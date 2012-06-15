@@ -57,6 +57,7 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
@@ -129,8 +130,20 @@
         DomToXhtml.nodeToXhtml(anyDomNode);
     });
 </pre></div><h3 id="configuration">3 Configuration</h3>
-<p>This plugin does not provide any configuration settings.</p>
-<h3 id="known-issues">4 Known Issues</h3>
+<p>To</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	Aloha.settings.plugins: {
+		'dom-to-xhtml': {
+			config: [ 'dom-to-xhtml' ],
+			editables: {
+				'#one': [ 'dom-to-xhtml' ],
+				'#two': [ ]
+			}
+		}
+	}
+</pre></div><h3 id="known-issues">4 Known Issues</h3>
 <p>There are some known issues especially with Internet Explorer. These issues are documented more in detail in the source code. Some best practices to avoid these issues:</p>
 <ul>
 	<li>IE &#8211; don&#8217;t use newer <span class="caps">HTML</span> elements on older Internet Explorer versions,</li>

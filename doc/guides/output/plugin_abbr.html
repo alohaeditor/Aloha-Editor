@@ -57,6 +57,7 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
@@ -106,7 +107,7 @@
 <p>The Abbr Plugin will wrap selected contents within an <tt>&lt;abbr&gt;</tt> tag. You can then specify a title text to describe the abbreviation.</p>
 
           </div>
-        <h4>Components</h4>
+        <h3 id="components">1 Components</h3>
 <ul>
 	<li>formatAbbr &#8211; format selection as an abbreviation</li>
 	<li>createAbbr &#8211; insert new abbreviation</li>
@@ -114,13 +115,36 @@
 	<li>abbrText &#8211; UIAttributeField for text input</li>
 	<li>removeAbbr &#8211; remove abbreviation from selection</li>
 </ul>
-<h4>Configuration settings</h4>
-<p>Currently there are no configuration options for the Abbr Plugin.</p>
+<h3 id="functional-description">2 Functional Description</h3>
+<p>To create an abbreviation highlight some text and click the abbreviation icon from the format tab. Now you can enter the description of the abbreviation which will be shown when hovering over the annotated word. For editing an abbreviation just click on the entered abbreviation and edit the text in the FloatingMenu. To delete an abbreviation just move the cursor to the abbreviation and click on the abbreviation button at the Aloha Editor again.</p>
+<h3 id="configuration-settings">3 Configuration settings</h3>
+<p>To enable or disable the abbr plugin for single editables refere the following example. All editables have the abbr plugin activated. The abbr plugin is deactivated for the editable with the ID &#8216;two&#8217;.</p>
+<p>Use a single array with the value <tt>[ 'abbr' ]</tt> to activate or an empty array <tt>[ ]</tt> to deactivate the plugin.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	Aloha.settings.plugins = {
+		abbr: {
+			config: [ 'abbr' ],
+
+			editables: {
+				'#one': [ 'abbr' ],
+				'#two': [ ]
+			}
+		}
+	};
+</pre></div>
 
       </div>
-      <div id="subCol">
-        
-      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#components"><p>Components</p>
+</a></li><li><a href="#functional-description"><p>Functional Description</p>
+</a></li><li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li>
+          </ol>
+        </div>
     </div>
   </div>
 

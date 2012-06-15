@@ -57,6 +57,7 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
@@ -115,8 +116,8 @@
 	<li>Support for resizing the image</li>
 	<li>Support for changing the image padding</li>
 </ul>
-<div class="note"><p>You need a server-sided script like image magick which will handle actual cropping for you.</p></div>
-<p>Follow devs on http://twitter.com/search?q=%23aeimg</p>
+<div class="note"><p>You need a server side script like ImageMagick which will handle actual cropping for you.</p></div>
+
 
           </div>
         <h3 id="main-features">1 Main Features</h3>
@@ -135,10 +136,22 @@
 	<li>insertimage &#8211; a button that allows you to insert an image</li>
 </ul>
 <h4 id="configuration-settings">2.2 Configuration settings</h4>
+<p>Activate the image plugin per editable:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-Aloha.plugins.image.settings = {
+	Aloha.settings.plugins.image: {
+		config: [ 'img' ], // enable the plugin
+		editables: {
+			'#my-editable': [ ] // disable the plugin for the editable with ID my-editable
+		}
+	}
+</pre></div><p>Instead of <tt>[ 'img' ]</tt> you can also use an object of with settings available for the image plugin.</p>
+<p>All available configuration settings (not all are per individual editable):</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.plugins.image = {
 	'maxWidth': 1600,
 	'minWidth': 3,
 	'maxHeight': 1200,
