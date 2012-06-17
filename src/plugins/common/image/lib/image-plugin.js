@@ -25,8 +25,8 @@ define([
 	'i18n!aloha/nls/i18n',
 	'i18n!image/nls/i18n',
 	'aloha/jquery-ui',
-	'jquery-plugin!image/vendor/jcrop/jquery.jcrop.min',
-	'jquery-plugin!image/vendor/mousewheel/mousewheel',
+	'image/vendor/jcrop/jquery.jcrop.min',
+	'image/vendor/mousewheel/mousewheel',
 	// css
 	'css!image/css/image.css',
 	'css!image/vendor/ui/ui-lightness/jquery-ui-1.8.10.cropnresize.css',
