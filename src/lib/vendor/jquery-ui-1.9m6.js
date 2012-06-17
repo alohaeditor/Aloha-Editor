@@ -1,3 +1,4 @@
+define(["aloha/jquery"], function(jQuery){
 /*!
  * jQuery UI 1.9m6
  *
@@ -14335,3 +14336,5 @@ $.widget( "ui.tooltip", {
 });
 
 }( jQuery ) );
+return jQuery.ui;
+});
