@@ -4,7 +4,7 @@
 	Aloha.settings = {
 		logLevels: { 'error': true, 'warn': true, 'info': true, 'debug': false, 'deprecated': true },
 		errorhandling: false,
-		ribbon: false,
+		ribbon: {enable: true},
 		locale: 'en',
 		repositories: {
 			linklist: {
