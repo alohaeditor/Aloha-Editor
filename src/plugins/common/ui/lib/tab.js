@@ -3,6 +3,7 @@ define([
 	'aloha/jquery',
 	'ui/container',
 	'ui/component',
+	'aloha/jquery-ui'
 ],
 function( Aloha, jQuery, Container, Component ) {
 	'use strict';

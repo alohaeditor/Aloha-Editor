@@ -1,7 +1,8 @@
 define([
 	'aloha/jquery',
 	'ui/surface',
-	'ui/tab'
+	'ui/tab',
+	'aloha/jquery-ui'
 ],
 function( jQuery, Surface, Tab ) {
 

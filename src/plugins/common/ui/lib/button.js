@@ -6,7 +6,8 @@
 
 define([
 	'aloha/jquery',
-	'ui/component'
+	'ui/component',
+	'aloha/jquery-ui'
 ],
 function( jQuery, Component ) {
 	'use strict';
