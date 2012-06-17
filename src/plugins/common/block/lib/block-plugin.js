@@ -20,8 +20,8 @@ define([
 	'block/editormanager',
 	'block/blockcontenthandler',
 	'block/editor',
-	'css!block/css/block.css',
-	'block/jquery-ui-1.8.16.custom.min'
+	'aloha/jquery-ui',
+	'css!block/css/block.css'
 ], function(Aloha, Plugin, jQuery, ContentHandlerManager, BlockManager, SidebarAttributeEditor, block, EditorManager, BlockContentHandler, editor) {
 	"use strict";
 	/**
