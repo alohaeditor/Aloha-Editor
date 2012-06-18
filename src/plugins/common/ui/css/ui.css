@@ -181,7 +181,7 @@
 	background-image: url(../img/tree.png);
 }
 
-.aloha-large-button {
+button.aloha-large-button {
 	width: 60px;
 	height: 50px;
 }
