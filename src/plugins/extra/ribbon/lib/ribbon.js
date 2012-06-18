@@ -38,8 +38,64 @@ define([
 		}
 	}
 
+	function makeSplitButton(props) {
+		var action = $('<button></button>');
+		var expand = action.clone();
+		var buttonset = $('<div></div>');
+		var menu = $('<ul></ul>');
+		var wrapper = buttonset.clone().addClass("aloha-ribbon-split-button");
+
+		if (props.icon) {
+			action.append($('<img></img>').attr('src', props.icon));
+		}
+
+		action
+			.text(props.label)
+			.button()
+			.click(props.onclick);
+
+		expand
+			.button({
+				text: false, icons: { primary: 'ui-icon-triangle-1-s' }
+			})
+			.click(function(){
+				menu.show().position({
+					my: 'left top',
+					at: 'left bottom',
+					of: action
+				});
+				$(window.document).bind('click', function(event){
+					menu.hide();
+					$(this).unbind(event);
+				});
+				return false;
+			});
+
+		buttonset.buttonset();
+		buttonset.append(action).append(expand);
+		wrapper.append(buttonset).append(menu);
+
+		for (var i = 0; i < props.menu.length; i++) {
+			var menuItem = props.menu[i];
+			var item = $('<li></li>');
+			var label = $('<span></span>');
+			var icon = $('<img/>');
+			label.text(menuItem.label);
+			icon.attr('url', menuItem.icon);
+			item.append(icon).append(label).appendTo(menu);
+			item.click(menuItem.onclick);
+		}
+		menu.hide().menu().css({
+			'position': 'absolute',
+			'width': '200px'
+		});
+
+		return wrapper;
+	}
+
 	return {
 		onSelect: onSelect,
-		setupButton: setupButton
+		setupButton: setupButton,
+		makeSplitButton: makeSplitButton
 	};
 });

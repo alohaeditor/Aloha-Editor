@@ -24,7 +24,7 @@ define([
 			this._visible = false;
 			this._menubar = false;
 
-			this._toolbar = $('<div class="aloha-ribbon"><ul class="aloha-ribbon-menubar"></ul></div>');
+			this._toolbar = $('<div class="aloha-ribbon-toolbar ui-menubar ui-widget-header ui-helper-clearfix"></div>');
 
 			var fadeIn = $("<button class='aloha-ribbon-in'></button>")
 				.button()
@@ -38,7 +38,7 @@ define([
 					});
 					fadeIn.hide();
 				})
-			    .prependTo(this._toolbar);
+			    .appendTo(this._toolbar);
 
 			var fadeOut = $("<button class='aloha-ribbon-out'></button>")
 				.button()
@@ -51,9 +51,9 @@ define([
 					});
 					fadeIn.show();
 				})
-				.prependTo(this._toolbar);
+				.appendTo(this._toolbar);
 
-			var wrapper = $('<div class="aloha-ribbon-container"></div>')
+			var wrapper = $('<div class="aloha-ribbon"></div>')
 				.appendTo("body");
 
 			this._icon = $('<div></div>')
@@ -81,11 +81,21 @@ define([
 		 * props.iconCls
 		 * props.menu
 		 */
-		addButton: function (props) {
+		_addButton: function (props) {
+			if ( ! this._toolbar.children("ul").length ) {
+				$('<ul class="aloha-ribbon-menubar"></ul>').appendTo(this._toolbar);
+			}
 			lib.setupButton(this._toolbar.children("ul"), props);
 		},
 
+		addButton: function(props) {
+			this._toolbar.append(lib.makeSplitButton(props));
+		},
+
 		refresh: function(){
+			if ( ! this._toolbar.children("ul").children().length ) {
+				return;
+			}
 			if (this._menubar) {
 				this._toolbar.children("ul").menubar("destroy");
 			} else {
