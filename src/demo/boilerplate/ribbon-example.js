@@ -42,11 +42,32 @@ Aloha.ready(function(){
 					onclick: function(){
 					}
 				}
+			]
+		});
+		/*
+		Ribbon._addButton({
+			label: "label",
+			menu: [
+				{
+					label: "X",
+					menu: [
+						{
+							label: "Z",
+							menu: [{ label: "Q" }]
+						},
+						{
+							label: "ZZ"
+						}
+					],	
+					onclick: function(){
+					}
+				}
 			],
 			// icon: 'url',
 			onclick: function(){
 			}
 		});
+		*/
 		Ribbon.refresh();
     });
 });

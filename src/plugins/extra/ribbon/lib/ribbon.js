@@ -39,30 +39,37 @@ define([
 	}
 
 	function makeSplitButton(props) {
-		var action = $('<button></button>');
-		var expand = action.clone();
-		var buttonset = $('<div></div>');
+		var expand = $('<button></button>');
 		var menu = $('<ul></ul>');
-		var wrapper = buttonset.clone().addClass("aloha-ribbon-split-button");
+		var wrapper = $('<div></div>').addClass("aloha-ribbon-split-button");
 
-		if (props.icon) {
-			action.append($('<img></img>').attr('src', props.icon));
+		var action = null;
+		var buttonset = null;
+		if (props.onclick) {
+			action = $('<button></button>')
+				.text(props.label)
+				.button()
+				.click(props.onclick);
+			if (props.icon) {
+				action.append($('<img></img>').attr('src', props.icon));
+			}
+			buttonset = $('<div></div>')
+				.buttonset()
+				.append(action)
+				.append(expand);
+		} else {
+			expand.text(props.label);
 		}
-
-		action
-			.text(props.label)
-			.button()
-			.click(props.onclick);
 
 		expand
 			.button({
-				text: false, icons: { primary: 'ui-icon-triangle-1-s' }
+				icons: { primary: 'ui-icon-triangle-1-s' }
 			})
 			.click(function(){
 				menu.show().position({
 					my: 'left top',
 					at: 'left bottom',
-					of: action
+					of: action || expand
 				});
 				$(window.document).bind('click', function(event){
 					menu.hide();
@@ -71,9 +78,8 @@ define([
 				return false;
 			});
 
-		buttonset.buttonset();
-		buttonset.append(action).append(expand);
-		wrapper.append(buttonset).append(menu);
+
+		wrapper.append(buttonset || expand).append(menu);
 
 		for (var i = 0; i < props.menu.length; i++) {
 			var menuItem = props.menu[i];
