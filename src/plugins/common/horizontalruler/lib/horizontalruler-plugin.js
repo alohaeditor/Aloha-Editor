@@ -29,9 +29,9 @@ function(Aloha, jQuery, Plugin, Component, Button, i18n, i18nCore) {
 			var that = this;
 
 			Component.define("insertHorizontalRule", Button, {
-				label: i18n.t('button.addhr.tooltip'),
+				tooltip: i18n.t('button.addhr.tooltip'),
 				iconOnly: true,
-				icon: 'aloha-button-horizontalruler',
+				icon: 'aloha-icon-horizontalruler',
 				click: function(){
 					that.insertHR();
 				}

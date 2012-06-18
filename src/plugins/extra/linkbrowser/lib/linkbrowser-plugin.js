@@ -22,9 +22,9 @@ define([
 
 			var that = this;
 
-			Component.define( 'linkBrowser', Button, {
-				icon: 'aloha-button-big aloha-button-tree',
-				label: i18n.t( 'button.addlink.tooltip' ),
+			Component.define('linkBrowser', Button, {
+				tooltip: i18n.t('button.addlink.tooltip'),
+				icon: 'aloha-icon-tree',
 				click: function () { that.open(); }
 			});
 

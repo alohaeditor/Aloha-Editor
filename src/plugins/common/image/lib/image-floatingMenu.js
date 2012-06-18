@@ -14,9 +14,8 @@ define(['aloha/jquery',
 		'ui/toolbar',
 	    'ui/button',
 	    'ui/toggleButton',
-	    'ui/label',
 	    'ui/port-helper-attribute-field'],
-function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Label, AttributeField) {
+function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, AttributeField) {
 	'use strict';
 	var jQuery = aQuery;
 	var $ = aQuery;
@@ -74,8 +73,8 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 			var plugin = this.plugin;
 
 			Component.define("imageCnrRatio", ToggleButton, {
-				label: i18n.t('button.toggle.tooltip'),
-				icon: 'cnr-ratio',
+				tooltip: i18n.t('button.toggle.tooltip'),
+				icon: 'aloha-icon-cnr-ratio',
 				click: function(){
 					plugin.toggleKeepAspectRatio();
 				}
@@ -97,8 +96,8 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 			var plugin = this.plugin;
 
 			Component.define("imageCnrReset", Button, {
-				label: i18n.t('Reset'),
-				icon: 'cnr-reset',
+				tooltip: i18n.t('Reset'),
+				icon: 'aloha-icon-cnr-reset',
 				click: function(){
 					plugin.reset();
 				}
@@ -112,7 +111,7 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 			var plugin = this.plugin;
 
 			Component.define("insertImage", Button, {
-				label: i18n.t('button.addimg.tooltip'),
+				tooltip: i18n.t('button.addimg.tooltip'),
 				icon: 'aloha-button aloha-image-insert',
 				click: function(){
 					plugin.insertImg();
@@ -128,20 +127,18 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 		_addUIMetaButtons: function () {
 			var plugin = this.plugin;
 			
-			Component.define("imageSourceLabel", Label, {
-				'label': i18n.t('field.img.src.label'),
-				'tooltip': i18n.t('field.img.src.tooltip')
+			this.imgSrcField = new AttributeField({
+				label: i18n.t('field.img.src.label'),
+				tooltip: i18n.t('field.img.src.tooltip'),
+				name: 'imageSource'
 			});
-
-			Component.define("imageTitleLabel", Label, {
-				'label': i18n.t('field.img.title.label'),
-				'tooltip': i18n.t('field.img.title.tooltip')
-			});
-
-			this.imgSrcField = new AttributeField({'name': 'imageSource'});
 			this.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
 			
-			this.imgTitleField = new AttributeField({'name': 'imageTitle'});
+			this.imgTitleField = new AttributeField({
+				label: i18n.t('field.img.title.label'),
+				tooltip: i18n.t('field.img.title.tooltip'),
+				name: 'imageTitle'
+			});
 			this.imgTitleField.setObjectTypeFilter();
 		},
 		
@@ -152,8 +149,8 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 			var plugin = this.plugin;
 		
 			Component.define("imageAlignLeft", Button, {
+				tooltip: i18n.t('button.img.align.left.tooltip'),
 				icon: 'aloha-img aloha-image-align-left',
-				label: i18n.t('button.img.align.left.tooltip'),
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'left');
@@ -161,8 +158,8 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 			});
 			
 			Component.define("imageAlignRight", Button, {
+				tooltip: i18n.t('button.img.align.right.tooltip'),
 				icon: 'aloha-img aloha-image-align-right',
-				label: i18n.t('button.img.align.right.tooltip'),
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'right');
@@ -170,8 +167,8 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 			});
 
 			Component.define("imageAlignNone", Button, {
+				tooltip: i18n.t('button.img.align.none.tooltip'),
 				icon: 'aloha-img aloha-image-align-none',
-				label: i18n.t('button.img.align.none.tooltip'),
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css({
@@ -189,16 +186,16 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 			var plugin = this.plugin;
 
 			Component.define("imageIncPadding", Button, {
+				tooltip: i18n.t('padding.increase'),
 				icon: 'aloha-img aloha-image-padding-increase',
-				label: i18n.t('padding.increase'),
 				click: function () {
 					jQuery(plugin.getPluginFocus()).increase('padding');
 				}
 			});
 			
 			Component.define("imageDecPadding", Button, {
+				tooltip: i18n.t('padding.decrease'),
 				icon: 'aloha-img aloha-image-padding-decrease',
-				label: i18n.t('padding.decrease'),
 				click: function () {
 					jQuery(plugin.getPluginFocus()).decrease('padding');
 				}
@@ -214,8 +211,8 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 			Toolbar.createScope('Aloha.img', ['Aloha.global']);
 
 			Component.define("imageCropButton", ToggleButton, {
-				icon: 'cnr-crop',
-				label : i18n.t('Crop'),
+				tooltip: i18n.t('Crop'),
+				icon: 'aloha-icon-cnr-crop',
 				click: function () {
 					if (this.getState()) {
 						plugin.crop();
@@ -236,6 +233,7 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 
 			// Manual resize fields
 			this.imgResizeHeightField = new AttributeField({
+				label:  i18n.t('height'),
 				name: "imageResizeHeight",
 				width: 50
 			});
@@ -243,21 +241,12 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 			this.imgResizeHeightField.minValue = plugin.settings.minHeight;
 			
 			this.imgResizeWidthField = new AttributeField({
+				label:  i18n.t('width'),				
 				name: "imageResizeWidth",
 				width: 50
 			});
 			this.imgResizeWidthField.maxValue = plugin.settings.maxWidth;
 			this.imgResizeWidthField.minValue = plugin.settings.minWidth;
-
-			Component.define("imageResizeWidthLabel", Label, {
-				'label':  i18n.t('width'),
-				'tooltip': i18n.t('width'),
-			});
-
-			Component.define("imageResizeHeightLabel", Label, {
-				'label':  i18n.t('height'),
-				'tooltip': i18n.t('height'),
-			});
  		},
 
 		/**
