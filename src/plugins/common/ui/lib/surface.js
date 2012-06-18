@@ -169,7 +169,8 @@ function( Aloha, jQuery, Class, Container ) {
 
 		/**
 		 * Initializes all surfaces for an editable.
-		 * @todo Rename to initialize
+		 * @todo Rename to initialize.
+		 * @todo Remove the above @todo.
 		 *
 		 * @param {Aloha.Editable} editable
 		 */

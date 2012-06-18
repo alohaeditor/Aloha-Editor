@@ -153,14 +153,22 @@ function( Aloha, jQuery ) {
 	 */
 	function sub( /* event, dispatch [, ... ] */ ) {
 		var args = Array.prototype.slice.call( arguments );
-		var event = args.shift();
+		var events = args.shift();
+		if ( typeof events === 'string' ) {
+			events = [ events ];
+		}
 		var guard = args.shift();
 		getUid( guard );
 		registerArguments( guard, args );
-		registerGuard( event, guard );
-		Aloha.bind( event, function ( $event, range, nativeEvent ) {
-			trigger( event, $event, range, nativeEvent );
-		});
+		var i;
+		var event;
+		for ( i = 0; i < events.length; i++ ) {
+			event = events[ i ];
+			registerGuard( event, guard );
+			Aloha.bind( event, function ( $event, range, nativeEvent ) {
+				trigger( event, $event, range, nativeEvent );
+			});
+		}
 	}
 
 	return sub;

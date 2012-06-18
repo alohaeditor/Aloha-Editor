@@ -3,9 +3,10 @@ define([
 	'ui/surface',
 	'ui/tab',
 	'ui/subguarded',
+	'ui/floating',
 	'aloha/jquery-ui'
 ],
-function( jQuery, Surface, Tab, subguarded ) {
+function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 
 	/**
 	 * The toolbar is configured via `settings.toolbar` and is defined as an
@@ -42,15 +43,14 @@ function( jQuery, Surface, Tab, subguarded ) {
 			// make it easy to show and hide the toolbar containers on
 			// activate/deactivate.  The editable instance gets a reference to
 			// this div.
-			editable.toolbar = jQuery( '<div>', {
-				'class': 'aloha-ui-toolbar'
-			});
 
+			this.$element = jQuery( '<div>', { 'class': 'aloha-ui-toolbar' });
+			editable.toolbar = this.$element;
 			var settings;
 			var tabs = editable.settings.toolbar;
 			var container = Tab.createContainer().appendTo( editable.toolbar );
 			var i;
-			for ( i = 0; i < tabs.length; ++i ) {
+			for ( i = 0; i < tabs.length; i++ ) {
 				settings = tabs[ i ];
 				new Tab( {
 					label: settings.label || '',
@@ -60,14 +60,42 @@ function( jQuery, Surface, Tab, subguarded ) {
 				}, settings.components );
 			}
 
-			this.initializeFloatingBehaviour();
+			this.initializeFloating();
+			this.initializeDragging();
 		},
 
-		initializeFloatingBehaviour: function() {
-			subguarded( 'aloha-selection-changed', Surface.onActivatedSurface,
+		initializeFloating: function() {
+			var surface = this;
+
+			this.$element.css( 'position', 'absolute' );
+
+			subguarded( [
+				'aloha-selection-changed',
+				'aloha-editable-activated'
+			], Surface.onActivatedSurface,
 				this, function( $event, range, event ) {
-					//console.warn( $event, range, event );
-				});
+				if ( Aloha.activeEditable ) {
+					floatSurface( surface, Aloha.activeEditable );
+				}
+			} );
+
+			var isScrolling = false;
+			jQuery( window ).scroll( function( $event, nativeEvent ) {
+				// @TODO only do this for active surfaces.
+				if ( !isScrolling ) {
+					isScrolling = true;
+					setTimeout( function () {
+						isScrolling = false;
+						if ( Aloha.activeEditable ) {
+							floatSurface( surface, Aloha.activeEditable );
+						}
+					}, 50 );
+				}
+			});
+		},
+
+		initializeDragging: function() {
+
 		},
 
 		enableFloating: function() {
