@@ -38,7 +38,7 @@ function( jQuery, Component, Button ) {
 			this.buttons = [];
 			jQuery( this.getButtons() ).map(function( i, button ) {
 				var component = new (Button.extend({
-					label: button.label,
+					tooltip: button.tooltip,
 					icon: "aloha-large-icon " + button.icon,
 					iconOnly: true,
 					click: function() {
@@ -60,7 +60,7 @@ function( jQuery, Component, Button ) {
 
 			jQuery( this.getItems() ).map(function( i, item ) {
 				var component = new (Button.extend({
-					label: item.label,
+					tooltip: item.tooltip,
 					icon: item.icon,
 					click: function() {
 						item.click.apply( multiSplit, arguments );

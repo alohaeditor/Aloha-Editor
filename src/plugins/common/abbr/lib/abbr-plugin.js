@@ -51,8 +51,7 @@ define( [
 		    var me = this;
 
 			Component.define("formatAbbr", ToggleButton, {
-				label: i18n.t("button.createAbbr.label"),
-				iconOnly: true,
+				tooltip: i18n.t("button.abbr.tooltip"),
 				icon: "aloha-icon aloha-icon-abbr",
 				click: function(){
 					me.formatAbbr();
@@ -62,8 +61,7 @@ define( [
 		    this.formatAbbrButton = Component.getGlobalInstance("formatAbbr");
 
 			Component.define("insertAbbr", Button, {
-				label: i18n.t( 'button.addabbr.tooltip' ),
-				iconOnly: true,
+				tooltip: i18n.t('button.addabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr',
 				click: function(){
 					me.insertAbbr( false );

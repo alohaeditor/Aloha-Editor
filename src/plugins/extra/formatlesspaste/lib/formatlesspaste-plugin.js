@@ -91,8 +91,8 @@ function(Aloha, Plugin, jQuery, Component, ToggleButton, FormatlessPasteHandler,
 			// add button to toggle format-less pasting
 
 			Component.define("toggleFormatlessPaste", ToggleButton, {
-					icon: 'aloha-button aloha-button-formatless-paste',
-					label: i18n.t('button.formatlessPaste.tooltip'),
+					tooltip: i18n.t('button.formatlessPaste.tooltip'),
+					icon: 'aloha-icon aloha-icon-formatless-paste',
 					click: function () { 
 						//toggle the value of allowFormatless
 						FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;

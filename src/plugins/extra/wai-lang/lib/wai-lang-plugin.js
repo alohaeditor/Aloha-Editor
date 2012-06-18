@@ -110,9 +110,8 @@ define( [
 			var that = this;
 
 			Component.define("wailang", ToggleButton, {
-				label: i18n.t( 'button.add-wai-lang.tooltip' ),
-				iconOnly: true,
-				icon: 'aloha-button aloha-button-wai-lang',
+				tooltip: i18n.t('button.add-wai-lang.tooltip'),
+				icon: 'aloha-icon aloha-icon-wai-lang',
 				click: function(){
 					that.addRemoveMarkupToSelection();
 				}
@@ -139,9 +138,8 @@ define( [
 			langField.setObjectTypeFilter( this.objectTypeFilter );
 
 			Component.define('removewailang', Button, {
-				label: i18n.t('button.add-wai-lang-remove.tooltip'),
-				icon: 'aloha-button aloha-button-wai-lang-remove',
-				iconOnly: true,
+				tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
+				icon: 'aloha-icon aloha-icon-wai-lang-remove',
 				click: function(){
 					that.removeLangMarkup();
 				}

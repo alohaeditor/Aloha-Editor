@@ -10,6 +10,7 @@ define({
 		"button.code.tooltip":"Code",
 		"button.abbr.tooltip":"Abbreviation",
 		"button.del.tooltip":"Strikethrough",
+		"button.s.tooltip":"Strikethrough",
 		"button.sub.tooltip":"Subscript",
 		"button.sup.tooltip":"Superscript",
 		"button.p.tooltip":"Paragraph",

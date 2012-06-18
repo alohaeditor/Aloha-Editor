@@ -38,22 +38,22 @@ function( jQuery, Component ) {
 			this._super();
 			this.createButtonElement()
 				.button({
-					label: this.label,
-					text: !this.iconOnly,
-					icons: {
-						primary: this.icon
+				    label: this.text ? this.text : this.tooltip,
+   				    text: !!this.text,
+				    icons: {
+					    primary: this.icon
 					}
-				})
+			    })
 				.button( 'widget' )
-					.tooltip({
-						position: {
-							my: 'left top',
-							at: 'right bottom'
-						}
-					})
-					.click( jQuery.proxy(function() {
-						this._onClick();
-					}, this ) );
+				.tooltip({
+					position: {
+						my: 'left top',
+						at: 'right bottom'
+					}
+				})			
+				.click( jQuery.proxy(function() {
+					this._onClick();
+				}, this ) );
 		},
 
 		/**

@@ -107,7 +107,7 @@ define( [
           newC.push({
             text	  : c[i].text	   ? c[i].text		: c[i].name,
             tooltip	  : c[i].tooltip   ? c[i].tooltip	: c[i].text,
-            iconClass : c[i].iconClass ? c[i].iconClass	: 'aloha-button-' + c[i].name,
+            iconClass : c[i].iconClass ? c[i].iconClass	: 'aloha-icon-' + c[i].name,
             cssClass  : c[i].cssClass  ? c[i].cssClass	: c[i].name
           });
         }
@@ -481,9 +481,8 @@ define( [
 
 	TablePlugin.initMergeSplitCellsBtns = function(){
 
-		Component.define( "mergecells", Button, {
-			label: i18n.t( "button.mergecells.label" ),
-			iconOnly: true,
+		Component.define("mergecells", Button, {
+			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
 			click: function() {
 				if (TablePlugin.activeTable) {
@@ -492,9 +491,8 @@ define( [
 			}
 		});
 
-		Component.define( "splitcells", Button, {
-			label: i18n.t( "button.splitcells.label" ),
-			iconOnly: true,
+		Component.define("splitcells", Button, {
+			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
 			click: function() {
 				if (TablePlugin.activeTable) {
@@ -510,9 +508,8 @@ define( [
 	TablePlugin.initRowsBtns = function () {
 		var that = this;
 
-		Component.define( "addrowbefore", Button, {
-			label: i18n.t( "button.addrowbefore.label" ),
-			iconOnly: true,
+		Component.define("addrowbefore", Button, {
+			tooltip: i18n.t( "button.addrowbefore.tooltip"),
 			icon: "aloha-icon aloha-icon-addrowbefore",
 			click: function() {
 				if (that.activeTable) {
@@ -521,9 +518,8 @@ define( [
 			}
 		});
 
-		Component.define( "addrowafter", Button, {
-			label: i18n.t( "button.addrowafter.label" ),
-			iconOnly: true,
+		Component.define("addrowafter", Button, {
+			tooltip: i18n.t("button.addrowafter.tooltip"),
 			icon: "aloha-icon aloha-icon-addrowafter",
 			click: function() {
 				if (that.activeTable) {
@@ -532,9 +528,8 @@ define( [
 			}
 		});
 
-		Component.define( "deleterows", Button, {
-			label: i18n.t( "button.deleterows.label" ),
-			iconOnly: true,
+		Component.define("deleterows", Button, {
+			tooltip: i18n.t("button.delrows.tooltip"),
 			icon: "aloha-icon aloha-icon-deleterows",
 			click: function() {
 				if (that.activeTable) {
@@ -550,9 +545,8 @@ define( [
 			}
 		});
 
-		Component.define( "rowheader", ToggleButton, {
-			label: i18n.t( "button.rowheader.label" ),
-			iconOnly: true,
+		Component.define("rowheader", ToggleButton, {
+			tooltip: i18n.t("button.rowheader.tooltip"),
 			icon: "aloha-icon aloha-icon-rowheader",
 			click: function() {
 				// table header
@@ -604,7 +598,7 @@ define( [
 				name: itemConf.name,
 				text: i18n.t(itemConf.text),
 				tooltip: i18n.t(itemConf.tooltip),
-				iconClass: 'aloha-button aloha-row-layout ' + itemConf.iconClass,
+				iconClass: 'aloha-icon aloha-row-layout ' + itemConf.iconClass,
 				click: function () {
 					if (that.activeTable) {
 						var sc = that.activeTable.selection.selectedCells;
@@ -635,7 +629,6 @@ define( [
 				name: 'removeFormat',
 				text: i18n.t('button.removeFormat.text'),
 				tooltip: i18n.t('button.removeFormat.tooltip'),
-				iconClass: 'aloha-button aloha-button-removeFormat',
 				wide: true,
 				click: function () {
 					if (that.activeTable) {
@@ -666,9 +659,8 @@ define( [
 	TablePlugin.initColumnBtns = function () {
 		var that = this;
 
-		Component.define( "addcolumnleft", Button, {
-			label: i18n.t( "button.addcolumnleft.label" ),
-			iconOnly: true,
+		Component.define("addcolumnleft", Button, {
+			tooltip: i18n.t("button.addcolleft.tooltip"),
 			icon: "aloha-icon aloha-icon-addcolumnleft",
 			click: function() {
 				if (that.activeTable) {
@@ -677,9 +669,8 @@ define( [
 			}
 		});
 
-		Component.define( "addcolumnright", Button, {
-			label: i18n.t( "button.addcolumnright.label" ),
-			iconOnly: true,
+		Component.define("addcolumnright", Button, {
+			tooltip: i18n.t("button.addcolright.tooltip"),
 			icon: "aloha-icon aloha-icon-addcolumnright",
 			click: function() {
 				if (that.activeTable) {
@@ -688,9 +679,8 @@ define( [
 			}
 		});
 
-		Component.define( "deletecolumns", Button, {
-			label: i18n.t( "button.deletecolumns.label" ),
-			iconOnly: true,
+		Component.define("deletecolumns", Button, {
+			tooltip: i18n.t("button.delcols.tooltip"),
 			icon: "aloha-icon aloha-icon-deletecolumns",
 			click: function() {
 				if (that.activeTable) {
@@ -706,9 +696,8 @@ define( [
 			}
 		});
 
-	    Component.define( "columnheader", ToggleButton, {
-			label: i18n.t( "button.columnheader.label" ),
-			iconOnly: true,
+	    Component.define("columnheader", ToggleButton, {
+			tooltip: i18n.t("button.columnheader.tooltip"),
 			icon: "aloha-icon aloha-icon-columnheader",
 			click: function() {
 				if (that.activeTable) {
@@ -750,7 +739,7 @@ define( [
 				name	  : itemConf.name,
 				text	  : i18n.t(itemConf.text),
 				tooltip	  : i18n.t(itemConf.tooltip),
-				iconClass : 'aloha-button aloha-column-layout ' + itemConf.iconClass,
+				iconClass : 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
 				click	  : function (x,y,z) {
 					if (that.activeTable) {
 						var sc = that.activeTable.selection.selectedCells;
@@ -782,7 +771,6 @@ define( [
 				name	  : 'removeFormat',
 				text	  : i18n.t('button.removeFormat.text'),
 				tooltip	  : i18n.t('button.removeFormat.tooltip'),
-				iconClass : 'aloha-button aloha-button-removeFormat',
 				wide	  : true,
 				click	  : function () {
 					if (that.activeTable) {
@@ -818,9 +806,8 @@ define( [
 		Toolbar.createScope(this.name + '.column', 'Aloha.continuoustext');
 		Toolbar.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
-		Component.define( "createTable", Button, {
-			label: i18n.t( "button.createTable.label" ),
-			iconOnly: true,
+		Component.define("createTable", Button, {
+			tooltip: i18n.t("button.createtable.tooltip"),
 			icon: "aloha-icon aloha-icon-createTable",
 			click: function() {
 				TablePlugin.createDialog(this.element);
@@ -847,7 +834,7 @@ define( [
 				name: itemConf.name,
 				text: i18n.t(itemConf.text),
 				tooltip: i18n.t(itemConf.tooltip),
-				iconClass: 'aloha-button aloha-table-layout ' + itemConf.iconClass,
+				iconClass: 'aloha-icon aloha-table-layout ' + itemConf.iconClass,
 				click: function(){
 					// set table css class
 					if (that.activeTable) {
@@ -865,7 +852,6 @@ define( [
 				name: 'removeFormat',
 				text: i18n.t('button.removeFormat.text'),
 				tooltip: i18n.t('button.removeFormat.tooltip'),
-				iconClass: 'aloha-button aloha-button-removeFormat',
 				wide: true,
 				click: function () {
 					// remove all table classes
@@ -884,9 +870,8 @@ define( [
 			hideIfEmpty: true
 		});
 
-		Component.define( "tableCaption", ToggleButton, {
-			label: i18n.t( "button.tableCaption.label" ),
-			iconOnly: true,
+		Component.define("tableCaption", ToggleButton, {
+			tooltip: i18n.t("button.caption.tooltip"),
 			icon: "aloha-icon aloha-icon-table-caption",
 			click: function() {
 				if (that.activeTable) {

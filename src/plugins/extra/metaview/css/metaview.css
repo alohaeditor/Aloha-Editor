@@ -4,7 +4,7 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-button.aloha-button-metaview { background: url(../img/button.png) no-repeat 0px 0px !important; }
+.aloha-icon-metaview { background: url(../img/button.png) no-repeat 0px 0px !important; }
 
 .aloha-metaview p, .aloha-metaview pre,
 .aloha-metaview h1, .aloha-metaview h2,
