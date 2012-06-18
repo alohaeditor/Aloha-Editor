@@ -25,6 +25,17 @@ function( Aloha, jQuery, Class, Container ) {
 		 */
 		_constructor: function( editable ) {
 			this.editable = editable;
+		},
+
+		/**
+		 * Check for whether or not this surface is active--that is, whether is
+		 * is visible and the user can interact with it.
+		 *
+		 * @FIME: @TODO: Implenent this function.
+		 * @eturn {boolean} True if this surface is visible.
+		 */
+		isActive: function () {
+			return true;
 		}
 
 	});
@@ -209,6 +220,15 @@ function( Aloha, jQuery, Class, Container ) {
 				Aloha.eventHandled = false;
 				Surface.suppressHide = false;
 			});
+		},
+
+		onActivatedSurface: function( tuples, eventName, $event, range, nativeEvent ) {
+			var i;
+			for ( i = 0; i < tuples.length; i++ ) {
+				if (tuples[i][0].isActive()) {
+					tuples[i][1]($event, range, nativeEvent);
+				}
+			}
 		}
 
 	});

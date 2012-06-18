@@ -1,9 +1,10 @@
 define([
 	'aloha/jquery',
 	'ui/surface',
-	'ui/tab'
+	'ui/tab',
+	'ui/subguarded'
 ],
-function( jQuery, Surface, Tab ) {
+function( jQuery, Surface, Tab, subguarded ) {
 
 	/**
 	 * The toolbar is configured via `settings.toolbar` and is defined as an
@@ -25,6 +26,7 @@ function( jQuery, Surface, Tab ) {
 	 * @extends {Surface}
 	 */
 	var Toolbar = Surface.extend({
+
 		/**
 		 * Toolbar constructor.
 		 *
@@ -49,13 +51,30 @@ function( jQuery, Surface, Tab ) {
 			var i;
 			for ( i = 0; i < tabs.length; ++i ) {
 				settings = tabs[ i ];
-				new Tab({
+				new Tab( {
 					label: settings.label || '',
 					showOn: settings.showOn,
 					editable: editable,
 					container: container
 				}, settings.components );
 			}
+
+			this.initializeFloatingBehaviour();
+		},
+
+		initializeFloatingBehaviour: function() {
+			subguarded( 'aloha-selection-changed', Surface.onActivatedSurface,
+				this, function( $event, range, event ) {
+					//console.warn( $event, range, event );
+				});
+		},
+
+		enableFloating: function() {
+			
+		},
+
+		disableFloating: function() {
+
 		},
 
 		/**

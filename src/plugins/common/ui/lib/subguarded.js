@@ -120,10 +120,11 @@ function( Aloha, jQuery ) {
 	 *
 	 */
 	function trigger( event, $event, range, nativeEvent ) {
-		var guards = getRegisteredGuards(event);
+		var guards = getRegisteredGuards( event );
 		var i;
 		for ( i = 0; i < guards.length; i++ ) {
-			guards[i](getArguments(guards[i]));
+			guards[ i ]( getArguments( guards[ i ] ), event, $event, range,
+				nativeEvent );
 		}
 	}
 
@@ -140,7 +141,13 @@ function( Aloha, jQuery ) {
 	 * @param {string} event
 	 * @param {function(array.<array.<*...>>)} guard A function that will be
 	 *                                               invoked when the specified
-	 *                                               event is fired.
+	 *                                               event is fired.  This
+	 *                                               function will receive a
+	 *                                               array consisting of
+	 *                                               arguments tuples, followed
+	 *                                               by the the arguments that
+	 *                                               are received from the
+	 *                                               event.
 	 * @param {*...} args A variable number of arguments which will be passed
 	 *                    as a list in a list to the dispatch function.
 	 */
@@ -148,10 +155,10 @@ function( Aloha, jQuery ) {
 		var args = Array.prototype.slice.call( arguments );
 		var event = args.shift();
 		var guard = args.shift();
-		getUid(guard); // Sets guard.uid property.
+		getUid( guard );
 		registerArguments( guard, args );
 		registerGuard( event, guard );
-		Aloha.bind( event, function ($event, range, nativeEvent ) {
+		Aloha.bind( event, function ( $event, range, nativeEvent ) {
 			trigger( event, $event, range, nativeEvent );
 		});
 	}
