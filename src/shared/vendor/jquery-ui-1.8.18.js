@@ -11804,4 +11804,6 @@ $.extend( $.ui.tabs.prototype, {
 
 })( jQuery );
 
+return jQuery.ui;
+
 }); // define()
