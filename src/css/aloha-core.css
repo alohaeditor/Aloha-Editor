@@ -10,9 +10,6 @@
 .aloha-editable-zerowidthfix {
 	padding: 0px 5px 0px 5px !important;
 }
-
-
-
 .aloha-logo {
 	width:37px !important;
 	height:25px !important;
@@ -20,16 +17,6 @@
 }
 .aloha-maximize {
 	background-image: url('../img/gentics-logo.png') !important;
-}
-.aloha-fade-out {
-	background-image: url('../img/fade-out.png') !important;
-	width:20px !important;
-	height:20px !important;
-}
-.aloha-fade-in {
-	background-image: url('../img/fade-in.png') !important;
-	width:20px !important;
-	height:20px !important;
 }
 .aloha-maximize {
 	width:20px !important;

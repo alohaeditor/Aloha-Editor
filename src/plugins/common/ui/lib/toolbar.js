@@ -2,7 +2,8 @@ define([
 	'aloha/jquery',
 	'ui/surface',
 	'ui/tab',
-	'ui/subguarded'
+	'ui/subguarded',
+	'aloha/jquery-ui'
 ],
 function( jQuery, Surface, Tab, subguarded ) {
 

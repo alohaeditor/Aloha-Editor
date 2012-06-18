@@ -1,10 +1,37 @@
-html body #aloha-ribbon {
-	z-index: 90000;
+.aloha-ribbon-container { 
 	position: fixed;
 	top: 0;
 	left: 0;
-	width: 100%;
-	padding-left: 0;
-	padding-right: 0;
+	right: 0;
+}
+.aloha-ribbon { 
+    position: relative;
+	z-index: 90000;
 	display: none;
+}
+.aloha-ribbon-out {
+	background-image: url('../img/fade-out.png');
+	background-position: center;
+	width: 20px;
+	height: 20px;
+	float: left;
+}
+.aloha-ribbon-in {
+	/* Override jquery-ui float:left for menubar buttons */
+	float: right !important;
+	background-image: url('../img/fade-in.png');
+	background-position: center;
+	width: 20px;
+	height: 20px;
+	float: right;
+}
+.aloha-ribbon-icon {
+	float: left;
+}
+.aloha-ribbon-singleton {
+	display:inline-block;
+/* TODO inline-block is not supported on IE <= 8. Maybe use this hack?
+	zoom: 1;
+	*display: inline;
+*/
 }

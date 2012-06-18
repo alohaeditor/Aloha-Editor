@@ -24,9 +24,9 @@ define([
 	'image/image-floatingMenu',
 	'i18n!aloha/nls/i18n',
 	'i18n!image/nls/i18n',
-	'jquery-plugin!image/vendor/ui/jquery-ui-1.8.10.custom.min',
-	'jquery-plugin!image/vendor/jcrop/jquery.jcrop.min',
-	'jquery-plugin!image/vendor/mousewheel/mousewheel',
+	'aloha/jquery-ui',
+	'image/vendor/jcrop/jquery.jcrop.min',
+	'image/vendor/mousewheel/mousewheel',
 	// css
 	'css!image/css/image.css',
 	'css!image/vendor/ui/ui-lightness/jquery-ui-1.8.10.cropnresize.css',

@@ -48,7 +48,7 @@ function(jQuery, Plugin, Component, ToggleButton, i18n, i18nCore) {
             icon : 'aloha-button aloha-button-numerated-headers',
             label : i18n.t('button.numeratedHeaders.tooltip'),
             click : function () {
-				if(that.numeratedHeadersButton.checked) {
+				if(that.numeratedHeadersButton.getState()) {
 					that.removeNumerations();
 				}
 				else {
@@ -62,7 +62,7 @@ function(jQuery, Plugin, Component, ToggleButton, i18n, i18nCore) {
 		 
 		// We need to bind to selection-changed event to recognize backspace and delete interactions
 		Aloha.bind( 'aloha-selection-changed', function ( event ) {
-			if ( that.numeratedHeadersButton.checked ) {
+			if (that.numeratedHeadersButton.getState()) {
 				that.createNumeratedHeaders();
 			}
 		});

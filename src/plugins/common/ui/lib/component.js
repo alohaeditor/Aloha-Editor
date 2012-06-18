@@ -1,7 +1,7 @@
 define([
 	'aloha/core',
 	'aloha/jquery',
-	'util/class',
+	'util/class'
 ],
 function( Aloha, jQuery, Class ) {
 	'use strict';
