@@ -90,7 +90,7 @@
 				components: [
 					[ "createTable", "characterPicker", "insertLink",
 					  "insertImage", "insertAbbr", "insertToc",
-					  "insertHorizontalRule" ]
+					  "insertHorizontalRule"]
 				]
 			},
 			// Link Tab
@@ -98,6 +98,17 @@
 				label: "Link", 
 				showOn: "a",
 				components: [ [ "editLink", "removeLink", "linkBrowser" ] ]
+			},
+			// Image insert Tab
+			{
+				label: "Image Insert",
+				// Show this tab whenever we have not selected an image.
+				showOn: function (el) {
+					var $el = jQuery(el);
+					//console.warn(el, el && !($el.is('img') || $el.find('img').length));
+					return !!el && !($el.is('img') || $el.find('img').length);
+				},
+				components: [ "insertImage" ]
 			},
             // Image Tab
             {
@@ -107,6 +118,7 @@
                     [ "imageSource", "imageTitle",
                       "imageAlignLeft", "imageAlignRight", "imageAlignNone",
                       "imageIncPadding", "imageDecPadding",
+                      "imageBrowser",
                       "imageCropButton", "imageCnrReset", "imageCnrRatio",
                       "imageResizeHeightLabel", "imageResizeHeight",
                       "imageResizeWidthLabel", "imageResizeWidth" ]
@@ -197,13 +209,11 @@
 	                            extra/wai-lang,
 	                            extra/flag-icons,
 	                            extra/linkbrowser,
+	                            extra/imagebrowser,
 	                            extra/sourceview"></script>
     <!--
     TODO not yet ready for jqueryui 
                                 extra/cite,
-                                extra/browser,
-	                            extra/linkbrowser,
-								extra/imagebrowser,
     -->
 	<!--
 		Application specific code
