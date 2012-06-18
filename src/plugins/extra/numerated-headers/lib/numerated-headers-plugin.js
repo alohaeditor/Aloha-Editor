@@ -5,8 +5,14 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha/jquery','aloha/plugin', 'aloha/floatingmenu', 'i18n!numerated-headers/nls/i18n', 'i18n!aloha/nls/i18n','css!numerated-headers/css/numerated-headers.css',],
-function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
+['aloha/jquery',
+ 'aloha/plugin',
+ 'ui/component',
+ 'ui/toggleButton',
+ 'i18n!numerated-headers/nls/i18n',
+ 'i18n!aloha/nls/i18n',
+ 'css!numerated-headers/css/numerated-headers.css'],
+function(jQuery, Plugin, Component, ToggleButton, i18n, i18nCore) {
 	"use strict";
 
    var
@@ -23,53 +29,43 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
       * Initialize the plugin
       */
      init: function () {
-       var that = this;
+		var that = this;
 
-	   if ( typeof this.settings.numeratedactive !== 'undefined' ) {
+		if ( typeof this.settings.numeratedactive !== 'undefined' ) {
 			this.numeratedactive = this.settings.numeratedactive;
 		}
 
-	   // modifyable selector for the headers, that should be numerated
-	   if ( typeof this.settings.headingselector !== 'undefined' ) {
+		// modifyable selector for the headers, that should be numerated
+		if ( typeof this.settings.headingselector !== 'undefined' ) {
 			this.headingselector = this.settings.headingselector;
 		}
-	   // modifyable selector for the baseobject. Where should be numerated
-	   if ( typeof this.settings.baseobjectSelector !== 'undefined' ) {
+		// modifyable selector for the baseobject. Where should be numerated
+		if ( typeof this.settings.baseobjectSelector !== 'undefined' ) {
 			this.baseobjectSelector = this.settings.baseobjectSelector;
 		}
-		
-       	    // add button to toggle format-less pasting
-          this.numeratedHeadersButton = new Aloha.ui.Button({
-            'iconClass' : 'aloha-button aloha-button-numerated-headers',
-            'size' : 'small',
-            'onclick' : function () {
-		   if(that.numeratedHeadersButton.isPressed()) {
-			//that.numeratedHeadersButton.setPressed(false);
-			that.removeNumerations();
-		   }
-		   else {
-			//that.numeratedHeadersButton.setPressed(true);
-			that.createNumeratedHeaders();
-		   }
-            },
-            'tooltip' : i18n.t('button.numeratedHeaders.tooltip'),
-            'toggle' : true,
-	    'pressed' : this.numeratedactive
-          });
+		 
+		Component.define("formatNumeratedHeaders", ToggleButton, {
+            tooltip: i18n.t('button.numeratedHeaders.tooltip'),
+            icon: 'aloha-icon aloha-icon-numerated-headers',
+            click: function () {
+				if(that.numeratedHeadersButton.getState()) {
+					that.removeNumerations();
+				}
+				else {
+					that.createNumeratedHeaders();
+				}
+            }
+		});
 
-          FloatingMenu.addButton(
-            'Aloha.continuoustext',
-            this.numeratedHeadersButton,
-            i18nCore.t('floatingmenu.tab.format'),
-            1
-          );
-	   
-	  // We need to bind to selection-changed event to recognize backspace and delete interactions
-	  Aloha.bind( 'aloha-selection-changed', function ( event ) {
-	    if ( that.numeratedHeadersButton.isPressed() ) {
-		that.createNumeratedHeaders();
-	    }
-	  });
+        this.numeratedHeadersButton = Component.getGlobalInstance("formatNumeratedHeaders");
+		this.numeratedHeadersButton.setState(this.numeratedactive);
+		 
+		// We need to bind to selection-changed event to recognize backspace and delete interactions
+		Aloha.bind( 'aloha-selection-changed', function ( event ) {
+			if (that.numeratedHeadersButton.getState()) {
+				that.createNumeratedHeaders();
+			}
+		});
      },
 
 	 removeNumerations : function () {

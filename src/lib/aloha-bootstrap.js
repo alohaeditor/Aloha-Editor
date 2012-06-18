@@ -172,8 +172,7 @@ define( 'aloha', [], function () {
 	require(Aloha.settings.requireConfig, 
 		[
 			'aloha/jquery',
-			'aloha/ext',
-			'util/json2',
+			'util/json2'
 		],
 		function () {
 			// load Aloha core files
@@ -199,13 +198,6 @@ define( 'aloha', [], function () {
 					'aloha/jquery.aloha',
 					'aloha/sidebar',
 					'util/position',
-					'aloha/ext-alohaproxy',
-					'aloha/ext-alohareader',
-					'aloha/ext-alohatreeloader',
-					'aloha/ui',
-					'aloha/ui-attributefield',
-					'aloha/ui-browser',
-					'aloha/floatingmenu',
 					'aloha/repositorymanager',
 					'aloha/repository',
 					'aloha/repositoryobjects',

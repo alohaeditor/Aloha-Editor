@@ -20,18 +20,166 @@
 	-->
 	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
 
+	<link rel="stylesheet" href="../../shared/repository-browser/css/repository-browser.css" type="text/css">
+
+	<style>
+		/* Place the new UI toolbar somewhere where we can see it */
+		.aloha-toolbar {
+			z-index: 999999;
+		}
+
+		/* Basic Styling for Sidebar */
+		.aloha-sidebar {
+		  position: fixed;
+		  right: 0;
+		  top: 0;
+		  width: 250px;
+		  height: 100%;
+		  border: 1px solid #000;
+		  border-width: 0 0 0 1px;
+		  background-color: #fff;
+		  padding: 10px;
+		}
+
+		.aloha-panel {
+		  border: 1px solid #000;
+		}
+
+		.aloha-panel-title {
+		  background-color: #000;
+		  color: #fff;
+		  padding: 5px 10px;
+		}
+
+		.aloha-panel-content {
+		 padding: 5px 10px;
+		}
+	</style>
+
 	<!--
 		All configuration for Aloha Editor for this demo is stored in js/aloha-config.js
 		It can also be placed inline here before loading Aloha Editor itself.
 	-->
 	<script src="js/aloha-config.js"></script>
 
+    <script>
+		Aloha.settings.toolbar = [
+			// Format Tab
+			{
+				label: "Format",
+				showOn: true,
+				components: [
+					[ "bold", "bold2", "italic", "italic2",
+                      "strikethrough", "subscript", "superscript",
+                      "orderedList", "unorderedList",
+                      "indentList", "outdentList",
+                      "formatLink", "formatAbbr", "wailang",
+                      "alignLeft", "alignCenter", "alignRight", "alignJustify",
+                      "toggleMetaView", "toggleFormatlessPaste",
+					  "formatNumeratedHeaders", "formatBlock" ]
+				]
+			},
+			// Insert Tab
+			{
+				label: "Insert",
+				showOn: true,
+				components: [
+					[ "createTable", "characterPicker", "insertLink",
+					  "insertImage", "insertAbbr", "insertToc",
+					  "insertHorizontalRule"]
+				]
+			},
+			// Link Tab
+			{
+				label: "Link", 
+				showOn: "a",
+				components: [ [ "editLink", "removeLink", "linkBrowser" ] ]
+			},
+			// Image insert Tab
+			{
+				label: "Image Insert",
+				// Show this tab whenever we have not selected an image.
+				showOn: function (el) {
+					var $el = jQuery(el);
+					//console.warn(el, el && !($el.is('img') || $el.find('img').length));
+					return !!el && !($el.is('img') || $el.find('img').length);
+				},
+				components: [ "insertImage" ]
+			},
+            // Image Tab
+            {
+                label: "Image",
+                showOn: true,
+                components: [
+                    [ "imageSource", "imageTitle",
+                      "imageAlignLeft", "imageAlignRight", "imageAlignNone",
+                      "imageIncPadding", "imageDecPadding",
+                      "imageBrowser",
+                      "imageCropButton", "imageCnrReset", "imageCnrRatio",
+                      "imageResizeHeight", "imageResizeWidth" ]
+                ]
+            },
+            // Abbr Tab
+            {   label: "Abbreviation",
+                showOn: "abbr",
+                components: [
+                    [ "abbrText" ]
+                ]
+            },
+            // Wailang Tab
+            {   label: "Wailang",
+                showOn: true, // Should show on this element <span class="aloha-wai-lang"></span>
+                components: [ [ "wailangfield", "removewailang" ] ]
+            },
+			// Table Tabs
+			{
+				label: "Table",
+				showOn: true,
+				components: [
+					[ "mergecells", "splitcells", "tableCaption",
+					  "formatTable" ]
+				]
+			},
+			{ 
+				label: "Column",
+				showOn: true,
+				components: [
+					[ "addcolumnleft", "addcolumnright", "deletecolumns",
+					  "columnheader", "mergecells", "splitcells",
+					  "formatColumn" ]
+				]
+			},
+			{
+				label: "Row",
+				showOn: true,
+				components: [
+					[ "addrowbefore", "addrowafter", "deleterows", "rowheader",
+					  "mergecells", "splitcells", "formatRow" ]
+				]
+			}
+		];
+    </script>
+
 	<!--
 		Load the Aloha Editor library.
 		The plugin list could also be added to the configuration.
 	-->
+	<script>
+		var __DEPS__ = {
+			lang: 'en',
+			root: '../'
+		};
+	</script>
+	<script src="../../shared/module-paths.js"></script>
+	<script>
+		__DEPS__.paths['Class'] = __DEPS__.root + 'lib/util/class';
+		Aloha.settings.requireConfig = {
+			paths: __DEPS__.paths
+		};
+	</script>
 	<script src="../../lib/aloha.js"
-	        data-aloha-plugins="common/format,
+	        data-aloha-plugins="common/ui,
+	                            common/format,
 	                            common/table,
 	                            common/list,
 	                            common/link,
@@ -41,17 +189,31 @@
 	                            common/paste,
 	                            common/characterpicker,
 	                            common/commands,
-								common/image,
+	                            common/block,
+	                            common/image,
 	                            common/abbr,
-	                            extra/browser,
+	                            common/horizontalruler,
+	                            common/align,
+	                            extra/formatlesspaste,
+	                            extra/toc,
+	                            extra/headerids,
+	                            extra/listenforcer,
+	                            extra/metaview,
+	                            extra/numerated-headers,
+	                            extra/ribbon,
+	                            extra/wai-lang,
+	                            extra/flag-icons,
 	                            extra/linkbrowser,
-								extra/imagebrowser,
+	                            extra/imagebrowser,
 	                            extra/sourceview"></script>
-
-
+    <!--
+    TODO not yet ready for jqueryui 
+                                extra/cite,
+    -->
 	<!--
 		Application specific code
 	-->
+    <script src="ribbon-example.js"></script>
 	<link rel="stylesheet" href="css/style.css">
 	<script src="js/aloha-boilerplate.js"></script>
 </head>

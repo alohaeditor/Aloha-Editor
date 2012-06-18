@@ -5,8 +5,8 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['aloha', 'aloha/jquery', 'aloha/floatingmenu', 'aloha/observable', 'aloha/registry'],
-function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
+define(['aloha', 'aloha/jquery', 'ui/toolbar', 'aloha/observable', 'aloha/registry'],
+function(Aloha, jQuery, Toolbar, Observable, Registry) {
 	"use strict";
 
 	var
@@ -74,7 +74,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @constructor
 		 */
 		_constructor: function() {
-			FloatingMenu.createScope('Aloha.Block');
+			Toolbar.createScope('Aloha.Block');
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
 			this._highlightedBlocks = {};
@@ -332,7 +332,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @api
 		 */
 		registerBlockType: function(identifier, blockType) {
-			FloatingMenu.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
+			Toolbar.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
 			this.blockTypes.register(identifier, blockType);
 		},
 

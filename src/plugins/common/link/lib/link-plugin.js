@@ -8,7 +8,7 @@
  * -----------------
  * This plugin provides an interface to allow the user to insert, edit and
  * remove links within an active editable.
- * It presents its user interface in the Floating menu, in a Sidebar panel.
+ * It presents its user interface in the Toolbar, in a Sidebar panel.
  * Clicking on any links inside the editable activates the this plugin's
  * floating menu scope.
  *
@@ -20,13 +20,18 @@ define( [
 	'aloha',
 	'aloha/plugin',
 	'aloha/jquery',
-	'aloha/floatingmenu',
+	'ui/port-helper-attribute-field',
+	'ui/toolbar',
+	'ui/surface',
+	'ui/component',
+	'ui/button',
+	'ui/toggleButton',
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
 	'css!link/css/link.css',
 	'link/../extra/linklist'
-], function ( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
+], function ( Aloha, Plugin, jQuery, AttributeField, Toolbar, Surface, Component, Button, ToggleButton, i18n, i18nCore, console ) {
 	'use strict';
 	
 	var GENTICS = window.GENTICS,
@@ -246,11 +251,11 @@ define( [
 				editable.obj.bind( 'keydown', that.hotKey.insertLink, function ( e ) {
 					if ( that.findLinkMarkup() ) {
 						// open the tab containing the href
-						FloatingMenu.activateTabOfButton( 'href' );
+						Toolbar.activateTabOfButton('editLink');
 						that.hrefField.focus();
 					} else {
 						that.insertLink( true );
-						that.preventAutoSuggestionBoxFromExpanding();
+						that.hrefField.preventAutoSuggestionBoxFromExpanding();
 					}
 					
 					return false;
@@ -289,15 +294,8 @@ define( [
 					if ( foundMarkup ) {
 						that.toggleLinkScope( true );
 						
-						// remember the current tab selected by the user
-						var currentTab = FloatingMenu.userActivatedTab;
+						Toolbar.activateTabOfButton('editLink');
 
-						// switch to the href tab (so that we make sure that the href field gets created)
-						FloatingMenu.activateTabOfButton( 'href' );
-						if ( currentTab ) {
-							// switch back to the original tab
-							FloatingMenu.userActivatedTab = currentTab;
-						}
 						// now we are ready to set the target object
 						that.hrefField.setTargetObject( foundMarkup, 'href' );
 
@@ -305,7 +303,7 @@ define( [
 						// the hrefField component might not be initialized. When the user switches to the link
 						// tab to edit the link the field would be empty. We check for that situation and add a
 						// special interval check to set the value once again
-						if ( jQuery( '#' + that.hrefField.extButton.id ).length == 0 ) {
+						if ( jQuery( '#' + that.hrefField.getInputId() ).length == 0 ) {
 							// there must only be one update interval running at the same time
 							if ( that.hrefUpdateInt !== null ) {
 								clearInterval( that.hrefUpdateInt );
@@ -313,7 +311,7 @@ define( [
 							
 							// register a timeout that will set the value as soon as the href field was initialized
 							that.hrefUpdateInt = setInterval( function () {
-								if ( jQuery( '#' + that.hrefField.extButton.id ).length > 0 ) { // the object was finally created
+								if ( jQuery( '#' + that.hrefField.getInputId() ).length > 0 ) { // the object was finally created
 									that.hrefField.setTargetObject( foundMarkup, 'href' );
 									clearInterval( that.hrefUpdateInt );
 								}
@@ -341,12 +339,12 @@ define( [
 				this.insertLinkButton.hide();
 				this.hrefField.show();
 				this.removeLinkButton.show();
-				this.formatLinkButton.setPressed( true );
+				this.formatLinkButton.setState( true );
 			} else {
 				this.insertLinkButton.show();
 				this.hrefField.hide();
 				this.removeLinkButton.hide();
-				this.formatLinkButton.setPressed( false );
+				this.formatLinkButton.setState( false );
 			}
 		},
 		
@@ -393,71 +391,42 @@ define( [
 		createButtons: function () {
 			var that = this;
 
-			// format Link Button - this button behaves like 
-			// a formatting button like (bold, italics, etc)
-			this.formatLinkButton = new Aloha.ui.Button( {
-				'name': 'a',
-				'iconClass': 'aloha-button aloha-button-a',
-				'size': 'small',
-				'onclick': function () { that.formatLink(); },
-				'tooltip': i18n.t( 'button.addlink.tooltip' ),
-				'toggle': true
-			} );
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.formatLinkButton,
-				i18nCore.t( 'floatingmenu.tab.format' ),
-				1
-			);
+			Component.define("formatLink", ToggleButton, {
+				tooltip: i18n.t("button.addlink.tooltip"),
+				icon: "aloha-icon aloha-icon-link",
+				click: function() {
+					that.formatLink();
+				}
+			});
 
-			// insert Link
-			// always inserts a new link
-			this.insertLinkButton = new Aloha.ui.Button( {
-				'name': 'insertLink',
-				'iconClass': 'aloha-button aloha-button-a',
-				'size': 'small',
-				'onclick': function () { that.insertLink( false ); },
-				'tooltip': i18n.t( 'button.addlink.tooltip' ),
-				'toggle': false
-			} );
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.insertLinkButton,
-				i18nCore.t( 'floatingmenu.tab.insert' ),
-				1
-			);
+			Component.define("insertLink", ToggleButton, {
+				tooltip: i18n.t("button.addlink.tooltip"),
+				icon: "aloha-icon aloha-icon-link",
+				click: function() {
+					that.insertLink(false);
+				}
+			});
 			
-			this.hrefField = new Aloha.ui.AttributeField( {
-				'name': 'href',
+			this.hrefField = new AttributeField( {
+				'name': 'editLink',
 				'width': 320,
 				'valueField': 'url',
 				'cls': 'aloha-link-href-field'
 			} );
 			this.hrefField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
-			// add the input field for links
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.hrefField,
-				i18n.t( 'floatingmenu.tab.link' ),
-				1
-			);
-			
-			this.removeLinkButton = new Aloha.ui.Button( {
-				// TODO use another icon here
-				'name': 'removeLink',
-				'iconClass': 'aloha-button aloha-button-a-remove',
-				'size': 'small',
-				'onclick': function () { that.removeLink(); },
-				'tooltip': i18n.t( 'button.removelink.tooltip' )
-			} );
-			// add a button for removing the currently set link
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.removeLinkButton,
-				i18n.t( 'floatingmenu.tab.link' ),
-				1
-			);
+
+			Component.define("removeLink", Button, {
+				tooltip: i18n.t("button.removelink.tooltip"),
+				icon: "aloha-icon aloha-icon-unlink",
+				click: function() {
+					that.removeLink();
+				}
+			});
+
+			this.formatLinkButton = Component.getGlobalInstance("formatLink");
+			this.insertLinkButton = Component.getGlobalInstance("insertLink");
+			this.removeLinkButton = Component.getGlobalInstance("removeLink");
 		},
 
 		/**
@@ -468,14 +437,14 @@ define( [
 			var that = this;
 
 			// update link object when src changes
-			this.hrefField.addListener( 'keyup', function ( obj, event ) {
+			this.hrefField.addListener( 'keyup', function ( event ) {
 				// Now show all the ui-attributefield elements
 				that.showComboList();
 				
 				// Handle ESC key press: We do a rough check to see if the user
 				// has entered a link or searched for something
 				if ( event.keyCode == 27 ) {
-					var curval = that.hrefField.getQueryValue();
+					var curval = that.hrefField.getValue();
 					if ( curval[ 0 ] == '/' || // local link
 						 curval[ 0 ] == '#' || // inner document link
 						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
@@ -523,17 +492,17 @@ define( [
 					range.select();
 					that.ignoreNextSelectionChangedEvent = true;
 					
-					var hrefValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
+					var hrefValue = jQuery( that.hrefField.getInputElem() ).attr( 'value' );
 					
 					if ( hrefValue == that.hrefValue || hrefValue == '' ) {
 						that.removeLink( false );
 					}
 					
 					window.setTimeout( function () {
-						FloatingMenu.setScope( 'Aloha.continuoustext' );
+						Toolbar.setScope('Aloha.continuoustext');
 					}, 100 );
 					
-					that.preventAutoSuggestionBoxFromExpanding();
+					that.hrefField.preventAutoSuggestionBoxFromExpanding();
 				} else {
 					// Check whether the value in the input field has changed
 					// because if it has, then the ui-attribute object's store
@@ -542,22 +511,10 @@ define( [
 					// shown and/or populated, the next enter keypress event
 					// would be handled as if the user is selecting one of the
 					// elements in the down down list.
-					newValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
+					newValue = jQuery( that.hrefField.getInputElem() ).attr( 'value' );
 					if ( oldValue != newValue ) {
 						oldValue = newValue;
-						// Drop local cache of suggestion items
-						
-						// Don't use this method because it will update the
-						// loading message to say that no items were found ...
-						// that.hrefField.extButton.store.removeAll();
-						
-						// ... instead we will manually delete the store data
-						// ourselves
-						var storeData = that.hrefField.extButton.store.data;
-						storeData.items = [];
-						storeData.key = [];
-						storeData.length = 0;
-						that.hrefField.extButton.store.lastQuery = null;
+						that.hrefField.clearStore();
 					}
 				}
 			} );
@@ -645,7 +602,7 @@ define( [
 			}
 			
 			// activate floating menu tab
-			FloatingMenu.activateTabOfButton( 'href' );
+			Toolbar.activateTabOfButton('editLink');
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
@@ -676,10 +633,9 @@ define( [
 			this.hrefField.focus();
 			
 			// prefill and select the new href
-			// We need this guard because there are time when the extButton's
-			// el element has not yet available
-			if ( this.hrefField.extButton.el ) {
-				jQuery( this.hrefField.extButton.el.dom ).attr( 'value', that.hrefValue ).select();
+			// We need this guard because sometimes the element has not yet been initialized
+			if ( this.hrefField.hasInputElem() ) {
+				jQuery( this.hrefField.getInputElem() ).attr( 'value', that.hrefValue ).select();
 			}
 			
 			this.hrefChange();
@@ -706,7 +662,7 @@ define( [
 				
 				if ( typeof terminateLinkScope == 'undefined' ||
 						terminateLinkScope === true ) {
-					FloatingMenu.setScope( 'Aloha.continuoustext' );
+					Toolbar.setScope('Aloha.continuoustext');
 				}
 			}
 		},
@@ -725,7 +681,7 @@ define( [
 					'target',
 					this.target,
 					this.targetregex,
-					this.hrefField.getQueryValue()
+					this.hrefField.getValue()
 				);
 			}
 			
@@ -733,12 +689,12 @@ define( [
 				'class',
 				this.cssclass,
 				this.cssclassregex,
-				this.hrefField.getQueryValue()
+				this.hrefField.getValue()
 			);
 			
 			Aloha.trigger( 'aloha-link-href-change', {
 				 obj: that.hrefField.getTargetObject(),
-				 href: that.hrefField.getQueryValue(),
+				 href: that.hrefField.getValue(),
 				 item: that.hrefField.getItem()
 			} );
 			
@@ -746,18 +702,10 @@ define( [
 				this.onHrefChange.call(
 					this,
 					this.hrefField.getTargetObject(),
-					this.hrefField.getQueryValue(),
+					this.hrefField.getValue(),
 					this.hrefField.getItem()
 				);
 			}
-		},
-		
-		/**
-		 * Prevents the combolist from expanding when
-		 * this.hrefField.extButton.expand method is invoked
-		 */
-		preventAutoSuggestionBoxFromExpanding: function () {
-			this.hrefField.extButton.hasFocus = false;
 		},
 		
 		/**
@@ -794,5 +742,4 @@ define( [
 		}
 		
 	} );
-	
 } );

@@ -17,9 +17,8 @@ define( [
 	'aloha',
 	'aloha/jquery',
 	'aloha/plugin',
-	'aloha/floatingmenu',
 	'aloha/console'
-], function( Aloha, jQuery, Plugin, FloatingMenu, console ) {
+], function( Aloha, jQuery, Plugin, console ) {
 	'use strict';
 
 	/**

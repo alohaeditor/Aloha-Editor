@@ -7,15 +7,22 @@
  * 
  * Author : Nicolas Karageuzian - http://nka.me
  */
-define(['aloha/jquery', 'i18n!image/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/floatingmenu'],
-function (aQuery, i18n, i18nCore, FloatingMenu) {
+define(['aloha/jquery',
+		'i18n!image/nls/i18n',
+		'i18n!aloha/nls/i18n',
+		'ui/component',
+		'ui/toolbar',
+	    'ui/button',
+	    'ui/toggleButton',
+	    'ui/port-helper-attribute-field'],
+function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, AttributeField) {
 	'use strict';
 	var jQuery = aQuery;
 	var $ = aQuery;
 	var GENTICS = window.GENTICS;
 	var Aloha = window.Aloha;
 	/**
-     * FloatingMenu elements for Image plugin
+     * Toolbar elements for Image plugin
      *
      * @class MyClass
      */
@@ -44,278 +51,170 @@ function (aQuery, i18n, i18nCore, FloatingMenu) {
 			imageFloatingMenu.plugin = plugin;
 			plugin.floatingMenuControl = imageFloatingMenu;
 
-			FloatingMenu.createScope(plugin.name, 'Aloha.empty');
+			Toolbar.createScope(plugin.name, 'Aloha.empty');
 
-			if (plugin.settings.ui.insert) {
-				var tabId = plugin.settings.ui.oneTab ? tabImage : tabInsert; 
-				imageFloatingMenu._addUIInsertButton(tabId);
-			}
-				
-			if (plugin.settings.ui.meta) {
-				var tabId = plugin.settings.ui.oneTab ? tabImage : tabImage;
-				imageFloatingMenu._addUIMetaButtons(tabId);
-			}
-				
-			if (plugin.settings.ui.reset) {
-				var tabId = plugin.settings.ui.reset ? tabImage : tabImage;
-				imageFloatingMenu._addUIResetButton(tabId);
-			}
-					
-			if (plugin.settings.ui.align) {
-				var tabId = plugin.settings.ui.oneTab ? tabImage : tabFormatting;
-				imageFloatingMenu._addUIAlignButtons(tabId);
-			}
-
-			if (plugin.settings.ui.margin) {
-				var tabId = plugin.settings.ui.oneTab ? tabImage : tabFormatting;
-				imageFloatingMenu._addUIMarginButtons(tabId);
-			}
-
-			if (plugin.settings.ui.crop) {
-				var tabId = plugin.settings.ui.oneTab ? tabImage : tabCrop;
-				imageFloatingMenu._addUICropButtons(tabId);
-			}
-				
-			if (plugin.settings.ui.resize) {
-				var tabId = plugin.settings.ui.oneTab ? tabImage : tabResize;
-				imageFloatingMenu._addUIResizeButtons(tabId);
-			}
-				
-			if (plugin.settings.ui.aspectRatioToggle) {
-				var tabId = plugin.settings.ui.oneTab ? tabImage : tabResize;
-				imageFloatingMenu.__addUIAspectRatioToggleButton(tabId);
-			}
+			imageFloatingMenu._addUIInsertButton();
+			imageFloatingMenu._addUIMetaButtons();
+			imageFloatingMenu._addUIResetButton();
+			imageFloatingMenu._addUIAlignButtons();
+			imageFloatingMenu._addUIMarginButtons();
+			imageFloatingMenu._addUICropButtons();
+			imageFloatingMenu._addUIResizeButtons();
+			imageFloatingMenu.__addUIAspectRatioToggleButton();
 
 //			 TODO fix the function and reenable this button 
-//			var tabId = plugin.settings.ui.oneTab ? tabImage : tabResize;
-//			imageFloatingMenu._addNaturalSizeButton(tabId);
+//			imageFloatingMenu._addNaturalSizeButton();
 		},
 
 		/**
 		 * Adds the aspect ratio toggle button to the floating menu
 		 */
-		__addUIAspectRatioToggleButton: function (tabId) {
+		__addUIAspectRatioToggleButton: function () {
 			var plugin = this.plugin;
-			var toggleButton = new Aloha.ui.Button({
-				'size' : 'small',
-				'tooltip' : i18n.t('button.toggle.tooltip'),
-				'toggle' : true,
-				'iconClass' : 'cnr-ratio',
-				'onclick' : function (btn, event) {
+
+			Component.define("imageCnrRatio", ToggleButton, {
+				tooltip: i18n.t('button.toggle.tooltip'),
+				icon: 'aloha-icon-cnr-ratio',
+				click: function(){
 					plugin.toggleKeepAspectRatio();
 				}
 			});
-			
 
 			// If the setting has been set to a number or false we need to activate the 
 			// toggle button to indicate that the aspect ratio will be preserved.
 			if (plugin.settings.fixedAspectRatio !== false) {
-				toggleButton.pressed = true;
+				var toggleButton = Component.getGlobalInstance("imageCnrRatio");
+				toggleButton.setState(true);
 				plugin.keepAspectRatio = true;
 			}
-			
-			FloatingMenu.addButton(
-					plugin.name,
-					toggleButton,
-					tabId,
-					20
-			);
 		},
 		
 		/**
 		 * Adds the reset button to the floating menu for the given tab 
 		 */
-		_addUIResetButton: function (tabId) {
+		_addUIResetButton: function () {
 			var plugin = this.plugin;
-			// Reset button
-			var resetButton = new Aloha.ui.Button({
-				'size' : 'small',
-				'tooltip' : i18n.t('Reset'),
-				'toggle' : false,
-				'iconClass' : 'cnr-reset',
-				'onclick' : function (btn, event) {
+
+			Component.define("imageCnrReset", Button, {
+				tooltip: i18n.t('Reset'),
+				icon: 'aloha-icon-cnr-reset',
+				click: function(){
 					plugin.reset();
 				}
 			});
-
-			FloatingMenu.addButton(
-				plugin.name,
-				resetButton,
-				tabId,
-				2
-			);
 		},
 		
 		/**
 		 * Adds the insert button to the floating menu
 		 */
-		_addUIInsertButton: function (tabId) {
+		_addUIInsertButton: function () {
 			var plugin = this.plugin;
-			this.insertImgButton = new Aloha.ui.Button({
-				'name' : 'insertimage',
-				'iconClass': 'aloha-button aloha-image-insert',
-				'size' : 'small',
-				'onclick' : function () {
-					plugin.insertImg(); 
-				},
-				'tooltip' : i18n.t('button.addimg.tooltip'),
-				'toggle' : false
+
+			Component.define("insertImage", Button, {
+				tooltip: i18n.t('button.addimg.tooltip'),
+				icon: 'aloha-button aloha-image-insert',
+				click: function(){
+					plugin.insertImg();
+				}
 			});
-			
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.insertImgButton,
-				tabId,
-				1
-			);
+
+			this.insertImgButton = Component.getGlobalInstance("insertImage");
 		},
 
         /**
          * Adds the ui meta fields (search, title) to the floating menu. 
          */
-		_addUIMetaButtons: function (tabId) {
+		_addUIMetaButtons: function () {
 			var plugin = this.plugin;
-			var imgSrcLabel = new Aloha.ui.Button({
-				'label': i18n.t('field.img.src.label'),
-				'tooltip': i18n.t('field.img.src.tooltip'),
-				'size': 'small'
+			
+			this.imgSrcField = new AttributeField({
+				label: i18n.t('field.img.src.label'),
+				tooltip: i18n.t('field.img.src.tooltip'),
+				name: 'imageSource'
 			});
-			this.imgSrcField = new Aloha.ui.AttributeField({'name' : 'imgsrc'});
 			this.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
 			
-			// add the title field for images
-			var imgTitleLabel = new Aloha.ui.Button({
-				'label': i18n.t('field.img.title.label'),
-				'tooltip': i18n.t('field.img.title.tooltip'),
-				'size': 'small'
+			this.imgTitleField = new AttributeField({
+				label: i18n.t('field.img.title.label'),
+				tooltip: i18n.t('field.img.title.tooltip'),
+				name: 'imageTitle'
 			});
-			
-			this.imgTitleField = new Aloha.ui.AttributeField();
 			this.imgTitleField.setObjectTypeFilter();
-			FloatingMenu.addButton(
-				plugin.name,
-				this.imgSrcField,
-				tabId,
-				1
-			);
-			
 		},
 		
 		/**
 		 * Adds the ui align buttons to the floating menu
 		 */
-		_addUIAlignButtons: function (tabId) {
+		_addUIAlignButtons: function () {
 			var plugin = this.plugin;
 		
-			var alignLeftButton = new Aloha.ui.Button({
-				'iconClass': 'aloha-img aloha-image-align-left',
-				'size': 'small',
-				'onclick' : function () {
+			Component.define("imageAlignLeft", Button, {
+				tooltip: i18n.t('button.img.align.left.tooltip'),
+				icon: 'aloha-img aloha-image-align-left',
+				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'left');
-				},
-				'tooltip': i18n.t('button.img.align.left.tooltip')
+				}
 			});
 			
-			FloatingMenu.addButton(
-				plugin.name,
-				alignLeftButton,
-				tabId,
-				1
-			);
-			
-			var alignRightButton = new Aloha.ui.Button({
-				'iconClass': 'aloha-img aloha-image-align-right',
-				'size': 'small',
-				'onclick' : function () {
+			Component.define("imageAlignRight", Button, {
+				tooltip: i18n.t('button.img.align.right.tooltip'),
+				icon: 'aloha-img aloha-image-align-right',
+				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'right');
-				},
-				'tooltip': i18n.t('button.img.align.right.tooltip')
+				}
 			});
-			
-			FloatingMenu.addButton(
-				plugin.name,
-				alignRightButton,
-				tabId,
-				1
-			);
-			
-			var alignNoneButton = new Aloha.ui.Button({
-				'iconClass': 'aloha-img aloha-image-align-none',
-				'size': 'small',
-				'onclick' : function () {
+
+			Component.define("imageAlignNone", Button, {
+				tooltip: i18n.t('button.img.align.none.tooltip'),
+				icon: 'aloha-img aloha-image-align-none',
+				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css({
 						'float': 'none',
 						display: 'inline-block'
 					});
-				},
-				'tooltip': i18n.t('button.img.align.none.tooltip')
+				}
 			});
-			
-			FloatingMenu.addButton(
-				plugin.name,
-				alignNoneButton,
-				tabId,
-				1
-			);
-		
 		},
 		
 		/**
 		 * Adds the ui margin buttons to the floating menu
 		 */
-		_addUIMarginButtons: function (tabId) {
+		_addUIMarginButtons: function () {
 			var plugin = this.plugin;
-			var incPadding = new Aloha.ui.Button({
-				iconClass: 'aloha-img aloha-image-padding-increase',
-				toggle: false,
-				size: 'small',
-				onclick: function () {
+
+			Component.define("imageIncPadding", Button, {
+				tooltip: i18n.t('padding.increase'),
+				icon: 'aloha-img aloha-image-padding-increase',
+				click: function () {
 					jQuery(plugin.getPluginFocus()).increase('padding');
-				},
-				tooltip: i18n.t('padding.increase')
+				}
 			});
-			FloatingMenu.addButton(
-				plugin.name,
-				incPadding,
-				tabId,
-				2
-			);
 			
-			var decPadding = new Aloha.ui.Button({
-				iconClass: 'aloha-img aloha-image-padding-decrease',
-				toggle: false,
-				size: 'small',
-				onclick: function () {
+			Component.define("imageDecPadding", Button, {
+				tooltip: i18n.t('padding.decrease'),
+				icon: 'aloha-img aloha-image-padding-decrease',
+				click: function () {
 					jQuery(plugin.getPluginFocus()).decrease('padding');
-				},
-				tooltip: i18n.t('padding.decrease')
+				}
 			});
-			FloatingMenu.addButton(
-				plugin.name,
-				decPadding,
-				tabId,
-				2
-			);
 		},
 		
 		/**
 		 * Adds the crop buttons to the floating menu
 		 */		
-		_addUICropButtons: function (tabId) {
+		_addUICropButtons: function () {
 			var plugin = this.plugin;
 
-			FloatingMenu.createScope('Aloha.img', ['Aloha.global']);
+			Toolbar.createScope('Aloha.img', ['Aloha.global']);
 
-			this.cropButton = new Aloha.ui.Button({
-				'size' : 'small',
-				'tooltip' : i18n.t('Crop'),
-				'toggle' : true,
-				'iconClass' : 'cnr-crop',
-				'onclick' : function (btn, event) {
-					if (btn.pressed) {
+			Component.define("imageCropButton", ToggleButton, {
+				tooltip: i18n.t('Crop'),
+				icon: 'aloha-icon-cnr-crop',
+				click: function () {
+					if (this.getState()) {
 						plugin.crop();
 					} else {
 						plugin.endCrop();
@@ -323,119 +222,72 @@ function (aQuery, i18n, i18nCore, FloatingMenu) {
 				}
 			});
 
-			FloatingMenu.addButton(
-				plugin.name,
-				this.cropButton,
-				tabId,
-				3
-			);
-	
+			this.cropButton = Component.getGlobalInstance("imageCropButton");
 		},
 
         /**
          * Adds the resize buttons to the floating menu
          */	
-		_addUIResizeButtons: function (tabId) {
+		_addUIResizeButtons: function () {
 			var plugin = this.plugin;
 
 			// Manual resize fields
-			this.imgResizeHeightField = new Aloha.ui.AttributeField();
+			this.imgResizeHeightField = new AttributeField({
+				label:  i18n.t('height'),
+				name: "imageResizeHeight",
+				width: 50
+			});
 			this.imgResizeHeightField.maxValue = plugin.settings.maxHeight;
 			this.imgResizeHeightField.minValue = plugin.settings.minHeight;
 			
-			this.imgResizeWidthField = new Aloha.ui.AttributeField();
+			this.imgResizeWidthField = new AttributeField({
+				label:  i18n.t('width'),				
+				name: "imageResizeWidth",
+				width: 50
+			});
 			this.imgResizeWidthField.maxValue = plugin.settings.maxWidth;
 			this.imgResizeWidthField.minValue = plugin.settings.minWidth;
-
-			this.imgResizeWidthField.width = 50;
-			this.imgResizeHeightField.width = 50;
-			
-			var widthLabel = new Aloha.ui.Button({
-				'label':  i18n.t('width'),
-				'tooltip': i18n.t('width'),
-				'size': 'small'
-			});
-			
-			FloatingMenu.addButton(
-					plugin.name,
-					widthLabel,
-					tabId,
-					30
-			);
-			
-			FloatingMenu.addButton(
-					plugin.name,
-					this.imgResizeWidthField,
-					tabId,
-					40
-			);
-			
-			
-			var heightLabel = new Aloha.ui.Button({
-				'label':  i18n.t('height'),
-				'tooltip': i18n.t('height'),
-				'size': 'small'
-			});
-			
-			FloatingMenu.addButton(
-					plugin.name,
-					heightLabel,
-					tabId,
-					50
-			);
-			
-			FloatingMenu.addButton(
-					plugin.name,
-					this.imgResizeHeightField,
-					tabId,
-					60
-			);
  		},
 
 		/**
 		 * Adds the natural size button to the floating menu
 		 */
-		_addNaturalSizeButton: function (tabId) {
+		/*
+		  TODO currently deactivated see TODO at call site above.
+		_addNaturalSizeButton: function () {
 			var plugin = this.plugin;
-			var naturalSize = new Aloha.ui.Button({
-				iconClass: 'aloha-img aloha-image-size-natural',
-				size: 'small',
-				toggle: false,
-				onclick: function () {
+
+			Component.define("imageNaturalSize", Button, {
+				icon: 'aloha-img aloha-image-size-natural',
+				label: i18n.t('size.natural'),
+				click: function () {
 					plugin.resetSize();
-						
-				},
-				tooltip: i18n.t('size.natural')
+				}
 			});
-			FloatingMenu.addButton(
-				plugin.name,
-				naturalSize,
-				tabId,
-				2
-			);
 		},
+		*/
 
 		/**
-		 * Sets FloatingMenu scope
-		 * 
-		 * 
+		 * Sets Toolbar scope
 		 */
 		setScope: function () {
-			FloatingMenu.setScope(this.plugin.name);
+			Toolbar.setScope(this.plugin.name);
 		},
 
 		/**
 		 * 
 		 */
 		activateView: function (name) {
-			FloatingMenu.activateTabOfButton(name);
+			Toolbar.activateTabOfButton(name);
 		},
 
 		/**
 		 * Redraws UI
 		 */
 		doLayout: function () {
-			FloatingMenu.doLayout();
+			// Implementation was removed while porting this plugin to
+			// the jqueryui toolbar because it seems to be a hack that
+			// is not needed with the new implementation.
 		}
     });
 });

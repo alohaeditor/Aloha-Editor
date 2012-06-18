@@ -6,8 +6,15 @@
 */
 
 define(
-['aloha', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!align/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/jquery', 'css!align/css/align.css'],
-function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
+['aloha',
+ 'aloha/plugin',
+ 'ui/component',
+ 'ui/toggleButton',
+ 'i18n!align/nls/i18n',
+ 'i18n!aloha/nls/i18n',
+ 'aloha/jquery',
+ 'css!align/css/align.css'],
+function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 	"use strict";
 
 	var
@@ -77,38 +84,38 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 				switch(this.lastAlignment)
 				{
 					case 'right':
-						this.alignRightButton.setPressed(false);
+						this.alignRightButton.setState(false);
 						break;
 
 					case 'left':
-						this.alignLeftButton.setPressed(false);
+						this.alignLeftButton.setState(false);
 						break;
 
 					case 'center':
-						this.alignCenterButton.setPressed(false);
+						this.alignCenterButton.setState(false);
 						break;
 
 					case 'justify':
-						this.alignJustifyButton.setPressed(false);
+						this.alignJustifyButton.setState(false);
 						break;
 				}
 
 				switch(this.alignment)
 				{
 					case 'right':
-						this.alignRightButton.setPressed(true);
+						this.alignRightButton.setState(true);
 						break;
 
 					case 'center':
-						this.alignCenterButton.setPressed(true);
+						this.alignCenterButton.setState(true);
 						break;
 
 					case 'justify':
-						this.alignJustifyButton.setPressed(true);
+						this.alignJustifyButton.setState(true);
 						break;
 
 					default:
-						this.alignLeftButton.setPressed(true);
+						this.alignLeftButton.setState(true);
 						this.alignment  = 'left';
 						break;
 				}
@@ -159,78 +166,37 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		createButtons: function () {
 		    var that = this;
 
-		    // create a new button
-		    this.alignLeftButton = new Aloha.ui.Button({
-			  'name' : 'alignLeft',
-		      'iconClass' : 'aloha-button-align aloha-button-align-left',
-		      'size' : 'small',
-		      'onclick' : function () { that.align('left'); },
-		      'tooltip' : i18n.t('button.alignleft.tooltip'),
-		      'toggle' : true
-		    });
+			Component.define("alignLeft", ToggleButton, {
+				tooltip: i18n.t('button.alignleft.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-left',
+				click: function(){ that.align('left'); }
+			});
 
-		    // add it to the floating menu
-		    FloatingMenu.addButton(
-		      'Aloha.continuoustext',
-		      this.alignLeftButton,
-		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
+		    this.alignLeftButton = Component.getGlobalInstance("alignLeft");
 
-		    // create a new button
-		    this.alignCenterButton = new Aloha.ui.Button({
-		      'name' : 'alignCenter',
-		      'iconClass' : 'aloha-button-align aloha-button-align-center',
-		      'size' : 'small',
-		      'onclick' : function () { that.align('center'); },
-		      'tooltip' : i18n.t('button.aligncenter.tooltip'),
-		      'toggle' : true
-		    });
+			Component.define("alignCenter", ToggleButton, {
+				tooltip: i18n.t('button.aligncenter.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-center',
+				click: function(){ that.align('center'); }
+			});
 
-		    // add it to the floating menu
-		    FloatingMenu.addButton(
-		      'Aloha.continuoustext',
-		      this.alignCenterButton,
-		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
+		    this.alignCenterButton = Component.getGlobalInstance("alignCenter");
 
-		    // create a new button
-		    this.alignRightButton = new Aloha.ui.Button({
-		      'name' : 'alignRight',
-		      'iconClass' : 'aloha-button-align aloha-button-align-right',
-		      'size' : 'small',
-		      'onclick' : function () { that.align('right'); },
-		      'tooltip' : i18n.t('button.alignright.tooltip'),
-		      'toggle' : true
-		    });
+			Component.define("alignRight", ToggleButton, {
+				tooltip: i18n.t('button.alignright.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-right',
+				click: function(){ that.align('right'); }
+			});
 
-		    // add it to the floating menu
-		    FloatingMenu.addButton(
-		      'Aloha.continuoustext',
-		      this.alignRightButton,
-		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
+		    this.alignRightButton = Component.getGlobalInstance("alignRight");
 
-		    // create a new button
-		    this.alignJustifyButton = new Aloha.ui.Button({
-		      'name' : 'alignJustify',
-		      'iconClass' : 'aloha-button-align aloha-button-align-justify',
-		      'size' : 'small',
-		      'onclick' : function () { that.align('justify'); },
-		      'tooltip' : i18n.t('button.alignjustify.tooltip'),
-		      'toggle' : true
-		    });
+			Component.define("alignJustify", ToggleButton, {
+				tooltip: i18n.t('button.alignjustify.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-justify',
+				click: function(){ that.align('justify'); }
+			});
 
-		    // add it to the floating menu
-		    FloatingMenu.addButton(
-		      'Aloha.continuoustext',
-		      this.alignJustifyButton,
-		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
-
+		    this.alignJustifyButton = Component.getGlobalInstance("alignJustify");
 		},
 
 		/**
@@ -304,19 +270,19 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 				switch(this.lastAlignment)
 				{
 					case 'right':
-						this.alignRightButton.setPressed(false);
+						this.alignRightButton.setState(false);
 						break;
 
 					case 'left':
-						this.alignLeftButton.setPressed(false);
+						this.alignLeftButton.setState(false);
 						break;
 
 					case 'center':
-						this.alignCenterButton.setPressed(false);
+						this.alignCenterButton.setState(false);
 						break;
 
 					case 'justify':
-						this.alignJustifyButton.setPressed(false);
+						this.alignJustifyButton.setState(false);
 						break;
 				}
 			}

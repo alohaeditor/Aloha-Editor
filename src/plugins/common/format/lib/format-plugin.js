@@ -9,16 +9,32 @@ define([
 	'aloha',
 	'aloha/plugin',
 	'aloha/jquery',
-	'aloha/floatingmenu',
+	'ui/component',
+	'ui/toolbar',
+	'ui/toggleButton',
+	'ui/port-helper-multi-split',
 	'i18n!format/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'aloha/console',
-	'css!format/css/format.css'],
-	function (Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
+	'i18n!aloha/nls/i18n'],
+function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitButton, i18n, i18nCore) {
 		"use strict";
 
 		var GENTICS = window.GENTICS,
 			pluginNamespace = 'aloha-format';
+
+		var commandsByElement = {
+			'b': 'bold',
+			'strong': 'bold',
+			'i': 'italic',
+			'em': 'italic',
+			's': 'strikethrough',
+			'sub': 'subscript',
+			'sup': 'superscript'
+		};
+
+		var componentNameExtensionByElement = {
+			'strong': '2',
+			'em': '2'
+		};
 
 		/**
 		 * register the plugin with unique name
@@ -32,7 +48,8 @@ define([
 			/**
 			 * default button configuration
 			 */
-			config: [ 'strong', 'em', 'b', 'i','s','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+			config: [ 'strong', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+
 			/*
 			config: { 
 						'em': {
@@ -204,27 +221,32 @@ define([
 						case 's':
 						case 'sub':
 						case 'sup':
-							that.buttons[button] = {'button' : new Aloha.ui.Button({
-								'name' : button,
-								'iconClass' : 'aloha-button aloha-button-' + button,
-								'size' : 'small',
-								'onclick' : function () {
+							var command = commandsByElement[button];
+							var componentName = command;
+							var componentNameExt = componentNameExtensionByElement[button];
+							if (componentNameExt) {
+								componentName += componentNameExt;
+							}
+							Component.define(componentName, ToggleButton, {
+								tooltip : i18n.t('button.' + button + '.tooltip'),
+								icon: 'aloha-icon aloha-icon-' + command,
+								click: function () {
 									var selectedCells = jQuery('.aloha-cell-selected');
 
-										if ( typeof button_config === 'string' ) {
-											markup.attr('class', button_config);
-										} else if ( typeof button_config === 'object' ) {
+									if ( typeof button_config === 'string' ) {
+										markup.attr('class', button_config);
+									} else if ( typeof button_config === 'object' ) {
 										//} else if ( typeof button_config === 'object' ) { // check for class and other html-attr
-											markup.attr('class', button_config[0]);
-										}
+										markup.attr('class', button_config[0]);
+									}
 
 									// formating workaround for table plugin
 									if ( selectedCells.length > 0 ) {
 										var cellMarkupCounter = 0;
 										selectedCells.each( function () {
 											var cellContent = jQuery(this).find('div'),
-												cellMarkup = cellContent.find(button);
-										
+											cellMarkup = cellContent.find(button);
+											
 											if ( cellMarkup.length > 0 ) {
 												// unwrap all found markup text
 												// <td><b>text</b> foo <b>bar</b></td>
@@ -246,17 +268,12 @@ define([
 
 									that.addMarkup( button ); 
 									return false;
-								},
-								'tooltip' : i18n.t('button.' + button + '.tooltip'),
-								'toggle' : true
-							}), 'markup' : jQuery('<'+button+'></'+button+'>').attr('class', button_config)};
-
-							FloatingMenu.addButton(
-								scope,
-								that.buttons[button].button,
-								i18nCore.t('floatingmenu.tab.format'),
-								1
-							);
+								}
+							});
+							that.buttons[button] = {
+								'button' : Component.getGlobalInstance(componentName),
+								'markup' : jQuery('<'+button+'></'+button+'>').attr('class', button_config)
+							};
 							break;
 
 						case 'p':
@@ -270,7 +287,7 @@ define([
 							that.multiSplitItems.push({
 								'name' : button,
 								'tooltip' : i18n.t('button.' + button + '.tooltip'),
-								'iconClass' : 'aloha-button ' + i18n.t('aloha-button-' + button),
+								'iconClass' : 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
 								'markup' : jQuery('<'+button+'></'+button+'>'),
 								'click' : function() {
 									var selectedCells = jQuery('.aloha-cell-selected');
@@ -313,7 +330,6 @@ define([
 								'name' : button,
 								'text' : i18n.t('button.' + button + '.text'),
 								'tooltip' : i18n.t('button.' + button + '.tooltip'),
-								'iconClass' : 'aloha-button aloha-button-' + button,
 								'wide' : true,
 								'click' : function() {
 									that.removeFormat();
@@ -327,18 +343,11 @@ define([
 					}
 				});
 
-				if (this.multiSplitItems.length > 0) {
-					this.multiSplitButton = new Aloha.ui.MultiSplitButton({
-						'name' : 'phrasing',
-						'items' : this.multiSplitItems
-					});
-					FloatingMenu.addButton(
-						scope,
-						this.multiSplitButton,
-						i18nCore.t('floatingmenu.tab.format'),
-						3
-					);
-				}
+				this.multiSplitButton = MultiSplitButton({
+					name: 'formatBlock',
+					items: this.multiSplitItems,
+					hideIfEmpty: true
+				});
 
 				// add the event handler for selection change
 				Aloha.bind('aloha-selection-changed',function(event,rangeObject){
@@ -352,12 +361,12 @@ define([
 						for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 							effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 							if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
-								button.button.setPressed(true);
+								button.button.setState(true);
 								statusWasSet = true;
 							}
 						}
 						if (!statusWasSet) {
-							button.button.setPressed(false);
+							button.button.setState(false);
 						}
 					});
 

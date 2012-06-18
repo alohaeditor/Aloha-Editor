@@ -9,12 +9,13 @@ define(
 	['aloha', 
 	'aloha/plugin', 
 	'aloha/jquery', 
-	'aloha/floatingmenu', 
+	'ui/component', 
+	'ui/button',
 	'i18n!toc/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
 	'aloha/console'],
 
-function( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
+function( Aloha, Plugin, jQuery, Component, Button, i18n, i18nCore, console ) {
 	"use strict";
 
 	var
@@ -93,22 +94,15 @@ function( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
 	    },
 	
 		initButtons: function () {
-			var scope = 'Aloha.continuoustext',
-				that = this;
+			var that = this;
 			
-	        this.insertTocButton = new Aloha.ui.Button({
-		        'iconClass' : 'aloha-button aloha-button-ol',
-		        'size' : 'small',
-		        'onclick' : function () { that.insertAtSelection($containers); },
-		        'tooltip' : i18n.t('button.addtoc.tooltip'),
-		        'toggle' : false
-	        });
-	        FloatingMenu.addButton(
-		        scope,
-		        this.insertTocButton,
-		        i18nCore.t('floatingmenu.tab.insert'),
-		        1
-	        );
+			Component.define("insertToc", Button, {
+		        tooltip: i18n.t('button.addtoc.tooltip'),
+		        icon: 'aloha-icon aloha-icon-orderedlist',
+		        click: function () { that.insertAtSelection($containers); }
+			});
+
+	        this.insertTocButton = Component.getGlobalInstance("insertToc");
 	    },
 	
 		register: function ($c) {

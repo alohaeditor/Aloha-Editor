@@ -4,14 +4,8 @@
 	Aloha.settings = {
 		logLevels: { 'error': true, 'warn': true, 'info': true, 'debug': false, 'deprecated': true },
 		errorhandling: false,
-		ribbon: false,
+		ribbon: {enable: true},
 		locale: 'en',
-		floatingmenu: {
-			"horizontalOffset" : "5",
-			"behaviour" : "topalign",
-			"width" : "510",
-			"topalignOffset" : "110" 
-		},
 		repositories: {
 			linklist: {
 				data: [
@@ -26,7 +20,7 @@
 		plugins: {
 			format: {
 				// all elements with no specific configuration get this configuration
-				config: [  'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+				//config: [  'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
 				editables: {
 					// no formatting allowed for title
 					'#top-text': []
