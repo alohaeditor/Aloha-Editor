@@ -68,6 +68,7 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 			var surface = this;
 
 			this.$element.css( 'position', 'absolute' );
+			this.$element.draggable();
 
 			subguarded( [
 				'aloha-selection-changed',
