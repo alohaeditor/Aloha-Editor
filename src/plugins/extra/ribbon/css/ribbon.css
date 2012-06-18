@@ -1,16 +1,17 @@
-.aloha-ribbon-container { 
+.aloha-ribbon { 
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 }
-.aloha-ribbon { 
+.aloha-ribbon-toolbar { 
     position: relative;
 	z-index: 90000;
 	display: none;
 }
 .aloha-ribbon-out {
-	background-image: url('../img/fade-out.png');
+	/* Override jquery-ui widget background with important */
+	background-image: url('../img/fade-out.png') !important;
 	background-position: center;
 	width: 20px;
 	height: 20px;
@@ -19,7 +20,8 @@
 .aloha-ribbon-in {
 	/* Override jquery-ui float:left for menubar buttons */
 	float: right !important;
-	background-image: url('../img/fade-in.png');
+	/* Override jquery-ui widget background with important */
+	background-image: url('../img/fade-in.png') !important;
 	background-position: center;
 	width: 20px;
 	height: 20px;
@@ -34,4 +36,7 @@
 	zoom: 1;
 	*display: inline;
 */
+}
+.aloha-ribbon-split-button {
+	float:left;
 }

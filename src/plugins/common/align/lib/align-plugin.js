@@ -167,36 +167,32 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 		    var that = this;
 
 			Component.define("alignLeft", ToggleButton, {
-				label: i18n.t('button.alignleft.tooltip'),
-				icon: 'aloha-button-align aloha-button-align-left',
-				iconOnly: true,
+				tooltip: i18n.t('button.alignleft.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-left',
 				click: function(){ that.align('left'); }
 			});
 
 		    this.alignLeftButton = Component.getGlobalInstance("alignLeft");
 
 			Component.define("alignCenter", ToggleButton, {
-				label: i18n.t('button.aligncenter.tooltip'),
-				icon: 'aloha-button-align aloha-button-align-center',
-				iconOnly: true,
+				tooltip: i18n.t('button.aligncenter.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-center',
 				click: function(){ that.align('center'); }
 			});
 
 		    this.alignCenterButton = Component.getGlobalInstance("alignCenter");
 
 			Component.define("alignRight", ToggleButton, {
-				label: i18n.t('button.alignright.tooltip'),
-				icon: 'aloha-button-align aloha-button-align-right',
-				iconOnly: true,
+				tooltip: i18n.t('button.alignright.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-right',
 				click: function(){ that.align('right'); }
 			});
 
 		    this.alignRightButton = Component.getGlobalInstance("alignRight");
 
 			Component.define("alignJustify", ToggleButton, {
-				label: i18n.t('button.alignjustify.tooltip'),
-				icon: 'aloha-button-align aloha-button-align-justify',
-				iconOnly: true,
+				tooltip: i18n.t('button.alignjustify.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-justify',
 				click: function(){ that.align('justify'); }
 			});
 

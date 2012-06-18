@@ -14,8 +14,7 @@ define([
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
 	'i18n!format/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!format/css/format.css'],
+	'i18n!aloha/nls/i18n'],
 function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitButton, i18n, i18nCore) {
 		"use strict";
 
@@ -229,9 +228,8 @@ function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitBut
 								componentName += componentNameExt;
 							}
 							Component.define(componentName, ToggleButton, {
-								label : i18n.t('button.' + button + '.tooltip'),
+								tooltip : i18n.t('button.' + button + '.tooltip'),
 								icon: 'aloha-icon aloha-icon-' + command,
-								iconOnly: true,
 								click: function () {
 									var selectedCells = jQuery('.aloha-cell-selected');
 
@@ -289,7 +287,7 @@ function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitBut
 							that.multiSplitItems.push({
 								'name' : button,
 								'tooltip' : i18n.t('button.' + button + '.tooltip'),
-								'iconClass' : 'aloha-button ' + i18n.t('aloha-button-' + button),
+								'iconClass' : 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
 								'markup' : jQuery('<'+button+'></'+button+'>'),
 								'click' : function() {
 									var selectedCells = jQuery('.aloha-cell-selected');
@@ -332,7 +330,6 @@ function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitBut
 								'name' : button,
 								'text' : i18n.t('button.' + button + '.text'),
 								'tooltip' : i18n.t('button.' + button + '.tooltip'),
-								'iconClass' : 'aloha-button aloha-button-' + button,
 								'wide' : true,
 								'click' : function() {
 									that.removeFormat();

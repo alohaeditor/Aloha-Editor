@@ -62,7 +62,7 @@ function( jQuery, Button ) {
 			this.element = jQuery( '<span>' );
 
 			jQuery( '<label>', {
-				text: this.label,
+				text: this.text,
 				'for': id
 			}).appendTo( this.element );
 

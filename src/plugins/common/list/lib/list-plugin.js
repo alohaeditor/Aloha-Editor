@@ -48,39 +48,33 @@ define(
 
 			var that = this;
 
-			Component.define( "orderedList", ToggleButton, {
-				label: i18n.t( "button.ol.label" ),
-				command: "insertorderedlist",
-				iconOnly: true,
+			Component.define("orderedList", ToggleButton, {
+				tooltip: i18n.t("button.createolist.tooltip"),
 				icon: "aloha-icon aloha-icon-orderedlist",
 				click: function(){
 					that.transformList(true);
 				}
 			});
 
-			Component.define( "unorderedList", ToggleButton, {
-				label: i18n.t( "button.ul.label" ),
-				command: "insertunorderedlist",
-				iconOnly: true,
+			Component.define("unorderedList", ToggleButton, {
+				tooltip: i18n.t("button.createulist.tooltip"),
 				icon: "aloha-icon aloha-icon-unorderedlist",
 				click: function(){
 					that.transformList(false);
 				}
 			});
 
-			Component.define( "indentList", Button, {
-				label: i18n.t( "button.indent.label" ),
-				iconOnly: true,
-				icon: "aloha-icon aloha-icon-indent",
+			Component.define("indentList", Button, {
+				tooltip: i18n.t('button.indentlist.tooltip'),
+				icon: 'aloha-icon aloha-icon-indent',
 				click: function() {
 					that.indentList();
 				}
 			});
 
-			Component.define( "outdentList", Button, {
-				label: i18n.t( "button.outdent.label" ),
-				iconOnly: true,
-				icon: "aloha-icon aloha-icon-outdent",
+			Component.define("outdentList", Button, {
+				tooltip: i18n.t('button.outdentlist.tooltip'),
+				icon: 'aloha-icon aloha-icon-outdent',
 				click: function() {
 					that.outdentList();
 				}

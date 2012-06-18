@@ -391,18 +391,16 @@ define( [
 		createButtons: function () {
 			var that = this;
 
-			Component.define( "formatLink", ToggleButton, {
-				label: i18n.t( "button.createLink.label" ),
-				iconOnly: true,
+			Component.define("formatLink", ToggleButton, {
+				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
 				click: function() {
 					that.formatLink();
 				}
 			});
 
-			Component.define( "insertLink", ToggleButton, {
-				label: i18n.t( "button.createLink.label" ),
-				iconOnly: true,
+			Component.define("insertLink", ToggleButton, {
+				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
 				click: function() {
 					that.insertLink(false);
@@ -418,9 +416,8 @@ define( [
 			this.hrefField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
 
-			Component.define( "removeLink", Button, {
-				label: i18n.t( "button.removeLink.label" ),
-				iconOnly: true,
+			Component.define("removeLink", Button, {
+				tooltip: i18n.t("button.removelink.tooltip"),
 				icon: "aloha-icon aloha-icon-unlink",
 				click: function() {
 					that.removeLink();

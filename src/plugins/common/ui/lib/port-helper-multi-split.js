@@ -29,7 +29,8 @@ function(Aloha, $, Component, MultiSplit){
 					return;
 				}
 				buttons.push({
-					label: item.tooltip,
+					tooltip: item.tooltip,
+					text: item.text,
 					icon: item.iconClass,
 					click: item.click,
 					isActive: function(){
