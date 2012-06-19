@@ -17,18 +17,15 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-// define jquery and ext modules. They need to be available in global namespace
-define('aloha/jquery',[], function() {
+define('aloha/jquery', ['jquery'], function (jQuery) {
+	'use strict';
+	// @TODO: This should be moved into jquery.patch.js
 	// Work-around for http://bugs.jquery.com/ticket/9905
 	// and https://github.com/alohaeditor/Aloha-Editor/issues/397
-	if ( !Aloha.jQuery.support.getSetAttribute ) {
-		( function( global ) {
-			Aloha.jQuery.removeAttr = function( elem, name ) {
-				elem.removeAttribute( name );
-			};
-		}( Aloha ));
+	if (!jQuery.support.getSetAttribute) {
+		jQuery.removeAttr = function (elem, name) {
+			elem.removeAttribute(name);
+		};
 	}
-
-	return Aloha.jQuery;
+	return jQuery;
 });

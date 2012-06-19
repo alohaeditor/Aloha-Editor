@@ -9404,6 +9404,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 	// will be provided on a require() call, we define our own jQuery module
 	// name which we can guarentee will result in this file's jQuery being
 	// provided.
+	// FIXME: consider renaming this module. or removing this hack altogether.
 	define( 'jQuery', [], function () { return jQuery; } );
 }
 

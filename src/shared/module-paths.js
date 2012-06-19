@@ -39,7 +39,7 @@
 	DependencyManagement.paths['jquery'] = root + '/vendor/jquery-1.7.2';             // Mutates global
 	DependencyManagement.paths['jQuery'] = root + '/vendor/jquery-1.7.2';             // Mutates global
 	// Other common vendor libraries
-	DependencyManagement.paths['jqueryui'] = root + '/vendor/jquery-ui-1.9m6';       // Mutates jquery
+	DependencyManagement.paths['jqueryui'] = root + '/vendor/jquery-ui-1.9m6';        // Mutates jquery
 	DependencyManagement.paths['Class'] = root + '/vendor/class';                     // Mutates global
 	// Plugin vendor libraries
 	DependencyManagement.paths['jquery-layout'] = root + '/vendor/jquery.layout';     // Mutates jquery

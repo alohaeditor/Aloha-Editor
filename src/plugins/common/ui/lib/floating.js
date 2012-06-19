@@ -11,7 +11,7 @@ define([
 	*/
 
 	var PADDING = 10;
-	var ANIMATION_TIME = 150;
+	var ANIMATION_TIME = 200;
 	var $window = jQuery( window );
 
 	var getOrientation = function( $element ) {

@@ -67,7 +67,7 @@ define('PubSub', ['Class'], function (Class) {
 
 		if (!message) {
 			message = {};
-		} else if (jQuery.type(message) !== 'object') {
+		} else if (typeof message !== 'object') {
 			message = {
 				data: message
 			};

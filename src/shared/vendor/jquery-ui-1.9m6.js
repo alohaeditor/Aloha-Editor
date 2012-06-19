@@ -1,4 +1,6 @@
-define(["aloha/jquery"], function(jQuery){
+define( 'jqueryui', [ 'jQuery' ], function( jQuery ) {
+var $ = jQuery;
+
 /*!
  * jQuery UI 1.9m6
  *
@@ -14336,5 +14338,7 @@ $.widget( "ui.tooltip", {
 });
 
 }( jQuery ) );
+
 return jQuery.ui;
+
 });

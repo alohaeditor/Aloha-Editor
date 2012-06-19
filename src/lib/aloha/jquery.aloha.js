@@ -1,7 +1,7 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
 * Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
+* Contributors http://aloha-editor.org/contribution.php
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
 * Aloha Editor is free software: you can redistribute it and/or modify
@@ -18,17 +18,16 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(
-[ 'aloha/core', 'aloha/selection', 'aloha/jquery', 'aloha/console' ],
-//function( Aloha, Selection, jQuery, console ) {
-function( Aloha, Selection, jQuery ) {
-	"use strict";
-	
-	var
-//		$ = jQuery,
-//		Aloha = window.Aloha,
-//		console = window.console,
-		XMLSerializer = window.XMLSerializer;
+define('jquery.aloha', ['jquery',
+                        'aloha/core',
+                        'aloha/selection',
+                        'aloha/console'], function (jQuery,
+                                                    Aloha,
+                                                    Selection,
+                                                    console) {
+	'use strict';
+
+	var XMLSerializer = window.XMLSerializer;
 
 	/**
 	 * jQuery between Extension
@@ -39,7 +38,7 @@ function( Aloha, Selection, jQuery ) {
 	 * @param content HTML Code, DOM object or jQuery object to be inserted
 	 * @param offset character offset from the start where the content should be inserted
 	 */
-	jQuery.fn.between = function(content, offset) {
+	jQuery.fn.between = function (content, offset) {
 		var
 			offSize,
 			fullText;
@@ -73,7 +72,7 @@ function( Aloha, Selection, jQuery ) {
 	/**
 	 * Make the object contenteditable. Care about browser version (name of contenteditable attribute depends on it)
 	 */
-	jQuery.fn.contentEditable = function( b ) {
+	jQuery.fn.contentEditable = function ( b ) {
 		// ie does not understand contenteditable but contentEditable
 		// contentEditable is not xhtml compatible.
 		var	$el = jQuery(this);
@@ -83,9 +82,9 @@ function( Aloha, Selection, jQuery ) {
 		if (jQuery.browser.msie && parseInt(jQuery.browser.version,10) == 7 ) {
 			ce = 'contentEditable';
 		}
-		
+
 		if (typeof b === 'undefined' ) {
-			
+
 			// For chrome use this specific attribute. The old ce will only
 			// return 'inherit' for nested elements of a contenteditable.
 			// The isContentEditable is a w3c standard compliant property which works in IE7,8,FF36+, Chrome 12+
@@ -96,7 +95,7 @@ function( Aloha, Selection, jQuery ) {
 			if (typeof $el[0].isContentEditable === 'undefined') {
 				console.warn('Could not determine whether the is editable or not. I assume it is.');
 				return true;
-			} else { 
+			} else {
 				return $el[0].isContentEditable;
 			}
 		} else if (b === '') {
@@ -120,11 +119,11 @@ function( Aloha, Selection, jQuery ) {
 	 * @return	jQuery object for the matched elements
 	 * @api
 	 */
-	jQuery.fn.aloha = function() {
+	jQuery.fn.aloha = function () {
 		var $this = jQuery( this );
 
-		Aloha.bind( 'aloha-ready', function() {
-			$this.each( function() {
+		Aloha.bind( 'aloha-ready', function () {
+			$this.each( function () {
 				// create a new aloha editable object for each passed object
 				if ( !Aloha.isEditable( this ) ) {
 					new Aloha.Editable( jQuery( this ) );
@@ -143,8 +142,8 @@ function( Aloha, Selection, jQuery ) {
 	 * @return	jQuery object for the matched elements
 	 * @api
 	 */
-	jQuery.fn.mahalo = function() {
-		return this.each(function() {
+	jQuery.fn.mahalo = function () {
+		return this.each(function () {
 			if (Aloha.isEditable(this)) {
 				Aloha.getEditableById(jQuery(this).attr('id')).destroy();
 			}
@@ -156,26 +155,27 @@ function( Aloha, Selection, jQuery ) {
 	 * new Event which is triggered whenever a selection (length >= 0) is made in
 	 * an Aloha Editable element
 	 */
-	jQuery.fn.contentEditableSelectionChange = function(callback) {
+	jQuery.fn.contentEditableSelectionChange = function (callback) {
 		var that = this;
 
 		// update selection when keys are pressed
-		this.keyup(function(event){
+		this.keyup(function (event){
 			var rangeObject = Selection.getRangeObject();
 			callback(event);
 		});
 
 		// update selection on doubleclick (especially important for the first automatic selection, when the Editable is not active yet, but is at the same time activated as the selection occurs
-		this.dblclick(function(event) {
+		this.dblclick(function (event) {
 			callback(event);
 		});
 
 		// update selection when text is selected
-		this.mousedown(function(event){
+		this.mousedown(function (event){
 			// remember that a selection was started
 			that.selectionStarted = true;
 		});
-		jQuery(document).mouseup(function(event) {
+
+		jQuery(document).mouseup(function (event) {
 			Selection.eventOriginalTarget = that;
 			if (that.selectionStarted) {
 				callback(event);
@@ -197,7 +197,7 @@ function( Aloha, Selection, jQuery ) {
 	 * @license MIT License {@link http://creativecommons.org/licenses/MIT/}
 	 * @return {String} outerHtml
 	 */
-	jQuery.fn.outerHtml = jQuery.fn.outerHtml || function(){
+	jQuery.fn.outerHtml = jQuery.fn.outerHtml || function (){
 		var
 			$el = jQuery(this),
 			el = $el.get(0);
@@ -214,39 +214,38 @@ function( Aloha, Selection, jQuery ) {
 					} catch (e) {}
 				}
 			}
-	
-	};
 
+	};
 
 	jQuery.fn.zap = function () {
-		return this.each(function(){ jQuery(this.childNodes).insertBefore(this); }).remove();
+		return this.each(function (){ jQuery(this.childNodes).insertBefore(this); }).remove();
 	};
 
-	jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
-			var
-				ret = [],
-				doSomething = function(el){
-					if (
-						(el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) ||
-						(el.nodeType === 3 && includeEmptyTextNodes) ||
-						(el.nodeName =="BR" && !excludeBreaks)) {
-						ret.push(el);
-					} else {
-						for (var i=0, childLength = el.childNodes.length; i < childLength; ++i) {
-							doSomething(el.childNodes[i]);
-						}
+	jQuery.fn.textNodes = function (excludeBreaks, includeEmptyTextNodes) {
+		var
+			ret = [],
+			doSomething = function (el) {
+				if (
+					(el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) ||
+					(el.nodeType === 3 && includeEmptyTextNodes) ||
+					(el.nodeName =="BR" && !excludeBreaks)) {
+					ret.push(el);
+				} else {
+					for (var i=0, childLength = el.childNodes.length; i < childLength; ++i) {
+						doSomething(el.childNodes[i]);
 					}
-				};
-			
-			doSomething(this[0]);
+				}
+			};
 
-			return jQuery(ret);
+		doSomething(this[0]);
+
+		return jQuery(ret);
 	};
 
 	/**
 	 * extendObjects is like jQuery.extend, but it does not extend arrays
 	 */
-	jQuery.extendObjects = jQuery.fn.extendObjects = function() {
+	jQuery.extendObjects = jQuery.fn.extendObjects = function () {
 		var options, name, src, copy, copyIsArray, clone,
 			target = arguments[0] || {},
 			i = 1,
@@ -315,22 +314,22 @@ function( Aloha, Selection, jQuery ) {
 		return target;
 	};
 
-	jQuery.isBoolean = function(b) {
+	jQuery.isBoolean = function (b) {
 		return b === true || b === false;
-	},
+	};
 
-	jQuery.isNumeric = function(o) {
-		return ! isNaN (o-0);
-	},
+	jQuery.isNumeric = function (o) {
+		return !isNaN (o-0);
+	};
 
 	/**
 	 * check if a mixed var is empty or not
 	 * borrowed from http://phpjs.org/functions/empty:392 and a bit improved
-	 * 
+	 *
 	 * @param mixed_var
 	 * @return {boolean}
 	*/
-	jQuery.isEmpty = function(mixed_var) {
+	jQuery.isEmpty = function (mixed_var) {
 	    // http://kevin.vanzonneveld.net
 	    // +   original by: Philippe Baumann
 	    // +      input by: Onno Marsman
@@ -370,7 +369,7 @@ function( Aloha, Selection, jQuery ) {
 
 	    return false;
 	}
-	
+
 	/*
 	 * jQuery Hotkeys Plugin
 	 * Copyright 2010, John Resig
@@ -382,23 +381,23 @@ function( Aloha, Selection, jQuery ) {
 	 * Original idea by:
 	 * Binny V A, http://www.openjs.com/scripts/events/keyboard_shortcuts/
 	*/
-	
+
 	jQuery.hotkeys = {
 		version: "0.8",
 
 		specialKeys: {
 			8: "backspace", 9: "tab", 13: "return", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause",
 			20: "capslock", 27: "esc", 32: "space", 33: "pageup", 34: "pagedown", 35: "end", 36: "home",
-			37: "left", 38: "up", 39: "right", 40: "down", 45: "insert", 46: "del", 
+			37: "left", 38: "up", 39: "right", 40: "down", 45: "insert", 46: "del",
 			96: "0", 97: "1", 98: "2", 99: "3", 100: "4", 101: "5", 102: "6", 103: "7",
-			104: "8", 105: "9", 106: "*", 107: "+", 109: "-", 110: ".", 111 : "/", 
-			112: "f1", 113: "f2", 114: "f3", 115: "f4", 116: "f5", 117: "f6", 118: "f7", 119: "f8", 
+			104: "8", 105: "9", 106: "*", 107: "+", 109: "-", 110: ".", 111 : "/",
+			112: "f1", 113: "f2", 114: "f3", 115: "f4", 116: "f5", 117: "f6", 118: "f7", 119: "f8",
 			120: "f9", 121: "f10", 122: "f11", 123: "f12", 144: "numlock", 145: "scroll", 191: "/", 224: "meta"
 		},
-	
+
 		shiftNums: {
-			"`": "~", "1": "!", "2": "@", "3": "#", "4": "$", "5": "%", "6": "^", "7": "&", 
-			"8": "*", "9": "(", "0": ")", "-": "_", "=": "+", ";": ": ", "'": "\"", ",": "<", 
+			"`": "~", "1": "!", "2": "@", "3": "#", "4": "$", "5": "%", "6": "^", "7": "&",
+			"8": "*", "9": "(", "0": ")", "-": "_", "=": "+", ";": ": ", "'": "\"", ",": "<",
 			".": ">",  "/": "?",  "\\": "|"
 		}
 	};
@@ -408,11 +407,11 @@ function( Aloha, Selection, jQuery ) {
 		if ( typeof handleObj.data !== "string" ) {
 			return;
 		}
-		
+
 		var origHandler = handleObj.handler,
 			keys = handleObj.data.toLowerCase().split(" ");
-	
-		handleObj.handler = function( event ) {
+
+		handleObj.handler = function ( event ) {
 			// Don't fire in text-accepting inputs that we didn't directly bind to
 			// Don't fire in contentEditable true elements
 			if ( this !== event.target && (/textarea|select/i.test( event.target.nodeName ) ||
@@ -420,7 +419,7 @@ function( Aloha, Selection, jQuery ) {
 				event.target.type === "text") ) {
 				return;
 			}
-			
+
 			// Keypress represents characters, not special keys
 			var special = event.type !== "keypress" && jQuery.hotkeys.specialKeys[ event.which ],
 				character = String.fromCharCode( event.which ).toLowerCase(),
@@ -434,7 +433,7 @@ function( Aloha, Selection, jQuery ) {
 			if ( event.ctrlKey && special !== "ctrl" ) {
 				modif += "ctrl+";
 			}
-			
+
 			// TODO: Need to make sure this works consistently across platforms
 			if ( event.metaKey && !event.ctrlKey && special !== "meta" ) {
 				modif += "meta+";
@@ -464,9 +463,9 @@ function( Aloha, Selection, jQuery ) {
 			}
 		};
 	}
-	
-	jQuery.each([ "keydown", "keyup", "keypress" ], function() {
-		jQuery.event.special[ this ] = { add: keyHandler };
+
+	jQuery.each(['keydown', 'keyup', 'keypress'], function () {
+		jQuery.event.special[this] = {add: keyHandler};
 	});
-	
+
 });
