@@ -2205,7 +2205,6 @@ define('aloha', [], function () {
 				'aloha/plugin',
 				'aloha/selection',
 				'aloha/command',
-				'aloha/jquery.patch',
 				'aloha/jquery.aloha',
 				'aloha/sidebar',
 				'util/position',
