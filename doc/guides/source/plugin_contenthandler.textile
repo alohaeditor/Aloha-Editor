@@ -143,7 +143,7 @@ The Generic Content Handler is a bit less generic than his name might suggest as
 * transform formattings by turning
 ** +<strong>+ tags into +<b>+ tags
 ** +<em>+ to +<i>+
-** +<s>+ to +<del>+
+** +<s>+ and +<strike>+ to +<del>+
 ** and by removing +<u>+ tags (as underline text decoration should solely be used for links)
 
 h4. Sanitize Content Handler
