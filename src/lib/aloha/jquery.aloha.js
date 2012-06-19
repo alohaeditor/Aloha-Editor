@@ -28,7 +28,6 @@ define('jquery.aloha', ['jQuery',
 	'use strict';
 
 	var XMLSerializer = window.XMLSerializer;
-	var aQuery = Aloha.jQuery;
 
 	/**
 	 * jQuery between Extension
@@ -39,7 +38,6 @@ define('jquery.aloha', ['jQuery',
 	 * @param content HTML Code, DOM object or jQuery object to be inserted
 	 * @param offset character offset from the start where the content should be inserted
 	 */
-	aQuery.fn.between =
 	jQuery.fn.between = function(content, offset) {
 		var
 			offSize,
@@ -74,7 +72,6 @@ define('jquery.aloha', ['jQuery',
 	/**
 	 * Make the object contenteditable. Care about browser version (name of contenteditable attribute depends on it)
 	 */
-	aQuery.fn.contentEditable =
 	jQuery.fn.contentEditable = function( b ) {
 		// ie does not understand contenteditable but contentEditable
 		// contentEditable is not xhtml compatible.
@@ -122,7 +119,6 @@ define('jquery.aloha', ['jQuery',
 	 * @return	jQuery object for the matched elements
 	 * @api
 	 */
-	aQuery.fn.aloha =
 	jQuery.fn.aloha = function() {
 		var $this = jQuery( this );
 
@@ -146,7 +142,6 @@ define('jquery.aloha', ['jQuery',
 	 * @return	jQuery object for the matched elements
 	 * @api
 	 */
-	aQuery.fn.mahalo =
 	jQuery.fn.mahalo = function() {
 		return this.each(function() {
 			if (Aloha.isEditable(this)) {
@@ -160,7 +155,6 @@ define('jquery.aloha', ['jQuery',
 	 * new Event which is triggered whenever a selection (length >= 0) is made in
 	 * an Aloha Editable element
 	 */
-	aQuery.fn.contentEditableSelectionChange =
 	jQuery.fn.contentEditableSelectionChange = function(callback) {
 		var that = this;
 
@@ -202,7 +196,6 @@ define('jquery.aloha', ['jQuery',
 	 * @license MIT License {@link http://creativecommons.org/licenses/MIT/}
 	 * @return {String} outerHtml
 	 */
-	aQuery.fn.outerHTML =
 	jQuery.fn.outerHtml = jQuery.fn.outerHtml || function(){
 		var
 			$el = jQuery(this),
@@ -223,13 +216,10 @@ define('jquery.aloha', ['jQuery',
 	
 	};
 
-
-	aQuery.fn.zap =
 	jQuery.fn.zap = function () {
 		return this.each(function(){ jQuery(this.childNodes).insertBefore(this); }).remove();
 	};
 
-	aQuery.fn.textNodes =
 	jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
 			var
 				ret = [],
@@ -254,7 +244,6 @@ define('jquery.aloha', ['jQuery',
 	/**
 	 * extendObjects is like jQuery.extend, but it does not extend arrays
 	 */
-	aQuery.extendObjects = aQuery.fn.extendObjects =
 	jQuery.extendObjects = jQuery.fn.extendObjects = function() {
 		var options, name, src, copy, copyIsArray, clone,
 			target = arguments[0] || {},
@@ -324,12 +313,10 @@ define('jquery.aloha', ['jQuery',
 		return target;
 	};
 
-	aQuery.isBoolean =
 	jQuery.isBoolean = function(b) {
 		return b === true || b === false;
 	};
 
-	aQuery.isNumeric =
 	jQuery.isNumeric = function(o) {
 		return ! isNaN (o-0);
 	};
@@ -346,7 +333,6 @@ define('jquery.aloha', ['jQuery',
 	 * Binny V A, http://www.openjs.com/scripts/events/keyboard_shortcuts/
 	*/
 
-	aQuery.hotkeys =
 	jQuery.hotkeys = {
 		version: "0.8",
 
@@ -430,7 +416,6 @@ define('jquery.aloha', ['jQuery',
 	}
 
 	jQuery.each([ "keydown", "keyup", "keypress" ], function() {
-		aQuery.event.special[ this ] =
 		jQuery.event.special[ this ] = { add: keyHandler };
 	});
 
