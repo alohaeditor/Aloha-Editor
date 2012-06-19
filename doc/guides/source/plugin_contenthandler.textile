@@ -156,7 +156,7 @@ The Sanitize Content Handler will remove all dom elements and attributes not cov
 Aloha.settings.contentHandler.sanitize = {
 	// elements allowed in the content
 	elements: [
-		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'del', 'dl', 'dt', 'em',
 		'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
 		'sup', 'u', 'ul' ],
 	// attributes allowed for specific elements
