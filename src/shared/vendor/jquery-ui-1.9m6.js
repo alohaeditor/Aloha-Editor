@@ -1,4 +1,4 @@
-define('jqueryui', ['jQuery'], function(jQuery){
+define( 'jqueryui', [ 'jQuery' ], function( jQuery ) {
 var $ = jQuery;
 
 /*!
@@ -14338,5 +14338,7 @@ $.widget( "ui.tooltip", {
 });
 
 }( jQuery ) );
+
 return jQuery.ui;
+
 });
