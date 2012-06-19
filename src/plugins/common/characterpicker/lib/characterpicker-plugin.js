@@ -57,7 +57,7 @@ function( Aloha, jQuery, Plugin, Component, Button, i18n, i18nCore ) {
 					=  (self.$node.css('display') === 'table')
 					&& (e.target != self.$node[0])
 				    // don't consider clicks to the 'show' button.
-					&& !jQuery(e.target).hasClass('aloha-button-characterpicker');
+					&& !jQuery(e.target).parent().children('.aloha-icon-characterpicker').length;
 				if(overlayVisibleAndNotTarget) {
 					self.$node.hide();
 				}
