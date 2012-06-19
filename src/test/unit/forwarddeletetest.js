@@ -1298,6 +1298,14 @@ var alltests = {
 		},
 		{	start: 'foo[]     bar',
 			execResult: 'foo[]bar'
+		},
+		{
+			start: 'foo []b baz',
+			execResult: 'foo&nbsp;[] baz'
+		},
+		{
+			start: ' []f bar',
+			execResult: '&nbsp;[] bar'
 		}
 	
 

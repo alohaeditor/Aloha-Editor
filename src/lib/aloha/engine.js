@@ -1014,7 +1014,7 @@ function collapseWhitespace(node, range) {
 
 	// iterate through the node data
 	for (var i = 0; i < node.data.length; ++i) {
-		if (/[\t\n\r ]/.test(node.data[i])) {
+		if (/[\t\n\r ]/.test(node.data.substr(i, 1))) {
 			// found a whitespace
 			if (!wsFound) {
 				// this is the first whitespace in the current sequence
@@ -1032,7 +1032,7 @@ function collapseWhitespace(node, range) {
 				}
 			}
 		} else {
-			newData += node.data[i];
+			newData += node.data.substr(i, 1);
 			wsFound = false;
 		}
 	}
@@ -6963,7 +6963,7 @@ commands.forwarddelete = {
 		}
 
 		// collapse whitespace in the node, if it is a text node
-		collapseWhitespace(node, range);
+		canonicalizeWhitespace(range.startContainer, range.startOffset);
 
 		// "If node is a Text node and offset is not node's length:"
 		if (node.nodeType == $_.Node.TEXT_NODE
