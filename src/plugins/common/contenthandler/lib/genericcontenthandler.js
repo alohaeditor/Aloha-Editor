@@ -118,15 +118,15 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 */
 		transformFormattings: function( content ) {
 			// find all formattings we will transform
-			content.find('strong,em,s,u').each(function() {
+			content.find('strong,em,s,u,strike').each(function() {
 				if (this.nodeName.toLowerCase() == 'strong') {
 					// transform strong to b
 					Aloha.Markup.transformDomObject(jQuery(this), 'b');
 				} else if (this.nodeName.toLowerCase() == 'em') {
 					// transform em to i
 					Aloha.Markup.transformDomObject(jQuery(this), 'i');
-				} else if (this.nodeName.toLowerCase() == 's') {
-					// transform s to del
+				} else if (this.nodeName.toLowerCase() == 's' || this.nodeName.toLowerCase() == 'strike') {
+					// transform s and strike to del
 					Aloha.Markup.transformDomObject(jQuery(this), 'del');
 				} else if (this.nodeName.toLowerCase() == 'u') {
 					// transform u?
