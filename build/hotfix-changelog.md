@@ -28,3 +28,4 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: A whole lot of Plugins can now be configured editable-specific configuration: abbr, highlighteditables, list, horizontalruler, link, paste, headerids, listenforcer, metaview, numerated-headers, wai-lang, cite, characterpicker, formatlesspaste, dom-to-xhtml. Have a look at the individual plugin guides for detailed information on how to configure them.
 - **ENHANCEMENT**: Added functional description for plugins
 - **BUG**: core: When using the delete button in IE7, so that after deleting the cursor is supposed to be in between two spaces, some unexpected text "undefined" was added to the editable. This has been fixed now.
+- **BUG**: generic contenthandler: Do not trim text nodes in list elements, because this could remove spaces between words, where one word is formatted.
