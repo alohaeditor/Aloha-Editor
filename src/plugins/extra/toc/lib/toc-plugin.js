@@ -97,8 +97,8 @@ function( Aloha, Plugin, jQuery, Component, Button, i18n, i18nCore, console ) {
 			var that = this;
 			
 			Component.define("insertToc", Button, {
-		        label : i18n.t('button.addtoc.tooltip'),
-		        icon: 'aloha-button aloha-button-ol',
+		        tooltip: i18n.t('button.addtoc.tooltip'),
+		        icon: 'aloha-icon aloha-icon-orderedlist',
 		        click: function () { that.insertAtSelection($containers); }
 			});
 

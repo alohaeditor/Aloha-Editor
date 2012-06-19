@@ -177,6 +177,10 @@
 	background-image: url(../img/quote.png);
 }
 
+.aloha-icon-tree { 
+	background-image: url(../img/tree.png);
+}
+
 button.aloha-large-button {
 	width: 60px;
 	height: 50px;

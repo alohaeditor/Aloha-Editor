@@ -166,7 +166,9 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 		// is clear that the calls can be safely removed from
 		// the plugins, these methods can be removed as well.
 		setScope: function(scope) { },
-		createScope: function(scope, extendsScope) {}
+		createScope: function(scope, extendsScope) {},
+		unhideTab: function(){},
+		hideTab: function(tabName){}
 	});
 
 	Toolbar.init();

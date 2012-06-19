@@ -74,30 +74,29 @@ define( [
 			var that = this;
 
 			// add the event handler for selection change
+			Aloha.bind( 'aloha-editable-activated', function( event, rangeObject ) {
+				var config;
+				// show/hide the button according to the configuration
+				config = that.getEditableConfig( Aloha.activeEditable.obj );
+				if ( jQuery.inArray( 'span', config ) !== -1 ) {
+					addMarkupToSelectionButton.show();
+				} else {
+					addMarkupToSelectionButton.hide();
+					return;
+				}
+			} );
+
+			// add the event handler for selection change
 			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
-				var config,
-				    foundMarkup;
+				var foundMarkup;
 
-				if ( Aloha.activeEditable ) {
-					// show/hide the button according to the configuration
-					config = that.getEditableConfig( Aloha.activeEditable.obj );
-					if ( jQuery.inArray( 'span', config ) !== -1 ) {
-						addMarkupToSelectionButton.setState( false );
-					} else {
-						addMarkupToSelectionButton.setState( true );
-
-						// leave if a is not allowed
-						return;
-					}
-
-					foundMarkup = that.findLangMarkup( rangeObject );
-					if ( foundMarkup ) {
+				foundMarkup = that.findLangMarkup( rangeObject );
+				if ( foundMarkup ) {
 						addMarkupToSelectionButton.setState( true );
 						Toolbar.setScope( 'wai-lang' );
-						langField.setTargetObject( foundMarkup, 'lang' );
-					} else {
-						langField.setTargetObject( null );
-					}
+					langField.setTargetObject( foundMarkup, 'lang' );
+				} else {
+					langField.setTargetObject( null );
 				}
 			} );
 		},
@@ -115,7 +114,7 @@ define( [
 				click: function(){
 					that.addRemoveMarkupToSelection();
 				}
-			});
+			} );
 
 			addMarkupToSelectionButton = Component.getGlobalInstance("wailang");
 
@@ -126,7 +125,7 @@ define( [
 				'width'      : 320,
 				'valueField' : 'id',
 				'minChars'   : 1
-			});
+			} );
 
 			langField.setTemplate(
 				'<div class="img-item">' +
@@ -143,7 +142,7 @@ define( [
 				click: function(){
 					that.removeLangMarkup();
 				}
-			});
+			} );
 		},
 
 		/**

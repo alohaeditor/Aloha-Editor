@@ -50,19 +50,19 @@
 }
 
 /* Crop and Resize */
-.cnr-resize.x-btn-text, button.cnr-crop.x-btn-text, button.cnr-reset.x-btn-text {
+.aloha-icon-cnr-resize, .aloha-icon-cnr-crop, .aloha-icon-cnr-reset {
 	background: url(../img/cropnresize.png);
 }
 
-.cnr-crop {
+.aloha-icon-cnr-crop {
 	background-position: -2px -2px !important;
 }
 
-.cnr-reset {
+.aloha-icon-cnr-reset {
 	background-position: -42px -2px !important;
 }
 
-.cnr-ratio {
+.aloha-icon-cnr-ratio {
 	background-image: url(../img/cropnresize.png) !important;
 	background-position: -60px -2px !important;
 }

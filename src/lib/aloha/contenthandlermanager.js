@@ -35,7 +35,7 @@ function( jQuery, Registry ) {
 		handleContent: function ( content, options ) {
 			var handler,
 				handlers = this.getEntries();
-			
+
 			if ( typeof options.contenthandler === 'undefined') {
 				options.contenthandler = [];
 				for ( handler in handlers ) {

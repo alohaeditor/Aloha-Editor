@@ -40,9 +40,9 @@ define([
 
 			var browser = this;
 
-			Component.define( 'imageBrowser', Button, {
-				icon: 'aloha-button-big aloha-button-tree',
-				label: i18n.t( 'button.addimage.tooltip' ),
+			Component.define('imageBrowser', Button, {
+				tooltip: i18n.t('button.addimage.tooltip'),
+				icon: 'aloha-icon-tree',
 				click: function () { browser.open(); }
 			});
 
