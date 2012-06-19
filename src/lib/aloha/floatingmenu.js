@@ -474,6 +474,11 @@ function(Aloha, jQuery, Ext, Class, console) {
 		fromConfig: false,
 
 		/**
+		 * hide a tab
+		*/
+		hideTab: false,
+
+		/**
 		 * Initialize the floatingmenu
 		 * @hide
 		 */
@@ -1180,6 +1185,15 @@ function(Aloha, jQuery, Ext, Class, console) {
 							Aloha.Log.debug(that, 'hiding tab strip for tab ' + tab.label);
 						}
 						that.extTabPanel.hideTabStripItem(tab.extPanel);
+					}
+				}
+
+				// hide a tab
+				if ( tab.label == that.hideTab ) {
+					that.extTabPanel.hideTabStripItem(tab.extPanel);
+
+					if ( activeExtTab.title == that.hideTab ) {
+						showUserActivatedTab = firstVisibleTab;
 					}
 				}
 			});

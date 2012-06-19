@@ -41,7 +41,6 @@ function(Aloha, jQuery, ContentHandlerManager) {
 				return;
 			};
 
-			// remove formattings
 			if ( this.enabled ) {
 				this.removeFormatting( content );
 			}
@@ -55,7 +54,6 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 */
 		removeFormatting: function( jqPasteDiv ) {
 			var formatting_elements = this.strippedElements;
-
 			// find all formattings we will transform
 			jqPasteDiv.find( formatting_elements.join(",")).each(function() {
 				jQuery(this).contents().unwrap();

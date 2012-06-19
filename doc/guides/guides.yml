@@ -39,7 +39,13 @@ index:
   Start Here:
     - title: "Using Aloha Editor"
       url: using_aloha
-      text: "Learn how to embed Aloha Editor and make your content editable."
+      text: "Learn how to embed Aloha Editor and make your content editable and how to use and configure Aloha Editor plugins."
+    - title: "Functional Description"
+      url: functional_description
+      text: "Functional description of basic functions of Aloha Editor."
+    - title: "Developing and building Aloha Editor"
+      url: develop_aloha
+      text: "Learn how to develop or make a custom build of Aloha Editor."
     - title: "Configuring Aloha Editor"
       url: configure_aloha
       text: "Learn how to configure Aloha Editor."

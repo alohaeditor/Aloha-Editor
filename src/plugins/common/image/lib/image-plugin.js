@@ -396,7 +396,6 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 
 				if (Aloha.activeEditable !== null) {
 					foundMarkup = plugin.findImgMarkup(rangeObject);
-					//var config = that.getEditableConfig(Aloha.activeEditable.obj);
 					config = plugin.getEditableConfig(Aloha.activeEditable.obj);
 
 					if (typeof config !== 'undefined') {

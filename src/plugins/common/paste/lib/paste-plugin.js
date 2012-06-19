@@ -38,7 +38,7 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 		// store the current range
 		pasteRange = Aloha.getSelection().getRangeAt( 0 );
 		pasteEditable = Aloha.activeEditable;
-		
+
 		// store the current scroll position
 		$pasteDiv.css( {
 			top: $window.scrollTop(),
@@ -74,7 +74,7 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			pasteEditable.obj.click();
 			
 			pasteDivContents = $pasteDiv.html();
-			
+
 			// We need to remove an insidious nbsp that IE inserted into our
 			// paste div, otherwise it will result in an empty paragraph being
 			// created right before the pasted content, if the pasted content
