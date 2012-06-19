@@ -18,9 +18,9 @@ function(jQuery, Plugin, i18n, i18nCore) {
 		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
-	
-	
-	
+
+
+
 	// namespace prefix for this plugin
     var ns = 'aloha-headerids';
     
@@ -43,12 +43,7 @@ function(jQuery, Plugin, i18n, i18nCore) {
         return strBldr.join(' ').trim();
     };
     
-    
-    
-
-	
-	
-     return Plugin.create('headerids', {
+	return Plugin.create('headerids', {
 		_constructor: function(){
 			this._super('headerids');
 		},
@@ -60,23 +55,32 @@ function(jQuery, Plugin, i18n, i18nCore) {
 		 */
 		init: function () {
 			var that = this;
-	
+
 			// mark active Editable with a css class
-			Aloha.bind("aloha-editable-activated", function(jEvent, params) { that.check(params.editable.obj); });
-			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) { that.check(params.editable.obj); });
-			Aloha.bind('aloha-ready', function (ev) { that.initSidebar(Aloha.Sidebar.right); });
+			Aloha.bind("aloha-editable-activated", function(jEvent, params) {
+				that.check(params.editable.obj);
+			});
+			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) {
+				that.check(params.editable.obj);
+			});
+			Aloha.bind('aloha-ready', function (ev) {
+				that.initSidebar(Aloha.Sidebar.right);
+			});
 		},
 		
 		check: function(editable) {
 			var that = this;
 			var config = that.getEditableConfig(editable);
-			if(jQuery.inArray('true',config) == -1) {
+
+			if(jQuery.inArray('true',config) === -1) {
 				// Return if the plugin should do nothing in this editable
-				return;
-			}		
+				return false;
+			}
+
 			jQuery(editable).find('h1, h2, h3, h4, h5, h6').not('.aloha-customized').each(function(){ 
 				that.processH(this); 
 			});
+
 		},
 		
 		processH: function(h) {
@@ -87,7 +91,6 @@ function(jQuery, Plugin, i18n, i18nCore) {
 		sanitize: function(str) {
 			return (str.replace(/[^a-z0-9]+/gi,'_'));
 		},
-		
 		
 		//ns = headerids
 		initSidebar: function(sidebar) {

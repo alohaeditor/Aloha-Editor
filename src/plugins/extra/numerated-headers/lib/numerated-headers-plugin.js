@@ -4,226 +4,239 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-define(
-['aloha/jquery',
- 'aloha/plugin',
- 'ui/component',
- 'ui/toggleButton',
- 'i18n!numerated-headers/nls/i18n',
- 'i18n!aloha/nls/i18n',
- 'css!numerated-headers/css/numerated-headers.css'],
-function(jQuery, Plugin, Component, ToggleButton, i18n, i18nCore) {
+define ([
+	'aloha/jquery',
+	'aloha/plugin',
+	'ui/component',
+	'ui/toggleButton',
+	'i18n!numerated-headers/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'css!numerated-headers/css/numerated-headers.css'
+],
+function (jQuery, Plugin, Component, ToggleButton, i18n, i18nCore) {
 	"use strict";
 
-   var
-	$ = jQuery,
-	GENTICS = window.GENTICS,
-	Aloha = window.Aloha;
-	
-   return Plugin.create('numerated-headers', {
-     
-	 numeratedactive : true,
-	 headingselector : 'h1, h2, h3, h4, h5, h6',
-	 
-     /**
-      * Initialize the plugin
-      */
-     init: function () {
-		var that = this;
+	var $ = jQuery,
+		Aloha = window.Aloha;
 
-		if ( typeof this.settings.numeratedactive !== 'undefined' ) {
-			this.numeratedactive = this.settings.numeratedactive;
-		}
+	return Plugin.create('numerated-headers', {
+		numeratedactive: true,
+		headingselector: 'h1, h2, h3, h4, h5, h6',
 
-		// modifyable selector for the headers, that should be numerated
-		if ( typeof this.settings.headingselector !== 'undefined' ) {
-			this.headingselector = this.settings.headingselector;
-		}
-		// modifyable selector for the baseobject. Where should be numerated
-		if ( typeof this.settings.baseobjectSelector !== 'undefined' ) {
-			this.baseobjectSelector = this.settings.baseobjectSelector;
-		}
-		 
+		/**
+		 * Initialize the plugin
+		*/
+		init: function () {
+			var that = this;
+
+			if ( typeof this.settings.numeratedactive !== 'undefined' ) {
+				this.numeratedactive = this.settings.numeratedactive;
+			}
+
+			// modifyable selector for the headers, that should be numerated
+			if ( typeof this.settings.headingselector !== 'undefined' ) {
+				this.headingselector = this.settings.headingselector;
+			}
+			// modifyable selector for the baseobject. Where should be numerated
+			if ( typeof this.settings.baseobjectSelector !== 'undefined' ) {
+				this.baseobjectSelector = this.settings.baseobjectSelector;
+			}
+
+
 		Component.define("formatNumeratedHeaders", ToggleButton, {
             tooltip: i18n.t('button.numeratedHeaders.tooltip'),
             icon: 'aloha-icon aloha-icon-numerated-headers',
             click: function () {
 				if(that.numeratedHeadersButton.getState()) {
-					that.removeNumerations();
+						that.removeNumerations();
 				}
 				else {
-					that.createNumeratedHeaders();
-				}
+						that.createNumeratedHeaders();
+					}
             }
-		});
+			});
 
         this.numeratedHeadersButton = Component.getGlobalInstance("formatNumeratedHeaders");
 		this.numeratedHeadersButton.setState(this.numeratedactive);
-		 
-		// We need to bind to selection-changed event to recognize backspace and delete interactions
-		Aloha.bind( 'aloha-selection-changed', function ( event ) {
+
+			// We need to bind to selection-changed event to recognize backspace and delete interactions
+			Aloha.bind( 'aloha-selection-changed', function ( event ) {
 			if (that.numeratedHeadersButton.getState()) {
-				that.createNumeratedHeaders();
+					that.createNumeratedHeaders();
+				}
+			});
+
+			Aloha.bind('aloha-editable-activated', function ( event ) {
+				var config = that.getEditableConfig( Aloha.activeEditable.obj );
+
+				if ( config && config[0] ) {
+					config = config[0];
+				}
+
+				if ( config && typeof config.numeratedactive !== 'undefined' ) {
+					that.numeratedactive = config.numeratedactive;
+				}
+
+				// modifyable selector for the headers, that should be numerated
+				if ( config && typeof config.headingselector !== 'undefined' ) {
+					that.headingselector = config.headingselector;
+				}
+				// modifyable selector for the baseobject. Where should be numerated
+				if ( config && typeof config.baseobjectSelector !== 'undefined' ) {
+					that.baseobjectSelector = config.baseobjectSelector;
+				}
+
+				if ( ! that.numeratedactive && that.numeratedHeadersButton ) {
+					that.numeratedHeadersButton.hide();
+				}
+			});
+		},
+
+		 removeNumerations : function () {
+			var active_editable_obj = this.getBaseElement();
+
+			if ( !active_editable_obj ) {
+				return;
 			}
-		});
-     },
 
-	 removeNumerations : function () {
-		var active_editable_obj = this.getBaseElement();
+			var headers = active_editable_obj.find(this.headingselector);
+			headers.each( function() {
+				jQuery(this).find('span[role=annotation]').each(function(){jQuery(this).remove();});
+			});
+		 },
 
-		if ( !active_editable_obj ) {
-			return;
-		}
-
-		var headers = active_editable_obj.find(this.headingselector);
-		headers.each( function() {
-			jQuery(this).find('span[role=annotation]').each(function(){jQuery(this).remove();});
-		});
-	 },
-
-	getBaseElement: function() {
-
-		if ( typeof this.baseobjectSelector !== 'undefined' ) {
-			if( jQuery(this.baseobjectSelector).length > 0 ) {
-				return jQuery(this.baseobjectSelector);
+		getBaseElement: function() {
+			if ( typeof this.baseobjectSelector !== 'undefined' ) {
+				if( jQuery( this.baseobjectSelector ).length > 0 ) {
+					return jQuery( this.baseobjectSelector );
+				} else {
+					return false;
+				}
 			} else {
+				if ( typeof Aloha.activeEditable === 'undefined' || Aloha.activeEditable == null ) {
+					return false;
+				} else {
+					return Aloha.activeEditable.obj;
+				}
+			}
+		},
+
+		/*
+		* checks if the given Object contains a note Tag that looks like this:
+		* <span annotation=''>
+		*
+		* @param {Object} obj - The Object to check
+		*/
+		hasNote: function(obj) {
+			if( !obj || !jQuery(obj).length > 0 ) {
 				return false;
 			}
+			obj = jQuery(obj);
+
+			if ( obj.find('span[role=annotation]').length > 0 ) {
+				return true;
+			}
+
+			return false;
+		},
+
+		/*
+		* checks if the given Object has textual content.
+		* A possible "<span annotation=''>" tag will be ignored
+		*
+		* @param {Object} obj - The Object to check
+		*/
+		hasContent: function(obj) {
+			if( !obj || !jQuery(obj).length > 0 ) {
+				return false;
+			}
+			obj = jQuery(obj);
+
+			// we have to check the content of this object without the annotation span
+			var objCleaned = obj.clone().find('span[role=annotation]').remove().end();
+
+			// check for text, also in other possible sub tags
+			if ( objCleaned.text().trim().length > 0 ) {
+				return true;
+			}
+
+			return false;
+		},
+
+		createNumeratedHeaders: function() {
+			var active_editable_obj = this.getBaseElement(),
+				that = this,
+				headers = active_editable_obj.find(this.headingselector),
+				config = that.getEditableConfig( active_editable_obj );
+
+			if( !active_editable_obj || config.numeratedactive !== true ) {
+				return;
+			}
+
+			if ( typeof headers == "undefined" || headers.length == 0 ) {
+				return;
+			}
+
+			var base_rank = parseInt(headers[0].nodeName.substr(1)),
+				prev_rank = null,
+				current_annotation = [],
+				annotation_pos = 0;
+
+			// initialize the base annotations
+			for ( var i=0; i < (6 - base_rank) + 1; i++ ) {
+				current_annotation[i] = 0; 
+			}
+
+			headers.each(function(){
+				// build and count annotation only if there is content in this header
+				if( that.hasContent(this) ) {
+
+					var current_rank = parseInt(this.nodeName.substr(1));
+					if( prev_rank == null ){
+						//increment the main annotation 
+						current_annotation[annotation_pos]++;
+					}
+
+				//starts a sub title
+				else if ( current_rank > prev_rank ) {
+					current_annotation[++annotation_pos]++; 
+				}
+				//continues subtitles
+				else if ( current_rank == prev_rank ) {
+					current_annotation[annotation_pos]++; 
+				}
+				//goes back to a main title
+				else if ( current_rank < prev_rank ) {
+					var current_pos = current_rank - base_rank;
+					for ( var j=annotation_pos; j > (current_pos); j-- ){
+						current_annotation[j] = 0; //reset current sub-annotation
+					}
+					annotation_pos = current_pos;
+					current_annotation[annotation_pos]++; 
+				}
+
+				prev_rank = current_rank;
+
+				var annotation_result = current_annotation[0];
+				for ( var i = 1; i < current_annotation.length; i++ ) {
+					if ( current_annotation[i] != 0 ){
+						annotation_result += ("." + current_annotation[i]);
+					}
+				}
+
+			if ( that.hasNote(this) ) {
+				jQuery(this).find('span[role=annotation]').html(annotation_result); 
+			} else {
+				jQuery(this).prepend("<span role='annotation'>" + annotation_result + "</span> ");
+			}
 		} else {
-			if ( typeof Aloha.activeEditable == "undefined" || Aloha.activeEditable == null ) {
-        			return false;
-        		} else {
-				return Aloha.activeEditable.obj;
+			// no Content, so remove the Note, if there is one
+			if ( that.hasNote(this) ) {
+				jQuery(this).find('span[role=annotation]').remove();
 			}
 		}
-	},
+	})
 
-
-	/*
-	* checks if the given Object contains a note Tag that looks like this:
-	* <span annotation=''>
-	*
-	* @param {Object} obj - The Object to check
-	*/
-     	hasNote: function(obj) {
-	
-		if(!obj || !jQuery(obj).length > 0){	
-			return false;
-		}
-
-		obj = jQuery(obj);
-
-		if( obj.find('span[role=annotation]').length > 0 ) {
-			return true;
-		}
-
-		return false;
-	},
-
-	
-	/*
-	* checks if the given Object has textual content.
-	* A possible "<span annotation=''>" tag will be ignored
-	*
-	* @param {Object} obj - The Object to check
-	*/
-	hasContent: function(obj) {
-	
-		if( !obj || !jQuery(obj).length > 0 ) {	
-			return false;
-		}
-
-		obj = jQuery(obj);
-
-		// we have to check the content of this object without the annotation span
-		var objCleaned = obj.clone().find('span[role=annotation]').remove().end();
-
-		// check for text, also in other possible sub tags
-		if ( objCleaned.text().trim().length > 0 ) {
-			return true;
-		}
-	
-		return false;
-	},
-
-
-     createNumeratedHeaders: function() {
-
-	var active_editable_obj = this.getBaseElement();
-
-	if(!active_editable_obj){
-		return;
-	}
-	
-	var that = this;
-      
-        var headers = active_editable_obj.find(this.headingselector);
-
-		if ( typeof headers == "undefined" || headers.length == 0 ) {
-           return;
-      }
-
-      var base_rank = parseInt(headers[0].nodeName.substr(1));
-      var prev_rank = null;
-      var current_annotation = [];
-      var annotation_pos = 0;
-
-      // initialize the base annotations
-      for ( var i=0; i < (6 - base_rank) + 1; i++ ) {
-          current_annotation[i] = 0; 
-      }
-      
-      headers.each(function(){
-	// build and count annotation only if there is content in this header
-	if( that.hasContent(this) ) {
-
-       		var current_rank = parseInt(this.nodeName.substr(1));
-        	if( prev_rank == null ){
-          		//increment the main annotation 
-          		current_annotation[annotation_pos]++;
-        	}
-        	//starts a sub title
-        	else if ( current_rank > prev_rank ) {
-          		current_annotation[++annotation_pos]++; 
-        	}
-        	//continues subtitles
-        	else if ( current_rank == prev_rank ) {
-          		current_annotation[annotation_pos]++; 
-        	}
-        	//goes back to a main title
-        	else if ( current_rank < prev_rank ) {
-          		var current_pos = current_rank - base_rank;
-          		for( var j=annotation_pos; j > (current_pos); j-- ){
-            			current_annotation[j] = 0; //reset current sub-annotation
-          		}
-          		annotation_pos = current_pos;
-          		current_annotation[annotation_pos]++; 
-        	}
-
-        	prev_rank = current_rank;
-
-        	var annotation_result = current_annotation[0];
-        	for( var i = 1; i < current_annotation.length; i++ ){
-          		if(current_annotation[i] != 0){
-             			annotation_result += ("." + current_annotation[i]); 
-          		} 
-        	}
-	
-		if ( that.hasNote(this) ) {
-			jQuery(this).find('span[role=annotation]').html(annotation_result); 
-		} else {
-			jQuery(this).prepend("<span role='annotation'>" + annotation_result + "</span> ");
-		}
-	} else {
-		// no Content, so remove the Note, if there is one
-		if ( that.hasNote(this) ) {
-			jQuery(this).find('span[role=annotation]').remove();
-		}
-		
-	}
-
-      })
-     }
-     
-   });
+}
+});
 });

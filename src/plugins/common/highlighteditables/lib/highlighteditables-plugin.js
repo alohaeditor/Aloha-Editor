@@ -15,18 +15,27 @@ function(Aloha, jQuery, Plugin) {
 
 	return Plugin.create('highlighteditables', {
 
+		/**
+		 * default button configuration
+		 */
+		config: [ 'highlight' ],
+
 		init: function () {
 
 			// remember refernce to this class for callback
-			var that = this;
+			var that = this,
+				config;
 
 			// highlight editables as long as the mouse is moving
 			GENTICS.Utils.Position.addMouseMoveCallback(function () {
-				var i, editable;
+				var i,
+					editable;
 
 				for ( i = 0; i < Aloha.editables.length; i++) {
 					editable = Aloha.editables[i];
-					if (!Aloha.activeEditable && !editable.isDisabled()) {
+					config = that.getEditableConfig( editable.obj );
+
+					if ( !Aloha.activeEditable && !editable.isDisabled() && config == 'highlight' ) {
 						editable.obj.addClass('aloha-editable-highlight');
 					}
 				}

@@ -1,21 +1,15 @@
-h2. The Paste Plugin
+h2. Paste Plugin
 
-The Paste Plugin provides means to handle pasting content from the
-clipboard and is a prerequisite if you want to handle contents pasted
-from Microsoft Word. In this case you will also have to enable the
-"Contenthandler Plugin":plugin_contenthandler.html.
+The Paste plugin enables copy and paste action for Aloha Editor editables.
 
 endprologue.
 
-h3. Goal
+The Paste plugin is used to handle the paste action in an editable. "ContentHanlder":plugin_contenthandler.html can be used to configure how pasted content will be handled.
 
-Provide a method to "copy", "copyLink", "copyMove", "link", "linkMove", "move" selected content (editable text, non editable text and blocks) 
-* inside the same HTML doc
-* from one HTML doc to another
-* from any host system app to the HTML doc
-* from the HTML doc to any application
+* The source of a pasted Microsoft Word(tm) document will be cleaned up
+* URLs to media content can be embeded after the paste action using the oEmbed contentHandler
 
-h3. Reference
-Please read carefully the bug 7721 from the HTML5 draft and the spec section the-drag-data-store
-* http://www.w3.org/Bugs/Public/show_bug.cgi?id=7721
-* http://www.whatwg.org/specs/web-apps/current-work/#the-drag-data-store
+h3. Configuration
+
+Enable the paste plugin +common/paste+.
+There are no configuration options for single editables. Use the @contentHandler@ with @insertHtml@ action or the @smartContentChange@ event.

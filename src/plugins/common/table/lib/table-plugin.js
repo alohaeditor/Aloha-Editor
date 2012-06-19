@@ -311,7 +311,7 @@ define( [
 				} );
 			}
 		} );
-		
+
 		if ( this.settings.summaryinsidebar ) {
 			Aloha.ready( function () { 
 				that.initSidebar( Aloha.Sidebar.right.show() );  
