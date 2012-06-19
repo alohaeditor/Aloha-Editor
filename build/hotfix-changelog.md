@@ -29,3 +29,4 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: Added functional description for plugins
 - **BUG**: core: When using the delete button in IE7, so that after deleting the cursor is supposed to be in between two spaces, some unexpected text "undefined" was added to the editable. This has been fixed now.
 - **BUG**: generic contenthandler: Do not trim text nodes in list elements, because this could remove spaces between words, where one word is formatted.
+- **BUG**: plugin format: The format plugin will now support 'del' instead of 's' for strikethrough ('s' is deprecated), like explained in the documentation.

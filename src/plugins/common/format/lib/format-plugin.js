@@ -25,7 +25,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * default button configuration
 		 */
-		config: [ 'strong', 'em', 'b', 'i','s','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		config: [ 'strong', 'em', 'b', 'i', 'del', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
