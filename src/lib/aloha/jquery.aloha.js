@@ -18,7 +18,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-define('jquery.aloha', ['jQuery',
+define('jquery.aloha', ['jquery',
                         'aloha/core',
                         'aloha/selection',
                         'aloha/console'], function (jQuery,

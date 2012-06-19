@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-define('aloha/jquery', ['jQuery'], function (jQuery) {
+define('aloha/jquery', ['jquery'], function (jQuery) {
 	'use strict';
 	// @TODO: This should be moved into jquery.patch.js
 	// Work-around for http://bugs.jquery.com/ticket/9905

@@ -2148,7 +2148,7 @@ var requirejs, require, define;
 	// and fire later when 'aloha-ready' is triggered all other events bind
 
 	Aloha.bind = function (type, fn) {
-        Aloha.require(['jQuery'], function (jQuery) {
+        Aloha.require(['jquery'], function (jQuery) {
             deferredReady = deferredReady || jQuery.Deferred();
             if ('aloha-ready' === type) {
                 if ('alohaReady' !== Aloha.stage) {
@@ -2164,7 +2164,7 @@ var requirejs, require, define;
 	};
 
 	Aloha.trigger = function (type, data) {
-        Aloha.require(['jQuery'], function (jQuery) {
+        Aloha.require(['jquery'], function (jQuery) {
             deferredReady = deferredReady || jQuery.Deferred();
             if ('aloha-ready' === type) {
                 jQuery(deferredReady.resolve);
@@ -2183,7 +2183,7 @@ var requirejs, require, define;
 define('aloha', [], function () {
 	// Load Aloha dependencies...
 	require(Aloha.settings.requireConfig, [
-			'jQuery',
+			'jquery',
 			'util/json2'
 		], function (jQuery) {
 		Aloha.jQuery = jQuery;
