@@ -30,7 +30,11 @@ function( jQuery, Button ) {
 		 */
 		setState: function( toggled ) {
 			this._checked = toggled;
-			this.buttonElement.prop('checked', toggled).button('refresh');
+			if (toggled) {
+				this.element.addClass("aloha-button-active");
+			} else {
+				this.element.removeClass("aloha-button-active");
+			}
 		},
 
 		getState: function() {
@@ -38,41 +42,9 @@ function( jQuery, Button ) {
 		},
 
 		_onClick: function() {
-			this._checked = ! this._checked;
-			// Implementations of the click method must be able to
-			// change the toggled state reliably with setState(). For
-			// some reason that doesn't work as the state of the button
-			// is sometimes wrong after the event handler returns if the
-			// state was modified with
-			// this.buttonElement.prop('checked', toggled).button('refresh')
-			// It is not known why updating the state this way in an event handler
-			// sets the button state incorrectly and it should be further investigated.
-			// To work around this issue we call the click method in a timeout which
-			// seems to work fine. This problem occurs with Chrome.
-			setTimeout(jQuery.proxy(this.click, this), 0);
-		},
-
-		/**
-		 * @override
-		 */
-		createButtonElement: function() {
-			// Generate a unique id for the button until jQuery UI supports
-			// implicit labels (http://bugs.jqueryui.com/ticket/6063).
-			var id = 'aloha-toggleButton-' + ( ++idCounter );
-			this.element = jQuery( '<span>' );
-
-			jQuery( '<label>', {
-				text: this.text,
-				'for': id
-			}).appendTo( this.element );
-
-			this.buttonElement = jQuery( '<input type="checkbox">' )
-				.attr( 'id', id )
-				.appendTo( this.element );
-
-			return this.buttonElement;
+			this.setState( ! this._checked );
+			this.click();
 		}
-
 	});
 
 	return ToggleButton;

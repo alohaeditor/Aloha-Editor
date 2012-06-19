@@ -68,7 +68,6 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 			var surface = this;
 
 			this.$element.css( 'position', 'absolute' );
-			this.$element.draggable();
 
 			subguarded( [
 				'aloha-selection-changed',
@@ -96,7 +95,9 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 		},
 
 		initializeDragging: function() {
-
+			this.$element.draggable({
+				"distance": 20
+			});
 		},
 
 		enableFloating: function() {
@@ -153,22 +154,20 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 			return null;
 		},
 
-		/**
-		 * @param name
-		 *        The name of a component that exists in the tab that should be activated.
-		 */
-		activateTabOfButton: function(name) {
-			// TODO
-		},
 
 		// Only added so that the calls that originally went to
 		// FloatingMenu.* can be preserved for the time being. When it
 		// is clear that the calls can be safely removed from
 		// the plugins, these methods can be removed as well.
-		setScope: function(scope) { },
-		createScope: function(scope, extendsScope) {},
+		setScope: function(scope){},
+		createScope: function(scope, extendsScope){},
 		unhideTab: function(){},
-		hideTab: function(tabName){}
+		hideTab: function(tabName){},
+		/**
+		 * @param name
+		 *        The name of a component that exists in the tab that should be activated.
+		 */
+		activateTabOfButton: function(name){},
 	});
 
 	Toolbar.init();
