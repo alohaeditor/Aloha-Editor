@@ -31,3 +31,7 @@ div.aloha-floatingmenu, div.aloha-shadow {
 	margin:0;
 	padding:0;
 }
+/* in IE the ext-shim iframes will overlap the floatingmenu making them inaccessible if not hidden */
+.ext-shim {
+	display: none !important;
+}

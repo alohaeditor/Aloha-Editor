@@ -30,7 +30,16 @@ script tag would look like the following
 h3. Configure Plugins
 
 To change the configuration parameters of plugins you can use the @Aloha.settings.plugins@ option.
-All possible settings are listed on the Guides page for that plugin.
+All possible settings are listed on the Guides page for each plugin.
+
+The common pattern for configuring plugins is that there is a +config+ key for global configuration
+and an +editables+ key for configuration specific to editables. The +editables+ key holds an object
+which contains a "jquery selector":http://api.jquery.com/category/selectors/ to identify individual
+editable as the key and the corresponding configuration as it's value. Usually plugins will expect
+the names of their buttons as configuration settings as best practice, but the available options
+may vary.
+
+NOTE: If multiple selectors apply for an editable only configuration of the last one is taken into account. 
 
 <html>
 <script type="text/javascript">
