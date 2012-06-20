@@ -83,22 +83,37 @@
 		return clone;
 	}
 
+	var baseUrl = Aloha.settings.baseUrl;
+
 	var defaultConfig = {
 		context: 'aloha',
 		locale: 'en',
-		baseUrl: Aloha.settings.baseUrl
+		baseUrl: baseUrl
 	};
 
 	// Aside from requirejs, jquery and jqueryui are the only external
 	// dependencies that Aloha must have provided to it.
 	var defaultPaths = {
-		jquery: Aloha.settings.baseUrl + '/vendor/jquery-1.7.2',
-		jqueryui: Aloha.settings.baseUrl + '/vendor/jquery-ui-1.9m6'
+		jquery: baseUrl + '/vendor/jquery-1.7.2',
+		jqueryui: baseUrl + '/vendor/jquery-ui-1.9m6'
+	};
+
+	var browserPaths = {
+		PubSub: baseUrl + '/vendor/pubsub/js/pubsub-unminified',
+		Class: baseUrl + '/util/class',
+		RepositoryBrowser: baseUrl + '/vendor/repository-browser/js/repository-browser-unminified',
+		jstree: baseUrl + '/vendor/jquery.jstree',              // Mutates jquery
+		jqgrid: baseUrl + '/vendor/jquery.jqgrid',              // Mutates jquery
+		'jquery-layout': baseUrl + '/vendor/jquery.layout',     // Mutates jquery
+		'jqgrid-locale-en': baseUrl + '/vendor/grid.locale.en', // Mutates jqgrid
+		'jqgrid-locale-de': baseUrl + '/vendor/grid.locale.de', // Mutates jqgrid
+		'repository-browser-i18n-de': baseUrl + '/vendor/repository-browser/js/repository-browser-unminified',
+		'repository-browser-i18n-en': baseUrl + '/vendor/repository-browser/js/repository-browser-unminified'
 	};
 
 	var requireConfig = mergeObjects(defaultConfig, Aloha.settings.requireConfig);
 
-	requireConfig.paths = mergeObjects(defaultPaths, requireConfig.paths);
+	requireConfig.paths = mergeObjects(defaultPaths, browserPaths, requireConfig.paths);
 
 	// Create define() wrappers that will provide the initialized objects that
 	// the user passes into Aloha via require() calls.

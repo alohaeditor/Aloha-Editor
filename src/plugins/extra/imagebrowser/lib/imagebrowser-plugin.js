@@ -132,7 +132,7 @@ define([
 					icon : { title: '',     width: 75,  sortable: false, resizable: false },
 					name : { title: 'Name', width: 320, sorttype: 'text' }
 				},
-				rootPath : window.__DEPS__.root + '../shared/repository-browser/'
+				rootPath : Aloha.settings.baseUrl + '/vendor/repository-browser/'
 			};
 			this.browser = new ImageBrowser( config );
 		}
