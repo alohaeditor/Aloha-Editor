@@ -1,4 +1,4 @@
-define( 'jqueryui', [ 'jQuery' ], function( jQuery ) {
+define( 'jqueryui', [ 'jquery' ], function( jQuery ) {
 var $ = jQuery;
 
 /*!

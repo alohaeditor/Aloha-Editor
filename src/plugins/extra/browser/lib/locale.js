@@ -12,7 +12,7 @@
  * should point to
  */
 define( [
-	'aloha/jquery',
+	'jquery',
 	'i18n!browser/nls/i18n',
 	'browser/../vendor/grid.locale.en',
 	'browser/../vendor/grid.locale.de'

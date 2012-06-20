@@ -1,5 +1,5 @@
 define(
-['aloha/jquery'],
+['jquery'],
 function (jQuery) {
 	/**
 	 * Initialize of the CreateLayer object

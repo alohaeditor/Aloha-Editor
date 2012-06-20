@@ -17,23 +17,21 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-(function () {
+(function (global) {
 	'use strict';
 
-	var deferredReady;
-	var alohaRequire;
+	// Establish Aloha namespace.
+	global.Aloha = global.Aloha || {};
 
-	// Ensure Aloha settings namespace and default.
-	window.Aloha = window.Aloha || {};
-
-	// Establish defaults.  Users should use settings.
+	// Establish defaults namespace.
 	Aloha.defaults = {};
 
-	// Establish the settings object if not set by user.
+	// Establish the settings object if none exists.
 	Aloha.settings = Aloha.settings || {};
 
-	// Aloha define, require, preserve original require
-	Aloha._require = require;
+	// @TODO: Carrying define() in Aloha does not seem to serve us in anyway.
+	//        It is simply confusing, so I propose that we get rid of it as
+	//        quickly as we can from the API.
 	Aloha.define = define;
 
 	// Determins the base path of Aloha Editor which is supposed to be the path
@@ -67,23 +65,68 @@
 		return baseUrl;
 	}
 
-	// Prepare the require config object.
-    var requireConfig = Aloha.settings.requireConfig;
-    if (!requireConfig.context) {
-        requireConfig.context = 'aloha';
-    }
-    if (!requireConfig.baseUrl) {
-        requireConfig.baseUrl = Aloha.settings.baseUrl;
-    }
-    if (!requireConfig.locale) {
-        requireConfig.locale = Aloha.settings.locale;
-    }
+	/**
+	 * Merges properites of all  passed arguments into a new one.
+	 * Duplicate properties will be "seived" out.
+	 * Works in a similar way to jQuery.extend.
+	 */
+	function mergeObjects () {
+		var clone = {};
+		var objects = Array.prototype.slice.call(arguments);
+		var name;
+		var i;
+		for (i = 0; i < objects.length; i++) {
+			for (name in objects[i]) {
+				clone[name] = objects[i][name];
+			}
+		}
+		return clone;
+	}
 
-	// configure require and expose the Aloha.require function
-	alohaRequire = require.config(Aloha.settings.requireConfig);
+	var defaultConfig = {
+		context: 'aloha',
+		locale: 'en',
+		baseUrl: Aloha.settings.baseUrl
+	};
+
+	// Aside from requirejs, jquery and jqueryui are the only external
+	// dependencies that Aloha must have provided to it.
+	var defaultPaths = {
+		jquery: Aloha.settings.baseUrl + '/vendor/jquery-1.7.2',
+		jqueryui: Aloha.settings.baseUrl + '/vendor/jquery-ui-1.9m6'
+	};
+
+	var requireConfig = mergeObjects(defaultConfig, Aloha.settings.requireConfig);
+
+	requireConfig.paths = mergeObjects(defaultPaths, requireConfig.paths);
+
+	// Create define() wrappers that will provide the initialized objects that
+	// the user passes into Aloha via require() calls.
+	var predefinedModules = Aloha.settings.predefinedModules || {};
+
+	// jQuery is treated specially in that, if it is available we will add it
+	// to the predifiedModules list as "jquery."
+	if (Aloha.settings.jQuery || global.jQuery) {
+		predefinedModules.jquery = Aloha.settings.jQuery || global.jQuery;
+	}
+
+	function createDefine (name, module) {
+		define(name, function () {
+			return module;
+		});
+	}
+
+	var moduleName;
+	for (moduleName in predefinedModules) {
+		createDefine(moduleName, predefinedModules[moduleName]);
+		delete requireConfig.paths[moduleName];
+	}
+
+	// Configure require and expose the Aloha.require.
+	var alohaRequire = require.config(requireConfig);
 	Aloha.require = function (callback) {
-		// passes the Aloha object to the passed callback function
-		if (arguments.length == 1 && typeof callback === 'function') {
+		// Pass the Aloha object to the given callback.
+		if (1 === arguments.length && typeof callback === 'function') {
 			return alohaRequire(['aloha'], callback);
 		}
 		return alohaRequire.apply(this, arguments);
@@ -92,30 +135,32 @@
 	// create promise for 'aloha-ready' when Aloha is not yet ready
 	// and fire later when 'aloha-ready' is triggered all other events bind
 
+	var deferredReady;
+
 	Aloha.bind = function (type, fn) {
-        Aloha.require(['jquery'], function (jQuery) {
-            deferredReady = deferredReady || jQuery.Deferred();
-            if ('aloha-ready' === type) {
-                if ('alohaReady' !== Aloha.stage) {
-                    deferredReady.done(fn);
-                } else {
-                    fn();
-                }
-            } else {
-                jQuery(Aloha, 'body').bind(type, fn);
-            }
-        });
-       return this;
+		Aloha.require(['jquery'], function (jQuery) {
+			deferredReady = deferredReady || jQuery.Deferred();
+			if ('aloha-ready' === type) {
+				if ('alohaReady' !== Aloha.stage) {
+					deferredReady.done(fn);
+				} else {
+					fn();
+				}
+			} else {
+				jQuery(Aloha, 'body').bind(type, fn);
+			}
+		});
+	   return this;
 	};
 
 	Aloha.trigger = function (type, data) {
-        Aloha.require(['jquery'], function (jQuery) {
-            deferredReady = deferredReady || jQuery.Deferred();
-            if ('aloha-ready' === type) {
-                jQuery(deferredReady.resolve);
-            }
-            jQuery(Aloha, 'body').trigger(type, data);
-        });
+		Aloha.require(['jquery'], function (jQuery) {
+			deferredReady = deferredReady || jQuery.Deferred();
+			if ('aloha-ready' === type) {
+				jQuery(deferredReady.resolve);
+			}
+			jQuery(Aloha, 'body').trigger(type, data);
+		});
 		return this;
 	};
 
@@ -123,46 +168,51 @@
 		this.bind('aloha-ready', fn);
 		return this;
 	};
-}());
 
-define('aloha', [], function () {
-	// Load Aloha dependencies...
-	require(Aloha.settings.requireConfig, [
-			'jquery',
-			'util/json2'
-		], function (jQuery) {
-		Aloha.jQuery = jQuery;
+	define('aloha', [], function () {
+	    // Load Aloha dependencies...
+	    require(requireConfig, [
+				'jquery',
+				'util/json2'
+			], function (jQuery) {
+			// Provide Aloha.jQuery for compatibility with old implementations
+			// that which expect it to be there.
+			Aloha.jQuery = jQuery;
 
-		// Load Aloha core files...
-		require(Aloha.settings.requireConfig, [
-				'vendor/jquery.json-2.2.min',
-				'vendor/jquery.store',
-				'aloha/rangy-core',
-				'util/class',
-				'util/lang',
-				'util/range',
-				'util/dom',
-				'aloha/core',
-				'aloha/editable',
-				'aloha/console',
-				'aloha/markup',
-				'aloha/message',
-				'aloha/plugin',
-				'aloha/selection',
-				'aloha/command',
-				'aloha/jquery.aloha',
-				'aloha/sidebar',
-				'util/position',
-				'aloha/repositorymanager',
-				'aloha/repository',
-				'aloha/repositoryobjects',
-				'aloha/contenthandlermanager'
-			], function () {
-			// ... and have jQuery call the Aloha.init method when the dom is
-			// ready.
-			jQuery(Aloha.init);
+	        // Load Aloha core files...
+	        require(requireConfig, [
+					'vendor/jquery.json-2.2.min',
+					'vendor/jquery.store',
+					'aloha/rangy-core',
+					'util/class',
+					'util/lang',
+					'util/range',
+					'util/dom',
+					'aloha/core',
+					'aloha/editable',
+					'aloha/console',
+					'aloha/markup',
+					'aloha/message',
+					'aloha/plugin',
+					'aloha/selection',
+					'aloha/command',
+					'aloha/jquery.aloha',
+					'aloha/sidebar',
+					'util/position',
+					'aloha/repositorymanager',
+					'aloha/repository',
+					'aloha/repositoryobjects',
+					'aloha/contenthandlermanager'
+				], function () {
+				// ... and have jQuery call the Aloha.init method when the dom is
+				// ready.
+				jQuery(Aloha.init);
+			});
 		});
+
+	    return Aloha;
 	});
 
-	return Aloha;
-});
+	//load Aloha dependencies
+	require(requireConfig, ['aloha'], function () {});
+}(window));

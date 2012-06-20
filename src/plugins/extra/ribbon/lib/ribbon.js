@@ -1,5 +1,5 @@
 define([
- 'aloha/jquery',
+ 'jquery',
  'order!aloha/jquery-ui',
 /* The menu and menubar versions distributed with Aloha
   * (jquery-ui-1.9m6) have a bug. See jquery.ui.menu for more

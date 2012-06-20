@@ -1,5 +1,5 @@
 Aloha.ready(function() {
-	Aloha.require( ['aloha', 'aloha/jquery'], function( Aloha, $) {
+	Aloha.require( ['aloha', 'jquery'], function( Aloha, $) {
 
 		$.fn.alohaStage = function() {
 			var switcher = this.find('ul.stage-switcher'),

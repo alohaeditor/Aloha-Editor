@@ -12,7 +12,7 @@ define(
  'ui/toggleButton',
  'i18n!align/nls/i18n',
  'i18n!aloha/nls/i18n',
- 'aloha/jquery',
+ 'jquery',
  'css!align/css/align.css'],
 function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 	"use strict";

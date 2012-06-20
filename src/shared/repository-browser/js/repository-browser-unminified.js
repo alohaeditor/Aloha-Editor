@@ -2,9 +2,9 @@
 
 define('RepositoryBrowser', [
 	'Class',
-	'jQuery',
+	'jquery',
 	'PubSub',
-	'repository-browser-i18n-' + (__DEPS__.lang || 'en'),
+	'repository-browser-i18n-' + (window && window.__DEPS__ && window.__DEPS__.lang || 'en'),
 	'jstree',
 	'jqgrid',
 	'jquery-layout'

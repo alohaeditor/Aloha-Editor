@@ -13,7 +13,7 @@
 
 
 	Aloha.ready(function() {
-		Aloha.require( ['aloha', 'aloha/jquery' ], function( Aloha, jQuery ) {
+		Aloha.require( ['aloha', 'jquery' ], function( Aloha, jQuery ) {
 
     // HELPER FUNCTIONS
     

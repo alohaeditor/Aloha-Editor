@@ -7,7 +7,7 @@
 // Ensure GENTICS Namespace
 GENTICS = window.GENTICS || {};
 GENTICS.Utils = GENTICS.Utils || {};
-define(['aloha/jquery'],
+define(['jquery'],
 function(jQuery) {
 	"use strict";
 	

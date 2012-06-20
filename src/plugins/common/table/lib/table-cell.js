@@ -1,5 +1,5 @@
 define(
-['aloha/jquery', 'table/table-plugin-utils'],
+['jquery', 'table/table-plugin-utils'],
 function (jQuery, Utils) {
 	/**
 	 * Constructs a TableCell.

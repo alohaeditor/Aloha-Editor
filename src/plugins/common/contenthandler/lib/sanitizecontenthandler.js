@@ -5,7 +5,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-[ 'aloha/core', 'aloha/jquery', 'aloha/contenthandlermanager', 'aloha/console', 'vendor/sanitize' ],
+[ 'aloha/core', 'jquery', 'aloha/contenthandlermanager', 'aloha/console', 'vendor/sanitize' ],
 function( Aloha, jQuery, ContentHandlerManager, console ) {
 	"use strict";
 	

@@ -1,5 +1,5 @@
 define([
-	"aloha/jquery",
+	"jquery",
 	"ui/component",
 	"ui/button"
 ],

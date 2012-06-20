@@ -1,6 +1,6 @@
 define([
 	'aloha/core',
-	'aloha/jquery'
+	'jquery'
 ], function( Aloha, jQuery ) {
 	/*
 	var $element = jQuery('<div style="\

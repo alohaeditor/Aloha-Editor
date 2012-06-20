@@ -5,7 +5,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['aloha', 'aloha/jquery', 'ui/toolbar', 'aloha/observable', 'aloha/registry'],
+define(['aloha', 'jquery', 'ui/toolbar', 'aloha/observable', 'aloha/registry'],
 function(Aloha, jQuery, Toolbar, Observable, Registry) {
 	"use strict";
 

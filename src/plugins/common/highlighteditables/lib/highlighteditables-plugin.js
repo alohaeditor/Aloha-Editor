@@ -6,7 +6,7 @@
 */
 
 define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'css!highlighteditables/css/highlighteditables.css'],
+['aloha', 'jquery', 'aloha/plugin', 'css!highlighteditables/css/highlighteditables.css'],
 function(Aloha, jQuery, Plugin) {
 	"use strict";
 

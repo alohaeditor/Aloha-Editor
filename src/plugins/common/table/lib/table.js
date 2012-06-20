@@ -23,7 +23,7 @@
 
 define( [
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'ui/toolbar',
 	'ui/message',
 	'i18n!table/nls/i18n',

@@ -8,7 +8,7 @@
 define([
 	'aloha',
 	'aloha/plugin',
-	'aloha/jquery',
+	'jquery',
 	'ui/component',
 	'ui/toolbar',
 	'ui/toggleButton',

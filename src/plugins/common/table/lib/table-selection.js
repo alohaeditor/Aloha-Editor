@@ -1,6 +1,6 @@
 define(
 ['aloha',
- 'aloha/jquery',
+ 'jquery',
  'table/table-plugin-utils',
  'table/table-cell',
  'ui/message',

@@ -19,7 +19,7 @@
  */
 
 define([
-	'aloha/jquery',
+	'jquery',
 	'util/class'
 ],
 function( jQuery, Class ) {

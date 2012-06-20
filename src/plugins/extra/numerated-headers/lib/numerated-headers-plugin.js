@@ -5,7 +5,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define ([
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
 	'ui/component',
 	'ui/toggleButton',

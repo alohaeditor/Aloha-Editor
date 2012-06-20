@@ -20,7 +20,7 @@
 	-->
 	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
 
-	<link rel="stylesheet" href="../../shared/repository-browser/css/repository-browser.css" type="text/css">
+	<!-- link rel="stylesheet" href="../../shared/repository-browser/css/repository-browser.css" type="text/css" -->
 
 	<style>
 		/* Place the new UI toolbar somewhere where we can see it */
@@ -93,7 +93,7 @@
 			{
 				label: "Link", 
 				showOn: "a",
-				components: [ [ "editLink", "removeLink", "linkBrowser" ] ]
+				components: [ [ "editLink", "removeLink" /*, "linkBrowser" */ ] ]
 			},
 			// Image insert Tab
 			{
@@ -114,7 +114,7 @@
                     [ "imageSource", "imageTitle",
                       "imageAlignLeft", "imageAlignRight", "imageAlignNone",
                       "imageIncPadding", "imageDecPadding",
-                      "imageBrowser",
+                      /* "imageBrowser", */
                       "imageCropButton", "imageCnrReset", "imageCnrRatio",
                       "imageResizeHeight", "imageResizeWidth" ]
                 ]
@@ -164,19 +164,7 @@
 		Load the Aloha Editor library.
 		The plugin list could also be added to the configuration.
 	-->
-	<script>
-		var __DEPS__ = {
-			lang: 'en',
-			root: '../'
-		};
-	</script>
-	<script src="../../shared/module-paths.js"></script>
-	<script>
-		__DEPS__.paths['Class'] = __DEPS__.root + 'lib/util/class';
-		Aloha.settings.requireConfig = {
-			paths: __DEPS__.paths
-		};
-	</script>
+	<!-- script src="../../lib/vendor/jquery-1.7.2.js"></script -->
 	<script src="../../lib/aloha.js"
 	        data-aloha-plugins="common/ui,
 	                            common/format,
@@ -203,8 +191,6 @@
 	                            extra/ribbon,
 	                            extra/wai-lang,
 	                            extra/flag-icons,
-	                            extra/linkbrowser,
-	                            extra/imagebrowser,
 	                            extra/sourceview"></script>
     <!--
     TODO not yet ready for jqueryui 

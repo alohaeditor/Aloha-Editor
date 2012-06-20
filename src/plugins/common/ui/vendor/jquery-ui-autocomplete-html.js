@@ -1,4 +1,4 @@
-define(["aloha/jquery", "aloha/jquery-ui"], function(jQuery){
+define(["jquery", "jquery-ui"], function(jQuery){
 /*
  * jQuery UI Autocomplete HTML Extension
  *

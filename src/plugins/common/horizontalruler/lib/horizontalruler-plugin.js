@@ -6,7 +6,7 @@
 */
 define(
 ['aloha',
- 'aloha/jquery',
+ 'jquery',
  'aloha/plugin',
  'ui/component',
  'ui/button',

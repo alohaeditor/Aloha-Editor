@@ -1,5 +1,5 @@
 define([
-	'aloha/jquery',
+	'jquery',
 	'ui/surface',
 	'ui/tab',
 	'ui/subguarded',

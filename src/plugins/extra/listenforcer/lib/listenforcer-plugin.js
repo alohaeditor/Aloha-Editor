@@ -15,7 +15,7 @@
 
 define( [
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
 	'aloha/console'
 ], function( Aloha, jQuery, Plugin, console ) {

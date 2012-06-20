@@ -3,7 +3,7 @@
 // (c) 2008-2010 jason frame [jason@onehackoranother.com]
 // released under the MIT license
 
-define(['aloha/jquery'], function(jQuery) {
+define(['jquery'], function(jQuery) {
     var $ = jQuery;
     
     function maybeCall(thing, ctx) {

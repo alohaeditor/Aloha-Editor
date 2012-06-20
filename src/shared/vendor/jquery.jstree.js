@@ -1,4 +1,4 @@
-define('jstree', ['jQuery'], function (jQuery) {
+define('jstree', ['jquery'], function (jQuery) {
 var $ = jQuery;
 
 /*

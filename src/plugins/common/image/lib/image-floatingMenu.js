@@ -7,7 +7,7 @@
  * 
  * Author : Nicolas Karageuzian - http://nka.me
  */
-define(['aloha/jquery',
+define(['jquery',
 		'i18n!image/nls/i18n',
 		'i18n!aloha/nls/i18n',
 		'ui/component',

@@ -1,7 +1,7 @@
 define([
 	// js
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
 	'ui/component',

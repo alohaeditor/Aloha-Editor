@@ -11,7 +11,7 @@ define(
  'flag-icons/flag-icons-plugin',
  'i18n!metaview/nls/i18n',
  'i18n!aloha/nls/i18n',
- 'aloha/jquery',
+ 'jquery',
  'css!metaview/css/metaview.css'],
 function(Plugin, Component, ToggleButton, FlagIcons, i18n, i18nCore, jQuery) {
 	"use strict";

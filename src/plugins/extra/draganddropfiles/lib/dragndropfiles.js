@@ -14,7 +14,7 @@
 //        GENTICS = window.GENTICS,
 //        Aloha = GENTICS.Aloha;
 define([	
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
 	'draganddropfiles/dropfilesrepository'
 	],

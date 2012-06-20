@@ -7,7 +7,7 @@
 */
 
 define([
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
 	'ribbon/ribbon',
 	'i18n!aloha/nls/i18n'

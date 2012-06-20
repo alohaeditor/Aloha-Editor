@@ -4,7 +4,7 @@
  * This interface is obsolete and must not be used for new implementations.
  */
 define(["aloha/core",
-		"aloha/jquery",
+		"jquery",
 		"ui/component",
 		"ui/multiSplit"],
 function(Aloha, $, Component, MultiSplit){

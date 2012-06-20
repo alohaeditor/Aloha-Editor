@@ -9397,15 +9397,6 @@ window.jQuery = window.$ = jQuery;
 // noConflict to hide this version of jQuery, it will work.
 if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 	define( "jquery", [], function () { return jQuery; } );
-
-	// Gentics dependencies need to have a guarentee that they are sharing the
-	// very same jQuery object.  Because requiring "jquery" where multiple
-	// jQuery files have been loaded proves difficult to determine which one
-	// will be provided on a require() call, we define our own jQuery module
-	// name which we can guarentee will result in this file's jQuery being
-	// provided.
-	// FIXME: consider renaming this module. or removing this hack altogether.
-	define( 'jQuery', [], function () { return jQuery; } );
 }
 
 

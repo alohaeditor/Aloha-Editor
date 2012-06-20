@@ -33,7 +33,7 @@
 
 define(
 [
- 'aloha/jquery',
+ 'jquery',
  'util/json2'
 ],
 function($, __unused_json, undefined) {

@@ -9,7 +9,7 @@
  * @name block.editor
  * @namespace Block attribute editors
  */
-define(['aloha/jquery', 'aloha/observable'],
+define(['jquery', 'aloha/observable'],
 function(jQuery, Observable) {
 	"use strict";
 

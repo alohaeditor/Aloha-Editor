@@ -19,7 +19,7 @@
 define( [
 	'aloha',
 	'aloha/plugin',
-	'aloha/jquery',
+	'jquery',
 	'ui/port-helper-attribute-field',
 	'ui/toolbar',
 	'ui/surface',
