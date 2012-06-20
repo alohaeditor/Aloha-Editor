@@ -90,6 +90,18 @@ var attributeField = function(props){
 	}
 
 	function onFocus(event, ui) {
+		if ( ! $(event.target).is(':visible') ) {
+			// The check for visible fixes the bug that the background
+			// color of the target element is not restored.
+			// Rationale: it's possible for the input to receive the focus event,
+			// for example if it was triggered programatically, even if
+			// it isn't visible. Problem is, if it's not visible, then
+			// it will not really get focused and consequently, there
+			// will be no blur event either. However, we must be able to
+			// assume that the blur event will be fired so that we can
+			// clean up the background color.
+			return;
+		}
 		changeTargetBackground();
 
 		// Remove placeholder

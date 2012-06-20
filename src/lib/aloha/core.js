@@ -293,7 +293,8 @@ function ( jQuery, PluginManager ) {
 
 			// register the body click event to blur editables
 			jQuery('html').mousedown(function(e) {
-				if (Aloha.activeEditable && !Aloha.eventHandled) {
+				// This is a hack to prevent a click into a modal dialog from blurring the editable.
+				if (Aloha.activeEditable && !jQuery(".aloha-dialog").is(':visible') && !Aloha.eventHandled) {
 					Aloha.activeEditable.blur();
 					Aloha.activeEditable = null;
 				}
