@@ -34,3 +34,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: generic contenthandler: Do not trim text nodes in list elements, because this could remove spaces between words, where one word is formatted.
 - **BUG**: plugin format: The format plugin will now support 'del' instead of 's' for strikethrough ('s' is deprecated), like explained in the documentation.
 - **ENHANCEMENT**: sanitize contenthandler: Added 'del' as allowed element to the default configuration of the sanitize contenthandler.
+- **ENHANCEMENT**: repository browser: searches in the repository browser will now be done recursively.
