@@ -1,2 +1,3 @@
-@import url( 'aloha-core.css');
-@import url( 'aloha-sidebar.css');
+@import url('aloha-core.css');
+@import url('aloha-sidebar.css');
+@import url('../lib/vendor/repository-browser/css/repository-browser.css');
