@@ -39,7 +39,7 @@ function(Plugin, FloatingMenu, FlagIcons, i18n, i18nCore, jQuery) {
 					function (jEvent, aEvent) {
 						var config;
 						config = that.getEditableConfig( Aloha.activeEditable.obj );
-						if ( jQuery.inArray( 'metaview', config ) !== -1 ) {
+						if (typeof config === 'array' && jQuery.inArray( 'metaview', config ) !== -1) {
 							that.button.show();
 						} else {
 							that.button.hide();
