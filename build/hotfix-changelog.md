@@ -32,3 +32,7 @@ All changes are categorized into one of the following keywords:
 - **BUG**: core: Fixed a bug within jquery that caused problems in IE9 when invoking getContents for an editable that contains an embedded object (e.g. flash player).
 - **BUG**: FloatingMenu: in IE the FloatingMenu would not be clickable after deleting a table row because of a transparent .ext-shim iframe layered on top of it. Forcefully removed the iframe from the layout.
 - **BUG**: repositorymanager: Fixed a bug in the repository manager that caused an javascript error when no result items were passed to the processResults method.
+- **BUG**: generic contenthandler: Do not trim text nodes in list elements, because this could remove spaces between words, where one word is formatted.
+- **BUG**: plugin format: The format plugin will now support 'del' instead of 's' for strikethrough ('s' is deprecated), like explained in the documentation.
+- **ENHANCEMENT**: sanitize contenthandler: Added 'del' as allowed element to the default configuration of the sanitize contenthandler.
+- **ENHANCEMENT**: repository browser: searches in the repository browser will now be done recursively.

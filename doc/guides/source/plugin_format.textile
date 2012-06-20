@@ -27,9 +27,9 @@ h4. Strong and Emphasize
 Texts or headlines can be formatted into strong or emphasized texts or headlines via selecting the text or headline and click on the strong or emphasize button at the Aloha Editor. This wraps the selected text or headline into a +<strong>+ tag if strong or +<em>+ tag if emphasized.
 To undo this select the text or headline and click the button again.
 
-h4. Underline and Strikethrough
+h4. Strikethrough
 
-Texts or headlines can be underlined or have strikethrough applied as well. Just selecting the text or headline and click on the underline or strikethrough button at the Aloha Editor. This wrap the selected text or headline into a +<u>+ tag if underlined or +<del>+ tag if strikethrough is chosen.
+Texts or headlines can have strikethrough applied as well. Just selecting the text or headline and click on the strikethrough button at the Aloha Editor. This wraps the selected text or headline into a +<del>+ tag.
 To undo this select the text or headline and click the button again.
 
 h4. Subscript and Superscript
