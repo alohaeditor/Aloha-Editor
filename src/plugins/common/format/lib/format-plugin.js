@@ -187,6 +187,8 @@ function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitBut
 			 */
 			initButtons: function () {
 				var
+					// @TODO: Please remove this when you are done obsoleting
+					// scopes completely.
 					scope = 'Aloha.continuoustext',
 					that = this;
 
@@ -228,6 +230,13 @@ function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitBut
 								componentName += componentNameExt;
 							}
 							Component.define(componentName, ToggleButton, {
+								enable: {
+									wrap: button,
+									wrapWord: button,
+									except: {
+										selector: 'img'
+									}
+								},
 								tooltip : i18n.t('button.' + button + '.tooltip'),
 								icon: 'aloha-icon aloha-icon-' + command,
 								click: function () {
@@ -285,6 +294,7 @@ function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitBut
 						case 'h6':
 						case 'pre':
 							that.multiSplitItems.push({
+								enable: { formatBlock: button },
 								'name' : button,
 								'tooltip' : i18n.t('button.' + button + '.tooltip'),
 								'iconClass' : 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
@@ -327,6 +337,7 @@ function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitBut
 						// wide multisplit buttons
 						case 'removeFormat':
 							that.multiSplitItems.push({
+								enable: { selector: that.config.join(',') },
 								'name' : button,
 								'text' : i18n.t('button.' + button + '.text'),
 								'tooltip' : i18n.t('button.' + button + '.tooltip'),

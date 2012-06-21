@@ -11,8 +11,8 @@
  * @name block.block
  * @namespace block/block
  */
-define(['aloha', 'jquery', 'block/blockmanager', 'aloha/observable', 'ui/toolbar'],
-function(Aloha, jQuery, BlockManager, Observable, Toolbar) {
+define(['aloha', 'jquery', 'block/blockmanager', 'aloha/observable', 'ui/toolbar', 'util/class'],
+function(Aloha, jQuery, BlockManager, Observable, Toolbar, Class) {
 	"use strict";
 
 	var GENTICS = window.GENTICS;

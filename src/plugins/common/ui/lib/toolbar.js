@@ -67,7 +67,10 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 		initializeFloating: function() {
 			var surface = this;
 
-			this.$element.css( 'position', 'absolute' );
+			this.$element.css({
+				'position': 'absolute',
+				'z-index': 9999
+			});
 
 			subguarded( [
 				'aloha-selection-changed',
@@ -96,7 +99,7 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 
 		initializeDragging: function() {
 			this.$element.draggable({
-				"distance": 20
+				'distance': 20
 			});
 		},
 
