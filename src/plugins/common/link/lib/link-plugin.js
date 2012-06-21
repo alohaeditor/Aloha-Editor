@@ -413,17 +413,7 @@ define( [
 			Component.define("formatLink", ToggleButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
-				enable: {
-					wrap: 'A', // According to the HTML5 contain-in rules,
-							   // check whether any of the current selection be
-							   // wrapped with this given element?
-					except: function (range) {
-						// Conditional on the link plugin logic.
-						return true || false;
-					}
-					// selector: '>a.aloha'
-					// wrapExactly: 'A'
-				},
+				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.formatLink();
 				}
@@ -432,35 +422,26 @@ define( [
 			Component.define("insertLink", ToggleButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
-				enable: { insert: 'A' },
+				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.insertLink(false);
 				}
 			});
 			
 			this.hrefField = new AttributeField( {
-				enable: {
-					on: 'A' // TRUE: {<a>test</a>} || <a>te[s]t</a> || <a>test{}</a>
-					        // FALSE: [one<a>tw]o</a>
-					        // MAYBE: <a>test</a>{}
-					/*
-					except: {
-						selector: 'table a'
-					}
-					*/
-				},
-				'name': 'editLink',
-				'width': 320,
-				'valueField': 'url',
-				'cls': 'aloha-link-href-field'
+				name: 'editLink',
+				width: 320,
+				valueField: 'url',
+				cls: 'aloha-link-href-field',
+				scope: 'Aloha.continuoustext'
 			} );
 			this.hrefField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
 
 			Component.define("removeLink", Button, {
-				enable: { on: 'A' },
 				tooltip: i18n.t("button.removelink.tooltip"),
 				icon: "aloha-icon aloha-icon-unlink",
+				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.removeLink();
 				}

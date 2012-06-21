@@ -111,6 +111,7 @@ define( [
 			Component.define("wailang", ToggleButton, {
 				tooltip: i18n.t('button.add-wai-lang.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang',
+				scope: 'Aloha.continuoustext',
 				click: function(){
 					that.addRemoveMarkupToSelection();
 				}
@@ -121,10 +122,11 @@ define( [
 			Toolbar.createScope('wai-lang', 'Aloha.continuoustext');
 
 			langField = new AttributeField({
-				'name'       : 'wailangfield',
-				'width'      : 320,
-				'valueField' : 'id',
-				'minChars'   : 1
+				name: 'wailangfield',
+				width: 320,
+				valueField: 'id',
+				minChars: 1,
+				scope: 'wai-lang'
 			} );
 
 			langField.setTemplate(
@@ -139,6 +141,7 @@ define( [
 			Component.define('removewailang', Button, {
 				tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang-remove',
+				scope: 'wai-lang',
 				click: function(){
 					that.removeLangMarkup();
 				}

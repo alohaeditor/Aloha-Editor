@@ -53,6 +53,7 @@ define( [
 			Component.define("formatAbbr", ToggleButton, {
 				tooltip: i18n.t("button.abbr.tooltip"),
 				icon: "aloha-icon aloha-icon-abbr",
+				scope: 'Aloha.continuoustext',
 				click: function(){
 					me.formatAbbr();
 				}
@@ -63,6 +64,7 @@ define( [
 			Component.define("insertAbbr", Button, {
 				tooltip: i18n.t('button.addabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr',
+				scope: 'Aloha.continuoustext',
 				click: function(){
 					me.insertAbbr( false );
 				}
@@ -73,8 +75,9 @@ define( [
 		    Toolbar.createScope('abbr', 'Aloha.continuoustext');
 
 		    this.abbrField = new AttributeField({
-		    	'width': 320,
-		    	'name': 'abbrText'
+		    	width: 320,
+		    	name: 'abbrText',
+		        scope: 'abbr'
 		    });
 		},
 

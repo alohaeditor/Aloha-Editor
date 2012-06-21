@@ -82,6 +82,7 @@ function(Plugin, Component, ToggleButton, FlagIcons, i18n, i18nCore, jQuery) {
 			Component.define("toggleMetaView", ToggleButton, {
 				tooltip : i18n.t('button.switch-metaview.tooltip'),
 				icon: 'aloha-icon aloha-icon-metaview',
+				scope: 'Aloha.continuoustext',
 				click : function () { that.buttonClick(); }
 			});
 

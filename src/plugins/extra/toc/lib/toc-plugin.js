@@ -99,6 +99,7 @@ function( Aloha, Plugin, jQuery, Component, Button, i18n, i18nCore, console ) {
 			Component.define("insertToc", Button, {
 		        tooltip: i18n.t('button.addtoc.tooltip'),
 		        icon: 'aloha-icon aloha-icon-orderedlist',
+				scope: 'Aloha.continuoustext',
 		        click: function () { that.insertAtSelection($containers); }
 			});
 

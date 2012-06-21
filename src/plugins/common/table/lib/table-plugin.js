@@ -480,10 +480,15 @@ define( [
 	};
 
 	TablePlugin.initMergeSplitCellsBtns = function(){
+		// TODO current it is not possible to add the same buttons to
+		//      multiple tabs. To work around this limitation we are
+		//      defining the mergecells and splitcells components
+		//      multiple times, once for each tab.
 
 		Component.define("mergecells", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
+			scope: this.name + '.cell',
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
@@ -494,6 +499,51 @@ define( [
 		Component.define("splitcells", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
+			scope: this.name + '.cell',
+			click: function() {
+				if (TablePlugin.activeTable) {
+					TablePlugin.activeTable.selection.splitCells();
+				}
+			}
+		});
+
+		Component.define("mergecellsRow", Button, {
+			tooltip: i18n.t("button.mergecells.tooltip"),
+			icon: "aloha-icon aloha-icon-mergecells",
+			scope: this.name + '.row',
+			click: function() {
+				if (TablePlugin.activeTable) {
+					TablePlugin.activeTable.selection.mergeCells();
+				}
+			}
+		});
+
+		Component.define("splitcellsRow", Button, {
+			tooltip: i18n.t("button.splitcells.tooltip"),
+			icon: "aloha-icon aloha-icon-splitcells",
+			scope: this.name + '.row',
+			click: function() {
+				if (TablePlugin.activeTable) {
+					TablePlugin.activeTable.selection.splitCells();
+				}
+			}
+		});
+
+		Component.define("mergecellsColumn", Button, {
+			tooltip: i18n.t("button.mergecells.tooltip"),
+			icon: "aloha-icon aloha-icon-mergecells",
+			scope: this.name + '.column',
+			click: function() {
+				if (TablePlugin.activeTable) {
+					TablePlugin.activeTable.selection.mergeCells();
+				}
+			}
+		});
+
+		Component.define("splitcellsColumn", Button, {
+			tooltip: i18n.t("button.splitcells.tooltip"),
+			icon: "aloha-icon aloha-icon-splitcells",
+			scope: this.name + '.column',
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.splitCells();
@@ -511,6 +561,7 @@ define( [
 		Component.define("addrowbefore", Button, {
 			tooltip: i18n.t( "button.addrowbefore.tooltip"),
 			icon: "aloha-icon aloha-icon-addrowbefore",
+			scope: this.name + '.row',
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addRowBeforeSelection();
@@ -521,6 +572,7 @@ define( [
 		Component.define("addrowafter", Button, {
 			tooltip: i18n.t("button.addrowafter.tooltip"),
 			icon: "aloha-icon aloha-icon-addrowafter",
+			scope: this.name + '.row',
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addRowAfterSelection();
@@ -531,6 +583,7 @@ define( [
 		Component.define("deleterows", Button, {
 			tooltip: i18n.t("button.delrows.tooltip"),
 			icon: "aloha-icon aloha-icon-deleterows",
+			scope: this.name + '.row',
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -548,6 +601,7 @@ define( [
 		Component.define("rowheader", ToggleButton, {
 			tooltip: i18n.t("button.rowheader.tooltip"),
 			icon: "aloha-icon aloha-icon-rowheader",
+			scope: this.name + '.row',
 			click: function() {
 				// table header
 				if (that.activeTable) {
@@ -649,7 +703,8 @@ define( [
 		this.rowMSButton = MultiSplitButton({
 			items: this.rowMSItems,
 			name: 'formatRow',
-			hideIfEmpty: true
+			hideIfEmpty: true,
+			scope: this.name + '.row'
 		});
 	};
 
@@ -662,6 +717,7 @@ define( [
 		Component.define("addcolumnleft", Button, {
 			tooltip: i18n.t("button.addcolleft.tooltip"),
 			icon: "aloha-icon aloha-icon-addcolumnleft",
+			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addColumnsLeft();
@@ -672,6 +728,7 @@ define( [
 		Component.define("addcolumnright", Button, {
 			tooltip: i18n.t("button.addcolright.tooltip"),
 			icon: "aloha-icon aloha-icon-addcolumnright",
+			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addColumnsRight();
@@ -682,6 +739,7 @@ define( [
 		Component.define("deletecolumns", Button, {
 			tooltip: i18n.t("button.delcols.tooltip"),
 			icon: "aloha-icon aloha-icon-deletecolumns",
+			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -699,6 +757,7 @@ define( [
 	    Component.define("columnheader", ToggleButton, {
 			tooltip: i18n.t("button.columnheader.tooltip"),
 			icon: "aloha-icon aloha-icon-columnheader",
+			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
     				var 
@@ -791,7 +850,8 @@ define( [
 		this.columnMSButton = MultiSplitButton({
 			items: this.columnMSItems,
 			name: 'formatColumn',
-			hideIfEmpty: true
+			hideIfEmpty: true,
+			scope: this.name + '.column'
 		});
 	};
 
@@ -809,6 +869,7 @@ define( [
 		Component.define("createTable", Button, {
 			tooltip: i18n.t("button.createtable.tooltip"),
 			icon: "aloha-icon aloha-icon-createTable",
+			scope: 'Aloha.continuoustext',
 			click: function() {
 				TablePlugin.createDialog(this.element);
 			}
@@ -867,12 +928,14 @@ define( [
 		this.tableMSButton = MultiSplitButton({
 			items : this.tableMSItems,
 			name : 'formatTable',
-			hideIfEmpty: true
+			hideIfEmpty: true,
+			scope: this.name + '.cell'
 		});
 
 		Component.define("tableCaption", ToggleButton, {
 			tooltip: i18n.t("button.caption.tooltip"),
 			icon: "aloha-icon aloha-icon-table-caption",
+			scope: this.name + '.cell',
 			click: function() {
 				if (that.activeTable) {
 					// look if table object has a child caption
@@ -908,7 +971,8 @@ define( [
 		this.summary = new AttributeField( {
 			width : 275,
 			name  : 'tableSummary',
-			noTargetHighlight: true
+			noTargetHighlight: true,
+			scope: this.name + '.cell'
 		} );
 		
 		this.summary.addListener( 'keyup', function( event ) {

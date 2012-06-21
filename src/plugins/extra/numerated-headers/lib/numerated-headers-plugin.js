@@ -46,6 +46,7 @@ function (jQuery, Plugin, Component, ToggleButton, i18n, i18nCore) {
 		Component.define("formatNumeratedHeaders", ToggleButton, {
             tooltip: i18n.t('button.numeratedHeaders.tooltip'),
             icon: 'aloha-icon aloha-icon-numerated-headers',
+			scope: 'Aloha.continuoustext',
             click: function () {
 				if(that.numeratedHeadersButton.getState()) {
 						that.removeNumerations();

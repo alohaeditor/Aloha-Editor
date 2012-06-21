@@ -177,6 +177,7 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 			Component.define("alignLeft", ToggleButton, {
 				tooltip: i18n.t('button.alignleft.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-left',
+				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('left'); }
 			});
 
@@ -185,6 +186,7 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 			Component.define("alignCenter", ToggleButton, {
 				tooltip: i18n.t('button.aligncenter.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-center',
+				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('center'); }
 			});
 
@@ -193,6 +195,7 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 			Component.define("alignRight", ToggleButton, {
 				tooltip: i18n.t('button.alignright.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-right',
+				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('right'); }
 			});
 
@@ -201,6 +204,7 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 			Component.define("alignJustify", ToggleButton, {
 				tooltip: i18n.t('button.alignjustify.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-justify',
+				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('justify'); }
 			});
 

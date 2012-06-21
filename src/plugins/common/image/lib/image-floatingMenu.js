@@ -42,40 +42,35 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
           * Initialize Floating menu buttons according to plugin config
           */
         init: function (plugin) {
-			var imageFloatingMenu = this,
-				tabInsert = i18nCore.t('floatingmenu.tab.insert'),
-				tabImage = i18n.t('floatingmenu.tab.img'),
-				tabFormatting = i18n.t('floatingmenu.tab.formatting'),
-				tabCrop = i18n.t('floatingmenu.tab.crop'),
-				tabResize = i18n.t('floatingmenu.tab.resize');
 
 			imageFloatingMenu.plugin = plugin;
-			plugin.floatingMenuControl = imageFloatingMenu;
+			plugin.floatingMenuControl = this;
 
 			Toolbar.createScope(plugin.name, 'Aloha.empty');
 
-			imageFloatingMenu._addUIInsertButton();
-			imageFloatingMenu._addUIMetaButtons();
-			imageFloatingMenu._addUIResetButton();
-			imageFloatingMenu._addUIAlignButtons();
-			imageFloatingMenu._addUIMarginButtons();
-			imageFloatingMenu._addUICropButtons();
-			imageFloatingMenu._addUIResizeButtons();
-			imageFloatingMenu.__addUIAspectRatioToggleButton();
+			this._addUIInsertButton();
+			this._addUIMetaButtons();
+			this._addUIResetButton();
+			this._addUIAlignButtons();
+			this._addUIMarginButtons();
+			this._addUICropButtons();
+			this._addUIResizeButtons();
+			this._addUIAspectRatioToggleButton();
 
 //			 TODO fix the function and reenable this button 
-//			imageFloatingMenu._addNaturalSizeButton();
+//			this._addNaturalSizeButton();
 		},
 
 		/**
 		 * Adds the aspect ratio toggle button to the floating menu
 		 */
-		__addUIAspectRatioToggleButton: function () {
+		_addUIAspectRatioToggleButton: function () {
 			var plugin = this.plugin;
 
 			Component.define("imageCnrRatio", ToggleButton, {
 				tooltip: i18n.t('button.toggle.tooltip'),
 				icon: 'aloha-icon-cnr-ratio',
+				scope: plugin.name,
 				click: function(){
 					plugin.toggleKeepAspectRatio();
 				}
@@ -99,6 +94,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			Component.define("imageCnrReset", Button, {
 				tooltip: i18n.t('Reset'),
 				icon: 'aloha-icon-cnr-reset',
+				scope: plugin.name,
 				click: function(){
 					plugin.reset();
 				}
@@ -114,6 +110,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			Component.define("insertImage", Button, {
 				tooltip: i18n.t('button.addimg.tooltip'),
 				icon: 'aloha-button aloha-image-insert',
+				scope: 'Aloha.continuoustext',
 				click: function(){
 					plugin.insertImg();
 				}
@@ -131,14 +128,16 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			this.imgSrcField = new AttributeField({
 				label: i18n.t('field.img.src.label'),
 				tooltip: i18n.t('field.img.src.tooltip'),
-				name: 'imageSource'
+				name: 'imageSource',
+				scope: plugin.name
 			});
 			this.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
 			
 			this.imgTitleField = new AttributeField({
 				label: i18n.t('field.img.title.label'),
 				tooltip: i18n.t('field.img.title.tooltip'),
-				name: 'imageTitle'
+				name: 'imageTitle',
+				scope: plugin.name
 			});
 			this.imgTitleField.setObjectTypeFilter();
 		},
@@ -152,6 +151,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			Component.define("imageAlignLeft", Button, {
 				tooltip: i18n.t('button.img.align.left.tooltip'),
 				icon: 'aloha-img aloha-image-align-left',
+				scope: plugin.name,
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'left');
@@ -161,6 +161,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			Component.define("imageAlignRight", Button, {
 				tooltip: i18n.t('button.img.align.right.tooltip'),
 				icon: 'aloha-img aloha-image-align-right',
+				scope: plugin.name,
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'right');
@@ -170,6 +171,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			Component.define("imageAlignNone", Button, {
 				tooltip: i18n.t('button.img.align.none.tooltip'),
 				icon: 'aloha-img aloha-image-align-none',
+				scope: plugin.name,
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css({
@@ -189,6 +191,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			Component.define("imageIncPadding", Button, {
 				tooltip: i18n.t('padding.increase'),
 				icon: 'aloha-img aloha-image-padding-increase',
+				scope: plugin.name,
 				click: function () {
 					jQuery(plugin.getPluginFocus()).increase('padding');
 				}
@@ -197,6 +200,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			Component.define("imageDecPadding", Button, {
 				tooltip: i18n.t('padding.decrease'),
 				icon: 'aloha-img aloha-image-padding-decrease',
+				scope: plugin.name,
 				click: function () {
 					jQuery(plugin.getPluginFocus()).decrease('padding');
 				}
@@ -214,6 +218,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			Component.define("imageCropButton", ToggleButton, {
 				tooltip: i18n.t('Crop'),
 				icon: 'aloha-icon-cnr-crop',
+				scope: plugin.name,
 				click: function () {
 					if (this.getState()) {
 						plugin.crop();
@@ -236,7 +241,8 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			this.imgResizeHeightField = new AttributeField({
 				label:  i18n.t('height'),
 				name: "imageResizeHeight",
-				width: 50
+				width: 50,
+				scope: plugin.name
 			});
 			this.imgResizeHeightField.maxValue = plugin.settings.maxHeight;
 			this.imgResizeHeightField.minValue = plugin.settings.minHeight;
@@ -244,7 +250,8 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			this.imgResizeWidthField = new AttributeField({
 				label:  i18n.t('width'),				
 				name: "imageResizeWidth",
-				width: 50
+				width: 50,
+				scope: plugin.name
 			});
 			this.imgResizeWidthField.maxValue = plugin.settings.maxWidth;
 			this.imgResizeWidthField.minValue = plugin.settings.minWidth;
@@ -261,6 +268,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			Component.define("imageNaturalSize", Button, {
 				icon: 'aloha-img aloha-image-size-natural',
 				label: i18n.t('size.natural'),
+				scope: plugin.name,
 				click: function () {
 					plugin.resetSize();
 				}
