@@ -102,7 +102,23 @@ function( Aloha, jQuery, Class ) {
 
 		_instances: {},
 
-		_scopes: {},
+		_scopes: {
+			'Aloha.empty' : {
+				'name' : 'Aloha.empty',
+				'extendedScopes' : [],
+				'buttons' : []
+			},
+			'Aloha.global' : {
+				'name' : 'Aloha.global',
+				'extendedScopes' : ['Aloha.empty'],
+				'buttons' : []
+			},
+			'Aloha.continuoustext' : {
+				'name' : 'Aloha.continuoustext',
+				'extendedScopes' : ['Aloha.global'],
+				'buttons' : []
+			}
+		},
 
 		/**
 		 * Defines a component type.
