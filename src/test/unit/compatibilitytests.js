@@ -36,8 +36,8 @@ define( [], function() {
 			});
 		
 			// Test if legacy jQuery version is correct
-			test( 'Aloha.require("aloha/jquery") test', function() {
-				equals( Aloha.require("aloha/jquery").fn.jquery, '1.5.1', 'Required jQuery version is correct' );
+			test( 'Aloha.require("jquery") test', function() {
+				equals( Aloha.require("jquery").fn.jquery, '1.5.1', 'Required jQuery version is correct' );
 			});
 			
 			// Test if the jquery plugins necessary for aloha core are attached to the Aloha jQuery object

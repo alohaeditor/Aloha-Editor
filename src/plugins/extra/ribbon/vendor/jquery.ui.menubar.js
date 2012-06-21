@@ -15,7 +15,7 @@ functionality that is in the latest jquery-ui core but isn't in the
 jquery-ui version distributed with Aloha.
 
 */
-define(["aloha/jquery", "aloha/jquery-ui"], function(jQuery){
+define(["jquery", "aloha/jquery-ui"], function(jQuery){
 /*
  * jQuery UI Menubar @VERSION
  *

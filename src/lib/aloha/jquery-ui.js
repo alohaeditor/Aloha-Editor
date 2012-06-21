@@ -1,6 +1,6 @@
-define( 'aloha/jquery-ui', [
-	'aloha/jquery',
+define('jquery-ui', [
+	'jquery',
 	'jqueryui'
-], function( jQuery, jQueryUI ) {
+], function(jQuery, jQueryUI) {
 	return jQueryUI;
 });

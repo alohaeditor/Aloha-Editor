@@ -7,7 +7,7 @@
 
 define( [
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
 	'ui/toolbar',

@@ -25,7 +25,7 @@
 
 define( [
     'aloha/core',
-	'aloha/jquery',
+	'jquery',
 	'aloha/selection'
 	// 'aloha/plugin' // For when we plugify sidebar
 ], function ( Aloha, jQuery, Selection, Plugin ) {

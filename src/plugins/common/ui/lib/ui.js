@@ -88,7 +88,7 @@
 
 define([
 	'aloha/core',
-	'aloha/jquery'
+	'jquery'
 ],
 function( Aloha, jQuery ) {
 	// Temporary location helper methods.

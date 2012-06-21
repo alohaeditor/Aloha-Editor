@@ -6,7 +6,7 @@
 */
 
 define([
-   	'aloha/jquery',
+   	'jquery',
 	'block/block',
 	'block/blockmanager',
 	'blockdemo/vendor/underscore'

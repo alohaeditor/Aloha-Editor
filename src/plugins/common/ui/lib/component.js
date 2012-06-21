@@ -1,6 +1,6 @@
 define([
 	'aloha/core',
-	'aloha/jquery',
+	'jquery',
 	'util/class'
 ],
 function( Aloha, jQuery, Class ) {
@@ -83,7 +83,7 @@ function( Aloha, jQuery, Class ) {
 		 * that are passed to the constructor at instantialization.
 		 */
 		selectionChange: function() {
-			console.log('selectionChange()');	
+			//console.log('selectionChange()');
 		}
 
 	});

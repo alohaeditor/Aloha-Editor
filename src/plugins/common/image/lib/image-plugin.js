@@ -19,7 +19,7 @@
 
 define([
 	// js
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
 	'image/image-floatingMenu',
 	'i18n!aloha/nls/i18n',

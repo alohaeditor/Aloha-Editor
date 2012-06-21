@@ -1,4 +1,4 @@
-define('jquery-layout', ['jQuery'], function (jQuery) {
+define('jquery-layout', ['jquery'], function (jQuery) {
 var $ = jQuery;
 
 /**

@@ -18,13 +18,15 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-define('jquery.aloha', ['jquery',
-                        'aloha/core',
-                        'aloha/selection',
-                        'aloha/console'], function (jQuery,
-                                                    Aloha,
-                                                    Selection,
-                                                    console) {
+define([
+	'aloha/core',
+	'aloha/selection',
+	'jquery',
+	'aloha/console'
+], function (Aloha,
+             Selection,
+			 jQuery,
+			 console) {
 	'use strict';
 
 	var XMLSerializer = window.XMLSerializer;

@@ -1,5 +1,5 @@
 define([
-	"aloha/jquery",
+	"jquery",
 	"aloha/repositorymanager",
 	"ui/component",
 	"./vendor/jquery-ui-autocomplete-html"

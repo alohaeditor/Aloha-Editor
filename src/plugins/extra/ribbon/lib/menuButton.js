@@ -1,5 +1,5 @@
 define([
-	"aloha/jquery",
+	"jquery",
 	"ribbon/ribbon",
 	'ui/component'
 ], function($, lib, Component) {

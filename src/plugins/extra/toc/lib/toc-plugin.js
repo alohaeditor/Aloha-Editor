@@ -8,7 +8,7 @@
 define(
 	['aloha', 
 	'aloha/plugin', 
-	'aloha/jquery', 
+	'jquery', 
 	'ui/component', 
 	'ui/button',
 	'i18n!toc/nls/i18n', 

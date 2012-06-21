@@ -15,7 +15,7 @@ functionality that is in the latest jquery-ui core but isn't in the
 jquery-ui version distributed with Aloha.
 
 */
-define(["aloha/jquery"], function(jQuery){
+define(["jquery"], function(jQuery){
 
 	var uuid = 0,
         runiqueId = /^ui-id-\d+$/;

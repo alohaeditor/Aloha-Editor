@@ -10,7 +10,7 @@
  *
  */
 define(
-['aloha/jquery', 'aloha/observable'],
+['jquery', 'aloha/observable'],
 function(jQuery, Observable) {
 	"use strict";
 

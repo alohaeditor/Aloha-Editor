@@ -1,5 +1,5 @@
 define([
-	'aloha/jquery',
+	'jquery',
 	'ui/container',
 	'ui/component',
 ], function( jQuery, Container, Component ) {

@@ -8,7 +8,7 @@
 define(
 ['aloha/core',
  'aloha/plugin',
- 'aloha/jquery',
+ 'jquery',
  'ui/component', 
  'ui/toggleButton',
  'formatlesspaste/formatlesshandler',

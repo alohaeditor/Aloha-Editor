@@ -1,4 +1,4 @@
-define(['aloha/jquery'], function(jQuery) { 
+define(['jquery'], function(jQuery) { 
 	var $ = jQuery;
 
 ;(function($){

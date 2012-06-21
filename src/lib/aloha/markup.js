@@ -21,7 +21,7 @@
 define([
 	'aloha/core',
 	'util/class',
-	'aloha/jquery',
+	'jquery',
 	'aloha/ecma5shims'
 ],
 function( Aloha, Class, jQuery, shims ) {

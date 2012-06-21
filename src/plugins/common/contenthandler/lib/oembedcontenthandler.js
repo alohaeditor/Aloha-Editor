@@ -7,7 +7,7 @@
 * Made by Thomas Lété for Aloha Editor
 */
 define(
-['aloha', 'aloha/jquery', 'aloha/contenthandlermanager'],
+['aloha', 'jquery', 'aloha/contenthandlermanager'],
 function(Aloha, jQuery, ContentHandlerManager) {
 	"use strict";
 

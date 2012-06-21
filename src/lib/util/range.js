@@ -22,7 +22,7 @@ GENTICS = window.GENTICS || {};
 GENTICS.Utils = GENTICS.Utils || {};
 
 define(
-['aloha/jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
+['jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
 function(jQuery, Dom, Class, console) {
 	"use strict";
 

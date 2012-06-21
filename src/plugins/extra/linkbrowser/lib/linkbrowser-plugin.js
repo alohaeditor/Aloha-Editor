@@ -1,7 +1,7 @@
 define([
 	// js
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
 	'ui/component',
@@ -141,7 +141,7 @@ define([
 					language     : { title: '',     width: 30,  sorttype: 'text' },
 					translations : { title: '',     width: 350, sorttype: 'text' }
 				},
-				rootPath : window.__DEPS__.root + '../shared/repository-browser/'
+				rootPath : Aloha.settings.baseUrl + '/vendor/repository-browser/'
 			};
 
 			this.browser = new LinkBrowser( config );

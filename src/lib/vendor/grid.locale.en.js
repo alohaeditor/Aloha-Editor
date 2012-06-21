@@ -1,4 +1,4 @@
-define('jqgrid-locale-en', ['jQuery'], function (jQuery) {
+define('jqgrid-locale-en', ['jquery'], function (jQuery) {
 var $ = jQuery;
 
 ;(function($){

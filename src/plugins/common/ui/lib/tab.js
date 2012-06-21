@@ -1,6 +1,6 @@
 define([
 	'aloha/core',
-	'aloha/jquery',
+	'jquery',
 	'ui/container',
 	'ui/component',
 	'aloha/jquery-ui'

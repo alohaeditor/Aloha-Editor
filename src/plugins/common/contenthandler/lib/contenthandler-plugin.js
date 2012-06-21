@@ -12,7 +12,7 @@
 define( [
 	'aloha',
 	'aloha/plugin',
-	'aloha/jquery',
+	'jquery',
 	'aloha/contenthandlermanager',
 	'contenthandler/wordcontenthandler',
 	'contenthandler/genericcontenthandler',

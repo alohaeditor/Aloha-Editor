@@ -5,7 +5,7 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-define(['aloha', 'aloha/jquery', 'aloha/plugin', 'hints/vendor/tipsy', 'css!hints/css/hints'],
+define(['aloha', 'jquery', 'aloha/plugin', 'hints/vendor/tipsy', 'css!hints/css/hints'],
 function( Aloha, jquery, plugin, tipsy ) {
 	"use strict";
 	return plugin.create( 'hints', {

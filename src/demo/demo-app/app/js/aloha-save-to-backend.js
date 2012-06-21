@@ -3,7 +3,7 @@
 // Listen to the 'aloha-editable-deactivated' event and save the data to our backend
 
 Aloha.ready(function() {
-	Aloha.require( ['aloha', 'aloha/jquery'], function( Aloha, jQuery) {
+	Aloha.require( ['aloha', 'jquery'], function( Aloha, jQuery) {
 
 		// start: save content on deactivation of an Aloha Editable
 		Aloha.bind('aloha-editable-deactivated', function() {

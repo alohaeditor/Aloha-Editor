@@ -20,7 +20,7 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'aloha/jquery', 'util/class', 'util/range', 'aloha/ecma5shims', 'aloha/rangy-core' ],
+[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'aloha/ecma5shims', 'aloha/rangy-core' ],
 function(Aloha, jQuery, Class, Range, $_) {
 	var
 //		$ = jQuery,

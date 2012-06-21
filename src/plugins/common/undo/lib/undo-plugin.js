@@ -6,7 +6,7 @@
 */
 
 define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'undo/vendor/undo', 'undo/vendor/diff_match_patch_uncompressed'],
+['aloha', 'jquery', 'aloha/plugin', 'undo/vendor/undo', 'undo/vendor/diff_match_patch_uncompressed'],
 function( Aloha, jQuery, Plugin) {
 	"use strict";
 	var

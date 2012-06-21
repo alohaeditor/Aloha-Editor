@@ -16,7 +16,7 @@
  *
  * ATTENTION: when updating the plugins you need to insert at the top of the file:
  * 
- * define(['aloha/jquery'], function(jQuery) { 
+ * define(['jquery'], function(jQuery) { 
  * 	var $ = jQuery;
  * 
  * and at the end of the file:
@@ -33,7 +33,7 @@
  */
 define( [
 	
-	'aloha/jquery',
+	'jquery',
 	'util/class',
 	'i18n!browser/nls/i18n',
 	'aloha/console',

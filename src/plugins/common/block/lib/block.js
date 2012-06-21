@@ -11,7 +11,7 @@
  * @name block.block
  * @namespace block/block
  */
-define(['aloha', 'aloha/jquery', 'block/blockmanager', 'aloha/observable', 'ui/toolbar'],
+define(['aloha', 'jquery', 'block/blockmanager', 'aloha/observable', 'ui/toolbar'],
 function(Aloha, jQuery, BlockManager, Observable, Toolbar) {
 	"use strict";
 

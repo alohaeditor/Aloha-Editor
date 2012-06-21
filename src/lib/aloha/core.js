@@ -21,7 +21,7 @@
 define(
 
 [
-	'aloha/jquery',
+	'jquery',
 	'aloha/pluginmanager'
 ],
 
