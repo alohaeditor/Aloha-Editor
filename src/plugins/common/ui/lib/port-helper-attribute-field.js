@@ -52,7 +52,7 @@ var attributeField = function(props){
 
 	Component.define(props.name, component, {
 		element: attrField._element,
-		scope: attrField.scope
+		scope: props.scope
 	});
 
 	attrField._element.autocomplete({
