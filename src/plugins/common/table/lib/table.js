@@ -24,13 +24,13 @@
 define( [
 	'aloha',
 	'jquery',
-	'ui/toolbar',
+	'ui/component',
 	'ui/message',
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
 	'table/table-plugin-utils'
-], function ( Aloha, jQuery, Toolbar, Message, i18n, TableCell, TableSelection,
+], function ( Aloha, jQuery, Component, Message, i18n, TableCell, TableSelection,
 	          Utils ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
