@@ -42,9 +42,8 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
           * Initialize Floating menu buttons according to plugin config
           */
         init: function (plugin) {
-
-			imageFloatingMenu.plugin = plugin;
 			plugin.floatingMenuControl = this;
+			this.plugin = plugin;
 
 			Component.createScope(plugin.name, 'Aloha.empty');
 
