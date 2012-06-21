@@ -9399,6 +9399,13 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 	define( "jquery", [], function () { return jQuery; } );
 }
 
-
+// ===================== PATCHES =====================
+// Work-around for http://bugs.jquery.com/ticket/9905
+// and https://github.com/alohaeditor/Aloha-Editor/issues/397
+if (!jQuery.support.getSetAttribute) {
+	jQuery.removeAttr = function(elem, name) {
+		elem.removeAttribute(name);
+	};
+}
 
 })( window );
