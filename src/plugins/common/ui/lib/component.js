@@ -120,6 +120,8 @@ function( Aloha, jQuery, Class ) {
 			}
 		},
 
+		_allButtons: [],
+
 		/**
 		 * Defines a component type.
 		 *
@@ -159,6 +161,13 @@ function( Aloha, jQuery, Class ) {
 			}
 			var instance = new ComponentType( editable );
 			this._instances[name] = instance;
+
+			var scopeProps = this._scopes[instance.scope];
+			if (scopeProps) {
+				scopeProps.buttons.push(instance);
+			}
+			this._allButtons.push(instance);
+
 			return instance;
 		},
 
@@ -181,7 +190,7 @@ function( Aloha, jQuery, Class ) {
 				this.currentScope = scope;
 
 				// first hide all buttons
-				jQuery.each(this.allButtons, function(index, buttonInfo) {
+				jQuery.each(this._allButtons, function(index, buttonInfo) {
 					buttonInfo.scopeVisible = false;
 				});
 
@@ -189,7 +198,7 @@ function( Aloha, jQuery, Class ) {
 				this.setButtonScopeVisibility(scopeObject);
 
 				// finally refresh the layout
-				this.doLayout();
+				//this._doLayout();
 			}
 		},
 
