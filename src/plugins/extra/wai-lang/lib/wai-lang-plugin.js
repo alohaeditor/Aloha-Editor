@@ -293,7 +293,7 @@ define( [
 		 * Toggles markup around selection.
 		 */
 		addRemoveMarkupToSelection: function() {
-			if ( addMarkupToSelectionButton.pressed ) {
+			if (addMarkupToSelectionButton.getState()) {
 				this.removeLangMarkup();
 			} else {
 				this.addMarkupToSelection( false );
