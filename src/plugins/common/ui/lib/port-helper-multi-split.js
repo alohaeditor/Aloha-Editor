@@ -3,19 +3,20 @@
  * ui-attributefield.js in the aloha core to the new ui-plugin.
  * This interface is obsolete and must not be used for new implementations.
  */
-define(["aloha/core",
-		"jquery",
-		"ui/component",
-		"ui/multiSplit"],
-function(Aloha, $, Component, MultiSplit){
+define([
+	'aloha/core',
+	'jquery',
+	'ui/component',
+	'ui/multiSplit'
+], function (Aloha, jQuery, Component, MultiSplit) {
 
-	function MultiSplitButton(props){
+	function MultiSplitButton(props) {
 
 		Component.define(props.name, MultiSplit, {
-			getButtons: function() {
+			getButtons: function () {
 				return makeButtonsFromOldStyleProps(props, false);
 			},
-			getItems: function() {
+			getItems: function () {
 				return makeButtonsFromOldStyleProps(props, true);
 			}
 		});
@@ -24,8 +25,8 @@ function(Aloha, $, Component, MultiSplit){
 
 		function makeButtonsFromOldStyleProps(props, wide) {
 			var buttons = [];
-			$.each(props.items, function(_, item){
-				if ( !!item.wide != wide) {
+			jQuery.each(props.items, function (_, item) {
+				if (!!item.wide != wide) {
 					return;
 				}
 				buttons.push({
@@ -33,7 +34,7 @@ function(Aloha, $, Component, MultiSplit){
 					text: item.text,
 					icon: item.iconClass,
 					click: item.click,
-					isActive: function(){
+					isActive: function () {
 						// TODO return activeItem === item.name;
 					}
 				});
@@ -42,9 +43,9 @@ function(Aloha, $, Component, MultiSplit){
 		}
 
 		return {
-			showItem: function(){
-			},
-			setActiveItem: function(name){
+			showItem: function () {},
+			hideItem: function () {},
+			setActiveItem: function (name) {
 				activeItem = name;
 			}
 		};
