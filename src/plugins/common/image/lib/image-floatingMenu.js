@@ -8,6 +8,7 @@
  * Author : Nicolas Karageuzian - http://nka.me
  */
 define(['jquery',
+        'util/class',
 		'i18n!image/nls/i18n',
 		'i18n!aloha/nls/i18n',
 		'ui/component',
@@ -15,7 +16,7 @@ define(['jquery',
 	    'ui/button',
 	    'ui/toggleButton',
 	    'ui/port-helper-attribute-field'],
-function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, AttributeField) {
+function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, AttributeField) {
 	'use strict';
 	var jQuery = aQuery;
 	var $ = aQuery;

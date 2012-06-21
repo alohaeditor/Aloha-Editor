@@ -5,8 +5,8 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 define(
-['jquery', 'aloha/registry'],
-function( jQuery, Registry ) {
+['jquery', 'aloha/registry', 'util/class'],
+function( jQuery, Registry, Class ) {
 	"use strict";
 
 	/**
