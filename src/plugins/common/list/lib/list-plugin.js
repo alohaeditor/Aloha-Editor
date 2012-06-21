@@ -87,7 +87,7 @@ define(
 			this.createUnorderedListButton = Component.getGlobalInstance("unorderedList");
 			this.createOrderedListButton = Component.getGlobalInstance("orderedList");
 
-			Toolbar.createScope('Aloha.List', 'Aloha.continuoustext');
+			Component.createScope('Aloha.List', 'Aloha.continuoustext');
 
 			this.indentListButton = Component.getGlobalInstance("indentList");
 			this.outdentListButton = Component.getGlobalInstance("outdentList");

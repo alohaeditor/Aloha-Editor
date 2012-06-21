@@ -72,7 +72,7 @@ define( [
 
 		    this.insertAbbrButton = Component.getGlobalInstance("insertAbbr");
 
-		    Toolbar.createScope('abbr', 'Aloha.continuoustext');
+		    Component.createScope('abbr', 'Aloha.continuoustext');
 
 		    this.abbrField = new AttributeField({
 		    	width: 320,
@@ -101,7 +101,7 @@ define( [
 		        Aloha.editables[ i ].obj.keydown( function ( e ) {
 		    		if ( e.metaKey && e.which == 71 ) {
 				        if ( me.findAbbrMarkup() ) {
-				        	Toolbar.activateTabOfButton( 'abbrText' );
+				        	Component.activateTabOfButton( 'abbrText' );
 				            me.abbrField.focus();
 				        } else {
 				        	me.insertAbbr();
@@ -146,7 +146,7 @@ define( [
 		        		// abbr found
 		        		me.insertAbbrButton.hide();
 		        		me.formatAbbrButton.setState( true );
-		        		Toolbar.setScope( 'abbr' );
+		        		Component.setScope( 'abbr' );
 		        		me.abbrField.setTargetObject( foundMarkup, 'title' );
 		        	} else {
 		        		// no abbr found
@@ -208,7 +208,7 @@ define( [
 		    }
 
 		    // activate floating menu tab
-		    Toolbar.activateTabOfButton('abbrText');
+		    Component.activateTabOfButton('abbrText');
 
 		    // if selection is collapsed then extend to the word.
 		    if ( range.isCollapsed() && extendToWord != false ) {

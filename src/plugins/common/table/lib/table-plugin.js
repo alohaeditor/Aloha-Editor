@@ -862,9 +862,9 @@ define( [
 		var that = this;
 
 		// generate the new scopes
-		Toolbar.createScope(this.name + '.row', 'Aloha.continuoustext');
-		Toolbar.createScope(this.name + '.column', 'Aloha.continuoustext');
-		Toolbar.createScope(this.name + '.cell', 'Aloha.continuoustext');
+		Component.createScope(this.name + '.row', 'Aloha.continuoustext');
+		Component.createScope(this.name + '.column', 'Aloha.continuoustext');
+		Component.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
 		Component.define("createTable", Button, {
 			tooltip: i18n.t("button.createtable.tooltip"),
@@ -1265,7 +1265,7 @@ define( [
 
 	TablePlugin.updateFloatingMenuScope = function () {
 		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
-			Toolbar.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+			Component.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
 		}
 	};
 	

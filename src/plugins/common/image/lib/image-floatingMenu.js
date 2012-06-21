@@ -46,7 +46,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			imageFloatingMenu.plugin = plugin;
 			plugin.floatingMenuControl = this;
 
-			Toolbar.createScope(plugin.name, 'Aloha.empty');
+			Component.createScope(plugin.name, 'Aloha.empty');
 
 			this._addUIInsertButton();
 			this._addUIMetaButtons();
@@ -213,7 +213,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 		_addUICropButtons: function () {
 			var plugin = this.plugin;
 
-			Toolbar.createScope('Aloha.img', ['Aloha.global']);
+			Component.createScope('Aloha.img', ['Aloha.global']);
 
 			Component.define("imageCropButton", ToggleButton, {
 				tooltip: i18n.t('Crop'),
@@ -280,14 +280,14 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 		 * Sets Toolbar scope
 		 */
 		setScope: function () {
-			Toolbar.setScope(this.plugin.name);
+			Component.setScope(this.plugin.name);
 		},
 
 		/**
 		 * 
 		 */
 		activateView: function (name) {
-			Toolbar.activateTabOfButton(name);
+			Component.activateTabOfButton(name);
 		},
 
 		/**

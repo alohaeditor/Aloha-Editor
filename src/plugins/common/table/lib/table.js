@@ -650,7 +650,7 @@ define( [
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
-					Toolbar.activateTabOfButton('rowheader');
+					Component.activateTabOfButton('rowheader');
 					
 					// As side-effect of the following call the focus
 					// will be set on the first selected cell. 
@@ -1349,7 +1349,7 @@ define( [
 			this.tablePlugin.columnMSButton.showItem(this.tablePlugin.columnMSItems[i].name);
 		}
 		
-		Toolbar.setScope(this.tablePlugin.name + '.column');
+		Component.setScope(this.tablePlugin.name + '.column');
 		
 		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
 		
@@ -1405,7 +1405,7 @@ define( [
 		}
 		
 		//    TableSelection.selectionType = 'row';
-		Toolbar.setScope(this.tablePlugin.name + '.row');
+		Component.setScope(this.tablePlugin.name + '.row');
 		
 		this.selection.selectRows( this.rowsToSelect );
 		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );

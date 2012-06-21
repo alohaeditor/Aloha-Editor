@@ -364,7 +364,7 @@ function(Aloha, jQuery, BlockManager, Observable, Toolbar, Class) {
 
 			// Activate current block
 			if (this.$element.attr('data-block-skip-scope') !== 'true') {
-				Toolbar.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
+				Component.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
 			}
 			this.$element.addClass('aloha-block-active');
 			this._highlight();

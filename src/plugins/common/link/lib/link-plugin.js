@@ -258,7 +258,7 @@ define( [
 				editable.obj.bind( 'keydown', that.hotKey.insertLink, function ( e ) {
 					if ( that.findLinkMarkup() ) {
 						// open the tab containing the href
-						Toolbar.activateTabOfButton('editLink');
+						Component.activateTabOfButton('editLink');
 						that.hrefField.focus();
 					} else {
 						that.insertLink( true );
@@ -281,11 +281,11 @@ define( [
 				if ( jQuery.inArray( 'a', config ) != -1 ) {
 					that.formatLinkButton.show();
 					that.insertLinkButton.show();
-					Toolbar.unhideTab();
+					Component.unhideTab();
 				} else {
 					that.formatLinkButton.hide();
 					that.insertLinkButton.hide();
-					Toolbar.hideTab(i18n.t('floatingmenu.tab.link'));
+					Component.hideTab(i18n.t('floatingmenu.tab.link'));
 				}
 			} );
 
@@ -313,7 +313,7 @@ define( [
 					if ( foundMarkup ) {
 						that.toggleLinkScope( true );
 						
-						Toolbar.activateTabOfButton('editLink');
+						Component.activateTabOfButton('editLink');
 
 						// now we are ready to set the target object
 						that.hrefField.setTargetObject( foundMarkup, 'href' );
@@ -522,7 +522,7 @@ define( [
 					}
 					
 					window.setTimeout( function () {
-						Toolbar.setScope('Aloha.continuoustext');
+						Component.setScope('Aloha.continuoustext');
 					}, 100 );
 					
 					that.hrefField.preventAutoSuggestionBoxFromExpanding();
@@ -625,7 +625,7 @@ define( [
 			}
 			
 			// activate floating menu tab
-			Toolbar.activateTabOfButton('editLink');
+			Component.activateTabOfButton('editLink');
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
@@ -685,7 +685,7 @@ define( [
 				
 				if ( typeof terminateLinkScope == 'undefined' ||
 						terminateLinkScope === true ) {
-					Toolbar.setScope('Aloha.continuoustext');
+					Component.setScope('Aloha.continuoustext');
 				}
 			}
 		},
