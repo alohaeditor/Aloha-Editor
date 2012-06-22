@@ -64,10 +64,6 @@ define([
 		return true;
 	};
 
-	function testScope(scope) {
-		return -1 !== jQuery.inArray(scope, Scopes.activeScopes);
-	}
-
 	/**
 	 * Normalizes a showOn option into a function.
 	 *
@@ -90,13 +86,13 @@ define([
 				return function(){
 					if (typeof jQuery.type(showOn.scope) === 'array') {
 						for (var i = 0; i < showOn.scope.length; i++) {
-							if (testScope(showOn.scope[i])) {
+							if (Scopes.isActiveScope(showOn.scope[i])) {
 								return true;
 							}
 						}
 						return false;
 					} else {
-						return testScope(showOn.scope);
+						return Scopes.isActiveScope(showOn.scope);
 					}
 				};
 			} else {

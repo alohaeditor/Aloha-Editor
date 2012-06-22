@@ -359,11 +359,13 @@ define( [
 				this.hrefField.show();
 				this.removeLinkButton.show();
 				this.formatLinkButton.setState( true );
+				Scopes.addScope(this.name);
 			} else {
 				this.insertLinkButton.show();
 				this.hrefField.hide();
 				this.removeLinkButton.hide();
 				this.formatLinkButton.setState( false );
+				Scopes.removeScope(this.name);
 			}
 		},
 		

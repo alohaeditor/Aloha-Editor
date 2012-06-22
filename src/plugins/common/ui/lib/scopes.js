@@ -1,4 +1,4 @@
-define([],function(){
+define(['jquery'],function($){
 
 	var scopes = {
 		'Aloha.empty': [],
@@ -6,16 +6,21 @@ define([],function(){
 		'Aloha.continuoustext': ['Aloha.global']
 	};
 
-	function pushScopeAncestors(array, scope) {
+	var activeScopes = [];
+	var addedScopes = {};
+	var scopeSetDuringSelectionChanged = false;
+
+	function pushScopeAncestors(ancestorScopes, scope) {
+		if ( ! scopes.hasOwnProperty(scope) ) {
+			return;
+		}
 		var parentScopes = scopes[scope];
 		for (var i = 0; i < parentScopes.length; i++) {
 			var parentScope = parentScopes[i];
-			array.push(parentScope);
-			pushScopeAncestors(array, parentScope);
+			ancestorScopes.push(parentScope);
+			pushScopeAncestors(ancestorScopes, parentScope);
 		}
 	}
-
-	var scopeSetDuringSelectionChanged = false;
 
 	Aloha.bind('aloha-selection-changed-before', function(){
 		scopeSetDuringSelectionChanged = false;
@@ -32,7 +37,36 @@ define([],function(){
 
 	var Scopes = {
 
-		activeScopes: [],
+		addScope: function(scope) {
+			var ancestorScopes = [];
+			pushScopeAncestors(ancestorScopes, scope);
+			addedScopes[scope] = ancestorScopes;
+			Aloha.trigger('aloha-ui-scope-change');
+		},
+
+		removeScope: function(scope) {
+			delete addedScopes[scope];
+			Aloha.trigger('aloha-ui-scope-change');
+		},
+
+		isActiveScope: function(scope){
+			var isActive = (-1 !== jQuery.inArray(scope, activeScopes));
+			if (isActive) {
+				return true;
+			}
+			for (var addedScope in addedScopes) {
+				if (addedScopes.hasOwnProperty(addedScope)) {
+					if (scope == addedScope) {
+						return true;
+					}
+					var addedScopeAncestors = addedScopes[addedScope];
+					if (-1 != jQuery.inArray(scope, addedScopeAncestors)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		},
 
 		/**
 		 * Set the current scope
@@ -40,21 +74,13 @@ define([],function(){
 		 * @param {String} scope name of the new current scope
 		 */
 		setScope: function(scope) {
-			// get the scope object
-			var scopeObject = scopes[scope];
-
-			if (typeof scopeObject === 'undefined') {
-				// TODO log an error
-				return;
-			}
-
 			scopeSetDuringSelectionChanged = true;
-			if (Scopes.activeScopes[0] != scope) {
-				Scopes.activeScopes = [scope];
-				pushScopeAncestors(Scopes.activeScopes, scope);
-				Aloha.trigger('aloha-ui-scope-change', Scopes.activeScopes);
+			if (activeScopes[0] != scope) {
+				activeScopes = [scope];
+				pushScopeAncestors(activeScopes, scope);
+				Aloha.trigger('aloha-ui-scope-change');
 			}
-			console.log("active scopes: " + Scopes.activeScopes.toString());
+			console.log("active scopes: " + activeScopes.toString()); //XX
 		},
 
 		createScope: function(scope, parentScopes){
@@ -63,12 +89,6 @@ define([],function(){
 			} else if (typeof parentScopes === 'string') {
 				parentScopes = [parentScopes];
 			}
-
-			if (scopes.hasOwnProperty(scope)) {
-				// TODO what if the scope already exists?
-				return;
-			}
-
 			scopes[scope] = parentScopes;
 		},
 
