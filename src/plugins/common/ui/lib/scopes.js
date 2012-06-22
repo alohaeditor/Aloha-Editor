@@ -80,7 +80,6 @@ define(['jquery'],function($){
 				pushScopeAncestors(activeScopes, scope);
 				Aloha.trigger('aloha-ui-scope-change');
 			}
-			console.log("active scopes: " + activeScopes.toString()); //XX
 		},
 
 		createScope: function(scope, parentScopes){
