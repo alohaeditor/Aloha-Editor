@@ -247,6 +247,16 @@ function(Aloha, jQuery, Class, Range, $_) {
 				return true;
 			}
 
+			// Only set the specific scope if an event was provided, which means
+			// that somehow an editable was selected
+			// TODO Bind code to aloha-selection-changed event to remove coupling to floatingmenu
+			if (event !== undefined) {
+				// Trigger an event so that the ui plugin can pick it up
+				// (obviously we don't want to have a declared
+				// dependency on the plugin).
+				Aloha.trigger('aloha-scope-change-hack');
+			}
+
 			// throw the event that the selection has changed. Plugins now have the
 			// chance to react on the currentElements[childCount].children.lengthged selection
 			Aloha.trigger('aloha-selection-changed', [ this.rangeObject, event ]);

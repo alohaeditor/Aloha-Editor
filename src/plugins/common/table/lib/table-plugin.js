@@ -10,7 +10,7 @@ define( [
 	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
-	'ui/toolbar',
+	'ui/scopes',
 	'ui/component',
 	'ui/button',
 	'ui/toggleButton',
@@ -27,7 +27,7 @@ define( [
 	         jQuery,
 	         Plugin,
 	         PluginManager,
-	         Toolbar,
+			 Scopes,
 			 Component,
 			 Button,
 			 ToggleButton,
@@ -862,9 +862,9 @@ define( [
 		var that = this;
 
 		// generate the new scopes
-		Component.createScope(this.name + '.row', 'Aloha.continuoustext');
-		Component.createScope(this.name + '.column', 'Aloha.continuoustext');
-		Component.createScope(this.name + '.cell', 'Aloha.continuoustext');
+		Scopes.createScope(this.name + '.row', 'Aloha.continuoustext');
+		Scopes.createScope(this.name + '.column', 'Aloha.continuoustext');
+		Scopes.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
 		Component.define("createTable", Button, {
 			tooltip: i18n.t("button.createtable.tooltip"),
@@ -1265,7 +1265,7 @@ define( [
 
 	TablePlugin.updateFloatingMenuScope = function () {
 		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
-			Component.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+			Scopes.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
 		}
 	};
 	

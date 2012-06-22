@@ -24,13 +24,13 @@
 define( [
 	'aloha',
 	'jquery',
-	'ui/component',
+	'ui/scopes',
 	'ui/message',
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
 	'table/table-plugin-utils'
-], function ( Aloha, jQuery, Component, Message, i18n, TableCell, TableSelection,
+], function ( Aloha, jQuery, Scopes, Message, i18n, TableCell, TableSelection,
 	          Utils ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
@@ -650,7 +650,7 @@ define( [
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
-					Component.activateTabOfButton('rowheader');
+					Scopes.activateTabOfButton('rowheader');
 					
 					// As side-effect of the following call the focus
 					// will be set on the first selected cell. 
@@ -1349,7 +1349,7 @@ define( [
 			this.tablePlugin.columnMSButton.showItem(this.tablePlugin.columnMSItems[i].name);
 		}
 		
-		Component.setScope(this.tablePlugin.name + '.column');
+		Scopes.setScope(this.tablePlugin.name + '.column');
 		
 		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
 		
@@ -1405,7 +1405,7 @@ define( [
 		}
 		
 		//    TableSelection.selectionType = 'row';
-		Component.setScope(this.tablePlugin.name + '.row');
+		Scopes.setScope(this.tablePlugin.name + '.row');
 		
 		this.selection.selectRows( this.rowsToSelect );
 		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );

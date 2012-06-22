@@ -5,18 +5,29 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(
-['aloha',
- 'jquery',
- 'aloha/plugin',
- 'ui/component',
- 'ui/toolbar',
- 'ui/button',
- 'ui/toggleButton',
- 'i18n!list/nls/i18n',
- 'i18n!aloha/nls/i18n',
- 'aloha/engine'],
-	function(Aloha, jQuery, Plugin, Component, Toolbar, Button, ToggleButton, i18n, i18nCore, Engine) {
+define([
+	'aloha',
+	'jquery',
+	'aloha/plugin',
+	'ui/component',
+	'ui/scopes',
+	'ui/button',
+	'ui/toggleButton',
+	'i18n!list/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'aloha/engine'
+], function(
+	Aloha,
+	jQuery,
+	Plugin,
+	Component,
+	Scopes,
+	Button,
+	ToggleButton,
+	i18n,
+	i18nCore,
+	Engine
+){
 	"use strict";
 
 	var
@@ -87,7 +98,7 @@ define(
 			this.createUnorderedListButton = Component.getGlobalInstance("unorderedList");
 			this.createOrderedListButton = Component.getGlobalInstance("orderedList");
 
-			Component.createScope('Aloha.List', 'Aloha.continuoustext');
+			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
 
 			this.indentListButton = Component.getGlobalInstance("indentList");
 			this.outdentListButton = Component.getGlobalInstance("outdentList");

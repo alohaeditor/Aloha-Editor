@@ -29,6 +29,8 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 	 */
 	var Toolbar = Surface.extend({
 
+		_tabs: [],
+
 		/**
 		 * Toolbar constructor.
 		 *
@@ -52,12 +54,12 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 			var i;
 			for ( i = 0; i < tabs.length; i++ ) {
 				settings = tabs[ i ];
-				new Tab( {
+				this._tabs.push(new Tab({
 					label: settings.label || '',
 					showOn: settings.showOn,
 					editable: editable,
 					container: container
-				}, settings.components );
+				}, settings.components));
 			}
 
 			this.initializeFloating();

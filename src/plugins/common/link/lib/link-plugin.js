@@ -21,7 +21,7 @@ define( [
 	'aloha/plugin',
 	'jquery',
 	'ui/port-helper-attribute-field',
-	'ui/toolbar',
+	'ui/scopes',
 	'ui/surface',
 	'ui/component',
 	'ui/button',
@@ -31,7 +31,7 @@ define( [
 	'aloha/console',
 	'css!link/css/link.css',
 	'link/../extra/linklist'
-], function ( Aloha, Plugin, jQuery, AttributeField, Toolbar, Surface, Component, Button, ToggleButton, i18n, i18nCore, console ) {
+], function ( Aloha, Plugin, jQuery, AttributeField, Scopes, Surface, Component, Button, ToggleButton, i18n, i18nCore, console ) {
 	'use strict';
 	
 	var GENTICS = window.GENTICS,
@@ -258,7 +258,7 @@ define( [
 				editable.obj.bind( 'keydown', that.hotKey.insertLink, function ( e ) {
 					if ( that.findLinkMarkup() ) {
 						// open the tab containing the href
-						Component.activateTabOfButton('editLink');
+						Scopes.activateTabOfButton('editLink');
 						that.hrefField.focus();
 					} else {
 						that.insertLink( true );
@@ -281,11 +281,11 @@ define( [
 				if ( jQuery.inArray( 'a', config ) != -1 ) {
 					that.formatLinkButton.show();
 					that.insertLinkButton.show();
-					Component.unhideTab();
+					Scopes.unhideTab();
 				} else {
 					that.formatLinkButton.hide();
 					that.insertLinkButton.hide();
-					Component.hideTab(i18n.t('floatingmenu.tab.link'));
+					Scopes.hideTab(i18n.t('floatingmenu.tab.link'));
 				}
 			} );
 
@@ -313,7 +313,7 @@ define( [
 					if ( foundMarkup ) {
 						that.toggleLinkScope( true );
 						
-						Component.activateTabOfButton('editLink');
+						Scopes.activateTabOfButton('editLink');
 
 						// now we are ready to set the target object
 						that.hrefField.setTargetObject( foundMarkup, 'href' );
@@ -522,7 +522,7 @@ define( [
 					}
 					
 					window.setTimeout( function () {
-						Component.setScope('Aloha.continuoustext');
+						Scopes.setScope('Aloha.continuoustext');
 					}, 100 );
 					
 					that.hrefField.preventAutoSuggestionBoxFromExpanding();
@@ -625,7 +625,7 @@ define( [
 			}
 			
 			// activate floating menu tab
-			Component.activateTabOfButton('editLink');
+			Scopes.activateTabOfButton('editLink');
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
@@ -685,7 +685,7 @@ define( [
 				
 				if ( typeof terminateLinkScope == 'undefined' ||
 						terminateLinkScope === true ) {
-					Component.setScope('Aloha.continuoustext');
+					Scopes.setScope('Aloha.continuoustext');
 				}
 			}
 		},
