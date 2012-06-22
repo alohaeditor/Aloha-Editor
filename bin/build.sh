@@ -106,17 +106,6 @@ echo -e "\n * Coping $TMP/aloha to $OUT"
   handleError $? "Error while adding aloha build to out directory"
 echo "Done."
  
-if [ "$MODE" != "BARE" ] ; then
-  echo -e "\n * Building guide"
-    $BASEDIR/build-guide.sh
-    handleError $? "Error while building the guide"
-  #echo "Done."
-
-  echo -e "\n * Building api doc"
-    $BASEDIR/build-api.sh
-    handleError $? "Error while building the api doc"
-  echo "Done."
-fi
 
 echo -e "\n * Adding build information"
   echo "build-date: `date`" >> $OUT/aloha/build.txt

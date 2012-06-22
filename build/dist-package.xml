@@ -8,12 +8,20 @@
 	</formats>
 	<fileSets>
 		<fileSet>
-			<directory>${project.basedir}/target/out</directory>
+			<directory>${project.basedir}/target/bin</directory>
+			<outputDirectory>/aloha/lib</outputDirectory>
+		</fileSet>
+
+		<fileSet>
+			<directory>${project.basedir}/target/tmp/</directory>
 			<outputDirectory>/</outputDirectory>
 			<excludes>
+				<exclude>**/lib/**</exclude>
+				<exclude>**/test/**</exclude>
 				<exclude>**/.gitmodules</exclude>
 			</excludes>
 		</fileSet>
+
 	</fileSets>
 
 	<includeBaseDirectory>false</includeBaseDirectory>

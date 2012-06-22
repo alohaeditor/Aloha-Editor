@@ -2,8 +2,6 @@
 
 <groups xmlns="http://www.isdc.ro/wro">
 	<group name='alohaeditor'>
-		<js>/aloha.js</js>
-		<js>/aloha/command.js</js>
-		<js>/aloha/console.js</js>
+		<js>/target/tmp/aloha/lib/aloha-bootstrap.js</js>
 	</group>
 </groups>
