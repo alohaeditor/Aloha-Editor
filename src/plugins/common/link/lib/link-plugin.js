@@ -461,9 +461,6 @@ define( [
 
 			// update link object when src changes
 			this.hrefField.addListener( 'keyup', function ( event ) {
-				// Now show all the ui-attributefield elements
-				that.showComboList();
-				
 				// Handle ESC key press: We do a rough check to see if the user
 				// has entered a link or searched for something
 				if ( event.keyCode == 27 ) {
@@ -481,7 +478,6 @@ define( [
 						
 						// restore original value and hide combo list
 						that.hrefField.setValue( hrefValue );
-						that.hideComboList();
 						
 						if ( hrefValue == that.hrefValue || hrefValue == '' ) {
 							that.removeLink( false );
@@ -732,24 +728,6 @@ define( [
 		},
 		
 		/**
-		 * Displays all the ui-attributefield elements
-		 */
-		showComboList: function () {
-			jQuery( '.x-layer x-combo-list,' +
-				    '.x-combo-list-inner,' +
-				    '.x-combo-list' ).show();
-		},
-		
-		/**
-		 * Hide all the ui-attributefield elements
-		 */
-		hideComboList: function () {
-			jQuery( '.x-layer x-combo-list,' +
-				    '.x-combo-list-inner,' +
-				    '.x-combo-list' ).hide();
-		},
-		
-		/**
 		 * Make the given jQuery object (representing an editable) clean for saving
 		 * Find all links and remove editing objects
 		 * @param obj jQuery object to make clean
@@ -763,6 +741,5 @@ define( [
 					.removeClass( 'aloha-link-text' );
 			} );
 		}
-		
 	} );
 } );
