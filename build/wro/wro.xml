@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<groups xmlns="http://www.isdc.ro/wro">
+	<group name='alohaeditor'>
+		<js>/aloha.js</js>
+		<js>/aloha/command.js</js>
+		<js>/aloha/console.js</js>
+	</group>
+</groups>
