@@ -6,20 +6,27 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-define(
-	['aloha', 
+define([
+	'aloha', 
 	'jquery', 
 	'aloha/plugin', 
 	'ui/component', 
 	'ui/button',
 	'i18n!characterpicker/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
-	'css!characterpicker/css/characterpicker.css'],
-function( Aloha, jQuery, Plugin, Component, Button, i18n, i18nCore ) {
-	"use strict";
+	'ui/port-helper-floatingmenu',
+	'css!characterpicker/css/characterpicker.css'
+], function(Aloha,
+            jQuery,
+			Plugin,
+			Component,
+			Button,
+			i18n,
+			i18nCore,
+			FloatingmenuPortHelper) {
+	'use strict';
 
-	var
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	function CharacterOverlay(onSelectCallback) {
 		var self = this;
@@ -228,7 +235,7 @@ function( Aloha, jQuery, Plugin, Component, Button, i18n, i18nCore ) {
 				}
 			});
 
-			self.insertButton = Component.getGlobalInstance("characterPicker");
+			//self.insertButton = Component.getGlobalInstance("characterPicker");
 
 			self.characterOverlay = new CharacterOverlay(self.onCharacterSelect);
 
@@ -243,9 +250,11 @@ function( Aloha, jQuery, Plugin, Component, Button, i18n, i18nCore ) {
 
 				if (config) {
 					self.characterOverlay.setCharacters(config);
-					self.insertButton.show();
+					//self.insertButton.show();
+					FloatingmenuPortHelper.showAll('characterPicker');
 				} else {
-					self.insertButton.hide();
+					//self.insertButton.hide();
+					FloatingmenuPortHelper.hideAll('characterPicker');
 				}
 			});
 		},

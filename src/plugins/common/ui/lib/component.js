@@ -2,8 +2,7 @@ define([
 	'aloha/core',
 	'jquery',
 	'util/class'
-],
-function( Aloha, jQuery, Class ) {
+], function(Aloha, jQuery, Class) {
 	'use strict';
 
 	/**
@@ -90,6 +89,18 @@ function( Aloha, jQuery, Class ) {
 
 	// Static fields.
 
+	/**
+	 * A hash of all component instances.  Instances are grouped into arrays
+	 * which are mapped against their component type name.  Therefore all
+	 * components that have are instances of from the "linkButton" component
+	 * type, for example, will be put into an array whose key in the hash will
+	 * be "linkButton."
+	 *
+	 * @type {object<string, Array<Component>>}
+	 * @private
+	 */
+	var componentInstances = {};
+
 	jQuery.extend( Component, {
 
 		/**
@@ -99,8 +110,6 @@ function( Aloha, jQuery, Class ) {
 		 *                                   their corresponding constructors.
 		 */
 		components: {},
-
-		_instances: {},
 
 		/**
 		 * Defines a component type.
@@ -123,30 +132,45 @@ function( Aloha, jQuery, Class ) {
 		 *
 		 * It is here that component instances are instantiated.
 		 *
-		 * @param {string} name Name of the component to render.
-		 * @param {Aloha.Editable} editable Editable to associate component with.
-		 * @return {Component} The component matching the given name.
+		 * @param {string} type The name of the component type we want to
+		 *                      (initialize if needed and) render.
+		 * @return {Component} An instance of the component of the given type.
 		 */
-		render: function( name, editable ) {
-			if (this._instances.hasOwnProperty(name)) {
-				var instance = this._instances[name];
-				instance.editable = editable;
-				return instance;
+		render: function(type) {
+			var ComponentType = Component.components[type];
+			if (!ComponentType) {
+				throw new Error('Component type "' + type +
+					'" is not defined.');
 			}
-
-			var ComponentType = Component.components[ name ];
-			if ( !ComponentType ) {
-				throw new Error( 'Component type "' + name +
-					'" is not defined.' );
+			var instance = new ComponentType();
+			if (!componentInstances[type]) {
+				componentInstances[type] = [];
 			}
-			var instance = new ComponentType( editable );
-			this._instances[name] = instance;
+			componentInstances[type] = instance;
 			return instance;
 		},
 
+		eachInstance: function (instanceTypes, callback) {
+			var instances = [];
+			var j = instanceTypes.length;
+			while (j) {
+				if (componentInstances[instanceTypes[--j]]) {
+					instances = instances.concat(componentInstances[instanceTypes[j]]);
+				}
+			}
+			j = instances.length;
+			while (j) {
+				if (false === callback(instances[--j])) {
+					return
+				};
+			}
+		},
+
 		getGlobalInstance: function( name ) {
+			console.warn('getGlobalInstance(', name, ')');
 			return this.render( name, Aloha.activeEditable );
 		}
+
 	});
 
 	return Component;

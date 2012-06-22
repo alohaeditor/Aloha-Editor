@@ -5,7 +5,7 @@
  * Licensed under the terms of http://www.aloha-editor.com/license.html
  */
 
-define( [
+define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
@@ -16,14 +16,25 @@ define( [
 	'ui/port-helper-attribute-field',
 	'i18n!wai-lang/nls/i18n',
 	'i18n!aloha/nls/i18n',
+	'ui/port-helper-floatingmenu',
 	'wai-lang/languages',
 	'css!wai-lang/css/wai-lang.css'
-], function( Aloha, jQuery, Plugin, Component, Toolbar, Button, ToggleButton, AttributeField, i18n, i18nCore ) {
+], function(Aloha,
+            jQuery,
+            Plugin,
+            Component,
+            Toolbar,
+            Button,
+            ToggleButton,
+            AttributeField,
+            i18n,
+            i18nCore,
+            FloatingmenuPortHelper) {
 	'use strict';
 
 	var WAI_LANG_CLASS = 'aloha-wai-lang',
 	    GENTICS = window.GENTICS,
-	    addMarkupToSelectionButton,
+	    // addMarkupToSelectionButton,
 	    langField;
 
 	return Plugin.create( 'wai-lang', {
@@ -79,9 +90,11 @@ define( [
 				// show/hide the button according to the configuration
 				config = that.getEditableConfig( Aloha.activeEditable.obj );
 				if ( jQuery.inArray( 'span', config ) !== -1 ) {
-					addMarkupToSelectionButton.show();
+					//addMarkupToSelectionButton.show();
+					FloatingmenuPortHelper.showAll('addMarkupToSelectionButton');
 				} else {
-					addMarkupToSelectionButton.hide();
+					//addMarkupToSelectionButton.hide();
+					FloatingmenuPortHelper.hideAll('addMarkupToSelectionButton');
 					return;
 				}
 			} );
@@ -92,7 +105,8 @@ define( [
 
 				foundMarkup = that.findLangMarkup( rangeObject );
 				if ( foundMarkup ) {
-						addMarkupToSelectionButton.setState( true );
+						//addMarkupToSelectionButton.setState( true );
+						FloatingmenuPortHelper.setStateTrueAll('addMarkupToSelectionButton');
 						Toolbar.setScope( 'wai-lang' );
 					langField.setTargetObject( foundMarkup, 'lang' );
 				} else {
@@ -116,7 +130,7 @@ define( [
 				}
 			} );
 
-			addMarkupToSelectionButton = Component.getGlobalInstance("wailang");
+			//addMarkupToSelectionButton = Component.getGlobalInstance("wailang");
 
 			Toolbar.createScope('wai-lang', 'Aloha.continuoustext');
 
@@ -293,7 +307,8 @@ define( [
 		 * Toggles markup around selection.
 		 */
 		addRemoveMarkupToSelection: function() {
-			if ( addMarkupToSelectionButton.pressed ) {
+			//if ( addMarkupToSelectionButton.pressed ) {
+			if (FloatingmenuPortHelper.isFirstPressed()) {
 				this.removeLangMarkup();
 			} else {
 				this.addMarkupToSelection( false );

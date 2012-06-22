@@ -4,21 +4,27 @@
 * Licensed unter the terms of LGPL http://www.gnu.org/copyleft/lesser.html
 *
 */
+define([
+	'aloha',
+	'aloha/plugin',
+	'ui/component',
+	'ui/toggleButton',
+	'i18n!align/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'jquery',
+	'ui/port-helper-floatingmenu',
+	'css!align/css/align.css',
+], function(Aloha,
+            Plugin,
+			Component,
+			ToggleButton,
+			i18n,
+			i18nCore,
+			jQuery,
+			FloatingmenuPortHelper) {
+	'use strict';
 
-define(
-['aloha',
- 'aloha/plugin',
- 'ui/component',
- 'ui/toggleButton',
- 'i18n!align/nls/i18n',
- 'i18n!aloha/nls/i18n',
- 'jquery',
- 'css!align/css/align.css'],
-function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
-	"use strict";
-
-	var
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * register the plugin with unique name
@@ -84,38 +90,46 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 				switch(this.lastAlignment)
 				{
 					case 'right':
-						this.alignRightButton.setState(false);
+						//this.alignRightButton.setState(false);
+						FloatingmenuPortHelper.setStateFalseAll('alignRight');
 						break;
 
 					case 'left':
-						this.alignLeftButton.setState(false);
+						//this.alignLeftButton.setState(false);
+						FloatingmenuPortHelper.setStateFalseAll('alignLeft');
 						break;
 
 					case 'center':
-						this.alignCenterButton.setState(false);
+						//this.alignCenterButton.setState(false);
+						FloatingmenuPortHelper.setStateFalseAll('alignCenter');
 						break;
 
 					case 'justify':
-						this.alignJustifyButton.setState(false);
+						//this.alignJustifyButton.setState(false);
+						FloatingmenuPortHelper.setStateFalseAll('alignJustify');
 						break;
 				}
 
 				switch(this.alignment)
 				{
 					case 'right':
-						this.alignRightButton.setState(true);
+						//this.alignRightButton.setState(true);
+						FloatingmenuPortHelper.setStateTrueAll('alignLeft');
 						break;
 
 					case 'center':
-						this.alignCenterButton.setState(true);
+						//this.alignCenterButton.setState(true);
+						FloatingmenuPortHelper.setStateTrueAll('alignLeft');
 						break;
 
 					case 'justify':
-						this.alignJustifyButton.setState(true);
+						//this.alignJustifyButton.setState(true);
+						FloatingmenuPortHelper.setStateTrueAll('alignJustify');
 						break;
 
 					default:
-						this.alignLeftButton.setState(true);
+						//this.alignLeftButton.setState(true);
+						FloatingmenuPortHelper.setStateTrueAll('alignLeft');
 						this.alignment  = 'left';
 						break;
 				}
@@ -147,27 +161,35 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 			}
 
 			if ( jQuery.inArray('right', config.alignment) != -1) {
-				this.alignRightButton.show();
+				//this.alignRightButton.show();
+				FloatingmenuPortHelper.showAll('alignRight');
 			} else {
-				this.alignRightButton.hide();
+				//this.alignRightButton.hide();
+				FloatingmenuPortHelper.hideAll('alignRight');
 			}
 
 			if ( jQuery.inArray('left', config.alignment) != -1) {
-				this.alignLeftButton.show();
+				//this.alignLeftButton.show();
+				FloatingmenuPortHelper.hideAll('alignLeft');
 			} else {
-				this.alignLeftButton.hide();
+				//this.alignLeftButton.hide();
+				FloatingmenuPortHelper.hideAll('alignLeft');
 			}
 
 			if ( jQuery.inArray('center', config.alignment) != -1) {
-				this.alignCenterButton.show();
+				//this.alignCenterButton.show();
+				FloatingmenuPortHelper.showAll('alignCenter');
 			} else {
-				this.alignCenterButton.hide();
+				//this.alignCenterButton.hide();
+				FloatingmenuPortHelper.hideAll('alignCenter');
 			}
 
 			if ( jQuery.inArray('justify', config.alignment) != -1) {
-				this.alignJustifyButton.show();
+				//this.alignJustifyButton.show();
+				FloatingmenuPortHelper.showAll('alignJustify');
 			} else {
-				this.alignJustifyButton.hide();
+				//this.alignJustifyButton.hide();
+				FloatingmenuPortHelper.hideAll('alignJustify');
 			}
 		},
 
@@ -180,7 +202,7 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 				click: function(){ that.align('left'); }
 			});
 
-		    this.alignLeftButton = Component.getGlobalInstance("alignLeft");
+		    //this.alignLeftButton = Component.getGlobalInstance("alignLeft");
 
 			Component.define("alignCenter", ToggleButton, {
 				tooltip: i18n.t('button.aligncenter.tooltip'),
@@ -188,7 +210,7 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 				click: function(){ that.align('center'); }
 			});
 
-		    this.alignCenterButton = Component.getGlobalInstance("alignCenter");
+		    //this.alignCenterButton = Component.getGlobalInstance("alignCenter");
 
 			Component.define("alignRight", ToggleButton, {
 				tooltip: i18n.t('button.alignright.tooltip'),
@@ -196,7 +218,7 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 				click: function(){ that.align('right'); }
 			});
 
-		    this.alignRightButton = Component.getGlobalInstance("alignRight");
+		    //this.alignRightButton = Component.getGlobalInstance("alignRight");
 
 			Component.define("alignJustify", ToggleButton, {
 				tooltip: i18n.t('button.alignjustify.tooltip'),
@@ -204,7 +226,7 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 				click: function(){ that.align('justify'); }
 			});
 
-		    this.alignJustifyButton = Component.getGlobalInstance("alignJustify");
+		    //this.alignJustifyButton = Component.getGlobalInstance("alignJustify");
 		},
 
 		/**
@@ -278,19 +300,23 @@ function(Aloha, Plugin, Component, ToggleButton, i18n, i18nCore, jQuery) {
 				switch(this.lastAlignment)
 				{
 					case 'right':
-						this.alignRightButton.setState(false);
+						//this.alignRightButton.setState(false);
+						FloatingmenuPortHelper.setStateFalseAll('alignRight');
 						break;
 
 					case 'left':
-						this.alignLeftButton.setState(false);
+						//this.alignLeftButton.setState(false);
+						FloatingmenuPortHelper.setStateFalseAll('alignLeft');
 						break;
 
 					case 'center':
-						this.alignCenterButton.setState(false);
+						//this.alignCenterButton.setState(false);
+						FloatingmenuPortHelper.setStateFalseAll('alignCenter');
 						break;
 
 					case 'justify':
-						this.alignJustifyButton.setState(false);
+						//this.alignJustifyButton.setState(false);
+						FloatingmenuPortHelper.setStateFalseAll('alignJustify');
 						break;
 				}
 			}

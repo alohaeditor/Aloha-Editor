@@ -32,9 +32,9 @@ define([
 						"class": "aloha-panel-content"
 					}).appendTo( element );
 
-			jQuery.each( components, function() {
-				var component = Component.render( this, editable );
-				content.append( component.element );
+			jQuery.each(components, function () {
+				var component = Component.render(this);
+				content.append(component.element);
 			});
 		},
 

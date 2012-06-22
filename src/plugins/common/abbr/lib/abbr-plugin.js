@@ -4,8 +4,7 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-
-define( [
+define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
@@ -15,10 +14,21 @@ define( [
 	'ui/toolbar',
 	'ui/port-helper-attribute-field',
 	'i18n!abbr/nls/i18n',
-	'i18n!aloha/nls/i18n'
-], function ( Aloha, jQuery, Plugin, Component, ToggleButton, Button, Toolbar, AttributeField, i18n, i18nCore ) {
-	"use strict";
-	
+	'i18n!aloha/nls/i18n',
+	'ui/port-helper-floatingmenu'
+], function (Aloha,
+             jQuery,
+			 Plugin,
+			 Component,
+			 ToggleButton,
+			 Button,
+			 Toolbar,
+			 AttributeField,
+			 i18n,
+			 i18nCore,
+			 FloatingmenuPortHelper) {
+	'use strict';
+
 	var GENTICS = window.GENTICS;
 
 	/**
@@ -58,7 +68,7 @@ define( [
 				}
 			});
 
-		    this.formatAbbrButton = Component.getGlobalInstance("formatAbbr");
+		    //this.formatAbbrButton = Component.getGlobalInstance("formatAbbr");
 
 			Component.define("insertAbbr", Button, {
 				tooltip: i18n.t('button.addabbr.tooltip'),
@@ -68,7 +78,7 @@ define( [
 				}
 			});
 
-		    this.insertAbbrButton = Component.getGlobalInstance("insertAbbr");
+		    //this.insertAbbrButton = Component.getGlobalInstance("insertAbbr");
 
 		    Toolbar.createScope('abbr', 'Aloha.continuoustext');
 
@@ -129,11 +139,15 @@ define( [
 		        	var config = me.getEditableConfig( Aloha.activeEditable.obj );
 
 		        	if ( jQuery.inArray( 'abbr', config ) != -1 ) {
-		        		me.formatAbbrButton.show();
-		        		me.insertAbbrButton.show();
+		        		//me.formatAbbrButton.show();
+		        		//me.insertAbbrButton.show();
+						FloatingmenuPortHelper.showAll('formatAbbr');
+						FloatingmenuPortHelper.showAll('insertAbbr');
 		        	} else {
-		        		me.formatAbbrButton.hide();
-		        		me.insertAbbrButton.hide();
+		        		//me.formatAbbrButton.hide();
+		        		//me.insertAbbrButton.hide();
+						FloatingmenuPortHelper.hideAll('formatAbbr');
+						FloatingmenuPortHelper.hideAll('insertAbbr');
 		        		// leave if a is not allowed
 		        		return;
 		        	}
@@ -141,14 +155,18 @@ define( [
 		        	var foundMarkup = me.findAbbrMarkup( rangeObject );
 		        	if ( foundMarkup ) {
 		        		// abbr found
-		        		me.insertAbbrButton.hide();
-		        		me.formatAbbrButton.setState( true );
+		        		//me.insertAbbrButton.hide();
+		        		//me.formatAbbrButton.setState( true );
+						FloatingmenuPortHelper.hideAll('insertAbbr');
+						FloatingmenuPortHelper.setStateTrueAll('formatAbbrButton');
+
 		        		Toolbar.setScope( 'abbr' );
 		        		me.abbrField.setTargetObject( foundMarkup, 'title' );
 		        	} else {
 		        		// no abbr found
-		        		me.formatAbbrButton.setState( false );
-		        		me.abbrField.setTargetObject( null );
+		        		//me.formatAbbrButton.setState( false );
+		        		//me.abbrField.setTargetObject( null );
+						FloatingmenuPortHelper.setStateFalseAll('formatAbbrButton');
 		        	}
 		        }
 		    });

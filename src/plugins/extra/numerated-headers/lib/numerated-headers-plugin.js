@@ -11,13 +11,19 @@ define ([
 	'ui/toggleButton',
 	'i18n!numerated-headers/nls/i18n',
 	'i18n!aloha/nls/i18n',
+	'ui/port-helper-floatingmenu',
 	'css!numerated-headers/css/numerated-headers.css'
 ],
-function (jQuery, Plugin, Component, ToggleButton, i18n, i18nCore) {
-	"use strict";
+function (jQuery,
+          Plugin,
+		  Component,
+		  ToggleButton,
+		  i18n,
+		  i18nCore,
+		  FloatingmenuPortHelper) {
+	'use strict';
 
-	var $ = jQuery,
-		Aloha = window.Aloha;
+	var Aloha = window.Aloha;
 
 	return Plugin.create('numerated-headers', {
 		numeratedactive: true,
@@ -47,7 +53,8 @@ function (jQuery, Plugin, Component, ToggleButton, i18n, i18nCore) {
             tooltip: i18n.t('button.numeratedHeaders.tooltip'),
             icon: 'aloha-icon aloha-icon-numerated-headers',
             click: function () {
-				if(that.numeratedHeadersButton.getState()) {
+				//if(that.numeratedHeadersButton.getState()) {
+				if (FloatingmenuPortHelper.getStateOfFirst('formatNumeratedHeaders')) {
 						that.removeNumerations();
 				}
 				else {
@@ -56,12 +63,15 @@ function (jQuery, Plugin, Component, ToggleButton, i18n, i18nCore) {
             }
 			});
 
-        this.numeratedHeadersButton = Component.getGlobalInstance("formatNumeratedHeaders");
-		this.numeratedHeadersButton.setState(this.numeratedactive);
+        //this.numeratedHeadersButton = Component.getGlobalInstance("formatNumeratedHeaders");
+		//this.numeratedHeadersButton.setState(this.numeratedactive);
+		(this.numeratedactive ? FloatingmenuPortHelper.setStateTrueAll
+		                      : FloatingmenuPortHelper.setStateFalseAll)('formatNumeratedHeaders');
 
 			// We need to bind to selection-changed event to recognize backspace and delete interactions
 			Aloha.bind( 'aloha-selection-changed', function ( event ) {
-			if (that.numeratedHeadersButton.getState()) {
+			//if (that.numeratedHeadersButton.getState()) {
+			if (FloatingmenuPortHelper.getStateOfFirst('formatNumeratedHeaders')) {
 					that.createNumeratedHeaders();
 				}
 			});
@@ -86,8 +96,9 @@ function (jQuery, Plugin, Component, ToggleButton, i18n, i18nCore) {
 					that.baseobjectSelector = config.baseobjectSelector;
 				}
 
-				if ( ! that.numeratedactive && that.numeratedHeadersButton ) {
-					that.numeratedHeadersButton.hide();
+				if ( !that.numeratedactive /* && that.numeratedHeadersButton */ ) {
+					//that.numeratedHeadersButton.hide();
+					FloatingmenuPortHelper.hideAll('formatNumeratedHeaders');
 				}
 			});
 		},

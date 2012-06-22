@@ -10,9 +10,19 @@ define([
 	'RepositoryBrowser',
 	// i18n
 	'i18n!linkbrowser/nls/i18n',
-	'i18n!aloha/nls/i18n'
-], function( Aloha, jQuery, Plugin, PluginManager, Component, Button, Links,
-             RepositoryBrowser, i18n, i18nCore ) {
+	'i18n!aloha/nls/i18n',
+	'ui/port-helper-floatingmenu'
+], function(Aloha,
+            jQuery,
+            Plugin,
+            PluginManager,
+            Component,
+            Button,
+			Links,
+			RepositoryBrowser,
+			i18n,
+			i18nCore,
+			FloatingmenuPortHelper) {
 	'use strict';
 
 	var LinkBrowser = RepositoryBrowser.extend({
@@ -28,17 +38,20 @@ define([
 				click: function () { that.open(); }
 			});
 
-			var repositoryButton = Component.getGlobalInstance( 'linkBrowser' );
+			//var repositoryButton = Component.getGlobalInstance( 'linkBrowser' );
 
-			repositoryButton.hide();
+			//repositoryButton.hide();
+			FloatingmenuPortHelper.hideAll('linkBrowser');
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
 
 			Aloha.bind( 'aloha-link-selected', function ( event, rangeObject ) {
-				repositoryButton.show();
+				//repositoryButton.show();
+				FloatingmenuPortHelper.showAll('linkBrowser');
 			});
 			Aloha.bind( 'aloha-link-unselected', function ( event, rangeObject ) {
-				repositoryButton.hide();
+				//repositoryButton.hide();
+				FloatingmenuPortHelper.hideAll('linkBrowser');
 			});
 		},
 

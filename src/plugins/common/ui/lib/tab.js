@@ -44,48 +44,46 @@ function( Aloha, jQuery, Container, Component ) {
 		 * @param {Array.<Array<string>>} components
 		 * @constructor
 		 */
-		_constructor: function( settings, components ) {
-			this._super( settings, components );
+		_constructor: function (settings, components) {
+			this._super(settings, components);
 
 			this.container = settings.container;
-			this.list = this.container.data( 'list' );
-			this.panels = this.container.data( 'panels' );
-			this.id = 'tab-ui-container-' + ( ++idCounter );
-			this.panel = jQuery( '<div>', { id : this.id } );
-			this.handle = jQuery( '<li><a href="#' + this.id + '">' +
-				settings.label + '</a></li>' );
+			this.list = this.container.data('list');
+			this.panels = this.container.data('panels');
+			this.id = 'tab-ui-container-' + (++idCounter);
+			this.panel = jQuery('<div>', {id : this.id});
+			this.handle = jQuery('<li><a href="#' + this.id + '">' +
+				settings.label + '</a></li>');
 
 			var i;
 			var j;
 			var component;
-			var componentGroup;
+			var groupedComponents;
 
-			for ( i = 0; i < components.length; ++i ) {
-				if ( typeof components[ i ] === 'string' ) {
-					component = Component.render( components[ i ],
-						this.editable );
-					this.panel.append( component.element );
+			for (i = 0; i < components.length; i++) {
+				if (typeof components[i] === 'string') {
+					component = Component.render(components[i]);
+					this.panel.append(component.element);
 				} else {
-					var group = jQuery( '<div>', {
+					var group = jQuery('<div>', {
 						'class': 'aloha-ui-component-group'
-					}).appendTo( this.panel );
+					}).appendTo(this.panel);
 
-					componentGroup = components[ i ];
-					for ( j = 0; j < componentGroup.length; ++j ) {
-						component = Component.render( componentGroup[ j ],
-							this.editable );
-						group.append( component.element );
+					groupedComponents = components[i];
+					for (j = 0; j < groupedComponents.length; j++) {
+						component = Component.render(groupedComponents[j]);
+						group.append(component.element);
 					}
 				}
 			}
 
-			this.handle.appendTo( this.list );
-			this.panel.appendTo( this.panels );
-			this.container.tabs( 'refresh' );
+			this.handle.appendTo(this.list);
+			this.panel.appendTo(this.panels);
+			this.container.tabs('refresh');
 
-			var alohaTabs = settings.container.data( 'alohaTabs' );
+			var alohaTabs = settings.container.data('alohaTabs');
 			this.index = alohaTabs.length;
-			alohaTabs.push( this );
+			alohaTabs.push(this);
 		},
 
 		/**

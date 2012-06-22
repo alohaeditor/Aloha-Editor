@@ -4,7 +4,6 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-
 define([
 	'aloha',
 	'aloha/plugin',
@@ -14,9 +13,19 @@ define([
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
 	'i18n!format/nls/i18n',
-	'i18n!aloha/nls/i18n'],
-function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitButton, i18n, i18nCore) {
-		"use strict";
+	'i18n!aloha/nls/i18n',
+	'ui/port-helper-floatingmenu'
+], function (Aloha,
+             Plugin,
+			 jQuery,
+			 Component,
+			 Toolbar,
+			 ToggleButton,
+			 MultiSplitButton,
+			 i18n,
+			 i18nCore,
+			 FloatingmenuPortHelper) {
+		'use strict';
 
 		var GENTICS = window.GENTICS,
 			pluginNamespace = 'aloha-format';
@@ -163,9 +172,11 @@ function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitBut
 				// now iterate all buttons and show/hide them according to the config
 				for ( button in this.buttons) {
 					if (jQuery.inArray(button, config) != -1) {
-						this.buttons[button].button.show();
+						//this.buttons[button].button.show();
+						FloatingmenuPortHelper.showAll(this.buttons[button].type);
 					} else {
-						this.buttons[button].button.hide();
+						//this.buttons[button].button.hide();
+						FloatingmenuPortHelper.hideAll(this.buttons[button].type);
 					}
 				}
 
@@ -280,6 +291,7 @@ function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitBut
 								}
 							});
 							that.buttons[button] = {
+								type: componentName,
 								'button' : Component.getGlobalInstance(componentName),
 								'markup' : jQuery('<'+button+'></'+button+'>').attr('class', button_config)
 							};
@@ -372,12 +384,14 @@ function (Aloha, Plugin, jQuery, Component, Toolbar, ToggleButton, MultiSplitBut
 						for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 							effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 							if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
-								button.button.setState(true);
+								//button.button.setState(true);
+								FloatingmenuPortHelper.setStateTrueAll(button.type);
 								statusWasSet = true;
 							}
 						}
 						if (!statusWasSet) {
-							button.button.setState(false);
+							//button.button.setState(false);
+							FloatingmenuPortHelper.setStateFalseAll(button.type);
 						}
 					});
 

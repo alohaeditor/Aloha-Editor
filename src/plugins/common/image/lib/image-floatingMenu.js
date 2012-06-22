@@ -7,21 +7,34 @@
  * 
  * Author : Nicolas Karageuzian - http://nka.me
  */
-define(['jquery',
-        'util/class',
-		'i18n!image/nls/i18n',
-		'i18n!aloha/nls/i18n',
-		'ui/component',
-		'ui/toolbar',
-	    'ui/button',
-	    'ui/toggleButton',
-	    'ui/port-helper-attribute-field'],
-function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, AttributeField) {
+define([
+	'jquery',
+    'util/class',
+	'i18n!image/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'ui/component',
+	'ui/toolbar',
+    'ui/button',
+    'ui/toggleButton',
+    'ui/port-helper-attribute-field',
+	'ui/port-helper-floatingmenu'
+],
+function (jQuery,
+          Class,
+		  i18n,
+		  i18nCore,
+		  Component,
+		  Toolbar,
+		  Button,
+		  ToggleButton,
+		  AttributeField,
+		  FloatingmenuPortHelper) {
 	'use strict';
-	var jQuery = aQuery;
-	var $ = aQuery;
+
+	var $ = jQuery;
 	var GENTICS = window.GENTICS;
 	var Aloha = window.Aloha;
+
 	/**
      * Toolbar elements for Image plugin
      *
@@ -84,8 +97,9 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			// If the setting has been set to a number or false we need to activate the 
 			// toggle button to indicate that the aspect ratio will be preserved.
 			if (plugin.settings.fixedAspectRatio !== false) {
-				var toggleButton = Component.getGlobalInstance("imageCnrRatio");
-				toggleButton.setState(true);
+				//var toggleButton = Component.getGlobalInstance("imageCnrRatio");
+				//toggleButton.setState(true);
+				FloatingmenuPortHelper.setStateTrueAll('imageCnrRatio');
 				plugin.keepAspectRatio = true;
 			}
 		},
