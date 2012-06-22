@@ -199,6 +199,7 @@ define([
 			Component.define("alignLeft", ToggleButton, {
 				tooltip: i18n.t('button.alignleft.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-left',
+				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('left'); }
 			});
 
@@ -207,6 +208,7 @@ define([
 			Component.define("alignCenter", ToggleButton, {
 				tooltip: i18n.t('button.aligncenter.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-center',
+				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('center'); }
 			});
 
@@ -215,6 +217,7 @@ define([
 			Component.define("alignRight", ToggleButton, {
 				tooltip: i18n.t('button.alignright.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-right',
+				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('right'); }
 			});
 
@@ -223,6 +226,7 @@ define([
 			Component.define("alignJustify", ToggleButton, {
 				tooltip: i18n.t('button.alignjustify.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-justify',
+				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('justify'); }
 			});
 

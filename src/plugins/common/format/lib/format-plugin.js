@@ -241,16 +241,10 @@ define([
 								componentName += componentNameExt;
 							}
 							Component.define(componentName, ToggleButton, {
-								enable: {
-									wrap: button,
-									wrapWord: button,
-									except: {
-										selector: 'img'
-									}
-								},
 								tooltip : i18n.t('button.' + button + '.tooltip'),
 								icon: 'aloha-icon aloha-icon-' + command,
-								click: function () {
+								scope: scope,
+ 								click: function () {
 									var selectedCells = jQuery('.aloha-cell-selected');
 
 									if ( typeof button_config === 'string' ) {
@@ -306,7 +300,6 @@ define([
 						case 'h6':
 						case 'pre':
 							that.multiSplitItems.push({
-								enable: { formatBlock: button },
 								'name' : button,
 								'tooltip' : i18n.t('button.' + button + '.tooltip'),
 								'iconClass' : 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
@@ -349,7 +342,6 @@ define([
 						// wide multisplit buttons
 						case 'removeFormat':
 							that.multiSplitItems.push({
-								enable: { selector: that.config.join(',') },
 								'name' : button,
 								'text' : i18n.t('button.' + button + '.text'),
 								'tooltip' : i18n.t('button.' + button + '.tooltip'),
@@ -369,7 +361,8 @@ define([
 				this.multiSplitButton = MultiSplitButton({
 					name: 'formatBlock',
 					items: this.multiSplitItems,
-					hideIfEmpty: true
+					hideIfEmpty: true,
+					scope: scope
 				});
 
 				// add the event handler for selection change

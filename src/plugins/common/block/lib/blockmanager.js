@@ -5,8 +5,21 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['aloha', 'jquery', 'ui/toolbar', 'aloha/observable', 'aloha/registry', 'util/class'],
-function(Aloha, jQuery, Toolbar, Observable, Registry, Class) {
+define([
+	'aloha',
+	'jquery',
+	'ui/component',
+	'aloha/observable',
+	'aloha/registry',
+	'util/class'
+], function(
+	Aloha,
+	jQuery,
+	Component,
+	Observable,
+	Registry,
+	Class
+){
 	"use strict";
 
 	var
@@ -74,7 +87,7 @@ function(Aloha, jQuery, Toolbar, Observable, Registry, Class) {
 		 * @constructor
 		 */
 		_constructor: function() {
-			Toolbar.createScope('Aloha.Block');
+			Component.createScope('Aloha.Block');
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
 			this._highlightedBlocks = {};
@@ -332,7 +345,7 @@ function(Aloha, jQuery, Toolbar, Observable, Registry, Class) {
 		 * @api
 		 */
 		registerBlockType: function(identifier, blockType) {
-			Toolbar.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
+			Component.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
 			this.blockTypes.register(identifier, blockType);
 		},
 

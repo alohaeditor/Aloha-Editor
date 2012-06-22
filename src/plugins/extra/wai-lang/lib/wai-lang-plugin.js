@@ -107,7 +107,7 @@ define([
 				if ( foundMarkup ) {
 						//addMarkupToSelectionButton.setState( true );
 						FloatingmenuPortHelper.setStateTrueAll('addMarkupToSelectionButton');
-						Toolbar.setScope( 'wai-lang' );
+						Component.setScope( 'wai-lang' );
 					langField.setTargetObject( foundMarkup, 'lang' );
 				} else {
 					langField.setTargetObject( null );
@@ -125,6 +125,7 @@ define([
 			Component.define("wailang", ToggleButton, {
 				tooltip: i18n.t('button.add-wai-lang.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang',
+				scope: 'Aloha.continuoustext',
 				click: function(){
 					that.addRemoveMarkupToSelection();
 				}
@@ -132,13 +133,14 @@ define([
 
 			//addMarkupToSelectionButton = Component.getGlobalInstance("wailang");
 
-			Toolbar.createScope('wai-lang', 'Aloha.continuoustext');
+			Component.createScope('wai-lang', 'Aloha.continuoustext');
 
 			langField = new AttributeField({
-				'name'       : 'wailangfield',
-				'width'      : 320,
-				'valueField' : 'id',
-				'minChars'   : 1
+				name: 'wailangfield',
+				width: 320,
+				valueField: 'id',
+				minChars: 1,
+				scope: 'wai-lang'
 			} );
 
 			langField.setTemplate(
@@ -153,6 +155,7 @@ define([
 			Component.define('removewailang', Button, {
 				tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang-remove',
+				scope: 'wai-lang',
 				click: function(){
 					that.removeLangMarkup();
 				}
@@ -209,7 +212,7 @@ define([
 
 		        // select the (possibly modified) range
 		        range.select();
-				Toolbar.setScope( 'Aloha.continousText' );
+				Component.setScope( 'Aloha.continousText' );
 				langField.setTargetObject( null );
 		    }
 		},
@@ -262,7 +265,7 @@ define([
 		 */
 		insertLanguageAnnotation: function() {
 			if ( this.findLangMarkup() ) {
-				Toolbar.activateTabOfButton( 'wailangfield' );
+				Component.activateTabOfButton( 'wailangfield' );
 				langField.focus();
 			} else {
 				this.addMarkupToSelection();
@@ -327,8 +330,8 @@ define([
 				return;
 			}
 
-			Toolbar.activateTabOfButton( 'wailangfield' );
-            Toolbar.setScope( 'wai-lang' );
+			Component.activateTabOfButton( 'wailangfield' );
+            Component.setScope( 'wai-lang' );
 
 			if ( range.isCollapsed() ) {
 				GENTICS.Utils.Dom.extendToWord( range );

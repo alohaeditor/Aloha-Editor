@@ -258,7 +258,7 @@ define( [
 				editable.obj.bind( 'keydown', that.hotKey.insertLink, function ( e ) {
 					if ( that.findLinkMarkup() ) {
 						// open the tab containing the href
-						Toolbar.activateTabOfButton('editLink');
+						Component.activateTabOfButton('editLink');
 						that.hrefField.focus();
 					} else {
 						that.insertLink( true );
@@ -286,7 +286,7 @@ define( [
 							component.show();
 						});
 
-					Toolbar.unhideTab();
+					Component.unhideTab();
 				} else {
 					//that.formatLinkButton.hide();
 					//that.insertLinkButton.hide();
@@ -295,7 +295,7 @@ define( [
 							component.hide();
 						});
 
-					Toolbar.hideTab(i18n.t('floatingmenu.tab.link'));
+					Component.hideTab(i18n.t('floatingmenu.tab.link'));
 				}
 			} );
 
@@ -323,7 +323,7 @@ define( [
 					if ( foundMarkup ) {
 						that.toggleLinkScope( true );
 						
-						Toolbar.activateTabOfButton('editLink');
+						Component.activateTabOfButton('editLink');
 
 						// now we are ready to set the target object
 						that.hrefField.setTargetObject( foundMarkup, 'href' );
@@ -448,17 +448,7 @@ define( [
 			Component.define("formatLink", ToggleButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
-				enable: {
-					wrap: 'A', // According to the HTML5 contain-in rules,
-							   // check whether any of the current selection be
-							   // wrapped with this given element?
-					except: function (range) {
-						// Conditional on the link plugin logic.
-						return true || false;
-					}
-					// selector: '>a.aloha'
-					// wrapExactly: 'A'
-				},
+				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.formatLink();
 				}
@@ -467,35 +457,26 @@ define( [
 			Component.define("insertLink", ToggleButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
-				enable: { insert: 'A' },
+				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.insertLink(false);
 				}
 			});
 			
 			this.hrefField = new AttributeField( {
-				enable: {
-					on: 'A' // TRUE: {<a>test</a>} || <a>te[s]t</a> || <a>test{}</a>
-					        // FALSE: [one<a>tw]o</a>
-					        // MAYBE: <a>test</a>{}
-					/*
-					except: {
-						selector: 'table a'
-					}
-					*/
-				},
-				'name': 'editLink',
-				'width': 320,
-				'valueField': 'url',
-				'cls': 'aloha-link-href-field'
+				name: 'editLink',
+				width: 320,
+				valueField: 'url',
+				cls: 'aloha-link-href-field',
+				scope: 'Aloha.continuoustext'
 			} );
 			this.hrefField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
 
 			Component.define("removeLink", Button, {
-				enable: { on: 'A' },
 				tooltip: i18n.t("button.removelink.tooltip"),
 				icon: "aloha-icon aloha-icon-unlink",
+				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.removeLink();
 				}
@@ -578,7 +559,7 @@ define( [
 					}
 					
 					window.setTimeout( function () {
-						Toolbar.setScope('Aloha.continuoustext');
+						Component.setScope('Aloha.continuoustext');
 					}, 100 );
 					
 					that.hrefField.preventAutoSuggestionBoxFromExpanding();
@@ -681,7 +662,7 @@ define( [
 			}
 			
 			// activate floating menu tab
-			Toolbar.activateTabOfButton('editLink');
+			Component.activateTabOfButton('editLink');
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
@@ -741,7 +722,7 @@ define( [
 				
 				if ( typeof terminateLinkScope == 'undefined' ||
 						terminateLinkScope === true ) {
-					Toolbar.setScope('Aloha.continuoustext');
+					Component.setScope('Aloha.continuoustext');
 				}
 			}
 		},

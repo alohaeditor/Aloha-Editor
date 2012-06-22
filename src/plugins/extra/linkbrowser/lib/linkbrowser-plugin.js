@@ -35,6 +35,7 @@ define([
 			Component.define('linkBrowser', Button, {
 				tooltip: i18n.t('button.addlink.tooltip'),
 				icon: 'aloha-icon-tree',
+				scope: 'Aloha.continuoustext',
 				click: function () { that.open(); }
 			});
 

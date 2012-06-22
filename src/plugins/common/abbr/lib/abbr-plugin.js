@@ -63,6 +63,7 @@ define([
 			Component.define("formatAbbr", ToggleButton, {
 				tooltip: i18n.t("button.abbr.tooltip"),
 				icon: "aloha-icon aloha-icon-abbr",
+				scope: 'Aloha.continuoustext',
 				click: function(){
 					me.formatAbbr();
 				}
@@ -73,6 +74,7 @@ define([
 			Component.define("insertAbbr", Button, {
 				tooltip: i18n.t('button.addabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr',
+				scope: 'Aloha.continuoustext',
 				click: function(){
 					me.insertAbbr( false );
 				}
@@ -80,11 +82,12 @@ define([
 
 		    //this.insertAbbrButton = Component.getGlobalInstance("insertAbbr");
 
-		    Toolbar.createScope('abbr', 'Aloha.continuoustext');
+		    Component.createScope('abbr', 'Aloha.continuoustext');
 
 		    this.abbrField = new AttributeField({
-		    	'width': 320,
-		    	'name': 'abbrText'
+		    	width: 320,
+		    	name: 'abbrText',
+		        scope: 'abbr'
 		    });
 		},
 
@@ -108,7 +111,7 @@ define([
 		        Aloha.editables[ i ].obj.keydown( function ( e ) {
 		    		if ( e.metaKey && e.which == 71 ) {
 				        if ( me.findAbbrMarkup() ) {
-				        	Toolbar.activateTabOfButton( 'abbrText' );
+				        	Component.activateTabOfButton( 'abbrText' );
 				            me.abbrField.focus();
 				        } else {
 				        	me.insertAbbr();
@@ -159,8 +162,7 @@ define([
 		        		//me.formatAbbrButton.setState( true );
 						FloatingmenuPortHelper.hideAll('insertAbbr');
 						FloatingmenuPortHelper.setStateTrueAll('formatAbbrButton');
-
-		        		Toolbar.setScope( 'abbr' );
+		        		Component.setScope( 'abbr' );
 		        		me.abbrField.setTargetObject( foundMarkup, 'title' );
 		        	} else {
 		        		// no abbr found
@@ -223,7 +225,7 @@ define([
 		    }
 
 		    // activate floating menu tab
-		    Toolbar.activateTabOfButton('abbrText');
+		    Component.activateTabOfButton('abbrText');
 
 		    // if selection is collapsed then extend to the word.
 		    if ( range.isCollapsed() && extendToWord != false ) {

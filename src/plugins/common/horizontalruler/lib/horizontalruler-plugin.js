@@ -39,6 +39,7 @@ define([
 				tooltip: i18n.t('button.addhr.tooltip'),
 				iconOnly: true,
 				icon: 'aloha-icon-horizontalruler',
+				scope: 'Aloha.continuoustext',
 				click: function(){
 					that.insertHR();
 				}

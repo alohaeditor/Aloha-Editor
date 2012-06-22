@@ -50,8 +50,9 @@ var attributeField = function(props){
 		attrField._element.width(props.width);
 	}
 
-	var componentInstance = Component.define(props.name, component, {
-		element: attrField._element
+	Component.define(props.name, component, {
+		element: attrField._element,
+		scope: props.scope
 	});
 
 	attrField._element.autocomplete({

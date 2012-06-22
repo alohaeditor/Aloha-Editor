@@ -230,6 +230,7 @@ define([
 			Component.define("characterPicker", Button, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
 				icon: "aloha-icon-characterpicker",
+				scope: 'Aloha.continuoustext',
 				click: function() {
 					self.characterOverlay.show(this.element);
 				}

@@ -94,6 +94,7 @@ define([
 			Component.define("toggleMetaView", ToggleButton, {
 				tooltip : i18n.t('button.switch-metaview.tooltip'),
 				icon: 'aloha-icon aloha-icon-metaview',
+				scope: 'Aloha.continuoustext',
 				click : function () { that.buttonClick(); }
 			});
 

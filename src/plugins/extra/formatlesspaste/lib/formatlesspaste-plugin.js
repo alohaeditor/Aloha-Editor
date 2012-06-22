@@ -139,13 +139,14 @@ define([
 			FormatlessPasteHandler.strippedElements = this.strippedElements;
 			// add button to toggle format-less pasting
 
-			Component.define("toggleFormatlessPaste", ToggleButton, {
-					tooltip: i18n.t('button.formatlessPaste.tooltip'),
-					icon: 'aloha-icon aloha-icon-formatless-paste',
-					click: function () { 
-						//toggle the value of allowFormatless
-						FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
-					}
+			Component.define('toggleFormatlessPaste', ToggleButton, {
+				tooltip: i18n.t('button.formatlessPaste.tooltip'),
+				icon: 'aloha-icon aloha-icon-formatless-paste',
+				scope: 'Aloha.continuoustext',
+				click: function () { 
+					//toggle the value of allowFormatless
+					FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
+				}
 			});
 
 			//this.formatlessPasteButton = Component.getGlobalInstance("toggleFormatlessPaste");

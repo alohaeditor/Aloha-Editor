@@ -13,6 +13,7 @@ define([
 	function MultiSplitButton(props) {
 
 		Component.define(props.name, MultiSplit, {
+			scope: props.scope,
 			getButtons: function () {
 				return makeButtonsFromOldStyleProps(props, false);
 			},

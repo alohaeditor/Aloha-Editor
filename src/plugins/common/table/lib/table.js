@@ -23,7 +23,7 @@
 define([
 	'aloha',
 	'jquery',
-	'ui/toolbar',
+	'ui/component',
 	'ui/message',
 	'i18n!table/nls/i18n',
 	'table/table-cell',
@@ -32,7 +32,7 @@ define([
 	'ui/port-helper-floatingmenu'
 ], function (Aloha,
              jQuery,
-			 Toolbar,
+			 Component,
 			 Message,
 			 i18n,
 			 TableCell,
@@ -657,7 +657,7 @@ define([
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
-					Toolbar.activateTabOfButton('rowheader');
+					Component.activateTabOfButton('rowheader');
 					
 					// As side-effect of the following call the focus
 					// will be set on the first selected cell. 
@@ -1356,7 +1356,7 @@ define([
 			this.tablePlugin.columnMSButton.showItem(this.tablePlugin.columnMSItems[i].name);
 		}
 		
-		Toolbar.setScope(this.tablePlugin.name + '.column');
+		Component.setScope(this.tablePlugin.name + '.column');
 		
 		//this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
 		(this.selection.isHeader ? FloatingmenuPortHelper.setStateTrueAll
@@ -1414,7 +1414,7 @@ define([
 		}
 		
 		//    TableSelection.selectionType = 'row';
-		Toolbar.setScope(this.tablePlugin.name + '.row');
+		Component.setScope(this.tablePlugin.name + '.row');
 		
 		this.selection.selectRows( this.rowsToSelect );
 		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );

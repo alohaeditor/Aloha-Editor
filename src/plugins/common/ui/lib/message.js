@@ -32,8 +32,11 @@ function($, Component) {
 	}
 
 	function makeDialogProps(props, defaultTitle){
-		// All root elements of widgets added to the page by aloha should have the class 'aloha'
-		var cls = 'aloha-dialog';
+		// All root elements of widgets added to the page by aloha should have the class 'aloha'.
+		// aloha-dialog is used for a hack to prevent a click in the
+		// dialog from bluggin the editable search for aloha-dialog in
+		// the aloha core for more information.
+		var cls = 'aloha aloha-dialog';
 		if (props.cls) {
 			cls += ' ' + props.cls;
 		}

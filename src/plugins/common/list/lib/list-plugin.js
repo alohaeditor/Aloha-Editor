@@ -60,6 +60,7 @@ define([
 			Component.define("orderedList", ToggleButton, {
 				tooltip: i18n.t("button.createolist.tooltip"),
 				icon: "aloha-icon aloha-icon-orderedlist",
+				scope: 'Aloha.continuoustext',
 				click: function(){
 					that.transformList(true);
 				}
@@ -68,6 +69,7 @@ define([
 			Component.define("unorderedList", ToggleButton, {
 				tooltip: i18n.t("button.createulist.tooltip"),
 				icon: "aloha-icon aloha-icon-unorderedlist",
+				scope: 'Aloha.continuoustext',
 				click: function(){
 					that.transformList(false);
 				}
@@ -76,6 +78,7 @@ define([
 			Component.define("indentList", Button, {
 				tooltip: i18n.t('button.indentlist.tooltip'),
 				icon: 'aloha-icon aloha-icon-indent',
+				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.indentList();
 				}
@@ -84,6 +87,7 @@ define([
 			Component.define("outdentList", Button, {
 				tooltip: i18n.t('button.outdentlist.tooltip'),
 				icon: 'aloha-icon aloha-icon-outdent',
+				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.outdentList();
 				}
@@ -92,7 +96,7 @@ define([
 			//this.createUnorderedListButton = Component.getGlobalInstance("unorderedList");
 			//this.createOrderedListButton = Component.getGlobalInstance("orderedList");
 
-			Toolbar.createScope('Aloha.List', 'Aloha.continuoustext');
+			Component.createScope('Aloha.List', 'Aloha.continuoustext');
 
 			//this.indentListButton = Component.getGlobalInstance("indentList");
 			//this.outdentListButton = Component.getGlobalInstance("outdentList");

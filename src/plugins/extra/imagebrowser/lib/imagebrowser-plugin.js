@@ -44,6 +44,7 @@ define([
 			Component.define('imageBrowser', Button, {
 				tooltip: i18n.t('button.addimage.tooltip'),
 				icon: 'aloha-icon-tree',
+				scope: 'Aloha.continuoustext',
 				click: function () { browser.open(); }
 			});
 
