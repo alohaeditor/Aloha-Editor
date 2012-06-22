@@ -4,8 +4,7 @@
 * aloha-sales@gentics.com - way to over-lawyer it up Andrew :/
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-
-define( [
+define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
@@ -24,23 +23,23 @@ define( [
 	'table/table-plugin-utils',
 	'ui/port-helper-floatingmenu',
 	'css!table/css/table.css'
-], function( Aloha,
-	         jQuery,
-	         Plugin,
-	         PluginManager,
-	         Toolbar,
-			 Component,
-			 Button,
-			 ToggleButton,
-			 Message,
-			 AttributeField,
-			 MultiSplitButton,
-	         i18n,
-	         i18nCore,
-	         CreateLayer,
-	         Table,
-	         Utils,
-			 FloatingmenuPortHelper) {
+], function(Aloha,
+            jQuery,
+            Plugin,
+            PluginManager,
+            Toolbar,
+            Component,
+            Button,
+            ToggleButton,
+            Message,
+            AttributeField,
+            MultiSplitButton,
+            i18n,
+            i18nCore,
+            CreateLayer,
+            Table,
+            Utils,
+            FloatingmenuPortHelper) {
 
 	var GENTICS = window.GENTICS;
 	

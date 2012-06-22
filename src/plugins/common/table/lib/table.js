@@ -32,13 +32,13 @@ define([
 	'ui/port-helper-floatingmenu'
 ], function (Aloha,
              jQuery,
-			 Component,
-			 Message,
-			 i18n,
-			 TableCell,
-			 TableSelection,
-	         Utils,
-			 FloatingmenuPortHelper) {
+             Component,
+             Message,
+             i18n,
+             TableCell,
+             TableSelection,
+             Utils,
+             FloatingmenuPortHelper) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
 	

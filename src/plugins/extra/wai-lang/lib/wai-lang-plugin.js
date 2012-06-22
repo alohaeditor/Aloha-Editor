@@ -105,9 +105,9 @@ define([
 
 				foundMarkup = that.findLangMarkup( rangeObject );
 				if ( foundMarkup ) {
-						//addMarkupToSelectionButton.setState( true );
-						FloatingmenuPortHelper.setStateTrueAll('addMarkupToSelectionButton');
-						Component.setScope( 'wai-lang' );
+					//addMarkupToSelectionButton.setState( true );
+					FloatingmenuPortHelper.setStateTrueAll('addMarkupToSelectionButton');
+					Component.setScope( 'wai-lang' );
 					langField.setTargetObject( foundMarkup, 'lang' );
 				} else {
 					langField.setTargetObject( null );
@@ -310,8 +310,8 @@ define([
 		 * Toggles markup around selection.
 		 */
 		addRemoveMarkupToSelection: function() {
-			//if ( addMarkupToSelectionButton.pressed ) {
-			if (FloatingmenuPortHelper.isFirstPressed()) {
+			//if ( addMarkupToSelectionButton.getState() ) {
+			if (FloatingmenuPortHelper.isStateOfFirst()) {
 				this.removeLangMarkup();
 			} else {
 				this.addMarkupToSelection( false );

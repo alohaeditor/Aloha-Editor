@@ -4,7 +4,7 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-define ([
+define([
 	'jquery',
 	'aloha/plugin',
 	'ui/component',
@@ -16,11 +16,11 @@ define ([
 ],
 function (jQuery,
           Plugin,
-		  Component,
-		  ToggleButton,
-		  i18n,
-		  i18nCore,
-		  FloatingmenuPortHelper) {
+          Component,
+          ToggleButton,
+          i18n,
+          i18nCore,
+          FloatingmenuPortHelper) {
 	'use strict';
 
 	var Aloha = window.Aloha;

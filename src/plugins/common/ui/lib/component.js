@@ -23,30 +23,18 @@ define([
 		visible: true,
 
 		/**
-		 * @param {Aloha.Editable} editable The editable to which this
-		 *                                  component will interact with for
-		 *                                  the extent of its lifetime.
 		 * @constructor
 		 */
-		//TODO components must not be bound to a single editable for
-		//  their lifetime. This may make sense for a menu tab pops up
-		//  when the editable has focus and disappers when the editable
-		//  looses focus, but doesn't make sense for a menu that is
-		//  always present. Also, it's harder to refactor existing
-		//  plugins this way because there isn't a global instance of
-		//  the component anymore.
-		_constructor: function( editable ) {
-			this.editable = editable;
-
+		_constructor: function() {
 			// Components are responsible for updating their state and visibility
 			// whenever the selection changes.
 			// TODO(p.salema@gentics.com): Consider implementing 'aloha-node-changed'
 			// which would be trigger only when the user selection moves from one node
 			// into another.
-			Aloha.bind( 'aloha-selection-changed aloha-command-executed',
-				jQuery.proxy( function( event, range ) {
-					this.selectionChange( range );
-				}, this ) );
+			Aloha.bind('aloha-selection-changed aloha-command-executed',
+				jQuery.proxy(function (event, range) {
+					this.selectionChange(range);
+				}, this));
 
 			this.init();
 		},
@@ -147,8 +135,7 @@ define([
 		},
 
 		/**
-		 * Renders a component of the given type, binding the specified
-		 * editable to it.
+		 * Renders a component of the given type.
 		 *
 		 * It is here that component instances are instantiated.
 		 *
@@ -158,16 +145,18 @@ define([
 		 */
 		render: function(type) {
 			var ComponentType = Component.components[type];
+
 			if (!ComponentType) {
 				throw new Error('Component type "' + type +
 					'" is not defined.');
 			}
-			var instance = new ComponentType();
+
 			if (!componentInstances[type]) {
 				componentInstances[type] = [];
 			}
 
-			componentInstances[type] = instance;
+			var instance = new ComponentType();
+			componentInstances[type].push(instance);
 
 			var scopeProps = this._scopes[instance.scope];
 			if (scopeProps) {
@@ -178,19 +167,20 @@ define([
 			return instance;
 		},
 
-		eachInstance: function (instanceTypes, callback) {
+		eachInstance: function (instanceTypes, forEach) {
 			var instances = [];
 			var j = instanceTypes.length;
 			while (j) {
 				if (componentInstances[instanceTypes[--j]]) {
-					instances = instances.concat(componentInstances[instanceTypes[j]]);
+					instances = instances.concat(
+						componentInstances[instanceTypes[j]]);
 				}
 			}
 			j = instances.length;
 			while (j) {
-				if (false === callback(instances[--j])) {
-					return
-				};
+				if (false === forEach(instances[--j])) {
+					return;
+				}
 			}
 		},
 

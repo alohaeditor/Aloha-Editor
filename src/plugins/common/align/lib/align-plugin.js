@@ -16,12 +16,12 @@ define([
 	'css!align/css/align.css',
 ], function(Aloha,
             Plugin,
-			Component,
-			ToggleButton,
-			i18n,
-			i18nCore,
-			jQuery,
-			FloatingmenuPortHelper) {
+            Component,
+            ToggleButton,
+            i18n,
+            i18nCore,
+            jQuery,
+            FloatingmenuPortHelper) {
 	'use strict';
 
 	var GENTICS = window.GENTICS;
@@ -78,7 +78,6 @@ define([
 		},
 
 		buttonPressed: function (rangeObject) {
-
 			var that = this;
 
 			rangeObject.findMarkup(function() {
@@ -87,6 +86,9 @@ define([
 
 			if(this.alignment != this.lastAlignment)
 			{
+				// @FIXME: Switching between editables will not work becuase
+				//         lastAlignment and alignment are shared across
+				//         multiple editables.
 				switch(this.lastAlignment)
 				{
 					case 'right':
@@ -114,12 +116,12 @@ define([
 				{
 					case 'right':
 						//this.alignRightButton.setState(true);
-						FloatingmenuPortHelper.setStateTrueAll('alignLeft');
+						FloatingmenuPortHelper.setStateTrueAll('alignRight');
 						break;
 
 					case 'center':
 						//this.alignCenterButton.setState(true);
-						FloatingmenuPortHelper.setStateTrueAll('alignLeft');
+						FloatingmenuPortHelper.setStateTrueAll('alignCenter');
 						break;
 
 					case 'justify':
@@ -145,7 +147,6 @@ define([
 		 * @return void
 		 */
 		applyButtonConfig: function (obj) {
-			
 			var config = this.getEditableConfig(obj);
 
 			if ( config && config.alignment && !this.settings.alignment ) {
@@ -170,7 +171,7 @@ define([
 
 			if ( jQuery.inArray('left', config.alignment) != -1) {
 				//this.alignLeftButton.show();
-				FloatingmenuPortHelper.hideAll('alignLeft');
+				FloatingmenuPortHelper.showAll('alignLeft');
 			} else {
 				//this.alignLeftButton.hide();
 				FloatingmenuPortHelper.hideAll('alignLeft');
@@ -278,7 +279,6 @@ define([
 		 * Align the selection
 		 */
 		insertAlign: function () {
-
 			var that = this;
 
 			// do not align the range
