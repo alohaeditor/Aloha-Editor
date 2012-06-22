@@ -85,14 +85,14 @@ function( jQuery, Component ) {
 		 * Shows the button in a greyed-out inactive (unclickable) state.
 		 */
 		disable: function() {
-			// TODO
+			this.element.button('option', 'disabled', true);
 		},
 
 		/**
 		 * Enables the button again after it has previously been disabled.
 		 */
 		enable: function() {
-			// TODO
+			this.element.button('option', 'disabled', false);
 		}
 	});
 
