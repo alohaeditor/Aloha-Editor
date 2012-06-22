@@ -247,9 +247,13 @@ function(Aloha, jQuery, Class, Range, $_) {
 				return true;
 			}
 
+			Aloha.trigger('aloha-selection-changed-before', [this.rangeObject, event]);
+
 			// throw the event that the selection has changed. Plugins now have the
 			// chance to react on the currentElements[childCount].children.lengthged selection
-			Aloha.trigger('aloha-selection-changed', [ this.rangeObject, event ]);
+			Aloha.trigger('aloha-selection-changed', [this.rangeObject, event]);
+
+			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
 
 			return true;
 		},

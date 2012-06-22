@@ -21,7 +21,7 @@ define( [
 	'aloha/plugin',
 	'jquery',
 	'ui/port-helper-attribute-field',
-	'ui/toolbar',
+	'ui/scopes',
 	'ui/surface',
 	'ui/component',
 	'ui/button',
@@ -31,7 +31,7 @@ define( [
 	'aloha/console',
 	'css!link/css/link.css',
 	'link/../extra/linklist'
-], function ( Aloha, Plugin, jQuery, AttributeField, Toolbar, Surface, Component, Button, ToggleButton, i18n, i18nCore, console ) {
+], function ( Aloha, Plugin, jQuery, AttributeField, Scopes, Surface, Component, Button, ToggleButton, i18n, i18nCore, console ) {
 	'use strict';
 	
 	var GENTICS = window.GENTICS,
@@ -258,7 +258,7 @@ define( [
 				editable.obj.bind( 'keydown', that.hotKey.insertLink, function ( e ) {
 					if ( that.findLinkMarkup() ) {
 						// open the tab containing the href
-						Component.activateTabOfButton('editLink');
+						Scopes.activateTabOfButton('editLink');
 						that.hrefField.focus();
 					} else {
 						that.insertLink( true );
@@ -286,7 +286,7 @@ define( [
 							component.show();
 						});
 
-					Component.unhideTab();
+					Scopes.unhideTab();
 				} else {
 					//that.formatLinkButton.hide();
 					//that.insertLinkButton.hide();
@@ -295,7 +295,7 @@ define( [
 							component.hide();
 						});
 
-					Component.hideTab(i18n.t('floatingmenu.tab.link'));
+					Scopes.hideTab(i18n.t('floatingmenu.tab.link'));
 				}
 			} );
 
@@ -323,7 +323,7 @@ define( [
 					if ( foundMarkup ) {
 						that.toggleLinkScope( true );
 						
-						Component.activateTabOfButton('editLink');
+						Scopes.activateTabOfButton('editLink');
 
 						// now we are ready to set the target object
 						that.hrefField.setTargetObject( foundMarkup, 'href' );
@@ -382,6 +382,7 @@ define( [
 					component.setState(true);
 				});
 
+				Scopes.addScope(this.name);
 			} else {
 				this.hrefField.hide();
 
@@ -399,6 +400,8 @@ define( [
 				Component.eachInstance(['formatLink'], function (component) {
 					component.setState(false);
 				});
+
+				Scopes.removeScope(this.name);
 			}
 		},
 		
@@ -498,9 +501,6 @@ define( [
 
 			// update link object when src changes
 			this.hrefField.addListener( 'keyup', function ( event ) {
-				// Now show all the ui-attributefield elements
-				that.showComboList();
-				
 				// Handle ESC key press: We do a rough check to see if the user
 				// has entered a link or searched for something
 				if ( event.keyCode == 27 ) {
@@ -518,7 +518,6 @@ define( [
 						
 						// restore original value and hide combo list
 						that.hrefField.setValue( hrefValue );
-						that.hideComboList();
 						
 						if ( hrefValue == that.hrefValue || hrefValue == '' ) {
 							that.removeLink( false );
@@ -559,7 +558,7 @@ define( [
 					}
 					
 					window.setTimeout( function () {
-						Component.setScope('Aloha.continuoustext');
+						Scopes.setScope('Aloha.continuoustext');
 					}, 100 );
 					
 					that.hrefField.preventAutoSuggestionBoxFromExpanding();
@@ -662,7 +661,7 @@ define( [
 			}
 			
 			// activate floating menu tab
-			Component.activateTabOfButton('editLink');
+			Scopes.activateTabOfButton('editLink');
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
@@ -722,7 +721,7 @@ define( [
 				
 				if ( typeof terminateLinkScope == 'undefined' ||
 						terminateLinkScope === true ) {
-					Component.setScope('Aloha.continuoustext');
+					Scopes.setScope('Aloha.continuoustext');
 				}
 			}
 		},
@@ -769,24 +768,6 @@ define( [
 		},
 		
 		/**
-		 * Displays all the ui-attributefield elements
-		 */
-		showComboList: function () {
-			jQuery( '.x-layer x-combo-list,' +
-				    '.x-combo-list-inner,' +
-				    '.x-combo-list' ).show();
-		},
-		
-		/**
-		 * Hide all the ui-attributefield elements
-		 */
-		hideComboList: function () {
-			jQuery( '.x-layer x-combo-list,' +
-				    '.x-combo-list-inner,' +
-				    '.x-combo-list' ).hide();
-		},
-		
-		/**
 		 * Make the given jQuery object (representing an editable) clean for saving
 		 * Find all links and remove editing objects
 		 * @param obj jQuery object to make clean
@@ -800,6 +781,5 @@ define( [
 					.removeClass( 'aloha-link-text' );
 			} );
 		}
-		
 	} );
 } );

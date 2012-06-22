@@ -9,22 +9,22 @@ define([
 	'aloha/plugin',
 	'jquery',
 	'ui/component',
-	'ui/toolbar',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
 	'i18n!format/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'ui/port-helper-floatingmenu'
-], function (Aloha,
-             Plugin,
-			 jQuery,
-			 Component,
-			 Toolbar,
-			 ToggleButton,
-			 MultiSplitButton,
-			 i18n,
-			 i18nCore,
-			 FloatingmenuPortHelper) {
+], function (
+	Aloha,
+	Plugin,
+	jQuery,
+	Component,
+	ToggleButton,
+	MultiSplitButton,
+	i18n,
+	i18nCore,
+	FloatingmenuPortHelper
+) {
 		'use strict';
 
 		var GENTICS = window.GENTICS,

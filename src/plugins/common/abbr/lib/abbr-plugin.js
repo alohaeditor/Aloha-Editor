@@ -11,24 +11,25 @@ define([
 	'ui/component',
 	'ui/toggleButton',
 	'ui/button',
-	'ui/toolbar',
+	'ui/scopes',
 	'ui/port-helper-attribute-field',
 	'i18n!abbr/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'ui/port-helper-floatingmenu'
-], function (Aloha,
-             jQuery,
-			 Plugin,
-			 Component,
-			 ToggleButton,
-			 Button,
-			 Toolbar,
-			 AttributeField,
-			 i18n,
-			 i18nCore,
-			 FloatingmenuPortHelper) {
+], function (
+	Aloha,
+	jQuery,
+	Plugin,
+	Component,
+	ToggleButton,
+	Button,
+	Scopes,
+	AttributeField,
+	i18n,
+	i18nCore,
+	FloatingmenuPortHelper
+) {
 	'use strict';
-
 	var GENTICS = window.GENTICS;
 
 	/**
@@ -82,7 +83,7 @@ define([
 
 		    //this.insertAbbrButton = Component.getGlobalInstance("insertAbbr");
 
-		    Component.createScope('abbr', 'Aloha.continuoustext');
+		    Scopes.createScope('abbr', 'Aloha.continuoustext');
 
 		    this.abbrField = new AttributeField({
 		    	width: 320,
@@ -111,7 +112,7 @@ define([
 		        Aloha.editables[ i ].obj.keydown( function ( e ) {
 		    		if ( e.metaKey && e.which == 71 ) {
 				        if ( me.findAbbrMarkup() ) {
-				        	Component.activateTabOfButton( 'abbrText' );
+				        	Scopes.activateTabOfButton( 'abbrText' );
 				            me.abbrField.focus();
 				        } else {
 				        	me.insertAbbr();
@@ -162,7 +163,7 @@ define([
 		        		//me.formatAbbrButton.setState( true );
 						FloatingmenuPortHelper.hideAll('insertAbbr');
 						FloatingmenuPortHelper.setStateTrueAll('formatAbbrButton');
-		        		Component.setScope( 'abbr' );
+		        		Scopes.setScope( 'abbr' );
 		        		me.abbrField.setTargetObject( foundMarkup, 'title' );
 		        	} else {
 		        		// no abbr found
@@ -225,7 +226,7 @@ define([
 		    }
 
 		    // activate floating menu tab
-		    Component.activateTabOfButton('abbrText');
+		    Scopes.activateTabOfButton('abbrText');
 
 		    // if selection is collapsed then extend to the word.
 		    if ( range.isCollapsed() && extendToWord != false ) {

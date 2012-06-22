@@ -10,7 +10,7 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/component',
-	'ui/toolbar',
+	'ui/scopes',
 	'ui/button',
 	'ui/toggleButton',
 	'ui/port-helper-attribute-field',
@@ -19,17 +19,19 @@ define([
 	'ui/port-helper-floatingmenu',
 	'wai-lang/languages',
 	'css!wai-lang/css/wai-lang.css'
-], function(Aloha,
-            jQuery,
-            Plugin,
-            Component,
-            Toolbar,
-            Button,
-            ToggleButton,
-            AttributeField,
-            i18n,
-            i18nCore,
-            FloatingmenuPortHelper) {
+], function(
+	Aloha,
+	jQuery,
+	Plugin,
+	Component,
+	Scopes,
+	Button,
+	ToggleButton,
+	AttributeField,
+	i18n,
+	i18nCore,
+	FloatingmenuPortHelper
+) {
 	'use strict';
 
 	var WAI_LANG_CLASS = 'aloha-wai-lang',
@@ -107,7 +109,7 @@ define([
 				if ( foundMarkup ) {
 					//addMarkupToSelectionButton.setState( true );
 					FloatingmenuPortHelper.setStateTrueAll('addMarkupToSelectionButton');
-					Component.setScope( 'wai-lang' );
+					Scopes.setScope( 'wai-lang' );
 					langField.setTargetObject( foundMarkup, 'lang' );
 				} else {
 					langField.setTargetObject( null );
@@ -133,7 +135,7 @@ define([
 
 			//addMarkupToSelectionButton = Component.getGlobalInstance("wailang");
 
-			Component.createScope('wai-lang', 'Aloha.continuoustext');
+			Scopes.createScope('wai-lang', 'Aloha.continuoustext');
 
 			langField = new AttributeField({
 				name: 'wailangfield',
@@ -212,7 +214,7 @@ define([
 
 		        // select the (possibly modified) range
 		        range.select();
-				Component.setScope( 'Aloha.continousText' );
+				Scopes.setScope( 'Aloha.continousText' );
 				langField.setTargetObject( null );
 		    }
 		},
@@ -265,7 +267,7 @@ define([
 		 */
 		insertLanguageAnnotation: function() {
 			if ( this.findLangMarkup() ) {
-				Component.activateTabOfButton( 'wailangfield' );
+				Scopes.activateTabOfButton( 'wailangfield' );
 				langField.focus();
 			} else {
 				this.addMarkupToSelection();
@@ -330,8 +332,8 @@ define([
 				return;
 			}
 
-			Component.activateTabOfButton( 'wailangfield' );
-            Component.setScope( 'wai-lang' );
+			Scopes.activateTabOfButton( 'wailangfield' );
+            Scopes.setScope( 'wai-lang' );
 
 			if ( range.isCollapsed() ) {
 				GENTICS.Utils.Dom.extendToWord( range );

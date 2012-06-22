@@ -231,7 +231,6 @@ function( Aloha, jQuery, Class, Container ) {
 				}
 			}
 		}
-
 	});
 
 	Surface.init();

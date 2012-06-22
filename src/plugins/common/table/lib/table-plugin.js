@@ -9,7 +9,7 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
-	'ui/toolbar',
+	'ui/scopes',
 	'ui/component',
 	'ui/button',
 	'ui/toggleButton',
@@ -23,24 +23,25 @@ define([
 	'table/table-plugin-utils',
 	'ui/port-helper-floatingmenu',
 	'css!table/css/table.css'
-], function(Aloha,
-            jQuery,
-            Plugin,
-            PluginManager,
-            Toolbar,
-            Component,
-            Button,
-            ToggleButton,
-            Message,
-            AttributeField,
-            MultiSplitButton,
-            i18n,
-            i18nCore,
-            CreateLayer,
-            Table,
-            Utils,
-            FloatingmenuPortHelper) {
-
+], function(
+	Aloha,
+	jQuery,
+	Plugin,
+	PluginManager,
+	Scopes,
+	Component,
+	Button,
+	ToggleButton,
+	Message,
+	AttributeField,
+	MultiSplitButton,
+	i18n,
+	i18nCore,
+	CreateLayer,
+	Table,
+	Utils,
+	FloatingmenuPortHelper
+) {
 	var GENTICS = window.GENTICS;
 	
 	/**
@@ -871,9 +872,9 @@ define([
 		var that = this;
 
 		// generate the new scopes
-		Component.createScope(this.name + '.row', 'Aloha.continuoustext');
-		Component.createScope(this.name + '.column', 'Aloha.continuoustext');
-		Component.createScope(this.name + '.cell', 'Aloha.continuoustext');
+		Scopes.createScope(this.name + '.row', 'Aloha.continuoustext');
+		Scopes.createScope(this.name + '.column', 'Aloha.continuoustext');
+		Scopes.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
 		Component.define("createTable", Button, {
 			tooltip: i18n.t("button.createtable.tooltip"),
@@ -1275,7 +1276,7 @@ define([
 
 	TablePlugin.updateFloatingMenuScope = function () {
 		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
-			Component.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+			Scopes.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
 		}
 	};
 	

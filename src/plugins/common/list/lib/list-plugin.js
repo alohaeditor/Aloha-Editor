@@ -9,24 +9,26 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/component',
-	'ui/toolbar',
+	'ui/scopes',
 	'ui/button',
 	'ui/toggleButton',
 	'i18n!list/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/engine',
 	'ui/port-helper-floatingmenu'
-], function(Aloha,
-            jQuery,
-			Plugin,
-			Component,
-			Toolbar,
-			Button,
-			ToggleButton,
-			i18n,
-			i18nCore,
-			Engine,
-			FloatingmenuPortHelper) {
+], function(
+	Aloha,
+	jQuery,
+	Plugin,
+	Component,
+	Scopes,
+	Button,
+	ToggleButton,
+	i18n,
+	i18nCore,
+	Engine,
+	FloatingmenuPortHelper
+) {
 	'use strict';
 
 	var GENTICS = window.GENTICS;
@@ -96,7 +98,7 @@ define([
 			//this.createUnorderedListButton = Component.getGlobalInstance("unorderedList");
 			//this.createOrderedListButton = Component.getGlobalInstance("orderedList");
 
-			Component.createScope('Aloha.List', 'Aloha.continuoustext');
+			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
 
 			//this.indentListButton = Component.getGlobalInstance("indentList");
 			//this.outdentListButton = Component.getGlobalInstance("outdentList");
