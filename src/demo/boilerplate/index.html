@@ -85,7 +85,7 @@
 				components: [
 					[ "createTable", "characterPicker", "insertLink",
 					  "insertImage", "insertAbbr", "insertToc",
-					  "insertHorizontalRule"]
+					  "insertHorizontalRule", "insertImage"]
 				]
 			},
 			// Link Tab
@@ -94,13 +94,6 @@
 				showOn: "a",
 				showOn: { scope: 'link' },
 				components: [ [ "editLink", "removeLink", "linkBrowser" ] ]
-			},
-			// Image insert Tab
-			{
-				label: "Image Insert",
-				// Show this tab whenever we have not selected an image.
-				showOn: { scope: 'Aloha.continuoustext' },
-				components: [ "insertImage" ]
 			},
             // Image Tab
             {
