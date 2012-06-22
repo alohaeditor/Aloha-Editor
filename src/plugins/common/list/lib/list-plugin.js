@@ -4,7 +4,6 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-
 define([
 	'aloha',
 	'jquery',
@@ -15,7 +14,8 @@ define([
 	'ui/toggleButton',
 	'i18n!list/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'aloha/engine'
+	'aloha/engine',
+	'ui/port-helper-floatingmenu'
 ], function(
 	Aloha,
 	jQuery,
@@ -26,12 +26,12 @@ define([
 	ToggleButton,
 	i18n,
 	i18nCore,
-	Engine
-){
-	"use strict";
+	Engine,
+	FloatingmenuPortHelper
+) {
+	'use strict';
 
-	var
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * Register the ListPlugin as Aloha.Plugin
@@ -95,38 +95,49 @@ define([
 				}
 			});
 
-			this.createUnorderedListButton = Component.getGlobalInstance("unorderedList");
-			this.createOrderedListButton = Component.getGlobalInstance("orderedList");
+			//this.createUnorderedListButton = Component.getGlobalInstance("unorderedList");
+			//this.createOrderedListButton = Component.getGlobalInstance("orderedList");
 
 			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
 
-			this.indentListButton = Component.getGlobalInstance("indentList");
-			this.outdentListButton = Component.getGlobalInstance("outdentList");
+			//this.indentListButton = Component.getGlobalInstance("indentList");
+			//this.outdentListButton = Component.getGlobalInstance("outdentList");
 
 			// add the event handler for selection change
 			Aloha.bind('aloha-selection-changed', function ( event, rangeObject ) {
 				var i, effectiveMarkup;
 				
 				// Hide all buttons in the list tab will make the list tab disappear
-				that.outdentListButton.hide();
-				that.indentListButton.hide();
-				that.createUnorderedListButton.setState(false);
-				that.createOrderedListButton.setState(false);
+				//that.outdentListButton.hide();
+				//that.indentListButton.hide();
+				//that.createUnorderedListButton.setState(false);
+				//that.createOrderedListButton.setState(false);
+
+				FloatingmenuPortHelper.hideAll('outdentList');
+				FloatingmenuPortHelper.hideAll('indentList');
+				FloatingmenuPortHelper.setStateFalseAll('unorderedList');
+				FloatingmenuPortHelper.setStateFalseAll('orderedList');
 				
 				for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
-						that.createUnorderedListButton.setState(true);
+						//that.createUnorderedListButton.setState(true);
+						FloatingmenuPortHelper.setStateTrueAll('unorderedList');
 						// Show all buttons in the list tab
-						that.outdentListButton.show();
-						that.indentListButton.show();
+						//that.outdentListButton.show();
+						//that.indentListButton.show();
+						FloatingmenuPortHelper.showAll('outdentList');
+						FloatingmenuPortHelper.showAll('indentList');
 						break;
 					}
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
-						that.createOrderedListButton.setState(true);
+						//that.createOrderedListButton.setState(true);
+						FloatingmenuPortHelper.setStateTrueAll('orderedList');
 						// Show all buttons in the list tab
-						that.outdentListButton.show();
-						that.indentListButton.show();
+						//that.outdentListButton.show();
+						//that.indentListButton.show();
+						FloatingmenuPortHelper.showAll('outdentList');
+						FloatingmenuPortHelper.showAll('indentList');
 						break;
 					}
 				}
@@ -153,15 +164,19 @@ define([
 			if (Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0]) {
 				// show/hide them according to the config
 				if (jQuery.inArray('ul', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ul") != -1) {
-					this.createUnorderedListButton.show();
+					//this.createUnorderedListButton.show();
+					FloatingmenuPortHelper.showAll('unorderedList');
 				} else {
-					this.createUnorderedListButton.hide();
+					//this.createUnorderedListButton.hide();
+					FloatingmenuPortHelper.hideAll('unorderedList');
 				}
 
 				if (jQuery.inArray('ol', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ol") != -1) {
-					this.createOrderedListButton.show();
+					//this.createOrderedListButton.show();
+					FloatingmenuPortHelper.showAll('orderedList');
 				} else {
-					this.createOrderedListButton.hide();
+					//this.createOrderedListButton.hide();
+					FloatingmenuPortHelper.hideAll('orderedList');
 				}
 
 			}
@@ -227,8 +242,10 @@ define([
 				newPara, jqToTransform, nodeName;
 
 			// visible is set to true, but the button is not visible
-			this.outdentListButton.show();
-			this.indentListButton.show();
+			//this.outdentListButton.show();
+			//this.indentListButton.show();
+			FloatingmenuPortHelper.showAll('outdentList');
+			FloatingmenuPortHelper.showAll('indentList');
 
 			if (!domToTransform) {
 				// wrap a paragraph around the selection

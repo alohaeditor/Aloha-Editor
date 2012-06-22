@@ -31,7 +31,7 @@ function( Aloha, jQuery, Class, Container ) {
 		 * Check for whether or not this surface is active--that is, whether is
 		 * is visible and the user can interact with it.
 		 *
-		 * @FIME: @TODO: Implenent this function.
+		 * @FIXME: @TODO: Implenent this function.
 		 * @eturn {boolean} True if this surface is visible.
 		 */
 		isActive: function () {

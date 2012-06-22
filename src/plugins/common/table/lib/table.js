@@ -20,8 +20,7 @@
  * @todo: - selectRow/selectColumn should take into account the helper row/column.
  *			ie: selectRow(0) and selectColumn(0), should be zero indexed
  */
-
-define( [
+define([
 	'aloha',
 	'jquery',
 	'ui/scopes',
@@ -29,9 +28,19 @@ define( [
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
-	'table/table-plugin-utils'
-], function ( Aloha, jQuery, Scopes, Message, i18n, TableCell, TableSelection,
-	          Utils ) {
+	'table/table-plugin-utils',
+	'ui/port-helper-floatingmenu'
+], function (
+	Aloha,
+	jQuery,
+	Scopes,
+	Message,
+	i18n,
+	TableCell,
+	TableSelection,
+	Utils,
+	FloatingmenuPortHelper
+) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
 	
@@ -1351,7 +1360,9 @@ define( [
 		
 		Scopes.setScope(this.tablePlugin.name + '.column');
 		
-		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
+		//this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
+		(this.selection.isHeader ? FloatingmenuPortHelper.setStateTrueAll
+		                         : FloatingmenuPortHelper.setStateFalseAll)('columnheader');
 		
 		var rows = this.getRows();
 		

@@ -9,7 +9,7 @@ define([
 	'ui/component',
 	'aloha/jquery-ui'
 ],
-function( jQuery, Component ) {
+function (jQuery, Component) {
 	'use strict';
 
 	/**
@@ -34,50 +34,51 @@ function( jQuery, Component ) {
 		 *
 		 * @override
 		 */
-		init: function() {
+		init: function () {
 			this._super();
 			this.createButtonElement()
 				.button({
-				    label: this.text ? this.text : this.tooltip,
-   				    text: !!this.text,
-				    icons: {
+					label: this.text || this.tooltip,
+					text: !!this.text,
+					icons: {
 					    primary: this.icon
 					}
 			    })
-				.button( 'widget' )
+				.button('widget')
 				.tooltip({
 					position: {
 						my: 'left top',
 						at: 'right bottom'
 					}
-				})			
-				.click( jQuery.proxy(function() {
+				})
+				.click(jQuery.proxy(function () {
 					this._onClick();
-				}, this ) );
+				}, this));
 		},
 
 		/**
-		 * May be overridden by component subclasses to implement component-specific behaviour.
-		 * The default implementation just calls the public click method.
+		 * May be overridden by component subclasses to implement
+		 * component-specific behaviour.  The default implementation just calls
+		 * the public click method.
 		 *
 		 * @protected
 		 */
-		_onClick: function() {
+		_onClick: function () {
 			this.click();
 		},
 
 		/**
 		 * Handles mouse clicks on this button's rendered elements.
 		 */
-		click: function() {},
+		click: function () {},
 
 		/**
 		 * Creates the DOM element to be rendered for user interaction.
 		 *
 		 * @return {jQuery<HTMLElement>}
 		 */
-		createButtonElement: function() {
-			this.element = this.buttonElement = jQuery( '<button>' );
+		createButtonElement: function () {
+			this.element = this.buttonElement = jQuery('<button>');
 			return this.buttonElement;
 		},
 

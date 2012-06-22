@@ -4,25 +4,31 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-
-define(
-	['aloha', 
+define([
+	'aloha', 
 	'aloha/plugin', 
 	'jquery', 
 	'ui/component', 
 	'ui/button',
 	'i18n!toc/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
-	'aloha/console'],
+	'aloha/console',
+	'ui/port-helper-floatingmenu'
+], function(Aloha,
+            Plugin,
+			jQuery,
+			Component,
+			Button,
+			i18n,
+			i18nCore,
+			console,
+			FloatingmenuPortHelper) {
+	'use strict';
 
-function( Aloha, Plugin, jQuery, Component, Button, i18n, i18nCore, console ) {
-	"use strict";
-
-	var
-		GENTICS = window.GENTICS,
-		namespace = 'toc',
-		$containers = null,
-		allTocs = [];
+	var GENTICS = window.GENTICS,
+	    namespace = 'toc',
+	    $containers = null,
+	    allTocs = [];
 
 	/* helper functions */
 	function last(a) { return a[a.length - 1]; }
@@ -77,9 +83,11 @@ function( Aloha, Plugin, jQuery, Component, Button, i18n, i18nCore, console ) {
 					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );
 
 					if ( jQuery.inArray( 'toc', that.cfg ) != -1 ) {
-		        		that.insertTocButton.show();
+		        		//that.insertTocButton.show();
+						FloatingmenuPortHelper.showAll('insertToc');
 		        	} else {
-		        		that.insertTocButton.hide();
+		        		//that.insertTocButton.hide();
+						FloatingmenuPortHelper.hideAll('insertToc');
 		        		return;
 		        	}
 				}
@@ -103,7 +111,7 @@ function( Aloha, Plugin, jQuery, Component, Button, i18n, i18nCore, console ) {
 		        click: function () { that.insertAtSelection($containers); }
 			});
 
-	        this.insertTocButton = Component.getGlobalInstance("insertToc");
+	        //this.insertTocButton = Component.getGlobalInstance("insertToc");
 	    },
 	
 		register: function ($c) {

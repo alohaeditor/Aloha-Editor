@@ -19,18 +19,19 @@ define([
 	'RepositoryBrowser',
 	// i18n
 	'i18n!imagebrowser/nls/i18n',
-	'i18n!aloha/nls/i18n'
-
-], function( Aloha,
-			 jQuery,
-			 Plugin,
-			 PluginManager,
-			 Component,
-			 Button,
-			 Images,
-			 RepositoryBrowser,
-			 i18n,
-			 i18nCore ) {
+	'i18n!aloha/nls/i18n',
+	'ui/port-helper-floatingmenu'
+], function(Aloha,
+            jQuery,
+            Plugin,
+            PluginManager,
+            Component,
+            Button,
+            Images,
+            RepositoryBrowser,
+            i18n,
+            i18nCore,
+			FloatingmenuPortHelper) {
 	'use strict';
 
 	var ImageBrowser = RepositoryBrowser.extend( {
@@ -47,17 +48,20 @@ define([
 				click: function () { browser.open(); }
 			});
 
-			var repositoryButton = Component.getGlobalInstance( 'imageBrowser' );
+			//var repositoryButton = Component.getGlobalInstance( 'imageBrowser' );
 
-			repositoryButton.hide();
+			//repositoryButton.hide();
+			FloatingmenuPortHelper.hideAll('imageBrowser');
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/imagebrowser/';
 
 			Aloha.bind( 'aloha-image-selected', function ( event, rangeObject ) {
-				repositoryButton.show();
+				//repositoryButton.show();
+				FloatingmenuPortHelper.showAll('imageBrowser');
 			});
 			Aloha.bind( 'aloha-image-unselected', function ( event, rangeObject ) {
-				repositoryButton.hide();
+				//repositoryButton.hide();
+				FloatingmenuPortHelper.hideAll('imageBrowser');
 			});
 		},
 		onSelect: function ( item ) {

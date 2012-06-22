@@ -279,12 +279,22 @@ define( [
 				// show/hide the button according to the configuration
 				config = that.getEditableConfig( Aloha.activeEditable.obj );
 				if ( jQuery.inArray( 'a', config ) != -1 ) {
-					that.formatLinkButton.show();
-					that.insertLinkButton.show();
+					//that.formatLinkButton.show();
+					//that.insertLinkButton.show();
+					Component.eachInstance(['formatLink', 'insertLink'],
+						function (component) {
+							component.show();
+						});
+
 					Scopes.unhideTab();
 				} else {
-					that.formatLinkButton.hide();
-					that.insertLinkButton.hide();
+					//that.formatLinkButton.hide();
+					//that.insertLinkButton.hide();
+					Component.eachInstance(['formatLink', 'insertLink'],
+						function (component) {
+							component.hide();
+						});
+
 					Scopes.hideTab(i18n.t('floatingmenu.tab.link'));
 				}
 			} );
@@ -355,16 +365,42 @@ define( [
 		 */
 		toggleLinkScope: function ( show ) {
 			if ( show ) {
-				this.insertLinkButton.hide();
 				this.hrefField.show();
-				this.removeLinkButton.show();
-				this.formatLinkButton.setState( true );
+
+				//this.insertLinkButton.hide();
+				Component.eachInstance(['insertLink'], function (component) {
+					component.hide();
+				});
+
+				//this.removeLinkButton.show();
+				Component.eachInstance(['removeLink'], function (component) {
+					component.hide();
+				});
+
+				//this.formatLinkButton.setState( true );
+				Component.eachInstance(['formatLink'], function (component) {
+					component.setState(true);
+				});
+
 				Scopes.addScope(this.name);
 			} else {
-				this.insertLinkButton.show();
 				this.hrefField.hide();
-				this.removeLinkButton.hide();
-				this.formatLinkButton.setState( false );
+
+				//this.insertLinkButton.show();
+				Component.eachInstance(['insertLink'], function (component) {
+					component.show();
+				});
+
+				//this.removeLinkButton.hide();
+				Component.eachInstance(['removeLink'], function (component) {
+					component.hide();
+				});
+
+				//this.formatLinkButton.setState( false );
+				Component.eachInstance(['formatLink'], function (component) {
+					component.setState(false);
+				});
+
 				Scopes.removeScope(this.name);
 			}
 		},
@@ -449,9 +485,11 @@ define( [
 				}
 			});
 
+			/*
 			this.formatLinkButton = Component.getGlobalInstance("formatLink");
 			this.insertLinkButton = Component.getGlobalInstance("insertLink");
 			this.removeLinkButton = Component.getGlobalInstance("removeLink");
+			*/
 		},
 
 		/**

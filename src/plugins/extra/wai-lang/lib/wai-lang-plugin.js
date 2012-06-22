@@ -16,6 +16,7 @@ define([
 	'ui/port-helper-attribute-field',
 	'i18n!wai-lang/nls/i18n',
 	'i18n!aloha/nls/i18n',
+	'ui/port-helper-floatingmenu',
 	'wai-lang/languages',
 	'css!wai-lang/css/wai-lang.css'
 ], function(
@@ -28,13 +29,14 @@ define([
 	ToggleButton,
 	AttributeField,
 	i18n,
-	i18nCore
-){
+	i18nCore,
+	FloatingmenuPortHelper
+) {
 	'use strict';
 
 	var WAI_LANG_CLASS = 'aloha-wai-lang',
 	    GENTICS = window.GENTICS,
-	    addMarkupToSelectionButton,
+	    // addMarkupToSelectionButton,
 	    langField;
 
 	return Plugin.create( 'wai-lang', {
@@ -90,9 +92,11 @@ define([
 				// show/hide the button according to the configuration
 				config = that.getEditableConfig( Aloha.activeEditable.obj );
 				if ( jQuery.inArray( 'span', config ) !== -1 ) {
-					addMarkupToSelectionButton.show();
+					//addMarkupToSelectionButton.show();
+					FloatingmenuPortHelper.showAll('addMarkupToSelectionButton');
 				} else {
-					addMarkupToSelectionButton.hide();
+					//addMarkupToSelectionButton.hide();
+					FloatingmenuPortHelper.hideAll('addMarkupToSelectionButton');
 					return;
 				}
 			} );
@@ -103,8 +107,9 @@ define([
 
 				foundMarkup = that.findLangMarkup( rangeObject );
 				if ( foundMarkup ) {
-						addMarkupToSelectionButton.setState( true );
-						Scopes.setScope( 'wai-lang' );
+					//addMarkupToSelectionButton.setState( true );
+					FloatingmenuPortHelper.setStateTrueAll('addMarkupToSelectionButton');
+					Scopes.setScope( 'wai-lang' );
 					langField.setTargetObject( foundMarkup, 'lang' );
 				} else {
 					langField.setTargetObject( null );
@@ -128,7 +133,7 @@ define([
 				}
 			} );
 
-			addMarkupToSelectionButton = Component.getGlobalInstance("wailang");
+			//addMarkupToSelectionButton = Component.getGlobalInstance("wailang");
 
 			Scopes.createScope('wai-lang', 'Aloha.continuoustext');
 
@@ -307,7 +312,8 @@ define([
 		 * Toggles markup around selection.
 		 */
 		addRemoveMarkupToSelection: function() {
-			if (addMarkupToSelectionButton.getState()) {
+			//if ( addMarkupToSelectionButton.getState() ) {
+			if (FloatingmenuPortHelper.isStateOfFirst()) {
 				this.removeLangMarkup();
 			} else {
 				this.addMarkupToSelection( false );
