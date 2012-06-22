@@ -224,7 +224,7 @@ define([
 	});
 
 	Aloha.bind('aloha-ui-scope-change', function(){
-		Container.showContainersForContext(Aloha.activeEditable, [], null);
+		Container.showContainersForContext(Aloha.activeEditable, null, null);
 	});
 
 	return Container;
