@@ -6,7 +6,7 @@ define([
 	'ui/floating',
 	'aloha/jquery-ui'
 ],
-function( jQuery, Surface, Tab, subguarded, floatSurface ) {
+function(jQuery, Surface, Tab, subguarded, floating) {
 
 	/**
 	 * The toolbar is configured via `settings.toolbar` and is defined as an
@@ -28,6 +28,8 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 	 * @extends {Surface}
 	 */
 	var Toolbar = Surface.extend({
+
+		isFloating: false,
 
 		/**
 		 * Toolbar constructor.
@@ -65,6 +67,9 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 		},
 
 		initializeFloating: function() {
+			// TODO: read cookie
+			this.isFloating = true;
+
 			var surface = this;
 
 			this.$element.css({
@@ -72,43 +77,49 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 				'z-index': 9999
 			});
 
-			subguarded( [
+			subguarded([
 				'aloha-selection-changed',
 				'aloha-editable-activated'
 			], Surface.onActivatedSurface,
-				this, function( $event, range, event ) {
-				if ( Aloha.activeEditable ) {
-					floatSurface( surface, Aloha.activeEditable );
-				}
-			} );
-
-			var isScrolling = false;
-			jQuery( window ).scroll( function( $event, nativeEvent ) {
-				// @TODO only do this for active surfaces.
-				if ( !isScrolling ) {
-					isScrolling = true;
-					setTimeout( function () {
-						isScrolling = false;
-						if ( Aloha.activeEditable ) {
-							floatSurface( surface, Aloha.activeEditable );
-						}
-					}, 50 );
+				this, function($event, range, event) {
+				if (Aloha.activeEditable) {
+					floating.floatSurface(surface, Aloha.activeEditable);
 				}
 			});
+
+			var isScrolling = false;
+			jQuery(window).scroll(function($event, nativeEvent) {
+				// @TODO only do this for active surfaces.
+				if (!isScrolling) {
+					isScrolling = true;
+					setTimeout(function () {
+						isScrolling = false;
+						if (Aloha.activeEditable) {
+							floating.floatSurface(surface, Aloha.activeEditable);
+						}
+					}, 50);
+				}
+			});
+
+			var $pin = jQuery('<div class="aloha-ui-pin">');
+			$pin.click(function () {
+				surface.isFloating = !surface.isFloating;
+
+				if (surface.isFloating) {
+					$pin.removeClass('aloha-ui-pin-down');
+				} else {
+					$pin.addClass('aloha-ui-pin-down');
+				}
+
+				floating.togglePinSurface(surface, Aloha.activeEditable);
+			});
+			this.$element.find('.ui-tabs:first').append($pin);
 		},
 
-		initializeDragging: function() {
+		initializeDragging: function () {
 			this.$element.draggable({
 				'distance': 20
 			});
-		},
-
-		enableFloating: function() {
-			
-		},
-
-		disableFloating: function() {
-
 		},
 
 		/**
