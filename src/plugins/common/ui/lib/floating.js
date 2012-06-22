@@ -77,7 +77,7 @@ define([
 		if (surface.isFloating) {
 			surface.$element.css({
 				position: 'absolute',
-				top: position.top + jQuery(window).scrollTop()
+				top: position.top
 			});
 		} else {
 			surface.$element.css({
