@@ -66,6 +66,7 @@
 			{
 				label: "Format",
 				showOn: true,
+				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
 					[ "bold", "bold2", "italic", "italic2",
                       "strikethrough", "subscript", "superscript",
@@ -80,7 +81,7 @@
 			// Insert Tab
 			{
 				label: "Insert",
-				showOn: true,
+				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
 					[ "createTable", "characterPicker", "insertLink",
 					  "insertImage", "insertAbbr", "insertToc",
@@ -91,17 +92,14 @@
 			{
 				label: "Link", 
 				showOn: "a",
+				showOn: { scope: 'link' },
 				components: [ [ "editLink", "removeLink", "linkBrowser" ] ]
 			},
 			// Image insert Tab
 			{
 				label: "Image Insert",
 				// Show this tab whenever we have not selected an image.
-				showOn: function (el) {
-					var $el = jQuery(el);
-					//console.warn(el, el && !($el.is('img') || $el.find('img').length));
-					return !!el && !($el.is('img') || $el.find('img').length);
-				},
+				showOn: { scope: 'Aloha.continuoustext' },
 				components: [ "insertImage" ]
 			},
             // Image Tab
@@ -119,20 +117,20 @@
             },
             // Abbr Tab
             {   label: "Abbreviation",
-                showOn: "abbr",
+                showOn: { scope: 'abbr' },
                 components: [
                     [ "abbrText" ]
                 ]
             },
             // Wailang Tab
             {   label: "Wailang",
-                showOn: true, // Should show on this element <span class="aloha-wai-lang"></span>
+				showOn: { scope: 'wai-lang' },
                 components: [ [ "wailangfield", "removewailang" ] ]
             },
 			// Table Tabs
 			{
 				label: "Table",
-				showOn: true,
+				showOn: { scope: 'table.cell' },
 				components: [
 					[ "mergecells", "splitcells", "tableCaption",
 					  "formatTable" ]
@@ -140,7 +138,7 @@
 			},
 			{ 
 				label: "Column",
-				showOn: true,
+				showOn: { scope: 'table.column' },
 				components: [
 					[ "addcolumnleft", "addcolumnright", "deletecolumns",
 					  "columnheader", "mergecells", "splitcells",
@@ -149,7 +147,7 @@
 			},
 			{
 				label: "Row",
-				showOn: true,
+				showOn: { scope: 'table.row' },
 				components: [
 					[ "addrowbefore", "addrowafter", "deleterows", "rowheader",
 					  "mergecells", "splitcells", "formatRow" ]
