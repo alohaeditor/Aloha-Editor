@@ -5,18 +5,29 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define( [
+define([
     'aloha',
 	'jquery',
 	'aloha/plugin',
-	'aloha/floatingmenu',
+	'ui/component',
+	'ui/toggleButton',
+	'ui/port-helper-floatingmenu',
 	'format/format-plugin',
 	'util/dom',
 	'i18n!cite/nls/i18n',
 	'i18n!aloha/nls/i18n'
-],
-function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
-                      i18n, i18nCore ) {
+], function CiteClosure(
+	Aloha,
+	jQuery,
+	Plugin,
+	Component,
+	ToggleButton,
+	FloatingmenuPortHelper,
+	Format,
+	domUtils,
+    i18n,
+	i18nCore
+){
 	'use strict';
 
 	Aloha.require([ 'css!cite/css/cite.css' ]);
@@ -167,28 +178,14 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 
 			}
 
-			// Add the inline quote button in the floating menu, in the
-			// standard manner...
-			this.buttons = [];
-
-			this.buttons[ 0 ] = new Aloha.ui.Button({
-				name      : 'quote',
-				text      : 'Quote', // that.i18n('button.' + button + '.text'),
-				tooltip   : i18n.t( 'cite.button.add.quote' ), // that.i18n('button.' + button + '.tooltip'),
-				iconClass : nsClass( 'button','inline-button' ),
-				size      : 'small',
-				toggle    : true,
-				onclick   : function() {
+			Component.define('quote', ToggleButton, {
+				tooltip: i18n.t('cite.button.add.quote'),
+				iconClass: nsClass('button', 'inline-button'),
+				scope: 'Aloha.continuoustext',
+				click: function() {
 					that.addInlineQuote();
 				}
 			});
-
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.buttons[ 0 ],
-				i18nCore.t( 'floatingmenu.tab.format' ),
-				1
-			);
 
 			// We brute-forcishly push our button settings into the
 			// multiSplitButton.  The multiSplitButton will pick it up and
@@ -196,12 +193,11 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 			// means that it will not be automatically shown when doLayout is
 			// called on the FloatingMenu.  We therefore have to do it
 			// ourselves at aloha-selection-changed.
-			Format.multiSplitButton.items.push({
-				name      : 'blockquote',
-				text      : 'Blockquote', // that.i18n('button.' + button + '.text'),
-				tooltip   : i18n.t( 'cite.button.add.blockquote' ),	// that.i18n('button.' + button + '.tooltip'),
-				iconClass : nsClass( 'button', 'block-button' ),
-				click     : function() {
+			Format.multiSplitButton.pushItem({
+				name: 'blockquote',
+				tooltip: i18n.t('cite.button.add.blockquote'),
+				iconClass: nsClass('button', 'block-button'),
+				click: function(){
 					that.addBlockQuote();
 				}
 			});
@@ -286,59 +282,55 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				}
 				
 				if ( jQuery.inArray( 'quote', config ) !== -1 ) {
-					that.buttons[ 0 ].show();
+					FloatingmenuPortHelper.showAll('quote');
 				} else {
-					that.buttons[ 0 ].hide();
+					FloatingmenuPortHelper.hideAll('quote');
 				}
 				
 				if ( jQuery.inArray( 'blockquote', config ) !== -1 ) {
-					Format.multiSplitButton.showItem( 'blockquote' );
+					Format.multiSplitButton.showItem('blockquote');
 				} else {
-					Format.multiSplitButton.hideItem( 'blockquote' );
+					Format.multiSplitButton.hideItem('blockquote');
 				}
 			});
 
 			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
 				var buttons = jQuery( 'button' + nsSel( 'button' ) ); // not used?
 
-				jQuery.each( that.buttons, function( index, button ) {
-					// Set to false to prevent multiple buttons being active
-					// when they should not.
-					var statusWasSet = false;
-					var tagName;
-					var effective = rangeObject.markupEffectiveAtStart;
-					var i = effective.length;
+				// Set to false to prevent multiple buttons being active
+				// when they should not.
+				var statusWasSet = false;
+				var tagName;
+				var effective = rangeObject.markupEffectiveAtStart;
+				var i = effective.length;
 
-					// Check whether any of the effective items are citation
-					// tags.
-					while ( i ) {
-						tagName = effective[ --i ].tagName.toLowerCase();
-						if ( tagName === 'q' || tagName === 'blockquote' ) {
-							statusWasSet = true;
-							break;
-						}
+				// Check whether any of the effective items are citation
+				// tags.
+				while ( i ) {
+					tagName = effective[ --i ].tagName.toLowerCase();
+					if ( tagName === 'q' || tagName === 'blockquote' ) {
+						statusWasSet = true;
+						break;
+					}
+				}
+
+				buttons.filter( nsSel( 'block-button' ) )
+					.removeClass( nsClass( 'pressed' ) );
+
+				FloatingmenuPortHelper.setStateFalseAll('quote');
+
+				if ( statusWasSet ) {
+					if( 'q' === tagName ) {
+						FloatingmenuPortHelper.setStateTrueAll('quote');
+					} else {
+						buttons.filter( nsSel( 'block-button' ) )
+							.addClass( nsClass( 'pressed' ) );
 					}
 
-					buttons.filter( nsSel( 'block-button' ) )
-					       .removeClass( nsClass( 'pressed' ) );
-
-					that.buttons[ 0 ].setPressed( false );
-					//button.setPressed( false ); // should it be this instead of that.buttons...?
-
-					if ( statusWasSet ) {
-						if( 'q' === tagName ) {
-							that.buttons[ 0 ].setPressed( true );
-							//button.setPressed( true ); // should it be this instead of that.buttons...?
-						} else {
-							buttons.filter( nsSel( 'block-button' ) )
-							       .addClass( nsClass( 'pressed' ) );
-						}
-
-						// We've got what we came for, so return false to break
-						// the each loop.
-						return false;
-					}
-				});
+					// We've got what we came for, so return false to break
+					// the each loop.
+					return false;
+				}
 				
 				// switch item visibility according to config
 				var config = [];
@@ -348,9 +340,9 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				
 				// quote
 				if ( jQuery.inArray( 'quote', config ) != -1 ) {
-	        		that.buttons[0].show();
+	        		FloatingmenuPortHelper.showAll('quote');
 	        	} else {
-	        		that.buttons[0].hide();
+	        		FloatingmenuPortHelper.hideAll('quote');
 	        	}
 				
 				// blockquote
