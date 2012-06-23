@@ -6,12 +6,20 @@ define([
 
 	var MenuButton = Component.extend({
 		init: function(){
-			this.element = $("<ul class='aloha-ribbon-singleton'></ul>");
-			lib.setupButton(this.element, this);
-			this.element.menubar({
-				select: lib.onSelect
-			});
+			this.element = lib.makeSplitButton(this);
 		}
+	});
+
+	Component.define("insertTag", MenuButton, {
+		label: "X",
+		menu: [
+			{ label: "Z",
+			  menu: [ { label: "Q", onclick: function(){console.log("Q");} },
+					  { label: "W", onclick: function(){console.log("W");} } ] },
+			{ label: "V",
+			  menu: [ { label: "Q", onclick: function(){console.log("Q");} },
+					  { label: "W", onclick: function(){console.log("W");} } ] }
+		]
 	});
 
 	return MenuButton;

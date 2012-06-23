@@ -10,7 +10,8 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ribbon/ribbon',
-	'i18n!aloha/nls/i18n'
+	'i18n!aloha/nls/i18n',
+	'aloha/jquery-ui'
 ], function($, Plugin, lib, i18nCore) {
 	"use strict";
 
@@ -19,12 +20,10 @@ define([
 			if ( ! this.settings.enable ) {
 				return;
 			}
-			var that = this;
-			
-			this._visible = false;
-			this._menubar = false;
 
-			this._toolbar = $('<div class="aloha-ribbon-toolbar ui-menubar ui-widget-header ui-helper-clearfix"></div>');
+			var that = this;
+			this._visible = false;
+            this._toolbar = $('<div class="aloha-ribbon-toolbar ui-menubar ui-widget-header ui-helper-clearfix"></div>');
 
 			var fadeIn = $("<button class='aloha-ribbon-in'></button>")
 				.button()
@@ -73,45 +72,8 @@ define([
 			this._icon.attr("class", "aloha-ribbon-icon " + iconClass);
 		},
 
-		/**
-		 * props.label
-		 * props.toggle
-		 * props.icon
-		 * props.pressed
-		 * props.iconCls
-		 * props.menu
-		 */
-		_addButton: function (props) {
-			if ( ! this._toolbar.children("ul").length ) {
-				$('<ul class="aloha-ribbon-menubar"></ul>').appendTo(this._toolbar);
-			}
-			lib.setupButton(this._toolbar.children("ul"), props);
-		},
-
 		addButton: function(props) {
 			this._toolbar.append(lib.makeSplitButton(props));
-		},
-
-		refresh: function(){
-			if ( ! this._toolbar.children("ul").children().length ) {
-				return;
-			}
-			if (this._menubar) {
-				this._toolbar.children("ul").menubar("destroy");
-			} else {
-				this._menubar = true;
-			}
-			this._toolbar.children("ul").menubar({
-				select: lib.onSelect,
-				buttons: true,
-				menuIcon: true
-				// autoExpand causes a bug that doesn't occur in the
-				// demo but does occur with the combination of jquery-ui
-				// from master and the menu and menubar plugins from the
-				// menubar branch (not sure if this discrepancy is the
-				// cause)
-				//autoExpand: true,
-			});
 		},
 
 		/**

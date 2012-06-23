@@ -4,29 +4,14 @@ define([
 	'css!./css/ribbon.css'
 ], function($){
 
-	function onSelect(event, ui) {
-		var clickHandler = ui.item.data("aloha-ribbon-click-handler");
-		clickHandler && clickHandler(event, ui);
-		// We use preventDefault() to keep a click on a menu item from
-		// scrolling to the top of the page.
-		event.preventDefault();
-	}
-
-	function setupButton(parentElem, props) {
-		var elem = $("<li></li>")
-			.appendTo(parentElem)
-			.append('<a href="#">' + props.label + '</a>');
-		if (props.onclick) {
-			elem.data("aloha-ribbon-click-handler", props.onclick);
-		}
-		if (props.menu) {
-			var subMenu = $("<ul></ul>").appendTo(elem);
-			for (var i = 0; i < props.menu.length; i++) {
-				setupButton(subMenu, props.menu[i]);
-			}
-		}
-	}
-
+	/**
+	 * @param props button properties:
+	 *        onclick - if provided will generate a split button,
+	 *                  otherwise just a normal select button.
+	 *        menu - array of props for nested buttons
+	 *        label - button text
+	 *        icon - button icon
+	 */
 	function makeSplitButton(props) {
 		var expand = $('<button></button>');
 		var menu = $('<ul></ul>');
@@ -52,7 +37,7 @@ define([
 
 		expand
 			.button({
-				icons: { primary: 'ui-icon-triangle-1-s' }
+				icons: { primary: 'aloha-jqueryui-icon ui-icon-triangle-1-s' }
 			})
 			.click(function(){
 				menu.show().position({
@@ -89,8 +74,6 @@ define([
 	}
 
 	return {
-		onSelect: onSelect,
-		setupButton: setupButton,
 		makeSplitButton: makeSplitButton
 	};
 });
