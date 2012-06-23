@@ -374,7 +374,7 @@ define( [
 
 				//this.removeLinkButton.show();
 				Component.eachInstance(['removeLink'], function (component) {
-					component.hide();
+					component.show();
 				});
 
 				//this.formatLinkButton.setState( true );
