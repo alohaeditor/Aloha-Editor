@@ -484,12 +484,6 @@ define( [
 					that.removeLink();
 				}
 			});
-
-			/*
-			this.formatLinkButton = Component.getGlobalInstance("formatLink");
-			this.insertLinkButton = Component.getGlobalInstance("insertLink");
-			this.removeLinkButton = Component.getGlobalInstance("removeLink");
-			*/
 		},
 
 		/**

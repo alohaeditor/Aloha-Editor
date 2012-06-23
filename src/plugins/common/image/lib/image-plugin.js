@@ -22,6 +22,7 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'image/image-floatingMenu',
+	'ui/port-helper-floatingmenu',
 	'i18n!aloha/nls/i18n',
 	'i18n!image/nls/i18n',
 	'aloha/jquery-ui',
@@ -30,8 +31,14 @@ define([
 	// css
 	'css!image/css/image.css',
 	'css!image/vendor/jcrop/jquery.jcrop.css'
-],
-function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
+], function AlohaImagePlugin(
+	aQuery,
+	Plugin,
+	ImageFloatingMenu,
+	FloatingmenuPortHelper,
+	i18nCore,
+	i18n
+){
 	
 	'use strict';
 	
@@ -398,15 +405,15 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 					config = plugin.getEditableConfig(Aloha.activeEditable.obj);
 
 					if (typeof config !== 'undefined') {
-						plugin.ui.insertImgButton.show();
+						FloatingmenuPortHelper.showAll('insertImage');
 					} else {
-						plugin.ui.insertImgButton.hide();
+						FloatingmenuPortHelper.hideAll('insertImage');
 						return;
 					}
 
 					// Enable image specific ui components if the element is an image
 					if (foundMarkup) { // TODO : this is always null (below is dead code, moving it to clickImage)
-						plugin.ui.insertImgButton.hide();
+						FloatingmenuPortHelper.hideAll('insertImage');
 						plugin.ui.setScope();
 						
 
@@ -1157,7 +1164,7 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 			}
 
 			this.destroyCropButtons();
-			this.ui.cropButton.setState(false);
+			FloatingmenuPortHelper.setStateTrueAll('imageCropButton');
 
 			if (this.settings.ui.resizable) {
 				this.startResize();

@@ -93,8 +93,6 @@ function (
 			// If the setting has been set to a number or false we need to activate the 
 			// toggle button to indicate that the aspect ratio will be preserved.
 			if (plugin.settings.fixedAspectRatio !== false) {
-				//var toggleButton = Component.getGlobalInstance("imageCnrRatio");
-				//toggleButton.setState(true);
 				FloatingmenuPortHelper.setStateTrueAll('imageCnrRatio');
 				plugin.keepAspectRatio = true;
 			}
@@ -130,8 +128,6 @@ function (
 					plugin.insertImg();
 				}
 			});
-
-			this.insertImgButton = Component.getGlobalInstance("insertImage");
 		},
 
         /**
@@ -242,8 +238,6 @@ function (
 					}
 				}
 			});
-
-			this.cropButton = Component.getGlobalInstance("imageCropButton");
 		},
 
         /**

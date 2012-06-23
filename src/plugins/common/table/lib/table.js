@@ -1360,7 +1360,6 @@ define([
 		
 		Scopes.setScope(this.tablePlugin.name + '.column');
 		
-		//this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
 		(this.selection.isHeader ? FloatingmenuPortHelper.setStateTrueAll
 		                         : FloatingmenuPortHelper.setStateFalseAll)('columnheader');
 		
@@ -1419,7 +1418,8 @@ define([
 		Scopes.setScope(this.tablePlugin.name + '.row');
 		
 		this.selection.selectRows( this.rowsToSelect );
-		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
+		(this.selection.isHeader ? FloatingmenuPortHelper.setStateTrueAll
+		                         : FloatingmenuPortHelper.setStateFalseAll)('columnheader');
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
