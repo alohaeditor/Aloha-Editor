@@ -36,7 +36,6 @@ define([
 
 	var WAI_LANG_CLASS = 'aloha-wai-lang',
 	    GENTICS = window.GENTICS,
-	    // addMarkupToSelectionButton,
 	    langField;
 
 	return Plugin.create( 'wai-lang', {
@@ -92,11 +91,9 @@ define([
 				// show/hide the button according to the configuration
 				config = that.getEditableConfig( Aloha.activeEditable.obj );
 				if ( jQuery.inArray( 'span', config ) !== -1 ) {
-					//addMarkupToSelectionButton.show();
-					FloatingmenuPortHelper.showAll('addMarkupToSelectionButton');
+					FloatingmenuPortHelper.showAll('wailang');
 				} else {
-					//addMarkupToSelectionButton.hide();
-					FloatingmenuPortHelper.hideAll('addMarkupToSelectionButton');
+					FloatingmenuPortHelper.hideAll('wailang');
 					return;
 				}
 			} );
@@ -107,8 +104,7 @@ define([
 
 				foundMarkup = that.findLangMarkup( rangeObject );
 				if ( foundMarkup ) {
-					//addMarkupToSelectionButton.setState( true );
-					FloatingmenuPortHelper.setStateTrueAll('addMarkupToSelectionButton');
+					FloatingmenuPortHelper.setStateTrueAll('wailang');
 					Scopes.setScope( 'wai-lang' );
 					langField.setTargetObject( foundMarkup, 'lang' );
 				} else {
@@ -132,8 +128,6 @@ define([
 					that.addRemoveMarkupToSelection();
 				}
 			} );
-
-			//addMarkupToSelectionButton = Component.getGlobalInstance("wailang");
 
 			Scopes.createScope('wai-lang', 'Aloha.continuoustext');
 
@@ -312,8 +306,7 @@ define([
 		 * Toggles markup around selection.
 		 */
 		addRemoveMarkupToSelection: function() {
-			//if ( addMarkupToSelectionButton.getState() ) {
-			if (FloatingmenuPortHelper.isStateOfFirst()) {
+			if (FloatingmenuPortHelper.getStateOfFirst('wailang')) {
 				this.removeLangMarkup();
 			} else {
 				this.addMarkupToSelection( false );
