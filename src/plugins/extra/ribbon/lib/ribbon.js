@@ -40,6 +40,10 @@ define([
 				icons: { primary: 'aloha-jqueryui-icon ui-icon-triangle-1-s' }
 			})
 			.click(function(){
+				if (menu.is(":visible")) {
+					menu.hide();
+					return;
+				}
 				menu.show().position({
 					my: 'left top',
 					at: 'left bottom',
