@@ -206,3 +206,21 @@ background-image: url(../img/format-inline.png);
 .aloha-large-icon-h5  { background-position: -260px 0; }
 .aloha-large-icon-h6  { background-position: -312px 0; }
 .aloha-large-icon-pre { background-position: -364px 0; }
+
+/**** multi-split-button ****/
+
+.aloha-multisplit-active {
+/* TODO this just gives the active multi-split item a border which
+        however isn't very visually distinctive */
+/* Override ui-state-default with important */
+border: 1px solid #aaaaaa !important;
+}
+
+/**** button states ****/
+
+.aloha-button-active {
+/* Override ui-state-default with important */
+border: 1px solid #aaaaaa !important;
+/* Override ui-state-default with important */
+background: #ffffff !important;
+}

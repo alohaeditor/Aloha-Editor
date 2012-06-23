@@ -36,7 +36,7 @@ define([
 					icon: item.iconClass,
 					click: item.click,
 					isActive: function () {
-						// TODO return activeItem === item.name;
+						return activeItem === item.name;
 					}
 				});
 			});
@@ -52,8 +52,12 @@ define([
 			pushItem: function(item){
 				props.items.push(item);
 			},
-			showItem: function(){},
-			hideItem: function(){},
+			showItem: function(){
+				//TODO
+			},
+			hideItem: function(){
+				//TODO
+			},
 			setActiveItem: function (name) {
 				activeItem = name;
 			}
