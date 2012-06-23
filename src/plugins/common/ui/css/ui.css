@@ -224,3 +224,18 @@ border: 1px solid #aaaaaa !important;
 /* Override ui-state-default with important */
 background: #ffffff !important;
 }
+
+/** jquery-ui icons used by Aloha **/
+
+/**
+ * Use a separate class for jqueryui icons used by aloha so that there
+ * is no contention between the aloha-icon class and the
+ * ui-button-icon-primary class which both define a background image. It's
+ * difficult to give the aloha-icon higher priority since there are no
+ * guarantees in which order the plugins are included.  */
+.aloha-jqueryui-icon { 
+background-image: url(../img/jqueryui/ui-icons_222222_256x240.png);
+}
+
+/** icon-triangle is used by the ribbon plugin for the drop down icon **/
+.ui-icon-triangle-1-s { background-position: -64px -16px; }

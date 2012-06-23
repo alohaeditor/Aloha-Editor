@@ -607,10 +607,3 @@ body .ui-tooltip { border-width:2px; }
 /* Overlays */
 .ui-widget-overlay { background: #aaaaaa/*{bgColorOverlay}*/; opacity: .3;filter:Alpha(Opacity=30)/*{opacityOverlay}*/; }
 .ui-widget-shadow { margin: -8px/*{offsetTopShadow}*/ 0 0 -8px/*{offsetLeftShadow}*/; padding: 8px/*{thicknessShadow}*/; background: #aaaaaa/*{bgColorShadow}*/; opacity: .3;filter:Alpha(Opacity=30)/*{opacityShadow}*/; -moz-border-radius: 8px/*{cornerRadiusShadow}*/; -khtml-border-radius: 8px/*{cornerRadiusShadow}*/; -webkit-border-radius: 8px/*{cornerRadiusShadow}*/; border-radius: 8px/*{cornerRadiusShadow}*/; }
-
-
-/** Aloha has a confirmed dependency on the following styles **/
-
-.ui-button-icon-primary { 
-background-image: url(../img/jqueryui/ui-icons_222222_256x240.png);
-}
