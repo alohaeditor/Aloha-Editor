@@ -962,7 +962,7 @@ define([
 			}
 		});
 
-		this.summary = new AttributeField( {
+		this.summary = AttributeField( {
 			width : 275,
 			name  : 'tableSummary',
 			noTargetHighlight: true,

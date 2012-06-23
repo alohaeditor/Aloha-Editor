@@ -85,7 +85,7 @@ define([
 
 		    Scopes.createScope('abbr', 'Aloha.continuoustext');
 
-		    this.abbrField = new AttributeField({
+		    this.abbrField = AttributeField({
 		    	width: 320,
 		    	name: 'abbrText',
 		        scope: 'abbr'

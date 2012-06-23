@@ -131,7 +131,7 @@ define([
 
 			Scopes.createScope('wai-lang', 'Aloha.continuoustext');
 
-			langField = new AttributeField({
+			langField = AttributeField({
 				name: 'wailangfield',
 				width: 320,
 				valueField: 'id',

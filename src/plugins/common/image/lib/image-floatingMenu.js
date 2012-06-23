@@ -136,7 +136,7 @@ function (
 		_addUIMetaButtons: function () {
 			var plugin = this.plugin;
 			
-			this.imgSrcField = new AttributeField({
+			this.imgSrcField = AttributeField({
 				label: i18n.t('field.img.src.label'),
 				tooltip: i18n.t('field.img.src.tooltip'),
 				name: 'imageSource',
@@ -144,7 +144,7 @@ function (
 			});
 			this.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
 			
-			this.imgTitleField = new AttributeField({
+			this.imgTitleField = AttributeField({
 				label: i18n.t('field.img.title.label'),
 				tooltip: i18n.t('field.img.title.tooltip'),
 				name: 'imageTitle',
@@ -247,7 +247,7 @@ function (
 			var plugin = this.plugin;
 
 			// Manual resize fields
-			this.imgResizeHeightField = new AttributeField({
+			this.imgResizeHeightField = AttributeField({
 				label:  i18n.t('height'),
 				name: "imageResizeHeight",
 				width: 50,
@@ -256,7 +256,7 @@ function (
 			this.imgResizeHeightField.maxValue = plugin.settings.maxHeight;
 			this.imgResizeHeightField.minValue = plugin.settings.minHeight;
 			
-			this.imgResizeWidthField = new AttributeField({
+			this.imgResizeWidthField = AttributeField({
 				label:  i18n.t('width'),				
 				name: "imageResizeWidth",
 				width: 50,

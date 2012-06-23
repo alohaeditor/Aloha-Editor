@@ -466,7 +466,7 @@ define( [
 				}
 			});
 			
-			this.hrefField = new AttributeField( {
+			this.hrefField = AttributeField( {
 				name: 'editLink',
 				width: 320,
 				valueField: 'url',
