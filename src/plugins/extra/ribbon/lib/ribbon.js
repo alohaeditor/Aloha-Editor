@@ -16,10 +16,10 @@ define([
 	 *               If a split button is expanded, all the other split buttons in
 	 *               this container will be closed.
 	 */
-	function makeSplitButton(props) {
+	function makeMenuButton(props) {
+		var wrapper = $('<div>'   , {'class': 'aloha-ribbon-split'});
 		var expand  = $('<button>', {'class': 'aloha-ribbon-expand'});
 		var menu    = $('<ul>'    , {'class': 'aloha-ribbon-menu'});
-		var wrapper = $('<div>'   , {'class': 'aloha-ribbon-split'});
 
 		var action = null;
 		var buttonset = null;
@@ -69,28 +69,60 @@ define([
 				return false;
 			});
 
-
 		wrapper.append(buttonset || expand).append(menu);
 
-		for (var i = 0; i < props.menu.length; i++) {
-			var menuItem = props.menu[i];
-			var item = $('<li></li>');
-			var label = $('<span></span>');
-			var icon = $('<img/>');
-			label.text(menuItem.label);
-			icon.attr('url', menuItem.icon);
-			item.append(icon).append(label).appendTo(menu);
-			item.click(menuItem.onclick);
-		}
-		menu.hide().menu().css({
-			'position': 'absolute',
-			'width': '200px'
+		menu.append(makeNestedMenus(makeCloseHandler(menu), props.menu));
+
+		menu.hide().menu({
+			'select': onSelect
 		});
 
 		return wrapper;
 	}
 
+	function makeNestedMenus(parentCloseHandler, menu){
+		var elems = [];
+		for (var i = 0; i < menu.length; i++) {
+			var item = menu[i];
+			var elem = $('<li>');
+			elem.append($('<a>', {'href': 'javascript:void 0', 'text': item.label}));
+			if (item.onclick) {
+				elem.data('aloha-ribbon-select', function(){
+					parentCloseHandler();
+					item.onclick();
+				});
+			}
+			if (item.menu) {
+				var nestedMenu = $('<ul>').appendTo(elem);
+				nestedMenu.append(
+					makeNestedMenus(makeCloseHandler(nestedMenu, parentCloseHandler),
+									item.menu));
+			}
+			elems.push(elem[0]);
+		}
+		return elems;
+	}
+
+	function makeCloseHandler(menu, parentCloseHandler) {
+		parentCloseHandler = parentCloseHandler || $.noop;
+		return function(){
+			// We must blur the parent menu otherwise it will remain in
+			// focused state and not expand the next time it is hovered over
+			// after the user has selected an item.
+			menu.blur().hide();
+			parentCloseHandler();
+		};
+	}
+
+	function onSelect(event, ui) {
+		var clickHandler = ui.item.data("aloha-ribbon-select");
+		clickHandler && clickHandler(event, ui);
+		// We use preventDefault() to keep a click on a menu item from
+		// scrolling to the top of the page.
+		event.preventDefault();
+	}
+
 	return {
-		makeSplitButton: makeSplitButton
+		makeMenuButton: makeMenuButton
 	};
 });

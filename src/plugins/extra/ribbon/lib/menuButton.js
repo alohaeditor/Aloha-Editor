@@ -6,7 +6,7 @@ define([
 
 	var MenuButton = Component.extend({
 		init: function(){
-			this.element = lib.makeSplitButton(this);
+			this.element = lib.makeMenuButton(this);
 		}
 	});
 

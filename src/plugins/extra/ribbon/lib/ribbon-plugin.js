@@ -74,7 +74,7 @@ define([
 
 		addButton: function(props) {
 			props = $.extend({}, props, {'siblingContainer': this._toolbar});
-			this._toolbar.append(lib.makeSplitButton(props));
+			this._toolbar.append(lib.makeMenuButton(props));
 		},
 
 		/**
