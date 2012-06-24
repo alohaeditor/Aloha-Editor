@@ -1,3 +1,8 @@
 @import url('aloha-core.css');
+/* The jqueryui css and the ui css have some classes of the same
+ * priority that define different styles. Make sure these css files are
+ * included exactly in this order. */
+@import url('../plugins/common/ui/css/jquery-ui-1.9m6.css');
+@import url('../plugins/common/ui/css/ui.css');
 @import url('aloha-sidebar.css');
 @import url('../lib/vendor/repository-browser/css/repository-browser.css');
