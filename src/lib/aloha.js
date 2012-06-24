@@ -1,4 +1,5 @@
-/**
+
+/** vim: et:ts=4:sw=4:sts=4
  * @license RequireJS 1.0.6 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/requirejs for details
@@ -2050,9 +2051,7 @@ var requirejs, require, define;
             req.checkReadyState();
         }, 0);
     }
-}());
-
-/*!
+}());/*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
 * Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php
@@ -2130,8 +2129,11 @@ var requirejs, require, define;
 		var name;
 		var i;
 		for (i = 0; i < objects.length; i++) {
-			for (name in objects[i]) {
-				clone[name] = objects[i][name];
+			var obj = objects[i];
+			for (name in obj) {
+				if (obj.hasOwnProperty(name)) {
+					clone[name] = objects[i][name];
+				}
 			}
 		}
 		return clone;
@@ -2148,21 +2150,21 @@ var requirejs, require, define;
 	// Aside from requirejs, jquery and jqueryui are the only external
 	// dependencies that Aloha must have provided to it.
 	var defaultPaths = {
-		jquery: baseUrl + '/vendor/jquery-1.7.2',
-		jqueryui: baseUrl + '/vendor/jquery-ui-1.9m6'
+		jquery: 'vendor/jquery-1.7.2',
+		jqueryui: 'vendor/jquery-ui-1.9m6'
 	};
 
 	var browserPaths = {
-		PubSub: baseUrl + '/vendor/pubsub/js/pubsub-unminified',
-		'Class': baseUrl + '/vendor/class',
-		RepositoryBrowser: baseUrl + '/vendor/repository-browser/js/repository-browser-unminified',
-		jstree: baseUrl + '/vendor/jquery.jstree',              // Mutates jquery
-		jqgrid: baseUrl + '/vendor/jquery.jqgrid',              // Mutates jquery
-		'jquery-layout': baseUrl + '/vendor/jquery.layout',     // Mutates jquery
-		'jqgrid-locale-en': baseUrl + '/vendor/grid.locale.en', // Mutates jqgrid
-		'jqgrid-locale-de': baseUrl + '/vendor/grid.locale.de', // Mutates jqgrid
-		'repository-browser-i18n-de': baseUrl + '/vendor/repository-browser/js/repository-browser-unminified',
-		'repository-browser-i18n-en': baseUrl + '/vendor/repository-browser/js/repository-browser-unminified'
+		PubSub: 'vendor/pubsub/js/pubsub-unminified',
+		'Class': 'vendor/class',
+		RepositoryBrowser: 'vendor/repository-browser/js/repository-browser-unminified',
+		jstree: 'vendor/jquery.jstree',              // Mutates jquery
+		jqgrid: 'vendor/jquery.jqgrid',              // Mutates jquery
+		'jquery-layout': 'vendor/jquery.layout',     // Mutates jquery
+		'jqgrid-locale-en': 'vendor/grid.locale.en', // Mutates jqgrid
+		'jqgrid-locale-de': 'vendor/grid.locale.de', // Mutates jqgrid
+		'repository-browser-i18n-de': 'vendor/repository-browser/js/repository-browser-unminified',
+		'repository-browser-i18n-en': 'vendor/repository-browser/js/repository-browser-unminified'
 	};
 
 	var requireConfig = mergeObjects(defaultConfig, Aloha.settings.requireConfig);
