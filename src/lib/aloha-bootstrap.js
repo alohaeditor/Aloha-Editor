@@ -77,7 +77,9 @@
 		var i;
 		for (i = 0; i < objects.length; i++) {
 			for (name in objects[i]) {
-				clone[name] = objects[i][name];
+				if (objects.hasOwnProperty(name)) {
+					clone[name] = objects[i][name];
+				}
 			}
 		}
 		return clone;
