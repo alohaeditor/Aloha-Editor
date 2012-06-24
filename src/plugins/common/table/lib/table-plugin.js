@@ -319,14 +319,14 @@ define([
 	function nsSel () {
 		var stringBuilder = [], prefix = tableNamespace;
 		jQuery.each(arguments, function () { stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this)); });
-		return stringBuilder.join(' ').trim();
+		return jQuery.trim(stringBuilder.join(' '));
 	};
 
 	//Creates string with this component's namepsace prefixed the each classname
 	function nsClass () {
 		var stringBuilder = [], prefix = tableNamespace;
 		jQuery.each(arguments, function () { stringBuilder.push(this == '' ? prefix : prefix + '-' + this); });
-		return stringBuilder.join(' ').trim();
+		return jQuery.trim(stringBuilder.join(' '));
 	};
 
 	TablePlugin.initSidebar = function(sidebar) {

@@ -485,7 +485,7 @@ define([
 				jQuery.each( arguments, function () {
 					stringBuilder.push( this == '' ? prefix : prefix + '-' + this );
 				} );
-				return stringBuilder.join( ' ' ).trim();
+				return jQuery.trim(stringBuilder.join(' '));
 			},
 
 			// duplicated code from link-plugin
@@ -494,7 +494,7 @@ define([
 				jQuery.each( arguments, function () {
 					stringBuilder.push( '.' + ( this == '' ? prefix : prefix + '-' + this ) );
 				} );
-				return stringBuilder.join( ' ' ).trim();
+				return jQuery.trim(stringBuilder.join(' '));
 			},
 
 			/**

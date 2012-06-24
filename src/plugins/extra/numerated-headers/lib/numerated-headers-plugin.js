@@ -168,7 +168,7 @@ function (jQuery,
 			var objCleaned = obj.clone().find('span[role=annotation]').remove().end();
 
 			// check for text, also in other possible sub tags
-			if ( objCleaned.text().trim().length > 0 ) {
+			if ( jQuery.trim(objCleaned.text()).length > 0 ) {
 				return true;
 			}
 

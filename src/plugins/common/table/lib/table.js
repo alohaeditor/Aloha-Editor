@@ -425,7 +425,7 @@ define([
     // Y U NO explain why we must check that summary is longer than 5 characters?
     // http://cdn3.knowyourmeme.com/i/000/089/665/original/tumblr_l96b01l36p1qdhmifo1_500.jpg
 
-    if (this.obj[0].summary.trim() != '') {
+    if (jQuery.trim(this.obj[0].summary) != '') {
       w.addClass(this.get('waiGreen'));
     } else {
       w.addClass(this.get('waiRed'));

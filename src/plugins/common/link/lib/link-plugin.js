@@ -152,7 +152,7 @@ define( [
 			jQuery.each( arguments, function () {
 				stringBuilder.push( '.' + ( this == '' ? prefix : prefix + '-' + this ) );
 			} );
-			return stringBuilder.join( ' ' ).trim();
+			return jQuery.trim(stringBuilder.join(' '));
 		},
 
 		//Creates string with this component's namepsace prefixed the each classname
@@ -161,7 +161,7 @@ define( [
 			jQuery.each( arguments, function () {
 				stringBuilder.push( this == '' ? prefix : prefix + '-' + this );
 			} );
-			return stringBuilder.join( ' ' ).trim();
+			return jQuery.trim(stringBuilder.join(' '));
 		},
 
 		initSidebar: function ( sidebar ) {
