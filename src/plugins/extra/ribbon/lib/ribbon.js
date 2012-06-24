@@ -11,26 +11,30 @@ define([
 	 *        menu - array of props for nested buttons
 	 *        label - button text
 	 *        icon - button icon
+	 *        siblingContainer
+	 *             - a jQuery object that will be searched for other split buttons.
+	 *               If a split button is expanded, all the other split buttons in
+	 *               this container will be closed.
 	 */
 	function makeSplitButton(props) {
-		var expand = $('<button></button>');
-		var menu = $('<ul></ul>');
-		var wrapper = $('<div></div>').addClass("aloha-ribbon-split-button");
+		var expand  = $('<button>', {'class': 'aloha-ribbon-expand'});
+		var menu    = $('<ul>'    , {'class': 'aloha-ribbon-menu'});
+		var wrapper = $('<div>'   , {'class': 'aloha-ribbon-split'});
 
 		var action = null;
 		var buttonset = null;
 		if (props.onclick) {
-			action = $('<button></button>')
+			action = $('<button>', {'class': 'aloha-ribbon-action'})
 				.text(props.label)
 				.button()
 				.click(props.onclick);
-			if (props.icon) {
-				action.append($('<img></img>').attr('src', props.icon));
-			}
 			buttonset = $('<div></div>')
 				.buttonset()
 				.append(action)
 				.append(expand);
+			if (props.icon) {
+				action.button('option', 'icons', { 'primary': props.icon });
+			}
 		} else {
 			expand.text(props.label);
 		}
@@ -40,6 +44,15 @@ define([
 				icons: { primary: 'aloha-jqueryui-icon ui-icon-triangle-1-s' }
 			})
 			.click(function(){
+				if (props.siblingContainer) {
+					props.siblingContainer
+						.find('.aloha-ribbon-menu')
+						.each(function(){
+							if (this !== menu[0]) {
+								$(this).hide();
+							}
+						});
+				}
 				if (menu.is(":visible")) {
 					menu.hide();
 					return;

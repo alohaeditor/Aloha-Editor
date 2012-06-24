@@ -69,10 +69,11 @@ define([
 		 * @param {String} iconClass CSS class for the icon
 		 */
 		setIcon: function (iconClass) {
-			this._icon.attr("class", "aloha-ribbon-icon " + iconClass);
+			this._icon.attr('class', 'aloha-ribbon-icon ' + iconClass);
 		},
 
 		addButton: function(props) {
+			props = $.extend({}, props, {'siblingContainer': this._toolbar});
 			this._toolbar.append(lib.makeSplitButton(props));
 		},
 
