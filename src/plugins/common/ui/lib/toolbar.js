@@ -71,21 +71,23 @@ function(jQuery, Surface, Tab, subguarded, floating, Store) {
 		},
 
 		initializeFloating: function() {
+			var surface = this;
+
+			var position;
 			if (store.get('Aloha.FloatingMenu.pinned') == 'true') {
 				var top = parseInt(store.get('Aloha.FloatingMenu.top'),10);
 				var left = parseInt(store.get('Aloha.FloatingMenu.left'),10);
-				this.$element.offset({top: top, left: left});
+				this.$element.css('position', 'fixed');
+				this.$element.offset({
+					top: top - jQuery(window).scrollTop(),
+					left: left
+				});
 				this.isFloating = false;
 			} else {
 				this.isFloating = true;
+				this.$element.css('position', 'absolute');
 			}
-
-			var surface = this;
-
-			this.$element.css({
-				'position': 'absolute',
-				'z-index': 9999
-			});
+			this.$element.css('z-index', 9999);
 
 			subguarded([
 				'aloha-selection-changed',
