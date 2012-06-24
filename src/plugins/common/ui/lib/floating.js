@@ -85,8 +85,6 @@ define([
 				top: position.top - jQuery(window).scrollTop()
 			});
 		}
-
-		// TODO: save to cookie
 	};
 
 	return {

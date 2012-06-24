@@ -467,4 +467,5 @@ $.store.serializers = {
 		$.store.drivers.voidDriver=voidDriver;
 	} 
 
+	return $.store;
 });

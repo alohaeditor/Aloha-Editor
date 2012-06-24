@@ -4,9 +4,12 @@ define([
 	'ui/tab',
 	'ui/subguarded',
 	'ui/floating',
+	'vendor/jquery.store',
 	'aloha/jquery-ui'
 ],
-function(jQuery, Surface, Tab, subguarded, floating) {
+function(jQuery, Surface, Tab, subguarded, floating, Store) {
+
+	var store = new Store;
 
 	/**
 	 * The toolbar is configured via `settings.toolbar` and is defined as an
@@ -68,8 +71,14 @@ function(jQuery, Surface, Tab, subguarded, floating) {
 		},
 
 		initializeFloating: function() {
-			// TODO: read cookie
-			this.isFloating = true;
+			if (store.get('Aloha.FloatingMenu.pinned') == 'true') {
+				var top = parseInt(store.get('Aloha.FloatingMenu.top'),10);
+				var left = parseInt(store.get('Aloha.FloatingMenu.left'),10);
+				this.$element.offset({top: top, left: left});
+				this.isFloating = false;
+			} else {
+				this.isFloating = true;
+			}
 
 			var surface = this;
 
@@ -103,6 +112,9 @@ function(jQuery, Surface, Tab, subguarded, floating) {
 			});
 
 			var $pin = jQuery('<div class="aloha-ui-pin">');
+			if (!this.isFloating) {
+				$pin.addClass('aloha-ui-pin-down');
+			}
 			$pin.click(function () {
 				surface.isFloating = !surface.isFloating;
 
@@ -113,13 +125,22 @@ function(jQuery, Surface, Tab, subguarded, floating) {
 				}
 
 				floating.togglePinSurface(surface, Aloha.activeEditable);
+
+				if (!surface.isFloating) {
+					storePosition(surface.$element.offset());
+				} else {
+					unstorePosition();
+				}
 			});
 			this.$element.find('.ui-tabs:first').append($pin);
 		},
 
 		initializeDragging: function () {
 			this.$element.draggable({
-				'distance': 20
+				'distance': 20,
+				'drag': function(event, ui){
+					storePosition(ui.offset);
+				}
 			});
 		},
 
@@ -172,6 +193,19 @@ function(jQuery, Surface, Tab, subguarded, floating) {
 
 	Toolbar.init();
 	Surface.registerType( Toolbar );
+
+
+	function storePosition(offset) {
+		store.set('Aloha.FloatingMenu.pinned', 'true');
+		store.set('Aloha.FloatingMenu.top', offset.top);
+		store.set('Aloha.FloatingMenu.left', offset.left);
+	}
+
+	function unstorePosition() {
+        store.del('Aloha.FloatingMenu.pinned');
+        store.del('Aloha.FloatingMenu.top');
+        store.del('Aloha.FloatingMenu.left');
+	}
 
 	return Toolbar;
 });
