@@ -1,51 +1,32 @@
+// TODO: This code needs inline-documentation!
 define([
 	'aloha/core',
 	'jquery'
 ], function (Aloha, jQuery) {
-	/*
-	var $element = jQuery('<div style="\
-		width:600px; height:150px; background:red;\
-		border: 2px solid black;\
-		position: absolute;\
-		z-index: 999999">').appendTo('body');
-	*/
-
 	var PADDING = 10;
-	var ANIMATION_TIME = 200;
+	var ANIMATION_TIME = 500;
 	var $window = jQuery(window);
 
-	var getOrientation = function ($element) {
-		var offset = $element.offset();
-		return {
-			width  : $element.width(),
-			height : $element.height(),
-			top    : offset.top, 
-			left   : offset.left
-		};
-	};
+	function floatTo($element, position, callback) {
+		$element.stop().animate(position, ANIMATION_TIME, function () {
+			callback(position);
+		});
+	}
 
-	var floatAbove = function ($element, position) {
-		$element.animate({
-			top: position.top - $element.height() - PADDING,
-			left: position.left
-		}, ANIMATION_TIME)
-	};
+	function floatAbove($element, position, callback) {
+		position.top -= $element.height() + PADDING;
+		floatTo($element, position, callback);
+	}
 
-	var floatBelow = function ($element, position) {
-		$element.animate({
-			top: position.top + PADDING,
-			left: position.left
-		}, ANIMATION_TIME);
-	};
+	function floatBelow($element, position, callback) {
+		position.top += PADDING;
+		floatTo($element, position, callback);
+	}
 
-	function floatSurface(surface, editable) {
-		if (!surface.isFloating) {
-			return;
-		}
-
+	function floatSurface(surface, editable, callback) {
 		var $element = surface.$element;
-		var surfaceOrientation = getOrientation($element);
-		var editableOrientation = getOrientation(editable.obj);
+		var surfaceOrientation = $element.offset();
+		var editableOrientation = editable.obj.offset();
 		var scrollTop = $window.scrollTop();
 		var availableSpace = editableOrientation.top - scrollTop;
 		var left = editableOrientation.left;
@@ -56,39 +37,45 @@ define([
 			left -= horizontalOverflow;
 		}
 
-		if (availableSpace >= surfaceOrientation.height) {
-			floatAbove($element, editableOrientation);
-		} else if (availableSpace + $element.height() > editableOrientation.height) {
+		if (availableSpace >= $element.height()) {
+			floatAbove($element, editableOrientation, callback);
+		} else if (availableSpace + $element.height() > editable.obj.height()) {
 			floatBelow($element, {
-				top: editableOrientation.top + editableOrientation.height,
+				top: editableOrientation.top + editable.obj.height(),
 				left: left
-			});
+			}, callback);
 		} else {
 			floatBelow($element, {
 				top: scrollTop,
 				left: left
-			});
+			}, callback);
 		}
-	};
+	}
 
-	function togglePinSurface(surface, editable) {
-		var position = getOrientation(surface.$element);
+	function togglePinSurfaces(surfaces, position, isFloating) {
+		var $elements = jQuery();
+		var j = surfaces.length;
+		while (j) {
+			$elements = $elements.add(surfaces[--j].$element);
+		}
 
-		if (surface.isFloating) {
-			surface.$element.css({
+		if (isFloating) {
+			$elements.find('.aloha-ui-pin').removeClass('aloha-ui-pin-down');
+			$elements.css({
 				position: 'absolute',
 				top: position.top
 			});
 		} else {
-			surface.$element.css({
+			$elements.find('.aloha-ui-pin').addClass('aloha-ui-pin-down');
+			$elements.css({
 				position: 'fixed',
 				top: position.top - jQuery(window).scrollTop()
 			});
 		}
-	};
+	}
 
 	return {
 		floatSurface: floatSurface,
-		togglePinSurface: togglePinSurface
+		togglePinSurfaces: togglePinSurfaces
 	};
 });
