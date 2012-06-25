@@ -200,6 +200,7 @@ background-image: url(../img/format-inline.png);
 	height: 50px !important;
 }
 
+.aloha-large-icon-h1  { background-position: -52px 0; }
 .aloha-large-icon-h2  { background-position: -104px 0; }
 .aloha-large-icon-h3  { background-position: -156px 0; }
 .aloha-large-icon-h4  { background-position: -208px 0; }
