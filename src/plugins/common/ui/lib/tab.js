@@ -72,7 +72,9 @@ function( Aloha, jQuery, Container, Component ) {
 					groupedComponents = components[i];
 					for (j = 0; j < groupedComponents.length; j++) {
 						component = Component.render(groupedComponents[j]);
-						group.append(component.element);
+						if (component) {
+							group.append(component.element);
+						}
 					}
 				}
 			}
