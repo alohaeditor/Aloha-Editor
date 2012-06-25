@@ -242,7 +242,6 @@ define([
 			// Populate the cache lazily
 			setTimeout(function(){ initCache(0); }, 100);
 			function initCache(i) {
-				console.log("init cache for editable " + i);
 				if (i < Aloha.editables.length) {
 					self.getOverlayForEditable(Aloha.editables[i]);
 					setTimeout(function(){ initCache(i + 1); }, 100);
