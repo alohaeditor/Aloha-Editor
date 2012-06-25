@@ -88,6 +88,9 @@ function( Aloha, jQuery, Class, Container ) {
 				// selection-changed doesn't fire on activation.  So we
 				// "yeild."
 				setTimeout( function() {
+					if ( ! Surface.active ) {
+						return;
+					}
 					var selection = Aloha.getSelection();
 					if (0 < selection.getRangeCount()) {
 						Container.showContainers( Surface.active, selection.getRangeAt( 0 ) );

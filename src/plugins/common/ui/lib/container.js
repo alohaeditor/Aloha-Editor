@@ -183,7 +183,7 @@ define([
 		 * @param {string} eventType Type of the event triggered (optional)
 		 * @static
 		 */
-		showContainersForContext: function( editable, elements, eventType ) {
+		showContainersForContext: function(editable, elements, eventType) {
 			if ( ! editable.containers ) {
 				// No containers were constructed for the given editable, so
 				// there is nothing for us to do.

@@ -27,6 +27,7 @@ define([
 	'use strict';
 
 	var GENTICS = window.GENTICS;
+	var overlayByConfig = {};
 
 	function CharacterOverlay(onSelectCallback) {
 		var self = this;
@@ -232,56 +233,83 @@ define([
 				icon: "aloha-icon-characterpicker",
 				scope: 'Aloha.continuoustext',
 				click: function() {
-					self.characterOverlay.show(this.element);
+					if (false !== self.characterOverlay) {
+						self.characterOverlay.show(this.element);
+					}
 				}
 			});
 
-			//self.insertButton = Component.getGlobalInstance("characterPicker");
-
-			self.characterOverlay = new CharacterOverlay(self.onCharacterSelect);
-
-			// when an editable is activated, we get the config for the editable
-			Aloha.bind('aloha-editable-activated', function (event, data) {
-				var config = self.getEditableConfig(data.editable.obj);
-
-				// make a space separated string out of arrays
-				if (jQuery.isArray(config)) {
-					config = config.join(' ');
+			// Populate the cache lazily
+			setTimeout(function(){ initCache(0); }, 100);
+			function initCache(i) {
+				if (i < Aloha.editables.length) {
+					self.getOverlayForEditable(Aloha.editables[i]);
+					setTimeout(function(){ initCache(i + 1); }, 100);
 				}
+			}
 
-				if (config) {
-					self.characterOverlay.setCharacters(config);
-					//self.insertButton.show();
+			Aloha.bind('aloha-editable-activated', function (event, data) {
+				self.characterOverlay = self.getOverlayForEditable(data.editable);
+				if (self.characterOverlay) {
 					FloatingmenuPortHelper.showAll('characterPicker');
 				} else {
-					//self.insertButton.hide();
 					FloatingmenuPortHelper.hideAll('characterPicker');
 				}
 			});
 		},
-		/**
-		 * insert a character after selecting it from the list
-		*/
-		onCharacterSelect: function (character) {
-			var self = this;
-			var range = Aloha.Selection.getRangeObject();
-			
-			if (Aloha.activeEditable) {
-				var charNode = jQuery(document.createTextNode(character));
-				GENTICS.Utils.Dom.insertIntoDOM(
-					charNode,
-					range,
-					jQuery(Aloha.activeEditable.obj),
-					true
-				);
 
-				range.startContainer = range.endContainer = charNode.get(0);
-				range.startOffset = range.endOffset = charNode.length;
-				range.select();
-
+		getOverlayForEditable: function(editable) {
+			// Each editable may have its own configuration and as
+			// such may have its own overlay.  We cache the overlay
+			// as data on the editable element. The special value
+			// false means that the editable has the characterpicker
+			// plugin turned off.
+			var overlay = editable.obj.data('aloha-characterpicker-overlay');
+			if (overlay || false === overlay) {
+				return overlay;
 			}
+			var config = this.getEditableConfig(editable.obj);
+			if ( ! config ) {
+				editable.obj.data('aloha-characterpicker-overlay', false);
+				return false;
+			}
+			if (jQuery.isArray(config)) {
+				config = config.join(' ');
+			}
+			// In addition to caching the selected overlay
+			// per-editable, we also cache the overlays for
+			// each config so that editables with the same
+			// config can share overlays.
+			overlay = overlayByConfig[config];
+			if ( ! overlay ) {
+				overlay = new CharacterOverlay(onCharacterSelect);
+				overlay.setCharacters(config);
+				overlayByConfig[config] = overlay;
+			}
+			editable.obj.data('aloha-characterpicker-overlay', overlay);
+			return overlay;
 		}
 	});
 
+	/**
+	 * insert a character after selecting it from the list
+	 */
+	function onCharacterSelect(character) {
+		var range = Aloha.Selection.getRangeObject();
+		
+		if (Aloha.activeEditable) {
+			var charNode = jQuery(document.createTextNode(character));
+			GENTICS.Utils.Dom.insertIntoDOM(
+				charNode,
+				range,
+				jQuery(Aloha.activeEditable.obj),
+				true
+			);
+
+			range.startContainer = range.endContainer = charNode.get(0);
+			range.startOffset = range.endOffset = charNode.length;
+			range.select();
+		}
+	}
 });
 // vim: noexpandtab
