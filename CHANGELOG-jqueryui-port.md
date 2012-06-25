@@ -57,6 +57,9 @@
                      All settings associated with the removed components
                      do not have any effect any more.
 
+                     The requirejs plugins order! and jquery-plugin!
+                     have been removed.
+
                      Many plugins exposed buttons, attribute-field and
                      multi-split-button components as non-private
                      members. For example, as in the case of the cite
