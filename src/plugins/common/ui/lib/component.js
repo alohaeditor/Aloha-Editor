@@ -1,8 +1,9 @@
 define([
 	'aloha/core',
 	'jquery',
-	'util/class'
-], function(Aloha, jQuery, Class) {
+	'util/class',
+	'aloha/console'
+], function(Aloha, jQuery, Class, console) {
 	'use strict';
 
 	/**
@@ -127,8 +128,9 @@ define([
 			var ComponentType = Component.components[type];
 
 			if (!ComponentType) {
-				throw new Error('Component type "' + type +
+				console.warn('Component type "' + type +
 					'" is not defined.');
+				return null;
 			}
 
 			if (!componentInstances[type]) {

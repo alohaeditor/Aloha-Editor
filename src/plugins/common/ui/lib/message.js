@@ -1,6 +1,6 @@
 define([
-	"jquery",
-	"ui/component"
+	'jquery',
+	'ui/component'
 ],
 function($, Component) {
 
@@ -12,7 +12,7 @@ function($, Component) {
 		if (props.html) {
 			textOrHtml['html'] = props.html;
 		}
-		return $("<div>", textOrHtml);
+		return $('<div>', textOrHtml);
 	}
 
 	function wrapDialogButtons(buttons) {
@@ -55,25 +55,45 @@ function($, Component) {
 		 * A confirm dialog has a confirm icon and style and yes and no buttons.
 		 *
 		 * @param props is an object with the following properties (all optional):
-		 *   title - the title of the dialog
-		 *    text - either the text inside the dialog
-		 *    html - or the html inside the dialog
-		 *     yes - makes a "Yes" button in the dialog
-		 *      no - makes a "No" button in the dialog
-		 *     cls - the root element of the dialog will receive this class
-         * buttons - an object where the properties are button titles and the values are callbacks
-		 *    Button callbacks will receive the dialog element as context.
-		 *    Pressing any buttons in the dialog will automatically close the dialog.
+		 *          title - the title of the dialog
+		 *           text - either the text inside the dialog
+		 *           html - or the html inside the dialog
+		 *            yes - makes a "Yes" button in the dialog and invokes the given callback if it is pressed.
+		 *             no - makes a "No" button in the dialog and invokes the given callback if it is pressed.
+		 *         answer - makes a "Yes" and "No" button in the dialog and pressing either will invoke the
+		 *                  callback with the answer as a boolean argument. Does not interfere with yes and
+		 *                  no properties.
+		 *            cls - the root element of the dialog will receive this class
+         *        buttons - an object where the properties are button titles and the values are callbacks
+		 *        Button callbacks will receive the dialog element as context.
+		 *        Pressing any buttons in the dialog will automatically close the dialog.
+		 * @return
+		 *        A function that can be called to close the dialog.
 		 */
 		'confirm': function(props) {
 			var buttons = props.buttons || {};
 			buttons['Yes'] = buttons['Yes'] || props.yes || $.noop;
-			buttons['No'] = buttons['No'] || props.no || $.noop;
+			buttons['No']  = buttons['No']  || props.no  || $.noop;
+			if (props.answer) {
+				var yes = buttons['Yes'];
+				var no  = buttons['No'];
+				buttons['Yes'] = function(){
+					yes();
+					props.answer(true);
+				};
+				buttons['No'] = function(){
+					no();
+					props.answer(false);
+				};
+			}
 			makeDialogDiv(props).dialog(
-				$.extend(makeDialogProps(props, "Confirm"), {
+				$.extend(makeDialogProps(props, 'Confirm'), {
 					'buttons': wrapDialogButtons(buttons)
 				})
 			);
+			return function() {
+				dialog.dialog('close').remove();
+			};
 		},
 		/**
 		 * Shows an alert dialog.
@@ -81,21 +101,58 @@ function($, Component) {
 		 * An alert dialog has an alert icon and style and a dismiss button.
 		 *
 		 * @param props is an object with the following properties (all optional)
-		 *  title - the title of the dialog
-		 *   text - either the text inside the dialog
-		 *   html - or the html inside the dialog
-		 *    cls - the root element of the dialog will receive this class
+		 *        title - the title of the dialog
+		 *        text - either the text inside the dialog
+		 *        html - or the html inside the dialog
+		 *        cls - the root element of the dialog will receive this class
+		 * @return
+		 *        A function that can be called to close the dialog.
 		 */
 		'alert': function(props) {
-			makeDialogDiv(props).dialog(
-				$.extend(makeDialogProps(props, "Alert"), {
+			var dialog = makeDialogDiv(props).dialog(
+				$.extend(makeDialogProps(props, 'Alert'), {
 					'buttons': wrapDialogButtons({
-						'Dismiss': function(){
-							$(this).dialog('close').remove();
-						}
+						'Dismiss': $.noop
 					})
 				})
 			);
+			return function() {
+				dialog.dialog('close').remove();
+			};
+		},
+		/**
+		 * Shows a wait dialog.
+		 *
+		 * A wait dialog shows a progressbar to indicate that some process is running.
+		 *
+		 * @param props is an object with the following properties (all optional)
+		 *        title - the title of the dialog
+		 *         text - either the text inside the dialog
+		 *         html - or the html inside the dialog
+		 *          cls - the root element of the dialog will receive this class
+		 *        value - the intial value of the progressbar from 0 to 100
+		 * @return
+		 *        A function that can be called to update the progress bar with a value from 0 to 100.
+		 *        If null or undefined is passed, the dialog will be closed.
+		 */
+		'wait': function(props) {
+			var progressbar = $("<div>").progressbar({
+				value: null != props.value ? props.value :  100
+			});
+			var dialog = makeDialogDiv(props).dialog(
+				$.extend(makeDialogProps(props, 'Progress'), {
+					open: function(){
+						$(this).append(progressbar);
+					}
+				})
+			);
+			return function(value){
+				if (null != value) {
+					progressbar.progressbar({ value: value });
+				} else {
+					dialog.dialog('close').remove();
+				}
+			};
 		}
 	};
 });

@@ -80,7 +80,9 @@ function (Aloha, jQuery, Container, Component) {
 							group.append('<div>');
 						} else {
 							component = Component.render(groupedComponents[j]);
-							group.append(component.element);
+							if (component) {
+								group.append(component.element);
+							}
 						}
 					}
 				}

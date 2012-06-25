@@ -57,6 +57,10 @@ define([
 					return false;
 				}
 			});
+		},
+
+		togglePin: function(pinned) {
+			// TODO
 		}
 	};
 });
