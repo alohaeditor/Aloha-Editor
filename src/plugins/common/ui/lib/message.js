@@ -105,9 +105,7 @@ function($, Component) {
 			makeDialogDiv(props).dialog(
 				$.extend(makeDialogProps(props, "Alert"), {
 					'buttons': wrapDialogButtons({
-						'Dismiss': function(){
-							$(this).dialog('close').remove();
-						}
+						'Dismiss': $.noop
 					})
 				})
 			);
