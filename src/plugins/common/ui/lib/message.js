@@ -58,8 +58,11 @@ function($, Component) {
 		 *   title - the title of the dialog
 		 *    text - either the text inside the dialog
 		 *    html - or the html inside the dialog
-		 *     yes - makes a "Yes" button in the dialog
-		 *      no - makes a "No" button in the dialog
+		 *     yes - makes a "Yes" button in the dialog and invokes the given callback if it is pressed.
+		 *      no - makes a "No" button in the dialog and invokes the given callback if it is pressed.
+		 *  answer - makes a "Yes" and "No" button in the dialog and pressing either will invoke the
+		 *           callback with the answer as a boolean argument. Does not interfere with yes and
+		 *           no properties.
 		 *     cls - the root element of the dialog will receive this class
          * buttons - an object where the properties are button titles and the values are callbacks
 		 *    Button callbacks will receive the dialog element as context.
@@ -68,7 +71,19 @@ function($, Component) {
 		'confirm': function(props) {
 			var buttons = props.buttons || {};
 			buttons['Yes'] = buttons['Yes'] || props.yes || $.noop;
-			buttons['No'] = buttons['No'] || props.no || $.noop;
+			buttons['No']  = buttons['No']  || props.no  || $.noop;
+			if (props.answer) {
+				var yes = buttons['Yes'];
+				var no  = buttons['No'];
+				buttons['Yes'] = function(){
+					yes();
+					props.answer(true);
+				};
+				buttons['No'] = function(){
+					no();
+					props.answer(false);
+				};
+			}
 			makeDialogDiv(props).dialog(
 				$.extend(makeDialogProps(props, "Confirm"), {
 					'buttons': wrapDialogButtons(buttons)
