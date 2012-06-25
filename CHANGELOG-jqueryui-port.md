@@ -57,6 +57,12 @@
                      All settings associated with the removed components
                      do not have any effect any more.
 
+                     The new common/ui plugin is now required for the
+                     user interface to be shown. This plugin is not
+                     loaded automatically. Most plugins require a user
+                     interface and will fail to load if this plugin is
+                     not configured to be loaded.
+
                      The requirejs plugins order! and jquery-plugin!
                      have been removed.
 
