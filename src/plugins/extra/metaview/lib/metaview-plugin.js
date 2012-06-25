@@ -4,21 +4,27 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-define(
-['aloha/plugin',
- 'ui/component',
- 'ui/toggleButton',
- 'flag-icons/flag-icons-plugin',
- 'i18n!metaview/nls/i18n',
- 'i18n!aloha/nls/i18n',
- 'jquery',
- 'css!metaview/css/metaview.css'],
-function(Plugin, Component, ToggleButton, FlagIcons, i18n, i18nCore, jQuery) {
-	"use strict";
+define([
+	'aloha/plugin',
+	'ui/component',
+	'ui/toggleButton',
+	'flag-icons/flag-icons-plugin',
+	'i18n!metaview/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'jquery',
+	'ui/port-helper-floatingmenu',
+	'css!metaview/css/metaview.css'
+], function(Plugin,
+            Component,
+			ToggleButton,
+			FlagIcons,
+			i18n,
+			i18nCore,
+			jQuery,
+			FloatingmenuPortHelper) {
+	'use strict';
 
-	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
+	var GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
      return Plugin.create('metaview', {
@@ -47,16 +53,20 @@ function(Plugin, Component, ToggleButton, FlagIcons, i18n, i18nCore, jQuery) {
 						var config;
 						config = that.getEditableConfig( Aloha.activeEditable.obj );
 						if ( config && jQuery.inArray( 'metaview', config ) !== -1 ) {
-							that.button.show();
+							//that.button.show();
+							FloatingmenuPortHelper.showAll('toggleMetaView');
 						} else {
-							that.button.hide();
+							//that.button.hide();
+							FloatingmenuPortHelper.hideAll('toggleMetaView');
 							return;
 						}
 						
-						if( that.button && jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
-							that.button.setState(true);
+						if ( /* that.button && */ jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
+							//that.button.setState(true);
+							FloatingmenuPortHelper.setStateTrueAll('toggleMetaView');
 						} else {
-							that.button.setState(false);
+							//that.button.setState(false);
+							FloatingmenuPortHelper.setStateFalseAll('toggleMetaView');
 						}
 					}
 			);
@@ -66,10 +76,12 @@ function(Plugin, Component, ToggleButton, FlagIcons, i18n, i18nCore, jQuery) {
 			var that = this;
 			if(jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
 				jQuery(Aloha.activeEditable.obj).removeClass('aloha-metaview');
-				that.button.setState(false);
+				FloatingmenuPortHelper.setStateFalseAll('toggleMetaView');
+				//that.button.setState(false);
 			} else {
 				jQuery(Aloha.activeEditable.obj).addClass('aloha-metaview');
-				that.button.setState(true);
+				FloatingmenuPortHelper.setStateTrueAll('toggleMetaView');
+				//that.button.setState(true);
 			}
 		},
 		
@@ -86,7 +98,7 @@ function(Plugin, Component, ToggleButton, FlagIcons, i18n, i18nCore, jQuery) {
 				click : function () { that.buttonClick(); }
 			});
 
-			that.button = Component.getGlobalInstance("toggleMetaView");
+			//that.button = Component.getGlobalInstance("toggleMetaView");
 		}
 	});
 });

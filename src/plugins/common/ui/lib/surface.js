@@ -31,7 +31,7 @@ function( Aloha, jQuery, Class, Container ) {
 		 * Check for whether or not this surface is active--that is, whether is
 		 * is visible and the user can interact with it.
 		 *
-		 * @FIME: @TODO: Implenent this function.
+		 * @FIXME: @TODO: Implenent this function.
 		 * @eturn {boolean} True if this surface is visible.
 		 */
 		isActive: function () {
@@ -88,6 +88,9 @@ function( Aloha, jQuery, Class, Container ) {
 				// selection-changed doesn't fire on activation.  So we
 				// "yeild."
 				setTimeout( function() {
+					if ( ! Surface.active ) {
+						return;
+					}
 					var selection = Aloha.getSelection();
 					if (0 < selection.getRangeCount()) {
 						Container.showContainers( Surface.active, selection.getRangeAt( 0 ) );
@@ -231,7 +234,6 @@ function( Aloha, jQuery, Class, Container ) {
 				}
 			}
 		}
-
 	});
 
 	Surface.init();

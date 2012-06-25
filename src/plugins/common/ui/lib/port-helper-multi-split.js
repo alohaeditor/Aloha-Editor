@@ -36,7 +36,7 @@ define([
 					icon: item.iconClass,
 					click: item.click,
 					isActive: function () {
-						// TODO return activeItem === item.name;
+						return activeItem === item.name;
 					}
 				});
 			});
@@ -44,8 +44,20 @@ define([
 		}
 
 		return {
-			showItem: function () {},
-			hideItem: function () {},
+			// Expose this function so the cite-plugin can push its own
+			// button to the format plugin's multi-split-button (which
+			// is a disastrous hack I know).
+			// TODO make it possible to combine the items of multiple
+			// plugins into a single multi split button.
+			pushItem: function(item){
+				props.items.push(item);
+			},
+			showItem: function(){
+				//TODO
+			},
+			hideItem: function(){
+				//TODO
+			},
 			setActiveItem: function (name) {
 				activeItem = name;
 			}

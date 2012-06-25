@@ -11,8 +11,21 @@
  * @name block.block
  * @namespace block/block
  */
-define(['aloha', 'jquery', 'block/blockmanager', 'aloha/observable', 'ui/toolbar', 'util/class'],
-function(Aloha, jQuery, BlockManager, Observable, Toolbar, Class) {
+define([
+	'aloha',
+	'jquery',
+	'block/blockmanager',
+	'aloha/observable',
+	'ui/scopes',
+	'util/class'
+], function(
+	Aloha,
+	jQuery,
+	BlockManager,
+	Observable,
+	Scopes,
+	Class
+){
 	"use strict";
 
 	var GENTICS = window.GENTICS;
@@ -364,7 +377,7 @@ function(Aloha, jQuery, BlockManager, Observable, Toolbar, Class) {
 
 			// Activate current block
 			if (this.$element.attr('data-block-skip-scope') !== 'true') {
-				Component.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
+				Scopes.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
 			}
 			this.$element.addClass('aloha-block-active');
 			this._highlight();

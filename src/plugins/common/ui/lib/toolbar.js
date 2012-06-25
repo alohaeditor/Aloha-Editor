@@ -4,9 +4,12 @@ define([
 	'ui/tab',
 	'ui/subguarded',
 	'ui/floating',
+	'vendor/jquery.store',
 	'aloha/jquery-ui'
 ],
-function( jQuery, Surface, Tab, subguarded, floatSurface ) {
+function(jQuery, Surface, Tab, subguarded, floating, Store) {
+
+	var store = new Store;
 
 	/**
 	 * The toolbar is configured via `settings.toolbar` and is defined as an
@@ -28,6 +31,9 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 	 * @extends {Surface}
 	 */
 	var Toolbar = Surface.extend({
+
+		isFloating: false,
+		_tabs: [],
 
 		/**
 		 * Toolbar constructor.
@@ -52,12 +58,12 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 			var i;
 			for ( i = 0; i < tabs.length; i++ ) {
 				settings = tabs[ i ];
-				new Tab( {
+				this._tabs.push(new Tab({
 					label: settings.label || '',
 					showOn: settings.showOn,
 					editable: editable,
 					container: container
-				}, settings.components );
+				}, settings.components));
 			}
 
 			this.initializeFloating();
@@ -67,48 +73,77 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 		initializeFloating: function() {
 			var surface = this;
 
-			this.$element.css({
-				'position': 'absolute',
-				'z-index': 9999
-			});
+			var position;
+			if (store.get('Aloha.FloatingMenu.pinned') == 'true') {
+				var top = parseInt(store.get('Aloha.FloatingMenu.top'),10);
+				var left = parseInt(store.get('Aloha.FloatingMenu.left'),10);
+				this.$element.css('position', 'fixed');
+				this.$element.offset({
+					top: top - jQuery(window).scrollTop(),
+					left: left
+				});
+				this.isFloating = false;
+			} else {
+				this.isFloating = true;
+				this.$element.css('position', 'absolute');
+			}
+			this.$element.css('z-index', 9999);
 
-			subguarded( [
+			subguarded([
 				'aloha-selection-changed',
 				'aloha-editable-activated'
 			], Surface.onActivatedSurface,
-				this, function( $event, range, event ) {
-				if ( Aloha.activeEditable ) {
-					floatSurface( surface, Aloha.activeEditable );
+				this, function($event, range, event) {
+				if (Aloha.activeEditable) {
+					floating.floatSurface(surface, Aloha.activeEditable);
 				}
-			} );
+			});
 
 			var isScrolling = false;
-			jQuery( window ).scroll( function( $event, nativeEvent ) {
+			jQuery(window).scroll(function($event, nativeEvent) {
 				// @TODO only do this for active surfaces.
-				if ( !isScrolling ) {
+				if (!isScrolling) {
 					isScrolling = true;
-					setTimeout( function () {
+					setTimeout(function () {
 						isScrolling = false;
-						if ( Aloha.activeEditable ) {
-							floatSurface( surface, Aloha.activeEditable );
+						if (Aloha.activeEditable) {
+							floating.floatSurface(surface, Aloha.activeEditable);
 						}
-					}, 50 );
+					}, 50);
 				}
 			});
-		},
 
-		initializeDragging: function() {
-			this.$element.draggable({
-				'distance': 20
+			var $pin = jQuery('<div class="aloha-ui-pin">');
+			if (!this.isFloating) {
+				$pin.addClass('aloha-ui-pin-down');
+			}
+			$pin.click(function () {
+				surface.isFloating = !surface.isFloating;
+
+				if (surface.isFloating) {
+					$pin.removeClass('aloha-ui-pin-down');
+				} else {
+					$pin.addClass('aloha-ui-pin-down');
+				}
+
+				floating.togglePinSurface(surface, Aloha.activeEditable);
+
+				if (!surface.isFloating) {
+					storePosition(surface.$element.offset());
+				} else {
+					unstorePosition();
+				}
 			});
+			this.$element.find('.ui-tabs:first').append($pin);
 		},
 
-		enableFloating: function() {
-			
-		},
-
-		disableFloating: function() {
-
+		initializeDragging: function () {
+			this.$element.draggable({
+				'distance': 20,
+				'drag': function(event, ui){
+					storePosition(ui.offset);
+				}
+			});
 		},
 
 		/**
@@ -160,6 +195,19 @@ function( jQuery, Surface, Tab, subguarded, floatSurface ) {
 
 	Toolbar.init();
 	Surface.registerType( Toolbar );
+
+
+	function storePosition(offset) {
+		store.set('Aloha.FloatingMenu.pinned', 'true');
+		store.set('Aloha.FloatingMenu.top', offset.top);
+		store.set('Aloha.FloatingMenu.left', offset.left);
+	}
+
+	function unstorePosition() {
+        store.del('Aloha.FloatingMenu.pinned');
+        store.del('Aloha.FloatingMenu.top');
+        store.del('Aloha.FloatingMenu.left');
+	}
 
 	return Toolbar;
 });

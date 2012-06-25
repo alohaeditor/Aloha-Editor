@@ -4,13 +4,12 @@
 * aloha-sales@gentics.com - way to over-lawyer it up Andrew :/
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-
-define( [
+define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
-	'ui/toolbar',
+	'ui/scopes',
 	'ui/component',
 	'ui/button',
 	'ui/toggleButton',
@@ -22,24 +21,27 @@ define( [
 	'table/table-create-layer',
 	'table/table',
 	'table/table-plugin-utils',
+	'ui/port-helper-floatingmenu',
 	'css!table/css/table.css'
-], function( Aloha,
-	         jQuery,
-	         Plugin,
-	         PluginManager,
-	         Toolbar,
-			 Component,
-			 Button,
-			 ToggleButton,
-			 Message,
-			 AttributeField,
-			 MultiSplitButton,
-	         i18n,
-	         i18nCore,
-	         CreateLayer,
-	         Table,
-	         Utils ) {
-
+], function(
+	Aloha,
+	jQuery,
+	Plugin,
+	PluginManager,
+	Scopes,
+	Component,
+	Button,
+	ToggleButton,
+	Message,
+	AttributeField,
+	MultiSplitButton,
+	i18n,
+	i18nCore,
+	CreateLayer,
+	Table,
+	Utils,
+	FloatingmenuPortHelper
+) {
 	var GENTICS = window.GENTICS;
 	
 	/**
@@ -162,16 +164,6 @@ define( [
 
 		// initialize the table buttons
 		this.initTableButtons();
-		this.rowHeader          = Component.getGlobalInstance("rowheader");
-		this.btnRowmergecells   = Component.getGlobalInstance("mergecells");
-		this.btnRowsplitcells   = Component.getGlobalInstance("splitcells");
-		this.columnHeader       = Component.getGlobalInstance("columnheader");
-		this.btnTablemergecells = Component.getGlobalInstance("mergecells");
-		this.btnTablesplitcells = Component.getGlobalInstance("splitcells");
-		this.btnMergecells      = Component.getGlobalInstance("mergecells");
-		this.btnSplitcells      = Component.getGlobalInstance("splitcells");
-		this.captionButton      = Component.getGlobalInstance("tableCaption");
-		this.createTableButton  = Component.getGlobalInstance("createTable");
 
 		Aloha.bind( 'aloha-table-selection-changed', function () {
 			if ( null != TablePlugin.activeTable &&
@@ -184,23 +176,23 @@ define( [
 				TablePlugin.activeTable.selection ) {
 
 				if ( TablePlugin.activeTable.selection.cellsAreSplitable() ) {
-					that.btnSplitcells.enable();
-					that.btnRowsplitcells.enable();
-					that.btnTablesplitcells.enable();
+					FloatingmenuPortHelper.enableAll('splitcells');
+					FloatingmenuPortHelper.enableAll('splitcellsRow');
+					FloatingmenuPortHelper.enableAll('splitcellsColumn');
 				} else {
-					that.btnSplitcells.disable();
-					that.btnRowsplitcells.disable();
-					that.btnTablesplitcells.disable();
+					FloatingmenuPortHelper.disableAll('splitcells');
+					FloatingmenuPortHelper.disableAll('splitcellsRow');
+					FloatingmenuPortHelper.disableAll('splitcellsColumn');
 				}
 
 				if ( TablePlugin.activeTable.selection.cellsAreMergeable() ) {
-					that.btnMergecells.enable();
-					that.btnRowmergecells.enable();
-					that.btnTablemergecells.enable();
+					FloatingmenuPortHelper.enableAll('mergecells');
+					FloatingmenuPortHelper.enableAll('mergecellsRow');
+					FloatingmenuPortHelper.enableAll('mergecellsColumn');
 				} else {
-					that.btnMergecells.disable();
-					that.btnRowmergecells.disable();
-					that.btnTablemergecells.disable();
+					FloatingmenuPortHelper.disableAll('mergecells');
+					FloatingmenuPortHelper.disableAll('mergecellsRow');
+					FloatingmenuPortHelper.disableAll('mergecellsColumn');
 				}
 			}
 
@@ -218,9 +210,11 @@ define( [
 
 				// show hide buttons regarding configuration and DOM position
 				if ( jQuery.inArray('table', config) != -1  && Aloha.Selection.mayInsertTag('table') ) {
-					that.createTableButton.show();
+					//that.createTableButton.show();
+					FloatingmenuPortHelper.showAll('createTable');
 				} else {
-					that.createTableButton.hide();
+					//that.createTableButton.hide();
+					FloatingmenuPortHelper.hideAll('createTable');
 				}
 
 				var table = rangeObject.findMarkup(function () {
@@ -246,12 +240,12 @@ define( [
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
 		Aloha.bind( 'aloha-editable-activated', function (event, props) {
 			// disable all split / merge buttons
-			that.btnSplitcells.disable();
-			that.btnRowsplitcells.disable();
-			that.btnTablesplitcells.disable();
-			that.btnMergecells.disable();
-			that.btnRowmergecells.disable();
-			that.btnTablemergecells.disable();
+			FloatingmenuPortHelper.disableAll('splitcells');
+			FloatingmenuPortHelper.disableAll('mergecells');
+			FloatingmenuPortHelper.disableAll('splitcellsRow');
+			FloatingmenuPortHelper.disableAll('mergecellsRow');
+			FloatingmenuPortHelper.disableAll('splitcellsColumn');
+			FloatingmenuPortHelper.disableAll('mergecellsColumn');
 
 			props.editable.obj.find('table').each(function () {
 				// shortcut for TableRegistry
@@ -325,14 +319,14 @@ define( [
 	function nsSel () {
 		var stringBuilder = [], prefix = tableNamespace;
 		jQuery.each(arguments, function () { stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this)); });
-		return stringBuilder.join(' ').trim();
+		return jQuery.trim(stringBuilder.join(' '));
 	};
 
 	//Creates string with this component's namepsace prefixed the each classname
 	function nsClass () {
 		var stringBuilder = [], prefix = tableNamespace;
 		jQuery.each(arguments, function () { stringBuilder.push(this == '' ? prefix : prefix + '-' + this); });
-		return stringBuilder.join(' ').trim();
+		return jQuery.trim(stringBuilder.join(' '));
 	};
 
 	TablePlugin.initSidebar = function(sidebar) {
@@ -862,9 +856,9 @@ define( [
 		var that = this;
 
 		// generate the new scopes
-		Component.createScope(this.name + '.row', 'Aloha.continuoustext');
-		Component.createScope(this.name + '.column', 'Aloha.continuoustext');
-		Component.createScope(this.name + '.cell', 'Aloha.continuoustext');
+		Scopes.createScope(this.name + '.row', 'Aloha.continuoustext');
+		Scopes.createScope(this.name + '.column', 'Aloha.continuoustext');
+		Scopes.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
 		Component.define("createTable", Button, {
 			tooltip: i18n.t("button.createtable.tooltip"),
@@ -968,7 +962,7 @@ define( [
 			}
 		});
 
-		this.summary = new AttributeField( {
+		this.summary = AttributeField( {
 			width : 275,
 			name  : 'tableSummary',
 			noTargetHighlight: true,
@@ -1129,7 +1123,8 @@ define( [
 			this.summary.setTargetObject(focusTable.obj, 'summary');
 			if ( focusTable.obj.children("caption").is('caption') ) {
 				// set caption button
-				that.captionButton.setState(true);
+				//that.captionButton.setState(true);
+				FloatingmenuPortHelper.setStateTrueAll('tableCaption');
 				var c = focusTable.obj.children("caption");
 				that.makeCaptionEditable(c);
 			}
@@ -1265,7 +1260,7 @@ define( [
 
 	TablePlugin.updateFloatingMenuScope = function () {
 		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
-			Component.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+			Scopes.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
 		}
 	};
 	

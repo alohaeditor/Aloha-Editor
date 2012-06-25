@@ -21,7 +21,7 @@ define( [
 	'aloha/plugin',
 	'jquery',
 	'ui/port-helper-attribute-field',
-	'ui/toolbar',
+	'ui/scopes',
 	'ui/surface',
 	'ui/component',
 	'ui/button',
@@ -31,7 +31,7 @@ define( [
 	'aloha/console',
 	'css!link/css/link.css',
 	'link/../extra/linklist'
-], function ( Aloha, Plugin, jQuery, AttributeField, Toolbar, Surface, Component, Button, ToggleButton, i18n, i18nCore, console ) {
+], function ( Aloha, Plugin, jQuery, AttributeField, Scopes, Surface, Component, Button, ToggleButton, i18n, i18nCore, console ) {
 	'use strict';
 	
 	var GENTICS = window.GENTICS,
@@ -152,7 +152,7 @@ define( [
 			jQuery.each( arguments, function () {
 				stringBuilder.push( '.' + ( this == '' ? prefix : prefix + '-' + this ) );
 			} );
-			return stringBuilder.join( ' ' ).trim();
+			return jQuery.trim(stringBuilder.join(' '));
 		},
 
 		//Creates string with this component's namepsace prefixed the each classname
@@ -161,7 +161,7 @@ define( [
 			jQuery.each( arguments, function () {
 				stringBuilder.push( this == '' ? prefix : prefix + '-' + this );
 			} );
-			return stringBuilder.join( ' ' ).trim();
+			return jQuery.trim(stringBuilder.join(' '));
 		},
 
 		initSidebar: function ( sidebar ) {
@@ -258,7 +258,7 @@ define( [
 				editable.obj.bind( 'keydown', that.hotKey.insertLink, function ( e ) {
 					if ( that.findLinkMarkup() ) {
 						// open the tab containing the href
-						Component.activateTabOfButton('editLink');
+						Scopes.activateTabOfButton('editLink');
 						that.hrefField.focus();
 					} else {
 						that.insertLink( true );
@@ -279,13 +279,23 @@ define( [
 				// show/hide the button according to the configuration
 				config = that.getEditableConfig( Aloha.activeEditable.obj );
 				if ( jQuery.inArray( 'a', config ) != -1 ) {
-					that.formatLinkButton.show();
-					that.insertLinkButton.show();
-					Component.unhideTab();
+					//that.formatLinkButton.show();
+					//that.insertLinkButton.show();
+					Component.eachInstance(['formatLink', 'insertLink'],
+						function (component) {
+							component.show();
+						});
+
+					Scopes.unhideTab();
 				} else {
-					that.formatLinkButton.hide();
-					that.insertLinkButton.hide();
-					Component.hideTab(i18n.t('floatingmenu.tab.link'));
+					//that.formatLinkButton.hide();
+					//that.insertLinkButton.hide();
+					Component.eachInstance(['formatLink', 'insertLink'],
+						function (component) {
+							component.hide();
+						});
+
+					Scopes.hideTab(i18n.t('floatingmenu.tab.link'));
 				}
 			} );
 
@@ -313,7 +323,7 @@ define( [
 					if ( foundMarkup ) {
 						that.toggleLinkScope( true );
 						
-						Component.activateTabOfButton('editLink');
+						Scopes.activateTabOfButton('editLink');
 
 						// now we are ready to set the target object
 						that.hrefField.setTargetObject( foundMarkup, 'href' );
@@ -355,15 +365,43 @@ define( [
 		 */
 		toggleLinkScope: function ( show ) {
 			if ( show ) {
-				this.insertLinkButton.hide();
 				this.hrefField.show();
-				this.removeLinkButton.show();
-				this.formatLinkButton.setState( true );
+
+				//this.insertLinkButton.hide();
+				Component.eachInstance(['insertLink'], function (component) {
+					component.hide();
+				});
+
+				//this.removeLinkButton.show();
+				Component.eachInstance(['removeLink'], function (component) {
+					component.show();
+				});
+
+				//this.formatLinkButton.setState( true );
+				Component.eachInstance(['formatLink'], function (component) {
+					component.setState(true);
+				});
+
+				Scopes.addScope(this.name);
 			} else {
-				this.insertLinkButton.show();
 				this.hrefField.hide();
-				this.removeLinkButton.hide();
-				this.formatLinkButton.setState( false );
+
+				//this.insertLinkButton.show();
+				Component.eachInstance(['insertLink'], function (component) {
+					component.show();
+				});
+
+				//this.removeLinkButton.hide();
+				Component.eachInstance(['removeLink'], function (component) {
+					component.hide();
+				});
+
+				//this.formatLinkButton.setState( false );
+				Component.eachInstance(['formatLink'], function (component) {
+					component.setState(false);
+				});
+
+				Scopes.removeScope(this.name);
 			}
 		},
 		
@@ -428,7 +466,7 @@ define( [
 				}
 			});
 			
-			this.hrefField = new AttributeField( {
+			this.hrefField = AttributeField( {
 				name: 'editLink',
 				width: 320,
 				valueField: 'url',
@@ -446,10 +484,6 @@ define( [
 					that.removeLink();
 				}
 			});
-
-			this.formatLinkButton = Component.getGlobalInstance("formatLink");
-			this.insertLinkButton = Component.getGlobalInstance("insertLink");
-			this.removeLinkButton = Component.getGlobalInstance("removeLink");
 		},
 
 		/**
@@ -461,9 +495,6 @@ define( [
 
 			// update link object when src changes
 			this.hrefField.addListener( 'keyup', function ( event ) {
-				// Now show all the ui-attributefield elements
-				that.showComboList();
-				
 				// Handle ESC key press: We do a rough check to see if the user
 				// has entered a link or searched for something
 				if ( event.keyCode == 27 ) {
@@ -481,7 +512,6 @@ define( [
 						
 						// restore original value and hide combo list
 						that.hrefField.setValue( hrefValue );
-						that.hideComboList();
 						
 						if ( hrefValue == that.hrefValue || hrefValue == '' ) {
 							that.removeLink( false );
@@ -522,7 +552,7 @@ define( [
 					}
 					
 					window.setTimeout( function () {
-						Component.setScope('Aloha.continuoustext');
+						Scopes.setScope('Aloha.continuoustext');
 					}, 100 );
 					
 					that.hrefField.preventAutoSuggestionBoxFromExpanding();
@@ -625,7 +655,7 @@ define( [
 			}
 			
 			// activate floating menu tab
-			Component.activateTabOfButton('editLink');
+			Scopes.activateTabOfButton('editLink');
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
@@ -685,7 +715,7 @@ define( [
 				
 				if ( typeof terminateLinkScope == 'undefined' ||
 						terminateLinkScope === true ) {
-					Component.setScope('Aloha.continuoustext');
+					Scopes.setScope('Aloha.continuoustext');
 				}
 			}
 		},
@@ -732,24 +762,6 @@ define( [
 		},
 		
 		/**
-		 * Displays all the ui-attributefield elements
-		 */
-		showComboList: function () {
-			jQuery( '.x-layer x-combo-list,' +
-				    '.x-combo-list-inner,' +
-				    '.x-combo-list' ).show();
-		},
-		
-		/**
-		 * Hide all the ui-attributefield elements
-		 */
-		hideComboList: function () {
-			jQuery( '.x-layer x-combo-list,' +
-				    '.x-combo-list-inner,' +
-				    '.x-combo-list' ).hide();
-		},
-		
-		/**
 		 * Make the given jQuery object (representing an editable) clean for saving
 		 * Find all links and remove editing objects
 		 * @param obj jQuery object to make clean
@@ -763,6 +775,5 @@ define( [
 					.removeClass( 'aloha-link-text' );
 			} );
 		}
-		
 	} );
 } );

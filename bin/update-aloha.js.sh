@@ -47,16 +47,8 @@ echo -e "\n * 1. Adding $REQUIRE"
 cat "$TARGET/$REQUIRE" >> "$TARGET/aloha.js"
 handleError $? "Could not add file to aloha.js"
 
-echo -e "\n * 2. Adding $JQUERY"
-cat "$TARGET/$JQUERY" >> "$TARGET/aloha.js"
-handleError $? "Could not add file to aloha.js"
-
 echo -e "\n * 5. Adding previously generated $TARGET/aloha-bootstrap.js"
 cat "$TARGET/aloha-bootstrap.js" >> "$TARGET/aloha.js"
 handleError $? "Could not add file aloha-bootstrap.js to aloha.js"
-
-echo -e "\n * 6. $TARGET/aloha-require.js"
-cat "$TARGET/aloha-require.js" >> "$TARGET/aloha.js"
-handleError $? "Could not add file aloha-require.js to aloha.js"
 
 echo -e "\n\nGenerated $TARGET/aloha.js."

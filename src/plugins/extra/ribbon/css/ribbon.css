@@ -40,3 +40,9 @@
 .aloha-ribbon-split-button {
 	float:left;
 }
+.aloha-ribbon-menu {
+	/* Necessary to avoid the expanded menu of MenuButton components in
+	   the floating menu to be displayed as part of the floating menu
+	   instead of on-top of it. */
+	position: absolute;
+}

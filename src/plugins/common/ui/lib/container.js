@@ -20,9 +20,9 @@
 
 define([
 	'jquery',
-	'util/class'
-],
-function( jQuery, Class ) {
+	'util/class',
+	'ui/scopes'
+], function(jQuery, Class, Scopes) {
 	'use strict';
 
 	var uid = 0;
@@ -59,6 +59,50 @@ function( jQuery, Class ) {
 		}
 	}
 
+	var stringFns = [];
+	var returnTrue = function() {
+		return true;
+	};
+
+	/**
+	 * Normalizes a showOn option into a function.
+	 *
+	 * @param {(string|boolean|function)} showOn
+	 * @return function
+	 */
+	function normalizeShowOn(container, showOn) {
+		switch( jQuery.type( showOn ) ) {
+		case 'function':
+			return showOn;
+		case 'string':
+			if ( !stringFns[ showOn ] ) {
+				stringFns[ showOn ] = function( el, ev ) {
+					return el ? jQuery( el ).is( showOn ) : false;
+				};
+			}
+			return stringFns[ showOn ];
+		case 'object':
+			if (showOn.scope) {
+				return function(){
+					if (typeof jQuery.type(showOn.scope) === 'array') {
+						for (var i = 0; i < showOn.scope.length; i++) {
+							if (Scopes.isActiveScope(showOn.scope[i])) {
+								return true;
+							}
+						}
+						return false;
+					} else {
+						return Scopes.isActiveScope(showOn.scope);
+					}
+				};
+			} else {
+				throw "Invalid showOn configuration";
+			}
+		default:
+			return returnTrue;
+		}
+	}
+
 	/**
 	 * Container class.
 	 *
@@ -87,7 +131,7 @@ function( jQuery, Class ) {
 				editable.containers = [];
 			}
 
-			var showOn = Container.normalizeShowOn( settings.showOn );
+			var showOn = normalizeShowOn(this, settings.showOn);
 			var key = getShowOnId( showOn );
 			var group = editable.containers[ key ];
 			if ( !group ) {
@@ -107,36 +151,6 @@ function( jQuery, Class ) {
 	// static fields
 
 	jQuery.extend( Container, {
-
-		/**
-		 * Normalizes a showOn option into a function.
-		 *
-		 * @param {(string|boolean|function)} showOn
-		 * @return function
-		 */
-		normalizeShowOn: (function(	) {
-			var stringFns = [];
-			var returnTrue = function() {
-				return true;
-			};
-
-			return function( showOn ) {
-				switch( jQuery.type( showOn ) ) {
-				case 'function':
-					return showOn;
-				case 'string':
-					if ( !stringFns[ showOn ] ) {
-						stringFns[ showOn ] = function( el, ev ) {
-							return el ? jQuery( el ).is( showOn ) : false;
-						};
-					}
-					return stringFns[ showOn ];
-				default:
-					return returnTrue;
-				}
-			};
-		})(),
-
 		/**
 		 * Given a range, show appropriate containers.
 		 *
@@ -169,7 +183,7 @@ function( jQuery, Class ) {
 		 * @param {string} eventType Type of the event triggered (optional)
 		 * @static
 		 */
-		showContainersForContext: function( editable, elements, eventType ) {
+		showContainersForContext: function(editable, elements, eventType) {
 			if ( ! editable.containers ) {
 				// No containers were constructed for the given editable, so
 				// there is nothing for us to do.
@@ -203,6 +217,10 @@ function( jQuery, Class ) {
 				}
 			}
 		}
+	});
+
+	Aloha.bind('aloha-ui-scope-change', function(){
+		Container.showContainersForContext(Aloha.activeEditable, null, null);
 	});
 
 	return Container;

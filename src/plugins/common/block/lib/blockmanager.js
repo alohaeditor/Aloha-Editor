@@ -8,14 +8,14 @@
 define([
 	'aloha',
 	'jquery',
-	'ui/component',
+	'ui/scopes',
 	'aloha/observable',
 	'aloha/registry',
 	'util/class'
 ], function(
 	Aloha,
 	jQuery,
-	Component,
+	Scopes,
 	Observable,
 	Registry,
 	Class
@@ -87,7 +87,7 @@ define([
 		 * @constructor
 		 */
 		_constructor: function() {
-			Component.createScope('Aloha.Block');
+			Scopes.createScope('Aloha.Block');
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
 			this._highlightedBlocks = {};
@@ -345,7 +345,7 @@ define([
 		 * @api
 		 */
 		registerBlockType: function(identifier, blockType) {
-			Component.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
+			Scopes.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
 			this.blockTypes.register(identifier, blockType);
 		},
 

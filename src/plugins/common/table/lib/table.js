@@ -20,18 +20,27 @@
  * @todo: - selectRow/selectColumn should take into account the helper row/column.
  *			ie: selectRow(0) and selectColumn(0), should be zero indexed
  */
-
-define( [
+define([
 	'aloha',
 	'jquery',
-	'ui/component',
+	'ui/scopes',
 	'ui/message',
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
-	'table/table-plugin-utils'
-], function ( Aloha, jQuery, Component, Message, i18n, TableCell, TableSelection,
-	          Utils ) {
+	'table/table-plugin-utils',
+	'ui/port-helper-floatingmenu'
+], function (
+	Aloha,
+	jQuery,
+	Scopes,
+	Message,
+	i18n,
+	TableCell,
+	TableSelection,
+	Utils,
+	FloatingmenuPortHelper
+) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
 	
@@ -416,7 +425,7 @@ define( [
     // Y U NO explain why we must check that summary is longer than 5 characters?
     // http://cdn3.knowyourmeme.com/i/000/089/665/original/tumblr_l96b01l36p1qdhmifo1_500.jpg
 
-    if (this.obj[0].summary.trim() != '') {
+    if (jQuery.trim(this.obj[0].summary) != '') {
       w.addClass(this.get('waiGreen'));
     } else {
       w.addClass(this.get('waiRed'));
@@ -650,7 +659,7 @@ define( [
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
-					Component.activateTabOfButton('rowheader');
+					Scopes.activateTabOfButton('rowheader');
 					
 					// As side-effect of the following call the focus
 					// will be set on the first selected cell. 
@@ -1349,9 +1358,10 @@ define( [
 			this.tablePlugin.columnMSButton.showItem(this.tablePlugin.columnMSItems[i].name);
 		}
 		
-		Component.setScope(this.tablePlugin.name + '.column');
+		Scopes.setScope(this.tablePlugin.name + '.column');
 		
-		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
+		(this.selection.isHeader ? FloatingmenuPortHelper.setStateTrueAll
+		                         : FloatingmenuPortHelper.setStateFalseAll)('columnheader');
 		
 		var rows = this.getRows();
 		
@@ -1405,10 +1415,11 @@ define( [
 		}
 		
 		//    TableSelection.selectionType = 'row';
-		Component.setScope(this.tablePlugin.name + '.row');
+		Scopes.setScope(this.tablePlugin.name + '.row');
 		
 		this.selection.selectRows( this.rowsToSelect );
-		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
+		(this.selection.isHeader ? FloatingmenuPortHelper.setStateTrueAll
+		                         : FloatingmenuPortHelper.setStateFalseAll)('columnheader');
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();

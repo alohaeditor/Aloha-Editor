@@ -4,10 +4,10 @@
                      user interface in the form of the ui-plugin, most
                      of the ui specific Aloha API has changed.
 
-                     (In the following, ui/x.js refers to src/plugins/common/ui/lib/x.js.)
+                     (In the following, ui/x refers to src/plugins/common/ui/lib/x.js.)
 
                      * FloatingMenu - removed
-                       There is now a new toolbar implementation in the ui plugin.
+                       See ui/toolbar
 
                      * Aloha.ui - removed
                        Affects
@@ -57,6 +57,9 @@
                      All settings associated with the removed components
                      do not have any effect any more.
 
+                     The requirejs plugins order! and jquery-plugin!
+                     have been removed.
+
                      Many plugins exposed buttons, attribute-field and
                      multi-split-button components as non-private
                      members. For example, as in the case of the cite
@@ -69,12 +72,19 @@
                      plugins must be refactored so that they do not
                      depend on the user interface of other plugins. Any
                      non-private component properties may be removed at
-                     any time in the future.
+                     some time in the future.
 
                      Also note that the removal of the Ext.* namespace
                      and the ExtJs css may inadvertently affect the
                      behaviour and display of any site that includes
                      Aloha.
+
+                     In particular the trim() function on the String
+                     object was provided by ExtJs for older versions of
+                     Internet Explorer. Since ExtJs is now gone this
+                     function will now probably cause errors on older
+                     versions of Internet Explorer. jQuery.trim() may be
+                     used as an alternative.
 
 - **MANUAL CHANGE**: The following files have been removed
                      src/lib/aloha/ext-alohatreeloader.js

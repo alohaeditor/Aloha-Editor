@@ -33,14 +33,14 @@ function(jQuery, Plugin, i18n, i18nCore) {
     function nsSel () {
         var strBldr = [], prx = ns;
         $.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-        return strBldr.join(' ').trim();
+        return jQuery.trim(strBldr.join(' '));
     };
     
     // Creates string with this component's namepsace prefixed the each classname
     function nsClass () {
         var strBldr = [], prx = ns;
         $.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-        return strBldr.join(' ').trim();
+        return jQuery.trim(strBldr.join(' '));
     };
     
 	return Plugin.create('headerids', {

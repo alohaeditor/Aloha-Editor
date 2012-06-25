@@ -7,21 +7,36 @@
  * 
  * Author : Nicolas Karageuzian - http://nka.me
  */
-define(['jquery',
-        'util/class',
-		'i18n!image/nls/i18n',
-		'i18n!aloha/nls/i18n',
-		'ui/component',
-		'ui/toolbar',
-	    'ui/button',
-	    'ui/toggleButton',
-	    'ui/port-helper-attribute-field'],
-function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, AttributeField) {
+define([
+	'jquery',
+    'util/class',
+	'i18n!image/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'ui/scopes',
+	'ui/component',
+    'ui/button',
+    'ui/toggleButton',
+    'ui/port-helper-attribute-field',
+	'ui/port-helper-floatingmenu'
+],
+function (
+	jQuery,
+	Class,
+	i18n,
+	i18nCore,
+	Scopes,
+	Component,
+	Button,
+	ToggleButton,
+	AttributeField,
+	FloatingmenuPortHelper
+) {
 	'use strict';
-	var jQuery = aQuery;
-	var $ = aQuery;
+
+	var $ = jQuery;
 	var GENTICS = window.GENTICS;
 	var Aloha = window.Aloha;
+
 	/**
      * Toolbar elements for Image plugin
      *
@@ -45,7 +60,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			plugin.floatingMenuControl = this;
 			this.plugin = plugin;
 
-			Component.createScope(plugin.name, 'Aloha.empty');
+			Scopes.createScope(plugin.name, 'Aloha.empty');
 
 			this._addUIInsertButton();
 			this._addUIMetaButtons();
@@ -78,8 +93,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			// If the setting has been set to a number or false we need to activate the 
 			// toggle button to indicate that the aspect ratio will be preserved.
 			if (plugin.settings.fixedAspectRatio !== false) {
-				var toggleButton = Component.getGlobalInstance("imageCnrRatio");
-				toggleButton.setState(true);
+				FloatingmenuPortHelper.setStateTrueAll('imageCnrRatio');
 				plugin.keepAspectRatio = true;
 			}
 		},
@@ -114,8 +128,6 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 					plugin.insertImg();
 				}
 			});
-
-			this.insertImgButton = Component.getGlobalInstance("insertImage");
 		},
 
         /**
@@ -124,7 +136,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 		_addUIMetaButtons: function () {
 			var plugin = this.plugin;
 			
-			this.imgSrcField = new AttributeField({
+			this.imgSrcField = AttributeField({
 				label: i18n.t('field.img.src.label'),
 				tooltip: i18n.t('field.img.src.tooltip'),
 				name: 'imageSource',
@@ -132,7 +144,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			});
 			this.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
 			
-			this.imgTitleField = new AttributeField({
+			this.imgTitleField = AttributeField({
 				label: i18n.t('field.img.title.label'),
 				tooltip: i18n.t('field.img.title.tooltip'),
 				name: 'imageTitle',
@@ -212,7 +224,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 		_addUICropButtons: function () {
 			var plugin = this.plugin;
 
-			Component.createScope('Aloha.img', ['Aloha.global']);
+			Scopes.createScope('Aloha.img', ['Aloha.global']);
 
 			Component.define("imageCropButton", ToggleButton, {
 				tooltip: i18n.t('Crop'),
@@ -226,8 +238,6 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 					}
 				}
 			});
-
-			this.cropButton = Component.getGlobalInstance("imageCropButton");
 		},
 
         /**
@@ -237,7 +247,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			var plugin = this.plugin;
 
 			// Manual resize fields
-			this.imgResizeHeightField = new AttributeField({
+			this.imgResizeHeightField = AttributeField({
 				label:  i18n.t('height'),
 				name: "imageResizeHeight",
 				width: 50,
@@ -246,7 +256,7 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 			this.imgResizeHeightField.maxValue = plugin.settings.maxHeight;
 			this.imgResizeHeightField.minValue = plugin.settings.minHeight;
 			
-			this.imgResizeWidthField = new AttributeField({
+			this.imgResizeWidthField = AttributeField({
 				label:  i18n.t('width'),				
 				name: "imageResizeWidth",
 				width: 50,
@@ -276,17 +286,17 @@ function (aQuery, Class, i18n, i18nCore, Component, Toolbar, Button, ToggleButto
 		*/
 
 		/**
-		 * Sets Toolbar scope
+		 * Sets the scope
 		 */
 		setScope: function () {
-			Component.setScope(this.plugin.name);
+			Scopes.setScope(this.plugin.name);
 		},
 
 		/**
 		 * 
 		 */
 		activateView: function (name) {
-			Component.activateTabOfButton(name);
+			Scopes.activateTabOfButton(name);
 		},
 
 		/**

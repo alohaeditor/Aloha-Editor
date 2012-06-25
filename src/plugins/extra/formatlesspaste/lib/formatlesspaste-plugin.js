@@ -5,21 +5,29 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(
-['aloha/core',
- 'aloha/plugin',
- 'jquery',
- 'ui/component', 
- 'ui/toggleButton',
- 'formatlesspaste/formatlesshandler',
- 'aloha/contenthandlermanager',
- 'i18n!formatlesspaste/nls/i18n',
- 'i18n!aloha/nls/i18n',
- 'css!formatlesspaste/css/formatless.css'],
-function(Aloha, Plugin, jQuery, Component, ToggleButton, FormatlessPasteHandler, ContentHandlerManager, i18n, i18nCore) {
-	"use strict";
-
-	
+define([
+	'aloha/core',
+	'aloha/plugin',
+	'jquery',
+	'ui/component', 
+	'ui/toggleButton',
+	'formatlesspaste/formatlesshandler',
+	'aloha/contenthandlermanager',
+	'i18n!formatlesspaste/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'ui/port-helper-floatingmenu',
+	'css!formatlesspaste/css/formatless.css'
+], function(Aloha,
+            Plugin,
+            jQuery,
+            Component,
+            ToggleButton,
+            FormatlessPasteHandler,
+            ContentHandlerManager,
+            i18n,
+            i18nCore,
+            FloatingmenuPortHelper) {
+	'use strict';
 
 	// Public Methods
 	return Plugin.create('formatlesspaste', {
@@ -105,16 +113,20 @@ function(Aloha, Plugin, jQuery, Component, ToggleButton, FormatlessPasteHandler,
 					FormatlessPasteHandler.strippedElements = config.strippedElements;
 				}
 				if (config.formatlessPasteOption === true) {
-					that.formatlessPasteButton.setState(true);
+					//that.formatlessPasteButton.setState(true);
+					FloatingmenuPortHelper.setStateTrueAll('toggleFormatlessPaste');
 					FormatlessPasteHandler.enabled = true;
 				} else if (config.formatlessPasteOption === false) {
-					that.formatlessPasteButton.setState(false);
+					//that.formatlessPasteButton.setState(false);
+					FloatingmenuPortHelper.setStateFalseAll('toggleFormatlessPaste');
 					FormatlessPasteHandler.enabled = false;
 				}
 				if ( config.button === false ) {
-					that.formatlessPasteButton.hide();
+					//that.formatlessPasteButton.hide();
+					FloatingmenuPortHelper.hideAll('toggleFormatlessPaste');
 				} else {
-					that.formatlessPasteButton.show();
+					//that.formatlessPasteButton.show();
+					FloatingmenuPortHelper.showAll('toggleFormatlessPaste');
 				}
 			});
 		},
@@ -137,17 +149,19 @@ function(Aloha, Plugin, jQuery, Component, ToggleButton, FormatlessPasteHandler,
 				}
 			});
 
-			this.formatlessPasteButton = Component.getGlobalInstance("toggleFormatlessPaste");
+			//this.formatlessPasteButton = Component.getGlobalInstance("toggleFormatlessPaste");
 
 			// activate formatless paste button if option is set
 			if (this.formatlessPasteOption === true) {
-				this.formatlessPasteButton.setState(true);
+				//this.formatlessPasteButton.setState(true);
+				FloatingmenuPortHelper.setStateTrueAll('toggleFormatlessPaste');
 				FormatlessPasteHandler.enabled = true;
 			}
 			
 			// hide button by default if configured
 			if (this.button === false) {
-				this.formatlessPasteButton.hide();
+				//this.formatlessPasteButton.hide();
+				FloatingmenuPortHelper.setStateFalseAll('toggleFormatlessPaste');
 			}
 		}
 	});

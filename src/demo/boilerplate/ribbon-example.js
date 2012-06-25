@@ -1,73 +1,69 @@
 Aloha.ready(function(){
-    Aloha.require(["ribbon/ribbon-plugin"], function(Ribbon){
+    Aloha.require(["ribbon/ribbon-plugin", "ui/component", "ribbon/menuButton"], function(Ribbon, Component, MenuButton){
+
+		Component.define("insertTag", MenuButton, {
+			label: "X",
+			menu: [
+				{ label: "Z",
+				  menu: [ { label: "Q", onclick: function(){console.log("Q");} },
+						  { label: "W", onclick: function(){console.log("W");} } ] },
+				{ label: "V",
+				  menu: [ { label: "Q", onclick: function(){console.log("Q");} },
+						  { label: "W", onclick: function(){console.log("W");} } ] }
+			]
+		});
+
 		Ribbon.addButton({
-			label: "label",
+			label: "split button",
 			menu: [
 				{
-					label: "X",
+					label: "action with submenu",
 					menu: [
 						{
-							label: "Z",
-							menu: [{ label: "Q" }]
+							label: "submenu only",
+							menu: [{ label: "action only", onclick: function(){ console.log("action only"); } }]
 						},
 						{
-							label: "ZZ"
+							label: "action only",
+							onclick: function() {
+								console.log("action only");
+							}
 						}
 					],	
 					onclick: function(){
+						console.log("action with submenu");
 					}
 				}
 			],
 			// icon: 'url',
 			onclick: function(){
+				console.log("split button");
 			}
 		});
-
-		Ribbon.refresh();
 		Ribbon.show();
 		Ribbon.addButton({
-			label: "label",
+			label: "menu button",
 			menu: [
 				{
-					label: "X",
+					label: "action with submenu",
 					menu: [
 						{
-							label: "Z",
-							menu: [{ label: "Q" }]
+							label: "submenu only",
+							menu: [{ label: "action only", onclick: function(){ console.log("action only"); } }]
 						},
 						{
-							label: "ZZ"
+							label: "action only",
+							onclick: function() {
+								console.log("action only");
+							}
 						}
 					],	
 					onclick: function(){
+						console.log("action with submenu");
 					}
 				}
 			]
-		});
-		/*
-		Ribbon._addButton({
-			label: "label",
-			menu: [
-				{
-					label: "X",
-					menu: [
-						{
-							label: "Z",
-							menu: [{ label: "Q" }]
-						},
-						{
-							label: "ZZ"
-						}
-					],	
-					onclick: function(){
-					}
-				}
-			],
 			// icon: 'url',
-			onclick: function(){
-			}
 		});
-		*/
-		Ribbon.refresh();
     });
 });
