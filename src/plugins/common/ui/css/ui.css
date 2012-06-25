@@ -240,3 +240,11 @@ background-image: url(../img/jqueryui/ui-icons_222222_256x240.png);
 
 /** icon-triangle is used by the ribbon plugin for the drop down icon **/
 .ui-icon-triangle-1-s { background-position: -64px -16px; }
+
+
+body .ui-tooltip {
+	font-size: 10px;
+	line-height: 1.2em;
+	padding: 4px 6px;
+	border: 1px solid #ccc;
+}
