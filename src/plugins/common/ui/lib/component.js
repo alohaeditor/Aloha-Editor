@@ -2,8 +2,9 @@ define([
 	'aloha/core',
 	'jquery',
 	'util/class',
-	'aloha/console'
-], function (Aloha, jQuery, Class, console) {
+	'aloha/console',
+	'ui/componentState'
+], function (Aloha, jQuery, Class, console, ComponentState) {
 	'use strict';
 
 	/**
@@ -38,6 +39,14 @@ define([
 				}, this));
 
 			this.init();
+
+			var thisComponent = this;
+			// TODO this should be done inside component but the
+			// component doesn't know its own type so we do it here.
+			ComponentState.applyAllStates(thisComponent.type, thisComponent);
+			Aloha.bind('aloha-ui-component-state-change.' + thisComponent.type, function(event, stateType){
+				ComponentState.applyState(thisComponent.type, stateType, thisComponent);
+			});
 		},
 
 		/**
@@ -111,7 +120,9 @@ define([
 		 * @return {Component} A generated Component sub class.
 		 */
 		define: function (name, type, settings) {
-			Component.components[name] = type.extend(settings);
+			var extendedType = type.extend(settings);
+			extendedType.prototype.type = name;
+			Component.components[name] = extendedType;
 			return Component.components[name];
 		},
 
@@ -138,22 +149,21 @@ define([
 
 			var instance = new ComponentType();
 			componentInstances[type].push(instance);
-
 			return instance;
 		},
 
 		eachInstance: function (instanceTypes, forEach) {
 			var instances = [];
 			var j = instanceTypes.length;
-			while (j) {
-				if (componentInstances[instanceTypes[--j]]) {
+			while (j--) {
+				if (componentInstances[instanceTypes[j]]) {
 					instances = instances.concat(
 						componentInstances[instanceTypes[j]]);
 				}
 			}
 			j = instances.length;
-			while (j) {
-				if (false === forEach(instances[--j])) {
+			while (j--) {
+				if (false === forEach(instances[j])) {
 					return;
 				}
 			}
