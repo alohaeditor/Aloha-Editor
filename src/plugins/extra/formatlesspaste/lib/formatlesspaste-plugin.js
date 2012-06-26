@@ -92,7 +92,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 			Aloha.bind( 'aloha-editable-activated', function( event, params) {
 				var config = that.getEditableConfig( params.editable.obj );
 				
-				// make configuration a bit more tolerant
+				// make button configuration a bit more tolerant
 				if (typeof config.button === 'string') {
 					config.button = config.button.toLowerCase();
 					if (config.button === 'false' || config.button === '0') {
@@ -101,6 +101,18 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 					} else {
 						// otherwise the button will always be shown
 						config.button = true;
+					}
+				}
+
+				// make formatlessPasteOption configuration a bit more tolerant
+				if (typeof config.formatlessPasteOption === 'string') {
+					config.formatlessPasteOption = config.formatlessPasteOption.toLowerCase();
+					if (config.formatlessPasteOption === 'false' || config.formatlessPasteOption === '0') {
+						// disable button only if 'false' or '0' is specified
+						config.formatlessPasteOption = false;
+					} else {
+						// otherwise the button will always be shown
+						config.formatlessPasteOption = true;
 					}
 				}
 				

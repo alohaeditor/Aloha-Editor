@@ -37,4 +37,4 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: sanitize contenthandler: Added 'del' as allowed element to the default configuration of the sanitize contenthandler.
 - **ENHANCEMENT**: repository browser: searches in the repository browser will now be done recursively.
 - **BUG**: plugin metaview: Metaview plugin would add a grey backdrop to lists on IE7. Added more specific styles.
-- **ENHANCEMENT**: plugin formatlesspaste: will now be more tolerant with the button setting and not only accept boolean values
+- **ENHANCEMENT**: plugin formatlesspaste: will now be more tolerant with the button and formatlessPasteOption setting and not only accept boolean values
