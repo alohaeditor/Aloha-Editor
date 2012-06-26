@@ -8,10 +8,15 @@ define([
 	'jquery',
 	'ui/component',
 	'ui/multiSplit'
-], function (Aloha, jQuery, Component, MultiSplit) {
+], function (
+	Aloha,
+	jQuery,
+	Component,
+	MultiSplit
+) {
+	'use strict';
 
 	function MultiSplitButton(props) {
-
 		Component.define(props.name, MultiSplit, {
 			scope: props.scope,
 			getButtons: function () {
