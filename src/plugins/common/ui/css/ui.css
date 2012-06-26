@@ -199,16 +199,70 @@
 	font-size: 11px;
 	border: 1px solid transparent;
 	float: left;
-
 	-moz-border-radius:    4px;
 	-khtml-border-radius:  4px;
 	-webkit-border-radius: 4px;
 	border-radius:         4px;
 }
+.aloha-ui-menubutton-container .ui-buttonset {
+	margin: 0px;
+}
+.aloha-ui-menubutton-container .ui-button {
+	height: 24px;
+	background: transparent;
+	-moz-border-radius:    4px;
+	-khtml-border-radius:  4px;
+	-webkit-border-radius: 4px;
+	border-radius:         4px;
+	padding: 0px;
+	border-width: 0;
+}
+.ui-button.aloha-ui-menubutton-action {
+	border-right: 1px solid transparent;
+	-moz-border-radius-topright:     0px;
+	-webkit-border-top-right-radius: 0px;
+	-khtml-border-top-right-radius:  0px;
+	border-top-right-radius:         0px;
+	-moz-border-radius-bottomright:     0px;
+	-webkit-border-bottom-right-radius: 0px;
+	-khtml-border-bottom-right-radius:  0px;
+	border-bottom-right-radius:         0px;
+}
+.ui-button.aloha-ui-menubutton-expand {
+	min-width: 18px;
+	border-left: 1px solid transparent;
+	-moz-border-radius-topleft:     0px;
+	-webkit-border-top-left-radius: 0px;
+	-khtml-border-top-left-radius:  0px;
+	border-top-left-radius:         0px;
+	-moz-border-radius-bottomleft:     0px;
+	-webkit-border-bottom-left-radius: 0px;
+	-khtml-border-bottom-left-radius:  0px;
+	border-bottom-left-radius:         0px;
+}
+.aloha-ui-menubutton-container .ui-button-text {
+	font-size: 11px;
+	padding: 0 4px;
+}
+.aloha-ui-menubutton-expand,
+.aloha-ui-menubutton-single .ui-button-text {
+	margin-left: 12px;
+}
+.aloha-ui-menubutton-expand.aloha-ui-menubutton-single {
+	-moz-border-radius:    4px;
+	-khtml-border-radius:  4px;
+	-webkit-border-radius: 4px;
+	border-radius:         4px;
+	border-width: 0;
+}
+.aloha-ui-menubutton-container .ui-button-icon-primary {
+	left: 0px;
+}
 .aloha-ui-menubutton-container:hover {
 	border-color: #bbb;
 }
 .aloha-ui-menubutton-container:hover .ui-button {
+	background-color: #e6e6e6;
 	background-image:         linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
 	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
 	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
@@ -223,76 +277,17 @@
 		color-stop(0, rgba(0,0,0,0.05))
 	);
 }
+.aloha-ui-menubutton-container:hover .aloha-ui-menubutton-expand {
+	border-color: #bbb;
+}
+.aloha-ui-menubutton-container:hover .aloha-ui-menubutton-action {
+	border-color: rgba(255,255,255,0.5);
+}
 .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
 	border-color: #999;
 }
 .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed .ui-button {
 	background: #ccc;
-}
-.aloha-ui-menubutton-container .ui-button-text {
-	font-size: 11px;
-}
-.aloha-ui-menubutton-container .ui-button {
-	-moz-border-radius:    4px;
-	-khtml-border-radius:  4px;
-	-webkit-border-radius: 4px;
-	border-radius:         4px;
-}
-.aloha-ui-menubutton-container .ui-buttonset {
-	margin: 0px;
-}
-.ui-button.aloha-ui-menubutton-action {
-	height: 24px;
-
-	-moz-border-radius-topright:     0px;
-	-webkit-border-top-right-radius: 0px;
-	-khtml-border-top-right-radius:  0px;
-	border-top-right-radius:         0px;
-
-	-moz-border-radius-bottomright:     0px;
-	-webkit-border-bottom-right-radius: 0px;
-	-khtml-border-bottom-right-radius:  0px;
-	border-bottom-right-radius:         0px;
-
-	border-width: 0;
-	border-right: 1px solid transparent;
-}
-.ui-button.aloha-ui-menubutton-expand {
-	height: 24px;
-
-	-moz-border-radius-topleft:     0px;
-	-webkit-border-top-left-radius: 0px;
-	-khtml-border-top-left-radius:  0px;
-	border-top-left-radius:         0px;
-
-	-moz-border-radius-bottomleft:     0px;
-	-webkit-border-bottom-left-radius: 0px;
-	-khtml-border-bottom-left-radius:  0px;
-	border-bottom-left-radius:         0px;
-
-	border-width: 0;
-	border-left: 1px solid transparent;
-}
-.ui-button.aloha-ui-menubutton-expand.aloha-ui-menubutton-single {
-	-moz-border-radius:    4px;
-	-khtml-border-radius:  4px;
-	-webkit-border-radius: 4px;
-	border-radius:         4px;
-	border-width: 0;
-}
-.ui-button.aloha-ui-menubutton-expand .ui-button-text {
-	padding: 0 1em;
-}
-.aloha-ui-menubutton-single .ui-button-text {
-	margin-left: 1em;
-}
-.aloha-ui-menubutton-container:hover
-.ui-button.aloha-ui-menubutton-expand {
-	border-color: #bbb;
-}
-.aloha-ui-menubutton-container:hover
-.ui-button.aloha-ui-menubutton-action {
-	border-color: rgba(255,255,255,0.5);
 }
 /* === /menubutton === */
 
