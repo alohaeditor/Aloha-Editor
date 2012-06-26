@@ -26,12 +26,13 @@
 /* === toolbar === */
 
 .aloha-ui-toolbar {
-	font-size: 11px;
-	font-family: tahoma, arial, helvetica;
 	text-align: left;
 }
 
 .aloha-ui-toolbar .ui-tabs {
+	font-size: 11px;
+	font-family: tahoma, arial, helvetica;
+	line-height: normal;
 	padding: 0;
 }
 .aloha-ui-toolbar .ui-tabs-nav li {
@@ -40,17 +41,33 @@
 }
 .aloha-ui-toolbar .ui-tabs-nav li,
 .aloha-ui-toolbar .ui-tabs-nav li a {
-	color: #212121;
+	color: #333;
 	text-decoration: none;
-	-moz-border-radius-topleft:     2px;
-	-webkit-border-top-left-radius: 2px;
-	-khtml-border-top-left-radius:  2px;
-	border-top-left-radius:         2px;
-
+	-moz-border-radius-topleft:      2px;
+	-webkit-border-top-left-radius:  2px;
+	-khtml-border-top-left-radius:   2px;
+	border-top-left-radius:          2px;
 	-moz-border-radius-topright:     2px;
 	-webkit-border-top-right-radius: 2px;
 	-khtml-border-top-right-radius:  2px;
 	border-top-right-radius:         2px;
+}
+.aloha-ui-toolbar .ui-tabs-nav li a {
+	padding: 0.2em 0.6em;
+	border-bottom: 0px;
+	border-top: 1px solid #fff;
+	background-image:         linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 70%);
+	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 70%);
+	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 70%);
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 70%);
+	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 70%);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.9, rgba(0,0,0,0.1)),
+		color-stop(0.7, rgba(0,0,0,0.05))
+	);
 }
 .aloha-ui-toolbar .ui-tabs-nav li.ui-state-active {
 	font-weight: bold;
@@ -58,6 +75,18 @@
 }
 .aloha-ui-toolbar .ui-tabs-nav li.ui-state-active a {
 	background: #f0f0f0;
+	background-image:         linear-gradient(bottom, rgba(255,255,255,0.5) 90%, rgba(255,255,255,0) 70%);
+	background-image:      -o-linear-gradient(bottom, rgba(255,255,255,0.5) 90%, rgba(255,255,255,0) 70%);
+	background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,0.5) 90%, rgba(255,255,255,0) 70%);
+	background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,0.5) 90%, rgba(255,255,255,0) 70%);
+	background-image:     -ms-linear-gradient(bottom, rgba(255,255,255,0.5) 90%, rgba(255,255,255,0) 70%);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.9, rgba(255,255,255,0.9)),
+		color-stop(0.7, rgba(255,255,255,0))
+	);
 }
 
 .aloha-ui-toolbar .ui-widget-content {
@@ -69,11 +98,10 @@
 	border: 0px;
 	background: transparent;
 
-	-moz-border-radius-topleft:     2px;
-	-webkit-border-top-left-radius: 2px;
-	-khtml-border-top-left-radius:  2px;
-	border-top-left-radius:         2px;
-
+	-moz-border-radius-topleft:      2px;
+	-webkit-border-top-left-radius:  2px;
+	-khtml-border-top-left-radius:   2px;
+	border-top-left-radius:          2px;
 	-moz-border-radius-topright:     2px;
 	-webkit-border-top-right-radius: 2px;
 	-khtml-border-top-right-radius:  2px;
@@ -115,19 +143,14 @@
 	border: 1px solid #d0d0d0;
 	box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
 
-	-moz-border-radius-bottomleft:     2px;
-	-webkit-border-bottom-left-radius: 2px;
-	-khtml-border-bottom-left-radius:  2px;
-	border-bottom-left-radius:         2px;
-
+	-moz-border-radius-bottomleft:      2px;
+	-webkit-border-bottom-left-radius:  2px;
+	-khtml-border-bottom-left-radius:   2px;
+	border-bottom-left-radius:          2px;
 	-moz-border-radius-bottomright:     2px;
 	-webkit-border-bottom-right-radius: 2px;
 	-khtml-border-bottom-right-radius:  2px;
 	border-bottom-right-radius:         2px;
-}
-.aloha-ui-toolbar .ui-tabs-nav li a {
-	padding: 0.4em 0.6em;
-	border-bottom: 0px;
 }
 .aloha-ui-toolbar li.ui-state-active {
 	border: 1px solid #d0d0d0;
@@ -263,11 +286,11 @@
 }
 .aloha-ui-menubutton-container:hover .ui-button {
 	background-color: #e6e6e6;
-	background-image:         linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
-	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
-	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
-	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
-	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
+	background-image:         linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:      -o-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:     -ms-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
 	background-image: -webkit-gradient(
 		linear,
 		left bottom,
