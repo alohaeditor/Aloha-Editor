@@ -5,7 +5,7 @@ define([
 	'ui/component',
 	'aloha/jquery-ui'
 ],
-function( Aloha, jQuery, Container, Component ) {
+function (Aloha, jQuery, Container, Component) {
 	'use strict';
 
 	var idCounter = 0;
@@ -62,8 +62,12 @@ function( Aloha, jQuery, Container, Component ) {
 
 			for (i = 0; i < components.length; i++) {
 				if (typeof components[i] === 'string') {
-					component = Component.render(components[i]);
-					this.panel.append(component.element);
+					if (1 === components[i].length && components[i].charCodeAt(0) === 10) {
+						this.panel.append('<div>');
+					} else {
+						component = Component.render(components[i]);
+						this.panel.append(component.element);
+					}
 				} else {
 					var group = jQuery('<div>', {
 						'class': 'aloha-ui-component-group'
@@ -71,9 +75,14 @@ function( Aloha, jQuery, Container, Component ) {
 
 					groupedComponents = components[i];
 					for (j = 0; j < groupedComponents.length; j++) {
-						component = Component.render(groupedComponents[j]);
-						if (component) {
-							group.append(component.element);
+						if (1 === groupedComponents[j].length &&
+						    groupedComponents[j].charCodeAt(0) === 10) {
+							group.append('<div>');
+						} else {
+							component = Component.render(groupedComponents[j]);
+							if (component) {
+								group.append(component.element);
+							}
 						}
 					}
 				}
