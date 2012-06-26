@@ -86,7 +86,6 @@ define(['jquery'],function($){
 		 *     Use addScope and removeScope instead.
 		 */
 		setScope: function(scope, noActivateTab) {
-			console.log(scope);
 			scopeSetDuringSelectionChanged = true;
 			if (activeScopes[0] != scope) {
 				activeScopes = [scope];
