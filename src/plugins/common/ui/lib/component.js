@@ -2,8 +2,9 @@ define([
 	'aloha/core',
 	'jquery',
 	'util/class',
-	'aloha/console'
-], function (Aloha, jQuery, Class, console) {
+	'aloha/console',
+	'ui/componentState'
+], function (Aloha, jQuery, Class, console, ComponentState) {
 	'use strict';
 
 	/**
@@ -38,6 +39,12 @@ define([
 				}, this));
 
 			this.init();
+
+			var thisComponent = this;
+			ComponentState.applyAllStates(thisComponent.type, thisComponent);
+			Aloha.bind('aloha-ui-component-state-change.' + thisComponent.type, function(event, stateType){
+				ComponentState.applyState(thisComponent.type, stateType, thisComponent);
+			});
 		},
 
 		/**
@@ -78,18 +85,6 @@ define([
 
 	// Static fields.
 
-	/**
-	 * A hash of all component instances.  Instances are grouped into arrays
-	 * which are mapped against their component type name.  Therefore all
-	 * components that have are instances of from the "linkButton" component
-	 * type, for example, will be put into an array whose key in the hash will
-	 * be "linkButton."
-	 *
-	 * @type {object<string, Array<Component>>}
-	 * @private
-	 */
-	var componentInstances = {};
-
 	jQuery.extend(Component, {
 
 		/**
@@ -111,7 +106,9 @@ define([
 		 * @return {Component} A generated Component sub class.
 		 */
 		define: function (name, type, settings) {
-			Component.components[name] = type.extend(settings);
+			var extendedType = type.extend(settings);
+			extendedType.prototype.type = name;
+			Component.components[name] = extendedType;
 			return Component.components[name];
 		},
 
@@ -126,41 +123,11 @@ define([
 		 */
 		render: function (type) {
 			var ComponentType = Component.components[type];
-
 			if (!ComponentType) {
 				console.warn('Component type "' + type + '" is not defined.');
 				return null;
 			}
-
-			if (!componentInstances[type]) {
-				componentInstances[type] = [];
-			}
-
-			var instance = new ComponentType();
-			componentInstances[type].push(instance);
-
-			return instance;
-		},
-
-		eachInstance: function (instanceTypes, forEach) {
-			var instances = [];
-			var j = instanceTypes.length;
-			while (j) {
-				if (componentInstances[instanceTypes[--j]]) {
-					instances = instances.concat(
-						componentInstances[instanceTypes[j]]);
-				}
-			}
-			j = instances.length;
-			while (j) {
-				if (false === forEach(instances[--j])) {
-					return;
-				}
-			}
-		},
-
-		getGlobalInstance: function (name) {
-			return this.render(name, Aloha.activeEditable);
+			return new ComponentType();
 		}
 	});
 

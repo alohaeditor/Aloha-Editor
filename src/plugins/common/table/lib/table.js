@@ -29,7 +29,7 @@ define([
 	'table/table-cell',
 	'table/table-selection',
 	'table/table-plugin-utils',
-	'ui/port-helper-floatingmenu'
+	'ui/componentState'
 ], function (
 	Aloha,
 	jQuery,
@@ -39,7 +39,7 @@ define([
 	TableCell,
 	TableSelection,
 	Utils,
-	FloatingmenuPortHelper
+	ComponentState
 ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
@@ -1360,8 +1360,7 @@ define([
 		
 		Scopes.setScope(this.tablePlugin.name + '.column');
 		
-		(this.selection.isHeader ? FloatingmenuPortHelper.setStateTrueAll
-		                         : FloatingmenuPortHelper.setStateFalseAll)('columnheader');
+		ComponentState.setState('columnheader', 'state', this.selection.isHeader());
 		
 		var rows = this.getRows();
 		
@@ -1418,8 +1417,7 @@ define([
 		Scopes.setScope(this.tablePlugin.name + '.row');
 		
 		this.selection.selectRows( this.rowsToSelect );
-		(this.selection.isHeader ? FloatingmenuPortHelper.setStateTrueAll
-		                         : FloatingmenuPortHelper.setStateFalseAll)('columnheader');
+		ComponentState.setState('rowheader', 'state', this.selection.isHeader());
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();

@@ -113,18 +113,13 @@ function( Aloha, jQuery ) {
 	 * when the event is triggered.
 	 *
 	 * @param {Event} event Name of the event.
-	 * @param {jQuery.<event>} $event jQuery event object.
-	 * @param {Aloha.Range} range The Aloha range at the time that the event is
-	 *                            triggered.
-	 * @param {nativeEvent} nativeEvent Native event object.
-	 *
+	 * @param ... any other arguments passed on to the guard function
 	 */
-	function trigger( event, $event, range, nativeEvent ) {
+	function trigger(event) {
 		var guards = getRegisteredGuards( event );
 		var i;
-		for ( i = 0; i < guards.length; i++ ) {
-			guards[ i ]( getArguments( guards[ i ] ), event, $event, range,
-				nativeEvent );
+		for (i = 0; i < guards.length; i++) {
+			guards[i].apply(null, [getArguments(guards[i])].concat(arguments));
 		}
 	}
 
