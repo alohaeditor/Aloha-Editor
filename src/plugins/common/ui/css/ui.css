@@ -161,24 +161,15 @@
 	-webkit-border-radius: 0px;
 	border-radius:         0px;
 }
-.aloha-ribbon-toolbar .ui-button {
-	border-width: 0px;
-	margin: 0 0 0 0.4em;
-}
-.aloha-ribbon-toolbar .ui-button-text {
-	border: 1px solid #aaa;
-	padding: 0.4em 0.6em 0.4em 2em;
-	font-size: 11px;
-}
-.aloha-ribbon-toolbar .ui-button-icon-primary {
-	left: 0.3em;
-}
+
+
+
 
 /* === dropdown menu === */
-
-.aloha-ribbon-split ul.ui-menu {
+.aloha-ui-menubutton-menu,
+.aloha-ui-menubutton-menu .ui-menu {
 	min-width: 100px;
-	padding: 0.4em;
+	padding: 0.4em 0;
 	background: #f0f0f0;
 	border: 1px solid #d0d0d0;
 	box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
@@ -188,13 +179,140 @@
 	border-radius:         0px;
 	font-size: 11px;
 }
-ul.ui-menu .ui-menu-item a {
+.aloha-ui-menubutton-menu .ui-menu-item a {
 	color: #212121;
 	-moz-border-radius:    0px;
 	-khtml-border-radius:  0px;
 	-webkit-border-radius: 0px;
 	border-radius:         0px;
+	border-color: transparent;
 }
+/* === dropdown menu === */
+
+
+
+
+/* === menubutton === */
+.aloha-ui-menubutton-container {
+	height: 24px;
+	margin-left: 4px;
+	font-size: 11px;
+	border: 1px solid transparent;
+	float: left;
+
+	-moz-border-radius:    4px;
+	-khtml-border-radius:  4px;
+	-webkit-border-radius: 4px;
+	border-radius:         4px;
+}
+.aloha-ui-menubutton-container:hover {
+	border-color: #bbb;
+}
+.aloha-ui-menubutton-container:hover .ui-button {
+	background-image:         linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
+	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
+	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
+	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.4, rgba(255,255,255,0.4)),
+		color-stop(0.2, rgba(255,255,255,0.1)),
+		color-stop(0, rgba(0,0,0,0.05))
+	);
+}
+.aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
+	border-color: #999;
+}
+.aloha-ui-menubutton-container.aloha-ui-menubutton-pressed .ui-button {
+	background: #ccc;
+}
+.aloha-ui-menubutton-container .ui-button-text {
+	font-size: 11px;
+}
+.aloha-ui-menubutton-container .ui-button {
+	-moz-border-radius:    4px;
+	-khtml-border-radius:  4px;
+	-webkit-border-radius: 4px;
+	border-radius:         4px;
+}
+.aloha-ui-menubutton-container .ui-buttonset {
+	margin: 0px;
+}
+.ui-button.aloha-ui-menubutton-action {
+	height: 24px;
+
+	-moz-border-radius-topright:     0px;
+	-webkit-border-top-right-radius: 0px;
+	-khtml-border-top-right-radius:  0px;
+	border-top-right-radius:         0px;
+
+	-moz-border-radius-bottomright:     0px;
+	-webkit-border-bottom-right-radius: 0px;
+	-khtml-border-bottom-right-radius:  0px;
+	border-bottom-right-radius:         0px;
+
+	border-width: 0;
+	border-right: 1px solid transparent;
+}
+.ui-button.aloha-ui-menubutton-expand {
+	height: 24px;
+
+	-moz-border-radius-topleft:     0px;
+	-webkit-border-top-left-radius: 0px;
+	-khtml-border-top-left-radius:  0px;
+	border-top-left-radius:         0px;
+
+	-moz-border-radius-bottomleft:     0px;
+	-webkit-border-bottom-left-radius: 0px;
+	-khtml-border-bottom-left-radius:  0px;
+	border-bottom-left-radius:         0px;
+
+	border-width: 0;
+	border-left: 1px solid transparent;
+}
+.ui-button.aloha-ui-menubutton-expand.aloha-ui-menubutton-single {
+	-moz-border-radius:    4px;
+	-khtml-border-radius:  4px;
+	-webkit-border-radius: 4px;
+	border-radius:         4px;
+	border-width: 0;
+}
+.ui-button.aloha-ui-menubutton-expand .ui-button-text {
+	padding: 0 1em;
+}
+.aloha-ui-menubutton-single .ui-button-text {
+	margin-left: 1em;
+}
+.aloha-ui-menubutton-container:hover
+.ui-button.aloha-ui-menubutton-expand {
+	border-color: #bbb;
+}
+.aloha-ui-menubutton-container:hover
+.ui-button.aloha-ui-menubutton-action {
+	border-color: rgba(255,255,255,0.5);
+}
+/* === /menubutton === */
+
+
+
+
+/*
+	height: 24px;
+	margin: 0;
+	border-width: 0px;
+	-moz-border-radius:    0px;
+	-khtml-border-radius:  0px;
+	-webkit-border-radius: 0px;
+	border-radius:         0px;
+}
+.ui-button .ui-button-text {
+	padding: 0.4em 0.6em 0.4em 2em;
+	font-size: 11px;
+}
+*/
 
 /* === icons === */
 

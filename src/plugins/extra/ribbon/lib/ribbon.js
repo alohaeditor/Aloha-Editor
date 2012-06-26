@@ -2,7 +2,8 @@ define([
 	'jquery',
 	'aloha/jquery-ui',
 	'css!./css/ribbon.css'
-], function($){
+], function (jQuery) {
+	'use strict';
 
 	/**
 	 * @param props button properties:
@@ -17,55 +18,65 @@ define([
 	 *               this container will be closed.
 	 */
 	function makeMenuButton(props) {
-		var wrapper = $('<div>'   , {'class': 'aloha-ribbon-split'});
-		var expand  = $('<button>', {'class': 'aloha-ribbon-expand'});
-		var menu    = $('<ul>'    , {'class': 'aloha-ribbon-menu'});
-
+		var wrapper = jQuery('<div>'   , {'class': 'aloha-ui-menubutton-container'});
+		var expand  = jQuery('<button>', {'class': 'aloha-ui-menubutton-expand'});
+		var menu    = jQuery('<ul>'    , {'class': 'aloha-ui-menubutton-menu'});
 		var action = null;
 		var buttonset = null;
+
 		if (props.onclick) {
-			action = $('<button>', {'class': 'aloha-ribbon-action'})
+			action = jQuery('<button>', {'class': 'aloha-ui-menubutton-action'})
 				.text(props.label)
 				.button()
 				.click(props.onclick);
-			buttonset = $('<div></div>')
+
+			buttonset = jQuery('<div>')
 				.buttonset()
 				.append(action)
 				.append(expand);
+
 			if (props.icon) {
-				action.button('option', 'icons', { 'primary': props.icon });
+				action.button('option', 'icons', {'primary': props.icon});
 			}
 		} else {
-			expand.text(props.label);
+			expand.text(props.label)
+			      .addClass('aloha-ui-menubutton-single');
 		}
 
 		expand
 			.button({
-				icons: { primary: 'aloha-jqueryui-icon ui-icon-triangle-1-s' }
+				icons: {primary: 'aloha-jqueryui-icon ui-icon-triangle-1-s'}
 			})
-			.click(function(){
+			.click(function (){
+				wrapper.addClass('aloha-ui-menubutton-pressed');
+
 				if (props.siblingContainer) {
 					props.siblingContainer
 						.find('.aloha-ribbon-menu')
-						.each(function(){
+						.each(function (){
 							if (this !== menu[0]) {
-								$(this).hide();
+								jQuery(this).hide();
 							}
 						});
 				}
-				if (menu.is(":visible")) {
+
+				if (menu.is(':visible')) {
 					menu.hide();
 					return;
 				}
+
 				menu.show().position({
 					my: 'left top',
 					at: 'left bottom',
 					of: action || expand
 				});
-				$(window.document).bind('click', function(event){
+
+				jQuery(document).bind('click', function (event){
 					menu.hide();
-					$(this).unbind(event);
+					jQuery(this).unbind(event);
+					wrapper.removeClass('aloha-ui-menubutton-pressed');
 				});
+
 				return false;
 			});
 
@@ -84,16 +95,16 @@ define([
 		var elems = [];
 		for (var i = 0; i < menu.length; i++) {
 			var item = menu[i];
-			var elem = $('<li>');
-			elem.append($('<a>', {'href': 'javascript:void 0', 'text': item.label}));
+			var elem = jQuery('<li>');
+			elem.append(jQuery('<a>', {'href': 'javascript:void 0', 'text': item.label}));
 			if (item.onclick) {
-				elem.data('aloha-ribbon-select', function(){
+				elem.data('aloha-ribbon-select', function (){
 					parentCloseHandler();
 					item.onclick();
 				});
 			}
 			if (item.menu) {
-				var nestedMenu = $('<ul>').appendTo(elem);
+				var nestedMenu = jQuery('<ul>').appendTo(elem);
 				nestedMenu.append(
 					makeNestedMenus(makeCloseHandler(nestedMenu, parentCloseHandler),
 									item.menu));
@@ -104,8 +115,8 @@ define([
 	}
 
 	function makeCloseHandler(menu, parentCloseHandler) {
-		parentCloseHandler = parentCloseHandler || $.noop;
-		return function(){
+		parentCloseHandler = parentCloseHandler || jQuery.noop;
+		return function (){
 			// We must blur the parent menu otherwise it will remain in
 			// focused state and not expand the next time it is hovered over
 			// after the user has selected an item.
@@ -115,7 +126,7 @@ define([
 	}
 
 	function onSelect(event, ui) {
-		var clickHandler = ui.item.data("aloha-ribbon-select");
+		var clickHandler = ui.item.data('aloha-ribbon-select');
 		clickHandler && clickHandler(event, ui);
 		// We use preventDefault() to keep a click on a menu item from
 		// scrolling to the top of the page.
