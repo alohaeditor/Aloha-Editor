@@ -396,7 +396,10 @@ define([
 				{},
 				this.defaults,
 				instanceDefaults,
-				blockElement.data()
+				// Clone the element before getting the data to fix an IE7 crash.
+				// We use jQuery.clone(true) because the sortableItem attribute isn't returned
+				// if we do a normal cloneNode(...).
+				blockElement.clone(true).data()
 			);
 		},
 
