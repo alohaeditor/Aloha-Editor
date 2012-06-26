@@ -3,7 +3,7 @@ define([
 	'jquery',
 	'util/class',
 	'aloha/console'
-], function(Aloha, jQuery, Class, console) {
+], function (Aloha, jQuery, Class, console) {
 	'use strict';
 
 	/**
@@ -26,7 +26,7 @@ define([
 		/**
 		 * @constructor
 		 */
-		_constructor: function() {
+		_constructor: function () {
 			// Components are responsible for updating their state and visibility
 			// whenever the selection changes.
 			// TODO(p.salema@gentics.com): Consider implementing 'aloha-node-changed'
@@ -43,13 +43,13 @@ define([
 		/**
 		 * Initializes this component.  To be implemented in subclasses.
 		 */
-		init: function() {},
+		init: function () {},
 
 		/**
 		 * Shows this component.
 		 */
-		show: function() {
-			if ( !this.visible ) {
+		show: function () {
+			if (!this.visible) {
 				this.element.show();
 			}
 			this.visible = true;
@@ -58,8 +58,8 @@ define([
 		/**
 		 * Hides this component.
 		 */
-		hide: function() {
-			if ( this.visible ) {
+		hide: function () {
+			if (this.visible) {
 				this.element.hide();
 			}
 			this.visible = false;
@@ -70,7 +70,7 @@ define([
 		 * Usually overridden by the component implementation or the settings
 		 * that are passed to the constructor at instantialization.
 		 */
-		selectionChange: function() {
+		selectionChange: function () {
 			//console.log('selectionChange()');
 		}
 
@@ -90,7 +90,7 @@ define([
 	 */
 	var componentInstances = {};
 
-	jQuery.extend( Component, {
+	jQuery.extend(Component, {
 
 		/**
 		 * @type {object<string, Component>} A hash map of all defined
@@ -110,9 +110,9 @@ define([
 		 *                          a new component type.
 		 * @return {Component} A generated Component sub class.
 		 */
-		define: function( name, type, settings ) {
-			Component.components[ name ] = type.extend( settings );
-			return Component.components[ name ];
+		define: function (name, type, settings) {
+			Component.components[name] = type.extend(settings);
+			return Component.components[name];
 		},
 
 		/**
@@ -124,12 +124,11 @@ define([
 		 *                      (initialize if needed and) render.
 		 * @return {Component} An instance of the component of the given type.
 		 */
-		render: function(type) {
+		render: function (type) {
 			var ComponentType = Component.components[type];
 
 			if (!ComponentType) {
-				console.warn('Component type "' + type +
-					'" is not defined.');
+				console.warn('Component type "' + type + '" is not defined.');
 				return null;
 			}
 
@@ -160,11 +159,8 @@ define([
 			}
 		},
 
-		getGlobalInstance: function( name ) {
-			if (typeof console !== 'undefined') {
-				console.warn('getGlobalInstance(', name, ')');
-			}
-			return this.render( name, Aloha.activeEditable );
+		getGlobalInstance: function (name) {
+			return this.render(name, Aloha.activeEditable);
 		}
 	});
 
