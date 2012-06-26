@@ -161,9 +161,6 @@ define([
 		},
 
 		getGlobalInstance: function( name ) {
-			if (typeof console !== 'undefined') {
-				console.warn('getGlobalInstance(', name, ')');
-			}
 			return this.render( name, Aloha.activeEditable );
 		}
 	});
