@@ -26,12 +26,13 @@ define( [
 	'ui/component',
 	'ui/button',
 	'ui/toggleButton',
+	'ui/componentState',
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
 	'css!link/css/link.css',
 	'link/../extra/linklist'
-], function ( Aloha, Plugin, jQuery, AttributeField, Scopes, Surface, Component, Button, ToggleButton, i18n, i18nCore, console ) {
+], function ( Aloha, Plugin, jQuery, AttributeField, Scopes, Surface, Component, Button, ToggleButton, ComponentState, i18n, i18nCore, console ) {
 	'use strict';
 	
 	var GENTICS = window.GENTICS,
@@ -279,22 +280,12 @@ define( [
 				// show/hide the button according to the configuration
 				config = that.getEditableConfig( Aloha.activeEditable.obj );
 				if ( jQuery.inArray( 'a', config ) != -1 ) {
-					//that.formatLinkButton.show();
-					//that.insertLinkButton.show();
-					Component.eachInstance(['formatLink', 'insertLink'],
-						function (component) {
-							component.show();
-						});
-
+					ComponentState.setState('formatLink', 'show', true);
+					ComponentState.setState('insertLink', 'show', true);
 					Scopes.unhideTab();
 				} else {
-					//that.formatLinkButton.hide();
-					//that.insertLinkButton.hide();
-					Component.eachInstance(['formatLink', 'insertLink'],
-						function (component) {
-							component.hide();
-						});
-
+					ComponentState.setState('formatLink', 'show', false);
+					ComponentState.setState('insertLink', 'show', false);
 					Scopes.hideTab(i18n.t('floatingmenu.tab.link'));
 				}
 			} );
@@ -366,41 +357,15 @@ define( [
 		toggleLinkScope: function ( show ) {
 			if ( show ) {
 				this.hrefField.show();
-
-				//this.insertLinkButton.hide();
-				Component.eachInstance(['insertLink'], function (component) {
-					component.hide();
-				});
-
-				//this.removeLinkButton.show();
-				Component.eachInstance(['removeLink'], function (component) {
-					component.show();
-				});
-
-				//this.formatLinkButton.setState( true );
-				Component.eachInstance(['formatLink'], function (component) {
-					component.setState(true);
-				});
-
+				ComponentState.setState('insertLink', 'show', false);
+				ComponentState.setState('removeLink', 'show', true);
+				ComponentState.setState('formatLink', 'state', true);
 				Scopes.addScope(this.name);
 			} else {
 				this.hrefField.hide();
-
-				//this.insertLinkButton.show();
-				Component.eachInstance(['insertLink'], function (component) {
-					component.show();
-				});
-
-				//this.removeLinkButton.hide();
-				Component.eachInstance(['removeLink'], function (component) {
-					component.hide();
-				});
-
-				//this.formatLinkButton.setState( false );
-				Component.eachInstance(['formatLink'], function (component) {
-					component.setState(false);
-				});
-
+				ComponentState.setState('insertLink', 'show', true);
+				ComponentState.setState('removeLink', 'show', false);
+				ComponentState.setState('formatLink', 'state', false);
 				Scopes.removeScope(this.name);
 			}
 		},

@@ -8,20 +8,22 @@ define([
 	'aloha',
 	'aloha/plugin',
 	'ui/component',
+	'ui/componentState',
 	'ui/toggleButton',
 	'i18n!align/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'jquery',
-	'ui/port-helper-floatingmenu',
 	'css!align/css/align.css',
-], function(Aloha,
-            Plugin,
-            Component,
-            ToggleButton,
-            i18n,
-            i18nCore,
-            jQuery,
-            FloatingmenuPortHelper) {
+], function(
+	Aloha,
+    Plugin,
+    Component,
+	ComponentState,
+    ToggleButton,
+    i18n,
+    i18nCore,
+    jQuery
+) {
 	'use strict';
 
 	var GENTICS = window.GENTICS;
@@ -92,52 +94,44 @@ define([
 				switch(this.lastAlignment)
 				{
 					case 'right':
-						//this.alignRightButton.setState(false);
-						FloatingmenuPortHelper.setStateFalseAll('alignRight');
+						ComponentState.setState('alignRight', 'state', false);
 						break;
 
 					case 'left':
-						//this.alignLeftButton.setState(false);
-						FloatingmenuPortHelper.setStateFalseAll('alignLeft');
+						ComponentState.setState('alignLeft', 'state', false);
 						break;
 
 					case 'center':
-						//this.alignCenterButton.setState(false);
-						FloatingmenuPortHelper.setStateFalseAll('alignCenter');
+						ComponentState.setState('alignCenter', 'state', false);
 						break;
 
 					case 'justify':
-						//this.alignJustifyButton.setState(false);
-						FloatingmenuPortHelper.setStateFalseAll('alignJustify');
+						ComponentState.setState('alignJustify', 'state', false);
 						break;
 				}
 
 				switch(this.alignment)
 				{
 					case 'right':
-						//this.alignRightButton.setState(true);
-						FloatingmenuPortHelper.setStateTrueAll('alignRight');
+						ComponentState.setState('alignRight', 'state', true);
 						break;
 
 					case 'center':
-						//this.alignCenterButton.setState(true);
-						FloatingmenuPortHelper.setStateTrueAll('alignCenter');
+						ComponentState.setState('alignCenter', 'state', true);
 						break;
 
 					case 'justify':
-						//this.alignJustifyButton.setState(true);
-						FloatingmenuPortHelper.setStateTrueAll('alignJustify');
+						ComponentState.setState('alignJustify', 'state', true);
 						break;
 
 					default:
-						//this.alignLeftButton.setState(true);
-						FloatingmenuPortHelper.setStateTrueAll('alignLeft');
-						this.alignment  = 'left';
+						ComponentState.setState('alignLeft', 'state', true);
+					    this.alignment = 'left';
 						break;
 				}
-			}
 
-			this.lastAlignment = this.alignment;
+				this.lastAlignment = this.alignment;
+			}
 		},
 
 		/**
@@ -162,35 +156,27 @@ define([
 			}
 
 			if ( jQuery.inArray('right', config.alignment) != -1) {
-				//this.alignRightButton.show();
-				FloatingmenuPortHelper.showAll('alignRight');
+				ComponentState.setState('alignRight', 'show', true);
 			} else {
-				//this.alignRightButton.hide();
-				FloatingmenuPortHelper.hideAll('alignRight');
+				ComponentState.setState('alignRight', 'show', false);
 			}
 
 			if ( jQuery.inArray('left', config.alignment) != -1) {
-				//this.alignLeftButton.show();
-				FloatingmenuPortHelper.showAll('alignLeft');
+				ComponentState.setState('alignLeft', 'show', true);
 			} else {
-				//this.alignLeftButton.hide();
-				FloatingmenuPortHelper.hideAll('alignLeft');
+				ComponentState.setState('alignLeft', 'show', false);
 			}
 
 			if ( jQuery.inArray('center', config.alignment) != -1) {
-				//this.alignCenterButton.show();
-				FloatingmenuPortHelper.showAll('alignCenter');
+				ComponentState.setState('alignCenter', 'show', true);
 			} else {
-				//this.alignCenterButton.hide();
-				FloatingmenuPortHelper.hideAll('alignCenter');
+				ComponentState.setState('alignCenter', 'show', false);
 			}
 
 			if ( jQuery.inArray('justify', config.alignment) != -1) {
-				//this.alignJustifyButton.show();
-				FloatingmenuPortHelper.showAll('alignJustify');
+				ComponentState.setState('alignJustify', 'show', true);
 			} else {
-				//this.alignJustifyButton.hide();
-				FloatingmenuPortHelper.hideAll('alignJustify');
+				ComponentState.setState('alignJustify', 'show', false);
 			}
 		},
 
@@ -204,16 +190,12 @@ define([
 				click: function(){ that.align('left'); }
 			});
 
-		    //this.alignLeftButton = Component.getGlobalInstance("alignLeft");
-
 			Component.define("alignCenter", ToggleButton, {
 				tooltip: i18n.t('button.aligncenter.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-center',
 				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('center'); }
 			});
-
-		    //this.alignCenterButton = Component.getGlobalInstance("alignCenter");
 
 			Component.define("alignRight", ToggleButton, {
 				tooltip: i18n.t('button.alignright.tooltip'),
@@ -222,16 +204,12 @@ define([
 				click: function(){ that.align('right'); }
 			});
 
-		    //this.alignRightButton = Component.getGlobalInstance("alignRight");
-
 			Component.define("alignJustify", ToggleButton, {
 				tooltip: i18n.t('button.alignjustify.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-justify',
 				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('justify'); }
 			});
-
-		    //this.alignJustifyButton = Component.getGlobalInstance("alignJustify");
 		},
 
 		/**
@@ -304,23 +282,19 @@ define([
 				switch(this.lastAlignment)
 				{
 					case 'right':
-						//this.alignRightButton.setState(false);
-						FloatingmenuPortHelper.setStateFalseAll('alignRight');
+						ComponentState.setState('alignRight', 'state', false);
 						break;
 
 					case 'left':
-						//this.alignLeftButton.setState(false);
-						FloatingmenuPortHelper.setStateFalseAll('alignLeft');
+						ComponentState.setState('alignLeft', 'state', false);
 						break;
 
 					case 'center':
-						//this.alignCenterButton.setState(false);
-						FloatingmenuPortHelper.setStateFalseAll('alignCenter');
+						ComponentState.setState('alignCenter', 'state', false);
 						break;
 
 					case 'justify':
-						//this.alignJustifyButton.setState(false);
-						FloatingmenuPortHelper.setStateFalseAll('alignJustify');
+						ComponentState.setState('alignJustify', 'state', false);
 						break;
 				}
 			}
