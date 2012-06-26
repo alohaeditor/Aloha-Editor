@@ -143,33 +143,25 @@ define([
 		        	var config = me.getEditableConfig( Aloha.activeEditable.obj );
 
 		        	if ( jQuery.inArray( 'abbr', config ) != -1 ) {
-		        		//me.formatAbbrButton.show();
-		        		//me.insertAbbrButton.show();
 						FloatingmenuPortHelper.showAll('formatAbbr');
 						FloatingmenuPortHelper.showAll('insertAbbr');
 		        	} else {
-		        		//me.formatAbbrButton.hide();
-		        		//me.insertAbbrButton.hide();
 						FloatingmenuPortHelper.hideAll('formatAbbr');
 						FloatingmenuPortHelper.hideAll('insertAbbr');
-		        		// leave if a is not allowed
 		        		return;
 		        	}
 
-		        	var foundMarkup = me.findAbbrMarkup( rangeObject );
-		        	if ( foundMarkup ) {
+		        	var foundMarkup = me.findAbbrMarkup(rangeObject);
+		        	if (foundMarkup) {
 		        		// abbr found
-		        		//me.insertAbbrButton.hide();
-		        		//me.formatAbbrButton.setState( true );
 						FloatingmenuPortHelper.hideAll('insertAbbr');
 						FloatingmenuPortHelper.setStateTrueAll('formatAbbrButton');
-		        		Scopes.setScope( 'abbr' );
-		        		me.abbrField.setTargetObject( foundMarkup, 'title' );
+						Scopes.setScope('abbr');
+						me.abbrField.setTargetObject(foundMarkup, 'title');
 		        	} else {
 		        		// no abbr found
-		        		//me.formatAbbrButton.setState( false );
-		        		//me.abbrField.setTargetObject( null );
 						FloatingmenuPortHelper.setStateFalseAll('formatAbbrButton');
+						me.abbrField.setTargetObject(null);
 		        	}
 		        }
 		    });
@@ -225,9 +217,6 @@ define([
 		        return;
 		    }
 
-		    // activate floating menu tab
-		    Scopes.activateTabOfButton('abbrText');
-
 		    // if selection is collapsed then extend to the word.
 		    if ( range.isCollapsed() && extendToWord != false ) {
 		        GENTICS.Utils.Dom.extendToWord( range );
@@ -247,9 +236,9 @@ define([
 		    }
 			
 		    range.select();
-			
+
+		    Scopes.activateTabOfButton('abbrText');
 		    this.abbrField.focus();
-		//	this.abbrChange();
 		},
 
 		/**
