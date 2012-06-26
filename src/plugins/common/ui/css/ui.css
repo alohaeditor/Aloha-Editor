@@ -26,31 +26,70 @@
 /* === toolbar === */
 
 .aloha-ui-toolbar {
-	font-size: 11px;
-	font-family: tahoma, arial, helvetica;
 	text-align: left;
 }
-
+.aloha-ui-toolbar .ui-button.ui-button-icon-only {
+	-moz-border-radius:    2px;
+	-khtml-border-radius:  2px;
+	-webkit-border-radius: 2px;
+	border-radius:         2px;
+}
+.aloha-ui-toolbar .ui-button.ui-button-icon-only:hover {
+	border-color: #999;
+	background-color: #e6e6e6;
+	background-image:         linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:      -o-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:     -ms-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.4, rgba(255,255,255,0.4)),
+		color-stop(0.2, rgba(255,255,255,0.1)),
+		color-stop(0, rgba(0,0,0,0.05))
+	);
+}
 .aloha-ui-toolbar .ui-tabs {
+	font-size: 11px;
+	font-family: tahoma, arial, helvetica;
+	line-height: normal;
 	padding: 0;
 }
 .aloha-ui-toolbar .ui-tabs-nav li {
 	border: 1px solid #aaa;
-	margin: 0.2em 0.2em 0;
+	margin: 0 1px;
 }
 .aloha-ui-toolbar .ui-tabs-nav li,
 .aloha-ui-toolbar .ui-tabs-nav li a {
-	color: #212121;
+	color: #333;
 	text-decoration: none;
-	-moz-border-radius-topleft:     2px;
-	-webkit-border-top-left-radius: 2px;
-	-khtml-border-top-left-radius:  2px;
-	border-top-left-radius:         2px;
-
+	-moz-border-radius-topleft:      2px;
+	-webkit-border-top-left-radius:  2px;
+	-khtml-border-top-left-radius:   2px;
+	border-top-left-radius:          2px;
 	-moz-border-radius-topright:     2px;
 	-webkit-border-top-right-radius: 2px;
 	-khtml-border-top-right-radius:  2px;
 	border-top-right-radius:         2px;
+}
+.aloha-ui-toolbar .ui-tabs-nav li a {
+	padding: 0.2em 0.6em;
+	border-bottom: 0px;
+	border-top: 1px solid #f0f0f0;
+	background-image:         linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 70%);
+	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 70%);
+	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 70%);
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 70%);
+	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 70%);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.9, rgba(0,0,0,0.1)),
+		color-stop(0.7, rgba(0,0,0,0.05))
+	);
 }
 .aloha-ui-toolbar .ui-tabs-nav li.ui-state-active {
 	font-weight: bold;
@@ -58,6 +97,18 @@
 }
 .aloha-ui-toolbar .ui-tabs-nav li.ui-state-active a {
 	background: #f0f0f0;
+	background-image:         linear-gradient(bottom, rgba(255,255,255,0.5) 90%, rgba(255,255,255,0) 70%);
+	background-image:      -o-linear-gradient(bottom, rgba(255,255,255,0.5) 90%, rgba(255,255,255,0) 70%);
+	background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,0.5) 90%, rgba(255,255,255,0) 70%);
+	background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,0.5) 90%, rgba(255,255,255,0) 70%);
+	background-image:     -ms-linear-gradient(bottom, rgba(255,255,255,0.5) 90%, rgba(255,255,255,0) 70%);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.9, rgba(255,255,255,0.9)),
+		color-stop(0.7, rgba(255,255,255,0))
+	);
 }
 
 .aloha-ui-toolbar .ui-widget-content {
@@ -69,11 +120,10 @@
 	border: 0px;
 	background: transparent;
 
-	-moz-border-radius-topleft:     2px;
-	-webkit-border-top-left-radius: 2px;
-	-khtml-border-top-left-radius:  2px;
-	border-top-left-radius:         2px;
-
+	-moz-border-radius-topleft:      2px;
+	-webkit-border-top-left-radius:  2px;
+	-khtml-border-top-left-radius:   2px;
+	border-top-left-radius:          2px;
 	-moz-border-radius-topright:     2px;
 	-webkit-border-top-right-radius: 2px;
 	-khtml-border-top-right-radius:  2px;
@@ -115,19 +165,14 @@
 	border: 1px solid #d0d0d0;
 	box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
 
-	-moz-border-radius-bottomleft:     2px;
-	-webkit-border-bottom-left-radius: 2px;
-	-khtml-border-bottom-left-radius:  2px;
-	border-bottom-left-radius:         2px;
-
+	-moz-border-radius-bottomleft:      2px;
+	-webkit-border-bottom-left-radius:  2px;
+	-khtml-border-bottom-left-radius:   2px;
+	border-bottom-left-radius:          2px;
 	-moz-border-radius-bottomright:     2px;
 	-webkit-border-bottom-right-radius: 2px;
 	-khtml-border-bottom-right-radius:  2px;
 	border-bottom-right-radius:         2px;
-}
-.aloha-ui-toolbar .ui-tabs-nav li a {
-	padding: 0.4em 0.6em;
-	border-bottom: 0px;
 }
 .aloha-ui-toolbar li.ui-state-active {
 	border: 1px solid #d0d0d0;
@@ -142,25 +187,40 @@
 	background: url('http://aloha-editor.org/builds/hotfix/latest/src/img/pin.png') no-repeat;
 	cursor: pointer;
 }
-.aloha-ui-toolbar .ui-tabs:hover .aloha-ui-pin {
-	display: block;
-}
 .aloha-ui-toolbar .aloha-ui-pin-down {
 	background-position: -16px 0;
 }
 
-/* === ribbon === */
 
-.aloha-ribbon-toolbar {
-	padding: 0.4em;
-	background: #f0f0f0;
+
+/* === ribbon === */
+.aloha-ritton {
+
 	border: 1px solid #d0d0d0;
-	box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+}
+.aloha-ribbon-toolbar {
+	padding: 0.2em 0.4em;
+	border-top: 1px solid #f0f0f0;
+	background: #f0f0f0;
+	box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
 	-moz-border-radius:    0px;
 	-khtml-border-radius:  0px;
 	-webkit-border-radius: 0px;
 	border-radius:         0px;
+	background-image:         linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 50%);
+	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 50%);
+	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 50%);
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 50%);
+	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.1) 90%, rgba(0,0,0,0.05) 50%);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.9, rgba(0,0,0,0.1)),
+		color-stop(0.5, rgba(0,0,0,0.05))
+	);
 }
+/* === /ribbon === */
 
 
 
@@ -199,21 +259,75 @@
 	font-size: 11px;
 	border: 1px solid transparent;
 	float: left;
-
 	-moz-border-radius:    4px;
 	-khtml-border-radius:  4px;
 	-webkit-border-radius: 4px;
 	border-radius:         4px;
 }
+.aloha-ui-menubutton-container .ui-buttonset {
+	margin: 0px;
+}
+.aloha-ui-menubutton-container .ui-button {
+	height: 24px;
+	background: transparent;
+	-moz-border-radius:    4px;
+	-khtml-border-radius:  4px;
+	-webkit-border-radius: 4px;
+	border-radius:         4px;
+	padding: 0px;
+	border-width: 0;
+}
+.ui-button.aloha-ui-menubutton-action {
+	border-right: 1px solid transparent;
+	-moz-border-radius-topright:     0px;
+	-webkit-border-top-right-radius: 0px;
+	-khtml-border-top-right-radius:  0px;
+	border-top-right-radius:         0px;
+	-moz-border-radius-bottomright:     0px;
+	-webkit-border-bottom-right-radius: 0px;
+	-khtml-border-bottom-right-radius:  0px;
+	border-bottom-right-radius:         0px;
+}
+.ui-button.aloha-ui-menubutton-expand {
+	min-width: 18px;
+	border-left: 1px solid transparent;
+	-moz-border-radius-topleft:     0px;
+	-webkit-border-top-left-radius: 0px;
+	-khtml-border-top-left-radius:  0px;
+	border-top-left-radius:         0px;
+	-moz-border-radius-bottomleft:     0px;
+	-webkit-border-bottom-left-radius: 0px;
+	-khtml-border-bottom-left-radius:  0px;
+	border-bottom-left-radius:         0px;
+}
+.aloha-ui-menubutton-container .ui-button-text {
+	font-size: 11px;
+	padding: 0 4px;
+}
+.aloha-ui-menubutton-expand,
+.aloha-ui-menubutton-single .ui-button-text {
+	margin-left: 12px;
+}
+.aloha-ui-menubutton-expand.aloha-ui-menubutton-single {
+	-moz-border-radius:    4px;
+	-khtml-border-radius:  4px;
+	-webkit-border-radius: 4px;
+	border-radius:         4px;
+	border-width: 0;
+}
+.aloha-ui-menubutton-container .ui-button-icon-primary {
+	left: 0px;
+}
 .aloha-ui-menubutton-container:hover {
 	border-color: #bbb;
 }
 .aloha-ui-menubutton-container:hover .ui-button {
-	background-image:         linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
-	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
-	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
-	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
-	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0) 10%, rgba(0,0,0,0.5) 0%);
+	background-color: #e6e6e6;
+	background-image:         linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:      -o-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:     -ms-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
 	background-image: -webkit-gradient(
 		linear,
 		left bottom,
@@ -223,96 +337,21 @@
 		color-stop(0, rgba(0,0,0,0.05))
 	);
 }
+.aloha-ui-menubutton-container:hover .aloha-ui-menubutton-expand {
+	border-color: #bbb;
+}
+.aloha-ui-menubutton-container:hover .aloha-ui-menubutton-action {
+	border-color: rgba(255,255,255,0.5);
+}
 .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
 	border-color: #999;
 }
 .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed .ui-button {
 	background: #ccc;
 }
-.aloha-ui-menubutton-container .ui-button-text {
-	font-size: 11px;
-}
-.aloha-ui-menubutton-container .ui-button {
-	-moz-border-radius:    4px;
-	-khtml-border-radius:  4px;
-	-webkit-border-radius: 4px;
-	border-radius:         4px;
-}
-.aloha-ui-menubutton-container .ui-buttonset {
-	margin: 0px;
-}
-.ui-button.aloha-ui-menubutton-action {
-	height: 24px;
-
-	-moz-border-radius-topright:     0px;
-	-webkit-border-top-right-radius: 0px;
-	-khtml-border-top-right-radius:  0px;
-	border-top-right-radius:         0px;
-
-	-moz-border-radius-bottomright:     0px;
-	-webkit-border-bottom-right-radius: 0px;
-	-khtml-border-bottom-right-radius:  0px;
-	border-bottom-right-radius:         0px;
-
-	border-width: 0;
-	border-right: 1px solid transparent;
-}
-.ui-button.aloha-ui-menubutton-expand {
-	height: 24px;
-
-	-moz-border-radius-topleft:     0px;
-	-webkit-border-top-left-radius: 0px;
-	-khtml-border-top-left-radius:  0px;
-	border-top-left-radius:         0px;
-
-	-moz-border-radius-bottomleft:     0px;
-	-webkit-border-bottom-left-radius: 0px;
-	-khtml-border-bottom-left-radius:  0px;
-	border-bottom-left-radius:         0px;
-
-	border-width: 0;
-	border-left: 1px solid transparent;
-}
-.ui-button.aloha-ui-menubutton-expand.aloha-ui-menubutton-single {
-	-moz-border-radius:    4px;
-	-khtml-border-radius:  4px;
-	-webkit-border-radius: 4px;
-	border-radius:         4px;
-	border-width: 0;
-}
-.ui-button.aloha-ui-menubutton-expand .ui-button-text {
-	padding: 0 1em;
-}
-.aloha-ui-menubutton-single .ui-button-text {
-	margin-left: 1em;
-}
-.aloha-ui-menubutton-container:hover
-.ui-button.aloha-ui-menubutton-expand {
-	border-color: #bbb;
-}
-.aloha-ui-menubutton-container:hover
-.ui-button.aloha-ui-menubutton-action {
-	border-color: rgba(255,255,255,0.5);
-}
 /* === /menubutton === */
 
 
-
-
-/*
-	height: 24px;
-	margin: 0;
-	border-width: 0px;
-	-moz-border-radius:    0px;
-	-khtml-border-radius:  0px;
-	-webkit-border-radius: 0px;
-	border-radius:         0px;
-}
-.ui-button .ui-button-text {
-	padding: 0.4em 0.6em 0.4em 2em;
-	font-size: 11px;
-}
-*/
 
 /* === icons === */
 
@@ -346,6 +385,8 @@
 .aloha-icon-link           { background-position: -288px 0; }
 .aloha-icon-unlink         { background-position: -304px 0; }
 .aloha-icon-abbr           { background-position: -336px 0; }
+.aloha-icon-emphasis { background-image: url(../img/em.png); }
+.aloha-icon-strong { background-image: url(../img/strong.png); }
 
 .aloha-icon-indent {
 	background: url(http://aloha-editor.org/builds/hotfix/latest/src/img/text_indent.png) no-repeat center center;
@@ -423,6 +464,7 @@ body .ui-tooltip {
 	line-height: 1.2em;
 	padding: 4px 6px;
 	border: 1px solid #ccc;
+	z-index: 999999;
 }
 
 .aloha-multisplit {
@@ -448,11 +490,19 @@ body .ui-tooltip {
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 15px;
+	width: 13px;
 	height: 50px;
-	background-image: url(http://aloha-editor.org/builds/hotfix/latest/src/img/multisplit-open.gif);
+	background-color: #f0f0f0;
+	background-image: url(../img/multisplit-open.gif);
 	background-repeat: no-repeat;
 	background-position: center center;
+}
+.aloha-multisplit-open .aloha-multisplit-toggle {
+	background-image: url(../img/multisplit-close.gif);
+}
+.aloha-multisplit .aloha-multisplit-toggle:hover {
+	background-color: #fff;
+	border-color: #e6e6e6;
 }
 .aloha-multisplit .aloha-multisplit-active {
 	background: #3B73D7;
@@ -468,9 +518,8 @@ body .ui-tooltip {
 
 .aloha-ui-component-group {
 	display: inline-block;
-	background: #eee;
-	border: 1px solid #ccc;
-	box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
+	border: 1px solid #e0e0e0;
+	box-shadow: inset 0 0 10px #fff;
 	-moz-border-radius:    4px;
 	-khtml-border-radius:  4px;
 	-webkit-border-radius: 4px;

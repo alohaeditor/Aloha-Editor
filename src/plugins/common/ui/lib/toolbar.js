@@ -175,8 +175,14 @@ function (jQuery, Surface, Tab, subguarded, floating, Store) {
 
 		addPin: function () {
 			var $pin = jQuery('<div class="aloha-ui-pin">');
-
-			this.$element.find('.ui-tabs:first').append($pin);
+			var $handle = this.$element.find('.ui-tabs-nav');
+			
+			$handle.append($pin);
+			$handle.hover(function () {
+				$pin.show();
+			}, function () {
+				$pin.hide();
+			});
 
 			if (!Toolbar.isFloatingMode) {
 				$pin.addClass('aloha-ui-pin-down');
