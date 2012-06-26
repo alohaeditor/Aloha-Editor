@@ -91,6 +91,19 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 			var formatlessPasteHandlerLastState;
 			Aloha.bind( 'aloha-editable-activated', function( event, params) {
 				var config = that.getEditableConfig( params.editable.obj );
+				
+				// make configuration a bit more tolerant
+				if (typeof config.button === 'string') {
+					config.button = config.button.toLowerCase();
+					if (config.button === 'false' || config.button === '0') {
+						// disable button only if 'false' or '0' is specified
+						config.button = false;
+					} else {
+						// otherwise the button will always be shown
+						config.button = true;
+					}
+				}
+				
 				if ( !config ) {
 					return;
 				}

@@ -79,6 +79,10 @@ The default configuration looks like this:
 	}
 </javascript>
 
+NOTE: The @button@ config property will accept boolean or string values. Boolean @false@,
+@'false'@ or @'0'@ will hide the button while boolean @true@ or any other string value will
+show it.
+
 You can also have configurations for individual editables:
 
 <javascript>
