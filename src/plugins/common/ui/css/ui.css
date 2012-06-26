@@ -158,10 +158,6 @@
 
 
 /* === ribbon === */
-.aloha-ritton {
-
-	border: 1px solid #d0d0d0;
-}
 .aloha-ribbon-toolbar {
 	padding: 0.2em 0.4em;
 	border-top: 1px solid #f0f0f0;
@@ -176,6 +172,27 @@
 	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
+}
+.aloha-ribbon-toolbar .aloha-ribbon-in,
+.aloha-ribbon-toolbar .aloha-ribbon-out {
+	height: 24px;
+	width: 24px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: center center;
+	border-color: transparent;
+	border-width: 1px !important;
+}
+.aloha-ribbon-toolbar .aloha-ribbon-in:hover,
+.aloha-ribbon-toolbar .aloha-ribbon-out:hover {
+	background-color: #f0f0f0;
+	border-color: #bbb;
+}
+.aloha-ribbon-toolbar .aloha-ribbon-in {
+	background-image: url('../img/fade-in.png');
+}
+.aloha-ribbon-toolbar .aloha-ribbon-out {
+	background-image: url('../img/fade-out.png');
 }
 /* === /ribbon === */
 
