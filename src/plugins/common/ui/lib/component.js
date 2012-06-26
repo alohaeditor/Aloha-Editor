@@ -87,18 +87,6 @@ define([
 
 	// Static fields.
 
-	/**
-	 * A hash of all component instances.  Instances are grouped into arrays
-	 * which are mapped against their component type name.  Therefore all
-	 * components that have are instances of from the "linkButton" component
-	 * type, for example, will be put into an array whose key in the hash will
-	 * be "linkButton."
-	 *
-	 * @type {object<string, Array<Component>>}
-	 * @private
-	 */
-	var componentInstances = {};
-
 	jQuery.extend(Component, {
 
 		/**
@@ -137,19 +125,11 @@ define([
 		 */
 		render: function (type) {
 			var ComponentType = Component.components[type];
-
 			if (!ComponentType) {
 				console.warn('Component type "' + type + '" is not defined.');
 				return null;
 			}
-
-			if (!componentInstances[type]) {
-				componentInstances[type] = [];
-			}
-
-			var instance = new ComponentType();
-			componentInstances[type].push(instance);
-			return instance;
+			return new ComponentType();
 		}
 	});
 
