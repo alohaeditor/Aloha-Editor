@@ -4,63 +4,43 @@
 define([
 	'aloha/core',
 	'jquery',
-	'ui/component'
-], function (Aloha, jQuery, Component) {
+	'ui/component',
+	'ui/componentState'
+], function (Aloha, jQuery, Component, ComponentState) {
 	'use strict';
 
-	function setStateAll(type, state) {
-		Component.eachInstance([type], function (component) {
-			component.setState(state);
-		});
-	}
-
+	// TODO merge this api with componentState
 	return {
 		setStateTrueAll: function (type) {
-			setStateAll(type, true);
+			ComponentState.setState(type, 'state', true);
 		},
 
 		setStateFalseAll: function (type) {
-			setStateAll(type, false);
+			ComponentState.setState(type, 'state', false);
 		},
 
 		showAll: function (type) {
-			Component.eachInstance([type], function (component) {
-				component.show();
-			});
+			ComponentState.setState(type, 'show', true);
 		},
 
 		hideAll: function (type) {
-			Component.eachInstance([type], function (component) {
-				component.hide();
-			});
+			ComponentState.setState(type, 'show', false);
 		},
 
 		enableAll: function (type) {
-			Component.eachInstance([type], function (component) {
-				component.enable();
-			});
+			ComponentState.setState(type, 'enable', true);
 		},
 
 		disableAll: function (type) {
-			Component.eachInstance([type], function (component) {
-				component.disable();
-			});
+			ComponentState.setState(type, 'enable', false);
 		},
 
 		getStateOfFirst: function (type) {
-			var state;
-			var gotState = false;
-			Component.eachInstance([type], function (component) {
-				if (!gotState) {
-					gotState = true;
-					state = component.getState();
-					return false;
-				}
-			});
+			return ComponentState.getState(type, 'state');
 		},
 
 		togglePin: function(pinned) {
-			// TODO
+			// TODO I don't know what this method is supposed to do
 		}
 	};
 });
