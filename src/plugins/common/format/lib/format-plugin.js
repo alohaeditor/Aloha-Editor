@@ -9,21 +9,21 @@ define([
 	'aloha/plugin',
 	'jquery',
 	'ui/component',
+	'ui/componentState',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
 	'i18n!format/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'ui/port-helper-floatingmenu'
 ], function (
 	Aloha,
 	Plugin,
 	jQuery,
 	Component,
+	ComponentState,
 	ToggleButton,
 	MultiSplitButton,
 	i18n,
-	i18nCore,
-	FloatingmenuPortHelper
+	i18nCore
 ) {
 		'use strict';
 
@@ -172,11 +172,9 @@ define([
 				// now iterate all buttons and show/hide them according to the config
 				for ( button in this.buttons) {
 					if (jQuery.inArray(button, config) != -1) {
-						//this.buttons[button].button.show();
-						FloatingmenuPortHelper.showAll(this.buttons[button].type);
+						ComponentState.setState(this.buttons[button].type, 'show', true);
 					} else {
-						//this.buttons[button].button.hide();
-						FloatingmenuPortHelper.hideAll(this.buttons[button].type);
+						ComponentState.setState(this.buttons[button].type, 'show', false);
 					}
 				}
 
@@ -285,7 +283,6 @@ define([
 							});
 							that.buttons[button] = {
 								type: componentName,
-								'button' : Component.getGlobalInstance(componentName),
 								'markup' : jQuery('<'+button+'></'+button+'>').attr('class', button_config)
 							};
 							break;
@@ -376,14 +373,12 @@ define([
 						for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 							effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 							if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
-								//button.button.setState(true);
-								FloatingmenuPortHelper.setStateTrueAll(button.type);
+								ComponentState.setState(button.type, 'state', true);
 								statusWasSet = true;
 							}
 						}
 						if (!statusWasSet) {
-							//button.button.setState(false);
-							FloatingmenuPortHelper.setStateFalseAll(button.type);
+							ComponentState.setState(button.type, 'state', false);
 						}
 					});
 

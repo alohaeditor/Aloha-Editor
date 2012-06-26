@@ -150,27 +150,6 @@ define([
 			var instance = new ComponentType();
 			componentInstances[type].push(instance);
 			return instance;
-		},
-
-		eachInstance: function (instanceTypes, forEach) {
-			var instances = [];
-			var j = instanceTypes.length;
-			while (j--) {
-				if (componentInstances[instanceTypes[j]]) {
-					instances = instances.concat(
-						componentInstances[instanceTypes[j]]);
-				}
-			}
-			j = instances.length;
-			while (j--) {
-				if (false === forEach(instances[j])) {
-					return;
-				}
-			}
-		},
-
-		getGlobalInstance: function (name) {
-			return this.render(name, Aloha.activeEditable);
 		}
 	});
 
