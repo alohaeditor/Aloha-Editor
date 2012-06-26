@@ -27,12 +27,12 @@ function (jQuery, Surface, Tab, subguarded, floating, Store) {
 	function forcePositionIntoWindow(position, $element) {
 		var $window = jQuery(window);
 		var left = position.left;
-		var top = position.top - $window.scrollTop();
+		var top = position.top;
 
 		if (top + $element.height() < 0) {
 			top = 0;
 		} else if (top > $window.height()) {
-			top = $window.height() - $element.height();
+			top = $window.height() / 2;
 		}
 
 		if (left + $element.width() < 0) {
@@ -42,7 +42,7 @@ function (jQuery, Surface, Tab, subguarded, floating, Store) {
 		}
 
 		return {
-			top: top,
+			top: top - $window.scrollTop(),
 			left: left
 		};
 	}
