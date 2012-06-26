@@ -28,6 +28,29 @@
 .aloha-ui-toolbar {
 	text-align: left;
 }
+.aloha-ui-toolbar .ui-button.ui-button-icon-only {
+	-moz-border-radius:    2px;
+	-khtml-border-radius:  2px;
+	-webkit-border-radius: 2px;
+	border-radius:         2px;
+}
+.aloha-ui-toolbar .ui-button.ui-button-icon-only:hover {
+	border-color: #999;
+	background-color: #e6e6e6;
+	background-image:         linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:      -o-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image:     -ms-linear-gradient(bottom, rgba(255,255,255,0.4) 40%, rgba(0,0,0,0.05) 0%);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.4, rgba(255,255,255,0.4)),
+		color-stop(0.2, rgba(255,255,255,0.1)),
+		color-stop(0, rgba(0,0,0,0.05))
+	);
+}
 .aloha-ui-toolbar .ui-tabs {
 	font-size: 11px;
 	font-family: tahoma, arial, helvetica;
@@ -163,9 +186,6 @@
 	height: 10px;
 	background: url('http://aloha-editor.org/builds/hotfix/latest/src/img/pin.png') no-repeat;
 	cursor: pointer;
-}
-.aloha-ui-toolbar .ui-tabs:hover .aloha-ui-pin {
-	display: block;
 }
 .aloha-ui-toolbar .aloha-ui-pin-down {
 	background-position: -16px 0;
@@ -333,22 +353,6 @@
 
 
 
-
-/*
-	height: 24px;
-	margin: 0;
-	border-width: 0px;
-	-moz-border-radius:    0px;
-	-khtml-border-radius:  0px;
-	-webkit-border-radius: 0px;
-	border-radius:         0px;
-}
-.ui-button .ui-button-text {
-	padding: 0.4em 0.6em 0.4em 2em;
-	font-size: 11px;
-}
-*/
-
 /* === icons === */
 
 .aloha-icon {
@@ -381,6 +385,8 @@
 .aloha-icon-link           { background-position: -288px 0; }
 .aloha-icon-unlink         { background-position: -304px 0; }
 .aloha-icon-abbr           { background-position: -336px 0; }
+.aloha-icon-emphasis { background-image: url(../img/em.png); }
+.aloha-icon-strong { background-image: url(../img/strong.png); }
 
 .aloha-icon-indent {
 	background: url(http://aloha-editor.org/builds/hotfix/latest/src/img/text_indent.png) no-repeat center center;
@@ -458,6 +464,7 @@ body .ui-tooltip {
 	line-height: 1.2em;
 	padding: 4px 6px;
 	border: 1px solid #ccc;
+	z-index: 999999;
 }
 
 .aloha-multisplit {

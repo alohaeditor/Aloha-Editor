@@ -40,9 +40,9 @@ define([
 			'sup': 'superscript'
 		};
 
-		var componentNameExtensionByElement = {
-			'strong': '2',
-			'em': '2'
+		var componentNameByElement = {
+			'strong': 'strong',
+			'em': 'emphasis'
 		};
 
 		/**
@@ -236,13 +236,12 @@ define([
 						case 'sup':
 							var command = commandsByElement[button];
 							var componentName = command;
-							var componentNameExt = componentNameExtensionByElement[button];
-							if (componentNameExt) {
-								componentName += componentNameExt;
+							if (componentNameByElement.hasOwnProperty(button)) {
+								componentName = componentNameByElement[button];
 							}
 							Component.define(componentName, ToggleButton, {
 								tooltip : i18n.t('button.' + button + '.tooltip'),
-								icon: 'aloha-icon aloha-icon-' + command,
+								icon: 'aloha-icon aloha-icon-' + componentName,
 								scope: scope,
  								click: function () {
 									var selectedCells = jQuery('.aloha-cell-selected');
