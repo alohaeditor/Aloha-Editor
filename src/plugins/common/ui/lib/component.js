@@ -41,8 +41,6 @@ define([
 			this.init();
 
 			var thisComponent = this;
-			// TODO this should be done inside component but the
-			// component doesn't know its own type so we do it here.
 			ComponentState.applyAllStates(thisComponent.type, thisComponent);
 			Aloha.bind('aloha-ui-component-state-change.' + thisComponent.type, function(event, stateType){
 				ComponentState.applyState(thisComponent.type, stateType, thisComponent);
