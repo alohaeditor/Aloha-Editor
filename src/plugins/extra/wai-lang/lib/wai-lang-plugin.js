@@ -339,7 +339,7 @@ define([
 			}
 
 			range.select();
-			// langField.focus();
+			langField.focus();
 		},
 
 		/**

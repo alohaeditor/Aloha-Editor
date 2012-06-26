@@ -392,14 +392,17 @@ define([
 		 * @private
 		 */
 		getConfig: function(blockElement, instanceDefaults) {
+			// Clone the element before getting the data to fix an IE7 crash.
+			// We use jQuery.clone(true) because the sortableItem attribute isn't returned
+			// if we do a normal cloneNode(...).
+			var clone = blockElement.clone(true);
+			var data = clone.data();
+			clone.removeData();
 			return jQuery.extend(
 				{},
 				this.defaults,
 				instanceDefaults,
-				// Clone the element before getting the data to fix an IE7 crash.
-				// We use jQuery.clone(true) because the sortableItem attribute isn't returned
-				// if we do a normal cloneNode(...).
-				blockElement.clone(true).data()
+				data
 			);
 		},
 

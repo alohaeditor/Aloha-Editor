@@ -31,7 +31,7 @@ define(['jquery'],function($){
 		// "Only set the specific scope if an event was provided, which means
 		//  that somehow an editable was selected"
 		if ( typeof originalEvent != 'undefined' && ! scopeSetDuringSelectionChanged ) {
-			Scopes.setScope('Aloha.continuoustext');
+			Scopes.setScope('Aloha.continuoustext', true);
 		}
 	});
 
@@ -69,19 +69,40 @@ define(['jquery'],function($){
 		},
 
 		/**
-		 * Set the current scope
-		 * @method
-		 * @param {String} scope name of the new current scope
+		 * TODO this should probably not be here and be called something else.
+		 *
+		 * @param name
+		 *        The name of a component that exists in the tab that should be activated.
 		 */
-		setScope: function(scope) {
+		activateTabOfButton: function(name){
+			// Tabs listen to focus events on components and show themselves if appropriate.
+			Aloha.trigger('aloha-ui-component-focus', name);
+		},
+
+		/**
+		 * @deprecated
+		 *     Problem with setScope is that scopes defined by multiple plugins are exclusive to one another.
+		 *     Example: table plugin and link plugin - you want to be able to set both table and link scopes.
+		 *     Use addScope and removeScope instead.
+		 */
+		setScope: function(scope, noActivateTab) {
+			console.log(scope);
 			scopeSetDuringSelectionChanged = true;
 			if (activeScopes[0] != scope) {
 				activeScopes = [scope];
 				pushScopeAncestors(activeScopes, scope);
 				Aloha.trigger('aloha-ui-scope-change');
+				if ( ! noActivateTab ) {
+					Aloha.trigger('aloha-ui-tab-activate-for-scope', scope);
+				}
 			}
 		},
 
+		/**
+		 * @deprecated
+		 *     This method was used to define an ancestry for scopes.
+		 *     The purpose for this is unknown, and the method is therefore deprecated.
+		 */
 		createScope: function(scope, parentScopes){
 			if ( ! parentScopes ) {
 				parentScopes = ['Aloha.empty'];
@@ -91,13 +112,12 @@ define(['jquery'],function($){
 			scopes[scope] = parentScopes;
 		},
 
-		/**
-		 * @param name
-		 *        The name of a component that exists in the tab that should be activated.
-		 */
-		activateTabOfButton: function(name){},
-		unhideTab: function(){},
-		hideTab: function(tabName){}
+		unhideTab: function(){
+			//TODO I don't know what this method is supposed to do
+		},
+		hideTab: function(tabName){
+			//TODO I don't know what this method is supposed to do
+		}
 	};
 	return Scopes;
 });

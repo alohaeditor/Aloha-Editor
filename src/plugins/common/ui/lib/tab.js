@@ -45,6 +45,7 @@ function (Aloha, jQuery, Container, Component) {
 		 * @constructor
 		 */
 		_constructor: function (settings, components) {
+			var thisTab = this;
 			this._super(settings, components);
 
 			this.container = settings.container;
@@ -59,6 +60,7 @@ function (Aloha, jQuery, Container, Component) {
 			var j;
 			var component;
 			var groupedComponents;
+			var componentsByName = {};
 
 			for (i = 0; i < components.length; i++) {
 				if (typeof components[i] === 'string') {
@@ -79,14 +81,36 @@ function (Aloha, jQuery, Container, Component) {
 						    groupedComponents[j].charCodeAt(0) === 10) {
 							group.append('<div>');
 						} else {
-							component = Component.render(groupedComponents[j]);
+							var componentName = groupedComponents[j];
+							component = Component.render(componentName);
 							if (component) {
 								group.append(component.element);
+								componentsByName[componentName] = component;
 							}
 						}
 					}
 				}
 			}
+
+			function selectTab() {
+				thisTab.container.tabs('select', thisTab.index);
+			}
+
+			Aloha.bind('aloha-ui-component-focus', function(event, componentName){
+				var component = componentsByName[componentName];
+				if (component) {
+					selectTab();
+				}
+			});
+
+			var showOnScope = ('object' === jQuery.type(settings.showOn) && settings.showOn.scope)
+				? settings.showOn.scope
+				: false;
+			Aloha.bind('aloha-ui-tab-activate-for-scope', function(event, scope){
+				if (scope === showOnScope) {
+					selectTab();
+				}
+			});
 
 			this.handle.appendTo(this.list);
 			this.panel.appendTo(this.panels);
