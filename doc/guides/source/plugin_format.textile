@@ -65,14 +65,16 @@ The format plugin provides the following config options:
 <javascript>
 Aloha.settings.plugins.format = {
 	// configure buttons available in the toolbar
-	config : [ 'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+	// this example enables all buttons available
+	config : [ 'strong', 'em', 'b', 'i', 'del', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
 	// specific configuration for each editable identified by css selectors
 	editables : {
 		// the editable with id "teaser" won't offer any formatting options
 		'#teaser'	: [  ]
 	},
 	// those are the tags that will be cleaned when clicking "remove formatting"
-	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
+	// this example resembles the default configuration
+	removeFormats : [ 'strong', 'em', 'b', 'i', 's', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
 };
 </javascript>
 
