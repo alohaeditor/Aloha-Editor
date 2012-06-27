@@ -9,20 +9,20 @@ define([
 	'aloha/plugin', 
 	'jquery', 
 	'ui/component', 
+	'ui/componentState',
 	'ui/button',
 	'i18n!toc/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
 	'aloha/console',
-	'ui/port-helper-floatingmenu'
 ], function(Aloha,
             Plugin,
 			jQuery,
 			Component,
+			ComponentState,
 			Button,
 			i18n,
 			i18nCore,
-			console,
-			FloatingmenuPortHelper) {
+			console) {
 	'use strict';
 
 	var GENTICS = window.GENTICS,
@@ -83,11 +83,9 @@ define([
 					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );
 
 					if ( jQuery.inArray( 'toc', that.cfg ) != -1 ) {
-		        		//that.insertTocButton.show();
-						FloatingmenuPortHelper.showAll('insertToc');
+						ComponentState.setState('insertToc', 'show', true);
 		        	} else {
-		        		//that.insertTocButton.hide();
-						FloatingmenuPortHelper.hideAll('insertToc');
+						ComponentState.setState('insertToc', 'show', false);
 		        		return;
 		        	}
 				}
