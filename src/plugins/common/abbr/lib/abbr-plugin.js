@@ -151,12 +151,12 @@ define([
 		        	if (foundMarkup) {
 		        		// abbr found
 						ComponentState.setState('insertAbbr', 'show', false);
-						ComponentState.setState('formatAbbrButton', 'state', true);
+						ComponentState.setState('formatAbbr', 'state', true);
 						Scopes.setScope('abbr');
 						me.abbrField.setTargetObject(foundMarkup, 'title');
 		        	} else {
 		        		// no abbr found
-						ComponentState.setState('formatAbbrButton', 'state', false);
+						ComponentState.setState('formatAbbr', 'state', false);
 						me.abbrField.setTargetObject(null);
 		        	}
 		        }
