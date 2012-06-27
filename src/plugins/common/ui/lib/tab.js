@@ -36,6 +36,8 @@ function (Aloha, jQuery, Container, Component) {
 	 */
 	var Tab = Container.extend({
 
+		components: {},
+
 		/**
 		 * All that this constructor does is save the components array into a
 		 * local variable, to be used during instantialization.
@@ -61,17 +63,26 @@ function (Aloha, jQuery, Container, Component) {
 			var component;
 			var groupedComponents;
 			var componentsByName = {};
+			var group;
+			var componentName;
+
+			this.components = {};
 
 			for (i = 0; i < components.length; i++) {
 				if (typeof components[i] === 'string') {
 					if (1 === components[i].length && components[i].charCodeAt(0) === 10) {
 						this.panel.append('<div>');
 					} else {
-						component = Component.render(components[i]);
-						this.panel.append(component.element);
+						componentName = components[i];	
+						component = Component.render(componentName);
+						if (component) {
+							this.storeComponent(component);
+							this.panel.append(component.element);
+							componentsByName[componentName] = component;
+						}
 					}
 				} else {
-					var group = jQuery('<div>', {
+					group = jQuery('<div>', {
 						'class': 'aloha-ui-component-group'
 					}).appendTo(this.panel);
 
@@ -81,9 +92,10 @@ function (Aloha, jQuery, Container, Component) {
 						    groupedComponents[j].charCodeAt(0) === 10) {
 							group.append('<div>');
 						} else {
-							var componentName = groupedComponents[j];
+							componentName = groupedComponents[j];
 							component = Component.render(componentName);
 							if (component) {
+								this.storeComponent(component);
 								group.append(component.element);
 								componentsByName[componentName] = component;
 							}
@@ -116,9 +128,16 @@ function (Aloha, jQuery, Container, Component) {
 			this.panel.appendTo(this.panels);
 			this.container.tabs('refresh');
 
-			var alohaTabs = settings.container.data('alohaTabs');
+			var alohaTabs = settings.container.data('aloha-tabs');
 			this.index = alohaTabs.length;
 			alohaTabs.push(this);
+		},
+
+		storeComponent: function (component) {
+			if (!this.components[component.type]) {
+				this.components[component.type] = [];
+			}
+			this.components[component.type].push(component);
 		},
 
 		/**
@@ -156,7 +175,7 @@ function (Aloha, jQuery, Container, Component) {
 			// select another tab in its stead.  We will select the first
 			// visible tab we find, or else we deselect all tabs.
 			if ( this.index === this.container.tabs( 'option', 'selected' ) ) {
-				tabs = this.container.data( 'alohaTabs' );
+				tabs = this.container.data( 'aloha-tabs' );
 
 				var i;
 				for ( i = 0; i < tabs.length; ++i ) {
@@ -175,26 +194,33 @@ function (Aloha, jQuery, Container, Component) {
 
 	});
 
-	jQuery.extend( Tab, {
+	jQuery.extend(Tab, {
 
 		/**
 		 * Creates holding elements for jQuery UI Tabs for a surface.
 		 *
 		 * @static
-		 * @return {jQuery<HTMLElement>} The holder container on which we invoke
-		 *                               jQuery UI Tabs once it is populated with
-		 *                               tab containers.
+		 * @return {jQuery.<HTMLElement>} The holder container on which we
+		 *                                invoke jQuery UI Tabs once it is
+		 *                                populated with tab containers.
 		 */
-		createContainer: function() {
-			var container = jQuery( '<div>' );
-			var list = jQuery( '<ul>' ).appendTo( container );
-			var panels = jQuery( '<div>' ).appendTo( container );
+		createContainer: function () {
+			var $container = jQuery('<div>');
+			var $list = jQuery('<ul>').appendTo($container);
+			var $panels = jQuery('<div>').appendTo($container);
 
-			return container
-				.data( 'list', list )
-				.data( 'panels', panels )
-				.data( 'alohaTabs', [] )
-				.tabs();
+			$container
+				.data('list', $list)
+				.data('panels', $panels)
+				.data('aloha-tabs', [])
+				.tabs({
+					select: function (event, ui) {
+						var tabs = $container.data('aloha-tabs');
+						$container.data('aloha-active-container', tabs[ui.index]);
+					}
+				});
+
+			return $container;
 		}
 	});
 

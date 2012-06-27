@@ -73,6 +73,8 @@ function( Aloha, jQuery, Class, Container ) {
 		 */
 		Types: [],
 
+		instances: [],
+
 		/**
 		 * Initializes the surface manager.
 		 *
@@ -164,8 +166,8 @@ function( Aloha, jQuery, Class, Container ) {
 		 *
 		 * @param {Aloha.Editable} editable
 		 */
-		hide: function( editable ) {
-			jQuery.each( editable.surfaces, function( i, surface ) {
+		hide: function (editable) {
+			jQuery.each(editable.surfaces, function (i, surface) {
 				surface.hide();
 			});
 		},
@@ -177,12 +179,13 @@ function( Aloha, jQuery, Class, Container ) {
 		 *
 		 * @param {Aloha.Editable} editable
 		 */
-		initialize: function( editable ) {
+		initialize: function (editable) {
 			editable.surfaces = [];
-			jQuery.each( Surface.Types, function( i, Type ) {
-				var surface = Type.createSurface( editable );
-				if ( surface ) {
-					editable.surfaces.push( surface );
+			jQuery.each(Surface.Types, function (i, Type) {
+				var surface = Type.createSurface(editable);
+				if (surface) {
+					editable.surfaces.push(surface);
+					Surface.instances.push(surface);
 				}
 			});
 		},
@@ -192,8 +195,8 @@ function( Aloha, jQuery, Class, Container ) {
 		 *
 		 * @param {Surface} surface
 		 */
-		registerType: function( surface ) {
-			Surface.Types.push( surface );
+		registerType: function (surface) {
+			Surface.Types.push(surface);
 		},
 
 		/**
@@ -205,34 +208,79 @@ function( Aloha, jQuery, Class, Container ) {
 		 *                                      when the user interacts with
 		 *                                      it.
 		 */
-		trackRange: function( element ) {
-			element.bind( 'mousedown', function(e) {
+		trackRange: function (element) {
+			element.bind('mousedown', function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = true;
 				Surface.suppressHide = true;
 
-				if ( Aloha.activeEditable ) {
+				if (Aloha.activeEditable) {
 					var selection = Aloha.getSelection();
-					Surface.range = (0 < selection.getRangeCount()) ? selection.getRangeAt( 0 ) : null;
+					Surface.range = (0 < selection.getRangeCount())
+					              ? selection.getRangeAt(0)
+								  : null;
 					// TODO: this overlaps with Surface.active
 					Surface.editable = Aloha.activeEditable;
 				}
 			});
 			
-			element.bind( 'mouseup', function(e) {
+			element.bind('mouseup', function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = false;
 				Surface.suppressHide = false;
 			});
 		},
 
-		onActivatedSurface: function( tuples, eventName, $event, range, nativeEvent ) {
+		onActivatedSurface: function (tuples, eventName, $event, range, nativeEvent) {
 			var i;
-			for ( i = 0; i < tuples.length; i++ ) {
+			for (i = 0; i < tuples.length; i++) {
 				if (tuples[i][0].isActive()) {
 					tuples[i][1]($event, range, nativeEvent);
 				}
 			}
+		},
+
+		getActiveSurfaces: function () {
+			return Aloha.activeEditable ? Aloha.activeEditable.surfaces : [];
+		},
+
+		getActiveContainer: function () {
+			return null;
+		},
+
+		getContainers: function () {
+			return [];
+		},
+
+		getActiveComponentsByType: function (type) {
+			var surfaces = Surface.getActiveSurfaces();
+			var components = [];
+			var container;
+			var i;
+			for (i = 0; i < surfaces.length; i++) {
+				container = surfaces[0].getActiveContainer();
+				if (container && container.components[type]) {
+					components = components.concat(container.components[type]);
+				}
+			}
+			return components;
+		},
+
+		getComponentsByType: function (type) {
+			var surfaces = Surface.instances;
+			var components = [];
+			var containers;
+			var i;
+			var j;
+			for (i = 0; i < surfaces.length; i++) {
+				containers = surfaces[0].getContainers();
+				for (j = 0; j < containers.length; j++) {
+					if (containers[j].components[type]) {
+						components = components.concat(containers[j].components[type]);
+					}
+				}
+			}
+			return components;
 		}
 	});
 

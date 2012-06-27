@@ -7,7 +7,14 @@ define([
 	'vendor/jquery.store',
 	'aloha/jquery-ui'
 ],
-function (jQuery, Surface, Tab, subguarded, floating, Store) {
+function (
+	jQuery,
+	Surface,
+	Tab,
+	subguarded,
+	floating,
+	Store
+) {
 	'use strict';
 
 	var store = new Store;
@@ -76,6 +83,8 @@ function (jQuery, Surface, Tab, subguarded, floating, Store) {
 
 		_tabs: [],
 
+		$_container: null,
+
 		/**
 		 * Toolbar constructor.
 		 *
@@ -93,9 +102,10 @@ function (jQuery, Surface, Tab, subguarded, floating, Store) {
 
 			this.$element = jQuery('<div>', {'class': 'aloha-ui-toolbar'});
 
+			this.$_container = Tab.createContainer().appendTo(this.$element);
+
 			var settings;
 			var tabs = editable.settings.toolbar;
-			var container = Tab.createContainer().appendTo(this.$element);
 			var i;
 			for (i = 0; i < tabs.length; i++) {
 				settings = tabs[i];
@@ -103,11 +113,19 @@ function (jQuery, Surface, Tab, subguarded, floating, Store) {
 					label: settings.label || '',
 					showOn: settings.showOn,
 					editable: editable,
-					container: container
+					container: this.$_container
 				}, settings.components));
 			}
 
 			this.initializeFloating();
+		},
+
+		getActiveContainer: function () {
+			return this.$_container.data('aloha-active-container');
+		},
+
+		getContainers: function () {
+			return this.$_container.data('aloha-tabs');
 		},
 
 		_move: function (duration) {
