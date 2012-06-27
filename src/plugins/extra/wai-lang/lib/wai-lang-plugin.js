@@ -105,10 +105,11 @@ define([
 				foundMarkup = that.findLangMarkup( rangeObject );
 				if ( foundMarkup ) {
 					ComponentState.setState('wailang', 'state', true);
-					Scopes.setScope( 'wai-lang' );
-					langField.setTargetObject( foundMarkup, 'lang' );
+					Scopes.setScope('wai-lang');
+					langField.setTargetObject(foundMarkup, 'lang');
 				} else {
-					langField.setTargetObject( null );
+					ComponentState.setState('wailang', 'state', false);
+					langField.setTargetObject(null);
 				}
 			} );
 		},
@@ -208,8 +209,8 @@ define([
 
 		        // select the (possibly modified) range
 		        range.select();
-				Scopes.setScope( 'Aloha.continousText' );
-				langField.setTargetObject( null );
+				Scopes.setScope('Aloha.continuoustext');
+				langField.setTargetObject(null);
 		    }
 		},
 
