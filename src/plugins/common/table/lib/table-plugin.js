@@ -11,6 +11,7 @@ define([
 	'aloha/pluginmanager',
 	'ui/scopes',
 	'ui/component',
+	'ui/componentState',
 	'ui/button',
 	'ui/toggleButton',
 	'ui/message',
@@ -21,7 +22,6 @@ define([
 	'table/table-create-layer',
 	'table/table',
 	'table/table-plugin-utils',
-	'ui/port-helper-floatingmenu',
 	'css!table/css/table.css'
 ], function(
 	Aloha,
@@ -30,6 +30,7 @@ define([
 	PluginManager,
 	Scopes,
 	Component,
+	ComponentState,
 	Button,
 	ToggleButton,
 	Message,
@@ -39,8 +40,7 @@ define([
 	i18nCore,
 	CreateLayer,
 	Table,
-	Utils,
-	FloatingmenuPortHelper
+	Utils
 ) {
 	var GENTICS = window.GENTICS;
 	
@@ -176,23 +176,23 @@ define([
 				TablePlugin.activeTable.selection ) {
 
 				if ( TablePlugin.activeTable.selection.cellsAreSplitable() ) {
-					FloatingmenuPortHelper.enableAll('splitcells');
-					FloatingmenuPortHelper.enableAll('splitcellsRow');
-					FloatingmenuPortHelper.enableAll('splitcellsColumn');
+					ComponentState.setState('splitcells', 'enable', true);
+					ComponentState.setState('splitcellsRow', 'enable', true);
+					ComponentState.setState('splitcellsColumn', 'enable', true);
 				} else {
-					FloatingmenuPortHelper.disableAll('splitcells');
-					FloatingmenuPortHelper.disableAll('splitcellsRow');
-					FloatingmenuPortHelper.disableAll('splitcellsColumn');
+					ComponentState.setState('splitcells', 'enable', false);
+					ComponentState.setState('splitcellsRow', 'enable', false);
+					ComponentState.setState('splitcellsColumn', 'enable', false);
 				}
 
 				if ( TablePlugin.activeTable.selection.cellsAreMergeable() ) {
-					FloatingmenuPortHelper.enableAll('mergecells');
-					FloatingmenuPortHelper.enableAll('mergecellsRow');
-					FloatingmenuPortHelper.enableAll('mergecellsColumn');
+					ComponentState.setState('mergecells', 'enable', true);
+					ComponentState.setState('mergecellsRow', 'enable', true);
+					ComponentState.setState('mergecellsColumn', 'enable', true);
 				} else {
-					FloatingmenuPortHelper.disableAll('mergecells');
-					FloatingmenuPortHelper.disableAll('mergecellsRow');
-					FloatingmenuPortHelper.disableAll('mergecellsColumn');
+					ComponentState.setState('mergecells', 'enable', false);
+					ComponentState.setState('mergecellsRow', 'enable', false);
+					ComponentState.setState('mergecellsColumn', 'enable', false);
 				}
 			}
 
@@ -210,11 +210,9 @@ define([
 
 				// show hide buttons regarding configuration and DOM position
 				if ( jQuery.inArray('table', config) != -1  && Aloha.Selection.mayInsertTag('table') ) {
-					//that.createTableButton.show();
-					FloatingmenuPortHelper.showAll('createTable');
+					ComponentState.setState('createTable', 'show', true);
 				} else {
-					//that.createTableButton.hide();
-					FloatingmenuPortHelper.hideAll('createTable');
+					ComponentState.setState('createTable', 'show', false);
 				}
 
 				var table = rangeObject.findMarkup(function () {
@@ -240,12 +238,13 @@ define([
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
 		Aloha.bind( 'aloha-editable-activated', function (event, props) {
 			// disable all split / merge buttons
-			FloatingmenuPortHelper.disableAll('splitcells');
-			FloatingmenuPortHelper.disableAll('mergecells');
-			FloatingmenuPortHelper.disableAll('splitcellsRow');
-			FloatingmenuPortHelper.disableAll('mergecellsRow');
-			FloatingmenuPortHelper.disableAll('splitcellsColumn');
-			FloatingmenuPortHelper.disableAll('mergecellsColumn');
+
+			ComponentState.setState('splitcells', 'enable', false);
+			ComponentState.setState('mergecells', 'enable', false);
+			ComponentState.setState('splitcellsRow', 'enable', false);
+			ComponentState.setState('mergecellsRow', 'enable', false);
+			ComponentState.setState('splitcellsColumn', 'enable', false);
+			ComponentState.setState('mergecellsColumn', 'enable', false);
 
 			props.editable.obj.find('table').each(function () {
 				// shortcut for TableRegistry
@@ -1123,8 +1122,7 @@ define([
 			this.summary.setTargetObject(focusTable.obj, 'summary');
 			if ( focusTable.obj.children("caption").is('caption') ) {
 				// set caption button
-				//that.captionButton.setState(true);
-				FloatingmenuPortHelper.setStateTrueAll('tableCaption');
+				ComponentState.setState('tableCaption', 'state', true);
 				var c = focusTable.obj.children("caption");
 				that.makeCaptionEditable(c);
 			}

@@ -9,19 +9,19 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/component',
+	'ui/componentState',
 	'ui/button',
 	'i18n!horizontalruler/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'ui/port-helper-floatingmenu',
 	'css!horizontalruler/css/horizontalruler.css'
 ], function(Aloha,
             jQuery,
 			Plugin,
 			Component,
+			ComponentState,
 			Button,
 			i18n,
-			i18nCore,
-			FloatingmenuPortHelper) {
+			i18nCore) {
 	'use strict';
 
 	var GENTICS = window.GENTICS;
@@ -45,18 +45,14 @@ define([
 				}
 			});
 
-			//this.insertButton = Component.getGlobalInstance("insertHorizontalRule");
-
 			Aloha.bind( 'aloha-editable-activated', function ( event, rangeObject ) {
 				if (Aloha.activeEditable) {
 					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );
 
 					if ( jQuery.inArray( 'hr', that.cfg ) != -1 ) {
-		        		//that.insertButton.show();
-						FloatingmenuPortHelper.showAll('insertHorizontalRule');
+						ComponentState.setState('insertHorizontalRule', 'show', true);
 		        	} else {
-		        		//that.insertButton.hide();
-						FloatingmenuPortHelper.hideAll('insertHorizontalRule');
+						ComponentState.setState('insertHorizontalRule', 'show', false);
 		        		return;
 		        	}
 				}

@@ -7,21 +7,21 @@
 define([
 	'aloha/plugin',
 	'ui/component',
+	'ui/componentState',
 	'ui/toggleButton',
 	'flag-icons/flag-icons-plugin',
 	'i18n!metaview/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'jquery',
-	'ui/port-helper-floatingmenu',
 	'css!metaview/css/metaview.css'
 ], function(Plugin,
             Component,
+			ComponentState,
 			ToggleButton,
 			FlagIcons,
 			i18n,
 			i18nCore,
-			jQuery,
-			FloatingmenuPortHelper) {
+			jQuery) {
 	'use strict';
 
 	var GENTICS = window.GENTICS,
@@ -53,20 +53,16 @@ define([
 						var config;
 						config = that.getEditableConfig( Aloha.activeEditable.obj );
 						if ( config && jQuery.inArray( 'metaview', config ) !== -1 ) {
-							//that.button.show();
-							FloatingmenuPortHelper.showAll('toggleMetaView');
+							ComponentState.setState('toggleMetaView', 'show', true);
 						} else {
-							//that.button.hide();
-							FloatingmenuPortHelper.hideAll('toggleMetaView');
+							ComponentState.setState('toggleMetaView', 'show', false);
 							return;
 						}
 						
 						if ( /* that.button && */ jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
-							//that.button.setState(true);
-							FloatingmenuPortHelper.setStateTrueAll('toggleMetaView');
+							ComponentState.setState('toggleMetaView', 'state', true);
 						} else {
-							//that.button.setState(false);
-							FloatingmenuPortHelper.setStateFalseAll('toggleMetaView');
+							ComponentState.setState('toggleMetaView', 'state', false);
 						}
 					}
 			);
@@ -76,12 +72,10 @@ define([
 			var that = this;
 			if(jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
 				jQuery(Aloha.activeEditable.obj).removeClass('aloha-metaview');
-				FloatingmenuPortHelper.setStateFalseAll('toggleMetaView');
-				//that.button.setState(false);
+				ComponentState.setState('toggleMetaView', 'state', false);
 			} else {
 				jQuery(Aloha.activeEditable.obj).addClass('aloha-metaview');
-				FloatingmenuPortHelper.setStateTrueAll('toggleMetaView');
-				//that.button.setState(true);
+				ComponentState.setState('toggleMetaView', 'state', true);
 			}
 		},
 		
@@ -97,8 +91,6 @@ define([
 				scope: 'Aloha.continuoustext',
 				click : function () { that.buttonClick(); }
 			});
-
-			//that.button = Component.getGlobalInstance("toggleMetaView");
 		}
 	});
 });

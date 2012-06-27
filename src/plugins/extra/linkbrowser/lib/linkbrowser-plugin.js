@@ -1,31 +1,29 @@
 define([
-	// js
 	'aloha',
 	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
 	'ui/component',
+	'ui/componentState',
 	'ui/button',
 	'ui/surface',
 	'link/link-plugin',
 	'RepositoryBrowser',
-	// i18n
 	'i18n!linkbrowser/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'ui/port-helper-floatingmenu'
 ], function(
 	Aloha,
 	jQuery,
 	Plugin,
 	PluginManager,
 	Component,
+	ComponentState,
 	Button,
 	Surface,
 	Links,
 	RepositoryBrowser,
 	i18n,
-	i18nCore,
-	FloatingmenuPortHelper
+	i18nCore
 ) {
 	'use strict';
 
@@ -43,20 +41,16 @@ define([
 				click: function () { that.open(); }
 			});
 
-			//var repositoryButton = Component.getGlobalInstance( 'linkBrowser' );
-
-			//repositoryButton.hide();
-			FloatingmenuPortHelper.hideAll('linkBrowser');
+			ComponentState.setState('linkBrowser', 'show', false);
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
 
-			Aloha.bind('aloha-link-selected', function (event, rangeObject) {
-				//repositoryButton.show();
-				FloatingmenuPortHelper.showAll('linkBrowser');
+			Aloha.bind('aloha-link-selected', function (event, rangeObject ) {
+				ComponentState.setState('linkBrowser', 'show', true);
 			});
-			Aloha.bind('aloha-link-unselected', function (event, rangeObject) {
-				//repositoryButton.hide();
-				FloatingmenuPortHelper.hideAll('linkBrowser');
+
+			Aloha.bind('aloha-link-unselected', function (event, rangeObject ) {
+				ComponentState.setState('linkBrowser', 'show', false);
 			});
 		},
 

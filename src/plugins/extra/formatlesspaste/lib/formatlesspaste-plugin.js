@@ -10,23 +10,23 @@ define([
 	'aloha/plugin',
 	'jquery',
 	'ui/component', 
+	'ui/componentState',
 	'ui/toggleButton',
 	'formatlesspaste/formatlesshandler',
 	'aloha/contenthandlermanager',
 	'i18n!formatlesspaste/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'ui/port-helper-floatingmenu',
 	'css!formatlesspaste/css/formatless.css'
 ], function(Aloha,
             Plugin,
             jQuery,
             Component,
+			ComponentState,
             ToggleButton,
             FormatlessPasteHandler,
             ContentHandlerManager,
             i18n,
-            i18nCore,
-            FloatingmenuPortHelper) {
+            i18nCore) {
 	'use strict';
 
 	// Public Methods
@@ -113,20 +113,16 @@ define([
 					FormatlessPasteHandler.strippedElements = config.strippedElements;
 				}
 				if (config.formatlessPasteOption === true) {
-					//that.formatlessPasteButton.setState(true);
-					FloatingmenuPortHelper.setStateTrueAll('toggleFormatlessPaste');
+					ComponentState.setState('toggleFormatlessPaste', 'state', true);
 					FormatlessPasteHandler.enabled = true;
 				} else if (config.formatlessPasteOption === false) {
-					//that.formatlessPasteButton.setState(false);
-					FloatingmenuPortHelper.setStateFalseAll('toggleFormatlessPaste');
+					ComponentState.setState('toggleFormatlessPaste', 'state', false);
 					FormatlessPasteHandler.enabled = false;
 				}
 				if ( config.button === false ) {
-					//that.formatlessPasteButton.hide();
-					FloatingmenuPortHelper.hideAll('toggleFormatlessPaste');
+					ComponentState.setState('toggleFormatlessPaste', 'show', false);
 				} else {
-					//that.formatlessPasteButton.show();
-					FloatingmenuPortHelper.showAll('toggleFormatlessPaste');
+					ComponentState.setState('toggleFormatlessPaste', 'show', true);
 				}
 			});
 		},
@@ -149,19 +145,15 @@ define([
 				}
 			});
 
-			//this.formatlessPasteButton = Component.getGlobalInstance("toggleFormatlessPaste");
-
 			// activate formatless paste button if option is set
 			if (this.formatlessPasteOption === true) {
-				//this.formatlessPasteButton.setState(true);
-				FloatingmenuPortHelper.setStateTrueAll('toggleFormatlessPaste');
+				ComponentState.setState('toggleFormatlessPaste', 'state', true);
 				FormatlessPasteHandler.enabled = true;
 			}
 			
 			// hide button by default if configured
 			if (this.button === false) {
-				//this.formatlessPasteButton.hide();
-				FloatingmenuPortHelper.setStateFalseAll('toggleFormatlessPaste');
+				ComponentState.setState('toggleFormatlessPaste', 'show', false);
 			}
 		}
 	});

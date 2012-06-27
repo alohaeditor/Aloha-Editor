@@ -9,25 +9,25 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/component',
+	'ui/componentState',
 	'ui/toggleButton',
 	'ui/button',
 	'ui/scopes',
 	'ui/port-helper-attribute-field',
 	'i18n!abbr/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'ui/port-helper-floatingmenu'
+	'i18n!aloha/nls/i18n'
 ], function (
 	Aloha,
 	jQuery,
 	Plugin,
 	Component,
+	ComponentState,
 	ToggleButton,
 	Button,
 	Scopes,
 	AttributeField,
 	i18n,
-	i18nCore,
-	FloatingmenuPortHelper
+	i18nCore
 ) {
 	'use strict';
 	var GENTICS = window.GENTICS;
@@ -70,8 +70,6 @@ define([
 				}
 			});
 
-		    //this.formatAbbrButton = Component.getGlobalInstance("formatAbbr");
-
 			Component.define("insertAbbr", Button, {
 				tooltip: i18n.t('button.addabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr',
@@ -80,8 +78,6 @@ define([
 					me.insertAbbr( false );
 				}
 			});
-
-		    //this.insertAbbrButton = Component.getGlobalInstance("insertAbbr");
 
 		    Scopes.createScope('abbr', 'Aloha.continuoustext');
 
@@ -143,24 +139,24 @@ define([
 		        	var config = me.getEditableConfig( Aloha.activeEditable.obj );
 
 		        	if ( jQuery.inArray( 'abbr', config ) != -1 ) {
-						FloatingmenuPortHelper.showAll('formatAbbr');
-						FloatingmenuPortHelper.showAll('insertAbbr');
+						ComponentState.setState('formatAbbr', 'show', true);
+						ComponentState.setState('insertAbbr', 'show', true);
 		        	} else {
-						FloatingmenuPortHelper.hideAll('formatAbbr');
-						FloatingmenuPortHelper.hideAll('insertAbbr');
+						ComponentState.setState('formatAbbr', 'show', false);
+						ComponentState.setState('insertAbbr', 'show', false);
 		        		return;
 		        	}
 
 		        	var foundMarkup = me.findAbbrMarkup(rangeObject);
 		        	if (foundMarkup) {
 		        		// abbr found
-						FloatingmenuPortHelper.hideAll('insertAbbr');
-						FloatingmenuPortHelper.setStateTrueAll('formatAbbrButton');
+						ComponentState.setState('insertAbbr', 'show', false);
+						ComponentState.setState('formatAbbr', 'state', true);
 						Scopes.setScope('abbr');
 						me.abbrField.setTargetObject(foundMarkup, 'title');
 		        	} else {
 		        		// no abbr found
-						FloatingmenuPortHelper.setStateFalseAll('formatAbbrButton');
+						ComponentState.setState('formatAbbr', 'state', false);
 						me.abbrField.setTargetObject(null);
 		        	}
 		        }

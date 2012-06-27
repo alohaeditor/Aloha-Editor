@@ -14,24 +14,24 @@ define([
 	'aloha/plugin',
 	'aloha/pluginmanager',
 	'ui/component',
+	'ui/componentState',
 	'ui/button',
 	'image/image-plugin',
 	'RepositoryBrowser',
 	// i18n
 	'i18n!imagebrowser/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'ui/port-helper-floatingmenu'
+	'i18n!aloha/nls/i18n'
 ], function(Aloha,
             jQuery,
             Plugin,
             PluginManager,
             Component,
+			ComponentState,
             Button,
             Images,
             RepositoryBrowser,
             i18n,
-            i18nCore,
-			FloatingmenuPortHelper) {
+            i18nCore) {
 	'use strict';
 
 	var ImageBrowser = RepositoryBrowser.extend( {
@@ -48,20 +48,15 @@ define([
 				click: function () { browser.open(); }
 			});
 
-			//var repositoryButton = Component.getGlobalInstance( 'imageBrowser' );
-
-			//repositoryButton.hide();
-			FloatingmenuPortHelper.hideAll('imageBrowser');
+			ComponentState.setState('imageBrowser', 'show', false);
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/imagebrowser/';
 
 			Aloha.bind( 'aloha-image-selected', function ( event, rangeObject ) {
-				//repositoryButton.show();
-				FloatingmenuPortHelper.showAll('imageBrowser');
+				ComponentState.setState('imageBrowser', 'show', true);
 			});
 			Aloha.bind( 'aloha-image-unselected', function ( event, rangeObject ) {
-				//repositoryButton.hide();
-				FloatingmenuPortHelper.hideAll('imageBrowser');
+				ComponentState.setState('imageBrowser', 'show', false);
 			});
 		},
 		onSelect: function ( item ) {

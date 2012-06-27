@@ -80,6 +80,9 @@ function( jQuery, Component, Button ) {
 			var content = this.contentElement;
 			this.element.find( ".aloha-multisplit-active" )
 				.removeClass( "aloha-multisplit-active" );
+			if ( ! content.is(':visible') ) {
+				return;
+			}
 			jQuery.each( this.buttons, function() {
 				if ( this.settings.isActive() ) {
 					this.element.addClass( "aloha-multisplit-active" );

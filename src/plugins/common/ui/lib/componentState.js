@@ -1,4 +1,4 @@
-define(['ui/subguarded'],function(subguarded){
+define(['PubSub'],function(PubSub){
 
 	var stateSettersByType = {
 		'enable': function(component, value) {
@@ -25,7 +25,7 @@ define(['ui/subguarded'],function(subguarded){
 
 	function setState(componentName, stateType, stateValue) {
 		state[componentName + '/' + stateType] = stateValue;
-		Aloha.trigger('aloha-ui-component-state-change.' + componentName, stateType);
+		PubSub.pub('aloha-ui-component-state-change.' + componentName, {state: stateType});
 	}
 
 	function getState(componentName, stateType) {

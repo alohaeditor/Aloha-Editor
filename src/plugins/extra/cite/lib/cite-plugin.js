@@ -10,8 +10,8 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/component',
+	'ui/componentState',
 	'ui/toggleButton',
-	'ui/port-helper-floatingmenu',
 	'format/format-plugin',
 	'util/dom',
 	'i18n!cite/nls/i18n',
@@ -21,8 +21,8 @@ define([
 	jQuery,
 	Plugin,
 	Component,
+	ComponentState,
 	ToggleButton,
-	FloatingmenuPortHelper,
 	Format,
 	domUtils,
     i18n,
@@ -282,9 +282,9 @@ define([
 				}
 				
 				if ( jQuery.inArray( 'quote', config ) !== -1 ) {
-					FloatingmenuPortHelper.showAll('quote');
+					ComponentState.setState('quote', 'show', true);
 				} else {
-					FloatingmenuPortHelper.hideAll('quote');
+					ComponentState.setState('quote', 'show', false);
 				}
 				
 				if ( jQuery.inArray( 'blockquote', config ) !== -1 ) {
@@ -317,11 +317,11 @@ define([
 				buttons.filter( nsSel( 'block-button' ) )
 					.removeClass( nsClass( 'pressed' ) );
 
-				FloatingmenuPortHelper.setStateFalseAll('quote');
+				ComponentState.setState('quote', 'state', false);
 
 				if ( statusWasSet ) {
 					if( 'q' === tagName ) {
-						FloatingmenuPortHelper.setStateTrueAll('quote');
+						ComponentState.setState('quote', 'state', true);
 					} else {
 						buttons.filter( nsSel( 'block-button' ) )
 							.addClass( nsClass( 'pressed' ) );
@@ -340,9 +340,9 @@ define([
 				
 				// quote
 				if ( jQuery.inArray( 'quote', config ) != -1 ) {
-	        		FloatingmenuPortHelper.showAll('quote');
+					ComponentState.setState('quote', 'show', true);
 	        	} else {
-	        		FloatingmenuPortHelper.hideAll('quote');
+					ComponentState.setState('quote', 'show', false);
 	        	}
 				
 				// blockquote
