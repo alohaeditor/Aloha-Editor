@@ -28,13 +28,15 @@
 .aloha-ui-toolbar {
 	text-align: left;
 }
-.aloha-ui-toolbar .ui-button.ui-button-icon-only {
+.aloha-ui-toolbar .ui-button-icon-only {
+	background-color: transparent;
+	border-color: transparent;
 	-moz-border-radius:    2px;
 	-khtml-border-radius:  2px;
 	-webkit-border-radius: 2px;
 	border-radius:         2px;
 }
-.aloha-ui-toolbar .ui-button.ui-button-icon-only:hover {
+.aloha-ui-toolbar .ui-button-icon-only:hover {
 	border-color: #999;
 	background-color: #e6e6e6;
 	background-image:         linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
@@ -424,21 +426,17 @@ body .ui-tooltip {
 .aloha-multisplit-open .aloha-multisplit-toggle {
 	background-image: url(../img/multisplit-close.gif);
 }
-.aloha-multisplit .aloha-multisplit-toggle:hover {
+.aloha-multisplit .ui-button-icon-only.aloha-multisplit-toggle:hover {
 	background-color: #fff;
 	border-color: #e6e6e6;
 }
-.aloha-multisplit .aloha-multisplit-active {
+.aloha-multisplit .ui-button-icon-only {
+	background: #e6e6e6;
+	border-color: lightGrey;
+}
+.aloha-multisplit .ui-button-icon-only.aloha-multisplit-active {
 	background: #3B73D7;
 }
-
-/*
-.aloha-ui-multisplit-remove-format {
-	clear: both;
-	background: red;
-	width: 200px;
-}
-*/
 
 .aloha-ui-component-group {
 	display: inline-block;
