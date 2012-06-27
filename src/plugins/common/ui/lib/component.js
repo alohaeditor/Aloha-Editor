@@ -3,8 +3,9 @@ define([
 	'jquery',
 	'util/class',
 	'aloha/console',
-	'ui/componentState'
-], function (Aloha, jQuery, Class, console, ComponentState) {
+	'ui/componentState',
+	'PubSub'
+], function (Aloha, jQuery, Class, console, ComponentState, PubSub) {
 	'use strict';
 
 	/**
@@ -42,8 +43,8 @@ define([
 
 			var thisComponent = this;
 			ComponentState.applyAllStates(thisComponent.type, thisComponent);
-			Aloha.bind('aloha-ui-component-state-change.' + thisComponent.type, function(event, stateType){
-				ComponentState.applyState(thisComponent.type, stateType, thisComponent);
+			PubSub.sub('aloha-ui-component-state-change.' + thisComponent.type, function(message){
+				ComponentState.applyState(thisComponent.type, message.state, thisComponent);
 			});
 		},
 
