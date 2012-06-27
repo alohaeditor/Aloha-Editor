@@ -157,48 +157,6 @@
 
 
 
-/* === ribbon === */
-.aloha-ribbon-toolbar {
-	padding: 0.2em 0.4em;
-	border-top: 1px solid #f0f0f0;
-	background: #f0f0f0;
-	box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
-	-moz-border-radius:    0px;
-	-khtml-border-radius:  0px;
-	-webkit-border-radius: 0px;
-	border-radius:         0px;
-	background-image:         linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
-	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
-	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
-	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
-	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
-}
-.aloha-ribbon-toolbar .aloha-ribbon-in,
-.aloha-ribbon-toolbar .aloha-ribbon-out {
-	height: 24px;
-	width: 24px;
-	background-color: transparent;
-	background-repeat: no-repeat;
-	background-position: center center;
-	border-color: transparent;
-	border-width: 1px !important;
-}
-.aloha-ribbon-toolbar .aloha-ribbon-in:hover,
-.aloha-ribbon-toolbar .aloha-ribbon-out:hover {
-	background-color: #f0f0f0;
-	border-color: #bbb;
-}
-.aloha-ribbon-toolbar .aloha-ribbon-in {
-	background-image: url('../img/fade-in.png');
-}
-.aloha-ribbon-toolbar .aloha-ribbon-out {
-	background-image: url('../img/fade-out.png');
-}
-/* === /ribbon === */
-
-
-
-
 /* === dropdown menu === */
 .aloha-ui-menubutton-menu,
 .aloha-ui-menubutton-menu .ui-menu {
@@ -222,7 +180,6 @@
 	border-color: transparent;
 }
 /* === dropdown menu === */
-
 
 
 
