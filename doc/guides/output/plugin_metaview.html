@@ -57,6 +57,7 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
@@ -131,8 +132,20 @@
 	<li>A button in the floating menu to toggle between meta and normal view.</li>
 </ul>
 <h3 id="configuration">4 Configuration</h3>
-<p>No configuration options are available.</p>
-<p>You can adjust the used <span class="caps">CSS</span> styles for your needs.</p>
+<p>You can adjust the used <span class="caps">CSS</span> styles for your needs and enable it for single editables.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins: {
+	metaview: {
+		config: [ 'metaview' ],
+		editables: {
+			'#one': [ 'metaview' ],
+			'#two': [ ]
+		}
+	}
+};
+</pre></div>
 
       </div>
         <div id="subCol">

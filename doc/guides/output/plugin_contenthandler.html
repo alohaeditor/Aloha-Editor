@@ -57,6 +57,7 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
@@ -221,7 +222,7 @@
 		<li>valign</li>
 	</ul></li>
 	<li>remove comments</li>
-	<li>unwrap font and span tags</li>
+	<li>unwrap contents of div, font and span tags</li>
 	<li>remove styles</li>
 	<li>remove namespaced elements</li>
 	<li>transform formattings by turning
@@ -233,6 +234,7 @@
 	</ul></li>
 </ul>
 <h4 id="sanitize-content-handler">7.3 Sanitize Content Handler</h4>
+<div class="warning"><p>The Sanitize Content Handler does not work reliably on IE7, and will therefore just do nothing, if this browser is detected.</p></div>
 <p>The Sanitize Content Handler will remove all dom elements and attributes not covered by it&#8217;s configuration. You may specify your own configuration based on these default settings:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
