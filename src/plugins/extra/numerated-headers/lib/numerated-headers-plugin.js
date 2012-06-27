@@ -8,19 +8,21 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/component',
+	'ui/componentState',
 	'ui/toggleButton',
 	'i18n!numerated-headers/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'ui/port-helper-floatingmenu',
 	'css!numerated-headers/css/numerated-headers.css'
 ],
-function (jQuery,
-          Plugin,
-          Component,
-          ToggleButton,
-          i18n,
-          i18nCore,
-          FloatingmenuPortHelper) {
+function (
+	jQuery,
+	Plugin,
+	Component,
+	ComponentState,
+	ToggleButton,
+	i18n,
+	i18nCore
+) {
 	'use strict';
 
 	var Aloha = window.Aloha;
@@ -49,30 +51,25 @@ function (jQuery,
 			}
 
 
-		Component.define("formatNumeratedHeaders", ToggleButton, {
-            tooltip: i18n.t('button.numeratedHeaders.tooltip'),
-            icon: 'aloha-icon aloha-icon-numerated-headers',
-			scope: 'Aloha.continuoustext',
-            click: function () {
-				//if(that.numeratedHeadersButton.getState()) {
-				if (FloatingmenuPortHelper.getStateOfFirst('formatNumeratedHeaders')) {
+			Component.define("formatNumeratedHeaders", ToggleButton, {
+				tooltip: i18n.t('button.numeratedHeaders.tooltip'),
+				icon: 'aloha-icon aloha-icon-numerated-headers',
+				scope: 'Aloha.continuoustext',
+				click: function () {
+					if (ComponentState.getState('formatNumeratedHeaders', 'state')) {
 						that.removeNumerations();
-				}
-				else {
+					}
+					else {
 						that.createNumeratedHeaders();
 					}
-            }
+				}
 			});
 
-        //this.numeratedHeadersButton = Component.getGlobalInstance("formatNumeratedHeaders");
-		//this.numeratedHeadersButton.setState(this.numeratedactive);
-		(this.numeratedactive ? FloatingmenuPortHelper.setStateTrueAll
-		                      : FloatingmenuPortHelper.setStateFalseAll)('formatNumeratedHeaders');
+			ComponentState.setState('formatNumeratedHeaders', 'state', this.numeratedactive);
 
 			// We need to bind to selection-changed event to recognize backspace and delete interactions
 			Aloha.bind( 'aloha-selection-changed', function ( event ) {
-			//if (that.numeratedHeadersButton.getState()) {
-			if (FloatingmenuPortHelper.getStateOfFirst('formatNumeratedHeaders')) {
+				if (ComponentState.getState('formatNumeratedHeaders', 'state')) {
 					that.createNumeratedHeaders();
 				}
 			});
@@ -98,8 +95,7 @@ function (jQuery,
 				}
 
 				if ( !that.numeratedactive /* && that.numeratedHeadersButton */ ) {
-					//that.numeratedHeadersButton.hide();
-					FloatingmenuPortHelper.hideAll('formatNumeratedHeaders');
+					ComponentState.setState('formatNumeratedHeaders', 'show', false);
 				}
 			});
 		},
