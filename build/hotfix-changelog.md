@@ -38,3 +38,4 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: repository browser: searches in the repository browser will now be done recursively.
 - **BUG**: plugin metaview: Metaview plugin would add a grey backdrop to lists on IE7. Added more specific styles.
 - **ENHANCEMENT**: plugin formatlesspaste: will now be more tolerant with the button and formatlessPasteOption setting and not only accept boolean values
+- **BUG**: core: Implemented deleting tables with "delete" or "forwarddelete" commands (pressing [DEl] or [BACKSPACE]). 
