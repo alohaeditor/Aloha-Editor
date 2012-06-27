@@ -70,8 +70,6 @@ define([
 				}
 			});
 
-		    //this.formatAbbrButton = Component.getGlobalInstance("formatAbbr");
-
 			Component.define("insertAbbr", Button, {
 				tooltip: i18n.t('button.addabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr',
@@ -80,8 +78,6 @@ define([
 					me.insertAbbr( false );
 				}
 			});
-
-		    //this.insertAbbrButton = Component.getGlobalInstance("insertAbbr");
 
 		    Scopes.createScope('abbr', 'Aloha.continuoustext');
 

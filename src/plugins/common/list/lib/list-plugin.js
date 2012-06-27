@@ -94,13 +94,7 @@ define([
 				}
 			});
 
-			//this.createUnorderedListButton = Component.getGlobalInstance("unorderedList");
-			//this.createOrderedListButton = Component.getGlobalInstance("orderedList");
-
 			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
-
-			//this.indentListButton = Component.getGlobalInstance("indentList");
-			//this.outdentListButton = Component.getGlobalInstance("outdentList");
 
 			// add the event handler for selection change
 			Aloha.bind('aloha-selection-changed', function ( event, rangeObject ) {

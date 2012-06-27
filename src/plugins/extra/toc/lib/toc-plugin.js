@@ -108,8 +108,6 @@ define([
 				scope: 'Aloha.continuoustext',
 		        click: function () { that.insertAtSelection($containers); }
 			});
-
-	        //this.insertTocButton = Component.getGlobalInstance("insertToc");
 	    },
 	
 		register: function ($c) {

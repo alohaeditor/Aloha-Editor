@@ -45,8 +45,6 @@ define([
 				}
 			});
 
-			//this.insertButton = Component.getGlobalInstance("insertHorizontalRule");
-
 			Aloha.bind( 'aloha-editable-activated', function ( event, rangeObject ) {
 				if (Aloha.activeEditable) {
 					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );

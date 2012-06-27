@@ -1122,7 +1122,6 @@ define([
 			this.summary.setTargetObject(focusTable.obj, 'summary');
 			if ( focusTable.obj.children("caption").is('caption') ) {
 				// set caption button
-				//that.captionButton.setState(true);
 				ComponentState.setState('tableCaption', 'state', true);
 				var c = focusTable.obj.children("caption");
 				that.makeCaptionEditable(c);

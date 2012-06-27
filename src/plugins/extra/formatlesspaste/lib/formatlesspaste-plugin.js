@@ -145,8 +145,6 @@ define([
 				}
 			});
 
-			//this.formatlessPasteButton = Component.getGlobalInstance("toggleFormatlessPaste");
-
 			// activate formatless paste button if option is set
 			if (this.formatlessPasteOption === true) {
 				ComponentState.setState('toggleFormatlessPaste', 'state', true);
