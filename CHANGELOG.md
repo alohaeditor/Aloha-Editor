@@ -12,6 +12,10 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **MANUAL CHANGE**: The change requires changes to existing implementation.
 
+## 0.20.15 - 2012/06/27
+
+- **BUG**: core: Fixed browser crashes in IE9 (and above), after splitting DOM nodes using ENTER and placing the cursor afterwards, that occurred due to a browser bug in IE9
+
 ## 0.20.14 - 2012/06/27
 
 - **ENHANCEMENT**: A whole lot of Plugins can now be configured editable-specific configuration: abbr, highlighteditables, list, horizontalruler, link, paste, headerids, listenforcer, metaview, numerated-headers, wai-lang, cite, characterpicker, formatlesspaste, dom-to-xhtml. Have a look at the individual plugin guides for detailed information on how to configure them.

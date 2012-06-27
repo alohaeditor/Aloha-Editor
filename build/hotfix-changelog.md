@@ -8,4 +8,3 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUG**: core: Fixed browser crashes in IE9 (and above), after splitting DOM nodes using ENTER and placing the cursor afterwards, that occurred due to a browser bug in IE9
