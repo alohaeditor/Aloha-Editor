@@ -11,19 +11,19 @@ define([
 	'jquery', 
 	'aloha/plugin', 
 	'ui/component', 
+	'ui/componentState',
 	'ui/button',
 	'i18n!characterpicker/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
-	'ui/port-helper-floatingmenu',
 	'css!characterpicker/css/characterpicker.css'
 ], function(Aloha,
             jQuery,
 			Plugin,
 			Component,
+			ComponentState,
 			Button,
 			i18n,
-			i18nCore,
-			FloatingmenuPortHelper) {
+			i18nCore) {
 	'use strict';
 
 	var GENTICS = window.GENTICS;
@@ -251,9 +251,9 @@ define([
 			Aloha.bind('aloha-editable-activated', function (event, data) {
 				self.characterOverlay = self.getOverlayForEditable(data.editable);
 				if (self.characterOverlay) {
-					FloatingmenuPortHelper.showAll('characterPicker');
+					ComponentState.setState('characterPicker', 'show', true);
 				} else {
-					FloatingmenuPortHelper.hideAll('characterPicker');
+					ComponentState.setState('characterPicker', 'show', false);
 				}
 			});
 		},
