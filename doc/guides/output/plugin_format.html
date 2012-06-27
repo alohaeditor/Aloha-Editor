@@ -117,8 +117,8 @@
 <p>Every text or headline can be formatted into bold or italic via selecting the text or headline and click on the bold or italic button at Aloha Editor. This wraps the selected text or headline into a <tt>&lt;b&gt;</tt> tag if bold or a <tt>&lt;i&gt;</tt> tag if italic. To undo this select the text or headline and click the button again.</p>
 <h4 id="strong-and-emphasize">1.3 Strong and Emphasize</h4>
 <p>Texts or headlines can be formatted into strong or emphasized texts or headlines via selecting the text or headline and click on the strong or emphasize button at the Aloha Editor. This wraps the selected text or headline into a <tt>&lt;strong&gt;</tt> tag if strong or <tt>&lt;em&gt;</tt> tag if emphasized. To undo this select the text or headline and click the button again.</p>
-<h4 id="underline-and-strikethrough">1.4 Underline and Strikethrough</h4>
-<p>Texts or headlines can be underlined or have strikethrough applied as well. Just selecting the text or headline and click on the underline or strikethrough button at the Aloha Editor. This wrap the selected text or headline into a <tt>&lt;u&gt;</tt> tag if underlined or <tt>&lt;del&gt;</tt> tag if strikethrough is chosen. To undo this select the text or headline and click the button again.</p>
+<h4 id="strikethrough">1.4 Strikethrough</h4>
+<p>Texts or headlines can have strikethrough applied as well. Just selecting the text or headline and click on the strikethrough button at the Aloha Editor. This wraps the selected text or headline into a <tt>&lt;del&gt;</tt> tag. To undo this select the text or headline and click the button again.</p>
 <h4 id="subscript-and-superscript">1.5 Subscript and Superscript</h4>
 <p>In order to make subscript and superscript texts or headlines selecting the text or headline and click on the subscript or superscript button at the Aloha Editor. This wrap the selected text or headline into a <tt>&lt;sub&gt;</tt> tag if subscript or <tt>&lt;sup&gt;</tt> tag if superscript. To undo this select the text or headline and click the button again.</p>
 <h4 id="code">1.6 Code</h4>
@@ -145,14 +145,16 @@
 
 Aloha.settings.plugins.format = {
 	// configure buttons available in the toolbar
-	config : [ 'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+	// this example enables all buttons available
+	config : [ 'strong', 'em', 'b', 'i', 'del', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
 	// specific configuration for each editable identified by css selectors
 	editables : {
 		// the editable with id &quot;teaser&quot; won't offer any formatting options
 		'#teaser'	: [  ]
 	},
 	// those are the tags that will be cleaned when clicking &quot;remove formatting&quot;
-	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
+	// this example resembles the default configuration
+	removeFormats : [ 'strong', 'em', 'b', 'i', 's', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
 };
 </pre></div>
 
@@ -164,7 +166,7 @@ Aloha.settings.plugins.format = {
 </a><ul><li><a href="#paragraph-headline-preformatted-or-remove-formatting"><p>Paragraph, Headline, Preformatted or remove formatting</p>
 </a></li> <li><a href="#bold-and-italic"><p>Bold and Italic</p>
 </a></li> <li><a href="#strong-and-emphasize"><p>Strong and Emphasize</p>
-</a></li> <li><a href="#underline-and-strikethrough"><p>Underline and Strikethrough</p>
+</a></li> <li><a href="#strikethrough"><p>Strikethrough</p>
 </a></li> <li><a href="#subscript-and-superscript"><p>Subscript and Superscript</p>
 </a></li> <li><a href="#code"><p>Code</p>
 </a></li></ul></li><li><a href="#components"><p>Components</p>

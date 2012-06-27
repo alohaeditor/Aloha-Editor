@@ -148,7 +148,10 @@ Sub Headline Two dot One
 
 	Aloha.settings.plugins: {
 		'numerated-headers': {
-			numeratedactive: true,                     // default
+			// default true
+			// numeratedactive will also accept &quot;true&quot; and &quot;1&quot; as true values
+			// false and &quot;false&quot; for false
+			numeratedactive: true,                     
 			headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
 			baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable
 		}

@@ -123,7 +123,10 @@
 &lt;script src=&quot;javascripts/aloha/aloha.js&quot;
   data-aloha-plugins=&quot;common/format, common/link&quot;&gt;&lt;/script&gt;
 </pre></div><h3 id="configure-plugins">2 Configure Plugins</h3>
-<p>To change the configuration parameters of plugins you can use the <code>Aloha.settings.plugins</code> option. All possible settings are listed on the Guides page for that plugin.</p>
+<p>To change the configuration parameters of plugins you can use the <code>Aloha.settings.plugins</code> option. All possible settings are listed on the Guides page for each plugin.</p>
+<p>The common pattern for configuring plugins is that there is a <tt>config</tt> key for global configuration and an <tt>editables</tt> key for configuration specific to editables. The <tt>editables</tt> key holds an object which contains a <a href="http://api.jquery.com/category/selectors/">jquery selector</a> to identify individual editable as the key and the corresponding configuration as it&#8217;s value. Usually plugins will expect the names of their buttons as configuration settings as best practice, but the available options may vary.</p>
+<div class="note"><p>If multiple selectors apply for an editable only configuration of the last one is taken into account. </p></div>
+
 <div class="code_container">
 <pre class="brush: xml; gutter: false; toolbar: false">
 
