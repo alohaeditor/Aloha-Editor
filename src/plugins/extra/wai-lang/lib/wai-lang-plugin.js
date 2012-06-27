@@ -10,13 +10,13 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/component',
+	'ui/componentState',
 	'ui/scopes',
 	'ui/button',
 	'ui/toggleButton',
 	'ui/port-helper-attribute-field',
 	'i18n!wai-lang/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'ui/port-helper-floatingmenu',
 	'wai-lang/languages',
 	'css!wai-lang/css/wai-lang.css'
 ], function(
@@ -24,13 +24,13 @@ define([
 	jQuery,
 	Plugin,
 	Component,
+	ComponentState,
 	Scopes,
 	Button,
 	ToggleButton,
 	AttributeField,
 	i18n,
-	i18nCore,
-	FloatingmenuPortHelper
+	i18nCore
 ) {
 	'use strict';
 
@@ -91,9 +91,9 @@ define([
 				// show/hide the button according to the configuration
 				config = that.getEditableConfig( Aloha.activeEditable.obj );
 				if ( jQuery.inArray( 'span', config ) !== -1 ) {
-					FloatingmenuPortHelper.showAll('wailang');
+					ComponentState.setState('wailang', 'show', true);
 				} else {
-					FloatingmenuPortHelper.hideAll('wailang');
+					ComponentState.setState('wailang', 'show', false);
 					return;
 				}
 			} );
@@ -104,7 +104,7 @@ define([
 
 				foundMarkup = that.findLangMarkup( rangeObject );
 				if ( foundMarkup ) {
-					FloatingmenuPortHelper.setStateTrueAll('wailang');
+					ComponentState.setState('wailang', 'state', true);
 					Scopes.setScope( 'wai-lang' );
 					langField.setTargetObject( foundMarkup, 'lang' );
 				} else {
@@ -306,7 +306,7 @@ define([
 		 * Toggles markup around selection.
 		 */
 		addRemoveMarkupToSelection: function() {
-			if (FloatingmenuPortHelper.getStateOfFirst('wailang')) {
+			if (ComponentState.getState('wailang', 'state')) {
 				this.removeLangMarkup();
 			} else {
 				this.addMarkupToSelection( false );
