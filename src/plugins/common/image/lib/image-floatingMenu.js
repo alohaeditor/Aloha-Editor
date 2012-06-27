@@ -14,10 +14,10 @@ define([
 	'i18n!aloha/nls/i18n',
 	'ui/scopes',
 	'ui/component',
+	'ui/componentState',
     'ui/button',
     'ui/toggleButton',
-    'ui/port-helper-attribute-field',
-	'ui/port-helper-floatingmenu'
+    'ui/port-helper-attribute-field'
 ],
 function (
 	jQuery,
@@ -26,10 +26,10 @@ function (
 	i18nCore,
 	Scopes,
 	Component,
+	ComponentState,
 	Button,
 	ToggleButton,
-	AttributeField,
-	FloatingmenuPortHelper
+	AttributeField
 ) {
 	'use strict';
 
@@ -93,7 +93,7 @@ function (
 			// If the setting has been set to a number or false we need to activate the 
 			// toggle button to indicate that the aspect ratio will be preserved.
 			if (plugin.settings.fixedAspectRatio !== false) {
-				FloatingmenuPortHelper.setStateTrueAll('imageCnrRatio');
+				ComponentState.setState('imageCnrRatio', 'state', true);
 				plugin.keepAspectRatio = true;
 			}
 		},
