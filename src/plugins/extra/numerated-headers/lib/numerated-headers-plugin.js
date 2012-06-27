@@ -23,6 +23,11 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		numeratedactive: true,
 		headingselector: 'h1, h2, h3, h4, h5, h6',
 
+		config: {
+			numeratedactive: true,
+			headingselector: 'h1, h2, h3, h4, h5, h6'
+		},
+
 		/**
 		 * Initialize the plugin
 		*/

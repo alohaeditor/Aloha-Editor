@@ -41,3 +41,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: core: Implemented deleting tables with "delete" or "forwarddelete" commands (pressing [DEl] or [BACKSPACE]). 
 - **ENHANCEMENT**: plugin cite: will now be more tolerant with the sidebar.open setting and not only accept boolean values. Additionally, the default config will now show both the quote and blockquote button.
 - **BUG**: core: Fixed strange cursor behaviour when using [BACKSPACE] to delete the first character in a text node, using IE9. 
+- **BUG**: enumerated-headers plugin: Added default configuration, which fixes some javascript error, if no other configuration is set.
