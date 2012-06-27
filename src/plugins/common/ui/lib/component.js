@@ -21,11 +21,17 @@ define([
 	var Component = Class.extend({
 
 		/**
+		 * Will be set in Component.define()
+		 */
+		type: null,
+
+		/**
 		 * @type {boolean} Whether or not this component is visible.
 		 */
 		visible: true,
 
 		/**
+		 * The type property is set in Component.define(), so components should only ever be instantiated through define.
 		 * @constructor
 		 */
 		_constructor: function () {
@@ -43,9 +49,10 @@ define([
 
 			var thisComponent = this;
 			ComponentState.applyAllStates(thisComponent.type, thisComponent);
-			PubSub.sub('aloha-ui-component-state-change.' + thisComponent.type, function(message){
+			PubSub.sub('aloha-ui-component-state-change.' + this.type, function(message){
 				ComponentState.applyState(thisComponent.type, message.state, thisComponent);
 			});
+			PubSub.pub('aloha-ui-component-created.' + this.type, {component: this});
 		},
 
 		/**
@@ -107,10 +114,14 @@ define([
 		 * @return {Component} A generated Component sub class.
 		 */
 		define: function (name, type, settings) {
+			settings = settings || {};
 			var extendedType = type.extend(settings);
+			// Add it to the prototype so that new instances will have the property
 			extendedType.prototype.type = name;
+			// And and it to the extended type so that it can also be referred to statically
+			extendedType.type = name;
 			Component.components[name] = extendedType;
-			return Component.components[name];
+			return extendedType;
 		},
 
 		/**
