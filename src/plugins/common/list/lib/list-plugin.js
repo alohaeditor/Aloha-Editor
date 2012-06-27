@@ -21,6 +21,7 @@ define([
 	jQuery,
 	Plugin,
 	Component,
+	ComponentState,
 	Scopes,
 	Button,
 	ToggleButton,
