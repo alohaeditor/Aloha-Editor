@@ -65,7 +65,7 @@ button.aloha-button-metaview { background: url(../img/button.png) no-repeat 0px 
 .aloha-metaview caption { background-image: url(../img/caption.png); }
 
 .aloha-metaview abbr[title], .aloha-metaview dfn[title] { border-bottom: 1px dotted; cursor: help; }
-.aloha-metaview [lang] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang~="de en fr es it nl no pl rs"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
 
 /* LANGUAGE FLAGS */
 .aloha-metaview [lang="de"] { background-image:url(../../flag-icons/img/flags/de.png); }

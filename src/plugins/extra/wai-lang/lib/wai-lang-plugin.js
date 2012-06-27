@@ -76,6 +76,7 @@ define( [
 			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
 				var foundMarkup;
 
+				addMarkupToSelectionButton.setPressed( false );
 				foundMarkup = that.findLangMarkup( rangeObject );
 				if ( foundMarkup ) {
 					addMarkupToSelectionButton.setPressed( true );
@@ -209,7 +210,7 @@ define( [
 
 		        // select the (possibly modified) range
 		        range.select();
-				FloatingMenu.setScope( 'Aloha.continousText' );
+				FloatingMenu.setScope( 'Aloha.continuoustext' );
 				langField.setTargetObject( null );
 				FloatingMenu.doLayout();
 		    }

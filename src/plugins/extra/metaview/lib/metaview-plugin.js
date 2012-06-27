@@ -19,12 +19,13 @@ function(Plugin, FloatingMenu, FlagIcons, i18n, i18nCore, jQuery) {
 			this._super('metaview');
 		},
 		
+		config: [ 'metaview' ],
+		
 		/**
 		 * Configure the available languages
 		 */
 		languages: ['en', 'de'],
 
-		
 		/**
 		 * Initialize the plugin
 		 */
@@ -39,7 +40,7 @@ function(Plugin, FloatingMenu, FlagIcons, i18n, i18nCore, jQuery) {
 					function (jEvent, aEvent) {
 						var config;
 						config = that.getEditableConfig( Aloha.activeEditable.obj );
-						if ( jQuery.inArray( 'metaview', config ) !== -1 ) {
+						if (jQuery.type(config) === 'array' && jQuery.inArray( 'metaview', config ) !== -1) {
 							that.button.show();
 						} else {
 							that.button.hide();

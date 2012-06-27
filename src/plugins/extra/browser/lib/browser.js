@@ -841,12 +841,14 @@ var Browser = Class.extend({
 	triggerSearch: function () {
 		var search = this.grid.find('input.aloha-browser-search-field'), searchValue = search.val();
 
-		if (jQuery(search).css("font-style") == "italic") {
-			searchValue = "";
+		if (jQuery(search).hasClass("aloha-browser-search-field-empty")) {
+			searchValue = null;
+		} else if (searchValue == "") {
+			searchValue = null;
 		}
 
 		this._pagingOffset = 0;
-		this._searchQuery  = search.val();
+		this._searchQuery  = searchValue;
 		
 		this.fetchItems(this._currentFolder, this.processItems);
 	},
@@ -943,7 +945,9 @@ var Browser = Class.extend({
 		if (!folder) {
 			return;
 		}
-		
+		// when searching, we do this recursive
+		var recursive = (typeof this._searchQuery === 'string');
+
 		this.list.setCaption(
 			(typeof this._searchQuery === 'string')
 				? i18n.t('Searching for') + ' "' + this._searchQuery + '" ' + i18n.t('in') + ' ' + folder.name
@@ -966,7 +970,7 @@ var Browser = Class.extend({
 				objectTypeFilter : this.objectTypeFilter,
 				renditionFilter  : this.renditionFilter,
 				filter           : this.filter,
-				recursive		 : false
+				recursive		 : recursive
 			},
 			function (data, metainfo) {
 				if (typeof callback === 'function') {

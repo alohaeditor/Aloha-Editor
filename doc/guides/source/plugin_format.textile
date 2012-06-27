@@ -27,9 +27,9 @@ h4. Strong and Emphasize
 Texts or headlines can be formatted into strong or emphasized texts or headlines via selecting the text or headline and click on the strong or emphasize button at the Aloha Editor. This wraps the selected text or headline into a +<strong>+ tag if strong or +<em>+ tag if emphasized.
 To undo this select the text or headline and click the button again.
 
-h4. Underline and Strikethrough
+h4. Strikethrough
 
-Texts or headlines can be underlined or have strikethrough applied as well. Just selecting the text or headline and click on the underline or strikethrough button at the Aloha Editor. This wrap the selected text or headline into a +<u>+ tag if underlined or +<del>+ tag if strikethrough is chosen.
+Texts or headlines can have strikethrough applied as well. Just selecting the text or headline and click on the strikethrough button at the Aloha Editor. This wraps the selected text or headline into a +<del>+ tag.
 To undo this select the text or headline and click the button again.
 
 h4. Subscript and Superscript
@@ -65,14 +65,16 @@ The format plugin provides the following config options:
 <javascript>
 Aloha.settings.plugins.format = {
 	// configure buttons available in the toolbar
-	config : [ 'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+	// this example enables all buttons available
+	config : [ 'strong', 'em', 'b', 'i', 'del', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
 	// specific configuration for each editable identified by css selectors
 	editables : {
 		// the editable with id "teaser" won't offer any formatting options
 		'#teaser'	: [  ]
 	},
 	// those are the tags that will be cleaned when clicking "remove formatting"
-	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
+	// this example resembles the default configuration
+	removeFormats : [ 'strong', 'em', 'b', 'i', 's', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
 };
 </javascript>
 
