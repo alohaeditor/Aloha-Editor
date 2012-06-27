@@ -7,6 +7,7 @@ define([
 	'ui/componentState',
 	'ui/button',
 	'ui/surface',
+	'ui/scopes',
 	'link/link-plugin',
 	'RepositoryBrowser',
 	'i18n!linkbrowser/nls/i18n',
@@ -20,6 +21,7 @@ define([
 	ComponentState,
 	Button,
 	Surface,
+	Scopes,
 	Links,
 	RepositoryBrowser,
 	i18n,
@@ -38,26 +40,33 @@ define([
 				tooltip: i18n.t('button.addlink.tooltip'),
 				icon: 'aloha-icon-tree',
 				scope: 'Aloha.continuoustext',
-				click: function () { that.open(); }
+				click: function () {
+					var linkField = Links.getActiveLinkField();
+					if (linkField) {
+						that.hrefField = linkField.hrefField;
+					}
+					that.open();
+				}
 			});
 
 			ComponentState.setState('linkBrowser', 'show', false);
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
 
-			Aloha.bind('aloha-link-selected', function (event, rangeObject ) {
+			Aloha.bind('aloha-link-selected', function (event, rangeObject) {
 				ComponentState.setState('linkBrowser', 'show', true);
 			});
 
-			Aloha.bind('aloha-link-unselected', function (event, rangeObject ) {
+			Aloha.bind('aloha-link-unselected', function (event, rangeObject) {
 				ComponentState.setState('linkBrowser', 'show', false);
 			});
 		},
 
 		onSelect: function (item) {
-			$.each(Surface.getComponentsByType('editLink'), function (_, field) {
-				field.hrefField.setItem(item);
-			});
+			if (this.hrefField) {
+				this.hrefField.setItem(item);
+				Scopes.activateTabOfButton('editLink');
+			}
 
 			// Now create a selection within the editable since the user should
 			// be able to type once the link has been created.

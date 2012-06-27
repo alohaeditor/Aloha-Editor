@@ -3,8 +3,12 @@ define([
 	'jquery',
 	'util/class',
 	'ui/container'
-],
-function( Aloha, jQuery, Class, Container ) {
+], function(
+	Aloha,
+	jQuery,
+	Class,
+	Container
+) {
 	'use strict';
 
 	/**
@@ -273,7 +277,7 @@ function( Aloha, jQuery, Class, Container ) {
 			var i;
 			var j;
 			for (i = 0; i < surfaces.length; i++) {
-				containers = surfaces[0].getContainers();
+				containers = surfaces[i].getContainers();
 				for (j = 0; j < containers.length; j++) {
 					if (containers[j].components[type]) {
 						components = components.concat(containers[j].components[type]);

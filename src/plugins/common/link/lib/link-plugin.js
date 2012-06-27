@@ -15,7 +15,6 @@
  * @todo Consider whether it would be better to have the target options in the
  *       sidebar panel be a selection box rather than radio buttons.
  */
-
 define([
 	'aloha',
 	'aloha/plugin',
@@ -253,6 +252,17 @@ define([
 			
 			sidebar.show();
 		},
+
+		getActiveLinkField: function () {
+			var fields = Surface.getActiveComponentsByType('editLink');
+			var j = fields.length;
+			while (j) {
+				if (fields[--j].hrefField.$element.is(':visible')) {
+					return fields[j];
+				}
+			}
+			return null;
+		},
 		
 		/**
 		 * Subscribe for events
@@ -274,13 +284,9 @@ define([
 					if (that.findLinkMarkup()) {
 						// open the tab containing the href
 						Scopes.activateTabOfButton('editLink');
-						var linkFields = Surface.getActiveComponentsByType('editLink');
-						var j = linkFields.length;
-						while (j) {
-							if (linkFields[--j].hrefField.$element.is(':visible')) {
-								linkFields[j].hrefField.focus();
-								break;
-							}
+						var linkField = that.getActiveLinkField();
+						if (linkField) {
+							linkField.focus();
 						}
 					} else {
 						that.insertLink( true );
@@ -373,7 +379,7 @@ define([
 						Aloha.trigger('aloha-link-selected');
 					} else {
 						that.toggleLinkScope(false);
-						$.each(Surface.getComponentsByType('editLink'), function(i, component) {
+						$.each(Surface.getActiveComponentsByType('editLink'), function(i, component) {
 							component.hrefField.setTargetObject(null);
 						});
 						Aloha.trigger('aloha-link-unselected');
@@ -694,13 +700,9 @@ define([
 			// focus has to become before prefilling the attribute, otherwise
 			// Chrome and Firefox will not focus the element correctly.
 			// Focus on the first visible editLink field.
-			var linkFields = Surface.getActiveComponentsByType('editLink');
-			var j = linkFields.length;
-			while (j) {
-				if (!linkFields[--j].hrefField.$element.is(':visible')) {
-					continue;
-				}
-				var hrefField = linkFields[j].hrefField;
+			var linkField = this.getActiveLinkField();
+			if (linkField) {
+				var hrefField = linkField.hrefField;
 				hrefField.focus();
 				// prefill and select the new href
 				// We need this guard because sometimes the element has not yet
@@ -709,7 +711,6 @@ define([
 					$(hrefField.getInputElem())
 						.attr('value', that.hrefValue).select();
 				}
-				break;
 			}
 			
 			this.hrefChange();
@@ -723,7 +724,7 @@ define([
 			var foundMarkup = this.findLinkMarkup();
 			
 			// Clear the current item from the href field
-			$.each(Surface.getComponentsByType('editLink'), function(i, components) {
+			$.each(Surface.getActiveComponentsByType('editLink'), function(i, components) {
 				components.hrefField.setItem(null);
 			});
 
