@@ -144,7 +144,7 @@ The Generic Content Handler is a bit less generic than his name might suggest as
 * transform formattings by turning
 ** +<strong>+ tags into +<b>+ tags
 ** +<em>+ to +<i>+
-** +<s>+ to +<del>+
+** +<s>+ and +<strike>+ to +<del>+
 ** and by removing +<u>+ tags (as underline text decoration should solely be used for links)
 
 h4. Sanitize Content Handler
@@ -157,7 +157,7 @@ The Sanitize Content Handler will remove all dom elements and attributes not cov
 Aloha.settings.contentHandler.sanitize = {
 	// elements allowed in the content
 	elements: [
-		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'del', 'dl', 'dt', 'em',
 		'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
 		'sup', 'u', 'ul' ],
 	// attributes allowed for specific elements
