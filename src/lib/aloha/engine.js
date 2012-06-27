@@ -6488,13 +6488,9 @@ commands["delete"] = {
 		// steps."
 		if (node.nodeType == $_.Node.TEXT_NODE
 		&& offset != 0) {
-			range.setStart(node, offset);
-			range.setEnd(node, offset);
-			// fix range start container offset according to old code
-			// so we can still pass our range and have it modified, but
-			// also conform with the previous implementation
-			range.startOffset -= 1;
-			deleteContents(range);
+			range.setStart(node, offset - 1);
+			range.setEnd(node, offset - 1);
+			deleteContents(node, offset - 1, node, offset);
 			return;
 		}
 

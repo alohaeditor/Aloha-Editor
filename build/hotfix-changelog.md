@@ -40,3 +40,4 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: plugin formatlesspaste: will now be more tolerant with the button and formatlessPasteOption setting and not only accept boolean values
 - **BUG**: core: Implemented deleting tables with "delete" or "forwarddelete" commands (pressing [DEl] or [BACKSPACE]). 
 - **ENHANCEMENT**: plugin cite: will now be more tolerant with the sidebar.open setting and not only accept boolean values. Additionally, the default config will now show both the quote and blockquote button.
+- **BUG**: core: Fixed strange cursor behaviour when using [BACKSPACE] to delete the first character in a text node, using IE9. 
