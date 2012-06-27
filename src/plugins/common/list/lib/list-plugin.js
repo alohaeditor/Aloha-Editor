@@ -9,13 +9,13 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/component',
+	'ui/componentState',
 	'ui/scopes',
 	'ui/button',
 	'ui/toggleButton',
 	'i18n!list/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'aloha/engine',
-	'ui/port-helper-floatingmenu'
+	'aloha/engine'
 ], function(
 	Aloha,
 	jQuery,
@@ -26,8 +26,7 @@ define([
 	ToggleButton,
 	i18n,
 	i18nCore,
-	Engine,
-	FloatingmenuPortHelper
+	Engine
 ) {
 	'use strict';
 
@@ -108,36 +107,25 @@ define([
 				var i, effectiveMarkup;
 				
 				// Hide all buttons in the list tab will make the list tab disappear
-				//that.outdentListButton.hide();
-				//that.indentListButton.hide();
-				//that.createUnorderedListButton.setState(false);
-				//that.createOrderedListButton.setState(false);
-
-				FloatingmenuPortHelper.hideAll('outdentList');
-				FloatingmenuPortHelper.hideAll('indentList');
-				FloatingmenuPortHelper.setStateFalseAll('unorderedList');
-				FloatingmenuPortHelper.setStateFalseAll('orderedList');
+				ComponentState.setState('outdentList', 'show', false);
+				ComponentState.setState('indentList', 'show', false);
+				ComponentState.setState('unorderedList', 'state', false);
+				ComponentState.setState('orderedList', 'state', false);
 				
 				for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
-						//that.createUnorderedListButton.setState(true);
-						FloatingmenuPortHelper.setStateTrueAll('unorderedList');
+						ComponentState.setState('unorderedList', 'state', true);
 						// Show all buttons in the list tab
-						//that.outdentListButton.show();
-						//that.indentListButton.show();
-						FloatingmenuPortHelper.showAll('outdentList');
-						FloatingmenuPortHelper.showAll('indentList');
+						ComponentState.setState('outdentList', 'show', true);
+						ComponentState.setState('indentList', 'show', true);
 						break;
 					}
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
-						//that.createOrderedListButton.setState(true);
-						FloatingmenuPortHelper.setStateTrueAll('orderedList');
+						ComponentState.setState('orderedList', 'state', true);
 						// Show all buttons in the list tab
-						//that.outdentListButton.show();
-						//that.indentListButton.show();
-						FloatingmenuPortHelper.showAll('outdentList');
-						FloatingmenuPortHelper.showAll('indentList');
+						ComponentState.setState('outdentList', 'show', true);
+						ComponentState.setState('indentList', 'show', true);
 						break;
 					}
 				}
@@ -164,19 +152,15 @@ define([
 			if (Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0]) {
 				// show/hide them according to the config
 				if (jQuery.inArray('ul', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ul") != -1) {
-					//this.createUnorderedListButton.show();
-					FloatingmenuPortHelper.showAll('unorderedList');
+					ComponentState.setState('unorderedList', 'show', true);
 				} else {
-					//this.createUnorderedListButton.hide();
-					FloatingmenuPortHelper.hideAll('unorderedList');
+					ComponentState.setState('unorderedList', 'show', false);
 				}
 
 				if (jQuery.inArray('ol', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ol") != -1) {
-					//this.createOrderedListButton.show();
-					FloatingmenuPortHelper.showAll('orderedList');
+					ComponentState.setState('orderedList', 'show', true);
 				} else {
-					//this.createOrderedListButton.hide();
-					FloatingmenuPortHelper.hideAll('orderedList');
+					ComponentState.setState('orderedList', 'show', false);
 				}
 
 			}
@@ -242,10 +226,8 @@ define([
 				newPara, jqToTransform, nodeName;
 
 			// visible is set to true, but the button is not visible
-			//this.outdentListButton.show();
-			//this.indentListButton.show();
-			FloatingmenuPortHelper.showAll('outdentList');
-			FloatingmenuPortHelper.showAll('indentList');
+			ComponentState.setState('outdentList', 'show', true);
+			ComponentState.setState('indentList', 'show', true);
 
 			if (!domToTransform) {
 				// wrap a paragraph around the selection
