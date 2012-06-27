@@ -43,3 +43,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: core: Fixed strange cursor behaviour when using [BACKSPACE] to delete the first character in a text node, using IE9. 
 - **BUG**: enumerated-headers plugin: Added default configuration, which fixes some javascript error, if no other configuration is set.
 - **BUG**: wai-lang plugin: Fixed toggle button to be pressed when a language is set, and unpressed if not. Hide language tab, when language is removed.
+- **BUG**: core: Fixed browser crashes in IE9 (and above), after splitting DOM nodes using ENTER and placing the cursor afterwards, that occurred due to a browser bug in IE9
