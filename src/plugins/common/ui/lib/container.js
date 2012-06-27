@@ -154,9 +154,6 @@ define([
 		/**
 		 * Given a range, show appropriate containers.
 		 *
-		 * @TODO(petro): Figure out a way to leave out containers which belong in
-		 *               deactivated (hidden) toolbars from being shown, since this
-		 *               is unnecessary work.
 		 * @param {object} editable Active editable
 		 * @param {object} range The range to show containers for
 		 * @static
