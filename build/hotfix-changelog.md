@@ -39,3 +39,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: plugin metaview: Metaview plugin would add a grey backdrop to lists on IE7. Added more specific styles.
 - **ENHANCEMENT**: plugin formatlesspaste: will now be more tolerant with the button and formatlessPasteOption setting and not only accept boolean values
 - **BUG**: core: Implemented deleting tables with "delete" or "forwarddelete" commands (pressing [DEl] or [BACKSPACE]). 
+- **ENHANCEMENT**: plugin cite: will now be more tolerant with the sidebar.open setting and not only accept boolean values. Additionally, the default config will now show both the quote and blockquote button.
