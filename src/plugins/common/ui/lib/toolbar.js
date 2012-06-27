@@ -110,10 +110,10 @@ function (jQuery, Surface, Tab, subguarded, floating, Store) {
 			this.initializeFloating();
 		},
 
-		_move: function () {
+		_move: function (duration) {
 			if (Aloha.activeEditable && Toolbar.isFloatingMode) {
 				this.$element.stop();
-				floating.floatSurface(this, Aloha.activeEditable, function (position) {
+				floating.floatSurface(this, Aloha.activeEditable, duration, function (position) {
 					Toolbar.setFloatingPosition(position);
 				});
 			}
@@ -133,16 +133,9 @@ function (jQuery, Surface, Tab, subguarded, floating, Store) {
 					surface._move();
 				});
 
-			var isScrolling = false;
 			jQuery(window).scroll(function ($event, nativeEvent) {
 				// FIXME: only do this for active surfaces.
-				if (!isScrolling) {
-					isScrolling = true;
-					setTimeout(function () {
-						isScrolling = false;
-						surface._move();
-					}, 50);
-				}
+				surface._move(0);
 			});
 
 			this.addPin();
@@ -176,7 +169,7 @@ function (jQuery, Surface, Tab, subguarded, floating, Store) {
 		addPin: function () {
 			var $pin = jQuery('<div class="aloha-ui-pin">');
 			var $handle = this.$element.find('.ui-tabs-nav');
-			
+
 			$handle.append($pin);
 			$handle.hover(function () {
 				$pin.show();

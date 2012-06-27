@@ -7,23 +7,27 @@ define([
 	var ANIMATION_TIME = 500;
 	var $window = jQuery(window);
 
-	function floatTo($element, position, callback) {
-		$element.stop().animate(position, ANIMATION_TIME, function () {
+	function floatTo($element, position, duration, callback) {
+		$element.stop().animate(position, duration, function () {
 			callback(position);
 		});
 	}
 
-	function floatAbove($element, position, callback) {
+	function floatAbove($element, position, duration, callback) {
 		position.top -= $element.height() + PADDING;
-		floatTo($element, position, callback);
+		floatTo($element, position, duration, callback);
 	}
 
-	function floatBelow($element, position, callback) {
+	function floatBelow($element, position, duration, callback) {
 		position.top += PADDING;
-		floatTo($element, position, callback);
+		floatTo($element, position, duration, callback);
 	}
 
-	function floatSurface(surface, editable, callback) {
+	function floatSurface(surface, editable, duration, callback) {
+		if (typeof duration !== 'number') {
+			duration = ANIMATION_TIME;
+		}
+
 		var $element = surface.$element;
 		var surfaceOrientation = $element.offset();
 		var editableOrientation = editable.obj.offset();
@@ -38,17 +42,17 @@ define([
 		}
 
 		if (availableSpace >= $element.height()) {
-			floatAbove($element, editableOrientation, callback);
+			floatAbove($element, editableOrientation, duration, callback);
 		} else if (availableSpace + $element.height() > editable.obj.height()) {
 			floatBelow($element, {
 				top: editableOrientation.top + editable.obj.height(),
 				left: left
-			}, callback);
+			}, duration, callback);
 		} else {
 			floatBelow($element, {
 				top: scrollTop,
 				left: left
-			}, callback);
+			}, duration, callback);
 		}
 	}
 
