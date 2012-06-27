@@ -3262,7 +3262,7 @@ function getBlockAtNextPosition(node, offset) {
 	// if we're inside a text node we first have to check
 	// if there is nothing but tabs, newlines or the like
 	// after our current cursor position
-	if (node.nodeType === 3 &&
+	if (node.nodeType === $_.Node.TEXT_NODE &&
 	offset < node.length) {
 		for (var i = offset; i < node.length; i++) {
 			if ((node.data.charAt(i) !== '\t' &&
@@ -3274,7 +3274,7 @@ function getBlockAtNextPosition(node, offset) {
 			}
 		}
 	}
-	
+
 	// try the most simple approach first: the next sibling
 	// is a table
 	if (node.nextSibling &&
@@ -3303,8 +3303,68 @@ function getBlockAtNextPosition(node, offset) {
 	node.parentNode.nextSibling.nextSibling.className.indexOf("aloha-table-wrapper") >= 0) {
 		return node.parentNode.nextSibling.nextSibling;
 	}
+
+	// Note: the search above works for tables, since they cannot be
+	// nested deeply in paragraphs and other formatting tags. If this code
+	// is extended to work also for other blocks, the search probably needs to be adapted
 }
 
+/**
+ * Attempt to retrieve a block like a table or an Aloha Block
+ * which is located right before the current position.
+ * If an appropriate element is found, it will be returned or
+ * false otherwise
+ * 
+ * @param {element} node current node
+ * @param {offset} offset current offset
+ * 
+ * @return dom node of found or false if no appropriate
+ * element was found
+ */
+function getBlockAtPreviousPosition(node, offset) {
+	if (node.nodeType === $_.Node.TEXT_NODE && offset > 0) {
+		for (var i = offset-1; i >= 0; i--) {
+			if ((node.data.charAt(i) !== '\t' &&
+			node.data.charAt(i) !== '\r' &&
+			node.data.charAt(i) !== '\n') ||
+			node.data.charCodeAt(i) === 160) { // &nbsp;
+				// this is a character that has to be deleted first
+				return false;
+			}
+		}
+	}
+
+	// try the previous sibling
+	if (node.previousSibling &&
+	node.previousSibling.className &&
+	node.previousSibling.className.indexOf("aloha-table-wrapper") >= 0) {
+		return node.previousSibling;
+	}
+
+	// try the parent's previous sibling
+	if (node.parentNode &&
+	node.parentNode.previousSibling &&
+	node.parentNode.previousSibling.className &&
+	node.parentNode.previousSibling.className.indexOf("aloha-table-wrapper") >= 0) {
+		return node.parentNode.previousSibling;
+	}
+
+	// the parent's previous sibling might be a whitespace node
+	if (node.parentNode &&
+	node.parentNode.previousSibling &&
+	isWhitespaceNode(node.parentNode.previousSibling) &&
+	node.parentNode.previousSibling.previousSibling &&
+	node.parentNode.previousSibling.previousSibling.className &&
+	node.parentNode.previousSibling.previousSibling.className.indexOf('aloha-table-wrapper') >= 0) {
+		return node.parentNode.previousSibling.previousSibling;
+	}
+
+	// Note: the search above works for tables, since they cannot be
+	// nested deeply in paragraphs and other formatting tags. If this code
+	// is extended to work also for other blocks, the search probably needs to be adapted
+
+	return false;
+}
 
 
 //@}
@@ -6344,9 +6404,6 @@ commands["delete"] = {
 		// range's start offset)."
 		canonicalizeWhitespace(range.startContainer, range.startOffset);
 
-		// collapse whitespace sequences
-		collapseWhitespace(node, range);
-
 		// "Let node and offset be the active range's start node and offset."
 		var node = range.startContainer;
 		var offset = range.startOffset;
@@ -6416,6 +6473,13 @@ commands["delete"] = {
 			} else {
 				break;
 			}
+		}
+
+		// if the previous node is an aloha-table we want to delete it
+		var delBlock;
+		if (delBlock = getBlockAtPreviousPosition(node, offset)) {
+			delBlock.parentNode.removeChild(delBlock);
+			return;
 		}
 
 		// "If node is a Text node and offset is not zero, call collapse(node,
