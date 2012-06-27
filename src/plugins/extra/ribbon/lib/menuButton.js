@@ -1,14 +1,8 @@
-define([
-	"jquery",
-	"ribbon/ribbon",
-	'ui/component'
-], function($, lib, Component) {
-
-	var MenuButton = Component.extend({
-		init: function(){
-			this.element = lib.makeMenuButton(this);
+define(['ribbon/ribbon', 'ui/component'], function (ribbon, Component) {
+	'use strict';
+	return Component.extend({
+		init: function () {
+			this.element = ribbon.makeMenuButton(this);
 		}
 	});
-
-	return MenuButton;
 });
