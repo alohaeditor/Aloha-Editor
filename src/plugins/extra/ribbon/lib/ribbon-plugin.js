@@ -43,7 +43,7 @@ define([
 				.button()
 				.click(function(){
 					that._toolbar.animate({
-						'left': -that._toolbar.outerWidth() + 30
+						'left': -that._toolbar.outerWidth() + fadeIn.outerWidth() + 10
 					});
 					$('body').animate({
 						paddingTop: 0
