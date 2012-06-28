@@ -162,7 +162,6 @@
 /* === dropdown menu === */
 .aloha-ui-menubutton-menu,
 .aloha-ui-menubutton-menu .ui-menu {
-	min-width: 100px;
 	padding: 0.4em 0;
 	background: #f0f0f0;
 	border: 1px solid #d0d0d0;
@@ -172,6 +171,7 @@
 	-webkit-border-radius: 0px;
 	border-radius:         0px;
 	font-size: 11px;
+	text-align: left;
 }
 .aloha-ui-menubutton-menu .ui-menu-item a {
 	color: #212121;
@@ -180,6 +180,10 @@
 	-webkit-border-radius: 0px;
 	border-radius:         0px;
 	border-color: transparent;
+	padding-left: 10px;
+}
+.aloha-ribbon-toolbar .ui-menu {
+	width: 150px;
 }
 /* === dropdown menu === */
 
