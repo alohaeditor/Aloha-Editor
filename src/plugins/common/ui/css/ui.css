@@ -94,6 +94,10 @@
 .aloha-ui-toolbar .ui-widget-content {
 	min-width: 130px;
 }
+.aloha-ui-toolbar .ui-widget-content {
+	border: 0px;
+	background: transparent;
+}
 .aloha-ui-toolbar .ui-widget-header {
 	padding-right: 30px;
 	border: 0px;
@@ -159,6 +163,8 @@
 
 
 /* === dropdown menu === */
+.aloha-ui-toolbar .aloha-ui-menubutton-menu,
+.aloha-ui-toolbar .aloha-ui-menubutton-menu .ui-menu,
 .aloha-ui-menubutton-menu,
 .aloha-ui-menubutton-menu .ui-menu {
 	position: absolute;
