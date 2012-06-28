@@ -6,56 +6,57 @@
 	<formats>
 		<format>zip</format>
 	</formats>
-	<fileSets>
 
-		<!-- BARE VERSION -->
-		<files>
-		    <file>
-		      <source>${project.basedir}/target/aloha-bare/bin/aloha-bare.js</source>
-                      <outputDirectory>/aloha-bare/lib</outputDirectory>
-		      <destName>aloha.js</destName>
-			<!--
-		      <fileMode/>
-		      <lineEnding/>
-		      <filtered/>
-			-->
-		    </file>
-		</files>
+	<files>
+		<!-- Bare Version -->
+		<file>
+			<source>${project.basedir}/target/aloha-bare/bin/aloha-bare.js</source>
+			<outputDirectory>/aloha/lib</outputDirectory>
+			<destName>aloha-bare.min.js</destName>
+		</file>
+		<file>
+			<source>${project.basedir}/target/aloha-bare/debug/aloha-bare.js</source>
+			<outputDirectory>/aloha/lib</outputDirectory>
+			<destName>aloha-bare.js</destName>
+		</file>
+
+		<!-- All inclusive version of aloha -->
+		<file>
+			<source>${project.basedir}/target/aloha-require-jquery/bin/aloha-require-jquery.js</source>
+			<outputDirectory>/aloha/lib</outputDirectory>
+			<destName>aloha-full.min.js</destName>
+		</file>
+
+		<file>
+			<source>${project.basedir}/target/aloha-require-jquery/debug/aloha-require-jquery.js</source>
+			<outputDirectory>/aloha/lib</outputDirectory>
+			<destName>aloha-full.js</destName>
+		</file>
+	</files>
+
+
+	<fileSets>
+		<!-- Other non core files -->
 		<fileSet>
 			<directory>${project.basedir}/target/tmp/aloha</directory>
-			<outputDirectory>/aloha-bare</outputDirectory>
+			<outputDirectory>/aloha</outputDirectory>
 			<excludes>
-				<exclude>aloha/lib/aloha.js</exclude>
-				<exclude>aloha/test/**</exclude>
+				<!-- Don't include the core -->
+				<exclude>lib/aloha/*.js</exclude>
+				<exclude>lib/aloha.js</exclude>
+				<exclude>test/**</exclude>
 				<exclude>**/.gitmodules</exclude>
 			</excludes>
 		</fileSet>
 
-		<!-- All inclusive version of aloha -->
-		<files> 
-		    <file>  
-                      <source>${project.basedir}/target/aloha-require-jquery/bin/aloha-require-jquery.js</source>
-                      <outputDirectory>/aloha-require-jquery/lib</outputDirectory>
-                      <destName>aloha.js</destName>
-                        <!--
-                      <fileMode/>
-                      <lineEnding/>
-                      <filtered/>
-                        -->
-                    </file>
-                </files>
-
-                <fileSet>
-                        <directory>${project.basedir}/target/tmp/aloha</directory>
-                        <outputDirectory>/aloha-require-jquery</outputDirectory>
-                        <excludes>
-                                <exclude>aloha/lib/aloha.js</exclude>
-                                <exclude>aloha/test/**</exclude>
-                                <exclude>**/.gitmodules</exclude>
-                        </excludes>
-                </fileSet>
-
-
+		<!-- Workaround for jquery-ui dependency -->
+		<fileSet>
+			<directory>${project.basedir}/target/tmp/aloha</directory>
+			<outputDirectory>/aloha</outputDirectory>
+			<includes>
+				<include>lib/aloha/jquery-ui.js</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 
 	<includeBaseDirectory>false</includeBaseDirectory>
