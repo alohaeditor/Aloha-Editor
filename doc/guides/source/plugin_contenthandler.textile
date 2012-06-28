@@ -2,9 +2,17 @@ h2. The Content Handler Plugin
 
 The Contenthandler Plugin has no user interface and is used for example in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called "Content Handlers" which will be used to cleanup html content on various occasions like pasting or when initializing an editable.
 
+After reading this guide, you will be able to:
+
+* Understand what Content Handler are and how to use them
+* Use the Content Handler API to create, modify and
+* Extend Content Handler with custom implementations
+
 endprologue.
 
 h3. Available Content Handlers
+
+*Aloha Content Handlers* (Content Handler) are used to sanitize content loaded or pasted in Aloha Editor.
 
 The available contenthandlers are:
 
@@ -22,6 +30,7 @@ h3. Configuration
 There are two hooks available:
 
 * insertHtml in @common/commands@ plugin
+
 * initEditable in core/editable.js
 
 <javascript>
@@ -95,13 +104,14 @@ The Contenthandler Plugin has no user interface and is used in conjunction with 
 
 h4. Word Content Handler
 
-The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It transforms and cleans the pasted html code so that deteriorating effects on mental health by staring at bogus and totally fubar html code can be kept to an acceptable minimum. Therefore it will
+The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It will:
 
-* remove all "mso-whatever" classes
-* remove all divs from the pasted content
+* remove all "mso-*" classes
+* remove all divs and spans from the pasted content
 * remove font tags
-* convert bullet points to real html lists with proper nesting
+* convert bullet points to unordered lists
 * transform titles to h1 and subtitles to h2 tags
+* keep bold and italic formatting, headlines, tables and lists but get rid of all other formattings
 
 h4. Generic Content Handler
 
@@ -122,7 +132,7 @@ The Generic Content Handler is a bit less generic than his name might suggest as
 * transform formattings by turning
 ** +<strong>+ tags into +<b>+ tags
 ** +<em>+ to +<i>+
-** +<s>+ to +<del>+
+** +<s>+ and +<strike>+ to +<del>+
 ** and by removing +<u>+ tags (as underline text decoration should solely be used for links)
 
 h4. Sanitize Content Handler
@@ -135,7 +145,7 @@ The Sanitize Content Handler will remove all dom elements and attributes not cov
 Aloha.settings.contentHandler.sanitize = {
 	// elements allowed in the content
 	elements: [
-		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'del', 'dl', 'dt', 'em',
 		'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
 		'sup', 'u', 'ul' ],
 	// attributes allowed for specific elements

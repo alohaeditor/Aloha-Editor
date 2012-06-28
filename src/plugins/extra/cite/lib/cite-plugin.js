@@ -134,10 +134,8 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 		referenceContainer: null,
 		settings: null,
 		sidebar: null,
-		config: {
-			active: true
-		},
-		
+		config: ['quote', 'blockquote'],
+
 		init: function() {
 			var that = this;
 
@@ -165,6 +163,17 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 					that.settings.sidebar.open = true;
 				}
 
+				// be tolerant about the setting: 'false' and '0' (as strings) will be interpreted as false (boolean)
+				if (typeof that.settings.sidebar.open === 'string') {
+					that.settings.sidebar.open = that.settings.sidebar.open.toLowerCase();
+					if (that.settings.sidebar.open === 'false' || that.settings.sidebar.open === '0') {
+						// disable button only if 'false' or '0' is specified
+						that.settings.sidebar.open = false;
+					} else {
+						// otherwise the button will always be shown
+						that.settings.sidebar.open = true;
+					}
+				}
 			}
 
 			// Add the inline quote button in the floating menu, in the

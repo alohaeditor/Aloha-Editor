@@ -23,13 +23,13 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 
 	// very restricted sanitize config
 	Aloha.defaults.sanitize.restricted = {
-		elements: [ 'b', 'em', 'i', 'strong', 'u', 'p', 'span', 'div', 'br' ]
+		elements: [ 'b', 'em', 'i', 'strong', 'u', 'del', 'p', 'span', 'div', 'br' ]
 	}
 
 	// sanitize  config allowing a bit more (no tables)
 	Aloha.defaults.sanitize.basic = {
 		elements: [
-			'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+			'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'del', 'dl', 'dt', 'em',
 			'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
 			'sup', 'u', 'ul' ],
 
@@ -55,7 +55,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 	Aloha.defaults.sanitize.relaxed = {
 		elements: [
 			'a', 'abbr', 'b', 'blockquote', 'br', 'caption', 'cite', 'code', 'col',
-			'colgroup', 'dd', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+			'colgroup', 'dd', 'del', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 			'i', 'img', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong',
 			'sub', 'sup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'u',
 			'ul', 'span', 'hr', 'object', 'div'
