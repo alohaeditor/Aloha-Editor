@@ -75,6 +75,16 @@ define([
 					of: action || expand
 				});
 
+				// In order to prevent the floating menu from being partially
+				// covered by the ribbon, we use "position: relative" and an
+				// invisible border to pad the top of the document.  This
+				// throws off the offset to the menu button so we need to
+				// compensate in ordet to ensure that the menu is placed
+				// underneatht the menubutton.
+				var target = action || expand;
+				var bodyOffset = parseInt($('body').css('border-top-width'), 10) || 0;
+				menu.css('top', target.height() + target.offset().top + bodyOffset);
+
 				$(document).bind('click', function (event){
 					menu.hide();
 					$(this).unbind(event);
@@ -125,6 +135,7 @@ define([
 			// focused state and not expand the next time it is hovered over
 			// after the user has selected an item.
 			menu.blur().hide();
+			menu.parent().removeClass('aloha-ui-menubutton-pressed');
 			parentCloseHandler();
 		};
 	}

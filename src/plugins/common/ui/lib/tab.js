@@ -76,6 +76,7 @@ function (Aloha, jQuery, Container, Component) {
 						componentName = components[i];	
 						component = Component.render(componentName);
 						if (component) {
+							component._container = this;
 							this.storeComponent(component);
 							this.panel.append(component.element);
 							componentsByName[componentName] = component;
@@ -95,6 +96,7 @@ function (Aloha, jQuery, Container, Component) {
 							componentName = groupedComponents[j];
 							component = Component.render(componentName);
 							if (component) {
+								component._container = this;
 								this.storeComponent(component);
 								group.append(component.element);
 								componentsByName[componentName] = component;
@@ -106,6 +108,7 @@ function (Aloha, jQuery, Container, Component) {
 
 			function selectTab() {
 				thisTab.container.tabs('select', thisTab.index);
+				Aloha.trigger('aloha-ui-container-activated', thisTab);
 			}
 
 			Aloha.bind('aloha-ui-component-focus', function(event, componentName){

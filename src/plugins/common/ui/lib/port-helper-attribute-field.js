@@ -4,11 +4,17 @@
  * This interface is obsolete and must not be used for new implementations.
  */
 define([
-	"jquery",
-	"ui/component",
-	"aloha/repositorymanager",
+	'jquery',
+	'ui/component',
+	'ui/scopes',
+	'aloha/repositorymanager',
 	'ui/vendor/jquery-ui-autocomplete-html'
-], function ($, Component, RepositoryManager) {
+], function (
+	$,
+	Component,
+	Scopes,
+	RepositoryManager
+) {
 	'use strict';
 
 	// Main responsibilities implemented by the attribute-field are
@@ -25,7 +31,6 @@ define([
 	//   item was selected (example link plugin)
 
 	var AttributeField = function (props) {
-
 		var valueField = props.valueField || "id";
 		var displayField = props.displayField || "name";
 		var objectTypeFilter = props.objectTypeFilter || "all";
@@ -39,8 +44,7 @@ define([
 		var targetAttribute;
 		var lastAttributeValue;
 
-		var id = "aloha-attribute-field-" + props.name;
-		var element = $("<input id='" + id + "'>");
+		var element = $('<input id="aloha-attribute-field-' + props.name + '">');
 		if (props.cls) {
 			element.addClass(props.cls);
 		}
@@ -49,8 +53,19 @@ define([
 		}
 
 		Component.define(props.name, Component, {
-			element: element,
-			scope: props.scope
+			scope: props.scope,
+			init: function () {
+				this._super();
+				this.element = $('<span>');
+				var that = this;
+				Aloha.bind('aloha-ui-container-activated', function (event, container) {
+					if (container.visible &&
+					    container === that._container &&
+						Aloha.activeEditable === container.editable) {
+						element.appendTo(that.element);
+					}
+				});
+			}
 		});
 
 		element.autocomplete({
