@@ -27,6 +27,7 @@
 
 .aloha-ui-toolbar {
 	text-align: left;
+	width: 435px;
 }
 .aloha-ui-toolbar .ui-button-icon-only {
 	background-color: transparent;
@@ -99,8 +100,6 @@
 .aloha-ui-toolbar .ui-widget-header {
 	padding-right: 30px;
 	border: 0px;
-	background: transparent;
-
 	-moz-border-radius-topleft:      2px;
 	-webkit-border-top-left-radius:  2px;
 	-khtml-border-top-left-radius:   2px;
@@ -109,19 +108,17 @@
 	-webkit-border-top-right-radius: 2px;
 	-khtml-border-top-right-radius:  2px;
 	border-top-right-radius:         2px;
-
+	background: transparent;
 	background-image:         linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 10%);
 	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 10%);
 	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 10%);
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 10%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 10%);
 }
-.aloha-ui-toolbar .ui-tabs-nav-hover,
-.aloha-ui-toolbar .ui-widget-header:hover {
+.aloha-ui-toolbar.aloha-ui-hover .ui-widget-header {
+	cursor: move;
 	background: #777;
 	background: rgba(0,0,0,0.3);
-	cursor: move;
-
 	background-image:         linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
 	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
 	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
@@ -148,6 +145,7 @@
 }
 .aloha-ui-toolbar .aloha-ui-pin {
 	position: absolute;
+	display: none;
 	top: 0.8em;
 	right: 0.4em;
 	width: 20px;
@@ -157,6 +155,9 @@
 }
 .aloha-ui-toolbar .aloha-ui-pin-down {
 	background-position: -16px 0;
+}
+.aloha-ui-toolbar.aloha-ui-hover .aloha-ui-pin {
+	display: block;
 }
 
 

@@ -186,13 +186,13 @@ function (
 
 		addPin: function () {
 			var $pin = jQuery('<div class="aloha-ui-pin">');
-			var $handle = this.$element.find('.ui-tabs-nav');
+			var that = this;
 
 			this.$element.find('.ui-tabs').append($pin);
-			$handle.add($pin).hover(function () {
-				$handle.addClass('ui-tabs-nav-hover');
+			this.$element.find('.ui-tabs').add($pin).hover(function () {
+				that.$element.addClass('aloha-ui-hover');
 			}, function () {
-				$handle.removeClass('ui-tabs-nav-hover');
+				that.$element.removeClass('aloha-ui-hover');
 			});
 
 			if (!Toolbar.isFloatingMode) {
