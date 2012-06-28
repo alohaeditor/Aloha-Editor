@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <groups xmlns="http://www.isdc.ro/wro">
-	<group name='alohaeditor'>
-		<js>/target/tmp/aloha/lib/aloha-bootstrap.js</js>
+	<group name='aloha'>
+		<js>/target/tmp/aloha/lib/require.js</js>
+		<js>/target/tmp/aloha/lib/aloha.js</js>
 	</group>
 </groups>

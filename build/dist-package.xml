@@ -16,8 +16,8 @@
 			<directory>${project.basedir}/target/tmp/</directory>
 			<outputDirectory>/</outputDirectory>
 			<excludes>
-				<exclude>**/lib/**</exclude>
-				<exclude>**/test/**</exclude>
+				<exclude>aloha/lib/aloha.js</exclude>
+				<exclude>aloha/test/**</exclude>
 				<exclude>**/.gitmodules</exclude>
 			</excludes>
 		</fileSet>

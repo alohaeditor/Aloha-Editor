@@ -104,7 +104,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<targetGroups>alohaeditor</targetGroups>
+					<targetGroups>aloha</targetGroups>
 					<jsDestinationFolder>${project.build.directory}/static/js/</jsDestinationFolder>
 					<contextFolder>${basedir}</contextFolder>
 					<buildDirectory>${basedir}</buildDirectory>
