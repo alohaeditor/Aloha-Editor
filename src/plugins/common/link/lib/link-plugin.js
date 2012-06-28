@@ -339,10 +339,13 @@ define( [
 						}
 						Aloha.trigger( 'aloha-link-selected' );
 					} else {
-						that.toggleLinkScope( false );
+						that.toggleLinkScope(false);
 						that.hrefField.setTargetObject( null );
-						Aloha.trigger( 'aloha-link-unselected' );
+						Aloha.trigger('aloha-link-unselected');
 					}
+				} else {
+					that.toggleLinkScope(false);
+					that.hrefField.setTargetObject( null );
 				}
 				
 				that.ignoreNextSelectionChangedEvent = false;
