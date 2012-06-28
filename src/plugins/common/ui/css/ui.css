@@ -57,6 +57,7 @@
 }
 .aloha-ui-toolbar .ui-tabs-nav li,
 .aloha-ui-toolbar .ui-tabs-nav li a {
+	cursor: default;
 	color: #333;
 	text-decoration: none;
 	-moz-border-radius-topleft:      2px;
@@ -90,11 +91,8 @@
 	background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,0) 70%, rgba(255,255,255,0.5) 90%);
 	background-image:     -ms-linear-gradient(bottom, rgba(255,255,255,0) 70%, rgba(255,255,255,0.5) 90%);
 }
-
 .aloha-ui-toolbar .ui-widget-content {
 	min-width: 130px;
-}
-.aloha-ui-toolbar .ui-widget-content {
 	border: 0px;
 	background: transparent;
 }
@@ -118,7 +116,9 @@
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 10%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 10%);
 }
+.aloha-ui-toolbar .ui-tabs-nav-hover,
 .aloha-ui-toolbar .ui-widget-header:hover {
+	background: #777;
 	background: rgba(0,0,0,0.3);
 	cursor: move;
 
@@ -147,7 +147,6 @@
 	border: 1px solid #d0d0d0;
 }
 .aloha-ui-toolbar .aloha-ui-pin {
-	display: none;
 	position: absolute;
 	top: 0.8em;
 	right: 0.4em;
