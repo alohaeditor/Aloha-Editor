@@ -6,8 +6,6 @@ define([
 	'ui/component',
 	'ui/componentState',
 	'ui/button',
-	'ui/surface',
-	'ui/scopes',
 	'link/link-plugin',
 	'RepositoryBrowser',
 	'i18n!linkbrowser/nls/i18n',
@@ -20,8 +18,6 @@ define([
 	Component,
 	ComponentState,
 	Button,
-	Surface,
-	Scopes,
 	Links,
 	RepositoryBrowser,
 	i18n,
@@ -41,10 +37,6 @@ define([
 				icon: 'aloha-icon-tree',
 				scope: 'Aloha.continuoustext',
 				click: function () {
-					var linkField = Links.getActiveLinkField();
-					if (linkField) {
-						that.hrefField = linkField.hrefField;
-					}
 					that.open();
 				}
 			});
@@ -63,10 +55,7 @@ define([
 		},
 
 		onSelect: function (item) {
-			if (this.hrefField) {
-				this.hrefField.setItem(item);
-				Scopes.activateTabOfButton('editLink');
-			}
+			Links.hrefField.setItem(item)
 
 			// Now create a selection within the editable since the user should
 			// be able to type once the link has been created.
