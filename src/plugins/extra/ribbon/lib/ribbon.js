@@ -81,9 +81,12 @@ define([
 				// throws off the offset to the menu button so we need to
 				// compensate in ordet to ensure that the menu is placed
 				// underneatht the menubutton.
+				// NB: For the time being we are not using the above fix.
+				/*
 				var target = action || expand;
 				var bodyOffset = parseInt($('body').css('border-top-width'), 10) || 0;
 				menu.css('top', target.height() + target.offset().top + bodyOffset);
+				*/
 
 				$(document).bind('click', function (event){
 					menu.hide();
