@@ -195,6 +195,9 @@ define([
 		}
 
 		function setPlaceholder () {
+			if (null == placeholder) {
+				return;
+			}
 			element.css('color', '#AAA');
 			element.val(placeholder);
 		}
