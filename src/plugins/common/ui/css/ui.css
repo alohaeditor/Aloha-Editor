@@ -180,16 +180,14 @@
 	text-align: left;
 }
 .aloha-ui-menubutton-menu .ui-menu-item a {
+	width: 150px;
+	padding-left: 10px;
 	color: #212121;
 	-moz-border-radius:    0px;
 	-khtml-border-radius:  0px;
 	-webkit-border-radius: 0px;
 	border-radius:         0px;
 	border-color: transparent;
-	padding-left: 10px;
-}
-.aloha-ribbon-toolbar .ui-menu {
-	width: 150px;
 }
 /* === dropdown menu === */
 
