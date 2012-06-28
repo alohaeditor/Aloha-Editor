@@ -130,7 +130,7 @@ define([
 		function finishEditing () {
 			restoreTargetBackground();
 
-			if (lastAttributeValue === $(targetObject).attr(targetAttribute)) {
+			if ( ! targetObject || lastAttributeValue === $(targetObject).attr(targetAttribute)) {
 				return;
 			}
 
