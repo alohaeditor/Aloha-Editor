@@ -345,7 +345,6 @@ define( [
 					}
 				} else {
 					that.toggleLinkScope(false);
-					that.hrefField.setTargetObject( null );
 				}
 				
 				that.ignoreNextSelectionChangedEvent = false;
