@@ -415,13 +415,16 @@ body .ui-tooltip {
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 13px;
+	width: 15px;
 	height: 50px;
 	overflow: hidden;
+	border-width: 0px;
 	background-color: #f0f0f0;
 	background-image: url(../img/multisplit-open.gif);
 	background-repeat: no-repeat;
-	background-position: center center;
+	background-position: bottom center;
+	text-indent: -99999px;
+	margin: 0;
 }
 .aloha-multisplit-open .aloha-multisplit-toggle {
 	background-image: url(../img/multisplit-close.gif);
