@@ -125,6 +125,7 @@ define([
 			// focused state and not expand the next time it is hovered over
 			// after the user has selected an item.
 			menu.blur().hide();
+			menu.parent().removeClass('aloha-ui-menubutton-pressed');
 			parentCloseHandler();
 		};
 	}
