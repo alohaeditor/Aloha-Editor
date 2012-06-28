@@ -2177,8 +2177,8 @@ var requirejs, require, define;
 
 	// jQuery is treated specially in that, if it is available we will add it
 	// to the predifiedModules list as "jquery."
-	if (Aloha.settings.jQuery || global.jQuery) {
-		predefinedModules.jquery = Aloha.settings.jQuery || global.jQuery;
+	if (Aloha.settings.jQuery) {
+		predefinedModules.jquery = Aloha.settings.jQuery;
 	}
 
 	function createDefine (name, module) {
