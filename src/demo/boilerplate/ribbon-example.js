@@ -5,11 +5,11 @@ Aloha.ready(function(){
 			label: "X",
 			menu: [
 				{ label: "Z",
-				  menu: [ { label: "Q", onclick: function(){console.log("Q");} },
-						  { label: "W", onclick: function(){console.log("W");} } ] },
+				  menu: [ { label: "Q", click: function(){console.log("Q");} },
+						  { label: "W", click: function(){console.log("W");} } ] },
 				{ label: "V",
-				  menu: [ { label: "Q", onclick: function(){console.log("Q");} },
-						  { label: "W", onclick: function(){console.log("W");} } ] }
+				  menu: [ { label: "Q", click: function(){console.log("Q");} },
+						  { label: "W", click: function(){console.log("W");} } ] }
 			]
 		});
 
@@ -21,22 +21,22 @@ Aloha.ready(function(){
 					menu: [
 						{
 							label: "submenu only",
-							menu: [{ label: "action only", onclick: function(){ console.log("action only"); } }]
+							menu: [{ label: "action only", click: function(){ console.log("action only"); } }]
 						},
 						{
 							label: "action only",
-							onclick: function() {
+							click: function() {
 								console.log("action only");
 							}
 						}
 					],	
-					onclick: function(){
+					click: function(){
 						console.log("action with submenu");
 					}
 				}
 			],
 			// icon: 'url',
-			onclick: function(){
+			click: function(){
 				console.log("split button");
 			}
 		});
@@ -49,16 +49,16 @@ Aloha.ready(function(){
 					menu: [
 						{
 							label: "submenu only",
-							menu: [{ label: "action only", onclick: function(){ console.log("action only"); } }]
+							menu: [{ label: "action only", click: function(){ console.log("action only"); } }]
 						},
 						{
 							label: "action only",
-							onclick: function() {
+							click: function() {
 								console.log("action only");
 							}
 						}
 					],	
-					onclick: function(){
+					click: function(){
 						console.log("action with submenu");
 					}
 				}

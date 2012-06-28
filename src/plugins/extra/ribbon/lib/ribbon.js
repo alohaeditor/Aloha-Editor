@@ -7,7 +7,7 @@ define([
 
 	/**
 	 * @param props button properties:
-	 *        onclick - if provided will generate a split button,
+	 *        click - if provided will generate a split button,
 	 *                  otherwise just a normal select button.
 	 *        menu - array of props for nested buttons
 	 *        label - button text
@@ -24,11 +24,11 @@ define([
 		var action = null;
 		var buttonset = null;
 
-		if (props.onclick) {
+		if (props.click) {
 			action = $('<button>', {'class': 'aloha-ui-menubutton-action'})
 				.text(props.label)
 				.button()
-				.click(props.onclick);
+				.click(props.click);
 
 			buttonset = $('<div>')
 				.buttonset()
@@ -114,10 +114,10 @@ define([
 			var item = menu[i];
 			var elem = $('<li>');
 			elem.append($('<a>', {'href': 'javascript:void 0', 'text': item.label}));
-			if (item.onclick) {
+			if (item.click) {
 				elem.data('aloha-ribbon-select', function (){
 					parentCloseHandler();
-					item.onclick();
+					item.click();
 				});
 			}
 			if (item.menu) {
