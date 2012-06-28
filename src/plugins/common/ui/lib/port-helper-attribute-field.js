@@ -146,7 +146,7 @@ define([
 		function finishEditing () {
 			restoreTargetBackground();
 
-			if (lastAttributeValue === $(targetObject).attr(targetAttribute)) {
+			if ( ! targetObject || lastAttributeValue === $(targetObject).attr(targetAttribute)) {
 				return;
 			}
 
@@ -196,6 +196,9 @@ define([
 		}
 
 		function setPlaceholder () {
+			if (null == placeholder) {
+				return;
+			}
 			element.css('color', '#AAA');
 			element.val(placeholder);
 		}

@@ -1164,7 +1164,7 @@ define([
 			}
 
 			this.destroyCropButtons();
-			ComponentState.setState('imageCropButton', 'state', true);
+			ComponentState.setState('imageCropButton', 'state', false);
 
 			if (this.settings.ui.resizable) {
 				this.startResize();
@@ -1202,7 +1202,6 @@ define([
 			});
 
 			currentImageObj.resizable({
-				
 				maxHeight : plugin.settings.maxHeight,
 				minHeight : plugin.settings.minHeight,
 				maxWidth  : plugin.settings.maxWidth,
@@ -1258,7 +1257,7 @@ define([
 				//this.imageObj.contentEditable(true);
 			}
 			
-			if (this.imageObj) {
+			if (this.imageObj && this.imageObj.is(":ui-resizable")) {
 				this.imageObj
 					.resizable('destroy')
 					.css({
