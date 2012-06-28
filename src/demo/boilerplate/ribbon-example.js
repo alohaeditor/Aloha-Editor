@@ -1,5 +1,5 @@
 Aloha.ready(function(){
-    Aloha.require(["ribbon/ribbon-plugin", "ui/component", "ribbon/menuButton"], function(Ribbon, Component, MenuButton){
+    Aloha.require(["ribbon/ribbon-plugin", "ui/component", "ui/menuButton"], function(Ribbon, Component, MenuButton){
 
 		Component.define("insertTag", MenuButton, {
 			label: "X",

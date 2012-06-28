@@ -9,10 +9,11 @@
 define([
 	'jquery',
 	'aloha/plugin',
-	'ribbon/ribbon',
+	'ui/menuButton',
 	'i18n!aloha/nls/i18n',
-	'aloha/jquery-ui'
-], function($, Plugin, lib, i18nCore) {
+	'aloha/jquery-ui',
+	'css!./css/ribbon.css'
+], function($, Plugin, MenuButton, i18nCore) {
 	"use strict";
 
 	var ribbon = Plugin.create('ribbon', {
@@ -86,7 +87,7 @@ define([
 				return;
 			}
 			props = $.extend({}, props, {'siblingContainer': this._toolbar});
-			this._toolbar.append(lib.makeMenuButton(props));
+			this._toolbar.append(MenuButton.makeMenuButton(props));
 		},
 
 		/**
