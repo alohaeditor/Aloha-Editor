@@ -33,7 +33,7 @@ define([
 						'left': 0
 					});
 					$('body').animate({
-						paddingTop: '30px'
+						'border-top-width': '30px'
 					});
 					fadeIn.hide();
 				})
@@ -46,7 +46,7 @@ define([
 						'left': -that._toolbar.outerWidth() + fadeIn.outerWidth() + 10
 					});
 					$('body').animate({
-						paddingTop: 0
+						'border-top-width': 0
 					});
 					fadeIn.show();
 				})
@@ -57,11 +57,14 @@ define([
 
 			this._icon = $('<div></div>')
 				.prependTo(this._toolbar);
-			this.setIcon("");
+			this.setIcon('');
 
 			this._toolbar.appendTo(wrapper);
 
-			$('body').css('paddingTop', '30px');
+			$('body').css({
+				position: 'relative',
+				border: '30px solid transparent'
+			});
 		},
 		
 		/**
