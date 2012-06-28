@@ -659,8 +659,6 @@ define([
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
-					Scopes.activateTabOfButton('rowheader');
-					
 					// As side-effect of the following call the focus
 					// will be set on the first selected cell. 
 					// This will be overwritten with the summary
