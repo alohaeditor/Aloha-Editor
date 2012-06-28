@@ -644,7 +644,6 @@ define([
 			 * Handle the mouse wheel event on the field
 			 */
 			function handleMouseWheelEventOnField(e, delta) {
-				debugger;
 				var minValue = e.data.minValue;
 				var maxValue = e.data.maxValue;
 				var fieldName = e.data.fieldName;
