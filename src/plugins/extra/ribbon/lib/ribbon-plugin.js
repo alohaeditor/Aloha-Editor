@@ -33,7 +33,8 @@ define([
 						'left': 0
 					});
 					$('body').animate({
-						'border-top-width': '30px'
+						paddingTop: '30px'
+						//'border-top-width': '30px'
 					});
 					fadeIn.hide();
 				})
@@ -46,7 +47,8 @@ define([
 						'left': -that._toolbar.outerWidth() + fadeIn.outerWidth() + 10
 					});
 					$('body').animate({
-						'border-top-width': 0
+						//'border-top-width': 0
+						paddingTop: 0
 					});
 					fadeIn.show();
 				})
@@ -62,8 +64,9 @@ define([
 			this._toolbar.appendTo(wrapper);
 
 			$('body').css({
-				position: 'relative',
-				border: '30px solid transparent'
+				//position: 'relative',
+				//border: '30px solid transparent'
+				paddingTop: '30px'
 			});
 		},
 		

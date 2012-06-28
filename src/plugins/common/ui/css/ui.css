@@ -92,8 +92,7 @@
 }
 
 .aloha-ui-toolbar .ui-widget-content {
-	border: 0px;
-	background: transparent;
+	min-width: 130px;
 }
 .aloha-ui-toolbar .ui-widget-header {
 	padding-right: 30px;
@@ -162,6 +161,7 @@
 /* === dropdown menu === */
 .aloha-ui-menubutton-menu,
 .aloha-ui-menubutton-menu .ui-menu {
+	position: absolute;
 	padding: 0.4em 0;
 	background: #f0f0f0;
 	border: 1px solid #d0d0d0;
@@ -243,7 +243,7 @@
 }
 .aloha-ui-menubutton-expand,
 .aloha-ui-menubutton-single .ui-button-text {
-	margin-left: 12px;
+	padding-left: 16px;
 }
 .aloha-ui-menubutton-expand.aloha-ui-menubutton-single {
 	-moz-border-radius:    4px;
@@ -272,7 +272,7 @@
 .aloha-ui-menubutton-container:hover .aloha-ui-menubutton-action {
 	border-color: rgba(255,255,255,0.5);
 }
-.aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
+.aloha-ui-toolbar .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
 	border-color: #999;
 }
 .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed .ui-button {
@@ -391,6 +391,7 @@
 body .ui-tooltip {
 	font-size: 10px;
 	line-height: 1.2em;
+	/* margin-top: 30px; synchonized with ribbon plugin document top spacing*/
 	padding: 4px 6px;
 	border: 1px solid #ccc;
 	z-index: 999999;
