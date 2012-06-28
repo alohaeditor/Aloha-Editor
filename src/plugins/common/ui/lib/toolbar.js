@@ -21,14 +21,21 @@ function (
 
 	function storePinPosition(offset) {
 		store.set('Aloha.FloatingMenu.pinned', 'true');
-		store.set('Aloha.FloatingMenu.top', offset.top - jQuery(window).scrollTop());
-		store.set('Aloha.FloatingMenu.left', offset.left - jQuery(window).scrollLeft());
+		store.set('Aloha.FloatingMenu.top', offset.top);
+		store.set('Aloha.FloatingMenu.left', offset.left);
 	}
 
 	function unstorePinPosition() {
 		store.del('Aloha.FloatingMenu.pinned');
 		store.del('Aloha.FloatingMenu.top');
 		store.del('Aloha.FloatingMenu.left');
+	}
+
+	function relativeToWindow(offset) {
+		return {
+			left: offset.left - jQuery(window).scrollLeft(),
+			top: offset.top - jQuery(window).scrollTop(),
+		};
 	}
 
 	function forcePositionIntoWindow(position, $element) {
@@ -178,7 +185,7 @@ function (
 				'stop': function (event, ui) {
 					Toolbar.setFloatingPosition(ui.position);
 					if (!Toolbar.isFloatingMode) {
-						storePinPosition(ui.position);
+						storePinPosition(relativeToWindow(ui.position));
 					}
 				}
 			});
@@ -213,7 +220,7 @@ function (
 					};
 					unstorePinPosition();
 				} else {
-					position = surface.$element.offset();
+					position = relativeToWindow(surface.$element.offset());
 					storePinPosition(position);
 				}
 

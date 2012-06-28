@@ -73,7 +73,7 @@ define([
 			$elements.find('.aloha-ui-pin').addClass('aloha-ui-pin-down');
 			$elements.css({
 				position: 'fixed',
-				top: position.top - jQuery(window).scrollTop()
+				top: position.top
 			});
 		}
 	}
