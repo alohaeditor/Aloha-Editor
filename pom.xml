@@ -79,17 +79,45 @@
 				<version>1.4.1</version>
 				<executions>
 					<execution>
-						<id>minify</id>
+						<id>aloha-require-jquery-minify</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
 							<minimize>true</minimize>
-							<destinationFolder>${project.build.directory}/bin/</destinationFolder>
-							<jsDestinationFolder>${project.build.directory}/bin/</jsDestinationFolder>
+                                                        <targetGroups>aloha-require-jquery</targetGroups>
+							<destinationFolder>${project.build.directory}/aloha-require-jquery/bin/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/aloha-require-jquery/bin/</jsDestinationFolder>
 						</configuration>
 					</execution>
+                                        <execution>
+                                                <id>aloha-require-jquery-debug</id>
+                                                <phase>compile</phase>
+                                                <goals>
+                                                        <goal>run</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <minimize>false</minimize>
+		 	                                <targetGroups>aloha-require-jquery</targetGroups>
+                                                        <destinationFolder>${project.build.directory}/aloha-require-jquery/debug/</destinationFolder>
+                                                        <jsDestinationFolder>${project.build.directory}/aloha-require-jquery/debug/</jsDestinationFolder>
+                                                </configuration>
+                                        </execution>
+
+                                        <execution>
+                                                <id>minify</id>
+                                                <phase>compile</phase>
+                                                <goals>
+                                                        <goal>run</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <minimize>true</minimize>
+                                                        <targetGroups>aloha-bare</targetGroups>
+                                                        <destinationFolder>${project.build.directory}/aloha-bare/bin/</destinationFolder>
+                                                        <jsDestinationFolder>${project.build.directory}/aloha-bare/bin/</jsDestinationFolder>
+                                                </configuration>
+                                        </execution>
 					<execution>
 						<id>debug</id>
 						<phase>compile</phase>
@@ -98,13 +126,13 @@
 						</goals>
 						<configuration>
 							<minimize>false</minimize>
-							<destinationFolder>${project.build.directory}/debug/</destinationFolder>
-							<jsDestinationFolder>${project.build.directory}/debug/</jsDestinationFolder>
+                                                        <targetGroups>aloha-bare</targetGroups>
+							<destinationFolder>${project.build.directory}/aloha-bare/debug/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/aloha-bare/debug/</jsDestinationFolder>
 						</configuration>
 					</execution>
 				</executions>
 				<configuration>
-					<targetGroups>aloha</targetGroups>
 					<jsDestinationFolder>${project.build.directory}/static/js/</jsDestinationFolder>
 					<contextFolder>${basedir}</contextFolder>
 					<buildDirectory>${basedir}</buildDirectory>

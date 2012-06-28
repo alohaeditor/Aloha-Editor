@@ -7,20 +7,54 @@
 		<format>zip</format>
 	</formats>
 	<fileSets>
-		<fileSet>
-			<directory>${project.basedir}/target/bin</directory>
-			<outputDirectory>/aloha/lib</outputDirectory>
-		</fileSet>
 
+		<!-- BARE VERSION -->
+		<files>
+		    <file>
+		      <source>${project.basedir}/target/aloha-bare/bin/aloha-bare.js</source>
+                      <outputDirectory>/aloha-bare/lib</outputDirectory>
+		      <destName>aloha.js</destName>
+			<!--
+		      <fileMode/>
+		      <lineEnding/>
+		      <filtered/>
+			-->
+		    </file>
+		</files>
 		<fileSet>
-			<directory>${project.basedir}/target/tmp/</directory>
-			<outputDirectory>/</outputDirectory>
+			<directory>${project.basedir}/target/tmp/aloha</directory>
+			<outputDirectory>/aloha-bare</outputDirectory>
 			<excludes>
 				<exclude>aloha/lib/aloha.js</exclude>
 				<exclude>aloha/test/**</exclude>
 				<exclude>**/.gitmodules</exclude>
 			</excludes>
 		</fileSet>
+
+		<!-- All inclusive version of aloha -->
+		<files> 
+		    <file>  
+                      <source>${project.basedir}/target/aloha-require-jquery/bin/aloha-require-jquery.js</source>
+                      <outputDirectory>/aloha-require-jquery/lib</outputDirectory>
+                      <destName>aloha.js</destName>
+                        <!--
+                      <fileMode/>
+                      <lineEnding/>
+                      <filtered/>
+                        -->
+                    </file>
+                </files>
+
+                <fileSet>
+                        <directory>${project.basedir}/target/tmp/aloha</directory>
+                        <outputDirectory>/aloha-require-jquery</outputDirectory>
+                        <excludes>
+                                <exclude>aloha/lib/aloha.js</exclude>
+                                <exclude>aloha/test/**</exclude>
+                                <exclude>**/.gitmodules</exclude>
+                        </excludes>
+                </fileSet>
+
 
 	</fileSets>
 
