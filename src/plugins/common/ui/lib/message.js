@@ -44,7 +44,8 @@ function($, Component) {
 			'resizable': false,
 			'modal': true,
 			'title': props.title || defaultTitle,
-			'dialogClass': cls
+			'dialogClass': cls,
+			'zIndex': 10200
 		};
 	}
 

@@ -180,7 +180,7 @@ function (
 				});
 			}
 
-			this.$element.css('z-index', 9999).draggable({
+			this.$element.css('z-index', 10100).draggable({
 				'distance': 20,
 				'stop': function (event, ui) {
 					Toolbar.setFloatingPosition(ui.position);

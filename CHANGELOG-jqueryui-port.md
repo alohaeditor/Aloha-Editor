@@ -57,6 +57,11 @@
                      All settings associated with the removed components
                      do not have any effect any more.
 
+                     The Aloha css rules has been completely
+                     re-implemented. In particular, the Aloha block
+                     handles now have z-index 10000, the floating menu
+                     has 10100, and Aloha dialogs have 10200.
+
                      The new common/ui plugin is now required for the
                      user interface to be shown. This plugin is not
                      loaded automatically. Most plugins require a user
