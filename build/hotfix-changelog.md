@@ -8,3 +8,4 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUT**: numerated-headers plugin: Fixed misleading interpretation of the 'numeratedactive' for configuration per editable. 'numeratedactive' will now only determine, whether headers shall be numerated by default (if button not unclicked by the editor). To disable the function for an editable, choose an empty 'headingselector'.
