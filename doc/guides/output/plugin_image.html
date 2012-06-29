@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: The Image Plugin</title>
+  <title>Aloha Editor GuidesAloha Editor Guides: The Image Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,7 +42,7 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/"></a></h2>
+        <h2><a href="/">Aloha Editor Guides</a></h2>
         <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
@@ -57,6 +57,8 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="aloha_jquery.html">Aloha Editor and jQuery</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
@@ -117,23 +119,29 @@
 	<li>Support for resizing the image</li>
 	<li>Support for changing the image padding</li>
 </ul>
-<div class="note"><p>You need a server-sided script like image magick which will handle actual cropping for you.</p></div>
-
-<div class="note"><p>Follow devs on http://twitter.com/search?q=%23aeimg</p></div>
+<div class="note"><p>You need a server side script like ImageMagick which will handle actual cropping for you.</p></div>
 
 
           </div>
         <h3 id="enable-the-image-browser-button">1 Enable the image browser button</h3>
 <p>If you have configured or integrated a repository containing images, you can enable an image browser button in the floating menu image scope. I will help user to choose an image picked from the repository. To enable this feature, just add &#8216;extra/imagebrowser&#8217; to the plugins list to be loaded.</p>
-<h3 id="components">2 Components</h3>
-<ul>
-	<li>insertimage &#8211; a button that allows you to insert an image</li>
-</ul>
-<h3 id="configuration-settings">3 Configuration settings</h3>
+<h4 id="configuration-settings">1.1 Configuration settings</h4>
+<p>Activate the image plugin per editable:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-Aloha.plugins.image.settings = {
+	Aloha.settings.plugins.image: {
+		config: [ 'img' ], // enable the plugin
+		editables: {
+			'#my-editable': [ ] // disable the plugin for the editable with ID my-editable
+		}
+	}
+</pre></div><p>Instead of <tt>[ 'img' ]</tt> you can also use an object of with settings available for the image plugin.</p>
+<p>All available configuration settings (not all are per individual editable):</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.plugins.image = {
 	'maxWidth': 1600,
 	'minWidth': 3,
 	'maxHeight': 1200,
@@ -195,16 +203,19 @@ Aloha.plugins.image.settings = {
 		Aloha.Log.info('Default onResized invoked', $image);
 	}
 };
-</pre></div>
+</pre></div><h4 id="components">1.2 Components</h4>
+<ul>
+	<li>insertimage &#8211; a button that allows you to insert an image</li>
+</ul>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
             <li><a href="#enable-the-image-browser-button"><p>Enable the image browser button</p>
-</a></li><li><a href="#components"><p>Components</p>
-</a></li><li><a href="#configuration-settings"><p>Configuration settings</p>
-</a></li>
+</a><ul><li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li> <li><a href="#components"><p>Components</p>
+</a></li></ul></li>
           </ol>
         </div>
     </div>
