@@ -34,7 +34,7 @@ function (
 	function relativeToWindow(offset) {
 		return {
 			left: offset.left - jQuery(window).scrollLeft(),
-			top: offset.top - jQuery(window).scrollTop(),
+			top: offset.top - jQuery(window).scrollTop()
 		};
 	}
 
@@ -189,6 +189,8 @@ function (
 					}
 				}
 			});
+
+			this.$element.resizable();
 		},
 
 		addPin: function () {

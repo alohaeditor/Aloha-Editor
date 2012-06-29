@@ -126,7 +126,7 @@
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
 }
 .aloha-ui-toolbar .ui-tabs-panel {
-	padding: 0.4em;
+	padding: 2px;
 	background: #f0f0f0;
 	border: 1px solid #d0d0d0;
 	box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
@@ -196,7 +196,6 @@
 /* === menubutton === */
 .aloha-ui-menubutton-container {
 	height: 24px;
-	margin-left: 4px;
 	font-size: 11px;
 	border: 1px solid transparent;
 	float: left;
@@ -276,11 +275,12 @@
 .aloha-ui-menubutton-container:hover .aloha-ui-menubutton-action {
 	border-color: rgba(255,255,255,0.5);
 }
-.aloha-ui-toolbar .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
+.aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
 	border-color: #999;
 }
 .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed .ui-button {
 	background: #ccc;
+	box-shadow: inset 0px 0px 4px rgba(0,0,0,0.2);
 }
 /* === /menubutton === */
 
@@ -468,12 +468,52 @@ body .ui-tooltip {
 	-khtml-border-radius:  4px;
 	-webkit-border-radius: 4px;
 	border-radius:         4px;
-	padding: 4px;
-	margin-right: 4px;
+	padding: 2px;
+	margin: 2px;
 	vertical-align: top;
 }
 
 .aloha-ui-clear {
 	float: none;
 	clear: both;
+}
+
+/* === Aloha Dialog === */
+.aloha-dialog {
+	padding: 0 2px 2px;
+	border: 1px solid #999;
+	background: #f0f0f0;
+	box-shadow: 0px 5px 20px rgba(0,0,0,0.2);
+	background-image:         linear-gradient(bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
+	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
+	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
+	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
+	color: #555;
+	font-size: 12px;
+	text-align: left;
+}
+.aloha-dialog .ui-dialog-titlebar {
+	padding: 4px;
+	border-width: 0;
+	background: transparent;
+	border-top: 1px solid #e6e6e6;
+	font: bold 12px tahoma,arial,verdana,sans-serif;
+	color: #555;
+}
+.aloha-dialog .ui-dialog-content {
+	color: #555;
+}
+.aloha-dialog .ui-dialog-buttonpane {
+	padding: 0;
+	border-width: 0;
+	background: transparent;
+}
+.aloha-dialog .ui-button {
+	background-color: #e6e6e6;
+	background-image:         linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
+	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
+	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
+	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
 }

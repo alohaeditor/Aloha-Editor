@@ -22,8 +22,8 @@
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
 }
-.aloha-ribbon-toolbar .ui-menu {
-	/*width: 150px;*/
+.aloha-ribbon-toolbar .aloha-ui-menubutton-container {
+	margin-left: 4px;
 }
 .aloha-ribbon-toolbar .aloha-ribbon-in,
 .aloha-ribbon-toolbar .aloha-ribbon-out {
