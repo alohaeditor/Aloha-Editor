@@ -196,7 +196,6 @@
 /* === menubutton === */
 .aloha-ui-menubutton-container {
 	height: 24px;
-	margin-left: 4px;
 	font-size: 11px;
 	border: 1px solid transparent;
 	float: left;
@@ -276,11 +275,12 @@
 .aloha-ui-menubutton-container:hover .aloha-ui-menubutton-action {
 	border-color: rgba(255,255,255,0.5);
 }
-.aloha-ui-toolbar .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
+.aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
 	border-color: #999;
 }
 .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed .ui-button {
 	background: #ccc;
+	box-shadow: inset 0px 0px 4px rgba(0,0,0,0.2);
 }
 /* === /menubutton === */
 
@@ -468,8 +468,8 @@ body .ui-tooltip {
 	-khtml-border-radius:  4px;
 	-webkit-border-radius: 4px;
 	border-radius:         4px;
-	padding: 4px;
-	margin-right: 4px;
+	padding: 2px;
+	margin: 2px;
 	vertical-align: top;
 }
 
