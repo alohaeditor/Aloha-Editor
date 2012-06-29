@@ -190,7 +190,60 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jslint-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<executions>
 
+					<!-- Check core javascript -->
+					<execution>
+						<id>jslint-core</id>
+						<phase>test</phase>
+						<goals>
+							<goal>jslint</goal>
+						</goals>
+						<configuration>
+							<workFolder>${project.build.directory}/JSLintMojo/core-test</workFolder>
+							<includes>
+								<include>lib/aloha/**/*.js</include>
+							</includes>
+						</configuration>
+					</execution>
+					<!-- Check plugin javascript -->
+					<execution>
+						<id>jslint-plugins</id>
+						<phase>test</phase>
+						<goals>
+							<goal>jslint</goal>
+						</goals>
+						<configuration>
+							<workFolder>${project.build.directory}/JSLintMojo/plugins-test</workFolder>
+							<includes>
+								<include>plugins/**/*.js</include>
+							</includes>
+							<excludes>
+								<exclude>plugins/**/extra/**</exclude>
+								<exclude>plugins/**/vendor/**</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<disallowInsecureCharsInRegExp>false</disallowInsecureCharsInRegExp>
+					<allowOneVarStatementPerFunction>false</allowOneVarStatementPerFunction>
+					<predefinedVars>Aloha, window, global, process, define, require,
+						jQuery, GCN</predefinedVars>
+					<assumeABrowser>true</assumeABrowser>
+					<tolerateContinuation>true</tolerateContinuation>
+					<sourceJsFolder>${basedir}/src</sourceJsFolder>
+					<failOnIssues>false</failOnIssues>
+					<excludes>
+						<exclude>**/vendor/**</exclude>
+						<exclude>**/shared/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
