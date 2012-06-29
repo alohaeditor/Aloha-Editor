@@ -65,45 +65,16 @@ See: http://npmjs.org
 curl http://npmjs.org/install.sh | sh
 </shell>
 
-* Install r.js
-<shell>
-npm install -g requirejs@0.26.0 
-Note: Please use r.js 0.26.0 for now
-</shell>
-
-Linux:
-Add r.js to your bin directory:
-<shell>
-ln -s /root/node_modules/requirejs/bin/r.js /usr/local/bin/
-</shell>
-
-Mac:
-r.js should be automatically added to your bin directory. Manual linking:
-<shell>
-ln -s /Users/{username}/lib/node_modules/requirejs/bin/r.js /Users/{username}/bin/r.js
-</shell>
-
-Manually from "github":https://github.com/jrburke/r.js
-
-* Install jslint
-
-<shell>
-cd /tmp
-npm install jslint
-mv /tmp/node_modules/jslint /usr/lib/node_modules/
-ln -s /usr/lib/node_modules/jslint/bin/jslint.js  jslint
-</shell>
 
 * Invoke Building:
 <shell>
 cd alohaeditor
-./bin/build.sh build/aloha
+mvn clean package
 </shell>
 
 
 h4. Other OS: 
 * Microsoft Windows: Not yet supported
-
 
 h3. Guide 
 
@@ -144,7 +115,6 @@ guides preview
 
 Preview URL: http://localhost:9292/
 
-
 * Building Guides:
 <shell>
 guides build
@@ -156,3 +126,4 @@ h3. Changelog
 
 * October 11, 2011: Added building information
 * July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek
+* June 29, 2012: Updated guides since the buildprocess now uses maven. 
