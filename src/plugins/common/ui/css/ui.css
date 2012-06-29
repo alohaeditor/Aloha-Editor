@@ -449,7 +449,17 @@ body .ui-tooltip {
 .aloha-multisplit .ui-button-icon-only.aloha-multisplit-active {
 	background: #3B73D7;
 }
-
+.aloha-multisplit .aloha-ui-multisplit-fullwidth {
+	display: block;
+	width: 100%;
+	background: #f0f0f0 url('../img/removeformat.png') no-repeat 6px 3px;
+	border: 1px solid #bbb;
+	padding-left: 18px;
+	text-align: left;
+}
+.aloha-multisplit .aloha-ui-multisplit-fullwidth:hover {
+	border-color: #999;
+}
 .aloha-ui-component-group {
 	float: left;
 	border: 1px solid #e0e0e0;

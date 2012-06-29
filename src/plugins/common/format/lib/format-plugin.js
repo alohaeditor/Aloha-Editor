@@ -338,11 +338,14 @@ define([
 						// wide multisplit buttons
 						case 'removeFormat':
 							that.multiSplitItems.push({
-								'name' : button,
-								'text' : i18n.t('button.' + button + '.text'),
-								'tooltip' : i18n.t('button.' + button + '.tooltip'),
-								'wide' : true,
-								'click' : function() {
+								name: button,
+								text: i18n.t('button.' + button + '.text'),
+								tooltip: i18n.t('button.' + button + '.tooltip'),
+								wide: true,
+								init: function () {
+									this.element.addClass('aloha-ui-multisplit-fullwidth');
+								},
+								click: function () {
 									that.removeFormat();
 								}
 							});

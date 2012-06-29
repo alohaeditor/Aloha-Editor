@@ -32,7 +32,6 @@ define([
 				}).appendTo(element);
 			var toggle = this.toggleButton = $('<button>', {
 					'class': 'aloha-multisplit-toggle',
-					'text': 'x',
 					click: function () {
 						multiSplit.toggle();
 					}
@@ -65,6 +64,12 @@ define([
 				var component = new (Button.extend({
 					tooltip: item.tooltip,
 					icon: item.icon,
+					init: function () {
+						this._super();
+						if (item.init) {
+							item.init.call(this);
+						}
+					},
 					click: function () {
 						item.click.apply(multiSplit, arguments);
 						multiSplit.close();
