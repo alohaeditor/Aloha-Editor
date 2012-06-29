@@ -20,6 +20,11 @@
     //Useful to map module names that are to resources on a CDN or other
     //http: URL when running in the browser and during an optimization that
     //file should be skipped because it has no dependencies.
+    paths: {
+	"jquery": 'vendor/no-jquery',
+    	//"jquery": 'vendor/jquery-1.7.2',
+	"jqueryui": 'vendor/jquery-ui-1.9m6'
+    },
 //    paths: {
 //        "foo.bar": "../scripts/foo/bar",
 //        "baz": "../another/path/baz"
@@ -156,7 +161,7 @@
         //of its dependencies includes i18n bundles, they may not be included in the
         //built file unless the locale: section is set above.
         {
-            name: "aloha-bootstrap",
+            name: "aloha",
 
             //For build profiles that contain more than one modules entry,
             //allow overrides for the properties that set for the whole build,
