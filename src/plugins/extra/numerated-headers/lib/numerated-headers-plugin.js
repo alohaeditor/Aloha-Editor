@@ -237,8 +237,20 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				return;
 			}
 
-			var base_rank = parseInt(headers[0].nodeName.substr(1), 10),
-				prev_rank = null,
+			// base rank is the lowest rank of all selected headers
+			var base_rank = 7;
+			headers.each(function () {
+				if (that.hasContent(this)) {
+					var current_rank = parseInt(this.nodeName.substr(1), 10);
+					if (current_rank < base_rank) {
+						base_rank = current_rank;
+					}
+				}
+			});
+			if (base_rank > 6) {
+				return;
+			}
+			var prev_rank = null,
 				current_annotation = [],
 				annotation_pos = 0;
 
@@ -252,7 +264,12 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				if (that.hasContent(this)) {
 
 					var current_rank = parseInt(this.nodeName.substr(1), 10);
-					if (prev_rank === null) {
+					if (prev_rank === null && current_rank !== base_rank) {
+						// when the first found header has a rank
+						// different from the base rank, we omit it
+						jQuery(this).find('span[role=annotation]').remove();
+						return;
+					} else if (prev_rank === null) {
 						// increment the main annotation 
 						current_annotation[annotation_pos]++;
 					} else if (current_rank > prev_rank) {
