@@ -61,7 +61,8 @@ define([
 				Aloha.bind('aloha-ui-container-activated', function (event, container) {
 					if (container.visible &&
 					    container === that._container &&
-						Aloha.activeEditable === container.editable) {
+						(!Aloha.activeEditable ||
+						 Aloha.activeEditable === container.editable)) {
 						element.appendTo(that.element);
 					}
 				});

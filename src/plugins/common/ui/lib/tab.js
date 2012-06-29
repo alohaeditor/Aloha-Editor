@@ -106,6 +106,8 @@ function (Aloha, jQuery, Container, Component) {
 				}
 			}
 
+			this.panel.append('<div class="aloha-ui-clear">');
+
 			function selectTab() {
 				thisTab.container.tabs('select', thisTab.index);
 				Aloha.trigger('aloha-ui-container-activated', thisTab);

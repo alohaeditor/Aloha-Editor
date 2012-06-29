@@ -76,14 +76,14 @@ define([
 		 * @param {String} iconClass CSS class for the icon
 		 */
 		setIcon: function (iconClass) {
-			if ( ! this._icon ) {
+			if (!this._icon) {
 				return;
 			}
 			this._icon.attr('class', 'aloha-ribbon-icon ' + iconClass);
 		},
 
 		addButton: function(props) {
-			if ( ! this._toolbar ) {
+			if (!this._toolbar) {
 				return;
 			}
 			props = $.extend({}, props, {'siblingContainer': this._toolbar});
@@ -94,10 +94,10 @@ define([
 		 * Shows the Ribbon
 		 */
 		hide: function () {
-			if ( ! this._toolbar ) {
+			if (!this._toolbar) {
 				return;
 			}
-			this._toolbar.fadeOut();
+			this._toolbar.hide();
 			this._visible = false;
 		},
 
@@ -105,10 +105,10 @@ define([
 		 * Hides the Ribbon
 		 */
 		show: function () {
-			if ( ! this._toolbar ) {
+			if (!this._toolbar) {
 				return;
 			}
-			this._toolbar.fadeIn();
+			this._toolbar.show();
 			this._visible = true;
 		},
 
