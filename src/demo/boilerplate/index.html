@@ -67,15 +67,16 @@
 				label: 'Format',
 				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
-					[ 'bold', 'strong', 'italic', 'emphasis', 'strikethrough', '\n',
-					  'subscript', 'superscript', 'orderedList', 'unorderedList', 'formatLink' ],
+					[
+						'bold', 'strong', 'italic', 'emphasis', 'strikethrough', '\n',
+						'subscript', 'superscript', 'formatLink', 'quote', 'wailang', 'formatAbbr', '\n',
+						'toggleMetaView', 'formatNumeratedHeaders', 'toggleFormatlessPaste'
+					], [
+						'orderedList', 'unorderedList', 'indentList', 'outdentList', '\n'
+					], [
+						'alignLeft', 'alignCenter', 'alignRight', 'alignJustify'
+					],
 					[ 'formatBlock' ]
-					  /*
-					  "indentList", "outdentList", "\n", 
-					  "formatAbbr", "wailang", "quote", "toggleFormatlessPaste", "\n",
-                      "alignLeft", "alignCenter", "alignRight", "alignJustify", "\n",
-                      "toggleMetaView", "formatNumeratedHeaders"
-					  */
 				]
 			},
 			// Insert Tab
@@ -377,6 +378,13 @@
 				// hide loading div
 				$('#aloha-loading').hide();
 				$('#aloha-loading span').html('Loading Plugins');
+
+				Aloha.require(['ui/message'], function(Message) {
+					Message.alert({
+						title: 'Aloha Editor',
+						text: 'Testing one two three'
+					});
+				});
 			});
 		</script>
 	</div>
