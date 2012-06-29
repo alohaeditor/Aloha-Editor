@@ -40,6 +40,7 @@ define([
 					text: item.text,
 					icon: item.iconClass,
 					click: item.click,
+					init: item.init,
 					isActive: function () {
 						return activeItem === item.name;
 					}

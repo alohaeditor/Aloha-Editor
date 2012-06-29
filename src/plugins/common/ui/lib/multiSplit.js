@@ -1,52 +1,55 @@
 define([
-	"jquery",
-	"ui/component",
-	"ui/button"
-],
-function( jQuery, Component, Button ) {
+	'jquery',
+	'ui/component',
+	'ui/button'
+], function (
+	$,
+	Component,
+	Button
+) {
+	'use strict';
+
 	/**
-	 * MultiSplit component type
+	 * MultiSplit component type.
 	 * @class
 	 * @extends {Component}
 	 */
 	var MultiSplit = Component.extend({
+
 		/**
 		 * Initializes the multisplit component
 		 * @override
 		 */
-		init: function() {
+		init: function () {
 			this._super();
-			var editable = this.editable,
-				multiSplit = this,
-				element = this.element = jQuery( "<div>", {
-					"class": "aloha-multisplit"
-				}),
-				content = this.contentElement = jQuery( "<div>", {
-					"class": "aloha-multisplit-content"
-				})
-					.appendTo( element ),
-				toggle = this.toggleButton = jQuery( "<button>", {
-					"class": "aloha-multisplit-toggle",
-					text: "x",
-					click: function() {
+			var editable = this.editable;
+			var multiSplit = this;
+			var element = this.element = $('<div>', {
+					'class': 'aloha-multisplit'
+				});
+			var content = this.contentElement = $('<div>', {
+					'class': 'aloha-multisplit-content'
+				}).appendTo(element);
+			var toggle = this.toggleButton = $('<button>', {
+					'class': 'aloha-multisplit-toggle',
+					click: function () {
 						multiSplit.toggle();
 					}
-				})
-					.button()
-					.appendTo( element );
+				}).button().appendTo(element);
 
 			this.buttons = [];
-			jQuery( this.getButtons() ).map(function( i, button ) {
+
+			$(this.getButtons()).map(function (i, button) {
 				var component = new (Button.extend({
 					tooltip: button.tooltip,
-					icon: "aloha-large-icon " + button.icon,
+					icon: 'aloha-large-icon ' + button.icon,
 					iconOnly: true,
-					click: function() {
-						button.click.apply( multiSplit, arguments );
+					click: function () {
+						button.click.apply(multiSplit, arguments);
 						multiSplit.close();
 					}
-				}))( editable );
-				component.element.addClass( "aloha-large-button" );
+				}))(editable);
+				component.element.addClass('aloha-large-button');
 
 				multiSplit.buttons.push({
 					settings: button,
@@ -54,39 +57,43 @@ function( jQuery, Component, Button ) {
 					element: component.element
 				});
 
-				return component.element[ 0 ];
-			})
-			.appendTo( content );
+				return component.element[0];
+			}).appendTo(content);
 
-			jQuery( this.getItems() ).map(function( i, item ) {
+			$(this.getItems()).map(function (i, item) {
 				var component = new (Button.extend({
 					tooltip: item.tooltip,
 					icon: item.icon,
-					click: function() {
-						item.click.apply( multiSplit, arguments );
+					init: function () {
+						this._super();
+						if (item.init) {
+							item.init.call(this);
+						}
+					},
+					click: function () {
+						item.click.apply(multiSplit, arguments);
 						multiSplit.close();
 					}
-				}))( editable );
-				return component.element[ 0 ];
-			})
-			.appendTo( content );
+				}))(editable);
+				return component.element[0];
+			}).appendTo(content);
 		},
 
 		/**
 		 * Selection change callback
 		 * @override
 		 */
-		selectionChange: function() {
+		selectionChange: function () {
 			var content = this.contentElement;
-			this.element.find( ".aloha-multisplit-active" )
-				.removeClass( "aloha-multisplit-active" );
-			if ( ! content.is(':visible') ) {
+			this.element.find('.aloha-multisplit-active')
+				.removeClass('aloha-multisplit-active');
+			if (!content.is(':visible')) {
 				return;
 			}
-			jQuery.each( this.buttons, function() {
-				if ( this.settings.isActive() ) {
-					this.element.addClass( "aloha-multisplit-active" );
-					content.css( "top", -this.element.position().top );
+			$.each(this.buttons, function () {
+				if (this.settings.isActive()) {
+					this.element.addClass('aloha-multisplit-active');
+					content.css('top', -this.element.position().top);
 					return false;
 				}
 			});
@@ -95,22 +102,22 @@ function( jQuery, Component, Button ) {
 		/**
 		 * Toggles the multisplit menu
 		 */
-		toggle: function() {
-			this.element.toggleClass( "aloha-multisplit-open" );
+		toggle: function () {
+			this.element.toggleClass('aloha-multisplit-open');
 		},
 
 		/**
 		 * Opens the multisplit menu
 		 */
-		open: function() {
-			this.element.addClass( "aloha-multisplit-open" );
+		open: function () {
+			this.element.addClass('aloha-multisplit-open');
 		},
 
 		/**
 		 * Closes the multisplit menu
 		 */
-		close: function() {
-			this.element.removeClass( "aloha-multisplit-open" );
+		close: function () {
+			this.element.removeClass('aloha-multisplit-open');
 		}
 	});
 
