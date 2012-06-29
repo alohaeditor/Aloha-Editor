@@ -61,6 +61,21 @@
 							</arguments>
 						</configuration>
 					</execution>
+					<execution>
+						<phase>deploy</phase>
+						<id>deploy</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bin/deploy-aloha.sh</executable>
+							<arguments>
+								<argument>${ALOHADEPLOYMENTURL}</argument>
+								<argument>${ALOHADEPLOYMENTPATH}</argument>
+								<argument>${maven.build.timestamp}</argument>
+							</arguments>
+						</configuration>
+					</execution>
 					<!-- TODO check filesize -->
 					<!-- Skip docu and guides in bare build mode -->
 					<!-- TODO: Build Guides ($BASEDIR/build-guide.sh) -->
@@ -86,38 +101,38 @@
 						</goals>
 						<configuration>
 							<minimize>true</minimize>
-                                                        <targetGroups>aloha-require-jquery</targetGroups>
+							<targetGroups>aloha-require-jquery</targetGroups>
 							<destinationFolder>${project.build.directory}/aloha-require-jquery/bin/</destinationFolder>
 							<jsDestinationFolder>${project.build.directory}/aloha-require-jquery/bin/</jsDestinationFolder>
 						</configuration>
 					</execution>
-                                        <execution>
-                                                <id>aloha-require-jquery-debug</id>
-                                                <phase>compile</phase>
-                                                <goals>
-                                                        <goal>run</goal>
-                                                </goals>
-                                                <configuration>
-                                                        <minimize>false</minimize>
-		 	                                <targetGroups>aloha-require-jquery</targetGroups>
-                                                        <destinationFolder>${project.build.directory}/aloha-require-jquery/debug/</destinationFolder>
-                                                        <jsDestinationFolder>${project.build.directory}/aloha-require-jquery/debug/</jsDestinationFolder>
-                                                </configuration>
-                                        </execution>
+					<execution>
+						<id>aloha-require-jquery-debug</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<minimize>false</minimize>
+							<targetGroups>aloha-require-jquery</targetGroups>
+							<destinationFolder>${project.build.directory}/aloha-require-jquery/debug/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/aloha-require-jquery/debug/</jsDestinationFolder>
+						</configuration>
+					</execution>
 
-                                        <execution>
-                                                <id>minify</id>
-                                                <phase>compile</phase>
-                                                <goals>
-                                                        <goal>run</goal>
-                                                </goals>
-                                                <configuration>
-                                                        <minimize>true</minimize>
-                                                        <targetGroups>aloha-bare</targetGroups>
-                                                        <destinationFolder>${project.build.directory}/aloha-bare/bin/</destinationFolder>
-                                                        <jsDestinationFolder>${project.build.directory}/aloha-bare/bin/</jsDestinationFolder>
-                                                </configuration>
-                                        </execution>
+					<execution>
+						<id>minify</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<minimize>true</minimize>
+							<targetGroups>aloha-bare</targetGroups>
+							<destinationFolder>${project.build.directory}/aloha-bare/bin/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/aloha-bare/bin/</jsDestinationFolder>
+						</configuration>
+					</execution>
 					<execution>
 						<id>debug</id>
 						<phase>compile</phase>
@@ -126,7 +141,7 @@
 						</goals>
 						<configuration>
 							<minimize>false</minimize>
-                                                        <targetGroups>aloha-bare</targetGroups>
+							<targetGroups>aloha-bare</targetGroups>
 							<destinationFolder>${project.build.directory}/aloha-bare/debug/</destinationFolder>
 							<jsDestinationFolder>${project.build.directory}/aloha-bare/debug/</jsDestinationFolder>
 						</configuration>
@@ -176,28 +191,6 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.1</version>
-				<executions>
-					<execution>
-						<phase>deploy</phase>
-						<id>deploy</id>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<executable>bin/deploy-aloha.sh</executable>
-							<arguments>
-								<argument>${ALOHADEPLOYMENTURL}</argument>
-								<argument>${ALOHADEPLOYMENTPATH}</argument>
-								<argument>${maven.build.timestamp}</argument>
-							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
