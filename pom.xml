@@ -11,7 +11,8 @@
 	<url>http://aloha-editor.org</url>
 	<licenses>
 		<license>
-			http://www.gnu.org/licenses/agpl-3.0.html
+			<name>AGPL 3.0</name>
+			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
 		</license>
 	</licenses>
 	<properties>
