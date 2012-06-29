@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: Cite Plugin</title>
+  <title>Aloha Editor GuidesAloha Editor Guides: Cite Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,7 +42,7 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/"></a></h2>
+        <h2><a href="/">Aloha Editor Guides</a></h2>
         <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
@@ -57,6 +57,8 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="aloha_jquery.html">Aloha Editor and jQuery</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
@@ -115,12 +117,17 @@
 <h3 id="usage">2 Usage</h3>
 <p>Select the text you want to markup as citation. <img src="images/plugins/cite-01.png" style="width:620px"></p>
 <p>Add the source <span class="caps">URL</span> and a note in the sidebar. This information will be displayed in the <code>referenceContainer</code>. <img src="images/plugins/cite-02.png" style="width:620px"></p>
-<h3 id="components">3 Components</h3>
+<h3 id="functional-description">3 Functional Description</h3>
+<p>The Cite plugin allows you to format text into blockquotes or quotes.</p>
+<p>In order to create a blockquote select the desired text and click on the blockquote layout button at the Aloha Editor. The selected text or headline will be wrapped into <tt>&lt;blockquote&gt;</tt> tag. If the text resides within a paragraph the whole paragraph will be turned into a blockquote.</p>
+<p>To inline quote a text just click the quote button and enter some text or select an already entered text and click on the quote button. To finalize the quotation enter the name or title and a <span class="caps">URL</span> at the Aloha Editor Sidebar.</p>
+<div class="note"><p>Currently the cite plugin is not able to remove blockquotes and inline annotations correctly. You may however apply another formatting like a paragraph to remove a blockquote. An inline quotation may only be removed by deleting the annotated text. The references will <strong>not</strong> be updated when quotes or blockquotes are removed.</p></div>
+<h3 id="components">4 Components</h3>
 <ul>
 	<li>Button to add a citation in the floating menu</li>
 	<li>Sidebar input fields for <span class="caps">URL</span> and Title</li>
 </ul>
-<h3 id="configuration">4 Configuration</h3>
+<h3 id="configuration">5 Configuration</h3>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
@@ -129,14 +136,19 @@ Aloha.settings.plugins: {
 		referenceContainer: '#Cites', // a jQuery selector for an
 		sidebar: {
 			open: true // will open the sidebar when the cite button is clicked
+		},
+		config: [ 'quote', 'blockquote' ],
+		editables: {
+			'#one': [ 'quote' ],
+			'#two': [ ]
 		}
 	}
 };
-</pre></div><h3 id="further-information">5 Further Information</h3>
+</pre></div><h3 id="further-information">6 Further Information</h3>
 <ul>
 	<li>q Element (HTML5 spec): <a href="http://www.w3.org/TR/html5/the-q-element.html#the-q-element">w3c.org</a></li>
 </ul>
-<h3 id="known-issues">6 Known Issues</h3>
+<h3 id="known-issues">7 Known Issues</h3>
 <ul>
 	<li>If you select &#8220;<code>CO&lt;sub&gt;2&lt;/sub&gt;</code>&#8221; and click the cite button it will result in &#8220;<code>CO[1]2[1]</code>&#8221; but is should be <code>CO2[1]</code></li>
 </ul>
@@ -147,6 +159,7 @@ Aloha.settings.plugins: {
           <ol class="chapters">
             <li><a href="#overview"><p>Overview</p>
 </a></li><li><a href="#usage"><p>Usage</p>
+</a></li><li><a href="#functional-description"><p>Functional Description</p>
 </a></li><li><a href="#components"><p>Components</p>
 </a></li><li><a href="#configuration"><p>Configuration</p>
 </a></li><li><a href="#further-information"><p>Further Information</p>

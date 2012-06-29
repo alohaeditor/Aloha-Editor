@@ -9,7 +9,12 @@
 
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
-
+	<licenses>
+		<license>
+			<name>AGPL 3.0</name>
+			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+		</license>
+	</licenses>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
@@ -42,6 +47,73 @@
 	<build>
 		<plugins>
 
+			<plugin>
+				<groupId>com.googlecode.jslint4java</groupId>
+				<artifactId>jslint4java-maven-plugin</artifactId>
+				<version>2.0.2</version>
+				<!-- Default configuration -->
+				<configuration>
+					<sourceFolders>
+						<sourceFolder>${project.basedir}/src</sourceFolder>
+					</sourceFolders>
+					<excludes>
+						<exclude>**/vendor/**</exclude>
+						<exclude>**/shared/**</exclude>
+					</excludes>
+					<failOnError>false</failOnError>
+					<!-- See http://docs.jslint4java.googlecode.com/git/2.0.2/apidocs/com/googlecode/jslint4java/Option.html -->
+					<options>
+						<predef>Aloha, window, global, process, define, require, jQuery,
+							GCN</predef>
+						<!-- If multiple var statements per function should be allowed -->
+						<vars>true</vars>
+						<!-- If variables can be declared out of order -->
+						<undef>true</undef>
+						<!-- If the standard browser globals should be predefined -->
+						<browser>true</browser>
+						<!-- If the continuation statement should be tolerated -->
+						<continue>true</continue>
+						<!-- If the . should be allowed in regexp literals -->
+						<regexp>true</regexp>
+						<!-- If sloppy whitespace is tolerated -->
+						<white>true</white>
+					</options>
+				</configuration>
+				<executions>
+					<!-- Linting Core -->
+					<execution>
+						<id>lint-core</id>
+						<phase>test</phase>
+						<goals>
+							<goal>lint</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>lib/aloha/**/*.js</include>
+							</includes>
+							<outputFolder>${project.build.directory}/jslint-core</outputFolder>
+						</configuration>
+					</execution>
+					<!-- Linting Plugins -->
+					<execution>
+						<id>lint-plugins</id>
+						<phase>test</phase>
+						<goals>
+							<goal>lint</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>plugins/**/*.js</include>
+							</includes>
+							<excludes>
+								<exclude>plugins/**/extra/**</exclude>
+								<exclude>plugins/**/vendor/**</exclude>
+							</excludes>
+							<outputFolder>${project.build.directory}/jslint-plugins</outputFolder>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
@@ -76,10 +148,31 @@
 							</arguments>
 						</configuration>
 					</execution>
-					<!-- TODO check filesize -->
-					<!-- Skip docu and guides in bare build mode -->
-					<!-- TODO: Build Guides ($BASEDIR/build-guide.sh) -->
-					<!-- TODO: Build API ($BASEDIR/build-api.sh) -->
+					<!-- TODO: check filesize -->
+					<!-- TODO: cd "$TMP/aloha/css" r.js -o cssIn=aloha.css out=aloha.css -->
+					<!-- TODO: echo "build-date: `date`" >> $OUT/aloha/build.txt -->
+					<execution>
+						<phase>package</phase>
+						<id>build-guides</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<skip>${bareMode}</skip>
+							<executable>${project.basedir}/bin/build-guide.sh</executable>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>package</phase>
+						<id>build-api</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<skip>${bareMode}</skip>
+							<executable>${project.basedir}/bin/build-api.sh</executable>
+						</configuration>
+					</execution>
 					<!-- Alternative rhino r.js optimization -->
 					<!-- <execution> <phase>package</phase> <goals> <goal>java</goal> </goals> 
 						<configuration> <classpathScope>runtime</classpathScope> <mainClass>org.mozilla.javascript.tools.shell.Main</mainClass> 
@@ -190,60 +283,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jslint-maven-plugin</artifactId>
-				<version>1.0.1</version>
-				<executions>
 
-					<!-- Check core javascript -->
-					<execution>
-						<id>jslint-core</id>
-						<phase>test</phase>
-						<goals>
-							<goal>jslint</goal>
-						</goals>
-						<configuration>
-							<workFolder>${project.build.directory}/JSLintMojo/core-test</workFolder>
-							<includes>
-								<include>lib/aloha/**/*.js</include>
-							</includes>
-						</configuration>
-					</execution>
-					<!-- Check plugin javascript -->
-					<execution>
-						<id>jslint-plugins</id>
-						<phase>test</phase>
-						<goals>
-							<goal>jslint</goal>
-						</goals>
-						<configuration>
-							<workFolder>${project.build.directory}/JSLintMojo/plugins-test</workFolder>
-							<includes>
-								<include>plugins/**/*.js</include>
-							</includes>
-							<excludes>
-								<exclude>plugins/**/extra/**</exclude>
-								<exclude>plugins/**/vendor/**</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<disallowInsecureCharsInRegExp>false</disallowInsecureCharsInRegExp>
-					<allowOneVarStatementPerFunction>false</allowOneVarStatementPerFunction>
-					<predefinedVars>Aloha, window, global, process, define, require,
-						jQuery, GCN</predefinedVars>
-					<assumeABrowser>true</assumeABrowser>
-					<tolerateContinuation>true</tolerateContinuation>
-					<sourceJsFolder>${basedir}/src</sourceJsFolder>
-					<failOnIssues>false</failOnIssues>
-					<excludes>
-						<exclude>**/vendor/**</exclude>
-						<exclude>**/shared/**</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 
