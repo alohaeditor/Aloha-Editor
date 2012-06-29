@@ -9,7 +9,11 @@
 
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
-
+	<licenses>
+		<license>
+			http://www.gnu.org/licenses/agpl-3.0.html
+		</license>
+	</licenses>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
@@ -70,6 +74,8 @@
 						<continue>true</continue>
 						<!-- If the . should be allowed in regexp literals -->
 						<regexp>true</regexp>
+						<!-- If sloppy whitespace is tolerated -->
+						<white>true</white>
 					</options>
 				</configuration>
 				<executions>
