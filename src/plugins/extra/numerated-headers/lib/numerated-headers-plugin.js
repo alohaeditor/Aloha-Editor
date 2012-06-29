@@ -23,7 +23,8 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	return Plugin.create('numerated-headers', {
 		config: {
 			numeratedactive: true,
-			headingselector: 'h1, h2, h3, h4, h5, h6'
+			headingselector: 'h1, h2, h3, h4, h5, h6',
+			trailingdot: false
 		},
 
 		/**
@@ -120,6 +121,12 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				config.headingselector = 'h1, h2, h3, h4, h5, h6';
 			}
 			config.headingselector = jQuery.trim(config.headingselector);
+
+			if (config.trailingdot === true || config.trailingdot === 'true' || config.trailingdot === '1') {
+				config.trailingdot = true;
+			} else {
+				config.trailingdot = false;
+			}
 
 			return config;
 		},
@@ -221,11 +228,11 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 
 		createNumeratedHeaders: function () {
-			var headingselector = this.getCurrentConfig().headingselector;
+			var config = this.getCurrentConfig();
+			var headingselector = config.headingselector;
 			var active_editable_obj = this.getBaseElement(),
 				that = this,
-				headers = active_editable_obj.find(headingselector),
-				config = that.getEditableConfig(active_editable_obj);
+				headers = active_editable_obj.find(headingselector);
 
 			if (!active_editable_obj) {
 				return;
@@ -290,10 +297,20 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 
 					prev_rank = current_rank;
 
-					var annotation_result = current_annotation[0];
-					for (var i = 1; i < current_annotation.length; i++) {
-						if (current_annotation[i] !== 0) {
-							annotation_result += ("." + current_annotation[i]);
+					var annotation_result = '', i;
+					if (config.trailingdot === true) {
+						annotation_result = '';
+						for (i = 0; i < current_annotation.length; i++) {
+							if (current_annotation[i] !== 0) {
+								annotation_result += (current_annotation[i] + ".");
+							}
+						}
+					} else {
+						annotation_result = current_annotation[0];
+						for (i = 1; i < current_annotation.length; i++) {
+							if (current_annotation[i] !== 0) {
+								annotation_result += ("." + current_annotation[i]);
+							}
 						}
 					}
 

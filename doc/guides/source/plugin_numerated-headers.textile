@@ -49,7 +49,8 @@ h3. Configuration
 
 * auto activate the feature of the plugin with numeratedactive: true (default)
 * specify selector for affected headers
-* specifiy Base Object, if you want the plugin to process in a specific container, or on the hole page (e.g. 'body')
+* specify Base Object, if you want the plugin to process in a specific container, or on the hole page (e.g. 'body')
+* specify the numeration format 1.2 or 1.2. (trailing dot).
 
 This settings can be applied for individual editables.
 
@@ -63,7 +64,8 @@ This settings can be applied for individual editables.
 				numeratedactive: true,
 				// if the headingselector is empty, the button will not be shown at all                     
 				headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
-				baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable
+				baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable,
+				trailingdot: false
 			}
 		}
 	}
