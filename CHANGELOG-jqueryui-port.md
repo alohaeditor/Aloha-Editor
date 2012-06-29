@@ -101,9 +101,12 @@
 - **MANUAL CHANGE**: The following files have been removed
                      src/lib/aloha/ext-alohatreeloader.js
                      src/lib/aloha/ui-browser.js
+                     src/lib/aloha/ecma5.js
 
                      These files are not in use by any of the main Aloha
-                     plugins and as such are deemed obsolete.
+                     plugins and as such are deemed obsolete. These
+                     files were never loaded and their removal should not
+                     have any side-effect.
 
                      Custom plugins should be checked for a possible
                      dependency on these files.
