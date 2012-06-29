@@ -72,6 +72,11 @@ cd alohaeditor
 mvn clean package
 </shell>
 
+You can also ommitt building of the api and guides using the following command:
+<shell>
+mvn clean package -DbareMode=true
+</shell>
+
 
 h4. Other OS: 
 * Microsoft Windows: Not yet supported
