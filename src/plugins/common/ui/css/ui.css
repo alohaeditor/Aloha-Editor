@@ -282,6 +282,10 @@
 	background: #ccc;
 	box-shadow: inset 0px 0px 4px rgba(0,0,0,0.2);
 }
+.aloha-ui-menubutton-single .ui-button-text {
+	/* Ensures that the secondary icon (right icon) doesn't overlap with the button text. */
+	padding-right: 2.1em;
+}
 /* === /menubutton === */
 
 
@@ -326,6 +330,11 @@
 }
 .aloha-icon-outdent {
 	background: url(http://aloha-editor.org/builds/hotfix/latest/src/img/text_indent_remove.png) no-repeat center center;
+}
+
+.aloha-ui-inline-icon {
+	/* Overwrite jqueryui icon style text-indent: -9999px; to support <img> icons instead of class icons */
+	text-indent: 0px;
 }
 
 /* === large icons === */

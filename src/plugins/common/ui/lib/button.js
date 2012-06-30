@@ -7,9 +7,10 @@
 define([
 	'jquery',
 	'ui/component',
+	'ui/utils',
 	'aloha/jquery-ui'
 ],
-function (jQuery, Component) {
+function (jQuery, Component, Utils) {
 	'use strict';
 
 	/**
@@ -36,14 +37,8 @@ function (jQuery, Component) {
 		 */
 		init: function () {
 			this._super();
-			this.createButtonElement()
-				.button({
-					label: this.text || this.tooltip,
-					text: !!this.text,
-					icons: {
-					    primary: this.icon
-					}
-			    })
+			this.createButtonElement();
+			Utils.makeButton(this.buttonElement, this)
 				.button('widget')
 				.tooltip({
 					position: {
