@@ -413,24 +413,27 @@ define([
 		}
 	};
 
-  /**
-   * check the WAI conformity of the table and sets the attribute.
-   */
-  Table.prototype.checkWai = function () {
-    var w = this.wai;
-    
-    w.removeClass(this.get('waiGreen'));
-    w.removeClass(this.get('waiRed'));
-    
-    // Y U NO explain why we must check that summary is longer than 5 characters?
-    // http://cdn3.knowyourmeme.com/i/000/089/665/original/tumblr_l96b01l36p1qdhmifo1_500.jpg
+	/**
+	 * check the WAI conformity of the table and sets the attribute.
+	 */
+	Table.prototype.checkWai = function () {
+		var w = this.wai;
+		if (!w) {
+			return;
+		}
 
-    if (jQuery.trim(this.obj[0].summary) != '') {
-      w.addClass(this.get('waiGreen'));
-    } else {
-      w.addClass(this.get('waiRed'));
-    }
-  };
+		w.removeClass(this.get('waiGreen'));
+		w.removeClass(this.get('waiRed'));
+		
+		// Y U NO explain why we must check that summary is longer than 5 characters?
+		// http://cdn3.knowyourmeme.com/i/000/089/665/original/tumblr_l96b01l36p1qdhmifo1_500.jpg
+
+		if (jQuery.trim(this.obj[0].summary) != '') {
+			w.addClass(this.get('waiGreen'));
+		} else {
+			w.addClass(this.get('waiRed'));
+		}
+	};
 
 	/**
 	 * Add the selection-column to the left side of the table and attach the events
