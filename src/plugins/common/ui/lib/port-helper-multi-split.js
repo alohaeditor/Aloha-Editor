@@ -40,7 +40,14 @@ define([
 					text: item.text,
 					icon: item.iconClass,
 					click: item.click,
-					init: item.init,
+					init: function () {
+						if (item.cls) {
+							this.element.addClass(item.cls);
+						}
+						if (item.init) {
+							item.init.call(this);
+						}
+					},
 					isActive: function () {
 						return activeItem === item.name;
 					}

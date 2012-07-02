@@ -342,9 +342,7 @@ define([
 								text: i18n.t('button.' + button + '.text'),
 								tooltip: i18n.t('button.' + button + '.tooltip'),
 								wide: true,
-								init: function () {
-									this.element.addClass('aloha-ui-multisplit-fullwidth');
-								},
+								'cls': 'aloha-ui-multisplit-fullwidth',
 								click: function () {
 									that.removeFormat();
 								}
