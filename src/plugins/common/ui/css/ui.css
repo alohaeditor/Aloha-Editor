@@ -180,7 +180,7 @@
 	text-align: left;
 }
 .aloha-ui-menubutton-menu .ui-menu-item a {
-	width: 200px;
+	white-space: nowrap;
 	padding-left: 10px;
 	color: #212121;
 	-moz-border-radius:    0px;
@@ -215,8 +215,15 @@
 .aloha-ui-menubutton-expand .ui-button-icon-secondary {
 	right: 3px;
 }
+.aloha-ui-menubutton-iehack .aloha-ui-menubutton-menu .ui-menu-item a {
+	/* It was impossible to get the menu items and expand icons work on IE7 without specifying a fixed width. */
+	width: 200px;
+	/* Override the default nowrap for menu items because we now have a fixed width to work with */
+	white-space: normal;
+	/* Works around menu items jumping around by one pixel when hovered over */
+	display: inline-block;
+}
 /* === dropdown menu === */
-
 
 
 /* === menubutton === */
