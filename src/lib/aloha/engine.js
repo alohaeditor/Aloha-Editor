@@ -723,7 +723,7 @@ function myQueryCommandValue(command, range) {
 		}
 
 		// "Return command's value."
-		return commands[command].value();
+		return commands[command].value(range);
 	});
 }
 //@}
@@ -4708,7 +4708,7 @@ function recordCurrentStatesAndValues(range) {
 
 	// "Add ("fontSize", node's effective command value for "fontSize") to
 	// overrides."
-	overrides.push("fontsize", getEffectiveCommandValue(node, "fontsize"));
+	overrides.push(["fontsize", getEffectiveCommandValue(node, "fontsize")]);
 
 	// "Return overrides."
 	return overrides;
@@ -4731,7 +4731,7 @@ function restoreStatesAndValues(overrides, range) {
 			// returns something different from override, call
 			// execCommand(command)."
 			if (typeof override == "boolean"
-			&& myQueryCommandState(command) != override) {
+			&& myQueryCommandState(command, range) != override) {
 				myExecCommand(command);
 
 			// "Otherwise, if override is a string, and command is not
@@ -4740,8 +4740,8 @@ function restoreStatesAndValues(overrides, range) {
 			// override)."
 			} else if (typeof override == "string"
 			&& command != "fontsize"
-			&& !areEquivalentValues(command, myQueryCommandValue(command), override)) {
-				myExecCommand(command, false, override);
+			&& !areEquivalentValues(command, myQueryCommandValue(command, range), override)) {
+				myExecCommand(command, false, override, range);
 
 			// "Otherwise, if override is a string; and command is "fontSize";
 			// and either there is a value override for "fontSize" that is not
@@ -4760,7 +4760,7 @@ function restoreStatesAndValues(overrides, range) {
 					&& !areLooselyEquivalentValues(command, getEffectiveCommandValue(node, "fontsize"), override)
 				)
 			)) {
-				myExecCommand("fontsize", false, override);
+				myExecCommand("fontsize", false, override, range);
 
 			// "Otherwise, continue this loop from the beginning."
 			} else {
@@ -5004,10 +5004,20 @@ function deleteContents() {
 		// node."
 		startNode.deleteData(startOffset, endOffset - startOffset);
 
+		// if deleting the text moved two spaces together, we replace the left one by a &nbsp;, which makes the two spaces a visible
+		// two space sequence
+		if (startOffset > 0 && startNode.data.substr(startOffset - 1, 1) === ' '
+		&& startOffset < startNode.data.length && startNode.data.substr(startOffset, 1) === ' ') {
+			startNode.replaceData(startOffset - 1, 1, '\xa0');
+		}
+
 		// "Canonicalize whitespace at (start node, start offset)."
 		canonicalizeWhitespace(startNode, startOffset);
 
 		// "Set range's end to its start."
+		// Ok, also set the range's start to its start, because modifying the text 
+		// might have somehow corrupted the range
+		range.setStart(range.startContainer, range.startOffset);
 		range.setEnd(range.startContainer, range.startOffset);
 
 		// "Restore states and values from overrides."
