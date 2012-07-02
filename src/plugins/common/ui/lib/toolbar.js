@@ -6,9 +6,8 @@ define([
 	'ui/floating',
 	'vendor/jquery.store',
 	'aloha/jquery-ui'
-],
-function (
-	jQuery,
+], function (
+	$,
 	Surface,
 	Tab,
 	subguarded,
@@ -33,13 +32,13 @@ function (
 
 	function relativeToWindow(offset) {
 		return {
-			left: offset.left - jQuery(window).scrollLeft(),
-			top: offset.top - jQuery(window).scrollTop()
+			left: offset.left - $(window).scrollLeft(),
+			top: offset.top - $(window).scrollTop()
 		};
 	}
 
 	function forcePositionIntoWindow(position, $element) {
-		var $window = jQuery(window);
+		var $window = $(window);
 		var left = position.left;
 		var top = position.top;
 
@@ -52,7 +51,7 @@ function (
 		if (left + $element.width() < 0) {
 			left = 0;
 		} else if (left > $window.width()) {
-			left = jQuery.width() - $element.width();
+			left = $.width() - $element.width();
 		}
 
 		return {
@@ -107,7 +106,7 @@ function (
 			// activate/deactivate.  The editable instance gets a reference to
 			// this div.
 
-			this.$element = jQuery('<div>', {'class': 'aloha-ui-toolbar'});
+			this.$element = $('<div>', {'class': 'aloha-ui-toolbar'});
 
 			this.$_container = Tab.createContainer().appendTo(this.$element);
 
@@ -136,12 +135,19 @@ function (
 		},
 
 		_move: function (duration) {
-			if (Aloha.activeEditable && Toolbar.isFloatingMode) {
-				this.$element.stop();
-				floating.floatSurface(this, Aloha.activeEditable, duration, function (position) {
-					Toolbar.setFloatingPosition(position);
-				});
-			}
+			// We need to order the invocation of the floating animation to
+			// occur after a sequence point so that the element's height will
+			// be correct.
+			var that = this;
+			setTimeout(function () {
+				if (Aloha.activeEditable && Toolbar.isFloatingMode) {
+					that.$element.stop();
+					floating.floatSurface(that, Aloha.activeEditable, duration,
+						function (position) {
+							Toolbar.setFloatingPosition(position);
+						});
+				}
+			}, 1);
 		},
 
 		/**
@@ -154,11 +160,11 @@ function (
 			var surface = this;
 
 			subguarded(['aloha-selection-changed'], Surface.onActivatedSurface,
-				this, function ($event, range, event) {
+				this, function () {
 					surface._move();
 				});
 
-			jQuery(window).scroll(function ($event, nativeEvent) {
+			$(window).scroll(function () {
 				// FIXME: only do this for active surfaces.
 				surface._move(0);
 			});
@@ -194,7 +200,7 @@ function (
 		},
 
 		addPin: function () {
-			var $pin = jQuery('<div class="aloha-ui-pin">');
+			var $pin = $('<div class="aloha-ui-pin">');
 			var that = this;
 
 			this.$element.find('.ui-tabs').append($pin);
@@ -261,7 +267,7 @@ function (
 		}
 	});
 
-	jQuery.extend(Toolbar, {
+	$.extend(Toolbar, {
 
 		/**
 		 * A set of all toolbar instances.
@@ -272,7 +278,7 @@ function (
 		/**
 		 * An element on which all toolbar surfaces are to be rendered on the
 		 * page.
-		 * @type {jQuery.<HTMLElement>}
+		 * @type {$.<HTMLElement>}
 		 */
 		$surfaceContainer: null,
 
@@ -299,7 +305,7 @@ function (
 		 * element, and sets up floating behaviour settings.
 		 */
 		init: function () {
-			Toolbar.$surfaceContainer = jQuery('<div>', {
+			Toolbar.$surfaceContainer = $('<div>', {
 				'class': 'aloha-surface aloha-toolbar'
 			}).hide().appendTo('body');
 
