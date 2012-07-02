@@ -150,7 +150,10 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 				if ( jQuery.browser.msie ) {
 					// We will only us the ugly beforepaste hack if we shall
 					// not access the clipboard
-					if ( that.settings.noclipboardaccess ) {
+
+					// NOTE: this hack is currently always used, because the other method would somehow
+					// lead to incorrect cursor positions after pasting
+					if ( that.settings.noclipboardaccess || true ) {
 						editable.obj.bind( 'beforepaste', function ( event ) {
 							redirectPaste();
 							event.stopPropagation();
@@ -193,7 +196,7 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 
 			// bind a handler to the paste event of the pasteDiv to get the
 			// pasted content (but do this only once, not for every editable)
-			if ( jQuery.browser.msie && that.settings.noclipboardaccess ) {
+			if ( jQuery.browser.msie && (that.settings.noclipboardaccess || true) ) {
 				$pasteDiv.bind( 'paste', function ( event ) {
 					window.setTimeout( function () {
 						getPastedContent();
