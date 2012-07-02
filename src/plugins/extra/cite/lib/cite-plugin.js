@@ -338,8 +338,6 @@ define([
 		        	var config = that.getEditableConfig( Aloha.activeEditable.obj );
 				}
 
-				debugger;
-				
 				// quote
 				if ( jQuery.inArray( 'quote', config ) != -1 ) {
 					ComponentState.setState('quote', 'show', true);
