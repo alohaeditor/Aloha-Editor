@@ -5,11 +5,11 @@ Aloha.ready(function(){
 			text: "X",
 			menu: [
 				{ text: "Z",
-				  menu: [ { text: "Q", click: function(){console.log("Q");}, iconUrl: '../../plugins/extra/wai-lang/img/button.png' },
-						  { text: "W", click: function(){console.log("W");} } ],
+				  menu: [ { text: "one two", click: function(){console.log("Q");}, iconUrl: '../../plugins/extra/wai-lang/img/button.png' },
+						  { text: "three four five", click: function(){console.log("W");} } ],
 				  iconUrl: '../../plugins/extra/wai-lang/img/button.png'},
-				{ text: "V",
-				  menu: [ { text: "Q", click: function(){console.log("Q");} },
+				{ text: "V sdf asdf as fasd fasfd asfasf asf",
+				  menu: [ { text: "Q asd fas fasf as faw awe ftasf asd sad f", click: function(){console.log("Q");} },
 						  { text: "W", click: function(){console.log("W");} } ] }
 			],
 			iconUrl: '../../plugins/extra/wai-lang/img/button.png'
@@ -57,7 +57,7 @@ Aloha.ready(function(){
 							}]
 						},
 						{
-							text: "action only",
+							text: "action only  x x x x  x x",
 							click: function() {
 								console.log("action only");
 							}
@@ -70,7 +70,6 @@ Aloha.ready(function(){
 			]
 		});
 		Ribbon.addButton({
-			text: "menu button icons",
 			menu: [
 				{
 					text: "action with submenu",
@@ -82,7 +81,7 @@ Aloha.ready(function(){
 								click: function(){ console.log("action only"); },
 								iconUrl: '../../plugins/extra/wai-lang/img/button.png'
 							}],
-							iconUrl: '../../plugins/extra/wai-lang/img/button.png',
+							iconUrl: '../../plugins/extra/wai-lang/img/button.png'
 						},
 						{
 							text: "action only",
@@ -99,6 +98,32 @@ Aloha.ready(function(){
 				}
 			],
 			iconUrl: '../../plugins/extra/wai-lang/img/button.png'
+		});
+		Ribbon.addButton({
+			text: "split button2",
+			menu: [
+				{
+					text: "action with submenu",
+					menu: [
+						{
+							text: "submenu only",
+							menu: [{ text: "action only", click: function(){ console.log("action only"); } }]
+						},
+						{
+							text: "action only",
+							click: function() {
+								console.log("action only");
+							}
+						}
+					],	
+					click: function(){
+						console.log("action with submenu");
+					}
+				}
+			],
+			click: function(){
+				console.log("split button");
+			}
 		});
     });
 });
