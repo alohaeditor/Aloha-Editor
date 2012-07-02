@@ -30,13 +30,6 @@ define([
 		store.del('Aloha.FloatingMenu.left');
 	}
 
-	function relativeToWindow(offset) {
-		return {
-			left: offset.left - $(window).scrollLeft(),
-			top: offset.top - $(window).scrollTop()
-		};
-	}
-
 	function forcePositionIntoWindow(position, $element) {
 		var $window = $(window);
 		var left = position.left;
@@ -55,7 +48,7 @@ define([
 		}
 
 		return {
-			top: top - $window.scrollTop(),
+			top: top,
 			left: left
 		};
 	}
@@ -172,7 +165,7 @@ define([
 			this.addPin();
 
 			if (Toolbar.isFloatingMode) {
-				this.$element.css('position', 'absolute');
+				this.$element.css('position', 'fixed');
 			} else {
 				var position = forcePositionIntoWindow({
 					top: Toolbar.pinTop,
@@ -191,7 +184,7 @@ define([
 				'stop': function (event, ui) {
 					Toolbar.setFloatingPosition(ui.position);
 					if (!Toolbar.isFloatingMode) {
-						storePinPosition(relativeToWindow(ui.position));
+						storePinPosition(ui.position);
 					}
 				}
 			});
@@ -229,7 +222,7 @@ define([
 					};
 					unstorePinPosition();
 				} else {
-					position = relativeToWindow(surface.$element.offset());
+					position = surface.$element.offset();
 					storePinPosition(position);
 				}
 
