@@ -1,11 +1,10 @@
 // TODO: This code needs inline-documentation!
-define([
-	'aloha/core',
-	'jquery'
-], function (Aloha, jQuery) {
+define(['aloha/core', 'jquery'], function (Aloha, $) {
+	'use strict';
+
 	var PADDING = 10;
 	var ANIMATION_TIME = 500;
-	var $window = jQuery(window);
+	var $window = $(window);
 
 	function floatTo($element, position, duration, callback) {
 		$element.stop().animate(position, duration, function () {
@@ -57,7 +56,7 @@ define([
 	}
 
 	function togglePinSurfaces(surfaces, position, isFloating) {
-		var $elements = jQuery();
+		var $elements = $();
 		var j = surfaces.length;
 		while (j) {
 			$elements = $elements.add(surfaces[--j].$element);
