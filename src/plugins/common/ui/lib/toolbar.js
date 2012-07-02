@@ -165,7 +165,7 @@ define([
 				});
 
 			$(window).scroll(function () {
-				// FIXME: only do this for active surfaces.
+				// TODO: only do this for active surfaces.
 				surface._move(0);
 			});
 
