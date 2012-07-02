@@ -1028,7 +1028,6 @@ define([
 
 		// show the createLayer
 		this.createLayer.show();
-
 	};
 
 	/**
