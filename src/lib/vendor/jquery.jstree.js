@@ -1,6 +1,4 @@
-define('jstree', ['jquery'], function (jQuery) {
-var $ = jQuery;
-
+define('jstree', ['jquery'], function ($) {
 /*
  * jsTree 1.0-rc3
  * http://jstree.com/

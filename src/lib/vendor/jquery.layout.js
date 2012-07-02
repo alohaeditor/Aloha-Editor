@@ -1,6 +1,4 @@
-define('jquery-layout', ['jquery'], function (jQuery) {
-var $ = jQuery;
-
+define('jquery-layout', ['jquery'], function ($) {
 /**
  * @preserve jquery.layout 1.3.0 - Release Candidate 30.51
  * $Date: 2012-05-12 08:00:00 (Sat, 12 May 2012) $
