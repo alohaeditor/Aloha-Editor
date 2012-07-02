@@ -6,7 +6,7 @@ define(['aloha/jquery-ui'], function() {
 				label: Utils.makeButtonLabel(props),
 				text: !!(props.text || props.html),
 				icons: {
-					primary: props.icon || (props.iconUrl && 'aloha-ui-inline-icon') || null,
+					primary: props.icon || (props.iconUrl && 'aloha-ui-inline-icon-container') || null,
 					secondary: (hasMenu && 'aloha-jqueryui-icon ui-icon-triangle-1-s') || null
 				}
 			});

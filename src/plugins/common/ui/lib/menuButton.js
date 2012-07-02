@@ -96,8 +96,8 @@ define([
 				*/
 
 				$(document).bind('click', function (event){
-					menu.hide();
 					$(this).unbind(event);
+					menu.hide();
 					wrapper.removeClass('aloha-ui-menubutton-pressed');
 				});
 
