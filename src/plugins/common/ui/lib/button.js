@@ -47,6 +47,13 @@ function (jQuery, Component, Utils) {
 					}
 				})
 				.click(jQuery.proxy(function () {
+
+					// Ensure tooltips are always hidden after a button
+					// is clicked because sometimes the tooltip doesn't
+					// get closed automatically, for example after table
+					// cells are merged or split.
+					this.buttonElement.tooltip('close');
+
 					this._onClick();
 				}, this));
 		},
