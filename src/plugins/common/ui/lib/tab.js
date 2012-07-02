@@ -4,8 +4,12 @@ define([
 	'ui/container',
 	'ui/component',
 	'aloha/jquery-ui'
-],
-function (Aloha, jQuery, Container, Component) {
+], function (
+	Aloha,
+	jQuery,
+	Container,
+	Component
+) {
 	'use strict';
 
 	var idCounter = 0;
@@ -123,6 +127,7 @@ function (Aloha, jQuery, Container, Component) {
 			var showOnScope = ('object' === jQuery.type(settings.showOn) && settings.showOn.scope)
 				? settings.showOn.scope
 				: false;
+
 			Aloha.bind('aloha-ui-tab-activate-for-scope', function(event, scope){
 				if (scope === showOnScope) {
 					selectTab();
@@ -222,11 +227,24 @@ function (Aloha, jQuery, Container, Component) {
 					select: function (event, ui) {
 						var tabs = $container.data('aloha-tabs');
 						$container.data('aloha-active-container', tabs[ui.index]);
+						Aloha.trigger('aloha-ui-container-selected', tabs[ui.index]);
 					}
 				});
 
 			return $container;
 		}
+	});
+
+	// Hide any groups that have no visible buttons
+	Aloha.bind('aloha-ui-container-selected', function (event, container) {
+		setTimeout(function () {
+			container.container.find('.aloha-ui-component-group').each(function () {
+				jQuery(this).removeClass('aloha-ui-hidden');
+				if (0 === jQuery(this).find('button.ui-button:visible').length) {
+					jQuery(this).addClass('aloha-ui-hidden');
+				}
+			});
+		}, 1);
 	});
 
 	return Tab;

@@ -570,3 +570,8 @@ body .ui-tooltip {
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
 }
+
+
+.aloha-ui-hidden {
+	display: none;
+}
