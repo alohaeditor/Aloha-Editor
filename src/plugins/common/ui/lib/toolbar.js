@@ -196,7 +196,8 @@ define([
 				}
 			});
 
-			this.$element.resizable();
+			// Resizable toolbars are possible, and would be a nice feature.
+			//this.$element.resizable();
 		},
 
 		addPin: function () {
