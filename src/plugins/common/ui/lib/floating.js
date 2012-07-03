@@ -41,15 +41,17 @@ define(['aloha/core', 'jquery'], function (Aloha, $) {
 		}
 
 		if (availableSpace >= $element.height()) {
+			editableOrientation.top -= scrollTop;
 			floatAbove($element, editableOrientation, duration, callback);
-		} else if (availableSpace + $element.height() > editable.obj.height()) {
+		}  else if (availableSpace + $element.height() >
+			editableOrientation.top + editable.obj.height()) {
 			floatBelow($element, {
 				top: editableOrientation.top + editable.obj.height(),
 				left: left
 			}, duration, callback);
 		} else {
 			floatBelow($element, {
-				top: scrollTop,
+				top: 0,
 				left: left
 			}, duration, callback);
 		}
@@ -64,17 +66,14 @@ define(['aloha/core', 'jquery'], function (Aloha, $) {
 
 		if (isFloating) {
 			$elements.find('.aloha-ui-pin').removeClass('aloha-ui-pin-down');
-			$elements.css({
-				position: 'absolute',
-				top: position.top
-			});
 		} else {
 			$elements.find('.aloha-ui-pin').addClass('aloha-ui-pin-down');
-			$elements.css({
-				position: 'fixed',
-				top: position.top
-			});
 		}
+
+		$elements.css({
+			position: 'fixed',
+			top: position.top
+		});
 	}
 
 	return {
