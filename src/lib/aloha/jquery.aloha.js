@@ -316,14 +316,6 @@ define([
 		return target;
 	};
 
-	jQuery.isBoolean = function (b) {
-		return b === true || b === false;
-	};
-
-	jQuery.isNumeric = function (o) {
-		return !isNaN (o-0);
-	};
-
 	/**
 	 * check if a mixed var is empty or not
 	 * borrowed from http://phpjs.org/functions/empty:392 and a bit improved
