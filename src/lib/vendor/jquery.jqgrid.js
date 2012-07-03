@@ -1,6 +1,8 @@
 define('jqgrid',
 ['jquery', 'jqgrid-locale-' + (window && window.__DEPS__ && window.__DEPS__.lang || 'en'), 'jqueryui'],
-function ($) {
+function (jQuery) {
+var $ = jQuery;
+
 /* 
 * jqGrid  4.0.0 - jQuery Grid 
 * Copyright (c) 2008, Tony Tomov, tony@trirand.com 
