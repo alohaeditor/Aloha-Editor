@@ -157,27 +157,34 @@
 
 	Aloha.bind = function (type, fn) {
 		Aloha.require(['jquery'], function (jQuery) {
-			deferredReady = deferredReady || jQuery.Deferred();
-			if ('aloha-ready' === type) {
-				if ('alohaReady' !== Aloha.stage) {
-					deferredReady.done(fn);
+			// We will only need to load jQuery once ...
+			Aloha.bind = function (type, fn) {
+				deferredReady = deferredReady || jQuery.Deferred();
+				if ('aloha-ready' === type) {
+					if ('alohaReady' !== Aloha.stage) {
+						deferredReady.done(fn);
+					} else {
+						fn();
+					}
 				} else {
-					fn();
+					jQuery(Aloha, 'body').bind(type, fn);
 				}
-			} else {
-				jQuery(Aloha, 'body').bind(type, fn);
 			}
+			Aloha.bind(type, fn);
 		});
 	   return this;
 	};
 
 	Aloha.trigger = function (type, data) {
 		Aloha.require(['jquery'], function (jQuery) {
-			deferredReady = deferredReady || jQuery.Deferred();
-			if ('aloha-ready' === type) {
-				jQuery(deferredReady.resolve);
-			}
-			jQuery(Aloha, 'body').trigger(type, data);
+			Aloha.trigger = function (type, data) {
+				deferredReady = deferredReady || jQuery.Deferred();
+				if ('aloha-ready' === type) {
+					jQuery(deferredReady.resolve);
+				}
+				jQuery(Aloha, 'body').trigger(type, data);
+			};
+			Aloha.trigger(type, data);
 		});
 		return this;
 	};
@@ -197,7 +204,7 @@
 			// that which expect it to be there.
 			Aloha.jQuery = jQuery;
 
-	        // Load Aloha core files...
+	        // Load Aloha core files ...
 	        require(requireConfig, [
 					'vendor/jquery.json-2.2.min',
 					'vendor/jquery.store',
@@ -222,8 +229,8 @@
 					'aloha/repositoryobjects',
 					'aloha/contenthandlermanager'
 				], function () {
-				// ... and have jQuery call the Aloha.init method when the dom is
-				// ready.
+				// ... and have jQuery call the Aloha.init method when the dom
+				// is ready.
 				jQuery(Aloha.init);
 			});
 		});
@@ -231,6 +238,6 @@
 	    return Aloha;
 	});
 
-	//load Aloha dependencies
+	// Trigger a loading of Aloha dependencies.
 	require(requireConfig, ['aloha'], function () {});
 }(window));

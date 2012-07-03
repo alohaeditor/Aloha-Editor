@@ -21,8 +21,14 @@
 define([
 	'jquery',
 	'util/class',
-	'ui/scopes'
-], function(jQuery, Class, Scopes) {
+	'ui/scopes',
+	'PubSub'
+], function(
+	jQuery,
+	Class,
+	Scopes,
+	PubSub
+) {
 	'use strict';
 
 	var uid = 0;
@@ -216,7 +222,7 @@ define([
 		}
 	});
 
-	Aloha.bind('aloha-ui-scope-change', function(){
+	PubSub.sub('aloha.ui.scope.change', function(){
 		if (Aloha.activeEditable) {
 			Container.showContainersForContext(Aloha.activeEditable, null, null);
 		}

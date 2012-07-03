@@ -1,4 +1,6 @@
-define('jqueryui', ['jquery'], function($){
+define( 'jqueryui', [ 'jquery' ], function( jQuery ) {
+var $ = jQuery;
+
 /*!
  * jQuery UI 1.9m6
  *
