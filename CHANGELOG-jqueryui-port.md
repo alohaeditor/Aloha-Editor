@@ -1,3 +1,4 @@
+- **ENHANCEMENT**: the default jQuery version distributed with Aloha was updated from 1.6.1 to the latest version.
 - **MANUAL CHANGE**: The browser plugin was removed
 
                      The browser plugin is obsolete. Please see
