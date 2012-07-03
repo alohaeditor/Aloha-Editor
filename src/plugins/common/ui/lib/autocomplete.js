@@ -3,8 +3,13 @@ define([
 	"aloha/repositorymanager",
 	"ui/component",
 	"./vendor/jquery-ui-autocomplete-html"
-],
-function( jQuery, RepositoryManager, Component ) {
+], function(
+	jQuery,
+	RepositoryManager,
+	Component
+) {
+	'use strict';
+
 	/**
 	 * Generates the HTML for an item
 	 * @param {string} template
@@ -15,6 +20,11 @@ function( jQuery, RepositoryManager, Component ) {
 		return template.replace( /{{([^}]+)}}/g, function( _, name ) {
 			return name in item ? item[ name ] : "";
 		});
+	}
+
+	var AUTOCOMPLETE_CONTAINER_CLASSNAME = 'aloha-ui-autocomplete-container';
+	if (0 === $('.' + AUTOCOMPLETE_CONTAINER_CLASSNAME).length) {
+		$('<div class="aloha ' + AUTOCOMPLETE_CONTAINER_CLASSNAME + '">').appendTo('body');
 	}
 
 	/**
@@ -33,6 +43,7 @@ function( jQuery, RepositoryManager, Component ) {
 			this.element = jQuery( "<input>" )
 				.autocomplete({
 					html: true,
+					appendTo: '.' + AUTOCOMPLETE_CONTAINER_CLASSNAME,
 					source: function( req, res ) {
 						RepositoryManager.query({
 							queryString: req.term,

@@ -575,3 +575,30 @@ body .ui-tooltip {
 .aloha-ui-hidden {
 	display: none;
 }
+
+/* === auto complete === */
+.aloha .ui-autocomplete.ui-widget-content {
+	background: #fff;
+	border: 1px solid #ddd;
+	box-shadow: 1px 2px 10px rgba(0,0,0,0.25);
+	padding: 3px;
+	-moz-border-radius:    0;
+	-khtml-border-radius:  0;
+	-webkit-border-radius: 0;
+	border-radius:         0;
+}
+
+.aloha .ui-autocomplete .ui-menu-item a {
+	text-align: left;
+	font-size: 12px;
+	-moz-border-radius:    0;
+	-khtml-border-radius:  0;
+	-webkit-border-radius: 0;
+	border-radius:         0;
+	border-color: transparent;
+}
+
+.aloha .ui-autocomplete .ui-menu-item a.ui-state-focus {
+	background: #3B73D7;
+	color: #fff;
+}

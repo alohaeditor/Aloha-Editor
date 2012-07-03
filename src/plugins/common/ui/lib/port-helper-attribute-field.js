@@ -19,6 +19,11 @@ define([
 ) {
 	'use strict';
 
+	var AUTOCOMPLETE_CONTAINER_CLASSNAME = 'aloha-ui-autocomplete-container';
+	if (0 === $('.' + AUTOCOMPLETE_CONTAINER_CLASSNAME).length) {
+		$('<div class="aloha ' + AUTOCOMPLETE_CONTAINER_CLASSNAME + '">').appendTo('body');
+	}
+
 	// Main responsibilities implemented by the attribute-field are
 	//
 	// * setting a target object and attribute and the subsequent change of
@@ -33,9 +38,9 @@ define([
 	//   item was selected (example link plugin)
 
 	var AttributeField = function (props) {
-		var valueField = props.valueField || "id";
-		var displayField = props.displayField || "name";
-		var objectTypeFilter = props.objectTypeFilter || "all";
+		var valueField = props.valueField || 'id';
+		var displayField = props.displayField || 'name';
+		var objectTypeFilter = props.objectTypeFilter || 'all';
 		var placeholder = props.placeholder;
 		var noTargetHighlight = !!props.noTargetHighlight;
 
@@ -73,8 +78,9 @@ define([
 		});
 
 		element.autocomplete({
-			"html": true,
-			"source": function( req, res ) {
+			'html': true,
+			'appendTo': '.' + AUTOCOMPLETE_CONTAINER_CLASSNAME,
+			'source': function( req, res ) {
 				RepositoryManager.query({
 					queryString: req.term,
 					objectTypeFilter: objectTypeFilter
