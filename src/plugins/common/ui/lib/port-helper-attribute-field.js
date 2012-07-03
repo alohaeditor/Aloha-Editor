@@ -8,12 +8,14 @@ define([
 	'ui/component',
 	'ui/scopes',
 	'aloha/repositorymanager',
+	'PubSub',
 	'ui/vendor/jquery-ui-autocomplete-html'
 ], function (
 	$,
 	Component,
 	Scopes,
-	RepositoryManager
+	RepositoryManager,
+	PubSub
 ) {
 	'use strict';
 
@@ -58,7 +60,8 @@ define([
 				this._super();
 				this.element = $('<span>');
 				var that = this;
-				Aloha.bind('aloha-ui-container-activated', function (event, container) {
+				PubSub.sub('aloha.ui.container.activated', function (message) {
+					var container = message.data;
 					if (container.visible &&
 					    container === that._container &&
 						(!Aloha.activeEditable ||
@@ -378,6 +381,7 @@ define([
 			clearStore: clearStore,
 			preventAutoSuggestionBoxFromExpanding: preventAutoSuggestionBoxFromExpanding
 		};
+
 		return attrField;
 	}
 

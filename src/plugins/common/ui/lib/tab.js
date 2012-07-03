@@ -3,12 +3,14 @@ define([
 	'jquery',
 	'ui/container',
 	'ui/component',
+	'PubSub',
 	'aloha/jquery-ui'
 ], function (
 	Aloha,
 	jQuery,
 	Container,
-	Component
+	Component,
+	PubSub
 ) {
 	'use strict';
 
@@ -114,10 +116,11 @@ define([
 
 			function selectTab() {
 				thisTab.container.tabs('select', thisTab.index);
-				Aloha.trigger('aloha-ui-container-activated', thisTab);
+				PubSub.pub('aloha.ui.container.activated', {data:thisTab});
 			}
 
-			Aloha.bind('aloha-ui-component-focus', function(event, componentName){
+			PubSub.sub('aloha.ui.component.focus', function(message){
+				var componentName = message.data;
 				var component = componentsByName[componentName];
 				if (component) {
 					selectTab();
@@ -128,7 +131,7 @@ define([
 				? settings.showOn.scope
 				: false;
 
-			Aloha.bind('aloha-ui-tab-activate-for-scope', function(event, scope){
+			PubSub.sub('aloha.ui.tab.activate-for-scope', function(scope){
 				if (scope === showOnScope) {
 					selectTab();
 				}
@@ -227,7 +230,7 @@ define([
 					select: function (event, ui) {
 						var tabs = $container.data('aloha-tabs');
 						$container.data('aloha-active-container', tabs[ui.index]);
-						Aloha.trigger('aloha-ui-container-selected', tabs[ui.index]);
+						PubSub.pub('aloha.ui.container.selected', {data: tabs[ui.index]});
 					}
 				});
 
@@ -236,9 +239,9 @@ define([
 	});
 
 	// Hide any groups that have no visible buttons
-	Aloha.bind('aloha-ui-container-selected', function (event, container) {
+	PubSub.sub('aloha.ui.container.selected', function (message) {
 		setTimeout(function () {
-			container.container.find('.aloha-ui-component-group').each(function () {
+			message.data.container.find('.aloha-ui-component-group').each(function () {
 				jQuery(this).removeClass('aloha-ui-hidden');
 				if (0 === jQuery(this).find('button.ui-button:visible').length) {
 					jQuery(this).addClass('aloha-ui-hidden');
@@ -248,5 +251,4 @@ define([
 	});
 
 	return Tab;
-
 });
