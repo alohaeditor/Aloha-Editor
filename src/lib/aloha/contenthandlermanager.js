@@ -9,6 +9,8 @@ define(
 function( jQuery, Registry ) {
 	"use strict";
 
+	registeredHandler: false
+
 	/**
 	 * Create an contentHandler from the given definition. Acts as a factory method
 	 * for contentHandler.

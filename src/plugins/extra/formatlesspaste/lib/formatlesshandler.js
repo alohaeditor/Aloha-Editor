@@ -15,7 +15,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 	/**
 	 * Register the generic content handler
 	 */
-	var FormatlessPasteHandler = ContentHandlerManager.createHandler({
+	var FormatlessContentHandler = ContentHandlerManager.createHandler({
 		
 		/**
 		 * Enable/Disable formatless pasting option 
@@ -61,5 +61,5 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		}
   });
 
-	return FormatlessPasteHandler;
+	return FormatlessContentHandler;
 });
