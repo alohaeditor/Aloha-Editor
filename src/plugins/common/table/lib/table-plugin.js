@@ -1102,7 +1102,14 @@ define([
 			}
 			
 			TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
-		// no active editable => error
+
+			// The selection starts out in the first cell of the new
+			// table. The table tab/scope has to be activated
+			// accordingly.
+			tableObj.focus();
+			TablePlugin.activeTable.selection.selectionType = 'cell';
+			TablePlugin.updateFloatingMenuScope();
+
 		} else {
 			this.error( 'There is no active Editable where the table can be\
 				inserted!' );
