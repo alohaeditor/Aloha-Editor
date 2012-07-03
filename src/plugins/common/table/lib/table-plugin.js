@@ -673,11 +673,12 @@ define([
 		
 		if (this.rowMSItems.length > 0) {
 			this.rowMSItems.push({
-				name: 'removeFormat',
-				text: i18n.t('button.removeFormat.text'),
-				tooltip: i18n.t('button.removeFormat.tooltip'),
-				wide: true,
-				click: function () {
+				name    : 'removeFormat',
+				text    : i18n.t('button.removeFormat.text'),
+				tooltip : i18n.t('button.removeFormat.tooltip'),
+				'cls'   : 'aloha-ui-multisplit-fullwidth',
+				wide    : true,
+				click   : function () {
 					if (that.activeTable) {
 						var sc = that.activeTable.selection.selectedCells;
 						// if a selection was made, transform the selected cells
@@ -820,11 +821,12 @@ define([
 		
 		if (this.columnMSItems.length > 0) {
 			this.columnMSItems.push({
-				name	  : 'removeFormat',
-				text	  : i18n.t('button.removeFormat.text'),
-				tooltip	  : i18n.t('button.removeFormat.tooltip'),
-				wide	  : true,
-				click	  : function () {
+				name	: 'removeFormat',
+				text	: i18n.t('button.removeFormat.text'),
+				tooltip	: i18n.t('button.removeFormat.tooltip'),
+				'cls'   : 'aloha-ui-multisplit-fullwidth',
+				wide	: true,
+				click	: function () {
 					if (that.activeTable) {
 						var sc = that.activeTable.selection.selectedCells;
 						// if a selection was made, transform the selected cells
@@ -903,11 +905,12 @@ define([
 		
 		if(this.tableMSItems.length > 0) {
 			this.tableMSItems.push({
-				name: 'removeFormat',
-				text: i18n.t('button.removeFormat.text'),
-				tooltip: i18n.t('button.removeFormat.tooltip'),
-				wide: true,
-				click: function () {
+				name    : 'removeFormat',
+				text    : i18n.t('button.removeFormat.text'),
+				tooltip : i18n.t('button.removeFormat.tooltip'),
+				'cls'   : 'aloha-ui-multisplit-fullwidth',
+				wide    : true,
+				click   : function () {
 					// remove all table classes
 					if (that.activeTable) {
 						for (var f = 0; f < tableConfig.length; f++) {
@@ -1025,7 +1028,6 @@ define([
 
 		// show the createLayer
 		this.createLayer.show();
-
 	};
 
 	/**
@@ -1100,7 +1102,14 @@ define([
 			}
 			
 			TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
-		// no active editable => error
+
+			// The selection starts out in the first cell of the new
+			// table. The table tab/scope has to be activated
+			// accordingly.
+			tableObj.focus();
+			TablePlugin.activeTable.selection.selectionType = 'cell';
+			TablePlugin.updateFloatingMenuScope();
+
 		} else {
 			this.error( 'There is no active Editable where the table can be\
 				inserted!' );

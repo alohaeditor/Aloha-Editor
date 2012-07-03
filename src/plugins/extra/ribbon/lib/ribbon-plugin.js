@@ -18,7 +18,7 @@ define([
 
 	var ribbon = Plugin.create('ribbon', {
 		init: function () {
-			if ( ! this.settings.enable ) {
+			if (!this.settings.enable && typeof this.settings.enable !== 'undefined') {
 				return;
 			}
 

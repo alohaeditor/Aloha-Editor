@@ -39,7 +39,13 @@ define([
 
 			this.buttons = [];
 
-			$(this.getButtons()).map(function (i, button) {
+			var buttons = this.getButtons();
+
+			if (0 === buttons.length) {
+				element.hide();
+			}
+
+			$(buttons).map(function (i, button) {
 				var component = new (Button.extend({
 					tooltip: button.tooltip,
 					icon: 'aloha-large-icon ' + button.icon,

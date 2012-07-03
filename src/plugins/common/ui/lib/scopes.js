@@ -1,4 +1,11 @@
-define(['jquery'],function($){
+define([
+	'jquery',
+	'PubSub'
+], function (
+	$,
+	PubSub
+) {
+	'use strict';
 
 	var scopes = {
 		'Aloha.empty': [],
@@ -11,7 +18,7 @@ define(['jquery'],function($){
 	var scopeSetDuringSelectionChanged = false;
 
 	function pushScopeAncestors(ancestorScopes, scope) {
-		if ( ! scopes.hasOwnProperty(scope) ) {
+		if (!scopes.hasOwnProperty(scope)) {
 			return;
 		}
 		var parentScopes = scopes[scope];
@@ -22,15 +29,16 @@ define(['jquery'],function($){
 		}
 	}
 
-	Aloha.bind('aloha-selection-changed-before', function(){
+	Aloha.bind('aloha-selection-changed-before', function () {
 		scopeSetDuringSelectionChanged = false;
 	});
 
-	Aloha.bind('aloha-selection-changed-after', function(event, range, originalEvent){
-		// I don't know why we check for originalEvent != 'undefined', here is the original comment:
+	Aloha.bind('aloha-selection-changed-after', function (event, range, originalEvent) {
+		// I don't know why we check for originalEvent != 'undefined', here is
+		// the original comment:
 		// "Only set the specific scope if an event was provided, which means
-		//  that somehow an editable was selected"
-		if ( typeof originalEvent != 'undefined' && ! scopeSetDuringSelectionChanged ) {
+		// that somehow an editable was selected"
+		if (typeof originalEvent != 'undefined' && ! scopeSetDuringSelectionChanged) {
 			Scopes.setScope('Aloha.continuoustext', true);
 		}
 	});
@@ -41,12 +49,12 @@ define(['jquery'],function($){
 			var ancestorScopes = [];
 			pushScopeAncestors(ancestorScopes, scope);
 			addedScopes[scope] = ancestorScopes;
-			Aloha.trigger('aloha-ui-scope-change');
+			PubSub.pub('aloha.ui.scope.change');
 		},
 
 		removeScope: function(scope) {
 			delete addedScopes[scope];
-			Aloha.trigger('aloha-ui-scope-change');
+			PubSub.pub('aloha.ui.scope.change');
 		},
 
 		isActiveScope: function(scope){
@@ -76,7 +84,7 @@ define(['jquery'],function($){
 		 */
 		activateTabOfButton: function(name){
 			// Tabs listen to focus events on components and show themselves if appropriate.
-			Aloha.trigger('aloha-ui-component-focus', name);
+			PubSub.pub('aloha.ui.component.focus', name);
 		},
 
 		/**
@@ -90,9 +98,9 @@ define(['jquery'],function($){
 			if (activeScopes[0] != scope) {
 				activeScopes = [scope];
 				pushScopeAncestors(activeScopes, scope);
-				Aloha.trigger('aloha-ui-scope-change');
+				PubSub.pub('aloha.ui.scope.change');
 				if ( ! noActivateTab ) {
-					Aloha.trigger('aloha-ui-tab-activate-for-scope', scope);
+					PubSub.pub('aloha.ui.tab.activate-for-scope', scope);
 				}
 			}
 		},

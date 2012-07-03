@@ -21,11 +21,6 @@
 	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
 
 	<style>
-		/* Place the new UI toolbar somewhere where we can see it */
-		.aloha-toolbar {
-			z-index: 999999;
-		}
-
 		/* Basic Styling for Sidebar */
 		.aloha-sidebar {
 		  position: fixed;
@@ -67,15 +62,18 @@
 				label: 'Format',
 				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
-					[ 'bold', 'strong', 'italic', 'emphasis', 'strikethrough', '\n',
-					  'subscript', 'superscript', 'orderedList', 'unorderedList', 'formatLink' ],
-					[ 'formatBlock' ]
-					  /*
-					  "indentList", "outdentList", "\n", 
-					  "formatAbbr", "wailang", "quote", "toggleFormatlessPaste", "\n",
-                      "alignLeft", "alignCenter", "alignRight", "alignJustify", "\n",
-                      "toggleMetaView", "formatNumeratedHeaders"
-					  */
+					[
+						'bold', 'strong', 'italic', 'emphasis', '\n',
+						'subscript', 'superscript', 'strikethrough', 'quote'
+					], [
+						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', '\n',
+						'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
+					], [
+						'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
+						'orderedList', 'unorderedList', 'indentList', 'outdentList'
+					], [
+						'formatBlock'
+					]
 				]
 			},
 			// Insert Tab

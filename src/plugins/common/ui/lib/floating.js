@@ -1,11 +1,10 @@
 // TODO: This code needs inline-documentation!
-define([
-	'aloha/core',
-	'jquery'
-], function (Aloha, jQuery) {
+define(['aloha/core', 'jquery'], function (Aloha, $) {
+	'use strict';
+
 	var PADDING = 10;
 	var ANIMATION_TIME = 500;
-	var $window = jQuery(window);
+	var $window = $(window);
 
 	function floatTo($element, position, duration, callback) {
 		$element.stop().animate(position, duration, function () {
@@ -42,22 +41,24 @@ define([
 		}
 
 		if (availableSpace >= $element.height()) {
+			editableOrientation.top -= scrollTop;
 			floatAbove($element, editableOrientation, duration, callback);
-		} else if (availableSpace + $element.height() > editable.obj.height()) {
+		}  else if (availableSpace + $element.height() >
+			editableOrientation.top + editable.obj.height()) {
 			floatBelow($element, {
 				top: editableOrientation.top + editable.obj.height(),
 				left: left
 			}, duration, callback);
 		} else {
 			floatBelow($element, {
-				top: scrollTop,
+				top: 0,
 				left: left
 			}, duration, callback);
 		}
 	}
 
 	function togglePinSurfaces(surfaces, position, isFloating) {
-		var $elements = jQuery();
+		var $elements = $();
 		var j = surfaces.length;
 		while (j) {
 			$elements = $elements.add(surfaces[--j].$element);
@@ -65,17 +66,14 @@ define([
 
 		if (isFloating) {
 			$elements.find('.aloha-ui-pin').removeClass('aloha-ui-pin-down');
-			$elements.css({
-				position: 'absolute',
-				top: position.top
-			});
 		} else {
 			$elements.find('.aloha-ui-pin').addClass('aloha-ui-pin-down');
-			$elements.css({
-				position: 'fixed',
-				top: position.top
-			});
 		}
+
+		$elements.css({
+			position: 'fixed',
+			top: position.top
+		});
 	}
 
 	return {

@@ -180,7 +180,7 @@ define([
 
 			Component.define('quote', ToggleButton, {
 				tooltip: i18n.t('cite.button.add.quote'),
-				iconClass: nsClass('button', 'inline-button'),
+				icon: nsClass('button', 'inline-button'),
 				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.addInlineQuote();
@@ -281,7 +281,7 @@ define([
 					return;
 				}
 				
-				if ( jQuery.inArray( 'quote', config ) !== -1 ) {
+				if ( jQuery.inArray('quote', config ) !== -1 ) {
 					ComponentState.setState('quote', 'show', true);
 				} else {
 					ComponentState.setState('quote', 'show', false);
@@ -337,7 +337,7 @@ define([
 				if ( Aloha.activeEditable ) {
 		        	var config = that.getEditableConfig( Aloha.activeEditable.obj );
 				}
-				
+
 				// quote
 				if ( jQuery.inArray( 'quote', config ) != -1 ) {
 					ComponentState.setState('quote', 'show', true);

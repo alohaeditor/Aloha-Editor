@@ -1,3 +1,16 @@
+- **MANUAL CHANGE**: The jQuery.isBoolean extension added to jQuery by Aloha was removed.
+                     Instead consider typeof x === 'boolean'. 
+
+- **ENHANCEMENT**: The default jQuery version distributed with Aloha was updated from 1.6.1 to 1.7.2.
+                   The jQuery.isNumeric extension added to jQuery by Aloha was removed to
+                   account for jQuery's own isNumeric function added in 1.7.
+
+- **MANUAL CHANGE**: The browser plugin was removed
+
+                     The browser plugin is obsolete. Please see
+                     linkbrowser and imagebrowser plugins for
+                     alternatives.
+
 - **MANUAL CHANGE**: Added the ui-plugin and removed ui specific code from the Aloha core
 
                      Due to a complete re-implementation of the Aloha
@@ -7,9 +20,9 @@
                      (In the following, ui/x refers to src/plugins/common/ui/lib/x.js.)
 
                      * FloatingMenu - removed
-                       See ui/toolbar
 
                      * Aloha.ui - removed
+
                        Affects
                        Aloha.ui.AttributeField
                        Aloha.ui.Button
@@ -22,7 +35,6 @@
                        Plugin.i18n (has been deprecated for some time now)
 
                      * Aloha.Message - removed
-                       See ui/message.
 
                      * Aloha.settings.plugins.table.summaryinsidebar - meaning changed
 
@@ -76,33 +88,32 @@
                      members. For example, as in the case of the cite
                      plugin, buttons were pushed from other plugins onto
                      the multi-split-button of the Format plugin. This
-                     kind of hack is obsolete and many of these
-                     component properties were removed. Even if the
-                     non-private property still exists, this kind of
-                     hack will not work any more. For this reason
-                     plugins must be refactored so that they do not
-                     depend on the user interface of other plugins. Any
-                     non-private component properties may be removed at
-                     some time in the future.
+                     many of these component properties were
+                     removed. Even if the non-private property still
+                     exists. For this reason plugins must be refactored
+                     so that they do not depend on the user interface of
+                     other plugins. Any non-private component properties
+                     may be removed at some time in the future.
 
-                     Also note that the removal of the Ext.* namespace
-                     and the ExtJs css may inadvertently affect the
-                     behaviour and display of any site that includes
-                     Aloha.
+                     The removal of the Ext.* namespace and the ExtJs
+                     css may inadvertently affect the behaviour and
+                     display of any site that includes Aloha.
 
                      In particular the trim() function on the String
                      object was provided by ExtJs for older versions of
-                     Internet Explorer. Since ExtJs is now gone this
-                     function will now probably cause errors on older
-                     versions of Internet Explorer. jQuery.trim() may be
-                     used as an alternative.
+                     IE. Since ExtJs is gone, this function will now
+                     probably cause errors on older versions of
+                     IE. jQuery.trim() may be used as an alternative.
 
 - **MANUAL CHANGE**: The following files have been removed
                      src/lib/aloha/ext-alohatreeloader.js
                      src/lib/aloha/ui-browser.js
+                     src/lib/aloha/ecma5.js
 
                      These files are not in use by any of the main Aloha
-                     plugins and as such are deemed obsolete.
+                     plugins and as such are deemed obsolete. These
+                     files were never loaded and their removal should not
+                     have any side-effect.
 
                      Custom plugins should be checked for a possible
                      dependency on these files.

@@ -1,4 +1,13 @@
-define(['jquery', 'ui/component', 'aloha/jquery-ui'], function ($, Component) {
+define([
+	'jquery',
+	'ui/component',
+	'ui/utils',
+	'aloha/jquery-ui'
+], function (
+	$,
+	Component,
+	Utils
+) {
 	'use strict';
 
 	var MenuButton = Component.extend({
@@ -14,8 +23,9 @@ define(['jquery', 'ui/component', 'aloha/jquery-ui'], function ($, Component) {
 	 *        click - if provided will generate a split button,
 	 *                  otherwise just a normal select button.
 	 *        menu - array of props for nested buttons
-	 *        label - button text
-	 *        icon - button icon
+	 *        text - button text
+	 *        html - button html
+	 *        iconUrl - button icon url
 	 *        siblingContainer
 	 *             - a $ object that will be searched for other split buttons.
 	 *               If a split button is expanded, all the other split buttons in
@@ -28,33 +38,30 @@ define(['jquery', 'ui/component', 'aloha/jquery-ui'], function ($, Component) {
 		var action = null;
 		var buttonset = null;
 
+		if ($.browser.msie) {
+			wrapper.addClass('aloha-ui-menubutton-iehack');
+		}
+
 		if (props.click) {
-			action = $('<button>', {'class': 'aloha-ui-menubutton-action'})
-				.text(props.label)
-				.button()
+			action = Utils.makeButton($('<button>', {'class': 'aloha-ui-menubutton-action'}), props)
 				.click(props.click);
+
+			Utils.makeButton(expand, {}, true);
 
 			buttonset = $('<div>')
 				.buttonset()
 				.append(action)
 				.append(expand);
-
-			if (props.icon) {
-				action.button('option', 'icons', {'primary': props.icon});
-			}
 		} else {
-			expand.text(props.label)
+			Utils.makeButton(expand, props, true)
 			      .addClass('aloha-ui-menubutton-single');
 		}
 
 		function hideMenu(menu) {
-			$(menu).hide().parent().removeClass('aloha-ui-menubutton-pressed');
+			menu.hide().parent().removeClass('aloha-ui-menubutton-pressed');
 		}
 
 		expand
-			.button({
-				icons: {primary: 'aloha-jqueryui-icon ui-icon-triangle-1-s'}
-			})
 			.click(function (){
 				wrapper.addClass('aloha-ui-menubutton-pressed');
 
@@ -63,7 +70,7 @@ define(['jquery', 'ui/component', 'aloha/jquery-ui'], function ($, Component) {
 						.find('.aloha-ui-menubutton-menu')
 						.each(function (){
 							if (this !== menu[0]) {
-								hideMenu(this);
+								hideMenu($(this));
 							}
 						});
 				}
@@ -93,8 +100,8 @@ define(['jquery', 'ui/component', 'aloha/jquery-ui'], function ($, Component) {
 				*/
 
 				$(document).bind('click', function (event){
-					menu.hide();
 					$(this).unbind(event);
+					menu.hide();
 					wrapper.removeClass('aloha-ui-menubutton-pressed');
 				});
 
@@ -117,7 +124,7 @@ define(['jquery', 'ui/component', 'aloha/jquery-ui'], function ($, Component) {
 		for (var i = 0; i < menu.length; i++) {
 			var item = menu[i];
 			var elem = $('<li>');
-			elem.append($('<a>', {'href': 'javascript:void 0', 'text': item.label}));
+			elem.append($('<a>', {'href': 'javascript:void 0', 'html': Utils.makeButtonLabelWithIcon(item)}));
 			if (item.click) {
 				elem.data('aloha-ui-menubutton-select', function (){
 					parentCloseHandler();

@@ -27,7 +27,7 @@
 
 .aloha-ui-toolbar {
 	text-align: left;
-	width: 435px;
+	width: 582px;
 }
 .aloha-ui-toolbar .ui-button-icon-only {
 	background-color: transparent;
@@ -180,7 +180,7 @@
 	text-align: left;
 }
 .aloha-ui-menubutton-menu .ui-menu-item a {
-	width: 150px;
+	white-space: nowrap;
 	padding-left: 10px;
 	color: #212121;
 	-moz-border-radius:    0px;
@@ -189,8 +189,41 @@
 	border-radius:         0px;
 	border-color: transparent;
 }
+/* The following margin and padding ensure that the triangle icon of submenus
+   doesn't overlap with the text (only for IE, looks ok in chrome without
+   these rules) */
+.aloha-ui-menubutton-menu .ui-menu-item .ui-menu-icon {
+	margin-right: -16px;
+}
+/* See previous rule */
+.aloha-ui-menubutton-menu .ui-menu-item a {
+	padding-right: 20px;
+}
+.aloha-ui-menubutton-menu .aloha-ui-inline-icon {
+	/* These margins align the inline icons of each menu item with the
+       text of the menu items */
+	margin-bottom: -4px;
+	margin-right: 5px;
+}
+/* This rule and the next will position the icon of an icon-only menu
+   button more properly with the secondary dropdown icon */
+.aloha-ui-menubutton-expand .aloha-ui-inline-icon-container {
+	margin-right: -4px;
+	margin-left: 4px;
+}
+/* See previous rule */
+.aloha-ui-menubutton-expand .ui-button-icon-secondary {
+	right: 3px;
+}
+.aloha-ui-menubutton-iehack .aloha-ui-menubutton-menu .ui-menu-item a {
+	/* It was impossible to get the menu items and expand icons work on IE7 without specifying a fixed width. */
+	width: 200px;
+	/* Override the default nowrap for menu items because we now have a fixed width to work with */
+	white-space: normal;
+	/* Works around menu items jumping around by one pixel when hovered over */
+	display: inline-block;
+}
 /* === dropdown menu === */
-
 
 
 /* === menubutton === */
@@ -242,11 +275,6 @@
 }
 .aloha-ui-menubutton-container .ui-button-text {
 	font-size: 11px;
-	padding: 0 4px;
-}
-.aloha-ui-menubutton-expand,
-.aloha-ui-menubutton-single .ui-button-text {
-	padding-left: 16px;
 }
 .aloha-ui-menubutton-expand.aloha-ui-menubutton-single {
 	-moz-border-radius:    4px;
@@ -281,6 +309,10 @@
 .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed .ui-button {
 	background: #ccc;
 	box-shadow: inset 0px 0px 4px rgba(0,0,0,0.2);
+}
+.aloha-ui-menubutton-single .ui-button-text {
+	/* Ensures that the secondary icon (right icon) doesn't overlap with the button text. */
+	padding-right: 2.1em;
 }
 /* === /menubutton === */
 
@@ -326,6 +358,27 @@
 }
 .aloha-icon-outdent {
 	background: url(http://aloha-editor.org/builds/hotfix/latest/src/img/text_indent_remove.png) no-repeat center center;
+}
+
+/* === inline icons (<img> instead of class) === */
+
+.ui-button-icon-only .aloha-ui-inline-icon-container {
+	/* These width height and margin settings will allow an inline icon
+       almost as big as the button */
+	width: 18px;
+	height: 18px;
+	margin-top: -10px;
+	margin-left: -9px;
+}
+
+.aloha-ui-inline-icon-container {
+	/* Overwrite jqueryui icon style text-indent: -9999px; to support
+       <img> icons (inline icons) instead of class icons */
+	text-indent: 0px;
+}
+
+.ui-button-text-icon-primary .ui-button-icon-primary {
+	margin-left: 4px;
 }
 
 /* === large icons === */
@@ -516,4 +569,36 @@ body .ui-tooltip {
 	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
+}
+
+
+.aloha-ui-hidden {
+	display: none;
+}
+
+/* === auto complete === */
+.aloha .ui-autocomplete.ui-widget-content {
+	background: #fff;
+	border: 1px solid #ddd;
+	box-shadow: 1px 2px 10px rgba(0,0,0,0.25);
+	padding: 3px;
+	-moz-border-radius:    0;
+	-khtml-border-radius:  0;
+	-webkit-border-radius: 0;
+	border-radius:         0;
+}
+
+.aloha .ui-autocomplete .ui-menu-item a {
+	text-align: left;
+	font-size: 12px;
+	-moz-border-radius:    0;
+	-khtml-border-radius:  0;
+	-webkit-border-radius: 0;
+	border-radius:         0;
+	border-color: transparent;
+}
+
+.aloha .ui-autocomplete .ui-menu-item a.ui-state-focus {
+	background: #3B73D7;
+	color: #fff;
 }
