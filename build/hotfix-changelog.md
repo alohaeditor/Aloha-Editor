@@ -14,3 +14,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: core: fixed missing space when selecting a word between two spaces and deleting (by [DEL] or [BACKSPACE]). The result will now be like expected: having the cursor between two spaces.
 - **BUG**: characterpicker-plugin: Fixed inserting characters with a non-collapsed selection. Instead of adding the character after the selection, the inserted character will now replace the selection (like expected).
 - **BUG**: paste-plugin: Disabled handling paste on IE by executing the command 'paste', because this causes incorrect cursor positions after pasting.
+- **BUG**: paste-plugin: Fixed setting focus and selection into the editable before inserting pasted html. That fixes strange behaviour in FF after pasting.
