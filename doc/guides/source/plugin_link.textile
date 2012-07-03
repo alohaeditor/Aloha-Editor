@@ -4,6 +4,9 @@ The Link Plugin allows you to add hyperlinks to your document, either by specify
 
 endprologue.
 
+h3. Functional Description
+
+To create a new link, click on the link button. If a text is already entered you have to mark the desired word(s) and click on the link button. Now you can enter a URL of another website, or enter a name of an existing page in your repository. On the Aloha Editor Sidebar you can enter a name for the link and decide in which target the link should be opened. In order to delete a link just click at the linked text and deactivat the link button from the "Format" tab or click on the remove link button on the "Link" tab.
 
 h3. Components
 

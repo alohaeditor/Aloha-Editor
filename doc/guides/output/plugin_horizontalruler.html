@@ -57,6 +57,7 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
@@ -103,34 +104,36 @@
       <div id="mainCol">
           <div class="headerSection">
             <h2>The Horizontalruler Plugin</h2>
-<p>With this plugin the editor has the possibility to insert a horizontal ruler <hr>-element.</p>
+<p>With this plugin the editor has the possibility to insert a horizontal ruler <tt>&lt;hr&gt;</tt>-element.</p>
 
           </div>
-        <h3 id="plugin-settings">1 Plugin Settings</h3>
-<div class="code_container">
-<pre class="brush: javascript; gutter: false; toolbar: false">
-
-	Aloha.settings.plugins.horizontalruler: {
-		editables: {
-			'#my-editable': []			// disable the plugin for the editable with ID my-editable
-		}
-	}
-</pre></div><h3 id="horizontalruler-plugin">2 Horizontalruler Plugin</h3>
-<p>The Horizontalruler Plugin allows you to insert a horizontal ruler tag aka <tt>&lt;hr&gt;</tt> at the current cursor position.</p>
-<h4 id="components">2.1 Components</h4>
+        <h3 id="functional-description">1 Functional Description</h3>
+<p>In order to insert a horizontal ruler move the cursor to the desired position and open the &#8220;Insert&#8221; tab at the Aloha Editor. Now click on the Horizontalruler plugin button and the ruler <tt>&lt;hr&gt;</tt> will be insert. To delete a horizontal ruler just place the cursor behind the ruler and press backspace.</p>
+<h3 id="components">2 Components</h3>
 <p>The plugin only offers a single component:</p>
 <ul>
 	<li>hr &#8211; a button which will insert a horizontal ruler at the cursor position</li>
 </ul>
+<h3 id="plugin-settings">3 Plugin Settings</h3>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	Aloha.settings.plugins.horizontalruler: {
+		config: [ 'hr '], // enable the plugin
+		editables: {
+			'#my-editable': [] // disable the plugin for the editable with ID my-editable
+		}
+	}
+</pre></div>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#plugin-settings"><p>Plugin Settings</p>
-</a></li><li><a href="#horizontalruler-plugin"><p>Horizontalruler Plugin</p>
-</a><ul><li><a href="#components"><p>Components</p>
-</a></li></ul></li>
+            <li><a href="#functional-description"><p>Functional Description</p>
+</a></li><li><a href="#components"><p>Components</p>
+</a></li><li><a href="#plugin-settings"><p>Plugin Settings</p>
+</a></li>
           </ol>
         </div>
     </div>

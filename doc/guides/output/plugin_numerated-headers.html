@@ -57,6 +57,7 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
@@ -107,7 +108,7 @@
 <p>The main features are:</p>
 <ul>
 	<li>Auto generate numeration</li>
-	<li>Put it in a <span> that will be prepended to the headline</li>
+	<li>Put it in a <tt>&lt;span&gt;</tt> that will be prepended to the headline</li>
 	<li>Auto remove the numeration if the editor deletes the header content</li>
 	<li>Customizable: which headers should be affected, and in which surrounding container should the plugin process</li>
 </ul>
@@ -141,12 +142,16 @@ Sub Headline Two dot One
 	<li>specify selector for affected headers</li>
 	<li>specifiy Base Object, if you want the plugin to process in a specific container, or on the hole page (e.g. &#8216;body&#8217;)</li>
 </ul>
+<p>This settings can be applied for individual editables.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 	Aloha.settings.plugins: {
 		'numerated-headers': {
-			numeratedactive: true,                     // default
+			// default true
+			// numeratedactive will also accept &quot;true&quot; and &quot;1&quot; as true values
+			// false and &quot;false&quot; for false
+			numeratedactive: true,                     
 			headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
 			baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable
 		}

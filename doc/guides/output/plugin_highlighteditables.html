@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: Aloha Editor PHP Example</title>
+  <title>: Highlight Editables Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -103,109 +103,62 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Aloha Editor <span class="caps">PHP</span> Example</h2>
-<p>This examples demonstrates how to use Aloha Editor in combination with <span class="caps">PHP</span>.</p>
-<p>In this example an ajax call will be invoked each time you deactivate a contenteditable. The ajax call contains information about the content and the editable. Finally the information will be stored within a php session.</p>
-<p>You can view it here: [http://www.aloha-editor.com/demos/php-demo/aloha-php.php aloha-php.php]</p>
+            <h2>Highlight Editables Plugin</h2>
+<p>The Highlight Editables Plugin provides a visual hint when moving the mouse to outline editables.</p>
 
           </div>
-        
+        <h3 id="overview">1 Overview</h3>
+<p>With this plugin editable areas will be outlined when the user moves the mouse.<br />
+An active editable will be outlined with a different color.</p>
+<h3 id="usage">2 Usage</h3>
+<p>Activate the plugin and decide if you want to highlight all editables.<br />
+You can use <span class="caps">CSS</span> to configure the look (see: Configuration).</p>
+<h3 id="functional-description">3 Functional Description</h3>
+<p>While moving the mouse cursor the Highlight Editables plugin will highlight each editable with a yellow blinking rectangle at your page. After clicking into a rectangle the blinking yellow turns into a constant blue glowing rectangle.</p>
+<div class="note"><p>The Highlight Editables plugin don&#8217;t work with Internet Explorer 7.</p></div>
+<h3 id="components">4 Components</h3>
+<ul>
+	<li>No components for user interaction</li>
+</ul>
+<h3 id="configuration">5 Configuration</h3>
 <div class="code_container">
-<pre class="brush: plain; gutter: false; toolbar: false">
+<pre class="brush: javascript; gutter: false; toolbar: false">
 
-&lt;?
-session_start();
-
-/**
-* Will store the posted content into currently active session.
-*/
-function storePost() {
-  $_SESSION[$_POST['id']]=$_POST['content'];
-  exit;
-}
-
-/**
-* Initializes the session with default values.
-*/
-function initSession() {
-  if(! isSet( $_SESSION[&quot;content1&quot;])) {
-    $_SESSION[&quot;content1&quot;]='Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.';
-    $_SESSION[&quot;content2&quot;]='Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.';
-    $_SESSION[&quot;content3&quot;]='At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.';
-  }
-}
-
-/**
-* Transforms session values into a set of div's 
-*/
-function showContents() {
-  foreach ($_SESSION as $key =&gt; $value) {
-    if(preg_match(&quot;/content.*/i&quot;,$key)) {
-		echo '&lt;div id=&quot;'. $key .'&quot;&gt;' . $value . '&lt;/div&gt;&lt;br/&gt;';
-    }
-  }
-}
-
-/**
-* Handle commands
-*/
-if ( $_GET['cmd']=='save' ) {
-	storePost();
-}
-initSession();
-
-?&gt;
-&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
-&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en&quot;&gt;
-&lt;head&gt;
-	&lt;title&gt;Aloha Editor - The HTML5 Editor Benchmark&lt;/title&gt;
-	&lt;meta http-equiv=&quot;Content-type&quot; content=&quot;text/html;charset=UTF-8&quot; /&gt;
-	&lt;script type=&quot;text/javascript&quot; src=&quot;/aloha/aloha/aloha.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/aloha/aloha/plugins/com.gentics.aloha.plugins.Format/plugin.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/aloha/aloha/plugins/com.gentics.aloha.plugins.Table/plugin.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/aloha/aloha/plugins/com.gentics.aloha.plugins.List/plugin.js&quot;&gt;&lt;/script&gt;
-
-	&lt;script type=&quot;text/javascript&quot;&gt;
-	function saveEditable(event, eventProperties) {
-		$.post(&quot;?cmd=save&quot;, { content: eventProperties.editable.getContents(), id: eventProperties.editable.getId() } );
+	Aloha.settings.plugins: {
+		highlighteditables: {
+			config: [ 'highlight' ],
+			
+			editables: {
+				'#one': [ 'highlight' ],
+				'#two': [ ] // do not show visual effect for this editable
+			}
+		}
 	}
+</pre></div><p><span class="caps">CSS</span> you can adapt to your needs.</p>
+<div class="code_container">
+<pre class="brush: xml; gutter: false; toolbar: false">
 
-	GENTICS.Aloha.settings = {
-		&quot;i18n&quot;: {&quot;current&quot;: &quot;en&quot;},
-		&quot;ribbon&quot;: false,
-		&quot;plugins&quot;: { 
-			&quot;com.gentics.aloha.plugins.GCN&quot;: { 
-				&quot;enabled&quot;: false 
-			},
-		 	&quot;com.gentics.aloha.plugins.Format&quot;: { 
-				config : [ 'b', 'i','u','del','sub','sup', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
-			} 
-	 	}
-	};
+.aloha-editable-highlight {
+	outline: #FFE767 solid 5px;
+}
 
-	$(document).ready(function() {
-		$('#content1').aloha();
-		$('#content2').aloha();
-		$('#content3').aloha();
-	});
-
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, &quot;editableDeactivated&quot;, saveEditable);
- 
-&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;h1&gt;Aloha Editor - Test&lt;/h1&gt;
-&lt;?
-showContents();
-?&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+.aloha-editable-active, .aloha-editable-active[contenteditable=true]:focus {
+	outline: #80B5F2 solid 5px;
+}
 </pre></div>
 
       </div>
-      <div id="subCol">
-        
-      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#overview"><p>Overview</p>
+</a></li><li><a href="#usage"><p>Usage</p>
+</a></li><li><a href="#functional-description"><p>Functional Description</p>
+</a></li><li><a href="#components"><p>Components</p>
+</a></li><li><a href="#configuration"><p>Configuration</p>
+</a></li>
+          </ol>
+        </div>
     </div>
   </div>
 

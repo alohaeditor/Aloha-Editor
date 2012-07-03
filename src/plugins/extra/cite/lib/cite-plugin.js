@@ -134,6 +134,7 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 		referenceContainer: null,
 		settings: null,
 		sidebar: null,
+		config: ['quote', 'blockquote'],
 
 		init: function() {
 			var that = this;
@@ -162,6 +163,17 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 					that.settings.sidebar.open = true;
 				}
 
+				// be tolerant about the setting: 'false' and '0' (as strings) will be interpreted as false (boolean)
+				if (typeof that.settings.sidebar.open === 'string') {
+					that.settings.sidebar.open = that.settings.sidebar.open.toLowerCase();
+					if (that.settings.sidebar.open === 'false' || that.settings.sidebar.open === '0') {
+						// disable button only if 'false' or '0' is specified
+						that.settings.sidebar.open = false;
+					} else {
+						// otherwise the button will always be shown
+						that.settings.sidebar.open = true;
+					}
+				}
 			}
 
 			// Add the inline quote button in the floating menu, in the
@@ -277,9 +289,21 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 
 			Aloha.bind( 'aloha-editable-activated', function( event, params) {
 				var config = that.getEditableConfig( params.editable.obj );
-				if ( !config.active ) {
-					that.buttons[ 0 ].hide();
+				
+				if ( !config ) {
 					return;
+				}
+				
+				if ( jQuery.inArray( 'quote', config ) !== -1 ) {
+					that.buttons[ 0 ].show();
+				} else {
+					that.buttons[ 0 ].hide();
+				}
+				
+				if ( jQuery.inArray( 'blockquote', config ) !== -1 ) {
+					Format.multiSplitButton.showItem( 'blockquote' );
+				} else {
+					Format.multiSplitButton.hideItem( 'blockquote' );
 				}
 			});
 
@@ -374,7 +398,7 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				mid = ( min + max ) >> 1; // Math.floor(i) / 2 == i >> 1 == ~~(i / 2)
 				cuid = c[ mid ].uid;
 
-				if ( cuid === uid ) {
+				if ( cuid == uid ) {
 					return mid;
 				}
 				

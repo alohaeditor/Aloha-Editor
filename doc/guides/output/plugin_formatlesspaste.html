@@ -57,6 +57,7 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
@@ -126,42 +127,65 @@ In this case we strip all formating like bold, italic and so on but allow a-Tags
 </ul>
 <h3 id="configuration">4 Configuration</h3>
 <p>The default behaviour can be configured with the setting &#8220;formatlessPasteOption&#8221;. The set of elements that should be stripped can be configured with the setting &#8220;strippedElements&#8221;.</p>
-<p>A typical configuration could look like this. If no configuration is provided, this is also the default configuration.</p>
+<p>The default configuration looks like this:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 	Aloha.settings.plugins: {
 		formatlesspaste: {
-			formatlessPasteOption: true,
-			strippedElements: [
-				&quot;a&quot;,
-				&quot;em&quot;,
-				&quot;strong&quot;,
-				&quot;small&quot;,
-				&quot;s&quot;,
-				&quot;cite&quot;,
-				&quot;q&quot;,
-				&quot;dfn&quot;,
-				&quot;abbr&quot;,
-				&quot;time&quot;,
-				&quot;code&quot;,
-				&quot;var&quot;,
-				&quot;samp&quot;,
-				&quot;kbd&quot;,
-				&quot;sub&quot;,
-				&quot;sup&quot;,
-				&quot;i&quot;,
-				&quot;b&quot;,
-				&quot;u&quot;,
-				&quot;mark&quot;,
-				&quot;ruby&quot;,
-				&quot;rt&quot;,
-				&quot;rp&quot;,
-				&quot;bdi&quot;,
-				&quot;bdo&quot;,
-				&quot;ins&quot;,
-				&quot;del&quot;
-			]
+			config: {
+				button: true, // if set to false the button will be hidden
+				formatlessPasteOption: true, // default state of the button
+				strippedElements: [ // elements to be stripped from the pasted code
+					&quot;a&quot;,
+					&quot;em&quot;,
+					&quot;strong&quot;,
+					&quot;small&quot;,
+					&quot;s&quot;,
+					&quot;cite&quot;,
+					&quot;q&quot;,
+					&quot;dfn&quot;,
+					&quot;abbr&quot;,
+					&quot;time&quot;,
+					&quot;code&quot;,
+					&quot;var&quot;,
+					&quot;samp&quot;,
+					&quot;kbd&quot;,
+					&quot;sub&quot;,
+					&quot;sup&quot;,
+					&quot;i&quot;,
+					&quot;b&quot;,
+					&quot;u&quot;,
+					&quot;mark&quot;,
+					&quot;ruby&quot;,
+					&quot;rt&quot;,
+					&quot;rp&quot;,
+					&quot;bdi&quot;,
+					&quot;bdo&quot;,
+					&quot;ins&quot;,
+					&quot;del&quot;
+				]
+			}
+		}
+	}
+</pre></div>
+<div class="note"><p>The <code>button</code> and <code>formatlessPasteOption</code> config property will accept boolean or  string values. Boolean <code>false</code>, <code>'false'</code> or <code>'0'</code> will hide the button while boolean  <code>true</code> or any other string value will show it.</p></div>
+<p>You can also have configurations for individual editables:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	Aloha.settings.plugins: {
+		formatlesspaste: {
+			config: {
+				formatlessPasteOption: true, // default state of the button
+			},
+			editables: {
+				'#one' : {
+					button: false, // hides the button in this editable
+					formatlessPasteOption: true, // will always activate formatless paste when this editable is activated
+					strippedElements: [ 'a' ] // only remove anchor tags when pasting to this editable
+				}
+			}
 		}
 	}
 </pre></div><h3 id="testing-the-plugin">5 Testing the Plugin</h3>

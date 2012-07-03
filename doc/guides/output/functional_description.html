@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: Aloha Editor PHP Example</title>
+  <title>: Functional Description</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -103,109 +103,42 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Aloha Editor <span class="caps">PHP</span> Example</h2>
-<p>This examples demonstrates how to use Aloha Editor in combination with <span class="caps">PHP</span>.</p>
-<p>In this example an ajax call will be invoked each time you deactivate a contenteditable. The ajax call contains information about the content and the editable. Finally the information will be stored within a php session.</p>
-<p>You can view it here: [http://www.aloha-editor.com/demos/php-demo/aloha-php.php aloha-php.php]</p>
+            <h2>Functional Description</h2>
+<p>After reading this guide, you will</p>
+<ul>
+	<li>Understand how Aloha Editor will handle paragraphs and line breaks</li>
+	<li>Contents will be deleted</li>
+</ul>
 
           </div>
-        
-<div class="code_container">
-<pre class="brush: plain; gutter: false; toolbar: false">
-
-&lt;?
-session_start();
-
-/**
-* Will store the posted content into currently active session.
-*/
-function storePost() {
-  $_SESSION[$_POST['id']]=$_POST['content'];
-  exit;
-}
-
-/**
-* Initializes the session with default values.
-*/
-function initSession() {
-  if(! isSet( $_SESSION[&quot;content1&quot;])) {
-    $_SESSION[&quot;content1&quot;]='Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.';
-    $_SESSION[&quot;content2&quot;]='Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.';
-    $_SESSION[&quot;content3&quot;]='At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.';
-  }
-}
-
-/**
-* Transforms session values into a set of div's 
-*/
-function showContents() {
-  foreach ($_SESSION as $key =&gt; $value) {
-    if(preg_match(&quot;/content.*/i&quot;,$key)) {
-		echo '&lt;div id=&quot;'. $key .'&quot;&gt;' . $value . '&lt;/div&gt;&lt;br/&gt;';
-    }
-  }
-}
-
-/**
-* Handle commands
-*/
-if ( $_GET['cmd']=='save' ) {
-	storePost();
-}
-initSession();
-
-?&gt;
-&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
-&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en&quot;&gt;
-&lt;head&gt;
-	&lt;title&gt;Aloha Editor - The HTML5 Editor Benchmark&lt;/title&gt;
-	&lt;meta http-equiv=&quot;Content-type&quot; content=&quot;text/html;charset=UTF-8&quot; /&gt;
-	&lt;script type=&quot;text/javascript&quot; src=&quot;/aloha/aloha/aloha.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/aloha/aloha/plugins/com.gentics.aloha.plugins.Format/plugin.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/aloha/aloha/plugins/com.gentics.aloha.plugins.Table/plugin.js&quot;&gt;&lt;/script&gt;
-    &lt;script type=&quot;text/javascript&quot; src=&quot;/aloha/aloha/plugins/com.gentics.aloha.plugins.List/plugin.js&quot;&gt;&lt;/script&gt;
-
-	&lt;script type=&quot;text/javascript&quot;&gt;
-	function saveEditable(event, eventProperties) {
-		$.post(&quot;?cmd=save&quot;, { content: eventProperties.editable.getContents(), id: eventProperties.editable.getId() } );
-	}
-
-	GENTICS.Aloha.settings = {
-		&quot;i18n&quot;: {&quot;current&quot;: &quot;en&quot;},
-		&quot;ribbon&quot;: false,
-		&quot;plugins&quot;: { 
-			&quot;com.gentics.aloha.plugins.GCN&quot;: { 
-				&quot;enabled&quot;: false 
-			},
-		 	&quot;com.gentics.aloha.plugins.Format&quot;: { 
-				config : [ 'b', 'i','u','del','sub','sup', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
-			} 
-	 	}
-	};
-
-	$(document).ready(function() {
-		$('#content1').aloha();
-		$('#content2').aloha();
-		$('#content3').aloha();
-	});
-
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, &quot;editableDeactivated&quot;, saveEditable);
- 
-&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;h1&gt;Aloha Editor - Test&lt;/h1&gt;
-&lt;?
-showContents();
-?&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</pre></div>
+        <h3 id="paragraphs-line-breaks">1 Paragraphs &amp; Line Breaks</h3>
+<p>Paragraphs and line breaks are a fundamental part of editing text. Aloha Editor will decide for you which kind of line break to use if certain preconditions are met. Both kind of line breaks can be created using the enter key.</p>
+<p>Pressing enter when contents are selected will remove those contents.</p>
+<h4 id="creating-paragraphs-p">1.1 Creating Paragraphs <tt>&lt;p&gt;</tt></h4>
+<p>To have the enter key create a new paragraph the cursor has to be located inside an existing paragraph. Every time you press enter, the existing paragraph will be split at the cursor position resulting in two paragraphs.</p>
+<h4 id="creating-line-breaks-br">1.2 Creating Line Breaks <tt>&lt;br&gt;</tt></h4>
+<p>If the cursor is within an editable, but no wrapping paragraph can be detected a <tt>&lt;br&gt;</tt> is inserted instead of a <tt>&lt;p&gt;</tt>. If you are inside a paragraph you may insert a line break at any time by pressing <tt>Shift</tt><tt>+Enter</tt>.</p>
+<h3 id="deletion-of-contents">2 Deletion of Contents</h3>
+<p>If you want to delete contents you may use the <tt>Del</tt> Button to issue a <tt>forwardDelete</tt> command or the <tt>Backspace</tt> key to trigger a <tt>delete</tt> command.</p>
+<p>If contents have been selected both <tt>forwardDelete</tt> and <tt>delete</tt> will remove the selected contents in the same manner.</p>
+<h4 id="forwarddelete">2.1 <tt>forwardDelete</tt></h4>
+<p>Forward delete means deleting characters that are right of your current caret position. If the selection is collapsed every time the <tt>Del</tt> key is hit a single character will be deleted. If you keep pressing <tt>Del</tt> and an inline formatting (like <tt>&lt;b&gt;</tt>) is encountered, the formatting will be kept for the remaining characters unless all of the formatted content is gone. If you encounter a phrasing element like a <tt>&lt;h1&gt;</tt> tag the contents will be unwrapped before character deletion is continued.</p>
+<h4 id="delete">2.2 <tt>delete</tt></h4>
+<p>The <tt>delete</tt> command will delte characters left of your current caret position. Deleting inline formattings will work the same way as with <tt>forwardDelete</tt>, but deleting phrasing elements will open up the end of the phrasing element which will then engulf the rest of the contents until the end of the current paragraph or comparable wrapping phrasing element is hit.</p>
 
       </div>
-      <div id="subCol">
-        
-      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#paragraphs-line-breaks"><p>Paragraphs &amp; Line Breaks</p>
+</a><ul><li><a href="#creating-paragraphs-p"><p>Creating Paragraphs <tt>&lt;p&gt;</tt></p>
+</a></li> <li><a href="#creating-line-breaks-br"><p>Creating Line Breaks <tt>&lt;br&gt;</tt></p>
+</a></li></ul></li><li><a href="#deletion-of-contents"><p>Deletion of Contents</p>
+</a><ul><li><a href="#forwarddelete"><tt>forwardDelete</tt>
+</a></li> <li><a href="#delete"><tt>delete</tt>
+</a></li></ul></li>
+          </ol>
+        </div>
     </div>
   </div>
 

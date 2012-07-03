@@ -34,7 +34,6 @@ define( [
 	var ContentHandlerPlugin = Plugin.create( 'contenthandler', {
 		settings : {},
 		dependencies : [],
-		availableHandler: [],
 		init : function () {
 			var that = this,
 				handler, cc,
@@ -48,40 +47,6 @@ define( [
 				ContentHandlerManager
 					.register( handler, eval( cc + 'ContentHandler' ) );
 			}
-
-			this.availableHandler = ContentHandlerManager.getEntries();
-
-			Aloha.bind( 'aloha-editable-activated', function( event, params) {
-				var config = that.getEditableConfig( params.editable.obj );
-
-				// add all contenthandler to the manager (may they got got removed)
-				jQuery.each( that.availableHandler, function (handler) {
-					for ( var i = 0; i < that.availableHandler.length; i++ ) {
-						handler = that.availableHandler[ i ];
-						cc = handler.charAt( 0 ).toUpperCase() + handler.slice( 1 );
-						ContentHandlerManager
-							.register( handler, eval( cc + 'ContentHandler' ) );
-					}
-				} );
-
-				if ( typeof config !== 'undefined' ) {
-					// config is empty; no contenthandler wanted
-					if ( jQuery.isEmpty(config) ) {
-						jQuery.each(ContentHandlerManager.getEntries(), function(handler) {
-							ContentHandlerManager.unregister(handler);
-						});
-					}
-
-					if ( !jQuery.isEmpty(config) ) {
-						jQuery.each(ContentHandlerManager.getEntries(), function(handler) {
-							if ( jQuery.inArray( handler, config ) < 0 ) {
-								ContentHandlerManager.unregister(handler);
-							}
-						});
-					}
-				}
-
-			});
 		}
 	} );
 

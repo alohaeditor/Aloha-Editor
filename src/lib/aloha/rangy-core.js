@@ -85,7 +85,8 @@ var rangy = (function() {
         modules: {},
         config: {
             alertOnWarn: false,
-            preferTextRange: false
+            // Note: this was set to true, see issue https://github.com/alohaeditor/Aloha-Editor/issues/474
+            preferTextRange: true
         }
     };
 
