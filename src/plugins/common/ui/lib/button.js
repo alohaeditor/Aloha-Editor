@@ -52,7 +52,9 @@ function (jQuery, Component, Utils) {
 					// is clicked because sometimes the tooltip doesn't
 					// get closed automatically, for example after table
 					// cells are merged or split.
-					this.buttonElement.tooltip('close');
+					// IE needs the force argument to be true, Chrome doesn't.
+					// The event argument can be ignored.
+					this.buttonElement.tooltip('close', null/*event*/, true/*force*/);
 
 					this._onClick();
 				}, this));
