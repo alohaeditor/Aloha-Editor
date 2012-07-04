@@ -171,6 +171,8 @@ define([
 					top: Toolbar.pinTop,
 					left: Toolbar.pinLeft
 				}, this.$element);
+				
+				Toolbar.setFloatingPosition(position);
 
 				this.$element.css({
 					'position': 'fixed',
@@ -211,7 +213,7 @@ define([
 			var surface = this;
 
 			$pin.click(function () {
-				Toolbar.isFloatingMode= !Toolbar.isFloatingMode;
+				Toolbar.isFloatingMode = !Toolbar.isFloatingMode;
 
 				var position;
 
@@ -223,6 +225,7 @@ define([
 					unstorePinPosition();
 				} else {
 					position = surface.$element.offset();
+					position.top -= $(window).scrollTop();
 					storePinPosition(position);
 				}
 
