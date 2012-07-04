@@ -1,3 +1,5 @@
+/* global aloha context with nexted lesscss rule */
+.aloha{
 
 .aloha-ui-toolbar .ui-corner-all, .aloha-ui-toolbar .ui-corner-top, .aloha-ui-toolbar .ui-corner-left, .aloha-ui-toolbar .ui-corner-tl {
 	-moz-border-radius-topleft:     0px;
@@ -180,6 +182,7 @@
 	font-size: 11px;
 	text-align: left;
 }
+
 .aloha-ui-menubutton-menu .ui-menu-item a {
 	white-space: nowrap;
 	padding-left: 10px;
@@ -445,16 +448,6 @@
 /** icon-triangle is used by the ribbon plugin for the drop down icon **/
 .ui-icon-triangle-1-s { background-position: -64px -16px; }
 
-
-body .ui-tooltip {
-	font-size: 10px;
-	line-height: 1.2em;
-	/* margin-top: 30px; synchonized with ribbon plugin document top spacing*/
-	padding: 4px 6px;
-	border: 1px solid #ccc;
-	z-index: 999999;
-}
-
 .aloha-multisplit {
 	position: relative;
 	width: 260px;
@@ -514,6 +507,7 @@ body .ui-tooltip {
 .aloha-multisplit .aloha-ui-multisplit-fullwidth:hover {
 	border-color: #999;
 }
+
 .aloha-ui-component-group {
 	float: left;
 	border: 1px solid #e0e0e0;
@@ -578,7 +572,7 @@ body .ui-tooltip {
 }
 
 /* === auto complete === */
-.aloha .ui-autocomplete.ui-widget-content {
+.ui-autocomplete.ui-widget-content {
 	background: #fff;
 	border: 1px solid #ddd;
 	box-shadow: 1px 2px 10px rgba(0,0,0,0.25);
@@ -589,7 +583,7 @@ body .ui-tooltip {
 	border-radius:         0;
 }
 
-.aloha .ui-autocomplete .ui-menu-item a {
+.ui-autocomplete .ui-menu-item a {
 	text-align: left;
 	font-size: 12px;
 	-moz-border-radius:    0;
@@ -599,7 +593,32 @@ body .ui-tooltip {
 	border-color: transparent;
 }
 
-.aloha .ui-autocomplete .ui-menu-item a.ui-state-focus {
+.ui-autocomplete .ui-menu-item a.ui-state-focus {
 	background: #3B73D7;
 	color: #fff;
+}
+
+}/* end global aloha context */
+
+
+.aloha.ui-tooltip {
+	font-size: 10px;
+	line-height: 1.2em;
+	/* margin-top: 30px; synchonized with ribbon plugin document top spacing*/
+	padding: 4px 6px;
+	border: 1px solid #ccc;
+	z-index: 999999;
+
+	/* The following styles were taken from jqueryui and pasted
+       here. The reason is that tooltips are appended to the body (and
+       there is no appendTo option for tooltips) which makes it difficult
+       to just wrap the aloha context around it. */
+	position:absolute;
+	-o-box-shadow: 0 0 5px #aaa;
+	-moz-box-shadow: 0 0 5px #aaa;
+	-webkit-box-shadow: 0 0 5px #aaa;
+	box-shadow: 0 0 5px #aaa;
+	font-family: Verdana,Arial,sans-serif/*{ffDefault}*/;
+	background: #ffffff/*{bgColorContent}*/;
+	color: #222222/*{fcContent}*/;
 }

@@ -1,10 +1,10 @@
-.aloha-ribbon { 
+.aloha.aloha-ribbon { 
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 }
-.aloha-ribbon-toolbar { 
+.aloha .aloha-ribbon-toolbar { 
     position: relative;
 	z-index: 90000;
 	display: none;
@@ -22,11 +22,11 @@
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
 }
-.aloha-ribbon-toolbar .aloha-ui-menubutton-container {
+.aloha .aloha-ribbon-toolbar .aloha-ui-menubutton-container {
 	margin-left: 4px;
 }
-.aloha-ribbon-toolbar .aloha-ribbon-in,
-.aloha-ribbon-toolbar .aloha-ribbon-out {
+.aloha .aloha-ribbon-toolbar .aloha-ribbon-in,
+.aloha .aloha-ribbon-toolbar .aloha-ribbon-out {
 	height: 24px;
 	width: 24px;
 	background-color: transparent;
@@ -35,20 +35,20 @@
 	border-color: transparent;
 	border-width: 1px !important;
 }
-.aloha-ribbon-toolbar .aloha-ribbon-in:hover,
-.aloha-ribbon-toolbar .aloha-ribbon-out:hover {
+.aloha .aloha-ribbon-toolbar .aloha-ribbon-in:hover,
+.aloha .aloha-ribbon-toolbar .aloha-ribbon-out:hover {
 	background-color: #f0f0f0;
 	border-color: #bbb;
 }
-.aloha-ribbon-toolbar .aloha-ribbon-in {
+.aloha .aloha-ribbon-toolbar .aloha-ribbon-in {
 	/* Override jquery-ui float:left for menubar buttons */
 	float: right !important;
 	background-image: url('../img/fade-in.png') !important;
 }
-.aloha-ribbon-toolbar .aloha-ribbon-out {
+.aloha .aloha-ribbon-toolbar .aloha-ribbon-out {
 	float: left;
 	background-image: url('../img/fade-out.png') !important;
 }
-.aloha-ribbon-icon {
+.aloha .aloha-ribbon-icon {
 	float: left;
 }

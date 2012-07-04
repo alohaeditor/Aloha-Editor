@@ -41,6 +41,7 @@ function (jQuery, Component, Utils) {
 			Utils.makeButton(this.buttonElement, this)
 				.button('widget')
 				.tooltip({
+					tooltipClass: 'aloha aloha-ui-tooltip',
 					position: {
 						my: 'left top',
 						at: 'right bottom'

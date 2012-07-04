@@ -1,3 +1,6 @@
+/* global aloha context with nexted lesscss rule */
+.aloha {
+
 /**
  * This file has been modified from the original jquery-ui css file for
  * the purpose of integrating it with Aloha.
@@ -19,8 +22,6 @@
 .ui-helper-reset { margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none; font-size: 100%; list-style: none; }
 .ui-helper-clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
 .ui-helper-clearfix { display: inline-block; }
-/* required comment for clearfix to work in Opera \*/
-* html .ui-helper-clearfix { height:1%; }
 .ui-helper-clearfix { display:block; }
 /* end clearfix */
 .ui-helper-zfix { width: 100%; height: 100%; top: 0; left: 0; position: absolute; opacity: 0; filter:Alpha(Opacity=0); }
@@ -72,8 +73,6 @@
  */
 .ui-autocomplete { position: absolute; cursor: default; }	
 
-/* workarounds */
-* html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
 /*
  * jQuery UI Button 1.9m6
  *
@@ -345,29 +344,6 @@ span.ui-spinner { background: none; }
 .ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-active a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
 .ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; }
 /*
- * jQuery UI Tooltip 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Tooltip#theming
- */
-.ui-tooltip {
-	padding:8px;
-	position:absolute;
-	z-index:9999;
-	-o-box-shadow: 0 0 5px #aaa;
-	-moz-box-shadow: 0 0 5px #aaa;
-	-webkit-box-shadow: 0 0 5px #aaa;
-	box-shadow: 0 0 5px #aaa;
-}
-/* Fades and background-images don't work well together in IE6, drop the image */
-* html .ui-tooltip {
-	background-image: none;
-}
-body .ui-tooltip { border-width:2px; }
-/*
  * jQuery UI CSS Framework 1.9m6
  *
  * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
@@ -378,7 +354,6 @@ body .ui-tooltip { border-width:2px; }
  *
  * To view and modify this theme, visit http://jqueryui.com/themeroller/
  */
-
 
 /* Component containers
 ----------------------------------*/
@@ -594,7 +569,6 @@ body .ui-tooltip { border-width:2px; }
 .ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }
 .ui-icon-grip-diagonal-se { background-position: -80px -224px; }
 
-
 /* Misc visuals
 ----------------------------------*/
 
@@ -607,3 +581,5 @@ body .ui-tooltip { border-width:2px; }
 /* Overlays */
 .ui-widget-overlay { background: #aaaaaa/*{bgColorOverlay}*/; opacity: .3;filter:Alpha(Opacity=30)/*{opacityOverlay}*/; }
 .ui-widget-shadow { margin: -8px/*{offsetTopShadow}*/ 0 0 -8px/*{offsetLeftShadow}*/; padding: 8px/*{thicknessShadow}*/; background: #aaaaaa/*{bgColorShadow}*/; opacity: .3;filter:Alpha(Opacity=30)/*{opacityShadow}*/; -moz-border-radius: 8px/*{cornerRadiusShadow}*/; -khtml-border-radius: 8px/*{cornerRadiusShadow}*/; -webkit-border-radius: 8px/*{cornerRadiusShadow}*/; border-radius: 8px/*{cornerRadiusShadow}*/; }
+
+}/* end global aloha context */
