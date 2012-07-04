@@ -52,9 +52,14 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			// TODO test in IE!
 			pasteEditable.obj.blur();
 		}
-		
-		GENTICS.Utils.Dom.setCursorInto( $pasteDiv.get( 0 ) );
-		
+
+		// set the cursor into the paste div
+		Aloha.getSelection().removeAllRanges();
+		var newRange = Aloha.createRange();
+		newRange.setStart($pasteDiv.get( 0 ), 0);
+		newRange.setEnd($pasteDiv.get( 0 ), 0);
+		Aloha.getSelection().addRange(newRange);
+
 		$pasteDiv.focus();
 	};
 
@@ -68,11 +73,15 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 		
 		// insert the content into the editable at the current range
 		if ( pasteRange && pasteEditable ) {
-			// activate and focus the editable
-			// @todo test in IE
-			//pasteEditable.activate();
-			pasteEditable.obj.click();
-			
+			// set the focus back into the editable,
+			// and select the former range
+			pasteEditable.obj.focus();
+			Aloha.getSelection().removeAllRanges();
+			var newRange = Aloha.createRange();
+			newRange.setStart(pasteRange.startContainer, pasteRange.startOffset);
+			newRange.setEnd(pasteRange.endContainer, pasteRange.endOffset);
+			Aloha.getSelection().addRange(newRange);
+
 			pasteDivContents = $pasteDiv.html();
 
 			// We need to remove an insidious nbsp that IE inserted into our
@@ -116,8 +125,7 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			}
 			
 			if ( Aloha.queryCommandSupported( 'insertHTML' ) ) {
-				Aloha.execCommand( 'insertHTML', false, pasteDivContents,
-					pasteRange );
+				Aloha.execCommand( 'insertHTML', false, pasteDivContents );
 			} else {
 				console.error( 'Common.Paste', 'Command "insertHTML" not ' +
 					'available. Enable the plugin "common/commands".' );
@@ -201,8 +209,8 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 					window.setTimeout( function () {
 						getPastedContent();
 						Aloha.activeEditable.smartContentChange( event );
-						event.stopPropagation();
 					}, 10 );
+					event.stopPropagation();
 				} );
 			}
 		},
