@@ -46,6 +46,7 @@
 
 	<build>
 		<plugins>
+		
 			<plugin>
 				<groupId>com.googlecode.jslint4java</groupId>
 				<artifactId>jslint4java-maven-plugin</artifactId>
@@ -180,6 +181,7 @@
 						</configuration> </execution> -->
 				</executions>
 			</plugin>
+			<!-- 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>lesscss-maven-plugin</artifactId>
@@ -202,10 +204,11 @@
 					</execution>
 				</executions>
 			</plugin>
+			 -->
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
-				<version>1.4.1</version>
+				<version>1.4.7</version>
 				<executions>
 					<execution>
 						<id>aloha-require-jquery-minify</id>
@@ -257,6 +260,23 @@
 							<targetGroups>aloha-bare</targetGroups>
 							<destinationFolder>${project.build.directory}/aloha-bare/debug/</destinationFolder>
 							<jsDestinationFolder>${project.build.directory}/aloha-bare/debug/</jsDestinationFolder>
+						</configuration>
+					</execution>
+					<execution>
+						<id>less-css</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<targetGroups>aloha</targetGroups>
+							<minimize>true</minimize>
+							<cssDestinationFolder>${basedir}/src/css</cssDestinationFolder>
+							<contextFolder>${basedir}/src</contextFolder>
+							<buildDirectory>${basedir}/src</buildDirectory>
+							<ignoreMissingResources>false</ignoreMissingResources>
+							<wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+							<extraConfigFile>${basedir}/build/wro/wro.properties</extraConfigFile>
 						</configuration>
 					</execution>
 				</executions>

@@ -8,6 +8,13 @@
 	</formats>
 
 	<files>
+		<!-- Readme -->
+		<file>
+			<source>${project.basedir}/doc/README</source>
+			<outputDirectory>/</outputDirectory>
+			<destName>README</destName>
+		</file>
+		
 		<!-- Bare Version -->
 		<file>
 			<source>${project.basedir}/target/aloha-bare/bin/aloha-bare.js</source>
@@ -51,6 +58,7 @@
 				<!-- Don't include the core -->
 				<exclude>lib/aloha/*.js</exclude>
 				<exclude>lib/aloha.js</exclude>
+				<exclude>**/*.less</exclude>
 				<exclude>test/**</exclude>
 				<exclude>**/.gitmodules</exclude>
 			</excludes>
@@ -73,7 +81,7 @@
 				<include>**/*</include>
 			</includes>
 		</fileSet>
-
+		
 	</fileSets>
 
 
