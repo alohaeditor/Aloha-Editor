@@ -300,7 +300,7 @@ define([
 		 */
 		init: function () {
 			Toolbar.$surfaceContainer = $('<div>', {
-				'class': 'aloha-surface aloha-toolbar'
+				'class': 'aloha aloha-surface aloha-toolbar'
 			}).hide().appendTo('body');
 
 			Surface.trackRange(Toolbar.$surfaceContainer);

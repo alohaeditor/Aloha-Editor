@@ -55,7 +55,7 @@ define([
 				})
 				.appendTo(this._toolbar);
 
-			var wrapper = $('<div class="aloha-ribbon"></div>')
+			var wrapper = $('<div class="aloha aloha-ribbon"></div>')
 				.appendTo("body");
 
 			this._icon = $('<div></div>')
