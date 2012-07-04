@@ -29,11 +29,14 @@
   padding: 6px;
   overflow: auto;
 }
-/**
+/* global aloha context with nexted lesscss rule */
+.aloha {
+  /**
  * This file has been modified from the original jquery-ui css file for
  * the purpose of integrating it with Aloha.
  */
-/*
+
+  /*
  * jQuery UI CSS Framework 1.9m6
  *
  * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
@@ -42,17 +45,229 @@
  *
  * http://docs.jquery.com/UI/Theming/API
  */
-/* Layout helpers
+
+  /* Layout helpers
 ----------------------------------*/
-.ui-helper-hidden {
+
+  /* end clearfix */
+
+  /*
+ * jQuery UI Accordion 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Accordion#theming
+ */
+
+  /* IE/Win - Fix animation bug - #4615 */
+
+  /*
+ * jQuery UI Autocomplete 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Autocomplete#theming
+ */
+
+  /*
+ * jQuery UI Button 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Button#theming
+ */
+
+  /* the overflow property removes extra width in IE */
+
+  /* to make room for the icon, a width needs to be set here */
+
+  /* button elements seem to need a little more width */
+
+  /*button text element */
+
+  /* no icon support for input elements, provide padding by default */
+
+  /*button icon element(s) */
+
+  /*button sets*/
+
+  /* workarounds */
+
+  /* reset extra padding in Firefox */
+
+  /*
+ * jQuery UI Datepicker 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Datepicker#theming
+ */
+
+  /* with multiple calendars */
+
+  /* RTL support */
+
+  /* IE6 IFRAME FIX (taken from datepicker 1.5.3 */
+
+  /*
+ * jQuery UI Dialog 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Dialog#theming
+ */
+
+  /*
+ * jQuery UI Menu 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Menu#theming
+ */
+
+  /* icon support */
+
+  /* left-aligned */
+
+  /* right-aligned */
+
+  /*
+ * jQuery UI Menubar 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ */
+
+  /*
+ * jQuery UI Progressbar 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Progressbar#theming
+ */
+
+  /*
+ * jQuery UI Resizable 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Resizable#theming
+ */
+
+  /*
+ * jQuery UI Selectable 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Selectable#theming
+ */
+
+  /*
+ * jQuery UI Slider 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Slider#theming
+ */
+
+  /*
+ * jQuery UI Spinner 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Spinner#theming
+ */
+
+  /* more specificity required here to overide default borders */
+
+  /* vertical centre icon */
+
+  /* TR overrides */
+
+  /*
+ * jQuery UI Tabs 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Tabs#theming
+ */
+
+  /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
+
+  /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
+
+  /*
+ * jQuery UI CSS Framework 1.9m6
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ *
+ * To view and modify this theme, visit http://jqueryui.com/themeroller/
+ */
+
+  /* Component containers
+----------------------------------*/
+
+  /* Interaction states
+----------------------------------*/
+
+  /* Interaction Cues
+----------------------------------*/
+
+  /* Icons
+----------------------------------*/
+
+  /* states and images */
+
+  /* positioning */
+
+  /* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */
+
+  /* Misc visuals
+----------------------------------*/
+
+  /* Corner radius */
+
+  /* Overlays */
+
+}
+.aloha .ui-helper-hidden {
   display: none;
 }
-.ui-helper-hidden-accessible {
+.aloha .ui-helper-hidden-accessible {
   position: absolute !important;
   clip: rect(1px 1px 1px 1px);
   clip: rect(1px, 1px, 1px, 1px);
 }
-.ui-helper-reset {
+.aloha .ui-helper-reset {
   margin: 0;
   padding: 0;
   border: 0;
@@ -62,25 +277,20 @@
   font-size: 100%;
   list-style: none;
 }
-.ui-helper-clearfix:after {
+.aloha .ui-helper-clearfix:after {
   content: ".";
   display: block;
   height: 0;
   clear: both;
   visibility: hidden;
 }
-.ui-helper-clearfix {
+.aloha .ui-helper-clearfix {
   display: inline-block;
 }
-/* required comment for clearfix to work in Opera \*/
-* html .ui-helper-clearfix {
-  height: 1%;
-}
-.ui-helper-clearfix {
+.aloha .ui-helper-clearfix {
   display: block;
 }
-/* end clearfix */
-.ui-helper-zfix {
+.aloha .ui-helper-zfix {
   width: 100%;
   height: 100%;
   top: 0;
@@ -89,67 +299,49 @@
   opacity: 0;
   filter: alpha(opacity=0);
 }
-/* Interaction Cues
-----------------------------------*/
-.ui-state-disabled {
+.aloha .ui-state-disabled {
   cursor: default !important;
 }
-/* Icons
-----------------------------------*/
-/* states and images */
-.ui-icon {
+.aloha .ui-icon {
   display: block;
   text-indent: -99999px;
   overflow: hidden;
   background-repeat: no-repeat;
 }
-/* Misc visuals
-----------------------------------*/
-/* Overlays */
-.ui-widget-overlay {
+.aloha .ui-widget-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
-/*
- * jQuery UI Accordion 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Accordion#theming
- */
-/* IE/Win - Fix animation bug - #4615 */
-.ui-accordion {
+.aloha .ui-accordion {
   width: 100%;
 }
-.ui-accordion .ui-accordion-header {
+.aloha .ui-accordion .ui-accordion-header {
   cursor: pointer;
   position: relative;
   margin-top: 1px;
   zoom: 1;
 }
-.ui-accordion .ui-accordion-header-active {
+.aloha .ui-accordion .ui-accordion-header-active {
   border-bottom: 0 !important;
 }
-.ui-accordion .ui-accordion-heading {
+.aloha .ui-accordion .ui-accordion-heading {
   display: block;
   font-size: 1em;
   padding: .5em .5em .5em .7em;
 }
-.ui-accordion-icons .ui-accordion-heading {
+.aloha .ui-accordion-icons .ui-accordion-heading {
   padding-left: 2.2em;
 }
-.ui-accordion .ui-accordion-header .ui-accordion-header-icon {
+.aloha .ui-accordion .ui-accordion-header .ui-accordion-header-icon {
   position: absolute;
   left: .5em;
   top: 50%;
   margin-top: -8px;
 }
-.ui-accordion .ui-accordion-content {
+.aloha .ui-accordion .ui-accordion-content {
   padding: 1em 2.2em;
   border-top: 0;
   margin-top: -2px;
@@ -160,37 +352,14 @@
   display: none;
   zoom: 1;
 }
-.ui-accordion .ui-accordion-content-active {
+.aloha .ui-accordion .ui-accordion-content-active {
   display: block;
 }
-/*
- * jQuery UI Autocomplete 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Autocomplete#theming
- */
-.ui-autocomplete {
+.aloha .ui-autocomplete {
   position: absolute;
   cursor: default;
 }
-/* workarounds */
-* html .ui-autocomplete {
-  width: 1px;
-}
-/* without this, the menu expands to 100% in IE6 */
-/*
- * jQuery UI Button 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Button#theming
- */
-.ui-button {
+.aloha .ui-button {
   display: inline-block;
   position: relative;
   padding: 0;
@@ -201,135 +370,117 @@
   zoom: 1;
   overflow: visible;
 }
-/* the overflow property removes extra width in IE */
-.ui-button-icon-only {
+.aloha .ui-button-icon-only {
   width: 2.2em;
 }
-/* to make room for the icon, a width needs to be set here */
-button.ui-button-icon-only {
+.aloha button.ui-button-icon-only {
   width: 2.4em;
 }
-/* button elements seem to need a little more width */
-.ui-button-icons-only {
+.aloha .ui-button-icons-only {
   width: 3.4em;
 }
-button.ui-button-icons-only {
+.aloha button.ui-button-icons-only {
   width: 3.7em;
 }
-/*button text element */
-.ui-button .ui-button-text {
+.aloha .ui-button .ui-button-text {
   display: block;
   line-height: 1.4;
 }
-.ui-button-text-only .ui-button-text {
+.aloha .ui-button-text-only .ui-button-text {
   padding: .4em 1em;
 }
-.ui-button-icon-only .ui-button-text,
-.ui-button-icons-only .ui-button-text {
+.aloha .ui-button-icon-only .ui-button-text,
+.aloha .ui-button-icons-only .ui-button-text {
   padding: .4em;
   text-indent: -9999999px;
 }
-.ui-button-text-icon-primary .ui-button-text,
-.ui-button-text-icons .ui-button-text {
+.aloha .ui-button-text-icon-primary .ui-button-text,
+.aloha .ui-button-text-icons .ui-button-text {
   padding: .4em 1em .4em 2.1em;
 }
-.ui-button-text-icon-secondary .ui-button-text,
-.ui-button-text-icons .ui-button-text {
+.aloha .ui-button-text-icon-secondary .ui-button-text,
+.aloha .ui-button-text-icons .ui-button-text {
   padding: .4em 2.1em .4em 1em;
 }
-.ui-button-text-icons .ui-button-text {
+.aloha .ui-button-text-icons .ui-button-text {
   padding-left: 2.1em;
   padding-right: 2.1em;
 }
-/* no icon support for input elements, provide padding by default */
-input.ui-button {
+.aloha input.ui-button {
   padding: .4em 1em;
 }
-/*button icon element(s) */
-.ui-button-icon-only .ui-icon,
-.ui-button-text-icon-primary .ui-icon,
-.ui-button-text-icon-secondary .ui-icon,
-.ui-button-text-icons .ui-icon,
-.ui-button-icons-only .ui-icon {
+.aloha .ui-button-icon-only .ui-icon,
+.aloha .ui-button-text-icon-primary .ui-icon,
+.aloha .ui-button-text-icon-secondary .ui-icon,
+.aloha .ui-button-text-icons .ui-icon,
+.aloha .ui-button-icons-only .ui-icon {
   position: absolute;
   top: 50%;
   margin-top: -8px;
 }
-.ui-button-icon-only .ui-icon {
+.aloha .ui-button-icon-only .ui-icon {
   left: 50%;
   margin-left: -8px;
 }
-.ui-button-text-icon-primary .ui-button-icon-primary,
-.ui-button-text-icons .ui-button-icon-primary,
-.ui-button-icons-only .ui-button-icon-primary {
+.aloha .ui-button-text-icon-primary .ui-button-icon-primary,
+.aloha .ui-button-text-icons .ui-button-icon-primary,
+.aloha .ui-button-icons-only .ui-button-icon-primary {
   left: .5em;
 }
-.ui-button-text-icon-secondary .ui-button-icon-secondary,
-.ui-button-text-icons .ui-button-icon-secondary,
-.ui-button-icons-only .ui-button-icon-secondary {
+.aloha .ui-button-text-icon-secondary .ui-button-icon-secondary,
+.aloha .ui-button-text-icons .ui-button-icon-secondary,
+.aloha .ui-button-icons-only .ui-button-icon-secondary {
   right: .5em;
 }
-.ui-button-text-icons .ui-button-icon-secondary,
-.ui-button-icons-only .ui-button-icon-secondary {
+.aloha .ui-button-text-icons .ui-button-icon-secondary,
+.aloha .ui-button-icons-only .ui-button-icon-secondary {
   right: .5em;
 }
-/*button sets*/
-.ui-buttonset {
+.aloha .ui-buttonset {
   margin-right: 7px;
 }
-.ui-buttonset .ui-button {
+.aloha .ui-buttonset .ui-button {
   margin-left: 0;
   margin-right: -0.3em;
 }
-/* workarounds */
-button.ui-button::-moz-focus-inner {
+.aloha button.ui-button::-moz-focus-inner {
   border: 0;
   padding: 0;
 }
-/* reset extra padding in Firefox */
-/*
- * jQuery UI Datepicker 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Datepicker#theming
- */
-.ui-datepicker {
+.aloha .ui-datepicker {
   width: 17em;
   padding: .2em .2em 0;
   display: none;
 }
-.ui-datepicker .ui-datepicker-header {
+.aloha .ui-datepicker .ui-datepicker-header {
   position: relative;
   padding: .2em 0;
 }
-.ui-datepicker .ui-datepicker-prev,
-.ui-datepicker .ui-datepicker-next {
+.aloha .ui-datepicker .ui-datepicker-prev,
+.aloha .ui-datepicker .ui-datepicker-next {
   position: absolute;
   top: 2px;
   width: 1.8em;
   height: 1.8em;
 }
-.ui-datepicker .ui-datepicker-prev-hover,
-.ui-datepicker .ui-datepicker-next-hover {
+.aloha .ui-datepicker .ui-datepicker-prev-hover,
+.aloha .ui-datepicker .ui-datepicker-next-hover {
   top: 1px;
 }
-.ui-datepicker .ui-datepicker-prev {
+.aloha .ui-datepicker .ui-datepicker-prev {
   left: 2px;
 }
-.ui-datepicker .ui-datepicker-next {
+.aloha .ui-datepicker .ui-datepicker-next {
   right: 2px;
 }
-.ui-datepicker .ui-datepicker-prev-hover {
+.aloha .ui-datepicker .ui-datepicker-prev-hover {
   left: 1px;
 }
-.ui-datepicker .ui-datepicker-next-hover {
+.aloha .ui-datepicker .ui-datepicker-next-hover {
   right: 1px;
 }
-.ui-datepicker .ui-datepicker-prev span,
-.ui-datepicker .ui-datepicker-next span {
+.aloha .ui-datepicker .ui-datepicker-prev span,
+.aloha .ui-datepicker .ui-datepicker-next span {
   display: block;
   position: absolute;
   left: 50%;
@@ -337,46 +488,46 @@ button.ui-button::-moz-focus-inner {
   top: 50%;
   margin-top: -8px;
 }
-.ui-datepicker .ui-datepicker-title {
+.aloha .ui-datepicker .ui-datepicker-title {
   margin: 0 2.3em;
   line-height: 1.8em;
   text-align: center;
 }
-.ui-datepicker .ui-datepicker-title select {
+.aloha .ui-datepicker .ui-datepicker-title select {
   font-size: 1em;
   margin: 1px 0;
 }
-.ui-datepicker select.ui-datepicker-month-year {
+.aloha .ui-datepicker select.ui-datepicker-month-year {
   width: 100%;
 }
-.ui-datepicker select.ui-datepicker-month,
-.ui-datepicker select.ui-datepicker-year {
+.aloha .ui-datepicker select.ui-datepicker-month,
+.aloha .ui-datepicker select.ui-datepicker-year {
   width: 49%;
 }
-.ui-datepicker table {
+.aloha .ui-datepicker table {
   width: 100%;
   font-size: .9em;
   border-collapse: collapse;
   margin: 0 0 .4em;
 }
-.ui-datepicker th {
+.aloha .ui-datepicker th {
   padding: .7em .3em;
   text-align: center;
   font-weight: bold;
   border: 0;
 }
-.ui-datepicker td {
+.aloha .ui-datepicker td {
   border: 0;
   padding: 1px;
 }
-.ui-datepicker td span,
-.ui-datepicker td a {
+.aloha .ui-datepicker td span,
+.aloha .ui-datepicker td a {
   display: block;
   padding: .2em;
   text-align: right;
   text-decoration: none;
 }
-.ui-datepicker .ui-datepicker-buttonpane {
+.aloha .ui-datepicker .ui-datepicker-buttonpane {
   background-image: none;
   margin: .7em 0 0 0;
   padding: 0 .2em;
@@ -384,7 +535,7 @@ button.ui-button::-moz-focus-inner {
   border-right: 0;
   border-bottom: 0;
 }
-.ui-datepicker .ui-datepicker-buttonpane button {
+.aloha .ui-datepicker .ui-datepicker-buttonpane button {
   float: right;
   margin: .5em .2em .4em;
   cursor: pointer;
@@ -392,85 +543,82 @@ button.ui-button::-moz-focus-inner {
   width: auto;
   overflow: visible;
 }
-.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
+.aloha .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
   float: left;
 }
-/* with multiple calendars */
-.ui-datepicker.ui-datepicker-multi {
+.aloha .ui-datepicker.ui-datepicker-multi {
   width: auto;
 }
-.ui-datepicker-multi .ui-datepicker-group {
+.aloha .ui-datepicker-multi .ui-datepicker-group {
   float: left;
 }
-.ui-datepicker-multi .ui-datepicker-group table {
+.aloha .ui-datepicker-multi .ui-datepicker-group table {
   width: 95%;
   margin: 0 auto .4em;
 }
-.ui-datepicker-multi-2 .ui-datepicker-group {
+.aloha .ui-datepicker-multi-2 .ui-datepicker-group {
   width: 50%;
 }
-.ui-datepicker-multi-3 .ui-datepicker-group {
+.aloha .ui-datepicker-multi-3 .ui-datepicker-group {
   width: 33.3%;
 }
-.ui-datepicker-multi-4 .ui-datepicker-group {
+.aloha .ui-datepicker-multi-4 .ui-datepicker-group {
   width: 25%;
 }
-.ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header {
+.aloha .ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header {
   border-left-width: 0;
 }
-.ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header {
+.aloha .ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header {
   border-left-width: 0;
 }
-.ui-datepicker-multi .ui-datepicker-buttonpane {
+.aloha .ui-datepicker-multi .ui-datepicker-buttonpane {
   clear: left;
 }
-.ui-datepicker-row-break {
+.aloha .ui-datepicker-row-break {
   clear: both;
   width: 100%;
   font-size: 0em;
 }
-/* RTL support */
-.ui-datepicker-rtl {
+.aloha .ui-datepicker-rtl {
   direction: rtl;
 }
-.ui-datepicker-rtl .ui-datepicker-prev {
+.aloha .ui-datepicker-rtl .ui-datepicker-prev {
   right: 2px;
   left: auto;
 }
-.ui-datepicker-rtl .ui-datepicker-next {
+.aloha .ui-datepicker-rtl .ui-datepicker-next {
   left: 2px;
   right: auto;
 }
-.ui-datepicker-rtl .ui-datepicker-prev:hover {
+.aloha .ui-datepicker-rtl .ui-datepicker-prev:hover {
   right: 1px;
   left: auto;
 }
-.ui-datepicker-rtl .ui-datepicker-next:hover {
+.aloha .ui-datepicker-rtl .ui-datepicker-next:hover {
   left: 1px;
   right: auto;
 }
-.ui-datepicker-rtl .ui-datepicker-buttonpane {
+.aloha .ui-datepicker-rtl .ui-datepicker-buttonpane {
   clear: right;
 }
-.ui-datepicker-rtl .ui-datepicker-buttonpane button {
+.aloha .ui-datepicker-rtl .ui-datepicker-buttonpane button {
   float: left;
 }
-.ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current {
+.aloha .ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current {
   float: right;
 }
-.ui-datepicker-rtl .ui-datepicker-group {
+.aloha .ui-datepicker-rtl .ui-datepicker-group {
   float: right;
 }
-.ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header {
+.aloha .ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header {
   border-right-width: 0;
   border-left-width: 1px;
 }
-.ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header {
+.aloha .ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header {
   border-right-width: 0;
   border-left-width: 1px;
 }
-/* IE6 IFRAME FIX (taken from datepicker 1.5.3 */
-.ui-datepicker-cover {
+.aloha .ui-datepicker-cover {
   display: none;
   /*sorry for IE5*/
 
@@ -484,30 +632,21 @@ button.ui-button::-moz-focus-inner {
   /*must have*/
 
 }
-/*
- * jQuery UI Dialog 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Dialog#theming
- */
-.ui-dialog {
+.aloha .ui-dialog {
   position: absolute;
   padding: .2em;
   width: 300px;
   overflow: hidden;
 }
-.ui-dialog .ui-dialog-titlebar {
+.aloha .ui-dialog .ui-dialog-titlebar {
   padding: .4em 1em;
   position: relative;
 }
-.ui-dialog .ui-dialog-title {
+.aloha .ui-dialog .ui-dialog-title {
   float: left;
   margin: .1em 16px .1em 0;
 }
-.ui-dialog .ui-dialog-titlebar-close {
+.aloha .ui-dialog .ui-dialog-titlebar-close {
   position: absolute;
   right: .3em;
   top: 50%;
@@ -516,15 +655,15 @@ button.ui-button::-moz-focus-inner {
   padding: 1px;
   height: 18px;
 }
-.ui-dialog .ui-dialog-titlebar-close span {
+.aloha .ui-dialog .ui-dialog-titlebar-close span {
   display: block;
   margin: 1px;
 }
-.ui-dialog .ui-dialog-titlebar-close:hover,
-.ui-dialog .ui-dialog-titlebar-close:focus {
+.aloha .ui-dialog .ui-dialog-titlebar-close:hover,
+.aloha .ui-dialog .ui-dialog-titlebar-close:focus {
   padding: 0;
 }
-.ui-dialog .ui-dialog-content {
+.aloha .ui-dialog .ui-dialog-content {
   position: relative;
   border: 0;
   padding: .5em 1em;
@@ -532,56 +671,47 @@ button.ui-button::-moz-focus-inner {
   overflow: auto;
   zoom: 1;
 }
-.ui-dialog .ui-dialog-buttonpane {
+.aloha .ui-dialog .ui-dialog-buttonpane {
   text-align: left;
   border-width: 1px 0 0 0;
   background-image: none;
   margin: .5em 0 0 0;
   padding: .3em 1em .5em .4em;
 }
-.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+.aloha .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
   float: right;
 }
-.ui-dialog .ui-dialog-buttonpane button {
+.aloha .ui-dialog .ui-dialog-buttonpane button {
   margin: .5em .4em .5em 0;
   cursor: pointer;
 }
-.ui-dialog .ui-resizable-se {
+.aloha .ui-dialog .ui-resizable-se {
   width: 14px;
   height: 14px;
   right: 3px;
   bottom: 3px;
 }
-.ui-draggable .ui-dialog-titlebar {
+.aloha .ui-draggable .ui-dialog-titlebar {
   cursor: move;
 }
-/*
- * jQuery UI Menu 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Menu#theming
- */
-.ui-menu {
+.aloha .ui-menu {
   list-style: none;
   padding: 2px;
   margin: 0;
   display: block;
   outline: none;
 }
-.ui-menu .ui-menu {
+.aloha .ui-menu .ui-menu {
   margin-top: -3px;
   position: absolute;
 }
-.ui-menu .ui-menu-item {
+.aloha .ui-menu .ui-menu-item {
   margin: 0;
   padding: 0;
   zoom: 1;
   width: 100%;
 }
-.ui-menu .ui-menu-item a {
+.aloha .ui-menu .ui-menu-item a {
   text-decoration: none;
   display: block;
   padding: 2px .4em;
@@ -589,52 +719,42 @@ button.ui-button::-moz-focus-inner {
   zoom: 1;
   font-weight: normal;
 }
-.ui-menu .ui-menu-item a.ui-state-focus,
-.ui-menu .ui-menu-item a.ui-state-active {
+.aloha .ui-menu .ui-menu-item a.ui-state-focus,
+.aloha .ui-menu .ui-menu-item a.ui-state-active {
   font-weight: normal;
   margin: -1px;
 }
-.ui-menu li.ui-state-disabled {
+.aloha .ui-menu li.ui-state-disabled {
   font-weight: normal;
   padding: .0em .4em;
   margin: .4em 0 .2em;
   line-height: 1.5;
 }
-/* icon support */
-.ui-menu-icons {
+.aloha .ui-menu-icons {
   position: relative;
 }
-.ui-menu-icons .ui-menu-item a {
+.aloha .ui-menu-icons .ui-menu-item a {
   position: relative;
   padding-left: 2em;
 }
-/* left-aligned */
-.ui-menu .ui-icon {
+.aloha .ui-menu .ui-icon {
   position: absolute;
   top: .2em;
   left: .2em;
 }
-/* right-aligned */
-.ui-menu .ui-menu-icon {
+.aloha .ui-menu .ui-menu-icon {
   position: static;
   float: right;
 }
-/*
- * jQuery UI Menubar 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- */
-.ui-menubar {
+.aloha .ui-menubar {
   list-style: none;
   margin: 0;
   padding-left: 0;
 }
-.ui-menubar-item {
+.aloha .ui-menubar-item {
   float: left;
 }
-.ui-menubar .ui-button {
+.aloha .ui-menubar .ui-button {
   float: left;
   font-weight: normal;
   border-top-width: 0 !important;
@@ -642,145 +762,109 @@ button.ui-button::-moz-focus-inner {
   margin: 0;
   outline: none;
 }
-.ui-menubar .ui-menubar-link {
+.aloha .ui-menubar .ui-menubar-link {
   border-right: 1px dashed transparent;
   border-left: 1px dashed transparent;
 }
-.ui-menubar .ui-menu {
+.aloha .ui-menubar .ui-menu {
   /* {aloha} width: 200px; */
   position: absolute;
   z-index: 9999;
 }
-/*
- * jQuery UI Progressbar 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Progressbar#theming
- */
-.ui-progressbar {
+.aloha .ui-progressbar {
   height: 2em;
   text-align: left;
 }
-.ui-progressbar .ui-progressbar-value {
+.aloha .ui-progressbar .ui-progressbar-value {
   margin: -1px;
   height: 100%;
 }
-/*
- * jQuery UI Resizable 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Resizable#theming
- */
-.ui-resizable {
+.aloha .ui-resizable {
   position: relative;
 }
-.ui-resizable-handle {
+.aloha .ui-resizable-handle {
   position: absolute;
   font-size: 0.1px;
   z-index: 99999;
   display: block;
 }
-.ui-resizable-disabled .ui-resizable-handle,
-.ui-resizable-autohide .ui-resizable-handle {
+.aloha .ui-resizable-disabled .ui-resizable-handle,
+.aloha .ui-resizable-autohide .ui-resizable-handle {
   display: none;
 }
-.ui-resizable-n {
+.aloha .ui-resizable-n {
   cursor: n-resize;
   height: 7px;
   width: 100%;
   top: -5px;
   left: 0;
 }
-.ui-resizable-s {
+.aloha .ui-resizable-s {
   cursor: s-resize;
   height: 7px;
   width: 100%;
   bottom: -5px;
   left: 0;
 }
-.ui-resizable-e {
+.aloha .ui-resizable-e {
   cursor: e-resize;
   width: 7px;
   right: -5px;
   top: 0;
   height: 100%;
 }
-.ui-resizable-w {
+.aloha .ui-resizable-w {
   cursor: w-resize;
   width: 7px;
   left: -5px;
   top: 0;
   height: 100%;
 }
-.ui-resizable-se {
+.aloha .ui-resizable-se {
   cursor: se-resize;
   width: 12px;
   height: 12px;
   right: 1px;
   bottom: 1px;
 }
-.ui-resizable-sw {
+.aloha .ui-resizable-sw {
   cursor: sw-resize;
   width: 9px;
   height: 9px;
   left: -5px;
   bottom: -5px;
 }
-.ui-resizable-nw {
+.aloha .ui-resizable-nw {
   cursor: nw-resize;
   width: 9px;
   height: 9px;
   left: -5px;
   top: -5px;
 }
-.ui-resizable-ne {
+.aloha .ui-resizable-ne {
   cursor: ne-resize;
   width: 9px;
   height: 9px;
   right: -5px;
   top: -5px;
 }
-/*
- * jQuery UI Selectable 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Selectable#theming
- */
-.ui-selectable-helper {
+.aloha .ui-selectable-helper {
   position: absolute;
   z-index: 100;
   border: 1px dotted black;
 }
-/*
- * jQuery UI Slider 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Slider#theming
- */
-.ui-slider {
+.aloha .ui-slider {
   position: relative;
   text-align: left;
 }
-.ui-slider .ui-slider-handle {
+.aloha .ui-slider .ui-slider-handle {
   position: absolute;
   z-index: 2;
   width: 1.2em;
   height: 1.2em;
   cursor: default;
 }
-.ui-slider .ui-slider-range {
+.aloha .ui-slider .ui-slider-range {
   position: absolute;
   z-index: 1;
   font-size: .7em;
@@ -788,59 +872,50 @@ button.ui-button::-moz-focus-inner {
   border: 0;
   background-position: 0 0;
 }
-.ui-slider-horizontal {
+.aloha .ui-slider-horizontal {
   height: .8em;
 }
-.ui-slider-horizontal .ui-slider-handle {
+.aloha .ui-slider-horizontal .ui-slider-handle {
   top: -0.3em;
   margin-left: -0.6em;
 }
-.ui-slider-horizontal .ui-slider-range {
+.aloha .ui-slider-horizontal .ui-slider-range {
   top: 0;
   height: 100%;
 }
-.ui-slider-horizontal .ui-slider-range-min {
+.aloha .ui-slider-horizontal .ui-slider-range-min {
   left: 0;
 }
-.ui-slider-horizontal .ui-slider-range-max {
+.aloha .ui-slider-horizontal .ui-slider-range-max {
   right: 0;
 }
-.ui-slider-vertical {
+.aloha .ui-slider-vertical {
   width: .8em;
   height: 100px;
 }
-.ui-slider-vertical .ui-slider-handle {
+.aloha .ui-slider-vertical .ui-slider-handle {
   left: -0.3em;
   margin-left: 0;
   margin-bottom: -0.6em;
 }
-.ui-slider-vertical .ui-slider-range {
+.aloha .ui-slider-vertical .ui-slider-range {
   left: 0;
   width: 100%;
 }
-.ui-slider-vertical .ui-slider-range-min {
+.aloha .ui-slider-vertical .ui-slider-range-min {
   bottom: 0;
 }
-.ui-slider-vertical .ui-slider-range-max {
+.aloha .ui-slider-vertical .ui-slider-range-max {
   top: 0;
 }
-/*
- * jQuery UI Spinner 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Spinner#theming
- */
-.ui-spinner {
+.aloha .ui-spinner {
   position: relative;
   display: inline-block;
   overflow: hidden;
   padding: 0;
   vertical-align: middle;
 }
-.ui-spinner-input {
+.aloha .ui-spinner-input {
   border: none;
   background: none;
   padding: 0;
@@ -849,7 +924,7 @@ button.ui-button::-moz-focus-inner {
   margin-left: .4em;
   margin-right: 22px;
 }
-.ui-spinner-button {
+.aloha .ui-spinner-button {
   width: 16px;
   height: 50%;
   font-size: .5em;
@@ -864,54 +939,41 @@ button.ui-button::-moz-focus-inner {
   overflow: hidden;
   right: 0;
 }
-.ui-spinner a.ui-spinner-button {
+.aloha .ui-spinner a.ui-spinner-button {
   border-top: none;
   border-bottom: none;
   border-right: none;
 }
-/* more specificity required here to overide default borders */
-.ui-spinner .ui-icon {
+.aloha .ui-spinner .ui-icon {
   position: absolute;
   margin-top: -8px;
   top: 50%;
   left: 0;
 }
-/* vertical centre icon */
-.ui-spinner-up {
+.aloha .ui-spinner-up {
   top: 0;
 }
-.ui-spinner-down {
+.aloha .ui-spinner-down {
   bottom: 0;
 }
-/* TR overrides */
-span.ui-spinner {
+.aloha span.ui-spinner {
   background: none;
 }
-.ui-spinner .ui-icon-triangle-1-s {
+.aloha .ui-spinner .ui-icon-triangle-1-s {
   /* need to fix icons sprite */
 
   background-position: -65px -16px;
 }
-/*
- * jQuery UI Tabs 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Tabs#theming
- */
-.ui-tabs {
+.aloha .ui-tabs {
   position: relative;
   padding: .2em;
   zoom: 1;
 }
-/* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
-.ui-tabs .ui-tabs-nav {
+.aloha .ui-tabs .ui-tabs-nav {
   margin: 0;
   padding: .2em .2em 0;
 }
-.ui-tabs .ui-tabs-nav li {
+.aloha .ui-tabs .ui-tabs-nav li {
   list-style: none;
   float: left;
   position: relative;
@@ -921,776 +983,724 @@ span.ui-spinner {
   padding: 0;
   white-space: nowrap;
 }
-.ui-tabs .ui-tabs-nav li a {
+.aloha .ui-tabs .ui-tabs-nav li a {
   float: left;
   padding: .5em 1em;
   text-decoration: none;
 }
-.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+.aloha .ui-tabs .ui-tabs-nav li.ui-tabs-active {
   margin-bottom: -1px;
   padding-bottom: 1px;
 }
-.ui-tabs .ui-tabs-nav li.ui-tabs-active a,
-.ui-tabs .ui-tabs-nav li.ui-state-disabled a,
-.ui-tabs .ui-tabs-nav li.ui-tabs-loading a {
+.aloha .ui-tabs .ui-tabs-nav li.ui-tabs-active a,
+.aloha .ui-tabs .ui-tabs-nav li.ui-state-disabled a,
+.aloha .ui-tabs .ui-tabs-nav li.ui-tabs-loading a {
   cursor: text;
 }
-.ui-tabs .ui-tabs-nav li a,
-.ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-active a {
+.aloha .ui-tabs .ui-tabs-nav li a,
+.aloha .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-active a {
   cursor: pointer;
 }
-/* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
-.ui-tabs .ui-tabs-panel {
+.aloha .ui-tabs .ui-tabs-panel {
   display: block;
   border-width: 0;
   padding: 1em 1.4em;
   background: none;
 }
-/*
- * jQuery UI Tooltip 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Tooltip#theming
- */
-.ui-tooltip {
-  padding: 8px;
-  position: absolute;
-  z-index: 9999;
-  -o-box-shadow: 0 0 5px #aaa;
-  -moz-box-shadow: 0 0 5px #aaa;
-  -webkit-box-shadow: 0 0 5px #aaa;
-  box-shadow: 0 0 5px #aaa;
-}
-/* Fades and background-images don't work well together in IE6, drop the image */
-* html .ui-tooltip {
-  background-image: none;
-}
-body .ui-tooltip {
-  border-width: 2px;
-}
-/*
- * jQuery UI CSS Framework 1.9m6
- *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Theming/API
- *
- * To view and modify this theme, visit http://jqueryui.com/themeroller/
- */
-/* Component containers
-----------------------------------*/
-.ui-widget {
+.aloha .ui-widget {
   font-family: Verdana, Arial, sans-serif /*{ffDefault}*/;
   font-size: 1.1em /*{fsDefault}*/;
 }
-.ui-widget .ui-widget {
+.aloha .ui-widget .ui-widget {
   font-size: 1em;
 }
-.ui-widget input,
-.ui-widget select,
-.ui-widget textarea,
-.ui-widget button {
+.aloha .ui-widget input,
+.aloha .ui-widget select,
+.aloha .ui-widget textarea,
+.aloha .ui-widget button {
   font-family: Verdana, Arial, sans-serif /*{ffDefault}*/;
   font-size: 1em;
 }
-.ui-widget-content {
+.aloha .ui-widget-content {
   border: 1px solid #aaaaaa /*{borderColorContent}*/;
   background: #ffffff /*{bgColorContent}*/;
   color: #222222 /*{fcContent}*/;
 }
-.ui-widget-content a {
+.aloha .ui-widget-content a {
   color: #222222 /*{fcContent}*/;
 }
-.ui-widget-header {
+.aloha .ui-widget-header {
   border: 1px solid #aaaaaa /*{borderColorHeader}*/;
   background: #cccccc /*{bgColorHeader}*/;
   color: #222222 /*{fcHeader}*/;
   font-weight: bold;
 }
-.ui-widget-header a {
+.aloha .ui-widget-header a {
   color: #222222 /*{fcHeader}*/;
 }
-/* Interaction states
-----------------------------------*/
-.ui-state-default,
-.ui-widget-content .ui-state-default,
-.ui-widget-header .ui-state-default {
+.aloha .ui-state-default,
+.aloha .ui-widget-content .ui-state-default,
+.aloha .ui-widget-header .ui-state-default {
   border: 1px solid #d3d3d3 /*{borderColorDefault}*/;
   background: #e6e6e6 /*{bgColorDefault}*/;
   font-weight: normal /*{fwDefault}*/;
   color: #555555 /*{fcDefault}*/;
 }
-.ui-state-default a,
-.ui-state-default a:link,
-.ui-state-default a:visited {
+.aloha .ui-state-default a,
+.aloha .ui-state-default a:link,
+.aloha .ui-state-default a:visited {
   color: #555555 /*{fcDefault}*/;
   text-decoration: none;
 }
-.ui-state-hover,
-.ui-widget-content .ui-state-hover,
-.ui-widget-header .ui-state-hover,
-.ui-state-focus,
-.ui-widget-content .ui-state-focus,
-.ui-widget-header .ui-state-focus {
+.aloha .ui-state-hover,
+.aloha .ui-widget-content .ui-state-hover,
+.aloha .ui-widget-header .ui-state-hover,
+.aloha .ui-state-focus,
+.aloha .ui-widget-content .ui-state-focus,
+.aloha .ui-widget-header .ui-state-focus {
   border: 1px solid #999999 /*{borderColorHover}*/;
   background: #dadada /*{bgColorHover}*/;
   font-weight: normal /*{fwDefault}*/;
   color: #212121 /*{fcHover}*/;
 }
-.ui-state-hover a,
-.ui-state-hover a:hover {
+.aloha .ui-state-hover a,
+.aloha .ui-state-hover a:hover {
   color: #212121 /*{fcHover}*/;
   text-decoration: none;
 }
-.ui-state-active,
-.ui-widget-content .ui-state-active,
-.ui-widget-header .ui-state-active {
+.aloha .ui-state-active,
+.aloha .ui-widget-content .ui-state-active,
+.aloha .ui-widget-header .ui-state-active {
   border: 1px solid #aaaaaa /*{borderColorActive}*/;
   background: #ffffff /*{bgColorActive}*/;
   font-weight: normal /*{fwDefault}*/;
   color: #212121 /*{fcActive}*/;
 }
-.ui-state-active a,
-.ui-state-active a:link,
-.ui-state-active a:visited {
+.aloha .ui-state-active a,
+.aloha .ui-state-active a:link,
+.aloha .ui-state-active a:visited {
   color: #212121 /*{fcActive}*/;
   text-decoration: none;
 }
-.ui-widget :active {
+.aloha .ui-widget :active {
   outline: none;
 }
-/* Interaction Cues
-----------------------------------*/
-.ui-state-highlight,
-.ui-widget-content .ui-state-highlight,
-.ui-widget-header .ui-state-highlight {
+.aloha .ui-state-highlight,
+.aloha .ui-widget-content .ui-state-highlight,
+.aloha .ui-widget-header .ui-state-highlight {
   border: 1px solid #fcefa1 /*{borderColorHighlight}*/;
   background: #fbf9ee /*{bgColorHighlight}*/;
   color: #363636 /*{fcHighlight}*/;
 }
-.ui-state-highlight a,
-.ui-widget-content .ui-state-highlight a,
-.ui-widget-header .ui-state-highlight a {
+.aloha .ui-state-highlight a,
+.aloha .ui-widget-content .ui-state-highlight a,
+.aloha .ui-widget-header .ui-state-highlight a {
   color: #363636 /*{fcHighlight}*/;
 }
-.ui-state-error,
-.ui-widget-content .ui-state-error,
-.ui-widget-header .ui-state-error {
+.aloha .ui-state-error,
+.aloha .ui-widget-content .ui-state-error,
+.aloha .ui-widget-header .ui-state-error {
   border: 1px solid #cd0a0a /*{borderColorError}*/;
   background: #fef1ec /*{bgColorError}*/;
   color: #cd0a0a /*{fcError}*/;
 }
-.ui-state-error a,
-.ui-widget-content .ui-state-error a,
-.ui-widget-header .ui-state-error a {
+.aloha .ui-state-error a,
+.aloha .ui-widget-content .ui-state-error a,
+.aloha .ui-widget-header .ui-state-error a {
   color: #cd0a0a /*{fcError}*/;
 }
-.ui-state-error-text,
-.ui-widget-content .ui-state-error-text,
-.ui-widget-header .ui-state-error-text {
+.aloha .ui-state-error-text,
+.aloha .ui-widget-content .ui-state-error-text,
+.aloha .ui-widget-header .ui-state-error-text {
   color: #cd0a0a /*{fcError}*/;
 }
-.ui-priority-primary,
-.ui-widget-content .ui-priority-primary,
-.ui-widget-header .ui-priority-primary {
+.aloha .ui-priority-primary,
+.aloha .ui-widget-content .ui-priority-primary,
+.aloha .ui-widget-header .ui-priority-primary {
   font-weight: bold;
 }
-.ui-priority-secondary,
-.ui-widget-content .ui-priority-secondary,
-.ui-widget-header .ui-priority-secondary {
+.aloha .ui-priority-secondary,
+.aloha .ui-widget-content .ui-priority-secondary,
+.aloha .ui-widget-header .ui-priority-secondary {
   opacity: .7;
   filter: alpha(opacity=70);
   font-weight: normal;
 }
-.ui-state-disabled,
-.ui-widget-content .ui-state-disabled,
-.ui-widget-header .ui-state-disabled {
+.aloha .ui-state-disabled,
+.aloha .ui-widget-content .ui-state-disabled,
+.aloha .ui-widget-header .ui-state-disabled {
   opacity: .35;
   filter: alpha(opacity=35);
   background-image: none;
 }
-/* Icons
-----------------------------------*/
-/* states and images */
-.ui-icon {
+.aloha .ui-icon {
   width: 16px;
   height: 16px;
 }
-/* positioning */
-.ui-icon-carat-1-n {
+.aloha .ui-icon-carat-1-n {
   background-position: 0 0;
 }
-.ui-icon-carat-1-ne {
+.aloha .ui-icon-carat-1-ne {
   background-position: -16px 0;
 }
-.ui-icon-carat-1-e {
+.aloha .ui-icon-carat-1-e {
   background-position: -32px 0;
 }
-.ui-icon-carat-1-se {
+.aloha .ui-icon-carat-1-se {
   background-position: -48px 0;
 }
-.ui-icon-carat-1-s {
+.aloha .ui-icon-carat-1-s {
   background-position: -64px 0;
 }
-.ui-icon-carat-1-sw {
+.aloha .ui-icon-carat-1-sw {
   background-position: -80px 0;
 }
-.ui-icon-carat-1-w {
+.aloha .ui-icon-carat-1-w {
   background-position: -96px 0;
 }
-.ui-icon-carat-1-nw {
+.aloha .ui-icon-carat-1-nw {
   background-position: -112px 0;
 }
-.ui-icon-carat-2-n-s {
+.aloha .ui-icon-carat-2-n-s {
   background-position: -128px 0;
 }
-.ui-icon-carat-2-e-w {
+.aloha .ui-icon-carat-2-e-w {
   background-position: -144px 0;
 }
-.ui-icon-triangle-1-n {
+.aloha .ui-icon-triangle-1-n {
   background-position: 0 -16px;
 }
-.ui-icon-triangle-1-ne {
+.aloha .ui-icon-triangle-1-ne {
   background-position: -16px -16px;
 }
-.ui-icon-triangle-1-e {
+.aloha .ui-icon-triangle-1-e {
   background-position: -32px -16px;
 }
-.ui-icon-triangle-1-se {
+.aloha .ui-icon-triangle-1-se {
   background-position: -48px -16px;
 }
-.ui-icon-triangle-1-s {
+.aloha .ui-icon-triangle-1-s {
   background-position: -64px -16px;
 }
-.ui-icon-triangle-1-sw {
+.aloha .ui-icon-triangle-1-sw {
   background-position: -80px -16px;
 }
-.ui-icon-triangle-1-w {
+.aloha .ui-icon-triangle-1-w {
   background-position: -96px -16px;
 }
-.ui-icon-triangle-1-nw {
+.aloha .ui-icon-triangle-1-nw {
   background-position: -112px -16px;
 }
-.ui-icon-triangle-2-n-s {
+.aloha .ui-icon-triangle-2-n-s {
   background-position: -128px -16px;
 }
-.ui-icon-triangle-2-e-w {
+.aloha .ui-icon-triangle-2-e-w {
   background-position: -144px -16px;
 }
-.ui-icon-arrow-1-n {
+.aloha .ui-icon-arrow-1-n {
   background-position: 0 -32px;
 }
-.ui-icon-arrow-1-ne {
+.aloha .ui-icon-arrow-1-ne {
   background-position: -16px -32px;
 }
-.ui-icon-arrow-1-e {
+.aloha .ui-icon-arrow-1-e {
   background-position: -32px -32px;
 }
-.ui-icon-arrow-1-se {
+.aloha .ui-icon-arrow-1-se {
   background-position: -48px -32px;
 }
-.ui-icon-arrow-1-s {
+.aloha .ui-icon-arrow-1-s {
   background-position: -64px -32px;
 }
-.ui-icon-arrow-1-sw {
+.aloha .ui-icon-arrow-1-sw {
   background-position: -80px -32px;
 }
-.ui-icon-arrow-1-w {
+.aloha .ui-icon-arrow-1-w {
   background-position: -96px -32px;
 }
-.ui-icon-arrow-1-nw {
+.aloha .ui-icon-arrow-1-nw {
   background-position: -112px -32px;
 }
-.ui-icon-arrow-2-n-s {
+.aloha .ui-icon-arrow-2-n-s {
   background-position: -128px -32px;
 }
-.ui-icon-arrow-2-ne-sw {
+.aloha .ui-icon-arrow-2-ne-sw {
   background-position: -144px -32px;
 }
-.ui-icon-arrow-2-e-w {
+.aloha .ui-icon-arrow-2-e-w {
   background-position: -160px -32px;
 }
-.ui-icon-arrow-2-se-nw {
+.aloha .ui-icon-arrow-2-se-nw {
   background-position: -176px -32px;
 }
-.ui-icon-arrowstop-1-n {
+.aloha .ui-icon-arrowstop-1-n {
   background-position: -192px -32px;
 }
-.ui-icon-arrowstop-1-e {
+.aloha .ui-icon-arrowstop-1-e {
   background-position: -208px -32px;
 }
-.ui-icon-arrowstop-1-s {
+.aloha .ui-icon-arrowstop-1-s {
   background-position: -224px -32px;
 }
-.ui-icon-arrowstop-1-w {
+.aloha .ui-icon-arrowstop-1-w {
   background-position: -240px -32px;
 }
-.ui-icon-arrowthick-1-n {
+.aloha .ui-icon-arrowthick-1-n {
   background-position: 0 -48px;
 }
-.ui-icon-arrowthick-1-ne {
+.aloha .ui-icon-arrowthick-1-ne {
   background-position: -16px -48px;
 }
-.ui-icon-arrowthick-1-e {
+.aloha .ui-icon-arrowthick-1-e {
   background-position: -32px -48px;
 }
-.ui-icon-arrowthick-1-se {
+.aloha .ui-icon-arrowthick-1-se {
   background-position: -48px -48px;
 }
-.ui-icon-arrowthick-1-s {
+.aloha .ui-icon-arrowthick-1-s {
   background-position: -64px -48px;
 }
-.ui-icon-arrowthick-1-sw {
+.aloha .ui-icon-arrowthick-1-sw {
   background-position: -80px -48px;
 }
-.ui-icon-arrowthick-1-w {
+.aloha .ui-icon-arrowthick-1-w {
   background-position: -96px -48px;
 }
-.ui-icon-arrowthick-1-nw {
+.aloha .ui-icon-arrowthick-1-nw {
   background-position: -112px -48px;
 }
-.ui-icon-arrowthick-2-n-s {
+.aloha .ui-icon-arrowthick-2-n-s {
   background-position: -128px -48px;
 }
-.ui-icon-arrowthick-2-ne-sw {
+.aloha .ui-icon-arrowthick-2-ne-sw {
   background-position: -144px -48px;
 }
-.ui-icon-arrowthick-2-e-w {
+.aloha .ui-icon-arrowthick-2-e-w {
   background-position: -160px -48px;
 }
-.ui-icon-arrowthick-2-se-nw {
+.aloha .ui-icon-arrowthick-2-se-nw {
   background-position: -176px -48px;
 }
-.ui-icon-arrowthickstop-1-n {
+.aloha .ui-icon-arrowthickstop-1-n {
   background-position: -192px -48px;
 }
-.ui-icon-arrowthickstop-1-e {
+.aloha .ui-icon-arrowthickstop-1-e {
   background-position: -208px -48px;
 }
-.ui-icon-arrowthickstop-1-s {
+.aloha .ui-icon-arrowthickstop-1-s {
   background-position: -224px -48px;
 }
-.ui-icon-arrowthickstop-1-w {
+.aloha .ui-icon-arrowthickstop-1-w {
   background-position: -240px -48px;
 }
-.ui-icon-arrowreturnthick-1-w {
+.aloha .ui-icon-arrowreturnthick-1-w {
   background-position: 0 -64px;
 }
-.ui-icon-arrowreturnthick-1-n {
+.aloha .ui-icon-arrowreturnthick-1-n {
   background-position: -16px -64px;
 }
-.ui-icon-arrowreturnthick-1-e {
+.aloha .ui-icon-arrowreturnthick-1-e {
   background-position: -32px -64px;
 }
-.ui-icon-arrowreturnthick-1-s {
+.aloha .ui-icon-arrowreturnthick-1-s {
   background-position: -48px -64px;
 }
-.ui-icon-arrowreturn-1-w {
+.aloha .ui-icon-arrowreturn-1-w {
   background-position: -64px -64px;
 }
-.ui-icon-arrowreturn-1-n {
+.aloha .ui-icon-arrowreturn-1-n {
   background-position: -80px -64px;
 }
-.ui-icon-arrowreturn-1-e {
+.aloha .ui-icon-arrowreturn-1-e {
   background-position: -96px -64px;
 }
-.ui-icon-arrowreturn-1-s {
+.aloha .ui-icon-arrowreturn-1-s {
   background-position: -112px -64px;
 }
-.ui-icon-arrowrefresh-1-w {
+.aloha .ui-icon-arrowrefresh-1-w {
   background-position: -128px -64px;
 }
-.ui-icon-arrowrefresh-1-n {
+.aloha .ui-icon-arrowrefresh-1-n {
   background-position: -144px -64px;
 }
-.ui-icon-arrowrefresh-1-e {
+.aloha .ui-icon-arrowrefresh-1-e {
   background-position: -160px -64px;
 }
-.ui-icon-arrowrefresh-1-s {
+.aloha .ui-icon-arrowrefresh-1-s {
   background-position: -176px -64px;
 }
-.ui-icon-arrow-4 {
+.aloha .ui-icon-arrow-4 {
   background-position: 0 -80px;
 }
-.ui-icon-arrow-4-diag {
+.aloha .ui-icon-arrow-4-diag {
   background-position: -16px -80px;
 }
-.ui-icon-extlink {
+.aloha .ui-icon-extlink {
   background-position: -32px -80px;
 }
-.ui-icon-newwin {
+.aloha .ui-icon-newwin {
   background-position: -48px -80px;
 }
-.ui-icon-refresh {
+.aloha .ui-icon-refresh {
   background-position: -64px -80px;
 }
-.ui-icon-shuffle {
+.aloha .ui-icon-shuffle {
   background-position: -80px -80px;
 }
-.ui-icon-transfer-e-w {
+.aloha .ui-icon-transfer-e-w {
   background-position: -96px -80px;
 }
-.ui-icon-transferthick-e-w {
+.aloha .ui-icon-transferthick-e-w {
   background-position: -112px -80px;
 }
-.ui-icon-folder-collapsed {
+.aloha .ui-icon-folder-collapsed {
   background-position: 0 -96px;
 }
-.ui-icon-folder-open {
+.aloha .ui-icon-folder-open {
   background-position: -16px -96px;
 }
-.ui-icon-document {
+.aloha .ui-icon-document {
   background-position: -32px -96px;
 }
-.ui-icon-document-b {
+.aloha .ui-icon-document-b {
   background-position: -48px -96px;
 }
-.ui-icon-note {
+.aloha .ui-icon-note {
   background-position: -64px -96px;
 }
-.ui-icon-mail-closed {
+.aloha .ui-icon-mail-closed {
   background-position: -80px -96px;
 }
-.ui-icon-mail-open {
+.aloha .ui-icon-mail-open {
   background-position: -96px -96px;
 }
-.ui-icon-suitcase {
+.aloha .ui-icon-suitcase {
   background-position: -112px -96px;
 }
-.ui-icon-comment {
+.aloha .ui-icon-comment {
   background-position: -128px -96px;
 }
-.ui-icon-person {
+.aloha .ui-icon-person {
   background-position: -144px -96px;
 }
-.ui-icon-print {
+.aloha .ui-icon-print {
   background-position: -160px -96px;
 }
-.ui-icon-trash {
+.aloha .ui-icon-trash {
   background-position: -176px -96px;
 }
-.ui-icon-locked {
+.aloha .ui-icon-locked {
   background-position: -192px -96px;
 }
-.ui-icon-unlocked {
+.aloha .ui-icon-unlocked {
   background-position: -208px -96px;
 }
-.ui-icon-bookmark {
+.aloha .ui-icon-bookmark {
   background-position: -224px -96px;
 }
-.ui-icon-tag {
+.aloha .ui-icon-tag {
   background-position: -240px -96px;
 }
-.ui-icon-home {
+.aloha .ui-icon-home {
   background-position: 0 -112px;
 }
-.ui-icon-flag {
+.aloha .ui-icon-flag {
   background-position: -16px -112px;
 }
-.ui-icon-calendar {
+.aloha .ui-icon-calendar {
   background-position: -32px -112px;
 }
-.ui-icon-cart {
+.aloha .ui-icon-cart {
   background-position: -48px -112px;
 }
-.ui-icon-pencil {
+.aloha .ui-icon-pencil {
   background-position: -64px -112px;
 }
-.ui-icon-clock {
+.aloha .ui-icon-clock {
   background-position: -80px -112px;
 }
-.ui-icon-disk {
+.aloha .ui-icon-disk {
   background-position: -96px -112px;
 }
-.ui-icon-calculator {
+.aloha .ui-icon-calculator {
   background-position: -112px -112px;
 }
-.ui-icon-zoomin {
+.aloha .ui-icon-zoomin {
   background-position: -128px -112px;
 }
-.ui-icon-zoomout {
+.aloha .ui-icon-zoomout {
   background-position: -144px -112px;
 }
-.ui-icon-search {
+.aloha .ui-icon-search {
   background-position: -160px -112px;
 }
-.ui-icon-wrench {
+.aloha .ui-icon-wrench {
   background-position: -176px -112px;
 }
-.ui-icon-gear {
+.aloha .ui-icon-gear {
   background-position: -192px -112px;
 }
-.ui-icon-heart {
+.aloha .ui-icon-heart {
   background-position: -208px -112px;
 }
-.ui-icon-star {
+.aloha .ui-icon-star {
   background-position: -224px -112px;
 }
-.ui-icon-link {
+.aloha .ui-icon-link {
   background-position: -240px -112px;
 }
-.ui-icon-cancel {
+.aloha .ui-icon-cancel {
   background-position: 0 -128px;
 }
-.ui-icon-plus {
+.aloha .ui-icon-plus {
   background-position: -16px -128px;
 }
-.ui-icon-plusthick {
+.aloha .ui-icon-plusthick {
   background-position: -32px -128px;
 }
-.ui-icon-minus {
+.aloha .ui-icon-minus {
   background-position: -48px -128px;
 }
-.ui-icon-minusthick {
+.aloha .ui-icon-minusthick {
   background-position: -64px -128px;
 }
-.ui-icon-close {
+.aloha .ui-icon-close {
   background-position: -80px -128px;
 }
-.ui-icon-closethick {
+.aloha .ui-icon-closethick {
   background-position: -96px -128px;
 }
-.ui-icon-key {
+.aloha .ui-icon-key {
   background-position: -112px -128px;
 }
-.ui-icon-lightbulb {
+.aloha .ui-icon-lightbulb {
   background-position: -128px -128px;
 }
-.ui-icon-scissors {
+.aloha .ui-icon-scissors {
   background-position: -144px -128px;
 }
-.ui-icon-clipboard {
+.aloha .ui-icon-clipboard {
   background-position: -160px -128px;
 }
-.ui-icon-copy {
+.aloha .ui-icon-copy {
   background-position: -176px -128px;
 }
-.ui-icon-contact {
+.aloha .ui-icon-contact {
   background-position: -192px -128px;
 }
-.ui-icon-image {
+.aloha .ui-icon-image {
   background-position: -208px -128px;
 }
-.ui-icon-video {
+.aloha .ui-icon-video {
   background-position: -224px -128px;
 }
-.ui-icon-script {
+.aloha .ui-icon-script {
   background-position: -240px -128px;
 }
-.ui-icon-alert {
+.aloha .ui-icon-alert {
   background-position: 0 -144px;
 }
-.ui-icon-info {
+.aloha .ui-icon-info {
   background-position: -16px -144px;
 }
-.ui-icon-notice {
+.aloha .ui-icon-notice {
   background-position: -32px -144px;
 }
-.ui-icon-help {
+.aloha .ui-icon-help {
   background-position: -48px -144px;
 }
-.ui-icon-check {
+.aloha .ui-icon-check {
   background-position: -64px -144px;
 }
-.ui-icon-bullet {
+.aloha .ui-icon-bullet {
   background-position: -80px -144px;
 }
-.ui-icon-radio-on {
+.aloha .ui-icon-radio-on {
   background-position: -96px -144px;
 }
-.ui-icon-radio-off {
+.aloha .ui-icon-radio-off {
   background-position: -112px -144px;
 }
-.ui-icon-pin-w {
+.aloha .ui-icon-pin-w {
   background-position: -128px -144px;
 }
-.ui-icon-pin-s {
+.aloha .ui-icon-pin-s {
   background-position: -144px -144px;
 }
-.ui-icon-play {
+.aloha .ui-icon-play {
   background-position: 0 -160px;
 }
-.ui-icon-pause {
+.aloha .ui-icon-pause {
   background-position: -16px -160px;
 }
-.ui-icon-seek-next {
+.aloha .ui-icon-seek-next {
   background-position: -32px -160px;
 }
-.ui-icon-seek-prev {
+.aloha .ui-icon-seek-prev {
   background-position: -48px -160px;
 }
-.ui-icon-seek-end {
+.aloha .ui-icon-seek-end {
   background-position: -64px -160px;
 }
-.ui-icon-seek-start {
+.aloha .ui-icon-seek-start {
   background-position: -80px -160px;
 }
-/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */
-.ui-icon-seek-first {
+.aloha .ui-icon-seek-first {
   background-position: -80px -160px;
 }
-.ui-icon-stop {
+.aloha .ui-icon-stop {
   background-position: -96px -160px;
 }
-.ui-icon-eject {
+.aloha .ui-icon-eject {
   background-position: -112px -160px;
 }
-.ui-icon-volume-off {
+.aloha .ui-icon-volume-off {
   background-position: -128px -160px;
 }
-.ui-icon-volume-on {
+.aloha .ui-icon-volume-on {
   background-position: -144px -160px;
 }
-.ui-icon-power {
+.aloha .ui-icon-power {
   background-position: 0 -176px;
 }
-.ui-icon-signal-diag {
+.aloha .ui-icon-signal-diag {
   background-position: -16px -176px;
 }
-.ui-icon-signal {
+.aloha .ui-icon-signal {
   background-position: -32px -176px;
 }
-.ui-icon-battery-0 {
+.aloha .ui-icon-battery-0 {
   background-position: -48px -176px;
 }
-.ui-icon-battery-1 {
+.aloha .ui-icon-battery-1 {
   background-position: -64px -176px;
 }
-.ui-icon-battery-2 {
+.aloha .ui-icon-battery-2 {
   background-position: -80px -176px;
 }
-.ui-icon-battery-3 {
+.aloha .ui-icon-battery-3 {
   background-position: -96px -176px;
 }
-.ui-icon-circle-plus {
+.aloha .ui-icon-circle-plus {
   background-position: 0 -192px;
 }
-.ui-icon-circle-minus {
+.aloha .ui-icon-circle-minus {
   background-position: -16px -192px;
 }
-.ui-icon-circle-close {
+.aloha .ui-icon-circle-close {
   background-position: -32px -192px;
 }
-.ui-icon-circle-triangle-e {
+.aloha .ui-icon-circle-triangle-e {
   background-position: -48px -192px;
 }
-.ui-icon-circle-triangle-s {
+.aloha .ui-icon-circle-triangle-s {
   background-position: -64px -192px;
 }
-.ui-icon-circle-triangle-w {
+.aloha .ui-icon-circle-triangle-w {
   background-position: -80px -192px;
 }
-.ui-icon-circle-triangle-n {
+.aloha .ui-icon-circle-triangle-n {
   background-position: -96px -192px;
 }
-.ui-icon-circle-arrow-e {
+.aloha .ui-icon-circle-arrow-e {
   background-position: -112px -192px;
 }
-.ui-icon-circle-arrow-s {
+.aloha .ui-icon-circle-arrow-s {
   background-position: -128px -192px;
 }
-.ui-icon-circle-arrow-w {
+.aloha .ui-icon-circle-arrow-w {
   background-position: -144px -192px;
 }
-.ui-icon-circle-arrow-n {
+.aloha .ui-icon-circle-arrow-n {
   background-position: -160px -192px;
 }
-.ui-icon-circle-zoomin {
+.aloha .ui-icon-circle-zoomin {
   background-position: -176px -192px;
 }
-.ui-icon-circle-zoomout {
+.aloha .ui-icon-circle-zoomout {
   background-position: -192px -192px;
 }
-.ui-icon-circle-check {
+.aloha .ui-icon-circle-check {
   background-position: -208px -192px;
 }
-.ui-icon-circlesmall-plus {
+.aloha .ui-icon-circlesmall-plus {
   background-position: 0 -208px;
 }
-.ui-icon-circlesmall-minus {
+.aloha .ui-icon-circlesmall-minus {
   background-position: -16px -208px;
 }
-.ui-icon-circlesmall-close {
+.aloha .ui-icon-circlesmall-close {
   background-position: -32px -208px;
 }
-.ui-icon-squaresmall-plus {
+.aloha .ui-icon-squaresmall-plus {
   background-position: -48px -208px;
 }
-.ui-icon-squaresmall-minus {
+.aloha .ui-icon-squaresmall-minus {
   background-position: -64px -208px;
 }
-.ui-icon-squaresmall-close {
+.aloha .ui-icon-squaresmall-close {
   background-position: -80px -208px;
 }
-.ui-icon-grip-dotted-vertical {
+.aloha .ui-icon-grip-dotted-vertical {
   background-position: 0 -224px;
 }
-.ui-icon-grip-dotted-horizontal {
+.aloha .ui-icon-grip-dotted-horizontal {
   background-position: -16px -224px;
 }
-.ui-icon-grip-solid-vertical {
+.aloha .ui-icon-grip-solid-vertical {
   background-position: -32px -224px;
 }
-.ui-icon-grip-solid-horizontal {
+.aloha .ui-icon-grip-solid-horizontal {
   background-position: -48px -224px;
 }
-.ui-icon-gripsmall-diagonal-se {
+.aloha .ui-icon-gripsmall-diagonal-se {
   background-position: -64px -224px;
 }
-.ui-icon-grip-diagonal-se {
+.aloha .ui-icon-grip-diagonal-se {
   background-position: -80px -224px;
 }
-/* Misc visuals
-----------------------------------*/
-/* Corner radius */
-.ui-corner-all,
-.ui-corner-top,
-.ui-corner-left,
-.ui-corner-tl {
+.aloha .ui-corner-all,
+.aloha .ui-corner-top,
+.aloha .ui-corner-left,
+.aloha .ui-corner-tl {
   -moz-border-radius-topleft: 4px /*{cornerRadius}*/;
   -webkit-border-top-left-radius: 4px /*{cornerRadius}*/;
   -khtml-border-top-left-radius: 4px /*{cornerRadius}*/;
   border-top-left-radius: 4px /*{cornerRadius}*/;
 }
-.ui-corner-all,
-.ui-corner-top,
-.ui-corner-right,
-.ui-corner-tr {
+.aloha .ui-corner-all,
+.aloha .ui-corner-top,
+.aloha .ui-corner-right,
+.aloha .ui-corner-tr {
   -moz-border-radius-topright: 4px /*{cornerRadius}*/;
   -webkit-border-top-right-radius: 4px /*{cornerRadius}*/;
   -khtml-border-top-right-radius: 4px /*{cornerRadius}*/;
   border-top-right-radius: 4px /*{cornerRadius}*/;
 }
-.ui-corner-all,
-.ui-corner-bottom,
-.ui-corner-left,
-.ui-corner-bl {
+.aloha .ui-corner-all,
+.aloha .ui-corner-bottom,
+.aloha .ui-corner-left,
+.aloha .ui-corner-bl {
   -moz-border-radius-bottomleft: 4px /*{cornerRadius}*/;
   -webkit-border-bottom-left-radius: 4px /*{cornerRadius}*/;
   -khtml-border-bottom-left-radius: 4px /*{cornerRadius}*/;
   border-bottom-left-radius: 4px /*{cornerRadius}*/;
 }
-.ui-corner-all,
-.ui-corner-bottom,
-.ui-corner-right,
-.ui-corner-br {
+.aloha .ui-corner-all,
+.aloha .ui-corner-bottom,
+.aloha .ui-corner-right,
+.aloha .ui-corner-br {
   -moz-border-radius-bottomright: 4px /*{cornerRadius}*/;
   -webkit-border-bottom-right-radius: 4px /*{cornerRadius}*/;
   -khtml-border-bottom-right-radius: 4px /*{cornerRadius}*/;
   border-bottom-right-radius: 4px /*{cornerRadius}*/;
 }
-/* Overlays */
-.ui-widget-overlay {
+.aloha .ui-widget-overlay {
   background: #aaaaaa /*{bgColorOverlay}*/;
   opacity: .3;
   filter: alpha(opacity=30) /*{opacityOverlay}*/;
 }
-.ui-widget-shadow {
+.aloha .ui-widget-shadow {
   margin: -8px /*{offsetTopShadow}*/ 0 0 -8px /*{offsetLeftShadow}*/;
   padding: 8px /*{thicknessShadow}*/;
   background: #aaaaaa /*{bgColorShadow}*/;
@@ -1701,48 +1711,97 @@ body .ui-tooltip {
   -webkit-border-radius: 8px /*{cornerRadiusShadow}*/;
   border-radius: 8px /*{cornerRadiusShadow}*/;
 }
-.aloha-ui-toolbar .ui-corner-all,
-.aloha-ui-toolbar .ui-corner-top,
-.aloha-ui-toolbar .ui-corner-left,
-.aloha-ui-toolbar .ui-corner-tl {
+/* end global aloha context */
+/* global aloha context with nexted lesscss rule */
+.aloha {
+  /* === toolbar === */
+
+  /* The following margin and padding ensure that the triangle icon of submenus
+   doesn't overlap with the text (only for IE, looks ok in chrome without
+   these rules) */
+
+  /* This rule and the next will position the icon of an icon-only menu
+   button more properly with the secondary dropdown icon */
+
+  /* See previous rule */
+
+  /* === dropdown menu === */
+
+  /* === menubutton === */
+
+  /* === /menubutton === */
+
+  /* === icons === */
+
+  /* TODO: merge with icons image file */
+
+  /* === inline icons (<img> instead of class) === */
+
+  /* === large icons === */
+
+  /* It does not suffice to make just the icon large, the button itself must also be made larger */
+
+  /**** multi-split-button ****/
+
+  /**** button states ****/
+
+  /** jquery-ui icons used by Aloha **/
+
+  /**
+ * Use a separate class for jqueryui icons used by aloha so that there
+ * is no contention between the aloha-icon class and the
+ * ui-button-icon-primary class which both define a background image. It's
+ * difficult to give the aloha-icon higher priority since there are no
+ * guarantees in which order the plugins are included.  */
+
+  /** icon-triangle is used by the ribbon plugin for the drop down icon **/
+
+  /* === Aloha Dialog === */
+
+  /* === auto complete === */
+
+}
+.aloha .aloha-ui-toolbar .ui-corner-all,
+.aloha .aloha-ui-toolbar .ui-corner-top,
+.aloha .aloha-ui-toolbar .ui-corner-left,
+.aloha .aloha-ui-toolbar .ui-corner-tl {
   -moz-border-radius-topleft: 0px;
   -webkit-border-top-left-radius: 0px;
   -khtml-border-top-left-radius: 0px;
   border-top-left-radius: 0px;
 }
-.aloha-ui-toolbar .ui-corner-all,
-.aloha-ui-toolbar .ui-corner-top,
-.aloha-ui-toolbar .ui-corner-right,
-.aloha-ui-toolbar .ui-corner-tr {
+.aloha .aloha-ui-toolbar .ui-corner-all,
+.aloha .aloha-ui-toolbar .ui-corner-top,
+.aloha .aloha-ui-toolbar .ui-corner-right,
+.aloha .aloha-ui-toolbar .ui-corner-tr {
   -moz-border-radius-topright: 0px;
   -webkit-border-top-right-radius: 0px;
   -khtml-border-top-right-radius: 0px;
   border-top-right-radius: 0px;
 }
-.aloha-ui-toolbar .ui-corner-all,
-.aloha-ui-toolbar .ui-corner-bottom,
-.aloha-ui-toolbar .ui-corner-left,
-.aloha-ui-toolbar .ui-corner-bl {
+.aloha .aloha-ui-toolbar .ui-corner-all,
+.aloha .aloha-ui-toolbar .ui-corner-bottom,
+.aloha .aloha-ui-toolbar .ui-corner-left,
+.aloha .aloha-ui-toolbar .ui-corner-bl {
   -moz-border-radius-bottomleft: 0px;
   -webkit-border-bottom-left-radius: 0px;
   -khtml-border-bottom-left-radius: 0px;
   border-bottom-left-radius: 0px;
 }
-.aloha-ui-toolbar .ui-corner-all,
-.aloha-ui-toolbar .ui-corner-bottom,
-.aloha-ui-toolbar .ui-corner-right,
-.aloha-ui-toolbar .ui-corner-br {
+.aloha .aloha-ui-toolbar .ui-corner-all,
+.aloha .aloha-ui-toolbar .ui-corner-bottom,
+.aloha .aloha-ui-toolbar .ui-corner-right,
+.aloha .aloha-ui-toolbar .ui-corner-br {
   -moz-border-radius-bottomright: 0px;
   -webkit-border-bottom-right-radius: 0px;
   -khtml-border-bottom-right-radius: 0px;
   border-bottom-right-radius: 0px;
 }
-/* === toolbar === */
-.aloha-ui-toolbar {
+.aloha .aloha-ui-toolbar {
   text-align: left;
   width: 582px;
 }
-.aloha-ui-toolbar .ui-button-icon-only {
+.aloha .aloha-ui-toolbar .ui-button-icon-only {
   background-color: transparent;
   border-color: transparent;
   -moz-border-radius: 2px;
@@ -1750,7 +1809,7 @@ body .ui-tooltip {
   -webkit-border-radius: 2px;
   border-radius: 2px;
 }
-.aloha-ui-toolbar .ui-button-icon-only:hover {
+.aloha .aloha-ui-toolbar .ui-button-icon-only:hover {
   border-color: #999;
   background-color: #e6e6e6;
   background-image: linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
@@ -1759,18 +1818,18 @@ body .ui-tooltip {
   background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
   background-image: -ms-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
 }
-.aloha-ui-toolbar .ui-tabs {
+.aloha .aloha-ui-toolbar .ui-tabs {
   font-size: 11px;
   font-family: tahoma, arial, helvetica;
   line-height: normal;
   padding: 0;
 }
-.aloha-ui-toolbar .ui-tabs-nav li {
+.aloha .aloha-ui-toolbar .ui-tabs-nav li {
   border: 1px solid #aaa;
   margin: 0 1px;
 }
-.aloha-ui-toolbar .ui-tabs-nav li,
-.aloha-ui-toolbar .ui-tabs-nav li a {
+.aloha .aloha-ui-toolbar .ui-tabs-nav li,
+.aloha .aloha-ui-toolbar .ui-tabs-nav li a {
   cursor: default;
   color: #333;
   text-decoration: none;
@@ -1783,7 +1842,7 @@ body .ui-tooltip {
   -khtml-border-top-right-radius: 2px;
   border-top-right-radius: 2px;
 }
-.aloha-ui-toolbar .ui-tabs-nav li a {
+.aloha .aloha-ui-toolbar .ui-tabs-nav li a {
   padding: 0.2em 0.6em;
   border-bottom: 0px;
   border-top: 1px solid #f0f0f0;
@@ -1793,11 +1852,11 @@ body .ui-tooltip {
   background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 70%, rgba(0, 0, 0, 0.1) 90%);
   background-image: -ms-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 70%, rgba(0, 0, 0, 0.1) 90%);
 }
-.aloha-ui-toolbar .ui-tabs-nav li.ui-state-active {
+.aloha .aloha-ui-toolbar .ui-tabs-nav li.ui-state-active {
   font-weight: bold;
   background: #f0f0f0;
 }
-.aloha-ui-toolbar .ui-tabs-nav li.ui-state-active a {
+.aloha .aloha-ui-toolbar .ui-tabs-nav li.ui-state-active a {
   background: #f0f0f0;
   background-image: linear-gradient(bottom, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.5) 90%);
   background-image: -o-linear-gradient(bottom, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.5) 90%);
@@ -1805,12 +1864,12 @@ body .ui-tooltip {
   background-image: -webkit-linear-gradient(bottom, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.5) 90%);
   background-image: -ms-linear-gradient(bottom, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.5) 90%);
 }
-.aloha-ui-toolbar .ui-widget-content {
+.aloha .aloha-ui-toolbar .ui-widget-content {
   min-width: 130px;
   border: 0px;
   background: transparent;
 }
-.aloha-ui-toolbar .ui-widget-header {
+.aloha .aloha-ui-toolbar .ui-widget-header {
   padding-right: 30px;
   border: 0px;
   -moz-border-radius-topleft: 2px;
@@ -1828,7 +1887,7 @@ body .ui-tooltip {
   background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 10%);
   background-image: -ms-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 10%);
 }
-.aloha-ui-toolbar.aloha-ui-hover .ui-widget-header {
+.aloha .aloha-ui-toolbar.aloha-ui-hover .ui-widget-header {
   cursor: move;
   background: #777;
   background: rgba(0, 0, 0, 0.3);
@@ -1838,7 +1897,7 @@ body .ui-tooltip {
   background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.3) 20%);
   background-image: -ms-linear-gradient(bottom, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.3) 20%);
 }
-.aloha-ui-toolbar .ui-tabs-panel {
+.aloha .aloha-ui-toolbar .ui-tabs-panel {
   padding: 2px;
   background: #f0f0f0;
   border: 1px solid #d0d0d0;
@@ -1852,10 +1911,10 @@ body .ui-tooltip {
   -khtml-border-bottom-right-radius: 2px;
   border-bottom-right-radius: 2px;
 }
-.aloha-ui-toolbar li.ui-state-active {
+.aloha .aloha-ui-toolbar li.ui-state-active {
   border: 1px solid #d0d0d0;
 }
-.aloha-ui-toolbar .aloha-ui-pin {
+.aloha .aloha-ui-toolbar .aloha-ui-pin {
   position: absolute;
   display: none;
   top: 0.8em;
@@ -1865,17 +1924,16 @@ body .ui-tooltip {
   background: url('http://aloha-editor.org/builds/hotfix/latest/src/img/pin.png') no-repeat;
   cursor: pointer;
 }
-.aloha-ui-toolbar .aloha-ui-pin-down {
+.aloha .aloha-ui-toolbar .aloha-ui-pin-down {
   background-position: -16px 0;
 }
-.aloha-ui-toolbar.aloha-ui-hover .aloha-ui-pin {
+.aloha .aloha-ui-toolbar.aloha-ui-hover .aloha-ui-pin {
   display: block;
 }
-/* === dropdown menu === */
-.aloha-ui-toolbar .aloha-ui-menubutton-menu,
-.aloha-ui-toolbar .aloha-ui-menubutton-menu .ui-menu,
-.aloha-ui-menubutton-menu,
-.aloha-ui-menubutton-menu .ui-menu {
+.aloha .aloha-ui-toolbar .aloha-ui-menubutton-menu,
+.aloha .aloha-ui-toolbar .aloha-ui-menubutton-menu .ui-menu,
+.aloha .aloha-ui-menubutton-menu,
+.aloha .aloha-ui-menubutton-menu .ui-menu {
   position: absolute;
   padding: 0.4em 0;
   background: #f0f0f0;
@@ -1888,7 +1946,7 @@ body .ui-tooltip {
   font-size: 11px;
   text-align: left;
 }
-.aloha-ui-menubutton-menu .ui-menu-item a {
+.aloha .aloha-ui-menubutton-menu .ui-menu-item a {
   white-space: nowrap;
   padding-left: 10px;
   color: #212121;
@@ -1898,34 +1956,27 @@ body .ui-tooltip {
   border-radius: 0px;
   border-color: transparent;
 }
-/* The following margin and padding ensure that the triangle icon of submenus
-   doesn't overlap with the text (only for IE, looks ok in chrome without
-   these rules) */
-.aloha-ui-menubutton-menu .ui-menu-item .ui-menu-icon {
+.aloha .aloha-ui-menubutton-menu .ui-menu-item .ui-menu-icon {
   margin-right: -16px;
 }
-/* See previous rule */
-.aloha-ui-menubutton-menu .ui-menu-item a {
+.aloha .aloha-ui-menubutton-menu .ui-menu-item a {
   padding-right: 20px;
 }
-.aloha-ui-menubutton-menu .aloha-ui-inline-icon {
+.aloha .aloha-ui-menubutton-menu .aloha-ui-inline-icon {
   /* These margins align the inline icons of each menu item with the
        text of the menu items */
 
   margin-bottom: -4px;
   margin-right: 5px;
 }
-/* This rule and the next will position the icon of an icon-only menu
-   button more properly with the secondary dropdown icon */
-.aloha-ui-menubutton-expand .aloha-ui-inline-icon-container {
+.aloha .aloha-ui-menubutton-expand .aloha-ui-inline-icon-container {
   margin-right: -4px;
   margin-left: 4px;
 }
-/* See previous rule */
-.aloha-ui-menubutton-expand .ui-button-icon-secondary {
+.aloha .aloha-ui-menubutton-expand .ui-button-icon-secondary {
   right: 3px;
 }
-.aloha-ui-menubutton-iehack .aloha-ui-menubutton-menu .ui-menu-item a {
+.aloha .aloha-ui-menubutton-iehack .aloha-ui-menubutton-menu .ui-menu-item a {
   /* It was impossible to get the menu items and expand icons work on IE7 without specifying a fixed width. */
 
   width: 200px;
@@ -1936,9 +1987,7 @@ body .ui-tooltip {
 
   display: inline-block;
 }
-/* === dropdown menu === */
-/* === menubutton === */
-.aloha-ui-menubutton-container {
+.aloha .aloha-ui-menubutton-container {
   height: 24px;
   font-size: 11px;
   border: 1px solid transparent;
@@ -1948,10 +1997,10 @@ body .ui-tooltip {
   -webkit-border-radius: 4px;
   border-radius: 4px;
 }
-.aloha-ui-menubutton-container .ui-buttonset {
+.aloha .aloha-ui-menubutton-container .ui-buttonset {
   margin: 0px;
 }
-.aloha-ui-menubutton-container .ui-button {
+.aloha .aloha-ui-menubutton-container .ui-button {
   height: 24px;
   background: transparent;
   -moz-border-radius: 4px;
@@ -1961,7 +2010,7 @@ body .ui-tooltip {
   padding: 0px;
   border-width: 0;
 }
-.ui-button.aloha-ui-menubutton-action {
+.aloha .ui-button.aloha-ui-menubutton-action {
   border-right: 1px solid transparent;
   -moz-border-radius-topright: 0px;
   -webkit-border-top-right-radius: 0px;
@@ -1972,7 +2021,7 @@ body .ui-tooltip {
   -khtml-border-bottom-right-radius: 0px;
   border-bottom-right-radius: 0px;
 }
-.ui-button.aloha-ui-menubutton-expand {
+.aloha .ui-button.aloha-ui-menubutton-expand {
   min-width: 18px;
   border-left: 1px solid transparent;
   -moz-border-radius-topleft: 0px;
@@ -1984,23 +2033,23 @@ body .ui-tooltip {
   -khtml-border-bottom-left-radius: 0px;
   border-bottom-left-radius: 0px;
 }
-.aloha-ui-menubutton-container .ui-button-text {
+.aloha .aloha-ui-menubutton-container .ui-button-text {
   font-size: 11px;
 }
-.aloha-ui-menubutton-expand.aloha-ui-menubutton-single {
+.aloha .aloha-ui-menubutton-expand.aloha-ui-menubutton-single {
   -moz-border-radius: 4px;
   -khtml-border-radius: 4px;
   -webkit-border-radius: 4px;
   border-radius: 4px;
   border-width: 0;
 }
-.aloha-ui-menubutton-container .ui-button-icon-primary {
+.aloha .aloha-ui-menubutton-container .ui-button-icon-primary {
   left: 0px;
 }
-.aloha-ui-menubutton-container:hover {
+.aloha .aloha-ui-menubutton-container:hover {
   border-color: #bbb;
 }
-.aloha-ui-menubutton-container:hover .ui-button {
+.aloha .aloha-ui-menubutton-container:hover .ui-button {
   background-color: #e6e6e6;
   background-image: linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
   background-image: -o-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
@@ -2008,116 +2057,112 @@ body .ui-tooltip {
   background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
   background-image: -ms-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
 }
-.aloha-ui-menubutton-container:hover .aloha-ui-menubutton-expand {
+.aloha .aloha-ui-menubutton-container:hover .aloha-ui-menubutton-expand {
   border-color: #bbb;
 }
-.aloha-ui-menubutton-container:hover .aloha-ui-menubutton-action {
+.aloha .aloha-ui-menubutton-container:hover .aloha-ui-menubutton-action {
   border-color: rgba(255, 255, 255, 0.5);
 }
-.aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
+.aloha .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed {
   border-color: #999;
 }
-.aloha-ui-menubutton-container.aloha-ui-menubutton-pressed .ui-button {
+.aloha .aloha-ui-menubutton-container.aloha-ui-menubutton-pressed .ui-button {
   background: #ccc;
   box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.2);
 }
-.aloha-ui-menubutton-single .ui-button-text {
+.aloha .aloha-ui-menubutton-single .ui-button-text {
   /* Ensures that the secondary icon (right icon) doesn't overlap with the button text. */
 
   padding-right: 2.1em;
 }
-/* === /menubutton === */
-/* === icons === */
-.aloha-icon {
+.aloha .aloha-icon {
   background-image: url(../plugins/common/ui/img/format-inline.png);
 }
-/* TODO: merge with icons image file */
-.aloha-icon-tree {
+.aloha .aloha-icon-tree {
   background-image: url(../plugins/common/ui/img/tree.png);
 }
-.aloha-icon-bold {
+.aloha .aloha-icon-bold {
   background-position: 0 0;
 }
-.aloha-icon-italic {
+.aloha .aloha-icon-italic {
   background-position: -16px 0;
 }
-.aloha-icon-underline {
+.aloha .aloha-icon-underline {
   background-position: -32px 0;
 }
-.aloha-icon-strikethrough {
+.aloha .aloha-icon-strikethrough {
   background-position: -48px 0;
 }
-.aloha-icon-subscript {
+.aloha .aloha-icon-subscript {
   background-position: -64px 0;
 }
-.aloha-icon-superscript {
+.aloha .aloha-icon-superscript {
   background-position: -80px 0;
 }
-.aloha-icon-createTable {
+.aloha .aloha-icon-createTable {
   background-position: -96px 0;
 }
-.aloha-icon-addcolumnleft {
+.aloha .aloha-icon-addcolumnleft {
   background-position: -112px 0;
 }
-.aloha-icon-addcolumnright {
+.aloha .aloha-icon-addcolumnright {
   background-position: -128px 0;
 }
-.aloha-icon-addrowbefore {
+.aloha .aloha-icon-addrowbefore {
   background-position: -144px 0;
 }
-.aloha-icon-addrowafter {
+.aloha .aloha-icon-addrowafter {
   background-position: -160px 0;
 }
-.aloha-icon-deleterows {
+.aloha .aloha-icon-deleterows {
   background-position: -176px 0;
 }
-.aloha-icon-deletecolumns {
+.aloha .aloha-icon-deletecolumns {
   background-position: -192px 0;
 }
-.aloha-icon-table-caption {
+.aloha .aloha-icon-table-caption {
   background-position: -320px 0;
 }
-.aloha-icon-rowheader {
+.aloha .aloha-icon-rowheader {
   background-position: -352px 0;
 }
-.aloha-icon-columnheader {
+.aloha .aloha-icon-columnheader {
   background-position: -368px 0;
 }
-.aloha-icon-mergecells {
+.aloha .aloha-icon-mergecells {
   background-position: -384px 0;
 }
-.aloha-icon-splitcells {
+.aloha .aloha-icon-splitcells {
   background-position: -400px 0;
 }
-.aloha-icon-orderedlist {
+.aloha .aloha-icon-orderedlist {
   background-position: -272px 0;
 }
-.aloha-icon-unorderedlist {
+.aloha .aloha-icon-unorderedlist {
   background-position: -256px 0;
 }
-.aloha-icon-link {
+.aloha .aloha-icon-link {
   background-position: -288px 0;
 }
-.aloha-icon-unlink {
+.aloha .aloha-icon-unlink {
   background-position: -304px 0;
 }
-.aloha-icon-abbr {
+.aloha .aloha-icon-abbr {
   background-position: -336px 0;
 }
-.aloha-icon-emphasis {
+.aloha .aloha-icon-emphasis {
   background-image: url(../plugins/common/ui/img/em.png);
 }
-.aloha-icon-strong {
+.aloha .aloha-icon-strong {
   background-image: url(../plugins/common/ui/img/strong.png);
 }
-.aloha-icon-indent {
+.aloha .aloha-icon-indent {
   background: url(http://aloha-editor.org/builds/hotfix/latest/src/img/text_indent.png) no-repeat center center;
 }
-.aloha-icon-outdent {
+.aloha .aloha-icon-outdent {
   background: url(http://aloha-editor.org/builds/hotfix/latest/src/img/text_indent_remove.png) no-repeat center center;
 }
-/* === inline icons (<img> instead of class) === */
-.ui-button-icon-only .aloha-ui-inline-icon-container {
+.aloha .ui-button-icon-only .aloha-ui-inline-icon-container {
   /* These width height and margin settings will allow an inline icon
        almost as big as the button */
 
@@ -2126,17 +2171,16 @@ body .ui-tooltip {
   margin-top: -10px;
   margin-left: -9px;
 }
-.aloha-ui-inline-icon-container {
+.aloha .aloha-ui-inline-icon-container {
   /* Overwrite jqueryui icon style text-indent: -9999px; to support
        <img> icons (inline icons) instead of class icons */
 
   text-indent: 0px;
 }
-.ui-button-text-icon-primary .ui-button-icon-primary {
+.aloha .ui-button-text-icon-primary .ui-button-icon-primary {
   margin-left: 4px;
 }
-/* === large icons === */
-.aloha-large-icon {
+.aloha .aloha-large-icon {
   /* TODO merge with icons image file */
 
   background-image: url("../plugins/common/ui/img/format-block.png");
@@ -2147,36 +2191,34 @@ body .ui-tooltip {
   margin-left: -27px !important;
   margin-top: -22px !important;
 }
-/* It does not suffice to make just the icon large, the button itself must also be made larger */
-.aloha-large-button {
+.aloha .aloha-large-button {
   width: 60px !important;
   /* TODO doesn't work without important */
 
   height: 50px !important;
 }
-.aloha-large-icon-h1 {
+.aloha .aloha-large-icon-h1 {
   background-position: -52px 0;
 }
-.aloha-large-icon-h2 {
+.aloha .aloha-large-icon-h2 {
   background-position: -104px 0;
 }
-.aloha-large-icon-h3 {
+.aloha .aloha-large-icon-h3 {
   background-position: -156px 0;
 }
-.aloha-large-icon-h4 {
+.aloha .aloha-large-icon-h4 {
   background-position: -208px 0;
 }
-.aloha-large-icon-h5 {
+.aloha .aloha-large-icon-h5 {
   background-position: -260px 0;
 }
-.aloha-large-icon-h6 {
+.aloha .aloha-large-icon-h6 {
   background-position: -312px 0;
 }
-.aloha-large-icon-pre {
+.aloha .aloha-large-icon-pre {
   background-position: -364px 0;
 }
-/**** multi-split-button ****/
-.aloha-multisplit-active {
+.aloha .aloha-multisplit-active {
   /* TODO this just gives the active multi-split item a border which
 			however isn't very visually distinctive */
 
@@ -2184,59 +2226,41 @@ body .ui-tooltip {
 
   border: 1px solid #aaaaaa !important;
 }
-/**** button states ****/
-.aloha-button-active {
+.aloha .aloha-button-active {
   border: 1px solid #aaaaaa !important;
   /* Override ui-state-default with important */
 
   background: #ffffff !important;
 }
-/** jquery-ui icons used by Aloha **/
-/**
- * Use a separate class for jqueryui icons used by aloha so that there
- * is no contention between the aloha-icon class and the
- * ui-button-icon-primary class which both define a background image. It's
- * difficult to give the aloha-icon higher priority since there are no
- * guarantees in which order the plugins are included.  */
-.aloha-jqueryui-icon {
+.aloha .aloha-jqueryui-icon {
   background-image: url(../plugins/common/ui/img/jqueryui/ui-icons_222222_256x240.png);
 }
-.ui-icon-carat-1-e {
+.aloha .ui-icon-carat-1-e {
   background: url(../plugins/common/ui/img/jqueryui/ui-icons_222222_256x240.png) no-repeat -30px -16px;
 }
-/** icon-triangle is used by the ribbon plugin for the drop down icon **/
-.ui-icon-triangle-1-s {
+.aloha .ui-icon-triangle-1-s {
   background-position: -64px -16px;
 }
-body .ui-tooltip {
-  font-size: 10px;
-  line-height: 1.2em;
-  /* margin-top: 30px; synchonized with ribbon plugin document top spacing*/
-
-  padding: 4px 6px;
-  border: 1px solid #ccc;
-  z-index: 999999;
-}
-.aloha-multisplit {
+.aloha .aloha-multisplit {
   position: relative;
   width: 260px;
   height: 50px;
   overflow: hidden;
   margin: 0 auto;
 }
-.aloha-multisplit-open {
+.aloha .aloha-multisplit-open {
   overflow: visible;
 }
-.aloha-multisplit-content {
+.aloha .aloha-multisplit-content {
   text-align: left;
   position: relative;
   width: 245px;
 }
-.aloha-multisplit-open .aloha-multisplit-content {
+.aloha .aloha-multisplit-open .aloha-multisplit-content {
   background: #ccc;
   box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.25);
 }
-.aloha-multisplit .aloha-multisplit-toggle {
+.aloha .aloha-multisplit .aloha-multisplit-toggle {
   position: absolute;
   top: 0;
   right: 0;
@@ -2251,21 +2275,21 @@ body .ui-tooltip {
   text-indent: -99999px;
   margin: 0;
 }
-.aloha-multisplit-open .aloha-multisplit-toggle {
+.aloha .aloha-multisplit-open .aloha-multisplit-toggle {
   background-image: url(../plugins/common/ui/img/multisplit-close.gif);
 }
-.aloha-multisplit .ui-button-icon-only.aloha-multisplit-toggle:hover {
+.aloha .aloha-multisplit .ui-button-icon-only.aloha-multisplit-toggle:hover {
   background-color: #fff;
   border-color: #e6e6e6;
 }
-.aloha-multisplit .ui-button-icon-only {
+.aloha .aloha-multisplit .ui-button-icon-only {
   background: #e6e6e6;
   border-color: lightGrey;
 }
-.aloha-multisplit .ui-button-icon-only.aloha-multisplit-active {
+.aloha .aloha-multisplit .ui-button-icon-only.aloha-multisplit-active {
   background: #3B73D7;
 }
-.aloha-multisplit .aloha-ui-multisplit-fullwidth {
+.aloha .aloha-multisplit .aloha-ui-multisplit-fullwidth {
   display: block;
   width: 100%;
   background: #f0f0f0 url('../plugins/common/ui/img/removeformat.png') no-repeat 6px 3px;
@@ -2273,10 +2297,10 @@ body .ui-tooltip {
   padding-left: 18px;
   text-align: left;
 }
-.aloha-multisplit .aloha-ui-multisplit-fullwidth:hover {
+.aloha .aloha-multisplit .aloha-ui-multisplit-fullwidth:hover {
   border-color: #999;
 }
-.aloha-ui-component-group {
+.aloha .aloha-ui-component-group {
   float: left;
   border: 1px solid #e0e0e0;
   box-shadow: inset 0 0 10px #fff;
@@ -2288,12 +2312,11 @@ body .ui-tooltip {
   margin: 2px;
   vertical-align: top;
 }
-.aloha-ui-clear {
+.aloha .aloha-ui-clear {
   float: none;
   clear: both;
 }
-/* === Aloha Dialog === */
-.aloha-dialog {
+.aloha .aloha-dialog {
   padding: 0 2px 2px;
   border: 1px solid #999;
   background: #f0f0f0;
@@ -2307,7 +2330,7 @@ body .ui-tooltip {
   font-size: 12px;
   text-align: left;
 }
-.aloha-dialog .ui-dialog-titlebar {
+.aloha .aloha-dialog .ui-dialog-titlebar {
   padding: 4px;
   border-width: 0;
   background: transparent;
@@ -2315,15 +2338,15 @@ body .ui-tooltip {
   font: bold 12px tahoma, arial, verdana, sans-serif;
   color: #555;
 }
-.aloha-dialog .ui-dialog-content {
+.aloha .aloha-dialog .ui-dialog-content {
   color: #555;
 }
-.aloha-dialog .ui-dialog-buttonpane {
+.aloha .aloha-dialog .ui-dialog-buttonpane {
   padding: 0;
   border-width: 0;
   background: transparent;
 }
-.aloha-dialog .ui-button {
+.aloha .aloha-dialog .ui-button {
   background-color: #e6e6e6;
   background-image: linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
   background-image: -o-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
@@ -2331,10 +2354,9 @@ body .ui-tooltip {
   background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
   background-image: -ms-linear-gradient(bottom, rgba(0, 0, 0, 0.05) 0%, rgba(255, 255, 255, 0.4) 40%);
 }
-.aloha-ui-hidden {
+.aloha .aloha-ui-hidden {
   display: none;
 }
-/* === auto complete === */
 .aloha .ui-autocomplete.ui-widget-content {
   background: #fff;
   border: 1px solid #ddd;
@@ -2357,6 +2379,29 @@ body .ui-tooltip {
 .aloha .ui-autocomplete .ui-menu-item a.ui-state-focus {
   background: #3B73D7;
   color: #fff;
+}
+/* end global aloha context */
+.aloha.ui-tooltip {
+  font-size: 10px;
+  line-height: 1.2em;
+  /* margin-top: 30px; synchonized with ribbon plugin document top spacing*/
+
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  z-index: 999999;
+  /* The following styles were taken from jqueryui and pasted
+       here. The reason is that tooltips are appended to the body (and
+       there is no appendTo option for tooltips) which makes it difficult
+       to just wrap the aloha context around it. */
+
+  position: absolute;
+  -o-box-shadow: 0 0 5px #aaa;
+  -moz-box-shadow: 0 0 5px #aaa;
+  -webkit-box-shadow: 0 0 5px #aaa;
+  box-shadow: 0 0 5px #aaa;
+  font-family: Verdana, Arial, sans-serif /*{ffDefault}*/;
+  background: #ffffff /*{bgColorContent}*/;
+  color: #222222 /*{fcContent}*/;
 }
 .aloha-sidebar-bar {
   z-index: 999999999;
