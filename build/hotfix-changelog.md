@@ -15,3 +15,5 @@ All changes are categorized into one of the following keywords:
 - **BUG**: characterpicker-plugin: Fixed inserting characters with a non-collapsed selection. Instead of adding the character after the selection, the inserted character will now replace the selection (like expected).
 - **BUG**: paste-plugin: Disabled handling paste on IE by executing the command 'paste', because this causes incorrect cursor positions after pasting.
 - **BUG**: paste-plugin: Fixed setting focus and selection into the editable before inserting pasted html. That fixes strange behaviour in FF after pasting.
+- **ENHANCEMENT**: contenthandler plugin: A new Blockelement Content Handler has been added, that handles breaks in blockelements upon initialization and getContents
+- **BUG**: core: The implementation for adding br-Tags in Blockelements has been fixed to realize a more consistent behaviour across all browsers and also with the metaview plugin turned on.
