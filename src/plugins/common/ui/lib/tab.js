@@ -131,8 +131,8 @@ define([
 				? settings.showOn.scope
 				: false;
 
-			PubSub.sub('aloha.ui.tab.activate-for-scope', function(scope){
-				if (scope === showOnScope) {
+			PubSub.sub('aloha.ui.tab.activate-for-scope', function(message){
+				if (message.scope === showOnScope) {
 					selectTab();
 				}
 			});

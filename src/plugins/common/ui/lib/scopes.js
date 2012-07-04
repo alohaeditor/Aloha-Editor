@@ -100,7 +100,7 @@ define([
 				pushScopeAncestors(activeScopes, scope);
 				PubSub.pub('aloha.ui.scope.change');
 				if ( ! noActivateTab ) {
-					PubSub.pub('aloha.ui.tab.activate-for-scope', scope);
+					PubSub.pub('aloha.ui.tab.activate-for-scope', {scope: scope});
 				}
 			}
 		},

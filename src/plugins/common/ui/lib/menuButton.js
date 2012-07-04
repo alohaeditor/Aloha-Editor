@@ -121,8 +121,7 @@ define([
 
 	function makeNestedMenus(parentCloseHandler, menu){
 		var elems = [];
-		for (var i = 0; i < menu.length; i++) {
-			var item = menu[i];
+		jQuery.each(menu, function(_, item) {
 			var elem = $('<li>');
 			elem.append($('<a>', {'href': 'javascript:void 0', 'html': Utils.makeButtonLabelWithIcon(item)}));
 			if (item.click) {
@@ -138,7 +137,7 @@ define([
 									item.menu));
 			}
 			elems.push(elem[0]);
-		}
+		});
 		return elems;
 	}
 
