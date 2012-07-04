@@ -9,4 +9,7 @@
 	<group name="aloha-bare">
 		<js>/target/tmp/aloha/lib/aloha.js</js>
 	</group>
+	<group name="aloha">
+		<css>/css/aloha.less</css>
+	</group>
 </groups>
