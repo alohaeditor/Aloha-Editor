@@ -1328,6 +1328,10 @@ var alltests = {
 		{
 			start: ' []f bar',
 			execResult: '&nbsp;[] bar'
+		},
+		{
+			start: 'foo [bar] baz',
+			execResult: 'foo&nbsp;[] baz'
 		}
 	
 
