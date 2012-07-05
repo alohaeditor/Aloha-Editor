@@ -1,5 +1,6 @@
 define([
 	'jquery',
+	'aloha/core',
 	'ui/surface',
 	'ui/tab',
 	'ui/subguarded',
@@ -9,6 +10,7 @@ define([
 	'aloha/jquery-ui'
 ], function (
 	$,
+	Aloha,
 	Surface,
 	Tab,
 	subguarded,
@@ -18,7 +20,7 @@ define([
 ) {
 	'use strict';
 
-	var store = new Store;
+	var store = new Store();
 
 	function storePinPosition(offset) {
 		store.set('Aloha.FloatingMenu.pinned', 'true');
