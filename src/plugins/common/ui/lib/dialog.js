@@ -122,9 +122,10 @@ function($, Component) {
 			};
 		},
 		/**
-		 * Shows a wait dialog.
+		 * Shows a progress dialog.
 		 *
-		 * A wait dialog shows a progressbar to indicate that some process is running.
+		 * A progress dialog shows a progressbar and a message to
+		 * indicate that some process is in progress.
 		 *
 		 * @param props is an object with the following properties (all optional)
 		 *        title - the title of the dialog
@@ -136,7 +137,7 @@ function($, Component) {
 		 *        A function that can be called to update the progress bar with a value from 0 to 100.
 		 *        If null or undefined is passed, the dialog will be closed.
 		 */
-		'wait': function(props) {
+		'progress': function(props) {
 			var progressbar = $("<div>").progressbar({
 				value: null != props.value ? props.value :  100
 			});

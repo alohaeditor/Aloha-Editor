@@ -24,7 +24,7 @@ define([
 	'aloha',
 	'jquery',
 	'ui/scopes',
-	'ui/message',
+	'ui/dialog',
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
@@ -34,7 +34,7 @@ define([
 	Aloha,
 	jQuery,
 	Scopes,
-	Message,
+	Dialog,
 	i18n,
 	TableCell,
 	TableSelection,
@@ -854,7 +854,7 @@ define([
 		// delete the whole table
 		if (deleteTable) {
 			var that = this;
-			Message.confirm({
+			Dialog.confirm({
 				title : i18n.t('Table'),
 				text : i18n.t('deletetable.confirm'),
 				yes : function () {
@@ -940,7 +940,7 @@ define([
 		// delete the whole table
 		if ( this.selection.selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
 			
-			Message.confirm({
+			Dialog.confirm({
 				title : i18n.t('Table'),
 				text : i18n.t('deletetable.confirm'),
 				yes : function () {
@@ -1190,7 +1190,7 @@ define([
 		
 		// refuse to insert a column unless a consecutive range has been selected
 		if ( ! Utils.isConsecutive( selectedColumnIdxs ) ) {
-			Message.alert( {
+			Dialog.alert( {
 				title : i18n.t( 'Table' ),
 				text  : i18n.t( 'table.addColumns.nonConsecutive' )
 			});

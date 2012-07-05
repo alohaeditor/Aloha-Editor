@@ -14,7 +14,7 @@ define([
 	'ui/componentState',
 	'ui/button',
 	'ui/toggleButton',
-	'ui/message',
+	'ui/dialog',
 	'ui/port-helper-attribute-field',
 	'ui/port-helper-multi-split',
 	'i18n!table/nls/i18n',
@@ -33,7 +33,7 @@ define([
 	ComponentState,
 	Button,
 	ToggleButton,
-	Message,
+	Dialog,
 	AttributeField,
 	MultiSplitButton,
 	i18n,
@@ -436,7 +436,7 @@ define([
 	
 	TablePlugin.preventNestedTables = function () {
 		if ( this.isSelectionInTable() ) {
-			Message.alert({
+			Dialog.alert({
 				title : i18n.t( 'Table' ),
 				text  : i18n.t( 'table.createTable.nestedTablesNoSupported' )
 			});
@@ -580,7 +580,7 @@ define([
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
-					Message.confirm({
+					Dialog.confirm({
 						title: i18n.t('Table'),
 						text: i18n.t('deleterows.confirm'),
 						yes: function(){
@@ -737,7 +737,7 @@ define([
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
-					Message.confirm({
+					Dialog.confirm({
 						title: i18n.t('Table'),
 						text: i18n.t('deletecolumns.confirm'),
 						yes: function(){
