@@ -18,6 +18,7 @@ define([
 	'use strict';
 
 	var ribbon = Plugin.create('ribbon', {
+
 		init: function () {
 			if (!this.settings.enable &&
 				typeof this.settings.enable !== 'undefined') {
@@ -36,10 +37,7 @@ define([
 					that._toolbar.animate({
 						'left': 0
 					});
-					$('body').animate({
-						paddingTop: '30px'
-						//'border-top-width': '30px'
-					});
+					$('body').animate({marginTop: 30});
 					fadeIn.hide();
 				})
 			    .appendTo(this._toolbar);
@@ -48,12 +46,11 @@ define([
 				.button()
 				.click(function () {
 					that._toolbar.animate({
-						'left': -that._toolbar.outerWidth() + fadeIn.outerWidth() + 10
+						'left': -that._toolbar.outerWidth()
+						        + fadeIn.outerWidth()
+						        + 10
 					});
-					$('body').animate({
-						paddingTop: 0
-						//'border-top-width': 0
-					});
+					$('body').animate({marginTop: 0});
 					fadeIn.show();
 				})
 				.appendTo(this._toolbar);
@@ -61,16 +58,14 @@ define([
 			var wrapper = $('<div class="aloha aloha-ribbon">')
 				.appendTo('body');
 
-			this._icon = $('<div>')
-				.prependTo(this._toolbar);
+			this._icon = $('<div>').prependTo(this._toolbar);
 			this.setIcon('');
 
 			this._toolbar.appendTo(wrapper);
 
 			$('body').css({
 				position: 'relative',
-				paddingTop: '30px'
-				//border: '30px solid transparent'
+				marginTop: 30
 			});
 		},
 
