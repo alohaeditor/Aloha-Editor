@@ -4,6 +4,7 @@ define([
 	'ui/tab',
 	'ui/subguarded',
 	'ui/floating',
+	'PubSub',
 	'vendor/jquery.store',
 	'aloha/jquery-ui'
 ], function (
@@ -12,6 +13,7 @@ define([
 	Tab,
 	subguarded,
 	floating,
+	PubSub,
 	Store
 ) {
 	'use strict';
@@ -152,10 +154,12 @@ define([
 
 			var surface = this;
 
-			subguarded(['aloha-selection-changed'], Surface.onActivatedSurface,
-				this, function () {
-					surface._move();
-				});
+			subguarded([
+				'aloha-selection-changed',
+				'aloha.ui.container.selected'
+			], Surface.onActivatedSurface, this, function () {
+				surface._move();
+			});
 
 			$(window).scroll(function () {
 				// TODO: only do this for active surfaces.
@@ -171,7 +175,7 @@ define([
 					top: Toolbar.pinTop,
 					left: Toolbar.pinLeft
 				}, this.$element);
-				
+
 				Toolbar.setFloatingPosition(position);
 
 				this.$element.css({

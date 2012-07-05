@@ -1,8 +1,12 @@
 define([
 	'aloha/core',
-	'jquery'
-],
-function( Aloha, jQuery ) {
+	'jquery',
+	'PubSub'
+], function (
+	Aloha,
+	jQuery,
+	PubSub
+) {
 	'use strict';
 
 	/**
@@ -162,6 +166,9 @@ function( Aloha, jQuery ) {
 			registerGuard( event, guard );
 			Aloha.bind( event, function ( $event, range, nativeEvent ) {
 				trigger( event, $event, range, nativeEvent );
+			});
+			PubSub.sub(event, function () {
+				trigger(event);
 			});
 		}
 	}
