@@ -7,6 +7,7 @@ define([
 	'jquery',
 	'ui/component',
 	'ui/scopes',
+	'ui/context',
 	'aloha/repositorymanager',
 	'PubSub',
 	'ui/vendor/jquery-ui-autocomplete-html'
@@ -14,15 +15,11 @@ define([
 	$,
 	Component,
 	Scopes,
+	Context,
 	RepositoryManager,
 	PubSub
 ) {
 	'use strict';
-
-	var AUTOCOMPLETE_CONTAINER_CLASSNAME = 'aloha-ui-autocomplete-container';
-	if (0 === $('.' + AUTOCOMPLETE_CONTAINER_CLASSNAME).length) {
-		$('<div class="aloha ' + AUTOCOMPLETE_CONTAINER_CLASSNAME + '">').appendTo('body');
-	}
 
 	// Main responsibilities implemented by the attribute-field are
 	//
@@ -79,7 +76,7 @@ define([
 
 		element.autocomplete({
 			'html': true,
-			'appendTo': '.' + AUTOCOMPLETE_CONTAINER_CLASSNAME,
+			'appendTo': Context.selector(),
 			'source': function( req, res ) {
 				RepositoryManager.query({
 					queryString: req.term,

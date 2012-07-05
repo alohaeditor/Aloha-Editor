@@ -1,12 +1,14 @@
 define([
-	"jquery",
-	"aloha/repositorymanager",
-	"ui/component",
-	"./vendor/jquery-ui-autocomplete-html"
+	'jquery',
+	'aloha/repositorymanager',
+	'ui/component',
+	'ui/context',
+	'./vendor/jquery-ui-autocomplete-html',
 ], function(
 	jQuery,
 	RepositoryManager,
-	Component
+	Component,
+	Context
 ) {
 	'use strict';
 
@@ -20,11 +22,6 @@ define([
 		return template.replace( /{{([^}]+)}}/g, function( _, name ) {
 			return name in item ? item[ name ] : "";
 		});
-	}
-
-	var AUTOCOMPLETE_CONTAINER_CLASSNAME = 'aloha-ui-autocomplete-container';
-	if (0 === $('.' + AUTOCOMPLETE_CONTAINER_CLASSNAME).length) {
-		$('<div class="aloha ' + AUTOCOMPLETE_CONTAINER_CLASSNAME + '">').appendTo('body');
 	}
 
 	/**
@@ -43,7 +40,7 @@ define([
 			this.element = jQuery( "<input>" )
 				.autocomplete({
 					html: true,
-					appendTo: '.' + AUTOCOMPLETE_CONTAINER_CLASSNAME,
+					appendTo: Context.selector(),
 					source: function( req, res ) {
 						RepositoryManager.query({
 							queryString: req.term,
