@@ -3,6 +3,7 @@ define([
 	'ui/component'
 ],
 function($, Component) {
+	'use strict';
 
 	function makeDialogDiv(props) {
 		var textOrHtml = {};
@@ -22,8 +23,7 @@ function($, Component) {
 				buttons[title] = (function(orgCallback){
 					return function(){
 						orgCallback.apply(this);
-						// The immediate removal from the dom may interfere with animation
-						$(this).dialog('close').remove();
+						$(this).dialog('destroy');
 					};
 				})(buttons[title]);
 			}
@@ -87,13 +87,13 @@ function($, Component) {
 					props.answer(false);
 				};
 			}
-			makeDialogDiv(props).dialog(
+			var dialog = makeDialogDiv(props).dialog(
 				$.extend(makeDialogProps(props, 'Confirm'), {
 					'buttons': wrapDialogButtons(buttons)
 				})
 			);
 			return function() {
-				dialog.dialog('close').remove();
+				dialog.dialog('destroy');
 			};
 		},
 		/**
@@ -118,7 +118,7 @@ function($, Component) {
 				})
 			);
 			return function() {
-				dialog.dialog('close').remove();
+				dialog.dialog('destroy');
 			};
 		},
 		/**
@@ -152,7 +152,7 @@ function($, Component) {
 				if (null != value) {
 					progressbar.progressbar({ value: value });
 				} else {
-					dialog.dialog('close').remove();
+					dialog.dialog('destroy');
 				}
 			};
 		}
