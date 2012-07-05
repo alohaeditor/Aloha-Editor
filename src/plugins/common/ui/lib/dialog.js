@@ -18,7 +18,7 @@ function($, Component) {
 
 	function wrapDialogButtons(buttons) {
 		// Buttons automatically close the dialog for convenience
-		for (title in buttons) {
+		for (var title in buttons) {
 			if (buttons.hasOwnProperty(title)) {
 				buttons[title] = (function(orgCallback){
 					return function(){
