@@ -1,22 +1,26 @@
 define([
 	'jquery',
+	'aloha/core',
 	'ui/surface',
 	'ui/tab',
 	'ui/subguarded',
 	'ui/floating',
+	'PubSub',
 	'vendor/jquery.store',
 	'aloha/jquery-ui'
 ], function (
 	$,
+	Aloha,
 	Surface,
 	Tab,
 	subguarded,
 	floating,
+	PubSub,
 	Store
 ) {
 	'use strict';
 
-	var store = new Store;
+	var store = new Store();
 
 	function storePinPosition(offset) {
 		store.set('Aloha.FloatingMenu.pinned', 'true');
@@ -152,10 +156,12 @@ define([
 
 			var surface = this;
 
-			subguarded(['aloha-selection-changed'], Surface.onActivatedSurface,
-				this, function () {
-					surface._move();
-				});
+			subguarded([
+				'aloha-selection-changed',
+				'aloha.ui.container.selected'
+			], Surface.onActivatedSurface, this, function () {
+				surface._move();
+			});
 
 			$(window).scroll(function () {
 				// TODO: only do this for active surfaces.
@@ -171,7 +177,7 @@ define([
 					top: Toolbar.pinTop,
 					left: Toolbar.pinLeft
 				}, this.$element);
-				
+
 				Toolbar.setFloatingPosition(position);
 
 				this.$element.css({

@@ -1,76 +1,74 @@
-/*
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*
-*/
-
+/**
+ * Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 define([
 	'jquery',
 	'aloha/plugin',
 	'ui/menuButton',
-	'i18n!aloha/nls/i18n',
 	'aloha/jquery-ui',
 	'css!./css/ribbon.css'
-], function($, Plugin, MenuButton, i18nCore) {
-	"use strict";
+], function (
+	$,
+	Plugin,
+	MenuButton
+) {
+	'use strict';
 
 	var ribbon = Plugin.create('ribbon', {
+
 		init: function () {
-			if (!this.settings.enable && typeof this.settings.enable !== 'undefined') {
+			if (!this.settings.enable &&
+				typeof this.settings.enable !== 'undefined') {
 				return;
 			}
 
 			var that = this;
 			this._visible = false;
-            this._toolbar = $('<div class="aloha-ribbon-toolbar ui-menubar ui-widget-header ui-helper-clearfix"></div>');
+            this._toolbar = $('<div class="aloha-ribbon-toolbar ui-menubar \
+				ui-widget-header ui-helper-clearfix">');
 
-			var fadeIn = $("<button class='aloha-ribbon-in'></button>")
+			var fadeIn = $('<button class="aloha-ribbon-in">')
 				.button()
 				.hide()
-				.click(function(){
+				.click(function () {
 					that._toolbar.animate({
 						'left': 0
 					});
-					$('body').animate({
-						paddingTop: '30px'
-						//'border-top-width': '30px'
-					});
+					$('body').animate({marginTop: 30});
 					fadeIn.hide();
 				})
 			    .appendTo(this._toolbar);
 
-			var fadeOut = $("<button class='aloha-ribbon-out'></button>")
+			var fadeOut = $('<button class="aloha-ribbon-out">')
 				.button()
-				.click(function(){
+				.click(function () {
 					that._toolbar.animate({
-						'left': -that._toolbar.outerWidth() + fadeIn.outerWidth() + 10
+						'left': -that._toolbar.outerWidth()
+						        + fadeIn.outerWidth()
+						        + 10
 					});
-					$('body').animate({
-						//'border-top-width': 0
-						paddingTop: 0
-					});
+					$('body').animate({marginTop: 0});
 					fadeIn.show();
 				})
 				.appendTo(this._toolbar);
 
-			var wrapper = $('<div class="aloha aloha-ribbon"></div>')
-				.appendTo("body");
+			var wrapper = $('<div class="aloha aloha-ribbon">')
+				.appendTo('body');
 
-			this._icon = $('<div></div>')
-				.prependTo(this._toolbar);
+			this._icon = $('<div>').prependTo(this._toolbar);
 			this.setIcon('');
 
 			this._toolbar.appendTo(wrapper);
 
 			$('body').css({
-				//position: 'relative',
-				//border: '30px solid transparent'
-				paddingTop: '30px'
+				position: 'relative',
+				marginTop: 30
 			});
 		},
-		
+
 		/**
 		 * Sets the icon class for the ribbon icon
 		 * @param {String} iconClass CSS class for the icon
@@ -82,7 +80,7 @@ define([
 			this._icon.attr('class', 'aloha-ribbon-icon ' + iconClass);
 		},
 
-		addButton: function(props) {
+		addButton: function (props) {
 			if (!this._toolbar) {
 				return;
 			}

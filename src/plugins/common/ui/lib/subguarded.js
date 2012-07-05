@@ -1,8 +1,12 @@
 define([
 	'aloha/core',
-	'jquery'
-],
-function( Aloha, jQuery ) {
+	'jquery',
+	'PubSub'
+], function (
+	Aloha,
+	jQuery,
+	PubSub
+) {
 	'use strict';
 
 	/**
@@ -44,8 +48,8 @@ function( Aloha, jQuery ) {
 	 * @return {number} The alohaUid property that has been assigned to the
 	 *                  given function.
 	 */
-	function getUid( func ) {
-		if ( !func.alohaUid ) {
+	function getUid(func) {
+		if (!func.alohaUid) {
 			func.alohaUid = ++alohaUid;
 		}
 		return func.alohaUid;
@@ -60,8 +64,8 @@ function( Aloha, jQuery ) {
 	 * @return {array.<function>} A list of guarded dispatch functions that
 	 *                            were registered to handle the given event.
 	 */
-	function getRegisteredGuards( event ) {
-		return registeredGuards[ event ] || [];
+	function getRegisteredGuards(event) {
+		return registeredGuards[event] || [];
 	}
 
 	/**
@@ -71,8 +75,8 @@ function( Aloha, jQuery ) {
 	 * @paran {function} guard A function that is to filter and dispatch.
 	 * @return {array.<*>} A list of arguments list.
 	 */
-	function getArguments( guard ) {
-		return registeredArguments[ guard.alohaUid ] || [];
+	function getArguments(guard) {
+		return registeredArguments[guard.alohaUid] || [];
 	}
 
 	/**
@@ -83,12 +87,12 @@ function( Aloha, jQuery ) {
 	 * @return {array.<*>} The list of all registed arguments lists that
 	 *                     correspond with the given guard.
 	 */
-	function registerArguments( guard, args ) {
-		if ( !registeredArguments[ guard.alohaUid ] ) {
-			registeredArguments[ guard.alohaUid ] = [];
+	function registerArguments(guard, args) {
+		if (!registeredArguments[guard.alohaUid]) {
+			registeredArguments[guard.alohaUid] = [];
 		}
-		registeredArguments[ guard.alohaUid ].push( args );
-		return registeredArguments[ guard.alohaUid ];
+		registeredArguments[guard.alohaUid].push(args);
+		return registeredArguments[guard.alohaUid];
 	}
 
 	/**
@@ -100,12 +104,12 @@ function( Aloha, jQuery ) {
 	 * @return {array.<*>} The list of all registed guard functions that
 	 *                     correspond with the given guard.
 	 */
-	function registerGuard( event, guard ) {
-		if ( !registeredGuards[ event ] ) {
-			registeredGuards[ event ] = [];
+	function registerGuard(event, guard) {
+		if (!registeredGuards[event]) {
+			registeredGuards[event] = [];
 		}
-		registeredGuards[ event ].push( guard );
-		return registeredGuards[ event ];
+		registeredGuards[event].push(guard);
+		return registeredGuards[event];
 	}
 
 	/**
@@ -116,7 +120,7 @@ function( Aloha, jQuery ) {
 	 * @param ... any other arguments passed on to the guard function
 	 */
 	function trigger(event) {
-		var guards = getRegisteredGuards( event );
+		var guards = getRegisteredGuards(event);
 		var i;
 		for (i = 0; i < guards.length; i++) {
 			guards[i].apply(null, [getArguments(guards[i])].concat(arguments));
@@ -133,6 +137,9 @@ function( Aloha, jQuery ) {
 	 * the other arguments pass the condition implemented in the guarded
 	 * dispatch function.
 	 *
+	 * USAGE:
+	 *    sub(event, dispatch [, ... ])
+	 *
 	 * @param {string} event
 	 * @param {function(array.<array.<*...>>)} guard A function that will be
 	 *                                               invoked when the specified
@@ -146,23 +153,28 @@ function( Aloha, jQuery ) {
 	 * @param {*...} args A variable number of arguments which will be passed
 	 *                    as a list in a list to the dispatch function.
 	 */
-	function sub( /* event, dispatch [, ... ] */ ) {
-		var args = Array.prototype.slice.call( arguments );
+	function sub() {
+		var args = Array.prototype.slice.call(arguments);
 		var events = args.shift();
-		if ( typeof events === 'string' ) {
-			events = [ events ];
+		if (typeof events === 'string') {
+			events = [events];
 		}
 		var guard = args.shift();
-		getUid( guard );
-		registerArguments( guard, args );
+		getUid(guard);
+		registerArguments(guard, args);
 		var i;
 		var event;
-		for ( i = 0; i < events.length; i++ ) {
-			event = events[ i ];
-			registerGuard( event, guard );
-			Aloha.bind( event, function ( $event, range, nativeEvent ) {
-				trigger( event, $event, range, nativeEvent );
-			});
+		var bindHandler = function ($event, range, nativeEvent) {
+			trigger(event, $event, range, nativeEvent);
+		};
+		var pubsubHandler = function () {
+			trigger(event);
+		};
+		for (i = 0; i < events.length; i++) {
+			event = events[i];
+			registerGuard(event, guard);
+			Aloha.bind(event, bindHandler);
+			PubSub.sub(event, pubsubHandler);
 		}
 	}
 
