@@ -44,6 +44,7 @@ define([
 		self._initCursorFocus(onSelectCallback);
 		self._initEvents();
 	}
+
 	CharacterOverlay.prototype = {
 		/**
 		 * Show the character overlay at the insert button's position
@@ -57,6 +58,12 @@ define([
 			// focus the first character
 			self.$node.find('.focused').removeClass('focused');
 			jQuery(self.$node.find('td')[0]).addClass('focused');
+			self._overlayActive = true;
+		},
+
+		hide: function() {
+			this.$node.hide();
+			this._overlayActive = false;
 		},
 
 		/**
@@ -74,15 +81,19 @@ define([
 			self.$node.click(function (e) {
 				e.stopPropagation();
 			});
+
+			var buttonSelector = '.aloha-icon-characterpicker';
 			// hide the layer if user clicks anywhere in the body
 			jQuery('body').click(function (e) {
-				var overlayVisibleAndNotTarget
-					=  (self.$node.css('display') === 'table')
-					&& (e.target != self.$node[0])
-				    // don't consider clicks to the 'show' button.
-					&& !jQuery(e.target).parent().children('.aloha-icon-characterpicker').length;
-				if(overlayVisibleAndNotTarget) {
-					self.$node.hide();
+				if (!self._overlayActive) {
+					return;
+				}
+				if (// don't consider clicks to the overlay itself
+				       e.target !== self.$node[0]
+				    // and don't consider clicks to the 'show' button.
+					&& !jQuery(e.target).is(buttonSelector)
+					&& !jQuery(e.target).find(buttonSelector).length) {
+					self.hide();
 				}
 			});
 		},
@@ -92,7 +103,7 @@ define([
 			jQuery(document).keyup(function (e) {
 				var overlayVisibleAndEscapeKeyPressed = (self.$node.css('display') === 'table') && (e.keyCode === 27);
 				if (overlayVisibleAndEscapeKeyPressed) {
-					self.$node.hide();
+					self.hide();
 				}
 			});
 		},
@@ -104,7 +115,7 @@ define([
 			var movements = {
 				13: function select() {
 					$current = self.$node.find('.focused');
-					self.$node.hide();
+					self.hide();
 					onSelectCallback($current.text());
 				},
 				37: function left() {
@@ -159,7 +170,7 @@ define([
 			var self = this;
 			// when the editable is deactivated, hide the layer
 			Aloha.bind('aloha-editable-deactivated', function (event, rangeObject) {
-				self.$node.hide();
+				self.hide();
 			});
 		},
 		_createCharacterButtons: function (characters) {
@@ -180,7 +191,7 @@ define([
 						jQuery(this).removeClass('mouseover');
 					})
 					.click(function (e) {
-						self.$node.hide();
+						self.hide();
 						self.onSelectCallback(character);
 						return false;
 					});
