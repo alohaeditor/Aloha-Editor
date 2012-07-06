@@ -218,7 +218,7 @@ define([
 		});
 	}
 
-	function makeFloating(surface, SurfaceManager) {
+	function makeFloating(surface, SurfaceTypeManager) {
 		subguarded([
 			'aloha-selection-changed',
 			'aloha.ui.container.selected'
@@ -226,35 +226,45 @@ define([
 			surface._move();
 		});
 
-		$window.scroll(function () {
-			// TODO: only do this for active surfaces.
-			surface._move(0);
-		});
-
-		surface.addPin();
-
-		if (SurfaceManager.isFloatingMode) {
-			surface.$element.css('position', 'fixed');
-		} else {
+		var updateSurfacePosition = function () {
 			var position = forcePositionIntoWindow({
-				top: SurfaceManager.pinTop,
-				left: SurfaceManager.pinLeft
+				top: SurfaceTypeManager.pinTop,
+				left: SurfaceTypeManager.pinLeft
 			});
 
-			SurfaceManager.setFloatingPosition(position);
+			SurfaceTypeManager.setFloatingPosition(position);
 
 			surface.$element.css({
 				'position': 'fixed',
 				'top': position.top,
 				'left': position.left
 			});
+		};
+
+		$window.scroll(function () {
+			// TODO: only do this for active surfaces.
+			surface._move(0);
+		});
+
+		$window.resize(function () {
+			if (!SurfaceTypeManager.isFloatingMode) {
+				updateSurfacePosition();
+			}
+		});
+
+		surface.addPin();
+
+		if (SurfaceTypeManager.isFloatingMode) {
+			surface.$element.css('position', 'fixed');
+		} else {
+			updateSurfacePosition();
 		}
 
 		surface.$element.css('z-index', 10100).draggable({
 			'distance': 20,
 			'stop': function (event, ui) {
-				SurfaceManager.setFloatingPosition(ui.position);
-				if (!SurfaceManager.isFloatingMode) {
+				SurfaceTypeManager.setFloatingPosition(ui.position);
+				if (!SurfaceTypeManager.isFloatingMode) {
 					storePinPosition(ui.position);
 				}
 			}
