@@ -1,6 +1,19 @@
-// TODO: This code needs inline-documentation!
-define(['aloha/core', 'jquery'], function (Aloha, $) {
+define([
+	'jquery',
+	'aloha/core',
+	'ui/surface',
+	'ui/subguarded',
+	'vendor/jquery.store'
+], function (
+	$,
+	Aloha,
+	Surface,
+	subguarded,
+	Store
+) {
 	'use strict';
+
+	var store = new Store();
 
 	/**
 	 * The distance the floating surface should remain from the editable it is
@@ -75,6 +88,58 @@ define(['aloha/core', 'jquery'], function (Aloha, $) {
 		floatTo($element, position, duration, callback);
 	}
 
+	function storePinPosition(offset) {
+		store.set('Aloha.FloatingMenu.pinned', 'true');
+		store.set('Aloha.FloatingMenu.top', offset.top);
+		store.set('Aloha.FloatingMenu.left', offset.left);
+	}
+
+	function unstorePinPosition() {
+		store.del('Aloha.FloatingMenu.pinned');
+		store.del('Aloha.FloatingMenu.top');
+		store.del('Aloha.FloatingMenu.left');
+	}
+
+	function getPinState() {
+		var state = {};
+
+		if (store.get('Aloha.FloatingMenu.pinned') === 'true') {
+			return {
+				top: parseInt(store.get('Aloha.FloatingMenu.top'), 10),
+				left: parseInt(store.get('Aloha.FloatingMenu.left'), 10),
+				isPinned: true
+			};
+		}
+
+		return {
+			top: null,
+			left: null,
+			isPinned: false
+		};
+	}
+
+	function forcePositionIntoWindow(position) {
+		var left = position.left;
+		var top = position.top;
+
+		if (top < 0) {
+			top = 0;
+		} else if (top > $window.height()) {
+			top = $window.height() / 2;
+		}
+
+		if (left < 0) {
+			left = 0;
+		} else if (left > $window.width()) {
+			left = $window.width() / 2;
+		}
+
+		return {
+			top: top,
+			left: left
+		};
+	}
+
 	/**
 	 * Cause the surface to float to the appropriate position around the given
 	 * editable
@@ -140,8 +205,10 @@ define(['aloha/core', 'jquery'], function (Aloha, $) {
 		}
 
 		if (isFloating) {
+			unstorePinPosition();
 			$elements.find('.aloha-ui-pin').removeClass('aloha-ui-pin-down');
 		} else {
+			storePinPosition(position);
 			$elements.find('.aloha-ui-pin').addClass('aloha-ui-pin-down');
 		}
 
@@ -151,7 +218,55 @@ define(['aloha/core', 'jquery'], function (Aloha, $) {
 		});
 	}
 
+	function makeFloating(surface, SurfaceManager) {
+		subguarded([
+			'aloha-selection-changed',
+			'aloha.ui.container.selected'
+		], Surface.onActivatedSurface, surface, function () {
+			surface._move();
+		});
+
+		$window.scroll(function () {
+			// TODO: only do this for active surfaces.
+			surface._move(0);
+		});
+
+		surface.addPin();
+
+		if (SurfaceManager.isFloatingMode) {
+			surface.$element.css('position', 'fixed');
+		} else {
+			var position = forcePositionIntoWindow({
+				top: SurfaceManager.pinTop,
+				left: SurfaceManager.pinLeft
+			});
+
+			SurfaceManager.setFloatingPosition(position);
+
+			surface.$element.css({
+				'position': 'fixed',
+				'top': position.top,
+				'left': position.left
+			});
+		}
+
+		surface.$element.css('z-index', 10100).draggable({
+			'distance': 20,
+			'stop': function (event, ui) {
+				SurfaceManager.setFloatingPosition(ui.position);
+				if (!SurfaceManager.isFloatingMode) {
+					storePinPosition(ui.position);
+				}
+			}
+		});
+
+		// Resizable toolbars are possible, and would be a nice feature.
+		//surface.$element.resizable();
+	}
+
 	return {
+		getPinState: getPinState,
+		makeFloating: makeFloating,
 		floatSurface: floatSurface,
 		togglePinSurfaces: togglePinSurfaces
 	};

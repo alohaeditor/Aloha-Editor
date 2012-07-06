@@ -3,59 +3,16 @@ define([
 	'aloha/core',
 	'ui/surface',
 	'ui/tab',
-	'ui/subguarded',
 	'ui/floating',
-	'PubSub',
-	'vendor/jquery.store',
 	'aloha/jquery-ui'
 ], function (
 	$,
 	Aloha,
 	Surface,
 	Tab,
-	subguarded,
-	floating,
-	PubSub,
-	Store
+	floating
 ) {
 	'use strict';
-
-	var store = new Store();
-
-	function storePinPosition(offset) {
-		store.set('Aloha.FloatingMenu.pinned', 'true');
-		store.set('Aloha.FloatingMenu.top', offset.top);
-		store.set('Aloha.FloatingMenu.left', offset.left);
-	}
-
-	function unstorePinPosition() {
-		store.del('Aloha.FloatingMenu.pinned');
-		store.del('Aloha.FloatingMenu.top');
-		store.del('Aloha.FloatingMenu.left');
-	}
-
-	function forcePositionIntoWindow(position) {
-		var $window = $(window);
-		var left = position.left;
-		var top = position.top;
-
-		if (top < 0) {
-			top = 0;
-		} else if (top > $window.height()) {
-			top = $window.height() / 2;
-		}
-
-		if (left < 0) {
-			left = 0;
-		} else if (left > $window.width()) {
-			left = $window.width() / 2;
-		}
-
-		return {
-			top: top,
-			left: left
-		};
-	}
 
 	/**
 	 * The toolbar is configured via `settings.toolbar` and is defined as an
@@ -77,12 +34,6 @@ define([
 	 * @extends {Surface}
 	 */
 	var Toolbar = Surface.extend({
-
-		/**
-		 * Whether this is a floating surface or not.
-		 * @type {boolean}
-		 */
-		isFloatingSurface: false,
 
 		_tabs: [],
 
@@ -120,7 +71,9 @@ define([
 				}, settings.components));
 			}
 
-			this.initializeFloating();
+			// Pinning behaviour is global in that if one toolbar is pinned,
+			// then all other toolbars will be pinned to that position.
+			floating.makeFloating(this, Toolbar);
 		},
 
 		getActiveContainer: function () {
@@ -145,60 +98,6 @@ define([
 						});
 				}
 			}, 1);
-		},
-
-		/**
-		 * Pinning behaviour is global in that if one toolbar is pinned, then
-		 * all other toolbars will be pinned to that position.
-		 */
-		initializeFloating: function () {
-			this.isFloatingSurface = true;
-
-			var surface = this;
-
-			subguarded([
-				'aloha-selection-changed',
-				'aloha.ui.container.selected'
-			], Surface.onActivatedSurface, this, function () {
-				surface._move();
-			});
-
-			$(window).scroll(function () {
-				// TODO: only do this for active surfaces.
-				surface._move(0);
-			});
-
-			this.addPin();
-
-			if (Toolbar.isFloatingMode) {
-				this.$element.css('position', 'fixed');
-			} else {
-				var position = forcePositionIntoWindow({
-					top: Toolbar.pinTop,
-					left: Toolbar.pinLeft
-				});
-
-				Toolbar.setFloatingPosition(position);
-
-				this.$element.css({
-					'position': 'fixed',
-					'top': position.top,
-					'left': position.left
-				});
-			}
-
-			this.$element.css('z-index', 10100).draggable({
-				'distance': 20,
-				'stop': function (event, ui) {
-					Toolbar.setFloatingPosition(ui.position);
-					if (!Toolbar.isFloatingMode) {
-						storePinPosition(ui.position);
-					}
-				}
-			});
-
-			// Resizable toolbars are possible, and would be a nice feature.
-			//this.$element.resizable();
 		},
 
 		addPin: function () {
@@ -228,11 +127,9 @@ define([
 						top: Toolbar.pinTop,
 						left: Toolbar.pinLeft
 					};
-					unstorePinPosition();
 				} else {
 					position = surface.$element.offset();
 					position.top -= $(window).scrollTop();
-					storePinPosition(position);
 				}
 
 				Toolbar.setFloatingPosition(position);
@@ -314,13 +211,10 @@ define([
 
 			Surface.trackRange(Toolbar.$surfaceContainer);
 
-			if (store.get('Aloha.FloatingMenu.pinned') === 'true') {
-				Toolbar.pinTop = parseInt(store.get('Aloha.FloatingMenu.top'), 10);
-				Toolbar.pinLeft = parseInt(store.get('Aloha.FloatingMenu.left'), 10);
-				Toolbar.isFloatingMode = false;
-			} else {
-				Toolbar.isFloatingMode = true;
-			}
+			var pinState = floating.getPinState();
+			Toolbar.pinTop = pinState.top;
+			Toolbar.pinLeft = pinState.left;
+			Toolbar.isFloatingMode = !pinState.isPinned;
 		},
 
 		/**
