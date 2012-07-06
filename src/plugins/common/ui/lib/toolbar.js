@@ -89,7 +89,10 @@ define([
 			// occur after a sequence point so that the element's height will
 			// be correct.
 			var that = this;
-			setTimeout(function () {
+			if (this._moveTimeout) {
+				clearTimeout(this._moveTimeout);
+			}
+			this._moveTimeout = setTimeout(function () {
 				if (Aloha.activeEditable && Toolbar.isFloatingMode) {
 					that.$element.stop();
 					floating.floatSurface(that, Aloha.activeEditable, duration,
