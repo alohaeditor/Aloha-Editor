@@ -1,3 +1,9 @@
+- **ENHANCEMENT**: Aloha specific css rules that are not in use any more were removed:
+
+                   .aloha-editable-zerowidthfix
+                   .aloha-logo
+                   .aloha-maximize
+
 - **MANUAL CHANGE**: The jQuery.isBoolean extension added to jQuery by Aloha was removed.
                      Instead consider typeof x === 'boolean'. 
 
