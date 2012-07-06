@@ -203,13 +203,13 @@ define([
 
 		addPin: function () {
 			var $pin = $('<div class="aloha-ui-pin">');
-			var that = this;
+			var $element = this.$element;
 
-			this.$element.find('.ui-tabs').append($pin);
-			this.$element.find('.ui-tabs').add($pin).hover(function () {
-				that.$element.addClass('aloha-ui-hover');
+			$element.find('.ui-tabs').append($pin);
+			$element.find('.ui-tabs').hover(function () {
+				$element.addClass('aloha-ui-hover');
 			}, function () {
-				that.$element.removeClass('aloha-ui-hover');
+				$element.removeClass('aloha-ui-hover');
 			});
 
 			if (!Toolbar.isFloatingMode) {
