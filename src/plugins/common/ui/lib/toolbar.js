@@ -100,7 +100,11 @@ define([
 							Toolbar.setFloatingPosition(position);
 						});
 				}
-			}, 1);
+				// 100ms should be small enough to be near instant to
+				// the user but large enough to avoid doing unnecessary
+				// work when selection changes multiple times during a
+				// short time frame.
+			}, 100);
 		},
 
 		addPin: function () {
