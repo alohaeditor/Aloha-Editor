@@ -244,41 +244,39 @@ define( [
 		 * Subscribe for events
 		 */
 		subscribeEvents: function () {
-			var that = this;
+			var that = this,
+			    isEnabled = {};
 
 			// add the event handler for creation of editables
-			Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
-				var config;
+			Aloha.bind('aloha-editable-created', function (event, editable) {
+				var config = that.getEditableConfig(editable.obj),
+				    enabled = (jQuery.inArray('a', config) !== -1);
 
-				config = that.getEditableConfig( editable.obj );
-				if ( jQuery.inArray( 'a', config ) == -1 ) {
+				isEnabled[editable.getId()] = enabled;
+
+				if (!enabled) {
 					return;
 				}
 
 				// enable hotkey for inserting links
-				editable.obj.bind( 'keydown', that.hotKey.insertLink, function ( e ) {
+				editable.obj.bind('keydown', that.hotKey.insertLink, function() {
 					if ( that.findLinkMarkup() ) {
 						// open the tab containing the href
 						Scopes.activateTabOfButton('editLink');
 						that.hrefField.focus();
 					} else {
-						that.insertLink( true );
+						that.insertLink(true);
 					}
-					
 					return false;
 				} );
 
-				editable.obj.find( 'a' ).each( function ( i ) {
-					that.addLinkEventHandlers( this );
-				} );
-			} );
+				editable.obj.find('a').each(function() {
+					that.addLinkEventHandlers(this);
+				});
+			});
 
-			Aloha.bind( 'aloha-editable-activated', function ( event, rangeObject ) {
-				var config;
-
-				// show/hide the button according to the configuration
-				config = that.getEditableConfig( Aloha.activeEditable.obj );
-				if ( jQuery.inArray( 'a', config ) != -1 ) {
+			Aloha.bind('aloha-editable-activated', function() {
+				if (isEnabled[Aloha.activeEditable.getId()]) {
 					ComponentState.setState('formatLink', 'show', true);
 					ComponentState.setState('insertLink', 'show', true);
 					Scopes.unhideTab();
@@ -287,75 +285,25 @@ define( [
 					ComponentState.setState('insertLink', 'show', false);
 					Scopes.hideTab(i18n.t('floatingmenu.tab.link'));
 				}
-			} );
+			});
 
-			// add the event handler for selection change
-			Aloha.bind( 'aloha-selection-changed', function ( event, rangeObject ) {
-				var config,
-				    foundMarkup;
-				
-				if ( Aloha.activeEditable && Aloha.activeEditable.obj ) {
-					config = that.getEditableConfig( Aloha.activeEditable.obj );
-				} else {
-					config = {};
+			Aloha.bind('aloha-selection-changed', function(event, rangeObject){
+				if (Aloha.activeEditable && isEnabled[Aloha.activeEditable.getId()]) {
+					selectionChangeHandler(that, rangeObject);
 				}
-				
-				// Check if we need to ignore this selection changed event for
-				// now and check whether the selection was placed within a
-				// editable area.
-				if ( !that.ignoreNextSelectionChangedEvent &&
-						Aloha.Selection.isSelectionEditable() &&
-							Aloha.activeEditable != null &&
-							jQuery.inArray( 'a', config ) !== -1 ) {
-					
-					foundMarkup = that.findLinkMarkup( rangeObject );
-					
-					if ( foundMarkup ) {
-						that.toggleLinkScope( true );
-						
-						Scopes.activateTabOfButton('editLink');
-
-						// now we are ready to set the target object
-						that.hrefField.setTargetObject( foundMarkup, 'href' );
-
-						// if the selection-changed event was raised by the first click interaction on this page
-						// the hrefField component might not be initialized. When the user switches to the link
-						// tab to edit the link the field would be empty. We check for that situation and add a
-						// special interval check to set the value once again
-						if ( jQuery( '#' + that.hrefField.getInputId() ).length == 0 ) {
-							// there must only be one update interval running at the same time
-							if ( that.hrefUpdateInt !== null ) {
-								clearInterval( that.hrefUpdateInt );
-							}
-							
-							// register a timeout that will set the value as soon as the href field was initialized
-							that.hrefUpdateInt = setInterval( function () {
-								if ( jQuery( '#' + that.hrefField.getInputId() ).length > 0 ) { // the object was finally created
-									that.hrefField.setTargetObject( foundMarkup, 'href' );
-									clearInterval( that.hrefUpdateInt );
-								}
-							}, 200 );
-						}
-						Aloha.trigger( 'aloha-link-selected' );
-					} else {
-						that.toggleLinkScope(false);
-						that.hrefField.setTargetObject( null );
-						Aloha.trigger('aloha-link-unselected');
-					}
-				} else {
-					that.toggleLinkScope(false);
-				}
-				
-				that.ignoreNextSelectionChangedEvent = false;
-			} );
+			});
 		},
 
 		/**
-		 * lets you toggle the link scope to true (link buttons are visible)
-		 * or false (link buttons are hidden)
-		 * @param show bool true to show link buttons, false otherwise
+		 * lets you toggle the link scope to true or false
+		 * @param show bool
 		 */
 		toggleLinkScope: function ( show ) {
+			// Check before doing anything as a performance improvement.
+			if (this._isScopeActive === show) {
+				return;
+			}
+			this._isScopeActive = show;
 			if ( show ) {
 				this.hrefField.show();
 				ComponentState.setState('insertLink', 'show', false);
@@ -739,4 +687,55 @@ define( [
 			} );
 		}
 	} );
+
+	function selectionChangeHandler(that, rangeObject) {
+		var foundMarkup;
+
+		// Check if we need to ignore this selection changed event for
+		// now and check whether the selection was placed within a
+		// editable area.
+		if (   !that.ignoreNextSelectionChangedEvent
+			   && Aloha.Selection.isSelectionEditable()
+			   && Aloha.activeEditable != null ) {
+			
+			foundMarkup = that.findLinkMarkup( rangeObject );
+			
+			if ( foundMarkup ) {
+				that.toggleLinkScope( true );
+				
+				Scopes.activateTabOfButton('editLink');
+
+				// now we are ready to set the target object
+				that.hrefField.setTargetObject( foundMarkup, 'href' );
+
+				// if the selection-changed event was raised by the first click interaction on this page
+				// the hrefField component might not be initialized. When the user switches to the link
+				// tab to edit the link the field would be empty. We check for that situation and add a
+				// special interval check to set the value once again
+				if ( jQuery( '#' + that.hrefField.getInputId() ).length == 0 ) {
+					// there must only be one update interval running at the same time
+					if ( that.hrefUpdateInt !== null ) {
+						clearInterval( that.hrefUpdateInt );
+					}
+					
+					// register a timeout that will set the value as soon as the href field was initialized
+					that.hrefUpdateInt = setInterval( function () {
+						if ( jQuery( '#' + that.hrefField.getInputId() ).length > 0 ) { // the object was finally created
+							that.hrefField.setTargetObject( foundMarkup, 'href' );
+							clearInterval( that.hrefUpdateInt );
+						}
+					}, 200 );
+				}
+				Aloha.trigger( 'aloha-link-selected' );
+			} else {
+				that.toggleLinkScope(false);
+				that.hrefField.setTargetObject( null );
+				Aloha.trigger('aloha-link-unselected');
+			}
+		} else {
+			that.toggleLinkScope(false);
+		}
+		
+		that.ignoreNextSelectionChangedEvent = false;
+	}
 } );
