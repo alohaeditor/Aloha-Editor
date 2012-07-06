@@ -100,7 +100,7 @@ define( [
 		 * HotKeys used for special actions
 		*/
 		hotKey: {
-			insertLink: i18n.t('insertLink', 'ctrl+k')
+			insertLink: i18n.t('insertLink', 'ctrl+l')
 		},
 		
 		/**
