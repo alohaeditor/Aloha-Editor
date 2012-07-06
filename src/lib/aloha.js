@@ -123,7 +123,7 @@
 	var predefinedModules = Aloha.settings.predefinedModules || {};
 
 	// jQuery is treated specially in that, if it is available we will add it
-	// to the predifiedModules list as "jquery."
+	// to the predefiedModules list as "jquery."
 	if (Aloha.settings.jQuery) {
 		predefinedModules.jquery = Aloha.settings.jQuery;
 	}
@@ -135,7 +135,7 @@
 	}
 
 	var moduleName;
-	for (moduleName in predefinedModules) {
+	for (moduleName in predefinedModules) if (predefinedModules.hasOwnProperty(moduleName)) {
 		createDefine(moduleName, predefinedModules[moduleName]);
 		delete requireConfig.paths[moduleName];
 	}
