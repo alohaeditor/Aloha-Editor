@@ -150,9 +150,6 @@
 		return alohaRequire.apply(this, arguments);
 	};
 
-	// create promise for 'aloha-ready' when Aloha is not yet ready
-	// and fire later when 'aloha-ready' is triggered all other events bind
-
 	var deferredReady;
 
 	Aloha.bind = function (type, fn) {
@@ -169,7 +166,8 @@
 				} else {
 					jQuery(Aloha, 'body').bind(type, fn);
 				}
-			}
+				return this;
+			};
 			Aloha.bind(type, fn);
 		});
 	   return this;
@@ -183,6 +181,7 @@
 					jQuery(deferredReady.resolve);
 				}
 				jQuery(Aloha, 'body').trigger(type, data);
+				return this;
 			};
 			Aloha.trigger(type, data);
 		});
