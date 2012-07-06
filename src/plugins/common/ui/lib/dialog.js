@@ -23,7 +23,7 @@ function($, Component) {
 				buttons[title] = (function(orgCallback){
 					return function(){
 						orgCallback.apply(this);
-						$(this).dialog('destroy');
+						$(this).dialog('destroy').remove();
 					};
 				})(buttons[title]);
 			}
@@ -93,7 +93,7 @@ function($, Component) {
 				})
 			);
 			return function() {
-				dialog.dialog('destroy');
+				dialog.dialog('destroy').remove();
 			};
 		},
 		/**
@@ -118,7 +118,7 @@ function($, Component) {
 				})
 			);
 			return function() {
-				dialog.dialog('destroy');
+				dialog.dialog('destroy').remove();
 			};
 		},
 		/**
@@ -152,7 +152,7 @@ function($, Component) {
 				if (null != value) {
 					progressbar.progressbar({ value: value });
 				} else {
-					dialog.dialog('destroy');
+					dialog.dialog('destroy').remove();
 				}
 			};
 		}
