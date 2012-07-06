@@ -344,24 +344,6 @@ define([
 			return element[0];
 		}
 
-		/**
-		 * @Deprecated during jqueryui migration
-		 */
-		function preventAutoSuggestionBoxFromExpanding () {
-			// No idea if this case needs any special handling or how to handle
-			// it in the jqueryui implementation of the attribute field. This
-			// probably was a fix for an edge case in the old implementation of
-			// the ui attribute field.
-		}
-
-		/**
-		 * @Deprecated during jqueryui migration
-		 */
-		function clearStore () {
-			// This was a fix for an edge case in the old implementation of the
-			// ui attribute field.
-		}
-
 		var attrField = {
 			getInputElem: getInputElem,
 			hasInputElem: hasInputElem,
@@ -379,10 +361,7 @@ define([
 			addListener: addListener,
 			setObjectTypeFilter: setObjectTypeFilter,
 			setTemplate: setTemplate,
-			setPlaceholder: setPlaceholder,
-			// Deprecated
-			clearStore: clearStore,
-			preventAutoSuggestionBoxFromExpanding: preventAutoSuggestionBoxFromExpanding
+			setPlaceholder: setPlaceholder
 		};
 
 		return attrField;

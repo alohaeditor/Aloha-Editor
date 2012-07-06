@@ -263,7 +263,6 @@ define( [
 						that.hrefField.focus();
 					} else {
 						that.insertLink( true );
-						that.hrefField.preventAutoSuggestionBoxFromExpanding();
 					}
 					
 					return false;
@@ -521,8 +520,6 @@ define( [
 					window.setTimeout( function () {
 						Scopes.setScope('Aloha.continuoustext');
 					}, 100 );
-					
-					that.hrefField.preventAutoSuggestionBoxFromExpanding();
 				} else {
 					// Check whether the value in the input field has changed
 					// because if it has, then the ui-attribute object's store
@@ -534,7 +531,6 @@ define( [
 					newValue = jQuery( that.hrefField.getInputElem() ).attr( 'value' );
 					if ( oldValue != newValue ) {
 						oldValue = newValue;
-						that.hrefField.clearStore();
 					}
 				}
 			} );

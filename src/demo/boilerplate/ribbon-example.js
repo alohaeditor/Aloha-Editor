@@ -1,4 +1,7 @@
 Aloha.ready(function(){
+	if (!Aloha.isPluginLoaded('ribbon')) {
+		return;
+	}
     Aloha.require(["ribbon/ribbon-plugin", "ui/component", "ui/menuButton"], function(Ribbon, Component, MenuButton){
 
 		Component.define("insertTag", MenuButton, {

@@ -1,3 +1,44 @@
+- **MANUAL CHANGE**: The jQuery loaded by Aloha no longer performs a call to $.noConflict.
+
+                     Aloha now loads jQuery asynchronously. It is
+                     difficult to predictably call $.noConflict after
+                     loading jquery asynchronously - the global jQuery
+                     and $ variables may or may not be set to the jQuery
+                     loaded by Aloha for some time after loading has
+                     finished, resulting in possibly unpredictable
+                     behaviour if multiple jQuery instances are used.
+
+                     It is up to the user to load jQuery, call
+                     noConflict himself, and pass jQuery into Aloha via
+                     Aloha.settings.predefinedModules.
+
+- **ENHANCEMENT**: It is now possible to pass in any third party
+                   dependencies, for example:
+
+                   Aloha.settings.predefinedModules = {'jquery': window.jQuery, 'jqueryui': window.jQuery.ui}
+
+                   Aloha will not try to load any of the dependencies defined in this way.
+
+                   Please note that if jqueryui is defined, a jquery
+                   dependency must also be defined, and the given
+                   jqueryui dependency must extend the given jquery
+                   dependency. The same rule holds for any other jquery
+                   plugins.
+
+                   It is also possible to define alternative paths to
+                   third party dependencies, for example:
+
+                   Aloha.settings.requireConfig.paths = {'jquery': '/my/jquery.js'};
+
+                   This will override the default location Aloha loads jquery from.
+
+                   Please note that any dependency defined in this way must have an AMD define.
+
+                   Care must be taken with both settings. Passing in a
+                   dependency that has a different version from the
+                   dependency that is loaded by default may result in
+                   unpredictable behaviour.
+
 - **ENHANCEMENT**: Aloha specific css rules that are not in use any more were removed:
 
                    .aloha-editable-zerowidthfix
@@ -22,8 +63,6 @@
                      Due to a complete re-implementation of the Aloha
                      user interface in the form of the ui-plugin, most
                      of the ui specific Aloha API has changed.
-
-                     (In the following, ui/x refers to src/plugins/common/ui/lib/x.js.)
 
                      * FloatingMenu - removed
 
@@ -57,15 +96,15 @@
 
                      * image-plugin - the following settings are obsolete
 
-                        plugin.settings.ui.oneTab
-            			plugin.settings.ui.insert
-                        plugin.settings.ui.meta
-                        plugin.settings.ui.reset
-                        plugin.settings.ui.align
-                        plugin.settings.ui.margin
-                        plugin.settings.ui.crop
-                        plugin.settings.ui.resize
-                        plugin.settings.ui.aspectRatioToggle
+                        Aloha.settings.plugins.image.ui.oneTab
+                        Aloha.settings.plugins.image.ui.insert
+                        Aloha.settings.plugins.image.ui.meta
+                        Aloha.settings.plugins.image.ui.reset
+                        Aloha.settings.plugins.image.ui.align
+                        Aloha.settings.plugins.image.ui.margin
+                        Aloha.settings.plugins.image.ui.crop
+                        Aloha.settings.plugins.image.ui.resize
+                        Aloha.settings.plugins.image.ui.aspectRatioToggle
 
                        It is now up to the toolbar configuration whether or
                        not and how to display these components.
@@ -75,10 +114,11 @@
                      All settings associated with the removed components
                      do not have any effect any more.
 
-                     The Aloha css rules has been completely
-                     re-implemented. In particular, the Aloha block
-                     handles now have z-index 10000, the floating menu
-                     has 10100, and Aloha dialogs have 10200.
+                     Most Aloha css rules have been re-implemented.
+                     
+                     In particular, the Aloha block handles now have
+                     z-index 10000, the floating menu has 10100, and
+                     Aloha dialogs have 10200.
 
                      The new common/ui plugin is now required for the
                      user interface to be shown. This plugin is not
