@@ -41,6 +41,11 @@
                    dependency that is loaded by default may result in
                    unpredictable behaviour.
 
+                   Also, the third part libraries that come with Aloha
+                   may have been patched to fix bugs or increase
+                   performance. See the git log for each third party
+                   library for further information before redefining it.
+
 - **ENHANCEMENT**: Aloha specific css rules that are not in use any more were removed:
 
                    .aloha-editable-zerowidthfix
