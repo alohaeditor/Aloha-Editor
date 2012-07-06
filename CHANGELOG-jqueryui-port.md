@@ -1,3 +1,44 @@
+- **MANUAL CHANGE**: The jQuery loaded by Aloha no longer performs a call to $.noConflict.
+
+                     Aloha now loads jQuery asynchronously. It is
+                     difficult to predictably call $.noConflict after
+                     loading jquery asynchronously - the global jQuery
+                     and $ variables may or may not be set to the jQuery
+                     loaded by Aloha for some time after loading has
+                     finished, resulting in possibly unpredictable
+                     behaviour if multiple jQuery instances are used.
+
+                     It is up to the user to load jQuery, call
+                     noConflict himself, and pass jQuery into Aloha via
+                     Aloha.settings.predefinedModules.
+
+- **ENHANCEMENT**: It is now possible to pass in any third party
+                   dependencies, for example:
+
+                   Aloha.settings.predefinedModules = {'jquery': window.jQuery, 'jqueryui': window.jQuery.ui}
+
+                   Aloha will not try to load any of the dependencies defined in this way.
+
+                   Please note that if jqueryui is defined, a jquery
+                   dependency must also be defined, and the given
+                   jqueryui dependency must extend the given jquery
+                   dependency. The same rule holds for any other jquery
+                   plugins.
+
+                   It is also possible to define alternative paths to
+                   third party dependencies, for example:
+
+                   Aloha.settings.requireConfig.paths = {'jquery': '/my/jquery.js'};
+
+                   This will override the default location Aloha loads jquery from.
+
+                   Please note that any dependency defined in this way must have an AMD define.
+
+                   Care must be taken with both settings. Passing in a
+                   dependency that has a different version from the
+                   dependency that is loaded by default may result in
+                   unpredictable behaviour.
+
 - **ENHANCEMENT**: Aloha specific css rules that are not in use any more were removed:
 
                    .aloha-editable-zerowidthfix
