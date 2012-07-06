@@ -33,7 +33,7 @@ define([
 	 */
 	MenuButton.makeMenuButton = function(props) {
 		var wrapper = $('<div>'   , {'class': 'aloha-ui-menubutton-container'});
-		var expand  = $('<button>', {'class': 'aloha-ui-menubutton-expand'});
+		var expand  = Utils.makeButtonElement({'class': 'aloha-ui-menubutton-expand'});
 		var menu    = $('<ul>'    , {'class': 'aloha-ui-menubutton-menu'});
 		var action = null;
 		var buttonset = null;
@@ -43,7 +43,7 @@ define([
 		}
 
 		if (props.click) {
-			action = Utils.makeButton($('<button>', {'class': 'aloha-ui-menubutton-action'}), props)
+			action = Utils.makeButton(Utils.makeButtonElement({'class': 'aloha-ui-menubutton-action'}), props)
 				.click(props.click);
 
 			Utils.makeButton(expand, {}, true);

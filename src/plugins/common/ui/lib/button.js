@@ -83,7 +83,7 @@ function (jQuery, Component, Utils) {
 		 * @return {jQuery<HTMLElement>}
 		 */
 		createButtonElement: function () {
-			this.element = this.buttonElement = jQuery('<button>');
+			this.element = this.buttonElement = Utils.makeButtonElement();
 			return this.buttonElement;
 		},
 

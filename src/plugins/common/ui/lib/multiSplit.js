@@ -1,11 +1,13 @@
 define([
 	'jquery',
 	'ui/component',
-	'ui/button'
+	'ui/button',
+	'ui/utils'
 ], function (
 	$,
 	Component,
-	Button
+	Button,
+	Utils
 ) {
 	'use strict';
 
@@ -30,7 +32,7 @@ define([
 			var content = this.contentElement = $('<div>', {
 					'class': 'aloha-multisplit-content'
 				}).appendTo(element);
-			var toggle = this.toggleButton = $('<button>', {
+			var toggle = this.toggleButton = Utils.makeButtonElement({
 					'class': 'aloha-multisplit-toggle',
 					click: function () {
 						multiSplit.toggle();
