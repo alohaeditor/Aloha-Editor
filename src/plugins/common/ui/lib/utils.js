@@ -32,13 +32,12 @@ define(['aloha/jquery-ui'], function() {
 			return '<img class="aloha-ui-inline-icon" src="' + iconUrl + '">';
 		},
 		makeButtonElement: function(attr){
-			var button = $('<button>', attr);
-			// Avoid problems with IE which considers buttons to be of
-			// type submit by default. One problem that occurd was that
-			// hitting enter inside a text-input caused a click event in
-			// the button right next to it.
-			button[0].type = 'button';
-			return button;
+			// Set type to button to avoid problems with IE which
+			// considers buttons to be of type submit by default. One
+			// problem that occurd was that hitting enter inside a
+			// text-input caused a click event in the button right next
+			// to it.
+			return $('<button>', attr).attr('type', 'button');
 		}
 	};
 	return Utils;
