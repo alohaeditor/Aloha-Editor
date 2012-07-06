@@ -45,33 +45,31 @@ define([
 
 	var Scopes = {
 
-		addScope: function(scope) {
-			var ancestorScopes = [];
-			pushScopeAncestors(ancestorScopes, scope);
-			addedScopes[scope] = ancestorScopes;
-			PubSub.pub('aloha.ui.scope.change');
+		enterScope: function(scope) {
+			var counter = addedScopes[scope] || 0;
+			addedScopes[scope] = counter + 1;
+			if (!counter) {
+				PubSub.pub('aloha.ui.scope.change');
+			}
 		},
 
-		removeScope: function(scope) {
-			delete addedScopes[scope];
-			PubSub.pub('aloha.ui.scope.change');
+		leaveScope: function(scope) {
+			var counter = addedScopes[scope] - 1;
+			if (counter) {
+				addedScopes[scope] = counter;
+			} else {
+				delete addedScopes[scope];
+				PubSub.pub('aloha.ui.scope.change');
+			}
 		},
 
 		isActiveScope: function(scope){
+			if (addedScopes[scope]) {
+				return true;
+			}
 			var isActive = (-1 !== jQuery.inArray(scope, activeScopes));
 			if (isActive) {
 				return true;
-			}
-			for (var addedScope in addedScopes) {
-				if (addedScopes.hasOwnProperty(addedScope)) {
-					if (scope == addedScope) {
-						return true;
-					}
-					var addedScopeAncestors = addedScopes[addedScope];
-					if (-1 != jQuery.inArray(scope, addedScopeAncestors)) {
-						return true;
-					}
-				}
 			}
 			return false;
 		},
@@ -91,7 +89,7 @@ define([
 		 * @deprecated
 		 *     Problem with setScope is that scopes defined by multiple plugins are exclusive to one another.
 		 *     Example: table plugin and link plugin - you want to be able to set both table and link scopes.
-		 *     Use addScope and removeScope instead.
+		 *     Use enterScope and leaveScope instead.
 		 */
 		setScope: function(scope, noActivateTab) {
 			scopeSetDuringSelectionChanged = true;

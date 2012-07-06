@@ -361,13 +361,13 @@ define( [
 				ComponentState.setState('insertLink', 'show', false);
 				ComponentState.setState('removeLink', 'show', true);
 				ComponentState.setState('formatLink', 'state', true);
-				Scopes.addScope(this.name);
+				Scopes.enterScope(this.name);
 			} else {
 				this.hrefField.hide();
 				ComponentState.setState('insertLink', 'show', true);
 				ComponentState.setState('removeLink', 'show', false);
 				ComponentState.setState('formatLink', 'state', false);
-				Scopes.removeScope(this.name);
+				Scopes.leaveScope(this.name);
 			}
 		},
 		
