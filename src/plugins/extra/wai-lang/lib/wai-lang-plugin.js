@@ -141,9 +141,9 @@ define([
 			} );
 
 			langField.setTemplate(
-				'<div class="img-item">' +
-					'<img class="typeahead-image" src="{url}" />' +
-					'<div class="label-item">{name}</div>' +
+				'<div class="aloha-wai-lang-img-item">' +
+					'<img class="aloha-wai-lang-img" src="{url}" />' +
+					'<div class="aloha-wai-lang-label-item">{name}</div>' +
 				'</div>'
 			);
 
