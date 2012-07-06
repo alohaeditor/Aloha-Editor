@@ -1,3 +1,5 @@
+- **MANUAL CHANGE**: Aloha.define was removed as it didn't serve any purpose
+
 - **MANUAL CHANGE**: The jQuery loaded by Aloha no longer performs a call to $.noConflict.
 
                      Aloha now loads jQuery asynchronously. It is

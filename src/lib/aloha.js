@@ -29,11 +29,6 @@
 	// Establish the settings object if none exists.
 	Aloha.settings = Aloha.settings || {};
 
-	// @TODO: Carrying define() in Aloha does not seem to serve us in anyway.
-	//        It is simply confusing, so I propose that we get rid of it as
-	//        quickly as we can from the API.
-	Aloha.define = define;
-
 	// Determins the base path of Aloha Editor which is supposed to be the path
 	// of aloha.js (this file).
 	Aloha.settings.baseUrl = Aloha.settings.baseUrl || getBaseUrl();
