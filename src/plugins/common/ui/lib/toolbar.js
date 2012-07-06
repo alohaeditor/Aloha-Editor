@@ -34,21 +34,21 @@ define([
 		store.del('Aloha.FloatingMenu.left');
 	}
 
-	function forcePositionIntoWindow(position, $element) {
+	function forcePositionIntoWindow(position) {
 		var $window = $(window);
 		var left = position.left;
 		var top = position.top;
 
-		if (top + $element.height() < 0) {
+		if (top < 0) {
 			top = 0;
 		} else if (top > $window.height()) {
 			top = $window.height() / 2;
 		}
 
-		if (left + $element.width() < 0) {
+		if (left < 0) {
 			left = 0;
 		} else if (left > $window.width()) {
-			left = $.width() - $element.width();
+			left = $window.width() / 2;
 		}
 
 		return {
@@ -176,7 +176,7 @@ define([
 				var position = forcePositionIntoWindow({
 					top: Toolbar.pinTop,
 					left: Toolbar.pinLeft
-				}, this.$element);
+				});
 
 				Toolbar.setFloatingPosition(position);
 
