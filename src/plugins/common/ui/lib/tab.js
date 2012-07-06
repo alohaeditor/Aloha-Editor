@@ -243,7 +243,7 @@ define([
 		setTimeout(function () {
 			message.data.container.find('.aloha-ui-component-group').each(function () {
 				jQuery(this).removeClass('aloha-ui-hidden');
-				if (0 === jQuery(this).find('button.ui-button:visible').length) {
+				if (0 === jQuery(this).find('button.ui-button:visible, input.ui-autocomplete-input:visible').length) {
 					jQuery(this).addClass('aloha-ui-hidden');
 				}
 			});
