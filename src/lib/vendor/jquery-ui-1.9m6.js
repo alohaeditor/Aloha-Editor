@@ -10484,6 +10484,36 @@ $.extend( $.ui.dialog.overlay.prototype, {
 
 var idIncrement = 0;
 
+var collapseSetup = 0;
+var collapseMenus = {};
+function collapseHandler(event) {
+	if (!$( event.target ).closest( ".ui-menu" ).length) {
+		for (var menuId in collapseMenus) {
+			if (collapseMenus.hasOwnProperty(menuId)) {
+				collapseMenus[menuId].collapseAll(event);
+			}
+		}
+	}
+}
+function setupCollapseBehaviour(menu) {
+	if (collapseMenus[menu.menuId]) {
+		return;
+	}
+	collapseMenus[menu.menuId] = menu;
+	if (!collapseSetup++) {
+		$('body').click(collapseHandler);
+	}
+}
+function teardownCollapseBehaviour(menu) {
+	if (!collapseMenus[menu.menuId]) {
+		return;
+	}
+	delete collapseMenus[menu.menuId];
+	if (collapseSetup && !--collapseSetup) {
+		$('body').unbind('click', collapseHandler);
+	}
+}
+
 $.widget( "ui.menu", {
 	version: "1.9m6",
 	defaultElement: "<ul>",
@@ -10649,14 +10679,6 @@ $.widget( "ui.menu", {
 				}
 			}
 		});
-
-		this._bind( document, {
-			click: function( event ) {
-				if ( !$( event.target ).closest( ".ui-menu" ).length ) {
-					this.collapseAll( event );
-				}
-			}
-		});
 	},
 
 	_destroy: function() {
@@ -10807,6 +10829,8 @@ $.widget( "ui.menu", {
 			.removeAttr( "aria-hidden" )
 			.attr( "aria-expanded", "true" )
 			.position( position );
+
+		setupCollapseBehaviour(this);
 	},
 
 	collapseAll: function( event ) {
@@ -10841,6 +10865,10 @@ $.widget( "ui.menu", {
 			.end()
 			.find( "a.ui-state-active" )
 			.removeClass( "ui-state-active" );
+
+		if (startMenu[0] === this.element[0]) {
+			teardownCollapseBehaviour(this);
+		}
 	},
 
 	collapse: function( event ) {
