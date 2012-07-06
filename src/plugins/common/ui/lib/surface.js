@@ -112,16 +112,6 @@ define([
 					Surface.active = null;
 				}
 			});
-
-			// When a special selection event is triggered (for example table
-			// selection changed), toggle the appropriate containers.
-			Aloha.bind( 'aloha-special-selection-changed',
-				function( event, elements, selectionType ) {
-					if ( Surface.active ) {
-						Container.showContainersForContext( Surface.active,
-							elements, selectionType );
-					}
-				});
 		},
 
 		/**
