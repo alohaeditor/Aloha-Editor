@@ -586,8 +586,8 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 		 * @hide
 		 */
 		standardAttributesComparator: function(domobj, markupObject) {			
-			var classesA = Strings.wordList((domobj && domobj.className) || '');
-			var classesB = Strings.wordList((markupObject.length && markupObject[0].className) || '');
+			var classesA = Strings.words((domobj && domobj.className) || '');
+			var classesB = Strings.words((markupObject.length && markupObject[0].className) || '');
 			Arrays.sortUnique(classesA);
 			Arrays.sortUnique(classesB);
 			return Arrays.equal(classesA, classesB);
