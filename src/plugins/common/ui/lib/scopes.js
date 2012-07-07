@@ -115,13 +115,6 @@ define([
 				parentScopes = [parentScopes];
 			}
 			scopes[scope] = parentScopes;
-		},
-
-		unhideTab: function(){
-			//TODO I don't know what this method is supposed to do
-		},
-		hideTab: function(tabName){
-			//TODO I don't know what this method is supposed to do
 		}
 	};
 	return Scopes;

@@ -279,11 +279,9 @@ define( [
 				if (isEnabled[Aloha.activeEditable.getId()]) {
 					ComponentState.setState('formatLink', 'show', true);
 					ComponentState.setState('insertLink', 'show', true);
-					Scopes.unhideTab();
 				} else {
 					ComponentState.setState('formatLink', 'show', false);
 					ComponentState.setState('insertLink', 'show', false);
-					Scopes.hideTab(i18n.t('floatingmenu.tab.link'));
 				}
 			});
 
