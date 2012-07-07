@@ -52,6 +52,8 @@
                    .aloha-logo
                    .aloha-maximize
 
+- **MANUAL CHANGE**: The jquery requirejs dependency was renamed from aloha/jquery to just jquery.
+
 - **MANUAL CHANGE**: The jQuery.isBoolean extension added to jQuery by Aloha was removed.
                      Instead consider typeof x === 'boolean'. 
 
