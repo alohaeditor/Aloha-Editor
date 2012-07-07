@@ -10,9 +10,11 @@ define([],function(){
      * @param compFn
      *        A custom comparison function that accepts two values a and
      *        b from the given array and returns -1, 0, 1 depending on
-     *        whether a < b, a == b, a > b respectively. If no compFn
-     *        is provided, the algorithm will use the browsers default
-     *        sort behaviour and loose comparison to detect duplicates.
+     *        whether a < b, a == b, a > b respectively.
+	 *
+	 *        If no compFn is provided, the algorithm will use the
+     *        browsers default sort behaviour and loose comparison to
+     *        detect duplicates.
      * @return
      *        The given array.
      */
@@ -38,22 +40,35 @@ define([],function(){
 		return a;
 	}
 
-	function equal(a, b, compFn) {
+	/**
+	 * Shallow comparison of two arrays.
+	 *
+	 * @param a, b
+	 *        The arrays to compare.
+	 * @param equalFn
+	 *        A custom comparison function that accepts two values a and
+	 *        b from the given arrays and returns true or false for
+	 *        equal and not equal respectively.
+	 *
+	 *        If no equalFn is provided, the algorithm will use the strict
+	 *        equals operator.
+	 * @return
+	 *        True if all items in a and b are equal, false if not.
+	 */
+	function equal(a, b, equalFn) {
 		var i = 0, len = a.length;
 		if (len !== b.length) {
 			return false;
 		}
-		if (compFn) {
+		if (equalFn) {
 			for (; i < len; i++) {
-				if (0 !== compFn(a[i], b[i])) {
+				if (!equalFn(a[i], b[i])) {
 					return false;
 				}
 			}
 		} else {
 			for (; i < len; i++) {
-				// Is it a good idea to use loosely typed comparison to
-				// be consistent with sortUnique?
-				if (a[i] != b[i]) {
+				if (a[i] !== b[i]) {
 					return false;
 				}
 			}
