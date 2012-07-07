@@ -949,6 +949,9 @@ define( [
 		 * Activates (displays) this panel
 		 */
 		activate: function (effective) {
+			if (this.isActive) {
+				return;
+			}
 			this.isActive = true;
 			this.content.parent('li').show().removeClass(nsClass('deactivated'));
 			this.effectiveElement = effective;
@@ -961,6 +964,9 @@ define( [
 		 * Hides this panel
 		 */
 		deactivate: function () {
+			if (!this.isActive) {
+				return;
+			}
 			this.isActive = false;
 			this.content.parent('li').hide().addClass(nsClass('deactivated'));
 			this.effectiveElement = null;
