@@ -129,6 +129,8 @@ define([
 	 * @return void
 	 */
 	TablePlugin.init = function() {
+		var that = this,
+		    isEnabled = {};
 
 		// apply settings
 		this.tableConfig = this.checkConfig(this.tableConfig||this.settings.tableConfig);
@@ -138,10 +140,10 @@ define([
 		// add reference to the create layer object
 		this.createLayer = new CreateLayer( this );
 
-		var that = this;
-
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
-		Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
+		Aloha.bind( 'aloha-editable-created', function (event, editable) {
+			var config = that.getEditableConfig(editable.obj);
+			isEnabled[editable.getId()] = (-1 !== jQuery.inArray('table', config));
 
 			// add a mousedown event to all created editables to check if focus leaves a table
 			editable.obj.bind( 'mousedown', function ( jqEvent ) {
@@ -200,38 +202,32 @@ define([
 
 		Aloha.bind( 'aloha-selection-changed', function (event, rangeObject) {
 			// this case probably occurs when the selection is empty?
-			if ( null == rangeObject.startContainer ) {
+			if (!rangeObject.startContainer || !Aloha.activeEditable) {
 				return;
 			}
 
-			if (Aloha.activeEditable) {
-				// get Plugin configuration
-				var config = that.getEditableConfig( Aloha.activeEditable.obj );
+			// show hide buttons regarding configuration and DOM position
+			if (isEnabled[Aloha.activeEditable.getId()] && Aloha.Selection.mayInsertTag('table') ) {
+				ComponentState.setState('createTable', 'show', true);
+			} else {
+				ComponentState.setState('createTable', 'show', false);
+			}
 
-				// show hide buttons regarding configuration and DOM position
-				if ( jQuery.inArray('table', config) != -1  && Aloha.Selection.mayInsertTag('table') ) {
-					ComponentState.setState('createTable', 'show', true);
-				} else {
-					ComponentState.setState('createTable', 'show', false);
-				}
+			if (!that.activeTable) {
+				return;
+			}
 
-				var table = rangeObject.findMarkup(function () {
-					return this.nodeName.toLowerCase() == 'table';
-				}, Aloha.activeEditable.obj);
-
-				if ( that.activeTable ) {
-					// check wheater we are inside a table
-					if ( table ) {
-						TablePlugin.updateFloatingMenuScope();
-					} else {
-						//reset cell selection flags
-						that.activeTable.selection.cellSelectionMode = false; 
-						that.activeTable.selection.baseCellPosition = null;
-						that.activeTable.selection.lastSelectionRange = null; 
-						
-						that.activeTable.focusOut();
-					}
-				}
+			// check wheater we are inside a table
+			var table = rangeObject.findMarkup(function() {
+				return this.nodeName === 'TABLE';
+			}, Aloha.activeEditable.obj);
+			if (table) {
+				TablePlugin.updateFloatingMenuScope();
+			} else {
+				that.activeTable.selection.cellSelectionMode = false; 
+				that.activeTable.selection.baseCellPosition = null;
+				that.activeTable.selection.lastSelectionRange = null; 
+				that.activeTable.focusOut();
 			}
 		});
 
