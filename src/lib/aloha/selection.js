@@ -20,13 +20,9 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'aloha/ecma5shims', 'aloha/rangy-core' ],
-function(Aloha, jQuery, Class, Range, $_) {
-	var
-//		$ = jQuery,
-//		Aloha = window.Aloha,
-//		Class = window.Class,
-		GENTICS = window.GENTICS;
+[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/ecma5shims', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * @namespace Aloha
@@ -589,55 +585,10 @@ function(Aloha, jQuery, Class, Range, $_) {
 		 * @return true if objects are equal and false if not
 		 * @hide
 		 */
-		standardAttributesComparator: function(domobj, markupObject) {
-			var i, attr, classString, classes, classes2, classLength, attrLength, domAttrLength;
-
-			// Cloning the domobj works around an IE7 bug that crashes
-			// the browser. The exact place where IE7 crashes is when
-			// the domobj.attribute[i] is read below.
-			// The bug can be reproduced with an editable that contains
-			// some text and and image, by clicking inside and outside the
-			// editable a few times.
-			domobj = domobj.cloneNode(false);
-
-			if (domobj.attributes && domobj.attributes.length && domobj.attributes.length > 0) {
-				for (i = 0, domAttrLength = domobj.attributes.length; i < domAttrLength; i++) {
-					// Dereferencing attributes[i] here would crash IE7 if domobj were not cloned above
-					attr = domobj.attributes[i];
-					if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
-						classString = attr.nodeValue;
-						classes = classString.split(' ');
-					}
-				}
-			}
-
-			if (markupObject[0].attributes && markupObject[0].attributes.length && markupObject[0].attributes.length > 0) {
-				for (i = 0, attrLength = markupObject[0].attributes.length; i < attrLength; i++) {
-					attr = markupObject[0].attributes[i];
-					if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
-						classString = attr.nodeValue;
-						classes2 = classString.split(' ');
-					}
-				}
-			}
-
-			if (classes && !classes2 || classes2 && !classes) {
-				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because one element has classes and the other has not');
-				return false;
-			}
-			if (classes && classes2 && classes.length != classes2.length) {
-				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of a different amount of classes');
-				return false;
-			}
-			if (classes && classes2 && classes.length === classes2.length && classes.length !== 0) {
-				for (i = 0, classLength = classes.length; i < classLength; i++) {
-					if (!markupObject.hasClass(classes[ i ])) {
-						Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of different classes');
-						return false;
-					}
-				}
-			}
-			return true;
+		standardAttributesComparator: function(domobj, markupObject) {			
+			var classesA = Strings.wordList((domobj && domobj.className) || '');
+			var classesB = Strings.wordList((markupObject.length && markupObject[0].className) || '');
+			return Arrays.equalSets(classesA, classesB);
 		},
 
 		/**
