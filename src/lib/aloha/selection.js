@@ -541,11 +541,10 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 		 */
 		standardTagNameComparator : function(domobj, markupObject) {
 			if  (domobj.nodeType === 1) {
-				if (domobj.tagName.toLowerCase() != markupObject[0].tagName.toLowerCase()) {
-					//			Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> and <' + markupObject[0].tagName.toLowerCase() + '> failed because tags are different');
+				if (domobj.nodeName != markupObject[0].nodeName) {
 					return false;
 				}
-				return true;//domobj.attributes.length
+				return true;
 			} else {
 				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
 			}
@@ -561,16 +560,14 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 		 * @hide
 		 */
 		standardTextLevelSemanticsComparator: function(domobj, markupObject) {
-			// only element nodes can be compared
 			if  (domobj.nodeType === 1) {
-				if (domobj.tagName.toLowerCase() != markupObject[0].tagName.toLowerCase()) {
-		//			Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> and <' + markupObject[0].tagName.toLowerCase() + '> failed because tags are different');
+				if (domobj.nodeName != markupObject[0].nodeName) {
 					return false;
 				}
 				if (!this.standardAttributesComparator(domobj, markupObject)) {
 					return false;
 				}
-				return true;//domobj.attributes.length
+				return true;
 			} else {
 				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
 			}
