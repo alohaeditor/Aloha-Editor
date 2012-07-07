@@ -1,4 +1,5 @@
 define(['jquery'],function($){
+	'use strict';
 
 	function wordList(str) {
 		// "  x  ".split(/\s/) -> ["", "x", ""] (Chrome)
