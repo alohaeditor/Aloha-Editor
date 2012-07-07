@@ -695,41 +695,41 @@ define( [
 		// now and check whether the selection was placed within a
 		// editable area.
 		if (   !that.ignoreNextSelectionChangedEvent
-			   && Aloha.Selection.isSelectionEditable()
-			   && Aloha.activeEditable != null ) {
+			&& Aloha.Selection.isSelectionEditable()
+			&& Aloha.activeEditable != null ) {
 			
-			foundMarkup = that.findLinkMarkup( rangeObject );
+			foundMarkup = that.findLinkMarkup(rangeObject);
 			
-			if ( foundMarkup ) {
-				that.toggleLinkScope( true );
+			if (foundMarkup) {
+				that.toggleLinkScope(true);
 				
 				Scopes.activateTabOfButton('editLink');
 
 				// now we are ready to set the target object
-				that.hrefField.setTargetObject( foundMarkup, 'href' );
+				that.hrefField.setTargetObject(foundMarkup, 'href');
 
 				// if the selection-changed event was raised by the first click interaction on this page
 				// the hrefField component might not be initialized. When the user switches to the link
 				// tab to edit the link the field would be empty. We check for that situation and add a
 				// special interval check to set the value once again
-				if ( jQuery( '#' + that.hrefField.getInputId() ).length == 0 ) {
+				if (jQuery('#' + that.hrefField.getInputId()).length == 0) {
 					// there must only be one update interval running at the same time
-					if ( that.hrefUpdateInt !== null ) {
-						clearInterval( that.hrefUpdateInt );
+					if (that.hrefUpdateInt !== null) {
+						clearInterval(that.hrefUpdateInt);
 					}
 					
 					// register a timeout that will set the value as soon as the href field was initialized
 					that.hrefUpdateInt = setInterval( function () {
-						if ( jQuery( '#' + that.hrefField.getInputId() ).length > 0 ) { // the object was finally created
-							that.hrefField.setTargetObject( foundMarkup, 'href' );
-							clearInterval( that.hrefUpdateInt );
+						if (jQuery( '#' + that.hrefField.getInputId()).length > 0) { // the object was finally created
+							that.hrefField.setTargetObject(foundMarkup, 'href');
+							clearInterval(that.hrefUpdateInt);
 						}
-					}, 200 );
+					}, 200);
 				}
-				Aloha.trigger( 'aloha-link-selected' );
+				Aloha.trigger('aloha-link-selected');
 			} else {
 				that.toggleLinkScope(false);
-				that.hrefField.setTargetObject( null );
+				that.hrefField.setTargetObject(null);
 				Aloha.trigger('aloha-link-unselected');
 			}
 		} else {
