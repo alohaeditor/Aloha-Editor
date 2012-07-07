@@ -369,7 +369,7 @@ define( [
 				}
 			});
 
-			Component.define("insertLink", ToggleButton, {
+			Component.define("insertLink", Button, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
 				scope: 'Aloha.continuoustext',
