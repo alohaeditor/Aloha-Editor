@@ -127,7 +127,8 @@
                      
                      In particular, the Aloha block handles now have
                      z-index 10000, the floating menu has 10100, and
-                     Aloha dialogs have 10200.
+                     Aloha dialogs have 10200. The sidebar continus to
+                     have a z-index of 999999999.
 
                      The new common/ui plugin is now required for the
                      user interface to be shown. This plugin is not
