@@ -2,9 +2,9 @@ define(['jquery'],function($){
 
 	function wordList(str) {
 		// "  x  ".split(/\s/) -> ["", "x", ""] (Chrome)
-		var list = $.trim(str).split(/\s/);
+		var list = $.trim(str).split(/\s+/);
 		// "".split(/\s/) -> [""] (Chrome)
-		return (!list.length && list[0] === "") ? [] : list;
+		return (list.length && list[0] === "") ? [] : list;
 	}
 
 	return {
