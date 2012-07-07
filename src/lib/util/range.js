@@ -156,38 +156,11 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 */
 	getContainerParents: function (limit, fromEnd) {
 		// TODO cache the calculated parents
-		var container = fromEnd ? this.endContainer : this.startContainer,
-		    parents,
-		    cur;
-
+		var container = fromEnd ? this.endContainer : this.startContainer;
 		if (!container) {
 			return false;
 		}
-
-		if (limit) {
-			limit = limit[0];
-		} else {
-			limit = document.body;
-		}
-
-		parents = [];
-		if (1 === container.nodeType) {
-			cur = container;
-		} else {
-			cur = container.parentNode;
-		}
-
-		for (;;) {
-			if (!cur || cur === limit || 9 === cur.nodeType) {
-				break;
-			}
-			if (1 === cur.nodeType) {
-				parents.push(cur);
-			}
-			cur = cur.parentNode;
-		}
-
-		return jQuery(parents);
+		return jQuery(selfAndParentsUntil(container, limit ? limit[0] : null));
 	},
 
 	/**
@@ -830,16 +803,17 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	findMarkup: function (comparator, limit, atEnd) {
-		var parents = this.getContainerParents(limit, atEnd),
-			returnValue = false;
-		jQuery.each(parents, function (index, domObj) {
-			if (comparator.apply(domObj)) {
-				returnValue = domObj;
-				return false;
+		var container = atEnd ? this.endContainer : this.startContainer,
+		    limit = limit ? limit[0] : null,
+		    parents = selfAndParentsUntil(container, limit),
+		    i,
+		    len;
+		for (i = 0, len = parents.length; i < len; i++) {
+			if (comparator.apply(parents[i])) {
+				return parents[i];
 			}
-		});
-
-		return returnValue;
+		}
+		return false;
 	},
 
 	/**
@@ -919,5 +893,25 @@ GENTICS.Utils.RangeTree = Class.extend({
 	children: []
 });
 	
+	function selfAndParentsUntil(container, limit) {
+		var parents = [],
+		    cur;
+		if (1 === container.nodeType) {
+			cur = container;
+		} else {
+			cur = container.parentNode;
+		}
+		for (;;) {
+			if (!cur || cur === limit || 9 === cur.nodeType) {
+				break;
+			}
+			if (1 === cur.nodeType) {
+				parents.push(cur);
+			}
+			cur = cur.parentNode;
+		}
+		return parents;
+	}
+
 	return GENTICS.Utils.RangeObject;
 });
