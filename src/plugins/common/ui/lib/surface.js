@@ -88,20 +88,8 @@ define([
 			// When an editable is activated, we show its associated surfaces.
 			Aloha.bind( 'aloha-editable-activated', function( event, alohaEvent ) {
 				Surface.active = alohaEvent.editable;
-				Surface.show( alohaEvent.editable );
-
-				// The range isn't set until after the activated event and
-				// selection-changed doesn't fire on activation.  So we
-				// "yeild."
-				setTimeout( function() {
-					if ( ! Surface.active ) {
-						return;
-					}
-					var selection = Aloha.getSelection();
-					if (0 < selection.getRangeCount()) {
-						Container.showContainers( Surface.active, selection.getRangeAt( 0 ) );
-					}
-				}, 1 );
+				Surface.show(alohaEvent.editable);
+				Container.showContainersForContext(Surface.active);
 			});
 
 			// When an editable is deactivated, we hide its associated surfaces.

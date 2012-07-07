@@ -41,10 +41,10 @@ define([
 	 * @param {function} showOn The function whose id we wish to get.
 	 * @return {number} The id of the given function.
 	 */
-	function getShowOnId( showOn ) {
+	function getShowOnId(showOn) {
 		// Store a unique id on the showOn function.
 		// See full explanation at top of file.
-		if ( !showOn.showOnId ) {
+		if (!showOn.showOnId) {
 			showOn.showOnId = ++uid;
 		}
 		return showOn.showOnId;
@@ -57,15 +57,16 @@ define([
 	 *                                       on.
 	 * @param {boolean} show Whether to show or hide the given containers.
 	 */
-	function toggleContainers( containers, show ) {
+	function toggleContainers(containers, show) {
 		var action = show ? 'show' : 'hide';
 		var j = containers.length;
-		while ( j ) {
-			containers[ --j ][ action ]();
+		while (j) {
+			containers[--j][action]();
 		}
 	}
 
-	var stringFns = [];
+	var scopeFns = {};
+
 	var returnTrue = function() {
 		return true;
 	};
@@ -80,26 +81,13 @@ define([
 		switch( jQuery.type( showOn ) ) {
 		case 'function':
 			return showOn;
-		case 'string':
-			if ( !stringFns[ showOn ] ) {
-				stringFns[ showOn ] = function( el, ev ) {
-					return el ? jQuery( el ).is( showOn ) : false;
-				};
-			}
-			return stringFns[ showOn ];
 		case 'object':
 			if (showOn.scope) {
-				return function(){
-					if (typeof jQuery.type(showOn.scope) === 'array') {
-						for (var i = 0; i < showOn.scope.length; i++) {
-							if (Scopes.isActiveScope(showOn.scope[i])) {
-								return true;
-							}
-						}
-						return false;
-					} else {
-						return Scopes.isActiveScope(showOn.scope);
-					}
+				if (scopeFns[showOn.scope]) {
+					return scopeFns[showOn.scope];
+				}
+				return scopeFns[showOn.scope] = function() {
+					return Scopes.isActiveScope(showOn.scope);
 				};
 			} else {
 				throw "Invalid showOn configuration";
@@ -133,20 +121,20 @@ define([
 		_constructor: function( settings ) {
 			var editable = this.editable = settings.editable;
 
-			if ( !editable.containers ) {
+			if (!editable.containers) {
 				editable.containers = [];
 			}
 
 			var showOn = normalizeShowOn(this, settings.showOn);
-			var key = getShowOnId( showOn );
-			var group = editable.containers[ key ];
-			if ( !group ) {
-				group = editable.containers[ key ] = {
+			var key = getShowOnId(showOn);
+			var group = editable.containers[key];
+			if (!group) {
+				group = editable.containers[key] = {
 					shouldShow: showOn,
 					containers: []
 				};
 			}
-			group.containers.push( this );
+			group.containers.push(this);
 		},
 
 		// must be implemented by extending classes
@@ -158,65 +146,26 @@ define([
 
 	jQuery.extend( Container, {
 		/**
-		 * Given a range, show appropriate containers.
-		 *
-		 * @param {object} editable Active editable
-		 * @param {object} range The range to show containers for
-		 * @static
-		 */
-		showContainers: function( editable, range ) {
-			// Add a null object to the elements array so that we can test
-			// whether the panel should be activated when we have no effective
-			// elements in the current selection.
-			var elements = [ null ];
-			var element;
-			var isEditingHost = GENTICS.Utils.Dom.isEditingHost;
-			for ( element = range.startContainer; element && !isEditingHost( element );
-			      element = element.parentNode ) {
-				elements.push( element );
-			}
-			Container.showContainersForContext( editable, elements );
-		},
-
-		/**
 		 * Given an array of elements, show appropriate containers.
 		 *
 		 * @param {object} editable Active editable
-		 * @param {object} elements An array of elements to show containers for
 		 * @param {string} eventType Type of the event triggered (optional)
 		 * @static
 		 */
-		showContainersForContext: function(editable, elements, eventType) {
-			if ( ! editable.containers ) {
+		showContainersForContext: function(editable, eventType) {
+			var group,
+			    groupKey,
+			    containerGroups;
+			if (!editable.containers) {
 				// No containers were constructed for the given editable, so
 				// there is nothing for us to do.
 				return;
 			}
-
-			// Add a null object to the elements array so that we can test
-			// whether the panel should be activated when we have no effective
-			// elements in the current selection.
-			var elements = elements || [ null ];
-			var element;
-			var isEditingHost = GENTICS.Utils.Dom.isEditingHost;
-			var group;
-			var groupKey;
-			var show;
-			var j;
-			var containerGroups = editable.containers;
-
-			for ( groupKey in containerGroups ) {
-				if ( containerGroups.hasOwnProperty( groupKey ) ) {
-					show = false;
-					group = containerGroups[ groupKey ];
-					j = elements.length;
-					while ( j ) {
-						if ( group.shouldShow( elements[ --j ], eventType ) ) {
-							show = true;
-							break;
-						}
-					}
-					toggleContainers( group.containers, show );
+			containerGroups = editable.containers;
+			for (groupKey in containerGroups) {
+				if (containerGroups.hasOwnProperty(groupKey)) {
+					group = containerGroups[groupKey];
+					toggleContainers(group.containers, group.shouldShow(eventType));
 				}
 			}
 		}
@@ -224,7 +173,7 @@ define([
 
 	PubSub.sub('aloha.ui.scope.change', function(){
 		if (Aloha.activeEditable) {
-			Container.showContainersForContext(Aloha.activeEditable, null, null);
+			Container.showContainersForContext(Aloha.activeEditable, null);
 		}
 	});
 
