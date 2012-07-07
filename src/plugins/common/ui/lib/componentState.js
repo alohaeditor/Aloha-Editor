@@ -24,8 +24,12 @@ define(['PubSub'],function(PubSub){
 
 
 	function setState(componentName, stateType, stateValue) {
-		state[componentName + '/' + stateType] = stateValue;
-		PubSub.pub('aloha-ui-component-state-change.' + componentName, {state: stateType});
+		var key = componentName + '/' + stateType,
+		    curValue = state[key];
+		if (curValue !== stateValue) {
+			state[key] = stateValue;
+			PubSub.pub('aloha-ui-component-state-change.' + componentName, {state: stateType});
+		}
 	}
 
 	function getState(componentName, stateType) {
