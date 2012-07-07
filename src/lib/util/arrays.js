@@ -61,18 +61,8 @@ define([],function(){
 		return true;
 	}
 
-	function equalSets(a, b, compFn) {
-		var i, len;
-		a = a.slice();
-		b = b.slice();
-		sortUnique(a, compFn);
-		sortUnique(b, compFn);
-		return equal(a, b, compFn);
-	}
-
 	return {
 		'sortUnique': sortUnique,
-		'equalSets': equalSets,
 		'equal': equal
 	};
 });
