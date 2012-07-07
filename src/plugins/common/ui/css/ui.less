@@ -204,7 +204,7 @@
 	right: 0.4em;
 	width: 20px;
 	height: 10px;
-	background: url('http://aloha-editor.org/builds/hotfix/latest/src/img/pin.png') no-repeat;
+	background: url('../../../../img/pin.png') no-repeat;
 	cursor: pointer;
 }
 .aloha-ui-toolbar .aloha-ui-pin-down {
@@ -409,10 +409,10 @@
 .aloha-icon-strong { background-image: url(../img/strong.png); }
 
 .aloha-icon-indent {
-	background: url(http://aloha-editor.org/builds/hotfix/latest/src/img/text_indent.png) no-repeat center center;
+	background: url(../../../../img/text_indent.png) no-repeat center center;
 }
 .aloha-icon-outdent {
-	background: url(http://aloha-editor.org/builds/hotfix/latest/src/img/text_indent_remove.png) no-repeat center center;
+	background: url(../../../../img/text_indent_remove.png) no-repeat center center;
 }
 
 /* === inline icons (<img> instead of class) === */
@@ -482,22 +482,12 @@
 
 /** jquery-ui icons used by Aloha **/
 
-/**
- * Use a separate class for jqueryui icons used by aloha so that there
- * is no contention between the aloha-icon class and the
- * ui-button-icon-primary class which both define a background image. It's
- * difficult to give the aloha-icon higher priority since there are no
- * guarantees in which order the plugins are included.  */
-.aloha-jqueryui-icon { 
-	background-image: url(../img/jqueryui/ui-icons_222222_256x240.png);
-}
-.ui-icon-carat-1-e {
-	background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat -30px -16px;
-}
 
-
-/** icon-triangle is used by the ribbon plugin for the drop down icon **/
+/* TODO take the two icons out from the jqueryui sprite and merge with other icons into an aloha specific sprite **/
+.aloha-jqueryui-icon { background-image: url(../img/jqueryui/ui-icons_222222_256x240.png); }
+/* triangle and carat are used by the ribbon plugin for the drop down and expand icons */
 .ui-icon-triangle-1-s { background-position: -64px -16px; }
+.ui-icon-carat-1-e { background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat -30px -16px; }
 
 .aloha-multisplit {
 	position: relative;
