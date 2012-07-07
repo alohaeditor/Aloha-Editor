@@ -156,38 +156,38 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 */
 	getContainerParents: function (limit, fromEnd) {
 		// TODO cache the calculated parents
-		var
-			container = fromEnd ? this.endContainer : this.startContainer,
-			parents, limitIndex,
-			i;
+		var container = fromEnd ? this.endContainer : this.startContainer,
+		    parents,
+		    cur;
 
 		if (!container) {
 			return false;
 		}
 
-		if ( typeof limit === 'undefined' || ! limit ) {
-			limit = jQuery('body');
-		}
-
-		
-		if (container.nodeType == 3) {
-			parents = jQuery(container).parents();
+		if (limit) {
+			limit = limit[0];
 		} else {
-			parents = jQuery(container).parents();
-			for (i = parents.length; i > 0; --i) {
-				parents[i] = parents[i - 1];
+			limit = document.body;
+		}
+
+		parents = [];
+		if (1 === container.nodeType) {
+			cur = container;
+		} else {
+			cur = container.parentNode;
+		}
+
+		for (;;) {
+			if (!cur || cur === limit || 9 === cur.nodeType) {
+				break;
 			}
-			parents[0] = container;
+			if (1 === cur.nodeType) {
+				parents.push(cur);
+			}
+			cur = cur.parentNode;
 		}
 
-		// now slice this array
-		limitIndex = parents.index(limit);
-
-		if (limitIndex >= 0) {
-			parents = parents.slice(0, limitIndex);
-		}
-
-		return parents;
+		return jQuery(parents);
 	},
 
 	/**
