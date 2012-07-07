@@ -295,36 +295,36 @@ define([
 			});
 
 			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
-				var buttons = jQuery( 'button' + nsSel( 'button' ) ); // not used?
+				var buttons = jQuery('button.aloha-cite-button');
 
 				// Set to false to prevent multiple buttons being active
 				// when they should not.
 				var statusWasSet = false;
-				var tagName;
+				var nodeName;
 				var effective = rangeObject.markupEffectiveAtStart;
 				var i = effective.length;
 
 				// Check whether any of the effective items are citation
 				// tags.
 				while ( i ) {
-					tagName = effective[ --i ].tagName.toLowerCase();
-					if ( tagName === 'q' || tagName === 'blockquote' ) {
+					nodeName = effective[ --i ].nodeName;
+					if (nodeName === 'Q' || nodeName === 'BLOCKQUOTE') {
 						statusWasSet = true;
 						break;
 					}
 				}
 
-				buttons.filter( nsSel( 'block-button' ) )
-					.removeClass( nsClass( 'pressed' ) );
+				buttons.filter('.aloha-cite-block-button')
+					.removeClass('aloha-cite-pressed');
 
 				ComponentState.setState('quote', 'state', false);
 
 				if ( statusWasSet ) {
-					if( 'q' === tagName ) {
+					if('Q' === nodeName) {
 						ComponentState.setState('quote', 'state', true);
 					} else {
-						buttons.filter( nsSel( 'block-button' ) )
-							.addClass( nsClass( 'pressed' ) );
+						buttons.filter('.aloha-cite-block-button')
+							.addClass('aloha-cite-pressed');
 					}
 
 					// We've got what we came for, so return false to break
