@@ -70,22 +70,6 @@ define([],function(){
 		return equal(a, b, compFn);
 	}
 
-	function assert(x) {
-		if (!x) {
-			throw "error";
-		}
-	}
-
-	/* Tests
-	assert(equalSets([1, "x", 2, "9", "2", 9], ["9", 2, "x", "2", 1]));
-	assert(equalSets([], []));
-	assert(!equalSets([1, "x", 2, "2"], [1, "x", 2, "2", 9]));
-	assert(!equalSets([0], []));
-	assert(equal([1, 2, 3], [1, 2, 3]));
-	assert(equal([], []));
-	assert(!equal([1, 3, 2], [1, 2, 3]));
-	*/
-
 	return {
 		'sortUnique': sortUnique,
 		'equalSets': equalSets,
