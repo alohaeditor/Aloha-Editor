@@ -27,17 +27,17 @@ define([
 			var editable = this.editable;
 			var multiSplit = this;
 			var element = this.element = $('<div>', {
-					'class': 'aloha-multisplit'
-				});
+				'class': 'aloha-multisplit'
+			});
 			var content = this.contentElement = $('<div>', {
-					'class': 'aloha-multisplit-content'
-				}).appendTo(element);
+				'class': 'aloha-multisplit-content'
+			}).appendTo(element);
 			var toggle = this.toggleButton = Utils.makeButtonElement({
-					'class': 'aloha-multisplit-toggle',
-					click: function () {
-						multiSplit.toggle();
-					}
-				}).button().appendTo(element);
+				'class': 'aloha-multisplit-toggle',
+				click: function () {
+					multiSplit.toggle();
+				}
+			}).button().appendTo(element);
 
 			this.buttons = [];
 
@@ -62,7 +62,8 @@ define([
 				multiSplit.buttons.push({
 					settings: button,
 					component: component,
-					element: component.element
+					element: component.element,
+					active: false
 				});
 
 				return component.element[0];
@@ -92,19 +93,17 @@ define([
 		 * @override
 		 */
 		selectionChange: function () {
-			var content = this.contentElement;
-			this.element.find('.aloha-multisplit-active')
-				.removeClass('aloha-multisplit-active');
-			if (!content.is(':visible')) {
-				return;
-			}
-			$.each(this.buttons, function () {
-				if (this.settings.isActive()) {
-					this.element.addClass('aloha-multisplit-active');
-					content.css('top', -this.element.position().top);
-					return false;
+			var buttons = this.buttons,
+			    button,
+			    active;
+			for (var i = 0; i < buttons.length; i++) {
+				button = buttons[i];
+				active = button.settings.isActive();
+				if (active !== button.active) {
+					button.active = active;
+					button.element.toggleClass('aloha-multisplit-active');
 				}
-			});
+			}
 		},
 
 		/**
