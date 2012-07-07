@@ -141,14 +141,9 @@
                      Many plugins exposed buttons, attribute-field and
                      multi-split-button components as non-private
                      members. For example, as in the case of the cite
-                     plugin, buttons were pushed from other plugins onto
-                     the multi-split-button of the Format plugin. This
-                     many of these component properties were
-                     removed. Even if the non-private property still
-                     exists. For this reason plugins must be refactored
-                     so that they do not depend on the user interface of
-                     other plugins. Any non-private component properties
-                     may be removed at some time in the future.
+                     plugin, buttons were pushed onto the exposed
+                     multi-split-button of the Format plugin. Most of
+                     these exposed components were removed.
 
                      The removal of the Ext.* namespace and the ExtJs
                      css may inadvertently affect the behaviour and
@@ -156,8 +151,8 @@
 
                      In particular the trim() function on the String
                      object was provided by ExtJs for older versions of
-                     IE. Since ExtJs is gone, this function will now
-                     probably cause errors on older versions of
+                     IE. Since ExtJs is gone, calling this function will
+                     now probably cause errors on older versions of
                      IE. jQuery.trim() may be used as an alternative.
 
 - **MANUAL CHANGE**: The following files have been removed
