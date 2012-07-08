@@ -124,21 +124,25 @@ define([
 					me.applyButtonConfig(params.editable.obj);
 
 					// handle hotKeys
-					params.editable.obj.bind( 'keydown', me.hotKey.formatBold, function() { me.addMarkup( 'b' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatItalic, function() { me.addMarkup( 'i' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatParagraph, function() { me.changeMarkup( 'p' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH1, function() { me.changeMarkup( 'h1' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH2, function() { me.changeMarkup( 'h2' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH3, function() { me.changeMarkup( 'h3' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH4, function() { me.changeMarkup( 'h4' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH5, function() { me.changeMarkup( 'h5' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH6, function() { me.changeMarkup( 'h6' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatPre, function() { me.changeMarkup( 'pre' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatDel, function() { me.addMarkup( 'del' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatSub, function() { me.addMarkup( 'sub' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatSup, function() { me.addMarkup( 'sup' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatBold, function() { me.addMarkup( 'b' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatItalic, function() { me.addMarkup( 'i' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatParagraph, function() { me.changeMarkup( 'p' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH1, function() { me.changeMarkup( 'h1' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH2, function() { me.changeMarkup( 'h2' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH3, function() { me.changeMarkup( 'h3' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH4, function() { me.changeMarkup( 'h4' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH5, function() { me.changeMarkup( 'h5' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH6, function() { me.changeMarkup( 'h6' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatPre, function() { me.changeMarkup( 'pre' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatDel, function() { me.addMarkup( 'del' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatSub, function() { me.addMarkup( 'sub' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatSup, function() { me.addMarkup( 'sup' ); return false; });
 				});
 
+
+				Aloha.bind('aloha-editable-deactivated',function (e, params) {
+					params.editable.obj.unbind('keydown.aloha.format');
+				});
 			},
 
 			/**
