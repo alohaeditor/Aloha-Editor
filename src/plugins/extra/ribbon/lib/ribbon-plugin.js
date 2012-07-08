@@ -8,12 +8,14 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/menuButton',
+	'ui/utils',
 	'aloha/jquery-ui',
 	'css!./css/ribbon.css'
 ], function (
 	$,
 	Plugin,
-	MenuButton
+	MenuButton,
+	Utils
 ) {
 	'use strict';
 
@@ -27,10 +29,9 @@ define([
 
 			var that = this;
 			this._visible = false;
-            this._toolbar = $('<div class="aloha-ribbon-toolbar ui-menubar \
-				ui-widget-header ui-helper-clearfix">');
+            this._toolbar = $('<div>', {'class': 'aloha-ribbon-toolbar ui-menubar ui-widget-header ui-helper-clearfix'});
 
-			var fadeIn = $('<button class="aloha-ribbon-in">')
+			var fadeIn = Utils.makeButtonElement({'class': 'aloha-ribbon-in'})
 				.button()
 				.hide()
 				.click(function () {
@@ -42,7 +43,7 @@ define([
 				})
 			    .appendTo(this._toolbar);
 
-			var fadeOut = $('<button class="aloha-ribbon-out">')
+			var fadeOut = Utils.makeButtonElement({'class': 'aloha-ribbon-out'})
 				.button()
 				.click(function () {
 					that._toolbar.animate({
@@ -55,7 +56,7 @@ define([
 				})
 				.appendTo(this._toolbar);
 
-			var wrapper = $('<div class="aloha aloha-ribbon">')
+			var wrapper = $('<div>', {'class': 'aloha aloha-ribbon'})
 				.appendTo('body');
 
 			this._icon = $('<div>').prependTo(this._toolbar);
