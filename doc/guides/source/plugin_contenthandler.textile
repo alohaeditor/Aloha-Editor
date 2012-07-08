@@ -75,7 +75,7 @@ h4. Writing your own Content Handler
 
 <javascript>
 	define(
-	['aloha', 'aloha/jquery', 'aloha/contenthandlermanager'],
+	['aloha', 'jquery', 'aloha/contenthandlermanager'],
 	function(Aloha, jQuery, ContentHandlerManager) {
 		"use strict";
 	

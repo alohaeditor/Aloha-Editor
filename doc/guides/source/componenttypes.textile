@@ -29,7 +29,7 @@ The button component type resembles a simple button input element, that can be c
 The Button Component must provide a +click+ method to handle user clicks. Here's an example implementation:
 
 <javascript>
-define([ 'aloha/jquery', 'ui/ui' ],
+define([ 'jquery', 'ui/ui' ],
 function ( jQuery, Ui ) {
 
 	// The button component type creates a simple button.
