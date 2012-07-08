@@ -287,7 +287,7 @@ define([
 							});
 							that.buttons[button] = {
 								type: componentName,
-								'markup' : jQuery('<'+button+'></'+button+'>').attr('class', button_config)
+								'markup' : jQuery('<'+button+'>').attr('class', button_config ? button_config : '')
 							};
 							break;
 
