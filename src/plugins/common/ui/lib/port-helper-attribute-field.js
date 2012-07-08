@@ -306,6 +306,7 @@ define([
 				setValue($(targetObject).attr(targetAttribute));
 			} else {
 				setValue('');
+				return;
 			}
 
 			// check whether a repository item is linked to the object
