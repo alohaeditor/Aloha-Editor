@@ -396,6 +396,16 @@ define([
 		}
 	};
 
+	function applyKeyHandler(handler, context, args, event) {
+		// Don't fire in text-accepting inputs that we didn't directly bind to
+		if ( context !== event.target
+			 && (/textarea|select/i.test( event.target.nodeName )
+				 || event.target.type === "text") ) {
+			return;
+		}
+		return handler.apply(context, args);
+	}
+
 	function keyHandler( handleObj ) {
 		// Only care when a possible input has been specified
 		if ( typeof handleObj.data !== "string" ) {
@@ -403,21 +413,23 @@ define([
 		}
 
 		var origHandler = handleObj.handler,
-			keys = handleObj.data.toLowerCase().split(" ");
+		    keys = handleObj.data.toLowerCase().split(" "),
+		    handle = {};
 
-		handleObj.handler = function ( event ) {
-			// Don't fire in text-accepting inputs that we didn't directly bind to
-			// Don't fire in contentEditable true elements
-			if ( this !== event.target && (/textarea|select/i.test( event.target.nodeName ) ||
-				event.target.contentEditable !== true ||
-				event.target.type === "text") ) {
+		for (var i = 0; i < keys.length; i++) {
+			handle[keys[i]] = true;
+		}
+
+		handleObj.handler = function(event) {
+
+            if (this !== event.target && !event.target.contentEditable) {
 				return;
 			}
 
 			// Keypress represents characters, not special keys
 			var special = event.type !== "keypress" && jQuery.hotkeys.specialKeys[ event.which ],
-				character = String.fromCharCode( event.which ).toLowerCase(),
-				key, modif = "", possible = {};
+			    modif = "",
+			    character;
 
 			// check combinations (alt|ctrl|shift+anything)
 			if ( event.altKey && special !== "alt" ) {
@@ -438,21 +450,25 @@ define([
 			}
 
 			if ( special ) {
-				possible[ modif + special ] = true;
-
+				if (handle[modif + special]) {
+					return applyKeyHandler(origHandler, this, arguments, event);
+				}
 			} else {
-				possible[ modif + character ] = true;
-				possible[ modif + jQuery.hotkeys.shiftNums[ character ] ] = true;
+				character = String.fromCharCode(event.which).toLowerCase();
+
+				if (handle[modif + character]) {
+					return applyKeyHandler(origHandler, this, arguments, event);
+				}
+
+				if (handle[modif + jQuery.hotkeys.shiftNums[character]]) {
+					return applyKeyHandler(origHandler, this, arguments, event);
+				}
 
 				// "$" can be triggered as "Shift+4" or "Shift+$" or just "$"
-				if ( modif === "shift+" ) {
-					possible[ jQuery.hotkeys.shiftNums[ character ] ] = true;
-				}
-			}
-
-			for ( var i = 0, l = keys.length; i < l; i++ ) {
-				if ( possible[ keys[i] ] ) {
-					return origHandler.apply( this, arguments );
+				if (modif === "shift+") {
+					if (handle[jQuery.hotkeys.shiftNums[character]]) {
+						return applyKeyHandler(origHandler, this, arguments, event);
+					}
 				}
 			}
 		};
