@@ -15,7 +15,8 @@ define([
 	'format/format-plugin',
 	'util/dom',
 	'i18n!cite/nls/i18n',
-	'i18n!aloha/nls/i18n'
+	'i18n!aloha/nls/i18n',
+	'css!cite/css/cite.css'
 ], function CiteClosure(
 	Aloha,
 	jQuery,
@@ -29,8 +30,6 @@ define([
 	i18nCore
 ){
 	'use strict';
-
-	Aloha.require([ 'css!cite/css/cite.css' ]);
 
 	var $ = jQuery,
 		ns  = 'aloha-cite',
