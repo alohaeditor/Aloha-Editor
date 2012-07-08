@@ -2,7 +2,7 @@
                      tagHierarchy
                      replacingElements
                      allowedToStealElements
-                     These properties are now maps of maps instead lists of lists.
+                     These properties are now maps of maps instead of maps of lists.
 
 - **MANUAL CHANGE**: Aloha.define was removed as it didn't serve any purpose
 
