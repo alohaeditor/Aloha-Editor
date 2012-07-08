@@ -1372,6 +1372,30 @@ var tests = {
 		},
 		{	start: '<p>\n\t\t\tf[]oo bar</p>',
 			execResult: '<p> []oo bar</p>'
+		},
+		{	
+			start: '<p>before table</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>[]after table</p>',
+			execResult: '<p>before table</p><p>[]after table</p>'
+		},
+		{	
+			start: '<p>before table</p><div class="aloha-table-wrapper" contenteditable="false"></div>		<p>[]after table</p>',
+			execResult: '<p>before table</p><p>[]after table</p>'
+		},
+		{	
+			start: '<p>before table</p><div class="aloha-table-wrapper" contenteditable="false"></div>	' + "\n" + '	<p>[]after table</p>',
+			execResult: '<p>before table</p><p>[]after table</p>'
+		},
+		{	
+			start: '<p>before table</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>&nbsp;[]after table</p>',
+			execResult: '<p>before table</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>[]after table</p>'
+		},
+		{	
+			start: '<p>before table</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>aft[]er table</p>',
+			execResult: '<p>before table</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>af[]er table</p>'
+		},
+		{
+			start: '<p><b>before table</p><div class="aloha-table-wrapper" contenteditable="false"></div><p><b><i>[]after</i> table</b></p>',
+			execResult: '<p><b>before table</p><p><b><i>[]after</i> table</b></p>'
 		}
 	]
 }

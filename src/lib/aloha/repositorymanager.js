@@ -369,7 +369,9 @@ define( [
 						return;
 					}
 
-					jQuery.merge( allitems, items );
+					if (allitems && items) {
+						jQuery.merge( allitems, items );
+					}
 
 					if ( --numOpenCallbacks === 0 ) {
 						that.getChildrenCallback( callback, allitems, timer );

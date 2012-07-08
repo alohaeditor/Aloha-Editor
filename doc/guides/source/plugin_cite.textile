@@ -54,6 +54,9 @@ Aloha.settings.plugins: {
 };
 </javascript>
 
+NOTE: The @sidebar.open@ config property will accept boolean or 
+string values. Boolean @false@, @'false'@ or @'0'@ will not show the sidebar, 
+@true@ or any other string value will show it.
 
 h3. Further Information
 

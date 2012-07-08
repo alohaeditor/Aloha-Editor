@@ -35,7 +35,7 @@ define([
 			'strong': 'bold',
 			'i': 'italic',
 			'em': 'italic',
-			's': 'strikethrough',
+			'del': 'strikethrough',
 			'sub': 'subscript',
 			'sup': 'superscript'
 		};
@@ -45,61 +45,38 @@ define([
 			'em': 'emphasis'
 		};
 
+	/**
+	 * register the plugin with unique name
+	 */
+	return Plugin.create('format', {
 		/**
-		 * register the plugin with unique name
+		 * Configure the available languages
 		 */
-		return Plugin.create('format', {
-			/**
-			 * Configure the available languages
-			 */
-			languages: ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'],
+		languages: ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'],
 
-			/**
-			 * default button configuration
-			 */
-			config: [ 'strong', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		/**
+		 * default button configuration
+		 */
+		config: [ 'strong', 'em', 'b', 'i', 'del', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
 
-			/*
-			config: { 
-						'em': {
-							'class': {
-								'warn': 'Warning',
-								'ok': 'Success',
-								'error': 'Error',
-							},
-							'aloha-data': {}
-						},
-						'strong': 'big-bold',
-						'b': ['big','small'], 
-						'i': false,
-						'p': [], 
-						'h1': {}, 
-						'h2': null, 
-						'h3': 'subheadline', 
-						'removeFormat': true
-					},
-		
-			formatOptions: [],
-			//*/
-		
-			/**
-			 * HotKeys used for special actions
-			*/
-			hotKey: { 
-				formatBold: 'ctrl+b',
-				formatItalic: 'ctrl+i',
-				formatParagraph: 'alt+ctrl+0',
-				formatH1: 'alt+ctrl+1',
-				formatH2: 'alt+ctrl+2',
-				formatH3: 'alt+ctrl+3',
-				formatH4: 'alt+ctrl+4',
-				formatH5: 'alt+ctrl+5',
-				formatH6: 'alt+ctrl+6',
-				formatPre: 'ctrl+p',
-				formatDel: 'ctrl+d',
-				formatSub: 'alt+shift+s',
-				formatSup: 'ctrl+shift+s'
-			},
+		/**
+		 * HotKeys used for special actions
+		 */
+		hotKey: { 
+			formatBold: 'ctrl+b',
+			formatItalic: 'ctrl+i',
+			formatParagraph: 'alt+ctrl+0',
+			formatH1: 'alt+ctrl+1',
+			formatH2: 'alt+ctrl+2',
+			formatH3: 'alt+ctrl+3',
+			formatH4: 'alt+ctrl+4',
+			formatH5: 'alt+ctrl+5',
+			formatH6: 'alt+ctrl+6',
+			formatPre: 'ctrl+p',
+			formatDel: 'ctrl+d',
+			formatSub: 'alt+shift+s',
+			formatSup: 'ctrl+shift+s'
+		},
 
 			/**
 			 * Initialize the plugin and set initialize flag on true
@@ -545,13 +522,13 @@ define([
 			},
 
 
-			/**
-			 * Removes all formatting from the current selection.
-			 */
-			removeFormat: function() {
-				var formats = [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
-					rangeObject = Aloha.Selection.rangeObject,
-					i;
+		/**
+		 * Removes all formatting from the current selection.
+		 */
+		removeFormat: function() {
+			var formats = [ 'strong', 'em', 'b', 'i', 's', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
+				rangeObject = Aloha.Selection.rangeObject,
+				i;
 			
 				// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
 				if (this.settings.removeFormats) {

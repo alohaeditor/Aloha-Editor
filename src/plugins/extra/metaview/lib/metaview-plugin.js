@@ -32,12 +32,13 @@ define([
 			this._super('metaview');
 		},
 		
+		config: [ 'metaview' ],
+		
 		/**
 		 * Configure the available languages
 		 */
 		languages: ['en', 'de'],
 
-		
 		/**
 		 * Initialize the plugin
 		 */
@@ -52,7 +53,7 @@ define([
 					function (jEvent, aEvent) {
 						var config;
 						config = that.getEditableConfig( Aloha.activeEditable.obj );
-						if ( config && jQuery.inArray( 'metaview', config ) !== -1 ) {
+ 						if (jQuery.type(config) === 'array' && jQuery.inArray( 'metaview', config ) !== -1) {
 							ComponentState.setState('toggleMetaView', 'show', true);
 						} else {
 							ComponentState.setState('toggleMetaView', 'show', false);

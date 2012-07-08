@@ -102,6 +102,7 @@ define([
 			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
 				var foundMarkup;
 
+				ComponentState.setState('wailang', 'state', false);
 				foundMarkup = that.findLangMarkup( rangeObject );
 				if ( foundMarkup ) {
 					ComponentState.setState('wailang', 'state', true);

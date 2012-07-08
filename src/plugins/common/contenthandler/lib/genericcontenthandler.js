@@ -72,15 +72,6 @@ function(Aloha, jQuery, ContentHandlerManager) {
 				$list.contents(':not(li,ul,ol)').each(function() {
 					jQuery(this).remove();
 				});
-				// for all li's, trim the text contents
-				$list.children('li').each(function() {
-					var $li = jQuery(this);
-					$li.contents().each(function() {
-						if (this.nodeType === 3) {
-							this.data = jQuery.trim(this.data);
-						}
-					});
-				});
 			});
 		},
 
@@ -127,15 +118,15 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 */
 		transformFormattings: function( content ) {
 			// find all formattings we will transform
-			content.find('strong,em,s,u').each(function() {
+			content.find('strong,em,s,u,strike').each(function() {
 				if (this.nodeName.toLowerCase() == 'strong') {
 					// transform strong to b
 					Aloha.Markup.transformDomObject(jQuery(this), 'b');
 				} else if (this.nodeName.toLowerCase() == 'em') {
 					// transform em to i
 					Aloha.Markup.transformDomObject(jQuery(this), 'i');
-				} else if (this.nodeName.toLowerCase() == 's') {
-					// transform s to del
+				} else if (this.nodeName.toLowerCase() == 's' || this.nodeName.toLowerCase() == 'strike') {
+					// transform s and strike to del
 					Aloha.Markup.transformDomObject(jQuery(this), 'del');
 				} else if (this.nodeName.toLowerCase() == 'u') {
 					// transform u?

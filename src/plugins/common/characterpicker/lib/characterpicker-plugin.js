@@ -31,7 +31,7 @@ define([
 
 	function CharacterOverlay(onSelectCallback) {
 		var self = this;
-		self.$node = jQuery('<table class="aloha-character-picker-overlay" role="dialog"><tbody></tbody></table>');
+		self.$node = jQuery('<table class="aloha-character-picker-overlay" unselectable="on" role="dialog"><tbody></tbody></table>');
 		// don't let the mousedown bubble up. otherwise there won't be an activeEditable 
 		self.$node.mousedown(function (e) {
 			return false;
@@ -183,7 +183,7 @@ define([
 			}
 			function mkButton(c) {
 				var character = htmlEntityToSingleCharacter(c);
-				return jQuery('<td>' + character + '</td>')
+				return jQuery('<td unselectable="on">' + character + '</td>')
 					.mouseover(function () {
 						jQuery(this).addClass('mouseover');
 					})
@@ -306,20 +306,8 @@ define([
 	 * insert a character after selecting it from the list
 	 */
 	function onCharacterSelect(character) {
-		var range = Aloha.Selection.getRangeObject();
-		
 		if (Aloha.activeEditable) {
-			var charNode = jQuery(document.createTextNode(character));
-			GENTICS.Utils.Dom.insertIntoDOM(
-				charNode,
-				range,
-				jQuery(Aloha.activeEditable.obj),
-				true
-			);
-
-			range.startContainer = range.endContainer = charNode.get(0);
-			range.startOffset = range.endOffset = charNode.length;
-			range.select();
+			Aloha.execCommand('insertHTML', false, character);
 		}
 	}
 });
