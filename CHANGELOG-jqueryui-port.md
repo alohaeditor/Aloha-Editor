@@ -60,8 +60,9 @@
 
 - **MANUAL CHANGE**: The jquery requirejs dependency was renamed from aloha/jquery to just jquery.
 
-- **MANUAL CHANGE**: The jQuery.isBoolean extension added to jQuery by Aloha was removed.
-                     Instead consider typeof x === 'boolean'. 
+- **MANUAL CHANGE**: The following jQuery extensions were removed
+                     jQuery.isBoolean - Instead consider typeof x === 'boolean'. 
+                     jQuery.isEmpty
 
 - **ENHANCEMENT**: The default jQuery version distributed with Aloha was updated from 1.6.1 to 1.7.2.
                    The jQuery.isNumeric extension added to jQuery by Aloha was removed to
