@@ -65,7 +65,7 @@ define([
 
 			$('body').css({
 				position: 'relative',
-				marginTop: 30
+				paddingTop: 30
 			});
 		},
 
