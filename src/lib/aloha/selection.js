@@ -39,19 +39,59 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 
 			// define basics first
 			this.tagHierarchy = {
-				'textNode' : [],
-				'abbr' : ['textNode'],
-				'b' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img','a','del','ins','u', 'cite', 'q', 'code', 'abbr', 'strong'],
-				'pre' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img','a','del','ins','u', 'cite','q', 'code', 'abbr', 'code'],
-				'blockquote' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img','a','del','ins','u', 'cite', 'q', 'code', 'abbr', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-				'ins' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img','a','u', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-				'ul' : ['li'],
-				'ol' : ['li'],
-				'li' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'del', 'ins', 'u', 'a'],
-				'tr' : ['td','th'],
-				'table' : ['tr'],
-				'div' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img', 'ul', 'ol', 'table', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'del', 'ins', 'u', 'p', 'div', 'pre', 'blockquote', 'a'],
-				'h1' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img','a', 'del', 'ins', 'u']
+				'textNode': {},
+				'abbr': {
+					'textNode' : true
+				},
+				'b': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'a'          : true,
+					'del'      : true, 'ins'   : true, 'u'      : true, 'cite' : true, 'q'          : true,
+					'code'     : true, 'abbr'  : true, 'strong' : true
+				},
+				'pre': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'a'          : true,
+					'del'      : true, 'ins'   : true, 'u'      : true, 'cite' : true, 'q'          : true,
+					'code'     : true, 'abbr'  : true
+				},
+				'blockquote': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'a'          : true,
+					'del'      : true, 'ins'   : true, 'u'      : true, 'cite' : true, 'q'          : true,
+					'code'     : true, 'abbr'  : true, 'p'      : true, 'h1'   : true, 'h2'         : true,
+					'h3'       : true, 'h4'    : true, 'h5'     : true, 'h6'   : true
+				},
+				'ins': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'a'          : true,
+					'u'        : true, 'p'     : true, 'h1'     : true, 'h2'   : true, 'h3'         : true,
+					'h4'       : true, 'h5'    : true, 'h6'     : true
+				},
+				'ul': { 'li'   : true },
+				'ol': { 'li'   : true },
+				'li': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'ul'         : true,
+					'ol'       : true, 'h1'    : true, 'h2'     : true, 'h3'   : true, 'h4'         : true,
+					'h5'       : true, 'h6'    : true, 'del'    : true, 'ins'  : true, 'u'          : true,
+					'a'        : true
+				},
+				'tr':    { 'td': true, 'th'    : true },
+				'table': { 'tr': true },
+				'div': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'ul'         : true,
+					'ol'       : true, 'table' : true, 'h1'     : true, 'h2'   : true, 'h3'         : true,
+					'h4'       : true, 'h5'    : true, 'h6'     : true, 'del'  : true, 'ins'        : true,
+					'u'        : true, 'p'     : true, 'div'    : true, 'pre'  : true, 'blockquote' : true,
+					'a'        : true
+				},
+				'h1': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'a'          : true,
+					'del'      : true, 'ins'   : true, 'u'      : true
+				}
 			};
 			// now reference the basics for all other equal tags (important: don't forget to include
 			// the basics itself as reference: 'b' : this.tagHierarchy.b
@@ -93,30 +133,40 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 
 			// When applying this elements to selection they will replace the assigned elements
 			this.replacingElements = {
-				'h1' : ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6','pre', 'blockquote']
+				'h1': {
+					'p': true,
+					'h1': true,
+					'h2': true,
+					'h3': true,
+					'h4': true,
+					'h5': true,
+					'h6': true,
+					'pre': true,
+					'blockquote': true
+				}
 			};
 			this.replacingElements = {
-					'h1' : this.replacingElements.h1,
-					'h2' : this.replacingElements.h1,
-					'h3' : this.replacingElements.h1,
-					'h4' : this.replacingElements.h1,
-					'h5' : this.replacingElements.h1,
-					'h6' : this.replacingElements.h1,
-					'pre' : this.replacingElements.h1,
-					'p' : this.replacingElements.h1,
-					'blockquote' : this.replacingElements.h1
+				'h1' : this.replacingElements.h1,
+				'h2' : this.replacingElements.h1,
+				'h3' : this.replacingElements.h1,
+				'h4' : this.replacingElements.h1,
+				'h5' : this.replacingElements.h1,
+				'h6' : this.replacingElements.h1,
+				'pre' : this.replacingElements.h1,
+				'p' : this.replacingElements.h1,
+				'blockquote' : this.replacingElements.h1
 			};
 			this.allowedToStealElements = {
-					'h1' : ['textNode']
+				'h1' : {'textNode': true}
 			};
 			this.allowedToStealElements = {
-					'h1' : this.allowedToStealElements.h1,
-					'h2' : this.allowedToStealElements.h1,
-					'h3' : this.allowedToStealElements.h1,
-					'h4' : this.allowedToStealElements.h1,
-					'h5' : this.allowedToStealElements.h1,
-					'h6' : this.allowedToStealElements.h1,
-					'p' : this.tagHierarchy.b
+				'h1' : this.allowedToStealElements.h1,
+				'h2' : this.allowedToStealElements.h1,
+				'h3' : this.allowedToStealElements.h1,
+				'h4' : this.allowedToStealElements.h1,
+				'h5' : this.allowedToStealElements.h1,
+				'h6' : this.allowedToStealElements.h1,
+				'p' : this.tagHierarchy.b
 			};
 		},
 
@@ -521,14 +571,15 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 		 * @hide
 		 */
 		standardSectionsAndGroupingContentComparator: function(domobj, markupObject) {
-			if  (domobj.nodeType === 1) {
-				if (markupObject[0].tagName && Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] && $_( Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] ).indexOf(markupObject[0].tagName.toLowerCase()) != -1) {
-					return true;
-				}
-			} else {
+			if  (domobj.nodeType !== 1) {
 				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
+				return false;
 			}
-			return false;
+			if (!markupObject[0].nodeName) {
+				return false;
+			}
+			var elemMap = Aloha.Selection.replacingElements[domobj.nodeName.toLowerCase()];
+			return elemMap && elemMap[markupObject[0].nodeName.toLowerCase()];
 		},
 
 		/**
@@ -611,7 +662,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 
 			// if the element is a replacing element (like p/h1/h2/h3/h4/h5/h6...), which must not wrap each other
 			// use a clone of rangeObject
-			if (this.replacingElements[ tagName ]) {
+			if (this.replacingElements[tagName]) {
 				// backup rangeObject for later selection;
 				backupRangeObject = rangeObject;
 
@@ -1008,8 +1059,8 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 				Aloha.Log.debug(this, 'Node name detected: ' + nn + ' for: ' + markupObject.outerHtml());
 			}
 			if (nn == '#text') {return 'textNode';}
-			if (this.replacingElements[ nn ]) {return 'sectionOrGroupingContent';}
-			if (this.tagHierarchy [ nn ]) {return 'textLevelSemantics';}
+			if (this.replacingElements[nn]) {return 'sectionOrGroupingContent';}
+			if (this.tagHierarchy[nn]) {return 'textLevelSemantics';}
 			Aloha.Log.warn(this, 'unknown markup passed to this.getMarkupType(...): ' + markupObject.outerHtml());
 		},
 
@@ -1366,20 +1417,11 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 			if (!selectionTreeElement.domobj) {
 				return false;
 			}
-			var nodeName = selectionTreeElement.domobj.nodeName.toLowerCase(),
-				markupName;
-			
-			nodeName = (nodeName == '#text') ? 'textNode' : nodeName;
-			markupName = markupObject[0].nodeName.toLowerCase();
-			// if nothing is defined for the markup, it's now allowed
-			if (!this.allowedToStealElements[ markupName ]) {
-				return false;
-			}
-			// if something is defined, but the specifig tag is not in the list
-			if ($_( this.allowedToStealElements[ markupName ] ).indexOf(nodeName) == -1) {
-				return false;
-			}
-			return true;
+			var maybeTextNodeName = selectionTreeElement.domobj.nodeName.toLowerCase(),
+			    nodeName = (maybeTextNodeName == '#text') ? 'textNode' : maybeTextNodeName,
+			    markupName = markupObject[0].nodeName.toLowerCase(),
+			    elemMap = this.allowedToStealElements[ markupName ];
+			return elemMap && elemMap[nodeName];
 		},
 
 		/**
@@ -1427,17 +1469,14 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 		canTag1WrapTag2: function(t1, t2) {
 			t1 = (t1 == '#text')?'textNode':t1.toLowerCase();
 			t2 = (t2 == '#text')?'textNode':t2.toLowerCase();
-			if (!this.tagHierarchy[ t1 ]) {
-				// Aloha.Log.warn(this, t1 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 1). Sadfully allowing the wrapping...');
+			var t1Map = this.tagHierarchy[t1];
+			if (!t1Map) {
 				return true;
 			}
-			if (!this.tagHierarchy[ t2 ]) {
-				// Aloha.Log.warn(this, t2 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 2). Sadfully allowing the wrapping...');
+			if (!this.tagHierarchy[t2]) {
 				return true;
 			}
-			var t1Array = this.tagHierarchy[ t1 ],
-				returnVal = ($_( t1Array ).indexOf( t2 ) != -1) ? true : false;
-			return returnVal;
+			return t1Map[t2];
 		},
 
 		/**
