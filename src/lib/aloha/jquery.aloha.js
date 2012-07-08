@@ -422,9 +422,19 @@ define([
 
 		handleObj.handler = function(event) {
 
-            if (this !== event.target && !event.target.contentEditable) {
-				return;
-			}
+			// This condition was added to the hotkeys plugin, probably to fix some aloha bug.
+			// If this was added to the hotkeys plugin to fix some aloha bug, it is unknown what the bug was.
+			// The original comment that was added with this condition says:
+			// "Don't fire in contentEditable true elements"
+			// But this is incorrect.
+			// What this condition does is it skips hotkey events for
+			// any non-editable target unless it is directly bound.
+			// Since this condition can possibly interfere with other
+			// plugins I will comment it out until it is clear what it
+			// breaks.
+			//if (this !== event.target && !event.target.contentEditable) {
+			//return;
+			//}
 
 			// Keypress represents characters, not special keys
 			var special = event.type !== "keypress" && jQuery.hotkeys.specialKeys[ event.which ],
