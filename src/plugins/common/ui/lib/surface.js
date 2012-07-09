@@ -75,15 +75,15 @@ define([
 			// When an editable is activated, we show its associated surfaces.
 			Aloha.bind( 'aloha-editable-activated', function( event, alohaEvent ) {
 				Surface.active = alohaEvent.editable;
-				Surface.show(alohaEvent.editable);
-				Container.showContainersForContext(Surface.active);
+				Surface.show(alohaEvent.editable.uiContext);
+				Container.showContainersForContext(Surface.active.uiContext);
 			});
 
 			// When an editable is deactivated, we hide its associated surfaces.
 			Aloha.bind( 'aloha-editable-deactivated', function( event, alohaEvent ) {
 				// TODO: handle a click on a surface, then a click outside
 				if ( !Surface.suppressHide ) {
-					Surface.hide( alohaEvent.editable );
+					Surface.hide( alohaEvent.editable.uiContext );
 					Surface.active = null;
 				}
 			});
@@ -92,7 +92,7 @@ define([
 		/**
 		 * Shows all surfaces for a given context.
 		 *
-		 * @param context.
+		 * @param {!Object} context.
 		 */
 		show: function( context ) {
 			// If this is the first time we're showing the surfaces for this
@@ -109,7 +109,7 @@ define([
 		/**
 		 * Hides all surfaces for a given context.
 		 *
-		 * @param context
+		 * @param {!Object} context
 		 */
 		hide: function (context) {
 			jQuery.each(context.surfaces, function (i, surface) {
@@ -122,7 +122,7 @@ define([
 		 * @todo Rename to initialize.
 		 * @todo Remove the above @todo.
 		 *
-		 * @param context
+		 * @param {!Object} context
 		 */
 		initialize: function (context) {
 			context.surfaces = [];

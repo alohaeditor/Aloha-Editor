@@ -57,22 +57,9 @@ define([
 		}
 
 		Component.define(props.name, Component, {
-			scope: props.scope,
-			init: function () {
-				this._super();
-				this.element = $('<span>');
-				var that = this;
-				PubSub.sub('aloha.ui.container.activated', function (message) {
-					var container = message.data;
-					if (container.visible &&
-					    container === that._container &&
-						(!Aloha.activeEditable ||
-						 Aloha.activeEditable === container.context)) {
-						element.appendTo(that.element);
-					}
-				});
-			}
-		});
+			element: $('<span>').append(element),
+			scope: props.scope
+		})
 
 		element.autocomplete({
 			'html': true,

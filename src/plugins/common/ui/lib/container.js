@@ -173,7 +173,7 @@ define([
 
 	PubSub.sub('aloha.ui.scope.change', function(){
 		if (Aloha.activeEditable) {
-			Container.showContainersForContext(Aloha.activeEditable, null);
+			Container.showContainersForContext(Aloha.activeEditable.uiContext, null);
 		}
 	});
 
