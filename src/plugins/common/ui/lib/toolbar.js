@@ -19,8 +19,8 @@ define([
 	 * array of tabs with component groups, where the groups are arrays of
 	 * controls.
 	 *
-	 * There are separate components for each editable, but only the components
-	 * for the active editable are shown.
+	 * There are separate components for each context, but only the components
+	 * for the active context are shown.
 	 *
 	 * As a container for tabs, the toolbar serves to group together groups of
 	 * control components so that they can be shown and hidden together in
@@ -42,15 +42,15 @@ define([
 		/**
 		 * Toolbar constructor.
 		 *
-		 * @param {Aloha.Editable} editable
+		 * @param context
 		 * @constructor
 		 * @override
 		 */
-		_constructor: function (editable) {
+		_constructor: function (context) {
 
-			// All containers are rendered in a div specific to the editable to
+			// All containers are rendered in a div specific to the context to
 			// make it easy to show and hide the toolbar containers on
-			// activate/deactivate.  The editable instance gets a reference to
+			// activate/deactivate.  The context instance gets a reference to
 			// this div.
 
 			this.$element = $('<div>', {'class': 'aloha-ui-toolbar'});
@@ -58,14 +58,14 @@ define([
 			this.$_container = Tab.createContainer().appendTo(this.$element);
 
 			var settings;
-			var tabs = editable.settings.toolbar;
+			var tabs = context.settings.toolbar;
 			var i;
 			for (i = 0; i < tabs.length; i++) {
 				settings = tabs[i];
 				this._tabs.push(new Tab({
 					label: settings.label || '',
 					showOn: settings.showOn,
-					editable: editable,
+					context: context,
 					container: this.$_container
 				}, settings.components));
 			}
@@ -225,15 +225,15 @@ define([
 		},
 
 		/**
-		 * Creates a toolbar for an editable.
+		 * Creates a toolbar for an context.
 		 *
-		 * @param {Aloha.Editable} editable
+		 * @param context
 		 * @returns {Toolbar}
 		 */
-		createSurface: function (editable) {
-			if (editable.settings.toolbar &&
-			    editable.settings.toolbar.length) {
-				var surface =  new Toolbar(editable);
+		createSurface: function (context) {
+			if (context.settings.toolbar &&
+			    context.settings.toolbar.length) {
+				var surface =  new Toolbar(context);
 				Toolbar.instances.push(surface);
 				return surface;
 			}

@@ -67,7 +67,7 @@ define([
 					if (container.visible &&
 					    container === that._container &&
 						(!Aloha.activeEditable ||
-						 Aloha.activeEditable === container.editable)) {
+						 Aloha.activeEditable === container.context)) {
 						element.appendTo(that.element);
 					}
 				});

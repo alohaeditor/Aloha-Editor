@@ -90,46 +90,46 @@ define([
 		},
 
 		/**
-		 * Shows all surfaces for a given editable.
+		 * Shows all surfaces for a given context.
 		 *
-		 * @param {Aloha.Editable} editable.
+		 * @param context.
 		 */
-		show: function( editable ) {
+		show: function( context ) {
 			// If this is the first time we're showing the surfaces for this
-			// editable, then we need to initialize the surfaces first.
-			if ( !editable.surfaces ) {
-				Surface.initialize( editable );
+			// context, then we need to initialize the surfaces first.
+			if ( !context.surfaces ) {
+				Surface.initialize( context );
 			}
 
-			jQuery.each( editable.surfaces, function( i, surface ) {
+			jQuery.each( context.surfaces, function( i, surface ) {
 				surface.show();
 			});
 		},
 
 		/**
-		 * Hides all surfaces for a given editable.
+		 * Hides all surfaces for a given context.
 		 *
-		 * @param {Aloha.Editable} editable
+		 * @param context
 		 */
-		hide: function (editable) {
-			jQuery.each(editable.surfaces, function (i, surface) {
+		hide: function (context) {
+			jQuery.each(context.surfaces, function (i, surface) {
 				surface.hide();
 			});
 		},
 
 		/**
-		 * Initializes all surfaces for an editable.
+		 * Initializes all surfaces for an context.
 		 * @todo Rename to initialize.
 		 * @todo Remove the above @todo.
 		 *
-		 * @param {Aloha.Editable} editable
+		 * @param context
 		 */
-		initialize: function (editable) {
-			editable.surfaces = [];
+		initialize: function (context) {
+			context.surfaces = [];
 			jQuery.each(Surface.Types, function (i, Type) {
-				var surface = Type.createSurface(editable);
+				var surface = Type.createSurface(context);
 				if (surface) {
-					editable.surfaces.push(surface);
+					context.surfaces.push(surface);
 					Surface.instances.push(surface);
 				}
 			});

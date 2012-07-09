@@ -11,8 +11,8 @@
  * exact same function must be returned from `Container.normalizeShowOn()' when
  * the logic is the same.
  *
- * The list of containers is then stored on the editable instance as
- * `editable.containers', which is a hash of `showOn()' ids to an array of
+ * The list of containers is then stored on the context instance as
+ * `context.containers', which is a hash of `showOn()' ids to an array of
  * containers. The `showOn()' ids are unique identifiers that are stored as
  * properties of the `showOn()' function (see `getShowOnId()'). This gives us
  * constant lookup times when grouping containers.
@@ -119,17 +119,17 @@ define([
 		 * @constructor
 		 */
 		_constructor: function( settings ) {
-			var editable = this.editable = settings.editable;
+			var context = this.context = settings.context;
 
-			if (!editable.containers) {
-				editable.containers = [];
+			if (!context.containers) {
+				context.containers = [];
 			}
 
 			var showOn = normalizeShowOn(this, settings.showOn);
 			var key = getShowOnId(showOn);
-			var group = editable.containers[key];
+			var group = context.containers[key];
 			if (!group) {
-				group = editable.containers[key] = {
+				group = context.containers[key] = {
 					shouldShow: showOn,
 					containers: []
 				};
@@ -148,20 +148,20 @@ define([
 		/**
 		 * Given an array of elements, show appropriate containers.
 		 *
-		 * @param {object} editable Active editable
+		 * @param {object} context
 		 * @param {string} eventType Type of the event triggered (optional)
 		 * @static
 		 */
-		showContainersForContext: function(editable, eventType) {
+		showContainersForContext: function(context, eventType) {
 			var group,
 			    groupKey,
 			    containerGroups;
-			if (!editable.containers) {
-				// No containers were constructed for the given editable, so
+			if (!context.containers) {
+				// No containers were constructed for the given context, so
 				// there is nothing for us to do.
 				return;
 			}
-			containerGroups = editable.containers;
+			containerGroups = context.containers;
 			for (groupKey in containerGroups) {
 				if (containerGroups.hasOwnProperty(groupKey)) {
 					group = containerGroups[groupKey];
