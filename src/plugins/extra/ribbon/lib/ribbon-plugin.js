@@ -5,12 +5,12 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 define([
-	'jquery',
-	'aloha/plugin',
-	'ui/menuButton',
-	'ui/utils',
-	'aloha/jquery-ui',
-	'css!./css/ribbon.css'
+    'jquery',
+    'aloha/plugin',
+    'ui/menuButton',
+    'ui/utils',
+    'aloha/jquery-ui',
+    'css!./css/ribbon.css'
 ], function (
 	$,
 	Plugin,
@@ -29,7 +29,8 @@ define([
 
 			var that = this;
 			this._visible = false;
-            this._toolbar = $('<div>', {'class': 'aloha-ribbon-toolbar ui-menubar ui-widget-header ui-helper-clearfix'});
+            this._toolbar = $('<div>', {'class':
+				'aloha-ribbon-toolbar ui-menubar ui-widget-header ui-helper-clearfix'});
 
 			var fadeIn = Utils.makeButtonElement({'class': 'aloha-ribbon-in'})
 				.button()
@@ -66,7 +67,7 @@ define([
 
 			$('body').css({
 				position: 'relative',
-				paddingTop: 30
+				marginTop: 30
 			});
 		},
 
