@@ -30,18 +30,18 @@ define([
 	// 'aloha/plugin' // For when we plugify sidebar
 ], function (
 	Aloha,
-	jQuery,
+	$,
 	Selection,
 	Plugin
 ) {
 	'use strict';
 
-	var $ = jQuery;
 	var uid  = +(new Date());
 
 	// Extend jQuery easing animations
-	if (!jQuery.easing.easeOutExpo) {
-		jQuery.extend(jQuery.easing, {
+	//debugger;
+	if (!$.easing.easeOutExpo) {
+		$.extend(jQuery.easing, {
 			easeOutExpo: function (x, t, b, c, d) {
 				return (t==d)?b+c:c*(-Math.pow(2,-10*t/d)+1)+b;
 			},
@@ -76,33 +76,6 @@ define([
 			 });
 	}
 
-	var nsClasses = {
-			'bar'                      : 'aloha-sidebar-bar',
-			'handle'                   : 'aloha-sidebar-handle',
-			'inner'                    : 'aloha-sidebar-inner',
-			'panels'                   : 'aloha-sidebar-panels',
-			'config-btn'               : 'aloha-sidebar-config-btn',
-			'handle-icon'              : 'aloha-sidebar-handle-icon',
-			'panel-content'            : 'aloha-sidebar-panel-content',
-			'panel-content-inner'      : 'aloha-sidebar-panel-content-inner',
-			'panel-content-inner-text' : 'aloha-sidebar-panel-content-inner-text',
-			'panel-title'              : 'aloha-sidebar-panel-title',
-			'panel-title-arrow'        : 'aloha-sidebar-panel-title-arrow',
-			'panel-title-text'         : 'aloha-sidebar-panel-title-text'
-		};
-
-	/**
-	 * Wrapper to call the supplant method on a given string, taking the
-	 * nsClasses object as the associative array containing the replacement
-	 * pairs
-	 *
-	 * @param {String} str
-	 * @return {String}
-	 */
-	function renderTemplate(str) {
-		return (typeof str === 'string') ? supplant(str, nsClasses) : str;
-	}
-
 	// ------------------------------------------------------------------------
 	// Panel constructor
 	// ------------------------------------------------------------------------
@@ -110,20 +83,15 @@ define([
 		this.id		  = null;
 		this.folds	  = {};
 		this.button	  = null;
-		this.title	  = jQuery(renderTemplate('                 \
-			<div class="{panel-title}">							\
-				<span class="{panel-title-arrow}"></span>		\
-				<span class="{panel-title-text}">Untitled</span>\
-			</div>												\
-		'));
-		this.content  = jQuery(renderTemplate('             \
-			<div class="{panel-content}">					\
-				<div class="{panel-content-inner}">			\
-					<div class="{panel-content-inner-text}">\
-					</div>									\
-				</div>										\
-			</div>											\
-		'));
+		this.title	  = $('<div class="aloha-sidebar-panel-title">' +
+				'<span class="aloha-sidebar-panel-title-arrow"></span>' +
+				'<span class="aloha-sidebar-panel-title-text">Untitled</span>' +
+			'</div>');
+		this.content  = $('<div class="aloha-sidebar-panel-content">' +
+				'<div class="aloha-sidebar-panel-content-inner">' +
+					'<div class="aloha-sidebar-panel-content-inner-text"></div>' +
+				'</div>' +
+			'</div>');
 		this.element  = null;
 		this.expanded = false;
 		this.effectiveElement = null;
@@ -140,32 +108,30 @@ define([
 
 		this.id = 'aloha-sidebar- ' + (++uid);
 		this.panels = {};
-		this.container = jQuery(renderTemplate(
-			'<div class="{bar}">' +
-				'<div class="{handle}">' +
-					'<span class="{handle-icon}"></span>' +
+		this.container = $('<div class="aloha-sidebar-bar">' +
+				'<div class="aloha-sidebar-handle">' +
+					'<span class="aloha-sidebar-handle-icon"></span>' +
 				'</div>' +
-				'<div class="{inner}">' +
-					'<ul class="{panels}"></ul>' +
+				'<div class="aloha-sidebar-inner">' +
+					'<ul class="aloha-sidebar-panels"></ul>' +
 				'</div>' +
-			'</div>'
-		));
+			'</div>');
 		// defaults
 		this.width = 300;
 		this.opened = false;
 		this.isOpen = false;
 		this.settings = {
-			// We automatically set this to true when we are in IE, where rotating
-			// elements using filters causes undesirable rendering ugliness.
-			// Our solution is to fallback to swapping icon images.
+			// We automatically set this to true when we are in IE, where
+			// rotating elements using filters causes undesirable rendering
+			// ugliness.  Our solution is to fallback to swapping icon images.
 			// We set this as a sidebar property so that it can overridden by
 			// whoever thinks they are smarter than we are.
-			rotateIcons : !jQuery.browser.msie,
+			rotateIcons : !$.browser.msie,
 			overlayPage : true
 		};
 
 		// Initialize after dom is ready
-		jQuery(function () {
+		$(function () {
 			if (!((typeof Aloha.settings.sidebar !== 'undefined') &&
 					Aloha.settings.sidebar.disabled)) {
 				sidebar.init(opts);
@@ -178,7 +144,7 @@ define([
 	// All properties to be shared across Sidebar instances can be placed in
 	// the prototype object
 	// ------------------------------------------------------------------------
-	jQuery.extend(Sidebar.prototype, {
+	$.extend(Sidebar.prototype, {
 
 		// Build as much of the sidebar as we can before appending it to DOM to
 		// minimize reflow.
@@ -193,10 +159,10 @@ define([
 			}
 
 			// Copy any implements, and overrides in opts to this Sidebar instance
-			jQuery.extend(this, opts);
+			$.extend(this, opts);
 
 			if (typeof panels === 'object') {
-				jQuery.each(panels, function () {
+				$.each(panels, function () {
 					that.addPanel(this, true);
 				});
 			}
@@ -209,7 +175,7 @@ define([
 
 			// Place the bar into the DOM
 			bar.hide()
-			   .appendTo(jQuery('body'))
+			   .appendTo($('body'))
 			   .click(function () {that.barClicked.apply(that, arguments);})
 			   .find('.aloha-sidebar-panels').width(this.width);
 
@@ -219,7 +185,7 @@ define([
 
 			this.width = bar.width();
 
-			jQuery(window).resize(function () {
+			$(window).resize(function () {
 				that.updateHeight();
 			});
 
@@ -236,7 +202,7 @@ define([
 			this.toggleHandleIcon(this.isOpen);
 			this.subscribeToEvents();
 
-			jQuery(window).resize(function () {
+			$(window).resize(function () {
 				that.correctHeight();
 			});
 
@@ -252,7 +218,7 @@ define([
 		hide: function () {
 			this.container.css('display','none');
 			//	.animate({opacity: 0}, 1000, function () {
-			//		jQuery(this).css('display', 'block')
+			//		$(this).css('display', 'block')
 			//	});
 			return this;
 		},
@@ -272,13 +238,13 @@ define([
 				var l = range.markupEffectiveAtStart.length;
 				var i;
 				for (i = 0; i < l; ++i) {
-					effective.push(jQuery(range.markupEffectiveAtStart[i]));
+					effective.push($(range.markupEffectiveAtStart[i]));
 				}
 			}
 
 			var that = this;
 
-			jQuery.each(this.panels, function () {
+			$.each(this.panels, function () {
 				that.showActivePanel(this, effective);
 			});
 
@@ -319,7 +285,7 @@ define([
 			var height = this.container.find('.aloha-sidebar-inner').height() - (15 * 2);
 			var panels = [];
 
-			jQuery.each(this.panels, function () {
+			$.each(this.panels, function () {
 				if (this.isActive) {
 					panels.push(this);
 				}
@@ -387,7 +353,7 @@ define([
 		 * elements in the current selection
 		 *
 		 * @param {Object} panel - The Panel object we will test
-		 * @param {Array} elements - The effective elements (jQuery), any of
+		 * @param {Array} elements - The effective elements ($), any of
 		 *							 which may activate the panel
 		 */
 		showActivePanel: function (panel, elements) {
@@ -397,14 +363,14 @@ define([
 			var count = 0;
 			var li = panel.content.parent('li');
 			var activeOn = panel.activeOn;
-			var effective = jQuery();
+			var effective = $();
 			var i;
 
 			for (i = 0; i < j; ++i) {
 				if (activeOn(elements[i])) {
 					++count;
 					if (elements[i]) {
-						jQuery.merge(effective, elements[i]);
+						$.merge(effective, elements[i]);
 					}
 				}
 			}
@@ -435,11 +401,11 @@ define([
 			}
 
 			// configure the position of the sidebar handle
-			jQuery(function () {
+			$(function () {
 				if (typeof Aloha.settings.sidebar !== 'undefined' &&
 						Aloha.settings.sidebar.handle &&
 						Aloha.settings.sidebar.handle.top) {
-					jQuery(bar.find('.aloha-sidebar-handle')).get(0).style.top = Aloha.settings.sidebar.handle.top;
+					$(bar.find('.aloha-sidebar-handle')).get(0).style.top = Aloha.settings.sidebar.handle.top;
 				}
 			});
 
@@ -452,11 +418,11 @@ define([
 					icon.stop().css('marginLeft', 4);
 
 					if (that.isOpen) {
-						jQuery(this).removeClass(toggledClass);
+						$(this).removeClass(toggledClass);
 						that.close();
 						that.isOpen = false;
 					} else {
-						jQuery(this).addClass(toggledClass);
+						$(this).addClass(toggledClass);
 						that.open();
 						that.isOpen = true;
 					}
@@ -470,7 +436,7 @@ define([
 
 						icon.stop();
 
-						jQuery(this).stop().animate(
+						$(this).stop().animate(
 							isRight ? {marginLeft: '-=' + (flag * 5)} : {marginRight: '-=' + (flag * 5)},
 							200
 						);
@@ -491,7 +457,7 @@ define([
 
 						icon.stop().css(isRight ? 'left' : 'right', 5);
 
-						jQuery(this).stop().animate(
+						$(this).stop().animate(
 							isRight ? {marginLeft: 0} : {marginRight: 0},
 							600, 'easeOutElastic'
 						);
@@ -522,7 +488,7 @@ define([
 		 * whenever the viewport is resized
 		 */
 		updateHeight: function () {
-			var h = jQuery(window).height();
+			var h = $(window).height();
 			this.container.height(h).find('.aloha-sidebar-inner').height(h);
 		},
 
@@ -532,7 +498,7 @@ define([
 		 * significant element that we can interact with
 		 */
 		barClicked: function (ev) {
-			this.handleBarclick(jQuery(ev.target));
+			this.handleBarclick($(ev.target));
 		},
 
 		/**
@@ -656,7 +622,7 @@ define([
 				'easeOutExpo');
 
 			if (!this.settings.overlayPage) {
-				jQuery('body').animate(
+				$('body').animate(
 					isRight ? {marginRight: '+=' + this.width}
 					        : {marginLeft: '+=' + this.width},
 					500, 'easeOutExpo');
@@ -664,7 +630,7 @@ define([
 
 			this.isOpen = true;
 
-			jQuery('body').trigger('aloha-sidebar-opened', this);
+			$('body').trigger('aloha-sidebar-opened', this);
 
 			return this;
 		},
@@ -687,7 +653,7 @@ define([
 				'easeOutExpo');
 
 			if (!this.settings.overlayPage) {
-				jQuery('body').animate(
+				$('body').animate(
 					isRight ? {marginRight: '-=' + this.width}
 					        : {marginLeft: '-=' + this.width},
 					500, 'easeOutExpo');
@@ -704,7 +670,7 @@ define([
 		 *
 		 * @param {Object|String} panel - Panel instance or the id of a panel
 		 *								  object
-		 * @param {jQuery} element - Element to pass to the panel as effective
+		 * @param {$} element - Element to pass to the panel as effective
 		 *							 element (the element that activated it)
 		 */
 		activatePanel: function (panel, element) {
@@ -801,7 +767,7 @@ define([
 	// ------------------------------------------------------------------------
 	// Panel prototype
 	// ------------------------------------------------------------------------
-	jQuery.extend(Panel.prototype, {
+	$.extend(Panel.prototype, {
 
 		init: function (opts) {
 			this.setTitle(opts.title)
@@ -810,14 +776,14 @@ define([
 			delete opts.title;
 			delete opts.content;
 
-			jQuery.extend(this, opts);
+			$.extend(this, opts);
 
 			if (!this.id) {
 				this.id = 'aloha-sidebar-' + (++uid);
 			}
 
 			var li = this.element =
-				jQuery('<li id="' + this.id + '">').append(this.title, this.content);
+				$('<li id="' + this.id + '">').append(this.title, this.content);
 
 			if (this.expanded) {
 				this.content.height('auto');
@@ -974,7 +940,7 @@ define([
 		/**
 		 * May also be called by the Sidebar to update title of panel
 		 *
-		 * @param html - Markup string, DOM object, or jQuery object
+		 * @param html - Markup string, DOM object, or $ object
 		 */
 		setTitle: function (html) {
 			this.title.find('.aloha-sidebar-panel-title-text').html(html);
@@ -984,7 +950,7 @@ define([
 		/**
 		 * May also be called by the Sidebar to update content of panel
 		 *
-		 * @param html - Markup string, DOM object, or jQuery object
+		 * @param html - Markup string, DOM object, or $ object
 		 */
 		setContent: function (html) {
 			// We do this so that empty panels don't appear collapsed
@@ -1017,7 +983,7 @@ define([
 		 * Walks up the ancestors chain for the given effective element, and
 		 * renders subpanels using the specified renderer function.
 		 *
-		 * @param {jQuery} effective - The effective element, whose lineage we
+		 * @param {$} effective - The effective element, whose lineage we
 		 *							   want to render
 		 * @param {Function} renderer - (Optional) function that will render
 		 *								 each element in the parental lineage
@@ -1057,8 +1023,8 @@ define([
 
 			this.setContent(content.join(''));
 
-			jQuery('.aloha-sidebar-panel-parent-path').click(function () {
-				var c = jQuery(this).parent().find('.aloha-sidebar-panel-parent-content');
+			$('.aloha-sidebar-panel-parent-path').click(function () {
+				var c = $(this).parent().find('.aloha-sidebar-panel-parent-content');
 
 				if (c.hasClass('aloha-sidebar-opened')) {
 					c.hide().removeClass('aloha-sidebar-opened');
