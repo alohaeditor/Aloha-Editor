@@ -19,26 +19,24 @@
 */
 
 /**
- * @todo: - Make the sidebars resizable using drag handles
- *		  - Make overlayPage setting settable from external config
+ * @todo: - Make the sidebars resizable using drag handles.
+ *        - Make overlayPage setting settable from external config.
  */
 
 define([
     'aloha/core',
 	'jquery',
 	'aloha/selection'
-	// 'aloha/plugin' // For when we plugify sidebar
 ], function (
 	Aloha,
 	$,
-	Selection,
-	Plugin
+	Selection
 ) {
 	'use strict';
 
 	var uid  = +(new Date());
 
-	// Extend jQuery easing animations
+	// Extend jQuery easing animations.
 	//debugger;
 	if (!$.easing.easeOutExpo) {
 		$.extend(jQuery.easing, {
@@ -56,37 +54,29 @@ define([
 		});
 	}
 
-	// ------------------------------------------------------------------------
-	// Panel constructor
-	// ------------------------------------------------------------------------
-	var Panel = function Panel (opts) {
-		this.id		  = null;
-		this.folds	  = {};
-		this.button	  = null;
-		this.title	  = $('<div class="aloha-sidebar-panel-title">' +
+	var Panel = function Panel(opts) {
+		this.id = null;
+		this.folds = {};
+		this.button	= null;
+		this.title = $('<div class="aloha-sidebar-panel-title">' +
 				'<span class="aloha-sidebar-panel-title-arrow"></span>' +
 				'<span class="aloha-sidebar-panel-title-text">Untitled</span>' +
 			'</div>');
-		this.content  = $('<div class="aloha-sidebar-panel-content">' +
+		this.content = $('<div class="aloha-sidebar-panel-content">' +
 				'<div class="aloha-sidebar-panel-content-inner">' +
 					'<div class="aloha-sidebar-panel-content-inner-text"></div>' +
 				'</div>' +
 			'</div>');
 		this.element  = null;
-		this.expanded = false;
 		this.effectiveElement = null;
+		this.expanded = false;
 		this.isActive = true;
 		this.init(opts);
 	};
 
-	// ------------------------------------------------------------------------
-	// Sidebar constructor
-	// Only instance properties are to be defined here
-	// ------------------------------------------------------------------------
 	var Sidebar = function Sidebar(opts) {
 		var sidebar = this;
-
-		this.id = 'aloha-sidebar- ' + (++uid);
+		this.id = 'aloha-sidebar-' + (++uid);
 		this.panels = {};
 		this.container = $('<div class="aloha-sidebar-bar">' +
 				'<div class="aloha-sidebar-handle">' +
@@ -96,7 +86,6 @@ define([
 					'<ul class="aloha-sidebar-panels"></ul>' +
 				'</div>' +
 			'</div>');
-		// defaults
 		this.width = 300;
 		this.opened = false;
 		this.isOpen = false;
@@ -110,7 +99,6 @@ define([
 			overlayPage : true
 		};
 
-		// Initialize after dom is ready
 		$(function () {
 			if (!((typeof Aloha.settings.sidebar !== 'undefined') &&
 					Aloha.settings.sidebar.disabled)) {
@@ -119,26 +107,19 @@ define([
 		});
 	};
 
-	// ------------------------------------------------------------------------
-	// Sidebar prototype
-	// All properties to be shared across Sidebar instances can be placed in
-	// the prototype object
-	// ------------------------------------------------------------------------
 	$.extend(Sidebar.prototype, {
 
-		// Build as much of the sidebar as we can before appending it to DOM to
-		// minimize reflow.
+		// We build as much of the sidebar as we can before appending it to DOM
+		// to minimize reflow.
 		init: function (opts) {
 			var that = this;
 			var panels;
 
-			// Pluck panels list from opts
 			if (typeof opts === 'object') {
 				panels = opts.panels;
 				delete opts.panels;
 			}
 
-			// Copy any implements, and overrides in opts to this Sidebar instance
 			$.extend(this, opts);
 
 			if (typeof panels === 'object') {
@@ -153,16 +134,14 @@ define([
 				bar.addClass('aloha-sidebar-right');
 			}
 
-			// Place the bar into the DOM
 			bar.hide()
 			   .appendTo($('body'))
-			   .click(function () {that.barClicked.apply(that, arguments);})
+			   .click(function () { that.barClicked.apply(that, arguments); })
 			   .find('.aloha-sidebar-panels').width(this.width);
 
 			// IE7 needs us to explicitly set the container width, since it is
-			// unable to determine it on its own
+			// unable to determine it on its own.
 			bar.width(this.width);
-
 			this.width = bar.width();
 
 			$(window).resize(function () {
@@ -173,7 +152,8 @@ define([
 			this.roundCorners();
 			this.initToggler();
 
-			this.container.css(this.position === 'right' ? 'marginRight' : 'marginLeft', -this.width);
+			this.container.css(this.position === 'right'
+				? 'marginRight' : 'marginLeft', -this.width);
 
 			if (this.opened) {
 				this.open(0);
@@ -191,15 +171,11 @@ define([
 
 		show: function () {
 			this.container.css('display', 'block');
-				//.animate({opacity: 1}, 1000);
 			return this;
 		},
 
 		hide: function () {
 			this.container.css('display','none');
-			//	.animate({opacity: 0}, 1000, function () {
-			//		$(this).css('display', 'block')
-			//	});
 			return this;
 		},
 
@@ -208,7 +184,7 @@ define([
 		 * Iterates through all panels and checks whether the panel should be
 		 * activated for any of the effective elements in the selection.
 		 *
-		 * @param {Object} range - The Aloha.RangeObject
+		 * @param {Aloha.RangeObject} range The current selection range.
 		 */
 		checkActivePanels: function (range) {
 			var effective = [];
@@ -332,18 +308,20 @@ define([
 		 * check whether the panel should be visible when we have no effective
 		 * elements in the current selection
 		 *
-		 * @param {Object} panel - The Panel object we will test
-		 * @param {Array} elements - The effective elements ($), any of
-		 *							 which may activate the panel
+		 * @param {object} panel The Panel object we will test
+		 * @param {Array.<jQuery.<HTMLElement>>} elements The effective
+		 *                                                elements, any of
+		 *                                                which may activate
+		 *                                                the panel.
 		 */
 		showActivePanel: function (panel, elements) {
 			elements.push(null);
 
-			var j = elements.length;
-			var count = 0;
 			var li = panel.content.parent('li');
 			var activeOn = panel.activeOn;
 			var effective = $();
+			var count = 0;
+			var j = elements.length;
 			var i;
 
 			for (i = 0; i < j; ++i) {
@@ -385,7 +363,8 @@ define([
 				if (typeof Aloha.settings.sidebar !== 'undefined' &&
 						Aloha.settings.sidebar.handle &&
 						Aloha.settings.sidebar.handle.top) {
-					$(bar.find('.aloha-sidebar-handle')).get(0).style.top = Aloha.settings.sidebar.handle.top;
+					$(bar.find('.aloha-sidebar-handle'))[0].style.top =
+						Aloha.settings.sidebar.handle.top;
 				}
 			});
 
@@ -406,48 +385,44 @@ define([
 						that.open();
 						that.isOpen = true;
 					}
-				}).hover(
-					function () {
-						var flag = that.isOpen ? -1 : 1;
+				}).hover(function () {
+					var flag = that.isOpen ? -1 : 1;
 
-						if (bounceTimer) {
-							clearInterval(bounceTimer);
-						}
-
-						icon.stop();
-
-						$(this).stop().animate(
-							isRight ? {marginLeft: '-=' + (flag * 5)} : {marginRight: '-=' + (flag * 5)},
-							200
-						);
-
-						bounceTimer = setInterval(function () {
-							flag *= -1;
-							icon.animate(
-								isRight ? {left: '-=' + (flag * 4)} : {right: '-=' + (flag * 4)},
-								300
-							);
-						}, 300);
-					},
-
-					function () {
-						if (bounceTimer) {
-							clearInterval(bounceTimer);
-						}
-
-						icon.stop().css(isRight ? 'left' : 'right', 5);
-
-						$(this).stop().animate(
-							isRight ? {marginLeft: 0} : {marginRight: 0},
-							600, 'easeOutElastic'
-						);
+					if (bounceTimer) {
+						clearInterval(bounceTimer);
 					}
-				);
+
+					icon.stop();
+
+					$(this).stop().animate(
+						isRight ? {marginLeft: '-=' + (flag * 5)}
+								: {marginRight: '-=' + (flag * 5)},
+						200);
+
+					bounceTimer = setInterval(function () {
+						flag *= -1;
+						icon.animate(
+							isRight ? {left: '-=' + (flag * 4)}
+									: {right: '-=' + (flag * 4)},
+							300
+						);
+					}, 300);
+				}, function () {
+					if (bounceTimer) {
+						clearInterval(bounceTimer);
+					}
+
+					icon.stop().css(isRight ? 'left' : 'right', 5);
+
+					$(this).stop().animate(
+						isRight ? {marginLeft: 0} : {marginRight: 0},
+						600, 'easeOutElastic');
+				});
 		},
 
 		/**
 		 * Rounds the top corners of the first visible panel, and the bottom
-		 * corners of the last visible panel elements in the panels ul list
+		 * corners of the last visible panel elements in the panels ul list.
 		 */
 		roundCorners: function () {
 			var bar = this.container;
@@ -465,7 +440,7 @@ define([
 
 		/**
 		 * Updates the height of the inner div of the sidebar. This is done
-		 * whenever the viewport is resized
+		 * whenever the viewport is resized.
 		 */
 		updateHeight: function () {
 			var h = $(window).height();
@@ -475,7 +450,7 @@ define([
 		/**
 		 * Delegate all sidebar onclick events to the container.
 		 * Then use handleBarclick method until we bubble up to the first
-		 * significant element that we can interact with
+		 * significant element that we can interact with.
 		 */
 		barClicked: function (ev) {
 			this.handleBarclick($(ev.target));
@@ -484,14 +459,14 @@ define([
 		/**
 		 * We handle all click events on the sidebar from here--dispatching
 		 * calls to which ever methods that should be invoked for the each
-		 * interaction
+		 * interaction.
 		 */
 		handleBarclick: function (el) {
 			if (el.hasClass('aloha-sidebar-panel-title')) {
 				this.togglePanel(el);
 			} else if (!el.hasClass('aloha-sidebar-panel-content') &&
-					   !el.hasClass('aloha-sidebar-handle') &&
-					   !el.hasClass('aloha-sidebar-bar')) {
+                       !el.hasClass('aloha-sidebar-handle') &&
+                       !el.hasClass('aloha-sidebar-bar')) {
 				this.handleBarclick(el.parent());
 			}
 		},
@@ -512,15 +487,16 @@ define([
 		/**
 		 * Animation to rotate the sidebar arrow
 		 *
-		 * @param {Number} angle - The angle two which the arrow should rotate
-		 *						   (0 or 180)
-		 * @param {Number|String} duration - (Optional) How long the animation
-		 *									 should play for
+		 * @param {number} angle The angle two which the arrow should rotate
+		 *						 (0 or 180).
+		 * @param {number|String} duration (Optional) How long the animation
+		 *                                 should play for.
 		 */
 		rotateHandleIcon: function (angle, duration) {
 			var arr = this.container.find('.aloha-sidebar-handle-icon');
 			arr.animate({angle: angle}, {
-				duration : (typeof duration === 'number' || typeof duration === 'string') ? duration : 500,
+				duration : (typeof duration === 'number' ||
+                            typeof duration === 'string') ? duration : 500,
 				easing   : 'easeOutExpo',
 				step     : function (val, fx) {
 					arr.css({
@@ -544,29 +520,8 @@ define([
 		 * on whether the sidebar is on the left or right, and whether it is
 		 * in an opened state or not.
 		 *
-		 *	Question:
-		 *		Given that the arrow icon is by default pointing right, should
-		 *		we make it point left?
-		 *
-		 *	Answer:
-		 *		isRight & isOpen   : no
-		 *		isRight & isClosed : yes
-		 *		isLeft  & isOpen   : yes
-		 *		isLeft  & isClosed : no
-		 *
-		 *	Truth table:
-		 *		 isRight | isOpen | XOR
-		 *      ---------+--------+-----
-		 *		 T       | T      | F
-		 *		 T       | F      | T
-		 *		 F       | T      | T
-		 *		 F       | F      | F
-		 *
-		 * Therefore:
-		 *		isPointingLeft = isRight XOR isOpen
-		 *
-		 * @param {Boolean} isOpened - Whether or not the sidebar is in the
-		 *							   opened state
+		 * @param {boolean} isOpened Whether or not the sidebar is in the
+		 *							 opened state.
 		 */
 		toggleHandleIcon: function (isOpen) {
 			var isPointingLeft = (this.position === 'right') ^ isOpen;
@@ -616,7 +571,7 @@ define([
 		},
 
 		/**
-		 * Slides that sidebar out of view
+		 * Slides that sidebar out of view.
 		 */
 		close: function (duration, callback) {
 			if (!this.isOpen) {
@@ -648,10 +603,10 @@ define([
 		 * Activates the given panel and passes to it the given element as the
 		 * the effective that we want it to think activated it.
 		 *
-		 * @param {Object|String} panel - Panel instance or the id of a panel
-		 *								  object
-		 * @param {$} element - Element to pass to the panel as effective
-		 *							 element (the element that activated it)
+		 * @param {object|String} panel Panel instance or the id of a panel
+		 *								object.
+		 * @param {jQuery} element Element to pass to the panel as effective
+		 *	                       element (the element that activated it).
 		 */
 		activatePanel: function (panel, element) {
 			if (typeof panel === 'string') {
@@ -671,9 +626,9 @@ define([
 		 * Invokes the expand method for the given panel so that it expands its
 		 * height to display its contents
 		 *
-		 * @param {Object|String} panel - Panel instance or the id of a panel
-		 *								  object
-		 * @param {Funtion} callback
+		 * @param {object|String} panel Panel instance or the id of a panel
+		 *                              object.
+		 * @param {funtion} callback
 		 */
 		expandPanel: function (panel, callback) {
 			if (typeof panel === 'string') {
@@ -691,9 +646,9 @@ define([
 		 * Collapses the panel contents by invoking the given panel's collapse
 		 * method.
 		 *
-		 * @param {Object|String} panel - Panel instance or the id of a panel
-		 *								  object
-		 * @param {Funtion} callback
+		 * @param {object|String} panel Panel instance or the id of a panel
+		 *								object.
+		 * @param {funtion} callback
 		 */
 		collapsePanel: function (panel, callback) {
 			if (typeof panel === 'string') {
@@ -712,15 +667,15 @@ define([
 		 * We try and build as much of the panel DOM as we can before inserting
 		 * it into the DOM in order to reduce reflow.
 		 *
-		 * @param {Object} panel - either a panel instance or an associative
+		 * @param {object} panel - either a panel instance or an associative
 		 *			   array containing settings for the construction
 		 *			   of a new panel.
-		 * @param {Boolean} deferRounding - (Optional) If true, the rounding-off
+		 * @param {boolean} deferRounding - (Optional) If true, the rounding-off
 		 *				    of the top most and bottom most panels
 		 *				    will not be automatically done. Set
 		 *				    this to true when adding a lot of panels
 		 *				    at once.
-		 * @return {Object} - The newly created panel.
+		 * @return {object} The newly created panel.
 		 */
 		addPanel: function (panel, deferRounding) {
 			if (!(panel instanceof Panel)) {
@@ -750,8 +705,7 @@ define([
 	$.extend(Panel.prototype, {
 
 		init: function (opts) {
-			this.setTitle(opts.title)
-				.setContent(opts.content);
+			this.setTitle(opts.title).setContent(opts.content);
 
 			delete opts.title;
 			delete opts.content;
@@ -770,10 +724,9 @@ define([
 			}
 
 			this.toggleTitleIcon(this.expanded);
-
 			this.coerceActiveOn();
 
-			// Disable text selection on title element
+			// Disable text selection on title element.
 			this.title
 				.attr('unselectable', 'on')
 				.css('-moz-user-select', 'none')
@@ -785,8 +738,8 @@ define([
 		},
 
 		/**
-		 * @param {Boolean} isExpanded - Whether or not the panel is in an
-		 *								 expanded state
+		 * @param {boolean} isExpanded Whether or not the panel is in an
+		 *                             expanded state.
 		 */
 		toggleTitleIcon: function (isExpanded) {
 			if (this.sidebar.settings.rotateIcons) {
@@ -803,7 +756,7 @@ define([
 		},
 
 		/**
-		 * Normalizes the activeOn property into a predicate function
+		 * Normalizes the activeOn property into a predicate function.
 		 */
 		coerceActiveOn: function () {
 			if (typeof this.activeOn !== 'function') {
@@ -837,7 +790,7 @@ define([
 		},
 
 		/**
-		 * Activates (displays) this panel
+		 * Activates (displays) this panel.
 		 */
 		activate: function (effective) {
 			if (this.isActive) {
@@ -852,7 +805,7 @@ define([
 		},
 
 		/**
-		 * Hides this panel
+		 * Hides this panel.
 		 */
 		deactivate: function () {
 			if (!this.isActive) {
@@ -872,14 +825,13 @@ define([
 		},
 
 		/**
-		 * Displays the panel's contents
+		 * Displays the panel's contents.
 		 */
 		expand: function (callback) {
 			var that = this;
 			var el = this.content;
 			var old_h = el.height();
 			var new_h = el.height('auto').height();
-
 			el.height(old_h).stop().animate(
 				{height: new_h}, 500, 'easeOutExpo',
 				function () {
@@ -888,17 +840,14 @@ define([
 					}
 				}
 			);
-
 			this.element.removeClass('collapsed');
 			this.toggleTitleIcon(true);
-
 			this.expanded = true;
-
 			return this;
 		},
 
 		/**
-		 * Hides the panel's contents--leaving only it's header
+		 * Hides the panel's contents--leaving only it's header.
 		 */
 		collapse: function (duration, callback) {
 			var that = this;
@@ -909,18 +858,15 @@ define([
 						callback.call(that);
 					}
 				});
-
 			this.toggleTitleIcon(false);
-
 			this.expanded = false;
-
 			return this;
 		},
 
 		/**
 		 * May also be called by the Sidebar to update title of panel
 		 *
-		 * @param html - Markup string, DOM object, or $ object
+		 * @param {string} html Markup string, DOM object, or jQuery object.
 		 */
 		setTitle: function (html) {
 			this.title.find('.aloha-sidebar-panel-title-text').html(html);
@@ -930,7 +876,9 @@ define([
 		/**
 		 * May also be called by the Sidebar to update content of panel
 		 *
-		 * @param html - Markup string, DOM object, or $ object
+		 * @param {string|jQuery.<HTMLElement>|HTMLElement} html Markup string,
+		 *                                                       DOM object, or
+		 *                                                       jQuery object.
 		 */
 		setContent: function (html) {
 			// We do this so that empty panels don't appear collapsed
@@ -963,11 +911,12 @@ define([
 		 * Walks up the ancestors chain for the given effective element, and
 		 * renders subpanels using the specified renderer function.
 		 *
-		 * @param {$} effective - The effective element, whose lineage we
-		 *							   want to render
-		 * @param {Function} renderer - (Optional) function that will render
-		 *								 each element in the parental lineage
-		 *								 of the effective element
+		 * @param {jQuery.<HTMLElement>} effective The effective element, whose
+		 *                                         lineage we want to render.
+		 * @param {function} renderer (Optional) function that will render each
+		 *                                       element in the parental
+		 *                                       lineage of the effective
+		 *                                       element.
 		 */
 		renderEffectiveParents: function (effective, renderer) {
 			var el = effective.first();
@@ -978,7 +927,6 @@ define([
 			var pathRev;
 
 			while (el.length > 0 && !el.is('.aloha-editable')) {
-
 				if (activeOn(el)) {
 					path.push('<span>' + el[0].tagName.toLowerCase() + '</span>');
 					l = path.length;
@@ -999,23 +947,23 @@ define([
 						'</div>' +
 					 '</div>');
 				}
-
 				el = el.parent();
 			}
 
 			this.setContent(content.join(''));
 
 			$('.aloha-sidebar-panel-parent-path').click(function () {
-				var c = $(this).parent().find('.aloha-sidebar-panel-parent-content');
-
-				if (c.hasClass('aloha-sidebar-opened')) {
-					c.hide().removeClass('aloha-sidebar-opened');
+				var $content = $(this).parent().find(
+					'.aloha-sidebar-panel-parent-content');
+				if ($content.hasClass('aloha-sidebar-opened')) {
+					$content.hide().removeClass('aloha-sidebar-opened');
 				} else {
-					c.show().addClass('aloha-sidebar-opened');
+					$content.show().addClass('aloha-sidebar-opened');
 				}
 			});
 
-			this.content.height('auto').find('.aloha-sidebar-panel-content-inner').height('auto');
+			this.content.height('auto').find(
+				'.aloha-sidebar-panel-content-inner').height('auto');
 		}
 
 	});
@@ -1036,5 +984,4 @@ define([
 	};
 
 	return Aloha.Sidebar;
-
 });
