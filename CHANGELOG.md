@@ -15,7 +15,7 @@ All changes are categorized into one of the following keywords:
 ## 0.20.17 - 2012/07/09
 
 - **ENHANCEMENT**: contenthandler plugin: A new Blockelement Content Handler has been added, that handles breaks in blockelements upon initialization and getContents
-- **ENHANCEMENT**: raganddropfiles: A security issue with the upload.php example file was found. The example will no longer be executable by default.
+- **ENHANCEMENT**: draganddropfiles: A security issue with the upload.php example file was found. The example will no longer be executable by default.
 - **BUG**: core: The implementation for adding br-Tags in Blockelements has been fixed to realize a more consistent behaviour across all browsers and also with the metaview plugin turned on.
 
 ## 0.20.16 - 2012/07/04
