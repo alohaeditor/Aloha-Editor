@@ -57,26 +57,6 @@ define([
 	}
 
 	// ------------------------------------------------------------------------
-	// Local (helper) functions
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Simple templating
-	 *
-	 * @param {String} str - The string containing placeholder keys in curly
-	 *                       brackets
-	 * @param {Object} obj - Associative array of replacing placeholder keys
-	 *                       with corresponding values
-	 */
-	function supplant(str, obj) {
-		 return str.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
-				 var replacement = obj[p1] || str;
-				 return (typeof replacement === 'function') ? replacement()
-			                                                : replacement;
-			 });
-	}
-
-	// ------------------------------------------------------------------------
 	// Panel constructor
 	// ------------------------------------------------------------------------
 	var Panel = function Panel (opts) {
@@ -1006,16 +986,18 @@ define([
 					while (l--) {
 						pathRev.push(path[l]);
 					}
-					content.push(supplant(
-							'<div class="aloha-sidebar-panel-parent">' +
-								'<div class="aloha-sidebar-panel-parent-path">{path}</div>' +
-								'<div class="aloha-sidebar-panel-parent-content aloha-sidebar-opened">{content}</div>' +
-							 '</div>',
-							{
-								path	: pathRev.join(''),
-								content	: (typeof renderer === 'function') ? renderer(el) : '----'
-							}
-						));
+					content.push('<div class="aloha-sidebar-panel-parent">' +
+						'<div class="aloha-sidebar-panel-parent-path">' +
+							pathRev.join('') +
+						'</div>' +
+						'<div class="aloha-sidebar-panel-parent-content' +
+							'aloha-sidebar-opened">' + (
+							(typeof renderer === 'function')
+								? renderer(el)
+								: '----'
+							) +
+						'</div>' +
+					 '</div>');
 				}
 
 				el = el.parent();
