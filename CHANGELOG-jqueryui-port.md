@@ -1,3 +1,13 @@
+- **MANUAL CHANGE**: requirejs is not loaded as part of Aloha-Editor
+
+                     For aloha development the user must now load
+                     requirejs himself before loading aloha.js.
+
+                     When using a built version of Aloha, it's possible
+                     to choose between aloha-min.js, which doesn't
+                     include requirejs, and and aloha-full.js,
+                     which odes include requirejs.
+
 - **MANUAL CHANGE**: Properties exposed by Aloha.Selection or aloha/selection were changed
                      tagHierarchy
                      replacingElements

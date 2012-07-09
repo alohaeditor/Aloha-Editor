@@ -37,7 +37,7 @@ define([
 	var AttributeField = function (props) {
 		var valueField = props.valueField || 'id';
 		var displayField = props.displayField || 'name';
-		var objectTypeFilter = props.objectTypeFilter || 'all';
+		var objectTypeFilter = props.objectTypeFilter || ['all'];
 		var placeholder = props.placeholder;
 		var noTargetHighlight = !!props.noTargetHighlight;
 

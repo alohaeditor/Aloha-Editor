@@ -13,7 +13,7 @@ define([
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
 	'i18n!format/nls/i18n',
-	'i18n!aloha/nls/i18n',
+	'i18n!aloha/nls/i18n'
 ], function (
 	Aloha,
 	Plugin,
@@ -85,7 +85,7 @@ define([
 				// Prepare
 				var me = this;
 
-				if ( typeof this.settings.hotKey != 'undefined' ) {
+				if ( typeof this.settings.hotKey !== 'undefined' ) {
 					jQuery.extend(true, this.hotKey, this.settings.hotKey);
 				}
 
@@ -136,10 +136,7 @@ define([
 				if ( typeof config === 'object' ) {
 					var config_old = [];
 					jQuery.each(config, function(j, button) {
-						//window.console.log('zzz check', j, button);
-						if ( typeof j === 'number' && typeof button === 'string' ) {
-							//config_old.push(j);
-						} else {
+						if ( !(typeof j === 'number' && typeof button === 'string') ) {
 							config_old.push(j);
 						}
 					});
@@ -152,17 +149,19 @@ define([
 
 				// now iterate all buttons and show/hide them according to the config
 				for ( button in this.buttons) {
-					if (jQuery.inArray(button, config) != -1) {
-						ComponentState.setState(this.buttons[button].type, 'show', true);
-					} else {
-						ComponentState.setState(this.buttons[button].type, 'show', false);
+					if (this.buttons.hasOwnProperty(button)) {
+						if (jQuery.inArray(button, config) !== -1) {
+							ComponentState.setState(this.buttons[button].type, 'show', true);
+						} else {
+							ComponentState.setState(this.buttons[button].type, 'show', false);
+						}
 					}
 				}
 
 				// and the same for multisplit items
 				len = this.multiSplitItems.length;
 				for (i = 0; i < len; i++) {
-					if (jQuery.inArray(this.multiSplitItems[i].name, config) != -1) {
+					if (jQuery.inArray(this.multiSplitItems[i].name, config) !== -1) {
 						this.multiSplitButton.showItem(this.multiSplitItems[i].name);
 					} else {
 						this.multiSplitButton.hideItem(this.multiSplitItems[i].name);
@@ -194,7 +193,7 @@ define([
 					var button_config = false;
 
 					if ( typeof j !== 'number' && typeof button !== 'string' ) {
-						var button_config = button;
+						button_config = button;
 						button = j;
 					}
 
@@ -222,15 +221,8 @@ define([
 								tooltip : i18n.t('button.' + button + '.tooltip'),
 								icon: 'aloha-icon aloha-icon-' + componentName,
 								scope: scope,
- 								click: function () {
+								click: function () {
 									var selectedCells = jQuery('.aloha-cell-selected');
-
-									if ( typeof button_config === 'string' ) {
-										markup.attr('class', button_config);
-									} else if ( typeof button_config === 'object' ) {
-										//} else if ( typeof button_config === 'object' ) { // check for class and other html-attr
-										markup.attr('class', button_config[0]);
-									}
 
 									// formating workaround for table plugin
 									if ( selectedCells.length > 0 ) {
@@ -251,7 +243,7 @@ define([
 										});
 
 										// remove all markup if all cells have markup
-										if ( cellMarkupCounter == selectedCells.length ) {
+										if ( cellMarkupCounter === selectedCells.length ) {
 											selectedCells.find(button).contents().unwrap();
 										}
 										return false;
@@ -264,7 +256,7 @@ define([
 							});
 							that.buttons[button] = {
 								type: componentName,
-								'markup' : jQuery('<'+button+'>').attr('class', button_config ? button_config : '')
+								'markup' : jQuery('<'+button+'>', {'class': button_config || ''})
 							};
 							break;
 
@@ -280,7 +272,7 @@ define([
 								'name' : button,
 								'tooltip' : i18n.t('button.' + button + '.tooltip'),
 								'iconClass' : 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
-								'markup' : jQuery('<'+button+'></'+button+'>'),
+								'markup' : jQuery('<'+button+'>'),
 								'click' : function() {
 									var selectedCells = jQuery('.aloha-cell-selected');
 
@@ -303,7 +295,7 @@ define([
 										});
 
 										// remove all markup if all cells have markup
-										if ( cellMarkupCounter == selectedCells.length ) {
+										if ( cellMarkupCounter === selectedCells.length ) {
 											selectedCells.find(button).contents().unwrap();
 										}
 										return false;
@@ -478,7 +470,7 @@ define([
 			*/
 			addMarkup: function( button ) {
 				var
-					markup = jQuery('<'+button+'></'+button+'>'),
+					markup = jQuery('<'+button+'>'),
 					rangeObject = Aloha.Selection.rangeObject,
 					foundMarkup;
 			
@@ -488,7 +480,7 @@ define([
 			
 				// check whether the markup is found in the range (at the start of the range)
 				foundMarkup = rangeObject.findMarkup( function() {
-					return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
+					return this.nodeName === markup[0].nodeName;
 				}, Aloha.activeEditable.obj );
 
 				if ( foundMarkup ) {
@@ -518,7 +510,7 @@ define([
 			 * Change markup
 			*/
 			changeMarkup: function( button ) {
-				Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
+				Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
 			},
 
 
@@ -540,7 +532,7 @@ define([
 				}
 
 				for (i = 0; i < formats.length; i++) {
-					GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '></' + formats[i] + '>'), Aloha.activeEditable.obj);
+					GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '>'), Aloha.activeEditable.obj);
 				}
 
 				// select the modified range
