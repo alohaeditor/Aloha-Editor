@@ -25,8 +25,8 @@
 
 define([
     'aloha/core',
-	'jquery',
-	'aloha/selection'
+    'jquery',
+    'aloha/selection'
 ], function (
 	Aloha,
 	$,
