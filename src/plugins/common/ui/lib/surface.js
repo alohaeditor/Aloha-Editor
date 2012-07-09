@@ -196,49 +196,6 @@ define([
 					tuples[i][1]($event, range, nativeEvent);
 				}
 			}
-		},
-
-		getActiveSurfaces: function () {
-			return Aloha.activeEditable ? Aloha.activeEditable.surfaces : [];
-		},
-
-		getActiveContainer: function () {
-			return null;
-		},
-
-		getContainers: function () {
-			return [];
-		},
-
-		getActiveComponentsByType: function (type) {
-			var surfaces = Surface.getActiveSurfaces();
-			var components = [];
-			var container;
-			var i;
-			for (i = 0; i < surfaces.length; i++) {
-				container = surfaces[0].getActiveContainer();
-				if (container && container.components[type]) {
-					components = components.concat(container.components[type]);
-				}
-			}
-			return components;
-		},
-
-		getComponentsByType: function (type) {
-			var surfaces = Surface.instances;
-			var components = [];
-			var containers;
-			var i;
-			var j;
-			for (i = 0; i < surfaces.length; i++) {
-				containers = surfaces[i].getContainers();
-				for (j = 0; j < containers.length; j++) {
-					if (containers[j].components[type]) {
-						components = components.concat(containers[j].components[type]);
-					}
-				}
-			}
-			return components;
 		}
 	});
 
