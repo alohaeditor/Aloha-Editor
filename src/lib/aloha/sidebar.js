@@ -37,34 +37,23 @@ define([
 	'use strict';
 
 	var $ = jQuery;
-
-	// Pseudo-namespace prefix for Sidebar elements
-	// Rational:
-	// We use a prefix instead of an enclosing class or id because we need to
-	// be paranoid of unintended style inheritance in an environment like the
-	// one in which Aloha-Editor operates in, with its numerous custom plugins.
-	// eg: .inner or .btn can be used in several plugins, with eaching adding
-	// to the class styles properties that we don't want.
-	var ns = 'aloha-sidebar';
 	var uid  = +(new Date());
-	// namespaced classnames
 	var nsClasses = {
-			'bar'                      : nsClass('bar'),
-			'handle'                   : nsClass('handle'),
-			'inner'                    : nsClass('inner'),
-			'panels'                   : nsClass('panels'),
-			'config-btn'               : nsClass('config-btn'),
-			'handle-icon'              : nsClass('handle-icon'),
-			'panel-content'            : nsClass('panel-content'),
-			'panel-content-inner'      : nsClass('panel-content-inner'),
-			'panel-content-inner-text' : nsClass('panel-content-inner-text'),
-			'panel-title'              : nsClass('panel-title'),
-			'panel-title-arrow'        : nsClass('panel-title-arrow'),
-			'panel-title-text'         : nsClass('panel-title-text')
+			'bar'                      : 'aloha-sidebar-bar',
+			'handle'                   : 'aloha-sidebar-handle',
+			'inner'                    : 'aloha-sidebar-inner',
+			'panels'                   : 'aloha-sidebar-panels',
+			'config-btn'               : 'aloha-sidebar-config-btn',
+			'handle-icon'              : 'aloha-sidebar-handle-icon',
+			'panel-content'            : 'aloha-sidebar-panel-content',
+			'panel-content-inner'      : 'aloha-sidebar-panel-content-inner',
+			'panel-content-inner-text' : 'aloha-sidebar-panel-content-inner-text',
+			'panel-title'              : 'aloha-sidebar-panel-title',
+			'panel-title-arrow'        : 'aloha-sidebar-panel-title-arrow',
+			'panel-title-text'         : 'aloha-sidebar-panel-title-text'
 		};
 
 	// Extend jQuery easing animations
-	/*
 	if (!jQuery.easing.easeOutExpo) {
 		jQuery.extend(jQuery.easing, {
 			easeOutExpo: function (x, t, b, c, d) {
@@ -80,7 +69,6 @@ define([
 			}
 		});
 	}
-	*/
 
 	// ------------------------------------------------------------------------
 	// Local (helper) functions
@@ -115,25 +103,6 @@ define([
 	}
 
 	/**
-	 * Generates a selector string with this plugins's namespace prefixed the
-	 * each classname
-	 *
-	 * Usage:
-	 *    nsSel('header,', 'main,', 'foooter ul')
-	 *    will return
-	 *    ".aloha-myplugin-header, .aloha-myplugin-main, .aloha-mypluzgin-footer ul"
-	 *
-	 * @return {String}
-	 */
-	function nsSel() {
-		var strBldr = [], prx = ns;
-		jQuery.each(arguments, function () {
-			strBldr.push('.' + (this === '' ? prx : prx + '-' + this));
-		});
-		return jQuery.trim(strBldr.join(' '));
-	}
-
-	/**
 	 * Generates a string with this plugins's namespace prefixed the each
 	 * classname
 	 *
@@ -145,7 +114,7 @@ define([
 	 * @return {String}
 	 */
 	function nsClass() {
-		var strBldr = [], prx = ns;
+		var strBldr = [], prx = 'aloha-sidebar';
 		jQuery.each(arguments, function () {
 			strBldr.push(this === '' ? prx : prx + '-' + this);
 		});
@@ -260,7 +229,7 @@ define([
 			bar.hide()
 			   .appendTo(jQuery('body'))
 			   .click(function () {that.barClicked.apply(that, arguments);})
-			   .find(nsSel('panels')).width(this.width);
+			   .find('.aloha-sidebar-panels').width(this.width);
 
 			// IE7 needs us to explicitly set the container width, since it is
 			// unable to determine it on its own
@@ -365,7 +334,7 @@ define([
 		 * share that space.
 		 */
 		correctHeight: function () {
-			var height = this.container.find(nsSel('inner')).height() - (15 * 2);
+			var height = this.container.find('.aloha-sidebar-inner').height() - (15 * 2);
 			var panels = [];
 
 			jQuery.each(this.panels, function () {
@@ -396,7 +365,7 @@ define([
 
 				for (j = panels.length - 1; j >= 0; --j) {
 					panel = panels[j];
-					panelInner = panel.content.find(nsSel('panel-content-inner'));
+					panelInner = panel.content.find('.aloha-sidebar-panel-content-inner');
 
 					targetHeight = math.min(
 						panelInner.height('auto').height(),
@@ -405,7 +374,7 @@ define([
 
 					panelInner.height(targetHeight);
 					remainingHeight -= targetHeight;
-					panelText = panelInner.find(nsSel('panel-content-inner-text'));
+					panelText = panelInner.find('.aloha-sidebar-panel-content-inner-text');
 
 					if (panelText.height() > targetHeight) {
 						undone.push(panel);
@@ -474,7 +443,7 @@ define([
 		initToggler: function () {
 			var that = this;
 			var bar = this.container;
-			var icon = bar.find(nsSel('handle-icon'));
+			var icon = bar.find('.aloha-sidebar-handle-icon');
 			var toggledClass = nsClass('toggled');
 			var bounceTimer;
 			var isRight = (this.position === 'right');
@@ -488,11 +457,11 @@ define([
 				if (typeof Aloha.settings.sidebar !== 'undefined' &&
 						Aloha.settings.sidebar.handle &&
 						Aloha.settings.sidebar.handle.top) {
-					jQuery(bar.find(nsSel('handle'))).get(0).style.top = Aloha.settings.sidebar.handle.top;
+					jQuery(bar.find('.aloha-sidebar-handle')).get(0).style.top = Aloha.settings.sidebar.handle.top;
 				}
 			});
 
-			bar.find(nsSel('handle'))
+			bar.find('.aloha-sidebar-handle')
 				.click(function () {
 					if (bounceTimer) {
 						clearInterval(bounceTimer);
@@ -554,16 +523,16 @@ define([
 		 */
 		roundCorners: function () {
 			var bar = this.container;
-			var lis = bar.find(nsSel('panels>li:not(', 'deactivated)'));
+			var lis = bar.find('.aloha-sidebar-panels>li:not(.aloha-sidebar-deactivated)');
 			var topClass = nsClass('panel-top');
 			var bottomClass = nsClass('panel-bottom');
 
-			bar.find(nsSel('panel-top,', 'panel-bottom'))
+			bar.find('.aloha-sidebar-panel-top, .aloha-sidebar-panel-bottom')
 			   .removeClass(topClass)
 			   .removeClass(bottomClass);
 
-			lis.first().find(nsSel('panel-title')).addClass(topClass);
-			lis.last().find(nsSel('panel-content')).addClass(bottomClass);
+			lis.first().find('.aloha-sidebar-panel-title').addClass(topClass);
+			lis.last().find('.aloha-sidebar-panel-content').addClass(bottomClass);
 		},
 
 		/**
@@ -572,7 +541,7 @@ define([
 		 */
 		updateHeight: function () {
 			var h = jQuery(window).height();
-			this.container.height(h).find(nsSel('inner')).height(h);
+			this.container.height(h).find('.aloha-sidebar-inner').height(h);
 		},
 
 		/**
@@ -621,7 +590,7 @@ define([
 		 *									 should play for
 		 */
 		rotateHandleIcon: function (angle, duration) {
-			var arr = this.container.find(nsSel('handle-icon'));
+			var arr = this.container.find('.aloha-sidebar-handle-icon');
 			arr.animate({angle: angle}, {
 				duration : (typeof duration === 'number' || typeof duration === 'string') ? duration : 500,
 				easing   : 'easeOutExpo',
@@ -677,7 +646,7 @@ define([
 			if (this.settings.rotateIcons) {
 				this.rotateHandleIcon(isPointingLeft ? 180 : 0, 0);
 			} else {
-				var icon = this.container.find(nsSel('handle-icon'));
+				var icon = this.container.find('.aloha-sidebar-handle-icon');
 
 				if (isPointingLeft) {
 					icon.addClass(nsClass('handle-icon-left'));
@@ -836,7 +805,7 @@ define([
 
 			this.panels[panel.id] = panel;
 
-			this.container.find(nsSel('panels')).append(panel.element);
+			this.container.find('.aloha-sidebar-panels').append(panel.element);
 
 			if (deferRounding !== true) {
 				this.roundCorners();
@@ -895,7 +864,7 @@ define([
 			if (this.sidebar.settings.rotateIcons) {
 				this.rotateTitleIcon(isExpanded ? 90 : 0);
 			} else {
-				var icon = this.title.find(nsSel('panel-title-arrow'));
+				var icon = this.title.find('.aloha-sidebar-panel-title-arrow');
 
 				if (isExpanded) {
 					icon.addClass(nsClass('panel-title-arrow-down'));
@@ -1026,7 +995,7 @@ define([
 		 * @param html - Markup string, DOM object, or jQuery object
 		 */
 		setTitle: function (html) {
-			this.title.find(nsSel('panel-title-text')).html(html);
+			this.title.find('.aloha-sidebar-panel-title-text').html(html);
 			return this;
 		},
 
@@ -1041,12 +1010,12 @@ define([
 				html = '&nbsp;';
 			}
 
-			this.content.find(nsSel('panel-content-inner-text')).html(html);
+			this.content.find('.aloha-sidebar-panel-content-inner-text').html(html);
 			return this;
 		},
 
 		rotateTitleIcon: function (angle, duration) {
-			var arr = this.title.find(nsSel('panel-title-arrow'));
+			var arr = this.title.find('.aloha-sidebar-panel-title-arrow');
 			arr.animate({angle: angle}, {
 				duration : (typeof duration === 'number') ? duration : 500,
 				easing   : 'easeOutExpo',
