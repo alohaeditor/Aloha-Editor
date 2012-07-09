@@ -393,7 +393,7 @@ define([
 			//if (this !== event.target && !event.target.contentEditable) {
 			//return;
 			//}
-			debugger;
+
 			// Keypress represents characters, not special keys
 			var special = event.type !== "keypress" && jQuery.hotkeys.specialKeys[ event.which ],
 			    modif = "",
