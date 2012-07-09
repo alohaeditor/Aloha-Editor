@@ -107,6 +107,13 @@ define([
 		});
 	};
 
+	/**
+	 * The last calculated view port height.
+	 * @type {number}
+	 */
+	var previousViewportHeight = null;
+	var previousActivePanelIds = null;
+
 	$.extend(Sidebar.prototype, {
 
 		// We build as much of the sidebar as we can before appending it to DOM
@@ -149,7 +156,6 @@ define([
 			});
 
 			this.updateHeight();
-			this.roundCorners();
 			this.initToggler();
 
 			this.container.css(this.position === 'right'
@@ -238,19 +244,37 @@ define([
 		 * share that space.
 		 */
 		correctHeight: function () {
-			var height = this.container.find('.aloha-sidebar-inner').height() - (15 * 2);
-			var panels = [];
-
-			$.each(this.panels, function () {
-				if (this.isActive) {
-					panels.push(this);
-				}
-			});
-
-			if (panels.length === 0) {
+			if (!this.isOpen) {
 				return;
 			}
 
+			var viewportHeight = $(window).height();
+			var activePanelIds = [];
+			var panels = [];
+			var panelId;
+			for (panelId in this.panels) if (this.panels.hasOwnProperty(panelId)) {
+				if (this.panels[panelId].isActive) {
+					panels.push(this.panels[panelId]);
+					activePanelIds.push(panelId);
+				}
+			}
+
+			if (0 === panels.length) {
+				return;
+			}
+
+			activePanelIds = activePanelIds.sort().join(',');
+
+			if (previousActivePanelIds === activePanelIds &&
+			    previousViewportHeight === viewportHeight) {
+				return;
+			}
+
+			previousViewportHeight = viewportHeight;
+			previousActivePanelIds = activePanelIds;
+
+			var PADDING = 15;
+			var height = this.container.find('.aloha-sidebar-inner').height() - (PADDING * 2);
 			var remainingHeight = height - ((panels[0].title.outerHeight() + 10) * panels.length);
 			var panel;
 			var targetHeight;
@@ -258,12 +282,11 @@ define([
 			var panelText;
 			var undone;
 			var toadd = 0;
-			var math = Math; // Local reference for quicker lookup
+			var math = Math;
 			var j;
 
 			while (panels.length > 0 && remainingHeight > 0) {
 				remainingHeight += toadd;
-
 				toadd = 0;
 				undone = [];
 
@@ -338,8 +361,6 @@ define([
 			} else {
 				panel.deactivate();
 			}
-
-			this.roundCorners();
 		},
 
 		/**
@@ -423,8 +444,11 @@ define([
 		/**
 		 * Rounds the top corners of the first visible panel, and the bottom
 		 * corners of the last visible panel elements in the panels ul list.
+		 * @deprecated
+		 * @fixme: css3
 		 */
 		roundCorners: function () {
+
 			var bar = this.container;
 			var lis = bar.find('.aloha-sidebar-panels>li:not(.aloha-sidebar-deactivated)');
 			var topClass = 'aloha-sidebar-panel-top';
@@ -520,8 +544,8 @@ define([
 		 * on whether the sidebar is on the left or right, and whether it is
 		 * in an opened state or not.
 		 *
-		 * @param {boolean} isOpened Whether or not the sidebar is in the
-		 *							 opened state.
+		 * @param {boolean} isOpen Whether or not the sidebar is in the opened
+		 *                         state.
 		 */
 		toggleHandleIcon: function (isOpen) {
 			var isPointingLeft = (this.position === 'right') ^ isOpen;
@@ -564,6 +588,7 @@ define([
 			}
 
 			this.isOpen = true;
+			this.correctHeight();
 
 			$('body').trigger('aloha-sidebar-opened', this);
 
@@ -687,12 +712,7 @@ define([
 			}
 
 			this.panels[panel.id] = panel;
-
 			this.container.find('.aloha-sidebar-panels').append(panel.element);
-
-			if (deferRounding !== true) {
-				this.roundCorners();
-			}
 			this.checkActivePanels(Selection.getRangeObject());
 			return panel;
 		}
