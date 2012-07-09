@@ -36,7 +36,7 @@ define([
 	var Toolbar = Surface.extend({
 
 		_tabs: [],
-
+		_moveTimeout: null,
 		$_container: null,
 
 		/**
@@ -93,6 +93,7 @@ define([
 				clearTimeout(this._moveTimeout);
 			}
 			this._moveTimeout = setTimeout(function () {
+				that._moveTimeout = null;
 				if (Aloha.activeEditable && Toolbar.isFloatingMode) {
 					that.$element.stop();
 					floating.floatSurface(that, Aloha.activeEditable, duration,
