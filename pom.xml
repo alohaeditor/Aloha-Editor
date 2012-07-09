@@ -77,6 +77,8 @@
 						<regexp>true</regexp>
 						<!-- If sloppy whitespace is tolerated -->
 						<white>true</white>
+						<!-- If increment/decrement should be allowed -->
+						<plusplus>true</plusplus>
 					</options>
 				</configuration>
 				<executions>
