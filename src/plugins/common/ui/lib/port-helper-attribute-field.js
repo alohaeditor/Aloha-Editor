@@ -7,7 +7,6 @@ define([
 	'jquery',
 	'ui/component',
 	'ui/scopes',
-	'ui/context',
 	'aloha/repositorymanager',
 	'PubSub',
 	'aloha/console',
@@ -16,7 +15,6 @@ define([
 	$,
 	Component,
 	Scopes,
-	Context,
 	RepositoryManager,
 	PubSub,
 	console

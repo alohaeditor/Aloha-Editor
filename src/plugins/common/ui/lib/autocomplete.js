@@ -2,13 +2,11 @@ define([
 	'jquery',
 	'aloha/repositorymanager',
 	'ui/component',
-	'ui/context',
 	'./vendor/jquery-ui-autocomplete-html',
 ], function(
 	jQuery,
 	RepositoryManager,
-	Component,
-	Context
+	Component
 ) {
 	'use strict';
 
