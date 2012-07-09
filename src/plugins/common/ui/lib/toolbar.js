@@ -47,7 +47,6 @@ define([
 		 * @override
 		 */
 		_constructor: function (editable) {
-			this._super(editable);
 
 			// All containers are rendered in a div specific to the editable to
 			// make it easy to show and hide the toolbar containers on
@@ -235,14 +234,7 @@ define([
 			if (editable.settings.toolbar &&
 			    editable.settings.toolbar.length) {
 				var surface =  new Toolbar(editable);
-
-				if (!editable.toolbars) {
-					editable.toolbars = [];
-				}
-				editable.toolbars.push(surface.$element);
-
 				Toolbar.instances.push(surface);
-
 				return surface;
 			}
 

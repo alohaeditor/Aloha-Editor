@@ -18,19 +18,6 @@ define([
 	 * @base
 	 */
 	var Surface = Class.extend({
-
-		/**
-		 * Surface constructor.
-		 *
-		 * @param {Aloha.Editable} editable The editable to which this surface
-		 *                                  is bound to for the duration of its
-		 *                                  lifetime.
-		 * @constructor
-		 */
-		_constructor: function( editable ) {
-			this.editable = editable;
-		},
-
 		/**
 		 * Check for whether or not this surface is active--that is, whether is
 		 * is visible and the user can interact with it.
