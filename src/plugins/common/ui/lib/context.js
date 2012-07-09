@@ -13,22 +13,30 @@
  * 2 - all css rules should have a .aloha context class, and the common
  *     parent provides this class.
  */
-define(['jquery'],function($){
+define(['jquery', 'util/class'],function($, Class){
 	'use strict';
 
-	var id = 'aloha-ui-context';
-	var selector = '#' + id;
+	var id = 'aloha-ui-context',
+	    selector = '#' + id,
+	    contextElem,
+	    contextSingleton;
 
-	if ( ! $(selector).length ) {
-		$('<div>', {'class': 'aloha', 'id': id}).appendTo('body');
+	contextElem = $(selector);
+	if (!contextElem.length) {
+		contextElem = $('<div>', {'class': 'aloha', 'id': id}).appendTo('body');
 	}
 
+	var Context =  Class.extend({
+		selector: selector,
+		element: contextElem
+	});
+
+	contextSingleton = new Context();
+
 	return {
-		selector: function(){
-			return selector;
-		},
-		element: function(){
-			return $(selector);
+		forEditable: function(editable) {
+			// per-editable context not implemented
+			return contextSingleton;
 		}
 	};
 });

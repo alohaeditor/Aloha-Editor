@@ -2,12 +2,14 @@ define([
 	'aloha/core',
 	'jquery',
 	'util/class',
-	'ui/container'
+	'ui/container',
+	'ui/context'
 ], function(
 	Aloha,
 	jQuery,
 	Class,
-	Container
+	Container,
+	Context
 ) {
 	'use strict';
 
@@ -25,7 +27,7 @@ define([
 		 * @FIXME: @TODO: Implenent this function.
 		 * @eturn {boolean} True if this surface is visible.
 		 */
-		isActive: function () {
+		isActive: function() {
 			return true;
 		}
 
@@ -73,17 +75,25 @@ define([
 		 */
 		init: function() {
 			// When an editable is activated, we show its associated surfaces.
-			Aloha.bind( 'aloha-editable-activated', function( event, alohaEvent ) {
+			Aloha.bind('aloha-editable-activated', function(event, alohaEvent) {
 				Surface.active = alohaEvent.editable;
-				Surface.show(alohaEvent.editable.uiContext);
-				Container.showContainersForContext(Surface.active.uiContext);
+				var context = Context.forEditable(Surface.active)
+
+				// If this is the first time we've seen this editable,
+				// then we need to initialize the surfaces first.
+				if (!context.surfaces) {
+					Surface.initialize(context, Surface.active.settings);
+				}
+
+				Surface.show(context);
+				Container.showContainersForContext(context, event);
 			});
 
 			// When an editable is deactivated, we hide its associated surfaces.
-			Aloha.bind( 'aloha-editable-deactivated', function( event, alohaEvent ) {
+			Aloha.bind('aloha-editable-deactivated', function(event, alohaEvent) {
 				// TODO: handle a click on a surface, then a click outside
 				if ( !Surface.suppressHide ) {
-					Surface.hide( alohaEvent.editable.uiContext );
+					Surface.hide(Context.forEditable(alohaEvent.editable));
 					Surface.active = null;
 				}
 			});
@@ -94,14 +104,8 @@ define([
 		 *
 		 * @param {!Object} context.
 		 */
-		show: function( context ) {
-			// If this is the first time we're showing the surfaces for this
-			// context, then we need to initialize the surfaces first.
-			if ( !context.surfaces ) {
-				Surface.initialize( context );
-			}
-
-			jQuery.each( context.surfaces, function( i, surface ) {
+		show: function(context) {
+			jQuery.each(context.surfaces, function(i, surface) {
 				surface.show();
 			});
 		},
@@ -111,23 +115,22 @@ define([
 		 *
 		 * @param {!Object} context
 		 */
-		hide: function (context) {
+		hide: function(context) {
 			jQuery.each(context.surfaces, function (i, surface) {
 				surface.hide();
 			});
 		},
 
 		/**
-		 * Initializes all surfaces for an context.
-		 * @todo Rename to initialize.
-		 * @todo Remove the above @todo.
+		 * Initializes all surfaces for a context.
 		 *
 		 * @param {!Object} context
+		 * @param {?Object} settings
 		 */
-		initialize: function (context) {
+		initialize: function(context, settings) {
 			context.surfaces = [];
-			jQuery.each(Surface.Types, function (i, Type) {
-				var surface = Type.createSurface(context);
+			jQuery.each(Surface.Types, function(i, Type) {
+				var surface = Type.createSurface(context, settings);
 				if (surface) {
 					context.surfaces.push(surface);
 					Surface.instances.push(surface);
@@ -140,7 +143,7 @@ define([
 		 *
 		 * @param {Surface} surface
 		 */
-		registerType: function (surface) {
+		registerType: function(surface) {
 			Surface.Types.push(surface);
 		},
 
@@ -153,8 +156,8 @@ define([
 		 *                                      when the user interacts with
 		 *                                      it.
 		 */
-		trackRange: function (element) {
-			element.bind('mousedown', function (e) {
+		trackRange: function(element) {
+			element.bind('mousedown', function(e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = true;
 				Surface.suppressHide = true;
@@ -169,14 +172,14 @@ define([
 				}
 			});
 			
-			element.bind('mouseup', function (e) {
+			element.bind('mouseup', function(e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = false;
 				Surface.suppressHide = false;
 			});
 		},
 
-		onActivatedSurface: function (tuples, eventName, $event, range, nativeEvent) {
+		onActivatedSurface: function(tuples, eventName, $event, range, nativeEvent) {
 			var i;
 			for (i = 0; i < tuples.length; i++) {
 				if (tuples[i][0].isActive()) {

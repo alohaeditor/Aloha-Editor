@@ -154,8 +154,6 @@ define( [
 			// TODO make editables their own settings.
 			this.settings = Aloha.settings;
 
-			this.uiContext = {settings: {toolbar: this.settings.toolbar}};
-
 			// smartContentChange settings
 			// @TODO move to new config when implemented in Aloha
 			if ( Aloha.settings && Aloha.settings.smartContentChange ) {

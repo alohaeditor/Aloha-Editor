@@ -30,17 +30,13 @@ define([
 	 * @extends {Component}
 	 */
 	var Autocomplete = Component.extend({
-		/**
-		 * Initializes the autocomplete component
-		 * @override
-		 */
-		init: function() {
+		init: function(context) {
 			this._super();
 			var that = this;
 			this.element = jQuery( "<input>" )
 				.autocomplete({
 					html: true,
-					appendTo: Context.selector(),
+					appendTo: context.selector,
 					source: function( req, res ) {
 						RepositoryManager.query({
 							queryString: req.term,

@@ -42,11 +42,14 @@ define([
 		/**
 		 * Toolbar constructor.
 		 *
-		 * @param context
+		 * @param {!Object} context
+		 * @param {!Array.<(Object|Array|string)>} tabs
 		 * @constructor
 		 * @override
 		 */
-		_constructor: function (context) {
+		_constructor: function(context, tabs) {
+			var tabSettings,
+			    i;
 
 			// All containers are rendered in a div specific to the context to
 			// make it easy to show and hide the toolbar containers on
@@ -57,17 +60,14 @@ define([
 
 			this.$_container = Tab.createContainer().appendTo(this.$element);
 
-			var settings;
-			var tabs = context.settings.toolbar;
-			var i;
 			for (i = 0; i < tabs.length; i++) {
-				settings = tabs[i];
+				tabSettings = tabs[i];
 				this._tabs.push(new Tab({
-					label: settings.label || '',
-					showOn: settings.showOn,
+					label: tabSettings.label || '',
+					showOn: tabSettings.showOn,
 					context: context,
 					container: this.$_container
-				}, settings.components));
+				}, tabSettings.components));
 			}
 
 			// Pinning behaviour is global in that if one toolbar is pinned,
@@ -227,13 +227,13 @@ define([
 		/**
 		 * Creates a toolbar for an context.
 		 *
-		 * @param context
+		 * @param {!Object} context
+		 * @param {!Object} settings
 		 * @returns {Toolbar}
 		 */
-		createSurface: function (context) {
-			if (context.settings.toolbar &&
-			    context.settings.toolbar.length) {
-				var surface =  new Toolbar(context);
+		createSurface: function (context, settings) {
+			if (settings.toolbar && settings.toolbar.length) {
+				var surface =  new Toolbar(context, settings.toolbar);
 				Toolbar.instances.push(surface);
 				return surface;
 			}

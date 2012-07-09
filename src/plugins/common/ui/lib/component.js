@@ -20,6 +20,8 @@ define([
 	 */
 	var Component = Class.extend({
 
+		context: null,
+
 		/**
 		 * Will be set in Component.define()
 		 */
@@ -32,9 +34,10 @@ define([
 
 		/**
 		 * The type property is set in Component.define(), so components should only ever be instantiated through define.
+		 * @param {!Object} context
 		 * @constructor
 		 */
-		_constructor: function () {
+		_constructor: function(context) {
 			// Components are responsible for updating their state and visibility
 			// whenever the selection changes.
 			// TODO(p.salema@gentics.com): Consider implementing 'aloha-node-changed'
@@ -45,7 +48,7 @@ define([
 					this.selectionChange(range);
 				}, this));
 
-			this.init();
+			this.init(context);
 
 			var thisComponent = this;
 			ComponentState.applyAllStates(thisComponent.type, thisComponent);
@@ -129,17 +132,18 @@ define([
 		 *
 		 * It is here that component instances are instantiated.
 		 *
+		 * @param {!Object} context
 		 * @param {string} type The name of the component type we want to
 		 *                      (initialize if needed and) render.
-		 * @return {Component} An instance of the component of the given type.
+		 * @return {!Component} An instance of the component of the given type.
 		 */
-		render: function (type) {
+		render: function (context, type) {
 			var ComponentType = Component.components[type];
 			if (!ComponentType) {
 				console.warn('Component type "' + type + '" is not defined.');
 				return null;
 			}
-			return new ComponentType();
+			return new ComponentType(context);
 		}
 	});
 

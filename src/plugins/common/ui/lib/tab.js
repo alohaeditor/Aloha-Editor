@@ -80,7 +80,7 @@ define([
 						this.panel.append('<div>');
 					} else {
 						componentName = components[i];	
-						component = Component.render(componentName);
+						component = Component.render(thisTab.context, componentName);
 						if (component) {
 							component._container = this;
 							this.storeComponent(component);
@@ -100,7 +100,7 @@ define([
 							group.append('<div>');
 						} else {
 							componentName = groupedComponents[j];
-							component = Component.render(componentName);
+							component = Component.render(thisTab.context, componentName);
 							if (component) {
 								component._container = this;
 								this.storeComponent(component);

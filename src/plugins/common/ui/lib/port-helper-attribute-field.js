@@ -10,6 +10,7 @@ define([
 	'ui/context',
 	'aloha/repositorymanager',
 	'PubSub',
+	'aloha/console',
 	'ui/vendor/jquery-ui-autocomplete-html'
 ], function (
 	$,
@@ -17,7 +18,8 @@ define([
 	Scopes,
 	Context,
 	RepositoryManager,
-	PubSub
+	PubSub,
+	console
 ) {
 	'use strict';
 
@@ -41,6 +43,7 @@ define([
 		var placeholder = props.placeholder;
 		var noTargetHighlight = !!props.noTargetHighlight;
 
+		var componentInstantiated = 0;
 		var template;
 		var resourceItem;
 		var resourceValue;
@@ -57,29 +60,40 @@ define([
 		}
 
 		Component.define(props.name, Component, {
-			element: $('<span>').append(element),
+			init: function(context){
+
+				if (componentInstantiated++) {
+					console.error("Multiple instantiation of port-helper-attribute-field is not implemented");
+					return;
+				}
+
+				// Why do we have to wrap the element in a span? It
+				// doesn't seem to work otherwise.
+				this.element = $('<span>').append(element);
+
+				element.autocomplete({
+					'html': true,
+					'appendTo': context.selector,
+					'source': function( req, res ) {
+						RepositoryManager.query({
+							queryString: req.term,
+							objectTypeFilter: objectTypeFilter
+						}, function( data ) {
+							res($.map(data.items, function(item) {
+								return {
+									label: parse(template, item),
+									value: item.name,
+									obj: item
+								};
+							}));
+						});
+					},
+					"select": onSelect
+				});
+			},
 			scope: props.scope
 		})
 
-		element.autocomplete({
-			'html': true,
-			'appendTo': Context.selector(),
-			'source': function( req, res ) {
-				RepositoryManager.query({
-					queryString: req.term,
-					objectTypeFilter: objectTypeFilter
-				}, function( data ) {
-					res($.map(data.items, function(item) {
-						return {
-							label: parse(template, item),
-							value: item.name,
-							obj: item
-						};
-					}));
-				});
-			},
-			"select": onSelect
-		});
 
 		element
 			.bind("focus", onFocus)
