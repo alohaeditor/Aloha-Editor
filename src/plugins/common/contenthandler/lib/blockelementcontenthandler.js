@@ -19,7 +19,7 @@ function (Aloha, jQuery, ContentHandlerManager) {
 		$this.filter('h1:empty,h2:empty,h3:empty,h4:empty,h5:empty,h6:empty,p:empty,pre:empty,blockquote:empty').remove();
 
 		// 2. if editing in IE: remove end-br's
-		if (jQuery.browser.msie) {
+		if (jQuery.browser.msie && jQuery.browser.version > 7) {
 			$this.filter('br.aloha-end-br').remove();
 		}
 

@@ -6410,7 +6410,7 @@ function ensureContainerEditable(container) {
 		return;
 	}
 
-	if (!jQuery.browser.msie) {
+	if (!jQuery.browser.msie || (jQuery.browser.version <= 7 && !isHtmlElement(container, "li"))) {
 		container.appendChild(createEndBreak());
 	}
 }
