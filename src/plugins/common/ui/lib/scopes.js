@@ -38,7 +38,7 @@ define([
 		// the original comment:
 		// "Only set the specific scope if an event was provided, which means
 		// that somehow an editable was selected"
-		if (typeof originalEvent != 'undefined' && ! scopeSetDuringSelectionChanged) {
+		if (typeof originalEvent !== 'undefined' && ! scopeSetDuringSelectionChanged) {
 			Scopes.setScope('Aloha.continuoustext', true);
 		}
 	});
@@ -91,15 +91,12 @@ define([
 		 *     Example: table plugin and link plugin - you want to be able to set both table and link scopes.
 		 *     Use enterScope and leaveScope instead.
 		 */
-		setScope: function(scope, noActivateTab) {
+		setScope: function(scope) {
 			scopeSetDuringSelectionChanged = true;
 			if (activeScopes[0] != scope) {
 				activeScopes = [scope];
 				pushScopeAncestors(activeScopes, scope);
 				PubSub.pub('aloha.ui.scope.change');
-				if ( ! noActivateTab ) {
-					PubSub.pub('aloha.ui.tab.activate-for-scope', {scope: scope});
-				}
 			}
 		},
 

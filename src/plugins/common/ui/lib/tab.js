@@ -127,16 +127,6 @@ define([
 				}
 			});
 
-			var showOnScope = ('object' === jQuery.type(settings.showOn) && settings.showOn.scope)
-				? settings.showOn.scope
-				: false;
-
-			PubSub.sub('aloha.ui.tab.activate-for-scope', function(message){
-				if (message.scope === showOnScope) {
-					selectTab();
-				}
-			});
-
 			this.handle.appendTo(this.list);
 			this.panel.appendTo(this.panels);
 			this.container.tabs('refresh');
