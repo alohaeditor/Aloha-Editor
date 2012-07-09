@@ -1,7 +1,5 @@
 h2. The Content Handler Plugin
 
-The Contenthandler Plugin has no user interface and is used for example in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called "Content Handlers" which will be used to cleanup html content on various occasions like pasting or when initializing an editable.
-
 After reading this guide, you will be able to:
 
 * Understand what Content Handler are and how to use them
@@ -10,28 +8,30 @@ After reading this guide, you will be able to:
 
 endprologue.
 
-h3. Available Content Handlers
+WARNING: This guide is currently work-in-progress.
+
+h3. What are Content Handlers?
 
 *Aloha Content Handlers* (Content Handler) are used to sanitize content loaded or pasted in Aloha Editor.
 
-The available contenthandlers are:
-
-* word
-* generic
-* sanitize
+There are some Content Handler available:
+* Generic
+* Word
 * oEmbed
+* Sanitize
 
-Plugins may also provide content handlers:
+Plugins also provide Content Handler:
+* Block +common/block+ plugin
 
-* Block @common/block@ plugin
-
-h3. Configuration
-
-There are two hooks available:
-
-* insertHtml in @common/commands@ plugin
-
+There are three hooks available:
+* insertHtml in +common/commands+ plugin
 * initEditable in core/editable.js
+
+
+h3. Enabling the Content Handler Plugin
+
+
+h4. Using Configuration
 
 <javascript>
 	Aloha.settings.contentHandler: {
@@ -93,6 +93,18 @@ h4. Writing your own Content Handler
 </javascript>
 
 All Content Handler needs to support the "handleContent" method and will receive and return the content as HTML text.
+
+h3. Internals
+
+h3. Future Work
+
+h3. Changelog
+
+* October 06, 2011: Initial version by "Rene Kapusta":credits.html#rene_kapusta
+
+
+From plugins.texile
+
 
 h3. Contenthandler Plugin
 

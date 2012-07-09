@@ -171,16 +171,21 @@ define( [
 			}
 
 			// apply content handler to clean up content
-			// this was activated by accident; see comments around line 240 regarding plugins!
-			// does look like here it would be fine regarding the plugins... 
-			//var content = me.obj.html();
-			//if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
-			//	Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
-			//}
-			//content = ContentHandlerManager.handleContent( content, {
-			//	contenthandler: Aloha.settings.contentHandler.initEditable
-			//} );
-			//me.obj.html( content );
+			if ( typeof Aloha.settings.contentHandler.getContents === 'undefined' ) {
+				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
+			}
+
+			// apply content handler to clean up content
+			if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
+				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
+			}
+			
+			var content = me.obj.html();
+			content = ContentHandlerManager.handleContent( content, {
+				contenthandler: Aloha.settings.contentHandler.initEditable,
+				command: 'initEditable'
+			} );
+			me.obj.html( content );
 
 			// only initialize the editable when Aloha is fully ready (including plugins)
 			Aloha.bind( 'aloha-ready', function() {
@@ -228,7 +233,6 @@ define( [
 				} );
 
 				// handle shortcut keys
-				// @todo replace with hotkey
 				me.obj.keyup( function( event ) {
 					if ( event.keyCode === 27 ) {
 						Aloha.deactivateEditable();
@@ -460,8 +464,6 @@ define( [
 			var placeholderClass = this.placeholderClass,
 			    range;
 
-			if (jQuery( '.' + placeholderClass, obj).length === 0) return;
-
 			// remove browser br
 			// jQuery( 'br', obj ).remove();
 
@@ -643,10 +645,11 @@ define( [
 			this.isActive = true;
 
 			/**
-			 * @event aloha-editable-activated fires after the editable has been activated by clicking on it.
+			 * @event editableActivated fires after the editable has been activated by clicking on it.
 			 * This event is triggered in Aloha's global scope Aloha
-			 * @param {Object} an object which contains a reference to last active editable (oldActive), as well
-			 * as the currently active editable (editable)
+			 * @param {Event} e the event object
+			 * @param {Array} a an array which contains a reference to last active editable on its first position, as well
+			 * as the currently active editable on it's second position
 			 */
 			// trigger a 'general' editableActivated event
 			Aloha.trigger( 'aloha-editable-activated', {
@@ -668,10 +671,10 @@ define( [
 			this.obj.removeClass( 'aloha-editable-active' );
 
 			/**
-			 * @event aloha-editable-deactivated fires after the editable has been deactivated 
-			 * by clicking on an other editable or a non editable part of the page
+			 * @event editableDeactivated fires after the editable has been activated by clicking on it.
 			 * This event is triggered in Aloha's global scope Aloha
-			 * @param {Object} a an object which contains a reference to this editable
+			 * @param {Event} e the event object
+			 * @param {Array} a an array which contains a reference to this editable
 			 */
 			Aloha.trigger( 'aloha-editable-deactivated', { editable : this } );
 
@@ -746,15 +749,6 @@ define( [
 		 */
 		getId: function() {
 			return this.obj.attr( 'id' );
-		},
-
-		/**
-		 * Get the id of the original object of this editable
-		 * @method
-		 * @return id of the original object of the editable
-		 */
-		getOriginalId: function() {
-			return this.originalObj.attr( 'id' );
 		},
 
 		/**
