@@ -38,20 +38,6 @@ define([
 
 	var $ = jQuery;
 	var uid  = +(new Date());
-	var nsClasses = {
-			'bar'                      : 'aloha-sidebar-bar',
-			'handle'                   : 'aloha-sidebar-handle',
-			'inner'                    : 'aloha-sidebar-inner',
-			'panels'                   : 'aloha-sidebar-panels',
-			'config-btn'               : 'aloha-sidebar-config-btn',
-			'handle-icon'              : 'aloha-sidebar-handle-icon',
-			'panel-content'            : 'aloha-sidebar-panel-content',
-			'panel-content-inner'      : 'aloha-sidebar-panel-content-inner',
-			'panel-content-inner-text' : 'aloha-sidebar-panel-content-inner-text',
-			'panel-title'              : 'aloha-sidebar-panel-title',
-			'panel-title-arrow'        : 'aloha-sidebar-panel-title-arrow',
-			'panel-title-text'         : 'aloha-sidebar-panel-title-text'
-		};
 
 	// Extend jQuery easing animations
 	if (!jQuery.easing.easeOutExpo) {
@@ -90,6 +76,21 @@ define([
 			 });
 	}
 
+	var nsClasses = {
+			'bar'                      : 'aloha-sidebar-bar',
+			'handle'                   : 'aloha-sidebar-handle',
+			'inner'                    : 'aloha-sidebar-inner',
+			'panels'                   : 'aloha-sidebar-panels',
+			'config-btn'               : 'aloha-sidebar-config-btn',
+			'handle-icon'              : 'aloha-sidebar-handle-icon',
+			'panel-content'            : 'aloha-sidebar-panel-content',
+			'panel-content-inner'      : 'aloha-sidebar-panel-content-inner',
+			'panel-content-inner-text' : 'aloha-sidebar-panel-content-inner-text',
+			'panel-title'              : 'aloha-sidebar-panel-title',
+			'panel-title-arrow'        : 'aloha-sidebar-panel-title-arrow',
+			'panel-title-text'         : 'aloha-sidebar-panel-title-text'
+		};
+
 	/**
 	 * Wrapper to call the supplant method on a given string, taking the
 	 * nsClasses object as the associative array containing the replacement
@@ -100,25 +101,6 @@ define([
 	 */
 	function renderTemplate(str) {
 		return (typeof str === 'string') ? supplant(str, nsClasses) : str;
-	}
-
-	/**
-	 * Generates a string with this plugins's namespace prefixed the each
-	 * classname
-	 *
-	 * Usage:
-	 *		nsClass('header', 'innerheaderdiv')
-	 *		will return
-	 *		"aloha-myplugin-header aloha-myplugin-innerheaderdiv"
-	 *
-	 * @return {String}
-	 */
-	function nsClass() {
-		var strBldr = [], prx = 'aloha-sidebar';
-		jQuery.each(arguments, function () {
-			strBldr.push(this === '' ? prx : prx + '-' + this);
-		});
-		return jQuery.trim(strBldr.join(' '));
 	}
 
 	// ------------------------------------------------------------------------
@@ -156,7 +138,7 @@ define([
 	var Sidebar = function Sidebar(opts) {
 		var sidebar = this;
 
-		this.id = nsClass(++uid);
+		this.id = 'aloha-sidebar- ' + (++uid);
 		this.panels = {};
 		this.container = jQuery(renderTemplate(
 			'<div class="{bar}">' +
@@ -222,7 +204,7 @@ define([
 			var bar = this.container;
 
 			if (this.position === 'right') {
-				bar.addClass(nsClass('right'));
+				bar.addClass('aloha-sidebar-right');
 			}
 
 			// Place the bar into the DOM
@@ -444,7 +426,7 @@ define([
 			var that = this;
 			var bar = this.container;
 			var icon = bar.find('.aloha-sidebar-handle-icon');
-			var toggledClass = nsClass('toggled');
+			var toggledClass = 'aloha-sidebar-toggled';
 			var bounceTimer;
 			var isRight = (this.position === 'right');
 
@@ -524,8 +506,8 @@ define([
 		roundCorners: function () {
 			var bar = this.container;
 			var lis = bar.find('.aloha-sidebar-panels>li:not(.aloha-sidebar-deactivated)');
-			var topClass = nsClass('panel-top');
-			var bottomClass = nsClass('panel-bottom');
+			var topClass = 'aloha-sidebar-panel-top';
+			var bottomClass = 'aloha-sidebar-panel-bottom';
 
 			bar.find('.aloha-sidebar-panel-top, .aloha-sidebar-panel-bottom')
 			   .removeClass(topClass)
@@ -559,11 +541,11 @@ define([
 		 * interaction
 		 */
 		handleBarclick: function (el) {
-			if (el.hasClass(nsClass('panel-title'))) {
+			if (el.hasClass('aloha-sidebar-panel-title')) {
 				this.togglePanel(el);
-			} else if (!el.hasClass(nsClass('panel-content')) &&
-					   !el.hasClass(nsClass('handle')) &&
-					   !el.hasClass(nsClass('bar'))) {
+			} else if (!el.hasClass('aloha-sidebar-panel-content') &&
+					   !el.hasClass('aloha-sidebar-handle') &&
+					   !el.hasClass('aloha-sidebar-bar')) {
 				this.handleBarclick(el.parent());
 			}
 		},
@@ -649,9 +631,9 @@ define([
 				var icon = this.container.find('.aloha-sidebar-handle-icon');
 
 				if (isPointingLeft) {
-					icon.addClass(nsClass('handle-icon-left'));
+					icon.addClass('aloha-sidebar-handle-icon-left');
 				} else {
-					icon.removeClass(nsClass('handle-icon-left'));
+					icon.removeClass('aloha-sidebar-handle-icon-left');
 				}
 			}
 		},
@@ -682,7 +664,7 @@ define([
 
 			this.isOpen = true;
 
-			jQuery('body').trigger(nsClass('opened'), this);
+			jQuery('body').trigger('aloha-sidebar-opened', this);
 
 			return this;
 		},
@@ -831,7 +813,7 @@ define([
 			jQuery.extend(this, opts);
 
 			if (!this.id) {
-				this.id = nsClass(++uid);
+				this.id = 'aloha-sidebar-' + (++uid);
 			}
 
 			var li = this.element =
@@ -867,9 +849,9 @@ define([
 				var icon = this.title.find('.aloha-sidebar-panel-title-arrow');
 
 				if (isExpanded) {
-					icon.addClass(nsClass('panel-title-arrow-down'));
+					icon.addClass('aloha-sidebar-panel-title-arrow-down');
 				} else {
-					icon.removeClass(nsClass('panel-title-arrow-down'));
+					icon.removeClass('aloha-sidebar-panel-title-arrow-down');
 				}
 			}
 		},
@@ -916,7 +898,7 @@ define([
 				return;
 			}
 			this.isActive = true;
-			this.content.parent('li').show().removeClass(nsClass('deactivated'));
+			this.content.parent('li').show().removeClass('aloha-sidebar-deactivated');
 			this.effectiveElement = effective;
 			if (typeof this.onActivate === 'function') {
 				this.onActivate.call(this, effective);
@@ -931,7 +913,7 @@ define([
 				return;
 			}
 			this.isActive = false;
-			this.content.parent('li').hide().addClass(nsClass('deactivated'));
+			this.content.parent('li').hide().addClass('aloha-sidebar-deactivated');
 			this.effectiveElement = null;
 		},
 
