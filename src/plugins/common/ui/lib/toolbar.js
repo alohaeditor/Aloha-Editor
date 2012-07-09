@@ -185,7 +185,7 @@ define([
 		/**
 		 * An element on which all toolbar surfaces are to be rendered on the
 		 * page.
-		 * @type {$.<HTMLElement>}
+		 * @type {jQuery.<HTMLElement>}
 		 */
 		$surfaceContainer: null,
 
