@@ -22,11 +22,13 @@ define([
 	'jquery',
 	'util/class',
 	'ui/scopes',
+	'ui/context',
 	'PubSub'
 ], function(
 	jQuery,
 	Class,
 	Scopes,
+	Context,
 	PubSub
 ) {
 	'use strict';
@@ -168,12 +170,6 @@ define([
 					toggleContainers(group.containers, group.shouldShow(eventType));
 				}
 			}
-		}
-	});
-
-	PubSub.sub('aloha.ui.scope.change', function(){
-		if (Aloha.activeEditable) {
-			Container.showContainersForContext(Aloha.activeEditable.context);
 		}
 	});
 

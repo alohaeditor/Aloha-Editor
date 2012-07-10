@@ -13,8 +13,7 @@ define([
 ) {
 	'use strict';
 
-	var contextSingleton = new Context(),
-	    Surface;
+	var Surface;
 
 	/**
 	 * The Surface class and manager.
@@ -80,16 +79,15 @@ define([
 			// When an editable is activated, we show its associated surfaces.
 			Aloha.bind('aloha-editable-activated', function(event, alohaEvent) {
 				Surface.active = alohaEvent.editable;
-				Surface.active.context = contextSingleton;
-				Surface.show(contextSingleton);
-				Container.showContainersForContext(contextSingleton, event);
+				Surface.show(Context.singleton);
+				Container.showContainersForContext(Context.singleton, event);
 			});
 
 			// When an editable is deactivated, we hide its associated surfaces.
 			Aloha.bind('aloha-editable-deactivated', function(event, alohaEvent) {
 				// TODO: handle a click on a surface, then a click outside
 				if ( !Surface.suppressHide ) {
-					Surface.hide(contextSingleton);
+					Surface.hide(Context.singleton);
 					Surface.active = null;
 				}
 			});
@@ -128,9 +126,9 @@ define([
 			// defined by plugins when they are loaded. Therefore, we
 			// have to defer creation of surfaces until after they are loaded.
 			Aloha.ready(function(){
-				var surface = type.createSurface(contextSingleton, Aloha.settings);
+				var surface = type.createSurface(Context.singleton, Aloha.settings);
 				if (surface) {
-					contextSingleton.surfaces.push(surface);
+					Context.singleton.surfaces.push(surface);
 					Surface.instances.push(surface);
 				}
 			});
