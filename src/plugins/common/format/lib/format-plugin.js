@@ -226,7 +226,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 									return false;
 								}
 								// formating workaround for table plugin
-
+								
 								Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
 							}
 						});

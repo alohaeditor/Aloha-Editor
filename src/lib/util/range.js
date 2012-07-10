@@ -178,6 +178,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 				parents[i] = parents[i - 1];
 			}
 			parents[0] = container;
+			parents.length++;
 		}
 
 		// now slice this array
@@ -324,9 +325,13 @@ GENTICS.Utils.RangeObject = Class.extend({
 	select: function() {
 		var ieRange, endRange, startRange, range, sel;
 
+		if ( typeof this.startContainer === 'undefined' || typeof this.endContainer === 'undefined' ) {
+			console.warn('can not select an empty range');
+			return false;
+		}
+
 		// create a range
 		range = rangy.createRange();
-
 		// set start and endContainer
 		range.setStart(this.startContainer,this.startOffset);
 		range.setEnd(this.endContainer, this.endOffset);
