@@ -388,7 +388,6 @@ define(	[ '../../lib/aloha/ecma5shims' ], function($_) {
 		
 		addBrackets: function (range) {
 			var marker;
-			//@{
 			// Handle the collapsed case specially, to avoid confusingly getting the
 			// markers backwards in some cases
 			if (range.endContainer.nodeType == $_.Node.TEXT_NODE
