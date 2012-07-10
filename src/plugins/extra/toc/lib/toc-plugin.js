@@ -8,21 +8,21 @@ define([
 	'aloha', 
 	'aloha/plugin', 
 	'jquery', 
-	'ui/component', 
-	'ui/componentState',
+	'ui/ui', 
 	'ui/button',
 	'i18n!toc/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
 	'aloha/console',
-], function(Aloha,
-            Plugin,
-			jQuery,
-			Component,
-			ComponentState,
-			Button,
-			i18n,
-			i18nCore,
-			console) {
+], function(
+	Aloha,
+    Plugin,
+	jQuery,
+	Ui,
+	Button,
+	i18n,
+	i18nCore,
+	console
+) {
 	'use strict';
 
 	var GENTICS = window.GENTICS,
@@ -83,9 +83,9 @@ define([
 					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );
 
 					if ( jQuery.inArray( 'toc', that.cfg ) != -1 ) {
-						ComponentState.setState('insertToc', 'show', true);
+						that._insertTocButton.show(true);
 		        	} else {
-						ComponentState.setState('insertToc', 'show', false);
+						that._insertTocButton.show(false);
 		        		return;
 		        	}
 				}
@@ -102,7 +102,7 @@ define([
 		initButtons: function () {
 			var that = this;
 			
-			Component.define("insertToc", Button, {
+			this._insertTocButton = Ui.assign("insertToc", Button, {
 		        tooltip: i18n.t('button.addtoc.tooltip'),
 		        icon: 'aloha-icon aloha-icon-orderedlist',
 				scope: 'Aloha.continuoustext',

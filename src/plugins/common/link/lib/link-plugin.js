@@ -21,18 +21,30 @@ define( [
 	'aloha/plugin',
 	'jquery',
 	'ui/port-helper-attribute-field',
+	'ui/ui',
 	'ui/scopes',
 	'ui/surface',
-	'ui/component',
 	'ui/button',
 	'ui/toggleButton',
-	'ui/componentState',
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
 	'css!link/css/link.css',
 	'link/../extra/linklist'
-], function ( Aloha, Plugin, jQuery, AttributeField, Scopes, Surface, Component, Button, ToggleButton, ComponentState, i18n, i18nCore, console ) {
+], function (
+	Aloha,
+	Plugin,
+	jQuery,
+	AttributeField,
+	Ui,
+	Scopes,
+	Surface,
+	Button,
+	ToggleButton,
+	i18n,
+	i18nCore,
+	console
+) {
 	'use strict';
 	
 	var GENTICS = window.GENTICS,
@@ -277,11 +289,11 @@ define( [
 
 			Aloha.bind('aloha-editable-activated', function() {
 				if (isEnabled[Aloha.activeEditable.getId()]) {
-					ComponentState.setState('formatLink', 'show', true);
-					ComponentState.setState('insertLink', 'show', true);
+					that._formatLinkButton.show(true);
+					that._insertLinkButton.show(true);
 				} else {
-					ComponentState.setState('formatLink', 'show', false);
-					ComponentState.setState('insertLink', 'show', false);
+					that._formatLinkButton.show(false);
+					that._insertLinkButton.show(false);
 				}
 			});
 
@@ -304,15 +316,15 @@ define( [
 			this._isScopeActive = show;
 			if ( show ) {
 				this.hrefField.show();
-				ComponentState.setState('insertLink', 'show', false);
-				ComponentState.setState('removeLink', 'show', true);
-				ComponentState.setState('formatLink', 'state', true);
+				this._insertLinkButton.show(false);
+				this._removeLinkButton.show(true);
+				this._formatLinkButton.setState(true);
 				Scopes.enterScope(this.name);
 			} else {
 				this.hrefField.hide();
-				ComponentState.setState('insertLink', 'show', true);
-				ComponentState.setState('removeLink', 'show', false);
-				ComponentState.setState('formatLink', 'state', false);
+				this._insertLinkButton.show(true);
+				this._removeLinkButton.show(false);
+				this._formatLinkButton.setState(false);
 				Scopes.leaveScope(this.name);
 			}
 		},
@@ -360,7 +372,7 @@ define( [
 		createButtons: function () {
 			var that = this;
 
-			Component.define("formatLink", ToggleButton, {
+			this._formatLinkButton = Ui.assign("formatLink", ToggleButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
 				scope: 'Aloha.continuoustext',
@@ -369,7 +381,7 @@ define( [
 				}
 			});
 
-			Component.define("insertLink", Button, {
+			this._insertLinkButton = Ui.assign("insertLink", Button, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
 				scope: 'Aloha.continuoustext',
@@ -388,7 +400,7 @@ define( [
 			this.hrefField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
 
-			Component.define("removeLink", Button, {
+			this._removeLinkButton = Ui.assign("removeLink", Button, {
 				tooltip: i18n.t("button.removelink.tooltip"),
 				icon: "aloha-icon aloha-icon-unlink",
 				scope: 'Aloha.continuoustext',

@@ -6,22 +6,22 @@
 */
 define([
 	'aloha/plugin',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/toggleButton',
 	'flag-icons/flag-icons-plugin',
 	'i18n!metaview/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'jquery',
 	'css!metaview/css/metaview.css'
-], function(Plugin,
-            Component,
-			ComponentState,
-			ToggleButton,
-			FlagIcons,
-			i18n,
-			i18nCore,
-			jQuery) {
+], function(
+	Plugin,
+    Ui,
+	ToggleButton,
+	FlagIcons,
+	i18n,
+	i18nCore,
+	jQuery
+) {
 	'use strict';
 
 	var GENTICS = window.GENTICS,
@@ -54,29 +54,28 @@ define([
 						var config;
 						config = that.getEditableConfig( Aloha.activeEditable.obj );
  						if (jQuery.type(config) === 'array' && jQuery.inArray( 'metaview', config ) !== -1) {
-							ComponentState.setState('toggleMetaView', 'show', true);
+							that._toggleMetaViewButton.show(true);
 						} else {
-							ComponentState.setState('toggleMetaView', 'show', false);
+							that._toggleMetaViewButton.show(false);
 							return;
 						}
 						
 						if ( /* that.button && */ jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
-							ComponentState.setState('toggleMetaView', 'state', true);
+							that._toggleMetaViewButton.setState(true);
 						} else {
-							ComponentState.setState('toggleMetaView', 'state', false);
+							that._toggleMetaViewButton.setState(false);
 						}
 					}
 			);
 		},
 		
 		buttonClick: function() {
-			var that = this;
 			if(jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
 				jQuery(Aloha.activeEditable.obj).removeClass('aloha-metaview');
-				ComponentState.setState('toggleMetaView', 'state', false);
+				this._toggleMetaViewButton.setState(false);
 			} else {
 				jQuery(Aloha.activeEditable.obj).addClass('aloha-metaview');
-				ComponentState.setState('toggleMetaView', 'state', true);
+				this._toggleMetaViewButton.setState(true);
 			}
 		},
 		
@@ -86,7 +85,7 @@ define([
 		createButtons: function () {
 			var that = this;
 	
-			Component.define("toggleMetaView", ToggleButton, {
+			this._toggleMetaViewButton = Ui.assign("toggleMetaView", ToggleButton, {
 				tooltip : i18n.t('button.switch-metaview.tooltip'),
 				icon: 'aloha-icon aloha-icon-metaview',
 				scope: 'Aloha.continuoustext',

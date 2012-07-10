@@ -42,7 +42,7 @@ define([
 	 */
 	var Tab = Container.extend({
 
-		components: {},
+		_elemBySlot: {},
 
 		/**
 		 * All that this constructor does is save the components array into a
@@ -52,9 +52,15 @@ define([
 		 * @param {Array.<Array<string>>} components
 		 * @constructor
 		 */
-		_constructor: function (settings, components) {
-			var thisTab = this;
-			this._super(settings, components);
+		_constructor: function (context, settings, components) {
+			var thisTab = this,
+			    i, j,
+			    elem,
+			    groupedComponents,
+			    group,
+			    componentName;
+
+			this._super(context, settings);
 
 			this.container = settings.container;
 			this.list = this.container.data('list');
@@ -64,29 +70,15 @@ define([
 			this.handle = jQuery('<li><a href="#' + this.id + '">' +
 				settings.label + '</a></li>');
 
-			var i;
-			var j;
-			var component;
-			var groupedComponents;
-			var componentsByName = {};
-			var group;
-			var componentName;
-
-			this.components = {};
 
 			for (i = 0; i < components.length; i++) {
 				if (typeof components[i] === 'string') {
 					if (1 === components[i].length && components[i].charCodeAt(0) === 10) {
 						this.panel.append('<div>');
 					} else {
-						componentName = components[i];	
-						component = Component.render(thisTab.context, componentName);
-						if (component) {
-							component._container = this;
-							this.storeComponent(component);
-							this.panel.append(component.element);
-							componentsByName[componentName] = component;
-						}
+						elem = $('<span>');
+						this._elemBySlot[components[i]] = elem;
+						this.panel.append(elem);
 					}
 				} else {
 					group = jQuery('<div>', {
@@ -100,33 +92,15 @@ define([
 							group.append('<div>');
 						} else {
 							componentName = groupedComponents[j];
-							component = Component.render(thisTab.context, componentName);
-							if (component) {
-								component._container = this;
-								this.storeComponent(component);
-								group.append(component.element);
-								componentsByName[componentName] = component;
-							}
+							elem = $('<span>');
+							this._elemBySlot[groupedComponents[j]] = elem;
+							group.append(elem);
 						}
 					}
 				}
 			}
 
 			this.panel.append('<div class="aloha-ui-clear">');
-
-			function selectTab() {
-				thisTab.container.tabs('select', thisTab.index);
-				PubSub.pub('aloha.ui.container.activated', {data:thisTab});
-			}
-
-			PubSub.sub('aloha.ui.component.focus', function(message){
-				var componentName = message.data;
-				var component = componentsByName[componentName];
-				if (component) {
-					selectTab();
-				}
-			});
-
 			this.handle.appendTo(this.list);
 			this.panel.appendTo(this.panels);
 			this.container.tabs('refresh');
@@ -136,11 +110,14 @@ define([
 			alohaTabs.push(this);
 		},
 
-		storeComponent: function (component) {
-			if (!this.components[component.type]) {
-				this.components[component.type] = [];
-			}
-			this.components[component.type].push(component);
+		assignToSlot: function(configuredSlot, component) {
+			component.adopt(this);
+			this._elemBySlot[configuredSlot].append(component.element);
+		},
+
+		focus: function() {
+			this.container.tabs('select', this.index);
+			PubSub.pub('aloha.ui.container.activated', {data: this});
 		},
 
 		/**

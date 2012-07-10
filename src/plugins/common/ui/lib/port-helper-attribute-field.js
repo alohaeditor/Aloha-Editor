@@ -5,18 +5,20 @@
  */
 define([
 	'jquery',
+	'ui/ui',
 	'ui/component',
 	'ui/scopes',
+	'ui/context',
 	'aloha/repositorymanager',
-	'PubSub',
 	'aloha/console',
 	'ui/vendor/jquery-ui-autocomplete-html'
 ], function (
 	$,
+	Ui,
 	Component,
 	Scopes,
+	Context,
 	RepositoryManager,
-	PubSub,
 	console
 ) {
 	'use strict';
@@ -35,21 +37,20 @@ define([
 	//   item was selected (example link plugin)
 
 	var AttributeField = function (props) {
-		var valueField = props.valueField || 'id';
-		var displayField = props.displayField || 'name';
-		var objectTypeFilter = props.objectTypeFilter || ['all'];
-		var placeholder = props.placeholder;
-		var noTargetHighlight = !!props.noTargetHighlight;
+		var valueField = props.valueField || 'id',
+		    displayField = props.displayField || 'name',
+		    objectTypeFilter = props.objectTypeFilter || ['all'],
+		    placeholder = props.placeholder,
+		    noTargetHighlight = !!props.noTargetHighlight,
+		    element = $('<input id="aloha-attribute-field-' + props.name + '">'),
+		    componentInstantiated = 0,
+		    template,
+		    resourceItem,
+		    resourceValue,
+		    targetObject,
+		    targetAttribute,
+		    lastAttributeValue;
 
-		var componentInstantiated = 0;
-		var template;
-		var resourceItem;
-		var resourceValue;
-		var targetObject;
-		var targetAttribute;
-		var lastAttributeValue;
-
-		var element = $('<input id="aloha-attribute-field-' + props.name + '">');
 		if (props.cls) {
 			element.addClass(props.cls);
 		}
@@ -57,8 +58,8 @@ define([
 			element.width(props.width);
 		}
 
-		Component.define(props.name, Component, {
-			init: function(context){
+		Ui.assign(props.name, Component, {
+			init: function(){
 
 				if (componentInstantiated++) {
 					console.error("Multiple instantiation of port-helper-attribute-field is not implemented");
@@ -71,7 +72,7 @@ define([
 
 				element.autocomplete({
 					'html': true,
-					'appendTo': context.selector,
+					'appendTo': Context.selector,
 					'source': function( req, res ) {
 						RepositoryManager.query({
 							queryString: req.term,

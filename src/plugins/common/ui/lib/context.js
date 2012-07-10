@@ -13,7 +13,15 @@
  * 2 - all css rules should have a .aloha context class, and the common
  *     parent provides this class.
  */
-define(['aloha', 'jquery', 'util/class'],function(Aloha, $, Class){
+define([
+	'aloha',
+	'jquery',
+	'util/class'
+], function(
+	Aloha,
+	$,
+	Class
+) {
 	'use strict';
 
 	var id = 'aloha-ui-context',
@@ -28,17 +36,14 @@ define(['aloha', 'jquery', 'util/class'],function(Aloha, $, Class){
 
 	var Context =  Class.extend({
 		surfaces: [],
-		containers: [],
-		selector: selector,
-		element: element
+		containers: []
 	});
 
-	Context.singleton = new Context();
+	// static fields
 
-	PubSub.sub('aloha.ui.scope.change', function(){
-		if (Aloha.activeEditable) {
-			Container.showContainersForContext(Context.singleton);
-		}
+	$.extend(Context, {
+		selector: selector,
+		element: element
 	});
 
 	return Context;

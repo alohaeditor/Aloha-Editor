@@ -2,10 +2,12 @@ define([
 	'jquery',
 	'aloha/repositorymanager',
 	'ui/component',
+	'ui/context',
 	'./vendor/jquery-ui-autocomplete-html',
 ], function(
 	jQuery,
 	RepositoryManager,
+	Context,
 	Component
 ) {
 	'use strict';
@@ -28,13 +30,13 @@ define([
 	 * @extends {Component}
 	 */
 	var Autocomplete = Component.extend({
-		init: function(context) {
+		init: function() {
 			this._super();
 			var that = this;
 			this.element = jQuery( "<input>" )
 				.autocomplete({
 					html: true,
-					appendTo: context.selector,
+					appendTo: Context.selector,
 					source: function( req, res ) {
 						RepositoryManager.query({
 							queryString: req.term,

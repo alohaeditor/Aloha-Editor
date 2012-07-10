@@ -21,15 +21,11 @@
 define([
 	'jquery',
 	'util/class',
-	'ui/scopes',
-	'ui/context',
-	'PubSub'
+	'ui/scopes'
 ], function(
-	jQuery,
+	$,
 	Class,
-	Scopes,
-	Context,
-	PubSub
+	Scopes
 ) {
 	'use strict';
 
@@ -80,7 +76,7 @@ define([
 	 * @return function
 	 */
 	function normalizeShowOn(container, showOn) {
-		switch( jQuery.type( showOn ) ) {
+		switch( $.type( showOn ) ) {
 		case 'function':
 			return showOn;
 		case 'object':
@@ -120,16 +116,11 @@ define([
 		 * @param {object=} settings Optional properties, and override methods.
 		 * @constructor
 		 */
-		_constructor: function( settings ) {
-			var context = this.context = settings.context;
-
-			if (!context.containers) {
-				context.containers = [];
-			}
-
-			var showOn = normalizeShowOn(this, settings.showOn);
-			var key = getShowOnId(showOn);
-			var group = context.containers[key];
+		_constructor: function(context, settings) {
+			var showOn = normalizeShowOn(this, settings.showOn),
+			    key = getShowOnId(showOn),
+			    group = context.containers[key];
+			this.context = context;
 			if (!group) {
 				group = context.containers[key] = {
 					shouldShow: showOn,
@@ -141,12 +132,13 @@ define([
 
 		// must be implemented by extending classes
 		show: function() {},
-		hide: function() {}
+		hide: function() {},
+		focus: function() {}
 	});
 
 	// static fields
 
-	jQuery.extend( Container, {
+	$.extend( Container, {
 		/**
 		 * Given an array of elements, show appropriate containers.
 		 *

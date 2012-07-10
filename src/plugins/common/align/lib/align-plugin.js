@@ -7,8 +7,7 @@
 define([
 	'aloha',
 	'aloha/plugin',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/toggleButton',
 	'i18n!align/nls/i18n',
 	'i18n!aloha/nls/i18n',
@@ -17,8 +16,7 @@ define([
 ], function(
 	Aloha,
     Plugin,
-    Component,
-	ComponentState,
+    Ui,
     ToggleButton,
     i18n,
     i18nCore,
@@ -94,38 +92,38 @@ define([
 				switch(this.lastAlignment)
 				{
 					case 'right':
-						ComponentState.setState('alignRight', 'state', false);
+						this._alignRightButton.setState(false);
 						break;
 
 					case 'left':
-						ComponentState.setState('alignLeft', 'state', false);
+						this._alignLeftButton.setState(false);
 						break;
 
 					case 'center':
-						ComponentState.setState('alignCenter', 'state', false);
+						this._alignCenterButton.setState(false);
 						break;
 
 					case 'justify':
-						ComponentState.setState('alignJustify', 'state', false);
+						this._alignJustifyButton.setState(false);
 						break;
 				}
 
 				switch(this.alignment)
 				{
 					case 'right':
-						ComponentState.setState('alignRight', 'state', true);
+						this._alignRightButton.setState(true);
 						break;
 
 					case 'center':
-						ComponentState.setState('alignCenter', 'state', true);
+						this._alignCenterButton.setState(true);
 						break;
 
 					case 'justify':
-						ComponentState.setState('alignJustify', 'state', true);
+						this._alignJustifyButton.setState(true);
 						break;
 
 					default:
-						ComponentState.setState('alignLeft', 'state', true);
+						this._alignLeftButton.setState(true);
 					    this.alignment = 'left';
 						break;
 				}
@@ -156,55 +154,55 @@ define([
 			}
 
 			if ( jQuery.inArray('right', config.alignment) != -1) {
-				ComponentState.setState('alignRight', 'show', true);
+				this._alignRightButton.show(true);
 			} else {
-				ComponentState.setState('alignRight', 'show', false);
+				this._alignRightButton.show(false);
 			}
 
 			if ( jQuery.inArray('left', config.alignment) != -1) {
-				ComponentState.setState('alignLeft', 'show', true);
+				this._alignLeftButton.show(true);
 			} else {
-				ComponentState.setState('alignLeft', 'show', false);
+				this._alignLeftButton.show(false);
 			}
 
 			if ( jQuery.inArray('center', config.alignment) != -1) {
-				ComponentState.setState('alignCenter', 'show', true);
+				this._alignCenterButton.show(true);
 			} else {
-				ComponentState.setState('alignCenter', 'show', false);
+				this._alignCenterButton.show(false);
 			}
 
 			if ( jQuery.inArray('justify', config.alignment) != -1) {
-				ComponentState.setState('alignJustify', 'show', true);
+				this._alignJustifyButton.show(true);
 			} else {
-				ComponentState.setState('alignJustify', 'show', false);
+				this._alignJustifyButton.show(false);
 			}
 		},
 
 		createButtons: function () {
 		    var that = this;
 
-			Component.define("alignLeft", ToggleButton, {
+			this._alignLeftButton = Ui.assign("alignLeft", ToggleButton, {
 				tooltip: i18n.t('button.alignleft.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-left',
 				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('left'); }
 			});
 
-			Component.define("alignCenter", ToggleButton, {
+			this._alignCenterButton = Ui.assign("alignCenter", ToggleButton, {
 				tooltip: i18n.t('button.aligncenter.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-center',
 				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('center'); }
 			});
 
-			Component.define("alignRight", ToggleButton, {
+			this._alignRightButton = Ui.assign("alignRight", ToggleButton, {
 				tooltip: i18n.t('button.alignright.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-right',
 				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('right'); }
 			});
 
-			Component.define("alignJustify", ToggleButton, {
+			this._alignJustifyButton = Ui.assign("alignJustify", ToggleButton, {
 				tooltip: i18n.t('button.alignjustify.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-justify',
 				scope: 'Aloha.continuoustext',
@@ -282,19 +280,19 @@ define([
 				switch(this.lastAlignment)
 				{
 					case 'right':
-						ComponentState.setState('alignRight', 'state', false);
+						this._alignRightButton.setState(false);
 						break;
 
 					case 'left':
-						ComponentState.setState('alignLeft', 'state', false);
+						this._alignLeftButton.setState(false);
 						break;
 
 					case 'center':
-						ComponentState.setState('alignCenter', 'state', false);
+						this._alignCenterButton.setState(false);
 						break;
 
 					case 'justify':
-						ComponentState.setState('alignJustify', 'state', false);
+						this._alignJustifyButton.setState(false);
 						break;
 				}
 			}

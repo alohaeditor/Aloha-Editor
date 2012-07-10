@@ -3,8 +3,7 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/button',
 	'link/link-plugin',
 	'RepositoryBrowser',
@@ -15,8 +14,7 @@ define([
 	jQuery,
 	Plugin,
 	PluginManager,
-	Component,
-	ComponentState,
+	Ui,
 	Button,
 	Links,
 	RepositoryBrowser,
@@ -32,7 +30,7 @@ define([
 
 			var that = this;
 
-			Component.define('linkBrowser', Button, {
+			this._linkBrowserButton = Ui.assign('linkBrowser', Button, {
 				tooltip: i18n.t('button.addlink.tooltip'),
 				icon: 'aloha-icon-tree',
 				scope: 'Aloha.continuoustext',
@@ -41,16 +39,16 @@ define([
 				}
 			});
 
-			ComponentState.setState('linkBrowser', 'show', false);
+			this._linkBrowserButton.show(false);
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
 
 			Aloha.bind('aloha-link-selected', function (event, rangeObject) {
-				ComponentState.setState('linkBrowser', 'show', true);
+				that._linkBrowserButton.show(true);
 			});
 
 			Aloha.bind('aloha-link-unselected', function (event, rangeObject) {
-				ComponentState.setState('linkBrowser', 'show', false);
+				that._linkBrowserButton.show(false);
 			});
 		},
 

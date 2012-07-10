@@ -9,8 +9,7 @@ define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/scopes',
 	'ui/button',
 	'ui/toggleButton',
@@ -23,8 +22,7 @@ define([
 	Aloha,
 	jQuery,
 	Plugin,
-	Component,
-	ComponentState,
+	Ui,
 	Scopes,
 	Button,
 	ToggleButton,
@@ -91,9 +89,9 @@ define([
 				// show/hide the button according to the configuration
 				config = that.getEditableConfig( Aloha.activeEditable.obj );
 				if ( jQuery.inArray( 'span', config ) !== -1 ) {
-					ComponentState.setState('wailang', 'show', true);
+					that._wailangButton.show(true);
 				} else {
-					ComponentState.setState('wailang', 'show', false);
+					that._wailangButton.show(false);
 					return;
 				}
 			} );
@@ -102,14 +100,14 @@ define([
 			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
 				var foundMarkup;
 
-				ComponentState.setState('wailang', 'state', false);
+				that._wailangButton.setState(false);
 				foundMarkup = that.findLangMarkup( rangeObject );
 				if ( foundMarkup ) {
-					ComponentState.setState('wailang', 'state', true);
+					that._wailangButton.setState(true);
 					Scopes.setScope('wai-lang');
 					langField.setTargetObject(foundMarkup, 'lang');
 				} else {
-					ComponentState.setState('wailang', 'state', false);
+					that._wailangButton.setState(false);
 					langField.setTargetObject(null);
 				}
 			} );
@@ -122,7 +120,7 @@ define([
 		createButtons: function() {
 			var that = this;
 
-			Component.define("wailang", ToggleButton, {
+			this._wailangButton = Ui.assign("wailang", ToggleButton, {
 				tooltip: i18n.t('button.add-wai-lang.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang',
 				scope: 'Aloha.continuoustext',
@@ -150,7 +148,7 @@ define([
 
 			langField.setObjectTypeFilter( this.objectTypeFilter );
 
-			Component.define('removewailang', Button, {
+			this._removewailangButton = Ui.assign('removewailang', Button, {
 				tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang-remove',
 				scope: 'wai-lang',
@@ -308,7 +306,7 @@ define([
 		 * Toggles markup around selection.
 		 */
 		addRemoveMarkupToSelection: function() {
-			if (ComponentState.getState('wailang', 'state')) {
+			if (this._waiLangButton.getState()) {
 				this.removeLangMarkup();
 			} else {
 				this.addMarkupToSelection( false );

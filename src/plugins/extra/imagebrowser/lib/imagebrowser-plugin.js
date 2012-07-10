@@ -13,25 +13,25 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/button',
 	'image/image-plugin',
 	'RepositoryBrowser',
 	// i18n
 	'i18n!imagebrowser/nls/i18n',
 	'i18n!aloha/nls/i18n'
-], function(Aloha,
-            jQuery,
-            Plugin,
-            PluginManager,
-            Component,
-			ComponentState,
-            Button,
-            Images,
-            RepositoryBrowser,
-            i18n,
-            i18nCore) {
+], function(
+	Aloha,
+    jQuery,
+    Plugin,
+    PluginManager,
+    Ui,
+    Button,
+    Images,
+    RepositoryBrowser,
+    i18n,
+    i18nCore
+) {
 	'use strict';
 
 	var ImageBrowser = RepositoryBrowser.extend( {
@@ -41,22 +41,22 @@ define([
 
 			var browser = this;
 
-			Component.define('imageBrowser', Button, {
+			this._imageBrowserButton = Ui.assign('imageBrowser', Button, {
 				tooltip: i18n.t('button.addimage.tooltip'),
 				icon: 'aloha-icon-tree',
 				scope: 'Aloha.continuoustext',
 				click: function () { browser.open(); }
 			});
 
-			ComponentState.setState('imageBrowser', 'show', false);
+			this._imageBrowserButton.show(false);
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/imagebrowser/';
 
 			Aloha.bind( 'aloha-image-selected', function ( event, rangeObject ) {
-				ComponentState.setState('imageBrowser', 'show', true);
+				browser._imageBrowserButton.show(true);
 			});
 			Aloha.bind( 'aloha-image-unselected', function ( event, rangeObject ) {
-				ComponentState.setState('imageBrowser', 'show', false);
+				browser._imageBrowserButton.show(false);
 			});
 		},
 		onSelect: function ( item ) {

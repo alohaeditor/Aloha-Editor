@@ -87,23 +87,34 @@
  */
 
 define([
+	'jquery',
 	'aloha/core',
-	'jquery'
+	'ui/ui-plugin'
 ],
-function( Aloha, jQuery ) {
-	// Temporary location helper methods.
-	// TODO: These need to live somewhere not tied to the UI.
-	var Ui = {
-		util: {
-			findElemFromRange: function( selector, range ) {
-				range = range || Aloha.getSelection().getRangeAt( 0 );
-				range = new GENTICS.Utils.RangeObject( range );
-				return range.findMarkup(function() {
-					return jQuery( this ).is( selector );
-				});
-			}
-		}
-	};
+function(
+	$,
+	Aloha,
+	Plugin
+) {
+	'use strict';
 
-	return Ui;
+	function assign(configuredSlot, superType, settings) {
+		var type,
+		component;
+
+		if (!superType.isInstance) {
+			type = settings ? superType.extend(settings) : superType;
+			component = new type();
+		} else {
+			component = superType;
+		}
+
+		Plugin.assignToSlot(configuredSlot, component);
+
+		return component;
+	}
+
+	return {
+		assign: assign
+	};
 });

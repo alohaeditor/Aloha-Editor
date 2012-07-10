@@ -1,11 +1,8 @@
 define([
 	'aloha/core',
 	'jquery',
-	'util/class',
-	'aloha/console',
-	'ui/componentState',
-	'PubSub'
-], function (Aloha, jQuery, Class, console, ComponentState, PubSub) {
+	'util/class'
+], function (Aloha, $, Class) {
 	'use strict';
 
 	/**
@@ -20,7 +17,16 @@ define([
 	 */
 	var Component = Class.extend({
 
-		context: null,
+		/**
+		 * Flag to indicate that this is an instance of a component and  not the class object.
+		 */
+		isInstance: true,
+
+		/**
+		 * The Container instance or null if this component was not
+		 * adopted by a counter by calling Component.adopt().
+		 */
+		container: null,
 
 		/**
 		 * Will be set in Component.define()
@@ -34,53 +40,62 @@ define([
 
 		/**
 		 * The type property is set in Component.define(), so components should only ever be instantiated through define.
-		 * @param {!Object} context
 		 * @constructor
 		 */
-		_constructor: function(context) {
+		_constructor: function() {
 			// Components are responsible for updating their state and visibility
 			// whenever the selection changes.
 			// TODO(p.salema@gentics.com): Consider implementing 'aloha-node-changed'
 			// which would be trigger only when the user selection moves from one node
 			// into another.
 			Aloha.bind('aloha-selection-changed aloha-command-executed',
-				jQuery.proxy(function (event, range) {
+				$.proxy(function (event, range) {
 					this.selectionChange(range);
 				}, this));
 
-			this.init(context);
+			this.init();
+		},
 
-			var thisComponent = this;
-			ComponentState.applyAllStates(thisComponent.type, thisComponent);
-			PubSub.sub('aloha-ui-component-state-change.' + this.type, function(message){
-				ComponentState.applyState(thisComponent.type, message.state, thisComponent);
-			});
-			PubSub.pub('aloha-ui-component-created.' + this.type, {component: this});
+		adopt: function(container) {
+			this.container = container;
 		},
 
 		/**
 		 * Initializes this component.  To be implemented in subclasses.
 		 */
-		init: function () {},
+		init: function() {},
 
 		/**
 		 * Shows this component.
 		 */
-		show: function () {
-			if (!this.visible) {
+		show: function(show_opt) {
+			if (false === show_opt) {
+				this.hide();
+			} else if (!this.visible) {
+				this.visible = true;
 				this.element.show();
 			}
-			this.visible = true;
 		},
 
 		/**
 		 * Hides this component.
 		 */
-		hide: function () {
+		hide: function() {
 			if (this.visible) {
+				this.visible = false;
 				this.element.hide();
 			}
-			this.visible = false;
+		},
+
+		focus: function() {
+			// First the container element must be visible before a
+			// descendant element can be focused. In the case of a
+			// toolbar with tabs this means that the tab must be brought
+			// into view.
+			if (this.container) {
+				this.container.focus();
+			}
+			this.element.focus();
 		},
 
 		/**
@@ -89,62 +104,8 @@ define([
 		 * that are passed to the constructor at instantialization.
 		 */
 		selectionChange: function () {
-			//console.log('selectionChange()');
 		}
 
-	});
-
-	// Static fields.
-
-	jQuery.extend(Component, {
-
-		/**
-		 * @type {object<string, Component>} A hash map of all defined
-		 *                                   components types, mapping the
-		 *                                   names of component type against
-		 *                                   their corresponding constructors.
-		 */
-		components: {},
-
-		/**
-		 * Defines a component type.
-		 *
-		 * @param {string} name The unique name of the Component type.
-		 * @param {Component} type An existing Component type to inherit from.
-		 * @param {object} settings Properties and methods which, along with
-		 *                          the inherited properties, will constitues
-		 *                          a new component type.
-		 * @return {Component} A generated Component sub class.
-		 */
-		define: function (name, type, settings) {
-			settings = settings || {};
-			var extendedType = type.extend(settings);
-			// Add it to the prototype so that new instances will have the property
-			extendedType.prototype.type = name;
-			// And and it to the extended type so that it can also be referred to statically
-			extendedType.type = name;
-			Component.components[name] = extendedType;
-			return extendedType;
-		},
-
-		/**
-		 * Renders a component of the given type.
-		 *
-		 * It is here that component instances are instantiated.
-		 *
-		 * @param {!Object} context
-		 * @param {string} type The name of the component type we want to
-		 *                      (initialize if needed and) render.
-		 * @return {!Component} An instance of the component of the given type.
-		 */
-		render: function (context, type) {
-			var ComponentType = Component.components[type];
-			if (!ComponentType) {
-				console.warn('Component type "' + type + '" is not defined.');
-				return null;
-			}
-			return new ComponentType(context);
-		}
 	});
 
 	return Component;

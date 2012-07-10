@@ -9,8 +9,7 @@ define([
 	'aloha/core',
 	'aloha/plugin',
 	'jquery',
-	'ui/component', 
-	'ui/componentState',
+	'ui/ui', 
 	'ui/toggleButton',
 	'formatlesspaste/formatlesshandler',
 	'aloha/contenthandlermanager',
@@ -20,8 +19,7 @@ define([
 ], function(Aloha,
             Plugin,
             jQuery,
-            Component,
-			ComponentState,
+            Ui,
             ToggleButton,
             FormatlessPasteHandler,
             ContentHandlerManager,
@@ -139,16 +137,16 @@ define([
 					FormatlessPasteHandler.strippedElements = config.strippedElements;
 				}
 				if (config.formatlessPasteOption === true) {
-					ComponentState.setState('toggleFormatlessPaste', 'state', true);
+					that._toggleFormatlessPasteButton.setState(true);
 					FormatlessPasteHandler.enabled = true;
 				} else if (config.formatlessPasteOption === false) {
-					ComponentState.setState('toggleFormatlessPaste', 'state', false);
+					that._toggleFormatlessPasteButton.setState(false);
 					FormatlessPasteHandler.enabled = false;
 				}
 				if ( config.button === false ) {
-					ComponentState.setState('toggleFormatlessPaste', 'show', false);
+					that._toggleFormatlessPasteButton.show(false);
 				} else {
-					ComponentState.setState('toggleFormatlessPaste', 'show', true);
+					that._toggleFormatlessPasteButton.show(true);
 				}
 			});
 		},
@@ -161,7 +159,7 @@ define([
 			FormatlessPasteHandler.strippedElements = this.strippedElements;
 			// add button to toggle format-less pasting
 
-			Component.define('toggleFormatlessPaste', ToggleButton, {
+			this._toggleFormatlessPasteButton = Ui.assign('toggleFormatlessPaste', ToggleButton, {
 				tooltip: i18n.t('button.formatlessPaste.tooltip'),
 				icon: 'aloha-icon aloha-icon-formatless-paste',
 				scope: 'Aloha.continuoustext',
@@ -173,13 +171,13 @@ define([
 
 			// activate formatless paste button if option is set
 			if (this.formatlessPasteOption === true) {
-				ComponentState.setState('toggleFormatlessPaste', 'state', true);
+				this._toggleFormatlessPasteButton.setState(true);
 				FormatlessPasteHandler.enabled = true;
 			}
 			
 			// hide button by default if configured
 			if (this.button === false) {
-				ComponentState.setState('toggleFormatlessPaste', 'show', false);
+				this._toggleFormatlessPasteButton.show(false);
 			}
 		}
 	});

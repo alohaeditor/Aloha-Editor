@@ -8,8 +8,7 @@ define([
 	'aloha',
 	'aloha/plugin',
 	'jquery',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
 	'i18n!format/nls/i18n',
@@ -18,19 +17,17 @@ define([
 	Aloha,
 	Plugin,
 	jQuery,
-	Component,
-	ComponentState,
+	Ui,
 	ToggleButton,
 	MultiSplitButton,
 	i18n,
 	i18nCore
 ) {
-		'use strict';
+	'use strict';
 
-		var GENTICS = window.GENTICS,
-			pluginNamespace = 'aloha-format';
-
-		var commandsByElement = {
+	var GENTICS = window.GENTICS,
+	    pluginNamespace = 'aloha-format',
+	    commandsByElement = {
 			'b': 'bold',
 			'strong': 'bold',
 			'i': 'italic',
@@ -38,11 +35,35 @@ define([
 			'del': 'strikethrough',
 			'sub': 'subscript',
 			'sup': 'superscript'
-		};
-
-		var componentNameByElement = {
+		},
+	    componentNameByElement = {
 			'strong': 'strong',
 			'em': 'emphasis'
+		},
+	    textLevelSemantics = {
+			'u': true,
+			'em': true,
+			'strong': true,
+			'b': true,
+			'i': true,
+			'cite': true,
+			'q': true,
+			'code': true,
+			'abbr': true,
+			'del': true,
+			's': true,
+			'sub': true,
+			'sup': true
+		},
+	    blockLevelSemantics = {
+			'p': true,
+			'h1': true,
+			'h2': true,
+			'h3': true,
+			'h4': true,
+			'h5': true,
+			'h6': true,
+			'pre': true
 		};
 
 	/**
@@ -116,7 +137,6 @@ define([
 					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatSup, function() { me.addMarkup( 'sup' ); return false; });
 				});
 
-
 				Aloha.bind('aloha-editable-deactivated',function (e, params) {
 					params.editable.obj.unbind('keydown.aloha.format');
 				});
@@ -151,9 +171,9 @@ define([
 				for ( button in this.buttons) {
 					if (this.buttons.hasOwnProperty(button)) {
 						if (jQuery.inArray(button, config) !== -1) {
-							ComponentState.setState(this.buttons[button].type, 'show', true);
+							this.buttons[button].handle.show();
 						} else {
-							ComponentState.setState(this.buttons[button].type, 'show', false);
+							this.buttons[button].handle.hide();
 						}
 					}
 				}
@@ -197,134 +217,107 @@ define([
 						button = j;
 					}
 
-					switch( button ) {
-						// text level semantics:
-						case 'u':
-						case 'em':
-						case 'strong':
-						case 'b':
-						case 'i':
-						case 'cite':
-						case 'q':
-						case 'code':
-						case 'abbr':
-						case 'del':
-						case 's':
-						case 'sub':
-						case 'sup':
-							var command = commandsByElement[button];
-							var componentName = command;
-							if (componentNameByElement.hasOwnProperty(button)) {
-								componentName = componentNameByElement[button];
-							}
-							Component.define(componentName, ToggleButton, {
-								tooltip : i18n.t('button.' + button + '.tooltip'),
-								icon: 'aloha-icon aloha-icon-' + componentName,
-								scope: scope,
-								click: function () {
-									var selectedCells = jQuery('.aloha-cell-selected');
+					if (textLevelSemantics[button]) {
+						var command = commandsByElement[button];
+						var componentName = command;
+						if (componentNameByElement.hasOwnProperty(button)) {
+							componentName = componentNameByElement[button];
+						}
+						var component = Ui.assign(componentName, ToggleButton, {
+							tooltip : i18n.t('button.' + button + '.tooltip'),
+							icon: 'aloha-icon aloha-icon-' + componentName,
+							scope: scope,
+							click: function () {
+								var selectedCells = jQuery('.aloha-cell-selected');
 
-									// formating workaround for table plugin
-									if ( selectedCells.length > 0 ) {
-										var cellMarkupCounter = 0;
-										selectedCells.each( function () {
-											var cellContent = jQuery(this).find('div'),
-											cellMarkup = cellContent.find(button);
-											
-											if ( cellMarkup.length > 0 ) {
-												// unwrap all found markup text
-												// <td><b>text</b> foo <b>bar</b></td>
-												// and wrap the whole contents of the <td> into <b> tags
-												// <td><b>text foo bar</b></td>
-												cellMarkup.contents().unwrap();
-												cellMarkupCounter++;
-											}
-											cellContent.contents().wrap('<'+button+'></'+button+'>');
-										});
-
-										// remove all markup if all cells have markup
-										if ( cellMarkupCounter === selectedCells.length ) {
-											selectedCells.find(button).contents().unwrap();
+								// formating workaround for table plugin
+								if ( selectedCells.length > 0 ) {
+									var cellMarkupCounter = 0;
+									selectedCells.each( function () {
+										var cellContent = jQuery(this).find('div'),
+										cellMarkup = cellContent.find(button);
+										
+										if ( cellMarkup.length > 0 ) {
+											// unwrap all found markup text
+											// <td><b>text</b> foo <b>bar</b></td>
+											// and wrap the whole contents of the <td> into <b> tags
+											// <td><b>text foo bar</b></td>
+											cellMarkup.contents().unwrap();
+											cellMarkupCounter++;
 										}
-										return false;
-									}
-									// formating workaround for table plugin
+										cellContent.contents().wrap('<'+button+'></'+button+'>');
+									});
 
-									that.addMarkup( button ); 
+									// remove all markup if all cells have markup
+									if ( cellMarkupCounter === selectedCells.length ) {
+										selectedCells.find(button).contents().unwrap();
+									}
 									return false;
 								}
-							});
-							that.buttons[button] = {
-								type: componentName,
-								'markup' : jQuery('<'+button+'>', {'class': button_config || ''})
-							};
-							break;
+								// formating workaround for table plugin
 
-						case 'p':
-						case 'h1':
-						case 'h2':
-						case 'h3':
-						case 'h4':
-						case 'h5':
-						case 'h6':
-						case 'pre':
-							that.multiSplitItems.push({
-								'name' : button,
-								'tooltip' : i18n.t('button.' + button + '.tooltip'),
-								'iconClass' : 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
-								'markup' : jQuery('<'+button+'>'),
-								'click' : function() {
-									var selectedCells = jQuery('.aloha-cell-selected');
+								that.addMarkup( button ); 
+								return false;
+							}
+						});
+						that.buttons[button] = {
+							handle: component,
+							'markup' : jQuery('<'+button+'>', {'class': button_config || ''})
+						};
+					} else if (blockLevelSemantics[button]) {
+						that.multiSplitItems.push({
+							'name' : button,
+							'tooltip' : i18n.t('button.' + button + '.tooltip'),
+							'iconClass' : 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
+							'markup' : jQuery('<'+button+'>'),
+							'click' : function() {
+								var selectedCells = jQuery('.aloha-cell-selected');
 
-									// formating workaround for table plugin
-									if ( selectedCells.length > 0 ) {
-										var cellMarkupCounter = 0;
-										selectedCells.each( function () {
-											var cellContent = jQuery(this).find('div'),
-												cellMarkup = cellContent.find(button);
+								// formating workaround for table plugin
+								if ( selectedCells.length > 0 ) {
+									var cellMarkupCounter = 0;
+									selectedCells.each( function () {
+										var cellContent = jQuery(this).find('div'),
+										cellMarkup = cellContent.find(button);
 										
-											if ( cellMarkup.length > 0 ) {
-												// unwrap all found markup text
-												// <td><b>text</b> foo <b>bar</b></td>
-												// and wrap the whole contents of the <td> into <b> tags
-												// <td><b>text foo bar</b></td>
-												cellMarkup.contents().unwrap();
-												cellMarkupCounter++;
-											}
-											cellContent.contents().wrap('<'+button+'></'+button+'>');
-										});
-
-										// remove all markup if all cells have markup
-										if ( cellMarkupCounter === selectedCells.length ) {
-											selectedCells.find(button).contents().unwrap();
+										if ( cellMarkup.length > 0 ) {
+											// unwrap all found markup text
+											// <td><b>text</b> foo <b>bar</b></td>
+											// and wrap the whole contents of the <td> into <b> tags
+											// <td><b>text foo bar</b></td>
+											cellMarkup.contents().unwrap();
+											cellMarkupCounter++;
 										}
-										return false;
+										cellContent.contents().wrap('<'+button+'></'+button+'>');
+									});
+
+									// remove all markup if all cells have markup
+									if ( cellMarkupCounter === selectedCells.length ) {
+										selectedCells.find(button).contents().unwrap();
 									}
-									// formating workaround for table plugin
-
-									that.changeMarkup( button );
-
+									return false;
 								}
-							});
-							break;
+								// formating workaround for table plugin
 
+								that.changeMarkup( button );
+
+							}
+						});
+					} else if ('removeFormat' === button) {
 						// wide multisplit buttons
-						case 'removeFormat':
-							that.multiSplitItems.push({
-								name: button,
-								text: i18n.t('button.' + button + '.text'),
-								tooltip: i18n.t('button.' + button + '.tooltip'),
-								wide: true,
-								'cls': 'aloha-ui-multisplit-fullwidth',
-								click: function () {
-									that.removeFormat();
-								}
-							});
-							break;
+						that.multiSplitItems.push({
+							name: button,
+							text: i18n.t('button.' + button + '.text'),
+							tooltip: i18n.t('button.' + button + '.tooltip'),
+							wide: true,
+							'cls': 'aloha-ui-multisplit-fullwidth',
+							click: function () {
+								that.removeFormat();
+							}
+						});
+					} else {
 						//no button defined
-						default:
-							Aloha.log('warn', this, 'Button "' + button + '" is not defined');
-							break;
+						Aloha.log('warn', this, 'Button "' + button + '" is not defined');
 					}
 				});
 
@@ -347,12 +340,12 @@ define([
 						for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 							effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 							if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
-								ComponentState.setState(button.type, 'state', true);
+								button.handle.setState(true);
 								statusWasSet = true;
 							}
 						}
 						if (!statusWasSet) {
-							ComponentState.setState(button.type, 'state', false);
+							button.handle.setState(false);
 						}
 					});
 

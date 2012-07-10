@@ -6,18 +6,18 @@
 define([
 	'aloha/core',
 	'jquery',
-	'ui/component',
+	'ui/ui',
 	'ui/multiSplit'
 ], function (
 	Aloha,
 	jQuery,
-	Component,
+	Ui,
 	MultiSplit
 ) {
 	'use strict';
 
 	function MultiSplitButton(props) {
-		Component.define(props.name, MultiSplit, {
+		Ui.assign(props.name, MultiSplit, {
 			scope: props.scope,
 			getButtons: function () {
 				return makeButtonsFromOldStyleProps(props, false);

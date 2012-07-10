@@ -2,14 +2,12 @@ define([
 	'aloha/core',
 	'jquery',
 	'util/class',
-	'ui/container',
-	'ui/context'
+	'ui/container'
 ], function(
 	Aloha,
-	jQuery,
+	$,
 	Class,
-	Container,
-	Context
+	Container
 ) {
 	'use strict';
 
@@ -22,11 +20,15 @@ define([
 	 * @base
 	 */
 	Surface = Class.extend({
+
+		_constructor: function(context) {
+			context.surfaces.push(this);
+		},
+
 		/**
 		 * Check for whether or not this surface is active--that is, whether is
 		 * is visible and the user can interact with it.
 		 *
-		 * @FIXME: @TODO: Implenent this function.
 		 * @eturn {boolean} True if this surface is visible.
 		 */
 		isActive: function() {
@@ -37,16 +39,7 @@ define([
 
 	// Static fields for the Surface class.
 
-	jQuery.extend( Surface, {
-
-		/**
-		 * The editable that is currently active.  The components that belong
-		 * to this surface will interact with this surface.
-		 *
-		 * @static
-		 * @type {Aloha.Editable}
-		 */
-		active: null,
+	$.extend( Surface, {
 
 		/**
 		 * The range of the current selection.
@@ -61,45 +54,12 @@ define([
 		range: null,
 
 		/**
-		 * List of surface types.  Each type must extend Surface.
-		 *
-		 * @static
-		 * @type {Array.<Surface>}
-		 */
-		Types: [],
-
-		instances: [],
-
-		/**
-		 * Initializes the surface manager.
-		 *
-		 * @static
-		 */
-		init: function() {
-			// When an editable is activated, we show its associated surfaces.
-			Aloha.bind('aloha-editable-activated', function(event, alohaEvent) {
-				Surface.active = alohaEvent.editable;
-				Surface.show(Context.singleton);
-				Container.showContainersForContext(Context.singleton, event);
-			});
-
-			// When an editable is deactivated, we hide its associated surfaces.
-			Aloha.bind('aloha-editable-deactivated', function(event, alohaEvent) {
-				// TODO: handle a click on a surface, then a click outside
-				if ( !Surface.suppressHide ) {
-					Surface.hide(Context.singleton);
-					Surface.active = null;
-				}
-			});
-		},
-
-		/**
 		 * Shows all surfaces for a given context.
 		 *
 		 * @param {!Object} context.
 		 */
 		show: function(context) {
-			jQuery.each(context.surfaces, function(i, surface) {
+			$.each(context.surfaces, function(i, surface) {
 				surface.show();
 			});
 		},
@@ -110,27 +70,8 @@ define([
 		 * @param {!Object} context
 		 */
 		hide: function(context) {
-			jQuery.each(context.surfaces, function (i, surface) {
+			$.each(context.surfaces, function (i, surface) {
 				surface.hide();
-			});
-		},
-
-		/**
-		 * Registers a new surface type.
-		 *
-		 * @param {Surface} surface
-		 */
-		registerType: function(type) {
-			Surface.Types.push(type);
-			// The components specified in Aloha.settings will be
-			// defined by plugins when they are loaded. Therefore, we
-			// have to defer creation of surfaces until after they are loaded.
-			Aloha.ready(function(){
-				var surface = type.createSurface(Context.singleton, Aloha.settings);
-				if (surface) {
-					Context.singleton.surfaces.push(surface);
-					Surface.instances.push(surface);
-				}
 			});
 		},
 
@@ -154,8 +95,6 @@ define([
 					Surface.range = (0 < selection.getRangeCount())
 					              ? selection.getRangeAt(0)
 								  : null;
-					// TODO: this overlaps with Surface.active
-					Surface.editable = Aloha.activeEditable;
 				}
 			});
 			
@@ -164,19 +103,8 @@ define([
 				Aloha.eventHandled = false;
 				Surface.suppressHide = false;
 			});
-		},
-
-		onActivatedSurface: function(tuples, eventName, $event, range, nativeEvent) {
-			var i;
-			for (i = 0; i < tuples.length; i++) {
-				if (tuples[i][0].isActive()) {
-					tuples[i][1]($event, range, nativeEvent);
-				}
-			}
 		}
 	});
-
-	Surface.init();
 
 	return Surface;
 });

@@ -22,7 +22,6 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'image/image-floatingMenu',
-	'ui/componentState',
 	'i18n!aloha/nls/i18n',
 	'i18n!image/nls/i18n',
 	'aloha/jquery-ui',
@@ -35,7 +34,6 @@ define([
 	aQuery,
 	Plugin,
 	ImageFloatingMenu,
-	ComponentState,
 	i18nCore,
 	i18n
 ){
@@ -405,15 +403,15 @@ define([
 					config = plugin.getEditableConfig(Aloha.activeEditable.obj);
 
 					if (typeof config !== 'undefined') {
-						ComponentState.setState('insertImage', 'show', true);
+						plugin.ui._insertImageButton.show();
 					} else {
-						ComponentState.setState('insertImage', 'show', false);
+						plugin.ui._insertImageButton.hide();
 						return;
 					}
 
 					// Enable image specific ui components if the element is an image
 					if (foundMarkup) { // TODO : this is always null (below is dead code, moving it to clickImage)
-						ComponentState.setState('insertImage', 'show', false);
+						plugin.ui._insertImageButton.show();
 						plugin.ui.setScope();
 						
 
@@ -1164,7 +1162,7 @@ define([
 			}
 
 			this.destroyCropButtons();
-			ComponentState.setState('imageCropButton', 'state', false);
+			this.ui._imageCropButton.setState(false);
 
 			if (this.settings.ui.resizable) {
 				this.startResize();

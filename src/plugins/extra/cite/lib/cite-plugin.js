@@ -9,8 +9,7 @@ define([
     'aloha',
 	'jquery',
 	'aloha/plugin',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/toggleButton',
 	'format/format-plugin',
 	'util/dom',
@@ -21,8 +20,7 @@ define([
 	Aloha,
 	jQuery,
 	Plugin,
-	Component,
-	ComponentState,
+	Ui,
 	ToggleButton,
 	Format,
 	domUtils,
@@ -186,7 +184,7 @@ define([
 				}
 			}
 
-			Component.define('quote', ToggleButton, {
+			this._quoteButton = Ui.assign('quote', ToggleButton, {
 				tooltip: i18n.t('cite.button.add.quote'),
 				icon: nsClass('button', 'inline-button'),
 				scope: 'Aloha.continuoustext',
@@ -290,9 +288,9 @@ define([
 				}
 				
 				if ( jQuery.inArray('quote', config ) !== -1 ) {
-					ComponentState.setState('quote', 'show', true);
+					that._quoteButton.show(true);
 				} else {
-					ComponentState.setState('quote', 'show', false);
+					that._quoteButton.show(false);
 				}
 				
 				if ( jQuery.inArray( 'blockquote', config ) !== -1 ) {
@@ -325,11 +323,11 @@ define([
 				buttons.filter('.aloha-cite-block-button')
 					.removeClass('aloha-cite-pressed');
 
-				ComponentState.setState('quote', 'state', false);
+				that._quoteButton.setState(false);
 
 				if ( statusWasSet ) {
 					if('Q' === nodeName) {
-						ComponentState.setState('quote', 'state', true);
+						that._quoteButton.setState(true);
 					} else {
 						buttons.filter('.aloha-cite-block-button')
 							.addClass('aloha-cite-pressed');
@@ -348,9 +346,9 @@ define([
 
 				// quote
 				if ( jQuery.inArray( 'quote', config ) != -1 ) {
-					ComponentState.setState('quote', 'show', true);
+					that._quoteButton.show(true);
 	        	} else {
-					ComponentState.setState('quote', 'show', false);
+					that._quoteButton.show(false);
 	        	}
 				
 				// blockquote
