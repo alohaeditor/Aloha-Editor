@@ -8,11 +8,7 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUG**: numerated-headers plugin: Fixed misleading interpretation of the 'numeratedactive' for configuration per editable. 'numeratedactive' will now only determine, whether headers shall be numerated by default (if button not unclicked by the editor). To disable the function for an editable, choose an empty 'headingselector'.
-- **BUG**: numerated-headers plugin: Fixed numeration, when the headers are not starting with the highest level (e.g. when using h2 h1 h2 h3, the first h2 will be omitted and numeration will start at the h1)
-- **ENHANCEMENT**: numerated-headers plugin: Added configuration option 'trailingdot' to switch format of generated headers.
-- **BUG**: core: fixed missing space when selecting a word between two spaces and deleting (by [DEL] or [BACKSPACE]). The result will now be like expected: having the cursor between two spaces.
-- **BUG**: characterpicker-plugin: Fixed inserting characters with a non-collapsed selection. Instead of adding the character after the selection, the inserted character will now replace the selection (like expected).
-- **BUG**: paste-plugin: Disabled handling paste on IE by executing the command 'paste', because this causes incorrect cursor positions after pasting.
-- **BUG**: paste-plugin: Fixed setting focus and selection into the editable before inserting pasted html. That fixes strange behaviour in FF after pasting.
-- **BUG**: format-plugin: removeFormat for quote and others (#577); enabled the useage of the u element (#580)
+
+- **BUG**: plugin metaview: language annotations would result in background images being repeated over and over again - fixed that problem.
+- **BUG**: rangy-core: fixed problem with the commonAncestorContainer
+- **BUG**: transformation of empty p/h1/hx elements to hx/h1/p is now possible

@@ -122,15 +122,17 @@
 	<li>Word</li>
 	<li>oEmbed</li>
 	<li>Sanitize</li>
+	<li>blockelement</li>
 </ul>
 <p>Plugins also provide Content Handler:</p>
 <ul>
 	<li>Block <tt>common/block</tt> plugin</li>
 </ul>
-<p>There are two hocks available:</p>
+<p>There are three hooks available:</p>
 <ul>
 	<li>insertHtml in <tt>common/commands</tt> plugin</li>
 	<li>initEditable in core/editable.js</li>
+	<li>getContents in core/editable.js</li>
 </ul>
 <h3 id="enabling-the-content-handler-plugin">2 Enabling the Content Handler Plugin</h3>
 <h4 id="using-configuration">2.1 Using Configuration</h4>
@@ -198,6 +200,7 @@
 	<li>word</li>
 	<li>generic</li>
 	<li>sanitize</li>
+	<li>blockelement</li>
 </ul>
 <h4 id="word-content-handler">7.1 Word Content Handler</h4>
 <p>The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It will:</p>
@@ -260,7 +263,8 @@ Aloha.settings.contentHandler.sanitize = {
 		'q' : {'cite': ['http', 'https', '__relative__']}
 	}
 }
-</pre></div>
+</pre></div><h4 id="blockelement-content-handler">7.4 Blockelement Content Handler</h4>
+<p>The blockelement implements the behaviour documented in the section about <a href="functional_description.html#implemented-behaviour">Empty Block Level Elements</a></p>
 
       </div>
         <div id="subCol">
@@ -278,6 +282,7 @@ Aloha.settings.contentHandler.sanitize = {
 </a><ul><li><a href="#word-content-handler"><p>Word Content Handler</p>
 </a></li> <li><a href="#generic-content-handler"><p>Generic Content Handler</p>
 </a></li> <li><a href="#sanitize-content-handler"><p>Sanitize Content Handler</p>
+</a></li> <li><a href="#blockelement-content-handler"><p>Blockelement Content Handler</p>
 </a></li></ul></li>
           </ol>
         </div>

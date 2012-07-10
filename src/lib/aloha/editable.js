@@ -41,8 +41,8 @@ define( [
 	// default supported and custom content handler settings
 	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
-	Aloha.defaults.contentHandler.initEditable = [ 'sanitize' ];
-	Aloha.defaults.contentHandler.getContents = [ 'sanitize' ];
+	Aloha.defaults.contentHandler.initEditable = ['blockelement', 'sanitize'];
+	Aloha.defaults.contentHandler.getContents = ['blockelement'];
 
 	// The insertHtml contenthandler ( paste ) will, by default, use all
 	// registered content handlers.
@@ -171,13 +171,19 @@ define( [
 			}
 
 			// apply content handler to clean up content
+			if ( typeof Aloha.settings.contentHandler.getContents === 'undefined' ) {
+				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
+			}
+
+			// apply content handler to clean up content
 			if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
 				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
 			}
 			
 			var content = me.obj.html();
 			content = ContentHandlerManager.handleContent( content, {
-				contenthandler: Aloha.settings.contentHandler.initEditable
+				contenthandler: Aloha.settings.contentHandler.initEditable,
+				command: 'initEditable'
 			} );
 			me.obj.html( content );
 
@@ -707,6 +713,11 @@ define( [
 			clonedObj.find( '.aloha-cleanme' ).remove();
 			this.removePlaceholder( clonedObj );
 			PluginManager.makeClean( clonedObj );
+
+			clonedObj = jQuery('<div>' + ContentHandlerManager.handleContent(clonedObj.html(), {
+				contenthandler: Aloha.settings.contentHandler.getContents,
+				command: 'getContents'
+			}) + '</div>');
 
 			return asObject ? clonedObj.contents() : contentSerializer(clonedObj[0]);
 		},
