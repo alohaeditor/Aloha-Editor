@@ -8,4 +8,7 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+
 - **BUG**: plugin metaview: language annotations would result in background images being repeated over and over again - fixed that problem.
+- **BUG**: rangy-core: fixed problem with the commonAncestorContainer
+- **BUG**: transformation of empty p/h1/hx elements to hx/h1/p is now possible

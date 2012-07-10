@@ -32,6 +32,9 @@ There are three hooks available:
 
 h3. Enabling the Content Handler Plugin
 
+Add +common/contenthandler+ to the list of plugins you would like to load / enable.
+
+WARNING: Add the content handler plugin as (one of) the last plugin -- plugins like formatless paste or block (which are providing contenthandler) needs to be loaded before!
 
 h4. Using Configuration
 
