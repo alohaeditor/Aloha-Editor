@@ -13,13 +13,16 @@ define([
 ) {
 	'use strict';
 
+	var contextSingleton = new Context(),
+	    Surface;
+
 	/**
 	 * The Surface class and manager.
 	 *
 	 * @class
 	 * @base
 	 */
-	var Surface = Class.extend({
+	Surface = Class.extend({
 		/**
 		 * Check for whether or not this surface is active--that is, whether is
 		 * is visible and the user can interact with it.
@@ -77,23 +80,16 @@ define([
 			// When an editable is activated, we show its associated surfaces.
 			Aloha.bind('aloha-editable-activated', function(event, alohaEvent) {
 				Surface.active = alohaEvent.editable;
-				var context = Context.forEditable(Surface.active)
-
-				// If this is the first time we've seen this editable,
-				// then we need to initialize the surfaces first.
-				if (!context.surfaces) {
-					Surface.initialize(context, Surface.active.settings);
-				}
-
-				Surface.show(context);
-				Container.showContainersForContext(context, event);
+				Surface.active.context = contextSingleton;
+				Surface.show(contextSingleton);
+				Container.showContainersForContext(contextSingleton, event);
 			});
 
 			// When an editable is deactivated, we hide its associated surfaces.
 			Aloha.bind('aloha-editable-deactivated', function(event, alohaEvent) {
 				// TODO: handle a click on a surface, then a click outside
 				if ( !Surface.suppressHide ) {
-					Surface.hide(Context.forEditable(alohaEvent.editable));
+					Surface.hide(contextSingleton);
 					Surface.active = null;
 				}
 			});
@@ -122,29 +118,22 @@ define([
 		},
 
 		/**
-		 * Initializes all surfaces for a context.
-		 *
-		 * @param {!Object} context
-		 * @param {?Object} settings
-		 */
-		initialize: function(context, settings) {
-			context.surfaces = [];
-			jQuery.each(Surface.Types, function(i, Type) {
-				var surface = Type.createSurface(context, settings);
-				if (surface) {
-					context.surfaces.push(surface);
-					Surface.instances.push(surface);
-				}
-			});
-		},
-
-		/**
 		 * Registers a new surface type.
 		 *
 		 * @param {Surface} surface
 		 */
-		registerType: function(surface) {
-			Surface.Types.push(surface);
+		registerType: function(type) {
+			Surface.Types.push(type);
+			// The components specified in Aloha.settings will be
+			// defined by plugins when they are loaded. Therefore, we
+			// have to defer creation of surfaces until after they are loaded.
+			Aloha.ready(function(){
+				var surface = type.createSurface(contextSingleton, Aloha.settings);
+				if (surface) {
+					contextSingleton.surfaces.push(surface);
+					Surface.instances.push(surface);
+				}
+			});
 		},
 
 		/**

@@ -21,22 +21,17 @@ define(['jquery', 'util/class'],function($, Class){
 	    contextElem,
 	    contextSingleton;
 
+	// There is just a single context element in the page
 	contextElem = $(selector);
 	if (!contextElem.length) {
 		contextElem = $('<div>', {'class': 'aloha', 'id': id}).appendTo('body');
 	}
 
 	var Context =  Class.extend({
+		surfaces: [],
 		selector: selector,
 		element: contextElem
 	});
 
-	contextSingleton = new Context();
-
-	return {
-		forEditable: function(editable) {
-			// per-editable context not implemented
-			return contextSingleton;
-		}
-	};
+	return Context;
 });
