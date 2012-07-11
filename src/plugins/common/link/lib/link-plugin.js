@@ -275,6 +275,7 @@ define( [
 					if ( that.findLinkMarkup() ) {
 						// open the tab containing the href
 						Scopes.activateTabOfButton('editLink');
+						that.hrefField.foreground();
 						that.hrefField.focus();
 					} else {
 						that.insertLink(true);
@@ -576,6 +577,7 @@ define( [
 			}
 			
 			// activate floating menu tab
+			this.hrefField.foreground();
 			Scopes.activateTabOfButton('editLink');
 			
 			// if selection is collapsed then extend to the word.
@@ -712,7 +714,8 @@ define( [
 			
 			if (foundMarkup) {
 				that.toggleLinkScope(true);
-				
+
+				that.hrefField.foreground();
 				Scopes.activateTabOfButton('editLink');
 
 				// now we are ready to set the target object

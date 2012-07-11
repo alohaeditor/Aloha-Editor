@@ -134,10 +134,11 @@ define([
 		show: function() {},
 		hide: function() {},
 		focus: function() {},
+		foreground: function() {},
 
-		childVisible: function(childComponent) {},
-		childHidden: function(childComponent) {},
-		childFocus: function(childComponent) {}
+		childVisible: function(childComponent, visible) {},
+		childFocus: function(childComponent) {},
+		childForeground: function(childComponent) {}
 	});
 
 	// static fields

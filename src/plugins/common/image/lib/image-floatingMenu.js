@@ -291,13 +291,6 @@ function (
 		},
 
 		/**
-		 * 
-		 */
-		activateView: function (name) {
-			Scopes.activateTabOfButton(name);
-		},
-
-		/**
 		 * Redraws UI
 		 */
 		doLayout: function () {

@@ -135,34 +135,30 @@ define([
 			return true;
 		},
 
-		focus: function() {
+		foreground: function() {
 			this.container.tabs('select', this.index);
 			PubSub.pub('aloha.ui.container.activated', {data: this});
 		},
 
-		childFocus: function(childComponent) {
-			this.focus();
+		childForeground: function(childComponent) {
+			this.foreground();
 		},
 
-		childVisible: function(childComponent) {
+		childVisible: function(childComponent, visible) {
 			var group = this._groupByComponent[childComponent.id];
 			if (!group) {
 				return;
 			}
-			if (0 === group.visibleCounter) {
-				group.element.removeClass('aloha-ui-hidden');
-			}
-			group.visibleCounter += 1;
-		},
-
-		childHidden: function(childComponent) {
-			var group = this._groupByComponent[childComponent.id];
-			if (!group) {
-				return;
-			}
-			group.visibleCounter -= 1;
-			if (0 === group.visibleCounter) {
-				group.element.addClass('aloha-ui-hidden');
+			if (visible) {
+				if (0 === group.visibleCounter) {
+					group.element.removeClass('aloha-ui-hidden');
+				}
+				group.visibleCounter += 1;
+			} else {
+				group.visibleCounter -= 1;
+				if (0 === group.visibleCounter) {
+					group.element.addClass('aloha-ui-hidden');
+				}
 			}
 		},
 

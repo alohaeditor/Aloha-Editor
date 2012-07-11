@@ -88,7 +88,7 @@ define([
 				this.visible = true;
 				this.element.show();
 				if (this.container) {
-					this.container.childVisible(this);
+					this.container.childVisible(this, true);
 				}
 			}
 		},
@@ -102,20 +102,22 @@ define([
 				this.visible = false;
 				this.element.hide();
 				if (this.container) {
-					this.container.childHidden(this);
+					this.container.childVisible(this, false);
 				}
 			}
 		},
 
 		focus: function() {
-			// First the container element must be visible before a
-			// descendant element can be focused. In the case of a
-			// toolbar with tabs this means that the tab must be brought
-			// into view.
+			this.element.focus();
 			if (this.container) {
 				this.container.childFocus(this);
 			}
-			this.element.focus();
+		},
+
+		foreground: function() {
+			if (this.container) {
+				this.container.childForeground(this);
+			}
 		},
 
 		enable: function(enable_opt){},

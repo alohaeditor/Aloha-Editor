@@ -260,6 +260,7 @@ define([
 		insertLanguageAnnotation: function() {
 			if ( this.findLangMarkup() ) {
 				Scopes.activateTabOfButton( 'wailangfield' );
+				langField.foreground();
 				langField.focus();
 			} else {
 				this.addMarkupToSelection();
@@ -324,7 +325,8 @@ define([
 			}
 
 			Scopes.activateTabOfButton( 'wailangfield' );
-            Scopes.setScope( 'wai-lang' );
+			langField.foreground();
+			Scopes.setScope( 'wai-lang' );
 
 			if ( range.isCollapsed() ) {
 				GENTICS.Utils.Dom.extendToWord( range );
