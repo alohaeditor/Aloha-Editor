@@ -118,6 +118,9 @@ define([
 			this.element.focus();
 		},
 
+		enable: function(enable_opt){},
+		disable: function(){},
+
 		/**
 		 * Selection change callback.
 		 * Usually overridden by the component implementation or the settings
