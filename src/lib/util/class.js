@@ -37,6 +37,7 @@ function(){
           typeof _super[name] == "function" && fnTest.test(prop[name]) ?
           (function(name, fn){
             return function() {
+
               var tmp = this._super;
 
               // Add a new ._super() method that is the same method
