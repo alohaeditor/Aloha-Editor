@@ -793,23 +793,20 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, Engine) {
 				Aloha.Log.info(this, 'non-markup 2 non-markup');
 				
 				// workaround to keep the caret at the right position if it's an empty element
-				if ( (rangeObject.startContainer === rangeObject.endContainer)
-						&& (rangeObject.startContainer.innerHTML === '' ||
-							rangeObject.startContainer.innerHTML.toLowerCase() === '<br class="aloha-end-br">') ) {
+				if (isCollapsedAndEmptyOrEndBr(rangeObject)) {
+					var newMarkup = markupObject.clone();
 
-
-					//markupObject[0].appendChild(document.createTextNode(''));
-					if ( rangeObject.startContainer.innerHTML.toLowerCase() === '<br class="aloha-end-br">' ) {
+					if (isCollapsedAndEndBr(rangeObject)) {
 						var endBr = document.createElement('br');
 						endBr.setAttribute('class', 'aloha-end-br');
-						markupObject[0].appendChild(endBr);
+						newMarkup[0].appendChild(endBr);
 					}
 
-					Engine.copyAttributes(rangeObject.startContainer, markupObject[0]);
-					jQuery(rangeObject.startContainer).after(markupObject[0]).remove();
+					Engine.copyAttributes(rangeObject.startContainer, newMarkup[0]);
+					jQuery(rangeObject.startContainer).after(newMarkup[0]).remove();
 
-					rangeObject.startContainer = markupObject[0];
-					rangeObject.endContainer = markupObject[0];
+					rangeObject.startContainer = newMarkup[0];
+					rangeObject.endContainer = newMarkup[0];
 					rangeObject.startOffset = 0;
 					rangeObject.endOffset = 0;
 
@@ -2136,6 +2133,26 @@ function correctRange ( range ) {
 	
 	var selection = new Selection();
 	Aloha.Selection = selection;
+
+
+	function isCollapsedAndEmptyOrEndBr(rangeObject) {
+		var firstChild;
+		if (rangeObject.startContainer !== rangeObject.endContainer) {
+			return false;
+		}
+		firstChild = rangeObject.startContainer.firstChild;
+		return (!firstChild
+				|| (!firstChild.nextSibling
+					&& firstChild.nodeName == 'BR'
+					&& jQuery(firstChild).hasClass('aloha-end-br')));
+	}
+
+	function isCollapsedAndEndBr(rangeObject) {
+		if (rangeObject.startContainer !== rangeObject.endContainer) {
+			return false;
+		}
+		return rangeObject.startContainer.innerHTML.toLowerCase() === '<br class="aloha-end-br">';
+	}
 
 	return selection;
 });
