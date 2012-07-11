@@ -680,10 +680,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, Engine) {
 				prevSibling, relevantMarkupObjectBeforeSelection,
 				extendedRangeObject;
 
-			if (Aloha.activeEditable) {
-				Aloha.activeEditable.obj.focus();
-			}
-
 			// if the element is a replacing element (like p/h1/h2/h3/h4/h5/h6...), which must not wrap each other
 			// use a clone of rangeObject
 			if (this.replacingElements[ tagName ]) {
@@ -793,13 +789,18 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, Engine) {
 				Aloha.Log.info(this, 'non-markup 2 non-markup');
 				
 				// workaround to keep the caret at the right position if it's an empty element
+				// applyMarkup was not working correctly and has a lot of overhead we don't need in that case
 				if (isCollapsedAndEmptyOrEndBr(rangeObject)) {
 					var newMarkup = markupObject.clone();
 
 					if (isCollapsedAndEndBr(rangeObject)) {
-						var endBr = document.createElement('br');
-						endBr.setAttribute('class', 'aloha-end-br');
-						newMarkup[0].appendChild(endBr);
+						newMarkup[0].appendChild(Engine.createEndBreak());
+					}
+
+					// setting the focus is needed for mozilla and IE 7 to have a working rangeObject.select()
+					if (Aloha.activeEditable
+						&& jQuery.browser.mozilla) {
+						Aloha.activeEditable.obj.focus();
 					}
 
 					Engine.copyAttributes(rangeObject.startContainer, newMarkup[0]);
@@ -826,7 +827,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, Engine) {
 
 			// update selection
 			if (markupObject.isReplacingElement) {
-				//this.setSelection(backupRangeObject, true);
 				if ( backupRangeObject &&
 					backupRangeObject.startContainer.className &&
 					backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1 ) {
@@ -837,7 +837,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, Engine) {
 				backupRangeObject.update();
 				backupRangeObject.select();
 			} else {
-				//this.setSelection(rangeObject);
 				rangeObject.select();
 			}
 		},
@@ -2143,8 +2142,7 @@ function correctRange ( range ) {
 		firstChild = rangeObject.startContainer.firstChild;
 		return (!firstChild
 				|| (!firstChild.nextSibling
-					&& firstChild.nodeName == 'BR'
-					&& jQuery(firstChild).hasClass('aloha-end-br')));
+					&& firstChild.nodeName == 'BR'));
 	}
 
 	function isCollapsedAndEndBr(rangeObject) {
