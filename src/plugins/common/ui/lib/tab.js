@@ -137,7 +137,6 @@ define([
 
 		foreground: function() {
 			this.container.tabs('select', this.index);
-			PubSub.pub('aloha.ui.container.activated', {data: this});
 		},
 
 		childForeground: function(childComponent) {
@@ -166,19 +165,16 @@ define([
 		 * @override
 		 */
 		show: function() {
-			if ( 0 === this.list.children().length ) {
+			if (!this.list.children().length) {
 				return;
 			}
 			this.handle.show();
 			this.visible = true;
 
-			// If no tabs are selected, then select the tab which was just
-			// shown.
-			if ( 0 === this.container.find( '.ui-tabs-active' ).length ) {
-				this.container.tabs( 'select', this.index );
-			} else if ( this.container.tabs( 'option', 'selected' )
-			            === this.index ) {
-				this.container.tabs( 'select', this.index );
+			// If no tabs are selected, then select the tab which was just shown.
+			if (   !this.container.find('.ui-tabs-active').length
+			    ||  this.container.tabs('option', 'selected') === this.index) {
+				this.foreground();
 			}
 		},
 

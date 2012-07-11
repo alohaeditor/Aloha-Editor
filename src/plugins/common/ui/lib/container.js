@@ -56,10 +56,10 @@ define([
 	 * @param {boolean} show Whether to show or hide the given containers.
 	 */
 	function toggleContainers(containers, show) {
-		var action = show ? 'show' : 'hide';
-		var j = containers.length;
-		while (j) {
-			containers[--j][action]();
+		var action = show ? 'show' : 'hide',
+		    i;
+		for (i = 0; i < containers.length; i++) {
+			containers[i][action]();
 		}
 	}
 
