@@ -41,7 +41,7 @@ define([
 
 		_moveTimeout: null,
 		$_container: null,
-		_tabBySlot: {},
+		_tabBySlot: null,
 
 		/**
 		 * Toolbar constructor.
@@ -58,8 +58,8 @@ define([
 			this._super(context);
 
 			this.$element = $('<div>', {'class': 'aloha-ui-toolbar'});
-
 			this.$_container = Tab.createContainer().appendTo(this.$element);
+			this._tabBySlot = {};
 
 			for (i = 0; i < tabs.length; i++) {
 				tabSettings = tabs[i];
@@ -68,7 +68,7 @@ define([
 					label: i18n.t(tabSettings.label, ''),
 					showOn: tabSettings.showOn,
 					container: this.$_container
-				}, tabSettings.components)
+				}, tabSettings.components);
 
 				for (key in tabInstance._elemBySlot) {
 					if (tabInstance._elemBySlot.hasOwnProperty(key)) {

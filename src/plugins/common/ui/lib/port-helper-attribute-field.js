@@ -43,7 +43,7 @@ define([
 		    placeholder = props.placeholder,
 		    noTargetHighlight = !!props.noTargetHighlight,
 		    element = $('<input id="aloha-attribute-field-' + props.name + '">'),
-		    componentInstantiated = 0,
+		    component,
 		    template,
 		    resourceItem,
 		    resourceValue,
@@ -58,13 +58,8 @@ define([
 			element.width(props.width);
 		}
 
-		Ui.assign(props.name, Component, {
+		component = Ui.assign(props.name, Component, {
 			init: function(){
-
-				if (componentInstantiated++) {
-					console.error("Multiple instantiation of port-helper-attribute-field is not implemented");
-					return;
-				}
 
 				// Why do we have to wrap the element in a span? It
 				// doesn't seem to work otherwise.
@@ -322,6 +317,7 @@ define([
 		}
 
 		function focus () {
+			component.focus();
 			element.focus();
 		}
 

@@ -42,7 +42,7 @@ define([
 	 */
 	var Tab = Container.extend({
 
-		_elemBySlot: {},
+		_elemBySlot: null,
 
 		/**
 		 * All that this constructor does is save the components array into a
@@ -60,6 +60,7 @@ define([
 			    group,
 			    componentName;
 
+			this._elemBySlot = {};
 			this._super(context, settings);
 
 			this.container = settings.container;
