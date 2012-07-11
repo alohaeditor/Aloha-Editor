@@ -98,16 +98,14 @@ define([
 
 			// add the event handler for selection change
 			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
-				var foundMarkup;
-
-				that._wailangButton.setState(false);
-				foundMarkup = that.findLangMarkup( rangeObject );
-				if ( foundMarkup ) {
+				var foundMarkup = that._foundLangMarkupAtSelection = that.findLangMarkup(rangeObject);
+				if (foundMarkup) {
 					that._wailangButton.setState(true);
 					Scopes.setScope('wai-lang');
 					langField.setTargetObject(foundMarkup, 'lang');
 				} else {
 					that._wailangButton.setState(false);
+					that._foundLangMarkupAtSelection = false;
 					langField.setTargetObject(null);
 				}
 			} );
@@ -306,7 +304,7 @@ define([
 		 * Toggles markup around selection.
 		 */
 		addRemoveMarkupToSelection: function() {
-			if (this._waiLangButton.getState()) {
+			if (this._foundLangMarkupAtSelection) {
 				this.removeLangMarkup();
 			} else {
 				this.addMarkupToSelection( false );
