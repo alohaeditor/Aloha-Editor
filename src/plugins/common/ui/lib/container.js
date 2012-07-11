@@ -133,7 +133,12 @@ define([
 		// must be implemented by extending classes
 		show: function() {},
 		hide: function() {},
-		focus: function() {}
+		focus: function() {},
+		foreground: function() {},
+
+		childVisible: function(childComponent, visible) {},
+		childFocus: function(childComponent) {},
+		childForeground: function(childComponent) {}
 	});
 
 	// static fields

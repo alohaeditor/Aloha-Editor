@@ -39,7 +39,7 @@ define([
 					that._toolbar.animate({
 						'left': 0
 					});
-					$('body').animate({marginTop: 30});
+					$('body').animate({paddingTop: 30});
 					fadeIn.hide();
 				})
 			    .appendTo(this._toolbar);
@@ -52,7 +52,7 @@ define([
 						        + fadeIn.outerWidth()
 						        + 10
 					});
-					$('body').animate({marginTop: 0});
+					$('body').animate({paddingTop: 0});
 					fadeIn.show();
 				})
 				.appendTo(this._toolbar);
@@ -67,7 +67,7 @@ define([
 
 			$('body').css({
 				position: 'relative',
-				marginTop: 30
+				paddingTop: 30
 			});
 		},
 

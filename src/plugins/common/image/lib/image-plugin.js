@@ -413,15 +413,12 @@ define([
 					if (foundMarkup) { // TODO : this is always null (below is dead code, moving it to clickImage)
 						plugin.ui._insertImageButton.show();
 						plugin.ui.setScope();
-						
-
 						if (plugin.settings.ui.meta) {
 							plugin.ui.imgSrcField.setTargetObject(foundMarkup, 'src');
 							plugin.ui.imgTitleField.setTargetObject(foundMarkup, 'title');
 						}
+						plugin.ui.imgSrcField.foreground();
 						plugin.ui.imgSrcField.focus();
-						plugin.ui.activateView('imageSource');
-						
 					} else {
 						if (plugin.settings.ui.meta) {
 							plugin.ui.imgSrcField.setTargetObject(null);

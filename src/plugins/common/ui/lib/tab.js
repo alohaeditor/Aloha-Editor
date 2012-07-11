@@ -7,7 +7,7 @@ define([
 	'aloha/jquery-ui'
 ], function (
 	Aloha,
-	jQuery,
+	$,
 	Container,
 	Component,
 	PubSub
@@ -42,7 +42,9 @@ define([
 	 */
 	var Tab = Container.extend({
 
-		_elemBySlot: {},
+		_elemBySlot: null,
+		_groupBySlot: null,
+		_groupByComponent: null,
 
 		/**
 		 * All that this constructor does is save the components array into a
@@ -58,16 +60,20 @@ define([
 			    elem,
 			    groupedComponents,
 			    group,
+			    groupProps,
 			    componentName;
 
+			this._elemBySlot = {};
+			this._groupBySlot = {};
+			this._groupByComponent = {};
 			this._super(context, settings);
 
 			this.container = settings.container;
 			this.list = this.container.data('list');
 			this.panels = this.container.data('panels');
 			this.id = 'tab-ui-container-' + (++idCounter);
-			this.panel = jQuery('<div>', {id : this.id});
-			this.handle = jQuery('<li><a href="#' + this.id + '">' +
+			this.panel = $('<div>', {id : this.id});
+			this.handle = $('<li><a href="#' + this.id + '">' +
 				settings.label + '</a></li>');
 
 
@@ -81,12 +87,13 @@ define([
 						this.panel.append(elem);
 					}
 				} else {
-					group = jQuery('<div>', {
+					group = $('<div>', {
 						'class': 'aloha-ui-component-group'
 					}).appendTo(this.panel);
-
+					groupProps = {element: group, visibleCounter: 0};
 					groupedComponents = components[i];
 					for (j = 0; j < groupedComponents.length; j++) {
+						this._groupBySlot[groupedComponents[j]] = groupProps;
 						if (1 === groupedComponents[j].length &&
 						    groupedComponents[j].charCodeAt(0) === 10) {
 							group.append('<div>');
@@ -111,13 +118,48 @@ define([
 		},
 
 		assignToSlot: function(configuredSlot, component) {
+			var elem = this._elemBySlot[configuredSlot],
+			    group;
+			if (!elem) {
+				return false;
+			}
 			component.adopt(this);
-			this._elemBySlot[configuredSlot].append(component.element);
+			elem.append(component.element);
+			group = this._groupBySlot[configuredSlot];
+			if (group) {
+				this._groupByComponent[component.id] = group;
+				if (component.isVisible()) {
+					group.visibleCounter += 1;
+				}
+			}
+			return true;
 		},
 
-		focus: function() {
+		foreground: function() {
 			this.container.tabs('select', this.index);
 			PubSub.pub('aloha.ui.container.activated', {data: this});
+		},
+
+		childForeground: function(childComponent) {
+			this.foreground();
+		},
+
+		childVisible: function(childComponent, visible) {
+			var group = this._groupByComponent[childComponent.id];
+			if (!group) {
+				return;
+			}
+			if (visible) {
+				if (0 === group.visibleCounter) {
+					group.element.removeClass('aloha-ui-hidden');
+				}
+				group.visibleCounter += 1;
+			} else {
+				group.visibleCounter -= 1;
+				if (0 === group.visibleCounter) {
+					group.element.addClass('aloha-ui-hidden');
+				}
+			}
 		},
 
 		/**
@@ -174,7 +216,7 @@ define([
 
 	});
 
-	jQuery.extend(Tab, {
+	$.extend(Tab, {
 
 		/**
 		 * Creates holding elements for jQuery UI Tabs for a surface.
@@ -185,9 +227,9 @@ define([
 		 *                                populated with tab containers.
 		 */
 		createContainer: function () {
-			var $container = jQuery('<div>');
-			var $list = jQuery('<ul>').appendTo($container);
-			var $panels = jQuery('<div>').appendTo($container);
+			var $container = $('<div>');
+			var $list = $('<ul>').appendTo($container);
+			var $panels = $('<div>').appendTo($container);
 
 			$container
 				.data('list', $list)
@@ -203,18 +245,6 @@ define([
 
 			return $container;
 		}
-	});
-
-	// Hide any groups that have no visible buttons
-	PubSub.sub('aloha.ui.container.selected', function (message) {
-		setTimeout(function () {
-			message.data.container.find('.aloha-ui-component-group').each(function () {
-				jQuery(this).removeClass('aloha-ui-hidden');
-				if (0 === jQuery(this).find('button.ui-button:visible, input.ui-autocomplete-input:visible').length) {
-					jQuery(this).addClass('aloha-ui-hidden');
-				}
-			});
-		}, 1);
 	});
 
 	return Tab;

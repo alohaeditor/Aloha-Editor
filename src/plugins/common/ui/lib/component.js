@@ -5,6 +5,8 @@ define([
 ], function (Aloha, $, Class) {
 	'use strict';
 
+	var idCounter = 0;
+
 	/**
 	 * Component class and manager.
 	 *
@@ -16,6 +18,8 @@ define([
 	 * @base
 	 */
 	var Component = Class.extend({
+
+		id: 0,
 
 		/**
 		 * Flag to indicate that this is an instance of a component and  not the class object.
@@ -43,6 +47,8 @@ define([
 		 * @constructor
 		 */
 		_constructor: function() {
+			this.id = idCounter++;
+
 			// Components are responsible for updating their state and visibility
 			// whenever the selection changes.
 			// TODO(p.salema@gentics.com): Consider implementing 'aloha-node-changed'
@@ -65,15 +71,25 @@ define([
 		 */
 		init: function() {},
 
+		isVisible: function() {
+			return this.visible;
+		},
+
 		/**
 		 * Shows this component.
 		 */
 		show: function(show_opt) {
 			if (false === show_opt) {
 				this.hide();
-			} else if (!this.visible) {
+				return;
+			} 
+			// Only call container.childVisible if we switch from hidden to visible
+			if (!this.visible) {
 				this.visible = true;
 				this.element.show();
+				if (this.container) {
+					this.container.childVisible(this, true);
+				}
 			}
 		},
 
@@ -81,22 +97,31 @@ define([
 		 * Hides this component.
 		 */
 		hide: function() {
+			// Only call container.childVisible if we switch from visible to hidden
 			if (this.visible) {
 				this.visible = false;
 				this.element.hide();
+				if (this.container) {
+					this.container.childVisible(this, false);
+				}
 			}
 		},
 
 		focus: function() {
-			// First the container element must be visible before a
-			// descendant element can be focused. In the case of a
-			// toolbar with tabs this means that the tab must be brought
-			// into view.
-			if (this.container) {
-				this.container.focus();
-			}
 			this.element.focus();
+			if (this.container) {
+				this.container.childFocus(this);
+			}
 		},
+
+		foreground: function() {
+			if (this.container) {
+				this.container.childForeground(this);
+			}
+		},
+
+		enable: function(enable_opt){},
+		disable: function(){},
 
 		/**
 		 * Selection change callback.

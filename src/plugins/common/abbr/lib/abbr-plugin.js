@@ -107,6 +107,7 @@ define([
 		    		if ( e.metaKey && e.which == 71 ) {
 				        if ( me.findAbbrMarkup() ) {
 				        	Scopes.activateTabOfButton( 'abbrText' );
+							me.abbrField.foreground();
 				            me.abbrField.focus();
 				        } else {
 				        	me.insertAbbr();
@@ -231,8 +232,9 @@ define([
 			
 		    range.select();
 
-		    Scopes.activateTabOfButton('abbrText');
-		    this.abbrField.focus();
+			Scopes.activateTabOfButton('abbrText');
+			this.abbrField.foreground();
+			this.abbrField.focus();
 		},
 
 		/**
