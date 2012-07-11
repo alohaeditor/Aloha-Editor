@@ -43,7 +43,7 @@ define([
 	});
 
 	function assignToSlot(configuredSlot, component) {
-		toolbar.assignToSlot(configuredSlot, component);
+		return toolbar.assignToSlot(configuredSlot, component);
 	}
 
 	return {

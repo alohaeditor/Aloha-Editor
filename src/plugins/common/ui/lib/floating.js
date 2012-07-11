@@ -197,22 +197,18 @@ define([
 	 * @param {boolean} isFloating Whether or not the surface type is in
 	 *                             "floating" mode or not.
 	 */
-	function togglePinSurfaces(surfaces, position, isFloating) {
-		var $elements = $();
-		var j = surfaces.length;
-		while (j) {
-			$elements = $elements.add(surfaces[--j].$element);
-		}
+	function togglePinSurface(surface, position, isFloating) {
+		var $element = surface.$element;
 
 		if (isFloating) {
 			unstorePinPosition();
-			$elements.find('.aloha-ui-pin').removeClass('aloha-ui-pin-down');
+			$element.find('.aloha-ui-pin').removeClass('aloha-ui-pin-down');
 		} else {
 			storePinPosition(position);
-			$elements.find('.aloha-ui-pin').addClass('aloha-ui-pin-down');
+			$element.find('.aloha-ui-pin').addClass('aloha-ui-pin-down');
 		}
 
-		$elements.css({
+		$element.css({
 			position: 'fixed',
 			top: position.top
 		});
@@ -287,6 +283,6 @@ define([
 		getPinState: getPinState,
 		makeFloating: makeFloating,
 		floatSurface: floatSurface,
-		togglePinSurfaces: togglePinSurfaces
+		togglePinSurface: togglePinSurface
 	};
 });

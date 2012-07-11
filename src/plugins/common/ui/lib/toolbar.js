@@ -83,7 +83,8 @@ define([
 		},
 
 		assignToSlot: function(configuredSlot, component){
-			this._tabBySlot[configuredSlot].assignToSlot(configuredSlot, component);
+			var tab = this._tabBySlot[configuredSlot];
+			return tab && tab.assignToSlot(configuredSlot, component);
 		},
 
 		getActiveContainer: function () {
@@ -152,8 +153,7 @@ define([
 
 				Toolbar.setFloatingPosition(position);
 
-				floating.togglePinSurfaces(Toolbar.instances, position,
-					Toolbar.isFloatingMode);
+				floating.togglePinSurface(surface, position, Toolbar.isFloatingMode);
 			});
 		},
 
