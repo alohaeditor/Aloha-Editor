@@ -4,13 +4,17 @@ define([
 	'ui/surface',
 	'ui/tab',
 	'ui/floating',
+	'ui/context',
+	'i18n!ui/nls/i18n',
 	'aloha/jquery-ui'
 ], function (
 	$,
 	Aloha,
 	Surface,
 	Tab,
-	floating
+	floating,
+	Context,
+	i18n
 ) {
 	'use strict';
 
@@ -19,8 +23,8 @@ define([
 	 * array of tabs with component groups, where the groups are arrays of
 	 * controls.
 	 *
-	 * There are separate components for each editable, but only the components
-	 * for the active editable are shown.
+	 * There are separate components for each context, but only the components
+	 * for the active context are shown.
 	 *
 	 * As a container for tabs, the toolbar serves to group together groups of
 	 * control components so that they can be shown and hidden together in
@@ -35,45 +39,51 @@ define([
 	 */
 	var Toolbar = Surface.extend({
 
-		_tabs: [],
-
+		_moveTimeout: null,
 		$_container: null,
+		_tabBySlot: {},
 
 		/**
 		 * Toolbar constructor.
 		 *
-		 * @param {Aloha.Editable} editable
+		 * @param {!Array.<(Object|Array|string)>} tabs
 		 * @constructor
 		 * @override
 		 */
-		_constructor: function (editable) {
-			this._super(editable);
+		_constructor: function(context, tabs) {
+			var tabSettings,
+			    tabInstance,
+			    i, key;
 
-			// All containers are rendered in a div specific to the editable to
-			// make it easy to show and hide the toolbar containers on
-			// activate/deactivate.  The editable instance gets a reference to
-			// this div.
+			this._super(context);
 
 			this.$element = $('<div>', {'class': 'aloha-ui-toolbar'});
 
 			this.$_container = Tab.createContainer().appendTo(this.$element);
 
-			var settings;
-			var tabs = editable.settings.toolbar;
-			var i;
 			for (i = 0; i < tabs.length; i++) {
-				settings = tabs[i];
-				this._tabs.push(new Tab({
-					label: settings.label || '',
-					showOn: settings.showOn,
-					editable: editable,
+				tabSettings = tabs[i];
+
+				tabInstance = new Tab(context, {
+					label: i18n.t(tabSettings.label, ''),
+					showOn: tabSettings.showOn,
 					container: this.$_container
-				}, settings.components));
+				}, tabSettings.components)
+
+				for (key in tabInstance._elemBySlot) {
+					if (tabInstance._elemBySlot.hasOwnProperty(key)) {
+						this._tabBySlot[key] = tabInstance;
+					}
+				}
 			}
 
 			// Pinning behaviour is global in that if one toolbar is pinned,
 			// then all other toolbars will be pinned to that position.
 			floating.makeFloating(this, Toolbar);
+		},
+
+		assignToSlot: function(configuredSlot, component){
+			this._tabBySlot[configuredSlot].assignToSlot(configuredSlot, component);
 		},
 
 		getActiveContainer: function () {
@@ -93,6 +103,7 @@ define([
 				clearTimeout(this._moveTimeout);
 			}
 			this._moveTimeout = setTimeout(function () {
+				that._moveTimeout = null;
 				if (Aloha.activeEditable && Toolbar.isFloatingMode) {
 					that.$element.stop();
 					floating.floatSurface(that, Aloha.activeEditable, duration,
@@ -177,12 +188,6 @@ define([
 	$.extend(Toolbar, {
 
 		/**
-		 * A set of all toolbar instances.
-		 * @type {Toolbar}
-		 */
-		instances: [],
-
-		/**
 		 * An element on which all toolbar surfaces are to be rendered on the
 		 * page.
 		 * @type {jQuery.<HTMLElement>}
@@ -212,6 +217,7 @@ define([
 		 * element, and sets up floating behaviour settings.
 		 */
 		init: function () {
+			// TODO should use context.js to get the context element
 			Toolbar.$surfaceContainer = $('<div>', {
 				'class': 'aloha aloha-surface aloha-toolbar'
 			}).hide().appendTo('body');
@@ -222,30 +228,6 @@ define([
 			Toolbar.pinTop = pinState.top;
 			Toolbar.pinLeft = pinState.left;
 			Toolbar.isFloatingMode = !pinState.isPinned;
-		},
-
-		/**
-		 * Creates a toolbar for an editable.
-		 *
-		 * @param {Aloha.Editable} editable
-		 * @returns {Toolbar}
-		 */
-		createSurface: function (editable) {
-			if (editable.settings.toolbar &&
-			    editable.settings.toolbar.length) {
-				var surface =  new Toolbar(editable);
-
-				if (!editable.toolbars) {
-					editable.toolbars = [];
-				}
-				editable.toolbars.push(surface.$element);
-
-				Toolbar.instances.push(surface);
-
-				return surface;
-			}
-
-			return null;
 		},
 
 		setFloatingPosition: function (position) {
@@ -262,7 +244,6 @@ define([
 	});
 
 	Toolbar.init();
-	Surface.registerType(Toolbar);
 
 	return Toolbar;
 });

@@ -7,8 +7,8 @@ define([
 ], function(
 	jQuery,
 	RepositoryManager,
-	Component,
-	Context
+	Context,
+	Component
 ) {
 	'use strict';
 
@@ -30,17 +30,13 @@ define([
 	 * @extends {Component}
 	 */
 	var Autocomplete = Component.extend({
-		/**
-		 * Initializes the autocomplete component
-		 * @override
-		 */
 		init: function() {
 			this._super();
 			var that = this;
 			this.element = jQuery( "<input>" )
 				.autocomplete({
 					html: true,
-					appendTo: Context.selector(),
+					appendTo: Context.selector,
 					source: function( req, res ) {
 						RepositoryManager.query({
 							queryString: req.term,

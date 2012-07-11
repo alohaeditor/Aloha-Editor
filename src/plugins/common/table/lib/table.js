@@ -28,8 +28,7 @@ define([
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
-	'table/table-plugin-utils',
-	'ui/componentState'
+	'table/table-plugin-utils'
 ], function (
 	Aloha,
 	jQuery,
@@ -38,8 +37,7 @@ define([
 	i18n,
 	TableCell,
 	TableSelection,
-	Utils,
-	ComponentState
+	Utils
 ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
@@ -1361,7 +1359,7 @@ define([
 		
 		Scopes.setScope(this.tablePlugin.name + '.column');
 		
-		ComponentState.setState('columnheader', 'state', this.selection.isHeader());
+		this.tablePlugin._columnheaderButton.setState(this.selection.isHeader());
 		
 		var rows = this.getRows();
 		
@@ -1418,7 +1416,7 @@ define([
 		Scopes.setScope(this.tablePlugin.name + '.row');
 		
 		this.selection.selectRows( this.rowsToSelect );
-		ComponentState.setState('rowheader', 'state', this.selection.isHeader());
+		this.tablePlugin._rowheaderButton.setState(this.selection.isHeader());
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();

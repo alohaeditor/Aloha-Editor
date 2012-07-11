@@ -11,8 +11,8 @@
  * exact same function must be returned from `Container.normalizeShowOn()' when
  * the logic is the same.
  *
- * The list of containers is then stored on the editable instance as
- * `editable.containers', which is a hash of `showOn()' ids to an array of
+ * The list of containers is then stored on the context instance as
+ * `context.containers', which is a hash of `showOn()' ids to an array of
  * containers. The `showOn()' ids are unique identifiers that are stored as
  * properties of the `showOn()' function (see `getShowOnId()'). This gives us
  * constant lookup times when grouping containers.
@@ -21,13 +21,11 @@
 define([
 	'jquery',
 	'util/class',
-	'ui/scopes',
-	'PubSub'
+	'ui/scopes'
 ], function(
-	jQuery,
+	$,
 	Class,
-	Scopes,
-	PubSub
+	Scopes
 ) {
 	'use strict';
 
@@ -78,7 +76,7 @@ define([
 	 * @return function
 	 */
 	function normalizeShowOn(container, showOn) {
-		switch( jQuery.type( showOn ) ) {
+		switch( $.type( showOn ) ) {
 		case 'function':
 			return showOn;
 		case 'object':
@@ -118,18 +116,13 @@ define([
 		 * @param {object=} settings Optional properties, and override methods.
 		 * @constructor
 		 */
-		_constructor: function( settings ) {
-			var editable = this.editable = settings.editable;
-
-			if (!editable.containers) {
-				editable.containers = [];
-			}
-
-			var showOn = normalizeShowOn(this, settings.showOn);
-			var key = getShowOnId(showOn);
-			var group = editable.containers[key];
+		_constructor: function(context, settings) {
+			var showOn = normalizeShowOn(this, settings.showOn),
+			    key = getShowOnId(showOn),
+			    group = context.containers[key];
+			this.context = context;
 			if (!group) {
-				group = editable.containers[key] = {
+				group = context.containers[key] = {
 					shouldShow: showOn,
 					containers: []
 				};
@@ -139,41 +132,36 @@ define([
 
 		// must be implemented by extending classes
 		show: function() {},
-		hide: function() {}
+		hide: function() {},
+		focus: function() {}
 	});
 
 	// static fields
 
-	jQuery.extend( Container, {
+	$.extend( Container, {
 		/**
 		 * Given an array of elements, show appropriate containers.
 		 *
-		 * @param {object} editable Active editable
+		 * @param {object} context
 		 * @param {string} eventType Type of the event triggered (optional)
 		 * @static
 		 */
-		showContainersForContext: function(editable, eventType) {
+		showContainersForContext: function(context, eventType) {
 			var group,
 			    groupKey,
 			    containerGroups;
-			if (!editable.containers) {
-				// No containers were constructed for the given editable, so
+			if (!context.containers) {
+				// No containers were constructed for the given context, so
 				// there is nothing for us to do.
 				return;
 			}
-			containerGroups = editable.containers;
+			containerGroups = context.containers;
 			for (groupKey in containerGroups) {
 				if (containerGroups.hasOwnProperty(groupKey)) {
 					group = containerGroups[groupKey];
 					toggleContainers(group.containers, group.shouldShow(eventType));
 				}
 			}
-		}
-	});
-
-	PubSub.sub('aloha.ui.scope.change', function(){
-		if (Aloha.activeEditable) {
-			Container.showContainersForContext(Aloha.activeEditable, null);
 		}
 	});
 

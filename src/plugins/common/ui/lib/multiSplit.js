@@ -24,7 +24,6 @@ define([
 		 */
 		init: function () {
 			this._super();
-			var editable = this.editable;
 			var multiSplit = this;
 			var element = this.element = $('<div>', {
 				'class': 'aloha-multisplit'
@@ -56,7 +55,7 @@ define([
 						button.click.apply(multiSplit, arguments);
 						multiSplit.close();
 					}
-				}))(editable);
+				}))();
 				component.element.addClass('aloha-large-button');
 
 				multiSplit.buttons.push({
@@ -83,7 +82,7 @@ define([
 						item.click.apply(multiSplit, arguments);
 						multiSplit.close();
 					}
-				}))(editable);
+				}))();
 				return component.element[0];
 			}).appendTo(content);
 		},

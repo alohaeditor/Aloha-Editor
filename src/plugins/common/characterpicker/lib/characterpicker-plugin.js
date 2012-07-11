@@ -10,8 +10,7 @@ define([
 	'aloha', 
 	'jquery', 
 	'aloha/plugin', 
-	'ui/component', 
-	'ui/componentState',
+	'ui/ui', 
 	'ui/button',
 	'i18n!characterpicker/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
@@ -19,8 +18,7 @@ define([
 ], function(Aloha,
             jQuery,
 			Plugin,
-			Component,
-			ComponentState,
+			Ui,
 			Button,
 			i18n,
 			i18nCore) {
@@ -239,7 +237,7 @@ define([
 				self.settings = Aloha.settings.plugins.characterpicker;
 			}
 			
-			Component.define("characterPicker", Button, {
+			this._characterPickerButton = Ui.assign("characterPicker", Button, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
 				icon: "aloha-icon-characterpicker",
 				scope: 'Aloha.continuoustext',
@@ -262,9 +260,9 @@ define([
 			Aloha.bind('aloha-editable-activated', function (event, data) {
 				self.characterOverlay = self.getOverlayForEditable(data.editable);
 				if (self.characterOverlay) {
-					ComponentState.setState('characterPicker', 'show', true);
+					self._characterPickerButton.show(true);
 				} else {
-					ComponentState.setState('characterPicker', 'show', false);
+					self._characterPickerButton.show(false);
 				}
 			});
 		},

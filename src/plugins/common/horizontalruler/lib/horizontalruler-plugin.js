@@ -8,8 +8,7 @@ define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/button',
 	'i18n!horizontalruler/nls/i18n',
 	'i18n!aloha/nls/i18n',
@@ -17,8 +16,7 @@ define([
 ], function(Aloha,
             jQuery,
 			Plugin,
-			Component,
-			ComponentState,
+			Ui,
 			Button,
 			i18n,
 			i18nCore) {
@@ -35,7 +33,7 @@ define([
 		init: function() {
 			var that = this;
 
-			Component.define("insertHorizontalRule", Button, {
+			this._insertHorizontalRuleButton = Ui.assign("insertHorizontalRule", Button, {
 				tooltip: i18n.t('button.addhr.tooltip'),
 				iconOnly: true,
 				icon: 'aloha-icon-horizontalruler',
@@ -50,9 +48,9 @@ define([
 					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );
 
 					if ( jQuery.inArray( 'hr', that.cfg ) != -1 ) {
-						ComponentState.setState('insertHorizontalRule', 'show', true);
+						that._insertHorizontalRuleButton.show(true);
 		        	} else {
-						ComponentState.setState('insertHorizontalRule', 'show', false);
+						that._insertHorizontalRuleButton.show(false);
 		        		return;
 		        	}
 				}

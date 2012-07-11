@@ -8,8 +8,7 @@ define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/scopes',
 	'ui/button',
 	'ui/toggleButton',
@@ -20,8 +19,7 @@ define([
 	Aloha,
 	jQuery,
 	Plugin,
-	Component,
-	ComponentState,
+	Ui,
 	Scopes,
 	Button,
 	ToggleButton,
@@ -59,7 +57,7 @@ define([
 
 			var that = this;
 
-			Component.define("orderedList", ToggleButton, {
+			this._orderedListButton = Ui.assign("orderedList", ToggleButton, {
 				tooltip: i18n.t("button.createolist.tooltip"),
 				icon: "aloha-icon aloha-icon-orderedlist",
 				scope: 'Aloha.continuoustext',
@@ -68,7 +66,7 @@ define([
 				}
 			});
 
-			Component.define("unorderedList", ToggleButton, {
+			this._unorderedListButton = Ui.assign("unorderedList", ToggleButton, {
 				tooltip: i18n.t("button.createulist.tooltip"),
 				icon: "aloha-icon aloha-icon-unorderedlist",
 				scope: 'Aloha.continuoustext',
@@ -77,7 +75,7 @@ define([
 				}
 			});
 
-			Component.define("indentList", Button, {
+			this._indentListButton = Ui.assign("indentList", Button, {
 				tooltip: i18n.t('button.indentlist.tooltip'),
 				icon: 'aloha-icon aloha-icon-indent',
 				scope: 'Aloha.continuoustext',
@@ -86,7 +84,7 @@ define([
 				}
 			});
 
-			Component.define("outdentList", Button, {
+			this._outdentListButton = Ui.assign("outdentList", Button, {
 				tooltip: i18n.t('button.outdentlist.tooltip'),
 				icon: 'aloha-icon aloha-icon-outdent',
 				scope: 'Aloha.continuoustext',
@@ -102,25 +100,25 @@ define([
 				var i, effectiveMarkup;
 				
 				// Hide all buttons in the list tab will make the list tab disappear
-				ComponentState.setState('outdentList', 'show', false);
-				ComponentState.setState('indentList', 'show', false);
-				ComponentState.setState('unorderedList', 'state', false);
-				ComponentState.setState('orderedList', 'state', false);
+				that._outdentListButton.show(false);
+				that._indentListButton.show(false);
+				that._unorderedListButton.setState(false);
+				that._orderedListButton.setState(false);
 				
 				for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
-						ComponentState.setState('unorderedList', 'state', true);
+						that._unorderedListButton.setState(true);
 						// Show all buttons in the list tab
-						ComponentState.setState('outdentList', 'show', true);
-						ComponentState.setState('indentList', 'show', true);
+						that._outdentListButton.show(true);
+						that._indentListButton.show(true);
 						break;
 					}
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
-						ComponentState.setState('orderedList', 'state', true);
+						that._orderedListButton.setState(true);
 						// Show all buttons in the list tab
-						ComponentState.setState('outdentList', 'show', true);
-						ComponentState.setState('indentList', 'show', true);
+						that._outdentListButton.show(true);
+						that._indentListButton.show(true);
 						break;
 					}
 				}
@@ -147,15 +145,15 @@ define([
 			if (Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0]) {
 				// show/hide them according to the config
 				if (jQuery.inArray('ul', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ul") != -1) {
-					ComponentState.setState('unorderedList', 'show', true);
+					this._unorderedListButton.show(true);
 				} else {
-					ComponentState.setState('unorderedList', 'show', false);
+					this._unorderedListButton.show(false);
 				}
 
 				if (jQuery.inArray('ol', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ol") != -1) {
-					ComponentState.setState('orderedList', 'show', true);
+					this._orderedListButton.show(true);
 				} else {
-					ComponentState.setState('orderedList', 'show', false);
+					this._orderedListButton.show(false);
 				}
 
 			}
@@ -221,8 +219,8 @@ define([
 				newPara, jqToTransform, nodeName;
 
 			// visible is set to true, but the button is not visible
-			ComponentState.setState('outdentList', 'show', true);
-			ComponentState.setState('indentList', 'show', true);
+			this._outdentListButton.show(true);
+			this._indentListButton.show(true);
 
 			if (!domToTransform) {
 				// wrap a paragraph around the selection

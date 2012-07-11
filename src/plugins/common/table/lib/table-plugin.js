@@ -9,9 +9,8 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
+	'ui/ui',
 	'ui/scopes',
-	'ui/component',
-	'ui/componentState',
 	'ui/button',
 	'ui/toggleButton',
 	'ui/dialog',
@@ -28,9 +27,8 @@ define([
 	jQuery,
 	Plugin,
 	PluginManager,
+	Ui,
 	Scopes,
-	Component,
-	ComponentState,
 	Button,
 	ToggleButton,
 	Dialog,
@@ -178,23 +176,23 @@ define([
 				TablePlugin.activeTable.selection ) {
 
 				if ( TablePlugin.activeTable.selection.cellsAreSplitable() ) {
-					ComponentState.setState('splitcells', 'enable', true);
-					ComponentState.setState('splitcellsRow', 'enable', true);
-					ComponentState.setState('splitcellsColumn', 'enable', true);
+					that._splitcellsButton.enable(true);
+					that._splitcellsRowButton.enable(true);
+					that._splitcellsColumnButton.enable(true);
 				} else {
-					ComponentState.setState('splitcells', 'enable', false);
-					ComponentState.setState('splitcellsRow', 'enable', false);
-					ComponentState.setState('splitcellsColumn', 'enable', false);
+					that._splitcellsButton.enable(false);
+					that._splitcellsRowButton.enable(false);
+					that._splitcellsColumnButton.enable(false);
 				}
 
 				if ( TablePlugin.activeTable.selection.cellsAreMergeable() ) {
-					ComponentState.setState('mergecells', 'enable', true);
-					ComponentState.setState('mergecellsRow', 'enable', true);
-					ComponentState.setState('mergecellsColumn', 'enable', true);
+					that._mergecellsButton.enable(true);
+					that._mergecellsRowButton.enable(true);
+					that._mergecellsColumnButton.enable(true);
 				} else {
-					ComponentState.setState('mergecells', 'enable', false);
-					ComponentState.setState('mergecellsRow', 'enable', false);
-					ComponentState.setState('mergecellsColumn', 'enable', false);
+					that._mergecellsButton.enable(false);
+					that._mergecellsRowButton.enable(false);
+					that._mergecellsColumnButton.enable(false);
 				}
 			}
 
@@ -208,9 +206,9 @@ define([
 
 			// show hide buttons regarding configuration and DOM position
 			if (isEnabled[Aloha.activeEditable.getId()] && Aloha.Selection.mayInsertTag('table') ) {
-				ComponentState.setState('createTable', 'show', true);
+				that._createTableButton.show();
 			} else {
-				ComponentState.setState('createTable', 'show', false);
+				that._createTableButton.hide();
 			}
 
 			if (!that.activeTable) {
@@ -235,12 +233,12 @@ define([
 		Aloha.bind( 'aloha-editable-activated', function (event, props) {
 			// disable all split / merge buttons
 
-			ComponentState.setState('splitcells', 'enable', false);
-			ComponentState.setState('mergecells', 'enable', false);
-			ComponentState.setState('splitcellsRow', 'enable', false);
-			ComponentState.setState('mergecellsRow', 'enable', false);
-			ComponentState.setState('splitcellsColumn', 'enable', false);
-			ComponentState.setState('mergecellsColumn', 'enable', false);
+			that._splitcellsButton.enable(false);
+			that._mergecellsButton.enable(false);
+			that._splitcellsRowButton.enable(false);
+			that._mergecellsRowButton.enable(false);
+			that._splitcellsColumnButton.enable(false);
+			that._mergecellsColumnButton.enable(false);
 
 			props.editable.obj.find('table').each(function () {
 				// shortcut for TableRegistry
@@ -474,7 +472,7 @@ define([
 		//      defining the mergecells and splitcells components
 		//      multiple times, once for each tab.
 
-		Component.define("mergecells", Button, {
+		this._mergecellsButton = Ui.assign("mergecells", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
 			scope: this.name + '.cell',
@@ -485,7 +483,7 @@ define([
 			}
 		});
 
-		Component.define("splitcells", Button, {
+		this._splitcellsButton = Ui.assign("splitcells", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
 			scope: this.name + '.cell',
@@ -496,7 +494,7 @@ define([
 			}
 		});
 
-		Component.define("mergecellsRow", Button, {
+		this._mergecellsRowButton = Ui.assign("mergecellsRow", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
 			scope: this.name + '.row',
@@ -507,7 +505,7 @@ define([
 			}
 		});
 
-		Component.define("splitcellsRow", Button, {
+		this._splitcellsRowButton = Ui.assign("splitcellsRow", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
 			scope: this.name + '.row',
@@ -518,7 +516,7 @@ define([
 			}
 		});
 
-		Component.define("mergecellsColumn", Button, {
+		this._mergecellsColumnButton = Ui.assign("mergecellsColumn", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
 			scope: this.name + '.column',
@@ -529,7 +527,7 @@ define([
 			}
 		});
 
-		Component.define("splitcellsColumn", Button, {
+		this._splitcellsColumnButton = Ui.assign("splitcellsColumn", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
 			scope: this.name + '.column',
@@ -547,7 +545,7 @@ define([
 	TablePlugin.initRowsBtns = function () {
 		var that = this;
 
-		Component.define("addrowbefore", Button, {
+		this._addrowbeforeButton = Ui.assign("addrowbefore", Button, {
 			tooltip: i18n.t( "button.addrowbefore.tooltip"),
 			icon: "aloha-icon aloha-icon-addrowbefore",
 			scope: this.name + '.row',
@@ -558,7 +556,7 @@ define([
 			}
 		});
 
-		Component.define("addrowafter", Button, {
+		this._addrowafterButton = Ui.assign("addrowafter", Button, {
 			tooltip: i18n.t("button.addrowafter.tooltip"),
 			icon: "aloha-icon aloha-icon-addrowafter",
 			scope: this.name + '.row',
@@ -569,7 +567,7 @@ define([
 			}
 		});
 
-		Component.define("deleterows", Button, {
+		this._deleterowsButton = Ui.assign("deleterows", Button, {
 			tooltip: i18n.t("button.delrows.tooltip"),
 			icon: "aloha-icon aloha-icon-deleterows",
 			scope: this.name + '.row',
@@ -587,7 +585,7 @@ define([
 			}
 		});
 
-		Component.define("rowheader", ToggleButton, {
+		this._rowheaderButton = Ui.assign("rowheader", ToggleButton, {
 			tooltip: i18n.t("button.rowheader.tooltip"),
 			icon: "aloha-icon aloha-icon-rowheader",
 			scope: this.name + '.row',
@@ -704,7 +702,7 @@ define([
 	TablePlugin.initColumnBtns = function () {
 		var that = this;
 
-		Component.define("addcolumnleft", Button, {
+		this._addcolumnleftButton = Ui.assign("addcolumnleft", Button, {
 			tooltip: i18n.t("button.addcolleft.tooltip"),
 			icon: "aloha-icon aloha-icon-addcolumnleft",
 			scope: this.name + '.column',
@@ -715,7 +713,7 @@ define([
 			}
 		});
 
-		Component.define("addcolumnright", Button, {
+		this._addcolumnrightButton = Ui.assign("addcolumnright", Button, {
 			tooltip: i18n.t("button.addcolright.tooltip"),
 			icon: "aloha-icon aloha-icon-addcolumnright",
 			scope: this.name + '.column',
@@ -726,7 +724,7 @@ define([
 			}
 		});
 
-		Component.define("deletecolumns", Button, {
+		this._deletecolumnsButton = Ui.assign("deletecolumns", Button, {
 			tooltip: i18n.t("button.delcols.tooltip"),
 			icon: "aloha-icon aloha-icon-deletecolumns",
 			scope: this.name + '.column',
@@ -744,7 +742,7 @@ define([
 			}
 		});
 
-	    Component.define("columnheader", ToggleButton, {
+	    this._columnheaderButton = Ui.assign("columnheader", ToggleButton, {
 			tooltip: i18n.t("button.columnheader.tooltip"),
 			icon: "aloha-icon aloha-icon-columnheader",
 			scope: this.name + '.column',
@@ -857,7 +855,7 @@ define([
 		Scopes.createScope(this.name + '.column', 'Aloha.continuoustext');
 		Scopes.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
-		Component.define("createTable", Button, {
+		this._createTableButton = Ui.assign("createTable", Button, {
 			tooltip: i18n.t("button.createtable.tooltip"),
 			icon: "aloha-icon aloha-icon-createTable",
 			scope: 'Aloha.continuoustext',
@@ -924,7 +922,7 @@ define([
 			scope: this.name + '.cell'
 		});
 
-		Component.define("tableCaption", ToggleButton, {
+		this._tableCaptionButton = Ui.assign("tableCaption", ToggleButton, {
 			tooltip: i18n.t("button.caption.tooltip"),
 			icon: "aloha-icon aloha-icon-table-caption",
 			scope: this.name + '.cell',
@@ -1127,7 +1125,7 @@ define([
 			this.summary.setTargetObject(focusTable.obj, 'summary');
 			if ( focusTable.obj.children("caption").is('caption') ) {
 				// set caption button
-				ComponentState.setState('tableCaption', 'state', true);
+				this._tableCaptionButton.setState(true);
 				var c = focusTable.obj.children("caption");
 				that.makeCaptionEditable(c);
 			}

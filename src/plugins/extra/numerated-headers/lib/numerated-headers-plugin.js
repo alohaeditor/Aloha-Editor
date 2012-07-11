@@ -8,8 +8,7 @@
 define([
 	'jquery',
 	'aloha/plugin',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/toggleButton',
 	'i18n!numerated-headers/nls/i18n',
 	'i18n!aloha/nls/i18n',
@@ -18,8 +17,7 @@ define([
 function (
 	jQuery,
 	Plugin,
-	Component,
-	ComponentState,
+	Ui,
 	ToggleButton,
 	i18n,
 	i18nCore
@@ -42,12 +40,12 @@ function (
 		init: function () {
 			var that = this;
 
-			Component.define("formatNumeratedHeaders", ToggleButton, {
+			this._formatNumeratedHeadersButton = Ui.assign("formatNumeratedHeaders", ToggleButton, {
 				tooltip: i18n.t('button.numeratedHeaders.tooltip'),
 				icon: 'aloha-icon aloha-icon-numerated-headers',
 				scope: 'Aloha.continuoustext',
 				click: function () {
-					if (ComponentState.getState('formatNumeratedHeaders', 'state')) {
+					if (that._formatNumeratedHeadersButton.getState()) {
 						that.removeNumerations();
 					}
 					else {
@@ -67,10 +65,10 @@ function (
 			Aloha.bind('aloha-editable-activated', function (event) {
 				var config = that.getCurrentConfig();
 				if (that.isNumeratingOn()) {
-					ComponentState.setState('formatNumeratedHeaders', 'show', true);
+					that._formatNumeratedHeadersButton.show(true);
 					that.initForEditable();
 				} else {
-					ComponentState.setState('formatNumeratedHeaders', 'show', false);
+					that._formatNumeratedHeadersButton.show(false);
 				}
 			});
 		},
@@ -95,9 +93,9 @@ function (
 
 			if (flag === 'true') {
 				this.createNumeratedHeaders();
-				ComponentState.setState('formatNumeratedHeaders', 'state', true);
+				this._formatNumeratedHeadersButton.setState(true);
 			} else {
-				ComponentState.setState('formatNumeratedHeaders', 'state', false);
+				this._formatNumeratedHeadersButton.setState(false);
 			}
 		},
 

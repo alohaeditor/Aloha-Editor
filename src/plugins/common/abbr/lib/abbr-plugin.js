@@ -8,8 +8,7 @@ define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
-	'ui/component',
-	'ui/componentState',
+	'ui/ui',
 	'ui/toggleButton',
 	'ui/button',
 	'ui/scopes',
@@ -20,8 +19,7 @@ define([
 	Aloha,
 	jQuery,
 	Plugin,
-	Component,
-	ComponentState,
+	Ui,
 	ToggleButton,
 	Button,
 	Scopes,
@@ -61,7 +59,7 @@ define([
 		createButtons: function () {
 		    var me = this;
 
-			Component.define("formatAbbr", ToggleButton, {
+			this._formatAbbrButton = Ui.assign("formatAbbr", ToggleButton, {
 				tooltip: i18n.t("button.abbr.tooltip"),
 				icon: "aloha-icon aloha-icon-abbr",
 				scope: 'Aloha.continuoustext',
@@ -70,7 +68,7 @@ define([
 				}
 			});
 
-			Component.define("insertAbbr", Button, {
+			this._insertAbbrButton = Ui.assign("insertAbbr", Button, {
 				tooltip: i18n.t('button.addabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr',
 				scope: 'Aloha.continuoustext',
@@ -139,24 +137,24 @@ define([
 		        	var config = me.getEditableConfig( Aloha.activeEditable.obj );
 
 		        	if ( jQuery.inArray( 'abbr', config ) != -1 ) {
-						ComponentState.setState('formatAbbr', 'show', true);
-						ComponentState.setState('insertAbbr', 'show', true);
+						me._formatAbbrButton.show(true);
+						me._insertAbbrButton.show(true);
 		        	} else {
-						ComponentState.setState('formatAbbr', 'show', false);
-						ComponentState.setState('insertAbbr', 'show', false);
+						me._formatAbbrButton.show(false);
+						me._insertAbbrButton.show(false);
 		        		return;
 		        	}
 
 		        	var foundMarkup = me.findAbbrMarkup(rangeObject);
 		        	if (foundMarkup) {
 		        		// abbr found
-						ComponentState.setState('insertAbbr', 'show', false);
-						ComponentState.setState('formatAbbr', 'state', true);
+						me._insertAbbrButton.show(false);
+						me._formatAbbrButton.setState(true);
 						Scopes.setScope('abbr');
 						me.abbrField.setTargetObject(foundMarkup, 'title');
 		        	} else {
 		        		// no abbr found
-						ComponentState.setState('formatAbbr', 'state', false);
+						me._formatAbbrButton.setState(false);
 						me.abbrField.setTargetObject(null);
 		        	}
 		        }
