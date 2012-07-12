@@ -1,4 +1,3 @@
-/*global define: true, window: true */
 /*!
 * Aloha Editor
 * Author & Copyright (c) 2010 Gentics Software GmbH
@@ -59,7 +58,7 @@ define([
 			config = {};
 		}
 
-		// normalize config (set default values)
+		// Normalize config (set default values).
 
 		config.numeratedactive = (
 			config.numeratedactive === true   ||
@@ -88,26 +87,28 @@ define([
 		},
 
 		/**
-		 * Initialize the plugin
+		 * Initialize the plugin.
 		 */
 		init: function () {
 			var that = this;
 
-			this._formatNumeratedHeadersButton = Ui.adopt("formatNumeratedHeaders", ToggleButton, {
-				tooltip: i18n.t('button.numeratedHeaders.tooltip'),
-				icon: 'aloha-icon aloha-icon-numerated-headers',
-				scope: 'Aloha.continuoustext',
-				click: function () {
-					if (that._formatNumeratedHeadersButton.getState()) {
-						that.removeNumerations();
-					} else {
-						that.createNumeratedHeaders();
+			this._formatNumeratedHeadersButton = Ui.adopt("formatNumeratedHeaders",
+				ToggleButton, {
+					tooltip: i18n.t('button.numeratedHeaders.tooltip'),
+					icon: 'aloha-icon aloha-icon-numerated-headers',
+					scope: 'Aloha.continuoustext',
+					click: function () {
+						if (that._formatNumeratedHeadersButton.getState()) {
+							that.removeNumerations();
+						} else {
+							that.createNumeratedHeaders();
+						}
 					}
-				}
-			});
+				});
 
 
-			// We need to bind to selection-changed event to recognize backspace and delete interactions
+			// We need to bind to selection-changed event to recognize
+			// backspace and delete interactions.
 			Aloha.bind('aloha-selection-changed', function (event) {
 				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
@@ -127,7 +128,8 @@ define([
 		/**
 		 * Init the toggle button (and numerating) for the current editable,
 		 * if not yet done.
-		 * If numerating shall be on by default and was not turned on, numbers will be created.
+		 * If numerating shall be on by default and was not turned on, numbers
+		 * will be created.
 		 */
 		initForEditable: function ($editable) {
 			var flag = $editable.attr('aloha-numerated-headers');
@@ -148,14 +150,15 @@ define([
 		},
 
 		/**
-		 * Check whether numerating shall be possible in the current editable
+		 * Check whether numerating shall be possible in the current editable.
 		 */
 		isNumeratingOn: function () {
 			return getCurrentConfig(this).headingselector !== '';
 		},
 
 		/**
-		 * Check whether numbers shall currently be shown in the current editable
+		 * Check whether numbers shall currently be shown in the current
+		 * editable.
 		 */
 		showNumbers: function () {
 			// don't show numbers if numerating is off
