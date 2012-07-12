@@ -72,22 +72,23 @@ define([
 			this.list = this.container.data('list');
 			this.panels = this.container.data('panels');
 			this.id = 'tab-ui-container-' + (++idCounter);
-			this.panel = $('<div>', {id : this.id});
+			this.panel = $('<div>', {id : this.id, 'unselectable': 'on'});
 			this.handle = $('<li><a href="#' + this.id + '">' +
 				settings.label + '</a></li>');
 
 			for (i = 0; i < components.length; i++) {
 				if (typeof components[i] === 'string') {
 					if (1 === components[i].length && components[i].charCodeAt(0) === 10) {
-						this.panel.append('<div>');
+						this.panel.append('<div>', {'unselectable': 'on'});
 					} else {
-						elem = $('<span>');
+						elem = $('<span>', {'unselectable': 'on'});
 						this._elemBySlot[components[i]] = elem;
 						this.panel.append(elem);
 					}
 				} else {
 					group = $('<div>', {
-						'class': 'aloha-ui-component-group'
+						'class': 'aloha-ui-component-group',
+						'unselectable': 'on'
 					}).appendTo(this.panel);
 					groupProps = {element: group, visibleCounter: 0};
 					groupedComponents = components[i];
@@ -95,10 +96,10 @@ define([
 						this._groupBySlot[groupedComponents[j]] = groupProps;
 						if (1 === groupedComponents[j].length &&
 						    groupedComponents[j].charCodeAt(0) === 10) {
-							group.append('<div>');
+							group.append($('<div>', {'unselectable': 'on'}));
 						} else {
 							componentName = groupedComponents[j];
-							elem = $('<span>');
+							elem = $('<span>', {'unselectable': 'on'});
 							this._elemBySlot[groupedComponents[j]] = elem;
 							group.append(elem);
 						}
@@ -106,7 +107,7 @@ define([
 				}
 			}
 
-			this.panel.append('<div class="aloha-ui-clear">');
+			this.panel.append($('<div>', {'class': 'aloha-ui-clear', 'unselectable': 'on'}));
 			this.handle.appendTo(this.list);
 			this.panel.appendTo(this.panels);
 			this.container.tabs('refresh');
@@ -222,9 +223,9 @@ define([
 		 *                                populated with tab containers.
 		 */
 		createContainer: function () {
-			var $container = $('<div>');
-			var $list = $('<ul>').appendTo($container);
-			var $panels = $('<div>').appendTo($container);
+			var $container = $('<div>', {'unselectable': 'on'});
+			var $list = $('<ul>', {'unselectable': 'on'}).appendTo($container);
+			var $panels = $('<div>', {'unselectable': 'on'}).appendTo($container);
 
 			$container
 				.data('list', $list)

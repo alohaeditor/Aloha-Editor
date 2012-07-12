@@ -222,7 +222,8 @@ define([
 		init: function () {
 			// TODO should use context.js to get the context element
 			Toolbar.$surfaceContainer = $('<div>', {
-				'class': 'aloha aloha-surface aloha-toolbar'
+				'class': 'aloha aloha-surface aloha-toolbar',
+				'unselectable': 'on'
 			}).hide().appendTo('body');
 
 			Surface.trackRange(Toolbar.$surfaceContainer);
