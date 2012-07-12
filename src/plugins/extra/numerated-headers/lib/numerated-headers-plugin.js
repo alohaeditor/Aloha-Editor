@@ -159,7 +159,7 @@ define([
 		 */
 		showNumbers: function () {
 			// don't show numbers if numerating is off
-			if (!this.isNumeratingOn()) {
+			if (!Aloha.activeEditable || !this.isNumeratingOn()) {
 				return false;
 			}
 			return $(Aloha.activeEditable.obj).attr('aloha-numerated-headers') === 'true';
