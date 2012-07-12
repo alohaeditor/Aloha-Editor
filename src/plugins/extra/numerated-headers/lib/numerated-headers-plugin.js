@@ -62,7 +62,7 @@ define([
 			config.numeratedactive === 'true' ||
 			config.numeratedactive === '1'
 		);
-		
+
 		config.trailingdot = (
 			config.trailingdot === true   ||
 			config.trailingdot === 'true' ||
@@ -180,18 +180,10 @@ define([
 
 		getBaseElement: function () {
 			if (typeof this.baseobjectSelector !== 'undefined') {
-				if (jQuery(this.baseobjectSelector).length > 0) {
-					return jQuery(this.baseobjectSelector);
-				} else {
-					return false;
-				}
-			} else {
-				if (typeof Aloha.activeEditable === 'undefined' || Aloha.activeEditable === null) {
-					return false;
-				} else {
-					return Aloha.activeEditable.obj;
-				}
+				return (jQuery(this.baseobjectSelector).length > 0) ?
+						jQuery(this.baseobjectSelector) : null;
 			}
+			return Aloha.activeEditable ? null : Aloha.activeEditable.obj;
 		},
 
 		/*
