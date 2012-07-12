@@ -85,7 +85,7 @@ define([
 		createButtons: function () {
 			var that = this;
 	
-			this._toggleMetaViewButton = Ui.assign("toggleMetaView", ToggleButton, {
+			this._toggleMetaViewButton = Ui.adopt("toggleMetaView", ToggleButton, {
 				tooltip : i18n.t('button.switch-metaview.tooltip'),
 				icon: 'aloha-icon aloha-icon-metaview',
 				scope: 'Aloha.continuoustext',

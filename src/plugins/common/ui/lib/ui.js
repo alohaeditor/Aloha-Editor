@@ -98,9 +98,9 @@ function(
 ) {
 	'use strict';
 
-	function assign(configuredSlot, superType, settings) {
+	function adopt(slot, superType, settings) {
 		var type,
-		component;
+		    component;
 
 		if (!superType.isInstance) {
 			type = settings ? superType.extend(settings) : superType;
@@ -109,12 +109,12 @@ function(
 			component = superType;
 		}
 
-		Plugin.assignToSlot(configuredSlot, component);
+		Plugin.adoptInto(slot, component);
 
 		return component;
 	}
 
 	return {
-		assign: assign
+		adopt: adopt
 	};
 });

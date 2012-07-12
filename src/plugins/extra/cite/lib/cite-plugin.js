@@ -184,7 +184,7 @@ define([
 				}
 			}
 
-			this._quoteButton = Ui.assign('quote', ToggleButton, {
+			this._quoteButton = Ui.adopt('quote', ToggleButton, {
 				tooltip: i18n.t('cite.button.add.quote'),
 				icon: nsClass('button', 'inline-button'),
 				scope: 'Aloha.continuoustext',

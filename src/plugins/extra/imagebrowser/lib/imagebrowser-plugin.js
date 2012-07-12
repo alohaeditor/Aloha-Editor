@@ -41,7 +41,7 @@ define([
 
 			var browser = this;
 
-			this._imageBrowserButton = Ui.assign('imageBrowser', Button, {
+			this._imageBrowserButton = Ui.adopt('imageBrowser', Button, {
 				tooltip: i18n.t('button.addimage.tooltip'),
 				icon: 'aloha-icon-tree',
 				scope: 'Aloha.continuoustext',

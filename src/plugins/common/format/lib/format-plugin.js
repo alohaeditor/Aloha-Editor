@@ -223,7 +223,7 @@ define([
 						if (componentNameByElement.hasOwnProperty(button)) {
 							componentName = componentNameByElement[button];
 						}
-						var component = Ui.assign(componentName, ToggleButton, {
+						var component = Ui.adopt(componentName, ToggleButton, {
 							tooltip : i18n.t('button.' + button + '.tooltip'),
 							icon: 'aloha-icon aloha-icon-' + componentName,
 							scope: scope,

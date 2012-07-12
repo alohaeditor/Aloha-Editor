@@ -117,15 +117,15 @@ define([
 			alohaTabs.push(this);
 		},
 
-		assignToSlot: function(configuredSlot, component) {
-			var elem = this._elemBySlot[configuredSlot],
+		adoptInto: function(slot, component) {
+			var elem = this._elemBySlot[slot],
 			    group;
 			if (!elem) {
 				return false;
 			}
 			component.adopt(this);
 			elem.append(component.element);
-			group = this._groupBySlot[configuredSlot];
+			group = this._groupBySlot[slot];
 			if (group) {
 				this._groupByComponent[component.id] = group;
 				if (component.isVisible()) {
@@ -198,7 +198,7 @@ define([
 				var i;
 				for ( i = 0; i < tabs.length; ++i ) {
 					if ( tabs[ i ].visible ) {
-						this.container.tabs( 'select', i );
+						this.container.tabs( 'select', i );n
 						return;
 					}
 				}

@@ -181,28 +181,28 @@ define([
 		createButtons: function () {
 		    var that = this;
 
-			this._alignLeftButton = Ui.assign("alignLeft", ToggleButton, {
+			this._alignLeftButton = Ui.adopt("alignLeft", ToggleButton, {
 				tooltip: i18n.t('button.alignleft.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-left',
 				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('left'); }
 			});
 
-			this._alignCenterButton = Ui.assign("alignCenter", ToggleButton, {
+			this._alignCenterButton = Ui.adopt("alignCenter", ToggleButton, {
 				tooltip: i18n.t('button.aligncenter.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-center',
 				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('center'); }
 			});
 
-			this._alignRightButton = Ui.assign("alignRight", ToggleButton, {
+			this._alignRightButton = Ui.adopt("alignRight", ToggleButton, {
 				tooltip: i18n.t('button.alignright.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-right',
 				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('right'); }
 			});
 
-			this._alignJustifyButton = Ui.assign("alignJustify", ToggleButton, {
+			this._alignJustifyButton = Ui.adopt("alignJustify", ToggleButton, {
 				tooltip: i18n.t('button.alignjustify.tooltip'),
 				icon: 'aloha-icon aloha-icon-align aloha-icon-align-justify',
 				scope: 'Aloha.continuoustext',

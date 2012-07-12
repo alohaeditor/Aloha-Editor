@@ -472,7 +472,7 @@ define([
 		//      defining the mergecells and splitcells components
 		//      multiple times, once for each tab.
 
-		this._mergecellsButton = Ui.assign("mergecells", Button, {
+		this._mergecellsButton = Ui.adopt("mergecells", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
 			scope: this.name + '.cell',
@@ -483,7 +483,7 @@ define([
 			}
 		});
 
-		this._splitcellsButton = Ui.assign("splitcells", Button, {
+		this._splitcellsButton = Ui.adopt("splitcells", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
 			scope: this.name + '.cell',
@@ -494,7 +494,7 @@ define([
 			}
 		});
 
-		this._mergecellsRowButton = Ui.assign("mergecellsRow", Button, {
+		this._mergecellsRowButton = Ui.adopt("mergecellsRow", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
 			scope: this.name + '.row',
@@ -505,7 +505,7 @@ define([
 			}
 		});
 
-		this._splitcellsRowButton = Ui.assign("splitcellsRow", Button, {
+		this._splitcellsRowButton = Ui.adopt("splitcellsRow", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
 			scope: this.name + '.row',
@@ -516,7 +516,7 @@ define([
 			}
 		});
 
-		this._mergecellsColumnButton = Ui.assign("mergecellsColumn", Button, {
+		this._mergecellsColumnButton = Ui.adopt("mergecellsColumn", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
 			scope: this.name + '.column',
@@ -527,7 +527,7 @@ define([
 			}
 		});
 
-		this._splitcellsColumnButton = Ui.assign("splitcellsColumn", Button, {
+		this._splitcellsColumnButton = Ui.adopt("splitcellsColumn", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
 			scope: this.name + '.column',
@@ -545,7 +545,7 @@ define([
 	TablePlugin.initRowsBtns = function () {
 		var that = this;
 
-		this._addrowbeforeButton = Ui.assign("addrowbefore", Button, {
+		this._addrowbeforeButton = Ui.adopt("addrowbefore", Button, {
 			tooltip: i18n.t( "button.addrowbefore.tooltip"),
 			icon: "aloha-icon aloha-icon-addrowbefore",
 			scope: this.name + '.row',
@@ -556,7 +556,7 @@ define([
 			}
 		});
 
-		this._addrowafterButton = Ui.assign("addrowafter", Button, {
+		this._addrowafterButton = Ui.adopt("addrowafter", Button, {
 			tooltip: i18n.t("button.addrowafter.tooltip"),
 			icon: "aloha-icon aloha-icon-addrowafter",
 			scope: this.name + '.row',
@@ -567,7 +567,7 @@ define([
 			}
 		});
 
-		this._deleterowsButton = Ui.assign("deleterows", Button, {
+		this._deleterowsButton = Ui.adopt("deleterows", Button, {
 			tooltip: i18n.t("button.delrows.tooltip"),
 			icon: "aloha-icon aloha-icon-deleterows",
 			scope: this.name + '.row',
@@ -585,7 +585,7 @@ define([
 			}
 		});
 
-		this._rowheaderButton = Ui.assign("rowheader", ToggleButton, {
+		this._rowheaderButton = Ui.adopt("rowheader", ToggleButton, {
 			tooltip: i18n.t("button.rowheader.tooltip"),
 			icon: "aloha-icon aloha-icon-rowheader",
 			scope: this.name + '.row',
@@ -702,7 +702,7 @@ define([
 	TablePlugin.initColumnBtns = function () {
 		var that = this;
 
-		this._addcolumnleftButton = Ui.assign("addcolumnleft", Button, {
+		this._addcolumnleftButton = Ui.adopt("addcolumnleft", Button, {
 			tooltip: i18n.t("button.addcolleft.tooltip"),
 			icon: "aloha-icon aloha-icon-addcolumnleft",
 			scope: this.name + '.column',
@@ -713,7 +713,7 @@ define([
 			}
 		});
 
-		this._addcolumnrightButton = Ui.assign("addcolumnright", Button, {
+		this._addcolumnrightButton = Ui.adopt("addcolumnright", Button, {
 			tooltip: i18n.t("button.addcolright.tooltip"),
 			icon: "aloha-icon aloha-icon-addcolumnright",
 			scope: this.name + '.column',
@@ -724,7 +724,7 @@ define([
 			}
 		});
 
-		this._deletecolumnsButton = Ui.assign("deletecolumns", Button, {
+		this._deletecolumnsButton = Ui.adopt("deletecolumns", Button, {
 			tooltip: i18n.t("button.delcols.tooltip"),
 			icon: "aloha-icon aloha-icon-deletecolumns",
 			scope: this.name + '.column',
@@ -742,7 +742,7 @@ define([
 			}
 		});
 
-	    this._columnheaderButton = Ui.assign("columnheader", ToggleButton, {
+	    this._columnheaderButton = Ui.adopt("columnheader", ToggleButton, {
 			tooltip: i18n.t("button.columnheader.tooltip"),
 			icon: "aloha-icon aloha-icon-columnheader",
 			scope: this.name + '.column',
@@ -855,7 +855,7 @@ define([
 		Scopes.createScope(this.name + '.column', 'Aloha.continuoustext');
 		Scopes.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
-		this._createTableButton = Ui.assign("createTable", Button, {
+		this._createTableButton = Ui.adopt("createTable", Button, {
 			tooltip: i18n.t("button.createtable.tooltip"),
 			icon: "aloha-icon aloha-icon-createTable",
 			scope: 'Aloha.continuoustext',
@@ -922,7 +922,7 @@ define([
 			scope: this.name + '.cell'
 		});
 
-		this._tableCaptionButton = Ui.assign("tableCaption", ToggleButton, {
+		this._tableCaptionButton = Ui.adopt("tableCaption", ToggleButton, {
 			tooltip: i18n.t("button.caption.tooltip"),
 			icon: "aloha-icon aloha-icon-table-caption",
 			scope: this.name + '.cell',

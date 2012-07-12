@@ -237,7 +237,7 @@ define([
 				self.settings = Aloha.settings.plugins.characterpicker;
 			}
 			
-			this._characterPickerButton = Ui.assign("characterPicker", Button, {
+			this._characterPickerButton = Ui.adopt("characterPicker", Button, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
 				icon: "aloha-icon-characterpicker",
 				scope: 'Aloha.continuoustext',
@@ -305,6 +305,7 @@ define([
 	 */
 	function onCharacterSelect(character) {
 		if (Aloha.activeEditable) {
+			debugger;
 			Aloha.execCommand('insertHTML', false, character);
 		}
 	}

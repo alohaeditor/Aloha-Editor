@@ -118,7 +118,7 @@ define([
 		createButtons: function() {
 			var that = this;
 
-			this._wailangButton = Ui.assign("wailang", ToggleButton, {
+			this._wailangButton = Ui.adopt("wailang", ToggleButton, {
 				tooltip: i18n.t('button.add-wai-lang.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang',
 				scope: 'Aloha.continuoustext',
@@ -146,7 +146,7 @@ define([
 
 			langField.setObjectTypeFilter( this.objectTypeFilter );
 
-			this._removewailangButton = Ui.assign('removewailang', Button, {
+			this._removewailangButton = Ui.adopt('removewailang', Button, {
 				tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang-remove',
 				scope: 'wai-lang',

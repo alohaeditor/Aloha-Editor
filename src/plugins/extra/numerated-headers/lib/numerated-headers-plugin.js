@@ -40,7 +40,7 @@ function (
 		init: function () {
 			var that = this;
 
-			this._formatNumeratedHeadersButton = Ui.assign("formatNumeratedHeaders", ToggleButton, {
+			this._formatNumeratedHeadersButton = Ui.adopt("formatNumeratedHeaders", ToggleButton, {
 				tooltip: i18n.t('button.numeratedHeaders.tooltip'),
 				icon: 'aloha-icon aloha-icon-numerated-headers',
 				scope: 'Aloha.continuoustext',

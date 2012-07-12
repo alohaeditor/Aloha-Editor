@@ -60,7 +60,7 @@ define([
 			element.width(props.width);
 		}
 
-		component = Ui.assign(props.name, Component, {
+		component = Ui.adopt(props.name, Component, {
 			init: function(){
 
 				// Why do we have to wrap the element in a span? It
