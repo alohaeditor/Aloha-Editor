@@ -6,6 +6,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define([
+	'aloha/core',
 	'jquery',
 	'aloha/plugin',
 	'ui/ui',
@@ -15,6 +16,7 @@ define([
 	'css!numerated-headers/css/numerated-headers.css'
 ],
 function (
+	Aloha,
 	jQuery,
 	Plugin,
 	Ui,
@@ -24,8 +26,7 @@ function (
 ) {
 	'use strict';
 
-	var $ = jQuery,
-		Aloha = window.Aloha;
+	var $ = jQuery;
 
 	return Plugin.create('numerated-headers', {
 		config: {
