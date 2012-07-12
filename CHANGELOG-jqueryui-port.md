@@ -1,3 +1,9 @@
+- **MANUAL CHANGE**: The jquery.store dependency has been removed
+                     The jquery.store dependency was used for persisting the floating menu position and pinned state.
+                     The functionality provided by jquery.store has been replaced with amplify.store.
+                     Make sure that any custom plugins don't depend on this module.
+                     This also fixes the problem that pinning the floating menu was not persisted.
+
 - **MANUAL CHANGE**: requirejs is not loaded as part of Aloha-Editor
 
                      For aloha development the user must now load

@@ -201,7 +201,6 @@
 	        // Load Aloha core files ...
 	        require(requireConfig, [
 					'vendor/jquery.json-2.2.min',
-					'vendor/jquery.store',
 					'aloha/rangy-core',
 					'util/class',
 					'util/lang',

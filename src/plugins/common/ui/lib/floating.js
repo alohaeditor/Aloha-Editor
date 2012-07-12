@@ -3,17 +3,15 @@ define([
 	'aloha/core',
 	'ui/surface',
 	'ui/subguarded',
-	'vendor/jquery.store'
+	'vendor/amplify.store'
 ], function (
 	$,
 	Aloha,
 	Surface,
 	subguarded,
-	Store
+	amplifyStore
 ) {
 	'use strict';
-
-	var store = new Store();
 
 	/**
 	 * The distance the floating surface should remain from the editable it is
@@ -95,24 +93,24 @@ define([
 	}
 
 	function storePinPosition(offset) {
-		store.set('Aloha.FloatingMenu.pinned', 'true');
-		store.set('Aloha.FloatingMenu.top', offset.top);
-		store.set('Aloha.FloatingMenu.left', offset.left);
+		amplifyStore.store('Aloha.FloatingMenu.pinned', 'true');
+		amplifyStore.store('Aloha.FloatingMenu.top', offset.top);
+		amplifyStore.store('Aloha.FloatingMenu.left', offset.left);
 	}
 
 	function unstorePinPosition() {
-		store.del('Aloha.FloatingMenu.pinned');
-		store.del('Aloha.FloatingMenu.top');
-		store.del('Aloha.FloatingMenu.left');
+		amplifyStore.store('Aloha.FloatingMenu.pinned', null);
+		amplifyStore.store('Aloha.FloatingMenu.top', null);
+		amplifyStore.store('Aloha.FloatingMenu.left', null);
 	}
 
 	function getPinState() {
 		var state = {};
 
-		if (store.get('Aloha.FloatingMenu.pinned') === 'true') {
+		if (amplifyStore.store('Aloha.FloatingMenu.pinned') === 'true') {
 			return {
-				top: parseInt(store.get('Aloha.FloatingMenu.top'), 10),
-				left: parseInt(store.get('Aloha.FloatingMenu.left'), 10),
+				top: parseInt(amplifyStore.store('Aloha.FloatingMenu.top'), 10),
+				left: parseInt(amplifyStore.store('Aloha.FloatingMenu.left'), 10),
 				isPinned: true
 			};
 		}
