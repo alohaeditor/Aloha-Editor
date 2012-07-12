@@ -198,7 +198,7 @@ define([
 				var i;
 				for ( i = 0; i < tabs.length; ++i ) {
 					if ( tabs[ i ].visible ) {
-						this.container.tabs( 'select', i );n
+						this.container.tabs( 'select', i );
 						return;
 					}
 				}
