@@ -92,7 +92,7 @@ define([
 		init: function () {
 			var that = this;
 
-			this._formatNumeratedHeadersButton = Ui.adopt("formatNumeratedHeaders",
+			this._formatNumeratedHeadersButton = Ui.adopt('formatNumeratedHeaders',
 				ToggleButton, {
 					tooltip: i18n.t('button.numeratedHeaders.tooltip'),
 					icon: 'aloha-icon aloha-icon-numerated-headers',
@@ -301,14 +301,14 @@ define([
 						annotation_result = '';
 						for (i = 0; i < current_annotation.length; i++) {
 							if (current_annotation[i] !== 0) {
-								annotation_result += (current_annotation[i] + ".");
+								annotation_result += (current_annotation[i] + '.');
 							}
 						}
 					} else {
 						annotation_result = current_annotation[0];
 						for (i = 1; i < current_annotation.length; i++) {
 							if (current_annotation[i] !== 0) {
-								annotation_result += ("." + current_annotation[i]);
+								annotation_result += ('.' + current_annotation[i]);
 							}
 						}
 					}
@@ -316,7 +316,8 @@ define([
 					if (that.hasNote(this)) {
 						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
-						$(this).prepend("<span role='annotation'>" + annotation_result + "</span> ");
+						$(this).prepend('<span role="annotation">' +
+							annotation_result + '</span> ');
 					}
 				} else {
 					// no Content, so remove the Note, if there is one
