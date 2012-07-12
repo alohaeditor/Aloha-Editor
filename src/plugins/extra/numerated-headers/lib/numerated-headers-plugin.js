@@ -163,7 +163,6 @@ define([
 
 		removeNumerations : function () {
 			var active_editable_obj = this.getBaseElement();
-
 			if (!active_editable_obj) {
 				return;
 			}
@@ -229,24 +228,24 @@ define([
 		},
 
 		createNumeratedHeaders: function () {
-			var config = getCurrentConfig(this);
-			var headingselector = config.headingselector;
-			var active_editable_obj = this.getBaseElement(),
-				that = this,
-				headers = active_editable_obj.find(headingselector);
-
+			var active_editable_obj = this.getBaseElement();
 			if (!active_editable_obj) {
 				return;
 			}
 
+			var config = getCurrentConfig(this);
+			var headingselector = config.headingselector;
+			var headers = active_editable_obj.find(headingselector);
+
 			jQuery(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'true');
 
-			if (typeof headers === "undefined" || headers.length === 0) {
+			if (typeof headers === 'undefined' || headers.length === 0) {
 				return;
 			}
 
 			// base rank is the lowest rank of all selected headers
 			var base_rank = 7;
+			var that = this;
 			headers.each(function () {
 				if (that.hasContent(this)) {
 					var current_rank = parseInt(this.nodeName.substr(1), 10);
