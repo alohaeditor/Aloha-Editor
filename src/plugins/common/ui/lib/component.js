@@ -110,7 +110,7 @@ define([
 		},
 
 		enable: function(enable_opt){},
-		disable: function(){},
+		disable: function(){}
 	});
 
 	return Component;
