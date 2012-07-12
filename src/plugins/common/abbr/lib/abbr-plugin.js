@@ -106,9 +106,8 @@ define([
 		        Aloha.editables[ i ].obj.keydown( function ( e ) {
 		    		if ( e.metaKey && e.which == 71 ) {
 				        if ( me.findAbbrMarkup() ) {
-				        	Scopes.activateTabOfButton( 'abbrText' );
 							me.abbrField.foreground();
-				            me.abbrField.focus();
+							me.abbrField.focus();
 				        } else {
 				        	me.insertAbbr();
 				        }
@@ -232,7 +231,6 @@ define([
 			
 		    range.select();
 
-			Scopes.activateTabOfButton('abbrText');
 			this.abbrField.foreground();
 			this.abbrField.focus();
 		},

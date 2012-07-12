@@ -259,7 +259,6 @@ define([
 		 */
 		insertLanguageAnnotation: function() {
 			if ( this.findLangMarkup() ) {
-				Scopes.activateTabOfButton( 'wailangfield' );
 				langField.foreground();
 				langField.focus();
 			} else {
@@ -324,7 +323,6 @@ define([
 				return;
 			}
 
-			Scopes.activateTabOfButton( 'wailangfield' );
 			langField.foreground();
 			Scopes.setScope( 'wai-lang' );
 

@@ -76,7 +76,7 @@ define([
 	 * @return function
 	 */
 	function normalizeShowOn(container, showOn) {
-		switch( $.type( showOn ) ) {
+		switch ($.type(showOn)) {
 		case 'function':
 			return showOn;
 		case 'object':

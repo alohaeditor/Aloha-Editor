@@ -42,6 +42,7 @@ define([
 		_moveTimeout: null,
 		$_container: null,
 		_tabBySlot: null,
+		_tabs: [],
 
 		/**
 		 * Toolbar constructor.
@@ -75,6 +76,8 @@ define([
 						this._tabBySlot[key] = tabInstance;
 					}
 				}
+
+				this._tabs.push({tab: tabInstance, settings: tabSettings});
 			}
 
 			// Pinning behaviour is global in that if one toolbar is pinned,

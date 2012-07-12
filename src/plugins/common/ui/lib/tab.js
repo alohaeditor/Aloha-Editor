@@ -76,7 +76,6 @@ define([
 			this.handle = $('<li><a href="#' + this.id + '">' +
 				settings.label + '</a></li>');
 
-
 			for (i = 0; i < components.length; i++) {
 				if (typeof components[i] === 'string') {
 					if (1 === components[i].length && components[i].charCodeAt(0) === 10) {

@@ -274,7 +274,6 @@ define( [
 				editable.obj.bind('keydown', that.hotKey.insertLink, function() {
 					if ( that.findLinkMarkup() ) {
 						// open the tab containing the href
-						Scopes.activateTabOfButton('editLink');
 						that.hrefField.foreground();
 						that.hrefField.focus();
 					} else {
@@ -298,10 +297,21 @@ define( [
 				}
 			});
 
+			var insideLinkScope = false;
+
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject){
+				var enteredLinkScope = false;
 				if (Aloha.activeEditable && isEnabled[Aloha.activeEditable.getId()]) {
-					selectionChangeHandler(that, rangeObject);
+					enteredLinkScope = selectionChangeHandler(that, rangeObject);
+					// Only foreground the tab containing the href field
+					// the first time the user enters the link scope to
+					// avoid intefering with the user's manual tab
+					// selection.
+					if (enteredLinkScope && insideLinkScope !== enteredLinkScope) {
+						that.hrefField.foreground();
+					}
 				}
+				insideLinkScope = enteredLinkScope;
 			});
 		},
 
@@ -578,7 +588,6 @@ define( [
 			
 			// activate floating menu tab
 			this.hrefField.foreground();
-			Scopes.activateTabOfButton('editLink');
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
@@ -701,7 +710,8 @@ define( [
 	} );
 
 	function selectionChangeHandler(that, rangeObject) {
-		var foundMarkup;
+		var foundMarkup,
+		    enteredLinkScope = false;
 
 		// Check if we need to ignore this selection changed event for
 		// now and check whether the selection was placed within a
@@ -714,9 +724,6 @@ define( [
 			
 			if (foundMarkup) {
 				that.toggleLinkScope(true);
-
-				that.hrefField.foreground();
-				Scopes.activateTabOfButton('editLink');
 
 				// now we are ready to set the target object
 				that.hrefField.setTargetObject(foundMarkup, 'href');
@@ -740,6 +747,7 @@ define( [
 					}, 200);
 				}
 				Aloha.trigger('aloha-link-selected');
+				enteredLinkScope = true;
 			} else {
 				that.toggleLinkScope(false);
 				that.hrefField.setTargetObject(null);
@@ -750,5 +758,6 @@ define( [
 		}
 		
 		that.ignoreNextSelectionChangedEvent = false;
+		return enteredLinkScope;
 	}
 } );
