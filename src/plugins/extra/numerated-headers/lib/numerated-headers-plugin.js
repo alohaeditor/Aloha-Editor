@@ -25,6 +25,11 @@ define([
 ) {
 	'use strict';
 
+	/**
+	 * A cache of editable configuration.
+	 * @private
+	 * @type {object<string, object>}
+	 */
 	var editableConfigurations = {};
 
 	Aloha.bind('aloha-editable-destroyed', function (event, editable) {
