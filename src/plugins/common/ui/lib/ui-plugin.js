@@ -13,7 +13,7 @@ define([
 	'PubSub',
 	// Most modules of the ui plugin depend on jquery-ui, but its easy
 	// to forget to add the dependency so we do it here.
-	'aloha/jquery-ui'
+	'jqueryui'
 ], function(
 	Aloha,
 	Context,

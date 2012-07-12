@@ -8,7 +8,7 @@ define([
 	'jquery',
 	'ui/component',
 	'ui/utils',
-	'aloha/jquery-ui'
+	'jqueryui'
 ],
 function (jQuery, Component, Utils) {
 	'use strict';

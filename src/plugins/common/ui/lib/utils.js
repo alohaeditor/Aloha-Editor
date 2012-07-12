@@ -1,4 +1,4 @@
-define(['aloha/jquery-ui'], function() {
+define(['jqueryui'], function() {
 	'use strict';
 	var Utils = {
 		makeButton: function(button, props, hasMenu) {

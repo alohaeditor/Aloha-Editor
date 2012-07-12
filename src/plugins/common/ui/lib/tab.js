@@ -4,7 +4,7 @@ define([
 	'ui/container',
 	'ui/component',
 	'PubSub',
-	'aloha/jquery-ui'
+	'jqueryui'
 ], function (
 	Aloha,
 	$,

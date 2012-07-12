@@ -6,7 +6,7 @@ define([
 	'ui/floating',
 	'ui/context',
 	'i18n!ui/nls/i18n',
-	'aloha/jquery-ui'
+	'jqueryui'
 ], function (
 	$,
 	Aloha,

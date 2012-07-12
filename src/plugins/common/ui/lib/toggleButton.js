@@ -1,7 +1,7 @@
 define([
 	'jquery',
 	'ui/button',
-	'aloha/jquery-ui'
+	'jqueryui'
 ],
 function( jQuery, Button ) {
 	'use strict';
