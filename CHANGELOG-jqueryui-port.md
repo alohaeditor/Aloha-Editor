@@ -43,11 +43,19 @@
 
                    Aloha will not try to load any of the dependencies defined in this way.
 
-                   Please note that if jqueryui is defined, a jquery
-                   dependency must also be defined, and the given
-                   jqueryui dependency must extend the given jquery
-                   dependency. The same rule holds for any other jquery
-                   plugins.
+                   Please note that if jqueryui is given this way,
+                   a jquery dependency must also be given this way,
+                   and the given jqueryui dependency must extend the
+                   given jquery dependency. The same rule holds for any
+                   other jquery plugins.
+
+                   Also note that if a jquery dependency is given this
+                   way, several jquery plugins will be registered on it
+                   (the given jquery instance will be mutated). The
+                   jquery plugins registered by aloha on the given
+                   jquery dependency should not be replaced, at least
+                   not without caution, otherwise behaviour may be
+                   unpredictable.
 
                    It is also possible to define alternative paths to
                    third party dependencies, for example:
