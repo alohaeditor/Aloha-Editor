@@ -17,7 +17,10 @@ define([
 	'use strict';
 
 	function MultiSplitButton(props) {
-		Ui.adopt(props.name, MultiSplit, {
+		var buttonIndexByName = {},
+		    component;
+
+		component = Ui.adopt(props.name, MultiSplit, {
 			scope: props.scope,
 			getButtons: function () {
 				return makeButtonsFromOldStyleProps(props, false);
@@ -27,11 +30,9 @@ define([
 			}
 		});
 
-		var activeItem = null;
-
 		function makeButtonsFromOldStyleProps(props, wide) {
 			var buttons = [];
-			jQuery.each(props.items, function (_, item) {
+			jQuery.each(props.items, function(i, item) {
 				if (!!item.wide != wide) {
 					return;
 				}
@@ -47,11 +48,9 @@ define([
 						if (item.init) {
 							item.init.call(this);
 						}
-					},
-					isActive: function () {
-						return activeItem === item.name;
 					}
 				});
+				buttonIndexByName[item.name] = i;
 			});
 			return buttons;
 		}
@@ -72,7 +71,7 @@ define([
 				//TODO
 			},
 			setActiveItem: function (name) {
-				activeItem = name;
+				component.setActiveButton(buttonIndexByName[name]);
 			}
 		};
 	}
