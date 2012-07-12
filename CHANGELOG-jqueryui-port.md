@@ -1,3 +1,9 @@
+- **MANUAL CHANGE**: The jquery.store dependency has been removed
+                     The jquery.store dependency was used for persisting the floating menu position and pinned state.
+                     The functionality provided by jquery.store has been replaced with amplify.store.
+                     Make sure that any custom plugins don't depend on this module.
+                     This also fixes the problem that pinning the floating menu was not persisted.
+
 - **MANUAL CHANGE**: requirejs is not loaded as part of Aloha-Editor
 
                      For aloha development the user must now load
@@ -37,11 +43,19 @@
 
                    Aloha will not try to load any of the dependencies defined in this way.
 
-                   Please note that if jqueryui is defined, a jquery
-                   dependency must also be defined, and the given
-                   jqueryui dependency must extend the given jquery
-                   dependency. The same rule holds for any other jquery
-                   plugins.
+                   Please note that if jqueryui is given this way,
+                   a jquery dependency must also be given this way,
+                   and the given jqueryui dependency must extend the
+                   given jquery dependency. The same rule holds for any
+                   other jquery plugins.
+
+                   Also note that if a jquery dependency is given this
+                   way, several jquery plugins will be registered on it
+                   (the given jquery instance will be mutated). The
+                   jquery plugins registered by aloha on the given
+                   jquery dependency should not be replaced, at least
+                   not without caution, otherwise behaviour may be
+                   unpredictable.
 
                    It is also possible to define alternative paths to
                    third party dependencies, for example:

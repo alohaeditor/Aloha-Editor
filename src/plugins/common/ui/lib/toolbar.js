@@ -58,7 +58,7 @@ define([
 
 			this._super(context);
 
-			this.$element = $('<div>', {'class': 'aloha-ui-toolbar'});
+			this.$element = $('<div>', {'class': 'aloha-ui-toolbar', 'unselectable': 'on'});
 			this.$_container = Tab.createContainer().appendTo(this.$element);
 			this._tabBySlot = {};
 
@@ -222,7 +222,8 @@ define([
 		init: function () {
 			// TODO should use context.js to get the context element
 			Toolbar.$surfaceContainer = $('<div>', {
-				'class': 'aloha aloha-surface aloha-toolbar'
+				'class': 'aloha aloha-surface aloha-toolbar',
+				'unselectable': 'on'
 			}).hide().appendTo('body');
 
 			Surface.trackRange(Toolbar.$surfaceContainer);
