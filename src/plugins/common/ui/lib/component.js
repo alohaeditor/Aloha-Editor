@@ -2,7 +2,11 @@ define([
 	'aloha/core',
 	'jquery',
 	'util/class'
-], function (Aloha, $, Class) {
+], function (
+	Aloha,
+	$,
+	Class
+) {
 	'use strict';
 
 	var idCounter = 0;
@@ -46,32 +50,32 @@ define([
 		 * The type property is set in Component.define(), so components should only ever be instantiated through define.
 		 * @constructor
 		 */
-		_constructor: function() {
+		_constructor: function () {
 			this.id = idCounter++;
 			this.init();
 		},
 
-		adoptParent: function(container) {
+		adoptParent: function (container) {
 			this.container = container;
 		},
 
 		/**
 		 * Initializes this component.  To be implemented in subclasses.
 		 */
-		init: function() {},
+		init: function () {},
 
-		isVisible: function() {
+		isVisible: function () {
 			return this.visible;
 		},
 
 		/**
 		 * Shows this component.
 		 */
-		show: function(show_opt) {
+		show: function (show_opt) {
 			if (false === show_opt) {
 				this.hide();
 				return;
-			} 
+			}
 			// Only call container.childVisible if we switch from hidden to visible
 			if (!this.visible) {
 				this.visible = true;
@@ -85,7 +89,7 @@ define([
 		/**
 		 * Hides this component.
 		 */
-		hide: function() {
+		hide: function () {
 			// Only call container.childVisible if we switch from visible to hidden
 			if (this.visible) {
 				this.visible = false;
@@ -96,21 +100,21 @@ define([
 			}
 		},
 
-		focus: function() {
+		focus: function () {
 			this.element.focus();
 			if (this.container) {
 				this.container.childFocus(this);
 			}
 		},
 
-		foreground: function() {
+		foreground: function () {
 			if (this.container) {
 				this.container.childForeground(this);
 			}
 		},
 
-		enable: function(enable_opt){},
-		disable: function(){},
+		enable: function (enable_opt) {},
+		disable: function () {}
 	});
 
 	return Component;

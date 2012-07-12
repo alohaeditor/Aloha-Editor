@@ -40,6 +40,12 @@ define([
 	var $window = $(window);
 
 	/**
+	 * Reference to the document body for quicker lookup.
+	 * @type {jQuery.<HTMLELement>}
+	 */
+	var $body = $('body');
+
+	/**
 	 * Animates the given element into the specified position.
 	 *
 	 * @param {jQuery.<HTMLElement>} $element The element to move.
@@ -157,12 +163,14 @@ define([
 			duration = DURATION;
 		}
 
-		var margin = parseInt($('body').css('marginTop'), 10) || 0;
+		var topGutter = (parseInt($body.css('marginTop'), 10) || 0)
+		              + (parseInt($body.css('paddingTop'), 10) || 0);
+
 		var $element = surface.$element;
 		var surfaceOrientation = $element.offset();
 		var editableOrientation = editable.obj.offset();
 		var scrollTop = $window.scrollTop();
-		var availableSpace = editableOrientation.top - scrollTop - margin;
+		var availableSpace = editableOrientation.top - scrollTop - topGutter;
 		var left = editableOrientation.left;
 		var horizontalOverflow = left + $element.width()
 		                       - $window.width() - PADDING;
@@ -175,14 +183,14 @@ define([
 			editableOrientation.top -= scrollTop;
 			floatAbove($element, editableOrientation, duration, callback);
 		} else if (availableSpace + $element.height() >
-			editableOrientation.top + editable.obj.height()) {
+				editableOrientation.top + editable.obj.height()) {
 			floatBelow($element, {
 				top: editableOrientation.top + editable.obj.height(),
 				left: left
 			}, duration, callback);
 		} else {
 			floatBelow($element, {
-				top: margin,
+				top: topGutter,
 				left: left
 			}, duration, callback);
 		}
