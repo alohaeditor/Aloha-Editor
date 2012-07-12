@@ -76,9 +76,11 @@
 						<!-- If the . should be allowed in regexp literals -->
 						<regexp>true</regexp>
 						<!-- If sloppy whitespace is tolerated -->
-						<white>true</white>
+						<white>false</white>
 						<!-- If increment/decrement should be allowed -->
 						<plusplus>true</plusplus>
+						<!-- Allow non-strict equals -->
+						<eqeq>true</eqeq>
 					</options>
 				</configuration>
 				<executions>
