@@ -123,7 +123,7 @@ define([
 			if (!elem) {
 				return false;
 			}
-			component.adopt(this);
+			component.adoptParent(this);
 			elem.append(component.element);
 			group = this._groupBySlot[slot];
 			if (group) {

@@ -62,7 +62,7 @@ define([
 			this.init();
 		},
 
-		adopt: function(container) {
+		adoptParent: function(container) {
 			this.container = container;
 		},
 
