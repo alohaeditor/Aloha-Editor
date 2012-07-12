@@ -41,7 +41,7 @@ define([
 	 *                  If there is not active editable then the defualt
 	 *                  configuration will be returned.
 	 */
-	function getCurrentConfig (plugin) {
+	function getCurrentConfig(plugin) {
 		var config;
 
 		if (Aloha.activeEditable) {
@@ -104,7 +104,7 @@ define([
 
 
 			// We need to bind to selection-changed event to recognize backspace and delete interactions
-			Aloha.bind( 'aloha-selection-changed', function (event) {
+			Aloha.bind('aloha-selection-changed', function (event) {
 				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
 				}
@@ -189,42 +189,32 @@ define([
 		* checks if the given Object contains a note Tag that looks like this:
 		* <span annotation=''>
 		*
-		* @param {Object} obj - The Object to check
+		* @param {HTMLElement} obj The DOM object to check.
 		*/
 		hasNote: function (obj) {
-			if (!obj || !jQuery(obj).length > 0) {
+			if (!obj || 0 === $(obj).length) {
 				return false;
 			}
-			obj = jQuery(obj);
-
-			if (obj.find('span[role=annotation]').length > 0) {
-				return true;
-			}
-
-			return false;
+			return $(obj).find('span[role=annotation]').length > 0;
 		},
 
 		/*
 		* checks if the given Object has textual content.
 		* A possible "<span annotation=''>" tag will be ignored
 		*
-		* @param {Object} obj - The Object to check
+		* @param {HTMLElement} obj The DOM object to check
 		*/
 		hasContent: function (obj) {
-			if (!obj || !jQuery(obj).length > 0) {
+			if (!obj || 0 === $(obj).length) {
 				return false;
 			}
-			obj = jQuery(obj);
-
 			// we have to check the content of this object without the annotation span
-			var objCleaned = obj.clone().find('span[role=annotation]').remove().end();
-
+			var $objCleaned = $(obj).clone()
+			                        .find('span[role=annotation]')
+			                        .remove()
+			                        .end();
 			// check for text, also in other possible sub tags
-			if ( jQuery.trim(objCleaned.text()).length > 0 ) {
-				return true;
-			}
-
-			return false;
+			return $.trim($objCleaned.text()).length > 0;
 		},
 
 		createNumeratedHeaders: function () {
@@ -259,10 +249,11 @@ define([
 			}
 			var prev_rank = null,
 				current_annotation = [],
-				annotation_pos = 0;
+				annotation_pos = 0,
+				i;
 
 			// initialize the base annotations
-			for (var i = 0; i < (6 - base_rank) + 1; i++) {
+			for (i = 0; i < (6 - base_rank) + 1; i++) {
 				current_annotation[i] = 0;
 			}
 
@@ -288,7 +279,8 @@ define([
 					} else if (current_rank < prev_rank) {
 						//goes back to a main title
 						var current_pos = current_rank - base_rank;
-						for (var j = annotation_pos; j > (current_pos); j--) {
+						var j;
+						for (j = annotation_pos; j > (current_pos); j--) {
 							current_annotation[j] = 0; //reset current sub-annotation
 						}
 						annotation_pos = current_pos;
