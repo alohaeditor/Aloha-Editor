@@ -16,7 +16,7 @@ define([
 	'css!numerated-headers/css/numerated-headers.css'
 ], function (
 	Aloha,
-	jQuery,
+	$,
 	Plugin,
 	Ui,
 	ToggleButton,
@@ -25,7 +25,6 @@ define([
 ) {
 	'use strict';
 
-	var $ = jQuery;
 	var editableConfigurations = {};
 
 	Aloha.bind('aloha-editable-destroyed', function (event, editable) {
@@ -158,7 +157,7 @@ define([
 			if (!this.isNumeratingOn()) {
 				return false;
 			}
-			return jQuery(Aloha.activeEditable.obj).attr('aloha-numerated-headers') === 'true';
+			return $(Aloha.activeEditable.obj).attr('aloha-numerated-headers') === 'true';
 		},
 
 		removeNumerations : function () {
@@ -167,20 +166,20 @@ define([
 				return;
 			}
 
-			jQuery(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
+			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
 			var headingselector = getCurrentConfig(this).headingselector;
 			var headers = active_editable_obj.find(headingselector);
 			headers.each(function () {
-				jQuery(this).find('span[role=annotation]').each(function () {
-					jQuery(this).remove();
+				$(this).find('span[role=annotation]').each(function () {
+					$(this).remove();
 				});
 			});
 		},
 
 		getBaseElement: function () {
 			if (typeof this.baseobjectSelector !== 'undefined') {
-				return (jQuery(this.baseobjectSelector).length > 0) ?
-						jQuery(this.baseobjectSelector) : null;
+				return ($(this.baseobjectSelector).length > 0) ?
+						$(this.baseobjectSelector) : null;
 			}
 			return Aloha.activeEditable ? null : Aloha.activeEditable.obj;
 		},
@@ -227,7 +226,7 @@ define([
 			var headingselector = config.headingselector;
 			var headers = active_editable_obj.find(headingselector);
 
-			jQuery(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'true');
+			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'true');
 
 			if (typeof headers === 'undefined' || headers.length === 0) {
 				return;
@@ -265,7 +264,7 @@ define([
 					if (prev_rank === null && current_rank !== base_rank) {
 						// when the first found header has a rank
 						// different from the base rank, we omit it
-						jQuery(this).find('span[role=annotation]').remove();
+						$(this).find('span[role=annotation]').remove();
 						return;
 					} else if (prev_rank === null) {
 						// increment the main annotation
@@ -307,14 +306,14 @@ define([
 					}
 
 					if (that.hasNote(this)) {
-						jQuery(this).find('span[role=annotation]').html(annotation_result);
+						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
-						jQuery(this).prepend("<span role='annotation'>" + annotation_result + "</span> ");
+						$(this).prepend("<span role='annotation'>" + annotation_result + "</span> ");
 					}
 				} else {
 					// no Content, so remove the Note, if there is one
 					if (that.hasNote(this)) {
-						jQuery(this).find('span[role=annotation]').remove();
+						$(this).find('span[role=annotation]').remove();
 					}
 				}
 			});
