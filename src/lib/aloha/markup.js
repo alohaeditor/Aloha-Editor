@@ -1200,17 +1200,20 @@ Aloha.Markup = Class.extend( {
 		// first create the new element
 		var jqOldObj = jQuery( domobj ),
 		    jqNewObj = jQuery( '<' + nodeName + '></' + nodeName + '>' ),
-		    i;
+		    i,
+		    attributes = jqOldObj[0].cloneNode(false).attributes;
 
-		// TODO what about events? css properties?
-
+		// TODO what about events?
 		// copy attributes
-		if ( jqOldObj[0].attributes ) {
-			for ( i = 0; i < jqOldObj[0].attributes.length; ++i ) {
-				jqNewObj.attr(
-					jqOldObj[0].attributes[ i ].nodeName,
-					jqOldObj[0].attributes[ i ].nodeValue
-				);
+		if (attributes) {
+			for ( i = 0; i < attributes.length; ++i ) {
+				if (   typeof attributes[i].specified === 'undefined'
+				    || attributes[i].specified) {
+					jqNewObj.attr(
+						attributes[ i ].nodeName,
+						attributes[ i ].nodeValue
+					);
+				}
 			}
 		}
 
