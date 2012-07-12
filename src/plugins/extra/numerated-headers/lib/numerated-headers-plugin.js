@@ -161,11 +161,11 @@ define([
 		 * editable.
 		 */
 		showNumbers: function () {
-			// don't show numbers if numerating is off
-			if (!Aloha.activeEditable || !this.isNumeratingOn()) {
-				return false;
-			}
-			return $(Aloha.activeEditable.obj).attr('aloha-numerated-headers') === 'true';
+			return (
+				Aloha.activeEditable &&
+				this.isNumeratingOn() &&
+				($(Aloha.activeEditable.obj).attr('aloha-numerated-headers') === 'true')
+			);
 		},
 
 		removeNumerations : function () {
