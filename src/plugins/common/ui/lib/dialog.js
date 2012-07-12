@@ -139,7 +139,8 @@ function($, Component) {
 		 */
 		'progress': function(props) {
 			var progressbar = $("<div>").progressbar({
-				value: null != props.value ? props.value :  100
+				// TODO if no initial value is specific, show a full but an animated progress bar instead
+				value: null != props.value ? props.value : 100
 			});
 			var dialog = makeDialogDiv(props).dialog(
 				$.extend(makeDialogProps(props, 'Progress'), {

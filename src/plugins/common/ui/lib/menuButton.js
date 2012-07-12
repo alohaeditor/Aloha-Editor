@@ -57,6 +57,10 @@ define([
 			      .addClass('aloha-ui-menubutton-single');
 		}
 
+		if (!props.menu) {
+			return wrapper.append(action);
+		}
+
 		function hideMenu(menu) {
 			menu.hide().parent().removeClass('aloha-ui-menubutton-pressed');
 		}
