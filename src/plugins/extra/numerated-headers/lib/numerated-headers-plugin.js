@@ -164,7 +164,7 @@ define([
 			return (
 				Aloha.activeEditable &&
 				this.isNumeratingOn() &&
-				($(Aloha.activeEditable.obj).attr('aloha-numerated-headers') === 'true')
+				(Aloha.activeEditable.obj.attr('aloha-numerated-headers') === 'true')
 			);
 		},
 
@@ -174,7 +174,7 @@ define([
 				return;
 			}
 
-			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
+			Aloha.activeEditable.obj.attr('aloha-numerated-headers', 'false');
 			var headingselector = getCurrentConfig(this).headingselector;
 			var headers = active_editable_obj.find(headingselector);
 			headers.each(function () {
@@ -189,7 +189,7 @@ define([
 				return ($(this.baseobjectSelector).length > 0) ?
 						$(this.baseobjectSelector) : null;
 			}
-			return Aloha.activeEditable ? null : Aloha.activeEditable.obj;
+			return Aloha.activeEditable ? Aloha.activeEditable.obj : null;
 		},
 
 		/*
@@ -234,7 +234,7 @@ define([
 			var headingselector = config.headingselector;
 			var headers = active_editable_obj.find(headingselector);
 
-			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'true');
+			Aloha.activeEditable.obj.attr('aloha-numerated-headers', 'true');
 
 			if (typeof headers === 'undefined' || headers.length === 0) {
 				return;
