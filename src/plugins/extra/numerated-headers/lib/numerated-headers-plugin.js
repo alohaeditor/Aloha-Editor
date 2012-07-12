@@ -14,8 +14,7 @@ define([
 	'i18n!numerated-headers/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'css!numerated-headers/css/numerated-headers.css'
-],
-function (
+], function (
 	Aloha,
 	jQuery,
 	Plugin,
@@ -27,42 +26,55 @@ function (
 	'use strict';
 
 	var $ = jQuery;
+	var editableConfigurations = {};
+
+	Aloha.bind('aloha-editable-destroyed', function (event, editable) {
+		delete editableConfigurations[editable.getId()];
+	});
 
 	/**
-	 * Get the config for the current editable.
+	 * Get the config for the current active editable.
 	 * @private
-	 * @param {Plugin} plugin For the time being we need an plugin instance to
-	 *                        get an editables configuration via
-	 *                        `getEditableConfig()'.
+	 * @param {Plugin} plugin The plugin instance to get an editables
+	 *                        configuration via `getEditableConfig()'.
 	 * @return {object} Configuration hashmap for the current active editable,
 	 *                  If there is not active editable then the defualt
 	 *                  configuration will be returned.
 	 */
 	function getCurrentConfig (plugin) {
-		var config = Aloha.activeEditable
-		           ? plugin.getEditableConfig(Aloha.activeEditable.obj)
-				   : {};
+		var config;
+
+		if (Aloha.activeEditable) {
+			config = editableConfigurations[Aloha.activeEditable.getId()];
+			if (config) {
+				return config;
+			}
+			config = editableConfigurations[Aloha.activeEditable.getId()]
+			       = plugin.getEditableConfig(Aloha.activeEditable.obj);
+		} else {
+			config = {};
+		}
 
 		// normalize config (set default values)
 
 		config.numeratedactive = (
-			config.numeratedactive === true ||
-		    config.numeratedactive === 'true' ||
+			config.numeratedactive === true   ||
+			config.numeratedactive === 'true' ||
 			config.numeratedactive === '1'
 		);
 		
 		config.trailingdot = (
-			config.trailingdot === true ||
+			config.trailingdot === true   ||
 			config.trailingdot === 'true' ||
 			config.trailingdot === '1'
 		);
 
 		config.headingselector = (typeof config.headingselector !== 'string')
 		                       ? 'h1, h2, h3, h4, h5, h6'
-							   $.trim(config.headingselector);
+		                       : $.trim(config.headingselector);
 
 		return config;
-	};
+	}
 
 	return Plugin.create('numerated-headers', {
 		config: {
@@ -84,8 +96,7 @@ function (
 				click: function () {
 					if (that._formatNumeratedHeadersButton.getState()) {
 						that.removeNumerations();
-					}
-					else {
+					} else {
 						that.createNumeratedHeaders();
 					}
 				}
@@ -93,14 +104,13 @@ function (
 
 
 			// We need to bind to selection-changed event to recognize backspace and delete interactions
-			Aloha.bind( 'aloha-selection-changed', function ( event ) {
+			Aloha.bind( 'aloha-selection-changed', function (event) {
 				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
 				}
 			});
 
 			Aloha.bind('aloha-editable-activated', function (event) {
-				//var config = getCurrentConfig(that);
 				if (that.isNumeratingOn()) {
 					that._formatNumeratedHeadersButton.show(true);
 					that.initForEditable(Aloha.activeEditable.obj);
@@ -121,7 +131,7 @@ function (
 			if (flag !== 'true' && flag !== 'false') {
 				flag = (true === getCurrentConfig(this).numeratedactive)
 				     ? 'true'
-					 : 'false';
+				     : 'false';
 				$editable.attr('aloha-numerated-headers', flag);
 			}
 
@@ -148,7 +158,6 @@ function (
 			if (!this.isNumeratingOn()) {
 				return false;
 			}
-
 			return jQuery(Aloha.activeEditable.obj).attr('aloha-numerated-headers') === 'true';
 		},
 
