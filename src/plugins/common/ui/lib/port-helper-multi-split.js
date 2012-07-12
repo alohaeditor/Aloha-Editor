@@ -71,7 +71,7 @@ define([
 				//TODO
 			},
 			setActiveItem: function (name) {
-				component.setActiveButton(buttonIndexByName[name]);
+				component.setActiveButton(name ? buttonIndexByName[name] : null);
 			}
 		};
 	}

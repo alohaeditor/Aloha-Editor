@@ -93,7 +93,9 @@ define([
 				this.buttons[this._activeButton].element.removeClass('aloha-multisplit-active');
 			}
 			this._activeButton = index;
-			this.buttons[index].element.addClass('aloha-multisplit-active');			
+			if (null !== index) {
+				this.buttons[index].element.addClass('aloha-multisplit-active');
+			}
 		},
 
 		/**
