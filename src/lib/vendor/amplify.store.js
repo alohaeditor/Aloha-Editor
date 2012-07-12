@@ -1,4 +1,6 @@
 define(['util/json2'],function(){
+var amplify = {};
+
 /*!
  * Amplify Store - Persistent Client-Side Storage 1.1.0
  * 
@@ -291,6 +293,6 @@ if ( window.globalStorage ) {
 	});
 }() );
 
-}( this.amplify = this.amplify || {} ) );
-return this.amplify;
+}( amplify ) );
+return amplify;
 });
