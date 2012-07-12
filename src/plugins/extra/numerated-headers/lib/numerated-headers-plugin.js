@@ -28,6 +28,39 @@ function (
 
 	var $ = jQuery;
 
+	/**
+	 * Get the config for the current editable.
+	 * @private
+	 * @param {Plugin} plugin For the time being we need an plugin instance to
+	 *                        get an editables configuration via
+	 *                        `getEditableConfig()'.
+	 * @return {object} Configuration hashmap for the current active editable.
+	 *                  null if the is no active editable.
+	 */
+	function getCurrentConfig (plugin) {
+		var config = plugin.getEditableConfig(Aloha.activeEditable.obj);
+
+		// normalize config (set default values)
+		if (config.numeratedactive === true || config.numeratedactive === 'true' || config.numeratedactive === '1') {
+			config.numeratedactive = true;
+		} else {
+			config.numeratedactive = false;
+		}
+
+		if (typeof config.headingselector !== 'string') {
+			config.headingselector = 'h1, h2, h3, h4, h5, h6';
+		}
+		config.headingselector = jQuery.trim(config.headingselector);
+
+		if (config.trailingdot === true || config.trailingdot === 'true' || config.trailingdot === '1') {
+			config.trailingdot = true;
+		} else {
+			config.trailingdot = false;
+		}
+
+		return config;
+	};
+
 	return Plugin.create('numerated-headers', {
 		config: {
 			numeratedactive: true,
@@ -64,7 +97,7 @@ function (
 			});
 
 			Aloha.bind('aloha-editable-activated', function (event) {
-				var config = that.getCurrentConfig();
+				var config = getCurrentConfig(that);
 				if (that.isNumeratingOn()) {
 					that._formatNumeratedHeadersButton.show(true);
 					that.initForEditable();
@@ -83,7 +116,7 @@ function (
 			var $editable = jQuery(Aloha.activeEditable.obj);
 			var flag = $editable.attr('aloha-numerated-headers');
 			if (flag !== 'true' && flag !== 'false') {
-				var config = this.getCurrentConfig();
+				var config = getCurrentConfig(this);
 				if (config.numeratedactive === true) {
 					flag = 'true';
 				} else {
@@ -101,37 +134,10 @@ function (
 		},
 
 		/**
-		 * Get the config for the current editable
-		 */
-		getCurrentConfig: function () {
-			var config = this.getEditableConfig(Aloha.activeEditable.obj);
-
-			// normalize config (set default values)
-			if (config.numeratedactive === true || config.numeratedactive === 'true' || config.numeratedactive === '1') {
-				config.numeratedactive = true;
-			} else {
-				config.numeratedactive = false;
-			}
-
-			if (typeof config.headingselector !== 'string') {
-				config.headingselector = 'h1, h2, h3, h4, h5, h6';
-			}
-			config.headingselector = jQuery.trim(config.headingselector);
-
-			if (config.trailingdot === true || config.trailingdot === 'true' || config.trailingdot === '1') {
-				config.trailingdot = true;
-			} else {
-				config.trailingdot = false;
-			}
-
-			return config;
-		},
-
-		/**
 		 * Check whether numerating shall be possible in the current editable
 		 */
 		isNumeratingOn: function () {
-			var config = this.getCurrentConfig();
+			var config = getCurrentConfig(this);
 			return config.headingselector !== '';
 		},
 
@@ -155,7 +161,7 @@ function (
 			}
 
 			jQuery(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
-			var headingselector = this.getCurrentConfig().headingselector;
+			var headingselector = getCurrentConfig(this).headingselector;
 
 			var headers = active_editable_obj.find(headingselector);
 			headers.each(function () {
@@ -224,7 +230,7 @@ function (
 		},
 
 		createNumeratedHeaders: function () {
-			var config = this.getCurrentConfig();
+			var config = getCurrentConfig(this);
 			var headingselector = config.headingselector;
 			var active_editable_obj = this.getBaseElement(),
 				that = this,
