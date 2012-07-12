@@ -259,7 +259,7 @@ function (
 
 			// initialize the base annotations
 			for (var i = 0; i < (6 - base_rank) + 1; i++) {
-				current_annotation[i] = 0; 
+				current_annotation[i] = 0;
 			}
 
 			headers.each(function () {
@@ -273,14 +273,14 @@ function (
 						jQuery(this).find('span[role=annotation]').remove();
 						return;
 					} else if (prev_rank === null) {
-						// increment the main annotation 
+						// increment the main annotation
 						current_annotation[annotation_pos]++;
 					} else if (current_rank > prev_rank) {
 						// starts a sub title
-						current_annotation[++annotation_pos]++; 
+						current_annotation[++annotation_pos]++;
 					} else if (current_rank === prev_rank) {
 						// continues subtitles
-						current_annotation[annotation_pos]++; 
+						current_annotation[annotation_pos]++;
 					} else if (current_rank < prev_rank) {
 						//goes back to a main title
 						var current_pos = current_rank - base_rank;
@@ -288,7 +288,7 @@ function (
 							current_annotation[j] = 0; //reset current sub-annotation
 						}
 						annotation_pos = current_pos;
-						current_annotation[annotation_pos]++; 
+						current_annotation[annotation_pos]++;
 					}
 
 					prev_rank = current_rank;
@@ -311,7 +311,7 @@ function (
 					}
 
 					if (that.hasNote(this)) {
-						jQuery(this).find('span[role=annotation]').html(annotation_result); 
+						jQuery(this).find('span[role=annotation]').html(annotation_result);
 					} else {
 						jQuery(this).prepend("<span role='annotation'>" + annotation_result + "</span> ");
 					}
