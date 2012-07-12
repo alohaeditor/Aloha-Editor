@@ -20,8 +20,8 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/ecma5shims', 'aloha/rangy-core' ],
-function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
+[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Range, Arrays, Strings) {
 	var GENTICS = window.GENTICS;
 
 	/**
@@ -1761,32 +1761,35 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, $_) {
 	}); // Selection
 
 
-/**
- * This method implements an ugly workaround for a selection problem in ie:
- * when the cursor shall be placed at the end of a text node in a li element, that is followed by a nested list,
- * the selection would always snap into the first li of the nested list
- * therefore, we make sure that the text node ends with a space and place the cursor right before it
- */
-function nestedListInIEWorkaround ( range ) {
-	if (jQuery.browser.msie
-		&& range.startContainer === range.endContainer
-		&& range.startOffset === range.endOffset
-		&& range.startContainer.nodeType == 3
-		&& range.startOffset == range.startContainer.data.length
-		&& range.startContainer.nextSibling
-		&& $_( ["OL", "UL"] ).indexOf(range.startContainer.nextSibling.nodeName) !== -1) {
-		if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
-			range.startOffset = range.endOffset = range.startOffset-1;
-		} else {
-			range.startContainer.data = range.startContainer.data + ' ';
+	/**
+	 * This method implements an ugly workaround for a selection problem in ie:
+	 * when the cursor shall be placed at the end of a text node in a li element, that is followed by a nested list,
+	 * the selection would always snap into the first li of the nested list
+	 * therefore, we make sure that the text node ends with a space and place the cursor right before it
+	 */
+	function nestedListInIEWorkaround ( range ) {
+		var nextSibling;
+		if (jQuery.browser.msie
+			&& range.startContainer === range.endContainer
+			&& range.startOffset === range.endOffset
+			&& range.startContainer.nodeType == 3
+			&& range.startOffset == range.startContainer.data.length
+			&& range.startContainer.nextSibling) {
+			nextSibling = range.startContainer.nextSibling;
+			if ('OL' === nextSibling.nodeName || 'UL' === nextSibling.nodeName) {
+				if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
+					range.startOffset = range.endOffset = range.startOffset-1;
+				} else {
+					range.startContainer.data = range.startContainer.data + ' ';
+				}
+			}
 		}
 	}
-}
 
-function correctRange ( range ) {
-	nestedListInIEWorkaround(range);
-	return range;
-}
+	function correctRange ( range ) {
+		nestedListInIEWorkaround(range);
+		return range;
+	}
 
 	/**
 	 * Implements Selection http://html5.org/specs/dom-range.html#selection
