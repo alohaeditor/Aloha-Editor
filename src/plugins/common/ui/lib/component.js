@@ -48,21 +48,10 @@ define([
 		 */
 		_constructor: function() {
 			this.id = idCounter++;
-
-			// Components are responsible for updating their state and visibility
-			// whenever the selection changes.
-			// TODO(p.salema@gentics.com): Consider implementing 'aloha-node-changed'
-			// which would be trigger only when the user selection moves from one node
-			// into another.
-			Aloha.bind('aloha-selection-changed aloha-command-executed',
-				$.proxy(function (event, range) {
-					this.selectionChange(range);
-				}, this));
-
 			this.init();
 		},
 
-		adopt: function(container) {
+		adoptParent: function(container) {
 			this.container = container;
 		},
 
@@ -122,15 +111,6 @@ define([
 
 		enable: function(enable_opt){},
 		disable: function(){},
-
-		/**
-		 * Selection change callback.
-		 * Usually overridden by the component implementation or the settings
-		 * that are passed to the constructor at instantialization.
-		 */
-		selectionChange: function () {
-		}
-
 	});
 
 	return Component;

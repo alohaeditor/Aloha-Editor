@@ -82,9 +82,9 @@ define([
 			floating.makeFloating(this, Toolbar);
 		},
 
-		assignToSlot: function(configuredSlot, component){
-			var tab = this._tabBySlot[configuredSlot];
-			return tab && tab.assignToSlot(configuredSlot, component);
+		adoptInto: function(slot, component){
+			var tab = this._tabBySlot[slot];
+			return tab && tab.adoptInto(slot, component);
 		},
 
 		getActiveContainer: function () {

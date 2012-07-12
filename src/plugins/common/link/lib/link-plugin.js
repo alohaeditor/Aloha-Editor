@@ -373,7 +373,7 @@ define( [
 		createButtons: function () {
 			var that = this;
 
-			this._formatLinkButton = Ui.assign("formatLink", ToggleButton, {
+			this._formatLinkButton = Ui.adopt("formatLink", ToggleButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
 				scope: 'Aloha.continuoustext',
@@ -382,7 +382,7 @@ define( [
 				}
 			});
 
-			this._insertLinkButton = Ui.assign("insertLink", Button, {
+			this._insertLinkButton = Ui.adopt("insertLink", Button, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
 				scope: 'Aloha.continuoustext',
@@ -401,7 +401,7 @@ define( [
 			this.hrefField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
 
-			this._removeLinkButton = Ui.assign("removeLink", Button, {
+			this._removeLinkButton = Ui.adopt("removeLink", Button, {
 				tooltip: i18n.t("button.removelink.tooltip"),
 				icon: "aloha-icon aloha-icon-unlink",
 				scope: 'Aloha.continuoustext',

@@ -117,15 +117,15 @@ define([
 			alohaTabs.push(this);
 		},
 
-		assignToSlot: function(configuredSlot, component) {
-			var elem = this._elemBySlot[configuredSlot],
+		adoptInto: function(slot, component) {
+			var elem = this._elemBySlot[slot],
 			    group;
 			if (!elem) {
 				return false;
 			}
-			component.adopt(this);
+			component.adoptParent(this);
 			elem.append(component.element);
-			group = this._groupBySlot[configuredSlot];
+			group = this._groupBySlot[slot];
 			if (group) {
 				this._groupByComponent[component.id] = group;
 				if (component.isVisible()) {
@@ -137,7 +137,6 @@ define([
 
 		foreground: function() {
 			this.container.tabs('select', this.index);
-			PubSub.pub('aloha.ui.container.activated', {data: this});
 		},
 
 		childForeground: function(childComponent) {
@@ -166,19 +165,16 @@ define([
 		 * @override
 		 */
 		show: function() {
-			if ( 0 === this.list.children().length ) {
+			if (!this.list.children().length) {
 				return;
 			}
 			this.handle.show();
 			this.visible = true;
 
-			// If no tabs are selected, then select the tab which was just
-			// shown.
-			if ( 0 === this.container.find( '.ui-tabs-active' ).length ) {
-				this.container.tabs( 'select', this.index );
-			} else if ( this.container.tabs( 'option', 'selected' )
-			            === this.index ) {
-				this.container.tabs( 'select', this.index );
+			// If no tabs are selected, then select the tab which was just shown.
+			if (   !this.container.find('.ui-tabs-active').length
+			    ||  this.container.tabs('option', 'selected') === this.index) {
+				this.foreground();
 			}
 		},
 

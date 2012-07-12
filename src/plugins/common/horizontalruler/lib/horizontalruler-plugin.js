@@ -33,7 +33,7 @@ define([
 		init: function() {
 			var that = this;
 
-			this._insertHorizontalRuleButton = Ui.assign("insertHorizontalRule", Button, {
+			this._insertHorizontalRuleButton = Ui.adopt("insertHorizontalRule", Button, {
 				tooltip: i18n.t('button.addhr.tooltip'),
 				iconOnly: true,
 				icon: 'aloha-icon-horizontalruler',

@@ -42,11 +42,11 @@ define([
 		Container.showContainersForContext(context);
 	});
 
-	function assignToSlot(configuredSlot, component) {
-		return toolbar.assignToSlot(configuredSlot, component);
+	function adoptInto(slot, component) {
+		return toolbar.adoptInto(slot, component);
 	}
 
 	return {
-		assignToSlot: assignToSlot
+		adoptInto: adoptInto
 	};
 });

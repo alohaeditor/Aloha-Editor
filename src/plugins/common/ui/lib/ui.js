@@ -88,33 +88,37 @@
 
 define([
 	'jquery',
-	'aloha/core',
 	'ui/ui-plugin'
 ],
 function(
 	$,
-	Aloha,
 	Plugin
 ) {
 	'use strict';
 
-	function assign(configuredSlot, superType, settings) {
-		var type,
-		component;
+	function adopt(slot, SuperType, settings) {
+		var Type,
+		    component;
 
-		if (!superType.isInstance) {
-			type = settings ? superType.extend(settings) : superType;
-			component = new type();
-		} else {
-			component = superType;
+		if ('string' !== $.type(slot)) {
+			settings = SuperType;
+			SuperType = slot;
+			slot = settings.name;
 		}
 
-		Plugin.assignToSlot(configuredSlot, component);
+		if (!SuperType.isInstance) {
+			Type = settings ? SuperType.extend(settings) : SuperType;
+			component = new Type();
+		} else {
+			component = SuperType;
+		}
+
+		Plugin.adoptInto(slot, component);
 
 		return component;
 	}
 
 	return {
-		assign: assign
+		adopt: adopt
 	};
 });

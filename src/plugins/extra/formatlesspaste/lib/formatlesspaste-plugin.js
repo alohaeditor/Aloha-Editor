@@ -159,7 +159,7 @@ define([
 			FormatlessPasteHandler.strippedElements = this.strippedElements;
 			// add button to toggle format-less pasting
 
-			this._toggleFormatlessPasteButton = Ui.assign('toggleFormatlessPaste', ToggleButton, {
+			this._toggleFormatlessPasteButton = Ui.adopt('toggleFormatlessPaste', ToggleButton, {
 				tooltip: i18n.t('button.formatlessPaste.tooltip'),
 				icon: 'aloha-icon aloha-icon-formatless-paste',
 				scope: 'Aloha.continuoustext',

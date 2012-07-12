@@ -18,6 +18,8 @@ define([
 	 */
 	var MultiSplit = Component.extend({
 
+		_activeButton: null,
+
 		/**
 		 * Initializes the multisplit component
 		 * @override
@@ -61,8 +63,7 @@ define([
 				multiSplit.buttons.push({
 					settings: button,
 					component: component,
-					element: component.element,
-					active: false
+					element: component.element
 				});
 
 				return component.element[0];
@@ -87,21 +88,13 @@ define([
 			}).appendTo(content);
 		},
 
-		/**
-		 * Selection change callback
-		 * @override
-		 */
-		selectionChange: function () {
-			var buttons = this.buttons,
-			    button,
-			    active;
-			for (var i = 0; i < buttons.length; i++) {
-				button = buttons[i];
-				active = button.settings.isActive();
-				if (active !== button.active) {
-					button.active = active;
-					button.element.toggleClass('aloha-multisplit-active');
-				}
+		setActiveButton: function(index) {
+			if (null !== this._activeButton) {
+				this.buttons[this._activeButton].element.removeClass('aloha-multisplit-active');
+			}
+			this._activeButton = index;
+			if (null !== index) {
+				this.buttons[index].element.addClass('aloha-multisplit-active');
 			}
 		},
 

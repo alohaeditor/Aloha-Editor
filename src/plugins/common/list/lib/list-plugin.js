@@ -57,7 +57,7 @@ define([
 
 			var that = this;
 
-			this._orderedListButton = Ui.assign("orderedList", ToggleButton, {
+			this._orderedListButton = Ui.adopt("orderedList", ToggleButton, {
 				tooltip: i18n.t("button.createolist.tooltip"),
 				icon: "aloha-icon aloha-icon-orderedlist",
 				scope: 'Aloha.continuoustext',
@@ -66,7 +66,7 @@ define([
 				}
 			});
 
-			this._unorderedListButton = Ui.assign("unorderedList", ToggleButton, {
+			this._unorderedListButton = Ui.adopt("unorderedList", ToggleButton, {
 				tooltip: i18n.t("button.createulist.tooltip"),
 				icon: "aloha-icon aloha-icon-unorderedlist",
 				scope: 'Aloha.continuoustext',
@@ -75,7 +75,7 @@ define([
 				}
 			});
 
-			this._indentListButton = Ui.assign("indentList", Button, {
+			this._indentListButton = Ui.adopt("indentList", Button, {
 				tooltip: i18n.t('button.indentlist.tooltip'),
 				icon: 'aloha-icon aloha-icon-indent',
 				scope: 'Aloha.continuoustext',
@@ -84,7 +84,7 @@ define([
 				}
 			});
 
-			this._outdentListButton = Ui.assign("outdentList", Button, {
+			this._outdentListButton = Ui.adopt("outdentList", Button, {
 				tooltip: i18n.t('button.outdentlist.tooltip'),
 				icon: 'aloha-icon aloha-icon-outdent',
 				scope: 'Aloha.continuoustext',

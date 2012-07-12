@@ -79,7 +79,7 @@ function (
 		_addUIAspectRatioToggleButton: function () {
 			var plugin = this.plugin;
 
-			this._imageCnrRatioButton = Ui.assign("imageCnrRatio", ToggleButton, {
+			this._imageCnrRatioButton = Ui.adopt("imageCnrRatio", ToggleButton, {
 				tooltip: i18n.t('button.toggle.tooltip'),
 				icon: 'aloha-icon-cnr-ratio',
 				scope: plugin.name,
@@ -102,7 +102,7 @@ function (
 		_addUIResetButton: function () {
 			var plugin = this.plugin;
 
-			this._imageCnrResetButton = Ui.assign("imageCnrReset", Button, {
+			this._imageCnrResetButton = Ui.adopt("imageCnrReset", Button, {
 				tooltip: i18n.t('Reset'),
 				icon: 'aloha-icon-cnr-reset',
 				scope: plugin.name,
@@ -118,7 +118,7 @@ function (
 		_addUIInsertButton: function () {
 			var plugin = this.plugin;
 
-			this._insertImageButton = Ui.assign("insertImage", Button, {
+			this._insertImageButton = Ui.adopt("insertImage", Button, {
 				tooltip: i18n.t('button.addimg.tooltip'),
 				icon: 'aloha-button aloha-image-insert',
 				scope: 'Aloha.continuoustext',
@@ -157,7 +157,7 @@ function (
 		_addUIAlignButtons: function () {
 			var plugin = this.plugin;
 		
-			this._imageAlignLeftButton = Ui.assign("imageAlignLeft", Button, {
+			this._imageAlignLeftButton = Ui.adopt("imageAlignLeft", Button, {
 				tooltip: i18n.t('button.img.align.left.tooltip'),
 				icon: 'aloha-img aloha-image-align-left',
 				scope: plugin.name,
@@ -167,7 +167,7 @@ function (
 				}
 			});
 			
-			this._imageAlignRightButton = Ui.assign("imageAlignRight", Button, {
+			this._imageAlignRightButton = Ui.adopt("imageAlignRight", Button, {
 				tooltip: i18n.t('button.img.align.right.tooltip'),
 				icon: 'aloha-img aloha-image-align-right',
 				scope: plugin.name,
@@ -177,7 +177,7 @@ function (
 				}
 			});
 
-			this._imageAlignNoneButton = Ui.assign("imageAlignNone", Button, {
+			this._imageAlignNoneButton = Ui.adopt("imageAlignNone", Button, {
 				tooltip: i18n.t('button.img.align.none.tooltip'),
 				icon: 'aloha-img aloha-image-align-none',
 				scope: plugin.name,
@@ -197,7 +197,7 @@ function (
 		_addUIMarginButtons: function () {
 			var plugin = this.plugin;
 
-			this._imageIncPaddingButton = Ui.assign("imageIncPadding", Button, {
+			this._imageIncPaddingButton = Ui.adopt("imageIncPadding", Button, {
 				tooltip: i18n.t('padding.increase'),
 				icon: 'aloha-img aloha-image-padding-increase',
 				scope: plugin.name,
@@ -206,7 +206,7 @@ function (
 				}
 			});
 			
-			this._imageDecPaddingButton = Ui.assign("imageDecPadding", Button, {
+			this._imageDecPaddingButton = Ui.adopt("imageDecPadding", Button, {
 				tooltip: i18n.t('padding.decrease'),
 				icon: 'aloha-img aloha-image-padding-decrease',
 				scope: plugin.name,
@@ -224,7 +224,7 @@ function (
 
 			Scopes.createScope('Aloha.img', ['Aloha.global']);
 
-			this._imageCropButtonButton = Ui.assign("imageCropButton", ToggleButton, {
+			this._imageCropButtonButton = Ui.adopt("imageCropButton", ToggleButton, {
 				tooltip: i18n.t('Crop'),
 				icon: 'aloha-icon-cnr-crop',
 				scope: plugin.name,
@@ -272,7 +272,7 @@ function (
 		_addNaturalSizeButton: function () {
 			var plugin = this.plugin;
 
-			this._imageNaturalSizeButton = Ui.assign("imageNaturalSize", Button, {
+			this._imageNaturalSizeButton = Ui.adopt("imageNaturalSize", Button, {
 				icon: 'aloha-img aloha-image-size-natural',
 				label: i18n.t('size.natural'),
 				scope: plugin.name,

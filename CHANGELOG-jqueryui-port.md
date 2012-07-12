@@ -6,7 +6,7 @@
                      When using a built version of Aloha, it's possible
                      to choose between aloha-min.js, which doesn't
                      include requirejs, and and aloha-full.js,
-                     which odes include requirejs.
+                     which does include requirejs.
 
 - **MANUAL CHANGE**: Properties exposed by Aloha.Selection or aloha/selection were changed
                      tagHierarchy
@@ -28,7 +28,7 @@
 
                      It is up to the user to load jQuery, call
                      noConflict himself, and pass jQuery into Aloha via
-                     Aloha.settings.predefinedModules.
+                     Aloha.settings.predefinedModules or Aloha.settings.jQuery.
 
 - **ENHANCEMENT**: It is now possible to pass in any third party
                    dependencies, for example:
@@ -50,16 +50,15 @@
 
                    This will override the default location Aloha loads jquery from.
 
-                   Please note that any dependency defined in this way must have an AMD define.
+                   Please note that any dependency defined in this way should have an AMD define.
 
                    Care must be taken with both settings. Passing in a
-                   dependency that has a different version from the
-                   dependency that is loaded by default may result in
-                   unpredictable behaviour.
+                   version of a dependency that differs from what Aloha
+                   expects may result in unpredictable behaviour.
 
                    Also, the third part libraries that come with Aloha
-                   may have been patched to fix bugs or increase
-                   performance. See the git log for each third party
+                   may have been patched to fix bugs or address Aloha
+                   specific issues. See the git log for each third party
                    library for further information before redefining it.
 
 - **ENHANCEMENT**: Aloha specific css rules that are not in use any more were removed:
@@ -81,8 +80,7 @@
 - **MANUAL CHANGE**: The browser plugin was removed
 
                      The browser plugin is obsolete. Please see
-                     linkbrowser and imagebrowser plugins for
-                     alternatives.
+                     linkbrowser and imagebrowser plugins.
 
 - **MANUAL CHANGE**: Added the ui-plugin and removed ui specific code from the Aloha core
 
@@ -144,7 +142,7 @@
                      
                      In particular, the Aloha block handles now have
                      z-index 10000, the floating menu has 10100, and
-                     Aloha dialogs have 10200. The sidebar continus to
+                     Aloha dialogs have 10200. The sidebar continues to
                      have a z-index of 999999999.
 
                      The new common/ui plugin is now required for the

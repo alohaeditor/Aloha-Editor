@@ -4,7 +4,7 @@ Aloha.ready(function(){
 	}
     Aloha.require(["ribbon/ribbon-plugin", "ui/ui", "ui/menuButton"], function(Ribbon, Ui, MenuButton){
 
-		Ui.assign("insertTag", MenuButton, {
+		Ui.adopt("insertTag", MenuButton, {
 			text: "X",
 			menu: [
 				{ text: "Z",

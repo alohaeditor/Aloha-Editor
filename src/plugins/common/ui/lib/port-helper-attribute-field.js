@@ -60,7 +60,7 @@ define([
 			element.width(props.width);
 		}
 
-		component = Ui.assign(props.name, Component, {
+		component = Ui.adopt(props.name, Component, {
 			init: function(){
 
 				// Why do we have to wrap the element in a span? It
@@ -139,11 +139,6 @@ define([
 		}
 
 		function onKeyup(event) {
-			if ( ( event.keyCode == 13 || event.keyCode == 27 ) ) {
-				// Set focus to link element and select the object
-				Selection.getRangeObject().select();
-			}
-
 			// If this attribute field currently refers to a repository
 			// item, and the user edits the contents of the input field,
 			// this attribute field seizes to refer to the repository item.
@@ -156,6 +151,12 @@ define([
 			// Input values that refer to a repository item are handled via setItem().
 			if ( ! resourceItem ) {
 				setAttribute(targetAttribute, getValue());
+			}
+
+			if ( ( event.keyCode == 13 || event.keyCode == 27 ) ) {
+				// Set focus to link element and select the object
+				Selection.getRangeObject().select();
+				finishEditing();
 			}
 		}
 
