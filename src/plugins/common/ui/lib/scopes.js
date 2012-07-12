@@ -43,8 +43,20 @@ define([
 		}
 	});
 
+	/**
+	 * @deprecated
+	 *     Scopes don't provide any additional functionality since
+	 *     the visibility of containers and components can be
+	 *     controlled individually.
+	 */
 	var Scopes = {
 
+		/**
+		 * @deprecated
+		 *     Scopes don't provide any additional functionality since
+		 *     the visibility of containers and components can be
+		 *     controlled individually.
+		 */
 		enterScope: function(scope) {
 			var counter = addedScopes[scope] || 0;
 			addedScopes[scope] = counter + 1;
@@ -53,6 +65,12 @@ define([
 			}
 		},
 
+		/**
+		 * @deprecated
+		 *     Scopes don't provide any additional functionality since
+		 *     the visibility of containers and components can be
+		 *     controlled individually.
+		 */
 		leaveScope: function(scope) {
 			var counter = addedScopes[scope] - 1;
 			if (counter) {
@@ -63,6 +81,12 @@ define([
 			}
 		},
 
+		/**
+		 * @deprecated
+		 *     Scopes don't provide any additional functionality since
+		 *     the visibility of containers and components can be
+		 *     controlled individually.
+		 */
 		isActiveScope: function(scope){
 			if (addedScopes[scope]) {
 				return true;
@@ -103,7 +127,8 @@ define([
 		/**
 		 * @deprecated
 		 *     This method was used to define an ancestry for scopes.
-		 *     The purpose for this is unknown, and the method is therefore deprecated.
+		 *     It is unknonwn what problem scope ancestry solved, and
+		 *     the method is therefore deprecated.
 		 */
 		createScope: function(scope, parentScopes){
 			if ( ! parentScopes ) {
