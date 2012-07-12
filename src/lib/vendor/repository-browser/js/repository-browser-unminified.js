@@ -4,7 +4,7 @@ define('RepositoryBrowser', [
 	'Class',
 	'jquery',
 	'PubSub',
-	'repository-browser-i18n-' + (window && window.__DEPS__ && window.__DEPS__.lang || 'en'),
+	'repository-browser-i18n-' + ((window && window.__DEPS__ && window.__DEPS__.lang) || 'en'),
 	'jstree',
 	'jqgrid',
 	'jquery-layout'
@@ -67,18 +67,13 @@ define('RepositoryBrowser', [
 			break;
 		}
 
-		var attr;
-		if (obj.type) {
-			attr = {rel: obj.type};
-		}
-
 		return {
 			data: {
 				title: obj.name,
 				attr: {'data-repo-obj': obj.uid},
 				icon: icon
 			},
-			attr: attr,
+			attr: obj.type ? {rel: obj.type} : undefined,
 			state: (obj.hasMoreItems || 'folder' === obj.baseType)
 				? 'closed'
 				: null,
@@ -235,7 +230,7 @@ define('RepositoryBrowser', [
 						that.$_list.setGridWidth($element.width());
 					}
 				}
-				// , applyDefaultStyles: true // debugging
+				// , applyDefaultStyles: true
 			}).sizePane('west', this.treeWidth); // Fix for a ui-layout bug in
 			                                     // chrome.
 			disableSelection(this.$_grid);
@@ -430,10 +425,10 @@ define('RepositoryBrowser', [
 					theme: 'browser'
 				},
 				json_data: {
-					data: function (node, callback) {
+					data: function (nodes, callback) {
 						if (that.repositoryManager) {
 							that.jstree_callback = callback;
-							that._fetchSubnodes(node, callback);
+							that._fetchSubnodes(nodes, callback);
 						} else {
 							callback();
 						}
@@ -477,7 +472,7 @@ define('RepositoryBrowser', [
 		 */
 		_createList: function ($container) {
 			var $list = jQuery('<table id="repository-browser-list-' + (++uid)
-				+ '" class="repository-browser-list"></table>');
+			          + '" class="repository-browser-list"></table>');
 
 			// This is a hidden utility column to help us with auto sorting.
 			var model = [{
@@ -851,13 +846,16 @@ define('RepositoryBrowser', [
 			return $container;
 		},
 
-		_fetchSubnodes: function (node, callback) {
-			if (-1 === node) {
+		_fetchSubnodes: function (nodes, callback) {
+			if (-1 === nodes) {
 				this._fetchRepoRoot(callback);
 			} else {
-				var obj = this._getObjectFromCache(node);
-				if (typeof obj === 'object') {
-					this.fetchChildren(obj, callback);
+				var i;
+				for (i = 0; i < nodes.length; i++) {
+					var obj = this._getObjectFromCache(nodes.eq(i));
+					if (obj) {
+						this.fetchChildren(obj, callback);
+					}
 				}
 			}
 		},
@@ -945,7 +943,6 @@ define('RepositoryBrowser', [
 			if (true === obj.hasMoreItems || 'folder' === obj.baseType) {
 				if (false === obj.loaded) {
 					var that = this;
-
 					this.getRepoChildren({
 						inFolderId: obj.id,
 						repositoryId: obj.repositoryId
@@ -1096,6 +1093,8 @@ define('RepositoryBrowser', [
 	return RepositoryBrowser;
 });
 define('repository-browser-i18n-de', [], function () {
+	'use strict';
+
 	return {
 		'Browsing': 'Browsing',
 		'Close': 'Schließn',
@@ -1111,6 +1110,8 @@ define('repository-browser-i18n-de', [], function () {
 	};
 });
 define('repository-browser-i18n-en', [], function () {
+	'use strict';
+
 	return {
 		'Browsing': 'Browsing',
 		'Close': 'Close',
