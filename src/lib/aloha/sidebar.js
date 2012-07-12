@@ -273,8 +273,7 @@ define([
 			previousViewportHeight = viewportHeight;
 			previousActivePanelIds = activePanelIds;
 
-			var PADDING = 15;
-			var height = this.container.find('.aloha-sidebar-inner').height() - (PADDING * 2);
+			var height = this.container.find('.aloha-sidebar-inner').height();
 			var remainingHeight = height - ((panels[0].title.outerHeight() + 10) * panels.length);
 			var panel;
 			var targetHeight;
