@@ -2886,10 +2886,10 @@ rangy.createModule("DomUtil", function(api, module) {
         selProto.removeAllRanges = function() {
             // Added try/catch as fix for issue #21
             try {
-                this.docSelection.empty();
-
                 // Check for empty() not working (issue #24)
                 if (this.docSelection.type != "None") {
+					this.docSelection.empty();
+
                     // Work around failure to empty a control selection by instead selecting a TextRange and then
                     // calling empty()
                     var doc;
