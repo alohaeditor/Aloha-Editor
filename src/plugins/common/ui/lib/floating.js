@@ -246,9 +246,8 @@ define([
 			SurfaceTypeManager.setFloatingPosition(position);
 
 			surface.$element.css({
-				'position': 'fixed',
-				'top': position.top,
-				'left': position.left
+				top: position.top,
+				left: position.left
 			});
 		};
 
@@ -265,9 +264,19 @@ define([
 
 		surface.addPin();
 
-		if (SurfaceTypeManager.isFloatingMode) {
-			surface.$element.css('position', 'fixed');
+		// IE7 will not properly set the position property to "fixed" if our
+		// element is not rendered.  We therefore have to do a rigmarore to
+		// temorarily render the element in order to set the position
+		// correctly.
+		if ($.browser.msie) {
+			var $parent = surface.$element.parent();
+			surface.$element.appendTo('body');
+			surface.$element.css('position', 'fixed').appendTo($parent);
 		} else {
+			surface.$element.css('position', 'fixed');
+		}
+
+		if (!SurfaceTypeManager.isFloatingMode) {
 			updateSurfacePosition();
 		}
 
