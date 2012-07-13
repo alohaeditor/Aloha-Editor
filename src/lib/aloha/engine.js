@@ -8570,36 +8570,36 @@ commands.outdent = {
 	action: function(value, range) {
 		range = range || getActiveRange();
 
+		// "Let items be a list of all lists that are ancestor containers of the
+		// range's start and/or end node."
+		//
+		// It's annoying to get this in tree order using functional stuff
+		// without doing getDescendants(document), which is slow, so I do it
+		// imperatively.
+		var items = [];
+		(function(){
+			for (
+				var ancestorContainer = range.endContainer;
+				ancestorContainer != range.commonAncestorContainer;
+				ancestorContainer = ancestorContainer.parentNode
+			) {
+				if (isHtmlElement(ancestorContainer, "li")) {
+					items.unshift(ancestorContainer);
+				}
+			}
+			for (
+				var ancestorContainer = range.startContainer;
+				ancestorContainer;
+				ancestorContainer = ancestorContainer.parentNode
+			) {
+				if (isHtmlElement(ancestorContainer, "li")) {
+					items.unshift(ancestorContainer);
+				}
+			}
+		})();
+
     // Note: Avoid normalizing sublists as it breaks Aloha's current behaviour
     // Original implementation was left commented for future reference.
-
-		// // "Let items be a list of all lists that are ancestor containers of the
-		// // range's start and/or end node."
-		// //
-		// // It's annoying to get this in tree order using functional stuff
-		// // without doing getDescendants(document), which is slow, so I do it
-		// // imperatively.
-		// var items = [];
-		// (function(){
-		// 	for (
-		// 		var ancestorContainer = range.endContainer;
-		// 		ancestorContainer != range.commonAncestorContainer;
-		// 		ancestorContainer = ancestorContainer.parentNode
-		// 	) {
-		// 		if (isNamedHtmlElement(ancestorContainer, 'li')) {
-		// 			items.unshift(ancestorContainer);
-		// 		}
-		// 	}
-		// 	for (
-		// 		var ancestorContainer = range.startContainer;
-		// 		ancestorContainer;
-		// 		ancestorContainer = ancestorContainer.parentNode
-		// 	) {
-		// 		if (isNamedHtmlElement(ancestorContainer, 'li')) {
-		// 			items.unshift(ancestorContainer);
-		// 		}
-		// 	}
-		// });
 
     // // "For each item in items, normalize sublists of item."
 		// $_( items ).forEach( function( thisArg) {
