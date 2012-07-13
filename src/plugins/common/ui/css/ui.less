@@ -1,5 +1,5 @@
 
-/* Woraround for dialogs that are appended directly to the body and
+/* Workaround for dialogs that are appended directly to the body and
    can't be placed inside a .aloha context element.
    Styles removed from jquery-ui.css and placed here. */
 /*
@@ -597,7 +597,8 @@
 	border-width: 0;
 	background: transparent;
 }
-&.aloha-dialog .ui-button {
+&.aloha-dialog .ui-button,
+&.aloha-dialog .ui-dialog-titlebar-close {
 	outline: none;
 	background-color: #e6e6e6;
 	background-image:         linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
@@ -606,7 +607,14 @@
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
 }
-
+&.aloha-dialog .ui-dialog-titlebar-close {
+	padding: 0;
+	border: 1px solid #ccc;
+	margin-top: -7px;
+}
+&.aloha-dialog .ui-dialog-titlebar-close:hover {
+	border-color: #999;
+}
 
 .aloha-ui-hidden {
 	display: none;
