@@ -85,16 +85,8 @@ define( [], function() {
 			equal(logHistory.length, 0, 'Check number of logged messages');
 		});
 		
-		test( 'Aloha.jQuery test', function() {
-			equals( Aloha.jQuery.fn.jquery, '1.6.1', 'Delivered jQuery version is correct' );
-		});
-
 		test( 'Aloha.require() test', function() {
 			equals( typeof Aloha.require, 'function', 'Aloha.require() is available' );
-		});
-
-		test( 'Aloha.define() test', function() {
-			equals( typeof Aloha.define, 'function', 'Aloha.define() is available' );
 		});
 
 		test( 'Aloha.bind() test', function() {

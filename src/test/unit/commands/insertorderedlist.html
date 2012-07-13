@@ -4,29 +4,33 @@
 	<meta charset="UTF-8" />
 	<title>Aloha Editor command insertorderedlist tests</title>
 	<!-- include qunit -->
-	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+	<link rel="stylesheet" href="../../vendor/qunit.css" type="text/css"/>
 
-	<script type="text/javascript" src="../vendor/qunit.js"></script>
+	<script type="text/javascript" src="../../vendor/qunit.js"></script>
 
 	<!-- include jquery -->
-	<script	src="../../lib/vendor/jquery-1.7.2.js" ></script>
-	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
-
-	<!-- include aloha -->
+	<script	src="../../../lib/vendor/jquery-1.7.2.js" ></script>
+	<script type="text/javascript" src="../../vendor/jquery.simulate.js"></script>
 	<script>
 		var Aloha = {
 			settings: {
 				jQuery: $,
-				baseUrl: '../../lib'
+				baseUrl: '../../../lib'
 			}
 		};
 	</script>
-	<script src="../../lib/require.js"></script>
-	<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,common/list"></script>
+
+	<!-- include aloha -->
+	<script src="../../../lib/require.js" ></script>
+	<script src="../../../lib/aloha.js" ></script>
 
 	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../vendor/swarminject.js"></script>
+	<script type="text/javascript" src="../../vendor/swarminject.js"></script>
 	<script>
+    require.config({
+      baseUrl: "../"
+    });
+
 		// load command test suite
 		require( ['commandtest'] );
 	</script>
@@ -49,7 +53,7 @@
 				start: '<ol><li>{}<br/></li></ol>',
 				execResult: '<p>{}<br/></p>'
 			},
-			{	include: ['msie7.0', 'msie8.0'],
+			{	include: ['msie8.0'],
 				start: '<ol><li>{}</li></ol>',
 				execResult: '<p>{}</p>'
 			},
@@ -64,7 +68,8 @@
 			{	start: '<p>foo[]</p>',
 				execResult: '<ol><li>foo[]</li></ol>'
 			},
-			{	start: '<ol><li>foo[]</li></ol>',
+      {	exclude: ['msie7.0'],
+        start: '<ol><li>foo[]</li></ol>',
 				execResult: '<p>foo[]</p>'
 			},
 			{	start: '<ul><li>foo[]</li></ul>',
@@ -78,7 +83,8 @@
 			{	start: '<p>[]foo</p>',
 				execResult: '<ol><li>[]foo</li></ol>'
 			},
-			{	start: '<ol><li>[]foo</li></ol>',
+      {	exclude: ['msie7.0'],
+				start: '<ol><li>[]foo</li></ol>',
 				execResult: '<p>[]foo</p>'
 			},
 			{	start: '<ul><li>[]foo</li></ul>',
@@ -92,7 +98,8 @@
 			{	start: '<p>[foo]</p>',
 				execResult: '<ol><li>[foo]</li></ol>'
 			},
-			{	start: '<ol><li>[foo]</li></ol>',
+      {	exclude: ['msie7.0'],
+				start: '<ol><li>[foo]</li></ol>',
 				execResult: '<p>[foo]</p>'
 			},
 			{	start: '<ul><li>[foo]</li></ul>',
@@ -104,14 +111,15 @@
 				start: 'foo[]<br/>bar',
 				execResult: '<ol><li>foo[]</li></ol>bar'
 			},
-      {	include: ['msie'],
+      {	include: ['msie8.0', 'msie9.0'],
 				start: 'foo[]<br/>bar',
         execResult: '<ol><li>foo[]<br/></li></ol>bar'
 			},
 			{	start: '<p>foo[]</p><p>bar</p>',
 				execResult: '<ol><li>foo[]</li></ol><p>bar</p>'
 			},
-			{	start: '<ol><li>foo[]</li></ol><p>bar</p>',
+      {	exclude: ['msie7.0'],
+				start: '<ol><li>foo[]</li></ol><p>bar</p>',
 				execResult: '<p>foo[]</p><p>bar</p>'
 			},
 			{	start: '<ul><li>foo[]</li></ul><p>bar</p>',
@@ -123,14 +131,15 @@
 				start: 'foo<br/>[]bar',
         execResult: 'foo<ol><li>[]bar</li></ol>' 
 			},
-      {	include: ['msie'],
+      {	include: ['msie8.0', 'msie9.0'],
 				start: 'foo<br/>[]bar',
         execResult: 'foo<br/><ol><li>[]bar</li></ol>' 
 			},
 			{	start: '<p>foo</p><p>[]bar</p>',
 				execResult: '<p>foo</p><ol><li>[]bar</li></ol>'
 			},
-			{	start: '<p>foo</p><ol><li>[]bar</li></ol>',
+      {	exclude: ['msie7.0'],
+				start: '<p>foo</p><ol><li>[]bar</li></ol>',
 				execResult: '<p>foo</p><p>[]bar</p>'
 			},
 			{	start: '<p>foo</p><ul><li>[]bar</li></ul>',
@@ -142,14 +151,15 @@
 				start: '[foo<br/>bar]',
 				execResult: '<ol><li>[foo</li><li>bar]</li></ol>'
 			},
-			{	include: ['msie'],
+      {	include: ['msie8.0', 'msie9.0'],
 				start: '[foo<br/>bar]',
         execResult: '<ol><li>[foo<br/></li><li>bar]</li></ol>'
 			},
 			{	start: '<p>[foo</p><p>bar]</p>',
 				execResult: '<ol><li>[foo</li><li>bar]</li></ol>'
 			},
-			{	start: '<ol><li>[foo</li><li>bar]</li></ol>',
+			{	exclude: ['msie7.0'],
+				start: '<ol><li>[foo</li><li>bar]</li></ol>',
 				execResult: '<p>[foo</p><p>bar]</p>'
 			},
 			{	start: '<ul><li>[foo</li><li>bar]</li></ul>',
@@ -157,12 +167,30 @@
 			},
 
 			// nested ol, in outer
-			{	start: '<ol><li>foo[]</li><li>bar<ol><li>baz</li><li>quz</li></ol></li></ol>',
+			{	exclude: ['msie7.0', 'msie8.0'],
+				start: '<ol><li>foo[]</li><li>bar<ol><li>baz</li><li>quz</li></ol></li></ol>',
 				execResult: '<p>foo[]</p><ol><li>bar<ol><li>baz</li><li>quz</li></ol></li></ol>'
 			},
+
+      {	include: ['msie7.0', 'msie8.0'],
+				start: '<ol><li>foo[]</li><li>bar<ol><li>baz</li><li>quz</li></ol></li></ol>',
+				execResult: '<p>foo[]</p><ol><li>bar <ol><li>baz</li><li>quz</li></ol></li></ol>'
+			},
+
 			// nested ol, in inner
-			{	start: '<ol><li>foo</li><li>bar<ol><li>baz[]</li><li>quz</li></ol></li></ol>',
+      {	exclude: ['msie'],
+				start: '<ol><li>foo</li><li>bar<ol><li>baz[]</li><li>quz</li></ol></li></ol>',
         execResult: '<ol><li>foo</li><li>bar</li><li>baz[]<ol><li>quz</li></ol></li></ol>'
+			},
+
+      {	include: ['msie9.0'],
+				start: '<ol><li>foo</li><li>bar<ol><li>baz[]</li><li>quz</li></ol></li></ol>',
+        execResult: '<ol><li>foo</li><li>bar</li><li>baz[] <ol><li>quz</li></ol></li></ol>'
+			},
+
+      {	include: ['msie7.0', 'msie8.0'],
+				start: '<ol><li>foo</li><li>bar<ol><li>baz[]</li><li>quz</li></ol></li></ol>',
+        execResult: '<ol><li>foo</li><li>bar</li><li>baz <ol><li>[]quz</li></ol></li></ol>'
 			},
 
 			// nested ul, in outer
@@ -194,13 +222,30 @@
         execResult: '<ol><li>foo[]</li></ol><ul><li>bar <ol><li>baz</li><li>quz</li></ol></li></ul>'
 			},
 			// ol nested in ul, selection in inner
-			{	start: '<ul><li>foo</li><li>bar<ol><li>baz[]</li><li>quz</li></ol></li></ul>',
+			{	exclude: ['msie'],
+				start: '<ul><li>foo</li><li>bar<ol><li>baz[]</li><li>quz</li></ol></li></ul>',
         execResult: '<ul><li>foo</li><li>bar</li><li>baz[]<ol><li>quz</li></ol></li></ul>'
 			},
 
+      {	include: ['msie9.0'],
+				start: '<ul><li>foo</li><li>bar<ol><li>baz[]</li><li>quz</li></ol></li></ul>',
+        execResult: '<ul><li>foo</li><li>bar</li><li>baz[] <ol><li>quz</li></ol></li></ul>'
+			},
+
+      {	include: ['msie7.0', 'msie8.0'],
+				start: '<ul><li>foo</li><li>bar<ol><li>baz[]</li><li>quz</li></ol></li></ul>',
+        execResult: '<ul><li>foo</li><li>bar</li><li>baz <ol><li>[]quz</li></ol></li></ul>'
+			},
+
 			// ul nested in ol, selection in outer
-			{	start: '<ol><li>foo[]</li><li>bar<ul><li>baz</li><li>quz</li></ul></li></ol>',
+      {	exclude: ['msie7.0', 'msie8.0'],
+				start: '<ol><li>foo[]</li><li>bar<ul><li>baz</li><li>quz</li></ul></li></ol>',
 				execResult: '<p>foo[]</p><ol><li>bar<ul><li>baz</li><li>quz</li></ul></li></ol>'
+			},
+
+      {	include: ['msie7.0', 'msie8.0'],
+				start: '<ol><li>foo[]</li><li>bar<ul><li>baz</li><li>quz</li></ul></li></ol>',
+				execResult: '<p>foo[]</p><ol><li>bar <ul><li>baz</li><li>quz</li></ul></li></ol>'
 			},
 			// ul nested in ol, selection in inner
 			{	exclude: ['msie7.0', 'msie8.0'],
@@ -209,7 +254,7 @@
 			},
 			{	include: ['msie7.0', 'msie8.0'],
 				start: '<ol><li>foo</li><li>bar<ul><li>baz[]</li><li>quz</li></ul></li></ol>',
-				execResult: '<ol><li>foo</li><li>bar <ol><li>baz[]</li><li>quz</li></ol></li></ol>'
+        execResult: '<ol><li>foo</li><li>bar <ol><li>baz[]</li></ol><ul><li>quz</li></ul></li></ol>'
 			}
 		]
 	}

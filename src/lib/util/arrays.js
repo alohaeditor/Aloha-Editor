@@ -76,8 +76,22 @@ define([],function(){
 		return true;
 	}
 
+	// TODO use native ecma5 function if available
+	function filter(a, fn) {
+		var result = [], i, item;
+		i = a.length;
+		while (i--) {
+			item = a[i];
+			if (fn(item)) {
+				result.push(item);
+			}
+		}
+		return result;
+	}
+
 	return {
-		'sortUnique': sortUnique,
-		'equal': equal
+		sortUnique: sortUnique,
+		equal: equal,
+		filter: filter
 	};
 });

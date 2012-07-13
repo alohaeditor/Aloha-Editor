@@ -1,0 +1,5 @@
+.notbold { font-weight: normal; }
+.notitalic { font-style: normal; }
+.underline { text-decoration: underline; }
+.line-through { text-decoration: line-through; }
+.underline-and-line-through { text-decoration: underline line-through; }

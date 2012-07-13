@@ -6,13 +6,22 @@
 	<!-- include qunit -->
 	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
 	<script type="text/javascript" src="../vendor/qunit.js"></script>
-	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
+
+	<!-- include jquery -->
+	<script	src="../../lib/vendor/jquery-1.7.2.js" ></script>
+	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
 
 	<!-- include aloha -->
 	<script>
-		var Aloha = { jQuery: $ };
+		var Aloha = {
+			settings: {
+				jQuery: $,
+				baseUrl: '../../lib'
+			}
+		};
 	</script>
-	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/aloha.js"></script>
 
 	<!-- include testswarm inject script -->
 	<script>

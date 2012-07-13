@@ -21,6 +21,11 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * @param content
 		 */
 		handleContent: function( content ) {
+
+			if (null == content) {
+				return;
+			}
+
 			if ( typeof content === 'string' ){
 				content = jQuery( '<div>' + content + '</div>' );
 			} else if ( content instanceof jQuery ) {
