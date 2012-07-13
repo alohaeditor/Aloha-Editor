@@ -5592,7 +5592,9 @@ function splitParent(nodeList, range) {
 		// parent of original parent immediately after original parent,
 		// preserving ranges."
 		for (var i = nodeList.length - 1; i >= 0; i--) {
-			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
+      if(isHtmlElement(originalParent.parentNode, ["UL", "OL", "LI"])){
+        movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
+      }
 		}
 
 		// "If precedes line break is true, and the last member of node list
@@ -8570,36 +8572,36 @@ commands.outdent = {
 	action: function(value, range) {
 		range = range || getActiveRange();
 
-		// "Let items be a list of all lists that are ancestor containers of the
-		// range's start and/or end node."
-		//
-		// It's annoying to get this in tree order using functional stuff
-		// without doing getDescendants(document), which is slow, so I do it
-		// imperatively.
-		var items = [];
-		(function(){
-			for (
-				var ancestorContainer = range.endContainer;
-				ancestorContainer != range.commonAncestorContainer;
-				ancestorContainer = ancestorContainer.parentNode
-			) {
-				if (isHtmlElement(ancestorContainer, "li")) {
-					items.unshift(ancestorContainer);
-				}
-			}
-			for (
-				var ancestorContainer = range.startContainer;
-				ancestorContainer;
-				ancestorContainer = ancestorContainer.parentNode
-			) {
-				if (isHtmlElement(ancestorContainer, "li")) {
-					items.unshift(ancestorContainer);
-				}
-			}
-		})();
-
     // Note: Avoid normalizing sublists as it breaks Aloha's current behaviour
     // Original implementation was left commented for future reference.
+
+		// // "Let items be a list of all lists that are ancestor containers of the
+		// // range's start and/or end node."
+		// //
+		// // It's annoying to get this in tree order using functional stuff
+		// // without doing getDescendants(document), which is slow, so I do it
+		// // imperatively.
+		// var items = [];
+		// (function(){
+		// 	for (
+		// 		var ancestorContainer = range.endContainer;
+		// 		ancestorContainer != range.commonAncestorContainer;
+		// 		ancestorContainer = ancestorContainer.parentNode
+		// 	) {
+		// 		if (isHtmlElement(ancestorContainer, "li")) {
+		// 			items.unshift(ancestorContainer);
+		// 		}
+		// 	}
+		// 	for (
+		// 		var ancestorContainer = range.startContainer;
+		// 		ancestorContainer;
+		// 		ancestorContainer = ancestorContainer.parentNode
+		// 	) {
+		// 		if (isHtmlElement(ancestorContainer, "li")) {
+		// 			items.unshift(ancestorContainer);
+		// 		}
+		// 	}
+		// });
 
     // // "For each item in items, normalize sublists of item."
 		// $_( items ).forEach( function( thisArg) {
@@ -8625,10 +8627,8 @@ commands.outdent = {
 		// "While node list is not empty:"
 		while (nodeList.length) {
 
-      // Note - Modified from the Editing API spec.
-      //
-			// "While the first member of node list is an ol or ul or is a 
-			// child of an li, outdent it and remove it from node
+			// "While the first member of node list is an ol or ul or is not
+			// the child of an ol or ul, outdent it and remove it from node
 			// list."
 			while (nodeList.length
 			&& (isHtmlElementInArray(nodeList[0], ["OL", "UL"])
