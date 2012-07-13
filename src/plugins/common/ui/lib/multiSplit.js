@@ -19,6 +19,7 @@ define([
 	var MultiSplit = Component.extend({
 
 		_activeButton: null,
+		_isOpen: false,
 
 		/**
 		 * Initializes the multisplit component
@@ -86,15 +87,26 @@ define([
 				}))();
 				return component.element[0];
 			}).appendTo(content);
+
+			var that = this;
+			$('body').click(function (event) {
+				if (that._isOpen &&
+			        !that.element.is(event.target) &&
+			        0 === that.element.find(event.target).length) {
+					that.close();
+				}
+			});
 		},
 
 		setActiveButton: function(index) {
 			if (null !== this._activeButton) {
-				this.buttons[this._activeButton].element.removeClass('aloha-multisplit-active');
+				this.buttons[this._activeButton]
+				    .element.removeClass('aloha-multisplit-active');
 			}
 			this._activeButton = index;
 			if (null !== index) {
-				this.buttons[index].element.addClass('aloha-multisplit-active');
+				this.buttons[index]
+				    .element.addClass('aloha-multisplit-active');
 			}
 		},
 
@@ -103,6 +115,7 @@ define([
 		 */
 		toggle: function () {
 			this.element.toggleClass('aloha-multisplit-open');
+			this._isOpen = !this._isOpen;
 		},
 
 		/**
@@ -110,6 +123,7 @@ define([
 		 */
 		open: function () {
 			this.element.addClass('aloha-multisplit-open');
+			this._isOpen = true;
 		},
 
 		/**
@@ -117,6 +131,7 @@ define([
 		 */
 		close: function () {
 			this.element.removeClass('aloha-multisplit-open');
+			this._isOpen = false;
 		}
 	});
 
