@@ -20,19 +20,6 @@
 (function (global) {
 	'use strict';
 
-	// Establish Aloha namespace.
-	global.Aloha = global.Aloha || {};
-
-	// Establish defaults namespace.
-	Aloha.defaults = {};
-
-	// Establish the settings object if none exists.
-	Aloha.settings = Aloha.settings || {};
-
-	// Determins the base path of Aloha Editor which is supposed to be the path
-	// of aloha.js (this file).
-	Aloha.settings.baseUrl = Aloha.settings.baseUrl || getBaseUrl();
-
 	// Aloha base path is defined by a script tag with the data attribute
 	// data-aloha-plugins and the filename aloha.js
 	// no jQuery at this stage...
@@ -61,7 +48,7 @@
 	}
 
 	/**
-	 * Merges properites of all  passed arguments into a new one.
+	 * Merges properites of all given arguments into a new one.
 	 * Duplicate properties will be "seived" out.
 	 * Works in a similar way to jQuery.extend.
 	 */
@@ -70,8 +57,9 @@
 		var objects = Array.prototype.slice.call(arguments);
 		var name;
 		var i;
+		var obj;
 		for (i = 0; i < objects.length; i++) {
-			var obj = objects[i];
+			obj = objects[i];
 			for (name in obj) {
 				if (obj.hasOwnProperty(name)) {
 					clone[name] = objects[i][name];
@@ -80,6 +68,19 @@
 		}
 		return clone;
 	}
+
+	// Establish Aloha namespace.
+	global.Aloha = global.Aloha || {};
+
+	// Establish defaults namespace.
+	Aloha.defaults = {};
+
+	// Establish the settings object if none exists.
+	Aloha.settings = Aloha.settings || {};
+
+	// Determins the base path of Aloha Editor which is supposed to be the path
+	// of aloha.js (this file).
+	Aloha.settings.baseUrl = Aloha.settings.baseUrl || getBaseUrl();
 
 	var baseUrl = Aloha.settings.baseUrl;
 
@@ -110,7 +111,6 @@
 	};
 
 	var requireConfig = mergeObjects(defaultConfig, Aloha.settings.requireConfig);
-
 	requireConfig.paths = mergeObjects(defaultPaths, browserPaths, requireConfig.paths);
 
 	// Create define() wrappers that will provide the initialized objects that
@@ -123,7 +123,7 @@
 		predefinedModules.jquery = Aloha.settings.jQuery;
 	}
 
-	function createDefine (name, module) {
+	function createDefine(name, module) {
 		define(name, function () {
 			return module;
 		});
@@ -165,7 +165,7 @@
 			};
 			Aloha.bind(type, fn);
 		});
-	   return this;
+		return this;
 	};
 
 	Aloha.trigger = function (type, data) {
@@ -189,8 +189,8 @@
 	};
 
 	define('aloha', [], function () {
-	    // Load Aloha dependencies...
-	    require(requireConfig, [
+		// Load Aloha dependencies...
+		require(requireConfig, [
 				'jquery',
 				'util/json2'
 			], function (jQuery) {
@@ -198,8 +198,8 @@
 			// that which expect it to be there.
 			Aloha.jQuery = jQuery;
 
-	        // Load Aloha core files ...
-	        require(requireConfig, [
+			// Load Aloha core files ...
+			require(requireConfig, [
 					'vendor/jquery.json-2.2.min',
 					'aloha/rangy-core',
 					'util/class',
@@ -228,7 +228,7 @@
 			});
 		});
 
-	    return Aloha;
+		return Aloha;
 	});
 
 	// Trigger a loading of Aloha dependencies.
