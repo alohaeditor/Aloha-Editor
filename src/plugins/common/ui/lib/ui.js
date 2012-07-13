@@ -92,7 +92,7 @@ define([
 ],
 function(
 	$,
-	Plugin
+	UiPlugin
 ) {
 	'use strict';
 
@@ -113,7 +113,7 @@ function(
 			component = SuperType;
 		}
 
-		Plugin.adoptInto(slot, component);
+		UiPlugin.adoptInto(slot, component);
 
 		return component;
 	}
