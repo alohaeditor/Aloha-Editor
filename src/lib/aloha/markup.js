@@ -1207,10 +1207,12 @@ Aloha.Markup = Class.extend( {
 		// copy attributes
 		if ( jqOldObj[0].attributes ) {
 			for ( i = 0; i < jqOldObj[0].attributes.length; ++i ) {
-				jqNewObj.attr(
-					jqOldObj[0].attributes[ i ].nodeName,
-					jqOldObj[0].attributes[ i ].nodeValue
-				);
+				if (jqOldObj[0].attributes[i].specified) {
+					jqNewObj.attr(
+							jqOldObj[0].attributes[ i ].nodeName,
+							jqOldObj[0].attributes[ i ].nodeValue
+					);
+				}
 			}
 		}
 
