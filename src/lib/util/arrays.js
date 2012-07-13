@@ -78,9 +78,8 @@ define([],function(){
 
 	// TODO use native ecma5 function if available
 	function filter(a, fn) {
-		var result = [], i, item;
-		i = a.length;
-		while (i--) {
+		var result = [], i, len, item;
+		for (i = 0, len = a.length; i < len; i++) {
 			item = a[i];
 			if (fn(item)) {
 				result.push(item);
