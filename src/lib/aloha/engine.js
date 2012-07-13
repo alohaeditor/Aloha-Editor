@@ -8627,8 +8627,10 @@ commands.outdent = {
 		// "While node list is not empty:"
 		while (nodeList.length) {
 
-			// "While the first member of node list is an ol or ul or is not
-			// the child of an ol or ul, outdent it and remove it from node
+      // Note - Modified from the Editing API spec.
+      //
+			// "While the first member of node list is an ol or ul or is a 
+			// child of an li, outdent it and remove it from node
 			// list."
 			while (nodeList.length
 			&& (isHtmlElementInArray(nodeList[0], ["OL", "UL"])
