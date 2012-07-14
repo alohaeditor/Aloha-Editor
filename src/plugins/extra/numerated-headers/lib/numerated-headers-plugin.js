@@ -109,7 +109,7 @@ define([
 
 			// We need to bind to selection-changed event to recognize
 			// backspace and delete interactions.
-			Aloha.bind('aloha-selection-changed', function (event) {
+			Aloha.bind('aloha-smart-content-changed', function (event) {
 				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
 				}

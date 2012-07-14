@@ -1,5 +1,5 @@
 
-/* Woraround for dialogs that are appended directly to the body and
+/* Workaround for dialogs that are appended directly to the body and
    can't be placed inside a .aloha context element.
    Styles removed from jquery-ui.css and placed here. */
 /*
@@ -233,7 +233,6 @@
 	font-size: 11px;
 	text-align: left;
 }
-
 .aloha-ui-menubutton-menu .ui-menu-item a {
 	white-space: nowrap;
 	padding-left: 10px;
@@ -243,6 +242,9 @@
 	-webkit-border-radius: 0px;
 	border-radius:         0px;
 	border-color: transparent;
+}
+.aloha-ui-menubutton-menu .ui-menu-item a.ui-state-active {
+	background: #dadada;
 }
 /* The following margin and padding ensure that the triangle icon of submenus
    doesn't overlap with the text (only for IE, looks ok in chrome without
@@ -305,7 +307,7 @@
 	padding: 0px;
 	border-width: 0;
 }
-.ui-button.aloha-ui-menubutton-action {
+.ui-buttonset .ui-button.aloha-ui-menubutton-action {
 	border-right: 1px solid transparent;
 	-moz-border-radius-topright:     0px;
 	-webkit-border-top-right-radius: 0px;
@@ -597,7 +599,8 @@
 	border-width: 0;
 	background: transparent;
 }
-&.aloha-dialog .ui-button {
+&.aloha-dialog .ui-button,
+&.aloha-dialog .ui-dialog-titlebar-close {
 	outline: none;
 	background-color: #e6e6e6;
 	background-image:         linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
@@ -606,7 +609,17 @@
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
 }
-
+&.aloha-dialog .ui-dialog-titlebar-close {
+	padding: 0;
+	border: 1px solid #ccc;
+	margin-top: -7px;
+}
+&.aloha-dialog .ui-dialog-titlebar-close:hover {
+	border-color: #999;
+}
+&.aloha-dialog .ui-icon-closethick {
+	background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat -80px -128px;
+}
 
 .aloha-ui-hidden {
 	display: none;
