@@ -50,7 +50,9 @@ function( jQuery, Registry, Class ) {
 					if (jQuery.inArray( handler, options.contenthandler ) < 0 ) {
 						continue;
 					}
-					
+					if (null == content) {
+						break;
+					}
 					if ( typeof handlers[handler].handleContent === 'function') {
 						content = handlers[handler].handleContent( content, options );
 					} else {
