@@ -113,9 +113,9 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 	 *        exlcude param.
 	 */
 	function combineToolbarSettings(userTabs, defaultTabs, exclude) {
-		var defaultComponentsByTabLabel = Maps.fillTuples({}, defaultTabs, function(tab) {
+		var defaultComponentsByTabLabel = Maps.fillTuples({}, Arrays.map(defaultTabs, function(tab) {
 			return [tab.label, tab.components];
-		});
+		}));
 		var exclusionLookup = makeExclusionMap(userTabs, exclude);
 		function pruneDefaultComponents(form) {
 			return 'array' === $.type(form) ? !form.length : exclusionLookup[form];
