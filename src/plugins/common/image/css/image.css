@@ -101,7 +101,7 @@
 /*
  * fix to use big resize handle for images
  */
-.ui-resizable-se {
+.aloha .ui-resizable-se {
 	width: 16px;
 	height: 16px;
 	background-position: -80px -224px !important;
