@@ -76,21 +76,8 @@ define([],function(){
 		return true;
 	}
 
-	// TODO use native ecma5 function if available
-	function filter(a, fn) {
-		var result = [], i, len, item;
-		for (i = 0, len = a.length; i < len; i++) {
-			item = a[i];
-			if (fn(item)) {
-				result.push(item);
-			}
-		}
-		return result;
-	}
-
 	return {
 		sortUnique: sortUnique,
-		equal: equal,
-		filter: filter
+		equal: equal
 	};
 });

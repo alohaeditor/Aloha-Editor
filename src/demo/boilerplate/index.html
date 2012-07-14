@@ -56,96 +56,11 @@
 	<script src="js/aloha-config.js"></script>
 
     <script>
-		Aloha.settings.toolbar = [
-			// Format Tab
-			{
-				label: 'Format',
-				showOn: { scope: 'Aloha.continuoustext' },
-				components: [
-					[
-						'bold', 'strong', 'italic', 'emphasis', '\n',
-						'subscript', 'superscript', 'strikethrough', 'quote'
-					], [
-						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', '\n',
-						'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
-					], [
-						'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
-						'orderedList', 'unorderedList', 'indentList', 'outdentList'
-					], [
-						'formatBlock'
-					]
-				]
-			},
-			// Insert Tab
-			{
-				label: "Insert",
-				showOn: { scope: 'Aloha.continuoustext' },
-				components: [
-					[ "createTable", "characterPicker", "insertLink",
-					  "insertImage", "insertAbbr", "insertToc",
-					  "insertHorizontalRule", "insertTag"]
-				]
-			},
-			// Link Tab
-			{
-				label: 'Link', 
-				showOn: { scope: 'link' },
-				components: [ 'editLink', 'removeLink', 'linkBrowser' ]
-			},
-            // Image Tab
-            {
-                label: "Image",
-                showOn: {scope: 'image'},
-                components: [
-                    [ "imageSource", "imageTitle",
-                      "imageAlignLeft", "imageAlignRight", "imageAlignNone",
-                      "imageIncPadding", "imageDecPadding",
-                      "imageBrowser",
-                      "imageCropButton", "imageCnrReset", "imageCnrRatio",
-                      "imageResizeWidth", "imageResizeHeight" ]
-                ]
-            },
-            // Abbr Tab
-            {   label: "Abbreviation",
-                showOn: { scope: 'abbr' },
-                components: [
-                    [ "abbrText" ]
-                ]
-            },
-            // Wailang Tab
-            {   label: "Wailang",
-				showOn: { scope: 'wai-lang' },
-                components: [ [ "wailangfield", "removewailang" ] ]
-            },
-			// Table Tabs
-			{
-				label: "Table",
-				showOn: { scope: 'table.cell' },
-				components: [
-					[ "mergecells", "splitcells", "tableCaption",
-					  "tableSummary", "formatTable" ]
-				]
-			},
-			{ 
-				label: "Column",
-				showOn: { scope: 'table.column' },
-				components: [
-					[ "addcolumnleft", "addcolumnright", "deletecolumns",
-					  "columnheader", "mergecellsColumn", "splitcellsColumn",
-					  "formatColumn" ]
-				]
-			},
-			{
-				label: "Row",
-				showOn: { scope: 'table.row' },
-				components: [
-					[ "addrowbefore", "addrowafter", "deleterows", "rowheader",
-					  "mergecellsRow", "splitcellsRow", "formatRow" ]
-				]
-			}
-		];
+    Aloha.settings.toolbar = {
+        tabs: [],
+        excludes: []
+    };
     </script>
-
 	<!--
 		Load the Aloha Editor library.
 		The plugin list could also be added to the configuration.

@@ -53,14 +53,14 @@ define([
 	   var userSettings = Aloha.settings.toolbar,
 	       defaultSettings = Settings.defaultToolbarSettings;
 	   if (!userSettings) {
-		   return defaultSettings;
+		   return defaultSettings.tabs;
 	   }
 	   return Settings.combineToolbarSettings(
 		   userSettings.tabs || [],
 		   defaultSettings.tabs,
 		   userSettings.exclude || []
 	   );
-   }
+   } 
 
 	function primaryScopeForegroundTab() {
 		var tabs = toolbar._tabs,

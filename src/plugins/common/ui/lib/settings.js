@@ -1,4 +1,4 @@
-define(['jquery', 'util/arrays', 'util/maps'], function($, Arrays, Maps){
+define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays, Maps, Trees){
 	var defaultToolbarSettings = {
 		tabs: [
 			// Format Tab
@@ -113,37 +113,31 @@ define(['jquery', 'util/arrays', 'util/maps'], function($, Arrays, Maps){
 	 *        exlcude param.
 	 */
 	function combineToolbarSettings(userTabs, defaultTabs, exclude) {
-		var i = 0;
-		var tabs = [];
 		var defaultComponentsByTabLabel = Maps.fillTuples({}, defaultTabs, function(tab) {
 			return [tab.label, tab.components];
 		});
-		var exclusionLookup = Maps.fillKeys({}, exclude, true);
-		function isNotExcluded(component){
-			return !exclusionLookup[component];
-		}
-		for (i = 0; i < userTabs.length; i++) {
-			exclusionLookup[userTabs[i].label] = true;
-			Maps.fillKeys(exclusionLookup, userTabs[i].components, true);
-		}
-		for (var i = 0; i < userTabs.length; i++) {
-			var userTab = userTabs[i];
-			var components = userTab.components;
-			var defaultComponents = defaultComponentsByTabLabel[userTab.label];
-			if (defaultComponents) {
-				defaultComponents = Arrays.filter(defaultComponents, isNotExcluded);
-				components = components.concat(defaultComponents);
-			}
-			var tab = $.extend({}, userTab);
-			tab.components = components;
-			tabs.push(tab);
-		}
-		for (var i = 0; i < defaultTabs.length; i++) {
-			var defaultTab = defaultTabs[i];
+		var exclusionLookup = makeExclusionMap(userTabs, exclude);
+		function pruneDefaultComponents(form) {
+			return 'array' === $.type(form) ? !form.length : exclusionLookup[form];
+		};
+		userTabs = mergeDefaultComponents(userTabs, defaultComponentsByTabLabel, pruneDefaultComponents);
+		defaultTabs = remainingDefaultTabs(defaultTabs, exclusionLookup, pruneDefaultComponents);
+		return userTabs.concat(defaultTabs);
+	}
+
+	function remainingDefaultTabs(defaultTabs, exclusionLookup, pruneDefaultComponents) {
+		var i,
+		    tab,
+		    tabs = [],
+		    defaultTab,
+		    components;
+		for (i = 0; i < defaultTabs.length; i++) {
+			defaultTab = defaultTabs[i];
 			if (!exclusionLookup[defaultTab.label]) {
-				var tab = $.extend({}, defaultTab);
-				tab.components = Arrays.filter(tab.components, isNotExcluded);
-				if (tab.components.length) {
+				components = Trees.postprune(defaultTab.components, pruneDefaultComponents);
+				if (components) {
+					tab = $.extend({}, defaultTab);
+					tab.components = components;
 					tabs.push(tab);
 				}
 			}
@@ -151,19 +145,39 @@ define(['jquery', 'util/arrays', 'util/maps'], function($, Arrays, Maps){
 		return tabs;
 	}
 
-	/*
-	var x = combineToolbarConfig(
-		[{label: "not-modified" , components: ["1", "2", "3"]},
-		 {label: "one-added"    , components: ["4", "5", "6"]}], 
-		[{label: "one-added"    , components: ["4", "added", "6", "ignored"]},
-		 {label: "one-remains  ", components: ["2", "3", "remains"]},
-		 {label: "empty"        , components: ["1", "5"]}],
-		["ignored"]
-	);
-	assertEqual(x, [{label: "not-modified" , components: ["1", "2", "3"]},
-	                {label: "one-added"    , components: ["4", "5", "6", "added"]},
-					{label: "one-remains"  , components: ["remains"]}]);
-	*/
+	function mergeDefaultComponents(userTabs, defaultComponentsByTabLabel, pruneDefaultComponents) {
+		var i,
+            tab,
+		    tabs = [],
+		    userTab,
+		    components,
+		    defaultComponents;
+		for (i = 0; i < userTabs.length; i++) {
+			userTab = userTabs[i];
+			components = userTab.components;
+			defaultComponents = defaultComponentsByTabLabel[userTab.label];
+			if (defaultComponents) {
+				defaultComponents = Trees.postprune(defaultComponents, pruneDefaultComponents);
+				if (defaultComponents) {
+					components = components.concat(defaultComponents);
+				}
+			}
+			tab = $.extend({}, userTab);
+			tab.components = components;
+			tabs.push(tab);
+		}
+		return tabs;
+	}
+
+	function makeExclusionMap(userTabs, exclude) {
+		var i,
+		    map = Maps.fillKeys({}, exclude, true);
+		for (i = 0; i < userTabs.length; i++) {
+			map[userTabs[i].label] = true;
+			Maps.fillKeys(map, Trees.flatten(userTabs[i].components), true);
+		}
+		return map;
+	}
 
 	return {
 		defaultToolbarSettings: defaultToolbarSettings,

@@ -57,7 +57,6 @@ define([
 			    i, key;
 
 			this._super(context);
-
 			this.$element = $('<div>', {'class': 'aloha-ui-toolbar', 'unselectable': 'on'});
 			this.$_container = Tab.createContainer().appendTo(this.$element);
 			this._tabBySlot = {};
