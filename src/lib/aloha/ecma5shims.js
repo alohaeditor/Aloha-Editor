@@ -157,7 +157,7 @@ define([], function(){
         return obj.hasAttribute(attr); 
       }
       else {
-        return (typeof obj.attributes[attr] != "undefined")
+        return !!obj.getAttribute(attr);
       }         
     }
 
