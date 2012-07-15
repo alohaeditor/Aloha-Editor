@@ -6,7 +6,7 @@
 */
 
 define('highlighteditables/highlighteditables-plugin',
-['aloha', 'jquery', 'aloha/plugin', 'css!highlighteditables/css/highlighteditables.css'],
+['aloha', 'jquery', 'aloha/plugin'],
 function(Aloha, jQuery, Plugin) {
 	"use strict";
 

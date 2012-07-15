@@ -26,10 +26,7 @@ define([
 	'i18n!image/nls/i18n',
 	'jqueryui',
 	'image/vendor/jcrop/jquery.jcrop.min',
-	'image/vendor/mousewheel/mousewheel',
-	// css
-	'css!image/css/image.css',
-	'css!image/vendor/jcrop/jquery.jcrop.css'
+	'image/vendor/mousewheel/mousewheel'
 ], function AlohaImagePlugin(
 	aQuery,
 	Plugin,
