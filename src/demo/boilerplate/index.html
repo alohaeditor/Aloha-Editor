@@ -54,19 +54,15 @@
 		It can also be placed inline here before loading Aloha Editor itself.
 	-->
 	<script src="js/aloha-config.js"></script>
-
+	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
+	<script src="../../lib/require.js"></script>
     <script>
-    Aloha.settings.toolbar = {
-        tabs: [],
-        excludes: []
-    };
+		Aloha.settings.jQuery = $;
     </script>
 	<!--
 		Load the Aloha Editor library.
 		The plugin list could also be added to the configuration.
 	-->
-	<!-- script src="../../lib/vendor/jquery-1.7.2.js"></script -->
-	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js"
 	        data-aloha-plugins="common/ui,
 	                            common/format,
