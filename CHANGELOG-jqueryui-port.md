@@ -1,3 +1,18 @@
+- **CLEANUP**: baseUrl and data-aloha-plugins attribute detection changed slightly
+
+      The exact rules are as follows:
+
+	  If Aloha.settings.baseUrl is not specified, it will be taken from
+	  the first script element that has a data-aloha-plugins attribute,
+	  or, if there is no such script element, the first script element
+	  of which the src attribute matches /\/aloha.js$/.
+	 
+	  If Aloha.settings.plugins.load is not specified, it will be taken
+	  from the data-aloha-plugins attribute of the first script
+	  element carrying this attribute.
+
+- **MANUAL CHANGE**: The Aloha.requirePaths property has been removed.
+
 - **MANUAL CHANGE**: The jquery.store dependency has been removed
                      The jquery.store dependency was used for persisting the floating menu position and pinned state.
                      The functionality provided by jquery.store has been replaced with amplify.store.
