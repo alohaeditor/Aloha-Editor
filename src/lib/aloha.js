@@ -90,8 +90,6 @@
 		baseUrl: baseUrl
 	};
 
-	// Aside from requirejs, jquery and jqueryui are the only external
-	// dependencies that Aloha must have provided to it.
 	var defaultPaths = {
 		jquery: 'vendor/jquery-1.7.2',
 		jqueryui: 'vendor/jquery-ui-1.9m6'
@@ -117,8 +115,6 @@
 	// the user passes into Aloha via require() calls.
 	var predefinedModules = Aloha.settings.predefinedModules || {};
 
-	// jQuery is treated specially in that, if it is available we will add it
-	// to the predefiedModules list as "jquery."
 	if (Aloha.settings.jQuery) {
 		predefinedModules.jquery = Aloha.settings.jQuery;
 	}
