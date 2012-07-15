@@ -72,11 +72,11 @@
  * How this works:
  * For example, a ui module "uiModule" would not be exposed through
  * `Aloha.ui.uiModule` but from require's `define` call:
-
+ *
  *		define([ 'ui/uiModule' ], function( uiModule ) {});
-
+ *
  * or
-
+ *
  *		var uiModule = Aloha.require( 'ui/uiModule' );
  * 
  * This will force more deliberate and precise usage of dependencies.  The
@@ -86,7 +86,7 @@
  * error that will emerge unexpectedly if that require is ever removed.
  */
 
-define([
+define('ui/ui', [
 	'jquery',
 	'ui/ui-plugin'
 ],
