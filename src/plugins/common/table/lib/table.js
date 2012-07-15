@@ -927,7 +927,6 @@ define([
 		    rows = this.getRows(),
 			that = this,
 			changeColspan = [],
-			focusColID,
 			cells,
 			cellInfo;
 		
@@ -949,12 +948,6 @@ define([
 		} else {
 			
 			colIDs.sort(function(a,b) {return a - b;} );
-			
-// TODO check which cell should be focused after the deletion
-//			focusColID = colIDs[0];
-//			if ( focusColID > (this.numCols - colIDs.length) ) {
-//				focusColID --;
-//			}
 
 			//TODO there is a bug that that occurs if a column is
 			//selected and deleted, and then a column with a greater
@@ -993,7 +986,7 @@ define([
 
 			// IE needs a timeout to work properly
 			window.setTimeout( function() {
-				var lastCell = jQuery( rows[1].cells[ focusColID +1 ] );
+				var lastCell = jQuery( rows[1].cells[1] );
 				lastCell.focus();
 			}, 5);
 

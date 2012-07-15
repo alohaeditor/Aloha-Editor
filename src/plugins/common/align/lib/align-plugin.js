@@ -12,7 +12,7 @@ define([
 	'i18n!align/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'jquery',
-	'css!align/css/align.css',
+	'css!align/css/align.css'
 ], function(
 	Aloha,
     Plugin,

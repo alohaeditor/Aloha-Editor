@@ -203,16 +203,16 @@ define([
 					return e !== '';
 				}
 			);
-			var i = 0, char;
+			var i = 0, chr;
 			var $row;
 			// remove existing rows
 			self.$tbody.find('tr').remove();
-			while ((char = characterList[i])) {
+			while ((chr = characterList[i])) {
 				// make a new row every 15 characters
 				if (((i % 15) === 0)) {
 					$row = addRow();
 				}
-				mkButton(char).appendTo($row);
+				mkButton(chr).appendTo($row);
 				i++;
 			}
 		}
