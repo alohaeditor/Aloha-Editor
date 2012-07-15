@@ -325,7 +325,6 @@
 				'aloha/editable',
 				'aloha/console',
 				'aloha/markup',
-				'aloha/message',
 				'aloha/plugin',
 				'aloha/selection',
 				'aloha/command',
