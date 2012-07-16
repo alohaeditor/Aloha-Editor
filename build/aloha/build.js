@@ -140,7 +140,7 @@
     //does not use require() in the built project or in the JS files, but you
     //still want to use the optimization tool from RequireJS to concatenate modules
     //together.
-    skipModuleInsertion: true,
+    skipModuleInsertion: false,
 
     //If it is not a one file optimization, scan through all .js files in the
     //output directory for any plugin resource dependencies, and if the plugin
