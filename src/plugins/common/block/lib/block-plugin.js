@@ -20,8 +20,7 @@ define([
 	'block/editormanager',
 	'block/blockcontenthandler',
 	'block/editor',
-	'jqueryui',
-	'css!block/css/block.css'
+	'jqueryui'
 ], function(Aloha, Plugin, jQuery, ContentHandlerManager, BlockManager, SidebarAttributeEditor, block, EditorManager, BlockContentHandler, editor) {
 	"use strict";
 	/**

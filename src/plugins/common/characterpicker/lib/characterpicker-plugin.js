@@ -13,8 +13,7 @@ define([
 	'ui/ui', 
 	'ui/button',
 	'i18n!characterpicker/nls/i18n', 
-	'i18n!aloha/nls/i18n', 
-	'css!characterpicker/css/characterpicker.css'
+	'i18n!aloha/nls/i18n'
 ], function(Aloha,
             jQuery,
 			Plugin,

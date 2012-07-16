@@ -29,7 +29,6 @@ define( [
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
-	'css!link/css/link.css',
 	'link/../extra/linklist'
 ], function (
 	Aloha,

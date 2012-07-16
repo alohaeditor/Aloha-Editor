@@ -11,8 +11,7 @@ define([
 	'ui/toggleButton',
 	'i18n!align/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'jquery',
-	'css!align/css/align.css'
+	'jquery'
 ], function(
 	Aloha,
     Plugin,

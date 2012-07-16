@@ -20,8 +20,7 @@ define([
 	'i18n!aloha/nls/i18n',
 	'table/table-create-layer',
 	'table/table',
-	'table/table-plugin-utils',
-	'css!table/css/table.css'
+	'table/table-plugin-utils'
 ], function(
 	Aloha,
 	jQuery,

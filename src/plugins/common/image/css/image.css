@@ -122,3 +122,5 @@
 }
 .aloha-image-box-active .ui-resizable-handle.ui-resizable-sw {
 }
+
+@import	"../vendor/jcrop/jquery.jcrop.css";

@@ -7,7 +7,7 @@
  * Version: 1.2.1
  * Build date: 8 October 2011
  */
-define( 'aloha/rangy-core', [], function(){} );
+define('aloha/rangy-core', [], function() {
 var rangy = (function() {
 
 
@@ -3240,4 +3240,9 @@ rangy.createModule("DomUtil", function(api, module) {
         }
         win = null;
     });
+});
+
+// TODO we should avoid populating the global namespace
+window.rangy = rangy;
+return rangy;
 });

@@ -23,12 +23,10 @@ GENTICS.Utils = GENTICS.Utils || {};
 
 define(
 ['jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
-function(jQuery, Dom, Class, console) {
+function(jQuery, Dom, Class, console, rangy) {
 	"use strict";
 
-	var
-		GENTICS = window.GENTICS,
-		rangy = window.rangy;
+	var GENTICS = window.GENTICS;
 
 /**
  * @namespace GENTICS.Utils

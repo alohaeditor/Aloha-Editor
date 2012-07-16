@@ -4,7 +4,7 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-define([
+define('ui/ui-plugin', [
 	'jquery',
 	'aloha',
 	'ui/context',

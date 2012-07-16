@@ -21,8 +21,8 @@
     //http: URL when running in the browser and during an optimization that
     //file should be skipped because it has no dependencies.
     paths: {
-	"jquery": 'vendor/no-jquery',
-    	//"jquery": 'vendor/jquery-1.7.2',
+	"jquery": 'empty:',
+	//"jquery": 'vendor/jquery-1.7.2',
 	"jqueryui": 'vendor/jquery-ui-1.9m6'
     },
 //    paths: {

@@ -11,8 +11,7 @@ define([
 	'ui/ui',
 	'ui/button',
 	'i18n!horizontalruler/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!horizontalruler/css/horizontalruler.css'
+	'i18n!aloha/nls/i18n'
 ], function(Aloha,
             jQuery,
 			Plugin,
