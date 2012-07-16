@@ -223,7 +223,11 @@ define([
 			Toolbar.$surfaceContainer = $('<div>', {
 				'class': 'aloha aloha-surface aloha-toolbar',
 				'unselectable': 'on'
-			}).hide().appendTo('body');
+			}).hide();
+
+			// In the built aloha.js, init will happend before the body has
+			// finished loading, so we have to defer appending the element.
+			$(function(){ Toolbar.$surfaceContainer.appendTo('body'); });
 
 			Surface.trackRange(Toolbar.$surfaceContainer);
 
