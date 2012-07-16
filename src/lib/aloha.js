@@ -185,6 +185,13 @@
 	}
 
 	global.Aloha = global.Aloha || {};
+	if (global.Aloha.deferInit) {
+		global.Aloha.deferInit = load;
+	} else {
+		load();
+	}
+	function load() {
+
 	Aloha.defaults = {};
 	Aloha.settings = Aloha.settings || {};
 
@@ -360,4 +367,5 @@
 	Aloha.stage = 'loadingAloha';
 	require(requireConfig, ['aloha'], function () {});
 
+	} // end load()
 }(window));
