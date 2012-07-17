@@ -1,3 +1,8 @@
+/**
+ * Captioned Images provides an Aloha block implementation a means to work with
+ * images that have captions, such that an image with is corresponding caption
+ * can be position, and aligned together in an editable.
+ */
 define([
 	'jquery',
 	'aloha/core',
@@ -22,8 +27,7 @@ define([
 			text-align: center;\
 			margin: 0 1em 1em;\
 		}\
-		.aloha-captioned-image-float-right {\
-			margin-right: 0;\
+		.aloha-captioned-image-float-right {\ margin-right: 0;\
 		}\
 		.aloha-captioned-image-float-left {\
 			margin-left: 0;\
@@ -71,6 +75,13 @@ define([
 		}
 	}));
 
+	function showComponents() {
+		var j = components.length;
+		while (j) {
+			components[--j].foreground();
+		}
+	}
+
 	var render = Aloha.settings &&
 	             Aloha.settings.plugins &&
 	             Aloha.settings.plugins.captionedImage &&
@@ -107,14 +118,7 @@ define([
 		return $editable.find('.aloha-captioned-image');
 	}
 
-	function showComponents() {
-		var j = components.length;
-		while (j) {
-			components[--j].foreground();
-		}
-	}
-
-	function initImageBlocksInEditable($editable) {
+	function initializeImageBlocks($editable) {
 		var $all = findBlocks($editable);
 		var $blocks = $();
 		var j = $all.length;
@@ -149,10 +153,11 @@ define([
 				$element.html(data.content);
 				that.$_image = $element.find(data.image);
 				that.$_caption = $element.find(data.caption).addClass('aloha-editable');
+				$element.css('width', that.$_image.width());
 				that.$_image.load(function () {
 					$element.css('width', that.$_image.width());
 				});
-				that._updateElementFloating(that.attr('position') || 'none');
+				that._updateFloating(that.attr('position') || 'none');
 				postProcessCallback();
 			});
 		},
@@ -160,7 +165,7 @@ define([
 			this._renderAttributes();
 			postProcessCallback();
 		},
-		_updateElementFloating: function (floating) {
+		_updateFloating: function (floating) {
 			this.$element.css('float', floating);
 			if ('left' === floating) {
 				this.$element
@@ -177,9 +182,13 @@ define([
 			}
 		},
 		_renderAttributes: function () {
-			this.$_image.attr('src', this.attr('source'));
+			this.$_image
+			    .attr('src', this.attr('source'))
+			    .attr('alt', this.attr('alt'))
+			    .attr('width', this.attr('width'))
+			    .attr('height', this.attr('height'));
 			this.$_caption.html(this.attr('caption'));
-			this._updateElementFloating(this.attr('position') || 'none');
+			this._updateFloating(this.attr('position') || 'none');
 		}
 	});
 
@@ -188,10 +197,10 @@ define([
 			BlockManager.registerBlockType('CaptionedImageBlock', CaptionedImageBlock);
 			var j = Aloha.editables.length;
 			while (j) {
-				initImageBlocksInEditable(Aloha.editables[--j].obj);
+				initializeImageBlocks(Aloha.editables[--j].obj);
 			}
 			Aloha.bind('aloha-editable-created', function ($event, editable) {
-				initImageBlocksInEditable(editable.obj);
+				initializeImageBlocks(editable.obj);
 				editable.obj.delegate('div.aloha-captioned-image', 'click',
 					showComponents);
 			});
