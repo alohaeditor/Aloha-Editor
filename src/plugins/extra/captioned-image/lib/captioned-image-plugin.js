@@ -33,7 +33,9 @@ define([
 		tooltip: 'Float image to left',
 		text: 'Float left',
 		click: function () {
-			debugger;
+			if (BlockManager) {
+				BlockManager._activeBlock.attr('position', 'left');
+			}
 		}
 	}));
 
@@ -41,15 +43,19 @@ define([
 		tooltip: 'Float image to right',
 		text: 'Float right',
 		click: function () {
-			debugger;
+			if (BlockManager) {
+				BlockManager._activeBlock.attr('position', 'right');
+			}
 		}
 	}));
 
 	components.push(Ui.adopt('imgFloatClear', Button, {
 		tooltip: 'Float image to clear',
-		text: 'Float clear',
+		text: 'No floating',
 		click: function () {
-			debugger;
+			if (BlockManager) {
+				BlockManager._activeBlock.attr('position', 'none');
+			}
 		}
 	}));
 
@@ -93,6 +99,7 @@ define([
 		_renderAttributes: function () {
 			this.$_image.attr('src', this.attr('source'));
 			this.$_caption.html(this.attr('caption'));
+			this.$element.css('float', this.attr('position') || 'none');
 		}
 	});
 
