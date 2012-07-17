@@ -56,9 +56,10 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				1
 			);
 
-			// We need to bind to selection-changed event to recognize backspace and delete interactions
-			Aloha.bind('aloha-selection-changed', function (event) {
-				if (that.numeratedHeadersButton && that.showNumbers()) {
+			// We need to bind to selection-changed event to recognize
+			// backspace and delete interactions.
+			Aloha.bind('aloha-smart-content-changed', function (event) {
+				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
 				}
 			});
