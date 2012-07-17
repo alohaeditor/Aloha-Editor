@@ -188,6 +188,13 @@ define( [
 		
 	};
 	
+	/**
+	 * The last calculated view port height.
+	 * @type {number}
+	 */
+	var previousViewportHeight = null;
+	var previousActivePanelIds = null;
+	
 	// ------------------------------------------------------------------------
 	// Sidebar prototype
 	// All properties to be shared across Sidebar instances can be placed in
@@ -239,7 +246,6 @@ define( [
 			});
 			
 			this.updateHeight();
-			this.roundCorners();
 			this.initToggler();
 			
 			this.container.css(this.position == 'right' ? 'marginRight' : 'marginLeft', -this.width);
@@ -331,19 +337,27 @@ define( [
 		 * share that space.
 		 */
 		correctHeight: function () {
-			var height = this.container.find(nsSel('inner')).height() - (15 * 2);
-			var panels = [];
-			
-			jQuery.each(this.panels, function () {
-				if (this.isActive) {
-					panels.push(this);
-				}
-			});
-			
-			if (panels.length == 0) {
+			if (!this.isOpen) {
 				return;
 			}
 			
+			var viewportHeight = $(window).height();
+			var activePanelIds = [];
+			var panels = [];
+			var panelId;
+			for (panelId in this.panels) if (this.panels.hasOwnProperty(panelId)) {
+				if (this.panels[panelId].isActive) {
+					panels.push(this.panels[panelId]);
+					activePanelIds.push(panelId);
+				}
+			}
+			
+			if (0 === panels.length) {
+				return;
+			}
+			
+			var PADDING = 15;
+			var height = this.container.find('.aloha-sidebar-inner').height() - (PADDING * 2);
 			var remainingHeight = height - ((panels[0].title.outerHeight() + 10) * panels.length);
 			var panel;
 			var targetHeight;
@@ -741,8 +755,6 @@ define( [
 				panel.activate(element);
 			}
 			
-			this.roundCorners();
-			
 			return this;
 		},
 		
@@ -813,10 +825,6 @@ define( [
 			this.panels[panel.id] = panel;
 			
 			this.container.find(nsSel('panels')).append(panel.element);
-			
-			if (deferRounding !== true) {
-				this.roundCorners();
-			}
 			this.checkActivePanels(Selection.getRangeObject());
 			return panel;
 		}
@@ -949,6 +957,9 @@ define( [
 		 * Activates (displays) this panel
 		 */
 		activate: function (effective) {
+			if (this.isActive) {
+				return;
+			}
 			this.isActive = true;
 			this.content.parent('li').show().removeClass(nsClass('deactivated'));
 			this.effectiveElement = effective;
@@ -961,6 +972,9 @@ define( [
 		 * Hides this panel
 		 */
 		deactivate: function () {
+			if (!this.isActive) {
+				return;
+			}
 			this.isActive = false;
 			this.content.parent('li').hide().addClass(nsClass('deactivated'));
 			this.effectiveElement = null;
