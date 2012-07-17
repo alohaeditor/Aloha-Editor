@@ -19,11 +19,20 @@ define([
 
 	$('<style type="text/css">').text('\
 		.aloha-captioned-image {\
-			background: whiteSmoke;\
+			margin: 0 1em 1em;\
+		}\
+		.aloha-captioned-image-float-right {\
+			margin-right: 0;\
+		}\
+		.aloha-captioned-image-float-left {\
+			margin-left: 0;\
 		}\
 		.aloha-captioned-image-caption {\
-			padding: 1em;\
-			font-size: 0.8em;\
+			padding: 0.5em;\
+			font-size: 0.9em;\
+			background: rgba(0,0,0,0.8);\
+			font-family: Arial;\
+			color: #fff;\
 		}\
 	').appendTo('head:first');
 
@@ -99,7 +108,21 @@ define([
 		_renderAttributes: function () {
 			this.$_image.attr('src', this.attr('source'));
 			this.$_caption.html(this.attr('caption'));
-			this.$element.css('float', this.attr('position') || 'none');
+			var floating = this.attr('position') || 'none';
+			this.$element.css('float', floating);
+			if ('left' === floating) {
+				this.$element
+				    .removeClass('aloha-captioned-image-float-right')
+				    .addClass('aloha-captioned-image-float-left');
+			} else if ('right' === floating) {
+				this.$element
+				    .removeClass('aloha-captioned-image-float-left')
+				    .addClass('aloha-captioned-image-float-right');
+			} else {
+				this.$element
+				    .removeClass('aloha-captioned-image-float-left')
+				    .removeClass('aloha-captioned-image-float-right');
+			}
 		}
 	});
 
