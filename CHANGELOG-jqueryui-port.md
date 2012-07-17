@@ -218,3 +218,11 @@
                      dependency on these files.
 
 - **BUG**: cite-plugin: Fixed a javascript error when the cite plugin had no explicit sidebar configuration.
+
+- **ENHANCEMENT**:  It's now possible to deactivate the transformFormattings method
+                    in the genericcontenthandler with the following setting:
+                    
+                    Aloha.settings.contentHandler.handler.generic.transformFormattings = false
+                    
+                    By default the transformFormattings method is enabled.
+
