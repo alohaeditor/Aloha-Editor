@@ -59,7 +59,19 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			this.removeNamespacedElements(content);
 
 			// transform formattings
-			this.transformFormattings(content);
+			var transformFormattingsEnabled = true;
+			if ( Aloha.settings 
+				&& Aloha.settings.contentHandler
+				&& Aloha.settings.contentHandler.handler
+				&& Aloha.settings.contentHandler.handler.generic
+				&& typeof Aloha.settings.contentHandler.handler.generic.transformFormattings !== 'undefinded'
+				&& !Aloha.settings.contentHandler.handler.generic.transformFormattings ) {
+					transformFormattingsEnabled = false;
+			}
+
+			if ( transformFormattingsEnabled === true ) {
+			    this.transformFormattings(content);
+			}
 
 			// transform links
 			//this.transformLinks(content);
@@ -123,6 +135,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 */
 		transformFormattings: function( content ) {
 			// find all formattings we will transform
+			// @todo this makes troubles -- don't change semantics! at least in this way...
 			content.find('strong,em,s,u,strike').each(function() {
 				if (this.nodeName === 'STRONG') {
 					// transform strong to b
