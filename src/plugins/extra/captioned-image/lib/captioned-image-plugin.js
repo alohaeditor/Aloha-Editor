@@ -91,7 +91,7 @@ define([
 				'<div>' +
 					'<img src="' + properties.src + '" ' +
 					     'alt="' + properties.alt + '"/>' +
-					'<div class="caption">' + properties.caption + '</div>' +
+					'<div class="caption">' +  (properties.caption || '') + '</div>' +
 				'</div>'
 			);
 
@@ -113,12 +113,37 @@ define([
 		}
 	}
 
-	function findBlocks($editable) {
+	function wrapNakedCaptionedImages($editable) {
+		var $imgs = $editable.find('img.aloha-captioned-image');
+		var j = $imgs.length;
+		var $img;
+
+		while (j) {
+			var $img = $imgs.eq(--j);
+
+			var $block = $img.removeClass('aloha-captioned-image')
+							 .wrap('<div class="aloha-captioned-image">')
+							 .parent();
+
+			$block.attr('data-source', $img.attr('src'));
+			$block.attr('data-alt', $img.attr('alt'));
+			$block.attr('data-width', $img.attr('width'));
+			$block.attr('data-height', $img.attr('height'));
+			$block.attr('data-caption', $img.attr('data-caption'));
+
+			$img.attr('width', '')
+			    .attr('height', '')
+				.attr('data-caption', '');
+		}
+	}
+
+	function findCaptionedImages($editable) {
 		return $editable.find('.aloha-captioned-image');
 	}
 
 	function initializeImageBlocks($editable) {
-		var $all = findBlocks($editable);
+		wrapNakedCaptionedImages($editable);
+		var $all = findCaptionedImages($editable);
 		var $blocks = $();
 		var j = $all.length;
 		while (j) {
