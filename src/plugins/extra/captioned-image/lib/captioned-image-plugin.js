@@ -3,79 +3,123 @@ define([
 	'aloha/core',
 	'aloha/plugin',
 	'block/block',
-	'block/blockmanager'
+	'block/blockmanager',
+	'ui/ui',
+	'ui/button'
 ], function (
 	$,
 	Aloha,
 	Plugin,
 	Block,
-	BlockManager
+	BlockManager,
+	Ui,
+	Button
 ) {
 	'use strict';
 
-	var alohaTempAttributes = ['data-aloha-captioned-image-id'];
-	var idCounter = 0;
-
 	$('<style type="text/css">').text('\
 		.aloha-captioned-image {\
-			background: yellow !important;\
+			background: whiteSmoke;\
+		}\
+		.aloha-captioned-image-caption {\
+			padding: 1em;\
+			font-size: 0.8em;\
 		}\
 	').appendTo('head:first');
 
-	function findImages ($editable) {
-		return $editable.find('img');
-	}
+	var components = [];
 
-	function isImageInitialized($img) {
-		return !!$img.attr('data-aloha-captioned-image-id');
-	}
-
-	function onEditableActivated (event, data) {
-		var $imgs = findImages(data.editable.obj);
-		var j = $imgs.length;
-		var $blocks = $();
-		while (j) {
-			if (!isImageInitialized($imgs.eq(--j))) {
-				$imgs.eq(j).wrap('<div class="aloha-captioned-image">');
-				$blocks = $blocks.add($imgs.eq(j).parent());
-			}
+	components.push(Ui.adopt('imgFloatLeft', Button, {
+		tooltip: 'Float image to left',
+		text: 'Float left',
+		click: function () {
+			debugger;
 		}
-		$blocks.alohaBlock({
+	}));
+
+	components.push(Ui.adopt('imgFloatRight', Button, {
+		tooltip: 'Float image to right',
+		text: 'Float right',
+		click: function () {
+			debugger;
+		}
+	}));
+
+	components.push(Ui.adopt('imgFloatClear', Button, {
+		tooltip: 'Float image to clear',
+		text: 'Float clear',
+		click: function () {
+			debugger;
+		}
+	}));
+
+	function findBlocks($editable) {
+		return $editable.find('.aloha-captioned-image');
+	}
+
+	function showComponents() {
+		var j = components.length;
+		while (j) {
+			components[--j].foreground();
+		}
+	}
+
+	function initImageBlocksInEditable($editable) {
+		findBlocks($editable).alohaBlock({
 			'aloha-block-type': 'CaptionedImageBlock'
 		});
 	}
 
 	var CaptionedImageBlock = Block.AbstractBlock.extend({
-
 		title: 'Captioned Image',
-
-		isInitialized: false,
-
+		$_image: $('<img>'),
+		$_caption: $('<div class="aloha-captioned-image-caption aloha-editable">'),
 		init: function ($element, postProcessCallback) {
-			if (this.isInitialized) {
+			if (this._initialized) {
 				return;
 			}
-			this.isInitialized = true;
-			var $img = $element.find('>img:first').attr('data-aloha-captioned-image-id',
-				++idCounter);
-			var $caption = $('<div class="aloha-captioned-image-caption aloha-editable">');
-			$caption.html($img.attr('data-aloha-image-caption'));
-			$element.append($caption).css('width', $img.width());
-
+			var $img = this.$_image;
+			$img.load(function () {
+				$element.css('width', $img.width());
+			});
+			$element.append(this.$_image).append(this.$_caption);
+			this._renderAttributes();
 			postProcessCallback();
+		},
+		update: function ($element, postProcessCallback) {
+			this._renderAttributes();
+			postProcessCallback();
+		},
+		_renderAttributes: function () {
+			this.$_image.attr('src', this.attr('source'));
+			this.$_caption.html(this.attr('caption'));
 		}
-
 	});
 
 	var CaptionedImage = Plugin.create('captioned-image', {
 		init: function () {
 			BlockManager.registerBlockType('CaptionedImageBlock', CaptionedImageBlock);
-			Aloha.bind('aloha-editable-activated', onEditableActivated);
+			var j = Aloha.editables.length;
+			while (j) {
+				initImageBlocksInEditable(Aloha.editables[--j].obj);
+			}
+			Aloha.bind('aloha-editable-created', function ($event, editable) {
+				initImageBlocksInEditable(editable.obj);
+				editable.obj.delegate('div.aloha-captioned-image', 'click',
+					showComponents);
+			});
+			Aloha.bind('aloha-editable-destroy', function ($event, editable) {
+				editable.obj.undelegate('div.aloha-captioned-image', 'click',
+					showComponents);
+			});
+		},
+
+		makeClean: function ($content) {
+			return $content;
 		}
 	});
 
 	CaptionedImage.blockType = CaptionedImageBlock;
-
 
 	return CaptionedImage;
 });

@@ -23,12 +23,20 @@
     <script>
 		var Aloha = {
 			settings: {
-				jQuery: $
+				jQuery: $,
+				toolbar: {
+					tabs: [{
+						label: 'Captioned Image',
+						showOn: { scope: 'Aloha.captionedimage' },
+						components: [ 'imgFloatLeft', 'imgFloatRight', 'imgFloatClear' ]
+					}]
+				}
 			}
 		};
     </script>
 	<script src="../../lib/aloha.js"
 	        data-aloha-plugins="common/ui,
+	                            common/format,
 	                            common/block,
 	                            extra/captioned-image"></script>
 </head>
@@ -37,16 +45,15 @@
 			<p>
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris convallis nisl eu mi posuere et congue metus posuere. Etiam sodales tristique urna, malesuada accumsan erat laoreet vel. Aliquam tincidunt porttitor mi, faucibus molestie mauris vestibulum ac. Fusce sollicitudin, nibh nec iaculis egestas, ligula tellus iaculis augue, quis faucibus nisl libero ac nulla. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nunc pulvinar luctus eros, ut laoreet enim aliquam vel. Vestibulum molestie velit volutpat magna molestie non condimentum metus tincidunt. Curabitur imperdiet lacus eget est hendrerit in aliquam elit hendrerit. Nullam porttitor urna ac ante volutpat feugiat semper quam volutpat. Donec auctor odio ut dui lobortis euismod imperdiet purus pellentesque. Quisque lacinia sem ac lacus commodo eu congue nisl porttitor. Aenean et velit quis urna porttitor dignissim consequat eu lectus. Nam interdum elit a lacus blandit porttitor. Integer id libero sed lectus tempus pulvinar ac sit amet lacus. Curabitur lobortis magna a est ultrices sagittis non eget nibh. In lobortis arcu odio.
 			</p>
-			<img src="http://www.aloha-editor.org/images/aloha-editor-logo.png"
-			     alt=""
-				 data-aloha-image-caption="Praesent commodo molestie adipiscing. Mauris
+			<div class="aloha-captioned-image"
+			     data-source="http://www.aloha-editor.org/images/aloha-editor-logo.png"
+				 data-caption="Praesent commodo molestie adipiscing. Mauris
 				 lorem justo, tincidunt eget iaculis et, fermentum nec odio. Ut
 				 pulvinar tristique quam, ut congue diam accumsan eleifend.
 				 Nulla sagittis tincidunt lacus, sit amet condimentum nibh
 				 ornare quis. Nulla ac nibh eu nunc rhoncus consectetur nec et
 				 velit. Cras nec dolor non felis placerat lobortis ut vitae
-				 ante. Curabitur at lectus non sem ultricies dictum."
-				/>
+				 ante. Curabitur at lectus non sem ultricies dictum."></div>
 			<p>
 			Praesent commodo molestie adipiscing. Mauris lorem justo, tincidunt eget iaculis et, fermentum nec odio. Ut pulvinar tristique quam, ut congue diam accumsan eleifend. Nulla sagittis tincidunt lacus, sit amet condimentum nibh ornare quis. Nulla ac nibh eu nunc rhoncus consectetur nec et velit. Cras nec dolor non felis placerat lobortis ut vitae ante. Curabitur at lectus non sem ultricies dictum.
 			</p>
