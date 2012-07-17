@@ -11,8 +11,7 @@ define([
 	'ui/ui',
 	'ui/toggleButton',
 	'i18n!numerated-headers/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!numerated-headers/css/numerated-headers.css'
+	'i18n!aloha/nls/i18n'
 ], function (
 	Aloha,
 	$,

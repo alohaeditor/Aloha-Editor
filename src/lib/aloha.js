@@ -320,9 +320,7 @@
 
 	// TODO this hierarchical chain of require calls should not really
 	//      be necessary if each file properly specifies its dependencies.
-	define('aloha', [
-
-], function() {
+	define('aloha', [], function() {
 
 		require(requireConfig, [
 			'jquery',

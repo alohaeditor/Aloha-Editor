@@ -1,3 +1,7 @@
+- **MANUAL CHANGE**: Most plugins don't load their css files through require any more
+      Before this change, plugins loaded the necessary css automatically.
+      Now, it is necessary to include aloha/css/aloha.css to get the css that is necessary to make plugins work.
+
 - **CLEANUP**: baseUrl and data-aloha-plugins attribute detection changed slightly
 
       The exact rules are as follows:

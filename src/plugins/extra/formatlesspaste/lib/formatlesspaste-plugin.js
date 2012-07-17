@@ -14,8 +14,7 @@ define([
 	'formatlesspaste/formatlesshandler',
 	'aloha/contenthandlermanager',
 	'i18n!formatlesspaste/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!formatlesspaste/css/formatless.css'
+	'i18n!aloha/nls/i18n'
 ], function(Aloha,
             Plugin,
             jQuery,

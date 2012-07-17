@@ -1199,7 +1199,7 @@ Aloha.Markup = Class.extend( {
 	transformDomObject: function( domobj, nodeName, range ) {
 		// first create the new element
 		var jqOldObj = jQuery( domobj ),
-		    jqNewObj = jQuery( '<' + nodeName + '></' + nodeName + '>' ),
+		    jqNewObj = jQuery('<' + nodeName + '>'),
 		    i,
 		    attributes = jqOldObj[0].cloneNode(false).attributes;
 

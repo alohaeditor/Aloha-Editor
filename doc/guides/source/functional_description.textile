@@ -2,10 +2,88 @@ h2. Functional Description
 
 After reading this guide, you will
 
+* Know about browser specific issues with empty block level elements
 * Understand how Aloha Editor will handle paragraphs and line breaks
 * Contents will be deleted
 
 endprologue.
+
+h3. Empty Block Level Elements
+
+Generally, empty block level elements are not rendered by browsers. This will lead
+to some problems when it comes to +contenteditable+.
+
+h4. Problems while editing
+
+Suppose you start editing with the following HTML (where [] marks the current
+cursor position):
+<html>
+<p>First paragraph[]</p>
+</html>
+
+After hitting the +Enter+ key, you would expect to get
+<html>
+<p>First paragraph</p>
+<p>[]</p>
+</html>
+
+Visually, you should see two paragraphs now, the first one containing the words
+"First Paragraph", while the second should be empty (but consuming one line
+in height) with the cursor blinking in it. But, since most browsers will _not_ render
+empty paragraphs (even in +contenteditable+ areas), you would not properly see the
+second paragraph.
+
+To fix this situation, Aloha Editor will instead generate HTML like this
+(note the additional +<br>+s added):
+<html>
+<p>First paragraph<br class="aloha-end-br"/></p>
+<p>[]<br class="aloha-end-br"/></p>
+</html>
+
+Everything is fine now, the additional +<br>+s at the end of +<p>+s do not
+change the rendering of non-empty paragraphs, but make the empty ones appear.
+
+At least, everything would be fine, if there was no Internet Explorer.
+IE is the only browser, that renders even empty +<p>+, when found in +contenteditable+
+areas, and - even worse - would add additional empty lines if +<br>+s are found
+at the end of +<p>+s.
+
+h4. Main goal in Aloha Editor
+
+The main goals in Aloha Editor are
+* Identical editing experience across all browsers and platforms. Therefore, browser
+differences must be compensated by implementation wherever possible.
+* _What You See Is What You Get_: If an editor hits the +Enter+ key multiple times, and
+creates multiple empty paragraphs, that's exactly what the resulting HTML code should
+render. Therefore "empty" paragraphs must not be really empty, but need to contain at
+least a single +<br>+ in the resulting HTML code.
+
+h4. Implemented behaviour
+
+The current implementation of Aloha Editor regarding block level elements is like follows:
+
+When initializing an editable
+* remove all empty block level elements (since they are invisible anyway)
+* remove all +<br class="aloha-end-br"/>+ when using Internet Explorer (since they would
+add additional lines while editing)
+* add +<br class="aloha-end-br"/>+ to all +<li>+ elements, except for Internet Exporer
+
+While editing
+* For every operation, that might lead to an empty block level elements (hitting +ENTER+, deleting, ...),
+fix the empty block level element by appending a +<br class="aloha-end-br"/>+ (except for Internet Explorer).
+
+When getting the editable's content (e.g. for saving) with the _getContents()_ method
+* Make sure that every block level element contains a single +<br class="aloha-end-br"/>+ as
+last child.
+* Remove all +<br class="aloha-end-br"/>+ contained in +<li>+.
+
+The current implementation handles
+* +<p>+
+* +<h1>+ - +<h6>+
+* +<pre>+
+* +<blockquote>+
+
+Initialization and getContents behaviour is implemented in the "Blockelement Content Handler":plugin_contenthandler.html#blockelement-content-handler.
 
 h3. Paragraphs & Line Breaks
 
