@@ -1,7 +1,7 @@
 /**
- * Captioned Images provides an Aloha block implementation a means to work with
- * images that have captions, such that an image with is corresponding caption
- * can be position, and aligned together in an editable.
+ * Captioned Images provides an Aloha block implementation that allows the
+ * editor to work with images that have captions, such that an image with is
+ * corresponding caption can be position, and aligned together in an editable.
  */
 define([
 	'jquery',
