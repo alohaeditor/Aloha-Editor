@@ -34,11 +34,15 @@ define('format/format-plugin', [
 			'em': 'italic',
 			'del': 'strikethrough',
 			'sub': 'subscript',
-			'sup': 'superscript'
+			'sup': 'superscript',
+			'u': 'underline',
+			's': 'strikethrough'
 		},
+
 	    componentNameByElement = {
 			'strong': 'strong',
-			'em': 'emphasis'
+			'em': 'emphasis',
+			's': 'strikethrough2'
 		},
 	    textLevelSemantics = {
 			'u': true,
