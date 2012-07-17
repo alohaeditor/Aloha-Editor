@@ -4,16 +4,6 @@ define(
 function($_, jQuery) {
 	"use strict";
 
-function hasAttribute(obj, attr){
-	var native_method = obj.hasAttribute;  
-	if(native_method){
-		return obj.hasAttribute(attr); 
-	}
-	else {
-		return !!obj.getAttribute(attr);
-	}         
-}
-
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
 
 var cssStylingFlag = false;
@@ -46,7 +36,7 @@ function getStyleLength(node) {
 		// others don't, so we will count
 		var styleLength = 0;
 		for (var s in node.style) {
-			if (s !== "cssText" && node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
+			if (node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
 				styleLength++;
 			}
 		}
@@ -97,26 +87,6 @@ function nextNodeDescendants(node) {
 		return null;
 	}
 	return node.nextSibling;
-}
-
-// Note that we cannot use splitText() because it is bugridden in IE 9.
-// A workaround method as suggested in http://stackoverflow.com/questions/7378186/ie9-childnodes-not-updated-after-splittext
-function insertAfter(node, precedingNode) {
-    var nextNode = precedingNode.nextSibling, parent = precedingNode.parentNode;
-    if (nextNode) {
-        parent.insertBefore(node, nextNode);
-    } else {
-        parent.appendChild(node);
-    }
-    return node;
-}
-
-function splitDataNode(node, index) {
-    var newNode = node.cloneNode(false);
-    newNode.deleteData(0, index);
-    node.deleteData(index, node.length - index);
-    insertAfter(newNode, node);
-    return newNode;
 }
 
 /**
@@ -258,7 +228,7 @@ function getDirectionality(element) {
 	// "If the element is a root element and the dir attribute is not in a
 	// defined state (i.e. it is not present or has an invalid value)
 	//     The directionality of the element is 'ltr'."
-	if (!isAnyHtmlElement(element.parentNode)) {
+	if (!isHtmlElement(element.parentNode)) {
 		return "ltr";
 	}
 
@@ -330,11 +300,10 @@ function getPosition(nodeA, offsetA, nodeB, offsetB) {
 		}
 	}
 
-	var documentPosition = $_.compareDocumentPosition(nodeB, nodeA);
 	// "If node A is after node B in tree order, compute the position of (node
 	// B, offset B) relative to (node A, offset A). If it is before, return
 	// after. If it is after, return before."
-	if (documentPosition & $_.Node.DOCUMENT_POSITION_FOLLOWING) {
+	if ($_.compareDocumentPosition(nodeB, nodeA) & $_.Node.DOCUMENT_POSITION_FOLLOWING) {
 		var pos = getPosition(nodeB, offsetB, nodeA, offsetA);
 		if (pos == "before") {
 			return "after";
@@ -345,7 +314,7 @@ function getPosition(nodeA, offsetA, nodeB, offsetB) {
 	}
 
 	// "If node A is an ancestor of node B:"
-	if (documentPosition & $_.Node.DOCUMENT_POSITION_CONTAINS) {
+	if ($_.compareDocumentPosition(nodeB, nodeA) & $_.Node.DOCUMENT_POSITION_CONTAINS) {
 		// "Let child equal node B."
 		var child = nodeB;
 
@@ -382,14 +351,11 @@ function getFurthestAncestor(node) {
  */
 function isContained(node, range) {
 	var pos1 = getPosition(node, 0, range.startContainer, range.startOffset);
-	if (pos1 !== "after") {
-		return false;
-	}
 	var pos2 = getPosition(node, getNodeLength(node), range.endContainer, range.endOffset);
-	if (pos2 !== "before") {
-		return false;
-	}
-	return getFurthestAncestor(node) == getFurthestAncestor(range.startContainer);
+
+	return getFurthestAncestor(node) == getFurthestAncestor(range.startContainer)
+		&& pos1 == "after"
+		&& pos2 == "before";
 }
 
 /**
@@ -650,9 +616,9 @@ function myExecCommand(command, showUi, value, range) {
 		// argument."
 		commands[command].action(value, range);
 
-    // always fix the range after the command is complete
+		// always fix the range after the command is complete
 		setActiveRange(range);
-
+		
 		// "Return true."
 		return true;
 	}})(command, showUi, value));
@@ -669,7 +635,7 @@ function myQueryCommandEnabled(command, range) {
 		// Miscellaneous commands are always enabled. The other commands defined
 		// here are enabled if the active range is not null, and disabled
 		// otherwise."
-		return jQuery.inArray(command, ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"]) != -1
+		return $_( ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"] ).indexOf(command) != -1
 			|| range !== null;
 	}})(command));
 }
@@ -770,11 +736,8 @@ function myQueryCommandValue(command, range) {
 // "An HTML element is an Element whose namespace is the HTML namespace."
 //
 // I allow an extra argument to more easily check whether something is a
-// particular HTML element, like isNamedHtmlElement(node, 'OL').  It accepts arrays
-// too, like isHtmlElementInArray(node, ["OL", "UL"]) to check if it's an ol or ul.
-// TODO This function was prominent during profiling. Remove it function
-//      and replace with calls to isAnyHtmlElement, isNamedHtmlElement
-//      and is isMappedHtmlElement.
+// particular HTML element, like isHtmlElement(node, "OL").  It accepts arrays
+// too, like isHtmlElement(node, ["OL", "UL"]) to check if it's an ol or ul.
 function isHtmlElement(node, tags) {
 	if (typeof tags == "string") {
 		tags = [tags];
@@ -783,52 +746,9 @@ function isHtmlElement(node, tags) {
 		tags = $_( tags ).map(function(tag) { return tag.toUpperCase() });
 	}
 	return node
-		&& node.nodeType == 1
+		&& node.nodeType == $_.Node.ELEMENT_NODE
 		&& isHtmlNamespace(node.namespaceURI)
 		&& (typeof tags == "undefined" || $_( tags ).indexOf(node.tagName) != -1);
-}
-
-function isAnyHtmlElement(node) {
-	return node
-		&& node.nodeType == 1
-		&& isHtmlNamespace(node.namespaceURI);
-}
-
-// name should be uppercase
-function isNamedHtmlElement(node, name) {
-	return node
-		&& node.nodeType == 1
-		&& isHtmlNamespace(node.namespaceURI)
-	    // This function is passed in a mix of upper and lower case names
-		&& name.toUpperCase() === node.nodeName;
-}
-
-// TODO remove when isHtmlElementInArray is removed
-function arrayContainsInsensitive(array, str) {
-	var i, len;
-	str = str.toUpperCase();
-	for (i = 0, len = array.length; i < len; i++) {
-		if (array[i].toUpperCase() === str) {
-			return true;
-		}
-	}
-	return false;
-}
-// TODO replace calls to this function with calls to isMappedHtmlElement()
-function isHtmlElementInArray(node, array) {
-	return node
-		&& node.nodeType == 1
-		&& isHtmlNamespace(node.namespaceURI)
-	    // This function is passed in a mix of upper and lower case names
-		&& arrayContainsInsensitive(array, node.nodeName);
-}
-
-// map must have all-uppercase keys
-function isMappedHtmlElement(node, map) {
-	return node
-		&& node.nodeType == 1
-		&& isHtmlNamespace(node.namespaceURI)
-		&& map[node.nodeName];
 }
 
 // "A prohibited paragraph child name is "address", "article", "aside",
@@ -838,35 +758,27 @@ function isMappedHtmlElement(node, map) {
 // "listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
 // "summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", or
 // "xmp"."
-var prohibitedParagraphChildNamesMap = {
-	"ADDRESS": true, "ARTICLE": true, "ASIDE": true,
-	"BLOCKQUOTE": true, "CAPTION": true, "CENTER": true, "COL": true, "COLGROUP": true, "DD": true, "DETAILS": true,
-	"DIR": true, "DIV": true, "DL": true, "DT": true, "FIELDSET": true, "FIGCAPTION": true, "FIGURE": true, "FOOTER": true,
-	"FORM": true, "H1": true, "H2": true, "H3": true, "H4": true, "H5": true, "H6": true, "HEADER": true, "HGROUP": true, "HR": true, "LI": true,
-	"LISTING": true, "MENU": true, "NAV": true, "OL": true, "P": true, "PLAINTEXT": true, "PRE": true, "SECTION": true,
-	"SUMMARY": true, "TABLE": true, "TBODY": true, "TD": true, "TFOOT": true, "TH": true, "THEAD": true, "TR": true, "UL": true,
-	"XMP": true
-};
+var prohibitedParagraphChildNames = ["address", "article", "aside",
+	"blockquote", "caption", "center", "col", "colgroup", "dd", "details",
+	"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
+	"form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
+	"listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
+	"summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul",
+	"xmp"];
 
 // "A prohibited paragraph child is an HTML element whose local name is a
 // prohibited paragraph child name."
 function isProhibitedParagraphChild(node) {
-	return isMappedHtmlElement(node, prohibitedParagraphChildNamesMap);
+	return isHtmlElement(node, prohibitedParagraphChildNames);
 }
-
-var nonBlockDisplayValuesMap = {
-	"inline": true,
-	"inline-block": true,
-	"inline-table": true,
-	"none": true
-};
 
 // "A block node is either an Element whose "display" property does not have
 // resolved value "inline" or "inline-block" or "inline-table" or "none", or a
 // Document, or a DocumentFragment."
 function isBlockNode(node) {
+	
 	return node
-		&& ((node.nodeType == $_.Node.ELEMENT_NODE && !nonBlockDisplayValuesMap[$_.getComputedStyle(node).display])
+		&& ((node.nodeType == $_.Node.ELEMENT_NODE && $_( ["inline", "inline-block", "inline-table", "none"] ).indexOf($_.getComputedStyle(node).display) == -1)
 		|| node.nodeType == $_.Node.DOCUMENT_NODE
 		|| node.nodeType == $_.Node.DOCUMENT_FRAGMENT_NODE);
 }
@@ -938,7 +850,7 @@ function inSameEditingHost(node1, node2) {
 // "A collapsed line break is a br that begins a line box which has nothing
 // else in it, and therefore has zero height."
 function isCollapsedLineBreak(br) {
-	if (!isNamedHtmlElement(br, 'br')) {
+	if (!isHtmlElement(br, "br")) {
 		return false;
 	}
 
@@ -987,11 +899,11 @@ function isCollapsedLineBreak(br) {
 // contenteditable.
 function isExtraneousLineBreak(br) {
 
-	if (!isNamedHtmlElement(br, 'br')) {
+	if (!isHtmlElement(br, "br")) {
 		return false;
 	}
 
-	if (isNamedHtmlElement(br.parentNode, "li")
+	if (isHtmlElement(br.parentNode, "li")
 	&& br.parentNode.childNodes.length == 1) {
 		return false;
 	}
@@ -1055,7 +967,7 @@ function isWhitespaceNode(node) {
 			/^[\t\n\r ]+$/.test(node.data)
 			&& node.parentNode
 			&& node.parentNode.nodeType == $_.Node.ELEMENT_NODE
-			&& jQuery.inArray($_.getComputedStyle(node.parentNode).whiteSpace, ["normal", "nowrap"]) != -1
+			&& $_( ["normal", "nowrap"] ).indexOf($_.getComputedStyle(node.parentNode).whiteSpace) != -1
 		) || (
 			/^[\t\r ]+$/.test(node.data)
 			&& node.parentNode
@@ -1086,7 +998,7 @@ function collapseWhitespace(node, range) {
 	}
 
 	// if the node is in a pre or pre-wrap node, return
-	if (jQuery.inArray($_.getComputedStyle(node.parentNode).whiteSpace, ["pre", "pre-wrap"]) != -1) {
+	if ($_(["pre", "pre-wrap"]).indexOf($_.getComputedStyle(node.parentNode).whiteSpace) != -1) {
 		return;
 	}
 
@@ -1176,14 +1088,14 @@ function isCollapsedWhitespaceNode(node) {
 
 		// "If reference is a block node or a br, return true."
 		if (isBlockNode(reference)
-		|| isNamedHtmlElement(reference, 'br')) {
+		|| isHtmlElement(reference, "br")) {
 			return true;
 		}
 
 		// "If reference is a Text node that is not a whitespace node, or is an
 		// img, break from this loop."
 		if ((reference.nodeType == $_.Node.TEXT_NODE && !isWhitespaceNode(reference))
-		|| isNamedHtmlElement(reference, 'img')) {
+		|| isHtmlElement(reference, "img")) {
 			break;
 		}
 	}
@@ -1200,14 +1112,14 @@ function isCollapsedWhitespaceNode(node) {
 
 		// "If reference is a block node or a br, return true."
 		if (isBlockNode(reference)
-		|| isNamedHtmlElement(reference, 'br')) {
+		|| isHtmlElement(reference, "br")) {
 			return true;
 		}
 
 		// "If reference is a Text node that is not a whitespace node, or is an
 		// img, break from this loop."
 		if ((reference && reference.nodeType == $_.Node.TEXT_NODE && !isWhitespaceNode(reference))
-		|| isNamedHtmlElement(reference, 'img')) {
+		|| isHtmlElement(reference, "img")) {
 			break;
 		}
 	}
@@ -1234,8 +1146,8 @@ function isVisible(node) {
 
 	if (isBlockNode(node)
 	|| (node.nodeType == $_.Node.TEXT_NODE && !isCollapsedWhitespaceNode(node))
-	|| isNamedHtmlElement(node, 'img')
-	|| (isNamedHtmlElement(node, 'br') && !isExtraneousLineBreak(node))) {
+	|| isHtmlElement(node, "img")
+	|| (isHtmlElement(node, "br") && !isExtraneousLineBreak(node))) {
 		return true;
 	}
 
@@ -1284,12 +1196,12 @@ function isCollapsedBlockProp(node) {
 
 function setActiveRange( range ) {
 	var rangeObject = new window.GENTICS.Utils.RangeObject();
-
+	
 	rangeObject.startContainer = range.startContainer;
 	rangeObject.startOffset = range.startOffset;
 	rangeObject.endContainer = range.endContainer;
 	rangeObject.endOffset = range.endOffset;
-
+	
 	rangeObject.select();
 }
 
@@ -1312,8 +1224,8 @@ function getActiveRange() {
 	} else {
 		return null;
 	}
-	if (jQuery.inArray(ret.startContainer.nodeType, [$_.Node.TEXT_NODE, $_.Node.ELEMENT_NODE]) == -1
-	|| jQuery.inArray(ret.endContainer.nodeType, [$_.Node.TEXT_NODE, $_.Node.ELEMENT_NODE]) == -1
+	if ($_( [$_.Node.TEXT_NODE, $_.Node.ELEMENT_NODE] ).indexOf(ret.startContainer.nodeType) == -1
+	|| $_( [$_.Node.TEXT_NODE, $_.Node.ELEMENT_NODE] ).indexOf(ret.endContainer.nodeType) == -1
 	|| !ret.startContainer.ownerDocument
 	|| !ret.endContainer.ownerDocument
 	|| !isDescendant(ret.startContainer, ret.startContainer.ownerDocument)
@@ -1412,7 +1324,6 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 //@{
 
 function movePreservingRanges(node, newParent, newIndex, range) {
-
 	// For convenience, I allow newIndex to be -1 to mean "insert at the end".
 	if (newIndex == -1) {
 		newIndex = newParent.childNodes.length;
@@ -1480,14 +1391,11 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 		newParent.insertBefore(node, newParent.childNodes[newIndex]);
 	}
 
-  // when node boundaries are not text nodes and
 	// if we're off actual node boundaries this implies that the move was
 	// part of a deletion process (backspace). If that's the case we 
 	// attempt to fix this by restoring the range to the first index of
 	// the node that has been moved
-	if (boundaryPoints[0][0].nodeType !== $_.Node.TEXT_NODE 
-  && boundaryPoints[1][0].nodeType !== $_.Node.TEXT_NODE
-  && boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
+	if (boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
 	&& boundaryPoints[1][1] > boundaryPoints[1][0].childNodes.length) {
 		range.setStart(node, 0);
 		range.setEnd(node, 0);
@@ -1548,7 +1456,7 @@ function copyAttributes( element, newElement ) {
 function setTagName(element, newName, range) {
 	// "If element is an HTML element with local name equal to new name, return
 	// element."
-	if (isNamedHtmlElement(element, newName)) {
+	if (isHtmlElement(element, newName.toUpperCase())) {
 		return element;
 	}
 
@@ -1675,8 +1583,8 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 	// "If node list's last member is an inline node that's not a br, and node
 	// list's last member's nextSibling is a br, append that br to node list."
 	if (isInlineNode(nodeList[nodeList.length - 1])
-	&& !isNamedHtmlElement(nodeList[nodeList.length - 1], "br")
-	&& isNamedHtmlElement(nodeList[nodeList.length - 1].nextSibling, "br")) {
+	&& !isHtmlElement(nodeList[nodeList.length - 1], "br")
+	&& isHtmlElement(nodeList[nodeList.length - 1].nextSibling, "br")) {
 		nodeList.push(nodeList[nodeList.length - 1].nextSibling);
 	}
 
@@ -1756,7 +1664,7 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 		if (!isInlineNode(newParent)
 		&& isInlineNode(newParent.lastChild)
 		&& isInlineNode(nodeList[0])
-		&& !isNamedHtmlElement(newParent.lastChild, "BR")) {
+		&& !isHtmlElement(newParent.lastChild, "BR")) {
 			newParent.appendChild(newParent.ownerDocument.createElement("br"));
 		}
 
@@ -1776,7 +1684,7 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 		if (!isInlineNode(newParent)
 		&& isInlineNode(newParent.firstChild)
 		&& isInlineNode(nodeList[nodeList.length - 1])
-		&& !isNamedHtmlElement(nodeList[nodeList.length - 1], "BR")) {
+		&& !isHtmlElement(nodeList[nodeList.length - 1], "BR")) {
 			newParent.insertBefore(newParent.ownerDocument.createElement("br"), newParent.firstChild);
 		}
 
@@ -1805,7 +1713,7 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 		if (!isInlineNode(newParent)
 		&& isInlineNode(newParent.lastChild)
 		&& isInlineNode(newParent.nextSibling.firstChild)
-		&& !isNamedHtmlElement(newParent.lastChild, "BR")) {
+		&& !isHtmlElement(newParent.lastChild, "BR")) {
 			newParent.appendChild(newParent.ownerDocument.createElement("br"));
 		}
 
@@ -1836,110 +1744,16 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 // "kbd", "mark", "p", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
 // "span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
 // "xmp", "big", "blink", "font", "marquee", "nobr", or "tt"."
-var namesOfElementsWithInlineContentsMap = {
-	"A": true, "ABBR": true, "B": true, "BDI": true, "BDO": true,
-	"CITE": true, "CODE": true, "DFN": true, "EM": true, "H1": true, "H2": true, "H3": true, "H4": true, "H5": true, "H6": true, "I": true,
-	"KBD": true, "MARK": true, "P": true, "PRE": true, "Q": true, "RP": true, "RT": true, "RUBY": true, "S": true, "SAMP": true, "SMALL": true,
-	"SPAN": true, "STRONG": true, "SUB": true, "SUP": true, "U": true, "VAR": true, "ACRONYM": true, "LISTING": true, "STRIKE": true,
-	"XMP": true, "BIG": true, "BLINK": true, "FONT": true, "MARQUEE": true, "NOBR": true, "TT": true
-};
-
-
-var tableRelatedElements = {
-	"colgroup": true,
-	"table": true,
-	"tbody": true,
-	"tfoot": true,
-	"thead": true,
-	"tr": true
-};
-
-var scriptRelatedElements = {
-	"script": true,
-	"style": true,
-	"plaintext": true,
-	"xmp": true
-};
-
-var prohibitedHeadingNestingMap = jQuery.extend({
-	"H1": true,
-	"H2": true,
-	"H3": true,
-	"H4": true,
-	"H5": true,
-	"H6": true
-}, prohibitedParagraphChildNamesMap);
-var prohibitedTableNestingMap = {
-	"CAPTION": true,
-	"COL": true,
-	"COLGROUP": true,
-	"TBODY": true,
-	"TD": true,
-	"TFOOT": true,
-	"TH": true,
-	"THEAD": true,
-	"TR": true
-};
-var prohibitedDefNestingMap = {
-	"DD": true,
-	"DT": true
-};
-var prohibitedNestingCombinationsMap = {
-	"A": jQuery.extend({"A": true}, prohibitedParagraphChildNamesMap),
-	"DD": prohibitedDefNestingMap,
-	"DT": prohibitedDefNestingMap,
-	"LI": {"LI": true},
-	"NOBR": jQuery.extend({"NOBR": true}, prohibitedParagraphChildNamesMap),
-	"H1": prohibitedHeadingNestingMap,
-	"H2": prohibitedHeadingNestingMap,
-	"H3": prohibitedHeadingNestingMap,
-	"H4": prohibitedHeadingNestingMap,
-	"H5": prohibitedHeadingNestingMap,
-	"H6": prohibitedHeadingNestingMap,
-	"TD": prohibitedTableNestingMap,
-	"TH": prohibitedTableNestingMap,
-	// this is the same as namesOfElementsWithInlineContentsMap excluding a and h1-h6 elements above
-	"ABBR": prohibitedParagraphChildNamesMap,
-	"B": prohibitedParagraphChildNamesMap,
-	"BDI": prohibitedParagraphChildNamesMap,
-	"BDO": prohibitedParagraphChildNamesMap,
-	"CITE": prohibitedParagraphChildNamesMap,
-	"CODE": prohibitedParagraphChildNamesMap,
-	"DFN": prohibitedParagraphChildNamesMap,
-	"EM": prohibitedParagraphChildNamesMap,
-	"I": prohibitedParagraphChildNamesMap,
-	"KBD": prohibitedParagraphChildNamesMap,
-	"MARK": prohibitedParagraphChildNamesMap,
-	"P": prohibitedParagraphChildNamesMap,
-	"PRE": prohibitedParagraphChildNamesMap,
-	"Q": prohibitedParagraphChildNamesMap,
-	"RP": prohibitedParagraphChildNamesMap,
-	"RT": prohibitedParagraphChildNamesMap,
-	"RUBY": prohibitedParagraphChildNamesMap,
-	"S": prohibitedParagraphChildNamesMap,
-	"SAMP": prohibitedParagraphChildNamesMap,
-	"SMALL": prohibitedParagraphChildNamesMap,
-	"SPAN": prohibitedParagraphChildNamesMap,
-	"STRONG": prohibitedParagraphChildNamesMap,
-	"SUB": prohibitedParagraphChildNamesMap,
-	"SUP": prohibitedParagraphChildNamesMap,
-	"U": prohibitedParagraphChildNamesMap,
-	"VAR": prohibitedParagraphChildNamesMap,
-	"ACRONYM": prohibitedParagraphChildNamesMap,
-	"LISTING": prohibitedParagraphChildNamesMap,
-	"STRIKE": prohibitedParagraphChildNamesMap,
-	"XMP": prohibitedParagraphChildNamesMap,
-	"BIG": prohibitedParagraphChildNamesMap,
-	"BLINK": prohibitedParagraphChildNamesMap,
-	"FONT": prohibitedParagraphChildNamesMap,
-	"MARQUEE": prohibitedParagraphChildNamesMap,
-	"TT": prohibitedParagraphChildNamesMap
-};
+var namesOfElementsWithInlineContents = ["a", "abbr", "b", "bdi", "bdo",
+	"cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
+	"kbd", "mark", "p", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
+	"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
+	"xmp", "big", "blink", "font", "marquee", "nobr", "tt"];
 
 // "An element with inline contents is an HTML element whose local name is a
 // name of an element with inline contents."
 function isElementWithInlineContents(node) {
-	return isMappedHtmlElement(node, namesOfElementsWithInlineContentsMap);
+	return isHtmlElement(node, namesOfElementsWithInlineContents);
 }
 
 function isAllowedChild(child, parent_) {
@@ -1947,8 +1761,8 @@ function isAllowedChild(child, parent_) {
 	// an HTML element with local name equal to one of those, and child is a
 	// Text node whose data does not consist solely of space characters, return
 	// false."
-	if ((tableRelatedElements[parent_]
-	|| isHtmlElementInArray(parent_, ["colgroup", "table", "tbody", "tfoot", "thead", "tr"]))
+	if (($_( ["colgroup", "table", "tbody", "tfoot", "thead", "tr"] ).indexOf(parent_) != -1
+	|| isHtmlElement(parent_, ["colgroup", "table", "tbody", "tfoot", "thead", "tr"]))
 	&& typeof child == "object"
 	&& child.nodeType == $_.Node.TEXT_NODE
 	&& !/^[ \t\n\f\r]*$/.test(child.data)) {
@@ -1958,8 +1772,8 @@ function isAllowedChild(child, parent_) {
 	// "If parent is "script", "style", "plaintext", or "xmp", or an HTML
 	// element with local name equal to one of those, and child is not a Text
 	// node, return false."
-	if ((scriptRelatedElements[parent_]
-	|| isHtmlElementInArray(parent_, ["script", "style", "plaintext", "xmp"]))
+	if (($_( ["script", "style", "plaintext", "xmp"] ).indexOf(parent_) != -1
+	|| isHtmlElement(parent_, ["script", "style", "plaintext", "xmp"]))
 	&& (typeof child != "object" || child.nodeType != $_.Node.TEXT_NODE)) {
 		return false;
 	}
@@ -1974,7 +1788,7 @@ function isAllowedChild(child, parent_) {
 	}
 
 	// "If child is an HTML element, set child to the local name of child."
-	if (isAnyHtmlElement(child)) {
+	if (isHtmlElement(child)) {
 		child = child.tagName.toLowerCase();
 	}
 
@@ -1984,7 +1798,7 @@ function isAllowedChild(child, parent_) {
 	}
 
 	// "If parent is an HTML element:"
-	if (isAnyHtmlElement(parent_)) {
+	if (isHtmlElement(parent_)) {
 		// "If child is "a", and parent or some ancestor of parent is an a,
 		// return false."
 		//
@@ -1997,15 +1811,15 @@ function isAllowedChild(child, parent_) {
 		// "h2", "h3", "h4", "h5", or "h6", return false."
 		var ancestor = parent_;
 		while (ancestor) {
-			if (child == "a" && isNamedHtmlElement(ancestor, 'a')) {
+			if (child == "a" && isHtmlElement(ancestor, "a")) {
 				return false;
 			}
-			if (prohibitedParagraphChildNamesMap[child.toUpperCase()]
+			if ($_( prohibitedParagraphChildNames ).indexOf(child) != -1
 			&& isElementWithInlineContents(ancestor)) {
 				return false;
 			}
 			if (/^h[1-6]$/.test(child)
-			&& isAnyHtmlElement(ancestor)
+			&& isHtmlElement(ancestor)
 			&& /^H[1-6]$/.test(ancestor.tagName)) {
 				return false;
 			}
@@ -2035,19 +1849,19 @@ function isAllowedChild(child, parent_) {
 		case "colgroup":
 			return child == "col";
 		case "table":
-			return jQuery.inArray(child, ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]) != -1;
+			return $_( ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"] ).indexOf(child) != -1;
 		case "tbody":
 		case "thead":
 		case "tfoot":
-			return jQuery.inArray(child, ["td", "th", "tr"]) != -1;
+			return $_( ["td", "th", "tr"] ).indexOf(child) != -1;
 		case "tr":
-			return jQuery.inArray(child, ["td", "th"]) != -1;
+			return $_( ["td", "th"] ).indexOf(child) != -1;
 		case "dl":
-			return jQuery.inArray(child, ["dt", "dd"]) != -1;
+			return $_( ["dt", "dd"] ).indexOf(child) != -1;
 		case "dir":
 		case "ol":
 		case "ul":
-			return jQuery.inArray(child, ["dir", "li", "ol", "ul"]) != -1;
+			return $_( ["dir", "li", "ol", "ul"] ).indexOf(child) != -1;
 		case "hgroup":
 			return /^h[1-6]$/.test(child);
 	}
@@ -2055,13 +1869,13 @@ function isAllowedChild(child, parent_) {
 	// "If child is "body", "caption", "col", "colgroup", "frame", "frameset",
 	// "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr", return
 	// false."
-	if (jQuery.inArray(child, ["body", "caption", "col", "colgroup", "frame", "frameset", "head",
-	"html", "tbody", "td", "tfoot", "th", "thead", "tr"]) != -1) {
+	if ($_( ["body", "caption", "col", "colgroup", "frame", "frameset", "head",
+	"html", "tbody", "td", "tfoot", "th", "thead", "tr"] ).indexOf(child) != -1) {
 		return false;
 	}
 
 	// "If child is "dd" or "dt" and parent is not "dl", return false."
-	if (jQuery.inArray(child, ["dd", "dt"]) != -1
+	if ($_( ["dd", "dt"] ).indexOf(child) != -1
 	&& parent_ != "dl") {
 		return false;
 	}
@@ -2075,10 +1889,18 @@ function isAllowedChild(child, parent_) {
 
 	// "If parent is on the left-hand side of an entry on the following list
 	// and child is listed on the right-hand side of that entry, return false."
-	var leftSide = prohibitedNestingCombinationsMap[parent_.toUpperCase()];
-	if (leftSide) {
-		var rightSide = leftSide[child.toUpperCase()];
-		if (rightSide) {
+	var table = [
+		[["a"], ["a"]],
+		[["dd", "dt"], ["dd", "dt"]],
+		[["h1", "h2", "h3", "h4", "h5", "h6"], ["h1", "h2", "h3", "h4", "h5", "h6"]],
+		[["li"], ["li"]],
+		[["nobr"], ["nobr"]],
+		[namesOfElementsWithInlineContents, prohibitedParagraphChildNames],
+		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]]
+	];
+	for (var i = 0; i < table.length; i++) {
+		if ($_( table[i][0] ).indexOf(parent_) != -1
+		&& $_( table[i][1] ).indexOf(child) != -1) {
 			return false;
 		}
 	}
@@ -2196,17 +2018,17 @@ function getAllEffectivelyContainedNodes(range, condition) {
 // attributes except possibly style, color, face, and/or size; or an a element
 // with no attributes except possibly style and/or href."
 function isModifiableElement(node) {
-	if (!isAnyHtmlElement(node)) {
+	if (!isHtmlElement(node)) {
 		return false;
 	}
 
-	if (jQuery.inArray(node.tagName, ["B", "EM", "I", "S", "SPAN", "STRIKE", "STRONG", "SUB", "SUP", "U"]) != -1) {
+	if ($_( ["B", "EM", "I", "S", "SPAN", "STRIKE", "STRONG", "SUB", "SUP", "U"] ).indexOf(node.tagName) != -1) {
 		if (node.attributes.length == 0) {
 			return true;
 		}
 
 		if (node.attributes.length == 1
-		&& hasAttribute(node, "style")) {
+		&& $_( node ).hasAttribute("style")) {
 			return true;
 		}
 	}
@@ -2214,26 +2036,26 @@ function isModifiableElement(node) {
 	if (node.tagName == "FONT" || node.tagName == "A") {
 		var numAttrs = node.attributes.length;
 
-		if (hasAttribute(node, "style")) {
+		if ($_( node ).hasAttribute("style")) {
 			numAttrs--;
 		}
 
 		if (node.tagName == "FONT") {
-			if (hasAttribute(node, "color")) {
+			if ($_( node ).hasAttribute("color")) {
 				numAttrs--;
 			}
 
-			if (hasAttribute(node, "face")) {
+			if ($_( node ).hasAttribute("face")) {
 				numAttrs--;
 			}
 
-			if (hasAttribute(node, "size")) {
+			if ($_( node ).hasAttribute("size")) {
 				numAttrs--;
 			}
 		}
 
 		if (node.tagName == "A"
-		&& hasAttribute(node, "href")) {
+		&& $_( node ).hasAttribute("href")) {
 			numAttrs--;
 		}
 
@@ -2248,31 +2070,23 @@ function isModifiableElement(node) {
 function isSimpleModifiableElement(node) {
 	// "A simple modifiable element is an HTML element for which at least one
 	// of the following holds:"
-	if (!isAnyHtmlElement(node)) {
+	if (!isHtmlElement(node)) {
 		return false;
 	}
 
 	// Only these elements can possibly be a simple modifiable element.
-	if (jQuery.inArray(node.tagName, ["A", "B", "EM", "FONT", "I", "S", "SPAN", "STRIKE", "STRONG", "SUB", "SUP", "U"]) == -1) {
+	if ($_( ["A", "B", "EM", "FONT", "I", "S", "SPAN", "STRIKE", "STRONG", "SUB", "SUP", "U"] ).indexOf(node.tagName) == -1) {
 		return false;
 	}
 
-  //Note: In IE 6,7 & 8 returns both system & user defined attributes
-  //since, we need only the user-defiend ones filter using specified property.
-  var specified_attributes = $_(node.attributes).filter(function(attr){
-    if(attr.specified){
-      return true 
-    }
-  });
-
 	// "It is an a, b, em, font, i, s, span, strike, strong, sub, sup, or u
 	// element with no attributes."
-	if (specified_attributes.length == 0) {
+	if (node.attributes.length == 0) {
 		return true;
 	}
 
 	// If it's got more than one attribute, everything after this fails.
-	if (specified_attributes.length > 1) {
+	if (node.attributes.length > 1) {
 		return false;
 	}
 
@@ -2281,23 +2095,23 @@ function isSimpleModifiableElement(node) {
 	// properties (including invalid or unrecognized properties)."
 	//
 	// Not gonna try for invalid or unrecognized.
-	if (hasAttribute(node, "style")
+	if ($_( node ).hasAttribute("style")
 	&& getStyleLength(node) == 0) {
 		return true;
 	}
 
 	// "It is an a element with exactly one attribute, which is href."
 	if (node.tagName == "A"
-	&& hasAttribute(node, "href")) {
+	&& $_( node ).hasAttribute("href")) {
 		return true;
 	}
 
 	// "It is a font element with exactly one attribute, which is either color,
 	// face, or size."
 	if (node.tagName == "FONT"
-	&& (hasAttribute(node, "color")
-	|| hasAttribute(node, "face")
-	|| hasAttribute(node, "size")
+	&& ($_( node ).hasAttribute("color")
+	|| $_( node ).hasAttribute("face")
+	|| $_( node ).hasAttribute("size")
 	)) {
 		return true;
 	}
@@ -2306,7 +2120,7 @@ function isSimpleModifiableElement(node) {
 	// and the style attribute sets exactly one CSS property (including invalid
 	// or unrecognized properties), which is "font-weight"."
 	if ((node.tagName == "B" || node.tagName == "STRONG")
-	&& hasAttribute(node, "style")
+	&& $_( node ).hasAttribute("style")
 	&& getStyleLength(node) == 1
 	&& node.style.fontWeight != "") {
 		return true;
@@ -2316,7 +2130,7 @@ function isSimpleModifiableElement(node) {
 	// and the style attribute sets exactly one CSS property (including invalid
 	// or unrecognized properties), which is "font-style"."
 	if ((node.tagName == "I" || node.tagName == "EM")
-	&& hasAttribute(node, "style")
+	&& $_( node ).hasAttribute("style")
 	&& getStyleLength(node) == 1
 	&& node.style.fontStyle != "") {
 		return true;
@@ -2327,7 +2141,7 @@ function isSimpleModifiableElement(node) {
 	// invalid or unrecognized properties), and that property is not
 	// "text-decoration"."
 	if ((node.tagName == "A" || node.tagName == "FONT" || node.tagName == "SPAN")
-	&& hasAttribute(node, "style")
+	&& $_( node ).hasAttribute("style")
 	&& getStyleLength(node) == 1
 	&& node.style.textDecoration == "") {
 		return true;
@@ -2338,8 +2152,8 @@ function isSimpleModifiableElement(node) {
 	// property (including invalid or unrecognized properties), which is
 	// "text-decoration", which is set to "line-through" or "underline" or
 	// "overline" or "none"."
-	if (jQuery.inArray(node.tagName, ["A", "FONT", "S", "SPAN", "STRIKE", "U"]) != -1
-	&& hasAttribute(node, "style")
+	if ($_( ["A", "FONT", "S", "SPAN", "STRIKE", "U"] ).indexOf(node.tagName) != -1
+	&& $_( node ).hasAttribute("style")
 	&& getStyleLength(node) == 1
 	&& (node.style.textDecoration == "line-through"
 	|| node.style.textDecoration == "underline"
@@ -2434,9 +2248,9 @@ function getEffectiveCommandValue(node, command) {
 		// "While node is not null, and is not an a element that has an href
 		// attribute, set node to its parent."
 		while (node
-		&& (!isAnyHtmlElement(node)
+		&& (!isHtmlElement(node)
 		|| node.tagName != "A"
-		|| !hasAttribute(node, "href"))) {
+		|| !$_( node ).hasAttribute("href"))) {
 			node = node.parentNode;
 		}
 
@@ -2490,11 +2304,11 @@ function getEffectiveCommandValue(node, command) {
 			var verticalAlign = $_.getComputedStyle(node).verticalAlign;
 
 			// "If node is a sub, set affected by subscript to true."
-			if (isNamedHtmlElement(node, 'sub')) {
+			if (isHtmlElement(node, "sub")) {
 				affectedBySubscript = true;
 			// "Otherwise, if node is a sup, set affected by superscript to
 			// true."
-			} else if (isNamedHtmlElement(node, 'sup')) {
+			} else if (isHtmlElement(node, "sup")) {
 				affectedBySuperscript = true;
 			}
 
@@ -2569,9 +2383,9 @@ function getSpecifiedCommandValue(element, command) {
 	if (command == "createlink" || command == "unlink") {
 		// "If element is an a element and has an href attribute, return the
 		// value of that attribute."
-		if (isAnyHtmlElement(element)
+		if (isHtmlElement(element)
 		&& element.tagName == "A"
-		&& hasAttribute(element, "href")) {
+		&& $_( element ).hasAttribute("href")) {
 			return element.getAttribute("href");
 		}
 
@@ -2582,12 +2396,12 @@ function getSpecifiedCommandValue(element, command) {
 	// "If command is "subscript" or "superscript":"
 	if (command == "subscript" || command == "superscript") {
 		// "If element is a sup, return "superscript"."
-		if (isNamedHtmlElement(element, 'sup')) {
+		if (isHtmlElement(element, "sup")) {
 			return "superscript";
 		}
 
 		// "If element is a sub, return "subscript"."
-		if (isNamedHtmlElement(element, 'sub')) {
+		if (isHtmlElement(element, "sub")) {
 			return "subscript";
 		}
 
@@ -2612,7 +2426,7 @@ function getSpecifiedCommandValue(element, command) {
 	// "If command is "strikethrough" and element is a s or strike element,
 	// return "line-through"."
 	if (command == "strikethrough"
-	&& isHtmlElementInArray(element, ["S", "STRIKE"])) {
+	&& isHtmlElement(element, ["S", "STRIKE"])) {
 		return "line-through";
 	}
 
@@ -2633,7 +2447,7 @@ function getSpecifiedCommandValue(element, command) {
 	// "If command is "underline" and element is a u element, return
 	// "underline"."
 	if (command == "underline"
-	&& isNamedHtmlElement(element, 'U')) {
+	&& isHtmlElement(element, "U")) {
 		return "underline";
 	}
 
@@ -2657,13 +2471,13 @@ function getSpecifiedCommandValue(element, command) {
 	// "xxx-large".)"
 	if (isHtmlNamespace(element.namespaceURI)
 	&& element.tagName == "FONT") {
-		if (property == "color" && hasAttribute(element, "color")) {
+		if (property == "color" && $_( element ).hasAttribute("color")) {
 			return element.color;
 		}
-		if (property == "fontFamily" && hasAttribute(element, "face")) {
+		if (property == "fontFamily" && $_( element ).hasAttribute("face")) {
 			return element.face;
 		}
-		if (property == "fontSize" && hasAttribute(element, "size")) {
+		if (property == "fontSize" && $_( element ).hasAttribute("size")) {
 			// This is not even close to correct in general.
 			var size = parseInt(element.size);
 			if (size < 1) {
@@ -2741,11 +2555,6 @@ function reorderModifiableDescendants(node, command, newValue, range) {
 	movePreservingRanges(node, candidate, -1, range);
 }
 
-var recordValuesCommands = [
-	"subscript", "bold", "fontname", "fontsize", "forecolor",
-	"hilitecolor", "italic", "strikethrough", "underline"
-];
-
 function recordValues(nodeList) {
 	// "Let values be a list of (node, command, specified command value)
 	// triples, initially empty."
@@ -2754,38 +2563,35 @@ function recordValues(nodeList) {
 	// "For each node in node list, for each command in the list "subscript",
 	// "bold", "fontName", "fontSize", "foreColor", "hiliteColor", "italic",
 	// "strikethrough", and "underline" in that order:"
-
-	// Ensure we have a plain array to avoid the potential performance
-	// overhead of a NodeList
-	var nodes = $.makeArray(nodeList);
-	for (var i = 0; i < nodes.length; i++) {
-		var node = nodes[i];
-		for (var j = 0; j < recordValuesCommands.length; j++) {
-			var command = recordValuesCommands[j];
-
+	$_( nodeList ).forEach(function(node) {
+		$_( ["subscript", "bold", "fontname", "fontsize", "forecolor",
+		"hilitecolor", "italic", "strikethrough", "underline"] ).forEach(function(command) {
 			// "Let ancestor equal node."
 			var ancestor = node;
 
 			// "If ancestor is not an Element, set it to its parent."
-			if (ancestor.nodeType != 1) {
+			if (ancestor.nodeType != $_.Node.ELEMENT_NODE) {
 				ancestor = ancestor.parentNode;
 			}
 
 			// "While ancestor is an Element and its specified command value
 			// for command is null, set it to its parent."
-			var specifiedCommandValue = null;
 			while (ancestor
-			&& ancestor.nodeType == 1
-			&& (specifiedCommandValue = getSpecifiedCommandValue(ancestor, command)) === null) {
+			&& ancestor.nodeType == $_.Node.ELEMENT_NODE
+			&& getSpecifiedCommandValue(ancestor, command) === null) {
 				ancestor = ancestor.parentNode;
 			}
 
 			// "If ancestor is an Element, add (node, command, ancestor's
 			// specified command value for command) to values. Otherwise add
 			// (node, command, null) to values."
-			values.push([node, command, specifiedCommandValue]);
-		}
-	}
+			if (ancestor && ancestor.nodeType == $_.Node.ELEMENT_NODE) {
+				values.push([node, command, getSpecifiedCommandValue(ancestor, command)]);
+			} else {
+				values.push([node, command, null]);
+			}
+		});
+	});
 
 	// "Return values."
 	return values;
@@ -2870,7 +2676,6 @@ function clearValue(element, command, range) {
 		return children;
 	}
 
-
 	// "If command is "strikethrough", and element has a style attribute that
 	// sets "text-decoration" to some value containing "line-through", delete
 	// "line-through" from the value."
@@ -2930,7 +2735,7 @@ function clearValue(element, command, range) {
 
 	// "If element is an a element and command is "createLink" or "unlink",
 	// unset the href property of element."
-	if (isNamedHtmlElement(element, 'A')
+	if (isHtmlElement(element, "A")
 	&& (command == "createlink" || command == "unlink")) {
 		element.removeAttribute("href");
 	}
@@ -3211,7 +3016,7 @@ function forceValue(node, command, newValue, range) {
 		while (ancestor) {
 			// "If ancestor is an a, set the tag name of ancestor to "span",
 			// and let ancestor be the result."
-			if (isNamedHtmlElement(ancestor, 'A')) {
+			if (isHtmlElement(ancestor, "A")) {
 				ancestor = setTagName(ancestor, "span", range);
 			}
 
@@ -3227,7 +3032,7 @@ function forceValue(node, command, newValue, range) {
 	// node, then set the size attribute of new parent to the number from the
 	// following table based on new value: [table omitted]"
 	if (command == "fontsize"
-	&& jQuery.inArray(newValue, ["xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"]) != -1
+	&& $_( ["xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"] ).indexOf(newValue) != -1
 	&& (!cssStylingFlag || newValue == "xxx-large")) {
 		newParent = node.ownerDocument.createElement("font");
 		newParent.size = cssSizeToLegacy(newValue);
@@ -3290,7 +3095,7 @@ function forceValue(node, command, newValue, range) {
 
 	// "Append node to new parent as its last child, preserving ranges."
 	movePreservingRanges(node, newParent, newParent.childNodes.length, range);
-  
+
 	// "If node is an Element and the effective command value of command for
 	// node is not loosely equivalent to new value:"
 	if (node.nodeType == $_.Node.ELEMENT_NODE
@@ -3332,10 +3137,10 @@ function forceValue(node, command, newValue, range) {
 //@{
 
 function setSelectionValue(command, newValue, range) {
-
+	
 	// Use current selected range if no range passed
 	range = range || getActiveRange();
-
+	
 	// "If there is no editable text node effectively contained in the active
 	// range:"
 	if (!$_( getAllEffectivelyContainedNodes(range) )
@@ -3377,8 +3182,7 @@ function setSelectionValue(command, newValue, range) {
 
 	// "If the active range's start node is an editable Text node, and its
 	// start offset is neither zero nor its start node's length, call
-	// splitText() (replaced with custom splitDataNode() for cross-browser support)
-  // on the active range's start node, with argument equal to the
+	// splitText() on the active range's start node, with argument equal to the
 	// active range's start offset. Then set the active range's start node to
 	// the result, and its start offset to zero."
 	if (isEditable(range.startContainer)
@@ -3386,7 +3190,7 @@ function setSelectionValue(command, newValue, range) {
 	&& range.startOffset != 0
 	&& range.startOffset != getNodeLength(range.startContainer)) {
 		// Account for browsers not following range mutation rules
-    var newNode = splitDataNode(range.startContainer, range.startOffset);
+		var newNode = range.startContainer.splitText(range.startOffset);
 		var newActiveRange = Aloha.createRange();
 		if (range.startContainer == range.endContainer) {
 			var newEndOffset = range.endOffset - range.startOffset;
@@ -3401,18 +3205,24 @@ function setSelectionValue(command, newValue, range) {
 	}
 
 	// "If the active range's end node is an editable Text node, and its end
-	// offset is neither zero nor its end node's length, 
-	// call splitText() (replaced with custom splitDataNode() for cross-browser support) on
+	// offset is neither zero nor its end node's length, call splitText() on
 	// the active range's end node, with argument equal to the active range's
 	// end offset."
 	if (isEditable(range.endContainer)
 	&& range.endContainer.nodeType == $_.Node.TEXT_NODE
 	&& range.endOffset != 0
 	&& range.endOffset != getNodeLength(range.endContainer)) {
-    var activeRange = range;
+		// IE seems to mutate the range incorrectly here, so we need correction
+		// here as well.  The active range will be temporarily in orphaned
+		// nodes, so calling getActiveRange() after splitText() but before
+		// fixing the range will throw an exception.
+		// TODO: check if this is still neccessary 
+		var activeRange = range;
 		var newStart = [activeRange.startContainer, activeRange.startOffset];
 		var newEnd = [activeRange.endContainer, activeRange.endOffset];
-    splitDataNode(activeRange.endContainer, activeRange.endOffset);
+		activeRange.endContainer.splitText(activeRange.endOffset);
+		activeRange.setStart(newStart[0], newStart[1]);
+		activeRange.setEnd(newEnd[0], newEnd[1]);
 
 		Aloha.getSelection().removeAllRanges();
 		Aloha.getSelection().addRange(activeRange);
@@ -3422,7 +3232,7 @@ function setSelectionValue(command, newValue, range) {
 	// active range.
 	//
 	// "For each element in element list, clear the value of element."
-	$_( getAllEffectivelyContainedNodes(range, function(node) {
+	$_( getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 		return isEditable(node) && node.nodeType == $_.Node.ELEMENT_NODE;
 	}) ).forEach(function(element) {
 		clearValue(element, command, range);
@@ -3433,14 +3243,11 @@ function setSelectionValue(command, newValue, range) {
 	//
 	// "For each node in node list:"
 	$_( getAllEffectivelyContainedNodes(range, isEditable) ).forEach(function(node) {
-
 		// "Push down values on node."
 		pushDownValues(node, command, newValue, range);
 
-    // "If node is an allowed child of span, force the value of node."
-		if (isAllowedChild(node, "span")) {
-      forceValue(node, command, newValue, range);
-    }
+		// "Force the value of node."
+		forceValue(node, command, newValue, range);
 	});
 }
 
@@ -3605,7 +3412,7 @@ commands.backcolor = {
 commands.bold = {
 	action: function(value, range) {
 		// "If queryCommandState("bold") returns true, set the selection's
-		// vale to "normal". Otherwise set the selection's value to "bold"."
+		// value to "normal". Otherwise set the selection's value to "bold"."
 		if (myQueryCommandState("bold", range)) {
 			setSelectionValue("bold", "normal", range);
 		} else {
@@ -3629,8 +3436,7 @@ commands.bold = {
 ///// The createLink command /////
 //@{
 commands.createlink = {
-	action: function(value, range) {
-		range = range || getActiveRange();
+	action: function(value) {
 		// "If value is the empty string, abort these steps and do nothing."
 		if (value === "") {
 			return;
@@ -3642,11 +3448,11 @@ commands.createlink = {
 		//
 		// TODO: We don't actually do this in tree order, not that it matters
 		// unless you're spying with mutation events.
-		$_( getAllEffectivelyContainedNodes(range) ).forEach(function(node) {
+		$_( getAllEffectivelyContainedNodes(getActiveRange()) ).forEach(function(node) {
 			$_( getAncestors(node) ).forEach(function(ancestor) {
 				if (isEditable(ancestor)
-				&& isNamedHtmlElement(ancestor, 'a')
-				&& hasAttribute(ancestor, "href")) {
+				&& isHtmlElement(ancestor, "a")
+				&& $_( ancestor ).hasAttribute("href")) {
 					ancestor.setAttribute("href", value);
 				}
 			});
@@ -3757,7 +3563,7 @@ commands.fontsize = {
 		// valid CSS absolute length, then abort these steps and do nothing."
 		//
 		// More cheap hacks to skip valid CSS absolute length checks.
-		if (jQuery.inArray(value, ["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"]) == -1
+		if ($_(["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"]).indexOf(value) == -1
 		&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc)$/.test(value)) {
 			return;
 		}
@@ -3802,7 +3608,7 @@ function getLegacyFontSize(size) {
 	// in suffixed with "px", not as plain numbers.
 	size = normalizeFontSize(size);
 
-	if (jQuery.inArray(size, ["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"]) == -1
+	if ($_(["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"]).indexOf(size) == -1
 	&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc|px)$/.test(size)) {
 		// There is no sensible legacy size for things like "2em".
 		return null;
@@ -3950,34 +3756,25 @@ commands.italic = {
 
 //@}
 ///// The removeFormat command /////
-// value: array of elements to remove
 //@{
 commands.removeformat = {
-	action: function(value, range) {
+	action: function() {
 		// "A removeFormat candidate is an editable HTML element with local
 		// name "abbr", "acronym", "b", "bdi", "bdo", "big", "blink", "cite",
 		// "code", "dfn", "em", "font", "i", "ins", "kbd", "mark", "nobr", "q",
 		// "s", "samp", "small", "span", "strike", "strong", "sub", "sup",
 		// "tt", "u", or "var"."
 		function isRemoveFormatCandidate(node) {
-      var defaultRemoveFormatCandidates = ["abbr", "acronym", "b", "bdi", "bdo",
+			return isEditable(node)
+				&& isHtmlElement(node, ["abbr", "acronym", "b", "bdi", "bdo",
 				"big", "blink", "cite", "code", "dfn", "em", "font", "i",
 				"ins", "kbd", "mark", "nobr", "q", "s", "samp", "small",
-				"span", "strike", "strong", "sub", "sup", "tt", "u", "var"];
-
-      //remove only the selected candidates
-      var candidates = value || defaultRemoveFormatCandidates;
-
-			return isEditable(node)
-				&& isHtmlElement(node, candidates);
+				"span", "strike", "strong", "sub", "sup", "tt", "u", "var"]);
 		}
-
-    //set the range
-    range = range || getActiveRange(); 
 
 		// "Let elements to remove be a list of every removeFormat candidate
 		// effectively contained in the active range."
-		var elementsToRemove = getAllEffectivelyContainedNodes(range, isRemoveFormatCandidate);
+		var elementsToRemove = getAllEffectivelyContainedNodes(getActiveRange(), isRemoveFormatCandidate);
 
 		// "For each element in elements to remove:"
 		$_( elementsToRemove ).forEach(function(element) {
@@ -3994,45 +3791,43 @@ commands.removeformat = {
 
 		// "If the active range's start node is an editable Text node, and its
 		// start offset is neither zero nor its start node's length, call
-    // splitText() (replaced with custom splitDataNode() for cross-browser support) on
-		// the active range's start node, with argument equal to
+		// splitText() on the active range's start node, with argument equal to
 		// the active range's start offset. Then set the active range's start
 		// node to the result, and its start offset to zero."
-		if (isEditable(range.startContainer)
-		&& range.startContainer.nodeType == $_.Node.TEXT_NODE
-		&& range.startOffset != 0
-		&& range.startOffset != getNodeLength(range.startContainer)) {
+		if (isEditable(getActiveRange().startContainer)
+		&& getActiveRange().startContainer.nodeType == $_.Node.TEXT_NODE
+		&& getActiveRange().startOffset != 0
+		&& getActiveRange().startOffset != getNodeLength(getActiveRange().startContainer)) {
 			// Account for browsers not following range mutation rules
-			if (range.startContainer == range.endContainer) {
-				var newEnd = range.endOffset - range.startOffset;
-        var newNode = splitDataNode(range.startContainer, range.startOffset);
-				range.setStart(newNode, 0);
-				range.setEnd(newNode, newEnd);
+			if (getActiveRange().startContainer == getActiveRange().endContainer) {
+				var newEnd = getActiveRange().endOffset - getActiveRange().startOffset;
+				var newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
+				getActiveRange().setStart(newNode, 0);
+				getActiveRange().setEnd(newNode, newEnd);
 			} else {
-        range.setStart(splitDataNode(range.startContainer, range.startOffset), 0);
+				getActiveRange().setStart(getActiveRange().startContainer.splitText(getActiveRange().startOffset), 0);
 			}
 		}
 
 		// "If the active range's end node is an editable Text node, and its
 		// end offset is neither zero nor its end node's length, call
-    // splitText() (replaced with custom splitDataNode() for cross-browser support) on
-		// the active range's end node, with argument equal to
+		// splitText() on the active range's end node, with argument equal to
 		// the active range's end offset."
-		if (isEditable(range.endContainer)
-		&& range.endContainer.nodeType == $_.Node.TEXT_NODE
-		&& range.endOffset != 0
-		&& range.endOffset != getNodeLength(range.endContainer)) {
+		if (isEditable(getActiveRange().endContainer)
+		&& getActiveRange().endContainer.nodeType == $_.Node.TEXT_NODE
+		&& getActiveRange().endOffset != 0
+		&& getActiveRange().endOffset != getNodeLength(getActiveRange().endContainer)) {
 			// IE seems to mutate the range incorrectly here, so we need
 			// correction here as well.  Have to be careful to set the range to
 			// something not including the text node so that getActiveRange()
 			// doesn't throw an exception due to a temporarily detached
 			// endpoint.
-			var newStart = [range.startContainer, range.startOffset];
-			var newEnd = [range.endContainer, range.endOffset];
-			range.setEnd(document.documentElement, 0);
-      splitDataNode(newEnd[0], newEnd[1]);
-			range.setStart(newStart[0], newStart[1]);
-			range.setEnd(newEnd[0], newEnd[1]);
+			var newStart = [getActiveRange().startContainer, getActiveRange().startOffset];
+			var newEnd = [getActiveRange().endContainer, getActiveRange().endOffset];
+			getActiveRange().setEnd(document.documentElement, 0);
+			newEnd[0].splitText(newEnd[1]);
+			getActiveRange().setStart(newStart[0], newStart[1]);
+			getActiveRange().setEnd(newEnd[0], newEnd[1]);
 		}
 
 		// "Let node list consist of all editable nodes effectively contained
@@ -4041,7 +3836,7 @@ commands.removeformat = {
 		// "For each node in node list, while node's parent is a removeFormat
 		// candidate in the same editing host as node, split the parent of the
 		// one-node list consisting of node."
-		$_( getAllEffectivelyContainedNodes(range, isEditable) ).forEach(function(node) {
+		$_( getAllEffectivelyContainedNodes(getActiveRange(), isEditable) ).forEach(function(node) {
 			while (isRemoveFormatCandidate(node.parentNode)
 			&& inSameEditingHost(node.parentNode, node)) {
 				splitParent([node], range);
@@ -4050,24 +3845,19 @@ commands.removeformat = {
 
 		// "For each of the entries in the following list, in the given order,
 		// set the selection's value to null, with command as given."
-    
-    // Note: if the removeformat candidates are explicitly supplied,
-    // these commands will not be applied
-    if(!value){
-      $_( [
-        "subscript",
-        "bold",
-        "fontname",
-        "fontsize",
-        "forecolor",
-        "hilitecolor",
-        "italic",
-        "strikethrough",
-        "underline"
-      ] ).forEach(function(command) {
-        setSelectionValue(command, null);
-      });
-    }
+		$_( [
+			"subscript",
+			"bold",
+			"fontname",
+			"fontsize",
+			"forecolor",
+			"hilitecolor",
+			"italic",
+			"strikethrough",
+			"underline"
+		] ).forEach(function(command) {
+			setSelectionValue(command, null);
+		});
 	}
 };
 
@@ -4075,14 +3865,14 @@ commands.removeformat = {
 ///// The strikethrough command /////
 //@{
 commands.strikethrough = {
-	action: function(value, range) {
+	action: function() {
 		// "If queryCommandState("strikethrough") returns true, set the
 		// selection's value to null. Otherwise set the selection's value to
 		// "line-through"."
-		if (myQueryCommandState("strikethrough", range)) {
-			setSelectionValue("strikethrough", null, range);
+		if (myQueryCommandState("strikethrough")) {
+			setSelectionValue("strikethrough", null);
 		} else {
-			setSelectionValue("strikethrough", "line-through", range);
+			setSelectionValue("strikethrough", "line-through");
 		}
 	}, inlineCommandActivatedValues: ["line-through"]
 };
@@ -4091,16 +3881,16 @@ commands.strikethrough = {
 ///// The subscript command /////
 //@{
 commands.subscript = {
-	action: function(value, range) {
+	action: function() {
 		// "Call queryCommandState("subscript"), and let state be the result."
-		var state = myQueryCommandState("subscript", range);
+		var state = myQueryCommandState("subscript");
 
 		// "Set the selection's value to null."
-		setSelectionValue("subscript", null, range);
+		setSelectionValue("subscript", null);
 
 		// "If state is false, set the selection's value to "subscript"."
 		if (!state) {
-			setSelectionValue("subscript", "subscript", range);
+			setSelectionValue("subscript", "subscript");
 		}
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
@@ -4122,17 +3912,17 @@ commands.subscript = {
 ///// The superscript command /////
 //@{
 commands.superscript = {
-	action: function(value, range) {
+	action: function() {
 		// "Call queryCommandState("superscript"), and let state be the
 		// result."
-		var state = myQueryCommandState("superscript", range);
+		var state = myQueryCommandState("superscript");
 
 		// "Set the selection's value to null."
-		setSelectionValue("superscript", null, range);
+		setSelectionValue("superscript", null);
 
 		// "If state is false, set the selection's value to "superscript"."
 		if (!state) {
-			setSelectionValue("superscript", "superscript", range);
+			setSelectionValue("superscript", "superscript");
 		}
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
@@ -4155,13 +3945,13 @@ commands.superscript = {
 ///// The underline command /////
 //@{
 commands.underline = {
-	action: function(value, range) {
+	action: function() {
 		// "If queryCommandState("underline") returns true, set the selection's
 		// value to null. Otherwise set the selection's value to "underline"."
-		if (myQueryCommandState("underline", range)) {
-			setSelectionValue("underline", null, range);
+		if (myQueryCommandState("underline")) {
+			setSelectionValue("underline", null);
 		} else {
-			setSelectionValue("underline", "underline", range);
+			setSelectionValue("underline", "underline");
 		}
 	}, inlineCommandActivatedValues: ["underline"]
 };
@@ -4170,22 +3960,22 @@ commands.underline = {
 ///// The unlink command /////
 //@{
 commands.unlink = {
-	action: function(value, range) {
-		range = range || getActiveRange();
+	action: function() {
 		// "Let hyperlinks be a list of every a element that has an href
 		// attribute and is contained in the active range or is an ancestor of
 		// one of its boundary points."
 		//
 		// As usual, take care to ensure it's tree order.  The correctness of
 		// the following is left as an exercise for the reader.
+		var range = getActiveRange();
 		var hyperlinks = [];
 		for (
 			var node = range.startContainer;
 			node;
 			node = node.parentNode
 		) {
-			if (isNamedHtmlElement(node, 'A')
-			&& hasAttribute(node, "href")) {
+			if (isHtmlElement(node, "A")
+			&& $_( node ).hasAttribute("href")) {
 				hyperlinks.unshift(node);
 			}
 		}
@@ -4194,8 +3984,8 @@ commands.unlink = {
 			node != nextNodeDescendants(range.endContainer);
 			node = nextNode(node)
 		) {
-			if (isNamedHtmlElement(node, 'A')
-			&& hasAttribute(node, "href")
+			if (isHtmlElement(node, "A")
+			&& $_( node ).hasAttribute("href")
 			&& (isContained(node, range)
 			|| isAncestor(node, range.endContainer)
 			|| node == range.endContainer)) {
@@ -4222,7 +4012,7 @@ commands.unlink = {
 // "An indentation element is either a blockquote, or a div that has a style
 // attribute that sets "margin" or some subproperty of it."
 function isIndentationElement(node) {
-	if (!isAnyHtmlElement(node)) {
+	if (!isHtmlElement(node)) {
 		return false;
 	}
 
@@ -4270,7 +4060,7 @@ function isSimpleIndentationElement(node) {
 
 	for (var i = 0; i < node.attributes.length; i++) {
 		if (!isHtmlNamespace(node.attributes[i].namespaceURI)
-		|| jQuery.inArray(node.attributes[i].name, ["style", "class", "dir"]) == -1) {
+		|| $_(["style", "class", "dir"]).indexOf(node.attributes[i].name) == -1) {
 			return false;
 		}
 	}
@@ -4298,7 +4088,7 @@ function isSimpleIndentationElement(node) {
 // "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "listing", "p", "pre",
 // or "xmp"."
 function isNonListSingleLineContainer(node) {
-	return isHtmlElementInArray(node, ["address", "div", "h1", "h2", "h3", "h4", "h5",
+	return isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5",
 		"h6", "listing", "p", "pre", "xmp"]);
 }
 
@@ -4306,7 +4096,7 @@ function isNonListSingleLineContainer(node) {
 // HTML element with local name "li", "dt", or "dd"."
 function isSingleLineContainer(node) {
 	return isNonListSingleLineContainer(node)
-		|| isHtmlElementInArray(node, ["li", "dt", "dd"]);
+		|| isHtmlElement(node, ["li", "dt", "dd"]);
 }
 
 // "The default single-line container name is "p"."
@@ -4336,15 +4126,14 @@ function fixDisallowedAncestors(node, range) {
 		// and false otherwise, and new parent instructions returning the
 		// result of calling createElement("dl") on the context object. Then
 		// abort these steps."
-		if (isHtmlElementInArray(node, ["dd", "dt"])) {
+		if (isHtmlElement(node, ["dd", "dt"])) {
 			wrap([node],
-				function(sibling) { return isNamedHtmlElement(sibling, 'dl') && !sibling.attributes.length },
+				function(sibling) { return isHtmlElement(sibling, "dl") && !sibling.attributes.length },
 				function() { return document.createElement("dl") },
 				range
 			);
 			return;
 		}
-
 
 		// "If node is not a prohibited paragraph child, abort these steps."
 		if (!isProhibitedParagraphChild(node)) {
@@ -4462,7 +4251,7 @@ function fixDisallowedAncestors(node, range) {
 function normalizeSublists(item, range) {
 	// "If item is not an li or it is not editable or its parent is not
 	// editable, abort these steps."
-	if (!isNamedHtmlElement(item, 'LI')
+	if (!isHtmlElement(item, "LI")
 	|| !isEditable(item)
 	|| !isEditable(item.parentNode)) {
 		return;
@@ -4472,13 +4261,13 @@ function normalizeSublists(item, range) {
 	var newItem = null;
 
 	// "While item has an ol or ul child:"
-	while ($_(item.childNodes).some( function (node) { return isHtmlElementInArray(node, ["OL", "UL"]) })) {
+	while ($_(item.childNodes).some( function (node) { return isHtmlElement(node, ["OL", "UL"]) })) {
 		// "Let child be the last child of item."
 		var child = item.lastChild;
 
 		// "If child is an ol or ul, or new item is null and child is a Text
 		// node whose data consists of zero of more space characters:"
-		if (isHtmlElementInArray(child, ["OL", "UL"])
+		if (isHtmlElement(child, ["OL", "UL"])
 		|| (!newItem && child.nodeType == $_.Node.TEXT_NODE && /^[ \t\n\f\r]*$/.test(child.data))) {
 			// "Set new item to null."
 			newItem = null;
@@ -4513,14 +4302,14 @@ function normalizeSublists(item, range) {
 function unNormalizeSublists(item, range) {
 	// "If item is not an ol or ol or it is not editable or its parent is not
 	// editable, abort these steps."
-	if (!isHtmlElementInArray(item, ["OL", "UL"])
+	if (!isHtmlElement(item, ["OL", "UL"])
 	|| !isEditable(item)) {
 		return;
 	}
 
 	var $list = jQuery(item);
 	$list.children("ol,ul").each(function(index, sublist) {
-		if (isNamedHtmlElement(sublist.previousSibling, "LI")) {
+		if (isHtmlElement(sublist.previousSibling, "LI")) {
 			// move the sublist into the LI
 			movePreservingRanges(sublist, sublist.previousSibling, sublist.previousSibling.childNodes.length, range);
 		}
@@ -4540,8 +4329,8 @@ function getSelectionListState() {
 	var nodeList = getContainedNodes(newRange, function(node) {
 		return isEditable(node)
 			&& !isIndentationElement(node)
-			&& (isHtmlElementInArray(node, ["ol", "ul"])
-			|| isHtmlElementInArray(node.parentNode, ["ol", "ul"])
+			&& (isHtmlElement(node, ["ol", "ul"])
+			|| isHtmlElement(node.parentNode, ["ol", "ul"])
 			|| isAllowedChild(node, "li"));
 	});
 
@@ -4554,11 +4343,11 @@ function getSelectionListState() {
 	// the child of an li child of an ol, and none is a ul or an ancestor of a
 	// ul, return "ol"."
 	if ($_(nodeList).every(function(node) {
-		return isNamedHtmlElement(node, 'ol')
-			|| isNamedHtmlElement(node.parentNode, "ol")
-			|| (isNamedHtmlElement(node.parentNode, "li") && isNamedHtmlElement(node.parentNode.parentNode, "ol"));
+		return isHtmlElement(node, "ol")
+			|| isHtmlElement(node.parentNode, "ol")
+			|| (isHtmlElement(node.parentNode, "li") && isHtmlElement(node.parentNode.parentNode, "ol"));
 	})
-	&& !$_( nodeList ).some(function(node) { return isNamedHtmlElement(node, 'ul') || ("querySelector" in node && node.querySelector("ul")) })) {
+	&& !$_( nodeList ).some(function(node) { return isHtmlElement(node, "ul") || ("querySelector" in node && node.querySelector("ul")) })) {
 		return "ol";
 	}
 
@@ -4566,25 +4355,25 @@ function getSelectionListState() {
 	// child of an li child of a ul, and none is an ol or an ancestor of an ol,
 	// return "ul"."
 	if ($_(nodeList).every(function(node) {
-		return isNamedHtmlElement(node, 'ul')
-			|| isNamedHtmlElement(node.parentNode, "ul")
-			|| (isNamedHtmlElement(node.parentNode, "li") && isNamedHtmlElement(node.parentNode.parentNode, "ul"));
+		return isHtmlElement(node, "ul")
+			|| isHtmlElement(node.parentNode, "ul")
+			|| (isHtmlElement(node.parentNode, "li") && isHtmlElement(node.parentNode.parentNode, "ul"));
 	})
-	&& !$_( nodeList ).some(function(node) { return isNamedHtmlElement(node, 'ol') || ("querySelector" in node && node.querySelector("ol")) })) {
+	&& !$_( nodeList ).some(function(node) { return isHtmlElement(node, "ol") || ("querySelector" in node && node.querySelector("ol")) })) {
 		return "ul";
 	}
 
 	var hasOl = $_( nodeList ).some(function(node) {
-		return isNamedHtmlElement(node, 'ol')
-			|| isNamedHtmlElement(node.parentNode, "ol")
+		return isHtmlElement(node, "ol")
+			|| isHtmlElement(node.parentNode, "ol")
 			|| ("querySelector" in node && node.querySelector("ol"))
-			|| (isNamedHtmlElement(node.parentNode, "li") && isNamedHtmlElement(node.parentNode.parentNode, "ol"));
+			|| (isHtmlElement(node.parentNode, "li") && isHtmlElement(node.parentNode.parentNode, "ol"));
 	});
 	var hasUl = $_( nodeList ).some(function(node) {
-		return isNamedHtmlElement(node, 'ul')
-			|| isNamedHtmlElement(node.parentNode, "ul")
+		return isHtmlElement(node, "ul")
+			|| isHtmlElement(node.parentNode, "ul")
 			|| ("querySelector" in node && node.querySelector("ul"))
-			|| (isNamedHtmlElement(node.parentNode, "li") && isNamedHtmlElement(node.parentNode.parentNode, "ul"));
+			|| (isHtmlElement(node.parentNode, "li") && isHtmlElement(node.parentNode.parentNode, "ul"));
 	});
 	// "If some member of node list is either an ol or the child or ancestor of
 	// an ol or the child of an li child of an ol, and some member of node list
@@ -4616,7 +4405,7 @@ function getAlignmentValue(node) {
 	// its parent."
 	while ((node && node.nodeType != $_.Node.ELEMENT_NODE)
 	|| (node.nodeType == $_.Node.ELEMENT_NODE
-	&& jQuery.inArray($_.getComputedStyle(node).display, ["inline", "none"]) != -1)) {
+	&& $_(["inline", "none"]).indexOf($_.getComputedStyle(node).display) != -1)) {
 		node = node.parentNode;
 	}
 
@@ -4644,7 +4433,7 @@ function getAlignmentValue(node) {
 
 	// "If node's "text-align" property has resolved value "center", "justify",
 	// "left", or "right", return that value."
-	if (jQuery.inArray(resolvedValue, ["center", "justify", "left", "right"]) != -1) {
+	if ($_(["center", "justify", "left", "right"]).indexOf(resolvedValue) != -1) {
 		return resolvedValue;
 	}
 
@@ -4665,7 +4454,7 @@ function isBlockStartPoint(node, offset) {
 		&& offset - 1 < node.childNodes.length
 		&& isVisible(node.childNodes[offset - 1])
 		&& (isBlockNode(node.childNodes[offset - 1])
-		|| isNamedHtmlElement(node.childNodes[offset - 1], "br")));
+		|| isHtmlElement(node.childNodes[offset - 1], "br")));
 }
 
 // "A boundary point (node, offset) is a block end point if either node's
@@ -4697,7 +4486,7 @@ function blockExtend(range) {
 	// the index of the last such li in tree order, and set start node to that
 	// li's parent."
 	var liAncestors = $_( getAncestors(startNode).concat(startNode) )
-		.filter(function(ancestor) { return isNamedHtmlElement(ancestor, 'li') })
+		.filter(function(ancestor) { return isHtmlElement(ancestor, "li") })
 		.slice(-1);
 	if (liAncestors.length) {
 		startOffset = getNodeIndex(liAncestors[0]);
@@ -4734,7 +4523,7 @@ function blockExtend(range) {
 	// plus the index of the last such li in tree order, and set end node to
 	// that li's parent."
 	var liAncestors = $_( getAncestors(endNode).concat(endNode) )
-		.filter(function(ancestor) { return isNamedHtmlElement(ancestor, 'li') })
+		.filter(function(ancestor) { return isHtmlElement(ancestor, "li") })
 		.slice(-1);
 	if (liAncestors.length) {
 		endOffset = 1 + getNodeIndex(liAncestors[0]);
@@ -5183,7 +4972,7 @@ function deleteContents() {
 	// set start block to null."
 	if ((!isBlockNode(startBlock) && !isEditingHost(startBlock))
 	|| !isAllowedChild("span", startBlock)
-	|| isHtmlElementInArray(startBlock, ["td", "th"])) {
+	|| isHtmlElement(startBlock, ["td", "th"])) {
 		startBlock = null;
 	}
 
@@ -5202,7 +4991,7 @@ function deleteContents() {
 	// block to null."
 	if ((!isBlockNode(endBlock) && !isEditingHost(endBlock))
 	|| !isAllowedChild("span", endBlock)
-	|| isHtmlElementInArray(endBlock, ["td", "th"])) {
+	|| isHtmlElement(endBlock, ["td", "th"])) {
 		endBlock = null;
 	}
 
@@ -5269,7 +5058,7 @@ function deleteContents() {
 	var nodeList = getContainedNodes(range,
 		function(node) {
 			return isEditable(node)
-				&& !isHtmlElementInArray(node, ["thead", "tbody", "tfoot", "tr", "th", "td"]);
+				&& !isHtmlElement(node, ["thead", "tbody", "tfoot", "tr", "th", "td"]);
 		}
 	);
 
@@ -5425,7 +5214,7 @@ function deleteContents() {
 		// "While children's last member is not a br, and children's last
 		// member's nextSibling is an inline node, append children's last
 		// member's nextSibling to children."
-		while (!isNamedHtmlElement(children[children.length - 1], "br")
+		while (!isHtmlElement(children[children.length - 1], "br")
 		&& isInlineNode(children[children.length - 1].nextSibling)) {
 			children.push(children[children.length - 1].nextSibling);
 		}
@@ -5442,7 +5231,7 @@ function deleteContents() {
 		// "If children's first member's previousSibling is an editable br,
 		// remove that br from its parent."
 		if (isEditable(children[0].previousSibling)
-		&& isNamedHtmlElement(children[0].previousSibling, "br")) {
+		&& isHtmlElement(children[0].previousSibling, "br")) {
 			children[0].parentNode.removeChild(children[0].previousSibling);
 		}
 
@@ -5465,7 +5254,7 @@ function deleteContents() {
 		// "If reference node's nextSibling is an inline node and start block's
 		// lastChild is a br, remove start block's lastChild from it."
 		if (isInlineNode(referenceNode.nextSibling)
-		&& isNamedHtmlElement(startBlock.lastChild, "br")) {
+		&& isHtmlElement(startBlock.lastChild, "br")) {
 			startBlock.removeChild(startBlock.lastChild);
 		}
 
@@ -5475,7 +5264,7 @@ function deleteContents() {
 		// "If reference node's nextSibling is neither null nor a br nor a
 		// block node, append it to nodes to move."
 		if (referenceNode.nextSibling
-		&& !isNamedHtmlElement(referenceNode.nextSibling, "br")
+		&& !isHtmlElement(referenceNode.nextSibling, "br")
 		&& !isBlockNode(referenceNode.nextSibling)) {
 			nodesToMove.push(referenceNode.nextSibling);
 		}
@@ -5485,7 +5274,7 @@ function deleteContents() {
 		// move."
 		if (nodesToMove.length
 		&& nodesToMove[nodesToMove.length - 1].nextSibling
-		&& !isNamedHtmlElement(nodesToMove[nodesToMove.length - 1].nextSibling, "br")
+		&& !isHtmlElement(nodesToMove[nodesToMove.length - 1].nextSibling, "br")
 		&& !isBlockNode(nodesToMove[nodesToMove.length - 1].nextSibling)) {
 			nodesToMove.push(nodesToMove[nodesToMove.length - 1].nextSibling);
 		}
@@ -5501,7 +5290,7 @@ function deleteContents() {
 
 		// "If the nextSibling of reference node is a br, remove it from its
 		// parent."
-		if (isNamedHtmlElement(referenceNode.nextSibling, "br")) {
+		if (isHtmlElement(referenceNode.nextSibling, "br")) {
 			referenceNode.parentNode.removeChild(referenceNode.nextSibling);
 		}
 
@@ -5515,7 +5304,7 @@ function deleteContents() {
 		// "If end block's firstChild is an inline node and start block's
 		// lastChild is a br, remove start block's lastChild from it."
 		if (isInlineNode(endBlock.firstChild)
-		&& isNamedHtmlElement(startBlock.lastChild, "br")) {
+		&& isHtmlElement(startBlock.lastChild, "br")) {
 			startBlock.removeChild(startBlock.lastChild);
 		}
 
@@ -5558,7 +5347,6 @@ function deleteContents() {
 //@{
 
 function splitParent(nodeList, range) {
-
 	// "Let original parent be the parent of the first member of node list."
 	var originalParent = nodeList[0].parentNode;
 
@@ -5571,31 +5359,31 @@ function splitParent(nodeList, range) {
 
 	// "If the first child of original parent is in node list, remove
 	// extraneous line breaks before original parent."
-	if (jQuery.inArray(originalParent.firstChild, nodeList) != -1) {
+	if ($_(nodeList).indexOf(originalParent.firstChild) != -1) {
 		removeExtraneousLineBreaksBefore(originalParent);
 	}
-
-	var firstChildInNodeList = jQuery.inArray(originalParent.firstChild, nodeList) != -1;
-	var lastChildInNodeList = jQuery.inArray(originalParent.lastChild, nodeList) != -1;
 
 	// "If the first child of original parent is in node list, and original
 	// parent follows a line break, set follows line break to true. Otherwise,
 	// set follows line break to false."
-	var followsLineBreak_ = firstChildInNodeList && followsLineBreak(originalParent);
+	var followsLineBreak_ = $_(nodeList).indexOf(originalParent.firstChild) != -1
+		&& followsLineBreak(originalParent);
 
 	// "If the last child of original parent is in node list, and original
 	// parent precedes a line break, set precedes line break to true.
 	// Otherwise, set precedes line break to false."
-	var precedesLineBreak_ = lastChildInNodeList && precedesLineBreak(originalParent);
+	var precedesLineBreak_ = $_(nodeList).indexOf(originalParent.lastChild) != -1
+		&& precedesLineBreak(originalParent);
 
 	// "If the first child of original parent is not in node list, but its last
 	// child is:"
-	if (!firstChildInNodeList && lastChildInNodeList) {
+	if ($_(nodeList).indexOf(originalParent.firstChild) == -1
+	&& $_(nodeList).indexOf(originalParent.lastChild) != -1) {
 		// "For each node in node list, in reverse order, insert node into the
 		// parent of original parent immediately after original parent,
 		// preserving ranges."
 		for (var i = nodeList.length - 1; i >= 0; i--) {
-      movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
+			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
 		}
 
 		// "If precedes line break is true, and the last member of node list
@@ -5615,7 +5403,7 @@ function splitParent(nodeList, range) {
 	}
 
 	// "If the first child of original parent is not in node list:"
-	if (!firstChildInNodeList) {
+	if ($_(nodeList).indexOf(originalParent.firstChild) == -1) {
 		// "Let cloned parent be the result of calling cloneNode(false) on
 		// original parent."
 		var clonedParent = originalParent.cloneNode(false);
@@ -5638,15 +5426,7 @@ function splitParent(nodeList, range) {
 	// "For each node in node list, insert node into the parent of original
 	// parent immediately before original parent, preserving ranges."
 	for (var i = 0; i < nodeList.length; i++) {
-		if(isHtmlElementInArray(originalParent.parentNode, ["LI"])){
-			var newParent = originalParent.parentNode.parentNode;
-			var newIndex = getNodeIndex(originalParent.parentNode) + 1;
-
-			movePreservingRanges(nodeList[i], newParent, newIndex, range);
-			movePreservingRanges(originalParent, nodeList[i], -1, range);
-		} else {
-			movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent), range);
-		}
+		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent), range);
 	}
 
 	// "If follows line break is true, and the first member of node list does
@@ -5662,8 +5442,8 @@ function splitParent(nodeList, range) {
 	// an inline node, remove the first child of original parent from original
 	// parent."
 	if (isInlineNode(nodeList[nodeList.length - 1])
-	&& !isNamedHtmlElement(nodeList[nodeList.length - 1], "br")
-	&& isNamedHtmlElement(originalParent.firstChild, "br")
+	&& !isHtmlElement(nodeList[nodeList.length - 1], "br")
+	&& isHtmlElement(originalParent.firstChild, "br")
 	&& !isInlineNode(originalParent)) {
 		originalParent.removeChild(originalParent.firstChild);
 	}
@@ -5821,7 +5601,7 @@ function canonicalizeWhitespace(node, offset) {
 		// node's data is a space (0x0020) or non-breaking space (0x00A0),
 		// subtract one from start offset."
 		} else if (startNode.nodeType == $_.Node.TEXT_NODE
-		&& jQuery.inArray($_.getComputedStyle(startNode.parentNode).whiteSpace, ["pre", "pre-wrap"]) == -1
+		&& $_(["pre", "pre-wrap"]).indexOf($_.getComputedStyle(startNode.parentNode).whiteSpace) == -1
 		&& startOffset != 0
 		&& /[ \xa0]/.test(startNode.data[startOffset - 1])) {
 			startOffset--;
@@ -5866,7 +5646,7 @@ function canonicalizeWhitespace(node, offset) {
 		// offset is not end node's length and the end offsetth element of
 		// end node's data is a space (0x0020) or non-breaking space (0x00A0):"
 		} else if (endNode.nodeType == $_.Node.TEXT_NODE
-		&& jQuery.inArray($_.getComputedStyle(endNode.parentNode).whiteSpace, ["pre", "pre-wrap"]) == -1
+		&& $_(["pre", "pre-wrap"]).indexOf($_.getComputedStyle(endNode.parentNode).whiteSpace) == -1
 		&& endOffset != getNodeLength(endNode)
 		&& /[ \xa0]/.test(endNode.data[endOffset])) {
 			// "If follows space is true and the end offsetth element of end
@@ -5993,7 +5773,7 @@ function indentNodes(nodeList, range) {
 	var firstNode = nodeList[0];
 
 	// "If first node's parent is an ol or ul:"
-	if (isHtmlElementInArray(firstNode.parentNode, ["OL", "UL"])) {
+	if (isHtmlElement(firstNode.parentNode, ["OL", "UL"])) {
 		// "Let tag be the local name of the parent of first node."
 		var tag = firstNode.parentNode.tagName;
 
@@ -6007,23 +5787,10 @@ function indentNodes(nodeList, range) {
 			range
 		);
 
-    //Note: This is not part of editing API spec
-    //Adding this to conform with Aloha's intended behaviour
-    //
-    //if the sublist's previousSibling is also a li
-    //move the sublist to previousSibling
-    $_( nodeList ).forEach( function( node ) {
-      var parentNode = node.parentNode
-      movePreservingRanges(parentNode, parentNode.previousSibling, -1, range);
-    });
-
 		// "Abort these steps."
 		return;
 	}
 
-  // Note: Disabled simple indention as it breaks Aloha's conventions.
-  // Original implementation was left commented for future reference.
-  
 	// "Wrap node list, with sibling criteria returning true for a simple
 	// indentation element and false otherwise, and new parent instructions
 	// returning the result of calling createElement("blockquote") on the
@@ -6039,7 +5806,7 @@ function indentNodes(nodeList, range) {
 }
 
 function outdentNode(node, range) {
- 	// "If node is not editable, abort these steps."
+	// "If node is not editable, abort these steps."
 	if (!isEditable(node)) {
 		return;
 	}
@@ -6084,7 +5851,7 @@ function outdentNode(node, range) {
 	while (isEditable(currentAncestor)
 	&& currentAncestor.nodeType == $_.Node.ELEMENT_NODE
 	&& !isSimpleIndentationElement(currentAncestor)
-	&& !isHtmlElementInArray(currentAncestor, ["ol", "ul"])) {
+	&& !isHtmlElement(currentAncestor, ["ol", "ul"])) {
 		ancestorList.push(currentAncestor);
 		currentAncestor = currentAncestor.parentNode;
 	}
@@ -6104,19 +5871,17 @@ function outdentNode(node, range) {
 		while (isEditable(currentAncestor)
 		&& currentAncestor.nodeType == $_.Node.ELEMENT_NODE
 		&& !isIndentationElement(currentAncestor)
-		&& !isHtmlElementInArray(currentAncestor, ["ol", "ul"])) {
+		&& !isHtmlElement(currentAncestor, ["ol", "ul"])) {
 			ancestorList.push(currentAncestor);
 			currentAncestor = currentAncestor.parentNode;
 		}
 	}
 
-	// "If node is an ol or ul 
-  // and current ancestor is not an editable
+	// "If node is an ol or ul and current ancestor is not an editable
 	// indentation element:"
-	if (isHtmlElementInArray(node, ["OL", "UL"])
+	if (isHtmlElement(node, ["OL", "UL"])
 	&& (!isEditable(currentAncestor)
 	|| !isIndentationElement(currentAncestor))) {
-
 		// "Unset the reversed, start, and type attributes of node, if any are
 		// set."
 		node.removeAttribute("reversed");
@@ -6129,7 +5894,7 @@ function outdentNode(node, range) {
 		// "If node has attributes, and its parent is not an ol or ul, set the
 		// tag name of node to "div"."
 		if (node.attributes.length
-		&& !isHtmlElementInArray(node.parentNode, ["OL", "UL"])) {
+		&& !isHtmlElement(node.parentNode, ["OL", "UL"])) {
 			setTagName(node, "div", range);
 
 		// "Otherwise:"
@@ -6183,8 +5948,8 @@ function outdentNode(node, range) {
 		// "If target is an inline node that is not a br, and its nextSibling
 		// is a br, remove target's nextSibling from its parent."
 		if (isInlineNode(target)
-		&& !isNamedHtmlElement(target, 'BR')
-		&& isNamedHtmlElement(target.nextSibling, "BR")) {
+		&& !isHtmlElement(target, "BR")
+		&& isHtmlElement(target.nextSibling, "BR")) {
 			target.parentNode.removeChild(target.nextSibling);
 		}
 
@@ -6210,10 +5975,6 @@ function outdentNode(node, range) {
 //@{
 
 function toggleLists(tagName, range) {
-
-  // get the range if the range is not set
-	range = range || getActiveRange();
-
 	// "Let mode be "disable" if the selection's list state is tag name, and
 	// "enable" otherwise."
 	var mode = getSelectionListState() == tagName ? "disable" : "enable";
@@ -6224,40 +5985,37 @@ function toggleLists(tagName, range) {
 	// "ol"."
 	var otherTagName = tagName == "OL" ? "UL" : "OL";
 
-  // Note: Disabled the normalization of sublists,
-  // as it breaks Aloha's default conventions.
-  
-	// // "Let items be a list of all lis that are ancestor containers of the
-	// // range's start and/or end node."
-	// //
-	// // It's annoying to get this in tree order using functional stuff without
-	// // doing getDescendants(document), which is slow, so I do it imperatively.
-	// var items = [];
-	// (function(){
-	// 	for (
-	// 		var ancestorContainer = range.endContainer;
-	// 		ancestorContainer != range.commonAncestorContainer;
-	// 		ancestorContainer = ancestorContainer.parentNode
-	// 	) {
-	// 		if (isNamedHtmlElement(ancestorContainer, 'li')) {
-	// 			items.unshift(ancestorContainer);
-	// 		}
-	// 	}
-	// 	for (
-	// 		var ancestorContainer = range.startContainer;
-	// 		ancestorContainer;
-	// 		ancestorContainer = ancestorContainer.parentNode
-	// 	) {
-	// 		if (isNamedHtmlElement(ancestorContainer, 'li')) {
-	// 			items.unshift(ancestorContainer);
-	// 		}
-	// 	}
-	// })();
+	// "Let items be a list of all lis that are ancestor containers of the
+	// range's start and/or end node."
+	//
+	// It's annoying to get this in tree order using functional stuff without
+	// doing getDescendants(document), which is slow, so I do it imperatively.
+	var items = [];
+	(function(){
+		for (
+			var ancestorContainer = range.endContainer;
+			ancestorContainer != range.commonAncestorContainer;
+			ancestorContainer = ancestorContainer.parentNode
+		) {
+			if (isHtmlElement(ancestorContainer, "li")) {
+				items.unshift(ancestorContainer);
+			}
+		}
+		for (
+			var ancestorContainer = range.startContainer;
+			ancestorContainer;
+			ancestorContainer = ancestorContainer.parentNode
+		) {
+			if (isHtmlElement(ancestorContainer, "li")) {
+				items.unshift(ancestorContainer);
+			}
+		}
+	})();
 
-	// // "For each item in items, normalize sublists of item."
-	// $_( items ).forEach( function( thisArg ) {
-	// 		normalizeSublists( thisArg, range);
-	// });
+	// "For each item in items, normalize sublists of item."
+	$_( items ).forEach( function( thisArg ) {
+			normalizeSublists( thisArg, range);
+	});
 
 	// "Block-extend the range, and let new range be the result."
 	var newRange = blockExtend(range);
@@ -6312,8 +6070,8 @@ function toggleLists(tagName, range) {
 	var nodeList = getContainedNodes(newRange, function(node) {
 		return isEditable(node)
 		&& !isIndentationElement(node)
-		&& (isHtmlElementInArray(node, ["OL", "UL"])
-		|| isHtmlElementInArray(node.parentNode, ["OL", "UL"])
+		&& (isHtmlElement(node, ["OL", "UL"])
+		|| isHtmlElement(node.parentNode, ["OL", "UL"])
 		|| isAllowedChild(node, "li"));
 	});
 
@@ -6321,8 +6079,8 @@ function toggleLists(tagName, range) {
 	// not also an ol or ul."
 	if (mode == "enable") {
 		nodeList = $_( nodeList ).filter(function(node) {
-			return !isHtmlElementInArray(node, ["ol", "ul"])
-				|| isHtmlElementInArray(node.parentNode, ["ol", "ul"]);
+			return !isHtmlElement(node, ["ol", "ul"])
+				|| isHtmlElement(node.parentNode, ["ol", "ul"]);
 		});
 	}
 
@@ -6383,13 +6141,13 @@ function toggleLists(tagName, range) {
 				// "If node list's first member is a p or div, set the tag name
 				// of node list's first member to "li", and append the result
 				// to sublist. Remove the first member from node list."
-				if (isHtmlElementInArray(nodeList[0], ["p", "div"])) {
+				if (isHtmlElement(nodeList[0], ["p", "div"])) {
 					sublist.push(setTagName(nodeList[0], "li", range));
 					nodeList.shift();
 
 				// "Otherwise, if the first member of node list is an li or ol
 				// or ul, remove it from node list and append it to sublist."
-				} else if (isHtmlElementInArray(nodeList[0], ["li", "ol", "ul"])) {
+				} else if (isHtmlElement(nodeList[0], ["li", "ol", "ul"])) {
 					sublist.push(nodeList.shift());
 
 				// "Otherwise:"
@@ -6408,7 +6166,7 @@ function toggleLists(tagName, range) {
 					&& nodeList[0] == nodesToWrap[nodesToWrap.length - 1].nextSibling
 					&& isInlineNode(nodeList[0])
 					&& isInlineNode(nodesToWrap[nodesToWrap.length - 1])
-					&& !isNamedHtmlElement(nodesToWrap[nodesToWrap.length - 1], "br"))) {
+					&& !isHtmlElement(nodesToWrap[nodesToWrap.length - 1], "br"))) {
 						nodesToWrap.push(nodeList.shift());
 					}
 
@@ -6429,7 +6187,7 @@ function toggleLists(tagName, range) {
 			// local name tag name, or if every member of sublist is an ol or
 			// ul, continue this loop from the beginning."
 			if (isHtmlElement(sublist[0].parentNode, tagName)
-			|| $_(sublist).every(function(node) { return isHtmlElementInArray(node, ["ol", "ul"]) })) {
+			|| $_(sublist).every(function(node) { return isHtmlElement(node, ["ol", "ul"]) })) {
 				continue;
 			}
 
@@ -6440,13 +6198,8 @@ function toggleLists(tagName, range) {
 				// result."
 				var values = recordValues(sublist);
 
-        // Move each node in sublist into the parent node of
-        // its original parent
-        // (Modified behaviour from editing API spec)
-        var originalParent = sublist[0].parentNode;
-        for (var i = sublist.length - 1; i >= 0; i--) {
-          movePreservingRanges(sublist[i], originalParent.parentNode, getNodeIndex(originalParent), range);
-        }
+				// "Split the parent of sublist."
+				splitParent(sublist, range);
 
 				// "Wrap sublist, with sibling criteria returning true for an
 				// HTML element with local name tag name and false otherwise,
@@ -6532,9 +6285,9 @@ function justifySelection(alignment, range) {
 			&& isEditable(node)
 			// Ignoring namespaces here
 			&& (
-				hasAttribute(node, "align")
+				$_( node ).hasAttribute("align")
 				|| node.style.textAlign != ""
-				|| isNamedHtmlElement(node, 'center')
+				|| isHtmlElement(node, "center")
 			);
 	});
 
@@ -6555,14 +6308,14 @@ function justifySelection(alignment, range) {
 
 		// "If element is a div or span or center with no attributes, remove
 		// it, preserving its descendants."
-		if (isHtmlElementInArray(element, ["div", "span", "center"])
+		if (isHtmlElement(element, ["div", "span", "center"])
 		&& !element.attributes.length) {
 			removePreservingDescendants(element, range);
 		}
 
 		// "If element is a center with one or more attributes, set the tag
 		// name of element to "div"."
-		if (isNamedHtmlElement(element, 'center')
+		if (isHtmlElement(element, "center")
 		&& element.attributes.length) {
 			setTagName(element, "div", range);
 		}
@@ -6615,7 +6368,7 @@ function justifySelection(alignment, range) {
 		// and return the result."
 		wrap(sublist,
 			function(node) {
-				return isNamedHtmlElement(node, 'div')
+				return isHtmlElement(node, "div")
 					&& $_(node.attributes).every(function(attr) {
 						return (attr.name == "align" && attr.value.toLowerCase() == alignment)
 							|| (attr.name == "style" && getStyleLength(node) == 1 && node.style.textAlign == alignment);
@@ -6635,15 +6388,8 @@ function justifySelection(alignment, range) {
 ///// Create an end break /////
 //@{
 function createEndBreak() {
-	// https://github.com/alohaeditor/Aloha-Editor/issues/516
 	var endBr = document.createElement("br");
 	endBr.setAttribute("class", "aloha-end-br");
-
-	// the code below cannot work, since the endBr is created right above and not inserted into the DOM tree.
-//	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
-//		var endTextNode = document.createTextNode(' ');
-//		endBr.insertBefore(endTextNode);
-//	}
 
 	return endBr;
 }
@@ -6687,8 +6433,8 @@ commands["delete"] = {
 		while ( true ) {
 			// we need to reset isBr and isHr on every interation of the loop
 			if ( offset > 0 ) {
-				isBr = isNamedHtmlElement(node.childNodes[offset - 1], "br") || false;
-				isHr = isNamedHtmlElement(node.childNodes[offset - 1], "hr") || false;
+				isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
+				isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
 			}
 
 			// "If offset is zero and node's previousSibling is an editable
@@ -6728,7 +6474,7 @@ commands["delete"] = {
 			} else if (0 <= offset - 1
 			&& offset - 1 < node.childNodes.length
 			&& isEditable(node.childNodes[offset - 1])
-			&& isNamedHtmlElement(node.childNodes[offset - 1], "a")) {
+			&& isHtmlElement(node.childNodes[offset - 1], "a")) {
 				removePreservingDescendants(node.childNodes[offset - 1], range);
 				return;
 
@@ -6738,7 +6484,7 @@ commands["delete"] = {
 			} else if (0 <= offset - 1
 			&& offset - 1 < node.childNodes.length
 			&& !isBlockNode(node.childNodes[offset - 1])
-			&& !isHtmlElementInArray(node.childNodes[offset - 1], ["br", "img"])) {
+			&& !isHtmlElement(node.childNodes[offset - 1], ["br", "img"])) {
 				node = node.childNodes[offset - 1];
 				offset = getNodeLength(node);
 
@@ -6792,7 +6538,7 @@ commands["delete"] = {
 		// (node, offset) and abort these steps."
 		if (0 <= offset - 1
 		&& offset - 1 < node.childNodes.length
-		&& isHtmlElementInArray(node.childNodes[offset - 1], ["br", "hr", "img"])) {
+		&& isHtmlElement(node.childNodes[offset - 1], ["br", "hr", "img"])) {
 			range.setStart(node, offset);
 			range.setEnd(node, offset);
 			deleteContents(range);
@@ -6801,7 +6547,7 @@ commands["delete"] = {
 
 		// "If node is an li or dt or dd and is the first child of its parent,
 		// and offset is zero:"
-		if (isHtmlElementInArray(node, ["li", "dt", "dd"])
+		if (isHtmlElement(node, ["li", "dt", "dd"])
 		&& node == node.parentNode.firstChild
 		&& offset == 0) {
 			// "Let items be a list of all lis that are ancestors of node."
@@ -6809,7 +6555,7 @@ commands["delete"] = {
 			// Remember, must be in tree order.
 			var items = [];
 			for (var ancestor = node.parentNode; ancestor; ancestor = ancestor.parentNode) {
-				if (isNamedHtmlElement(ancestor, 'li')) {
+				if (isHtmlElement(ancestor, "li")) {
 					items.unshift(ancestor);
 				}
 			}
@@ -6833,7 +6579,7 @@ commands["delete"] = {
 			// its ancestors in the same editing host, set the tag name of node
 			// to the default single-line container name and let node be the
 			// result."
-			if (isHtmlElementInArray(node, ["dd", "dt"])
+			if (isHtmlElement(node, ["dd", "dt"])
 			&& $_(getAncestors(node)).every(function(ancestor) {
 				return !inSameEditingHost(node, ancestor)
 					|| !isAllowedChild(node, ancestor)
@@ -6918,7 +6664,7 @@ commands["delete"] = {
 
 		// "If the child of start node with index start offset is a table,
 		// abort these steps."
-		if (isNamedHtmlElement(startNode.childNodes[startOffset], "table")) {
+		if (isHtmlElement(startNode.childNodes[startOffset], "table")) {
 			return;
 		}
 
@@ -6926,7 +6672,7 @@ commands["delete"] = {
 		// child is a table:"
 		if (0 <= startOffset - 1
 		&& startOffset - 1 < startNode.childNodes.length
-		&& isNamedHtmlElement(startNode.childNodes[startOffset - 1], "table")) {
+		&& isHtmlElement(startNode.childNodes[startOffset - 1], "table")) {
 			// "Call collapse(start node, start offset − 1) on the context
 			// object's Selection."
 			range.setStart(startNode, startOffset - 1);
@@ -6943,11 +6689,11 @@ commands["delete"] = {
 		// start offset minus one is an hr, or the child is a br whose
 		// previousSibling is either a br or not an inline node:"
 		if (offset == 0
-		&& (isNamedHtmlElement(startNode.childNodes[startOffset - 1], "hr")
+		&& (isHtmlElement(startNode.childNodes[startOffset - 1], "hr")
 			|| (
-				isNamedHtmlElement(startNode.childNodes[startOffset - 1], "br")
+				isHtmlElement(startNode.childNodes[startOffset - 1], "br")
 				&& (
-					isNamedHtmlElement(startNode.childNodes[startOffset - 1].previousSibling, "br")
+					isHtmlElement(startNode.childNodes[startOffset - 1].previousSibling, "br")
 					|| !isInlineNode(startNode.childNodes[startOffset - 1].previousSibling)
 				)
 			)
@@ -6967,7 +6713,7 @@ commands["delete"] = {
 		// "If the child of start node with index start offset is an li or dt
 		// or dd, and that child's firstChild is an inline node, and start
 		// offset is not zero:"
-		if (isHtmlElementInArray(startNode.childNodes[startOffset], ["li", "dt", "dd"])
+		if (isHtmlElement(startNode.childNodes[startOffset], ["li", "dt", "dd"])
 		&& isInlineNode(startNode.childNodes[startOffset].firstChild)
 		&& startOffset != 0) {
 			// "Let previous item be the child of start node with index start
@@ -6978,7 +6724,7 @@ commands["delete"] = {
 			// call createElement("br") on the context object and append the
 			// result as the last child of previous item."
 			if (isInlineNode(previousItem.lastChild)
-			&& !isNamedHtmlElement(previousItem.lastChild, "br")) {
+			&& !isHtmlElement(previousItem.lastChild, "br")) {
 				previousItem.appendChild(document.createElement("br"));
 			}
 
@@ -6995,8 +6741,8 @@ commands["delete"] = {
 		// node to its child with index start offset − 1, then set start offset
 		// to start node's length, then set node to start node's nextSibling,
 		// then set offset to 0."
-		if (isHtmlElementInArray(startNode.childNodes[startOffset], ["li", "dt", "dd"])
-		&& isHtmlElementInArray(startNode.childNodes[startOffset - 1], ["li", "dt", "dd"])) {
+		if (isHtmlElement(startNode.childNodes[startOffset], ["li", "dt", "dd"])
+		&& isHtmlElement(startNode.childNodes[startOffset - 1], ["li", "dt", "dd"])) {
 			startNode = startNode.childNodes[startOffset - 1];
 			startOffset = getNodeLength(startNode);
 			node = startNode.nextSibling;
@@ -7053,7 +6799,7 @@ var formattableBlockNames = ["address", "dd", "div", "dt", "h1", "h2", "h3",
 	"h4", "h5", "h6", "p", "pre"];
 
 commands.formatblock = {
-	action: function(value, range) {
+	action: function(value) {
 		// "If value begins with a "<" character and ends with a ">" character,
 		// remove the first and last characters from it."
 		if (/^<.*>$/.test(value)) {
@@ -7070,7 +6816,7 @@ commands.formatblock = {
 		}
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(range || getActiveRange());
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be an empty list of nodes."
 		//
@@ -7083,7 +6829,7 @@ commands.formatblock = {
 			return isEditable(node)
 				&& (isNonListSingleLineContainer(node)
 				|| isAllowedChild(node, "p")
-				|| isHtmlElementInArray(node, ["dd", "dt"]))
+				|| isHtmlElement(node, ["dd", "dt"]))
 				&& !$_( getDescendants(node) ).some(isProhibitedParagraphChild);
 		});
 
@@ -7153,7 +6899,7 @@ commands.formatblock = {
 				while (nodeList.length
 				&& nodeList[0] == sublist[sublist.length - 1].nextSibling
 				&& !isSingleLineContainer(nodeList[0])
-				&& !isNamedHtmlElement(sublist[sublist.length - 1], "BR")) {
+				&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
 					sublist.push(nodeList.shift());
 				}
 			}
@@ -7166,7 +6912,7 @@ commands.formatblock = {
 			// ancestors of the result."
 			fixDisallowedAncestors(
 				wrap(sublist,
-					jQuery.inArray(value, ["div", "p"]) == - 1
+					$_(["div", "p"]).indexOf(value) == - 1
 						? function(node) { return isHtmlElement(node, value) && !node.attributes.length }
 						: function() { return false },
 					function() { return document.createElement(value) },
@@ -7301,8 +7047,8 @@ commands.forwarddelete = {
 		while (true) {
 			// check whether the next element is a br or hr
 			if ( offset < node.childNodes.length ) {
-				isBr = isNamedHtmlElement(node.childNodes[offset], "br") || false;
-				isHr = isNamedHtmlElement(node.childNodes[offset], "hr") || false;
+//				isBr = isNamedHtmlElement(node.childNodes[offset], "br") || false;
+//				isHr = isNamedHtmlElement(node.childNodes[offset], "hr") || false;
 			}
 
 			// "If offset is the length of node and node's nextSibling is an
@@ -7345,7 +7091,7 @@ commands.forwarddelete = {
 			// then set offset to zero."
 			} else if (offset < node.childNodes.length
 			&& !isBlockNode(node.childNodes[offset])
-			&& !isHtmlElementInArray(node.childNodes[offset], ["br", "img"])) {
+			&& !isHtmlElement(node.childNodes[offset], ["br", "img"])) {
 				node = node.childNodes[offset];
 				offset = 0;
 
@@ -7406,7 +7152,7 @@ commands.forwarddelete = {
 		// the contents of the range with start (node, offset) and end (node,
 		// offset + 1) and abort these steps."
 		if (offset < node.childNodes.length
-		&& isHtmlElementInArray(node.childNodes[offset], ["br", "hr", "img"])) {
+		&& isHtmlElement(node.childNodes[offset], ["br", "hr", "img"])) {
 			range.setStart(node, offset);
 			range.setEnd(node, offset);
 			deleteContents(node, offset, node, offset + 1);
@@ -7440,12 +7186,12 @@ commands.forwarddelete = {
 
 		// "If the child of end node with index end offset minus one is a
 		// table, abort these steps."
-		if (isNamedHtmlElement(endNode.childNodes[endOffset - 1], "table")) {
+		if (isHtmlElement(endNode.childNodes[endOffset - 1], "table")) {
 			return;
 		}
 
 		// "If the child of end node with index end offset is a table:"
-		if (isNamedHtmlElement(endNode.childNodes[endOffset], "table")) {
+		if (isHtmlElement(endNode.childNodes[endOffset], "table")) {
 			// "Call collapse(end node, end offset) on the context object's
 			// Selection."
 			range.setStart(endNode, endOffset);
@@ -7461,7 +7207,7 @@ commands.forwarddelete = {
 		// "If offset is the length of node, and the child of end node with
 		// index end offset is an hr or br:"
 		if (offset == getNodeLength(node)
-		&& isHtmlElementInArray(endNode.childNodes[endOffset], ["br", "hr"])) {
+		&& isHtmlElement(endNode.childNodes[endOffset], ["br", "hr"])) {
 			// "Call collapse(node, offset) on the Selection."
 			range.setStart(node, offset);
 			range.setEnd(node, offset);
@@ -7500,38 +7246,35 @@ commands.forwarddelete = {
 ///// The indent command /////
 //@{
 commands.indent = {
-	action: function(value, range) {
-		range = range || getActiveRange();
-		// "Let items be a list of all lists that are ancestor containers of the
+	action: function() {
+		// "Let items be a list of all lis that are ancestor containers of the
 		// active range's start and/or end node."
 		//
 		// Has to be in tree order, remember!
 		var items = [];
-		for (var node = range.endContainer; node != range.commonAncestorContainer; node = node.parentNode) {
-			if (isNamedHtmlElement(node, 'LI')) {
+		for (var node = getActiveRange().endContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
+			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
-		for (var node = range.startContainer; node != range.commonAncestorContainer; node = node.parentNode) {
-			if (isNamedHtmlElement(node, 'LI')) {
+		for (var node = getActiveRange().startContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
+			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
-		for (var node = range.commonAncestorContainer; node; node = node.parentNode) {
-			if (isNamedHtmlElement(node, 'LI')) {
+		for (var node = getActiveRange().commonAncestorContainer; node; node = node.parentNode) {
+			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
 
-    // Note: Avoid normalizing sublists as it breaks Aloha's current behaviour
-    // Original implementation was left commented for future reference.
 		// "For each item in items, normalize sublists of item."
 		for (var i = 0; i < items.length; i++) {
-			normalizeSublists(items[i], range);
+			normalizeSublists(items[i, range]);
 		}
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(range);
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
@@ -7549,9 +7292,9 @@ commands.indent = {
 		// ul, and its previousSibling is an li as well, normalize sublists of
 		// its previousSibling."
 		if (nodeList.length
-		&& isNamedHtmlElement(nodeList[0], "LI")
-		&& isHtmlElementInArray(nodeList[0].parentNode, ["OL", "UL"])
-		&& isNamedHtmlElement(nodeList[0].previousSibling, "LI")) {
+		&& isHtmlElement(nodeList[0], "LI")
+		&& isHtmlElement(nodeList[0].parentNode, ["OL", "UL"])
+		&& isHtmlElement(nodeList[0].previousSibling, "LI")) {
 			normalizeSublists(nodeList[0].previousSibling, range);
 		}
 
@@ -7656,8 +7399,7 @@ commands.inserthorizontalrule = {
 //@{
 commands.inserthtml = {
 	action: function(value, range) {
-
-    range = range || getActiveRange();
+		
 		
 		// "Delete the contents of the active range."
 		deleteContents(range);
@@ -7754,7 +7496,7 @@ commands.insertimage = {
 		// its start offset is 0, remove its start node's child from it."
 		if (isBlockNode(range.startContainer)
 		&& range.startContainer.childNodes.length == 1
-		&& isNamedHtmlElement(range.startContainer.firstChild, "br")
+		&& isHtmlElement(range.startContainer.firstChild, "br")
 		&& range.startOffset == 0) {
 			range.startContainer.removeChild(range.startContainer.firstChild);
 		}
@@ -7884,17 +7626,13 @@ commands.insertlinebreak = {
 //@{
 commands.insertorderedlist = {
 	// "Toggle lists with tag name "ol"."
-	action: function(value, range) {
-		toggleLists("ol", range);
-	},
+	action: function() { toggleLists("ol") },
 	// "True if the selection's list state is "mixed" or "mixed ol", false
 	// otherwise."
 	indeterm: function() { return /^mixed( ol)?$/.test(getSelectionListState()) },
 	// "True if the selection's list state is "ol", false otherwise."
 	state: function() { return getSelectionListState() == "ol" }
 };
-
-var listRelatedElements = {"LI": true, "DT": true, "DD": true};
 
 //@}
 ///// The insertParagraph command /////
@@ -7921,12 +7659,11 @@ commands.insertparagraph = {
 		var offset = range.startOffset;
 
 		// "If node is a Text node, and offset is neither 0 nor the length of
-    // call splitText(offset) (replaced with custom splitDataNode() for cross-browser support)
-    // on node."
+		// node, call splitText(offset) on node."
 		if (node.nodeType == $_.Node.TEXT_NODE
 		&& offset != 0
 		&& offset != getNodeLength(node)) {
-      splitDataNode(node, offset);
+			node.splitText(offset);
 		}
 
 		// "If node is a Text node and offset is its length, set offset to one
@@ -8070,10 +7807,10 @@ commands.insertparagraph = {
 
 		// "If container's local name is "li", "dt", or "dd"; and either it has
 		// no children or it has a single child and that child is a br:"
-		if (listRelatedElements[container.tagName]
+		if ($_(["LI", "DT", "DD"]).indexOf(container.tagName) != -1
 		&& (!container.hasChildNodes()
 		|| (container.childNodes.length == 1
-		&& isNamedHtmlElement(container.firstChild, "br")))) {
+		&& isHtmlElement(container.firstChild, "br")))) {
 			// "Split the parent of the one-node list consisting of container."
 			splitParent([container], range);
 
@@ -8093,7 +7830,7 @@ commands.insertparagraph = {
 			// any of its ancestors in the same editing host, set the tag name
 			// of container to the default single-line container name and let
 			// container be the result."
-			if (isHtmlElementInArray(container, ["dd", "dt"])
+			if (isHtmlElement(container, ["dd", "dt"])
 			&& $_( getAncestors(container) ).every(function(ancestor) {
 				return !inSameEditingHost(container, ancestor)
 					|| !isAllowedChild(container, ancestor)
@@ -8105,9 +7842,9 @@ commands.insertparagraph = {
 			fixDisallowedAncestors(container, range);
 
 			// fix invalid nested lists
-			if (isNamedHtmlElement(container, 'li')
-			&& isNamedHtmlElement(container.nextSibling, "li")
-			&& isHtmlElementInArray(container.nextSibling.firstChild, ["ol", "ul"])) {
+			if (isHtmlElement(container, "li")
+			&& isHtmlElement(container.nextSibling, "li")
+			&& isHtmlElement(container.nextSibling.firstChild, ["ol", "ul"])) {
 				// we found a li containing only a br followed by a li containing a list as first element: merge the two li's
 				var listParent = container.nextSibling, length = container.nextSibling.childNodes.length;
 				for (var i = 0; i < length; i++) {
@@ -8149,7 +7886,7 @@ commands.insertparagraph = {
 		var containedInNewLineRange = getContainedNodes(newLineRange);
 		var endOfLine = !containedInNewLineRange.length
 			|| (containedInNewLineRange.length == 1
-			&& isNamedHtmlElement(containedInNewLineRange[0], "br"));
+			&& isHtmlElement(containedInNewLineRange[0], "br"));
 
 		// "If the local name of container is "h1", "h2", "h3", "h4", "h5", or
 		// "h6", and end of line is true, let new container name be the default
@@ -8217,7 +7954,7 @@ commands.insertparagraph = {
 		}
 
 		// if newContainer is a li and frag contains only a list, we add a br in the li (but only if the height would not change)
-		if (isNamedHtmlElement(newContainer, 'li') && fragChildren.length && isHtmlElementInArray(fragChildren[0], ["ul", "ol"])) {
+		if (isHtmlElement(newContainer, "li") && fragChildren.length && isHtmlElement(fragChildren[0], ["ul", "ol"])) {
 			var oldHeight = newContainer.offsetHeight;
 			var endBr = createEndBreak();
 			newContainer.appendChild(endBr);
@@ -8323,7 +8060,7 @@ commands.inserttext = {
 		var refElement = node.nodeType == $_.Node.ELEMENT_NODE ? node : node.parentNode;
 		if (value == " "
 		&& refElement.nodeType == $_.Node.ELEMENT_NODE
-		&& jQuery.inArray($_.getComputedStyle(refElement).whiteSpace, ["pre", "pre-wrap"]) == -1) {
+		&& $_(["pre", "pre-wrap"]).indexOf($_.getComputedStyle(refElement).whiteSpace) == -1) {
 			value = "\xa0";
 		}
 
@@ -8392,9 +8129,7 @@ commands.inserttext = {
 //@{
 commands.insertunorderedlist = {
 	// "Toggle lists with tag name "ul"."
-	action: function(value, range) {
-		toggleLists("ul", range);
-	},
+	action: function() { toggleLists("ul") },
 	// "True if the selection's list state is "mixed" or "mixed ul", false
 	// otherwise."
 	indeterm: function() { return /^mixed( ul)?$/.test(getSelectionListState()) },
@@ -8570,72 +8305,64 @@ commands.justifyright = {
 ///// The outdent command /////
 //@{
 commands.outdent = {
-	action: function(value, range) {
-		range = range || getActiveRange();
+	action: function() {
+		// "Let items be a list of all lis that are ancestor containers of the
+		// range's start and/or end node."
+		//
+		// It's annoying to get this in tree order using functional stuff
+		// without doing getDescendants(document), which is slow, so I do it
+		// imperatively.
+		var items = [];
+		(function(){
+			for (
+				var ancestorContainer = getActiveRange().endContainer;
+				ancestorContainer != getActiveRange().commonAncestorContainer;
+				ancestorContainer = ancestorContainer.parentNode
+			) {
+				if (isHtmlElement(ancestorContainer, "li")) {
+					items.unshift(ancestorContainer);
+				}
+			}
+			for (
+				var ancestorContainer = getActiveRange().startContainer;
+				ancestorContainer;
+				ancestorContainer = ancestorContainer.parentNode
+			) {
+				if (isHtmlElement(ancestorContainer, "li")) {
+					items.unshift(ancestorContainer);
+				}
+			}
+		})();
 
-    // Note: Avoid normalizing sublists as it breaks Aloha's current behaviour
-    // Original implementation was left commented for future reference.
-
-		// // "Let items be a list of all lists that are ancestor containers of the
-		// // range's start and/or end node."
-		// //
-		// // It's annoying to get this in tree order using functional stuff
-		// // without doing getDescendants(document), which is slow, so I do it
-		// // imperatively.
-		// var items = [];
-		// (function(){
-		// 	for (
-		// 		var ancestorContainer = range.endContainer;
-		// 		ancestorContainer != range.commonAncestorContainer;
-		// 		ancestorContainer = ancestorContainer.parentNode
-		// 	) {
-		// 		if (isHtmlElement(ancestorContainer, "li")) {
-		// 			items.unshift(ancestorContainer);
-		// 		}
-		// 	}
-		// 	for (
-		// 		var ancestorContainer = range.startContainer;
-		// 		ancestorContainer;
-		// 		ancestorContainer = ancestorContainer.parentNode
-		// 	) {
-		// 		if (isHtmlElement(ancestorContainer, "li")) {
-		// 			items.unshift(ancestorContainer);
-		// 		}
-		// 	}
-		// });
-
-    // // "For each item in items, normalize sublists of item."
-		// $_( items ).forEach( function( thisArg) {
-		// 	normalizeSublists( thisArg, range);
-		// });
+		// "For each item in items, normalize sublists of item."
+		$_( items ).forEach( function( thisArg) {
+			normalizeSublists( thisArg, range);
+		});
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(range);
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be a list of nodes, initially empty."
 		//
-		// "For each node contained in new range, append node to node list
+		// "For each node node contained in new range, append node to node list
 		// if the last member of node list (if any) is not an ancestor of node;
 		// node is editable; and either node has no editable descendants, or is
 		// an ol or ul, or is an li whose parent is an ol or ul."
 		var nodeList = getContainedNodes(newRange, function(node) {
 			return isEditable(node)
 				&& (!$_( getDescendants(node) ).some(isEditable)
-				|| isHtmlElementInArray(node, ["ol", "ul"])
-				|| (isNamedHtmlElement(node, 'li') && isHtmlElementInArray(node.parentNode, ["ol", "ul"])));
+				|| isHtmlElement(node, ["ol", "ul"])
+				|| (isHtmlElement(node, "li") && isHtmlElement(node.parentNode, ["ol", "ul"])));
 		});
 
 		// "While node list is not empty:"
 		while (nodeList.length) {
-
-      // Note - Modified from the Editing API spec.
-      //
-			// "While the first member of node list is an ol or ul or is a 
-			// child of an li, outdent it and remove it from node
+			// "While the first member of node list is an ol or ul or is not
+			// the child of an ol or ul, outdent it and remove it from node
 			// list."
 			while (nodeList.length
-			&& (isHtmlElementInArray(nodeList[0], ["OL", "UL"])
-			&& isNamedHtmlElement(nodeList[0].parentNode, "LI"))) {
+			&& (isHtmlElement(nodeList[0], ["OL", "UL"])
+			|| !isHtmlElement(nodeList[0].parentNode, ["OL", "UL"]))) {
 				outdentNode(nodeList.shift(), range);
 			}
 
@@ -8656,7 +8383,7 @@ commands.outdent = {
 			// to sublist."
 			while (nodeList.length
 			&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-			&& !isHtmlElementInArray(nodeList[0], ["OL", "UL"])) {
+			&& !isHtmlElement(nodeList[0], ["OL", "UL"])) {
 				sublist.push(nodeList.shift());
 			}
 
@@ -8666,12 +8393,8 @@ commands.outdent = {
 			// "Split the parent of sublist, with new parent null."
 			splitParent(sublist, range);
 
-			// "Fix disallowed ancestors and isolated lis of each member of sublist."
-			$_( sublist ).forEach(function(node){
-
-        fixDisallowedAncestors(node, range);
-
-      });
+			// "Fix disallowed ancestors of each member of sublist."
+			$_( sublist ).forEach(fixDisallowedAncestors);
 
 			// "Restore the values from values."
 			restoreValues(values, range);
@@ -8813,8 +8536,8 @@ $_( commandNames ).forEach(function(command) {
 	// active range, or if there is no such node, the effective command
 	// value of the active range's start node."
 	if ("standardInlineValueCommand" in commands[command]) {
-		commands[command].indeterm = function(range) {
-			var values = $_(getAllEffectivelyContainedNodes(range))
+		commands[command].indeterm = function() {
+			var values = $_(getAllEffectivelyContainedNodes(getActiveRange()))
 				.filter(function(node) { return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE }, true)
 				.map(function(node) { return getEffectiveCommandValue(node, command) });
 			for (var i = 1; i < values.length; i++) {
@@ -8848,7 +8571,9 @@ return {
 	queryCommandState: myQueryCommandState,
 	queryCommandValue: myQueryCommandValue,
 	queryCommandEnabled: myQueryCommandEnabled,
-	queryCommandSupported: myQueryCommandSupported
+	queryCommandSupported: myQueryCommandSupported,
+	copyAttributes: copyAttributes,
+	createEndBreak: createEndBreak
 }
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker

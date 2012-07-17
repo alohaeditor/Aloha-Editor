@@ -38,12 +38,6 @@ define([
 	var $window = $(window);
 
 	/**
-	 * Reference to the document body for quicker lookup.
-	 * @type {jQuery.<HTMLELement>}
-	 */
-	var $body = $('body');
-
-	/**
 	 * Animates the given element into the specified position.
 	 *
 	 * @param {jQuery.<HTMLElement>} $element The element to move.
@@ -161,8 +155,8 @@ define([
 			duration = DURATION;
 		}
 
-		var topGutter = (parseInt($body.css('marginTop'), 10) || 0)
-		              + (parseInt($body.css('paddingTop'), 10) || 0);
+		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
+		              + (parseInt($('body').css('paddingTop'), 10) || 0);
 
 		var $element = surface.$element;
 		var surfaceOrientation = $element.offset();

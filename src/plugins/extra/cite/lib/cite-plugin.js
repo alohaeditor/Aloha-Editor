@@ -16,7 +16,7 @@ define([
 	'i18n!cite/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'css!cite/css/cite.css'
-], function CiteClosure(
+], function (
 	Aloha,
 	jQuery,
 	Plugin,

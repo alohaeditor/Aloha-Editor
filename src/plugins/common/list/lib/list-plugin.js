@@ -239,9 +239,6 @@ define([
 						//IE7 requires an (empty or non-empty) text node
 						//inside the li for the selection to work.
 						li.appendChild(document.createTextNode(""));
-						/* if ( jQuery.browser.mozilla ) {
-							li.appendChild(document.createElement("BR"));
-						}*/
 
 						editable.append(jqList);
 						editable.focus();

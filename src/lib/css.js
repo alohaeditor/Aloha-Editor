@@ -3,7 +3,7 @@
  */
 
 /*jslint browser:true, on:true, sub:true */
-
+if (typeof window !== "undefined") {
 (function (doc) {
 "use strict";
 
@@ -311,3 +311,4 @@ var plugin = {
 define(plugin);
 
 })(document);
+}

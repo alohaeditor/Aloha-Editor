@@ -4,6 +4,12 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
+/**
+ * The ui/ui-plugin module (this file) controls the creation and display
+ * of the UI. It is valid to override this module via requirejs to
+ * provide a custom behaviour. An overriding module must implement all
+ * API methods.
+ */
 define('ui/ui-plugin', [
 	'jquery',
 	'aloha',
@@ -81,7 +87,19 @@ define('ui/ui-plugin', [
 	}
 
 	return {
-		adoptInto: adoptInto,
-		toolbar: toolbar
+		/**
+		 * Adopts a component instance into the UI.
+		 *
+		 * Usually, the implementation of this method will display the
+		 * component, at a position in the UI given by the slot
+		 * argument.
+		 *
+		 * @param slot
+		 *        A position argument that is interpreted by the UI however it likes.
+		 * @param component
+		 *        An instance of a component to adopt into the given slot.
+		 * @api
+		 */
+		adoptInto: adoptInto
 	};
 });

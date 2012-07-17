@@ -82,6 +82,17 @@
 		};
 	}
 
+	function isDeferInit() {
+		var scripts = document.getElementsByTagName('script');
+		for (var i = 0; i < scripts.length; i++) {
+			var attr = scripts[i].getAttribute('data-aloha-defer-init');
+			if ("true" === attr) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Extends the given map with plugin specific requirejs path configuration.
 	 *
@@ -185,6 +196,13 @@
 	}
 
 	global.Aloha = global.Aloha || {};
+	if (global.Aloha.deferInit || isDeferInit()) {
+		global.Aloha.deferInit = load;
+	} else {
+		load();
+	}
+	function load() {
+
 	Aloha.defaults = {};
 	Aloha.settings = Aloha.settings || {};
 
@@ -302,7 +320,9 @@
 
 	// TODO this hierarchical chain of require calls should not really
 	//      be necessary if each file properly specifies its dependencies.
-	define('aloha', [], function() {
+	define('aloha', [
+
+], function() {
 
 		require(requireConfig, [
 			'jquery',
@@ -360,4 +380,5 @@
 	Aloha.stage = 'loadingAloha';
 	require(requireConfig, ['aloha'], function () {});
 
+	} // end load()
 }(window));
