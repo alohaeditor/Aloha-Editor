@@ -16,8 +16,7 @@ define([
 	'ui/port-helper-attribute-field',
 	'i18n!wai-lang/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'wai-lang/languages',
-	'css!wai-lang/css/wai-lang.css'
+	'wai-lang/languages'
 ], function(
 	Aloha,
 	jQuery,
