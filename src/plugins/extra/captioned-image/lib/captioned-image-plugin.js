@@ -42,7 +42,7 @@ define([
 		tooltip: 'Float image to left',
 		text: 'Float left',
 		click: function () {
-			if (BlockManager) {
+			if (BlockManager._activeBlock) {
 				BlockManager._activeBlock.attr('position', 'left');
 			}
 		}
@@ -52,7 +52,7 @@ define([
 		tooltip: 'Float image to right',
 		text: 'Float right',
 		click: function () {
-			if (BlockManager) {
+			if (BlockManager._activeBlock) {
 				BlockManager._activeBlock.attr('position', 'right');
 			}
 		}
@@ -62,7 +62,7 @@ define([
 		tooltip: 'Float image to clear',
 		text: 'No floating',
 		click: function () {
-			if (BlockManager) {
+			if (BlockManager._activeBlock) {
 				BlockManager._activeBlock.attr('position', 'none');
 			}
 		}
