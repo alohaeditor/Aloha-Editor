@@ -78,7 +78,14 @@ define('format/format-plugin', [
 		/**
 		 * default button configuration
 		 */
-		config: [ 'strong', 'em', 'b', 'i', 'del', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		config: [ 'b', 'i', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+
+		/**
+		 * available options / buttons
+		 * 
+		 * @todo new buttons needed for 'del', 'code'
+		 */
+		availableButtons: [ 'u', 'strong', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
 
 		/**
 		 * HotKeys used for special actions
@@ -209,7 +216,7 @@ define('format/format-plugin', [
 				//this.multiSplitButton;
 
 				//iterate configuration array an push buttons to buttons array
-				jQuery.each(this.config, function(j, button) {
+				jQuery.each(this.availableButtons, function(j, button) {
 					var button_config = false;
 
 					if ( typeof j !== 'number' && typeof button !== 'string' ) {
@@ -236,7 +243,6 @@ define('format/format-plugin', [
 									selectedCells.each( function () {
 										var cellContent = jQuery(this).find('div'),
 										cellMarkup = cellContent.find(button);
-										
 										if ( cellMarkup.length > 0 ) {
 											// unwrap all found markup text
 											// <td><b>text</b> foo <b>bar</b></td>
@@ -298,9 +304,7 @@ define('format/format-plugin', [
 									return false;
 								}
 								// formating workaround for table plugin
-
 								that.changeMarkup( button );
-
 							}
 						});
 					} else if ('removeFormat' === button) {
@@ -511,10 +515,10 @@ define('format/format-plugin', [
 		 * Removes all formatting from the current selection.
 		 */
 		removeFormat: function() {
-			var formats = [ 'strong', 'em', 'b', 'i', 's', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
+			var formats = [ 'u', 'strong', 'em', 'b', 'i', 'q', 'del', 's', 'code', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'quote', 'blockquote' ],
 				rangeObject = Aloha.Selection.rangeObject,
 				i;
-			
+
 				// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
 				if (this.settings.removeFormats) {
 					formats = this.settings.removeFormats;
@@ -531,7 +535,6 @@ define('format/format-plugin', [
 				// select the modified range
 				rangeObject.select();
 				// TODO: trigger event - removed Format
-
 			},
 
 			/**
