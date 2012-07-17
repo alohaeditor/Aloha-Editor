@@ -23,15 +23,13 @@ define([
 	'use strict';
 
 	$('<style type="text/css">').text('\
-		.aloha-captioned-image {\
+		.aloha-captioned-image {display: inline-block;}\
+		.aloha-captioned-image>div {\
 			text-align: center;\
-			margin: 0 1em 1em;\
+			padding: 0 1em 1em;\
 		}\
-		.aloha-captioned-image-float-right {\ margin-right: 0;\
-		}\
-		.aloha-captioned-image-float-left {\
-			margin-left: 0;\
-		}\
+		.aloha-captioned-image .float-right {padding-right: 0;}\
+		.aloha-captioned-image .float-left {padding-left: 0;}\
 		.aloha-captioned-image .caption {\
 			padding: 0.5em;\
 			font-size: 0.9em;\
@@ -97,8 +95,9 @@ define([
 				'</div>'
 			);
 
-			if (properties.position) {
-				$content.css('float', properties.position);
+			if ('left' === properties.position || 'right' === properties.position) {
+				$content.css('float', properties.position)
+				        .addClass('float-' + properties.position);
 			}
 
 			$content.find('>img:first').css({
@@ -136,6 +135,7 @@ define([
 		title: 'Captioned Image',
 		$_image: null,
 		$_caption: null,
+		onload: null,
 		init: function ($element, postProcessCallback) {
 			if (this._initialized) {
 				return;
@@ -143,52 +143,56 @@ define([
 
 			var that = this;
 
+			this.onload = function () {
+				that.$_caption.css('width', that.$_image.width());
+			};
+
 			render({
+				alt: this.attr('alt'),
 				src: this.attr('source'),
-				caption: this.attr('caption'),
 				width: this.attr('width'),
 				height: this.attr('height'),
-				alt: this.attr('alt')
+				caption: this.attr('caption'),
+				position: this.attr('position')
 			}, function (data) {
-				$element.html(data.content);
-				that.$_image = $element.find(data.image);
-				that.$_caption = $element.find(data.caption).addClass('aloha-editable');
-				$element.css('width', that.$_image.width());
-				that.$_image.load(function () {
-					$element.css('width', that.$_image.width());
-				});
-				that._updateFloating(that.attr('position') || 'none');
+				that._processRenderedData(data);
+				that.$_image.bind('load', that.onload);
+				postProcessCallback();
+			}, function (error) {
+				if (window.console) {
+					console.error(error);
+				}
 				postProcessCallback();
 			});
 		},
 		update: function ($element, postProcessCallback) {
-			this._renderAttributes();
-			postProcessCallback();
+			this.$_image.unbind('load', this.onload);
+
+			var that = this;
+
+			render({
+				alt: this.attr('alt'),
+				src: this.attr('source'),
+				width: this.attr('width'),
+				height: this.attr('height'),
+				caption: this.attr('caption'),
+				position: this.attr('position')
+			}, function (data) {
+				that._processRenderedData(data);
+				that.$_image.bind('load', this.onload);
+				postProcessCallback();
+			}, function (error) {
+				if (window.console) {
+					console.error(error);
+				}
+				postProcessCallback();
+			});
 		},
-		_updateFloating: function (floating) {
-			this.$element.css('float', floating);
-			if ('left' === floating) {
-				this.$element
-				    .removeClass('aloha-captioned-image-float-right')
-				    .addClass('aloha-captioned-image-float-left');
-			} else if ('right' === floating) {
-				this.$element
-				    .removeClass('aloha-captioned-image-float-left')
-				    .addClass('aloha-captioned-image-float-right');
-			} else {
-				this.$element
-				    .removeClass('aloha-captioned-image-float-left')
-				    .removeClass('aloha-captioned-image-float-right');
-			}
-		},
-		_renderAttributes: function () {
-			this.$_image
-			    .attr('src', this.attr('source'))
-			    .attr('alt', this.attr('alt'))
-			    .attr('width', this.attr('width'))
-			    .attr('height', this.attr('height'));
-			this.$_caption.html(this.attr('caption'));
-			this._updateFloating(this.attr('position') || 'none');
+		_processRenderedData: function (data) {
+			this.$element.html(data.content).css('float', this.attr('position'));
+			this.$_image = this.$element.find(data.image);
+			this.$_caption = this.$element.find(data.caption).addClass('aloha-editable');
+			this.$_caption.css('width', this.$_image.width());
 		}
 	});
 
