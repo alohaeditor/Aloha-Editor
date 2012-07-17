@@ -87,16 +87,18 @@ define([
 
 	var CaptionedImageBlock = Block.AbstractBlock.extend({
 		title: 'Captioned Image',
-		$_image: $('<img>'),
-		$_caption: $('<div class="aloha-captioned-image-caption aloha-editable">'),
+		$_image: null,
+		$_caption: null,
 		init: function ($element, postProcessCallback) {
 			if (this._initialized) {
 				return;
 			}
-			var $img = this.$_image;
+			var $img = this.$_image = $('<img>');
 			$img.load(function () {
 				$element.css('width', $img.width());
 			});
+			this.$_caption = $(
+				'<div class="aloha-captioned-image-caption aloha-editable">');
 			$element.append(this.$_image).append(this.$_caption);
 			this._renderAttributes();
 			postProcessCallback();
