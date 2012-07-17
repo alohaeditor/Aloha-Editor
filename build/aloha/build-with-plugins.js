@@ -408,6 +408,9 @@
             name: "aloha",
 
 			include: [
+				'jquery',
+				'util/json2',
+
 				'vendor/jquery.json-2.2.min',
 				'aloha/rangy-core',
 				'util/class',
