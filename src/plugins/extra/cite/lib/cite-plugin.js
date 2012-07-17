@@ -14,8 +14,7 @@ define([
 	'format/format-plugin',
 	'util/dom',
 	'i18n!cite/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!cite/css/cite.css'
+	'i18n!aloha/nls/i18n'
 ], function (
 	Aloha,
 	jQuery,

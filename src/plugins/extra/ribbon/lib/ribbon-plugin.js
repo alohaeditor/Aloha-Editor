@@ -9,8 +9,7 @@ define([
     'aloha/plugin',
     'ui/menuButton',
     'ui/utils',
-    'jqueryui',
-    'css!./css/ribbon.css'
+    'jqueryui'
 ], function (
 	$,
 	Plugin,

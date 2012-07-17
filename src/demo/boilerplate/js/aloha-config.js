@@ -156,8 +156,7 @@
 				"bdo",
 				"ins",
 				"del"]
-			}
-			,
+			},
 			'numerated-headers': {
 				config: {
 					// default true

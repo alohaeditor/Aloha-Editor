@@ -109,7 +109,6 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		config.filters = [function( elem ) {
 			return elem.contentEditable != "false";
 		}];
-
 		sanitize = new Sanitize( config );
 	}
 
@@ -124,6 +123,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			if (jQuery.browser.msie && jQuery.browser.version <= 7) {
 				return content;
 			}
+
 			if ( typeof sanitize === 'undefined' ) {
 			   initSanitize();
 			}
