@@ -6376,6 +6376,16 @@ function justifySelection(alignment, range) {
 }
 
 //@}
+///// Check whether the given element is an end break /////
+//@{
+function isEndBreak(element) {
+	if (!isHtmlElement(element, 'br')) {
+		return false;
+	}
+	return jQuery(element).hasClass('aloha-end-br');
+}
+
+//@}
 ///// Create an end break /////
 //@{
 function createEndBreak() {
@@ -8574,7 +8584,8 @@ return {
 	queryCommandEnabled: myQueryCommandEnabled,
 	queryCommandSupported: myQueryCommandSupported,
 	copyAttributes: copyAttributes,
-	createEndBreak: createEndBreak
+	createEndBreak: createEndBreak,
+	isEndBreak: isEndBreak
 }
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker

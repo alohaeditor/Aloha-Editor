@@ -2139,6 +2139,10 @@ function correctRange ( range ) {
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
+		// check whether the container starts in an element node
+		if (rangeObject.startContainer.nodeType != 1) {
+			return false;
+		}
 		firstChild = rangeObject.startContainer.firstChild;
 		return (!firstChild
 				|| (!firstChild.nextSibling
@@ -2149,7 +2153,7 @@ function correctRange ( range ) {
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
-		return rangeObject.startContainer.innerHTML.toLowerCase() === '<br class="aloha-end-br">';
+		return Engine.isEndBreak(rangeObject.startContainer);
 	}
 
 	return selection;

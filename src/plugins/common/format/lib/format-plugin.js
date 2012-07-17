@@ -228,6 +228,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 								// formating workaround for table plugin
 								
 								Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
+
+								// setting the focus is needed for mozilla to have a working rangeObject.select()
+								if (Aloha.activeEditable
+									&& jQuery.browser.mozilla) {
+									Aloha.activeEditable.obj.focus();
+								}
 							}
 						});
 						break;
