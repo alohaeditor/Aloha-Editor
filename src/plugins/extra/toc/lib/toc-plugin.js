@@ -12,7 +12,7 @@ define([
 	'ui/button',
 	'i18n!toc/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
-	'aloha/console',
+	'aloha/console'
 ], function(
 	Aloha,
     Plugin,
