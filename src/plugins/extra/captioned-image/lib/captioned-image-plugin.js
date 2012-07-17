@@ -179,7 +179,6 @@ define([
 				position: this.attr('position')
 			}, function (data) {
 				that._processRenderedData(data);
-				that.$_image.bind('load', this.onload);
 				postProcessCallback();
 			}, function (error) {
 				if (window.console) {
