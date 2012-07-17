@@ -19,6 +19,7 @@ define([
 
 	$('<style type="text/css">').text('\
 		.aloha-captioned-image {\
+			text-align: center;\
 			margin: 0 1em 1em;\
 		}\
 		.aloha-captioned-image-float-right {\
@@ -27,12 +28,14 @@ define([
 		.aloha-captioned-image-float-left {\
 			margin-left: 0;\
 		}\
-		.aloha-captioned-image-caption {\
+		.aloha-captioned-image .caption {\
 			padding: 0.5em;\
 			font-size: 0.9em;\
 			background: rgba(0,0,0,0.8);\
 			font-family: Arial;\
 			color: #fff;\
+			text-align: left;\
+			min-width: 100px;\
 		}\
 	').appendTo('head:first');
 
@@ -68,6 +71,38 @@ define([
 		}
 	}));
 
+	var render = Aloha.settings &&
+	             Aloha.settings.plugins &&
+	             Aloha.settings.plugins.captionedImage &&
+	             Aloha.settings.plugins.captionedImage.render;
+
+	if (!render) {
+		render = function (properties, callback, error) {
+			var $content = $(
+				'<div>' +
+					'<img src="' + properties.src + '" ' +
+					     'alt="' + properties.alt + '"/>' +
+					'<div class="caption">' + properties.caption + '</div>' +
+				'</div>'
+			);
+
+			if (properties.position) {
+				$content.css('float', properties.position);
+			}
+
+			$content.find('>img:first').css({
+				width: properties.width,
+				height: properties.height
+			});
+
+			 callback({
+				content: $content[0].outerHTML,
+				image: '>div>img:first',
+				caption: '>div>div.caption:first'
+			});
+		}
+	}
+
 	function findBlocks($editable) {
 		return $editable.find('.aloha-captioned-image');
 	}
@@ -80,7 +115,15 @@ define([
 	}
 
 	function initImageBlocksInEditable($editable) {
-		findBlocks($editable).alohaBlock({
+		var $all = findBlocks($editable);
+		var $blocks = $();
+		var j = $all.length;
+		while (j) {
+			if (!$all.eq(--j).hasClass('aloha-block')) {
+				$blocks = $blocks.add($all[j]);
+			}
+		}
+		$blocks.alohaBlock({
 			'aloha-block-type': 'CaptionedImageBlock'
 		});
 	}
@@ -93,24 +136,31 @@ define([
 			if (this._initialized) {
 				return;
 			}
-			var $img = this.$_image = $('<img>');
-			$img.load(function () {
-				$element.css('width', $img.width());
+
+			var that = this;
+
+			render({
+				src: this.attr('source'),
+				caption: this.attr('caption'),
+				width: this.attr('width'),
+				height: this.attr('height'),
+				alt: this.attr('alt')
+			}, function (data) {
+				$element.html(data.content);
+				that.$_image = $element.find(data.image);
+				that.$_caption = $element.find(data.caption).addClass('aloha-editable');
+				that.$_image.load(function () {
+					$element.css('width', that.$_image.width());
+				});
+				that._updateElementFloating(that.attr('position') || 'none');
+				postProcessCallback();
 			});
-			this.$_caption = $(
-				'<div class="aloha-captioned-image-caption aloha-editable">');
-			$element.append(this.$_image).append(this.$_caption);
-			this._renderAttributes();
-			postProcessCallback();
 		},
 		update: function ($element, postProcessCallback) {
 			this._renderAttributes();
 			postProcessCallback();
 		},
-		_renderAttributes: function () {
-			this.$_image.attr('src', this.attr('source'));
-			this.$_caption.html(this.attr('caption'));
-			var floating = this.attr('position') || 'none';
+		_updateElementFloating: function (floating) {
 			this.$element.css('float', floating);
 			if ('left' === floating) {
 				this.$element
@@ -125,6 +175,11 @@ define([
 				    .removeClass('aloha-captioned-image-float-left')
 				    .removeClass('aloha-captioned-image-float-right');
 			}
+		},
+		_renderAttributes: function () {
+			this.$_image.attr('src', this.attr('source'));
+			this.$_caption.html(this.attr('caption'));
+			this._updateElementFloating(this.attr('position') || 'none');
 		}
 	});
 
@@ -150,8 +205,6 @@ define([
 			return $content;
 		}
 	});
-
-	CaptionedImage.blockType = CaptionedImageBlock;
 
 	return CaptionedImage;
 });
