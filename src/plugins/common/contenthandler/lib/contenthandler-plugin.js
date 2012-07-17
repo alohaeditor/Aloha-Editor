@@ -1,3 +1,4 @@
+/*global define: true */
 /*!
 * Aloha Editor
 * Author & Copyright (c) 2010 Gentics Software GmbH
@@ -9,7 +10,7 @@
  * @name contenthandler
  * @namespace Content handler plugin
  */
-define( [
+define([
 	'aloha',
 	'aloha/plugin',
 	'jquery',
@@ -17,38 +18,40 @@ define( [
 	'contenthandler/wordcontenthandler',
 	'contenthandler/genericcontenthandler',
 	'contenthandler/oembedcontenthandler',
-	'contenthandler/sanitizecontenthandler'
-], function( Aloha,
+	'contenthandler/sanitizecontenthandler',
+	'contenthandler/blockelementcontenthandler'
+], function (Aloha,
 			 Plugin,
 			 jQuery,
 			 ContentHandlerManager,
 			 WordContentHandler,
 			 GenericContentHandler, 
 			 OembedContentHandler,
-			 SanitizeContentHandler ) {
+			 SanitizeContentHandler,
+			 BlockelementContentHandler) {
 	'use strict';
 
 	/**
 	 * Register the plugin with unique name
 	 */
-	var ContentHandlerPlugin = Plugin.create( 'contenthandler', {
+	var ContentHandlerPlugin = Plugin.create('contenthandler', {
 		settings : {},
 		dependencies : [],
 		init : function () {
 			var that = this,
 				handler, cc,
-				contentHandler = [ 'word', 'generic', 'sanitize' ], //  'oembed' deactivated
+				contentHandler = [ 'word', 'generic', 'sanitize', 'blockelement' ], //  'oembed' deactivated
 				i, j = contentHandler.length;
 
 			// Register available content handler
-			for ( i = 0; i < j; i++ ) {
-				handler = contentHandler[ i ];
-				cc = handler.charAt( 0 ).toUpperCase() + handler.slice( 1 );
+			for (i = 0; i < j; i++) {
+				handler = contentHandler[i];
+				cc = handler.charAt(0).toUpperCase() + handler.slice(1);
 				ContentHandlerManager
-					.register( handler, eval( cc + 'ContentHandler' ) );
+					.register(handler, eval(cc + 'ContentHandler'));
 			}
 		}
-	} );
+	});
 
 	return ContentHandlerPlugin;
 });
