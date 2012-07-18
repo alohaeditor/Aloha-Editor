@@ -14,11 +14,10 @@ define([
 	'css!numerated-headers/css/numerated-headers.css'
 ],
 
-function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
+function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 
-	var $ = jQuery,
-		Aloha = window.Aloha;
+	var	Aloha = window.Aloha;
 
 	return Plugin.create('numerated-headers', {
 		config: {
@@ -65,13 +64,12 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			});
 
 			Aloha.bind('aloha-editable-activated', function (event) {
-				var config = that.getCurrentConfig();
-
+				
 				// hide the button, when numerating is off
 				if (that.numeratedHeadersButton) {
 					if (that.isNumeratingOn()) {
 						that.numeratedHeadersButton.show();
-						that.initForEditable();
+						that.initForEditable(Aloha.activeEditable.obj);
 					} else {
 						that.numeratedHeadersButton.hide();
 					}
@@ -84,16 +82,13 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * if not yet done.
 		 * If numerating shall be on by default and was not turned on, numbers will be created.
 		 */
-		initForEditable: function () {
-			var $editable = jQuery(Aloha.activeEditable.obj);
+		initForEditable: function ($editable) {
 			var flag = $editable.attr('aloha-numerated-headers');
+			
 			if (flag !== 'true' && flag !== 'false') {
-				var config = this.getCurrentConfig();
-				if (config.numeratedactive === true) {
-					flag = 'true';
-				} else {
-					flag = 'false';
-				}
+				flag = (true === this.getCurrentConfig().numeratedactive)
+				     ? 'true'
+				     : 'false';
 				$editable.attr('aloha-numerated-headers', flag);
 			}
 
@@ -121,7 +116,7 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			if (typeof config.headingselector !== 'string') {
 				config.headingselector = 'h1, h2, h3, h4, h5, h6';
 			}
-			config.headingselector = jQuery.trim(config.headingselector);
+			config.headingselector = $.trim(config.headingselector);
 
 			if (config.trailingdot === true || config.trailingdot === 'true' || config.trailingdot === '1') {
 				config.trailingdot = true;
@@ -136,54 +131,43 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * Check whether numerating shall be possible in the current editable
 		 */
 		isNumeratingOn: function () {
-			var config = this.getCurrentConfig();
-			return config.headingselector !== '';
+			return this.getCurrentConfig().headingselector !== '';
 		},
 
 		/**
 		 * Check whether numbers shall currently be shown in the current editable
 		 */
 		showNumbers: function () {
-			// don't show numbers if numerating is off
-			if (!this.isNumeratingOn()) {
-				return false;
-			}
-
-			return jQuery(Aloha.activeEditable.obj).attr('aloha-numerated-headers') === 'true';
+			return (
+				Aloha.activeEditable &&
+				this.isNumeratingOn() &&
+				(Aloha.activeEditable.obj.attr('aloha-numerated-headers') === 'true')
+			);
 		},
 
 		removeNumerations : function () {
 			var active_editable_obj = this.getBaseElement();
-
 			if (!active_editable_obj) {
 				return;
 			}
 
-			jQuery(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
+			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
 			var headingselector = this.getCurrentConfig().headingselector;
 
 			var headers = active_editable_obj.find(headingselector);
 			headers.each(function () {
-				jQuery(this).find('span[role=annotation]').each(function () {
-					jQuery(this).remove();
+				$(this).find('span[role=annotation]').each(function () {
+					$(this).remove();
 				});
 			});
 		},
 
 		getBaseElement: function () {
 			if (typeof this.baseobjectSelector !== 'undefined') {
-				if (jQuery(this.baseobjectSelector).length > 0) {
-					return jQuery(this.baseobjectSelector);
-				} else {
-					return false;
-				}
-			} else {
-				if (typeof Aloha.activeEditable === 'undefined' || Aloha.activeEditable === null) {
-					return false;
-				} else {
-					return Aloha.activeEditable.obj;
-				}
+				return ($(this.baseobjectSelector).length > 0) ?
+						$(this.baseobjectSelector) : null;
 			}
+			return Aloha.activeEditable ? Aloha.activeEditable.obj : null;
 		},
 
 		/*
@@ -193,16 +177,10 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		* @param {Object} obj - The Object to check
 		*/
 		hasNote: function (obj) {
-			if (!obj || !jQuery(obj).length > 0) {
+			if (!obj || !$(obj).length > 0) {
 				return false;
 			}
-			obj = jQuery(obj);
-
-			if (obj.find('span[role=annotation]').length > 0) {
-				return true;
-			}
-
-			return false;
+			return $(obj).find('span[role=annotation]').length > 0;
 		},
 
 		/*
@@ -212,41 +190,38 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		* @param {Object} obj - The Object to check
 		*/
 		hasContent: function (obj) {
-			if (!obj || !jQuery(obj).length > 0) {
+			if (!obj || 0 === $(obj).length) {
 				return false;
 			}
-			obj = jQuery(obj);
-
+			
 			// we have to check the content of this object without the annotation span
-			var objCleaned = obj.clone().find('span[role=annotation]').remove().end();
-
+			var $objCleaned = $(obj).clone()
+			                        .find('span[role=annotation]')
+			                        .remove()
+			                        .end();
 			// check for text, also in other possible sub tags
-			if (objCleaned.text().trim().length > 0) {
-				return true;
-			}
-
-			return false;
+			return $.trim($objCleaned.text()).length > 0;
 		},
 
 		createNumeratedHeaders: function () {
-			var config = this.getCurrentConfig();
-			var headingselector = config.headingselector;
-			var active_editable_obj = this.getBaseElement(),
-				that = this,
-				headers = active_editable_obj.find(headingselector);
-
+			var active_editable_obj = this.getBaseElement();
 			if (!active_editable_obj) {
 				return;
 			}
 
-			jQuery(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'true');
+			var config = this.getCurrentConfig();
+			var headingselector = config.headingselector;
+			var headers = active_editable_obj.find(headingselector);
 
-			if (typeof headers === "undefined" || headers.length === 0) {
+			Aloha.activeEditable.obj.attr('aloha-numerated-headers', 'true');
+
+			if (typeof headers === 'undefined' || headers.length === 0) {
 				return;
 			}
 
 			// base rank is the lowest rank of all selected headers
 			var base_rank = 7;
+			var that = this;
 			headers.each(function () {
 				if (that.hasContent(this)) {
 					var current_rank = parseInt(this.nodeName.substr(1), 10);
@@ -260,11 +235,12 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			}
 			var prev_rank = null,
 				current_annotation = [],
-				annotation_pos = 0;
+				annotation_pos = 0,
+				i;
 
 			// initialize the base annotations
-			for (var i = 0; i < (6 - base_rank) + 1; i++) {
-				current_annotation[i] = 0; 
+			for (i = 0; i < (6 - base_rank) + 1; i++) {
+				current_annotation[i] = 0;
 			}
 
 			headers.each(function () {
@@ -275,21 +251,22 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 					if (prev_rank === null && current_rank !== base_rank) {
 						// when the first found header has a rank
 						// different from the base rank, we omit it
-						jQuery(this).find('span[role=annotation]').remove();
+						$(this).find('span[role=annotation]').remove();
 						return;
 					} else if (prev_rank === null) {
 						// increment the main annotation 
 						current_annotation[annotation_pos]++;
 					} else if (current_rank > prev_rank) {
 						// starts a sub title
-						current_annotation[++annotation_pos]++; 
+						current_annotation[++annotation_pos]++;
 					} else if (current_rank === prev_rank) {
 						// continues subtitles
-						current_annotation[annotation_pos]++; 
+						current_annotation[annotation_pos]++;
 					} else if (current_rank < prev_rank) {
 						//goes back to a main title
 						var current_pos = current_rank - base_rank;
-						for (var j = annotation_pos; j > (current_pos); j--) {
+						var j;
+						for (j = annotation_pos; j > (current_pos); j--) {
 							current_annotation[j] = 0; //reset current sub-annotation
 						}
 						annotation_pos = current_pos;
@@ -303,27 +280,28 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 						annotation_result = '';
 						for (i = 0; i < current_annotation.length; i++) {
 							if (current_annotation[i] !== 0) {
-								annotation_result += (current_annotation[i] + ".");
+								annotation_result += (current_annotation[i] + '.');
 							}
 						}
 					} else {
 						annotation_result = current_annotation[0];
 						for (i = 1; i < current_annotation.length; i++) {
 							if (current_annotation[i] !== 0) {
-								annotation_result += ("." + current_annotation[i]);
+								annotation_result += ('.' + current_annotation[i]);
 							}
 						}
 					}
 
 					if (that.hasNote(this)) {
-						jQuery(this).find('span[role=annotation]').html(annotation_result); 
+						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
-						jQuery(this).prepend("<span role='annotation'>" + annotation_result + "</span> ");
+						$(this).prepend('<span role="annotation">' +
+							annotation_result + '</span> ');
 					}
 				} else {
 					// no Content, so remove the Note, if there is one
 					if (that.hasNote(this)) {
-						jQuery(this).find('span[role=annotation]').remove();
+						$(this).find('span[role=annotation]').remove();
 					}
 				}
 			});
