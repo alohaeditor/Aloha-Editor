@@ -352,9 +352,10 @@ define( [
 					// TODO need some special handling.
 					break;
 				case 'textarea':
+				case 'input':
 					// Create a div alongside the textarea
 					div = jQuery( '<div id="' + this.getId() +
-							'-aloha" class="aloha-textarea" />' )
+							'-aloha" class="aloha-' + nodeName + '" />' )
 								.insertAfter( obj );
 
 					// Resize the div to the textarea and
@@ -510,6 +511,7 @@ define( [
 					// TODO need some special handling.
 					break;
 				case 'textarea':
+				case 'input':
 					// restore content to original textarea
 					this.originalObj.val( this.getContents() );
 					this.obj.remove();
