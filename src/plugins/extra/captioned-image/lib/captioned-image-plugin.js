@@ -159,7 +159,7 @@ define([
 
 	if (!render) {
 		render = function (properties, callback, error) {
-			var src = properties.src || 'img/noimg.gif';
+			var src = properties.source || 'img/noimg.gif';
 			var alt = properties.alt || '';
 			var caption = properties.caption || '';
 			var $content = $('<div>' +
@@ -255,9 +255,9 @@ define([
 
 			render({
 				alt: this.attr('alt'),
-				src: this.attr('source'),
 				width: this.attr('width'),
 				height: this.attr('height'),
+				source: this.attr('source'),
 				caption: this.attr('caption'),
 				position: this.attr('position')
 			}, function (data) {
@@ -280,9 +280,9 @@ define([
 
 			render({
 				alt: this.attr('alt'),
-				src: this.attr('source'),
 				width: this.attr('width'),
 				height: this.attr('height'),
+				source: this.attr('source'),
 				caption: this.attr('caption'),
 				position: this.attr('position')
 			}, function (data) {
