@@ -147,7 +147,8 @@ define([
 				block.$element.replaceWith($img);
 			} else {
 				block.$element.html('')
-					 .removeClass('aloha-captioned-image-hidden');
+				     .removeClass('aloha-captioned-image-hidden')
+				     .removeClass('aloha-block');
 			}
 		}
 	}
