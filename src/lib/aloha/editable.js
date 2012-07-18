@@ -442,7 +442,7 @@ define( [
 			} else {
 				el = span;
 			}
-			if (jQuery( obj ).find("." + this.placeholderClass).length !== 0) return;
+			if (jQuery( "." + this.placeholderClass, obj).length !== 0) return;
 			jQuery( obj ).append( el.addClass( this.placeholderClass ) );
 			jQuery.each(
 				Aloha.settings.placeholder,
@@ -471,16 +471,18 @@ define( [
 		removePlaceholder: function( obj, setCursor ) {
 			var placeholderClass = this.placeholderClass,
 			    range;
-
+			if (jQuery( "." + this.placeholderClass, obj).length === 0) return;
 			// set the cursor // remove placeholder
 			if ( setCursor === true ) {
-				range = new Selection.SelectionRange();
-				range.startContainer = range.endContainer = obj.get( 0 );
-				range.startOffset = range.endOffset = 0;
 				window.setTimeout( function() {
+					//debugger;
+					range = new Selection.SelectionRange();
+					range.startContainer = range.endContainer = obj.get( 0 );
+					range.startOffset = range.endOffset = 0;
 					jQuery( '.' + placeholderClass, obj ).remove();
 					range.select();
-				}, 20 );
+				
+				}, 100 );
 			} else {
 				jQuery( '.' + placeholderClass, obj ).remove();
 			}
