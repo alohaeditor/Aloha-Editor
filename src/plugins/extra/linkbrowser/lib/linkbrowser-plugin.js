@@ -8,7 +8,7 @@ define([
 	'link/link-plugin',
 	'RepositoryBrowser',
 	'i18n!linkbrowser/nls/i18n',
-	'i18n!aloha/nls/i18n',
+	'i18n!aloha/nls/i18n'
 ], function(
 	Aloha,
 	jQuery,

@@ -1,3 +1,34 @@
+/**
+ * !IMPORTANT NOTE!
+ * This build profile is currently not actively maintained.
+ *
+ * This build file contains a module for each plugin, and each plugin
+ * must exclude all other modules it refers to, and include all other
+ * .js files that are part of the plugin (lib or vender folder) but on
+ * which the plugin doesn't have a dependency.
+ *
+ * For example, most plugins depend on the ui-plugin - so, they must
+ * explicitly exclude the ui-plugin, otherwise the ui-plugin may be
+ * compiled into multiple plugins. Additionally, the ui-plugin exposes
+ * multiple .js files (toggleButton.js, menuButton.js) on which the
+ * ui-plugin itself doesn't have a dependency - so, they must be
+ * explicitly included.
+ *
+ * The same issue applies to the core, which is treated as just another
+ * module by r.js.
+ *
+ * If changes are made to a plugin, or the core, that introduce a
+ * dependency, or if a new .js file is added to a module on which the
+ * module itself doesn't have a dependency, this build file will become
+ * out of sync and has to be updated.
+ *
+ * The best way to update the build file is to look at the git log since
+ * the last change to this build file and look for define()s for which
+ * the dependencies changed.
+ *
+ * At the time of this writing the includes and excludes for all modules
+ * is probably not be complete.
+ */
 ({
   //The top level directory that contains your app. If this option is used
   //then it assumed your scripts are in a subdirectory under this path.

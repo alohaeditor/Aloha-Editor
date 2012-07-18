@@ -94,7 +94,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		
 		// @TODO think about Aloha.settings.contentHandler.sanitize name/options
 		if ( Aloha.settings.contentHandler.sanitize && jQuery.inArray(Aloha.settings.contentHandler.sanitize, filter) > -1 ) {
-			config = eval('Aloha.defaults.sanitize.' + Aloha.settings.contentHandler.sanitize);
+			config = Aloha.defaults.sanitize[Aloha.settings.contentHandler.sanitize];
 		} else {
 			// use relaxed filter by default
 			config = Aloha.defaults.sanitize.relaxed;
