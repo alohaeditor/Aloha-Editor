@@ -7,7 +7,7 @@
  * Version: 1.2.1
  * Build date: 8 October 2011
  */
-define( 'aloha/rangy-core', [], function(){} );
+define('aloha/rangy-core', [], function() {
 var rangy = (function() {
 
 
@@ -2083,18 +2083,23 @@ rangy.createModule("DomUtil", function(api, module) {
             boundaryParent.appendChild(workingNode);
         }
 
-        workingRange.moveToElementText(workingNode);
-        workingRange.collapse(!isStart);
+		try {
+			workingRange.moveToElementText(workingNode);
+	        workingRange.collapse(!isStart);
+		} catch ( err ) {
+			// @todo window.console.log('problem with moveToElementText');
+			//return false;
+		}
 
-        // Clean up
-        boundaryParent.removeChild(workingNode);
+		// Clean up
+		boundaryParent.removeChild(workingNode);
 
-        // Move the working range to the text offset, if required
-        if (nodeIsDataNode) {
-            workingRange[isStart ? "moveStart" : "moveEnd"]("character", boundaryOffset);
-        }
+		// Move the working range to the text offset, if required
+		if (nodeIsDataNode) {
+			workingRange[isStart ? "moveStart" : "moveEnd"]("character", boundaryOffset);
+		}
 
-        return workingRange;
+		return workingRange;
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -2402,11 +2407,7 @@ rangy.createModule("DomUtil", function(api, module) {
         WrappedRange.rangeToTextRange = function(range) {
             if (range.collapsed) {
                 var tr = createBoundaryTextRange(new DomPosition(range.startContainer, range.startOffset), true);
-
-
-
                 return tr;
-
                 //return createBoundaryTextRange(new DomPosition(range.startContainer, range.startOffset), true);
             } else {
                 var startRange = createBoundaryTextRange(new DomPosition(range.startContainer, range.startOffset), true);
@@ -2885,10 +2886,10 @@ rangy.createModule("DomUtil", function(api, module) {
         selProto.removeAllRanges = function() {
             // Added try/catch as fix for issue #21
             try {
-                this.docSelection.empty();
-
                 // Check for empty() not working (issue #24)
                 if (this.docSelection.type != "None") {
+					this.docSelection.empty();
+
                     // Work around failure to empty a control selection by instead selecting a TextRange and then
                     // calling empty()
                     var doc;
@@ -2914,11 +2915,16 @@ rangy.createModule("DomUtil", function(api, module) {
             if (this.docSelection.type == CONTROL) {
                 addRangeToControlSelection(this, range);
             } else {
+				try {
                 WrappedRange.rangeToTextRange(range).select();
                 this._ranges[0] = range;
                 this.rangeCount = 1;
                 this.isCollapsed = this._ranges[0].collapsed;
                 updateAnchorAndFocusFromRange(this, range, false);
+				} catch (e) {
+					// @todo
+					// window.console.log('problem at addRange');
+				}
             }
         };
 
@@ -3240,4 +3246,9 @@ rangy.createModule("DomUtil", function(api, module) {
         }
         win = null;
     });
+});
+
+// TODO we should avoid populating the global namespace
+window.rangy = rangy;
+return rangy;
 });

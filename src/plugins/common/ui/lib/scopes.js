@@ -8,14 +8,13 @@ define([
 	'use strict';
 
 	var scopes = {
-		'Aloha.empty': [],
-		'Aloha.global': ['Aloha.empty'],
-		'Aloha.continuoustext': ['Aloha.global']
-	};
-
-	var activeScopes = [];
-	var addedScopes = {};
-	var scopeSetDuringSelectionChanged = false;
+		    'Aloha.empty': [],
+		    'Aloha.global': ['Aloha.empty'],
+		    'Aloha.continuoustext': ['Aloha.global']
+	    },
+	    activeScopes = [],
+	    addedScopes = {},
+	    scopeSetDuringSelectionChanged = false;
 
 	function pushScopeAncestors(ancestorScopes, scope) {
 		if (!scopes.hasOwnProperty(scope)) {
@@ -39,12 +38,24 @@ define([
 		// "Only set the specific scope if an event was provided, which means
 		// that somehow an editable was selected"
 		if (typeof originalEvent !== 'undefined' && ! scopeSetDuringSelectionChanged) {
-			Scopes.setScope('Aloha.continuoustext', true);
+			Scopes.setScope('Aloha.continuoustext');
 		}
 	});
 
+	/**
+	 * @deprecated
+	 *     Scopes don't provide any additional functionality since
+	 *     the visibility of containers and components can be
+	 *     controlled individually.
+	 */
 	var Scopes = {
 
+		/**
+		 * @deprecated
+		 *     Scopes don't provide any additional functionality since
+		 *     the visibility of containers and components can be
+		 *     controlled individually.
+		 */
 		enterScope: function(scope) {
 			var counter = addedScopes[scope] || 0;
 			addedScopes[scope] = counter + 1;
@@ -53,6 +64,12 @@ define([
 			}
 		},
 
+		/**
+		 * @deprecated
+		 *     Scopes don't provide any additional functionality since
+		 *     the visibility of containers and components can be
+		 *     controlled individually.
+		 */
 		leaveScope: function(scope) {
 			var counter = addedScopes[scope] - 1;
 			if (counter) {
@@ -63,6 +80,12 @@ define([
 			}
 		},
 
+		/**
+		 * @deprecated
+		 *     Scopes don't provide any additional functionality since
+		 *     the visibility of containers and components can be
+		 *     controlled individually.
+		 */
 		isActiveScope: function(scope){
 			if (addedScopes[scope]) {
 				return true;
@@ -75,14 +98,11 @@ define([
 		},
 
 		/**
-		 * TODO this should probably not be here and be called something else.
-		 *
-		 * @param name
-		 *        The name of a component that exists in the tab that should be activated.
+		 * @deprecated
+		 *     See setScope()
 		 */
-		activateTabOfButton: function(name){
-			// Tabs listen to focus events on components and show themselves if appropriate.
-			PubSub.pub('aloha.ui.component.focus', name);
+		getPrimaryScope: function() {
+			return activeScopes[0];
 		},
 
 		/**
@@ -103,7 +123,8 @@ define([
 		/**
 		 * @deprecated
 		 *     This method was used to define an ancestry for scopes.
-		 *     The purpose for this is unknown, and the method is therefore deprecated.
+		 *     It is unknonwn what problem scope ancestry solved, and
+		 *     the method is therefore deprecated.
 		 */
 		createScope: function(scope, parentScopes){
 			if ( ! parentScopes ) {

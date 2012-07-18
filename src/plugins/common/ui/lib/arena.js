@@ -3,7 +3,7 @@ define(['ui/component'],function(Component){
 		init: function(){
 			this.element = $('<div>');
 		},
-		addComponent: function(component) {
+		adopt: function(component) {
 			this.element.append(component.element);
 		}
 	});

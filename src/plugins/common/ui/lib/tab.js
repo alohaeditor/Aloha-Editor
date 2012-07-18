@@ -4,7 +4,7 @@ define([
 	'ui/container',
 	'ui/component',
 	'PubSub',
-	'aloha/jquery-ui'
+	'jqueryui'
 ], function (
 	Aloha,
 	$,
@@ -72,23 +72,23 @@ define([
 			this.list = this.container.data('list');
 			this.panels = this.container.data('panels');
 			this.id = 'tab-ui-container-' + (++idCounter);
-			this.panel = $('<div>', {id : this.id});
+			this.panel = $('<div>', {id : this.id, 'unselectable': 'on'});
 			this.handle = $('<li><a href="#' + this.id + '">' +
 				settings.label + '</a></li>');
-
 
 			for (i = 0; i < components.length; i++) {
 				if (typeof components[i] === 'string') {
 					if (1 === components[i].length && components[i].charCodeAt(0) === 10) {
-						this.panel.append('<div>');
+						this.panel.append('<div>', {'unselectable': 'on'});
 					} else {
-						elem = $('<span>');
+						elem = $('<span>', {'unselectable': 'on'});
 						this._elemBySlot[components[i]] = elem;
 						this.panel.append(elem);
 					}
 				} else {
 					group = $('<div>', {
-						'class': 'aloha-ui-component-group'
+						'class': 'aloha-ui-component-group',
+						'unselectable': 'on'
 					}).appendTo(this.panel);
 					groupProps = {element: group, visibleCounter: 0};
 					groupedComponents = components[i];
@@ -96,10 +96,10 @@ define([
 						this._groupBySlot[groupedComponents[j]] = groupProps;
 						if (1 === groupedComponents[j].length &&
 						    groupedComponents[j].charCodeAt(0) === 10) {
-							group.append('<div>');
+							group.append($('<div>', {'unselectable': 'on'}));
 						} else {
 							componentName = groupedComponents[j];
-							elem = $('<span>');
+							elem = $('<span>', {'unselectable': 'on'});
 							this._elemBySlot[groupedComponents[j]] = elem;
 							group.append(elem);
 						}
@@ -107,7 +107,7 @@ define([
 				}
 			}
 
-			this.panel.append('<div class="aloha-ui-clear">');
+			this.panel.append($('<div>', {'class': 'aloha-ui-clear', 'unselectable': 'on'}));
 			this.handle.appendTo(this.list);
 			this.panel.appendTo(this.panels);
 			this.container.tabs('refresh');
@@ -117,15 +117,15 @@ define([
 			alohaTabs.push(this);
 		},
 
-		assignToSlot: function(configuredSlot, component) {
-			var elem = this._elemBySlot[configuredSlot],
+		adoptInto: function(slot, component) {
+			var elem = this._elemBySlot[slot],
 			    group;
 			if (!elem) {
 				return false;
 			}
-			component.adopt(this);
+			component.adoptParent(this);
 			elem.append(component.element);
-			group = this._groupBySlot[configuredSlot];
+			group = this._groupBySlot[slot];
 			if (group) {
 				this._groupByComponent[component.id] = group;
 				if (component.isVisible()) {
@@ -135,34 +135,29 @@ define([
 			return true;
 		},
 
-		focus: function() {
+		foreground: function() {
 			this.container.tabs('select', this.index);
-			PubSub.pub('aloha.ui.container.activated', {data: this});
 		},
 
-		childFocus: function(childComponent) {
-			this.focus();
+		childForeground: function(childComponent) {
+			this.foreground();
 		},
 
-		childVisible: function(childComponent) {
+		childVisible: function(childComponent, visible) {
 			var group = this._groupByComponent[childComponent.id];
 			if (!group) {
 				return;
 			}
-			if (0 === group.visibleCounter) {
-				group.element.removeClass('aloha-ui-hidden');
-			}
-			group.visibleCounter += 1;
-		},
-
-		childHidden: function(childComponent) {
-			var group = this._groupByComponent[childComponent.id];
-			if (!group) {
-				return;
-			}
-			group.visibleCounter -= 1;
-			if (0 === group.visibleCounter) {
-				group.element.addClass('aloha-ui-hidden');
+			if (visible) {
+				if (0 === group.visibleCounter) {
+					group.element.removeClass('aloha-ui-hidden');
+				}
+				group.visibleCounter += 1;
+			} else {
+				group.visibleCounter -= 1;
+				if (0 === group.visibleCounter) {
+					group.element.addClass('aloha-ui-hidden');
+				}
 			}
 		},
 
@@ -170,19 +165,16 @@ define([
 		 * @override
 		 */
 		show: function() {
-			if ( 0 === this.list.children().length ) {
+			if (!this.list.children().length) {
 				return;
 			}
 			this.handle.show();
 			this.visible = true;
 
-			// If no tabs are selected, then select the tab which was just
-			// shown.
-			if ( 0 === this.container.find( '.ui-tabs-active' ).length ) {
-				this.container.tabs( 'select', this.index );
-			} else if ( this.container.tabs( 'option', 'selected' )
-			            === this.index ) {
-				this.container.tabs( 'select', this.index );
+			// If no tabs are selected, then select the tab which was just shown.
+			if (   !this.container.find('.ui-tabs-active').length
+			    ||  this.container.tabs('option', 'selected') === this.index) {
+				this.foreground();
 			}
 		},
 
@@ -231,9 +223,9 @@ define([
 		 *                                populated with tab containers.
 		 */
 		createContainer: function () {
-			var $container = $('<div>');
-			var $list = $('<ul>').appendTo($container);
-			var $panels = $('<div>').appendTo($container);
+			var $container = $('<div>', {'unselectable': 'on'});
+			var $list = $('<ul>', {'unselectable': 'on'}).appendTo($container);
+			var $panels = $('<div>', {'unselectable': 'on'}).appendTo($container);
 
 			$container
 				.data('list', $list)

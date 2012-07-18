@@ -24,12 +24,9 @@ define([
 	'image/image-floatingMenu',
 	'i18n!aloha/nls/i18n',
 	'i18n!image/nls/i18n',
-	'aloha/jquery-ui',
+	'jqueryui',
 	'image/vendor/jcrop/jquery.jcrop.min',
-	'image/vendor/mousewheel/mousewheel',
-	// css
-	'css!image/css/image.css',
-	'css!image/vendor/jcrop/jquery.jcrop.css'
+	'image/vendor/mousewheel/mousewheel'
 ], function AlohaImagePlugin(
 	aQuery,
 	Plugin,
@@ -413,15 +410,12 @@ define([
 					if (foundMarkup) { // TODO : this is always null (below is dead code, moving it to clickImage)
 						plugin.ui._insertImageButton.show();
 						plugin.ui.setScope();
-						
-
 						if (plugin.settings.ui.meta) {
 							plugin.ui.imgSrcField.setTargetObject(foundMarkup, 'src');
 							plugin.ui.imgTitleField.setTargetObject(foundMarkup, 'title');
 						}
+						plugin.ui.imgSrcField.foreground();
 						plugin.ui.imgSrcField.focus();
-						plugin.ui.activateView('imageSource');
-						
 					} else {
 						if (plugin.settings.ui.meta) {
 							plugin.ui.imgSrcField.setTargetObject(null);

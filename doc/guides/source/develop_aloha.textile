@@ -1,18 +1,10 @@
 h2. Using Aloha Editor
 
-After reading this guide, you will be able to:
-
-* Prepare your development envireonment 
-* build your custom Aloha Editor
-
 endprologue.
 
 h3. Clone from Github
 
-NOTE: You should know how to work with git before continuing.
-
-First of all you have to get your copy of the Aloha Editor. Just clone our "Github repository":http://github.com/alohaeditor/Aloha-Editor:
-WARNING: fork Aloha Editor before doing anything ;-)
+Fork it on github "Github repository":http://github.com/alohaeditor/Aloha-Editor, then:
 
 <shell>
 git clone git@github.com:YOURNAME/Aloha-Editor.git alohaeditor
@@ -23,15 +15,15 @@ git checkout dev
 h3. Repository Directory Structure
 
 * /
-* /bin - Build scripts
-* /build - Build configuration
+* /bin - build scripts
+* /build - build configuration
 
 * /doc
-* /doc/api - The API documentation
-* /doc/guides - This document
+* /doc/api - the API documentation
+* /doc/guides
 
-* /vendor - Vendor source code. (e.g. ExtJS, require-js, jquery)
-* /target - Build output folder
+* /vendor - third party libraries (e.g. jquery)
+* /target - build output folder
 
 * /src
 * /src/css - Aloha core css files
@@ -40,16 +32,14 @@ h3. Repository Directory Structure
 
 * /src/lib - Require plugins and bootstrap files
 * /src/lib/aloha - Main Aloha Editor core sources
-* /src/lib/vendor - Vendor source code. E.g. ExtJS, jquery
-* /src/lib/util - Utility sources. (e.g. json2.js, class.js)
+* /src/lib/vendor - third party libraries jquery
+* /src/lib/util - utility libraries (e.g. json2.js, class.js)
 
 * /src/plugins
 * /src/plugins/common - Common plugin bundle
 * /src/plugins/extra - Extra plugin bundle
 
 * /src/test - QUnit tests
-
-
 
 
 h3. Building  - Aloha Building
@@ -69,14 +59,18 @@ curl http://npmjs.org/install.sh | sh
 * Invoke Building:
 <shell>
 cd alohaeditor
-mvn clean package
+mvn3 clean package
 </shell>
 
-You can also ommitt building of the api and guides using the following command:
+You can also ommitt building of the api and guides:
 <shell>
-mvn clean package -DbareMode=true
+mvn3 clean package -DbareMode=true
 </shell>
 
+You can build only the core css:
+<shell>
+mvn3 generate-sources
+</shell>
 
 h4. Other OS: 
 * Microsoft Windows: Not yet supported
@@ -124,11 +118,3 @@ Preview URL: http://localhost:9292/
 <shell>
 guides build
 </shell>
-
-
-
-h3. Changelog
-
-* October 11, 2011: Added building information
-* July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek
-* June 29, 2012: Updated guides since the buildprocess now uses maven. 

@@ -14,8 +14,7 @@ define([
 	'formatlesspaste/formatlesshandler',
 	'aloha/contenthandlermanager',
 	'i18n!formatlesspaste/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!formatlesspaste/css/formatless.css'
+	'i18n!aloha/nls/i18n'
 ], function(Aloha,
             Plugin,
             jQuery,
@@ -159,7 +158,7 @@ define([
 			FormatlessPasteHandler.strippedElements = this.strippedElements;
 			// add button to toggle format-less pasting
 
-			this._toggleFormatlessPasteButton = Ui.assign('toggleFormatlessPaste', ToggleButton, {
+			this._toggleFormatlessPasteButton = Ui.adopt('toggleFormatlessPaste', ToggleButton, {
 				tooltip: i18n.t('button.formatlessPaste.tooltip'),
 				icon: 'aloha-icon aloha-icon-formatless-paste',
 				scope: 'Aloha.continuoustext',

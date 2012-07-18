@@ -6,7 +6,7 @@ define([
 	'ui/floating',
 	'ui/context',
 	'i18n!ui/nls/i18n',
-	'aloha/jquery-ui'
+	'jqueryui'
 ], function (
 	$,
 	Aloha,
@@ -42,6 +42,7 @@ define([
 		_moveTimeout: null,
 		$_container: null,
 		_tabBySlot: null,
+		_tabs: [],
 
 		/**
 		 * Toolbar constructor.
@@ -56,8 +57,7 @@ define([
 			    i, key;
 
 			this._super(context);
-
-			this.$element = $('<div>', {'class': 'aloha-ui-toolbar'});
+			this.$element = $('<div>', {'class': 'aloha-ui-toolbar', 'unselectable': 'on'});
 			this.$_container = Tab.createContainer().appendTo(this.$element);
 			this._tabBySlot = {};
 
@@ -75,6 +75,8 @@ define([
 						this._tabBySlot[key] = tabInstance;
 					}
 				}
+
+				this._tabs.push({tab: tabInstance, settings: tabSettings});
 			}
 
 			// Pinning behaviour is global in that if one toolbar is pinned,
@@ -82,9 +84,9 @@ define([
 			floating.makeFloating(this, Toolbar);
 		},
 
-		assignToSlot: function(configuredSlot, component){
-			var tab = this._tabBySlot[configuredSlot];
-			return tab && tab.assignToSlot(configuredSlot, component);
+		adoptInto: function(slot, component){
+			var tab = this._tabBySlot[slot];
+			return tab && tab.adoptInto(slot, component);
 		},
 
 		getActiveContainer: function () {
@@ -219,8 +221,13 @@ define([
 		init: function () {
 			// TODO should use context.js to get the context element
 			Toolbar.$surfaceContainer = $('<div>', {
-				'class': 'aloha aloha-surface aloha-toolbar'
-			}).hide().appendTo('body');
+				'class': 'aloha aloha-surface aloha-toolbar',
+				'unselectable': 'on'
+			}).hide();
+
+			// In the built aloha.js, init will happend before the body has
+			// finished loading, so we have to defer appending the element.
+			$(function(){ Toolbar.$surfaceContainer.appendTo('body'); });
 
 			Surface.trackRange(Toolbar.$surfaceContainer);
 

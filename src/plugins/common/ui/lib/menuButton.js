@@ -2,7 +2,7 @@ define([
 	'jquery',
 	'ui/component',
 	'ui/utils',
-	'aloha/jquery-ui'
+	'jqueryui'
 ], function (
 	$,
 	Component,
@@ -31,7 +31,7 @@ define([
 	 *               If a split button is expanded, all the other split buttons in
 	 *               this container will be closed.
 	 */
-	MenuButton.makeMenuButton = function(props) {
+	MenuButton.makeMenuButton = function (props) {
 		var wrapper = $('<div>'   , {'class': 'aloha-ui-menubutton-container'});
 		var expand  = Utils.makeButtonElement({'class': 'aloha-ui-menubutton-expand'});
 		var menu    = $('<ul>'    , {'class': 'aloha-ui-menubutton-menu'});
@@ -55,6 +55,10 @@ define([
 		} else {
 			Utils.makeButton(expand, props, true)
 			      .addClass('aloha-ui-menubutton-single');
+		}
+
+		if (!props.menu) {
+			return wrapper.append(action);
 		}
 
 		function hideMenu(menu) {
@@ -121,7 +125,7 @@ define([
 
 	function makeNestedMenus(parentCloseHandler, menu){
 		var elems = [];
-		jQuery.each(menu, function(_, item) {
+		$.each(menu, function (_, item) {
 			var elem = $('<li>');
 			elem.append($('<a>', {'href': 'javascript:void 0', 'html': Utils.makeButtonLabelWithIcon(item)}));
 			if (item.click) {

@@ -14,9 +14,8 @@ define([
 	'format/format-plugin',
 	'util/dom',
 	'i18n!cite/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!cite/css/cite.css'
-], function CiteClosure(
+	'i18n!aloha/nls/i18n'
+], function (
 	Aloha,
 	jQuery,
 	Plugin,
@@ -184,7 +183,7 @@ define([
 				}
 			}
 
-			this._quoteButton = Ui.assign('quote', ToggleButton, {
+			this._quoteButton = Ui.adopt('quote', ToggleButton, {
 				tooltip: i18n.t('cite.button.add.quote'),
 				icon: nsClass('button', 'inline-button'),
 				scope: 'Aloha.continuoustext',

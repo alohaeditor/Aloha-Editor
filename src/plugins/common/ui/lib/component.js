@@ -2,7 +2,11 @@ define([
 	'aloha/core',
 	'jquery',
 	'util/class'
-], function (Aloha, $, Class) {
+], function (
+	Aloha,
+	$,
+	Class
+) {
 	'use strict';
 
 	var idCounter = 0;
@@ -46,49 +50,38 @@ define([
 		 * The type property is set in Component.define(), so components should only ever be instantiated through define.
 		 * @constructor
 		 */
-		_constructor: function() {
+		_constructor: function () {
 			this.id = idCounter++;
-
-			// Components are responsible for updating their state and visibility
-			// whenever the selection changes.
-			// TODO(p.salema@gentics.com): Consider implementing 'aloha-node-changed'
-			// which would be trigger only when the user selection moves from one node
-			// into another.
-			Aloha.bind('aloha-selection-changed aloha-command-executed',
-				$.proxy(function (event, range) {
-					this.selectionChange(range);
-				}, this));
-
 			this.init();
 		},
 
-		adopt: function(container) {
+		adoptParent: function (container) {
 			this.container = container;
 		},
 
 		/**
 		 * Initializes this component.  To be implemented in subclasses.
 		 */
-		init: function() {},
+		init: function () {},
 
-		isVisible: function() {
+		isVisible: function () {
 			return this.visible;
 		},
 
 		/**
 		 * Shows this component.
 		 */
-		show: function(show_opt) {
+		show: function (show_opt) {
 			if (false === show_opt) {
 				this.hide();
 				return;
-			} 
+			}
 			// Only call container.childVisible if we switch from hidden to visible
 			if (!this.visible) {
 				this.visible = true;
 				this.element.show();
 				if (this.container) {
-					this.container.childVisible(this);
+					this.container.childVisible(this, true);
 				}
 			}
 		},
@@ -96,36 +89,32 @@ define([
 		/**
 		 * Hides this component.
 		 */
-		hide: function() {
+		hide: function () {
 			// Only call container.childVisible if we switch from visible to hidden
 			if (this.visible) {
 				this.visible = false;
 				this.element.hide();
 				if (this.container) {
-					this.container.childHidden(this);
+					this.container.childVisible(this, false);
 				}
 			}
 		},
 
-		focus: function() {
-			// First the container element must be visible before a
-			// descendant element can be focused. In the case of a
-			// toolbar with tabs this means that the tab must be brought
-			// into view.
+		focus: function () {
+			this.element.focus();
 			if (this.container) {
 				this.container.childFocus(this);
 			}
-			this.element.focus();
 		},
 
-		/**
-		 * Selection change callback.
-		 * Usually overridden by the component implementation or the settings
-		 * that are passed to the constructor at instantialization.
-		 */
-		selectionChange: function () {
-		}
+		foreground: function () {
+			if (this.container) {
+				this.container.childForeground(this);
+			}
+		},
 
+		enable: function (enable_opt) {},
+		disable: function () {}
 	});
 
 	return Component;

@@ -5,21 +5,26 @@
 	<title>Aloha Editor Core Test Suite</title>
 	<!-- include qunit -->
 	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
-	<script type="text/javascript" src="../vendor/jquery-1.5.1.js"></script>
+
+	<!-- include jquery -->
+	<script	src="../../lib/vendor/jquery-1.7.2.js" ></script>
 	<script type="text/javascript" src="../vendor/qunit.js"></script>
 
 	<!-- include aloha -->
 	<script>
-		var Aloha = {};
+		var Aloha = {
+			settings: {
+				jQuery: $,
+				baseUrl: '../../lib'
+			}
+		};
 	</script>
+	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
 
 	<!-- include testswarm inject script -->
 	<script>
-		var 
-			require = Aloha._require,
-			define = Aloha.define,
-			url = window.location.search;
+		var url = window.location.search;
 		url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
 		if ( url && url.indexOf("http") === 0 ) {
 			require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});

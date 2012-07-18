@@ -31,7 +31,10 @@ define([
 	// There is just a single context element in the page
 	element = $(selector);
 	if (!element.length) {
-		element = $('<div>', {'class': 'aloha', 'id': id}).appendTo('body');
+		element = $('<div>', {'class': 'aloha', 'id': id});
+		// In the built aloha.js, init will happend before the body has
+		// finished loading, so we have to defer appending the element.
+		$(function(){ element.appendTo('body'); });
 	}
 
 	var Context =  Class.extend({

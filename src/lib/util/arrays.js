@@ -76,8 +76,33 @@ define([],function(){
 		return true;
 	}
 
+	/**
+	 * ECMAScript map replacement
+	 * See https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map
+	 * And http://es5.github.com/#x15.4.4.19
+	 * It's not exactly according to standard, but it does exactly what one expects.
+	 */
+	function map(a, fn) {
+		var i, len, result = [];
+		for (i = 0, len = a.length; i < len; i++) {
+			result.push(fn(a[i]));
+		}
+		return result;
+	}
+
+	function mapNative(a, fn) {
+		// Call map directly on the object instead of going through
+		// Array.prototype.map. This avoids the problem that we may get
+		// passed an array-like object (NodeList) which may cause an
+		// error if the implementation of Array.prototype.map can only
+		// deal with arrays (Array.prototype.map may be native or
+		// provided by a javscript framework).
+		return a.map(fn);
+	}
+
 	return {
-		'sortUnique': sortUnique,
-		'equal': equal
+		sortUnique: sortUnique,
+		equal: equal,
+		map: Array.prototype.map ? mapNative : map
 	};
 });

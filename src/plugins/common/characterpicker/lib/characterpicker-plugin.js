@@ -13,8 +13,7 @@ define([
 	'ui/ui', 
 	'ui/button',
 	'i18n!characterpicker/nls/i18n', 
-	'i18n!aloha/nls/i18n', 
-	'css!characterpicker/css/characterpicker.css'
+	'i18n!aloha/nls/i18n'
 ], function(Aloha,
             jQuery,
 			Plugin,
@@ -203,16 +202,16 @@ define([
 					return e !== '';
 				}
 			);
-			var i = 0, char;
+			var i = 0, chr;
 			var $row;
 			// remove existing rows
 			self.$tbody.find('tr').remove();
-			while ((char = characterList[i])) {
+			while ((chr = characterList[i])) {
 				// make a new row every 15 characters
 				if (((i % 15) === 0)) {
 					$row = addRow();
 				}
-				mkButton(char).appendTo($row);
+				mkButton(chr).appendTo($row);
 				i++;
 			}
 		}
@@ -237,7 +236,7 @@ define([
 				self.settings = Aloha.settings.plugins.characterpicker;
 			}
 			
-			this._characterPickerButton = Ui.assign("characterPicker", Button, {
+			this._characterPickerButton = Ui.adopt("characterPicker", Button, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
 				icon: "aloha-icon-characterpicker",
 				scope: 'Aloha.continuoustext',
@@ -304,8 +303,29 @@ define([
 	 * insert a character after selecting it from the list
 	 */
 	function onCharacterSelect(character) {
+		var alohaRange,
+		    range;
 		if (Aloha.activeEditable) {
-			Aloha.execCommand('insertHTML', false, character);
+
+			// On IE7 (and only IE7) Aoha.getSelection().getRangeAt()
+			// will return a range with start and end containers set to
+			// the body element. This also happens in other places. IE7
+			// sometimes sets the selection to the body element.
+			// To work around this we create a new range from the
+			// Aloha.Selection rangeObject, which is correct. I think
+			// the rangeObject is correct because it is a little behind
+			// the rangy selection (isn't always up-to-date).
+			// TODO this IE7 bug should be detected and worked around in
+			// Aloha.getSelection().
+			alohaRange = Aloha.Selection.getRangeObject();
+			range = Aloha.createRange();
+			range.setStart(alohaRange.startContainer, alohaRange.startOffset);
+			range.setEnd(alohaRange.endContainer, alohaRange.endOffset);
+
+			Aloha.execCommand('insertHTML', false, character, range);
+
+			// TODO on Firefox the selection will be lost. On Chrome or
+			// IE the selection is collapsed after the inserted character.
 		}
 	}
 });

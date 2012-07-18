@@ -23,12 +23,10 @@ GENTICS.Utils = GENTICS.Utils || {};
 
 define(
 ['jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
-function(jQuery, Dom, Class, console) {
+function(jQuery, Dom, Class, console, rangy) {
 	"use strict";
 
-	var
-		GENTICS = window.GENTICS,
-		rangy = window.rangy;
+	var GENTICS = window.GENTICS;
 
 /**
  * @namespace GENTICS.Utils
@@ -297,9 +295,13 @@ GENTICS.Utils.RangeObject = Class.extend({
 	select: function() {
 		var ieRange, endRange, startRange, range, sel;
 
+		if ( typeof this.startContainer === 'undefined' || typeof this.endContainer === 'undefined' ) {
+			console.warn('can not select an empty range');
+			return false;
+		}
+
 		// create a range
 		range = rangy.createRange();
-
 		// set start and endContainer
 		range.setStart(this.startContainer,this.startOffset);
 		range.setEnd(this.endContainer, this.endOffset);

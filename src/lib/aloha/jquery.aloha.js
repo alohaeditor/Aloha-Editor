@@ -357,7 +357,7 @@ define([
 	function applyKeyHandler(handler, context, args, event) {
 		// Don't fire in text-accepting inputs that we didn't directly bind to
 		if ( context !== event.target
-			 && (/textarea|select/i.test( event.target.nodeName )
+			 && (/textarea|input|select/i.test( event.target.nodeName )
 				 || event.target.type === "text") ) {
 			return;
 		}

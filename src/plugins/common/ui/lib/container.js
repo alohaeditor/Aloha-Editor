@@ -56,10 +56,10 @@ define([
 	 * @param {boolean} show Whether to show or hide the given containers.
 	 */
 	function toggleContainers(containers, show) {
-		var action = show ? 'show' : 'hide';
-		var j = containers.length;
-		while (j) {
-			containers[--j][action]();
+		var action = show ? 'show' : 'hide',
+		    i;
+		for (i = 0; i < containers.length; i++) {
+			containers[i][action]();
 		}
 	}
 
@@ -76,7 +76,7 @@ define([
 	 * @return function
 	 */
 	function normalizeShowOn(container, showOn) {
-		switch( $.type( showOn ) ) {
+		switch ($.type(showOn)) {
 		case 'function':
 			return showOn;
 		case 'object':
@@ -134,10 +134,11 @@ define([
 		show: function() {},
 		hide: function() {},
 		focus: function() {},
+		foreground: function() {},
 
-		childVisible: function(childComponent) {},
-		childHidden: function(childComponent) {},
-		childFocus: function(childComponent) {}
+		childVisible: function(childComponent, visible) {},
+		childFocus: function(childComponent) {},
+		childForeground: function(childComponent) {}
 	});
 
 	// static fields

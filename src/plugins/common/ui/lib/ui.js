@@ -72,11 +72,11 @@
  * How this works:
  * For example, a ui module "uiModule" would not be exposed through
  * `Aloha.ui.uiModule` but from require's `define` call:
-
+ *
  *		define([ 'ui/uiModule' ], function( uiModule ) {});
-
+ *
  * or
-
+ *
  *		var uiModule = Aloha.require( 'ui/uiModule' );
  * 
  * This will force more deliberate and precise usage of dependencies.  The
@@ -86,35 +86,39 @@
  * error that will emerge unexpectedly if that require is ever removed.
  */
 
-define([
+define('ui/ui', [
 	'jquery',
-	'aloha/core',
 	'ui/ui-plugin'
 ],
 function(
 	$,
-	Aloha,
-	Plugin
+	UiPlugin
 ) {
 	'use strict';
 
-	function assign(configuredSlot, superType, settings) {
-		var type,
-		component;
+	function adopt(slot, SuperType, settings) {
+		var Type,
+		    component;
 
-		if (!superType.isInstance) {
-			type = settings ? superType.extend(settings) : superType;
-			component = new type();
-		} else {
-			component = superType;
+		if ('string' !== $.type(slot)) {
+			settings = SuperType;
+			SuperType = slot;
+			slot = settings.name;
 		}
 
-		Plugin.assignToSlot(configuredSlot, component);
+		if (!SuperType.isInstance) {
+			Type = settings ? SuperType.extend(settings) : SuperType;
+			component = new Type();
+		} else {
+			component = SuperType;
+		}
+
+		UiPlugin.adoptInto(slot, component);
 
 		return component;
 	}
 
 	return {
-		assign: assign
+		adopt: adopt
 	};
 });

@@ -11,8 +11,7 @@ define([
 	'ui/ui',
 	'ui/button',
 	'i18n!horizontalruler/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!horizontalruler/css/horizontalruler.css'
+	'i18n!aloha/nls/i18n'
 ], function(Aloha,
             jQuery,
 			Plugin,
@@ -33,7 +32,7 @@ define([
 		init: function() {
 			var that = this;
 
-			this._insertHorizontalRuleButton = Ui.assign("insertHorizontalRule", Button, {
+			this._insertHorizontalRuleButton = Ui.adopt("insertHorizontalRule", Button, {
 				tooltip: i18n.t('button.addhr.tooltip'),
 				iconOnly: true,
 				icon: 'aloha-icon-horizontalruler',

@@ -65,7 +65,15 @@
 .aloha-metaview caption { background-image: url(../img/caption.png); }
 
 .aloha-metaview abbr[title], .aloha-metaview dfn[title] { border-bottom: 1px dotted; cursor: help; }
-.aloha-metaview [lang~="de en fr es it nl no pl rs"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang="de"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang="en"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang="fr"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang="es"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang="it"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang="nl"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang="no"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang="pl"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang="rs"] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
 
 /* LANGUAGE FLAGS */
 .aloha-metaview [lang="de"] { background-image:url(../../flag-icons/img/flags/de.png); }

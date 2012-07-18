@@ -29,7 +29,6 @@ define( [
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
-	'css!link/css/link.css',
 	'link/../extra/linklist'
 ], function (
 	Aloha,
@@ -274,7 +273,7 @@ define( [
 				editable.obj.bind('keydown', that.hotKey.insertLink, function() {
 					if ( that.findLinkMarkup() ) {
 						// open the tab containing the href
-						Scopes.activateTabOfButton('editLink');
+						that.hrefField.foreground();
 						that.hrefField.focus();
 					} else {
 						that.insertLink(true);
@@ -297,10 +296,21 @@ define( [
 				}
 			});
 
+			var insideLinkScope = false;
+
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject){
+				var enteredLinkScope = false;
 				if (Aloha.activeEditable && isEnabled[Aloha.activeEditable.getId()]) {
-					selectionChangeHandler(that, rangeObject);
+					enteredLinkScope = selectionChangeHandler(that, rangeObject);
+					// Only foreground the tab containing the href field
+					// the first time the user enters the link scope to
+					// avoid intefering with the user's manual tab
+					// selection.
+					if (enteredLinkScope && insideLinkScope !== enteredLinkScope) {
+						that.hrefField.foreground();
+					}
 				}
+				insideLinkScope = enteredLinkScope;
 			});
 		},
 
@@ -372,7 +382,7 @@ define( [
 		createButtons: function () {
 			var that = this;
 
-			this._formatLinkButton = Ui.assign("formatLink", ToggleButton, {
+			this._formatLinkButton = Ui.adopt("formatLink", ToggleButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
 				scope: 'Aloha.continuoustext',
@@ -381,7 +391,7 @@ define( [
 				}
 			});
 
-			this._insertLinkButton = Ui.assign("insertLink", Button, {
+			this._insertLinkButton = Ui.adopt("insertLink", Button, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
 				scope: 'Aloha.continuoustext',
@@ -400,7 +410,7 @@ define( [
 			this.hrefField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
 
-			this._removeLinkButton = Ui.assign("removeLink", Button, {
+			this._removeLinkButton = Ui.adopt("removeLink", Button, {
 				tooltip: i18n.t("button.removelink.tooltip"),
 				icon: "aloha-icon aloha-icon-unlink",
 				scope: 'Aloha.continuoustext',
@@ -576,7 +586,7 @@ define( [
 			}
 			
 			// activate floating menu tab
-			Scopes.activateTabOfButton('editLink');
+			this.hrefField.foreground();
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
@@ -699,7 +709,8 @@ define( [
 	} );
 
 	function selectionChangeHandler(that, rangeObject) {
-		var foundMarkup;
+		var foundMarkup,
+		    enteredLinkScope = false;
 
 		// Check if we need to ignore this selection changed event for
 		// now and check whether the selection was placed within a
@@ -712,8 +723,6 @@ define( [
 			
 			if (foundMarkup) {
 				that.toggleLinkScope(true);
-				
-				Scopes.activateTabOfButton('editLink');
 
 				// now we are ready to set the target object
 				that.hrefField.setTargetObject(foundMarkup, 'href');
@@ -737,6 +746,7 @@ define( [
 					}, 200);
 				}
 				Aloha.trigger('aloha-link-selected');
+				enteredLinkScope = true;
 			} else {
 				that.toggleLinkScope(false);
 				that.hrefField.setTargetObject(null);
@@ -747,5 +757,6 @@ define( [
 		}
 		
 		that.ignoreNextSelectionChangedEvent = false;
+		return enteredLinkScope;
 	}
 } );

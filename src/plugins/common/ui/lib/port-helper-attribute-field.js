@@ -10,6 +10,7 @@ define([
 	'ui/scopes',
 	'ui/context',
 	'aloha/repositorymanager',
+	'aloha/selection',
 	'aloha/console',
 	'ui/vendor/jquery-ui-autocomplete-html'
 ], function (
@@ -19,6 +20,7 @@ define([
 	Scopes,
 	Context,
 	RepositoryManager,
+	Selection,
 	console
 ) {
 	'use strict';
@@ -58,7 +60,7 @@ define([
 			element.width(props.width);
 		}
 
-		component = Ui.assign(props.name, Component, {
+		component = Ui.adopt(props.name, Component, {
 			init: function(){
 
 				// Why do we have to wrap the element in a span? It
@@ -92,22 +94,23 @@ define([
 		element
 			.bind("focus", onFocus)
 			.bind("blur", onBlur)
+		    .bind("keydown", onKeyDown)
 			.bind("keyup", onKeyup);
 
 		setPlaceholder();
 
-		function onSelect (event, ui) {
+		function onSelect(event, ui) {
 			if (ui.item) {
 				setItem(ui.item.obj);
 			}
 			finishEditing();
 		}
 
-		function onBlur () {
+		function onBlur() {
 			finishEditing();
 		}
 
-		function onFocus (event, ui) {
+		function onFocus(event, ui) {
 			if ( ! $(event.target).is(':visible') ) {
 				// The check for visible fixes the bug that the background
 				// color of the target element is not restored.
@@ -128,7 +131,14 @@ define([
 			}
 		}
 
-		function onKeyup () {
+		function onKeyDown(event){
+			// on ENTER or ESC leave the editing
+			if ( event.keyCode == 13 || event.keyCode == 27 ) {
+				event.preventDefault();
+			}
+		}
+
+		function onKeyup(event) {
 			// If this attribute field currently refers to a repository
 			// item, and the user edits the contents of the input field,
 			// this attribute field seizes to refer to the repository item.
@@ -142,9 +152,15 @@ define([
 			if ( ! resourceItem ) {
 				setAttribute(targetAttribute, getValue());
 			}
+
+			if ( ( event.keyCode == 13 || event.keyCode == 27 ) ) {
+				// Set focus to link element and select the object
+				Selection.getRangeObject().select();
+				finishEditing();
+			}
 		}
 
-		function finishEditing () {
+		function finishEditing() {
 			restoreTargetBackground();
 
 			if ( ! targetObject || lastAttributeValue === $(targetObject).attr(targetAttribute)) {
@@ -161,7 +177,7 @@ define([
 			}
 		}
 
-		function changeTargetBackground () {
+		function changeTargetBackground() {
 			if (noTargetHighlight) {
 				return;
 			}
@@ -175,7 +191,7 @@ define([
 			target.css('background-color', '#80B5F2');
 		}
 
-		function restoreTargetBackground () {
+		function restoreTargetBackground() {
 			if (noTargetHighlight) {
 				return;
 			}
@@ -190,13 +206,13 @@ define([
 			target.removeAttr('data-original-background-color');
 		}
 
-		function parse (template, item) {
+		function parse(template, item) {
 			return template.replace( /\{([^}]+)\}/g, function(_, name) {
 				return name in item ? item[ name ] : "";
 			});
 		}
 
-		function setPlaceholder () {
+		function setPlaceholder() {
 			if (null == placeholder) {
 				return;
 			}
@@ -204,7 +220,7 @@ define([
 			element.val(placeholder);
 		}
 
-		function setTemplate (tmpl){
+		function setTemplate(tmpl){
 			template = tmpl;
 		}
 
@@ -213,7 +229,7 @@ define([
 		 * @param {Array} objectTypeFilter The array of objectTypeFilter to be searched for.
 		 * @void
 		 */
-		function setObjectTypeFilter (objTypeFilter) {
+		function setObjectTypeFilter(objTypeFilter) {
 			objectTypeFilter = objTypeFilter;
 		}
 
@@ -222,20 +238,20 @@ define([
 		 * @param {String} eventname The name of the event. Ex. 'keyup'
 		 * @param {function} handler The function that should be called when the event happens.
 		 */
-		function addListener (eventName, handler) {
+		function addListener(eventName, handler) {
 			element.bind(eventName, $.proxy(handler, attrField));
 		}
 
-		function getValue () {
+		function getValue() {
 			return element.val();
 		}
 
-		function setValue (value) {
+		function setValue(value) {
 			element.val(value);
 			element.css('color', 'black');
 		}
 
-		function setItem (item) {
+		function setItem(item) {
 			resourceItem = item;
 
 			if (item) {
@@ -252,7 +268,7 @@ define([
 			}
 		}
 
-		function getItem () {
+		function getItem() {
 			return resourceItem;
 		}
 
@@ -263,7 +279,7 @@ define([
 		 * @param {String} regex The regex when the attribute should be set. The regex is applied to the value of refernece.
 		 * @param {String} reference The value for the regex.
 		 */
-		function setAttribute (attr, value, regex, reference) {
+		function setAttribute(attr, value, regex, reference) {
 			if (targetObject) {
 				// check if a reference value is submitted to check against with a regex
 				var setAttr = true;
@@ -290,7 +306,7 @@ define([
 		 * @param {String} attr Attribute to be modified ex. "href" of a link
 		 * @void
 		 */
-		function setTargetObject (obj, attr) {
+		function setTargetObject(obj, attr) {
 			targetObject = obj;
 			targetAttribute = attr;
 
@@ -312,32 +328,36 @@ define([
 			} );
 		}
 
-		function getTargetObject () {
+		function getTargetObject() {
 			return targetObject;
 		}
 
-		function focus () {
+		function focus() {
 			component.focus();
 			element.focus();
 		}
 
-		function show () {
+		function foreground() {
+			component.foreground();
+		}
+
+		function show() {
 			element.show();
 		}
 
-		function hide () {
+		function hide() {
 			element.hide();
 		}
 
-		function getInputId (){
+		function getInputId(){
 			return element.attr("id");
 		}
 
-		function hasInputElem () {
+		function hasInputElem() {
 			return true;
 		}
 
-		function getInputElem () {
+		function getInputElem() {
 			return element[0];
 		}
 
@@ -347,6 +367,7 @@ define([
 			getInputId: getInputId,
 			hide: hide,
 			show: show,
+			foreground: foreground,
 			focus: focus,
 			getTargetObject: getTargetObject,
 			setTargetObject: setTargetObject,

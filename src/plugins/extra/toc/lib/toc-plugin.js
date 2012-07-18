@@ -12,7 +12,7 @@ define([
 	'ui/button',
 	'i18n!toc/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
-	'aloha/console',
+	'aloha/console'
 ], function(
 	Aloha,
     Plugin,
@@ -102,7 +102,7 @@ define([
 		initButtons: function () {
 			var that = this;
 			
-			this._insertTocButton = Ui.assign("insertToc", Button, {
+			this._insertTocButton = Ui.adopt("insertToc", Button, {
 		        tooltip: i18n.t('button.addtoc.tooltip'),
 		        icon: 'aloha-icon aloha-icon-orderedlist',
 				scope: 'Aloha.continuoustext',

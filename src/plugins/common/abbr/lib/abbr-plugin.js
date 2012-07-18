@@ -59,7 +59,7 @@ define([
 		createButtons: function () {
 		    var me = this;
 
-			this._formatAbbrButton = Ui.assign("formatAbbr", ToggleButton, {
+			this._formatAbbrButton = Ui.adopt("formatAbbr", ToggleButton, {
 				tooltip: i18n.t("button.abbr.tooltip"),
 				icon: "aloha-icon aloha-icon-abbr",
 				scope: 'Aloha.continuoustext',
@@ -68,7 +68,7 @@ define([
 				}
 			});
 
-			this._insertAbbrButton = Ui.assign("insertAbbr", Button, {
+			this._insertAbbrButton = Ui.adopt("insertAbbr", Button, {
 				tooltip: i18n.t('button.addabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr',
 				scope: 'Aloha.continuoustext',
@@ -106,8 +106,8 @@ define([
 		        Aloha.editables[ i ].obj.keydown( function ( e ) {
 		    		if ( e.metaKey && e.which == 71 ) {
 				        if ( me.findAbbrMarkup() ) {
-				        	Scopes.activateTabOfButton( 'abbrText' );
-				            me.abbrField.focus();
+							me.abbrField.foreground();
+							me.abbrField.focus();
 				        } else {
 				        	me.insertAbbr();
 				        }
@@ -231,8 +231,8 @@ define([
 			
 		    range.select();
 
-		    Scopes.activateTabOfButton('abbrText');
-		    this.abbrField.focus();
+			this.abbrField.foreground();
+			this.abbrField.focus();
 		},
 
 		/**

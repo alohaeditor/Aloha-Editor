@@ -8,7 +8,7 @@ define([
 	'link/link-plugin',
 	'RepositoryBrowser',
 	'i18n!linkbrowser/nls/i18n',
-	'i18n!aloha/nls/i18n',
+	'i18n!aloha/nls/i18n'
 ], function(
 	Aloha,
 	jQuery,
@@ -30,7 +30,7 @@ define([
 
 			var that = this;
 
-			this._linkBrowserButton = Ui.assign('linkBrowser', Button, {
+			this._linkBrowserButton = Ui.adopt('linkBrowser', Button, {
 				tooltip: i18n.t('button.addlink.tooltip'),
 				icon: 'aloha-icon-tree',
 				scope: 'Aloha.continuoustext',

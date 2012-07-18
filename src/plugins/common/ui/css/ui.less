@@ -1,5 +1,7 @@
 
-/* Woraround for dialogs that are appended directly to the body and
+@import "jquery-ui-1.9m6.less";
+
+/* Workaround for dialogs that are appended directly to the body and
    can't be placed inside a .aloha context element.
    Styles removed from jquery-ui.css and placed here. */
 /*
@@ -233,7 +235,6 @@
 	font-size: 11px;
 	text-align: left;
 }
-
 .aloha-ui-menubutton-menu .ui-menu-item a {
 	white-space: nowrap;
 	padding-left: 10px;
@@ -243,6 +244,9 @@
 	-webkit-border-radius: 0px;
 	border-radius:         0px;
 	border-color: transparent;
+}
+.aloha-ui-menubutton-menu .ui-menu-item a.ui-state-active {
+	background: #dadada;
 }
 /* The following margin and padding ensure that the triangle icon of submenus
    doesn't overlap with the text (only for IE, looks ok in chrome without
@@ -305,7 +309,7 @@
 	padding: 0px;
 	border-width: 0;
 }
-.ui-button.aloha-ui-menubutton-action {
+.ui-buttonset .ui-button.aloha-ui-menubutton-action {
 	border-right: 1px solid transparent;
 	-moz-border-radius-topright:     0px;
 	-webkit-border-top-right-radius: 0px;
@@ -483,11 +487,14 @@
 /** jquery-ui icons used by Aloha **/
 
 
-/* TODO take the two icons out from the jqueryui sprite and merge with other icons into an aloha specific sprite **/
+/* TODO take the jqueryui icons out from the jqueryui icon sprite map
+   and merge with other icons into an aloha specific sprite map */
 .aloha-jqueryui-icon { background-image: url(../img/jqueryui/ui-icons_222222_256x240.png); }
 /* triangle and carat are used by the ribbon plugin for the drop down and expand icons */
 .ui-icon-triangle-1-s { background-position: -64px -16px; }
 .ui-icon-carat-1-e { background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat -30px -16px; }
+/* the gripsmall is used by the image plugin */
+.ui-icon-gripsmall-diagonal-se { background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat; }
 
 .aloha-multisplit {
 	position: relative;
@@ -573,24 +580,23 @@
 	border: 1px solid #999;
 	background: #f0f0f0;
 	box-shadow: 0px 5px 20px rgba(0,0,0,0.2);
-	background-image:         linear-gradient(bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
-	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
-	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
-	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
-	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0) 80%, rgba(0,0,0,0.2) 100%);
 	color: #555;
 	font-size: 12px;
 	text-align: left;
+	-moz-border-radius:    4px;
+	-khtml-border-radius:  4px;
+	-webkit-border-radius: 4px;
+	border-radius:         4px;
 }
 &.aloha-dialog .ui-dialog-titlebar {
 	padding: 4px;
 	border-width: 0;
 	background: transparent;
-	border-top: 1px solid #e6e6e6;
 	font: bold 12px tahoma,arial,verdana,sans-serif;
 	color: #555;
 }
 &.aloha-dialog .ui-dialog-content {
+	min-height: 25px !important;
 	color: #555;
 }
 &.aloha-dialog .ui-dialog-buttonpane {
@@ -598,15 +604,27 @@
 	border-width: 0;
 	background: transparent;
 }
-&.aloha-dialog .ui-button {
+&.aloha-dialog .ui-button,
+&.aloha-dialog .ui-dialog-titlebar-close {
+	outline: none;
 	background-color: #e6e6e6;
-	background-image:         linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
-	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
-	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
-	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
-	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.4) 40%);
+	background-image:         linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
+	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
+	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
+	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(255,255,255,0.2) 50%);
 }
-
+&.aloha-dialog .ui-dialog-titlebar-close {
+	padding: 0;
+	border: 1px solid #ccc;
+	margin-top: -7px;
+}
+&.aloha-dialog .ui-dialog-titlebar-close:hover {
+	border-color: #999;
+}
+&.aloha-dialog .ui-icon-closethick {
+	background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat -80px -128px;
+}
 
 .aloha-ui-hidden {
 	display: none;

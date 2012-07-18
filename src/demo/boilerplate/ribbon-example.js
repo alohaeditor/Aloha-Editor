@@ -2,9 +2,9 @@ Aloha.ready(function(){
 	if (!Aloha.isPluginLoaded('ribbon')) {
 		return;
 	}
-    Aloha.require(["ribbon/ribbon-plugin", "ui/ui", "ui/menuButton"], function(Ribbon, Ui, MenuButton){
+    Aloha.require(["ribbon/ribbon-plugin", "ui/ui", "ui/menuButton", 'ui/dialog'], function(Ribbon, Ui, MenuButton, Dialog){
 
-		Ui.assign("insertTag", MenuButton, {
+		Ui.adopt("insertTag", MenuButton, {
 			text: "X",
 			menu: [
 				{ text: "Z",
@@ -126,6 +126,42 @@ Aloha.ready(function(){
 			],
 			click: function(){
 				console.log("split button");
+			}
+		});
+
+		Ribbon.addButton({
+			text: 'confirm',
+			click: function() {
+				Dialog.confirm({
+					text: "Do you want to X?"
+				});
+			}
+		});
+
+		Ribbon.addButton({
+			text: 'alert',
+			click: function() {
+				Dialog.alert({
+					text: "X happened!"
+				});
+			}
+		});
+
+		Ribbon.addButton({
+			text: 'progress',
+			click: function() {
+				var progress = Dialog.progress({
+					text: "X is in progress...",
+					value: 0
+				});
+				var percent = 0;
+				var interval = setInterval(function() {
+					percent += 10;
+					progress(percent);
+					if (percent == 100) {
+						clearInterval(interval);
+					}
+				}, 1000);
 			}
 		});
     });

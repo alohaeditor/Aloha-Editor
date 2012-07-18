@@ -36,7 +36,7 @@ function getStyleLength(node) {
 		// others don't, so we will count
 		var styleLength = 0;
 		for (var s in node.style) {
-			if (s !== "cssText" && node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
+			if (node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
 				styleLength++;
 			}
 		}
@@ -87,26 +87,6 @@ function nextNodeDescendants(node) {
 		return null;
 	}
 	return node.nextSibling;
-}
-
-// Note that we cannot use splitText() because it is bugridden in IE 9.
-// A workaround method as suggested in http://stackoverflow.com/questions/7378186/ie9-childnodes-not-updated-after-splittext
-function insertAfter(node, precedingNode) {
-    var nextNode = precedingNode.nextSibling, parent = precedingNode.parentNode;
-    if (nextNode) {
-        parent.insertBefore(node, nextNode);
-    } else {
-        parent.appendChild(node);
-    }
-    return node;
-}
-
-function splitDataNode(node, index) {
-    var newNode = node.cloneNode(false);
-    newNode.deleteData(0, index);
-    node.deleteData(index, node.length - index);
-    insertAfter(newNode, node);
-    return newNode;
 }
 
 /**
@@ -636,9 +616,9 @@ function myExecCommand(command, showUi, value, range) {
 		// argument."
 		commands[command].action(value, range);
 
-    // always fix the range after the command is complete
+		// always fix the range after the command is complete
 		setActiveRange(range);
-
+		
 		// "Return true."
 		return true;
 	}})(command, showUi, value));
@@ -1216,12 +1196,12 @@ function isCollapsedBlockProp(node) {
 
 function setActiveRange( range ) {
 	var rangeObject = new window.GENTICS.Utils.RangeObject();
-
+	
 	rangeObject.startContainer = range.startContainer;
 	rangeObject.startOffset = range.startOffset;
 	rangeObject.endContainer = range.endContainer;
 	rangeObject.endOffset = range.endOffset;
-
+	
 	rangeObject.select();
 }
 
@@ -1344,7 +1324,6 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 //@{
 
 function movePreservingRanges(node, newParent, newIndex, range) {
-
 	// For convenience, I allow newIndex to be -1 to mean "insert at the end".
 	if (newIndex == -1) {
 		newIndex = newParent.childNodes.length;
@@ -1412,14 +1391,11 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 		newParent.insertBefore(node, newParent.childNodes[newIndex]);
 	}
 
-  // when node boundaries are not text nodes and
 	// if we're off actual node boundaries this implies that the move was
 	// part of a deletion process (backspace). If that's the case we 
 	// attempt to fix this by restoring the range to the first index of
 	// the node that has been moved
-	if (boundaryPoints[0][0].nodeType !== $_.Node.TEXT_NODE 
-  && boundaryPoints[1][0].nodeType !== $_.Node.TEXT_NODE
-  && boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
+	if (boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
 	&& boundaryPoints[1][1] > boundaryPoints[1][0].childNodes.length) {
 		range.setStart(node, 0);
 		range.setEnd(node, 0);
@@ -2103,22 +2079,14 @@ function isSimpleModifiableElement(node) {
 		return false;
 	}
 
-  //Note: In IE 6,7 & 8 returns both system & user defined attributes
-  //since, we need only the user-defiend ones filter using specified property.
-  var specified_attributes = $_(node.attributes).filter(function(attr){
-    if(attr.specified){
-      return true 
-    }
-  });
-
 	// "It is an a, b, em, font, i, s, span, strike, strong, sub, sup, or u
 	// element with no attributes."
-	if (specified_attributes.length == 0) {
+	if (node.attributes.length == 0) {
 		return true;
 	}
 
 	// If it's got more than one attribute, everything after this fails.
-	if (specified_attributes.length > 1) {
+	if (node.attributes.length > 1) {
 		return false;
 	}
 
@@ -2708,7 +2676,6 @@ function clearValue(element, command, range) {
 		return children;
 	}
 
-
 	// "If command is "strikethrough", and element has a style attribute that
 	// sets "text-decoration" to some value containing "line-through", delete
 	// "line-through" from the value."
@@ -3128,7 +3095,7 @@ function forceValue(node, command, newValue, range) {
 
 	// "Append node to new parent as its last child, preserving ranges."
 	movePreservingRanges(node, newParent, newParent.childNodes.length, range);
-  
+
 	// "If node is an Element and the effective command value of command for
 	// node is not loosely equivalent to new value:"
 	if (node.nodeType == $_.Node.ELEMENT_NODE
@@ -3170,10 +3137,10 @@ function forceValue(node, command, newValue, range) {
 //@{
 
 function setSelectionValue(command, newValue, range) {
-
+	
 	// Use current selected range if no range passed
 	range = range || getActiveRange();
-
+	
 	// "If there is no editable text node effectively contained in the active
 	// range:"
 	if (!$_( getAllEffectivelyContainedNodes(range) )
@@ -3215,8 +3182,7 @@ function setSelectionValue(command, newValue, range) {
 
 	// "If the active range's start node is an editable Text node, and its
 	// start offset is neither zero nor its start node's length, call
-	// splitText() (replaced with custom splitDataNode() for cross-browser support)
-  // on the active range's start node, with argument equal to the
+	// splitText() on the active range's start node, with argument equal to the
 	// active range's start offset. Then set the active range's start node to
 	// the result, and its start offset to zero."
 	if (isEditable(range.startContainer)
@@ -3224,7 +3190,7 @@ function setSelectionValue(command, newValue, range) {
 	&& range.startOffset != 0
 	&& range.startOffset != getNodeLength(range.startContainer)) {
 		// Account for browsers not following range mutation rules
-    var newNode = splitDataNode(range.startContainer, range.startOffset);
+		var newNode = range.startContainer.splitText(range.startOffset);
 		var newActiveRange = Aloha.createRange();
 		if (range.startContainer == range.endContainer) {
 			var newEndOffset = range.endOffset - range.startOffset;
@@ -3239,18 +3205,24 @@ function setSelectionValue(command, newValue, range) {
 	}
 
 	// "If the active range's end node is an editable Text node, and its end
-	// offset is neither zero nor its end node's length, 
-	// call splitText() (replaced with custom splitDataNode() for cross-browser support) on
+	// offset is neither zero nor its end node's length, call splitText() on
 	// the active range's end node, with argument equal to the active range's
 	// end offset."
 	if (isEditable(range.endContainer)
 	&& range.endContainer.nodeType == $_.Node.TEXT_NODE
 	&& range.endOffset != 0
 	&& range.endOffset != getNodeLength(range.endContainer)) {
-    var activeRange = range;
+		// IE seems to mutate the range incorrectly here, so we need correction
+		// here as well.  The active range will be temporarily in orphaned
+		// nodes, so calling getActiveRange() after splitText() but before
+		// fixing the range will throw an exception.
+		// TODO: check if this is still neccessary 
+		var activeRange = range;
 		var newStart = [activeRange.startContainer, activeRange.startOffset];
 		var newEnd = [activeRange.endContainer, activeRange.endOffset];
-    splitDataNode(activeRange.endContainer, activeRange.endOffset);
+		activeRange.endContainer.splitText(activeRange.endOffset);
+		activeRange.setStart(newStart[0], newStart[1]);
+		activeRange.setEnd(newEnd[0], newEnd[1]);
 
 		Aloha.getSelection().removeAllRanges();
 		Aloha.getSelection().addRange(activeRange);
@@ -3260,7 +3232,7 @@ function setSelectionValue(command, newValue, range) {
 	// active range.
 	//
 	// "For each element in element list, clear the value of element."
-	$_( getAllEffectivelyContainedNodes(range, function(node) {
+	$_( getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 		return isEditable(node) && node.nodeType == $_.Node.ELEMENT_NODE;
 	}) ).forEach(function(element) {
 		clearValue(element, command, range);
@@ -3271,14 +3243,11 @@ function setSelectionValue(command, newValue, range) {
 	//
 	// "For each node in node list:"
 	$_( getAllEffectivelyContainedNodes(range, isEditable) ).forEach(function(node) {
-
 		// "Push down values on node."
 		pushDownValues(node, command, newValue, range);
 
-    // "If node is an allowed child of span, force the value of node."
-		if (isAllowedChild(node, "span")) {
-      forceValue(node, command, newValue, range);
-    }
+		// "Force the value of node."
+		forceValue(node, command, newValue, range);
 	});
 }
 
@@ -3443,7 +3412,7 @@ commands.backcolor = {
 commands.bold = {
 	action: function(value, range) {
 		// "If queryCommandState("bold") returns true, set the selection's
-		// vale to "normal". Otherwise set the selection's value to "bold"."
+		// value to "normal". Otherwise set the selection's value to "bold"."
 		if (myQueryCommandState("bold", range)) {
 			setSelectionValue("bold", "normal", range);
 		} else {
@@ -3467,8 +3436,7 @@ commands.bold = {
 ///// The createLink command /////
 //@{
 commands.createlink = {
-	action: function(value, range) {
-		range = range || getActiveRange();
+	action: function(value) {
 		// "If value is the empty string, abort these steps and do nothing."
 		if (value === "") {
 			return;
@@ -3480,7 +3448,7 @@ commands.createlink = {
 		//
 		// TODO: We don't actually do this in tree order, not that it matters
 		// unless you're spying with mutation events.
-		$_( getAllEffectivelyContainedNodes(range) ).forEach(function(node) {
+		$_( getAllEffectivelyContainedNodes(getActiveRange()) ).forEach(function(node) {
 			$_( getAncestors(node) ).forEach(function(ancestor) {
 				if (isEditable(ancestor)
 				&& isHtmlElement(ancestor, "a")
@@ -3788,34 +3756,25 @@ commands.italic = {
 
 //@}
 ///// The removeFormat command /////
-// value: array of elements to remove
 //@{
 commands.removeformat = {
-	action: function(value, range) {
+	action: function() {
 		// "A removeFormat candidate is an editable HTML element with local
 		// name "abbr", "acronym", "b", "bdi", "bdo", "big", "blink", "cite",
 		// "code", "dfn", "em", "font", "i", "ins", "kbd", "mark", "nobr", "q",
 		// "s", "samp", "small", "span", "strike", "strong", "sub", "sup",
 		// "tt", "u", or "var"."
 		function isRemoveFormatCandidate(node) {
-      var defaultRemoveFormatCandidates = ["abbr", "acronym", "b", "bdi", "bdo",
+			return isEditable(node)
+				&& isHtmlElement(node, ["abbr", "acronym", "b", "bdi", "bdo",
 				"big", "blink", "cite", "code", "dfn", "em", "font", "i",
 				"ins", "kbd", "mark", "nobr", "q", "s", "samp", "small",
-				"span", "strike", "strong", "sub", "sup", "tt", "u", "var"];
-
-      //remove only the selected candidates
-      var candidates = value || defaultRemoveFormatCandidates;
-
-			return isEditable(node)
-				&& isHtmlElement(node, candidates);
+				"span", "strike", "strong", "sub", "sup", "tt", "u", "var"]);
 		}
-
-    //set the range
-    range = range || getActiveRange(); 
 
 		// "Let elements to remove be a list of every removeFormat candidate
 		// effectively contained in the active range."
-		var elementsToRemove = getAllEffectivelyContainedNodes(range, isRemoveFormatCandidate);
+		var elementsToRemove = getAllEffectivelyContainedNodes(getActiveRange(), isRemoveFormatCandidate);
 
 		// "For each element in elements to remove:"
 		$_( elementsToRemove ).forEach(function(element) {
@@ -3832,45 +3791,43 @@ commands.removeformat = {
 
 		// "If the active range's start node is an editable Text node, and its
 		// start offset is neither zero nor its start node's length, call
-    // splitText() (replaced with custom splitDataNode() for cross-browser support) on
-		// the active range's start node, with argument equal to
+		// splitText() on the active range's start node, with argument equal to
 		// the active range's start offset. Then set the active range's start
 		// node to the result, and its start offset to zero."
-		if (isEditable(range.startContainer)
-		&& range.startContainer.nodeType == $_.Node.TEXT_NODE
-		&& range.startOffset != 0
-		&& range.startOffset != getNodeLength(range.startContainer)) {
+		if (isEditable(getActiveRange().startContainer)
+		&& getActiveRange().startContainer.nodeType == $_.Node.TEXT_NODE
+		&& getActiveRange().startOffset != 0
+		&& getActiveRange().startOffset != getNodeLength(getActiveRange().startContainer)) {
 			// Account for browsers not following range mutation rules
-			if (range.startContainer == range.endContainer) {
-				var newEnd = range.endOffset - range.startOffset;
-        var newNode = splitDataNode(range.startContainer, range.startOffset);
-				range.setStart(newNode, 0);
-				range.setEnd(newNode, newEnd);
+			if (getActiveRange().startContainer == getActiveRange().endContainer) {
+				var newEnd = getActiveRange().endOffset - getActiveRange().startOffset;
+				var newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
+				getActiveRange().setStart(newNode, 0);
+				getActiveRange().setEnd(newNode, newEnd);
 			} else {
-        range.setStart(splitDataNode(range.startContainer, range.startOffset), 0);
+				getActiveRange().setStart(getActiveRange().startContainer.splitText(getActiveRange().startOffset), 0);
 			}
 		}
 
 		// "If the active range's end node is an editable Text node, and its
 		// end offset is neither zero nor its end node's length, call
-    // splitText() (replaced with custom splitDataNode() for cross-browser support) on
-		// the active range's end node, with argument equal to
+		// splitText() on the active range's end node, with argument equal to
 		// the active range's end offset."
-		if (isEditable(range.endContainer)
-		&& range.endContainer.nodeType == $_.Node.TEXT_NODE
-		&& range.endOffset != 0
-		&& range.endOffset != getNodeLength(range.endContainer)) {
+		if (isEditable(getActiveRange().endContainer)
+		&& getActiveRange().endContainer.nodeType == $_.Node.TEXT_NODE
+		&& getActiveRange().endOffset != 0
+		&& getActiveRange().endOffset != getNodeLength(getActiveRange().endContainer)) {
 			// IE seems to mutate the range incorrectly here, so we need
 			// correction here as well.  Have to be careful to set the range to
 			// something not including the text node so that getActiveRange()
 			// doesn't throw an exception due to a temporarily detached
 			// endpoint.
-			var newStart = [range.startContainer, range.startOffset];
-			var newEnd = [range.endContainer, range.endOffset];
-			range.setEnd(document.documentElement, 0);
-      splitDataNode(newEnd[0], newEnd[1]);
-			range.setStart(newStart[0], newStart[1]);
-			range.setEnd(newEnd[0], newEnd[1]);
+			var newStart = [getActiveRange().startContainer, getActiveRange().startOffset];
+			var newEnd = [getActiveRange().endContainer, getActiveRange().endOffset];
+			getActiveRange().setEnd(document.documentElement, 0);
+			newEnd[0].splitText(newEnd[1]);
+			getActiveRange().setStart(newStart[0], newStart[1]);
+			getActiveRange().setEnd(newEnd[0], newEnd[1]);
 		}
 
 		// "Let node list consist of all editable nodes effectively contained
@@ -3879,7 +3836,7 @@ commands.removeformat = {
 		// "For each node in node list, while node's parent is a removeFormat
 		// candidate in the same editing host as node, split the parent of the
 		// one-node list consisting of node."
-		$_( getAllEffectivelyContainedNodes(range, isEditable) ).forEach(function(node) {
+		$_( getAllEffectivelyContainedNodes(getActiveRange(), isEditable) ).forEach(function(node) {
 			while (isRemoveFormatCandidate(node.parentNode)
 			&& inSameEditingHost(node.parentNode, node)) {
 				splitParent([node], range);
@@ -3888,24 +3845,19 @@ commands.removeformat = {
 
 		// "For each of the entries in the following list, in the given order,
 		// set the selection's value to null, with command as given."
-    
-    // Note: if the removeformat candidates are explicitly supplied,
-    // these commands will not be applied
-    if(!value){
-      $_( [
-        "subscript",
-        "bold",
-        "fontname",
-        "fontsize",
-        "forecolor",
-        "hilitecolor",
-        "italic",
-        "strikethrough",
-        "underline"
-      ] ).forEach(function(command) {
-        setSelectionValue(command, null);
-      });
-    }
+		$_( [
+			"subscript",
+			"bold",
+			"fontname",
+			"fontsize",
+			"forecolor",
+			"hilitecolor",
+			"italic",
+			"strikethrough",
+			"underline"
+		] ).forEach(function(command) {
+			setSelectionValue(command, null);
+		});
 	}
 };
 
@@ -3913,14 +3865,14 @@ commands.removeformat = {
 ///// The strikethrough command /////
 //@{
 commands.strikethrough = {
-	action: function(value, range) {
+	action: function() {
 		// "If queryCommandState("strikethrough") returns true, set the
 		// selection's value to null. Otherwise set the selection's value to
 		// "line-through"."
-		if (myQueryCommandState("strikethrough", range)) {
-			setSelectionValue("strikethrough", null, range);
+		if (myQueryCommandState("strikethrough")) {
+			setSelectionValue("strikethrough", null);
 		} else {
-			setSelectionValue("strikethrough", "line-through", range);
+			setSelectionValue("strikethrough", "line-through");
 		}
 	}, inlineCommandActivatedValues: ["line-through"]
 };
@@ -3929,16 +3881,16 @@ commands.strikethrough = {
 ///// The subscript command /////
 //@{
 commands.subscript = {
-	action: function(value, range) {
+	action: function() {
 		// "Call queryCommandState("subscript"), and let state be the result."
-		var state = myQueryCommandState("subscript", range);
+		var state = myQueryCommandState("subscript");
 
 		// "Set the selection's value to null."
-		setSelectionValue("subscript", null, range);
+		setSelectionValue("subscript", null);
 
 		// "If state is false, set the selection's value to "subscript"."
 		if (!state) {
-			setSelectionValue("subscript", "subscript", range);
+			setSelectionValue("subscript", "subscript");
 		}
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
@@ -3960,17 +3912,17 @@ commands.subscript = {
 ///// The superscript command /////
 //@{
 commands.superscript = {
-	action: function(value, range) {
+	action: function() {
 		// "Call queryCommandState("superscript"), and let state be the
 		// result."
-		var state = myQueryCommandState("superscript", range);
+		var state = myQueryCommandState("superscript");
 
 		// "Set the selection's value to null."
-		setSelectionValue("superscript", null, range);
+		setSelectionValue("superscript", null);
 
 		// "If state is false, set the selection's value to "superscript"."
 		if (!state) {
-			setSelectionValue("superscript", "superscript", range);
+			setSelectionValue("superscript", "superscript");
 		}
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
@@ -3993,13 +3945,13 @@ commands.superscript = {
 ///// The underline command /////
 //@{
 commands.underline = {
-	action: function(value, range) {
+	action: function() {
 		// "If queryCommandState("underline") returns true, set the selection's
 		// value to null. Otherwise set the selection's value to "underline"."
-		if (myQueryCommandState("underline", range)) {
-			setSelectionValue("underline", null, range);
+		if (myQueryCommandState("underline")) {
+			setSelectionValue("underline", null);
 		} else {
-			setSelectionValue("underline", "underline", range);
+			setSelectionValue("underline", "underline");
 		}
 	}, inlineCommandActivatedValues: ["underline"]
 };
@@ -4008,14 +3960,14 @@ commands.underline = {
 ///// The unlink command /////
 //@{
 commands.unlink = {
-	action: function(value, range) {
-		range = range || getActiveRange();
+	action: function() {
 		// "Let hyperlinks be a list of every a element that has an href
 		// attribute and is contained in the active range or is an ancestor of
 		// one of its boundary points."
 		//
 		// As usual, take care to ensure it's tree order.  The correctness of
 		// the following is left as an exercise for the reader.
+		var range = getActiveRange();
 		var hyperlinks = [];
 		for (
 			var node = range.startContainer;
@@ -4182,7 +4134,6 @@ function fixDisallowedAncestors(node, range) {
 			);
 			return;
 		}
-
 
 		// "If node is not a prohibited paragraph child, abort these steps."
 		if (!isProhibitedParagraphChild(node)) {
@@ -5396,7 +5347,6 @@ function deleteContents() {
 //@{
 
 function splitParent(nodeList, range) {
-
 	// "Let original parent be the parent of the first member of node list."
 	var originalParent = nodeList[0].parentNode;
 
@@ -5433,7 +5383,7 @@ function splitParent(nodeList, range) {
 		// parent of original parent immediately after original parent,
 		// preserving ranges."
 		for (var i = nodeList.length - 1; i >= 0; i--) {
-      movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
+			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
 		}
 
 		// "If precedes line break is true, and the last member of node list
@@ -5476,15 +5426,7 @@ function splitParent(nodeList, range) {
 	// "For each node in node list, insert node into the parent of original
 	// parent immediately before original parent, preserving ranges."
 	for (var i = 0; i < nodeList.length; i++) {
-    if(isHtmlElement(originalParent.parentNode, ["LI"])){
-      var newParent = originalParent.parentNode.parentNode;
-      var newIndex = getNodeIndex(originalParent.parentNode) + 1;
-
-      movePreservingRanges(nodeList[i], newParent, newIndex, range);
-      movePreservingRanges(originalParent, nodeList[i], -1, range);
-    } else {
-      movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent), range);
-    }
+		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent), range);
 	}
 
 	// "If follows line break is true, and the first member of node list does
@@ -5845,23 +5787,10 @@ function indentNodes(nodeList, range) {
 			range
 		);
 
-    //Note: This is not part of editing API spec
-    //Adding this to conform with Aloha's intended behaviour
-    //
-    //if the sublist's previousSibling is also a li
-    //move the sublist to previousSibling
-    $_( nodeList ).forEach( function( node ) {
-      var parentNode = node.parentNode
-      movePreservingRanges(parentNode, parentNode.previousSibling, -1, range);
-    });
-
 		// "Abort these steps."
 		return;
 	}
 
-  // Note: Disabled simple indention as it breaks Aloha's conventions.
-  // Original implementation was left commented for future reference.
-  
 	// "Wrap node list, with sibling criteria returning true for a simple
 	// indentation element and false otherwise, and new parent instructions
 	// returning the result of calling createElement("blockquote") on the
@@ -5877,7 +5806,7 @@ function indentNodes(nodeList, range) {
 }
 
 function outdentNode(node, range) {
- 	// "If node is not editable, abort these steps."
+	// "If node is not editable, abort these steps."
 	if (!isEditable(node)) {
 		return;
 	}
@@ -5948,13 +5877,11 @@ function outdentNode(node, range) {
 		}
 	}
 
-	// "If node is an ol or ul 
-  // and current ancestor is not an editable
+	// "If node is an ol or ul and current ancestor is not an editable
 	// indentation element:"
 	if (isHtmlElement(node, ["OL", "UL"])
 	&& (!isEditable(currentAncestor)
 	|| !isIndentationElement(currentAncestor))) {
-
 		// "Unset the reversed, start, and type attributes of node, if any are
 		// set."
 		node.removeAttribute("reversed");
@@ -6048,10 +5975,6 @@ function outdentNode(node, range) {
 //@{
 
 function toggleLists(tagName, range) {
-
-  // get the range if the range is not set
-	range = range || getActiveRange();
-
 	// "Let mode be "disable" if the selection's list state is tag name, and
 	// "enable" otherwise."
 	var mode = getSelectionListState() == tagName ? "disable" : "enable";
@@ -6062,40 +5985,37 @@ function toggleLists(tagName, range) {
 	// "ol"."
 	var otherTagName = tagName == "OL" ? "UL" : "OL";
 
-  // Note: Disabled the normalization of sublists,
-  // as it breaks Aloha's default conventions.
-  
-	// // "Let items be a list of all lis that are ancestor containers of the
-	// // range's start and/or end node."
-	// //
-	// // It's annoying to get this in tree order using functional stuff without
-	// // doing getDescendants(document), which is slow, so I do it imperatively.
-	// var items = [];
-	// (function(){
-	// 	for (
-	// 		var ancestorContainer = range.endContainer;
-	// 		ancestorContainer != range.commonAncestorContainer;
-	// 		ancestorContainer = ancestorContainer.parentNode
-	// 	) {
-	// 		if (isHtmlElement(ancestorContainer, "li")) {
-	// 			items.unshift(ancestorContainer);
-	// 		}
-	// 	}
-	// 	for (
-	// 		var ancestorContainer = range.startContainer;
-	// 		ancestorContainer;
-	// 		ancestorContainer = ancestorContainer.parentNode
-	// 	) {
-	// 		if (isHtmlElement(ancestorContainer, "li")) {
-	// 			items.unshift(ancestorContainer);
-	// 		}
-	// 	}
-	// })();
+	// "Let items be a list of all lis that are ancestor containers of the
+	// range's start and/or end node."
+	//
+	// It's annoying to get this in tree order using functional stuff without
+	// doing getDescendants(document), which is slow, so I do it imperatively.
+	var items = [];
+	(function(){
+		for (
+			var ancestorContainer = range.endContainer;
+			ancestorContainer != range.commonAncestorContainer;
+			ancestorContainer = ancestorContainer.parentNode
+		) {
+			if (isHtmlElement(ancestorContainer, "li")) {
+				items.unshift(ancestorContainer);
+			}
+		}
+		for (
+			var ancestorContainer = range.startContainer;
+			ancestorContainer;
+			ancestorContainer = ancestorContainer.parentNode
+		) {
+			if (isHtmlElement(ancestorContainer, "li")) {
+				items.unshift(ancestorContainer);
+			}
+		}
+	})();
 
-	// // "For each item in items, normalize sublists of item."
-	// $_( items ).forEach( function( thisArg ) {
-	// 		normalizeSublists( thisArg, range);
-	// });
+	// "For each item in items, normalize sublists of item."
+	$_( items ).forEach( function( thisArg ) {
+			normalizeSublists( thisArg, range);
+	});
 
 	// "Block-extend the range, and let new range be the result."
 	var newRange = blockExtend(range);
@@ -6278,13 +6198,8 @@ function toggleLists(tagName, range) {
 				// result."
 				var values = recordValues(sublist);
 
-        // Move each node in sublist into the parent node of
-        // its original parent
-        // (Modified behaviour from editing API spec)
-        var originalParent = sublist[0].parentNode;
-        for (var i = sublist.length - 1; i >= 0; i--) {
-          movePreservingRanges(sublist[i], originalParent.parentNode, getNodeIndex(originalParent), range);
-        }
+				// "Split the parent of sublist."
+				splitParent(sublist, range);
 
 				// "Wrap sublist, with sibling criteria returning true for an
 				// HTML element with local name tag name and false otherwise,
@@ -6473,15 +6388,8 @@ function justifySelection(alignment, range) {
 ///// Create an end break /////
 //@{
 function createEndBreak() {
-	// https://github.com/alohaeditor/Aloha-Editor/issues/516
 	var endBr = document.createElement("br");
 	endBr.setAttribute("class", "aloha-end-br");
-
-	// the code below cannot work, since the endBr is created right above and not inserted into the DOM tree.
-//	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
-//		var endTextNode = document.createTextNode(' ');
-//		endBr.insertBefore(endTextNode);
-//	}
 
 	return endBr;
 }
@@ -6891,7 +6799,7 @@ var formattableBlockNames = ["address", "dd", "div", "dt", "h1", "h2", "h3",
 	"h4", "h5", "h6", "p", "pre"];
 
 commands.formatblock = {
-	action: function(value, range) {
+	action: function(value) {
 		// "If value begins with a "<" character and ends with a ">" character,
 		// remove the first and last characters from it."
 		if (/^<.*>$/.test(value)) {
@@ -6908,7 +6816,7 @@ commands.formatblock = {
 		}
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(range || getActiveRange());
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be an empty list of nodes."
 		//
@@ -7139,8 +7047,8 @@ commands.forwarddelete = {
 		while (true) {
 			// check whether the next element is a br or hr
 			if ( offset < node.childNodes.length ) {
-				isBr = isHtmlElement(node.childNodes[offset], "br") || false;
-				isHr = isHtmlElement(node.childNodes[offset], "hr") || false;
+//				isBr = isNamedHtmlElement(node.childNodes[offset], "br") || false;
+//				isHr = isNamedHtmlElement(node.childNodes[offset], "hr") || false;
 			}
 
 			// "If offset is the length of node and node's nextSibling is an
@@ -7338,38 +7246,35 @@ commands.forwarddelete = {
 ///// The indent command /////
 //@{
 commands.indent = {
-	action: function(value, range) {
-		range = range || getActiveRange();
-		// "Let items be a list of all lists that are ancestor containers of the
+	action: function() {
+		// "Let items be a list of all lis that are ancestor containers of the
 		// active range's start and/or end node."
 		//
 		// Has to be in tree order, remember!
 		var items = [];
-		for (var node = range.endContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+		for (var node = getActiveRange().endContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
-		for (var node = range.startContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+		for (var node = getActiveRange().startContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
-		for (var node = range.commonAncestorContainer; node; node = node.parentNode) {
+		for (var node = getActiveRange().commonAncestorContainer; node; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
 
-    // Note: Avoid normalizing sublists as it breaks Aloha's current behaviour
-    // Original implementation was left commented for future reference.
 		// "For each item in items, normalize sublists of item."
 		for (var i = 0; i < items.length; i++) {
-			normalizeSublists(items[i], range);
+			normalizeSublists(items[i, range]);
 		}
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(range);
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
@@ -7494,8 +7399,7 @@ commands.inserthorizontalrule = {
 //@{
 commands.inserthtml = {
 	action: function(value, range) {
-
-    range = range || getActiveRange();
+		
 		
 		// "Delete the contents of the active range."
 		deleteContents(range);
@@ -7722,9 +7626,7 @@ commands.insertlinebreak = {
 //@{
 commands.insertorderedlist = {
 	// "Toggle lists with tag name "ol"."
-	action: function(value, range) {
-		toggleLists("ol", range);
-	},
+	action: function() { toggleLists("ol") },
 	// "True if the selection's list state is "mixed" or "mixed ol", false
 	// otherwise."
 	indeterm: function() { return /^mixed( ol)?$/.test(getSelectionListState()) },
@@ -7757,12 +7659,11 @@ commands.insertparagraph = {
 		var offset = range.startOffset;
 
 		// "If node is a Text node, and offset is neither 0 nor the length of
-    // call splitText(offset) (replaced with custom splitDataNode() for cross-browser support)
-    // on node."
+		// node, call splitText(offset) on node."
 		if (node.nodeType == $_.Node.TEXT_NODE
 		&& offset != 0
 		&& offset != getNodeLength(node)) {
-      splitDataNode(node, offset);
+			node.splitText(offset);
 		}
 
 		// "If node is a Text node and offset is its length, set offset to one
@@ -8228,9 +8129,7 @@ commands.inserttext = {
 //@{
 commands.insertunorderedlist = {
 	// "Toggle lists with tag name "ul"."
-	action: function(value, range) {
-		toggleLists("ul", range);
-	},
+	action: function() { toggleLists("ul") },
 	// "True if the selection's list state is "mixed" or "mixed ul", false
 	// otherwise."
 	indeterm: function() { return /^mixed( ul)?$/.test(getSelectionListState()) },
@@ -8406,51 +8305,46 @@ commands.justifyright = {
 ///// The outdent command /////
 //@{
 commands.outdent = {
-	action: function(value, range) {
-		range = range || getActiveRange();
+	action: function() {
+		// "Let items be a list of all lis that are ancestor containers of the
+		// range's start and/or end node."
+		//
+		// It's annoying to get this in tree order using functional stuff
+		// without doing getDescendants(document), which is slow, so I do it
+		// imperatively.
+		var items = [];
+		(function(){
+			for (
+				var ancestorContainer = getActiveRange().endContainer;
+				ancestorContainer != getActiveRange().commonAncestorContainer;
+				ancestorContainer = ancestorContainer.parentNode
+			) {
+				if (isHtmlElement(ancestorContainer, "li")) {
+					items.unshift(ancestorContainer);
+				}
+			}
+			for (
+				var ancestorContainer = getActiveRange().startContainer;
+				ancestorContainer;
+				ancestorContainer = ancestorContainer.parentNode
+			) {
+				if (isHtmlElement(ancestorContainer, "li")) {
+					items.unshift(ancestorContainer);
+				}
+			}
+		})();
 
-    // Note: Avoid normalizing sublists as it breaks Aloha's current behaviour
-    // Original implementation was left commented for future reference.
-
-		// // "Let items be a list of all lists that are ancestor containers of the
-		// // range's start and/or end node."
-		// //
-		// // It's annoying to get this in tree order using functional stuff
-		// // without doing getDescendants(document), which is slow, so I do it
-		// // imperatively.
-		// var items = [];
-		// (function(){
-		// 	for (
-		// 		var ancestorContainer = range.endContainer;
-		// 		ancestorContainer != range.commonAncestorContainer;
-		// 		ancestorContainer = ancestorContainer.parentNode
-		// 	) {
-		// 		if (isHtmlElement(ancestorContainer, "li")) {
-		// 			items.unshift(ancestorContainer);
-		// 		}
-		// 	}
-		// 	for (
-		// 		var ancestorContainer = range.startContainer;
-		// 		ancestorContainer;
-		// 		ancestorContainer = ancestorContainer.parentNode
-		// 	) {
-		// 		if (isHtmlElement(ancestorContainer, "li")) {
-		// 			items.unshift(ancestorContainer);
-		// 		}
-		// 	}
-		// });
-
-    // // "For each item in items, normalize sublists of item."
-		// $_( items ).forEach( function( thisArg) {
-		// 	normalizeSublists( thisArg, range);
-		// });
+		// "For each item in items, normalize sublists of item."
+		$_( items ).forEach( function( thisArg) {
+			normalizeSublists( thisArg, range);
+		});
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(range);
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be a list of nodes, initially empty."
 		//
-		// "For each node contained in new range, append node to node list
+		// "For each node node contained in new range, append node to node list
 		// if the last member of node list (if any) is not an ancestor of node;
 		// node is editable; and either node has no editable descendants, or is
 		// an ol or ul, or is an li whose parent is an ol or ul."
@@ -8463,15 +8357,12 @@ commands.outdent = {
 
 		// "While node list is not empty:"
 		while (nodeList.length) {
-
-      // Note - Modified from the Editing API spec.
-      //
-			// "While the first member of node list is an ol or ul or is a 
-			// child of an li, outdent it and remove it from node
+			// "While the first member of node list is an ol or ul or is not
+			// the child of an ol or ul, outdent it and remove it from node
 			// list."
 			while (nodeList.length
 			&& (isHtmlElement(nodeList[0], ["OL", "UL"])
-			&& isHtmlElement(nodeList[0].parentNode, ["LI"]))) {
+			|| !isHtmlElement(nodeList[0].parentNode, ["OL", "UL"]))) {
 				outdentNode(nodeList.shift(), range);
 			}
 
@@ -8502,12 +8393,8 @@ commands.outdent = {
 			// "Split the parent of sublist, with new parent null."
 			splitParent(sublist, range);
 
-			// "Fix disallowed ancestors and isolated lis of each member of sublist."
-			$_( sublist ).forEach(function(node){
-
-        fixDisallowedAncestors(node, range);
-
-      });
+			// "Fix disallowed ancestors of each member of sublist."
+			$_( sublist ).forEach(fixDisallowedAncestors);
 
 			// "Restore the values from values."
 			restoreValues(values, range);
@@ -8649,8 +8536,8 @@ $_( commandNames ).forEach(function(command) {
 	// active range, or if there is no such node, the effective command
 	// value of the active range's start node."
 	if ("standardInlineValueCommand" in commands[command]) {
-		commands[command].indeterm = function(range) {
-			var values = $_(getAllEffectivelyContainedNodes(range))
+		commands[command].indeterm = function() {
+			var values = $_(getAllEffectivelyContainedNodes(getActiveRange()))
 				.filter(function(node) { return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE }, true)
 				.map(function(node) { return getEffectiveCommandValue(node, command) });
 			for (var i = 1; i < values.length; i++) {
@@ -8684,7 +8571,9 @@ return {
 	queryCommandState: myQueryCommandState,
 	queryCommandValue: myQueryCommandValue,
 	queryCommandEnabled: myQueryCommandEnabled,
-	queryCommandSupported: myQueryCommandSupported
+	queryCommandSupported: myQueryCommandSupported,
+	copyAttributes: copyAttributes,
+	createEndBreak: createEndBreak
 }
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker

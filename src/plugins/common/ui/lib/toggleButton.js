@@ -1,7 +1,7 @@
 define([
 	'jquery',
 	'ui/button',
-	'aloha/jquery-ui'
+	'jqueryui'
 ],
 function( jQuery, Button ) {
 	'use strict';
@@ -29,6 +29,12 @@ function( jQuery, Button ) {
 		 *                          "toggled/checked" state.
 		 */
 		setState: function( toggled ) {
+			// It is very common to set the button state on every
+			// selection change even if the state hasn't changed.
+			// Profiling showed that this is very inefficient.
+			if (this._checked === toggled) {
+				return;
+			}
 			this._checked = toggled;
 			if (toggled) {
 				this.element.addClass("aloha-button-active");

@@ -3,17 +3,15 @@ define([
 	'aloha/core',
 	'ui/surface',
 	'ui/subguarded',
-	'vendor/jquery.store'
+	'vendor/amplify.store'
 ], function (
 	$,
 	Aloha,
 	Surface,
 	subguarded,
-	Store
+	amplifyStore
 ) {
 	'use strict';
-
-	var store = new Store();
 
 	/**
 	 * The distance the floating surface should remain from the editable it is
@@ -89,24 +87,24 @@ define([
 	}
 
 	function storePinPosition(offset) {
-		store.set('Aloha.FloatingMenu.pinned', 'true');
-		store.set('Aloha.FloatingMenu.top', offset.top);
-		store.set('Aloha.FloatingMenu.left', offset.left);
+		amplifyStore.store('Aloha.FloatingMenu.pinned', 'true');
+		amplifyStore.store('Aloha.FloatingMenu.top', offset.top);
+		amplifyStore.store('Aloha.FloatingMenu.left', offset.left);
 	}
 
 	function unstorePinPosition() {
-		store.del('Aloha.FloatingMenu.pinned');
-		store.del('Aloha.FloatingMenu.top');
-		store.del('Aloha.FloatingMenu.left');
+		amplifyStore.store('Aloha.FloatingMenu.pinned', null);
+		amplifyStore.store('Aloha.FloatingMenu.top', null);
+		amplifyStore.store('Aloha.FloatingMenu.left', null);
 	}
 
 	function getPinState() {
 		var state = {};
 
-		if (store.get('Aloha.FloatingMenu.pinned') === 'true') {
+		if (amplifyStore.store('Aloha.FloatingMenu.pinned') === 'true') {
 			return {
-				top: parseInt(store.get('Aloha.FloatingMenu.top'), 10),
-				left: parseInt(store.get('Aloha.FloatingMenu.left'), 10),
+				top: parseInt(amplifyStore.store('Aloha.FloatingMenu.top'), 10),
+				left: parseInt(amplifyStore.store('Aloha.FloatingMenu.left'), 10),
 				isPinned: true
 			};
 		}
@@ -157,12 +155,14 @@ define([
 			duration = DURATION;
 		}
 
-		var margin = parseInt($('body').css('marginTop'), 10) || 0;
+		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
+		              + (parseInt($('body').css('paddingTop'), 10) || 0);
+
 		var $element = surface.$element;
 		var surfaceOrientation = $element.offset();
 		var editableOrientation = editable.obj.offset();
 		var scrollTop = $window.scrollTop();
-		var availableSpace = editableOrientation.top - scrollTop - margin;
+		var availableSpace = editableOrientation.top - scrollTop - topGutter;
 		var left = editableOrientation.left;
 		var horizontalOverflow = left + $element.width()
 		                       - $window.width() - PADDING;
@@ -175,14 +175,14 @@ define([
 			editableOrientation.top -= scrollTop;
 			floatAbove($element, editableOrientation, duration, callback);
 		} else if (availableSpace + $element.height() >
-			editableOrientation.top + editable.obj.height()) {
+				editableOrientation.top + editable.obj.height()) {
 			floatBelow($element, {
 				top: editableOrientation.top + editable.obj.height(),
 				left: left
 			}, duration, callback);
 		} else {
 			floatBelow($element, {
-				top: margin,
+				top: topGutter,
 				left: left
 			}, duration, callback);
 		}
@@ -240,9 +240,8 @@ define([
 			SurfaceTypeManager.setFloatingPosition(position);
 
 			surface.$element.css({
-				'position': 'fixed',
-				'top': position.top,
-				'left': position.left
+				top: position.top,
+				left: position.left
 			});
 		};
 
@@ -259,9 +258,19 @@ define([
 
 		surface.addPin();
 
-		if (SurfaceTypeManager.isFloatingMode) {
-			surface.$element.css('position', 'fixed');
+		// IE7 will not properly set the position property to "fixed" if our
+		// element is not rendered.  We therefore have to do a rigmarore to
+		// temorarily render the element in order to set the position
+		// correctly.
+		if ($.browser.msie) {
+			var $parent = surface.$element.parent();
+			surface.$element.appendTo('body');
+			surface.$element.css('position', 'fixed').appendTo($parent);
 		} else {
+			surface.$element.css('position', 'fixed');
+		}
+
+		if (!SurfaceTypeManager.isFloatingMode) {
 			updateSurfacePosition();
 		}
 

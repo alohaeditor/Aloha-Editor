@@ -11,7 +11,7 @@
  */
 
 define(
-[ 'testutils', '../../lib/jquery', 'htmlbeautifier' ],
+[ 'testutils', 'htmlbeautifier' ],
 function( TestUtils) {
 	'use strict';
 

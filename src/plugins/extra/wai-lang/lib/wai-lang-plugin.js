@@ -16,8 +16,7 @@ define([
 	'ui/port-helper-attribute-field',
 	'i18n!wai-lang/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'wai-lang/languages',
-	'css!wai-lang/css/wai-lang.css'
+	'wai-lang/languages'
 ], function(
 	Aloha,
 	jQuery,
@@ -118,7 +117,7 @@ define([
 		createButtons: function() {
 			var that = this;
 
-			this._wailangButton = Ui.assign("wailang", ToggleButton, {
+			this._wailangButton = Ui.adopt("wailang", ToggleButton, {
 				tooltip: i18n.t('button.add-wai-lang.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang',
 				scope: 'Aloha.continuoustext',
@@ -146,7 +145,7 @@ define([
 
 			langField.setObjectTypeFilter( this.objectTypeFilter );
 
-			this._removewailangButton = Ui.assign('removewailang', Button, {
+			this._removewailangButton = Ui.adopt('removewailang', Button, {
 				tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang-remove',
 				scope: 'wai-lang',
@@ -259,7 +258,7 @@ define([
 		 */
 		insertLanguageAnnotation: function() {
 			if ( this.findLangMarkup() ) {
-				Scopes.activateTabOfButton( 'wailangfield' );
+				langField.foreground();
 				langField.focus();
 			} else {
 				this.addMarkupToSelection();
@@ -323,8 +322,8 @@ define([
 				return;
 			}
 
-			Scopes.activateTabOfButton( 'wailangfield' );
-            Scopes.setScope( 'wai-lang' );
+			langField.foreground();
+			Scopes.setScope( 'wai-lang' );
 
 			if ( range.isCollapsed() ) {
 				GENTICS.Utils.Dom.extendToWord( range );

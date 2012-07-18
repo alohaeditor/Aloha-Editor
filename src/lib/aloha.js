@@ -20,58 +20,165 @@
 (function (global) {
 	'use strict';
 
-	// Establish Aloha namespace.
-	global.Aloha = global.Aloha || {};
-
-	// Establish defaults namespace.
-	Aloha.defaults = {};
-
-	// Establish the settings object if none exists.
-	Aloha.settings = Aloha.settings || {};
-
-	// Determins the base path of Aloha Editor which is supposed to be the path
-	// of aloha.js (this file).
-	Aloha.settings.baseUrl = Aloha.settings.baseUrl || getBaseUrl();
-
-	// Aloha base path is defined by a script tag with the data attribute
-	// data-aloha-plugins and the filename aloha.js
-	// no jQuery at this stage...
-	function getBaseUrl() {
-		var baseUrl = './',
+	/**
+	 * Gets the configuration for loading Aloha.
+	 *
+	 * If Aloha.settings.baseUrl is not specified, it will be taken from
+	 * the first script element that has a data-aloha-plugins attribute,
+	 * or, if there is no such script element, the first script element
+	 * of which the src attribute matches /\/aloha.js$/.
+	 *
+	 * If Aloha.settings.plugins.load is not specified, it will be taken
+	 * from the data-aloha-plugins attribute from the first script
+	 * element carrying this attribute.
+	 *
+	 * @return
+	 *       A map with two properties:
+	 *       baseUrl - the path to aloha.js (this file).
+	 *       plugins - an array of plugins to load.
+	 */
+	function getLoadConfig() {
+		var scripts = document.getElementsByTagName('script'),
 		    script,
-		    scripts = document.getElementsByTagName('script'),
-		    i, j = scripts.length,
-		    regexAlohaJs = /\/aloha.js$/,
-		    regexJs = /[^\/]*\.js$/;
+		    pluginsConfigured = Aloha.settings.plugins && Aloha.settings.plugins.load,
+		    baseUrlConfigured = Aloha.settings.baseUrl,
+		    plugins = [],
+		    baseUrl = './',
+		    pluginsAttr,
+		    regexAlohaJs = /\/aloha\.js$/,
+            regexStripFilename = /\/[^\/]*\.js$/,
+		    i;
 
-		for (i = 0; i < j && (script = scripts[i]); i++) {
-			// take aloha.js or first ocurrency of data-aloha-plugins
-			// and script ends with .js
-			if (regexAlohaJs.test(script.src)) {
-				baseUrl = script.src.replace(regexAlohaJs , '');
-				break;
-			}
-			if ('./' === baseUrl && script.getAttribute('data-aloha-plugins')
-				&& regexJs.test(script.src)) {
-				baseUrl = script.src.replace(regexJs , '');
+		if (!pluginsConfigured || !baseUrlConfigured) {
+			for (i = 0; i < scripts.length; i++) {
+				script = scripts[i];
+				pluginsAttr = script.getAttribute('data-aloha-plugins');
+				if (pluginsAttr) {
+					plugins = pluginsAttr;
+					baseUrl = script.src.replace(regexStripFilename, '');
+					break;
+				}
+				if (!baseUrl && regexAlohaJs.test(script.src)) {
+					baseUrl = script.src.replace(regexAlohaJs, '');
+				}
 			}
 		}
 
-		return baseUrl;
+		if (pluginsConfigured) {
+			plugins = pluginsConfigured;
+		}
+
+		if (baseUrlConfigured) {
+			baseUrl = baseUrlConfigured;
+		}
+
+		if (typeof plugins === 'string' && plugins !== '') {
+			plugins = plugins.replace(/\s+/g, '').split(',');
+		}
+
+		return {
+			baseUrl: baseUrl,
+			plugins: plugins
+		};
+	}
+
+	function isDeferInit() {
+		var scripts = document.getElementsByTagName('script');
+		for (var i = 0; i < scripts.length; i++) {
+			var attr = scripts[i].getAttribute('data-aloha-defer-init');
+			if ("true" === attr) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
-	 * Merges properites of all  passed arguments into a new one.
+	 * Extends the given map with plugin specific requirejs path configuration.
+	 *
+	 * plugin-name: bundle-path/plugin-name/lib
+	 * plugin-name/nls: bundle-path/plugin-name/nls
+	 * plugin-name/css: bundle-path/plugin-name/css
+	 * plugin-name/vendor: bundle-path/plugin-name/vendor
+	 * plugin-name/res: bundle-path/plugin-name/res
+	 */
+	function mergePluginPaths(paths, bundlePath, pluginName) {
+		var resourceFolders = ['nls', 'css', 'vendor', 'res'],
+		    resourceFolder,
+		    i;
+		paths[pluginName] = bundlePath + '/' + pluginName + '/lib';
+		for (i = 0; i < resourceFolders.length; i++) {
+			var resourceFolder = resourceFolders[i];
+			paths[pluginName + '/' + resourceFolder]
+				= bundlePath + '/' + pluginName + '/' + resourceFolder;
+		}
+	}
+
+	/**
+	 * Gets the configuration for loading the given plugins.
+	 *
+	 * The bundle-path for each given plugin is determined in the following manner:
+	 * Aloha.settings.basePath + (Aloha.settings.bundles[bundleName] || "../plugins/bundle-name")
+	 *
+	 * @param plugins
+	 *        An array of plugins to get the configuration for in the
+	 *        form "bundle-name/plugin-name"
+	 * @return
+	 *        A map with the following properties:
+	 *        paths - requirejs path configuration for each plugin (mergePluginPaths())
+	 *        entryPoints - an array of requirejs entry points ("link/link-plugin")
+	 *        baseUrlByName - ("link" => "bundle-path/link")
+	 *        names - an array of plugin names (the same as the given
+	 *                array with the bundle-name stripped)
+	 */
+	function getPluginLoadConfig(plugins) {
+		var paths = {},
+		    entryPoints = [],
+		    names = [],
+		    baseUrlByName = {},
+		    parts,
+		    bundleName,
+		    pluginName,
+		    basePath = Aloha.settings.basePath || '',
+		    bundlePath,
+		    bundles = Aloha.settings.bundles || {},
+		    i;
+		for (i = 0; i < plugins.length; i++) {
+			parts = plugins[i].split('/');
+			bundleName = parts[0];
+			pluginName = parts[1];
+			if (bundles[bundleName]) {
+				bundlePath = basePath + bundles[bundleName];
+			} else {
+				bundlePath = basePath + '../plugins/' + bundleName;
+			}
+			mergePluginPaths(paths, bundlePath, pluginName);
+			baseUrlByName[pluginName] = bundlePath + '/' + pluginName;
+			entryPoints.push(pluginName + '/' + pluginName + '-plugin');
+		}
+		return {
+			paths: paths,
+			entryPoints: entryPoints,
+			baseUrlByName: baseUrlByName,
+			names: names
+		};
+	}
+
+	/**
+	 * Merges properites of all given arguments into a new one.
 	 * Duplicate properties will be "seived" out.
 	 * Works in a similar way to jQuery.extend.
+	 * Necessary because we must not assume that jquery was already
+	 * loaded.
 	 */
 	function mergeObjects () {
 		var clone = {};
 		var objects = Array.prototype.slice.call(arguments);
 		var name;
 		var i;
+		var obj;
 		for (i = 0; i < objects.length; i++) {
-			var obj = objects[i];
+			obj = objects[i];
 			for (name in obj) {
 				if (obj.hasOwnProperty(name)) {
 					clone[name] = objects[i][name];
@@ -81,16 +188,37 @@
 		return clone;
 	}
 
-	var baseUrl = Aloha.settings.baseUrl;
+	function createDefine(name, module) {
+		if (!name || !module)debugger;
+		define(name, function () {
+			return module;
+		});
+	}
+
+	global.Aloha = global.Aloha || {};
+	if (global.Aloha.deferInit || isDeferInit()) {
+		global.Aloha.deferInit = load;
+	} else {
+		load();
+	}
+	function load() {
+
+	Aloha.defaults = {};
+	Aloha.settings = Aloha.settings || {};
+
+	var loadConfig = getLoadConfig();
+	var pluginConfig = getPluginLoadConfig(loadConfig.plugins);
+
+	Aloha.settings.baseUrl = loadConfig.baseUrl;
+	Aloha.settings.loadedPlugins = pluginConfig.names;
+	Aloha.settings._pluginBaseUrlByName = pluginConfig.baseUrlByName;
 
 	var defaultConfig = {
 		context: 'aloha',
-		locale: 'en',
-		baseUrl: baseUrl
+		locale: Aloha.settings.locale || 'en',
+		baseUrl: Aloha.settings.baseUrl
 	};
 
-	// Aside from requirejs, jquery and jqueryui are the only external
-	// dependencies that Aloha must have provided to it.
 	var defaultPaths = {
 		jquery: 'vendor/jquery-1.7.2',
 		jqueryui: 'vendor/jquery-ui-1.9m6'
@@ -109,24 +237,24 @@
 		'repository-browser-i18n-en': 'vendor/repository-browser/js/repository-browser-unminified'
 	};
 
-	var requireConfig = mergeObjects(defaultConfig, Aloha.settings.requireConfig);
+	var requireConfig = mergeObjects(
+		defaultConfig,
+		Aloha.settings.requireConfig
+	);
 
-	requireConfig.paths = mergeObjects(defaultPaths, browserPaths, requireConfig.paths);
+	requireConfig.paths = mergeObjects(
+		defaultPaths,
+		browserPaths,
+		pluginConfig.paths,
+		requireConfig.paths
+	);
 
 	// Create define() wrappers that will provide the initialized objects that
 	// the user passes into Aloha via require() calls.
 	var predefinedModules = Aloha.settings.predefinedModules || {};
 
-	// jQuery is treated specially in that, if it is available we will add it
-	// to the predefiedModules list as "jquery."
 	if (Aloha.settings.jQuery) {
 		predefinedModules.jquery = Aloha.settings.jQuery;
-	}
-
-	function createDefine (name, module) {
-		define(name, function () {
-			return module;
-		});
 	}
 
 	var moduleName;
@@ -137,6 +265,7 @@
 
 	// Configure require and expose the Aloha.require.
 	var alohaRequire = require.config(requireConfig);
+
 	Aloha.require = function (callback) {
 		// Pass the Aloha object to the given callback.
 		if (1 === arguments.length && typeof callback === 'function') {
@@ -165,7 +294,7 @@
 			};
 			Aloha.bind(type, fn);
 		});
-	   return this;
+		return this;
 	};
 
 	Aloha.trigger = function (type, data) {
@@ -188,50 +317,66 @@
 		return this;
 	};
 
-	define('aloha', [], function () {
-	    // Load Aloha dependencies...
-	    require(requireConfig, [
-				'jquery',
-				'util/json2'
-			], function (jQuery) {
+
+	// TODO this hierarchical chain of require calls should not really
+	//      be necessary if each file properly specifies its dependencies.
+	define('aloha', [], function() {
+
+		require(requireConfig, [
+			'jquery',
+			'util/json2'
+		], function (jQuery) {
+
 			// Provide Aloha.jQuery for compatibility with old implementations
 			// that which expect it to be there.
 			Aloha.jQuery = jQuery;
 
-	        // Load Aloha core files ...
-	        require(requireConfig, [
-					'vendor/jquery.json-2.2.min',
-					'vendor/jquery.store',
-					'aloha/rangy-core',
-					'util/class',
-					'util/lang',
-					'util/range',
-					'util/dom',
-					'aloha/core',
-					'aloha/editable',
-					'aloha/console',
-					'aloha/markup',
-					'aloha/message',
-					'aloha/plugin',
-					'aloha/selection',
-					'aloha/command',
-					'aloha/jquery.aloha',
-					'aloha/sidebar',
-					'util/position',
-					'aloha/repositorymanager',
-					'aloha/repository',
-					'aloha/repositoryobjects',
-					'aloha/contenthandlermanager'
-				], function () {
-				// ... and have jQuery call the Aloha.init method when the dom
-				// is ready.
-				jQuery(Aloha.init);
+			// Load Aloha core files ...
+			require(requireConfig, [
+				'vendor/jquery.json-2.2.min',
+				'aloha/rangy-core',
+				'util/class',
+				'util/lang',
+				'util/range',
+				'util/dom',
+				'aloha/core',
+				'aloha/editable',
+				'aloha/console',
+				'aloha/markup',
+				'aloha/plugin',
+				'aloha/selection',
+				'aloha/command',
+				'aloha/jquery.aloha',
+				'aloha/sidebar',
+				'util/position',
+				'aloha/repositorymanager',
+				'aloha/repository',
+				'aloha/repositoryobjects',
+				'aloha/contenthandlermanager'
+			], function() {
+
+				// Some core files provide default settings in Aloha.defaults.
+				Aloha.settings = jQuery.extendObjects( true, {}, Aloha.defaults, Aloha.settings );
+
+				Aloha.stage = 'loadPlugins';
+				require(requireConfig, pluginConfig.entryPoints, function() {
+					// jQuery calls Aloha.init when the dom is ready.
+					jQuery(function(){
+						// Rangy must be initialized only after the body
+						// is available since it accesses the body
+						// element during initialization.
+						window.rangy.init();
+						Aloha.init();
+					});
+				});
 			});
 		});
-
-	    return Aloha;
+		return Aloha;
 	});
 
 	// Trigger a loading of Aloha dependencies.
+	Aloha.stage = 'loadingAloha';
 	require(requireConfig, ['aloha'], function () {});
+
+	} // end load()
 }(window));

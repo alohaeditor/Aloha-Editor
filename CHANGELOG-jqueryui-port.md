@@ -1,3 +1,28 @@
+- **MANUAL CHANGE**: Most plugins don't load their css files through require any more
+      Before this change, plugins loaded the necessary css automatically.
+      Now, it is necessary to include aloha/css/aloha.css to get the css that is necessary to make plugins work.
+
+- **CLEANUP**: baseUrl and data-aloha-plugins attribute detection changed slightly
+
+      The exact rules are as follows:
+
+	  If Aloha.settings.baseUrl is not specified, it will be taken from
+	  the first script element that has a data-aloha-plugins attribute,
+	  or, if there is no such script element, the first script element
+	  of which the src attribute matches /\/aloha.js$/.
+	 
+	  If Aloha.settings.plugins.load is not specified, it will be taken
+	  from the data-aloha-plugins attribute of the first script
+	  element carrying this attribute.
+
+- **MANUAL CHANGE**: The Aloha.requirePaths property has been removed.
+
+- **MANUAL CHANGE**: The jquery.store dependency has been removed
+                     The jquery.store dependency was used for persisting the floating menu position and pinned state.
+                     The functionality provided by jquery.store has been replaced with amplify.store.
+                     Make sure that any custom plugins don't depend on this module.
+                     This also fixes the problem that pinning the floating menu was not persisted.
+
 - **MANUAL CHANGE**: requirejs is not loaded as part of Aloha-Editor
 
                      For aloha development the user must now load
@@ -6,7 +31,7 @@
                      When using a built version of Aloha, it's possible
                      to choose between aloha-min.js, which doesn't
                      include requirejs, and and aloha-full.js,
-                     which odes include requirejs.
+                     which does include requirejs.
 
 - **MANUAL CHANGE**: Properties exposed by Aloha.Selection or aloha/selection were changed
                      tagHierarchy
@@ -28,7 +53,7 @@
 
                      It is up to the user to load jQuery, call
                      noConflict himself, and pass jQuery into Aloha via
-                     Aloha.settings.predefinedModules.
+                     Aloha.settings.predefinedModules or Aloha.settings.jQuery.
 
 - **ENHANCEMENT**: It is now possible to pass in any third party
                    dependencies, for example:
@@ -37,11 +62,19 @@
 
                    Aloha will not try to load any of the dependencies defined in this way.
 
-                   Please note that if jqueryui is defined, a jquery
-                   dependency must also be defined, and the given
-                   jqueryui dependency must extend the given jquery
-                   dependency. The same rule holds for any other jquery
-                   plugins.
+                   Please note that if jqueryui is given this way,
+                   a jquery dependency must also be given this way,
+                   and the given jqueryui dependency must extend the
+                   given jquery dependency. The same rule holds for any
+                   other jquery plugins.
+
+                   Also note that if a jquery dependency is given this
+                   way, several jquery plugins will be registered on it
+                   (the given jquery instance will be mutated). The
+                   jquery plugins registered by aloha on the given
+                   jquery dependency should not be replaced, at least
+                   not without caution, otherwise behaviour may be
+                   unpredictable.
 
                    It is also possible to define alternative paths to
                    third party dependencies, for example:
@@ -50,16 +83,15 @@
 
                    This will override the default location Aloha loads jquery from.
 
-                   Please note that any dependency defined in this way must have an AMD define.
+                   Please note that any dependency defined in this way should have an AMD define.
 
                    Care must be taken with both settings. Passing in a
-                   dependency that has a different version from the
-                   dependency that is loaded by default may result in
-                   unpredictable behaviour.
+                   version of a dependency that differs from what Aloha
+                   expects may result in unpredictable behaviour.
 
                    Also, the third part libraries that come with Aloha
-                   may have been patched to fix bugs or increase
-                   performance. See the git log for each third party
+                   may have been patched to fix bugs or address Aloha
+                   specific issues. See the git log for each third party
                    library for further information before redefining it.
 
 - **ENHANCEMENT**: Aloha specific css rules that are not in use any more were removed:
@@ -81,8 +113,7 @@
 - **MANUAL CHANGE**: The browser plugin was removed
 
                      The browser plugin is obsolete. Please see
-                     linkbrowser and imagebrowser plugins for
-                     alternatives.
+                     linkbrowser and imagebrowser plugins.
 
 - **MANUAL CHANGE**: Added the ui-plugin and removed ui specific code from the Aloha core
 
@@ -144,7 +175,7 @@
                      
                      In particular, the Aloha block handles now have
                      z-index 10000, the floating menu has 10100, and
-                     Aloha dialogs have 10200. The sidebar continus to
+                     Aloha dialogs have 10200. The sidebar continues to
                      have a z-index of 999999999.
 
                      The new common/ui plugin is now required for the
@@ -187,3 +218,13 @@
                      dependency on these files.
 
 - **BUG**: cite-plugin: Fixed a javascript error when the cite plugin had no explicit sidebar configuration.
+
+- **ENHANCEMENT**:  It's now possible to deactivate the transformFormattings method
+                    in the genericcontenthandler with the following setting:
+                    
+                    Aloha.settings.contentHandler.handler.generic.transformFormattings = false
+                    
+                    By default the transformFormattings method is enabled.
+
+- **DISCUSS**:      It would make sense to support also input (like textarea) elements
+                    eg. for basic formattings like strong / em -- but prevent insertation of br / p ?

@@ -18,6 +18,9 @@ define([
 	 */
 	var MultiSplit = Component.extend({
 
+		_activeButton: null,
+		_isOpen: false,
+
 		/**
 		 * Initializes the multisplit component
 		 * @override
@@ -61,8 +64,7 @@ define([
 				multiSplit.buttons.push({
 					settings: button,
 					component: component,
-					element: component.element,
-					active: false
+					element: component.element
 				});
 
 				return component.element[0];
@@ -85,23 +87,26 @@ define([
 				}))();
 				return component.element[0];
 			}).appendTo(content);
+
+			var that = this;
+			$('body').click(function (event) {
+				if (that._isOpen &&
+			        !that.element.is(event.target) &&
+			        0 === that.element.find(event.target).length) {
+					that.close();
+				}
+			});
 		},
 
-		/**
-		 * Selection change callback
-		 * @override
-		 */
-		selectionChange: function () {
-			var buttons = this.buttons,
-			    button,
-			    active;
-			for (var i = 0; i < buttons.length; i++) {
-				button = buttons[i];
-				active = button.settings.isActive();
-				if (active !== button.active) {
-					button.active = active;
-					button.element.toggleClass('aloha-multisplit-active');
-				}
+		setActiveButton: function(index) {
+			if (null !== this._activeButton) {
+				this.buttons[this._activeButton]
+				    .element.removeClass('aloha-multisplit-active');
+			}
+			this._activeButton = index;
+			if (null !== index) {
+				this.buttons[index]
+				    .element.addClass('aloha-multisplit-active');
 			}
 		},
 
@@ -110,6 +115,7 @@ define([
 		 */
 		toggle: function () {
 			this.element.toggleClass('aloha-multisplit-open');
+			this._isOpen = !this._isOpen;
 		},
 
 		/**
@@ -117,6 +123,7 @@ define([
 		 */
 		open: function () {
 			this.element.addClass('aloha-multisplit-open');
+			this._isOpen = true;
 		},
 
 		/**
@@ -124,6 +131,7 @@ define([
 		 */
 		close: function () {
 			this.element.removeClass('aloha-multisplit-open');
+			this._isOpen = false;
 		}
 	});
 

@@ -94,7 +94,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		
 		// @TODO think about Aloha.settings.contentHandler.sanitize name/options
 		if ( Aloha.settings.contentHandler.sanitize && jQuery.inArray(Aloha.settings.contentHandler.sanitize, filter) > -1 ) {
-			config = eval('Aloha.defaults.sanitize.' + Aloha.settings.contentHandler.sanitize);
+			config = Aloha.defaults.sanitize[Aloha.settings.contentHandler.sanitize];
 		} else {
 			// use relaxed filter by default
 			config = Aloha.defaults.sanitize.relaxed;
@@ -109,7 +109,6 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		config.filters = [function( elem ) {
 			return elem.contentEditable != "false";
 		}];
-
 		sanitize = new Sanitize( config );
 	}
 
@@ -124,6 +123,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			if (jQuery.browser.msie && jQuery.browser.version <= 7) {
 				return content;
 			}
+
 			if ( typeof sanitize === 'undefined' ) {
 			   initSanitize();
 			}
