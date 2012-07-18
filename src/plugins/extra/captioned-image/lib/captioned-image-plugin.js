@@ -39,8 +39,8 @@ define([
 			text-align: left;\
 			min-width: 100px;\
 		}\
-		.aloha-captioned-image-hidden {display: none;}\
-		.aloha-block-active .aloha-captioned-image-hidden {display: block;}\
+		.aloha-captioned-image-hidden .caption {display: none;}\
+		.aloha-captioned-image-hidden.aloha-block-active .caption {display: block;}\
 	').appendTo('head:first');
 
 	var components = [];
@@ -114,6 +114,13 @@ define([
 				image: '>div>img:first',
 				caption: '>div>div.caption:first'
 			});
+		}
+	}
+
+	function onEditableClick() {
+		if (BlockManager._activeBlock) {
+			BlockManager._activeBlock.$_caption.focus();
+			showComponents();
 		}
 	}
 
@@ -237,9 +244,9 @@ define([
 			    .bind('blur', this.onblur);
 
 			if (this.attr('caption')) {
-				this.$_caption.removeClass('aloha-captioned-image-hidden');
+				this.$element.removeClass('aloha-captioned-image-hidden');
 			} else {
-				this.$_caption.addClass('aloha-captioned-image-hidden');
+				this.$element.addClass('aloha-captioned-image-hidden');
 			}
 		}
 	});
@@ -254,11 +261,11 @@ define([
 			Aloha.bind('aloha-editable-created', function ($event, editable) {
 				initializeImageBlocks(editable.obj);
 				editable.obj.delegate('div.aloha-captioned-image', 'click',
-					showComponents);
+					onEditableClick);
 			});
 			Aloha.bind('aloha-editable-destroy', function ($event, editable) {
 				editable.obj.undelegate('div.aloha-captioned-image', 'click',
-					showComponents);
+					onEditableClick);
 			});
 		},
 
