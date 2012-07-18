@@ -472,25 +472,15 @@ define( [
 			var placeholderClass = this.placeholderClass,
 			    range;
 
-			// remove browser br
-			// jQuery( 'br', obj ).remove();
-
-			//debugger;
 			// set the cursor // remove placeholder
 			if ( setCursor === true ) {
-			//	range = Selection.getRangeObject();
-			//	if ( !range.select ) {
 				range = new Selection.SelectionRange();
-			//	}
 				range.startContainer = range.endContainer = obj.get( 0 );
 				range.startOffset = range.endOffset = 0;
 				window.setTimeout( function() {
 					jQuery( '.' + placeholderClass, obj ).remove();
 					range.select();
 				}, 20 );
-
-				
-
 			} else {
 				jQuery( '.' + placeholderClass, obj ).remove();
 			}
