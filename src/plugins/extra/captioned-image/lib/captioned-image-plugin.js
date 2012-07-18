@@ -17,6 +17,7 @@ define([
 	'block/blockmanager',
 	'ui/ui',
 	'ui/button',
+	'ui/toolbar',
 	'aloha/console'
 ], function (
 	$,
@@ -26,6 +27,7 @@ define([
 	BlockManager,
 	Ui,
 	Button,
+	Toolbar,
 	Console
 ) {
 	'use strict';
@@ -250,6 +252,7 @@ define([
 				if (that.attr('caption') !== html) {
 					that.attr('caption', html);
 				}
+				Toolbar.$surfaceContainer.show();
 			};
 
 			this.$element.css('float', this.attr('position'));
@@ -265,6 +268,11 @@ define([
 				that._processRenderedData(data);
 				that.$_image.bind('load', that.onload);
 				postProcessCallback();
+				Aloha.bind('aloha-editable-activated', function ($event, data) {
+					if (data.editable.obj.is(that.$_caption)) {
+						Toolbar.$surfaceContainer.hide();
+					}
+				});
 			}, function (error) {
 				if (Console) {
 					Console.error(error);
