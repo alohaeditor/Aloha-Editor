@@ -236,6 +236,9 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-jqgrid .ui-grid-ico-sort {
 	display: none;
 }
+.ui-jqgrid-sortable {
+	cursor: default;
+}
 .ui-jqgrid .ui-icon-asc {
 	background: url(../img/sort-alphabet.png) no-repeat center center;
 }
