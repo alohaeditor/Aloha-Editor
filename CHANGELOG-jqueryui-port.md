@@ -226,3 +226,5 @@
                     
                     By default the transformFormattings method is enabled.
 
+- **DISCUSS**:      It would make sense to support also input (like textarea) elements
+                    eg. for basic formattings like strong / em -- but prevent insertation of br / p ?

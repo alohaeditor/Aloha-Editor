@@ -17,6 +17,7 @@ define([
 	'block/blockmanager',
 	'ui/ui',
 	'ui/button',
+	'ui/toolbar',
 	'aloha/console'
 ], function (
 	$,
@@ -26,6 +27,7 @@ define([
 	BlockManager,
 	Ui,
 	Button,
+	Toolbar,
 	Console
 ) {
 	'use strict';
@@ -84,9 +86,72 @@ define([
 	}));
 
 	function showComponents() {
-		var j = components.length;
+		setTimeout(function () {
+			var j = components.length;
+			while (j) {
+				components[--j].foreground();
+			}
+		}, 100);
+	}
+
+	function cleanEditable($editable) {
+		var $blocks = $editable.find('.aloha-captioned-image');
+		var j = $blocks.length;
+		var block;
+		var $img;
+
 		while (j) {
-			components[--j].foreground();
+			block = BlockManager.getBlock($blocks[--j]);
+
+			if (!block) {
+				continue;
+			}
+
+			if (block.attr('aloha-captioned-image-tag') === 'img') {
+				$img = block.$_image;
+
+				$img.attr('src', block.attr('source'));
+
+				var alt = block.attr('alt');
+				var width = block.attr('width');
+				var height = block.attr('height');
+				var caption = block.attr('caption');
+				var floating = block.attr('position');
+
+				if (alt) {
+					$img.attr('alt', alt);
+				} else {
+					$img.removeAttr('alt');
+				}
+
+				if (typeof width !== 'undefined') {
+					$img.attr('width', width);
+				} else {
+					$img.removeAttr('width');
+				}
+
+				if (typeof height !== 'undefined') {
+					$img.attr('height', height);
+				} else {
+					$img.removeAttr('height');
+				}
+
+				if (caption) {
+					$img.attr('caption', caption);
+				} else {
+					$img.removeAttr('caption');
+				}
+
+				$img.attr('float',
+					(!floating || 'none' === floating) ? '' : floating);
+
+				$img.addClass('aloha-captioned-image');
+				block.$element.replaceWith($img);
+			} else {
+				block.$element.html('')
+				     .removeClass('aloha-captioned-image-hidden')
+				     .removeClass('aloha-block');
+			}
 		}
 	}
 
@@ -97,14 +162,13 @@ define([
 
 	if (!render) {
 		render = function (properties, callback, error) {
-			var src = properties.src || 'img/noimg.gif';
+			var src = properties.source || 'img/noimg.gif';
 			var alt = properties.alt || '';
 			var caption = properties.caption || '';
 			var $content = $('<div>' +
-					'<img src="' + src + '" alt="' + alt + '"/>' +
-					'<div class="caption">' +  caption + '</div>' +
-					'</div>'
-			);
+				'<img src="' + src + '" alt="' + alt + '"/>' +
+				'<div class="caption">' +  caption + '</div>' +
+				'</div>');
 
 			if ('left' === properties.position || 'right' === properties.position) {
 				$content.css('float', properties.position)
@@ -124,10 +188,6 @@ define([
 		};
 	}
 
-	function onEditableClick() {
-		showComponents();
-	}
-
 	function wrapNakedCaptionedImages($editable) {
 		var $imgs = $editable.find('img.aloha-captioned-image');
 		var j = $imgs.length;
@@ -139,16 +199,16 @@ define([
 							 .wrap('<div class="aloha-captioned-image">')
 							 .parent();
 
-			$block.attr('data-alt', $img.attr('alt'));
-			$block.attr('data-source', $img.attr('src'));
-			$block.attr('data-width', $img.attr('width'));
-			$block.attr('data-height', $img.attr('height'));
-			$block.attr('data-caption', $img.attr('data-caption'));
+			$block.attr('data-alt', $img.attr('alt'))
+			      .attr('data-source', $img.attr('src'))
+			      .attr('data-width', $img.attr('width'))
+			      .attr('data-height', $img.attr('height'))
+			      .attr('data-caption', $img.attr('data-caption'))
+			      .attr('data-aloha-captioned-image-tag', 'img');
 
 			$img.attr('width', '')
 			    .attr('height', '')
-			    .attr('data-caption', '')
-			    .attr('data-aloha-captioned-image-tag', 'img');
+			    .attr('data-caption', '');
 		}
 	}
 
@@ -192,21 +252,27 @@ define([
 				if (that.attr('caption') !== html) {
 					that.attr('caption', html);
 				}
+				Toolbar.$surfaceContainer.show();
 			};
 
 			this.$element.css('float', this.attr('position'));
 
 			render({
 				alt: this.attr('alt'),
-				src: this.attr('source'),
 				width: this.attr('width'),
 				height: this.attr('height'),
+				source: this.attr('source'),
 				caption: this.attr('caption'),
 				position: this.attr('position')
 			}, function (data) {
 				that._processRenderedData(data);
 				that.$_image.bind('load', that.onload);
 				postProcessCallback();
+				Aloha.bind('aloha-editable-activated', function ($event, data) {
+					if (data.editable.obj.is(that.$_caption)) {
+						Toolbar.$surfaceContainer.hide();
+					}
+				});
 			}, function (error) {
 				if (Console) {
 					Console.error(error);
@@ -223,9 +289,9 @@ define([
 
 			render({
 				alt: this.attr('alt'),
-				src: this.attr('source'),
 				width: this.attr('width'),
 				height: this.attr('height'),
+				source: this.attr('source'),
 				caption: this.attr('caption'),
 				position: this.attr('position')
 			}, function (data) {
@@ -264,14 +330,14 @@ define([
 			Aloha.bind('aloha-editable-created', function ($event, editable) {
 				initializeImageBlocks(editable.obj);
 				editable.obj.delegate('div.aloha-captioned-image', 'click',
-					onEditableClick);
+					showComponents);
 			});
-			Aloha.bind('aloha-editable-destroy', function ($event, editable) {
+			Aloha.bind('aloha-editable-destroyed', function ($event, editable) {
+				cleanEditable(editable.obj);
 				editable.obj.undelegate('div.aloha-captioned-image', 'click',
-					onEditableClick);
+					showComponents);
 			});
 		},
-
 		makeClean: function ($content) {
 			return $content;
 		}
