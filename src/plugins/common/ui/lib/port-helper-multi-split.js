@@ -39,6 +39,7 @@ define([
 				buttons.push({
 					tooltip: item.tooltip,
 					text: item.text,
+					name: item.name,
 					icon: item.iconClass,
 					click: item.click,
 					init: function () {
