@@ -39,6 +39,8 @@ define([
 			text-align: left;\
 			min-width: 100px;\
 		}\
+		.aloha-captioned-image-hidden {display: none;}\
+		.aloha-block-active .aloha-captioned-image-hidden {display: block;}\
 	').appendTo('head:first');
 
 	var components = [];
@@ -87,11 +89,13 @@ define([
 
 	if (!render) {
 		render = function (properties, callback, error) {
+			var src = properties.src || 'img/noimg.gif';
+			var alt = properties.alt || '';
+			var caption = properties.caption || '';
 			var $content = $(
 				'<div>' +
-					'<img src="' + properties.src + '" ' +
-					     'alt="' + properties.alt + '"/>' +
-					'<div class="caption">' +  (properties.caption || '') + '</div>' +
+					'<img src="' + src + '" alt="' + alt + '"/>' +
+					'<div class="caption">' +  caption + '</div>' +
 				'</div>'
 			);
 
@@ -101,8 +105,8 @@ define([
 			}
 
 			$content.find('>img:first').css({
-				width: properties.width,
-				height: properties.height
+				width: properties.width || '',
+				height: properties.height || ''
 			});
 
 			 callback({
@@ -125,15 +129,16 @@ define([
 							 .wrap('<div class="aloha-captioned-image">')
 							 .parent();
 
-			$block.attr('data-source', $img.attr('src'));
 			$block.attr('data-alt', $img.attr('alt'));
+			$block.attr('data-source', $img.attr('src'));
 			$block.attr('data-width', $img.attr('width'));
 			$block.attr('data-height', $img.attr('height'));
 			$block.attr('data-caption', $img.attr('data-caption'));
 
 			$img.attr('width', '')
 			    .attr('height', '')
-				.attr('data-caption', '');
+			    .attr('data-caption', '')
+			    .attr('data-aloha-captioned-image-tag', 'img');
 		}
 	}
 
@@ -158,9 +163,10 @@ define([
 
 	var CaptionedImageBlock = Block.AbstractBlock.extend({
 		title: 'Captioned Image',
+		onblur: null,
+		onload: null,
 		$_image: null,
 		$_caption: null,
-		onload: null,
 		init: function ($element, postProcessCallback) {
 			if (this._initialized) {
 				return;
@@ -171,6 +177,14 @@ define([
 			this.onload = function () {
 				that.$_caption.css('width', that.$_image.width());
 			};
+			this.onblur = function () {
+				var html = that.$_caption.html();
+				if (that.attr('caption') !== html) {
+					that.attr('caption', html);
+				}
+			};
+
+			this.$element.css('float', this.attr('position'));
 
 			render({
 				alt: this.attr('alt'),
@@ -192,6 +206,8 @@ define([
 		},
 		update: function ($element, postProcessCallback) {
 			this.$_image.unbind('load', this.onload);
+			this.$_caption.unbind('blur', this.onblur);
+			this.$element.css('float', this.attr('position'));
 
 			var that = this;
 
@@ -213,10 +229,18 @@ define([
 			});
 		},
 		_processRenderedData: function (data) {
-			this.$element.html(data.content).css('float', this.attr('position'));
+			this.$element.html(data.content);
 			this.$_image = this.$element.find(data.image);
-			this.$_caption = this.$element.find(data.caption).addClass('aloha-editable');
-			this.$_caption.css('width', this.$_image.width());
+			this.$_caption = this.$element.find(data.caption);
+			this.$_caption.addClass('aloha-editable')
+			    .css('width', this.$_image.width())
+			    .bind('blur', this.onblur);
+
+			if (this.attr('caption')) {
+				this.$_caption.removeClass('aloha-captioned-image-hidden');
+			} else {
+				this.$_caption.addClass('aloha-captioned-image-hidden');
+			}
 		}
 	});
 
