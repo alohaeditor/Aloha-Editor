@@ -10,7 +10,8 @@ define([
 	'block/block',
 	'block/blockmanager',
 	'ui/ui',
-	'ui/button'
+	'ui/button',
+	'aloha/console'
 ], function (
 	$,
 	Aloha,
@@ -18,7 +19,8 @@ define([
 	Block,
 	BlockManager,
 	Ui,
-	Button
+	Button,
+	Console
 ) {
 	'use strict';
 
@@ -92,11 +94,10 @@ define([
 			var src = properties.src || 'img/noimg.gif';
 			var alt = properties.alt || '';
 			var caption = properties.caption || '';
-			var $content = $(
-				'<div>' +
+			var $content = $('<div>' +
 					'<img src="' + src + '" alt="' + alt + '"/>' +
 					'<div class="caption">' +  caption + '</div>' +
-				'</div>'
+					'</div>'
 			);
 
 			if ('left' === properties.position || 'right' === properties.position) {
@@ -109,25 +110,29 @@ define([
 				height: properties.height || ''
 			});
 
-			 callback({
+			callback({
 				content: $content[0].outerHTML,
 				image: '>div>img:first',
 				caption: '>div>div.caption:first'
 			});
-		}
+		};
 	}
 
 	function onEditableClick() {
-		if (BlockManager._activeBlock) {
-			BlockManager._activeBlock.$_caption.focus();
-			showComponents();
-		}
+		showComponents();
+
+		// Yeild to allow the Aloha to handle the selection-changed event
+		// before moving the focus which changes the location.
+		setTimeout(function () {
+			if (BlockManager._activeBlock) {
+				BlockManager._activeBlock.$_caption.focus();
+			}
+		}, 0);
 	}
 
 	function wrapNakedCaptionedImages($editable) {
 		var $imgs = $editable.find('img.aloha-captioned-image');
 		var j = $imgs.length;
-		var $img;
 
 		while (j) {
 			var $img = $imgs.eq(--j);
@@ -205,8 +210,8 @@ define([
 				that.$_image.bind('load', that.onload);
 				postProcessCallback();
 			}, function (error) {
-				if (window.console) {
-					console.error(error);
+				if (Console) {
+					Console.error(error);
 				}
 				postProcessCallback();
 			});
@@ -229,8 +234,8 @@ define([
 				that._processRenderedData(data);
 				postProcessCallback();
 			}, function (error) {
-				if (window.console) {
-					console.error(error);
+				if (Console) {
+					Console.error(error);
 				}
 				postProcessCallback();
 			});
