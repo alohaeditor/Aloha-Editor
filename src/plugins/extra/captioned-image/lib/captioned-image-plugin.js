@@ -2,6 +2,12 @@
  * Captioned Images provides an Aloha block implementation that allows the
  * editor to work with images that have captions, such that an image with is
  * corresponding caption can be position, and aligned together in an editable.
+ *
+ * TODO
+ * ----
+ * - Implement makeClean
+ * - Prevent floating menu from showing on caption
+ * - Prevent disallowed content in caption
  */
 define([
 	'jquery',
@@ -120,14 +126,6 @@ define([
 
 	function onEditableClick() {
 		showComponents();
-
-		// Yeild to allow the Aloha to handle the selection-changed event
-		// before moving the focus which changes the location.
-		setTimeout(function () {
-			if (BlockManager._activeBlock) {
-				BlockManager._activeBlock.$_caption.focus();
-			}
-		}, 0);
 	}
 
 	function wrapNakedCaptionedImages($editable) {
