@@ -15,3 +15,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: repository-browser: Some images for the repository browser were changed because Internet Explorer 7+8 don't know how to handle alpha in PNGs.
 - **BUG**: repository-browser: Columns that are not sortable will now no longer be displayed like they were sortable.
 - **BUG**: dom-to-xhtml-plugin: When used in IE7 (or IE8 in IE7 mode), classes of elements were removed. This lead to unexpected behaviour with the BR-tags with class aloha-end-br, that are automatically added, when using the blockelementcontenthandler.
+- **BUG**: characterpicker-plugin: Fixed inserting a special character with a collapsed selection, when using IE.

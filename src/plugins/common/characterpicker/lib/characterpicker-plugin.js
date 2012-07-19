@@ -255,6 +255,8 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		*/
 		onCharacterSelect: function (character) {
 			if (Aloha.activeEditable) {
+				// set focux to editable
+				Aloha.activeEditable.obj.focus();
 				Aloha.execCommand('insertHTML', false, character);
 			}
 		}
