@@ -1096,7 +1096,7 @@ define( [
 					} else {
 						var captionText = i18n.t('empty.caption');
 						var c = jQuery('<caption></caption>');
-						that.activeTable.obj.append(c);
+						that.activeTable.obj.prepend(c);
 						that.makeCaptionEditable(c, captionText);
 
 						// get the editable span within the caption and select it
