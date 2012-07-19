@@ -274,11 +274,6 @@ define([
 				that._processRenderedData(data);
 				that.$_image.bind('load', that.onload);
 				postProcessCallback();
-				Aloha.bind('aloha-editable-activated', function ($event, data) {
-					if (data.editable.obj.is(that.$_caption)) {
-						Toolbar.$surfaceContainer.hide();
-					}
-				});
 			}, function (error) {
 				if (Console) {
 					Console.error(error);
@@ -342,6 +337,12 @@ define([
 				cleanEditable(editable.obj);
 				editable.obj.undelegate('div.aloha-captioned-image', 'click',
 					showComponents);
+			});
+			Aloha.bind('aloha-editable-activated', function ($event, data) {
+				if (BlockManager._activeBlock &&
+						data.editable.obj.is(BlockManager._activeBlock.$_caption)) {
+					Toolbar.$surfaceContainer.hide();
+				}
 			});
 		},
 		makeClean: function ($content) {
