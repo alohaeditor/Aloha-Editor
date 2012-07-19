@@ -26,9 +26,35 @@ var alltests = {
 		defaultCommand: 'forwarddelete',
 		tests: [
 
-/**
- * It is impossible to get a selection like this in ie
- */		
+
+
+		{	
+			start: '<p>before table[]</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
+			execResult: '<p>before table[]</p><p>after table</p>'
+		},
+		{	
+			start: '<p>before table[]</p>		<div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
+			execResult: '<p>before table[]</p><p>after table</p>'
+		},
+		{	
+			start: '<p>before table[]</p>	' + "\n" + '	<div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
+			execResult: '<p>before table[]</p><p>after table</p>'
+		},
+		{	
+			start: '<p>before table[] </p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
+			execResult: '<p>before table[]</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>'
+		},
+		{	
+			start: '<p>be[]fore table</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
+			execResult: '<p>be[]ore table</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>'
+		},
+		{
+			start: '<p><b>before <i>table[]</i></b></p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
+			execResult: '<p><b>before <i>table[]</i></b></p><p>after table</p>'
+		},
+		
+//		It is impossible to get a selection like this in ie
+				
 		{	exclude: 'msie',
 			start: 'foo{<p>bar</p>}baz',
 			execResult: 'foo[]baz'
@@ -52,12 +78,11 @@ var alltests = {
 		{	exclude: 'msie',	
 			start: '<div><p>foo[</p></div>]bar',
 			execResult: '<div><p>foo[]bar</p></div>'
-		},	        
+		},       
 		
 
-/**
- * Tests that had to be adapted to work for ie 
- */		       
+//		Tests that had to be adapted to work for ie 
+		       
 		        
 		// These tests will currently not work in ie since ie won't accept this
 		// cursor position. It won't allow the cursor to be placed directly in
@@ -195,9 +220,8 @@ var alltests = {
 		},
 		
 
-/**
- * IE Special cases
- */		
+// IE Special cases
+ 		
 		
 		// After deletion of the br tag the cursor will automatically be placed
 		// inside the paragraph and a additional space will be added. See 'Tests
@@ -234,9 +258,9 @@ var alltests = {
 		},
 		
 		
-/**
- * Tests OK in IE 
- */
+
+//		Tests OK in IE 
+ 
 		
 		{	start: '<ol><li>foo[]<li>bar</ol>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
@@ -678,9 +702,8 @@ var alltests = {
 			
 
 
-/**
- * Cases we don't care about
- */		
+// Cases we don't care about
+		
 //		Yeah well I dunno
 //	    {  	start: '[]&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;&#x5dd;', 
 //			execResult: '[]&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;&#x5dd;'
@@ -707,9 +730,8 @@ var alltests = {
 		
 		
 	        
-/**
- * Tests with errors in ie
- */	        
+
+// Tests with errors in ie
 		{	exclude: 'msie',
 			start: 'foo <span>&nbsp;</span> []bar',
 			execResult: 'foo <span>&nbsp;[]</span> []ar'
@@ -1298,6 +1320,18 @@ var alltests = {
 		},
 		{	start: 'foo[]     bar',
 			execResult: 'foo[]bar'
+		},
+		{
+			start: 'foo []b baz',
+			execResult: 'foo&nbsp;[] baz'
+		},
+		{
+			start: ' []f bar',
+			execResult: '&nbsp;[] bar'
+		},
+		{
+			start: 'foo [bar] baz',
+			execResult: 'foo&nbsp;[] baz'
 		}
 	
 
@@ -1404,7 +1438,6 @@ var alltests = {
 //			{	start: '<table><tr><td>{}<span><br></span></table>foo',
 //				execResult: ''
 //			}
-			
 		]
 }
 

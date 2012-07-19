@@ -115,6 +115,8 @@ define( [
 	 * @return void
 	 */
 	TablePlugin.init = function() {
+		var that = this,
+		    isEnabled = {};
 
 		// apply settings
 		this.tableConfig = this.checkConfig(this.tableConfig||this.settings.tableConfig);
@@ -124,10 +126,10 @@ define( [
 		// add reference to the create layer object
 		this.createLayer = new CreateLayer( this );
 
-		var that = this;
-
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
-		Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
+		Aloha.bind( 'aloha-editable-created', function (event, editable) {
+			var config = that.getEditableConfig(editable.obj);
+			isEnabled[editable.getId()] = (-1 !== jQuery.inArray('table', config));
 
 			// add a mousedown event to all created editables to check if focus leaves a table
 			editable.obj.bind( 'mousedown', function ( jqEvent ) {
@@ -186,41 +188,32 @@ define( [
 
 		Aloha.bind( 'aloha-selection-changed', function (event, rangeObject) {
 			// this case probably occurs when the selection is empty?
-			if ( null == rangeObject.startContainer ) {
+			if (!rangeObject.startContainer || !Aloha.activeEditable) {
 				return;
 			}
 
-			if (Aloha.activeEditable) {
-				// get Plugin configuration
-				var config = that.getEditableConfig( Aloha.activeEditable.obj );
+			// show hide buttons regarding configuration and DOM position
+			if (isEnabled[Aloha.activeEditable.getId()] && Aloha.Selection.mayInsertTag('table') ) {
+				that.createTableButton.show();
+			} else {
+				that.createTableButton.hide();
+			}
 
-				// show hide buttons regarding configuration and DOM position
-				if ( jQuery.inArray('table', config) != -1  && Aloha.Selection.mayInsertTag('table') ) {
-					that.createTableButton.show();
-				} else {
-					that.createTableButton.hide();
-				}
+			if (!that.activeTable) {
+				return;
+			}
 
-				var table = rangeObject.findMarkup(function () {
-					return this.nodeName.toLowerCase() == 'table';
-				}, Aloha.activeEditable.obj);
-
-				if ( that.activeTable ) {
-					// check wheater we are inside a table
-					if ( table ) {
-						TablePlugin.updateFloatingMenuScope();
-					} else {
-						//reset cell selection flags
-						that.activeTable.selection.cellSelectionMode = false; 
-						that.activeTable.selection.baseCellPosition = null;
-						that.activeTable.selection.lastSelectionRange = null; 
-						
-						that.activeTable.focusOut();
-					}
-				}
-
-				// TODO this should not be necessary here!
-				FloatingMenu.doLayout();
+			// check wheater we are inside a table
+			var table = rangeObject.findMarkup(function() {
+				return this.nodeName === 'TABLE';
+			}, Aloha.activeEditable.obj);
+			if (table) {
+				TablePlugin.updateFloatingMenuScope();
+			} else {
+				that.activeTable.selection.cellSelectionMode = false; 
+				that.activeTable.selection.baseCellPosition = null;
+				that.activeTable.selection.lastSelectionRange = null; 
+				that.activeTable.focusOut();
 			}
 		});
 
@@ -292,7 +285,7 @@ define( [
 				} );
 			}
 		} );
-		
+
 		if ( this.settings.summaryinsidebar ) {
 			Aloha.ready( function () { 
 				that.initSidebar( Aloha.Sidebar.right.show() );  
@@ -960,8 +953,8 @@ define( [
 		var that = this;
 
 		// generate the new scopes
-		FloatingMenu.createScope(this.name + '.row', 'Aloha.global');
-		FloatingMenu.createScope(this.name + '.column', 'Aloha.global');
+		FloatingMenu.createScope(this.name + '.row', 'Aloha.continuoustext');
+		FloatingMenu.createScope(this.name + '.column', 'Aloha.continuoustext');
 		FloatingMenu.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
 		// the 'create table' button
@@ -1163,15 +1156,16 @@ define( [
 	 */
 	TablePlugin.makeCaptionEditable = function(caption, captionText) {
 		var that = this;
-		var cSpan = caption.children('div').eq(0);
-		if (cSpan.length == 0) {
+		var cSpan = caption.children('div');
+		if (cSpan.length === 0) {
 			// generate a new div
 			cSpan = jQuery('<div></div>');
 			jQuery(cSpan).addClass('aloha-ui');
 			jQuery(cSpan).addClass('aloha-editable-caption');
 			if (caption.contents().length > 0) {
 				// when the caption has content, we wrap it with the new div
-				caption.contents().wrap(cSpan);
+				cSpan.append(caption.contents());
+				caption.append(cSpan);
 			} else {
 				// caption has no content, so insert the default caption text
 				if (captionText) {
@@ -1180,18 +1174,17 @@ define( [
 				// and append the div into the caption
 				caption.append(cSpan);
 			}
+		} else if (cSpan.length > 1) {
+			// merge multiple divs (they are probably created by IE)
+			caption.children('div:not(:first-child)').each(function () {
+				$this = jQuery(this);
+				cSpan.eq(0).append($this.contents());
+				$this.remove();
+			});
+			cSpan = cSpan.eq(0);
 		}
 		// make the div editable
 		cSpan.contentEditable(true);
-		cSpan.unbind('mousedown');
-		// focus on click
-		cSpan.bind('mousedown', function(jqEvent) {
-			cSpan.focus();
-			// stop bubble, otherwise the mousedown of the table is called ...
-			jqEvent.preventDefault();
-			jqEvent.stopPropagation();
-			return false;
-		});
 	};
 
 	/**

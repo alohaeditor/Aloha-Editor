@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Format Plugin</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+      <dd><a href="repository.html">Working with repositories</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+</dl>
+<dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd>Numerated Headers</dd>
+      <dd><a href="plugin_undo.html">Undo</a></dd>
+      <dd><a href="plugin_table.html">Table</a></dd>
+      <dd><a href="plugin_paste.html">Paste</a></dd>
+      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Format Plugin</h2>
+<p>The Format Plugin provides basic formatting choices for your content.</p>
+
+          </div>
+        <p>With the Format Plugin you are able to format paragraph formattings (p, h1, &#8230;) and other content formats like bold or subscript. You can also use Aloha Editor to annotate parts of your content as e.g. citation or code.</p>
+<p>The following components are available:</p>
+<h3 id="functional-description">1 Functional Description</h3>
+<p>The Format plugin allows you to format texts and headlines.</p>
+<h4 id="paragraph-headline-preformatted-or-remove-formatting">1.1 Paragraph, Headline, Preformatted or remove formatting</h4>
+<p>In order to enter normal text choose the paragraph layout at the Aloha Editor or select an entered text and choose the layout. In order to create a headline choose one of the headlines (h2 to h6) at Aloha Editor. Normal text will be wrapped into a <tt>&lt;p&gt;</tt> tag, headlines into e.g. a <tt>&lt;h2&gt;</tt> tag and preformatted text into a <tt>&lt;pre&gt;</tt> tag. You can change the layout each time or remove a formatting via clicking the remove formatting button at the Aloha Editor.</p>
+<h4 id="bold-and-italic">1.2 Bold and Italic</h4>
+<p>Every text or headline can be formatted into bold or italic via selecting the text or headline and click on the bold or italic button at Aloha Editor. This wraps the selected text or headline into a <tt>&lt;b&gt;</tt> tag if bold or a <tt>&lt;i&gt;</tt> tag if italic. To undo this select the text or headline and click the button again.</p>
+<h4 id="strong-and-emphasize">1.3 Strong and Emphasize</h4>
+<p>Texts or headlines can be formatted into strong or emphasized texts or headlines via selecting the text or headline and click on the strong or emphasize button at the Aloha Editor. This wraps the selected text or headline into a <tt>&lt;strong&gt;</tt> tag if strong or <tt>&lt;em&gt;</tt> tag if emphasized. To undo this select the text or headline and click the button again.</p>
+<h4 id="strikethrough">1.4 Strikethrough</h4>
+<p>Texts or headlines can have strikethrough applied as well. Just selecting the text or headline and click on the strikethrough button at the Aloha Editor. This wraps the selected text or headline into a <tt>&lt;del&gt;</tt> tag. To undo this select the text or headline and click the button again.</p>
+<h4 id="subscript-and-superscript">1.5 Subscript and Superscript</h4>
+<p>In order to make subscript and superscript texts or headlines selecting the text or headline and click on the subscript or superscript button at the Aloha Editor. This wrap the selected text or headline into a <tt>&lt;sub&gt;</tt> tag if subscript or <tt>&lt;sup&gt;</tt> tag if superscript. To undo this select the text or headline and click the button again.</p>
+<h4 id="code">1.6 Code</h4>
+<p>Texts or headlines can a layout for codes via selecting the text or headline and click on the code button at Aloha Editor. This wraps the selected text or headline into a <tt>&lt;code&gt;</tt> tag. To undo this select the text or headline and click the button again.</p>
+<h3 id="components">2 Components</h3>
+<ul>
+	<li>cite &#8211; format content as a citation</li>
+	<li>quote &#8211; format content as a quote</li>
+	<li>code &#8211; format content as a code block</li>
+	<li>emphasize &#8211; emphasize content</li>
+	<li>strong (not def command) &#8211; put strong emphasis on content</li>
+	<li>bold &#8211; format content bold</li>
+	<li>italic &#8211; format content italic</li>
+	<li>strikethrough &#8211; add strikethrough formatting</li>
+	<li>subscript &#8211; add subscript formatting</li>
+	<li>superscript &#8211; add superscript formatting</li>
+	<li>underline &#8211; add underline formatting</li>
+	<li>paragraph &#8211; will allow you to add paragraph formattings (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre)</li>
+</ul>
+<h3 id="configuration">3 Configuration</h3>
+<p>The format plugin provides the following config options:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.format = {
+	// configure buttons available in the toolbar
+	// this example enables all buttons available
+	config : [ 'strong', 'em', 'b', 'i', 'del', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+	// specific configuration for each editable identified by css selectors
+	editables : {
+		// the editable with id &quot;teaser&quot; won't offer any formatting options
+		'#teaser'	: [  ]
+	},
+	// those are the tags that will be cleaned when clicking &quot;remove formatting&quot;
+	// this example resembles the default configuration
+	removeFormats : [ 'strong', 'em', 'b', 'i', 's', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
+};
+</pre></div>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#functional-description"><p>Functional Description</p>
+</a><ul><li><a href="#paragraph-headline-preformatted-or-remove-formatting"><p>Paragraph, Headline, Preformatted or remove formatting</p>
+</a></li> <li><a href="#bold-and-italic"><p>Bold and Italic</p>
+</a></li> <li><a href="#strong-and-emphasize"><p>Strong and Emphasize</p>
+</a></li> <li><a href="#strikethrough"><p>Strikethrough</p>
+</a></li> <li><a href="#subscript-and-superscript"><p>Subscript and Superscript</p>
+</a></li> <li><a href="#code"><p>Code</p>
+</a></li></ul></li><li><a href="#components"><p>Components</p>
+</a></li><li><a href="#configuration"><p>Configuration</p>
+</a></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>

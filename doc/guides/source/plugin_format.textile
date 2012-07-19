@@ -1,0 +1,80 @@
+h2. Format Plugin
+
+The Format Plugin provides basic formatting choices for your content.
+
+endprologue.
+
+With the Format Plugin you are able to format paragraph formattings (p, h1, ...) and other content formats like bold or subscript. You can also use Aloha Editor to annotate parts of your content as e.g. citation or code.
+
+The following components are available:
+
+h3. Functional Description
+
+The Format plugin allows you to format texts and headlines.
+
+h4. Paragraph, Headline, Preformatted or remove formatting
+
+In order to enter normal text choose the paragraph layout at the Aloha Editor or select an entered text and choose the layout. In order to create a headline choose one of the headlines (h2 to h6) at Aloha Editor. Normal text will be wrapped into a +<p>+ tag, headlines into e.g. a +<h2>+ tag and preformatted text into a +<pre>+ tag.
+You can change the layout each time or remove a formatting via clicking the remove formatting button at the Aloha Editor.
+ 
+h4. Bold and Italic
+
+Every text or headline can be formatted into bold or italic via selecting the text or headline and click on the bold or italic button at Aloha Editor. This wraps the selected text or headline into a +<b>+ tag if bold or a +<i>+ tag if italic.
+To undo this select the text or headline and click the button again.
+
+h4. Strong and Emphasize
+
+Texts or headlines can be formatted into strong or emphasized texts or headlines via selecting the text or headline and click on the strong or emphasize button at the Aloha Editor. This wraps the selected text or headline into a +<strong>+ tag if strong or +<em>+ tag if emphasized.
+To undo this select the text or headline and click the button again.
+
+h4. Strikethrough
+
+Texts or headlines can have strikethrough applied as well. Just selecting the text or headline and click on the strikethrough button at the Aloha Editor. This wraps the selected text or headline into a +<del>+ tag.
+To undo this select the text or headline and click the button again.
+
+h4. Subscript and Superscript
+
+In order to make subscript and superscript texts or headlines selecting the text or headline and click on the subscript or superscript button at the Aloha Editor. This wrap the selected text or headline into a +<sub>+ tag if subscript or +<sup>+ tag if superscript.
+To undo this select the text or headline and click the button again.
+
+h4. Code
+
+Texts or headlines can a layout for codes via selecting the text or headline and click on the code button at Aloha Editor. This wraps the selected text or headline into a +<code>+ tag.
+To undo this select the text or headline and click the button again.
+
+h3. Components
+
+* cite - format content as a citation
+* quote - format content as a quote
+* code - format content as a code block
+* emphasize - emphasize content
+* strong (not def command) - put strong emphasis on content
+* bold - format content bold
+* italic - format content italic
+* strikethrough - add strikethrough formatting
+* subscript - add subscript formatting
+* superscript - add superscript formatting
+* underline - add underline formatting
+* paragraph - will allow you to add paragraph formattings (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre)
+
+
+h3. Configuration
+
+The format plugin provides the following config options:
+
+<javascript>
+Aloha.settings.plugins.format = {
+	// configure buttons available in the toolbar
+	// this example enables all buttons available
+	config : [ 'strong', 'em', 'b', 'i', 'del', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+	// specific configuration for each editable identified by css selectors
+	editables : {
+		// the editable with id "teaser" won't offer any formatting options
+		'#teaser'	: [  ]
+	},
+	// those are the tags that will be cleaned when clicking "remove formatting"
+	// this example resembles the default configuration
+	removeFormats : [ 'strong', 'em', 'b', 'i', 's', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
+};
+</javascript>
+

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Link Plugin</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+      <dd><a href="repository.html">Working with repositories</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+</dl>
+<dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd>Numerated Headers</dd>
+      <dd><a href="plugin_undo.html">Undo</a></dd>
+      <dd><a href="plugin_table.html">Table</a></dd>
+      <dd><a href="plugin_paste.html">Paste</a></dd>
+      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Link Plugin</h2>
+<p>The Link Plugin allows you to add hyperlinks to your document, either by specifying them manually or by selecting from repositories using autocompletion.</p>
+
+          </div>
+        <h3 id="functional-description">1 Functional Description</h3>
+<p>To create a new link, click on the link button. If a text is already entered you have to mark the desired word(s) and click on the link button. Now you can enter a <span class="caps">URL</span> of another website, or enter a name of an existing page in your repository. On the Aloha Editor Sidebar you can enter a name for the link and decide in which target the link should be opened. In order to delete a link just click at the linked text and deactivat the link button from the &#8220;Format&#8221; tab or click on the remove link button on the &#8220;Link&#8221; tab.</p>
+<h3 id="components">2 Components</h3>
+<ul>
+	<li>formatLink &#8211; will format a given selection as a link by wrapping it in an <tt>&lt;a&gt;</tt> tag. If the selection is collapsed <tt>createLink</tt> will be executed</li>
+	<li>createLink &#8211; will insert a new link tag with an empty href into the dom at the current cursor position</li>
+	<li>editLink &#8211; allows you to edit an existing link</li>
+	<li>unlink &#8211; removes an existing link by unwrapping</li>
+</ul>
+<h3 id="configuration">3 Configuration</h3>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.plugins.link: {
+	// all elements with no specific configuration may insert links
+	config : [ 'a' ],
+	editables : {
+	// No links in the title.
+	'#top-text'	: [  ]
+	},
+	// all links that match the targetregex will get set the target
+	// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+	targetregex : '^(?!.*aloha-editor.com).*',
+	// this target is set when either targetregex matches or not set
+	// e.g. _blank opens all links in new window
+	target : '_blank',
+	// the same for css class as for target
+	cssclassregex : '^(?!.*aloha-editor.com).*',
+	cssclass : 'aloha',
+	// use all resources of type website for autosuggest
+	objectTypeFilter: [ 'website' ],
+	// handle change of href
+	onHrefChange: function( obj, href, item ) {
+		var jQuery = Aloha.require('aloha/jquery');
+		if ( item ) {
+			jQuery(obj).attr('data-name', item.name);
+		} else {
+			jQuery(obj).removeAttr('data-name');
+		}
+	}
+};
+</pre></div>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#functional-description"><p>Functional Description</p>
+</a></li><li><a href="#components"><p>Components</p>
+</a></li><li><a href="#configuration"><p>Configuration</p>
+</a></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+h2. Align Plugin
+
+WARNING: The Align Plugin is not working correctly right now.
+
+The Align Plugin allows you to align contents left, right, center, or justify the flow of text. It provides four components:
+
+endprologue.
+
+h3. Components
+
+* alignLeft - align selected text left
+* alignRight - align selected text right
+* alignCenter - center selected text
+* alignJustify - justify selected text
+
+h3. Configuration settings
+
+The align plugin allows you to configure which of it's buttons are available.
+Available options: +'right', 'left', 'center', 'justify'+ or use an empty array to deactivate the plugin for an editable.
+
+All editables with no special configuration will have the align options +'right', 'left', 'center', 'justify'+. The align plugin for the editable with ID 'one' has the +[ 'right', 'left' ]+ align buttons enabled. The plugin is deactivated for the editable with the ID 'two'.
+
+<javascript>
+	Aloha.settings.plugins = {
+		alignment: {
+			config: [ 'right', 'left', 'center', 'justify' ],
+
+			editables: {
+				'#one': [ 'right', 'left' ],
+				'#two': [ ]
+			}
+		}
+	};
+</javascript>

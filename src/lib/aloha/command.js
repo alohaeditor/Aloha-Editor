@@ -75,13 +75,14 @@ function( Aloha, Registry, Engine, Dom, ContentHandlerManager ) {
 			}
 			
 			// For the insertHTML command we provide contenthandler API
-			if ( commandId == 'insertHTML' ) {
+			if ( commandId.toLowerCase() === 'inserthtml' ) {
 				//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
 				//	use all registered content handler; used for copy & paste atm (or write log message)
 				//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
 				//}
 				value = ContentHandlerManager.handleContent( value, {
-					contenthandler: Aloha.settings.contentHandler.insertHtml
+					contenthandler: Aloha.settings.contentHandler.insertHtml,
+					command: 'insertHtml'
 				});
 			}
 
@@ -92,7 +93,7 @@ function( Aloha, Registry, Engine, Dom, ContentHandlerManager ) {
 				range = Aloha.getSelection().getRangeAt( 0 );
 
 				// FIX: doCleanup should work with W3C range
-				var startnode = range.commonAncestorContainer.parentNode;
+				var startnode = range.commonAncestorContainer;
 				var rangeObject = new window.GENTICS.Utils.RangeObject();
 				rangeObject.startContainer = range.startContainer;
 				rangeObject.startOffset = range.startOffset;

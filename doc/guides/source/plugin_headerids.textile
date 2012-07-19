@@ -1,0 +1,41 @@
+h2. Header IDs Plugin
+
+The Header IDs Plugin is used to automaticaly add @id@ attributes to headings. This can be used for internal hyperlinks.
+
+endprologue.
+
+
+h3. Overview
+
+If you want to to create internal hyperlinks to the headings on your web page you can use this plugin to achive that.
+
+When the plugin is activated @id@ attributes to headings (H1 - H6) will be added. Those auto generated headings can be modified in the sidebar.
+
+h3. Usage
+
+Activate the plugin.
+
+ID attributes for headings will be added -- the text of the heading will be used (where all non alphanumeric will be replaced with underscore).
+
+If you want to modify those values select a heading and open the sidebar.
+<img src="images/plugins/headerids-01.png" style="width:620px">
+
+
+h3. Components
+
+* Sidebar input field to adjust the auto generated ID
+
+h3. Configuration
+
+The Header IDs plugin provides the following configuration options:
+<javascript>
+Aloha.settings.plugins: {
+	headerids: {
+		config: [ 'true' ],
+		editables: {
+			'#one': [ 'true' ],
+			'#two': [ ]
+		}
+	}
+};
+</javascript>

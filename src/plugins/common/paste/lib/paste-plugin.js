@@ -38,7 +38,7 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 		// store the current range
 		pasteRange = Aloha.getSelection().getRangeAt( 0 );
 		pasteEditable = Aloha.activeEditable;
-		
+
 		// store the current scroll position
 		$pasteDiv.css( {
 			top: $window.scrollTop(),
@@ -52,9 +52,14 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			// TODO test in IE!
 			pasteEditable.obj.blur();
 		}
-		
-		GENTICS.Utils.Dom.setCursorInto( $pasteDiv.get( 0 ) );
-		
+
+		// set the cursor into the paste div
+		Aloha.getSelection().removeAllRanges();
+		var newRange = Aloha.createRange();
+		newRange.setStart($pasteDiv.get( 0 ), 0);
+		newRange.setEnd($pasteDiv.get( 0 ), 0);
+		Aloha.getSelection().addRange(newRange);
+
 		$pasteDiv.focus();
 	};
 
@@ -68,13 +73,17 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 		
 		// insert the content into the editable at the current range
 		if ( pasteRange && pasteEditable ) {
-			// activate and focus the editable
-			// @todo test in IE
-			//pasteEditable.activate();
-			pasteEditable.obj.click();
-			
+			// set the focus back into the editable,
+			// and select the former range
+			pasteEditable.obj.focus();
+			Aloha.getSelection().removeAllRanges();
+			var newRange = Aloha.createRange();
+			newRange.setStart(pasteRange.startContainer, pasteRange.startOffset);
+			newRange.setEnd(pasteRange.endContainer, pasteRange.endOffset);
+			Aloha.getSelection().addRange(newRange);
+
 			pasteDivContents = $pasteDiv.html();
-			
+
 			// We need to remove an insidious nbsp that IE inserted into our
 			// paste div, otherwise it will result in an empty paragraph being
 			// created right before the pasted content, if the pasted content
@@ -116,8 +125,7 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			}
 			
 			if ( Aloha.queryCommandSupported( 'insertHTML' ) ) {
-				Aloha.execCommand( 'insertHTML', false, pasteDivContents,
-					pasteRange );
+				Aloha.execCommand( 'insertHTML', false, pasteDivContents );
 			} else {
 				console.error( 'Common.Paste', 'Command "insertHTML" not ' +
 					'available. Enable the plugin "common/commands".' );
@@ -150,7 +158,10 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 				if ( jQuery.browser.msie ) {
 					// We will only us the ugly beforepaste hack if we shall
 					// not access the clipboard
-					if ( that.settings.noclipboardaccess ) {
+
+					// NOTE: this hack is currently always used, because the other method would somehow
+					// lead to incorrect cursor positions after pasting
+					if ( that.settings.noclipboardaccess || true ) {
 						editable.obj.bind( 'beforepaste', function ( event ) {
 							redirectPaste();
 							event.stopPropagation();
@@ -193,13 +204,13 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 
 			// bind a handler to the paste event of the pasteDiv to get the
 			// pasted content (but do this only once, not for every editable)
-			if ( jQuery.browser.msie && that.settings.noclipboardaccess ) {
+			if ( jQuery.browser.msie && (that.settings.noclipboardaccess || true) ) {
 				$pasteDiv.bind( 'paste', function ( event ) {
 					window.setTimeout( function () {
 						getPastedContent();
 						Aloha.activeEditable.smartContentChange( event );
-						event.stopPropagation();
 					}, 10 );
+					event.stopPropagation();
 				} );
 			}
 		},

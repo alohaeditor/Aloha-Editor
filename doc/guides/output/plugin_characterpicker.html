@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Characterpicker Plugin</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+      <dd><a href="repository.html">Working with repositories</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+</dl>
+<dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd>Numerated Headers</dd>
+      <dd><a href="plugin_undo.html">Undo</a></dd>
+      <dd><a href="plugin_table.html">Table</a></dd>
+      <dd><a href="plugin_paste.html">Paste</a></dd>
+      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Characterpicker Plugin</h2>
+<p>The Characterpicker Plugin allows you to insert special characters into your text. Position your cursor, click the icon and choose the character you&#8217;d like to insert from the overlay menu.</p>
+
+          </div>
+        <h3 id="functional-description">1 Functional Description</h3>
+<p>In order to insert a special character move the cursor to the desired position and open the &#8220;Insert&#8221; tab at the Aloha Editor. Now click on the characterpicker button and choose a special character from the table. To delete a special character just mark the special character and press backspace or delete.</p>
+<h4 id="components">1.1 Components</h4>
+<ul>
+	<li>characterpicker &#8211; brings up the overlay to select a character</li>
+</ul>
+<h4 id="configuration-settings">1.2 Configuration settings</h4>
+<p>The characterpicker will by default support the following characters:</p>
+<table>
+	<tr>
+		<td> &#38;   </td>
+		<td> &#34;   </td>
+		<td> &#162;  </td>
+		<td> &#8364; </td>
+		<td> &#163;  </td>
+		<td> &#165;  </td>
+		<td> &#169;  </td>
+		<td> &#174;  </td>
+		<td> &#8482; </td>
+		<td> &#8240; </td>
+		<td> &#181;  </td>
+		<td> &#183;  </td>
+		<td> &#8226; </td>
+		<td> &#8230; </td>
+		<td> &#8242; </td>
+	</tr>
+	<tr>
+		<td> &#8243; </td>
+		<td> &#167;  </td>
+		<td> &#182;  </td>
+		<td> &#223;  </td>
+		<td> &#8249; </td>
+		<td> &#8250; </td>
+		<td> &#171;  </td>
+		<td> &#187;  </td>
+		<td> &#8216; </td>
+		<td> &#8217; </td>
+		<td> &#8220; </td>
+		<td> &#8221; </td>
+		<td> &#8218; </td>
+		<td> &#8222; </td>
+		<td> &#60;   </td>
+	</tr>
+	<tr>
+		<td> &#62;   </td>
+		<td> &#8804; </td>
+		<td> &#8805; </td>
+		<td> &#8211; </td>
+		<td> &#8212; </td>
+		<td> &#175;  </td>
+		<td> &#8254; </td>
+		<td> &#164;  </td>
+		<td> &#166;  </td>
+		<td> &#168;  </td>
+		<td> &#161;  </td>
+		<td> &#191;  </td>
+		<td> &#710;  </td>
+		<td> &#732;  </td>
+		<td> &#176;  </td>
+	</tr>
+	<tr>
+		<td> &#8722; </td>
+		<td> &#177;  </td>
+		<td> &#247;  </td>
+		<td> &#8260; </td>
+		<td> &#215;  </td>
+		<td> &#185;  </td>
+		<td> &#178;  </td>
+		<td> &#179;  </td>
+		<td> &#188;  </td>
+		<td> &#189;  </td>
+		<td> &#190;  </td>
+		<td> &#402;  </td>
+		<td> &#8747; </td>
+		<td> &#8721; </td>
+		<td> &#8734; </td>
+	</tr>
+	<tr>
+		<td> &#8730; </td>
+		<td> &#8764; </td>
+		<td> &#8773; </td>
+		<td> &#8776; </td>
+		<td> &#8800; </td>
+		<td> &#8801; </td>
+		<td> &#8712; </td>
+		<td> &#8713; </td>
+		<td> &#8715; </td>
+		<td> &#8719; </td>
+		<td> &#8743; </td>
+		<td> &#8744; </td>
+		<td> &#172;  </td>
+		<td> &#8745; </td>
+		<td> &#8746; </td>
+	</tr>
+	<tr>
+		<td> &#8706; </td>
+		<td> &#8704; </td>
+		<td> &#8707; </td>
+		<td> &#8709; </td>
+		<td> &#8711; </td>
+		<td> &#8727; </td>
+		<td> &#8733; </td>
+		<td> &#8736; </td>
+		<td> &#180;  </td>
+		<td> &#184;  </td>
+		<td> &#170;  </td>
+		<td> &#186;  </td>
+		<td> &#8224; </td>
+		<td> &#8225; </td>
+		<td> &#192;  </td>
+	</tr>
+	<tr>
+		<td> &#193;  </td>
+		<td> &#194;  </td>
+		<td> &#195;  </td>
+		<td> &#196;  </td>
+		<td> &#197;  </td>
+		<td> &#198;  </td>
+		<td> &#199;  </td>
+		<td> &#200;  </td>
+		<td> &#201;  </td>
+		<td> &#202;  </td>
+		<td> &#203;  </td>
+		<td> &#204;  </td>
+		<td> &#205;  </td>
+		<td> &#206;  </td>
+		<td> &#207;  </td>
+	</tr>
+	<tr>
+		<td> &#208;  </td>
+		<td> &#209;  </td>
+		<td> &#210;  </td>
+		<td> &#211;  </td>
+		<td> &#212;  </td>
+		<td> &#213;  </td>
+		<td> &#214;  </td>
+		<td> &#216;  </td>
+		<td> &#338;  </td>
+		<td> &#352;  </td>
+		<td> &#217;  </td>
+		<td> &#218;  </td>
+		<td> &#219;  </td>
+		<td> &#220;  </td>
+		<td> &#221;  </td>
+	</tr>
+	<tr>
+		<td> &#376;  </td>
+		<td> &#222;  </td>
+		<td> &#224;  </td>
+		<td> &#225;  </td>
+		<td> &#226;  </td>
+		<td> &#227;  </td>
+		<td> &#228;  </td>
+		<td> &#229;  </td>
+		<td> &#230;  </td>
+		<td> &#231;  </td>
+		<td> &#232;  </td>
+		<td> &#233;  </td>
+		<td> &#234;  </td>
+		<td> &#235;  </td>
+		<td> &#236;  </td>
+	</tr>
+	<tr>
+		<td> &#237;  </td>
+		<td> &#238;  </td>
+		<td> &#239;  </td>
+		<td> &#240;  </td>
+		<td> &#241;  </td>
+		<td> &#242;  </td>
+		<td> &#243;  </td>
+		<td> &#244;  </td>
+		<td> &#245;  </td>
+		<td> &#246;  </td>
+		<td> &#248;  </td>
+		<td> &#339;  </td>
+		<td> &#353;  </td>
+		<td> &#249;  </td>
+		<td> &#250;  </td>
+	</tr>
+	<tr>
+		<td> &#251;  </td>
+		<td> &#252;  </td>
+		<td> &#253;  </td>
+		<td> &#254;  </td>
+		<td> &#255;  </td>
+		<td> &#913;  </td>
+		<td> &#914;  </td>
+		<td> &#915;  </td>
+		<td> &#916;  </td>
+		<td> &#917;  </td>
+		<td> &#918;  </td>
+		<td> &#919;  </td>
+		<td> &#920;  </td>
+		<td> &#921;  </td>
+		<td> &#922;  </td>
+	</tr>
+	<tr>
+		<td> &#923;  </td>
+		<td> &#924;  </td>
+		<td> &#925;  </td>
+		<td> &#926;  </td>
+		<td> &#927;  </td>
+		<td> &#928;  </td>
+		<td> &#929;  </td>
+		<td> &#931;  </td>
+		<td> &#932;  </td>
+		<td> &#933;  </td>
+		<td> &#934;  </td>
+		<td> &#935;  </td>
+		<td> &#936;  </td>
+		<td> &#937;  </td>
+		<td> &#945;  </td>
+	</tr>
+	<tr>
+		<td> &#946;  </td>
+		<td> &#947;  </td>
+		<td> &#948;  </td>
+		<td> &#949;  </td>
+		<td> &#950;  </td>
+		<td> &#951;  </td>
+		<td> &#952;  </td>
+		<td> &#953;  </td>
+		<td> &#954;  </td>
+		<td> &#955;  </td>
+		<td> &#956;  </td>
+		<td> &#957;  </td>
+		<td> &#958;  </td>
+		<td> &#959;  </td>
+		<td> &#960;  </td>
+	</tr>
+	<tr>
+		<td> &#961;  </td>
+		<td> &#962;  </td>
+		<td> &#963;  </td>
+		<td> &#964;  </td>
+		<td> &#965;  </td>
+		<td> &#966;  </td>
+		<td> &#967;  </td>
+		<td> &#968;  </td>
+		<td> &#969;  </td>
+		<td> &#8501; </td>
+		<td> &#982;  </td>
+		<td> &#8476; </td>
+		<td> &#977;  </td>
+		<td> &#978;  </td>
+		<td> &#8472; </td>
+	</tr>
+	<tr>
+		<td> &#8465; </td>
+		<td> &#8592; </td>
+		<td> &#8593; </td>
+		<td> &#8594; </td>
+		<td> &#8595; </td>
+		<td> &#8596; </td>
+		<td> &#8629; </td>
+		<td> &#8656; </td>
+		<td> &#8657; </td>
+		<td> &#8658; </td>
+		<td> &#8659; </td>
+		<td> &#8660; </td>
+		<td> &#8756; </td>
+		<td> &#8834; </td>
+		<td> &#8835; </td>
+	</tr>
+	<tr>
+		<td> &#8836; </td>
+		<td> &#8838; </td>
+		<td> &#8839; </td>
+		<td> &#8853; </td>
+		<td> &#8855; </td>
+		<td> &#8869; </td>
+		<td> &#8901; </td>
+		<td> &#8968; </td>
+		<td> &#8969; </td>
+		<td> &#8970; </td>
+		<td> &#8971; </td>
+		<td> &#9001; </td>
+		<td> &#9002; </td>
+		<td> &#9674; </td>
+		<td> &#9824; </td>
+	</tr>
+	<tr>
+		<td> &#9827; </td>
+		<td> &#9829; </td>
+		<td> &#9830; </td>
+	</tr>
+</table>
+<p>It is possible to configure the global character set and to configure character sets for specific editables (identified by jQuery selectors):</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings = {
+	plugins: {
+		characterpicker: {
+			// this is the global setting
+			config: '&amp;#38; &amp;#34; &amp;#162; &amp;#8364;',
+			editables: {
+				// this will disable the characterpicker for the header
+				'#header': '',
+				// allow more characters for editables with class 'article'
+				'.article': '&amp;#38; &amp;#34; &amp;#162; &amp;#8364; &amp;#163; &amp;#165;'
+			}
+		}
+	}
+}
+</pre></div>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#functional-description"><p>Functional Description</p>
+</a><ul><li><a href="#components"><p>Components</p>
+</a></li> <li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li></ul></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>

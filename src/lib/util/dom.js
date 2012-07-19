@@ -56,7 +56,17 @@ function(jQuery, Class, $_) {
     		'DOCUMENT_POSITION_CONTAINED_BY': 0x10,
     		//The determination of preceding versus following is implementation-specific.
     		'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
-    	};
+    	},
+		blockElementNames = {
+			'P': true,
+			'H1': true,
+			'H2': true,
+			'H3': true,
+			'H4': true,
+			'H5': true,
+			'H6': true,
+			'LI': true
+		};
 
 	
 
@@ -668,13 +678,15 @@ var Dom = Class.extend({
 		endOffset = rangeObject.endOffset;
 
 		// iterate through all sub nodes
-		startObject.contents().each(function(index) {
+		startObject.contents().each(function() {
+			var index;
 
 			// Try to read the nodeType property and return if we do not have permission
 			// ie.: frame document to an external URL
 			var nodeType;
 			try {
 				nodeType = this.nodeType;
+				index = that.getIndexInParent(this);
 			}
 			catch (e) {
 				return;
@@ -951,20 +963,7 @@ var Dom = Class.extend({
 	 * @method
 	 */
 	isSplitObject: function(el) {
-		if (el.nodeType === 1){
-			switch(el.nodeName.toLowerCase()) {
-			case 'p':
-			case 'h1':
-			case 'h2':
-			case 'h3':
-			case 'h4':
-			case 'h5':
-			case 'h6':
-			case 'li':
-				return true;
-			}
-		}
-		return false;
+		return el.nodeType === 1 && blockElementNames.hasOwnProperty(el.nodeName);
 	},
 
 	/**

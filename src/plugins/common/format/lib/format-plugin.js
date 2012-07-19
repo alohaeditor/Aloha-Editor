@@ -25,7 +25,14 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * default button configuration
 		 */
-		config: [ 'strong', 'em', 'b', 'i','s','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		config: [ 'b', 'i', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+
+		/**
+		 * available options / buttons
+		 * 
+		 * @todo new buttons needed for 'del', 'code'
+		 */
+		availableButtons: [ 'u', 'strong', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
@@ -40,13 +47,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			Aloha.bind('aloha-editable-activated',function (e, params) {
 				me.applyButtonConfig(params.editable.obj);
 			});
-
-			/*
-			Aloha.defaults.supports = jQuery.merge(Aloha.defaults.supports, {
-					elements: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre' ]
-			});
-			*/
-
 		},
 
 		/**
@@ -94,10 +94,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			// collect the multisplit items here
 			this.multiSplitItems = [];
-			//this.multiSplitButton;
 
 			//iterate configuration array an push buttons to buttons array
-			jQuery.each(this.config, function(j, button) {
+			jQuery.each(this.availableButtons, function( j, button ) {
 				switch( button ) {
 					// text level semantics:
 					case 'u':
@@ -105,10 +104,8 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					case 'strong':
 					case 'b':
 					case 'i':
-					case 'cite':
 					case 'q':
 					case 'code':
-					case 'abbr':
 					case 'del':
 					case 's':
 					case 'sub':
@@ -130,7 +127,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 									selectedCells.each( function () {
 										var cellContent = jQuery(this).find('div'),
 											cellMarkup = cellContent.find(button);
-										
+
 										if ( cellMarkup.length > 0 ) {
 											// unwrap all found markup text
 											// <td><b>text</b> foo <b>bar</b></td>
@@ -229,8 +226,26 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 									return false;
 								}
 								// formating workaround for table plugin
-
+								
 								Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
+
+								// setting the focus is needed for mozilla to have a working rangeObject.select()
+								if (Aloha.activeEditable
+									&& jQuery.browser.mozilla) {
+									Aloha.activeEditable.obj.focus();
+								}
+								
+								// triggered for numerated-headers plugin
+								if (Aloha.activeEditable) {
+									Aloha.trigger( 'aloha-smart-content-changed', {
+										'editable'        : Aloha.activeEditable,
+										'keyIdentifier'   : null,
+										'keyCode'         : null,
+										'char'            : null,
+										'triggerType'     : 'idle',
+										'snapshotContent' : Aloha.activeEditable.getSnapshotContent()
+									} );
+								}
 							}
 						});
 						break;
@@ -323,10 +338,10 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		 * Removes all formatting from the current selection.
 		 */
 		removeFormat: function() {
-			var formats = [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
+			var formats = [ 'u', 'strong', 'em', 'b', 'i', 'q', 'del', 's', 'code', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'quote', 'blockquote' ],
 				rangeObject = Aloha.Selection.rangeObject,
 				i;
-			
+
 			// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
 			if (this.settings.removeFormats) {
 				formats = this.settings.removeFormats;
@@ -342,8 +357,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			// select the modified range
 			rangeObject.select();
-			// TODO: trigger event - removed Format
-
+			// @TODO: trigger event - removed Format
 		},
 
 		/**

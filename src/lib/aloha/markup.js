@@ -383,7 +383,7 @@ Aloha.Markup = Class.extend( {
 		// Versions of Internet Explorer that are older that 9, will
 		// erroneously allow you to enter and edit inside elements which have
 		// their contenteditable attribute set to false...
-		if ( isOldIE ) {
+		if ( isOldIE && !jQuery(node).contentEditable() ) {
 			var $parentBlock = jQuery( node ).parents(
 				'[contenteditable=false]' );
 			var isInsideBlock = $parentBlock.length > 0;
@@ -1207,10 +1207,12 @@ Aloha.Markup = Class.extend( {
 		// copy attributes
 		if ( jqOldObj[0].attributes ) {
 			for ( i = 0; i < jqOldObj[0].attributes.length; ++i ) {
-				jqNewObj.attr(
-					jqOldObj[0].attributes[ i ].nodeName,
-					jqOldObj[0].attributes[ i ].nodeValue
-				);
+				if (jqOldObj[0].attributes[i].specified) {
+					jqNewObj.attr(
+							jqOldObj[0].attributes[ i ].nodeName,
+							jqOldObj[0].attributes[ i ].nodeValue
+					);
+				}
 			}
 		}
 

@@ -19,12 +19,13 @@ function(Plugin, FloatingMenu, FlagIcons, i18n, i18nCore, jQuery) {
 			this._super('metaview');
 		},
 		
+		config: [ 'metaview' ],
+		
 		/**
 		 * Configure the available languages
 		 */
 		languages: ['en', 'de'],
 
-		
 		/**
 		 * Initialize the plugin
 		 */
@@ -37,7 +38,16 @@ function(Plugin, FloatingMenu, FlagIcons, i18n, i18nCore, jQuery) {
 			Aloha.bind(
 					"aloha-editable-activated",
 					function (jEvent, aEvent) {
-						if(jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
+						var config;
+						config = that.getEditableConfig( Aloha.activeEditable.obj );
+						if (jQuery.type(config) === 'array' && jQuery.inArray( 'metaview', config ) !== -1) {
+							that.button.show();
+						} else {
+							that.button.hide();
+							return;
+						}
+						
+						if( that.button && jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
 							that.button.setPressed(true);
 						} else {
 							that.button.setPressed(false);
