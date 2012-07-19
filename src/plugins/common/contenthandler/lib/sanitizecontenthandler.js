@@ -76,7 +76,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			'td': ['abbr', 'axis', 'colspan', 'rowspan', 'width'],
 			'th': ['abbr', 'axis', 'colspan', 'rowspan', 'scope', 'width'],
 			'ul': ['type'],
-			'span': ['class','style']
+			'span': ['class','style','lang','xml:lang']
 		},
 
 		protocols: {
