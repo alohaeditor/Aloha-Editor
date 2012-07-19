@@ -14,6 +14,7 @@ define([
 	/**
 	 * MultiSplit component type.
 	 * @class
+	 * @api
 	 * @extends {Component}
 	 */
 	var MultiSplit = Component.extend({
@@ -22,7 +23,6 @@ define([
 		_isOpen: false,
 
 		/**
-		 * Initializes the multisplit component
 		 * @override
 		 */
 		init: function () {
@@ -98,6 +98,9 @@ define([
 			});
 		},
 
+		/**
+		 * @api
+		 */
 		setActiveButton: function(index) {
 			if (null !== this._activeButton) {
 				this.buttons[this._activeButton]
@@ -112,6 +115,7 @@ define([
 
 		/**
 		 * Toggles the multisplit menu
+		 * @api
 		 */
 		toggle: function () {
 			this.element.toggleClass('aloha-multisplit-open');
@@ -120,6 +124,7 @@ define([
 
 		/**
 		 * Opens the multisplit menu
+		 * @api
 		 */
 		open: function () {
 			this.element.addClass('aloha-multisplit-open');
@@ -128,6 +133,7 @@ define([
 
 		/**
 		 * Closes the multisplit menu
+		 * @api
 		 */
 		close: function () {
 			this.element.removeClass('aloha-multisplit-open');

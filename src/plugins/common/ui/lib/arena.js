@@ -1,4 +1,4 @@
-define(['ui/component'],function(Component){
+define(['jquery', 'ui/component'],function($, Component){
 	var Arena = Component.extend({
 		init: function(){
 			this.element = $('<div>');
