@@ -366,11 +366,18 @@ define( [
 		/**
 		 * Make the given jQuery object (representing an editable) clean for saving
 		 * Find all elements with lang attributes and remove the attribute.
+		 * 
+		 * It also removes dataattributes attached by the repository.
+		 * It adds a xml:lang attribute with the value of the lang attribute.
+		 * 
 		 * @param {jQuery} obj jQuery object to make clean
 		 */
 		makeClean: function( obj ) {
 			obj.find( 'span[lang]' ).each( function() {
 				jQuery( this ).removeClass( WAI_LANG_CLASS );
+				jQuery( this ).removeAttr( "data-gentics-aloha-repository" );
+				jQuery( this ).removeAttr( "data-gentics-aloha-object-id" );
+				jQuery( this ).attr( "xml:lang", jQuery(this).attr( "lang" ) );
 			} );
 		}
 
