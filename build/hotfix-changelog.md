@@ -18,3 +18,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: dom-to-xhtml-plugin: When used in IE7 (or IE8 in IE7 mode), classes of elements were removed. This lead to unexpected behaviour with the BR-tags with class aloha-end-br, that are automatically added, when using the blockelementcontenthandler.
 - **BUG**: characterpicker-plugin: Fixed inserting a special character with a collapsed selection, when using IE.
 - **BUG**: table-plugin: Enabled proper selection (with mouse or keys) in the editable caption of a table.
+- **BUG**: table-plugin: When the contents of a table cell gains the focus, the whole cell is no longer selected. This also affects applying format to contents of a table cell.
