@@ -34,7 +34,7 @@ function( Aloha, $, console) {
 				// There seems to be a jQuery bug that returns undefined
 				// for the "checked" attribute on IE7, otherwise we
 				// could always use jquery.
-				var value = ( "style" === name ? $.attr(element, name) : element.getAttribute(name) );
+				var value = ( "style" === name ? $.attr(element, name) : attr.nodeValue );
 				cleanAttrs.push( [ name, value ] );
 			}
 		}
