@@ -15,3 +15,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: repository-browser: Some images for the repository browser were changed because Internet Explorer 7+8 don't know how to handle alpha in PNGs.
 - **BUG**: repository-browser: Columns that are not sortable will now no longer be displayed like they were sortable.
 - **BUG**: formatlesspaste-plugin: Fixed javascript error that ocurred when no custom editable configuration was set
+- **ENHANCEMENT**: cite-plugin: Fixed cite plugin DOM element attributes. It is not needed to add attributes to blockquote and q tags unless you have defined a referencecontainer. 
