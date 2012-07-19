@@ -94,20 +94,23 @@ Ext.ux.AlohaAttributeField = Ext.extend( Ext.form.ComboBox, {
 		var target = jQuery( this.getTargetObject() ), color;
 		
 		// Remove the highlighting and restore original color if was set before
-		if ( target ) {
+		
+		// changed if check from 'target' to this.getTargetObject(), because
+		// target is a jQuery Object and always true
+		if ( this.getTargetObject() ) {
 			if ( color = target.attr( 'data-original-background-color' ) ) {
 				jQuery( target ).css( 'background-color', color );
 			} else {
 				jQuery( target ).css( 'background-color', '' );
 			}
 			jQuery( target ).removeAttr( 'data-original-background-color' );
+		
+			// Check whether the attribute was changed since the last focus event. Return early when the attribute was not changed.
+			if ( lastAttributeValue === target.attr( this.targetAttribute ) ) {
+				return;
+			}
 		}
 		
-		// Check whether the attribute was changed since the last focus event. Return early when the attribute was not changed.
-		if ( lastAttributeValue === target.attr( this.targetAttribute ) ) {
-			return;
-		}
-
 		// when no resource item was selected, remove any marking of the target object
 		if ( !this.resourceItem ) {
 			RepositoryManager.markObject( this.targetObject );
