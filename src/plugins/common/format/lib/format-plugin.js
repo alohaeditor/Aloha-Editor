@@ -234,6 +234,11 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 									&& jQuery.browser.mozilla) {
 									Aloha.activeEditable.obj.focus();
 								}
+								
+								// triggered for numerated-headers plugin
+								if (Aloha.activeEditable) {
+									Aloha.trigger( 'aloha-format-block' );
+								}
 							}
 						});
 						break;

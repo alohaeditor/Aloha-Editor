@@ -17,8 +17,8 @@ define(
 function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 
-	var
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
+	var overlayByConfig = {};
 
 	function CharacterOverlay(onSelectCallback) {
 		var self = this;
@@ -48,6 +48,12 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			// focus the first character
 			self.$node.find('.focused').removeClass('focused');
 			jQuery(self.$node.find('td')[0]).addClass('focused');
+			self._overlayActive = true;
+		},
+
+		hide: function() {
+			this.$node.hide();
+			this._overlayActive = false;
 		},
 
 		/**
@@ -67,6 +73,9 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			});
 			// hide the layer if user clicks anywhere in the body
 			jQuery('body').click(function (e) {
+				if (!self._overlayActive) {
+					return;
+				}
 				var overlayVisibleAndNotTarget
 					=  (self.$node.css('display') === 'table') &&
 						(e.target !== self.$node[0]) &&
@@ -185,16 +194,16 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 					return e !== '';
 				}
 			);
-			var i = 0, char;
+			var i = 0, chr;
 			var $row;
 			// remove existing rows
 			self.$tbody.find('tr').remove();
-			while ((char = characterList[i])) {
+			while ((chr = characterList[i])) {
 				// make a new row every 15 characters
 				if (((i % 15) === 0)) {
 					$row = addRow();
 				}
-				mkButton(char).appendTo($row);
+				mkButton(chr).appendTo($row);
 				i++;
 			}
 		}
@@ -230,19 +239,19 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				i18nCore.t('floatingmenu.tab.insert'),
 				1
 			);
-			self.characterOverlay = new CharacterOverlay(self.onCharacterSelect);
 
-			// when an editable is activated, we get the config for the editable
-			Aloha.bind('aloha-editable-activated', function (event, data) {
-				var config = self.getEditableConfig(data.editable.obj);
-
-				// make a space separated string out of arrays
-				if (jQuery.isArray(config)) {
-					config = config.join(' ');
+			// Populate the cache lazily
+			setTimeout(function(){ initCache(0); }, 100);
+			function initCache(i) {
+				if (i < Aloha.editables.length) {
+					self.getOverlayForEditable(Aloha.editables[i]);
+					setTimeout(function(){ initCache(i + 1); }, 100);
 				}
+			}
 
-				if (config) {
-					self.characterOverlay.setCharacters(config);
+			Aloha.bind('aloha-editable-activated', function (event, data) {
+				self.characterOverlay = self.getOverlayForEditable(data.editable);
+				if (self.characterOverlay) {
 					self.insertButton.show();
 				} else {
 					self.insertButton.hide();
@@ -250,15 +259,49 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			});
 		},
 
-		/**
-		 * insert a character after selecting it from the list
-		*/
-		onCharacterSelect: function (character) {
-			if (Aloha.activeEditable) {
-				Aloha.execCommand('insertHTML', false, character);
+		getOverlayForEditable: function(editable) {
+			// Each editable may have its own configuration and as
+			// such may have its own overlay.  We cache the overlay
+			// as data on the editable element. The special value
+			// false means that the editable has the characterpicker
+			// plugin turned off.
+			var overlay = editable.obj.data('aloha-characterpicker-overlay');
+			if (overlay || false === overlay) {
+				return overlay;
 			}
-		}
-	});
+			var config = this.getEditableConfig(editable.obj);
+			if ( ! config ) {
+				editable.obj.data('aloha-characterpicker-overlay', false);
+				return false;
+			}
+				if (jQuery.isArray(config)) {
+					config = config.join(' ');
+				}
+			// In addition to caching the selected overlay
+			// per-editable, we also cache the overlays for
+			// each config so that editables with the same
+			// config can share overlays.
+			overlay = overlayByConfig[config];
+			if ( ! overlay ) {
+				overlay = new CharacterOverlay(onCharacterSelect);
+				overlay.setCharacters(config);
+				overlayByConfig[config] = overlay;
+			}
+			editable.obj.data('aloha-characterpicker-overlay', overlay);
+			return overlay;
+				}
+			});
 
+	/**
+	 * insert a character after selecting it from the list
+	*/
+	function onCharacterSelect (character) {
+		if (Aloha.activeEditable) {
+			// set focux to editable
+			Aloha.activeEditable.obj.focus();
+			Aloha.execCommand('insertHTML', false, character);
+		}
+	}
 });
+	
 // vim: noexpandtab
