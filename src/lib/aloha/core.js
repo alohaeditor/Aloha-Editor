@@ -359,10 +359,7 @@ function ( jQuery, PluginManager ) {
 		 * @hide
 		 */
 		unregisterEditable: function (editable) {
-
-			// Find the index
-			var id = Aloha.editables.indexOf( editable );
-			// Remove it if really found!
+			var id = jQuery.inArray(editable, Aloha.editables);
 			if (id != -1) {
 				Aloha.editables.splice(id, 1);
 			}
