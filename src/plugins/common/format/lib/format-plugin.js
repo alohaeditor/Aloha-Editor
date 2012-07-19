@@ -237,14 +237,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 								
 								// triggered for numerated-headers plugin
 								if (Aloha.activeEditable) {
-									Aloha.trigger( 'aloha-smart-content-changed', {
-										'editable'        : Aloha.activeEditable,
-										'keyIdentifier'   : null,
-										'keyCode'         : null,
-										'char'            : null,
-										'triggerType'     : 'idle',
-										'snapshotContent' : Aloha.activeEditable.getSnapshotContent()
-									} );
+									Aloha.trigger( 'aloha-format-block' );
 								}
 							}
 						});

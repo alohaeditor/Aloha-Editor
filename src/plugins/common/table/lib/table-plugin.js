@@ -1096,7 +1096,7 @@ define( [
 					} else {
 						var captionText = i18n.t('empty.caption');
 						var c = jQuery('<caption></caption>');
-						that.activeTable.obj.append(c);
+						that.activeTable.obj.prepend(c);
 						that.makeCaptionEditable(c, captionText);
 
 						// get the editable span within the caption and select it
@@ -1422,6 +1422,8 @@ define( [
 			// same id as tables which have been activated and registered
 			if ( that.getTableFromRegistry( this ) ) {
 				( new Table( this, that ) ).deactivate();
+				// remove the id attribute
+				jQuery(this).attr('id', null);
 			}
 		} );
 	};
