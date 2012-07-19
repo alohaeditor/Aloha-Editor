@@ -22,4 +22,6 @@ All changes are categorized into one of the following keywords:
 - **BUG**: table-plugin: New Captions are now added as first child of the table (before the tbody), according to the HTML5 specification.
 - **BUG**: table-plugin: The table plugin will now remove table id's on cleanup.
 - **BUG**: numerated-headers-plugin: Fixed error that annotations would not be removed when converting a header to a paragraph. The plugin also added leading spaces to the heading's text. This was removed.
+- **ENHANCEMENT**: cite-plugin: Fixed cite plugin DOM element attributes. It is not needed to add attributes to blockquote and q tags unless you have defined a referencecontainer. 
+- **BUG**: linkbrowser-plugin/numerated-headers-plugin: A bug in the numerated headers plugin caused a javascript error when the linkbrowser window should be closed. This bug was fixed and the linkbrowser window closes now propely.
 - **ENHANCEMENT**: contenthandler: Modified contenthandlers to allow language annotations made by the wai-lang plugin. This enables copy & paste of language annotations.

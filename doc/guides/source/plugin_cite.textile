@@ -41,7 +41,13 @@ h3. Configuration
 <javascript>
 Aloha.settings.plugins: {
 	cite: {
-		referenceContainer: '#Cites', // a jQuery selector for an
+		/**
+		 * A jQuery selector for an container in which references can be stored.
+		 * Once a reference container was specified additional attributes will be 
+		 * added to the quotes elements. Those are needed to link the reference container
+		 * to the quote elements.
+		 */
+		referenceContainer: '#Cites',  
 		sidebar: {
 			open: true // will open the sidebar when the cite button is clicked
 		},
