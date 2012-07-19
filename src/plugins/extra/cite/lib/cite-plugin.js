@@ -291,7 +291,7 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 
 			Aloha.bind('aloha-editable-activated', function (event, params) {
 				var config = that.getEditableConfig(params.editable.obj);
-				
+
 				if (!config) {
 					return;
 				}
@@ -307,6 +307,7 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				} else {
 					Format.multiSplitButton.hideItem('blockquote');
 				}
+				
 			});
 
 			Aloha.bind('aloha-selection-changed', function (event, rangeObject) {
@@ -330,8 +331,7 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 						}
 					}
 
-					buttons.filter(nsSel('block-button'))
-					       .removeClass(nsClass('pressed'));
+					buttons.filter(nsSel('block-button')).removeClass(nsClass('pressed'));
 
 					that.buttons[0].setPressed(false);
 					//button.setPressed( false ); // should it be this instead of that.buttons...?
