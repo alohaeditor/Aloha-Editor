@@ -55,9 +55,18 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 				1
 			);
 
-			// We need to bind to selection-changed event to recognize
+			// We need to bind to smart-content-changed event to recognize
 			// backspace and delete interactions.
 			Aloha.bind('aloha-smart-content-changed', function (event) {
+				if (that.showNumbers()) {
+					that.createNumeratedHeaders();
+				}
+			});
+			
+			// We need to listen to that event, when a block is formatted to
+			// header format. smart-content-changed would be not fired in 
+			// that case
+			Aloha.bind('aloha-format-block', function () {
 				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
 				}
