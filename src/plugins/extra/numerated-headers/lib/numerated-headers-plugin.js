@@ -301,7 +301,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
 						$(this).prepend('<span role="annotation">' +
-							annotation_result + '</span> ');
+							annotation_result + '</span>');
 					}
 				} else {
 					// no Content, so remove the Note, if there is one
