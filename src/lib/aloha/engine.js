@@ -1438,12 +1438,17 @@ function copyAttributes( element, newElement ) {
 		jQuery(element).removeAttr(jQuery.expando);
 	}
 
-	for ( var i = 0; i < element.attributes.length; i++ ) {
-		if ( typeof newElement.setAttributeNS === 'function' ) {
-			newElement.setAttributeNS( element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value );
-		} else if ( element.attributes[i].specified ) {
-			// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515 
-			newElement.setAttribute( element.attributes[i].name, element.attributes[i].value );
+	var attrs = element.attributes;
+	for ( var i = 0; i < attrs.length; i++ ) {
+		var attr = attrs[i];
+		// attr.specified is an IE specific check to exclude attributes that were never really set.
+		if (typeof attr.specified == "undefined" || attr.specified) {
+			if ( typeof newElement.setAttributeNS === 'function' ) {
+				newElement.setAttributeNS( attr.namespaceURI, attr.name, attr.value );
+			} else {
+				// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515 
+				newElement.setAttribute( attr.name, attr.value );
+			}
 		}
 	}
 }
@@ -5028,9 +5033,9 @@ function deleteContents() {
 		// and append the result as the last child of parent."
 		// only do this, if the offsetHeight is 0
 		if ((isEditable(parent_) || isEditingHost(parent_))
-		&& !isInlineNode(parent_)) {
-			// TODO is this always correct?
-			ensureContainerEditable(parent_);
+		&& !isInlineNode(parent_)
+		&& parent_.offsetHeight === 0) {
+			parent_.appendChild(createEndBreak());
 		}
 
 		// "Abort these steps."
@@ -5087,8 +5092,10 @@ function deleteContents() {
 		// and append the result as the last child of parent."
 		// only do this, if the offsetHeight is 0
 		if ((isEditable(parent_) || isEditingHost(parent_))
-		&& !isInlineNode(parent_)) {
-			ensureContainerEditable(parent_);
+		&& !isInlineNode(parent_)
+		&& !parent_.hasChildNodes()
+		&& parent_.offsetHeight === 0) {
+			parent_.appendChild(createEndBreak());
 		}
 	}
 
@@ -5326,7 +5333,9 @@ function deleteContents() {
 
 	// "If start block has no children, call createElement("br") on the context
 	// object and append the result as the last child of start block."
-	ensureContainerEditable(startBlock);
+	if (!startBlock.hasChildNodes() && startBlock.offsetHeight == 0) {
+		startBlock.appendChild(createEndBreak());
+	}
 
 	// "Restore states and values from overrides."
 	restoreStatesAndValues(overrides, range);
@@ -6395,33 +6404,18 @@ function createEndBreak() {
 	return endBr;
 }
 
-//@}
-///// Ensure that the container is editable /////
-///// E.g. when called for an empty paragraph or header, and the browser is not IE, we need to append
-///// br (marked with aloha-end-br)
-//@{
-function ensureContainerEditable(container) {
-	if (!container) {
-		return;
-	}
 
-	if (isHtmlElement(container.lastChild, "br")) {
-		return;
-	}
-
-	if ($_(container.childNodes).some(isVisible)) {
-		return;
-	}
-
-	if (!jQuery.browser.msie || (jQuery.browser.version <= 7 && !isHtmlElement(container, "li"))) {
-		container.appendChild(createEndBreak());
-	}
-}
-
-
-//@}
-///// The delete command /////
-//@{
+/**
+ * implementation of the delete command
+ * will attempt to delete contents within range if non-collapsed
+ * or delete the character left of the cursor position if range
+ * is collapsed. Is used to define the behaviour of the backspace
+ * button.
+ *
+ * @param	value	is just there for compatibility with the commands api. parameter is ignored.
+ * @param	range	the range to execute the delete command for
+ * @return	void
+ */
 commands["delete"] = {
 	action: function(value, range) {
 
@@ -6435,13 +6429,16 @@ commands["delete"] = {
 		// "Canonicalize whitespace at (active range's start node, active
 		// range's start offset)."
 		canonicalizeWhitespace(range.startContainer, range.startOffset);
+		
+		// collapse whitespace sequences
+		collapseWhitespace(range.startContainer, range);
 
 		// "Let node and offset be the active range's start node and offset."
 		var node = range.startContainer;
 		var offset = range.startOffset;
 		var isBr = false;
 		var isHr = false;
-
+		
 		// "Repeat the following steps:"
 		while ( true ) {
 			// we need to reset isBr and isHr on every interation of the loop
@@ -7060,8 +7057,8 @@ commands.forwarddelete = {
 		while (true) {
 			// check whether the next element is a br or hr
 			if ( offset < node.childNodes.length ) {
-//				isBr = isHtmlElement(node.childNodes[offset], "br") || false;
-//				isHr = isHtmlElement(node.childNodes[offset], "hr") || false;
+//				isBr = isNamedHtmlElement(node.childNodes[offset], "br") || false;
+//				isHr = isNamedHtmlElement(node.childNodes[offset], "hr") || false;
 			}
 
 			// "If offset is the length of node and node's nextSibling is an
@@ -7079,7 +7076,6 @@ commands.forwarddelete = {
 			&& (isInvisible(node.childNodes[offset]) || isBr || isHr )) {
 				node.removeChild(node.childNodes[offset]);
 				if (isBr || isHr) {
-					ensureContainerEditable(node);
 					range.setStart(node, offset);
 					range.setEnd(node, offset);
 					return;
@@ -7463,8 +7459,9 @@ commands.inserthtml = {
 		// "If the active range's start node is a block node with no visible
 		// children, call createElement("br") on the context object and append
 		// the result as the last child of the active range's start node."
-		if (isBlockNode(range.startContainer)) {
-			ensureContainerEditable(range.startContainer);
+		if (isBlockNode(range.startContainer)
+		&& !$_(range.startContainer.childNodes).some(isVisible)) {
+			range.startContainer.appendChild(createEndBreak());
 		}
 
 		// "Call collapse() on the context object's Selection, with last
@@ -7618,7 +7615,6 @@ commands.insertlinebreak = {
 		// context object and let extra br be the result, then call
 		// insertNode(extra br) on the active range."
 		if (isCollapsedLineBreak(br)) {
-			// TODO
 			range.insertNode(createEndBreak());
 
 			// Compensate for nonstandard implementations of insertNode
@@ -7749,7 +7745,6 @@ commands.insertparagraph = {
 
 				// "Call createElement("br") on the context object, and append
 				// the result as the last child of container."
-				// TODO not always
 				container.appendChild(createEndBreak());
 
 				// "Call collapse(container, 0) on the context object's
@@ -7811,7 +7806,6 @@ commands.insertparagraph = {
 			// Work around browser bugs: some browsers select the
 			// newly-inserted node, not per spec.
 			if (oldHeight == newHeight && !isDescendant(nextNode(br), container)) {
-				// TODO check
 				range.insertNode(createEndBreak());
 				Aloha.getSelection().collapse(node, offset + 1);
 				range.setEnd(node, offset + 1);
@@ -7986,12 +7980,17 @@ commands.insertparagraph = {
 		// "If container has no visible children, call createElement("br") on
 		// the context object, and append the result as the last child of
 		// container."
-		ensureContainerEditable(container);
+		if (container.offsetHeight == 0 && !$_(container.childNodes).some(isVisible)) {
+			container.appendChild(createEndBreak());
+		}
 
 		// "If new container has no visible children, call createElement("br")
 		// on the context object, and append the result as the last child of
 		// new container."
-		ensureContainerEditable(newContainer);
+		if (newContainer.offsetHeight == 0 &&
+			!$_(newContainer.childNodes).some(isVisible)) {
+			newContainer.appendChild(createEndBreak());
+		}
 
 		// "Call collapse(new container, 0) on the context object's Selection."
 		Aloha.getSelection().collapse(newContainer, 0);
