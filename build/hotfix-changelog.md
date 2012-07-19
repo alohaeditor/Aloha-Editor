@@ -25,3 +25,4 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: cite-plugin: Fixed cite plugin DOM element attributes. It is not needed to add attributes to blockquote and q tags unless you have defined a referencecontainer. 
 - **BUG**: linkbrowser-plugin/numerated-headers-plugin: A bug in the numerated headers plugin caused a javascript error when the linkbrowser window should be closed. This bug was fixed and the linkbrowser window closes now propely.
 - **ENHANCEMENT**: contenthandler: Modified contenthandlers to allow language annotations made by the wai-lang plugin. This enables copy & paste of language annotations.
+- **ENHANCEMENT**: list-plugin: Some internet explorer specific attributes (hidefocus, tabindex) will now be removed on makeClean.
