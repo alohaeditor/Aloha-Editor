@@ -58,6 +58,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 			// We need to bind to selection-changed event to recognize
 			// backspace and delete interactions.
 			Aloha.bind('aloha-smart-content-changed', function (event) {
+				that.cleanNumerations();
 				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
 				}
@@ -86,9 +87,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 			var flag = $editable.attr('aloha-numerated-headers');
 			
 			if (flag !== 'true' && flag !== 'false') {
-				flag = (true === this.getCurrentConfig().numeratedactive)
-				     ? 'true'
-				     : 'false';
+				flag = (true === this.getCurrentConfig().numeratedactive) ? 'true' : 'false';
 				$editable.attr('aloha-numerated-headers', flag);
 			}
 
@@ -144,22 +143,28 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 				(Aloha.activeEditable.obj.attr('aloha-numerated-headers') === 'true')
 			);
 		},
-
-		removeNumerations : function () {
+		
+		/**
+		 * Remove all annotations in the current editable.
+		 */
+		cleanNumerations: function () {
 			var active_editable_obj = this.getBaseElement();
 			if (!active_editable_obj) {
 				return;
 			}
-
-			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
-			var headingselector = this.getCurrentConfig().headingselector;
-
-			var headers = active_editable_obj.find(headingselector);
-			headers.each(function () {
-				$(this).find('span[role=annotation]').each(function () {
-					$(this).remove();
-				});
+			
+			$(active_editable_obj).find('span[role=annotation]').each(function () {
+				$(this).remove();
 			});
+		},
+
+		/**
+		 * Removed and disables numeration for the current editable.
+		 */
+		removeNumerations : function () {
+			
+			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
+			this.cleanNumerations();
 		},
 
 		getBaseElement: function () {
@@ -177,7 +182,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 		* @param {Object} obj - The Object to check
 		*/
 		hasNote: function (obj) {
-			if (!obj || !$(obj).length > 0) {
+			if (!obj || $(obj).length <= 0) {
 				return false;
 			}
 			return $(obj).find('span[role=annotation]').length > 0;
@@ -296,7 +301,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
 						$(this).prepend('<span role="annotation">' +
-							annotation_result + '</span> ');
+							annotation_result + '</span>');
 					}
 				} else {
 					// no Content, so remove the Note, if there is one

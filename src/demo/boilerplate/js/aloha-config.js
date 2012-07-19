@@ -161,7 +161,10 @@
 			}
 			,
 			'numerated-headers': {
-				numeratedactive: false
+				config : {
+					numeratedactive: false,
+					trailingdot:true
+				}
 			}
 		}
 	};

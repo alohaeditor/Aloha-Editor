@@ -514,6 +514,7 @@ footer {
 .clearfix:after { clear: both; }
 .clearfix { zoom: 1; }
 
+span[role=annotation] { margin-right: 10px; }
 
 @media all and (orientation:portrait) {
 
