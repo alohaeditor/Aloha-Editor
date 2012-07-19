@@ -228,3 +228,8 @@
 
 - **DISCUSS**:      It would make sense to support also input (like textarea) elements
                     eg. for basic formattings like strong / em -- but prevent insertation of br / p ?
+
+- **MANUAL CHANGE**:    HotKey for inserting links is changed back to ctrl+k like documented here:
+                        https://github.com/alohaeditor/Aloha-Editor/blob/dev-jqueryui-ultra/doc/guides/source/core_hotkey.textile
+
+
