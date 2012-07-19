@@ -20,3 +20,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: table-plugin: Enabled proper selection (with mouse or keys) in the editable caption of a table.
 - **BUG**: table-plugin: When the contents of a table cell gains the focus, the whole cell is no longer selected. This also affects applying format to contents of a table cell.
 - **BUG**: table-plugin: New Captions are now added as first child of the table (before the tbody), according to the HTML5 specification.
+- **BUG**: table-plugin: The table plugin will now remove table id's on cleanup.
