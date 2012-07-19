@@ -21,3 +21,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: table-plugin: When the contents of a table cell gains the focus, the whole cell is no longer selected. This also affects applying format to contents of a table cell.
 - **BUG**: table-plugin: New Captions are now added as first child of the table (before the tbody), according to the HTML5 specification.
 - **BUG**: table-plugin: The table plugin will now remove table id's on cleanup.
+- **BUG**: numerated-headers-plugin: Fixed error that annotations would not be removed when converting a header to a paragraph. The plugin also added leading spaces to the heading's text. This was removed.
