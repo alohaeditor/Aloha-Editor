@@ -1,4 +1,4 @@
-define(['jqueryui'], function() {
+define(['jquery', 'jqueryui'], function($) {
 	'use strict';
 	var Utils = {
 		makeButton: function(button, props, hasMenu) {
