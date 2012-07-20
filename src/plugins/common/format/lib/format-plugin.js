@@ -6,15 +6,14 @@
 */
 
 define(
-['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'PubSub', 'aloha/selection',
- 		'css!format/css/format.css'],
-function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, PubSub) {
+['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'PubSub', 'aloha/selection', 
+ 'css!format/css/format.css'],
+function (Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, PubSub) {
 	"use strict";
 	var
 		GENTICS = window.GENTICS;
 	
-	
-	//TODO
+	// extracted selection changed function
 	function onSelectionChanged(formatPlugin, rangeObject) {
 		// iterate over all buttons
 		var
