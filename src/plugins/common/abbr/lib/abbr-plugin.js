@@ -133,50 +133,50 @@ define( [
 		    }
 		},
 
-		/**
-		 * Subscribe for events
-		 */
 		subscribeEvents: function () {
 			var me = this;
+			var editableConfig = {};
 
-		    // add the event handler for selection change
-			Aloha.bind( 'aloha-selection-changed', function ( event, rangeObject ) {
-		        if ( Aloha.activeEditable ) {
-		        	// show/hide the button according to the configuration
-					// @todo this part should be done at aloha-editable-activated event
-		        	var config = me.getEditableConfig( Aloha.activeEditable.obj );
+			Aloha.bind('aloha-editable-activated', function () {
+				if (!Aloha.activeEditable.obj) {
+					return;
+				}
+				var config = me.getEditableConfig(Aloha.activeEditable.obj);
+				editableConfig[
+					Aloha.activeEditable.getId()
+				] = jQuery.inArray('abbr', config) !== -1;
+			});
 
-		        	if ( jQuery.inArray( 'abbr', config ) != -1 ) {
-		        		me.formatAbbrButton.show();
-		        		me.insertAbbrButton.show();
-		        	} else {
-		        		me.formatAbbrButton.hide();
-		        		me.insertAbbrButton.hide();
-			        	// TODO this should not be necessary here!
-			        	// FloatingMenu.doLayout();
-		        		// leave if a is not allowed
-		        		return;
-		        	}
+			Aloha.bind('aloha-editable-destroyed', function () {
+				if (Aloha.activeEditable.obj) {
+					delete editableConfig[Aloha.activeEditable.getId()];
+				}
+			});
 
-		//        if ( !Aloha.Selection.mayInsertTag('abbr') ) {
-		//        	me.insertAbbrButton.hide();
-		//        }
+			Aloha.bind('aloha-selection-changed', function (event, range) {
+		        if (!Aloha.activeEditable) {
+					return;
+				}
 
-		        	var foundMarkup = me.findAbbrMarkup( rangeObject );
-		        	if ( foundMarkup ) {
-		        		// abbr found
-		        		me.insertAbbrButton.hide();
-		        		me.formatAbbrButton.setPressed( true );
-		        		FloatingMenu.setScope( 'abbr' );
-		        		me.abbrField.setTargetObject( foundMarkup, 'title' );
-		        	} else {
-		        		// no abbr found
-		        		me.formatAbbrButton.setPressed( false );
-		        		me.abbrField.setTargetObject( null );
-		        	}
-		        	// TODO this should not be necessary here!
-		        	// FloatingMenu.doLayout();
-		        }
+				if (editableConfig[Aloha.activeEditable.getId()]) {
+					me.formatAbbrButton.show();
+					me.insertAbbrButton.show();
+				} else {
+					me.formatAbbrButton.hide();
+					me.insertAbbrButton.hide();
+					return;
+				}
+
+				var foundMarkup = me.findAbbrMarkup(range);
+				if (foundMarkup) {
+					me.insertAbbrButton.hide();
+					me.formatAbbrButton.setPressed(true);
+					FloatingMenu.setScope('abbr');
+					me.abbrField.setTargetObject(foundMarkup, 'title');
+				} else {
+					me.formatAbbrButton.setPressed(false);
+					me.abbrField.setTargetObject(null);
+				}
 		    });
 		},
 
