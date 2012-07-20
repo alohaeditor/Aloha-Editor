@@ -61790,7 +61790,7 @@ require(
 	[
 		'aloha/jquery',
 		'aloha/ext',
-		'util/json2',
+		'util/json2'
 	],
 	function () {
 		// load Aloha core files
