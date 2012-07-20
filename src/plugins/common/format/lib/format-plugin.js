@@ -6,12 +6,62 @@
 */
 
 define(
-['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console',
+['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'PubSub', 'aloha/selection',
  		'css!format/css/format.css'],
-function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
+function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, PubSub) {
 	"use strict";
 	var
 		GENTICS = window.GENTICS;
+	
+	
+	//TODO
+	function onSelectionChanged(formatPlugin, rangeObject) {
+		// iterate over all buttons
+		var
+			statusWasSet = false, effectiveMarkup,
+			foundMultiSplit, i, j, multiSplitItem;
+
+		jQuery.each(formatPlugin.buttons, function (index, button) {
+			statusWasSet = false;
+			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
+				if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
+					button.button.setPressed(true);
+					statusWasSet = true;
+				}
+			}
+			if (!statusWasSet) {
+				button.button.setPressed(false);
+			}
+		});
+
+		if (formatPlugin.multiSplitItems.length > 0) {
+			foundMultiSplit = false;
+
+			// iterate over the markup elements
+			for (i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
+				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
+
+				for (j = 0; j < formatPlugin.multiSplitItems.length && !foundMultiSplit; j++) {
+					multiSplitItem = formatPlugin.multiSplitItems[j];
+
+					if (!multiSplitItem.markup) {
+						continue;
+					}
+
+					// now check whether one of the multiSplitItems fits to the effective markup
+					if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
+						formatPlugin.multiSplitButton.setActiveItem(multiSplitItem.name);
+						foundMultiSplit = true;
+					}
+				}
+			}
+
+			if (!foundMultiSplit) {
+				formatPlugin.multiSplitButton.setActiveItem(null);
+			}
+		}
+	}
 
 	/**
 	 * register the plugin with unique name
@@ -172,6 +222,11 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 								}
 								// select the modified range
 								rangeObject.select();
+								
+								// update Button toggle state. We take 'Aloha.Selection.getRangeObject()'
+								// because rangeObject is not up-to-date
+								onSelectionChanged(that, Aloha.Selection.getRangeObject());
+								
 								return false;
 							},
 							'tooltip' : i18n.t('button.' + button + '.tooltip'),
@@ -276,53 +331,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				);
 			}
 
-			// add the event handler for selection change
-			Aloha.bind('aloha-selection-changed',function(event,rangeObject){
-				// iterate over all buttons
-				var
-					statusWasSet = false, effectiveMarkup,
-					foundMultiSplit, i, j, multiSplitItem;
-
-				jQuery.each(that.buttons, function(index, button) {
-					statusWasSet = false;
-					for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-						effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-						if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
-							button.button.setPressed(true);
-							statusWasSet = true;
-						}
-					}
-					if (!statusWasSet) {
-						button.button.setPressed(false);
-					}
-				});
-
-				if (that.multiSplitItems.length > 0) {
-					foundMultiSplit = false;
-
-					// iterate over the markup elements
-					for ( i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
-						effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-
-						for ( j = 0; j < that.multiSplitItems.length && !foundMultiSplit; j++) {
-							multiSplitItem = that.multiSplitItems[j];
-
-							if (!multiSplitItem.markup) {
-								continue;
-							}
-
-							// now check whether one of the multiSplitItems fits to the effective markup
-							if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
-								that.multiSplitButton.setActiveItem(multiSplitItem.name);
-								foundMultiSplit = true;
-							}
-						}
-					}
-
-					if (!foundMultiSplit) {
-						that.multiSplitButton.setActiveItem(null);
-					}
-				}
+			// add the event handler for context selection change
+			PubSub.sub('aloha.selection.context-change', function(message) {
+				onSelectionChanged(that, message.range);
 			});
 
 		},
