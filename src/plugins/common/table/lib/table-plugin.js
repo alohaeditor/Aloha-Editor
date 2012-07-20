@@ -444,15 +444,14 @@ define( [
 	/**
 	 * Checks for the presence of nested tables in the given editable.
 	 * @todo complete
+	 *		if ( editable.find( 'table table' ).length ) {
+	 *			// show warning
+	 *		} else {
+	 *			// hide warning
+	 *		}
 	 * @param {jQuery} editable
 	 */
-	TablePlugin.checkForNestedTables = function ( editable ) {
-		if ( editable.find( 'table table' ).length ) {
-			// show warning
-		} else {
-			// hide warning
-		}
-	};
+	TablePlugin.checkForNestedTables = function ($editable) {};
 	
 	/**
 	 * Adds default row buttons, and custom formatting buttons to floating menu
