@@ -22,7 +22,8 @@ Start typing the language name or code in the input field and select the desired
 
 
 The text is surrounded with a span-tag with a @lang@ attribute.
-As language code there will be the ISO 639‑1 two-letter code used.
+As language code there will be the either the ISO 639‑1 two-letter code (default) or the
+ISO 639-2 three-letter code used.
 <img src="images/plugins/wai-lang-code.png" style="width:620px">
 
 
@@ -49,6 +50,8 @@ The WAI Language plugin provides the following configuration options:
 <javascript>
 Aloha.settings.plugins: {
 	'wai-lang': {
+		iso639: 'iso639-1', // iso639-2 for three letter codes
+		flags: false,		// whether to show flags in the dropdown
 		config: [ 'span' ],
 		editables: {
 			// Don't allow wai-lang in top-text

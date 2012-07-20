@@ -36,6 +36,16 @@ define([
 		config: [ 'span' ],
 
 		/**
+		 * Define the exact standard of language codes to use (possible values are 'iso639-1' and 'iso639-2', default is 'iso639-1')
+		 */
+		iso639: 'iso639-1',
+
+		/**
+		 * Whether to show flags
+		 */
+		flags: false,
+
+		/**
 		 * the defined object types to be used for this instance
 		 */
 		objectTypeFilter: [ 'language' ],
@@ -47,6 +57,14 @@ define([
 		init: function () {
 			if (this.settings.objectTypeFilter) {
 				this.objectTypeFilter = this.settings.objectTypeFilter;
+			}
+			if (this.settings.flags === 'true' || this.settings.flags === true || this.settings.flags === '1' || this.settings.flags === 1) {
+				this.flags = true;
+			} else {
+				this.flags = false;
+			}
+			if (this.settings.iso639) {
+				this.iso639 = this.settings.iso639;
 			}
 
 			this.createButtons();
@@ -283,7 +301,10 @@ define([
 		 * Make the given element visible by adding the class to it.
 		 */
 		makeVisible: function (element) {
-			jQuery(element).addClass(WAI_LANG_CLASS);
+			var $element = jQuery(element);
+			$element.addClass(WAI_LANG_CLASS);
+			$element.attr('data-gentics-aloha-repository', 'wai-languages');
+			$element.attr('data-gentics-aloha-object-id', $element.attr('lang'));
 		},
 
 		/**

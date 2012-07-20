@@ -1,4 +1,4 @@
-/*global define: true */
+/*global define: true, require: true */
 /*!
  * Aloha Editor
  * Author & Copyright (c) 2011 Gentics Software GmbH
@@ -10,7 +10,7 @@
  * Provides a set of language codes and images
  */
 
-define(['aloha', 'aloha/jquery', 'flag-icons/flag-icons-plugin'],
+define(['aloha', 'aloha/jquery', 'flag-icons/flag-icons-plugin', 'wai-lang/wai-lang-plugin'],
 function (Aloha, jQuery, FlagIcons) {
 	'use strict';
 
@@ -21,6 +21,11 @@ function (Aloha, jQuery, FlagIcons) {
 		 */
 		languageCodes: [],
 
+		/**
+		 * Whether to show flags or not
+		 */
+		flags: false,
+
 		_constructor: function () {
 			this._super('wai-languages');
 		},
@@ -29,9 +34,25 @@ function (Aloha, jQuery, FlagIcons) {
 		 * Initialize WAI Languages, load the language file and prepare the data.
 		 */
 		init: function () {
+			var waiLang = Aloha.require('wai-lang/wai-lang-plugin');
+			var locale = Aloha.settings.locale;
+			var iso = waiLang.iso639;
+
+			if (locale !== 'de') {
+				locale = 'en';
+			}
+
+			if (iso !== 'iso639-1') {
+				iso = 'iso639-2';
+			}
+
+			this.flags = waiLang.flags;
+
+			this.setTemplate('<span><img src="{url}"/><b>{name} ({id})</b></span>');
+
 			// Load the language codes
 			jQuery.ajax({
-				url      : Aloha.getPluginUrl('wai-lang') + '/lib/language-codes.json',
+				url      : Aloha.getPluginUrl('wai-lang') + '/lib/' + iso + '-' + locale + '.json',
 				dataType : 'json',
 				success  : jQuery.proxy(this.storeLanguageCodes, this),
 				error    : this.errorHandler
@@ -66,7 +87,9 @@ function (Aloha, jQuery, FlagIcons) {
 				el.id = key;
 				el.repositoryId = that.repositoryId;
 				el.type = 'language';
-				el.url =  FlagIcons.path + '/img/flags/' + el.id + '.png';
+				if (that.flags && el.flag) {
+					el.url =  FlagIcons.path + '/img/flags/' + el.flag + '.png';
+				}
 				// el.renditions.url = "img/flags/" + e.id + ".png";
 				// el.renditions.kind.thumbnail = true;
 				that.languageCodes.push(new Aloha.RepositoryDocument(el));
@@ -88,7 +111,7 @@ function (Aloha, jQuery, FlagIcons) {
 
 			for (i = 0; i < this.languageCodes.length; ++i) {
 				currentElement = this.languageCodes[i];
-				matchesName = (!p.queryString || currentElement.name.match(query)  || currentElement.nativeName.match(query));
+				matchesName = (!p.queryString || currentElement.name.match(query));
 				matchesType = (!p.objectTypeFilter || (!p.objectTypeFilter.length) || jQuery.inArray(currentElement.type, p.objectTypeFilter) > -1);
 
 				if (matchesName && matchesType) {
@@ -97,7 +120,25 @@ function (Aloha, jQuery, FlagIcons) {
 			}
 
 			callback.call(this, d);
-		}
+		},
 
+		/**
+		 * Get the repositoryItem with given id
+		 * @param itemId {String} id of the repository item to fetch
+		 * @param callback {function} callback function
+		 * @return {Aloha.Repository.Object} item with given id
+		 */
+		getObjectById: function (itemId, callback) {
+			var i, currentElement;
+
+			for (i = 0; i < this.languageCodes.length; ++i) {
+				currentElement = this.languageCodes[i];
+				if (currentElement.id === itemId) {
+					callback.call(this, [currentElement]);
+					break;
+				}
+			}
+
+		}
 	}))();
 });
