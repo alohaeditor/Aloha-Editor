@@ -215,26 +215,28 @@ define([
 
 		subscribeToEvents: function () {
 			var that = this;
-			var $container = this.container;
 
 			Aloha.bind('aloha-selection-changed', function (event, range) {
+				if (!that.isOpen) {
 					that.checkActivePanels(range);
-				});
-
-			$container.mousedown(function (e) {
-					e.originalEvent.stopSelectionUpdate = true;
-					Aloha.eventHandled = true;
-					//e.stopSelectionUpdate = true;
-				});
-
-			$container.mouseup(function (e) {
-					e.originalEvent.stopSelectionUpdate = true;
-					Aloha.eventHandled = false;
-				});
+				}
+			});
 
 			Aloha.bind('aloha-editable-deactivated', function (event, params) {
+				if (!that.isOpen) {
 					that.checkActivePanels();
-				});
+				}
+			});
+
+			this.container.mousedown(function (e) {
+				e.originalEvent.stopSelectionUpdate = true;
+				Aloha.eventHandled = true;
+			});
+
+			this.container.mouseup(function (e) {
+				e.originalEvent.stopSelectionUpdate = true;
+				Aloha.eventHandled = false;
+			});
 		},
 
 		/**
