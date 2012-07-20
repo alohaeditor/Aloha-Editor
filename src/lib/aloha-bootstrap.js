@@ -79,7 +79,8 @@
 	Aloha.settings.requireConfig = {
 		context: 'aloha',
 		baseUrl: Aloha.settings.baseUrl,
-		locale: Aloha.settings.locale
+		locale: Aloha.settings.locale,
+		paths: {'PubSub': 'vendor/pubsub/js/pubsub'}
 	};
 	
 	// configure require and expose the Aloha.require function
