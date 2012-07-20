@@ -26,11 +26,13 @@
 define([
     'aloha/core',
     'aloha/jquery',
-    'aloha/selection'
+    'aloha/selection',
+    'PubSub'
 ], function (
 	Aloha,
 	$,
-	Selection
+	Selection,
+	PubSub
 ) {
 	'use strict';
 
@@ -217,8 +219,9 @@ define([
 			var that = this;
 			var $container = this.container;
 
-			Aloha.bind('aloha-selection-changed', function (event, range) {
-					that.checkActivePanels(range);
+			// add the event handler for context selection change
+			PubSub.sub('aloha.selection.context-change', function (message) {
+					that.checkActivePanels(message.range);
 				});
 
 			$container.mousedown(function (e) {
