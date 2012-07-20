@@ -3492,6 +3492,13 @@ jQuery.support = (function() {
 			support.noCloneEvent = false;
 		});
 		div.cloneNode( true ).fireEvent( "onclick" );
+		// Clear event handler that was attached just now.
+		// Fix for IE8 memory leak across frame reloads when jQuery is
+		// loaded inside a frame. Memory leak wouldn't go away until
+		// window.top was unloaded.
+		if (div.clearAttributes) {
+			div.clearAttributes();
+		}
 	}
 
 	// Check if a radio maintains its value
@@ -61783,7 +61790,7 @@ require(
 	[
 		'aloha/jquery',
 		'aloha/ext',
-		'util/json2',
+		'util/json2'
 	],
 	function () {
 		// load Aloha core files

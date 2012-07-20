@@ -20,8 +20,8 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'aloha/jquery', 'aloha/floatingmenu', 'util/class', 'util/arrays', 'util/strings', 'util/range', 'aloha/engine', 'aloha/console', 'PubSub', 'aloha/rangy-core' ],
-function(Aloha, jQuery, FloatingMenu, Class, Arrays, Strings, Range, Engine, console, PubSub) {
+[ 'aloha/core', 'aloha/jquery', 'util/class', 'util/arrays', 'util/strings', 'util/range', 'aloha/engine', 'aloha/console', 'PubSub', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) {
 	var
 
 		GENTICS = window.GENTICS;
@@ -313,14 +313,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Arrays, Strings, Range, Engine, con
 				return true;
 			}
 
-			// Only set the specific scope if an event was provided, which means
-			// that somehow an editable was selected
-			// TODO Bind code to aloha-selection-changed event to remove coupling to floatingmenu
-			if (event !== undefined) {
-				// Initiallly set the scope to 'continuoustext'
-				FloatingMenu.setScope('Aloha.continuoustext');
-			}
-
+			Aloha.trigger('aloha-selection-changed-before', [this.rangeObject, event]);
 			Aloha.trigger('aloha-selection-changed', [this.rangeObject, event]);
 			triggerSelectionContextChanged(this.rangeObject, event);
 
