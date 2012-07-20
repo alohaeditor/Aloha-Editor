@@ -60,9 +60,12 @@ WARNING: TODO describe GENTICS.Utils.dom and the like
 
 h3. Events
 
+Events are bound to with Aoha.bind and triggered with Aloha.trigger.
+
 * aloha-smart-content-changed
 * aloha-editable-activated
 * aloha-editable-deactivated
+* aloha-selection-changed
 
 h4. aloha-smart-content-changed Event
 
@@ -83,6 +86,42 @@ WARNING: Documentation pending.
 h4. aloha-editable-deactivated Event
 
 WARNING: Documentation pending.
+
+h4. aloha-selection-changed
+
+The aloha-selection-changed event is fired whenever the selection
+returned by Aloha.getSelection() changes. It is not recommended to bind
+to this event unless you know what you are doing. Instead consider
+subscribing to the aloha.selection.context-change channel.
+
+h3. PubSub
+
+Aloha has a publish/subscribe system. For more information on how to use
+it, see PubSub.js in the src/lib/vendor folder.
+
+Aloha publishes messages on the following channels
+
+* aloha.selection.context-change
+
+  The message that will be published contains two properties
+
+  - range the current value of Aloha.Selection.getRangeObject()
+  - the event that caused the context change
+
+  The message will be published every time the context of the selection
+  changes.
+
+  The context of the selection changes whenever the startContainer node
+  or endContainer node of any range in the selection returned by
+  Aloha.getSelection() changes, or any of their ancestors change, or any
+  attributes of the container nodes or their ancestors change. The
+  ancestor tree is calculated up to including the containing Aloha
+  editable.
+
+  Subscribing to this channel is preferred over aloha-selection-changed
+  to avoid unnecessary processing of the DOM while the user is typing.
+  To be able to type without perceptible lag is considered by the Aloha
+  team to be one of the most important aspects of editor-performance.
 
 h3. Editables
 
