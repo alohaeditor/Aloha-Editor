@@ -143,12 +143,20 @@ define([
 				'minChars'   : 1
 			});
 
-			langField.setTemplate(
-				'<div class="img-item">' +
-					'<img class="typeahead-image" src="{url}" />' +
-					'<div class="label-item">{name}</div>' +
-				'</div>'
-			);
+			if (this.flags) {
+				langField.setTemplate(
+						'<div class="img-item">' +
+						'<img class="typeahead-image" src="{url}" />' +
+						'<div class="label-item">{name} ({id})</div>' +
+						'</div>'
+				);
+			} else {
+				langField.setTemplate(
+						'<div class="img-item">' +
+						'<div class="label-item">{name} ({id})</div>' +
+						'</div>'
+				);
+			}
 
 			langField.setObjectTypeFilter(this.objectTypeFilter);
 

@@ -48,8 +48,6 @@ function (Aloha, jQuery, FlagIcons) {
 
 			this.flags = waiLang.flags;
 
-			this.setTemplate('<span><img src="{url}"/><b>{name} ({id})</b></span>');
-
 			// Load the language codes
 			jQuery.ajax({
 				url      : Aloha.getPluginUrl('wai-lang') + '/lib/' + iso + '-' + locale + '.json',
@@ -80,6 +78,7 @@ function (Aloha, jQuery, FlagIcons) {
 		 */
 		storeLanguageCodes: function (data) {
 			var that = this;
+			var waiLangPath = Aloha.getPluginUrl('wai-lang');
 
 			// Transform loaded json into a set of repository documents
 			jQuery.each(data, function (key, value) {
@@ -87,8 +86,12 @@ function (Aloha, jQuery, FlagIcons) {
 				el.id = key;
 				el.repositoryId = that.repositoryId;
 				el.type = 'language';
-				if (that.flags && el.flag) {
-					el.url =  FlagIcons.path + '/img/flags/' + el.flag + '.png';
+				if (that.flags) {
+					if (el.flag) {
+						el.url =  FlagIcons.path + '/img/flags/' + el.flag + '.png';
+					} else {
+						el.url =  waiLangPath + '/img/button.png';
+					}
 				}
 				// el.renditions.url = "img/flags/" + e.id + ".png";
 				// el.renditions.kind.thumbnail = true;
