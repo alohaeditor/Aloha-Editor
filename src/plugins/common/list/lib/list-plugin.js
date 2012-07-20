@@ -191,6 +191,21 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 
 			}
 		},
+		
+		/**
+		 * Make the given jQuery object (representing an editable) clean for saving
+		 * Find all li tags and remove editing attributes
+		 * @param obj jQuery object to make clean
+		 * @return void
+		 */
+		makeClean: function (obj) {
+			// find all li tags
+			obj.find('li').each(function () {
+				// Remove IE attributes
+				jQuery(this).removeAttr('hidefocus');
+				jQuery(this).removeAttr('tabindex');
+			});
+		},
 
 		/**
 		 * Process Tab and Shift-Tab pressed in lists
