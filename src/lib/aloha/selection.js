@@ -314,7 +314,12 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 			}
 
 			Aloha.trigger('aloha-selection-changed-before', [this.rangeObject, event]);
+
+			/**
+			 * @api documented in the guides
+			 */
 			Aloha.trigger('aloha-selection-changed', [this.rangeObject, event]);
+
 			triggerSelectionContextChanged(this.rangeObject, event);
 
 			return true;
@@ -2186,6 +2191,10 @@ function correctRange ( range ) {
 		}
 		prevStartContext = startContext;
 		prevEndContext   = endContext;
+
+		/**
+		 * @api documented in the guides
+		 */
 		PubSub.pub('aloha.selection.context-change', {range: rangeObject, event: event});
 	}
 
