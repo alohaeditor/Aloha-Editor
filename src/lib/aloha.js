@@ -61684,7 +61684,8 @@ Ext.grid.GroupingView.GROUP_ID = 1000;
 	Aloha.settings.requireConfig = {
 		context: 'aloha',
 		baseUrl: Aloha.settings.baseUrl,
-		locale: Aloha.settings.locale
+		locale: Aloha.settings.locale,
+		paths: {'PubSub': 'vendor/pubsub/js/pubsub'}
 	};
 	
 	// configure require and expose the Aloha.require function
