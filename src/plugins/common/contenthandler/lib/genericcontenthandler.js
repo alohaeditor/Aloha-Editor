@@ -175,7 +175,10 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		unwrapTags: function( content ) {
 			var that = this;
 
-			content.find('span,font,div').each(function() {
+			// Note: we exclude all elements (they will be spans) here, that have the class aloha-wai-lang
+			// TODO find a better solution for this (e.g. invent a more generic aloha class for all elements, that are
+			// somehow maintained by aloha, and are therefore allowed)
+			content.find('span,font,div').not('.aloha-wai-lang').each(function() {
 				if (this.nodeName == 'DIV') {
 					// safari and chrome cleanup for plain text paste with working linebreaks
 					if (this.innerHTML == '<br>') {

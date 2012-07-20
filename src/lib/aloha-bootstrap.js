@@ -76,11 +76,12 @@
 	};
 	
 	// prepare the require config object and remember it
-	Aloha.settings.requireConfig = jQuery.extend({
+	Aloha.settings.requireConfig = {
 		context: 'aloha',
 		baseUrl: Aloha.settings.baseUrl,
-		locale: Aloha.settings.locale
-	}, Aloha.settings.requireConfig);
+		locale: Aloha.settings.locale,
+		paths: {'PubSub': 'vendor/pubsub/js/pubsub'}
+	};
 	
 	// configure require and expose the Aloha.require function
 	alohaRequire = require.config( Aloha.settings.requireConfig );

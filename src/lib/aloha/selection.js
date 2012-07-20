@@ -20,8 +20,8 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'aloha/jquery', 'aloha/floatingmenu', 'util/class', 'util/arrays', 'util/strings', 'util/range',  'aloha/engine', 'aloha/rangy-core' ],
-function(Aloha, jQuery, FloatingMenu, Class, Arrays, Strings, Range, Engine) {
+[ 'aloha/core', 'aloha/jquery', 'util/class', 'util/arrays', 'util/strings', 'util/range', 'aloha/engine', 'aloha/console', 'PubSub', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) {
 	var
 
 		GENTICS = window.GENTICS;
@@ -313,17 +313,9 @@ function(Aloha, jQuery, FloatingMenu, Class, Arrays, Strings, Range, Engine) {
 				return true;
 			}
 
-			// Only set the specific scope if an event was provided, which means
-			// that somehow an editable was selected
-			// TODO Bind code to aloha-selection-changed event to remove coupling to floatingmenu
-			if (event !== undefined) {
-				// Initiallly set the scope to 'continuoustext'
-				FloatingMenu.setScope('Aloha.continuoustext');
-			}
-
-			// throw the event that the selection has changed. Plugins now have the
-			// chance to react on the chancurrentElements[childCount].children.lengthged selection
-			Aloha.trigger('aloha-selection-changed', [ this.rangeObject, event ]);
+			Aloha.trigger('aloha-selection-changed-before', [this.rangeObject, event]);
+			Aloha.trigger('aloha-selection-changed', [this.rangeObject, event]);
+			triggerSelectionContextChanged(this.rangeObject, event);
 
 			return true;
 		},
@@ -2149,6 +2141,52 @@ function correctRange ( range ) {
 			return false;
 		}
 		return Engine.isEndBreak(rangeObject.startContainer);
+	}
+
+	var prevStartContext = null;
+	var prevEndContext = null;
+
+	function makeContextHtml(node, parents) {
+		var result = [],
+		    len,
+		    i;
+		if (1 === node.nodeType) {
+			result.push(node.cloneNode(false).outerHTML);
+		} else {
+			result.push('#' + node.nodeType);
+		}
+		for (i = 0, len = parents.length; i < len; i++) {
+			result.push(parents[i].cloneNode(false).outerHTML);
+		}
+		return result.join('');
+	}
+
+	function getChangedContext(node, context) {
+		var until = Aloha.activeEditable ? Aloha.activeEditable.obj.parent()[0] : null;
+		var parents = jQuery(node).parentsUntil(until).get();
+		var html = makeContextHtml(node, parents);
+		var equal = (   context
+					 && node === context.node
+					 && Arrays.equal(context.parents, parents)
+					 && html === context.html);
+		return equal ? null : {node: node, parents: parents, html: html};
+	}
+
+	function triggerSelectionContextChanged(rangeObject, event) {
+		var startContainer = rangeObject.startContainer;
+		var endContainer = rangeObject.endContainer;
+		if (!startContainer || !endContainer) {
+			console.error("encountered range object without start or end container");
+			return;
+		}
+		var startContext = getChangedContext(startContainer, prevStartContext);
+		var endContext   = getChangedContext(endContainer  , prevEndContext);
+		if (!startContext && !endContext) {
+			return;
+		}
+		prevStartContext = startContext;
+		prevEndContext   = endContext;
+		PubSub.pub('aloha.selection.context-change', {range: rangeObject, event: event});
 	}
 
 	return selection;

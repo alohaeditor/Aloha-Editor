@@ -10,8 +10,8 @@
  *
  */
 define(
-['aloha/jquery', 'aloha/observable'],
-function(jQuery, Observable) {
+['aloha/jquery', 'aloha/observable', 'util/class'],
+function(jQuery, Observable, Class) {
 	"use strict";
 
 	return Class.extend(Observable, {

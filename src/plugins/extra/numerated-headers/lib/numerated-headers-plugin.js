@@ -68,6 +68,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 			// header format. smart-content-changed would be not fired in 
 			// that case
 			Aloha.bind('aloha-format-block', function () {
+				that.cleanNumerations();
 				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
 				}

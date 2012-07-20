@@ -3492,6 +3492,13 @@ jQuery.support = (function() {
 			support.noCloneEvent = false;
 		});
 		div.cloneNode( true ).fireEvent( "onclick" );
+		// Clear event handler that was attached just now.
+		// Fix for IE8 memory leak across frame reloads when jQuery is
+		// loaded inside a frame. Memory leak wouldn't go away until
+		// window.top was unloaded.
+		if (div.clearAttributes) {
+			div.clearAttributes();
+		}
 	}
 
 	// Check if a radio maintains its value
@@ -61681,11 +61688,12 @@ Ext.grid.GroupingView.GROUP_ID = 1000;
 	};
 	
 	// prepare the require config object and remember it
-	Aloha.settings.requireConfig = jQuery.extend({
+	Aloha.settings.requireConfig = {
 		context: 'aloha',
 		baseUrl: Aloha.settings.baseUrl,
-		locale: Aloha.settings.locale
-	}, Aloha.settings.requireConfig);
+		locale: Aloha.settings.locale,
+		paths: {'PubSub': 'vendor/pubsub/js/pubsub'}
+	};
 	
 	// configure require and expose the Aloha.require function
 	alohaRequire = require.config( Aloha.settings.requireConfig );

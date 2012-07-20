@@ -18,7 +18,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 define(
-['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'aloha/console', 'vendor/jquery.store'],
+['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'aloha/console', 'vendor/jquery.store', 'aloha/selection'],
 function(Aloha, jQuery, Ext, Class, console) {
 	"use strict";
 	var GENTICS = window.GENTICS;
@@ -1503,6 +1503,15 @@ function(Aloha, jQuery, Ext, Class, console) {
 		menu.setScope('Aloha.empty');
 	});
 	
+	Aloha.bind('aloha-selection-changed-before', function(event, rangeObject, originalEvent) {
+		// Only set the specific scope if an event was provided, which means
+		// that somehow an editable was selected
+		if (originalEvent !== undefined) {
+			// Initiallly set the scope to 'continuoustext'
+			menu.setScope('Aloha.continuoustext');
+		}
+	});
+
 	// set scope to empty if the user selectes a non contenteditable area
 	Aloha.bind('aloha-selection-changed', function() {
 		if ( !Aloha.Selection.isSelectionEditable() && !Aloha.Selection.isFloatingMenuVisible() ) {
@@ -1512,4 +1521,3 @@ function(Aloha, jQuery, Ext, Class, console) {
 	
 	return menu;
 });
-
