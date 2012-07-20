@@ -14,10 +14,11 @@ define([
 	'format/format-plugin',
 	'util/dom',
 	'i18n!cite/nls/i18n',
-	'i18n!aloha/nls/i18n'
+	'i18n!aloha/nls/i18n',
+	'PubSub'
 ],
 function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
-                      i18n, i18nCore) {
+                      i18n, i18nCore, PubSub) {
 	'use strict';
 
 	Aloha.require(['css!cite/css/cite.css']);
@@ -310,9 +311,11 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				
 			});
 
-			Aloha.bind('aloha-selection-changed', function (event, rangeObject) {
+			// add the event handler for context selection change
+			PubSub.sub('aloha.selection.context-change', function (message) {
 				var buttons = jQuery('button' + nsSel('button')); // not used?
-
+				var rangeObject = message.range;
+				
 				jQuery.each(that.buttons, function (index, button) {
 					// Set to false to prevent multiple buttons being active
 					// when they should not.

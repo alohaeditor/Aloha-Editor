@@ -6,8 +6,8 @@
 */
 
 define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!list/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/engine'],
-function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
+['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!list/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/engine', 'PubSub'],
+function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine, PubSub) {
 	"use strict";
 
 	var
@@ -125,9 +125,11 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 				1
 			);
 
-			// add the event handler for selection change
-			Aloha.bind('aloha-selection-changed', function ( event, rangeObject ) {
-				var i, effectiveMarkup;
+			// add the event handler for context selection change
+			PubSub.sub('aloha.selection.context-change', function(message){
+				var i,
+					effectiveMarkup,
+					rangeObject = message.range;
 				
 				// Hide all buttons in the list tab will make the list tab disappear
 				that.outdentListButton.hide();
