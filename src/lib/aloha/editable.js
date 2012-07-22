@@ -469,18 +469,17 @@ define( [
 
 			// set the cursor // remove placeholder
 			if ( setCursor === true ) {
+				window.setTimeout( function() {
+					jQuery( '.' + placeholderClass, obj ).remove();
+				}, 20 );
+
 				range = Selection.getRangeObject();
 				if ( !range.select ) {
 					return;
 				}
 				range.startContainer = range.endContainer = obj.get( 0 );
 				range.startOffset = range.endOffset = 0;
-				range.select();
-
-				window.setTimeout( function() {
-					jQuery( '.' + placeholderClass, obj ).remove();
-				}, 20 );
-
+				range.select();				
 			} else {
 				jQuery( '.' + placeholderClass, obj ).remove();
 			}
