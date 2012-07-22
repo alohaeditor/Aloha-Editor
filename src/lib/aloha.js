@@ -337,27 +337,48 @@
 			return Aloha;
 		});
 
+		// TODO aloha should not make the require call itself. Instead,
+		// user code should require and initialize aloha.
 		Aloha.stage = 'loadingAloha';
 		require(requireConfig, ['aloha', 'jquery'], function (Aloha, jQuery) {
 			Aloha.stage = 'loadPlugins';
 			require(requireConfig, pluginConfig.entryPoints, function() {
-				// jQuery calls Aloha.init when the dom is ready.
 				jQuery(function(){
 					// Rangy must be initialized only after the body
 					// is available since it accesses the body
 					// element during initialization.
 					window.rangy.init();
+					// The same for Aloha, but probably only because it
+					// depends on rangy.
 					Aloha.init();
 				});
 			});
 		});
-
 	} // end load()
 
 	global.Aloha = global.Aloha || {};
 	if (global.Aloha.deferInit || isDeferInit()) {
 		global.Aloha.deferInit = load;
 	} else {
+		// Unless init is deferred above, aloha mus be loaded
+		// immediately in the development version, but later in the
+		// compiled version. The reason loading must be delayed in the
+		// compiled version is that the "include" directive in the r.js
+		// build profile, which lists the plugins that will be compiled
+		// into aloha.js, will include the plugins *after* this
+		// file. Since the require() call that loads the plugins is in
+		// this file, it will not see any of the plugin's defines that
+		// come after this file. The call to Aloha._load is only made in
+		// compiled mode in closure-end.frag. The call to load() below
+		// is only made in development mode because the excludeStart and
+		// excludeEnd r.js pragmas will exclude everything inbetween in
+		// the compiled version.
+		// TODO ideally the bootstrap file should not make the require
+		//      call at all. Instead, user code should require and
+		//      initialize aloha.
+		Aloha._load = load;
+		//>>excludeStart("alohaLoadInEndClosure", pragmas.alohaLoadInEndClosure);
 		load();
+		//>>excludeEnd("alohaLoadInEndClosure");
 	}
 }(window));

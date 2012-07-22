@@ -315,9 +315,9 @@
     //Pragmas also remove code in non-minified source, where has branch
     //trimming is only done if the code is minified via UglifyJS or
     //Closure Compiler.
-    //pragmas: {
-    //    fooExclude: true
-    //},
+    pragmas: {
+		alohaLoadInEndClosure: true
+    },
 
     //Same as "pragmas", but only applied once during the file save phase
     //of an optimization. "pragmas" are applied both during the dependency
