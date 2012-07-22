@@ -38,23 +38,24 @@
 	 *       plugins - an array of plugins to load.
 	 */
 	function getLoadConfig() {
-		var scripts = document.getElementsByTagName('script'),
+		var scripts,
 		    script,
-		    pluginsConfigured = Aloha.settings.plugins && Aloha.settings.plugins.load,
-		    baseUrlConfigured = Aloha.settings.baseUrl,
-		    plugins = [],
-		    baseUrl = './',
+		    plugins = Aloha.settings.plugins && Aloha.settings.plugins.load,
+		    baseUrl = Aloha.settings.baseUrl,
 		    pluginsAttr,
 		    regexAlohaJs = /\/aloha\.js$/,
             regexStripFilename = /\/[^\/]*\.js$/,
 		    i;
 
-		if (!pluginsConfigured || !baseUrlConfigured) {
+		if (!plugins || !baseUrl) {
+			scripts = document.getElementsByTagName('script');
 			for (i = 0; i < scripts.length; i++) {
 				script = scripts[i];
 				pluginsAttr = script.getAttribute('data-aloha-plugins');
-				if (pluginsAttr) {
-					plugins = pluginsAttr;
+				if (null != pluginsAttr) {
+					if (!plugins) {
+						plugins = pluginsAttr;
+					}
 					baseUrl = script.src.replace(regexStripFilename, '');
 					break;
 				}
@@ -62,14 +63,6 @@
 					baseUrl = script.src.replace(regexAlohaJs, '');
 				}
 			}
-		}
-
-		if (pluginsConfigured) {
-			plugins = pluginsConfigured;
-		}
-
-		if (baseUrlConfigured) {
-			baseUrl = baseUrlConfigured;
 		}
 
 		if (typeof plugins === 'string' && plugins !== '') {
@@ -189,7 +182,6 @@
 	}
 
 	function createDefine(name, module) {
-		if (!name || !module)debugger;
 		define(name, function () {
 			return module;
 		});
