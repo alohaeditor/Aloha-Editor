@@ -10,7 +10,7 @@
  * @namespace Block plugin
  */
 define([
-    'aloha',
+  'aloha',
 	'aloha/plugin',
 	'jquery',
 	'aloha/contenthandlermanager',
@@ -20,18 +20,45 @@ define([
 	'block/editormanager',
 	'block/blockcontenthandler',
 	'block/editor',
+	'ui/ui',
+	'ui/toggleButton',
+	'i18n!block/nls/i18n',
+	'i18n!aloha/nls/i18n',
 	'jqueryui'
-], function(Aloha, Plugin, jQuery, ContentHandlerManager, BlockManager, SidebarAttributeEditor, block, EditorManager, BlockContentHandler, editor) {
+], function(
+	Aloha,
+ 	Plugin,
+ 	jQuery,
+ 	ContentHandlerManager, 
+	BlockManager,
+ 	SidebarAttributeEditor,
+ 	block,
+ 	EditorManager,
+ 	BlockContentHandler,
+ 	editor,
+ 	Ui,
+ 	ToggleButton, 
+	i18n,
+	i18nCore
+) {
 	"use strict";
 	/**
 	 * Register the 'block' plugin
 	 */
 	var BlockPlugin = Plugin.create( 'block', {
+		
+		/**
+		 * default button configuration
+		 */
+		config: [], 
+
 		settings: {},
+
 //		dependencies: [ 'paste' ],
 
 		init: function () {
 			var that = this;
+
 			// Register default block types
 			BlockManager.registerBlockType('DebugBlock', block.DebugBlock);
 			BlockManager.registerBlockType('DefaultBlock', block.DefaultBlock);
@@ -57,6 +84,66 @@ define([
 					SidebarAttributeEditor.init();
 				}
 			});
+
+			// create the toolbar buttons
+			this.createButtons();
+
+			// apply specific configuration if an editable has been activated
+			Aloha.bind('aloha-editable-activated', function (e, params) {
+				that.applyButtonConfig(params.editable.obj);
+			});
+		},
+
+		/**
+		 * applies a configuration specific for an editable
+		 * buttons not available in this configuration are hidden
+		 * @param {Object} id of the activated editable
+		 * @return void
+		 */
+		applyButtonConfig: function (obj) {
+
+			var config = this.getEditableConfig(obj);
+
+			if(config[0] === "dragdrop" && this.isDragDropEnabled()){
+				this._toggleDragDropButton.show(true);
+				this._toggleDragDropButton.setState(obj.data("block-dragdrop"));
+			} else {
+				this._toggleDragDropButton.show(false);
+			}
+		},
+
+		createButtons: function () {
+			var that = this;
+
+			this._toggleDragDropButton = Ui.adopt("toggleDragDrop", ToggleButton, {
+				tooltip: i18n.t('button.toggledragdrop.tooltip'),
+				icon: 'aloha-icon aloha-icon-toggledragdrop',
+				scope: 'Aloha.continuoustext',
+				click: function(){ 
+					if ( Aloha.activeEditable ) {
+						var active_editable = Aloha.activeEditable.obj;
+						var current_dragdrop_state = active_editable.data("block-dragdrop");
+						active_editable.data("block-dragdrop", !current_dragdrop_state);
+					}
+				}
+			});
+		},
+
+		/**
+		 * checks whether drag & drop is enabled for blocks 
+		 * @return boolean 
+		 */
+		isDragDropEnabled: function(){
+			if(this.settings.dragdrop){
+				// Normalize config
+				return (
+					this.settings.dragdrop === true   ||
+					this.settings.dragdrop === 'true' ||
+					this.settings.dragdrop === '1'
+				);
+			} else {
+				return true // by default dragdrop is activated 
+			}
 		},
 
 		/**
@@ -69,7 +156,9 @@ define([
 			jQuery.each(this.settings.defaults, function(selector, instanceDefaults) {
 				jQuery(selector).alohaBlock(instanceDefaults);
 			});
-		}
+		},
+
+
 	});
 
 	/**

@@ -8,10 +8,10 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				components: [
 					[
 						'bold', 'strong', 'italic', 'emphasis', '\n',
-						'subscript', 'superscript', 'strikethrough', 'quote'
+						'subscript', 'superscript', 'strikethrough', 'quote',
 					], [
 						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', '\n',
-						'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
+						'toggleMetaView', 'wailang', 'toggleFormatlessPaste', 'toggleDragDrop'
 					], [
 						'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
 						'orderedList', 'unorderedList', 'indentList', 'outdentList'
