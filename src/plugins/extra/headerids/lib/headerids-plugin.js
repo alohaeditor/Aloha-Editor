@@ -8,8 +8,7 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'i18n!headerids/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!headerids/css/headerids.css'
+	'i18n!aloha/nls/i18n'
 ],
 function(jQuery, Plugin, i18n, i18nCore) {
 	"use strict";

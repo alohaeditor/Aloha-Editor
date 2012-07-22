@@ -201,6 +201,16 @@
 		"wai-lang/css": "../plugins/extra/wai-lang/css",
 		"wai-lang/nls": "../plugins/extra/wai-lang/nls",
 		"wai-lang/res": "../plugins/extra/wai-lang/res",
+		"headerids": "../plugins/extra/headerids/lib",
+		"headerids/vendor": "../plugins/extra/headerids/vendor",
+		"headerids/css": "../plugins/extra/headerids/css",
+		"headerids/nls": "../plugins/extra/headerids/nls",
+		"headerids/res": "../plugins/extra/headerids/res",
+		"metaview": "../plugins/extra/metaview/lib",
+		"metaview/vendor": "../plugins/extra/metaview/vendor",
+		"metaview/css": "../plugins/extra/metaview/css",
+		"metaview/nls": "../plugins/extra/metaview/nls",
+		"metaview/res": "../plugins/extra/metaview/res",
     },
 
     //Configure CommonJS packages. See http://requirejs.org/docs/api.html#packages
@@ -457,6 +467,8 @@
 				'imagebrowser/imagebrowser-plugin',
 				'ribbon/ribbon-plugin',
 				'wai-lang/wai-lang-plugin',
+				'headerids/headerids-plugin',
+				'metaview/metaview-plugin'
 			],
         },
 

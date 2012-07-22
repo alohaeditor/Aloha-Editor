@@ -11,8 +11,7 @@ define([
 	'flag-icons/flag-icons-plugin',
 	'i18n!metaview/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'jquery',
-	'css!metaview/css/metaview.css'
+	'jquery'
 ], function(
 	Plugin,
     Ui,
