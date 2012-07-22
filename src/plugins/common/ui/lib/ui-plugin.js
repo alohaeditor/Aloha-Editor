@@ -5,10 +5,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 /**
- * The ui/ui-plugin module (this file) controls the creation and display
- * of the UI. It is valid to override this module via requirejs to
- * provide a custom behaviour. An overriding module must implement all
- * API methods.
+ * The ui/ui-plugin module controls the creation and display of the UI.
  */
 define('ui/ui-plugin', [
 	'jquery',
@@ -86,6 +83,14 @@ define('ui/ui-plugin', [
 		return toolbar.adoptInto(slot, component);
 	}
 
+	/**
+	 * This module is part of the Aloha API.
+	 * It is valid to override this module via requirejs to provide a
+	 * custom behaviour. An overriding module must implement all API
+	 * methods. Every member must have an api annotation. No private
+	 * members are allowed.
+	 * @api
+	 */
 	return {
 		/**
 		 * Adopts a component instance into the UI.
