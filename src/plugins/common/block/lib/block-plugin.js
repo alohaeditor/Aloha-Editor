@@ -124,6 +124,22 @@ define([
 						var active_editable = Aloha.activeEditable.obj;
 						var current_dragdrop_state = active_editable.data("block-dragdrop");
 						active_editable.data("block-dragdrop", !current_dragdrop_state);
+
+						if(jQuery(active_editable.hasClass("ui-sortable"))){
+							var disabled = jQuery(active_editable).sortable( "option", "disabled" );
+							jQuery(active_editable).sortable("option", "disabled", !disabled );	
+						}
+
+						jQuery(active_editable).find(".aloha-block.ui-draggable").each(function(){
+							var disabled = jQuery(this).draggable( "option", "disabled" );
+							jQuery(this).draggable("option", "disabled", !disabled );	
+						});
+
+						jQuery(active_editable).find(".aloha-block-handle").each(function(){
+							jQuery(this).toggleClass("aloha-block-draghandle");	
+						});
+
+						// todo: don't allow as a dropzone
 					}
 				}
 			});
