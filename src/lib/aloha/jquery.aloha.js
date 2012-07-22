@@ -379,7 +379,6 @@ define([
 		}
 
 		handleObj.handler = function(event) {
-
 			// The original comment that was added with this condition says:
 			// "Don't fire in contentEditable true elements"
 			// But this is incorrect.
@@ -388,7 +387,7 @@ define([
 			// The condition event.target.contentEditable !== true will
 			// always be true, because contentEditable is a string
 			// attribute that is never strictly equal true.
-			//if ((event.target.contentEditable !== true) !== event.target.contentEditable !== true) {
+			//if (this !== event.target && event.target.contentEditable !== true) {
 			//return;
 			//}
 			// Below is what this condition really does. Ideally, I'd
