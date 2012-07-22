@@ -374,7 +374,7 @@
     //normalize() method). In those cases, an AMD loader just needs to know
     //that the module has a definition. These small stubs can be used instead of
     //including the full source for a plugin.
-    stubModules: ['text', 'bar'],
+    //stubModules: ['text', 'bar'],
 
     //If it is not a one file optimization, scan through all .js files in the
     //output directory for any plugin resource dependencies, and if the plugin
@@ -410,8 +410,6 @@
 			include: [
 				'jquery',
 				'util/json2',
-
-				'vendor/jquery.json-2.2.min',
 				'aloha/rangy-core',
 				'util/class',
 				'util/lang',

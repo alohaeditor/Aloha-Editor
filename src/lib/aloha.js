@@ -324,50 +324,44 @@
 
 		require(requireConfig, [
 			'jquery',
-			'util/json2'
-		], function (jQuery) {
+			'util/json2',
+			'aloha/rangy-core',
+			'util/class',
+			'util/lang',
+			'util/range',
+			'util/dom',
+			'aloha/core',
+			'aloha/editable',
+			'aloha/console',
+			'aloha/markup',
+			'aloha/plugin',
+			'aloha/selection',
+			'aloha/command',
+			'aloha/jquery.aloha',
+			'aloha/sidebar',
+			'util/position',
+			'aloha/repositorymanager',
+			'aloha/repository',
+			'aloha/repositoryobjects',
+			'aloha/contenthandlermanager'
+		], function(jQuery) {
 
 			// Provide Aloha.jQuery for compatibility with old implementations
 			// that which expect it to be there.
 			Aloha.jQuery = jQuery;
 
-			// Load Aloha core files ...
-			require(requireConfig, [
-				'vendor/jquery.json-2.2.min',
-				'aloha/rangy-core',
-				'util/class',
-				'util/lang',
-				'util/range',
-				'util/dom',
-				'aloha/core',
-				'aloha/editable',
-				'aloha/console',
-				'aloha/markup',
-				'aloha/plugin',
-				'aloha/selection',
-				'aloha/command',
-				'aloha/jquery.aloha',
-				'aloha/sidebar',
-				'util/position',
-				'aloha/repositorymanager',
-				'aloha/repository',
-				'aloha/repositoryobjects',
-				'aloha/contenthandlermanager'
-			], function() {
+			// Some core files provide default settings in Aloha.defaults.
+			Aloha.settings = jQuery.extendObjects( true, {}, Aloha.defaults, Aloha.settings );
 
-				// Some core files provide default settings in Aloha.defaults.
-				Aloha.settings = jQuery.extendObjects( true, {}, Aloha.defaults, Aloha.settings );
-
-				Aloha.stage = 'loadPlugins';
-				require(requireConfig, pluginConfig.entryPoints, function() {
-					// jQuery calls Aloha.init when the dom is ready.
-					jQuery(function(){
-						// Rangy must be initialized only after the body
-						// is available since it accesses the body
-						// element during initialization.
-						window.rangy.init();
-						Aloha.init();
-					});
+			Aloha.stage = 'loadPlugins';
+			require(requireConfig, pluginConfig.entryPoints, function() {
+				// jQuery calls Aloha.init when the dom is ready.
+				jQuery(function(){
+					// Rangy must be initialized only after the body
+					// is available since it accesses the body
+					// element during initialization.
+					window.rangy.init();
+					Aloha.init();
 				});
 			});
 		});
