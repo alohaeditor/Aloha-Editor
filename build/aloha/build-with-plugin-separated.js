@@ -460,7 +460,6 @@
         'aloha/contenthandlermanager',
         'aloha/nls/i18n',
 
-        'vendor/jquery.json-2.2.min',
         'vendor/class',
         'vendor/pubsub/js/pubsub',
         'vendor/amplify.store',
