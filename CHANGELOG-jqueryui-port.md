@@ -1,3 +1,5 @@
+- **BUG**: fixing placeholder bug where it appears twice in some cases
+
 - **MANUAL CHANGE**: Most plugins don't load their css files through require any more
       Before this change, plugins loaded the necessary css automatically.
       Now, it is necessary to include aloha/css/aloha.css to get the css that is necessary to make plugins work.
