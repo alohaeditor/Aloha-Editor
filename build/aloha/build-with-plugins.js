@@ -211,6 +211,11 @@
 		"metaview/css": "../plugins/extra/metaview/css",
 		"metaview/nls": "../plugins/extra/metaview/nls",
 		"metaview/res": "../plugins/extra/metaview/res",
+		"listenforcer": "../plugins/extra/listenforcer/lib",
+		"listenforcer/vendor": "../plugins/extra/listenforcer/vendor",
+		"listenforcer/css": "../plugins/extra/listenforcer/css",
+		"listenforcer/nls": "../plugins/extra/listenforcer/nls",
+		"listenforcer/res": "../plugins/extra/listenforcer/res",
     },
 
     //Configure CommonJS packages. See http://requirejs.org/docs/api.html#packages
@@ -418,6 +423,7 @@
             name: "aloha",
 
 			include: [
+				// all common plugins
 				"ui/ui-plugin",
 				"link/link-plugin",
 				"table/table-plugin",
@@ -435,7 +441,7 @@
 				"horizontalruler/horizontalruler-plugin",
 				"undo/undo-plugin",
 				"paste/paste-plugin",
-
+				// some extra plugins
 				'toc/toc-plugin',
 				'cite/cite-plugin',
 				'flag-icons/flag-icons-plugin',
@@ -446,7 +452,8 @@
 				'ribbon/ribbon-plugin',
 				'wai-lang/wai-lang-plugin',
 				'headerids/headerids-plugin',
-				'metaview/metaview-plugin'
+				'metaview/metaview-plugin',
+				'listenforcer/listenforcer-plugin',
 			],
         },
 
