@@ -20,7 +20,7 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/engine', 'aloha/console', 'PubSub', 'aloha/rangy-core' ],
+[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/console', 'PubSub', 'aloha/engine', 'aloha/rangy-core' ],
 function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) {
 	var GENTICS = window.GENTICS;
 	/**

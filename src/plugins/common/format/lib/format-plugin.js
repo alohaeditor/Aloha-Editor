@@ -12,9 +12,9 @@ define('format/format-plugin', [
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
 	'PubSub',
-	'aloha/selection',
 	'i18n!format/nls/i18n',
-	'i18n!aloha/nls/i18n'
+	'i18n!aloha/nls/i18n',
+	'aloha/selection'
 ], function (
 	Aloha,
 	Plugin,
@@ -81,15 +81,16 @@ define('format/format-plugin', [
 
 		jQuery.each(formatPlugin.buttons, function (index, button) {
 			statusWasSet = false;
+
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
-					button.button.setPressed(true);
+					button.handle.setState(true);
 					statusWasSet = true;
 				}
 			}
 			if (!statusWasSet) {
-				button.button.setPressed(false);
+				button.handle.setState(false);
 			}
 		});
 

@@ -306,6 +306,7 @@ define([
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
 				var rangeObject = message.range;
+				var buttons = jQuery('button.aloha-cite-button');
 
 				// Set to false to prevent multiple buttons being active
 				// when they should not.
