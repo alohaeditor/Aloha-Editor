@@ -7,7 +7,7 @@
 define(
 [
 'aloha', 
-'aloha/jquery', 
+'jquery', 
 'aloha/plugin', 
 'aloha/floatingmenu', 
 'i18n!zemanta/nls/i18n', 

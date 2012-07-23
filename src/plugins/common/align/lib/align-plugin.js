@@ -4,14 +4,26 @@
 * Licensed unter the terms of LGPL http://www.gnu.org/copyleft/lesser.html
 *
 */
+define([
+	'aloha',
+	'aloha/plugin',
+	'ui/ui',
+	'ui/toggleButton',
+	'i18n!align/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'jquery'
+], function(
+	Aloha,
+    Plugin,
+    Ui,
+    ToggleButton,
+    i18n,
+    i18nCore,
+    jQuery
+) {
+	'use strict';
 
-define(
-['aloha', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!align/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/jquery', 'css!align/css/align.css'],
-function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
-	"use strict";
-
-	var
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * register the plugin with unique name
@@ -65,7 +77,6 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		},
 
 		buttonPressed: function (rangeObject) {
-
 			var that = this;
 
 			rangeObject.findMarkup(function() {
@@ -74,47 +85,50 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 
 			if(this.alignment != this.lastAlignment)
 			{
+				// @FIXME: Switching between editables will not work becuase
+				//         lastAlignment and alignment are shared across
+				//         multiple editables.
 				switch(this.lastAlignment)
 				{
 					case 'right':
-						this.alignRightButton.setPressed(false);
+						this._alignRightButton.setState(false);
 						break;
 
 					case 'left':
-						this.alignLeftButton.setPressed(false);
+						this._alignLeftButton.setState(false);
 						break;
 
 					case 'center':
-						this.alignCenterButton.setPressed(false);
+						this._alignCenterButton.setState(false);
 						break;
 
 					case 'justify':
-						this.alignJustifyButton.setPressed(false);
+						this._alignJustifyButton.setState(false);
 						break;
 				}
 
 				switch(this.alignment)
 				{
 					case 'right':
-						this.alignRightButton.setPressed(true);
+						this._alignRightButton.setState(true);
 						break;
 
 					case 'center':
-						this.alignCenterButton.setPressed(true);
+						this._alignCenterButton.setState(true);
 						break;
 
 					case 'justify':
-						this.alignJustifyButton.setPressed(true);
+						this._alignJustifyButton.setState(true);
 						break;
 
 					default:
-						this.alignLeftButton.setPressed(true);
-						this.alignment  = 'left';
+						this._alignLeftButton.setState(true);
+					    this.alignment = 'left';
 						break;
 				}
-			}
 
-			this.lastAlignment = this.alignment;
+				this.lastAlignment = this.alignment;
+			}
 		},
 
 		/**
@@ -124,7 +138,6 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		 * @return void
 		 */
 		applyButtonConfig: function (obj) {
-			
 			var config = this.getEditableConfig(obj);
 
 			if ( config && config.alignment && !this.settings.alignment ) {
@@ -140,105 +153,60 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 			}
 
 			if ( jQuery.inArray('right', config.alignment) != -1) {
-				this.alignRightButton.show();
+				this._alignRightButton.show(true);
 			} else {
-				this.alignRightButton.hide();
+				this._alignRightButton.show(false);
 			}
 
 			if ( jQuery.inArray('left', config.alignment) != -1) {
-				this.alignLeftButton.show();
+				this._alignLeftButton.show(true);
 			} else {
-				this.alignLeftButton.hide();
+				this._alignLeftButton.show(false);
 			}
 
 			if ( jQuery.inArray('center', config.alignment) != -1) {
-				this.alignCenterButton.show();
+				this._alignCenterButton.show(true);
 			} else {
-				this.alignCenterButton.hide();
+				this._alignCenterButton.show(false);
 			}
 
 			if ( jQuery.inArray('justify', config.alignment) != -1) {
-				this.alignJustifyButton.show();
+				this._alignJustifyButton.show(true);
 			} else {
-				this.alignJustifyButton.hide();
+				this._alignJustifyButton.show(false);
 			}
 		},
 
 		createButtons: function () {
 		    var that = this;
 
-		    // create a new button
-		    this.alignLeftButton = new Aloha.ui.Button({
-			  'name' : 'alignLeft',
-		      'iconClass' : 'aloha-button-align aloha-button-align-left',
-		      'size' : 'small',
-		      'onclick' : function () { that.align('left'); },
-		      'tooltip' : i18n.t('button.alignleft.tooltip'),
-		      'toggle' : true
-		    });
+			this._alignLeftButton = Ui.adopt("alignLeft", ToggleButton, {
+				tooltip: i18n.t('button.alignleft.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-left',
+				scope: 'Aloha.continuoustext',
+				click: function(){ that.align('left'); }
+			});
 
-		    // add it to the floating menu
-		    FloatingMenu.addButton(
-		      'Aloha.continuoustext',
-		      this.alignLeftButton,
-		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
+			this._alignCenterButton = Ui.adopt("alignCenter", ToggleButton, {
+				tooltip: i18n.t('button.aligncenter.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-center',
+				scope: 'Aloha.continuoustext',
+				click: function(){ that.align('center'); }
+			});
 
-		    // create a new button
-		    this.alignCenterButton = new Aloha.ui.Button({
-		      'name' : 'alignCenter',
-		      'iconClass' : 'aloha-button-align aloha-button-align-center',
-		      'size' : 'small',
-		      'onclick' : function () { that.align('center'); },
-		      'tooltip' : i18n.t('button.aligncenter.tooltip'),
-		      'toggle' : true
-		    });
+			this._alignRightButton = Ui.adopt("alignRight", ToggleButton, {
+				tooltip: i18n.t('button.alignright.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-right',
+				scope: 'Aloha.continuoustext',
+				click: function(){ that.align('right'); }
+			});
 
-		    // add it to the floating menu
-		    FloatingMenu.addButton(
-		      'Aloha.continuoustext',
-		      this.alignCenterButton,
-		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
-
-		    // create a new button
-		    this.alignRightButton = new Aloha.ui.Button({
-		      'name' : 'alignRight',
-		      'iconClass' : 'aloha-button-align aloha-button-align-right',
-		      'size' : 'small',
-		      'onclick' : function () { that.align('right'); },
-		      'tooltip' : i18n.t('button.alignright.tooltip'),
-		      'toggle' : true
-		    });
-
-		    // add it to the floating menu
-		    FloatingMenu.addButton(
-		      'Aloha.continuoustext',
-		      this.alignRightButton,
-		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
-
-		    // create a new button
-		    this.alignJustifyButton = new Aloha.ui.Button({
-		      'name' : 'alignJustify',
-		      'iconClass' : 'aloha-button-align aloha-button-align-justify',
-		      'size' : 'small',
-		      'onclick' : function () { that.align('justify'); },
-		      'tooltip' : i18n.t('button.alignjustify.tooltip'),
-		      'toggle' : true
-		    });
-
-		    // add it to the floating menu
-		    FloatingMenu.addButton(
-		      'Aloha.continuoustext',
-		      this.alignJustifyButton,
-		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
-
+			this._alignJustifyButton = Ui.adopt("alignJustify", ToggleButton, {
+				tooltip: i18n.t('button.alignjustify.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-justify',
+				scope: 'Aloha.continuoustext',
+				click: function(){ that.align('justify'); }
+			});
 		},
 
 		/**
@@ -286,7 +254,6 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		 * Align the selection
 		 */
 		insertAlign: function () {
-
 			var that = this;
 
 			// do not align the range
@@ -312,19 +279,19 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 				switch(this.lastAlignment)
 				{
 					case 'right':
-						this.alignRightButton.setPressed(false);
+						this._alignRightButton.setState(false);
 						break;
 
 					case 'left':
-						this.alignLeftButton.setPressed(false);
+						this._alignLeftButton.setState(false);
 						break;
 
 					case 'center':
-						this.alignCenterButton.setPressed(false);
+						this._alignCenterButton.setState(false);
 						break;
 
 					case 'justify':
-						this.alignJustifyButton.setPressed(false);
+						this._alignJustifyButton.setState(false);
 						break;
 				}
 			}

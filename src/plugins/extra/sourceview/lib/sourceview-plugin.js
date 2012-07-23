@@ -9,7 +9,7 @@
 
 window.define([
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'../../../../test/unit/testutils',
 	'css!sourceview/css/sourceview'
 ],

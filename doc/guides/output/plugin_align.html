@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: Align Plugin</title>
+  <title>Aloha Editor GuidesAloha Editor Guides: Align Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,7 +42,7 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/"></a></h2>
+        <h2><a href="/">Aloha Editor Guides</a></h2>
         <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
@@ -57,6 +57,8 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="aloha_jquery.html">Aloha Editor and jQuery</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
@@ -110,13 +112,21 @@
 
           </div>
         <h3 id="configuration-settings">1 Configuration settings</h3>
-<p>The align plugin allows you to configure which of it&#8217;s buttons are available:</p>
+<p>The align plugin allows you to configure which of it&#8217;s buttons are available. Available options: <tt>'right', 'left', 'center', 'justify'</tt> or use an empty array to deactivate the plugin for an editable.</p>
+<p>All editables with no special configuration will have the align options <tt>'right', 'left', 'center', 'justify'</tt>. The align plugin for the editable with ID &#8216;one&#8217; has the <tt>[ 'right', 'left' ]</tt> align buttons enabled. The plugin is deactivated for the editable with the ID &#8216;two&#8217;.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-Aloha.settings.plugins.align.config = {
-	alignment: [ 'right', 'left', 'center', 'justify' ]
-};
+	Aloha.settings.plugins = {
+		alignment: {
+			config: [ 'right', 'left', 'center', 'justify' ],
+
+			editables: {
+				'#one': [ 'right', 'left' ],
+				'#two': [ ]
+			}
+		}
+	};
 </pre></div><h3 id="components">2 Components</h3>
 <ul>
 	<li>alignLeft &#8211; align selected text left</li>

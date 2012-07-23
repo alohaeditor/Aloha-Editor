@@ -89,7 +89,7 @@ h4. example
  * Create the Aloha Repositories object.
  */
 define(
-[ 'aloha', 'aloha/jquery' ],
+[ 'aloha', 'jquery' ],
 function ( Aloha, jQuery ) {
 	'use strict';
 	

@@ -4,24 +4,31 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-
-define(
-	['aloha', 
+define([
+	'aloha', 
 	'aloha/plugin', 
-	'aloha/jquery', 
-	'aloha/floatingmenu', 
+	'jquery', 
+	'ui/ui', 
+	'ui/button',
 	'i18n!toc/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
-	'aloha/console'],
+	'aloha/console'
+], function(
+	Aloha,
+    Plugin,
+	jQuery,
+	Ui,
+	Button,
+	i18n,
+	i18nCore,
+	console
+) {
+	'use strict';
 
-function( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
-	"use strict";
-
-	var
-		GENTICS = window.GENTICS,
-		namespace = 'toc',
-		$containers = null,
-		allTocs = [];
+	var GENTICS = window.GENTICS,
+	    namespace = 'toc',
+	    $containers = null,
+	    allTocs = [];
 
 	/* helper functions */
 	function last(a) { return a[a.length - 1]; }
@@ -76,9 +83,9 @@ function( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
 					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );
 
 					if ( jQuery.inArray( 'toc', that.cfg ) != -1 ) {
-		        		that.insertTocButton.show();
+						that._insertTocButton.show(true);
 		        	} else {
-		        		that.insertTocButton.hide();
+						that._insertTocButton.show(false);
 		        		return;
 		        	}
 				}
@@ -93,22 +100,14 @@ function( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
 	    },
 	
 		initButtons: function () {
-			var scope = 'Aloha.continuoustext',
-				that = this;
+			var that = this;
 			
-	        this.insertTocButton = new Aloha.ui.Button({
-		        'iconClass' : 'aloha-button aloha-button-ol',
-		        'size' : 'small',
-		        'onclick' : function () { that.insertAtSelection($containers); },
-		        'tooltip' : i18n.t('button.addtoc.tooltip'),
-		        'toggle' : false
-	        });
-	        FloatingMenu.addButton(
-		        scope,
-		        this.insertTocButton,
-		        i18nCore.t('floatingmenu.tab.insert'),
-		        1
-	        );
+			this._insertTocButton = Ui.adopt("insertToc", Button, {
+		        tooltip: i18n.t('button.addtoc.tooltip'),
+		        icon: 'aloha-icon aloha-icon-orderedlist',
+				scope: 'Aloha.continuoustext',
+		        click: function () { that.insertAtSelection($containers); }
+			});
 	    },
 	
 		register: function ($c) {

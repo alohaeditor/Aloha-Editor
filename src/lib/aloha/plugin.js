@@ -19,7 +19,7 @@
 */
 
 define(
-['aloha/core', 'aloha/jquery', 'util/class', 'aloha/pluginmanager', 'aloha/console'],
+['aloha/core', 'jquery', 'util/class', 'aloha/pluginmanager', 'aloha/console'],
 function(Aloha, jQuery, Class, PluginManager, console ) {
 	"use strict";
 	
@@ -221,19 +221,6 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		getUID: function(id) {
 			console.deprecated ('plugin', 'getUID() is deprecated. Use plugin.name instead.');
 			return this.name;
-		},
-
-		/**
-		 * Localize the given key for the plugin.
-		 * @param key key to be localized
-		 * @param replacements array of replacement strings
-		 * @return localized string
-		 * @hide
-		 * @deprecated
-		 */
-		i18n: function(key, replacements) {
-			console.deprecated ('plugin', 'i18n() is deprecated. Use plugin.t() instead.');
-			return Aloha.i18n(this, key, replacements);
 		},
 
 		/**

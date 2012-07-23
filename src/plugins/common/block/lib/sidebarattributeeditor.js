@@ -5,8 +5,8 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager'],
-	function (jQuery, BlockManager, Sidebar, EditorManager) {
+define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager', 'util/class'],
+	function (jQuery, BlockManager, Sidebar, EditorManager, Class) {
 	"use strict";
 
 	/**

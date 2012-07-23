@@ -6,7 +6,7 @@
 */
 
 define(
-['aloha/jquery', 'aloha/contenthandlermanager', 'block/blockmanager'],
+['jquery', 'aloha/contenthandlermanager', 'block/blockmanager'],
 function(jQuery, ContentHandlerManager, BlockManager) {
 
 	/**

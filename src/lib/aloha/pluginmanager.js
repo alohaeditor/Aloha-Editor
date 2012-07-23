@@ -20,7 +20,7 @@
 
 // Do not add dependencies that require depend on aloha/core
 define(
-[ 'aloha/jquery', 'util/class' ],
+[ 'jquery', 'util/class' ],
 function( jQuery, Class ) {
 	"use strict";
 	

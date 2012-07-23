@@ -5,14 +5,12 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define([
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
-	'aloha/floatingmenu',
 	'i18n!headerids/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!headerids/css/headerids.css'
+	'i18n!aloha/nls/i18n'
 ],
-function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
+function(jQuery, Plugin, i18n, i18nCore) {
 	"use strict";
 
 	var
@@ -34,14 +32,14 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
     function nsSel () {
         var strBldr = [], prx = ns;
         $.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-        return strBldr.join(' ').trim();
+        return jQuery.trim(strBldr.join(' '));
     };
     
     // Creates string with this component's namepsace prefixed the each classname
     function nsClass () {
         var strBldr = [], prx = ns;
         $.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-        return strBldr.join(' ').trim();
+        return jQuery.trim(strBldr.join(' '));
     };
     
 	return Plugin.create('headerids', {

@@ -5,8 +5,21 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['aloha', 'aloha/jquery', 'aloha/floatingmenu', 'aloha/observable', 'aloha/registry'],
-function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
+define([
+	'aloha',
+	'jquery',
+	'ui/scopes',
+	'aloha/observable',
+	'aloha/registry',
+	'util/class'
+], function(
+	Aloha,
+	jQuery,
+	Scopes,
+	Observable,
+	Registry,
+	Class
+){
 	"use strict";
 
 	var
@@ -74,7 +87,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @constructor
 		 */
 		_constructor: function() {
-			FloatingMenu.createScope('Aloha.Block');
+			Scopes.createScope('Aloha.Block');
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
 			this._highlightedBlocks = {};
@@ -332,7 +345,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @api
 		 */
 		registerBlockType: function(identifier, blockType) {
-			FloatingMenu.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
+			Scopes.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
 			this.blockTypes.register(identifier, blockType);
 		},
 
@@ -379,11 +392,17 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @private
 		 */
 		getConfig: function(blockElement, instanceDefaults) {
+			// Clone the element before getting the data to fix an IE7 crash.
+			// We use jQuery.clone(true) because the sortableItem attribute isn't returned
+			// if we do a normal cloneNode(...).
+			var clone = blockElement.clone(true);
+			var data = clone.data();
+			clone.removeData();
 			return jQuery.extend(
 				{},
 				this.defaults,
 				instanceDefaults,
-				blockElement.data()
+				data
 			);
 		},
 

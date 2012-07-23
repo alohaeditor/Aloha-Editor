@@ -5,7 +5,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha', 'aloha/jquery', 'aloha/contenthandlermanager'],
+['aloha', 'jquery', 'aloha/contenthandlermanager'],
 function( Aloha, jQuery, ContentHandlerManager ) {
 	"use strict";
 
@@ -119,12 +119,12 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			spans = content.find(detectionFilter);
 			spans.each(function() {
 				var jqElem = jQuery(this),
-					innerText = jqElem.text().trim().replace(/&nbsp;/g, ''),
+				    innerText = jQuery.trim(jqElem.text()).replace(/&nbsp;/g, ''),
 					outerText;
 				
 				if (innerText.length === 0) {
 					// check whether the outermost of the three spans contains nothing more than numbering
-					outerText = jqElem.parent().parent().text().trim().replace(/&nbsp;/g, '');
+					outerText = jQuery.trim(jqElem.parent().parent().text()).replace(/&nbsp;/g, '');
 
 					// patterns for list numbering
 					// 1.
@@ -280,7 +280,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			
 			// when href starts with #, it's the link to an anchor. remove it.
 			content.find('a').each(function() {
-				if ( jQuery(this).attr('href') && jQuery(this).attr('href').trim().match(/^#(.*)$/) ) {
+				if ( jQuery(this).attr('href') && jQuery.trim(jQuery(this).attr('href')).match(/^#(.*)$/) ) {
 					jQuery(this).contents().unwrap();
 				}
 			});
@@ -311,7 +311,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 				
 					// remove TOC numbering
 					spans.each(function() {
-						if ( jQuery(this).text().trim().match(/^([\.\(]?[\d\D][\.\(]?){1,4}$/) ) {
+						if ( jQuery.trim(jQuery(this).text()).match(/^([\.\(]?[\d\D][\.\(]?){1,4}$/) ) {
 							jQuery(this).remove();
 						}
 					})

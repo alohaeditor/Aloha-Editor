@@ -20,17 +20,25 @@
  * @todo: - selectRow/selectColumn should take into account the helper row/column.
  *			ie: selectRow(0) and selectColumn(0), should be zero indexed
  */
-
-define( [
+define([
 	'aloha',
-	'aloha/jquery',
-	'aloha/floatingmenu',
+	'jquery',
+	'ui/scopes',
+	'ui/dialog',
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
 	'table/table-plugin-utils'
-], function ( Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection,
-	          Utils ) {
+], function (
+	Aloha,
+	jQuery,
+	Scopes,
+	Dialog,
+	i18n,
+	TableCell,
+	TableSelection,
+	Utils
+) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
 	
@@ -403,24 +411,27 @@ define( [
 		}
 	};
 
-  /**
-   * check the WAI conformity of the table and sets the attribute.
-   */
-  Table.prototype.checkWai = function () {
-    var w = this.wai;
-    
-    w.removeClass(this.get('waiGreen'));
-    w.removeClass(this.get('waiRed'));
-    
-    // Y U NO explain why we must check that summary is longer than 5 characters?
-    // http://cdn3.knowyourmeme.com/i/000/089/665/original/tumblr_l96b01l36p1qdhmifo1_500.jpg
+	/**
+	 * check the WAI conformity of the table and sets the attribute.
+	 */
+	Table.prototype.checkWai = function () {
+		var w = this.wai;
+		if (!w) {
+			return;
+		}
 
-    if (this.obj[0].summary.trim() != '') {
-      w.addClass(this.get('waiGreen'));
-    } else {
-      w.addClass(this.get('waiRed'));
-    }
-  };
+		w.removeClass(this.get('waiGreen'));
+		w.removeClass(this.get('waiRed'));
+		
+		// Y U NO explain why we must check that summary is longer than 5 characters?
+		// http://cdn3.knowyourmeme.com/i/000/089/665/original/tumblr_l96b01l36p1qdhmifo1_500.jpg
+
+		if (jQuery.trim(this.obj[0].summary) != '') {
+			w.addClass(this.get('waiGreen'));
+		} else {
+			w.addClass(this.get('waiRed'));
+		}
+	};
 
 	/**
 	 * Add the selection-column to the left side of the table and attach the events
@@ -649,8 +660,6 @@ define( [
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
-					FloatingMenu.activateTabOfButton('rowheader');
-					
 					// As side-effect of the following call the focus
 					// will be set on the first selected cell. 
 					// This will be overwritten with the summary
@@ -843,16 +852,13 @@ define( [
 		// delete the whole table
 		if (deleteTable) {
 			var that = this;
-			Aloha.showMessage(new Aloha.Message({
+			Dialog.confirm({
 				title : i18n.t('Table'),
 				text : i18n.t('deletetable.confirm'),
-				type : Aloha.Message.Type.CONFIRM,
-				callback : function (sel) {
-					if (sel == 'yes') {
-						that.deleteTable();
-					}
+				yes : function () {
+					that.deleteTable();
 				}
-			}));
+			});
 		} else {
 
 			rowIDs.sort(function(a,b){return a - b;});
@@ -921,7 +927,6 @@ define( [
 		    rows = this.getRows(),
 			that = this,
 			changeColspan = [],
-			focusColID,
 			cells,
 			cellInfo;
 		
@@ -932,26 +937,17 @@ define( [
 		// delete the whole table
 		if ( this.selection.selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
 			
-			Aloha.showMessage(new Aloha.Message({
+			Dialog.confirm({
 				title : i18n.t('Table'),
 				text : i18n.t('deletetable.confirm'),
-				type : Aloha.Message.Type.CONFIRM,
-				callback : function (sel) {
-					if (sel == 'yes') {
-						that.deleteTable();
-					}
+				yes : function () {
+					that.deleteTable();
 				}
-			}));
+			});
 			
 		} else {
 			
 			colIDs.sort(function(a,b) {return a - b;} );
-			
-// TODO check which cell should be focused after the deletion
-//			focusColID = colIDs[0];
-//			if ( focusColID > (this.numCols - colIDs.length) ) {
-//				focusColID --;
-//			}
 
 			//TODO there is a bug that that occurs if a column is
 			//selected and deleted, and then a column with a greater
@@ -990,7 +986,7 @@ define( [
 
 			// IE needs a timeout to work properly
 			window.setTimeout( function() {
-				var lastCell = jQuery( rows[1].cells[ focusColID +1 ] );
+				var lastCell = jQuery( rows[1].cells[1] );
 				lastCell.focus();
 			}, 5);
 
@@ -1185,11 +1181,10 @@ define( [
 		
 		// refuse to insert a column unless a consecutive range has been selected
 		if ( ! Utils.isConsecutive( selectedColumnIdxs ) ) {
-			Aloha.showMessage( new Aloha.Message( {
+			Dialog.alert( {
 				title : i18n.t( 'Table' ),
-				text  : i18n.t( 'table.addColumns.nonConsecutive' ),
-				type  : Aloha.Message.Type.ALERT
-			} ) );
+				text  : i18n.t( 'table.addColumns.nonConsecutive' )
+			});
 			return;
 		}
 		
@@ -1355,9 +1350,9 @@ define( [
 			this.tablePlugin.columnMSButton.showItem(this.tablePlugin.columnMSItems[i].name);
 		}
 		
-		FloatingMenu.setScope(this.tablePlugin.name + '.column');
+		Scopes.setScope(this.tablePlugin.name + '.column');
 		
-		this.tablePlugin.columnHeader.setPressed( this.selection.isHeader() );
+		this.tablePlugin._columnheaderButton.setState(this.selection.isHeader());
 		
 		var rows = this.getRows();
 		
@@ -1388,47 +1383,15 @@ define( [
 	 */
 	Table.prototype.selectRows = function () {
 		
-		//	// get the class which selected cells should have
-		//    var selectClass = this.get('classCellSelected');
-		//
-		//    // unselect selected cells
-		//    TableSelection.unselectCells();
-		
 		// activate all row formatting button
 		for (var i = 0; i < this.tablePlugin.rowMSItems.length; i++ ) {
 			this.tablePlugin.rowMSButton.showItem(this.tablePlugin.rowMSItems[i].name);
 		}
-		
-		//    this.rowsToSelect.sort(function (a,b) {return a - b;});
 
-
-		// set the status of the table header button to the status of the 
-		// frist 2 selected cells (index 1+2). First cell is for selection.
-		//	if ( this.rowsToSelect &&  this.rowsToSelect.length > 0 &&
-		//		rowCells && rowCells[0] ) {
-		//	    if ( rowCells[1]  ) {
-		//	    	TablePlugin.rowHeader.setPressed(
-		//	    			// take 1 column to detect if the header button is pressd
-		//	    			rowsCells[1].nodeName.toLowerCase() == 'th' &&
-		//	    			rowsCells[2].nodeName.toLowerCase() == 'th'
-		//	    	);
-		//	    } else {
-		//	    	TablePlugin.rowHeader.setPressed( rowCells[1].nodeName.toLowerCase() == 'th');
-		//	    }
-		//	}
-		// 
 		for (var i = 0; i < this.rowsToSelect.length; i++) {
 			var rowId = this.rowsToSelect[i];
 			var rowCells = jQuery(this.getRows()[rowId].cells).toArray();
 			if (i == 0) {
-				// set the status of the table header button to the status of the first 2 selected
-				// cells (index 1 + 2). The first cell is the selection-helper
-				//        TablePlugin.rowHeader.setPressed(
-				//          rowCells[1].nodeName.toLowerCase() == 'th'  &&
-				//          rowCells[2].nodeName.toLowerCase() == 'th'
-				////          jQuery(rowCells[1]).attr('scope') == 'col'
-				//        );
-
 				// set the first class found as active item in the multisplit button
 				for (var j = 0; j < rowCells.length; j++) {
 					this.tablePlugin.rowMSButton.setActiveItem();
@@ -1440,20 +1403,13 @@ define( [
 					}
 				}
 			}
-
-			//      // shift the first element (which is a selection-helper cell)
-			//      rowCells.shift();
-			//
-			//      TableSelection.selectedCells = TableSelection.selectedCells.concat(rowCells);
-			//      
-			//      jQuery(rowCells).addClass(this.get('classCellSelected'));
 		}
 		
 		//    TableSelection.selectionType = 'row';
-		FloatingMenu.setScope(this.tablePlugin.name + '.row');
+		Scopes.setScope(this.tablePlugin.name + '.row');
 		
 		this.selection.selectRows( this.rowsToSelect );
-		this.tablePlugin.columnHeader.setPressed( this.selection.isHeader() );
+		this.tablePlugin._rowheaderButton.setState(this.selection.isHeader());
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();

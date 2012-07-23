@@ -5,14 +5,26 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(
-['aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 
- 'formatlesspaste/formatlesshandler', 'aloha/contenthandlermanager',
- 'i18n!formatlesspaste/nls/i18n', 'i18n!aloha/nls/i18n','css!formatlesspaste/css/formatless.css'],
-function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHandlerManager, i18n, i18nCore) {
-	"use strict";
-
-	
+define([
+	'aloha/core',
+	'aloha/plugin',
+	'jquery',
+	'ui/ui', 
+	'ui/toggleButton',
+	'formatlesspaste/formatlesshandler',
+	'aloha/contenthandlermanager',
+	'i18n!formatlesspaste/nls/i18n',
+	'i18n!aloha/nls/i18n'
+], function(Aloha,
+            Plugin,
+            jQuery,
+            Ui,
+            ToggleButton,
+            FormatlessPasteHandler,
+            ContentHandlerManager,
+            i18n,
+            i18nCore) {
+	'use strict';
 
 	// Public Methods
 	return Plugin.create('formatlesspaste', {
@@ -92,6 +104,10 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 			Aloha.bind( 'aloha-editable-activated', function( event, params) {
 				var config = that.getEditableConfig( params.editable.obj );
 				
+				if ( !config ) {
+					return;
+				}
+
 				// make button configuration a bit more tolerant
 				if (typeof config.button === 'string') {
 					config.button = config.button.toLowerCase();
@@ -116,23 +132,20 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 					}
 				}
 				
-				if ( !config ) {
-					return;
-				}
 				if ( config.strippedElements ) {
 					FormatlessPasteHandler.strippedElements = config.strippedElements;
 				}
 				if (config.formatlessPasteOption === true) {
-					that.formatlessPasteButton.setPressed(true);
+					that._toggleFormatlessPasteButton.setState(true);
 					FormatlessPasteHandler.enabled = true;
 				} else if (config.formatlessPasteOption === false) {
-					that.formatlessPasteButton.setPressed(false);
+					that._toggleFormatlessPasteButton.setState(false);
 					FormatlessPasteHandler.enabled = false;
 				}
 				if ( config.button === false ) {
-					that.formatlessPasteButton.hide();
+					that._toggleFormatlessPasteButton.show(false);
 				} else {
-					that.formatlessPasteButton.show();
+					that._toggleFormatlessPasteButton.show(true);
 				}
 			});
 		},
@@ -144,32 +157,26 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 			ContentHandlerManager.register( 'formatless', FormatlessPasteHandler );
 			FormatlessPasteHandler.strippedElements = this.strippedElements;
 			// add button to toggle format-less pasting
-			this.formatlessPasteButton = new Aloha.ui.Button({
-					'iconClass' : 'aloha-button aloha-button-formatless-paste',
-					'size' : 'small',
-					'onclick' : function () { 
-						//toggle the value of allowFormatless
-						FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
-					},
-					'tooltip' : i18n.t( 'button.formatlessPaste.tooltip' ),
-					'toggle' : true
-				});
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.formatlessPasteButton,
-				i18nCore.t( 'floatingmenu.tab.format' ),
-				1
-			);
-			
+
+			this._toggleFormatlessPasteButton = Ui.adopt('toggleFormatlessPaste', ToggleButton, {
+				tooltip: i18n.t('button.formatlessPaste.tooltip'),
+				icon: 'aloha-icon aloha-icon-formatless-paste',
+				scope: 'Aloha.continuoustext',
+				click: function () { 
+					//toggle the value of allowFormatless
+					FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
+				}
+			});
+
 			// activate formatless paste button if option is set
 			if (this.formatlessPasteOption === true) {
-				this.formatlessPasteButton.setPressed(true);
+				this._toggleFormatlessPasteButton.setState(true);
 				FormatlessPasteHandler.enabled = true;
 			}
 			
 			// hide button by default if configured
 			if (this.button === false) {
-				this.formatlessPasteButton.hide();
+				this._toggleFormatlessPasteButton.show(false);
 			}
 		}
 	});

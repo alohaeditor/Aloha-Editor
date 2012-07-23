@@ -10,7 +10,7 @@
  * (in so far as the DOM of the editables itself is valid).
  */
 define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'dom-to-xhtml/dom-to-xhtml'],
+['aloha', 'jquery', 'aloha/plugin', 'dom-to-xhtml/dom-to-xhtml'],
 function( Aloha, $, Plugin, domToXhtml) {
 	"use strict";
 

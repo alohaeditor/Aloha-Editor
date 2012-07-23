@@ -8,7 +8,7 @@
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
 define(
-['aloha', 'aloha/jquery', 'aloha/console'],
+['aloha', 'jquery', 'aloha/console'],
 function( Aloha, $, console) {
 	"use strict";
 
@@ -49,7 +49,7 @@ function( Aloha, $, console) {
 		"img", "input", "isindex", "link", "meta", "param", "embed" ];
 
 	/**
-	 * Attributes that are to be serialized like checked="checked" for any true attribute value.
+	 * Attributes that are to be serialized like checked="checked" for any attribute value.
 	 */
 	var booleanAttrs = [
 		"checked", "compact", "declare", "defer", "disabled", "ismap", "multiple",
@@ -93,20 +93,21 @@ function( Aloha, $, console) {
 		var attrs = getAttrs(element);
 		var str = "";
 		for (var i = 0; i < attrs.length; i++) {
-			var name  = attrs[i][0];
+			// The XHTML spec says attributes are lowercase
+			var name  = attrs[i][0].toLowerCase();
 			var value = attrs[i][1];
-			if ( "" === value || null == value ) {
+
+			//TODO it's only a boolean attribute if the element is in an HTML namespace
+			var isBool = (-1 !== $.inArray(name.toLowerCase(), booleanAttrs));
+
+			if (!isBool && ("" === value || null == value)) {
 				// I don't think it is ever an error to make an
 				// attribute not appear if its string value is empty.
 				continue;
 			}
-			// The XHTML spec says attributes are lowercase
-			name = name.toLowerCase();
-			//TODO it's only a boolean attribute if the element is in an HTML namespace
-			var isBool = (-1 !== $.inArray(name.toLowerCase(), booleanAttrs));
-			if ( ! isBool || (isBool && value) ) {
-				str += " " + name + '="' + encodeDqAttrValue( "" + (isBool ? name : value) ) + '"';
-			}
+
+			// For boolean attributes, the mere existence of the attribute means it is true.
+			str += " " + name + '="' + encodeDqAttrValue("" + (isBool ? name : value)) + '"';
 		}
 		return str;
 	}

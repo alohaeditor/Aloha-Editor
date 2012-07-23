@@ -19,7 +19,7 @@
 */
 
 define(
-['aloha/core', 'util/class', 'aloha/jquery'],
+['aloha/core', 'util/class', 'jquery'],
 function(Aloha, Class, jQuery ) {
 	"use strict";
 	

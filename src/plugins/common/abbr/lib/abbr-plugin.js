@@ -4,17 +4,30 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-
-define( [
+define([
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
-	'aloha/floatingmenu',
+	'ui/ui',
+	'ui/toggleButton',
+	'ui/button',
+	'ui/scopes',
+	'ui/port-helper-attribute-field',
 	'i18n!abbr/nls/i18n',
 	'i18n!aloha/nls/i18n'
-], function ( Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
-	"use strict";
-	
+], function (
+	Aloha,
+	jQuery,
+	Plugin,
+	Ui,
+	ToggleButton,
+	Button,
+	Scopes,
+	AttributeField,
+	i18n,
+	i18nCore
+) {
+	'use strict';
 	var GENTICS = window.GENTICS;
 
 	/**
@@ -46,54 +59,31 @@ define( [
 		createButtons: function () {
 		    var me = this;
 
-		    // format Abbr Button
-		    // this button behaves like a formatting button like (bold, italics, etc)
-		    this.formatAbbrButton = new Aloha.ui.Button( {
-		    	'name' : 'abbr',
-		        'iconClass' : 'aloha-button aloha-button-abbr',
-		        'size' : 'small',
-		        'onclick' : function () { me.formatAbbr(); },
-		        'tooltip' : i18n.t( 'button.abbr.tooltip' ),
-		        'toggle' : true
-		    } );
-		    FloatingMenu.addButton(
-		        'Aloha.continuoustext',
-		        this.formatAbbrButton,
-		        i18nCore.t( 'floatingmenu.tab.format' ),
-		        1
-		    );
+			this._formatAbbrButton = Ui.adopt("formatAbbr", ToggleButton, {
+				tooltip: i18n.t("button.abbr.tooltip"),
+				icon: "aloha-icon aloha-icon-abbr",
+				scope: 'Aloha.continuoustext',
+				click: function(){
+					me.formatAbbr();
+				}
+			});
 
-		    // insert Abbr
-		    // always inserts a new abbr
-		    this.insertAbbrButton = new Aloha.ui.Button( {
-		    	'name' : 'insertAbbr',
-		    	'iconClass' : 'aloha-button aloha-button-abbr',
-		        'size' : 'small',
-		        'onclick' : function () { me.insertAbbr( false ); },
-		        'tooltip' : i18n.t( 'button.addabbr.tooltip' ),
-		        'toggle' : false
-		    } );
-			FloatingMenu.addButton(
-		        'Aloha.continuoustext',
-		        this.insertAbbrButton,
-		        i18nCore.t( 'floatingmenu.tab.insert' ),
-		        1
-		    );
+			this._insertAbbrButton = Ui.adopt("insertAbbr", Button, {
+				tooltip: i18n.t('button.addabbr.tooltip'),
+				icon: 'aloha-icon aloha-icon-abbr',
+				scope: 'Aloha.continuoustext',
+				click: function(){
+					me.insertAbbr( false );
+				}
+			});
 
-		    // add the new scope for abbr
-		    FloatingMenu.createScope( 'abbr', 'Aloha.continuoustext' );
+		    Scopes.createScope('abbr', 'Aloha.continuoustext');
 
-		    this.abbrField = new Aloha.ui.AttributeField( {
-		    	'width': 320,
-		    	'name': 'abbrText'
-		    } );
-		    // add the input field for abbr
-		    FloatingMenu.addButton(
-		        'abbr',
-		        this.abbrField,
-		        i18n.t( 'floatingmenu.tab.abbr' ),
-		        1
-		    );
+		    this.abbrField = AttributeField({
+		    	width: 320,
+		    	name: 'abbrText',
+		        scope: 'abbr'
+		    });
 		},
 
 		/**
@@ -116,8 +106,8 @@ define( [
 		        Aloha.editables[ i ].obj.keydown( function ( e ) {
 		    		if ( e.metaKey && e.which == 71 ) {
 				        if ( me.findAbbrMarkup() ) {
-				        	FloatingMenu.activateTabOfButton( 'abbrText' );
-				            me.abbrField.focus();
+							me.abbrField.foreground();
+							me.abbrField.focus();
 				        } else {
 				        	me.insertAbbr();
 				        }
@@ -147,35 +137,26 @@ define( [
 		        	var config = me.getEditableConfig( Aloha.activeEditable.obj );
 
 		        	if ( jQuery.inArray( 'abbr', config ) != -1 ) {
-		        		me.formatAbbrButton.show();
-		        		me.insertAbbrButton.show();
+						me._formatAbbrButton.show(true);
+						me._insertAbbrButton.show(true);
 		        	} else {
-		        		me.formatAbbrButton.hide();
-		        		me.insertAbbrButton.hide();
-			        	// TODO this should not be necessary here!
-			        	// FloatingMenu.doLayout();
-		        		// leave if a is not allowed
+						me._formatAbbrButton.show(false);
+						me._insertAbbrButton.show(false);
 		        		return;
 		        	}
 
-		//        if ( !Aloha.Selection.mayInsertTag('abbr') ) {
-		//        	me.insertAbbrButton.hide();
-		//        }
-
-		        	var foundMarkup = me.findAbbrMarkup( rangeObject );
-		        	if ( foundMarkup ) {
+		        	var foundMarkup = me.findAbbrMarkup(rangeObject);
+		        	if (foundMarkup) {
 		        		// abbr found
-		        		me.insertAbbrButton.hide();
-		        		me.formatAbbrButton.setPressed( true );
-		        		FloatingMenu.setScope( 'abbr' );
-		        		me.abbrField.setTargetObject( foundMarkup, 'title' );
+						me._insertAbbrButton.show(false);
+						me._formatAbbrButton.setState(true);
+						Scopes.setScope('abbr');
+						me.abbrField.setTargetObject(foundMarkup, 'title');
 		        	} else {
 		        		// no abbr found
-		        		me.formatAbbrButton.setPressed( false );
-		        		me.abbrField.setTargetObject( null );
+						me._formatAbbrButton.setState(false);
+						me.abbrField.setTargetObject(null);
 		        	}
-		        	// TODO this should not be necessary here!
-		        	// FloatingMenu.doLayout();
 		        }
 		    });
 		},
@@ -230,9 +211,6 @@ define( [
 		        return;
 		    }
 
-		    // activate floating menu tab
-		    FloatingMenu.activateTabOfButton('abbrText');
-
 		    // if selection is collapsed then extend to the word.
 		    if ( range.isCollapsed() && extendToWord != false ) {
 		        GENTICS.Utils.Dom.extendToWord( range );
@@ -252,9 +230,9 @@ define( [
 		    }
 			
 		    range.select();
-			
-		    this.abbrField.focus();
-		//	this.abbrChange();
+
+			this.abbrField.foreground();
+			this.abbrField.focus();
 		},
 
 		/**

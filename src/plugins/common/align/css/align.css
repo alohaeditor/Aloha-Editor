@@ -1,19 +1,19 @@
-button.aloha-button-align {
+.aloha-icon-align {
 	background: url(../img/align.png) no-repeat !important;
 }
 
-button.aloha-button-align-left{
+.aloha-icon-align-left{
 	background-position: 0px 0px !important;
 }
 
-button.aloha-button-align-center {
+.aloha-icon-align-center {
 	background-position: -16px 0px !important;
 }
 
-button.aloha-button-align-right {
+.aloha-icon-align-right {
 	background-position: -32px 0px !important;
 }
 
-button.aloha-button-align-justify {
+.aloha-icon-align-justify {
 	background-position: -48px 0px !important;
 }

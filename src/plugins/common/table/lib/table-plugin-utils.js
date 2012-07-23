@@ -1,5 +1,5 @@
 define(
-['aloha/jquery'],
+['jquery'],
 function ($) {
 	var Utils = {
 		/**

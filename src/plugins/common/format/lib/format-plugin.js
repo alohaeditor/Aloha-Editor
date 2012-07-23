@@ -4,21 +4,71 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-
-define([
+define('format/format-plugin', [
 	'aloha',
 	'aloha/plugin',
-	'aloha/jquery',
-	'aloha/floatingmenu',
+	'jquery',
+	'ui/ui',
+	'ui/toggleButton',
+	'ui/port-helper-multi-split',
 	'i18n!format/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'aloha/console',
-	'css!format/css/format.css'],
-	function (Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
-		"use strict";
+	'i18n!aloha/nls/i18n'
+], function (
+	Aloha,
+	Plugin,
+	jQuery,
+	Ui,
+	ToggleButton,
+	MultiSplitButton,
+	i18n,
+	i18nCore
+) {
+	'use strict';
 
-		var GENTICS = window.GENTICS,
-			pluginNamespace = 'aloha-format';
+	var GENTICS = window.GENTICS,
+	    pluginNamespace = 'aloha-format',
+	    commandsByElement = {
+			'b': 'bold',
+			'strong': 'bold',
+			'i': 'italic',
+			'em': 'italic',
+			'del': 'strikethrough',
+			'sub': 'subscript',
+			'sup': 'superscript',
+			'u': 'underline',
+			's': 'strikethrough'
+		},
+
+	    componentNameByElement = {
+			'strong': 'strong',
+			'em': 'emphasis',
+			's': 'strikethrough2'
+		},
+	    textLevelSemantics = {
+			'u': true,
+			'em': true,
+			'strong': true,
+			'b': true,
+			'i': true,
+			'cite': true,
+			'q': true,
+			'code': true,
+			'abbr': true,
+			'del': true,
+			's': true,
+			'sub': true,
+			'sup': true
+		},
+	    blockLevelSemantics = {
+			'p': true,
+			'h1': true,
+			'h2': true,
+			'h3': true,
+			'h4': true,
+			'h5': true,
+			'h6': true,
+			'pre': true
+		};
 
 	/**
 	 * register the plugin with unique name
@@ -32,34 +82,18 @@ define([
 		/**
 		 * default button configuration
 		 */
-		config: [ 'strong', 'em', 'b', 'i', 'del', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		config: [ 'b', 'i', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
 
-		/*
-		config: { 
-					'em': {
-						'class': {
-							'warn': 'Warning',
-							'ok': 'Success',
-							'error': 'Error',
-						},
-						'aloha-data': {}
-					},
-					'strong': 'big-bold',
-					'b': ['big','small'], 
-					'i': false,
-					'p': [], 
-					'h1': {}, 
-					'h2': null, 
-					'h3': 'subheadline', 
-					'removeFormat': true
-				},
-	
-		formatOptions: [],
-		//*/
-		
+		/**
+		 * available options / buttons
+		 * 
+		 * @todo new buttons needed for 'del', 'code'
+		 */
+		availableButtons: [ 'u', 'strong', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+
 		/**
 		 * HotKeys used for special actions
-		*/
+		 */
 		hotKey: { 
 			formatBold: 'ctrl+b',
 			formatItalic: 'ctrl+i',
@@ -83,7 +117,7 @@ define([
 				// Prepare
 				var me = this;
 
-				if ( typeof this.settings.hotKey != 'undefined' ) {
+				if ( typeof this.settings.hotKey !== 'undefined' ) {
 					jQuery.extend(true, this.hotKey, this.settings.hotKey);
 				}
 
@@ -99,21 +133,24 @@ define([
 					me.applyButtonConfig(params.editable.obj);
 
 					// handle hotKeys
-					params.editable.obj.bind( 'keydown', me.hotKey.formatBold, function() { me.addMarkup( 'b' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatItalic, function() { me.addMarkup( 'i' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatParagraph, function() { me.changeMarkup( 'p' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH1, function() { me.changeMarkup( 'h1' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH2, function() { me.changeMarkup( 'h2' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH3, function() { me.changeMarkup( 'h3' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH4, function() { me.changeMarkup( 'h4' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH5, function() { me.changeMarkup( 'h5' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatH6, function() { me.changeMarkup( 'h6' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatPre, function() { me.changeMarkup( 'pre' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatDel, function() { me.addMarkup( 'del' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatSub, function() { me.addMarkup( 'sub' ); return false; });
-					params.editable.obj.bind( 'keydown', me.hotKey.formatSup, function() { me.addMarkup( 'sup' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatBold, function() { me.addMarkup( 'b' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatItalic, function() { me.addMarkup( 'i' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatParagraph, function() { me.changeMarkup( 'p' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH1, function() { me.changeMarkup( 'h1' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH2, function() { me.changeMarkup( 'h2' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH3, function() { me.changeMarkup( 'h3' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH4, function() { me.changeMarkup( 'h4' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH5, function() { me.changeMarkup( 'h5' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH6, function() { me.changeMarkup( 'h6' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatPre, function() { me.changeMarkup( 'pre' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatDel, function() { me.addMarkup( 'del' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatSub, function() { me.addMarkup( 'sub' ); return false; });
+					params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatSup, function() { me.addMarkup( 'sup' ); return false; });
 				});
 
+				Aloha.bind('aloha-editable-deactivated',function (e, params) {
+					params.editable.obj.unbind('keydown.aloha.format');
+				});
 			},
 
 			/**
@@ -130,10 +167,7 @@ define([
 				if ( typeof config === 'object' ) {
 					var config_old = [];
 					jQuery.each(config, function(j, button) {
-						//window.console.log('zzz check', j, button);
-						if ( typeof j === 'number' && typeof button === 'string' ) {
-							//config_old.push(j);
-						} else {
+						if ( !(typeof j === 'number' && typeof button === 'string') ) {
 							config_old.push(j);
 						}
 					});
@@ -146,17 +180,19 @@ define([
 
 				// now iterate all buttons and show/hide them according to the config
 				for ( button in this.buttons) {
-					if (jQuery.inArray(button, config) != -1) {
-						this.buttons[button].button.show();
-					} else {
-						this.buttons[button].button.hide();
+					if (this.buttons.hasOwnProperty(button)) {
+						if (jQuery.inArray(button, config) !== -1) {
+							this.buttons[button].handle.show();
+						} else {
+							this.buttons[button].handle.hide();
+						}
 					}
 				}
 
 				// and the same for multisplit items
 				len = this.multiSplitItems.length;
 				for (i = 0; i < len; i++) {
-					if (jQuery.inArray(this.multiSplitItems[i].name, config) != -1) {
+					if (jQuery.inArray(this.multiSplitItems[i].name, config) !== -1) {
 						this.multiSplitButton.showItem(this.multiSplitItems[i].name);
 					} else {
 						this.multiSplitButton.hideItem(this.multiSplitItems[i].name);
@@ -171,6 +207,8 @@ define([
 			 */
 			initButtons: function () {
 				var
+					// @TODO: Please remove this when you are done obsoleting
+					// scopes completely.
 					scope = 'Aloha.continuoustext',
 					that = this;
 
@@ -182,164 +220,121 @@ define([
 				//this.multiSplitButton;
 
 				//iterate configuration array an push buttons to buttons array
-				jQuery.each(this.config, function(j, button) {
+				jQuery.each(this.availableButtons, function(j, button) {
 					var button_config = false;
 
 					if ( typeof j !== 'number' && typeof button !== 'string' ) {
-						var button_config = button;
+						button_config = button;
 						button = j;
 					}
 
-					switch( button ) {
-						// text level semantics:
-						case 'u':
-						case 'em':
-						case 'strong':
-						case 'b':
-						case 'i':
-						case 'cite':
-						case 'q':
-						case 'code':
-						case 'abbr':
-						case 'del':
-						case 's':
-						case 'sub':
-						case 'sup':
-							that.buttons[button] = {'button' : new Aloha.ui.Button({
-								'name' : button,
-								'iconClass' : 'aloha-button aloha-button-' + button,
-								'size' : 'small',
-								'onclick' : function () {
-									var selectedCells = jQuery('.aloha-cell-selected');
+					if (textLevelSemantics[button]) {
+						var command = commandsByElement[button];
+						var componentName = command;
+						if (componentNameByElement.hasOwnProperty(button)) {
+							componentName = componentNameByElement[button];
+						}
+						var component = Ui.adopt(componentName, ToggleButton, {
+							tooltip : i18n.t('button.' + button + '.tooltip'),
+							icon: 'aloha-icon aloha-icon-' + componentName,
+							scope: scope,
+							click: function () {
+								var selectedCells = jQuery('.aloha-cell-selected');
 
-										if ( typeof button_config === 'string' ) {
-											markup.attr('class', button_config);
-										} else if ( typeof button_config === 'object' ) {
-										//} else if ( typeof button_config === 'object' ) { // check for class and other html-attr
-											markup.attr('class', button_config[0]);
+								// formating workaround for table plugin
+								if ( selectedCells.length > 0 ) {
+									var cellMarkupCounter = 0;
+									selectedCells.each( function () {
+										var cellContent = jQuery(this).find('div'),
+										cellMarkup = cellContent.find(button);
+										if ( cellMarkup.length > 0 ) {
+											// unwrap all found markup text
+											// <td><b>text</b> foo <b>bar</b></td>
+											// and wrap the whole contents of the <td> into <b> tags
+											// <td><b>text foo bar</b></td>
+											cellMarkup.contents().unwrap();
+											cellMarkupCounter++;
 										}
+										cellContent.contents().wrap('<'+button+'></'+button+'>');
+									});
 
-									// formating workaround for table plugin
-									if ( selectedCells.length > 0 ) {
-										var cellMarkupCounter = 0;
-										selectedCells.each( function () {
-											var cellContent = jQuery(this).find('div'),
-												cellMarkup = cellContent.find(button);
-										
-											if ( cellMarkup.length > 0 ) {
-												// unwrap all found markup text
-												// <td><b>text</b> foo <b>bar</b></td>
-												// and wrap the whole contents of the <td> into <b> tags
-												// <td><b>text foo bar</b></td>
-												cellMarkup.contents().unwrap();
-												cellMarkupCounter++;
-											}
-											cellContent.contents().wrap('<'+button+'></'+button+'>');
-										});
-
-										// remove all markup if all cells have markup
-										if ( cellMarkupCounter == selectedCells.length ) {
-											selectedCells.find(button).contents().unwrap();
-										}
-										return false;
+									// remove all markup if all cells have markup
+									if ( cellMarkupCounter === selectedCells.length ) {
+										selectedCells.find(button).contents().unwrap();
 									}
-									// formating workaround for table plugin
-
-									that.addMarkup( button ); 
 									return false;
-								},
-								'tooltip' : i18n.t('button.' + button + '.tooltip'),
-								'toggle' : true
-							}), 'markup' : jQuery('<'+button+'></'+button+'>').attr('class', button_config)};
+								}
+								// formating workaround for table plugin
 
-							FloatingMenu.addButton(
-								scope,
-								that.buttons[button].button,
-								i18nCore.t('floatingmenu.tab.format'),
-								1
-							);
-							break;
+								that.addMarkup( button ); 
+								return false;
+							}
+						});
+						that.buttons[button] = {
+							handle: component,
+							'markup' : jQuery('<'+button+'>', {'class': button_config || ''})
+						};
+					} else if (blockLevelSemantics[button]) {
+						that.multiSplitItems.push({
+							'name' : button,
+							'tooltip' : i18n.t('button.' + button + '.tooltip'),
+							'iconClass' : 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
+							'markup' : jQuery('<'+button+'>'),
+							'click' : function() {
+								var selectedCells = jQuery('.aloha-cell-selected');
 
-						case 'p':
-						case 'h1':
-						case 'h2':
-						case 'h3':
-						case 'h4':
-						case 'h5':
-						case 'h6':
-						case 'pre':
-							that.multiSplitItems.push({
-								'name' : button,
-								'tooltip' : i18n.t('button.' + button + '.tooltip'),
-								'iconClass' : 'aloha-button ' + i18n.t('aloha-button-' + button),
-								'markup' : jQuery('<'+button+'></'+button+'>'),
-								'click' : function() {
-									var selectedCells = jQuery('.aloha-cell-selected');
-
-									// formating workaround for table plugin
-									if ( selectedCells.length > 0 ) {
-										var cellMarkupCounter = 0;
-										selectedCells.each( function () {
-											var cellContent = jQuery(this).find('div'),
-												cellMarkup = cellContent.find(button);
+								// formating workaround for table plugin
+								if ( selectedCells.length > 0 ) {
+									var cellMarkupCounter = 0;
+									selectedCells.each( function () {
+										var cellContent = jQuery(this).find('div'),
+										cellMarkup = cellContent.find(button);
 										
-											if ( cellMarkup.length > 0 ) {
-												// unwrap all found markup text
-												// <td><b>text</b> foo <b>bar</b></td>
-												// and wrap the whole contents of the <td> into <b> tags
-												// <td><b>text foo bar</b></td>
-												cellMarkup.contents().unwrap();
-												cellMarkupCounter++;
-											}
-											cellContent.contents().wrap('<'+button+'></'+button+'>');
-										});
-
-										// remove all markup if all cells have markup
-										if ( cellMarkupCounter == selectedCells.length ) {
-											selectedCells.find(button).contents().unwrap();
+										if ( cellMarkup.length > 0 ) {
+											// unwrap all found markup text
+											// <td><b>text</b> foo <b>bar</b></td>
+											// and wrap the whole contents of the <td> into <b> tags
+											// <td><b>text foo bar</b></td>
+											cellMarkup.contents().unwrap();
+											cellMarkupCounter++;
 										}
-										return false;
+										cellContent.contents().wrap('<'+button+'></'+button+'>');
+									});
+
+									// remove all markup if all cells have markup
+									if ( cellMarkupCounter === selectedCells.length ) {
+										selectedCells.find(button).contents().unwrap();
 									}
-									// formating workaround for table plugin
-
-									that.changeMarkup( button );
-
+									return false;
 								}
-							});
-							break;
-
+								// formating workaround for table plugin
+								that.changeMarkup( button );
+							}
+						});
+					} else if ('removeFormat' === button) {
 						// wide multisplit buttons
-						case 'removeFormat':
-							that.multiSplitItems.push({
-								'name' : button,
-								'text' : i18n.t('button.' + button + '.text'),
-								'tooltip' : i18n.t('button.' + button + '.tooltip'),
-								'iconClass' : 'aloha-button aloha-button-' + button,
-								'wide' : true,
-								'click' : function() {
-									that.removeFormat();
-								}
-							});
-							break;
+						that.multiSplitItems.push({
+							name: button,
+							text: i18n.t('button.' + button + '.text'),
+							tooltip: i18n.t('button.' + button + '.tooltip'),
+							wide: true,
+							'cls': 'aloha-ui-multisplit-fullwidth',
+							click: function () {
+								that.removeFormat();
+							}
+						});
+					} else {
 						//no button defined
-						default:
-							Aloha.log('warn', this, 'Button "' + button + '" is not defined');
-							break;
+						Aloha.log('warn', this, 'Button "' + button + '" is not defined');
 					}
 				});
 
-				if (this.multiSplitItems.length > 0) {
-					this.multiSplitButton = new Aloha.ui.MultiSplitButton({
-						'name' : 'phrasing',
-						'items' : this.multiSplitItems
-					});
-					FloatingMenu.addButton(
-						scope,
-						this.multiSplitButton,
-						i18nCore.t('floatingmenu.tab.format'),
-						3
-					);
-				}
+				this.multiSplitButton = MultiSplitButton({
+					name: 'formatBlock',
+					items: this.multiSplitItems,
+					hideIfEmpty: true,
+					scope: scope
+				});
 
 				// add the event handler for selection change
 				Aloha.bind('aloha-selection-changed',function(event,rangeObject){
@@ -353,12 +348,12 @@ define([
 						for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 							effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 							if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
-								button.button.setPressed(true);
+								button.handle.setState(true);
 								statusWasSet = true;
 							}
 						}
 						if (!statusWasSet) {
-							button.button.setPressed(false);
+							button.handle.setState(false);
 						}
 					});
 
@@ -459,7 +454,7 @@ define([
 				jQuery.each( arguments, function () {
 					stringBuilder.push( this == '' ? prefix : prefix + '-' + this );
 				} );
-				return stringBuilder.join( ' ' ).trim();
+				return jQuery.trim(stringBuilder.join(' '));
 			},
 
 			// duplicated code from link-plugin
@@ -468,7 +463,7 @@ define([
 				jQuery.each( arguments, function () {
 					stringBuilder.push( '.' + ( this == '' ? prefix : prefix + '-' + this ) );
 				} );
-				return stringBuilder.join( ' ' ).trim();
+				return jQuery.trim(stringBuilder.join(' '));
 			},
 
 			/**
@@ -476,7 +471,7 @@ define([
 			*/
 			addMarkup: function( button ) {
 				var
-					markup = jQuery('<'+button+'></'+button+'>'),
+					markup = jQuery('<'+button+'>'),
 					rangeObject = Aloha.Selection.rangeObject,
 					foundMarkup;
 			
@@ -486,7 +481,7 @@ define([
 			
 				// check whether the markup is found in the range (at the start of the range)
 				foundMarkup = rangeObject.findMarkup( function() {
-					return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
+					return this.nodeName === markup[0].nodeName;
 				}, Aloha.activeEditable.obj );
 
 				if ( foundMarkup ) {
@@ -516,7 +511,7 @@ define([
 			 * Change markup
 			*/
 			changeMarkup: function( button ) {
-				Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
+				Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
 			},
 
 
@@ -524,10 +519,10 @@ define([
 		 * Removes all formatting from the current selection.
 		 */
 		removeFormat: function() {
-			var formats = [ 'strong', 'em', 'b', 'i', 's', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
+			var formats = [ 'u', 'strong', 'em', 'b', 'i', 'q', 'del', 's', 'code', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'quote', 'blockquote' ],
 				rangeObject = Aloha.Selection.rangeObject,
 				i;
-			
+
 				// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
 				if (this.settings.removeFormats) {
 					formats = this.settings.removeFormats;
@@ -538,13 +533,12 @@ define([
 				}
 
 				for (i = 0; i < formats.length; i++) {
-					GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '></' + formats[i] + '>'), Aloha.activeEditable.obj);
+					GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '>'), Aloha.activeEditable.obj);
 				}
 
 				// select the modified range
 				rangeObject.select();
 				// TODO: trigger event - removed Format
-
 			},
 
 			/**

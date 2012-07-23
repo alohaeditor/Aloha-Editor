@@ -19,7 +19,7 @@
 */
 
 define(
-['aloha/jquery'],
+['jquery'],
 function(jQuery, undefined) {
 	"use strict";
 	

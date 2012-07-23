@@ -21,15 +21,22 @@
 define( [
 	'aloha/core',
 	'util/class',
-	'aloha/jquery',
+	'jquery',
 	'aloha/pluginmanager',
-	'aloha/floatingmenu',
 	'aloha/selection',
 	'aloha/markup',
 	'aloha/contenthandlermanager',
 	'aloha/console'
-], function( Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection,
-	         Markup, ContentHandlerManager, console ) {
+], function(
+	Aloha,
+	Class,
+	jQuery,
+	PluginManager,
+	Selection,
+	Markup,
+	ContentHandlerManager,
+	console
+) {
 	'use strict';
 
 	var unescape = window.unescape,
@@ -345,9 +352,10 @@ define( [
 					// TODO need some special handling.
 					break;
 				case 'textarea':
+				case 'input':
 					// Create a div alongside the textarea
 					div = jQuery( '<div id="' + this.getId() +
-							'-aloha" class="aloha-textarea" />' )
+							'-aloha" class="aloha-' + nodeName + '" />' )
 								.insertAfter( obj );
 
 					// Resize the div to the textarea and
@@ -494,9 +502,6 @@ define( [
 			// leave the element just to get sure
 			if ( this === Aloha.getActiveEditable() ) {
 				this.blur();
-
-				// also hide the floating menu if the current editable was active
-				FloatingMenu.hide();
 			}
 
 			// special handled elements
@@ -506,6 +511,7 @@ define( [
 					// TODO need some special handling.
 					break;
 				case 'textarea':
+				case 'input':
 					// restore content to original textarea
 					this.originalObj.val( this.getContents() );
 					this.obj.remove();

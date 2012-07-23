@@ -21,7 +21,7 @@
 define( [
 	'aloha/core',
 	'util/class',
-	'aloha/jquery',
+	'jquery',
 	'aloha/console'
 ], function( Aloha, Class, jQuery, console ) {
 	'use strict';
@@ -219,8 +219,8 @@ define( [
 							allmetainfo.numItems = undefined;
 						}
 
-						if ( jQuery.isBoolean( metainfo.hasMoreItems ) &&
-								jQuery.isBoolean( allmetainfo.hasMoreItems ) ) {
+						if ( typeof metainfo.hasMoreItems === 'boolean' &&
+								typeof allmetainfo.hasMoreItems === 'boolean' ) {
 							allmetainfo.hasMoreItems = allmetainfo.hasMoreItems || metainfo.hasMoreItems;
 						} else {
 							allmetainfo.hasMoreItems = undefined;

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: Numerated Headers Plugin</title>
+  <title>Aloha Editor GuidesAloha Editor Guides: Numerated Headers Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,7 +42,7 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/"></a></h2>
+        <h2><a href="/">Aloha Editor Guides</a></h2>
         <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
@@ -57,6 +57,8 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="aloha_jquery.html">Aloha Editor and jQuery</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
@@ -109,7 +111,7 @@
 <p>The main features are:</p>
 <ul>
 	<li>Auto generate numeration</li>
-	<li>Put it in a <span> that will be prepended to the headline</li>
+	<li>Put it in a <tt>&lt;span&gt;</tt> that will be prepended to the headline</li>
 	<li>Auto remove the numeration if the editor deletes the header content</li>
 	<li>Customizable: which headers should be affected, and in which surrounding container should the plugin process</li>
 </ul>
@@ -141,24 +143,17 @@ Sub Headline Two dot One
 <ul>
 	<li>auto activate the feature of the plugin with numeratedactive: true (default)</li>
 	<li>specify selector for affected headers</li>
-	<li>specify Base Object, if you want the plugin to process in a specific container, or on the hole page (e.g. &#8216;body&#8217;)</li>
-	<li>specify the numeration format 1.2 or 1.2. (trailing dot).</li>
+	<li>specifiy Base Object, if you want the plugin to process in a specific container, or on the hole page (e.g. &#8216;body&#8217;)</li>
 </ul>
+<p>This settings can be applied for individual editables.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 	Aloha.settings.plugins: {
 		'numerated-headers': {
-			config: {
-				// default true
-				// numeratedactive will also accept &quot;true&quot; and &quot;1&quot; as true values
-				// false and &quot;false&quot; for false
-				numeratedactive: true,
-				// if the headingselector is empty, the button will not be shown at all                     
-				headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
-				baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable,
-				trailingdot: false
-			}
+			numeratedactive: true,                     // default
+			headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
+			baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable
 		}
 	}
 </pre></div>

@@ -22,13 +22,11 @@ GENTICS = window.GENTICS || {};
 GENTICS.Utils = GENTICS.Utils || {};
 
 define(
-['aloha/jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
-function(jQuery, Dom, Class, console) {
+['jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
+function(jQuery, Dom, Class, console, rangy) {
 	"use strict";
 
-	var
-		GENTICS = window.GENTICS,
-		rangy = window.rangy;
+	var GENTICS = window.GENTICS;
 
 /**
  * @namespace GENTICS.Utils
@@ -156,38 +154,11 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 */
 	getContainerParents: function (limit, fromEnd) {
 		// TODO cache the calculated parents
-		var
-			container = fromEnd ? this.endContainer : this.startContainer,
-			parents, limitIndex,
-			i;
-
+		var container = fromEnd ? this.endContainer : this.startContainer;
 		if (!container) {
 			return false;
 		}
-
-		if ( typeof limit === 'undefined' || ! limit ) {
-			limit = jQuery('body');
-		}
-
-		
-		if (container.nodeType == 3) {
-			parents = jQuery(container).parents();
-		} else {
-			parents = jQuery(container).parents();
-			for (i = parents.length; i > 0; --i) {
-				parents[i] = parents[i - 1];
-			}
-			parents[0] = container;
-		}
-
-		// now slice this array
-		limitIndex = parents.index(limit);
-
-		if (limitIndex >= 0) {
-			parents = parents.slice(0, limitIndex);
-		}
-
-		return parents;
+		return jQuery(selfAndParentsUntil(container, limit ? limit[0] : null));
 	},
 
 	/**
@@ -324,9 +295,13 @@ GENTICS.Utils.RangeObject = Class.extend({
 	select: function() {
 		var ieRange, endRange, startRange, range, sel;
 
+		if ( typeof this.startContainer === 'undefined' || typeof this.endContainer === 'undefined' ) {
+			console.warn('can not select an empty range');
+			return false;
+		}
+
 		// create a range
 		range = rangy.createRange();
-
 		// set start and endContainer
 		range.setStart(this.startContainer,this.startOffset);
 		range.setEnd(this.endContainer, this.endOffset);
@@ -830,16 +805,21 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	findMarkup: function (comparator, limit, atEnd) {
-		var parents = this.getContainerParents(limit, atEnd),
-			returnValue = false;
-		jQuery.each(parents, function (index, domObj) {
-			if (comparator.apply(domObj)) {
-				returnValue = domObj;
-				return false;
+		var container = atEnd ? this.endContainer : this.startContainer,
+		    limit = limit ? limit[0] : null,
+		    parents,
+		    i,
+		    len;
+		if (!container) {
+			return;
+		}
+		parents = selfAndParentsUntil(container, limit);
+		for (i = 0, len = parents.length; i < len; i++) {
+			if (comparator.apply(parents[i])) {
+				return parents[i];
 			}
-		});
-
-		return returnValue;
+		}
+		return false;
 	},
 
 	/**
@@ -919,5 +899,25 @@ GENTICS.Utils.RangeTree = Class.extend({
 	children: []
 });
 	
+	function selfAndParentsUntil(container, limit) {
+		var parents = [],
+		    cur;
+		if (1 === container.nodeType) {
+			cur = container;
+		} else {
+			cur = container.parentNode;
+		}
+		for (;;) {
+			if (!cur || cur === limit || 9 === cur.nodeType) {
+				break;
+			}
+			if (1 === cur.nodeType) {
+				parents.push(cur);
+			}
+			cur = cur.parentNode;
+		}
+		return parents;
+	}
+
 	return GENTICS.Utils.RangeObject;
 });

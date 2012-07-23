@@ -11,8 +11,21 @@
  * @name block.block
  * @namespace block/block
  */
-define(['aloha', 'aloha/jquery', 'block/blockmanager', 'aloha/observable', 'aloha/floatingmenu'],
-function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
+define([
+	'aloha',
+	'jquery',
+	'block/blockmanager',
+	'aloha/observable',
+	'ui/scopes',
+	'util/class'
+], function(
+	Aloha,
+	jQuery,
+	BlockManager,
+	Observable,
+	Scopes,
+	Class
+){
 	"use strict";
 
 	var GENTICS = window.GENTICS;
@@ -364,7 +377,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			// Activate current block
 			if (this.$element.attr('data-block-skip-scope') !== 'true') {
-				FloatingMenu.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
+				Scopes.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
 			}
 			this.$element.addClass('aloha-block-active');
 			this._highlight();
@@ -607,7 +620,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				},
 				revertDuration: 250,
 				stop: function() {
-					if (Ext.isIE7) {
+					if (jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10)) {
 						dropFn();
 					}
 					jQuery.each(editablesWhichNeedToBeCleaned, function() {
@@ -685,7 +698,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 						 * as drop target.
 						 */
 						drop: function() {
-							if (!Ext.isIE7) {
+							if (! (jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10)) ) {
 								dropFn();
 							}
 						}
@@ -788,7 +801,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				leftWordPartLength = Math.floor(word.length/2);
 
 				// For Internet Explorer, we only make dropping AFTER words possible to improve performance
-				if (Ext.isIE7 || Ext.isIE8) {
+				var browserMajorVersion = parseInt(jQuery.browser.version, 10);
+				if (jQuery.browser.msie && (7 === browserMajorVersion || 8 === browserMajorVersion)) {
 					leftWordPartLength = 0;
 				}
 

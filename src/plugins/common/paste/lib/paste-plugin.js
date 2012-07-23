@@ -15,7 +15,7 @@
  */
 
 define(
-[ 'aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/command',
+[ 'aloha/core', 'aloha/plugin', 'jquery', 'aloha/command',
   'aloha/console' ],
 function ( Aloha, Plugin, jQuery, Commands, console ) {
 	'use strict';

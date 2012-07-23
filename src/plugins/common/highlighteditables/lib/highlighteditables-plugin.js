@@ -5,8 +5,8 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'css!highlighteditables/css/highlighteditables.css'],
+define('highlighteditables/highlighteditables-plugin',
+['aloha', 'jquery', 'aloha/plugin'],
 function(Aloha, jQuery, Plugin) {
 	"use strict";
 
@@ -78,4 +78,3 @@ function(Aloha, jQuery, Plugin) {
 
 	});
 });
-

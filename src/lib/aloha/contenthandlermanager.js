@@ -5,8 +5,8 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 define(
-['aloha/jquery', 'aloha/registry'],
-function( jQuery, Registry ) {
+['jquery', 'aloha/registry', 'util/class'],
+function( jQuery, Registry, Class ) {
 	"use strict";
 
 	/**
@@ -50,7 +50,9 @@ function( jQuery, Registry ) {
 					if (jQuery.inArray( handler, options.contenthandler ) < 0 ) {
 						continue;
 					}
-					
+					if (null == content) {
+						break;
+					}
 					if ( typeof handlers[handler].handleContent === 'function') {
 						content = handlers[handler].handleContent( content, options );
 					} else {

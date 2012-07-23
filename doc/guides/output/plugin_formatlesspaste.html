@@ -128,16 +128,14 @@ In this case we strip all formating like bold, italic and so on but allow a-Tags
 </ul>
 <h3 id="configuration">4 Configuration</h3>
 <p>The default behaviour can be configured with the setting &#8220;formatlessPasteOption&#8221;. The set of elements that should be stripped can be configured with the setting &#8220;strippedElements&#8221;.</p>
-<p>The default configuration looks like this:</p>
+<p>A typical configuration could look like this. If no configuration is provided, this is also the default configuration.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 	Aloha.settings.plugins: {
 		formatlesspaste: {
-			config: {
-				button: true, // if set to false the button will be hidden
-				formatlessPasteOption: true, // default state of the button
-				strippedElements: [ // elements to be stripped from the pasted code
+			formatlessPasteOption: true,
+			strippedElements: [
 				&quot;a&quot;,
 				&quot;em&quot;,
 				&quot;strong&quot;,
