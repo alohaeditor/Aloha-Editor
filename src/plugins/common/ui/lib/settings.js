@@ -7,7 +7,8 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
 					[
-						'bold', 'strong', 'italic', 'emphasis', '\n',
+						// strong, emphasis and underline are not shown with the default format plugin button configuration
+						'bold', 'strong', 'italic', 'emphasis', 'underline', '\n',
 						'subscript', 'superscript', 'strikethrough', 'quote'
 					], [
 						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', '\n',
