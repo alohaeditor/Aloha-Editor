@@ -2087,6 +2087,10 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
 
 
 	function isCollapsedAndEmptyOrEndBr(rangeObject) {
+		if (rangeObject.startContainer.nodeType !== 1) {
+			return;
+		}
+
 		var firstChild;
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
@@ -2098,6 +2102,9 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
 	}
 
 	function isCollapsedAndEndBr(rangeObject) {
+		if (rangeObject.startContainer.nodeType !== 1) {
+			return;
+		}
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
