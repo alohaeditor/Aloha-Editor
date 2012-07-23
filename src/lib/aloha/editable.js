@@ -45,6 +45,13 @@ define( [
 	    // True, if the next editable activate event should not be handled
 	    ignoreNextActivateEvent = false;
 
+	/**
+	 * A cache to hold information derived, and used in getContents().
+	 * @type {object<string,(string|jQuery.<HTMLElement>)>}
+	 * @private
+	 */
+	var editableContentCache = {};
+
 	// default supported and custom content handler settings
 	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
@@ -703,24 +710,39 @@ define( [
 		},
 
 		/**
-		 * Get the contents of this editable as a HTML string
-		 * @method
-		 * @return contents of the editable
+		 * Get the contents of this editable as a HTML string or child node DOM
+		 * objects.
+		 *
+		 * @param {boolean} asObject Whether or not to retreive the contents of
+		 *                           this editable as child node objects or as
+		 *                           HTML string.
+		 * @return {string|jQuery.<HTMLElement>} Contents of the editable as
+		 *                                       DOM objects or an HTML string.
 		 */
-		getContents: function( asObject ) {
-			// Cloned nodes are problematic in IE7.  When trying to read/write
-			// to them, they can sometimes cause the browser to crash.
-			// The IE7 fix was moved to engine#copyAttributes() 
-			
-			var clonedObj = this.obj.clone( false );
-			//var clonedObj = jQuery(this.obj[0].outerHTML);
+		getContents: function (asObject) {
+			var raw = this.obj.html();
+			var cache = editableContentCache[this.getId()];
+			if (cache && raw === cache.raw) {
+				return asObject ? cache.elements : cache.clean;
+			}
 
-			// do core cleanup
-			clonedObj.find( '.aloha-cleanme' ).remove();
-			this.removePlaceholder( clonedObj );
-			PluginManager.makeClean( clonedObj );
+			var $clone = this.obj.clone(false);
 
-			return asObject ? clonedObj.contents() : contentSerializer(clonedObj[0]);
+			$clone.find( '.aloha-cleanme' ).remove();
+			this.removePlaceholder($clone);
+			PluginManager.makeClean($clone);
+
+			$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
+				contenthandler: Aloha.settings.contentHandler.getContents,
+				command: 'getContents'
+			}) + '</div>');
+
+			cache = editableContentCache[this.getId()] = {};
+			cache.raw = raw;
+			cache.clean = contentSerializer($clone[0]);
+			cache.elements = $clone.contents();
+
+			return asObject ? cache.elements : cache.clean;
 		},
 
 		/**

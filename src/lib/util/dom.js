@@ -57,7 +57,7 @@ function(jQuery, Class, $_) {
     		//The determination of preceding versus following is implementation-specific.
     		'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
     	},
-	    blockElementNames = {
+		blockElementNames = {
 			'P': true,
 			'H1': true,
 			'H2': true,

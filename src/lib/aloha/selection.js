@@ -20,10 +20,9 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/engine', 'aloha/rangy-core' ],
-function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
+[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/engine', 'aloha/console', 'PubSub', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) {
 	var GENTICS = window.GENTICS;
-
 	/**
 	 * @namespace Aloha
 	 * @class Selection
@@ -93,6 +92,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
 					'del'      : true, 'ins'   : true, 'u'      : true
 				}
 			};
+			
 			// now reference the basics for all other equal tags (important: don't forget to include
 			// the basics itself as reference: 'b' : this.tagHierarchy.b
 			this.tagHierarchy = {
@@ -298,6 +298,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
 			// throw the event that the selection has changed. Plugins now have the
 			// chance to react on the currentElements[childCount].children.lengthged selection
 			Aloha.trigger('aloha-selection-changed', [this.rangeObject, event]);
+			triggerSelectionContextChanged(this.rangeObject, event);
 
 			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
 
@@ -2091,6 +2092,10 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
+		// check whether the container starts in an element node
+		if (rangeObject.startContainer.nodeType != 1) {
+			return false;
+		}
 		firstChild = rangeObject.startContainer.firstChild;
 		return (!firstChild
 				|| (!firstChild.nextSibling
@@ -2101,7 +2106,53 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
-		return rangeObject.startContainer.innerHTML.toLowerCase() === '<br class="aloha-end-br">';
+		return Engine.isEndBreak(rangeObject.startContainer);
+	}
+
+	var prevStartContext = null;
+	var prevEndContext = null;
+
+	function makeContextHtml(node, parents) {
+		var result = [],
+		    len,
+		    i;
+		if (1 === node.nodeType) {
+			result.push(node.cloneNode(false).outerHTML);
+		} else {
+			result.push('#' + node.nodeType);
+		}
+		for (i = 0, len = parents.length; i < len; i++) {
+			result.push(parents[i].cloneNode(false).outerHTML);
+		}
+		return result.join('');
+	}
+
+	function getChangedContext(node, context) {
+		var until = Aloha.activeEditable ? Aloha.activeEditable.obj.parent()[0] : null;
+		var parents = jQuery(node).parentsUntil(until).get();
+		var html = makeContextHtml(node, parents);
+		var equal = (   context
+					 && node === context.node
+					 && Arrays.equal(context.parents, parents)
+					 && html === context.html);
+		return equal ? null : {node: node, parents: parents, html: html};
+	}
+
+	function triggerSelectionContextChanged(rangeObject, event) {
+		var startContainer = rangeObject.startContainer;
+		var endContainer = rangeObject.endContainer;
+		if (!startContainer || !endContainer) {
+			console.error("encountered range object without start or end container");
+			return;
+		}
+		var startContext = getChangedContext(startContainer, prevStartContext);
+		var endContext   = getChangedContext(endContainer  , prevEndContext);
+		if (!startContext && !endContext) {
+			return;
+		}
+		prevStartContext = startContext;
+		prevEndContext   = endContext;
+		PubSub.pub('aloha.selection.context-change', {range: rangeObject, event: event});
 	}
 
 	return selection;

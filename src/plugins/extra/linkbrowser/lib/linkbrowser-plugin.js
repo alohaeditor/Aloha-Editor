@@ -39,16 +39,16 @@ define([
 				}
 			});
 
-			this._linkBrowserButton.show(false);
+			this._linkBrowserButton.hide();
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
 
 			Aloha.bind('aloha-link-selected', function (event, rangeObject) {
-				that._linkBrowserButton.show(true);
+				that._linkBrowserButton.show();
 			});
 
 			Aloha.bind('aloha-link-unselected', function (event, rangeObject) {
-				that._linkBrowserButton.show(false);
+				that._linkBrowserButton.hide();
 			});
 		},
 

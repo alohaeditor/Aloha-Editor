@@ -123,41 +123,50 @@ define([
 		    }
 		},
 
-		/**
-		 * Subscribe for events
-		 */
 		subscribeEvents: function () {
 			var me = this;
+			var editableConfig = {};
 
-		    // add the event handler for selection change
-			Aloha.bind( 'aloha-selection-changed', function ( event, rangeObject ) {
-		        if ( Aloha.activeEditable ) {
-		        	// show/hide the button according to the configuration
-					// @todo this part should be done at aloha-editable-activated event
-		        	var config = me.getEditableConfig( Aloha.activeEditable.obj );
+			Aloha.bind('aloha-editable-activated', function () {
+				if (!Aloha.activeEditable.obj) {
+					return;
+				}
+				var config = me.getEditableConfig(Aloha.activeEditable.obj);
+				editableConfig[
+					Aloha.activeEditable.getId()
+				] = jQuery.inArray('abbr', config) !== -1;
+			});
 
-		        	if ( jQuery.inArray( 'abbr', config ) != -1 ) {
-						me._formatAbbrButton.show(true);
-						me._insertAbbrButton.show(true);
-		        	} else {
-						me._formatAbbrButton.show(false);
-						me._insertAbbrButton.show(false);
-		        		return;
-		        	}
+			Aloha.bind('aloha-editable-destroyed', function () {
+				if (Aloha.activeEditable.obj) {
+					delete editableConfig[Aloha.activeEditable.getId()];
+				}
+			});
 
-		        	var foundMarkup = me.findAbbrMarkup(rangeObject);
-		        	if (foundMarkup) {
-		        		// abbr found
-						me._insertAbbrButton.show(false);
-						me._formatAbbrButton.setState(true);
-						Scopes.setScope('abbr');
-						me.abbrField.setTargetObject(foundMarkup, 'title');
-		        	} else {
-		        		// no abbr found
-						me._formatAbbrButton.setState(false);
-						me.abbrField.setTargetObject(null);
-		        	}
-		        }
+			Aloha.bind('aloha-selection-changed', function (event, range) {
+		        if (!Aloha.activeEditable) {
+					return;
+				}
+
+				if (editableConfig[Aloha.activeEditable.getId()]) {
+					me._formatAbbrButton.show();
+					me._insertAbbrButton.show();
+				} else {
+					me._formatAbbrButton.hide();
+					me._insertAbbrButton.hide();
+					return;
+				}
+
+				var foundMarkup = me.findAbbrMarkup(range);
+				if (foundMarkup) {
+					me._insertAbbrButton.hide();
+					me._formatAbbrButton.setState(true);
+					Scopes.setScope('abbr');
+					me.abbrField.setTargetObject(foundMarkup, 'title');
+				} else {
+					me._formatAbbrButton.setState(false);
+					me.abbrField.setTargetObject(null);
+				}
 		    });
 		},
 

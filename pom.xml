@@ -4,7 +4,7 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.21.0-jqueryui-SNAPSHOT</version>
+	<version>0.21.0-dev-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>

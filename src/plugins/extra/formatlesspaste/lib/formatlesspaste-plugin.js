@@ -103,8 +103,7 @@ define([
 			var formatlessPasteHandlerLastState;
 			Aloha.bind( 'aloha-editable-activated', function( event, params) {
 				var config = that.getEditableConfig( params.editable.obj );
-				
-				if ( !config ) {
+				if (!config) {
 					return;
 				}
 

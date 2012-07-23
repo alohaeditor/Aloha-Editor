@@ -26,11 +26,13 @@
 define([
     'aloha/core',
     'jquery',
-    'aloha/selection'
+    'aloha/selection',
+    'PubSub'
 ], function (
 	Aloha,
 	$,
-	Selection
+	Selection,
+	PubSub
 ) {
 	'use strict';
 
@@ -39,7 +41,7 @@ define([
 	// Extend jQuery easing animations.
 	//debugger;
 	if (!$.easing.easeOutExpo) {
-		$.extend(jQuery.easing, {
+		$.extend($.easing, {
 			easeOutExpo: function (x, t, b, c, d) {
 				return (t==d)?b+c:c*(-Math.pow(2,-10*t/d)+1)+b;
 			},
@@ -215,26 +217,28 @@ define([
 
 		subscribeToEvents: function () {
 			var that = this;
-			var $container = this.container;
 
-			Aloha.bind('aloha-selection-changed', function (event, range) {
-					that.checkActivePanels(range);
-				});
-
-			$container.mousedown(function (e) {
-					e.originalEvent.stopSelectionUpdate = true;
-					Aloha.eventHandled = true;
-					//e.stopSelectionUpdate = true;
-				});
-
-			$container.mouseup(function (e) {
-					e.originalEvent.stopSelectionUpdate = true;
-					Aloha.eventHandled = false;
-				});
+			PubSub.sub('aloha.selection.context-change', function (message) {
+				if (!that.isOpen) {
+					that.checkActivePanels(message.range);
+				}
+			});
 
 			Aloha.bind('aloha-editable-deactivated', function (event, params) {
+				if (!that.isOpen) {
 					that.checkActivePanels();
-				});
+				}
+			});
+
+			this.container.mousedown(function (e) {
+				e.originalEvent.stopSelectionUpdate = true;
+				Aloha.eventHandled = true;
+			});
+
+			this.container.mouseup(function (e) {
+				e.originalEvent.stopSelectionUpdate = true;
+				Aloha.eventHandled = false;
+			});
 		},
 
 		/**

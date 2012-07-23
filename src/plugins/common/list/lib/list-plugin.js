@@ -14,7 +14,8 @@ define([
 	'ui/toggleButton',
 	'i18n!list/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'aloha/engine'
+	'aloha/engine',
+	'PubSub'
 ], function(
 	Aloha,
 	jQuery,
@@ -25,7 +26,8 @@ define([
 	ToggleButton,
 	i18n,
 	i18nCore,
-	Engine
+	Engine,
+	PubSub
 ) {
 	'use strict';
 
@@ -95,9 +97,11 @@ define([
 
 			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
 
-			// add the event handler for selection change
-			Aloha.bind('aloha-selection-changed', function ( event, rangeObject ) {
-				var i, effectiveMarkup;
+			// add the event handler for context selection change
+			PubSub.sub('aloha.selection.context-change', function(message){
+				var i,
+					effectiveMarkup,
+					rangeObject = message.range;
 				
 				// Hide all buttons in the list tab will make the list tab disappear
 				that._outdentListButton.show(false);
@@ -157,6 +161,21 @@ define([
 				}
 
 			}
+		},
+		
+		/**
+		 * Make the given jQuery object (representing an editable) clean for saving
+		 * Find all li tags and remove editing attributes
+		 * @param obj jQuery object to make clean
+		 * @return void
+		 */
+		makeClean: function (obj) {
+			// find all li tags
+			obj.find('li').each(function () {
+				// Remove IE attributes
+				jQuery(this).removeAttr('hidefocus');
+				jQuery(this).removeAttr('tabindex');
+			});
 		},
 
 		/**
