@@ -49,7 +49,17 @@
 
 - **MANUAL CHANGE**: The jQuery loaded by Aloha no longer performs a call to $.noConflict.
 
-                     Aloha now loads jQuery asynchronously. It is
+                     The combined and minified aloha-full.js will
+                     contain the call to $.noConflict to preserve
+                     behaviour with earlier Aloha builds
+
+                     The combined and minified aloha-bare.js, or the
+                     unminified and uncombined form used during
+                     development, will not contain the call to
+                     $.noConflict.
+
+                     Aloha now loads jQuery asynchronously, unless the
+                     user passes in a jQuery instance himself. It is
                      difficult to predictably call $.noConflict after
                      loading jquery asynchronously - the global jQuery
                      and $ variables may or may not be set to the jQuery
