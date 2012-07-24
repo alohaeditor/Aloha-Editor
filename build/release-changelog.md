@@ -1,0 +1,3 @@
+
+- **BUG**: table-plugin: Fixed the removal of the aloha-table-cell_active once a table gets deactivated.
+
