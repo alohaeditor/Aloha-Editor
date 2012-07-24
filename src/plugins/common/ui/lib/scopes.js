@@ -90,7 +90,7 @@ define([
 			if (addedScopes[scope]) {
 				return true;
 			}
-			var isActive = (-1 !== jQuery.inArray(scope, activeScopes));
+			var isActive = (-1 !== $.inArray(scope, activeScopes));
 			if (isActive) {
 				return true;
 			}
