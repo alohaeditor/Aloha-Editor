@@ -114,14 +114,14 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 	 *        exlcude param.
 	 */
 	function combineToolbarSettings(userTabs, defaultTabs, exclude) {
-		var defaultComponentsByTabLabel = Maps.fillTuples({}, Arrays.map(defaultTabs, function(tab) {
-			return [tab.label, tab.components];
+		var defaultTabsByLabel = Maps.fillTuples({}, Arrays.map(defaultTabs, function(tab) {
+			return [tab.label, tab];
 		}));
 		var exclusionLookup = makeExclusionMap(userTabs, exclude);
 		function pruneDefaultComponents(form) {
 			return 'array' === $.type(form) ? !form.length : exclusionLookup[form];
 		};
-		userTabs = mergeDefaultComponents(userTabs, defaultComponentsByTabLabel, pruneDefaultComponents);
+		userTabs = mergeDefaultComponents(userTabs, defaultTabsByLabel, pruneDefaultComponents);
 		defaultTabs = remainingDefaultTabs(defaultTabs, exclusionLookup, pruneDefaultComponents);
 		return userTabs.concat(defaultTabs);
 	}
@@ -146,24 +146,26 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 		return tabs;
 	}
 
-	function mergeDefaultComponents(userTabs, defaultComponentsByTabLabel, pruneDefaultComponents) {
+	function mergeDefaultComponents(userTabs, defaultTabsByLabel, pruneDefaultComponents) {
 		var i,
             tab,
 		    tabs = [],
 		    userTab,
 		    components,
+		    defaultTab,
 		    defaultComponents;
 		for (i = 0; i < userTabs.length; i++) {
 			userTab = userTabs[i];
 			components = userTab.components;
-			defaultComponents = defaultComponentsByTabLabel[userTab.label];
-			if (defaultComponents) {
-				defaultComponents = Trees.postprune(defaultComponents, pruneDefaultComponents);
+			defaultTab = defaultTabsByLabel[userTab.label];
+			if (defaultTab) {
+				defaultComponents = Trees.postprune(defaultTab.components, pruneDefaultComponents);
 				if (defaultComponents) {
 					components = components.concat(defaultComponents);
 				}
 			}
-			tab = $.extend({}, userTab);
+			debugger;
+			tab = $.extend({}, defaultTab || {}, userTab);
 			tab.components = components;
 			tabs.push(tab);
 		}
