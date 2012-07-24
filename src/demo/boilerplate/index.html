@@ -56,7 +56,7 @@
 	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
 	<script src="../../lib/require.js"></script>
     <script>
-		Aloha.settings.jQuery = $;
+		Aloha.settings.jQuery = $.noConflict(true);
     </script>
 	<!--
 		Load the Aloha Editor library.
