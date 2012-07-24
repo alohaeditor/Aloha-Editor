@@ -2092,7 +2092,6 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
-		// check whether the container starts in an element node
 		if (rangeObject.startContainer.nodeType != 1) {
 			return false;
 		}
@@ -2104,6 +2103,9 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 
 	function isCollapsedAndEndBr(rangeObject) {
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
+			return false;
+		}
+		if (rangeObject.startContainer.nodeType != 1) {
 			return false;
 		}
 		return Engine.isEndBreak(rangeObject.startContainer);
