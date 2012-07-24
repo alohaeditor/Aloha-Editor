@@ -1,3 +1,14 @@
+- **ENHANCEMENT**: Wrapping some Aloha.require calls in Aloha.ready calls is not necessary any more
+
+    In some cases, wrapping an Aloha.require call in an Aloha.ready call
+    is not necessary any more. There are some exceptions, because the
+    module itself may assume that Aloha is ready before its API is used.
+
+    At the time of this writing this affects most plugins, since most
+    plugins are initialized when Aloha is ready. So, calling
+    Aloha.require with the plugin as a dependency will work, but the API
+    will likely not be initialized resulting in unpredictable behavior.
+
 - **MANUAL CHANGE**: Most plugins don't load their css files through require any more
 
     Before this change, plugins loaded the necessary css automatically.
@@ -6,7 +17,14 @@
 
 - **MANUAL CHANGE**: baseUrl and data-aloha-plugins attribute detection changed slightly
 
-    The exact rules are as follows:
+    This change can be ignored if aloha.js is loaded in a page where
+    only a single script element refers to a file with this name and if
+    this script include is also the one carrying the data-aloha-plugins
+    attribute, and no other script include is carrying this attribute -
+    this should normally be the case. If this is not the case, aloha may
+    not load correctly due to this change.
+
+    The exact rules are now as follows:
 
     If Aloha.settings.baseUrl is not specified, it will be taken from
     the first script element that has a data-aloha-plugins attribute,
@@ -16,13 +34,6 @@
     If Aloha.settings.plugins.load is not specified, it will be taken
     from the data-aloha-plugins attribute of the first script element
     carrying this attribute.
-
-    This change can be ignored if aloha.js is loaded in a page where
-    only a single script element refers to a file with this name and if
-    this script include is also the one carrying the data-aloha-plugins
-    attribute, and no other script include is carrying this attribute -
-    this should normally be the case. If this is not the case, aloha may
-    not load correctly due to this change.
 
 - **MANUAL CHANGE**: The Aloha.requirePaths property has been removed.
 
@@ -77,43 +88,6 @@
     pass jQuery into Aloha via Aloha.settings.predefinedModules or
     Aloha.settings.jQuery.
 
-- **ENHANCEMENT**: It is now possible to pass in any third party
-    dependencies, for example:
-
-    Aloha.settings.predefinedModules = {'jquery': window.jQuery, 'jqueryui': window.jQuery.ui}
-
-    Aloha will not try to load any of the dependencies defined in this way.
-
-    Please note that if jqueryui is given this way, a jquery dependency
-    must also be given this way, and the given jqueryui dependency must
-    extend the given jquery dependency. The same rule holds for any
-    other jquery plugins.
-
-    Also note that if a jquery dependency is given this way, several
-    jquery plugins will be registered on it (the given jquery instance
-    will be mutated). The jquery plugins registered by aloha on the
-    given jquery dependency should not be replaced, at least not without
-    caution, otherwise behaviour may be unpredictable.
-
-    It is also possible to define alternative paths to third party
-    dependencies, for example:
-
-    Aloha.settings.requireConfig.paths = {'jquery': '/my/jquery.js'};
-
-    This will override the default location Aloha loads jquery from.
-
-    Please note that any dependency defined in this way should have an
-    AMD define.
-
-    Care must be taken with both settings. Passing in a version of a
-    dependency that differs from what Aloha expects may result in
-    unpredictable behaviour.
-
-    Also, the third part libraries that come with Aloha may have been
-    patched to fix bugs or address Aloha specific issues. See the git
-    log for each third party library for further information before
-    redefining it.
-
 - **ENHANCEMENT**: Aloha specific css rules that are not in use any more were removed:
 
     .aloha-editable-zerowidthfix
@@ -122,12 +96,18 @@
 
 - **MANUAL CHANGE**: The jquery requirejs dependency was renamed from aloha/jquery to just jquery.
 
+    define(['aloha/jquery', function($) { });
+
+    must be changed to
+
+    define(['jquery', function($) { });
+
 - **MANUAL CHANGE**: The following jQuery extensions were removed
 
     jQuery.isBoolean - Instead consider typeof x === 'boolean'. 
     jQuery.isEmpty
 
-- **ENHANCEMENT**: The default jQuery version distributed with Aloha was updated from 1.6.1 to 1.7.2.
+- **MANUAL CHANGE**: The default jQuery version distributed with Aloha was updated from 1.6.1 to 1.7.2.
 
     The jQuery.isNumeric extension added to jQuery by Aloha was removed
     to account for jQuery's own isNumeric function added in 1.7.
@@ -217,6 +197,8 @@
     by ExtJs for older versions of IE. Since ExtJs is gone, calling this
     function will now probably cause errors on older versions of
     IE. jQuery.trim() may be used as an alternative.
+
+    See the ui.html guide for more information about the new UI.
 
 - **MANUAL CHANGE**: Several files have been removed
 

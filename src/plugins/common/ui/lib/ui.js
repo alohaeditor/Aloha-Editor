@@ -96,24 +96,58 @@ function(
 ) {
 	'use strict';
 
-	function adopt(slot, SuperType, settings) {
+	/**
+	 * Adopts a component into the UI.
+	 *
+	 * Only adopted components will become part of the UI.
+	 *
+	 * Where the component is placed is decided by looking the name up
+	 * in the configuration.
+	 * 
+	 * If adoption is successful, the component will have its
+	 * adoptParent() method invoked by the container the component ends
+	 * up in.
+	 *
+	 * @param {string?} name
+	 *        Names the component to be adopted.
+	 *        The name is used by the UI to identify the component,
+	 *        and place the component.
+	 *        Making multiple calles with different components but
+	 *        the same name is valid.
+	 *        If not given, settings must be given and contain a
+	 *        name property.
+	 * @param {Object?} SuperTypeOrInstance
+	 *        Either a component type that will be instantiated, or an
+	 *        already instantiated component instance.
+	 * @param {Object?} settings
+	 *        An optional map of component settings which will be used
+	 *        to extend the SuperType.
+	 *        Ignored if an component instance is given.
+	 *        Must contain a name property if no name is given.
+	 * @return
+	 *        If a SuperTypeOrInstance is a SuperType, the new component
+	 *        instantiated from SuperType, or the given component
+	 *        instance.
+	 * @api
+	 */
+	function adopt(name, SuperTypeOrInstance, settings) {
 		var Type,
 		    component;
 
-		if ('string' !== $.type(slot)) {
-			settings = SuperType;
-			SuperType = slot;
-			slot = settings.name;
+		if ('string' !== $.type(name)) {
+			settings = SuperTypeOrInstance;
+			SuperTypeOrInstance = name;
+			name = settings.name;
 		}
 
-		if (!SuperType.isInstance) {
-			Type = settings ? SuperType.extend(settings) : SuperType;
+		if (!SuperTypeOrInstance.isInstance) {
+			Type = settings ? SuperTypeOrInstance.extend(settings) : SuperTypeOrInstance;
 			component = new Type();
 		} else {
-			component = SuperType;
+			component = SuperTypeOrInstance;
 		}
 
-		UiPlugin.adoptInto(slot, component);
+		UiPlugin.adoptInto(name, component);
 
 		return component;
 	}
