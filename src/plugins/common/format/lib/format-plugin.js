@@ -527,7 +527,7 @@ define('format/format-plugin', [
 
 				// update Button toggle state. We take 'Aloha.Selection.getRangeObject()'
 				// because rangeObject is not up-to-date
-				onSelectionChanged(that, Aloha.Selection.getRangeObject());
+				onSelectionChanged(this, Aloha.Selection.getRangeObject());
 
 				return false;
 			},
