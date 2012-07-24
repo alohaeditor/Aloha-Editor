@@ -1,13 +1,3 @@
-/*
- * This is an example build file that demonstrates how to use the build system for
- * require.js.
- *
- * THIS BUILD FILE WILL NOT WORK. It is referencing paths that probably
- * do not exist on your machine. Just use it as a guide.
- *
- *
- */
-
 ({
     //The top level directory that contains your app. If this option is used
     //then it assumed your scripts are in a subdirectory under this path.
@@ -226,7 +216,7 @@
     //The directory path to save the output. If not specified, then
     //the path will default to be a directory called "build" as a sibling
     //to the build file. All relative paths are relative to the build file.
-    dir: "../../target/build-with-plugins",
+    dir: "../../target/tmp/aloha",
 
     //As of RequireJS 2.0.2, the dir above will be deleted before the
     //build starts again. If you have a big build and are not doing

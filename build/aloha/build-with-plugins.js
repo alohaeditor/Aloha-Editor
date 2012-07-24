@@ -1,13 +1,3 @@
-/*
- * This is an example build file that demonstrates how to use the build system for
- * require.js.
- *
- * THIS BUILD FILE WILL NOT WORK. It is referencing paths that probably
- * do not exist on your machine. Just use it as a guide.
- *
- *
- */
-
 ({
     //The top level directory that contains your app. If this option is used
     //then it assumed your scripts are in a subdirectory under this path.
