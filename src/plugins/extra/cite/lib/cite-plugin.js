@@ -653,7 +653,7 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 			// find all quotes
 			obj.find('q').each(function () {
 				// Remove empty class attributes
-				if (jQuery(this).attr('class') !== null && jQuery(this).attr('class').length === 0) {
+				if (jQuery.trim(jQuery(this).attr('class')) === '') {
 					jQuery(this).removeAttr('class');
 				}
 			});
