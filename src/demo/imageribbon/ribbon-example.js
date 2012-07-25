@@ -19,13 +19,33 @@ Aloha.ready(function(){
 		});
 
 		Ribbon.addButton({
-			text: 'Insert Image',
-			click: function() {
-				Dialog.alert({
-					text: "An fancy cool image insert dialog should show up now!"
-				});
-			},
-			iconUrl: '../../plugins/extra/wai-lang/img/button.png'
+			text: 'Image',
+			menu: [
+				{
+					text: "Insert Image... (own dialog)",
+					click: function() {
+						Dialog.alert({
+							text: "An fancy cool image insert dialog should show up now!"
+						});
+					}
+				},
+				{
+					text: "Insert Image... (Google Picker)",
+					click: function() {
+						Dialog.alert({
+							text: "Google Picker should show up!"
+						});						
+					}
+				},
+				{
+					text: "Insert Image... (Flickr)",
+					click: function() {
+						Dialog.alert({
+							text: "Import from Flickr?!"
+						});						
+					}
+				}
+			],
 		});
 
 		Ribbon.show();
