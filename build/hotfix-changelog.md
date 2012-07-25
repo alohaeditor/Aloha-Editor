@@ -30,3 +30,4 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: wai-lang-plugin: The plugin now supports both ISO-639-1 (two letter) and ISO-639-2 (three letter) language codes. The languages can be searched in english or german (depending on the user's locale). Additionally, it is now possible to switch on/off the display of country flags when searching for language codes.
 - **BUG**: metaview-plugin: Modified CSS for language annotations to always show a generic icon for language annotated spans.
 - **BUG**: Fixed trailing comma in array literal.
+- **BUG**: Fixed editing of saved citation links.

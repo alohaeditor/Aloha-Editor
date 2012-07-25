@@ -815,9 +815,6 @@ define([
 		 * Activates (displays) this panel.
 		 */
 		activate: function (effective) {
-			if (this.isActive) {
-				return;
-			}
 			this.isActive = true;
 			this.content.parent('li').show().removeClass('aloha-sidebar-deactivated');
 			this.effectiveElement = effective;
