@@ -32,9 +32,12 @@ Aloha.ready(function(){
 				{
 					text: "Insert Image... (Google Picker)",
 					click: function() {
+						newPicker();
+						/*
 						Dialog.alert({
 							text: "Google Picker should show up!"
-						});						
+						});
+						*/
 					}
 				},
 				{
