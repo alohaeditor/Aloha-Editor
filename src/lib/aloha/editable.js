@@ -69,7 +69,6 @@ define( [
 			// We need to do this this way because removeAttr is not working 
 			// in IE8 in IE8-compatibilitymode for those attributes.
 			if (jQuery.browser.msie && jQuery.browser.version < 8) {
-				debugger;
 				content = content.replace(/(<table\s+[^>]*?)contenteditable=['\"\w]+/gi, "$1");
 			}
 
