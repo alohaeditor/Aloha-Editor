@@ -31,10 +31,6 @@ function pickerCallback(data) {
         var doc = data[google.picker.Response.DOCUMENTS][0];
         site_url = doc[google.picker.Document.EMBEDDABLE_URL]; // only shows website url :(
         image_url = data.docs[0].thumbnails[data.docs[0].thumbnails.length - 1].url;
-        alert(image_url);
-        /*
-        document.getElementById('gdocs_resource_id').value = google.picker.ResourceId.generate(data.docs[0]);
-        $('form#uploadform').submit(); 
-        */
+        alert('Picked image url: ' + image_url);
     }
 }
