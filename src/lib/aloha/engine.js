@@ -882,7 +882,9 @@ function isCollapsedLineBreak(br) {
 
 	ref.style.height = origStyle.height;
 	ref.style.maxHeight = origStyle.maxHeight;
-	ref.style.minHeight = origStyle.minHeight;
+	if (!(jQuery.browser.msie && jQuery.browser.version < 9)) {
+		ref.style.minHeight = origStyle.minHeight;
+	}
 
 	// Allow some leeway in case the zwsp didn't create a whole new line, but
 	// only made an existing line slightly higher.  Firefox 6.0a2 shows this
