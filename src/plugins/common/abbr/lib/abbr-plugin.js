@@ -128,7 +128,7 @@ define([
 			var editableConfig = {};
 
 			Aloha.bind('aloha-editable-activated', function () {
-				if (!Aloha.activeEditable && !Aloha.activeEditable.obj) {
+				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
 					return;
 				}
 
@@ -139,13 +139,11 @@ define([
 			});
 
 			Aloha.bind('aloha-editable-destroyed', function () {
-				if (!Aloha.activeEditable) {
+				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
 					return;
 				}
 
-				if (Aloha.activeEditable.obj) {
-					delete editableConfig[Aloha.activeEditable.getId()];
-				}
+				delete editableConfig[Aloha.activeEditable.getId()];
 			});
 
 			Aloha.bind('aloha-selection-changed', function (event, range) {
