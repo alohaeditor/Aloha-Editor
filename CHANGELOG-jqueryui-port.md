@@ -232,3 +232,4 @@
 
 - **MANUAL CHANGE**: Updated naming from Aloha to Aloha Editor in boilerplate demo
 
+- **ENHANCEMENT**: The vie plugin was removed
