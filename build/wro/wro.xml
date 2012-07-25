@@ -4,6 +4,7 @@
 	<group name="aloha-require-jquery">
 		<js>/target/tmp/aloha/lib/require.js</js>
 		<js>/target/tmp/aloha/lib/vendor/jquery-1.7.2.js</js>
+		<js>/target/tmp/aloha/lib/aloha-jquery-noconflict.js</js>
 		<js>/target/tmp/aloha/lib/aloha.js</js>
 	</group>
 	<group name="aloha-bare">

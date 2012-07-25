@@ -7,21 +7,21 @@ Aloha.require(['ui/settings'], function(Settings){
 
 		var userSettings = [
 			{label: "not-modified" , components: ["1", "2", "3"]},
-			{label: "groups"       , components: [["a", "b", "c"], ["d", "e", "f"]]},
+			{label: "groups"       , components: [["a", "b", "c"], ["d", "e", "f"]], showOn: {scope: 'user'}},
 			{label: "one-added"    , components: ["4", "5", "6"]}
 		];
 
 		var defaultSettings = [
-			{label: "one-added"    , components: ["4", "added", "6", "ignored"]},
-			{label: "groups"       , components: [["d", "e", "g"], ["f", "a", "b"], ["h", "i", "j"]]},
+			{label: "one-added"    , components: ["4", "added", "6", "ignored"], showOn: {scope: 'default'}},
+			{label: "groups"       , components: [["d", "e", "g"], ["f", "a", "b"], ["h", "i", "j"]], showOn: {scope: 'default'}},
 			{label: "one-remains"  , components: ["2", "3", "remains"]},
 			{label: "empty"        , components: ["1", "5"]}
 		];
 
 		var expected = [
 			{label: "not-modified" , components: ["1", "2", "3"]},
-			{label: "groups"       , components: [["a", "b", "c"], ["d", "e", "f"], ["g"], ["h", "i", "j"]]},
-			{label: "one-added"    , components: ["4", "5", "6", "added"]},
+			{label: "groups"       , components: [["a", "b", "c"], ["d", "e", "f"], ["g"], ["h", "i", "j"]], showOn: {scope: 'user'}},
+			{label: "one-added"    , components: ["4", "5", "6", "added"], showOn: {scope: 'default'}},
 			{label: "one-remains"  , components: ["remains"]}
 		];
 
