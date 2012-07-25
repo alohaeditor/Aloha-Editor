@@ -870,7 +870,9 @@ function isCollapsedLineBreak(br) {
 
 	ref.style.height = 'auto';
 	ref.style.maxHeight = 'none';
-	ref.style.minHeight = '0';
+	if (!(jQuery.browser.msie && jQuery.browser.version < 8)) {
+		ref.style.minHeight = '0';
+	}
 	var space = document.createTextNode('\u200b');
 	var origHeight = ref.offsetHeight;
 	if (origHeight == 0) {
@@ -882,7 +884,7 @@ function isCollapsedLineBreak(br) {
 
 	ref.style.height = origStyle.height;
 	ref.style.maxHeight = origStyle.maxHeight;
-	if (!(jQuery.browser.msie && jQuery.browser.version < 9)) {
+	if (!(jQuery.browser.msie && jQuery.browser.version < 8)) {
 		ref.style.minHeight = origStyle.minHeight;
 	}
 
