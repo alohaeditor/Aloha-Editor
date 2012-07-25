@@ -611,7 +611,11 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				// Only remove the data cite attribute when no reference container was set
 				if (!this.referenceContainer) {
 					jQuery(this).removeClass('aloha-cite-' + jQuery(this).attr('data-cite-id'));
-					jQuery(this).removeAttr('data-cite-id');
+
+					// TODO this call to removeAttr causes IE7 to
+					// crash. Find a way to remove the attribute without
+					// causing IE7 to crash.
+					//jQuery(this).removeAttr('data-cite-id');
 				}
 				
 				jQuery(this).removeClass('aloha-cite-wrapper');
