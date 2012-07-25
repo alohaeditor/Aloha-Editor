@@ -419,14 +419,11 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 
 		addBlockQuote: function () {
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
-			var markup = jQuery('<blockquote></blockquote>');
 
-			if (this.referenceContainer) {
-				markup = jQuery(supplant(
-						'<blockquote class="{classes}" data-cite-id="{uid}"></blockquote>',
-						{uid: uid, classes: classes}
-				));
-			}
+			var markup = jQuery(supplant(
+					'<blockquote class="{classes}" data-cite-id="{uid}"></blockquote>',
+					{uid: uid, classes: classes}
+			));
 
 			// Now re-enable the editable...
 			if (Aloha.activeEditable) {
@@ -449,14 +446,11 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 		addInlineQuote: function () {
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
 			
-			var markup = jQuery('<q></q>');
+			var markup = jQuery(supplant(
+					'<q class="{classes}" data-cite-id="{uid}"></q>',
+					{ uid: uid, classes: classes }
+			));
 
-			if (this.referenceContainer) {
-				markup = jQuery(supplant(
-						'<q class="{classes}" data-cite-id="{uid}"></q>',
-						{ uid: uid, classes: classes }
-				));
-			}
 			var rangeObject = Aloha.Selection.rangeObject;
 			var foundMarkup;
 
@@ -656,6 +650,15 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				if (jQuery.trim(jQuery(this).attr('class')) === '') {
 					jQuery(this).removeAttr('class');
 				}
+				
+				// Only remove the data cite attribute when no reference container was set
+				if (!this.referenceContainer) {
+					jQuery(this).removeClass('aloha-cite-' + jQuery(this).attr('data-cite-id'));
+					jQuery(this).removeAttr('data-cite-id');
+				}
+				
+				jQuery(this).removeClass('aloha-cite-wrapper');
+				
 			});
 		}
 
