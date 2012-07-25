@@ -228,7 +228,7 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 					title    : 'Citation',
 					content  : '',
 					expanded : true,
-					activeOn : '.aloha-cite-wrapper',
+					activeOn : 'q, blockquote',
 
 					// Executed once, when this panel object is instantialized
 					onInit   : function () {
@@ -268,18 +268,24 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 					 * created for it first.
 					 */
 					onActivate: function (effective) {
-						var uid = effective.attr('data-cite-id');
-						var index = that.getIndexOfCitation(uid);
+						var activeUid = effective.attr('data-cite-id');
+						if (!activeUid) {
+							activeUid = ++uid;
+							var classes = [nsClass('wrapper')].join(' ');
+							effective.addClass(classes);
+							effective.attr('data-cite-id', activeUid);
+						}
+						var index = that.getIndexOfCitation(activeUid);
 
 						if (-1 === index) {
 							index = that.citations.push({
-								uid   : uid,
+								uid   : activeUid,
 								link  : null,
 								notes : null
 							}) - 1;
 						}
 
-						this.content.attr('data-cite-id', uid);
+						this.content.attr('data-cite-id', activeUid);
 						this.content.find(nsSel('link-field input'))
 						    .val(effective.attr('cite'));
 						this.content.find(nsSel('note-field textarea'))
@@ -596,7 +602,7 @@ function CiteClosure(Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 		makeClean: function (obj) {
 
 			// find all quotes
-			obj.find('q').each(function () {
+			obj.find('q, blockquote').each(function () {
 				// Remove empty class attributes
 				if (jQuery.trim(jQuery(this).attr('class')) === '') {
 					jQuery(this).removeAttr('class');
