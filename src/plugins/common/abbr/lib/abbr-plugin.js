@@ -128,9 +128,10 @@ define([
 			var editableConfig = {};
 
 			Aloha.bind('aloha-editable-activated', function () {
-				if (!Aloha.activeEditable.obj) {
+				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
 					return;
 				}
+
 				var config = me.getEditableConfig(Aloha.activeEditable.obj);
 				editableConfig[
 					Aloha.activeEditable.getId()
@@ -138,9 +139,11 @@ define([
 			});
 
 			Aloha.bind('aloha-editable-destroyed', function () {
-				if (Aloha.activeEditable.obj) {
-					delete editableConfig[Aloha.activeEditable.getId()];
+				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
+					return;
 				}
+
+				delete editableConfig[Aloha.activeEditable.getId()];
 			});
 
 			Aloha.bind('aloha-selection-changed', function (event, range) {

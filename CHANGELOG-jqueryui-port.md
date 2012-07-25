@@ -228,4 +228,7 @@
 - **MANUAL CHANGE**:    HotKey for inserting links is changed back to ctrl+k like documented here:
     https://github.com/alohaeditor/Aloha-Editor/blob/dev-jqueryui-ultra/doc/guides/source/core_hotkey.textile
 
+- **BUG**: abbr-plugin: Fixed a javascript error when Aloha.activeEditable.obj / Aloha.activeEditable was not defined
+
+- **MANUAL CHANGE**: Updated naming from Aloha to Aloha Editor in boilerplate demo
 
