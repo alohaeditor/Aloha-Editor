@@ -12,6 +12,10 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **MANUAL CHANGE**: The change requires changes to existing implementation.
 
+## 0.20.20 - 2012/07/25
+
+- **BUG**: core: An issue that resize handles were displayed on inline elements that contained a new lines in IE7/8 was fixed. 
+
 ## 0.20.19 - 2012/07/25
 
 - **BUG**: cite-plugin: Removal of a cite specific data attribute caused a crash in Native Internet Explorer 7. The removal will now be skipped for Native Internet Explorer 7.
