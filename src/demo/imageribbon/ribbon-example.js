@@ -19,6 +19,21 @@ Aloha.ready(function(){
 		});
 
 		Ribbon.addButton({
+			text: 'Insert Image',
+			click: function() {
+				Dialog.alert({
+					text: "An fancy cool image insert dialog should show up now!"
+				});
+			},
+			iconUrl: '../../plugins/extra/wai-lang/img/button.png'
+		});
+
+		Ribbon.show();
+
+		// Comment Boilerplate example buttons out. Just kept in source for examples of new buttons
+		/*
+
+		Ribbon.addButton({
 			text: "split button",
 			menu: [
 				{
@@ -45,7 +60,6 @@ Aloha.ready(function(){
 			},
 			iconUrl: '../../plugins/extra/wai-lang/img/button.png'
 		});
-		Ribbon.show();
 		Ribbon.addButton({
 			text: "menu button",
 			menu: [
@@ -164,5 +178,7 @@ Aloha.ready(function(){
 				}, 1000);
 			}
 		});
+
+		*/
     });
 });
