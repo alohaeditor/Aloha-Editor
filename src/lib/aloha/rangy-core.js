@@ -2886,9 +2886,18 @@ rangy.createModule("DomUtil", function(api, module) {
         selProto.removeAllRanges = function() {
             // Added try/catch as fix for issue #21
             try {
+            
+            	var isNativeIE7 = (jQuery.browser.msie && jQuery.version < 8 && (typeof document.documentMode === 'undefined'));
+            	if (!isNativeIE7) {
+            		this.docSelection.empty();
+            	}
+
                 // Check for empty() not working (issue #24)
                 if (this.docSelection.type != "None") {
-					this.docSelection.empty();
+
+					if (isNativeIE7) {
+            			this.docSelection.empty();
+            		}
 
                     // Work around failure to empty a control selection by instead selecting a TextRange and then
                     // calling empty()

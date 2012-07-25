@@ -14,6 +14,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.20 - 2012/07/25
 
+- **BUG**: core: An Internet Explorer 7 crash fix was fixed. Previously the fix caused the whole content to be selected for a short period of time when appling inline format elements.
 - **BUG**: core: An issue that resize handles were displayed on inline elements that contained a new lines in IE7/8 was fixed. 
 
 ## 0.20.19 - 2012/07/25
