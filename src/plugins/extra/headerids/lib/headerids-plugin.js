@@ -131,6 +131,18 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
                     
                 });
 			sidebar.show();
+		},
+		
+		/**
+		 * Make the given jQuery object (representing an editable) clean for saving
+		 * If the headerids plugin is active it checks the current editable and 
+		 * generates ids for headers.
+		 * 
+		 * @param {jQuery} obj jQuery object to make clean
+		 */
+		makeClean: function (obj) {
+			this.check(obj);
 		}
+		
 	});
 });
