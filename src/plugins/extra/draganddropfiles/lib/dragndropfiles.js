@@ -138,7 +138,7 @@ function($, Plugin,DropFilesRepository) {
 		/**
 		 * Prepare upload
 		 */
-		prepareFileUpload: function(file) {
+		prepareFileUpload: function(file,targetid) {
 			var 
 				reader = new FileReader(),
 				fileObj,
@@ -152,7 +152,7 @@ function($, Plugin,DropFilesRepository) {
                     fileName: this.file.fileName,
                     data: reader.result
                 };
-                that.filesObjs.push(that.uploader.addFileUpload(currentFile));
+                that.filesObjs.push(that.uploader.addFileUpload(currentFile,targetid));
                 that.processedFiles++;
                 Aloha.trigger('aloha-file-upload-prepared',fileObj);
             };
@@ -163,7 +163,7 @@ function($, Plugin,DropFilesRepository) {
 		 */
 		dropEventHandler: function(event) {
 			var 
-				that = this, edConfig, len, target,
+				that = this, edConfig = this.settings, len, target,
 				files = event.dataTransfer.files, dropimg;
 			this.targetEditable = undefined;
 			this.droppedFilesCount = files.length;
@@ -216,7 +216,7 @@ function($, Plugin,DropFilesRepository) {
 			this.filesObjs = [];
 			this.dropInEditable = false;
 			len = this.droppedFilesCount;
-			if (this.targetEditable[0] === null) { // Process files out of editables
+			if (this.targetEditable[0] === null || this.targetEditable[0] === undefined) { // Process files out of editables
 				while(--len >= 0) {
 					if  ( // Set of conditions, can we resize the image, and do we have a conf to do it
 							!(!!document.createElement('canvas').getContext &&
@@ -230,7 +230,7 @@ function($, Plugin,DropFilesRepository) {
 							Aloha.Log.warn(that,"max_file_size exeeded, upload of " + files[len].name + " aborted");
 						}
 					} else {
-						that.prepareFileUpload(files[len]);
+						that.prepareFileUpload(files[len],target.attr("id"));
 					}
 				}
 			} else {
@@ -253,13 +253,13 @@ function($, Plugin,DropFilesRepository) {
 							  dropimg)
 						) {
 						if (files[len].size <= edConfig.max_file_size) {
-							that.prepareFileUpload(files[len]);
+							that.prepareFileUpload(files[len],target.attr("id"));
 						} else {
 							this.processedFiles++;
 							Aloha.Log.warn(that,"max_file_size exeeded, upload of " + files[len].name + " aborted");
 						}
 					} else {
-						that.prepareFileUpload(files[len]);
+						that.prepareFileUpload(files[len],target.attr("id"));
 					}
 				} //while
 			}

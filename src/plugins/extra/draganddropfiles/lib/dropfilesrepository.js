@@ -106,7 +106,7 @@ function($, repository, i18nCore){
 			callback.call( this, d);
 		},
 		getChildren: function( p, callback) {
-			d = [];
+			var d = [];
 			var parentFolder = p.inFolderId.split("")[0];
 			if (parentFolder == "") {
 				parentFolder = "/";
@@ -124,7 +124,7 @@ function($, repository, i18nCore){
 		 * Triggers an upload
 		 * Resizes if it's an image which is too large
 		 */
-		addFileUpload: function(file) {
+		addFileUpload: function(file,targetid) {
 			var type='';
 			//this.browser.show();
 
@@ -145,6 +145,7 @@ function($, repository, i18nCore){
 			this.objects.push(new this.UploadFile({
 				file:file,
 				id: id,
+                targetid: targetid,
 				name: file.name,
 				displayName:file.name,
 				parentId:"Uploads",
@@ -182,7 +183,7 @@ function($, repository, i18nCore){
 				this._super(properties);
 			},
 			getDataObject: function(record) {
-				repo = Aloha.RepositoryManager.getRepository(record.data.repositoryId);
+				var repo = Aloha.RepositoryManager.getRepository(record.data.repositoryId),
 				d = repo.objects.filter(function(e, i, a) {
 					if (e.id == record.data.id && e.file) return true;
 					return false;
@@ -200,29 +201,29 @@ function($, repository, i18nCore){
 		UploadFile: Aloha.RepositoryDocument.extend({
 			_constructor: function(properties) {
 				var xhr = this.xhr,
-				that = this;
-				this._super(properties);
-				xhr.upload['onprogress'] = function(rpe) {
-					that.loaded = rpe.loaded;
-					that.total = rpe.total;
-					that.ulProgress = rpe.loaded / rpe.total;
-					Aloha.trigger('aloha-upload-progress',that);
+				uploadFile = this;
+				uploadFile._super( properties );
+				xhr.upload.onprogress = function( rpe ) {
+					uploadFile.loaded = rpe.loaded;
+					uploadFile.total = rpe.total;
+					uploadFile.ulProgress = rpe.loaded / rpe.total;
+					Aloha.trigger('aloha-upload-progress',uploadFile);
 					xhr.onload = function(load) {
 						try {
-							that.src = that.upload_config.callback(xhr.responseText);
-							Aloha.trigger('aloha-upload-success',that);
+							uploadFile.src = uploadFile.upload_config.callback(xhr.responseText);
+							Aloha.trigger('aloha-upload-success',uploadFile);
 						} catch(e) {
-							Aloha.trigger('aloha-upload-failure', that);
+							Aloha.trigger('aloha-upload-failure', uploadFile);
 						}
 //						if (that.delegateUploadEvent(xhr.responseText)) {
 	//
 //						} else {
 					};
 					xhr.onabort = function() {
-						Aloha.trigger('aloha-upload-abort', that);
+						Aloha.trigger('aloha-upload-abort', uploadFile);
 					};
 					xhr.onerror = function(e) {
-						Aloha.trigger('aloha-upload-error', that);
+						Aloha.trigger('aloha-upload-error', uploadFile);
 					};
 				}
 			},
@@ -233,14 +234,22 @@ function($, repository, i18nCore){
 			 */
 			startUpload: function() {
 				//if ()
-				var xhr = this.xhr, options = this.upload_config, that = this, data;
-
-				xhr.open(options.method, typeof(options.url) == "function" ? options.url(number) : options.url, true);
-				xhr.setRequestHeader("Cache-Control", "no-cache");
-				xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-				xhr.setRequestHeader(options.file_name_header, this.file.fileName);
-				xhr.setRequestHeader("X-File-Size", this.file.fileSize);
-				xhr.setRequestHeader("Accept", options.accept);
+				var filename = this.file.fileName,
+					xhr = this.xhr,
+					options = this.upload_config,
+					uploadFile = this,
+					data;
+				// firefox and webkit have different property name
+				if ( typeof filename === "undefined" ) {
+					filename = this.file.name;
+				}
+				xhr.open( options.method, typeof(options.url) == "function" ? options.url() : options.url, true );
+				xhr.setRequestHeader( "Cache-Control", "no-cache" );
+				xhr.setRequestHeader( "X-Requested-With", "XMLHttpRequest" );
+				xhr.setRequestHeader( options.file_name_header, filename );
+				xhr.setRequestHeader( "X-File-Size", this.file.fileSize );
+                xhr.setRequestHeader( "X-drop-targetId", this.targetid );
+				xhr.setRequestHeader( "Accept", options.accept );
 //			l
 				if (!options.send_multipart_form) {
 					xhr.setRequestHeader("Content-Type", this.file.type + ";base64");
@@ -283,15 +292,15 @@ function($, repository, i18nCore){
 							targetsize.width,
 							targetsize.height
 						);
-						data = canvas.toDataURL(that.file.type);
-						Aloha.Log.debug(Aloha,"Sent Data (length:" + data.length + ") = " + data.substring(0,30));
+						data = canvas.toDataURL( uploadFile.file.type );
+						Aloha.Log.debug( Aloha , "Sent Data (length:" + data.length + ") = " + data.substring(0,30) );
 						xhr.send(data);
 					};
 					tempimg.src = this.file.data;
 				} else {
-					if (window.FormData) {//Many thanks to scottt.tw
+					if ( window.FormData ) {//Many thanks to scottt.tw
 						var f = new FormData();
-						f.append(typeof(options.fieldName) == "function" ? options.fieldName() : options.fieldName, this.file);
+						f.append( typeof( options.fieldName ) == "function" ? options.fieldName() : options.fieldName, this.file );
 						xhr.send(f);
 					}
 					else if (this.file.getAsBinary) {//Thanks to jm.schelcher
