@@ -12,9 +12,10 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **MANUAL CHANGE**: The change requires changes to existing implementation.
 
+
 ## 0.21.0 - 2012/07/26
 
-- **MANUAL CHANGE**: Updated naming from Aloha to Aloha Editor in boilerplate demo
+- **MANUAL CHANGE**: Updated naming from Aloha to Aloha Editor in boilerplate demo.
 
 - **MANUAL CHANGE**: Most plugins don't load their css files through require any more
 
@@ -215,12 +216,12 @@ All changes are categorized into one of the following keywords:
     Aloha.settings.jQuery.
 
 - **MANUAL CHANGE**:    HotKey for inserting links is changed back to ctrl+k like documented here:
-    https://github.com/alohaeditor/Aloha-Editor/blob/dev-jqueryui-ultra/doc/guides/source/core_hotkey.textile
+    https://github.com/alohaeditor/Aloha-Editor/blob/dev/doc/guides/source/core_hotkey.textile
 
-- **FEATURE**: added hotkey functionality
-- **FEATURE**: added Aloha.settings.plugins.load to load plugins also via config
+- **FEATURE**: Added hotkey functionality.
+- **FEATURE**: Added Aloha.settings.plugins.load to load plugins also via config
 - **FEATURE**: plugin extra/proxy: as multiple plugins need a proxy script to access external resources there's now one for all to use
-- **FEATURE**: images browser plugin
+- **FEATURE**: The images browser plugin was added.
 - **ENHANCEMENT**: Wrapping some Aloha.require calls in Aloha.ready calls is not necessary any more
 
     In some cases, wrapping an Aloha.require call in an Aloha.ready call
@@ -237,12 +238,13 @@ All changes are categorized into one of the following keywords:
     .aloha-editable-zerowidthfix
     .aloha-logo
     .aloha-maximize
-- **ENHANCEMENT**:  It's now possible to deactivate the transformFormattings method
-    in the genericcontenthandler with the following setting:
+    
+- **ENHANCEMENT**:  It's now possible to deactivate the transformFormattings method in the genericcontenthandler with the following setting:
     
     Aloha.settings.contentHandler.handler.generic.transformFormattings = false
     
     By default the transformFormattings method is enabled.
+    
 - **ENHANCEMENT**: The vie plugin was removed
 - **ENHANCEMENT**: block plugin: It is now possible to navigate with arrow keys when there are blocks.
 - **ENHANCEMENT**: block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
