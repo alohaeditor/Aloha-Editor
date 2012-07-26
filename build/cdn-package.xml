@@ -18,9 +18,9 @@
 				<excludes>
 					<exclude>**/demo/**</exclude>
 					<exclude>**/test/**</exclude>
-					<exclude>**/doc/**</exclude>
-					<exclude>**/api/**</exclude>
-					<exclude>**/README</exclude>
+					<exclude>/doc/**</exclude>
+					<exclude>/api/**</exclude>
+					<exclude>/README</exclude>
 				</excludes>
 			</unpackOptions>
 			<outputFileNameMapping></outputFileNameMapping>

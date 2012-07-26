@@ -6,6 +6,7 @@
 * /aloha - Contains the build version of aloha with all examples and plugins
 * /CHANGELOG.md - The Aloha Editor Changelog
 * /CHANGELOG-jquery-port.md - jQuery migration guide
+* /LICENSE.txt - License information
 * /guides - Aloha Editor Guides
 * /api (Still under development)
 
@@ -40,34 +41,63 @@ JSDelivr CDN:
 
 You can include Aloha Editor in your maven project using the following dependencies:
 
-<dependency>
-	<groupId>org.alohaeditor</groupId>
-	<artifactId>alohaeditor</artifactId>
-	<version>${version}</version>
-	<type>zip</type>
-</dependency>
+	<dependency>
+		<groupId>org.alohaeditor</groupId>
+		<artifactId>alohaeditor</artifactId>
+		<version>${version}</version>
+		<type>zip</type>
+	</dependency>
 
-<!-- The CDN Version of aloha contains no examples and no documentation --> 
-<dependency>
-	<groupId>org.alohaeditor</groupId>
-	<artifactId>alohaeditor</artifactId>
-	<version>${version}</version>
-	<classifier>cdn</classifier>
-	<type>zip</type>
-</dependency>
+	<!-- The CDN Version of aloha contains no examples and no documentation --> 
+	<dependency>
+		<groupId>org.alohaeditor</groupId>
+		<artifactId>alohaeditor</artifactId>
+		<version>${version}</version>
+		<classifier>cdn</classifier>
+		<type>zip</type>
+	</dependency>
 
-<!-- A sourcecode snapshot of the released version -->
-<dependency>
-	<groupId>org.alohaeditor</groupId>
-	<artifactId>alohaeditor</artifactId>
-	<version>${version}</version>
-	<classifier>source</classifier>
-	<type>zip</type>
-</dependency>
+	<!-- A sourcecode snapshot of the released version -->
+	<dependency>
+		<groupId>org.alohaeditor</groupId>
+		<artifactId>alohaeditor</artifactId>
+		<version>${version}</version>
+		<classifier>source</classifier>
+		<type>zip</type>
+	</dependency>
+
+### Maven Repository:
+
+	<repositories>
+		<repository>
+			<id>archiva.com.gentics.public</id>
+			<name>Gentics Public Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>archiva.com.gentics.public_snapshots</id>
+			<name>Gentics Public Snapshots Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 [Maven Archive](http://archiva.gentics.com:8081/archiva/browse/org.alohaeditor/alohaeditor)  
 
-[Artifacts can be downloaded here](http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/org/alohaeditor/alohaeditor/${version}/)
+[Released artifacts](http://archiva.gentics.com:8081/archiva/repository/com.gentics.public/org/alohaeditor/alohaeditor/)
+[Snapshot artifacts](http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/org/alohaeditor/alohaeditor/)
 
 ## New Documentation
 
