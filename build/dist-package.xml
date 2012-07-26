@@ -2,7 +2,7 @@
 	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
-	<id>cdn</id>
+	<id>bin</id>
 	<formats>
 		<format>zip</format>
 	</formats>
@@ -11,7 +11,7 @@
 		<!-- Readme -->
 		<file>
 			<source>${project.basedir}/doc/README</source>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}</outputDirectory>
 			<destName>README</destName>
 			<filtered>true</filtered>
 		</file>
@@ -19,20 +19,20 @@
 		<!-- License -->
 		<file>
 			<source>${project.basedir}/LICENSE.txt</source>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}</outputDirectory>
 		</file>
 		
 		<!-- package.json file -->
 		<file>
 			<source>${project.basedir}/src/package.json</source>
-			<outputDirectory>/aloha</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}/aloha</outputDirectory>
 			<filtered>true</filtered>
 		</file>
 		
 		<!-- Bare Version (No require, No jquery) - minified -->
 		<file>
 			<source>${project.basedir}/target/${build.profile}/minified-bare/${build.profile}-bare.js</source>
-			<outputDirectory>/aloha/lib</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}/aloha/lib</outputDirectory>
 			<destName>aloha-bare.min.js</destName>
 			<filtered>true</filtered>
 		</file>
@@ -40,7 +40,7 @@
 		<!-- Bare Version (No require, No jquery) - unminified -->
 		<file>
 			<source>${project.basedir}/target/${build.profile}/debug-bare/${build.profile}-bare.js</source>
-			<outputDirectory>/aloha/lib</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}/aloha/lib</outputDirectory>
 			<destName>aloha-bare.js</destName>
 			<filtered>true</filtered>
 		</file>
@@ -48,14 +48,14 @@
 		<!-- All inclusive version of aloha -->
 		<file>
 			<source>${project.basedir}/target/${build.profile}/minified-full/${build.profile}.js</source>
-			<outputDirectory>/aloha/lib</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}/aloha/lib</outputDirectory>
 			<destName>aloha-full.min.js</destName>
 			<filtered>true</filtered>
 		</file>
 
 		<file>
 			<source>${project.basedir}/target/${build.profile}/debug-full/${build.profile}.js</source>
-			<outputDirectory>/aloha/lib</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}/aloha/lib</outputDirectory>
 			<destName>aloha-full.js</destName>
 			<filtered>true</filtered>
 		</file>
@@ -63,7 +63,7 @@
 		<!-- Default version of aloha (the minified bare version) -->
 		<file>
 			<source>${project.basedir}/target/${build.profile}/minified-bare/${build.profile}-bare.js</source>
-			<outputDirectory>/aloha/lib</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}/aloha/lib</outputDirectory>
 			<destName>aloha.js</destName>
 			<filtered>true</filtered>
 		</file>
@@ -74,7 +74,7 @@
 		<!-- Other non core files -->
 		<fileSet>
 			<directory>${project.basedir}/target/${build.profile}/rjs-output</directory>
-			<outputDirectory>/aloha</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}/aloha</outputDirectory>
 			<excludes>
 				<!-- Don't include the core -->
 				<exclude>lib/aloha/*.js</exclude>
@@ -88,7 +88,7 @@
 		<!-- Workaround for jquery-ui dependency -->
 		<fileSet>
 			<directory>${project.basedir}/target/${build.profile}/rjs-output</directory>
-			<outputDirectory>/aloha</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}/aloha</outputDirectory>
 			<includes>
 				<include>lib/aloha/jquery-ui.js</include>
 			</includes>
@@ -97,7 +97,7 @@
 		<!-- guides / api -->
 		<fileSet>
 			<directory>${project.basedir}/target/out</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}</outputDirectory>
 			<includes>
 				<include>**/*</include>
 			</includes>
@@ -106,7 +106,7 @@
 		<!-- Changelog -->
 		<fileSet>
 			<directory>${project.basedir}/</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}</outputDirectory>
 			<includes>
 				<include>/CHANGELOG*</include>
 			</includes>
