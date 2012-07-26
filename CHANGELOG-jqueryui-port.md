@@ -1,3 +1,5 @@
+- **BUG**: fixing placeholder bug where it appears twice in some cases
+
 - **ENHANCEMENT**: Wrapping some Aloha.require calls in Aloha.ready calls is not necessary any more
 
     In some cases, wrapping an Aloha.require call in an Aloha.ready call
@@ -232,3 +234,4 @@
 
 - **MANUAL CHANGE**: Updated naming from Aloha to Aloha Editor in boilerplate demo
 
+- **ENHANCEMENT**: The vie plugin was removed

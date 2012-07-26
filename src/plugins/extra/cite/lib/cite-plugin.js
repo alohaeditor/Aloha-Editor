@@ -33,8 +33,7 @@ define([
 
 	var $ = jQuery,
 		ns  = 'aloha-cite',
-		uid = (new Date()).getTime(),
-		animating = false;
+		uid = (new Date()).getTime();
 
 	// namespaced classnames
 	var nsClasses = {
@@ -222,7 +221,7 @@ define([
 					title    : 'Citation',
 					content  : '',
 					expanded : true,
-					activeOn : '.aloha-cite-wrapper',
+					activeOn : 'q, blockquote',
 
 					// Executed once, when this panel object is instantialized
 					onInit   : function () {
@@ -262,18 +261,24 @@ define([
 					 * created for it first.
 					 */
 					onActivate: function (effective) {
-						var uid = effective.attr('data-cite-id');
-						var index = that.getIndexOfCitation(uid);
+						var activeUid = effective.attr('data-cite-id');
+						if (!activeUid) {
+							activeUid = ++uid;
+							var classes = [nsClass('wrapper')].join(' ');
+							effective.addClass(classes);
+							effective.attr('data-cite-id', activeUid);
+						}
+						var index = that.getIndexOfCitation(activeUid);
 
 						if (-1 === index) {
 							index = that.citations.push({
-								uid   : uid,
+								uid   : activeUid,
 								link  : null,
 								notes : null
 							}) - 1;
 						}
 
-						this.content.attr('data-cite-id', uid);
+						this.content.attr('data-cite-id', activeUid);
 						this.content.find(nsSel('link-field input'))
 						    .val(effective.attr('cite'));
 						this.content.find(nsSel('note-field textarea'))
@@ -407,14 +412,11 @@ define([
 
 		addBlockQuote: function () {
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
-			var markup = jQuery('<blockquote></blockquote>');
 
-			if (this.referenceContainer) {
-				markup = jQuery(supplant(
-						'<blockquote class="{classes}" data-cite-id="{uid}"></blockquote>',
-						{uid: uid, classes: classes}
-				));
-			}
+			var markup = jQuery(supplant(
+					'<blockquote class="{classes}" data-cite-id="{uid}"></blockquote>',
+					{uid: uid, classes: classes}
+			));
 
 			// Now re-enable the editable...
 			if (Aloha.activeEditable) {
@@ -437,14 +439,11 @@ define([
 		addInlineQuote: function () {
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
 			
-			var markup = jQuery('<q></q>');
+			var markup = jQuery(supplant(
+					'<q class="{classes}" data-cite-id="{uid}"></q>',
+					{ uid: uid, classes: classes }
+			));
 
-			if (this.referenceContainer) {
-				markup = jQuery(supplant(
-						'<q class="{classes}" data-cite-id="{uid}"></q>',
-						{ uid: uid, classes: classes }
-				));
-			}
 			var rangeObject = Aloha.Selection.rangeObject;
 			var foundMarkup;
 
@@ -565,54 +564,6 @@ define([
 			if (link) {
 				// Update link attribute
 				var el = jQuery(nsSel(uid)).attr('cite', link);
-
-				if (!animating) {
-					// Highlight animation for happy user.
-					var round = Math.round;
-					var from  = hex2rgb('#fdff9a');
-					var to    = hex2rgb('#fdff9a');
-
-					from.push(1);
-					to.push(0);
-
-					var diff = [ to[0] - from[0],
-								 to[1] - from[1],
-								 to[2] - from[2],
-								 to[3] - from[3] ];
-
-					var origBg = el[0].style.backgroundColor;
-					var origShadow = el[0].style.boxShadow;
-
-					el.css({
-						__tick: 0, // Our increment.
-						'background-color': 'rgba(' + from.join(',') + ')',
-						'box-shadow': '0 0 20px rgba(' + from.join(',') + ')'
-					});
-
-					animating = true;
-
-					el.animate({ __tick: 1}, {
-						duration: 500,
-						easing: 'linear',
-						step: function (val, fx) {
-							var rgba = [round(from[0] + diff[0] * val),
-							            round(from[1] + diff[1] * val),
-							            round(from[2] + diff[2] * val),
-							            from[3] + diff[3] * val];
-
-							jQuery(this).css({
-								'background-color': 'rgba(' + rgba.join(',') + ')',
-								'box-shadow': '0 0 ' + (20 * (1 - val)) +
-									'px rgba(' + from.join(',') + ')'
-							});
-						},
-						complete: function () {
-							animating = false;
-							this.style.backgroundColor = origBg;
-							this.style.boxShadow = origShadow;
-						}
-					});
-				}
 			}
 
 			// Update information in references list for this citation.
@@ -639,11 +590,25 @@ define([
 		makeClean: function (obj) {
 
 			// find all quotes
-			obj.find('q').each(function () {
+			obj.find('q, blockquote').each(function () {
 				// Remove empty class attributes
-				if (jQuery(this).attr('class').length === 0) {
+				if (jQuery.trim(jQuery(this).attr('class')) === '') {
 					jQuery(this).removeAttr('class');
 				}
+				// Only remove the data cite attribute when no reference container was set
+				if (!this.referenceContainer) {
+					jQuery(this).removeClass('aloha-cite-' + jQuery(this).attr('data-cite-id'));
+			
+					// We need to read this attribute for IE7. Otherwise it will
+					// crash when the attribute gets removed. In IE7 this removal 
+					// does not work at all. (no wonders here.. :.( )
+					if (jQuery(this).attr('data-cite-id') != null) {
+						jQuery(this).removeAttr('data-cite-id');
+					}
+				}
+				
+				jQuery(this).removeClass('aloha-cite-wrapper');
+				
 			});
 		}
 

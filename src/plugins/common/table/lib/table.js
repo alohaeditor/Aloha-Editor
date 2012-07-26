@@ -1455,7 +1455,7 @@ define([
 
 		// remove the "selection class" from all td and th in the table
 		this.obj.find('td, th').removeClass(this.get('classCellSelected'));
-
+		this.obj.find('td, th').removeClass('aloha-table-cell_active');
 		this.obj.unbind();
 		this.obj.children('tbody').unbind();
 
