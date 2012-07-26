@@ -455,7 +455,9 @@ define( [
 			} else {
 				el = span;
 			}
-
+			if ( jQuery( "." + this.placeholderClass, obj ).length !== 0 ) {
+				return;
+			}
 			jQuery( obj ).append( el.addClass( this.placeholderClass ) );
 			jQuery.each(
 				Aloha.settings.placeholder,
@@ -484,24 +486,19 @@ define( [
 		removePlaceholder: function( obj, setCursor ) {
 			var placeholderClass = this.placeholderClass,
 			    range;
-
-			// remove browser br
-			// jQuery( 'br', obj ).remove();
-
+			if ( jQuery("." + this.placeholderClass, obj ).length === 0 ) {
+				return;
+			} 
 			// set the cursor // remove placeholder
 			if ( setCursor === true ) {
-				range = Selection.getRangeObject();
-				if ( !range.select ) {
-					return;
-				}
-				range.startContainer = range.endContainer = obj.get( 0 );
-				range.startOffset = range.endOffset = 0;
-				range.select();
-
 				window.setTimeout( function() {
+					range = new Selection.SelectionRange();
+					range.startContainer = range.endContainer = obj.get(0);
+					range.startOffset = range.endOffset = 0;
 					jQuery( '.' + placeholderClass, obj ).remove();
-				}, 20 );
-
+					range.select();
+				
+				}, 100 );
 			} else {
 				jQuery( '.' + placeholderClass, obj ).remove();
 			}
@@ -518,7 +515,7 @@ define( [
 			}
 
 			// special handled elements
-			switch ( this.originalObj.get( 0 ).nodeName.toLowerCase() ) {
+			switch ( this.originalObj.get(0).nodeName.toLowerCase() ) {
 				case 'label':
 				case 'button':
 					// TODO need some special handling.
