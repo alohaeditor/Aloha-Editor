@@ -158,7 +158,6 @@
 					</execution>
 					<!-- TODO: check filesize -->
 					<!-- TODO: cd "$TMP/aloha/css" r.js -o cssIn=aloha.css out=aloha.css -->
-					<!-- TODO: echo "build-date: `date`" >> $OUT/aloha/build.txt -->
 					<execution>
 						<phase>package</phase>
 						<id>build-guides</id>

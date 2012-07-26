@@ -9,9 +9,22 @@
 * /guides - Aloha Editor Guides
 * /api (Still under development)
 
-## Security Notice
+## Variations of aloha.js
 
-The +aloha+ folder contains some php example. Please remove example code when you plan to use the build in your project. Alternatively you can download the CDN version.
+### Bare Version
+
+The bare version of aloha will not include require.js, jquery-1.7.2.js, aloha-jquery-noconflict.js.
+
+* aloha-bare.js
+* aloha-bare.min.js - Minified version
+* aloha.js - alias for aloha-bare.min.js
+
+### Full Version
+
+The full version of aloha will include require.js, jquery-1.7.2.js, aloha-jquery-noconflict.js.
+
+* aloha-full.js 
+* aloha-full.min.js - Minified version
 
 ## CDN (Content Delivery Network) Locations
 
@@ -34,7 +47,7 @@ You can include Aloha Editor in your maven project using the following dependenc
 	<type>zip</type>
 </dependency>
 
-<!-- The CDN Version of aloha contains no examples and no documenation --> 
+<!-- The CDN Version of aloha contains no examples and no documentation --> 
 <dependency>
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
@@ -64,3 +77,7 @@ For help there is:
 - [the wiki](https://github.com/alohaeditor/Aloha-Editor/wiki) for end-users and implementors
 - [the issues tracker](https://github.com/alohaeditor/Aloha-Editor/issues) for developer support requests
 - [the support forum](http://getsatisfaction.com/aloha_editor) for end-user and implementor support requests
+
+## Security Notice
+
+The +aloha+ folder contains some php example. Please remove example code when you plan to use the build in your project. Alternatively you can download the CDN version.

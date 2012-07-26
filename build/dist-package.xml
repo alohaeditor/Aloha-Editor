@@ -16,6 +16,12 @@
 			<filtered>true</filtered>
 		</file>
 		
+		<!-- License -->
+		<file>
+			<source>${project.basedir}/LICENSE.txt</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+		
 		<!-- package.json file -->
 		<file>
 			<source>${project.basedir}/src/package.json</source>
@@ -54,7 +60,7 @@
 			<filtered>true</filtered>
 		</file>
 
-		<!-- Default version of aloha (the full minified version) -->
+		<!-- Default version of aloha (the minified bare version) -->
 		<file>
 			<source>${project.basedir}/target/${build.profile}/minified-bare/${build.profile}-bare.js</source>
 			<outputDirectory>/aloha/lib</outputDirectory>
