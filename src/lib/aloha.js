@@ -50,7 +50,7 @@
 		    plugins = Aloha.settings.plugins && Aloha.settings.plugins.load,
 		    baseUrl = Aloha.settings.baseUrl,
 		    pluginsAttr,
-		    regexAlohaJs = /\/aloha\.js$/,
+		    regexAlohaJs = /\/aloha.js(\?\S*)?$/,
             regexStripFilename = /\/[^\/]*\.js$/,
 		    i;
 
