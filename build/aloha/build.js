@@ -405,6 +405,7 @@
     //done. If that module or any of its dependencies includes i18n bundles,
     //only the root bundles will be included unless the locale: section is set above.
     modules: [
+
         //Just specifying a module name means that module will be converted into
         //a built file that contains all of its dependencies. If that module or any
         //of its dependencies includes i18n bundles, they may not be included in the

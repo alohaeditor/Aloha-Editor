@@ -122,16 +122,19 @@
 	<li>The tagged version will be merged into the dev branch. Please note that the dev version should always be one level above the current major release version. (eg. current stable is 0.20.0 than the dev branch version would be 0.30.0-dev.)</li>
 </ul>
 <h3 id="practical-maven-feature-release-example-for-version-0-20-0">2 Practical Maven Feature Release Example For Version 0.20.0</h3>
-<p>1. Switch into the dev branch.</p>
+<p>1. Update the dev branch.</p>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
 
   git checkout dev
-</pre></div><p>2. Create a new release branch.</p>
+  git pull origin dev
+</pre></div><p>2. Switch into the release branch and update it.</p>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
 
-  git checkout -b release-0.20.0
+  git checkout release
+  git pull origin dev
+  git push origin release
 </pre></div>
 <p>3. Prepare the release and define the release version.</p>
 <div class="code_container">
@@ -175,34 +178,42 @@ What is the new development version for &quot;Aloha Editor&quot;? (org.alohaedit
 
   git add .
   git commit -m &quot;Maven release prepare&quot;
-  git push origin release-0.20.0
+  git push origin release
   mvn release:perform
-</pre></div><p>6. Checkout the master branch and merge the tag into that branch</p>
+</pre></div><p>6. Checkout the master branch and merge it with the release branch</p>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
 
   git checkout master
-  git merge tags/release-0.20.0
+  git pull origin master 
+  git pull origin release
+  git push origin master
 </pre></div><p>8. Update the dev branch</p>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
  
   git checkout dev
-  git pull hotfix-0.20.0
+  git pull origin release
+  git push origin dev
 </pre></div><p>9. Update the dev branch version to 0.21.0-dev-<span class="caps">SNAPSHOT</span></p>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
 
-  mvn release:update-versions -DdevelopmentVersion=0.21-dev-SNAPSHOT -DautoVersionSubmodules=true
+  mvn release:update-versions -DdevelopmentVersion=0.21.0-dev-SNAPSHOT -DautoVersionSubmodules=true
 </pre></div><h3 id="practical-maven-hotfix-release-example">3 Practical Maven Hotfix Release Example</h3>
-<p>1. Create a new hotfix branch from master</p>
+<p>1. Switch to the hotfix branch and update it</p>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
   
-  git checkout -b hotfix-0.20.1 master
-  git push origin hotfix-0.20.1
-</pre></div><p>2. Rename the old release/hotfix branch   git checkout release-0.20.0   git checkout -b release-0.20.0-closed   git branch -d release-0.20.0   git push upstream release-0.20.0-closed   git push upstream :release-0.20.0</p>
-<p>3. Continue with step 3 from the feature release example</p>
+  git checkout hotfix
+  git pull origin hotfix
+</pre></div><p>3. Continue with step three from the feature release example</p>
+<h4 id="post-release-steps">3.1 Post Release Steps</h4>
+<ul>
+	<li>Upload the released zip file to https://github.com/alohaeditor/Aloha-Editor/downloads</li>
+	<li>Add the release to the artifactItems of https://github.com/alohaeditor/Aloha-Editor-<span class="caps">CDN</span>/blob/master/pom.xml and reinvoke synchronisation of the <span class="caps">CDN</span>.</li>
+	<li>Tweet about the release</li>
+</ul>
 
       </div>
         <div id="subCol">
@@ -214,7 +225,8 @@ What is the new development version for &quot;Aloha Editor&quot;? (org.alohaedit
 </a></li> <li><a href="#post-release-steps"><p>Post Release Steps</p>
 </a></li></ul></li><li><a href="#practical-maven-feature-release-example-for-version-0-20-0"><p>Practical Maven Feature Release Example For Version 0.20.0</p>
 </a></li><li><a href="#practical-maven-hotfix-release-example"><p>Practical Maven Hotfix Release Example</p>
-</a></li>
+</a><ul><li><a href="#post-release-steps"><p>Post Release Steps</p>
+</a></li></ul></li>
           </ol>
         </div>
     </div>

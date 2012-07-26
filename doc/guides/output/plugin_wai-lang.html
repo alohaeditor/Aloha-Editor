@@ -116,7 +116,7 @@
 <p>Include the <tt>extra/wai-lang</tt> plugin in the plugin list of the Aloha-Editor.</p>
 <p>Select the text you want to annotate and click the &#8220;Add language annotation&#8221; button. <img src="images/plugins/wai-lang-add-annotation.png" style="width:620px"></p>
 <p>Start typing the language name or code in the input field and select the desired entry. <img src="images/plugins/wai-lang-select.png" style="width:620px"></p>
-<p>The text is surrounded with a span-tag with a <code>lang</code> attribute. As language code there will be the <span class="caps">ISO</span> 639‑1 two-letter code used. <img src="images/plugins/wai-lang-code.png" style="width:620px"></p>
+<p>The text is surrounded with a span-tag with a <code>lang</code> attribute. As language code there will be the either the <span class="caps">ISO</span> 639‑1 two-letter code (default) or the <span class="caps">ISO</span> 639-2 three-letter code used. <img src="images/plugins/wai-lang-code.png" style="width:620px"></p>
 <div class="code_container">
 <pre class="brush: xml; gutter: false; toolbar: false">
 
@@ -139,6 +139,8 @@
 
 Aloha.settings.plugins: {
 	'wai-lang': {
+		iso639: 'iso639-1', // iso639-2 for three letter codes
+		flags: false,		// whether to show flags in the dropdown
 		config: [ 'span' ],
 		editables: {
 			// Don't allow wai-lang in top-text

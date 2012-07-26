@@ -61,8 +61,8 @@ define( [
 	// default supported and custom content handler settings
 	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
-	Aloha.defaults.contentHandler.initEditable = [ 'sanitize' ];
-	Aloha.defaults.contentHandler.getContents = [ 'sanitize' ];
+	Aloha.defaults.contentHandler.initEditable = [ 'blockelement', 'sanitize' ];
+	Aloha.defaults.contentHandler.getContents = [ 'blockelement', 'sanitize', 'basic'];
 
 	// The insertHtml contenthandler ( paste ) will, by default, use all
 	// registered content handlers.
@@ -78,6 +78,51 @@ define( [
 
 	var contentSerializer = defaultContentSerializer;
 
+	var BasicContentHandler = ContentHandlerManager.createHandler({
+
+		/**
+		 * @param {string} content Content to process.
+		 * @return {string} Processed content.
+		 */
+		handleContent: function (content) {
+			// Remove the contenteditable attribute from the final html in IE8
+			// We need to do this this way because removeAttr is not working 
+			// in IE8 in IE8-compatibilitymode for those attributes.
+			if (jQuery.browser.msie && jQuery.browser.version < 8) {
+				content = content.replace(/(<table\s+[^>]*?)contenteditable=['\"\w]+/gi, "$1");
+			}
+
+			return content;
+		}
+
+	});
+
+	// Register the basic contenthandler
+	ContentHandlerManager.register('basic', BasicContentHandler);
+
+	function makeClean($content) {
+		if (jQuery.browser.msie && jQuery.browser.version < 8) {
+			$content = jQuery($content);
+			
+			$content.find('[hidefocus]').each(function () {
+				jQuery(this).removeAttr('hidefocus');
+			});
+			
+			$content.find('[hideFocus]').each(function () {
+				jQuery(this).removeAttr('hideFocus');
+			});
+			
+			$content.find('[tabindex]').each(function () {
+				jQuery(this).removeAttr('tabindex');
+			});
+			
+			$content.find('[tabIndex]').each(function () {
+				jQuery(this).removeAttr('tabIndex');
+			});
+		}
+	}
+
+	
 	/**
 	 * Editable object
 	 * @namespace Aloha
@@ -734,6 +779,8 @@ define( [
 			$clone.find( '.aloha-cleanme' ).remove();
 			this.removePlaceholder($clone);
 			PluginManager.makeClean($clone);
+
+			makeClean($clone);
 
 			$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
 				contenthandler: Aloha.settings.contentHandler.getContents,
