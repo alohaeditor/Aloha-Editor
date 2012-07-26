@@ -1,4 +1,4 @@
-# [Aloha Editor - ${project.version} - The HTML5 WYSIWYG Editor](http://aloha-editor.org/)
+# [Aloha Editor - ${version} - The HTML5 WYSIWYG Editor](http://aloha-editor.org/)
 
 ## Zipfile content:
 
@@ -16,11 +16,11 @@ The +aloha+ folder contains some php example. Please remove example code when yo
 ## CDN (Content Delivery Network) Locations
 
 Cloudfront CDN:
-* http://cdn.aloha-editor.org/aloha-${project.version}/lib/aloha.js
+* http://cdn.aloha-editor.org/aloha-${version}/lib/aloha.js
 * http://cdn.aloha-editor.org/current/lib/aloha.js
 
 JSDelivr CDN:
-* http://cdn.jsdelivr.net/aloha-${project.version}/lib/aloha.js
+* http://cdn.jsdelivr.net/aloha-${version}/lib/aloha.js
 * http://cdn.jsdelivr.net/alohaeditor/current/lib/aloha.js
 
 ## Maven
@@ -30,7 +30,7 @@ You can include Aloha Editor in your maven project using the following dependenc
 <dependency>
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>${project.version}</version>
+	<version>${version}</version>
 	<type>zip</type>
 </dependency>
 
@@ -38,7 +38,7 @@ You can include Aloha Editor in your maven project using the following dependenc
 <dependency>
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>${project.version}</version>
+	<version>${version}</version>
 	<classifier>cdn</classifier>
 	<type>zip</type>
 </dependency>
@@ -47,14 +47,14 @@ You can include Aloha Editor in your maven project using the following dependenc
 <dependency>
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>${project.version}</version>
+	<version>${version}</version>
 	<classifier>source</classifier>
 	<type>zip</type>
 </dependency>
 
 [Maven Archive](http://archiva.gentics.com:8081/archiva/browse/org.alohaeditor/alohaeditor)  
 
-[Artifacts can be downloaded here](http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/org/alohaeditor/alohaeditor/${project.version}/)
+[Artifacts can be downloaded here](http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots/org/alohaeditor/alohaeditor/${version}/)
 
 ## New Documentation
 
