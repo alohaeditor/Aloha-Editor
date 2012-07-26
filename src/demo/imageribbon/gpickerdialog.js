@@ -31,7 +31,9 @@ function ImagePickerCallback(data) {
         var doc = data[google.picker.Response.DOCUMENTS][0];
         site_url = doc[google.picker.Document.URL]; // only shows website url :(
         image_url = data.docs[0].thumbnails[data.docs[0].thumbnails.length - 1].url;
-        alert('Picked image url: ' + image_url);
+
+        var img = Aloha.jQuery("<img />").attr("src", image_url);
+        AlohaInsertIntoDom(img);
     }
 }
 
