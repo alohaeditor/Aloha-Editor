@@ -1,0 +1,108 @@
+<html>
+<head>
+<link href="./stylemain.css" rel="stylesheet" type="text/css">
+</head>
+
+<body style="background-color:#ccc;">
+
+<div id="bookcontent" class="example-text mercury-region" data-type="editable">
+  <h1>What is Airtime?</h1>
+
+  <p><em>Updated for Airtime 1.9.5</em><br></p>
+
+  <p><a title="Airtime homepage" href="http://airtime.sourcefabric.org/">Airtime</a> is the open broadcast software for scheduling and remote station management. Web browser access to the station's media archive, multi-file upload and automatic metadata verification features are coupled with a collaborative on-line scheduling calendar and playlist management. The scheduling calendar is managed through an easy-to-use interface and triggers playout with sub-second precision.</p>
+
+  <p><img src="http://en.flossmanuals.net/airtime/_booki/airtime/static/Screenshot57-Airtime1.7_admin_interface.png"></p>
+
+  <p>Airtime has been intended to provide a solution for a wide range of broadcast projects, from community to public and commercial stations. The scalability of Airtime allows implementation in a number of scenarios, ranging from an unmanned broadcast unit accessed remotely through the Internet, to a local network of machines accessing a central Airtime storage system. Airtime supports the playout of files in both the commonly used MP3 format and the open, royalty-free equivalent <a title="Ogg Vorbis homepage" href="http://www.vorbis.com/">Ogg Vorbis</a>.</p>
+
+  <p>Airtime manages the <a href="http://savonet.sourceforge.net/">Liquidsoap</a> stream generator, which is at the heart of the system. Liquidsoap generates streams from files in the Airtime media archive, which is indexed in a <a href="http://www.postgresql.org/">PostgreSQL</a> database. Live shows are automatically recorded with <a title="Ecasound homepage" href="http://eca.cx/ecasound/">Ecasound</a>, using the soundcard line input. Editors and station controllers can use Airtime to build playlists and manage files (upload, add metadata, manage advertisements) inside the station or via the Internet, using a standard web browser such as Mozilla Firefox or Internet Explorer.</p>
+
+  <p>The scheduler in Airtime has a calendar view, organized by months, weeks and days. Here the program editors can schedule playlists and shows for their broadcast station. In some scenarios, the transmitter is situated outside the reach of the broadcaster and all program management has to be maintained through the web interface. Possible reasons for this scenario might be of a pragmatic nature (running many stations from one central office due to limited human resources) or an emergency (running a transmitter in a crisis area without putting staff at risk).</p>
+
+  <h2>Airtime workflow</h2>
+
+  <p>This typical workflow is intended to clarify the difference between the various components that make up a complete Airtime system.&nbsp;<br></p>
+
+  <p>1. There are media files on a server, which include metadata in their tags (title, creator, genre and so on).</p>
+
+  <p>2. There is a PostgreSQL database which contains the location of those media files and their metadata. This means you can search for and select a set of media files according to the specific metadata that you require.<br></p>
+
+  <p>3. There is a Liquidsoap stream generator on the server which can take individual media files and assemble them into a continuous stream. This stream can be sent to a soundcard (e.g. for a broadcast mixer, on the way to an FM or DAB transmitter) or to a streaming server for IP network distribution, such as LAN, local WiFi or the Internet. You can stream to a soundcard and to IP networks with the same server, if you wish.<br></p>
+
+  <p>4. Icecast (<a title="Icecast homepage" href="http://www.icecast.org/">http://www.icecast.org/</a>) is the default streaming server, but in theory you could stream from Liquidsoap to any online service, including Shoutcast (<a title="Shoutcast homepage" href="http://www.shoutcast.com">http://www.shoutcast.com</a>). If a suitable software interface is not available for your streaming service of choice, you can send audio from Liquidsoap to a separate encoding or streaming machine via a soundcard.<br></p>
+
+  <p>5. Airtime manages all of these components, and provides an easy to use web interface to the system. It enables your station staff to:</p>
+
+  <p>a) upload media files to the storage server</p>
+
+  <p>b) automatically import the file metadata into the PostgreSQL database</p>
+
+  <p>c) edit the metadata for the files, if required</p>
+
+  <p>d) create and edit playlists of media files (playlists are also saved in the database)</p>
+
+  <p>e) schedule shows (which can contain playlists, or be live) for specific dates and times on a calendar</p>
+
+  <p>f) record live shows from the soundcard input with Ecasound, upload them to the storage server and import them into the database automatically</p>
+
+  <p>g) manage presenter access to the schedule calendar</p>
+
+  <p>h) see what is about to be played by Liquidsoap in the 'Now Playing' view</p>
+
+  <h2>Example system</h2>
+
+  <p>Combining Airtime, the Liquidsoap stream generator, the PostgreSQL database and file storage, you can supply a broadcast station with all the functionality needed for automation.</p>
+
+  <p>In the diagram below, the media files are stored on a separate machine which also includes a PostgreSQL database, accessible through the local network. Liquidsoap outputs streams to both the transmitter and a streaming media server. The machine running Airtime is behind a firewall because it is connected both to the local network, and to the Internet for remote access. This enables Airtime to offer password-protected access to the media database and scheduling from both inside and outside the studio building.</p>
+
+<p>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ut luctus lorem. In tristique elit in ipsum pharetra scelerisque. Quisque dapibus eros vel sem tincidunt tincidunt. Donec in lorem eu dui tempus pharetra. Aliquam fringilla lectus ut massa commodo ultrices. Etiam sapien justo, suscipit in suscipit a, aliquet in sapien. Aliquam metus odio, ornare quis pharetra ac, bibendum non mauris. Pellentesque elementum, urna non auctor ullamcorper, lectus magna viverra purus, nec blandit tellus lorem quis urna. Aliquam fermentum lacus sit amet neque bibendum ornare. Proin at nisl turpis. Nullam sollicitudin malesuada leo, non dignissim dui euismod vel. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec pretium vestibulum libero non iaculis.
+</p>
+<p>
+Nunc urna lacus, ultricies quis facilisis at, elementum ac orci. Aliquam lacinia, nisi vel tempor pharetra, lectus lacus tristique lectus, in tincidunt odio sem sit amet erat. Integer vitae turpis risus, nec placerat ipsum. Nam tempor, ipsum vel varius auctor, metus nulla porta tortor, eget fermentum quam neque non felis. Cras nec nisl vitae arcu convallis luctus. Sed eget sapien leo. Mauris felis est, interdum nec suscipit non, ultricies id purus. Nulla urna tortor, rutrum sit amet mollis ac, posuere in nunc. Aliquam mattis, mi eget dignissim tristique, eros orci posuere lacus, in tristique nisi leo quis massa. Nullam nec quam nec justo placerat fringilla. Donec bibendum nulla vitae nunc viverra laoreet non sed ipsum.
+</p>
+<p>
+Sed sed egestas augue. Fusce id mollis dui. Sed justo felis, tincidunt vitae pharetra ac, vulputate et enim. Integer convallis, velit et sodales gravida, ligula risus vehicula justo, ut euismod sapien quam vitae elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean aliquet varius semper. Mauris dui dolor, porttitor vitae pretium vel, aliquet egestas quam. Ut molestie, sem sit amet adipiscing varius, eros mi placerat velit, eget dapibus orci urna ut odio. Mauris vitae dui euismod nisl convallis dapibus. Suspendisse potenti.
+</p>
+<p>
+Cras pretium vestibulum ligula, non auctor orci lobortis vitae. Mauris dapibus suscipit tempus. Integer nibh enim, laoreet eget ornare in, rutrum eleifend velit. Donec placerat neque vitae lacus semper ornare quis ac sapien. Suspendisse scelerisque, quam ac vulputate auctor, risus nibh pharetra libero, sed mollis nunc risus at enim. In ultricies, turpis sit amet dictum hendrerit, justo ligula blandit odio, at mattis est nulla sit amet urna. Etiam ipsum est, tristique quis porttitor in, dignissim a nulla. Etiam porta vehicula leo a sagittis. Nulla ultricies felis sit amet dolor adipiscing porttitor. Morbi tristique pellentesque tempor. Integer odio quam, consequat eget faucibus sed, vulputate non neque. Ut ac gravida ligula. Vestibulum ut elit erat, et tincidunt nisl. Nulla facilisi. Nam non lorem nunc. Sed faucibus magna sit amet erat dignissim tincidunt vel ut erat.
+</p>
+<p>
+Vivamus pharetra mollis ligula nec dapibus. Integer accumsan imperdiet dui vel porta. Maecenas viverra, odio non euismod suscipit, odio metus imperdiet enim, a malesuada mauris urna a dolor. Sed rutrum tempus turpis, rutrum blandit neque faucibus et. Donec erat nisl, sollicitudin id adipiscing non, faucibus eu libero. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec volutpat pretium magna, et gravida tortor pharetra volutpat. Suspendisse potenti. Nulla facilisi. Fusce rutrum, turpis in congue cursus, odio dui gravida nisi, nec venenatis ante est eu lorem. Etiam non nibh turpis, a aliquet ante.
+</p>
+<p>
+Integer ultrices, erat a faucibus dictum, ante velit elementum neque, id placerat sapien enim ut dui. Praesent felis risus, sodales vitae eleifend quis, molestie vel sapien. Aenean at nisi sed enim malesuada adipiscing. Pellentesque lacus massa, vestibulum sit amet vulputate sit amet, sollicitudin nec massa. Curabitur ut nisl nisi. Curabitur pulvinar arcu eget tortor posuere in luctus odio ullamcorper. Sed dui velit, tristique eu semper ac, rhoncus sed sapien. Praesent malesuada orci vel purus tempor quis tempor lectus pulvinar. Suspendisse pharetra sem nec lorem dictum sit amet mattis purus faucibus. Suspendisse massa risus, aliquet non ultricies vitae, cursus quis augue. Nam eget risus vitae est pulvinar pulvinar eget quis felis. Integer purus erat, elementum nec tincidunt vitae, tempus sed quam. Vivamus iaculis facilisis lacus sed feugiat. Quisque eu elementum odio.
+</p>
+<p>
+Vestibulum elementum tincidunt neque, a vehicula enim sagittis ut. Pellentesque eget magna ac sem rutrum laoreet ac molestie erat. Quisque ipsum eros, placerat non tristique quis, vehicula ut purus. Vivamus et nibh in nulla suscipit interdum. Donec ac eros nisl, eleifend aliquam ligula. Duis vitae ipsum vel ipsum imperdiet varius eget vel libero. Vestibulum nisl leo, iaculis et fringilla a, mollis eu lectus. Duis nulla sapien, imperdiet ac convallis vitae, vestibulum et ipsum. Suspendisse mauris lectus, tincidunt vitae laoreet nec, adipiscing laoreet felis. Quisque vestibulum risus vitae tortor aliquet gravida. Cras eget lorem at odio eleifend iaculis. Duis eleifend vulputate urna eu suscipit. Aenean sit amet ligula sed risus venenatis ullamcorper. Donec consequat lacus eu sapien sollicitudin at mollis diam facilisis. Morbi ut nisi nisl, fermentum iaculis nulla.
+</p>
+<p>
+Nam mattis pulvinar est non auctor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur posuere massa laoreet magna pharetra bibendum. Suspendisse vel purus augue, sit amet varius sem. Donec est risus, tincidunt id interdum in, suscipit a urna. Mauris dictum varius gravida. Sed non velit in sapien auctor posuere ut id eros. Sed rutrum tristique mi id lobortis. Nunc lorem nibh, imperdiet ut ullamcorper a, dapibus ornare dui. Quisque pellentesque laoreet tortor vel venenatis. Cras nisl turpis, dictum a dictum eget, iaculis nec eros. Sed ullamcorper diam a arcu rhoncus vel aliquet arcu rutrum. Etiam dictum rutrum ipsum eu rhoncus. Vestibulum varius interdum facilisis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut imperdiet nisi sit amet magna vehicula in vehicula dolor malesuada.
+</p>
+<p>
+Donec ut purus eu nisl imperdiet porta. Proin ipsum erat, euismod ac convallis at, egestas id ligula. Donec quis lectus diam, et vulputate dolor. Donec scelerisque neque varius mauris blandit faucibus. Curabitur diam quam, eleifend eget pulvinar a, lacinia ut dolor. Vivamus vel tellus magna. Sed ut arcu dui, vitae interdum libero. Nulla ut gravida ligula. Pellentesque at arcu non mauris accumsan porta eget in tellus.
+</p>
+<p>
+Curabitur iaculis ante adipiscing nibh dictum vestibulum. Nullam rutrum ante non magna pellentesque convallis. Phasellus consequat ipsum et urna iaculis ultricies. Aenean eget tristique sem. Nunc elit diam, molestie vel pretium sit amet, elementum vel eros. Aliquam consectetur pretium nulla vitae vulputate. Praesent a nulla est. Vivamus tempus vulputate mi sollicitudin faucibus. Integer venenatis quam rutrum sem dapibus quis dictum sapien elementum. Integer sed purus at lectus auctor sollicitudin vel sit amet odio. Cras est est, dapibus quis fringilla eget, dignissim eu massa. Curabitur condimentum nunc eu eros tincidunt id pellentesque lorem fermentum. Donec massa augue, malesuada in tristique vitae, sollicitudin sit amet arcu. Suspendisse ullamcorper lobortis arcu sit amet condimentum. Duis cursus semper euismod. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+</p>
+
+</div>
+
+</div>
+
+<div class="regions">
+</div>
+
+<div class="regions">
+</div>
+<div class="regions">
+</div>
+
+
+</body>
+</html>
+
+
+
+
