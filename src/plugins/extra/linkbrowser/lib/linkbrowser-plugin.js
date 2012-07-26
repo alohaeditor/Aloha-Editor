@@ -6,7 +6,7 @@ define([
 	'aloha/pluginmanager',
 	'aloha/floatingmenu',
 	'link/link-plugin',
-	'RepositoryBrowser',
+	'browser/browser-plugin',
 	// i18n
 	'i18n!linkbrowser/nls/i18n',
 	'i18n!aloha/nls/i18n'
@@ -23,7 +23,7 @@ define([
 			var repositoryButton = new Aloha.ui.Button({
 				iconClass : 'aloha-button-big aloha-button-tree',
 				size      : 'large',
-				onclick   : function () { that.open(); },
+				onclick   : function () { that.show(); },
 				tooltip   : i18n.t( 'button.addlink.tooltip' ),
 				toggle    : false
 			});
@@ -143,7 +143,7 @@ define([
 					language     : { title: '',     width: 30,  sorttype: 'text' },
 					translations : { title: '',     width: 350, sorttype: 'text' }
 				},
-				rootPath : window.__DEPS__.root + '../shared/repository-browser/'
+				rootPath : Aloha.getPluginUrl( 'browser' ) + '/'
 			};
 
 			this.browser = new LinkBrowser( config );
