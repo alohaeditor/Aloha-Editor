@@ -421,7 +421,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 		rgba(0,   0,   0,   0.7)
 	);
 }
-.aloha-browser-modal-window {
+div.aloha-browser-modal-window {
 	position: fixed;
 	top: 0;
 	left: 0;
