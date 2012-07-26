@@ -152,10 +152,12 @@ Aloha.loadPlugins(function(){
 <h3 id="utilities">6 Utilities</h3>
 <div class="warning"><p><span class="caps">TODO</span> describe <span class="caps">GENTICS</span>.Utils.dom and the like</p></div>
 <h3 id="events">7 Events</h3>
+<p>Events are bound to with Aoha.bind and triggered with Aloha.trigger.</p>
 <ul>
 	<li>aloha-smart-content-changed</li>
 	<li>aloha-editable-activated</li>
 	<li>aloha-editable-deactivated</li>
+	<li>aloha-selection-changed</li>
 </ul>
 <h4 id="aloha-smart-content-changed-event">7.1 aloha-smart-content-changed Event</h4>
 <p>A smart content change occurs when a special editing action, or a combination of interactions are performed by the user during the course of editing within an editable. The smart content change event would therefore signal to any component that is listening to this event, that content has been inserted into the editable that may need to be prococessed in a special way. The smart content change event is also triggered after an idle period that follows rapid, basic changes to the contents of an editable such as when the user is typing.</p>
@@ -163,7 +165,30 @@ Aloha.loadPlugins(function(){
 <div class="warning"><p>Documentation pending.</p></div>
 <h4 id="aloha-editable-deactivated-event">7.3 aloha-editable-deactivated Event</h4>
 <div class="warning"><p>Documentation pending.</p></div>
-<h3 id="editables">8 Editables</h3>
+<h4 id="aloha-selection-changed">7.4 aloha-selection-changed</h4>
+<p>The aloha-selection-changed event is fired whenever the selection returned by Aloha.getSelection() changes. It is not recommended to bind to this event unless you know what you are doing. Instead consider subscribing to the aloha.selection.context-change channel.</p>
+<h3 id="pubsub">8 PubSub</h3>
+<p>Aloha has a publish/subscribe system. For more information on how to use it, see PubSub.js in the src/lib/vendor folder.</p>
+<p>Aloha publishes messages on the following channels</p>
+<ul>
+	<li>aloha.selection.context-change</li>
+</ul>
+The message that will be published contains two properties
+- range the current value of Aloha.Selection.getRangeObject()
+- the event that caused the context change
+The message will be published every time the context of the selection
+changes.
+The context of the selection changes whenever the startContainer node
+or endContainer node of any range in the selection returned by
+Aloha.getSelection() changes, or any of their ancestors change, or any
+attributes of the container nodes or their ancestors change. The
+ancestor tree is calculated up to including the containing Aloha
+editable.
+Subscribing to this channel is preferred over aloha-selection-changed
+to avoid unnecessary processing of the <span class="caps">DOM</span> while the user is typing.
+To be able to type without perceptible lag is considered by the Aloha
+team to be one of the most important aspects of editor-performance.
+<h3 id="editables">9 Editables</h3>
 <div class="warning"><p>Documentation pending.</p></div>
 <p>.</p>
 
@@ -181,7 +206,9 @@ Aloha.loadPlugins(function(){
 </a><ul><li><a href="#aloha-smart-content-changed-event"><p>aloha-smart-content-changed Event</p>
 </a></li> <li><a href="#aloha-editable-activated-event"><p>aloha-editable-activated Event</p>
 </a></li> <li><a href="#aloha-editable-deactivated-event"><p>aloha-editable-deactivated Event</p>
-</a></li></ul></li><li><a href="#editables"><p>Editables</p>
+</a></li> <li><a href="#aloha-selection-changed"><p>aloha-selection-changed</p>
+</a></li></ul></li><li><a href="#pubsub"><p>PubSub</p>
+</a></li><li><a href="#editables"><p>Editables</p>
 </a></li>
           </ol>
         </div>

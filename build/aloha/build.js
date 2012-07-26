@@ -20,10 +20,9 @@
     //Useful to map module names that are to resources on a CDN or other
     //http: URL when running in the browser and during an optimization that
     //file should be skipped because it has no dependencies.
-//    paths: {
-//        "foo.bar": "../scripts/foo/bar",
-//        "baz": "../another/path/baz"
-//    },
+    paths: {
+         'PubSub': 'vendor/pubsub/js/pubsub'
+    },
 
     //Configure CommonJS packages. See http://requirejs.org/docs/api.html#packages
     //for more information.
