@@ -373,8 +373,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			// Highlight parent blocks
 			this.$element.parents('.aloha-block').each(function() {
 				var block = BlockManager.getBlock(this);
-				block._highlight();
-				highlightedBlocks.push(block);
+				if (block) {
+					block._highlight();
+					highlightedBlocks.push(block);
+				}
 			});
 
 			// Browsers do not remove the cursor, so we enforce it when an aditable is clicked.
