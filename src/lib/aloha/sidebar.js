@@ -219,13 +219,13 @@ define([
 			var that = this;
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
-				if (!that.isOpen) {
+				if (that.isOpen) {
 					that.checkActivePanels(message.range);
 				}
 			});
 
 			Aloha.bind('aloha-editable-deactivated', function (event, params) {
-				if (!that.isOpen) {
+				if (that.isOpen) {
 					that.checkActivePanels();
 				}
 			});
