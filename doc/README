@@ -5,7 +5,6 @@
 * /README - This file
 * /aloha - Contains the build version of aloha with all examples and plugins
 * /CHANGELOG.md - The Aloha Editor Changelog
-* /CHANGELOG-jquery-port.md - jQuery migration guide
 * /LICENSE.txt - License information
 * /guides - Aloha Editor Guides
 * /api (Still under development)
