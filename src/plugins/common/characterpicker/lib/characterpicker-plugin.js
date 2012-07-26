@@ -172,48 +172,40 @@ define([
 		},
 		_createCharacterButtons: function (characters) {
 			var self = this;
-			function htmlEntityToSingleCharacter(character) {
-				// isn't there any better way?
-				var textarea = document.createElement('textarea');
-				textarea.innerHTML = character;
-				return textarea.value;
-			}
-			function mkButton(c) {
-				var character = htmlEntityToSingleCharacter(c);
-				return jQuery('<td unselectable="on">' + character + '</td>')
-					.mouseover(function () {
-						jQuery(this).addClass('mouseover');
-					})
-					.mouseout(function () {
-						jQuery(this).removeClass('mouseover');
-					})
-					.click(function (e) {
-						self.hide();
-						self.onSelectCallback(character);
-						return false;
-					});
-			}
-			function addRow() {
-				return jQuery('<tr></tr>').appendTo(self.$tbody);
-			}
+			// TODO: shouldn't we do jQuery('<div>' + characters + '</div>').text() here?
+			var textarea = document.createElement('textarea');
+			textarea.innerHTML = characters;
+			characters = textarea.value;
 			var characterList = jQuery.grep(
 				characters.split(' '),
 				function filterOutEmptyOnces(e) {
 					return e !== '';
 				}
 			);
-			var i = 0, chr;
-			var $row;
-			// remove existing rows
-			self.$tbody.find('tr').remove();
+			var charTable = ['<tr>'];
+			var i = 0;
+			var chr;
 			while ((chr = characterList[i])) {
 				// make a new row every 15 characters
-				if (((i % 15) === 0)) {
-					$row = addRow();
+				if (0 !== i && ((i % 15) === 0)) {
+					charTable.push('</tr><tr>');
 				}
-				mkButton(chr).appendTo($row);
+				charTable.push('<td unselectable="on">' + chr + '</td>');
 				i++;
 			}
+			charTable.push('</tr>');
+			self.$tbody
+				.empty()
+				.append(charTable.join(''));
+			self.$node.delegate('td', 'mouseover', function () {
+				jQuery(this).addClass('mouseover');
+			}).delegate('td', 'mouseout', function () {
+				jQuery(this).removeClass('mouseover');
+			}).delegate('td', 'click', function (e) {
+				self.$node.hide();
+				var character = jQuery(this).text();
+				self.onSelectCallback(character);
+			});
 		}
 	};
 
@@ -259,74 +251,47 @@ define([
 			Aloha.bind('aloha-editable-activated', function (event, data) {
 				self.characterOverlay = self.getOverlayForEditable(data.editable);
 				if (self.characterOverlay) {
-					self._characterPickerButton.show(true);
+					self._characterPickerButton.show();
 				} else {
-					self._characterPickerButton.show(false);
+					self._characterPickerButton.hide();
 				}
 			});
 		},
 
 		getOverlayForEditable: function(editable) {
 			// Each editable may have its own configuration and as
-			// such may have its own overlay.  We cache the overlay
-			// as data on the editable element. The special value
-			// false means that the editable has the characterpicker
-			// plugin turned off.
-			var overlay = editable.obj.data('aloha-characterpicker-overlay');
-			if (overlay || false === overlay) {
-				return overlay;
-			}
-			var config = this.getEditableConfig(editable.obj);
+			// such may have its own overlay.
+			var config = this.getEditableConfig(editable.obj),
+			    overlay;
 			if ( ! config ) {
-				editable.obj.data('aloha-characterpicker-overlay', false);
 				return false;
 			}
 			if (jQuery.isArray(config)) {
 				config = config.join(' ');
 			}
-			// In addition to caching the selected overlay
-			// per-editable, we also cache the overlays for
-			// each config so that editables with the same
-			// config can share overlays.
+			// We cache the overlay by configuration. If all editables
+			// have the same configuration, only a single overlay will
+			// be created that will be used by all editables.
 			overlay = overlayByConfig[config];
 			if ( ! overlay ) {
 				overlay = new CharacterOverlay(onCharacterSelect);
 				overlay.setCharacters(config);
 				overlayByConfig[config] = overlay;
 			}
-			editable.obj.data('aloha-characterpicker-overlay', overlay);
 			return overlay;
 		}
 	});
 
 	/**
 	 * insert a character after selecting it from the list
-	 */
-	function onCharacterSelect(character) {
-		var alohaRange,
-		    range;
+	*/
+	function onCharacterSelect (character) {
 		if (Aloha.activeEditable) {
-
-			// On IE7 (and only IE7) Aoha.getSelection().getRangeAt()
-			// will return a range with start and end containers set to
-			// the body element. This also happens in other places. IE7
-			// sometimes sets the selection to the body element.
-			// To work around this we create a new range from the
-			// Aloha.Selection rangeObject, which is correct. I think
-			// the rangeObject is correct because it is a little behind
-			// the rangy selection (isn't always up-to-date).
-			// TODO this IE7 bug should be detected and worked around in
-			// Aloha.getSelection().
-			alohaRange = Aloha.Selection.getRangeObject();
-			range = Aloha.createRange();
-			range.setStart(alohaRange.startContainer, alohaRange.startOffset);
-			range.setEnd(alohaRange.endContainer, alohaRange.endOffset);
-
-			Aloha.execCommand('insertHTML', false, character, range);
-
-			// TODO on Firefox the selection will be lost. On Chrome or
-			// IE the selection is collapsed after the inserted character.
+			// set focux to editable
+			Aloha.activeEditable.obj.focus();
+			Aloha.execCommand('insertHTML', false, character);
 		}
 	}
 });
+	
 // vim: noexpandtab

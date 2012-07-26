@@ -1,13 +1,3 @@
-/*
- * This is an example build file that demonstrates how to use the build system for
- * require.js.
- *
- * THIS BUILD FILE WILL NOT WORK. It is referencing paths that probably
- * do not exist on your machine. Just use it as a guide.
- *
- *
- */
-
 ({
     //The top level directory that contains your app. If this option is used
     //then it assumed your scripts are in a subdirectory under this path.
@@ -201,6 +191,21 @@
 		"wai-lang/css": "../plugins/extra/wai-lang/css",
 		"wai-lang/nls": "../plugins/extra/wai-lang/nls",
 		"wai-lang/res": "../plugins/extra/wai-lang/res",
+		"headerids": "../plugins/extra/headerids/lib",
+		"headerids/vendor": "../plugins/extra/headerids/vendor",
+		"headerids/css": "../plugins/extra/headerids/css",
+		"headerids/nls": "../plugins/extra/headerids/nls",
+		"headerids/res": "../plugins/extra/headerids/res",
+		"metaview": "../plugins/extra/metaview/lib",
+		"metaview/vendor": "../plugins/extra/metaview/vendor",
+		"metaview/css": "../plugins/extra/metaview/css",
+		"metaview/nls": "../plugins/extra/metaview/nls",
+		"metaview/res": "../plugins/extra/metaview/res",
+		"listenforcer": "../plugins/extra/listenforcer/lib",
+		"listenforcer/vendor": "../plugins/extra/listenforcer/vendor",
+		"listenforcer/css": "../plugins/extra/listenforcer/css",
+		"listenforcer/nls": "../plugins/extra/listenforcer/nls",
+		"listenforcer/res": "../plugins/extra/listenforcer/res",
     },
 
     //Configure CommonJS packages. See http://requirejs.org/docs/api.html#packages
@@ -305,9 +310,9 @@
     //Pragmas also remove code in non-minified source, where has branch
     //trimming is only done if the code is minified via UglifyJS or
     //Closure Compiler.
-    //pragmas: {
-    //    fooExclude: true
-    //},
+    pragmas: {
+		alohaLoadInEndClosure: true
+    },
 
     //Same as "pragmas", but only applied once during the file save phase
     //of an optimization. "pragmas" are applied both during the dependency
@@ -374,7 +379,7 @@
     //normalize() method). In those cases, an AMD loader just needs to know
     //that the module has a definition. These small stubs can be used instead of
     //including the full source for a plugin.
-    stubModules: ['text', 'bar'],
+    //stubModules: ['text', 'bar'],
 
     //If it is not a one file optimization, scan through all .js files in the
     //output directory for any plugin resource dependencies, and if the plugin
@@ -408,30 +413,7 @@
             name: "aloha",
 
 			include: [
-				'jquery',
-				'util/json2',
-
-				'vendor/jquery.json-2.2.min',
-				'aloha/rangy-core',
-				'util/class',
-				'util/lang',
-				'util/range',
-				'util/dom',
-				'aloha/core',
-				'aloha/editable',
-				'aloha/console',
-				'aloha/markup',
-				'aloha/plugin',
-				'aloha/selection',
-				'aloha/command',
-				'aloha/jquery.aloha',
-				'aloha/sidebar',
-				'util/position',
-				'aloha/repositorymanager',
-				'aloha/repository',
-				'aloha/repositoryobjects',
-				'aloha/contenthandlermanager',
-
+				// all common plugins
 				"ui/ui-plugin",
 				"link/link-plugin",
 				"table/table-plugin",
@@ -449,7 +431,7 @@
 				"horizontalruler/horizontalruler-plugin",
 				"undo/undo-plugin",
 				"paste/paste-plugin",
-
+				// some extra plugins
 				'toc/toc-plugin',
 				'cite/cite-plugin',
 				'flag-icons/flag-icons-plugin',
@@ -459,6 +441,9 @@
 				'imagebrowser/imagebrowser-plugin',
 				'ribbon/ribbon-plugin',
 				'wai-lang/wai-lang-plugin',
+				'headerids/headerids-plugin',
+				'metaview/metaview-plugin',
+				'listenforcer/listenforcer-plugin',
 			],
         },
 

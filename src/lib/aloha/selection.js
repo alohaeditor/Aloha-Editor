@@ -1,29 +1,34 @@
-/*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+/* selection.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 "use strict";
 define(
-[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/engine', 'aloha/rangy-core' ],
-function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
+[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/console', 'PubSub', 'aloha/engine', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) {
 	var GENTICS = window.GENTICS;
-
 	/**
 	 * @namespace Aloha
 	 * @class Selection
@@ -93,6 +98,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
 					'del'      : true, 'ins'   : true, 'u'      : true
 				}
 			};
+			
 			// now reference the basics for all other equal tags (important: don't forget to include
 			// the basics itself as reference: 'b' : this.tagHierarchy.b
 			this.tagHierarchy = {
@@ -298,6 +304,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
 			// throw the event that the selection has changed. Plugins now have the
 			// chance to react on the currentElements[childCount].children.lengthged selection
 			Aloha.trigger('aloha-selection-changed', [this.rangeObject, event]);
+			triggerSelectionContextChanged(this.rangeObject, event);
 
 			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
 
@@ -2091,6 +2098,9 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
+		if (rangeObject.startContainer.nodeType != 1) {
+			return false;
+		}
 		firstChild = rangeObject.startContainer.firstChild;
 		return (!firstChild
 				|| (!firstChild.nextSibling
@@ -2101,7 +2111,70 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, Engine) {
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
-		return rangeObject.startContainer.innerHTML.toLowerCase() === '<br class="aloha-end-br">';
+		if (rangeObject.startContainer.nodeType != 1) {
+			return false;
+		}
+		return Engine.isEndBreak(rangeObject.startContainer);
+	}
+
+	var prevStartContext = null;
+	var prevEndContext = null;
+
+	function makeContextHtml(node, parents) {
+		var result = [],
+		    parent,
+		    len,
+		    i;
+		if (1 === node.nodeType) {
+			result.push(node.cloneNode(false).outerHTML);
+		} else {
+			result.push('#' + node.nodeType);
+		}
+		for (i = 0, len = parents.length; i < len; i++) {
+			parent = parents[i];
+			if (parent.nodeName === 'BODY') {
+				// Although we limit the ancestors in most cases to the
+				// active editable, in some cases (copy&paste) the
+				// parent may be outside.
+				// On IE7 this means the following code may clone the
+				// HTML node too, which causes the browser to crash.
+				// On other browsers, this is just an optimization
+				// because the body and html elements should probably
+				// not be considered part of the context of an edit
+				// operation.
+				break;
+			}
+			result.push(parent.cloneNode(false).outerHTML);
+		}
+		return result.join('');
+	}
+
+	function getChangedContext(node, context) {
+		var until = Aloha.activeEditable ? Aloha.activeEditable.obj.parent()[0] : null;
+		var parents = jQuery(node).parentsUntil(until).get();
+		var html = makeContextHtml(node, parents);
+		var equal = (   context
+					 && node === context.node
+					 && Arrays.equal(context.parents, parents)
+					 && html === context.html);
+		return equal ? null : {node: node, parents: parents, html: html};
+	}
+
+	function triggerSelectionContextChanged(rangeObject, event) {
+		var startContainer = rangeObject.startContainer;
+		var endContainer = rangeObject.endContainer;
+		if (!startContainer || !endContainer) {
+			console.error("encountered range object without start or end container");
+			return;
+		}
+		var startContext = getChangedContext(startContainer, prevStartContext);
+		var endContext   = getChangedContext(endContainer  , prevEndContext);
+		if (!startContext && !endContext) {
+			return;
+		}
+		prevStartContext = startContext;
+		prevEndContext   = endContext;
+		PubSub.pub('aloha.selection.context-change', {range: rangeObject, event: event});
 	}
 
 	return selection;

@@ -1,9 +1,29 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* numerated-headers-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define([
 	'aloha/core',
 	'jquery',
@@ -34,50 +54,6 @@ define([
 		delete editableConfigurations[editable.getId()];
 	});
 
-	/**
-	 * Get the config for the current active editable.
-	 * @private
-	 * @param {Plugin} plugin The plugin instance to get an editables
-	 *                        configuration via `getEditableConfig()'.
-	 * @return {object} Configuration hashmap for the current active editable,
-	 *                  If there is not active editable then the defualt
-	 *                  configuration will be returned.
-	 */
-	function getCurrentConfig(plugin) {
-		var config;
-
-		if (Aloha.activeEditable) {
-			config = editableConfigurations[Aloha.activeEditable.getId()];
-			if (config) {
-				return config;
-			}
-			config = editableConfigurations[Aloha.activeEditable.getId()]
-			       = plugin.getEditableConfig(Aloha.activeEditable.obj);
-		} else {
-			config = {};
-		}
-
-		// Normalize config (set default values).
-
-		config.numeratedactive = (
-			config.numeratedactive === true   ||
-			config.numeratedactive === 'true' ||
-			config.numeratedactive === '1'
-		);
-
-		config.trailingdot = (
-			config.trailingdot === true   ||
-			config.trailingdot === 'true' ||
-			config.trailingdot === '1'
-		);
-
-		config.headingselector = (typeof config.headingselector !== 'string')
-		                       ? 'h1, h2, h3, h4, h5, h6'
-		                       : $.trim(config.headingselector);
-
-		return config;
-	}
-
 	return Plugin.create('numerated-headers', {
 		config: {
 			numeratedactive: true,
@@ -106,9 +82,20 @@ define([
 				});
 
 
-			// We need to bind to selection-changed event to recognize
+			// We need to bind to smart-content-changed event to recognize
 			// backspace and delete interactions.
 			Aloha.bind('aloha-smart-content-changed', function (event) {
+				that.cleanNumerations();
+				if (that.showNumbers()) {
+					that.createNumeratedHeaders();
+				}
+			});
+			
+			// We need to listen to that event, when a block is formatted to
+			// header format. smart-content-changed would be not fired in 
+			// that case
+			Aloha.bind('aloha-format-block', function () {
+				that.cleanNumerations();
 				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
 				}
@@ -116,10 +103,10 @@ define([
 
 			Aloha.bind('aloha-editable-activated', function (event) {
 				if (that.isNumeratingOn()) {
-					that._formatNumeratedHeadersButton.show(true);
+					that._formatNumeratedHeadersButton.show();
 					that.initForEditable(Aloha.activeEditable.obj);
 				} else {
-					that._formatNumeratedHeadersButton.show(false);
+					that._formatNumeratedHeadersButton.hide();
 				}
 			});
 		},
@@ -132,11 +119,8 @@ define([
 		 */
 		initForEditable: function ($editable) {
 			var flag = $editable.attr('aloha-numerated-headers');
-
 			if (flag !== 'true' && flag !== 'false') {
-				flag = (true === getCurrentConfig(this).numeratedactive)
-				     ? 'true'
-				     : 'false';
+				flag = (true === this.getCurrentConfig().numeratedactive) ? 'true' : 'false';
 				$editable.attr('aloha-numerated-headers', flag);
 			}
 
@@ -149,10 +133,37 @@ define([
 		},
 
 		/**
-		 * Check whether numerating shall be possible in the current editable.
+		 * Get the config for the current editable
+		 */
+		getCurrentConfig: function () {
+			var config = this.getEditableConfig(Aloha.activeEditable.obj);
+
+			// normalize config (set default values)
+			if (config.numeratedactive === true || config.numeratedactive === 'true' || config.numeratedactive === '1') {
+				config.numeratedactive = true;
+			} else {
+				config.numeratedactive = false;
+			}
+
+			if (typeof config.headingselector !== 'string') {
+				config.headingselector = 'h1, h2, h3, h4, h5, h6';
+			}
+			config.headingselector = $.trim(config.headingselector);
+
+			if (config.trailingdot === true || config.trailingdot === 'true' || config.trailingdot === '1') {
+				config.trailingdot = true;
+			} else {
+				config.trailingdot = false;
+			}
+
+			return config;
+		},
+
+		/**
+		 * Check whether numerating shall be possible in the current editable
 		 */
 		isNumeratingOn: function () {
-			return getCurrentConfig(this).headingselector !== '';
+			return this.getCurrentConfig().headingselector !== '';
 		},
 
 		/**
@@ -166,21 +177,26 @@ define([
 				(Aloha.activeEditable.obj.attr('aloha-numerated-headers') === 'true')
 			);
 		},
-
-		removeNumerations : function () {
+		
+		/**
+		 * Remove all annotations in the current editable.
+		 */
+		cleanNumerations: function () {
 			var active_editable_obj = this.getBaseElement();
 			if (!active_editable_obj) {
 				return;
 			}
-
-			Aloha.activeEditable.obj.attr('aloha-numerated-headers', 'false');
-			var headingselector = getCurrentConfig(this).headingselector;
-			var headers = active_editable_obj.find(headingselector);
-			headers.each(function () {
-				$(this).find('span[role=annotation]').each(function () {
-					$(this).remove();
-				});
+			$(active_editable_obj).find('span[role=annotation]').each(function () {
+				$(this).remove();
 			});
+		},
+
+		/**
+		 * Removed and disables numeration for the current editable.
+		 */
+		removeNumerations : function () {
+			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
+			this.cleanNumerations();
 		},
 
 		getBaseElement: function () {
@@ -198,7 +214,7 @@ define([
 		* @param {HTMLElement} obj The DOM object to check.
 		*/
 		hasNote: function (obj) {
-			if (!obj || 0 === $(obj).length) {
+			if (!obj || $(obj).length <= 0) {
 				return false;
 			}
 			return $(obj).find('span[role=annotation]').length > 0;
@@ -229,7 +245,7 @@ define([
 				return;
 			}
 
-			var config = getCurrentConfig(this);
+			var config = this.getCurrentConfig();
 			var headingselector = config.headingselector;
 			var headers = active_editable_obj.find(headingselector);
 
@@ -316,7 +332,7 @@ define([
 						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
 						$(this).prepend('<span role="annotation">' +
-							annotation_result + '</span> ');
+							annotation_result + '</span>');
 					}
 				} else {
 					// no Content, so remove the Note, if there is one

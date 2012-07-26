@@ -138,7 +138,7 @@ The Generic Content Handler is a bit less generic than his name might suggest as
 ** height
 ** valign
 * remove comments
-* unwrap contents of div, font and span tags
+* unwrap contents of div, font and span tags (unless the span's are language annotations made by the wai-lang plugin)
 * remove styles
 * remove namespaced elements
 * transform formattings by turning

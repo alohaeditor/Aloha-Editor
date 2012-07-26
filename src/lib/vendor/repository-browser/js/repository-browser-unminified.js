@@ -218,6 +218,11 @@ define('RepositoryBrowser', [
 			var give = this.treeWidth / 5;
 
 			this.$_grid.layout({
+				// Disable cursor hot keys since they interfere with
+				// text editing. For example, CTRL+left (wordwise left)
+				// and CTRL+SHIFT+left (select wordwise left) would stop
+				// working.
+				enableCursorHotkey: false,
 				west__size: this.treeWidth - 1,
 				west__minSize: this.treeWidth - give,
 				west__maxSize: this.treeWidth + give,

@@ -1,9 +1,29 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* list-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define([
 	'aloha',
 	'jquery',
@@ -14,7 +34,8 @@ define([
 	'ui/toggleButton',
 	'i18n!list/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'aloha/engine'
+	'aloha/engine',
+	'PubSub'
 ], function(
 	Aloha,
 	jQuery,
@@ -25,7 +46,8 @@ define([
 	ToggleButton,
 	i18n,
 	i18nCore,
-	Engine
+	Engine,
+	PubSub
 ) {
 	'use strict';
 
@@ -95,9 +117,11 @@ define([
 
 			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
 
-			// add the event handler for selection change
-			Aloha.bind('aloha-selection-changed', function ( event, rangeObject ) {
-				var i, effectiveMarkup;
+			// add the event handler for context selection change
+			PubSub.sub('aloha.selection.context-change', function(message){
+				var i,
+					effectiveMarkup,
+					rangeObject = message.range;
 				
 				// Hide all buttons in the list tab will make the list tab disappear
 				that._outdentListButton.show(false);
@@ -157,6 +181,21 @@ define([
 				}
 
 			}
+		},
+		
+		/**
+		 * Make the given jQuery object (representing an editable) clean for saving
+		 * Find all li tags and remove editing attributes
+		 * @param obj jQuery object to make clean
+		 * @return void
+		 */
+		makeClean: function (obj) {
+			// find all li tags
+			obj.find('li').each(function () {
+				// Remove IE attributes
+				jQuery(this).removeAttr('hidefocus');
+				jQuery(this).removeAttr('tabindex');
+			});
 		},
 
 		/**

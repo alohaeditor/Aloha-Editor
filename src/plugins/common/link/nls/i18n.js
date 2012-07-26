@@ -11,7 +11,7 @@ define({
 		'link.target.framename': 'Framename',
 		'link.target.legend': 'Target',
 		'link.title.legend': 'Title',
-		'insertLink': 'ctrl+l'
+		'insertLink': 'ctrl+k'
 	},
 	de: true,
 	fr: true,

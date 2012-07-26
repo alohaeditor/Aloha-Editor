@@ -1,3 +1,4 @@
+/*global define: true, require: true */
 /*!
  * Aloha Editor
  * Author & Copyright (c) 2011 Gentics Software GmbH
@@ -13,33 +14,52 @@ define( [ 'aloha', 'jquery', 'flag-icons/flag-icons-plugin' ],
 function( Aloha, jQuery, FlagIcons ) {
 	'use strict';
 
-	return new ( Aloha.AbstractRepository.extend( {
+	return new (Aloha.AbstractRepository.extend({
 
 		/**
 		 * Set of language codes
 		 */
 		languageCodes: [],
 
-		_constructor: function() {
-			this._super( 'wai-languages' );
+		/**
+		 * Whether to show flags or not
+		 */
+		flags: false,
+
+		_constructor: function () {
+			this._super('wai-languages');
 		},
 
 		/**
 		 * Initialize WAI Languages, load the language file and prepare the data.
 		 */
-		init: function() {
+		init: function () {
+			var waiLang = Aloha.require('wai-lang/wai-lang-plugin');
+			var locale = Aloha.settings.locale;
+			var iso = waiLang.iso639;
+
+			if (locale !== 'de') {
+				locale = 'en';
+			}
+
+			if (iso !== 'iso639-1') {
+				iso = 'iso639-2';
+			}
+
+			this.flags = waiLang.flags;
+
 			// Load the language codes
-			jQuery.ajax( {
-				url      : Aloha.getPluginUrl( 'wai-lang' ) + '/lib/language-codes.json',
+			jQuery.ajax({
+				url      : Aloha.getPluginUrl('wai-lang') + '/lib/' + iso + '-' + locale + '.json',
 				dataType : 'json',
-				success  : jQuery.proxy( this.storeLanguageCodes, this ),
+				success  : jQuery.proxy(this.storeLanguageCodes, this),
 				error    : this.errorHandler
-			} );
+			});
 
 		    this.repositoryName = 'WaiLanguages';
 		},
 
-		markObject: function( obj, item ) {
+		markObject: function (obj, item) {
 			//copied from wai-lang-plugin makeVisible to avoid a circular dependency
 			// We do not need to add this class here since it already being
 			// done in the wai-lang plugin
@@ -49,27 +69,34 @@ function( Aloha, jQuery, FlagIcons ) {
 		/**
 		 * This method will invoked if a error occurres while loading data via ajax
 		 */
-		errorHandler: function( text, error ) {
+		errorHandler: function (text, error) {
 			//TODO log error here
 		},
 
 		/**
 		 * Stores the retrieved language code data in this object
 		 */
-		storeLanguageCodes: function( data ) {
+		storeLanguageCodes: function (data) {
 			var that = this;
+			var waiLangPath = Aloha.getPluginUrl('wai-lang');
 
 			// Transform loaded json into a set of repository documents
-			jQuery.each( data, function( key, value ) {
+			jQuery.each(data, function (key, value) {
 				var el = value;
 				el.id = key;
 				el.repositoryId = that.repositoryId;
 				el.type = 'language';
-				el.url =  FlagIcons.path + '/img/flags/' + el.id + '.png';
+				if (that.flags) {
+					if (el.flag) {
+						el.url =  FlagIcons.path + '/img/flags/' + el.flag + '.png';
+					} else {
+						el.url =  waiLangPath + '/img/button.png';
+					}
+				}
 				// el.renditions.url = "img/flags/" + e.id + ".png";
 				// el.renditions.kind.thumbnail = true;
-				that.languageCodes.push( new Aloha.RepositoryDocument( el ) );
-			} );
+				that.languageCodes.push(new Aloha.RepositoryDocument(el));
+			});
 		},
 
 		/**
@@ -77,26 +104,44 @@ function( Aloha, jQuery, FlagIcons ) {
 		 * If none found it returns null.
 		 * Not supported: filter, orderBy, maxItems, skipcount, renditionFilter
 		 */
-		query: function( p, callback ) {
-			var query = new RegExp( '^' + p.queryString, 'i' ),
+		query: function (p, callback) {
+			var query = new RegExp('^' + p.queryString, 'i'),
 			    i,
 			    d = [],
 			    matchesName,
 			    matchesType,
 			    currentElement;
 
-			for ( i = 0; i < this.languageCodes.length; ++i ) {
-				currentElement = this.languageCodes[ i ];
-				matchesName = ( !p.queryString || currentElement.name.match( query )  || currentElement.nativeName.match( query ) );
-				matchesType = ( !p.objectTypeFilter || ( !p.objectTypeFilter.length ) || jQuery.inArray( currentElement.type, p.objectTypeFilter ) > -1 );
+			for (i = 0; i < this.languageCodes.length; ++i) {
+				currentElement = this.languageCodes[i];
+				matchesName = (!p.queryString || currentElement.name.match(query));
+				matchesType = (!p.objectTypeFilter || (!p.objectTypeFilter.length) || jQuery.inArray(currentElement.type, p.objectTypeFilter) > -1);
 
-				if ( matchesName && matchesType ) {
-					d.push( currentElement );
+				if (matchesName && matchesType) {
+					d.push(currentElement);
 				}
 			}
 
-			callback.call( this, d );
-		}
+			callback.call(this, d);
+		},
 
-	} ) )();
-} );
+		/**
+		 * Get the repositoryItem with given id
+		 * @param itemId {String} id of the repository item to fetch
+		 * @param callback {function} callback function
+		 * @return {Aloha.Repository.Object} item with given id
+		 */
+		getObjectById: function (itemId, callback) {
+			var i, currentElement;
+
+			for (i = 0; i < this.languageCodes.length; ++i) {
+				currentElement = this.languageCodes[i];
+				if (currentElement.id === itemId) {
+					callback.call(this, [currentElement]);
+					break;
+				}
+			}
+
+		}
+	}))();
+});

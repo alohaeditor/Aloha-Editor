@@ -1,9 +1,29 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* abbr-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define([
 	'aloha',
 	'jquery',
@@ -123,41 +143,53 @@ define([
 		    }
 		},
 
-		/**
-		 * Subscribe for events
-		 */
 		subscribeEvents: function () {
 			var me = this;
+			var editableConfig = {};
 
-		    // add the event handler for selection change
-			Aloha.bind( 'aloha-selection-changed', function ( event, rangeObject ) {
-		        if ( Aloha.activeEditable ) {
-		        	// show/hide the button according to the configuration
-					// @todo this part should be done at aloha-editable-activated event
-		        	var config = me.getEditableConfig( Aloha.activeEditable.obj );
+			Aloha.bind('aloha-editable-activated', function () {
+				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
+					return;
+				}
 
-		        	if ( jQuery.inArray( 'abbr', config ) != -1 ) {
-						me._formatAbbrButton.show(true);
-						me._insertAbbrButton.show(true);
-		        	} else {
-						me._formatAbbrButton.show(false);
-						me._insertAbbrButton.show(false);
-		        		return;
-		        	}
+				var config = me.getEditableConfig(Aloha.activeEditable.obj);
+				editableConfig[
+					Aloha.activeEditable.getId()
+				] = jQuery.inArray('abbr', config) !== -1;
+			});
 
-		        	var foundMarkup = me.findAbbrMarkup(rangeObject);
-		        	if (foundMarkup) {
-		        		// abbr found
-						me._insertAbbrButton.show(false);
-						me._formatAbbrButton.setState(true);
-						Scopes.setScope('abbr');
-						me.abbrField.setTargetObject(foundMarkup, 'title');
-		        	} else {
-		        		// no abbr found
-						me._formatAbbrButton.setState(false);
-						me.abbrField.setTargetObject(null);
-		        	}
-		        }
+			Aloha.bind('aloha-editable-destroyed', function () {
+				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
+					return;
+				}
+
+				delete editableConfig[Aloha.activeEditable.getId()];
+			});
+
+			Aloha.bind('aloha-selection-changed', function (event, range) {
+		        if (!Aloha.activeEditable) {
+					return;
+				}
+
+				if (editableConfig[Aloha.activeEditable.getId()]) {
+					me._formatAbbrButton.show();
+					me._insertAbbrButton.show();
+				} else {
+					me._formatAbbrButton.hide();
+					me._insertAbbrButton.hide();
+					return;
+				}
+
+				var foundMarkup = me.findAbbrMarkup(range);
+				if (foundMarkup) {
+					me._insertAbbrButton.hide();
+					me._formatAbbrButton.setState(true);
+					Scopes.setScope('abbr');
+					me.abbrField.setTargetObject(foundMarkup, 'title');
+				} else {
+					me._formatAbbrButton.setState(false);
+					me.abbrField.setTargetObject(null);
+				}
 		    });
 		},
 

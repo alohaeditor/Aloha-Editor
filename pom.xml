@@ -4,15 +4,15 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.21.0-jqueryui-SNAPSHOT</version>
+	<version>0.21.0-dev-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
 	<licenses>
 		<license>
-			<name>AGPL 3.0</name>
-			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+			<name>GPL 2.0 or later</name>
+			<url>http://www.gnu.org/licenses/gpl-2.0.html</url>
 		</license>
 	</licenses>
 	<properties>

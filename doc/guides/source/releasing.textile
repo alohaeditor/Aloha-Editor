@@ -11,7 +11,6 @@ h4. Feature Release
 For every feature release a new release branch will be created. This branch must be named using the targeted release version. If you want to release 0.20.0 it will be named: +release-0.20.0+. The release branch will always be created from the +dev+ branch. 
 
 
-
 h4. Hotfix Release
 
 A hotfix release can be done from an existing hotfix branch. The hotfix level of the version will be raised one leve. (eg. 0.20.0 -> 0.20.1)
@@ -23,14 +22,17 @@ h4. Post Release Steps
 
 h3. Practical Maven Feature Release Example For Version 0.20.0
 
-1. Switch into the dev branch.
+1. Update the dev branch.
 <shell>
   git checkout dev
+  git pull origin dev
 </shell>
 
-2. Create a new release branch.
+2. Switch into the release branch and update it.
 <shell>
-  git checkout -b release-0.20.0
+  git checkout release
+  git pull origin dev
+  git push origin release
 </shell>
  
 3. Prepare the release and define the release version. 
@@ -74,40 +76,42 @@ What is the new development version for "Aloha Editor"? (org.alohaeditor:alohaed
 <shell>
   git add .
   git commit -m "Maven release prepare"
-  git push origin release-0.20.0
+  git push origin release
   mvn release:perform
 </shell>
 
-6. Checkout the master branch and merge the tag into that branch
+6. Checkout the master branch and merge it with the release branch
 <shell>
   git checkout master
-  git merge tags/release-0.20.0
+  git pull origin master 
+  git pull origin release
+  git push origin master
 </shell>
 
 8. Update the dev branch
 <shell> 
   git checkout dev
-  git pull hotfix-0.20.0
+  git pull origin release
+  git push origin dev
 </shell>
 
 9. Update the dev branch version to 0.21.0-dev-SNAPSHOT
 <shell>
-  mvn release:update-versions -DdevelopmentVersion=0.21-dev-SNAPSHOT -DautoVersionSubmodules=true
+  mvn release:update-versions -DdevelopmentVersion=0.21.0-dev-SNAPSHOT -DautoVersionSubmodules=true
 </shell>
 
 h3. Practical Maven Hotfix Release Example 
 
-1. Create a new hotfix branch from master
+1. Switch to the hotfix branch and update it
 <shell>  
-  git checkout -b hotfix-0.20.1 master
-  git push origin hotfix-0.20.1
+  git checkout hotfix
+  git pull origin hotfix
 </shell>
 
-2. Rename the old release/hotfix branch
-  git checkout release-0.20.0
-  git checkout -b release-0.20.0-closed
-  git branch -d release-0.20.0
-  git push upstream release-0.20.0-closed
-  git push upstream :release-0.20.0
+3. Continue with step three from the feature release example
 
-3. Continue with step 3 from the feature release example
+h4. Post Release Steps
+
+* Upload the released zip file to https://github.com/alohaeditor/Aloha-Editor/downloads
+* Add the release to the artifactItems of https://github.com/alohaeditor/Aloha-Editor-CDN/blob/master/pom.xml and reinvoke synchronisation of the CDN.
+* Tweet about the release

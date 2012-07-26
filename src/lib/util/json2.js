@@ -155,11 +155,7 @@
     test, toJSON, toString, valueOf
 */
 
-
-// Create a JSON object only if one does not already exist. We create the
-// methods in a closure to avoid creating global variables.
-define( 'util/json2', [], function(){} );
-
+// Create a JSON object only if one does not already exist.
 var JSON;
 if (!JSON) {
     JSON = {};
@@ -479,3 +475,5 @@ if (!JSON) {
         };
     }
 }());
+
+define('util/json2', [], function(){ return JSON; });

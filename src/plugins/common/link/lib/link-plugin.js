@@ -1,21 +1,37 @@
-/*!
- * Aloha Editor
- * Author & Copyright (c) 2010 Gentics Software GmbH
- * aloha-sales@gentics.com
- * Licensed unter the terms of http://www.aloha-editor.com/license.html
+/* link-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Link Plugin
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+/* Aloha Link Plugin
  * -----------------
  * This plugin provides an interface to allow the user to insert, edit and
  * remove links within an active editable.
  * It presents its user interface in the Toolbar, in a Sidebar panel.
  * Clicking on any links inside the editable activates the this plugin's
  * floating menu scope.
- *
- * @todo Consider whether it would be better to have the target options in the
- *       sidebar panel be a selection box rather than radio buttons.
  */
-
 define( [
 	'aloha',
 	'aloha/plugin',
@@ -111,7 +127,7 @@ define( [
 		 * HotKeys used for special actions
 		*/
 		hotKey: {
-			insertLink: i18n.t('insertLink', 'ctrl+l')
+			insertLink: i18n.t('insertLink', 'ctrl+k')
 		},
 		
 		/**

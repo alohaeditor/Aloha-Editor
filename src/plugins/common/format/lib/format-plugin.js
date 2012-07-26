@@ -1,9 +1,29 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* format-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define('format/format-plugin', [
 	'aloha',
 	'aloha/plugin',
@@ -11,8 +31,10 @@ define('format/format-plugin', [
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
+	'PubSub',
 	'i18n!format/nls/i18n',
-	'i18n!aloha/nls/i18n'
+	'i18n!aloha/nls/i18n',
+	'aloha/selection'
 ], function (
 	Aloha,
 	Plugin,
@@ -20,6 +42,7 @@ define('format/format-plugin', [
 	Ui,
 	ToggleButton,
 	MultiSplitButton,
+	PubSub,
 	i18n,
 	i18nCore
 ) {
@@ -38,7 +61,6 @@ define('format/format-plugin', [
 			'u': 'underline',
 			's': 'strikethrough'
 		},
-
 	    componentNameByElement = {
 			'strong': 'strong',
 			'em': 'emphasis',
@@ -69,6 +91,56 @@ define('format/format-plugin', [
 			'h6': true,
 			'pre': true
 		};
+	
+	// extracted selection changed function
+	function onSelectionChanged(formatPlugin, rangeObject) {
+		// iterate over all buttons
+		var
+			statusWasSet = false, effectiveMarkup,
+			foundMultiSplit, i, j, multiSplitItem;
+
+		jQuery.each(formatPlugin.buttons, function (index, button) {
+			statusWasSet = false;
+
+			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
+				if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
+					button.handle.setState(true);
+					statusWasSet = true;
+				}
+			}
+			if (!statusWasSet) {
+				button.handle.setState(false);
+			}
+		});
+
+		if (formatPlugin.multiSplitItems.length > 0) {
+			foundMultiSplit = false;
+
+			// iterate over the markup elements
+			for (i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
+				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
+
+				for (j = 0; j < formatPlugin.multiSplitItems.length && !foundMultiSplit; j++) {
+					multiSplitItem = formatPlugin.multiSplitItems[j];
+
+					if (!multiSplitItem.markup) {
+						continue;
+					}
+
+					// now check whether one of the multiSplitItems fits to the effective markup
+					if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
+						formatPlugin.multiSplitButton.setActiveItem(multiSplitItem.name);
+						foundMultiSplit = true;
+					}
+				}
+			}
+
+			if (!foundMultiSplit) {
+				formatPlugin.multiSplitButton.setActiveItem(null);
+			}
+		}
+	}
 
 	/**
 	 * register the plugin with unique name
@@ -267,6 +339,7 @@ define('format/format-plugin', [
 								// formating workaround for table plugin
 
 								that.addMarkup( button ); 
+								
 								return false;
 							}
 						});
@@ -308,7 +381,19 @@ define('format/format-plugin', [
 									return false;
 								}
 								// formating workaround for table plugin
+
 								that.changeMarkup( button );
+
+								// setting the focus is needed for mozilla to have a working rangeObject.select()
+								if (Aloha.activeEditable
+									&& jQuery.browser.mozilla) {
+									Aloha.activeEditable.obj.focus();
+								}
+								
+								// triggered for numerated-headers plugin
+								if (Aloha.activeEditable) {
+									Aloha.trigger( 'aloha-format-block' );
+								}
 							}
 						});
 					} else if ('removeFormat' === button) {
@@ -336,55 +421,10 @@ define('format/format-plugin', [
 					scope: scope
 				});
 
-				// add the event handler for selection change
-				Aloha.bind('aloha-selection-changed',function(event,rangeObject){
-					// iterate over all buttons
-					var
-						statusWasSet = false, effectiveMarkup,
-						foundMultiSplit, i, j, multiSplitItem;
-
-					jQuery.each(that.buttons, function(index, button) {
-						statusWasSet = false;
-						for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-							effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-							if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
-								button.handle.setState(true);
-								statusWasSet = true;
-							}
-						}
-						if (!statusWasSet) {
-							button.handle.setState(false);
-						}
-					});
-
-					if (that.multiSplitItems.length > 0) {
-						foundMultiSplit = false;
-
-						// iterate over the markup elements
-						for ( i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
-							effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-
-							for ( j = 0; j < that.multiSplitItems.length && !foundMultiSplit; j++) {
-								multiSplitItem = that.multiSplitItems[j];
-
-								if (!multiSplitItem.markup) {
-									continue;
-								}
-
-								// now check whether one of the multiSplitItems fits to the effective markup
-								if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
-									that.multiSplitButton.setActiveItem(multiSplitItem.name);
-									foundMultiSplit = true;
-								}
-							}
-						}
-
-						if (!foundMultiSplit) {
-							that.multiSplitButton.setActiveItem(null);
-						}
-					}
+				// add the event handler for context selection change
+				PubSub.sub('aloha.selection.context-change', function(message) {
+					onSelectionChanged(that, message.range);
 				});
-
 			},
 
 
@@ -504,6 +544,11 @@ define('format/format-plugin', [
 				}
 				// select the modified range
 				rangeObject.select();
+
+				// update Button toggle state. We take 'Aloha.Selection.getRangeObject()'
+				// because rangeObject is not up-to-date
+				onSelectionChanged(this, Aloha.Selection.getRangeObject());
+
 				return false;
 			},
 		
@@ -513,7 +558,6 @@ define('format/format-plugin', [
 			changeMarkup: function( button ) {
 				Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
 			},
-
 
 		/**
 		 * Removes all formatting from the current selection.

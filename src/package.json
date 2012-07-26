@@ -37,8 +37,8 @@
 
 	"licenses": [
 		{
-			"type": "AGPLv3",
-			"url": "http://www.opensource.org/licenses/agpl-v3"
+			"type": "GPLv2 or later",
+			"url": "http://www.gnu.org/licenses/gpl-2.0.html"
 		}
 	],
 

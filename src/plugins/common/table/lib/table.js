@@ -278,7 +278,7 @@ define([
 
 		var that = this,
 		    htmlTableWrapper,
-		    tableWrapper;
+		    tableWrapper, eventContainer;
 		
 		// alter the table attributes
 		this.obj.addClass( this.get( 'className' ) );
@@ -291,8 +291,14 @@ define([
 		
 		// unset the selection type
 		this.selection.selectionType = undefined;
-		
-		this.obj.bind( 'keydown', function ( jqEvent ) {
+
+		// the eventContainer will be the tbody (if there is one), or the table (if no tbody exists)
+		eventContainer = this.obj.children('tbody');
+		if (eventContainer.length === 0) {
+			eventContainer = this.obj;
+		}
+
+		eventContainer.bind( 'keydown', function ( jqEvent ) {
 			if ( !jqEvent.ctrlKey && !jqEvent.shiftKey ) {
 				if ( that.selection.selectedCells.length > 0 &&
 						that.selection.selectedCells[ 0 ].length > 0 ) {
@@ -300,7 +306,7 @@ define([
 				}
 			}
 		} );
-		
+
 		/*
 		We need to make sure that when the user has selected text inside a
 		table cell we do not delete the entire row, before we activate this
@@ -328,11 +334,12 @@ define([
 	//		return false;
 	//	});
 
-		this.obj.bind( 'mousedown', function ( jqEvent ) {
+		eventContainer.bind( 'mousedown', function ( jqEvent ) {
 			// focus the table if not already done
 			if ( !that.hasFocus ) {
 				that.focus();
 			}
+
 
 	// DEACTIVATED by Haymo prevents selecting rows
 	//		// if a mousedown is done on the table, just focus the first cell of the table
@@ -381,7 +388,8 @@ define([
 		htmlTableWrapper.get( 0 ).oncontrolselect = function ( e ) { return false; };
 		htmlTableWrapper.get( 0 ).ondragstart = function ( e ) { return false; };
 		htmlTableWrapper.get( 0 ).onmovestart = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).onselectstart = function ( e ) { return false; };
+		// the following handler prevents proper selection in the editable div in the caption!
+		// htmlTableWrapper.get( 0 ).onselectstart = function ( e ) { return false; };
 
 		this.tableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) ).get( 0 );
 
@@ -483,7 +491,7 @@ define([
 		// prevent ie from selecting the contents of the table
 		cell.get(0).onselectstart = function() { return false; };
 
-		cell.bind('mousedown', function(e){
+		cell.bind('mousedown', function(e) {
 			// set flag that the mouse is pressed
 //TODO to implement the mousedown-select effect not only must the
 //mousedown be set here but also be unset when the mouse button is
@@ -1449,6 +1457,8 @@ define([
 		this.obj.find('td, th').removeClass(this.get('classCellSelected'));
 
 		this.obj.unbind();
+		this.obj.children('tbody').unbind();
+
 		// wrap the inner html of the contentEditable div to its outer html
 		for (var i = 0; i < this.cells.length; i++) {
 			var Cell = this.cells[i];

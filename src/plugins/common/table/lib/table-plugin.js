@@ -1,9 +1,29 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com - way to over-lawyer it up Andrew :/
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* table-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define([
 	'aloha',
 	'jquery',
@@ -455,6 +475,11 @@ define([
 	/**
 	 * Checks for the presence of nested tables in the given editable.
 	 * @todo complete
+	 *		if ( editable.find( 'table table' ).length ) {
+	 *			// show warning
+	 *		} else {
+	 *			// hide warning
+	 *		}
 	 * @param {jQuery} editable
 	 */
 	TablePlugin.checkForNestedTables = function ( editable ) {
@@ -933,7 +958,7 @@ define([
 					} else {
 						var captionText = i18n.t('empty.caption');
 						var c = jQuery('<caption></caption>');
-						that.activeTable.obj.append(c);
+						that.activeTable.obj.prepend(c);
 						that.makeCaptionEditable(c, captionText);
 
 						// get the editable span within the caption and select it
@@ -976,15 +1001,16 @@ define([
 	 */
 	TablePlugin.makeCaptionEditable = function(caption, captionText) {
 		var that = this;
-		var cSpan = caption.children('div').eq(0);
-		if (cSpan.length == 0) {
+		var cSpan = caption.children('div');
+		if (cSpan.length === 0) {
 			// generate a new div
 			cSpan = jQuery('<div></div>');
 			jQuery(cSpan).addClass('aloha-ui');
 			jQuery(cSpan).addClass('aloha-editable-caption');
 			if (caption.contents().length > 0) {
 				// when the caption has content, we wrap it with the new div
-				caption.contents().wrap(cSpan);
+				cSpan.append(caption.contents());
+				caption.append(cSpan);
 			} else {
 				// caption has no content, so insert the default caption text
 				if (captionText) {
@@ -993,18 +1019,17 @@ define([
 				// and append the div into the caption
 				caption.append(cSpan);
 			}
+		} else if (cSpan.length > 1) {
+			// merge multiple divs (they are probably created by IE)
+			caption.children('div:not(:first-child)').each(function () {
+				$this = jQuery(this);
+				cSpan.eq(0).append($this.contents());
+				$this.remove();
+			});
+			cSpan = cSpan.eq(0);
 		}
 		// make the div editable
 		cSpan.contentEditable(true);
-		cSpan.unbind('mousedown');
-		// focus on click
-		cSpan.bind('mousedown', function(jqEvent) {
-			cSpan.focus();
-			// stop bubble, otherwise the mousedown of the table is called ...
-			jqEvent.preventDefault();
-			jqEvent.stopPropagation();
-			return false;
-		});
 	};
 
 	/**
@@ -1245,6 +1270,8 @@ define([
 			// same id as tables which have been activated and registered
 			if ( that.getTableFromRegistry( this ) ) {
 				( new Table( this, that ) ).deactivate();
+				// remove the id attribute
+				jQuery(this).attr('id', null);
 			}
 		} );
 	};

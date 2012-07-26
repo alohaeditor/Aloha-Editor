@@ -4,7 +4,7 @@
  * @overview Provides methods to broker publish/subscribe facilities.
  */
 
-define('PubSub', ['Class'], function (Class) {
+define('PubSub', [], function () {
 	'use strict';
 
 	/**

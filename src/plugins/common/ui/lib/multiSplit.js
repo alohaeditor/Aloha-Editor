@@ -1,3 +1,7 @@
+/**
+ * The multiSplit component groups multiple buttons and other
+ * button-like items into an expandable menu.
+ */
 define([
 	'jquery',
 	'ui/component',
@@ -141,5 +145,13 @@ define([
 		}
 	});
 
+	/**
+	 * This module is part of the Aloha API.
+	 * It is valid to override this module via requirejs to provide a
+	 * custom behaviour. An overriding module must implement all API
+	 * methods. Every member must have an api annotation. No private
+	 * members are allowed.
+	 * @api
+	 */
 	return MultiSplit;
 });

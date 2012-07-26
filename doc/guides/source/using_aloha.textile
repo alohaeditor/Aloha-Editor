@@ -1,10 +1,5 @@
 h2. Using Aloha Editor
 
-After reading this guide, you will be able to:
-
-* Embed Aloha Editor in your web application.
-* Make areas of your web page editable with Aloha Editor
-
 endprologue.
 
 h3. Prerequisites
@@ -39,8 +34,9 @@ To embed Aloha Editor, you just need to load a single css +/javascripts/aloha/cs
 	<link rel="stylesheet" href="index.css" type="text/css">
 	<!-- Load Aloha Editor css and js -->
 	<link rel="stylesheet" href="/javascripts/aloha/css/aloha.css" type="text/css">
+	<script src="/javascripts/aloha/lib/require.js"></script>
 	<script src="/javascripts/aloha/lib/aloha.js"
-	  data-aloha-plugins="common/format,common/highlighteditables,common/link"></script>
+	  data-aloha-plugins="common/ui,common/format,common/highlighteditables,common/link"></script>
 </head>
 <body>
 	<div id="main">
@@ -62,8 +58,9 @@ When we want to make the div with ID *content* editable, we add the script
 	<link rel="stylesheet" href="index.css" type="text/css">
 	<!-- Load Aloha Editor css and js -->
 	<link rel="stylesheet" href="/javascripts/aloha/css/aloha.css" type="text/css">
+	<script src="/javascripts/aloha/lib/require.js"></script>
 	<script src="/javascripts/aloha/lib/aloha.js"
-	  data-aloha-plugins="common/format,common/highlighteditables,common/link"></script>
+	  data-aloha-plugins="common/ui,common/format,common/highlighteditables,common/link"></script>
 </head>
 <body>
 	<div id="main">
@@ -79,8 +76,76 @@ When we want to make the div with ID *content* editable, we add the script
 
 NOTE: In this example, the HTML element is made editable in the event handler of the +Aloha.ready+ event. This ensures that aloha is fully loaded, before actually using it and is therefore the recommended way of using Aloha Editor.
 
+h3. requirejs
+
+Aloha uses "requirejs":http://requirejs.org/ to load modules at runtime.
+
+It is necessary, for development and when using aloha-bare.js, to
+include requirejs before Aloha. It is not necessary to include requirejs
+when using aloha-full.js, as that already includes requirejs (as well as
+jQuery).
+
+TODO: at the time of this writing it is not clear what aloha.js is going
+to be in the distributable package - is it aloha-bare.js or
+aloha-full.js?
+
+It is possible to build a custom version of Aloha that does not need
+requirejs, although that has not been tested at the time of this writing
+and requires a customized build profile. See "Customized builds":develop_aloha.html
+for more information.
+
+h3. Custom jQuery, jQueryUI and other modules
+
+Aloha requires many third party modules. If these modules are not
+combined during building, they will be loaded at runtime by
+requirejs. Two of the most prominent modules are jQuery and jQueryUI.
+
+There are severaly ways to customize the module loading in Aloha.
+
+* Use requirejs (preferred)
+  define('jquery', function(){ return window.jQuery; })
+  define('jqueryui', function(){ return window.jQuery.ui; })
+
+* Use Aloha settings
+  Aloha.settings.predefinedModules = {'jquery': window.jQuery, 'jqueryui': window.jQuery.ui};
+  which just does a define() call as above, except it also works if
+  requirejs is bundled as part of Aloha (aloha-full.js).
+  Calling define yourself is always preferred if possible.
+
+* Customize the requirejs path configuration
+  Aloha.settings.requireConfig.paths = {'jquery': 'path/to/jquery.js', 'jqueryui': 'path/to/jqueryui.js'};
+  This will only work if jQuery was not already defined via a call to define() as above.
+  Loading the modules and calling define yourself is always preferred if possible.
+
+* Customize the r.js path configuration during building
+  "r.js":https://github.com/jrburke/r.js/ build profiles also
+  contain path configuration, like above, that can be adapted. See
+  "Customized builds":develop_aloha.html.
+  This is different from the other methods in that this controls how
+  Aloha will be combined, whereas the other methods control module
+  loading during runtime.
+
+Please note that if jqueryui is given this way, a jquery module must
+also be given this way, and the given jqueryui module must extend
+the given jquery module. The same rule holds for any other jquery
+plugins.
+
+Also note that if a jquery instance is given this way, it will be
+extended (jquery plugins will be registered on it).
+
+Care must be taken with both settings. Passing in a version of a
+module that differs from what Aloha expects may result in
+unpredictable behaviour.
+
+Also, the third part libraries that come with Aloha may have been
+patched to fix bugs or address Aloha specific issues. See the git
+log for each third party library for further information before
+redefining it.
+
+For this reason, if you experiencing problems when using custom versions
+of some modules, please go back to using the modules packaged with Aloha
+before making a bugreport.
+
 h3. Further reading
 
-* Read the section "Configure Aloha Editor":configure_aloha.html to learn how to configure the behavior of Aloha Editor
-* Read more about "Aloha and jQuery":aloha_jquery.html
 * Learn about "Plugins":plugins.html

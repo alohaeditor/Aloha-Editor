@@ -128,6 +128,3 @@ Others, (IE) either let you handle built-in short-cuts, but will add their funct
 
 
 Code from: https://github.com/jeresig/jquery.hotkeys
-
-
-.

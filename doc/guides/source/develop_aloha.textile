@@ -62,18 +62,61 @@ cd alohaeditor
 mvn3 clean package
 </shell>
 
-You can also ommitt building of the api and guides:
+You probably want to ommit building of the api and guides:
 <shell>
 mvn3 clean package -DbareMode=true
 </shell>
 
-You can build only the core css:
+You can also build just the css:
 <shell>
 mvn3 generate-sources
 </shell>
 
+The resulting css should be in src/css/aloha.css
+
 h4. Other OS: 
 * Microsoft Windows: Not yet supported
+
+h4. Customized builds:
+
+Aloha-Editor uses maven to build a distributable package (includes
+documentation etc.). To build just the javascript, it suffices to invoke
+"r.js":https://github.com/jrburke/r.js/ from the command line. For example
+
+<shell>
+node build/r.js -o build/aloha/build.js
+</shell>
+
+To customize the build to your needs, you can modify the build profile
+in build/aloha/build.js. The most likely customization you want to make
+is to remove or add plugins from the include property of the 'aloha'
+module definition.
+
+To include i18n files in your build, define the locale property. If the
+locale property is not defined, the appropriate i18n files will be
+loaded dynamically by requirejs. Remember to configure Aloha.locale
+as well.
+
+Unless you ask for plugins to be loaded that are not defined in the
+build profile, or use a locale that was not defined during building, no
+additional files should be downloaded by requirejs. In the future
+requirejs may be replaced with an AMD stub such that requirejs is not
+necessary for production deployments.
+
+Css building can be customized by adding or removing entries in
+src/css/aloha.less. If you removed or added plugins in the r.js build
+profile, you also want to add or remove the appropriate css in the
+aloha-core.less. Then, run
+
+<shell>
+mvn3 generate-sources
+</shell>
+
+And the resulting css should be in src/css/aloha.css
+
+If you want to redefine modules in the build profile, for example if you
+want to use your own jqueryui, please first read "Custom jQuery,
+jQueryUI and other modules":using_aloha.html
 
 h3. Guide 
 

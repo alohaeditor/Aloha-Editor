@@ -1,22 +1,29 @@
-/*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/* aloha.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 (function (global) {
 	'use strict';
 
@@ -38,23 +45,24 @@
 	 *       plugins - an array of plugins to load.
 	 */
 	function getLoadConfig() {
-		var scripts = document.getElementsByTagName('script'),
+		var scripts,
 		    script,
-		    pluginsConfigured = Aloha.settings.plugins && Aloha.settings.plugins.load,
-		    baseUrlConfigured = Aloha.settings.baseUrl,
-		    plugins = [],
-		    baseUrl = './',
+		    plugins = Aloha.settings.plugins && Aloha.settings.plugins.load,
+		    baseUrl = Aloha.settings.baseUrl,
 		    pluginsAttr,
 		    regexAlohaJs = /\/aloha\.js$/,
             regexStripFilename = /\/[^\/]*\.js$/,
 		    i;
 
-		if (!pluginsConfigured || !baseUrlConfigured) {
+		if (!plugins || !baseUrl) {
+			scripts = document.getElementsByTagName('script');
 			for (i = 0; i < scripts.length; i++) {
 				script = scripts[i];
 				pluginsAttr = script.getAttribute('data-aloha-plugins');
-				if (pluginsAttr) {
-					plugins = pluginsAttr;
+				if (null != pluginsAttr) {
+					if (!plugins) {
+						plugins = pluginsAttr;
+					}
 					baseUrl = script.src.replace(regexStripFilename, '');
 					break;
 				}
@@ -62,14 +70,6 @@
 					baseUrl = script.src.replace(regexAlohaJs, '');
 				}
 			}
-		}
-
-		if (pluginsConfigured) {
-			plugins = pluginsConfigured;
-		}
-
-		if (baseUrlConfigured) {
-			baseUrl = baseUrlConfigured;
 		}
 
 		if (typeof plugins === 'string' && plugins !== '') {
@@ -189,194 +189,203 @@
 	}
 
 	function createDefine(name, module) {
-		if (!name || !module)debugger;
 		define(name, function () {
 			return module;
 		});
 	}
 
-	global.Aloha = global.Aloha || {};
-	if (global.Aloha.deferInit || isDeferInit()) {
-		global.Aloha.deferInit = load;
-	} else {
-		load();
-	}
 	function load() {
 
-	Aloha.defaults = {};
-	Aloha.settings = Aloha.settings || {};
+		Aloha.defaults = {};
+		Aloha.settings = Aloha.settings || {};
 
-	var loadConfig = getLoadConfig();
-	var pluginConfig = getPluginLoadConfig(loadConfig.plugins);
+		var loadConfig = getLoadConfig();
+		var pluginConfig = getPluginLoadConfig(loadConfig.plugins);
 
-	Aloha.settings.baseUrl = loadConfig.baseUrl;
-	Aloha.settings.loadedPlugins = pluginConfig.names;
-	Aloha.settings._pluginBaseUrlByName = pluginConfig.baseUrlByName;
+		Aloha.settings.baseUrl = loadConfig.baseUrl;
+		Aloha.settings.loadedPlugins = pluginConfig.names;
+		Aloha.settings._pluginBaseUrlByName = pluginConfig.baseUrlByName;
 
-	var defaultConfig = {
-		context: 'aloha',
-		locale: Aloha.settings.locale || 'en',
-		baseUrl: Aloha.settings.baseUrl
-	};
+		var defaultConfig = {
+			context: 'aloha',
+			locale: Aloha.settings.locale || 'en',
+			baseUrl: Aloha.settings.baseUrl
+		};
 
-	var defaultPaths = {
-		jquery: 'vendor/jquery-1.7.2',
-		jqueryui: 'vendor/jquery-ui-1.9m6'
-	};
+		var defaultPaths = {
+			jquery: 'vendor/jquery-1.7.2',
+			jqueryui: 'vendor/jquery-ui-1.9m6'
+		};
 
-	var browserPaths = {
-		PubSub: 'vendor/pubsub/js/pubsub-unminified',
-		'Class': 'vendor/class',
-		RepositoryBrowser: 'vendor/repository-browser/js/repository-browser-unminified',
-		jstree: 'vendor/jquery.jstree',              // Mutates jquery
-		jqgrid: 'vendor/jquery.jqgrid',              // Mutates jquery
-		'jquery-layout': 'vendor/jquery.layout',     // Mutates jquery
-		'jqgrid-locale-en': 'vendor/grid.locale.en', // Mutates jqgrid
-		'jqgrid-locale-de': 'vendor/grid.locale.de', // Mutates jqgrid
-		'repository-browser-i18n-de': 'vendor/repository-browser/js/repository-browser-unminified',
-		'repository-browser-i18n-en': 'vendor/repository-browser/js/repository-browser-unminified'
-	};
+		var browserPaths = {
+			PubSub: 'vendor/pubsub/js/pubsub-unminified',
+			'Class': 'vendor/class',
+			RepositoryBrowser: 'vendor/repository-browser/js/repository-browser-unminified',
+			jstree: 'vendor/jquery.jstree',              // Mutates jquery
+			jqgrid: 'vendor/jquery.jqgrid',              // Mutates jquery
+			'jquery-layout': 'vendor/jquery.layout',     // Mutates jquery
+			'jqgrid-locale-en': 'vendor/grid.locale.en', // Mutates jqgrid
+			'jqgrid-locale-de': 'vendor/grid.locale.de', // Mutates jqgrid
+			'repository-browser-i18n-de': 'vendor/repository-browser/js/repository-browser-unminified',
+			'repository-browser-i18n-en': 'vendor/repository-browser/js/repository-browser-unminified'
+		};
 
-	var requireConfig = mergeObjects(
-		defaultConfig,
-		Aloha.settings.requireConfig
-	);
+		var requireConfig = mergeObjects(
+			defaultConfig,
+			Aloha.settings.requireConfig
+		);
 
-	requireConfig.paths = mergeObjects(
-		defaultPaths,
-		browserPaths,
-		pluginConfig.paths,
-		requireConfig.paths
-	);
+		requireConfig.paths = mergeObjects(
+			defaultPaths,
+			browserPaths,
+			pluginConfig.paths,
+			requireConfig.paths
+		);
 
-	// Create define() wrappers that will provide the initialized objects that
-	// the user passes into Aloha via require() calls.
-	var predefinedModules = Aloha.settings.predefinedModules || {};
+		// Create define() wrappers that will provide the initialized objects that
+		// the user passes into Aloha via require() calls.
+		var predefinedModules = Aloha.settings.predefinedModules || {};
 
-	if (Aloha.settings.jQuery) {
-		predefinedModules.jquery = Aloha.settings.jQuery;
-	}
-
-	var moduleName;
-	for (moduleName in predefinedModules) if (predefinedModules.hasOwnProperty(moduleName)) {
-		createDefine(moduleName, predefinedModules[moduleName]);
-		delete requireConfig.paths[moduleName];
-	}
-
-	// Configure require and expose the Aloha.require.
-	var alohaRequire = require.config(requireConfig);
-
-	Aloha.require = function (callback) {
-		// Pass the Aloha object to the given callback.
-		if (1 === arguments.length && typeof callback === 'function') {
-			return alohaRequire(['aloha'], callback);
+		if (Aloha.settings.jQuery) {
+			predefinedModules.jquery = Aloha.settings.jQuery;
 		}
-		return alohaRequire.apply(this, arguments);
-	};
 
-	var deferredReady;
+		var moduleName;
+		for (moduleName in predefinedModules) if (predefinedModules.hasOwnProperty(moduleName)) {
+			createDefine(moduleName, predefinedModules[moduleName]);
+			delete requireConfig.paths[moduleName];
+		}
 
-	Aloha.bind = function (type, fn) {
-		Aloha.require(['jquery'], function (jQuery) {
-			// We will only need to load jQuery once ...
-			Aloha.bind = function (type, fn) {
-				deferredReady = deferredReady || jQuery.Deferred();
-				if ('aloha-ready' === type) {
-					if ('alohaReady' !== Aloha.stage) {
-						deferredReady.done(fn);
+		// Configure require and expose the Aloha.require.
+		var alohaRequire = require.config(requireConfig);
+
+		Aloha.require = function (callback) {
+			// Pass the Aloha object to the given callback.
+			if (1 === arguments.length && typeof callback === 'function') {
+				return alohaRequire(['aloha'], callback);
+			}
+			return alohaRequire.apply(this, arguments);
+		};
+
+		var deferredReady;
+
+		Aloha.bind = function (type, fn) {
+			Aloha.require(['jquery'], function (jQuery) {
+				// We will only need to load jQuery once ...
+				Aloha.bind = function (type, fn) {
+					deferredReady = deferredReady || jQuery.Deferred();
+					if ('aloha-ready' === type) {
+						if ('alohaReady' !== Aloha.stage) {
+							deferredReady.done(fn);
+						} else {
+							fn();
+						}
 					} else {
-						fn();
+						jQuery(Aloha, 'body').bind(type, fn);
 					}
-				} else {
-					jQuery(Aloha, 'body').bind(type, fn);
-				}
-				return this;
-			};
-			Aloha.bind(type, fn);
-		});
-		return this;
-	};
+					return this;
+				};
+				Aloha.bind(type, fn);
+			});
+			return this;
+		};
 
-	Aloha.trigger = function (type, data) {
-		Aloha.require(['jquery'], function (jQuery) {
-			Aloha.trigger = function (type, data) {
-				deferredReady = deferredReady || jQuery.Deferred();
-				if ('aloha-ready' === type) {
-					jQuery(deferredReady.resolve);
-				}
-				jQuery(Aloha, 'body').trigger(type, data);
-				return this;
-			};
-			Aloha.trigger(type, data);
-		});
-		return this;
-	};
+		Aloha.trigger = function (type, data) {
+			Aloha.require(['jquery'], function (jQuery) {
+				Aloha.trigger = function (type, data) {
+					deferredReady = deferredReady || jQuery.Deferred();
+					if ('aloha-ready' === type) {
+						jQuery(deferredReady.resolve);
+					}
+					jQuery(Aloha, 'body').trigger(type, data);
+					return this;
+				};
+				Aloha.trigger(type, data);
+			});
+			return this;
+		};
 
-	Aloha.ready = function (fn) {
-		this.bind('aloha-ready', fn);
-		return this;
-	};
+		Aloha.ready = function (fn) {
+			this.bind('aloha-ready', fn);
+			return this;
+		};
 
-
-	// TODO this hierarchical chain of require calls should not really
-	//      be necessary if each file properly specifies its dependencies.
-	define('aloha', [], function() {
-
-		require(requireConfig, [
+		define('aloha', [
 			'jquery',
-			'util/json2'
-		], function (jQuery) {
+			'util/json2',
+			'aloha/rangy-core',
+			'util/class',
+			'util/lang',
+			'util/range',
+			'util/dom',
+			'aloha/core',
+			'aloha/editable',
+			'aloha/console',
+			'aloha/markup',
+			'aloha/plugin',
+			'aloha/selection',
+			'aloha/command',
+			'aloha/jquery.aloha',
+			'aloha/sidebar',
+			'util/position',
+			'aloha/repositorymanager',
+			'aloha/repository',
+			'aloha/repositoryobjects',
+			'aloha/contenthandlermanager'
+		], function(jQuery) {
 
 			// Provide Aloha.jQuery for compatibility with old implementations
 			// that which expect it to be there.
 			Aloha.jQuery = jQuery;
 
-			// Load Aloha core files ...
-			require(requireConfig, [
-				'vendor/jquery.json-2.2.min',
-				'aloha/rangy-core',
-				'util/class',
-				'util/lang',
-				'util/range',
-				'util/dom',
-				'aloha/core',
-				'aloha/editable',
-				'aloha/console',
-				'aloha/markup',
-				'aloha/plugin',
-				'aloha/selection',
-				'aloha/command',
-				'aloha/jquery.aloha',
-				'aloha/sidebar',
-				'util/position',
-				'aloha/repositorymanager',
-				'aloha/repository',
-				'aloha/repositoryobjects',
-				'aloha/contenthandlermanager'
-			], function() {
+			// Some core files provide default settings in Aloha.defaults.
+			Aloha.settings = jQuery.extendObjects( true, {}, Aloha.defaults, Aloha.settings );
 
-				// Some core files provide default settings in Aloha.defaults.
-				Aloha.settings = jQuery.extendObjects( true, {}, Aloha.defaults, Aloha.settings );
+			return Aloha;
+		});
 
-				Aloha.stage = 'loadPlugins';
-				require(requireConfig, pluginConfig.entryPoints, function() {
-					// jQuery calls Aloha.init when the dom is ready.
-					jQuery(function(){
-						// Rangy must be initialized only after the body
-						// is available since it accesses the body
-						// element during initialization.
-						window.rangy.init();
-						Aloha.init();
-					});
+		// TODO aloha should not make the require call itself. Instead,
+		// user code should require and initialize aloha.
+		Aloha.stage = 'loadingAloha';
+		require(requireConfig, ['aloha', 'jquery'], function (Aloha, jQuery) {
+			Aloha.stage = 'loadPlugins';
+			require(requireConfig, pluginConfig.entryPoints, function() {
+				jQuery(function(){
+					// Rangy must be initialized only after the body
+					// is available since it accesses the body
+					// element during initialization.
+					window.rangy.init();
+					// The same for Aloha, but probably only because it
+					// depends on rangy.
+					Aloha.init();
 				});
 			});
 		});
-		return Aloha;
-	});
-
-	// Trigger a loading of Aloha dependencies.
-	Aloha.stage = 'loadingAloha';
-	require(requireConfig, ['aloha'], function () {});
-
 	} // end load()
+
+	global.Aloha = global.Aloha || {};
+	if (global.Aloha.deferInit || isDeferInit()) {
+		global.Aloha.deferInit = load;
+	} else {
+		// Unless init is deferred above, aloha mus be loaded
+		// immediately in the development version, but later in the
+		// compiled version. The reason loading must be delayed in the
+		// compiled version is that the "include" directive in the r.js
+		// build profile, which lists the plugins that will be compiled
+		// into aloha.js, will include the plugins *after* this
+		// file. Since the require() call that loads the plugins is in
+		// this file, it will not see any of the plugin's defines that
+		// come after this file. The call to Aloha._load is only made in
+		// compiled mode in closure-end.frag. The call to load() below
+		// is only made in development mode because the excludeStart and
+		// excludeEnd r.js pragmas will exclude everything inbetween in
+		// the compiled version.
+		// TODO ideally the bootstrap file should not make the require
+		//      call at all. Instead, user code should require and
+		//      initialize aloha.
+		Aloha._load = load;
+		//>>excludeStart("alohaLoadInEndClosure", pragmas.alohaLoadInEndClosure);
+		load();
+		//>>excludeEnd("alohaLoadInEndClosure");
+	}
 }(window));

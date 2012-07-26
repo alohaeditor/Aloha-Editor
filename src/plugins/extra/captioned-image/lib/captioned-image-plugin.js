@@ -32,7 +32,7 @@ define([
 ) {
 	'use strict';
 
-	$('<style type="text/css">').text('\
+	var css = '\
 		.aloha-captioned-image {display: inline-block;}\
 		.aloha-captioned-image>div {\
 			text-align: center;\
@@ -51,7 +51,9 @@ define([
 		}\
 		.aloha-captioned-image-hidden .caption {display: none;}\
 		.aloha-captioned-image-hidden.aloha-block-active .caption {display: block;}\
-	').appendTo('head:first');
+	';
+
+	$('<style type="text/css">').text(css).appendTo('head:first');
 
 	var components = [];
 
@@ -86,6 +88,10 @@ define([
 	}));
 
 	function showComponents() {
+		// A very fragile yield hack to help make it more likely that our
+		// components' tag will be forgrouned() after other components so that
+		// ours are visible.  A fix is needed at the architectural level of
+		// Aloha for this.
 		setTimeout(function () {
 			var j = components.length;
 			while (j) {
