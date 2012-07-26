@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: The Undo Plugin</title>
+  <title>Aloha Editor GuidesAloha Editor Guides: The Undo Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,8 +42,8 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/"></a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <h2><a href="/">Aloha Editor Guides</a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -59,8 +59,10 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd>Configuring Aloha Editor</dd>
+      <dd>Aloha Editor and jQuery</dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
       <dd><a href="repository.html">Working with repositories</a></dd>
     <dt>The Core</dt>
@@ -68,10 +70,10 @@
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd>Aloha Editor toolbar</dd>
+      <dd>Aloha Editor sidebar</dd>
+      <dd>Aloha Editor UI API</dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -85,6 +87,7 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
       <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
@@ -104,28 +107,37 @@
       <div id="mainCol">
           <div class="headerSection">
             <h2>The Undo Plugin</h2>
+<p>The Undo plugin replaces native browser undo/redo functionality.</p>
 
           </div>
-        <h3 id="goal">1 Goal</h3>
+        <h3 id="usage">1 Usage</h3>
+<p>The Undo Plugin allows you to undo changes to an editable by pressing <code>Ctrl&#43;Z</code> (or <code>Cmd&#43;Z</code> on Mac). You may also reapply changes made undone by pressing <code>Ctrl&#43;Shift&#43;Z</code> or <code>Cmd&#43;Shift&#43;Z</code> on Mac. The Undo Plugin has no UI and no components.</p>
+<h3 id="configuration">2 Configuration</h3>
+<p>This plugin does not provide any configuration settings itself.</p>
+<p>However, the Undo plugin relies on the <code>aloha-smart-content-changed</code> event for creating undo snapshots. All undo and redo actions will jump from one undo snapshot to another.</p>
+<p>The <code>aloha-smart-content-changed</code> fires after content changes. The event doesn&#8217;t fire immediately, but only if the content didn&#8217;t change again for a certain amount of time. By default the timeout is 5 seconds (the <code>idle</code> setting). If the user types a character that is in the list configured by the <code>delimiters</code> settings, the timeout is drastically shortened to half a second (the <code>delay</code> setting).</p>
+<p>The timeouts and delimiters can be configured as follows (timeouts are in milliseconds):</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.smartContentChange = {
+    delimiters: [ ':', ';', '.', '!', '?', ',', unescape( '%u0009' ), unescape( '%u0020' ), 'Enter' ],
+    idle: 5000,
+    delay: 500
+};
+</pre></div><h3 id="references">3 References</h3>
 <ul>
-	<li>Undo changes to the content of an element.</li>
-	<li>Undo changes to the <span class="caps">DOM</span> hierarchy of nodes that are descendants of the HTMLDocument object (parentNode, childNodes).</li>
-	<li>Undo changes to internal state, such as a form control&#8217;s value or dirty checkedness flag.</li>
-	<li>Undo changes to all attributes</li>
-	<li>Undo changes to any occurred <span class="caps">DOM</span> manipulation</li>
-</ul>
-<h3 id="reference">2 Reference</h3>
-<ul>
-	<li>http://www.whatwg.org/specs/web-apps/current-work/#undo</li>
-	<li>https://github.com/jzaefferer/undo (Undo/Redo Stack Abstraction by Jörn Zaefferer from jQuery UI)</li>
+	<li><a href="http://www.whatwg.org/specs/web-apps/current-work/#undo">http://www.whatwg.org/specs/web-apps/current-work</a></li>
+	<li><a href="https://github.com/jzaefferer/undo">Undo/Redo Stack Abstraction by Jörn Zaefferer from jQuery UI</a></li>
 </ul>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#goal"><p>Goal</p>
-</a></li><li><a href="#reference"><p>Reference</p>
+            <li><a href="#usage"><p>Usage</p>
+</a></li><li><a href="#configuration"><p>Configuration</p>
+</a></li><li><a href="#references"><p>References</p>
 </a></li>
           </ol>
         </div>

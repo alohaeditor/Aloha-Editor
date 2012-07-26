@@ -51,7 +51,7 @@ function ( jQuery, PluginManager ) {
 		 * It should be set by us and updated for the particular branch
 		 * @property
 		 */
-		version: '0.20.0',
+		version: '${project.version}',
 
 		/**
 		 * Array of editables that are managed by Aloha

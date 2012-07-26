@@ -2,7 +2,7 @@
 	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
-	<id>bin</id>
+	<id>cdn</id>
 	<formats>
 		<format>zip</format>
 	</formats>
@@ -13,38 +13,53 @@
 			<source>${project.basedir}/doc/README</source>
 			<outputDirectory>/</outputDirectory>
 			<destName>README</destName>
+			<filtered>true</filtered>
 		</file>
 		
-		<!-- Bare Version -->
+		<!-- package.json file -->
 		<file>
-			<source>${project.basedir}/target/aloha-bare/bin/aloha-bare.js</source>
+			<source>${project.basedir}/src/package.json</source>
+			<outputDirectory>/aloha</outputDirectory>
+			<filtered>true</filtered>
+		</file>
+		
+		<!-- Bare Version (No require, No jquery) - minified -->
+		<file>
+			<source>${project.basedir}/target/${build.profile}/minified-bare/${build.profile}-bare.js</source>
 			<outputDirectory>/aloha/lib</outputDirectory>
 			<destName>aloha-bare.min.js</destName>
+			<filtered>true</filtered>
 		</file>
+
+		<!-- Bare Version (No require, No jquery) - unminified -->
 		<file>
-			<source>${project.basedir}/target/aloha-bare/debug/aloha-bare.js</source>
+			<source>${project.basedir}/target/${build.profile}/debug-bare/${build.profile}-bare.js</source>
 			<outputDirectory>/aloha/lib</outputDirectory>
 			<destName>aloha-bare.js</destName>
+			<filtered>true</filtered>
 		</file>
 
 		<!-- All inclusive version of aloha -->
 		<file>
-			<source>${project.basedir}/target/aloha-require-jquery/bin/aloha-require-jquery.js</source>
+			<source>${project.basedir}/target/${build.profile}/minified-full/${build.profile}.js</source>
 			<outputDirectory>/aloha/lib</outputDirectory>
 			<destName>aloha-full.min.js</destName>
+			<filtered>true</filtered>
 		</file>
 
 		<file>
-			<source>${project.basedir}/target/aloha-require-jquery/debug/aloha-require-jquery.js</source>
+			<source>${project.basedir}/target/${build.profile}/debug-full/${build.profile}.js</source>
 			<outputDirectory>/aloha/lib</outputDirectory>
 			<destName>aloha-full.js</destName>
+			<filtered>true</filtered>
 		</file>
 
-		<!-- Default version of aloha -->
+		<!-- Default version of aloha (the full minified version) -->
 		<file>
-			<source>${project.basedir}/target/aloha-require-jquery/bin/aloha-require-jquery.js</source>
+			<source>${project.basedir}/target/${build.profile}/minified-bare/${build.profile}-bare.js</source>
 			<outputDirectory>/aloha/lib</outputDirectory>
 			<destName>aloha.js</destName>
+			<filtered>true</filtered>
 		</file>
 	</files>
 
@@ -52,7 +67,7 @@
 	<fileSets>
 		<!-- Other non core files -->
 		<fileSet>
-			<directory>${project.basedir}/target/tmp/aloha</directory>
+			<directory>${project.basedir}/target/${build.profile}/rjs-output</directory>
 			<outputDirectory>/aloha</outputDirectory>
 			<excludes>
 				<!-- Don't include the core -->
@@ -66,7 +81,7 @@
 
 		<!-- Workaround for jquery-ui dependency -->
 		<fileSet>
-			<directory>${project.basedir}/target/tmp/aloha</directory>
+			<directory>${project.basedir}/target/${build.profile}/rjs-output</directory>
 			<outputDirectory>/aloha</outputDirectory>
 			<includes>
 				<include>lib/aloha/jquery-ui.js</include>
@@ -82,9 +97,16 @@
 			</includes>
 		</fileSet>
 		
+		<!-- Changelog -->
+		<fileSet>
+			<directory>${project.basedir}/</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>/CHANGELOG*</include>
+			</includes>
+		</fileSet>
+		
 	</fileSets>
-
-
 
 	<includeBaseDirectory>false</includeBaseDirectory>
 </assembly>

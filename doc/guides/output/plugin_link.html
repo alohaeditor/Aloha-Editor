@@ -59,8 +59,8 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="aloha_jquery.html">Aloha Editor and jQuery</a></dd>
+      <dd>Configuring Aloha Editor</dd>
+      <dd>Aloha Editor and jQuery</dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
@@ -71,9 +71,9 @@
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
       <dd><a href="ui.html">Aloha Editor UI</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd>Aloha Editor toolbar</dd>
+      <dd>Aloha Editor sidebar</dd>
+      <dd>Aloha Editor UI API</dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -143,7 +143,7 @@ Aloha.plugins.link: {
 	objectTypeFilter: [ 'website' ],
 	// handle change of href
 	onHrefChange: function( obj, href, item ) {
-		var jQuery = Aloha.require('aloha/jquery');
+		var jQuery = Aloha.require('jquery');
 		if ( item ) {
 			jQuery(obj).attr('data-name', item.name);
 		} else {
