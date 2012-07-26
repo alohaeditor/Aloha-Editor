@@ -455,7 +455,7 @@ define( [
 			} else {
 				el = span;
 			}
-			if (jQuery( "." + this.placeholderClass, obj).length !== 0) {
+			if ( jQuery( "." + this.placeholderClass, obj ).length !== 0 ) {
 				return;
 			}
 			jQuery( obj ).append( el.addClass( this.placeholderClass ) );
@@ -486,14 +486,14 @@ define( [
 		removePlaceholder: function( obj, setCursor ) {
 			var placeholderClass = this.placeholderClass,
 			    range;
-			if (jQuery( "." + this.placeholderClass, obj).length === 0) {
+			if ( jQuery("." + this.placeholderClass, obj ).length === 0 ) {
 				return;
 			} 
 			// set the cursor // remove placeholder
 			if ( setCursor === true ) {
 				window.setTimeout( function() {
 					range = new Selection.SelectionRange();
-					range.startContainer = range.endContainer = obj.get( 0 );
+					range.startContainer = range.endContainer = obj.get(0);
 					range.startOffset = range.endOffset = 0;
 					jQuery( '.' + placeholderClass, obj ).remove();
 					range.select();
@@ -515,7 +515,7 @@ define( [
 			}
 
 			// special handled elements
-			switch ( this.originalObj.get( 0 ).nodeName.toLowerCase() ) {
+			switch ( this.originalObj.get(0).nodeName.toLowerCase() ) {
 				case 'label':
 				case 'button':
 					// TODO need some special handling.
