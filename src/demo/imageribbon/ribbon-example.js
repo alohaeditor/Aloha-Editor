@@ -32,7 +32,7 @@ Aloha.ready(function(){
 				{
 					text: "Insert Image... (Google Picker)",
 					click: function() {
-						newPicker();
+						newImagePicker();
 						/*
 						Dialog.alert({
 							text: "Google Picker should show up!"
@@ -50,6 +50,21 @@ Aloha.ready(function(){
 				}
 			],
 		});
+
+		Ribbon.addButton({
+			text: 'Video',
+			menu: [
+				{
+					text: "Insert Video... (Google Picker)",
+					click: function() {
+						newVideoPicker();
+					}
+				},
+			],
+		});
+
+		Ribbon.show();
+
 
 		Ribbon.show();
 
