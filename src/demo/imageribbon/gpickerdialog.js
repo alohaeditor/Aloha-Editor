@@ -58,19 +58,9 @@ function VideoPickerCallback(data) {
     if(data.action == google.picker.Action.PICKED){
         var doc = data[google.picker.Response.DOCUMENTS][0];
         site_url = doc[google.picker.Document.URL]; // only shows website url :(
-        // image_url = data.docs[0].thumbnails[data.docs[0].thumbnails.length - 1].url;
+        // image_url = data.docs[0].thumbnails[data.docs[0].thumbnails.length - 1].url; // we only get a image preview with this
         embed_url = doc[google.picker.Document.EMBEDDABLE_URL];
-        var embed_code_template = Aloha.jQuery('<object width="560" height="315"><param name="movie" value="http://www.youtube.com/v/Rj8JoAAytyg?version=3&amp;hl=de_DE"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="" type="application/x-shockwave-flash" width="560" height="315" allowscriptaccess="always" allowfullscreen="true"></embed></object>');
-
-
-        // var embed_code_template = Aloha.jQuery(
-        //         '<object width="260" height="140">' +   
-        //           '<param name="movie" value=""></param>' +  
-        //           '<param name="allowFullScreen" value="true"></param>' +  
-        //           '<param name="allowscriptaccess" value="always"></param>' +  
-        //           '<embed type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="260" height="140"></embed>' +  
-        //           '</object>');
-        // var embed_code = Aloha.jQuery(embed_code_template).find('object embed').attr('src', embed_url);
+        var embed_code_template = Aloha.jQuery('<object width="420" height="236"><param name="movie" value="http://www.youtube.com/v/Rj8JoAAytyg?version=3&amp;hl=de_DE"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="" type="application/x-shockwave-flash" width="560" height="315" allowscriptaccess="always" allowfullscreen="true"></embed></object>');
         var embed_code = Aloha.jQuery(embed_code_template).find('embed').attr('src', embed_url);
         AlohaInsertIntoDom(embed_code);
     }
