@@ -47,6 +47,13 @@ Aloha.ready(function(){
 							text: "Import from Flickr?!"
 						});						
 					}
+				},
+				{
+					text: "Foobar!",
+					click: function() {
+						var img = Aloha.jQuery("<img />").attr("src", "http://a0.twimg.com/profile_images/1262048739/You-Made-it__2__normal.png");
+						AlohaInsertIntoDom(img);
+					}
 				}
 			],
 		});
