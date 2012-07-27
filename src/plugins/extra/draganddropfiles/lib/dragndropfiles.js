@@ -24,11 +24,6 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-//(function(window, undefined) {
-//    var
-//        $ = jQuery = window.alohaQuery || window.jQuery,
-//        GENTICS = window.GENTICS,
-//        Aloha = GENTICS.Aloha;
 define([	
 	'jquery',
 	'aloha/plugin',
@@ -202,11 +197,13 @@ function( $, Plugin, DropFilesRepository ) {
 				return true;
 			}
 			target = jQuery( event.target );
+			
 			//If drop in editable
 			if ( target.hasClass('aloha-editable') ) {
 				this.targetEditable = target;
 				target = this.targetEditable.children( ':last' );
 				if ( target.hasClass('aloha-editable') ) {
+					
 					//nested space is needed in this tag, otherwise select won't success...
 					this.targetEditable.append( '<span> </span>' );
 					target = this.targetEditable.children( ':last' );
@@ -217,14 +214,15 @@ function( $, Plugin, DropFilesRepository ) {
 			this.filesObjs = [];
 			this.dropInEditable = false;
 			len = this.droppedFilesCount;
+			
 			// Process files out of editables
 			if ( this.targetEditable[0] === null || this.targetEditable[0] === undefined ) { 
 				while(--len >= 0) {
 					if  ( 
 							// Set of conditions, can we resize the image, and do we have a conf to do it
-							!(!!document.createElement('canvas').getContext &&
+							!( !!document.createElement('canvas').getContext &&
 								files[len].type.match(/image\//) &&
-								edConfig.upload.config.image)
+								edConfig.upload.config.image )
 						) {
 						if ( files[len].size <= draganddropfiles.settings.max_file_size ) {
 							draganddropfiles.prepareFileUpload( files[len] );
@@ -254,7 +252,7 @@ function( $, Plugin, DropFilesRepository ) {
 							// Set of conditions, can we resize the image, and do we have a conf to do it
 							!( !!document.createElement( 'canvas' ).getContext &&
 								files[len].type.match(/image\//) &&
-								dropimg)
+								dropimg )
 						) {
 						if ( files[len].size <= edConfig.max_file_size ) {
 							draganddropfiles.prepareFileUpload( files[len], target.attr("id") );
@@ -281,7 +279,7 @@ function( $, Plugin, DropFilesRepository ) {
 		 */
 		setBodyDropHandler: function() {
 			var draganddropfiles = this;
-			if ( !document.body.BodyDragSinker ){
+			if ( !document.body.BodyDragSinker ) {
 				document.body.BodyDragSinker = true;
 				this.onstr = "";
 				this.mydoc = document;
@@ -296,40 +294,43 @@ function( $, Plugin, DropFilesRepository ) {
 				this.mydoc[this.methodName]( this.onstr+"drop" , function(event) {
 					draganddropfiles.dropEventHandler(event);
 				} , false);
-			// TODO: improve below to allow default comportment behaviour if drop event is not a files drop event
-			this.mydoc[this.methodName]( this.onstr+"dragenter" , function(event) {
-				if ( event.preventDefault )
-					event.preventDefault();
-				else
-					event.cancelBubble = true;
-				if ( event.stopPropagation )
-					event.stopPropagation();
-				else
-					event.returnValue = false;
-				return false;
-			}, false);
-			this.mydoc[this.methodName]( this.onstr+"dragleave" , function(event) {
-				if ( event.preventDefault )
-					event.preventDefault();
-				else
-					event.cancelBubble = true;
-				if ( event.stopPropagation )
-					event.stopPropagation();
-				else
-					event.returnValue = false;
-				return false;
-			}, false);
-			this.mydoc[this.methodName]( this.onstr+"dragover" , function(event) {
-				if ( event.preventDefault )
-					event.preventDefault();
-				else
-					event.cancelBubble = true;
-				if ( event.stopPropagation )
-					event.stopPropagation();
-				else
-					event.returnValue = false;
-				//return false;
-			}, false);
+				
+				// TODO: improve below to allow default comportment behaviour if drop event is not a files drop event
+				this.mydoc[this.methodName]( this.onstr+"dragenter" , function(event) {
+					if ( event.preventDefault )
+						event.preventDefault();
+					else
+						event.cancelBubble = true;
+					if ( event.stopPropagation )
+						event.stopPropagation();
+					else
+						event.returnValue = false;
+					return false;
+				}, false);
+				
+				this.mydoc[this.methodName]( this.onstr+"dragleave" , function(event) {
+					if ( event.preventDefault )
+						event.preventDefault();
+					else
+						event.cancelBubble = true;
+					if ( event.stopPropagation )
+						event.stopPropagation();
+					else
+						event.returnValue = false;
+					return false;
+				}, false);
+				
+				this.mydoc[this.methodName]( this.onstr+"dragover" , function(event) {
+					if ( event.preventDefault )
+						event.preventDefault();
+					else
+						event.cancelBubble = true;
+					if ( event.stopPropagation )
+						event.stopPropagation();
+					else
+						event.returnValue = false;
+					//return false;
+				}, false);
 
 
 
@@ -343,12 +344,9 @@ function( $, Plugin, DropFilesRepository ) {
 		 * for plugin developers comfort.
 		 */
 		initializeRangeForDropEvent: function( event, editable ) {
-			//var range = new GENTICS.Utils.RangeObject();
-			var target = jQuery( event.target );
-//			if (target.textNodes().length == 0 && target.html().length == 0) {
-//				target.html(" ");
-//			}
-			var	range = new Aloha.Selection.SelectionRange(true);
+			var target = jQuery( event.target ),
+				range = new Aloha.Selection.SelectionRange(true);
+
 			range.update();
 			if ( target.textNodes().length === 0 ) {
 				range.startContainer = target[0].childNodes[0];
@@ -357,9 +355,8 @@ function( $, Plugin, DropFilesRepository ) {
 				range.startContainer = target.textNodes()[0];
 				range.endContainer = target.textNodes()[0];
 			}
-		//
-				range.startOffset = 0;
-				range.endOffset = 0;
+			range.startOffset = 0;
+			range.endOffset = 0;
 			try {
 				range.select();
 			} catch (error) {
