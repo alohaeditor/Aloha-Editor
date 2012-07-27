@@ -1,0 +1,2 @@
+- **MANUAL CHANGE**: Updated impress.js to work with jQuery UI
+- **MANUAL CHANGE**: Updated demo-app to work with jQuery UI; added simple system test to check file permissions;
