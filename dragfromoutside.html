@@ -1,0 +1,129 @@
+<!doctype html>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Figures!</title>
+	<script language="javascript">
+		Aloha = window.Aloha || {};
+
+		Aloha.settings = {
+			logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
+			errorhandling : true,
+
+			plugins: {
+				block: {
+					defaults : {
+						'.default-block': {
+						},
+						'figure': {
+							'aloha-block-type': 'EditableImageBlock'
+						},
+					}
+				}
+			},
+			bundles: {
+				// Path for custom bundle relative from require.js path
+				user: '../demo/block'
+			}
+		};
+
+	</script>
+
+	<script src="src/lib/require.js"></script>
+	<script src="src/lib/aloha.js" data-aloha-plugins="common/ui,common/format,common/paste,common/block,user/blockdemo,common/table,common/highlighteditables,common/image,extra/figure,extra/ribbon,extra/no-floating"></script>
+
+	<link rel="stylesheet" href="src/css/aloha.css" type="text/css">
+	</style>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+ <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css" type="text/css" />
+ <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/jquery-ui.min.js"></script>
+</head>
+<body style="background-color:#e1e1e1 !important;">
+
+<style type="text/css">
+ #draggable { width: 100px; height: 500px; padding: 0.5em; float: left; margin: 10px; background: #ddd;  }
+ #droppable { width: 250px; height: 500px; padding: 0.5em; float: left; margin: 10px; background: #ccc; }
+ .dragme { background: #999; text-align: center; width: 100px; padding: 5px; }
+ .fade { opacity: 0.3 }
+</style>
+
+<div class="demo">
+
+<div id="draggable" class="ui-widget-content">
+	<p>Drag from here</p>
+ <div class="dragme"><img src="http://i201.photobucket.com/albums/aa236/Mottie1/testsite/styles/cleanin.gif"><br><span class="caption">Drag me to my target</span></div>
+ <div class="dragme"><img src="http://i201.photobucket.com/albums/aa236/Mottie1/testsite/styles/jammin.gif" height="100"><br><span class="caption">Drag me to my target</span></div>
+</div>
+<!--
+<div id="droppable">
+ <p>Drop here</p>
+</div>
+-->
+
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+ $(".dragme").draggable({
+  helper : 'clone',
+  revert : true,
+  start: function(e,ui){
+   $(this).addClass('fade');
+   ui.helper.find('.caption').text("I'm being dragged!");
+  },
+  stop: function(e,ui){
+   $(this).removeClass('fade');
+   ui.helper.find('.caption').text("Drag me to my target");
+  }
+ });
+ $("#content").droppable({
+  drop: function(e, ui) {
+   $(this).addClass('ui-state-highlight');
+   ui.draggable.appendTo($(this)).removeClass('fade')
+    .find('.caption').text("I've been dropped");
+   ui.helper.remove();
+  }
+ });
+})
+</script>
+
+<!-- any copyright I might have acquired through the cutting and pasting other peoples scripts together to make this monstrosity I hereby bequeath to Nicola du Toit ;) -->
+
+
+
+
+	<div id="whole-site">
+		<div id="aloha-loading"><span>Loading Aloha Editor</span> <img src="img/loading1.gif" title="Loading Aloha Editor ..."/></div>
+		<div id="container notes" style="background-color:#e1e1e1 !important;">
+		<h2>Dragging Content from Outside Editable Region</h2>
+			<div id="main" role="main" style="background-color:#e1e1e1 !important;">
+				<div id="content" style="left:380px;background-color:white !important;border:1px solid black;align:center;  margin-left: auto ;margin-right: auto;width:170mm;height:297mm;padding:20px;">
+				<p>This box is editable</p>
+					<p>test for dragging content from outside an editable region into a editable region</p>
+					<p>caption is editable once dragged into the page</p>
+					<p>caption changes on drag</p>
+				</div>
+		</div>
+		
+		<script type="text/javascript">
+			Aloha.ready( function(){
+				var $ = Aloha.jQuery;
+				// register all editable areas
+				$('#top-text').aloha();
+				$('#content').aloha();
+				$('.area-content').aloha();
+				// hide loading div
+				$('#aloha-loading').hide();
+				$('#aloha-loading span').html('Loading Plugins');
+			});
+		</script>
+	</div>
+	<!--[if lt IE 7 ]>
+	<script src="js/libs/dd_belatedpng.js"></script>
+	<script> DD_belatedPNG.fix('img, .png_bg');</script>
+	<![endif]-->
+	<!--
+			<div id="notes" style="width:100%;height:100%;">
+</div>
+-->
+
+</body>
+</html>
