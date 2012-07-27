@@ -13,6 +13,7 @@ All changes are categorized into one of the following keywords:
 - **MANUAL CHANGE**: The change requires changes to existing implementation.
 
 ## 0.21.x - xxx
+- **BUG**: images-plugin: global fix and debug interactions with draganddropfiles
 - **BUG**: draganddropfiles-plugin: fix for Firefox in order to send fileName
 - *ENHANCEMENT**: draganddropfiles-plugin: Send id target element in headers to inform the server where in page the file has been dropped
 
