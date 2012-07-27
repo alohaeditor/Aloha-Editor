@@ -6,7 +6,7 @@
 * aloha-sales@gentics.com
 * Contributors 
 *		Johannes Schüth - http://jotschi.de
-*		Nicolas karageuzian - http://nka.me/
+*		Nicolas karageuzian - http://nka.re/
 *		Benjamin Athur Lupton - http://www.balupton.com/
 *		Thomas Lete
 *		Nils Dehl
@@ -101,7 +101,7 @@ define([
 			'maxHeight': 1200,
 			'minHeight': 3,
 			// This setting will correct manually values that are out of bounds
-			'autoCorrectManualInput': true,	 
+			'autoCorrectManualInput': true,
 			// This setting will define a fixed aspect ratio for all resize actions
 			'fixedAspectRatio' : false, 
 			// When enabled this setting will order the plugin to automatically resize images to given bounds
@@ -284,12 +284,10 @@ define([
 		* Create buttons
 		*/
 		initializeUI: function () {
-			
-			var that = this;
-
 			this.ui = new ImageFloatingMenu();
 			this.ui.init(this);
 		},
+		
 		/**
 		 * Bind plugin interactions
 		 */
@@ -351,23 +349,23 @@ define([
 			var	plugin = this;
 			var config = this.settings;
 			
-			jQuery('img').filter(config.globalselector).unbind();
-			jQuery('img').filter(config.globalselector).click(function (event) {
+			jQuery( 'img' ).filter( config.globalselector ).unbind();
+			jQuery( 'img' ).filter( config.globalselector ).click( function ( event ) {
 				plugin.clickImage(event);
 			});
 
-			Aloha.bind('aloha-drop-files-in-editable', function (event, data) {
+			Aloha.bind( 'aloha-drop-files-in-editable', function ( event, data ) {
 				var img, len = data.filesObjs.length, fileObj, config;
 
 				while (--len >= 0) {
 					fileObj = data.filesObjs[len];
-					if (fileObj.file.type.match(/image\//)) {
-						config = plugin.getEditableConfig(data.editable);
+					if ( fileObj.file.type.match( /image\// )) {
+						config = plugin.getEditableConfig( data.editable );
 						// Prepare
 						img = jQuery('<img/>');
 						img.css({
-							"max-width": that.maxWidth,
-							"max-height": that.maxHeight
+							"max-width": plugin.maxWidth,
+							"max-height": plugin.maxHeight
 						});
 						img.attr('id', fileObj.id);
 						if (typeof fileObj.src === 'undefined') {
@@ -381,6 +379,17 @@ define([
 				}
 				
 			});
+			
+			Aloha.bind( 'aloha-upload-success', function ( event, data ) {
+				if ( data.src != null) {
+					$('#' + data.id).attr('src', data.src);
+				}
+			});
+			
+			Aloha.bind( 'aloha-upload-failure', function ( event, data ) {
+				$('#' + data.id).remove();
+			});
+			
 			/*
 			 * Add the event handler for selection change
 			 */
@@ -458,27 +467,27 @@ define([
 			// @todo add an option to do just down scaling and not upscale when image is too small
 			// @todo handle ratio mismatches (eg 4:3 is set but image is 16:9 --> image need to be cut)
 
-			var that = this;
+			var plugin = this;
 
-			var width = that.imageObj.width();
-			var height = that.imageObj.height();
+			var width = plugin.imageObj.width();
+			var height = plugin.imageObj.height();
 			var resize = false;
 
 			// Only normalize the field values when the image exeeds the definded bounds
-			if (width < that.settings.minWidth || 
-				width > that.settings.maxWidth || 
-				height < that.settings.minHeight || 
-				height > that.settings.maxHeight) {
+			if ( width < plugin.settings.minWidth || 
+				width > plugin.settings.maxWidth || 
+				height < plugin.settings.minHeight || 
+				height > plugin.settings.maxHeight ) {
 				resize = true;
 			}
 
 			if ( resize && width >= height ) {
-				that._setNormalizedFieldValues('width');
-				that.setSizeByFieldValue();
+				plugin._setNormalizedFieldValues('width');
+				plugin.setSizeByFieldValue();
 				return true;
 			} else if ( resize && width < height ) {
-				that._setNormalizedFieldValues('height');
-				that.setSizeByFieldValue();
+				plugin._setNormalizedFieldValues('height');
+				plugin.setSizeByFieldValue();
 				return true;
 			} else {
 				return false;
@@ -838,7 +847,7 @@ define([
 		 * @return Image width and height.
 		 */
 		_normalizeSize: function( width, height, primarySize ) {
-			var that = this;
+			var plugin = this;
 			// Convert string values to numbers
 			width = parseInt(width); 
 			height = parseInt(height);
@@ -848,19 +857,19 @@ define([
 			 */
 			function handleHeight( callHandleWidth ) {
 				// Check whether the value is within bounds 
-				if ( height > that.settings.maxHeight ) {
+				if ( height > plugin.settings.maxHeight ) {
 					// Throw a notification event
-					var eventProps = { 'org': height, 'new': that.settings.maxHeight};
+					var eventProps = { 'org': height, 'new': plugin.settings.maxHeight};
 					$('body').trigger('aloha-image-resize-outofbounds', ["height", "max", eventProps]);
-					height = that.settings.maxHeight;
-				} else if ( height < that.settings.minHeight ) {
+					height = plugin.settings.maxHeight;
+				} else if ( height < plugin.settings.minHeight ) {
 					// Throw a notification event
-					var eventProps = { 'org': height, 'new': that.settings.minHeight};
+					var eventProps = { 'org': height, 'new': plugin.settings.minHeight};
 					$('body').trigger('aloha-image-resize-outofbounds', ["height", "min", eventProps]);
-					height = that.settings.minHeight;
+					height = plugin.settings.minHeight;
 				}
 
-				if ( that.keepAspectRatio ) {
+				if ( plugin.keepAspectRatio ) {
 					width = height * aspectRatio;
 
 					// We don't want to invoke handleWidth again. This would mess up our previously calculated width
@@ -876,23 +885,23 @@ define([
 			function handleWidth( callHandleHeight ) {
 
 				// Check whether the value is within bounds 
-				if (width > that.settings.maxWidth) {
+				if (width > plugin.settings.maxWidth) {
 				
 					// Throw a notification event
-					var eventProps = { 'org': width, 'new': that.settings.maxWidth};
+					var eventProps = { 'org': width, 'new': plugin.settings.maxWidth};
 					$('body').trigger('aloha-image-resize-outofbounds', ["width", "max", eventProps]);
 				
-					width = that.settings.maxWidth;
-				} else if ( width < that.settings.minWidth ) {
+					width = plugin.settings.maxWidth;
+				} else if ( width < plugin.settings.minWidth ) {
 					// Throw a notification event
-					var eventProps = { 'org': width, 'new': that.settings.minWidth};
+					var eventProps = { 'org': width, 'new': plugin.settings.minWidth};
 					$('body').trigger('aloha-image-resize-outofbounds', ["width", "min", eventProps]);
 
-					width = that.settings.minWidth;
+					width = plugin.settings.minWidth;
 				}
 
 				// Calculate the new height
-				if ( that.keepAspectRatio ) {
+				if ( plugin.keepAspectRatio ) {
 					height = width / aspectRatio;
 				
 					// We don't want to invoke handleHeight again. This would mess up our previously calculated height
@@ -908,12 +917,12 @@ define([
 			var aspectRatio = 1.33333;
 
 			// if keepAspectRatio is set to true, calculate it from the image size
-			if ( that.keepAspectRatio ) {
+			if ( plugin.keepAspectRatio ) {
 				aspectRatio = width / height;
 			}
 
-			if ( typeof that.startAspectRatio === 'number' ) {
-				aspectRatio = that.startAspectRatio;
+			if ( typeof plugin.startAspectRatio === 'number' ) {
+				aspectRatio = plugin.startAspectRatio;
 			}  
 
 			// Determin which size should be handled
@@ -1037,7 +1046,7 @@ define([
 		 *
 		 */
 		initCropButtons: function() {
-			var that = this,
+			var plugin = this,
 				btns;
 
 			jQuery('body').append(
@@ -1050,15 +1059,15 @@ define([
 			btns = jQuery('#aloha-CropNResize-btns');
 			
 			btns.find('.cnr-crop-apply').click(function () {
-				that.acceptCrop();
+				plugin.acceptCrop();
 			});
 			
 			btns.find('.cnr-crop-cancel').click(function () {
-				that.endCrop();
+				plugin.endCrop();
 			});
 
 			this.interval = setInterval(function () {
-				that.positionCropButtons();
+				plugin.positionCropButtons();
 			}, 10);
 		},
 
@@ -1211,7 +1220,7 @@ define([
 					if (this.enableCrop) {
 						window.setTimeout(function () {
 							plugin.ui.setScope();
-							that.done(event);
+							plugin.done(event);
 						}, 10);
 					}
 				}

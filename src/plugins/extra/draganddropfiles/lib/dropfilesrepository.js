@@ -258,7 +258,7 @@ function( $, repository, i18nCore ){
 					Aloha.trigger( 'aloha-upload-progress', uploadFile );
 					xhr.onload = function(load) {
 						try {
-							uploadFile.src = uploadFile.upload_config.callback( xhr.responseText );
+							uploadFile.src = uploadFile.upload_config.callback( xhr.responseText, uploadFile );
 							Aloha.trigger( 'aloha-upload-success', uploadFile );
 						} catch(e) {
 							Aloha.trigger( 'aloha-upload-failure', uploadFile );
