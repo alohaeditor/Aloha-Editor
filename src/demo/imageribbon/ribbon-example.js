@@ -24,9 +24,7 @@ Aloha.ready(function(){
 				{
 					text: "Insert Image... (own dialog)",
 					click: function() {
-						Dialog.alert({
-							text: "An fancy cool image insert dialog should show up now!"
-						});
+						createWysiwhatImagePicker();
 					}
 				},
 				{
