@@ -381,8 +381,12 @@ define([
 			});
 			
 			Aloha.bind( 'aloha-upload-success', function ( event, data ) {
+				var
+					$img;
 				if ( data.src != null) {
-					$('#' + data.id).attr('src', data.src);
+					$img = $('#' + data.id);
+					$img.attr('src', data.src);
+					$img.removeAttr("id");
 				}
 			});
 			
