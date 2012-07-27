@@ -289,6 +289,9 @@ function( $, repository, i18nCore ){
 				if ( typeof filename === "undefined" ) {
 					filename = this.file.name;
 				}
+				if ( this.targetid == null ) {
+					this.targetid = "undefined";
+				}
 				xhr.open( options.method, typeof(options.url) == "function" ? options.url() : options.url, true );
 				xhr.setRequestHeader( "Cache-Control", "no-cache" );
 				xhr.setRequestHeader( "X-Requested-With", "XMLHttpRequest" );
