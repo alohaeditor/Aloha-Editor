@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Editor GuidesAloha Editor Guides: Using Aloha Editor</title>
+  <title>: Using Aloha Editor</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,7 +42,7 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/">Aloha Editor Guides</a></h2>
+        <h2><a href="/"></a></h2>
         <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
@@ -59,8 +59,8 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="aloha_jquery.html">Aloha Editor and jQuery</a></dd>
+      <dd>Configuring Aloha Editor</dd>
+      <dd>Aloha Editor and jQuery</dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
@@ -71,9 +71,9 @@
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
       <dd><a href="ui.html">Aloha Editor UI</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd>Aloha Editor toolbar</dd>
+      <dd>Aloha Editor sidebar</dd>
+      <dd>Aloha Editor UI API</dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -107,18 +107,10 @@
       <div id="mainCol">
           <div class="headerSection">
             <h2>Using Aloha Editor</h2>
-<p>After reading this guide, you will be able to:</p>
-<ul>
-	<li>Prepare your development envireonment</li>
-	<li>build your custom Aloha Editor</li>
-</ul>
 
           </div>
         <h3 id="clone-from-github">1 Clone from Github</h3>
-<div class="note"><p>You should know how to work with git before continuing.</p></div>
-<p>First of all you have to get your copy of the Aloha Editor. Just clone our <a href="http://github.com/alohaeditor/Aloha-Editor">Github repository</a>:</p>
-<div class="warning"><p>fork Aloha Editor before doing anything ;-)</p></div>
-
+<p>Fork it on github <a href="http://github.com/alohaeditor/Aloha-Editor">Github repository</a>, then:</p>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
 
@@ -128,17 +120,17 @@ git checkout dev
 </pre></div><h3 id="repository-directory-structure">2 Repository Directory Structure</h3>
 <ul>
 	<li>/</li>
-	<li>/bin &#8211; Build scripts</li>
-	<li>/build &#8211; Build configuration</li>
+	<li>/bin &#8211; build scripts</li>
+	<li>/build &#8211; build configuration</li>
 </ul>
 <ul>
 	<li>/doc</li>
-	<li>/doc/api &#8211; The <span class="caps">API</span> documentation</li>
-	<li>/doc/guides &#8211; This document</li>
+	<li>/doc/api &#8211; the <span class="caps">API</span> documentation</li>
+	<li>/doc/guides</li>
 </ul>
 <ul>
-	<li>/vendor &#8211; Vendor source code. (e.g. ExtJS, require-js, jquery)</li>
-	<li>/target &#8211; Build output folder</li>
+	<li>/vendor &#8211; third party libraries (e.g. jquery)</li>
+	<li>/target &#8211; build output folder</li>
 </ul>
 <ul>
 	<li>/src</li>
@@ -149,8 +141,8 @@ git checkout dev
 <ul>
 	<li>/src/lib &#8211; Require plugins and bootstrap files</li>
 	<li>/src/lib/aloha &#8211; Main Aloha Editor core sources</li>
-	<li>/src/lib/vendor &#8211; Vendor source code. E.g. ExtJS, jquery</li>
-	<li>/src/lib/util &#8211; Utility sources. (e.g. json2.js, class.js)</li>
+	<li>/src/lib/vendor &#8211; third party libraries jquery</li>
+	<li>/src/lib/util &#8211; utility libraries (e.g. json2.js, class.js)</li>
 </ul>
 <ul>
 	<li>/src/plugins</li>
@@ -179,11 +171,38 @@ curl http://npmjs.org/install.sh | sh
 <pre class="brush: plain; gutter: false; toolbar: false">
 
 cd alohaeditor
-mvn clean package
-</pre></div><h4 id="other-os">3.2 Other OS:</h4>
+mvn3 clean package
+</pre></div><p>You probably want to ommit building of the api and guides:</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+mvn3 clean package -DbareMode=true
+</pre></div><p>You can also build just the css:</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+mvn3 generate-sources
+</pre></div><p>The resulting css should be in src/css/aloha.css</p>
+<h4 id="other-os">3.2 Other OS:</h4>
 <ul>
 	<li>Microsoft Windows: Not yet supported</li>
 </ul>
+<h4 id="customized-builds">3.3 Customized builds:</h4>
+<p>Aloha-Editor uses maven to build a distributable package (includes documentation etc.). To build just the javascript, it suffices to invoke <a href="https://github.com/jrburke/r.js/">r.js</a> from the command line. For example</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+node build/r.js -o build/aloha/build.js
+</pre></div><p>To customize the build to your needs, you can modify the build profile in build/aloha/build.js. The most likely customization you want to make is to remove or add plugins from the include property of the &#8216;aloha&#8217; module definition.</p>
+<p>To include i18n files in your build, define the locale property. If the locale property is not defined, the appropriate i18n files will be loaded dynamically by requirejs. Remember to configure Aloha.locale as well.</p>
+<p>Unless you ask for plugins to be loaded that are not defined in the build profile, or use a locale that was not defined during building, no additional files should be downloaded by requirejs. In the future requirejs may be replaced with an <span class="caps">AMD</span> stub such that requirejs is not necessary for production deployments.</p>
+<p>Css building can be customized by adding or removing entries in src/css/aloha.less. If you removed or added plugins in the r.js build profile, you also want to add or remove the appropriate css in the aloha-core.less. Then, run</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+mvn3 generate-sources
+</pre></div><p>And the resulting css should be in src/css/aloha.css</p>
+<p>If you want to redefine modules in the build profile, for example if you want to use your own jqueryui, please first read <a href="using_aloha.html">Custom jQuery, jQueryUI and other modules</a></p>
 <h3 id="guide">4 Guide</h3>
 <ul>
 	<li><a href="http://redcloth.org/hobix.com/textile/">Textile manual</a></li>
@@ -227,12 +246,7 @@ guides preview
 <pre class="brush: plain; gutter: false; toolbar: false">
 
 guides build
-</pre></div><h3 id="changelog">5 Changelog</h3>
-<ul>
-	<li>October 11, 2011: Added building information</li>
-	<li>July 3, 2011: Initial version by <a href="credits.html#skurfuerst">Sebastian Kurfürst</a> and <a href="credits.html#hlubek">Christopher Hlubek</a></li>
-	<li>June 29, 2012: Updated guides since the buildprocess now uses maven.</li>
-</ul>
+</pre></div>
 
       </div>
         <div id="subCol">
@@ -243,11 +257,11 @@ guides build
 </a></li><li><a href="#building-aloha-building"><p>Building  &#8211; Aloha Building</p>
 </a><ul><li><a href="#debian-linux-mac-os-x"><p>Debian Linux / Mac OS X</p>
 </a></li> <li><a href="#other-os"><p>Other OS:</p>
+</a></li> <li><a href="#customized-builds"><p>Customized builds:</p>
 </a></li></ul></li><li><a href="#guide"><p>Guide</p>
 </a><ul><li><a href="#installation"><p>Installation</p>
 </a></li> <li><a href="#using-the-guides"><p>Using the Guides</p>
-</a></li></ul></li><li><a href="#changelog"><p>Changelog</p>
-</a></li>
+</a></li></ul></li>
           </ol>
         </div>
     </div>

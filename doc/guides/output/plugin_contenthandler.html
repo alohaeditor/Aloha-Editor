@@ -43,7 +43,7 @@
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
         <h2><a href="/"></a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -59,8 +59,10 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd>Configuring Aloha Editor</dd>
+      <dd>Aloha Editor and jQuery</dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
       <dd><a href="repository.html">Working with repositories</a></dd>
     <dt>The Core</dt>
@@ -68,10 +70,10 @@
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd>Aloha Editor toolbar</dd>
+      <dd>Aloha Editor sidebar</dd>
+      <dd>Aloha Editor UI API</dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -85,6 +87,7 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
       <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
@@ -104,15 +107,22 @@
       <div id="mainCol">
           <div class="headerSection">
             <h2>The Content Handler Plugin</h2>
-<p>The Contenthandler Plugin has no user interface and is used for example in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called &#8220;Content Handlers&#8221; which will be used to cleanup html content on various occasions like pasting or when initializing an editable.</p>
+<p>After reading this guide, you will be able to:</p>
+<ul>
+	<li>Understand what Content Handler are and how to use them</li>
+	<li>Use the Content Handler <span class="caps">API</span> to create, modify and</li>
+	<li>Extend Content Handler with custom implementations</li>
+</ul>
 
           </div>
-        <h3 id="available-content-handlers">1 Available Content Handlers</h3>
-<p>The available contenthandlers are:</p>
+        
+<div class="warning"><p>This guide is currently work-in-progress.</p></div>
+<h3 id="what-are-content-handlers">1 What are Content Handlers?</h3>
+<p><strong>Aloha Content Handlers</strong> (Content Handler) are used to sanitize content loaded or pasted in Aloha Editor.</p>
+<p>There are some Content Handler available:</p>
 <ul>
-	<li>word</li>
-	<li>generic</li>
-	<li>sanitize</li>
+	<li>Generic</li>
+	<li>Word</li>
 	<li>oEmbed</li>
 	<li>Sanitize</li>
 </ul>
@@ -131,9 +141,7 @@
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 	Aloha.settings.contentHandler: {
-        // The following content handlers will be called when HTML is inserted into an editable (pasted, for example).
 		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
-        // The following content handlers will be called when the editable is initialized (editable.aloha()).
 		initEditable: [ 'sanitize' ],
 		sanitize: 'relaxed' // relaxed, restricted, basic,
 		allows: {
@@ -155,14 +163,54 @@
 			}
 		}
 	}
-</pre></div><h3 id="word-content-handler">3 Word Content Handler</h3>
-<p>The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It transforms and cleans the pasted html code so that deteriorating effects on mental health by staring at bogus and totally fubar html code can be kept to an acceptable minimum. Therefore it will</p>
+</pre></div><p>For the sanitize Content Handler you can use a predefined set of allowed <span class="caps">HTML</span>-tags and attributes (&#8220;sanitize&#8221; option) or your own set defined as &#8220;allows&#8221; option. The configuration option for &#8220;insertHtml&#8221; and &#8220;initEditable&#8221; defines which Content Handler should be used at that hook points. &#8220;initEditable&#8221; uses the &#8220;sanitize&#8221; Content Handler by default. &#8220;insertHtml&#8221; uses all registered Content Handler by default (including the Content Handler from other Plugins)</p>
+<div class="warning"><p>The order how the handlers are loaded and executed is important. If you first load the &#8220;sanitize&#8221; or &#8220;generic&#8221; handler the &#8220;word&#8221; handler will not be able to detect a MS Word document.</p></div>
+<h3 id="apis-and-extension-points">3 APIs and Extension Points</h3>
+<p>There is the Content Handler Manager in Aloha Core available where Content Handler can register themself.</p>
+<h4 id="writing-your-own-content-handler">3.1 Writing your own Content Handler</h4>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	define(
+	['aloha', 'jquery', 'aloha/contenthandlermanager'],
+	function(Aloha, jQuery, ContentHandlerManager) {
+		&quot;use strict&quot;;
+	
+		var MyContentHandler = ContentHandlerManager.createHandler({
+			handleContent: function( content ) {
+				
+				// do something with the content
+				
+				return content; // return as HTML text not jQuery/DOM object
+			}
+		});
+
+		return MyContentHandler;
+	});
+</pre></div><p>All Content Handler needs to support the &#8220;handleContent&#8221; method and will receive and return the content as <span class="caps">HTML</span> text.</p>
+<h3 id="internals">4 Internals</h3>
+<h3 id="future-work">5 Future Work</h3>
+<h3 id="changelog">6 Changelog</h3>
 <ul>
-	<li>remove all &#8220;mso-whatever&#8221; classes</li>
-	<li>remove all divs from the pasted content</li>
+	<li>October 06, 2011: Initial version by <a href="credits.html#rene_kapusta">Rene Kapusta</a></li>
+</ul>
+<p>From plugins.texile</p>
+<h3 id="contenthandler-plugin">7 Contenthandler Plugin</h3>
+<p>The Contenthandler Plugin has no user interface and is used in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called &#8220;Content Handlers&#8221; which will be used to cleanup html content on various occasions like pasting or when initializing an editable. Those contenthandlers are:</p>
+<ul>
+	<li>word</li>
+	<li>generic</li>
+	<li>sanitize</li>
+</ul>
+<h4 id="word-content-handler">7.1 Word Content Handler</h4>
+<p>The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It will:</p>
+<ul>
+	<li>remove all &#8220;mso-*&#8221; classes</li>
+	<li>remove all divs and spans from the pasted content</li>
 	<li>remove font tags</li>
-	<li>convert bullet points to real html lists with proper nesting</li>
+	<li>convert bullet points to unordered lists</li>
 	<li>transform titles to h1 and subtitles to h2 tags</li>
+	<li>keep bold and italic formatting, headlines, tables and lists but get rid of all other formattings</li>
 </ul>
 <h4 id="generic-content-handler">7.2 Generic Content Handler</h4>
 <p>The Generic Content Handler is a bit less generic than his name might suggest as he will apply the following cleaning actions:</p>
@@ -183,10 +231,10 @@
 	<li>remove namespaced elements</li>
 	<li>transform formattings by turning
 	<ul>
-		<li><code>&lt;strong&gt;</code> tags into <code>&lt;b&gt;</code> tags</li>
-		<li><code>&lt;em&gt;</code> to <code>&lt;i&gt;</code></li>
-		<li><code>&lt;s&gt;</code> to <code>&lt;del&gt;</code></li>
-		<li>and by removing <code>&lt;u&gt;</code> tags (as underline text decoration should solely be used for links)</li>
+		<li><tt>&lt;strong&gt;</tt> tags into <tt>&lt;b&gt;</tt> tags</li>
+		<li><tt>&lt;em&gt;</tt> to <tt>&lt;i&gt;</tt></li>
+		<li><tt>&lt;s&gt;</tt> and <tt>&lt;strike&gt;</tt> to <tt>&lt;del&gt;</tt></li>
+		<li>and by removing <tt>&lt;u&gt;</tt> tags (as underline text decoration should solely be used for links)</li>
 	</ul></li>
 </ul>
 <h4 id="sanitize-content-handler">7.3 Sanitize Content Handler</h4>
@@ -198,7 +246,7 @@
 Aloha.settings.contentHandler.sanitize = {
 	// elements allowed in the content
 	elements: [
-		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'del', 'dl', 'dt', 'em',
 		'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
 		'sup', 'u', 'ul' ],
 	// attributes allowed for specific elements
@@ -215,45 +263,25 @@ Aloha.settings.contentHandler.sanitize = {
 		'q' : {'cite': ['http', 'https', '__relative__']}
 	}
 }
-</pre></div><p>For the sanitize Content Handler you can use a predefined set of allowed <span class="caps">HTML</span>-tags and attributes (&#8220;sanitize&#8221; option) or your own set defined as &#8220;allows&#8221; option. The configuration option for &#8220;insertHtml&#8221; and &#8220;initEditable&#8221; defines which Content Handler should be used at that hook points. &#8220;initEditable&#8221; uses the &#8220;sanitize&#8221; Content Handler by default. &#8220;insertHtml&#8221; uses all registered Content Handler by default (including the Content Handler from other Plugins)</p>
-<div class="warning"><p>The order how the handlers are loaded and executed is important. If you first load the &#8220;sanitize&#8221; or &#8220;generic&#8221; handler the &#8220;word&#8221; handler will not be able to detect a MS Word document.</p></div>
-<h3 id="apis-and-extension-points">6 APIs and Extension Points</h3>
-<p>There is the Content Handler Manager in Aloha Core available where Content Handler can register themself.</p>
-<h3 id="writing-your-own-content-handler">7 Writing your own Content Handler</h3>
-<p>A content handler implements the &#8220;handleContent&#8221; method which will receive and return the content as <span class="caps">HTML</span> text.</p>
-<div class="code_container">
-<pre class="brush: javascript; gutter: false; toolbar: false">
-
-	define(
-	['aloha', 'aloha/jquery', 'aloha/contenthandlermanager'],
-	function(Aloha, jQuery, ContentHandlerManager) {
-		&quot;use strict&quot;;
-	
-		var MyContentHandler = ContentHandlerManager.createHandler({
-			handleContent: function( content ) {
-				
-				// do something with the content
-				
-				return content; // return as HTML text not jQuery/DOM object
-			}
-		});
-
-		return MyContentHandler;
-	});
 </pre></div>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#available-content-handlers"><p>Available Content Handlers</p>
-</a></li><li><a href="#configuration"><p>Configuration</p>
-</a></li><li><a href="#word-content-handler"><p>Word Content Handler</p>
-</a></li><li><a href="#generic-content-handler"><p>Generic Content Handler</p>
-</a></li><li><a href="#sanitize-content-handler"><p>Sanitize Content Handler</p>
-</a></li><li><a href="#apis-and-extension-points"><p>APIs and Extension Points</p>
-</a></li><li><a href="#writing-your-own-content-handler"><p>Writing your own Content Handler</p>
-</a></li>
+            <li><a href="#what-are-content-handlers"><p>What are Content Handlers?</p>
+</a></li><li><a href="#enabling-the-content-handler-plugin"><p>Enabling the Content Handler Plugin</p>
+</a><ul><li><a href="#using-configuration"><p>Using Configuration</p>
+</a></li></ul></li><li><a href="#apis-and-extension-points"><p>APIs and Extension Points</p>
+</a><ul><li><a href="#writing-your-own-content-handler"><p>Writing your own Content Handler</p>
+</a></li></ul></li><li><a href="#internals"><p>Internals</p>
+</a></li><li><a href="#future-work"><p>Future Work</p>
+</a></li><li><a href="#changelog"><p>Changelog</p>
+</a></li><li><a href="#contenthandler-plugin"><p>Contenthandler Plugin</p>
+</a><ul><li><a href="#word-content-handler"><p>Word Content Handler</p>
+</a></li> <li><a href="#generic-content-handler"><p>Generic Content Handler</p>
+</a></li> <li><a href="#sanitize-content-handler"><p>Sanitize Content Handler</p>
+</a></li></ul></li>
           </ol>
         </div>
     </div>

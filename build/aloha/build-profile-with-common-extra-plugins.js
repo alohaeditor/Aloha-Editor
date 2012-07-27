@@ -216,7 +216,7 @@
     //The directory path to save the output. If not specified, then
     //the path will default to be a directory called "build" as a sibling
     //to the build file. All relative paths are relative to the build file.
-    dir: "../../target/tmp/aloha",
+    dir: "../../target/build-profile-with-common-extra-plugins/rjs-output",
 
     //As of RequireJS 2.0.2, the dir above will be deleted before the
     //build starts again. If you have a big build and are not doing
@@ -405,7 +405,6 @@
     //done. If that module or any of its dependencies includes i18n bundles,
     //only the root bundles will be included unless the locale: section is set above.
     modules: [
-
         //Just specifying a module name means that module will be converted into
         //a built file that contains all of its dependencies. If that module or any
         //of its dependencies includes i18n bundles, they may not be included in the
@@ -432,6 +431,19 @@
 				"horizontalruler/horizontalruler-plugin",
 				"undo/undo-plugin",
 				"paste/paste-plugin",
+				// some extra plugins
+				'toc/toc-plugin',
+				'cite/cite-plugin',
+				'flag-icons/flag-icons-plugin',
+				'numerated-headers/numerated-headers-plugin',
+				'formatlesspaste/formatlesspaste-plugin',
+				'linkbrowser/linkbrowser-plugin',
+				'imagebrowser/imagebrowser-plugin',
+				'ribbon/ribbon-plugin',
+				'wai-lang/wai-lang-plugin',
+				'headerids/headerids-plugin',
+				'metaview/metaview-plugin',
+				'listenforcer/listenforcer-plugin',
 			],
         },
 

@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.21.0-dev-SNAPSHOT</version>
+	<version>0.21.1-dev-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
@@ -21,6 +20,7 @@
 		<ALOHABUILDCONF>build/aloha</ALOHABUILDCONF>
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
+		<build.profile>build-profile-with-common-extra-plugins</build.profile>
 	</properties>
 
 	<dependencies>
@@ -46,13 +46,14 @@
 
 	<build>
 		<plugins>
-		
+
 			<plugin>
 				<groupId>com.googlecode.jslint4java</groupId>
 				<artifactId>jslint4java-maven-plugin</artifactId>
 				<version>2.0.2</version>
 				<!-- Default configuration -->
 				<configuration>
+					<skip>${bareMode}</skip>
 					<sourceFolders>
 						<sourceFolder>${project.basedir}/src</sourceFolder>
 					</sourceFolders>
@@ -123,8 +124,10 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.1.1</version>
 				<executions>
+					<!-- r.js optimize -->
 					<execution>
 						<phase>process-sources</phase>
+						<id>rjs-optimize-${build.profile}</id>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -133,7 +136,7 @@
 							<arguments>
 								<argument>${project.basedir}/build/r.js</argument>
 								<argument>-o</argument>
-								<argument>${project.basedir}/build/aloha/build.js</argument>
+								<argument>${project.basedir}/build/aloha/${build.profile}.js</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -154,7 +157,6 @@
 					</execution>
 					<!-- TODO: check filesize -->
 					<!-- TODO: cd "$TMP/aloha/css" r.js -o cssIn=aloha.css out=aloha.css -->
-					<!-- TODO: echo "build-date: `date`" >> $OUT/aloha/build.txt -->
 					<execution>
 						<phase>package</phase>
 						<id>build-guides</id>
@@ -185,87 +187,72 @@
 						</configuration> </execution> -->
 				</executions>
 			</plugin>
-			<!-- 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>lesscss-maven-plugin</artifactId>
-				<version>1.0-beta-3</version>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<configuration>
-							<sourceDirectory>${project.basedir}/src/css</sourceDirectory>
-							<outputDirectory>${project.basedir}/src/css</outputDirectory>
-							<includes>
-								<include>aloha.less</include>
-							</includes>
-							<compress>true</compress>
-							<force>true</force>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			 -->
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>lesscss-maven-plugin</artifactId> 
+				<version>1.0-beta-3</version> <executions> <execution> <phase>generate-sources</phase> 
+				<goals> <goal>compile</goal> </goals> <configuration> <sourceDirectory>${project.basedir}/src/css</sourceDirectory> 
+				<outputDirectory>${project.basedir}/src/css</outputDirectory> <includes> 
+				<include>aloha.less</include> </includes> <compress>true</compress> <force>true</force> 
+				</configuration> </execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
 				<version>1.4.7</version>
 				<executions>
+					<!-- Full version of aloha (With jquery and requirejs) -->
 					<execution>
-						<id>aloha-require-jquery-minify</id>
+						<id>aloha-${build.profile}-minified-full</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
 							<minimize>true</minimize>
-							<targetGroups>aloha-require-jquery</targetGroups>
-							<destinationFolder>${project.build.directory}/aloha-require-jquery/bin/</destinationFolder>
-							<jsDestinationFolder>${project.build.directory}/aloha-require-jquery/bin/</jsDestinationFolder>
+							<targetGroups>${build.profile}</targetGroups>
+							<destinationFolder>${project.build.directory}/${build.profile}/minified-full/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-full/</jsDestinationFolder>
 						</configuration>
 					</execution>
-					<execution>
-						<id>aloha-require-jquery-debug</id>
+						<execution>
+						<id>aloha-${build.profile}-debug-full</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
 							<minimize>false</minimize>
-							<targetGroups>aloha-require-jquery</targetGroups>
-							<destinationFolder>${project.build.directory}/aloha-require-jquery/debug/</destinationFolder>
-							<jsDestinationFolder>${project.build.directory}/aloha-require-jquery/debug/</jsDestinationFolder>
+							<targetGroups>${build.profile}</targetGroups>
+							<destinationFolder>${project.build.directory}/${build.profile}/debug-full/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-full/</jsDestinationFolder>
+						</configuration>
+					</execution>
+					<!-- Bare version of aloha (Without jquery and requirejs) -->
+					<execution>
+						<id>aloha-${build.profile}-debug-bare</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<minimize>false</minimize>
+							<targetGroups>${build.profile}-bare</targetGroups>
+							<destinationFolder>${project.build.directory}/${build.profile}/debug-bare/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-bare/</jsDestinationFolder>
 						</configuration>
 					</execution>
 					<execution>
-						<id>minify</id>
+						<id>aloha-${build.profile}-minified-bare</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
 							<minimize>true</minimize>
-							<targetGroups>aloha-bare</targetGroups>
-							<destinationFolder>${project.build.directory}/aloha-bare/bin/</destinationFolder>
-							<jsDestinationFolder>${project.build.directory}/aloha-bare/bin/</jsDestinationFolder>
+							<targetGroups>${build.profile}-bare</targetGroups>
+							<destinationFolder>${project.build.directory}/${build.profile}/minified-bare/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-bare/</jsDestinationFolder>
 						</configuration>
 					</execution>
-					<execution>
-						<id>debug</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<minimize>false</minimize>
-							<targetGroups>aloha-bare</targetGroups>
-							<destinationFolder>${project.build.directory}/aloha-bare/debug/</destinationFolder>
-							<jsDestinationFolder>${project.build.directory}/aloha-bare/debug/</jsDestinationFolder>
-						</configuration>
-					</execution>
+					
 					<execution>
 						<id>less-css</id>
 						<phase>generate-sources</phase>
@@ -308,6 +295,20 @@
 							<appendAssemblyId>false</appendAssemblyId>
 							<descriptors>
 								<descriptor>${project.basedir}/build/dist-package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+						<execution>
+						<id>cdn</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>true</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/build/cdn-package.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
