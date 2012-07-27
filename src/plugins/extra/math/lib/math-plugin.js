@@ -156,6 +156,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
            
             Aloha.bind('aloha-editable-created', function (event, editable) 
             {
+                
                 var activeMathEdit = false;
                 editable.obj.bind('keydown', self.hotKey.insertMath, function() 
                 {
@@ -185,16 +186,21 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                     };
                     startWatch();
                     
-                    newMathEditContainer.on('focusout blur', function()
+                    
+                    var blurout = function()
                     {
                         newMathEditContainer.hide();
                         clearInterval(activeMathEdit);
                         activeMathEdit = false;
-                    });
+                    };
+                    $(editable.obj).on('blur focusout', blurout);
+                    newMathEditContainer.on('focusout blur', blurout);
+                    
                     
                     newMathContainer.on('click', function()
                     {
                         GENTICS.Utils.Dom.setCursorInto( newMathEditContainer[0] );
+                        newMathEditContainer.show();
                         startWatch();
                     });
                     
