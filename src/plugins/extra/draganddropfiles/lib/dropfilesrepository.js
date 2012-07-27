@@ -290,7 +290,7 @@ function( $, repository, i18nCore ){
 					filename = this.file.name;
 				}
 				if ( this.targetid == null ) {
-					this.targetid = "undefined";
+					this.targetid = "";
 				}
 				xhr.open( options.method, typeof(options.url) == "function" ? options.url() : options.url, true );
 				xhr.setRequestHeader( "Cache-Control", "no-cache" );
