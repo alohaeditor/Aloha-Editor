@@ -12,6 +12,10 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **MANUAL CHANGE**: The change requires changes to existing implementation.
 
+## 0.21.x - xxx
+- **BUG**: draganddropfiles-plugin: fix for Firefox in order to send fileName
+- *ENHANCEMENT**: draganddropfiles-plugin: Send id target element in headers to inform the server where in page the file has been dropped
+
 
 ## 0.21.0 - 2012/07/26
 
@@ -269,7 +273,6 @@ All changes are categorized into one of the following keywords:
 
 - **DISCUSS**: It would make sense to support also input (like textarea) elements
     eg. for basic formattings like strong / em -- but prevent insertation of br / p ?
-
 
 ## 0.20.20 - 2012/07/25
 
