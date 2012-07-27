@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Figures!</title>
+	<script language="javascript">
+		Aloha = window.Aloha || {};
+
+		Aloha.settings = {
+			logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
+			errorhandling : true,
+
+			plugins: {
+				block: {
+					defaults : {
+						'.default-block': {
+						},
+						'.columnBlock': {
+							'aloha-block-type': 'ColumnBlock'
+						},
+						'.uneditableColumnBlock': {
+							'aloha-block-type': 'UneditableColumnBlock'
+						},
+						'.product-teaser': {
+							'aloha-block-type': 'ProductTeaserBlock'
+						},
+						'.company': {
+							'aloha-block-type': 'CompanyBlock'
+						},
+						'.imageBlock': {
+							'aloha-block-type': 'ImageBlock'
+						},
+						'.editableImageBlock': {
+							'aloha-block-type': 'EditableImageBlock'
+						},
+						'.news-block': {
+							'aloha-block-type': 'NewsBlock'
+						},
+						'.sortable-news-block': {
+							'aloha-block-type': 'SortableNewsBlock'
+						},
+						'.editable-product-teaser': {
+							'aloha-block-type': 'EditableProductTeaserBlock'
+						}
+					}
+				}
+			},
+			bundles: {
+				// Path for custom bundle relative from require.js path
+				user: '../demo/block'
+			}
+		};
+
+	</script>
+
+	<script src="src/lib/require.js"></script>
+	<script src="src/lib/aloha.js" data-aloha-plugins="common/ui,common/format,common/paste,common/block,user/blockdemo,common/table,common/highlighteditables,common/image,extra/figure"></script>
+
+	<link rel="stylesheet" href="src/css/aloha.css" type="text/css">
+
+	<style>
+	</style>
+</head>
+<body>
+  <h1>Figures in Aloha</h1>
+	<div class="document">
+		<p>This example uses the figure plugin.</p>
+		<p>You can move a figure around and eventually should be able to create/paste new ones in.</p>
+    <figure class="figure">
+      <img src="src/test/AlohaEditorLogo.png"/>
+      <figcaption>This is a caption on a figure</figcaption>
+    </figure>
+    <p>Here is some text after a figure</p>
+    <p>Below is another figure</p>
+    <figure class="figure">
+      <img src="src/test/AlohaEditorLogo.png"/>
+      <figcaption>This is a caption on a figure</figcaption>
+    </figure>
+    <p>And some more text after a figure</p>
+
+	</div>
+	<script type="text/javascript">
+	Aloha.ready( function() {
+		Aloha.jQuery('.document').aloha();
+	});
+	</script>
+</body>
+</html>
