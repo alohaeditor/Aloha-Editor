@@ -164,7 +164,6 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 					components = components.concat(defaultComponents);
 				}
 			}
-			debugger;
 			tab = $.extend({}, defaultTab || {}, userTab);
 			tab.components = components;
 			tabs.push(tab);
