@@ -1,16 +1,47 @@
-/*
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!horizontalruler/nls/i18n', 'i18n!aloha/nls/i18n', 'css!horizontalruler/css/horizontalruler.css'],
-function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
-	"use strict";
+/* horizontalruler-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+define([
+	'aloha',
+	'jquery',
+	'aloha/plugin',
+	'ui/ui',
+	'ui/button',
+	'i18n!horizontalruler/nls/i18n',
+	'i18n!aloha/nls/i18n'
+], function(Aloha,
+            jQuery,
+			Plugin,
+			Ui,
+			Button,
+			i18n,
+			i18nCore) {
+	'use strict';
 
-	var
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	return Plugin.create('horizontalruler', {
 		_constructor: function(){
@@ -21,29 +52,24 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		init: function() {
 			var that = this;
 
-			this.insertButton = new Aloha.ui.Button({
-				'name': 'hr',
-				'iconClass': 'aloha-button-horizontalruler',
-				'size': 'small',
-				'onclick': function(element, event) { that.insertHR(); },
-				'tooltip': i18n.t('button.addhr.tooltip'),
-				'toggle': false
+			this._insertHorizontalRuleButton = Ui.adopt("insertHorizontalRule", Button, {
+				tooltip: i18n.t('button.addhr.tooltip'),
+				iconOnly: true,
+				icon: 'aloha-icon-horizontalruler',
+				scope: 'Aloha.continuoustext',
+				click: function(){
+					that.insertHR();
+				}
 			});
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.insertButton,
-				i18nCore.t('floatingmenu.tab.insert'),
-				1
-			);
 
 			Aloha.bind( 'aloha-editable-activated', function ( event, rangeObject ) {
 				if (Aloha.activeEditable) {
 					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );
 
 					if ( jQuery.inArray( 'hr', that.cfg ) != -1 ) {
-		        		that.insertButton.show();
+						that._insertHorizontalRuleButton.show(true);
 		        	} else {
-		        		that.insertButton.hide();
+						that._insertHorizontalRuleButton.show(false);
 		        		return;
 		        	}
 				}

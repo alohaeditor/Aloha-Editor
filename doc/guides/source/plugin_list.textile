@@ -17,13 +17,6 @@ You can use the tab key to indent lists or use shift-tab to outdent them if you 
 
 You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.
 
-h3. Components
-
-The List Plugin provides two components
-
-* ul - for inserting unordered lists
-* ol - for inserting ordered lists
-
 h3. Configuration settings
 
 Add the available components +'ol', 'ul'+ to the editables where you want to use them:
@@ -39,3 +32,10 @@ Add the available components +'ol', 'ul'+ to the editables where you want to use
 		}
 	}
 </javascript>
+
+h3. Components
+
+The List Plugin provides two components
+
+* ul - for inserting unordered lists
+* ol - for inserting ordered lists

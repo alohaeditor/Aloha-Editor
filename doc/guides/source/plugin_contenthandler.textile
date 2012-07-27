@@ -19,7 +19,6 @@ There are some Content Handler available:
 * Word
 * oEmbed
 * Sanitize
-* blockelement
 
 Plugins also provide Content Handler:
 * Block +common/block+ plugin
@@ -27,7 +26,6 @@ Plugins also provide Content Handler:
 There are three hooks available:
 * insertHtml in +common/commands+ plugin
 * initEditable in core/editable.js
-* getContents in core/editable.js
 
 
 h3. Enabling the Content Handler Plugin
@@ -77,7 +75,7 @@ h4. Writing your own Content Handler
 
 <javascript>
 	define(
-	['aloha', 'aloha/jquery', 'aloha/contenthandlermanager'],
+	['aloha', 'jquery', 'aloha/contenthandlermanager'],
 	function(Aloha, jQuery, ContentHandlerManager) {
 		"use strict";
 	
@@ -115,7 +113,6 @@ The Contenthandler Plugin has no user interface and is used in conjunction with 
 * word
 * generic
 * sanitize
-* blockelement
 
 h4. Word Content Handler
 
@@ -178,7 +175,3 @@ Aloha.settings.contentHandler.sanitize = {
 	}
 }
 </javascript>
-
-h4. Blockelement Content Handler
-
-The blockelement implements the behaviour documented in the section about "Empty Block Level Elements":functional_description.html#implemented-behaviour

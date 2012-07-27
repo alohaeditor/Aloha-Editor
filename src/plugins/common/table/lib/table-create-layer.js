@@ -1,5 +1,5 @@
 define(
-['aloha/jquery'],
+['jquery'],
 function (jQuery) {
 	/**
 	 * Initialize of the CreateLayer object
@@ -112,7 +112,10 @@ function (jQuery) {
 		// append layer to body and
 		// hide the create layer if user clicks anywhere in the body
 		jQuery('body').append(layer).bind('click', function(e) {
-			if (e.target != that.get('target') && that.visible) {
+			// If the layer is visible and the event target is not the
+			// button itself or a descendant of the button, hide the
+			// layer.
+			if (that.visible && !(e.target === that.get('target')[0] || jQuery.contains(that.get('target')[0], e.target))) {
 				that.hide();
 			}
 		});

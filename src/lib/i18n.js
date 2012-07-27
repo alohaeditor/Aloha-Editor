@@ -1,9 +1,9 @@
 /**
- * @license RequireJS i18n 0.24.0 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
+ * @license RequireJS i18n 2.0.1 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
- * see: http://github.com/jrburke/requirejs for details
+ * see: http://github.com/requirejs/i18n for details
  */
-/*jslint regexp: false, nomen: false, plusplus: false, strict: false */
+/*jslint regexp: true */
 /*global require: false, navigator: false, define: false */
 
 /**
@@ -35,6 +35,8 @@
  * for the nls/fr-fr/colors bundle to be that mixed in locale.
  */
 (function () {
+    'use strict';
+
     //regexp for reconstructing the master bundle name from parts of the regexp match
     //nlsRegExp.exec("foo/bar/baz/nls/en-ca/foo") gives:
     //["foo/bar/baz/nls/en-ca/foo", "foo/bar/baz/nls/", "/", "/", "en-ca", "foo"]
@@ -57,97 +59,134 @@
 
     function addIfExists(req, locale, toLoad, prefix, suffix) {
         var fullName = prefix + locale + '/' + suffix;
-        if (require._fileExists(req.nameToUrl(fullName, null))) {
+        if (require._fileExists(req.toUrl(fullName))) {
             toLoad.push(fullName);
         }
     }
 
-    define({
-        version: '0.24.0',
-        /**
-         * Called when a dependency needs to be loaded.
-         */
-        load: function (name, req, onLoad, config) {
-            config = config || {};
-
-            var masterName,
-                match = nlsRegExp.exec(name),
-                prefix = match[1],
-                locale = match[4],
-                suffix = match[5],
-                parts = locale.split("-"),
-                toLoad = [],
-                value = {},
-                i, part, current = "";
-
-            //If match[5] is blank, it means this is the top bundle definition,
-            //so it does not have to be handled. Locale-specific requests
-            //will have a match[4] value but no match[5]
-            if (match[5]) {
-                //locale-specific bundle
-                prefix = match[1];
-                masterName = prefix + suffix;
-            } else {
-                //Top-level bundle.
-                masterName = name;
-                suffix = match[4];
-                locale = config.locale || (config.locale =
-                        typeof navigator === "undefined" ? "root" :
-                        (navigator.language ||
-                         navigator.userLanguage || "root").toLowerCase());
-                parts = locale.split("-");
-            }
-
-            if (config.isBuild) {
-                //Check for existence of all locale possible files and
-                //require them if exist.
-                toLoad.push(masterName);
-                addIfExists(req, "root", toLoad, prefix, suffix);
-                for (i = 0; (part = parts[i]); i++) {
-                    current += (current ? "-" : "") + part;
-                    addIfExists(req, current, toLoad, prefix, suffix);
-                }
-                req(toLoad);
-                onLoad();
-            } else {
-                //First, fetch the master bundle, it knows what locales are available.
-                req([masterName], function (master) {
-                    //Figure out the best fit
-                    var needed = [];
-
-                    //Always allow for root, then do the rest of the locale parts.
-                    addPart("root", master, needed, toLoad, prefix, suffix);
-                    for (i = 0; (part = parts[i]); i++) {
-                        current += (current ? "-" : "") + part;
-                        addPart(current, master, needed, toLoad, prefix, suffix);
-                    }
-
-                    //Load all the parts missing.
-                    req(toLoad, function () {
-                        var i, partBundle;
-                        for (i = needed.length - 1; i > -1 && (part = needed[i]); i--) {
-                            partBundle = master[part];
-                            if (partBundle === true || partBundle === 1) {
-                                partBundle = req(prefix + part + '/' + suffix);
-                            }
-                            require.mixin(value, partBundle);
-                        }
-						
-						// MODIFICATION FROM ALOHA START: add a t() function
-						value.t = function(key) {
-							if (this[key]) {
-								return this[key];
-							} else {
-								return key;
-							}
-						}
-						// END OF ALOHA MODIFICATION
-
-						//All done, notify the loader.
-                        onLoad(value);
-                    });
-                });
+    /**
+     * Simple function to mix in properties from source into target,
+     * but only if target does not already have a property of the same name.
+     * This is not robust in IE for transferring methods that match
+     * Object.prototype names, but the uses of mixin here seem unlikely to
+     * trigger a problem related to that.
+     */
+    function mixin(target, source, force) {
+        var prop;
+        for (prop in source) {
+            if (source.hasOwnProperty(prop) && (!target.hasOwnProperty(prop) || force)) {
+                target[prop] = source[prop];
+            } else if (typeof source[prop] === 'object') {
+                mixin(target[prop], source[prop], force);
             }
         }
+    }
+
+    define(['module'], function (module) {
+        var masterConfig = module.config();
+
+        return {
+            version: '2.0.1',
+            /**
+             * Called when a dependency needs to be loaded.
+             */
+            load: function (name, req, onLoad, config) {
+                config = config || {};
+
+                if (config.locale) {
+                    masterConfig.locale = config.locale;
+                }
+
+                var masterName,
+                    match = nlsRegExp.exec(name),
+                    prefix = match[1],
+                    locale = match[4],
+                    suffix = match[5],
+                    parts = locale.split("-"),
+                    toLoad = [],
+                    value = {},
+                    i, part, current = "";
+
+                //If match[5] is blank, it means this is the top bundle definition,
+                //so it does not have to be handled. Locale-specific requests
+                //will have a match[4] value but no match[5]
+                if (match[5]) {
+                    //locale-specific bundle
+                    prefix = match[1];
+                    masterName = prefix + suffix;
+                } else {
+                    //Top-level bundle.
+                    masterName = name;
+                    suffix = match[4];
+                    locale = masterConfig.locale;
+                    if (!locale) {
+                        locale = masterConfig.locale =
+                            typeof navigator === "undefined" ? "root" :
+                            (navigator.language ||
+                             navigator.userLanguage || "root").toLowerCase();
+                    }
+                    parts = locale.split("-");
+                }
+
+                if (config.isBuild) {
+                    //Check for existence of all locale possible files and
+                    //require them if exist.
+                    toLoad.push(masterName);
+                    addIfExists(req, "root", toLoad, prefix, suffix);
+                    for (i = 0; i < parts.length; i++) {
+                        part = parts[i];
+                        current += (current ? "-" : "") + part;
+                        addIfExists(req, current, toLoad, prefix, suffix);
+                    }
+
+                    req(toLoad, function () {
+                        onLoad();
+                    });
+                } else {
+                    //First, fetch the master bundle, it knows what locales are available.
+                    req([masterName], function (master) {
+                        //Figure out the best fit
+                        var needed = [],
+                            part;
+
+                        //Always allow for root, then do the rest of the locale parts.
+                        addPart("root", master, needed, toLoad, prefix, suffix);
+                        for (i = 0; i < parts.length; i++) {
+                            part = parts[i];
+                            current += (current ? "-" : "") + part;
+                            addPart(current, master, needed, toLoad, prefix, suffix);
+                        }
+
+                        //Load all the parts missing.
+                        req(toLoad, function () {
+                            var i, partBundle, part;
+                            for (i = needed.length - 1; i > -1 && needed[i]; i--) {
+                                part = needed[i];
+                                partBundle = master[part];
+                                if (partBundle === true || partBundle === 1) {
+                                    partBundle = req(prefix + part + '/' + suffix);
+                                }
+                                mixin(value, partBundle);
+                            }
+
+							// MODIFICATION FROM ALOHA START: add a t() function
+							value.t = function( key, defaultValue ) {
+								if ( this[key] ) {
+									return this[key];
+								} else if ( defaultValue ) {
+									return defaultValue;
+								} else {
+									return key;
+								}
+							}
+							// END OF ALOHA MODIFICATION
+
+                            //All done, notify the loader.
+                            onLoad(value);
+                        });
+                    });
+                }
+            }
+        };
     });
 }());

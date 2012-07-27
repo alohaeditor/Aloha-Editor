@@ -1,20 +1,53 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-
-define( [
+/* abbr-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+define([
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
-	'aloha/floatingmenu',
+	'ui/ui',
+	'ui/toggleButton',
+	'ui/button',
+	'ui/scopes',
+	'ui/port-helper-attribute-field',
 	'i18n!abbr/nls/i18n',
 	'i18n!aloha/nls/i18n'
-], function ( Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
-	"use strict";
-	
+], function (
+	Aloha,
+	jQuery,
+	Plugin,
+	Ui,
+	ToggleButton,
+	Button,
+	Scopes,
+	AttributeField,
+	i18n,
+	i18nCore
+) {
+	'use strict';
 	var GENTICS = window.GENTICS;
 
 	/**
@@ -46,54 +79,31 @@ define( [
 		createButtons: function () {
 		    var me = this;
 
-		    // format Abbr Button
-		    // this button behaves like a formatting button like (bold, italics, etc)
-		    this.formatAbbrButton = new Aloha.ui.Button( {
-		    	'name' : 'abbr',
-		        'iconClass' : 'aloha-button aloha-button-abbr',
-		        'size' : 'small',
-		        'onclick' : function () { me.formatAbbr(); },
-		        'tooltip' : i18n.t( 'button.abbr.tooltip' ),
-		        'toggle' : true
-		    } );
-		    FloatingMenu.addButton(
-		        'Aloha.continuoustext',
-		        this.formatAbbrButton,
-		        i18nCore.t( 'floatingmenu.tab.format' ),
-		        1
-		    );
+			this._formatAbbrButton = Ui.adopt("formatAbbr", ToggleButton, {
+				tooltip: i18n.t("button.abbr.tooltip"),
+				icon: "aloha-icon aloha-icon-abbr",
+				scope: 'Aloha.continuoustext',
+				click: function(){
+					me.formatAbbr();
+				}
+			});
 
-		    // insert Abbr
-		    // always inserts a new abbr
-		    this.insertAbbrButton = new Aloha.ui.Button( {
-		    	'name' : 'insertAbbr',
-		    	'iconClass' : 'aloha-button aloha-button-abbr',
-		        'size' : 'small',
-		        'onclick' : function () { me.insertAbbr( false ); },
-		        'tooltip' : i18n.t( 'button.addabbr.tooltip' ),
-		        'toggle' : false
-		    } );
-			FloatingMenu.addButton(
-		        'Aloha.continuoustext',
-		        this.insertAbbrButton,
-		        i18nCore.t( 'floatingmenu.tab.insert' ),
-		        1
-		    );
+			this._insertAbbrButton = Ui.adopt("insertAbbr", Button, {
+				tooltip: i18n.t('button.addabbr.tooltip'),
+				icon: 'aloha-icon aloha-icon-abbr',
+				scope: 'Aloha.continuoustext',
+				click: function(){
+					me.insertAbbr( false );
+				}
+			});
 
-		    // add the new scope for abbr
-		    FloatingMenu.createScope( 'abbr', 'Aloha.continuoustext' );
+		    Scopes.createScope('abbr', 'Aloha.continuoustext');
 
-		    this.abbrField = new Aloha.ui.AttributeField( {
-		    	'width': 320,
-		    	'name': 'abbrText'
-		    } );
-		    // add the input field for abbr
-		    FloatingMenu.addButton(
-		        'abbr',
-		        this.abbrField,
-		        i18n.t( 'floatingmenu.tab.abbr' ),
-		        1
-		    );
+		    this.abbrField = AttributeField({
+		    	width: 320,
+		    	name: 'abbrText',
+		        scope: 'abbr'
+		    });
 		},
 
 		/**
@@ -116,8 +126,8 @@ define( [
 		        Aloha.editables[ i ].obj.keydown( function ( e ) {
 		    		if ( e.metaKey && e.which == 71 ) {
 				        if ( me.findAbbrMarkup() ) {
-				        	FloatingMenu.activateTabOfButton( 'abbrText' );
-				            me.abbrField.focus();
+							me.abbrField.foreground();
+							me.abbrField.focus();
 				        } else {
 				        	me.insertAbbr();
 				        }
@@ -133,50 +143,53 @@ define( [
 		    }
 		},
 
-		/**
-		 * Subscribe for events
-		 */
 		subscribeEvents: function () {
 			var me = this;
+			var editableConfig = {};
 
-		    // add the event handler for selection change
-			Aloha.bind( 'aloha-selection-changed', function ( event, rangeObject ) {
-		        if ( Aloha.activeEditable ) {
-		        	// show/hide the button according to the configuration
-					// @todo this part should be done at aloha-editable-activated event
-		        	var config = me.getEditableConfig( Aloha.activeEditable.obj );
+			Aloha.bind('aloha-editable-activated', function () {
+				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
+					return;
+				}
 
-		        	if ( jQuery.inArray( 'abbr', config ) != -1 ) {
-		        		me.formatAbbrButton.show();
-		        		me.insertAbbrButton.show();
-		        	} else {
-		        		me.formatAbbrButton.hide();
-		        		me.insertAbbrButton.hide();
-			        	// TODO this should not be necessary here!
-			        	// FloatingMenu.doLayout();
-		        		// leave if a is not allowed
-		        		return;
-		        	}
+				var config = me.getEditableConfig(Aloha.activeEditable.obj);
+				editableConfig[
+					Aloha.activeEditable.getId()
+				] = jQuery.inArray('abbr', config) !== -1;
+			});
 
-		//        if ( !Aloha.Selection.mayInsertTag('abbr') ) {
-		//        	me.insertAbbrButton.hide();
-		//        }
+			Aloha.bind('aloha-editable-destroyed', function () {
+				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
+					return;
+				}
 
-		        	var foundMarkup = me.findAbbrMarkup( rangeObject );
-		        	if ( foundMarkup ) {
-		        		// abbr found
-		        		me.insertAbbrButton.hide();
-		        		me.formatAbbrButton.setPressed( true );
-		        		FloatingMenu.setScope( 'abbr' );
-		        		me.abbrField.setTargetObject( foundMarkup, 'title' );
-		        	} else {
-		        		// no abbr found
-		        		me.formatAbbrButton.setPressed( false );
-		        		me.abbrField.setTargetObject( null );
-		        	}
-		        	// TODO this should not be necessary here!
-		        	// FloatingMenu.doLayout();
-		        }
+				delete editableConfig[Aloha.activeEditable.getId()];
+			});
+
+			Aloha.bind('aloha-selection-changed', function (event, range) {
+		        if (!Aloha.activeEditable) {
+					return;
+				}
+
+				if (editableConfig[Aloha.activeEditable.getId()]) {
+					me._formatAbbrButton.show();
+					me._insertAbbrButton.show();
+				} else {
+					me._formatAbbrButton.hide();
+					me._insertAbbrButton.hide();
+					return;
+				}
+
+				var foundMarkup = me.findAbbrMarkup(range);
+				if (foundMarkup) {
+					me._insertAbbrButton.hide();
+					me._formatAbbrButton.setState(true);
+					Scopes.setScope('abbr');
+					me.abbrField.setTargetObject(foundMarkup, 'title');
+				} else {
+					me._formatAbbrButton.setState(false);
+					me.abbrField.setTargetObject(null);
+				}
 		    });
 		},
 
@@ -230,9 +243,6 @@ define( [
 		        return;
 		    }
 
-		    // activate floating menu tab
-		    FloatingMenu.activateTabOfButton('abbrText');
-
 		    // if selection is collapsed then extend to the word.
 		    if ( range.isCollapsed() && extendToWord != false ) {
 		        GENTICS.Utils.Dom.extendToWord( range );
@@ -252,9 +262,9 @@ define( [
 		    }
 			
 		    range.select();
-			
-		    this.abbrField.focus();
-		//	this.abbrChange();
+
+			this.abbrField.foreground();
+			this.abbrField.focus();
 		},
 
 		/**

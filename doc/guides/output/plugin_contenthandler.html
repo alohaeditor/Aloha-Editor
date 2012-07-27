@@ -43,7 +43,7 @@
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
         <h2><a href="/"></a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -59,8 +59,10 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd>Configuring Aloha Editor</dd>
+      <dd>Aloha Editor and jQuery</dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
       <dd><a href="repository.html">Working with repositories</a></dd>
     <dt>The Core</dt>
@@ -68,10 +70,10 @@
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd>Aloha Editor toolbar</dd>
+      <dd>Aloha Editor sidebar</dd>
+      <dd>Aloha Editor UI API</dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -85,6 +87,7 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
       <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
@@ -122,7 +125,6 @@
 	<li>Word</li>
 	<li>oEmbed</li>
 	<li>Sanitize</li>
-	<li>blockelement</li>
 </ul>
 <p>Plugins also provide Content Handler:</p>
 <ul>
@@ -132,7 +134,6 @@
 <ul>
 	<li>insertHtml in <tt>common/commands</tt> plugin</li>
 	<li>initEditable in core/editable.js</li>
-	<li>getContents in core/editable.js</li>
 </ul>
 <h3 id="enabling-the-content-handler-plugin">2 Enabling the Content Handler Plugin</h3>
 <h4 id="using-configuration">2.1 Using Configuration</h4>
@@ -171,7 +172,7 @@
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 	define(
-	['aloha', 'aloha/jquery', 'aloha/contenthandlermanager'],
+	['aloha', 'jquery', 'aloha/contenthandlermanager'],
 	function(Aloha, jQuery, ContentHandlerManager) {
 		&quot;use strict&quot;;
 	
@@ -200,7 +201,6 @@
 	<li>word</li>
 	<li>generic</li>
 	<li>sanitize</li>
-	<li>blockelement</li>
 </ul>
 <h4 id="word-content-handler">7.1 Word Content Handler</h4>
 <p>The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It will:</p>
@@ -263,8 +263,7 @@ Aloha.settings.contentHandler.sanitize = {
 		'q' : {'cite': ['http', 'https', '__relative__']}
 	}
 }
-</pre></div><h4 id="blockelement-content-handler">7.4 Blockelement Content Handler</h4>
-<p>The blockelement implements the behaviour documented in the section about <a href="functional_description.html#implemented-behaviour">Empty Block Level Elements</a></p>
+</pre></div>
 
       </div>
         <div id="subCol">
@@ -282,7 +281,6 @@ Aloha.settings.contentHandler.sanitize = {
 </a><ul><li><a href="#word-content-handler"><p>Word Content Handler</p>
 </a></li> <li><a href="#generic-content-handler"><p>Generic Content Handler</p>
 </a></li> <li><a href="#sanitize-content-handler"><p>Sanitize Content Handler</p>
-</a></li> <li><a href="#blockelement-content-handler"><p>Blockelement Content Handler</p>
 </a></li></ul></li>
           </ol>
         </div>

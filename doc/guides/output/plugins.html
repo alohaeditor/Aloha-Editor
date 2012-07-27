@@ -43,7 +43,7 @@
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
         <h2><a href="/"></a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -59,8 +59,10 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd>Configuring Aloha Editor</dd>
+      <dd>Aloha Editor and jQuery</dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
       <dd><a href="repository.html">Working with repositories</a></dd>
     <dt>The Core</dt>
@@ -68,10 +70,10 @@
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd>Aloha Editor toolbar</dd>
+      <dd>Aloha Editor sidebar</dd>
+      <dd>Aloha Editor UI API</dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -85,6 +87,7 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
       <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
@@ -105,14 +108,9 @@
           <div class="headerSection">
             <h2>Aloha Editor Plugins</h2>
 <p>Plugins are optional components of Aloha Editor.</p>
-<p>Aloha Editor exists of the core which is dealing with the editable and the different browser browser implementations of the contentEditable element and generated <span class="caps">HTML</span> code.</p>
+<p>Aloha Editor exists of the core which deals with the different contentEditable implementations of the supported browsers.</p>
 <p>Almost all other functionality is designed to be implemented as Aloha Editor Plugin.</p>
-<p>Each plugin will provide you with <strong>components</strong> (buttons, input fields, &#8230; ) that can be added to the <strong>toolbar</strong> or <strong>sidebar</strong>, provides an <span class="caps">API</span> for other plugins or hooks into the AE core <span class="caps">API</span>.</p>
-<p>After reading this guide, you will</p>
-<ul>
-	<li>how to load and configure plugins</li>
-	<li>know which plugins are available and which functionality they provide</li>
-</ul>
+<p>Plugins may provide <strong>components</strong> (buttons, input fields, &#8230; ) that can be added to the <strong>toolbar</strong> or <strong>sidebar</strong> (link plugin), or a library that can be required by other plugins (dom-to-xhtml plugin). Plugins may also hook into the AE core <span class="caps">API</span> to extend what is considered the core functionality of aloha (contenthandler plugin).</p>
 
           </div>
         <h3 id="load-plugins">1 Load Plugins</h3>

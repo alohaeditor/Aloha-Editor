@@ -1,33 +1,47 @@
-/*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/* jquery.aloha.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+/**
+ * IMPORTANT!
+ * Don't add any more custom jquery extensions here.
+ * Instead use the define(...) mechanism to define a module and to
+ * import it where you need it.
+ */
+define([
+	'aloha/core',
+	'aloha/selection',
+	'jquery',
+	'aloha/console'
+], function (Aloha,
+             Selection,
+			 jQuery,
+			 console) {
+	'use strict';
 
-define(
-[ 'aloha/core', 'aloha/selection', 'aloha/jquery', 'aloha/console' ],
-function( Aloha, Selection, jQuery, console ) {
-	"use strict";
-	
-	var
-//		$ = jQuery,
-//		Aloha = window.Aloha,
-//		console = window.console,
-		XMLSerializer = window.XMLSerializer;
+	var XMLSerializer = window.XMLSerializer;
 
 	/**
 	 * jQuery between Extension
@@ -38,7 +52,7 @@ function( Aloha, Selection, jQuery, console ) {
 	 * @param content HTML Code, DOM object or jQuery object to be inserted
 	 * @param offset character offset from the start where the content should be inserted
 	 */
-	jQuery.fn.between = function(content, offset) {
+	jQuery.fn.between = function (content, offset) {
 		var
 			offSize,
 			fullText;
@@ -72,7 +86,7 @@ function( Aloha, Selection, jQuery, console ) {
 	/**
 	 * Make the object contenteditable. Care about browser version (name of contenteditable attribute depends on it)
 	 */
-	jQuery.fn.contentEditable = function( b ) {
+	jQuery.fn.contentEditable = function ( b ) {
 		// ie does not understand contenteditable but contentEditable
 		// contentEditable is not xhtml compatible.
 		var	$el = jQuery(this);
@@ -82,9 +96,9 @@ function( Aloha, Selection, jQuery, console ) {
 		if (jQuery.browser.msie && parseInt(jQuery.browser.version,10) == 7 ) {
 			ce = 'contentEditable';
 		}
-		
+
 		if (typeof b === 'undefined' ) {
-			
+
 			// For chrome use this specific attribute. The old ce will only
 			// return 'inherit' for nested elements of a contenteditable.
 			// The isContentEditable is a w3c standard compliant property which works in IE7,8,FF36+, Chrome 12+
@@ -95,7 +109,7 @@ function( Aloha, Selection, jQuery, console ) {
 			if (typeof $el[0].isContentEditable === 'undefined') {
 				console.warn('Could not determine whether the is editable or not. I assume it is.');
 				return true;
-			} else { 
+			} else {
 				return $el[0].isContentEditable;
 			}
 		} else if (b === '') {
@@ -119,11 +133,11 @@ function( Aloha, Selection, jQuery, console ) {
 	 * @return	jQuery object for the matched elements
 	 * @api
 	 */
-	jQuery.fn.aloha = function() {
+	jQuery.fn.aloha = function () {
 		var $this = jQuery( this );
 
-		Aloha.bind( 'aloha-ready', function() {
-			$this.each( function() {
+		Aloha.bind( 'aloha-ready', function () {
+			$this.each( function () {
 				// create a new aloha editable object for each passed object
 				if ( !Aloha.isEditable( this ) ) {
 					new Aloha.Editable( jQuery( this ) );
@@ -142,8 +156,8 @@ function( Aloha, Selection, jQuery, console ) {
 	 * @return	jQuery object for the matched elements
 	 * @api
 	 */
-	jQuery.fn.mahalo = function() {
-		return this.each(function() {
+	jQuery.fn.mahalo = function () {
+		return this.each(function () {
 			if (Aloha.isEditable(this)) {
 				Aloha.getEditableById(jQuery(this).attr('id')).destroy();
 			}
@@ -155,26 +169,27 @@ function( Aloha, Selection, jQuery, console ) {
 	 * new Event which is triggered whenever a selection (length >= 0) is made in
 	 * an Aloha Editable element
 	 */
-	jQuery.fn.contentEditableSelectionChange = function(callback) {
+	jQuery.fn.contentEditableSelectionChange = function (callback) {
 		var that = this;
 
 		// update selection when keys are pressed
-		this.keyup(function(event){
+		this.keyup(function (event){
 			var rangeObject = Selection.getRangeObject();
 			callback(event);
 		});
 
 		// update selection on doubleclick (especially important for the first automatic selection, when the Editable is not active yet, but is at the same time activated as the selection occurs
-		this.dblclick(function(event) {
+		this.dblclick(function (event) {
 			callback(event);
 		});
 
 		// update selection when text is selected
-		this.mousedown(function(event){
+		this.mousedown(function (event){
 			// remember that a selection was started
 			that.selectionStarted = true;
 		});
-		jQuery(document).mouseup(function(event) {
+
+		jQuery(document).mouseup(function (event) {
 			Selection.eventOriginalTarget = that;
 			if (that.selectionStarted) {
 				callback(event);
@@ -196,7 +211,7 @@ function( Aloha, Selection, jQuery, console ) {
 	 * @license MIT License {@link http://creativecommons.org/licenses/MIT/}
 	 * @return {String} outerHtml
 	 */
-	jQuery.fn.outerHtml = jQuery.fn.outerHtml || function(){
+	jQuery.fn.outerHtml = jQuery.fn.outerHtml || function (){
 		var
 			$el = jQuery(this),
 			el = $el.get(0);
@@ -213,39 +228,38 @@ function( Aloha, Selection, jQuery, console ) {
 					} catch (e) {}
 				}
 			}
-	
-	};
 
+	};
 
 	jQuery.fn.zap = function () {
-		return this.each(function(){ jQuery(this.childNodes).insertBefore(this); }).remove();
+		return this.each(function (){ jQuery(this.childNodes).insertBefore(this); }).remove();
 	};
 
-	jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
-			var
-				ret = [],
-				doSomething = function(el){
-					if (
-						(el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) ||
-						(el.nodeType === 3 && includeEmptyTextNodes) ||
-						(el.nodeName =="BR" && !excludeBreaks)) {
-						ret.push(el);
-					} else {
-						for (var i=0, childLength = el.childNodes.length; i < childLength; ++i) {
-							doSomething(el.childNodes[i]);
-						}
+	jQuery.fn.textNodes = function (excludeBreaks, includeEmptyTextNodes) {
+		var
+			ret = [],
+			doSomething = function (el) {
+				if (
+					(el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) ||
+					(el.nodeType === 3 && includeEmptyTextNodes) ||
+					(el.nodeName =="BR" && !excludeBreaks)) {
+					ret.push(el);
+				} else {
+					for (var i=0, childLength = el.childNodes.length; i < childLength; ++i) {
+						doSomething(el.childNodes[i]);
 					}
-				};
-			
-			doSomething(this[0]);
+				}
+			};
 
-			return jQuery(ret);
+		doSomething(this[0]);
+
+		return jQuery(ret);
 	};
 
 	/**
 	 * extendObjects is like jQuery.extend, but it does not extend arrays
 	 */
-	jQuery.extendObjects = jQuery.fn.extendObjects = function() {
+	jQuery.extendObjects = jQuery.fn.extendObjects = function () {
 		var options, name, src, copy, copyIsArray, clone,
 			target = arguments[0] || {},
 			i = 1,
@@ -314,55 +328,135 @@ function( Aloha, Selection, jQuery, console ) {
 		return target;
 	};
 
-	jQuery.isBoolean = function(b) {
-		return b === true || b === false;
-	},
-
-	/**
-	 * check if a mixed var is empty or not
-	 * borrowed from http://phpjs.org/functions/empty:392 and a bit improved
-	 * 
-	 * @param mixed_var
-	 * @return {boolean}
+	/*
+	 * jQuery Hotkeys Plugin
+	 * Copyright 2010, John Resig
+	 * Dual licensed under the MIT or GPL Version 2 licenses.
+	 *
+	 * Based upon the plugin by Tzury Bar Yochay:
+	 * http://github.com/tzuryby/hotkeys
+	 *
+	 * Original idea by:
+	 * Binny V A, http://www.openjs.com/scripts/events/keyboard_shortcuts/
 	*/
-	jQuery.isEmpty = function(mixed_var) {
-	    // http://kevin.vanzonneveld.net
-	    // +   original by: Philippe Baumann
-	    // +      input by: Onno Marsman
-	    // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	    // +      input by: LH
-	    // +   improved by: Onno Marsman
-	    // +   improved by: Francesco
-	    // +   improved by: Marc Jansen
-	    // +   improved by: Rene Kapusta
-	    // +   input by: Stoyan Kyosev (http://www.svest.org/)
-	    // *     example 1: empty(null);
-	    // *     returns 1: true
-	    // *     example 2: empty(undefined);
-	    // *     returns 2: true
-	    // *     example 3: empty([]);
-	    // *     returns 3: true
-	    // *     example 4: empty({});
-	    // *     returns 4: true
-	    // *     example 5: empty({'aFunc' : function () { alert('humpty'); } });
-	    // *     returns 5: false
-	    var key;
 
-		if ( Array.isArray(mixed_var) || typeof mixed_var == 'string' ) {
-			return mixed_var.length === 0;
+	jQuery.hotkeys = {
+		version: "0.8",
+
+		specialKeys: {
+			8: "backspace", 9: "tab", 13: "return", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause",
+			20: "capslock", 27: "esc", 32: "space", 33: "pageup", 34: "pagedown", 35: "end", 36: "home",
+			37: "left", 38: "up", 39: "right", 40: "down", 45: "insert", 46: "del",
+			96: "0", 97: "1", 98: "2", 99: "3", 100: "4", 101: "5", 102: "6", 103: "7",
+			104: "8", 105: "9", 106: "*", 107: "+", 109: "-", 110: ".", 111 : "/",
+			112: "f1", 113: "f2", 114: "f3", 115: "f4", 116: "f5", 117: "f6", 118: "f7", 119: "f8",
+			120: "f9", 121: "f10", 122: "f11", 123: "f12", 144: "numlock", 145: "scroll", 191: "/", 224: "meta"
+		},
+
+		shiftNums: {
+			"`": "~", "1": "!", "2": "@", "3": "#", "4": "$", "5": "%", "6": "^", "7": "&",
+			"8": "*", "9": "(", "0": ")", "-": "_", "=": "+", ";": ": ", "'": "\"", ",": "<",
+			".": ">",  "/": "?",  "\\": "|"
+		}
+	};
+
+	function applyKeyHandler(handler, context, args, event) {
+		// Don't fire in text-accepting inputs that we didn't directly bind to
+		if ( context !== event.target
+			 && (/textarea|input|select/i.test( event.target.nodeName )
+				 || event.target.type === "text") ) {
+			return;
+		}
+		return handler.apply(context, args);
+	}
+
+	function keyHandler( handleObj ) {
+		// Only care when a possible input has been specified
+		if ( typeof handleObj.data !== "string" ) {
+			return;
 		}
 
-	    if (mixed_var === "" || mixed_var === 0 || mixed_var === "0" || mixed_var === null || mixed_var === false || typeof mixed_var === 'undefined') {
-	        return true;
-	    }
+		var origHandler = handleObj.handler,
+		    keys = handleObj.data.toLowerCase().split(" "),
+		    handle = {};
 
-	    if (typeof mixed_var == 'object') {
-	        for (key in mixed_var) {
-	            return false;
-	        }
-	        return true;
-	    }
+		for (var i = 0; i < keys.length; i++) {
+			handle[keys[i]] = true;
+		}
 
-	    return false;
+		handleObj.handler = function(event) {
+			// The original comment that was added with this condition says:
+			// "Don't fire in contentEditable true elements"
+			// But this is incorrect.
+			// What this condition does is it skips hotkey events for
+			// any target unless it is directly bound.
+			// The condition event.target.contentEditable !== true will
+			// always be true, because contentEditable is a string
+			// attribute that is never strictly equal true.
+			//if (this !== event.target && event.target.contentEditable !== true) {
+			//return;
+			//}
+			// Below is what this condition really does. Ideally, I'd
+			// like to remove this condition since it was not there in
+			// the original implementation by John Resig and it could
+			// interfere with other plugins, but when I removed it, I
+			// was unable to input any space characters into an
+			// editable.
+			// TODO figure out a way to safely remove this
+			if (this !== event.target) {
+				return;
+			}
+
+			// Keypress represents characters, not special keys
+			var special = event.type !== "keypress" && jQuery.hotkeys.specialKeys[ event.which ],
+			    modif = "",
+			    character;
+
+			// check combinations (alt|ctrl|shift+anything)
+			if ( event.altKey && special !== "alt" ) {
+				modif += "alt+";
+			}
+
+			if ( event.ctrlKey && special !== "ctrl" ) {
+				modif += "ctrl+";
+			}
+
+			// TODO: Need to make sure this works consistently across platforms
+			if ( event.metaKey && !event.ctrlKey && special !== "meta" ) {
+				modif += "meta+";
+			}
+
+			if ( event.shiftKey && special !== "shift" ) {
+				modif += "shift+";
+			}
+
+			if ( special ) {
+				if (handle[modif + special]) {
+					return applyKeyHandler(origHandler, this, arguments, event);
+				}
+			} else {
+				character = String.fromCharCode(event.which).toLowerCase();
+
+				if (handle[modif + character]) {
+					return applyKeyHandler(origHandler, this, arguments, event);
+				}
+
+				if (handle[modif + jQuery.hotkeys.shiftNums[character]]) {
+					return applyKeyHandler(origHandler, this, arguments, event);
+				}
+
+				// "$" can be triggered as "Shift+4" or "Shift+$" or just "$"
+				if (modif === "shift+") {
+					if (handle[jQuery.hotkeys.shiftNums[character]]) {
+						return applyKeyHandler(origHandler, this, arguments, event);
+					}
+				}
+			}
+		};
 	}
+
+	jQuery.each(['keydown', 'keyup', 'keypress'], function () {
+		jQuery.event.special[this] = {add: keyHandler};
+	});
+
 });

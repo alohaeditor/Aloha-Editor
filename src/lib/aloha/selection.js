@@ -1,31 +1,34 @@
-/*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+/* selection.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 "use strict";
 define(
-[ 'aloha/core', 'aloha/jquery', 'util/class', 'util/arrays', 'util/strings', 'util/range', 'aloha/engine', 'aloha/console', 'PubSub', 'aloha/rangy-core' ],
-function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) {
-	var
-
-		GENTICS = window.GENTICS;
-
+[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/console', 'PubSub', 'aloha/engine', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) {
+	var GENTICS = window.GENTICS;
 	/**
 	 * @namespace Aloha
 	 * @class Selection
@@ -246,23 +249,6 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 		},
 
 		/**
-		 * This method checks, if the current rangeObject common ancestor container has a 'data-aloha-floatingmenu-visible' Attribute.
-		 * Needed in Floating Menu for exceptional display of floatingmenu.
-		 */
-		isFloatingMenuVisible: function() {
-			var visible = jQuery(Aloha.Selection.rangeObject
-				.commonAncestorContainer).attr('data-aloha-floatingmenu-visible');
-			if(visible !== 'undefined'){
-				if (visible === 'true'){
-					return true;
-				} else {
-					return false;
-				}
-			}
-			return false;
-		},
-
-		/**
 		 * INFO: Method is used for integration with Gentics Aloha, has no use otherwise
 		 * Updates the rangeObject according to the current user selection
 		 * Method is always called on selection change
@@ -315,12 +301,12 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 
 			Aloha.trigger('aloha-selection-changed-before', [this.rangeObject, event]);
 
-			/**
-			 * @api documented in the guides
-			 */
+			// throw the event that the selection has changed. Plugins now have the
+			// chance to react on the currentElements[childCount].children.lengthged selection
 			Aloha.trigger('aloha-selection-changed', [this.rangeObject, event]);
-
 			triggerSelectionContextChanged(this.rangeObject, event);
+
+			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
 
 			return true;
 		},
@@ -613,11 +599,10 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 		 */
 		standardTagNameComparator : function(domobj, markupObject) {
 			if  (domobj.nodeType === 1) {
-				if (domobj.tagName.toLowerCase() != markupObject[0].tagName.toLowerCase()) {
-					//			Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> and <' + markupObject[0].tagName.toLowerCase() + '> failed because tags are different');
+				if (domobj.nodeName != markupObject[0].nodeName) {
 					return false;
 				}
-				return true;//domobj.attributes.length
+				return true;
 			} else {
 				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
 			}
@@ -633,16 +618,14 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 		 * @hide
 		 */
 		standardTextLevelSemanticsComparator: function(domobj, markupObject) {
-			// only element nodes can be compared
 			if  (domobj.nodeType === 1) {
-				if (domobj.tagName.toLowerCase() != markupObject[0].tagName.toLowerCase()) {
-		//			Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> and <' + markupObject[0].tagName.toLowerCase() + '> failed because tags are different');
+				if (domobj.nodeName != markupObject[0].nodeName) {
 					return false;
 				}
 				if (!this.standardAttributesComparator(domobj, markupObject)) {
 					return false;
 				}
-				return true;//domobj.attributes.length
+				return true;
 			} else {
 				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
 			}
@@ -657,7 +640,7 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 		 * @return true if objects are equal and false if not
 		 * @hide
 		 */
-		standardAttributesComparator: function(domobj, markupObject) {    
+		standardAttributesComparator: function(domobj, markupObject) {			
 			var classesA = Strings.words((domobj && domobj.className) || '');
 			var classesB = Strings.words((markupObject.length && markupObject[0].className) || '');
 			Arrays.sortUnique(classesA);
@@ -686,7 +669,7 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 
 			// if the element is a replacing element (like p/h1/h2/h3/h4/h5/h6...), which must not wrap each other
 			// use a clone of rangeObject
-			if (this.replacingElements[ tagName ]) {
+			if (this.replacingElements[tagName]) {
 				// backup rangeObject for later selection;
 				backupRangeObject = rangeObject;
 
@@ -1118,8 +1101,8 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 				Aloha.Log.debug(this, 'Node name detected: ' + nn + ' for: ' + markupObject.outerHtml());
 			}
 			if (nn == '#text') {return 'textNode';}
-			if (this.replacingElements[ nn ]) {return 'sectionOrGroupingContent';}
-			if (this.tagHierarchy [ nn ]) {return 'textLevelSemantics';}
+			if (this.replacingElements[nn]) {return 'sectionOrGroupingContent';}
+			if (this.tagHierarchy[nn]) {return 'textLevelSemantics';}
 			Aloha.Log.warn(this, 'unknown markup passed to this.getMarkupType(...): ' + markupObject.outerHtml());
 		},
 
@@ -1820,32 +1803,35 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 	}); // Selection
 
 
-/**
- * This method implements an ugly workaround for a selection problem in ie:
- * when the cursor shall be placed at the end of a text node in a li element, that is followed by a nested list,
- * the selection would always snap into the first li of the nested list
- * therefore, we make sure that the text node ends with a space and place the cursor right before it
- */
-function nestedListInIEWorkaround ( range ) {
-	if (jQuery.browser.msie
-		&& range.startContainer === range.endContainer
-		&& range.startOffset === range.endOffset
-		&& range.startContainer.nodeType == 3
-		&& range.startOffset == range.startContainer.data.length
-		&& range.startContainer.nextSibling
-		&& ["OL", "UL"].indexOf(range.startContainer.nextSibling.nodeName) !== -1) {
-		if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
-			range.startOffset = range.endOffset = range.startOffset-1;
-		} else {
-			range.startContainer.data = range.startContainer.data + ' ';
+	/**
+	 * This method implements an ugly workaround for a selection problem in ie:
+	 * when the cursor shall be placed at the end of a text node in a li element, that is followed by a nested list,
+	 * the selection would always snap into the first li of the nested list
+	 * therefore, we make sure that the text node ends with a space and place the cursor right before it
+	 */
+	function nestedListInIEWorkaround ( range ) {
+		var nextSibling;
+		if (jQuery.browser.msie
+			&& range.startContainer === range.endContainer
+			&& range.startOffset === range.endOffset
+			&& range.startContainer.nodeType == 3
+			&& range.startOffset == range.startContainer.data.length
+			&& range.startContainer.nextSibling) {
+			nextSibling = range.startContainer.nextSibling;
+			if ('OL' === nextSibling.nodeName || 'UL' === nextSibling.nodeName) {
+				if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
+					range.startOffset = range.endOffset = range.startOffset-1;
+				} else {
+					range.startContainer.data = range.startContainer.data + ' ';
+				}
+			}
 		}
 	}
-}
 
-function correctRange ( range ) {
-	nestedListInIEWorkaround(range);
-	return range;
-}
+	function correctRange ( range ) {
+		nestedListInIEWorkaround(range);
+		return range;
+	}
 
 	/**
 	 * Implements Selection http://html5.org/specs/dom-range.html#selection
@@ -2041,25 +2027,6 @@ function correctRange ( range ) {
 		removeAllRanges: function() {
 			this._nativeSelection.removeAllRanges();
 		},
-				
-		/**
-		 * prevents the next aloha-selection-changed event from
-		 * being triggered
-		 * @param flag boolean defines weather to update the selection on change or not
-		 */
-		preventedChange: function( flag ) {
-//			this.preventChange = typeof flag === 'undefined' ? false : flag;
-		},
-
-		/**
-		 * will return wheter selection change event was prevented or not, and reset the
-		 * preventSelectionChangedFlag
-		 * @return boolean true if aloha-selection-change event
-		 *         was prevented
-		 */
-		isChangedPrevented: function() {
-//			return this.preventSelectionChangedFlag;
-		},
 
 		/**
 		 * INFO: Method is used for integration with Gentics
@@ -2131,7 +2098,6 @@ function correctRange ( range ) {
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
-		// check whether the container starts in an element node
 		if (rangeObject.startContainer.nodeType != 1) {
 			return false;
 		}
@@ -2143,6 +2109,9 @@ function correctRange ( range ) {
 
 	function isCollapsedAndEndBr(rangeObject) {
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
+			return false;
+		}
+		if (rangeObject.startContainer.nodeType != 1) {
 			return false;
 		}
 		return Engine.isEndBreak(rangeObject.startContainer);
@@ -2205,10 +2174,6 @@ function correctRange ( range ) {
 		}
 		prevStartContext = startContext;
 		prevEndContext   = endContext;
-
-		/**
-		 * @api documented in the guides
-		 */
 		PubSub.pub('aloha.selection.context-change', {range: rangeObject, event: event});
 	}
 

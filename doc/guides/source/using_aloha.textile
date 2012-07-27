@@ -1,217 +1,151 @@
 h2. Using Aloha Editor
 
-After reading this guide, you will be able to:
-
-* Embed Aloha Editor in your web application.
-* Load plugins to enrich your editing experience.
-* Configure Aloha Editor to make your content editable and persist changes.
-* Customize the editor in different contexts.
-
 endprologue.
 
-h3. Install Aloha
+h3. Prerequisites
 
-Let's begin by installing the Aloha Editor library. There are two ways to choose right now.
+For a start, let's assume that you have a simple web page, you want to make editable with Aloha Editor and you already have placed Aloha Editor on your web server.
 
-INFO: Actually you don’t "install" Aloha Editor, since it is neither a standalone CMS nor an HTML editor to create
-websites. It is a JavaScript Library which has to be embedded and integrated in your web application.
-Use it like a supersonic textarea. You can edit any DOM element with this supersonic textarea,
-but you need to care about configuration and storage.
-
-<shell>
-cd aloha
-cp -r aloha-minified path_to_your_webapp/javascripts/aloha
-</shell>
-
-h3. Embed Aloha
-
-Let's assume that you have installed Aloha to your webapplication in a path like +javascripts/aloha+.
-
-Put the following in the *head* of your web application to load Aloha with a basic formatting plugin:
+This is your web page:
 
 <html>
 <head>
-	<script src="javascripts/aloha/aloha.js" data-aloha-plugins="common/format"></script>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Getting Started with Aloha Editor</title>
+	<link rel="stylesheet" href="index.css" type="text/css">
 </head>
+<body>
+	<div id="main">
+		<div id="content"><p>Getting started with Aloha Editor!</p></div>
+	</div>
+</body>
 </html>
 
-INFO: We will cover just enough about RequireJS to get you started here. To learn more about how RequireJS works,
-read our "Aloha dependency management with requireJS":require.html guide.
+Aloha Editor is located in the path +/javascripts+ of your web server.
 
-In the script tag attribute +data-aloha-plugins="common/format"+ we tell Aloha which plugins should be loaded. We come
-to this later, but note that the mere inclusion does not yet change the behaviour of your web page.
+h3. Embed Aloha Editor
 
-Aloha Editor tries to determ the baseUrl to load common plugins, css and localization files. Aloha Editor does the lookup the following way:
+To embed Aloha Editor, you just need to load a single css +/javascripts/aloha/css/aloha.css+ and a javascript file +/javascripts/aloha/lib/aloha.js+ into the *head* section of your page.
 
-* use +Aloha.settings.baseUrl+
-* find first occureancy of a script tag, where the file name is +aloha.js+
-* find the first script tag where a data attribute +data-aloha-plugins+ is added
-
-By default the baseUrl is used to lookup at least following files:
-
-* @baseUrl/aloha/nls/18n@
-* @baseUrl/plugins/common/plugin@
-* @baseUrl/aloha.css@
-
-NOTE: You may define different mappings for localization, common plugins and the aloha.css
-
-If all this fails Aloha Editor may not be able to load properly.
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Getting Started with Aloha Editor</title>
+	<link rel="stylesheet" href="index.css" type="text/css">
+	<!-- Load Aloha Editor css and js -->
+	<link rel="stylesheet" href="/javascripts/aloha/css/aloha.css" type="text/css">
+	<script src="/javascripts/aloha/lib/require.js"></script>
+	<script src="/javascripts/aloha/lib/aloha.js"
+	  data-aloha-plugins="common/ui,common/format,common/highlighteditables,common/link"></script>
+</head>
+<body>
+	<div id="main">
+		<div id="content"><p>Getting started with Aloha Editor!</p></div>
+	</div>
+</body>
+</html>
 
 h3. Create editables
 
-An editable is an HTML element that should be editable by Aloha. Aloha includes a jQuery plugin
-to create the editables through selectors. Once Aloha is loaded by RequireJS, we can call +.aloha()+ on the
-matched elements. The @require@ function takes care that Aloha is actually loaded, so you can put this code anywhere
-after the inclusion of @require.js@.
+An editable is an HTML element that should be editable by Aloha Editor. You can specify the element with a jQuery selector, and simply call +.aloha+ for it.
 
-<html>
-<script type="text/javascript">
-	Aloha.ready( function() {
-		
-		// Make #content editable once Aloha is loaded and ready.
-		Aloha.jQuery('#content').aloha();
-		
-	});
-</script>
-</html>
-
-Et voilà! You should now see the floating menu of Aloha when you click into your +#content+ element.
-
-Since the @.aloha()@ plugin can be called on any jQuery set, you could create many editables at once by specifying a
-CSS class or any other jQuery selector.
-
-<javascript>
-// Make all elements with class="content" editable
-Aloha.jQuery('.content').aloha();
-</javascript>
-
-h3. CSS loading
-
-WARNING: Not yet done
-
-h3. Localization
-
-Use the "localization" setting to set the current language of Aloha:
-
-<html>
-<script type="text/javascript">
-// switch Aloha Editor's localization to french
-Aloha.settings.locale = 'fr';
-</script>
-</html>
-
-As Aloha Editor uses RequireJS to handle it's localization needs a powerful fallback mechanism is in place. See http://requirejs.org/docs/api.html#i18n for additional details.
-
-
-h3. Using plugins
-
-h4. Laoding plugins
-
-Loading the new plugins is easy, just add it to the list of plugins in the main
-script tag loading Aloha:
+When we want to make the div with ID *content* editable, we add the script
 
 <html>
 <head>
-	<script 
-		src="javascripts/aloha/aloha.js" 
-		data-aloha-plugins="common/format,common/list,common/table" >
-	</script>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Getting Started with Aloha Editor</title>
+	<link rel="stylesheet" href="index.css" type="text/css">
+	<!-- Load Aloha Editor css and js -->
+	<link rel="stylesheet" href="/javascripts/aloha/css/aloha.css" type="text/css">
+	<script src="/javascripts/aloha/lib/require.js"></script>
+	<script src="/javascripts/aloha/lib/aloha.js"
+	  data-aloha-plugins="common/ui,common/format,common/highlighteditables,common/link"></script>
 </head>
+<body>
+	<div id="main">
+		<div id="content"><p>Getting started with Aloha Editor!</p></div>
+	</div>
+	<script type="text/javascript">
+		Aloha.ready( function() {
+			Aloha.jQuery('#content').aloha();
+		});
+	</script>
+</body>
 </html>
 
+NOTE: In this example, the HTML element is made editable in the event handler of the +Aloha.ready+ event. This ensures that aloha is fully loaded, before actually using it and is therefore the recommended way of using Aloha Editor.
 
-h4. Configuring plugins
+h3. requirejs
 
-Every plugin provides its configuration settings and namespace. Configuration settings are absolutely plugin specific. 
+Aloha uses "requirejs":http://requirejs.org/ to load modules at runtime.
 
-<javascript>
-var Aloha = {};
-Aloha.settings = {
-	pluginA: {
-		// set value for pluginA
-		value: 20,
-		// set an array 
-		list: ['some', 'other'],
-		// set an object
-		object: {
-			huhu: 'hello'
-		}
-	}
-};
-</javascript>
+It is necessary, for development and when using aloha-bare.js, to
+include requirejs before Aloha. It is not necessary to include requirejs
+when using aloha-full.js, as that already includes requirejs (as well as
+jQuery).
 
-h4. Plugin bundles
+TODO: at the time of this writing it is not clear what aloha.js is going
+to be in the distributable package - is it aloha-bare.js or
+aloha-full.js?
 
-Aloha Editor comes with a bundle of common plugins. A bundle is a installation specific path where Aloha looks for plugins. The structure of a plugin is a follows:
+It is possible to build a custom version of Aloha that does not need
+requirejs, although that has not been tested at the time of this writing
+and requires a customized build profile. See "Customized builds":develop_aloha.html
+for more information.
 
-* @mybundle@
-** @plugin1@
-** @pluginX@
+h3. Custom jQuery, jQueryUI and other modules
 
-Every plugin has the file structure as described above.
+Aloha requires many third party modules. If these modules are not
+combined during building, they will be loaded at runtime by
+requirejs. Two of the most prominent modules are jQuery and jQueryUI.
 
-You can use plugins from this bundle by adding the +common/pluginname+ 
-to the +data-aloha-plugins+ attribute of the script tag. See the example above. 
-Additionally you may add your own bundle, which can be located in a complete 
-different path. You can specify the path like this.
+There are severaly ways to customize the module loading in Aloha.
 
-<javascript>
-var Aloha = {};
-Aloha.settings = {
-	bundles: {
-		// Path for custom bundle relative from Aloha.settings.baseUrl usually path of aloha.js
-		custom1: '../mybundle',
-		// Path for custom bundle with an absolute path at the server
-		custom2: '/yourbundle',
-		// Path for a custom bundle located at another server 
-		//(NOTE: cross site scritping issues with that configuration)
-		custom3: 'http://theserver.com/their/bundle'
-	}
-};
-</javascript>
+* Use requirejs (preferred)
+  define('jquery', function(){ return window.jQuery; })
+  define('jqueryui', function(){ return window.jQuery.ui; })
 
-You can now easily load plugins from that bundles as follows
+* Use Aloha settings
+  Aloha.settings.predefinedModules = {'jquery': window.jQuery, 'jqueryui': window.jQuery.ui};
+  which just does a define() call as above, except it also works if
+  requirejs is bundled as part of Aloha (aloha-full.js).
+  Calling define yourself is always preferred if possible.
 
-<html>
-<head>
-	<script 
-		src="javascripts/aloha/aloha.js" 
-		data-aloha-plugins="common/link,custom1/plugin1,custom2/plugin2,custom3/plugin3" >
-	</script>
-</head>
-</html>
+* Customize the requirejs path configuration
+  Aloha.settings.requireConfig.paths = {'jquery': 'path/to/jquery.js', 'jqueryui': 'path/to/jqueryui.js'};
+  This will only work if jQuery was not already defined via a call to define() as above.
+  Loading the modules and calling define yourself is always preferred if possible.
 
-This example will try to load following plugins:
+* Customize the r.js path configuration during building
+  "r.js":https://github.com/jrburke/r.js/ build profiles also
+  contain path configuration, like above, that can be adapted. See
+  "Customized builds":develop_aloha.html.
+  This is different from the other methods in that this controls how
+  Aloha will be combined, whereas the other methods control module
+  loading during runtime.
 
-* +javascripts/aloha/lib/../plugins/common/link/lib/link-plugin.js+
-* +javascripts/aloha/lib/../../mybundle/plugin1/lib/plugin1-plugin.js+
-* +/yourbundle/plugin2/lib/plugin2-plugin.js+
-* +http://theserver.com/their/bundle/plugin3/lib/plugin3-plugin.js+
+Please note that if jqueryui is given this way, a jquery module must
+also be given this way, and the given jqueryui module must extend
+the given jquery module. The same rule holds for any other jquery
+plugins.
 
+Also note that if a jquery instance is given this way, it will be
+extended (jquery plugins will be registered on it).
 
-h3. jQuery compatibility
+Care must be taken with both settings. Passing in a version of a
+module that differs from what Aloha expects may result in
+unpredictable behaviour.
 
-Aloha Editor currently puts 3 objects in the global namespace:
+Also, the third part libraries that come with Aloha may have been
+patched to fix bugs or address Aloha specific issues. See the git
+log for each third party library for further information before
+redefining it.
 
-* +Aloha+ the core Aloha Editor object which gives you access to the main functionality
-* +GENTICS+ the utilities to manipulate the DOM in a proper way
+For this reason, if you experiencing problems when using custom versions
+of some modules, please go back to using the modules packaged with Aloha
+before making a bugreport.
 
-Aloha Editor will not interfere with any jQuery version you use on your site. Anyway if you want to use the jQuery version of your site you may specify the jQuery to use for Aloha editor. All Aloha Editor jQuery plugins will then be attached to the specified jQuery version. 
+h3. Further reading
 
-<javascript>
-	var Aloha = {};
-	Aloha.settings: {
-		jQuery: $
-	};
-</javascript>
-
-The order Aloha Editor looks for a specified jQuery is:
-
-* Aloha.settings.jQuery
-* Aloha.jQuery
-* buildin jQuery
-
-
-h3. Changelog
-
-* July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek
+* Learn about "Plugins":plugins.html

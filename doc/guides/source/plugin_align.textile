@@ -2,16 +2,9 @@ h2. Align Plugin
 
 WARNING: The Align Plugin is not working correctly right now.
 
-The Align Plugin allows you to align contents left, right, center, or justify the flow of text. It provides four components:
+The Align Plugin allows you to align contents left, right, center, or justify the flow of text.
 
 endprologue.
-
-h3. Components
-
-* alignLeft - align selected text left
-* alignRight - align selected text right
-* alignCenter - center selected text
-* alignJustify - justify selected text
 
 h3. Configuration settings
 
@@ -32,3 +25,10 @@ All editables with no special configuration will have the align options +'right'
 		}
 	};
 </javascript>
+
+h3. Components
+
+* alignLeft - align selected text left
+* alignRight - align selected text right
+* alignCenter - center selected text
+* alignJustify - justify selected text

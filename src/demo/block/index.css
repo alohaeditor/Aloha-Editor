@@ -224,19 +224,22 @@ td.redwhite {
 	height:100px;
 }
 
-.two-columns {
-	width:100%;
+.no-aloha-area {
+	background-color: #DDD;
+	background-image: -webkit-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+	background-image: -moz-repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+}
+
+.columnBlock, .uneditableColumnBlock {
+	width: 100%;
+}
+
+.columnBlock .column,
+.uneditableColumnBlock .column {
 	float:left;
 }
-.two-columns .column-left {
-	float:left;
-	width:48%;
-}
-.two-columns .column-right {
-	margin-left:2%;
-	width:50%;
-	float:left;
-}
-.two-columns .clear {
+
+.columnBlock .clear,
+.uneditableColumnBlock .clear {
 	clear:both;
 }

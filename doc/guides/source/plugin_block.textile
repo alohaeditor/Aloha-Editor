@@ -2,11 +2,6 @@ h2. The Block Plugin
 
 After reading this guide, you will be able to:
 
-* Understand what Aloha Blocks are
-* use already-given Aloha Blocks
-* write your own blocks and editors
-* Integrate Blocks into your CMS or backend system
-
 endprologue.
 
 TIP: We suggest that you open up the block demo located at +src/demo/block/index.html+ of the Aloha Source, as it contains lots of usage examples and best practices.
@@ -411,6 +406,10 @@ BlockManager.bind('block-selection-change', function(blocks) {
 	// If the array is empty, no block has been selected.
 });
 </javascript>
+
+h4. Preventing switch of scope for a block
+
+The block plugin will switch the current scope to a block-specific one whenever a block is activated. To prevent it from doing so just add the @data-block-skip-scope="true"@ attribute to the element you plan to turn into a block. As long as it's value is "true" the scope will not be switched. 
 
 h3. Internals
 

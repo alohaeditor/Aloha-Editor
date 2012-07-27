@@ -4,15 +4,6 @@ The Abbr Plugin will wrap selected contents within an +<abbr>+ tag. You can then
 
 endprologue.
 
-
-h3. Components
-
-* formatAbbr - format selection as an abbreviation
-* createAbbr - insert new abbreviation
-* editAbbr - edit existing abbreviation
-* abbrText - UIAttributeField for text input
-* removeAbbr - remove abbreviation from selection
-
 h3. Functional Description
 
 To create an abbreviation highlight some text and click the abbreviation icon from the format tab. Now you can enter the description of the abbreviation which will be shown when hovering over the annotated word. For editing an abbreviation just click on the entered abbreviation and edit the text in the FloatingMenu.
@@ -37,3 +28,11 @@ Use a single array with the value +[ 'abbr' ]+ to activate or an empty array +[ 
 		}
 	};
 </javascript>
+
+h3. Components
+
+* formatAbbr - format selection as an abbreviation
+* createAbbr - insert new abbreviation
+* editAbbr - edit existing abbreviation
+* abbrText - UIAttributeField for text input
+* removeAbbr - remove abbreviation from selection

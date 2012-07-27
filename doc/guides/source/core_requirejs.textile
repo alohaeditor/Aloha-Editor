@@ -1,0 +1,63 @@
+h2. Aloha Editor and RequireJS
+
+WARNING: The RequireJS guides needs improvement.
+
+endprologue.
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>The Aloha Editor - Just another debugging page</title>
+
+	<script src="scripts/require.js"></script>
+	
+	<script>
+		require( { baseUrl: "scripts" }, ["scripts/main.js"] ); // see http://requirejs.org/docs/start.html regarding scripts/main.js
+	</script>
+	
+	<script>
+		if (window.Aloha === undefined || window.Aloha === null) {
+			var Aloha = window.Aloha = {};
+		}
+
+		Aloha.settings = {
+			locale: 'en',
+			repositories: {
+				linklist: {
+					data: [
+						{ name: 'Example', url:'http://example.com', type:'website', weight: 0.50 }
+					]
+				}
+			},
+			plugins: {
+				load: 'common/format, common/link',
+				format: {
+					config : [  'b', 'i', 'p', 'h1', 'h2', 'h3', 'pre', 'removeFormat' ],
+				}
+			}
+		}
+	</script>
+
+	<link rel="stylesheet" href="/aloha-editor/css/aloha.css" id="aloha-style-include" type="text/css">
+</head>
+<body>
+
+<div id="content-editable">
+	<p>Aloha World</p>
+</div>
+
+<script type="text/javascript">
+require( {
+			context: 'aloha',
+			baseUrl: '/aloha-editor/lib'
+		}, ['aloha'], function( Aloha ) {
+
+			Aloha.ready( function(){
+				Aloha.jQuery('#content-editable').aloha();
+			});
+});
+</script>
+</body>
+</html>

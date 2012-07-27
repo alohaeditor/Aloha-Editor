@@ -41,27 +41,6 @@ h4. Table caption & summary
 
 To add a caption to a table click inside of one cell and click the button table caption. A summary may be added by using the according field in the sidebar.
 
-h3. Components
-
-* table - insert a table into the content
-* addrowbefore - adds a row before the current row
-* addrowafter - adds a row after the current row
-* deleterow - deletes the current row
-* deletecolumn - deletes the current column
-* rowheader - turns current row into a row of headers
-* columnheader - turns current column into a column of headers
-* romergecells - merge all cells within this row
-* rowsplitcells - split merged cells within this row
-* columnmergecells - merge all cells within this column
-* columnsplitcells - split merged cells within this column
-* addcolumnleft - add a column left of the current column
-* addcolumnright - add a column right of the current column
-* tablemergecells - merge selected cells
-* tablesplitcells - split selected cells
-* mergecells - merge selected cells
-* splitcells - split selected cells
-* tablecaption - input field which allows you to add a caption to the table
-
 h3. Configuration settings
 
 The table configuration allows for some special settings:
@@ -98,3 +77,24 @@ Aloha.settings.plugins: {
 	}
 };
 </javascript>
+
+h3. Components
+
+* table - insert a table into the content
+* addrowbefore - adds a row before the current row
+* addrowafter - adds a row after the current row
+* deleterow - deletes the current row
+* deletecolumn - deletes the current column
+* rowheader - turns current row into a row of headers
+* columnheader - turns current column into a column of headers
+* romergecells - merge all cells within this row
+* rowsplitcells - split merged cells within this row
+* columnmergecells - merge all cells within this column
+* columnsplitcells - split merged cells within this column
+* addcolumnleft - add a column left of the current column
+* addcolumnright - add a column right of the current column
+* tablemergecells - merge selected cells
+* tablesplitcells - split selected cells
+* mergecells - merge selected cells
+* splitcells - split selected cells
+* tablecaption - input field which allows you to add a caption to the table

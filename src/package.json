@@ -1,6 +1,6 @@
 {
 	"name": "aloha-editor",
-	"version": "0.10.0",
+	"version": "${version}",
 	"description": "The HTML5 WYSIWYG Editor",
 	"homepage": "https://github.com/alohaeditor/Aloha-Editor",
 	"keywords": [
@@ -37,8 +37,8 @@
 
 	"licenses": [
 		{
-			"type": "AGPLv3",
-			"url": "http://www.opensource.org/licenses/agpl-v3"
+			"type": "GPLv2 or later",
+			"url": "http://www.gnu.org/licenses/gpl-2.0.html"
 		}
 	],
 

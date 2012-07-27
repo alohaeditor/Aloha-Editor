@@ -1,50 +1,42 @@
-/*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+/* core.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define(
 
 [
-	'aloha/jquery',
+	'jquery',
 	'aloha/pluginmanager'
 ],
 
 function ( jQuery, PluginManager ) {
 	"use strict";
 
-	// Aloha Editor does not support Internet Explorer 6.  ExtJS style fixes for
-	// IE6 which are applied through the "ext-ie6" class cause visual bugs in
-	// IE9, and so we remove it so that IE6 fixes are not applied.
-	Aloha.ready(function() {
-		jQuery('.ext-ie6').removeClass('ext-ie6');
-	});
-
 	//----------------------------------------
 	// Private variables
 	//----------------------------------------
-	
-	/**
-	 * Maps the names of plugins with their urls for easy assess in the
-	 * getPluginUrl method.  Hash table that will be populated through the
-	 * loadPlugins method.
-	 */
-	var pluginPaths = {};
 
 	/**
 	 * Base Aloha Object
@@ -59,7 +51,7 @@ function ( jQuery, PluginManager ) {
 		 * It should be set by us and updated for the particular branch
 		 * @property
 		 */
-		version: '0.20.0',
+		version: '${version}',
 
 		/**
 		 * Array of editables that are managed by Aloha
@@ -100,165 +92,44 @@ function ( jQuery, PluginManager ) {
 		 */
 		OSName: 'Unknown',
 
-		/**
-		 * Which stage is the aloha init process at?
-		 * @property
-		 * @type string
-		 */
-		stage: 'loadingAloha',
+        /**
+         * Which stage is the aloha init process at?
+         * @property
+         * @type string
+         */
+        stage: 'loadingAloha',
+
+        /**
+         * A list of loaded plugin names. Available after the
+         * "loadPlugins" stage.
+         *
+         * @property
+         * @type array
+         * @internal
+         */
+        loadedPlugins: [],
 
 		/**
-		 * A list of loaded plugin names. Available after the
-		 * "loadPlugins" stage.
-		 *
-		 * @property
-		 * @type array
-		 * @internal
+		 * Maps names of plugins (link) to the base URL (../plugins/common/link).
 		 */
-		loadedPlugins: [],
+		_pluginBaseUrlByName: {},
 
-		requirePaths: [],
 		/**
 		 * Initialize the initialization process
 		 */
 		init: function () {
-				
-			// merge defaults and settings and provide all in settings
-			Aloha.settings = jQuery.extendObjects( true, {}, Aloha.defaults, Aloha.settings );
-
-			// initialize rangy. This is probably necessary here,
-			// because due to the current loading mechanism, rangy
-			// doesn't initialize itself in all browsers
-			if (window.rangy) {
-				window.rangy.init();
-			}
-			
 			// Load & Initialise
-			Aloha.stage = 'loadPlugins';
-			Aloha.loadPlugins(function(){
-				Aloha.stage = 'initAloha';
-				Aloha.initAloha(function(){
-					Aloha.stage = 'initPlugins';
-					Aloha.initPlugins(function(){
-						Aloha.stage = 'initGui';
-						Aloha.initGui(function(){
-							Aloha.stage = 'alohaReady';
-							Aloha.trigger('aloha-ready');
-						});
+			Aloha.stage = 'initAloha';
+			Aloha.initAloha(function(){
+				Aloha.stage = 'initPlugins';
+				Aloha.initPlugins(function(){
+					Aloha.stage = 'initGui';
+					Aloha.initGui(function(){
+						Aloha.stage = 'alohaReady';
+						Aloha.trigger('aloha-ready');
 					});
 				});
 			});
-		},
-
-		/**
-		 * Load Plugins
-		 */
-		loadPlugins: function (next) {
-			// contains an array like [common/format, common/block]
-			var configuredPluginsWithBundle = this.getPluginsToBeLoaded();
-
-			if (configuredPluginsWithBundle.length) {
-				var paths = {},
-				    pluginNames = [],
-				    requiredInitializers = [],
-				    pathsToPlugins = {};
-
-				// Background: We do not use CommonJS packages for our Plugins
-				// as this breaks the loading order when these modules have
-				// other dependencies.
-				// We "emulate" the commonjs modules with the path mapping.
-				/* require(
-				 *  { paths: {
-				 *      'format': 'plugins/common/format/lib',
-				 *      'format/nls': 'plugins/common/format/nls',
-				 *      ... for every plugin ...
-				 *    }
-				 *  },
-				 *  ['format/format-plugin', ... for every plugin ...],
-				 *  next <-- when everything is loaded, we continue
-				 */
-				jQuery.each(configuredPluginsWithBundle, function (i, configuredPluginWithBundle) {
-					var tmp, bundleName, pluginName, bundlePath = '';
-
-					tmp = configuredPluginWithBundle.split('/');
-					bundleName = tmp[0];
-					pluginName = tmp[1];
-
-					// TODO assertion if pluginName or bundleName NULL _-> ERROR!!
-
-					if (Aloha.settings.basePath) {
-						bundlePath = Aloha.settings.basePath;
-					}
-
-					if (Aloha.settings.bundles && Aloha.settings.bundles[bundleName]) {
-						bundlePath += Aloha.settings.bundles[bundleName];
-					} else {
-						bundlePath += '../plugins/' + bundleName;
-					}
-
-					pluginNames.push(pluginName);
-					paths[pluginName] = bundlePath + '/' + pluginName + '/lib';
-
-					pathsToPlugins[pluginName] = bundlePath + '/' + pluginName;
-
-					// As the "nls" path lies NOT inside /lib/, but is a sibling to /lib/, we need
-					// to register it explicitely. The same goes for the "css" folder.
-					jQuery.each(['nls', 'css', 'vendor', 'res'], function() {
-						paths[pluginName + '/' + this] = bundlePath + '/' + pluginName + '/' + this;
-					});
-
-					requiredInitializers.push(pluginName + '/' + pluginName + '-plugin');
-				});
-
-				this.loadedPlugins = pluginNames;
-				this.requirePaths = paths;
-				
-				// Main Require.js loading call, which fetches all the plugins.
-				require(
-					{
-						context: 'aloha',
-						paths: paths,
-						locale: this.settings.locale || this.defaults.locale || 'en'
-					},
-					requiredInitializers,
-					next
-				);
-
-				pluginPaths = pathsToPlugins;
-			} else {
-				next();
-			}
-		},
-
-		/**
-		 * Fetches plugins the user wants to have loaded. Returns all plugins the user
-		 * has specified with the data-plugins property as array, with the bundle
-		 * name in front.
-		 * It's also possible to use 'Aloha.settings.plugins.load' to define the plugins
-		 * to load.
-		 *
-		 * @return array
-		 * @internal
-		 */
-		getPluginsToBeLoaded: function() {
-			// look for data-aloha-plugins attributes and load values
-			var
-				plugins = jQuery('[data-aloha-plugins]').data('aloha-plugins');
-
-			// load aloha plugins from config
-			if ( typeof Aloha.settings.plugins != 'undefined' && typeof Aloha.settings.plugins.load != 'undefined' ) {
-				plugins = Aloha.settings.plugins.load;
-				if (plugins instanceof Array) {
-					return plugins;
-				}
-			}
-
-			// Determine Plugins
-			if ( typeof plugins === 'string' && plugins !== "") {
-				return plugins.replace(/\s+/g, '').split(',');
-			}
-			// Return
-			return [];
 		},
 
 		/**
@@ -300,14 +171,8 @@ function ( jQuery, PluginManager ) {
 
 			// register the body click event to blur editables
 			jQuery('html').mousedown(function(e) {
-				// if an Ext JS modal is visible, we don't want to loose the focus on
-				// the editable as we assume that the user must have clicked somewhere
-				// in the modal... where else could he click?
-				// loosing the editable focus in this case hinders correct table
-				// column/row deletion, as the table module will clean it's selection
-				// as soon as the editable is deactivated. Fusubscriberthermore you'd have to
-				// refocus the editable again, which is just strange UX
-				if (Aloha.activeEditable && !Aloha.isMessageVisible() && !Aloha.eventHandled) {
+				// This is a hack to prevent a click into a modal dialog from blurring the editable.
+				if (Aloha.activeEditable && !jQuery(".aloha-dialog").is(':visible') && !Aloha.eventHandled) {
 					Aloha.activeEditable.blur();
 					Aloha.activeEditable = null;
 				}
@@ -372,9 +237,7 @@ function ( jQuery, PluginManager ) {
 		 * @return void
 		 */
 		initPlugins: function (next) {
-			PluginManager.init(function(){
-				next();
-			}, this.getLoadedPlugins() );
+			PluginManager.init(next, this.getLoadedPlugins());
 		},
 
 		/**
@@ -502,10 +365,7 @@ function ( jQuery, PluginManager ) {
 		 * @hide
 		 */
 		unregisterEditable: function (editable) {
-
-			// Find the index
-			var id = Aloha.editables.indexOf( editable );
-			// Remove it if really found!
+			var id = jQuery.inArray(editable, Aloha.editables);
 			if (id != -1) {
 				Aloha.editables.splice(id, 1);
 			}
@@ -542,15 +402,7 @@ function ( jQuery, PluginManager ) {
 		 * @return {String} alohaUrl
 		 */
 		getAlohaUrl: function( suffix ) {
-			// aloha base path is defined by a script tag with 2 data attributes
-			var requireJs = jQuery('[data-aloha-plugins]'),
-				baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?aloha.js$/ , '' ) : '';
-			
-			if ( typeof Aloha.settings.baseUrl === "string" ) {
-				baseUrl = Aloha.settings.baseUrl;
-			}
-			
-			return baseUrl;
+			return Aloha.settings.baseUrl;
 		},
 
 		/**
@@ -565,7 +417,7 @@ function ( jQuery, PluginManager ) {
 			var url;
 
 			if (name) {
-				url = pluginPaths[name];
+				url = Aloha.settings._pluginBaseUrlByName[name];
 				if(url) {
 					//Check if url is absolute and attach base url if it is not
 					if(!url.match("^(\/|http[s]?:).*")) {
@@ -573,7 +425,6 @@ function ( jQuery, PluginManager ) {
 					}
 				}
 			}
-
 			return url;
 		}
 

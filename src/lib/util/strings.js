@@ -1,4 +1,4 @@
-define(['aloha/jquery'],function($){
+define(['jquery'],function($){
 	'use strict';
 
 	/**

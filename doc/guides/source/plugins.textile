@@ -2,19 +2,13 @@ h2. Aloha Editor Plugins
 
 Plugins are optional components of Aloha Editor.
 
-Aloha Editor exists of the core which is dealing with the editable and the different browser browser implementations of the contentEditable element and generated HTML code.
+Aloha Editor exists of the core which deals with the different contentEditable implementations of the supported browsers.
 
 Almost all other functionality is designed to be implemented as Aloha Editor Plugin.
 
-Each plugin will provide you with *components* (buttons, input fields, ... ) that can be added to the *toolbar* or *sidebar*, provides an API for other plugins or hooks into the AE core API.
-
-After reading this guide, you will
-
-* how to load and configure plugins
-* know which plugins are available and which functionality they provide
+Plugins may provide *components* (buttons, input fields, ... ) that can be added to the *toolbar* or *sidebar* (link plugin), or a library that can be required by other plugins (dom-to-xhtml plugin). Plugins may also hook into the AE core API to extend what is considered the core functionality of aloha (contenthandler plugin).
 
 endprologue.
-
 
 h3. Load Plugins
 

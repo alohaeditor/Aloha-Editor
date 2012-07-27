@@ -6,16 +6,22 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-define(
-	['aloha', 
-	'aloha/jquery', 
+define([
+	'aloha', 
+	'jquery', 
 	'aloha/plugin', 
-	'aloha/floatingmenu', 
+	'ui/ui', 
+	'ui/button',
 	'i18n!characterpicker/nls/i18n', 
-	'i18n!aloha/nls/i18n', 
-	'css!characterpicker/css/characterpicker.css'],
-function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
-	"use strict";
+	'i18n!aloha/nls/i18n'
+], function(Aloha,
+            jQuery,
+			Plugin,
+			Ui,
+			Button,
+			i18n,
+			i18nCore) {
+	'use strict';
 
 	var GENTICS = window.GENTICS;
 	var overlayByConfig = {};
@@ -35,6 +41,7 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		self._initCursorFocus(onSelectCallback);
 		self._initEvents();
 	}
+
 	CharacterOverlay.prototype = {
 		/**
 		 * Show the character overlay at the insert button's position
@@ -71,18 +78,19 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			self.$node.click(function (e) {
 				e.stopPropagation();
 			});
+
+			var buttonSelector = '.aloha-icon-characterpicker';
 			// hide the layer if user clicks anywhere in the body
 			jQuery('body').click(function (e) {
 				if (!self._overlayActive) {
 					return;
 				}
-				var overlayVisibleAndNotTarget
-					=  (self.$node.css('display') === 'table') &&
-						(e.target !== self.$node[0]) &&
-				    // don't consider clicks to the 'show' button.
-						!jQuery(e.target).is('button.aloha-button-characterpicker');
-				if (overlayVisibleAndNotTarget) {
-					self.$node.hide();
+				if (// don't consider clicks to the overlay itself
+				       e.target !== self.$node[0]
+				    // and don't consider clicks to the 'show' button.
+					&& !jQuery(e.target).is(buttonSelector)
+					&& !jQuery(e.target).find(buttonSelector).length) {
+					self.hide();
 				}
 			});
 		},
@@ -92,7 +100,7 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			jQuery(document).keyup(function (e) {
 				var overlayVisibleAndEscapeKeyPressed = (self.$node.css('display') === 'table') && (e.keyCode === 27);
 				if (overlayVisibleAndEscapeKeyPressed) {
-					self.$node.hide();
+					self.hide();
 				}
 			});
 		},
@@ -104,7 +112,7 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			var movements = {
 				13: function select() {
 					$current = self.$node.find('.focused');
-					self.$node.hide();
+					self.hide();
 					onSelectCallback($current.text());
 				},
 				37: function left() {
@@ -159,7 +167,7 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			var self = this;
 			// when the editable is deactivated, hide the layer
 			Aloha.bind('aloha-editable-deactivated', function (event, rangeObject) {
-				self.$node.hide();
+				self.hide();
 			});
 		},
 		_createCharacterButtons: function (characters) {
@@ -215,22 +223,21 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		init: function () {
 			var self = this;
 
-			self.insertButton = new Aloha.ui.Button({
-				'name': 'characterpicker',
-				'iconClass': 'aloha-button-characterpicker',
-				'size': 'small',
-				'onclick': function (element, event) {
-					self.characterOverlay.show(element.btnEl.dom);
-				},
-				'tooltip': i18n.t('button.addcharacter.tooltip'),
-				'toggle': false
+			if ( typeof Aloha.settings.plugins != 'undefined' 
+				&& typeof Aloha.settings.plugins.characterpicker != 'undefined' ) {
+				self.settings = Aloha.settings.plugins.characterpicker;
+			}
+			
+			this._characterPickerButton = Ui.adopt("characterPicker", Button, {
+				tooltip: i18n.t('button.addcharacter.tooltip'),
+				icon: "aloha-icon-characterpicker",
+				scope: 'Aloha.continuoustext',
+				click: function() {
+					if (false !== self.characterOverlay) {
+						self.characterOverlay.show(this.element);
+					}
+				}
 			});
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				self.insertButton,
-				i18nCore.t('floatingmenu.tab.insert'),
-				1
-			);
 
 			// Populate the cache lazily
 			setTimeout(function(){ initCache(0); }, 100);
@@ -244,9 +251,9 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			Aloha.bind('aloha-editable-activated', function (event, data) {
 				self.characterOverlay = self.getOverlayForEditable(data.editable);
 				if (self.characterOverlay) {
-					self.insertButton.show();
+					self._characterPickerButton.show();
 				} else {
-					self.insertButton.hide();
+					self._characterPickerButton.hide();
 				}
 			});
 		},

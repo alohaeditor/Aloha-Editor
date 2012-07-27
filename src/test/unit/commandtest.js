@@ -1,9 +1,29 @@
-/*!
- * This file is part of Aloha Editor
- * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
- * Licensed unter the terms of http://www.aloha-editor.com/license.html
+/* commandtest.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
  */
-
 define(
 ['testutils'],
 function( TestUtils ) {
@@ -43,12 +63,6 @@ function( TestUtils ) {
 			editable = aQuery( '#edit' ),
 			converterResult = aQuery('<div>'),
 			converter = aQuery('<div>');
-
-		// we never want to see the floatingmenu here
-		var floatingMenu = Aloha.require('aloha/floatingmenu');
-		floatingMenu.doLayout = function() {
-			this.hide();
-		};
 
 		// aloha'fy the editable
 		editable.aloha();
@@ -134,7 +148,7 @@ function( TestUtils ) {
 					r.setEnd( range.endContainer, range.endOffset);
 					Aloha.getSelection().removeAllRanges();
 					Aloha.getSelection().addRange(r);
-					
+
 					// Start
 					if ( typeof check.indetermStart !== 'undefined' ) {
 						// query command indeterminacy and compare
@@ -155,7 +169,7 @@ function( TestUtils ) {
 					// ExecCommand
 					if ( typeof check.execResult !== 'undefined' ) {
 						// execute the command
-						Aloha.execCommand( command, false, check.value );
+						Aloha.execCommand( command, false, check.value, range );
 						// place the marker at the selection and add brackets
 						range = rangy.getSelection().getRangeAt(0);
 						TestUtils.addBrackets(range);
@@ -211,7 +225,7 @@ function( TestUtils ) {
 						Aloha.getSelection().removeAllRanges();
 						Aloha.getSelection().addRange(r);
 						
-						// toggle ExecCommand
+            // toggle ExecCommand
 						if ( typeof check.execToggle !== 'undefined' ) {
 							// execute the command
 							result = Aloha.execCommand( command, false, check.value );

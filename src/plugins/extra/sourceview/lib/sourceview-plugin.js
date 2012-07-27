@@ -9,7 +9,7 @@
 
 window.define([
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'../../../../test/unit/testutils',
 	'css!sourceview/css/sourceview'
 ],
@@ -173,6 +173,10 @@ function ( Aloha, jQuery, TestUtils ) {
 				});
 
 			Aloha.bind( 'aloha-selection-changed', function ( event, range ) {
+				if (!Aloha.Sidebar.right.isOpen) {
+					return;
+				}
+
 				var sNode = range.startContainer;
 				var eNode = range.endContainer;
 

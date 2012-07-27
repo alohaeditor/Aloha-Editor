@@ -1,18 +1,50 @@
-/*!
- * Aloha Editor
- * Author & Copyright (c) 2010 Gentics Software GmbH
- * aloha-sales@gentics.com
- * Licensed unter the terms of http://www.aloha-editor.com/license.html
+/* block.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
  */
-
 /**
  * Module which contains the base class for Blocks, and a Default/Debug block.
  *
  * @name block.block
  * @namespace block/block
  */
-define(['aloha', 'aloha/jquery', 'block/blockmanager', 'aloha/observable', 'aloha/floatingmenu'],
-function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
+define([
+	'aloha',
+	'jquery',
+	'block/blockmanager',
+	'aloha/observable',
+	'ui/scopes',
+	'util/class'
+], function(
+	Aloha,
+	jQuery,
+	BlockManager,
+	Observable,
+	Scopes,
+	Class
+){
 	"use strict";
 
 	var GENTICS = window.GENTICS;
@@ -364,7 +396,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			// Activate current block
 			if (this.$element.attr('data-block-skip-scope') !== 'true') {
-				FloatingMenu.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
+				Scopes.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
 			}
 			this.$element.addClass('aloha-block-active');
 			this._highlight();
@@ -607,7 +639,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				},
 				revertDuration: 250,
 				stop: function() {
-					if (Ext.isIE7) {
+					if (jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10)) {
 						dropFn();
 					}
 					jQuery.each(editablesWhichNeedToBeCleaned, function() {
@@ -685,7 +717,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 						 * as drop target.
 						 */
 						drop: function() {
-							if (!Ext.isIE7) {
+							if (! (jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10)) ) {
 								dropFn();
 							}
 						}
@@ -788,7 +820,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				leftWordPartLength = Math.floor(word.length/2);
 
 				// For Internet Explorer, we only make dropping AFTER words possible to improve performance
-				if (Ext.isIE7 || Ext.isIE8) {
+				var browserMajorVersion = parseInt(jQuery.browser.version, 10);
+				if (jQuery.browser.msie && (7 === browserMajorVersion || 8 === browserMajorVersion)) {
 					leftWordPartLength = 0;
 				}
 

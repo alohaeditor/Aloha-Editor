@@ -1,34 +1,39 @@
-/*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/* range.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 // Ensure GENTICS Namespace
 GENTICS = window.GENTICS || {};
 GENTICS.Utils = GENTICS.Utils || {};
 
 define(
-['aloha/jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
-function(jQuery, Dom, Class, console) {
+['jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
+function(jQuery, Dom, Class, console, rangy) {
 	"use strict";
 
-	var
-		GENTICS = window.GENTICS,
-		rangy = window.rangy;
+	var GENTICS = window.GENTICS;
 
 /**
  * @namespace GENTICS.Utils
@@ -206,7 +211,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 
 			// find the crossing between startContainer and endContainer parents (=commonAncestorContainer)
 			if (!(parentsStartContainer.length > 0 && parentsEndContainer.length > 0)) {
-				console.warn('could not find commonAncestorContainer');
+				console.warn('aloha/range', 'could not find commonAncestorContainer');
 				return false;
 			}
 
@@ -807,16 +812,21 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	findMarkup: function (comparator, limit, atEnd) {
-		var parents = this.getContainerParents(limit, atEnd),
-			returnValue = false;
-		jQuery.each(parents, function (index, domObj) {
-			if (comparator.apply(domObj)) {
-				returnValue = domObj;
-				return false;
+		var container = atEnd ? this.endContainer : this.startContainer,
+		    limit = limit ? limit[0] : null,
+		    parents,
+		    i,
+		    len;
+		if (!container) {
+			return;
+		}
+		parents = selfAndParentsUntil(container, limit);
+		for (i = 0, len = parents.length; i < len; i++) {
+			if (comparator.apply(parents[i])) {
+				return parents[i];
 			}
-		});
-
-		return returnValue;
+		}
+		return false;
 	},
 
 	/**
@@ -916,5 +926,25 @@ GENTICS.Utils.RangeTree = Class.extend({
 		return parents;
 	}
 	
+	function selfAndParentsUntil(container, limit) {
+		var parents = [],
+		    cur;
+		if (1 === container.nodeType) {
+			cur = container;
+		} else {
+			cur = container.parentNode;
+		}
+		for (;;) {
+			if (!cur || cur === limit || 9 === cur.nodeType) {
+				break;
+			}
+			if (1 === cur.nodeType) {
+				parents.push(cur);
+			}
+			cur = cur.parentNode;
+		}
+		return parents;
+	}
+
 	return GENTICS.Utils.RangeObject;
 });

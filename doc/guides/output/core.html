@@ -43,7 +43,7 @@
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
         <h2><a href="/"></a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -59,8 +59,10 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd>Configuring Aloha Editor</dd>
+      <dd>Aloha Editor and jQuery</dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
       <dd><a href="repository.html">Working with repositories</a></dd>
     <dt>The Core</dt>
@@ -68,10 +70,10 @@
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd>Aloha Editor toolbar</dd>
+      <dd>Aloha Editor sidebar</dd>
+      <dd>Aloha Editor UI API</dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -85,6 +87,7 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
       <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
@@ -113,7 +116,27 @@
 </ul>
 
           </div>
-        <h3 id="core-files">1 Core files</h3>
+        <h3 id="editable-elements">1 Editable elements</h3>
+<p>Aloha can be used with the following <span class="caps">HTML</span> text elements:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	[ 'a', 'abbr', 'address', 'article', 'aside',
+	'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
+	'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer',
+	'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i',
+	'ins', 'menu', 'nav', 'p', 'pre', 'q', 'ruby',
+	'section', 'small', 'span', 'strong', 'sub', 'sup',
+	'textarea', 'var' ]
+</pre></div><p>Not supported <span class="caps">HTML</span> elements:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	[ 'canvas', 'audio', 'br', 'embed', 'fieldset', 'hgroup', 'hr',
+	'iframe', 'img', 'input', 'map', 'script', 'select', 'style',
+	'svg', 'table', 'ul', 'video', 'ol', 'form', 'noscript' ]
+</pre></div><p>Note if you are using a textarea with Aloha: If the textarea has a <span class="caps">HTML</span> ID (eg. mytxtarea) the ID of the Aloha editable will be &#8220;-aloha&#8221; suffixed (eg. mytxtarea-aloha).</p>
+<h3 id="core-files">2 Core files</h3>
 <div class="warning"><p><span class="caps">TODO</span> describe file contents</p></div>
 <ul>
 	<li><tt>src/lib/aloha.js</tt></li>
@@ -121,7 +144,7 @@
 	<li><tt>src/lib/aloha/core.js</tt></li>
 	<li>&#8230;</li>
 </ul>
-<h3 id="initialization-process">2 Initialization Process</h3>
+<h3 id="initialization-process">3 Initialization Process</h3>
 <p>When Aloha Editor is loading several steps are completed until the initialization process is finished.</p>
 <div class="warning"><p><span class="caps">TODO</span> add description for init process and events!</p></div>
 
@@ -143,72 +166,61 @@ Aloha.loadPlugins(function(){
 		});
 	});
 });
-</pre></div><h3 id="how-to-use-require">3 How to use require</h3>
+</pre></div><h3 id="how-to-use-require">4 How to use require</h3>
 <div class="warning"><p><span class="caps">TODO</span> describe how Aloha.require is used</p></div>
-<h3 id="internationalization">4 Internationalization</h3>
+<h3 id="internationalization">5 Internationalization</h3>
 <div class="warning"><p><span class="caps">TODO</span> describe</p></div>
-<h3 id="logging">5 Logging</h3>
+<h3 id="logging">6 Logging</h3>
 <div class="warning"><p><span class="caps">TODO</span> describe</p></div>
-<h3 id="utilities">6 Utilities</h3>
+<h3 id="utilities">7 Utilities</h3>
 <div class="warning"><p><span class="caps">TODO</span> describe <span class="caps">GENTICS</span>.Utils.dom and the like</p></div>
-<h3 id="events">7 Events</h3>
-<p>Events are bound to with Aoha.bind and triggered with Aloha.trigger.</p>
-<ul>
-	<li>aloha-smart-content-changed</li>
-	<li>aloha-editable-activated</li>
-	<li>aloha-editable-deactivated</li>
-	<li>aloha-selection-changed</li>
-</ul>
-<h4 id="aloha-smart-content-changed-event">7.1 aloha-smart-content-changed Event</h4>
-<p>A smart content change occurs when a special editing action, or a combination of interactions are performed by the user during the course of editing within an editable. The smart content change event would therefore signal to any component that is listening to this event, that content has been inserted into the editable that may need to be prococessed in a special way. The smart content change event is also triggered after an idle period that follows rapid, basic changes to the contents of an editable such as when the user is typing.</p>
-<h4 id="aloha-editable-activated-event">7.2 aloha-editable-activated Event</h4>
-<div class="warning"><p>Documentation pending.</p></div>
-<h4 id="aloha-editable-deactivated-event">7.3 aloha-editable-deactivated Event</h4>
-<div class="warning"><p>Documentation pending.</p></div>
-<h4 id="aloha-selection-changed">7.4 aloha-selection-changed</h4>
-<p>The aloha-selection-changed event is fired whenever the selection returned by Aloha.getSelection() changes. It is not recommended to bind to this event unless you know what you are doing. Instead consider subscribing to the aloha.selection.context-change channel.</p>
-<h3 id="pubsub">8 PubSub</h3>
-<p>Aloha has a publish/subscribe system. For more information on how to use it, see PubSub.js in the src/lib/vendor folder.</p>
-<p>Aloha publishes messages on the following channels</p>
-<ul>
-	<li>aloha.selection.context-change</li>
-</ul>
-The message that will be published contains two properties
-- range the current value of Aloha.Selection.getRangeObject()
-- the event that caused the context change
-The message will be published every time the context of the selection
-changes.
-The context of the selection changes whenever the startContainer node
-or endContainer node of any range in the selection returned by
-Aloha.getSelection() changes, or any of their ancestors change, or any
-attributes of the container nodes or their ancestors change. The
-ancestor tree is calculated up to including the containing Aloha
-editable.
-Subscribing to this channel is preferred over aloha-selection-changed
-to avoid unnecessary processing of the <span class="caps">DOM</span> while the user is typing.
-To be able to type without perceptible lag is considered by the Aloha
-team to be one of the most important aspects of editor-performance.
+<h3 id="events">8 Events</h3>
+<p>see: Guides page: Events</p>
 <h3 id="editables">9 Editables</h3>
 <div class="warning"><p>Documentation pending.</p></div>
-<p>.</p>
+<h3 id="hotkeys">10 HotKeys</h3>
+<div class="warning"><p>Documentation pending.</p></div>
+<p>Add and remove HotKey handler for keyboard events supporting almost any key combination.</p>
+<p>The syntax is as follows:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+    $(document).bind('keydown', 'ctrl+a', fn);
+</pre></div><p>Example configuration for inserting a Link with the HotKey `Ctrl-u` (default: `Ctrl-l`)</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings = {
+	plugins: {
+		link: {
+			hotKey: { insertLink: 'ctrl+u' }
+		}
+	}
+}
+</pre></div>
+	<ol>
+		<li>Types Supported types are `&#8216;keydown&#8217;`, `&#8216;keyup&#8217;` and `&#8216;keypress&#8217;`</li>
+	</ol>
+		<ol>
+			<li>Addendum Firefox is the most liberal one in the manner of letting you capture all short-cuts even those that are built-in in the browser such as `Ctrl-t` for new tab, or `Ctrl-a` for selecting all text. You can always bubble them up to the browser by returning `true` in your handler.</li>
+		</ol><p>Others, (IE) either let you handle built-in short-cuts, but will add their functionality after your code has executed. Or (Opera/Safari) will <strong>not</strong> pass those events to the <span class="caps">DOM</span> at all.</p>
+<p><strong>So, if you bind `Ctrl-Q` or `Alt-F4` and your Safari/Opera window is closed don&#8217;t be surprised.</strong></p>
+<p>Code from: https://github.com/jeresig/jquery.hotkeys</p>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#core-files"><p>Core files</p>
+            <li><a href="#editable-elements"><p>Editable elements</p>
+</a></li><li><a href="#core-files"><p>Core files</p>
 </a></li><li><a href="#initialization-process"><p>Initialization Process</p>
 </a></li><li><a href="#how-to-use-require"><p>How to use require</p>
 </a></li><li><a href="#internationalization"><p>Internationalization</p>
 </a></li><li><a href="#logging"><p>Logging</p>
 </a></li><li><a href="#utilities"><p>Utilities</p>
 </a></li><li><a href="#events"><p>Events</p>
-</a><ul><li><a href="#aloha-smart-content-changed-event"><p>aloha-smart-content-changed Event</p>
-</a></li> <li><a href="#aloha-editable-activated-event"><p>aloha-editable-activated Event</p>
-</a></li> <li><a href="#aloha-editable-deactivated-event"><p>aloha-editable-deactivated Event</p>
-</a></li> <li><a href="#aloha-selection-changed"><p>aloha-selection-changed</p>
-</a></li></ul></li><li><a href="#pubsub"><p>PubSub</p>
 </a></li><li><a href="#editables"><p>Editables</p>
+</a></li><li><a href="#hotkeys"><p>HotKeys</p>
 </a></li>
           </ol>
         </div>

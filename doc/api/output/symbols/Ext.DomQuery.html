@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Aloha Editor</title>
+  <meta name="description" content="The world's most advanced browser HTML5 based WYSIWYG editor lets you experience a whole new way of editing." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/api.css" />
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
+  <script src="js/jquery-bbq.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/lib/modernizr-1.7.min.js"></script>
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+  <body id="docs">
+<!-- ============================== header ================================= -->
+    <!-- begin static/header.html -->
+      <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="img/logo.png" alt="Aloha Editor" /></a>
+        </h1>
+
+      <nav role="navigation">
+        <ul>
+          <li><a href="http://aloha-editor.org/about.php">About</a></li>
+          <li><a href="#">Guides</a></li>
+          <li class="active"><a href="http://aloha-editor.org/api" >API Docs</a></li>
+          <li><a href="http://getsatisfaction.com/aloha_editor">Forum</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+
+
+    <!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+
+    <section id="list">
+      <header>
+        <form action="#" role="search">
+          <input type="text" />
+          <a href="#" class="search-reset"></a>
+        </form>
+      </header>
+      <div>
+        <span class="odd active"><a href="/">API Documentation Index</a></span>
+	
+	<span class='even' global><a href="../symbols/_global_.html">_global_</a></span>
+	
+	<span class='odd'><a href="../symbols/Aloha.Editable.html">Aloha.Editable</a></span>
+	
+	<span class='even'><a href="../symbols/Aloha.Message.html">Aloha.Message</a></span>
+	
+	<span class='odd'><a href="../symbols/Aloha.RepositoryDocument.html">Aloha.RepositoryDocument</a></span>
+	
+	<span class='even'><a href="../symbols/Aloha.RepositoryFolder.html">Aloha.RepositoryFolder</a></span>
+	
+	<span class='odd'><a href="../symbols/Aloha.RepositoryManager.html">Aloha.RepositoryManager</a></span>
+	
+	<span class='even'><a href="../symbols/Aloha.ui.Button.html">Aloha.ui.Button</a></span>
+	
+	<span class='odd'><a href="../symbols/Aloha.ui.MultiSplitButton.html">Aloha.ui.MultiSplitButton</a></span>
+	
+	<span class='even'><a href="../symbols/Array.html">Array</a></span>
+	
+	<span class='odd'><a href="../symbols/block.html">block</a></span>
+	
+	<span class='even'><a href="../symbols/block.block.html">block.block</a></span>
+	
+	<span class='odd'><a href="../symbols/block.block.AbstractBlock.html">block.block.AbstractBlock</a></span>
+	
+	<span class='even'><a href="../symbols/block.block.DebugBlock.html">block.block.DebugBlock</a></span>
+	
+	<span class='odd'><a href="../symbols/block.block.DefaultBlock.html">block.block.DefaultBlock</a></span>
+	
+	<span class='even'><a href="../symbols/block.BlockContentHandler.html">block.BlockContentHandler</a></span>
+	
+	<span class='odd'><a href="../symbols/block.blockmanager.html">block.blockmanager</a></span>
+	
+	<span class='even'><a href="../symbols/block.editor.html">block.editor</a></span>
+	
+	<span class='odd'><a href="../symbols/block.editor.AbstractEditor.html">block.editor.AbstractEditor</a></span>
+	
+	<span class='even'><a href="../symbols/block.editor.AbstractFormElementEditor.html">block.editor.AbstractFormElementEditor</a></span>
+	
+	<span class='odd'><a href="../symbols/block.editor.EmailEditor.html">block.editor.EmailEditor</a></span>
+	
+	<span class='even'><a href="../symbols/block.editor.NumberEditor.html">block.editor.NumberEditor</a></span>
+	
+	<span class='odd'><a href="../symbols/block.editor.StringEditor.html">block.editor.StringEditor</a></span>
+	
+	<span class='even'><a href="../symbols/block.editor.UrlEditor.html">block.editor.UrlEditor</a></span>
+	
+	<span class='odd'><a href="../symbols/block.editormanager.html">block.editormanager</a></span>
+	
+	<span class='even'><a href="../symbols/block.sidebarattributeeditor.html">block.sidebarattributeeditor</a></span>
+	
+	<span class='odd'><a href="../symbols/Boolean.html">Boolean</a></span>
+	
+	<span class='even'><a href="../symbols/contenthandler.html">contenthandler</a></span>
+	
+	<span class='odd'><a href="../symbols/Date.html">Date</a></span>
+	
+	<span class='even'><a href="../symbols/diff_match_patch.html">diff_match_patch</a></span>
+	
+	<span class='odd'><a href="../symbols/Ext.html">Ext</a></span>
+	
+	<span class='even'><a href="../symbols/Ext.DomQuery.html">Ext.DomQuery</a></span>
+	
+	<span class='odd'><a href="../symbols/Ext.TaskMgr.html">Ext.TaskMgr</a></span>
+	
+	<span class='even'><a href="../symbols/Ext.util.TaskRunner.html">Ext.util.TaskRunner</a></span>
+	
+	<span class='odd'><a href="../symbols/Function.html">Function</a></span>
+	
+	<span class='even'><a href="../symbols/GENTICS.Utils.RangeObject.html">GENTICS.Utils.RangeObject</a></span>
+	
+	<span class='odd'><a href="../symbols/GENTICS.Utils.RangeTree.html">GENTICS.Utils.RangeTree</a></span>
+	
+	<span class='even'><a href="../symbols/jQuery.html">jQuery</a></span>
+	
+	<span class='odd'><a href="../symbols/jQuery.fn.html">jQuery.fn</a></span>
+	
+	<span class='even'><a href="../symbols/patch_obj.html">patch_obj</a></span>
+	
+	<span class='odd'><a href="../symbols/rangy-Module.html">rangy-Module</a></span>
+	
+	<span class='even'><a href="../symbols/String.html">String</a></span>
+	
+	<span class='odd'><a href="../symbols/Ui.AttributeField.html">Ui.AttributeField</a></span>
+	
+
+      </div>
+    </section>
+    <footer>
+      <a href="https://github.com/alohaeditor/Aloha-Editor/issues" class="button secondary">REPORT AN ISSUE</a>
+    </footer>
+
+    <div role="main">
+      <section id="documentation">
+<!-- ============================== class title ============================ -->
+        <h1 class="classTitle">
+          
+          Class: Ext.DomQuery
+        </h1>
+
+<!-- ============================== class summary ========================== -->
+        <p class="description">
+          <span class="extends">
+          
+          </span>
+
+          <p><code class='syntax js'><span class="class">Ext</span>.<span class="class">DomQuery</span></code>
+Provides high performance selector/xpath processing by compiling queries into reusable functions. New pseudo classes and matchers can be plugged. It works on HTML and XML documents (if a content node is passed in).</p>
+
+<p>
+DomQuery supports most of the <a href="http://www.w3.org/TR/2005/WD-css3-selectors-20051215/#selectors">CSS3 selectors spec</a>, along with some custom selectors and basic XPath.</p>
+
+<p>
+All selectors, attribute filters and pseudos below can be combined infinitely in any order. For example "div.foo:nth-child(odd)[@foo=bar].bar:first" would be a perfectly valid selector. Node filters are processed in the order in which they appear, which allows you to optimize your queries for your document structure.
+</p>
+
+<h4>Element Selectors:</h4>
+
+<ul class="list">
+<li> <b>*</b> any element</li>
+<li> <b>E</b> an element with the tag E</li>
+<li> <b>E F</b> All descendent elements of E that have the tag F</li>
+<li> <b>E > F</b> or <b>E/F</b> all direct children elements of E that have the tag F</li>
+<li> <b>E + F</b> all elements with the tag F that are immediately preceded by an element with the tag E</li>
+<li> <b>E ~ F</b> all elements with the tag F that are preceded by a sibling element with the tag E</li>
+</ul>
+
+<h4>Attribute Selectors:</h4>
+
+<p>The use of &#64; and quotes are optional. For example, div[&#64;foo='bar'] is also a valid attribute selector.</p>
+
+<ul class="list">
+<li> <b>E[foo]</b> has an attribute "foo"</li>
+<li> <b>E[foo=bar]</b> has an attribute "foo" that equals "bar"</li>
+<li> <b>E[foo^=bar]</b> has an attribute "foo" that starts with "bar"</li>
+<li> <b>E[foo$=bar]</b> has an attribute "foo" that ends with "bar"</li>
+<li> <b>E[foo*=bar]</b> has an attribute "foo" that contains the substring "bar"</li>
+<li> <b>E[foo%=2]</b> has an attribute "foo" that is evenly divisible by 2</li>
+<li> <b>E[foo!=bar]</b> has an attribute "foo" that does not equal "bar"</li>
+</ul>
+
+<h4>Pseudo Classes:</h4>
+
+<ul class="list">
+<li> <b>E:first-child</b> E is the first child of its parent</li>
+<li> <b>E:last-child</b> E is the last child of its parent</li>
+<li> <b>E:nth-child(<i>n</i>)</b> E is the <i>n</i>th child of its parent (1 based as per the spec)</li>
+<li> <b>E:nth-child(odd)</b> E is an odd child of its parent</li>
+<li> <b>E:nth-child(even)</b> E is an even child of its parent</li>
+<li> <b>E:only-child</b> E is the only child of its parent</li>
+<li> <b>E:checked</b> E is an element that is has a checked attribute that is true (e.g. a radio or checkbox) </li>
+<li> <b>E:first</b> the first E in the resultset</li>
+<li> <b>E:last</b> the last E in the resultset</li>
+<li> <b>E:nth(<i>n</i>)</b> the <i>n</i>th E in the resultset (1 based)</li>
+<li> <b>E:odd</b> shortcut for :nth-child(odd)</li>
+<li> <b>E:even</b> shortcut for :nth-child(even)</li>
+<li> <b>E:contains(foo)</b> E's innerHTML contains the substring "foo"</li>
+<li> <b>E:nodeValue(foo)</b> E contains a textNode with a nodeValue that equals "foo"</li>
+<li> <b>E:not(S)</b> an E element that does not match simple selector S</li>
+<li> <b>E:has(S)</b> an E element that has a descendent that matches simple selector S</li>
+<li> <b>E:next(S)</b> an E element whose next sibling matches simple selector S</li>
+<li> <b>E:prev(S)</b> an E element whose previous sibling matches simple selector S</li>
+<li> <b>E:any(S1|S2|S2)</b> an E element which matches any of the simple selectors S1, S2 or S3
+</ul>
+
+<h4>CSS Value Selectors:</h4>
+
+<ul class="list">
+<li> <b>E{display=none}</b> css value "display" that equals "none"</li>
+<li> <b>E{display^=none}</b> css value "display" that starts with "none"</li>
+<li> <b>E{display$=none}</b> css value "display" that ends with "none"</li>
+<li> <b>E{display*=none}</b> css value "display" that contains the substring "none"</li>
+<li> <b>E{display%=2}</b> css value "display" that is evenly divisible by 2</li>
+<li> <b>E{display!=none}</b> css value "display" that does not equal "none"</li>
+</ul>
+
+          
+            <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_aloha.js.html">aloha.js</a>.</span>
+          
+        </p>
+
+
+<!-- ============================== properties summary ===================== -->
+      
+      
+
+
+
+
+<!-- ============================== methods summary ======================== -->
+      
+      
+        
+        
+          <h2>Class Methods</h2>
+          <ul class="methods">
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-attrValue">attrValue</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-byAttribute">byAttribute</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-byClassName">byClassName</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-byId">byId</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-byPseudo">byPseudo</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-byTag">byTag</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-child">child</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-children">children</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-concat">concat</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-getNodes">getNodes</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-next">next</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-nodup">nodup</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-nodupIEXml">nodupIEXml</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-prev">prev</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-quickDiff">quickDiff</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-quickDiffIEXml">quickDiffIEXml</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/Ext.DomQuery.html#-quickId">quickId</a></li>
+          
+          </ul>
+        
+      
+        
+        
+      
+<!-- ============================== events summary ======================== -->
+      
+
+
+
+<!-- ============================== field details ========================== -->
+      
+
+
+<!-- ============================== method details ========================= -->
+      
+        
+        
+          <h2>Class Method Detail</h2>
+          
+            <a name="-attrValue"> </a>
+            <div class="fixedFont">
+              <span class="methodname">attrValue</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>n</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>attr</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-byAttribute"> </a>
+            <div class="fixedFont">
+              <span class="methodname">byAttribute</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>cs</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>attr</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>value</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>op</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>custom</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-byClassName"> </a>
+            <div class="fixedFont">
+              <span class="methodname">byClassName</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>nodeSet</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>cls</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-byId"> </a>
+            <div class="fixedFont">
+              <span class="methodname">byId</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>cs</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>id</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-byPseudo"> </a>
+            <div class="fixedFont">
+              <span class="methodname">byPseudo</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>cs</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>name</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>value</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-byTag"> </a>
+            <div class="fixedFont">
+              <span class="methodname">byTag</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>cs</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>tagName</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-child"> </a>
+            <div class="fixedFont">
+              <span class="methodname">child</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>parent</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>index</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-children"> </a>
+            <div class="fixedFont">
+              <span class="methodname">children</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>parent</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-concat"> </a>
+            <div class="fixedFont">
+              <span class="methodname">concat</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>a</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>b</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-getNodes"> </a>
+            <div class="fixedFont">
+              <span class="methodname">getNodes</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>ns</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>mode</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>tagName</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-next"> </a>
+            <div class="fixedFont">
+              <span class="methodname">next</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>n</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-nodup"> </a>
+            <div class="fixedFont">
+              <span class="methodname">nodup</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>cs</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-nodupIEXml"> </a>
+            <div class="fixedFont">
+              <span class="methodname">nodupIEXml</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>cs</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-prev"> </a>
+            <div class="fixedFont">
+              <span class="methodname">prev</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>n</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-quickDiff"> </a>
+            <div class="fixedFont">
+              <span class="methodname">quickDiff</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>c1</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>c2</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-quickDiffIEXml"> </a>
+            <div class="fixedFont">
+              <span class="methodname">quickDiffIEXml</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>c1</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>c2</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name="-quickId"> </a>
+            <div class="fixedFont">
+              <span class="methodname">quickId</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_vendor_ext-3.2.1_ext-all.js.html">ext-all.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>ns</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>mode</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>root</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>id</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+        
+      
+        
+        
+      
+
+<!-- ============================== event details ========================= -->
+      
+
+
+
+<!-- ============================== footer ================================= -->
+        <div class="fineprint" style="clear:both">
+          
+          Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Nov 30 2011 13:33:45 GMT+0100 (CET)
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

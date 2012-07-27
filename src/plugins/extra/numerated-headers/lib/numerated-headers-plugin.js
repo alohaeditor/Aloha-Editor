@@ -1,23 +1,58 @@
-/*global define: true, window: true */
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* numerated-headers-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define([
-	'aloha/jquery',
+	'aloha/core',
+	'jquery',
 	'aloha/plugin',
-	'aloha/floatingmenu',
+	'ui/ui',
+	'ui/toggleButton',
 	'i18n!numerated-headers/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'css!numerated-headers/css/numerated-headers.css'
-],
+	'i18n!aloha/nls/i18n'
+], function (
+	Aloha,
+	$,
+	Plugin,
+	Ui,
+	ToggleButton,
+	i18n,
+	i18nCore
+) {
+	'use strict';
 
-function ($, Plugin, FloatingMenu, i18n, i18nCore) {
-	"use strict";
+	/**
+	 * A cache of editable configuration.
+	 * @private
+	 * @type {object<string, object>}
+	 */
+	var editableConfigurations = {};
 
-	var	Aloha = window.Aloha;
+	Aloha.bind('aloha-editable-destroyed', function (event, editable) {
+		delete editableConfigurations[editable.getId()];
+	});
 
 	return Plugin.create('numerated-headers', {
 		config: {
@@ -27,33 +62,25 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 
 		/**
-		 * Initialize the plugin
+		 * Initialize the plugin.
 		 */
 		init: function () {
 			var that = this;
 
-			// add button to toggle numerated-headers
-			this.numeratedHeadersButton = new Aloha.ui.Button({
-				'iconClass' : 'aloha-button aloha-button-numerated-headers',
-				'size' : 'small',
-				'onclick' : function () {
-					if (that.numeratedHeadersButton.isPressed()) {
-						that.removeNumerations();
-					} else {
-						that.createNumeratedHeaders();
+			this._formatNumeratedHeadersButton = Ui.adopt('formatNumeratedHeaders',
+				ToggleButton, {
+					tooltip: i18n.t('button.numeratedHeaders.tooltip'),
+					icon: 'aloha-icon aloha-icon-numerated-headers',
+					scope: 'Aloha.continuoustext',
+					click: function () {
+						if (that._formatNumeratedHeadersButton.getState()) {
+							that.removeNumerations();
+						} else {
+							that.createNumeratedHeaders();
+						}
 					}
-				},
-				'tooltip' : i18n.t('button.numeratedHeaders.tooltip'),
-				'toggle' : true /*,
-				'pressed' : this.numeratedactive */
-			});
+				});
 
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.numeratedHeadersButton,
-				i18nCore.t('floatingmenu.tab.format'),
-				1
-			);
 
 			// We need to bind to smart-content-changed event to recognize
 			// backspace and delete interactions.
@@ -75,15 +102,11 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 			});
 
 			Aloha.bind('aloha-editable-activated', function (event) {
-				
-				// hide the button, when numerating is off
-				if (that.numeratedHeadersButton) {
-					if (that.isNumeratingOn()) {
-						that.numeratedHeadersButton.show();
-						that.initForEditable(Aloha.activeEditable.obj);
-					} else {
-						that.numeratedHeadersButton.hide();
-					}
+				if (that.isNumeratingOn()) {
+					that._formatNumeratedHeadersButton.show();
+					that.initForEditable(Aloha.activeEditable.obj);
+				} else {
+					that._formatNumeratedHeadersButton.hide();
 				}
 			});
 		},
@@ -91,11 +114,11 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * Init the toggle button (and numerating) for the current editable,
 		 * if not yet done.
-		 * If numerating shall be on by default and was not turned on, numbers will be created.
+		 * If numerating shall be on by default and was not turned on, numbers
+		 * will be created.
 		 */
 		initForEditable: function ($editable) {
 			var flag = $editable.attr('aloha-numerated-headers');
-			
 			if (flag !== 'true' && flag !== 'false') {
 				flag = (true === this.getCurrentConfig().numeratedactive) ? 'true' : 'false';
 				$editable.attr('aloha-numerated-headers', flag);
@@ -103,9 +126,9 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 
 			if (flag === 'true') {
 				this.createNumeratedHeaders();
-				this.numeratedHeadersButton.setPressed(true);
+				this._formatNumeratedHeadersButton.setState(true);
 			} else {
-				this.numeratedHeadersButton.setPressed(false);
+				this._formatNumeratedHeadersButton.setState(false);
 			}
 		},
 
@@ -144,7 +167,8 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 
 		/**
-		 * Check whether numbers shall currently be shown in the current editable
+		 * Check whether numbers shall currently be shown in the current
+		 * editable.
 		 */
 		showNumbers: function () {
 			return (
@@ -162,7 +186,6 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 			if (!active_editable_obj) {
 				return;
 			}
-			
 			$(active_editable_obj).find('span[role=annotation]').each(function () {
 				$(this).remove();
 			});
@@ -172,7 +195,6 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * Removed and disables numeration for the current editable.
 		 */
 		removeNumerations : function () {
-			
 			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
 			this.cleanNumerations();
 		},
@@ -189,7 +211,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 		* checks if the given Object contains a note Tag that looks like this:
 		* <span annotation=''>
 		*
-		* @param {Object} obj - The Object to check
+		* @param {HTMLElement} obj The DOM object to check.
 		*/
 		hasNote: function (obj) {
 			if (!obj || $(obj).length <= 0) {
@@ -202,13 +224,12 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 		* checks if the given Object has textual content.
 		* A possible "<span annotation=''>" tag will be ignored
 		*
-		* @param {Object} obj - The Object to check
+		* @param {HTMLElement} obj The DOM object to check
 		*/
 		hasContent: function (obj) {
 			if (!obj || 0 === $(obj).length) {
 				return false;
 			}
-			
 			// we have to check the content of this object without the annotation span
 			var $objCleaned = $(obj).clone()
 			                        .find('span[role=annotation]')
@@ -269,7 +290,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 						$(this).find('span[role=annotation]').remove();
 						return;
 					} else if (prev_rank === null) {
-						// increment the main annotation 
+						// increment the main annotation
 						current_annotation[annotation_pos]++;
 					} else if (current_rank > prev_rank) {
 						// starts a sub title
@@ -285,7 +306,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 							current_annotation[j] = 0; //reset current sub-annotation
 						}
 						annotation_pos = current_pos;
-						current_annotation[annotation_pos]++; 
+						current_annotation[annotation_pos]++;
 					}
 
 					prev_rank = current_rank;

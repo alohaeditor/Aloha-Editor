@@ -1,0 +1,58 @@
+h2. Aloha HotKeys
+
+WARNING: The HotKey feature is still being developed. Not all shortcuts are available at the moment.
+
+endprologue.
+
+|_. Document action |_. Shortcut |
+| Select all | Ctrl+A |
+| Copy | Ctrl+C |
+| Paste | Ctrl+V |
+| Cut | Ctrl+X |
+| Undo* | Ctrl+Z |
+| Redo* | Ctrl+Y |
+| Increase paragraph indentation* | Tab |
+| Decrease paragraph indentation* | Shift+Tab |
+
+
+|_. Text formatting |_. Shortcut |
+| Bold | Ctrl+B |
+| Italicize | Ctrl+I |
+| Underline | Ctrl+U |
+| Superscript | Ctrl+. |
+| Subscript | Ctrl+, |
+| Clear formatting | Ctrl+\ |
+
+
+|_. Paragraph formatting |_. Shortcut |
+| Normal paragraph style | Ctrl+Alt+0 |
+| Header style 1 | Ctrl+Alt+1 |
+| Header style 2 | Ctrl+Alt+2 |
+| Header style 3 | Ctrl+Alt+3 |
+| Header style 4 | Ctrl+Alt+4 |
+| Header style 5 | Ctrl+Alt+5 |
+| Header style 6 | Ctrl+Alt+6 |
+| Preformatted | Ctrl+Alt+P |
+| Left alignment* | Ctrl+Shift+L |
+| Center alignment* | Ctrl+Shift+E |
+| Right alignment* | Ctrl+Shift+R |
+| Full justify* | Ctrl+Shift+J |
+| Numbered list* | Ctrl+Shift+7 |
+| Bulleted list* | Ctrl+Shift+8 |
+
+
+|_. Actions |_. Shortcut |
+| Insert link | Ctrl+K |
+
+
+|_. Navigation |_. Shortcut |
+| Move to next heading* | Ctrl + Alt + N then Ctrl + Alt + H |
+| Move to previous heading* | Ctrl + Alt + P then Ctrl + Alt + H |
+
+
+|_. Plugins |_. Shortcut |
+| WAI Lang: Insert Annotation | Ctrl+Shift+l |
+
+
+*) not implemented yet
+Reference: https://docs.google.com/support/bin/answer.py?answer=179738

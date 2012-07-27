@@ -1,35 +1,48 @@
-/*!
- * This file is part of Aloha Editor Project http://aloha-editor.org
- * Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
- * Contributors http://aloha-editor.org/contribution.php
- * Licensed unter the terms of http://www.aloha-editor.org/license.html
+/* editable.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * ( at your option ) any later version.*
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
  *
  * Aloha Editor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
  */
-
 define( [
 	'aloha/core',
 	'util/class',
-	'aloha/jquery',
+	'jquery',
 	'aloha/pluginmanager',
-	'aloha/floatingmenu',
 	'aloha/selection',
 	'aloha/markup',
 	'aloha/contenthandlermanager',
 	'aloha/console'
-], function( Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection,
-	         Markup, ContentHandlerManager, console ) {
+], function(
+	Aloha,
+	Class,
+	jQuery,
+	PluginManager,
+	Selection,
+	Markup,
+	ContentHandlerManager,
+	console
+) {
 	'use strict';
 
 	var unescape = window.unescape,
@@ -38,11 +51,18 @@ define( [
 	    // True, if the next editable activate event should not be handled
 	    ignoreNextActivateEvent = false;
 
+	/**
+	 * A cache to hold information derived, and used in getContents().
+	 * @type {object<string,(string|jQuery.<HTMLElement>)>}
+	 * @private
+	 */
+	var editableContentCache = {};
+
 	// default supported and custom content handler settings
 	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
-	Aloha.defaults.contentHandler.initEditable = ['blockelement', 'sanitize'];
-	Aloha.defaults.contentHandler.getContents = ['blockelement', 'basic'];
+	Aloha.defaults.contentHandler.initEditable = [ 'blockelement', 'sanitize' ];
+	Aloha.defaults.contentHandler.getContents = [ 'blockelement', 'sanitize', 'basic'];
 
 	// The insertHtml contenthandler ( paste ) will, by default, use all
 	// registered content handlers.
@@ -390,9 +410,10 @@ define( [
 					// TODO need some special handling.
 					break;
 				case 'textarea':
+				case 'input':
 					// Create a div alongside the textarea
 					div = jQuery( '<div id="' + this.getId() +
-							'-aloha" class="aloha-textarea" />' )
+							'-aloha" class="aloha-' + nodeName + '" />' )
 								.insertAfter( obj );
 
 					// Resize the div to the textarea and
@@ -479,7 +500,9 @@ define( [
 			} else {
 				el = span;
 			}
-
+			if ( jQuery( "." + this.placeholderClass, obj ).length !== 0 ) {
+				return;
+			}
 			jQuery( obj ).append( el.addClass( this.placeholderClass ) );
 			jQuery.each(
 				Aloha.settings.placeholder,
@@ -508,24 +531,19 @@ define( [
 		removePlaceholder: function( obj, setCursor ) {
 			var placeholderClass = this.placeholderClass,
 			    range;
-
-			// remove browser br
-			// jQuery( 'br', obj ).remove();
-
+			if ( jQuery("." + this.placeholderClass, obj ).length === 0 ) {
+				return;
+			} 
 			// set the cursor // remove placeholder
 			if ( setCursor === true ) {
-				range = Selection.getRangeObject();
-				if ( !range.select ) {
-					return;
-				}
-				range.startContainer = range.endContainer = obj.get( 0 );
-				range.startOffset = range.endOffset = 0;
-				range.select();
-
 				window.setTimeout( function() {
+					range = new Selection.SelectionRange();
+					range.startContainer = range.endContainer = obj.get(0);
+					range.startOffset = range.endOffset = 0;
 					jQuery( '.' + placeholderClass, obj ).remove();
-				}, 20 );
-
+					range.select();
+				
+				}, 100 );
 			} else {
 				jQuery( '.' + placeholderClass, obj ).remove();
 			}
@@ -539,18 +557,16 @@ define( [
 			// leave the element just to get sure
 			if ( this === Aloha.getActiveEditable() ) {
 				this.blur();
-
-				// also hide the floating menu if the current editable was active
-				FloatingMenu.hide();
 			}
 
 			// special handled elements
-			switch ( this.originalObj.get( 0 ).nodeName.toLowerCase() ) {
+			switch ( this.originalObj.get(0).nodeName.toLowerCase() ) {
 				case 'label':
 				case 'button':
 					// TODO need some special handling.
 					break;
 				case 'textarea':
+				case 'input':
 					// restore content to original textarea
 					this.originalObj.val( this.getContents() );
 					this.obj.remove();
@@ -742,31 +758,41 @@ define( [
 		},
 
 		/**
-		 * Get the contents of this editable as a HTML string
-		 * @method
-		 * @return contents of the editable
+		 * Get the contents of this editable as a HTML string or child node DOM
+		 * objects.
+		 *
+		 * @param {boolean} asObject Whether or not to retreive the contents of
+		 *                           this editable as child node objects or as
+		 *                           HTML string.
+		 * @return {string|jQuery.<HTMLElement>} Contents of the editable as
+		 *                                       DOM objects or an HTML string.
 		 */
-		getContents: function( asObject ) {
-			// Cloned nodes are problematic in IE7.  When trying to read/write
-			// to them, they can sometimes cause the browser to crash.
-			// The IE7 fix was moved to engine#copyAttributes() 
-			
-			var clonedObj = this.obj.clone( false );
-			//var clonedObj = jQuery(this.obj[0].outerHTML);
+		getContents: function (asObject) {
+			var raw = this.obj.html();
+			var cache = editableContentCache[this.getId()];
+			if (cache && raw === cache.raw) {
+				return asObject ? cache.elements : cache.clean;
+			}
 
-			// do core cleanup
-			clonedObj.find( '.aloha-cleanme' ).remove();
-			this.removePlaceholder( clonedObj );
-			PluginManager.makeClean( clonedObj );
-			
-			makeClean(clonedObj);
-			
-			clonedObj = jQuery('<div>' + ContentHandlerManager.handleContent(clonedObj.html(), {
+			var $clone = this.obj.clone(false);
+
+			$clone.find( '.aloha-cleanme' ).remove();
+			this.removePlaceholder($clone);
+			PluginManager.makeClean($clone);
+
+			makeClean($clone);
+
+			$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
 				contenthandler: Aloha.settings.contentHandler.getContents,
 				command: 'getContents'
 			}) + '</div>');
 
-			return asObject ? clonedObj.contents() : contentSerializer(clonedObj[0]);
+			cache = editableContentCache[this.getId()] = {};
+			cache.raw = raw;
+			cache.clean = contentSerializer($clone[0]);
+			cache.elements = $clone.contents();
+
+			return asObject ? cache.elements : cache.clean;
 		},
 
 		/**

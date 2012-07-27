@@ -20,7 +20,7 @@ h3. Functional Description
 
 While moving the mouse cursor the Highlight Editables plugin will highlight each editable with a yellow blinking rectangle at your page. After clicking into a rectangle the blinking yellow turns into a constant blue glowing rectangle.
 
-NOTE: The Highlight Editables plugin don't work with Internet Explorer 7.
+NOTE: The Highlight Editables plugin doesn't work with Internet Explorer 7.
 
 h3. Components
 

@@ -10,8 +10,8 @@
  * Provides a set of language codes and images
  */
 
-define(['aloha', 'aloha/jquery', 'flag-icons/flag-icons-plugin', 'wai-lang/wai-lang-plugin'],
-function (Aloha, jQuery, FlagIcons) {
+define( [ 'aloha', 'jquery', 'flag-icons/flag-icons-plugin' ],
+function( Aloha, jQuery, FlagIcons ) {
 	'use strict';
 
 	return new (Aloha.AbstractRepository.extend({

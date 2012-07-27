@@ -1,12 +1,44 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-
-define(['aloha', 'aloha/jquery', 'aloha/floatingmenu', 'aloha/observable', 'aloha/registry'],
-function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
+/* blockmanager.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+define([
+	'aloha',
+	'jquery',
+	'ui/scopes',
+	'aloha/observable',
+	'aloha/registry',
+	'util/class'
+], function(
+	Aloha,
+	jQuery,
+	Scopes,
+	Observable,
+	Registry,
+	Class
+){
 	"use strict";
 
 	var
@@ -74,7 +106,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @constructor
 		 */
 		_constructor: function() {
-			FloatingMenu.createScope('Aloha.Block');
+			Scopes.createScope('Aloha.Block');
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
 			this._highlightedBlocks = {};
@@ -332,7 +364,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @api
 		 */
 		registerBlockType: function(identifier, blockType) {
-			FloatingMenu.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
+			Scopes.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
 			this.blockTypes.register(identifier, blockType);
 		},
 
@@ -379,11 +411,17 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @private
 		 */
 		getConfig: function(blockElement, instanceDefaults) {
+			// Clone the element before getting the data to fix an IE7 crash.
+			// We use jQuery.clone(true) because the sortableItem attribute isn't returned
+			// if we do a normal cloneNode(...).
+			var clone = blockElement.clone(true);
+			var data = clone.data();
+			clone.removeData();
 			return jQuery.extend(
 				{},
 				this.defaults,
 				instanceDefaults,
-				blockElement.data()
+				data
 			);
 		},
 

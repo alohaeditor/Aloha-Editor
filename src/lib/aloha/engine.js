@@ -1,6 +1,6 @@
 define(
 //['aloha/ecma5'],
-['aloha/ecma5shims', 'aloha/jquery'],
+['aloha/ecma5shims', 'jquery'],
 function($_, jQuery) {
 	"use strict";
 

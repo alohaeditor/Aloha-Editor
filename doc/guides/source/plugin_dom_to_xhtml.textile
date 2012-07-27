@@ -80,5 +80,4 @@ practices to avoid these issues:
 * IE - but don't use white-space:pre CSS styles (and similar whitespace modifying styles),
   or expect whitespace to sometimes be preserved and sometimes not,
 * IE7 only - expect URLs in href and src attributes to be turned into absolute URLs,
-* all browsers - don't expect comments, conditional comments, processing
-  instructions or CDATA sections to be preserved correctly.
+* all browsers - don't expect comments, conditional comments, processing instructions or CDATA sections to be preserved correctly.

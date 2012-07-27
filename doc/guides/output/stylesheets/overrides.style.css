@@ -404,3 +404,7 @@ div.filename {
   /* FIXES: Chome cuts off underscores on the last line of a code block */
   padding-bottom: 1px;
 }
+
+strong {
+	font-weight: bold;
+}

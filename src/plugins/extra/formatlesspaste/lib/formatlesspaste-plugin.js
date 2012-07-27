@@ -1,18 +1,49 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-
-define(
-['aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 
- 'formatlesspaste/formatlesshandler', 'aloha/contenthandlermanager',
- 'i18n!formatlesspaste/nls/i18n', 'i18n!aloha/nls/i18n','css!formatlesspaste/css/formatless.css'],
-function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHandlerManager, i18n, i18nCore) {
-	"use strict";
-
-	
+/* formatlesspaste-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+define([
+	'aloha/core',
+	'aloha/plugin',
+	'jquery',
+	'ui/ui', 
+	'ui/toggleButton',
+	'formatlesspaste/formatlesshandler',
+	'aloha/contenthandlermanager',
+	'i18n!formatlesspaste/nls/i18n',
+	'i18n!aloha/nls/i18n'
+], function(Aloha,
+            Plugin,
+            jQuery,
+            Ui,
+            ToggleButton,
+            FormatlessPasteHandler,
+            ContentHandlerManager,
+            i18n,
+            i18nCore) {
+	'use strict';
 
 	// Public Methods
 	return Plugin.create('formatlesspaste', {
@@ -91,10 +122,10 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 			var formatlessPasteHandlerLastState;
 			Aloha.bind( 'aloha-editable-activated', function( event, params) {
 				var config = that.getEditableConfig( params.editable.obj );
-				
 				if (!config) {
 					return;
 				}
+
 				// make button configuration a bit more tolerant
 				if (typeof config.button === 'string') {
 					config.button = config.button.toLowerCase();
@@ -123,16 +154,16 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 					FormatlessPasteHandler.strippedElements = config.strippedElements;
 				}
 				if (config.formatlessPasteOption === true) {
-					that.formatlessPasteButton.setPressed(true);
+					that._toggleFormatlessPasteButton.setState(true);
 					FormatlessPasteHandler.enabled = true;
 				} else if (config.formatlessPasteOption === false) {
-					that.formatlessPasteButton.setPressed(false);
+					that._toggleFormatlessPasteButton.setState(false);
 					FormatlessPasteHandler.enabled = false;
 				}
 				if ( config.button === false ) {
-					that.formatlessPasteButton.hide();
+					that._toggleFormatlessPasteButton.show(false);
 				} else {
-					that.formatlessPasteButton.show();
+					that._toggleFormatlessPasteButton.show(true);
 				}
 			});
 		},
@@ -144,32 +175,26 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 			ContentHandlerManager.register( 'formatless', FormatlessPasteHandler );
 			FormatlessPasteHandler.strippedElements = this.strippedElements;
 			// add button to toggle format-less pasting
-			this.formatlessPasteButton = new Aloha.ui.Button({
-					'iconClass' : 'aloha-button aloha-button-formatless-paste',
-					'size' : 'small',
-					'onclick' : function () { 
-						//toggle the value of allowFormatless
-						FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
-					},
-					'tooltip' : i18n.t( 'button.formatlessPaste.tooltip' ),
-					'toggle' : true
-				});
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.formatlessPasteButton,
-				i18nCore.t( 'floatingmenu.tab.format' ),
-				1
-			);
-			
+
+			this._toggleFormatlessPasteButton = Ui.adopt('toggleFormatlessPaste', ToggleButton, {
+				tooltip: i18n.t('button.formatlessPaste.tooltip'),
+				icon: 'aloha-icon aloha-icon-formatless-paste',
+				scope: 'Aloha.continuoustext',
+				click: function () { 
+					//toggle the value of allowFormatless
+					FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
+				}
+			});
+
 			// activate formatless paste button if option is set
 			if (this.formatlessPasteOption === true) {
-				this.formatlessPasteButton.setPressed(true);
+				this._toggleFormatlessPasteButton.setState(true);
 				FormatlessPasteHandler.enabled = true;
 			}
 			
 			// hide button by default if configured
 			if (this.button === false) {
-				this.formatlessPasteButton.hide();
+				this._toggleFormatlessPasteButton.show(false);
 			}
 		}
 	});
