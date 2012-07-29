@@ -507,6 +507,7 @@ define([
 				this._setupDragDropForBlockElements();
 				this._disableUglyInternetExplorerDragHandles();
 			}
+			this._attachDropzoneHighlightEvents();
 		},
 
 		/**
@@ -553,6 +554,35 @@ define([
 			// We do NOT abort the "ondragstart" event as it is required for drag/drop.
 			this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
 			this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
+		},
+
+		/**
+		 * Attach mousedown/up events to block's draghandle 
+		 * to toggle dropzones when dragging starts and ends.
+		 */
+		_attachDropzoneHighlightEvents: function(){
+			var that = this;
+
+			this.$element.delegate(".aloha-block-draghandle", "mousedown", function(){
+				var dropzones = that.$element.parents('.aloha-editable').first().data('block-dropzones') || [];
+				jQuery.each(dropzones, function(i, editable_selector){
+					var editables = jQuery(editable_selector);
+					jQuery(editables).each(function(){
+						if(!jQuery(this).data("block-dragdrop-disabled")){
+							jQuery(this).addClass("aloha-block-dropzone");	
+						}
+					});
+				});
+
+				// remove the dropzones as soon as the mouse is released,
+				// irrespective of where the drop took place.
+				jQuery(document).one("mouseup.aloha-block-dropzone", function(e){
+					var dropzones = that.$element.parents('.aloha-editable').first().data('block-dropzones') || [];
+					jQuery.each(dropzones, function(i, editable_selector){
+						jQuery(editable_selector).removeClass("aloha-block-dropzone");	
+					});
+				});
+			});
 		},
 
 		/**************************
@@ -703,7 +733,7 @@ define([
 						}
 					};
 
-					jQuery('.aloha-editable').children(':not(.aloha-block)').droppable(droppableCfg);
+					jQuery('.aloha-editable.aloha-block-dropzone').children(':not(.aloha-block)').droppable(droppableCfg);
 					// Small HACK: Also make table cells droppable
 					jQuery('.aloha-table-cell-editable').droppable(droppableCfg);
 				}

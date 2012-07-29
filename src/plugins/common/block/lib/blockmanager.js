@@ -313,9 +313,21 @@ define([
 				$editableOrBlockCollection.addClass('aloha-block-blocklevel-sortable').sortable({
 					revert: 100,
 					handle: '.aloha-block-draghandle-blocklevel',
-					connectWith: '.aloha-block-blocklevel-sortable' // we want to be able to drag an element to other editables
+					connectWith: '.aloha-block-blocklevel-sortable.aloha-block-dropzone', // we want to be able to drag an element to other editables
+					start: function(event, ui){
+						// check if the block's parent is a dropzone
+						ui.item.data("block-sort-allowed", (ui.item.parents('.aloha-block-dropzone').length > 0));
+					},
+					change: function(event, ui){
+						ui.item.data("block-sort-allowed", (ui.placeholder.parents('.aloha-block-dropzone').length > 0));
+					},
+					stop: function(event, ui) { 
+						if(!ui.item.data("block-sort-allowed")){
+							jQuery(this).sortable('cancel');	
+						} 
+						ui.item.removeData("block-sort-allowed");
+					}
 				});
-
 
 				// Hack for Internet Explorer 8:
 				// If you first click inside an editable, and THEN want to drag a block-level block,

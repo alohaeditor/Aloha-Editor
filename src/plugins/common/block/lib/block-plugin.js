@@ -88,10 +88,19 @@ define([
 			// create the toolbar buttons
 			this.createButtons();
 
+			// set the dropzones for the initialized editable
+			Aloha.bind('aloha-editable-created', function(e, editable) {
+				that.setDropzones(editable.obj);
+			});
+
 			// apply specific configuration if an editable has been activated
 			Aloha.bind('aloha-editable-activated', function (e, params) {
 				that.applyButtonConfig(params.editable.obj);
 			});
+
+			// Aloha.bind('aloha-editable-deactivated', function (e, params) {
+			// 	that.resetDropzones(params.editable.obj);
+			// });
 		},
 
 		/**
@@ -104,9 +113,20 @@ define([
 
 			var config = this.getEditableConfig(obj);
 
-			if(config[0] === "dragdrop" && this.isDragDropEnabled()){
+			// toggle drag & drop option can be set as
+			// config: {'toggeleDragdrop': true} or
+			// config: ['toggleDragdrop']
+			var toggleDragdropConfigured = function(){
+				return (config[0] === "toggleDragdrop") ||
+								config.toggleDragdrop == true   ||
+								config.toggleDragdrop == 'true' ||
+								config.toggleDragdrop == 1      ||
+								config.toggleDragdrop == '1'    
+			};
+
+			if(toggleDragdropConfigured() && this.isDragDropEnabled()){
 				this._toggleDragDropButton.show(true);
-				this._toggleDragDropButton.setState(obj.data("block-dragdrop"));
+				this._toggleDragDropButton.setState(obj.data("block-dragdrop-disabled"));
 			} else {
 				this._toggleDragDropButton.show(false);
 			}
@@ -119,30 +139,20 @@ define([
 				tooltip: i18n.t('button.toggledragdrop.tooltip'),
 				icon: 'aloha-icon aloha-icon-toggledragdrop',
 				scope: 'Aloha.continuoustext',
-				click: function(){ 
-					if ( Aloha.activeEditable ) {
-						var active_editable = Aloha.activeEditable.obj;
-						var current_dragdrop_state = active_editable.data("block-dragdrop");
-						active_editable.data("block-dragdrop", !current_dragdrop_state);
-
-						if(jQuery(active_editable.hasClass("ui-sortable"))){
-							var disabled = jQuery(active_editable).sortable( "option", "disabled" );
-							jQuery(active_editable).sortable("option", "disabled", !disabled );	
-						}
-
-						jQuery(active_editable).find(".aloha-block.ui-draggable").each(function(){
-							var disabled = jQuery(this).draggable( "option", "disabled" );
-							jQuery(this).draggable("option", "disabled", !disabled );	
-						});
-
-						jQuery(active_editable).find(".aloha-block-handle").each(function(){
-							jQuery(this).toggleClass("aloha-block-draghandle");	
-						});
-
-						// todo: don't allow as a dropzone
-					}
-				}
+				click: that._toggleDragDropHandler
 			});
+		},
+
+		setDropzones: function(editable){
+			var that = this;
+			var config = that.getEditableConfig(editable);
+
+			if(config && config.dropzones){
+				editable.data('block-dropzones', config.dropzones);	
+			} else {
+				// if dropzones are undefined all editables should be dropzones
+				editable.data('block-dropzones', [".aloha-editable"]);	
+			}
 		},
 
 		/**
@@ -155,6 +165,7 @@ define([
 				return (
 					this.settings.dragdrop === true   ||
 					this.settings.dragdrop === 'true' ||
+					this.settings.dragdrop === 1      ||
 					this.settings.dragdrop === '1'
 				);
 			} else {
@@ -174,7 +185,30 @@ define([
 			});
 		},
 
+		/**
+		 * Toggles drag & drop options for the current editable 
+		 */
+		_toggleDragDropHandler: function(){
+			if ( Aloha.activeEditable ) {
+				var active_editable = Aloha.activeEditable.obj;
+				var current_dragdrop_state = active_editable.data("block-dragdrop-disabled");
+				active_editable.data("block-dragdrop-disabled", !current_dragdrop_state);
 
+				if(jQuery(active_editable.hasClass("ui-sortable"))){
+					var disabled = jQuery(active_editable).sortable( "option", "disabled" );
+					jQuery(active_editable).sortable("option", "disabled", !disabled );	
+				}
+
+				jQuery(active_editable).find(".aloha-block.ui-draggable").each(function(){
+					var disabled = jQuery(this).draggable( "option", "disabled" );
+					jQuery(this).draggable("option", "disabled", !disabled );	
+				});
+
+				jQuery(active_editable).find(".aloha-block-handle").each(function(){
+					jQuery(this).toggleClass("aloha-block-draghandle");	
+				});
+			}
+		}
 	});
 
 	/**
