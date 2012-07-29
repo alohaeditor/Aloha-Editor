@@ -107,7 +107,7 @@ define('ui/ui-plugin', [
 	 * This module is part of the Aloha API.
 	 * It is valid to override this module via requirejs to provide a
 	 * custom behaviour. An overriding module must implement all API
-	 * methods. Every member must have an api annotation. No private
+	 * methods. Every member must have an api annotation. No non-api
 	 * members are allowed.
 	 * @api
 	 */
