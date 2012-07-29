@@ -143,6 +143,10 @@ define([
 			});
 		},
 
+		/**
+		 * set available dropzones for the given editable 
+		 * @return void 
+		 */
 		setDropzones: function(editable){
 			var that = this;
 			var config = that.getEditableConfig(editable);
