@@ -104,8 +104,9 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 	 * @return
 	 *        The resulting configuration will contain all tabs from
 	 *        userTabs and defaultTabs. If a tab is contained in both,
-	 *        the one in userTabs takes precedence, but the components
-	 *        of both tabs will be combined.
+	 *        the they will be merged, with the tab in userTabs having
+	 *        precedence, and the components of both tabs will be
+	 *        combined.
 	 *        If a given component in defaultTabs already exists in any
 	 *        tab of userTabs, the component in defaultTabs will be
 	 *        ignored.
@@ -156,7 +157,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 		    defaultComponents;
 		for (i = 0; i < userTabs.length; i++) {
 			userTab = userTabs[i];
-			components = userTab.components;
+			components = userTab.components || [];
 			defaultTab = defaultTabsByLabel[userTab.label];
 			if (defaultTab) {
 				defaultComponents = Trees.postprune(defaultTab.components, pruneDefaultComponents);
