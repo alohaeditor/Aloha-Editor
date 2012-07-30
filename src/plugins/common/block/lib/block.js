@@ -560,25 +560,25 @@ define([
 		 * Attach mousedown/up events to block's draghandle 
 		 * to toggle dropzones when dragging starts and ends.
 		 */
-		_attachDropzoneHighlightEvents: function(){
+		_attachDropzoneHighlightEvents: function() {
 			var that = this;
 
-			this.$element.delegate(".aloha-block-draghandle", "mousedown", function(){
-				var dropzones = that.$element.parents('.aloha-editable').first().data('block-dropzones') || [];
-				jQuery.each(dropzones, function(i, editable_selector){
+			this.$element.delegate(".aloha-block-draghandle", "mousedown", function() {
+				var dropzones = that.$element.parents( '.aloha-editable' ).first().data( 'block-dropzones' ) || [];
+				jQuery.each(dropzones, function(i, editable_selector) {
 					var editables = jQuery(editable_selector);
-					jQuery(editables).each(function(){
-						if(!jQuery(this).data("block-dragdrop-disabled")){
+					jQuery(editables).each(function() {
+						if (!jQuery(this).data("block-dragdrop-disabled")) {
 							jQuery(this).addClass("aloha-block-dropzone");	
 						}
 					});
 				});
 
-				// remove the dropzones as soon as the mouse is released,
+				// Remove the dropzones as soon as the mouse is released,
 				// irrespective of where the drop took place.
-				jQuery(document).one("mouseup.aloha-block-dropzone", function(e){
+				jQuery(document).one("mouseup.aloha-block-dropzone", function(e) {
 					var dropzones = that.$element.parents('.aloha-editable').first().data('block-dropzones') || [];
-					jQuery.each(dropzones, function(i, editable_selector){
+					jQuery.each(dropzones, function(i, editable_selector) {
 						jQuery(editable_selector).removeClass("aloha-block-dropzone");	
 					});
 				});

@@ -314,16 +314,16 @@ define([
 					revert: 100,
 					handle: '.aloha-block-draghandle-blocklevel',
 					connectWith: '.aloha-block-blocklevel-sortable.aloha-block-dropzone', // we want to be able to drag an element to other editables
-					start: function(event, ui){
+					start: function(event, ui) {
 						// check if the block's parent is a dropzone
 						ui.item.data("block-sort-allowed", (ui.item.parents('.aloha-block-dropzone').length > 0));
 					},
-					change: function(event, ui){
+					change: function(event, ui) {
 						ui.item.data("block-sort-allowed", (ui.placeholder.parents('.aloha-block-dropzone').length > 0));
 					},
 					stop: function(event, ui) { 
-						if(!ui.item.data("block-sort-allowed")){
-							jQuery(this).sortable('cancel');	
+						if (!ui.item.data("block-sort-allowed")) {
+							jQuery(this).sortable('cancel');
 						} 
 						ui.item.removeData("block-sort-allowed");
 					}

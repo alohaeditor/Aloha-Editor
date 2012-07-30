@@ -144,14 +144,14 @@ define([
 		},
 
 		/**
-		 * set available dropzones for the given editable 
+		 * Set available dropzones for the given editable.
 		 * @return void 
 		 */
-		setDropzones: function(editable){
+		setDropzones: function (editable) {
 			var that = this;
 			var config = that.getEditableConfig(editable);
 
-			if(config && config.dropzones){
+			if (config && config.dropzones) {
 				editable.data('block-dropzones', config.dropzones);	
 			} else {
 				// if dropzones are undefined all editables should be dropzones
@@ -160,11 +160,11 @@ define([
 		},
 
 		/**
-		 * checks whether drag & drop is enabled for blocks 
+		 * Checks whether drag & drop is enabled for blocks.
 		 * @return boolean 
 		 */
-		isDragDropEnabled: function(){
-			if(this.settings.dragdrop){
+		isDragDropEnabled: function() {
+			if (this.settings.dragdrop) {
 				// Normalize config
 				return (
 					this.settings.dragdrop === true   ||
@@ -190,25 +190,25 @@ define([
 		},
 
 		/**
-		 * Toggles drag & drop options for the current editable 
+		 * Toggles drag & drop options for the current editable.
 		 */
-		_toggleDragDropHandler: function(){
+		_toggleDragDropHandler: function() {
 			if ( Aloha.activeEditable ) {
 				var active_editable = Aloha.activeEditable.obj;
 				var current_dragdrop_state = active_editable.data("block-dragdrop-disabled");
 				active_editable.data("block-dragdrop-disabled", !current_dragdrop_state);
 
-				if(jQuery(active_editable.hasClass("ui-sortable"))){
-					var disabled = jQuery(active_editable).sortable( "option", "disabled" );
-					jQuery(active_editable).sortable("option", "disabled", !disabled );	
+				if (jQuery(active_editable.hasClass("ui-sortable"))) {
+					var disabled = jQuery(active_editable).sortable("option", "disabled");
+					jQuery(active_editable).sortable("option", "disabled", !disabled);	
 				}
 
-				jQuery(active_editable).find(".aloha-block.ui-draggable").each(function(){
-					var disabled = jQuery(this).draggable( "option", "disabled" );
-					jQuery(this).draggable("option", "disabled", !disabled );	
+				jQuery(active_editable).find(".aloha-block.ui-draggable").each(function() {
+					var disabled = jQuery(this).draggable("option", "disabled");
+					jQuery(this).draggable("option", "disabled", !disabled);	
 				});
 
-				jQuery(active_editable).find(".aloha-block-handle").each(function(){
+				jQuery(active_editable).find(".aloha-block-handle").each(function() {
 					jQuery(this).toggleClass("aloha-block-draghandle");	
 				});
 			}
