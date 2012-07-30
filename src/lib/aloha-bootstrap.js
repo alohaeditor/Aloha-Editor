@@ -214,7 +214,8 @@ require(
 				'aloha/repositorymanager',
 				'aloha/repository',
 				'aloha/repositoryobjects',
-				'aloha/contenthandlermanager'
+				'aloha/contenthandlermanager',
+				'aloha/ie7-mode-hacks'
 			],
 			function () {
 				// jQuery calls the init method when the dom is ready
