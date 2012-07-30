@@ -9,3 +9,4 @@ All changes are categorized into one of the following keywords:
 ----
 
 
+- **BUG**: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.
