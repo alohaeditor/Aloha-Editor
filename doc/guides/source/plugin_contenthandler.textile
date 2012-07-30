@@ -56,6 +56,11 @@ h4. Using Configuration
 				'blockquote': {'cite': ['http', 'https', '__relative__']},
 				'q'         : {'cite': ['http', 'https', '__relative__']}
 			}
+		},
+		handler: {
+			generic: {
+				transformFormattings: false // this will disable the transformFormattings method in the generic content handler
+			}
 		}
 	}
 </javascript>
