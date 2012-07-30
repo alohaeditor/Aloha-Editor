@@ -74,7 +74,7 @@ define([
 					scope: 'Aloha.continuoustext',
 					click: function () {
 						var buttonPressed = that._formatNumeratedHeadersButton.getState();
-					 	if (!buttonPressed) {
+						if (!buttonPressed) {
 							that.removeNumerations();
 						} else {
 							that.createNumeratedHeaders();
