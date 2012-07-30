@@ -113,7 +113,7 @@ function( Aloha, jQuery, Plugin) {
 				if (resetFlag) {
 					return;
 				}
-				var oldValue = aevent.snapshotContent,
+				var oldValue = aevent.getSnapshotContent(),
 				newValue = aevent.editable.getContents(),
 				patch = dmp.patch_make(oldValue, newValue);
 				// only push an EditCommand if something actually changed.
