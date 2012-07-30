@@ -49,7 +49,7 @@ define( [
 	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
 	Aloha.defaults.contentHandler.initEditable = ['blockelement', 'sanitize'];
-	Aloha.defaults.contentHandler.getContents = ['blockelement', 'basic'];
+	Aloha.defaults.contentHandler.getContents = ['blockelement', 'basic', 'sanitize'];
 
 	// The insertHtml contenthandler ( paste ) will, by default, use all
 	// registered content handlers.

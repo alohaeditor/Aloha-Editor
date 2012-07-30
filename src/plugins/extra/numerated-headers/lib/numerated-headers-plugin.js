@@ -18,7 +18,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 
 	var	Aloha = window.Aloha;
-
+	
 	return Plugin.create('numerated-headers', {
 		config: {
 			numeratedactive: true,
@@ -158,15 +158,42 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * Remove all annotations in the current editable.
 		 */
 		cleanNumerations: function () {
+			var that = this;
 			var active_editable_obj = this.getBaseElement();
 			if (!active_editable_obj) {
 				return;
 			}
 			
 			$(active_editable_obj).find('span[role=annotation]').each(function () {
+				var range = Aloha.Selection.getRangeObject();
+				//Check if the selection starts inside the annotation
+				if (range.startContainer === this || $.inArray(this, $(range.startContainer).parents()) > -1) {
+					range.startContainer = that._prevNode(this);
+					range.startOffset = 0;
+				}
+				//Check if the selection ends inside the annotation
+				if (range.endContainer === this || $.inArray(this, $(range.endContainer).parents()) > -1) {
+					range.endContainer = that._prevNode(this);
+					range.endOffset = 0;
+				}
 				$(this).remove();
 			});
 		},
+		
+		/**
+		 * Navigates to the previous node.
+		 */
+		_prevNode: function (node) {
+			var prev = node.previousSibling;
+			if (!prev) {
+				return node.parentNode;
+			}
+			while (prev.lastChild) {
+				prev = prev.lastChild;
+			}
+			return prev;
+		},
+		
 
 		/**
 		 * Removed and disables numeration for the current editable.
@@ -306,7 +333,9 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 							}
 						}
 					}
-
+					//We add a trailing non-breakable space to the annotation_result
+					//to separate the annotation from the heading's text.
+					annotation_result += '&nbsp;';
 					if (that.hasNote(this)) {
 						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
