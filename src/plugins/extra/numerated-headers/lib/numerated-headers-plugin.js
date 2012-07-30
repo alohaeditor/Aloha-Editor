@@ -306,7 +306,9 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 							}
 						}
 					}
-
+					//We add a trailing non-breakable space to the annotation_result
+					//to separate the annotation from the heading's text.
+					annotation_result += '&nbsp;';
 					if (that.hasNote(this)) {
 						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
