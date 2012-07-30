@@ -4,29 +4,23 @@
 	Aloha.settings = {
 		logLevels: { 'error': true, 'warn': true, 'info': true, 'debug': false, 'deprecated': true },
 		errorhandling: false,
-		ribbon: false,
+		ribbon: {enable: true},
 		locale: 'en',
-		floatingmenu: {
-			"horizontalOffset" : "5",
-			"behaviour" : "topalign",
-			"width" : "510",
-			"topalignOffset" : "110" 
-		},
 		repositories: {
 			linklist: {
 				data: [
-					{ name: 'Aloha Developers Wiki', url:'https://github.com/alohaeditor/Aloha-Editor/wiki', type:'website', weight: 0.50 },
+					{ name: 'Aloha Editor Developers Wiki', url:'https://github.com/alohaeditor/Aloha-Editor/wiki', type:'website', weight: 0.50 },
 					{ name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website', weight: 0.90 },
-					{ name: 'Aloha Demo', url:'http://www.aloha-editor.com/demos.html', type:'website', weight: 0.75 },
-					{ name: 'Aloha Wordpress Demo', url:'http://www.aloha-editor.com/demos/wordpress-demo/index.html', type:'website', weight: 0.75 },
-					{ name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image', weight: 0.10 }
+					{ name: 'Aloha Editor Demo', url:'http://www.aloha-editor.com/demos.html', type:'website', weight: 0.75 },
+					{ name: 'Aloha Editor Wordpress Demo', url:'http://www.aloha-editor.com/demos/wordpress-demo/index.html', type:'website', weight: 0.75 },
+					{ name: 'Aloha Editor Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image', weight: 0.10 }
 				]
 			}
 		},
 		plugins: {
 			format: {
 				// all elements with no specific configuration get this configuration
-				config: [  'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+				//config: [  'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
 				editables: {
 					// no formatting allowed for title
 					'#top-text': []
@@ -75,7 +69,7 @@
 				objectTypeFilter: ['website'],
 				// handle change of href
 				onHrefChange: function ( obj, href, item ) {
-					var jQuery = Aloha.require( 'aloha/jquery' );
+					var jQuery = Aloha.require( 'jquery' );
 					if ( item ) {
 						jQuery( obj ).attr( 'data-name', item.name );
 					} else {
@@ -162,10 +156,17 @@
 				"bdo",
 				"ins",
 				"del"]
-			}
-			,
+			},
 			'numerated-headers': {
-				numeratedactive: false
+				config: {
+					// default true
+					// numeratedactive will also accept "true" and "1" as true values
+					// false and "false" for false
+					numeratedactive: false,
+					// if the headingselector is empty, the button will not be shown at all                     
+					headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
+					baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable
+				}
 			}
 		}
 	};

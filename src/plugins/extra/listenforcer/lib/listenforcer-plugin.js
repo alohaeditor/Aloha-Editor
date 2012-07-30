@@ -1,25 +1,42 @@
-/*!
- * Aloha Editor
- * Author & Copyright (c) 2010 Gentics Software GmbH
- * aloha-sales@gentics.com
- * Licensed unter the terms of http://www.aloha-editor.com/license.html
+/* listenforcer-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
  *
- * Aloha List Enforcer
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+/* Aloha List Enforcer
  * -------------------
  * Enforces a one top-level list per editable policy ;-)
  * This plugin will register editables and enforce lists in them. List enforced
  * editables will be permitted to contain, exactly one top-level element which
  * must be a (OL or a UL) list element.
  */
-
 define( [
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
-	'aloha/floatingmenu',
 	'aloha/console'
-], function( Aloha, jQuery, Plugin, FloatingMenu, console ) {
+], function( Aloha, jQuery, Plugin, console ) {
 	'use strict';
 
 	/**
@@ -35,6 +52,7 @@ define( [
 	 * If there are no lists, one will be added, using the
 	 * placeHolderListString. If there is more than one list, they will be
 	 * merged into the first list.
+	 * If there is any other content in the editable it will be removed.
 	 *
 	 * @private
 	 * @param {jQuery} $editable
@@ -49,7 +67,7 @@ define( [
 		// Remove all temporary <br>s in the editable, which we may have
 		// inserted when we activated this editable and found it empty. These
 		// <br>s are needed to make the otherwise emty <li> visible (in IE).
-		$editable.find( '.GENTICS_temporary' ).remove();
+		$editable.find( '.aloha-end-br' ).remove();
 
 		// Check for the presence of at least one non-empty list. We consider
 		// a list to be not empty if it has atleast one item whose contents are
@@ -136,7 +154,7 @@ define( [
 
 			Aloha.bind( 'aloha-editable-activated', function( $event, params ) {
 				enforce( params.editable.obj,
-					'<ul><li><br class="GENTICS_temporary" /></li></ul>' );
+					'<ul><li><br class="aloha-end-br" /></li></ul>' );
 			} );
 
 			Aloha.bind( 'aloha-editable-deactivated', function( $event, params ) {
@@ -144,9 +162,8 @@ define( [
 			} );
 
 			Aloha.bind( 'aloha-smart-content-changed', function( $event, params ) {
-				// window.console.log( 'Smart content changed event' );
 				enforce( params.editable.obj,
-					'<ul><li><br class="GENTICS_temporary" /></li></ul>' );
+					'<ul><li><br class="aloha-end-br" /></li></ul>' );
 			} );
 		},
 

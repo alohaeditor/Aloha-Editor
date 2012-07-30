@@ -1,14 +1,34 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* dom-to-xhtml.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 /**
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
 define(
-['aloha', 'aloha/jquery', 'aloha/console'],
+['aloha', 'jquery', 'aloha/console'],
 function( Aloha, $, console) {
 	"use strict";
 
@@ -34,7 +54,7 @@ function( Aloha, $, console) {
 				// There seems to be a jQuery bug that returns undefined
 				// for the "checked" attribute on IE7, otherwise we
 				// could always use jquery.
-				var value = ( "style" === name ? $.attr(element, name) : element.getAttribute(name) );
+				var value = ( "style" === name ? $.attr(element, name) : attr.nodeValue );
 				cleanAttrs.push( [ name, value ] );
 			}
 		}
@@ -49,7 +69,7 @@ function( Aloha, $, console) {
 		"img", "input", "isindex", "link", "meta", "param", "embed" ];
 
 	/**
-	 * Attributes that are to be serialized like checked="checked" for any true attribute value.
+	 * Attributes that are to be serialized like checked="checked" for any attribute value.
 	 */
 	var booleanAttrs = [
 		"checked", "compact", "declare", "defer", "disabled", "ismap", "multiple",
@@ -93,20 +113,21 @@ function( Aloha, $, console) {
 		var attrs = getAttrs(element);
 		var str = "";
 		for (var i = 0; i < attrs.length; i++) {
-			var name  = attrs[i][0];
+			// The XHTML spec says attributes are lowercase
+			var name  = attrs[i][0].toLowerCase();
 			var value = attrs[i][1];
-			if ( "" === value || null == value ) {
+
+			//TODO it's only a boolean attribute if the element is in an HTML namespace
+			var isBool = (-1 !== $.inArray(name.toLowerCase(), booleanAttrs));
+
+			if (!isBool && ("" === value || null == value)) {
 				// I don't think it is ever an error to make an
 				// attribute not appear if its string value is empty.
 				continue;
 			}
-			// The XHTML spec says attributes are lowercase
-			name = name.toLowerCase();
-			//TODO it's only a boolean attribute if the element is in an HTML namespace
-			var isBool = (-1 !== $.inArray(name.toLowerCase(), booleanAttrs));
-			if ( ! isBool || (isBool && value) ) {
-				str += " " + name + '="' + encodeDqAttrValue( "" + (isBool ? name : value) ) + '"';
-			}
+
+			// For boolean attributes, the mere existence of the attribute means it is true.
+			str += " " + name + '="' + encodeDqAttrValue("" + (isBool ? name : value)) + '"';
 		}
 		return str;
 	}

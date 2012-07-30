@@ -72,7 +72,7 @@
 					objectTypeFilter: ['website'],
 					// handle change of href
 					onHrefChange: function( obj, href, item ) {
-						var jQuery = Aloha.require('aloha/jquery');
+						var jQuery = Aloha.require('jquery');
 						if ( item ) {
 							jQuery(obj).attr('data-name', item.name);
 						} else {

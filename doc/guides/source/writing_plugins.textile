@@ -156,7 +156,9 @@ h3. Loading resources
 
 h3. Including CSS files
 
-When your Aloha plugin needs some CSS files, you should place them in the @css@ folder of your plugin. Furthermore, your plugin should depend on the CSS file as follows:
+When your Aloha plugin needs some CSS files, you should place them in
+the @css@ folder of your plugin. Your plugin can load the CSS file as
+follows:
 
 <javascript filename="myplugin/lib/myplugin-plugin.js">
 define(
@@ -174,10 +176,24 @@ function(Plugin) {
 });
 </javascript>
 
-The key part is to set a dependency on +css!myplugin/css/myplugin.css+. Then, the loader knows that it needs to load the @myplugin.css@ stylesheet into the current website.
+The key part is to set a dependency on
++css!myplugin/css/myplugin.css+. Then, the loader knows that it needs to
+load the @myplugin.css@ stylesheet into the current website.
 
-NOTE: By default, CSS file loading is *asynchronous*, meaning that CSS files are loaded in the background, independently from the JavaScript loading.
-If you for some reason depend on the fact that a CSS file is included at a particular point in time (calles *synchronous loading*), you need to append the parameter @!nowait@ to the dependency, so the whole dependency looks like  @css!myplugin/css/myplugin.css!nowait@
+The css! requirejs plugin is just a convenience if you only need to load
+one or two additional plugins that are not included in the Aloha
+distribution Aloha. If you have many css files, they should be
+concatenated and minified to avoid performing many independent HTTP
+requests during loading, which significantly impacts load
+performance. When writing an Aloha common plugin, the css file must
+added to the main aloha css include @src/css/aloha.css@.
+
+NOTE: By default, CSS file loading is *asynchronous*, meaning that CSS
+files are loaded in the background, independently from the JavaScript
+loading.  If you for some reason depend on the fact that a CSS file is
+included at a particular point in time (calles *synchronous loading*),
+you need to append the parameter @!nowait@ to the dependency, so the
+whole dependency looks like @css!myplugin/css/myplugin.css!nowait@
 
 h3. Lifecycle of Plugins
 

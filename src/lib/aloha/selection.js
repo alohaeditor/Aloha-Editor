@@ -1,33 +1,34 @@
-/*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+/* selection.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 "use strict";
 define(
-[ 'aloha/core', 'aloha/jquery', 'aloha/floatingmenu', 'util/class', 'util/range', 'aloha/ecma5shims', 'aloha/rangy-core' ],
-function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
-	var
-//		$ = jQuery,
-//		Aloha = window.Aloha,
-//		Class = window.Class,
-		GENTICS = window.GENTICS;
-
+[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/console', 'PubSub', 'aloha/engine', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) {
+	var GENTICS = window.GENTICS;
 	/**
 	 * @namespace Aloha
 	 * @class Selection
@@ -43,20 +44,61 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 
 			// define basics first
 			this.tagHierarchy = {
-				'textNode' : [],
-				'abbr' : ['textNode'],
-				'b' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img','a','del','ins','u', 'cite', 'q', 'code', 'abbr', 'strong'],
-				'pre' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img','a','del','ins','u', 'cite','q', 'code', 'abbr', 'code'],
-				'blockquote' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img','a','del','ins','u', 'cite', 'q', 'code', 'abbr', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-				'ins' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img','a','u', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-				'ul' : ['li'],
-				'ol' : ['li'],
-				'li' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'del', 'ins', 'u', 'a'],
-				'tr' : ['td','th'],
-				'table' : ['tr'],
-				'div' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img', 'ul', 'ol', 'table', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'del', 'ins', 'u', 'p', 'div', 'pre', 'blockquote', 'a'],
-				'h1' : ['textNode', 'b', 'i', 'em', 'sup', 'sub', 'br', 'span', 'img','a', 'del', 'ins', 'u']
+				'textNode': {},
+				'abbr': {
+					'textNode' : true
+				},
+				'b': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'a'          : true,
+					'del'      : true, 'ins'   : true, 'u'      : true, 'cite' : true, 'q'          : true,
+					'code'     : true, 'abbr'  : true, 'strong' : true
+				},
+				'pre': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'a'          : true,
+					'del'      : true, 'ins'   : true, 'u'      : true, 'cite' : true, 'q'          : true,
+					'code'     : true, 'abbr'  : true
+				},
+				'blockquote': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'a'          : true,
+					'del'      : true, 'ins'   : true, 'u'      : true, 'cite' : true, 'q'          : true,
+					'code'     : true, 'abbr'  : true, 'p'      : true, 'h1'   : true, 'h2'         : true,
+					'h3'       : true, 'h4'    : true, 'h5'     : true, 'h6'   : true
+				},
+				'ins': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'a'          : true,
+					'u'        : true, 'p'     : true, 'h1'     : true, 'h2'   : true, 'h3'         : true,
+					'h4'       : true, 'h5'    : true, 'h6'     : true
+				},
+				'ul': { 'li'   : true },
+				'ol': { 'li'   : true },
+				'li': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'ul'         : true,
+					'ol'       : true, 'h1'    : true, 'h2'     : true, 'h3'   : true, 'h4'         : true,
+					'h5'       : true, 'h6'    : true, 'del'    : true, 'ins'  : true, 'u'          : true,
+					'a'        : true
+				},
+				'tr':    { 'td': true, 'th'    : true },
+				'table': { 'tr': true },
+				'div': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'ul'         : true,
+					'ol'       : true, 'table' : true, 'h1'     : true, 'h2'   : true, 'h3'         : true,
+					'h4'       : true, 'h5'    : true, 'h6'     : true, 'del'  : true, 'ins'        : true,
+					'u'        : true, 'p'     : true, 'div'    : true, 'pre'  : true, 'blockquote' : true,
+					'a'        : true
+				},
+				'h1': {
+					'textNode' : true, 'b'     : true, 'i'      : true, 'em'   : true, 'sup'        : true,
+					'sub'      : true, 'br'    : true, 'span'   : true, 'img'  : true, 'a'          : true,
+					'del'      : true, 'ins'   : true, 'u'      : true
+				}
 			};
+			
 			// now reference the basics for all other equal tags (important: don't forget to include
 			// the basics itself as reference: 'b' : this.tagHierarchy.b
 			this.tagHierarchy = {
@@ -97,30 +139,40 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 
 			// When applying this elements to selection they will replace the assigned elements
 			this.replacingElements = {
-				'h1' : ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6','pre', 'blockquote']
+				'h1': {
+					'p': true,
+					'h1': true,
+					'h2': true,
+					'h3': true,
+					'h4': true,
+					'h5': true,
+					'h6': true,
+					'pre': true,
+					'blockquote': true
+				}
 			};
 			this.replacingElements = {
-					'h1' : this.replacingElements.h1,
-					'h2' : this.replacingElements.h1,
-					'h3' : this.replacingElements.h1,
-					'h4' : this.replacingElements.h1,
-					'h5' : this.replacingElements.h1,
-					'h6' : this.replacingElements.h1,
-					'pre' : this.replacingElements.h1,
-					'p' : this.replacingElements.h1,
-					'blockquote' : this.replacingElements.h1
+				'h1' : this.replacingElements.h1,
+				'h2' : this.replacingElements.h1,
+				'h3' : this.replacingElements.h1,
+				'h4' : this.replacingElements.h1,
+				'h5' : this.replacingElements.h1,
+				'h6' : this.replacingElements.h1,
+				'pre' : this.replacingElements.h1,
+				'p' : this.replacingElements.h1,
+				'blockquote' : this.replacingElements.h1
 			};
 			this.allowedToStealElements = {
-					'h1' : ['textNode']
+				'h1' : {'textNode': true}
 			};
 			this.allowedToStealElements = {
-					'h1' : this.allowedToStealElements.h1,
-					'h2' : this.allowedToStealElements.h1,
-					'h3' : this.allowedToStealElements.h1,
-					'h4' : this.allowedToStealElements.h1,
-					'h5' : this.allowedToStealElements.h1,
-					'h6' : this.allowedToStealElements.h1,
-					'p' : this.tagHierarchy.b
+				'h1' : this.allowedToStealElements.h1,
+				'h2' : this.allowedToStealElements.h1,
+				'h3' : this.allowedToStealElements.h1,
+				'h4' : this.allowedToStealElements.h1,
+				'h5' : this.allowedToStealElements.h1,
+				'h6' : this.allowedToStealElements.h1,
+				'p' : this.tagHierarchy.b
 			};
 		},
 
@@ -197,23 +249,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 		},
 
 		/**
-		 * This method checks, if the current rangeObject common ancestor container has a 'data-aloha-floatingmenu-visible' Attribute.
-		 * Needed in Floating Menu for exceptional display of floatingmenu.
-		 */
-		isFloatingMenuVisible: function() {
-			var visible = jQuery(Aloha.Selection.rangeObject
-				.commonAncestorContainer).attr('data-aloha-floatingmenu-visible');
-			if(visible !== 'undefined'){
-				if (visible === 'true'){
-					return true;
-				} else {
-					return false;
-				}
-			}
-			return false;
-		},
-
-		/**
 		 * INFO: Method is used for integration with Gentics Aloha, has no use otherwise
 		 * Updates the rangeObject according to the current user selection
 		 * Method is always called on selection change
@@ -264,17 +299,14 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 				return true;
 			}
 
-			// Only set the specific scope if an event was provided, which means
-			// that somehow an editable was selected
-			// TODO Bind code to aloha-selection-changed event to remove coupling to floatingmenu
-			if (event !== undefined) {
-				// Initiallly set the scope to 'continuoustext'
-				FloatingMenu.setScope('Aloha.continuoustext');
-			}
+			Aloha.trigger('aloha-selection-changed-before', [this.rangeObject, event]);
 
 			// throw the event that the selection has changed. Plugins now have the
 			// chance to react on the currentElements[childCount].children.lengthged selection
-			Aloha.trigger('aloha-selection-changed', [ this.rangeObject, event ]);
+			Aloha.trigger('aloha-selection-changed', [this.rangeObject, event]);
+			triggerSelectionContextChanged(this.rangeObject, event);
+
+			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
 
 			return true;
 		},
@@ -352,8 +384,18 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 					// the start of the selection was not yet found, so look for it now
 					// check whether the start of the selection is found here
 
+					// Try to read the nodeType property and return if we do not have permission
+					// ie.: frame document to an external URL
+					var nodeType;
+					try {
+						nodeType = this.nodeType;
+					}
+					catch (e) {
+						return;
+					}
+
 					// check is dependent on the node type
-					switch(this.nodeType) {
+					switch(nodeType) {
 					case 3: // text node
 						if (this === rangeObject.startContainer) {
 							// the selection starts here
@@ -536,14 +578,15 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 		 * @hide
 		 */
 		standardSectionsAndGroupingContentComparator: function(domobj, markupObject) {
-			if  (domobj.nodeType === 1) {
-				if (markupObject[0].tagName && Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] && $_( Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] ).indexOf(markupObject[0].tagName.toLowerCase()) != -1) {
-					return true;
-				}
-			} else {
+			if  (domobj.nodeType !== 1) {
 				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
+				return false;
 			}
-			return false;
+			if (!markupObject[0].nodeName) {
+				return false;
+			}
+			var elemMap = Aloha.Selection.replacingElements[domobj.nodeName.toLowerCase()];
+			return elemMap && elemMap[markupObject[0].nodeName.toLowerCase()];
 		},
 
 		/**
@@ -556,11 +599,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 		 */
 		standardTagNameComparator : function(domobj, markupObject) {
 			if  (domobj.nodeType === 1) {
-				if (domobj.tagName.toLowerCase() != markupObject[0].tagName.toLowerCase()) {
-					//			Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> and <' + markupObject[0].tagName.toLowerCase() + '> failed because tags are different');
+				if (domobj.nodeName != markupObject[0].nodeName) {
 					return false;
 				}
-				return true;//domobj.attributes.length
+				return true;
 			} else {
 				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
 			}
@@ -576,16 +618,14 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 		 * @hide
 		 */
 		standardTextLevelSemanticsComparator: function(domobj, markupObject) {
-			// only element nodes can be compared
 			if  (domobj.nodeType === 1) {
-				if (domobj.tagName.toLowerCase() != markupObject[0].tagName.toLowerCase()) {
-		//			Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> and <' + markupObject[0].tagName.toLowerCase() + '> failed because tags are different');
+				if (domobj.nodeName != markupObject[0].nodeName) {
 					return false;
 				}
 				if (!this.standardAttributesComparator(domobj, markupObject)) {
 					return false;
 				}
-				return true;//domobj.attributes.length
+				return true;
 			} else {
 				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
 			}
@@ -600,55 +640,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 		 * @return true if objects are equal and false if not
 		 * @hide
 		 */
-		standardAttributesComparator: function(domobj, markupObject) {
-			var i, attr, classString, classes, classes2, classLength, attrLength, domAttrLength;
-
-			// Cloning the domobj works around an IE7 bug that crashes
-			// the browser. The exact place where IE7 crashes is when
-			// the domobj.attribute[i] is read below.
-			// The bug can be reproduced with an editable that contains
-			// some text and and image, by clicking inside and outside the
-			// editable a few times.
-			domobj = domobj.cloneNode(false);
-
-			if (domobj.attributes && domobj.attributes.length && domobj.attributes.length > 0) {
-				for (i = 0, domAttrLength = domobj.attributes.length; i < domAttrLength; i++) {
-					// Dereferencing attributes[i] here would crash IE7 if domobj were not cloned above
-					attr = domobj.attributes[i];
-					if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
-						classString = attr.nodeValue;
-						classes = classString.split(' ');
-					}
-				}
-			}
-
-			if (markupObject[0].attributes && markupObject[0].attributes.length && markupObject[0].attributes.length > 0) {
-				for (i = 0, attrLength = markupObject[0].attributes.length; i < attrLength; i++) {
-					attr = markupObject[0].attributes[i];
-					if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
-						classString = attr.nodeValue;
-						classes2 = classString.split(' ');
-					}
-				}
-			}
-
-			if (classes && !classes2 || classes2 && !classes) {
-				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because one element has classes and the other has not');
-				return false;
-			}
-			if (classes && classes2 && classes.length != classes2.length) {
-				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of a different amount of classes');
-				return false;
-			}
-			if (classes && classes2 && classes.length === classes2.length && classes.length !== 0) {
-				for (i = 0, classLength = classes.length; i < classLength; i++) {
-					if (!markupObject.hasClass(classes[ i ])) {
-						Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of different classes');
-						return false;
-					}
-				}
-			}
-			return true;
+		standardAttributesComparator: function(domobj, markupObject) {			
+			var classesA = Strings.words((domobj && domobj.className) || '');
+			var classesB = Strings.words((markupObject.length && markupObject[0].className) || '');
+			Arrays.sortUnique(classesA);
+			Arrays.sortUnique(classesB);
+			return Arrays.equal(classesA, classesB);
 		},
 
 		/**
@@ -672,7 +669,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 
 			// if the element is a replacing element (like p/h1/h2/h3/h4/h5/h6...), which must not wrap each other
 			// use a clone of rangeObject
-			if (this.replacingElements[ tagName ]) {
+			if (this.replacingElements[tagName]) {
 				// backup rangeObject for later selection;
 				backupRangeObject = rangeObject;
 
@@ -777,7 +774,36 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 			// Alternative D: no-markup to no-markup: easy
 			else if (markupObject.isReplacingElement || (!relevantMarkupObjectsAtSelectionStart && !relevantMarkupObjectsAtSelectionEnd && !relevantMarkupObjectBeforeSelection && !relevantMarkupObjectAfterSelection)) {
 				Aloha.Log.info(this, 'non-markup 2 non-markup');
-				this.applyMarkup(rangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator, {setRangeObject2NewMarkup: true});
+				
+				// workaround to keep the caret at the right position if it's an empty element
+				// applyMarkup was not working correctly and has a lot of overhead we don't need in that case
+				if (isCollapsedAndEmptyOrEndBr(rangeObject)) {
+					var newMarkup = markupObject.clone();
+
+					if (isCollapsedAndEndBr(rangeObject)) {
+						newMarkup[0].appendChild(Engine.createEndBreak());
+					}
+
+					// setting the focus is needed for mozilla and IE 7 to have a working rangeObject.select()
+					if (Aloha.activeEditable
+						&& jQuery.browser.mozilla) {
+						Aloha.activeEditable.obj.focus();
+					}
+
+					Engine.copyAttributes(rangeObject.startContainer, newMarkup[0]);
+					jQuery(rangeObject.startContainer).after(newMarkup[0]).remove();
+
+					rangeObject.startContainer = newMarkup[0];
+					rangeObject.endContainer = newMarkup[0];
+					rangeObject.startOffset = 0;
+					rangeObject.endOffset = 0;
+
+					rangeObject.update();
+					rangeObject.select();
+					return;
+				} else {
+					this.applyMarkup(rangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator, {setRangeObject2NewMarkup: true});
+				}
 			}
 
 			// remove all marked items
@@ -788,10 +814,16 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 
 			// update selection
 			if (markupObject.isReplacingElement) {
-		//		this.setSelection(backupRangeObject, true);
+				if ( backupRangeObject &&
+					backupRangeObject.startContainer.className &&
+					backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1 ) {
+					var parentElement = jQuery(backupRangeObject.startContainer).closest(markupObject[0].tagName).get(0);
+					backupRangeObject.startContainer = parentElement;
+					backupRangeObject.endContainer = parentElement;
+				}
+				backupRangeObject.update();
 				backupRangeObject.select();
 			} else {
-		//		this.setSelection(rangeObject);
 				rangeObject.select();
 			}
 		},
@@ -942,7 +974,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 		 * @hide
 		 */
 		getClonedMarkup4Wrapping: function(domobj) {
-			var wrapper = jQuery(domobj).clone().removeClass('preparedForRemoval').empty();
+			var wrapper = jQuery(domobj.outerHTML).removeClass('preparedForRemoval').empty();
 			if (wrapper.attr('class').length === 0) {
 				wrapper.removeAttr('class');
 			}
@@ -1017,8 +1049,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 			this.changeMarkup(this.getRangeObject(), markupObject, this.getStandardTagComparator(markupObject));
 
 			// merge text nodes
-
 			GENTICS.Utils.Dom.doCleanup({'merge' : true}, this.rangeObject);
+
 			// update the range and select it
 			this.rangeObject.update();
 			this.rangeObject.select();
@@ -1069,8 +1101,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 				Aloha.Log.debug(this, 'Node name detected: ' + nn + ' for: ' + markupObject.outerHtml());
 			}
 			if (nn == '#text') {return 'textNode';}
-			if (this.replacingElements[ nn ]) {return 'sectionOrGroupingContent';}
-			if (this.tagHierarchy [ nn ]) {return 'textLevelSemantics';}
+			if (this.replacingElements[nn]) {return 'sectionOrGroupingContent';}
+			if (this.tagHierarchy[nn]) {return 'textLevelSemantics';}
 			Aloha.Log.warn(this, 'unknown markup passed to this.getMarkupType(...): ' + markupObject.outerHtml());
 		},
 
@@ -1427,20 +1459,11 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 			if (!selectionTreeElement.domobj) {
 				return false;
 			}
-			var nodeName = selectionTreeElement.domobj.nodeName.toLowerCase(),
-				markupName;
-			
-			nodeName = (nodeName == '#text') ? 'textNode' : nodeName;
-			markupName = markupObject[0].nodeName.toLowerCase();
-			// if nothing is defined for the markup, it's now allowed
-			if (!this.allowedToStealElements[ markupName ]) {
-				return false;
-			}
-			// if something is defined, but the specifig tag is not in the list
-			if ($_( this.allowedToStealElements[ markupName ] ).indexOf(nodeName) == -1) {
-				return false;
-			}
-			return true;
+			var maybeTextNodeName = selectionTreeElement.domobj.nodeName.toLowerCase(),
+			    nodeName = (maybeTextNodeName == '#text') ? 'textNode' : maybeTextNodeName,
+			    markupName = markupObject[0].nodeName.toLowerCase(),
+			    elemMap = this.allowedToStealElements[ markupName ];
+			return elemMap && elemMap[nodeName];
 		},
 
 		/**
@@ -1488,17 +1511,14 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 		canTag1WrapTag2: function(t1, t2) {
 			t1 = (t1 == '#text')?'textNode':t1.toLowerCase();
 			t2 = (t2 == '#text')?'textNode':t2.toLowerCase();
-			if (!this.tagHierarchy[ t1 ]) {
-				// Aloha.Log.warn(this, t1 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 1). Sadfully allowing the wrapping...');
+			var t1Map = this.tagHierarchy[t1];
+			if (!t1Map) {
 				return true;
 			}
-			if (!this.tagHierarchy[ t2 ]) {
-				// Aloha.Log.warn(this, t2 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 2). Sadfully allowing the wrapping...');
+			if (!this.tagHierarchy[t2]) {
 				return true;
 			}
-			var t1Array = this.tagHierarchy[ t1 ],
-				returnVal = ($_( t1Array ).indexOf( t2 ) != -1) ? true : false;
-			return returnVal;
+			return t1Map[t2];
 		},
 
 		/**
@@ -1783,32 +1803,35 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 	}); // Selection
 
 
-/**
- * This method implements an ugly workaround for a selection problem in ie:
- * when the cursor shall be placed at the end of a text node in a li element, that is followed by a nested list,
- * the selection would always snap into the first li of the nested list
- * therefore, we make sure that the text node ends with a space and place the cursor right before it
- */
-function nestedListInIEWorkaround ( range ) {
-	if (jQuery.browser.msie
-		&& range.startContainer === range.endContainer
-		&& range.startOffset === range.endOffset
-		&& range.startContainer.nodeType == 3
-		&& range.startOffset == range.startContainer.data.length
-		&& range.startContainer.nextSibling
-		&& $_( ["OL", "UL"] ).indexOf(range.startContainer.nextSibling.nodeName) !== -1) {
-		if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
-			range.startOffset = range.endOffset = range.startOffset-1;
-		} else {
-			range.startContainer.data = range.startContainer.data + ' ';
+	/**
+	 * This method implements an ugly workaround for a selection problem in ie:
+	 * when the cursor shall be placed at the end of a text node in a li element, that is followed by a nested list,
+	 * the selection would always snap into the first li of the nested list
+	 * therefore, we make sure that the text node ends with a space and place the cursor right before it
+	 */
+	function nestedListInIEWorkaround ( range ) {
+		var nextSibling;
+		if (jQuery.browser.msie
+			&& range.startContainer === range.endContainer
+			&& range.startOffset === range.endOffset
+			&& range.startContainer.nodeType == 3
+			&& range.startOffset == range.startContainer.data.length
+			&& range.startContainer.nextSibling) {
+			nextSibling = range.startContainer.nextSibling;
+			if ('OL' === nextSibling.nodeName || 'UL' === nextSibling.nodeName) {
+				if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
+					range.startOffset = range.endOffset = range.startOffset-1;
+				} else {
+					range.startContainer.data = range.startContainer.data + ' ';
+				}
+			}
 		}
 	}
-}
 
-function correctRange ( range ) {
-	nestedListInIEWorkaround(range);
-	return range;
-}
+	function correctRange ( range ) {
+		nestedListInIEWorkaround(range);
+		return range;
+	}
 
 	/**
 	 * Implements Selection http://html5.org/specs/dom-range.html#selection
@@ -2068,6 +2091,91 @@ function correctRange ( range ) {
 	
 	var selection = new Selection();
 	Aloha.Selection = selection;
+
+
+	function isCollapsedAndEmptyOrEndBr(rangeObject) {
+		var firstChild;
+		if (rangeObject.startContainer !== rangeObject.endContainer) {
+			return false;
+		}
+		if (rangeObject.startContainer.nodeType != 1) {
+			return false;
+		}
+		firstChild = rangeObject.startContainer.firstChild;
+		return (!firstChild
+				|| (!firstChild.nextSibling
+					&& firstChild.nodeName == 'BR'));
+	}
+
+	function isCollapsedAndEndBr(rangeObject) {
+		if (rangeObject.startContainer !== rangeObject.endContainer) {
+			return false;
+		}
+		if (rangeObject.startContainer.nodeType != 1) {
+			return false;
+		}
+		return Engine.isEndBreak(rangeObject.startContainer);
+	}
+
+	var prevStartContext = null;
+	var prevEndContext = null;
+
+	function makeContextHtml(node, parents) {
+		var result = [],
+		    parent,
+		    len,
+		    i;
+		if (1 === node.nodeType && node.nodeName !== 'BODY' && node.nodeName !== 'HTML') {
+			result.push(node.cloneNode(false).outerHTML);
+		} else {
+			result.push('#' + node.nodeType);
+		}
+		for (i = 0, len = parents.length; i < len; i++) {
+			parent = parents[i];
+			if (parent.nodeName === 'BODY' || parent.nodeName === 'HTML') {
+				// Although we limit the ancestors in most cases to the
+				// active editable, in some cases (copy&paste) the
+				// parent may be outside.
+				// On IE7 this means the following code may clone the
+				// HTML node too, which causes the browser to crash.
+				// On other browsers, this is just an optimization
+				// because the body and html elements should probably
+				// not be considered part of the context of an edit
+				// operation.
+				break;
+			}
+			result.push(parent.cloneNode(false).outerHTML);
+		}
+		return result.join('');
+	}
+
+	function getChangedContext(node, context) {
+		var until = Aloha.activeEditable ? Aloha.activeEditable.obj.parent()[0] : null;
+		var parents = jQuery(node).parentsUntil(until).get();
+		var html = makeContextHtml(node, parents);
+		var equal = (   context
+					 && node === context.node
+					 && Arrays.equal(context.parents, parents)
+					 && html === context.html);
+		return equal ? null : {node: node, parents: parents, html: html};
+	}
+
+	function triggerSelectionContextChanged(rangeObject, event) {
+		var startContainer = rangeObject.startContainer;
+		var endContainer = rangeObject.endContainer;
+		if (!startContainer || !endContainer) {
+			console.error("encountered range object without start or end container");
+			return;
+		}
+		var startContext = getChangedContext(startContainer, prevStartContext);
+		var endContext   = getChangedContext(endContainer  , prevEndContext);
+		if (!startContext && !endContext) {
+			return;
+		}
+		prevStartContext = startContext;
+		prevEndContext   = endContext;
+		PubSub.pub('aloha.selection.context-change', {range: rangeObject, event: event});
+	}
 
 	return selection;
 });

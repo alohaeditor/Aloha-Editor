@@ -1,12 +1,31 @@
-/*!
- * Aloha Editor
- * Author & Copyright (c) 2010 Gentics Software GmbH
- * aloha-sales@gentics.com
- * Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-
-define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager'],
-	function (jQuery, BlockManager, Sidebar, EditorManager) {
+/* sidebarattributeeditor.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager', 'util/class'],
+	function (jQuery, BlockManager, Sidebar, EditorManager, Class) {
 	"use strict";
 
 	/**
@@ -42,8 +61,8 @@ define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editorman
 			}
 			// TODO: Clearing the whole sidebar might not be what we want; instead we might only want
 			// to clear certain panels.
-			that._sidebar.container.find('.aloha-sidebar-panels').children().remove();
-			that._sidebar.panels = {};
+			// that._sidebar.container.find('.aloha-sidebar-panels').children().remove();
+			// that._sidebar.panels = {};
 
 			jQuery.each(selectedBlocks, function() {
 				var schema = this.getSchema(),
@@ -96,7 +115,8 @@ define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editorman
 
 						// This code is from the superclass
 						this.isActive = false;
-						this.content.parent('li').hide();
+						// TODO check if this is needed in current block implementation
+						// this.content.parent('li').hide();
 						this.effectiveElement = null;
 					}
 				});

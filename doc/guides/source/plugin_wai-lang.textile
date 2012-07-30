@@ -1,0 +1,69 @@
+h2. WAI Language Plugin
+
+The WAI Language Plugin enables the editor to add language annotations to the content.
+
+endprologue.
+
+
+h3. Overview
+
+If you use a number of different languages on a page, the WAI Lang plugin makes it easy to add "lang" attributes to the parts of the content where are language changes.
+
+h3. Usage
+
+Include the +extra/wai-lang+ plugin in the plugin list of the Aloha-Editor.
+
+Select the text you want to annotate and click the "Add language annotation" button.
+<img src="images/plugins/wai-lang-add-annotation.png" style="width:620px">
+
+
+Start typing the language name or code in the input field and select the desired entry.
+<img src="images/plugins/wai-lang-select.png" style="width:620px">
+
+
+The text is surrounded with a span-tag with a @lang@ attribute.
+As language code there will be the either the ISO 639‑1 two-letter code (default) or the
+ISO 639-2 three-letter code used.
+<img src="images/plugins/wai-lang-code.png" style="width:620px">
+
+
+<html>
+<span 
+	class="aloha-wai-lang" 
+	lang="de" 
+	data-gentics-aloha-repository="wai-languages" 
+	data-gentics-aloha-object-id="de">
+	Guten Tag
+</span>
+</html>
+
+
+h3. Components
+
+* Add language annotation button
+* Language annotation tab with input field for the language and a button to remove a annotation
+
+
+h3. Configuration
+
+The WAI Language plugin provides the following configuration options:
+<javascript>
+Aloha.settings.plugins: {
+	'wai-lang': {
+		iso639: 'iso639-1', // iso639-2 for three letter codes
+		flags: false,		// whether to show flags in the dropdown
+		config: [ 'span' ],
+		editables: {
+			// Don't allow wai-lang in top-text
+			'#top-text': [ ]
+		}
+	}
+};
+</javascript>
+
+
+h3. Further Information
+
+* Web Content Accessibility Guidelines: "w3c.org":http://www.w3.org/TR/WAI-WEBCONTENT/#gl-abbreviated-and-foreign
+* HTML Techniques for Web Content Accessibility Guidelines: "w3c.org":http://www.w3.org/TR/WCAG10-HTML-TECHS/#language
+* Language code reference: "loc.gov":http://www.loc.gov/standards/iso639-2/langhome.html

@@ -1,11 +1,31 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* genericcontenthandler.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define(
-['aloha', 'aloha/jquery', 'aloha/contenthandlermanager'],
+['aloha', 'jquery', 'aloha/contenthandlermanager'],
 function(Aloha, jQuery, ContentHandlerManager) {
 	"use strict";
 
@@ -21,6 +41,11 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * @param content
 		 */
 		handleContent: function( content ) {
+
+			if (null == content) {
+				return;
+			}
+
 			if ( typeof content === 'string' ){
 				content = jQuery( '<div>' + content + '</div>' );
 			} else if ( content instanceof jQuery ) {
@@ -54,7 +79,19 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			this.removeNamespacedElements(content);
 
 			// transform formattings
-			this.transformFormattings(content);
+			var transformFormattingsEnabled = true;
+			if ( Aloha.settings 
+				&& Aloha.settings.contentHandler
+				&& Aloha.settings.contentHandler.handler
+				&& Aloha.settings.contentHandler.handler.generic
+				&& typeof Aloha.settings.contentHandler.handler.generic.transformFormattings !== 'undefinded'
+				&& !Aloha.settings.contentHandler.handler.generic.transformFormattings ) {
+					transformFormattingsEnabled = false;
+			}
+
+			if ( transformFormattingsEnabled === true ) {
+			    this.transformFormattings(content);
+			}
 
 			// transform links
 			//this.transformLinks(content);
@@ -71,15 +108,6 @@ function(Aloha, jQuery, ContentHandlerManager) {
 				var $list = jQuery(this);
 				$list.contents(':not(li,ul,ol)').each(function() {
 					jQuery(this).remove();
-				});
-				// for all li's, trim the text contents
-				$list.children('li').each(function() {
-					var $li = jQuery(this);
-					$li.contents().each(function() {
-						if (this.nodeType === 3) {
-							this.data = jQuery.trim(this.data);
-						}
-					});
 				});
 			});
 		},
@@ -104,7 +132,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 					this.innerHTML = '&nbsp;';
 				}
 				
-				if ( jQuery(this).find('p').length == 1) {
+				if ( jQuery(this).find('p').length === 1) {
 					jQuery(this).find('p').contents().unwrap();
 				}
 			});
@@ -127,17 +155,18 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 */
 		transformFormattings: function( content ) {
 			// find all formattings we will transform
-			content.find('strong,em,s,u').each(function() {
-				if (this.nodeName.toLowerCase() == 'strong') {
+			// @todo this makes troubles -- don't change semantics! at least in this way...
+			content.find('strong,em,s,u,strike').each(function() {
+				if (this.nodeName === 'STRONG') {
 					// transform strong to b
 					Aloha.Markup.transformDomObject(jQuery(this), 'b');
-				} else if (this.nodeName.toLowerCase() == 'em') {
+				} else if (this.nodeName === 'EM') {
 					// transform em to i
 					Aloha.Markup.transformDomObject(jQuery(this), 'i');
-				} else if (this.nodeName.toLowerCase() == 's') {
-					// transform s to del
+				} else if (this.nodeName === 'S' || this.nodeName == 'STRIKE') {
+					// transform s and strike to del
 					Aloha.Markup.transformDomObject(jQuery(this), 'del');
-				} else if (this.nodeName.toLowerCase() == 'u') {
+				} else if (this.nodeName === 'U') {
 					// transform u?
 					jQuery(this).contents().unwrap();
 				}
@@ -168,7 +197,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 
 			// ok, remove all comments
 			content.contents().each(function() {
-				if (this.nodeType == 8) {
+				if (this.nodeType === 8) {
 					jQuery(this).remove();
 				} else {
 					// do recursion
@@ -184,12 +213,13 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		unwrapTags: function( content ) {
 			var that = this;
 
-			content.children('span,font,div').filter(function() {
-				return this.contentEditable != 'false';
-			}).each(function() {
+			// Note: we exclude all elements (they will be spans) here, that have the class aloha-wai-lang
+			// TODO find a better solution for this (e.g. invent a more generic aloha class for all elements, that are
+			// somehow maintained by aloha, and are therefore allowed)
+			content.find('span,font,div').not('.aloha-wai-lang').each(function() {
 				if (this.nodeName == 'DIV') {
 					// safari and chrome cleanup for plain text paste with working linebreaks
-					if (this.innerHTML == '<br>') {
+					if (this.innerHTML === '<br>') {
 						jQuery(this).contents().unwrap();
 					} else {
 						jQuery( Aloha.Markup.transformDomObject(jQuery(this), 'p').append('<br>') ).contents().unwrap();
@@ -197,8 +227,6 @@ function(Aloha, jQuery, ContentHandlerManager) {
 				} else {
 					jQuery(this).contents().unwrap();
 				}
-
-				that.unwrapTags(jQuery(this));
 			});
 		},
 
@@ -211,12 +239,12 @@ function(Aloha, jQuery, ContentHandlerManager) {
 
 			// completely remove style tags
 			content.children('style').filter(function() {
-				return this.contentEditable != 'false';
+				return this.contentEditable !== 'false';
 			}).remove();
 
 			// remove style attributes and classes
 			content.children().filter(function() {
-				return this.contentEditable != 'false';
+				return this.contentEditable !== 'false';
 			}).each(function() {
 				jQuery(this).removeAttr('style').removeClass();
 				that.removeStyles(jQuery(this));
@@ -237,7 +265,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 						: (this.scopeName ? this.scopeName : undefined);
 				// when the prefix is set (and different from 'HTML'), we remove the
 				// element
-				if ((nsPrefix && nsPrefix != 'HTML') || this.nodeName.indexOf(':') >= 0 ) {
+				if ((nsPrefix && nsPrefix !== 'HTML') || this.nodeName.indexOf(':') >= 0 ) {
 					var $this = jQuery(this), $contents = $this.contents();
 					if ($contents.length) {
 						// the element has contents, so unwrap the contents

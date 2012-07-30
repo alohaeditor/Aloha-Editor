@@ -4,7 +4,7 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-button.aloha-button-metaview { background: url(../img/button.png) no-repeat 0px 0px !important; }
+.aloha-icon-metaview { background: url(../img/button.png) no-repeat 0px 0px !important; }
 
 .aloha-metaview p, .aloha-metaview pre,
 .aloha-metaview h1, .aloha-metaview h2,
@@ -65,18 +65,9 @@ button.aloha-button-metaview { background: url(../img/button.png) no-repeat 0px 
 .aloha-metaview caption { background-image: url(../img/caption.png); }
 
 .aloha-metaview abbr[title], .aloha-metaview dfn[title] { border-bottom: 1px dotted; cursor: help; }
-.aloha-metaview [lang] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
+.aloha-metaview [lang] { background-image:url(../../wai-lang/img/button.png); padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
 
-/* LANGUAGE FLAGS */
-.aloha-metaview [lang="de"] { background-image:url(../../flag-icons/img/flags/de.png); }
-.aloha-metaview [lang="en"] { background-image:url(../../flag-icons/img/flags/en.png); }
-.aloha-metaview [lang="fr"] { background-image:url(../../flag-icons/img/flags/fr.png); }
-.aloha-metaview [lang="es"] { background-image:url(../../flag-icons/img/flags/es.png); }
-.aloha-metaview [lang="it"] { background-image:url(../../flag-icons/img/flags/it.png); }
-.aloha-metaview [lang="nl"] { background-image:url(../../flag-icons/img/flags/nl.png); }
-.aloha-metaview [lang="no"] { background-image:url(../../flag-icons/img/flags/no.png); }
-.aloha-metaview [lang="pl"] { background-image:url(../../flag-icons/img/flags/pl.png); }
-.aloha-metaview [lang="rs"] { background-image:url(../../flag-icons/img/flags/rs.png); }
+/* @todo add also the other languages which are available */
 
 .aloha-metaview q { background-image:url(../img/icon_cite.png); padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
 

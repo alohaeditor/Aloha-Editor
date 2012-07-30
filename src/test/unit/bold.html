@@ -9,14 +9,15 @@
 	<script type="text/javascript" src="../vendor/qunit.js"></script>
 
 	<!-- include jquery -->
-	<script	src="../vendor/jquery-1.6.1.js" ></script>
+	<script	src="../../lib/vendor/jquery-1.7.2.js" ></script>
 	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
-	<script>
-		window.alohaQuery = jQuery.noConflict();
-	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/aloha.js" ></script>
+	<script>
+		Aloha = { jQuery: $, settings: { jQuery: $ } };
+	</script>
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/aloha.js"></script>
 
 	<!-- inject into testswarm -->
 	<script type="text/javascript" src="../vendor/swarminject.js"></script>

@@ -14,44 +14,88 @@
 	<link rel="shortcut icon" href="/favicon.ico">
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-
 	<!--
 		Load the CSS styles for Aloha Editor
 	-->
 	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
+
+	<style>
+		/* Basic Styling for Sidebar */
+		.aloha-sidebar {
+		  position: fixed;
+		  right: 0;
+		  top: 0;
+		  width: 250px;
+		  height: 100%;
+		  border: 1px solid #000;
+		  border-width: 0 0 0 1px;
+		  background-color: #fff;
+		  padding: 10px;
+		}
+
+		.aloha-panel {
+		  border: 1px solid #000;
+		}
+
+		.aloha-panel-title {
+		  background-color: #000;
+		  color: #fff;
+		  padding: 5px 10px;
+		}
+
+		.aloha-panel-content {
+		 padding: 5px 10px;
+		}
+	</style>
 
 	<!--
 		All configuration for Aloha Editor for this demo is stored in js/aloha-config.js
 		It can also be placed inline here before loading Aloha Editor itself.
 	-->
 	<script src="js/aloha-config.js"></script>
-
+	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
+	<script src="../../lib/require.js"></script>
+    <script>
+		Aloha.settings.jQuery = $.noConflict(true);
+    </script>
 	<!--
 		Load the Aloha Editor library.
 		The plugin list could also be added to the configuration.
 	-->
 	<script src="../../lib/aloha.js"
-	        data-aloha-plugins="common/format,
+	        data-aloha-plugins="common/ui,
+	                            common/format,
 	                            common/table,
 	                            common/list,
 	                            common/link,
 	                            common/highlighteditables,
-	                            common/block,
 	                            common/undo,
 	                            common/contenthandler,
 	                            common/paste,
+	                            extra/cite,
 	                            common/characterpicker,
 	                            common/commands,
-								common/image,
+	                            common/block,
+	                            common/image,
 	                            common/abbr,
-	                            extra/browser,
+	                            common/horizontalruler,
+	                            common/align,
+	                            extra/formatlesspaste,
+	                            extra/toc,
+	                            extra/headerids,
+	                            extra/listenforcer,
+	                            extra/metaview,
+	                            extra/numerated-headers,
+	                            extra/ribbon,
+	                            extra/wai-lang,
+	                            extra/flag-icons,
 	                            extra/linkbrowser,
-								extra/imagebrowser"></script>
-
-
+	                            extra/imagebrowser,
+	                            extra/cite"></script>
 	<!--
 		Application specific code
 	-->
+    <script src="ribbon-example.js"></script>
 	<link rel="stylesheet" href="css/style.css">
 	<script src="js/aloha-boilerplate.js"></script>
 </head>

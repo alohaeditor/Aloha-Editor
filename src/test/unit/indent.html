@@ -6,17 +6,22 @@
 	<!-- include qunit -->
 	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
 
-	<script type="text/javascript" src="../vendor/qunit.js"></script>
-
 	<!-- include jquery -->
-	<script	src="../vendor/jquery-1.6.1.js" ></script>
+	<script	src="../../lib/vendor/jquery-1.7.2.js" ></script>
+	<script type="text/javascript" src="../vendor/qunit.js"></script>
 	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
-	<script>
-		window.alohaQuery = jQuery.noConflict();
-	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/aloha.js" data-aloha-plugins="common/list"></script>
+	<script>
+		var Aloha = {
+			settings: {
+				jQuery: $,
+				baseUrl: '../../lib'
+			}
+		};
+	</script>
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,common/list"></script>
 
 	<!-- inject into testswarm -->
 	<script type="text/javascript" src="../vendor/swarminject.js"></script>
@@ -35,7 +40,6 @@
 	var tests = {
 		defaultCommand: 'indent',
 		tests: [
-			// command 1
 			{	start: '<ol><li>foo[]</li></ol>',
 				execResult: '<ol><li>foo[]</li></ol>'
 			},
@@ -71,8 +75,7 @@
 				start: '<ul><li>foo</li><li>bar[]</li></ul>',
 				execResult: '<ul><li>foo <ul><li>bar[]</li></ul></li></ul>'
 			},
-			// command 10
-			{	exclude: ['msie'],
+			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>bar</li><li>baz[]</li></ol>',
 				execResult: '<ol><li>foo</li><li>bar<ol><li>baz[]</li></ol></li></ol>'
 			},

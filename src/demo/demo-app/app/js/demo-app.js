@@ -1,7 +1,7 @@
 // Aloha Editor Demo logic
 
 Aloha.ready(function() {
-	Aloha.require( ['aloha', 'aloha/jquery' ], function( Aloha, jQuery ) {
+	Aloha.require( ['aloha', 'jquery' ], function( Aloha, jQuery ) {
 		// here jQuery 1.6 from Aloha is used
 		//console.log('Aloha jQuery: ' + jQuery().jquery);
 		

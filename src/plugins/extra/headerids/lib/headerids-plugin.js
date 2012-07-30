@@ -1,21 +1,45 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-define(
-['aloha/jquery','aloha/plugin', 'aloha/floatingmenu', 'i18n!headerids/nls/i18n', 'i18n!aloha/nls/i18n', 'css!headerids/css/headerids.css'],
-function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
+/* headerids-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+define([
+	'jquery',
+	'aloha/plugin',
+	'i18n!headerids/nls/i18n',
+	'i18n!aloha/nls/i18n'
+],
+function(jQuery, Plugin, i18n, i18nCore) {
 	"use strict";
 
 	var
 		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
-	
-	
-	
+
+
+
 	// namespace prefix for this plugin
     var ns = 'aloha-headerids';
     
@@ -28,22 +52,17 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
     function nsSel () {
         var strBldr = [], prx = ns;
         $.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-        return strBldr.join(' ').trim();
+        return jQuery.trim(strBldr.join(' '));
     };
     
     // Creates string with this component's namepsace prefixed the each classname
     function nsClass () {
         var strBldr = [], prx = ns;
         $.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-        return strBldr.join(' ').trim();
+        return jQuery.trim(strBldr.join(' '));
     };
     
-    
-    
-
-	
-	
-     return Plugin.create('headerids', {
+	return Plugin.create('headerids', {
 		_constructor: function(){
 			this._super('headerids');
 		},
@@ -55,23 +74,32 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 */
 		init: function () {
 			var that = this;
-	
+
 			// mark active Editable with a css class
-			Aloha.bind("aloha-editable-activated", function(jEvent, params) { that.check(params.editable.obj); });
-			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) { that.check(params.editable.obj); });
-			Aloha.bind('aloha-ready', function (ev) { that.initSidebar(Aloha.Sidebar.right); });
+			Aloha.bind("aloha-editable-activated", function(jEvent, params) {
+				that.check(params.editable.obj);
+			});
+			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) {
+				that.check(params.editable.obj);
+			});
+			Aloha.bind('aloha-ready', function (ev) {
+				that.initSidebar(Aloha.Sidebar.right);
+			});
 		},
 		
 		check: function(editable) {
 			var that = this;
 			var config = that.getEditableConfig(editable);
-			if(jQuery.inArray('true',config) == -1) {
+
+			if(jQuery.inArray('true',config) === -1) {
 				// Return if the plugin should do nothing in this editable
-				return;
-			}		
+				return false;
+			}
+
 			jQuery(editable).find('h1, h2, h3, h4, h5, h6').not('.aloha-customized').each(function(){ 
 				that.processH(this); 
 			});
+
 		},
 		
 		processH: function(h) {
@@ -83,7 +111,6 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			return (str.replace(/[^a-z0-9]+/gi,'_'));
 		},
 		
-		
 		//ns = headerids
 		initSidebar: function(sidebar) {
 			var pl = this;
@@ -91,7 +118,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			sidebar.addPanel({
                     
                     id         : nsClass('sidebar-panel'),
-                    title     : 'Sprungmarken',
+                    title     : i18n.t('internal_hyperlink'),
                     content     : '',
                     expanded : true,
                     activeOn : 'h1, h2, h3, h4, h5, h6',

@@ -4,7 +4,6 @@ WARNING: The HotKey feature is still being developed. Not all shortcuts are avai
 
 endprologue.
 
-
 |_. Document action |_. Shortcut |
 | Select all | Ctrl+A |
 | Copy | Ctrl+C |

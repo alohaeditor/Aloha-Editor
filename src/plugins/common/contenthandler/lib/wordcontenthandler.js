@@ -1,11 +1,31 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* wordcontenthandler.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define(
-['aloha', 'aloha/jquery', 'aloha/contenthandlermanager'],
+['aloha', 'jquery', 'aloha/contenthandlermanager'],
 function( Aloha, jQuery, ContentHandlerManager ) {
 	"use strict";
 
@@ -119,12 +139,12 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			spans = content.find(detectionFilter);
 			spans.each(function() {
 				var jqElem = jQuery(this),
-					innerText = jqElem.text().trim().replace(/&nbsp;/g, ''),
+				    innerText = jQuery.trim(jqElem.text()).replace(/&nbsp;/g, ''),
 					outerText;
 				
 				if (innerText.length === 0) {
 					// check whether the outermost of the three spans contains nothing more than numbering
-					outerText = jqElem.parent().parent().text().trim().replace(/&nbsp;/g, '');
+					outerText = jQuery.trim(jqElem.parent().parent().text()).replace(/&nbsp;/g, '');
 
 					// patterns for list numbering
 					// 1.
@@ -280,7 +300,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			
 			// when href starts with #, it's the link to an anchor. remove it.
 			content.find('a').each(function() {
-				if ( jQuery(this).attr('href') && jQuery(this).attr('href').trim().match(/^#(.*)$/) ) {
+				if ( jQuery(this).attr('href') && jQuery.trim(jQuery(this).attr('href')).match(/^#(.*)$/) ) {
 					jQuery(this).contents().unwrap();
 				}
 			});
@@ -311,7 +331,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 				
 					// remove TOC numbering
 					spans.each(function() {
-						if ( jQuery(this).text().trim().match(/^([\.\(]?[\d\D][\.\(]?){1,4}$/) ) {
+						if ( jQuery.trim(jQuery(this).text()).match(/^([\.\(]?[\d\D][\.\(]?){1,4}$/) ) {
 							jQuery(this).remove();
 						}
 					})

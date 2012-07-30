@@ -24,10 +24,6 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
   display: block;
 }
-
-blockquote, q { quotes: none; }
-blockquote:before, blockquote:after,
-q:before, q:after { content: ''; content: none; }
 ins { background-color: #ff9; color: #000; text-decoration: none; }
 mark { background-color: #ff9; color: #000; font-style: italic; font-weight: bold; }
 del { text-decoration: line-through; }
@@ -514,6 +510,7 @@ footer {
 .clearfix:after { clear: both; }
 .clearfix { zoom: 1; }
 
+span[role=annotation] { margin-right: 10px; }
 
 @media all and (orientation:portrait) {
 

@@ -1,42 +1,42 @@
 
 /* Images */
-button.aloha-image-align-left {
+.aloha-image-align-left {
     background: url(../img/image-align-left.png);
 }
 
-button.aloha-image-align-right {
+.aloha-image-align-right {
     background: url(../img/image-align-right.png);
 }
 
-button.aloha-image-align-none {
+.aloha-image-align-none {
     background: url(../img/image-align-none.png);
 }
 
-button.aloha-img.aloha-image-title {
+.aloha-img.aloha-image-title {
     background: url(../img/image-title.png);
 }
 
-button.aloha-img.aloha-image-border {
+.aloha-img.aloha-image-border {
     background: url(../img/image-border.png);
 }
 
-button.aloha-image-insert {
+.aloha-image-insert {
     background: url(../img/image.gif) !important;
 }
 
-button.aloha-img.aloha-image-padding-increase {
+.aloha-img.aloha-image-padding-increase {
 	background: url(../img/padding-increase.gif);
 }
 
-button.aloha-img.aloha-image-padding-decrease {
+.aloha-img.aloha-image-padding-decrease {
 	background: url(../img/padding-decrease.gif);
 }
 
-button.aloha-img.aloha-image-size-increase {
+.aloha-img.aloha-image-size-increase {
 	background: url(../img/size-increase.gif);
 }
 
-button.aloha-img.aloha-image-size-decrease {
+.aloha-img.aloha-image-size-decrease {
 	background: url(../img/size-decrease.gif);
 }
 
@@ -50,19 +50,19 @@ button.aloha-img.aloha-image-size-decrease {
 }
 
 /* Crop and Resize */
-button.cnr-resize.x-btn-text, button.cnr-crop.x-btn-text, button.cnr-reset.x-btn-text {
+.aloha-icon-cnr-resize, .aloha-icon-cnr-crop, .aloha-icon-cnr-reset {
 	background: url(../img/cropnresize.png);
 }
 
-button.cnr-crop {
+.aloha-icon-cnr-crop {
 	background-position: -2px -2px !important;
 }
 
-button.cnr-reset {
+.aloha-icon-cnr-reset {
 	background-position: -42px -2px !important;
 }
 
-.cnr-ratio {
+.aloha-icon-cnr-ratio {
 	background-image: url(../img/cropnresize.png) !important;
 	background-position: -60px -2px !important;
 }
@@ -101,7 +101,7 @@ button.cnr-reset {
 /*
  * fix to use big resize handle for images
  */
-.ui-resizable-se {
+.aloha .ui-resizable-se {
 	width: 16px;
 	height: 16px;
 	background-position: -80px -224px !important;
@@ -122,3 +122,5 @@ button.cnr-reset {
 }
 .aloha-image-box-active .ui-resizable-handle.ui-resizable-sw {
 }
+
+@import	"../vendor/jcrop/jquery.jcrop.css";

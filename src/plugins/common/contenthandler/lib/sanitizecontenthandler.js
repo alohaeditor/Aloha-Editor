@@ -1,11 +1,31 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* sanitizecontenthandler.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define(
-[ 'aloha/core', 'aloha/jquery', 'aloha/contenthandlermanager', 'aloha/console', 'vendor/sanitize' ],
+[ 'aloha/core', 'jquery', 'aloha/contenthandlermanager', 'aloha/console', 'vendor/sanitize' ],
 function( Aloha, jQuery, ContentHandlerManager, console ) {
 	"use strict";
 	
@@ -23,13 +43,13 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 
 	// very restricted sanitize config
 	Aloha.defaults.sanitize.restricted = {
-		elements: [ 'b', 'em', 'i', 'strong', 'u', 'p', 'span', 'div', 'br' ]
+		elements: [ 'b', 'em', 'i', 'strong', 'u', 'del', 'p', 'span', 'div', 'br' ]
 	}
 
 	// sanitize  config allowing a bit more (no tables)
 	Aloha.defaults.sanitize.basic = {
 		elements: [
-			'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+			'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'del', 'dl', 'dt', 'em',
 			'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
 			'sup', 'u', 'ul' ],
 
@@ -55,14 +75,14 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 	Aloha.defaults.sanitize.relaxed = {
 		elements: [
 			'a', 'abbr', 'b', 'blockquote', 'br', 'caption', 'cite', 'code', 'col',
-			'colgroup', 'dd', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+			'colgroup', 'dd', 'del', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 			'i', 'img', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong',
 			'sub', 'sup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'u',
 			'ul', 'span', 'hr', 'object', 'div'
 		],
 
 		attributes: {
-			'a': ['href', 'title', 'id', 'class', 'data-gentics-aloha-repository', 'data-gentics-aloha-object-id'],
+			'a': ['href', 'title', 'id', 'class', 'target', 'data-gentics-aloha-repository', 'data-gentics-aloha-object-id'],
 			'div': [ 'id', 'class'],
 			'abbr': ['title'],
 			'blockquote': ['cite'],
@@ -76,7 +96,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			'td': ['abbr', 'axis', 'colspan', 'rowspan', 'width'],
 			'th': ['abbr', 'axis', 'colspan', 'rowspan', 'scope', 'width'],
 			'ul': ['type'],
-			'span': ['class']
+			'span': ['class','style','lang','xml:lang']
 		},
 
 		protocols: {
@@ -94,7 +114,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		
 		// @TODO think about Aloha.settings.contentHandler.sanitize name/options
 		if ( Aloha.settings.contentHandler.sanitize && jQuery.inArray(Aloha.settings.contentHandler.sanitize, filter) > -1 ) {
-			config = eval('Aloha.defaults.sanitize.' + Aloha.settings.contentHandler.sanitize);
+			config = Aloha.defaults.sanitize[Aloha.settings.contentHandler.sanitize];
 		} else {
 			// use relaxed filter by default
 			config = Aloha.defaults.sanitize.relaxed;
@@ -109,7 +129,6 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		config.filters = [function( elem ) {
 			return elem.contentEditable != "false";
 		}];
-
 		sanitize = new Sanitize( config );
 	}
 
@@ -119,6 +138,12 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		 * @param content
 		 */
 		handleContent: function( content )  {
+			// sanitize does not work in IE7. It tries to set the style attribute via setAttributeNode() and this is know to not work in IE7
+			// (see http://www.it-blogger.com/2007-06-22/microsofts-internetexplorer-und-mitglied-nicht-gefunden/ as a reference)
+			if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+				return content;
+			}
+
 			if ( typeof sanitize === 'undefined' ) {
 			   initSanitize();
 			}

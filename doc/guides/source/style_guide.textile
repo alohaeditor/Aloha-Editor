@@ -1,38 +1,33 @@
 h2. JavaScript Style Guide
 
-After reading this guide, you will be able to:
-
-* Follow our naming conventions for files, variables and types.
-* Use RequireJS in a clean way.
-* Write clean JavaScript code that looks good.
-
 endprologue.
 
 h3. Code Conventions
 
 WARNING: The current codebase does not yet follow all of these principles. 
 
-INFO: If you checkout Aloha Editor from github you can use +bin/lint.sh+ to check the code with jslint 
-
-We follow all suggestions in the "jQuery coding style guide":http://docs.jquery.com/JQuery_Core_Style_Guidelines
-
+* We use jslint. Look for jslint4java-maven-plugin in pom.xml in the repository root to see our jslint configuration.
 * We use only the +TAB+ character for indentation.
 * We use +UpperCamelCase+ for class names, and +lowerCamelCase+ for method and property names.
 * Methods and properties that begin with an underscore (+_+) are @private@.
-* We use variable names that indicate the content of a variable.  
+* We don't use obfuscated variable names (e.g. with all vowels removed). Understandable abbreviations are OK.
+* Don't use "that" to refer to an outer "this". Use the name of the class instead (with first char lowercased).
 <javascript>
-
 	var MyObject = Class.extend({
-		// GOOD
-		var myObject = this;
-		setTimeout( function() {
-			console.log( myObject.name + ' done.' );
-		};
-		// BAD
-		var that = this;
-		setTimeout( function() {
-			console.log( that.name + ' done.' );
-		};
+		_constructor: function() {
+
+			// GOOD
+			var myObject = this;
+			setTimeout(function() {
+				console.log(myObject.name + ' done.');
+			};
+
+			// BAD
+			var that = this;
+			setTimeout(function() {
+				console.log(that.name + ' done.');
+			};
+		}
 	});
 </javascript>
 
@@ -53,10 +48,12 @@ All files which are RequireJS modules (scripts in +package/lib+) should follow t
  * aloha-sales@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
-
-define(['dependency'],
-function(Dependency) {
-	"use strict";
+define([
+	'dependency'
+], function(
+	Dependency
+) {
+	'use strict';
 
 	// Declare exports
 
@@ -100,94 +97,6 @@ greeterInstance.greet(); // alerts "Good Morning Mr. Chistopher"
 
 You can use +this._super()+ to call the superclass constructor.
 
-h3. Mixin Support
-
-Our class definition also supports mixins, so you can specify multiple arguments to @Class.extend@. For example, in order to make your class observable, you can mix in @core/mixin.Observable@:
-
-WARNING: The following code is not yet correct; it is however the way we want to change Aloha core.
-
-<javascript>
-define(
-['core/mixin'],
-function(mixin) {
-    "use strict";
-
-    return Class.extend(mixin.Observable, {
-    	// your methods here
-    });
-});
-</javascript>
-
-A mixin itself should not use Class.extend, but instead just return a simple object. You see this in the following example:
-
-<javascript filename="core/observable.js">
-define(
-[],
-function() {
-	"use strict";
-	var exports = {};
-
-	exports.Observable = {
-		bind: function(eventType, handler, scope) {
-			// implement method here
-		},
-		trigger: function(eventType) {
-			// implement method here
-		}
-	};
-
-	return exports;
-});
-</javascript>
-
-For a list of current mixins, you can soon check the API doc. Right now, there is only +Observable+.
-
-h3. Classes
-
-WARNING: Not current anymore, we strive for a more JS - style.
-
-Every class should go into one module which means one file. The filename should be lowercase, even if the class is camelcased.
-
-<javascript filename="package/lib/classname.js">
-/*!
- * Aloha Editor
- * Author & Copyright (c) 2011 Gentics Software GmbH
- * aloha-sales@gentics.com
- * Licensed unter the terms of http://www.aloha-editor.com/license.html
- */
-
-define(['core/observable'],
-function(Observable) {
-	"use strict";
-
-	/**
-	 * Description of the class
-	 *
-	 * @class MyClass
-	 */
-	return Class.extend(Observable, {
-
-		/**
-		 * An optional constructor
-		 *
-		 * @method
-		 * @constructor
-		 */
-		 _constructor: function() {
-
-		 }
-
-	});
-});
-</javascript>
-
-But a module is not limited to expose a class. You could also export one of the following:
-
-* Singletons (Class instances)
-* Mixins (Class definition without @Class.extend@ call)
-
-Or just about any other JavaScript value that is useful as a dependency.
-
 h3. Singletons
 
 All singletons should follow this structure:
@@ -199,7 +108,6 @@ All singletons should follow this structure:
  * aloha-sales@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
-
 define([],
 function() {
 	"use strict";
@@ -217,15 +125,14 @@ that have state.
 
 h3. RequireJS Dependency Order
 
-TODO: Explain the order
+The order of a module's dependencies listed in the call to define([...], function(...) should be in the following order:
 
-* The base class
-* Other Classes
-* i18n
-* i18nCore
-* Text files
-* vendor
-* css
+* The base class, if the module exports a subclass
+* Other Classes, if the module instantiates or uses other classes
+* i18n - plugin specific internationalization if applicable
+* i18nCore - core specific internationalization if applicable
+* vendor - third party modules and libraries
+* css - css files if applicable
 
 h3. Public API, Private methods and attributes
 
@@ -233,24 +140,9 @@ All methods and properties which are public API are marked with +@api+. The publ
 for a longer period by the Aloha Core Team, and when a public API changes, this is clearly communicated in the
 Release Notes of a version.
 
-On the contrary, we prefix +private+ methods and attributes with an underscore. The *user* of an API should never
-override or call methods +private+ methods as they are not meant for him to be overridden.
+If you use methods that are not marked with +@api@+ you are on your own.
 
-There's also a type in between: methods which are not +private+ but do not have a +@api+ annotation. They
-can be safely overridden by the user, and he should not experience any unwanted behavior. Still, the names or
-functionality of these methods can change without notice between releases.
-In the long run, all of these methods should become part of the public API, as soon as they are proven in real
-life.
-
-To sum it up, we have three types of methods/properties:
-
-* +@api+ methods: Public API, the user of the object can rely on the functionality to be stable, changes in @api are clearly communicated
-* non-@@api@ but also not private: The user can use it, but needs to be aware the method might still change.
-* private (prefixed with +_+): The user should never ever call or access this. Very strange things might happen.
-
-h3. Naming of methods
-
-h4. Initialization Methods
+h3. Initialization Methods
 
 Initialization methods should be named +init()+.
 
@@ -278,7 +170,3 @@ Bad:
 
 * @shutdown()@
 * @stop()@
-
-h3. Changelog
-
-* July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek

@@ -1,17 +1,57 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+/* list-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+define([
+	'aloha',
+	'jquery',
+	'aloha/plugin',
+	'ui/ui',
+	'ui/scopes',
+	'ui/button',
+	'ui/toggleButton',
+	'i18n!list/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'aloha/engine',
+	'PubSub'
+], function(
+	Aloha,
+	jQuery,
+	Plugin,
+	Ui,
+	Scopes,
+	Button,
+	ToggleButton,
+	i18n,
+	i18nCore,
+	Engine,
+	PubSub
+) {
+	'use strict';
 
-define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!list/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/engine'],
-function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
-	"use strict";
-
-	var
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * Register the ListPlugin as Aloha.Plugin
@@ -39,116 +79,70 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 
 			var that = this;
 
-//			//register the workaround-handler keypress handler on every editable
-//			Aloha.bind('aloha-editable-created', function(event, editable) {
-//				editable.obj.keyup(function(event){
-//					deleteWorkaroundHandler(event);
-//					return true;
-//				});
-//			});
-
-			// the 'create unordered list' button
-			this.createUnorderedListButton = new Aloha.ui.Button({
-				'name' : 'ul',
-				'iconClass' : 'aloha-button aloha-button-ul',
-				'size' : 'small',
-				'tooltip' : i18n.t('button.createulist.tooltip'),
-				'toggle' : true,
-				'onclick' : function (element, event) {
-					that.transformList(false);
-				}
-			});
-			// add to floating menu
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.createUnorderedListButton,
-				i18nCore.t('floatingmenu.tab.format'),
-				1
-			);
-
-			// the 'create ordered list' button
-			this.createOrderedListButton = new Aloha.ui.Button({
-				'name' : 'ol',
-				'iconClass' : 'aloha-button aloha-button-ol',
-				'size' : 'small',
-				'tooltip' : i18n.t('button.createolist.tooltip'),
-				'toggle' : true,
-				'onclick' : function (element, event) {
+			this._orderedListButton = Ui.adopt("orderedList", ToggleButton, {
+				tooltip: i18n.t("button.createolist.tooltip"),
+				icon: "aloha-icon aloha-icon-orderedlist",
+				scope: 'Aloha.continuoustext',
+				click: function(){
 					that.transformList(true);
 				}
 			});
-			// add to floating menu
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.createOrderedListButton,
-				i18nCore.t('floatingmenu.tab.format'),
-				1
-			);
 
+			this._unorderedListButton = Ui.adopt("unorderedList", ToggleButton, {
+				tooltip: i18n.t("button.createulist.tooltip"),
+				icon: "aloha-icon aloha-icon-unorderedlist",
+				scope: 'Aloha.continuoustext',
+				click: function(){
+					that.transformList(false);
+				}
+			});
 
-			FloatingMenu.createScope('Aloha.List', 'Aloha.continuoustext');
-			// the 'indent list' button
-			this.indentListButton = new Aloha.ui.Button({
-				'name' : 'indent-list',
-				'iconClass' : 'aloha-button aloha-button-indent-list',
-				'size' : 'small',
-				'tooltip' : i18n.t('button.indentlist.tooltip'),
-				'toggle' : false,
-				'onclick' : function (element, event) {
+			this._indentListButton = Ui.adopt("indentList", Button, {
+				tooltip: i18n.t('button.indentlist.tooltip'),
+				icon: 'aloha-icon aloha-icon-indent',
+				scope: 'Aloha.continuoustext',
+				click: function() {
 					that.indentList();
 				}
 			});
-			// add to floating menu
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.indentListButton,
-				i18n.t('floatingmenu.tab.list'),
-				1
-			);
 
-			// the 'outdent list' button
-			this.outdentListButton = new Aloha.ui.Button({
-				'name' : 'outdent-list',
-				'iconClass' : 'aloha-button aloha-button-outdent-list',
-				'size' : 'small',
-				'tooltip' : i18n.t('button.outdentlist.tooltip'),
-				'toggle' : false,
-				'onclick' : function (element, event) {
+			this._outdentListButton = Ui.adopt("outdentList", Button, {
+				tooltip: i18n.t('button.outdentlist.tooltip'),
+				icon: 'aloha-icon aloha-icon-outdent',
+				scope: 'Aloha.continuoustext',
+				click: function() {
 					that.outdentList();
 				}
 			});
-			// add to floating menu
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.outdentListButton,
-				i18n.t('floatingmenu.tab.list'),
-				1
-			);
 
-			// add the event handler for selection change
-			Aloha.bind('aloha-selection-changed', function ( event, rangeObject ) {
-				var i, effectiveMarkup;
+			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
+
+			// add the event handler for context selection change
+			PubSub.sub('aloha.selection.context-change', function(message){
+				var i,
+					effectiveMarkup,
+					rangeObject = message.range;
 				
 				// Hide all buttons in the list tab will make the list tab disappear
-				that.outdentListButton.hide();
-				that.indentListButton.hide();
-				that.createUnorderedListButton.setPressed(false);
-				that.createOrderedListButton.setPressed(false);
+				that._outdentListButton.show(false);
+				that._indentListButton.show(false);
+				that._unorderedListButton.setState(false);
+				that._orderedListButton.setState(false);
 				
 				for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
-						that.createUnorderedListButton.setPressed(true);
+						that._unorderedListButton.setState(true);
 						// Show all buttons in the list tab
-						that.outdentListButton.show();
-						that.indentListButton.show();
+						that._outdentListButton.show(true);
+						that._indentListButton.show(true);
 						break;
 					}
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
-						that.createOrderedListButton.setPressed(true);
+						that._orderedListButton.setState(true);
 						// Show all buttons in the list tab
-						that.outdentListButton.show();
-						that.indentListButton.show();
+						that._outdentListButton.show(true);
+						that._indentListButton.show(true);
 						break;
 					}
 				}
@@ -156,9 +150,6 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 				if (Aloha.activeEditable) {
 					that.applyButtonConfig(Aloha.activeEditable.obj);
 				}
-
-				// TODO this should not be necessary here!
-				FloatingMenu.doLayout();
 			});
 
 			// add the key handler for Tab
@@ -178,18 +169,35 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 			if (Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0]) {
 				// show/hide them according to the config
 				if (jQuery.inArray('ul', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ul") != -1) {
-					this.createUnorderedListButton.show();
+					this._unorderedListButton.show(true);
 				} else {
-					this.createUnorderedListButton.hide();
+					this._unorderedListButton.show(false);
 				}
 
 				if (jQuery.inArray('ol', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ol") != -1) {
-					this.createOrderedListButton.show();
+					this._orderedListButton.show(true);
 				} else {
-					this.createOrderedListButton.hide();
+					this._orderedListButton.show(false);
 				}
 
 			}
+		},
+		
+		/**
+		 * Make the given jQuery object (representing an editable) clean for saving
+		 * Find all li tags and remove editing attributes
+		 * @param obj jQuery object to make clean
+		 * @return void
+		 */
+		makeClean: function (obj) {
+			// find all li tags
+			obj.find('li').each(function () {
+				// Remove IE attributes
+				jQuery(this).removeAttr('hidefocus');
+				jQuery(this).removeAttr('hideFocus');
+				jQuery(this).removeAttr('tabindex');
+				jQuery(this).removeAttr('tabIndex');
+			});
 		},
 
 		/**
@@ -252,8 +260,8 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 				newPara, jqToTransform, nodeName;
 
 			// visible is set to true, but the button is not visible
-			this.outdentListButton.show();
-			this.indentListButton.show();
+			this._outdentListButton.show(true);
+			this._indentListButton.show(true);
 
 			if (!domToTransform) {
 				// wrap a paragraph around the selection
@@ -272,9 +280,6 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 						//IE7 requires an (empty or non-empty) text node
 						//inside the li for the selection to work.
 						li.appendChild(document.createTextNode(""));
-						/* if ( jQuery.browser.mozilla ) {
-							li.appendChild(document.createElement("BR"));
-						}*/
 
 						editable.append(jqList);
 						editable.focus();

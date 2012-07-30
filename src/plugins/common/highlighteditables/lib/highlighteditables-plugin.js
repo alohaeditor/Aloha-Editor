@@ -1,12 +1,31 @@
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-
-define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'css!highlighteditables/css/highlighteditables.css'],
+/* highlighteditables-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+define('highlighteditables/highlighteditables-plugin',
+['aloha', 'jquery', 'aloha/plugin'],
 function(Aloha, jQuery, Plugin) {
 	"use strict";
 
@@ -15,18 +34,27 @@ function(Aloha, jQuery, Plugin) {
 
 	return Plugin.create('highlighteditables', {
 
+		/**
+		 * default button configuration
+		 */
+		config: [ 'highlight' ],
+
 		init: function () {
 
 			// remember refernce to this class for callback
-			var that = this;
+			var that = this,
+				config;
 
 			// highlight editables as long as the mouse is moving
 			GENTICS.Utils.Position.addMouseMoveCallback(function () {
-				var i, editable;
+				var i,
+					editable;
 
 				for ( i = 0; i < Aloha.editables.length; i++) {
 					editable = Aloha.editables[i];
-					if (!Aloha.activeEditable && !editable.isDisabled()) {
+					config = that.getEditableConfig( editable.obj );
+
+					if ( !Aloha.activeEditable && !editable.isDisabled() && config == 'highlight' ) {
 						editable.obj.addClass('aloha-editable-highlight');
 					}
 				}
@@ -58,7 +86,8 @@ function(Aloha, jQuery, Plugin) {
 			for ( i = 0; i < Aloha.editables.length; i++) {
 				editable = Aloha.editables[i].obj;
 				if (editable.hasClass('aloha-editable-highlight')) {
-					editable.css('outline', editable.css('outlineColor') + ' ' + editable.css('outlineStyle') + ' ' + editable.css('outlineWidth'))
+					// IE8 fix - hardcode 5px because editable.css('outlineWidth') sometimes causes a javascript error
+					editable.css('outline', editable.css('outlineColor') + ' ' + editable.css('outlineStyle') + ' 5px')
 						.removeClass('aloha-editable-highlight')
 						.animate({
 							outlineWidth : '0px'
@@ -69,4 +98,3 @@ function(Aloha, jQuery, Plugin) {
 
 	});
 });
-

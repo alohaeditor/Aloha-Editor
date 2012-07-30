@@ -1,5 +1,5 @@
 define(
-['aloha/jquery', 'table/table-plugin-utils'],
+['jquery', 'table/table-plugin-utils'],
 function (jQuery, Utils) {
 	/**
 	 * Constructs a TableCell.
@@ -94,7 +94,7 @@ function (jQuery, Utils) {
 		} );
 
 		this.obj.bind( 'mousedown', function ( jqEvent ) {
-			setTimeout( function () {
+			window.setTimeout( function () {
 				that.wrapper.trigger( 'focus' );
 			}, 1 );
 			that.tableObj.selection.unselectCells();
@@ -139,6 +139,7 @@ function (jQuery, Utils) {
 
 			// remove the click event of the
 			this.obj.unbind('click');
+			this.obj.unbind('mousedown');
 
 			if (jQuery.trim(this.obj.attr('class')) == '') {
 				this.obj.removeAttr('class');
@@ -176,9 +177,6 @@ function (jQuery, Utils) {
 			// set the focus flag
 			this.hasFocus = true;
 
-			// select the whole content in the table-data field
-			this._selectAll(this.wrapper.get(0));
-
 			// unset the selection type
 			this.tableObj.selection.selectionType = 'cell';
 
@@ -201,7 +199,7 @@ function (jQuery, Utils) {
 		this.hasFocus = false;
 
 		// remove "active class"
-		this.obj.removeClass('aloha-table-cell-active');
+		this.obj.removeClass('aloha-table-cell_active');
 	};
 
 	/**

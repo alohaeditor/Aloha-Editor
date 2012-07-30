@@ -1,29 +1,246 @@
-/*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/* markup.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
+define([
+	'aloha/core',
+	'util/class',
+	'jquery',
+	'aloha/ecma5shims'
+],
+function( Aloha, Class, jQuery, shims ) {
 
-define(
-[ 'aloha/core', 'util/class', 'aloha/jquery' ],
-function( Aloha, Class, jQuery ) {
 "use strict";
 
 var GENTICS = window.GENTICS;
+
+var isOldIE = !!( jQuery.browser.msie &&
+				  9 > parseInt( jQuery.browser.version, 10 ) );
+
+function isBR( node ) {
+	return 'BR' === node.nodeName;
+}
+
+function isBlock( node ) {
+	return 'false' === jQuery( node ).attr( 'contenteditable' );
+}
+
+function isTextNode( node ) {
+	return node && 3 === node.nodeType; // Node.TEXT_NODE
+}
+
+function nodeLength( node ) {
+	return !node ? 0
+				 : ( isTextNode( node ) ? node.length
+										: node.childNodes.length );
+}
+
+function nextVisibleNode( node ) {
+	if ( !node ) {
+		return null;
+	}
+
+	if ( node.nextSibling ) {
+		// Skip over nodes that the user cannot see ...
+		if ( isTextNode( node.nextSibling ) &&
+			 !isVisibleTextNode( node.nextSibling ) ) {
+			return nextVisibleNode( node.nextSibling );
+		}
+
+		// Skip over propping <br>s ...
+		if ( isBR( node.nextSibling ) &&
+			 node.nextSibling === node.parentNode.lastChild ) {
+			return nextVisibleNode( node.nextSibling );	
+		}
+
+		// Skip over empty editable elements ...
+		if ( '' === node.nextSibling.innerHTML &&
+		     !isBlock( node.nextSibling ) ) {
+			return nextVisibleNode( node.nextSibling );
+		}
+
+		return node.nextSibling;
+	}
+
+	if ( node.parentNode ) {
+		return nextVisibleNode( node.parentNode );
+	}
+
+	return null;
+}
+
+function prevVisibleNode( node ) {
+	if ( !node ) {
+		return null;
+	}
+
+	if ( node.previousSibling ) {
+		// Skip over nodes that the user cannot see...
+		if ( isTextNode( node.previousSibling ) &&
+			 !isVisibleTextNode( node.previousSibling ) ) {
+			return prevVisibleNode( node.previousSibling );
+		}
+
+		// Skip over empty editable elements ...
+		if ( '' === node.previousSibling.innerHTML &&
+		     !isBlock( node.previousSibling ) ) {
+			return prevVisibleNode( node.previouSibling );
+		}
+
+		return node.previousSibling;
+	}
+
+	if ( node.parentNode ) {
+		return prevVisibleNode( node.parentNode );
+	}
+
+	return null;
+}
+
+/**
+ * Determines whether the given text node is visible to the the user,
+ * based on our understanding that browsers will not display
+ * superfluous white spaces.
+ *
+ * @param {HTMLEmenent} node The text node to be checked.
+ */
+function isVisibleTextNode( node ) {
+	return 0 < node.data.replace( /\s+/g, '' ).length;
+}
+
+function isFrontPosition( node, offset ) {
+	return ( 0 === offset ) ||
+		   ( offset <= node.data.length -
+					   node.data.replace( /^\s+/, '' ).length );
+}
+
+function isBlockInsideEditable( $block ) {
+	return $block.parent().hasClass( 'aloha-editable' );
+}
+
+function isEndPosition( node, offset ) {
+	var length = nodeLength( node );
+
+	if ( length === offset ) {
+		return true;
+	}
+
+	var isText = isTextNode( node );
+
+	// If within a text node, then ignore superfluous white-spaces,
+	// since they are invisible to the user.
+	if ( isText &&
+		 node.data.replace( /\s+$/, '' ).length === offset ) {
+		return true;
+	}
+
+	if ( 1 === length && !isText ) {
+		return isBR( node.childNodes[0] );
+	}
+
+	return false;
+}
+
+function blink( node ) {
+	jQuery( node )
+		.stop( true )
+		.css({ opacity: 0 })
+		.fadeIn( 0 ).delay( 100 )
+		.fadeIn(function () {
+			jQuery( node ).css({ opacity: 1 });
+		});
+
+	return node;
+}
+
+/**
+ * @TODO(petro): We need to be more intelligent about whether we insert a
+ *               block-level placeholder or a phrasing level element.
+ * @TODO(petro): test with <pre>
+ */
+function jumpBlock( block, isGoingLeft ) {
+	var range = new GENTICS.Utils.RangeObject();
+	var sibling = isGoingLeft ? prevVisibleNode( block )
+	                          : nextVisibleNode( block );
+
+	if ( !sibling || isBlock( sibling ) ) {
+		var $landing = jQuery( '<div>&nbsp;</div>' );
+
+		if ( isGoingLeft ) {
+			jQuery( block ).before( $landing );
+		} else {
+			jQuery( block ).after( $landing );
+		}
+
+		range.startContainer = range.endContainer = $landing[0];
+		range.startOffset = range.endOffset = 0;
+
+		// Clear out any old placeholder first ...
+		cleanupPlaceholders( range );
+
+		window.$_alohaPlaceholder = $landing;
+	} else {
+		range.startContainer = range.endContainer = sibling;
+		range.startOffset = range.endOffset = isGoingLeft ?
+			nodeLength( sibling ) : ( isOldIE ? 1 : 0 );
+
+		cleanupPlaceholders( range );
+	}
+
+	range.select();
+
+	Aloha.trigger( 'aloha-block-selected', block );
+	Aloha.Selection.preventSelectionChanged();
+}
+
+function nodeContains( node1, node2 ) {
+	return isOldIE ? ( shims.compareDocumentPosition( node1, node2 ) & 16 )
+	               : 0 < jQuery( node1 ).find( node2 ).length;
+}
+
+function isInsidePlaceholder( range ) {
+	var start = range.startContainer;
+	var end = range.endContainer;
+	var $placeholder = window.$_alohaPlaceholder;
+
+	return $placeholder.is( start )               ||
+	       $placeholder.is( end )                 ||
+	       nodeContains( $placeholder[0], start ) ||
+	       nodeContains( $placeholder[0], end );
+}
+
+function cleanupPlaceholders( range ) {
+	if ( window.$_alohaPlaceholder && !isInsidePlaceholder( range ) ) {
+		if ( 0 === window.$_alohaPlaceholder.html()
+		                 .replace( /^(&nbsp;)*$/, '' ).length ) {
+			window.$_alohaPlaceholder.remove();
+		}
+
+		window.$_alohaPlaceholder = null;
+	}
+}
 
 /**
  * Markup object
@@ -106,9 +323,14 @@ Aloha.Markup = Class.extend( {
 			}
 		}
 
-		// handle left (37) and right (39) keys for block detection
+		// LEFT (37), RIGHT (39) keys for block detection
 		if ( event.keyCode === 37 || event.keyCode === 39 ) {
-			return this.processCursor( rangeObject, event.keyCode );
+			if ( this.processCursor( rangeObject, event.keyCode ) ) {
+				cleanupPlaceholders( Aloha.Selection.rangeObject );
+				return true;
+			}
+
+			return false;
 		}
 
 		// BACKSPACE
@@ -139,66 +361,117 @@ Aloha.Markup = Class.extend( {
 	},
 
 	/**
-	 * Processing of cursor keys
-	 * will currently detect blocks (elements with contenteditable=false)
-	 * and selects them (normally the cursor would jump right past them)
+	 * Processing of cursor keys.
+	 * Detect blocks (elements with contenteditable=false) and will select them
+	 * (normally the cursor would simply jump right past them).
 	 *
-	 * For each block an 'aloha-block-selected' event will be triggered.
+	 * For each block that is selected, an 'aloha-block-selected' event will be
+	 * triggered.
 	 *
-	 * @param range the current range object
-	 * @param keyCode keyCode of current keypress
-	 * @return false if a block was found to prevent further events, true otherwise
+	 * @param {RangyRange} range A range object for the current selection.
+	 * @param {number} keyCode Code of the currently pressed key.
+	 * @return {boolean} False if a block was found, to prevent further events,
+	 *                   true otherwise.
 	 */
 	processCursor: function( range, keyCode ) {
-		var rt = range.getRangeTree(), // RangeTree reference
-		    i = 0,
-		    cursorLeft = keyCode === 37,
-		    cursorRight = keyCode === 39,
-		    nextSiblingIsBlock = false, // check whether the next sibling is a block (contenteditable = false)
-		    cursorIsWithinBlock = false, // check whether the cursor is positioned within a block (contenteditable = false)
-		    cursorAtLastPos = false, // check if the cursor is within the last position of the currently active dom element
-		    obj; // will contain references to dom objects
-
 		if ( !range.isCollapsed() ) {
 			return true;
 		}
 
-		for (;i < rt.length; i++) {
-			cursorAtLastPos = range.startOffset === rt[i].domobj.length;
-			if ( !cursorAtLastPos || typeof rt[i].domobj === 'undefined' ) {
-				continue;
-			}
-				
-			if ( cursorAtLastPos ) {
-				nextSiblingIsBlock = jQuery( rt[i].domobj.nextSibling ).attr('contenteditable') === 'false';
-				cursorIsWithinBlock = jQuery( rt[i].domobj ).parents('[contenteditable=false]').length > 0;
+		var node = range.startContainer;
 
-				if ( cursorRight && nextSiblingIsBlock ) {
-					obj = rt[i].domobj.nextSibling;
-					GENTICS.Utils.Dom.selectDomNode( obj );
-					Aloha.trigger( 'aloha-block-selected', obj );
-					Aloha.Selection.preventSelectionChanged();
-					return false;
-				}
+		if ( !node ) {
+			return true;
+		}
 
-				if ( cursorRight && !nextSiblingIsBlock ) {
-					obj = jQuery( rt[i].domobj ).get(0);
-					//obj = rt[i].domobj.nextSibling;
-					GENTICS.Utils.Dom.selectDomNode( obj );
+		var sibling;
+
+		// Versions of Internet Explorer that are older that 9, will
+		// erroneously allow you to enter and edit inside elements which have
+		// their contenteditable attribute set to false...
+		if ( isOldIE && !jQuery(node).contentEditable() ) {
+			var $parentBlock = jQuery( node ).parents(
+				'[contenteditable=false]' );
+			var isInsideBlock = $parentBlock.length > 0;
+
+			if ( isInsideBlock ) {
+				if ( isBlockInsideEditable( $parentBlock ) ) {
+					sibling = $parentBlock[0];
+				} else {
 					return true;
-				}
-
-				if ( cursorLeft && cursorIsWithinBlock ) {
-					obj = jQuery( rt[i].domobj ).parents('[contenteditable=false]').get(0);
-					if ( jQuery( obj ).parent().hasClass('aloha-editable') ) {
-						GENTICS.Utils.Dom.selectDomNode( obj );
-						Aloha.trigger( 'aloha-block-selected', obj );
-						Aloha.Selection.preventSelectionChanged();
-						return false;
-					}
 				}
 			}
 		}
+		
+		if ( !sibling ) {
+			// True if keyCode denotes LEFT or UP arrow key, otherwise they
+			// keyCode is for RIGHT or DOWN in which this value will be false.
+			var isLeft = (37 === keyCode || 38 === keyCode);
+			var offset = range.startOffset;
+
+			if ( isTextNode( node ) ) {
+				if ( isLeft ) {
+					// FIXME(Petro): Please consider if you have a better idea
+					//               of how we can work around this.
+					//
+					// Here is the problem... with Internet Explorer:
+					// ----------------------------------------------
+					//
+					// Versions of Internet Explorer older than 9, are buggy in
+					// how they `select()', or position a selection from cursor
+					// movements, when the following conditions are true:
+					//
+					//  * The range is collapsed.
+					//  * startContainer is a contenteditable text node.
+					//  * startOffset is 1.
+					//  * There is a non-conenteditable element left of the
+					//    startContainer.
+					//  * You attempt to move left to offset 0 (we consider a
+					//    range to be at "frontposition" if it is at offset 0
+					//    within its startContainer).
+					//
+					// What happens in IE 7, and IE 8, is that the selection
+					// will jump to the adjacent non-contenteditable
+					// element(s), instead moving to the front of the
+					// container, and the offset will be stuck at 1--even as
+					// the cursor is jumping around the screen!
+					//
+					// Our imperfect work-around is to reckon ourselves to be
+					// at the front of the next node (ie: offset 0 in other
+					// browsers), as soon as we detect that we are at offset 1
+					// in IEv<9.
+					//
+					// Considering the bug, I think this is acceptable because
+					// the user can still position themselve right between the
+					// block (non-contenteditable element) and the first
+					// characater of the text node by clicking there with the
+					// mouse, since this seems to work fine in all IE versions.
+					var isFrontPositionInIE = isOldIE && 1 === offset;
+
+					if ( !isFrontPositionInIE &&
+						 !isFrontPosition( node, offset ) ) {
+						return true;
+					}
+
+				} else if ( !isEndPosition( node, offset ) ) {
+					return true;
+				}
+
+			} else {
+				node = node.childNodes[
+					offset === nodeLength( node ) ? offset - 1 : offset ];
+			}
+
+			sibling = isLeft ? prevVisibleNode( node )
+			                 : nextVisibleNode( node );
+		}
+
+		if ( isBlock( sibling ) ) {
+			jumpBlock( sibling, isLeft );
+			return false;
+		}
+
+		return true;
 	},
 
 	/**
@@ -416,8 +689,9 @@ Aloha.Markup = Class.extend( {
 					if ( astext ) {
 						text += this.getFromSelectionTree( el.children, astext );
 					} else {
-						// when the html shall be fetched, we create a clone of the element and remove all the children
-						clone = jQuery( el.domobj ).clone( false ).empty();
+						// when the html shall be fetched, we create a clone of
+						// the element and remove all the children
+						clone = jQuery( el.domobj.outerHTML ).empty();
 						// then we do the recursion and add the selection into the clone
 						clone.html( this.getFromSelectionTree( el.children, astext ) );
 						// finally we get the html of the clone
@@ -892,7 +1166,7 @@ Aloha.Markup = Class.extend( {
 				if ( lastObj && rangeObject.startContainer === lastObj
 					 && rangeObject.startOffset === lastObj.length ) {
 					returnObj = jQuery( '<p></p>' );
-					inside = jQuery( rangeObject.splitObject ).clone().contents();
+					inside = jQuery( rangeObject.splitObject.outerHTML ).contents();
 					returnObj.append( inside );
 					return returnObj;
 				}
@@ -904,7 +1178,7 @@ Aloha.Markup = Class.extend( {
 				if ( rangeObject.startContainer.nodeName.toLowerCase() === 'br'
 					 && jQuery( rangeObject.startContainer ).hasClass( 'aloha-ephemera' ) ) {
 					returnObj = jQuery( '<p></p>' );
-					inside = jQuery( rangeObject.splitObject ).clone().contents();
+					inside = jQuery( rangeObject.splitObject.outerHTML ).contents();
 					returnObj.append( inside );
 					return returnObj;
 				}
@@ -916,7 +1190,7 @@ Aloha.Markup = Class.extend( {
 				}
 		}
 
-		return jQuery( rangeObject.splitObject ).clone();
+		return jQuery( rangeObject.splitObject.outerHTML );
 	},
 
 	/**
@@ -931,18 +1205,21 @@ Aloha.Markup = Class.extend( {
 	transformDomObject: function( domobj, nodeName, range ) {
 		// first create the new element
 		var jqOldObj = jQuery( domobj ),
-		    jqNewObj = jQuery( '<' + nodeName + '></' + nodeName + '>' ),
-		    i;
+		    jqNewObj = jQuery('<' + nodeName + '>'),
+		    i,
+		    attributes = jqOldObj[0].cloneNode(false).attributes;
 
-		// TODO what about events? css properties?
-
+		// TODO what about events?
 		// copy attributes
-		if ( jqOldObj[0].attributes ) {
-			for ( i = 0; i < jqOldObj[0].attributes.length; ++i ) {
-				jqNewObj.attr(
-					jqOldObj[0].attributes[ i ].nodeName,
-					jqOldObj[0].attributes[ i ].nodeValue
-				);
+		if (attributes) {
+			for ( i = 0; i < attributes.length; ++i ) {
+				if (   typeof attributes[i].specified === 'undefined'
+				    || attributes[i].specified) {
+					jqNewObj.attr(
+						attributes[ i ].nodeName,
+						attributes[ i ].nodeValue
+					);
+				}
 			}
 		}
 

@@ -8,7 +8,7 @@
     border: 1px solid #afafaf;
     border-collapse: separate;
     background-color: #fff;
-    z-index: 12000;
+    z-index: 999999;
 }
 
 .aloha-character-picker-overlay {
@@ -33,6 +33,6 @@
     background-color: #b9d6f9;
 }
 
-.x-btn button.aloha-button-characterpicker {
+.aloha-icon-characterpicker {
     background: url( '../img/icon.png' );
 }

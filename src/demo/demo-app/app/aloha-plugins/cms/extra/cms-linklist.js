@@ -3,7 +3,7 @@
  * --------------------------
  * A simple demo repository of links
 */
-define( [ 'aloha/jquery', 'aloha/repository' ],
+define( [ 'jquery', 'aloha/repository' ],
 function ( jQuery, repository ) {
 	
 	new ( repository.extend( {

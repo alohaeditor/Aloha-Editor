@@ -1,34 +1,39 @@
-/*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/* range.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 // Ensure GENTICS Namespace
 GENTICS = window.GENTICS || {};
 GENTICS.Utils = GENTICS.Utils || {};
 
 define(
-['aloha/jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
-function(jQuery, Dom, Class, console) {
+['jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
+function(jQuery, Dom, Class, console, rangy) {
 	"use strict";
 
-	var
-		GENTICS = window.GENTICS,
-		rangy = window.rangy;
+	var GENTICS = window.GENTICS;
 
 /**
  * @namespace GENTICS.Utils
@@ -156,38 +161,11 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 */
 	getContainerParents: function (limit, fromEnd) {
 		// TODO cache the calculated parents
-		var
-			container = fromEnd ? this.endContainer : this.startContainer,
-			parents, limitIndex,
-			i;
-
+		var container = fromEnd ? this.endContainer : this.startContainer;
 		if (!container) {
 			return false;
 		}
-
-		if ( typeof limit === 'undefined' || ! limit ) {
-			limit = jQuery('body');
-		}
-
-		
-		if (container.nodeType == 3) {
-			parents = jQuery(container).parents();
-		} else {
-			parents = jQuery(container).parents();
-			for (i = parents.length; i > 0; --i) {
-				parents[i] = parents[i - 1];
-			}
-			parents[0] = container;
-		}
-
-		// now slice this array
-		limitIndex = parents.index(limit);
-
-		if (limitIndex >= 0) {
-			parents = parents.slice(0, limitIndex);
-		}
-
-		return parents;
+		return jQuery(selfAndParentsUntil(container, limit ? limit[0] : null));
 	},
 
 	/**
@@ -324,9 +302,13 @@ GENTICS.Utils.RangeObject = Class.extend({
 	select: function() {
 		var ieRange, endRange, startRange, range, sel;
 
+		if ( typeof this.startContainer === 'undefined' || typeof this.endContainer === 'undefined' ) {
+			console.warn('can not select an empty range');
+			return false;
+		}
+
 		// create a range
 		range = rangy.createRange();
-
 		// set start and endContainer
 		range.setStart(this.startContainer,this.startOffset);
 		range.setEnd(this.endContainer, this.endOffset);
@@ -649,7 +631,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 */
 	getRangeTree: function (root) {
 		// TODO cache rangeTrees
-		if (typeof root === 'undefined') {
+		if ( typeof root === 'undefined' ) {
 			root = this.getCommonAncestorContainer();
 		}
 
@@ -830,16 +812,21 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	findMarkup: function (comparator, limit, atEnd) {
-		var parents = this.getContainerParents(limit, atEnd),
-			returnValue = false;
-		jQuery.each(parents, function (index, domObj) {
-			if (comparator.apply(domObj)) {
-				returnValue = domObj;
-				return false;
+		var container = atEnd ? this.endContainer : this.startContainer,
+		    limit = limit ? limit[0] : null,
+		    parents,
+		    i,
+		    len;
+		if (!container) {
+			return;
+		}
+		parents = selfAndParentsUntil(container, limit);
+		for (i = 0, len = parents.length; i < len; i++) {
+			if (comparator.apply(parents[i])) {
+				return parents[i];
 			}
-		});
-
-		return returnValue;
+		}
+		return false;
 	},
 
 	/**
@@ -918,6 +905,46 @@ GENTICS.Utils.RangeTree = Class.extend({
 	 */
 	children: []
 });
+
+	function selfAndParentsUntil(container, limit) {
+		var parents = [],
+		    cur;
+		if (1 === container.nodeType) {
+			cur = container;
+		} else {
+			cur = container.parentNode;
+		}
+		for (;;) {
+			if (!cur || cur === limit || 9 === cur.nodeType) {
+				break;
+			}
+			if (1 === cur.nodeType) {
+				parents.push(cur);
+			}
+			cur = cur.parentNode;
+		}
+		return parents;
+	}
 	
+	function selfAndParentsUntil(container, limit) {
+		var parents = [],
+		    cur;
+		if (1 === container.nodeType) {
+			cur = container;
+		} else {
+			cur = container.parentNode;
+		}
+		for (;;) {
+			if (!cur || cur === limit || 9 === cur.nodeType) {
+				break;
+			}
+			if (1 === cur.nodeType) {
+				parents.push(cur);
+			}
+			cur = cur.parentNode;
+		}
+		return parents;
+	}
+
 	return GENTICS.Utils.RangeObject;
 });

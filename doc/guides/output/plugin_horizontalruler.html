@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Editor Guides: Horizontalruler Plugin</title>
+  <title>: The Horizontalruler Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,8 +42,8 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/">Aloha Guides</a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -57,10 +57,12 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="aloha_jquery.html">Aloha and jQuery</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd>Configuring Aloha Editor</dd>
+      <dd>Aloha Editor and jQuery</dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
       <dd><a href="repository.html">Working with repositories</a></dd>
     <dt>The Core</dt>
@@ -68,10 +70,10 @@
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd>Aloha Editor toolbar</dd>
+      <dd>Aloha Editor sidebar</dd>
+      <dd>Aloha Editor UI API</dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -80,12 +82,13 @@
       <dd><a href="plugin_image.html">Image</a></dd>
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
       <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+      <dd>Numerated Headers</dd>
       <dd><a href="plugin_undo.html">Undo</a></dd>
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
       <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
+      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
@@ -103,22 +106,25 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Horizontalruler Plugin</h2>
-<p>The Horizontalruler Plugin allows you to insert a horizontal ruler tag aka <code>&lt;hr&gt;</code> at the current cursor position.</p>
+            <h2>The Horizontalruler Plugin</h2>
+<p>With this plugin the editor has the possibility to insert a horizontal ruler <tt>&lt;hr&gt;</tt>-element.</p>
 
           </div>
-        <h3 id="components">1 Components</h3>
+        <h3 id="functional-description">1 Functional Description</h3>
+<p>In order to insert a horizontal ruler move the cursor to the desired position and open the &#8220;Insert&#8221; tab at the Aloha Editor. Now click on the Horizontalruler plugin button and the ruler <tt>&lt;hr&gt;</tt> will be insert. To delete a horizontal ruler just place the cursor behind the ruler and press backspace.</p>
+<h3 id="components">2 Components</h3>
 <p>The plugin only offers a single component:</p>
 <ul>
 	<li>hr &#8211; a button which will insert a horizontal ruler at the cursor position</li>
 </ul>
-<h3 id="plugin-settings">2 Plugin Settings</h3>
+<h3 id="plugin-settings">3 Plugin Settings</h3>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 	Aloha.settings.plugins.horizontalruler: {
+		config: [ 'hr '], // enable the plugin
 		editables: {
-			'#my-editable': []			// disable the plugin for the editable with ID my-editable
+			'#my-editable': [] // disable the plugin for the editable with ID my-editable
 		}
 	}
 </pre></div>
@@ -127,7 +133,8 @@
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#components"><p>Components</p>
+            <li><a href="#functional-description"><p>Functional Description</p>
+</a></li><li><a href="#components"><p>Components</p>
 </a></li><li><a href="#plugin-settings"><p>Plugin Settings</p>
 </a></li>
           </ol>

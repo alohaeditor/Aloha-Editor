@@ -1,6 +1,6 @@
 define( [
 	'aloha',
-	'aloha/jquery',
+	'jquery',
 	'aloha/plugin',
 	'../../cms/extra/cms-linklist' // custom linklist
 ], function ( Aloha, jQuery, Plugin ) {

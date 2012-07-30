@@ -1,6 +1,6 @@
 define(
 //['aloha/ecma5'],
-['aloha/ecma5shims', 'aloha/jquery'],
+['aloha/ecma5shims', 'jquery'],
 function($_, jQuery) {
 	"use strict";
 
@@ -723,7 +723,7 @@ function myQueryCommandValue(command, range) {
 		}
 
 		// "Return command's value."
-		return commands[command].value();
+		return commands[command].value(range);
 	});
 }
 //@}
@@ -862,25 +862,30 @@ function isCollapsedLineBreak(br) {
 		ref = ref.parentNode;
 	}
 
-	var refStyle = $_( ref ).hasAttribute("style") ? ref.getAttribute("style") : null;
-	ref.style.height = "auto";
-	ref.style.maxHeight = "none";
-	ref.style.minHeight = "0";
-	var space = document.createTextNode("\u200b");
+	var origStyle = {
+		height: ref.style.height,
+		maxHeight: ref.style.maxHeight,
+		minHeight: ref.style.minHeight
+	};
+
+	ref.style.height = 'auto';
+	ref.style.maxHeight = 'none';
+	if (!(jQuery.browser.msie && jQuery.browser.version < 8)) {
+		ref.style.minHeight = '0';
+	}
+	var space = document.createTextNode('\u200b');
 	var origHeight = ref.offsetHeight;
 	if (origHeight == 0) {
-		throw "isCollapsedLineBreak: original height is zero, bug?";
+		throw 'isCollapsedLineBreak: original height is zero, bug?';
 	}
 	br.parentNode.insertBefore(space, br.nextSibling);
 	var finalHeight = ref.offsetHeight;
 	space.parentNode.removeChild(space);
-	if (refStyle === null) {
-		// Without the setAttribute() line, removeAttribute() doesn't work in
-		// Chrome 14 dev.  I have no idea why.
-		ref.setAttribute("style", "");
-		ref.removeAttribute("style");
-	} else {
-		ref.setAttribute("style", refStyle);
+
+	ref.style.height = origStyle.height;
+	ref.style.maxHeight = origStyle.maxHeight;
+	if (!(jQuery.browser.msie && jQuery.browser.version < 8)) {
+		ref.style.minHeight = origStyle.minHeight;
 	}
 
 	// Allow some leeway in case the zwsp didn't create a whole new line, but
@@ -892,10 +897,12 @@ function isCollapsedLineBreak(br) {
 // "An extraneous line break is a br that has no visual effect, in that
 // removing it from the DOM would not change layout, except that a br that is
 // the sole child of an li is not extraneous."
+
 //
 // FIXME: This doesn't work in IE, since IE ignores display: none in
 // contenteditable.
 function isExtraneousLineBreak(br) {
+
 	if (!isHtmlElement(br, "br")) {
 		return false;
 	}
@@ -913,30 +920,38 @@ function isExtraneousLineBreak(br) {
 	while ($_.getComputedStyle(ref).display == "inline") {
 		ref = ref.parentNode;
 	}
-	var refStyle = $_( ref ).hasAttribute("style") ? ref.getAttribute("style") : null;
-	ref.style.height = "auto";
-	ref.style.maxHeight = "none";
-	ref.style.minHeight = "0";
-	var brStyle = $_( br ).hasAttribute("style") ? br.getAttribute("style") : null;
+
+	var origStyle = {
+		height: ref.style.height,
+		maxHeight: ref.style.maxHeight,
+		minHeight: ref.style.minHeight
+	};
+
+	ref.style.height = 'auto';
+	ref.style.maxHeight = 'none';
+	ref.style.minHeight = '0';
+
 	var origHeight = ref.offsetHeight;
 	if (origHeight == 0) {
 		throw "isExtraneousLineBreak: original height is zero, bug?";
 	}
-	br.setAttribute("style", "display:none");
+
+	var origBrDisplay = br.style.display;
+	br.style.display = 'none';
 	var finalHeight = ref.offsetHeight;
-	if (refStyle === null) {
-		// Without the setAttribute() line, removeAttribute() doesn't work in
-		// Chrome 14 dev.  I have no idea why.
-		ref.setAttribute("style", "");
-		ref.removeAttribute("style");
-	} else {
-		ref.setAttribute("style", refStyle);
-	}
-	if (brStyle === null) {
+
+	// Restore original styles to the touched elements.
+	ref.style.height = origStyle.height;
+	ref.style.maxHeight = origStyle.maxHeight;
+	ref.style.minHeight = origStyle.minHeight;
+	br.style.display = origBrDisplay;
+
+	// https://github.com/alohaeditor/Aloha-Editor/issues/516
+	// look like it works in msie > 7
+	/* if (jQuery.browser.msie && jQuery.browser.version < 8) {
 		br.removeAttribute("style");
-	} else {
-		br.setAttribute("style", brStyle);
-	}
+		ref.removeAttribute("style");
+	} */
 
 	return origHeight == finalHeight;
 }
@@ -1003,7 +1018,7 @@ function collapseWhitespace(node, range) {
 
 	// iterate through the node data
 	for (var i = 0; i < node.data.length; ++i) {
-		if (/[\t\n\r ]/.test(node.data[i])) {
+		if (/[\t\n\r ]/.test(node.data.substr(i, 1))) {
 			// found a whitespace
 			if (!wsFound) {
 				// this is the first whitespace in the current sequence
@@ -1021,7 +1036,7 @@ function collapseWhitespace(node, range) {
 				}
 			}
 		} else {
-			newData += node.data[i];
+			newData += node.data.substr(i, 1);
 			wsFound = false;
 		}
 	}
@@ -1405,6 +1420,43 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 	}
 }
 
+/**
+ * Copy all non empty attributes from an existing to a new element
+ * 
+ * @param {dom} element The source DOM element
+ * @param {dom} newElement The new DOM element which will get the attributes of the source DOM element
+ * @return void
+ */
+function copyAttributes( element, newElement ) {
+
+	// This is an IE7 workaround. We identified three places that were connected 
+	// to the mysterious ie7 crash:
+	// 1. Add attribute to dom element (Initialization of jquery-ui sortable)
+	// 2. Access the jquery expando attribute. Just reading the name is 
+	//    sufficient to make the browser vulnerable for the crash (Press enter)
+	// 3. On editable blur the Aloha.editables[0].getContents(); gets invoked.
+	//    This invokation somehow crashes the ie7. We assume that the access of 
+	//    shared expando attribute updates internal references which are not 
+	//    correclty handled during clone(); 
+	if ( jQuery.browser.msie && jQuery.browser.version >=7 && typeof element.attributes[jQuery.expando] !== 'undefined' ) {
+		jQuery(element).removeAttr(jQuery.expando);
+	}
+
+	var attrs = element.attributes;
+	for ( var i = 0; i < attrs.length; i++ ) {
+		var attr = attrs[i];
+		// attr.specified is an IE specific check to exclude attributes that were never really set.
+		if (typeof attr.specified == "undefined" || attr.specified) {
+			if ( typeof newElement.setAttributeNS === 'function' ) {
+				newElement.setAttributeNS( attr.namespaceURI, attr.name, attr.value );
+			} else {
+				// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515 
+				newElement.setAttribute( attr.name, attr.value );
+			}
+		}
+	}
+}
+
 function setTagName(element, newName, range) {
 	// "If element is an HTML element with local name equal to new name, return
 	// element."
@@ -1426,14 +1478,8 @@ function setTagName(element, newName, range) {
 	element.parentNode.insertBefore(replacementElement, element);
 
 	// "Copy all attributes of element to replacement element, in order."
-	for (var i = 0; i < element.attributes.length; i++) {
-		if (typeof replacementElement.setAttributeNS === 'function') {
-			replacementElement.setAttributeNS(element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value);
-		} else {
-			replacementElement.setAttribute(element.attributes[i].name, element.attributes[i].value);
-		}
-	}
-
+	copyAttributes( element,  replacementElement );
+	
 	// "While element has children, append the first child of element as the
 	// last child of replacement element, preserving ranges."
 	while (element.childNodes.length) {
@@ -1445,10 +1491,10 @@ function setTagName(element, newName, range) {
 
 	// if the range still uses the old element, we modify it to the new one
 	if (range.startContainer === element) {
-		range.setStart(replacementElement, range.startOffset);
+		range.startContainer = replacementElement;
 	}
 	if (range.endContainer === element) {
-		range.setEnd(replacementElement, range.endOffset);
+		range.endContainer = replacementElement;
 	}
 
 	// "Return replacement element."
@@ -3209,6 +3255,126 @@ function setSelectionValue(command, newValue, range) {
 	});
 }
 
+/**
+ * attempt to retrieve a block like a table or an Aloha Block
+ * which is located one step right of the current caret position.
+ * If an appropriate element is found it will be returned or
+ * false otherwise
+ * 
+ * @param {element} node current node we're in
+ * @param {number} offset current offset within that node
+ * 
+ * @return the dom node if found or false if no appropriate
+ * element was found
+ */
+function getBlockAtNextPosition(node, offset) {
+	// if we're inside a text node we first have to check
+	// if there is nothing but tabs, newlines or the like
+	// after our current cursor position
+	if (node.nodeType === $_.Node.TEXT_NODE &&
+	offset < node.length) {
+		for (var i = offset; i < node.length; i++) {
+			if ((node.data.charAt(i) !== '\t' &&
+			node.data.charAt(i) !== '\r' &&
+			node.data.charAt(i) !== '\n') ||
+			node.data.charCodeAt(i) === 160) { // &nbsp;
+				// this is a character that has to be deleted first
+				return false;
+			}
+		}
+	}
+
+	// try the most simple approach first: the next sibling
+	// is a table
+	if (node.nextSibling &&
+	node.nextSibling.className &&
+	node.nextSibling.className.indexOf("aloha-table-wrapper") >= 0) {
+		return node.nextSibling;
+	}
+	
+	// since we got only ignorable whitespace here determine if
+	// our nodes parents next sibling is a table
+	if (node.parentNode &&
+	node.parentNode.nextSibling &&
+	node.parentNode.nextSibling.className &&
+	node.parentNode.nextSibling.className.indexOf("aloha-table-wrapper") >= 0) {
+		return node.parentNode.nextSibling;
+	}
+
+	// our parents nextsibling is a pure whitespace node such as
+	// generated by sourcecode indentation so we'll check for
+	// the next next sibling
+	if (node.parentNode &&
+	node.parentNode.nextSibling &&
+	isWhitespaceNode(node.parentNode.nextSibling) &&
+	node.parentNode.nextSibling.nextSibling &&
+	node.parentNode.nextSibling.nextSibling.className &&
+	node.parentNode.nextSibling.nextSibling.className.indexOf("aloha-table-wrapper") >= 0) {
+		return node.parentNode.nextSibling.nextSibling;
+	}
+
+	// Note: the search above works for tables, since they cannot be
+	// nested deeply in paragraphs and other formatting tags. If this code
+	// is extended to work also for other blocks, the search probably needs to be adapted
+}
+
+/**
+ * Attempt to retrieve a block like a table or an Aloha Block
+ * which is located right before the current position.
+ * If an appropriate element is found, it will be returned or
+ * false otherwise
+ * 
+ * @param {element} node current node
+ * @param {offset} offset current offset
+ * 
+ * @return dom node of found or false if no appropriate
+ * element was found
+ */
+function getBlockAtPreviousPosition(node, offset) {
+	if (node.nodeType === $_.Node.TEXT_NODE && offset > 0) {
+		for (var i = offset-1; i >= 0; i--) {
+			if ((node.data.charAt(i) !== '\t' &&
+			node.data.charAt(i) !== '\r' &&
+			node.data.charAt(i) !== '\n') ||
+			node.data.charCodeAt(i) === 160) { // &nbsp;
+				// this is a character that has to be deleted first
+				return false;
+			}
+		}
+	}
+
+	// try the previous sibling
+	if (node.previousSibling &&
+	node.previousSibling.className &&
+	node.previousSibling.className.indexOf("aloha-table-wrapper") >= 0) {
+		return node.previousSibling;
+	}
+
+	// try the parent's previous sibling
+	if (node.parentNode &&
+	node.parentNode.previousSibling &&
+	node.parentNode.previousSibling.className &&
+	node.parentNode.previousSibling.className.indexOf("aloha-table-wrapper") >= 0) {
+		return node.parentNode.previousSibling;
+	}
+
+	// the parent's previous sibling might be a whitespace node
+	if (node.parentNode &&
+	node.parentNode.previousSibling &&
+	isWhitespaceNode(node.parentNode.previousSibling) &&
+	node.parentNode.previousSibling.previousSibling &&
+	node.parentNode.previousSibling.previousSibling.className &&
+	node.parentNode.previousSibling.previousSibling.className.indexOf('aloha-table-wrapper') >= 0) {
+		return node.parentNode.previousSibling.previousSibling;
+	}
+
+	// Note: the search above works for tables, since they cannot be
+	// nested deeply in paragraphs and other formatting tags. If this code
+	// is extended to work also for other blocks, the search probably needs to be adapted
+
+	return false;
+}
+
 
 //@}
 ///// The backColor command /////
@@ -3692,7 +3858,7 @@ commands.removeformat = {
 			"hilitecolor",
 			"italic",
 			"strikethrough",
-			"underline",
+			"underline"
 		] ).forEach(function(command) {
 			setSelectionValue(command, null);
 		});
@@ -4028,27 +4194,51 @@ function fixDisallowedAncestors(node, range) {
 
 		// now that the parent has only the node as child (because we
 		// removed any existing empty text nodes), we can safely unwrap the
-		// node, and correct the range if necessary
+		// node's contents, and correct the range if necessary
 		if (node.parentNode.childNodes.length == 1) {
-			var correctStart = false;
-			var correctEnd = false;
-			if (range.startContainer === node.parentNode) {
-				correctStart = true;
+			var newStartOffset = range.startOffset;
+			var newEndOffset = range.endOffset;
+
+			if (range.startContainer === node.parentNode && range.startOffset > getNodeIndex(node)) {
+				// the node (1 element) will be replaced by its contents (contents().length elements)
+				newStartOffset = range.startOffset + (jQuery(node).contents().length - 1);
 			}
-			if (range.endContainer === node.parentNode) {
-				correctEnd = true;
+			if (range.endContainer === node.parentNode && range.endOffset > getNodeIndex(node)) {
+				// the node (1 element) will be replaced by its contents (contents().length elements)
+				newEndOffset = range.endOffset + (jQuery(node).contents().length - 1);
 			}
-			jQuery(node).unwrap();
-			if (correctStart) {
-				range.startContainer = node.parentNode;
-				range.startOffset = range.startOffset + getNodeIndex(node);
-			}
-			if (correctEnd) {
-				range.endContainer = node.parentNode;
-				range.endOffset = range.endOffset + getNodeIndex(node);
-			}
+			jQuery(node).contents().unwrap();
+			range.startOffset = newStartOffset;
+			range.endOffset = newEndOffset;
+			// after unwrapping, we are done
+			break;
 		} else {
+			// store the original parent
+			var originalParent = node.parentNode;
 			splitParent([node], range);
+			// check whether the parent did not change, so the split did not work, e.g.
+			// because we already reached the editing host itself.
+			// this situation can occur, e.g. when we insert a paragraph into an contenteditable span
+			// in such cases, we just unwrap the contents of the paragraph
+			if (originalParent === node.parentNode) {
+				// so we unwrap now
+				var newStartOffset = range.startOffset;
+				var newEndOffset = range.endOffset;
+
+				if (range.startContainer === node.parentNode && range.startOffset > getNodeIndex(node)) {
+					// the node (1 element) will be replaced by its contents (contents().length elements)
+					newStartOffset = range.startOffset + (jQuery(node).contents().length - 1);
+				}
+				if (range.endContainer === node.parentNode && range.endOffset > getNodeIndex(node)) {
+					// the node (1 element) will be replaced by its contents (contents().length elements)
+					newEndOffset = range.endOffset + (jQuery(node).contents().length - 1);
+				}
+				jQuery(node).contents().unwrap();
+				range.startOffset = newStartOffset;
+				range.endOffset = newEndOffset;
+				// after unwrapping, we are done
+				break;
+			}
 		}
 	}
 
@@ -4527,7 +4717,7 @@ function recordCurrentStatesAndValues(range) {
 
 	// "Add ("fontSize", node's effective command value for "fontSize") to
 	// overrides."
-	overrides.push("fontsize", getEffectiveCommandValue(node, "fontsize"));
+	overrides.push(["fontsize", getEffectiveCommandValue(node, "fontsize")]);
 
 	// "Return overrides."
 	return overrides;
@@ -4550,7 +4740,7 @@ function restoreStatesAndValues(overrides, range) {
 			// returns something different from override, call
 			// execCommand(command)."
 			if (typeof override == "boolean"
-			&& myQueryCommandState(command) != override) {
+			&& myQueryCommandState(command, range) != override) {
 				myExecCommand(command);
 
 			// "Otherwise, if override is a string, and command is not
@@ -4559,8 +4749,8 @@ function restoreStatesAndValues(overrides, range) {
 			// override)."
 			} else if (typeof override == "string"
 			&& command != "fontsize"
-			&& !areEquivalentValues(command, myQueryCommandValue(command), override)) {
-				myExecCommand(command, false, override);
+			&& !areEquivalentValues(command, myQueryCommandValue(command, range), override)) {
+				myExecCommand(command, false, override, range);
 
 			// "Otherwise, if override is a string; and command is "fontSize";
 			// and either there is a value override for "fontSize" that is not
@@ -4579,7 +4769,7 @@ function restoreStatesAndValues(overrides, range) {
 					&& !areLooselyEquivalentValues(command, getEffectiveCommandValue(node, "fontsize"), override)
 				)
 			)) {
-				myExecCommand("fontsize", false, override);
+				myExecCommand("fontsize", false, override, range);
 
 			// "Otherwise, continue this loop from the beginning."
 			} else {
@@ -4823,10 +5013,20 @@ function deleteContents() {
 		// node."
 		startNode.deleteData(startOffset, endOffset - startOffset);
 
+		// if deleting the text moved two spaces together, we replace the left one by a &nbsp;, which makes the two spaces a visible
+		// two space sequence
+		if (startOffset > 0 && startNode.data.substr(startOffset - 1, 1) === ' '
+		&& startOffset < startNode.data.length && startNode.data.substr(startOffset, 1) === ' ') {
+			startNode.replaceData(startOffset - 1, 1, '\xa0');
+		}
+
 		// "Canonicalize whitespace at (start node, start offset)."
 		canonicalizeWhitespace(startNode, startOffset);
 
 		// "Set range's end to its start."
+		// Ok, also set the range's start to its start, because modifying the text 
+		// might have somehow corrupted the range
+		range.setStart(range.startContainer, range.startOffset);
 		range.setEnd(range.startContainer, range.startOffset);
 
 		// "Restore states and values from overrides."
@@ -5531,6 +5731,42 @@ function canonicalizeWhitespace(node, offset) {
 ///// Indenting and outdenting /////
 //@{
 
+function cleanLists(node, range) {
+	// remove any whitespace nodes around list nodes
+	if (node) {
+		jQuery(node).find('ul,ol,li').each(function () {
+			jQuery(this).contents().each(function () {
+				if (isWhitespaceNode(this)) {
+					var index = getNodeIndex(this);
+
+					// if the range points to somewhere behind the removed text node, we reduce the offset
+					if (range.startContainer === this.parentNode && range.startOffset > index) {
+						range.startOffset--;
+					} else if (range.startContainer === this) {
+						// the range starts in the removed text node, let it start right before
+						range.startContainer = this.parentNode;
+						range.startOffset = index;
+					}
+					// same thing for end of the range
+					if (range.endContainer === this.parentNode && range.endOffset > index) {
+						range.endOffset--;
+					} else if (range.endContainer === this) {
+						range.endContainer = this.parentNode;
+						range.endOffset = index;
+					}
+					// finally remove the whitespace node
+					jQuery(this).remove();
+				}
+			});
+		});
+	}
+}
+
+
+//@}
+///// Indenting and outdenting /////
+//@{
+
 function indentNodes(nodeList, range) {
 	// "If node list is empty, do nothing and abort these steps."
 	if (!nodeList.length) {
@@ -6152,6 +6388,15 @@ function justifySelection(alignment, range) {
 	}
 }
 
+//@}
+///// Check whether the given element is an end break /////
+//@{
+function isEndBreak(element) {
+	if (!isHtmlElement(element, 'br')) {
+		return false;
+	}
+	return jQuery(element).hasClass('aloha-end-br');
+}
 
 //@}
 ///// Create an end break /////
@@ -6159,6 +6404,7 @@ function justifySelection(alignment, range) {
 function createEndBreak() {
 	var endBr = document.createElement("br");
 	endBr.setAttribute("class", "aloha-end-br");
+
 	return endBr;
 }
 
@@ -6176,6 +6422,7 @@ function createEndBreak() {
  */
 commands["delete"] = {
 	action: function(value, range) {
+
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
 		if (!range.collapsed) {
@@ -6261,9 +6508,12 @@ commands["delete"] = {
 			}
 		}
 
-		// collapse whitespace sequences
-		collapseWhitespace(node, range);
-		offset = range.startOffset;
+		// if the previous node is an aloha-table we want to delete it
+		var delBlock;
+		if (delBlock = getBlockAtPreviousPosition(node, offset)) {
+			delBlock.parentNode.removeChild(delBlock);
+			return;
+		}
 
 		// "If node is a Text node and offset is not zero, call collapse(node,
 		// offset) on the Selection. Then delete the contents of the range with
@@ -6271,12 +6521,22 @@ commands["delete"] = {
 		// steps."
 		if (node.nodeType == $_.Node.TEXT_NODE
 		&& offset != 0) {
+			range.setStart(node, offset - 1);
+			range.setEnd(node, offset - 1);
+			deleteContents(node, offset - 1, node, offset);
+			return;
+		}
+
+		// @iebug
+		// when inserting a special char via the plugin 
+		// there where problems deleting them again with backspace after insertation
+		// see https://github.com/alohaeditor/Aloha-Editor/issues/517
+		if (node.nodeType == $_.Node.TEXT_NODE
+		&& offset == 0 && jQuery.browser.msie) {
+			offset = 1;
 			range.setStart(node, offset);
 			range.setEnd(node, offset);
-			// fix range start container offset according to old code
-			// so we can still pass our range and have it modified, but
-			// also conform with the previous implementation
-			range.startOffset -= 1;
+			range.startOffset = 0;
 			deleteContents(range);
 			return;
 		}
@@ -6801,8 +7061,8 @@ commands.forwarddelete = {
 		while (true) {
 			// check whether the next element is a br or hr
 			if ( offset < node.childNodes.length ) {
-				isBr = isHtmlElement(node.childNodes[offset], "br") || false;
-				isHr = isHtmlElement(node.childNodes[offset], "hr") || false;
+//				isBr = isNamedHtmlElement(node.childNodes[offset], "br") || false;
+//				isHr = isNamedHtmlElement(node.childNodes[offset], "hr") || false;
 			}
 
 			// "If offset is the length of node and node's nextSibling is an
@@ -6856,9 +7116,15 @@ commands.forwarddelete = {
 		}
 
 		// collapse whitespace in the node, if it is a text node
-		collapseWhitespace(node, range);
-		offset = range.startOffset;
+		canonicalizeWhitespace(range.startContainer, range.startOffset);
 
+		// if the next node is an aloha-table we want to delete it
+		var delBlock;
+		if (delBlock = getBlockAtNextPosition(node, offset)) {
+			delBlock.parentNode.removeChild(delBlock);
+			return;
+		}
+		
 		// "If node is a Text node and offset is not node's length:"
 		if (node.nodeType == $_.Node.TEXT_NODE
 		&& offset != getNodeLength(node)) {
@@ -7360,6 +7626,12 @@ commands.insertlinebreak = {
 			range.setStart(br.parentNode, 1 + getNodeIndex(br));
 			range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 		}
+		
+		// IE7 is adding this styles: height: auto; min-height: 0px; max-height: none;
+		// with that there is the ugly "IE-editable-outline"
+		if (jQuery.browser.msie && jQuery.browser.version < 8) {
+			br.parentNode.removeAttribute("style");
+		}
 	}
 };
 
@@ -7381,9 +7653,13 @@ commands.insertorderedlist = {
 //@{
 commands.insertparagraph = {
 	action: function(value, range) {
-		
+
 		// "Delete the contents of the active range."
 		deleteContents(range);
+
+		// clean lists in the editing host, this will remove any whitespace nodes around lists
+		// because the following algorithm is not prepared to deal with them
+		cleanLists(getEditingHostOf(range.startContainer), range);
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
@@ -7586,7 +7862,8 @@ commands.insertparagraph = {
 				// we found a li containing only a br followed by a li containing a list as first element: merge the two li's
 				var listParent = container.nextSibling, length = container.nextSibling.childNodes.length;
 				for (var i = 0; i < length; i++) {
-					container.appendChild(listParent.childNodes[i]);
+					// we always move the first child into the container
+					container.appendChild(listParent.childNodes[0]);
 				}
 				listParent.parentNode.removeChild(listParent);
 			}
@@ -7655,15 +7932,7 @@ commands.insertparagraph = {
 		var newContainer = document.createElement(newContainerName);
 
 		// "Copy all non empty attributes of the container to new container."
-		for ( var i = 0; i < container.attributes.length; i++ ) {
-			if ( typeof newContainer.setAttributeNS === 'function' ) {
-				newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
-			} else if ( container.attributes[i].value.length > 0 
-						&& container.attributes[i].value != 'null'
-						&& container.attributes[i].value > 0) {
-				newContainer.setAttribute(container.attributes[i].name, container.attributes[i].value);
-			}
-		}
+		copyAttributes( container,  newContainer );
 
 		// "If new container has an id attribute, unset it."
 		newContainer.removeAttribute("id");
@@ -7722,7 +7991,8 @@ commands.insertparagraph = {
 		// "If new container has no visible children, call createElement("br")
 		// on the context object, and append the result as the last child of
 		// new container."
-		if (newContainer.offsetHeight == 0 && !$_(newContainer.childNodes).some(isVisible)) {
+		if (newContainer.offsetHeight == 0 &&
+			!$_(newContainer.childNodes).some(isVisible)) {
 			newContainer.appendChild(createEndBreak());
 		}
 
@@ -8315,7 +8585,10 @@ return {
 	queryCommandState: myQueryCommandState,
 	queryCommandValue: myQueryCommandValue,
 	queryCommandEnabled: myQueryCommandEnabled,
-	queryCommandSupported: myQueryCommandSupported
+	queryCommandSupported: myQueryCommandSupported,
+	copyAttributes: copyAttributes,
+	createEndBreak: createEndBreak,
+	isEndBreak: isEndBreak
 }
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker

@@ -1,29 +1,35 @@
-/*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+/* dom.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 // Ensure GENTICS Namespace
 GENTICS = window.GENTICS || {};
 GENTICS.Utils = GENTICS.Utils || {};
 
 define(
-['aloha/jquery', 'util/class', 'aloha/ecma5shims'],
+['jquery', 'util/class', 'aloha/ecma5shims'],
 function(jQuery, Class, $_) {
 	"use strict";
 	
@@ -56,9 +62,17 @@ function(jQuery, Class, $_) {
     		'DOCUMENT_POSITION_CONTAINED_BY': 0x10,
     		//The determination of preceding versus following is implementation-specific.
     		'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
-    	};
-
-	
+    	},
+		blockElementNames = {
+			'P': true,
+			'H1': true,
+			'H2': true,
+			'H3': true,
+			'H4': true,
+			'H5': true,
+			'H6': true,
+			'LI': true
+		};
 
 /**
  * @namespace GENTICS.Utils
@@ -668,9 +682,22 @@ var Dom = Class.extend({
 		endOffset = rangeObject.endOffset;
 
 		// iterate through all sub nodes
-		startObject.contents().each(function(index) {
+		startObject.contents().each(function() {
+			var index;
+
+			// Try to read the nodeType property and return if we do not have permission
+			// ie.: frame document to an external URL
+			var nodeType;
+			try {
+				nodeType = this.nodeType;
+				index = that.getIndexInParent(this);
+			}
+			catch (e) {
+				return;
+			}
+
 			// decide further actions by node type
-			switch(this.nodeType) {
+			switch(nodeType) {
 			// found a non-text node
 			case 1:
 				if (prevNode && prevNode.nodeName == this.nodeName) {
@@ -940,20 +967,7 @@ var Dom = Class.extend({
 	 * @method
 	 */
 	isSplitObject: function(el) {
-		if (el.nodeType === 1){
-			switch(el.nodeName.toLowerCase()) {
-			case 'p':
-			case 'h1':
-			case 'h2':
-			case 'h3':
-			case 'h4':
-			case 'h5':
-			case 'h6':
-			case 'li':
-				return true;
-			}
-		}
-		return false;
+		return el.nodeType === 1 && blockElementNames.hasOwnProperty(el.nodeName);
 	},
 
 	/**
