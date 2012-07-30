@@ -121,7 +121,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		handleContent: function( content )  {
 			// sanitize does not work in IE7. It tries to set the style attribute via setAttributeNode() and this is know to not work in IE7
 			// (see http://www.it-blogger.com/2007-06-22/microsofts-internetexplorer-und-mitglied-nicht-gefunden/ as a reference)
-			var isNativeIE7 = (jQuery.browser.msie && jQuery.version < 8 && (typeof document.documentMode === 'undefined'));
+			var isNativeIE7 = (jQuery.browser.msie && jQuery.browser.version < 8 && (typeof document.documentMode === 'undefined'));
 			if (isNativeIE7) {
 				return content;
 			}
