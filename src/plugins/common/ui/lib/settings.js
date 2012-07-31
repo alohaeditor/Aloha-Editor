@@ -8,7 +8,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				components: [
 					[
 						// strong, emphasis and underline are not shown with the default format plugin button configuration
-						'bold', 'strong', 'italic', 'emphasis', 'underline', '\n',
+						'bold', 'strong', 'italic', 'emphasis', '\n',
 						'subscript', 'superscript', 'strikethrough', 'quote'
 					], [
 						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', '\n',
