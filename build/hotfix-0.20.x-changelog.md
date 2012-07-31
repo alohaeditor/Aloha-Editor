@@ -12,16 +12,16 @@
 
     The problem is that with a DOM like the following:
 
-    <style>p { margin-top: 2em; }</style>
+    ```<style>p { margin-top: 2em; }</style>
     <p><br class='aloha-end-br'/></p>
-    <p></p>
+    <p></p>```
 
     The margin between the paragraphs will not take effect because
-    IE8 in compatibility mode considers the paragraph with the <br>
+    IE8 in compatibility mode considers the paragraph with the ```<br>```
     in it empty. Normal IE8 will render the margin.
 
     To make IE8 in compatibility mode render the margin, some content
-    must be put into the <p>. That is not a big problem, since there
+    must be put into the ```<p>```. That is not a big problem, since there
     usually should be no reason to have empty paragraphs in your
     content.
 
