@@ -374,7 +374,7 @@
 
 /* === icons === */
 
-.aloha .aloha-icon {
+.aloha .ui-state-default .aloha-icon {
 	background-image: url(../img/format-inline.png);
 }
 
@@ -437,7 +437,7 @@
 
 /* === large icons === */
 
-.aloha .aloha-large-icon {
+.aloha .ui-state-default .aloha-large-icon {
     /* TODO merge with icons image file */
 	background-image: url("../img/format-block.png");
 	width: 54px;
