@@ -94,7 +94,8 @@ define([
 					groupedComponents = components[i];
 					for (j = 0; j < groupedComponents.length; j++) {
 						this._groupBySlot[groupedComponents[j]] = groupProps;
-						if (1 === groupedComponents[j].length &&
+						if (groupedComponents[j] &&
+							1 === groupedComponents[j].length &&
 						    groupedComponents[j].charCodeAt(0) === 10) {
 							group.append($('<div>', {'unselectable': 'on'}));
 						} else {
