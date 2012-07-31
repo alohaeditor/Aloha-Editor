@@ -20,6 +20,6 @@
 		<js>/target/build-profile-with-common-extra-plugins/rjs-output/lib/aloha.js</js>
 	</group>
 	<group name="aloha">
-		<css>/css/aloha.less</css>
+		<css>/css/aloha-common-extra.css</css>
 	</group>
 </groups>
