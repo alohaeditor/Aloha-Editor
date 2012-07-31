@@ -484,7 +484,7 @@
 
 /* TODO take the jqueryui icons out from the jqueryui icon sprite map
    and merge with other icons into an aloha specific sprite map */
-.aloha .aloha-jqueryui-icon { background-image: url(../img/jqueryui/ui-icons_222222_256x240.png); }
+.aloha .ui-state-default .aloha-jqueryui-icon { background-image: url(../img/jqueryui/ui-icons_222222_256x240.png); }
 /* triangle and carat are used by the ribbon plugin for the drop down and expand icons */
 .aloha .ui-icon-triangle-1-s { background-position: -64px -16px; }
 .aloha .ui-icon-carat-1-e { background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat -30px -16px; }
