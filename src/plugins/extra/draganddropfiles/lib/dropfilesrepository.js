@@ -285,7 +285,7 @@ function( $, repository, i18nCore ){
 					uploadFile = this,
 					targetsize = {},
 					tempimg = new Image();
-				// firefox and webkit have different property name
+				
 				if ( typeof filename === "undefined" ) {
 					filename = this.file.name;
 				}
