@@ -838,8 +838,13 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 					backupRangeObject.startContainer = parentElement;
 					backupRangeObject.endContainer = parentElement;
 				}
-				backupRangeObject.update();
-				backupRangeObject.select();
+				//TODO sometimes the backupRangeObject is modified and is not valid any longer because the offset does not match the corresponding
+				//container. In such a case the select() call would throw an exception (DOM_INDEX_SIZE ERROR).
+				//Even though we are ignoring the exception, everything works as expected.
+				try {
+					backupRangeObject.update();
+					backupRangeObject.select();
+				} catch (e) {}
 			} else {
 				rangeObject.select();
 			}
