@@ -49,7 +49,7 @@ define( [
 	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
 	Aloha.defaults.contentHandler.initEditable = ['blockelement', 'sanitize'];
-	Aloha.defaults.contentHandler.getContents = ['blockelement', 'basic', 'sanitize'];
+	Aloha.defaults.contentHandler.getContents = ['blockelement', 'basic'];
 
 	// The insertHtml contenthandler ( paste ) will, by default, use all
 	// registered content handlers.
@@ -78,8 +78,18 @@ define( [
 			if (jQuery.browser.msie && jQuery.browser.version < 8) {
 				content = content.replace(/(<table\s+[^>]*?)contenteditable=['\"\w]+/gi, "$1");
 			}
+			
+			content = this.stringFizzleSizzle(content);
 
 			return content;
+		},
+		
+		/**
+		 * Removes nodeIndex, sizcache and sizset attributes.
+		 * @param {string} content to process.
+		 */
+		stringFizzleSizzle: function (x) {
+			return x.replace(/(nodeIndex|sizcache|sizset)[\w\d]*(="[^"]*")*/gi, '');
 		}
 
 	});
