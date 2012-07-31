@@ -422,7 +422,9 @@ define([
 					Aloha.Selection.updateSelection(event);
 				}
 			}
-			// Trigger selection change event
+
+			// Trigger block activate & selection change events.
+			BlockManager.trigger('block-activate', highlightedBlocks);
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
 		},
 
@@ -431,12 +433,17 @@ define([
 		 */
 		deactivate: function() {
 			var that = this;
+			var deactivatedBlocks = [this];
 			this._unhighlight();
 			this.$element.parents('.aloha-block').each(function() {
+				deactivatedBlocks.push(this);
 				that._unhighlight();
 			});
 
 			this.$element.removeClass('aloha-block-active');
+
+			// Trigger block deactivate & selection change events.
+			BlockManager.trigger('block-deactivate', deactivatedBlocks);
 			BlockManager.trigger('block-selection-change', []);
 		},
 
