@@ -12,9 +12,11 @@
 
     The problem is that with a DOM like the following:
 
-    ```<style>p { margin-top: 2em; }</style>
+    ```html
+    <style>p { margin-top: 2em; }</style>
     <p><br class='aloha-end-br'/></p>
-    <p></p>```
+    <p></p>
+    ```
 
     The margin between the paragraphs will not take effect because
     IE8 in compatibility mode considers the paragraph with the ```<br>```
