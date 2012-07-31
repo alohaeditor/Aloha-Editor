@@ -6,7 +6,6 @@
  * TODO
  * ----
  * - Implement makeClean
- * - Prevent floating menu from showing on caption
  * - Prevent disallowed content in caption
  */
 define([
@@ -52,11 +51,9 @@ define([
 		.aloha-captioned-image-hidden .caption {display: none;}\
 		.aloha-captioned-image-hidden.aloha-block-active .caption {display: block;}\
 	';
-
 	$('<style type="text/css">').text(css).appendTo('head:first');
 
 	var components = [];
-
 	components.push(Ui.adopt('imgFloatLeft', Button, {
 		tooltip: 'Float image to left',
 		text: 'Float left',
@@ -66,7 +63,6 @@ define([
 			}
 		}
 	}));
-
 	components.push(Ui.adopt('imgFloatRight', Button, {
 		tooltip: 'Float image to right',
 		text: 'Float right',
@@ -76,7 +72,6 @@ define([
 			}
 		}
 	}));
-
 	components.push(Ui.adopt('imgFloatClear', Button, {
 		tooltip: 'Float image to clear',
 		text: 'No floating',
@@ -89,11 +84,12 @@ define([
 
 	function showComponents() {
 		// A very fragile yield hack to help make it more likely that our
-		// components' tag will be forgrouned() after other components so that
+		// components' tag will be forgroun()ed after other components so that
 		// ours are visible.  A fix is needed at the architectural level of
 		// Aloha for this.
 		setTimeout(function () {
 			var j = components.length;
+
 			while (j) {
 				components[--j].foreground();
 			}
@@ -115,9 +111,7 @@ define([
 
 			if (block.attr('aloha-captioned-image-tag') === 'img') {
 				$img = block.$_image;
-
 				$img.attr('src', block.attr('source'));
-
 				var alt = block.attr('alt');
 				var width = block.attr('width');
 				var height = block.attr('height');
@@ -150,7 +144,6 @@ define([
 
 				$img.attr('float',
 					(!floating || 'none' === floating) ? '' : floating);
-
 				$img.addClass('aloha-captioned-image');
 				block.$element.replaceWith($img);
 			} else {
@@ -185,7 +178,6 @@ define([
 				width: properties.width || '',
 				height: properties.height || ''
 			});
-
 			callback({
 				content: $content[0].outerHTML,
 				image: '>div>img:first',
@@ -200,18 +192,15 @@ define([
 
 		while (j) {
 			var $img = $imgs.eq(--j);
-
 			var $block = $img.removeClass('aloha-captioned-image')
 							 .wrap('<div class="aloha-captioned-image">')
 							 .parent();
-
 			$block.attr('data-alt', $img.attr('alt'))
 			      .attr('data-source', $img.attr('src'))
 			      .attr('data-width', $img.attr('width'))
 			      .attr('data-height', $img.attr('height'))
 			      .attr('data-caption', $img.attr('data-caption'))
 			      .attr('data-aloha-captioned-image-tag', 'img');
-
 			$img.attr('width', '')
 			    .attr('height', '')
 			    .attr('data-caption', '');
@@ -227,11 +216,13 @@ define([
 		var $all = findCaptionedImages($editable);
 		var $blocks = $();
 		var j = $all.length;
+
 		while (j) {
 			if (!$all.eq(--j).hasClass('aloha-block')) {
 				$blocks = $blocks.add($all[j]);
 			}
 		}
+
 		$blocks.alohaBlock({
 			'aloha-block-type': 'CaptionedImageBlock'
 		});
@@ -255,9 +246,11 @@ define([
 			};
 			this.onblur = function () {
 				var html = that.$_caption.html();
+
 				if (that.attr('caption') !== html) {
 					that.attr('caption', html);
 				}
+
 				Toolbar.$surfaceContainer.show();
 			};
 
@@ -280,9 +273,7 @@ define([
 					}
 				});
 			}, function (error) {
-				if (Console) {
-					Console.error(error);
-				}
+				Console.error(error);
 				postProcessCallback();
 			});
 		},
@@ -304,9 +295,7 @@ define([
 				that._processRenderedData(data);
 				postProcessCallback();
 			}, function (error) {
-				if (Console) {
-					Console.error(error);
-				}
+				Console.error(error);
 				postProcessCallback();
 			});
 		},
@@ -330,9 +319,11 @@ define([
 		init: function () {
 			BlockManager.registerBlockType('CaptionedImageBlock', CaptionedImageBlock);
 			var j = Aloha.editables.length;
+
 			while (j) {
 				initializeImageBlocks(Aloha.editables[--j].obj);
 			}
+
 			Aloha.bind('aloha-editable-created', function ($event, editable) {
 				initializeImageBlocks(editable.obj);
 				editable.obj.delegate('div.aloha-captioned-image', 'click',
