@@ -1,4 +1,4 @@
-h2. The Drang and Drop files Plugin
+h2. The Drag and Drop files Plugin
 
 The Drag and drop files plugin allows a file of any type to be dropped on the page and handled with aloha.
 
