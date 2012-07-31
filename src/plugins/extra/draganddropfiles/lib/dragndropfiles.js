@@ -143,21 +143,27 @@ function( $, Plugin, DropFilesRepository ) {
 		 * Prepare upload of a single file, reads the given file data and trigger upload-prepared event
 		 */
 		prepareFileUpload: function( file, targetid ) {
-			var fileObj,
+			var 
 				reader = new FileReader(),
 				draganddropfiles = this;
 			reader.file = file;
             reader.onloadend = function() {
-                var currentFile = {
-                    name: this.file.name,
-                    type: this.file.type,
-                    fileSize: this.file.fileSize,
-                    fileName: this.file.fileName,
-                    data: reader.result
-                };
+				var currentFile,
+					filename = this.file.name
+				;
+				// firefox and webkit have different property name
+				if (filename === undefined) {
+					filename = this.file.fileName;
+				}
+				currentFile = {
+					name: filename,
+					type: this.file.type,
+					fileSize: this.file.fileSize,
+					data: reader.result
+				};
                 draganddropfiles.filesObjs.push( draganddropfiles.uploader.addFileUpload( currentFile, targetid ) );
                 draganddropfiles.processedFiles++;
-                Aloha.trigger( 'aloha-file-upload-prepared', fileObj );
+                Aloha.trigger( 'aloha-file-upload-prepared', currentFile );
             };
             reader.readAsDataURL( file );
 		},
