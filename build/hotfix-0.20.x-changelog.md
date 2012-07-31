@@ -21,7 +21,7 @@
     in it empty. Normal IE8 will render the margin.
 
     To make IE8 in compatibility mode render the margin, some content
-    must be put into the ```html <p>```. That is not a big problem, since there
+    must be put into the ```<p>```. That is not a big problem, since there
     usually should be no reason to have empty paragraphs in your
     content.
 
