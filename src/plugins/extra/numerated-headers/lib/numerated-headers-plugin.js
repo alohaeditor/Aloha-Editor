@@ -73,7 +73,8 @@ define([
 					icon: 'aloha-icon aloha-icon-numerated-headers',
 					scope: 'Aloha.continuoustext',
 					click: function () {
-						if (that._formatNumeratedHeadersButton.getState()) {
+						var buttonPressed = that._formatNumeratedHeadersButton.getState();
+						if (!buttonPressed) {
 							that.removeNumerations();
 						} else {
 							that.createNumeratedHeaders();
