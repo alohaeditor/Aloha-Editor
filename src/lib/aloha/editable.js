@@ -88,8 +88,12 @@ define( [
 		 * Removes nodeIndex, sizcache and sizset attributes.
 		 * @param {string} content to process.
 		 */
-		stringFizzleSizzle: function (x) {
-			return x.replace(/(nodeIndex|sizcache|sizset)[\w\d]*(="[^"]*")*/gi, '');
+		stringFizzleSizzle: function (content) {
+			var replaced = content;
+			while (content !== (replaced = content.replace(/(<[^>]*?)(nodeIndex|sizcache|sizset)[\w\d]*="[^"]*"/gi, '$1'))) {
+				content = replaced;
+			}
+			return content;
 		}
 
 	});
