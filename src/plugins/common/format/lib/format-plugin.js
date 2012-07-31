@@ -437,7 +437,7 @@ define('format/format-plugin', [
 					title    : i18n.t( 'floatingmenu.tab.format' ),
 					content  : '',
 					expanded : true,
-					activeOn : this.formatOptions,
+					activeOn : this.formatOptions || false,
 
 					onInit: function () {
 					},
