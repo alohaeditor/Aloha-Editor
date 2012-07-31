@@ -706,7 +706,7 @@ define([
 						 * them droppable.
 						 */
 						over: function(event, ui) {
-							if (editablesWhichNeedToBeCleaned.indexOf(this) === -1) {
+							if (jQuery.inArray(this, editablesWhichNeedToBeCleaned) === -1) {
 								editablesWhichNeedToBeCleaned.push(this);
 							}
 
