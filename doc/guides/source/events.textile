@@ -1,5 +1,7 @@
 h2. Aloha Editor Events
 
+endprologue.
+
 Aloha has two mechanisms for subscribing to and publishing events.
 
 The old bind/trigger mechanism uses jQuery's bind() and trigger() behind
