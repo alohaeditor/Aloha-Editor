@@ -1,6 +1,6 @@
 (function(window, undefined) {
 
-var Aloha = window.Aloha || ( window.Aloha = {} );
+	Aloha = window.Aloha || {};
 
 	Aloha.settings = {
 		locale: 'en',
