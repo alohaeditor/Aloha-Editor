@@ -98,6 +98,9 @@ define([
 		 * @api
 		 */
 		setActiveButton: function (name) {
+			if (!name) {
+				name = null;
+			}
 			if (null !== this._activeButton) {
 				this.buttons[this._activeButton]
 				    .element.removeClass('aloha-multisplit-active');
@@ -142,6 +145,9 @@ define([
 		 * @param {Number} index button index
 		 */
 		show: function (name) {
+			if (!name) {
+				name = null;
+			}
 			if (null !== name && this.buttons[name] !== undefined) {
 				this.buttons[name].element.show();
 				this.buttons[name].visible = true;
@@ -158,6 +164,9 @@ define([
 		hide: function (name) {
 			var button, visible = false;
 
+			if (!name) {
+				name = null;
+			}
 			if (null !== name && this.buttons[name] !== undefined) {
 				this.buttons[name].element.hide();
 				this.buttons[name].visible = false;
