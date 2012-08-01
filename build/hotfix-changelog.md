@@ -8,4 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-
+- **BUG**: Missing implementations to show and hide items in a multisplit button have been added.
+- **MANUAL CHANGE**: The API Method setActiveButton() of the MultiSplit component changed: the parameter must be the name of the button to set active, not the index.
