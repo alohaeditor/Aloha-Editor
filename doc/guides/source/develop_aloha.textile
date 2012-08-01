@@ -118,6 +118,17 @@ If you want to redefine modules in the build profile, for example if you
 want to use your own jqueryui, please first read "Custom jQuery,
 jQueryUI and other modules":using_aloha.html
 
+h3. Developing CSS
+
+src/css/aloha.css is a concatenated and minified version of
+src/css/aloha-common-extra.css. To develop CSS without rebuilding the
+CSS everytime, temporarily copy src/css/aloha-comm-extra.css over
+src/css/aloha.css.
+
+Having the built version be included during development makes it
+possible to develop Aloha without having to worry too much about the IE
+maximum stylesheet limit.
+
 h3. Guide 
 
 * "Textile manual":http://redcloth.org/hobix.com/textile/
