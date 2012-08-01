@@ -1,19 +1,24 @@
 h2. Aloha Editor Events
 
-At specific situations Aloha Editor and it's plugins triggers events.
-Components that are listening to those events can then interact when they get the signal.
+Aloha has two mechanisms for subscribing to and publishing events.
 
-There are events related to editable areas and content modification available.
+The old bind/trigger mechanism uses jQuery's bind() and trigger() behind
+the scenes and currently handles most of the events fired by Aloha:
 
-After reading this guide, you:
+    Aloha.bind('event-name', function (jQuery.Event, eventArgument) {});
+    Aloha.trigger('event-name', eventArgument);
 
-* Know about available core events in Aloha Editor
-* Events provided by plugins
-* Are able to use Aloha Editor events
+We are now in the process of replacing this API with a PubSub mechanism
+that we implement ourselves. The advantage of implementing it ourselves
+is that we have greater flexibility when we need to make extensions to
+the event system in the future. Also, the PubSub mechanism has less
+overhead (important for IE7) and a slightly cleaner API (requirejs
+module; forces a map argument; no event object).
 
-endprologue.
-
-
+define(['PubSub'], function (PubSub) {
+    PubSub.sub('event.name', function (eventArgument) {});
+    PusSub.pub('event.name', {key: value});
+});
 
 h4. aloha-command-will-execute Event
 
@@ -145,6 +150,9 @@ h4. aloha-selection-changed Event
 
 This event is triggered when there are changes of the selection (using the mouse or cursor).
 
+It is not recommended to bind to this event unless you know what you are
+doing. Instead consider subscribing to 'aloha.selection.context-change'.
+
 <javascript>
 Aloha.trigger( 'aloha-selection-changed', [ 
 	this.rangeObject, // range object
@@ -152,6 +160,31 @@ Aloha.trigger( 'aloha-selection-changed', [
 ] );
 </javascript>
 
+
+h4. aloha.selection.context-change Event
+
+  The argument to the event handler contains two properties
+
+  * range the current value of Aloha.Selection.getRangeObject()
+  * the event that caused the context change
+
+  These values are the same as for aloha-selection-changed.
+
+  The message will be published every time the context of the selection
+  changes.
+
+  The context of the selection changes whenever the startContainer node
+  or endContainer node of any range in the selection returned by
+  Aloha.getSelection() changes, or any of their ancestors change, or any
+  attributes of the container nodes or their ancestors change. The
+  ancestor tree is calculated up to including the containing Aloha
+  editable.
+
+  Subscribing to this event is preferred over aloha-selection-changed
+  because it does not fire as often, and because it is not fired at all
+  when the user is just typing. To be able to type without introducing
+  perceptible lag is an important aspect of editor-performance;
+  unnecessary processing should therefore be avoided whenever possible.
 
 h3. Plugin: Image
 
