@@ -32,7 +32,7 @@ define([
 ) {
 	'use strict';
 
-	var css = '\
+	var defaultCss = '\
 		.aloha-captioned-image {display: inline-block;}\
 		.aloha-captioned-image>div {\
 			text-align: center;\
@@ -53,7 +53,23 @@ define([
 		.aloha-captioned-image-hidden.aloha-block-active .caption {display: block;}\
 	';
 
-	$('<style type="text/css">').text(css).appendTo('head:first');
+	// Parse all settings.
+	var settings = {};
+	if ( typeof Aloha.settings.plugins.captionedImage !== 'undefined' ) {
+		for ( var setting in Aloha.settings.plugins.captionedImage ) {
+			if ( Aloha.settings.plugins.captionedImage.hasOwnProperty( setting ) ) {
+				settings[setting] = Aloha.settings.plugins.captionedImage[setting];
+			}
+		}
+	}
+
+	// If default CSS is not disabled, then add it.
+	if ( settings.css !== false ) {
+		$( '<style type="text/css">' ).text( defaultCss )
+		.appendTo( 'head:first' );
+	}
+
+
 
 	var components = [];
 
