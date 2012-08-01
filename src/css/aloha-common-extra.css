@@ -2,8 +2,8 @@
  * the core and plugins, so that it is easy to make variations of this
  * file that exclude some plugins.
  */
-@import "aloha-core.less";
-@import "../plugins/common/ui/css/ui.less";
+@import "aloha-core.css";
+@import "../plugins/common/ui/css/ui.css";
 @import "../plugins/common/link/css/link.css";
 @import "../plugins/common/characterpicker/css/characterpicker.css";
 @import "../plugins/common/highlighteditables/css/highlighteditables.css";

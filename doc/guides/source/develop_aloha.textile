@@ -72,7 +72,7 @@ You can also build just the css:
 mvn3 generate-sources
 </shell>
 
-The resulting css should be in src/css/aloha.css
+The resulting css will be generated in src/css/aloha.css.
 
 h4. Other OS: 
 * Microsoft Windows: Not yet supported
@@ -104,15 +104,15 @@ requirejs may be replaced with an AMD stub such that requirejs is not
 necessary for production deployments.
 
 Css building can be customized by adding or removing entries in
-src/css/aloha.less. If you removed or added plugins in the r.js build
-profile, you also want to add or remove the appropriate css in the
-aloha-core.less. Then, run
+src/css/aloha-common-extra.css. If you removed or added plugins in the
+r.js build profile, you also want to add or remove the appropriate css
+import statement. Then, run
 
 <shell>
 mvn3 generate-sources
 </shell>
 
-And the resulting css should be in src/css/aloha.css
+The resulting css will be generated in src/css/aloha.css.
 
 If you want to redefine modules in the build profile, for example if you
 want to use your own jqueryui, please first read "Custom jQuery,
