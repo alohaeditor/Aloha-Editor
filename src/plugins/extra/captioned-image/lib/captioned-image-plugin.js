@@ -106,6 +106,12 @@ define([
 		render = settings.render;
 	}
 
+	// This is the class that will be set on the image when cleaning up. Set to
+	// the empty string if you don't want a class to be set.
+	if ( typeof settings.captionedImageClass !== 'string' ) {
+		settings.captionedImageClass = 'aloha-captioned-image';
+	}
+
 
 	var components = [];
 
@@ -203,7 +209,9 @@ define([
 				$img.attr('float',
 					(!floating || 'none' === floating) ? '' : floating);
 
-				$img.addClass('aloha-captioned-image');
+				if ( settings.captionedImageClass ) {
+					$img.addClass( settings.captionedImageClass );
+				}
 				block.$element.replaceWith($img);
 			} else {
 				block.$element.html('')
@@ -221,7 +229,7 @@ define([
 		while (j) {
 			var $img = $imgs.eq(--j);
 
-			var $block = $img.removeClass('aloha-captioned-image')
+			var $block = $img.removeClass( settings.captionedImageClass )
 							 .wrap('<div class="aloha-captioned-image">')
 							 .parent();
 
