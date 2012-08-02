@@ -407,10 +407,10 @@
 .aloha .aloha-icon-emphasis { background-image: url(../img/em.png); }
 .aloha .aloha-icon-strong { background-image: url(../img/strong.png); }
 
-.aloha .aloha-icon-indent {
+.aloha .ui-state-default .aloha-icon-indent {
 	background: url(../../../../img/text_indent.png) no-repeat center center;
 }
-.aloha .aloha-icon-outdent {
+.aloha .ui-state-default .aloha-icon-outdent {
 	background: url(../../../../img/text_indent_remove.png) no-repeat center center;
 }
 
