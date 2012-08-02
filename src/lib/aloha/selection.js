@@ -20,8 +20,8 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'aloha/jquery', 'util/class', 'util/arrays', 'util/strings', 'util/range', 'aloha/engine', 'aloha/console', 'PubSub', 'aloha/rangy-core' ],
-function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) {
+[ 'aloha/core', 'aloha/jquery', 'util/class', 'util/arrays', 'util/strings', 'util/range', 'aloha/engine', 'aloha/console', 'PubSub', 'aloha/ecma5shims', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub, e5s) {
 	var
 
 		GENTICS = window.GENTICS;
@@ -823,29 +823,50 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 				}
 			}
 
+			if (markupObject.isReplacingElement) {
+				//Check if the startContainer is one of the zapped elements
+				if ( backupRangeObject &&
+						backupRangeObject.startContainer.className &&
+						backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1 ) {
+						//var parentElement = jQuery(backupRangeObject.startContainer).closest(markupObject[0].tagName).get(0);
+						var parentElement = jQuery(backupRangeObject.startContainer).parents(markupObject[0].tagName).get(0);
+						backupRangeObject.startContainer = parentElement;
+						rangeObject.startContainer = parentElement;
+					}
+				//check if the endContainer is one of the zapped elements
+				if (backupRangeObject &&
+						backupRangeObject.endContainer.className &&
+						backupRangeObject.endContainer.className.indexOf('preparedForRemoval') > -1 ) {
+					//var parentElement = jQuery(backupRangeObject.endContainer).closest(markupObject[0].tagName).get(0);
+					var parentElement = jQuery(backupRangeObject.endContainer).parents(markupObject[0].tagName).get(0);
+					backupRangeObject.endContainer = parentElement;
+					rangeObject.endContainer = parentElement;
+				}
+			}
 			// remove all marked items
 			jQuery('.preparedForRemoval').zap();
 
 			// recalculate cac and selectionTree
-			rangeObject.update();
-
+			
 			// update selection
 			if (markupObject.isReplacingElement) {
-				if ( backupRangeObject &&
-					backupRangeObject.startContainer.className &&
-					backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1 ) {
-					var parentElement = jQuery(backupRangeObject.startContainer).closest(markupObject[0].tagName).get(0);
-					backupRangeObject.startContainer = parentElement;
-					backupRangeObject.endContainer = parentElement;
+				//After the zapping we have to check for wrong offsets
+				if (e5s.Node.ELEMENT_NODE === backupRangeObject.startContainer.nodeType && backupRangeObject.startContainer.childNodes && backupRangeObject.startContainer.childNodes.length < backupRangeObject.startOffset) {
+					backupRangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
+					rangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
 				}
-				//TODO sometimes the backupRangeObject is modified and is not valid any longer because the offset does not match the corresponding
-				//container. In such a case the select() call would throw an exception (DOM_INDEX_SIZE ERROR).
-				//Even though we are ignoring the exception, everything works as expected.
-				try {
-					backupRangeObject.update();
-					backupRangeObject.select();
-				} catch (e) {}
+				if (e5s.Node.ELEMENT_NODE === backupRangeObject.endContainer.nodeType && backupRangeObject.endContainer.childNodes && backupRangeObject.endContainer.childNodes.length < backupRangeObject.endOffset) {
+					backupRangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
+					rangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
+				}
+				rangeObject.endContainer = backupRangeObject.endContainer;
+				rangeObject.endOffset = backupRangeObject.endOffset;
+				rangeObject.startContainer = backupRangeObject.startContainer;
+				rangeObject.startOffset = backupRangeObject.startOffset;
+				backupRangeObject.update();
+				backupRangeObject.select();
 			} else {
+				rangeObject.update();
 				rangeObject.select();
 			}
 		},
@@ -1067,15 +1088,18 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub) 
 		 * @hide
 		 */
 		changeMarkupOnSelection: function(markupObject) {
+			var rangeObject = this.getRangeObject();
+			
 			// change the markup
-			this.changeMarkup(this.getRangeObject(), markupObject, this.getStandardTagComparator(markupObject));
+			this.changeMarkup(rangeObject, markupObject, this.getStandardTagComparator(markupObject));
 
 			// merge text nodes
-			GENTICS.Utils.Dom.doCleanup({'merge' : true}, this.rangeObject);
+			GENTICS.Utils.Dom.doCleanup({'merge' : true}, rangeObject);
 
 			// update the range and select it
-			this.rangeObject.update();
-			this.rangeObject.select();
+			rangeObject.update();
+			rangeObject.select();
+			this.rangeObject = rangeObject;
 		},
 
 		/**
