@@ -101,6 +101,10 @@ define( [
 	// Register the basic contenthandler
 	ContentHandlerManager.register('basic', BasicContentHandler);
 
+	/**
+	 * Cleans the given content by manipulating the jquery content object. 
+	 * @param {Object} $content jQuery object that represents the content
+	 */ 
 	function makeClean($content) {
 		if (jQuery.browser.msie && jQuery.browser.version < 8) {
 			$content = jQuery($content);
