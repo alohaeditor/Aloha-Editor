@@ -136,6 +136,31 @@ Having the built version be included during development makes it
 possible to develop Aloha without having to worry too much about the IE
 maximum stylesheet limit.
 
+Every CSS class must have either an 'aloha-' prefix, or must be limited
+to occur within an '.aloha' context. For example:
+
+<css>
+.aloha .new-style { ... }
+.aloha-new-style { ... }
+</css>
+
+This is to avoid interference with the CSS of the host page.
+
+If UI elements are added to the DOM with the purpose of absolute
+posistioning, which is common when implementing UI widgets, they should
+be appended to the ui/context module:
+
+<javascript>
+define(['ui/context'], function(Context) {
+    // preferably append it directly to the element
+    Context.element.append(widgetx);
+    // sometimes you need a selector instead
+    elementx.widgetx({
+        appendTo: Context.selector
+    });
+});
+</javascript>
+
 h3. Guide 
 
 * "Textile manual":http://redcloth.org/hobix.com/textile/
