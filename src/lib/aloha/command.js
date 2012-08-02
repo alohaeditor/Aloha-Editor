@@ -94,6 +94,9 @@ function( Aloha, Registry, Engine, Dom, ContentHandlerManager ) {
 
 				// FIX: doCleanup should work with W3C range
 				var startnode = range.commonAncestorContainer;
+				if (startnode.parentNode) {
+					startnode = startnode.parentNode;
+				}
 				var rangeObject = new window.GENTICS.Utils.RangeObject();
 				rangeObject.startContainer = range.startContainer;
 				rangeObject.startOffset = range.startOffset;
