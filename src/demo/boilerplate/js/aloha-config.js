@@ -6,6 +6,7 @@
 		errorhandling: false,
 		ribbon: {enable: true},
 		locale: 'en',
+		//waitSeconds: 300, // This can be turned on to avoid requirejs timeouts if Aloha startup code needs to be debugged
 		repositories: {
 			linklist: {
 				data: [

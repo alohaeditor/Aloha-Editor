@@ -12,6 +12,13 @@ cd alohaeditor
 git checkout dev
 </shell>
 
+h3. Pre-commit hook
+
+To avoid accidentally committing debugging code, symlink or copy
+.githooks/pre-commit into .git/hooks. This will check for the most
+common mistakes like 'debugger;' or 'console.log();' statements before
+every commit.
+
 h3. Repository Directory Structure
 
 * /
@@ -117,6 +124,42 @@ The resulting css will be generated in src/css/aloha.css.
 If you want to redefine modules in the build profile, for example if you
 want to use your own jqueryui, please first read "Custom jQuery,
 jQueryUI and other modules":using_aloha.html
+
+h3. Developing CSS
+
+src/css/aloha.css is a concatenated and minified version of
+src/css/aloha-common-extra.css. To develop CSS without rebuilding the
+CSS everytime, temporarily copy src/css/aloha-comm-extra.css over
+src/css/aloha.css.
+
+Having the built version be included during development makes it
+possible to develop Aloha without having to worry too much about the IE
+maximum stylesheet limit.
+
+Every CSS class must have either an 'aloha-' prefix, or must be limited
+to occur within an '.aloha' context. For example:
+
+<css>
+.aloha .new-style { ... }
+.aloha-new-style { ... }
+</css>
+
+This is to avoid interference with the CSS of the host page.
+
+If UI elements are added to the DOM with the purpose of absolute
+posistioning, which is common when implementing UI widgets, they should
+be appended to the ui/context module:
+
+<javascript>
+define(['ui/context'], function(Context) {
+    // preferably append it directly to the element
+    Context.element.append(widgetx);
+    // sometimes you need a selector instead
+    elementx.widgetx({
+        appendTo: Context.selector
+    });
+});
+</javascript>
 
 h3. Guide 
 
