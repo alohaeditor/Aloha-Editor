@@ -351,8 +351,8 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub, 
 
 			// before getting the selection tree, we do a cleanup
 			if (GENTICS.Utils.Dom.doCleanup({'merge' : true}, rangeObject)) {
-				this.rangeObject.update();
-				this.rangeObject.select();
+				rangeObject.update();
+				rangeObject.select();
 			}
 
 			return this.recursiveGetSelectionTree(rangeObject, rangeObject.commonAncestorContainer);
@@ -820,9 +820,13 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub, 
 					return;
 				} else {
 					this.applyMarkup(rangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator, {setRangeObject2NewMarkup: true});
+					backupRangeObject.startContainer = rangeObject.startContainer;
+					backupRangeObject.endContainer = rangeObject.endContainer;
+					backupRangeObject.startOffset = rangeObject.startOffset;
+					backupRangeObject.endOffset = rangeObject.endOffset;
 				}
 			}
-
+																		  debugger;
 			if (markupObject.isReplacingElement) {
 				//Check if the startContainer is one of the zapped elements
 				if ( backupRangeObject &&
