@@ -18,6 +18,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 
 	var	Aloha = window.Aloha;
+	var GENTICS = window.GENTICS;
 	
 	return Plugin.create('numerated-headers', {
 		config: {
@@ -163,21 +164,66 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 			if (!active_editable_obj) {
 				return;
 			}
-			
-			$(active_editable_obj).find('span[role=annotation]').each(function () {
-				var range = Aloha.Selection.getRangeObject();
-				//Check if the selection starts inside the annotation
+			this._saveRemoveAnnotations($(active_editable_obj).find('span[role=annotation]'));
+		},
+		
+		/**
+		 * Savely removes a jQuery collection of annotations.
+		 * @param annotationcollection the collection of annotations.
+		 */
+		_saveRemoveAnnotations: function (annotationcollection) {
+			var that = this;
+			var range = Aloha.Selection.getRangeObject();
+			var rangemod = false;
+			annotationcollection.each(function () {
+				//GENTICS.Utils.Dom.removeFromDOM($(this).get(0), range, true);
 				if (range.startContainer === this || $.inArray(this, $(range.startContainer).parents()) > -1) {
-					range.startContainer = that._prevNode(this);
-					range.startOffset = 0;
+			        range.startContainer = that._prevNode(this);
+			        range.startOffset = 0;
+			        rangemod = true;
+				}
+				if (range.startContainer === this.parentNode && range.startOffset >= $(this).index() && range.startOffset > 0) {
+					range.startOffset --;
+					rangemod = true;
 				}
 				//Check if the selection ends inside the annotation
 				if (range.endContainer === this || $.inArray(this, $(range.endContainer).parents()) > -1) {
 					range.endContainer = that._prevNode(this);
 					range.endOffset = 0;
+					rangemod = true;
+				}
+				if (range.endContainer === this.parentNode && range.endOffset >= $(this).index() && range.endOffset > 0) {
+					range.endOffset --;
+					rangemod = true;
 				}
 				$(this).remove();
 			});
+			if (rangemod === true) {
+				range.update();
+				range.select();
+			}
+		},
+		
+		/**
+		 * Prepends the annotation to the given prependElement.
+		 */
+		_prependAnnotation: function (annotationcontent, prependElem) {
+			var range = Aloha.Selection.getRangeObject();
+			var rangemod = false;
+			if (range.startContainer === prependElem) {
+				range.startOffset ++;
+				rangemod = true;
+			}
+			if (range.endContainer === prependElem) {
+				range.endOffset ++;
+				rangemod = true;
+			}
+			$(prependElem).prepend('<span role="annotation">' +
+					annotationcontent + '</span>');
+			if (rangemod === true) {
+				range.update();
+				range.select();
+			}
 		},
 		
 		/**
@@ -293,7 +339,7 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 					if (prev_rank === null && current_rank !== base_rank) {
 						// when the first found header has a rank
 						// different from the base rank, we omit it
-						$(this).find('span[role=annotation]').remove();
+						that._saveRemoveAnnotations($(this).find('span[role=annotation]'));
 						return;
 					} else if (prev_rank === null) {
 						// increment the main annotation 
@@ -339,13 +385,13 @@ function ($, Plugin, FloatingMenu, i18n, i18nCore) {
 					if (that.hasNote(this)) {
 						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
-						$(this).prepend('<span role="annotation">' +
-							annotation_result + '</span>');
+						
+						that._prependAnnotation(annotation_result, this);
 					}
 				} else {
 					// no Content, so remove the Note, if there is one
 					if (that.hasNote(this)) {
-						$(this).find('span[role=annotation]').remove();
+						that._saveRemoveAnnotations($(this).find('span[role=annotation]'));
 					}
 				}
 			});
