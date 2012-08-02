@@ -182,7 +182,7 @@ mvn3 clean package -DbareMode=true
 <pre class="brush: plain; gutter: false; toolbar: false">
 
 mvn3 generate-sources
-</pre></div><p>The resulting css should be in src/css/aloha.css</p>
+</pre></div><p>The resulting css will be generated in src/css/aloha.css.</p>
 <h4 id="other-os">3.2 Other OS:</h4>
 <ul>
 	<li>Microsoft Windows: Not yet supported</li>
@@ -196,12 +196,12 @@ node build/r.js -o build/aloha/build.js
 </pre></div><p>To customize the build to your needs, you can modify the build profile in build/aloha/build.js. The most likely customization you want to make is to remove or add plugins from the include property of the &#8216;aloha&#8217; module definition.</p>
 <p>To include i18n files in your build, define the locale property. If the locale property is not defined, the appropriate i18n files will be loaded dynamically by requirejs. Remember to configure Aloha.locale as well.</p>
 <p>Unless you ask for plugins to be loaded that are not defined in the build profile, or use a locale that was not defined during building, no additional files should be downloaded by requirejs. In the future requirejs may be replaced with an <span class="caps">AMD</span> stub such that requirejs is not necessary for production deployments.</p>
-<p>Css building can be customized by adding or removing entries in src/css/aloha.less. If you removed or added plugins in the r.js build profile, you also want to add or remove the appropriate css in the aloha-core.less. Then, run</p>
+<p>Css building can be customized by adding or removing entries in src/css/aloha-common-extra.css. If you removed or added plugins in the r.js build profile, you also want to add or remove the appropriate css import statement. Then, run</p>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
 
 mvn3 generate-sources
-</pre></div><p>And the resulting css should be in src/css/aloha.css</p>
+</pre></div><p>The resulting css will be generated in src/css/aloha.css.</p>
 <p>If you want to redefine modules in the build profile, for example if you want to use your own jqueryui, please first read <a href="using_aloha.html">Custom jQuery, jQueryUI and other modules</a></p>
 <h3 id="guide">4 Guide</h3>
 <ul>
