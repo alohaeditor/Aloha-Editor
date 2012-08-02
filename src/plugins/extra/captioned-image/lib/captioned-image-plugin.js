@@ -32,7 +32,7 @@ define([
 ) {
 	'use strict';
 
-	var css = '\
+	var defaultCss = '\
 		.aloha-captioned-image {display: inline-block;}\
 		.aloha-captioned-image>div {\
 			text-align: center;\
@@ -53,7 +53,65 @@ define([
 		.aloha-captioned-image-hidden.aloha-block-active .caption {display: block;}\
 	';
 
-	$('<style type="text/css">').text(css).appendTo('head:first');
+	// Parse all settings.
+	var settings = {};
+	if ( typeof Aloha.settings.plugins.captionedImage !== 'undefined' ) {
+		for ( var setting in Aloha.settings.plugins.captionedImage ) {
+			if ( Aloha.settings.plugins.captionedImage.hasOwnProperty( setting ) ) {
+				settings[setting] = Aloha.settings.plugins.captionedImage[setting];
+			}
+		}
+	}
+
+	// If default CSS is not disabled, then add it.
+	if ( settings.css !== false ) {
+		$( '<style type="text/css">' ).text( defaultCss )
+		.appendTo( 'head:first' );
+	}
+
+	// Load render callback.
+	var render;
+	if ( typeof settings.render !== 'function' ) {
+		// At first sight, it doesn't make sense to have an error callback. It
+		// does not make sense for simple rendering functions in JavaScript. But
+		// when the rendering would happen on the server-side, then e.g. the
+		// network could fail.
+		render = function (properties, callback, error) {
+			var src = properties.source || 'img/noimg.gif';
+			var alt = properties.alt || '';
+			var caption = properties.caption || '';
+			var $content = $('<div>' +
+				'<img src="' + src + '" alt="' + alt + '"/>' +
+				'<div class="caption">' +  caption + '</div>' +
+				'</div>');
+
+			if ('left' === properties.position || 'right' === properties.position) {
+				$content.css('float', properties.position)
+				        .addClass('float-' + properties.position);
+			}
+
+			$content.find('>img:first').css({
+				width: properties.width || '',
+				height: properties.height || ''
+			});
+
+			callback({
+				content: $content[0].outerHTML,
+				image: '>div>img:first',
+				caption: '>div>div.caption:first'
+			});
+		};
+	}
+	else {
+		render = settings.render;
+	}
+
+	// This is the class that will be set on the image when cleaning up. Set to
+	// the empty string if you don't want a class to be set.
+	if ( typeof settings.captionedImageClass !== 'string' ) {
+		settings.captionedImageClass = 'aloha-captioned-image';
+	}
+
 
 	var components = [];
 
@@ -113,95 +171,59 @@ define([
 				continue;
 			}
 
-			if (block.attr('aloha-captioned-image-tag') === 'img') {
-				$img = block.$_image;
+			$img = block.$_image;
 
-				$img.attr('src', block.attr('source'));
+			$img.attr('src', block.attr('source'));
 
-				var alt = block.attr('alt');
-				var width = block.attr('width');
-				var height = block.attr('height');
-				var caption = block.attr('caption');
-				var floating = block.attr('position');
+			var alt = block.attr('alt');
+			var width = block.attr('width');
+			var height = block.attr('height');
+			var caption = block.attr('caption');
+			var floating = block.attr('position');
 
-				if (alt) {
-					$img.attr('alt', alt);
-				} else {
-					$img.removeAttr('alt');
-				}
-
-				if (typeof width !== 'undefined') {
-					$img.attr('width', width);
-				} else {
-					$img.removeAttr('width');
-				}
-
-				if (typeof height !== 'undefined') {
-					$img.attr('height', height);
-				} else {
-					$img.removeAttr('height');
-				}
-
-				if (caption) {
-					$img.attr('caption', caption);
-				} else {
-					$img.removeAttr('caption');
-				}
-
-				$img.attr('float',
-					(!floating || 'none' === floating) ? '' : floating);
-
-				$img.addClass('aloha-captioned-image');
-				block.$element.replaceWith($img);
+			if (alt) {
+				$img.attr('alt', alt);
 			} else {
-				block.$element.html('')
-				     .removeClass('aloha-captioned-image-hidden')
-				     .removeClass('aloha-block');
+				$img.removeAttr('alt');
 			}
+
+			if (typeof width !== 'undefined') {
+				$img.attr('width', width);
+			} else {
+				$img.removeAttr('width');
+			}
+
+			if (typeof height !== 'undefined') {
+				$img.attr('height', height);
+			} else {
+				$img.removeAttr('height');
+			}
+
+			if (caption) {
+				$img.attr('caption', caption);
+			} else {
+				$img.removeAttr('caption');
+			}
+
+			$img.attr('float',
+				(!floating || 'none' === floating) ? '' : floating);
+
+			if ( settings.captionedImageClass ) {
+				$img.addClass( settings.captionedImageClass );
+			}
+			block.$element.replaceWith($img);
 		}
 	}
 
-	var render = Aloha.settings &&
-	             Aloha.settings.plugins &&
-	             Aloha.settings.plugins.captionedImage &&
-	             Aloha.settings.plugins.captionedImage.render;
-
-	if (!render) {
-		render = function (properties, callback, error) {
-			var src = properties.source || 'img/noimg.gif';
-			var alt = properties.alt || '';
-			var caption = properties.caption || '';
-			var $content = $('<div>' +
-				'<img src="' + src + '" alt="' + alt + '"/>' +
-				'<div class="caption">' +  caption + '</div>' +
-				'</div>');
-
-			if ('left' === properties.position || 'right' === properties.position) {
-				$content.css('float', properties.position)
-				        .addClass('float-' + properties.position);
-			}
-
-			$content.find('>img:first').css({
-				width: properties.width || '',
-				height: properties.height || ''
-			});
-
-			callback({
-				content: $content[0].outerHTML,
-				image: '>div>img:first',
-				caption: '>div>div.caption:first'
-			});
-		};
-	}
-
 	function wrapNakedCaptionedImages($editable) {
-		var $imgs = $editable.find('img.aloha-captioned-image');
+		var selector = settings['selector'] || 'img.aloha-captioned-image';
+		var $imgs = $editable.find(selector);
 		var j = $imgs.length;
 
 		while (j) {
 			var $img = $imgs.eq(--j);
 
-			var $block = $img.removeClass('aloha-captioned-image')
+			var $block = $img.removeClass( settings.captionedImageClass )
 							 .wrap('<div class="aloha-captioned-image">')
 							 .parent();
 
@@ -209,8 +231,7 @@ define([
 			      .attr('data-source', $img.attr('src'))
 			      .attr('data-width', $img.attr('width'))
 			      .attr('data-height', $img.attr('height'))
-			      .attr('data-caption', $img.attr('data-caption'))
-			      .attr('data-aloha-captioned-image-tag', 'img');
+			      .attr('data-caption', $img.attr('data-caption'));
 
 			$img.attr('width', '')
 			    .attr('height', '')
@@ -219,7 +240,7 @@ define([
 	}
 
 	function findCaptionedImages($editable) {
-		return $editable.find('.aloha-captioned-image');
+		return $editable.find('div.aloha-captioned-image');
 	}
 
 	function initializeImageBlocks($editable) {
