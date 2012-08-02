@@ -12,7 +12,7 @@ The Image Plugin will allow for basic image manipulation right within your conte
 * Support for resizing the image
 * Support for changing the image padding
 
-NOTE: You need a server side script like ImageMagick which will handle actual cropping for you.
+NOTE: Crop feature now uses CANVAS api with HTML5 browsers.
 
 endprologue.
 

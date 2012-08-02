@@ -369,8 +369,7 @@ define([
 						});
 						img.attr('id', fileObj.id);
 						if (typeof fileObj.src === 'undefined') {
-							img.attr('src', fileObj.data);
-							//fileObj.src = fileObj.data ;
+							img.attr('src', fileObj.file.data);
 						} else {
 							img.attr('src', fileObj.src);
 						}
