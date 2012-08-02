@@ -215,7 +215,8 @@ define([
 	}
 
 	function wrapNakedCaptionedImages($editable) {
-		var $imgs = $editable.find('img.aloha-captioned-image');
+		var selector = settings['selector'] || 'img.aloha-captioned-image';
+		var $imgs = $editable.find(selector);
 		var j = $imgs.length;
 
 		while (j) {
