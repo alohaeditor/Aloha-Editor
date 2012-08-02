@@ -69,6 +69,42 @@ define([
 		.appendTo( 'head:first' );
 	}
 
+	// Load render callback.
+	var render;
+	if ( typeof settings.render !== 'function' ) {
+		// At first sight, it doesn't make sense to have an error callback. It
+		// does not make sense for simple rendering functions in JavaScript. But
+		// when the rendering would happen on the server-side, then e.g. the
+		// network could fail.
+		render = function (properties, callback, error) {
+			var src = properties.source || 'img/noimg.gif';
+			var alt = properties.alt || '';
+			var caption = properties.caption || '';
+			var $content = $('<div>' +
+				'<img src="' + src + '" alt="' + alt + '"/>' +
+				'<div class="caption">' +  caption + '</div>' +
+				'</div>');
+
+			if ('left' === properties.position || 'right' === properties.position) {
+				$content.css('float', properties.position)
+				        .addClass('float-' + properties.position);
+			}
+
+			$content.find('>img:first').css({
+				width: properties.width || '',
+				height: properties.height || ''
+			});
+
+			callback({
+				content: $content[0].outerHTML,
+				image: '>div>img:first',
+				caption: '>div>div.caption:first'
+			});
+		};
+	}
+	else {
+		render = settings.render;
+	}
 
 
 	var components = [];
@@ -175,43 +211,6 @@ define([
 				     .removeClass('aloha-block');
 			}
 		}
-	}
-
-	var render = Aloha.settings &&
-	             Aloha.settings.plugins &&
-	             Aloha.settings.plugins.captionedImage &&
-	             Aloha.settings.plugins.captionedImage.render;
-
-	if (!render) {
-		// At first sight, it doesn't make sense to have an error callback. It
-		// does not make sense for simple rendering functions in JavaScript. But
-		// when the rendering would happen on the server-side, then e.g. the
-		// network could fail.
-		render = function (properties, callback, error) {
-			var src = properties.source || 'img/noimg.gif';
-			var alt = properties.alt || '';
-			var caption = properties.caption || '';
-			var $content = $('<div>' +
-				'<img src="' + src + '" alt="' + alt + '"/>' +
-				'<div class="caption">' +  caption + '</div>' +
-				'</div>');
-
-			if ('left' === properties.position || 'right' === properties.position) {
-				$content.css('float', properties.position)
-				        .addClass('float-' + properties.position);
-			}
-
-			$content.find('>img:first').css({
-				width: properties.width || '',
-				height: properties.height || ''
-			});
-
-			callback({
-				content: $content[0].outerHTML,
-				image: '>div>img:first',
-				caption: '>div>div.caption:first'
-			});
-		};
 	}
 
 	function wrapNakedCaptionedImages($editable) {
