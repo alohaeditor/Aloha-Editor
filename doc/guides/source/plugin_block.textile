@@ -400,11 +400,23 @@ Aloha.settings.plugins.block.sidebarAttributeEditor = false;
 Then, you need to listen to some events on the BlockManager, most notably the +block-selection-change+ event, which is triggered each time the block selection changes.
 
 <javascript>
-BlockManager.bind('block-selection-change', function(blocks) {
+BlockManager.bind('block-selection-change', function (blocks) {
 	// blocks is an array now, where the first element is the selected block
 	// and the other elements are the ancestor blocs.
 	// If the array is empty, no block has been selected.
 });
+</javascript>
+
+
+The block-selection-change is cumbersome to rely on when you don't care
+about the global state of "which blocks are selected?" but when you do
+care about the local state of each block, i.e. when you want to do
+things whenever a block gets focus or loses focus - for rather use the
+block-activate and block-deactivate events.
+
+<javascript>
+BlockManager.bind('block-activate', function (blocks) { });
+BlockManager.bind('block-deactivate', function (blocks) { });
 </javascript>
 
 h4. Preventing switch of scope for a block

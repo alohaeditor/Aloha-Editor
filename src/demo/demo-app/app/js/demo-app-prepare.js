@@ -1,7 +1,4 @@
 $(document).ready(function() {
-	// here jQuery 1.7 (non Aloha) is used
-	//console.log('jQuery: ' + $().jquery);
-	
 	// hide the save and edit button on startup
 	$('#save-page').hide();
 	$('#edit-page').hide();
