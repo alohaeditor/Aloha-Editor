@@ -78,7 +78,7 @@
 
 		return {
 			baseUrl: baseUrl,
-			plugins: plugins
+			plugins: plugins || []
 		};
 	}
 
