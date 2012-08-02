@@ -183,6 +183,10 @@ define([
 	             Aloha.settings.plugins.captionedImage.render;
 
 	if (!render) {
+		// At first sight, it doesn't make sense to have an error callback. It
+		// does not make sense for simple rendering functions in JavaScript. But
+		// when the rendering would happen on the server-side, then e.g. the
+		// network could fail.
 		render = function (properties, callback, error) {
 			var src = properties.source || 'img/noimg.gif';
 			var alt = properties.alt || '';
