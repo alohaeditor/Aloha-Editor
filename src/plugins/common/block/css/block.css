@@ -14,24 +14,31 @@
 	box-shadow: 0 0 0px 3px #80B5F2; /* We use box-shadow because of a Firefox rendering bug with "outline" */
 }
 
-/* IE7/IE8 hacks http://css-tricks.com/how-to-create-an-ie-only-stylesheet/ */
-.aloha-block:hover {
-	border: 3px solid #FFE767\9; /* IE does not support box-shadow, thus we need to use border */
-	margin: -3px\9;
+
+/* IE8 will use outline for highlighting */
+.ext-ie8 .aloha-block:hover {
+	outline: 3px solid #FFE767; /* IE does not support box-shadow, thus we need to use border */
 }
-.aloha-block.aloha-block-active, .aloha-block.aloha-block-active:hover {
-	border: 3px solid #80B5F2\9; /* IE does not support box-shadow, thus we need to use border */
-	margin: -3px\9;
+.ext-ie8 .aloha-block.aloha-block-active, .ext-ie8 .aloha-block.aloha-block-active:hover {
+	outline: 3px solid #80B5F2; /* IE does not support box-shadow, thus we need to use border */
+}
+/* IE7 will use border for outlining */
+.ext-ie7 .aloha-block:hover {
+	border: 3px solid #FFE767; /* IE does not support box-shadow, thus we need to use border */
+	margin: -3px;
+}
+.ext-ie7 .aloha-block.aloha-block-active, .ext-ie7 .aloha-block.aloha-block-active:hover {
+	border: 3px solid #80B5F2; /* IE does not support box-shadow, thus we need to use border */
+	margin: -3px;
 }
 
 /** DRAG DROP **/
 /* Display cursor for drag/drop */
 .aloha-block-droppable {
-	border-left: 1px solid #80B5F2;
+	border-left: 1px solid red;
 	margin-left:-1px;
 }
-/* IE7 hack http://css-tricks.com/how-to-create-an-ie-only-stylesheet/ */
-*+html .aloha-block-droppable {
+.ext-ie7 .aloha-block-droppable {
 	margin-left:0; /* IE7 cannot handle the negative margin... */
 }
 
@@ -39,7 +46,7 @@
 	margin-left:0 !important;
 	border-left: none !important;
 	margin-right:-1px;
-	border-right: 1px solid #80B5F2;
+	border-right: 1px solid red;
 }
 
 .aloha-block-droppable-blocklevel {
@@ -49,7 +56,7 @@
 	position:absolute;
 	width: 100%;
 	height:2px;
-	background-color:#80B5F2;
+	background-color:red;
 	bottom:0;
 
 }
@@ -93,5 +100,5 @@
 
 
 .aloha-block-dropInlineElementIntoEmptyBlock {
-	border: 1px solid #80B5F2;
+	border: 1px solid red;
 }
