@@ -43,7 +43,7 @@
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
         <h2><a href="/"></a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -59,8 +59,10 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd>Configuring Aloha Editor</dd>
+      <dd>Aloha Editor and jQuery</dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
       <dd><a href="repository.html">Working with repositories</a></dd>
     <dt>The Core</dt>
@@ -68,10 +70,10 @@
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd>Aloha Editor toolbar</dd>
+      <dd>Aloha Editor sidebar</dd>
+      <dd>Aloha Editor UI API</dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -85,6 +87,7 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
       <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
@@ -135,6 +138,7 @@
 &lt;p&gt;[]&lt;br class=&quot;aloha-end-br&quot;/&gt;&lt;/p&gt;
 </pre></div><p>Everything is fine now, the additional <tt>&lt;br&gt;</tt>s at the end of <tt>&lt;p&gt;</tt>s do not change the rendering of non-empty paragraphs, but make the empty ones appear.</p>
 <p>At least, everything would be fine, if there was no Internet Explorer. IE is the only browser, that renders even empty <tt>&lt;p&gt;</tt>, when found in <tt>contenteditable</tt> areas, and &#8211; even worse &#8211; would add additional empty lines if <tt>&lt;br&gt;</tt>s are found at the end of <tt>&lt;p&gt;</tt>s.</p>
+<p>When using Internet Exporer 7, however, things get much worse: Internet Exporer 7 renders empty <tt>&lt;p&gt;</tt> only, if they are the <em>last</em> elements. If you have an empty <tt>&lt;p&gt;</tt> between two non-empty <tt>&lt;p&gt;</tt>, it will not be rendered. If the last <tt>&lt;p&gt;</tt> contains the aloha-end-br, it would show an additional line (but this is only true for the <em>last</em> <tt>&lt;p&gt;</tt>. Therefore, the Implementation of Aloha Editor for Internet Exporer 7 is special, as described below.</p>
 <h4 id="main-goal-in-aloha-editor">1.2 Main goal in Aloha Editor</h4>
 <p>The main goals in Aloha Editor are</p>
 <ul>
@@ -147,11 +151,12 @@
 <ul>
 	<li>remove all empty block level elements (since they are invisible anyway)</li>
 	<li>remove all <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> when using Internet Explorer (since they would add additional lines while editing)</li>
+	<li>add zero-width spaces to all empty block level elements when using Internet Explorer 7</li>
 	<li>add <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> to all <tt>&lt;li&gt;</tt> elements, except for Internet Exporer</li>
 </ul>
 <p>While editing</p>
 <ul>
-	<li>For every operation, that might lead to an empty block level elements (hitting <tt>ENTER</tt>, deleting, &#8230;), fix the empty block level element by appending a <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> (except for Internet Explorer).</li>
+	<li>For every operation, that might lead to an empty block level elements (hitting <tt>ENTER</tt>, deleting, &#8230;), fix the empty block level element by appending a <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> (except for Internet Explorer). For Internet Explorer 7, instead of <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> the zero-width spaces will be used.</li>
 </ul>
 <p>When getting the editable&#8217;s content (e.g. for saving) with the <em>getContents()</em> method</p>
 <ul>

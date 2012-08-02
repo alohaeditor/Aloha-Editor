@@ -4148,6 +4148,8 @@ function fixDisallowedAncestors(node, range) {
 		// and let node be the result."
 		node = setTagName(node, defaultSingleLineContainerName, range);
 
+		ensureContainerEditable(node);
+
 		// "Fix disallowed ancestors of node."
 		fixDisallowedAncestors(node, range);
 
@@ -6404,11 +6406,13 @@ function createEndBreak() {
 	return endBr;
 }
 
-//@}
-///// Ensure that the container is editable /////
-///// E.g. when called for an empty paragraph or header, and the browser is not IE, we need to append
-///// br (marked with aloha-end-br)
-//@{
+/**
+ * Ensure the container is editable
+ * E.g. when called for an empty paragraph or header, and the browser is not IE,
+ * we need to append a br (marked with class aloha-end-br)
+ * For IE7, there is a special behaviour that will append zero-width whitespace
+ * @param {DOMNode} container
+ */
 function ensureContainerEditable(container) {
 	if (!container) {
 		return;
@@ -6422,15 +6426,60 @@ function ensureContainerEditable(container) {
 		return;
 	}
 
-	// For all browsers except IE >= 8. If container is a li element, then exclude IE7 as well.
-	// IE7 may refer to either a native IE7 or an IE8 in compatibility mode.
-	if (   !jQuery.browser.msie
-		|| (   jQuery.browser.version <= 7
-			&& !isHtmlElement(container, "li"))) {
+	if (!jQuery.browser.msie) {
+		// for normal browsers, the end-br will do
 		container.appendChild(createEndBreak());
+	} else if (jQuery.browser.msie && jQuery.browser.version <= 7 &&
+			isHtmlElement(container, ["p", "h1", "h2", "h3", "h4", "h5", "h6", "pre", "blockquote"])) {
+		// for IE7, we need to insert a text node containing a single zero-width whitespace character
+		if (!container.firstChild) {
+			container.appendChild(document.createTextNode('\u200b'));
+		}
 	}
 }
 
+//@}
+///// Move the given collapsed range over adjacent zero-width whitespace characters.
+///// The range is 
+//@{
+/**
+ * Move the given collapsed range over adjacent zero-width whitespace characters.
+ * If the range is not collapsed or is not contained in a text node, it is not modified
+ * @param range range to modify
+ * @param forward {Boolean} true to move forward, false to move backward
+ */
+function moveOverZWSP(range, forward) {
+	var offset;
+	if (!range.collapsed) {
+		return;
+	}
+
+	offset = range.startOffset;
+
+	if (forward) {
+		// check whether the range starts in a text node
+		if (range.startContainer && range.startContainer.nodeType === $_.Node.TEXT_NODE) {
+			// move forward (i.e. increase offset) as long as we stay in the text node and have zwsp characters to the right
+			while (offset < range.startContainer.data.length && range.startContainer.data.charAt(offset) === '\u200b') {
+				offset++;
+			}
+		}
+	} else {
+		// check whether the range starts in a text node
+		if (range.startContainer && range.startContainer.nodeType === $_.Node.TEXT_NODE) {
+			// move backward (i.e. decrease offset) as long as we stay in the text node and have zwsp characters to the left
+			while (offset > 0 && range.startContainer.data.charAt(offset - 1) === '\u200b') {
+				offset--;
+			}
+		}
+	}
+
+	// if the offset was changed, set it back to the collapsed range
+	if (offset !== range.startOffset) {
+		range.setStart(range.startContainer, offset);
+		range.setEnd(range.startContainer, offset);
+	}
+}
 
 /**
  * implementation of the delete command
@@ -6445,6 +6494,10 @@ function ensureContainerEditable(container) {
  */
 commands["delete"] = {
 	action: function(value, range) {
+		// special behaviour for skipping zero-width whitespaces in IE7
+		if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+			moveOverZWSP(range, false);
+		}
 
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
@@ -7059,6 +7112,10 @@ commands.formatblock = {
 //@{
 commands.forwarddelete = {
 	action: function(value, range) {
+		// special behaviour for skipping zero-width whitespaces in IE7
+		if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+			moveOverZWSP(range, true);
+		}
 	
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
