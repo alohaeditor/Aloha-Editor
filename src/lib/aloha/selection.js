@@ -826,7 +826,7 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub, 
 					backupRangeObject.endOffset = rangeObject.endOffset;
 				}
 			}
-																		  debugger;
+
 			if (markupObject.isReplacingElement) {
 				//Check if the startContainer is one of the zapped elements
 				if ( backupRangeObject &&
