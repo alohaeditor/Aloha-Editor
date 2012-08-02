@@ -30,14 +30,16 @@ define([
 	'ui/scopes',
 	'aloha/observable',
 	'aloha/registry',
-	'util/class'
+	'util/class',
+	'util/strings'
 ], function(
 	Aloha,
 	jQuery,
 	Scopes,
 	Observable,
 	Registry,
-	Class
+	Class,
+	Strings
 ){
 	"use strict";
 
@@ -414,8 +416,19 @@ define([
 			// We use jQuery.clone(true) because the sortableItem attribute isn't returned
 			// if we do a normal cloneNode(...).
 			var clone = blockElement.clone(true);
-			var data = clone.data();
+			var dataCamelCase = clone.data();
+			var data = {};
 			clone.removeData();
+			// jQuery.data() returns data attributes with names like
+			// data-some-attr as dataSomeAttr which has to be reversed
+			// so that they can be merged with this.defaults and
+			// instanceDefaults which are expected to be in
+			// data-some-attr form.
+			for (var key in dataCamelCase) {
+				if (dataCamelCase.hasOwnProperty(key)) {
+					data[Strings.camelCaseToDashes(key)] = dataCamelCase[key];
+				}
+			}
 			return jQuery.extend(
 				{},
 				this.defaults,
