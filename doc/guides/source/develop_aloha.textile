@@ -12,6 +12,13 @@ cd alohaeditor
 git checkout dev
 </shell>
 
+h3. Pre-commit hook
+
+To avoid accidentally committing debugging code, symlink or copy
+.githooks/pre-commit into .git/hooks. This will check for the most
+common mistakes like 'debugger;' or 'console.log();' statements before
+every commit.
+
 h3. Repository Directory Structure
 
 * /
