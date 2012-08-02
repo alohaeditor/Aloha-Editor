@@ -171,53 +171,47 @@ define([
 				continue;
 			}
 
-			if (block.attr('aloha-captioned-image-tag') === 'img') {
-				$img = block.$_image;
+			$img = block.$_image;
 
-				$img.attr('src', block.attr('source'));
+			$img.attr('src', block.attr('source'));
 
-				var alt = block.attr('alt');
-				var width = block.attr('width');
-				var height = block.attr('height');
-				var caption = block.attr('caption');
-				var floating = block.attr('position');
+			var alt = block.attr('alt');
+			var width = block.attr('width');
+			var height = block.attr('height');
+			var caption = block.attr('caption');
+			var floating = block.attr('position');
 
-				if (alt) {
-					$img.attr('alt', alt);
-				} else {
-					$img.removeAttr('alt');
-				}
-
-				if (typeof width !== 'undefined') {
-					$img.attr('width', width);
-				} else {
-					$img.removeAttr('width');
-				}
-
-				if (typeof height !== 'undefined') {
-					$img.attr('height', height);
-				} else {
-					$img.removeAttr('height');
-				}
-
-				if (caption) {
-					$img.attr('caption', caption);
-				} else {
-					$img.removeAttr('caption');
-				}
-
-				$img.attr('float',
-					(!floating || 'none' === floating) ? '' : floating);
-
-				if ( settings.captionedImageClass ) {
-					$img.addClass( settings.captionedImageClass );
-				}
-				block.$element.replaceWith($img);
+			if (alt) {
+				$img.attr('alt', alt);
 			} else {
-				block.$element.html('')
-				     .removeClass('aloha-captioned-image-hidden')
-				     .removeClass('aloha-block');
+				$img.removeAttr('alt');
 			}
+
+			if (typeof width !== 'undefined') {
+				$img.attr('width', width);
+			} else {
+				$img.removeAttr('width');
+			}
+
+			if (typeof height !== 'undefined') {
+				$img.attr('height', height);
+			} else {
+				$img.removeAttr('height');
+			}
+
+			if (caption) {
+				$img.attr('caption', caption);
+			} else {
+				$img.removeAttr('caption');
+			}
+
+			$img.attr('float',
+				(!floating || 'none' === floating) ? '' : floating);
+
+			if ( settings.captionedImageClass ) {
+				$img.addClass( settings.captionedImageClass );
+			}
+			block.$element.replaceWith($img);
 		}
 	}
 
@@ -237,8 +231,7 @@ define([
 			      .attr('data-source', $img.attr('src'))
 			      .attr('data-width', $img.attr('width'))
 			      .attr('data-height', $img.attr('height'))
-			      .attr('data-caption', $img.attr('data-caption'))
-			      .attr('data-aloha-captioned-image-tag', 'img');
+			      .attr('data-caption', $img.attr('data-caption'));
 
 			$img.attr('width', '')
 			    .attr('height', '')
@@ -247,7 +240,7 @@ define([
 	}
 
 	function findCaptionedImages($editable) {
-		return $editable.find('.aloha-captioned-image');
+		return $editable.find('div.aloha-captioned-image');
 	}
 
 	function initializeImageBlocks($editable) {
