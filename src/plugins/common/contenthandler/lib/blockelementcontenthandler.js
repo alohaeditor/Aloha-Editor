@@ -19,7 +19,7 @@ function (Aloha, jQuery, ContentHandlerManager) {
 		$this.filter('h1:empty,h2:empty,h3:empty,h4:empty,h5:empty,h6:empty,p:empty,pre:empty,blockquote:empty').remove();
 
 		// 2. if editing in IE: remove end-br's
-		if (jQuery.browser.msie && jQuery.browser.version > 7) {
+		if (jQuery.browser.msie) {
 			$this.filter('br.aloha-end-br').remove();
 		}
 
@@ -36,6 +36,19 @@ function (Aloha, jQuery, ContentHandlerManager) {
 
 		// proceed with all non-block child elements
 		$this.children(':not(.aloha-block)').each(prepareEditing);
+	};
+
+	/**
+	 * Function to prepare the content for editing in IE7
+	 */
+	var prepareEditingIE7 = function () {
+		var $this = jQuery(this);
+
+		// all empty blocklevel elements must contain a zero-width whitespace
+		$this.filter('h1:empty,h2:empty,h3:empty,h4:empty,h5:empty,h6:empty,p:empty,pre:empty,blockquote:empty').append('\u200b');
+
+		// proceed with all non-block child elements
+		$this.children(':not(.aloha-block)').each(prepareEditingIE7);
 	};
 
 	/**
@@ -72,6 +85,9 @@ function (Aloha, jQuery, ContentHandlerManager) {
 
 			if (options.command === 'initEditable') {
 				content.children(':not(.aloha-block)').each(prepareEditing);
+				if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+					content.children(':not(.aloha-block)').each(prepareEditingIE7);
+				}
 			} else if (options.command === 'getContents') {
 				content.children(':not(.aloha-block)').each(fixEndBr);
 
