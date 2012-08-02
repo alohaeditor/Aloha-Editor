@@ -235,8 +235,7 @@ define([
 
 					// BROWSER QUIRK WORKAROUND
 					// - IE7+IE8 for block-level blocks which are NOT part of a bigger selection.
-					// TODO as we're going to remove Ext this browser checks should be made with jQuery
-					if ((Ext.isIE8 || Ext.isIE7) && that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
+					if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) <= 8 && that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
 						that._activeBlock.destroy();
 						e.preventDefault();
 						return false;
