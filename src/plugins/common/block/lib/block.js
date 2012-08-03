@@ -594,7 +594,7 @@ define([
 				jQuery.each(dropzones, function(i, editable_selector) {
 					var editables = jQuery(editable_selector);
 					jQuery(editables).each(function() {
-						if (!jQuery(this).data("block-dragdrop-disabled")) {
+						if (jQuery(this).data("block-dragdrop")) {
 							jQuery(this).addClass("aloha-block-dropzone");	
 						}
 					});
@@ -622,6 +622,10 @@ define([
 			// Furthermore, we use it to know whether we need to "revert" the draggable to the original state or not.
 			var lastHoveredCharacter = null;
 
+			// Unless this flag is set to true, drag operation should be reverted.
+			// Firing of "drop" event will set this to true.
+			var blockDroppedProperly = false;
+
 			// HACK for IE7: Internet Explorer 7 has a very weird behavior in
 			// not always firing the "drop" callback of the inner droppable... However,
 			// the "over" and "out" callbacks are fired correctly.
@@ -632,6 +636,10 @@ define([
 			// $currentDraggable contains a reference to the current draggable, but
 			// only makes sense to read when lastHoveredCharacter !== NULL.
 			var $currentDraggable = null;
+
+			// We need to store the droppables created at the start of the drag,
+			// they should be destroyed when the drag stops.
+			var $createdDroppables = null;
 
 			// This dropFn is the callback which handles the actual moving of
 			// nodes. We created a separate function for it, as it is called inside the "stop" callback
@@ -666,13 +674,19 @@ define([
 					that._fixScrollPositionBugsInIE();
 				}
 				jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
+
+				// clear the created droppables
+				$createdDroppables.droppable( "destroy" );
+				$createdDroppables = null;
+
+				blockDroppedProperly = true;
 			};
 			var editablesWhichNeedToBeCleaned = [];
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
 				revert: function() {
-					return (lastHoveredCharacter === null);
+					return (lastHoveredCharacter === null || !blockDroppedProperly);
 				},
 				revertDuration: 250,
 				stop: function() {
@@ -681,12 +695,13 @@ define([
 					}
 					jQuery.each(editablesWhichNeedToBeCleaned, function() {
 						that._dd_traverseDomTreeAndRemoveSpans(this);
-					})
+					});
 					$currentDraggable = null;
 
 					editablesWhichNeedToBeCleaned = [];
 				},
 				start: function() {
+					blockDroppedProperly = false;
 					editablesWhichNeedToBeCleaned = [];
 
 					// In order to make Inline Blocks droppable into empty paragraphs, we insert a &nbsp; manually before the placeholder-br.
@@ -759,7 +774,8 @@ define([
 						}
 					};
 
-					jQuery('.aloha-editable.aloha-block-dropzone').children(':not(.aloha-block)').droppable(droppableCfg);
+					$createdDroppables = jQuery('.aloha-editable.aloha-block-dropzone').children(':not(.aloha-block)');
+					$createdDroppables.droppable(droppableCfg);
 					// Small HACK: Also make table cells droppable
 					jQuery('.aloha-table-cell-editable').droppable(droppableCfg);
 				}
