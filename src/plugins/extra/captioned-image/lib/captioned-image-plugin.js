@@ -244,6 +244,11 @@ define([
 							 .wrap('<div class="aloha-captioned-image-block">')
 							 .parent();
 
+			// Set user-provided block class, if any.
+			if ( typeof settings.blockClass === 'string' ) {
+				$block.addClass(settings.blockClass);
+			}
+
 			// Through this plug-in, users will be able to change the caption
 			// and the alignment, so we only need to grab those two attributes,
 			// as well as the original image. We'll then always manipulate the
