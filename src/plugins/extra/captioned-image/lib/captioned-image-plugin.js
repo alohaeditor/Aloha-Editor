@@ -90,14 +90,19 @@ define([
 	} else {
 		render = function (variables, callback, error) {
 			var html = '<div class="captioned-image';
+
 			if (variables.align) {
 				html += ' align-' + variables.align;
 			}
-			html += '">'
-			     + variables.image
-				 + '<div class="caption" style="width:' + variables.width + '">'
-				 + variables.caption
-				 + '</div></div>'
+
+			html += '">' + (variables.image || '<img alt="Captioned image placeholder"/>')
+				 + '<div class="caption"';
+
+			if (variables.width) {
+				html += ' style="width:' + variables.width + '"';
+			}
+
+			html += '>' + (variables.caption || '') + '</div></div>';
 
 			callback({
 				content: html,
@@ -135,7 +140,9 @@ define([
 		if (left) {
 			var clickLeft = left.click;
 			left.click = function () {
-				alignLeft() || clickLeft();
+				if (!alignLeft()) {
+					clickLeft();
+				}
 			};
 			components.push(left);
 		} else {
@@ -149,7 +156,9 @@ define([
 		if (right) {
 			var clickRight = right.click;
 			right.click = function () {
-				alignRight() || clickRight();
+				if (!alignRight()) {
+					clickRight();
+				}
 			};
 			components.push(right);
 		} else {
@@ -175,13 +184,13 @@ define([
 		var width;
 
 		if (typeof $img.attr('width') !== 'undefined') {
-			width = parseInt($img.attr('width'));
+			width = parseInt($img.attr('width'), 10);
 		} else {
 			// NOTE: this assumes the image has already loaded!
-			width = parseInt($img.width());
+			width = parseInt($img.width(), 10);
 		}
 
-		if (typeof width === 'number' && width !== NaN) {
+		if (typeof width === 'number' && !isNaN(width)) {
 			width += 'px';
 		} else {
 			width = 'auto';
@@ -238,7 +247,7 @@ define([
 	}
 
 	function wrapNakedCaptionedImages($editable) {
-		var selector = settings['selector'] || 'img.aloha-captioned-image';
+		var selector = settings.selector || 'img.aloha-captioned-image';
 		var $imgs = $editable.find(selector);
 		var j = $imgs.length;
 
