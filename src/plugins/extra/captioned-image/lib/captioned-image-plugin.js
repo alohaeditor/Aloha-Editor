@@ -18,7 +18,8 @@ define([
 	'ui/ui',
 	'ui/button',
 	'ui/toolbar',
-	'aloha/console'
+	'aloha/console',
+	'css!captioned-image/css/captioned-image.css'
 ], function (
 	$,
 	Aloha,
@@ -32,15 +33,20 @@ define([
 ) {
 	'use strict';
 
-	var defaultCss = '\
-		.aloha-captioned-image {display: inline-block;}\
-		.aloha-captioned-image>div {\
+	var defaultRenderCss = '\
+		.captioned-image {\
 			text-align: center;\
 			padding: 0 1em 1em;\
 		}\
-		.aloha-captioned-image .float-right {padding-right: 0;}\
-		.aloha-captioned-image .float-left {padding-left: 0;}\
-		.aloha-captioned-image .caption {\
+		.captioned-image.align-right {\
+			float: right;\
+			padding-right: 0;\
+		}\
+		.captioned-image .align-left {\
+			float: left;\
+			padding-left: 0;\
+		}\
+		.captioned-image .caption {\
 			padding: 0.5em;\
 			font-size: 0.9em;\
 			background: rgba(0,0,0,0.8);\
@@ -49,8 +55,6 @@ define([
 			text-align: left;\
 			min-width: 100px;\
 		}\
-		.aloha-captioned-image-hidden .caption {display: none;}\
-		.aloha-captioned-image-hidden.aloha-block-active .caption {display: block;}\
 	';
 
 	// Parse all settings.
@@ -64,8 +68,8 @@ define([
 	}
 
 	// If default CSS is not disabled, then add it.
-	if ( settings.css !== false ) {
-		$( '<style type="text/css">' ).text( defaultCss )
+	if ( settings.defaultCss !== false ) {
+		$( '<style type="text/css">' ).text( defaultRenderCss )
 		.appendTo( 'head:first' );
 	}
 
@@ -335,9 +339,11 @@ define([
 			this.$element.html(data.content);
 			this.$_image = this.$element.find(data.image);
 			this.$_caption = this.$element.find(data.caption);
-			this.$_caption.addClass('aloha-editable')
-			    .css('width', this.$_image.width())
-			    .bind('blur', this.onblur);
+			this.$_caption.addClass( 'aloha-captioned-image-caption' )
+			              .addClass( 'aloha-editable' )
+			              .css('width', this.$_image.width())
+			              .bind('blur', this.onblur);
+
 
 			if (this.attr('caption')) {
 				this.$element.removeClass('aloha-captioned-image-hidden');

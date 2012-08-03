@@ -1,0 +1,12 @@
+/*!
+* Aloha Editor
+* Author & Copyright (c) 2012 Gentics Software GmbH
+* aloha-sales@gentics.com
+* Licensed unter the terms of http://www.aloha-editor.com/license.html
+*/
+
+/* The styling for the captioned image "infrastructure", i.e. not for the
+   captions themselves, which should be provided by the site using it. */
+.aloha-captioned-image { display: inline-block; }
+.aloha-captioned-image-hidden .aloha-captioned-image-caption { display: none; }
+.aloha-captioned-image-hidden.aloha-block-active .aloha-captioned-image-caption { display: block; }
