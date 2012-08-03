@@ -1,7 +1,10 @@
 /**
- * Captioned Images provides an Aloha block implementation that allows the
- * editor to work with images that have captions, such that an image with is
- * corresponding caption can be position, and aligned together in an editable.
+ * Captioned Image provides an Aloha block implementation that allows the editor
+ * to work with images that have captions, such that an image with its
+ * corresponding caption can be aligned together in an editable.
+ * It reads and writes to an <img> tag's data-caption and data-align attributes.
+ * No formatting inside the caption is allowed; only plain text is permitted.
+ * Four possible alignments are possible: none, left, right, center.
  *
  * TODO
  * ----
@@ -19,7 +22,9 @@ define([
 	'ui/toolbar',
 	'ui/ui-plugin',
 	'align/align-plugin',
-	'aloha/console'
+	'aloha/console',
+	// FIXME: use of the css require plugin is deprecated
+	'css!captioned-image/css/captioned-image.css'
 ], function (
 	$,
 	Aloha,
@@ -35,15 +40,24 @@ define([
 ) {
 	'use strict';
 
-	var css = '\
-		.aloha-captioned-image {display: inline-block;}\
-		.aloha-captioned-image>div {\
+	var defaultRenderCSS = '\
+		.captioned-image {\
 			text-align: center;\
 			padding: 0 1em 1em;\
 		}\
-		.aloha-captioned-image .float-right {padding-right: 0;}\
-		.aloha-captioned-image .float-left {padding-left: 0;}\
-		.aloha-captioned-image .caption {\
+		.captioned-image.align-right {\
+			float: right;\
+			padding-right: 0;\
+		}\
+		.captioned-image.align-left {\
+			float: left;\
+			padding-left: 0;\
+		}\
+		.captioned-image.align-center {\
+			display: block;\
+			text-align: center;\
+		}\
+		.captioned-image .caption {\
 			padding: 0.5em;\
 			font-size: 0.9em;\
 			background: rgba(0,0,0,0.8);\
@@ -52,10 +66,52 @@ define([
 			text-align: left;\
 			min-width: 100px;\
 		}\
-		.aloha-captioned-image-hidden .caption {display: none;}\
-		.aloha-captioned-image-hidden.aloha-block-active .caption {display: block;}\
+		.captioned-image.align-center .caption {\
+			margin-left: auto;\
+			margin-right: auto;\
+		}\
+		/* Overrides for when the caption is being edited through Aloha Editor. */\
+		.aloha-captioned-image-block .captioned-image {\
+			padding: 0;\
+		}\
 	';
-	$('<style type="text/css">').text(css).appendTo('head:first');
+
+	var settings = Aloha.settings &&
+	               Aloha.settings.plugins &&
+	               Aloha.settings.plugins.captionedImage;
+
+	if (settings.defaultCSS !== false) {
+		$('<style type="text/css">').text(defaultRenderCSS).appendTo('head:first');
+	}
+
+	var render;
+	if (typeof settings.render === 'function') {
+		render = settings.render;
+	} else {
+		render = function (variables, callback, error) {
+			var html = '<div class="captioned-image';
+			if (variables.align) {
+				html += ' align-' + variables.align;
+			}
+			html += '">'
+			     + variables.image
+				 + '<div class="caption" style="width:' + variables.width + '">'
+				 + variables.caption
+				 + '</div></div>'
+
+			callback({
+				content: html,
+				image: '>div>img:first',
+				caption: '>div>div.caption:first'
+			});
+		};
+	}
+
+	// This is the class that will be set on the image when cleaning up. Set to
+	// the empty string if you don't want a class to be set.
+	if (typeof settings.captionedImageClass !== 'string') {
+		settings.captionedImageClass = 'aloha-captioned-image';
+	}
 
 	var components = [];
 	function initializeComponents() {
@@ -63,23 +119,23 @@ define([
 		var right = UiPlugin.getAdoptedComponent('alignRight');
 		var alignLeft = function () {
 			if (BlockManager._activeBlock) {
-				BlockManager._activeBlock.attr('position', 'left');
+				BlockManager._activeBlock.attr('align', 'left');
 				return true;
 			}
 			return false;
 		};
 		var alignRight = function () {
 			if (BlockManager._activeBlock) {
-				BlockManager._activeBlock.attr('position', 'right');
+				BlockManager._activeBlock.attr('align', 'right');
 				return true;
 			}
 			return false;
 		};
 
 		if (left) {
-			var origLeft = left.click;
+			var clickLeft = left.click;
 			left.click = function () {
-				alignLeft() || origLeft();
+				alignLeft() || clickLeft();
 			};
 			components.push(left);
 		} else {
@@ -91,9 +147,9 @@ define([
 		}
 
 		if (right) {
-			var origRight = right.click;
+			var clickRight = right.click;
 			right.click = function () {
-				alignRight() || origRight();
+				alignRight() || clickRight();
 			};
 			components.push(right);
 		} else {
@@ -109,17 +165,32 @@ define([
 			text: 'Remove alignment',
 			click: function () {
 				if (BlockManager._activeBlock) {
-					BlockManager._activeBlock.attr('position', 'none');
+					BlockManager._activeBlock.attr('align', 'none');
 				}
 			}
 		}));
 	}
 
+	function getImageWidth($img) {
+		var width;
+
+		if (typeof $img.attr('width') !== 'undefined') {
+			width = parseInt($img.attr('width'));
+		} else {
+			// NOTE: this assumes the image has already loaded!
+			width = parseInt($img.width());
+		}
+
+		if (typeof width === 'number' && width !== NaN) {
+			width += 'px';
+		} else {
+			width = 'auto';
+		}
+
+		return width;
+	}
+
 	function showComponents() {
-		// A very fragile yield hack to help make it more likely that our
-		// components' tag will be foregroun()ed after other components so that
-		// ours are visible.  A fix is needed at the architectural level of
-		// Aloha for this.
 		var j = components.length;
 		while (j--) {
 			components[j].foreground();
@@ -127,132 +198,93 @@ define([
 	}
 
 	function cleanEditable($editable) {
-		var $blocks = $editable.find('.aloha-captioned-image');
+		var $blocks = $editable.find('.aloha-captioned-image-block');
 		var j = $blocks.length;
 		var block;
 		var $img;
 
-		while (j) {
-			block = BlockManager.getBlock($blocks[--j]);
+		while (j--) {
+			block = BlockManager.getBlock($blocks[j]);
 
 			if (!block) {
 				continue;
 			}
 
-			if (block.attr('aloha-captioned-image-tag') === 'img') {
-				$img = block.$_image;
-				$img.attr('src', block.attr('source'));
-				var alt = block.attr('alt');
-				var width = block.attr('width');
-				var height = block.attr('height');
-				var caption = block.attr('caption');
-				var floating = block.attr('position');
+			$img = block.$_image;
+			var caption = block.attr('caption');
+			var align = block.attr('align');
 
-				if (alt) {
-					$img.attr('alt', alt);
-				} else {
-					$img.removeAttr('alt');
-				}
-
-				if (typeof width !== 'undefined') {
-					$img.attr('width', width);
-				} else {
-					$img.removeAttr('width');
-				}
-
-				if (typeof height !== 'undefined') {
-					$img.attr('height', height);
-				} else {
-					$img.removeAttr('height');
-				}
-
-				if (caption) {
-					$img.attr('caption', caption);
-				} else {
-					$img.removeAttr('caption');
-				}
-
-				$img.attr('float',
-					(!floating || 'none' === floating) ? '' : floating);
-				$img.addClass('aloha-captioned-image');
-				block.$element.replaceWith($img);
+			// We only touch the data-caption and data-align attributes o/t img!
+			if (caption) {
+				$img.attr('data-caption', caption);
 			} else {
-				block.$element.html('')
-				     .removeClass('aloha-captioned-image-hidden')
-				     .removeClass('aloha-block');
+				$img.removeAttr('data-caption');
 			}
+
+			if (align) {
+				$img.attr('data-align', align);
+			} else {
+				$img.removeAttr('data-align');
+			}
+
+			if (settings.captionedImageClass) {
+				$img.addClass(settings.captionedImageClass);
+			}
+
+			// Now replace the entire block with the original image, with
+			// potentially updated data-caption, data-align and class attributes.
+			block.$element.replaceWith($img);
 		}
-	}
-
-	var render = Aloha.settings &&
-	             Aloha.settings.plugins &&
-	             Aloha.settings.plugins.captionedImage &&
-	             Aloha.settings.plugins.captionedImage.render;
-
-	if (!render) {
-		render = function (properties, callback, error) {
-			var src = properties.source || 'img/noimg.gif';
-			var alt = properties.alt || '';
-			var caption = properties.caption || '';
-			var $content = $('<div>' +
-				'<img src="' + src + '" alt="' + alt + '"/>' +
-				'<div class="caption">' +  caption + '</div>' +
-				'</div>');
-
-			if ('left' === properties.position || 'right' === properties.position) {
-				$content.css('float', properties.position)
-				        .addClass('float-' + properties.position);
-			}
-
-			$content.find('>img:first').css({
-				width: properties.width || '',
-				height: properties.height || ''
-			});
-			callback({
-				content: $content[0].outerHTML,
-				image: '>div>img:first',
-				caption: '>div>div.caption:first'
-			});
-		};
 	}
 
 	function wrapNakedCaptionedImages($editable) {
-		var $imgs = $editable.find('img.aloha-captioned-image');
+		var selector = settings['selector'] || 'img.aloha-captioned-image';
+		var $imgs = $editable.find(selector);
 		var j = $imgs.length;
 
-		while (j) {
-			var $img = $imgs.eq(--j);
-			var $block = $img.removeClass('aloha-captioned-image')
-							 .wrap('<div class="aloha-captioned-image">')
+		while (j--) {
+			var $img = $imgs.eq(j);
+			var $block = $img.removeClass(settings.captionedImageClass)
+							 .wrap('<div class="aloha-captioned-image-block">')
 							 .parent();
-			$block.attr('data-alt', $img.attr('alt'))
-			      .attr('data-source', $img.attr('src'))
-			      .attr('data-width', $img.attr('width'))
-			      .attr('data-height', $img.attr('height'))
-			      .attr('data-caption', $img.attr('data-caption'))
-			      .attr('data-aloha-captioned-image-tag', 'img');
-			$img.attr('width', '')
-			    .attr('height', '')
-			    .attr('data-caption', '');
-		}
-	}
 
-	function findCaptionedImages($editable) {
-		return $editable.find('.aloha-captioned-image');
+			// Set user-provided block class, if any.
+			if (typeof settings.blockClass === 'string') {
+				$block.addClass(settings.blockClass);
+			}
+
+			// Through this plug-in, users will be able to change the caption
+			// and the alignment, so we only need to grab those two attributes,
+			// as well as the original image. We'll then always manipulate the
+			// original image, to make sure we don't accidentally erase other
+			// attributes.
+			// Whenever we need to use other attributes, we'll have to retrieve
+			// it from the original image.
+			var caption = $img.attr('data-caption');
+			caption = (typeof caption !== 'undefined') ? caption : '';
+			$block.attr('data-caption',        caption)
+			      .attr('data-align',          $img.attr('data-align'))
+			      .attr('data-width',          getImageWidth($img))
+			      .attr('data-original-image', $img[0].outerHTML);
+		}
+
+		return $editable.find('.aloha-captioned-image-block');
 	}
 
 	function initializeImageBlocks($editable) {
-		wrapNakedCaptionedImages($editable);
-		var $all = findCaptionedImages($editable);
+		var $all = wrapNakedCaptionedImages($editable);
 		var $blocks = $();
 		var j = $all.length;
 
-		while (j) {
-			if (!$all.eq(--j).hasClass('aloha-block')) {
+		// Transform all of the captioned (or captionable!) images into Aloha
+		// Blocks.
+		while (j--) {
+			if (!$all.eq(j).hasClass('aloha-block')) {
 				$blocks = $blocks.add($all[j]);
 			}
 		}
 
+		// Set the block type for these new Aloha Blocks to the right type.
 		$blocks.alohaBlock({
 			'aloha-block-type': 'CaptionedImageBlock'
 		});
@@ -261,7 +293,6 @@ define([
 	var CaptionedImageBlock = Block.AbstractBlock.extend({
 		title: 'Captioned Image',
 		onblur: null,
-		onload: null,
 		$_image: null,
 		$_caption: null,
 		init: function ($element, postProcessCallback) {
@@ -270,9 +301,7 @@ define([
 			}
 
 			var that = this;
-			this.onload = function () {
-				that.$_caption.css('width', that.$_image.width());
-			};
+
 			this.onblur = function () {
 				var html = that.$_caption.html();
 
@@ -283,18 +312,13 @@ define([
 				Toolbar.$surfaceContainer.show();
 			};
 
-			this.$element.css('float', this.attr('position'));
-
 			render({
-				alt: this.attr('alt'),
-				width: this.attr('width'),
-				height: this.attr('height'),
-				source: this.attr('source'),
+				image  : this.attr('original-image'),
 				caption: this.attr('caption'),
-				position: this.attr('position')
+				align  : this.attr('align'),
+				width  : this.attr('width')
 			}, function (data) {
 				that._processRenderedData(data);
-				that.$_image.bind('load', that.onload);
 				postProcessCallback();
 				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable.obj.is(that.$_caption)) {
@@ -307,19 +331,13 @@ define([
 			});
 		},
 		update: function ($element, postProcessCallback) {
-			this.$_image.unbind('load', this.onload);
 			this.$_caption.unbind('blur', this.onblur);
-			this.$element.css('float', this.attr('position'));
-
 			var that = this;
-
 			render({
-				alt: this.attr('alt'),
-				width: this.attr('width'),
-				height: this.attr('height'),
-				source: this.attr('source'),
+				image  : this.attr('original-image'),
 				caption: this.attr('caption'),
-				position: this.attr('position')
+				align  : this.attr('align'),
+				width  : this.attr('width')
 			}, function (data) {
 				that._processRenderedData(data);
 				postProcessCallback();
@@ -332,14 +350,18 @@ define([
 			this.$element.html(data.content);
 			this.$_image = this.$element.find(data.image);
 			this.$_caption = this.$element.find(data.caption);
-			this.$_caption.addClass('aloha-editable')
-			    .css('width', this.$_image.width())
-			    .bind('blur', this.onblur);
+			this.$_caption.addClass('aloha-captioned-image-caption')
+			              .addClass('aloha-editable')
+			              .bind('blur', this.onblur);
+			this.$element.removeClass('align-left align-right align-center')
+			             .addClass('align-' + this.attr('align'));
 
+			// Indicate which CaptionedImage blocks have an empty caption, so we
+			// can hide their caption areas whenever these blocks are not active.
 			if (this.attr('caption')) {
-				this.$element.removeClass('aloha-captioned-image-hidden');
+				this.$element.removeClass('aloha-captioned-image-block-empty-caption');
 			} else {
-				this.$element.addClass('aloha-captioned-image-hidden');
+				this.$element.addClass('aloha-captioned-image-block-empty-caption');
 			}
 		}
 	});
@@ -349,19 +371,18 @@ define([
 			initializeComponents();
 			BlockManager.registerBlockType('CaptionedImageBlock', CaptionedImageBlock);
 			var j = Aloha.editables.length;
-
-			while (j) {
-				initializeImageBlocks(Aloha.editables[--j].obj);
+			while (j--) {
+				initializeImageBlocks(Aloha.editables[j].obj);
 			}
 
 			Aloha.bind('aloha-editable-created', function ($event, editable) {
 				initializeImageBlocks(editable.obj);
-				editable.obj.delegate('div.aloha-captioned-image', 'mouseup',
+				editable.obj.delegate('.aloha-captioned-image-block', 'click',
 					showComponents);
 			});
 			Aloha.bind('aloha-editable-destroyed', function ($event, editable) {
 				cleanEditable(editable.obj);
-				editable.obj.undelegate('div.aloha-captioned-image', 'mouseup',
+				editable.obj.undelegate('.aloha-captioned-image-block', 'click',
 					showComponents);
 			});
 		},
