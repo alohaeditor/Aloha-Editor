@@ -16,3 +16,9 @@ All changes are categorized into one of the following keywords:
 
 	The now Aloha.toolbar.settings.tab[i].exclusive property was implemented.
 	See the ui guide for more information.
+
+- **FEATURE**: UiPlugin API addition
+
+	UiPlugin.showToolbar() was added to the UiPlugin API.
+	This function provides better control over when the toolbar is
+	shown.
