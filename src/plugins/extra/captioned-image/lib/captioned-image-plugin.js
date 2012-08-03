@@ -42,7 +42,7 @@ define([
 			float: right;\
 			padding-right: 0;\
 		}\
-		.captioned-image .align-left {\
+		.captioned-image.align-left {\
 			float: left;\
 			padding-left: 0;\
 		}\
@@ -54,6 +54,10 @@ define([
 			color: #fff;\
 			text-align: left;\
 			min-width: 100px;\
+		}\
+		/* Overrides for when the caption is being edited through Aloha Editor. */\
+		.aloha-captioned-image-block .captioned-image {\
+			padding: 0;\
 		}\
 	';
 
@@ -163,7 +167,7 @@ define([
 	}
 
 	function cleanEditable($editable) {
-		var $blocks = $editable.find('.aloha-captioned-image');
+		var $blocks = $editable.find('.aloha-captioned-image-block');
 		var j = $blocks.length;
 		var block;
 		var $img;
@@ -228,7 +232,7 @@ define([
 			var $img = $imgs.eq(--j);
 
 			var $block = $img.removeClass( settings.captionedImageClass )
-							 .wrap('<div class="aloha-captioned-image">')
+							 .wrap('<div class="aloha-captioned-image-block">')
 							 .parent();
 
 			$block.attr('data-alt', $img.attr('alt'))
@@ -242,7 +246,7 @@ define([
 			    .attr('data-caption', '');
 		}
 
-		return $editable.find('div.aloha-captioned-image');
+		return $editable.find('.aloha-captioned-image-block');
 	}
 
 	function initializeImageBlocks($editable) {
@@ -345,10 +349,12 @@ define([
 			              .bind('blur', this.onblur);
 
 
+			// Indicate which CaptionedImage blocks have an empty caption, so we
+			// can hide their caption areas whenever these blocks are not active.
 			if (this.attr('caption')) {
-				this.$element.removeClass('aloha-captioned-image-hidden');
+				this.$element.removeClass('aloha-captioned-image-block-empty-caption');
 			} else {
-				this.$element.addClass('aloha-captioned-image-hidden');
+				this.$element.addClass('aloha-captioned-image-block-empty-caption');
 			}
 		}
 	});
@@ -362,12 +368,12 @@ define([
 			}
 			Aloha.bind('aloha-editable-created', function ($event, editable) {
 				initializeImageBlocks(editable.obj);
-				editable.obj.delegate('div.aloha-captioned-image', 'click',
+				editable.obj.delegate('.aloha-captioned-image-block', 'click',
 					showComponents);
 			});
 			Aloha.bind('aloha-editable-destroyed', function ($event, editable) {
 				cleanEditable(editable.obj);
-				editable.obj.undelegate('div.aloha-captioned-image', 'click',
+				editable.obj.undelegate('.aloha-captioned-image-block', 'click',
 					showComponents);
 			});
 		},

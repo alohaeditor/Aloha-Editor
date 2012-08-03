@@ -7,6 +7,9 @@
 
 /* The styling for the captioned image "infrastructure", i.e. not for the
    captions themselves, which should be provided by the site using it. */
-.aloha-captioned-image { display: inline-block; }
-.aloha-captioned-image-hidden .aloha-captioned-image-caption { display: none; }
-.aloha-captioned-image-hidden.aloha-block-active .aloha-captioned-image-caption { display: block; }
+.aloha-captioned-image-block { display: inline-block; }
+.aloha-captioned-image-block.align-left { float: left; }
+.aloha-captioned-image-block.align-right { float: right; }
+.aloha-captioned-image-block.align-center { display: block; text-align: center; }
+.aloha-captioned-image-block-empty-caption .aloha-captioned-image-caption { display: none; }
+.aloha-captioned-image-block-empty-caption.aloha-block-active .aloha-captioned-image-caption { display: block; }
