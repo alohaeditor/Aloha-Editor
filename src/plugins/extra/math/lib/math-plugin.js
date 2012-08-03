@@ -171,7 +171,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                     var newElId = wrapPrefix+cntEq,
                         range = Aloha.Selection.getRangeObject(),
                         newMathEditContainer = $('<div id="edit-'+newElId+'" style="padding:2px;min-height:28px;border:1px solid green;-moz-border-radius: 4px;-webkit-border-radius: 4px;-khtml-border-radius: 4px;border-radius: 4px;background-color:white;"></div>'),
-                        newMathContainer = $('<div id="'+newElId+'" style="float:left;border:1px dotted grey">${}$</div>');
+                        newMathContainer = $('<div id="'+newElId+'" style="left;border:1px dotted grey">${}$</div>');
                     
                     GENTICS.Utils.Dom.insertIntoDOM( newMathEditContainer, range, $( Aloha.activeEditable.obj ) );
                     GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $( Aloha.activeEditable.obj ) );
