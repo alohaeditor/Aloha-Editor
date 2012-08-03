@@ -1,7 +1,10 @@
 /**
- * Captioned Images provides an Aloha block implementation that allows the
- * editor to work with images that have captions, such that an image with is
- * corresponding caption can be position, and aligned together in an editable.
+ * Captioned Image provides an Aloha block implementation that allows the editor
+ * to work with images that have captions, such that an image with its
+ * corresponding caption can be aligned together in an editable.
+ * It reads and writes to an <img> tag's data-caption and data-align attributes.
+ * No formatting inside the caption is allowed; only plain text is permitted.
+ * Four possible alignments are possible: none, left, right, center.
  *
  * TODO
  * ----
@@ -84,24 +87,12 @@ define([
 		// does not make sense for simple rendering functions in JavaScript. But
 		// when the rendering would happen on the server-side, then e.g. the
 		// network could fail.
-		render = function (properties, callback, error) {
-			var src = properties.source || 'img/noimg.gif';
-			var alt = properties.alt || '';
-			var caption = properties.caption || '';
-			var $content = $('<div>' +
-				'<img src="' + src + '" alt="' + alt + '"/>' +
-				'<div class="caption">' +  caption + '</div>' +
-				'</div>');
-
-			if ('left' === properties.position || 'right' === properties.position) {
-				$content.css('float', properties.position)
-				        .addClass('float-' + properties.position);
-			}
-
-			$content.find('>img:first').css({
-				width: properties.width || '',
-				height: properties.height || ''
-			});
+		render = function ( variables, callback, error ) {
+			var $content = $( '<div class="captioned-image align-' + variables.align + '">' +
+			                   variables.image +
+			                   '<div class="caption" style="width:' + variables.width + '">' +
+			                   variables.caption +
+			                   '</div></div>' );
 
 			callback({
 				content: $content[0].outerHTML,
@@ -153,6 +144,27 @@ define([
 		}
 	}));
 
+	function getImageWidth( imageHTML ) {
+		var $img = $( imageHTML );
+		var width;
+		if ( typeof $img.attr('width') !== 'undefined' ) {
+			width = parseInt( $img.attr('width') );
+		}
+		else {
+			// NOTE: this assumes the image has already loaded!
+			width = parseInt( $img.width() );
+		}
+
+		if ( typeof width === 'number' && width !== NaN ) {
+			width += 'px';
+		}
+		else {
+			width = 'auto';
+		}
+
+		return width;
+	};
+
 	function showComponents() {
 		// A very fragile yield hack to help make it more likely that our
 		// components' tag will be forgrouned() after other components so that
@@ -167,59 +179,42 @@ define([
 	}
 
 	function cleanEditable($editable) {
-		var $blocks = $editable.find('.aloha-captioned-image-block');
+		var $blocks = $editable.find( '.aloha-captioned-image-block' );
 		var j = $blocks.length;
 		var block;
 		var $img;
 
 		while (j) {
-			block = BlockManager.getBlock($blocks[--j]);
+			block = BlockManager.getBlock( $blocks[--j] );
 
-			if (!block) {
+			if ( !block ) {
 				continue;
 			}
 
 			$img = block.$_image;
+			var caption = block.attr( 'caption' );
+			var align = block.attr( 'align' );
 
-			$img.attr('src', block.attr('source'));
-
-			var alt = block.attr('alt');
-			var width = block.attr('width');
-			var height = block.attr('height');
-			var caption = block.attr('caption');
-			var floating = block.attr('position');
-
-			if (alt) {
-				$img.attr('alt', alt);
-			} else {
-				$img.removeAttr('alt');
-			}
-
-			if (typeof width !== 'undefined') {
-				$img.attr('width', width);
-			} else {
-				$img.removeAttr('width');
-			}
-
-			if (typeof height !== 'undefined') {
-				$img.attr('height', height);
-			} else {
-				$img.removeAttr('height');
-			}
-
+			// We only touch the data-caption and data-align attributes o/t img!
 			if (caption) {
-				$img.attr('caption', caption);
+				$img.attr( 'data-caption', caption );
 			} else {
-				$img.removeAttr('caption');
+				$img.removeAttr( 'data-caption' );
+			}
+			if (align) {
+				$img.attr( 'data-align', align );
+			} else {
+				$img.removeAttr( 'data-align' );
 			}
 
-			$img.attr('float',
-				(!floating || 'none' === floating) ? '' : floating);
-
+			// If configured, set a class on captioned images.
 			if ( settings.captionedImageClass ) {
 				$img.addClass( settings.captionedImageClass );
 			}
-			block.$element.replaceWith($img);
+
+			// Now replace the entire block with the original image, with
+			// potentially updated data-caption, data-align and class attributes.
+			block.$element.replaceWith( $img );
 		}
 	}
 
@@ -235,15 +230,19 @@ define([
 							 .wrap('<div class="aloha-captioned-image-block">')
 							 .parent();
 
-			$block.attr('data-alt', $img.attr('alt'))
-			      .attr('data-source', $img.attr('src'))
-			      .attr('data-width', $img.attr('width'))
-			      .attr('data-height', $img.attr('height'))
-			      .attr('data-caption', $img.attr('data-caption'));
-
-			$img.attr('width', '')
-			    .attr('height', '')
-			    .attr('data-caption', '');
+			// Through this plug-in, users will be able to change the caption
+			// and the alignment, so we only need to grab those two attributes,
+			// as well as the original image. We'll then always manipulate the
+			// original image, to make sure we don't accidentally erase other
+			// attributes.
+			// Whenever we need to use other attributes, we'll have to retrieve
+			// it from the original image.
+			var caption = $img.attr( 'data-caption' );
+			caption = ( typeof caption !== 'undefined' ) ? caption : '';
+			$block.attr( 'data-caption',        caption )
+			      .attr( 'data-align',          $img.attr( 'data-align' ) )
+			      .attr( 'data-width',          getImageWidth( $img ) )
+			      .attr( 'data-original-image', $img[0].outerHTML );
 		}
 
 		return $editable.find('.aloha-captioned-image-block');
@@ -279,9 +278,6 @@ define([
 
 			var that = this;
 
-			this.onload = function () {
-				that.$_caption.css('width', that.$_image.width());
-			};
 			this.onblur = function () {
 				var html = that.$_caption.html();
 				if (that.attr('caption') !== html) {
@@ -290,18 +286,13 @@ define([
 				Toolbar.$surfaceContainer.show();
 			};
 
-			this.$element.css('float', this.attr('position'));
-
 			render({
-				alt: this.attr('alt'),
-				width: this.attr('width'),
-				height: this.attr('height'),
-				source: this.attr('source'),
-				caption: this.attr('caption'),
-				position: this.attr('position')
+				image  : this.attr( 'original-image' ),
+				caption: this.attr( 'caption' ),
+				align  : this.attr( 'align' ),
+				width  : this.attr( 'width' )
 			}, function (data) {
 				that._processRenderedData(data);
-				that.$_image.bind('load', that.onload);
 				postProcessCallback();
 				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable.obj.is(that.$_caption)) {
@@ -316,19 +307,15 @@ define([
 			});
 		},
 		update: function ($element, postProcessCallback) {
-			this.$_image.unbind('load', this.onload);
 			this.$_caption.unbind('blur', this.onblur);
-			this.$element.css('float', this.attr('position'));
 
 			var that = this;
 
 			render({
-				alt: this.attr('alt'),
-				width: this.attr('width'),
-				height: this.attr('height'),
-				source: this.attr('source'),
-				caption: this.attr('caption'),
-				position: this.attr('position')
+				image  : this.attr( 'original-image' ),
+				caption: this.attr( 'caption' ),
+				align  : this.attr( 'align' ),
+				width  : this.attr( 'width' )
 			}, function (data) {
 				that._processRenderedData(data);
 				postProcessCallback();
@@ -345,7 +332,6 @@ define([
 			this.$_caption = this.$element.find(data.caption);
 			this.$_caption.addClass( 'aloha-captioned-image-caption' )
 			              .addClass( 'aloha-editable' )
-			              .css('width', this.$_image.width())
 			              .bind('blur', this.onblur);
 
 
