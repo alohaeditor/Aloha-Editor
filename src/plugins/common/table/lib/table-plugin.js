@@ -312,7 +312,7 @@ define( [
 	TablePlugin.initSidebar = function(sidebar) {
 		var pl = this;
 		pl.sidebar = sidebar;
-		sidebar.addPanel({
+		pl.sidebarPanel = sidebar.addPanel({
             
             id       : nsClass('sidebar-panel'),
             title    : i18n.t('table.sidebar.title'),
