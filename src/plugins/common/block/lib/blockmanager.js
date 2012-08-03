@@ -30,14 +30,16 @@ define([
 	'ui/scopes',
 	'aloha/observable',
 	'aloha/registry',
-	'util/class'
+	'util/class',
+	'util/maps'
 ], function(
 	Aloha,
 	jQuery,
 	Scopes,
 	Observable,
 	Registry,
-	Class
+	Class,
+	Maps
 ){
 	"use strict";
 
@@ -138,12 +140,15 @@ define([
 		},
 
 		/**
-		 * Register the event handlers which deactivate aloha blocks when the user clicks outside a block
+		 * Register the event handlers which deactivate Aloha blocks when the
+		 * user clicks outside a block.
 		 */
 		_registerEventHandlersForDeactivatingAlohaBlock: function() {
 			var that = this;
 			jQuery(document).bind('click', function(event) {
-				if (that._highlightedBlocks == {}) return;
+				if (Maps.isEmpty(that._highlightedBlocks)) {
+					return;
+				}
 				if (jQuery(event.target)
 				        .closest('.aloha-ui,.aloha-block-do-not-deactivate,.aloha-block')
 				        .length > 0) {
