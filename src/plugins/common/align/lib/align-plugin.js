@@ -98,53 +98,40 @@ define([
 
 		buttonPressed: function (rangeObject) {
 			var that = this;
-
 			rangeObject.findMarkup(function() {
 		        that.alignment = jQuery(this).css('text-align');
 		    }, Aloha.activeEditable.obj);
 
-			if(this.alignment != this.lastAlignment)
-			{
-				// @FIXME: Switching between editables will not work becuase
-				//         lastAlignment and alignment are shared across
-				//         multiple editables.
-				switch(this.lastAlignment)
-				{
-					case 'right':
-						this._alignRightButton.setState(false);
-						break;
-
-					case 'left':
-						this._alignLeftButton.setState(false);
-						break;
-
-					case 'center':
-						this._alignCenterButton.setState(false);
-						break;
-
-					case 'justify':
-						this._alignJustifyButton.setState(false);
-						break;
+			if (this.alignment != this.lastAlignment) {
+				switch (this.lastAlignment) {
+				case 'right':
+					this._alignRightButton.setState(false);
+					break;
+				case 'left':
+					this._alignLeftButton.setState(false);
+					break;
+				case 'center':
+					this._alignCenterButton.setState(false);
+					break;
+				case 'justify':
+					this._alignJustifyButton.setState(false);
+					break;
 				}
 
-				switch(this.alignment)
-				{
-					case 'right':
-						this._alignRightButton.setState(true);
-						break;
-
-					case 'center':
-						this._alignCenterButton.setState(true);
-						break;
-
-					case 'justify':
-						this._alignJustifyButton.setState(true);
-						break;
-
-					default:
-						this._alignLeftButton.setState(true);
-					    this.alignment = 'left';
-						break;
+				switch (this.alignment) {
+				case 'right':
+					this._alignRightButton.setState(true);
+					break;
+				case 'center':
+					this._alignCenterButton.setState(true);
+					break;
+				case 'justify':
+					this._alignJustifyButton.setState(true);
+					break;
+				default:
+					this._alignLeftButton.setState(true);
+					this.alignment = 'left';
+					break;
 				}
 
 				this.lastAlignment = this.alignment;
