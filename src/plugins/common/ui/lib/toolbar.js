@@ -65,7 +65,7 @@ define([
 				tabSettings = tabs[i];
 
 				tabInstance = new Tab(context, {
-					label: i18n.t(tabSettings.label, ''),
+					label: i18n.t(tabSettings.label, tabSettings.label),
 					showOn: tabSettings.showOn,
 					container: this.$_container
 				}, tabSettings.components);
