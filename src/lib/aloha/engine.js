@@ -897,10 +897,6 @@ function isCollapsedLineBreak(br) {
 // "An extraneous line break is a br that has no visual effect, in that
 // removing it from the DOM would not change layout, except that a br that is
 // the sole child of an li is not extraneous."
-
-//
-// FIXME: This doesn't work in IE, since IE ignores display: none in
-// contenteditable.
 function isExtraneousLineBreak(br) {
 
 	if (!isHtmlElement(br, "br")) {
@@ -924,12 +920,17 @@ function isExtraneousLineBreak(br) {
 	var origStyle = {
 		height: ref.style.height,
 		maxHeight: ref.style.maxHeight,
-		minHeight: ref.style.minHeight
+		minHeight: ref.style.minHeight,
+		contentEditable: ref.contentEditable
 	};
 
 	ref.style.height = 'auto';
 	ref.style.maxHeight = 'none';
 	ref.style.minHeight = '0';
+	// IE7 would ignore display:none in contentEditable, so we temporarily set it to false
+	if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+		ref.contentEditable = 'false';
+	}
 
 	var origHeight = ref.offsetHeight;
 	if (origHeight == 0) {
@@ -944,6 +945,10 @@ function isExtraneousLineBreak(br) {
 	ref.style.height = origStyle.height;
 	ref.style.maxHeight = origStyle.maxHeight;
 	ref.style.minHeight = origStyle.minHeight;
+	// reset contentEditable for IE7
+	if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+		ref.contentEditable = origStyle.contentEditable;
+	}
 	br.style.display = origBrDisplay;
 
 	// https://github.com/alohaeditor/Aloha-Editor/issues/516
