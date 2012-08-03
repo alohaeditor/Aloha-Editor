@@ -8668,7 +8668,8 @@ return {
 	queryCommandSupported: myQueryCommandSupported,
 	copyAttributes: copyAttributes,
 	createEndBreak: createEndBreak,
-	isEndBreak: isEndBreak
+	isEndBreak: isEndBreak,
+	ensureContainerEditable: ensureContainerEditable
 }
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker
