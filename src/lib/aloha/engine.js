@@ -7912,13 +7912,13 @@ commands.insertparagraph = {
 			// context object and append the result as the last child of
 			// container."
 			// only do this, if inserting the br does NOT modify the offset height of the container
-			if (!container.hasChildNodes()) {
-				var oldHeight = container.offsetHeight, endBr = createEndBreak();
-				container.appendChild(endBr);
-				if (container.offsetHeight !== oldHeight) {
-					container.removeChild(endBr);
-				}
-			}
+//			if (!container.hasChildNodes()) {
+//				var oldHeight = container.offsetHeight, endBr = createEndBreak();
+//				container.appendChild(endBr);
+//				if (container.offsetHeight !== oldHeight) {
+//					container.removeChild(endBr);
+//				}
+//			}
 
 			// "If container is a dd or dt, and it is not an allowed child of
 			// any of its ancestors in the same editing host, set the tag name
