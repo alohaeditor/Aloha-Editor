@@ -142,11 +142,12 @@ define([
 		 */
 		_registerEventHandlersForDeactivatingAlohaBlock: function() {
 			var that = this;
-
 			jQuery(document).bind('click', function(event) {
 				if (that._highlightedBlocks == {}) return;
-				if (jQuery(event.target).closest('.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu, .aloha-block').length > 0) {
-					// If we are inside the sidebar, the floating menu or other elements which should not trigger the block deactivation, we do an early return.
+				if (jQuery(event.target)
+				        .closest('.aloha-ui,.aloha-block-do-not-deactivate,.aloha-block')
+				        .length > 0) {
+					// A ui element has been clicked; ignore this event.
 					return;
 				}
 				that._deactivateHighlightedBlocks();
