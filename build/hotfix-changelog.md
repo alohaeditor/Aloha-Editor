@@ -16,3 +16,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: core: Added the removal of sizzle attributes to the basic content handler.
 - **BUG**: core: We now catch an exception that is thrown when the selection is not properly updated. This exception would lead to unexpected behaviour.
 - **BUG**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
+- **ENHANCEMENT**: table-plugin: We now show the summary textarea in the sidebar if a click on the wai-image was issued.
