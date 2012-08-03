@@ -12,3 +12,7 @@ All changes are categorized into one of the following keywords:
 - **MANUAL CHANGE**: The API Method setActiveButton() of the MultiSplit component changed: the parameter must be the name of the button to set active, not the index.
 - **BUG**: Fixes loading errors when a second jQuery was loaded below aloha.js
 - **ENHANCEMENT**: Aloha Editor will now add the browser version to the html dom node (see http://www.aloha-editor.org/guides/core.html#initialization-process)
+- **FEATURE**: Toolbar configurability was extended
+
+	The now Aloha.toolbar.settings.tab[i].exclusive property was implemented.
+	See the ui guide for more information.

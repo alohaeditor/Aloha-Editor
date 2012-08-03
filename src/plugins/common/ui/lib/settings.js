@@ -94,6 +94,20 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 	/**
 	 * Combines two toolbar configurations.
 	 *
+	 * The rules for combining configurations are as follows
+	 *
+	 * * remove all components and tabs from the default toolbar configuration
+	 *   that are listed in the given exclude array,
+	 * * add all remaining tabs from the default configuration to the user
+	 *   configuration,
+	 * * and merge tabs with the same name such that a tab property that is
+	 *   omitted in the user configuration will be taken from the default
+	 *   configuration,
+	 * * and, if both the default tab and the user's tab configuration contain
+	 *   a components property, and unless the exclusive property on a tab is
+	 *   true, append all remaining components from the default tab to the
+	 *   user's tab configuration.
+	 *
 	 * @param userTabs
 	 *        a list of tab configurations
 	 * @param defaultTabs
@@ -102,17 +116,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 	 *        a list of component names and tab labels to ignore
 	 *        in the given defaultTabs configuration.
 	 * @return
-	 *        The resulting configuration will contain all tabs from
-	 *        userTabs and defaultTabs. If a tab is contained in both,
-	 *        the they will be merged, with the tab in userTabs having
-	 *        precedence, and the components of both tabs will be
-	 *        combined.
-	 *        If a given component in defaultTabs already exists in any
-	 *        tab of userTabs, the component in defaultTabs will be
-	 *        ignored.
-	 *        Tabs and components of defaulTabs can be excluded by
-	 *        listing the tab labels and component names in the given
-	 *        exlcude param.
+	 *         
 	 */
 	function combineToolbarSettings(userTabs, defaultTabs, exclude) {
 		var defaultTabsByLabel = Maps.fillTuples({}, Arrays.map(defaultTabs, function(tab) {
@@ -159,7 +163,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 			userTab = userTabs[i];
 			components = userTab.components || [];
 			defaultTab = defaultTabsByLabel[userTab.label];
-			if (defaultTab) {
+			if (!userTab.exclusive && defaultTab) {
 				defaultComponents = Trees.postprune(defaultTab.components, pruneDefaultComponents);
 				if (defaultComponents) {
 					components = components.concat(defaultComponents);
