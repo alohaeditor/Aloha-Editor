@@ -17,6 +17,8 @@ define([
 	'ui/ui',
 	'ui/button',
 	'ui/toolbar',
+	'ui/ui-plugin',
+	'align/align-plugin',
 	'aloha/console'
 ], function (
 	$,
@@ -27,6 +29,8 @@ define([
 	Ui,
 	Button,
 	Toolbar,
+	UiPlugin,
+	AlignPlugin,
 	Console
 ) {
 	'use strict';
@@ -54,46 +58,72 @@ define([
 	$('<style type="text/css">').text(css).appendTo('head:first');
 
 	var components = [];
-	components.push(Ui.adopt('imgFloatLeft', Button, {
-		tooltip: 'Float image to left',
-		text: 'Float left',
-		click: function () {
+	function initializeComponents() {
+		var left = UiPlugin.getAdoptedComponent('alignLeft');
+		var right = UiPlugin.getAdoptedComponent('alignRight');
+		var alignLeft = function () {
 			if (BlockManager._activeBlock) {
 				BlockManager._activeBlock.attr('position', 'left');
+				return true;
 			}
-		}
-	}));
-	components.push(Ui.adopt('imgFloatRight', Button, {
-		tooltip: 'Float image to right',
-		text: 'Float right',
-		click: function () {
+			return false;
+		};
+		var alignRight = function () {
 			if (BlockManager._activeBlock) {
 				BlockManager._activeBlock.attr('position', 'right');
+				return true;
 			}
+			return false;
+		};
+
+		if (left) {
+			var origLeft = left.click;
+			left.click = function () {
+				alignLeft() || origLeft();
+			};
+			components.push(left);
+		} else {
+			components.push(Ui.adopt('imgAlignLeft', Button, {
+				tooltip: 'Align left',
+				text: 'Align left',
+				click: alignLeft
+			}));
 		}
-	}));
-	components.push(Ui.adopt('imgFloatClear', Button, {
-		tooltip: 'Float image to clear',
-		text: 'No floating',
-		click: function () {
-			if (BlockManager._activeBlock) {
-				BlockManager._activeBlock.attr('position', 'none');
+
+		if (right) {
+			var origRight = right.click;
+			right.click = function () {
+				alignRight() || origRight();
+			};
+			components.push(right);
+		} else {
+			components.push(Ui.adopt('imgAlignRight', Button, {
+				tooltip: 'Align right',
+				text: 'Align right',
+				click: alignRight
+			}));
+		}
+
+		components.push(Ui.adopt('imgAlignClear', Button, {
+			tooltip: 'Remove alignment',
+			text: 'Remove alignment',
+			click: function () {
+				if (BlockManager._activeBlock) {
+					BlockManager._activeBlock.attr('position', 'none');
+				}
 			}
-		}
-	}));
+		}));
+	}
 
 	function showComponents() {
 		// A very fragile yield hack to help make it more likely that our
-		// components' tag will be forgroun()ed after other components so that
+		// components' tag will be foregroun()ed after other components so that
 		// ours are visible.  A fix is needed at the architectural level of
 		// Aloha for this.
-		setTimeout(function () {
-			var j = components.length;
-
-			while (j) {
-				components[--j].foreground();
-			}
-		}, 100);
+		var j = components.length;
+		while (j--) {
+			components[j].foreground();
+		}
 	}
 
 	function cleanEditable($editable) {
@@ -240,7 +270,6 @@ define([
 			}
 
 			var that = this;
-
 			this.onload = function () {
 				that.$_caption.css('width', that.$_image.width());
 			};
@@ -317,6 +346,7 @@ define([
 
 	var CaptionedImage = Plugin.create('captioned-image', {
 		init: function () {
+			initializeComponents();
 			BlockManager.registerBlockType('CaptionedImageBlock', CaptionedImageBlock);
 			var j = Aloha.editables.length;
 
@@ -326,12 +356,12 @@ define([
 
 			Aloha.bind('aloha-editable-created', function ($event, editable) {
 				initializeImageBlocks(editable.obj);
-				editable.obj.delegate('div.aloha-captioned-image', 'click',
+				editable.obj.delegate('div.aloha-captioned-image', 'mouseup',
 					showComponents);
 			});
 			Aloha.bind('aloha-editable-destroyed', function ($event, editable) {
 				cleanEditable(editable.obj);
-				editable.obj.undelegate('div.aloha-captioned-image', 'click',
+				editable.obj.undelegate('div.aloha-captioned-image', 'mouseup',
 					showComponents);
 			});
 		},
