@@ -2022,7 +2022,22 @@ rangy.createModule("DomUtil", function(api, module) {
                     tempRange.moveStart("character", 1);
                 }
             } else {
-                offset = workingRange.text.length;
+            	// IE7 sometimes has weird workingranges that apparently do not start in the workingNode any more, but in
+            	// some kind of phantom paragraph, that cannot be found in the DOM.
+            	// in such situations, the workingRange.text no longer is a substring at the start of the boundaryNode.data
+            	// If we find such a situation, we skip all characters at the start of the workingRange.data, that are not
+            	// at the start of the boundaryNode.data.
+            	// Before comparing, we have to replace all nbsp with normal spaces
+            	var wrText = workingRange.text.replace(/\u00a0/g, " ");
+            	var bnText = boundaryNode.data.replace(/\u00a0/g, " ");
+            	if (bnText.indexOf(wrText) !== 0) {
+            		while (wrText.length > 0 && bnText.indexOf(wrText) !== 0) {
+            			wrText = wrText.substr(1);
+            		}
+            		offset = wrText.length;
+            	} else {
+            		offset = workingRange.text.length;
+            	}
             }
             boundaryPosition = new DomPosition(boundaryNode, offset);
         } else {
