@@ -25,7 +25,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                     + 'extensions: ["tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],'
                     + 'tex2jax: { inlineMath: [["$","$"],["\\(","\\)"]] },'
                     + 'TeX: {'
-                        + 'extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]'
+                        + 'extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"], noErrors: { disabled: true }'
                     + '}});');
             //$(script0).html('MathJax.Hub.Config({ tex2jax: { inlineMath: [["$","$"],["\\(","\\)"]] } });');
             
