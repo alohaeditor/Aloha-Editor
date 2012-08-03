@@ -92,9 +92,11 @@ define([
 		// when the rendering would happen on the server-side, then e.g. the
 		// network could fail.
 		render = function ( variables, callback, error ) {
-			var $content = $( '<div class="captioned-image align-' + variables.align + '">' +
+			var $content = $( '<div class="captioned-image align-' +
+			                   variables.align + '">' +
 			                   variables.image +
-			                   '<div class="caption" style="width:' + variables.width + '">' +
+			                   '<div class="caption" style="width:' +
+			                   variables.width + '">' +
 			                   variables.caption +
 			                   '</div></div>' );
 
@@ -287,7 +289,6 @@ define([
 	var CaptionedImageBlock = Block.AbstractBlock.extend({
 		title: 'Captioned Image',
 		onblur: null,
-		onload: null,
 		$_image: null,
 		$_caption: null,
 		init: function ($element, postProcessCallback) {
