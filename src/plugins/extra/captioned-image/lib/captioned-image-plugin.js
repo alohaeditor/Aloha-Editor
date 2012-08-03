@@ -62,6 +62,10 @@ define([
 			text-align: left;\
 			min-width: 100px;\
 		}\
+		.captioned-image.align-center .caption {\
+			margin-left: auto;\
+			margin-right: auto;\
+		}\
 		/* Overrides for when the caption is being edited through Aloha Editor. */\
 		.aloha-captioned-image-block .captioned-image {\
 			padding: 0;\
