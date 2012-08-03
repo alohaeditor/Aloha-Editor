@@ -49,6 +49,10 @@ define([
 			float: left;\
 			padding-left: 0;\
 		}\
+		.captioned-image.align-center {\
+			display: block;\
+			text-align: center;\
+		}\
 		.captioned-image .caption {\
 			padding: 0.5em;\
 			font-size: 0.9em;\
@@ -114,32 +118,42 @@ define([
 
 	var components = [];
 
-	components.push(Ui.adopt('imgFloatLeft', Button, {
-		tooltip: 'Float image to left',
-		text: 'Float left',
+	components.push(Ui.adopt('imgAlignLeft', Button, {
+		tooltip: 'Align image to left',
+		text: 'Align left',
 		click: function () {
 			if (BlockManager._activeBlock) {
-				BlockManager._activeBlock.attr('position', 'left');
+				BlockManager._activeBlock.attr('align', 'left');
 			}
 		}
 	}));
 
-	components.push(Ui.adopt('imgFloatRight', Button, {
-		tooltip: 'Float image to right',
-		text: 'Float right',
+	components.push(Ui.adopt('imgAlignRight', Button, {
+		tooltip: 'Align image to right',
+		text: 'Align right',
 		click: function () {
 			if (BlockManager._activeBlock) {
-				BlockManager._activeBlock.attr('position', 'right');
+				BlockManager._activeBlock.attr('align', 'right');
 			}
 		}
 	}));
 
-	components.push(Ui.adopt('imgFloatClear', Button, {
-		tooltip: 'Float image to clear',
-		text: 'No floating',
+	components.push(Ui.adopt('imgAlignCenter', Button, {
+		tooltip: 'Align image to center',
+		text: 'Align center',
 		click: function () {
 			if (BlockManager._activeBlock) {
-				BlockManager._activeBlock.attr('position', 'none');
+				BlockManager._activeBlock.attr('align', 'center');
+			}
+		}
+	}));
+
+	components.push(Ui.adopt('imgAlignClear', Button, {
+		tooltip: 'Align image to clear',
+		text: 'No alignment',
+		click: function () {
+			if (BlockManager._activeBlock) {
+				BlockManager._activeBlock.attr('align', 'none');
 			}
 		}
 	}));
@@ -333,6 +347,8 @@ define([
 			this.$_caption.addClass( 'aloha-captioned-image-caption' )
 			              .addClass( 'aloha-editable' )
 			              .bind('blur', this.onblur);
+			this.$element.removeClass('align-left align-right align-center')
+			             .addClass('align-' + this.attr('align'));
 
 
 			// Indicate which CaptionedImage blocks have an empty caption, so we
