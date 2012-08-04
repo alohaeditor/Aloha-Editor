@@ -97,6 +97,12 @@ define([
 		 */
 		_activeBlock: null,
 
+		/**
+		 * Flag that stores the drag & drop state
+		 * @type boolean 
+		 */
+		_dragdropEnabled: true,
+
 		/**************************
 		 * SECTION: Initialization
 		 **************************/
@@ -305,9 +311,11 @@ define([
 		initializeBlockLevelDragDrop: function() {
 			var that = this;
 			jQuery.each(Aloha.editables, function(i, editable) {
+				editable.obj.data("block-dragdrop", that._dragdropEnabled);
 				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
 			});
 			Aloha.bind('aloha-editable-created', function(e, editable) {
+				editable.obj.data("block-dragdrop", that._dragdropEnabled);
 				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
 			});
 		},
@@ -319,6 +327,8 @@ define([
 		 * This is an internal method a user should never call!
 		 */
 		createBlockLevelSortableForEditableOrBlockCollection: function($editableOrBlockCollection) {
+			var that = this;
+
 			if (!$editableOrBlockCollection.hasClass('aloha-block-blocklevel-sortable')) {
 
 				// We only want to make "block-level" aloha blocks sortable. According to the docs,
@@ -333,6 +343,7 @@ define([
 					revert: 100,
 					handle: '.aloha-block-draghandle-blocklevel',
 					connectWith: '.aloha-block-blocklevel-sortable.aloha-block-dropzone', // we want to be able to drag an element to other editables
+					disabled: !that._dragdropEnabled, // if drag & drop is disabled, sortable should also be disabled
 					start: function(event, ui) {
 						// check if the block's parent is a dropzone
 						ui.item.data("block-sort-allowed", (ui.item.parents('.aloha-block-dropzone').length > 0));
@@ -364,6 +375,17 @@ define([
 			}
 		},
 
+		/**
+		 * Set   
+		 * @param {String} state
+		 * 
+		 */
+		setDragDropState: function(state) {
+			var that = this;
+
+			that._dragdropEnabled = state;
+		},
+
 		/**************************
 		 * SECTION: Blockify / Block Access
 		 **************************/
@@ -387,6 +409,7 @@ define([
 		 * @private
 		 */
 		_blockify: function(element, instanceDefaults) {
+			var that = this;
 			var attributes, block, $element;
 			$element = jQuery(element);
 
@@ -411,7 +434,6 @@ define([
 				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
 				block._setAttribute(k, v);
 			});
-
 
 			// Register block
 			this.blocks.register(block.getId(), block);

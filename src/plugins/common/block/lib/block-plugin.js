@@ -93,6 +93,7 @@ define([
 			// register content handler for block plugin
 			ContentHandlerManager.register('block', BlockContentHandler);
 
+			BlockManager.setDragDropState( that.isDragDropEnabled() );
 			BlockManager.registerEventHandlers();
 			BlockManager.initializeBlockLevelDragDrop();
 
@@ -102,6 +103,10 @@ define([
 				if (that.settings['sidebarAttributeEditor'] !== false) {
 					SidebarAttributeEditor.init();
 				}
+
+				// jQuery.each(Aloha.editables, function(i, editable){
+				// 	that._setDragDropStateForEditable(editable.obj, that.isDragDropEnabled());
+				// });
 			});
 
 			// create the toolbar buttons
@@ -109,7 +114,6 @@ define([
 
 			// set the dropzones for the initialized editable
 			Aloha.bind('aloha-editable-created', function(e, editable) {
-				that._setDragDropStateForEditable(editable.obj, that.isDragDropEnabled());
 				that.setDropzones(editable.obj);
 			});
 
@@ -169,10 +173,11 @@ define([
 		 */
 		setDropzones: function (editable) {
 			var that = this;
-			var config = that.getEditableConfig(editable) || that.settings.dropzones;
+			var config = that.getEditableConfig(editable);
+			var dropzones = (config && config.dropzones) || that.settings.dropzones;
 
-			if (config && config.dropzones) {
-				editable.data('block-dropzones', config.dropzones);	
+			if (dropzones) {
+				editable.data('block-dropzones', dropzones);	
 			} else {
 				// if dropzones are undefined all editables should be dropzones
 				editable.data('block-dropzones', [".aloha-editable"]);	

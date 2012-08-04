@@ -685,6 +685,7 @@ define([
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
+				disabled: !this._dd_isDragdropEnabled(),
 				revert: function() {
 					return (lastHoveredCharacter === null || !blockDroppedProperly);
 				},
@@ -965,6 +966,21 @@ define([
 			}
 		},
 
+		/**
+		 * Helper method to check whether the drag & drop is enabled
+		 * for the editable, which given blocked belongs to.
+		 */
+		_dd_isDragdropEnabled: function() {
+			var editable = this.$element.parents(".aloha-editable");
+
+			if (editable) {
+				return editable.first().data("block-dragdrop");
+			} else {
+				// no editable specified, let's make drag & drop enabled by default.	
+				return true;
+			}
+		},
+
 		/**************************
 		 * SECTION: Drag&Drop for Block elements
 		 **************************/
@@ -1006,7 +1022,11 @@ define([
 		renderBlockHandlesIfNeeded: function() {
 			if (this.isDraggable()) {
 				if (this.$element.children('.aloha-block-draghandle').length === 0) {
-					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
+					if (this._dd_isDragdropEnabled()){
+						this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
+					} else {
+						this.$element.prepend('<span class="aloha-block-handle"></span>');
+					}
 				}
 			}
 		},
