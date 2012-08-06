@@ -122,6 +122,7 @@ define([
 	function initializeComponents() {
 		var left = UiPlugin.getAdoptedComponent('alignLeft');
 		var right = UiPlugin.getAdoptedComponent('alignRight');
+		var center = UiPlugin.getAdoptedComponent('alignCenter');
 		var alignLeft = function () {
 			if (BlockManager._activeBlock) {
 				BlockManager._activeBlock.attr('align', 'left');
@@ -136,6 +137,13 @@ define([
 			}
 			return false;
 		};
+		var alignCenter = function () {
+			if (BlockManager._activeBlock) {
+				BlockManager._activeBlock.attr('align', 'center');
+				return true;
+			}
+			return false;
+		}
 
 		if (left) {
 			var clickLeft = left.click;
@@ -166,6 +174,22 @@ define([
 				tooltip: 'Align right',
 				text: 'Align right',
 				click: alignRight
+			}));
+		}
+
+		if (center) {
+			var clickCenter = center.click;
+			center.click = function () {
+				if (!alignCenter()) {
+					clickCenter();
+				}
+			};
+			components.push(center);
+		} else {
+			components.push(Ui.adopt('imgAlignCenter', Button, {
+				tooltip: 'Align center',
+				text: 'Align center',
+				click: alignCenter
 			}));
 		}
 
