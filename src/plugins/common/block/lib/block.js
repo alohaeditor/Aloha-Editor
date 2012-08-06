@@ -533,6 +533,7 @@ define([
 				this._setupDragDropForBlockElements();
 				this._disableUglyInternetExplorerDragHandles();
 			}
+			this._hideDragHandlesIfDragDropDisabled();
 			this._attachDropzoneHighlightEvents();
 		},
 
@@ -580,6 +581,16 @@ define([
 			// We do NOT abort the "ondragstart" event as it is required for drag/drop.
 			this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
 			this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
+		},
+
+		/**
+		 * Removes the draghandle class from block handle,
+		 * if drag & drop is disabled for the editable
+		 */
+		_hideDragHandlesIfDragDropDisabled: function() {
+			if (!this._dd_isDragdropEnabled()){
+				this.$element.find('.aloha-block-draghandle').removeClass('aloha-block-draghandle');
+			} 
 		},
 
 		/**
@@ -1022,11 +1033,7 @@ define([
 		renderBlockHandlesIfNeeded: function() {
 			if (this.isDraggable()) {
 				if (this.$element.children('.aloha-block-draghandle').length === 0) {
-					if (this._dd_isDragdropEnabled()){
-						this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
-					} else {
-						this.$element.prepend('<span class="aloha-block-handle"></span>');
-					}
+					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
 				}
 			}
 		},
