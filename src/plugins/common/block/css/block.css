@@ -97,8 +97,10 @@
 	display:block;
 }
 
-
-
 .aloha-block-dropInlineElementIntoEmptyBlock {
 	border: 1px solid red;
+}
+
+.aloha-block-dropzone {
+	background-color: #eeeeff;
 }

@@ -38,7 +38,6 @@ define([
 	 * @extends {Surface}
 	 */
 	var Toolbar = Surface.extend({
-
 		_moveTimeout: null,
 		$_container: null,
 		_tabBySlot: null,
@@ -54,28 +53,25 @@ define([
 		_constructor: function(context, tabs) {
 			var tabSettings,
 			    tabInstance,
-			    i, key;
-
+			    i,
+			    key;
 			this._super(context);
-			this.$element = $('<div>', {'class': 'aloha-ui-toolbar', 'unselectable': 'on'});
+			this.$element = $('<div>', {'class': 'aloha-ui aloha-ui-toolbar', 'unselectable': 'on'});
 			this.$_container = Tab.createContainer().appendTo(this.$element);
 			this._tabBySlot = {};
 
 			for (i = 0; i < tabs.length; i++) {
 				tabSettings = tabs[i];
-
 				tabInstance = new Tab(context, {
-					label: i18n.t(tabSettings.label, ''),
+					label: i18n.t(tabSettings.label, tabSettings.label),
 					showOn: tabSettings.showOn,
 					container: this.$_container
 				}, tabSettings.components);
-
 				for (key in tabInstance._elemBySlot) {
 					if (tabInstance._elemBySlot.hasOwnProperty(key)) {
 						this._tabBySlot[key] = tabInstance;
 					}
 				}
-
 				this._tabs.push({tab: tabInstance, settings: tabSettings});
 			}
 
@@ -124,7 +120,6 @@ define([
 		addPin: function () {
 			var $pin = $('<div class="aloha-ui-pin">');
 			var $element = this.$element;
-
 			$element.find('.ui-tabs').append($pin);
 			$element.find('.ui-tabs').hover(function () {
 				$element.addClass('aloha-ui-hover');
@@ -140,7 +135,6 @@ define([
 
 			$pin.click(function () {
 				Toolbar.isFloatingMode = !Toolbar.isFloatingMode;
-
 				var position;
 
 				if (Toolbar.isFloatingMode) {
@@ -154,7 +148,6 @@ define([
 				}
 
 				Toolbar.setFloatingPosition(position);
-
 				floating.togglePinSurface(surface, position, Toolbar.isFloatingMode);
 			});
 		},
@@ -166,14 +159,11 @@ define([
 			Toolbar.$surfaceContainer.children().detach();
 			Toolbar.$surfaceContainer.append(this.$element);
 			Toolbar.$surfaceContainer.stop().fadeTo(200, 1);
-
 			var position = Toolbar.getFloatingPosition();
-
 			this.$element.stop().css({
 				top: position.top,
 				left: position.left
 			});
-
 			this._move();
 		},
 
@@ -227,10 +217,8 @@ define([
 
 			// In the built aloha.js, init will happend before the body has
 			// finished loading, so we have to defer appending the element.
-			$(function(){ Toolbar.$surfaceContainer.appendTo('body'); });
-
+			$(function () { Toolbar.$surfaceContainer.appendTo('body'); });
 			Surface.trackRange(Toolbar.$surfaceContainer);
-
 			var pinState = floating.getPinState();
 			Toolbar.pinTop = pinState.top;
 			Toolbar.pinLeft = pinState.left;
