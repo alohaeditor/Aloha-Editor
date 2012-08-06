@@ -310,13 +310,13 @@ define([
 		 */
 		initializeBlockLevelDragDrop: function() {
 			var that = this;
-			jQuery.each(Aloha.editables, function(i, editable) {
-				editable.obj.data("block-dragdrop", that._dragdropEnabled);
-				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
+			jQuery.each( Aloha.editables, function(i, editable) {
+				editable.obj.data( "block-dragdrop", that._dragdropEnabled );
+				that.createBlockLevelSortableForEditableOrBlockCollection( editable.obj );
 			});
 			Aloha.bind('aloha-editable-created', function(e, editable) {
-				editable.obj.data("block-dragdrop", that._dragdropEnabled);
-				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
+				editable.obj.data( "block-dragdrop", that._dragdropEnabled );
+				that.createBlockLevelSortableForEditableOrBlockCollection( editable.obj );
 			});
 		},
 
@@ -339,23 +339,23 @@ define([
 				// Every "block-level" aloha block drag handle gets a new CSS class, and we only select this as
 				// drag handle. As only "block-level" aloha blocks have this CSS class, this will also only make
 				// aloha blocks draggable.
-				$editableOrBlockCollection.addClass('aloha-block-blocklevel-sortable').sortable({
+				$editableOrBlockCollection.addClass("aloha-block-blocklevel-sortable").sortable({
 					revert: 100,
-					handle: '.aloha-block-draghandle-blocklevel',
-					connectWith: '.aloha-block-blocklevel-sortable.aloha-block-dropzone', // we want to be able to drag an element to other editables
+					handle: ".aloha-block-draghandle-blocklevel",
+					connectWith: ".aloha-block-blocklevel-sortable.aloha-block-dropzone", // we want to be able to drag an element to other editables
 					disabled: !that._dragdropEnabled, // if drag & drop is disabled, sortable should also be disabled
 					start: function(event, ui) {
 						// check if the block's parent is a dropzone
-						ui.item.data("block-sort-allowed", (ui.item.parents('.aloha-block-dropzone').length > 0));
+						ui.item.data( "block-sort-allowed", (ui.item.parents( ".aloha-block-dropzone" ).length > 0) );
 					},
 					change: function(event, ui) {
-						ui.item.data("block-sort-allowed", (ui.placeholder.parents('.aloha-block-dropzone').length > 0));
+						ui.item.data( "block-sort-allowed", (ui.placeholder.parents( ".aloha-block-dropzone" ).length > 0) );
 					},
 					stop: function(event, ui) { 
-						if (!ui.item.data("block-sort-allowed")) {
-							jQuery(this).sortable('cancel');
+						if ( !ui.item.data( "block-sort-allowed" ) ) {
+							jQuery( this ).sortable( "cancel" );
 						} 
-						ui.item.removeData("block-sort-allowed");
+						ui.item.removeData( "block-sort-allowed" );
 					}
 				});
 
