@@ -78,7 +78,7 @@
 
 		return {
 			baseUrl: baseUrl,
-			plugins: plugins
+			plugins: plugins || []
 		};
 	}
 
@@ -136,6 +136,7 @@
 		    entryPoints = [],
 		    names = [],
 		    baseUrlByName = {},
+		    map = {},
 		    parts,
 		    bundleName,
 		    pluginName,
@@ -155,12 +156,14 @@
 			mergePluginPaths(paths, bundlePath, pluginName);
 			baseUrlByName[pluginName] = bundlePath + '/' + pluginName;
 			entryPoints.push(pluginName + '/' + pluginName + '-plugin');
+			map[pluginName] = {'jquery': 'aloha/jquery'};
 		}
 		return {
 			paths: paths,
 			entryPoints: entryPoints,
 			baseUrlByName: baseUrlByName,
-			names: names
+			names: names,
+			map: map
 		};
 	}
 
@@ -206,10 +209,41 @@
 		Aloha.settings.loadedPlugins = pluginConfig.names;
 		Aloha.settings._pluginBaseUrlByName = pluginConfig.baseUrlByName;
 
+		var coreMap = {
+			'aloha':             {'jquery': 'aloha/jquery'},
+			'aloha/jquery':      {'jquery': 'jquery'}, // avoid a circular dependency
+			'jqueryui':          {'jquery': 'aloha/jquery'},
+			'vendor':            {'jquery': 'aloha/jquery'},
+			'util':              {'jquery': 'aloha/jquery'},
+			'RepositoryBrowser': {'jquery': 'aloha/jquery'},
+			'jstree':            {'jquery': 'aloha/jquery'},
+			'jqgrid':            {'jquery': 'aloha/jquery'},
+			'jqgrid-locale-en':  {'jquery': 'aloha/jquery'},
+			'jqgrid-locale-de':  {'jquery': 'aloha/jquery'},
+			'jquery-layout':     {'jquery': 'aloha/jquery'}
+		};
+
+		/**
+		 * Map the 'jquery' module to the 'aloha/jquery' module. This
+		 * enforces Aloha modules to always use aloha/jquery instead of
+		 * jquery. One could also just write
+		 * define(['aloha/jquery']... to require Aloha's jquery, but
+		 * this is problematic in vendor files that don't know anything
+		 * about Aloha. Each key in the map is either the module name,
+		 * or the firs part of the module name. For example, the mapping
+		 * under the key 'aloha' will take effect for all modules with
+		 * names like aloha/xxx.  When a new 'paths' entry is added
+		 * (browserPaths or other), an entry should also be added the
+		 * moduleMap to rename the jquery dependency.
+		 * See also define('aloha/jquery', ... below.
+		 */
+		var moduleMap = mergeObjects(coreMap, pluginConfig.map)
+
 		var defaultConfig = {
 			context: 'aloha',
 			locale: Aloha.settings.locale || 'en',
-			baseUrl: Aloha.settings.baseUrl
+			baseUrl: Aloha.settings.baseUrl,
+			map: moduleMap
 		};
 
 		var defaultPaths = {
@@ -270,7 +304,7 @@
 		var deferredReady;
 
 		Aloha.bind = function (type, fn) {
-			Aloha.require(['jquery'], function (jQuery) {
+			Aloha.require(['aloha/jquery'], function (jQuery) {
 				// We will only need to load jQuery once ...
 				Aloha.bind = function (type, fn) {
 					deferredReady = deferredReady || jQuery.Deferred();
@@ -291,7 +325,7 @@
 		};
 
 		Aloha.trigger = function (type, data) {
-			Aloha.require(['jquery'], function (jQuery) {
+			Aloha.require(['aloha/jquery'], function (jQuery) {
 				Aloha.trigger = function (type, data) {
 					deferredReady = deferredReady || jQuery.Deferred();
 					if ('aloha-ready' === type) {
@@ -310,8 +344,35 @@
 			return this;
 		};
 
+		/**
+		 * This makes sure that all Aloha modules will receive the same jQuery.
+		 *
+		 * This is a workaround for when a user includes his own
+		 * jQuery _after_ aloha.js has been loaded.
+		 *
+		 * If multiple 'jquery's are included in the page, each version
+		 * will make its own call to define(), and depending on when an
+		 * Aloha module is loaded, it may receive a different
+		 * 'jquery'. However, 'aloha/jquery' will not be redefined and
+		 * will therefore point always to only one particular version.
+		 *
+		 * !!Important!! to be certain that 'aloha/jquery' points to
+		 * the jQuery intended for Aloha, it can't be loaded
+		 * dynamically, because if a user loads his own jQuery after
+		 * aloha.js, then there is no way to tell whether it is the
+		 * user's jQuery or Aloha's jQuery that has finished
+		 * loading. Instead, jQuery must be loaded before aloha.js and
+		 * passed in to us.
+		 */
+		var jQueryThatWasPassedToUs = Aloha.settings.jQuery;
+		define('aloha/jquery', ['jquery'], function (jQuery) {
+			// We prefer Aloha.settings.jQuery, since a dynamically loaded
+			// jQuery may have been redefined by a user's jQuery.
+			return jQueryThatWasPassedToUs || jQuery;
+		});
+
 		define('aloha', [
-			'jquery',
+			'aloha/jquery',
 			'util/json2',
 			'aloha/rangy-core',
 			'util/class',
@@ -347,7 +408,7 @@
 		// TODO aloha should not make the require call itself. Instead,
 		// user code should require and initialize aloha.
 		Aloha.stage = 'loadingAloha';
-		require(requireConfig, ['aloha', 'jquery'], function (Aloha, jQuery) {
+		require(requireConfig, ['aloha', 'aloha/jquery'], function (Aloha, jQuery) {
 			Aloha.stage = 'loadPlugins';
 			require(requireConfig, pluginConfig.entryPoints, function() {
 				jQuery(function(){

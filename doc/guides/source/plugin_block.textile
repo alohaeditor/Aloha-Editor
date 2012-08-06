@@ -423,6 +423,48 @@ h4. Preventing switch of scope for a block
 
 The block plugin will switch the current scope to a block-specific one whenever a block is activated. To prevent it from doing so just add the @data-block-skip-scope="true"@ attribute to the element you plan to turn into a block. As long as it's value is "true" the scope will not be switched. 
 
+h4. En/Disabling drag & drop for blocks 
+
+If a block is placed inside an editable, it can be draged/dropped by default. If you want to prevent drag/drop behaviour for all blocks, add the following configuration option:
+
+<javascript>
+Aloha.settings.plugins.block.dragdrop = false;
+</javascript>
+
+Also, it is possible to allow users to toggle the drag/drop behaviour per editable by placing a button in the floating menu. To define the toggle drag/drop button for all editables, use the following configuration:
+
+<javascript>
+Aloha.settings.plugins.block.config.toggleDragdrop = true;
+</javascript>
+
+Alternatively, you can show this button only for selected editables:
+
+<javascript>
+Aloha.settings.plugins.block.editables = {
+	'#editable-1': { 'toggleDragrop': true },
+	'#editable-2': { 'toggleDragrop': false },
+};
+</javascript>
+
+h4. Defining Dropzones
+
+When a block is being dragged, it can be dropped to any editable available in the page by default. To specify explicit drop targets for blocks inside an editable, use the `dropzones` option.
+
+<javascript>
+Aloha.settings.plugins.block.editables = {
+	'#editable-1': { 'dropzones': [ '#editable-1', '#editable-2' ]},
+	'#editable-2': { 'dropzones': [ '#editable-2' ]},
+};
+</javascript>
+
+In the above example, blocks defined in "#editable-1" can be dragged to either "#editable-1" or "#editable-2". However, blocks in "#editable-2" can only be dragged within itself.
+
+You can also define the dropzones globally.
+
+<javascript>
+Aloha.settings.plugins.block.dropzones = [ '#editable-1', '#editable-2' ];
+</javascript>
+
 h3. Internals
 
 For this work, numerous IE hacks were needed. Especially in areas like Drag/Drop, Deletion and Copy/Paste, especially IE7 and IE8 differ considerably in their behavior. See the compatibility matrix below for the tests which have been run.

@@ -1,3 +1,6 @@
+@import "aloha-sidebar.css";
+@import "../lib/vendor/repository-browser/css/repository-browser.css";
+
 .aloha-editable {
 	min-height: 1.2em;
 	outline: none;
@@ -13,5 +16,3 @@
 	padding:6px;
 	overflow:auto;
 }
-@import "aloha-sidebar.less";
-@import "../lib/vendor/repository-browser/css/repository-browser.less";

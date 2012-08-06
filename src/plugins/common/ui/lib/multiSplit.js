@@ -1,3 +1,4 @@
+/*global define: true */
 /**
  * The multiSplit component groups multiple buttons and other
  * button-like items into an expandable menu.
@@ -56,39 +57,30 @@ define([
 			$(buttons).map(function (i, button) {
 				var component = new (Button.extend({
 					tooltip: button.tooltip,
-					icon: 'aloha-large-icon ' + button.icon,
-					iconOnly: true,
+					icon: button.wide ? button.icon : 'aloha-large-icon ' + button.icon,
+					iconOnly: button.wide ? false : true,
+					init: function () {
+						this._super();
+						if (button.init) {
+							button.init.call(this);
+						}
+					},
 					click: function () {
 						button.click.apply(multiSplit, arguments);
 						multiSplit.close();
 					}
 				}))();
-				component.element.addClass('aloha-large-button');
+				if (!button.wide) {
+					component.element.addClass('aloha-large-button');
+				}
 
-				multiSplit.buttons.push({
+				multiSplit.buttons[button.name] = {
 					settings: button,
 					component: component,
-					element: component.element
-				});
+					element: component.element,
+					visible: true
+				};
 
-				return component.element[0];
-			}).appendTo(content);
-
-			$(this.getItems()).map(function (i, item) {
-				var component = new (Button.extend({
-					tooltip: item.tooltip,
-					icon: item.icon,
-					init: function () {
-						this._super();
-						if (item.init) {
-							item.init.call(this);
-						}
-					},
-					click: function () {
-						item.click.apply(multiSplit, arguments);
-						multiSplit.close();
-					}
-				}))();
 				return component.element[0];
 			}).appendTo(content);
 
@@ -105,14 +97,17 @@ define([
 		/**
 		 * @api
 		 */
-		setActiveButton: function(index) {
+		setActiveButton: function (name) {
+			if (!name) {
+				name = null;
+			}
 			if (null !== this._activeButton) {
 				this.buttons[this._activeButton]
 				    .element.removeClass('aloha-multisplit-active');
 			}
-			this._activeButton = index;
-			if (null !== index) {
-				this.buttons[index]
+			this._activeButton = name;
+			if (null !== name) {
+				this.buttons[name]
 				    .element.addClass('aloha-multisplit-active');
 			}
 		},
@@ -142,6 +137,55 @@ define([
 		close: function () {
 			this.element.removeClass('aloha-multisplit-open');
 			this._isOpen = false;
+		},
+
+		/**
+		 * Show the button with given index
+		 * @api
+		 * @param {Number} index button index
+		 */
+		show: function (name) {
+			if (!name) {
+				name = null;
+			}
+			if (null !== name && this.buttons[name] !== undefined) {
+				this.buttons[name].element.show();
+				this.buttons[name].visible = true;
+				// since we show at least one button now, we need to show the multisplit button
+				this.element.show();
+			}
+		},
+
+		/**
+		 * Hide the button with given index
+		 * @api
+		 * @param {Number} index button index
+		 */
+		hide: function (name) {
+			var button, visible = false;
+
+			if (!name) {
+				name = null;
+			}
+			if (null !== name && this.buttons[name] !== undefined) {
+				this.buttons[name].element.hide();
+				this.buttons[name].visible = false;
+
+				// now check, if there is a visible button
+				for (button in this.buttons) {
+					if (this.buttons.hasOwnProperty(button)) {
+						if (this.buttons[button].visible) {
+							this.element.show();
+							visible = true;
+							break;
+						}
+					}
+				}
+
+				if (!visible) {
+					this.element.hide();
+				}
+			}
 		}
 	});
 
@@ -149,7 +193,7 @@ define([
 	 * This module is part of the Aloha API.
 	 * It is valid to override this module via requirejs to provide a
 	 * custom behaviour. An overriding module must implement all API
-	 * methods. Every member must have an api annotation. No private
+	 * methods. Every member must have an api annotation. No non-api
 	 * members are allowed.
 	 * @api
 	 */

@@ -12,10 +12,109 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **MANUAL CHANGE**: The change requires changes to existing implementation.
 
+## 0.21.1 - 2012/08/06
+
+- **MANUAL CHANGE**: The API Method setActiveButton() of the MultiSplit component changed: the parameter must be the name of the button to set active, not the index.
+
+- **MANUAL CHANGE**: Changed the aloha-smart-content-changed event
+
+    The snapshotContent property provided bythe
+    aloha-smart-content-changed event was replaced with the
+    getSnapshotContent property which is a function that must be
+    called to retrieve the value that was provided by snapshotContent.
+
+    This was done to make snapshotting of the editable contents
+    optional, since it is a very expensive operation.
+    
+- **FEATURE**: Toolbar configurability was extended
+
+	The now Aloha.toolbar.settings.tab[i].exclusive property was implemented.
+	See the ui guide for more information.
+
+- **FEATURE**: UiPlugin API addition
+
+	UiPlugin.showToolbar() was added to the UiPlugin API.
+	This function provides better control over when the toolbar is
+	shown.
+
+- **FEATURE**: Aloha Blocks dropzones and configuration
+
+	Aloha Blocks now allow for additional configuration settings which
+	allow you to disable the drag'n'drop functionality of blocks
+	globally or for individual editables as well as defining custom
+	dropzones for each editable. See
+	http://www.aloha-editor.org/guides/plugin_block.html#en-disabling-drag-drop-for-blocks
+	for details.
+
+- **ENHANCEMENT**: Aloha Editor will now add the browser version to the html dom node (see http://www.aloha-editor.org/guides/core.html#initialization-process)
+
+- **BUG**: A debugger statement was removed.
+
+- **BUG**: Missing implementations to show and hide items in a multisplit button have been added.
+
+- **BUG**: Fixed IE7 mode paragraph margin
+
+    The problem is that with a DOM like the following:
+
+    ```html
+    <style>p { margin-top: 2em; }</style>
+    <p><br class='aloha-end-br'/></p>
+    <p></p>
+    ```
+
+    The margin between the paragraphs will not take effect because
+    IE8 in compatibility mode considers the paragraph with the ```<br>```
+    in it empty. Normal IE8 will render the margin.
+
+    To make IE8 in compatibility mode render the margin, some content
+    must be put into the ```<p>```. That is not a big problem, since there
+    usually should be no reason to have empty paragraphs in your
+    content.
+
+    However, if the content is entered by hand (if it is not there to
+    begin with) then the margin will not be immediately updated. Only
+    when, after entering some content into the first paragraph, the
+    selection is put into the second paragraph, will the margin be
+    updated.
+
+    Although I don't see an easy workaround for the first problem
+    (that the margin is not displayed when the paragraph is empty)
+    there is an easy workaround for the second problem (that the
+    margin isn't updated even after some content has been
+    entered). The workaround is simply, when some content is entered,
+    to insert and remove an arbitrary DOM node into the second
+    paragraph, which will force IE to re-render the paragraph.
+
+    Problem was verified to exist on IE7 and IE8 in compatibility
+    mode with IE7 document type. May also exist in other IE7 modes.
+
+- **BUG**: Fixed some random and weird selection problems in IE7, where some
+	actions (like Enter behaviour) were not performed on the correct cursor
+	position. Sometimes there also occurred some JS errors.
+	
+- **BUG**: Fixed Transforming an empty contenteditable into a list, which
+	caused the contenteditable container to disappear.
+
+- **BUG**: Loading errors that occured when a second jQuery was loaded below aloha.js were fixed.
+
+- **BUG**: Fixed the qUnit tests for following commands to work in IE 7/8/9, latest Firefox and Chrome.
+  * Bold
+  * Italic
+  * Subscript
+  * Superscript
+  * CreateLink
+  * Unlink
+  * Underline
+  * Strikethrough
+  * FormatBlock
+  * RemoveFormat
+  * Indent
+  * Outdent
+  * InsertOrderedList
+  * InsertUnorderedList  
+
 
 ## 0.21.0 - 2012/07/26
-
-- **MANUAL CHANGE**: Updated naming from Aloha to Aloha Editor in boilerplate demo.
 
 - **MANUAL CHANGE**: Most plugins don't load their css files through require any more
 
@@ -232,6 +331,8 @@ All changes are categorized into one of the following keywords:
     plugins are initialized when Aloha is ready. So, calling
     Aloha.require with the plugin as a dependency will work, but the API
     will likely not be initialized resulting in unpredictable behavior.
+
+- **ENHANCEMENT**: Updated naming from Aloha to Aloha Editor in boilerplate demo.
 
 - **ENHANCEMENT**: Aloha specific css rules that are not in use any more were removed:
 

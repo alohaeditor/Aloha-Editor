@@ -56,7 +56,7 @@ define('ui/ui-plugin', [
 	var context = new Context(),
         toolbar = new Toolbar(context, getToolbarSettings());
 
-	Aloha.bind('aloha-editable-activated', function (event, alohaEvent) {
+	Aloha.bind('aloha-editable-activated', function(event, alohaEvent) {
 		Surface.show(context);
 		Container.showContainersForContext(context, event);
 	});
@@ -99,15 +99,49 @@ define('ui/ui-plugin', [
 		}
 	}
 
+	/**
+	 * Adopts a component instance into the UI.
+	 *
+	 * Usually, the implementation of this method will display the
+	 * component, at a position in the UI given by the slot
+	 * argument.
+	 *
+	 * @param slot
+	 *        A position argument that is interpreted by the UI however it likes.
+	 * @param component
+	 *        An instance of a component to adopt into the given slot.
+	 * @api
+	 */
 	function adoptInto(slot, component) {
 		return toolbar.adoptInto(slot, component);
+	}
+
+	/**
+	 * Shows the toolbar.
+	 *
+	 * By default, the toolbar will be hidden when no editable is
+	 * activated, and shown when an editable is activated. Calling
+	 * this function will show the toolbar regardless of whether an
+	 * editable is activated.
+	 *
+	 * Please note that the toolbar will not remain visible if an
+	 * editable is subsequently deactivated.
+	 *
+	 * @param {?Object} event
+	 *        An optional event argument that caused the toolbar to be show.
+	 *        Will be passed on to Aloha.settings.toolbar.tabs[i].showOn functions.
+	 * @api
+	 */
+	function showToolbar(event) {
+		Surface.show(context);
+		Container.showContainersForContext(context, event);
 	}
 
 	/**
 	 * This module is part of the Aloha API.
 	 * It is valid to override this module via requirejs to provide a
 	 * custom behaviour. An overriding module must implement all API
-	 * methods. Every member must have an api annotation. No private
+	 * methods. Every member must have an api annotation. No non-api
 	 * members are allowed.
 	 * @api
 	 */
@@ -125,6 +159,7 @@ define('ui/ui-plugin', [
 		 *        An instance of a component to adopt into the given slot.
 		 * @api
 		 */
-		adoptInto: adoptInto
+		adoptInto: adoptInto,
+		showToolbar: showToolbar
 	};
 });

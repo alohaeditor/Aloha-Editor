@@ -398,7 +398,7 @@
 
     //If set to true, any files that were combined into a build layer will be
     //removed from the output folder.
-    removeCombined: false,
+    removeCombined: true,
 
     //List the modules that will be optimized. All their immediate and deep
     //dependencies will be included in the module's file when the build is

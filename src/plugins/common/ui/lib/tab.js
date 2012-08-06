@@ -94,7 +94,8 @@ define([
 					groupedComponents = components[i];
 					for (j = 0; j < groupedComponents.length; j++) {
 						this._groupBySlot[groupedComponents[j]] = groupProps;
-						if (1 === groupedComponents[j].length &&
+						if (groupedComponents[j] &&
+							1 === groupedComponents[j].length &&
 						    groupedComponents[j].charCodeAt(0) === 10) {
 							group.append($('<div>', {'unselectable': 'on'}));
 						} else {
@@ -170,6 +171,10 @@ define([
 			}
 			this.handle.show();
 			this.visible = true;
+			
+			// Hiding all tabs may hide the toolbar, so showing the
+			// first tab again must also show the toolbar.
+			this.container.show();
 
 			// If no tabs are selected, then select the tab which was just shown.
 			if (   !this.container.find('.ui-tabs-active').length
@@ -206,7 +211,12 @@ define([
 				// This does not work...
 				// this.container.tabs( 'select', -1 );
 
+				// Why do we remove this class?
 				this.handle.removeClass( 'ui-tabs-active' );
+
+				// It doesn't make any sense to leave the toolbar
+				// visible after all tabs have been hidden.
+				this.container.hide();
 			}
 		}
 

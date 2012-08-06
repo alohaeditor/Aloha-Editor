@@ -53,10 +53,13 @@
 		It can also be placed inline here before loading Aloha Editor itself.
 	-->
 	<script src="js/aloha-config.js"></script>
-	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
 	<script src="../../lib/require.js"></script>
+	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
     <script>
-		Aloha.settings.jQuery = $.noConflict(true);
+	  // Passing jQuery into Aloha explicitly is not necessary since
+	  // newer versions of jQuery will make a call to define which will
+	  // be picked up in aloha.js
+	  //Aloha.settings.jQuery = $.noConflict(true);
     </script>
 	<!--
 		Load the Aloha Editor library.
@@ -92,9 +95,9 @@
 	                            extra/linkbrowser,
 	                            extra/imagebrowser,
 	                            extra/cite"></script>
-	<!--
-		Application specific code
-	-->
+	<!-- Include the fake-jquery to make sure that Aloha works even if
+		 the user includes his own global jQuery after aloha.js. -->
+	<script src="fake-jquery.js"></script>
     <script src="ribbon-example.js"></script>
 	<link rel="stylesheet" href="css/style.css">
 	<script src="js/aloha-boilerplate.js"></script>

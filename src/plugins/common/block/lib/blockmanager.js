@@ -31,6 +31,7 @@ define([
 	'aloha/observable',
 	'aloha/registry',
 	'util/class',
+	'util/strings',
 	'util/maps'
 ], function(
 	Aloha,
@@ -39,6 +40,7 @@ define([
 	Observable,
 	Registry,
 	Class,
+	Strings,
 	Maps
 ){
 	"use strict";
@@ -98,6 +100,12 @@ define([
 		 * @type AbstractBlock
 		 */
 		_activeBlock: null,
+
+		/**
+		 * Flag that stores the drag & drop state
+		 * @type boolean 
+		 */
+		_dragdropEnabled: true,
 
 		/**************************
 		 * SECTION: Initialization
@@ -241,8 +249,7 @@ define([
 
 					// BROWSER QUIRK WORKAROUND
 					// - IE7+IE8 for block-level blocks which are NOT part of a bigger selection.
-					// TODO as we're going to remove Ext this browser checks should be made with jQuery
-					if ((Ext.isIE8 || Ext.isIE7) && that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
+					if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) <= 8 && that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
 						that._activeBlock.destroy();
 						e.preventDefault();
 						return false;
@@ -310,11 +317,13 @@ define([
 		 */
 		initializeBlockLevelDragDrop: function() {
 			var that = this;
-			jQuery.each(Aloha.editables, function(i, editable) {
-				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
+			jQuery.each( Aloha.editables, function(i, editable) {
+				editable.obj.data( "block-dragdrop", that._dragdropEnabled );
+				that.createBlockLevelSortableForEditableOrBlockCollection( editable.obj );
 			});
 			Aloha.bind('aloha-editable-created', function(e, editable) {
-				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
+				editable.obj.data( "block-dragdrop", that._dragdropEnabled );
+				that.createBlockLevelSortableForEditableOrBlockCollection( editable.obj );
 			});
 		},
 
@@ -325,6 +334,8 @@ define([
 		 * This is an internal method a user should never call!
 		 */
 		createBlockLevelSortableForEditableOrBlockCollection: function($editableOrBlockCollection) {
+			var that = this;
+
 			if (!$editableOrBlockCollection.hasClass('aloha-block-blocklevel-sortable')) {
 
 				// We only want to make "block-level" aloha blocks sortable. According to the docs,
@@ -335,12 +346,25 @@ define([
 				// Every "block-level" aloha block drag handle gets a new CSS class, and we only select this as
 				// drag handle. As only "block-level" aloha blocks have this CSS class, this will also only make
 				// aloha blocks draggable.
-				$editableOrBlockCollection.addClass('aloha-block-blocklevel-sortable').sortable({
+				$editableOrBlockCollection.addClass("aloha-block-blocklevel-sortable").sortable({
 					revert: 100,
-					handle: '.aloha-block-draghandle-blocklevel',
-					connectWith: '.aloha-block-blocklevel-sortable' // we want to be able to drag an element to other editables
+					handle: ".aloha-block-draghandle-blocklevel",
+					connectWith: ".aloha-block-blocklevel-sortable.aloha-block-dropzone", // we want to be able to drag an element to other editables
+					disabled: !that._dragdropEnabled, // if drag & drop is disabled, sortable should also be disabled
+					start: function(event, ui) {
+						// check if the block's parent is a dropzone
+						ui.item.data( "block-sort-allowed", (ui.item.parents( ".aloha-block-dropzone" ).length > 0) );
+					},
+					change: function(event, ui) {
+						ui.item.data( "block-sort-allowed", (ui.placeholder.parents( ".aloha-block-dropzone" ).length > 0) );
+					},
+					stop: function(event, ui) { 
+						if ( !ui.item.data( "block-sort-allowed" ) ) {
+							jQuery( this ).sortable( "cancel" );
+						} 
+						ui.item.removeData( "block-sort-allowed" );
+					}
 				});
-
 
 				// Hack for Internet Explorer 8:
 				// If you first click inside an editable, and THEN want to drag a block-level block,
@@ -356,6 +380,17 @@ define([
 					}
 				};
 			}
+		},
+
+		/**
+		 * Set   
+		 * @param {String} state
+		 * 
+		 */
+		setDragDropState: function(state) {
+			var that = this;
+
+			that._dragdropEnabled = state;
 		},
 
 		/**************************
@@ -381,6 +416,7 @@ define([
 		 * @private
 		 */
 		_blockify: function(element, instanceDefaults) {
+			var that = this;
 			var attributes, block, $element;
 			$element = jQuery(element);
 
@@ -406,7 +442,6 @@ define([
 				block._setAttribute(k, v);
 			});
 
-
 			// Register block
 			this.blocks.register(block.getId(), block);
 		},
@@ -421,8 +456,19 @@ define([
 			// We use jQuery.clone(true) because the sortableItem attribute isn't returned
 			// if we do a normal cloneNode(...).
 			var clone = blockElement.clone(true);
-			var data = clone.data();
+			var dataCamelCase = clone.data();
+			var data = {};
 			clone.removeData();
+			// jQuery.data() returns data attributes with names like
+			// data-some-attr as dataSomeAttr which has to be reversed
+			// so that they can be merged with this.defaults and
+			// instanceDefaults which are expected to be in
+			// data-some-attr form.
+			for (var key in dataCamelCase) {
+				if (dataCamelCase.hasOwnProperty(key)) {
+					data[Strings.camelCaseToDashes(key)] = dataCamelCase[key];
+				}
+			}
 			return jQuery.extend(
 				{},
 				this.defaults,
