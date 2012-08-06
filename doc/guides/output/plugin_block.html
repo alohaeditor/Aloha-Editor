@@ -413,14 +413,54 @@ Aloha.settings.plugins.block.sidebarAttributeEditor = false;
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-BlockManager.bind('block-selection-change', function(blocks) {
+BlockManager.bind('block-selection-change', function (blocks) {
 	// blocks is an array now, where the first element is the selected block
 	// and the other elements are the ancestor blocs.
 	// If the array is empty, no block has been selected.
 });
+</pre></div><p>The block-selection-change is cumbersome to rely on when you don&#8217;t care about the global state of &#8220;which blocks are selected?&#8221; but when you do care about the local state of each block, i.e. when you want to do things whenever a block gets focus or loses focus &#8211; for rather use the block-activate and block-deactivate events.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+BlockManager.bind('block-activate', function (blocks) { });
+BlockManager.bind('block-deactivate', function (blocks) { });
 </pre></div><h4 id="preventing-switch-of-scope-for-a-block">6.4 Preventing switch of scope for a block</h4>
 <p>The block plugin will switch the current scope to a block-specific one whenever a block is activated. To prevent it from doing so just add the <code>data-block-skip-scope="true"</code> attribute to the element you plan to turn into a block. As long as it&#8217;s value is &#8220;true&#8221; the scope will not be switched.</p>
-<h3 id="internals">7 Internals</h3>
+<h4 id="en-disabling-drag-drop-for-blocks">6.5 En/Disabling drag &amp; drop for blocks</h4>
+<p>If a block is placed inside an editable, it can be draged/dropped by default. If you want to prevent drag/drop behaviour for all blocks, add the following configuration option:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.block.dragdrop = false;
+</pre></div><p>Also, it is possible to allow users to toggle the drag/drop behaviour per editable by placing a button in the floating menu. To define the toggle drag/drop button for all editables, use the following configuration:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.block.config.toggleDragdrop = true;
+</pre></div><p>Alternatively, you can show this button only for selected editables:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.block.editables = {
+	'#editable-1': { 'toggleDragrop': true },
+	'#editable-2': { 'toggleDragrop': false },
+};
+</pre></div><h4 id="defining-dropzones">6.6 Defining Dropzones</h4>
+<p>When a block is being dragged, it can be dropped to any editable available in the page by default. To specify explicit drop targets for blocks inside an editable, use the `dropzones` option.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.block.editables = {
+	'#editable-1': { 'dropzones': [ '#editable-1', '#editable-2' ]},
+	'#editable-2': { 'dropzones': [ '#editable-2' ]},
+};
+</pre></div><p>In the above example, blocks defined in &#8220;#editable-1&#8221; can be dragged to either &#8220;#editable-1&#8221; or &#8220;#editable-2&#8221;. However, blocks in &#8220;#editable-2&#8221; can only be dragged within itself.</p>
+<p>You can also define the dropzones globally.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.block.dropzones = [ '#editable-1', '#editable-2' ];
+</pre></div><h3 id="internals">7 Internals</h3>
 <p>For this work, numerous IE hacks were needed. Especially in areas like Drag/Drop, Deletion and Copy/Paste, especially IE7 and IE8 differ considerably in their behavior. See the compatibility matrix below for the tests which have been run.</p>
 <h4 id="browser-compatibility-matrix">7.1 Browser Compatibility Matrix</h4>
 <table>
@@ -613,6 +653,8 @@ BlockManager.bind('block-selection-change', function(blocks) {
 </a></li> <li><a href="#custom-floating-menu"><p>Custom Floating Menu</p>
 </a></li> <li><a href="#disabling-the-sidebar-editor"><p>Disabling the sidebar editor</p>
 </a></li> <li><a href="#preventing-switch-of-scope-for-a-block"><p>Preventing switch of scope for a block</p>
+</a></li> <li><a href="#en-disabling-drag-drop-for-blocks"><p>En/Disabling drag &amp; drop for blocks</p>
+</a></li> <li><a href="#defining-dropzones"><p>Defining Dropzones</p>
 </a></li></ul></li><li><a href="#internals"><p>Internals</p>
 </a><ul><li><a href="#browser-compatibility-matrix"><p>Browser Compatibility Matrix</p>
 </a></li></ul></li>

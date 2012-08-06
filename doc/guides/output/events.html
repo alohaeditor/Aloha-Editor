@@ -107,17 +107,15 @@
       <div id="mainCol">
           <div class="headerSection">
             <h2>Aloha Editor Events</h2>
-<p>At specific situations Aloha Editor and it&#8217;s plugins triggers events. Components that are listening to those events can then interact when they get the signal.</p>
-<p>There are events related to editable areas and content modification available.</p>
-<p>After reading this guide, you:</p>
-<ul>
-	<li>Know about available core events in Aloha Editor</li>
-	<li>Events provided by plugins</li>
-	<li>Are able to use Aloha Editor events</li>
-</ul>
 
           </div>
-        <h4>aloha-command-will-execute Event</h4>
+        <p>Aloha has two mechanisms for subscribing to and publishing events.</p>
+<p>The old bind/trigger mechanism uses jQuery&#8217;s bind() and trigger() behind the scenes and currently handles most of the events fired by Aloha:</p>
+Aloha.bind(&#8216;event-name&#8217;, function (jQuery.Event, eventArgument) {});
+Aloha.trigger(&#8216;event-name&#8217;, eventArgument);
+<p>We are now in the process of replacing this <span class="caps">API</span> with a PubSub mechanism that we implement ourselves. The advantage of implementing it ourselves is that we have greater flexibility when we need to make extensions to the event system in the future. Also, the PubSub mechanism has less overhead (important for IE7) and a slightly cleaner <span class="caps">API</span> (requirejs module; forces a map argument; no event object).</p>
+<p>define([&#8216;PubSub&#8217;], function (PubSub) {     PubSub.sub(&#8216;event.name&#8217;, function (eventArgument) {});     PusSub.pub(&#8216;event.name&#8217;, {key: value}); });</p>
+<h4>aloha-command-will-execute Event</h4>
 <p>This event is triggered before a command will be executed. The commandId hold the command which should be executed (eg. bold).</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -207,6 +205,7 @@ Aloha.trigger( 'aloha-block-selected',
 );
 </pre></div><h4>aloha-selection-changed Event</h4>
 <p>This event is triggered when there are changes of the selection (using the mouse or cursor).</p>
+<p>It is not recommended to bind to this event unless you know what you are doing. Instead consider subscribing to &#8216;aloha.selection.context-change&#8217;.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
@@ -214,7 +213,27 @@ Aloha.trigger( 'aloha-selection-changed', [
 	this.rangeObject, // range object
 	event // browser event object
 ] );
-</pre></div><h3 id="plugin-image">1 Plugin: Image</h3>
+</pre></div><h4>aloha.selection.context-change Event</h4>
+The argument to the event handler contains two properties
+<ul>
+	<li>range the current value of Aloha.Selection.getRangeObject()</li>
+	<li>the event that caused the context change</li>
+</ul>
+These values are the same as for aloha-selection-changed.
+The message will be published every time the context of the selection
+changes.
+The context of the selection changes whenever the startContainer node
+or endContainer node of any range in the selection returned by
+Aloha.getSelection() changes, or any of their ancestors change, or any
+attributes of the container nodes or their ancestors change. The
+ancestor tree is calculated up to including the containing Aloha
+editable.
+Subscribing to this event is preferred over aloha-selection-changed
+because it does not fire as often, and because it is not fired at all
+when the user is just typing. To be able to type without introducing
+perceptible lag is an important aspect of editor-performance;
+unnecessary processing should therefore be avoided whenever possible.
+<h3 id="plugin-image">1 Plugin: Image</h3>
 <p>Events provided by the Image Plugin.</p>
 <h4 id="aloha-image-unselected-event">1.1 aloha-image-unselected Event</h4>
 <p>When an image is unselected by the user.</p>
