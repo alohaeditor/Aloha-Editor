@@ -14,29 +14,31 @@
 define([
 	'jquery',
 	'aloha/core',
+	'aloha/selection',
 	'aloha/plugin',
 	'block/block',
 	'block/blockmanager',
 	'ui/ui',
 	'ui/button',
 	'ui/toolbar',
-	'ui/ui-plugin',
 	'align/align-plugin',
 	'aloha/console',
+	'util/maps',
 	// FIXME: use of the css require plugin is deprecated
 	'css!captioned-image/css/captioned-image.css'
 ], function (
 	$,
 	Aloha,
+	Selection,
 	Plugin,
 	Block,
 	BlockManager,
 	Ui,
 	Button,
 	Toolbar,
-	UiPlugin,
 	AlignPlugin,
-	Console
+	Console,
+	Maps
 ) {
 	'use strict';
 
@@ -95,7 +97,8 @@ define([
 				html += ' align-' + variables.align;
 			}
 
-			html += '">' + (variables.image || '<img alt="Captioned image placeholder"/>')
+			html += '">'
+				 + (variables.image || '<img alt="Captioned image placeholder"/>')
 				 + '<div class="caption"';
 
 			if (variables.width) {
@@ -118,20 +121,25 @@ define([
 		settings.captionedImageClass = 'aloha-captioned-image';
 	}
 
+	var alignmentToggleButtons;
 	var components = [];
 	function initializeComponents() {
-		var left = UiPlugin.getAdoptedComponent('alignLeft');
-		var right = UiPlugin.getAdoptedComponent('alignRight');
+		var left = Ui.getAdoptedComponent('alignLeft');
+		var right = Ui.getAdoptedComponent('alignRight');
 		var alignLeft = function () {
 			if (BlockManager._activeBlock) {
-				BlockManager._activeBlock.attr('align', 'left');
+				var alignment = BlockManager._activeBlock.attr('align');
+				BlockManager._activeBlock.attr('align',
+					('left' === alignment) ? 'none' : 'left');
 				return true;
 			}
 			return false;
 		};
 		var alignRight = function () {
 			if (BlockManager._activeBlock) {
-				BlockManager._activeBlock.attr('align', 'right');
+				var alignment = BlockManager._activeBlock.attr('align');
+				BlockManager._activeBlock.attr('align',
+					('right' === alignment) ? 'none' : 'right');
 				return true;
 			}
 			return false;
@@ -146,7 +154,7 @@ define([
 			};
 			components.push(left);
 		} else {
-			components.push(Ui.adopt('imgAlignLeft', Button, {
+			components.push(Ui.adopt('imgAlignLeft', ToggleButton, {
 				tooltip: 'Align left',
 				text: 'Align left',
 				click: alignLeft
@@ -162,12 +170,14 @@ define([
 			};
 			components.push(right);
 		} else {
-			components.push(Ui.adopt('imgAlignRight', Button, {
+			components.push(Ui.adopt('imgAlignRight', ToggleButton, {
 				tooltip: 'Align right',
 				text: 'Align right',
 				click: alignRight
 			}));
 		}
+
+		alignmentToggleButtons = components.slice();
 
 		components.push(Ui.adopt('imgAlignClear', Button, {
 			tooltip: 'Remove alignment',
@@ -178,6 +188,10 @@ define([
 				}
 			}
 		}));
+		var removeButton = Ui.getAdoptedComponent('imgAlignClear');
+		if (removeButton) {
+			removeButton.hide();
+		}
 	}
 
 	function getImageWidth($img) {
@@ -199,10 +213,37 @@ define([
 		return width;
 	}
 
+	var blockAlignment = {};
+
+	function getAlignmentButton(alignment) {
+		switch(alignment) {
+		case 'left':
+			return Ui.getAdoptedComponent('alignLeft');
+		case 'right':
+			return Ui.getAdoptedComponent('alignRight');
+		}
+		return null;
+	}
+
 	function showComponents() {
-		var j = components.length;
-		while (j--) {
-			components[j].foreground();
+		var i;
+		for (i = components.length - 1; i > 0; i--) {
+			components[i].foreground();
+		}
+
+		if (!Aloha.activeEditable || !BlockManager._activeBlock) {
+			return;
+		}
+
+		for (i = 0; i < alignmentToggleButtons.length; i++) {
+			alignmentToggleButtons[i].setState(false);
+		}
+
+		var alignment = BlockManager._activeBlock.attr('align');
+		var component = getAlignmentButton(alignment);
+
+		if (component) {
+			component.setState(true);
 		}
 	}
 
