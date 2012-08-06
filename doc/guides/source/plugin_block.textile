@@ -425,7 +425,7 @@ The block plugin will switch the current scope to a block-specific one whenever 
 
 h4. En/Disabling drag & drop for blocks 
 
-If a block is placed inside an editable, it can be drag/drop by default. If you want to prevent drag/drop behaviour for all blocks, add the following configuration option:
+If a block is placed inside an editable, it can be draged/dropped by default. If you want to prevent drag/drop behaviour for all blocks, add the following configuration option:
 
 <javascript>
 Aloha.settings.plugins.block.dragdrop = false;
