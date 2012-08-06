@@ -79,27 +79,28 @@ define([
 			var that = this;
 
 			// Register default block types
-			BlockManager.registerBlockType('DebugBlock', block.DebugBlock);
-			BlockManager.registerBlockType('DefaultBlock', block.DefaultBlock);
+			BlockManager.registerBlockType( 'DebugBlock', block.DebugBlock );
+			BlockManager.registerBlockType( 'DefaultBlock', block.DefaultBlock );
 
 			// Register default editors
-			EditorManager.register('string', editor.StringEditor);
-			EditorManager.register('number', editor.NumberEditor);
-			EditorManager.register('url', editor.UrlEditor);
-			EditorManager.register('email', editor.EmailEditor);
-			EditorManager.register('select', editor.SelectEditor);
-			EditorManager.register('button', editor.ButtonEditor);
+			EditorManager.register( 'string', editor.StringEditor );
+			EditorManager.register( 'number', editor.NumberEditor );
+			EditorManager.register( 'url', editor.UrlEditor );
+			EditorManager.register( 'email', editor.EmailEditor );
+			EditorManager.register( 'select', editor.SelectEditor );
+			EditorManager.register( 'button', editor.ButtonEditor );
 
 			// register content handler for block plugin
-			ContentHandlerManager.register('block', BlockContentHandler);
+			ContentHandlerManager.register( 'block', BlockContentHandler );
 
+			BlockManager.setDragDropState( that.isDragDropEnabled() );
 			BlockManager.registerEventHandlers();
 			BlockManager.initializeBlockLevelDragDrop();
 
-			Aloha.bind('aloha-ready', function() {
+			Aloha.bind( 'aloha-ready', function() {
 				// When Aloha is fully loaded, we initialize the blocks.
 				that._createBlocks();
-				if (that.settings['sidebarAttributeEditor'] !== false) {
+				if ( that.settings['sidebarAttributeEditor'] !== false ) {
 					SidebarAttributeEditor.init();
 				}
 			});
@@ -108,14 +109,13 @@ define([
 			this.createButtons();
 
 			// set the dropzones for the initialized editable
-			Aloha.bind('aloha-editable-created', function(e, editable) {
-				that._setDragDropStateForEditable(editable.obj, that.isDragDropEnabled());
-				that.setDropzones(editable.obj);
+			Aloha.bind( 'aloha-editable-created', function(e, editable) {
+				that.setDropzones( editable.obj );
 			});
 
 			// apply specific configuration if an editable has been activated
-			Aloha.bind('aloha-editable-activated', function (e, params) {
-				that.applyButtonConfig(params.editable.obj);
+			Aloha.bind( 'aloha-editable-activated', function (e, params) {
+				that.applyButtonConfig( params.editable.obj );
 			});
 
 		},
@@ -128,7 +128,7 @@ define([
 		 */
 		applyButtonConfig: function (obj) {
 
-			var config = this.getEditableConfig(obj);
+			var config = this.getEditableConfig( obj );
 
 			// toggle drag & drop option can be set as
 			// config: {'toggeleDragdrop': true} or
@@ -141,19 +141,19 @@ define([
 								config.toggleDragdrop == '1'    
 			};
 
-			if(toggleDragdropConfigured() && this.isDragDropEnabled()){
-				this._toggleDragDropButton.show(true);
-				this._toggleDragDropButton.setState(obj.data("block-dragdrop"));
+			if ( toggleDragdropConfigured() && this.isDragDropEnabled() ){
+				this._toggleDragDropButton.show( true );
+				this._toggleDragDropButton.setState( obj.data("block-dragdrop") );
 			} else {
-				this._toggleDragDropButton.show(false);
+				this._toggleDragDropButton.show( false );
 			}
 		},
 
 		createButtons: function () {
 			var that = this;
 
-			this._toggleDragDropButton = Ui.adopt("toggleDragDrop", ToggleButton, {
-				tooltip: i18n.t('button.toggledragdrop.tooltip'),
+			this._toggleDragDropButton = Ui.adopt( "toggleDragDrop", ToggleButton, {
+				tooltip: i18n.t( 'button.toggledragdrop.tooltip' ),
 				icon: 'aloha-icon aloha-icon-toggledragdrop',
 				scope: 'Aloha.continuoustext',
 				click: function() {
@@ -169,13 +169,14 @@ define([
 		 */
 		setDropzones: function (editable) {
 			var that = this;
-			var config = that.getEditableConfig(editable) || that.settings.dropzones;
+			var config = that.getEditableConfig(editable);
+			var dropzones = (config && config.dropzones) || that.settings.dropzones;
 
-			if (config && config.dropzones) {
-				editable.data('block-dropzones', config.dropzones);	
+			if ( dropzones ) {
+				editable.data( 'block-dropzones', dropzones );	
 			} else {
 				// if dropzones are undefined all editables should be dropzones
-				editable.data('block-dropzones', [".aloha-editable"]);	
+				editable.data( 'block-dropzones', [".aloha-editable"] );	
 			}
 		},
 
@@ -184,7 +185,7 @@ define([
 		 * @return boolean 
 		 */
 		isDragDropEnabled: function() {
-			if (this.settings && typeof this.settings.dragdrop !== "undefined") {
+			if ( this.settings && typeof this.settings.dragdrop !== "undefined" ) {
 				// Normalize config
 				return (
 					this.settings.dragdrop === true   ||
@@ -204,30 +205,30 @@ define([
 			if (!this.settings.defaults) {
 				this.settings.defaults = {};
 			}
-			jQuery.each(this.settings.defaults, function(selector, instanceDefaults) {
-				jQuery(selector).alohaBlock(instanceDefaults);
+			jQuery.each( this.settings.defaults, function(selector, instanceDefaults) {
+				jQuery( selector ).alohaBlock( instanceDefaults );
 			});
 		},
 
 		/**
 		 * Set the drag & drop state for the given editable.
 		 */
-		_setDragDropStateForEditable: function(editable, state) {
-			editable.data("block-dragdrop", state);
+		_setDragDropStateForEditable: function($editable, state) {
+			$editable.data( "block-dragdrop", state );
 
-			if (jQuery(editable.hasClass("ui-sortable"))) {
-				jQuery(editable).sortable("option", "disabled", !state);	
+			if ( $editable.hasClass("ui-sortable") ) {
+				$editable.sortable( "option", "disabled", !state );	
 			}
 
-			jQuery(editable).find(".aloha-block.ui-draggable").each(function() {
-				jQuery(this).draggable("option", "disabled", !state);	
+			$editable.find( ".aloha-block.ui-draggable" ).each( function() {
+				jQuery( this ).draggable( "option", "disabled", !state );	
 			});
 
-			jQuery(editable).find(".aloha-block-handle").each(function() {
+			$editable.find( ".aloha-block-handle" ).each( function() {
 				if (state) {
-					jQuery(this).addClass("aloha-block-draghandle");	
+					jQuery( this ).addClass( "aloha-block-draghandle" );	
 				} else {
-					jQuery(this).removeClass("aloha-block-draghandle");	
+					jQuery( this ).removeClass( "aloha-block-draghandle" );	
 				}
 			});
 		}
@@ -248,12 +249,12 @@ define([
 	 */
 	jQuery.fn.alohaBlock = function(instanceDefaults) {
 		instanceDefaults = instanceDefaults || {};
-		jQuery(this).each(function(index, element) {
-			BlockManager._blockify(element, instanceDefaults);
+		jQuery( this ).each( function(index, element) {
+			BlockManager._blockify( element, instanceDefaults );
 		});
 
 		// Chain
-		return jQuery(this);
+		return jQuery( this );
 	};
 
 	// jQuery.fn.mahaloBlock = TODO
