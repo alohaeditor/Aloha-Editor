@@ -807,16 +807,18 @@ function(Aloha, jQuery, Class, Arrays, Strings, Range, Engine, console, PubSub, 
 						Aloha.activeEditable.obj.focus();
 					}
 
-					Engine.copyAttributes(rangeObject.startContainer, newMarkup[0]);
-					jQuery(rangeObject.startContainer).after(newMarkup[0]).remove();
+					if (Engine.isEditable(rangeObject.startContainer)) {
+						Engine.copyAttributes(rangeObject.startContainer, newMarkup[0]);
+						jQuery(rangeObject.startContainer).after(newMarkup[0]).remove();
+					} else if (Engine.isEditingHost(rangeObject.startContainer)) {
+						jQuery(rangeObject.startContainer).append(newMarkup[0]);
+						Engine.ensureContainerEditable(newMarkup[0]);
+					}
 
-					rangeObject.startContainer = newMarkup[0];
-					rangeObject.endContainer = newMarkup[0];
-					rangeObject.startOffset = 0;
-					rangeObject.endOffset = 0;
-
-					rangeObject.update();
-					rangeObject.select();
+					backupRangeObject.startContainer = newMarkup[0];
+					backupRangeObject.endContainer = newMarkup[0];
+					backupRangeObject.startOffset = 0;
+					backupRangeObject.endOffset = 0;
 					return;
 				} else {
 					this.applyMarkup(rangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator, {setRangeObject2NewMarkup: true});
