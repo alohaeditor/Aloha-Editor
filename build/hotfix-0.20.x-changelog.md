@@ -47,3 +47,6 @@
 - **BUG**: Fixed some random and weird selection problems in IE7, where some
 	actions (like Enter behaviour) were not performed on the correct cursor
 	position. Sometimes there also occurred some JS errors.
+	
+- **BUG**: Fixed Transforming an empty contenteditable into a list, which
+	caused the contenteditable container to disappear.

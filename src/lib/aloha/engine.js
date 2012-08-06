@@ -8669,7 +8669,9 @@ return {
 	copyAttributes: copyAttributes,
 	createEndBreak: createEndBreak,
 	isEndBreak: isEndBreak,
-	ensureContainerEditable: ensureContainerEditable
+	ensureContainerEditable: ensureContainerEditable,
+	isEditingHost: isEditingHost,
+	isEditable: isEditable
 }
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker
