@@ -14,30 +14,22 @@
 define([
 	'jquery',
 	'aloha/core',
-	'aloha/selection',
 	'aloha/plugin',
 	'block/block',
 	'block/blockmanager',
 	'ui/ui',
-	'ui/button',
 	'ui/toolbar',
-	'align/align-plugin',
-	'aloha/console',
 	'util/maps',
 	// FIXME: use of the css require plugin is deprecated
 	'css!captioned-image/css/captioned-image.css'
 ], function (
 	$,
 	Aloha,
-	Selection,
 	Plugin,
 	Block,
 	BlockManager,
 	Ui,
-	Button,
 	Toolbar,
-	AlignPlugin,
-	Console,
 	Maps
 ) {
 	'use strict';
@@ -267,7 +259,8 @@ define([
 			}
 
 			// Now replace the entire block with the original image, with
-			// potentially updated data-caption, data-align and class attributes.
+			// potentially updated data-caption, data-align and class
+			// attributes.
 			block.$element.replaceWith($img);
 		}
 	}
@@ -361,7 +354,6 @@ define([
 					}
 				});
 			}, function (error) {
-				Console.error(error);
 				postProcessCallback();
 			});
 		},
@@ -377,7 +369,6 @@ define([
 				that._processRenderedData(data);
 				postProcessCallback();
 			}, function (error) {
-				Console.error(error);
 				postProcessCallback();
 			});
 		},
@@ -391,8 +382,9 @@ define([
 			this.$element.removeClass('align-left align-right align-center')
 			             .addClass('align-' + this.attr('align'));
 
-			// Indicate which CaptionedImage blocks have an empty caption, so we
-			// can hide their caption areas whenever these blocks are not active.
+			// Indicate which CaptionedImage blocks have an empty caption, so
+			// we can hide their caption areas whenever these blocks are not
+			// active.
 			if (this.attr('caption')) {
 				this.$element.removeClass('aloha-captioned-image-block-empty-caption');
 			} else {
