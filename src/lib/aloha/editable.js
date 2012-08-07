@@ -90,7 +90,7 @@ define( [
 		 */
 		stringFizzleSizzle: function (content) {
 			var replaced = content;
-			while (content !== (replaced = content.replace(/(<[^>]*?)(nodeIndex|sizcache|sizset)[\w\d]*="[^"]*"/gi, '$1'))) {
+			while (content !== (replaced = content.replace(/(<[^>]*?)(nodeIndex|sizcache|sizset|jquery)[\w\d]*="[^"]*"/gi, '$1'))) {
 				content = replaced;
 			}
 			return content;
