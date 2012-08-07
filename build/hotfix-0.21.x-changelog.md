@@ -15,3 +15,7 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: Addition to the API
 	Aloha.Editable.setContentSerializer() was added to the API.
 	Aloha.Editable.getContentSerializer() was implemented and added to the API.
+
+
+- **BUG**: image-plugin: The reset image button function was fixed. Previously a javascript error occured when the button was pressed.
+
