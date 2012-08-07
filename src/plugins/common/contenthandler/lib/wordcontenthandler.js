@@ -271,8 +271,9 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			
 			// unwrap empty tags
 			// do not remove them here because of eg. spaces wrapped in spans which are needed
+			// we don't want to unwrap empty table cells
 			content.find('*').filter( function() {
-				return jQuery.trim(jQuery(this).text()) == '';
+				return jQuery.trim(jQuery(this).text()) == '' && !jQuery(this).is("td");
 			}).contents().unwrap();
 			
 			// unwrap all spans
@@ -288,9 +289,9 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			// eg. footnotes are wrapped in divs. unwrap them.
 			content.find('div').contents().unwrap();
 			
-			// remove empty tags
+			// remove empty tags (we don't want to remove empty table cells)
 			content.find('*').filter( function() {
-			    return jQuery.trim(jQuery(this).text()) == '';
+			    return jQuery.trim(jQuery(this).text()) == '' && !jQuery(this).is("td");
 			}).remove();
 			
 		},
