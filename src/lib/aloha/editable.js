@@ -992,4 +992,16 @@ define( [
 	Aloha.Editable.setContentSerializer = function (serializerFunction) {
 		contentSerializer = serializerFunction;
 	};
+
+	/**
+	 * Gets the content serializer function.
+	 *
+	 * @see Aloha.Editable.setContentSerializer()
+	 * @api
+	 * @return {!Function}
+	 *        The serializer function.
+	 */
+	Aloha.Editable.getContentSerializer = function () {
+		return contentSerializer;
+	};
 });
