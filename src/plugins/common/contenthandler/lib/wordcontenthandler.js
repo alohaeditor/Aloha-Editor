@@ -92,7 +92,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			bulletClass = 'aloha-list-bullet';
 
 			// first step is to find all paragraphs which will be converted into list elements and mark them by adding the class 'aloha-list-element'
-			detectionFilter = 'p.MsoListParagraphCxSpFirst,p.MsoListParagraph,p span';
+			detectionFilter = 'p.MsoListParagraphCxSpFirst,p.MsoListParagraphCxSpMiddle,p.MsoListParagraphCxSpLast,p.MsoListParagraph,p span';
 			paragraphs = content.find(detectionFilter);
 			paragraphs.each(function() {
 				var jqElem = jQuery(this),
@@ -144,7 +144,8 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 
 			// no detect all marked paragraphs and transform into lists
 			detectionFilter = 'p.' + listElementClass;
-			negateDetectionFilter = ':not('+detectionFilter+')';
+			//We also have to include font because if IE9
+			negateDetectionFilter = ':not('+detectionFilter+', font)';
 			paragraphs = content.find(detectionFilter);
 
 			if (paragraphs.length > 0) {
@@ -162,6 +163,10 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 					// lists by comparing the left margin)
 					nestLevel = [];
 					margin = parseFloat(jqElem.css('marginLeft'));
+					// Fix for not found margin on level 0
+					if (isNaN(margin)) {
+						margin = 0;
+					}
 					// this array will hold all ul/ol elements
 					lists = [];
 					// get all following list elements
@@ -194,6 +199,11 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 					following.each(function() {
 						var jqElem = jQuery(this),
 							newMargin, jqNewList;
+						
+						if (jqElem.is('font')) {
+							//Fix for IE9
+							return;
+						}
 
 						// remove all font tags
 						jqElem.find('font').each(function() {
@@ -201,7 +211,11 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 						});
 						// check the new margin
 						newMargin = parseFloat(jqElem.css('marginLeft'));
-
+						// Fix for not found margin on level 0
+						if (isNaN(newMargin)) {
+							newMargin = 0;
+						}
+						
 						// get the first span
 						firstSpan = jQuery(jqElem.find('span.' + bulletClass));
 						if (firstSpan.length === 0) {
