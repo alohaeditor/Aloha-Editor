@@ -774,29 +774,30 @@ define( [
 		getContents: function (asObject) {
 			var raw = this.obj.html();
 			var cache = editableContentCache[this.getId()];
-			if (cache && raw === cache.raw) {
-				return asObject ? cache.elements : cache.clean;
+
+			if (!cache || raw !== cache.raw) {
+				var $clone = this.obj.clone(false);
+				$clone.find( '.aloha-cleanme' ).remove();
+				this.removePlaceholder($clone);
+				PluginManager.makeClean($clone);
+				makeClean($clone);
+				$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
+					contenthandler: Aloha.settings.contentHandler.getContents,
+					command: 'getContents'
+				}) + '</div>');
+				cache = editableContentCache[this.getId()] = {};
+				cache.raw = raw;
+				cache.element = $clone;
 			}
 
-			var $clone = this.obj.clone(false);
-
-			$clone.find( '.aloha-cleanme' ).remove();
-			this.removePlaceholder($clone);
-			PluginManager.makeClean($clone);
-
-			makeClean($clone);
-
-			$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
-				contenthandler: Aloha.settings.contentHandler.getContents,
-				command: 'getContents'
-			}) + '</div>');
-
-			cache = editableContentCache[this.getId()] = {};
-			cache.raw = raw;
-			cache.clean = contentSerializer($clone[0]);
-			cache.elements = $clone.contents();
-
-			return asObject ? cache.elements : cache.clean;
+			if (asObject) {
+				return cache.element.clone().contents();
+			} else {
+				if (null == cache.serialized) {
+					cache.serialized = contentSerializer(cache.element[0]);
+				}
+				return cache.serialized;
+			}
 		},
 
 		/**
@@ -973,7 +974,7 @@ define( [
 	} );
 
 	/**
-	 * Sets the serializer function to be used for the contents of all editables.
+	 * Sets the content serializer function.
 	 *
 	 * The default content serializer will just call the jQuery.html()
 	 * function on the editable element (which gets the innerHTML property).
@@ -982,12 +983,13 @@ define( [
 	 * of editable.getContents() for all editables that have been or
 	 * will be constructed.
 	 *
-	 * @param serializerFunction
+	 * @param {!Function} serializerFunction
 	 *        A function that accepts a DOM element and returns the serialized
 	 *        XHTML of the element contents (excluding the start and end tag of
 	 *        the passed element).
+	 * @api
 	 */
-	Aloha.Editable.setContentSerializer = function( serializerFunction ) {
+	Aloha.Editable.setContentSerializer = function (serializerFunction) {
 		contentSerializer = serializerFunction;
 	};
-} );
+});

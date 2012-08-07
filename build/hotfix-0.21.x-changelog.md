@@ -8,3 +8,6 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUG**: Editable.getContents(true) doesn't make defensive copies
+	Invoking Editable.getContents(true) multiple times in a row would return
+	the same object, causing unexpected behaviour when client code modified that object.
