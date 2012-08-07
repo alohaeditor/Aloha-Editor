@@ -121,7 +121,6 @@ define([
 		settings.captionedImageClass = 'aloha-captioned-image';
 	}
 
-	var alignmentToggleButtons;
 	var components = [];
 	function initializeComponents() {
 		var left = Ui.getAdoptedComponent('alignLeft');
@@ -176,22 +175,6 @@ define([
 				click: alignRight
 			}));
 		}
-
-		alignmentToggleButtons = components.slice();
-
-		components.push(Ui.adopt('imgAlignClear', Button, {
-			tooltip: 'Remove alignment',
-			text: 'Remove alignment',
-			click: function () {
-				if (BlockManager._activeBlock) {
-					BlockManager._activeBlock.attr('align', 'none');
-				}
-			}
-		}));
-		var removeButton = Ui.getAdoptedComponent('imgAlignClear');
-		if (removeButton) {
-			removeButton.hide();
-		}
 	}
 
 	function getImageWidth($img) {
@@ -227,7 +210,9 @@ define([
 
 	function showComponents() {
 		var i;
-		for (i = components.length - 1; i > 0; i--) {
+		for (i = 0; i < components.length; i++) {
+			components[i].visible = false; // Force the component to be shown.
+			components[i].show();
 			components[i].foreground();
 		}
 
@@ -235,8 +220,8 @@ define([
 			return;
 		}
 
-		for (i = 0; i < alignmentToggleButtons.length; i++) {
-			alignmentToggleButtons[i].setState(false);
+		for (i = 0; i < components.length; i++) {
+			components[i].setState(false);
 		}
 
 		var alignment = BlockManager._activeBlock.attr('align');
