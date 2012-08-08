@@ -18,6 +18,7 @@ define([
 	'block/block',
 	'block/blockmanager',
 	'ui/ui',
+	'ui/toggleButton',
 	'ui/toolbar',
 	'util/maps',
 	// FIXME: use of the css require plugin is deprecated
@@ -29,6 +30,7 @@ define([
 	Block,
 	BlockManager,
 	Ui,
+	ToggleButton,
 	Toolbar,
 	Maps
 ) {
@@ -70,9 +72,9 @@ define([
 		}\
 	';
 
-	var settings = Aloha.settings &&
+	var settings = ((Aloha.settings &&
 	               Aloha.settings.plugins &&
-	               Aloha.settings.plugins.captionedImage;
+	               Aloha.settings.plugins.captionedImage) || false);
 
 	if (settings.defaultCSS !== false) {
 		$('<style type="text/css">').text(defaultRenderCSS).appendTo('head:first');
