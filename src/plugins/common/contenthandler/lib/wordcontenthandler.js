@@ -144,8 +144,8 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 
 			// no detect all marked paragraphs and transform into lists
 			detectionFilter = 'p.' + listElementClass;
-			//We also have to include font because if IE9
-			negateDetectionFilter = ':not('+detectionFilter+', font)';
+			// We also have to include font because if IE9
+			negateDetectionFilter = ':not(' + detectionFilter + ', font)';
 			paragraphs = content.find(detectionFilter);
 
 			if (paragraphs.length > 0) {
