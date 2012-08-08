@@ -1,17 +1,17 @@
 # including "ui/settings" has weird side effects, namely most of the buttons don't load
 menuSettings = [
   text: "Format"
-  subMenu: [ "bold", "italic", "underline", "strikethrough", "subscript", "superscript", "quote", '', {text: 'Paragraph Styles', subMenu: ["indentList", "outdentList"] }, { text: "Align", subMenu: [ "alignLeft", "alignCenter", "alignRight", "alignJustify"] }, "formatLink", "formatAbbr", "formatNumeratedHeaders", "toggleMetaView", "wailang", "toggleFormatlessPaste" ]
+  subMenu: [ "bold", "italic", "underline", "subscript", "superscript" ]
 ,
   text: "Insert"
-  subMenu: [ "characterPicker", "insertLink", "insertImage", 'insertFigure', "insertAbbr", "insertToc", "insertHorizontalRule", "insertTag" ]
+  subMenu: [ "insertImage", 'insertFigure' ]
 ,
   text: "Table"
   subMenu: [ "createTable", '', {text: "Cell", subMenu: ["mergecells", "splitcells", "tableCaption", "tableSummary", "formatTable"]}, { text: "Row", subMenu: ["addrowbefore", "addrowafter", "deleterows", "rowheader", "mergecellsRow", "splitcellsRow", "formatRow"]}, '', { text: "Column", subMenu: ["addcolumnleft", "addcolumnright", "deletecolumns", "columnheader", "mergecellsColumn", "splitcellsColumn", "formatColumn"] } ]
 ]
 
 toolbarSettings = [
- 'bold', 'italic', 'underline', '', 'insertLink', 'insertImage', 'insertFigure', '', 'orderedList', 'unorderedList', 'outdentList', 'indentList', '', "alignLeft", "alignCenter", "alignRight", "alignJustify"
+ 'bold', 'italic', 'underline', '', 'insertImage', 'insertFigure'
 ]
 
 define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmenu/appmenu', "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, Ribbon, appmenu, i18n, i18nCore) ->
