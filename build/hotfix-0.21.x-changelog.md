@@ -19,3 +19,6 @@ All changes are categorized into one of the following keywords:
 
 - **BUG**: image-plugin: The reset image button function was fixed. Previously a javascript error occured when the button was pressed.
 
+- **BUG**: wai-lang-plugin: language annotations were not enhanced
+	The short name ('de') of language annotations was displayed
+	instead of of the full name from the repository ('German').
