@@ -10,8 +10,8 @@
  * Provides a set of language codes and images
  */
 
-define(['aloha', 'aloha/jquery', 'flag-icons/flag-icons-plugin', 'wai-lang/wai-lang-plugin'],
-function (Aloha, jQuery, FlagIcons) {
+define(['aloha', 'aloha/jquery', 'flag-icons/flag-icons-plugin', 'aloha/console', 'wai-lang/wai-lang-plugin'],
+function (Aloha, jQuery, FlagIcons, console) {
 	'use strict';
 
 	return new (Aloha.AbstractRepository.extend({
@@ -20,6 +20,16 @@ function (Aloha, jQuery, FlagIcons) {
 		 * Set of language codes
 		 */
 		languageCodes: [],
+		
+		/**
+		 * Set default locale
+		 */
+		locale: 'de',
+		
+		/**
+		 * Set default iso
+		 */
+		iso: 'iso639-1',
 
 		/**
 		 * Whether to show flags or not
@@ -39,22 +49,16 @@ function (Aloha, jQuery, FlagIcons) {
 			var iso = waiLang.iso639;
 
 			if (locale !== 'de') {
-				locale = 'en';
+				this.locale = 'en';
 			}
 
 			if (iso !== 'iso639-1') {
-				iso = 'iso639-2';
+				this.iso = 'iso639-2';
 			}
 
 			this.flags = waiLang.flags;
 
-			// Load the language codes
-			jQuery.ajax({
-				url      : Aloha.getPluginUrl('wai-lang') + '/lib/' + iso + '-' + locale + '.json',
-				dataType : 'json',
-				success  : jQuery.proxy(this.storeLanguageCodes, this),
-				error    : this.errorHandler
-			});
+			
 
 		    this.repositoryName = 'WaiLanguages';
 		},
@@ -70,7 +74,7 @@ function (Aloha, jQuery, FlagIcons) {
 		 * This method will invoked if a error occurres while loading data via ajax
 		 */
 		errorHandler: function (text, error) {
-			//TODO log error here
+			console.log("error", this, "Error while loading languages. " + text);
 		},
 
 		/**
@@ -98,31 +102,55 @@ function (Aloha, jQuery, FlagIcons) {
 				that.languageCodes.push(new Aloha.RepositoryDocument(el));
 			});
 		},
-
+		
 		/**
 		 * Searches a repository for object items matching query if objectTypeFilter.
 		 * If none found it returns null.
 		 * Not supported: filter, orderBy, maxItems, skipcount, renditionFilter
 		 */
-		query: function (p, callback) {
+		_searchInLanguageCodes: function (p, callback) {
 			var query = new RegExp('^' + p.queryString, 'i'),
-			    i,
-			    d = [],
-			    matchesName,
-			    matchesType,
-			    currentElement;
+		    i,
+		    d = [],
+		    matchesName,
+		    matchesType,
+		    currentElement;
 
 			for (i = 0; i < this.languageCodes.length; ++i) {
 				currentElement = this.languageCodes[i];
 				matchesName = (!p.queryString || currentElement.name.match(query));
 				matchesType = (!p.objectTypeFilter || (!p.objectTypeFilter.length) || jQuery.inArray(currentElement.type, p.objectTypeFilter) > -1);
-
+	
 				if (matchesName && matchesType) {
 					d.push(currentElement);
 				}
 			}
-
+	
 			callback.call(this, d);
+		},
+
+		/**
+		 * Fetches the languageCodes if they are not already loaded and
+		 * searches the collection with the given query.
+		 * If no matches are found it returns null.
+		 */
+		query: function (p, callback) {
+			var that = this;
+			
+			if (this.languageCodes.length > 0) {
+				this._searchInLanguageCodes(p, callback);
+			} else {
+				// Load the language codes
+				jQuery.ajax({
+					url      : Aloha.getPluginUrl('wai-lang') + '/lib/' + this.iso + '-' + this.locale + '.json',
+					dataType : 'json',
+					success  : function (data) {
+						that.storeLanguageCodes(data);
+						that._searchInLanguageCodes(p, callback);
+					},
+					error    : this.errorHandler
+				});
+			}
 		},
 
 		/**
