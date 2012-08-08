@@ -24,9 +24,15 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(
-[ 'aloha/core', 'jquery', 'aloha/contenthandlermanager', 'aloha/console', 'vendor/sanitize' ],
-function( Aloha, jQuery, ContentHandlerManager, console ) {
+define([
+	'aloha/core',
+	'jquery',
+	'aloha/contenthandlermanager',
+	'aloha/plugin',
+	'aloha/console',
+	'vendor/sanitize'
+],
+function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 	"use strict";
 	
 	var sanitize;
@@ -89,7 +95,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			'br': ['class'],
 			'col': ['span', 'width'],
 			'colgroup': ['span', 'width'],
-			'img': ['align', 'alt', 'height', 'src', 'title', 'width', 'class'],
+			'img': ['align', 'alt', 'height', 'src', 'title', 'width', 'class', 'data-caption', 'data-align', 'data-width', 'data-original-image'],
 			'ol': ['start', 'type'],
 			'q': ['cite'],
 			'table': ['summary', 'width'],
@@ -107,13 +113,14 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		}
 	}
 
-	function initSanitize () {
+	function initSanitize (configAllows, configType) {
 		var 
 			filter = [ 'restricted', 'basic', 'relaxed' ],
 			config = Aloha.defaults.supports; // @TODO: needs to be implemented into all plugins
 		
 		// @TODO think about Aloha.settings.contentHandler.sanitize name/options
-		if ( Aloha.settings.contentHandler.sanitize && jQuery.inArray(Aloha.settings.contentHandler.sanitize, filter) > -1 ) {
+		if (Aloha.settings.contentHandler.sanitize &&
+			jQuery.inArray(Aloha.settings.contentHandler.sanitize, filter) > -1) {
 			config = Aloha.defaults.sanitize[Aloha.settings.contentHandler.sanitize];
 		} else {
 			// use relaxed filter by default
@@ -121,15 +128,19 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		}
 		
 		// @TODO move to Aloha.settings.contentHandler.sanitize.allows ?
-		if ( Aloha.settings.contentHandler.allows ) {
+		if (Aloha.settings.contentHandler.allows) {
 			config = Aloha.settings.contentHandler.allows;
+		}
+		
+		if (configAllows) {
+			config = configAllows;
 		}
 
 		// add a filter to stop cleaning elements with contentEditable "false"
 		config.filters = [function( elem ) {
 			return elem.contentEditable != "false";
 		}];
-		sanitize = new Sanitize( config );
+		sanitize = new Sanitize(config);
 	}
 
 	var SanitizeContentHandler = ContentHandlerManager.createHandler({
@@ -144,8 +155,29 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 				return content;
 			}
 
-			if ( typeof sanitize === 'undefined' ) {
-			   initSanitize();
+			var sanitizeConfig,
+				contentHandlerConfig;
+
+			if (Aloha.activeEditable) {
+				// individual sanitize config per editable -- should support merging of configs from other plugins ...
+				if ( Aloha.settings.contentHandler.sanitize ) {
+					contentHandlerConfig = Aloha.settings.contentHandler.sanitize;
+				}
+				var containerId = Aloha.settings.contentHandler.sanitize['#' + Aloha.activeEditable.getId()];
+				if (typeof containerId !== 'undefined') {
+					sanitizeConfig = contentHandlerConfig;
+				} else {
+					var containerClasses = Aloha.activeEditable.obj.attr('class').split(' ');
+					for ( var i=0; i < containerClasses.length; i++) {
+						if (typeof contentHandlerConfig['.' + containerClasses[i]] !== 'undefined') {
+							sanitizeConfig = contentHandlerConfig['.' + containerClasses[i]];
+						}
+					}
+				}
+			}
+
+			if ( typeof sanitize === 'undefined' || typeof sanitizeConfig !== 'undefined') {
+				initSanitize( sanitizeConfig );
 			}
 
 			if ( typeof content === 'string' ){
