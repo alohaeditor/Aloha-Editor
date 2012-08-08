@@ -20,7 +20,6 @@ define([
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/toolbar',
-	'ui/toggleButton',
 	'util/maps',
 	'align/align-plugin', // Needed to ensure that we have "alignLeft", and
 	                      // "alignRight" components.
@@ -35,7 +34,6 @@ define([
 	Ui,
 	ToggleButton,
 	Toolbar,
-	ToggleButton,
 	Maps
 ) {
 	'use strict';
