@@ -31,7 +31,8 @@ define([
 	'ui/toggleButton',
 	'i18n!align/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'jquery'
+	'jquery',
+	'PubSub'
 ], function(
 	Aloha,
     Plugin,
@@ -39,7 +40,8 @@ define([
     ToggleButton,
     i18n,
     i18nCore,
-    jQuery
+    jQuery,
+    PubSub
 ) {
 	'use strict';
 
@@ -88,12 +90,13 @@ define([
 				that.applyButtonConfig(params.editable.obj);
 			});
 
-			// add the event handler for selection change
-		    Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
-		    	if (Aloha.activeEditable) {
-		    		that.buttonPressed(rangeObject);
-		    	}
-		    });
+			PubSub.sub('aloha.selection.context-change', function (message) {
+				var rangeObject = message.range;
+
+				if (Aloha.activeEditable) {
+					that.buttonPressed(rangeObject);
+				}
+			});
 		},
 
 		buttonPressed: function (rangeObject) {
