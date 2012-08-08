@@ -20,7 +20,10 @@ define([
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/toolbar',
+	'ui/toggleButton',
 	'util/maps',
+	'align/align-plugin', // Needed to ensure that we have "alignLeft", and
+	                      // "alignRight" components.
 	// FIXME: use of the css require plugin is deprecated
 	'css!captioned-image/css/captioned-image.css'
 ], function (
@@ -32,6 +35,7 @@ define([
 	Ui,
 	ToggleButton,
 	Toolbar,
+	ToggleButton,
 	Maps
 ) {
 	'use strict';
@@ -193,7 +197,7 @@ define([
 	var blockAlignment = {};
 
 	function getAlignmentButton(alignment) {
-		switch(alignment) {
+		switch (alignment) {
 		case 'left':
 			return Ui.getAdoptedComponent('alignLeft');
 		case 'right':
