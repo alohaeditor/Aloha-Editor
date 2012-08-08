@@ -1,6 +1,7 @@
 (function() {
+  var __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(["aloha", "aloha/plugin", 'block/block', "block/blockmanager"], function(Aloha, Plugin, block, BlockManager, i18n, i18nCore) {
+  define(["aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui'], function(Aloha, Plugin, block, BlockManager, Ui, i18n, i18nCore) {
     /*
        Monkey patch a couple of things in Aloha so figures can be draggable blocks
     */    block.AbstractBlock.prototype._postProcessElementIfNeeded = function() {
@@ -37,34 +38,29 @@
     */
     return Plugin.create("figure", {
       init: function() {
-        var EditableImageBlock, editable, initializeBlocks, _i, _len, _ref;
-        EditableImageBlock = block.AbstractBlock.extend({
+        var FigureBlock, editable, initializeEditable, initializeFigures, _i, _len, _ref;
+        Ui.adopt('insertFigure', {
+          isInstance: function() {
+            return false;
+          }
+        }, {
+          tooltip: 'Create Figure',
+          click: function(evt) {
+            var markup, rangeObject;
+            console.log('sdkjfh');
+            markup = jQuery("<figure><span class='media'><img src='" + (Aloha.getPluginUrl('image')) + "/img/blank.jpg'/></span><figcaption>Enter Caption Here</figcaption></figure>");
+            rangeObject = Aloha.Selection.getRangeObject();
+            GENTICS.Utils.Dom.insertIntoDOM(markup, rangeObject, jQuery(Aloha.activeEditable.obj));
+            markup.alohaBlock({
+              'aloha-block-type': 'FigureBlock'
+            });
+            return initializeFigures(markup);
+          }
+        });
+        FigureBlock = block.AbstractBlock.extend({
           title: 'Image',
-          getSchema: function() {
-            return {
-              'image': {
-                type: 'string',
-                label: 'Image URI'
-              },
-              'position': {
-                type: 'select',
-                label: 'Position',
-                values: [
-                  {
-                    key: '',
-                    label: 'No Float'
-                  }, {
-                    key: 'left',
-                    label: 'Float left'
-                  }, {
-                    key: 'right',
-                    label: 'Float right'
-                  }
-                ]
-              }
-            };
-          },
           init: function($element, postProcessFn) {
+            $element.contentEditable(true);
             this.attr('image', $element.find('img').attr('src'));
             return postProcessFn();
           },
@@ -78,21 +74,55 @@
             }
             $element.find('img').attr('src', this.attr('image'));
             return postProcessFn();
+          },
+          _onElementClickHandler: function() {
+            return console.log('Ignoring figure click');
+          },
+          _preventSelectionChangedEventHandler: function(evt) {
+            console.log('Ignoring figure mousedown/focus/something');
+            return window.setTimeout((function() {
+              return jQuery(this).trigger('focus');
+            }), 1);
           }
         });
-        BlockManager.registerBlockType('EditableImageBlock', EditableImageBlock);
-        initializeBlocks = function($editable) {
-          return $editable.find('figure:not(.aloha-block)').alohaBlock({
-            'aloha-block-type': 'EditableImageBlock'
-          }).find('figcaption').aloha();
+        BlockManager.registerBlockType('FigureBlock', FigureBlock);
+        initializeFigures = function($figures) {
+          return $figures.find('img').on('drop', function(dropEvent) {
+            var dt, img, readFile;
+            img = jQuery(dropEvent.target);
+            dropEvent.preventDefault();
+            readFile = function(file) {
+              var majorType, minorType, reader, _ref;
+              if (file != null) {
+                _ref = file.type.split("/"), majorType = _ref[0], minorType = _ref[1];
+                reader = new FileReader();
+                if (majorType === "image") {
+                  reader.onload = function(loadEvent) {
+                    return img.attr('src', loadEvent.target.result);
+                  };
+                  return reader.readAsDataURL(file);
+                }
+              }
+            };
+            if ((dt = dropEvent.originalEvent.dataTransfer) != null) {
+              if (__indexOf.call(dt.types, 'Files') >= 0) {
+                return readFile(dt.files[0]);
+              }
+            }
+          });
+        };
+        initializeEditable = function($editable) {
+          return initializeFigures($editable.find('figure:not(.aloha-block)').alohaBlock({
+            'aloha-block-type': 'FigureBlock'
+          }));
         };
         _ref = Aloha.editables;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           editable = _ref[_i];
-          initializeBlocks(editable.obj);
+          initializeEditable(editable.obj);
         }
         return Aloha.bind('aloha-editable-created', function($event, editable) {
-          return initializeBlocks(editable.obj);
+          return initializeEditable(editable.obj);
         });
       },
       /*
