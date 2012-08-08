@@ -1,0 +1,166 @@
+/* ---------------------------------------- */
+
+.tool-bar {
+  width: 100%;
+  background-color: whiteSmoke;
+  border-top: 1px solid #E5E5E5;
+  border-bottom: 1px solid #E5E5E5;
+  //min-height: 30px;
+  padding: 5px;
+  padding-left: 70px;
+  padding-right: 90px;
+  box-shadow: 0 2px 3px 0 #ccc;
+  
+  &> .menu-item {
+    vertical-align: middle;
+    display: inline-block;
+    opacity: 0.70;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    padding: 5px;
+    cursor: pointer;
+
+    &.selected {
+      opacity: 1.0;
+      border: 1px solid #ccc;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+    }
+    &.disabled.selected { border: 1px solid transparent; }
+    &.checked { background-color: #eee; opacity: 1.0; border: 1px solid #ccc; }
+    &> .checked-icon { display: none; }
+
+    &> .accel { display: none; }
+    &> .tool-tip { display: none; }
+    &> .menu-icon { display: inline-block; }
+    &> .text {
+      display: inline-block;
+      font-weight: bold;
+    }
+    &.icon > .text { display: none; }
+    &> .submenu {
+      display: inline-block;
+      position: relative;
+      padding-left: 3px;
+      right: 0;
+      top: -5px;
+      font-size: 50%;
+    }
+
+  }
+
+}
+
+
+.menu-button { cursor: default; }
+
+.menu-item {
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  white-space: nowrap;
+  position: relative; // For the submenu icon
+
+  &.selected {
+    background-color: #eee;
+  }
+
+  &.disabled { opacity: 0.3; }
+  &.disabled.selected { background-color: inherit; }
+  
+  &.checked.icon .checked-icon { display: none; }
+  
+  &> .accel { position: absolute; right: 5px; }
+  &> .submenu {
+    position: absolute;
+    font-size: 70%;
+    right: 10px;
+    top: 8px;
+    opacity: 0.5;
+    
+    &.selected {
+      opacity: 1.0;
+    }
+  }
+}
+
+
+.menu-icon {
+  width: 16px;
+  height: 16px;
+  /*display: inline;*/
+}
+
+.menu > .menu-item > .menu-icon {
+  position: absolute;
+  left: 3px;
+}
+
+
+
+.hidden {
+  display: none;
+}
+
+
+.menu {
+  position: fixed;
+  background-color: white;
+  border: 1px solid black;
+  -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 6px 0;
+  /* Make sure the menu shows up above everything else */
+  z-index: 1000;
+
+
+  &> .menu-item {
+    padding: 6px 7em 6px 30px;
+    cursor: default;
+  }
+
+  &> .checked > .checked-icon {
+    position: absolute;
+    left: 3px;
+    top: 40%;
+  }
+
+}
+
+
+.menu-bar {
+  background-color: white;
+  min-height: 30px;
+  padding: 5px;
+  padding-left: 70px;
+  padding-right: 90px;
+
+  &> .menu-button {
+    display: inline; padding: 6px 7px;
+
+    &> .text { display: inline; }
+    &> .submenu { display: none; }
+    &> .menu-icon { display: none; }
+  }
+}
+
+
+.menu > .separator {
+  padding: 0;
+  border-bottom: 1px solid;
+  margin-top: 6px;
+  margin-bottom: 7px;
+}
+
+.tool-bar > .separator {
+  display: inline-block;
+  border-right: 1px solid;
+  width: 0;
+  height: 10px; /* a little higher than the buttons */
+  padding: 5px 0;
+  vertical-align: middle;
+}
+
+
+.menu-item .custom-heading::before {
+  position: static;
+  margin-right: 0.5em;
+}
