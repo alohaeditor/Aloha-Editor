@@ -674,6 +674,14 @@ define([
 					// attribute-field, if the setting summaryinsidebar
 					// is false.
 					that._removeCursorSelection();
+					
+					//If the summary should be modified in the sidebar
+					//we activate the sidebar panel
+					if (that.tablePlugin.settings.summaryinsidebar) {
+						that.tablePlugin.sidebarPanel.activate(that.obj);
+						that.tablePlugin.sidebar.show();
+						that.tablePlugin.sidebar.correctHeight();
+					}
 
 					// jump in Summary field
 					// attempting to focus on summary input field will occasionally result in the

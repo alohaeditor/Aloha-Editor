@@ -54,8 +54,7 @@ define('ui/ui-plugin', [
 	'use strict';
 
 	var context = new Context(),
-        toolbar = new Toolbar(context, getToolbarSettings()),
-	    components = {};
+        toolbar = new Toolbar(context, getToolbarSettings());
 
 	Aloha.bind('aloha-editable-activated', function(event, alohaEvent) {
 		Surface.show(context);
@@ -114,12 +113,7 @@ define('ui/ui-plugin', [
 	 * @api
 	 */
 	function adoptInto(slot, component) {
-		components[slot] = component;
 		return toolbar.adoptInto(slot, component);
-	}
-
-	function getComponentAtSlot(slot) {
-		return components[slot] || null;
 	}
 
 	/**
@@ -166,16 +160,6 @@ define('ui/ui-plugin', [
 		 * @api
 		 */
 		adoptInto: adoptInto,
-
-		/**
-		 * Retreives the component that was adopted at the given UI slot.
-		 *
-		 * @param {string} slot The name of the slot.
-		 * @return {Component?} A component, or null if no slot was adopted
-		 *                      into the slot.
-		 */
-		getAdoptedComponent: getComponentAtSlot,
-		showToolbar: showToolbar,
-		components: components
+		showToolbar: showToolbar
 	};
 });

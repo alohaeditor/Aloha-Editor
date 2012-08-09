@@ -15,6 +15,7 @@ define([
 	'use strict';
 
 	var idCounter = 0;
+	var slottedComponents = {};
 
 	/**
 	 * Defines a Container object that represents a collection of related
@@ -124,6 +125,7 @@ define([
 			if (!elem) {
 				return false;
 			}
+			slottedComponents[slot] = component;
 			component.adoptParent(this);
 			elem.append(component.element);
 			group = this._groupBySlot[slot];
@@ -144,7 +146,25 @@ define([
 			this.foreground();
 		},
 
+		hasVisibleComponents: function () {
+			var siblings = this._elemBySlot;
+			var slot;
+			for (slot in siblings) {
+				if (siblings.hasOwnProperty(slot) && slottedComponents[slot]) {
+					if (slottedComponents[slot].visible) {
+						return true;
+					}
+				}
+			}
+			return false;
+		},
+
 		childVisible: function(childComponent, visible) {
+			if (visible) {
+				childComponent.container.show();
+			} else if (!childComponent.container.hasVisibleComponents()) {
+				childComponent.container.hide();
+			}
 			var group = this._groupByComponent[childComponent.id];
 			if (!group) {
 				return;

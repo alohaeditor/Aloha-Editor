@@ -237,6 +237,7 @@ define( [
 						allmetainfo = undefined;
 					}
 
+					console.debug(this, "The repository " + this.repositoryId + " returned.");
 					// TODO how to return the metainfo here?
 					if ( --numOpenCallbacks === 0 ) {
 						that.queryCallback( callback, allitems, allmetainfo, timer );
@@ -250,6 +251,10 @@ define( [
 			// like autocomplete
 			var timeout = parseInt( params.timeout, 10 ) || this.settings.timeout;
 			timer = window.setTimeout( function() {
+                if (numOpenCallbacks > 0) {
+                    console.warn(this, numOpenCallbacks 
+                                 + " repositories did not return before the configured timeout of " + timeout + "ms.");
+                }
 				numOpenCallbacks = 0;
 				that.queryCallback( callback, allitems, allmetainfo, timer );
 			}, timeout );
