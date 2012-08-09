@@ -18,9 +18,11 @@ define([
 	'block/block',
 	'block/blockmanager',
 	'ui/ui',
-	'ui/toolbar',
 	'ui/toggleButton',
+	'ui/toolbar',
 	'util/maps',
+	'aloha/contenthandlermanager',
+	'aloha/console',
 	'align/align-plugin', // Needed to ensure that we have "alignLeft", and
 	                      // "alignRight" components.
 	// FIXME: use of the css require plugin is deprecated
@@ -32,9 +34,11 @@ define([
 	Block,
 	BlockManager,
 	Ui,
-	Toolbar,
 	ToggleButton,
-	Maps
+	Toolbar,
+	Maps,
+	ContentHandlerManager,
+	console
 ) {
 	'use strict';
 
@@ -74,9 +78,9 @@ define([
 		}\
 	';
 
-	var settings = Aloha.settings &&
+	var settings = ((Aloha.settings &&
 	               Aloha.settings.plugins &&
-	               Aloha.settings.plugins.captionedImage;
+	               Aloha.settings.plugins.captionedImage) || false);
 
 	if (settings.defaultCSS !== false) {
 		$('<style type="text/css">').text(defaultRenderCSS).appendTo('head:first');
@@ -344,6 +348,48 @@ define([
 				Toolbar.$surfaceContainer.show();
 			};
 
+			this.onkeypress = function(e) {
+				// prevent new line in image caption -- no p and br allowed (default)
+				//
+				// use Aloha.settings.plugins.captionedImage.allowLinebreak = false (or an empty array [ ]) (default)
+				// to allow no <br> and <p>
+				//
+				// use Aloha.settings.plugins.captionedImage.allowLinebreak = ['p', 'br'] to allow <br> and <p>
+				// use Aloha.settings.plugins.captionedImage.allowLinebreak = [ 'br' ] to allow just <br> and not <p> (or boolean true)
+				// use Aloha.settings.plugins.captionedImage.allowLinebreak = [ 'p' ] to allow just <p>
+				var allowLinebreak = false,
+					allowNewline = false;
+
+				if (settings &&
+					typeof settings.allowLinebreak != 'undefined' &&
+					settings.allowLinebreak) {
+					allowNewline = true;
+					allowLinebreak = settings.allowLinebreak;
+				}
+
+				if (settings.allowLinebreak === true) {
+					allowLinebreak = [ 'br' ];
+				}
+
+				if (jQuery.inArray('p', allowLinebreak) < 0 && jQuery.inArray('br', allowLinebreak) < 0) {
+					allowNewline = false;
+				}
+
+				if (e.keyCode == 13 && !allowNewline) {
+					console.info(this.title, 'No new line or paragraph allowed in image caption. Use: "Aloha.settings.plugins.captionedImage.allowLinebreak = true" to activate.');
+					e.preventDefault();
+				} else {
+					if ((event.shiftKey && jQuery.inArray('br', allowLinebreak) >= 0) ||
+						(!event.shiftKey && jQuery.inArray('p', allowLinebreak) < 0)) {
+						Aloha.execCommand( 'insertlinebreak', false );
+						return false;
+					} else if (jQuery.inArray('p', allowLinebreak) >= 0) {
+						Aloha.execCommand( 'insertparagraph', false );
+						return false;
+					}
+				}
+			};
+
 			render({
 				image  : this.attr('original-image'),
 				caption: this.attr('caption'),
@@ -352,6 +398,12 @@ define([
 			}, function (data) {
 				that._processRenderedData(data);
 				postProcessCallback();
+
+				// add the key handler for enter (no new line allowed in caption)
+				Aloha.Markup.addKeyHandler(13, function(event) {
+					return that.onkeypress(event);
+				});
+
 				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable.obj.is(that.$_caption)) {
 						Toolbar.$surfaceContainer.hide();
