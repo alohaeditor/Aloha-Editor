@@ -419,7 +419,7 @@ define([
 				this._isInsideNestedEditable = true;
 				if ( event ) {
 					// We now update the selection, as you clicked *inside* an editable inside the block
-					Aloha.Selection.updateSelection( event );
+					Aloha.Selection.updateSelection( event ); // @todo fixfix
 				}
 			}
 

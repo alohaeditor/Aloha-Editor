@@ -37,11 +37,6 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 	
 	var sanitize;
 	
-	// needed minimum sanitize configuration for Aloha itselft
-	/*Aloha.defaults.supports = jQuery.merge(Aloha.defaults.supports, {
-			elements: [ 'br', 'div', 'p', 'span' ]
-	});*/
-	
 	// predefined set of sanitize options if no dynamic or custom config is used
 	if( !Aloha.defaults.sanitize ) {
 		Aloha.defaults.sanitize = {}
@@ -89,7 +84,7 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 
 		attributes: {
 			'a': ['href', 'title', 'id', 'class', 'target', 'data-gentics-aloha-repository', 'data-gentics-aloha-object-id'],
-			'div': [ 'id', 'class'],
+			'div': ['id','class','style'],
 			'abbr': ['title'],
 			'blockquote': ['cite'],
 			'br': ['class'],
@@ -97,11 +92,12 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			'colgroup': ['span', 'width'],
 			'img': ['align', 'alt', 'height', 'src', 'title', 'width', 'class', 'data-caption', 'data-align', 'data-width', 'data-original-image'],
 			'ol': ['start', 'type'],
+			'p': ['class', 'style', 'id'],
 			'q': ['cite'],
 			'table': ['summary', 'width'],
 			'td': ['abbr', 'axis', 'colspan', 'rowspan', 'width'],
 			'th': ['abbr', 'axis', 'colspan', 'rowspan', 'scope', 'width'],
-			'ul': ['type'],
+			'ul': ['start', 'type'],
 			'span': ['class','style','lang','xml:lang']
 		},
 
