@@ -20,5 +20,7 @@
 		}
 	}
 	</code>
-	
+
+- **MANUAL CHANGE**: Updated UI CSS regarding button selector;
+- **MANUAL CHANGE**: Added a demo of placeholders to boilerplate;
 
