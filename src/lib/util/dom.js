@@ -582,7 +582,7 @@ var Dom = Class.extend({
 				this.split(rangeObject, jQuery(endSplitLimit).parent(), true);
 				didSplit = true;
 			}
-			if (rangeObject.endContainer.nodeType === 1 && rangeObject.endOffset < rangeObject.childNodes.length) {
+			if (rangeObject.endContainer.nodeType === 1 && rangeObject.endOffset < rangeObject.endContainer.childNodes.length) {
 				this.split(rangeObject, jQuery(endSplitLimit).parent(), true);
 				didSplit = true;
 			}

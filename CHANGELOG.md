@@ -52,6 +52,10 @@ All changes are categorized into one of the following keywords:
 
 - **BUG**: Missing implementations to show and hide items in a multisplit button have been added.
 
+- **ENHANCEMENT**: numerated-headers-plugin: Added a &nbsp to the annotation, to seperate it from the heading's text.
+
+- **ENHANCEMENT**: table-plugin: We now show the summary textarea in the sidebar if a click on the wai-image was issued.
+
 - **BUG**: Fixed IE7 mode paragraph margin
 
     The problem is that with a DOM like the following:
@@ -371,6 +375,17 @@ All changes are categorized into one of the following keywords:
 - **DISCUSS**: It would make sense to support also input (like textarea) elements
     eg. for basic formattings like strong / em -- but prevent insertation of br / p ?
 
+- **BUG**: headerids-plugin: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.
+
+- **BUG**: numerated-headers-plugin: Fixed a bug in the numerated-headers plugin, that the selection was not properly updated when the annotations were removed.
+
+- **BUG**: core: Fixed that sanitizing was not executed for IE7 because of an error with modifying style attributes in IE7. We now execute sanitizing, but ignore style attributes.
+
+- **BUG**: core: Added the removal of sizzle attributes to the basic content handler.
+
+- **BUG**: core: We now catch an exception that is thrown when the selection is not properly updated. This exception would lead to unexpected behaviour.
+
+- **BUG**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
 
 ## 0.20.20 - 2012/07/25
 

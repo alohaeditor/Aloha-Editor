@@ -1451,7 +1451,7 @@ function copyAttributes( element, newElement ) {
 	for ( var i = 0; i < attrs.length; i++ ) {
 		var attr = attrs[i];
 		// attr.specified is an IE specific check to exclude attributes that were never really set.
-		if (typeof attr.specified == "undefined" || attr.specified) {
+		if (typeof attr.specified === "undefined" || attr.specified) {
 			if ( typeof newElement.setAttributeNS === 'function' ) {
 				newElement.setAttributeNS( attr.namespaceURI, attr.name, attr.value );
 			} else {
@@ -6493,9 +6493,9 @@ function moveOverZWSP(range, forward) {
  * is collapsed. Is used to define the behaviour of the backspace
  * button.
  *
- * @param	value	is just there for compatibility with the commands api. parameter is ignored.
- * @param	range	the range to execute the delete command for
- * @return	void
+ * @param      value   is just there for compatibility with the commands api. parameter is ignored.
+ * @param      range   the range to execute the delete command for
+ * @return     void
  */
 commands["delete"] = {
 	action: function(value, range) {
@@ -6514,16 +6514,13 @@ commands["delete"] = {
 		// "Canonicalize whitespace at (active range's start node, active
 		// range's start offset)."
 		canonicalizeWhitespace(range.startContainer, range.startOffset);
-		
-		// collapse whitespace sequences
-		collapseWhitespace(range.startContainer, range);
 
 		// "Let node and offset be the active range's start node and offset."
 		var node = range.startContainer;
 		var offset = range.startOffset;
 		var isBr = false;
 		var isHr = false;
-		
+
 		// "Repeat the following steps:"
 		while ( true ) {
 			// we need to reset isBr and isHr on every interation of the loop
@@ -7146,8 +7143,8 @@ commands.forwarddelete = {
 		while (true) {
 			// check whether the next element is a br or hr
 			if ( offset < node.childNodes.length ) {
-//				isBr = isNamedHtmlElement(node.childNodes[offset], "br") || false;
-//				isHr = isNamedHtmlElement(node.childNodes[offset], "hr") || false;
+//				isBr = isHtmlElement(node.childNodes[offset], "br") || false;
+//				isHr = isHtmlElement(node.childNodes[offset], "hr") || false;
 			}
 
 			// "If offset is the length of node and node's nextSibling is an
@@ -7704,6 +7701,7 @@ commands.insertlinebreak = {
 		// context object and let extra br be the result, then call
 		// insertNode(extra br) on the active range."
 		if (isCollapsedLineBreak(br)) {
+			// TODO
 			range.insertNode(createEndBreak());
 
 			// Compensate for nonstandard implementations of insertNode
@@ -7834,6 +7832,7 @@ commands.insertparagraph = {
 
 				// "Call createElement("br") on the context object, and append
 				// the result as the last child of container."
+				// TODO not always
 				container.appendChild(createEndBreak());
 
 				// "Call collapse(container, 0) on the context object's
@@ -7895,6 +7894,7 @@ commands.insertparagraph = {
 			// Work around browser bugs: some browsers select the
 			// newly-inserted node, not per spec.
 			if (oldHeight == newHeight && !isDescendant(nextNode(br), container)) {
+				// TODO check
 				range.insertNode(createEndBreak());
 				Aloha.getSelection().collapse(node, offset + 1);
 				range.setEnd(node, offset + 1);
@@ -7917,13 +7917,13 @@ commands.insertparagraph = {
 			// context object and append the result as the last child of
 			// container."
 			// only do this, if inserting the br does NOT modify the offset height of the container
-			if (!container.hasChildNodes()) {
-				var oldHeight = container.offsetHeight, endBr = createEndBreak();
-				container.appendChild(endBr);
-				if (container.offsetHeight !== oldHeight) {
-					container.removeChild(endBr);
-				}
-			}
+//			if (!container.hasChildNodes()) {
+//				var oldHeight = container.offsetHeight, endBr = createEndBreak();
+//				container.appendChild(endBr);
+//				if (container.offsetHeight !== oldHeight) {
+//					container.removeChild(endBr);
+//				}
+//			}
 
 			// "If container is a dd or dt, and it is not an allowed child of
 			// any of its ancestors in the same editing host, set the tag name
