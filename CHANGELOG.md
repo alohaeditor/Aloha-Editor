@@ -387,6 +387,77 @@ All changes are categorized into one of the following keywords:
 
 - **BUG**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
 
+## 0.20.21 - 2012/08/06
+
+- **MANUAL CHANGE**: Changed the aloha-smart-content-changed event
+
+    The snapshotContent property provided bythe
+    aloha-smart-content-changed event was replaced with the
+    getSnapshotContent property which is a function that must be
+    called to retrieve the value that was provided by snapshotContent.
+
+    This was done to make snapshotting of the editable contents
+    optional, since it is a very expensive operation.
+
+- **ENHANCEMENT**: numerated-headers-plugin: Added a &nbsp to the annotation, to seperate it from the heading's text.
+
+- **ENHANCEMENT**: table-plugin: We now show the summary textarea in the sidebar if a click on the wai-image was issued.
+
+- **BUG**: Fixed IE7 mode paragraph margin
+
+    The problem is that with a DOM like the following:
+
+    ```html
+    <style>p { margin-top: 2em; }</style>
+    <p><br class='aloha-end-br'/></p>
+    <p></p>
+    ```
+
+    The margin between the paragraphs will not take effect because
+    IE8 in compatibility mode considers the paragraph with the ```<br>```
+    in it empty. Normal IE8 will render the margin.
+
+    To make IE8 in compatibility mode render the margin, some content
+    must be put into the ```<p>```. That is not a big problem, since there
+    usually should be no reason to have empty paragraphs in your
+    content.
+
+    However, if the content is entered by hand (if it is not there to
+    begin with) then the margin will not be immediately updated. Only
+    when, after entering some content into the first paragraph, the
+    selection is put into the second paragraph, will the margin be
+    updated.
+
+    Although I don't see an easy workaround for the first problem
+    (that the margin is not displayed when the paragraph is empty)
+    there is an easy workaround for the second problem (that the
+    margin isn't updated even after some content has been
+    entered). The workaround is simply, when some content is entered,
+    to insert and remove an arbitrary DOM node into the second
+    paragraph, which will force IE to re-render the paragraph.
+
+    Problem was verified to exist on IE7 and IE8 in compatibility
+    mode with IE7 document type. May also exist in other IE7 modes.
+
+- **BUG**: Fixed some random and weird selection problems in IE7, where some
+	actions (like Enter behaviour) were not performed on the correct cursor
+	position. Sometimes there also occurred some JS errors.
+	
+- **BUG**: Fixed Transforming an empty contenteditable into a list, which
+	caused the contenteditable container to disappear.
+
+- **BUG**: headerids-plugin: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.
+
+- **BUG**: numerated-headers-plugin: Fixed a bug in the numerated-headers plugin, that the selection was not properly updated when the annotations were removed.
+
+- **BUG**: core: Fixed that sanitizing was not executed for IE7 because of an error with modifying style attributes in IE7. We now execute sanitizing, but ignore style attributes.
+
+- **BUG**: core: Added the removal of sizzle attributes to the basic content handler.
+
+- **BUG**: core: We now catch an exception that is thrown when the selection is not properly updated. This exception would lead to unexpected behaviour.
+
+- **BUG**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
+
 ## 0.20.20 - 2012/07/25
 
 - **BUG**: core: An Internet Explorer 7 crash fix was fixed. Previously the fix caused the whole content to be selected for a short period of time when appling inline format elements.
