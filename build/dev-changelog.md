@@ -6,7 +6,7 @@
 - **BUG**: Align Plugin button status was not shown correctly
 - **FEATURE**: Image Caption Plugin: caption now supports sanitize contenthandler & disable / enable of line breaks;
 	<code>
-	Aloha.settings.contentHandler: {
+	Aloha.settings.contentHandler.handler: {
 		sanitize: {
 			'.aloha-captioned-image-caption': { elements: [ 'em', 'strong' ] }
 		}

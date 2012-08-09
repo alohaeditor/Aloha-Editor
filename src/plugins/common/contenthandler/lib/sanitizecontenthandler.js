@@ -148,12 +148,14 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			var sanitizeConfig,
 				contentHandlerConfig;
 
-			if (Aloha.activeEditable && Aloha.settings.contentHandler && Aloha.settings.contentHandler.sanitize) {
+			if (Aloha.activeEditable &&
+				Aloha.settings.contentHandler &&
+				Aloha.settings.contentHandler.handler && Aloha.settings.contentHandler.handler.sanitize) {
 				// individual sanitize config per editable -- should support merging of configs from other plugins ...
-				if ( Aloha.settings.contentHandler.sanitize ) {
-					contentHandlerConfig = Aloha.settings.contentHandler.sanitize;
+				if ( Aloha.settings.contentHandler.handler.sanitize ) {
+					contentHandlerConfig = Aloha.settings.contentHandler.handler.sanitize;
 				}
-				var containerId = Aloha.settings.contentHandler.sanitize['#' + Aloha.activeEditable.getId()];
+				var containerId = contentHandlerConfig['#' + Aloha.activeEditable.getId()];
 				if (typeof containerId !== 'undefined') {
 					sanitizeConfig = contentHandlerConfig;
 				} else {
