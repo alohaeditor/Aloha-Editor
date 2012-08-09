@@ -230,7 +230,7 @@ define( [
 						// we have no aggregated metainfo at all
 						allmetainfo = undefined;
 					}
-					console.debug(this, "The repository " + this.repositoryId + " returned.");
+					console.debug(this, "The repository " + this.repositoryId + " returned with " + j + " results.");
 					// TODO how to return the metainfo here?
 					if ( --numOpenCallbacks === 0 ) {
 						that.queryCallback( callback, allitems, allmetainfo, timer );
