@@ -26,8 +26,8 @@
  */
 "use strict";
 define(
-[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/console', 'PubSub', 'aloha/engine', 'aloha/rangy-core' ],
-function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) {
+[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/console', 'PubSub', 'aloha/engine', 'aloha/ecma5shims', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, e5s) {
 	var GENTICS = window.GENTICS;
 	/**
 	 * @namespace Aloha
@@ -337,8 +337,8 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 
 			// before getting the selection tree, we do a cleanup
 			if (GENTICS.Utils.Dom.doCleanup({'merge' : true}, rangeObject)) {
-				this.rangeObject.update();
-				this.rangeObject.select();
+				rangeObject.update();
+				rangeObject.select();
 			}
 
 			return this.recursiveGetSelectionTree(rangeObject, rangeObject.commonAncestorContainer);
@@ -805,27 +805,57 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 					return;
 				} else {
 					this.applyMarkup(rangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator, {setRangeObject2NewMarkup: true});
+					backupRangeObject.startContainer = rangeObject.startContainer;
+					backupRangeObject.endContainer = rangeObject.endContainer;
+					backupRangeObject.startOffset = rangeObject.startOffset;
+					backupRangeObject.endOffset = rangeObject.endOffset;
 				}
 			}
 
+			if (markupObject.isReplacingElement) {
+				//Check if the startContainer is one of the zapped elements
+				if ( backupRangeObject &&
+						backupRangeObject.startContainer.className &&
+						backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1 ) {
+						//var parentElement = jQuery(backupRangeObject.startContainer).closest(markupObject[0].tagName).get(0);
+						var parentElement = jQuery(backupRangeObject.startContainer).parents(markupObject[0].tagName).get(0);
+						backupRangeObject.startContainer = parentElement;
+						rangeObject.startContainer = parentElement;
+					}
+				//check if the endContainer is one of the zapped elements
+				if (backupRangeObject &&
+						backupRangeObject.endContainer.className &&
+						backupRangeObject.endContainer.className.indexOf('preparedForRemoval') > -1 ) {
+					//var parentElement = jQuery(backupRangeObject.endContainer).closest(markupObject[0].tagName).get(0);
+					var parentElement = jQuery(backupRangeObject.endContainer).parents(markupObject[0].tagName).get(0);
+					backupRangeObject.endContainer = parentElement;
+					rangeObject.endContainer = parentElement;
+				}
+			}
 			// remove all marked items
 			jQuery('.preparedForRemoval').zap();
 
 			// recalculate cac and selectionTree
-			rangeObject.update();
-
+			
 			// update selection
 			if (markupObject.isReplacingElement) {
-				if ( backupRangeObject &&
-					backupRangeObject.startContainer.className &&
-					backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1 ) {
-					var parentElement = jQuery(backupRangeObject.startContainer).closest(markupObject[0].tagName).get(0);
-					backupRangeObject.startContainer = parentElement;
-					backupRangeObject.endContainer = parentElement;
+				//After the zapping we have to check for wrong offsets
+				if (e5s.Node.ELEMENT_NODE === backupRangeObject.startContainer.nodeType && backupRangeObject.startContainer.childNodes && backupRangeObject.startContainer.childNodes.length < backupRangeObject.startOffset) {
+					backupRangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
+					rangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
 				}
+				if (e5s.Node.ELEMENT_NODE === backupRangeObject.endContainer.nodeType && backupRangeObject.endContainer.childNodes && backupRangeObject.endContainer.childNodes.length < backupRangeObject.endOffset) {
+					backupRangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
+					rangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
+				}
+				rangeObject.endContainer = backupRangeObject.endContainer;
+				rangeObject.endOffset = backupRangeObject.endOffset;
+				rangeObject.startContainer = backupRangeObject.startContainer;
+				rangeObject.startOffset = backupRangeObject.startOffset;
 				backupRangeObject.update();
 				backupRangeObject.select();
 			} else {
+				rangeObject.update();
 				rangeObject.select();
 			}
 		},
@@ -1047,15 +1077,18 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 		 * @hide
 		 */
 		changeMarkupOnSelection: function(markupObject) {
+			var rangeObject = this.getRangeObject();
+			
 			// change the markup
-			this.changeMarkup(this.getRangeObject(), markupObject, this.getStandardTagComparator(markupObject));
+			this.changeMarkup(rangeObject, markupObject, this.getStandardTagComparator(markupObject));
 
 			// merge text nodes
-			GENTICS.Utils.Dom.doCleanup({'merge' : true}, this.rangeObject);
+			GENTICS.Utils.Dom.doCleanup({'merge' : true}, rangeObject);
 
 			// update the range and select it
-			this.rangeObject.update();
-			this.rangeObject.select();
+			rangeObject.update();
+			rangeObject.select();
+			this.rangeObject = rangeObject;
 		},
 
 		/**

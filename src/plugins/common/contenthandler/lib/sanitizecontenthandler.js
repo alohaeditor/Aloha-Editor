@@ -97,8 +97,8 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			'table': ['summary', 'width'],
 			'td': ['abbr', 'axis', 'colspan', 'rowspan', 'width'],
 			'th': ['abbr', 'axis', 'colspan', 'rowspan', 'scope', 'width'],
-			'ul': ['start', 'type'],
-			'span': ['class','style','lang','xml:lang']
+			'ul': ['type'],
+			'span': ['class','style','lang','xml:lang','role']
 		},
 
 		protocols: {
@@ -109,11 +109,11 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 		}
 	}
 
-	function initSanitize (configAllows, configType) {
+	function initSanitize (configAllows) {
 		var 
 			filter = [ 'restricted', 'basic', 'relaxed' ],
 			config = Aloha.defaults.supports; // @TODO: needs to be implemented into all plugins
-		
+
 		// @TODO think about Aloha.settings.contentHandler.sanitize name/options
 		if (Aloha.settings.contentHandler.sanitize &&
 			jQuery.inArray(Aloha.settings.contentHandler.sanitize, filter) > -1) {
@@ -122,12 +122,12 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			// use relaxed filter by default
 			config = Aloha.defaults.sanitize.relaxed;
 		}
-		
+
 		// @TODO move to Aloha.settings.contentHandler.sanitize.allows ?
 		if (Aloha.settings.contentHandler.allows) {
 			config = Aloha.settings.contentHandler.allows;
 		}
-		
+
 		if (configAllows) {
 			config = configAllows;
 		}
@@ -136,7 +136,7 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 		config.filters = [function( elem ) {
 			return elem.contentEditable != "false";
 		}];
-		sanitize = new Sanitize(config);
+		sanitize = new Sanitize( config, jQuery );
 	}
 
 	var SanitizeContentHandler = ContentHandlerManager.createHandler({
@@ -145,16 +145,10 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 		 * @param content
 		 */
 		handleContent: function( content )  {
-			// sanitize does not work in IE7. It tries to set the style attribute via setAttributeNode() and this is know to not work in IE7
-			// (see http://www.it-blogger.com/2007-06-22/microsofts-internetexplorer-und-mitglied-nicht-gefunden/ as a reference)
-			if (jQuery.browser.msie && jQuery.browser.version <= 7) {
-				return content;
-			}
-
 			var sanitizeConfig,
 				contentHandlerConfig;
 
-			if (Aloha.activeEditable) {
+			if (Aloha.activeEditable && Aloha.settings.contentHandler && Aloha.settings.contentHandler.sanitize) {
 				// individual sanitize config per editable -- should support merging of configs from other plugins ...
 				if ( Aloha.settings.contentHandler.sanitize ) {
 					contentHandlerConfig = Aloha.settings.contentHandler.sanitize;
@@ -185,6 +179,6 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			return jQuery('<div>').append(sanitize.clean_node(content)).html();
 		}
 	});
-	
+
 	return SanitizeContentHandler;
 });

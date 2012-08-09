@@ -30,7 +30,7 @@ define([
 	'jquery',
 	'aloha/ecma5shims'
 ],
-function( Aloha, Class, jQuery, shims ) {
+function(Aloha, Class, jQuery, shims) {
 
 "use strict";
 
@@ -534,7 +534,7 @@ Aloha.Markup = Class.extend( {
 			this.splitRangeObject( rangeObject );
 		} else { // if there is no split object, the Editable is the paragraph type itself (e.g. a p or h2)
 			this.insertHTMLBreak( rangeObject.getSelectionTree(), rangeObject );
-		}
+	}
 	},
 
 	/**
@@ -1290,10 +1290,8 @@ Aloha.Markup = Class.extend( {
 		return 'Aloha.Markup';
 	}
 
-} );
+});
 
 Aloha.Markup = new Aloha.Markup();
-
 return Aloha.Markup;
-
-} );
+});

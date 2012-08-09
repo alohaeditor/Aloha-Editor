@@ -91,7 +91,21 @@ define( [
 			if (jQuery.browser.msie && jQuery.browser.version < 8) {
 				content = content.replace(/(<table\s+[^>]*?)contenteditable=['\"\w]+/gi, "$1");
 			}
+			
+			content = this.stringFizzleSizzle(content);
 
+			return content;
+		},
+		
+		/**
+		 * Removes nodeIndex, sizcache and sizset attributes.
+		 * @param {string} content to process.
+		 */
+		stringFizzleSizzle: function (content) {
+			var replaced = content;
+			while (content !== (replaced = content.replace(/(<[^>]*?)(nodeIndex|sizcache|sizset|jquery)[\w\d]*="[^"]*"/gi, '$1'))) {
+				content = replaced;
+			}
 			return content;
 		}
 
@@ -779,7 +793,6 @@ define( [
 			}
 
 			var $clone = this.obj.clone(false);
-
 			$clone.find( '.aloha-cleanme' ).remove();
 			this.removePlaceholder($clone);
 			PluginManager.makeClean($clone);
@@ -882,6 +895,14 @@ define( [
 				}
 			}
 
+			var snapshot = null;
+			function getSnapshotContent() {
+				if (null == snapshot) {
+					snapshot = me.getSnapshotContent();
+				}
+				return snapshot;
+			}
+
 			// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
 			// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 			if ( jQuery.inArray( uniChar, this.sccDelimiters ) >= 0 ) {
@@ -895,34 +916,12 @@ define( [
 						'keyCode'         : event.keyCode,
 						'char'            : uniChar,
 						'triggerType'     : 'keypress', // keypress, timer, blur, paste
-						'snapshotContent' : me.getSnapshotContent()
+						'getSnapshotContent' : getSnapshotContent
 					} );
 
 					console.debug( 'Aloha.Editable',
 						'smartContentChanged: event type keypress triggered' );
-					/*
-					var r = Aloha.Selection.rangeObject;
-					if ( r.isCollapsed() && r.startContainer.nodeType == 3 ) {
-						var posDummy = jQuery( '<span id="GENTICS-Aloha-PosDummy" />' );
-						GENTICS.Utils.Dom.insertIntoDOM(
-							posDummy,
-							r,
-							this.obj,
-							null,
-							false,
-							false
-						);
-						console.log( posDummy.offset().top, posDummy.offset().left );
-						GENTICS.Utils.Dom.removeFromDOM(
-							posDummy,
-							r,
-							false
-						);
-						r.select();
-					}
-					*/
 				}, this.sccDelay );
-
 			} else if ( event && event.type === 'paste' ) {
 				Aloha.trigger( 'aloha-smart-content-changed', {
 					'editable'        : me,
@@ -930,7 +929,7 @@ define( [
 					'keyCode'         : null,
 					'char'            : null,
 					'triggerType'     : 'paste',
-					'snapshotContent' : me.getSnapshotContent()
+					'getSnapshotContent' : getSnapshotContent
 				} );
 
 			} else if ( event && event.type === 'blur' ) {
@@ -940,7 +939,7 @@ define( [
 					'keyCode'         : null,
 					'char'            : null,
 					'triggerType'     : 'blur',
-					'snapshotContent' : me.getSnapshotContent()
+					'getSnapshotContent' : getSnapshotContent
 				} );
 
 			} else if ( uniChar !== null ) {
@@ -954,7 +953,7 @@ define( [
 						'keyCode'         : null,
 						'char'            : null,
 						'triggerType'     : 'idle',
-						'snapshotContent' : me.getSnapshotContent()
+						'getSnapshotContent' : getSnapshotContent
 					} );
 				}, this.sccIdle );
 			}
