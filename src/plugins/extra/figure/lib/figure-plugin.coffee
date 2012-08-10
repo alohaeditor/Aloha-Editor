@@ -88,6 +88,19 @@ define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui' ]
       initializeFigures = ($figures) ->
         # $figures.find('figcaption').aloha()
 
+        $figures.find('figcaption').on 'dblclick', () ->
+          dialog = $('<div></div>')
+          captionArea = $('<div></div>').appendTo(dialog)
+          captionArea[0].innerHTML = @.innerHTML
+          caption = $(@)
+          figure = caption.parent()
+          dialog.dialog
+            close: () ->
+              captionArea.mahalo()
+              caption[0].innerHTML = captionArea[0].innerHTML
+              
+          captionArea.aloha()
+
         # register drop handlers to store the dropped file as a data URI
         $figures.find('img').on 'drop', (dropEvent) ->
           img = jQuery(dropEvent.target)

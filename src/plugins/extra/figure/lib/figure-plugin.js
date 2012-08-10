@@ -87,6 +87,21 @@
         });
         BlockManager.registerBlockType('FigureBlock', FigureBlock);
         initializeFigures = function($figures) {
+          $figures.find('figcaption').on('dblclick', function() {
+            var caption, captionArea, dialog, figure;
+            dialog = $('<div></div>');
+            captionArea = $('<div></div>').appendTo(dialog);
+            captionArea[0].innerHTML = this.innerHTML;
+            caption = $(this);
+            figure = caption.parent();
+            dialog.dialog({
+              close: function() {
+                captionArea.mahalo();
+                return caption[0].innerHTML = captionArea[0].innerHTML;
+              }
+            });
+            return captionArea.aloha();
+          });
           return $figures.find('img').on('drop', function(dropEvent) {
             var dt, img, readFile;
             img = jQuery(dropEvent.target);
