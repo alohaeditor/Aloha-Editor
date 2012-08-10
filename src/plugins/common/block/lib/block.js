@@ -1,18 +1,50 @@
-/*!
- * Aloha Editor
- * Author & Copyright (c) 2010 Gentics Software GmbH
- * aloha-sales@gentics.com
- * Licensed unter the terms of http://www.aloha-editor.com/license.html
+/* block.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
  */
-
 /**
  * Module which contains the base class for Blocks, and a Default/Debug block.
  *
  * @name block.block
  * @namespace block/block
  */
-define(['aloha', 'aloha/jquery', 'block/blockmanager', 'aloha/observable', 'ui/scopes'],
-function(Aloha, jQuery, BlockManager, Observable, Scopes) {
+define([
+       'aloha',
+       'jquery',
+       'block/blockmanager',
+       'aloha/observable',
+       'ui/scopes',
+       'util/class'
+], function(
+       Aloha,
+       jQuery,
+       BlockManager,
+       Observable,
+       Scopes,
+       Class
+){
 	"use strict";
 
 	var GENTICS = window.GENTICS;
@@ -392,7 +424,8 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 					Aloha.Selection.updateSelection(event);
 				}
 			}
-			// Trigger selection change event
+			// Trigger block activate & selection change events.
+			BlockManager.trigger('block-activate', highlightedBlocks);
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
 		},
 
@@ -401,12 +434,17 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 		 */
 		deactivate: function() {
 			var that = this;
+			var deactivatedBlocks = [this];
 			this._unhighlight();
 			this.$element.parents('.aloha-block').each(function() {
+				deactivatedBlocks.push(this);
 				that._unhighlight();
 			});
 
 			this.$element.removeClass('aloha-block-active');
+
+			// Trigger block deactivate & selection change events.
+			BlockManager.trigger('block-deactivate', deactivatedBlocks);
 			BlockManager.trigger('block-selection-change', []);
 		},
 
@@ -496,6 +534,8 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 				this._setupDragDropForBlockElements();
 				this._disableUglyInternetExplorerDragHandles();
 			}
+			this._hideDragHandlesIfDragDropDisabled();
+			this._attachDropzoneHighlightEvents();
 		},
 
 		/**
@@ -544,6 +584,45 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 			this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
 		},
 
+        /**
+         * Removes the draghandle class from block handle,
+         * if drag & drop is disabled for the editable
+         */
+        _hideDragHandlesIfDragDropDisabled: function() {
+            if ( !this._dd_isDragdropEnabled() ){
+                this.$element.find( '.aloha-block-draghandle' ).removeClass( 'aloha-block-draghandle' );
+            } 
+        },
+
+        /**
+         * Attach mousedown/up events to block's draghandle 
+         * to toggle dropzones when dragging starts and ends.
+         */
+        _attachDropzoneHighlightEvents: function() {
+            var that = this;
+
+            this.$element.delegate( ".aloha-block-draghandle", "mousedown", function() {
+                var dropzones = that.$element.parents( ".aloha-editable" ).first().data( "block-dropzones" ) || [];
+                jQuery.each( dropzones, function(i, editable_selector) {
+                    var editables = jQuery( editable_selector );
+                    jQuery( editables ).each(function() {
+                        if (jQuery( this ).data( "block-dragdrop" )) {
+                            jQuery( this ).addClass( "aloha-block-dropzone" );      
+                        }
+                    });
+                });
+
+                // Remove the dropzones as soon as the mouse is released,
+                // irrespective of where the drop took place.
+                jQuery( document ).one( "mouseup.aloha-block-dropzone", function(e) {
+                    var dropzones = that.$element.parents( ".aloha-editable" ).first().data( "block-dropzones" ) || [];
+                    jQuery.each( dropzones, function(i, editable_selector) {
+                        jQuery( editable_selector ).removeClass( "aloha-block-dropzone" );      
+                    });
+                });
+            });
+        },
+
 		/**************************
 		 * SECTION: Drag&Drop for INLINE elements
 		 **************************/
@@ -555,6 +634,10 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 			// Furthermore, we use it to know whether we need to "revert" the draggable to the original state or not.
 			var lastHoveredCharacter = null;
 
+            // Unless this flag is set to true, drag operation should be reverted.
+            // Firing of "drop" event will set this to true.
+            var blockDroppedProperly = false;
+
 			// HACK for IE7: Internet Explorer 7 has a very weird behavior in
 			// not always firing the "drop" callback of the inner droppable... However,
 			// the "over" and "out" callbacks are fired correctly.
@@ -565,6 +648,10 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 			// $currentDraggable contains a reference to the current draggable, but
 			// only makes sense to read when lastHoveredCharacter !== NULL.
 			var $currentDraggable = null;
+
+            // We need to store the droppables created at the start of the drag,
+            // they should be destroyed when the drag stops.
+            var $createdDroppables = null;
 
 			// This dropFn is the callback which handles the actual moving of
 			// nodes. We created a separate function for it, as it is called inside the "stop" callback
@@ -599,27 +686,35 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 					that._fixScrollPositionBugsInIE();
 				}
 				jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
+
+                // clear the created droppables
+                $createdDroppables.droppable( "destroy" );
+                $createdDroppables = null;
+
+                blockDroppedProperly = true;
 			};
 			var editablesWhichNeedToBeCleaned = [];
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
+				disabled: !this._dd_isDragdropEnabled(),
 				revert: function() {
-					return (lastHoveredCharacter === null);
+					return (lastHoveredCharacter === null || !blockDroppedProperly);
 				},
 				revertDuration: 250,
 				stop: function() {
-					if (Ext.isIE7) {
+					if (jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10)) {
 						dropFn();
 					}
 					jQuery.each(editablesWhichNeedToBeCleaned, function() {
 						that._dd_traverseDomTreeAndRemoveSpans(this);
-					})
+					});
 					$currentDraggable = null;
 
 					editablesWhichNeedToBeCleaned = [];
 				},
 				start: function() {
+					blockDroppedProperly = false;
 					editablesWhichNeedToBeCleaned = [];
 
 					// In order to make Inline Blocks droppable into empty paragraphs, we insert a &nbsp; manually before the placeholder-br.
@@ -640,7 +735,7 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 						 * them droppable.
 						 */
 						over: function(event, ui) {
-							if (editablesWhichNeedToBeCleaned.indexOf(this) === -1) {
+							if (jQuery.inArray(this, editablesWhichNeedToBeCleaned) === -1) {
 								editablesWhichNeedToBeCleaned.push(this);
 							}
 
@@ -687,14 +782,14 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 						 * as drop target.
 						 */
 						drop: function() {
-							if (!Ext.isIE7) {
+							if (!(jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10))) {
 								dropFn();
 							}
 						}
 					};
 
-
-					jQuery('.aloha-editable').children(':not(.aloha-block)').droppable(droppableCfg);
+					$createdDroppables = jQuery( ".aloha-editable.aloha-block-dropzone" ).children( ":not(.aloha-block)" );
+					$createdDroppables.droppable( droppableCfg );
 					// Small HACK: Also make table cells droppable
 					jQuery('.aloha-table-cell-editable').droppable(droppableCfg);
 				}
@@ -790,7 +885,8 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 				leftWordPartLength = Math.floor(word.length/2);
 
 				// For Internet Explorer, we only make dropping AFTER words possible to improve performance
-				if (Ext.isIE7 || Ext.isIE8) {
+				var browserMajorVersion = parseInt(jQuery.browser.version, 10);
+				if (jQuery.browser.msie && (7 === browserMajorVersion || 8 === browserMajorVersion)) {
 					leftWordPartLength = 0;
 				}
 
@@ -883,9 +979,25 @@ function(Aloha, jQuery, BlockManager, Observable, Scopes) {
 			}
 		},
 
+        /**
+         * Helper method to check whether the drag & drop is enabled
+         * for the editable, which given blocked belongs to.
+         */
+        _dd_isDragdropEnabled: function() {
+            var editable = this.$element.parents( ".aloha-editable" );
+
+            if ( editable ) {
+                return editable.first().data( "block-dragdrop" );
+            } else {
+                // no editable specified, let's make drag & drop enabled by default.    
+                return true;
+            }
+        },
+
 		/**************************
 		 * SECTION: Drag&Drop for Block elements
 		 **************************/
+
 		_setupDragDropForBlockElements: function() {
 			// Mark the drag handle with an extra CSS class, such that it is picked up by BlockManager.initializeBlockLevelDragDrop()
 			this.$element.find('.aloha-block-draghandle').addClass('aloha-block-draghandle-blocklevel');
