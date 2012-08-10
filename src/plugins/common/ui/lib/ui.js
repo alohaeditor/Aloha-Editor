@@ -174,6 +174,6 @@ function(
 
 	return {
 		adopt: adopt,
-		getAdoptedComponent: getComponentAtSlot,
+		getAdoptedComponent: getComponentAtSlot
 	};
 });
