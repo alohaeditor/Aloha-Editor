@@ -22,3 +22,5 @@ All changes are categorized into one of the following keywords:
 - **BUG**: wai-lang-plugin: language annotations were not enhanced
 	The short name ('de') of language annotations was displayed
 	instead of of the full name from the repository ('German').
+
+- **BUG**: block-plugin: selection was lost when using the cursor keys to move across inline blocks

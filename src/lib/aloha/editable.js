@@ -32,7 +32,8 @@ define( [
 	'aloha/selection',
 	'aloha/markup',
 	'aloha/contenthandlermanager',
-	'aloha/console'
+	'aloha/console',
+	'aloha/block-jump'
 ], function(
 	Aloha,
 	Class,
@@ -41,7 +42,8 @@ define( [
 	Selection,
 	Markup,
 	ContentHandlerManager,
-	console
+	console,
+	BlockJump
 ) {
 	'use strict';
 
@@ -790,6 +792,9 @@ define( [
 			var cache = editableContentCache[this.getId()];
 
 			if (!cache || raw !== cache.raw) {
+
+				BlockJump.removeZeroWidthTextNodeFix();
+
 				var $clone = this.obj.clone(false);
 				$clone.find( '.aloha-cleanme' ).remove();
 				this.removePlaceholder($clone);

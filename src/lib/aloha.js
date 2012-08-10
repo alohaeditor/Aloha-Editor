@@ -339,6 +339,10 @@
 			return this;
 		};
 
+		Aloha.unbind = function (typeOrEvent) {
+			jQuery(Aloha, 'body').unbind(typeOrEvent);
+		};
+
 		Aloha.ready = function (fn) {
 			this.bind('aloha-ready', fn);
 			return this;
