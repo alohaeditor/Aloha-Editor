@@ -739,10 +739,19 @@ define([
 								editablesWhichNeedToBeCleaned.push(this);
 							}
 
+							var hasOnlyProppingBr = (
+								1 === jQuery(this).contents().length &&
+								1 === jQuery(this).children('br.aloha-end-br').length
+							);
 							$currentDraggable = ui.draggable;
-							if (jQuery(this).is(':empty') || jQuery(this).children('br.aloha-end-br').length > 0 || jQuery(this).html() === '&nbsp;') {
-								// the user tries to drop into an empty container, thus we highlight the container and do an early return
-								jQuery(this).addClass('aloha-block-dropInlineElementIntoEmptyBlock');
+
+							if (jQuery(this).is(':empty') ||
+								hasOnlyProppingBr ||
+								jQuery(this).html() === '&nbsp;') {
+								// The user is hovering over an empty
+								// container; simply highlight the container.
+								jQuery(this).addClass(
+									'aloha-block-dropInlineElementIntoEmptyBlock');
 								lastHoveredCharacter = this;
 								return;
 							}
