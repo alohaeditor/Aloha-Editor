@@ -122,15 +122,11 @@ module, and afterwards Aloha is included, which will pick up the
 'jquery' module that was previously defined.
 
 The jQuery that is given to Aloha should be the same version as the one
-Aloha woul load itself, which should be the most recent version of
+Aloha would load itself, which should be the most recent version of
 jQuery. Older versions may work, but since older versions are not tested
-against.
+against, please expect for things to break.
 
-If you don't use the jQuery provided with Aloha, please expect for
-things to break.
-
-Please also note that the given jQuery will be extended with many jQuery
-plugins.
+Please also note that the given jQuery will be extended by jQuery plugins.
 
 h4. Customizing other modules
 
