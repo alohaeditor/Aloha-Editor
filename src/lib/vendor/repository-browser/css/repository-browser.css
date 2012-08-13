@@ -74,8 +74,18 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 /* loading */
 .ui-jqgrid .loading {position: absolute; top: 45%;left: 45%;width: auto;z-index:101;padding: 6px; margin: 5px;text-align: center;font-weight: bold;display: none;border-width: 2px;}
 .ui-jqgrid .jqgrid-overlay {display:none;z-index:100;}
-* html .jqgrid-overlay {width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}
-* .jqgrid-overlay iframe {position:absolute;top:0;left:0;z-index:-1;width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');}
+* html .jqgrid-overlay {
+	width: ~"expression(this.parentNode.offsetWidth+'px')";
+	height: ~"expression(this.parentNode.offsetHeight+'px')";
+}
+* .jqgrid-overlay iframe {
+	position:absolute;
+	top:0;
+	left:0;
+	z-index:-1;
+	width: ~"expression(this.parentNode.offsetWidth+'px')";
+	height: ~"expression(this.parentNode.offsetHeight+'px')";
+}
 /* Tree Grid */
 .ui-jqgrid .tree-wrap   {position: relative; height: 18px; float: left; overflow: hidden; white-space: nowrap;}
 .ui-jqgrid .tree-minus {position: absolute; height: 18px; width: 18px; overflow: hidden;}
