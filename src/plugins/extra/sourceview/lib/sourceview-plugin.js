@@ -1,8 +1,11 @@
-/**
- * Aloha Source Viewer
- * -------------------
- * Provides a development tool for Aloha Editor that shows the source around
- * the selection inside an editable.
+/*!
+ * Aloha Editor
+ * Author & Copyright (c) 2012 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed under the terms of http://www.aloha-editor.com/license.html
+ *
+ * @overfiew: Provides a development tool for Aloha Editor that shows the
+ *            source around the selection inside an editable.
  */
 define([
 	'aloha',
