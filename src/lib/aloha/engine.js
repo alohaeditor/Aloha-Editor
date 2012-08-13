@@ -897,10 +897,6 @@ function isCollapsedLineBreak(br) {
 // "An extraneous line break is a br that has no visual effect, in that
 // removing it from the DOM would not change layout, except that a br that is
 // the sole child of an li is not extraneous."
-
-//
-// FIXME: This doesn't work in IE, since IE ignores display: none in
-// contenteditable.
 function isExtraneousLineBreak(br) {
 
 	if (!isHtmlElement(br, "br")) {
@@ -924,12 +920,17 @@ function isExtraneousLineBreak(br) {
 	var origStyle = {
 		height: ref.style.height,
 		maxHeight: ref.style.maxHeight,
-		minHeight: ref.style.minHeight
+		minHeight: ref.style.minHeight,
+		contentEditable: ref.contentEditable
 	};
 
 	ref.style.height = 'auto';
 	ref.style.maxHeight = 'none';
 	ref.style.minHeight = '0';
+	// IE7 would ignore display:none in contentEditable, so we temporarily set it to false
+	if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+		ref.contentEditable = 'false';
+	}
 
 	var origHeight = ref.offsetHeight;
 	if (origHeight == 0) {
@@ -944,6 +945,10 @@ function isExtraneousLineBreak(br) {
 	ref.style.height = origStyle.height;
 	ref.style.maxHeight = origStyle.maxHeight;
 	ref.style.minHeight = origStyle.minHeight;
+	// reset contentEditable for IE7
+	if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+		ref.contentEditable = origStyle.contentEditable;
+	}
 	br.style.display = origBrDisplay;
 
 	// https://github.com/alohaeditor/Aloha-Editor/issues/516
@@ -4148,6 +4153,8 @@ function fixDisallowedAncestors(node, range) {
 		// and let node be the result."
 		node = setTagName(node, defaultSingleLineContainerName, range);
 
+		ensureContainerEditable(node);
+
 		// "Fix disallowed ancestors of node."
 		fixDisallowedAncestors(node, range);
 
@@ -6404,11 +6411,13 @@ function createEndBreak() {
 	return endBr;
 }
 
-//@}
-///// Ensure that the container is editable /////
-///// E.g. when called for an empty paragraph or header, and the browser is not IE, we need to append
-///// br (marked with aloha-end-br)
-//@{
+/**
+ * Ensure the container is editable
+ * E.g. when called for an empty paragraph or header, and the browser is not IE,
+ * we need to append a br (marked with class aloha-end-br)
+ * For IE7, there is a special behaviour that will append zero-width whitespace
+ * @param {DOMNode} container
+ */
 function ensureContainerEditable(container) {
 	if (!container) {
 		return;
@@ -6422,15 +6431,60 @@ function ensureContainerEditable(container) {
 		return;
 	}
 
-	// For all browsers except IE >= 8. If container is a li element, then exclude IE7 as well.
-	// IE7 may refer to either a native IE7 or an IE8 in compatibility mode.
-	if (   !jQuery.browser.msie
-		|| (   jQuery.browser.version <= 7
-			&& !isHtmlElement(container, "li"))) {
+	if (!jQuery.browser.msie) {
+		// for normal browsers, the end-br will do
 		container.appendChild(createEndBreak());
+	} else if (jQuery.browser.msie && jQuery.browser.version <= 7 &&
+			isHtmlElement(container, ["p", "h1", "h2", "h3", "h4", "h5", "h6", "pre", "blockquote"])) {
+		// for IE7, we need to insert a text node containing a single zero-width whitespace character
+		if (!container.firstChild) {
+			container.appendChild(document.createTextNode('\u200b'));
+		}
 	}
 }
 
+//@}
+///// Move the given collapsed range over adjacent zero-width whitespace characters.
+///// The range is 
+//@{
+/**
+ * Move the given collapsed range over adjacent zero-width whitespace characters.
+ * If the range is not collapsed or is not contained in a text node, it is not modified
+ * @param range range to modify
+ * @param forward {Boolean} true to move forward, false to move backward
+ */
+function moveOverZWSP(range, forward) {
+	var offset;
+	if (!range.collapsed) {
+		return;
+	}
+
+	offset = range.startOffset;
+
+	if (forward) {
+		// check whether the range starts in a text node
+		if (range.startContainer && range.startContainer.nodeType === $_.Node.TEXT_NODE) {
+			// move forward (i.e. increase offset) as long as we stay in the text node and have zwsp characters to the right
+			while (offset < range.startContainer.data.length && range.startContainer.data.charAt(offset) === '\u200b') {
+				offset++;
+			}
+		}
+	} else {
+		// check whether the range starts in a text node
+		if (range.startContainer && range.startContainer.nodeType === $_.Node.TEXT_NODE) {
+			// move backward (i.e. decrease offset) as long as we stay in the text node and have zwsp characters to the left
+			while (offset > 0 && range.startContainer.data.charAt(offset - 1) === '\u200b') {
+				offset--;
+			}
+		}
+	}
+
+	// if the offset was changed, set it back to the collapsed range
+	if (offset !== range.startOffset) {
+		range.setStart(range.startContainer, offset);
+		range.setEnd(range.startContainer, offset);
+	}
+}
 
 /**
  * implementation of the delete command
@@ -6445,6 +6499,10 @@ function ensureContainerEditable(container) {
  */
 commands["delete"] = {
 	action: function(value, range) {
+		// special behaviour for skipping zero-width whitespaces in IE7
+		if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+			moveOverZWSP(range, false);
+		}
 
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
@@ -7059,6 +7117,10 @@ commands.formatblock = {
 //@{
 commands.forwarddelete = {
 	action: function(value, range) {
+		// special behaviour for skipping zero-width whitespaces in IE7
+		if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+			moveOverZWSP(range, true);
+		}
 	
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
@@ -7855,13 +7917,13 @@ commands.insertparagraph = {
 			// context object and append the result as the last child of
 			// container."
 			// only do this, if inserting the br does NOT modify the offset height of the container
-			if (!container.hasChildNodes()) {
-				var oldHeight = container.offsetHeight, endBr = createEndBreak();
-				container.appendChild(endBr);
-				if (container.offsetHeight !== oldHeight) {
-					container.removeChild(endBr);
-				}
-			}
+//			if (!container.hasChildNodes()) {
+//				var oldHeight = container.offsetHeight, endBr = createEndBreak();
+//				container.appendChild(endBr);
+//				if (container.offsetHeight !== oldHeight) {
+//					container.removeChild(endBr);
+//				}
+//			}
 
 			// "If container is a dd or dt, and it is not an allowed child of
 			// any of its ancestors in the same editing host, set the tag name
@@ -8606,7 +8668,10 @@ return {
 	queryCommandSupported: myQueryCommandSupported,
 	copyAttributes: copyAttributes,
 	createEndBreak: createEndBreak,
-	isEndBreak: isEndBreak
+	isEndBreak: isEndBreak,
+	ensureContainerEditable: ensureContainerEditable,
+	isEditingHost: isEditingHost,
+	isEditable: isEditable
 }
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker

@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright Â© 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -304,7 +304,7 @@ Aloha.Markup = Class.extend( {
 			return false;
 		}
 
-		var rangeObject = Aloha.Selection.rangeObject,
+		var rangeObject,
 		    handlers,
 		    i;
 
@@ -319,9 +319,13 @@ Aloha.Markup = Class.extend( {
 
 		// LEFT (37), RIGHT (39) keys for block detection
 		if ( event.keyCode === 37 || event.keyCode === 39 ) {
+			if (Aloha.getSelection().getRangeCount()) {
+				rangeObject = Aloha.getSelection().getRangeAt( 0 );
+
 			if ( this.processCursor( rangeObject, event.keyCode ) ) {
 				cleanupPlaceholders( Aloha.Selection.rangeObject );
 				return true;
+			}
 			}
 
 			return false;
@@ -368,17 +372,47 @@ Aloha.Markup = Class.extend( {
 	 *                   true otherwise.
 	 */
 	processCursor: function( range, keyCode ) {
-		if ( !range.isCollapsed() ) {
+		if ( !range.collapsed ) {
 			return true;
 		}
 
-		var node = range.startContainer;
+		var node = range.startContainer, selection = Aloha.getSelection();
 
 		if ( !node ) {
 			return true;
 		}
 
 		var sibling;
+
+		// special handling for moving Cursor around zero-width whitespace in IE7
+		if (jQuery.browser.msie && jQuery.browser.version <= 7 && isTextNode(node)) {
+			if (keyCode == 37) {
+				// moving left -> skip zwsp to the left
+				var offset = range.startOffset;
+				while (offset > 0 && node.data.charAt(offset - 1) === '\u200b') {
+					offset--;
+				}
+				if (offset != range.startOffset) {
+					range.setStart(range.startContainer, offset);
+					range.setEnd(range.startContainer, offset);
+					selection = Aloha.getSelection();
+					selection.removeAllRanges();
+					selection.addRange(range);
+				}
+			} else if (keyCode == 39) {
+				// moving right -> skip zwsp to the right
+				var offset = range.startOffset;
+				while (offset < node.data.length && node.data.charAt(offset) === '\u200b') {
+					offset++;
+				}
+				if (offset != range.startOffset) {
+					range.setStart(range.startContainer, offset);
+					range.setEnd(range.startContainer, offset);
+					selection.removeAllRanges();
+					selection.addRange(range);
+				}
+			}
+		}
 
 		// Versions of Internet Explorer that are older that 9, will
 		// erroneously allow you to enter and edit inside elements which have

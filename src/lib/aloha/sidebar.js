@@ -222,12 +222,14 @@ define([
 				if (that.isOpen) {
 					that.checkActivePanels(message.range);
 				}
+				that.lastRange = message.range;
 			});
 
 			Aloha.bind('aloha-editable-deactivated', function (event, params) {
 				if (that.isOpen) {
 					that.checkActivePanels();
 				}
+				that.lastRange = null;
 			});
 
 			this.container.mousedown(function (e) {
@@ -592,7 +594,9 @@ define([
 
 			this.isOpen = true;
 			this.correctHeight();
-
+			if (this.lastRange) {
+				this.checkActivePanels(this.lastRange);
+			}
 			$('body').trigger('aloha-sidebar-opened', this);
 
 			return this;
