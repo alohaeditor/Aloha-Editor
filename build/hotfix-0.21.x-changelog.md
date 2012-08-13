@@ -26,10 +26,10 @@ All changes are categorized into one of the following keywords:
 - **BUG**: block-plugin: selection was lost when using the cursor keys to move across inline blocks
 
 - **BUG**: block-plugin: Fixes problem in how droppable containers were being
-						 determined while drapping blocks.  The algorithm was
-						 miss-identifing any container that had a <br> tags
-						 with the "aloha-end-br" class as an "empty" container,
-						 even if it contained other content along with the
-						 propping <br>.  We now use a stricter check to remove
-						 this false positive.
+                         determined while drapping blocks.  The algorithm was
+                         miss-identifing any container that had a <br> tags
+                         with the "aloha-end-br" class as an "empty" container,
+                         even if it contained other content along with the
+                         propping <br>.  We now use a stricter check to remove
+                         this false positive.
 
