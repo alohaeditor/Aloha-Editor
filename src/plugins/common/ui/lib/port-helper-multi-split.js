@@ -18,9 +18,9 @@ define([
 	'use strict';
 
 	function MultiSplitButton(props) {
-		var component;
+		var multiSplit;
 
-		component = Ui.adopt(props.name, MultiSplit, {
+		multiSplit = Ui.adopt(props.name, MultiSplit, {
 			scope: props.scope,
 			getButtons: function () {
 				var buttons = [];
@@ -53,16 +53,16 @@ define([
 			// TODO make it possible to combine the items of multiple
 			// plugins into a single multi split button.
 			pushItem: function (item) {
-				props.items.push(item);
+				multiSplit.addButton(item);
 			},
 			showItem: function (name) {
-				component.show(name);
+				multiSplit.show(name);
 			},
 			hideItem: function (name) {
-				component.hide(name);
+				multiSplit.hide(name);
 			},
 			setActiveItem: function (name) {
-				component.setActiveButton(name);
+				multiSplit.setActiveButton(name);
 			}
 		};
 	}

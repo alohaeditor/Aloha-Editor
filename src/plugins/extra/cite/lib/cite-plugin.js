@@ -193,11 +193,8 @@ define([
 			});
 
 			// We brute-forcishly push our button settings into the
-			// multiSplitButton.  The multiSplitButton will pick it up and
-			// render it.  Nevertheless, because this button is added late, it
-			// means that it will not be automatically shown when doLayout is
-			// called on the FloatingMenu.  We therefore have to do it
-			// ourselves at aloha-selection-changed.
+			// multiSplitButton. The multiSplitButton will pick it up
+			// and render it.
 			Format.multiSplitButton.pushItem({
 				name: 'blockquote',
 				tooltip: i18n.t('cite.button.add.blockquote'),
