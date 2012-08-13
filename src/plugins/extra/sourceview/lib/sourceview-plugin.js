@@ -3,14 +3,12 @@
  * -------------------
  * Provides a development tool for Aloha Editor that shows the source around
  * the selection inside an editable.
- *
- * @TODO support for pretty print
  */
-
 define([
 	'aloha',
 	'jquery',
 	'../../../../test/unit/testutils',
+	'../../../../test/unit/htmlbeautifier',
 	'css!sourceview/css/sourceview'
 ], function (Aloha, jQuery, TestUtils) {
 	'use strict';
@@ -77,8 +75,11 @@ define([
 	 * @param {DOMElement} container
 	 */
 	function showSource(container) {
-		var source = Aloha.jQuery('<div>').text(container.html()).html();
-		source = source.replace(/\t/g, '&nbsp;&nbsp;')
+		var source = style_html(container.html());
+		source = Aloha.jQuery('<div>').text(source).html();
+		source = source.replace(/ /g, '&nbsp;')
+		               .replace(/[\r\n]/g, '<br/>')
+		               .replace(/\t/g, '&nbsp;&nbsp;')
 		               .replace(/([\[\{])/,
 		                  '<span class="aloha-devtool-source-viewer-marker"\
 		                     style="background:#70a5e2; color:#fff">$1')
