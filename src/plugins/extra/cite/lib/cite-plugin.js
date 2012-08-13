@@ -198,7 +198,7 @@ define([
 			Format.multiSplitButton.pushItem({
 				name: 'blockquote',
 				tooltip: i18n.t('cite.button.add.blockquote'),
-				iconClass: nsClass('button', 'block-button'),
+				icon: nsClass('button', 'block-button'),
 				click: function(){
 					that.addBlockQuote();
 				}
