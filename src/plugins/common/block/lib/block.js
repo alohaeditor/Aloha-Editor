@@ -577,11 +577,13 @@ define([
 		 * least they do not work anymore
 		 */
 		_disableUglyInternetExplorerDragHandles: function() {
-			this.$element.get( 0 ).onresizestart = function ( e ) { return false; };
-			this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
-			// We do NOT abort the "ondragstart" event as it is required for drag/drop.
-			this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
-			this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
+			if (jQuery.browser.msie) {
+				this.$element.get( 0 ).onresizestart = function ( e ) { return false; };
+				this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
+				// We do NOT abort the "ondragstart" event as it is required for drag/drop.
+				this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
+				this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
+			}
 		},
 
         /**
