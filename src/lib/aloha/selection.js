@@ -280,7 +280,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 			}
 
 			this.rangeObject = range || new Aloha.Selection.SelectionRange( true );
-			
+
 			// Only execute the workaround when a valid rangeObject was provided
 			if ( typeof this.rangeObject !== "undefined" && typeof this.rangeObject.startContainer !== "undefined" && this.rangeObject.endContainer !== "undefined") {
 				// workaround for a nasty IE bug that allows the user to select text nodes inside areas with contenteditable "false"
@@ -2199,7 +2199,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 		var startContainer = rangeObject.startContainer;
 		var endContainer = rangeObject.endContainer;
 		if (!startContainer || !endContainer) {
-			console.error("encountered range object without start or end container");
+			console.warn("aloha/selection", "encountered range object without start or end container");
 			return;
 		}
 		var startContext = getChangedContext(startContainer, prevStartContext);
