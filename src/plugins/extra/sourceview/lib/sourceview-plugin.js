@@ -78,7 +78,7 @@ define([
 	 * @param {DOMElement} container
 	 */
 	function showSource(container) {
-		var source = style_html(container.html());
+		var source = window.style_html(container.html());
 		source = Aloha.jQuery('<div>').text(source).html();
 		source = source.replace(/ /g, '&nbsp;')
 		               .replace(/[\r\n]/g, '<br/>')
