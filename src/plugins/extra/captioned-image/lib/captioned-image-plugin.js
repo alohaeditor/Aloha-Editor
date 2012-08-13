@@ -125,6 +125,7 @@ define([
 	function initializeComponents() {
 		var left = Ui.getAdoptedComponent('alignLeft');
 		var right = Ui.getAdoptedComponent('alignRight');
+		var center = Ui.getAdoptedComponent('alignCenter');
 		var alignLeft = function () {
 			if (BlockManager._activeBlock) {
 				var alignment = BlockManager._activeBlock.attr('align');
@@ -143,6 +144,13 @@ define([
 			}
 			return false;
 		};
+		var alignCenter = function () {
+			if (BlockManager._activeBlock) {
+				BlockManager._activeBlock.attr('align', 'center');
+				return true;
+			}
+			return false;
+		}
 
 		if (left) {
 			var clickLeft = left.click;
@@ -175,6 +183,32 @@ define([
 				click: alignRight
 			}));
 		}
+
+		if (center) {
+			var clickCenter = center.click;
+			center.click = function () {
+				if (!alignCenter()) {
+					clickCenter();
+				}
+			};
+			components.push(center);
+		} else {
+			components.push(Ui.adopt('imgAlignCenter', Button, {
+				tooltip: 'Align center',
+				text: 'Align center',
+				click: alignCenter
+			}));
+		}
+
+		components.push(Ui.adopt('imgAlignClear', Button, {
+			tooltip: 'Remove alignment',
+			text: 'Remove alignment',
+			click: function () {
+				if (BlockManager._activeBlock) {
+					BlockManager._activeBlock.attr('align', 'none');
+				}
+			}
+		}));
 	}
 
 	function getImageWidth($img) {
