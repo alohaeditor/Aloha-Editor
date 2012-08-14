@@ -60,7 +60,27 @@ define(['jquery', 'util/functions'],function($, Functions){
 		return result;
 	}
 	
-	function prewalk(form, fn, leaf, recurse, key, result) {
+	function walkNodes(form, recurseFn, leafFn) {
+		var result;
+		if (1 === form.nodeType) {
+			var clone = form.cloneNode(false);
+			var child = form.firstChild;
+			var subResult = [];
+			while (child) {
+				recurseFn(child, 0, subResult);
+				if (0 !== subResult.length) {
+					clone.appendChild(subResult[0]);
+				}
+				child = child.nextSibling;
+			}
+			result = clone;
+		} else {
+			result = leafFn(form.cloneNode(true));
+		}
+		return result;
+	}
+
+	function prewalk(form, fn, leaf, recurse, key, result, walk) {
 		result[key] = walk(
 			fn(form),
 			recurse,
@@ -68,7 +88,7 @@ define(['jquery', 'util/functions'],function($, Functions){
 		);
 	}
 
-	function postwalk(form, fn, leaf, recurse, key, result) {
+	function postwalk(form, fn, leaf, recurse, key, result, walk) {
 		result[key] = fn(walk(
 			form,
 			recurse,
@@ -76,7 +96,7 @@ define(['jquery', 'util/functions'],function($, Functions){
 		));
 	}
 
-	function preprune(form, fn, leaf, recurse, key, result) {
+	function preprune(form, fn, leaf, recurse, key, result, walk) {
 		if (!fn(form)) {
 			result[key] = walk(
 				form,
@@ -86,7 +106,7 @@ define(['jquery', 'util/functions'],function($, Functions){
 		}
 	}
 
-	function postprune(form, fn, leaf, recurse, key, result) {
+	function postprune(form, fn, leaf, recurse, key, result, walk) {
 		var subForm = walk(
 			form,
 			recurse,
@@ -97,23 +117,22 @@ define(['jquery', 'util/functions'],function($, Functions){
 		}
 	}
 
-	// TODO consider rewriting tree walking to do iteration instead of
-	// recursion to avoid the IE maximum recursion depth (which is
-	// limited to just a few hundred frames).
-	function walkrec(form, fn, leaf, walkFn) {
+	function walkrec(form, fn, leaf, walkFn, walk) {
 		var result = [null];
 		(function recurse(subForm, key, result) {
-			walkFn(subForm, fn, leaf, recurse, key, result);
+			walkFn(subForm, fn, leaf, recurse, key, result, walk);
 		}(form, 0, result));
 		return result[0];
 	}
 
 	return {
-		prewalk  : function(form, fn, leaf   ) { return walkrec(form, fn, leaf || Functions.identity, prewalk); },
-		postwalk : function(form, fn, leaf   ) { return walkrec(form, fn, leaf || Functions.identity, postwalk); },
-		preprune : function(form, pred, leaf ) { return walkrec(form, pred, leaf || Functions.identity, preprune); },
-		postprune: function(form, pred, leaf ) { return walkrec(form, pred, leaf || Functions.identity, postprune); },
-		leaves   : function(form, leaf       ) { return walkrec(form, Functions.identity, leaf, postwalk); },
+		prewalk  : function(form, fn, leaf   ) { return walkrec(form, fn, leaf || Functions.identity, prewalk, walk); },
+		postwalk : function(form, fn, leaf   ) { return walkrec(form, fn, leaf || Functions.identity, postwalk, walk); },
+		preprune : function(form, pred, leaf ) { return walkrec(form, pred, leaf || Functions.identity, preprune, walk); },
+		postprune: function(form, pred, leaf ) { return walkrec(form, pred, leaf || Functions.identity, postprune, walk); },
+		leaves   : function(form, leaf       ) { return walkrec(form, Functions.identity, leaf, postwalk, walk); },
+		prepruneNodes : function(form, pred, leaf) { return walkrec(form, pred, leaf || Functions.identity, preprune, walkNodes); },
+		postpruneNodes: function(form, pred, leaf) { return walkrec(form, pred, leaf || Functions.identity, postprune, walkNodes); },
 		flatten  : function(form) {
 			var result = [];
 			walkrec(form, Functions.identity, function(leaf){ result.push(leaf); }, postwalk);
