@@ -309,9 +309,7 @@ define([
 			newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.$element[0]);
 
 			BlockManager.trigger('block-delete', this);
-			BlockManager._unregisterBlock(this);
-
-			this.unbindAll();
+			this.free();
 
 			var isInlineElement = this.$element[0].tagName.toLowerCase() === 'span';
 
@@ -324,6 +322,22 @@ define([
 					}
 				}, 5);
 			});
+		},
+
+		/**
+		 * Free internal state associated with this block.
+		 *
+		 * Should be called when a block is not used any more to prevent
+		 * memory leaks.
+		 *
+		 * Any invokations of instance methods after this method has
+		 * been called will result in undefined behaviour.
+		 *
+		 * @api
+		 */
+		free: function () {
+			BlockManager._unregisterBlock(this);
+			this.unbindAll();
 		},
 
 		/**************************
