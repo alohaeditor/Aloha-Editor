@@ -37,3 +37,20 @@ All changes are categorized into one of the following keywords:
 
 - **ENHANCEMENT**: pubsub/repository-browser: Upgrades the PubSub, and
                    RepositoryBrowser dependencies.
+
+- **BUG**: Fixed block formatting (p, h1, ...)
+
+    To reproduce the error
+
+    * insert two paragraphs into an editable
+
+    "
+    Paragraph1
+    Paragraph2
+    "
+
+    * select both paragraphs and format them as h2
+    * click into the second paragraph and format as h3
+
+    The result before this fix would have been that in the last step both
+    paragraphs were formatted as h3.
