@@ -35,6 +35,14 @@
  * flatten(form)
  *
  *     Makes an array of all leaves in the tree.
+ *
+ * prepruneNodes(form, fn, leaf)
+ *
+ *     Like preprune(form, fn, leaf) except for DOM nodes.
+ *
+ * postpruneNodes(form, fn, leaf
+ *
+ *     Like postprune(form, fn, leaf) except for DOM nodes.
  */
 define(['jquery', 'util/functions'],function($, Functions){
 	'use strict';
