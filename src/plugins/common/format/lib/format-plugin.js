@@ -281,7 +281,6 @@ function (Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, PubSub) {
 								}
 								// formating workaround for table plugin
 								
-								Aloha.Selection.updateSelection(null);
 								Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
 
 								// setting the focus is needed for mozilla to have a working rangeObject.select()
