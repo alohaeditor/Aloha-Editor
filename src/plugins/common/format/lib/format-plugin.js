@@ -556,7 +556,6 @@ define('format/format-plugin', [
 			 * Change markup
 			*/
 			changeMarkup: function( button ) {
-				Aloha.Selection.updateSelection(null);
 				Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
 			},
 
