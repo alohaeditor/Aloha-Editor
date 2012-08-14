@@ -241,7 +241,7 @@ define([
 				continue;
 			}
 
-			$img = block.$_image;
+			$img = block.$_image.clone();
 			var caption = block.attr('caption');
 			var align = block.attr('align');
 
@@ -265,7 +265,7 @@ define([
 			// Now replace the entire block with the original image, with
 			// potentially updated data-caption, data-align and class
 			// attributes.
-			block.$element.replaceWith($img);
+			$blocks.eq(j).replaceWith($img);
 		}
 	}
 
@@ -418,7 +418,7 @@ define([
 			});
 		},
 		makeClean: function ($content) {
-			return $content;
+			cleanEditable($content);
 		}
 	});
 
