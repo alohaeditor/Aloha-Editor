@@ -37,3 +37,10 @@ All changes are categorized into one of the following keywords:
 
 - **ENHANCEMENT**: pubsub/repository-browser: Upgrades the PubSub, and
                    RepositoryBrowser dependencies.
+                   
+- **BUG**: table-plugin: Fixes a bug that occurred when marking a row or column
+		   as a header which contained cells that were already headers (th). If
+		   the selected row or column contains any cells that are not headers, 
+		   all selected cells will now be marked as headers. If all cells in the
+		   selection are already headers, they will all be marked as normal
+		   cells (td).
