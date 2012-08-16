@@ -331,9 +331,11 @@ define([
 			// Whenever we need to use other attributes, we'll have to retrieve
 			// it from the original image.
 			var caption = $img.attr('data-caption');
+			var align = $img.attr('data-align');
 			caption = (typeof caption !== 'undefined') ? caption : '';
+			align = (typeof align !== 'undefined') ? align : false;
 			$block.attr('data-caption',        caption)
-			      .attr('data-align',          $img.attr('data-align'))
+			      .attr('data-align',          align)
 			      .attr('data-width',          getImageWidth($img))
 			      .attr('data-original-image', $img[0].outerHTML);
 		}
