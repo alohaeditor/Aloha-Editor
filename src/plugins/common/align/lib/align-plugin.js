@@ -106,7 +106,7 @@ define([
 		    }, Aloha.activeEditable.obj);
 
 			if (this.alignment != this.lastAlignment) {
-				// reset all button states -- it can only one be one active...
+				// reset all button states -- it can only be one active...
 				this._alignRightButton.setState(false);
 				this._alignLeftButton.setState(false);
 				this._alignCenterButton.setState(false);
