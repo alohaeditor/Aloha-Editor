@@ -39,6 +39,9 @@ All changes are categorized into one of the following keywords:
 		   return the same object, causing unexpected behaviour when client
 		   code modified that object.
 
+- **BUG**: building/undo-plugin: The undo plugin was removed from the list of 
+           plugins that are included in the build process because it caused some 
+           silent javascript errors with content in frameset environments.
 
 - **BUG**: image-plugin: The reset image button function was fixed.  Previously
            a javascript error occured when the button was pressed.
