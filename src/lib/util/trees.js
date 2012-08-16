@@ -143,7 +143,7 @@ define(['jquery', 'util/functions'],function($, Functions){
 		postpruneNodes: function(form, pred, leaf) { return walkrec(form, pred, leaf || Functions.identity, postprune, walkNodes); },
 		flatten  : function(form) {
 			var result = [];
-			walkrec(form, Functions.identity, function(leaf){ result.push(leaf); }, postwalk);
+			walkrec(form, Functions.identity, function(leaf){ result.push(leaf); }, postwalk, walk);
 			return result;
 		}
 	};
