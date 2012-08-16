@@ -127,6 +127,8 @@ define([
 		var right = Ui.getAdoptedComponent('alignRight');
 		var center = Ui.getAdoptedComponent('alignCenter');
 		var alignLeft = function () {
+			center.setState(false);
+			right.setState(false);
 			if (BlockManager._activeBlock) {
 				var alignment = BlockManager._activeBlock.attr('align');
 				BlockManager._activeBlock.attr('align',
@@ -136,6 +138,8 @@ define([
 			return false;
 		};
 		var alignRight = function () {
+			left.setState(false);
+			center.setState(false);
 			if (BlockManager._activeBlock) {
 				var alignment = BlockManager._activeBlock.attr('align');
 				BlockManager._activeBlock.attr('align',
@@ -145,6 +149,8 @@ define([
 			return false;
 		};
 		var alignCenter = function () {
+			left.setState(false);
+			right.setState(false);
 			if (BlockManager._activeBlock) {
 				BlockManager._activeBlock.attr('align', 'center');
 				return true;
