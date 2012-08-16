@@ -12,6 +12,36 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **MANUAL CHANGE**: The change requires changes to existing implementation.
 
+# 0.20.x
+
+## 0.20.22 - 2012/08/16
+
+- **ENHANCEMENT**: link-plugin: Removed unwanted margins from the sidebar panel of the link attribute.
+- **BUG**: Fixed block formatting (p, h1, ...)
+
+    To reproduce the error
+
+    * insert two paragraphs into an editable
+
+    "
+    Paragraph1
+    Paragraph2
+    "
+
+    * select both paragraphs and format them as h2
+    * click into the second paragraph and format as h3
+
+    The result before this fix would have been that in the last step both
+    paragraphs were formatted as h3.
+
+- **BUG**: core: We now also remove jquery* attributes before the content is saved.
+- **BUG**: core: We now log a warning to the console if repositories run into timeouts.
+- **BUG**: wai-lang: We now load the language dataset in the query method. This fixes the issue that if the first request went wrong it was never loaded again.
+- **BUG**: sidebar: The sidebar now remembers the current selection and refreshes itself when it is being opened.
+- **BUG**: wordcontenthandler: Fixed the pasting of tables with empty cells.
+- **BUG**: wordcontenthandler: Fixed the pasting of lists in chrome and IE9.
+
+
 ## 0.20.21 - 2012/08/06
 
 - **MANUAL CHANGE**: Changed the aloha-smart-content-changed event
