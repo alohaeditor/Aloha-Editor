@@ -193,14 +193,14 @@ define([
 			};
 			components.push(center);
 		} else {
-			components.push(Ui.adopt('imgAlignCenter', Button, {
+			components.push(Ui.adopt('imgAlignCenter', ToggleButton, {
 				tooltip: 'Align center',
 				text: 'Align center',
 				click: alignCenter
 			}));
 		}
 
-		components.push(Ui.adopt('imgAlignClear', Button, {
+		components.push(Ui.adopt('imgAlignClear', ToggleButton, {
 			tooltip: 'Remove alignment',
 			text: 'Remove alignment',
 			click: function () {
