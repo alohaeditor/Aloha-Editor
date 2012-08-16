@@ -614,44 +614,45 @@ define([
 			icon: "aloha-icon aloha-icon-rowheader",
 			scope: this.name + '.row',
 			click: function() {
-				// table header
 				if (that.activeTable) {
-					var sc = that.activeTable.selection.selectedCells;
-					that.rowsToSelect = [];
-					var makeHeader = ( 
-        				sc[0] && sc[0].nodeName.toLowerCase() == 'td' && sc.length == 1 ||
-        					sc[0] && sc[0].nodeName.toLowerCase() == 'td' && 
-        					sc[1].nodeName.toLowerCase() == 'td' );
-
-					// if a selection was made, transform the selected cells
-					for (var i = 0; i < sc.length; i++) {
-						if (i == 0) {
-							that.rowsToSelect.push(sc[i].rowIndex);
+    				var selectedRowIdxs = that.activeTable.selection.selectedRowIdxs,
+    	  			cell,
+    	  			isHeader = that.activeTable.selection.isHeader(),
+    				allHeaders = true; // flag for header check
+    				
+    				// loop through selected cells, determine if any are not already headers
+    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
+    					cell = that.activeTable.selection.selectedCells[j];
+						if ( !isHeader ) {
+							allHeaders = false;
+							break;
 						}
-						
-						if ( makeHeader ) {
-            				sc[i] = Aloha.Markup.transformDomObject(sc[i], 'th').attr('scope', 'col')[0];
+    				}
+    				
+    				// updated selected cells
+    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
+			    		cell = that.activeTable.selection.selectedCells[j];
+						if ( allHeaders ) {
+			        		cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
 						} else { 
-            				sc[i] = Aloha.Markup.transformDomObject(sc[i], 'td').removeAttr('scope')[0];
+			        		cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'row' ).get(0);
 						}
 						
-						jQuery(sc[i]).bind('mousedown', function (jqEvent) {
+						jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
 							var wrapper = jQuery(this).children('div').eq(0);
+							// lovely IE ;-)
 							window.setTimeout(function () {
-								wrapper.trigger('focus');
+			            		wrapper.trigger( 'focus' );
 							}, 1);
 							// unselect cells
-							if (that.activeTable) {
-								that.activeTable.selection.unselectCells();
-							}
 						});
+						
 					}
 					
-					// selection could have changed.
-					if (that.activeTable) {
-						that.activeTable.refresh();
-						that.activeTable.selectRows();
-					}
+					// select the row
+					that.activeTable.refresh();
+					that.activeTable.selection.unselectCells();
+					that.activeTable.selection.selectRows( selectedRowIdxs );
 				}
 			}
 		});
@@ -775,11 +776,22 @@ define([
     				var 
     	  			selectedColumnIdxs = that.activeTable.selection.selectedColumnIdxs,
     	  			cell,
-    	  			isHeader = that.activeTable.selection.isHeader();
-
-					for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
+    	  			isHeader = that.activeTable.selection.isHeader(),
+    				allHeaders = true; // flag for header check
+    				
+    				// loop through selected cells, determine if any are not already headers
+    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
+    					cell = that.activeTable.selection.selectedCells[j];
+						if ( !isHeader ) {
+							allHeaders = false;
+							break;
+						}
+    				}
+    				
+    				// updated selected cells
+    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
 			    		cell = that.activeTable.selection.selectedCells[j];
-						if ( isHeader ) {
+						if ( allHeaders ) {
 			        		cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
 						} else { 
 			        		cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'row' ).get(0);
@@ -795,7 +807,8 @@ define([
 						});
 						
 					}
-					// selection the column.
+    				
+					// select the column
 					that.activeTable.refresh();
 					that.activeTable.selection.unselectCells();
 					that.activeTable.selection.selectColumns( selectedColumnIdxs );
