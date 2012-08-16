@@ -205,10 +205,10 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 				window.clearTimeout(this.updateSelectionTimeout);
 			}
 
-			// We have to update the selection due to an IE bug that is
-			// is caused by selecting some text and then clicking once
-			// inside the selection (which collapses the selection
-			// inside the previous selection).
+			// We have to update the selection in a timeout due to an IE
+			// bug that is is caused by selecting some text and then
+			// clicking once inside the selection (which collapses the
+			// selection inside the previous selection).
 			var selection = this;
 			this.updateSelectionTimeout = window.setTimeout(function () {
 				var range = new Aloha.Selection.SelectionRange(true);
