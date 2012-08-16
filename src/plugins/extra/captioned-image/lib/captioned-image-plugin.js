@@ -18,8 +18,8 @@ define([
 	'block/block',
 	'block/blockmanager',
 	'ui/ui',
+	'ui/scopes',
 	'ui/toggleButton',
-	'ui/toolbar',
 	'util/maps',
 	'aloha/contenthandlermanager',
 	'aloha/console',
@@ -34,8 +34,8 @@ define([
 	Block,
 	BlockManager,
 	Ui,
+	Scopes,
 	ToggleButton,
-	Toolbar,
 	Maps,
 	ContentHandlerManager,
 	console
@@ -379,7 +379,7 @@ define([
 					that.attr('caption', html);
 				}
 
-				Toolbar.$surfaceContainer.show();
+				Scopes.leaveScope('caption');
 			};
 
 			this.onkeypress = function(e) {
@@ -440,7 +440,7 @@ define([
 
 				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable.obj.is(that.$_caption)) {
-						Toolbar.$surfaceContainer.hide();
+						Scopes.enterScope('caption');
 					}
 				});
 			}, function (error) {
