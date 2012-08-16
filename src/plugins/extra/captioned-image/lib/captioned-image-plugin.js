@@ -228,45 +228,48 @@ define([
 		}
 	}
 
-	function cleanEditable($editable) {
-		var $blocks = $editable.find('.aloha-captioned-image-block');
-		var j = $blocks.length;
-		var block;
-		var $img;
-
-		while (j--) {
-			block = BlockManager.getBlock($blocks[j]);
-
-			if (!block) {
-				continue;
+	function eachBlock($context, fn) {
+		var $blocks = $context.find('.aloha-captioned-image-block');
+		$blocks.each(function (i, blockElem) {
+			var block = BlockManager.getBlock(blockElem);
+			if (block) {
+				return fn(block, blockElem);
 			}
+		});
+	}
 
-			$img = block.$_image;
-			var caption = block.attr('caption');
-			var align = block.attr('align');
+	function cleanBlock(block, blockElem) {
+		var $img = block.$_image.clone();
+		var caption = block.attr('caption');
+		var align = block.attr('align');
 
-			// We only touch the data-caption and data-align attributes o/t img!
-			if (caption) {
-				$img.attr('data-caption', caption);
-			} else {
-				$img.removeAttr('data-caption');
-			}
-
-			if (align) {
-				$img.attr('data-align', align);
-			} else {
-				$img.removeAttr('data-align');
-			}
-
-			if (settings.captionedImageClass) {
-				$img.addClass(settings.captionedImageClass);
-			}
-
-			// Now replace the entire block with the original image, with
-			// potentially updated data-caption, data-align and class
-			// attributes.
-			block.$element.replaceWith($img);
+		// We only touch the data-caption and data-align attributes o/t img!
+		if (caption) {
+			$img.attr('data-caption', caption);
+		} else {
+			$img.removeAttr('data-caption');
 		}
+
+		if (align) {
+			$img.attr('data-align', align);
+		} else {
+			$img.removeAttr('data-align');
+		}
+
+		if (settings.captionedImageClass) {
+			$img.addClass(settings.captionedImageClass);
+		}
+
+		// Now replace the entire block with the original image, with
+		// potentially updated data-caption, data-align and class
+		// attributes.
+		$(blockElem).replaceWith($img);
+	}
+
+	function cleanEditable($editable) {
+		eachBlock($editable, function (block, blockElem) {
+			cleanBlock(block, blockElem);
+		});
 	}
 
 	function wrapNakedCaptionedImages($editable) {
@@ -412,13 +415,16 @@ define([
 					showComponents);
 			});
 			Aloha.bind('aloha-editable-destroyed', function ($event, editable) {
-				cleanEditable(editable.obj);
+				eachBlock(editable.obj, function (block, blockElem) {
+					cleanBlock(block, blockElem);
+					block.free();
+				});
 				editable.obj.undelegate('.aloha-captioned-image-block', 'click',
 					showComponents);
 			});
 		},
 		makeClean: function ($content) {
-			return $content;
+			cleanEditable($content);
 		}
 	});
 

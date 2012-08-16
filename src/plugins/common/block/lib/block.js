@@ -309,9 +309,7 @@ define([
 			newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.$element[0]);
 
 			BlockManager.trigger('block-delete', this);
-			BlockManager._unregisterBlock(this);
-
-			this.unbindAll();
+			this.free();
 
 			var isInlineElement = this.$element[0].tagName.toLowerCase() === 'span';
 
@@ -324,6 +322,22 @@ define([
 					}
 				}, 5);
 			});
+		},
+
+		/**
+		 * Free internal state associated with this block.
+		 *
+		 * Should be called when a block is not used any more to prevent
+		 * memory leaks.
+		 *
+		 * Any invokations of instance methods after this method has
+		 * been called will result in undefined behaviour.
+		 *
+		 * @api
+		 */
+		free: function () {
+			BlockManager._unregisterBlock(this);
+			this.unbindAll();
 		},
 
 		/**************************
@@ -577,11 +591,13 @@ define([
 		 * least they do not work anymore
 		 */
 		_disableUglyInternetExplorerDragHandles: function() {
-			this.$element.get( 0 ).onresizestart = function ( e ) { return false; };
-			this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
-			// We do NOT abort the "ondragstart" event as it is required for drag/drop.
-			this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
-			this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
+			if (jQuery.browser.msie) {
+				this.$element.get( 0 ).onresizestart = function ( e ) { return false; };
+				this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
+				// We do NOT abort the "ondragstart" event as it is required for drag/drop.
+				this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
+				this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
+			}
 		},
 
         /**

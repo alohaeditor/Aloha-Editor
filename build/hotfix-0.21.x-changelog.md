@@ -44,3 +44,20 @@ All changes are categorized into one of the following keywords:
 		   all selected cells will now be marked as headers. If all cells in the
 		   selection are already headers, they will all be marked as normal
 		   cells (td).
+
+- **BUG**: Fixed block formatting (p, h1, ...)
+
+    To reproduce the error
+
+    * insert two paragraphs into an editable
+
+    "
+    Paragraph1
+    Paragraph2
+    "
+
+    * select both paragraphs and format them as h2
+    * click into the second paragraph and format as h3
+
+    The result before this fix would have been that in the last step both
+    paragraphs were formatted as h3.
