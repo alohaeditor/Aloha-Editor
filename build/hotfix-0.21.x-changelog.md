@@ -54,3 +54,6 @@ All changes are categorized into one of the following keywords:
 
     The result before this fix would have been that in the last step both
     paragraphs were formatted as h3.
+
+- **BUG**: Updated requirejs and r.js to 2.0.5 to fix loading error in Safari
+
