@@ -7,6 +7,7 @@
  * MIT licensed.
  */
 (function() {
+	'use strict';
 
 // based on Backbone.js' inherits	
 var ctor = function(){};
@@ -30,6 +31,7 @@ var inherits = function(parent, protoProps) {
 };
 
 function extend(target, ref) {
+	var name;
 	for ( name in ref ) {
 		var value = ref[name];
 		if (value !== undefined) {

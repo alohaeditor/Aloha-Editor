@@ -87,8 +87,9 @@ define([
 						this.panel.append(elem);
 					}
 				} else {
+					// Hide the group until the first button is adopted into it.
 					group = $('<div>', {
-						'class': 'aloha-ui-component-group',
+						'class': 'aloha-ui-component-group aloha-ui-hidden',
 						'unselectable': 'on'
 					}).appendTo(this.panel);
 					groupProps = {element: group, visibleCounter: 0};
@@ -132,6 +133,9 @@ define([
 			if (group) {
 				this._groupByComponent[component.id] = group;
 				if (component.isVisible()) {
+					if (!group.visibleCounter) {
+						group.element.removeClass('aloha-ui-hidden');
+					}
 					group.visibleCounter += 1;
 				}
 			}

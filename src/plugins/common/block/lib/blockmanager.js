@@ -516,7 +516,7 @@ define([
 			} else {
 				id = blockOrBlockId;
 			}
-			this.blocks.unregister(blockOrBlockId);
+			this.blocks.unregister(id);
 		},
 
 

@@ -200,25 +200,33 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 		 * @return true when rangeObject was modified, false otherwise
 		 * @hide
 		 */
-		onChange: function(objectClicked, event) {
+		onChange: function(objectClicked, event, timeout) {
 			if (this.updateSelectionTimeout) {
 				window.clearTimeout(this.updateSelectionTimeout);
-				this.updateSelectionTimeout = undefined;
 			}
-			//we have to work around an IE bug that causes the user
-			//selection to be incorrectly set on the body element when
-			//the updateSelectionTimeout triggers. We remember the range
-			//from the time when this onChange is triggered and provide
-			//it instead of the current user selection when the timout
-			//is triggered. The bug is caused by selecting some text and
-			//then clicking once inside the selection (which collapses
-			//the selection). Interesting fact: when the timeout is
-			//increased to 500 milliseconds, the bug will not cause any
-			//problems since the selection will correct itself somehow.
-			var range = new Aloha.Selection.SelectionRange(true);
+
+			// We have to update the selection in a timeout due to an IE
+			// bug that is is caused by selecting some text and then
+			// clicking once inside the selection (which collapses the
+			// selection inside the previous selection).
+			var selection = this;
 			this.updateSelectionTimeout = window.setTimeout(function () {
+				var range = new Aloha.Selection.SelectionRange(true);
+				// We have to work around an IE bug that causes the user
+				// selection to be incorrectly set on the body element
+				// when the updateSelectionTimeout triggers. The
+				// selection corrects itself after waiting a while.
+				if (!range.startContainer ||
+					'HTML' === range.startContainer.nodeName ||
+					'BODY' === range.startContainer.nodeName ) {
+					if (!this.updateSelectionTimeout) {
+						// First wait 5 millis, then 20 millis, 50 millis, 110 millis etc.
+						selection.onChange(objectClicked, event, 10 + (timeout || 5) * 2);
+					}
+					return;
+				}
 				Aloha.Selection._updateSelection(event, range);
-			}, 5);
+			}, timeout || 5);
 		},
 
 		/**

@@ -224,7 +224,7 @@ function (
 
 			Scopes.createScope('Aloha.img', ['Aloha.global']);
 
-			this._imageCropButtonButton = Ui.adopt("imageCropButton", ToggleButton, {
+			this._imageCropButton = Ui.adopt("imageCropButton", ToggleButton, {
 				tooltip: i18n.t('Crop'),
 				icon: 'aloha-icon-cnr-crop',
 				scope: plugin.name,

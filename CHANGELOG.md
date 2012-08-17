@@ -12,6 +12,86 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **MANUAL CHANGE**: The change requires changes to existing implementation.
 
+# 0.21.x
+
+## 0.21.2 - 2012/08/16
+
+- **MANUAL CHANGE**: Updated impress.js to work with jQuery UI
+
+- **MANUAL CHANGE**: Updated demo-app to work with jQuery UI; added simple system test to check file permissions;
+
+- **MANUAL CHANGE**: Updated the guides for the contenthandler configuration;
+
+- **MANUAL CHANGE**: removed not needed demo/test.html (was for testing per editable config)
+
+- **ENHANCEMENT**: link-plugin: Removed unwanted margins from the sidebar panel of the link attribute.
+
+- **ENHANCEMENT**: Addition to the API
+                   Aloha.Editable.setContentSerializer() was added to the API.
+                   Aloha.Editable.getContentSerializer() was implemented and
+				   added to the API.
+
+- **ENHANCEMENT**: pubsub/repository-browser: Upgrades the PubSub, and
+                   RepositoryBrowser dependencies.
+
+- **BUG**: Editable.getContents(true) doesn't make defensive copies.
+		   Invoking Editable.getContents(true) multiple times in a row would
+		   return the same object, causing unexpected behaviour when client
+		   code modified that object.
+
+- **BUG**: building/undo-plugin: The undo plugin was removed from the list of 
+           plugins that are included in the build process because it caused some 
+           silent javascript errors with content in frameset environments.
+
+- **BUG**: image-plugin: The reset image button function was fixed.  Previously
+           a javascript error occured when the button was pressed.
+
+- **BUG**: wai-lang-plugin: Language annotations were not enhanced.
+		   The short name ('de') of language annotations was displayed instead
+		   of of the full name from the repository ('German').
+
+- **BUG**: block-plugin: Selection was lost when using the cursor keys to move
+           across inline blocks.
+
+- **BUG**: block-plugin: Fixes problem in how droppable containers were being
+		   determined while drapping blocks.  The algorithm was miss-identifing
+		   any container that had a <br> tags with the "aloha-end-br" class as
+		   an "empty" container, even if it contained other content along with
+		   the propping <br>.  We now use a stricter check to remove this false
+		   positive.
+
+- **BUG**: Fixed block formatting (p, h1, ...)
+
+    To reproduce the error
+
+    * insert two paragraphs into an editable
+
+    "
+    Paragraph1
+    Paragraph2
+    "
+
+    * select both paragraphs and format them as h2
+    * click into the second paragraph and format as h3
+
+    The result before this fix would have been that in the last step both
+    paragraphs were formatted as h3.
+
+
+- **BUG**: core: We now also remove jquery* attributes before the content is saved.
+
+- **BUG**: core: We now log a warning to the console if repositories run into timeouts.
+
+- **BUG**: wai-lang: We now load the language dataset in the query method. This fixes the issue that if the first request went wrong it was never loaded again.
+
+- **BUG**: sidebar: The sidebar now remembers the current selection and refreshes itself when it is being opened.
+
+- **BUG**: wordcontenthandler: Fixed the pasting of tables with empty cells.
+
+- **BUG**: wordcontenthandler: Fixed the pasting of lists in chrome and IE9.
+
+- **BUG**: In the sidebar the panel entry for the format plugin was always shown; now when the formatOptions is empty the empty (useless) sidebar panel will be hidden
+
 ## 0.21.1 - 2012/08/06
 
 - **MANUAL CHANGE**: The API Method setActiveButton() of the MultiSplit component changed: the parameter must be the name of the button to set active, not the index.

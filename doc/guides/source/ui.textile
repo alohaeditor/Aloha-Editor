@@ -68,7 +68,7 @@ Aloha.settings.toolbar = {
         	label: 'Format',
     		components: [
                 [ 'bold', 'italic', 'underline', '\n',
-				  'subscript', 'superscript', 'strikethrough' ]
+				  'subscript', 'superscript', 'strikethrough' ],
 			    [ 'formatBlock' ]
             ]
     	},
@@ -104,5 +104,3 @@ The merge rules are as follows
   a components property, and unless the exclusive property on a tab is
   true, append all remaining components from the default tab to the
   user's tab configuration.
-
-<img src="images/toolbar.png" style="width:600px">
