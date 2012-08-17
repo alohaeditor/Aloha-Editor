@@ -257,6 +257,23 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 		},
 
 		/**
+		 * This method checks, if the current rangeObject common ancestor container has a 'data-aloha-floatingmenu-visible' Attribute.
+		 * Needed in Floating Menu for exceptional display of floatingmenu.
+		 */
+		isFloatingMenuVisible: function() {
+			var visible = jQuery(Aloha.Selection.rangeObject
+				.commonAncestorContainer).attr('data-aloha-floatingmenu-visible');
+			if(visible !== 'undefined'){
+				if (visible === 'true'){
+					return true;
+				} else {
+					return false;
+				}
+			}
+			return false;
+		},
+
+		/**
 		 * INFO: Method is used for integration with Gentics Aloha, has no use otherwise
 		 * Updates the rangeObject according to the current user selection
 		 * Method is always called on selection change
@@ -288,7 +305,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 			}
 
 			this.rangeObject = range || new Aloha.Selection.SelectionRange( true );
-
+			
 			// Only execute the workaround when a valid rangeObject was provided
 			if ( typeof this.rangeObject !== "undefined" && typeof this.rangeObject.startContainer !== "undefined" && this.rangeObject.endContainer !== "undefined") {
 				// workaround for a nasty IE bug that allows the user to select text nodes inside areas with contenteditable "false"
@@ -312,6 +329,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 			// throw the event that the selection has changed. Plugins now have the
 			// chance to react on the currentElements[childCount].children.lengthged selection
 			Aloha.trigger('aloha-selection-changed', [this.rangeObject, event]);
+
 			triggerSelectionContextChanged(this.rangeObject, event);
 
 			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
@@ -626,6 +644,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 		 * @hide
 		 */
 		standardTextLevelSemanticsComparator: function(domobj, markupObject) {
+			// only element nodes can be compared
 			if  (domobj.nodeType === 1) {
 				if (domobj.nodeName != markupObject[0].nodeName) {
 					return false;
@@ -648,7 +667,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 		 * @return true if objects are equal and false if not
 		 * @hide
 		 */
-		standardAttributesComparator: function(domobj, markupObject) {			
+		standardAttributesComparator: function(domobj, markupObject) {
 			var classesA = Strings.words((domobj && domobj.className) || '');
 			var classesB = Strings.words((markupObject.length && markupObject[0].className) || '');
 			Arrays.sortUnique(classesA);
@@ -1144,8 +1163,8 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 				Aloha.Log.debug(this, 'Node name detected: ' + nn + ' for: ' + markupObject.outerHtml());
 			}
 			if (nn == '#text') {return 'textNode';}
-			if (this.replacingElements[nn]) {return 'sectionOrGroupingContent';}
-			if (this.tagHierarchy[nn]) {return 'textLevelSemantics';}
+			if (this.replacingElements[ nn ]) {return 'sectionOrGroupingContent';}
+			if (this.tagHierarchy [ nn ]) {return 'textLevelSemantics';}
 			Aloha.Log.warn(this, 'unknown markup passed to this.getMarkupType(...): ' + markupObject.outerHtml());
 		},
 
@@ -2141,6 +2160,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
+		// check whether the container starts in an element node
 		if (rangeObject.startContainer.nodeType != 1) {
 			return false;
 		}
@@ -2217,6 +2237,10 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 		}
 		prevStartContext = startContext;
 		prevEndContext   = endContext;
+
+		/**
+		 * @api documented in the guides
+		 */
 		PubSub.pub('aloha.selection.context-change', {range: rangeObject, event: event});
 	}
 
