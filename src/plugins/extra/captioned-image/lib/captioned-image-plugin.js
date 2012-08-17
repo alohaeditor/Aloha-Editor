@@ -444,16 +444,39 @@ define([
 				that._processRenderedData(data);
 				postProcessCallback();
 
-				// add the key handler for enter (no new line allowed in caption)
-				Aloha.Markup.addKeyHandler(13, function(event) {
-					return that.onkeypress(event);
-				});
-
 				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable.obj.is(that.$_caption)) {
 						Toolbar.$surfaceContainer.hide();
+
+						// add the key handler for enter (no new line allowed in caption)
+						Aloha.Markup.addKeyHandler(13, function($event) {
+							return that.onkeypress($event);
+						});
+
 					}
 				});
+
+				Aloha.bind('aloha-editable-deactivated', function ($event, data) {
+					//if (data.editable.obj.is(that.$_caption)) {
+						// this should work like above at aloha-editable-activated,
+						// but it seems there is a proplem in the block implementation / this plugin
+						// when iteracting with the caption editable aloha-editable-(de)activated
+						// is triggerd 3 times (because there are 3 captioned image block in the main editable)
+						// when just activate / deactivate the caption it works with fine (that.$_caption is available for all 3) but
+						// when you change the text of the caption and deactivate it that.$_caption is 3 times the same,
+						// it's the first caption editable (but this one was not the one I (de)activated)
+
+						// the implementation of Aloha.Markup.addKeyHandler is at the moment ok,
+						// but should be improved so that it's possible to bind it to a specific editable
+						// right now addKeyHandler is just used here and in the list plugin
+						// there is already an issue in the tracker recommending using the hotkey plugin also here
+						// we need to discuss this topic ...
+
+						// remove the key handler for enter
+						Aloha.Markup.removeKeyHandler(13);
+					//}
+				});
+
 			}, function (error) {
 				postProcessCallback();
 			});
