@@ -429,7 +429,6 @@
 				"align/align-plugin",
 				"abbr/abbr-plugin",
 				"horizontalruler/horizontalruler-plugin",
-				"undo/undo-plugin",
 				"paste/paste-plugin",
 				// some extra plugins
 				'toc/toc-plugin',
