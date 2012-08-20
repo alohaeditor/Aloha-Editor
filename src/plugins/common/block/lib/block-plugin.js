@@ -78,9 +78,10 @@ define([
 		init: function () {
 			var that = this;
 
-			// Register default block types
+			// Register default block types			
 			BlockManager.registerBlockType( 'DebugBlock', block.DebugBlock );
 			BlockManager.registerBlockType( 'DefaultBlock', block.DefaultBlock );
+			BlockManager.registerBlockType( 'EmptyBlock', block.EmptyBlock );
 
 			// Register default editors
 			EditorManager.register( 'string', editor.StringEditor );
