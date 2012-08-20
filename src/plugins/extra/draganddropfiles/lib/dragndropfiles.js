@@ -345,8 +345,13 @@ function($, Plugin,DropFilesRepository) {
 			var	range = new Aloha.Selection.SelectionRange(true);
 			range.update();
 			if (target.textNodes().length == 0) {
-				range.startContainer = target[0].childNodes[0];
-				range.endContainer = target[0].childNodes[0];
+			  if (target[0].childNodes[0]) {
+          range.startContainer = target[0].childNodes[0];
+          range.endContainer = target[0].childNodes[0];
+        } else {
+          range.startContainer = target[0];
+          range.endContainer = target[0];
+        }
 			} else {
 				range.startContainer = target.textNodes()[0];
 				range.endContainer = target.textNodes()[0];

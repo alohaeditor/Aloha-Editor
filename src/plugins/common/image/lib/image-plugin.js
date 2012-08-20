@@ -364,19 +364,24 @@ define([
 					if (fileObj.file.type.match(/image\//)) {
 						config = plugin.getEditableConfig(data.editable);
 						// Prepare
-						img = jQuery('<img/>');
-						img.css({
-							"max-width": that.maxWidth,
-							"max-height": that.maxHeight
-						});
-						img.attr('id', fileObj.id);
-						if (typeof fileObj.src === 'undefined') {
-							img.attr('src', fileObj.data);
-							//fileObj.src = fileObj.data ;
+						// If the user is dropping onto an existing image change the existing img tag
+						if (data.range.startContainer === data.range.endContainer && data.range.startContainer.tagName && data.range.startContainer.tagName.toLowerCase() == 'img') {
+						  img = jQuery(data.range.startContainer);
+							img.attr('src', fileObj.file.data);
 						} else {
-							img.attr('src', fileObj.src);
-						}
-						GENTICS.Utils.Dom.insertIntoDOM(img, data.range, jQuery(Aloha.activeEditable.obj));
+              img = jQuery('<img/>');
+              img.css({
+                "max-width": plugin.maxWidth,
+                "max-height": plugin.maxHeight
+              });
+              img.attr('id', fileObj.id);
+              //if (typeof fileObj.src !== 'undefined') {
+              //	img.attr('src', fileObj.src);
+              //} else {
+                img.attr('src', fileObj.file.data);
+              //}
+              GENTICS.Utils.Dom.insertIntoDOM(img, data.range, jQuery(Aloha.activeEditable.obj));
+            }
 					}
 				}
 				
