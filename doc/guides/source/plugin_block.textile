@@ -46,6 +46,11 @@ TIP: Make sure to wrap the initialization code inside an @Aloha.ready()@ callbac
 
 NOTE: It is only allowed to convert @span@ or @div@ elements into an Aloha Block. Otherwise,
       an error will be thrown. So watch the browser's console output when debugging!
+      The reason is that edit-icons can't otherwise be added to the block root
+      element. For example, edit-icons wouldn't work correctly in an 'a' root
+      element. The reason that edit-icons have to be added to the blockified
+      element instead of being absolutely positioned is that absolutely
+      positioned edit-icons may overlap with content.
 
 The @alohaBlock@ function takes a configuration object of *Block Attributes*, which are set on the block.
 
