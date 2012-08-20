@@ -1188,10 +1188,28 @@ define([
 			postProcessFn();
 		}
 	});
+	
+	/**
+	 * @name block.block.EmptyBlock
+	 * @class An empty block doesn't render any tag fill icons or border (no Aloha tags)
+	 * @extends block.block.AbstractBlock
+	 */
+	var EmptyBlock = AbstractBlock.extend (
+	/** @lends block.block.EmptyBlock */
+	{
+		title: 'EmptyBlock',
+		init: function($element, postProcessFn) {
+			
+		},
+		activate: function () {},
+		deactivate: function () {},
+		renderBlockHandlesIfNeeded: function () {}
+	});
 
 	return {
 		AbstractBlock: AbstractBlock,
 		DefaultBlock: DefaultBlock,
-		DebugBlock: DebugBlock
+		DebugBlock: DebugBlock,
+		EmptyBlock: EmptyBlock
 	};
 });
