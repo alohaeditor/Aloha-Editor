@@ -16,6 +16,15 @@ All changes are categorized into one of the following keywords:
 	container" was incorrectly logged as an error instead of a
 	warning.
 
+- **ENHANCEMENT**: Added a new block implementation of Aloha Editor blocks, which 
+				   doesn't render any tag fill icons or borders. This is useful for 
+				   tags that should be editable with Aloha Editor.
+
+				   To use this block type, just wrap your tag content in a <div> 
+				   with the following attribute: 
+
+				   data-aloha-block-type="EmptyBlock"
+
 - **BUG**: Fixed JS error in Aloha.unbind()
 
 - **ENHANCEMENT**: Added jQuery method mahaloBlock() to "unblock" the elements from a jQuery collection. Added method .unblock() for Blocks to "unblock" a block instance (in both cases without removing the DOM element from the DOM).
