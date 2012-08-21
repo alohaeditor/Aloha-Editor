@@ -15,3 +15,5 @@ All changes are categorized into one of the following keywords:
 	The error message "encountered range object without start or end
 	container" was incorrectly logged as an error instead of a
 	warning.
+
+- **BUG**: Fixed JS error in Aloha.unbind()
