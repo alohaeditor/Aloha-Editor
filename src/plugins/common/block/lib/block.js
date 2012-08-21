@@ -210,12 +210,7 @@ define([
 		_connectThisBlockToDomElement: function(newElement) {
 			var that = this;
 			var $newElement = jQuery(newElement);
-			if (this.$element) {
-				this.$element.unbind('click', this._onElementClickHandler);
-				this.$element.unbind('mousedown', this._preventSelectionChangedEventHandler);
-				this.$element.unbind('focus', this._preventSelectionChangedEventHandler);
-				this.$element.unbind('dblclick', this._preventSelectionChangedEventHandler);
-			}
+			this._disconnectFromDomElement();
 			this.$element = $newElement;
 
 			this.$element.bind('click', this._onElementClickHandler);
@@ -237,6 +232,18 @@ define([
 					that._postProcessElementIfNeeded();
 				}, 5);
 			});
+		},
+
+		/**
+		 * Disconnect the block from the DOM element
+		 */
+		_disconnectFromDomElement: function() {
+			if (this.$element) {
+				this.$element.unbind('click', this._onElementClickHandler);
+				this.$element.unbind('mousedown', this._preventSelectionChangedEventHandler);
+				this.$element.unbind('focus', this._preventSelectionChangedEventHandler);
+				this.$element.unbind('dblclick', this._preventSelectionChangedEventHandler);
+			}
 		},
 
 		/**
@@ -322,6 +329,25 @@ define([
 					}
 				}, 5);
 			});
+		},
+
+		/**
+		 * Remove this block, but leave the original DOM element
+		 */
+		unblock: function () {
+			// TODO set old value of contentEditable
+			// TODO set old values for draggable attributes
+
+			// deactivate
+			this.deactivate();
+			// remove handlers
+			this._disconnectFromDomElement();
+			// remove block class
+			this.$element.removeClass('aloha-block');
+			// remove block handles
+			this.$element.children('.aloha-block-handle').remove();
+			// unregister the block
+			this.free();
 		},
 
 		/**

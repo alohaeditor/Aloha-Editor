@@ -44,6 +44,8 @@ Blocks need to be initialized before they can be used. Most conveniently, it sho
 TIP: Make sure to wrap the initialization code inside an @Aloha.ready()@ callback, to make
      sure Aloha is fully loaded by then.
 
+TIP: You can use the reverse function +.mahaloBlock()+ to "unblock" the elements in a jQuery collection.
+
 NOTE: It is only allowed to convert @span@ or @div@ elements into an Aloha Block. Otherwise,
       an error will be thrown. So watch the browser's console output when debugging!
       The reason is that edit-icons can't otherwise be added to the block root
@@ -162,6 +164,7 @@ methods are:
 * +attr()+ to retrieve all key/values as objecz
 * +activate()+ to activate the block
 * +deactivate()+ to deactivate the block
+* +unblock()+ to remove this block, but retain the DOM Element
 
 When an attribute is changed through @attr@, the block is re-rendered automatically.
 

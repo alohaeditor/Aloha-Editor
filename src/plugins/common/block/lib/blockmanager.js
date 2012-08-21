@@ -447,6 +447,18 @@ define([
 		},
 
 		/**
+		 * Unblockify the given element
+		 * 
+		 * @private
+		 */
+		_unblockify: function (element) {
+			var block = this.getBlock(element);
+			if (block) {
+				block.unblock();
+			}
+		},
+
+		/**
 		 * Merges the config from different places, and return the merged config.
 		 *
 		 * @private
