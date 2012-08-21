@@ -9,3 +9,9 @@ All changes are categorized into one of the following keywords:
 ----
 
 - **BUG**: the sidebar didn't always update the height of panels correctly.
+
+- **ENHANCEMENT**: error was turned into a warning
+
+	The error message "encountered range object without start or end
+	container" was incorrectly logged as an error instead of a
+	warning.

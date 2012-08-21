@@ -2207,7 +2207,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, 
 		var startContainer = rangeObject.startContainer;
 		var endContainer = rangeObject.endContainer;
 		if (!startContainer || !endContainer) {
-			console.error("encountered range object without start or end container");
+			console.warn("aloha/selection", "encountered range object without start or end container");
 			return;
 		}
 		var startContext = getChangedContext(startContainer, prevStartContext);
