@@ -631,9 +631,14 @@ define([
          * if drag & drop is disabled for the editable
          */
         _hideDragHandlesIfDragDropDisabled: function() {
-            if ( !this._dd_isDragdropEnabled() ){
-                this.$element.find( '.aloha-block-draghandle' ).removeClass( 'aloha-block-draghandle' );
-            } 
+			if ( !this._dd_isDragdropEnabled() ){
+				this.$element.find('.aloha-block-draghandle').each(function () {
+					var $draghandle = jQuery(this);
+					if (!isDragdropEnabledForElement($draghandle)) {
+						$draghandle.removeClass('aloha-block-draghandle');
+					}
+				});
+			} 
         },
 
         /**
@@ -1032,17 +1037,10 @@ define([
 
         /**
          * Helper method to check whether the drag & drop is enabled
-         * for the editable, which given blocked belongs to.
+         * for the editable, which this block belongs to.
          */
-        _dd_isDragdropEnabled: function() {
-            var editable = this.$element.parents( ".aloha-editable" );
-
-            if ( editable ) {
-                return editable.first().data( "block-dragdrop" );
-            } else {
-                // no editable specified, let's make drag & drop enabled by default.    
-                return true;
-            }
+        _dd_isDragdropEnabled: function () {
+			return isDragdropEnabledForElement(this.$element.parent());
         },
 
 		/**************************
@@ -1229,6 +1227,26 @@ define([
 		deactivate: function () {},
 		renderBlockHandlesIfNeeded: function () {}
 	});
+
+	/**
+	 * Tests whether the given element is contained in an editable for
+	 * which the block dragdrop feature is enabled.
+	 * 
+	 * @param {!jQuery} $element
+	 *        The element that may or may not be contained in an editable.
+	 * @return {boolean}
+	 *        True, unless the given $element is contained in an
+	 *        editable for which the dragdrop feature has been disabled.
+	 */
+	function isDragdropEnabledForElement($element) {
+		var editable = $element.closest(".aloha-editable");
+		if (editable.length) {
+			return !!editable.data("block-dragdrop");
+		} else {
+			// no editable specified, let's make drag & drop enabled by default.    
+			return true;
+		}
+	}
 
 	return {
 		AbstractBlock: AbstractBlock,
