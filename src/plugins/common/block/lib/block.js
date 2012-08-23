@@ -622,7 +622,7 @@ define([
 				this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
 				// We do NOT abort the "ondragstart" event as it is required for drag/drop.
 				this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
-				this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
+				// We do NOT abort the "onselectstart" event because this would disable selection in nested editables
 			}
 		},
 
