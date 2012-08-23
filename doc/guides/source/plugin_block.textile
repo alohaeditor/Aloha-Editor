@@ -446,8 +446,8 @@ Alternatively, you can show this button only for selected editables:
 
 <javascript>
 Aloha.settings.plugins.block.editables = {
-	'#editable-1': { 'toggleDragrop': true },
-	'#editable-2': { 'toggleDragrop': false },
+	'#editable-1': { 'toggleDragdrop': true },
+	'#editable-2': { 'toggleDragdrop': false },
 };
 </javascript>
 
