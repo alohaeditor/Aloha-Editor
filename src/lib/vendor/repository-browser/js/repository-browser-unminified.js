@@ -26,7 +26,11 @@ define('RepositoryBrowser', [
 		filter: ['url'],
 		element: null,
 		isFloating: false,
-		minWidth: 800,
+		verticalPadding: 100,
+		horizontalPadding: 50,
+		maxHeight: 1000,
+		minHeight: 400,
+		minWidth: 400,
 		maxWidth: 1200,
 		treeWidth: 300,
 		listWidth: 'auto',
@@ -214,6 +218,7 @@ define('RepositoryBrowser', [
 			this.element.width(this.maxWidth);
 
 			this.$_grid = this._createGrid(this.element).resize();
+			this._setIntialHeight();
 			this.$_tree = this._createTree(this.$_grid.find('.ui-layout-west'));
 			this.$_list = this._createList(this.$_grid.find('.ui-layout-center'));
 
@@ -264,12 +269,22 @@ define('RepositoryBrowser', [
 		},
 
 		/**
+		 * Sets the initial height of the repository browser using the minHeight maxHeight setting.
+		 */
+		_setIntialHeight: function () {
+
+			var overflow = this.maxHeight - jQuery(window).height() + this.verticalPadding;
+			var targetHeight = overflow > 0 ? Math.max(this.minHeight, this.maxHeight - overflow) : this.maxHeight;
+			
+			this.$_grid.height(targetHeight);
+		},
+		
+		/**
 		 * Automatically resize the browser modal, constraining its dimensions
 		 * between minWidth and maxWidth.
 		 */
 		_onWindowResized: function () {
-			var PADDING = 50;
-			var overflow = this.maxWidth - jQuery(window).width() + PADDING;
+			var overflow = this.maxWidth - jQuery(window).width() + this.horizontalPadding;
 			var target = overflow > 0
 			           ? Math.max(this.minWidth, this.maxWidth - overflow)
 					   : this.maxWidth;

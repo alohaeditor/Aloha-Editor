@@ -78,9 +78,10 @@ define([
 		init: function () {
 			var that = this;
 
-			// Register default block types
+			// Register default block types			
 			BlockManager.registerBlockType( 'DebugBlock', block.DebugBlock );
 			BlockManager.registerBlockType( 'DefaultBlock', block.DefaultBlock );
+			BlockManager.registerBlockType( 'EmptyBlock', block.EmptyBlock );
 
 			// Register default editors
 			EditorManager.register( 'string', editor.StringEditor );
@@ -255,6 +256,18 @@ define([
 
 		// Chain
 		return jQuery( this );
+	};
+
+	/**
+	 * Un"block" the matched elements. If matched elements were made blocks
+	 * (by calling alohaBlock() on them), they will no longer be blocks.
+	 * 
+	 * @api
+	 */
+	jQuery.fn.mahaloBlock = function() {
+		jQuery(this).each(function (index, element) {
+			BlockManager._unblockify(element);
+		});
 	};
 
 	// jQuery.fn.mahaloBlock = TODO
