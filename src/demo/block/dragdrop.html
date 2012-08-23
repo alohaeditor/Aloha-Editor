@@ -45,7 +45,13 @@
 					},
 					dragdrop: "1",
 					dropzones: ["#editable-1"],
-					config : {'toggleDragdrop': "1"},
+					config : {
+						'toggleDragdrop': "1"
+						// The following would make the toggleDragDrop button ignore the
+						// per-editable config and make the button always show and toggle
+						// the dragndrop feature for all editables.
+						//toggleDragdropGlobal: true
+					},
 					editables : {
 						"#editable-1": {'toggleDragdrop': true, 'dropzones': [ '#editable-1', '#editable-2' ]},
 						"#editable-2": {'toggleDragdrop': true}

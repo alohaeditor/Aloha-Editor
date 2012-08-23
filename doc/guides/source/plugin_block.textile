@@ -455,6 +455,15 @@ Aloha.settings.plugins.block.editables = {
 };
 </javascript>
 
+With the following settings the toggle button can be made to toggle the
+drag and drop feature for all editables instead of per-editable. Turning
+this setting on will override any of the per-editable settings above and
+will make the toggle button always visible.
+
+<javascript>
+Aloha.settings.plugins.block.config.toggleDragdropGlobal = true;
+</javascript>
+
 h4. Defining Dropzones
 
 When a block is being dragged, it can be dropped to any editable available in the page by default. To specify explicit drop targets for blocks inside an editable, use the `dropzones` option.
