@@ -1,0 +1,1 @@
+- **BUG**: resolved issue with opening the sidebar when clicking on table WAI button.
