@@ -1,0 +1,1 @@
+define({"floatingmenu.tab.store":"store ","button.addstore.tooltip":"Speicherneinf\u00fcgen","button.store.tooltip":"Als Speichernformatieren","newstore.defaulttext":"store"});
