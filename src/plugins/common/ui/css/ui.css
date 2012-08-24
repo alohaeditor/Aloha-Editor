@@ -673,3 +673,17 @@
 	background: #ffffff/*{bgColorContent}*/;
 	color: #222222/*{fcContent}*/;
 }
+
+.aloha-toolbar .aloha-ui-label {
+	display: inline-block;
+	/* Always display labels next to the component */
+	white-space: nowrap;
+	/* same height as toolbar buttons */
+	height: 23px;
+	/* compensate for the 1px border on buttons */
+	margin: 2px 2px 0;
+}
+
+.aloha.aloha-toolbar .aloha-ui-label-text {
+	margin-right: 2px;
+}

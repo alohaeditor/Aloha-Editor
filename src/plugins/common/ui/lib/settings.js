@@ -43,12 +43,13 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
                 label: "tab.img.label",
                 showOn: {scope: 'image'},
                 components: [
-                    [ "imageSource", "imageTitle",
-                      "imageAlignLeft", "imageAlignRight", "imageAlignNone",
-                      "imageIncPadding", "imageDecPadding",
-                      "imageBrowser",
-                      "imageCropButton", "imageCnrReset", "imageCnrRatio",
-                      "imageResizeWidth", "imageResizeHeight" ]
+					[ "imageSource", "\n",
+					  "imageTitle" ],
+					[ "imageResizeWidth", "\n",
+					  "imageResizeHeight" ],
+					[ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "\n",
+					  "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ],
+					[ "imageBrowser" ]
                 ]
             },
             // Abbr Tab
