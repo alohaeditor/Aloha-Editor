@@ -14,6 +14,11 @@ All changes are categorized into one of the following keywords:
 
 # 0.20.x
 
+## 0.20.23 - 2012/08/24
+
+- **ENHANCEMENT**: changed loading procedure of languages in wai lang plugin from AJAX to require.js
+- **BUG**: resolved issue with opening the sidebar when clicking on table WAI button.
+
 ## 0.20.22 - 2012/08/16
 
 - **ENHANCEMENT**: link-plugin: Removed unwanted margins from the sidebar panel of the link attribute.

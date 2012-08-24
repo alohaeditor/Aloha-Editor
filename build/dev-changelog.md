@@ -1,1 +1,0 @@
-- **ENHANCEMENT**: changed loading procedure of languages in wai lang plugin from AJAX to require.js
