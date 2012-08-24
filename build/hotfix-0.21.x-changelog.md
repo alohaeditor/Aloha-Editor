@@ -34,3 +34,5 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: repository-browser: The repository browser will now automatically increase its height.
 
 - **BUG**: Fixed selecting with keyboard or mouse in editables that are nested in blocks, when using the Internet Explorer.
+
+- **BUG**: Fixed block draghandles are sometimes missing
