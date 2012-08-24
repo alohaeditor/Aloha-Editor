@@ -1,0 +1,372 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.alohaeditor</groupId>
+	<artifactId>alohaeditor</artifactId>
+	<version>0.21.3-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Aloha Editor</name>
+	<url>http://aloha-editor.org</url>
+	<licenses>
+		<license>
+			<name>GPL 2.0 or later</name>
+			<url>http://www.gnu.org/licenses/gpl-2.0.html</url>
+		</license>
+	</licenses>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
+		<ALOHABUILDCONF>build/aloha</ALOHABUILDCONF>
+		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
+		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
+		<build.profile>build-profile-with-common-extra-plugins</build.profile>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>rhino</groupId>
+			<artifactId>js</artifactId>
+			<version>1.7R2</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.javascript</groupId>
+			<artifactId>closure-compiler</artifactId>
+			<version>r1918</version>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+
+	<scm>
+		<connection>scm:git:git@github.com:alohaeditor/Aloha-Editor.git</connection>
+		<developerConnection>scm:git:git@github.com:alohaeditor/Aloha-Editor.git</developerConnection>
+		<url>https://github.com/alohaeditor/Aloha-Editor</url>
+	</scm>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>com.googlecode.jslint4java</groupId>
+				<artifactId>jslint4java-maven-plugin</artifactId>
+				<version>2.0.2</version>
+				<!-- Default configuration -->
+				<configuration>
+					<skip>${bareMode}</skip>
+					<sourceFolders>
+						<sourceFolder>${project.basedir}/src</sourceFolder>
+					</sourceFolders>
+					<excludes>
+						<exclude>**/vendor/**</exclude>
+						<exclude>**/shared/**</exclude>
+					</excludes>
+					<failOnError>false</failOnError>
+					<!-- See http://docs.jslint4java.googlecode.com/git/2.0.2/apidocs/com/googlecode/jslint4java/Option.html -->
+					<options>
+						<predef>Aloha, window, global, process, define, require, jQuery,
+							GCN</predef>
+						<!-- If multiple var statements per function should be allowed -->
+						<vars>true</vars>
+						<!-- If variables can be declared out of order -->
+						<undef>true</undef>
+						<!-- If the standard browser globals should be predefined -->
+						<browser>true</browser>
+						<!-- If the continuation statement should be tolerated -->
+						<continue>true</continue>
+						<!-- If the . should be allowed in regexp literals -->
+						<regexp>true</regexp>
+						<!-- If sloppy whitespace is tolerated -->
+						<white>false</white>
+						<!-- If increment/decrement should be allowed -->
+						<plusplus>true</plusplus>
+						<!-- Allow non-strict equals -->
+						<eqeq>true</eqeq>
+					</options>
+				</configuration>
+				<executions>
+					<!-- Linting Core -->
+					<execution>
+						<id>lint-core</id>
+						<phase>test</phase>
+						<goals>
+							<goal>lint</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>lib/aloha/**/*.js</include>
+							</includes>
+							<outputFolder>${project.build.directory}/jslint-core</outputFolder>
+						</configuration>
+					</execution>
+					<!-- Linting Plugins -->
+					<execution>
+						<id>lint-plugins</id>
+						<phase>test</phase>
+						<goals>
+							<goal>lint</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>plugins/**/*.js</include>
+							</includes>
+							<excludes>
+								<exclude>plugins/**/extra/**</exclude>
+								<exclude>plugins/**/vendor/**</exclude>
+							</excludes>
+							<outputFolder>${project.build.directory}/jslint-plugins</outputFolder>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.1.1</version>
+				<executions>
+					<!-- r.js optimize -->
+					<execution>
+						<phase>process-sources</phase>
+						<id>rjs-optimize-${build.profile}</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>node</executable>
+							<arguments>
+								<argument>${project.basedir}/build/r.js</argument>
+								<argument>-o</argument>
+								<argument>${project.basedir}/build/aloha/${build.profile}.js</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>deploy</phase>
+						<id>deploy</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bin/deploy-aloha.sh</executable>
+							<arguments>
+								<argument>${ALOHADEPLOYMENTURL}</argument>
+								<argument>${ALOHADEPLOYMENTPATH}</argument>
+								<argument>${maven.build.timestamp}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<!-- TODO: check filesize -->
+					<!-- TODO: cd "$TMP/aloha/css" r.js -o cssIn=aloha.css out=aloha.css -->
+					<execution>
+						<phase>package</phase>
+						<id>build-guides</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<skip>${bareMode}</skip>
+							<executable>${project.basedir}/bin/build-guide.sh</executable>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>package</phase>
+						<id>build-api</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<skip>${bareMode}</skip>
+							<executable>${project.basedir}/bin/build-api.sh</executable>
+						</configuration>
+					</execution>
+					<!-- Alternative rhino r.js optimization -->
+					<!-- <execution> <phase>package</phase> <goals> <goal>java</goal> </goals> 
+						<configuration> <classpathScope>runtime</classpathScope> <mainClass>org.mozilla.javascript.tools.shell.Main</mainClass> 
+						<arguments> <argument>${project.basedir}/build/r.js</argument> <argument>-o</argument> 
+						<argument>${project.basedir}/build/aloha/build.js</argument> </arguments> 
+						</configuration> </execution> -->
+				</executions>
+			</plugin>
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>lesscss-maven-plugin</artifactId> 
+				<version>1.0-beta-3</version> <executions> <execution> <phase>generate-sources</phase> 
+				<goals> <goal>compile</goal> </goals> <configuration> <sourceDirectory>${project.basedir}/src/css</sourceDirectory> 
+				<outputDirectory>${project.basedir}/src/css</outputDirectory> <includes> 
+				<include>aloha.less</include> </includes> <compress>true</compress> <force>true</force> 
+				</configuration> </execution> </executions> </plugin> -->
+			<plugin>
+				<groupId>ro.isdc.wro4j</groupId>
+				<artifactId>wro4j-maven-plugin</artifactId>
+				<version>1.4.7</version>
+				<executions>
+					<!-- Full version of aloha (With jquery and requirejs) -->
+					<execution>
+						<id>aloha-${build.profile}-minified-full</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<minimize>true</minimize>
+							<targetGroups>${build.profile}</targetGroups>
+							<destinationFolder>${project.build.directory}/${build.profile}/minified-full/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-full/</jsDestinationFolder>
+						</configuration>
+					</execution>
+						<execution>
+						<id>aloha-${build.profile}-debug-full</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<minimize>false</minimize>
+							<targetGroups>${build.profile}</targetGroups>
+							<destinationFolder>${project.build.directory}/${build.profile}/debug-full/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-full/</jsDestinationFolder>
+						</configuration>
+					</execution>
+					<!-- Bare version of aloha (Without jquery and requirejs) -->
+					<execution>
+						<id>aloha-${build.profile}-debug-bare</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<minimize>false</minimize>
+							<targetGroups>${build.profile}-bare</targetGroups>
+							<destinationFolder>${project.build.directory}/${build.profile}/debug-bare/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-bare/</jsDestinationFolder>
+						</configuration>
+					</execution>
+					<execution>
+						<id>aloha-${build.profile}-minified-bare</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<minimize>true</minimize>
+							<targetGroups>${build.profile}-bare</targetGroups>
+							<destinationFolder>${project.build.directory}/${build.profile}/minified-bare/</destinationFolder>
+							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-bare/</jsDestinationFolder>
+						</configuration>
+					</execution>
+					
+					<execution>
+						<id>less-css</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<targetGroups>aloha</targetGroups>
+							<minimize>true</minimize>
+							<cssDestinationFolder>${basedir}/src/css</cssDestinationFolder>
+							<contextFolder>${basedir}/src</contextFolder>
+							<buildDirectory>${basedir}/src</buildDirectory>
+							<ignoreMissingResources>false</ignoreMissingResources>
+							<wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+							<extraConfigFile>${basedir}/build/wro/wro.properties</extraConfigFile>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<jsDestinationFolder>${project.build.directory}/static/js/</jsDestinationFolder>
+					<contextFolder>${basedir}</contextFolder>
+					<buildDirectory>${basedir}</buildDirectory>
+					<ignoreMissingResources>false</ignoreMissingResources>
+					<wroFile>${basedir}/build/wro/wro.xml</wroFile>
+					<wroManagerFactory>ro.isdc.wro.extensions.manager.standalone.GoogleStandaloneManagerFactory</wroManagerFactory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>dist</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/build/dist-package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+						<execution>
+						<id>cdn</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>true</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/build/cdn-package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>source</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>true</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/build/source-package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.m2e</groupId>
+				<artifactId>lifecycle-mapping</artifactId>
+				<version>1.0.0</version>
+				<configuration>
+					<lifecycleMappingMetadata>
+						<pluginExecutions>
+							<pluginExecution>
+								<pluginExecutionFilter>
+									<groupId>ro.isdc.wro4j</groupId>
+									<artifactId>wro4j-maven-plugin</artifactId>
+									<versionRange>[1.0,)</versionRange>
+									<phase>generate-sources</phase>
+									<goals>
+										<goal>run</goal>
+									</goals>
+								</pluginExecutionFilter>
+								<action>
+									<execute />
+								</action>
+							</pluginExecution>
+						</pluginExecutions>
+					</lifecycleMappingMetadata>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>archiva.com.gentics.public</id>
+			<name>Gentics Public Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+		</repository>
+		<snapshotRepository>
+			<id>archiva.com.gentics.public_snapshots</id>
+			<name>Gentics Public Snapshots Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>
+
