@@ -383,14 +383,23 @@ define([
 		},
 
 		/**
-		 * Set   
-		 * @param {String} state
-		 * 
+		 * Turn the dragdrop feature globally on or off.
+		 *
+		 * Will only affect editables created after this call is made.
+		 *
+		 * @param {boolean} state
 		 */
-		setDragDropState: function(state) {
-			var that = this;
+		setDragDropState: function (state) {
+			this._dragdropEnabled = state;
+		},
 
-			that._dragdropEnabled = state;
+		/**
+		 * Test whether the dragdrop feature is globally enabled.
+		 *
+		 * @return {boolean}
+		 */
+		getDragDropState: function () {
+			return this._dragdropEnabled;
 		},
 
 		/**************************
