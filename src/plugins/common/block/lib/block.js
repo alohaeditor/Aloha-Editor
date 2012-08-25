@@ -210,12 +210,7 @@ define([
 		_connectThisBlockToDomElement: function(newElement) {
 			var that = this;
 			var $newElement = jQuery(newElement);
-			if (this.$element) {
-				this.$element.unbind('click', this._onElementClickHandler);
-				this.$element.unbind('mousedown', this._preventSelectionChangedEventHandler);
-				this.$element.unbind('focus', this._preventSelectionChangedEventHandler);
-				this.$element.unbind('dblclick', this._preventSelectionChangedEventHandler);
-			}
+			this._disconnectFromDomElement();
 			this.$element = $newElement;
 
 			this.$element.bind('click', this._onElementClickHandler);
@@ -237,6 +232,18 @@ define([
 					that._postProcessElementIfNeeded();
 				}, 5);
 			});
+		},
+
+		/**
+		 * Disconnect the block from the DOM element
+		 */
+		_disconnectFromDomElement: function() {
+			if (this.$element) {
+				this.$element.unbind('click', this._onElementClickHandler);
+				this.$element.unbind('mousedown', this._preventSelectionChangedEventHandler);
+				this.$element.unbind('focus', this._preventSelectionChangedEventHandler);
+				this.$element.unbind('dblclick', this._preventSelectionChangedEventHandler);
+			}
 		},
 
 		/**
@@ -322,6 +329,25 @@ define([
 					}
 				}, 5);
 			});
+		},
+
+		/**
+		 * Remove this block, but leave the original DOM element
+		 */
+		unblock: function () {
+			// TODO set old value of contentEditable
+			// TODO set old values for draggable attributes
+
+			// deactivate
+			this.deactivate();
+			// remove handlers
+			this._disconnectFromDomElement();
+			// remove block class
+			this.$element.removeClass('aloha-block');
+			// remove block handles
+			this.$element.children('.aloha-block-handle').remove();
+			// unregister the block
+			this.free();
 		},
 
 		/**
@@ -596,7 +622,7 @@ define([
 				this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
 				// We do NOT abort the "ondragstart" event as it is required for drag/drop.
 				this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
-				this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
+				// We do NOT abort the "onselectstart" event because this would disable selection in nested editables
 			}
 		},
 
@@ -605,9 +631,14 @@ define([
          * if drag & drop is disabled for the editable
          */
         _hideDragHandlesIfDragDropDisabled: function() {
-            if ( !this._dd_isDragdropEnabled() ){
-                this.$element.find( '.aloha-block-draghandle' ).removeClass( 'aloha-block-draghandle' );
-            } 
+			if ( !this._dd_isDragdropEnabled() ){
+				this.$element.find('.aloha-block-draghandle').each(function () {
+					var $draghandle = jQuery(this);
+					if (!isDragdropEnabledForElement($draghandle)) {
+						$draghandle.removeClass('aloha-block-draghandle');
+					}
+				});
+			} 
         },
 
         /**
@@ -1006,17 +1037,10 @@ define([
 
         /**
          * Helper method to check whether the drag & drop is enabled
-         * for the editable, which given blocked belongs to.
+         * for the editable, which this block belongs to.
          */
-        _dd_isDragdropEnabled: function() {
-            var editable = this.$element.parents( ".aloha-editable" );
-
-            if ( editable ) {
-                return editable.first().data( "block-dragdrop" );
-            } else {
-                // no editable specified, let's make drag & drop enabled by default.    
-                return true;
-            }
+        _dd_isDragdropEnabled: function () {
+			return isDragdropEnabledForElement(this.$element.parent());
         },
 
 		/**************************
@@ -1188,10 +1212,46 @@ define([
 			postProcessFn();
 		}
 	});
+	
+	/**
+	 * @name block.block.EmptyBlock
+	 * @class An empty block doesn't render any tag fill icons or borders (no Aloha tags)
+	 * @extends block.block.AbstractBlock
+	 */
+	var EmptyBlock = AbstractBlock.extend (
+	/** @lends block.block.EmptyBlock */
+	{
+		title: 'EmptyBlock',
+		init: function() {},
+		activate: function () {},
+		deactivate: function () {},
+		renderBlockHandlesIfNeeded: function () {}
+	});
+
+	/**
+	 * Tests whether the given element is contained in an editable for
+	 * which the block dragdrop feature is enabled.
+	 * 
+	 * @param {!jQuery} $element
+	 *        The element that may or may not be contained in an editable.
+	 * @return {boolean}
+	 *        True, unless the given $element is contained in an
+	 *        editable for which the dragdrop feature has been disabled.
+	 */
+	function isDragdropEnabledForElement($element) {
+		var editable = $element.closest(".aloha-editable");
+		if (editable.length) {
+			return !!editable.data("block-dragdrop");
+		} else {
+			// no editable specified, let's make drag & drop enabled by default.    
+			return true;
+		}
+	}
 
 	return {
 		AbstractBlock: AbstractBlock,
 		DefaultBlock: DefaultBlock,
-		DebugBlock: DebugBlock
+		DebugBlock: DebugBlock,
+		EmptyBlock: EmptyBlock
 	};
 });

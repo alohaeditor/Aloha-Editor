@@ -97,6 +97,7 @@ define([
 		this.width = 300;
 		this.opened = false;
 		this.isOpen = false;
+		this.isCompletelyOpen = false;
 		this.settings = {
 			// We automatically set this to true when we are in IE, where
 			// rotating elements using filters causes undesirable rendering
@@ -159,10 +160,6 @@ define([
 			bar.width(this.width);
 			this.width = bar.width();
 
-			$(window).resize(function () {
-				that.updateHeight();
-			});
-
 			this.updateHeight();
 			this.initToggler();
 
@@ -177,6 +174,7 @@ define([
 			this.subscribeToEvents();
 
 			$(window).resize(function () {
+				that.updateHeight();
 				that.correctHeight();
 			});
 
@@ -259,6 +257,10 @@ define([
 			if (!this.isOpen) {
 				return;
 			}
+			if (!this.isCompletelyOpen) {
+				this.correctHeightWhenCompletelyOpen = true;
+				return;
+			}
 
 			var viewportHeight = $(window).height();
 			var activePanelIds = [];
@@ -279,7 +281,7 @@ define([
 
 			if (previousActivePanelIds === activePanelIds &&
 			    previousViewportHeight === viewportHeight) {
-				return;
+			 	return;
 			}
 
 			previousViewportHeight = viewportHeight;
@@ -584,6 +586,7 @@ define([
 
 			var isRight = (this.position === 'right');
 			var anim = isRight ? {marginRight: 0} : {marginLeft: 0};
+			var sidebar = this;
 
 			this.toggleHandleIcon(true);
 			this.container.animate(anim,
@@ -595,7 +598,12 @@ define([
 				$('body').animate(
 					isRight ? {marginRight: '+=' + this.width}
 					        : {marginLeft: '+=' + this.width},
-					500, 'easeOutExpo');
+					500, 'easeOutExpo', function () {
+						sidebar.isCompletelyOpen = true;
+						if (sidebar.correctHeightWhenCompletelyOpen) {
+							sidebar.correctHeight();
+						}
+					});
 			}
 
 			this.isOpen = true;
@@ -633,6 +641,7 @@ define([
 			}
 
 			this.isOpen = false;
+			this.isCompletelyOpen = false;
 
 			return this;
 		},

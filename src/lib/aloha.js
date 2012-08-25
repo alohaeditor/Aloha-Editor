@@ -340,7 +340,12 @@
 		};
 
 		Aloha.unbind = function (typeOrEvent) {
-			jQuery(Aloha, 'body').unbind(typeOrEvent);
+			Aloha.require(['aloha/jquery'], function (jQuery) {
+				Aloha.unbind = function (typeOrEvent) {
+					jQuery(Aloha, 'body').unbind(typeOrEvent);
+				};
+				Aloha.unbind(typeOrEvent);
+			});
 		};
 
 		Aloha.ready = function (fn) {

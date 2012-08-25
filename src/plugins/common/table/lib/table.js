@@ -1441,6 +1441,12 @@ define([
 	 * @return void
 	 */
 	Table.prototype.deactivate = function() {
+		// unblockify the table wrapper
+		var parent = this.obj.parent();
+		if (parent.mahaloBlock) {
+			parent.mahaloBlock();
+		}
+
 		this.obj.removeClass(this.get('className'));
 		if (jQuery.trim(this.obj.attr('class')) == '') {
 			this.obj.removeAttr('class');
