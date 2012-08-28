@@ -93,6 +93,11 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         });
       };
 
+      Menu.prototype.prepend = function(item) {
+        this.items.unshift(item);
+        return item.el.prependTo(this.el);
+      };
+
       Menu.prototype.append = function(item) {
         this.items.push(item);
         return item.el.appendTo(this.el);

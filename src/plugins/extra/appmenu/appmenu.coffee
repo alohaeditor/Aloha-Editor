@@ -67,6 +67,10 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
           if child.subMenu and child != item
             child.subMenu.close()
   
+    prepend: (item) ->
+      @items.unshift(item)
+      item.el.prependTo(@el)
+
     append: (item) ->
       @items.push(item)
       item.el.appendTo(@el)
