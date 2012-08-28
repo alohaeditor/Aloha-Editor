@@ -36,3 +36,5 @@ All changes are categorized into one of the following keywords:
 - **BUG**: Fixed selecting with keyboard or mouse in editables that are nested in blocks, when using the Internet Explorer.
 
 - **BUG**: Fixed block draghandles are sometimes missing
+
+- **BUG**: Fixed the ContentHandlerManager to use the content handlers in the correct order.
