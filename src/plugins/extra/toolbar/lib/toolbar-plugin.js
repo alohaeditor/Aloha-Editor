@@ -38,7 +38,7 @@
     */
     return Plugin.create("toolbar", {
       init: function() {
-        var applyHeading, item, labels, menu, menuLookup, menubar, order, recurse, subMenuItems, tab, toolbar, toolbarLookup, _i, _j, _len, _len2;
+        var applyHeading, h, headingButtons, headingsButton, item, labels, menu, menuLookup, menubar, order, recurse, subMenuItems, tab, toolbar, toolbarLookup, _i, _j, _len, _len2;
         window.menubar = menubar = new appmenu.MenuBar([]);
         menubar.el.appendTo(CONTAINER_JQUERY);
         window.toolbar = toolbar = new appmenu.ToolBar();
@@ -94,7 +94,6 @@
         }
         Ui.adopt = function(slot, type, settings) {
           var ItemRelay, item2;
-          console.log("PHIL: Slot=" + slot);
           ItemRelay = (function() {
 
             function ItemRelay(items) {
@@ -199,16 +198,18 @@
           item.element = item.el;
           return new ItemRelay([item]);
         };
-        applyHeading = function() {
-          var $newEl, $oldEl, rangeObject;
-          rangeObject = Aloha.Selection.getRangeObject();
-          if (rangeObject.isCollapsed()) {
-            GENTICS.Utils.Dom.extendToWord(rangeObject);
-          }
-          Aloha.Selection.changeMarkupOnSelection(Aloha.jQuery(this.markup));
-          $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer());
-          $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer());
-          return $newEl.addClass($oldEl.attr('class'));
+        applyHeading = function(hTag) {
+          return function() {
+            var $newEl, $oldEl, rangeObject;
+            rangeObject = Aloha.Selection.getRangeObject();
+            if (rangeObject.isCollapsed()) {
+              GENTICS.Utils.Dom.extendToWord(rangeObject);
+            }
+            Aloha.Selection.changeMarkupOnSelection(Aloha.jQuery("<" + hTag + "></" + hTag + ">"));
+            $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer());
+            $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer());
+            return $newEl.addClass($oldEl.attr('class'));
+          };
         };
         order = ['p', 'h1', 'h2', 'h3'];
         labels = {
@@ -217,20 +218,44 @@
           'h2': 'Heading 2',
           'h3': 'Heading 3'
         };
-        /*
-              headingButtons = (new appmenu.custom.Heading("<#{ h } />", labels[h], {accel: "Ctrl+#{ h.charAt(1) }", action: applyHeading }) for h in order)
-              
-              headingsButton = new appmenu.ToolButton("Heading 1", {subMenu: new appmenu.Menu(headingButtons)})
-              toolbar.append(headingsButton)
-              toolbar.append(new appmenu.Separator())
-        */
+        headingButtons = (function() {
+          var _k, _len3, _results;
+          _results = [];
+          for (_k = 0, _len3 = order.length; _k < _len3; _k++) {
+            h = order[_k];
+            _results.push(new appmenu.custom.Heading("<" + h + " />", labels[h], {
+              accel: "Ctrl+" + (h.charAt(1) || 0),
+              action: applyHeading(h)
+            }));
+          }
+          return _results;
+        })();
+        headingsButton = new appmenu.ToolButton("Heading 1", {
+          subMenu: new appmenu.Menu(headingButtons)
+        });
+        toolbar.append(headingsButton);
+        toolbar.append(new appmenu.Separator());
+        Aloha.bind('aloha-editable-activated', function(e, params) {
+          menubar.setAccelContainer(params.editable.obj);
+          return toolbar.setAccelContainer(params.editable.obj);
+        });
+        Aloha.bind('aloha-editable-deactivated', function(e, params) {
+          menubar.setAccelContainer();
+          return toolbar.setAccelContainer();
+        });
         return Aloha.bind("aloha-selection-changed", function(event, rangeObject) {
           var $el, h, i, isActive, _len3, _results;
           $el = Aloha.jQuery(rangeObject.startContainer);
           _results = [];
           for (i = 0, _len3 = order.length; i < _len3; i++) {
             h = order[i];
-            _results.push(isActive = $el.parents(h).length > 0);
+            isActive = $el.parents(h).length > 0;
+            headingButtons[i].setChecked(isActive);
+            if (isActive) {
+              _results.push(headingsButton.setText(labels[h]));
+            } else {
+              _results.push(void 0);
+            }
           }
           return _results;
         });

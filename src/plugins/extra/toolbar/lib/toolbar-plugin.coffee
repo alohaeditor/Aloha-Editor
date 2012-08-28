@@ -71,7 +71,6 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
       
       Ui.adopt = (slot, type, settings) ->
         # This class adapts button functions Aloha expects to functions the appmenu uses
-        console.log "PHIL: Slot=#{slot}"
         class ItemRelay
           constructor: (@items) ->
           show: () -> item.setHidden false for item in @items
@@ -116,11 +115,11 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
         return new ItemRelay([item])
 
       
-      applyHeading = () ->
+      applyHeading = (hTag) -> () ->
         rangeObject = Aloha.Selection.getRangeObject()
         GENTICS.Utils.Dom.extendToWord rangeObject  if rangeObject.isCollapsed()
 
-        Aloha.Selection.changeMarkupOnSelection Aloha.jQuery(@markup)
+        Aloha.Selection.changeMarkupOnSelection Aloha.jQuery("<#{hTag}></#{hTag}>")
         # Attach the id and classes back onto the new element
         $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer())
         $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer())
@@ -136,24 +135,30 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
         'h2': 'Heading 2'
         'h3': 'Heading 3'
 
-      ###
-      headingButtons = (new appmenu.custom.Heading("<#{ h } />", labels[h], {accel: "Ctrl+#{ h.charAt(1) }", action: applyHeading }) for h in order)
+      headingButtons = (new appmenu.custom.Heading("<#{ h } />", labels[h], {accel: "Ctrl+#{ h.charAt(1) or 0 }", action: applyHeading(h) }) for h in order)
       
       headingsButton = new appmenu.ToolButton("Heading 1", {subMenu: new appmenu.Menu(headingButtons)})
       toolbar.append(headingsButton)
       toolbar.append(new appmenu.Separator())
-      ###
 
+      Aloha.bind 'aloha-editable-activated', (e, params) ->
+        menubar.setAccelContainer(params.editable.obj)
+        toolbar.setAccelContainer(params.editable.obj)
+
+      Aloha.bind 'aloha-editable-deactivated', (e, params) ->
+        menubar.setAccelContainer()
+        toolbar.setAccelContainer()
+      
       # Keep track of the range because Aloha.Selection.obj seems to go {} sometimes
       Aloha.bind "aloha-selection-changed", (event, rangeObject) ->
         # Squirrel away the range because clicking the button changes focus and removed the range
         $el = Aloha.jQuery(rangeObject.startContainer)
         for h, i in order
           isActive = $el.parents(h).length > 0
-          #headingButtons[i].setChecked(isActive)
+          headingButtons[i].setChecked(isActive)
           # Update the toolbar to show the current heading level
-          #if isActive
-          #  headingsButton.setText labels[h]
+          if isActive
+            headingsButton.setText labels[h]
 
     ###
      toString method
