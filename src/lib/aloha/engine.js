@@ -310,10 +310,11 @@ function getPosition(nodeA, offsetA, nodeB, offsetB) {
 		}
 	}
 
+	var documentPosition = $_.compareDocumentPosition(nodeB, nodeA);
 	// "If node A is after node B in tree order, compute the position of (node
 	// B, offset B) relative to (node A, offset A). If it is before, return
 	// after. If it is after, return before."
-	if ($_.compareDocumentPosition(nodeB, nodeA) & $_.Node.DOCUMENT_POSITION_FOLLOWING) {
+	if (documentPosition & $_.Node.DOCUMENT_POSITION_FOLLOWING) {
 		var pos = getPosition(nodeB, offsetB, nodeA, offsetA);
 		if (pos == "before") {
 			return "after";
@@ -324,7 +325,7 @@ function getPosition(nodeA, offsetA, nodeB, offsetB) {
 	}
 
 	// "If node A is an ancestor of node B:"
-	if ($_.compareDocumentPosition(nodeB, nodeA) & $_.Node.DOCUMENT_POSITION_CONTAINS) {
+	if (documentPosition & $_.Node.DOCUMENT_POSITION_CONTAINS) {
 		// "Let child equal node B."
 		var child = nodeB;
 
@@ -361,11 +362,14 @@ function getFurthestAncestor(node) {
  */
 function isContained(node, range) {
 	var pos1 = getPosition(node, 0, range.startContainer, range.startOffset);
+	if (pos1 !== "after") {
+		return false;
+	}
 	var pos2 = getPosition(node, getNodeLength(node), range.endContainer, range.endOffset);
-
-	return getFurthestAncestor(node) == getFurthestAncestor(range.startContainer)
-		&& pos1 == "after"
-		&& pos2 == "before";
+	if (pos2 !== "before") {
+		return false;
+	}
+	return getFurthestAncestor(node) == getFurthestAncestor(range.startContainer);
 }
 
 /**
