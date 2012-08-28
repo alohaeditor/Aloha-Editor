@@ -13,13 +13,13 @@
       subMenu: [
         "createTable", '', {
           text: "Cell",
-          subMenu: ["mergecells", "splitcells", "tableCaption", "tableSummary", "formatTable"]
+          subMenu: ["mergecells", "splitcells", "tableCaption"]
         }, {
           text: "Row",
-          subMenu: ["addrowbefore", "addrowafter", "deleterows", "rowheader", "mergecellsRow", "splitcellsRow", "formatRow"]
+          subMenu: ["addrowbefore", "addrowafter", "deleterows", "rowheader", "mergecellsRow", "splitcellsRow"]
         }, '', {
           text: "Column",
-          subMenu: ["addcolumnleft", "addcolumnright", "deletecolumns", "columnheader", "mergecellsColumn", "splitcellsColumn", "formatColumn"]
+          subMenu: ["addcolumnleft", "addcolumnright", "deletecolumns", "columnheader", "mergecellsColumn", "splitcellsColumn"]
         }
       ]
     }
