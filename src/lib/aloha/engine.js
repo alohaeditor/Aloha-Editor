@@ -5528,22 +5528,22 @@ function splitParent(nodeList, range) {
 		removeExtraneousLineBreaksBefore(originalParent);
 	}
 
+	var firstChildInNodeList = jQuery.inArray(originalParent.firstChild, nodeList) != -1;
+	var lastChildInNodeList = jQuery.inArray(originalParent.lastChild, nodeList) != -1;
+
 	// "If the first child of original parent is in node list, and original
 	// parent follows a line break, set follows line break to true. Otherwise,
 	// set follows line break to false."
-	var followsLineBreak_ = jQuery.inArray(originalParent.firstChild, nodeList) != -1
-		&& followsLineBreak(originalParent);
+	var followsLineBreak_ = firstChildInNodeList && followsLineBreak(originalParent);
 
 	// "If the last child of original parent is in node list, and original
 	// parent precedes a line break, set precedes line break to true.
 	// Otherwise, set precedes line break to false."
-	var precedesLineBreak_ = jQuery.inArray(originalParent.lastChild, nodeList) != -1
-		&& precedesLineBreak(originalParent);
+	var precedesLineBreak_ = lastChildInNodeList && precedesLineBreak(originalParent);
 
 	// "If the first child of original parent is not in node list, but its last
 	// child is:"
-	if (jQuery.inArray(originalParent.firstChild, nodeList) == -1
-	&& jQuery.inArray(originalParent.lastChild, nodeList) != -1) {
+	if (!firstChildInNodeList && lastChildInNodeList) {
 		// "For each node in node list, in reverse order, insert node into the
 		// parent of original parent immediately after original parent,
 		// preserving ranges."
@@ -5568,7 +5568,7 @@ function splitParent(nodeList, range) {
 	}
 
 	// "If the first child of original parent is not in node list:"
-	if (jQuery.inArray(originalParent.firstChild, nodeList) == -1) {
+	if (!firstChildInNodeList) {
 		// "Let cloned parent be the result of calling cloneNode(false) on
 		// original parent."
 		var clonedParent = originalParent.cloneNode(false);
