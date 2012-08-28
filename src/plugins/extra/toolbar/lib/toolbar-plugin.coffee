@@ -11,7 +11,7 @@ menuSettings = [
 ]
 
 toolbarSettings = [
- 'bold', 'italic', 'underline', '', 'insertImage', 'insertFigure'
+ 'bold', 'italic', 'underline', '', 'insertImage', 'insertFigure', '', 'orderedList', 'unorderedList', 'outdentList', 'indentList'
 ]
 
 define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmenu/appmenu', "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, Ribbon, appmenu, i18n, i18nCore) ->
@@ -71,6 +71,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
       
       Ui.adopt = (slot, type, settings) ->
         # This class adapts button functions Aloha expects to functions the appmenu uses
+        console.log "PHIL: Slot=#{slot}"
         class ItemRelay
           constructor: (@items) ->
           show: () -> item.setHidden false for item in @items
