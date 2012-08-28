@@ -38,3 +38,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: Fixed block draghandles are sometimes missing
 
 - **BUG**: Fixed the ContentHandlerManager to use the content handlers in the correct order.
+- **BUG**: Fixed clicking custom block handles activates the image plugin

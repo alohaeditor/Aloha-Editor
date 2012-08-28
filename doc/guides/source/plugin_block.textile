@@ -246,6 +246,10 @@ renderBlockHandlesIfNeeded: function() {
 }
 </javascript>
 
+NOTE: if you use image elements as icons, mark them with the class
+      'aloha-ui', otherwise the image plugin will pick them up as normal
+      content images that can be resized etc.
+
 h4. Nested Aloha Editables
 
 If you want to mark a certain area inside a block as Aloha editable again, you just need to apply the +aloha-editable+ CSS class to it. If the default behavior is not what you want, you can also call @$element.find(...).aloha()@ in the @init()@ and/or @update()@ method.
