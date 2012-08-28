@@ -7,7 +7,7 @@ menuSettings = [
   subMenu: [ "insertImage", 'insertFigure' ]
 ,
   text: "Table"
-  subMenu: [ "createTable", '', {text: "Cell", subMenu: ["mergecells", "splitcells", "tableCaption", "tableSummary", "formatTable"]}, { text: "Row", subMenu: ["addrowbefore", "addrowafter", "deleterows", "rowheader", "mergecellsRow", "splitcellsRow", "formatRow"]}, '', { text: "Column", subMenu: ["addcolumnleft", "addcolumnright", "deletecolumns", "columnheader", "mergecellsColumn", "splitcellsColumn", "formatColumn"] } ]
+  subMenu: [ "createTable", '', {text: "Cell", subMenu: ["mergecells", "splitcells", "tableCaption"]}, { text: "Row", subMenu: ["addrowbefore", "addrowafter", "deleterows", "rowheader", "mergecellsRow", "splitcellsRow"]}, '', { text: "Column", subMenu: ["addcolumnleft", "addcolumnright", "deletecolumns", "columnheader", "mergecellsColumn", "splitcellsColumn"] } ]
 ]
 
 toolbarSettings = [
