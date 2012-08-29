@@ -29,13 +29,12 @@ define(
 'aloha', 
 'jquery', 
 'aloha/plugin', 
-'aloha/floatingmenu', 
 'i18n!zemanta/nls/i18n', 
 'i18n!aloha/nls/i18n', 
 'aloha/console',
 'css!zemanta/css/zemanta-widget-alohaeditor.css', 
 ],
-function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
+function(Aloha, jQuery, Plugin, i18n, i18nCore, console) {
 	"use strict";
 
 	var
@@ -43,6 +42,15 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
 		active = false,
 		editableId = false,
 		settings = false;
+
+	var FloatingMenu = {}; /* plugin needs rewrite */
+	var msg = 'Plugin Zemanta: This plugin is not working right now. Please deactivate it';
+	if (window.console) {
+		window.console.log(msg);
+	} else {
+		alert(msg);
+	}
+	return;
 
 		// check for API key settings
 		if ( typeof Aloha.settings.plugins.zemanta === 'undefined' ) {

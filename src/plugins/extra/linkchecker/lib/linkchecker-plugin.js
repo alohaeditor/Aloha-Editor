@@ -24,13 +24,28 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-(function(window, undefined) {
+
+
+define([
+	'jquery',
+	'aloha/plugin',
+	'i18n!aloha/nls/i18n'
+],
+function(jQuery, Plugin, i18nCore) {
 	"use strict";
 
 	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
+		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
+
+	var msg = 'Plugin LinkChecker: This plugin is not working right now. Please deactivate it';
+	if (window.console) {
+		window.console.log(msg);
+	} else {
+		alert(msg);
+	}
+	return;
 
 	Aloha.LinkChecker = new Aloha.Plugin('linkchecker');
 
@@ -272,4 +287,5 @@
 																		replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
 	};
 
-})(window);
+
+});

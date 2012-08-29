@@ -27,9 +27,8 @@
 // TODO: SHIFT + ENTER => submit comment  |
 
 define(
-['aloha', 'aloha/plugin', 'jquery', 'aloha/floatingmenu', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console',
- 		'css!format/css/format.css'],
-function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
+['aloha', 'aloha/plugin', 'jquery', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console'],
+function(Aloha, Plugin, jQuery, i18n, i18nCore) {
 	"use strict";
 
 	
@@ -38,6 +37,15 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		GENTICS = window.GENTICS,
 		  Aloha	= window.Aloha;
 	
+	var FloatingMenu = {}; /* plugin needs rewrite */
+	var msg = 'Plugin Comments: This plugin is not working right now. Please deactivate it';
+	if (window.console) {
+		window.console.log(msg);
+	} else {
+		alert(msg);
+	}
+	return;
+
 	$.extend($.easing, {
 		easeOutExpo: function (x, t, b, c, d) {
 			return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;

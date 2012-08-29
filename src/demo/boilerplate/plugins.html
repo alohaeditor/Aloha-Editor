@@ -52,7 +52,7 @@
 		All configuration for Aloha Editor for this demo is stored in js/aloha-config.js
 		It can also be placed inline here before loading Aloha Editor itself.
 	-->
-	<script src="js/aloha-config.js"></script>
+	<script src="js/aloha-config-plugins.js"></script>
 	<script src="../../lib/require.js"></script>
 	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
     <script>
@@ -66,40 +66,53 @@
 		The plugin list could also be added to the configuration.
 	-->
 	<script src="../../lib/aloha.js"
-	        data-aloha-plugins="common/ui,
-	                            common/format,
-	                            common/table,
-	                            common/list,
-	                            common/link,
-	                            common/highlighteditables,
-	                            common/undo,
-	                            common/contenthandler,
-	                            common/paste,
+	        data-aloha-plugins="
+	                            common/abbr,
+	                            common/align,
+	                            common/block,
 	                            common/characterpicker,
 	                            common/commands,
-	                            common/block,
-	                            common/image,
-	                            common/abbr,
+	                            common/contenthandler,
+	                            common/dom-to-xhtml,
+	                            common/format,
+	                            common/highlighteditables,
 	                            common/horizontalruler,
-	                            common/align,
+	                            common/image,
+	                            common/link,
+	                            common/list,
+	                            common/paste,
+	                            common/table,
+	                            common/ui,
+	                            common/undo,
+
+	                            extra/attributes,
+	                            extra/browser,
+	                            extra/captioned-image,
+	                            extra/cite,
+	                            extra/comments,
+	                            extra/draganddropfiles,
+	                            extra/flag-icons,
 	                            extra/formatlesspaste,
-	                            extra/toc,
+	                            extra/googletranslate,
 	                            extra/headerids,
+	                            extra/hints,
+	                            extra/imagebrowser,
+	                            extra/linkbrowser,
+	                            extra/linkchecker,
 	                            extra/listenforcer,
 	                            extra/metaview,
+	                            extra/microdata,
 	                            extra/numerated-headers,
+	                            extra/profiler,
+	                            extra/proxy,
 	                            extra/ribbon,
+	                            extra/sourceview,
+	                            extra/speak,
+	                            extra/toc,
 	                            extra/wai-lang,
-	                            extra/flag-icons,
-	                            extra/linkbrowser,
-	                            extra/imagebrowser,
-	                            extra/cite"></script>
-	<!-- Include the fake-jquery to make sure that Aloha works even if
-		 the user includes his own global jQuery after aloha.js. -->
-	<script src="fake-jquery.js"></script>
-    <script src="ribbon-example.js"></script>
+	                            extra/zemanta
+	"></script>
 	<link rel="stylesheet" href="css/style.css">
-	<script src="js/aloha-boilerplate.js"></script>
 </head>
 <body>
 	<div id="whole-site">
@@ -119,84 +132,6 @@
 				</ul>
 			</div>
 			<div id="main" role="main">
-			<!-- Stage area start -->
-				<div class="stage-area">
-					<ul class="stage-switcher">
-						<li class="stage">
-							<span class="stage-icon" style="background-image: url(img/stage-icon-formats.png);"></span>
-							<h2>Formatting</h2>
-							<p>Bold, headlines, ...</p>
-							<div class="small-image stage-item">
-								<img src="img/stage-bg-formats.png" alt="" />
-								<div class="area-content">
-									<div class="aloha-textbox">
-									<p><b>Bold or headlines, whatever you might want</b></p>
-									<h2>Formatting content</h2>
-									<p>Editing any content with Aloha Editor is similar to editing with state of the art word processors on your desktop. No need to learn any HTML, Wiki or other markup language. The option dialogs have been designed for users not for techies. Writing content has never been that easy.</p>
-									<p><a href="#">More about content formatting</a></p>
-									</div>
-								</div>
-							</div>
-						</li>
-						<li class="stage">
-							<span class="stage-icon" style="background-image: url(img/stage-icon-images.png);"></span>
-							<h2>Images</h2>
-							<p>Placing, scaling ...</p>
-							<div class="full-image stage-item">
-								<img src="img/stage-bg-images.png" alt="" />
-								<div class="area-content">
-									<h3>Place and edit images with Aloha</h3>
-									<h2>Image-Editing</h2>
-									<p><img src="http://aloha-editor.org/logo/Aloha%20Editor%20HTML5%20sticker%20transparent%20128.png" title="Aloha Editor" alt="Aloha Editor" /> Editing any content with Aloha Editor is similar to editing with state of the art word processors on your desktop. No need to learn any HTML, Wiki or other markup language. The option dialogs have been designed for users not for techies. Writing content has never been that easy.</p>
-									<p><a href="#">Digg into placing/editing of images</a></p>
-								</div>
-							</div>
-						</li>
-						<li class="stage">
-							<span class="stage-icon" style="background-image: url(img/stage-icon-tables.png);"></span>
-							<h2>Tables</h2>
-							<p>All you might put into tables</p>
-							<div class="full-image stage-item">
-								<img src="img/stage-bg-tables.png" alt="" />
-								<div class="area-content">
-									<h3>Create and edit tables the way you want them to be</h3>
-									<h2>Table Stuff</h2>
-									<p>Editing any content with Aloha Editor is similar to editing with state of the art word processors on your desktop. No need to learn any HTML, Wiki or other markup language. The option dialogs have been designed for users not for techies. Writing content has never been that easy.</p>
-									<p><a href="#">Try out table editing</a></p>
-								</div>
-							</div>
-						</li>
-						<li class="stage">
-							<span class="stage-icon" style="background-image: url(img/stage-icon-boxes.png);"></span>
-							<h2>Boxes</h2>
-							<p>You may edit dynamic boxes</p>
-							<div class="full-image stage-item">
-								<img src="img/stage-bg-boxes.png" alt="" />
-								<div class="area-content">
-									<h3>You can edit dynamic content</h3>
-									<h2>Edit jQuery stuff</h2>
-									<p>Your imagination ist the limit. Edit every content even if it is dynamic.</p>
-									<p><a href="#">Try out jQuery boxes</a></p>
-								</div>
-							</div>
-						</li>
-						<li class="stage">
-							<span class="stage-icon" style="background-image: url(img/stage-icon-comments.png);"></span>
-							<h2>Comments</h2>
-							<p>threaded inline comments</p>
-							<div class="full-image stage-item">
-								<img src="img/stage-bg-comments.png" alt="" />
-								<div class="area-content">
-									<h3>Threaded inline enterprise commenting</h3>
-									<h2>Increase collaboration</h2>
-									<p>Your imagination ist the limit. Does more content fill the box and move it to the right?</p>
-									<p><a href="#">Try out jQuery boxes</a></p>
-								</div>
-							</div>
-						</li>
-					</ul>
-				</div>
-				<!-- Stage area end -->
 				<div id="content">
 					<p>Here you'll find some <b>example content</b> to show Aloha's <i>possibilities</i> regarding any kind of formatting.</p>
 					<h1>Headline 1</h1>

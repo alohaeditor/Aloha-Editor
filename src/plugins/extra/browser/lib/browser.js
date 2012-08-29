@@ -39,7 +39,7 @@ define( [
 	// this will load the correct language pack needed for the browser
 	'browser/locale',
 	'css!browser/css/browsercombined.css',
-	'browser/vendor/jquery.ui',
+	//'browser/vendor/jquery.ui',
 	'browser/vendor/ui-layout',
 	'browser/vendor/jquery.jqGrid',
 	'browser/vendor/jquery.jstree'

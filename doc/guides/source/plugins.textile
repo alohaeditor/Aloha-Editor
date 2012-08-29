@@ -79,31 +79,40 @@ Plugins in the @common@ directory:
 
 Plugins in the @extra@ directory:
 
-* "extra/attributes":plugin_attributes.html - 
+* "extra/attributes°":plugin_attributes.html - 
 * "extra/browser":plugin_browser.html - provides a browser for the Repository API to insert links or images
 * "extra/captioned-image":plugin_captioned-image.html - provides images with captions as AE Block
 * "extra/cite":plugin_cite.html - provides the possibility to add references to content quoted from another source
-* "extra/comments":plugin_comments.html - add inline comments which are stored in the DOM
+* "extra/comments°":plugin_comments.html - add inline comments which are stored in the DOM
 * "extra/draganddropfiles":plugin_draganddropfiles.html - use Drag and Drop to upload files
 * "extra/flag-icons":plugin_flag-icons.html - this plugin is used by other plugins (wai-lang / metaview) and provides country and language icons
 * "extra/formatlesspaste":plugin_formatlesspaste.html - the formatless paste plugin can be used to strip HTML tags from pasted content
-* "extra/googletranslate":plugin_googletranslate.html - translate content with Google Translate
+* "extra/googletranslate°":plugin_googletranslate.html - translate content with Google Translate
 * "extra/headerids":plugin_headerids.html - insert jump labels for internal hyperlinks
 * "extra/hints":plugin_hints.html - (old plugin)
 * "extra/linkbrowser":plugin_linkbrowser.html - a browser for the link plugin
-* "extra/linkchecker":plugin_linkchecker.html - (old plugin)
+* "extra/linkchecker°":plugin_linkchecker.html - (old plugin)
 * "extra/listenforcer":plugin_listenforcer.html - allow just one top-level list in an editable
 * "extra/metaview":plugin_metaview.html - the Meta View Plugin is used to visualize HTML elements for the editor
 * "extra/numerated-headers":plugin_numerated-headers.html - with this plugin the editor has the possibility to auto generate numeration in the heading tags
-* "extra/profiler":plugin_profiler.html - 
+* "extra/profiler°":plugin_profiler.html - 
 * "extra/ribbon":plugin_ribbon.html - this plugin is intended to provide a Ribbon which is displayed on top of the page and some controls can be added to it dynamically
 * "extra/sourceview":plugin_sourceview.html - view the source of an editable including selection marks in the sidebar
-* "extra/speak":plugin_speak.html - integrates speak.js into Aloha Editor
+* "extra/speak°":plugin_speak.html - integrates speak.js into Aloha Editor
 * "extra/toc":plugin_toc.html - add a table of contents into your editable
 * "extra/vie":plugin_vie.html - integrates VIE.js into Aloha Editor
 * "extra/wai-lang":plugin_wai-lang.html - annotate parts of the content with @lang@ attributes
-* "extra/zemanta":plugin_zemanta.html - integrates Zemanta into Aloha Editor
+* "extra/zemanta°":plugin_zemanta.html - integrates Zemanta into Aloha Editor
 
 
 Community Plugins:
-* "colorselector":https://github.com/mihaisimi/Aloha-Plugin-Colorselector - add font color or background color
+* "colorselector°":https://github.com/mihaisimi/Aloha-Plugin-Colorselector - add font color or background color
+* "fontsize°":https://github.com/jstrouse/Aloha-Plugin-FontSize - select the font size
+* "fontfamily°":https://github.com/jstrouse/Aloha-Plugin-FontFamily - select the font family
+* "undoredo°":https://github.com/jstrouse/Aloha-Plugin-UndoRedo - Undo/Redo plugin
+* "math":https://github.com/wysiwhat/Aloha-Editor/tree/dev/src/plugins/extra/math - Use mathematical formulas and LaTeX (FF only)
+
+
+
+° this plugin is currently not working within AE 0.21.x
+

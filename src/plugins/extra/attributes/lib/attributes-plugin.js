@@ -25,8 +25,8 @@
  * recipients can access the Corresponding Source.
  */
 define(
-['aloha','aloha/plugin', 'aloha/floatingmenu', 'i18n!attributes/nls/i18n', 'i18n!aloha/nls/i18n', 'css!attributes/css/attributes.css'],
-function(Aloha, Plugin, FloatingMenu, i18n, i18nCore) {
+['aloha','aloha/plugin', 'i18n!attributes/nls/i18n', 'i18n!aloha/nls/i18n', 'css!attributes/css/attributes.css'],
+function(Aloha, Plugin, i18n, i18nCore) {
 	"use strict";
 
 	var
@@ -34,7 +34,16 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore) {
 		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
-	
+		
+	var FloatingMenu = {}; /* plugin needs rewrite */
+	var msg = 'Plugin Attributes: This plugin is not working right now. Please deactivate it';
+	if (window.console) {
+		window.console.log(msg);
+	} else {
+		alert(msg);
+	}
+	return;
+
     return Plugin.create('attributes', {
 		_constructor: function(){
 			this._super('attributes');

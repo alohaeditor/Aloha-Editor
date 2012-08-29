@@ -39,7 +39,8 @@ Aloha.ready( function() {
 		}
 
 		// we never want to see the floatingmenu here
-		var floatingMenu = Aloha.require('aloha/floatingmenu');
+		//var floatingMenu = Aloha.require('aloha/floatingmenu');
+		var FloatingMenu = {}; /* @todo needs rewrite */
 		floatingMenu.doLayout = function() {
 			this.hide();
 		};

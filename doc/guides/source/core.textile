@@ -31,8 +31,7 @@ Not supported HTML elements:
 	'svg', 'table', 'ul', 'video', 'ol', 'form', 'noscript' ]
 </javascript>
 
-Note if you are using a textarea with Aloha:
-If the textarea has a HTML ID (eg. mytxtarea) the ID of the Aloha editable will be "-aloha" suffixed (eg. mytxtarea-aloha).
+NOTE: If you are using a textarea with Aloha Editor and the textarea has a HTML ID (eg. mytxtarea) the Aloha Editor ID of the editable will be suffixed with "-aloha" (eg. mytxtarea-aloha).
 
 
 h3. Core files

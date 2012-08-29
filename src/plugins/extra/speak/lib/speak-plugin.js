@@ -26,10 +26,18 @@
  */
 define([
     'aloha/plugin',
-	'aloha/floatingmenu',
 	'i18n!aloha/nls/i18n'
-], function ( Plugin, FloatingMenu, i18nCore ) {
+], function ( Plugin, i18nCore ) {
 	'use strict';
+	
+	var FloatingMenu = {}; /* plugin needs rewrite */
+	var msg = 'Plugin Speak: This plugin is not working right now. Please deactivate it';
+	if (window.console) {
+		window.console.log(msg);
+	} else {
+		alert(msg);
+	}
+	return;
 	
 	return Plugin.create('speak', {
 		

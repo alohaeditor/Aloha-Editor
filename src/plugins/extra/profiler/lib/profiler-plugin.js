@@ -41,11 +41,10 @@ window.define( [
 	'aloha/selection',
 	'aloha/markup',
 	'aloha/contenthandlermanager',
-	'aloha/floatingmenu',
 	'aloha/console',
 	'css!profiler/css/profiler'
 ], function( Aloha, Plugin, /* Sidebar */ Editable, Selection, Markup,
-             ContentHandlerManager, FloatingMenu, console ) {
+             ContentHandlerManager, console ) {
 	// 'caller', 'callee', and 'arguments' properties may not be accessed on
 	// strict mode functions or the arguments objects for calls to them
 	// 'use strict';
@@ -58,6 +57,15 @@ window.define( [
 	    argsStr = ( /function[^\(]*\(([^\)]+)/g ).exec( arguments.callee.toString() ),
 	    argNames = argsStr ? argsStr[1].replace( /^\s+|\s+$/g, '' ).split( /\,\s*/ ) : [],
 	    args = Array.prototype.slice.call( arguments );
+
+	var FloatingMenu = {}; /* plugin needs rewrite */
+	var msg = 'Plugin Profiler: This plugin is not working right now. Please deactivate it';
+	if (window.console) {
+		window.console.log(msg);
+	} else {
+		alert(msg);
+	}
+	return;
 
 	/**
 	 * @param {String} path dot seperated path to resolve inside a given object

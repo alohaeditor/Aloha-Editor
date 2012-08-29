@@ -31,12 +31,19 @@
 define([
     'aloha',
 	'aloha/plugin',
-	'aloha/floatingmenu',
-], function CiteClosure (Aloha, Plugin, FloatingMenu ) {
+], function CiteClosure (Aloha, Plugin ) {
 	'use strict';
 
 	var jQuery = Aloha.jQuery;
 	
+	var FloatingMenu = {}; /* plugin needs rewrite */
+	var msg = 'Plugin GoogleTranslate: This plugin is not working right now. Please deactivate it';
+	if (window.console) {
+		window.console.log(msg);
+	} else {
+		alert(msg);
+	}
+	return;
 
 	return Plugin.create('googletranslate', {
 		

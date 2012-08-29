@@ -106,8 +106,9 @@ function($, repository, i18nCore){
 			callback.call( this, d);
 		},
 		getChildren: function( p, callback) {
-			d = [];
-			var parentFolder = p.inFolderId.split("")[0];
+			var d = [],
+				parentFolder = p.inFolderId.split("")[0];
+
 			if (parentFolder == "") {
 				parentFolder = "/";
 			}

@@ -248,7 +248,6 @@ define('format/format-plugin', [
 						config = config_old;
 					}
 				}
-				this.formatOptions = config;
 
 				// now iterate all buttons and show/hide them according to the config
 				for ( button in this.buttons) {
@@ -429,6 +428,10 @@ define('format/format-plugin', [
 
 
 			initSidebar: function ( sidebar ) {
+				// @todo check for existing class and pre-select
+				// @todo make is possible to remove a class
+				// @todo use config per editable not just default config
+				// example config: {'p': {'class': {'foo': 'Foo Style', 'bar': 'BAR CSS'}}},
 				var pl = this;
 				pl.sidebar = sidebar;
 				sidebar.addPanel( {
@@ -437,7 +440,7 @@ define('format/format-plugin', [
 					title    : i18n.t( 'floatingmenu.tab.format' ),
 					content  : '',
 					expanded : true,
-					activeOn : this.formatOptions || false,
+					activeOn : 'p' || false, // pl.formatOptions not working ... 
 
 					onInit: function () {
 					},
@@ -458,36 +461,30 @@ define('format/format-plugin', [
 						dom.append(fieldset);
 					
 						var html = 
-							'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'format.class.legend' ) + '</legend><select name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '">' + 
+							'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset>' + 
+							'<legend>' + i18n.t( 'format.class.legend' ) + '</legend>' + 
+							'<select name="targetGroup" class="' + pl.nsClass( 'cssclass' ) + '">' + 
 							'<option value="">' + i18n.t( 'format.class.none' ) + '</option>';
 
-							if ( pl.config[that.format] && pl.config[that.format]['class'] ) {
-								jQuery.each(pl.config[that.format]['class'], function(i ,v) {
+							if ( pl.settings.config[that.format] && pl.settings.config[that.format]['class'] ) {
+								jQuery.each(pl.settings.config[that.format]['class'], function(i ,v) {
 									html += '<option value="' + i + '" >' + v + '</option>';
 								});
 							}
 
 							html += '</select></fieldset></div>';
 
-						var that = this,
-							content = this.setContent(html).content; 
-
-						 jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
-							jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
+						 jQuery( pl.nsSel( 'cssclass' ) ).change(function () {
+							jQuery( that.effective ).addClass( jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 						 } );
-					
-
-						var that = this;
-						that.effective = effective;
-						jQuery( pl.nsSel( 'linkTitle' ) ).val( jQuery( that.effective ).attr( 'title' ) );
 					}
 
 				} );
-
 				sidebar.show();
 			},
 
 			// duplicated code from link-plugin
+			// @todo remove duplicated code
 			//Creates string with this component's namepsace prefixed the each classname
 			nsClass: function () {
 				var stringBuilder = [], prefix = pluginNamespace;
