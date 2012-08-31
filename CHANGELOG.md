@@ -498,6 +498,41 @@ All changes are categorized into one of the following keywords:
 
 - **BUG**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
 
+
+# 0.20.x
+
+## 0.20.23 - 2012/08/24
+
+- **ENHANCEMENT**: changed loading procedure of languages in wai lang plugin from AJAX to require.js
+- **BUG**: resolved issue with opening the sidebar when clicking on table WAI button.
+
+## 0.20.22 - 2012/08/16
+
+- **ENHANCEMENT**: link-plugin: Removed unwanted margins from the sidebar panel of the link attribute.
+- **BUG**: Fixed block formatting (p, h1, ...)
+
+    To reproduce the error
+
+    * insert two paragraphs into an editable
+
+    "
+    Paragraph1
+    Paragraph2
+    "
+
+    * select both paragraphs and format them as h2
+    * click into the second paragraph and format as h3
+
+    The result before this fix would have been that in the last step both
+    paragraphs were formatted as h3.
+
+- **BUG**: core: We now also remove jquery* attributes before the content is saved.
+- **BUG**: core: We now log a warning to the console if repositories run into timeouts.
+- **BUG**: wai-lang: We now load the language dataset in the query method. This fixes the issue that if the first request went wrong it was never loaded again.
+- **BUG**: sidebar: The sidebar now remembers the current selection and refreshes itself when it is being opened.
+- **BUG**: wordcontenthandler: Fixed the pasting of tables with empty cells.
+- **BUG**: wordcontenthandler: Fixed the pasting of lists in chrome and IE9.
+
 ## 0.20.21 - 2012/08/06
 
 - **MANUAL CHANGE**: Changed the aloha-smart-content-changed event
@@ -706,6 +741,7 @@ All changes are categorized into one of the following keywords:
 - **BUG** floatingmenu: Fixed problem with showing floatingmenu shadow too early
 - **BUG** core: Fixed a permission error in Firefox, when Aloha Editor tried to access a document property of an external ressource
 - **BUG** table-plugin: Fixed the cleanup of the table cells on blur not cleaning up correctly (caused by a typo in the element class)
+- **BUG** core: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist (fixed in extjs)
 
 ## 0.20.8 - 2012/04/06
 
@@ -714,6 +750,7 @@ All changes are categorized into one of the following keywords:
 - **BUG** core: The cursor processing around non-contenteditable elements (blocks) was not functioning as described or desired.  It now behaves with more stability especially on Internet Explorer.
 - **ENHANCEMENT** core: Improved efficiency of cursor processing, especially around blocks.
 - **FEATURE** core: It is now possible to place the caret between two adjecent non-contenteditable elements.
+- **ENHANCEMENT** core: The jquery-plugin require plugin will now be able to return loaded plugins. Previously loaded plugins were just accessible through the extended jquery object.
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
 - **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
 - **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly
