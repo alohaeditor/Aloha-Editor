@@ -44,6 +44,7 @@
 		<url>https://github.com/alohaeditor/Aloha-Editor</url>
 	</scm>
 
+
 	<build>
 		<plugins>
 
@@ -119,6 +120,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>

@@ -12,6 +12,117 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **MANUAL CHANGE**: The change requires changes to existing implementation.
 
+# 0.21.x
+
+## 0.21.3 - 2012/08/24
+
+- **ENHANCEMENT**: An error was turned into a warning
+
+	The error message "encountered range object without start or end
+	container" was incorrectly logged as an error instead of a
+	warning.
+	
+- **ENHANCEMENT**: repository-browser: The repository browser will now automatically increase its height.
+
+- **ENHANCEMENT**: Added a new block implementation of Aloha Editor blocks, which 
+				   doesn't render any tag fill icons or borders. This is useful for 
+				   tags that should be editable with Aloha Editor.
+
+				   To use this block type, just wrap your tag content in a <div> 
+				   with the following attribute: 
+
+				   data-aloha-block-type="EmptyBlock"
+
+- **ENHANCEMENT**: Added jQuery method mahaloBlock() to "unblock" the elements from a jQuery collection. Added method .unblock() for Blocks to "unblock" a block instance (in both cases without removing the DOM element from the DOM).
+
+- **BUG**: The sidebar didn't always update the height of panels correctly.
+
+- **BUG**: Fixed JS error in Aloha.unbind()
+
+- **BUG**: Fixed adding of unwanted <span>'S before tables every time an editable was deactivated when the table plugin and block plugin was used.
+
+- **BUG**: Fixed selecting with keyboard or mouse in editables that are nested in blocks, when using the Internet Explorer.
+
+- **BUG**: Fixed block draghandles are sometimes missing
+
+## 0.21.2 - 2012/08/16
+
+- **MANUAL CHANGE**: Updated impress.js to work with jQuery UI
+
+- **MANUAL CHANGE**: Updated demo-app to work with jQuery UI; added simple system test to check file permissions;
+
+- **MANUAL CHANGE**: Updated the guides for the contenthandler configuration;
+
+- **MANUAL CHANGE**: removed not needed demo/test.html (was for testing per editable config)
+
+- **ENHANCEMENT**: link-plugin: Removed unwanted margins from the sidebar panel of the link attribute.
+
+- **ENHANCEMENT**: Addition to the API
+                   Aloha.Editable.setContentSerializer() was added to the API.
+                   Aloha.Editable.getContentSerializer() was implemented and
+				   added to the API.
+
+- **ENHANCEMENT**: pubsub/repository-browser: Upgrades the PubSub, and
+                   RepositoryBrowser dependencies.
+
+- **BUG**: Editable.getContents(true) doesn't make defensive copies.
+		   Invoking Editable.getContents(true) multiple times in a row would
+		   return the same object, causing unexpected behaviour when client
+		   code modified that object.
+
+- **BUG**: building/undo-plugin: The undo plugin was removed from the list of 
+           plugins that are included in the build process because it caused some 
+           silent javascript errors with content in frameset environments.
+
+- **BUG**: image-plugin: The reset image button function was fixed.  Previously
+           a javascript error occured when the button was pressed.
+
+- **BUG**: wai-lang-plugin: Language annotations were not enhanced.
+		   The short name ('de') of language annotations was displayed instead
+		   of of the full name from the repository ('German').
+
+- **BUG**: block-plugin: Selection was lost when using the cursor keys to move
+           across inline blocks.
+
+- **BUG**: block-plugin: Fixes problem in how droppable containers were being
+		   determined while drapping blocks.  The algorithm was miss-identifing
+		   any container that had a <br> tags with the "aloha-end-br" class as
+		   an "empty" container, even if it contained other content along with
+		   the propping <br>.  We now use a stricter check to remove this false
+		   positive.
+
+- **BUG**: Fixed block formatting (p, h1, ...)
+
+    To reproduce the error
+
+    * insert two paragraphs into an editable
+
+    "
+    Paragraph1
+    Paragraph2
+    "
+
+    * select both paragraphs and format them as h2
+    * click into the second paragraph and format as h3
+
+    The result before this fix would have been that in the last step both
+    paragraphs were formatted as h3.
+
+
+- **BUG**: core: We now also remove jquery* attributes before the content is saved.
+
+- **BUG**: core: We now log a warning to the console if repositories run into timeouts.
+
+- **BUG**: wai-lang: We now load the language dataset in the query method. This fixes the issue that if the first request went wrong it was never loaded again.
+
+- **BUG**: sidebar: The sidebar now remembers the current selection and refreshes itself when it is being opened.
+
+- **BUG**: wordcontenthandler: Fixed the pasting of tables with empty cells.
+
+- **BUG**: wordcontenthandler: Fixed the pasting of lists in chrome and IE9.
+
+- **BUG**: In the sidebar the panel entry for the format plugin was always shown; now when the formatOptions is empty the empty (useless) sidebar panel will be hidden
+
 ## 0.21.1 - 2012/08/06
 
 - **MANUAL CHANGE**: The API Method setActiveButton() of the MultiSplit component changed: the parameter must be the name of the button to set active, not the index.
@@ -51,6 +162,10 @@ All changes are categorized into one of the following keywords:
 - **BUG**: A debugger statement was removed.
 
 - **BUG**: Missing implementations to show and hide items in a multisplit button have been added.
+
+- **ENHANCEMENT**: numerated-headers-plugin: Added a &nbsp to the annotation, to seperate it from the heading's text.
+
+- **ENHANCEMENT**: table-plugin: We now show the summary textarea in the sidebar if a click on the wai-image was issued.
 
 - **BUG**: Fixed IE7 mode paragraph margin
 
@@ -371,6 +486,118 @@ All changes are categorized into one of the following keywords:
 - **DISCUSS**: It would make sense to support also input (like textarea) elements
     eg. for basic formattings like strong / em -- but prevent insertation of br / p ?
 
+- **BUG**: headerids-plugin: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.
+
+- **BUG**: numerated-headers-plugin: Fixed a bug in the numerated-headers plugin, that the selection was not properly updated when the annotations were removed.
+
+- **BUG**: core: Fixed that sanitizing was not executed for IE7 because of an error with modifying style attributes in IE7. We now execute sanitizing, but ignore style attributes.
+
+- **BUG**: core: Added the removal of sizzle attributes to the basic content handler.
+
+- **BUG**: core: We now catch an exception that is thrown when the selection is not properly updated. This exception would lead to unexpected behaviour.
+
+- **BUG**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
+
+
+# 0.20.x
+
+## 0.20.22 - 2012/08/16
+
+- **ENHANCEMENT**: link-plugin: Removed unwanted margins from the sidebar panel of the link attribute.
+- **BUG**: Fixed block formatting (p, h1, ...)
+
+    To reproduce the error
+
+    * insert two paragraphs into an editable
+
+    "
+    Paragraph1
+    Paragraph2
+    "
+
+    * select both paragraphs and format them as h2
+    * click into the second paragraph and format as h3
+
+    The result before this fix would have been that in the last step both
+    paragraphs were formatted as h3.
+
+- **BUG**: core: We now also remove jquery* attributes before the content is saved.
+- **BUG**: core: We now log a warning to the console if repositories run into timeouts.
+- **BUG**: wai-lang: We now load the language dataset in the query method. This fixes the issue that if the first request went wrong it was never loaded again.
+- **BUG**: sidebar: The sidebar now remembers the current selection and refreshes itself when it is being opened.
+- **BUG**: wordcontenthandler: Fixed the pasting of tables with empty cells.
+- **BUG**: wordcontenthandler: Fixed the pasting of lists in chrome and IE9.
+
+## 0.20.21 - 2012/08/06
+
+- **MANUAL CHANGE**: Changed the aloha-smart-content-changed event
+
+    The snapshotContent property provided bythe
+    aloha-smart-content-changed event was replaced with the
+    getSnapshotContent property which is a function that must be
+    called to retrieve the value that was provided by snapshotContent.
+
+    This was done to make snapshotting of the editable contents
+    optional, since it is a very expensive operation.
+
+- **ENHANCEMENT**: numerated-headers-plugin: Added a &nbsp to the annotation, to seperate it from the heading's text.
+
+- **ENHANCEMENT**: table-plugin: We now show the summary textarea in the sidebar if a click on the wai-image was issued.
+
+- **BUG**: Fixed IE7 mode paragraph margin
+
+    The problem is that with a DOM like the following:
+
+    ```html
+    <style>p { margin-top: 2em; }</style>
+    <p><br class='aloha-end-br'/></p>
+    <p></p>
+    ```
+
+    The margin between the paragraphs will not take effect because
+    IE8 in compatibility mode considers the paragraph with the ```<br>```
+    in it empty. Normal IE8 will render the margin.
+
+    To make IE8 in compatibility mode render the margin, some content
+    must be put into the ```<p>```. That is not a big problem, since there
+    usually should be no reason to have empty paragraphs in your
+    content.
+
+    However, if the content is entered by hand (if it is not there to
+    begin with) then the margin will not be immediately updated. Only
+    when, after entering some content into the first paragraph, the
+    selection is put into the second paragraph, will the margin be
+    updated.
+
+    Although I don't see an easy workaround for the first problem
+    (that the margin is not displayed when the paragraph is empty)
+    there is an easy workaround for the second problem (that the
+    margin isn't updated even after some content has been
+    entered). The workaround is simply, when some content is entered,
+    to insert and remove an arbitrary DOM node into the second
+    paragraph, which will force IE to re-render the paragraph.
+
+    Problem was verified to exist on IE7 and IE8 in compatibility
+    mode with IE7 document type. May also exist in other IE7 modes.
+
+- **BUG**: Fixed some random and weird selection problems in IE7, where some
+	actions (like Enter behaviour) were not performed on the correct cursor
+	position. Sometimes there also occurred some JS errors.
+	
+- **BUG**: Fixed Transforming an empty contenteditable into a list, which
+	caused the contenteditable container to disappear.
+
+- **BUG**: headerids-plugin: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.
+
+- **BUG**: numerated-headers-plugin: Fixed a bug in the numerated-headers plugin, that the selection was not properly updated when the annotations were removed.
+
+- **BUG**: core: Fixed that sanitizing was not executed for IE7 because of an error with modifying style attributes in IE7. We now execute sanitizing, but ignore style attributes.
+
+- **BUG**: core: Added the removal of sizzle attributes to the basic content handler.
+
+- **BUG**: core: We now catch an exception that is thrown when the selection is not properly updated. This exception would lead to unexpected behaviour.
+
+- **BUG**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
 
 ## 0.20.20 - 2012/07/25
 
@@ -509,6 +736,7 @@ All changes are categorized into one of the following keywords:
 - **BUG** floatingmenu: Fixed problem with showing floatingmenu shadow too early
 - **BUG** core: Fixed a permission error in Firefox, when Aloha Editor tried to access a document property of an external ressource
 - **BUG** table-plugin: Fixed the cleanup of the table cells on blur not cleaning up correctly (caused by a typo in the element class)
+- **BUG** core: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist (fixed in extjs)
 
 ## 0.20.8 - 2012/04/06
 
@@ -517,6 +745,7 @@ All changes are categorized into one of the following keywords:
 - **BUG** core: The cursor processing around non-contenteditable elements (blocks) was not functioning as described or desired.  It now behaves with more stability especially on Internet Explorer.
 - **ENHANCEMENT** core: Improved efficiency of cursor processing, especially around blocks.
 - **FEATURE** core: It is now possible to place the caret between two adjecent non-contenteditable elements.
+- **ENHANCEMENT** core: The jquery-plugin require plugin will now be able to return loaded plugins. Previously loaded plugins were just accessible through the extended jquery object.
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
 - **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
 - **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly

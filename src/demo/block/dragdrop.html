@@ -45,7 +45,13 @@
 					},
 					dragdrop: "1",
 					dropzones: ["#editable-1"],
-					config : {'toggleDragdrop': "1"},
+					config : {
+						'toggleDragdrop': "1"
+						// The following would make the toggleDragDrop button ignore the
+						// per-editable config and make the button always show and toggle
+						// the dragndrop feature for all editables.
+						//toggleDragdropGlobal: true
+					},
 					editables : {
 						"#editable-1": {'toggleDragdrop': true, 'dropzones': [ '#editable-1', '#editable-2' ]},
 						"#editable-2": {'toggleDragdrop': true}
@@ -61,7 +67,7 @@
 	</script>
 
 	<script src="../../lib/require.js"></script>
-	<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,common/format,common/paste,common/block,user/blockdemo,common/table,common/highlighteditables"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,common/format,common/paste,common/block,user/blockdemo,common/table,common/highlighteditables,extra/sourceview"></script>
 
 	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
 	<link rel="stylesheet" href="index.css" type="text/css">

@@ -3,7 +3,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 		tabs: [
 			// Format Tab
 			{
-				label: 'Format',
+				label: 'tab.format.label',
 				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
 					[
@@ -24,7 +24,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 			},
 			// Insert Tab
 			{
-				label: "Insert",
+				label: "tab.insert.label",
 				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
 					[ "createTable", "characterPicker", "insertLink",
@@ -34,13 +34,13 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 			},
 			// Link Tab
 			{
-				label: 'Link', 
+				label: 'tab.link.label', 
 				showOn: { scope: 'link' },
 				components: [ 'editLink', 'removeLink', 'linkBrowser' ]
 			},
             // Image Tab
             {
-                label: "Image",
+                label: "tab.img.label",
                 showOn: {scope: 'image'},
                 components: [
                     [ "imageSource", "imageTitle",
@@ -52,20 +52,20 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
                 ]
             },
             // Abbr Tab
-            {   label: "Abbreviation",
+            {   label: "tab.abbr.label",
                 showOn: { scope: 'abbr' },
                 components: [
                     [ "abbrText" ]
                 ]
             },
             // Wailang Tab
-            {   label: "Wailang",
+            {   label: "tab.wai-lang.label",
 				showOn: { scope: 'wai-lang' },
                 components: [ [ "wailangfield", "removewailang" ] ]
             },
 			// Table Tabs
 			{
-				label: "Table",
+				label: "tab.table.label",
 				showOn: { scope: 'table.cell' },
 				components: [
 					[ "mergecells", "splitcells", "tableCaption",
@@ -73,7 +73,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				]
 			},
 			{ 
-				label: "Column",
+				label: "tab.col.label",
 				showOn: { scope: 'table.column' },
 				components: [
 					[ "addcolumnleft", "addcolumnright", "deletecolumns",
@@ -82,7 +82,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				]
 			},
 			{
-				label: "Row",
+				label: "tab.row.label",
 				showOn: { scope: 'table.row' },
 				components: [
 					[ "addrowbefore", "addrowafter", "deleterows", "rowheader",

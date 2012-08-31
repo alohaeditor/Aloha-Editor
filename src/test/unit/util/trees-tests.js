@@ -91,4 +91,18 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 		deepEqual(prepruned, preprunedTree);
 		deepEqual(postpruned, postprunedTree);
 	});
+
+	test('preprune and postprune for nodes', function () {
+		var tree = $('<div><span><b></b></span></div>')[0];
+		var expected = $('<div><span></span></div>')[0].outerHTML
+		var result;
+		result = Trees.prepruneNodes(tree, function (node) {
+			return node.nodeName === 'B';
+		});
+		deepEqual(result.outerHTML, expected);
+		result = Trees.postpruneNodes(tree, function (node) {
+			return node.nodeName === 'B';
+		});
+		deepEqual(result.outerHTML, expected);
+	});
 });

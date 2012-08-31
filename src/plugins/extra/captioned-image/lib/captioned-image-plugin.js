@@ -18,9 +18,11 @@ define([
 	'block/block',
 	'block/blockmanager',
 	'ui/ui',
-	'ui/toolbar',
 	'ui/toggleButton',
+	'ui/toolbar',
 	'util/maps',
+	'aloha/contenthandlermanager',
+	'aloha/console',
 	'align/align-plugin', // Needed to ensure that we have "alignLeft", and
 	                      // "alignRight" components.
 	// FIXME: use of the css require plugin is deprecated
@@ -32,9 +34,11 @@ define([
 	Block,
 	BlockManager,
 	Ui,
-	Toolbar,
 	ToggleButton,
-	Maps
+	Toolbar,
+	Maps,
+	ContentHandlerManager,
+	console
 ) {
 	'use strict';
 
@@ -74,9 +78,9 @@ define([
 		}\
 	';
 
-	var settings = Aloha.settings &&
+	var settings = ((Aloha.settings &&
 	               Aloha.settings.plugins &&
-	               Aloha.settings.plugins.captionedImage;
+	               Aloha.settings.plugins.captionedImage) || false);
 
 	if (settings.defaultCSS !== false) {
 		$('<style type="text/css">').text(defaultRenderCSS).appendTo('head:first');
@@ -121,7 +125,10 @@ define([
 	function initializeComponents() {
 		var left = Ui.getAdoptedComponent('alignLeft');
 		var right = Ui.getAdoptedComponent('alignRight');
+		var center = Ui.getAdoptedComponent('alignCenter');
 		var alignLeft = function () {
+			center.setState(false);
+			right.setState(false);
 			if (BlockManager._activeBlock) {
 				var alignment = BlockManager._activeBlock.attr('align');
 				BlockManager._activeBlock.attr('align',
@@ -131,6 +138,8 @@ define([
 			return false;
 		};
 		var alignRight = function () {
+			left.setState(false);
+			center.setState(false);
 			if (BlockManager._activeBlock) {
 				var alignment = BlockManager._activeBlock.attr('align');
 				BlockManager._activeBlock.attr('align',
@@ -139,6 +148,15 @@ define([
 			}
 			return false;
 		};
+		var alignCenter = function () {
+			left.setState(false);
+			right.setState(false);
+			if (BlockManager._activeBlock) {
+				BlockManager._activeBlock.attr('align', 'center');
+				return true;
+			}
+			return false;
+		}
 
 		if (left) {
 			var clickLeft = left.click;
@@ -171,6 +189,32 @@ define([
 				click: alignRight
 			}));
 		}
+
+		if (center) {
+			var clickCenter = center.click;
+			center.click = function () {
+				if (!alignCenter()) {
+					clickCenter();
+				}
+			};
+			components.push(center);
+		} else {
+			components.push(Ui.adopt('imgAlignCenter', ToggleButton, {
+				tooltip: 'Align center',
+				text: 'Align center',
+				click: alignCenter
+			}));
+		}
+
+		components.push(Ui.adopt('imgAlignClear', ToggleButton, {
+			tooltip: 'Remove alignment',
+			text: 'Remove alignment',
+			click: function () {
+				if (BlockManager._activeBlock) {
+					BlockManager._activeBlock.attr('align', 'none');
+				}
+			}
+		}));
 	}
 
 	function getImageWidth($img) {
@@ -198,6 +242,8 @@ define([
 		switch (alignment) {
 		case 'left':
 			return Ui.getAdoptedComponent('alignLeft');
+		case 'center':
+			return Ui.getAdoptedComponent('alignCenter');
 		case 'right':
 			return Ui.getAdoptedComponent('alignRight');
 		}
@@ -228,45 +274,48 @@ define([
 		}
 	}
 
-	function cleanEditable($editable) {
-		var $blocks = $editable.find('.aloha-captioned-image-block');
-		var j = $blocks.length;
-		var block;
-		var $img;
-
-		while (j--) {
-			block = BlockManager.getBlock($blocks[j]);
-
-			if (!block) {
-				continue;
+	function eachBlock($context, fn) {
+		var $blocks = $context.find('.aloha-captioned-image-block');
+		$blocks.each(function (i, blockElem) {
+			var block = BlockManager.getBlock(blockElem);
+			if (block) {
+				return fn(block, blockElem);
 			}
+		});
+	}
 
-			$img = block.$_image;
-			var caption = block.attr('caption');
-			var align = block.attr('align');
+	function cleanBlock(block, blockElem) {
+		var $img = block.$_image.clone();
+		var caption = block.attr('caption');
+		var align = block.attr('align');
 
-			// We only touch the data-caption and data-align attributes o/t img!
-			if (caption) {
-				$img.attr('data-caption', caption);
-			} else {
-				$img.removeAttr('data-caption');
-			}
-
-			if (align) {
-				$img.attr('data-align', align);
-			} else {
-				$img.removeAttr('data-align');
-			}
-
-			if (settings.captionedImageClass) {
-				$img.addClass(settings.captionedImageClass);
-			}
-
-			// Now replace the entire block with the original image, with
-			// potentially updated data-caption, data-align and class
-			// attributes.
-			block.$element.replaceWith($img);
+		// We only touch the data-caption and data-align attributes o/t img!
+		if (caption) {
+			$img.attr('data-caption', caption);
+		} else {
+			$img.removeAttr('data-caption');
 		}
+
+		if (align) {
+			$img.attr('data-align', align);
+		} else {
+			$img.removeAttr('data-align');
+		}
+
+		if (settings.captionedImageClass) {
+			$img.addClass(settings.captionedImageClass);
+		}
+
+		// Now replace the entire block with the original image, with
+		// potentially updated data-caption, data-align and class
+		// attributes.
+		$(blockElem).replaceWith($img);
+	}
+
+	function cleanEditable($editable) {
+		eachBlock($editable, function (block, blockElem) {
+			cleanBlock(block, blockElem);
+		});
 	}
 
 	function wrapNakedCaptionedImages($editable) {
@@ -293,9 +342,11 @@ define([
 			// Whenever we need to use other attributes, we'll have to retrieve
 			// it from the original image.
 			var caption = $img.attr('data-caption');
+			var align = $img.attr('data-align');
 			caption = (typeof caption !== 'undefined') ? caption : '';
+			align = (typeof align !== 'undefined') ? align : false;
 			$block.attr('data-caption',        caption)
-			      .attr('data-align',          $img.attr('data-align'))
+			      .attr('data-align',          align)
 			      .attr('data-width',          getImageWidth($img))
 			      .attr('data-original-image', $img[0].outerHTML);
 		}
@@ -344,6 +395,48 @@ define([
 				Toolbar.$surfaceContainer.show();
 			};
 
+			this.onkeypress = function(e) {
+				// prevent new line in image caption -- no p and br allowed (default)
+				//
+				// use Aloha.settings.plugins.captionedImage.allowLinebreak = false (or an empty array [ ]) (default)
+				// to allow no <br> and <p>
+				//
+				// use Aloha.settings.plugins.captionedImage.allowLinebreak = ['p', 'br'] to allow <br> and <p>
+				// use Aloha.settings.plugins.captionedImage.allowLinebreak = [ 'br' ] to allow just <br> and not <p> (or boolean true)
+				// use Aloha.settings.plugins.captionedImage.allowLinebreak = [ 'p' ] to allow just <p>
+				var allowLinebreak = false,
+					allowNewline = false;
+
+				if (settings &&
+					typeof settings.allowLinebreak != 'undefined' &&
+					settings.allowLinebreak) {
+					allowNewline = true;
+					allowLinebreak = settings.allowLinebreak;
+				}
+
+				if (settings.allowLinebreak === true) {
+					allowLinebreak = [ 'br' ];
+				}
+
+				if (jQuery.inArray('p', allowLinebreak) < 0 && jQuery.inArray('br', allowLinebreak) < 0) {
+					allowNewline = false;
+				}
+
+				if (e.keyCode == 13 && !allowNewline) {
+					console.info(this.title, 'No new line or paragraph allowed in image caption. Use: "Aloha.settings.plugins.captionedImage.allowLinebreak = true" to activate.');
+					e.preventDefault();
+				} else {
+					if ((event.shiftKey && jQuery.inArray('br', allowLinebreak) >= 0) ||
+						(!event.shiftKey && jQuery.inArray('p', allowLinebreak) < 0)) {
+						Aloha.execCommand( 'insertlinebreak', false );
+						return false;
+					} else if (jQuery.inArray('p', allowLinebreak) >= 0) {
+						Aloha.execCommand( 'insertparagraph', false );
+						return false;
+					}
+				}
+			};
+
 			render({
 				image  : this.attr('original-image'),
 				caption: this.attr('caption'),
@@ -352,11 +445,40 @@ define([
 			}, function (data) {
 				that._processRenderedData(data);
 				postProcessCallback();
+
 				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable.obj.is(that.$_caption)) {
 						Toolbar.$surfaceContainer.hide();
+
+						// add the key handler for enter (no new line allowed in caption)
+						Aloha.Markup.addKeyHandler(13, function($event) {
+							return that.onkeypress($event);
+						});
+
 					}
 				});
+
+				Aloha.bind('aloha-editable-deactivated', function ($event, data) {
+					//if (data.editable.obj.is(that.$_caption)) {
+						// this should work like above at aloha-editable-activated,
+						// but it seems there is a proplem in the block implementation / this plugin
+						// when iteracting with the caption editable aloha-editable-(de)activated
+						// is triggerd 3 times (because there are 3 captioned image block in the main editable)
+						// when just activate / deactivate the caption it works with fine (that.$_caption is available for all 3) but
+						// when you change the text of the caption and deactivate it that.$_caption is 3 times the same,
+						// it's the first caption editable (but this one was not the one I (de)activated)
+
+						// the implementation of Aloha.Markup.addKeyHandler is at the moment ok,
+						// but should be improved so that it's possible to bind it to a specific editable
+						// right now addKeyHandler is just used here and in the list plugin
+						// there is already an issue in the tracker recommending using the hotkey plugin also here
+						// we need to discuss this topic ...
+
+						// remove the key handler for enter
+						Aloha.Markup.removeKeyHandler(13);
+					//}
+				});
+
 			}, function (error) {
 				postProcessCallback();
 			});
@@ -416,13 +538,16 @@ define([
 					showComponents);
 			});
 			Aloha.bind('aloha-editable-destroyed', function ($event, editable) {
-				cleanEditable(editable.obj);
+				eachBlock(editable.obj, function (block, blockElem) {
+					cleanBlock(block, blockElem);
+					block.free();
+				});
 				editable.obj.undelegate('.aloha-captioned-image-block', 'click',
 					showComponents);
 			});
 		},
 		makeClean: function ($content) {
-			return $content;
+			cleanEditable($content);
 		}
 	});
 

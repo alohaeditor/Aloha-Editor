@@ -60,6 +60,9 @@ h4. Using Configuration
 		handler: {
 			generic: {
 				transformFormattings: false // this will disable the transformFormattings method in the generic content handler
+			},
+			sanitize: {
+				'.aloha-captioned-image-caption': { elements: [ 'em', 'strong' ] }
 			}
 		}
 	}

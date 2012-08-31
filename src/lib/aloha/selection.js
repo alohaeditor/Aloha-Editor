@@ -26,8 +26,8 @@
  */
 "use strict";
 define(
-[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/console', 'PubSub', 'aloha/engine', 'aloha/rangy-core' ],
-function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) {
+[ 'aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/console', 'PubSub', 'aloha/engine', 'aloha/ecma5shims', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, e5s) {
 	var GENTICS = window.GENTICS;
 	/**
 	 * @namespace Aloha
@@ -200,25 +200,33 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 		 * @return true when rangeObject was modified, false otherwise
 		 * @hide
 		 */
-		onChange: function(objectClicked, event) {
+		onChange: function(objectClicked, event, timeout) {
 			if (this.updateSelectionTimeout) {
 				window.clearTimeout(this.updateSelectionTimeout);
-				this.updateSelectionTimeout = undefined;
 			}
-			//we have to work around an IE bug that causes the user
-			//selection to be incorrectly set on the body element when
-			//the updateSelectionTimeout triggers. We remember the range
-			//from the time when this onChange is triggered and provide
-			//it instead of the current user selection when the timout
-			//is triggered. The bug is caused by selecting some text and
-			//then clicking once inside the selection (which collapses
-			//the selection). Interesting fact: when the timeout is
-			//increased to 500 milliseconds, the bug will not cause any
-			//problems since the selection will correct itself somehow.
-			var range = new Aloha.Selection.SelectionRange(true);
+
+			// We have to update the selection in a timeout due to an IE
+			// bug that is is caused by selecting some text and then
+			// clicking once inside the selection (which collapses the
+			// selection inside the previous selection).
+			var selection = this;
 			this.updateSelectionTimeout = window.setTimeout(function () {
+				var range = new Aloha.Selection.SelectionRange(true);
+				// We have to work around an IE bug that causes the user
+				// selection to be incorrectly set on the body element
+				// when the updateSelectionTimeout triggers. The
+				// selection corrects itself after waiting a while.
+				if (!range.startContainer ||
+					'HTML' === range.startContainer.nodeName ||
+					'BODY' === range.startContainer.nodeName ) {
+					if (!this.updateSelectionTimeout) {
+						// First wait 5 millis, then 20 millis, 50 millis, 110 millis etc.
+						selection.onChange(objectClicked, event, 10 + (timeout || 5) * 2);
+					}
+					return;
+				}
 				Aloha.Selection._updateSelection(event, range);
-			}, 5);
+			}, timeout || 5);
 		},
 
 		/**
@@ -246,6 +254,23 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 			return ( this.rangeObject.commonAncestorContainer &&
 						jQuery( this.rangeObject.commonAncestorContainer )
 							.contentEditable() );
+		},
+
+		/**
+		 * This method checks, if the current rangeObject common ancestor container has a 'data-aloha-floatingmenu-visible' Attribute.
+		 * Needed in Floating Menu for exceptional display of floatingmenu.
+		 */
+		isFloatingMenuVisible: function() {
+			var visible = jQuery(Aloha.Selection.rangeObject
+				.commonAncestorContainer).attr('data-aloha-floatingmenu-visible');
+			if(visible !== 'undefined'){
+				if (visible === 'true'){
+					return true;
+				} else {
+					return false;
+				}
+			}
+			return false;
 		},
 
 		/**
@@ -304,6 +329,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 			// throw the event that the selection has changed. Plugins now have the
 			// chance to react on the currentElements[childCount].children.lengthged selection
 			Aloha.trigger('aloha-selection-changed', [this.rangeObject, event]);
+
 			triggerSelectionContextChanged(this.rangeObject, event);
 
 			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
@@ -337,8 +363,8 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 
 			// before getting the selection tree, we do a cleanup
 			if (GENTICS.Utils.Dom.doCleanup({'merge' : true}, rangeObject)) {
-				this.rangeObject.update();
-				this.rangeObject.select();
+				rangeObject.update();
+				rangeObject.select();
 			}
 
 			return this.recursiveGetSelectionTree(rangeObject, rangeObject.commonAncestorContainer);
@@ -618,6 +644,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 		 * @hide
 		 */
 		standardTextLevelSemanticsComparator: function(domobj, markupObject) {
+			// only element nodes can be compared
 			if  (domobj.nodeType === 1) {
 				if (domobj.nodeName != markupObject[0].nodeName) {
 					return false;
@@ -640,7 +667,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 		 * @return true if objects are equal and false if not
 		 * @hide
 		 */
-		standardAttributesComparator: function(domobj, markupObject) {			
+		standardAttributesComparator: function(domobj, markupObject) {
 			var classesA = Strings.words((domobj && domobj.className) || '');
 			var classesB = Strings.words((markupObject.length && markupObject[0].className) || '');
 			Arrays.sortUnique(classesA);
@@ -805,27 +832,57 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 					return;
 				} else {
 					this.applyMarkup(rangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator, {setRangeObject2NewMarkup: true});
+					backupRangeObject.startContainer = rangeObject.startContainer;
+					backupRangeObject.endContainer = rangeObject.endContainer;
+					backupRangeObject.startOffset = rangeObject.startOffset;
+					backupRangeObject.endOffset = rangeObject.endOffset;
 				}
 			}
 
+			if (markupObject.isReplacingElement) {
+				//Check if the startContainer is one of the zapped elements
+				if ( backupRangeObject &&
+						backupRangeObject.startContainer.className &&
+						backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1 ) {
+						//var parentElement = jQuery(backupRangeObject.startContainer).closest(markupObject[0].tagName).get(0);
+						var parentElement = jQuery(backupRangeObject.startContainer).parents(markupObject[0].tagName).get(0);
+						backupRangeObject.startContainer = parentElement;
+						rangeObject.startContainer = parentElement;
+					}
+				//check if the endContainer is one of the zapped elements
+				if (backupRangeObject &&
+						backupRangeObject.endContainer.className &&
+						backupRangeObject.endContainer.className.indexOf('preparedForRemoval') > -1 ) {
+					//var parentElement = jQuery(backupRangeObject.endContainer).closest(markupObject[0].tagName).get(0);
+					var parentElement = jQuery(backupRangeObject.endContainer).parents(markupObject[0].tagName).get(0);
+					backupRangeObject.endContainer = parentElement;
+					rangeObject.endContainer = parentElement;
+				}
+			}
 			// remove all marked items
 			jQuery('.preparedForRemoval').zap();
 
 			// recalculate cac and selectionTree
-			rangeObject.update();
-
+			
 			// update selection
 			if (markupObject.isReplacingElement) {
-				if ( backupRangeObject &&
-					backupRangeObject.startContainer.className &&
-					backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1 ) {
-					var parentElement = jQuery(backupRangeObject.startContainer).closest(markupObject[0].tagName).get(0);
-					backupRangeObject.startContainer = parentElement;
-					backupRangeObject.endContainer = parentElement;
+				//After the zapping we have to check for wrong offsets
+				if (e5s.Node.ELEMENT_NODE === backupRangeObject.startContainer.nodeType && backupRangeObject.startContainer.childNodes && backupRangeObject.startContainer.childNodes.length < backupRangeObject.startOffset) {
+					backupRangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
+					rangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
 				}
+				if (e5s.Node.ELEMENT_NODE === backupRangeObject.endContainer.nodeType && backupRangeObject.endContainer.childNodes && backupRangeObject.endContainer.childNodes.length < backupRangeObject.endOffset) {
+					backupRangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
+					rangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
+				}
+				rangeObject.endContainer = backupRangeObject.endContainer;
+				rangeObject.endOffset = backupRangeObject.endOffset;
+				rangeObject.startContainer = backupRangeObject.startContainer;
+				rangeObject.startOffset = backupRangeObject.startOffset;
 				backupRangeObject.update();
 				backupRangeObject.select();
 			} else {
+				rangeObject.update();
 				rangeObject.select();
 			}
 		},
@@ -1047,15 +1104,18 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 		 * @hide
 		 */
 		changeMarkupOnSelection: function(markupObject) {
+			var rangeObject = this.getRangeObject();
+			
 			// change the markup
-			this.changeMarkup(this.getRangeObject(), markupObject, this.getStandardTagComparator(markupObject));
+			this.changeMarkup(rangeObject, markupObject, this.getStandardTagComparator(markupObject));
 
 			// merge text nodes
-			GENTICS.Utils.Dom.doCleanup({'merge' : true}, this.rangeObject);
+			GENTICS.Utils.Dom.doCleanup({'merge' : true}, rangeObject);
 
 			// update the range and select it
-			this.rangeObject.update();
-			this.rangeObject.select();
+			rangeObject.update();
+			rangeObject.select();
+			this.rangeObject = rangeObject;
 		},
 
 		/**
@@ -1103,8 +1163,8 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 				Aloha.Log.debug(this, 'Node name detected: ' + nn + ' for: ' + markupObject.outerHtml());
 			}
 			if (nn == '#text') {return 'textNode';}
-			if (this.replacingElements[nn]) {return 'sectionOrGroupingContent';}
-			if (this.tagHierarchy[nn]) {return 'textLevelSemantics';}
+			if (this.replacingElements[ nn ]) {return 'sectionOrGroupingContent';}
+			if (this.tagHierarchy [ nn ]) {return 'textLevelSemantics';}
 			Aloha.Log.warn(this, 'unknown markup passed to this.getMarkupType(...): ' + markupObject.outerHtml());
 		},
 
@@ -2100,6 +2160,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 		if (rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
+		// check whether the container starts in an element node
 		if (rangeObject.startContainer.nodeType != 1) {
 			return false;
 		}
@@ -2166,7 +2227,7 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 		var startContainer = rangeObject.startContainer;
 		var endContainer = rangeObject.endContainer;
 		if (!startContainer || !endContainer) {
-			console.error("encountered range object without start or end container");
+			console.warn("aloha/selection", "encountered range object without start or end container");
 			return;
 		}
 		var startContext = getChangedContext(startContainer, prevStartContext);
@@ -2176,6 +2237,10 @@ function(Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine) 
 		}
 		prevStartContext = startContext;
 		prevEndContext   = endContext;
+
+		/**
+		 * @api documented in the guides
+		 */
 		PubSub.pub('aloha.selection.context-change', {range: rangeObject, event: event});
 	}
 
