@@ -302,6 +302,16 @@ Aloha.Markup = Class.extend( {
 		this.keyHandlers[ keyCode ].push( handler );
 	},
 
+	/**
+	 * Removes a key handler for the given key code
+	 * @param keyCode key code
+	 */
+	removeKeyHandler: function( keyCode ) {
+		if ( this.keyHandlers[ keyCode ] ) {
+			this.keyHandlers[ keyCode ] = null;
+		}
+	},
+
 	insertBreak: function() {
 		var range = Aloha.Selection.rangeObject,
 		    onWSIndex,
