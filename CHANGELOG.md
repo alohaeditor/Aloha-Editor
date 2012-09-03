@@ -14,6 +14,16 @@ All changes are categorized into one of the following keywords:
 
 # 0.21.x
 
+## 0.21.4 - 2012/09/03
+
+- **ENHANCEMENT**: Added labels to the image-plugin url, title, width, height input fields
+
+	This change also rearranges the order of image-plugin components in the toolbar.
+
+- **BUG**: Fixed the ContentHandlerManager to use the content handlers in the correct order.
+
+- **BUG**: Fixed clicking custom block handles activates the image plugin
+
 ## 0.21.3 - 2012/08/24
 
 - **ENHANCEMENT**: An error was turned into a warning

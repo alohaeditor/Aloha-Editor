@@ -7,7 +7,3 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
-
-- **ENHANCEMENT**: added labels to the image-plugin url, title, width, height input fields
-
-	This change also rearranges the order of image-plugin components in the toolbar.
