@@ -8,3 +8,4 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUG**: characterpicker-plugin: Fixed a bug that when inserting a special character using the character picker plugin, the focus would be sometimes set to the start of the active editable (e.g. when inserting into a table cell).
