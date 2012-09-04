@@ -1,4 +1,4 @@
-﻿title: Aloha Editor Guides
+title: Aloha Editor Guides
 description: These guides help you to make your content editable and to develop Aloha Editor.
 
 team_name: The People That Make It Happen
@@ -126,6 +126,10 @@ index:
     - title: "WAI Language"
       url: plugin_wai-lang
       text: "Add WAI conform language annotations to your content."
+    - title: "Drag and Drop Files"
+      url: plugin_draganddropfiles
+      text: "Learn how to handle files dropped from the computer to the page with Aloha."
+
 
   Contributing to Aloha Editor:
     - title: Releasing

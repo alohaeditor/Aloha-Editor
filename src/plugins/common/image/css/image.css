@@ -1,26 +1,26 @@
 
 /* Images */
-.aloha-image-align-left {
-    background: url(../img/image-align-left.png);
+.aloha-img.aloha-image-align-left {
+    background: url('../img/image-align-left.png');
 }
 
-.aloha-image-align-right {
-    background: url(../img/image-align-right.png);
+.aloha-img.aloha-image-align-right {
+    background: url('../img/image-align-right.png');
 }
 
-.aloha-image-align-none {
-    background: url(../img/image-align-none.png);
+.aloha-img.aloha-image-align-none {
+    background: url('../img/image-align-none.png');
 }
 
 .aloha-img.aloha-image-title {
-    background: url(../img/image-title.png);
+    background: url('../img/image-title.png');
 }
 
 .aloha-img.aloha-image-border {
     background: url(../img/image-border.png);
 }
 
-.aloha-image-insert {
+.aloha-img.aloha-image-insert {
     background: url(../img/image.gif) !important;
 }
 
@@ -40,7 +40,7 @@
 	background: url(../img/size-decrease.gif);
 }
 
-.aloha-default-file-icon {
+.aloha-img.aloha-default-file-icon {
 	background: url(../img/page.png);
 
 	width: 16px;
@@ -50,19 +50,19 @@
 }
 
 /* Crop and Resize */
-.aloha-icon-cnr-resize, .aloha-icon-cnr-crop, .aloha-icon-cnr-reset {
+.aloha-img.aloha-icon-cnr-resize, .aloha-img.aloha-icon-cnr-crop, .aloha-img.aloha-icon-cnr-reset {
 	background: url(../img/cropnresize.png);
 }
 
-.aloha-icon-cnr-crop {
+.aloha-img.aloha-icon-cnr-crop {
 	background-position: -2px -2px !important;
 }
 
-.aloha-icon-cnr-reset {
+.aloha-img.aloha-icon-cnr-reset {
 	background-position: -42px -2px !important;
 }
 
-.aloha-icon-cnr-ratio {
+.aloha-img.aloha-icon-cnr-ratio {
 	background-image: url(../img/cropnresize.png) !important;
 	background-position: -60px -2px !important;
 }

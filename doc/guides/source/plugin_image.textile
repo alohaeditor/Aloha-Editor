@@ -10,7 +10,7 @@ The Image Plugin allows for the basic manipulation of images right within the co
 * changing the image padding,
 * resetting the image to it's initial state after changing some of its properties.
 
-NOTE: You need a server side script like ImageMagick which will handle actual cropping for you.
+NOTE: Crop feature now uses CANVAS api with HTML5 browsers.
 
 endprologue.
 

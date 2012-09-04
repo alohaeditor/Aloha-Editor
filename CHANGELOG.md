@@ -12,8 +12,6 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **MANUAL CHANGE**: The change requires changes to existing implementation.
 
-# 0.22.x
-
 ## 0.22.0 - 2012/09/03
 
 - **MANUAL CHANGE**: Updated UI CSS regarding button selector.
@@ -42,6 +40,10 @@ All changes are categorized into one of the following keywords:
 - **BUG**: Align Plugin button status was not shown correctly.
 
 # 0.21.x
+
+- **BUG**: images-plugin: global fix and debug interactions with draganddropfiles
+- **BUG**: draganddropfiles-plugin: fix for Firefox in order to send fileName
+- *ENHANCEMENT**: draganddropfiles-plugin: Send id target element in headers to inform the server where in page the file has been dropped
 
 ## 0.21.4 - 2012/09/03
 
@@ -525,6 +527,8 @@ All changes are categorized into one of the following keywords:
 - **DISCUSS**: It would make sense to support also input (like textarea) elements
     eg. for basic formattings like strong / em -- but prevent insertation of br / p ?
 
+<<<<<<< HEAD
+=======
 - **BUG**: headerids-plugin: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.
 
 - **BUG**: numerated-headers-plugin: Fixed a bug in the numerated-headers plugin, that the selection was not properly updated when the annotations were removed.
@@ -643,6 +647,7 @@ All changes are categorized into one of the following keywords:
 
 - **BUG**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
 
+>>>>>>> f9b58cf72c386543d9f560d3151267e3961e734d
 ## 0.20.20 - 2012/07/25
 
 - **BUG**: core: An Internet Explorer 7 crash fix was fixed. Previously the fix caused the whole content to be selected for a short period of time when appling inline format elements.
