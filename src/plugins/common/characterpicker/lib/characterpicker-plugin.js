@@ -281,7 +281,7 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * insert a character after selecting it from the list
 		*/
-		onCharacterSelect: function(character) {
+		onCharacterSelect: function (character) {
 			if (Aloha.activeEditable) {
 				//Select the range that was selected before the overlay was opened
 				this._savedRange.select();
