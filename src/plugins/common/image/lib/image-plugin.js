@@ -26,7 +26,8 @@ define([
 	'i18n!image/nls/i18n',
 	'jqueryui',
 	'image/vendor/jcrop/jquery.jcrop.min',
-	'image/vendor/mousewheel/mousewheel'
+	'image/vendor/mousewheel/mousewheel',
+    'css!image/css/image.css'
 ], function AlohaImagePlugin(
 	aQuery,
 	Plugin,
@@ -736,7 +737,11 @@ define([
 			plugin.imageObj = jQuery(e.target);
 			var currentImage = plugin.imageObj;
 			
-			
+			// Ignore any images that are part of the ui (e.g. block edit and delete icons)
+			if (currentImage.hasClass('aloha-ui')) {
+				return;
+			}
+
 			plugin.ui.setScope();
 			
 			var editable = currentImage.closest('.aloha-editable');

@@ -68,6 +68,22 @@ Aloha.loadPlugins(function(){
 });
 </javascript>
 
+Aloha Editor will also add a CSS class to the html DOM node during it's @initAloha@ stage.
+The following classes will be used:
+
+|_. Browser |_. Class |
+| Chrome or Safari | @aloha-webkit@ |
+| Opera | @aloha-opera@ |
+| Firefox | @aloha-mozilla@ |
+| Opera | @aloha-webkit@ |
+| Internet Explorer 7* | @aloha-ie7@ |
+| Internet Explorer 8* | @aloha-ie8@ |
+| Internet Explorer 9* | @aloha-ie9@ |
+| Internet Explorer 10* | @aloha-ie10@ |
+
+NOTE: * Internet Explorer Version Numbers will be derived by turning the browser version into an integer
+			    
+
 h3. How to use require
 
 WARNING: TODO describe how Aloha.require is used

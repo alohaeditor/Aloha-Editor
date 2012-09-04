@@ -52,6 +52,14 @@ h3. Configuration
 * specify Base Object, if you want the plugin to process in a specific container, or on the hole page (e.g. 'body')
 * specify the numeration format 1.2 or 1.2. (trailing dot).
 
+Add a rule to your project CSS to account for the space between the heading's text and the annotation span.
+e.g.:
+<pre>
+span[role="annotation"] {
+	margin-right: 10px;
+}
+</pre>
+
 This settings can be applied for individual editables.
 
 <javascript>

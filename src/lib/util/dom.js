@@ -582,7 +582,7 @@ var Dom = Class.extend({
 				this.split(rangeObject, jQuery(endSplitLimit).parent(), true);
 				didSplit = true;
 			}
-			if (rangeObject.endContainer.nodeType === 1 && rangeObject.endOffset < rangeObject.childNodes.length) {
+			if (rangeObject.endContainer.nodeType === 1 && rangeObject.endOffset < rangeObject.endContainer.childNodes.length) {
 				this.split(rangeObject, jQuery(endSplitLimit).parent(), true);
 				didSplit = true;
 			}
@@ -863,6 +863,25 @@ var Dom = Class.extend({
 
 				// remove this text node
 				jQuery(this).remove();
+
+				// if this is the last text node in a sequence, we remove any zero-width spaces in the text node,
+				// unless it is the only character
+				if (prevNode && (!prevNode.nextSibling || prevNode.nextSibling.nodeType !== 3)) {
+					var pos;
+					for (pos = prevNode.data.length - 1; pos >= 0 && prevNode.data.length > 1; pos--) {
+						if (prevNode.data.charAt(pos) === '\u200b') {
+							prevNode.deleteData(pos, 1);
+							if (rangeObject.startContainer === prevNode && rangeObject.startOffset > pos) {
+								rangeObject.startOffset--;
+								modifiedRange = true;
+							}
+							if (rangeObject.endContainer === prevNode && rangeObject.endOffset > pos) {
+								rangeObject.endOffset--;
+								modifiedRange = true;
+							}
+						}
+					}
+				}
 
 				break;
 			}

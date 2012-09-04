@@ -1,5 +1,18 @@
-define([], function(){
+define([], function () {
 	'use strict';
+
+	/**
+	 * Checks whether the given object has no own or inherited properties.
+	 *
+	 * @param {!Object} obj The object to check.
+	 * @return {boolean} True if the object is empty. eg: isEmpty({}) == true
+	 */
+	function isEmpty(obj) {
+		for (var name in obj) if (obj.hasOwnProperty(name)) {
+			return false;	
+		}
+		return true;
+	}
  
 	/**
 	 * Fill the given map with the given keys mapped to the given value.
@@ -47,6 +60,7 @@ define([], function(){
 	}
 
 	return {
+		isEmpty: isEmpty,
 		fillTuples: fillTuples,
 		fillKeys: fillKeys
 	};

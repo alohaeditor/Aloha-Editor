@@ -143,6 +143,7 @@
 	Aloha.settings.contentHandler: {
 		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
 		initEditable: [ 'sanitize' ],
+		getContents: [ 'blockelement', 'sanitize', 'basic' ],
 		sanitize: 'relaxed' // relaxed, restricted, basic,
 		allows: {
 			elements: [
@@ -160,6 +161,14 @@
 				'a'         : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']}, // Sanitize.RELATIVE
 				'blockquote': {'cite': ['http', 'https', '__relative__']},
 				'q'         : {'cite': ['http', 'https', '__relative__']}
+			}
+		},
+		handler: {
+			generic: {
+				transformFormattings: false // this will disable the transformFormattings method in the generic content handler
+			},
+			sanitize: {
+				'.aloha-captioned-image-caption': { elements: [ 'em', 'strong' ] }
 			}
 		}
 	}

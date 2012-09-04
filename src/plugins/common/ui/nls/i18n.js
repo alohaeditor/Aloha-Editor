@@ -52,7 +52,19 @@ define({
 
 		// cite
 		"button.quote.label": "Format selection as quote",
-		"button.blockquote.label": "Format selection as blockquote"
+		"button.blockquote.label": "Format selection as blockquote",
+
+		// Tabs
+		"tab.format.label": "Format",
+		"tab.insert.label": "Insert",
+		"tab.abbr.label": "Abbreviation",
+		"tab.img.label": "Image",
+		"tab.link.label": "Link",
+		"tab.list.label": "List",
+		"tab.table.label": "Table",
+		"tab.col.label": "Table Column",
+		"tab.row.label": "Table Row",
+		"tab.wai-lang.label": "Language annotation"
 	},
 	"de": true
 });

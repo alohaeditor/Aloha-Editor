@@ -28,9 +28,11 @@ define([
 	'aloha/core',
 	'util/class',
 	'jquery',
-	'aloha/ecma5shims'
+	'aloha/ecma5shims',
+	'aloha/console',
+	'aloha/block-jump'
 ],
-function( Aloha, Class, jQuery, shims ) {
+function(Aloha, Class, jQuery, shims, console, BlockJump) {
 
 "use strict";
 
@@ -179,8 +181,9 @@ function blink( node ) {
  * @TODO(petro): We need to be more intelligent about whether we insert a
  *               block-level placeholder or a phrasing level element.
  * @TODO(petro): test with <pre>
+ * @TODO: move to block-jump.js
  */
-function jumpBlock( block, isGoingLeft ) {
+function jumpBlock(block, isGoingLeft, currentRange) {
 	var range = new GENTICS.Utils.RangeObject();
 	var sibling = isGoingLeft ? prevVisibleNode( block )
 	                          : nextVisibleNode( block );
@@ -202,11 +205,45 @@ function jumpBlock( block, isGoingLeft ) {
 
 		window.$_alohaPlaceholder = $landing;
 	} else {
-		range.startContainer = range.endContainer = sibling;
-		range.startOffset = range.endOffset = isGoingLeft ?
-			nodeLength( sibling ) : ( isOldIE ? 1 : 0 );
 
-		cleanupPlaceholders( range );
+		// Don't jump the block yet if the cursor is moving to the
+		// beginning or end of a text node, or if it is about to leave
+		// an element node. Both these cases require a hack in some
+		// browsers.
+		var moveToBoundaryPositionInIE
+			= (// To the beginning or end of a text node?
+			   (currentRange.startContainer.nodeType === 3 &&
+				currentRange.startContainer === currentRange.endContainer &&
+				currentRange.startContainer.nodeValue !== "" &&
+				(isGoingLeft ? currentRange.startOffset === 1
+		                     : currentRange.endOffset + 1 === currentRange.endContainer.length)) ||
+			   // Leaving an element node?
+			   (currentRange.startContainer.nodeType === 1 &&
+				(!currentRange.startOffset ||
+				 currentRange.startContainer.childNodes[currentRange.startOffset] &&
+				 currentRange.startContainer.childNodes[currentRange.startOffset].nodeType === 1)));
+
+		if (moveToBoundaryPositionInIE) {
+			// The cursor is moving to the beginning or end of a text
+			// node, or is leaving an element node, which requires a
+			// hack in some browsers.
+			var zeroWidthNode = BlockJump.insertZeroWidthTextNodeFix(block, isGoingLeft);
+			range.startContainer = range.endContainer = zeroWidthNode;
+			range.startOffset = range.endOffset = isGoingLeft ? 1 : 0;
+		} else {
+			// The selection is already at the boundary position - jump
+			// the block.
+			range.startContainer = range.endContainer = sibling;
+			range.startOffset = range.endOffset = isGoingLeft ?
+				nodeLength(sibling) : 0;
+			if (!isGoingLeft) {
+				// Just as above, jumping to the first position right of
+				// a block requires a hack in some browsers. Jumping
+				// left seems to be fine.
+				BlockJump.insertZeroWidthTextNodeFix(block, true);
+			}
+		}
+		cleanupPlaceholders(range);
 	}
 
 	range.select();
@@ -265,6 +302,16 @@ Aloha.Markup = Class.extend( {
 		this.keyHandlers[ keyCode ].push( handler );
 	},
 
+	/**
+	 * Removes a key handler for the given key code
+	 * @param keyCode key code
+	 */
+	removeKeyHandler: function( keyCode ) {
+		if ( this.keyHandlers[ keyCode ] ) {
+			this.keyHandlers[ keyCode ] = null;
+		}
+	},
+
 	insertBreak: function() {
 		var range = Aloha.Selection.rangeObject,
 		    onWSIndex,
@@ -310,7 +357,7 @@ Aloha.Markup = Class.extend( {
 			return false;
 		}
 
-		var rangeObject = Aloha.Selection.rangeObject,
+		var rangeObject,
 		    handlers,
 		    i;
 
@@ -325,9 +372,13 @@ Aloha.Markup = Class.extend( {
 
 		// LEFT (37), RIGHT (39) keys for block detection
 		if ( event.keyCode === 37 || event.keyCode === 39 ) {
-			if ( this.processCursor( rangeObject, event.keyCode ) ) {
-				cleanupPlaceholders( Aloha.Selection.rangeObject );
-				return true;
+			if (Aloha.getSelection().getRangeCount()) {
+				rangeObject = Aloha.getSelection().getRangeAt( 0 );
+
+				if ( this.processCursor( rangeObject, event.keyCode ) ) {
+					cleanupPlaceholders( Aloha.Selection.rangeObject );
+					return true;
+				}
 			}
 
 			return false;
@@ -368,23 +419,58 @@ Aloha.Markup = Class.extend( {
 	 * For each block that is selected, an 'aloha-block-selected' event will be
 	 * triggered.
 	 *
+	 * TODO: the above is what should happen. Currently we just skip past blocks.
+	 *
 	 * @param {RangyRange} range A range object for the current selection.
 	 * @param {number} keyCode Code of the currently pressed key.
 	 * @return {boolean} False if a block was found, to prevent further events,
 	 *                   true otherwise.
+	 * @TODO move to block-jump.js
 	 */
 	processCursor: function( range, keyCode ) {
-		if ( !range.isCollapsed() ) {
+		if ( !range.collapsed ) {
 			return true;
 		}
 
-		var node = range.startContainer;
+		BlockJump.removeZeroWidthTextNodeFix();
+
+		var node = range.startContainer, selection = Aloha.getSelection();
 
 		if ( !node ) {
 			return true;
 		}
 
 		var sibling;
+
+		// special handling for moving Cursor around zero-width whitespace in IE7
+		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) <= 7 && isTextNode(node)) {
+			if (keyCode == 37) {
+				// moving left -> skip zwsp to the left
+				var offset = range.startOffset;
+				while (offset > 0 && node.data.charAt(offset - 1) === '\u200b') {
+					offset--;
+				}
+				if (offset != range.startOffset) {
+					range.setStart(range.startContainer, offset);
+					range.setEnd(range.startContainer, offset);
+					selection = Aloha.getSelection();
+					selection.removeAllRanges();
+					selection.addRange(range);
+				}
+			} else if (keyCode == 39) {
+				// moving right -> skip zwsp to the right
+				var offset = range.startOffset;
+				while (offset < node.data.length && node.data.charAt(offset) === '\u200b') {
+					offset++;
+				}
+				if (offset != range.startOffset) {
+					range.setStart(range.startContainer, offset);
+					range.setEnd(range.startContainer, offset);
+					selection.removeAllRanges();
+					selection.addRange(range);
+				}
+			}
+		}
 
 		// Versions of Internet Explorer that are older that 9, will
 		// erroneously allow you to enter and edit inside elements which have
@@ -411,48 +497,11 @@ Aloha.Markup = Class.extend( {
 
 			if ( isTextNode( node ) ) {
 				if ( isLeft ) {
-					// FIXME(Petro): Please consider if you have a better idea
-					//               of how we can work around this.
-					//
-					// Here is the problem... with Internet Explorer:
-					// ----------------------------------------------
-					//
-					// Versions of Internet Explorer older than 9, are buggy in
-					// how they `select()', or position a selection from cursor
-					// movements, when the following conditions are true:
-					//
-					//  * The range is collapsed.
-					//  * startContainer is a contenteditable text node.
-					//  * startOffset is 1.
-					//  * There is a non-conenteditable element left of the
-					//    startContainer.
-					//  * You attempt to move left to offset 0 (we consider a
-					//    range to be at "frontposition" if it is at offset 0
-					//    within its startContainer).
-					//
-					// What happens in IE 7, and IE 8, is that the selection
-					// will jump to the adjacent non-contenteditable
-					// element(s), instead moving to the front of the
-					// container, and the offset will be stuck at 1--even as
-					// the cursor is jumping around the screen!
-					//
-					// Our imperfect work-around is to reckon ourselves to be
-					// at the front of the next node (ie: offset 0 in other
-					// browsers), as soon as we detect that we are at offset 1
-					// in IEv<9.
-					//
-					// Considering the bug, I think this is acceptable because
-					// the user can still position themselve right between the
-					// block (non-contenteditable element) and the first
-					// characater of the text node by clicking there with the
-					// mouse, since this seems to work fine in all IE versions.
-					var isFrontPositionInIE = isOldIE && 1 === offset;
-
-					if ( !isFrontPositionInIE &&
+					var isApproachingFrontPosition = (1 === offset);
+					if ( !isApproachingFrontPosition &&
 						 !isFrontPosition( node, offset ) ) {
 						return true;
 					}
-
 				} else if ( !isEndPosition( node, offset ) ) {
 					return true;
 				}
@@ -466,8 +515,8 @@ Aloha.Markup = Class.extend( {
 			                 : nextVisibleNode( node );
 		}
 
-		if ( isBlock( sibling ) ) {
-			jumpBlock( sibling, isLeft );
+		if (isBlock(sibling)) {
+			jumpBlock(sibling, isLeft, range);
 			return false;
 		}
 
@@ -500,7 +549,7 @@ Aloha.Markup = Class.extend( {
 			this.splitRangeObject( rangeObject );
 		} else { // if there is no split object, the Editable is the paragraph type itself (e.g. a p or h2)
 			this.insertHTMLBreak( rangeObject.getSelectionTree(), rangeObject );
-		}
+	}
 	},
 
 	/**
@@ -1256,10 +1305,8 @@ Aloha.Markup = Class.extend( {
 		return 'Aloha.Markup';
 	}
 
-} );
+});
 
 Aloha.Markup = new Aloha.Markup();
-
 return Aloha.Markup;
-
-} );
+});

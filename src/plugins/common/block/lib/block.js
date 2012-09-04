@@ -31,19 +31,19 @@
  * @namespace block/block
  */
 define([
-	'aloha',
-	'jquery',
-	'block/blockmanager',
-	'aloha/observable',
-	'ui/scopes',
-	'util/class'
+       'aloha',
+       'jquery',
+       'block/blockmanager',
+       'aloha/observable',
+       'ui/scopes',
+       'util/class'
 ], function(
-	Aloha,
-	jQuery,
-	BlockManager,
-	Observable,
-	Scopes,
-	Class
+       Aloha,
+       jQuery,
+       BlockManager,
+       Observable,
+       Scopes,
+       Class
 ){
 	"use strict";
 
@@ -210,12 +210,7 @@ define([
 		_connectThisBlockToDomElement: function(newElement) {
 			var that = this;
 			var $newElement = jQuery(newElement);
-			if (this.$element) {
-				this.$element.unbind('click', this._onElementClickHandler);
-				this.$element.unbind('mousedown', this._preventSelectionChangedEventHandler);
-				this.$element.unbind('focus', this._preventSelectionChangedEventHandler);
-				this.$element.unbind('dblclick', this._preventSelectionChangedEventHandler);
-			}
+			this._disconnectFromDomElement();
 			this.$element = $newElement;
 
 			this.$element.bind('click', this._onElementClickHandler);
@@ -237,6 +232,18 @@ define([
 					that._postProcessElementIfNeeded();
 				}, 5);
 			});
+		},
+
+		/**
+		 * Disconnect the block from the DOM element
+		 */
+		_disconnectFromDomElement: function() {
+			if (this.$element) {
+				this.$element.unbind('click', this._onElementClickHandler);
+				this.$element.unbind('mousedown', this._preventSelectionChangedEventHandler);
+				this.$element.unbind('focus', this._preventSelectionChangedEventHandler);
+				this.$element.unbind('dblclick', this._preventSelectionChangedEventHandler);
+			}
 		},
 
 		/**
@@ -309,9 +316,7 @@ define([
 			newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.$element[0]);
 
 			BlockManager.trigger('block-delete', this);
-			BlockManager._unregisterBlock(this);
-
-			this.unbindAll();
+			this.free();
 
 			var isInlineElement = this.$element[0].tagName.toLowerCase() === 'span';
 
@@ -324,6 +329,41 @@ define([
 					}
 				}, 5);
 			});
+		},
+
+		/**
+		 * Remove this block, but leave the original DOM element
+		 */
+		unblock: function () {
+			// TODO set old value of contentEditable
+			// TODO set old values for draggable attributes
+
+			// deactivate
+			this.deactivate();
+			// remove handlers
+			this._disconnectFromDomElement();
+			// remove block class
+			this.$element.removeClass('aloha-block');
+			// remove block handles
+			this.$element.children('.aloha-block-handle').remove();
+			// unregister the block
+			this.free();
+		},
+
+		/**
+		 * Free internal state associated with this block.
+		 *
+		 * Should be called when a block is not used any more to prevent
+		 * memory leaks.
+		 *
+		 * Any invokations of instance methods after this method has
+		 * been called will result in undefined behaviour.
+		 *
+		 * @api
+		 */
+		free: function () {
+			BlockManager._unregisterBlock(this);
+			this.unbindAll();
 		},
 
 		/**************************
@@ -405,8 +445,10 @@ define([
 			// Highlight parent blocks
 			this.$element.parents('.aloha-block').each(function() {
 				var block = BlockManager.getBlock(this);
-				block._highlight();
-				highlightedBlocks.push(block);
+				if (block) {
+					block._highlight();
+					highlightedBlocks.push(block);
+				}
 			});
 
 			// Browsers do not remove the cursor, so we enforce it when an aditable is clicked.
@@ -422,7 +464,8 @@ define([
 					Aloha.Selection.updateSelection(event);
 				}
 			}
-			// Trigger selection change event
+			// Trigger block activate & selection change events.
+			BlockManager.trigger('block-activate', highlightedBlocks);
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
 		},
 
@@ -431,12 +474,17 @@ define([
 		 */
 		deactivate: function() {
 			var that = this;
+			var deactivatedBlocks = [this];
 			this._unhighlight();
 			this.$element.parents('.aloha-block').each(function() {
+				deactivatedBlocks.push(this);
 				that._unhighlight();
 			});
 
 			this.$element.removeClass('aloha-block-active');
+
+			// Trigger block deactivate & selection change events.
+			BlockManager.trigger('block-deactivate', deactivatedBlocks);
 			BlockManager.trigger('block-selection-change', []);
 		},
 
@@ -526,6 +574,8 @@ define([
 				this._setupDragDropForBlockElements();
 				this._disableUglyInternetExplorerDragHandles();
 			}
+			this._hideDragHandlesIfDragDropDisabled();
+			this._attachDropzoneHighlightEvents();
 		},
 
 		/**
@@ -567,12 +617,58 @@ define([
 		 * least they do not work anymore
 		 */
 		_disableUglyInternetExplorerDragHandles: function() {
-			this.$element.get( 0 ).onresizestart = function ( e ) { return false; };
-			this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
-			// We do NOT abort the "ondragstart" event as it is required for drag/drop.
-			this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
-			this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
+			if (jQuery.browser.msie) {
+				this.$element.get( 0 ).onresizestart = function ( e ) { return false; };
+				this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
+				// We do NOT abort the "ondragstart" event as it is required for drag/drop.
+				this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
+				// We do NOT abort the "onselectstart" event because this would disable selection in nested editables
+			}
 		},
+
+        /**
+         * Removes the draghandle class from block handle,
+         * if drag & drop is disabled for the editable
+         */
+        _hideDragHandlesIfDragDropDisabled: function() {
+			if ( !this._dd_isDragdropEnabled() ){
+				this.$element.find('.aloha-block-draghandle').each(function () {
+					var $draghandle = jQuery(this);
+					if (!isDragdropEnabledForElement($draghandle)) {
+						$draghandle.removeClass('aloha-block-draghandle');
+					}
+				});
+			} 
+        },
+
+        /**
+         * Attach mousedown/up events to block's draghandle 
+         * to toggle dropzones when dragging starts and ends.
+         */
+        _attachDropzoneHighlightEvents: function() {
+            var that = this;
+
+            this.$element.delegate( ".aloha-block-draghandle", "mousedown", function() {
+                var dropzones = that.$element.parents( ".aloha-editable" ).first().data( "block-dropzones" ) || [];
+                jQuery.each( dropzones, function(i, editable_selector) {
+                    var editables = jQuery( editable_selector );
+                    jQuery( editables ).each(function() {
+                        if (jQuery( this ).data( "block-dragdrop" )) {
+                            jQuery( this ).addClass( "aloha-block-dropzone" );      
+                        }
+                    });
+                });
+
+                // Remove the dropzones as soon as the mouse is released,
+                // irrespective of where the drop took place.
+                jQuery( document ).one( "mouseup.aloha-block-dropzone", function(e) {
+                    var dropzones = that.$element.parents( ".aloha-editable" ).first().data( "block-dropzones" ) || [];
+                    jQuery.each( dropzones, function(i, editable_selector) {
+                        jQuery( editable_selector ).removeClass( "aloha-block-dropzone" );      
+                    });
+                });
+            });
+        },
 
 		/**************************
 		 * SECTION: Drag&Drop for INLINE elements
@@ -585,6 +681,10 @@ define([
 			// Furthermore, we use it to know whether we need to "revert" the draggable to the original state or not.
 			var lastHoveredCharacter = null;
 
+            // Unless this flag is set to true, drag operation should be reverted.
+            // Firing of "drop" event will set this to true.
+            var blockDroppedProperly = false;
+
 			// HACK for IE7: Internet Explorer 7 has a very weird behavior in
 			// not always firing the "drop" callback of the inner droppable... However,
 			// the "over" and "out" callbacks are fired correctly.
@@ -595,6 +695,10 @@ define([
 			// $currentDraggable contains a reference to the current draggable, but
 			// only makes sense to read when lastHoveredCharacter !== NULL.
 			var $currentDraggable = null;
+
+            // We need to store the droppables created at the start of the drag,
+            // they should be destroyed when the drag stops.
+            var $createdDroppables = null;
 
 			// This dropFn is the callback which handles the actual moving of
 			// nodes. We created a separate function for it, as it is called inside the "stop" callback
@@ -629,13 +733,20 @@ define([
 					that._fixScrollPositionBugsInIE();
 				}
 				jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
+
+                // clear the created droppables
+                $createdDroppables.droppable( "destroy" );
+                $createdDroppables = null;
+
+                blockDroppedProperly = true;
 			};
 			var editablesWhichNeedToBeCleaned = [];
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
+				disabled: !this._dd_isDragdropEnabled(),
 				revert: function() {
-					return (lastHoveredCharacter === null);
+					return (lastHoveredCharacter === null || !blockDroppedProperly);
 				},
 				revertDuration: 250,
 				stop: function() {
@@ -644,12 +755,13 @@ define([
 					}
 					jQuery.each(editablesWhichNeedToBeCleaned, function() {
 						that._dd_traverseDomTreeAndRemoveSpans(this);
-					})
+					});
 					$currentDraggable = null;
 
 					editablesWhichNeedToBeCleaned = [];
 				},
 				start: function() {
+					blockDroppedProperly = false;
 					editablesWhichNeedToBeCleaned = [];
 
 					// In order to make Inline Blocks droppable into empty paragraphs, we insert a &nbsp; manually before the placeholder-br.
@@ -670,14 +782,23 @@ define([
 						 * them droppable.
 						 */
 						over: function(event, ui) {
-							if (editablesWhichNeedToBeCleaned.indexOf(this) === -1) {
+							if (jQuery.inArray(this, editablesWhichNeedToBeCleaned) === -1) {
 								editablesWhichNeedToBeCleaned.push(this);
 							}
 
+							var hasOnlyProppingBr = (
+								1 === jQuery(this).contents().length &&
+								1 === jQuery(this).children('br.aloha-end-br').length
+							);
 							$currentDraggable = ui.draggable;
-							if (jQuery(this).is(':empty') || jQuery(this).children('br.aloha-end-br').length > 0 || jQuery(this).html() === '&nbsp;') {
-								// the user tries to drop into an empty container, thus we highlight the container and do an early return
-								jQuery(this).addClass('aloha-block-dropInlineElementIntoEmptyBlock');
+
+							if (jQuery(this).is(':empty') ||
+								hasOnlyProppingBr ||
+								jQuery(this).html() === '&nbsp;') {
+								// The user is hovering over an empty
+								// container; simply highlight the container.
+								jQuery(this).addClass(
+									'aloha-block-dropInlineElementIntoEmptyBlock');
 								lastHoveredCharacter = this;
 								return;
 							}
@@ -717,14 +838,14 @@ define([
 						 * as drop target.
 						 */
 						drop: function() {
-							if (! (jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10)) ) {
+							if (!(jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10))) {
 								dropFn();
 							}
 						}
 					};
 
-
-					jQuery('.aloha-editable').children(':not(.aloha-block)').droppable(droppableCfg);
+					$createdDroppables = jQuery( ".aloha-editable.aloha-block-dropzone" ).children( ":not(.aloha-block)" );
+					$createdDroppables.droppable( droppableCfg );
 					// Small HACK: Also make table cells droppable
 					jQuery('.aloha-table-cell-editable').droppable(droppableCfg);
 				}
@@ -914,9 +1035,18 @@ define([
 			}
 		},
 
+        /**
+         * Helper method to check whether the drag & drop is enabled
+         * for the editable, which this block belongs to.
+         */
+        _dd_isDragdropEnabled: function () {
+			return isDragdropEnabledForElement(this.$element.parent());
+        },
+
 		/**************************
 		 * SECTION: Drag&Drop for Block elements
 		 **************************/
+
 		_setupDragDropForBlockElements: function() {
 			// Mark the drag handle with an extra CSS class, such that it is picked up by BlockManager.initializeBlockLevelDragDrop()
 			this.$element.find('.aloha-block-draghandle').addClass('aloha-block-draghandle-blocklevel');
@@ -1082,10 +1212,46 @@ define([
 			postProcessFn();
 		}
 	});
+	
+	/**
+	 * @name block.block.EmptyBlock
+	 * @class An empty block doesn't render any tag fill icons or borders (no Aloha tags)
+	 * @extends block.block.AbstractBlock
+	 */
+	var EmptyBlock = AbstractBlock.extend (
+	/** @lends block.block.EmptyBlock */
+	{
+		title: 'EmptyBlock',
+		init: function() {},
+		activate: function () {},
+		deactivate: function () {},
+		renderBlockHandlesIfNeeded: function () {}
+	});
+
+	/**
+	 * Tests whether the given element is contained in an editable for
+	 * which the block dragdrop feature is enabled.
+	 * 
+	 * @param {!jQuery} $element
+	 *        The element that may or may not be contained in an editable.
+	 * @return {boolean}
+	 *        True, unless the given $element is contained in an
+	 *        editable for which the dragdrop feature has been disabled.
+	 */
+	function isDragdropEnabledForElement($element) {
+		var editable = $element.closest(".aloha-editable");
+		if (editable.length) {
+			return !!editable.data("block-dragdrop");
+		} else {
+			// no editable specified, let's make drag & drop enabled by default.    
+			return true;
+		}
+	}
 
 	return {
 		AbstractBlock: AbstractBlock,
 		DefaultBlock: DefaultBlock,
-		DebugBlock: DebugBlock
+		DebugBlock: DebugBlock,
+		EmptyBlock: EmptyBlock
 	};
 });

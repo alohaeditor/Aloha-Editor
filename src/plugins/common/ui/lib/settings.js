@@ -3,16 +3,17 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 		tabs: [
 			// Format Tab
 			{
-				label: 'Format',
+				label: 'tab.format.label',
 				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
 					[
 						// strong, emphasis and underline are not shown with the default format plugin button configuration
-						'bold', 'strong', 'italic', 'emphasis', 'underline', '\n',
+						'bold', 'strong', 'italic', 'emphasis', '\n',
 						'subscript', 'superscript', 'strikethrough', 'quote'
 					], [
 						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', '\n',
-						'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
+						'toggleMetaView', 'wailang', 'toggleFormatlessPaste', '\n',
+						'toggleDragDrop'
 					], [
 						'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
 						'orderedList', 'unorderedList', 'indentList', 'outdentList'
@@ -23,7 +24,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 			},
 			// Insert Tab
 			{
-				label: "Insert",
+				label: "tab.insert.label",
 				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
 					[ "createTable", "characterPicker", "insertLink",
@@ -33,38 +34,39 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 			},
 			// Link Tab
 			{
-				label: 'Link', 
+				label: 'tab.link.label', 
 				showOn: { scope: 'link' },
 				components: [ 'editLink', 'removeLink', 'linkBrowser' ]
 			},
             // Image Tab
             {
-                label: "Image",
+                label: "tab.img.label",
                 showOn: {scope: 'image'},
                 components: [
-                    [ "imageSource", "imageTitle",
-                      "imageAlignLeft", "imageAlignRight", "imageAlignNone",
-                      "imageIncPadding", "imageDecPadding",
-                      "imageBrowser",
-                      "imageCropButton", "imageCnrReset", "imageCnrRatio",
-                      "imageResizeWidth", "imageResizeHeight" ]
+					[ "imageSource", "\n",
+					  "imageTitle" ],
+					[ "imageResizeWidth", "\n",
+					  "imageResizeHeight" ],
+					[ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "\n",
+					  "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ],
+					[ "imageBrowser" ]
                 ]
             },
             // Abbr Tab
-            {   label: "Abbreviation",
+            {   label: "tab.abbr.label",
                 showOn: { scope: 'abbr' },
                 components: [
                     [ "abbrText" ]
                 ]
             },
             // Wailang Tab
-            {   label: "Wailang",
+            {   label: "tab.wai-lang.label",
 				showOn: { scope: 'wai-lang' },
                 components: [ [ "wailangfield", "removewailang" ] ]
             },
 			// Table Tabs
 			{
-				label: "Table",
+				label: "tab.table.label",
 				showOn: { scope: 'table.cell' },
 				components: [
 					[ "mergecells", "splitcells", "tableCaption",
@@ -72,7 +74,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				]
 			},
 			{ 
-				label: "Column",
+				label: "tab.col.label",
 				showOn: { scope: 'table.column' },
 				components: [
 					[ "addcolumnleft", "addcolumnright", "deletecolumns",
@@ -81,7 +83,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				]
 			},
 			{
-				label: "Row",
+				label: "tab.row.label",
 				showOn: { scope: 'table.row' },
 				components: [
 					[ "addrowbefore", "addrowafter", "deleterows", "rowheader",
@@ -94,6 +96,20 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 	/**
 	 * Combines two toolbar configurations.
 	 *
+	 * The rules for combining configurations are as follows
+	 *
+	 * * remove all components and tabs from the default toolbar configuration
+	 *   that are listed in the given exclude array,
+	 * * add all remaining tabs from the default configuration to the user
+	 *   configuration,
+	 * * and merge tabs with the same name such that a tab property that is
+	 *   omitted in the user configuration will be taken from the default
+	 *   configuration,
+	 * * and, if both the default tab and the user's tab configuration contain
+	 *   a components property, and unless the exclusive property on a tab is
+	 *   true, append all remaining components from the default tab to the
+	 *   user's tab configuration.
+	 *
 	 * @param userTabs
 	 *        a list of tab configurations
 	 * @param defaultTabs
@@ -102,16 +118,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 	 *        a list of component names and tab labels to ignore
 	 *        in the given defaultTabs configuration.
 	 * @return
-	 *        The resulting configuration will contain all tabs from
-	 *        userTabs and defaultTabs. If a tab is contained in both,
-	 *        the one in userTabs takes precedence, but the components
-	 *        of both tabs will be combined.
-	 *        If a given component in defaultTabs already exists in any
-	 *        tab of userTabs, the component in defaultTabs will be
-	 *        ignored.
-	 *        Tabs and components of defaulTabs can be excluded by
-	 *        listing the tab labels and component names in the given
-	 *        exlcude param.
+	 *         
 	 */
 	function combineToolbarSettings(userTabs, defaultTabs, exclude) {
 		var defaultTabsByLabel = Maps.fillTuples({}, Arrays.map(defaultTabs, function(tab) {
@@ -156,15 +163,14 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 		    defaultComponents;
 		for (i = 0; i < userTabs.length; i++) {
 			userTab = userTabs[i];
-			components = userTab.components;
+			components = userTab.components || [];
 			defaultTab = defaultTabsByLabel[userTab.label];
-			if (defaultTab) {
+			if (!userTab.exclusive && defaultTab) {
 				defaultComponents = Trees.postprune(defaultTab.components, pruneDefaultComponents);
 				if (defaultComponents) {
 					components = components.concat(defaultComponents);
 				}
 			}
-			debugger;
 			tab = $.extend({}, defaultTab || {}, userTab);
 			tab.components = components;
 			tabs.push(tab);

@@ -32,7 +32,8 @@ define( [
 	'aloha/selection',
 	'aloha/markup',
 	'aloha/contenthandlermanager',
-	'aloha/console'
+	'aloha/console',
+	'aloha/block-jump'
 ], function(
 	Aloha,
 	Class,
@@ -41,7 +42,8 @@ define( [
 	Selection,
 	Markup,
 	ContentHandlerManager,
-	console
+	console,
+	BlockJump
 ) {
 	'use strict';
 
@@ -91,7 +93,21 @@ define( [
 			if (jQuery.browser.msie && jQuery.browser.version < 8) {
 				content = content.replace(/(<table\s+[^>]*?)contenteditable=['\"\w]+/gi, "$1");
 			}
+			
+			content = this.stringFizzleSizzle(content);
 
+			return content;
+		},
+		
+		/**
+		 * Removes nodeIndex, sizcache and sizset attributes.
+		 * @param {string} content to process.
+		 */
+		stringFizzleSizzle: function (content) {
+			var replaced = content;
+			while (content !== (replaced = content.replace(/(<[^>]*?)(nodeIndex|sizcache|sizset|jquery)[\w\d]*="[^"]*"/gi, '$1'))) {
+				content = replaced;
+			}
 			return content;
 		}
 
@@ -100,6 +116,10 @@ define( [
 	// Register the basic contenthandler
 	ContentHandlerManager.register('basic', BasicContentHandler);
 
+	/**
+	 * Cleans the given content by manipulating the jquery content object. 
+	 * @param {Object} $content jQuery object that represents the content
+	 */ 
 	function makeClean($content) {
 		if (jQuery.browser.msie && jQuery.browser.version < 8) {
 			$content = jQuery($content);
@@ -770,29 +790,33 @@ define( [
 		getContents: function (asObject) {
 			var raw = this.obj.html();
 			var cache = editableContentCache[this.getId()];
-			if (cache && raw === cache.raw) {
-				return asObject ? cache.elements : cache.clean;
+
+			if (!cache || raw !== cache.raw) {
+
+				BlockJump.removeZeroWidthTextNodeFix();
+
+				var $clone = this.obj.clone(false);
+				$clone.find( '.aloha-cleanme' ).remove();
+				this.removePlaceholder($clone);
+				PluginManager.makeClean($clone);
+				makeClean($clone);
+				$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
+					contenthandler: Aloha.settings.contentHandler.getContents,
+					command: 'getContents'
+				}) + '</div>');
+				cache = editableContentCache[this.getId()] = {};
+				cache.raw = raw;
+				cache.element = $clone;
 			}
 
-			var $clone = this.obj.clone(false);
-
-			$clone.find( '.aloha-cleanme' ).remove();
-			this.removePlaceholder($clone);
-			PluginManager.makeClean($clone);
-
-			makeClean($clone);
-
-			$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
-				contenthandler: Aloha.settings.contentHandler.getContents,
-				command: 'getContents'
-			}) + '</div>');
-
-			cache = editableContentCache[this.getId()] = {};
-			cache.raw = raw;
-			cache.clean = contentSerializer($clone[0]);
-			cache.elements = $clone.contents();
-
-			return asObject ? cache.elements : cache.clean;
+			if (asObject) {
+				return cache.element.clone().contents();
+			} else {
+				if (null == cache.serialized) {
+					cache.serialized = contentSerializer(cache.element[0]);
+				}
+				return cache.serialized;
+			}
 		},
 
 		/**
@@ -878,6 +902,14 @@ define( [
 				}
 			}
 
+			var snapshot = null;
+			function getSnapshotContent() {
+				if (null == snapshot) {
+					snapshot = me.getSnapshotContent();
+				}
+				return snapshot;
+			}
+
 			// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
 			// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 			if ( jQuery.inArray( uniChar, this.sccDelimiters ) >= 0 ) {
@@ -891,34 +923,12 @@ define( [
 						'keyCode'         : event.keyCode,
 						'char'            : uniChar,
 						'triggerType'     : 'keypress', // keypress, timer, blur, paste
-						'snapshotContent' : me.getSnapshotContent()
+						'getSnapshotContent' : getSnapshotContent
 					} );
 
 					console.debug( 'Aloha.Editable',
 						'smartContentChanged: event type keypress triggered' );
-					/*
-					var r = Aloha.Selection.rangeObject;
-					if ( r.isCollapsed() && r.startContainer.nodeType == 3 ) {
-						var posDummy = jQuery( '<span id="GENTICS-Aloha-PosDummy" />' );
-						GENTICS.Utils.Dom.insertIntoDOM(
-							posDummy,
-							r,
-							this.obj,
-							null,
-							false,
-							false
-						);
-						console.log( posDummy.offset().top, posDummy.offset().left );
-						GENTICS.Utils.Dom.removeFromDOM(
-							posDummy,
-							r,
-							false
-						);
-						r.select();
-					}
-					*/
 				}, this.sccDelay );
-
 			} else if ( event && event.type === 'paste' ) {
 				Aloha.trigger( 'aloha-smart-content-changed', {
 					'editable'        : me,
@@ -926,7 +936,7 @@ define( [
 					'keyCode'         : null,
 					'char'            : null,
 					'triggerType'     : 'paste',
-					'snapshotContent' : me.getSnapshotContent()
+					'getSnapshotContent' : getSnapshotContent
 				} );
 
 			} else if ( event && event.type === 'blur' ) {
@@ -936,7 +946,7 @@ define( [
 					'keyCode'         : null,
 					'char'            : null,
 					'triggerType'     : 'blur',
-					'snapshotContent' : me.getSnapshotContent()
+					'getSnapshotContent' : getSnapshotContent
 				} );
 
 			} else if ( uniChar !== null ) {
@@ -950,7 +960,7 @@ define( [
 						'keyCode'         : null,
 						'char'            : null,
 						'triggerType'     : 'idle',
-						'snapshotContent' : me.getSnapshotContent()
+						'getSnapshotContent' : getSnapshotContent
 					} );
 				}, this.sccIdle );
 			}
@@ -969,7 +979,7 @@ define( [
 	} );
 
 	/**
-	 * Sets the serializer function to be used for the contents of all editables.
+	 * Sets the content serializer function.
 	 *
 	 * The default content serializer will just call the jQuery.html()
 	 * function on the editable element (which gets the innerHTML property).
@@ -978,12 +988,25 @@ define( [
 	 * of editable.getContents() for all editables that have been or
 	 * will be constructed.
 	 *
-	 * @param serializerFunction
+	 * @param {!Function} serializerFunction
 	 *        A function that accepts a DOM element and returns the serialized
 	 *        XHTML of the element contents (excluding the start and end tag of
 	 *        the passed element).
+	 * @api
 	 */
-	Aloha.Editable.setContentSerializer = function( serializerFunction ) {
+	Aloha.Editable.setContentSerializer = function (serializerFunction) {
 		contentSerializer = serializerFunction;
 	};
-} );
+
+	/**
+	 * Gets the content serializer function.
+	 *
+	 * @see Aloha.Editable.setContentSerializer()
+	 * @api
+	 * @return {!Function}
+	 *        The serializer function.
+	 */
+	Aloha.Editable.getContentSerializer = function () {
+		return contentSerializer;
+	};
+});

@@ -145,12 +145,13 @@ Aloha.settings.toolbar = {
         	label: 'Format',
     		components: [
                 [ 'bold', 'italic', 'underline', '\n',
-				  'subscript', 'superscript', 'strikethrough' ]
+				  'subscript', 'superscript', 'strikethrough' ],
 			    [ 'formatBlock' ]
             ]
     	},
 		{
         	label: 'Insert',
+            exclusive: true,
 			components: [
                 &quot;createTable&quot;, &quot;characterPicker&quot;, &quot;insertLink&quot;,
             ]
@@ -159,9 +160,17 @@ Aloha.settings.toolbar = {
         	label: 'Link',
     		components: [ 'editlink' ]
     	}
-    ]
+    ],
+    exclude: [ 'strong', 'emphasis', 'strikethrough' ]
 };
-</pre></div><p><img src="images/toolbar.png" style="width:600px"></p>
+</pre></div><p>The UI plugin merges this toolbar configuration with the default toolbar configuration. The default toolbar configuration can be looked up in src/plugins/common/ui/lib/settings.js.</p>
+<p>The merge rules are as follows</p>
+<ul>
+	<li>remove all components and tabs from the default toolbar configuration   that are listed in Aloha.settings.toolbar.exclude,</li>
+	<li>add all remaining tabs from the default configuration to the user   configuration,</li>
+	<li>and merge tabs with the same name such that a tab property that is   omitted in the user configuration will be taken from the default   configuration,</li>
+	<li>and, if both the default tab and the user&#8217;s tab configuration contain   a components property, and unless the exclusive property on a tab is   true, append all remaining components from the default tab to the   user&#8217;s tab configuration.</li>
+</ul>
 
       </div>
         <div id="subCol">

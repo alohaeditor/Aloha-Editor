@@ -107,24 +107,22 @@
       <div id="mainCol">
           <div class="headerSection">
             <h2>The Image Plugin</h2>
-<p>The Image Plugin will allow for basic image manipulation right within your content:</p>
+<p>The Image Plugin allows for the basic manipulation of images right within the content of an editable. It has support for:</p>
 <ul>
-	<li>resize (by dragging and entering values)</li>
-	<li>resizing with fixed aspect ratio</li>
-	<li>resetting the image to it&#8217;s initial state</li>
-	<li>Image cropping</li>
-	<li>Insert a Image</li>
-	<li>Support for dragging the image around</li>
-	<li>Support for changing the title, src and alt attributes</li>
-	<li>Support for resizing the image</li>
-	<li>Support for changing the image padding</li>
+	<li>insertion,</li>
+	<li>resizing by dragging or entering values, both with and without fixed aspect ratio,</li>
+	<li>cropping,</li>
+	<li>dragging the image around,</li>
+	<li>changing the title, src and alt attributes,</li>
+	<li>changing the image padding,</li>
+	<li>resetting the image to it&#8217;s initial state after changing some of its properties.</li>
 </ul>
 <div class="note"><p>You need a server side script like ImageMagick which will handle actual cropping for you.</p></div>
 
 
           </div>
         <h3 id="enable-the-image-browser-button">1 Enable the image browser button</h3>
-<p>If you have configured or integrated a repository containing images, you can enable an image browser button in the floating menu image scope. I will help user to choose an image picked from the repository. To enable this feature, just add &#8216;extra/imagebrowser&#8217; to the plugins list to be loaded.</p>
+<p>If you have configured or integrated a repository containing images, you can enable an image browser button in the floating menu image scope. To enable this feature, just add &#8216;extra/imagebrowser&#8217; to the plugins list to be loaded.</p>
 <h4 id="configuration-settings">1.1 Configuration settings</h4>
 <p>Activate the image plugin per editable:</p>
 <div class="code_container">
@@ -203,7 +201,10 @@ Aloha.plugins.image = {
 		Aloha.Log.info('Default onResized invoked', $image);
 	}
 };
-</pre></div><h4 id="components">1.2 Components</h4>
+</pre></div><h3 id="notes">2 Notes</h3>
+<h4 id="ignoring-images">2.1 Ignoring images</h4>
+<p>To make the image plugin ignore image elements that are contained in an editable but not part of the content, for example UI elements that enhance the editor&#8217;s interactivity, or other elements that are transient in nature, mark them with the class &#8216;aloha-ui&#8217;.</p>
+<h4 id="components">2.2 Components</h4>
 <ul>
 	<li>insertimage &#8211; a button that allows you to insert an image</li>
 </ul>
@@ -214,6 +215,8 @@ Aloha.plugins.image = {
           <ol class="chapters">
             <li><a href="#enable-the-image-browser-button"><p>Enable the image browser button</p>
 </a><ul><li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li></ul></li><li><a href="#notes"><p>Notes</p>
+</a><ul><li><a href="#ignoring-images"><p>Ignoring images</p>
 </a></li> <li><a href="#components"><p>Components</p>
 </a></li></ul></li>
           </ol>

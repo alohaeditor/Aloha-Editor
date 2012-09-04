@@ -97,6 +97,14 @@ function(
 	'use strict';
 
 	/**
+	 * A hash map of components mapped against the slots into which they have
+	 * been adopted.
+	 *
+	 * @type {Object<string, Component>}
+	 */
+	var components = {};
+
+	/**
 	 * Adopts a component into the UI.
 	 *
 	 * Only adopted components will become part of the UI.
@@ -147,12 +155,25 @@ function(
 			component = SuperTypeOrInstance;
 		}
 
+		components[name] = component;
 		UiPlugin.adoptInto(name, component);
 
 		return component;
 	}
 
+	/**
+	 * Retreives the component that was adopted at the given UI slot.
+	 *
+	 * @param {string} slot The name of the slot.
+	 * @return {Component?} A component, or null if no slot was adopted
+	 *                      into the slot.
+	 */
+	function getComponentAtSlot(slot) {
+		return components[slot] || null;
+	}
+
 	return {
-		adopt: adopt
+		adopt: adopt,
+		getAdoptedComponent: getComponentAtSlot
 	};
 });

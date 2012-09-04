@@ -35,7 +35,7 @@ define([
 				icon: 'aloha-icon-tree',
 				scope: 'Aloha.continuoustext',
 				click: function () {
-					that.open();
+					that.show();
 				}
 			});
 

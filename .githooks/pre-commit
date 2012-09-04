@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+
+showError() {
+  echo "Error: Attempt to commit changes that contain debug code"
+  echo "Detected pattern for $1"
+  echo "Line: $2"
+  echo
+  echo "If you know what you are doing you can disable this"
+  echo "check using the following option:"
+  echo 
+  echo "  --no-verify "
+  echo
+  exit 1;
+}
+
+checkDiff() {
+  LINE=`git diff --cached --unified=0 | grep "$1"`
+  RT=$?
+  
+  if [ "$RT" = "0" ] ; then
+    showError "$1" "$LINE"
+  else
+    echo "Check passed for $1"
+  fi
+}
+
+checkDiff "debugger"
+checkDiff "alert("
+checkDiff "console.log"
