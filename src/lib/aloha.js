@@ -63,7 +63,9 @@
 					if (!plugins) {
 						plugins = pluginsAttr;
 					}
-					baseUrl = script.src.replace(regexStripFilename, '');
+					if (!baseUrl) {
+						baseUrl = script.src.replace(regexStripFilename, '');
+					}
 					break;
 				}
 				if (!baseUrl && regexAlohaJs.test(script.src)) {

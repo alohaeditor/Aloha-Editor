@@ -678,8 +678,8 @@ define([
 					//If the summary should be modified in the sidebar
 					//we activate the sidebar panel
 					if (that.tablePlugin.settings.summaryinsidebar) {
+						that.tablePlugin.sidebar.open();
 						that.tablePlugin.sidebarPanel.activate(that.obj);
-						that.tablePlugin.sidebar.show();
 						that.tablePlugin.sidebar.correctHeight();
 					}
 

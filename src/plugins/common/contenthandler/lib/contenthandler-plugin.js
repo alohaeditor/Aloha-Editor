@@ -47,7 +47,7 @@ define([
 				},
 				handlerName;
 
-			// Register available content handler
+			// Register available default content handler
 			for (handlerName in contentHandlers) {
 				if (contentHandlers.hasOwnProperty(handlerName)) {
 					ContentHandlerManager.register(handlerName, contentHandlers[handlerName]);

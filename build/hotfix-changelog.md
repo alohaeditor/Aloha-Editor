@@ -8,6 +8,11 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **ENHANCEMENT**: added labels to the image-plugin url, title, width, height input fields
+- **BUG**: added the del format button to the possible format plugin buttons
 
-	This change also rearranges the order of image-plugin components in the toolbar.
+	The del button is not enabled by default. To enable it, it has to
+	be configured. For example
+
+	Aloha.settings.plugins.format.config = ['del', ...];
+
+	See http://aloha-editor.org/guides/plugin_format.html

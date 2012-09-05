@@ -26,10 +26,8 @@
  */
 window.TestUtils = window.TestUtils || {};
 
-define(	[ '../../lib/aloha/ecma5shims' ], function($_) {
-	"use strict";
-	
-	var jQuery = window.jQuery;
+define(['jquery', '../../lib/aloha/ecma5shims'], function(jQuery, $_) {
+	'use strict';
 
 	/**
 	 * TestUtils class

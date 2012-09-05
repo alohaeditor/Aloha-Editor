@@ -293,7 +293,9 @@ renderBlockHandlesIfNeeded: function() {
 		}
 	}
 }
-</pre></div><h4 id="nested-aloha-editables">4.3 Nested Aloha Editables</h4>
+</pre></div>
+<div class="note"><p>if you use image elements as icons, mark them with the class &#8216;aloha-ui&#8217;, otherwise the image plugin will pick them up as normal content images that can be resized etc.</p></div>
+<h4 id="nested-aloha-editables">4.3 Nested Aloha Editables</h4>
 <p>If you want to mark a certain area inside a block as Aloha editable again, you just need to apply the <tt>aloha-editable</tt> <span class="caps">CSS</span> class to it. If the default behavior is not what you want, you can also call <code>$element.find(...).aloha()</code> in the <code>init()</code> and/or <code>update()</code> method.</p>
 <h3 id="editing-api">5 Editing <span class="caps">API</span></h3>
 <p>The attributes of an Aloha Block can be edited through an automatically generated User Interface in the <strong>Aloha Sidebar</strong>. Of course, this user interface needs to know which block attributes are editable. For that, an Aloha Block can contain a <strong>schema</strong> that defines this information. Simply override the <code>getSchema()</code> method and make it return a schema.</p>
