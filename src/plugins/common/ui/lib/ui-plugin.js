@@ -124,6 +124,10 @@ define('ui/ui-plugin', [
 	 * this function will show the toolbar regardless of whether an
 	 * editable is activated.
 	 *
+	 * The toolbar will only become visible if tabs are visible as well.
+	 * To make tabs visible, set a scope. For example
+	 * Scopes.setScope('Aloha.continuoustext');		
+	 *
 	 * Please note that the toolbar will not remain visible if an
 	 * editable is subsequently deactivated.
 	 *
