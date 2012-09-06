@@ -22,7 +22,8 @@ if [ "$DURL" == "NA" ] || [ "$DURL" == "SKIP" ] ; then
   exit 0 
 fi
 
-SOURCEFILENAME=`basename target/alohaeditor*.zip`
+ZIPFILE=`ls target/alohaeditor-* | egrep -v "source|cdn"`
+SOURCEFILENAME=`basename $ZIPFILE`
 
 FILENAME=`echo $SOURCEFILENAME | sed 's/-aloha-package//'`
 EXTENSION=${FILENAME##*.}
@@ -31,14 +32,14 @@ NAME=${FILENAME%.*}
 FOLDERNAME=$NAME-$BUILDDATE
 FILENAME=$FOLDERNAME.$EXTENSION
 
+echo "Deploying $SOURCEFILENAME "
 
 echo -e "\n * Removing old archive from $DPATH"
   ssh $DURL "cd $DPATH ; rm -rf $FILENAME ; rm -rf $FOLDERNAME"
 echo "Done."
 
 echo -e "\n * Removing old builds"
-  ssh $DURL "find "$DPATH/" -mtime +90"
-#-exec rm -f {} \;
+  ssh $DURL "find "$DPATH/" -mtime +90 -exec rm -rf {} \;"
 echo "Done."
 
 echo -e "\n * Transfering aloha archive to to target server."
