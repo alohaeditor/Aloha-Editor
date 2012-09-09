@@ -76,6 +76,14 @@ When we want to make the div with ID *content* editable, we add the script
 
 NOTE: In this example, the HTML element is made editable in the event handler of the +Aloha.ready+ event. This ensures that aloha is fully loaded, before actually using it and is therefore the recommended way of using Aloha Editor.
 
+The follwing reverts an editable to its non-editable form
+
+<javascript>
+    $('#editable').mahalo();
+</javascript>
+
+This should also remove the attributes added by aloha (classes, contenteditable=true, etc.).
+
 h3. requirejs
 
 Aloha uses "requirejs":http://requirejs.org/ to load modules at runtime.
