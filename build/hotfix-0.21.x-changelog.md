@@ -8,7 +8,7 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-**BUG** Rangy Core: Patches Rangy to include a workaround for html5shiv's
+- **BUG**: Rangy Core: Patches Rangy to include a workaround for html5shiv's
         violation of document.createElement().
 
         As detailed in this discussion:
@@ -25,3 +25,7 @@ All changes are categorized into one of the following keywords:
         created via html4shiv's implementation of document.createElement() from
         its parentNode, near the critical area of code where the exception
         occurs.
+
+- ** BUG**: Moved call to execCommand('enableObjectResizing', false, false) to init method of editable.
+		Otherwise, FF 15 (and above) will throw a JS error, if execCommand('enableObjectResizing', false, false)
+		is called with no contenteditable elements found in the page.

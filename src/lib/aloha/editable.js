@@ -358,6 +358,14 @@ define( [
 
 				me.ready = true;
 
+				// disable object resizing.
+				// we do this in here and with a slight delay, because
+				// starting with FF 15, this would cause a JS error
+				// if done before the first DOM object is made contentEditable.
+				window.setTimeout( function() {
+					Aloha.disableObjectResizing();
+				}, 20 );
+
 				// throw a new event when the editable has been created
 				/**
 				 * @event editableCreated fires after a new editable has been created, eg. via $( '#editme' ).aloha()
