@@ -1,139 +1,62 @@
 ﻿title: Aloha Editor Guides
 description: These guides help you to make your content editable and to develop Aloha Editor.
 
-team_name: The People That Make It Happen
-authors:
-  Documentation Team:
-    - name: Haymo Meran
-      nick: haymo
-      image: credits/haymo.jpg
-      description: "Haymo is one of the founders of the Aloha Editor project."
-      
-  Contributors:
-    - name: Christopher Hlubek
-      nick: hlubek
-      image: credits/hlubek.jpg
-      description: "Christopher Hlubek is a proud contributor of the Aloha Editor project."
-    - name: Sebastian Kurfürst
-      nick: skurfuerst
-      image: credits/skurfuerst.jpg
-      description: "Sebastian Kurfürst is a proud contributor of the Aloha Editor project."
-    - name: Rene Kapusta
-      nick: rene_kapusta
-      image: credits/rene_kapusta.jpg
-      description: "Rene Kapusta is a proud contributor of the Aloha Editor project."
-    - name: Nicolas Karageuzian
-      nick: nka
-      image: credits/nka.jpg
-      description: "Nicolas Karageuzian is a proud contributor of the Aloha Editor project."
-
 index:
   order:
     - "Start Here"
     - "The Core"
-    - "Plugins"
-    - "Commands"
     - "UI"
+    - "Plugins"
     - "Contributing to Aloha Editor"
     
   Start Here:
-    - title: "Using Aloha Editor"
+    - title: "Use"
       url: using_aloha
       text: "Learn how to embed Aloha Editor and make your content editable and how to use and configure Aloha Editor plugins."
+    - title: "Develop"
+      url: develop_aloha
+      text: "Learn how to develop or make a custom build of Aloha Editor."
+    - title: "Dependencies"
+      url: dependencies
+      text: "In this guide, we will explain how dependencies are managed with Aloha Editor."
+      
+  The Core:
+    - title: "Events"
+      url: events
+      text: "Describes how to publish and subscribe to events."
+    - title: "Commands"
+      url: using_commands
+      text: "Learn how to use commands."
+    - title: "Repositories"
+      url: repository
+      text: "In this guide, we will explain how repositories work."
     - title: "Functional Description"
       url: functional_description
       text: "Functional description of basic functions of Aloha Editor."
-    - title: "Developing and building Aloha Editor"
-      url: develop_aloha
-      text: "Learn how to develop or make a custom build of Aloha Editor."
-    - title: "Configuring Aloha Editor"
-      url: configure_aloha
-      text: "Learn how to configure Aloha Editor."
-    - title: "Aloha Editor and jQuery"
-      url: aloha_jquery
-      text: "Read about Aloha Editor and jQuery"
-    - title: "Developing and building Aloha Editor"
-      url: develop_aloha
-      text: "Learn how to develop or make a custom build of Aloha Editor."
-    - title: "Aloha Editor dependency management"
-      url: require
-      text: "In this guide, we will explain how dependencies are managed with Aloha Editor."
-    - title: "Writing Plugins"
-      url: writing_plugins
-      text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha Editor."
-    - title: "Working with repositories"
-      url: repository
-      text: "In this guide, we will explain how repositories work."
-      
-  The Core:
-    - title: "The Core"
-      url: core
-      text: "Learn about the core of Aloha Editor and how to utilize it's functions."
-      
-  Commands:
-    - title: "Using commands"
-      url: using_commands
-      text: "Learn how to use commands."
-      
+    - title: "Internals"
+      url: internals
+      text: "Miscellaneous implementation details."
+
   UI:
     - title: "Aloha Editor UI"
       url: ui
       text: "Learn how the Aloha Editor UI works."
-    - title: "Aloha Editor toolbar"
-      url: toolbar
-      text: "Learn how to configure the toolbar."
-    - title: "Aloha Editor sidebar"
-      url: sidebar
-      text: "Learn how to configure the sidebar."
-    - title: "Aloha Editor UI API"
-      url: componenttypes
-      text: "Learn how to configure and implement components and componentTypes."
+    - title: "Hotkeys"
+      url: core_hotkey
+      text: "Key combinations available in Aloha Editor"
       
   Plugins:
-    - title: "Aloha Editor plugins"
+    - title: "Available Plugins"
       url: plugins
-      text: "Learn configure Aloha Editor plugins."
-    - title: "Block"
-      url: plugin_block
-      text: "Learn how to use and extend the block plugin for advanced content editing."
-    - title: "Image"
-      url: plugin_image
-      text: "Learn how to use and extend the image plugin for inline image manipulation."
-    - title: "Content Handler"
-      url: plugin_contenthandler
-      text: "Learn how to use and extend the contenthandler plugin for advanced content editing."
-    - title: "Browser"
-      url: plugin_browser
-      text: "Learn how to use and extend the browser plugin for enhanced file browsing."
-    - title: "Numerated Headers"
-      url: plugin_numeratedheaders
-      text: "Learn how to use the Numerated Headers Plugin."
-    - title: "Undo"
-      url: plugin_undo
-      text: "The undo plugin."
-    - title: "Table"
-      url: plugin_table
-      text: "The table plugin."
-    - title: "Paste"
-      url: plugin_paste
-      text: "The paste plugin."
-    - title: "Formatless paste"
-      url: plugin_formatlesspaste
-      text: "The formatlesspaste plugin."
-    - title: "DOM to XHTML"
-      url: plugin_dom_to_xhtml
-      text: "The DOM to XHTML plugin."
-    - title: "WAI Language"
-      url: plugin_wai-lang
-      text: "Add WAI conform language annotations to your content."
+      text: "Learn what Aloha Editor plugins are available and how to enable them."
+    - title: "Writing Plugins"
+      url: writing_plugins
+      text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha Editor."
 
   Contributing to Aloha Editor:
     - title: Releasing
       url: releasing
       text: "Our release process and scripts."
-    - title: Development Process
-      url: development_process
-      text: "Everything about the Aloha Editor development process and being a good contributor."
     - title: "Javascript Style Guide"
       url: style_guide
       text: "This guide covers the style of Aloha Editor."

@@ -84,7 +84,7 @@ The resulting css will be generated in src/css/aloha.css.
 h4. Other OS: 
 * Microsoft Windows: Not yet supported
 
-h4. Customized builds:
+h4. Customized Builds:
 
 Aloha-Editor uses maven to build a distributable package (includes
 documentation etc.). To build just the javascript, it suffices to invoke
@@ -123,7 +123,7 @@ The resulting css will be generated in src/css/aloha.css.
 
 If you want to redefine modules in the build profile, for example if you
 want to use your own jqueryui, please first read "Custom jQuery,
-jQueryUI and other modules":using_aloha.html
+jQueryUI and other modules":dependencies.html
 
 h3. Developing CSS
 
