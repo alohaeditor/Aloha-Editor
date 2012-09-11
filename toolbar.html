@@ -17,6 +17,29 @@
 			errorhandling : true,
 
 			plugins: {
+			  // This whole thing is what's needed to:
+			  // - set a custom URL to send files to
+			  // - register a callback that updates the IMG with the new src
+			  draganddropfiles: {
+          upload: {
+            config: {
+              method: "POST",
+              url: "",
+              callback: function(resp) {
+                // If the response is a URL then change the Image source to it
+                // The URL could be absolute (/^http/) or relative (/\// or [a-z])
+                if (resp.match(/^http/) || resp.match(/^\//) || resp.match(/^[a-z]/) ) {
+                } else {
+                  alert('You dropped a file and we sent a message to the server to do something with it.\nIt responded with some gibberish so we are showing you some other file to show it worked');
+                  resp = "src/test/AlohaEditorLogo.png";
+                }
+
+                Aloha.jQuery('#' + this.id).attr('src', resp);
+                console.log('Updated Image src as a result of upload');
+              }
+            }
+          }
+			  },
 				block: {
 					defaults : {
 						'.default-block': {
