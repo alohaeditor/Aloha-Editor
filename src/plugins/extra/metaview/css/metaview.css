@@ -65,14 +65,6 @@ button.aloha-button-metaview { background: url(../img/button.png) no-repeat 0px 
 .aloha-metaview caption { background-image: url(../img/caption.png); }
 .aloha-metaview hr { background-image: url(../img/hr.png); }
 
-.aloha-metaview br:before { content:"¶"; }
-br:after {
-border: 1px none black;
-border-bottom-style: dashed;
-content: "";
-padding: 0 6px 0;
-}
-br { content: "" }
 
 .aloha-metaview abbr[title], .aloha-metaview dfn[title] { border-bottom: 1px dotted; cursor: help; }
 .aloha-metaview [lang] { background-image:url(../../wai-lang/img/button.png); padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
