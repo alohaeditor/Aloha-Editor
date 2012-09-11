@@ -1959,6 +1959,14 @@ rangy.createModule("DomUtil", function(api, module) {
         }
 
         var workingNode = dom.getDocument(containerElement).createElement("span");
+
+		// Workaround for HTML5 Shiv's insane violation of
+		// document.createElement(). See Rangy issue 104 and HTML 5 Shiv issue
+		// 64: https://github.com/aFarkas/html5shiv/issues/64
+		if (workingNode.parentNode) {
+			workingNode.parentNode.removeChild(workingNode);
+		}
+
         var comparison, workingComparisonType = isStart ? "StartToStart" : "StartToEnd";
         var previousNode, nextNode, boundaryPosition, boundaryNode;
 

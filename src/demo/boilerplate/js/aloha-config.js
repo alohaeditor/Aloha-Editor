@@ -171,6 +171,9 @@
 					headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
 					baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable
 				}
+			},
+			'wai-lang': {
+				flags: true
 			}
 		}
 	};

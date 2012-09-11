@@ -448,12 +448,12 @@ define([
 				return;
 			}
 
-			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element);
+			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element, attributes);
 			block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
-			jQuery.each(attributes, function(k, v) {
-				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
-				block._setAttribute(k, v);
-			});
+//			jQuery.each(attributes, function(k, v) {
+//				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
+//				block._setAttribute(k, v);
+//			});
 
 			// Register block
 			this.blocks.register(block.getId(), block);
