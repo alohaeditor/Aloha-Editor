@@ -209,7 +209,7 @@ function($, repository, i18nCore){
 					Aloha.trigger('aloha-upload-progress',that);
 					xhr.onload = function(load) {
 						try {
-							that.src = that.upload_config.callback(xhr.responseText);
+							that.src = that.upload_config.callback.call(that, xhr.responseText);
 							Aloha.trigger('aloha-upload-success',that);
 						} catch(e) {
 							Aloha.trigger('aloha-upload-failure', that);
