@@ -23,7 +23,7 @@ Some use cases for blocks include:
 Some properties of blocks:
 
 * Blocks can occur inside or outside of Aloha Editables
-* Both +<span>+ and +<div>+ elements can be blockified (i.e. converted to blocks)
+* Both +<span>+ and +<div>+ elements can be blockified (i.e. converted to blocks). You may however "change the list of root tags":#changing-the-root-tags if you have further requirements.
 * Blocks can contain nested editable areas
 * Blocks can be copy/pasted and dragged/dropped if they are inside an Aloha editable
 * Blocks can be deleted using backspace or DEL if inside an editable
@@ -485,6 +485,23 @@ You can also define the dropzones globally.
 
 <javascript>
 Aloha.settings.plugins.block.dropzones = [ '#editable-1', '#editable-2' ];
+</javascript>
+
+h4. Changing the root tags
+
+WARNING: Please note that changing the root tags will result in undesired behaviour when using Drag/Drop functionality of the block plugin. You must stick to span and div if you want to use Drag/Drop.
+
+The block plugin will only allow for +<span>+ and +<div>+ elements as root tags when creating blocks. You can however change that using the following setting:
+
+<javascript>
+// add tables and paragraphs to the default
+// list of root tags
+Aloha.settings.plugins.block.rootTags = [ 
+	'span', 
+	'div', 
+	'table', 
+	'p' 
+];
 </javascript>
 
 h3. Internals
