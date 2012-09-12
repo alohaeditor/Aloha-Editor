@@ -156,19 +156,19 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 		var tree = $('<div><span><b><i></i></b></span></div>')[0];
 		var expected = $('<div><span></span></div>')[0].outerHTML;
 		var result;
-		result = Trees.prepruneNodes(tree, function (node) {
+		result = Trees.prepruneDom(tree, function (node) {
 			return node.nodeName === 'B';
 		});
 		equal(result.outerHTML, expected);
 		notEqual(result.outerHTML, tree.outerHTML);
-		result = Trees.postpruneNodes(tree, function (node) {
+		result = Trees.postpruneDom(tree, function (node) {
 			return node.nodeName === 'B';
 		});
 		equal(result.outerHTML, expected);
 		notEqual(result.outerHTML, tree.outerHTML);
 	});
 
-	test('prewalkNodes inplace, postwalkNodes inplace', function () {
+	test('prewalkDom inplace, postwalkDom inplace', function () {
 		var tree = $('<div><span><b><i></i></b><p><b></b></p><div><i></i></div></span></div>')[0];
 		var expected = $('<div><span><b>'
 						 + '<i><span>X</span></i>'
@@ -183,7 +183,7 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 
 		var inputA = tree.cloneNode(true);
 		var descendedIntoModifiedNode = 0;
-		var resultA = Trees.prewalkNodes(inputA, function (node) {
+		var resultA = Trees.prewalkDom(inputA, function (node) {
 			if ($('<span>X</span>')[0].outerHTML !== node.outerHTML) {
 				$(node).append('<span>X</span>');
 			} else {
@@ -195,7 +195,7 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 		}, true);
 
 		var inputB = tree.cloneNode(true);
-		var resultB = Trees.postwalkNodes(inputB, function (node) {
+		var resultB = Trees.postwalkDom(inputB, function (node) {
 			$(node).append('<span>X</span>');
 			return node;
 		}, function (leaf) {
