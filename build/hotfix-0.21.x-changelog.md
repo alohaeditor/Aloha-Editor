@@ -26,6 +26,11 @@ All changes are categorized into one of the following keywords:
         its parentNode, near the critical area of code where the exception
         occurs.
 
-- ** BUG**: Moved call to execCommand('enableObjectResizing', false, false) to init method of editable.
+- **BUG**: Moved call to execCommand('enableObjectResizing', false, false) to init method of editable.
 		Otherwise, FF 15 (and above) will throw a JS error, if execCommand('enableObjectResizing', false, false)
 		is called with no contenteditable elements found in the page.
+
+- **ENHANCEMENT**: Aloha Editor will no longer annotate end <br> tags, which
+				   are used to prop up empty block-level elements that would be
+				   otherwise rendererd invisbly, with the "aloha-end-br" class.
+				   This should result in cleaner markup.

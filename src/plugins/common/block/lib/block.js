@@ -794,7 +794,7 @@ define([
 
 							var hasOnlyProppingBr = (
 								1 === jQuery(this).contents().length &&
-								1 === jQuery(this).children('br.aloha-end-br').length
+								1 === jQuery(this).children('br').length
 							);
 							$currentDraggable = ui.draggable;
 
