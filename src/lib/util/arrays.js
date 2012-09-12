@@ -100,7 +100,31 @@ define([],function(){
 		return a.map(fn);
 	}
 
+	/**
+	 * Reduces an array of values to a single value.
+	 *
+	 * For example:
+	 * Arrays.reduce([2, 3, 4], 1, function (a, b) { return a + b; });
+	 * returns the result of (((1 + 2) + 3) + 4)
+	 *
+	 * @param a
+	 *        An array of values.
+	 * @param init
+	 *        An initial value.
+	 * @param fn
+	 *        A function that takes two values and returns the reduction
+	 *        of both.
+	 */
+	function reduce(a, init, fn) {
+		var i = 0;
+		for (i = 0; i < a.length; i++) {
+			init = fn(init, a[i]);
+		}
+		return init;
+	}
+
 	return {
+		reduce: reduce,
 		sortUnique: sortUnique,
 		equal: equal,
 		map: Array.prototype.map ? mapNative : map
