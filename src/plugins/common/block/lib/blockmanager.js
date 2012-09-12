@@ -425,13 +425,17 @@ define([
 		 * @private
 		 */
 		_blockify: function(element, instanceDefaults) {
-			var that = this;
-			var attributes, block, $element;
-			$element = jQuery(element);
+			var that = this,
+				$element = jQuery(element),
+				BlockPlugin = Aloha.require('block/block-plugin'),
+				tagName = $element[0].tagName.toLowerCase(),
+				attributes,
+				block;
 
-			var tagName = $element[0].tagName.toLowerCase();
-			if (tagName !== 'span' && tagName !== 'div') {
-				Aloha.Log.error('block/blockmanager', 'Blocks can only be created from <div> or <span> element. You passed ' + tagName + '.');
+			if (jQuery.inArray(tagName, BlockPlugin.settings.rootTags) === -1) {
+				Aloha.Log.error('block/blockmanager', 'Blocks can only be created from [' +
+					BlockPlugin.settings.rootTags.join(', ') + ']' +
+					'] element. You passed ' + tagName + '.');
 				return;
 			}
 
