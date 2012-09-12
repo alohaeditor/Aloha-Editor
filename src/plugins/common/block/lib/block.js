@@ -121,9 +121,10 @@ define([
 		 * This function shall only be called through the BlockManager. See BlockManager::_blockify().
 		 *
 		 * @param {jQuery} $element Element that declares the block
+		 * @param {Object} attributes that shall be set to the block
 		 * @constructor
 		 */
-		_constructor: function($element) {
+		_constructor: function ($element, attributes) {
 			var that = this;
 
 			this.$element = $element;
@@ -145,8 +146,13 @@ define([
 				$element.find('a').attr('draggable', 'false');
 			}
 
+			// set the attributes
+			jQuery.each(attributes, function (k, v) {
+				that._setAttribute(k, v);
+			});
+
 			// While the event handler is defined here, it is connected to the DOM element inside "_connectThisBlockToDomElement"
-			this._onElementClickHandler = function(event) {
+			this._onElementClickHandler = function (event) {
 				// We only activate ourselves if we are the innermost aloha-block.
 				// If we are not the innermost aloha-block, we get highlighted (but not activated) automatically
 				// by the innermost block.
@@ -788,7 +794,7 @@ define([
 
 							var hasOnlyProppingBr = (
 								1 === jQuery(this).contents().length &&
-								1 === jQuery(this).children('br.aloha-end-br').length
+								1 === jQuery(this).children('br').length
 							);
 							$currentDraggable = ui.draggable;
 

@@ -8,7 +8,7 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-**BUG** Rangy Core: Patches Rangy to include a workaround for html5shiv's
+- **BUG**: Rangy Core: Patches Rangy to include a workaround for html5shiv's
         violation of document.createElement().
 
         As detailed in this discussion:
@@ -25,3 +25,18 @@ All changes are categorized into one of the following keywords:
         created via html4shiv's implementation of document.createElement() from
         its parentNode, near the critical area of code where the exception
         occurs.
+
+- **BUG**: Moved call to execCommand('enableObjectResizing', false, false) to init method of editable.
+		Otherwise, FF 15 (and above) will throw a JS error, if execCommand('enableObjectResizing', false, false)
+		is called with no contenteditable elements found in the page.
+
+- **ENHANCEMENT**: The Block Plugin now allows you to configure your own root tags for block creation. Every
+		time you create a new block, the block plugin will check if its root node is supported. You may
+		now change the roots nodes and use your own list root tags. If you want to use Aloha Blocks drag'n drop
+		functionalities we strongly suggest that you do not use other root tags than div and span. See the
+		guides at http://www.aloha-editor.org/guides/plugin_block.html for further information.
+
+- **ENHANCEMENT**: Aloha Editor will no longer annotate end <br> tags, which
+				   are used to prop up empty block-level elements that would be
+				   otherwise rendererd invisbly, with the "aloha-end-br" class.
+				   This should result in cleaner markup.

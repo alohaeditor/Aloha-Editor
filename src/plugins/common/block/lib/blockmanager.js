@@ -425,13 +425,17 @@ define([
 		 * @private
 		 */
 		_blockify: function(element, instanceDefaults) {
-			var that = this;
-			var attributes, block, $element;
-			$element = jQuery(element);
+			var that = this,
+				$element = jQuery(element),
+				BlockPlugin = Aloha.require('block/block-plugin'),
+				tagName = $element[0].tagName.toLowerCase(),
+				attributes,
+				block;
 
-			var tagName = $element[0].tagName.toLowerCase();
-			if (tagName !== 'span' && tagName !== 'div') {
-				Aloha.Log.error('block/blockmanager', 'Blocks can only be created from <div> or <span> element. You passed ' + tagName + '.');
+			if (jQuery.inArray(tagName, BlockPlugin.settings.rootTags) === -1) {
+				Aloha.Log.error('block/blockmanager', 'Blocks can only be created from [' +
+					BlockPlugin.settings.rootTags.join(', ') + ']' +
+					'] element. You passed ' + tagName + '.');
 				return;
 			}
 
@@ -444,12 +448,12 @@ define([
 				return;
 			}
 
-			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element);
+			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element, attributes);
 			block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
-			jQuery.each(attributes, function(k, v) {
-				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
-				block._setAttribute(k, v);
-			});
+//			jQuery.each(attributes, function(k, v) {
+//				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
+//				block._setAttribute(k, v);
+//			});
 
 			// Register block
 			this.blocks.register(block.getId(), block);
