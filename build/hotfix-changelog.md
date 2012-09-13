@@ -19,3 +19,4 @@ All changes are categorized into one of the following keywords:
 
 - **BUG**: characterpicker-plugin: Fixed a bug that when inserting a special character using the character picker plugin, the focus would be sometimes set to the start of the active editable (e.g. when inserting into a table cell).
 - **BUG**: listenforcer-plugin: Fixed a bug that would only mark the first editable matching a configured selector as an enforced editable. Also when leaving an editable, we now remove the added list properly.
+- **FEATURE**: metaview: We now also display HR tags in the metaview. We also removed the dependency to the flag-icons plugin.
