@@ -1,4 +1,4 @@
-/* functions.js is part of Aloha Editor project http://aloha-editor.org
+/* ephemera.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
@@ -25,10 +25,16 @@
  * recipients can access the Corresponding Source.
  */
 define([], function () {
-	'use strict';
-	return {
-		identity: function (arg) {
-			return arg;
+	
+	function insertBeforeAll(parent, firstChild, refChild) {
+		while (firstChild) {
+			var nextChild = firstChild.nextSibling;
+			parent.insertBefore(firstChild, refChild);
+			firstChild = nextChild;
 		}
+	}
+
+	return {
+		insertBeforeAll: insertBeforeAll
 	};
 });
