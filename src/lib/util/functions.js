@@ -26,9 +26,16 @@
  */
 define([], function () {
 	'use strict';
+
+	/**
+	 * The identity function returns its single argument.
+	 * Useful for composition when some default behaviour is needed.
+	 */
+	function identity(arg) {
+		return arg;
+	}
+
 	return {
-		identity: function (arg) {
-			return arg;
-		}
+		identity: identity
 	};
 });

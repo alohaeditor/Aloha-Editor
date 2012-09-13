@@ -26,7 +26,10 @@
  */
 define([], function () {
 	
-	function insertBeforeAll(parent, firstChild, refChild) {
+	/**
+	 * Like insertBefore, except also inserts 
+	 */
+	function moveNextAll(parent, firstChild, refChild) {
 		while (firstChild) {
 			var nextChild = firstChild.nextSibling;
 			parent.insertBefore(firstChild, refChild);
@@ -34,7 +37,52 @@ define([], function () {
 		}
 	}
 
+	var attrRegex = /\s([^<\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^\s]+))?/g;
+
+	/**
+	 * Retrieves the names of all attributes from the given elmenet.
+	 *
+	 * Correctly handles the case that IE7 and IE8 have approx 70-90
+	 * default attributes on each and every element.
+	 *
+	 * The implementation does not iterate over the elem.attributes
+	 * NamedNodeList since it is much slower on IE7 (even when checking
+	 * the attrNode.specified property). Instead it parses the HTML of
+	 * the element. For elements with very few attributes the
+	 * performance on IE7 is improved by an order of magnitued.
+	 */
+	function attrNames(elem) {
+		var names = [];
+		var html = elem.cloneNode(false).outerHTML;
+		var match;
+		while (null != (match = attrRegex.exec(html))) {
+			names.push(match[1]);
+		}
+		return names;
+	}
+
+	/**
+	 * Gets the attributes of the given element.
+	 *
+	 * @param elem
+	 *        An element to get the attributes for.
+	 * @return
+	 *        An array of consisting of [name, value] tuples for each attribute.
+	 *        Attribute values will always be strings, but possibly empty strings.
+	 */
+	function attrs(elem) {
+		var attrs = [];
+		var attrNames = attributeNames(elem);
+		for (var i = 0, len = attrNames.length; i < len; i++) {
+			var value = $.attr(elem, name);
+			attrs.push([name, (null == value ? "" : "" + value)]);
+		}
+		return attrs;
+	}
+
 	return {
-		insertBeforeAll: insertBeforeAll
+		moveNextAll: moveNextAll,
+		attrNames: attrNames,
+		attrs: attrs
 	};
 });

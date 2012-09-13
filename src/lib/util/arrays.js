@@ -161,9 +161,45 @@ define([],function(){
 		return -1;
 	}
 
+	/**
+	 * Reduces an array of values to a single value.
+	 *
+	 * For example:
+	 * Arrays.reduce([2, 3, 4], 1, function (a, b) { return a + b; });
+	 * returns the result of (((1 + 2) + 3) + 4)
+	 *
+	 * @param a
+	 *        An array of values.
+	 * @param init
+	 *        An initial value.
+	 * @param fn
+	 *        A function that takes two values and returns the reduction
+	 *        of both.
+	 */
+	function reduce(a, init, fn) {
+		var i,
+		    len;
+		for (i = 0, len = a.length; i < len; i++) {
+			init = fn(init, a[i]);
+		}
+		return init;
+	}
+
+	/**
+	 * Applies the given value to the given function unless the value is
+	 * null, in which case just returns null.
+	 *
+	 * This is a handy utility function to be used with reduce().
+	 */
+	function applyNotNull(value, fn) {
+		return value == null ? null : fn(value);		
+	}
+
 	return {
 		filter: filter,
 		indexOf: indexOf,
+		reduce: reduce,
+		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
 		equal: equal,
 		map: Array.prototype.map ? mapNative : map

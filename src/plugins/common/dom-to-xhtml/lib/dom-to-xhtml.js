@@ -27,39 +27,17 @@
 /**
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
-define(
-['aloha', 'jquery', 'aloha/console'],
-function( Aloha, $, console) {
+define([
+	'jquery',
+	'util/dom2',
+	'aloha/console'
+],
+function(
+	$,
+	Dom,
+	console
+) {
 	"use strict";
-
-	/**
-	 * Gets the attributes of the given element.
-	 *
-	 * @param element
-	 *        An element to get the attributes for.
-	 * @return
-	 *        An array of consisting of [name, value] tuples for each attribute.
-	 *        Attribute values may be strings, booleans or undefined.
-	 */
-	function getAttrs(element) {
-		var attrs = element.attributes;
-		var cleanAttrs = [];
-		for ( var i = 0; i < attrs.length; i++ ) {
-			var attr = attrs[ i ];
-			if ( typeof attr.specified === "undefined" || attr.specified ) {
-				var name = attr.nodeName;
-				// Use jQuery to get a corrected style attribute on IE.
-				// Otherwise prefer getAttribute() over attr.nodeValue as the
-				// latter stringifies the attribute value.
-				// There seems to be a jQuery bug that returns undefined
-				// for the "checked" attribute on IE7, otherwise we
-				// could always use jquery.
-				var value = ( "style" === name ? $.attr(element, name) : attr.nodeValue );
-				cleanAttrs.push( [ name, value ] );
-			}
-		}
-		return cleanAttrs;
-	}
 
 	/**
 	 * Elements that are to be serialized like <img /> and not like <img></img>
@@ -110,7 +88,7 @@ function( Aloha, $, console) {
 	 *        given element, separated by space. The string will have a leading space.
 	 */
 	function makeAttrString(element) {
-		var attrs = getAttrs(element);
+		var attrs = Dom2.attributes(element);
 		var str = "";
 		for (var i = 0; i < attrs.length; i++) {
 			// The XHTML spec says attributes are lowercase
@@ -120,14 +98,14 @@ function( Aloha, $, console) {
 			//TODO it's only a boolean attribute if the element is in an HTML namespace
 			var isBool = (-1 !== $.inArray(name.toLowerCase(), booleanAttrs));
 
-			if (!isBool && ("" === value || null == value)) {
+			if (!isBool && "" === value) {
 				// I don't think it is ever an error to make an
 				// attribute not appear if its string value is empty.
 				continue;
 			}
 
 			// For boolean attributes, the mere existence of the attribute means it is true.
-			str += " " + name + '="' + encodeDqAttrValue("" + (isBool ? name : value)) + '"';
+			str += " " + name + '="' + encodeDqAttrValue((isBool ? name : value)) + '"';
 		}
 		return str;
 	}
