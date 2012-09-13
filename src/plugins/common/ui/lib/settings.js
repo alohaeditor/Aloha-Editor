@@ -56,7 +56,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
             {   label: "tab.abbr.label",
                 showOn: { scope: 'abbr' },
                 components: [
-                    [ "abbrText" ]
+                    [ "abbrText", "removeAbbr" ]
                 ]
             },
             // Wailang Tab
