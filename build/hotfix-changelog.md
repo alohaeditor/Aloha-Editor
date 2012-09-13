@@ -16,3 +16,5 @@ All changes are categorized into one of the following keywords:
 	Aloha.settings.plugins.format.config = ['del', ...];
 
 	See http://aloha-editor.org/guides/plugin_format.html
+
+- **BUG**: characterpicker-plugin: Fixed a bug that when inserting a special character using the character picker plugin, the focus would be sometimes set to the start of the active editable (e.g. when inserting into a table cell).
