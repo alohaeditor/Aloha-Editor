@@ -36,7 +36,7 @@ button.aloha-button-metaview { background: url(../img/button.png) no-repeat 0px 
 * .aloha-metaview dl, * .aloha-metaview dt,
 * .aloha-metaview dd, * .aloha-metaview td,
 * .aloha-metaview th, * .aloha-metaview table,
-* .aloha-metaview caption {
+* .aloha-metaview caption, * .aloha-metaview hr {
 	min-height: auto;
 }
 
