@@ -640,7 +640,7 @@ define('RepositoryBrowser', [
 			var $btns = jQuery(
 				'<div class="repository-browser-btns">\
 					<input type="text" class="repository-browser-search-field" />\
-					<span class="repositroy-browser-btn repository-browser-search-btn">\
+					<span class="repository-browser-btn repository-browser-search-btn">\
 						<span class="repository-browser-search-icon"></span>\
 					</span>\
 					<span class="repository-browser-btn repository-browser-close-btn">' +
