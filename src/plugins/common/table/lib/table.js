@@ -674,6 +674,14 @@ define([
 					// attribute-field, if the setting summaryinsidebar
 					// is false.
 					that._removeCursorSelection();
+					
+					//If the summary should be modified in the sidebar
+					//we activate the sidebar panel
+					if (that.tablePlugin.settings.summaryinsidebar) {
+						that.tablePlugin.sidebar.open();
+						that.tablePlugin.sidebarPanel.activate(that.obj);
+						that.tablePlugin.sidebar.correctHeight();
+					}
 
 					// jump in Summary field
 					// attempting to focus on summary input field will occasionally result in the
@@ -1433,6 +1441,12 @@ define([
 	 * @return void
 	 */
 	Table.prototype.deactivate = function() {
+		// unblockify the table wrapper
+		var parent = this.obj.parent();
+		if (parent.mahaloBlock) {
+			parent.mahaloBlock();
+		}
+
 		this.obj.removeClass(this.get('className'));
 		if (jQuery.trim(this.obj.attr('class')) == '') {
 			this.obj.removeAttr('class');
@@ -1455,7 +1469,7 @@ define([
 
 		// remove the "selection class" from all td and th in the table
 		this.obj.find('td, th').removeClass(this.get('classCellSelected'));
-
+		this.obj.find('td, th').removeClass('aloha-table-cell_active');
 		this.obj.unbind();
 		this.obj.children('tbody').unbind();
 

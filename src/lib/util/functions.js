@@ -1,6 +1,7 @@
-define([],function(){
+define([], function () {
+	'use strict';
 	return {
-		identity: function(arg) {
+		identity: function (arg) {
 			return arg;
 		}
 	};

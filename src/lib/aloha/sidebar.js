@@ -86,7 +86,7 @@ define([
 		var sidebar = this;
 		this.id = 'aloha-sidebar-' + (++uid);
 		this.panels = {};
-		this.container = $('<div class="aloha-sidebar-bar">' +
+		this.container = $('<div class="aloha-ui aloha-sidebar-bar">' +
 				'<div class="aloha-sidebar-handle">' +
 					'<span class="aloha-sidebar-handle-icon"></span>' +
 				'</div>' +
@@ -97,6 +97,7 @@ define([
 		this.width = 300;
 		this.opened = false;
 		this.isOpen = false;
+		this.isCompletelyOpen = false;
 		this.settings = {
 			// We automatically set this to true when we are in IE, where
 			// rotating elements using filters causes undesirable rendering
@@ -159,10 +160,6 @@ define([
 			bar.width(this.width);
 			this.width = bar.width();
 
-			$(window).resize(function () {
-				that.updateHeight();
-			});
-
 			this.updateHeight();
 			this.initToggler();
 
@@ -177,6 +174,7 @@ define([
 			this.subscribeToEvents();
 
 			$(window).resize(function () {
+				that.updateHeight();
 				that.correctHeight();
 			});
 
@@ -225,15 +223,17 @@ define([
 			var that = this;
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
-				if (!that.isOpen) {
+				if (that.isOpen) {
 					that.checkActivePanels(message.range);
 				}
+				that.lastRange = message.range;
 			});
 
 			Aloha.bind('aloha-editable-deactivated', function (event, params) {
-				if (!that.isOpen) {
+				if (that.isOpen) {
 					that.checkActivePanels();
 				}
+				that.lastRange = null;
 			});
 
 			this.container.mousedown(function (e) {
@@ -257,6 +257,10 @@ define([
 			if (!this.isOpen) {
 				return;
 			}
+			if (!this.isCompletelyOpen) {
+				this.correctHeightWhenCompletelyOpen = true;
+				return;
+			}
 
 			var viewportHeight = $(window).height();
 			var activePanelIds = [];
@@ -277,7 +281,7 @@ define([
 
 			if (previousActivePanelIds === activePanelIds &&
 			    previousViewportHeight === viewportHeight) {
-				return;
+			 	return;
 			}
 
 			previousViewportHeight = viewportHeight;
@@ -582,6 +586,7 @@ define([
 
 			var isRight = (this.position === 'right');
 			var anim = isRight ? {marginRight: 0} : {marginLeft: 0};
+			var sidebar = this;
 
 			this.toggleHandleIcon(true);
 			this.container.animate(anim,
@@ -593,12 +598,19 @@ define([
 				$('body').animate(
 					isRight ? {marginRight: '+=' + this.width}
 					        : {marginLeft: '+=' + this.width},
-					500, 'easeOutExpo');
+					500, 'easeOutExpo', function () {
+						sidebar.isCompletelyOpen = true;
+						if (sidebar.correctHeightWhenCompletelyOpen) {
+							sidebar.correctHeight();
+						}
+					});
 			}
 
 			this.isOpen = true;
 			this.correctHeight();
-
+			if (this.lastRange) {
+				this.checkActivePanels(this.lastRange);
+			}
 			$('body').trigger('aloha-sidebar-opened', this);
 
 			return this;
@@ -629,6 +641,7 @@ define([
 			}
 
 			this.isOpen = false;
+			this.isCompletelyOpen = false;
 
 			return this;
 		},
@@ -822,9 +835,6 @@ define([
 		 * Activates (displays) this panel.
 		 */
 		activate: function (effective) {
-			if (this.isActive) {
-				return;
-			}
 			this.isActive = true;
 			this.content.parent('li').show().removeClass('aloha-sidebar-deactivated');
 			this.effectiveElement = effective;

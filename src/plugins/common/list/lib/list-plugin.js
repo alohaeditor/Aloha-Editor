@@ -194,7 +194,9 @@ define([
 			obj.find('li').each(function () {
 				// Remove IE attributes
 				jQuery(this).removeAttr('hidefocus');
+				jQuery(this).removeAttr('hideFocus');
 				jQuery(this).removeAttr('tabindex');
+				jQuery(this).removeAttr('tabIndex');
 			});
 		},
 
@@ -329,6 +331,7 @@ define([
 						newPara = Aloha.Markup.transformDomObject(li, 'p', Aloha.Selection.rangeObject);
 						// if any lists are in the paragraph, move the to after the paragraph
 						newPara.after(newPara.children('ol,ul'));
+						Engine.ensureContainerEditable(newPara.get(0));
 					});
 
 					// unwrap the li (remove the enclosing ul)
@@ -378,6 +381,7 @@ define([
 						newPara = Aloha.Markup.transformDomObject(li, 'p', Aloha.Selection.rangeObject);
 						// if any lists are in the paragraph, move the to after the paragraph
 						newPara.after(newPara.children('ol,ul'));
+						Engine.ensureContainerEditable(newPara.get(0));
 					});
 
 					// unwrap the li (remove the enclosing ul)

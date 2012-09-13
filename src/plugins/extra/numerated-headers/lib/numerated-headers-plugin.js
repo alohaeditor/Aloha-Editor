@@ -73,7 +73,8 @@ define([
 					icon: 'aloha-icon aloha-icon-numerated-headers',
 					scope: 'Aloha.continuoustext',
 					click: function () {
-						if (that._formatNumeratedHeadersButton.getState()) {
+						var buttonPressed = that._formatNumeratedHeadersButton.getState();
+						if (!buttonPressed) {
 							that.removeNumerations();
 						} else {
 							that.createNumeratedHeaders();
@@ -182,14 +183,86 @@ define([
 		 * Remove all annotations in the current editable.
 		 */
 		cleanNumerations: function () {
+			var that = this;
 			var active_editable_obj = this.getBaseElement();
 			if (!active_editable_obj) {
 				return;
 			}
-			$(active_editable_obj).find('span[role=annotation]').each(function () {
+			this._saveRemoveAnnotations($(active_editable_obj).find('span[role=annotation]'));
+		},
+		
+		/**
+		 * Savely removes a jQuery collection of annotations.
+		 * @param annotationcollection the collection of annotations.
+		 */
+		_saveRemoveAnnotations: function (annotationcollection) {
+			var that = this;
+			var range = Aloha.Selection.getRangeObject();
+			var rangemod = false;
+			annotationcollection.each(function () {
+				if (range.startContainer === this || $.inArray(this, $(range.startContainer).parents()) > -1) {
+			        range.startContainer = that._prevNode(this);
+			        range.startOffset = 0;
+			        rangemod = true;
+				}
+				if (range.startContainer === this.parentNode && range.startOffset >= $(this).index() && range.startOffset > 0) {
+					range.startOffset --;
+					rangemod = true;
+				}
+				//Check if the selection ends inside the annotation
+				if (range.endContainer === this || $.inArray(this, $(range.endContainer).parents()) > -1) {
+					range.endContainer = that._prevNode(this);
+					range.endOffset = 0;
+					rangemod = true;
+				}
+				if (range.endContainer === this.parentNode && range.endOffset >= $(this).index() && range.endOffset > 0) {
+					range.endOffset --;
+					rangemod = true;
+				}
 				$(this).remove();
 			});
+			if (rangemod === true) {
+				range.update();
+				range.select();
+			}
 		},
+		
+		/**
+		 * Prepends the annotation to the given prependElement.
+		 */
+		_prependAnnotation: function (annotationcontent, prependElem) {
+			var range = Aloha.Selection.getRangeObject();
+			var rangemod = false;
+			if (range.startContainer === prependElem) {
+				range.startOffset ++;
+				rangemod = true;
+			}
+			if (range.endContainer === prependElem) {
+				range.endOffset ++;
+				rangemod = true;
+			}
+			$(prependElem).prepend('<span role="annotation">' +
+					annotationcontent + '</span>');
+			if (rangemod === true) {
+				range.update();
+				range.select();
+			}
+		},
+		
+		/**
+		 * Navigates to the previous node.
+		 */
+		_prevNode: function (node) {
+			var prev = node.previousSibling;
+			if (!prev) {
+				return node.parentNode;
+			}
+			while (prev.lastChild) {
+				prev = prev.lastChild;
+			}
+			return prev;
+		},
+		
 
 		/**
 		 * Removed and disables numeration for the current editable.
@@ -287,7 +360,7 @@ define([
 					if (prev_rank === null && current_rank !== base_rank) {
 						// when the first found header has a rank
 						// different from the base rank, we omit it
-						$(this).find('span[role=annotation]').remove();
+						that._saveRemoveAnnotations($(this).find('span[role=annotation]'));
 						return;
 					} else if (prev_rank === null) {
 						// increment the main annotation
@@ -327,17 +400,19 @@ define([
 							}
 						}
 					}
-
+					//We add a trailing non-breakable space to the annotation_result
+					//to separate the annotation from the heading's text.
+					annotation_result += '&nbsp;';
 					if (that.hasNote(this)) {
 						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
-						$(this).prepend('<span role="annotation">' +
-							annotation_result + '</span>');
+						
+						that._prependAnnotation(annotation_result, this);
 					}
 				} else {
 					// no Content, so remove the Note, if there is one
 					if (that.hasNote(this)) {
-						$(this).find('span[role=annotation]').remove();
+						that._saveRemoveAnnotations($(this).find('span[role=annotation]'));
 					}
 				}
 			});

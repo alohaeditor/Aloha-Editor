@@ -57,7 +57,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			// comes from Aloha and not from other sources, and does
 			// not need to be cleaned up.
 			if (content.find('.aloha-block').length > 0) {
-				return;
+				return content.html();
 			}
 
 			// clean lists

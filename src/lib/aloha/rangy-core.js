@@ -7,7 +7,7 @@
  * Version: 1.2.1
  * Build date: 8 October 2011
  */
-define('aloha/rangy-core', [], function() {
+define('aloha/rangy-core', ['jquery'], function(jQuery) {
 var rangy = (function() {
 
 
@@ -1959,6 +1959,14 @@ rangy.createModule("DomUtil", function(api, module) {
         }
 
         var workingNode = dom.getDocument(containerElement).createElement("span");
+
+		// Workaround for HTML5 Shiv's insane violation of
+		// document.createElement(). See Rangy issue 104 and HTML 5 Shiv issue
+		// 64: https://github.com/aFarkas/html5shiv/issues/64
+		if (workingNode.parentNode) {
+			workingNode.parentNode.removeChild(workingNode);
+		}
+
         var comparison, workingComparisonType = isStart ? "StartToStart" : "StartToEnd";
         var previousNode, nextNode, boundaryPosition, boundaryNode;
 
@@ -2022,7 +2030,22 @@ rangy.createModule("DomUtil", function(api, module) {
                     tempRange.moveStart("character", 1);
                 }
             } else {
-                offset = workingRange.text.length;
+            	// IE7 sometimes has weird workingranges that apparently do not start in the workingNode any more, but in
+            	// some kind of phantom paragraph, that cannot be found in the DOM.
+            	// in such situations, the workingRange.text no longer is a substring at the start of the boundaryNode.data
+            	// If we find such a situation, we skip all characters at the start of the workingRange.data, that are not
+            	// at the start of the boundaryNode.data.
+            	// Before comparing, we have to replace all nbsp with normal spaces
+            	var wrText = workingRange.text.replace(/\u00a0/g, " ");
+            	var bnText = boundaryNode.data.replace(/\u00a0/g, " ");
+            	if (bnText.indexOf(wrText) !== 0) {
+            		while (wrText.length > 0 && bnText.indexOf(wrText) !== 0) {
+            			wrText = wrText.substr(1);
+            		}
+            		offset = wrText.length;
+            	} else {
+            		offset = workingRange.text.length;
+            	}
             }
             boundaryPosition = new DomPosition(boundaryNode, offset);
         } else {
@@ -2886,27 +2909,24 @@ rangy.createModule("DomUtil", function(api, module) {
         selProto.removeAllRanges = function() {
             // Added try/catch as fix for issue #21
             try {
+                
+            	var isNativeIE7 = (jQuery.browser.msie && jQuery.browser.version < 8 && (typeof document.documentMode === 'undefined'));
+            	if (!isNativeIE7) {
+            		this.docSelection.empty();
+            	}
+
                 // Check for empty() not working (issue #24)
                 if (this.docSelection.type != "None") {
-					this.docSelection.empty();
 
-                    // Work around failure to empty a control selection by instead selecting a TextRange and then
-                    // calling empty()
-                    var doc;
-                    if (this.anchorNode) {
-                        doc = dom.getDocument(this.anchorNode);
-                    } else if (this.docSelection.type == CONTROL) {
-                        var controlRange = this.docSelection.createRange();
-                        if (controlRange.length) {
-                            doc = dom.getDocument(controlRange.item(0)).body.createTextRange();
-                        }
-                    }
-                    if (doc) {
-                        var textRange = doc.body.createTextRange();
-                        textRange.select();
-                        this.docSelection.empty();
-                    }
+					if (isNativeIE7) {
+            			this.docSelection.empty();
+            		}
+					
+					// removed workaround of rangy-core implementation
+					// for IE to fix issue with strange selection of
+					// hole body in some selection change cases
                 }
+                
             } catch(ex) {}
             updateEmptySelection(this);
         };

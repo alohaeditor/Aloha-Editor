@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Editor GuidesAloha Editor Guides: Understanding the Aloha Editor core</title>
+  <title>: Understanding the Aloha Editor core</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,7 +42,7 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/">Aloha Editor Guides</a></h2>
+        <h2><a href="/"></a></h2>
         <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
@@ -59,8 +59,8 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="aloha_jquery.html">Aloha Editor and jQuery</a></dd>
+      <dd>Configuring Aloha Editor</dd>
+      <dd>Aloha Editor and jQuery</dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
@@ -71,9 +71,9 @@
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
       <dd><a href="ui.html">Aloha Editor UI</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd>Aloha Editor toolbar</dd>
+      <dd>Aloha Editor sidebar</dd>
+      <dd>Aloha Editor UI API</dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -166,7 +166,47 @@ Aloha.loadPlugins(function(){
 		});
 	});
 });
-</pre></div><h3 id="how-to-use-require">4 How to use require</h3>
+</pre></div><p>Aloha Editor will also add a <span class="caps">CSS</span> class to the html <span class="caps">DOM</span> node during it&#8217;s <code>initAloha</code> stage. The following classes will be used:</p>
+<table>
+	<tr>
+		<th>Browser </th>
+		<th>Class </th>
+	</tr>
+	<tr>
+		<td> Chrome or Safari </td>
+		<td> <code>aloha-webkit</code> </td>
+	</tr>
+	<tr>
+		<td> Opera </td>
+		<td> <code>aloha-opera</code> </td>
+	</tr>
+	<tr>
+		<td> Firefox </td>
+		<td> <code>aloha-mozilla</code> </td>
+	</tr>
+	<tr>
+		<td> Opera </td>
+		<td> <code>aloha-webkit</code> </td>
+	</tr>
+	<tr>
+		<td> Internet Explorer 7* </td>
+		<td> <code>aloha-ie7</code> </td>
+	</tr>
+	<tr>
+		<td> Internet Explorer 8* </td>
+		<td> <code>aloha-ie8</code> </td>
+	</tr>
+	<tr>
+		<td> Internet Explorer 9* </td>
+		<td> <code>aloha-ie9</code> </td>
+	</tr>
+	<tr>
+		<td> Internet Explorer 10* </td>
+		<td> <code>aloha-ie10</code> </td>
+	</tr>
+</table>
+<div class="note"><p>* Internet Explorer Version Numbers will be derived by turning the browser version into an integer </p></div>
+<h3 id="how-to-use-require">4 How to use require</h3>
 <div class="warning"><p><span class="caps">TODO</span> describe how Aloha.require is used</p></div>
 <h3 id="internationalization">5 Internationalization</h3>
 <div class="warning"><p><span class="caps">TODO</span> describe</p></div>
@@ -206,7 +246,6 @@ Aloha.settings = {
 		</ol><p>Others, (IE) either let you handle built-in short-cuts, but will add their functionality after your code has executed. Or (Opera/Safari) will <strong>not</strong> pass those events to the <span class="caps">DOM</span> at all.</p>
 <p><strong>So, if you bind `Ctrl-Q` or `Alt-F4` and your Safari/Opera window is closed don&#8217;t be surprised.</strong></p>
 <p>Code from: https://github.com/jeresig/jquery.hotkeys</p>
-<p>.</p>
 
       </div>
         <div id="subCol">

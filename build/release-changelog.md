@@ -1,2 +1,0 @@
-- **BUG** table-plugin: fixed a javascript error when the block plugin wasn't loaded.
-- **BUG** browser-plugin: fixed a bug that caused only a single root-node to be displayed.

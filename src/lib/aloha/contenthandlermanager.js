@@ -24,9 +24,10 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
+/*global define:true */
 define(
-['jquery', 'aloha/registry', 'util/class'],
-function( jQuery, Registry, Class ) {
+['jquery', 'aloha/registry', 'util/class', 'aloha/console'],
+function (jQuery, Registry, Class, console) {
 	"use strict";
 
 	/**
@@ -35,16 +36,16 @@ function( jQuery, Registry, Class ) {
 	 *
 	 * @param {Object} definition
 	 */
-	return new ( Registry.extend({
+	return new (Registry.extend({
 
-		createHandler: function( definition ) {
+		createHandler: function (definition) {
 			
-			if ( typeof definition.handleContent != 'function' ) {
+			if (typeof definition.handleContent !== 'function') {
 				throw 'ContentHandler has no function handleContent().';
 			}
 
 			var AbstractContentHandler = Class.extend({
-				handleContent: function( content ) {
+				handleContent: function (content) {
 					// Implement in subclass!
 				}
 			}, definition);
@@ -52,31 +53,31 @@ function( jQuery, Registry, Class ) {
 			return new AbstractContentHandler();
 		},
 		
-		handleContent: function ( content, options ) {
-			var handler,
-				handlers = this.getEntries();
+		handleContent: function (content, options) {
+			var handler, id,
+				ids = this.getIds();
 
-			if ( typeof options.contenthandler === 'undefined') {
+			if (typeof options.contenthandler === 'undefined') {
 				options.contenthandler = [];
-				for ( handler in handlers ) {
-					if ( handlers.hasOwnProperty(handler) ) {
-						options.contenthandler.push(handler);
+				for (id in ids) {
+					if (ids.hasOwnProperty(id)) {
+						options.contenthandler.push(ids[id]);
 					}
 				}
 			}
 
-			for ( handler in handlers ) {
-				if ( handlers.hasOwnProperty(handler) ) {
-					if (jQuery.inArray( handler, options.contenthandler ) < 0 ) {
-						continue;
+			for (id in options.contenthandler) {
+				if (options.contenthandler.hasOwnProperty(id)) {
+					handler = this.get(options.contenthandler[id]);
+					if (handler) {
+						if (typeof handler.handleContent === 'function') {
+							content = handler.handleContent(content, options);
+						} else {
+							console.error('A valid content handler needs the method handleContent.');
+						}
 					}
-					if (null == content) {
+					if (null === content) {
 						break;
-					}
-					if ( typeof handlers[handler].handleContent === 'function') {
-						content = handlers[handler].handleContent( content, options );
-					} else {
-						console.error( 'A valid content handler needs the method handleContent.' );
 					}
 				}
 			}
