@@ -1,9 +1,9 @@
 /* editable.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -269,10 +269,9 @@ define( [
 				// mark the editable as unmodified
 				me.setUnmodified();
 
-				// we don't do the sanitizing on aloha ready, since some plugins add elements into the content and bind events to it.
-				// if we sanitize by replacing the html, all events would get lost. TODO: think about a better solution for the sanitizing, without
-				// destroying the events
-//				// apply content handler to clean up content
+				// we don't do the sanitizing on aloha ready, since some plugins add elements into the content and bind
+				// events to it. If we sanitize by replacing the html, all events would get lost. TODO: think about a
+				// better solution for the sanitizing, without destroying the events  apply content handler to clean up content
 //				var content = me.obj.html();
 //				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
 //					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
@@ -599,8 +598,8 @@ define( [
 		 * check whether the editable has been disabled
 		 */
 		isDisabled: function() {
-			return !this.obj.contentEditable()
-				|| this.obj.contentEditable() === 'false';
+			return !this.obj.contentEditable() ||
+				this.obj.contentEditable() === 'false';
 		},
 
 		/**
@@ -642,8 +641,8 @@ define( [
 			// in this case the "focus" event would be triggered on the parent element
 			// which actually shifts the focus away to it's parent. this if is here to
 			// prevent this situation
-			if ( e && e.type === 'focus' && oldActive !== null
-			     && oldActive.obj.parent().get( 0 ) === e.currentTarget ) {
+			if ( e && e.type === 'focus' && oldActive !== null &&
+			     oldActive.obj.parent().get( 0 ) === e.currentTarget ) {
 				return;
 			}
 
@@ -711,8 +710,8 @@ define( [
 		 */
 		empty: function( str ) {
 			// br is needed for chrome
-			return ( null === str )
-				|| ( jQuery.trim( str ) === '' || str === '<br/>' );
+			return ( null === str ) ||
+				( jQuery.trim( str ) === '' || str === '<br/>' );
 		},
 
 		/**

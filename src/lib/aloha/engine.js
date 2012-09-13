@@ -1,5 +1,4 @@
-define(
-//['aloha/ecma5'],
+define(//['aloha/ecma5'],
 ['aloha/ecma5shims', 'jquery'],
 function($_, jQuery) {
 	"use strict";
@@ -72,8 +71,8 @@ function previousNode(node) {
 		}
 		return node;
 	}
-	if (node.parentNode
-	&& node.parentNode.nodeType == $_.Node.ELEMENT_NODE) {
+	if (node.parentNode &&
+		node.parentNode.nodeType == $_.Node.ELEMENT_NODE) {
 		return node.parentNode;
 	}
 	return null;
