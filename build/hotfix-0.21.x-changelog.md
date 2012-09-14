@@ -40,3 +40,5 @@ All changes are categorized into one of the following keywords:
 				   are used to prop up empty block-level elements that would be
 				   otherwise rendererd invisbly, with the "aloha-end-br" class.
 				   This should result in cleaner markup.
+
+- ** BUG**: Fixed Javascript error when doing searches in the repository browser (which caused to search to not be done).

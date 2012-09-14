@@ -709,7 +709,7 @@ define('RepositoryBrowser', [
 			var searchValue = $searchField.val();
 
 			if (jQuery($searchField).hasClass('aloha-browser-search-field-empty') ||
-			    '' == searchValue.val()) {
+			    '' === searchValue) {
 				searchValue = null;
 			}
 			this._pagingOffset = 0;
