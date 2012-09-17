@@ -459,7 +459,7 @@ function ( jQuery, PluginManager ) {
 		},
 
 		/**
-		 * Checks wheater an object is a registered Aloha Editable.
+		 * Checks whether an object is a registered Aloha Editable.
 		 * @param {jQuery} obj the jQuery object to be checked.
 		 * @return {boolean}
 		 */
@@ -470,6 +470,29 @@ function ( jQuery, PluginManager ) {
 				}
 			}
 			return false;
+		},
+
+		/**
+		 * Get the nearest editable parent of the given jQuery object
+		 * @param {jQuery} $obj jQuery object
+		 * @return {Aloha.Editable} editable or undefined if none found
+		 */
+		getEditableHost: function ($obj) {
+			var $parents, i, $editable, editablesLength = Aloha.editables.length;
+			if (!$obj) {
+				return;
+			}
+
+			$parents = $obj.parents().andSelf().each(function () {
+				for (i = 0; i < editablesLength; i++) {
+					if (Aloha.editables[i].originalObj.get(0) === this) {
+						$editable = Aloha.editables[i];
+						return false;
+					}
+				}
+			});
+
+			return $editable;
 		},
 
 		/**
