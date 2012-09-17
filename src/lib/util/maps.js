@@ -85,9 +85,21 @@ define([], function () {
 		return map;
 	}
 
+	function keys(map) {
+		var ks = [],
+		    k;
+		for (k in map) {
+			if (map.hasOwnProperty(k)) {
+				ks.push(k);
+			}
+		}
+		return ks;
+	}
+
 	return {
 		isEmpty: isEmpty,
 		fillTuples: fillTuples,
-		fillKeys: fillKeys
+		fillKeys: fillKeys,
+		keys: keys
 	};
 });

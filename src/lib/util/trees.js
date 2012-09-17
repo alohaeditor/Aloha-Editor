@@ -102,42 +102,6 @@
  *     Like prepruneDom(), except the given function is applied as the tree
  *     is ascended.
  *
- * walkrec(form, step, walk)
- *
- *     Iteration primitive used by more high level functions like
- *     prewalk/postwalk etc.
- *
- *     Useful to have more control over the walk process. In particular,
- *     this function allows a custom step function to be provided. The
- *     step function is what sets prewalk and postwalk or preprune and
- *     postprune etc. apart.
- *
- *     @param step
- *            A function that accepts the following arguments
- *            form    - either the given form or a subform
- *            recurse - a function that should be passed on to the given walk function
- *            key     - used as the index to result
- *            result  - an array or map to place the result of the step into
- *            walk    - the same as the walk argument given to walkrec
- *            returns - true if a value has been placed into result[key]
- *
- *            The given step function will be invoked for the form given
- *            to walkrec and each subform. The step function can decide
- *            whether to recurse into subforms by calling the given walk
- *            function with the given recurse function.
- *
- *            A value should be placed into result[key] as the result of
- *            this step, and true should be returned. If the step
- *            doesn't return true, no value will be added to the result
- *            of walkrec. For example, if the step function never
- *            returns true, the call to walkrec will return null.
- *
- *     @param walk
- *            A function that walks any nested forms.
- *            Currently either Trees.walk or Trees.walkDom can be passed
- *            to facilitate the walking of arrays/map or DOM nodes
- *            respectively.
- *
  * walk(form, recurse, inplace)
  *
  *     If form is an array or map, calls recurse on each of its items.
@@ -152,7 +116,7 @@
  *
  *     Short for walk(form, recurse, true)
  *
- * walkDomInplace(form, recurseFn)
+ * walkDomInplace(form, recurse)
  *
  *     Similar to walk() but operates on DOM nodes.
  *

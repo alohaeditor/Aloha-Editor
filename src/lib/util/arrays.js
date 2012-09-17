@@ -189,7 +189,7 @@ define([],function(){
 	 * Applies the given value to the given function unless the value is
 	 * null, in which case just returns null.
 	 *
-	 * This is a handy utility function to be used with reduce().
+	 * This is a utility function to be used with reduce().
 	 */
 	function applyNotNull(value, fn) {
 		return value == null ? null : fn(value);		

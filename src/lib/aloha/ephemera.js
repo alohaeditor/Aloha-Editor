@@ -47,18 +47,19 @@
  *
  * * When a plugin provides very general functionality over all nodes of
  *   the DOM, somtimes the plugin may not know what is and what isn't
- *   supposed to be real content. The funcionality provided here makes
+ *   supposed to be real content. The functionality provided here makes
  *   it possible for the plugin to exaclty distinguish real content from
  *   ephemeral content.
  *
  * TODO: currently only simple transformations are suppored, like
  *       marking classes, attributes and elements as ephemeral and removing
- *       them when during the pruning process.
+ *       them during the pruning process.
  *       In the future, support for the block-plugin and custom pruning
  *       functions should be added. This may be done by letting implementations
  *       completely control the pruning of a DOM element through a
  *       function that takes the content+ephemeral-data and returns only
- *       content - similar to make clean, but for single elements to reduce the overhead by content inspection mechanisms.
+ *       content - similar to make clean, but for single elements to reduce
+ *       overhead.
  */
 define([
 	'jquery',
@@ -69,7 +70,9 @@ define([
 	'util/arrays',
 	'util/maps',
 	'util/dom2',
-	'util/functions'
+	'util/functions',
+	'util/misc',
+	'PubSub'
 ], function (
 	$,
 	Aloha,
@@ -79,7 +82,9 @@ define([
 	Arrays,
 	Maps,
 	Dom,
-	Functions
+	Functions,
+	Misc,
+	PubSub
 ) {
 	'use strict';
 
@@ -94,7 +99,9 @@ define([
 			'hidefocus': true,
 			'hideFocus': true,
 			'tabindex': true,
-			'tabIndex': true
+			'tabIndex': true,
+			'TABLE.contenteditable': true,
+			'TABLE.contentEditable': true
 		},
 		attrRxs: [
 			/^(?:nodeIndex|sizcache|sizset|jquery)[\w\d]*$/i
@@ -148,6 +155,7 @@ define([
 		var clss = Array.prototype.slice.call(arguments);
 		Maps.fillKeys(ephemeraMap.classMap, clss, true);
 		checkCommonSubstr(clss);
+		PubSub.pub('aloha.ephemera.classes', {ephemera: ephemeraMap, newClasses: clss});
 	}
 
 	/**
@@ -159,6 +167,7 @@ define([
 	function attributes() {
 		var attrs = Array.prototype.slice.call(arguments);
 		Maps.fillKeys(ephemeraMap.attrMap, attrs, true);
+		PubSub.pub('aloha.ephemera.attributes', {ephemera: ephemeraMap, newAttributes: attrs});
 	}
 	
 	/**
@@ -167,13 +176,20 @@ define([
 	 *
 	 * The given map may have the following entries
 	 * classMap - a map from class name to the value true
-	 * attrMap  - a map from attribute name to the value true
+	 * attrMap  - a map from attribute name to the value true; attribute
+	 *            names may be optionally prefixed with "ELEMENT.",
+	 *            where ELEMENT is the name of an element in uppercase,
+	 *            to prune only from specific elements. An element name prefix
+	 *            should always be specified if it is known, and if
+	 *            multiple are known, multiple entries with separate
+	 *            element prefixes should be made instead of a single
+	 *            entry without - preserve information for refactoring.
 	 * attrRxs  - an array of regexes in object form (/[a-z].../ and not "[a-z]...")
 	 * pruneFns - an array of functions that will be called at each pruning step.
 	 *
 	 * Returns the global registry, which has the same structure as above.
 	 *
-	 * When a DOM tree is pruned with prune(elem, emap) without an emap
+	 * When a DOM tree is pruned with prune(elem) without an emap
 	 * argument, the global registry maintained with classes()
 	 * attributes() and ephemera() is used as a default map. If an emap
 	 * argument is specified, the global registry will be ignored and
@@ -193,6 +209,10 @@ define([
      *   node is not removed.
 	 *
 	 * Also see classes() and attributes().
+	 *
+	 * Note that removal of attributes doesn't always work on IE7 (in
+	 * rare special cases). The dom-to-xhtml plugin can reliably remove
+	 * ephemeral attributes during the serialization step.
 	 */
 	function ephemera(emap) {
 		if (emap) {
@@ -208,6 +228,7 @@ define([
 			if (emap.pruneFns) {
 				ephemeraMap.pruneFns = ephemeraMap.pruneFns.concat(emap.pruneFns);
 			}
+			PubSub.pub('aloha.ephemera', {ephemera: ephemeraMap, newEphemera: emap});
 		}
 		return ephemeraMap;
 	}
@@ -272,19 +293,6 @@ define([
 	}
 
 	/**
-	 * Returns true if any regex in the given rxs array tests true
-	 * against str.
-	 */
-	function anyRx(rxs, str) {
-		for (var i = 0, len = rxs.length; i < len; i++) {
-			if (rxs[i].test(str)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * Prunes attributes marked as ephemeral with Ephemera.attributes()
 	 * from the given element.
 	 */
@@ -301,6 +309,17 @@ define([
 	}
 
 	/**
+	 * Determines whether the given attribute of the given element is
+	 * ephemeral according to the given emap.
+	 * See Ephemera.ephemera() for an explanation of attrMap and attrRxs.
+	 */
+	function isAttrEphemeral(elem, attrName, attrMap, attrRxs) {
+		return attrMap[attrName]
+			|| Misc.anyRx(attrRxs, attrName)
+			|| attrMap[elem.nodeName + '.' + attrName];
+	}
+
+	/**
 	 * Prunes attributes specified with either emap.attrMap or emap.attrRxs.
 	 * See ephemera().
 	 */
@@ -310,7 +329,7 @@ define([
 		    name;
 		for (var i = 0, len = attrs.length; i < len; i++) {
 			name = attrs[i];
-			if (emap.attrMap[name] || anyRx(emap.attrRxs, name)) {
+			if (isAttrEphemeral(elem, name, emap.attrMap, emap.attrRxs)) {
 				$elem = $elem || $(elem);
 				$elem.removeAttr(name);
 			}
@@ -330,8 +349,7 @@ define([
 	 */
 	function pruneElem(elem, emap) {
 		var className = elem.className;
-		if (typeof className === 'string' &&
-			    -1 !== className.indexOf(commonClsSubstr)) {
+		if (className && -1 !== className.indexOf(commonClsSubstr)) {
 			var classes = Strings.words(className);
 
 			// Ephemera.markElement()
@@ -425,6 +443,7 @@ define([
 		markAttribute: markAttribute,
 		markWrapper: markWrapper,
 		markFiller: markFiller,
-		prune: prune
+		prune: prune,
+		isAttrEphemeral: isAttrEphemeral
 	};
 });

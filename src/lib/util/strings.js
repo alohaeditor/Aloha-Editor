@@ -27,21 +27,24 @@
 define(['jquery'], function ($) {
 	'use strict';
 
+	var spacesRx = /\s+/;
+
 	/**
 	 * Splits a string into individual words.
 	 *
 	 * Words are non-empty sequences of non-space characaters.
 	 */
 	function words(str) {
-		// Trim because "  x  ".split(/\s/) -> ["", "x", ""] (Chrome)
-		var list = $.trim(str).split(/[\r\n\t\s]+/);
-
-		// "".split(/\s/) -> [""] (Chrome)
-		// To catche the above case, we compare list[0] against the
-		// empty string, even when list.length == 0, but we don't care
-		// since there are no index out of bounds exceptions in js and
-		// we save a condition.
-		return list[0] === "" ? [] : list;
+		var list = str.split(spacesRx);
+		// "  x  ".split(/\s+/) => ["", "x", ""] (Chrome)
+		// "".split(/\s+/) => [""] (Chrome)
+		if (list.length && list[0] === "") {
+			list.shift();
+		}
+		if (list.length && list[list.length - 1] === "") {
+			list.pop();
+		}
+		return list;
 	}
 
 	/**
