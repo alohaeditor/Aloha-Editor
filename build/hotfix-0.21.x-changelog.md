@@ -8,6 +8,8 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUG**: Added missing icon for the block plugins toggledragdrop button
+
 - **BUG**: Rangy Core: Patches Rangy to include a workaround for html5shiv's
         violation of document.createElement().
 
