@@ -115,7 +115,7 @@ define([
 					"select": onSelect
 				});
 			}
-		})
+		});
 
 		element
 			.bind("focus", onFocus)
