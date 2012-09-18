@@ -814,6 +814,12 @@ define('RepositoryBrowser', [
 			}
 		},
 
+		/**
+		 * Handle repository timeouts
+		 */
+		handleTimeout: function () {
+		},
+
 		_processItems: function (data, metainfo) {
 			// If the total number of items is known, we can calculate the
 			// number of pages.
@@ -866,6 +872,11 @@ define('RepositoryBrowser', [
 				(jQuery.isNumeric(this._pagingCount)
 					? this._pageingCount : this._i18n('numerous'))
 			);
+
+			// when the repository manager reports a timeout, we handle it
+			if (metainfo && metainfo.timeout) {
+				this.handleTimeout();
+			}
 		},
 
 		_createOverlay: function () {
@@ -940,7 +951,8 @@ define('RepositoryBrowser', [
 					that._processRepoResponse(
 						(response.results > 0) ? response.items : [], {
 							numItems: response.numItems,
-							hasMoreItems: response.hasMoreItems
+							hasMoreItems: response.hasMoreItems,
+							timeout: response.timeout
 						}, callback
 					);
 				});
