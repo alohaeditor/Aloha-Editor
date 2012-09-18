@@ -138,8 +138,8 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
       headingButtons = (new appmenu.custom.Heading("<#{ h } />", labels[h], {accel: "Ctrl+#{ h.charAt(1) or 0 }", action: applyHeading(h) }) for h in order)
       
       headingsButton = new appmenu.ToolButton("Heading 1", {subMenu: new appmenu.Menu(headingButtons)})
-      toolbar.append(headingsButton)
-      toolbar.append(new appmenu.Separator())
+      toolbar.prepend(new appmenu.Separator())
+      toolbar.prepend(headingsButton)
 
       Aloha.bind 'aloha-editable-activated', (e, params) ->
         menubar.setAccelContainer(params.editable.obj)

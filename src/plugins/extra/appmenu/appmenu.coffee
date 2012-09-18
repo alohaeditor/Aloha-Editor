@@ -58,6 +58,7 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
   
       for item in @items
         @_closeEverythingBut(item)
+        item.parent = @
         @el.append(item.el)
   
     _closeEverythingBut: (item) ->
@@ -65,35 +66,69 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       item.el.bind 'mouseenter', () ->
         for child in that.items
           if child.subMenu and child != item
-            child.subMenu.close()
+            child.subMenu._closeSubMenu()
   
+    prepend: (item) ->
+      item.parent = @
+      @items.unshift(item)
+      item.el.prependTo(@el)
+
     append: (item) ->
+      item.parent = @
       @items.push(item)
       item.el.appendTo(@el)
+    
+    _setSelectedBubbledUp: (child, dir) ->
+      that = @
+      child.setSelected(false)
+      ariaParent = () ->
+        that.setSelected(false)
+        that.parent.setSelected(that)
+      ariaUp = () ->
+        i = that.items.indexOf child
+        newSelection = that.items[(i+that.items.length - 1) % that.items.length]
+        newSelection._setSelected(true)
+      ariaDown = () ->
+        i = that.items.indexOf child
+        newSelection = that.items[(i+that.items.length + 1) % that.items.length]
+        newSelection._setSelected(true)
+      ariaLeft = () ->
+        that.parent._setSelectedBubbledUp(true, false) # ,false == left
+      ariaRight = () ->
+        that.setSelected(false)
+        that.parent._setSelectedBubbledUp(true, true) # ,true == right
+
+      switch dir
+        when 'up' then ariaUp()
+        when 'down' then ariaDown()
+        when 'left' then ariaLeft()
+        when 'right' then ariaRight()
   
-    open: (position) ->
+    _openSubMenuAt: (position) ->
       # Since we're appending to 'body' we need to shift the menu by how much the body has scrolled
       $canvas = $('body')
       position.top -= $canvas.scrollTop()
       position.left -= $canvas.scrollLeft()
       @el.css(position).appendTo($canvas)
       @el.show()
+      @isOpened = true
       # Close the menu when someone clicks outside the menu (locally mousedowns's are already squashed)
       # Add a handler for when someone clicks outside the menu
       that = @
       $('body').one 'mousedown', () ->
-        setTimeout(that.close.bind(that), 10)
+        setTimeout(that._closeSubMenu.bind(that), 10)
     
-    close: () ->
+    _closeSubMenu: () ->
       # Close the submenus
       for item in @items
         if item.subMenu
-          item.subMenu.close()
+          item.subMenu._closeSubMenu()
       @el.hide()
+      @isOpened = false
     
-    setAccelContainer: ($accel) ->
+    setAccelContainer: (@$keyBinder) ->
       for item in @items
-        item.setAccelContainer($accel)
+        item.setAccelContainer(@$keyBinder)
   
   class appmenu.MenuItem extends appmenu.MenuBase
     constructor: (@text, conf = {}) ->
@@ -135,10 +170,8 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       @setAccelContainer($('body'))
   
       # Add hover/selection
-      @el.bind 'mouseenter', () ->
-        that.el.addClass('selected')
-      @el.bind 'mouseleave', () ->
-        that.el.removeClass('selected')
+      @el.on 'mouseenter', () -> that.setSelected(true)
+      @el.on 'mouseout',   () -> that.setSelected(false)
   
       @_addEvents()
   
@@ -162,10 +195,10 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
         else # below
           top += @el.outerHeight()
         position = { top: top, left: left }
-        @subMenu.open(position)
+        @subMenu._openSubMenuAt(position)
   
     _closeSubMenu: () ->
-      @subMenu.close()
+      @subMenu._closeSubMenu() if @subMenu
   
   
     _cssToggler: (val, cls) ->
@@ -218,19 +251,45 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
     setText: (@text) ->
       @el.children('.text')[0].innerHTML = @text
     
+    _setSelected: (@isSelected) ->
+      @_cssToggler @isSelected, 'selected'
+    setSelected: (isSelected) ->
+      @_setSelected isSelected
+      that = @
+      ariaParent = (direction) ->
+        that.setSelected(false)
+        that._closeSubMenu()
+        that.parent._setSelectedBubbledUp(that, direction)
+      ariaUp = () -> ariaParent('up')
+      ariaDown = () -> ariaParent('down')
+      ariaLeft = () -> ariaParent('left')
+      ariaRight = () -> ariaParent('right')
+      ariaEnter = () ->
+        that.action()
+      if isSelected
+        # Add key binders
+        @$keyBinder.bind 'keydown.appmenuaria', 'up', ariaUp
+        @$keyBinder.bind 'keydown.appmenuaria', 'down', ariaDown
+        @$keyBinder.bind 'keydown.appmenuaria', 'left', ariaLeft
+        @$keyBinder.bind 'keydown.appmenuaria', 'right', ariaRight
+        @$keyBinder.bind 'keydown.appmenuaria', 'enter', ariaEnter
+      else
+        # Remove key binders
+        @$keyBinder.off 'keydown.appmenuaria'
+    
     # Handling keydown events are not bubbled up to the body handler so
     # As the editable region changes we have to rebind the key handler
-    setAccelContainer: ($accel) ->
-      if @$accel
-        @$accel.unbind 'keydown.appmenu'
-      @$accel = $accel
+    setAccelContainer: ($keyBinder) ->
+      if @$keyBinder
+        @$keyBinder.unbind 'keydown.appmenu'
+      @$keyBinder = $keyBinder
 
-      if @accel? and @$accel
+      if @accel? and @$keyBinder
         that = @
         if @action
-          @$accel.bind 'keydown.appmenu', @accel, @action
+          @$keyBinder.bind 'keydown.appmenu', @accel, @action
       if @subMenu
-        @subMenu.setAccelContainer($accel)
+        @subMenu.setAccelContainer($keyBinder)
   
   class appmenu.Separator extends appmenu.MenuItem
     constructor: () ->
@@ -247,7 +306,7 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       @el.addClass 'tool-bar' # Don't add it to 'menu'
       @el.removeClass 'menu'
     
-    close: () ->
+    _closeSubMenu: () ->
       # Never close a toolbar
   
   class appmenu.ToolButton extends appmenu.MenuItem
@@ -279,9 +338,22 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       super(items)
       @el.addClass 'menu-bar'
       @el.removeClass 'menu' # Don't treat the menubar as a menu
+
+      that = @
+      @el.on 'click', (evt) ->
+        # Open the currect menu (if one exists)
+        # And start trapping key strokes
+        for item in that.items
+          if $(evt.target).parent('.menu-item')[0] == item.el[0]
+            item._openSubMenu(false) # false == open-below
+      
+            
     
-    close: () ->
+    _closeSubMenu: () ->
       # Cannot be closed
+      # But close the children
+      for item in @items
+        item._closeSubMenu()
     
   
   class appmenu.MenuButton extends appmenu.MenuItem
@@ -292,8 +364,6 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
     _addEvents: () ->
       that = @
       # Open the menu on click
-      @el.bind 'click', (evt) ->
-        that._openSubMenu(false) # false == open-below
   
       # On mouseover close all other menus (except submenu)
       @el.bind 'mouseenter', (evt) ->
