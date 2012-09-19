@@ -42,32 +42,76 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
             document.getElementsByTagName("head")[0].appendChild(script);
 
             var inChange = false;
+
+            var Inserted = [];
+            var savedOffset = -1;
+
+            function convertToConcrete(character, ele, leVal, currentOffset) {
+                for(var i = 0; i < Inserted.length; i++) {
+                    if(Inserted[i].loc == currentOffset+1 && Inserted[i].character == character) {
+                        Inserted.splice(i, 1);
+                        if(ele.val() == leVal) {
+                            ele.val(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
+                            leVal = ele.val();
+                        } else {
+                            ele.text(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
+                            leVal = ele.text();
+                        }
+                        window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], currentOffset+1);
+                        break;
+                    }
+                }
+                return leVal;
+            }
+
+            function generateInserted(ele, leVal, offset, character) {
+                if(ele.val() == leVal) {
+                    ele.val(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
+                    leVal = ele.val();
+                } else {
+                    ele.text(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
+                    leVal = ele.text();
+                }
+                window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset+1);
+                Inserted.push({ loc: offset+1, character: character });
+                return leVal;
+            }
            
             function onTexCharChange(evt, arg) {
                 if(inChange) return;
                 inChange = true;
+
                 var range = window.getSelection().getRangeAt(0);
                 var offset = range.startOffset;
                 var eqId = evt.currentTarget.id.substring(5);
                 var ele = $('#'+evt.currentTarget.id);
                 var leVal = ele.val() || ele.text();
                 var ch = leVal[offset];
-                console.log(evt.currentTarget.id);
-                if(ch == '{') {
-                    //console.log(window.getSelection().getRangeAt(0).startOffset);
-                    var saveOffset = window.getSelection().getRangeAt(0).startOffset;
-                    if(ele.val() == leVal) {
-                        ele.val(leVal.slice(0,offset+1)+'}'+leVal.slice(offset+1));
-                        leVal = ele.val();
-                    } else {
-                        ele.text(leVal.slice(0,offset+1)+'}'+leVal.slice(offset+1));
-                        leVal = ele.text();
+
+                for(var i = 0; i < Inserted.length; i++) {
+                    if(Inserted[i].loc >= offset) {
+                        Inserted[i].loc = Inserted[i].loc + 1;
                     }
-                    //console.log(window.getSelection().focusNode.childNodes[0]);
-                    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], saveOffset+1);
                 }
+
+                console.log(evt);
+
+                switch(ch) {
+                    case(')'):
+                    case('}'):
+                        leVal = convertToConcrete(ch, ele, leVal, offset);
+                        break;
+                    case('{'):
+                        leVal = generateInserted(ele, leVal, offset, '}');
+                        break;
+                    case('('):
+                        leVal = generateInserted(ele, leVal, offset, ')');
+                        break;
+                }
+                console.log(Inserted);
                 MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
                 inChange = false;
+                savedOffset = offset;
             }
 
             function onAsciiCharChange(evt) {
