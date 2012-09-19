@@ -159,6 +159,11 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                     newMathEditContainer.hide();
                 };
 
+                var doClick = function() {
+                    Inserted = [];
+                }
+
+                $(editableObj).on('click', doClick);
                 $(editableObj).on('blur focusout', blurout);
                 newMathEditContainer.on('focusout blur', blurout);
                 
