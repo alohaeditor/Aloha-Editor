@@ -579,6 +579,79 @@ define( [
 			}
 		},
 
+    /**
+     * Pops up a dialog that either creates a new link or changes 
+     * an existing one. callback is passed 1 non-null argument
+     * If the dialog is cancelled.
+     */
+    showModalDialog: function ( $a, callback ) {
+      var root = Aloha.activeEditable.obj;
+      var dialog = jQuery('<div class="link-chooser">');
+      var select = jQuery('<select class="link-list" size="5"></select>');
+      select.appendTo(dialog);
+      
+      var appendOption = function(id, contentsToClone) {
+        var clone = contentsToClone[0].cloneNode(true);
+        var contents = jQuery(clone).contents();
+        
+        var option = jQuery('<option></option>');
+        option.attr('value', '#' + id);
+        option.append(contents);
+        option.appendTo(select);
+      }      
+
+      // Append all the headings and then all the figure/table captions
+			var orgElements = root.find('h1,h2,h3,h4,h5,h6');
+			var figuresAndTables = root.find('figure,table');
+			
+			// HACK: Slap id's on the headings if they don't have any
+			orgElements.filter(':not([id])').each(function() {
+			  jQuery(this).attr('id', GENTICS.Utils.guid());
+			});
+
+			orgElements.each(function() {
+			  var item = jQuery(this);
+			  var id = item.attr('id');
+			  appendOption(id, item);
+			});
+			figuresAndTables.each(function() {
+			  var item = jQuery(this);
+			  var id = item.attr('id');
+			  var caption = item.find('caption,figcaption');
+			  appendOption(id, caption);
+			});
+			
+			// Try to select if the link already matches one of the options
+			select.val($a.attr('href'));
+			
+			var cancelled = null;
+			var onOk = function() {
+				// Validate and save the href if something is selected.
+				if(select.val()) {
+				  $a.attr('href',  select.val());
+					jQuery(this).dialog('close');
+				}
+			};
+			
+			var onCancel = function() {
+			  cancelled = true;
+				jQuery(this).dialog('close');
+			};
+			
+			var onClose = function() {
+			  callback(cancelled);
+			};
+
+      dialog.dialog({
+        modal: true,
+        buttons: {
+					'OK': onOk,
+					'Cancel': onCancel
+        },
+        close: onClose
+      });
+    },
+    
 		/**
 		 * Insert a new link at the current selection. When the selection is
 		 * collapsed, the link will have a default link text, otherwise the
@@ -597,38 +670,38 @@ define( [
 			}
 			
 			// do not nest a link inside a link
-			if ( this.findLinkMarkup( range ) ) {
+			var isLink = this.findLinkMarkup( range );
+			if (isLink) {
+				this.showModalDialog(jQuery(isLink), function(){console.log('PHIL: callback');});
 				return;
 			}
-			
-			// activate floating menu tab
-			this.hrefField.foreground();
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
 				GENTICS.Utils.Dom.extendToWord( range );
 			}
 
-      var cachedEditable = Aloha.activeEditable.obj;
+      if ( range.isCollapsed() ) {
+        // insert a link with text here
+        linkText = i18n.t( 'newlink.defaulttext' );
+        newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link">' + linkText + '</a>' );
+        GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
+        range.startContainer = range.endContainer = newLink.contents().get( 0 );
+        range.startOffset = 0;
+        range.endOffset = linkText.length;
+      } else {
+        newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
+        GENTICS.Utils.Dom.addMarkup( range, newLink, false );
+      }
+
+      newLink = Aloha.activeEditable.obj.find( 'a.aloha-new-link' );
+      newLink.each( function ( i ) {
+        that.addLinkEventHandlers( that );
+        jQuery(this).removeClass( 'aloha-new-link' );
+      } );
+
+
       var callback = function() {
-        if ( range.isCollapsed() ) {
-          // insert a link with text here
-          linkText = i18n.t( 'newlink.defaulttext' );
-          newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link">' + linkText + '</a>' );
-          GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
-          range.startContainer = range.endContainer = newLink.contents().get( 0 );
-          range.startOffset = 0;
-          range.endOffset = linkText.length;
-        } else {
-          newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
-          GENTICS.Utils.Dom.addMarkup( range, newLink, false );
-        }
-  
-        cachedEditable.find( 'a.aloha-new-link' ).each( function ( i ) {
-          that.addLinkEventHandlers( that );
-          jQuery(this).removeClass( 'aloha-new-link' );
-        } );
-  
         range.select();
   
         // focus has to become before prefilling the attribute, otherwise
@@ -644,43 +717,7 @@ define( [
         that.hrefChange();
       }; // callback
 
-			var browse = jQuery('<div></div>');
-			// Attach an id to headings so we can link to them
-			var orgElements = jQuery('.aloha-editable').find('h1,h2,h3,h4,h5,h6');
-			orgElements.filter(':not([id])').each(function() {
-			  var $el = jQuery(this);
-			  $el.attr('id', GENTICS.Utils.guid());
-			});
-			var figuresAndTables = jQuery('.aloha-editable').find('figure,table');
-			orgElements.each(function() {
-			  var item = this.cloneNode(true);
-			  var $item = jQuery(item);
-			  var id = $item.attr('id');
-			  $item.removeAttr('id');
-			  $item.on('click', function(evt) {
-			    that.hrefValue = '#' + id;
-			    callback();
-			    browse.dialog('close');
-			  });
-			  $item.appendTo(browse);
-			});
-
-			figuresAndTables.each(function() {
-			  var $item = jQuery(this);
-			  var id = $item.attr('id');
-			  var $caption = $item.find('caption,figcaption');
-			  var $title = jQuery('<div></div>').append($caption.text());
-
-			  $title.on('click', function(evt) {
-			    that.hrefValue = '#' + id;
-			    callback();
-			    browse.dialog('close');
-			  });
-			  $title.appendTo(browse);
-			});
-			
-			browse.dialog();
-
+			this.showModalDialog(newLink, callback);
 		},
 
 		/**
