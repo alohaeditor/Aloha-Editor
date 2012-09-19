@@ -11,9 +11,8 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 						'bold', 'strong', 'italic', 'emphasis', '\n',
 						'subscript', 'superscript', 'strikethrough', 'quote'
 					], [
-						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', '\n',
-						'toggleMetaView', 'wailang', 'toggleFormatlessPaste', '\n',
-						'toggleDragDrop'
+						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n',
+						'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
 					], [
 						'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
 						'orderedList', 'unorderedList', 'indentList', 'outdentList'

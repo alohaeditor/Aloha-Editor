@@ -1,5 +1,4 @@
-define(
-//['aloha/ecma5'],
+define(//['aloha/ecma5'],
 ['aloha/ecma5shims', 'jquery'],
 function($_, jQuery) {
 	"use strict";
@@ -82,8 +81,8 @@ function previousNode(node) {
 		}
 		return node;
 	}
-	if (node.parentNode
-	&& node.parentNode.nodeType == $_.Node.ELEMENT_NODE) {
+	if (node.parentNode &&
+		node.parentNode.nodeType == $_.Node.ELEMENT_NODE) {
 		return node.parentNode;
 	}
 	return null;
@@ -6557,20 +6556,15 @@ function justifySelection(alignment, range) {
 ///// Check whether the given element is an end break /////
 //@{
 function isEndBreak(element) {
-	if (!isNamedHtmlElement(element, 'br')) {
-		return false;
-	}
-	return jQuery(element).hasClass('aloha-end-br');
+	return (isNamedHtmlElement(element, 'br')
+		&& element.parentNode.lastChild === element);
 }
 
 //@}
 ///// Create an end break /////
 //@{
 function createEndBreak() {
-	var endBr = document.createElement("br");
-	endBr.setAttribute("class", "aloha-end-br");
-
-	return endBr;
+	return document.createElement("br");
 }
 
 /**

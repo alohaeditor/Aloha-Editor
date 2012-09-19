@@ -7,7 +7,7 @@
  * Version: 1.2.1
  * Build date: 8 October 2011
  */
-define('aloha/rangy-core', [], function() {
+define('aloha/rangy-core', ['jquery'], function(jQuery) {
 var rangy = (function() {
 
 
@@ -1959,6 +1959,14 @@ rangy.createModule("DomUtil", function(api, module) {
         }
 
         var workingNode = dom.getDocument(containerElement).createElement("span");
+
+		// Workaround for HTML5 Shiv's insane violation of
+		// document.createElement(). See Rangy issue 104 and HTML 5 Shiv issue
+		// 64: https://github.com/aFarkas/html5shiv/issues/64
+		if (workingNode.parentNode) {
+			workingNode.parentNode.removeChild(workingNode);
+		}
+
         var comparison, workingComparisonType = isStart ? "StartToStart" : "StartToEnd";
         var previousNode, nextNode, boundaryPosition, boundaryNode;
 
@@ -2901,7 +2909,7 @@ rangy.createModule("DomUtil", function(api, module) {
         selProto.removeAllRanges = function() {
             // Added try/catch as fix for issue #21
             try {
-            
+                
             	var isNativeIE7 = (jQuery.browser.msie && jQuery.browser.version < 8 && (typeof document.documentMode === 'undefined'));
             	if (!isNativeIE7) {
             		this.docSelection.empty();
@@ -2913,24 +2921,12 @@ rangy.createModule("DomUtil", function(api, module) {
 					if (isNativeIE7) {
             			this.docSelection.empty();
             		}
-
-                    // Work around failure to empty a control selection by instead selecting a TextRange and then
-                    // calling empty()
-                    var doc;
-                    if (this.anchorNode) {
-                        doc = dom.getDocument(this.anchorNode);
-                    } else if (this.docSelection.type == CONTROL) {
-                        var controlRange = this.docSelection.createRange();
-                        if (controlRange.length) {
-                            doc = dom.getDocument(controlRange.item(0)).body.createTextRange();
-                        }
-                    }
-                    if (doc) {
-                        var textRange = doc.body.createTextRange();
-                        textRange.select();
-                        this.docSelection.empty();
-                    }
+					
+					// removed workaround of rangy-core implementation
+					// for IE to fix issue with strange selection of
+					// hole body in some selection change cases
                 }
+                
             } catch(ex) {}
             updateEmptySelection(this);
         };
