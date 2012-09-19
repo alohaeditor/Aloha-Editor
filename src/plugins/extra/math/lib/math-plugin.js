@@ -44,7 +44,10 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
             var inChange = false;
 
             var Inserted = [];
-            var savedOffset = -1;
+            var currentEditor = null;
+            var currentLength = -1;
+            var editorToOffset = { };
+            
 
             function convertToConcrete(character, ele, leVal, currentOffset) {
                 for(var i = 0; i < Inserted.length; i++) {
@@ -90,11 +93,13 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
 
                 for(var i = 0; i < Inserted.length; i++) {
                     if(Inserted[i].loc >= offset) {
-                        Inserted[i].loc = Inserted[i].loc + 1;
+                        if(leVal.length < currentLength) {
+                            Inserted[i].loc = Inserted[i].loc - 1;
+                        } else {
+                            Inserted[i].loc = Inserted[i].loc + 1;
+                        }
                     }
                 }
-
-                console.log(evt);
 
                 switch(ch) {
                     case(')'):
@@ -108,10 +113,9 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                         leVal = generateInserted(ele, leVal, offset, ')');
                         break;
                 }
-                console.log(Inserted);
                 MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
                 inChange = false;
-                savedOffset = offset;
+                currentLength = leVal.length;
             }
 
             function onAsciiCharChange(evt) {
@@ -119,6 +123,27 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 var ele = $('#'+evt.currentTarget.id);
                 var leVal = ele.val() || ele.text();
                 MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],leVal]);
+            }
+
+            function enableEditor(editor, length) {
+                if(currentEditor != null && currentEditor[0] != editor[0]) {
+                    disableEditor();
+                }
+                currentEditor = editor;
+                currentLength = length;
+                GENTICS.Utils.Dom.setCursorInto( editor[0] );
+                if(editorToOffset[editor[0].id] != null) {
+                    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], editorToOffset[editor[0].id]);
+                }
+                editor.show();
+            }
+
+            function disableEditor() {
+                if(currentEditor != null) {
+                    editorToOffset[currentEditor[0].id] = window.getSelection().getRangeAt(0).startOffset;
+                    currentEditor.hide();
+                    currentEditor = null;
+                }
             }
 
             function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, initValue, editableObj) {
@@ -135,19 +160,21 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 newMathEditContainer.hide();
                
                 if(initValue == '') {
-                    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { newMathEditContainer.show() }]);
+                    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
+                        enableEditor(newMathEditContainer, 0);
+                    }]);
                 } else {
 
                     if(openDelimiter == '${') {
 
                         MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
-                               newMathEditContainer.show(); 
+                               enableEditor(newMathEditContainer, initValue.length);
                                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],"\\displaystyle{"+initValue+"}"]);
                         }]);
                     } else {
 
                         MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
-                               newMathEditContainer.show(); 
+                               enableEditor(newMathEditContainer, initValue.length);
                                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],initValue]);
                         }]);
                     }
@@ -156,24 +183,41 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 var blurout = function()
                 {
                     Inserted = [];
-                    newMathEditContainer.hide();
+                    disableEditor();
                 };
 
-                var doClick = function() {
-                    Inserted = [];
-                }
+                var editableClickBlurout = function(evt) {
+                    if(currentEditor != null) {
+                        var id = evt.target.id;
+                        if(id == null) {
+                            return;
+                        }
+                        if(id.length > 8) {
+                            if(id.substring(0, 8) == 'eqprefix-') {
+                                return;
+                            }
+                        }
+                        if(id.length > 13) {
+                            if(id.substring(0, 13) == 'edit-eqprefix-') {
+                                return;
+                            }
+                        }
+                        disableEditor();
+                    }
+                };
 
-                $(editableObj).on('click', doClick);
                 $(editableObj).on('blur focusout', blurout);
-                newMathEditContainer.on('focusout blur', blurout);
-                
+                $(editableObj).on('click', editableClickBlurout);
+
+                newMathEditContainer.on('focusout', blurout);
+                newMathEditContainer.on('blur', blurout);
                 
                 newMathContainer.on('click', function()
                 {
-                    GENTICS.Utils.Dom.setCursorInto( newMathEditContainer[0] );
-                    newMathEditContainer.show();
+                    Inserted = [];
+                    enableEditor(newMathEditContainer, newMathEditContainer.val() ? newMathEditContainer.val().length : newMathEditContainer.text().length );
                 });
-                
+
                 cntEq++;
 
             }
@@ -252,6 +296,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                     generateMathContainer('<math>','</math>', onAsciiCharChange, '', editable.obj);
                 });
             });
+
         }
     });
 });
