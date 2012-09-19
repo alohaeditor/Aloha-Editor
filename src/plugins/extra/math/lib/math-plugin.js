@@ -155,6 +155,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                                     
                 var blurout = function()
                 {
+                    Inserted = [];
                     newMathEditContainer.hide();
                 };
 
