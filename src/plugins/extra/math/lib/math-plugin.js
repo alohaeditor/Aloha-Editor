@@ -52,16 +52,19 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 var ele = $('#'+evt.currentTarget.id);
                 var leVal = ele.val() || ele.text();
                 var ch = leVal[offset];
+                console.log(evt.currentTarget.id);
                 if(ch == '{') {
-                    leVal = leVal.slice(0,offset+1)+'}'+leVal.slice(offset+1);
-                    /*
-                    if(ele.val()) {
-                        ele.val(leVal);
+                    //console.log(window.getSelection().getRangeAt(0).startOffset);
+                    var saveOffset = window.getSelection().getRangeAt(0).startOffset;
+                    if(ele.val() == leVal) {
+                        ele.val(leVal.slice(0,offset+1)+'}'+leVal.slice(offset+1));
+                        leVal = ele.val();
                     } else {
-                        ele.text(leVal);
+                        ele.text(leVal.slice(0,offset+1)+'}'+leVal.slice(offset+1));
+                        leVal = ele.text();
                     }
-                    console.log(evt);
-                    */
+                    //console.log(window.getSelection().focusNode.childNodes[0]);
+                    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], saveOffset+1);
                 }
                 MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
                 inChange = false;
