@@ -55,7 +55,7 @@ function( Aloha, $, console) {
 				if ('http://www.w3.org/2000/xmlns/' == attr.namespaceURI) {
 					continue;
 				} else if ('http://www.w3.org/1999/xhtml' == attr.namespaceURI || null == attr.namespaceURI) {
-					name = name.toLowerCase();
+					// Leave the name alone. It will get lowercased later.
 				} else {
 					// Uses CSS namespace syntax
 					name = attr.namespaceURI + '|' + name;
@@ -123,6 +123,7 @@ function( Aloha, $, console) {
 	 *        given element, separated by space. The string will have a leading space.
 	 */
 	function makeAttrString(element) {
+		var nsElement = element.namespaceURI;
 		var attrs = getAttrs(element);
 		var str = "";
 		for (var i = 0; i < attrs.length; i++) {
@@ -141,8 +142,15 @@ function( Aloha, $, console) {
 				name = nsName;
 			}
 			if (namespace == null || namespace == 'http://www.w3.org/1999/xhtml') {
-				name = name.toLowerCase();
-				nsExtra = '';
+				// Check if the element belongs to the HTML namespace.
+				// If not, then don't lowercase the attribute
+				if (nsElement == null || nsElement == 'http://www.w3.org/1999/xhtml') {
+					name = name.toLowerCase();
+					nsExtra = '';
+				} else {
+					// name = name.toLowerCase();
+					nsExtra = '';
+				}
 			} else {
 				name = 'ns' + i + ':' + name;
 				nsExtra = 'xmlns:ns' + i + '="' + namespace + '" ';
