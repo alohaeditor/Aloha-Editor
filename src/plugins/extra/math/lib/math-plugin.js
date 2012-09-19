@@ -76,7 +76,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                     leVal = ele.text();
                 }
                 window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset+1);
-                Inserted.push({ loc: offset+1, character: character });
+                Inserted.push({ start: offset, loc: offset+1, character: character });
                 return leVal;
             }
            
@@ -97,6 +97,13 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                             Inserted[i].loc = Inserted[i].loc - 1;
                         } else {
                             Inserted[i].loc = Inserted[i].loc + 1;
+                        }
+                    }
+                    if(Inserted[i].start >= offset) {
+                        if(leVal.length < currentLength) {
+                            Inserted[i].start = Inserted[i].start - 1;
+                        } else {
+                            Inserted[i].start = Inserted[i].start + 1;
                         }
                     }
                 }
