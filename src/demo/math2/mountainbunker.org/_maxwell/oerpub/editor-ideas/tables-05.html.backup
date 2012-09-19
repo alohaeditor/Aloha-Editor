@@ -4324,7 +4324,584 @@ xmlns:bib="http://bibtexml.sf.net/" id="cnx_main">
     its inputs. We would build such a system, but envisioning the signal's components
     helps understand the signal's structure. Furthermore, you can readily compute a
     linear system's output to an input decomposed as a superposition of simple signals.
-    </p>
+
+
+<!-- Editable Equation -->
+<span style="" aria-readonly="true" role="textbox" class="MathJax"><span class="asciimath" style="display: none;">x+sqrt(1-x^2)</span>
+<span 
+class="actual-math"><nobr><span id="MathJax-Span-5" 
+class="math"><span 
+style="display: 
+inline-block; 
+position: relative; 
+width: 5.393em; height: 0px; font-size: 139%;"><span style="position: absolute; top: -2.18em; left: 0em; clip: rect(1.163em, 1000em, 2.455em, -0.472em);"><span 
+id="MathJax-Span-6" class="mrow"><span id="MathJax-Span-7" class="mrow"><span id="MathJax-Span-8" class="mi"><img style="width: 9px; height: 7px; margin-right: 0.047em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0078.png"></span><span style="padding-left: 0.222em;" id="MathJax-Span-9" class="mo"><img 
+style="width: 12px; height: 12px; vertical-align: -1px; margin-right: 0.053em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/002B.png"></span><span style="padding-left: 0.222em;" id="MathJax-Span-10" 
+class="msqrt"><span style="display: inline-block; position: relative; width: 3.677em; height: 0px;"><span style="position: absolute; top: -2.18em; left: 0.843em; clip: 
+rect(1.273em, 1000em, 2.359em, -0.426em);"><span id="MathJax-Span-11" class="mrow"><span id="MathJax-Span-12" class="mn"><img style="width: 8px; height: 12px; 
+margin-right: 0.07em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/0031.png"></span><span style="padding-left: 0.222em;" 
+id="MathJax-Span-13" class="mo"><img style="width: 12px; height: 1px; vertical-align: 4px; margin-right: 0.08em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png"></span><span style="padding-left: 0.222em;" id="MathJax-Span-14" 
+class="msup"><span style="display: inline-block; position: relative; width: 1.105em; height: 0px;"><span style="position: absolute; top: -2.18em; left: 0em; clip: 
+rect(1.588em, 1000em, 2.359em, -0.472em);"><span id="MathJax-Span-15" class="mi"><img style="width: 9px; height: 7px; margin-right: 0.047em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0078.png"></span>&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.18em;"></span></span><span style="position: absolute; top: -2.469em; left: 0.637em;"><span style="font-size: 70.7%;" id="MathJax-Span-16" class="mn"><img style="width: 
+6px; height: 8px; margin-right: 0.049em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/085/0032.png"></span>&nbsp;<span style="display: 
+inline-block; width: 0px; height: 2.18em;"></span></span></span></span></span>&nbsp;<span style="display: inline-block; width: 0px; height: 2.18em;"></span></span><span 
+style="position: absolute; top: -2.77em; left: 0.843em; clip: rect(1.753em, 1000em, 2.129em, -0.506em);"><span style="display: inline-block; position: relative; width: 
+2.834em; height: 0px;"><span style="position: absolute; top: -2.18em; left: -0.079em;"><img style="width: 12px; height: 1px; vertical-align: 4px; margin-right: 0.08em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png">&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.18em;"></span></span><span style="position: absolute; top: -2.18em; left: 2.171em;"><img style="width: 12px; height: 1px; vertical-align: 4px; margin-right: 0.08em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png">&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.18em;"></span></span><span style="position: absolute; top: -2.18em; left: 0.351em;"><img style="width: 12px; height: 1px; vertical-align: 4px; margin-right: 0.08em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png">&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.18em;"></span></span><span style="position: absolute; top: -2.18em; left: 0.806em;"><img style="width: 12px; height: 1px; vertical-align: 4px; margin-right: 0.08em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png">&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.18em;"></span></span><span style="position: absolute; top: -2.18em; left: 1.261em;"><img style="width: 12px; height: 1px; vertical-align: 4px; margin-right: 0.08em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png">&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.18em;"></span></span><span style="position: absolute; top: -2.18em; left: 1.716em;"><img style="width: 12px; height: 1px; vertical-align: 4px; margin-right: 0.08em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png">&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.18em;"></span></span></span>&nbsp;<span style="display: inline-block; width: 0px; height: 2.18em;"></span></span><span style="position: absolute; top: -2.264em; left: 
+0em; clip: rect(1.247em, 1000em, 2.539em, -0.437em);"><span><img style="width: 15px; height: 18px; vertical-align: -4px; margin-right: -0.019em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/221A.png"></span>&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.18em;"></span></span></span></span></span></span>&nbsp;<span style="display: inline-block; width: 0px; height: 2.18em;"></span></span></span><span style="border-left: 
+0em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.328em; vertical-align: -0.148em;"></span></span></nobr></span>
+<span class="ascii-math-error-message" style="display: none;">ASCIIMath error: syntax error</span>
+<span class="math-error-message" style="display: none;">LaTeX error: sqrt requires initial backslash: \sqrt</span>
+<script 
+id="MathJax-Element-1" 
+type="math/mml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><semantics><mrow>
+    <mi>x</mi>
+    <mo>+</mo>
+    <msqrt>
+      <mn>1</mn>
+      <mo>-</mo>
+      <msup>
+        <mi>x</mi>
+        <mn>2</mn>
+      </msup>
+    </msqrt>
+</mrow></semantics></math></script>
+
+  </p>
+
+<div class="canvas-wrap">
+  <div class="canvas inactive example" id="ex1">
+<div class="canvas-inner">
+<div style="display: none;" class="canvas-buddy-2">
+  <a class="edit-element" href="#" title="Edit options for this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png">
+  </a>
+  <a class="remove-element" href="#" title="Remove this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">
+  </a>
+</div>
+<div style="display: none;" class="canvas-buddy">
+  <a class="drag-element" href="#" title="Drag this element to another location">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png">
+  </a>
+</div>
+<h2 class="example-header"><span class="cnx_label">Example 1</span>
+<strong class="title content-editable" style="display: none;" contentEditable="true">
+  <span class="hint-text">Add a descriptive title (optional)</span>
+</strong>
+</h2><div class="example-contents">
+
+<p class="para content-editable" id="paraex1" contentEditable="true">
+      As an example of signal complexity, we can express the pulse  
+      <span style="" aria-readonly="true" role="textbox" class="MathJax"><span class="asciimath" style="display: none;">p_Delta(t)</span><span 
+class="actual-math"><nobr><span 
+id="MathJax-Span-9" 
+class="math"><span style="display: 
+inline-block; 
+position: 
+relative; width: 2.757em; height: 0px; font-size: 139%;"><span style="position: absolute; top: -2.319em; left: 0em; clip: rect(1.277em, 1000em, 2.86em, -0.579em);"><span 
+id="MathJax-Span-10" class="mrow"><span id="MathJax-Span-11" class="mrow"><span id="MathJax-Span-12" class="mrow"><span id="MathJax-Span-13" class="mrow"><span 
+id="MathJax-Span-14" class="mi"></span><span id="MathJax-Span-15" class="msub"><span style="display: inline-block; position: relative; width: 1.109em; height: 0px;"><span 
+style="position: absolute; top: -2.199em; left: 0em; clip: rect(1.569em, 1000em, 2.576em, -0.579em);"><span id="MathJax-Span-16" class="mi"><img style="width: 10px; 
+height: 10px; vertical-align: -3px; margin-left: -0.04em; margin-right: 0.006em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0070.png"></span>&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.199em;"></span></span><span style="position: absolute; top: -1.966em; left: 0.614em;"><span 
+xmlns="http://www.w3.org/1999/xhtml" class="mi" id="MathJax-Span-30" style="font-size: 70.7%; font-family: MathJax_Math; font-style: italic; ">&#x394;</span><!--
+<span style="font-size: 70.7%;" id="MathJax-Span-17" class="mi"><img style="width: 
+7px; height: 8px; margin-right: -0.041em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Italic/085/003F.png"></span>
+-->&nbsp;<span style="display: 
+inline-block; width: 0px; height: 2.199em;"></span></span></span></span><span id="MathJax-Span-18" class="mi"></span></span><span id="MathJax-Span-19" 
+class="mo"></span><span style="padding-left: 0.278em;" id="MathJax-Span-20" class="mfenced"><span style="vertical-align: -0.005em;" id="MathJax-Span-21" 
+class="mo"><span><img style="width: 7px; height: 20px; vertical-align: -6px; margin-right: 0.037em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0028.png"></span></span><span id="MathJax-Span-22" class="mrow"><span 
+id="MathJax-Span-23" class="mi"><img style="width: 6px; height: 10px; margin-right: 0.032em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0074.png"></span></span><span style="vertical-align: -0.006em;" id="MathJax-Span-24" 
+class="mo"><span><img style="width: 6px; height: 20px; vertical-align: -6px; margin-right: 0.156em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0029.png"></span></span><span style="border-left: 0em solid; display: inline-block; 
+overflow: hidden; width: 0px; height: 0.861em; vertical-align: 0em;"></span><span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; 
+height: 0.861em; vertical-align: 0em;"></span></span></span></span></span>&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.319em;"></span></span></span><span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.7em; vertical-align: 
+-0.502em;"></span></span></nobr></span></span>      as a sum of delayed unit steps.
+</p>
+
+
+
+<div class="canvas-wrap">
+      <div class="equation canvas inactive" id="eq1">
+<div class="canvas-inner">
+<div style="display: none;" class="canvas-buddy-2">
+  <a class="edit-element" href="#" title="Edit options for this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png">
+  </a>
+  <a class="remove-element" href="#" title="Remove this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">
+  </a>
+</div>
+<div style="display: none;" class="canvas-buddy">
+  <a class="drag-element" href="#" title="Drag this element to another location">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png">
+  </a>
+</div>
+<h2 class="equation-header">
+<strong class="title content-editable" style="display: none;" contentEditable="true">
+  <span class="hint-text">Add a descriptive title (optional)</span>
+</strong>
+</h2>
+<div class="equation-contents"> 
+        <div aria-readonly="true" role="textbox" style="width: 100%; position: relative; text-align: center;" class="MathJax_Display"><span style="" 
+class="MathJax"><span class="asciimath" style="display: none;">p_Delta(t) = u(t) - u(t-Delta)</span><span 
+class="actual-math"><nobr><span 
+id="MathJax-Span-25" class="math"><span style="display: inline-block; position: relative; width: 11.688em; height: 0px; font-size: 
+139%;"><span style="position: absolute; top: -2.319em; left: 0em; clip: rect(1.277em, 1000em, 2.86em, -0.579em);"><span id="MathJax-Span-26" class="mrow"><span 
+id="MathJax-Span-27" class="mrow"><span id="MathJax-Span-28" class="mrow"><span id="MathJax-Span-29" class="mrow"><span id="MathJax-Span-30" class="mrow"><span 
+id="MathJax-Span-31" class="mi"></span><span id="MathJax-Span-32" class="msub"><span style="display: inline-block; position: relative; width: 1.109em; height: 0px;"><span 
+style="position: absolute; top: -2.199em; left: 0em; clip: rect(1.569em, 1000em, 2.576em, -0.579em);"><span id="MathJax-Span-33" class="mi"><img style="width: 10px; 
+height: 10px; vertical-align: -3px; margin-left: -0.04em; margin-right: 0.006em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0070.png"></span>&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.199em;"></span></span><span style="position: absolute; top: -1.966em; left: 0.614em;"><span 
+xmlns="http://www.w3.org/1999/xhtml" class="mi" id="MathJax-Span-30" style="font-size: 70.7%; font-family: MathJax_Math; font-style: italic; ">&#x394;</span><!--
+<span style="font-size: 70.7%;" id="MathJax-Span-34" class="mi"><img style="width: 
+7px; height: 8px; margin-right: -0.041em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Italic/085/003F.png"></span>-->&nbsp;<span style="display: 
+inline-block; width: 0px; height: 2.199em;"></span></span></span></span><span id="MathJax-Span-35" class="mi"></span></span><span id="MathJax-Span-36" 
+class="mo"></span><span style="padding-left: 0.278em;" id="MathJax-Span-37" class="mfenced"><span style="vertical-align: -0.005em;" id="MathJax-Span-38" 
+class="mo"><span><img style="width: 7px; height: 20px; vertical-align: -6px; margin-right: 0.037em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0028.png"></span></span><span id="MathJax-Span-39" class="mrow"><span 
+id="MathJax-Span-40" class="mi"><img style="width: 6px; height: 10px; margin-right: 0.032em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0074.png"></span></span><span style="vertical-align: -0.006em;" id="MathJax-Span-41" 
+class="mo"><span><img style="width: 6px; height: 20px; vertical-align: -6px; margin-right: 0.156em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0029.png"></span></span><span style="border-left: 0em solid; display: inline-block; 
+overflow: hidden; width: 0px; height: 0.861em; vertical-align: 0em;"></span><span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; 
+height: 0.861em; vertical-align: 0em;"></span></span></span></span><span style="padding-left: 0.278em;" id="MathJax-Span-42" class="mrow"><span id="MathJax-Span-43" 
+class="mo"><img style="width: 12px; height: 4px; vertical-align: 2px; margin-right: 0.057em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/003D.png"></span></span><span style="padding-left: 0.278em;" id="MathJax-Span-44" 
+class="mrow"><span id="MathJax-Span-45" class="mrow"><span id="MathJax-Span-46" class="mrow"><span id="MathJax-Span-47" class="mrow"><span id="MathJax-Span-48" 
+class="mi"><img style="width: 10px; height: 7px; margin-right: 0.021em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0075.png"></span></span><span id="MathJax-Span-49" class="mo"></span><span 
+style="padding-left: 0.278em;" id="MathJax-Span-50" class="mfenced"><span style="vertical-align: -0.005em;" id="MathJax-Span-51" class="mo"><span><img style="width: 7px; 
+height: 20px; vertical-align: -6px; margin-right: 0.037em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0028.png"></span></span><span 
+id="MathJax-Span-52" class="mrow"><span id="MathJax-Span-53" class="mi"><img style="width: 6px; height: 10px; margin-right: 0.032em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0074.png"></span></span><span style="vertical-align: -0.006em;" id="MathJax-Span-54" 
+class="mo"><span><img style="width: 6px; height: 20px; vertical-align: -6px; margin-right: 0.156em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0029.png"></span></span><span style="border-left: 0em solid; display: inline-block; 
+overflow: hidden; width: 0px; height: 0.861em; vertical-align: 0em;"></span><span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; 
+height: 0.861em; vertical-align: 0em;"></span></span></span><span style="padding-left: 0.222em;" id="MathJax-Span-55" class="mo"><img style="width: 12px; height: 1px; 
+vertical-align: 4px; margin-right: 0.086em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png"></span><span style="padding-left: 
+0.222em;" id="MathJax-Span-56" class="mrow"><span id="MathJax-Span-57" class="mrow"><span id="MathJax-Span-58" class="mi"><img style="width: 10px; height: 7px; 
+margin-right: 0.021em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0075.png"></span></span><span id="MathJax-Span-59" 
+class="mo"></span><span style="padding-left: 0.278em;" id="MathJax-Span-60" class="mfenced"><span style="vertical-align: -0.005em;" id="MathJax-Span-61" 
+class="mo"><span><img style="width: 7px; height: 20px; vertical-align: -6px; margin-right: 0.037em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0028.png"></span></span><span id="MathJax-Span-62" class="mrow"><span 
+id="MathJax-Span-63" class="mrow"><span id="MathJax-Span-64" class="mi"><img style="width: 6px; height: 10px; margin-right: 0.032em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0074.png"></span></span><span style="padding-left: 0.222em;" id="MathJax-Span-65" 
+class="mo"><img style="width: 12px; height: 1px; vertical-align: 4px; margin-right: 0.086em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png"></span><span style="padding-left: 0.222em;" id="MathJax-Span-66" 
+class="mrow"><!--<span id="MathJax-Span-67" class="mi">
+<img style="width: 10px; height: 11px; margin-right: -0.041em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Italic/120/003F.png"></span>
+--><span xmlns="http://www.w3.org/1999/xhtml" class="mi" id="MathJax-Span-30" style="font-family: MathJax_Math; font-style: italic;">&#x394;</span></span></span><span 
+style="vertical-align: -0.006em;" id="MathJax-Span-68" 
+class="mo"><span><img style="width: 6px; height: 20px; vertical-align: -6px; margin-right: 0.156em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0029.png"></span></span><span style="border-left: 0em solid; display: inline-block; 
+overflow: hidden; width: 0px; height: 0.861em; vertical-align: 0em;"></span><span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; 
+height: 0.861em; vertical-align: 0em;"></span></span></span></span></span></span></span>&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.319em;"></span></span></span><span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.7em; vertical-align: 
+-0.502em;"></span></span></nobr></span></span></div>
+      </div><span class="equation-number">(1)</span></div>
+</div>
+</div>
+
+      Thus, the pulse is a more complex signal than the step. Be that as it may,
+      the pulse is very useful to us.
+    <p></p></div>
+</div>
+</div>
+</div>
+
+
+<div class="canvas-wrap">
+  <div class="canvas inactive exercise" id="swsuper">
+<div class="canvas-inner">
+<div style="display: none;" class="canvas-buddy-2">
+  <a class="edit-element" href="#" title="Edit options for this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png" style="">
+  </a>
+  <a class="remove-element" href="#" title="Remove this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">
+  </a>
+</div>
+<div style="display: none;" class="canvas-buddy">
+  <a class="drag-element" href="#" title="Drag this element to another location">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png">
+  </a>
+</div>
+<h2 class="exercise-header"><span class="cnx_label">Exercise 1</span>
+<strong class="title content-editable" style="display: none;" contentEditable="true">
+  <span class="hint-text">Add a descriptive title (optional)</span>
+</strong>
+</h2><div class="exercise-contents"><div class="problem"><div class="problem-contents">
+
+      <p class="para content-editable" id="swsupera" contentEditable="true">
+        Express a square wave having period   
+        <span style="" aria-readonly="true" role="textbox" class="MathJax"><span class="asciimath" style="display: none;">T</span><span 
+class="actual-math"><nobr><span 
+id="MathJax-Span-69" class="math"><span style="display: inline-block; position: 
+relative; width: 0.599em; height: 0px; font-size: 139%;"><span style="position: absolute; top: -2.199em; left: 0em; clip: rect(1.328em, 1000em, 2.379em, -0.518em);"><span 
+id="MathJax-Span-70" class="mrow"><span id="MathJax-Span-71" class="mrow"><span id="MathJax-Span-72" class="mrow"><span id="MathJax-Span-73" class="mi"><img style="width: 
+12px; height: 11px; margin-right: -0.123em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0054.png"></span></span></span></span>&nbsp;<span style="display: inline-block; width: 0px; 
+height: 2.199em;"></span></span></span><span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; height: 0.96em; vertical-align: 
+0em;"></span></span></nobr></span></span> and amplitude
+
+<span style="" aria-readonly="true" role="textbox" class="MathJax">
+    <span class="asciimath" style="display: none;">A</span>
+    <span class="actual-math">
+        <nobr>
+            <span id="MathJax-Span-74" class="math">
+                <span style="display: inline-block; position: relative; width: 0.779em; height: 0px; font-size: 139%;">
+                    <span style="position: absolute; top: -2.199em; left: 0em; clip: rect(1.288em, 1000em, 2.379em, -0.504em);">
+                        <span id="MathJax-Span-75" class="mrow">
+                            <span id="MathJax-Span-76" class="mrow">
+                                <span id="MathJax-Span-77" class="mrow">
+                                    <span id="MathJax-Span-78" class="mi">
+                                        <img style="width: 13px; height: 11px; margin-right: 0.023em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0041.png">
+                                    </span>
+                                </span>
+                            </span>
+                        </span>&nbsp;
+                    <span style="display: inline-block; width: 0px; height: 2.199em;">
+                </span>
+            </span>
+        </span>
+        <span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.016em; vertical-align: 0em;">
+        </span>
+    </span>
+</nobr>
+</span>
+</span>
+        as a superposition of delayed and amplitude-scaled pulses.
+      </p>
+
+    </div></div>
+<div class="canvas-wrap">
+<div class="solution canvas inactive" style="display: block;">
+<div class="canvas-inner">
+<div style="display: none;" class="canvas-buddy-2">
+  <a class="edit-element" href="#" title="Edit options for this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png" style="">
+  </a>
+  <a class="remove-element" href="#" title="Remove this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">
+  </a>
+</div>
+<div class="canvas-buddy nodrag" style="cursor: auto; display: none;">
+  <a class="drag-element" href="#" title="You can only drag this element within exercises!">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png">
+  </a>
+</div>
+<h3 class="solution-header"><span class="cnx_label">Solution</span>
+<!--
+<strong class="title content-editable" style="display: none;" contentEditable="true">
+  <span class="hint-text">Add a descriptive title (optional)</span>
+</strong>
+-->
+</h3><div class="solution-contents">
+
+<p class="para content-editable" id="swsuperb" contentEditable="true">
+        <span style="" aria-readonly="true" role="textbox" class="MathJax"><span class="asciimath" style="display: none;">sq(t) sum_(n=-infty)^infty 
+(-1)^n A p_{p/2}{t-n{T/2}}</span><span 
+class="actual-math"><nobr><span 
+id="MathJax-Span-79" 
+class="math"><span 
+style="display: 
+inline-block; position: 
+relative; width: 16.843em; height: 0px; font-size: 139%;"><span style="position: absolute; top: -2.858em; left: 0em; clip: rect(1.143em, 1000em, 3.819em, 
+-0.507em);"><span id="MathJax-Span-80" class="mrow"><span id="MathJax-Span-81" class="mrow"><span id="MathJax-Span-82" class="mrow"><span id="MathJax-Span-83" 
+class="mrow"><span id="MathJax-Span-84" class="mrow"><span id="MathJax-Span-85" class="mi"><img style="width: 6px; height: 8px; margin-right: 0.036em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/0073.png"><img style="width: 9px; height: 12px; vertical-align: -4px; margin-right: 
+-0.007em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/0071.png"></span></span><span id="MathJax-Span-86" class="mo"></span><span 
+style="padding-left: 0.278em;" id="MathJax-Span-87" class="mfenced"><span style="vertical-align: -0.005em;" id="MathJax-Span-88" class="mo"><span><img style="width: 7px; 
+height: 20px; vertical-align: -6px; margin-right: 0.037em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0028.png"></span></span><span 
+id="MathJax-Span-89" class="mrow"><span id="MathJax-Span-90" class="mi"><img style="width: 6px; height: 10px; margin-right: 0.032em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0074.png"></span></span><span style="vertical-align: -0.006em;" id="MathJax-Span-91" 
+class="mo"><span><img style="width: 6px; height: 20px; vertical-align: -6px; margin-right: 0.156em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0029.png"></span></span><span style="border-left: 0em solid; display: inline-block; 
+overflow: hidden; width: 0px; height: 0.861em; vertical-align: 0em;"></span><span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; 
+height: 0.861em; vertical-align: 0em;"></span></span></span>
+<!--
+<span style="padding-left: 0.278em;" id="MathJax-Span-92" class="mo"><img style="width: 12px; height: 4px; 
+vertical-align: 2px; margin-right: 0.057em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/003D.png"></span>
+-->
+<span xmlns="http://www.w3.org/1999/xhtml" class="mo" id="MathJax-Span-214" style="font-family: MathJax_Size1; font-size: 1.3em; vertical-align: 0em;">&#x3a3;</span>
+<span 
+id="MathJax-Span-93" 
+class="mrow"><span id="MathJax-Span-94" class="munderover"><span style="display: inline-block; position: relative; width: 2.038em; height: 0px;"><span style="position: 
+absolute; top: -2.199em; left: 0.779em; clip: rect(1.3em, 1000em, 2.378em, -0.483em);"><!--
+<span id="MathJax-Span-95" class="mo"><img style="width: 7px; height: 12px; 
+margin-right: 0.057em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/003F.png"></span>
+--><!--<span xmlns="http://www.w3.org/1999/xhtml" class="mi" id="MathJax-Span-216" style="font-family: MathJax_Main; ">&#x221e;</span>&nbsp;<span style="display: 
+inline-block; width: 
+0px; height: 2.199em;"></span>--></span><span style="position: absolute; top: -1.517em; left: 0em; clip: rect(1.503em, 1000em, 2.479em, -0.539em);"><span 
+id="MathJax-Span-96" class="mrow"><span style="font-size: 70.7%;" id="MathJax-Span-97" class="mi"><span id="MathJax-Span-98" class="mrow"><span style="font-size: 70.7%;" 
+id="MathJax-Span-99" class="mi"><img style="width: 7px; height: 5px; margin-right: 0.02em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/085/006E.png"></span></span></span><span style="font-size: 70.7%;" id="MathJax-Span-100" 
+class="mi"><img style="width: 10px; height: 3px; vertical-align: 1px; margin-right: -0.009em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Italic/085/003D.png"></span><span id="MathJax-Span-101" class="mrow"><span style="font-size: 70.7%;" 
+id="MathJax-Span-102" class="mo"><img style="width: 9px; height: 1px; vertical-align: 2px; margin-right: 0.085em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/085/2212.png"></span><!--
+<span style="font-size: 70.7%;" id="MathJax-Span-103" class="mi"><img 
+style="width: 7px; height: 8px; margin-right: -0.041em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Italic/085/003F.png"></span>
+--><span xmlns="http://www.w3.org/1999/xhtml" class="mi" id="MathJax-Span-216" style="font-size: 70.7%; font-family: MathJax_Main;">&#x221e;</span></span></span>&nbsp;<span 
+style="display: inline-block; width: 0px; 
+height: 2.199em;"></span></span><span style="position: absolute; top: -3.118em; left: 0.809em; clip: rect(1.403em, 1000em, 2.379em, -0.399em);"><span 
+id="MathJax-Span-104" class="mrow"><!--
+<span style="font-size: 70.7%;" id="MathJax-Span-105" class="mi"><img style="width: 7px; height: 8px; margin-right: -0.041em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Italic/085/003F.png"></span>
+--><span xmlns="http://www.w3.org/1999/xhtml" class="mi" id="MathJax-Span-216" style="font-size: 70.7%; font-family: MathJax_Main; ">&#x221e;</span></span>&nbsp;<span 
+style="display: inline-block; width: 0px; height: 
+2.199em;"></span></span></span></span><span id="MathJax-Span-106" class="mrow"><span id="MathJax-Span-107" class="msup"><span style="display: inline-block; position: 
+relative; width: 2.907em; height: 0px;"><span style="position: absolute; top: -2.319em; left: 0em; clip: rect(1.277em, 1000em, 2.86em, -0.385em);"><span 
+id="MathJax-Span-108" class="mfenced"><span style="vertical-align: -0.005em;" id="MathJax-Span-109" class="mo"><span><img style="width: 7px; height: 20px; vertical-align: 
+-6px; margin-right: 0.037em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0028.png"></span></span><span id="MathJax-Span-110" 
+class="mrow"><span id="MathJax-Span-111" class="mo"><img style="width: 12px; height: 1px; vertical-align: 4px; margin-right: 0.086em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png"></span><span id="MathJax-Span-112" class="mn"><img style="width: 8px; height: 
+12px; margin-right: 0.074em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/0031.png"></span></span><span style="vertical-align: 
+-0.006em;" id="MathJax-Span-113" class="mo"><span><img style="width: 6px; height: 20px; vertical-align: -6px; margin-right: 0.156em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size1/Regular/120/0029.png"></span></span><span style="border-left: 0em solid; display: inline-block; 
+overflow: hidden; width: 0px; height: 0.861em; vertical-align: 0em;"></span><span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; 
+height: 0.861em; vertical-align: 0em;"></span></span>&nbsp;<span style="display: inline-block; width: 0px; height: 2.319em;"></span></span><span style="position: 
+absolute; top: -2.787em; left: 2.413em;"><span id="MathJax-Span-114" class="mrow"><span style="font-size: 70.7%;" id="MathJax-Span-115" class="mi"><img style="width: 7px; 
+height: 5px; margin-right: 0.02em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/085/006E.png"></span></span>&nbsp;<span style="display: 
+inline-block; width: 0px; height: 2.199em;"></span></span></span></span><span id="MathJax-Span-116" class="mo"></span><span style="padding-left: 0.278em;" 
+id="MathJax-Span-117" class="mrow"><span id="MathJax-Span-118" class="mi"><img style="width: 13px; height: 11px; margin-right: 0.023em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0041.png"></span></span><span id="MathJax-Span-119" class="mo"></span><span 
+style="padding-left: 0.278em;" id="MathJax-Span-120" class="mrow"><span id="MathJax-Span-121" class="mi"></span><span id="MathJax-Span-122" class="msub"><span 
+style="display: inline-block; position: relative; width: 2.008em; height: 0px;"><span style="position: absolute; top: -2.199em; left: 0em; clip: rect(1.569em, 1000em, 
+2.576em, -0.579em);"><span id="MathJax-Span-123" class="mi"><img style="width: 10px; height: 10px; vertical-align: -3px; margin-left: -0.04em; margin-right: 0.006em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0070.png"></span>&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.199em;"></span></span><span style="position: absolute; top: -1.966em; left: 0.614em;"><span style="font-size: 70.7%;" id="MathJax-Span-124" class="mi"><img 
+style="width: 8px; height: 8px; margin-right: 0.038em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/085/0054.png"><img style="width: 6px; 
+height: 11px; vertical-align: -3px; margin-right: 0.056em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/085/002F.png"><img style="width: 
+6px; height: 8px; margin-right: 0.052em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/085/0032.png"></span>&nbsp;<span style="display: 
+inline-block; width: 0px; height: 2.199em;"></span></span></span></span><span id="MathJax-Span-125" class="mi"></span></span><span id="MathJax-Span-126" 
+class="mo"></span><span style="padding-left: 0.278em;" id="MathJax-Span-127" class="mrow"><span style="vertical-align: -0.005em;" id="MathJax-Span-128" 
+class="mo"><span><img style="width: 10px; height: 30px; vertical-align: -11px; margin-right: 0.037em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size2/Regular/120/0028.png"></span></span><span id="MathJax-Span-129" class="mrow"><span 
+id="MathJax-Span-130" class="mi"><img style="width: 6px; height: 10px; margin-right: 0.032em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/0074.png"></span></span><span style="padding-left: 0.222em;" id="MathJax-Span-131" 
+class="mo"><img style="width: 12px; height: 1px; vertical-align: 4px; margin-right: 0.086em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/120/2212.png"></span><span style="padding-left: 0.222em;" id="MathJax-Span-132" 
+class="mrow"><span id="MathJax-Span-133" class="mrow"><span id="MathJax-Span-134" class="mi"><img style="width: 10px; height: 7px; margin-right: 0.02em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/120/006E.png"></span></span><span id="MathJax-Span-135" class="mo"></span><span 
+style="padding-left: 0.398em; padding-right: 0.12em;" id="MathJax-Span-136" class="mfrac"><span style="display: inline-block; position: relative; width: 0.6em; height: 
+0px;"><span style="position: absolute; top: -2.621em; left: 50%; clip: rect(1.531em, 1000em, 2.379em, -0.524em); margin-left: -0.24em;"><span id="MathJax-Span-137" 
+class="mrow"><span style="font-size: 70.7%;" id="MathJax-Span-138" class="mi"><img style="width: 9px; height: 8px; margin-right: -0.123em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Math/Italic/085/0054.png"></span></span>&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.199em;"></span></span><span style="position: absolute; top: -1.797em; left: 50%; clip: rect(1.54em, 1000em, 2.379em, -0.504em); margin-left: -0.21em;"><span 
+style="font-size: 70.7%;" id="MathJax-Span-139" class="mn"><img style="width: 6px; height: 8px; margin-right: 0.052em;" 
+src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Main/Regular/085/0032.png"></span>&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.199em;"></span></span><span style="position: absolute; top: -2.419em; left: 0em; clip: rect(1.944em, 1000em, 2.379em, -0.539em);"><span style="border-left: 0.6em solid; 
+display: inline-block; overflow: hidden; width: 0px; height: 0.075em; vertical-align: 0em;"></span>&nbsp;<span style="display: inline-block; width: 0px; height: 
+2.199em;"></span></span></span></span></span><span style="vertical-align: -0.006em;" id="MathJax-Span-140" class="mo"><span><img style="width: 7px; height: 30px; 
+vertical-align: -11px; margin-right: 0.184em;" src="http://cnx.org/++resource++mathjax/fonts/HTML-CSS/TeX/png/Size2/Regular/120/0029.png"></span></span><span 
+style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.167em; vertical-align: 0em;"></span><span style="border-left: 0em solid; 
+display: inline-block; overflow: hidden; width: 0px; height: 1.167em; vertical-align: 0em;"></span></span></span></span></span></span></span>&nbsp;<span style="display: 
+inline-block; width: 0px; height: 2.858em;"></span></span></span><span style="border-left: 0em solid; display: inline-block; overflow: hidden; width: 0px; height: 
+3.221em; vertical-align: -1.086em;"></span></span></nobr></span></span>
+      </p>
+
+
+<div class="canvas-wrap">
+  <div class="canvas inactive rule" id="rulephth">
+<div class="canvas-inner">
+<div style="display: none;" class="canvas-buddy-2">
+  <a class="edit-element" href="#" title="Edit options for this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png">
+  </a>
+  <a class="remove-element" href="#" title="Remove this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">
+  </a>
+</div>
+<div style="display: none;" class="canvas-buddy">
+  <a class="drag-element" href="#" title="Drag this element to another location">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png">
+  </a>
+</div>
+
+
+<h3 class="rule-header"><span class="cnx_label">Theorem 1: </span>
+<strong class="title content-editable" contentEditable="true">Pythagorean 
+Theorem</strong></h3><div class="rule-contents"><div class="statement"><p class="para content-editable" id="st1" contentEditable="true">On a right triangle, the sum of 
+the
+            squares of the sides equals the square of the hypotenus.
+          </p></div>
+
+<div class="canvas-wrap">
+  <div class="canvas inactive proof">
+<div class="canvas-inner">
+<div style="display: none;" class="canvas-buddy-2">
+  <a class="edit-element" href="#" title="Edit options for this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png">
+  </a>
+  <a class="remove-element" href="#" title="Remove this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">
+  </a>
+</div>
+<div style="display: none;" class="canvas-buddy nodrag">
+  <a class="drag-element" href="#" title="You can only drag this element to another rule!">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png">
+  </a>
+</div>
+
+
+<h4 class="proof-header"><span class="cnx_label">Proof</span>
+<strong class="title content-editable" style="display: none;" contentEditable="true">
+  <span class="hint-text">Add a descriptive title (optional)</span>
+</strong>
+</h4>
+
+<p class="para content-editable" id="phthexp1" contentEditable="true">
+            Take a right triangle whose sides are of length 3, 4, and 5.
+            In this case the sum of the square of the two shorter sides is
+            9+16=25.  The square of the hypotenus is 25.  So the theorem holds.
+          </p>
+
+<div class="canvas-wrap">
+  <div class="canvas inactive">
+<div class="canvas-inner">
+<div style="display: none;" class="canvas-buddy-2">
+  <a class="edit-element" href="#" title="Edit options for this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png">
+  </a>
+  <a class="remove-element" href="#" title="Remove this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">
+  </a>
+</div>
+<div style="display: none;" class="canvas-buddy">
+  <a class="drag-element" href="#" title="Drag this element to another location">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png">
+  </a>
+</div>
+
+<h4 class="note-header"><span class="cnx_label">note: </span></h4><div class="note-contents content-editable" contentEditable="true">
+
+The Pythagorean Theorem does not apply to <dfn class="term">acute</dfn> and <dfn class="term">obtuse</dfn> triangles.  It can only be applied to right triangles.  
+However, a corollary of the Pythagorean theorem's converse is a simple means of determining whether a triangle is right, obtuse, or acute. 
+
+<div class="canvas-wrap">
+  <div class="canvas inactive example" id="ex2">
+<div class="canvas-inner">
+<div style="display: none;" class="canvas-buddy-2">
+  <a class="edit-element" href="#" title="Edit options for this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png">
+  </a>
+  <a class="remove-element" href="#" title="Remove this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">
+  </a>
+</div>
+<div style="display: none;" class="canvas-buddy">
+  <a class="drag-element" href="#" title="Drag this element to another location">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png">
+  </a>
+</div>
+<h2 class="example-header"><span class="cnx_label" contentEditable="false">Example 2</span>
+<strong class="title content-editable" style="display: none;" contentEditable="true">
+  <span class="hint-text">Add a descriptive title (optional)</span>
+</strong>
+</h2><div class="example-contents">
+
+<div class="canvas-wrap">
+      <div class="equation canvas inactive" id="eq2">
+<div class="canvas-inner">
+<div style="display: none;" class="canvas-buddy-2">
+  <a class="edit-element" href="#" title="Edit options for this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png">
+  </a>
+  <a class="remove-element" href="#" title="Remove this element">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">
+  </a>
+</div>
+<div style="display: none;" class="canvas-buddy">
+  <a class="drag-element" href="#" title="Drag this element to another location">
+    <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png">
+  </a>
+</div>
+<h2 class="equation-header">
+<strong class="title content-editable" style="display: none;" contentEditable="true">
+  <span class="hint-text">Add a descriptive title (optional)</span>
+</strong>
+</h2>
+<div class="equation-contents">
+<div class="content-editable" contentEditable="true">
+5<sup>2</sup> + 7<sup>2</sup> &lt; 9<sup>2</sup>
+</div>
+<span class="equation-number">(2)</span>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div></div>
+
+</div></div>
+
+</div></div>
+
+</div></div>
+
+</div></div>
+
+</div></div>
+
+<div class="solution-toggles" style="display: none;"><a href="#" onclick="toggleSolution('swsuper',1); return false;"><span class="solution-toggle">
+          [
+          Show Solution
+          ]
+        </span><span class="solution-toggle" style="display: none;">
+          [ 
+          Hide Solution
+          ]
+        </span></a></div></div>
+</div>
+</div>
+
+
+<div class="add-solution-2">
+  <a href="#asdf">Click to add another solution (optional)</a>
+</div>
+
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
 
   <p class="para content-editable" id="para2" contentEditable="true">
     Because the sinusoid is a superposition of two complex exponentials, the 
