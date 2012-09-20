@@ -222,11 +222,11 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         }
         that = this;
         this.setAction(this.action);
-        this.setAccelContainer($('body'));
-        this.el.on('mouseenter', function() {
+        this.setAccelContainer($(document));
+        this.el.on('mouseenter', function(evt) {
           return that.setSelected(true);
         });
-        this.el.on('mouseout', function() {
+        this.el.on('mouseleave', function(evt) {
           return that.setSelected(false);
         });
         this._addEvents();

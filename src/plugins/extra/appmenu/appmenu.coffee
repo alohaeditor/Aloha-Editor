@@ -167,11 +167,11 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       that = @
       
       @setAction(@action)
-      @setAccelContainer($('body'))
+      @setAccelContainer($(document))
   
       # Add hover/selection
-      @el.on 'mouseenter', () -> that.setSelected(true)
-      @el.on 'mouseout',   () -> that.setSelected(false)
+      @el.on 'mouseenter', (evt) -> that.setSelected(true)
+      @el.on 'mouseleave', (evt) -> that.setSelected(false)
   
       @_addEvents()
   
