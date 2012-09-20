@@ -39,14 +39,136 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
             document.getElementsByTagName("head")[0].appendChild(script0);
             document.getElementsByTagName("head")[0].appendChild(script);
             
-            // -----
-            
-            //new MathMenu();
-            
-            // clicking eq
-            function editMath(evt)
-            {
-                self._mathEditInput.data('current-edit', this).show().val($(this).data('equation'));
+
+            function convertToConcrete(character, ele, leVal, currentOffset) {
+                for(var i = 0; i < Inserted.length; i++) {
+                    if(Inserted[i].loc == currentOffset+1 && Inserted[i].character == character) {
+                        Inserted.splice(i, 1);
+                        if(ele.val() == leVal) {
+                            ele.val(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
+                            leVal = ele.val();
+                        } else {
+                            ele.text(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
+                            leVal = ele.text();
+                        }
+                        window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], currentOffset+1);
+                        break;
+                    }
+                }
+                return leVal;
+            }
+
+            function generateInserted(ele, leVal, offset, character) {
+                if(ele.val() == leVal) {
+                    ele.val(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
+                    leVal = ele.val();
+                } else {
+                    ele.text(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
+                    leVal = ele.text();
+                }
+                window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset+1);
+                Inserted.push({ start: offset, loc: offset+1, character: character });
+                return leVal;
+            }
+           
+            function onTexCharChange(evt) {
+                if(inChange) return;
+                inChange = true;
+
+                console.log(evt);
+
+                var range = window.getSelection().getRangeAt(0);
+                var offset = range.startOffset;
+                console.log(Inserted);
+                var eqId = evt.currentTarget.id.substring(5);
+                var ele = $('#'+evt.currentTarget.id);
+                var leVal = ele.val() || ele.text();
+                console.log(currentLength+ " "+leVal.length);
+                var ch = leVal[offset];
+                var diff = leVal.length - currentLength;
+
+                var didRemove = false;
+                for(var i = 0; i < Inserted.length; i++) {
+
+                    // if this was a delete or backspace that removed a character
+                    if(leVal.length < currentLength) {
+                        // if this delete was on the opening character of a virtual closing character and there is no content in between
+                        if(offset == Inserted[i].start && Inserted[i].loc == Inserted[i].start + 1) {
+                            diff = diff - 1;
+
+                           if(ele.val() == leVal) {
+                                ele.val(leVal.slice(0,offset)+leVal.slice(offset+1));
+                                leVal = ele.val();
+                            } else {
+                                ele.text(leVal.slice(0,offset)+leVal.slice(offset+1));
+                                leVal = ele.text();
+                            }
+                            Inserted.splice(i, 1);
+                            window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset);
+                            // this can only occur once
+                            didRemove = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(!didRemove) {
+                    var i = 0;
+                    while(i < Inserted.length) {
+                        if(offset > Inserted[i].loc || offset <= Inserted[i].start) {
+                            Inserted.splice(i, 1);
+                        } else {
+                            i = i + 1;
+                        }
+                    }
+                }
+
+                for(var i = 0; i < Inserted.length; i++) {
+
+                    if(Inserted[i].start >= offset) {
+                        Inserted[i].start = Inserted[i].start + diff;
+                    }
+
+                    if(Inserted[i].loc >= offset) {
+                        Inserted[i].loc = Inserted[i].loc + diff;
+                    }
+                }
+
+                switch(ch) {
+                    case(')'):
+                    case('}'):
+                        leVal = convertToConcrete(ch, ele, leVal, offset);
+                        break;
+                    case('{'):
+                        leVal = generateInserted(ele, leVal, offset, '}');
+                        break;
+                    case('('):
+                        leVal = generateInserted(ele, leVal, offset, ')');
+                        break;
+                }
+                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                inChange = false;
+                currentLength = leVal.length;
+            }
+
+            function onAsciiCharChange(evt) {
+                var eqId = evt.currentTarget.id.substring(5);
+                var ele = $('#'+evt.currentTarget.id);
+                var leVal = ele.val() || ele.text();
+                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],leVal]);
+            }
+
+            function enableEditor(editor, length) {
+                if(currentEditor != null && currentEditor[0] != editor[0]) {
+                    disableEditor();
+                }
+                currentEditor = editor;
+                currentLength = length;
+                GENTICS.Utils.Dom.setCursorInto( editor[0] );
+                if(editorToOffset[editor[0].id] != null) {
+                    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], editorToOffset[editor[0].id]);
+                }
+                editor.show();
             }
             
             // changing eq in input
