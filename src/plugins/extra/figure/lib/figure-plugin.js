@@ -91,7 +91,7 @@
             var caption, captionRow, dialog, editCaption, editImage, editTitle, figure, imageRow, images, title, titleRow;
             dialog = $('<div class="x-figure"></div>');
             titleRow = $('<div class="title area"><span class="label">Title</span><span class="value"/></div>').appendTo(dialog);
-            imageRow = $('<div class="image area"><span class="label">Image (drop a file to change)</span><span class="value"/></div>').appendTo(dialog);
+            imageRow = $('<div class="image area"><span class="label">Image (drop to change)</span><span class="value"/></div>').appendTo(dialog);
             captionRow = $('<div class="caption area"><span class="label">caption</span><span class="value"/></div>').appendTo(dialog);
             figure = $(this);
             title = figure.children('.title');
@@ -105,6 +105,11 @@
             editCaption.append(caption.contents());
             dialog.find('.value').aloha();
             return dialog.dialog({
+              buttons: {
+                'Close': function() {
+                  return dialog.dialog('close');
+                }
+              },
               close: function() {
                 var appender;
                 dialog.find('.value').mahalo();
