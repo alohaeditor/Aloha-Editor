@@ -94,24 +94,38 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 var ch = leVal[offset];
                 var diff = 1;
 
+                var didRemove = false;
                 for(var i = 0; i < Inserted.length; i++) {
 
-                    if(Inserted[i].start >= offset) {
-                        if(leVal.length < currentLength) {
-                            if(offset == Inserted[i].start && Inserted[i].loc == Inserted[i].start + 1) {
-                                diff = diff + 1;
+                    // if this was a delete or backspace that removed a character
+                    if(leVal.length < currentLength) {
+                        // if this delete was on the opening character of a virtual closing character and there is no content in between
+                        if(offset == Inserted[i].start && Inserted[i].loc == Inserted[i].start + 1) {
+                            diff = diff + 1;
 
-                               if(ele.val() == leVal) {
-                                    ele.val(leVal.slice(0,offset)+leVal.slice(offset+1));
-                                    leVal = ele.val();
-                                } else {
-                                    ele.text(leVal.slice(0,offset)+leVal.slice(offset+1));
-                                    leVal = ele.text();
-                                }
-                                Inserted.splice(i, 1);
-                                window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset);
-                                break;
+                           if(ele.val() == leVal) {
+                                ele.val(leVal.slice(0,offset)+leVal.slice(offset+1));
+                                leVal = ele.val();
+                            } else {
+                                ele.text(leVal.slice(0,offset)+leVal.slice(offset+1));
+                                leVal = ele.text();
                             }
+                            Inserted.splice(i, 1);
+                            window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset);
+                            // this can only occur once
+                            didRemove = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(!didRemove) {
+                    var i = 0;
+                    while(i < Inserted.length) {
+                        if(offset > Inserted[i].loc || offset <= Inserted[i].start) {
+                            Inserted.splice(i, 1);
+                        } else {
+                            i = i + 1;
                         }
                     }
                 }
