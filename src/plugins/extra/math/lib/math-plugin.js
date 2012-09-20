@@ -80,19 +80,21 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 return leVal;
             }
            
-            function onTexCharChange(evt, arg) {
+            function onTexCharChange(evt) {
                 if(inChange) return;
                 inChange = true;
+
+                console.log(evt);
 
                 var range = window.getSelection().getRangeAt(0);
                 var offset = range.startOffset;
                 console.log(Inserted);
-                console.log(range.startOffset+" "+range.endOffset);
                 var eqId = evt.currentTarget.id.substring(5);
                 var ele = $('#'+evt.currentTarget.id);
                 var leVal = ele.val() || ele.text();
+                console.log(currentLength+ " "+leVal.length);
                 var ch = leVal[offset];
-                var diff = 1;
+                var diff = leVal.length - currentLength;
 
                 var didRemove = false;
                 for(var i = 0; i < Inserted.length; i++) {
@@ -101,7 +103,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                     if(leVal.length < currentLength) {
                         // if this delete was on the opening character of a virtual closing character and there is no content in between
                         if(offset == Inserted[i].start && Inserted[i].loc == Inserted[i].start + 1) {
-                            diff = diff + 1;
+                            diff = diff - 1;
 
                            if(ele.val() == leVal) {
                                 ele.val(leVal.slice(0,offset)+leVal.slice(offset+1));
@@ -133,19 +135,11 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 for(var i = 0; i < Inserted.length; i++) {
 
                     if(Inserted[i].start >= offset) {
-                        if(leVal.length < currentLength) {
-                            Inserted[i].start = Inserted[i].start - diff;
-                        } else {
-                            Inserted[i].start = Inserted[i].start + diff;
-                        }
+                        Inserted[i].start = Inserted[i].start + diff;
                     }
 
                     if(Inserted[i].loc >= offset) {
-                        if(leVal.length < currentLength) {
-                            Inserted[i].loc = Inserted[i].loc - diff;
-                        } else {
-                            Inserted[i].loc = Inserted[i].loc + diff;
-                        }
+                        Inserted[i].loc = Inserted[i].loc + diff;
                     }
                 }
 
