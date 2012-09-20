@@ -70,7 +70,7 @@ define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 
         $figures.on 'click', () ->
           dialog = $('<div class="x-figure"></div>')
           titleRow = $('<div class="title area"><span class="label">Title</span><span class="value"/></div>').appendTo dialog
-          imageRow = $('<div class="image area"><span class="label">Image (drop a file to change)</span><span class="value"/></div>').appendTo dialog
+          imageRow = $('<div class="image area"><span class="label">Image (drop to change)</span><span class="value"/></div>').appendTo dialog
           captionRow = $('<div class="caption area"><span class="label">caption</span><span class="value"/></div>').appendTo dialog
           
           figure = $(@)
@@ -90,6 +90,7 @@ define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 
           dialog.find('.value').aloha()
           
           dialog.dialog
+            buttons: { 'Close': () -> dialog.dialog('close') }
             close: () ->
               dialog.find('.value').mahalo()
               figure.contents().remove()
