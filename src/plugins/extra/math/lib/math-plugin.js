@@ -86,24 +86,51 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
 
                 var range = window.getSelection().getRangeAt(0);
                 var offset = range.startOffset;
+                console.log(Inserted);
+                console.log(range.startOffset+" "+range.endOffset);
                 var eqId = evt.currentTarget.id.substring(5);
                 var ele = $('#'+evt.currentTarget.id);
                 var leVal = ele.val() || ele.text();
                 var ch = leVal[offset];
+                var diff = 1;
 
                 for(var i = 0; i < Inserted.length; i++) {
-                    if(Inserted[i].loc >= offset) {
-                        if(leVal.length < currentLength) {
-                            Inserted[i].loc = Inserted[i].loc - 1;
-                        } else {
-                            Inserted[i].loc = Inserted[i].loc + 1;
-                        }
-                    }
+
                     if(Inserted[i].start >= offset) {
                         if(leVal.length < currentLength) {
-                            Inserted[i].start = Inserted[i].start - 1;
+                            if(offset == Inserted[i].start && Inserted[i].loc == Inserted[i].start + 1) {
+                                diff = diff + 1;
+
+                               if(ele.val() == leVal) {
+                                    ele.val(leVal.slice(0,offset)+leVal.slice(offset+1));
+                                    leVal = ele.val();
+                                } else {
+                                    ele.text(leVal.slice(0,offset)+leVal.slice(offset+1));
+                                    leVal = ele.text();
+                                }
+                                Inserted.splice(i, 1);
+                                window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                for(var i = 0; i < Inserted.length; i++) {
+
+                    if(Inserted[i].start >= offset) {
+                        if(leVal.length < currentLength) {
+                            Inserted[i].start = Inserted[i].start - diff;
                         } else {
-                            Inserted[i].start = Inserted[i].start + 1;
+                            Inserted[i].start = Inserted[i].start + diff;
+                        }
+                    }
+
+                    if(Inserted[i].loc >= offset) {
+                        if(leVal.length < currentLength) {
+                            Inserted[i].loc = Inserted[i].loc - diff;
+                        } else {
+                            Inserted[i].loc = Inserted[i].loc + diff;
                         }
                     }
                 }
@@ -213,9 +240,10 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                     }
                 };
 
+/*
                 $(editableObj).on('blur focusout', blurout);
                 $(editableObj).on('click', editableClickBlurout);
-
+*/
                 newMathEditContainer.on('focusout', blurout);
                 newMathEditContainer.on('blur', blurout);
                 
@@ -287,6 +315,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
            
             Aloha.bind('aloha-editable-created', function (event, editable) 
             {
+                console.log("HOWDY PARDNER");
                 editableObj = editable.obj;
                 
                 editable.obj.bind('keydown', self.hotKey.insertTexMath, function() 
