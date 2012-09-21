@@ -2,13 +2,17 @@ h2. Aloha Editor Events
 
 endprologue.
 
+h3. Two event mechanisms
+
 Aloha has two mechanisms for subscribing to and publishing events.
 
 The old bind/trigger mechanism uses jQuery's bind() and trigger() behind
 the scenes and currently handles most of the events fired by Aloha:
 
-    Aloha.bind('event-name', function (jQuery.Event, eventArgument) {});
-    Aloha.trigger('event-name', eventArgument);
+<javascript>
+Aloha.bind('event-name', function (jQuery.Event, eventArgument) {});
+Aloha.trigger('event-name', eventArgument);
+</javascript>
 
 We are now in the process of replacing this API with a PubSub mechanism
 that we implement ourselves. The advantage of implementing it ourselves
@@ -17,10 +21,14 @@ the event system in the future. Also, the PubSub mechanism has less
 overhead (important for IE7) and a slightly cleaner API (requirejs
 module; forces a map argument; no event object).
 
+<javascript>
 define(['PubSub'], function (PubSub) {
     PubSub.sub('event.name', function (eventArgument) {});
     PusSub.pub('event.name', {key: value});
 });
+</javascript>
+
+h3. Available events
 
 h4. aloha-command-will-execute Event
 
