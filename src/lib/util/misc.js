@@ -1,4 +1,4 @@
-/* functions.js is part of Aloha Editor project http://aloha-editor.org
+/* misc.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
@@ -24,18 +24,26 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
+/**
+ * Contains miscellaneous utility functions that don't fit anywhere else.
+ */
 define([], function () {
 	'use strict';
 
 	/**
-	 * The identity function returns its single argument.
-	 * Useful for composition when some default behaviour is needed.
+	 * Returns true if any regex in the given rxs array tests true
+	 * against str.
 	 */
-	function identity(arg) {
-		return arg;
+	function anyRx(rxs, str) {
+		for (var i = 0, len = rxs.length; i < len; i++) {
+			if (rxs[i].test(str)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	return {
-		identity: identity
-	};
+		anyRx: anyRx
+	}
 });

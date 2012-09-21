@@ -1,3 +1,29 @@
+/* arrays.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 define([],function(){
 	'use strict'
 
@@ -100,7 +126,80 @@ define([],function(){
 		return a.map(fn);
 	}
 
+	/**
+	 * Returns a new array that contains all values in the given a for
+	 * which pred returns true.
+	 */
+	function filter(a, pred) {
+		var i,
+		    len,
+		    value,
+		    result = [];
+		for (i = 0, len = a.length; i < len; i++) {
+			value = a[i];
+			if (pred(value)) {
+				result.push(value);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Finds a value in the given array.
+	 * Strict comparison is used to find the value.
+	 * Returns the index of the first occurrence of the given value in
+	 * the given a, or -1 if a contains no such value.
+	 */
+	function indexOf(a, value) {
+		var i,
+		    len;
+		for (i = 0, len = a.length; i < len; i++) {
+			if (value === a[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Reduces an array of values to a single value.
+	 *
+	 * For example:
+	 * Arrays.reduce([2, 3, 4], 1, function (a, b) { return a + b; });
+	 * returns the result of (((1 + 2) + 3) + 4)
+	 *
+	 * @param a
+	 *        An array of values.
+	 * @param init
+	 *        An initial value.
+	 * @param fn
+	 *        A function that takes two values and returns the reduction
+	 *        of both.
+	 */
+	function reduce(a, init, fn) {
+		var i,
+		    len;
+		for (i = 0, len = a.length; i < len; i++) {
+			init = fn(init, a[i]);
+		}
+		return init;
+	}
+
+	/**
+	 * Applies the given value to the given function unless the value is
+	 * null, in which case just returns null.
+	 *
+	 * This is a utility function to be used with reduce().
+	 */
+	function applyNotNull(value, fn) {
+		return value == null ? null : fn(value);		
+	}
+
 	return {
+		filter: filter,
+		indexOf: indexOf,
+		reduce: reduce,
+		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
 		equal: equal,
 		map: Array.prototype.map ? mapNative : map

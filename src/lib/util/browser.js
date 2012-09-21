@@ -1,4 +1,4 @@
-/* functions.js is part of Aloha Editor project http://aloha-editor.org
+/* ephemera.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
@@ -24,18 +24,9 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([], function () {
+define(['jquery'], function ($) {
 	'use strict';
-
-	/**
-	 * The identity function returns its single argument.
-	 * Useful for composition when some default behaviour is needed.
-	 */
-	function identity(arg) {
-		return arg;
-	}
-
-	return {
-		identity: identity
+    return {
+		ie7: $.browser.msie && parseInt($.browser.version, 10) < 8
 	};
 });
