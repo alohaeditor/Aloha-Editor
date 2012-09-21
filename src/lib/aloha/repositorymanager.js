@@ -231,6 +231,10 @@ define( [
 						} else {
 							allmetainfo.hasMoreItems = undefined;
 						}
+
+						if (metainfo.timeout) {
+							allmetainfo.timeout = true;
+						}
 					} else {
 						// at least one repository did not return metainfo, so
 						// we have no aggregated metainfo at all
@@ -255,6 +259,9 @@ define( [
 							" repositories did not return before the configured timeout of " + timeout + "ms.");
 				}
 				numOpenCallbacks = 0;
+				// store in the metainfo, that a timeout occurred
+				allmetainfo = allmetainfo || {};
+				allmetainfo.timeout = true;
 				that.queryCallback( callback, allitems, allmetainfo, timer );
 			}, timeout );
 
@@ -340,6 +347,7 @@ define( [
 			if ( metainfo ) {
 				result.numItems = metainfo.numItems;
 				result.hasMoreItems = metainfo.hasMoreItems;
+				result.timeout = metainfo.timeout;
 			}
 
 			callback.call( this, result );

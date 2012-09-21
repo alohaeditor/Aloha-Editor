@@ -25,6 +25,8 @@ define([
 
 	var GENTICS = window.GENTICS;
 	var overlayByConfig = {};
+	
+	var _savedRange;
 
 	function CharacterOverlay(onSelectCallback) {
 		var self = this;
@@ -234,6 +236,7 @@ define([
 				scope: 'Aloha.continuoustext',
 				click: function() {
 					if (false !== self.characterOverlay) {
+						_savedRange = Aloha.Selection.rangeObject;
 						self.characterOverlay.show(this.element);
 					}
 				}
@@ -287,8 +290,8 @@ define([
 	*/
 	function onCharacterSelect (character) {
 		if (Aloha.activeEditable) {
-			// set focux to editable
-			Aloha.activeEditable.obj.focus();
+			//Select the saved range
+			_savedRange.select();
 			Aloha.execCommand('insertHTML', false, character);
 		}
 	}

@@ -8,6 +8,8 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUG**: Added missing icon for the block plugins toggledragdrop button
+
 - **BUG**: Rangy Core: Patches Rangy to include a workaround for html5shiv's
         violation of document.createElement().
 
@@ -40,3 +42,8 @@ All changes are categorized into one of the following keywords:
 				   are used to prop up empty block-level elements that would be
 				   otherwise rendererd invisbly, with the "aloha-end-br" class.
 				   This should result in cleaner markup.
+
+- ** BUG**: Fixed Javascript error when doing searches in the repository browser (which caused to search to not be done).
+
+- **ENHANCEMENT**: Aloha Blocks will now publish a message on the channel
+                   "aloha.blocks.initialized" when a block is fully initialized.
