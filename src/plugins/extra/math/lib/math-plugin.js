@@ -96,10 +96,26 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 var ch = leVal[offset];
                 var diff = leVal.length - currentLength;
 
+                // bulk delete
+                if(leVal.length < currentLength && currentLength - leVal.length > 1) {
+                    var i = 0;
+                    while(i < Inserted.length) {
+                        if(Inserted[i].loc >= offset && Inserted[i].loc < offset + (currentLength - leVal.length)) {
+                            // if closing virtual is in the range of deleted characters, remove it from Inserted
+                            Inserted.splice(i, 1);
+                        } else if(Inserted[i].start >= offset && Inserted[i].start < offset + (currentLength - leVal.length)) {
+                            // if opening for a closing virtual is in the range of deleted characters (but not the closing), make it concrete
+                            Inserted.splice(i, 1);
+                        } else {
+                            i = i + 1;
+                        }
+                    }
+                }
+
                 var didRemove = false;
                 for(var i = 0; i < Inserted.length; i++) {
 
-                    // if this was a delete or backspace that removed a character
+                    // if this was a delete or backspace that removed character(s)
                     if(leVal.length < currentLength) {
                         // if this delete was on the opening character of a virtual closing character and there is no content in between
                         if(offset == Inserted[i].start && Inserted[i].loc == Inserted[i].start + 1) {
@@ -122,6 +138,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 }
 
                 if(!didRemove) {
+                    // if inserted character that is beyond the bounds of a virtual paren pair
                     var i = 0;
                     while(i < Inserted.length) {
                         if(offset > Inserted[i].loc || offset <= Inserted[i].start) {
@@ -132,6 +149,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                     }
                 }
 
+                // update the offsets of the remaining virtual parens
                 for(var i = 0; i < Inserted.length; i++) {
 
                     if(Inserted[i].start >= offset) {
