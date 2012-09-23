@@ -181,6 +181,12 @@ define([
 			if (noTargetHighlight) {
 				return;
 			}
+
+			// Make sure that multiple invokations of
+			// changeTargetBackground don't set an incorrect
+			// data-original-background-color.
+			restoreTargetBackground();
+
 			// set background color to give visual feedback which link is modified
 			var	target = $(targetObject);
 			if (target && target.context && target.context.style &&
