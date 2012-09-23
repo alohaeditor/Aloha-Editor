@@ -112,33 +112,33 @@ define([
 		selectionArea        : 10                             // width/height of the selection rows (in pixel)
 	};
 
-  /**
-   * @hide
-   * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
-  */
-  TablePlugin.checkConfig = function (c){
-        
-    if (typeof c == 'object' && c.length) {
-      var newC = [];
-      
-      for (var i = 0; i < c.length; i++) {
-        if (c[i]) {
-          newC.push({
-            text	  : c[i].text	   ? c[i].text		: c[i].name,
-            tooltip	  : c[i].tooltip   ? c[i].tooltip	: c[i].text,
-            iconClass : c[i].iconClass ? c[i].iconClass	: 'aloha-icon-' + c[i].name,
-            cssClass  : c[i].cssClass  ? c[i].cssClass	: c[i].name
-          });
-        }
-      }
-      
-      c = newC;
-    } else {
-      c = [];
-    }
-    
-    return c;
-  };
+	/**
+	 * @hide
+	 * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
+	 */
+	TablePlugin.checkConfig = function (c){
+		if (typeof c == 'object' && c.length) {
+			var newC = [];
+			
+			for (var i = 0; i < c.length; i++) {
+				if (c[i]) {
+					newC.push({
+						name      : c[i].name,
+						text	  : c[i].text	   ? c[i].text		: c[i].name,
+						tooltip	  : c[i].tooltip   ? c[i].tooltip	: c[i].text,
+						iconClass : c[i].iconClass ? c[i].iconClass	: 'aloha-icon-' + c[i].name,
+						cssClass  : c[i].cssClass  ? c[i].cssClass	: c[i].name
+					});
+				}
+			}
+			
+			c = newC;
+		} else {
+			c = [];
+		}
+		
+		return c;
+	};
   
 	/**
 	 * Init method of the Table-plugin transforms all tables in the document

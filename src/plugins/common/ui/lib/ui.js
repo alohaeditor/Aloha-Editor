@@ -146,6 +146,8 @@ function(
 			settings = SuperTypeOrInstance;
 			SuperTypeOrInstance = name;
 			name = settings.name;
+		} else {
+			settings = $.extend({name: name}, settings);
 		}
 
 		if (!SuperTypeOrInstance.isInstance) {
