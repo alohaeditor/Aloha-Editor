@@ -336,7 +336,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
 
   // Adds a new editor every time the math button is entered
 
-  function mathClickNew() {
+  function mathClickNew(e) {
     var aol = 'aol-latex';
     console.log("mathClickNew ");
     var exText = getSelectionText();
@@ -347,10 +347,12 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
      /* $("[class*='-header']").die("mouseenter mouseleave"); // Turning hovers off (temporarily)
       $(".canvas-wrap").die("mouseenter mouseleave"); // Have to do this one separately from above, apparently
       $(".MathJax").die("mouseenter mouseleave");
-      $("table caption").die("mouseenter mouseleave");
-      cwLeave($(".canvas-wrap"),"special");
-      $("#toolbar-math").addClass("selected");
-      */
+      $("table caption").die("mouseenter mouseleave");*/
+      // cwLeave($(".canvas-wrap"),"special");
+
+      // Changes status of math button to selected
+      $('button[title="Math"]').addClass("selected");
+    
       console.log("Building the math editor");
       var mec = buildMathEditor();
       
@@ -383,12 +385,13 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
     else {
 
       pasteHtmlAtCaret('<span id="MathJaxNew" class="MathJax" contenteditable="false"><span class="MathJaxText">' + exText + '</span></span>');
-      $("#toolbar-math").removeClass("selected");
+      // Changes status of math button to be 'unselected'
+      $('button[title="Math"]').removeClass("selected");
       $("#MathJaxNew").removeAttr("id").effect("highlight", { color: "#E5EEF5" }, 1000);
 
     }
 
-    //e.stopPropagation();
+    // e.stopPropagation();
     //e.preventDefault();
 
   }
@@ -428,7 +431,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         }
       }
       $(".math-editor").remove();
-      /*$("#toolbar-math").removeClass("selected");*/ //Unselects the button
+      $('button[title="Math"]').removeClass("selected"); //Unselects the button
       // Removes every math editor
       $(".MathJax").each(function(){
         if ($(this).attr("id") == 'MathJaxNew') {
@@ -436,6 +439,81 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         }
       });
     }
+    // Sets a callback on the aloha button by looking for an element whose title=math
+    $('button[title="Math"]').live("click", function(e) {
+        console.log("Button being clicked");
+        e.stopPropagation();
+    });
+  $(".MathJax").live("mouseenter", function(e){
+    console.log("Editor being entered");
+    mathEnter($(this),e);
+  });
+  $(".MathJax").live("mouseleave", function(e){
+    console.log("Editor being left");    
+    mathLeave($(this),e);
+  });
+  $(".MathJax:not(.selected)").live("click", function(e){
+    console.log("Editor not selected?");    
+    mathClick($(this),e);
+
+  });
+  $(".math-editor").live("click", function(e){
+    console.log("math editor being clicked");
+//  e.stopPropagation();
+    meClick($(this),e);
+  });
+
+
+
+  function meClick(me,e) {
+    e.stopPropagation();
+  };
+function mathClick(m,e) {
+
+   /* $("[class*='-header']").die("mouseenter mouseleave"); // Turning hovers off (temporarily)
+   // $(".canvas-wrap").die("mouseenter mouseleave"); // Have to do this one separately from above, apparently
+    $(".MathJax").die("mouseenter mouseleave");
+    $("table caption").die("mouseenter mouseleave");*/
+    console.log("Math click being called");
+   /* cwLeave($(".canvas-wrap"),"special");*/
+
+    if(!m.find(".math-editor").length) {
+      mathEditorRemove("");
+      m.find('#math-icon-edit').remove();
+      m.find('#math-icon-clear').remove();
+      m.removeAttr("title");
+      m.addClass("selected");
+      // Changes status of button to selected
+      $('button[title="Math"]').addClass("selected");
+
+      var mec = buildMathEditor(m,e);
+      m.prepend(mec);
+      var mathtext = m.find(".asciimath").text();
+      if (mathtext.length) {
+        m.find(".math-source").append(mathtext);
+      } else if ( m.find(".MathJaxText, .MathJaxText2").text().length ) {
+        m.find(".math-source").append(m.find(".MathJaxText, .MathJaxText2").text());
+      } else {
+        m.find(".math-source").append("&nbsp;");
+      }
+      newB = m.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
+      newL = m.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
+      $(".math-editor").css("bottom", newB + "px");
+      $(".math-editor").css("left", newL + "px");
+      placeCaretAtEnd($(".math-source").get(0));
+    } else {
+      placeCaretAtEnd($(".math-source").get(0));
+    }
+    /*if ( $("#cheat-sheet").css("display") != 'none' ) $("#cheat-sheet-activator").attr("checked",true);
+    $("#cheat-sheet-wrap").slideUp("fast", function(e){
+      $(this).show();
+    });*/
+    e.stopPropagation();
+  }
+
+  $(".math-source").live("click", function(e){
+    $(this).find(".math-source-hint-text").replaceWith("&nbsp;");
+  });
 function getSelectionText() { // from Tim Down at http://stackoverflow.com/questions/5379120/jquery-get-the-highlighted-text
     var text = "";
     if (window.getSelection) {
@@ -462,20 +540,66 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
         textRange.select();
     }
   }
-  // Removes the math editor when the html document is clicked. I don't know where the '.math-done' class is used b/c  I don't see it used in the page
+    function mathLeave(m,e) {
+    if(!m.find(".math-editor").length) {
+      m.removeClass("selected");
+    }
+    m.removeClass("hovered");
+    m.removeAttr("title");
+    m.find('#math-icon-edit').remove();
+    m.find('#math-icon-clear').remove();
+  /*  if ( !m.parents().closest(".active").length) {
+      m.parent().closest('.canvas-wrap').each(function(){
+        $(this).children().children().children('.canvas-buddy, .canvas-buddy-2').show();
+        $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').show();
+        $(this).children('.canvas').addClass("canvas-hovered");
+      });
+    }*/
+  }
 
-  $("#content,#container, .math-editor-close, .math-done").on("click", function(e){
-    console.log("Removing the math editor");
+   function mathEnter(m,e) {
+    
+    /* Wraps the text */
+    /*$('.canvas-wrap').each(function(){
+      $(this).children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
+      $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
+      $(this).children('.canvas').removeClass("canvas-hovered");
+    });*/
+    console.log("Entering math")
+    m.addClass("hovered");
+    // If the length is zero then add the original text back
+    if(!m.find(".math-editor").length) {
+      m.attr("title","Click anywhere on the math to edit it");
+      m.append('<span class="math-icon" id="math-icon-edit"><span class="math-icon-message">Click anywhere on the math to edit it</span></span>');
+      m.append('<span class="math-icon" id="math-icon-clear"><span class="math-icon-message"><span class="math-icon-message-close">X</span> Remove math formatting (revert to plain text)</span></span>');
+    }
+    e.stopPropagation();
+  }
+  // Removes the math editor when the html document is clicked. I don't know where the '.math-done' class is used b/c  I don't see it used in the page
+   $("html, .math-editor-close, .math-done").live("click", function(e){
 /*
     if ($(this).hasClass("math-editor-close")) {
       mathEditorRemove("override");
     } else {
-
-*/  // Removes the math edior when the html document is clicked
+*/    console.log("Removing the math editor");
       mathEditorRemove("");
 /*
     }
-*/});
+*/
+    $(".MathJax").live("mouseenter", function(e){
+      mathEnter($(this),e);
+    });
+    $(".MathJax").live("mouseleave", function(e){
+      mathLeave($(this),e);
+    });
+
+  });
+
+  $(".math-editor").live("click", function(e){
+        console.log("Stopping propagation");
+        meClick($(this),e);
+  });
+
   function buildMathEditor(m,e) {
     var ed = '<div class="math-editor" contenteditable="false" id="meditor">\
         <span class="math-editor-close">\
@@ -545,7 +669,14 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
             {
                 tooltip: 'Math', /*i18n.t('button.addmath.tooltip'),*/
                 icon: "M",
-                click: mathClickNew
+                click: function() {
+                    console.log("Math button being clicked");
+                    mathClickNew();
+                    // e.stopPropagation();
+                }
+                /*onclick: function() {
+                    console.log("Test");
+                }*/
             });
             
             var parsedJax = false; 
