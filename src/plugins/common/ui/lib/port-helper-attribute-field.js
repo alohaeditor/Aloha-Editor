@@ -38,13 +38,33 @@ define([
 	// * repository manager markObject on the target object if a repository
 	//   item was selected (example link plugin)
 
+	/**
+	 * Creates a new attribute field.
+	 *
+	 * @param {!Object} props
+	 *        A map containing the following properties
+	 *        name         -
+	 *        label        - some text that will be displayed alongside
+	 *                       the attribute field,
+	 *        labelClass   - a class to identify the label element,
+	 *        valueField   -
+	 *        displayField -
+	 *        objectTypeFilter -
+	 *        placeholder  -
+	 *        noTargetHighlight -
+	 *        cls          -
+	 *        width        -
+	 *        scope        -
+	 *        element      - the <input> element to use.
+	 *                       If not supplied, a new one will be created.
+	 */
 	var AttributeField = function (props) {
 		var valueField = props.valueField || 'id',
 		    displayField = props.displayField || 'name',
 		    objectTypeFilter = props.objectTypeFilter || ['all'],
 		    placeholder = props.placeholder,
 		    noTargetHighlight = !!props.noTargetHighlight,
-		    element = $('<input id="aloha-attribute-field-' + props.name + '">'),
+		    element = props.element ? $(props.element) : $('<input id="aloha-attribute-field-' + props.name + '">'),
 		    component,
 		    template,
 		    resourceItem,
@@ -65,7 +85,7 @@ define([
 
 				// Why do we have to wrap the element in a span? It
 				// doesn't seem to work otherwise.
-				this.element = $('<span>').append(element);
+				this.element = props.element ? element : $('<span>').append(element);
 
 				element.autocomplete({
 					'html': true,
