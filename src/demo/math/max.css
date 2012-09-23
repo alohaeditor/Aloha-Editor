@@ -9,7 +9,7 @@
   padding-left: 0em;
   padding-right: 0em;
   padding-bottom: 0em;
-padding-top: 0;
+  padding-top: 0;
 }
 #pageheader-wrap{
   margin-top: -10px;
@@ -1159,9 +1159,6 @@ right: 200px;
   width: 25px;
   height: 25px;
   background: #C5DAE9;
-    border-style:solid;
-  border-width:5px;
-  border-color: blue;
   border-right:1px solid #1b86d2;
   border-bottom:1px solid #1b86d2;
   -moz-transform:rotate(45deg);
@@ -1173,9 +1170,6 @@ right: 200px;
   margin-right: -3px;
   position: relative;
   z-index: 404;
-  border-style:solid;
-  border-width:5px;
-  border-color: red;
 }
 
 .math-source{
