@@ -565,7 +565,7 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
       $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
       $(this).children('.canvas').removeClass("canvas-hovered");
     });*/
-    console.log("Entering math")
+    //console.log("Entering math")
     m.addClass("hovered");
     // If the length is zero then add the original text back
     if(!m.find(".math-editor").length) {
