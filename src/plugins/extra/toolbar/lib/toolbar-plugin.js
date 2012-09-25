@@ -239,8 +239,8 @@
         headingsButton = new appmenu.ToolButton("Heading 1", {
           subMenu: new appmenu.Menu(headingButtons)
         });
-        toolbar.append(headingsButton);
-        toolbar.append(new appmenu.Separator());
+        toolbar.prepend(new appmenu.Separator());
+        toolbar.prepend(headingsButton);
         Aloha.bind('aloha-editable-activated', function(e, params) {
           menubar.setAccelContainer(params.editable.obj);
           return toolbar.setAccelContainer(params.editable.obj);
