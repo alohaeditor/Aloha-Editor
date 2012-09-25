@@ -41,19 +41,32 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
             
 
             function convertToConcrete(character, ele, leVal, currentOffset) {
-                for(var i = 0; i < Inserted.length; i++) {
+                var i = 0;
+                while(i < Inserted.length) {
                     if(Inserted[i].loc == currentOffset+1 && Inserted[i].character == character) {
-                        Inserted.splice(i, 1);
-                        if(ele.val() == leVal) {
-                            ele.val(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
-                            leVal = ele.val();
-                        } else {
-                            ele.text(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
-                            leVal = ele.text();
-                        }
-                        window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], currentOffset+1);
                         break;
                     }
+                    i = i + 1;
+                }
+                console.log(window.getSelection().focusNode);
+                if(i != Inserted.length) {
+                    Inserted.splice(i, 1);
+                    //console.log(ele.children());
+                    //window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], currentOffset+1);
+                    if(ele.val().length > 0) {
+                        console.log('DOING VAL');
+                        ele.val(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
+                        leVal = ele.val();
+                    } else {
+                        console.log('DOING TEXT');
+                        ele.text(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
+                        leVal = ele.text();
+                    }
+                    //console.log(currentOffset)
+                    //console.log(window.getSelection().getRangeAt(0));
+                    //console.log(window.getSelection().focusNode.childNodes);
+                    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], currentOffset+1);
+                    //window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], 3);
                 }
                 return leVal;
             }
@@ -75,10 +88,12 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 if(inChange) return;
                 inChange = true;
 
+                if(evt.type != "DOMCharacterDataModified") {
+                    console.log(evt);
+                }
+
                 var range = window.getSelection().getRangeAt(0);
                 var offset = range.startOffset;
-                /*console.log(Inserted);
-                console.log(range.startOffset+" "+range.endOffset);*/
                 var eqId = evt.currentTarget.id.substring(5);
                 var ele = $('#'+evt.currentTarget.id);
                 var leVal = ele.val() || ele.text();
@@ -95,10 +110,18 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                             diff = diff + 1;
 
                            if(ele.val() == leVal) {
-                                ele.val(leVal.slice(0,offset)+leVal.slice(offset+1));
-                                leVal = ele.val();
+                               if(offset == leVal.length-1) {
+                                    ele.val(leVal.slice(0,offset));
+                               } else {
+                                    ele.val(leVal.slice(0,offset)+leVal.slice(offset+1));
+                               }
+                               leVal = ele.val();
                             } else {
-                                ele.text(leVal.slice(0,offset)+leVal.slice(offset+1));
+                                if(offset == leVal.length-1) {
+                                    ele.text(leVal.slice(0,offset));
+                                } else {
+                                    ele.text(leVal.slice(0,offset)+leVal.slice(offset+1));
+                                }
                                 leVal = ele.text();
                             }
                             Inserted.splice(i, 1);
