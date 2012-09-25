@@ -1,6 +1,9 @@
 define({
 	"root":  {
-		"root": "Array"
+		"button.addimage.tooltip": "Insert Image",
+		"button.removeimage.tooltip": "Remove Image",
+		"newimage.defaulttext": "New Image",
+		"floatingmenu.tab.img": "Image"
 	},
 		"ar": true,
 		"bg": true,

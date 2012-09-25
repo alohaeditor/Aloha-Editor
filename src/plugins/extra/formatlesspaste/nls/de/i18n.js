@@ -1,3 +1,3 @@
 define({
-	"button.formatlessPaste.tooltip": ""
+	"button.formatlessPaste.tooltip": "Ohne Format einfügen de-/aktivieren"
 });

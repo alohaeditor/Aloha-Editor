@@ -3,12 +3,12 @@ define({
 	"button.removelink.tooltip": "Verweis entfernen",
 	"newlink.defaulttext": "Neuer Verweis",
 	"floatingmenu.tab.link": "Verweis",
-	"link.target.self": "",
-	"link.target.blank": "",
-	"link.target.parent": "",
+	"link.target.self": "Gleiches Fenster",
+	"link.target.blank": "Neues Fenster",
+	"link.target.parent": "Elternfenster",
 	"link.target.top": "",
-	"link.target.framename": "",
-	"link.target.legend": "",
-	"link.title.legend": "",
-	"insertLink": ""
+	"link.target.framename": "Framename",
+	"link.target.legend": "Ziel",
+	"link.title.legend": "Titel",
+	"insertLink": "Ctrl+k"
 });

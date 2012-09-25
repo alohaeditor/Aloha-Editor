@@ -1,6 +1,6 @@
 define({
-	"button.alignright.tooltip": "",
-	"button.alignleft.tooltip": "",
-	"button.aligncenter.tooltip": "",
-	"button.alignjustify.tooltip": ""
+	"button.alignright.tooltip": "Rechtsbünding",
+	"button.alignleft.tooltip": "Linksbündig",
+	"button.aligncenter.tooltip": "Zentriert",
+	"button.alignjustify.tooltip": "Blocksatz"
 });

@@ -1,5 +1,5 @@
 define({
-	"headerids.label.target": "",
-	"headerids.button.reset": "",
-	"headerids.button.set": ""
+	"headerids.label.target": "Ziel",
+	"headerids.button.reset": "Zurücksetzen",
+	"headerids.button.set": "Setzen"
 });

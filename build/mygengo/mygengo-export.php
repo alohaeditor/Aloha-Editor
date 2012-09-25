@@ -15,6 +15,7 @@ $exportUrl = 'http://mygengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6
 //$exportUrl = 'http://mygengo.com/string/p/aloha-test-1/export/all/8fced2397fb2dcec3761431ad4dbc4f007998ddc16e2f188b684d99aa8e839d3';
 
 
+// defined or add some auto check???
 $full_translated = array('en',
 'ar',
 'bg',

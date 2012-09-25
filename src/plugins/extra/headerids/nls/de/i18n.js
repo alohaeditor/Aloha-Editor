@@ -1,6 +1,6 @@
 define({
-	"headerids.label.target": "",
-	"headerids.button.reset": "",
-	"headerids.button.set": "",
-	"internal_hyperlink": ""
+	"headerids.label.target": "Ziel",
+	"headerids.button.reset": "Zurücksetzen",
+	"headerids.button.set": "Setzen",
+	"internal_hyperlink": "Interner Link"
 });

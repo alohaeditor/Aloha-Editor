@@ -1,3 +1,3 @@
 define({
-	"button.toggledragdrop.tooltip": ""
+	"button.toggledragdrop.tooltip": "Drag & Drop umschalten"
 });
