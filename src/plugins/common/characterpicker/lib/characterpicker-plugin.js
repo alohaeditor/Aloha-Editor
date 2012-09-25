@@ -289,7 +289,7 @@ define([
 		
 		/**
 		 * insert a character after selecting it from the list
-		*/
+		 */
 		onCharacterSelect: function (character) {
 			if (Aloha.activeEditable) {
 				//Select the range that was selected before the overlay was opened

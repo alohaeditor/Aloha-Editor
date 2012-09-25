@@ -95,6 +95,7 @@ define([
 		});
 		return found;
 	}
+
 	/**
 	 * Register the ListPlugin as Aloha.Plugin
 	 */
@@ -366,7 +367,7 @@ define([
 				// we are in an unordered list and shall transform it to an ordered list
 
 				// transform the ul into an ol
-				this._transformExistingListAndSubLists(domToTransform, 'ol');
+				transformExistingListAndSubLists(domToTransform, 'ol');
 				
 				// merge adjacent lists
 				this.mergeAdjacentLists(jQuery(domToTransform));
@@ -374,7 +375,7 @@ define([
 				// we are in an ordered list and shall transform it to an unordered list
 
 				// transform the ol into an ul
-				this._transformExistingListAndSubLists(domToTransform, 'ul');
+				transformExistingListAndSubLists(domToTransform, 'ul');
 
 				// merge adjacent lists
 				this.mergeAdjacentLists(jQuery(domToTransform));
@@ -489,51 +490,7 @@ define([
 			// refresh the selection
 			this.refreshSelection();
 		},
-		
-		/**
-		 * Transforms the given list element and its sub elements (if they are in the selection) into
-		 * the given transformTo target.
-		 * @param domToTransform - The list object that should be transformed
-		 * @param transformTo - Transformationtarget e.g. 'ul' / 'ol'
-		 */
-		_transformExistingListAndSubLists: function(domToTransform, transformTo) {
-			var that = this;
-			// find and transform sublists if they are in the selection
-			jQuery(domToTransform).find(domToTransform.nodeName).each(function(){
-				if (that.isListInSelection(this)) {
-					Aloha.Markup.transformDomObject(this, transformTo, Aloha.Selection.rangeObject);
-				}
-			});
-			
-			// the element itself
-			Aloha.Markup.transformDomObject(domToTransform, transformTo, Aloha.Selection.rangeObject);
-		},
-		
-		/**
-		 * Checks if a dom element is in the given Slectiontree.
-		 * @param needle - the searched element
-		 * @return returns true if the needle is found in the current selection tree.
-		 */
-		isListInSelection: function(needle) {
-			var selectionTree = Aloha.Selection.getSelectionTree();
-			return this._checkSelectionTreeEntryForElement(selectionTree, needle);
-		},
-		
-		/**
-		 * Checks if the given needle is in the given treeElement or in one of its sub elements.
-		 * @param treeElement - the tree element to be searched in
-		 * @param needle - the searched element
-		 */
-		_checkSelectionTreeEntryForElement: function(treeElementArray, needle) {
-			var that = this;
-			var found = false;
-			jQuery.each(treeElementArray, function(index, element){
-				if ((element.domobj === needle && element.selection !== "none") || that._checkSelectionTreeEntryForElement(element.children, needle)) {
-					found = true;
-				}
-			});
-			return found;
-		},
+
 
 		/**
 		 * Indent the selected list items by moving them into a new created, nested list
