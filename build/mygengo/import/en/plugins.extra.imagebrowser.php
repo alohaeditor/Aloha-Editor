@@ -1,5 +1,0 @@
-<?php
-
-$lang['root'] = 'Array';
-
-?>
