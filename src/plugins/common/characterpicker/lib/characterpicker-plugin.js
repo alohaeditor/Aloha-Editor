@@ -262,6 +262,7 @@ define([
 		},
 
 		getOverlayForEditable: function(editable) {
+			var that = this;
 			// Each editable may have its own configuration and as
 			// such may have its own overlay.
 			var config = this.getEditableConfig(editable.obj),
@@ -277,24 +278,27 @@ define([
 			// be created that will be used by all editables.
 			overlay = overlayByConfig[config];
 			if ( ! overlay ) {
-				overlay = new CharacterOverlay(onCharacterSelect);
+				overlay = new CharacterOverlay(function(character){
+						that.onCharacterSelect(character);
+				});
 				overlay.setCharacters(config);
 				overlayByConfig[config] = overlay;
 			}
 			return overlay;
+		},
+		
+		/**
+		 * insert a character after selecting it from the list
+		*/
+		onCharacterSelect: function (character) {
+			if (Aloha.activeEditable) {
+				//Select the range that was selected before the overlay was opened
+				this._savedRange.select();
+				Aloha.execCommand('insertHTML', false, character);
+			}
 		}
 	});
 
-	/**
-	 * insert a character after selecting it from the list
-	*/
-	function onCharacterSelect (character) {
-		if (Aloha.activeEditable) {
-			//Select the saved range
-			_savedRange.select();
-			Aloha.execCommand('insertHTML', false, character);
-		}
-	}
 });
 	
 // vim: noexpandtab

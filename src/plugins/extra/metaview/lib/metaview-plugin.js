@@ -40,7 +40,6 @@ define([
 	jQuery
 ) {
 	'use strict';
-
 	var GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
