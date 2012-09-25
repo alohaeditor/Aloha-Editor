@@ -7,13 +7,11 @@ require_once 'nls.php';
 
 define("ENVIRONMENT_LIVE", true);
 
-
+// @todo add possibility to export from gengo to AE just one language
 
 // URL to the MyGengo public download of all translations
+// just de: http://gengo.com/string/p/aloha-editor-1/export/language/de/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067
 $exportUrl = 'http://mygengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067';
-// test project
-//$exportUrl = 'http://mygengo.com/string/p/aloha-test-1/export/all/8fced2397fb2dcec3761431ad4dbc4f007998ddc16e2f188b684d99aa8e839d3';
-
 
 // defined or add some auto check???
 $full_translated = array('en',
@@ -50,11 +48,11 @@ $exportZipFile = './export.zip';
 // remove old download and fetch file
  
 //deactivated for now to test new structure
-//$command = "rm $exportZipFile"; 
-//system($command);
-
-$command = "rm -rf $exportDir*"; 
+$command = "rm $exportZipFile"; 
 system($command);
+
+//$command = "rm -rf $exportDir*"; 
+//system($command);
 
 $exportZipFileData = file_get_contents($exportUrl);
 file_put_contents($exportZipFile, $exportZipFileData);
