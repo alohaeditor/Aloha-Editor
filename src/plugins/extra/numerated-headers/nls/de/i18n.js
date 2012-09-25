@@ -1,1 +1,5 @@
-define( { "button.numeratedHeaders.tooltip": "Ueberschriftennummerierung ein- bzw. ausschalten." });
+define({
+	"headerids.label.target": "",
+	"headerids.button.reset": "",
+	"headerids.button.set": ""
+});

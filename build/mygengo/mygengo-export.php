@@ -5,14 +5,14 @@
 */
 require_once 'nls.php';
 
-define("ENVIRONMENT_LIVE", false);
+define("ENVIRONMENT_LIVE", true);
 
 
 
 // URL to the MyGengo public download of all translations
-//$exportUrl = 'http://mygengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067';
+$exportUrl = 'http://mygengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067';
 // test project
-$exportUrl = 'http://mygengo.com/string/p/aloha-test-1/export/all/8fced2397fb2dcec3761431ad4dbc4f007998ddc16e2f188b684d99aa8e839d3';
+//$exportUrl = 'http://mygengo.com/string/p/aloha-test-1/export/all/8fced2397fb2dcec3761431ad4dbc4f007998ddc16e2f188b684d99aa8e839d3';
 
 
 $full_translated = array('en',
@@ -47,12 +47,12 @@ $exportZipFile = './export.zip';
 
 
 // remove old download and fetch file
-
  
 //deactivated for now to test new structure
+//$command = "rm $exportZipFile"; 
+//system($command);
 
-
-$command = "rm $exportZipFile"; 
+$command = "rm -rf $exportDir*"; 
 system($command);
 
 $exportZipFileData = file_get_contents($exportUrl);
@@ -133,7 +133,7 @@ function generate_nls($translations, $full_translated) {
 	$exportDir = './nls/';
 	
 	foreach ($translations as $section => $language_data) {
-		echo "generate $section\n";
+		echo "** generate $section\n";
 		
 		$out = "define({\n";
 		$out .= "\t\"root\":  {\n";
@@ -151,20 +151,18 @@ function generate_nls($translations, $full_translated) {
 		//print_r($available_languages);
 		
 		foreach ($master as $translate_key => $translate_string) {
-			//$translate_string = htmlentities($translate_string, ENT_SUBSTITUTE); // needs php 5.4
-			//$translate_string = htmlentities($translate_string, ENT_QUOTES, 'UTF-8'); // produces html entities
-			// @hack
-            //$translate_string = str_replace(array("*\///*"), "\\\\", $translate_string);
-            //$translate_string = str_replace(array("*\//*"), "\\", $translate_string);
-            // @hack end
-            
-			$out .= "\t\t\"$translate_key\": \"$translate_string\",\n";
+			if (!empty($translate_key)) {
+				//$translate_string = htmlentities($translate_string, ENT_SUBSTITUTE); // needs php 5.4
+				//$translate_string = htmlentities($translate_string, ENT_QUOTES, 'UTF-8'); // produces html entities
+				$out .= "\t\t\"$translate_key\": \"$translate_string\",\n";
+			}
 		}
 		$out = substr($out, 0, -2);
 		$out .= "\n\t},\n";
-		
 		foreach ($available_languages as $lang_code) {
-			$out .= "\t\t\"$lang_code\": true,\n";
+			if (in_array($lang_code, $full_translated)) {
+				$out .= "\t\t\"$lang_code\": true,\n";
+			}
 		}
 		$out = substr($out, 0, -2);
 		$out .= "\n});\n";
@@ -183,9 +181,11 @@ function generate_nls($translations, $full_translated) {
 				$out = "define({\n";
 
 				foreach ($language_data[$lang_code] as $translate_key => $translate_string) {
-					//$translate_string = htmlentities($translate_string, ENT_SUBSTITUTE); // needs php 5.4
-					//$translate_string = htmlentities($translate_string, ENT_QUOTES, 'UTF-8'); // produces html entities
-					$out .= "\t\"$translate_key\": \"$translate_string\",\n";
+					if (!empty($translate_key)) {
+						//$translate_string = htmlentities($translate_string, ENT_SUBSTITUTE); // needs php 5.4
+						//$translate_string = htmlentities($translate_string, ENT_QUOTES, 'UTF-8'); // produces html entities
+						$out .= "\t\"$translate_key\": \"$translate_string\",\n";
+					}
 				}
 
 				$out = substr($out, 0, -2);
@@ -223,6 +223,10 @@ function write_nls_file($path_pattern, $language, $data) {
 		$plugin_path = '../../src/plugins/extra/'.$plugin;
 	}
 
+	if (!is_dir($plugin_path) && $plugin == 'aloha') {
+		$plugin_path = '../../src/lib/'.$plugin;
+	}
+	
 	if (!is_dir($plugin_path)) {
 		echo $plugin_path.' does not exist';
 		$plugin_path = '*** ERROR plugin path not found ***';
@@ -242,6 +246,8 @@ function write_nls_file($path_pattern, $language, $data) {
 	if ($language != 'en') {
 	    $path_dir .= $language.'/';
 	}
+	
+	// rm old $path_dir or delete whole nls dir first?
 	
 	$path = $path_dir.$file_name;
 	

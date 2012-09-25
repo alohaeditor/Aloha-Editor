@@ -1,5 +1,28 @@
 define({
-	root: { "headerids.label.target": "Target", "headerids.button.reset":"Reset","headerids.button.set":"Set","internal_hyperlink":"Internal Hyperlink" },
-	"de":true,
-	"en":true
+	"root":  {
+		"headerids.label.target": "Target",
+		"headerids.button.reset": "Reset",
+		"headerids.button.set": "Set",
+		"internal_hyperlink": "Internal Hyperlink"
+	},
+		"ar": true,
+		"bg": true,
+		"cs": true,
+		"da": true,
+		"de": true,
+		"es": true,
+		"et": true,
+		"fr": true,
+		"gl": true,
+		"hu": true,
+		"ko": true,
+		"nb-no": true,
+		"nl": true,
+		"sk": true,
+		"sv": true,
+		"th": true,
+		"tr": true,
+		"uk": true,
+		"zh": true,
+		"zh-tw": true
 });

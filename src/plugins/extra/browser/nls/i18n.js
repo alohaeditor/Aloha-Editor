@@ -1,4 +1,40 @@
-define( {
-	'de': true,
-	'en': true
-} );
+define({
+	"root":  {
+		"jgrid.locale": "en",
+		"button.switch-metaview.tooltip": "Switch between meta and normal view",
+		"Browsing": "Browsing",
+		"Searching for": "Searching for",
+		"in": "in",
+		"Viewing": "Viewing",
+		"numerous": "numerous",
+		"of": "of",
+		"Close": "Close",
+		"Open": "Open",
+		"Search": "Search",
+		"Name": "Name",
+		"URL": "URL",
+		"Preview": "Preview",
+		"No records to view": "No records to view",
+		"Input search text...": "Input search text..."
+	},
+		"ar": true,
+		"bg": true,
+		"cs": true,
+		"da": true,
+		"de": true,
+		"es": true,
+		"et": true,
+		"fr": true,
+		"gl": true,
+		"hu": true,
+		"ko": true,
+		"nb-no": true,
+		"nl": true,
+		"sk": true,
+		"sv": true,
+		"th": true,
+		"tr": true,
+		"uk": true,
+		"zh": true,
+		"zh-tw": true
+});
