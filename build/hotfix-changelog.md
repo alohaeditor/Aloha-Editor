@@ -32,3 +32,4 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: list-plugin: When transforming a list from ul to ol or back all sub elements that are selected are also transformed.
 - **FEATURE**: core: Added method Aloha.getEditableHost() to get the editable, that contains the given jQuery object.
 - **FEATURE**: repository browser: If one of the repositories runs into a timeout during query, the browser will now call the method handleTimeout().
+- **BUG**: core: Sometimes when putting the cursor at the first position of an editable, the cursor would vanish or be put outside the editable. This has been fixed.

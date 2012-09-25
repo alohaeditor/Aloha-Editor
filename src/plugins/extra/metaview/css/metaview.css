@@ -36,7 +36,7 @@
 * .aloha-metaview dl, * .aloha-metaview dt,
 * .aloha-metaview dd, * .aloha-metaview td,
 * .aloha-metaview th, * .aloha-metaview table,
-* .aloha-metaview caption,* .aloha-metaview caption hr {
+* .aloha-metaview caption, * .aloha-metaview hr {
 	min-height: auto;
 }
 
