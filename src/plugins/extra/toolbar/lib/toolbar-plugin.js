@@ -54,7 +54,7 @@
             if ('' === item) {
               return new appmenu.Separator();
             }
-            menuItem = new appmenu.MenuItem('EMPTY_LABEL');
+            menuItem = new appmenu.MenuItem(item);
             lookupMap[item] = menuItem;
             return menuItem;
           } else {
