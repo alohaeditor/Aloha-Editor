@@ -95,6 +95,7 @@ define([
 		});
 		return found;
 	}
+
 	/**
 	 * Register the ListPlugin as Aloha.Plugin
 	 */
@@ -367,7 +368,7 @@ define([
 
 				// transform the ul into an ol
 				transformExistingListAndSubLists(domToTransform, 'ol');
-
+				
 				// merge adjacent lists
 				this.mergeAdjacentLists(jQuery(domToTransform));
 			} else if (nodeName == 'ol' && !ordered) {
@@ -489,6 +490,7 @@ define([
 			// refresh the selection
 			this.refreshSelection();
 		},
+
 
 		/**
 		 * Indent the selected list items by moving them into a new created, nested list

@@ -262,6 +262,7 @@ define([
 		},
 
 		getOverlayForEditable: function(editable) {
+			var that = this;
 			// Each editable may have its own configuration and as
 			// such may have its own overlay.
 			var config = this.getEditableConfig(editable.obj),
@@ -282,19 +283,20 @@ define([
 				overlayByConfig[config] = overlay;
 			}
 			return overlay;
-		}
-	});
+		},
 
+	});
+	
+			
 	/**
 	 * insert a character after selecting it from the list
-	*/
+	 */
 	function onCharacterSelect (character) {
 		if (Aloha.activeEditable) {
-			//Select the saved range
+			//Select the range that was selected before the overlay was opened
 			_savedRange.select();
 			Aloha.execCommand('insertHTML', false, character);
 		}
 	}
+
 });
-	
-// vim: noexpandtab
