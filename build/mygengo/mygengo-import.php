@@ -59,7 +59,7 @@ $path = '../../src/plugins/common/';
 read_nls_dir($path);
 
 $path = '../../src/plugins/extra/';
-//read_nls_dir($path);
+read_nls_dir($path);
 
 
 
@@ -166,6 +166,10 @@ function convert_nls_file($section, $language, $data, $plugin = false) {
     
     $import_dir = './import/';
     
+
+	// remove comments
+	$data = preg_replace('(//.+)', '', $data);
+
     // clean file input
     $data = str_replace('define(', '', $data);
     $data = str_replace(');', '', $data);
@@ -226,20 +230,21 @@ function convert_nls_file($section, $language, $data, $plugin = false) {
     //parse_jsobj($data, $parsed);
     try {
         echo 'try ...';
-        // @hack
-        $data = str_replace(array("\\\\"), "*\///*", $data);
-        $data = str_replace(array("\\"), "*\//*", $data);
-        // @hack end
+		// hex encoded stuff
+        $data = str_replace(array("\\"), "#@#", $data);		
+		$data = preg_replace_callback('/#@#u([0-9a-f]{4})/i', 'replace_unicode_escape_sequence', $data);
+		
         parse_jsobj($data, $parsed);
+	    echo 'parsing ok ...';
     } catch (Exception $e) {
         echo 'Exception: ',  $e->getMessage(), "\n";
 
         //echo "\n data to parse \n";
         //print_r($data);
         //echo "\n\n";
+	    echo 'parsing ERROR ...';
     }
     
-    echo 'parsing ok ...';
     
     //print_r($parsed);
 
@@ -265,16 +270,21 @@ function convert_nls_file($section, $language, $data, $plugin = false) {
     file_put_contents($path, $out);
     
     // generate old file format
-    // /*
+    /*
     if (empty($plugin)) {
         $old = 'aloha';
     } else {
         // @todo $plugin_path_name with array replacement (camelcase some times)
         //$old = 'com.gentics.aloha.plugins.'.$plugin_path_name;
-        $old = 'com.gentics.aloha.plugins.'.ucfirst($plugin);
+        $old = 'Com.gentics.aloha.plugins.'.ucfirst($plugin);
     }
     $path = $import_dir.$language.'/'.$old.'.php';
     echo "\nwrite data to old path: $path \n";
     file_put_contents($path, $out);
     // */
+}
+
+
+function replace_unicode_escape_sequence($match) {
+    return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
 }

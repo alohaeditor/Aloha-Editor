@@ -10,9 +10,37 @@ define("ENVIRONMENT_LIVE", false);
 
 
 // URL to the MyGengo public download of all translations
-$exportUrl = 'http://mygengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067';
+//$exportUrl = 'http://mygengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067';
 // test project
-//$exportUrl = 'http://mygengo.com/string/p/aloha-test-1/export/all/8fced2397fb2dcec3761431ad4dbc4f007998ddc16e2f188b684d99aa8e839d3';
+$exportUrl = 'http://mygengo.com/string/p/aloha-test-1/export/all/8fced2397fb2dcec3761431ad4dbc4f007998ddc16e2f188b684d99aa8e839d3';
+
+
+$full_translated = array('en',
+'ar',
+'bg',
+'zh',
+'zh-tw',
+'cs',
+'da',
+'nl',
+'et',
+'fr',
+'gl',
+'de',
+'hu',
+'ko',
+'nb-no',
+'sk',
+'es',
+'sv',
+'th',
+'tr',
+'uk');
+
+
+// custom language export url (de)
+// $exportUrl = 'http://gengo.com/string/p/aloha-test-1/export/language/de/8fced2397fb2dcec3761431ad4dbc4f007998ddc16e2f188b684d99aa8e839d3';
+
 
 $exportDir = './export/';
 $exportZipFile = './export.zip';
@@ -43,7 +71,7 @@ if ($res === TRUE) {
 	echo "\n[error] Translations not downloaded or extracted\n";
 }
 
-// process all downloaded php language files and convert it to the aloha i8ln format
+// process all downloaded php language files and convert it to the aloha i18n format
 $languages =  get_directories($exportDir);
 $translations = array();
 //print_r($languages);
@@ -60,17 +88,17 @@ foreach ($languages as $language) {
 		require_once $exportDir.$language.'/'.$section;
 		//print_r($lang);
 		
-		foreach ($lang as $i8ln_key => $i8ln_value) {
+		foreach ($lang as $i18n_key => $i18n_value) {
 			$section = str_replace('.php', '', $section);
-			//$translations[$language][$section][$i8ln_key] = $i8ln_value;
-			$translations[$section][$language][$i8ln_key] = $i8ln_value;
+			//$translations[$language][$section][$i18n_key] = $i18n_value;
+			$translations[$section][$language][$i18n_key] = $i18n_value;
 		}
 	}
 }
 
 //print_r($translations);
 
-generate_nls($translations);
+generate_nls($translations, $full_translated);
 
 /*
 input:
@@ -101,7 +129,7 @@ lang file:
 
 */
 
-function generate_nls($translations) {
+function generate_nls($translations, $full_translated) {
 	$exportDir = './nls/';
 	
 	foreach ($translations as $section => $language_data) {
@@ -126,8 +154,8 @@ function generate_nls($translations) {
 			//$translate_string = htmlentities($translate_string, ENT_SUBSTITUTE); // needs php 5.4
 			//$translate_string = htmlentities($translate_string, ENT_QUOTES, 'UTF-8'); // produces html entities
 			// @hack
-            $translate_string = str_replace(array("*\///*"), "\\\\", $translate_string);
-            $translate_string = str_replace(array("*\//*"), "\\", $translate_string);
+            //$translate_string = str_replace(array("*\///*"), "\\\\", $translate_string);
+            //$translate_string = str_replace(array("*\//*"), "\\", $translate_string);
             // @hack end
             
 			$out .= "\t\t\"$translate_key\": \"$translate_string\",\n";
@@ -150,21 +178,23 @@ function generate_nls($translations) {
 		$out = '';
 		foreach ($available_languages as $lang_code) {
 			
-			echo "\n write language file for $section: $lang_code \n";
-			$out = "define({\n";
+			if (in_array($lang_code, $full_translated)) {
+				echo "\n write language file for $section: $lang_code \n";
+				$out = "define({\n";
 
-			foreach ($language_data[$lang_code] as $translate_key => $translate_string) {
-				//$translate_string = htmlentities($translate_string, ENT_SUBSTITUTE); // needs php 5.4
-				//$translate_string = htmlentities($translate_string, ENT_QUOTES, 'UTF-8'); // produces html entities
-				$out .= "\t\"$translate_key\": \"$translate_string\",\n";
-			}
+				foreach ($language_data[$lang_code] as $translate_key => $translate_string) {
+					//$translate_string = htmlentities($translate_string, ENT_SUBSTITUTE); // needs php 5.4
+					//$translate_string = htmlentities($translate_string, ENT_QUOTES, 'UTF-8'); // produces html entities
+					$out .= "\t\"$translate_key\": \"$translate_string\",\n";
+				}
 
-			$out = substr($out, 0, -2);
-			$out .= "\n});\n";
+				$out = substr($out, 0, -2);
+				$out .= "\n});\n";
 
-			//echo $out;
+				//echo $out;
 			
-			write_nls_file($section, $lang_code, $out);
+				write_nls_file($section, $lang_code, $out);
+			}
 		}
 		
 	}
@@ -172,13 +202,40 @@ function generate_nls($translations) {
 
 function write_nls_file($path_pattern, $language, $data) {
 	date_default_timezone_set('Europe/Vienna');
-	$file_name = 'i8ln-'.date('ymd').'.js';
+	$file_name = 'i18n-'.date('ymd').'.js';
 	
 	if (ENVIRONMENT_LIVE == true) {
-	    $file_name = 'i8ln.js';
+	    $file_name = 'i18n.js';
 	}
 
-	$path_dir = '../../src/'.str_replace('.', '/', $path_pattern).'/nls/';
+	
+	// old path pattern
+	echo "\n## transform old plugin pattern ";
+	echo "\n plugin: \n";
+	$pa = explode('.', $path_pattern);
+	$plugin = strtolower(array_pop($pa));
+	echo $plugin;
+	
+	// check for plugin folder
+	$plugin_path = '../../src/plugins/common/'.$plugin;
+	
+	if (!is_dir($plugin_path)) {
+		$plugin_path = '../../src/plugins/extra/'.$plugin;
+	}
+
+	if (!is_dir($plugin_path)) {
+		echo $plugin_path.' does not exist';
+		$plugin_path = '*** ERROR plugin path not found ***';
+	}
+	
+	echo "\nplugin path: \n";
+	echo $plugin_path;
+	echo "\n###\n\n";
+
+	$path_dir = $plugin_path.'/nls/';
+	// end old path pattern
+	//$path_dir = '../../src/'.str_replace('.', '/', strtolower($path_pattern)).'/nls/';
+
 	$parent_dir = $path_dir;
 	
 	// is master or not
@@ -200,10 +257,10 @@ function write_nls_file($path_pattern, $language, $data) {
 	if (is_dir($path_dir)) {
     	//echo "\n write nls file to: $path_dir \n";
     	//print_r(get_directories($path_dir));
-    	echo "\n write nls file to: $path \n";
+    	echo "\n[ok] write nls file to: $path \n";
     	file_put_contents($path, $data);
 	} else {
-	    echo "\n can not write nls file to: $path \n";
+	    echo "\n[error] can not write nls file to: $path \n";
 	}
 
 }
