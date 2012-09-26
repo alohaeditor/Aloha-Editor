@@ -76,6 +76,24 @@ function (jQuery) {
 		layer.id = this.get('elemId');
 		layer.addClass(this.get('className'));
 
+        // Option for including a header row
+        var options = jQuery('<div id="table-options"></div>')
+            .append('<input type="checkbox" id="include-row-header" checked="checked" />')
+            .append('<label for="include-row-header">Include header row</label>')
+            .css('margin', '0.5em 0.25em')
+            .on('click', function(e){
+                var addheader = jQuery(e.target).is(":checked");
+                jQuery('#table-options').parent()
+                .find('table tr:first-child td').each(function(){
+                    if(addheader){
+                        jQuery(this).addClass("header");
+                    } else {
+                        jQuery(this).removeClass("header");
+                    }
+                })
+            });
+        layer.append(options);
+
 		var table = jQuery('<table></table>');
 		table.css('width', (this.get('numX') + 6) * 15);
 		var tr;

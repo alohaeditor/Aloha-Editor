@@ -56,3 +56,7 @@
 	text-align: center;
 	font-size: 0.8em;
 }
+
+.aloha-table-createdialog table td.header {
+    background-color: #AAAAAA !important;
+}
