@@ -50,17 +50,18 @@ function (jQuery) {
 			this.create();
             layer = this.get('layer');
             if(e!==undefined){
-                this.setPosition(e.clientX, e.clientY + layer.height());
+                this.setPosition(e.pageX, e.pageY);
             }
 		} else {
 			// or reposition, cleanup and show the layer
             if(e!==undefined){
-                this.setPosition(e.clientX, e.clientY + layer.height());
+                this.setPosition(e.pageX, e.pageY);
             }
 			layer.find('td').removeClass('hover');
 			layer.show();
 		}
 		this.visible = true;
+        return layer;
 	};
 
 	/**
@@ -171,8 +172,15 @@ function (jQuery) {
 	 * @return void
 	 */
 	CreateLayer.prototype.hide = function() {
-		this.get('layer').hide();
+        var layer = this.get('layer');
+		layer.hide();
 		this.visible = false;
+
+        // Fire event for this closure
+        var ev = jQuery.Event();
+        ev.type = 'table-create-layer.closed'
+        ev.target = layer;
+        layer.trigger(ev);
 	};
 
 	/**
