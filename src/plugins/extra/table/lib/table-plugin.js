@@ -1,10 +1,67 @@
 define(
 ['aloha', 'aloha/plugin', 'jquery', 'ui/ui', 'ui/button', 'ui/scopes',
-	'table/table-create-layer'],
-function(Aloha, plugin, jQuery, Ui, Button, Scopes, CreateLayer) {
+    'ui/dialog', 'table/table-create-layer'],
+function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
     "use strict";
 
 	var GENTICS = window.GENTICS;
+
+	function prepareRangeContainersForInsertion(range, table){
+		var	eNode = range.endContainer,
+			sNode = range.startContainer,
+			eNodeLength =(eNode.nodeType == 3)
+				? eNode.length
+				: eNode.childNodes.length;		
+		
+		if(sNode.nodeType == 3 &&
+				sNode.parentNode.tagName == 'P' &&
+					sNode.parentNode.childNodes.length == 1 &&
+						/^(\s|%A0)$/.test( escape( sNode.data))){
+			sNode.data = '';
+			range.startOffset = 0;
+			
+			// In case ... <p> []</p>
+			if(eNode == sNode){
+				range.endOffset = 0;
+			}
+		}
+		
+		// If the table is not allowed to be nested inside the startContainer,
+		// then it will have to be split in order to insert the table.
+		// We will therefore check if the selection touches the start and/or
+		// end of their container nodes.
+		// If they do, we will mark their container so that after they are
+		// split we can check whether or not they should be removed
+		if(!GENTICS.Utils.Dom.allowsNesting(
+				sNode.nodeType == 3 ? sNode.parentNode : sNode, table)){
+			
+			if(range.startOffset == 0){
+				jQuery( sNode.nodeType == 3 ? sNode.parentNode : sNode)
+					.addClass( 'aloha-table-cleanme');
+			}
+			
+			if(range.endOffset == eNodeLength){
+				jQuery( eNode.nodeType == 3 ? eNode.parentNode : eNode)
+					.addClass( 'aloha-table-cleanme');
+			}
+		}
+	}
+
+	function cleanupAfterInsertion(){
+		var dirty = jQuery('.aloha-table-cleanme').removeClass(
+						'aloha-table-cleanme');
+		
+		for (var i=0; i<dirty.length; i++){
+			if (jQuery.trim(jQuery(dirty[i]).html()) == '' &&
+					!GENTICS.Utils.Dom.isEditingHost(dirty[i])){
+				jQuery(dirty[i]).remove();
+			}
+		}
+	}
+
+	function isWithinTable(elem) {
+		return (jQuery(elem).parents('.aloha-editable table').length > 0);
+	}
 
     return plugin.create('table', {
         defaults: {
@@ -30,82 +87,65 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, CreateLayer) {
                 }
             });
         },
+	    isSelectionInTable: function (){
+            var range = Aloha.Selection.getRangeObject();
+            var container = jQuery(range.commonAncestorContainer);
+            if (container.length == 0){
+                return  false;
+            }
+            if (container.parents('.aloha-editable table').length){
+                return true;
+            }
+            return false;
+        },
+	    preventNestedTables: function (){
+            if (this.isSelectionInTable()) {
+                Dialog.alert({
+                    title : 'Table',
+                    text  : 'Nested tables are not supported'
+                });
+                return true;
+            }
+            return false;
+	    },
         createTable: function(cols, rows){
-            return;
             if (this.preventNestedTables()){
                 return;
             }
             
             // Check if there is an active Editable and that it contains an element (= .obj)
-            if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
+            if (Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined'){
                 // create a dom-table object
-                var table = document.createElement( 'table' );
+                var table = document.createElement('table');
                 var tableId = table.id = GENTICS.Utils.guid();
-                var tbody = document.createElement( 'tbody' );
+                var tbody = document.createElement('tbody');
 
                 // create "rows"-number of rows
-                for ( var i = 0; i < rows; i++ ) {
-                    var tr = document.createElement( 'tr' );
+                for (var i=0; i<rows; i++){
+                    var tr = document.createElement('tr');
                     // create "cols"-number of columns
-                    for ( var j = 0; j < cols; j++ ) {
-                        var text = document.createTextNode( '\u00a0' );
-                        var td = document.createElement( 'td' );
-                        td.appendChild( text );
-                        tr.appendChild( td );
+                    for (var j = 0; j < cols; j++) {
+                        var text = document.createTextNode('\u00a0');
+                        var td = document.createElement('td');
+                        td.appendChild(text);
+                        tr.appendChild(td);
                     }
-                    tbody.appendChild( tr );
+                    tbody.appendChild(tr);
                 }
-                table.appendChild( tbody );
+                table.appendChild(tbody);
                 
                 prepareRangeContainersForInsertion(
-                    Aloha.Selection.getRangeObject(), table );
+                    Aloha.Selection.getRangeObject(), table);
                 
                 // insert the table at the current selection
-                GENTICS.Utils.Dom.insertIntoDOM(
-                    jQuery( table ),
-                    Aloha.Selection.getRangeObject(),
-                    Aloha.activeEditable.obj
-                );
+                GENTICS.Utils.Dom.insertIntoDOM(jQuery(table),
+                    Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
                 
                 cleanupAfterInsertion();
-                
-                var tableReloadedFromDOM = document.getElementById( tableId );
-
-                if ( !TablePlugin.isWithinTable( tableReloadedFromDOM ) ) {
-                    var tableObj = new Table( tableReloadedFromDOM, TablePlugin );
-                    tableObj.parentEditable = Aloha.activeEditable;
-                    // transform the table to be editable
-                    tableObj.activate();
-
-                    // after creating the table, trigger a click into the first cell to
-                    // focus the content
-                    // for IE set a timeout of 10ms to focus the first cell, other wise it
-                    // won't work
-                    if ( jQuery.browser.msie ) {
-                        window.setTimeout( function () {
-                            tableObj.cells[ 0 ].wrapper.get( 0 ).focus();
-                        }, 20 );
-                    } else {
-                        tableObj.cells[ 0 ].wrapper.get( 0 ).focus();
-                    }
-
-                    TablePlugin.TableRegistry.push( tableObj );
-                }
-                
-                TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
-
-                // The selection starts out in the first cell of the new
-                // table. The table tab/scope has to be activated
-                // accordingly.
-                tableObj.focus();
-                TablePlugin.activeTable.selection.selectionType = 'cell';
-                TablePlugin.updateFloatingMenuScope();
-
             } else {
-                this.error( 'There is no active Editable where the table can be\
-                    inserted!' );
+                this.error('There is no active Editable where the table can be inserted!');
             }
         },
-        createLayer: undefined
+        createLayer: undefined // Defined in init above.
     });
 });
