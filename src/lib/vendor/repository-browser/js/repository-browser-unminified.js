@@ -58,37 +58,6 @@ define('RepositoryBrowser', [
 	};
 
 	/**
-	 * Processes and returns an object that is usable with the tree component.
-	 *
-	 * @param {object} obj An object that represents a repository object.
-	 * @return {object} An object that is compatible with the tree component.
-	 */
-	function processRepoObject(obj) {
-		var icon;
-		switch (obj.baseType) {
-		case 'folder':
-			icon = 'folder';
-			break;
-		case 'document':
-			icon = 'document';
-			break;
-		}
-
-		return {
-			data: {
-				title: obj.name,
-				attr: {'data-repo-obj': obj.uid},
-				icon: icon || ''
-			},
-			attr: obj.type ? {rel: obj.type} : undefined,
-			state: (obj.hasMoreItems || 'folder' === obj.baseType)
-				? 'closed'
-				: null,
-			resource: obj
-		};
-	}
-
-	/**
 	 * Prevents native browser selection on the given element.
 	 *
 	 * @param {jQuery.<HTMLElement>} element An element on which to prevent
@@ -358,7 +327,50 @@ define('RepositoryBrowser', [
 					uid: uid,
 					loaded: false
 				});
-			return processRepoObject(this._cachedRepositoryObjects[uid]);
+			return this._processRepoObject(this._cachedRepositoryObjects[uid]);
+		},
+
+		/**
+		 * Processes and returns an object that is usable with the tree component.
+		 *
+		 * @param {object} obj An object that represents a repository object.
+		 * @return {object} An object that is compatible with the tree component.
+		 */
+		_processRepoObject: function (obj) {
+			var icon, state, children, that = this;
+
+			switch (obj.baseType) {
+			case 'folder':
+				icon = 'folder';
+				break;
+			case 'document':
+				icon = 'document';
+				break;
+			}
+
+			// set the node state
+			state = (obj.hasMoreItems || obj.baseType === 'folder') ? 'closed' : null;
+
+			// process children (if any)
+			if (obj.children) {
+				children = [];
+				jQuery.each(obj.children, function () {
+					children.push(that._harvestRepoObject(this));
+					state = 'open';
+				});
+			}
+
+			return {
+				data: {
+					title: obj.name,
+					attr: {'data-repo-obj': obj.uid},
+					icon: icon || ''
+				},
+				attr: obj.type ? {rel: obj.type} : undefined,
+				state: state,
+				resource: obj,
+				children: children
+			};
 		},
 
 		/**
@@ -870,7 +882,7 @@ define('RepositoryBrowser', [
 				(from) + ' - '  +
 				(to) + ' ' + this._i18n('of') + ' ' +
 				(jQuery.isNumeric(this._pagingCount)
-					? this._pageingCount : this._i18n('numerous'))
+					? this._pagingCount : this._i18n('numerous'))
 			);
 
 			// when the repository manager reports a timeout, we handle it

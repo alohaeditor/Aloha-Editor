@@ -242,6 +242,7 @@ h4. Folder
 * creationDate OPTIONAL
 * lastModifiedBy OPTIONAL
 * lastModificationDate OPTIONAL
+* children OPTIONAL (array of child folders objects)
 
 h4. Rendition
 
