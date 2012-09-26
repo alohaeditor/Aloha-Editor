@@ -56,42 +56,25 @@
           <hr style="clear:both;">
           <dl class="L">
     <dt>Start Here</dt>
-      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
-      <dd><a href="functional_description.html">Functional Description</a></dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd>Configuring Aloha Editor</dd>
-      <dd>Aloha Editor and jQuery</dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
-      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
-      <dd><a href="repository.html">Working with repositories</a></dd>
+      <dd><a href="using_aloha.html">Use</a></dd>
+      <dd><a href="develop_aloha.html">Develop</a></dd>
+      <dd><a href="dependencies.html">Dependencies</a></dd>
     <dt>The Core</dt>
-      <dd><a href="core.html">The Core</a></dd>
-    <dt>Commands</dt>
-      <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor UI</a></dd>
-      <dd>Aloha Editor toolbar</dd>
-      <dd>Aloha Editor sidebar</dd>
-      <dd>Aloha Editor UI API</dd>
+      <dd><a href="events.html">Events</a></dd>
+      <dd><a href="using_commands.html">Commands</a></dd>
+      <dd><a href="repository.html">Repositories</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="internals.html">Internals</a></dd>
 </dl>
 <dl class="R">
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd><a href="core_hotkey.html">Hotkeys</a></dd>
     <dt>Plugins</dt>
-      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
-      <dd><a href="plugin_block.html">Block</a></dd>
-      <dd><a href="plugin_image.html">Image</a></dd>
-      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
-      <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd>Numerated Headers</dd>
-      <dd><a href="plugin_undo.html">Undo</a></dd>
-      <dd><a href="plugin_table.html">Table</a></dd>
-      <dd><a href="plugin_paste.html">Paste</a></dd>
-      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
-      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
-      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
+      <dd><a href="plugins.html">Available Plugins</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
-      <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
 </dl>
@@ -134,11 +117,11 @@
 <div class="code_container">
 <pre class="brush: xml; gutter: false; toolbar: false">
 
-&lt;p&gt;First paragraph&lt;br class=&quot;aloha-end-br&quot;/&gt;&lt;/p&gt;
-&lt;p&gt;[]&lt;br class=&quot;aloha-end-br&quot;/&gt;&lt;/p&gt;
+&lt;p&gt;First paragraph&lt;br /&gt;&lt;/p&gt;
+&lt;p&gt;[]&lt;br /&gt;&lt;/p&gt;
 </pre></div><p>Everything is fine now, the additional <tt>&lt;br&gt;</tt>s at the end of <tt>&lt;p&gt;</tt>s do not change the rendering of non-empty paragraphs, but make the empty ones appear.</p>
 <p>At least, everything would be fine, if there was no Internet Explorer. IE is the only browser, that renders even empty <tt>&lt;p&gt;</tt>, when found in <tt>contenteditable</tt> areas, and &#8211; even worse &#8211; would add additional empty lines if <tt>&lt;br&gt;</tt>s are found at the end of <tt>&lt;p&gt;</tt>s.</p>
-<p>When using Internet Exporer 7, however, things get much worse: Internet Exporer 7 renders empty <tt>&lt;p&gt;</tt> only, if they are the <em>last</em> elements. If you have an empty <tt>&lt;p&gt;</tt> between two non-empty <tt>&lt;p&gt;</tt>, it will not be rendered. If the last <tt>&lt;p&gt;</tt> contains the aloha-end-br, it would show an additional line (but this is only true for the <em>last</em> <tt>&lt;p&gt;</tt>. Therefore, the Implementation of Aloha Editor for Internet Exporer 7 is special, as described below.</p>
+<p>When using Internet Exporer 7, however, things get much worse: Internet Exporer 7 renders empty <tt>&lt;p&gt;</tt> only, if they are the <em>last</em> elements. If you have an empty <tt>&lt;p&gt;</tt> between two non-empty <tt>&lt;p&gt;</tt>, it will not be rendered. If the last <tt>&lt;p&gt;</tt> contains the propping end <br>, it would show an additional line (but this is only true for the <em>last</em> <tt>&lt;p&gt;</tt>. Therefore, the Implementation of Aloha Editor for Internet Exporer 7 is special, as described below.</p>
 <h4 id="main-goal-in-aloha-editor">1.2 Main goal in Aloha Editor</h4>
 <p>The main goals in Aloha Editor are</p>
 <ul>
@@ -150,18 +133,17 @@
 <p>When initializing an editable</p>
 <ul>
 	<li>remove all empty block level elements (since they are invisible anyway)</li>
-	<li>remove all <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> when using Internet Explorer (since they would add additional lines while editing)</li>
 	<li>add zero-width spaces to all empty block level elements when using Internet Explorer 7</li>
-	<li>add <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> to all <tt>&lt;li&gt;</tt> elements, except for Internet Exporer</li>
+	<li>add <tt>&lt;br /&gt;</tt> to all <tt>&lt;li&gt;</tt> elements, except when in Internet Exporer</li>
 </ul>
 <p>While editing</p>
 <ul>
-	<li>For every operation, that might lead to an empty block level elements (hitting <tt>ENTER</tt>, deleting, &#8230;), fix the empty block level element by appending a <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> (except for Internet Explorer). For Internet Explorer 7, instead of <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> the zero-width spaces will be used.</li>
+	<li>For every operation, that might lead to an empty block level elements (hitting <tt>ENTER</tt>, deleting, &#8230;), fix the empty block level element by appending a <tt>&lt;br /&gt;</tt> (except when editing in Internet Explorer). For Internet Explorer 7, instead of <tt>&lt;br /&gt;</tt> the zero-width spaces will be used.</li>
 </ul>
 <p>When getting the editable&#8217;s content (e.g. for saving) with the <em>getContents()</em> method</p>
 <ul>
-	<li>Make sure that every block level element contains a single <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> as last child.</li>
-	<li>Remove all <tt>&lt;br class=&quot;aloha-end-br&quot;/&gt;</tt> contained in <tt>&lt;li&gt;</tt>.</li>
+	<li>Make sure that every block level element contains a single <tt>&lt;br /&gt;</tt> as last child.</li>
+	<li>Remove all end <tt>&lt;br /&gt;</tt> tags contained in <tt>&lt;li&gt;</tt>.</li>
 </ul>
 <p>The current implementation handles</p>
 <ul>

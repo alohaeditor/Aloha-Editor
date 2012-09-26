@@ -56,42 +56,25 @@
           <hr style="clear:both;">
           <dl class="L">
     <dt>Start Here</dt>
-      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
-      <dd><a href="functional_description.html">Functional Description</a></dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd>Configuring Aloha Editor</dd>
-      <dd>Aloha Editor and jQuery</dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
-      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
-      <dd><a href="repository.html">Working with repositories</a></dd>
+      <dd><a href="using_aloha.html">Use</a></dd>
+      <dd><a href="develop_aloha.html">Develop</a></dd>
+      <dd><a href="dependencies.html">Dependencies</a></dd>
     <dt>The Core</dt>
-      <dd><a href="core.html">The Core</a></dd>
-    <dt>Commands</dt>
-      <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor UI</a></dd>
-      <dd>Aloha Editor toolbar</dd>
-      <dd>Aloha Editor sidebar</dd>
-      <dd>Aloha Editor UI API</dd>
+      <dd><a href="events.html">Events</a></dd>
+      <dd><a href="using_commands.html">Commands</a></dd>
+      <dd><a href="repository.html">Repositories</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="internals.html">Internals</a></dd>
 </dl>
 <dl class="R">
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd><a href="core_hotkey.html">Hotkeys</a></dd>
     <dt>Plugins</dt>
-      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
-      <dd><a href="plugin_block.html">Block</a></dd>
-      <dd><a href="plugin_image.html">Image</a></dd>
-      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
-      <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd>Numerated Headers</dd>
-      <dd><a href="plugin_undo.html">Undo</a></dd>
-      <dd><a href="plugin_table.html">Table</a></dd>
-      <dd><a href="plugin_paste.html">Paste</a></dd>
-      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
-      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
-      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
+      <dd><a href="plugins.html">Available Plugins</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
-      <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
 </dl>
@@ -189,7 +172,7 @@ mvn3 generate-sources
 <ul>
 	<li>Microsoft Windows: Not yet supported</li>
 </ul>
-<h4 id="customized-builds">4.3 Customized builds:</h4>
+<h4 id="customized-builds">4.3 Customized Builds:</h4>
 <p>Aloha-Editor uses maven to build a distributable package (includes documentation etc.). To build just the javascript, it suffices to invoke <a href="https://github.com/jrburke/r.js/">r.js</a> from the command line. For example</p>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
@@ -204,7 +187,7 @@ node build/r.js -o build/aloha/build.js
 
 mvn3 generate-sources
 </pre></div><p>The resulting css will be generated in src/css/aloha.css.</p>
-<p>If you want to redefine modules in the build profile, for example if you want to use your own jqueryui, please first read <a href="using_aloha.html">Custom jQuery, jQueryUI and other modules</a></p>
+<p>If you want to redefine modules in the build profile, for example if you want to use your own jqueryui, please first read <a href="dependencies.html">Custom jQuery, jQueryUI and other modules</a></p>
 <h3 id="developing-css">5 Developing <span class="caps">CSS</span></h3>
 <p>src/css/aloha.css is a concatenated and minified version of src/css/aloha-common-extra.css. To develop <span class="caps">CSS</span> without rebuilding the <span class="caps">CSS</span> everytime, temporarily copy src/css/aloha-comm-extra.css over src/css/aloha.css.</p>
 <p>Having the built version be included during development makes it possible to develop Aloha without having to worry too much about the IE maximum stylesheet limit.</p>
@@ -282,7 +265,7 @@ guides build
 </a></li><li><a href="#building-aloha-building"><p>Building  &#8211; Aloha Building</p>
 </a><ul><li><a href="#debian-linux-mac-os-x"><p>Debian Linux / Mac OS X</p>
 </a></li> <li><a href="#other-os"><p>Other OS:</p>
-</a></li> <li><a href="#customized-builds"><p>Customized builds:</p>
+</a></li> <li><a href="#customized-builds"><p>Customized Builds:</p>
 </a></li></ul></li><li><a href="#developing-css"><p>Developing <span class="caps">CSS</span></p>
 </a></li><li><a href="#guide"><p>Guide</p>
 </a><ul><li><a href="#installation"><p>Installation</p>

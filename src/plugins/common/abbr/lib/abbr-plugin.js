@@ -104,6 +104,15 @@ define([
 		    	name: 'abbrText',
 		        scope: 'abbr'
 		    });
+		    
+		    this.remAbbrButton = Ui.adopt("removeAbbr", Button, {
+				tooltip: i18n.t('button.remabbr.tooltip'),
+				icon: 'aloha-icon aloha-icon-abbr-rem',
+				scope: 'abbr',
+				click: function () {
+					me.removeAbbr();
+				}
+			});
 		},
 
 		/**
