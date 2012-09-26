@@ -24,6 +24,7 @@ All changes are categorized into one of the following keywords:
 - **BUG**: listenforcer-plugin: Fixed a bug that would only mark the first editable matching a configured selector as an enforced editable. Also when leaving an editable, we now remove the added list properly.
 - **BUG**: floatingmenu: Fixed a bug in the floating menu that the position would not be adjusted if the height of the floating menu changed. This is needed in the topalign mode to not hide parts of the editable.
 - **BUG**: core: Sometimes when putting the cursor at the first position of an editable, the cursor would vanish or be put outside the editable. This has been fixed.
+- **BUG**: abbr-plugin: A possible dereference error was fixed in the plugin.
 
 ## 0.20.23 - 2012/08/24
 
