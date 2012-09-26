@@ -16,3 +16,4 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: core: Added method Aloha.getEditableHost() to get the editable, that contains the given jQuery object.
 - **FEATURE**: repository browser: If one of the repositories runs into a timeout during query, the browser will now call the method handleTimeout().
 - **BUG**: core: Sometimes when putting the cursor at the first position of an editable, the cursor would vanish or be put outside the editable. This has been fixed.
+- **BUG**: abbr-plugin: A possible dereference error was fixed in the plugin.
