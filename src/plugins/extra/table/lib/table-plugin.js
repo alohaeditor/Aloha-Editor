@@ -148,6 +148,9 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
                 
                 cleanupAfterInsertion();
+                var ev = jQuery.Event();
+                ev.type = 'blur';
+                Aloha.activeEditable.smartContentChange(ev);
             } else {
                 this.error('There is no active Editable where the table can be inserted!');
             }
