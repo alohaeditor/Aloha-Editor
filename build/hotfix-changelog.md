@@ -25,3 +25,4 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: core: Added method Aloha.getEditableHost() to get the editable, that contains the given jQuery object.
 - **FEATURE**: repository browser: If one of the repositories runs into a timeout during query, the browser will now call the method handleTimeout().
 - **FEATURE**: abbr-plugin: We added a remove abbreviation button to make the functionality more consistent with the wai-lang plugin.
+- **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html
