@@ -223,6 +223,7 @@ function onTexCharChange(evt) {
             case('('):
                 diff = diff + 1;
                 break;
+            case('^'):
             case('_'):
                 diff = diff + 2;
                 break;
@@ -256,6 +257,7 @@ function onTexCharChange(evt) {
             case('('):
                 leVal = generateInserted(ele, leVal, offset, ')');
                 break;
+            case('^'):
             case('_'):
                 leVal = insertBraces(ele, leVal, offset);
                 break;
