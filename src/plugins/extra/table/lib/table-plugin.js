@@ -83,7 +83,12 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                 icon: "aloha-icon aloha-icon-createTable",
                 scope: 'Aloha.continuoustext',
                 click: function(e){
-                    that.createLayer.show(e);
+                    var layer = that.createLayer.show(e);
+                    layer.on('table-create-layer.closed', function(){
+                        // Once we've managed to make menus sticky, we
+                        // will close the menus here.
+                        //alert('closed');
+                    });
                 }
             });
         },
