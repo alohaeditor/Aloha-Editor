@@ -168,8 +168,8 @@ define([
 			});
 
 			Aloha.bind('aloha-editable-destroyed', function () {
-				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
-					return;
+				if (Aloha.activeEditable && Aloha.activeEditable.obj) {
+					delete editableConfig[Aloha.activeEditable.getId()];
 				}
 
 				delete editableConfig[Aloha.activeEditable.getId()];
