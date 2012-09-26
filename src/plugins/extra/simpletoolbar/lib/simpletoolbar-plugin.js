@@ -32,7 +32,7 @@
             if ('' === item) {
               return new appmenu.Separator();
             }
-            menuItem = new appmenu.MenuItem(item);
+            menuItem = new appmenu.ToolButton(item);
             lookupMap[item] = menuItem;
             return menuItem;
           } else {
@@ -48,7 +48,7 @@
             })();
             subMenu = new appmenu.Menu(subItems);
             subMenu.el.addClass('aloha');
-            menuItem = new appmenu.MenuItem(item.text, {
+            menuItem = new appmenu.ToolButton(item.text, {
               subMenu: subMenu
             });
             return menuItem;
@@ -146,7 +146,7 @@
           if (slot in toolbarLookup) {
             item = toolbarLookup[slot];
           } else {
-            item = new appmenu.MenuItem('DUMMY_ITEM_THAT_SQUASHES_STATE_CHANGES');
+            item = new appmenu.ToolButton('DUMMY_ITEM_THAT_SQUASHES_STATE_CHANGES');
           }
           item.setText(settings.tooltip);
           item.setIcon(settings.icon);
