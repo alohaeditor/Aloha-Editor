@@ -104,6 +104,15 @@ define([
 		    	name: 'abbrText',
 		        scope: 'abbr'
 		    });
+		    
+		    this.remAbbrButton = Ui.adopt("removeAbbr", Button, {
+				tooltip: i18n.t('button.remabbr.tooltip'),
+				icon: 'aloha-icon aloha-icon-abbr-rem',
+				scope: 'abbr',
+				click: function () {
+					me.removeAbbr();
+				}
+			});
 		},
 
 		/**
@@ -159,8 +168,8 @@ define([
 			});
 
 			Aloha.bind('aloha-editable-destroyed', function () {
-				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
-					return;
+				if (Aloha.activeEditable && Aloha.activeEditable.obj) {
+					delete editableConfig[Aloha.activeEditable.getId()];
 				}
 
 				delete editableConfig[Aloha.activeEditable.getId()];

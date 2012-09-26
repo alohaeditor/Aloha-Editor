@@ -25,7 +25,6 @@ define([
 
 	var GENTICS = window.GENTICS;
 	var overlayByConfig = {};
-	
 	var _savedRange;
 
 	function CharacterOverlay(onSelectCallback) {
@@ -283,7 +282,7 @@ define([
 				overlayByConfig[config] = overlay;
 			}
 			return overlay;
-		},
+		}
 
 	});
 	
