@@ -310,9 +310,9 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       # Never close a toolbar
   
   class appmenu.ToolButton extends appmenu.MenuItem
-    constructor: (text, conf) ->
+    constructor: (text, conf = {}) ->
       # By default it's a right arrow, but the toolbar buttons use a down arrow
-      conf.subMenuChar = '\u25BC'
+      conf.subMenuChar = conf.subMenuChar || '\u25BC'
       super(text, conf)
       @el.addClass 'tool-button'
       @toolTip = conf.toolTip || null
