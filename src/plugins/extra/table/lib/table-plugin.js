@@ -63,6 +63,27 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
 		return (jQuery(elem).parents('.aloha-editable table').length > 0);
 	}
 
+    function createRow(cols, tagname){
+        tagname = tagname || 'td';
+        var tr = document.createElement('tr');
+        for (var i=0; i<cols; i++) {
+            var text = document.createTextNode('\u00a0');
+            var td = document.createElement(tagname);
+            td.appendChild(text);
+            tr.appendChild(td);
+        }
+        return tr;
+    }
+
+    function getActiveRow(){
+        var range = Aloha.Selection.getRangeObject();
+        var cell = jQuery(range.commonAncestorContainer);
+        if (cell.parents('.aloha-editable table').length == 0){
+            return null;
+        }
+        return cell.closest('tr');
+    }
+
     return plugin.create('table', {
         defaults: {
         },
@@ -91,6 +112,47 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     });
                 }
             });
+
+            this._addrowbeforeButton = Ui.adopt("addrowbefore", Button, {
+                tooltip: "Add new row before",
+                icon: "aloha-icon aloha-icon-addrowbefore",
+                scope: this.name + '.row',
+                click: function(){
+                    var row = getActiveRow();
+                    if (row === null){
+                        this.error('Selection is not in a table!');
+                        return;
+                    }
+                    var rowcount = row.find('*').length;
+                    var newrow = createRow(rowcount);
+                    row.before(newrow);
+                }
+            });
+
+            this._addrowafterButton = Ui.adopt("addrowafter", Button, {
+                tooltip: "Add new row after",
+                icon: "aloha-icon aloha-icon-addrowafter",
+                scope: this.name + '.row',
+                click: function(){
+                    var row = getActiveRow();
+                    if (row === null){
+                        this.error('Selection is not in a table!');
+                        return;
+                    }
+                    var rowcount = row.find('*').length;
+                    var newrow = createRow(rowcount);
+                    row.after(newrow);
+                }
+            });
+        },
+        getActiveRow: function(){
+            var range = Aloha.Selection.getRangeObject();
+            var cell = jQuery(range.commonAncestorContainer);
+            if (cell.parents('.aloha-editable table').length == 0){
+                this.error('Selection is not in a table!');
+                return null;
+            }
+            var row = cell.closest('tr');
         },
 	    isSelectionInTable: function (){
             var range = Aloha.Selection.getRangeObject();
