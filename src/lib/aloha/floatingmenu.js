@@ -1245,6 +1245,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 
 			// let the Ext object render itself again
 			this.extTabPanel.doLayout();
+			onWindowScroll(this);
 		},
 
 		/**
