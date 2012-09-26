@@ -152,6 +152,9 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                 this.error('There is no active Editable where the table can be inserted!');
             }
         },
+	    error: function(msg){
+            Aloha.Log.error(this, msg);
+        },
         createLayer: undefined // Defined in init above.
     });
 });
