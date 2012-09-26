@@ -1,6 +1,6 @@
 define(
 ['aloha', 'aloha/plugin', 'jquery', 'ui/ui', 'ui/button', 'ui/scopes',
-    'ui/dialog', 'table/table-create-layer'],
+    'ui/dialog', 'table/table-create-layer', 'css!table/css/table.css'],
 function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
     "use strict";
 
@@ -119,6 +119,12 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                 var table = document.createElement('table');
                 var tableId = table.id = GENTICS.Utils.guid();
                 var tbody = document.createElement('tbody');
+
+                // Create caption
+                var caption = document.createElement('caption');
+                var captiontext = document.createTextNode('Table ' + (jQuery('.aloha-editable table').length+1));
+                caption.appendChild(captiontext);
+                table.appendChild(caption);
 
                 // create "rows"-number of rows
                 for (var i=0; i<rows; i++){
