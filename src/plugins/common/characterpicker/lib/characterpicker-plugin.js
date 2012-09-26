@@ -19,6 +19,7 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 
 	var GENTICS = window.GENTICS;
 	var overlayByConfig = {};
+	var _savedRange;
 
 	function CharacterOverlay(onSelectCallback) {
 		var self = this;
@@ -220,6 +221,7 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				'iconClass': 'aloha-button-characterpicker',
 				'size': 'small',
 				'onclick': function (element, event) {
+					_savedRange = Aloha.Selection.rangeObject;
 					self.characterOverlay.show(element.btnEl.dom);
 				},
 				'tooltip': i18n.t('button.addcharacter.tooltip'),
@@ -252,6 +254,7 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 
 		getOverlayForEditable: function(editable) {
+			var that = this;
 			// Each editable may have its own configuration and as
 			// such may have its own overlay.
 			var config = this.getEditableConfig(editable.obj),
@@ -273,18 +276,20 @@ function (Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			}
 			return overlay;
 		}
+		
+		
 	});
-
 	/**
 	 * insert a character after selecting it from the list
 	*/
-	function onCharacterSelect (character) {
+	function onCharacterSelect(character) {
 		if (Aloha.activeEditable) {
-			// set focux to editable
-			Aloha.activeEditable.obj.focus();
+			//Select the range that was selected before the overlay was opened
+			_savedRange.select();
 			Aloha.execCommand('insertHTML', false, character);
 		}
 	}
+	
 });
 	
 // vim: noexpandtab
