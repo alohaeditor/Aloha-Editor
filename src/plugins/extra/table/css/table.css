@@ -22,6 +22,11 @@
     text-transform: uppercase;
 }
 
+.aloha-editable th {
+    background-color: #F3F3F3;
+    text-align: left;
+}
+
 /* create dialog */
 .aloha-table-createdialog {
 	z-index: 99999;

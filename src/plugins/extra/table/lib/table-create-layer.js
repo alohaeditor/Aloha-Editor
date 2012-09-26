@@ -78,7 +78,7 @@ function (jQuery) {
 
         // Option for including a header row
         var options = jQuery('<div id="table-options"></div>')
-            .append('<input type="checkbox" id="include-row-header" checked="checked" />')
+            .append('<input type="checkbox" id="include-row-header" />')
             .append('<label for="include-row-header">Include header row</label>')
             .css('margin', '0.5em 0.25em')
             .on('click', function(e){
@@ -117,7 +117,12 @@ function (jQuery) {
 					var rows = e.data.rowId + 1;
 					var cols = e.data.colId + 1;
 
-					that.TablePlugin.createTable(cols, rows);
+                    var dialog = jQuery(e.target)
+                        .closest('div.aloha-table-createdialog');
+                    var headerrows = Number(dialog.find(
+                        '#include-row-header').is(':checked'));
+
+					that.TablePlugin.createTable(cols, rows, headerrows);
 					that.hide();
 				});
 

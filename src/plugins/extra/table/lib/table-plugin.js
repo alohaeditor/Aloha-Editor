@@ -113,7 +113,7 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
             }
             return false;
 	    },
-        createTable: function(cols, rows){
+        createTable: function(cols, rows, headerrows){
             if (this.preventNestedTables()){
                 return;
             }
@@ -130,6 +130,19 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                 var captiontext = document.createTextNode('Table ' + (jQuery('.aloha-editable table').length+1));
                 caption.appendChild(captiontext);
                 table.appendChild(caption);
+
+                // Create headerrows of headers
+                for(var i=0; i<headerrows; i++){
+                    var tr = document.createElement('tr');
+                    // create "cols"-number of columns
+                    for (var j = 0; j < cols; j++) {
+                        var text = document.createTextNode('\u00a0');
+                        var td = document.createElement('th');
+                        td.appendChild(text);
+                        tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                }
 
                 // create "rows"-number of rows
                 for (var i=0; i<rows; i++){
