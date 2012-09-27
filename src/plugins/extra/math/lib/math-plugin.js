@@ -325,14 +325,24 @@ function onTexCharChange(evt) {
                     window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
                     currentNode = newText;
                 } else {
-                    console.log('BBB');
                     // character inserted in front of closer
+                    var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
+                    var curr = Inserted[i].open.nextSibling;
                     var parentNode = Inserted[i].close.parentNode;
-                    currentNode.textContent = currentNode.textContent.slice(1);
-                    var newText = document.createTextNode(ch);
+                    Inserted[i].close.textContent = Inserted[i].close.textContent[1];
+
+                    while(curr != Inserted[i].close) {
+                        var next = curr.nextSibling;
+                        parentNode.removeChild(curr);
+                        curr = next;
+                    }
+                    text += ch;
+
+                    var newText = document.createTextNode(text);
                     parentNode.insertBefore(newText, Inserted[i].close);
                     GENTICS.Utils.Dom.setCursorInto( newText );
                     window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
+                    window.getSelection().getRangeAt(0).setEnd(newText, newText.textContent.length);
                     currentNode = newText;
                 }
                 break;
@@ -359,28 +369,23 @@ function onTexCharChange(evt) {
                 } else {
                     console.log('DDD');
                     // character inserted after opener
-                    var newText = null;
-                    var next = currentNode.parentNode.nextSibling;
-                    var prev = currentNode.parentNode;
-                    var parentNode = currentNode.parentNode.parentNode;
-                    currentNode.textContent = currentNode.textContent.slice(0,1);
-                    if(next == null || next.tagName == "SPAN") {
-                        console.log("DA");
-                        newText = document.createTextNode(ch);
-                        parentNode.insertBefore(newText, next);
-                    } else {
-                        console.log("DB");
-                        var text = next.textContent;
-                        text = ch + text;
-                        newText = document.createTextNode(text);
-                        parentNode.removeChild(next);
-                        parentNode.insertBefore(newText, prev.nextSibling);
+                    var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
+                    var curr = Inserted[i].open.nextSibling;
+                    var parentNode = Inserted[i].close.parentNode;
+                    Inserted[i].open.textContent = Inserted[i].open.textContent[0];
+
+                    while(curr != Inserted[i].close) {
+                        var next = curr.nextSibling;
+                        parentNode.removeChild(curr);
+                        curr = next;
                     }
-                    /*
+                    text = ch+text;
+
+                    var newText = document.createTextNode(text);
+                    parentNode.insertBefore(newText, Inserted[i].close);
                     GENTICS.Utils.Dom.setCursorInto( newText );
                     window.getSelection().getRangeAt(0).setStart(newText, 1);
                     window.getSelection().getRangeAt(0).setEnd(newText, 1);
-                    */
                     currentNode = newText;
                 }
                 
