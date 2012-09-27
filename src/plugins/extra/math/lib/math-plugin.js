@@ -62,6 +62,7 @@ function convertToConcrete(character, ele, leVal, currentOffset) {
 
     if(i != Inserted.length) {
 
+        console.log('removing g');
         if(Inserted.length == 1) {
             Inserted = [];
         } else {
@@ -287,6 +288,16 @@ function concretize(span) {
 
 }
 
+function hasChild(parentNode, childNode) {
+    var nodes = parentNode.childNodes;
+    for(var i = 0; i < nodes.length; i++) {
+        if(nodes[i] == childNode) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function onTexCharChange(evt) {
     if(inChange) return;
     inChange = true;
@@ -302,6 +313,28 @@ function onTexCharChange(evt) {
     var ele = $('#'+evt.currentTarget.id);
     var leVal = getFullStr(ele[0].childNodes);
 
+    var i = 0;
+    while(i < Inserted.length) {
+        console.log(Inserted[i].open.parentNode);
+        console.log(Inserted[i].close.parentNode);
+        //if(!hasChild(Inserted[i].open.parentNode, Inserted[i].open) || !hasChild(Inserted[i].close.parentNode, Inserted[i].close)) {
+        if(Inserted[i].open.parentNode == null || Inserted[i].close.parentNode == null) {
+            console.log('removing a');
+            if(Inserted[i].open.parentNode != null) {
+                concretize(Inserted[i].open);
+            } 
+            if(Inserted[i].close.parentNode != null) {
+                concretize(Inserted[i].close);
+            } 
+            if(Inserted.length == 1) {
+                Inserted = [];
+            } else {
+                Inserted.splice(i, 1);
+            }
+        } else {
+            i = i + 1;
+        }
+    }
 
     if(leVal.length > currentLength && leVal.length - currentLength == 1) {
         for(var i = 0; i < Inserted.length; i++) {
@@ -402,6 +435,64 @@ function onTexCharChange(evt) {
     var diff = leVal.length - currentLength;
 
 
+    if(leVal.length < currentLength && currentLength - leVal.length > 1) {
+        // bulk delete
+        var startDelete = range.startContainer;
+        if(startDelete.tagName == "DIV") {
+            startDelete = startDelete.childNodes[0];
+        }
+        var endDelete = range.endContainer;
+        if(endDelete.tagName == "DIV") {
+            endDelete = endDelete.childNodes[0];
+        }
+
+        for(var i = 0; i < Inserted.length; i++) {
+            var open = Inserted[i].open;
+            var close = Inserted[i].close;
+            var deleteOpen = false;
+            var deleteClose = false;
+            var parentNode = Inserted[i].open.parentNode;
+
+            if(isAfterOther(open, startDelete) && isBeforeOther(open, endDelete)) {
+                deleteOpen = true;
+            }
+            if(isAfterOther(close, startDelete) && isBeforeOther(close, endDelete)) {
+                deleteClose = true;
+            }
+            if(deleteOpen && deleteClose) {
+                parentNode.removeChild(open);
+                parentNode.removeChild(close);
+                console.log('removing b');
+                if(Inserted.length == 1) {
+                    Inserted = [];
+                } else {
+                    Inserted.splice(i, 1);
+                }
+            } else if(deleteOpen) {
+                parentNode.removeChild(open);
+                console.log('removing c');
+                if(Inserted.length == 1) {
+                    Inserted = [];
+                } else {
+                    Inserted.splice(i, 1);
+                }
+            } else if(deleteClose) {
+                parentNode.removeChild(close);
+                console.log('removing d');
+                if(Inserted.length == 1) {
+                    Inserted = [];
+                } else {
+                    Inserted.splice(i, 1);
+                }
+            }
+        }
+        leVal = getFullStr(ele[0].childNodes);
+        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+        inChange = false;
+        currentLength = leVal.length;
+        return;
+    }
+
     if(leVal.length < currentLength && currentLength - leVal.length == 1) {
         for(var i = 0; i < Inserted.length; i++) {
 
@@ -435,6 +526,7 @@ function onTexCharChange(evt) {
                         window.getSelection().getRangeAt(0).setStart(newText, 0);
                     }
 
+                    console.log('removing e');
                     if(Inserted.length == 1) {
                         Inserted = [];
                     } else {
@@ -608,6 +700,7 @@ function onTexCharChange(evt) {
             concretize(Inserted[i].open);
             concretize(Inserted[i].close);
 
+            console.log('removing f');
             if(Inserted.length == 1) {
                 Inserted = [];
             } else {
@@ -620,7 +713,6 @@ function onTexCharChange(evt) {
 
 
     if(leVal.length - currentLength > 0) {
-        console.log('CONVERTING '+ch);
         switch(ch) {
             case(')'):
             case('}'):
