@@ -200,6 +200,39 @@ function isAfterOther(testNode, searchFor) {
     return false;
 }
 
+function getTextBetweenElementsInclusive(start, finish) {
+    var curr = start;
+    var acc = '';
+    while(curr != finish) {
+        switch(curr.nodeType) {
+            case(3):
+                acc+=curr.textContent;
+                break;
+            case(1):
+                if(curr.tagName=='SPAN') {
+                    acc+=curr.childNodes[0].textContent;
+                }
+                break;
+            default:
+                break;
+        }
+        curr = curr.nextSibling;
+    }
+    switch(finish.nodeType) {
+        case(3):
+            acc+=finish.textContent;
+            break;
+        case(1):
+            if(finish.tagName=='SPAN') {
+                acc += curr.childNodes[0].textContent;
+            }
+            break;
+        default:
+            break;
+    }
+    return acc;
+}
+
 function getTextBetweenElements(start, finish) {
     var curr = start.nextSibling;
     var acc = '';
@@ -263,28 +296,107 @@ function onTexCharChange(evt) {
 
     var range = window.getSelection().getRangeAt(0);
     var offset = range.startOffset;
-    var eqId = evt.currentTarget.id.substring(5);
+    var ch = currentNode.textContent[offset];
     var ele = $('#'+evt.currentTarget.id);
     var leVal = getFullStr(ele[0].childNodes);
-    var ch = currentNode.textContent[offset];
-    var diff = leVal.length - currentLength;
-/*
-    // bulk delete
-    if(leVal.length < currentLength && currentLength - leVal.length > 1) {
-        var i = 0;
-        while(i < Inserted.length) {
-            if(Inserted[i].loc >= offset && Inserted[i].loc < offset + (currentLength - leVal.length)) {
-                // if closing virtual is in the range of deleted characters, remove it from Inserted
-                Inserted.splice(i, 1);
-            } else if(Inserted[i].start >= offset && Inserted[i].start < offset + (currentLength - leVal.length)) {
-                // if opening for a closing virtual is in the range of deleted characters (but not the closing), make it concrete
-                Inserted.splice(i, 1);
-            } else {
-                i = i + 1;
+
+    
+    if(leVal.length > currentLength && leVal.length - currentLength == 1) {
+        for(var i = 0; i < Inserted.length; i++) {
+            if(currentNode.parentNode == Inserted[i].close) {
+                var enclosing = Inserted[i].close;
+                if(currentNode.textContent[0] == ')' || currentNode.textContent[0] == '}') {
+                    console.log('AAA');
+                    // character inserted after closer
+
+                    var text = getTextBetweenElementsInclusive(Inserted[i].open, Inserted[i].close);
+                    var curr = Inserted[i].open;
+                    var end = Inserted[i].close.nextSibling;
+                    var parentNode = Inserted[i].close.parentNode;
+
+                    while(curr != end) {
+                        var next = curr.nextSibling;
+                        curr.parentNode.removeChild(curr);
+                        curr = next;
+                    }
+                    var newText = document.createTextNode(text);
+                    parentNode.insertBefore(newText, end);
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
+                    currentNode = newText;
+                } else {
+                    console.log('BBB');
+                    // character inserted in front of closer
+                    var parentNode = Inserted[i].close.parentNode;
+                    currentNode.textContent = currentNode.textContent.slice(1);
+                    var newText = document.createTextNode(ch);
+                    parentNode.insertBefore(newText, Inserted[i].close);
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
+                    currentNode = newText;
+                }
+                break;
+            } else if(currentNode.parentNode == Inserted[i].open) {
+                var enclosing = Inserted[i].open;
+                if(currentNode.textContent[1] == '(' || currentNode.textContent[1] == '{') {
+                    console.log('CCC');
+                    // character inserted in front of opener
+                    var text = getTextBetweenElementsInclusive(Inserted[i].open, Inserted[i].close);
+                    var curr = Inserted[i].open;
+                    var end = Inserted[i].close.nextSibling;
+                    var parentNode = Inserted[i].close.parentNode;
+                    while(curr != end) {
+                        var next = curr.nextSibling;
+                        curr.parentNode.removeChild(curr);
+                        curr = next;
+                    }
+                    var newText = document.createTextNode(text);
+                    parentNode.insertBefore(newText, end);
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, 1);
+                    window.getSelection().getRangeAt(0).setEnd(newText, 1);
+                    currentNode = newText;
+                } else {
+                    console.log('DDD');
+                    // character inserted after opener
+                    var newText = null;
+                    var next = currentNode.parentNode.nextSibling;
+                    var prev = currentNode.parentNode;
+                    var parentNode = currentNode.parentNode.parentNode;
+                    currentNode.textContent = currentNode.textContent.slice(0,1);
+                    if(next == null || next.tagName == "SPAN") {
+                        console.log("DA");
+                        newText = document.createTextNode(ch);
+                        parentNode.insertBefore(newText, next);
+                    } else {
+                        console.log("DB");
+                        var text = next.textContent;
+                        text = ch + text;
+                        newText = document.createTextNode(text);
+                        parentNode.removeChild(next);
+                        parentNode.insertBefore(newText, prev.nextSibling);
+                    }
+                    /*
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, 1);
+                    window.getSelection().getRangeAt(0).setEnd(newText, 1);
+                    */
+                    currentNode = newText;
+                }
+                
+                break;
             }
         }
     }
-*/
+
+    range = window.getSelection().getRangeAt(0);
+    offset = range.startOffset;
+    //ch = currentNode.textContent[offset];
+    
+    var eqId = evt.currentTarget.id.substring(5);
+    var leVal = getFullStr(ele[0].childNodes);
+    var diff = leVal.length - currentLength;
+
     if(leVal.length < currentLength && currentLength - leVal.length == 1) {
         for(var i = 0; i < Inserted.length; i++) {
 
@@ -403,6 +515,7 @@ function onTexCharChange(evt) {
 
 
     // moved beyond the scope of a parens or braces
+    /*
     var i = 0;
     while(i < Inserted.length) {
         if(currentNode.parentNode == Inserted[i].close) {
@@ -446,25 +559,7 @@ function onTexCharChange(evt) {
             i = i + 1;
         }
     }
-/*
-    i = 0;
-    while(i < FuncInserted.length) {
-        if(FuncInserted[i].start <= offset && FuncInserted[i].start+4 > offset) {
-            diff = diff - 4;
-            if(ele.val() == leVal) {
-                ele.val(leVal.slice(0, FuncInserted[i].start)+ch+leVal.slice(FuncInserted[i].start+5));
-                leVal = ele.val();
-            } else {
-                ele.text(leVal.slice(0, FuncInserted[i].start)+ch+leVal.slice(FuncInserted[i].start+5));
-                leVal = ele.text();
-            }
-            window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], FuncInserted[i].start+1);
-            FuncInserted.splice(i, 1);
-            break;
-        }
-        i = i + 1;
-    }
-*/
+    */
 
 
     if(leVal.length - currentLength > 0) {
@@ -489,9 +584,14 @@ function onTexCharChange(evt) {
         }
     }
     leVal = getFullStr(ele[0].childNodes);
+    console.log('LEVAL is: '+leVal);
     MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
     inChange = false;
     currentLength = leVal.length;
+}
+
+function onSpanClick(evt) {
+    console.log(evt);
 }
 
 function getFullStr(children) {
