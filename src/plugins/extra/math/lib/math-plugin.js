@@ -61,58 +61,61 @@ function convertToConcrete(character, ele, leVal, currentOffset) {
 
     if(i != Inserted.length) {
         Inserted.splice(i, 1);
-        if(ele.val().length > 0) {
-            ele.val(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
-            leVal = ele.val();
-        } else {
-            ele.text(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
-            leVal = ele.text();
-        }
-        window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], currentOffset+1);
+        window.getSelection().getRangeAt(0).startContainer.parentElement.removeChild(window.getSelection().getRangeAt(0).startContainer.nextSibling);
     }
-    return leVal;
 }
 
 
 function insertFunc(ele, leVal, offset) {
-    if(ele.val() == leVal) {
-        ele.val(leVal.slice(0,offset+1)+'func'+leVal.slice(offset+1));
-        leVal = ele.val();
-    } else {
-        ele.text(leVal.slice(0,offset+1)+'func'+leVal.slice(offset+1));
-        leVal = ele.text();
-    }
-    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset+1);
+    generateInserted(offset+1, "func", "");
     FuncInserted.push({ start: offset+1 });
-    return leVal;
 }
 
 
 function insertBraces(ele, leVal, offset) {
-    if(ele.val() == leVal) {
-        ele.val(leVal.slice(0,offset+1)+'{}'+leVal.slice(offset+1));
-        leVal = ele.val();
-    } else {
-        ele.text(leVal.slice(0,offset+1)+'{}'+leVal.slice(offset+1));
-        leVal = ele.text();
-    }
-    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset+2);
-    Inserted.push({ start: offset+1, loc: offset+2, character: '}' });
-    return leVal;
+    generateInserted(offset+1, '}', '{');
 }
 
+function insertAfter(newChild, refChild) { 
+    refChild.parentNode.insertBefore(newChild,refChild.nextSibling); 
+} 
 
-function generateInserted(ele, leVal, offset, character) {
-    if(ele.val() == leVal) {
-        ele.val(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
-        leVal = ele.val();
-    } else {
-        ele.text(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
-        leVal = ele.text();
+
+function generateInserted(offset, character, additionalCharacter) {
+    var currentNode = window.getSelection().focusNode;
+    var completeStr = currentNode.textContent;
+
+    // happens if first character typed generates a virtual character
+    if(currentNode.nodeName == "DIV") {
+        currentNode = currentNode.childNodes[0];
     }
-    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset+1);
-    Inserted.push({ start: offset, loc: offset+1, character: character });
-    return leVal;
+
+    //var preEle = document.createTextNode(completeStr.slice(0,offset+1));
+    var replacement = document.createTextNode(completeStr.slice(0, offset+1)+additionalCharacter);
+    var postEle = null;
+    if(completeStr.slice(offset+1).length > 0) {
+        postEle = document.createTextNode(completeStr.slice(offset+1));
+    }
+    var newSpan = document.createElement('span');
+    var newText = document.createTextNode(character);
+    newSpan.style.background="#BBBBBB";
+    newSpan.appendChild(newText);
+
+
+    insertAfter(replacement, currentNode);
+    insertAfter(newSpan, replacement);
+    
+    if(postEle != null) {
+        insertAfter(postEle, newSpan);
+    }
+
+    currentNode.parentNode.removeChild(currentNode);
+
+    GENTICS.Utils.Dom.setCursorInto( replacement );
+    window.getSelection().getRangeAt(0).setStart(replacement, replacement.textContent.length);
+    window.getSelection().getRangeAt(0).setEnd(replacement, replacement.textContent.length);
+
+    Inserted.push({ start: offset, loc: offset+1, character: character, span: newSpan });
 }
 
 function onTexCharChange(evt) {
@@ -180,6 +183,10 @@ function onTexCharChange(evt) {
     var i = 0;
     while(i < Inserted.length) {
         if(offset > Inserted[i].loc || offset <= Inserted[i].start) {
+            var cur = Inserted[i];
+            var c = Inserted[i].span.childNodes[0].textContent;
+            Inserted[i].span.previousSibling.textContent += c;
+            Inserted[i].span.parentNode.removeChild(Inserted[i].span);
             Inserted.splice(i, 1);
         } else {
             i = i + 1;
@@ -249,26 +256,47 @@ function onTexCharChange(evt) {
         switch(ch) {
             case(')'):
             case('}'):
-                leVal = convertToConcrete(ch, ele, leVal, offset);
+                convertToConcrete(ch, ele, leVal, offset);
                 break;
             case('{'):
-                leVal = generateInserted(ele, leVal, offset, '}');
+                generateInserted(offset, '}', '');
                 break;
             case('('):
-                leVal = generateInserted(ele, leVal, offset, ')');
+                generateInserted(offset, ')', '');
                 break;
             case('^'):
             case('_'):
-                leVal = insertBraces(ele, leVal, offset);
+                insertBraces(ele, leVal, offset);
                 break;
             case('\\'):
-                leVal = insertFunc(ele, leVal, offset);
+                insertFunc(ele, leVal, offset);
                 break;
         }
     }
+    leVal = getFullStr(ele[0].childNodes);
     MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
     inChange = false;
     currentLength = leVal.length;
+}
+
+function getFullStr(children) {
+    var str = '';
+    for(var i = 0; i < children.length; i++) {
+        var ele = children[i];
+        switch(ele.nodeType) {
+            case(3):
+                str = str + ele.textContent;
+                break;
+            case(1):
+                if(ele.tagName=='SPAN') {
+                    str = str + ele.childNodes[0].textContent;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    return str;
 }
 
 function onAsciiCharChange(evt) {
@@ -302,7 +330,8 @@ function disableEditor() {
 function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, initValue, editableObj) {
     var newElId = wrapPrefix+cntEq;
     var range = Aloha.Selection.getRangeObject();
-    var newMathEditContainer = $('<div id="edit-'+newElId+'" style="padding:2px;min-height:28px;border:1px solid green;-moz-border-radius: 4px;-webkit-border-radius: 4px;-khtml-border-radius: 4px;border-radius: 4px;background-color:white;">'+initValue+'</div>');
+
+    var newMathEditContainer = $('<div id="edit-'+newElId+'" style="padding:2px;min-height:28px;border:1px solid green;-moz-border-radius: 4px;-webkit-border-radius: 4px;-khtml-border-radius: 4px;border-radius: 4px;background-color:white;"></div>');
     var newMathContainer = $('<div id="'+newElId+'" style="left;border:1px dotted grey">'+openDelimiter+closeDelimiter+'</div>');
 
     GENTICS.Utils.Dom.insertIntoDOM( newMathEditContainer, range, $( Aloha.activeEditable.obj ) );
@@ -311,6 +340,8 @@ function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction
     newMathEditContainer.bind('DOMCharacterDataModified', charChangeFunction);
     newMathEditContainer.bind('DOMNodeInserted', charChangeFunction);
     newMathEditContainer.hide();
+
+    var initText = document.createTextNode('');
 
     if(initValue == '') {
         MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
