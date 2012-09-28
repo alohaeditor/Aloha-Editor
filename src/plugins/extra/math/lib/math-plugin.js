@@ -47,18 +47,20 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
             var currentEditor = null;
             var currentLength = -1;
             var editorToOffset = { };
-            
+            // Holds the user preferences for rendering math
+            var aolDictionary = { };
+            var aol = 'radio_latex';
 
-            function convertToConcrete(character, ele, leVal, currentOffset) {
+            function convertToConcrete(character, element, leVal, currentOffset) {
                 for(var i = 0; i < Inserted.length; i++) {
                     if(Inserted[i].loc == currentOffset+1 && Inserted[i].character == character) {
                         Inserted.splice(i, 1);
-                        if(ele.val() == leVal) {
-                            ele.val(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
-                            leVal = ele.val();
+                        if(element.val() == leVal) {
+                            element.val(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
+                            leVal = element.val();
                         } else {
-                            ele.text(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
-                            leVal = ele.text();
+                            element.text(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
+                            leVal = element.text();
                         }
                         window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], currentOffset+1);
                         break;
@@ -67,30 +69,36 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 return leVal;
             }
 
-            function generateInserted(ele, leVal, offset, character) {
-                if(ele.val() == leVal) {
-                    ele.val(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
-                    leVal = ele.val();
+            function generateInserted(element, leVal, offset, character) {
+                if(element.val() == leVal) {
+                    element.val(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
+                    leVal = element.val();
                 } else {
-                    ele.text(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
-                    leVal = ele.text();
+                    element.text(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
+                    leVal = element.text();
                 }
                 window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset+1);
                 Inserted.push({ start: offset, loc: offset+1, character: character });
                 return leVal;
             }
            
-            function onTexCharChange(evt, arg) {
-                if(inChange) return;
+            function onTexCharChange(evt, mathEditorContainer, eqId) {
+                console.log("Updating LaTex, Id is: " + eqId);
+                //if(inChange) return;
                 inChange = true;
 
                 var range = window.getSelection().getRangeAt(0);
                 var offset = range.startOffset;
                 /*console.log(Inserted);
                 console.log(range.startOffset+" "+range.endOffset);*/
-                var eqId = evt.currentTarget.id.substring(5);
-                var ele = $('#'+evt.currentTarget.id);
-                var leVal = ele.val() || ele.text();
+                /*var eqId = evt.currentTarget.id.substring(5);
+                var element = $('#'+evt.currentTarget.id);*/
+                //var leVal = element.val() || element.text();
+                // Retrieves the original math from the 'editable'
+                var mathEditBox = mathEditorContainer.find(".math-source");
+                //var eqId = evt.currentTarget.id.substring(5);
+                var leVal = mathEditBox.text() || mathEditBox.val();
+                console.log("leVal is: " + leVal);
                 var ch = leVal[offset];
                 var diff = 1;
 
@@ -103,12 +111,12 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                         if(offset == Inserted[i].start && Inserted[i].loc == Inserted[i].start + 1) {
                             diff = diff + 1;
 
-                           if(ele.val() == leVal) {
-                                ele.val(leVal.slice(0,offset)+leVal.slice(offset+1));
-                                leVal = ele.val();
+                           if(mathEditBox.val() == leVal) {
+                                mathEditBox.val(leVal.slice(0,offset)+leVal.slice(offset+1));
+                                leVal = mathEditBox.val();
                             } else {
-                                ele.text(leVal.slice(0,offset)+leVal.slice(offset+1));
-                                leVal = ele.text();
+                                mathEditBox.text(leVal.slice(0,offset)+leVal.slice(offset+1));
+                                leVal = mathEditBox.text();
                             }
                             Inserted.splice(i, 1);
                             window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset);
@@ -146,30 +154,37 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                         } else {
                             Inserted[i].loc = Inserted[i].loc + diff;
                         }
-                    }
+                   } 
                 }
 
                 switch(ch) {
                     case(')'):
                     case('}'):
-                        leVal = convertToConcrete(ch, ele, leVal, offset);
+                        leVal = convertToConcrete(ch, mathEditBox, leVal, offset);
                         break;
                     case('{'):
-                        leVal = generateInserted(ele, leVal, offset, '}');
+                        leVal = generateInserted(mathEditBox, leVal, offset, '}');
                         break;
                     case('('):
-                        leVal = generateInserted(ele, leVal, offset, ')');
+                        leVal = generateInserted(mathEditBox, leVal, offset, ')');
                         break;
                 }
+                // Updates the mathjax element with the new text
                 MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
                 inChange = false;
                 currentLength = leVal.length;
             }
 
-            function onAsciiCharChange(evt) {
-                var eqId = evt.currentTarget.id.substring(5);
-                var ele = $('#'+evt.currentTarget.id);
-                var leVal = ele.val() || ele.text();
+            function onAsciiCharChange(evt,  mathEditorContainer, eqId) {
+                // var eqId = evt.currentTarget.id.substring(5);
+                console.log("Refreshing ascii rendering");
+                var mathEditBox = mathEditorContainer.find(".math-source");
+                //var eqId = evt.currentTarget.id.substring(5);
+                // var mathEditBox = $('#'+evt.currentTarget.id);
+                // var leVal = mathEditBox.val() || mathEditBox.text();
+                var leVal = mathEditBox.text() || mathEditBox.val();
+                console.log("The ascii eqid is: " + eqId);
+                console.log("The retrieved value is: " + leVal);
                 MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],leVal]);
             }
 
@@ -194,41 +209,52 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                 }
             }
 
-            function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, initValue, editableObj) {
+            function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj, newMathEditContainer) {
                 var newElId = wrapPrefix+cntEq;
                 var range = Aloha.Selection.getRangeObject();
-                var newMathEditContainer = $('<div id="edit-'+newElId+'" style="padding:2px;min-height:28px;border:1px solid green;-moz-border-radius: 4px;-webkit-border-radius: 4px;-khtml-border-radius: 4px;border-radius: 4px;background-color:white;">'+initValue+'</div>');
-                var newMathContainer = $('<div id="'+newElId+'" style="left;border:1px dotted grey">'+openDelimiter+closeDelimiter+'</div>');
-                
-                GENTICS.Utils.Dom.insertIntoDOM( newMathEditContainer, range, $( Aloha.activeEditable.obj ) );
-                GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $( Aloha.activeEditable.obj ) );
-                GENTICS.Utils.Dom.setCursorInto( newMathEditContainer[0] );
-                newMathEditContainer.bind('DOMCharacterDataModified', charChangeFunction);
-                newMathEditContainer.bind('DOMNodeInserted', charChangeFunction);
-                newMathEditContainer.hide();
-               
-                if(initValue == '') {
+                //pasteHtmlAtCaret('<span id="" class="MathJax selected MathBoxNew" contenteditable="false">' + exText + '</span>');
+                var newMathContainer = $('<div id="'+newElId+'" class="MathBox MathBoxNew selected">'+openDelimiter + closeDelimiter+'</div>');
+                //class="MathBoxNew"
+                //class="MathBox selected MathBoxNew"
+                //var newMathEditContainer = $(buildMathEditor());
+                // Sets the id of the math editor
+                //newMathEditContainer.attr("id", "edit-'+newElId+'");
+                //pasteHtmlAtCaret(newMathContainer);
+                //var newMathEditContainer = $('<div id="edit-'+newElId+'" style="padding:2px;min-height:28px;border:1px solid green;-moz-border-radius: 4px;-webkit-border-radius: 4px;-khtml-border-radius: 4px;border-radius: 4px;background-color:white;">'+initValue+'</div>');
+                // var newMathContainer = $('<div id="'+newElId+'" class="MathBox selected" style="left;border:1px dotted grey">'+openDelimiter+closeDelimiter+'</div>');
+
+               /* Generates the math editor */ 
+                GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $( Aloha.activeEditable.obj ) ); // Inserts the math container into the aloha 'editable' object
+               // GENTICS.Utils.Dom.insertIntoDOM( newMathEditContainer, range, $( Aloha.activeEditable.obj ) );
+               // GENTICS.Utils.Dom.setCursorInto( newMathEditContainer[0] );
+        
+                //newMathEditContainer.hide();
+               console.log("ID is: " + newElId);
+                if(equation == '' || equation == "&nbsp\;") {
                     MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
-                        enableEditor(newMathEditContainer, 0);
+                        console.log("Finished typsetting");
+                        //enableEditor(newMathEditContainer, 0);
                     }]);
-                } else {
+                } 
+                else {
 
                     if(openDelimiter == '${') {
 
                         MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
-                               enableEditor(newMathEditContainer, initValue.length);
-                               MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],"\\displaystyle{"+initValue+"}"]);
+                               //enableEditor(newMathEditContainer, initValue.length);
+                               MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],"\\displaystyle{"+equation+"}"]);
                         }]);
-                    } else {
+                    } 
+                    else {
 
                         MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
-                               enableEditor(newMathEditContainer, initValue.length);
-                               MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],initValue]);
+                               // enableEditor(newMathEditContainer, initValue.length);
+                               MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],equation]);
                         }]);
                     }
                 }
                                     
-                var blurout = function()
+               /* var blurout = function()
                 {
                     Inserted = [];
                     disableEditor();
@@ -252,22 +278,23 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
                         }
                         disableEditor();
                     }
-                };
+                };*/
 
 /*
                 $(editableObj).on('blur focusout', blurout);
                 $(editableObj).on('click', editableClickBlurout);
 */
-                newMathEditContainer.on('focusout', blurout);
-                newMathEditContainer.on('blur', blurout);
+                // newMathEditContainer.on('focusout', blurout);
+                // newMathEditContainer.on('blur', blurout);
                 
-                newMathContainer.on('click', function()
+                /*newMathContainer.on('click', function()
                 {
                     Inserted = [];
                     enableEditor(newMathEditContainer, newMathEditContainer.val() ? newMathEditContainer.val().length : newMathEditContainer.text().length );
-                });
+                });*/
 
                 cntEq++;
+                return newElId; // Returns the id of the newly inserted math element
 
             }
 
@@ -293,7 +320,7 @@ function( plugin, $, ui, button, attributeField, scopes, floatingMenu )
             }
  function insertToolbar() {
     var popOutHtml = buildMathEditor();
-    popOutHtml = '<span id="MathJaxNew" class="MathJax selected" contenteditable="false"' + popOutHtml + '</span>';
+    popOutHtml = '<span id="" class="MathBox selected MathBoxNew" contenteditable="false"' + popOutHtml + '</span>';
     $("#content").append(popOutHtml);
     //$(document.body).append(popOUt);
     //pasteHtmlAtCaret(popOUt);
@@ -336,17 +363,20 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
 
   // Adds a new editor every time the math button is entered
 
-  function mathClickNew(e) {
-    var aol = 'aol-latex';
+/* 
+ * Converts text to ASCII math or LaTex if the user selected some text.
+ * If not it provides the user with a math-editor
+*/
+  function mathClickNew(openDelimiter, closeDelimiter, charChangeFunction) {
     console.log("mathClickNew ");
-    var exText = getSelectionText();
-    if (exText == '') {
-      exText = '&nbsp\;';
-      pasteHtmlAtCaret('<span id="MathJaxNew" class="MathJax selected" contenteditable="false">' + exText + '</span>');
+    var equation = getSelectionText();
+    // Pops up the math-editor if the user hasn't selected text
+    if (equation == '') {
+      equation = "&nbsp\;";
 
      /* $("[class*='-header']").die("mouseenter mouseleave"); // Turning hovers off (temporarily)
       $(".canvas-wrap").die("mouseenter mouseleave"); // Have to do this one separately from above, apparently
-      $(".MathJax").die("mouseenter mouseleave");
+      $(".MathBox").die("mouseenter mouseleave");
       $("table caption").die("mouseenter mouseleave");*/
       // cwLeave($(".canvas-wrap"),"special");
 
@@ -354,25 +384,74 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       $('button[title="Math"]').addClass("selected");
     
       console.log("Building the math editor");
-      var mec = buildMathEditor();
-      
-      var m = $("#MathJaxNew");
-      m.prepend(mec);
-      if (aol == 'aol-latex') {
-        m.find("#radio_latex").attr("checked",true);
-      } else {
-        m.find("#radio_ascii").attr("checked",true);
+      var mathEditor = buildMathEditor();
+      console.log("Delimiter is: " + openDelimiter);
+    // pasteHtmlAtCaret('<span id="" class="MathBox selected MathBoxNew" contenteditable="false">' + exText + '</span>');
+     var newElId = generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj)
+      // Retrieves the html element(which has the selected text) it just inserted to the document
+      var mathEditorContainer = $(".MathBoxNew");
+      // Inserts the math editor
+      mathEditorContainer.prepend(mathEditor);
+      console.log("Editor text is: " + $(".math-editor").find(".math-source").text());
+      //console.log("The radio button is currently: " + aol);
+      // Sets the radio button depending on the saved global preferences. Optional if Kathi wants this feature
+      if (aol == 'radio_latex') {
+        console.log("Checking latex radio");
+        mathEditorContainer.find("#radio_latex").attr('checked','checked');
+      } 
+
+      else {
+        console.log("Checking ascii radio");
+        mathEditorContainer.find("#radio_ascii").attr('checked','checked');
+        // mathEditorContainer.find("#radio_latex").attr("checked",false);
+
       }
-      //m.removeClass("temporarily-hide");
-      var newB = m.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
-      var newL = m.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
+      //mathEditorContainer.removeClass("temporarily-hide");
+      var newB = mathEditorContainer.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
+      var newL = mathEditorContainer.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
       $(".math-editor").css("bottom", newB + "px");
       $(".math-editor").css("left", newL + "px");
-      if (exText == '&nbsp;') {
-        m.find(".math-source").append('<span class="math-source-hint-text">Enter your math notation here</span>');
+
+       /* Changes the update function based on what radio button is chosen */
+       mathEditorContainer.find("#radio_latex").on("click", function(e){
+            console.log("Changing update function");
+            charChangeFunction = onTexCharChange;
+            /* Updates the current equation */
+            charChangeFunction(e, $(".math-editor"), newElId);
+
+        });
+       mathEditorContainer.find("#radio_ascii").on("click", function(e){
+            console.log("Changing the update function");
+            charChangeFunction = onAsciiCharChange;
+            /* Updates the current equation */
+            charChangeFunction(e, $(".math-editor"), newElId);
+        });
+      // Updates the generated math as the user modifies it
+      $(".math-editor").find(".math-source-wrap").on('DOMCharacterDataModified', function(e) {
+        /* Replaces the current text with a '&nbsp;' if the user removes all the text */
+        var text = $(".math-editor").find(".math-source").text();
+        if (text == '') {
+            $(".math-editor").find(".math-source").append("&nbsp\;");
+            console.log("Inserted nbsp");
+        }
+        else {
+            console.log("Text is:" + text);
+        }
+
+        console.log("Editor text is: " + $(".math-editor").find(".math-source").text());
+        charChangeFunction(e, $(".math-editor"), newElId);
+       });
+      $(".math-editor").find(".math-source-wrap").on('DOMNodeInserted', function(e) {
+        console.log("Editor text is: " + $(".math-editor").find(".math-source").text());
+        charChangeFunction(e, $(".math-editor"), newElId);
+    });
+      /* If the math-editor is empty then it's replaced w/ default text */
+      if (equation == "&nbsp\;") {
+        mathEditorContainer.find(".math-source").append('<span class="math-source-hint-text">Enter your math notation here</span>');
       } 
       else {
-        m.find(".math-source").append(exText);
+        /* Appends the equation to the text in the editor */
+        mathEditorContainer.find(".math-source").append(equation);
         placeCaretAtEnd($(".math-source").get(0));
       }
       /*if ( $("#cheat-sheet").css("display") != 'none' ) $("#cheat-sheet-activator").attr("checked",true);
@@ -382,77 +461,100 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
 
 
     } 
+    /* If the user selects text then that text is converted to whatever was selected */
     else {
 
-      pasteHtmlAtCaret('<span id="MathJaxNew" class="MathJax" contenteditable="false"><span class="MathJaxText">' + exText + '</span></span>');
+      // pasteHtmlAtCaret('<span id="" class="MathBox MathBoxNew" contenteditable="false"><span class="MathJaxText">' + exText + '</span></span>');
+      generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj, null);
       // Changes status of math button to be 'unselected'
       $('button[title="Math"]').removeClass("selected");
-      $("#MathJaxNew").removeAttr("id").effect("highlight", { color: "#E5EEF5" }, 1000);
+      $(".MathBoxNew").removeAttr("id").effect("highlight", { color: "#E5EEF5" }, 1000);
 
     }
-
     // e.stopPropagation();
     //e.preventDefault();
 
   }
+
   function mathEditorRemove(override) {
-      console.log("mathEditorRemove");
-//    if (!$("#MathJaxNew").length || override.length) { // Hack because propagation doesn't seem to be stopping in mathClickNew2
-      $(".MathJax").removeClass("selected");
-      $(".MathJax").removeClass("hovered");
+      console.log("mathEditorRemove, override is: " + override);
+      // If the new math element is empty then unselect and unhover it
+      $(".MathBox").removeClass("selected");
+      $(".MathBox").removeClass("hovered");
       // This is only related to the math cheat sheet
       /*if ($("#cheat-sheet-wrap").css("display") != 'none') {
         $("#cheat-sheet-wrap").slideDown("fast", function(e){
           $(this).hide();
         });
       }*/
-      var mj = $(".math-editor").closest(".MathJax");
-      var ms = $(".math-editor").find(".math-source").text();
+      // Retrieves the closest mathjax element
+      var mathJax = $(".math-editor").closest(".MathBox");
+      // Retrieves the math editor's text
+      var mathSource = $(".math-editor").find(".math-source").text();
       /* Checks if the override's string length is non zero or the 'radio button(I don't know which yet) is checked' 
          And that  the hint text is zero
         */
+     // Sets the user preferences to the id of which radio button is checked {}
+      var newAol = $(".math-editor").find('input[name="math-type"]:checked').attr("id");
+      // Saves the preference of the rendering to the global aolDictionary so that their preferenc will be saved depending on which equation they're editing
+      if (newAol != null && mathJax != null) {
+        aol = newAol;      
+        aolDictionary[mathJax.attr("id")] = aol;
+        console.log("Adding a new aol: " + aol + " with id: " + mathJax.attr("id"));
 
+    }
+    
       if ((override.length || $("#radio_regular").is(":checked")) && !$(".math-source-hint-text").length) {
-        if (ms == "&nbsp\;") {
-          mj.replaceWith("");
+        if (mathSource == "&nbsp\;") {
+            // If the math source only has a 'standard space' simply replace it with empty text?
+          //mathJax.replaceWith("");
         } 
         else {
-          mj.replaceWith(ms);
+            // Otherwise update it with the next text
+          // /mathJax.replaceWith(mathSource);
         }
       } 
       else {
-        if (!mj.find(".asciimath").length) { // This just not to mess up the nice examples in the mock-up.
-          if (!ms.trim().length || $("#MathJaxNew").find(".math-source-hint-text").length) {
-            mj.remove();
+        // Removes the mathjax element if the editor is empty
+        if (!mathJax.find(".asciimath").length) { 
+          if (!mathSource.trim().length || $(".MathBoxNew").find(".math-source-hint-text").length) {
+            mathJax.remove();
           } 
           else {
-            mj.html('<span class="MathJaxText">' + ms + '</span>');
+            //mathJax.html('<span class="MathJaxText">' + mathSource + '</span>');
           }
         }
       }
+
+      // Removes every math editor open
       $(".math-editor").remove();
       $('button[title="Math"]').removeClass("selected"); //Unselects the button
-      // Removes every math editor
-      $(".MathJax").each(function(){
-        if ($(this).attr("id") == 'MathJaxNew') {
-          $(this).removeAttr("id");
+      // For every math element it removes the 'MathBoxNew' class from the element
+      $(".MathBox").each(function(){
+        if ($(this).hasClass('MathBoxNew')) {
+          $(this).removeClass("MathBoxNew"); // Removes its 'new status from it'
         }
       });
     }
-    // Sets a callback on the aloha button by looking for an element whose title=math
+    /* Sets a callback on the aloha button by looking for an element whose title=math,
+     * This is used to prevent the math editor being closed by another callback function keyed on the entire html document. 
+     * it does this by calling e.stopPropogation()
+     */
+
     $('button[title="Math"]').live("click", function(e) {
         console.log("Button being clicked");
         e.stopPropagation();
     });
-  $(".MathJax").live("mouseenter", function(e){
+    /* Generates events everytime the inserted equation is being interacted with */
+  $(".MathBox").live("mouseenter", function(e){
     console.log("Editor being entered");
     mathEnter($(this),e);
   });
-  $(".MathJax").live("mouseleave", function(e){
+  $(".MathBox").live("mouseleave", function(e){
     console.log("Editor being left");    
     mathLeave($(this),e);
   });
-  $(".MathJax:not(.selected)").live("click", function(e){
+  $(".MathBox:not(.selected)").live("click", function(e){
     console.log("Editor not selected?");    
     mathClick($(this),e);
 
@@ -464,46 +566,132 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
   });
 
 
-
+  function removeMathWrapper(mathText) {
+    /*var latexRegexPattern = "(?<=\\displaystyle{)(.*)(?=})";
+    latexRegexPattern = "\\displaystyle{.*}";*/
+    var latexRegex = /\\displaystyle{(.*)}/;
+    var asciiRegex = /`(.*)`}/; 
+    var actualMathTextFromLatex = latexRegex.exec(mathText);
+    var actualMathTextFromAscii = asciiRegex.exec(mathText);
+    var actualMathText = actualMathTextFromLatex || actualMathTextFromAscii;
+    if (actualMathText == null) {
+        return mathText;       
+    }
+    return actualMathText[1];
+  }
   function meClick(me,e) {
     e.stopPropagation();
   };
-function mathClick(m,e) {
+function mathClick(mathEditorContainer, e) {
 
    /* $("[class*='-header']").die("mouseenter mouseleave"); // Turning hovers off (temporarily)
    // $(".canvas-wrap").die("mouseenter mouseleave"); // Have to do this one separately from above, apparently
-    $(".MathJax").die("mouseenter mouseleave");
+    $(".MathBox").die("mouseenter mouseleave");
     $("table caption").die("mouseenter mouseleave");*/
     console.log("Math click being called");
    /* cwLeave($(".canvas-wrap"),"special");*/
-
-    if(!m.find(".math-editor").length) {
+    var charChangeFunction, elementId;
+    if(!mathEditorContainer.find(".math-editor").length) {
       mathEditorRemove("");
-      m.find('#math-icon-edit').remove();
-      m.find('#math-icon-clear').remove();
-      m.removeAttr("title");
-      m.addClass("selected");
+      mathEditorContainer.find('#math-icon-edit').remove();
+      mathEditorContainer.find('#math-icon-clear').remove();
+      mathEditorContainer.removeAttr("title");
+      mathEditorContainer.addClass("selected");
       // Changes status of button to selected
       $('button[title="Math"]').addClass("selected");
+      /* Inserts the math editor */
+      var mathEditor = buildMathEditor(mathEditorContainer,e);
+      mathEditorContainer.prepend(mathEditor);
+      var mathtext = mathEditorContainer.find(".asciimath").text(); // Don't quite know what this is supposed to do
+      // Retrieves the  id of the mathjax element
+      elementId = mathEditorContainer.closest(".MathBox").attr("id");
+      console.log("Actual math text is: " + actualMathText);
+      // Retrieves the original math text by searching for the mathjax element
+      var actualMathText = mathEditorContainer.find('[id^="MathJax-Element-*"], [type^="math/"]').text();
+      // Retrieves the user rendering preferences for the selected mathjax element. If it can't find it's value then it uses the default value
+      var savedAol = aolDictionary[elementId] || 'radio_latex';
+      console.log("Retrieved aol with an id of: " + elementId + " is: " + savedAol);
 
-      var mec = buildMathEditor(m,e);
-      m.prepend(mec);
-      var mathtext = m.find(".asciimath").text();
-      if (mathtext.length) {
-        m.find(".math-source").append(mathtext);
-      } else if ( m.find(".MathJaxText, .MathJaxText2").text().length ) {
-        m.find(".math-source").append(m.find(".MathJaxText, .MathJaxText2").text());
-      } else {
-        m.find(".math-source").append("&nbsp;");
+    // Checks the radio button based on what was last chosen, then sets the update function based on what the user chooses
+      if ( savedAol == 'radio_latex') {
+        mathEditorContainer.find("#radio_latex").attr('checked','checked');
+        charChangeFunction = onTexCharChange;
+        actualMathText = removeMathWrapper(actualMathText);
+      } 
+      else 
+      {
+        mathEditorContainer.find("#radio_ascii").attr('checked','checked');
+        charChangeFunction = onAsciiCharChange;
+        console.log("Setting the onAsciiCharChange");
+        actualMathText = removeMathWrapper(actualMathText);
+        console.log("The retrieved math looks like: " + actualMathText);
       }
-      newB = m.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
-      newL = m.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
+      if (mathtext.length) {
+        console.log("themathtext is not empty");
+        mathEditorContainer.find(".math-source").append(mathtext);
+      } 
+      else if (actualMathText.length) {
+        // Drops the text into the math editor if the text is non-empty
+        mathEditorContainer.find(".math-source").append(actualMathText);
+      } 
+      else {
+        // Otherwise  it just appends nbsp
+        mathEditorContainer.find(".math-source").append("&nbsp\;");
+      }
+    
+      // Repositions the editor next to the mathjax
+      var newB = mathEditorContainer.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
+      var newL = mathEditorContainer.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
       $(".math-editor").css("bottom", newB + "px");
       $(".math-editor").css("left", newL + "px");
       placeCaretAtEnd($(".math-source").get(0));
-    } else {
+    } 
+    else {
+      /*elementId = $("#content").find('[id^="eqprefix-"]').attr("id");
+             // Retrieves the user rendering preferences for the selected mathjax element. If it can't find it's value then it uses the default value
+      var savedAol = aolDictionary[elementId] || 'radio_latex';
+      console.log("Retrieved aol with an id of: " + elementId + " is: " + savedAol);
+    // Checks the radio button based on what was last chosen, then sets the update function based on what the user chooses
+      if ( savedAol == 'radio_latex') {
+        mathEditorContainer.find("#radio_latex").attr("checked",true);
+        charChangeFunction = onTexCharChange;
+      } 
+      else {
+        mathEditorContainer.find("#radio_ascii").attr("checked",true);
+        charChangeFunction = onAsciiCharChange;
+      }*/
       placeCaretAtEnd($(".math-source").get(0));
     }
+    /* Changes the update function based on what radio button is chosen */
+    mathEditorContainer.find("#radio_latex").on("click", function(e){
+        console.log("changing update function");
+        charChangeFunction = onTexCharChange;
+        /* Updates the current equation */
+        charChangeFunction(e, $(".math-editor"), elementId);
+
+    });
+   mathEditorContainer.find("#radio_ascii").on("click", function(e){
+        console.log("changing update function");
+        charChangeFunction = onAsciiCharChange;
+        /* Updates the current equation */
+        charChangeFunction(e, $(".math-editor"), elementId);
+    });
+    // Updates the generated math as the user modifies it
+      $(".math-editor").find(".math-source-wrap").on('DOMCharacterDataModified', function(e) {
+        /* Replaces the current text with a '&nbsp;' if the user removes all the text */
+        var text = $(".math-editor").find(".math-source").text();
+        if (text == '') {
+            $(".math-editor").find(".math-source").append("&nbsp\;");
+            console.log("Inserted nbsp");
+        }
+        console.log("Editor text is: " + $(".math-editor").find(".math-source").text());
+        charChangeFunction(e, $(".math-editor"), elementId);
+    });
+      $(".math-editor").find(".math-source-wrap").on('DOMNodeInserted', function(e) {
+        console.log("Editor text is: " + $(".math-editor").find(".math-source").text());
+        charChangeFunction(e, $(".math-editor"), elementId);
+    });
+     
     /*if ( $("#cheat-sheet").css("display") != 'none' ) $("#cheat-sheet-activator").attr("checked",true);
     $("#cheat-sheet-wrap").slideUp("fast", function(e){
       $(this).show();
@@ -512,7 +700,7 @@ function mathClick(m,e) {
   }
 
   $(".math-source").live("click", function(e){
-    $(this).find(".math-source-hint-text").replaceWith("&nbsp;");
+    $(this).find(".math-source-hint-text").replaceWith("&nbsp\;");
   });
 function getSelectionText() { // from Tim Down at http://stackoverflow.com/questions/5379120/jquery-get-the-highlighted-text
     var text = "";
@@ -540,16 +728,16 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
         textRange.select();
     }
   }
-    function mathLeave(m,e) {
-    if(!m.find(".math-editor").length) {
-      m.removeClass("selected");
+    function mathLeave(mathEditorContainer,e) {
+    if(!mathEditorContainer.find(".math-editor").length) {
+      mathEditorContainer.removeClass("selected");
     }
-    m.removeClass("hovered");
-    m.removeAttr("title");
-    m.find('#math-icon-edit').remove();
-    m.find('#math-icon-clear').remove();
-  /*  if ( !m.parents().closest(".active").length) {
-      m.parent().closest('.canvas-wrap').each(function(){
+    mathEditorContainer.removeClass("hovered");
+    mathEditorContainer.removeAttr("title");
+    mathEditorContainer.find('#math-icon-edit').remove();
+    mathEditorContainer.find('#math-icon-clear').remove();
+  /*  if ( !mathEditorContainer.parents().closest(".active").length) {
+      mathEditorContainer.parent().closest('.canvas-wrap').each(function(){
         $(this).children().children().children('.canvas-buddy, .canvas-buddy-2').show();
         $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').show();
         $(this).children('.canvas').addClass("canvas-hovered");
@@ -557,7 +745,7 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
     }*/
   }
 
-   function mathEnter(m,e) {
+   function mathEnter(mathEditorContainer,e) {
     
     /* Wraps the text */
     /*$('.canvas-wrap').each(function(){
@@ -565,42 +753,37 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
       $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
       $(this).children('.canvas').removeClass("canvas-hovered");
     });*/
-    //console.log("Entering math")
-    m.addClass("hovered");
+    console.log("Entering math");
+    mathEditorContainer.addClass("hovered");
     // If the length is zero then add the original text back
-    if(!m.find(".math-editor").length) {
-      m.attr("title","Click anywhere on the math to edit it");
-      m.append('<span class="math-icon" id="math-icon-edit"><span class="math-icon-message">Click anywhere on the math to edit it</span></span>');
-      m.append('<span class="math-icon" id="math-icon-clear"><span class="math-icon-message"><span class="math-icon-message-close">X</span> Remove math formatting (revert to plain text)</span></span>');
+    if(!mathEditorContainer.find(".math-editor").length) {
+      mathEditorContainer.attr("title","Click anywhere on the math to edit it");
+      mathEditorContainer.append('<span class="math-icon" id="math-icon-edit"><span class="math-icon-message">Click anywhere on the math to edit it</span></span>');
+      mathEditorContainer.append('<span class="math-icon" id="math-icon-clear"><span class="math-icon-message"><span class="math-icon-message-close">X</span> Remove math formatting (revert to plain text)</span></span>');
     }
     e.stopPropagation();
   }
   // Removes the math editor when the html document is clicked. I don't know where the '.math-done' class is used b/c  I don't see it used in the page
    $("html, .math-editor-close, .math-done").live("click", function(e){
-/*
-    if ($(this).hasClass("math-editor-close")) {
-      mathEditorRemove("override");
-    } else {
-*/    console.log("Removing the math editor");
+      console.log("Removing the math editor");
       mathEditorRemove("");
-/*
-    }
-*/
-    $(".MathJax").live("mouseenter", function(e){
+    /* Establishes a listener for mouse movements to on the math mathjax box */
+    $(".MathBox").live("mouseenter", function(e){
       mathEnter($(this),e);
     });
-    $(".MathJax").live("mouseleave", function(e){
+    $(".MathBox").live("mouseleave", function(e){
       mathLeave($(this),e);
     });
 
-  });
+   });
 
   $(".math-editor").live("click", function(e){
         console.log("Stopping propagation");
         meClick($(this),e);
   });
+  /* Builds the math editor html */
 
-  function buildMathEditor(m,e) {
+  function buildMathEditor(mathEditorContainer,e) {
     var ed = '<div class="math-editor" contenteditable="false" id="meditor">\
         <span class="math-editor-close">\
           <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">\
@@ -614,7 +797,7 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
         <div class="math-options-activate">\
           This is:\
           <input type="radio" name="math-type" id="radio_ascii" value="ascii" checked="checked"> <label for="radio_ascii">ASCIIMath</label>\
-          <input type="radio" name="math-type" id="radio_latex" value="latex"> <label for="radio_latex">LaTeX</label>\
+          <input type="radio" name="math-type" id="radio_latex" value="latex" checked=""> <label for="radio_latex">LaTeX</label>\
           <span id="math-type-help" class="math-help" style="display: none\;">(<a href="#asdfasdf">what\'s this?</a>)</span>\
         </div>\
         <div id="cheat-sheet-activate" style="text-align: right\; display: block\;">\
@@ -664,14 +847,16 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
   }
             
             scopes.createScope('math', 'Aloha.empty');
-            
+            /* Configure the 'insert latex' math */
             self._mathCtrl = ui.adopt( 'characterPicker'/*"math"*/, button, 
             {
                 tooltip: 'Math', /*i18n.t('button.addmath.tooltip'),*/
-                icon: "M",
+                icon: "mathEditorContainer",
                 click: function() {
                     console.log("Math button being clicked");
-                    mathClickNew();
+                    // Generates a new math editor
+                    mathClickNew('${','}$', onTexCharChange);
+                    aol = radio_latex;
                     // e.stopPropagation();
                 }
                 /*onclick: function() {
@@ -690,14 +875,18 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
                     { 
                         $(MathJax.Hub.getAllJax()).each(function()
                         { 
+                            console.log("Initializing...?");
                             var elfr = $('#'+this.inputID+'-Frame'),
                                 el = $('#'+this.inputID),
                                 elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0),
                                 eqWrapper = $('<span id="'+wrapPrefix+cntEq+'" />').insertBefore(elpr)
                                     .append(elpr).append(elfr).append(el)
                                     .data('equation', this.originalText);
+                           console.log("elfr is: " + elfr) ;
+                           console.log("el is: " + el );
+                           console.log("elpr is: " + elpr);
                             
-                            cntEq++;
+                           cntEq++;
                         }); 
                     }]);
                 })();
@@ -711,19 +900,27 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
                 
                 editable.obj.bind('keydown', self.hotKey.insertTexMath, function() 
                 {
-                    generateMathContainer('${','}$', onTexCharChange, '', editable.obj);
+                    //generateMathContainer('${','}$', onTexCharChange, '', editable.obj);
+                    aol = 'radio_latex';
+                    mathClickNew('${','}$', onTexCharChange); // Generates a new math container and binds the 'latex' callback function
                 });
 
                 editable.obj.bind('keydown', self.hotKey.insertAsciiMath, function() 
                 {
-                    generateMathContainer('`','`', onAsciiCharChange, '', editable.obj);
+                    //generateMathContainer('`','`', onAsciiCharChange, '', editable.obj);
+                    aol = 'radio_ascii';
+                    mathClickNew('`','`', onAsciiCharChange); // Generates a new math container and binds the 'asciimath' callback functoin
+                    console.log("Setting the radio default");
                 });
                 editable.obj.bind('keydown', self.hotKey.insertMLMath, function() 
                 {
-                    generateMathContainer('<math>','</math>', onAsciiCharChange, '', editable.obj);
+                    // generateMathContainer('<math>','</math>', onAsciiCharChange, '', editable.obj);
+                    aol = 'radio_mathml';
+                    mathClickNew('<math>','</math>', onAsciiCharChange); // Generates a new math container and binds the 'asciimathml' callback functoin
                 });
             });
 
         }
     });
 });
+    
