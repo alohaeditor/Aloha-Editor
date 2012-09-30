@@ -301,6 +301,7 @@ function hasChild(parentNode, childNode) {
 }
 
 function onTexCharChange(evt, mathEditorContainer, eqId) {
+    console.log('Entering onTexChange '+inChange)
     if(inChange) return;
     inChange = true;
 
@@ -316,7 +317,8 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     var offset = range.startOffset;
     var ch = currentNode.textContent[offset];
     var ele = $('#'+evt.currentTarget.id);
-    var leVal = getFullStr(mathEditBox.childNodes);
+    var leVal = getFullStr(mathEditBox[0].childNodes);
+    console.log('onTexChange Checkpoint 1')
 
     var i = 0;
     while(i < Inserted.length) {
@@ -340,6 +342,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         }
     }
 
+    console.log('onTexChange Checkpoint 2')
     if(leVal.length > currentLength && leVal.length - currentLength == 1) {
         for(var i = 0; i < Inserted.length; i++) {
             if(currentNode.parentNode == Inserted[i].close) {
@@ -429,13 +432,14 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             }
         }
     }
+    console.log('onTexChange Checkpoint 3')
 
     range = window.getSelection().getRangeAt(0);
     offset = range.startOffset;
     //ch = currentNode.textContent[offset];
     
     var eqId = evt.currentTarget.id.substring(5);
-    var leVal = getFullStr(mathEditBox.childNodes);
+    var leVal = getFullStr(mathEditBox[0].childNodes);
     var diff = leVal.length - currentLength;
 
 
@@ -490,12 +494,13 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                 }
             }
         }
-        leVal = getFullStr(mathEditBox.childNodes);
+        leVal = getFullStr(mathEditBox[0].childNodes);
         MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
         inChange = false;
         currentLength = leVal.length;
         return;
     }
+    console.log('onTexChange Checkpoint 4')
 
     if(leVal.length < currentLength && currentLength - leVal.length == 1) {
         for(var i = 0; i < Inserted.length; i++) {
@@ -537,7 +542,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                         Inserted.splice(i, 1);
                     }
 
-                    leVal = getFullStr(mathEditBox.childNodes);
+                    leVal = getFullStr(mathEditBox[0].childNodes);
                     MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
                     inChange = false;
                     currentLength = leVal.length;
@@ -570,7 +575,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                         Inserted[i].splice(i, 1);
                     }
 
-                    leVal = getFullStr(mathEditBox.childNodes);
+                    leVal = getFullStr(mathEditBox[0].childNodes);
                     MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
                     inChange = false;
                     currentLength = leVal.length;
@@ -604,7 +609,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                     Inserted[i].splice(i, 1);
                 }
 
-                leVal = getFullStr(mathEditBox.childNodes);
+                leVal = getFullStr(mathEditBox[0].childNodes);
                 MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
                 inChange = false;
                 currentLength = leVal.length;
@@ -646,7 +651,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                     FuncInserted.splice(i, 1);
                 }
 
-                leVal = getFullStr(mathEditBox.childNodes);
+                leVal = getFullStr(mathEditBox[0].childNodes);
                 MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
                 inChange = false;
                 currentLength = leVal.length;
@@ -686,7 +691,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                     FuncInserted.splice(i, 1);
                 }
 
-                leVal = getFullStr(mathEditBox.childNodes);
+                leVal = getFullStr(mathEditBox[0].childNodes);
                 MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
                 inChange = false;
                 currentLength = leVal.length;
@@ -694,6 +699,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             }
         }
     }
+    console.log('onTexChange Checkpoint 5')
 
 
 
@@ -714,6 +720,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             i = i + 1;
         }
     }
+    console.log('onTexChange Checkpoint 6')
 
 
     if(leVal.length - currentLength > 0) {
@@ -737,9 +744,14 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                 break;
         }
     }
-    leVal = getFullStr(mathEditBox.childNodes);
+    console.log('onTexChange Checkpoint 7')
+
+    leVal = getFullStr(mathEditBox[0].childNodes);
     console.log('LEVAL is: '+leVal);
-    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+    if(leVal != "Enter your math notation here") {
+        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+    }
+    console.log('onTexChange Checkpoint 8')
     inChange = false;
     currentLength = leVal.length;
 }
@@ -750,7 +762,7 @@ function onAsciiCharChange(evt,  mathEditorContainer, eqId) {
         //var eqId = evt.currentTarget.id.substring(5);
         // var mathEditBox = $('#'+evt.currentTarget.id);
         // var leVal = mathEditBox.val() || mathEditBox.text();
-        var leVal = getFullStr(mathEditBox.childNodes);
+        var leVal = getFullStr(mathEditBox[0].childNodes);
         //var leVal = mathEditBox.text() || mathEditBox.val();
         console.log("The ascii eqid is: " + eqId);
         console.log("The retrieved value is: " + leVal);
@@ -860,7 +872,8 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       var mathEditorContainer = $(".MathBoxNew");
       // Inserts the math editor
       mathEditorContainer.prepend(mathEditor);
-      console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source").childNodes));
+
+      console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
       //console.log("The radio button is currently: " + aol);
       // Sets the radio button depending on the saved global preferences. Optional if Kathi wants this feature
       if (aol == 'radio_latex') {
@@ -897,7 +910,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       // Updates the generated math as the user modifies it
       $(".math-editor").find(".math-source-wrap").on('DOMCharacterDataModified', function(e) {
         /* Replaces the current text with a '&nbsp;' if the user removes all the text */
-        var text = getFullStr($(".math-editor").find(".math-source").childNodes);
+        var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
         if (text == '') {
             $(".math-editor").find(".math-source").append("&nbsp\;");
             console.log("Inserted nbsp");
@@ -906,11 +919,11 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
             console.log("Text is:" + text);
         }
 
-        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source").childNodes));
+        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), newElId);
        });
       $(".math-editor").find(".math-source-wrap").on('DOMNodeInserted', function(e) {
-        console.log("Editor text is: " + getFulLStr($(".math-editor").find(".math-source").childNodes));
+        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), newElId);
     });
       /* If the math-editor is empty then it's replaced w/ default text */
@@ -962,7 +975,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
           // no math editor currently exists to be closed. This can be triggered by a click on the HTML without an existing math editor
           return;
       }
-      var mathSource = getFullStr($(".math-editor").find(".math-source").childNodes);
+      var mathSource = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
       /* Checks if the override's string length is non zero or the 'radio button(I don't know which yet) is checked' 
          And that  the hint text is zero
         */
@@ -1153,16 +1166,16 @@ function mathClick(mathEditorContainer, e) {
     // Updates the generated math as the user modifies it
       $(".math-editor").find(".math-source-wrap").on('DOMCharacterDataModified', function(e) {
         /* Replaces the current text with a '&nbsp;' if the user removes all the text */
-        var text = getFullStr($(".math-editor").find(".math-source").childNodes);
+        var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
         if (text == '') {
             $(".math-editor").find(".math-source").append("&nbsp\;");
             console.log("Inserted nbsp");
         }
-        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source").childNodes));
+        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), elementId);
     });
       $(".math-editor").find(".math-source-wrap").on('DOMNodeInserted', function(e) {
-        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source").childNodes));
+        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), elementId);
     });
      
@@ -1187,7 +1200,6 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
   }
 
 function getFullStr(allChildren) {
-    console.log(allChildren)
     var str = '';
     for(var i = 0; i < allChildren.length; i++) {
         var ele = allChildren[i];
