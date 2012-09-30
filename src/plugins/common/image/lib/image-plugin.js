@@ -394,13 +394,19 @@ define([
 								"max-width": plugin.maxWidth,
 								"max-height": plugin.maxHeight
 							});
-						  img.attr('id', fileObj.id);
-						  img.attr('src', fileObj.file.dataURI);
-						  GENTICS.Utils.Dom.insertIntoDOM(img, data.range, jQuery(Aloha.activeEditable.obj));
+							img.attr('id', fileObj.id);
+							img.attr('src', fileObj.file.dataURI);
+
+							var start = jQuery(data.range.startContainer).parents('.aloha-image-upload-drop-box');
+							if (start.length != 0) {
+								// Replace the box with the image tag.
+								start.replaceWith(img);
+							} else {
+								GENTICS.Utils.Dom.insertIntoDOM(img, data.range, jQuery(Aloha.activeEditable.obj));
+							}
 						}
 					}
 				}
-				
 			});
 
             /* Event handlers for successful/failed uploads */
@@ -1013,12 +1019,15 @@ define([
 				if (range.isCollapsed()) {
 					// TODO I would suggest to call the srcChange method. So all image src
 					// changes are on one single point.
-					imagestyle = "max-width: " + config.maxWidth + "; max-height: " + config.maxHeight;
-					imagetag = '<img style="' + imagestyle + '" src="' + imagePluginUrl + '/img/blank.jpg" title="" alt="" />';
-					newImg = jQuery(imagetag);
-					// add the click selection handler
-					//newImg.click( Aloha.Image.clickImage ); - Using delegate now
-					GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(Aloha.activeEditable.obj));
+					
+					// Create a div that allows the user to drop an image, upload, or provide a URL
+					var uploadBox = jQuery('<div class="aloha-image-upload-drop-box ui-wrapper" contentEditable="false">');
+					uploadBox.on('click', function() {
+					  alert('TODO: A browse button would look great here');
+					});
+					
+					uploadBox.append('Click to upload an image or dop one here');
+					GENTICS.Utils.Dom.insertIntoDOM(uploadBox, range, jQuery(Aloha.activeEditable.obj));
 
 			} else {
 				Aloha.Log.error('img cannot markup a selection');
