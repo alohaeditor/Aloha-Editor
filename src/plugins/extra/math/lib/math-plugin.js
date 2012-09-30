@@ -301,7 +301,7 @@ function hasChild(parentNode, childNode) {
 }
 
 function onTexCharChange(evt, mathEditorContainer, eqId) {
-    console.log('Entering onTexChange '+inChange)
+    console.log('Entering onTexChange '+inChange+' on '+eqId)
     if(inChange) return;
     inChange = true;
 
@@ -438,7 +438,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     offset = range.startOffset;
     //ch = currentNode.textContent[offset];
     
-    var eqId = evt.currentTarget.id.substring(5);
+    //var eqId = evt.currentTarget.id.substring(5);
     var leVal = getFullStr(mathEditBox[0].childNodes);
     var diff = leVal.length - currentLength;
 
@@ -744,7 +744,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                 break;
         }
     }
-    console.log('onTexChange Checkpoint 7')
+    console.log('onTexChange Checkpoint 7 '+eqId)
 
     leVal = getFullStr(mathEditBox[0].childNodes);
     console.log('LEVAL is: '+leVal);
