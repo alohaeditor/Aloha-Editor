@@ -987,7 +987,7 @@ clear-text-from-input{
   margin: 0;
 }
 
-.MathJax{
+.MathBox{
   cursor: default;
   position: relative;
   padding: .5em .2em;
@@ -996,13 +996,13 @@ clear-text-from-input{
 display: inline-block;
 }
 
-.MathJaxText, .math-style{
+.MathBoxText, .math-style{
   font-style: italic;
   font-size: 1.3em;
   font-family: serif; 
 }
 
-.MathJax.selected{
+.MathBox.selected{
   background-color: #E5EEF5;
   background-color: #c5dae9 !important;
   background-color: #D4E3EE !important;
@@ -1011,7 +1011,7 @@ display: inline-block;
   border: 1px dotted #1B86D2 !important;
 }
 
-.MathJax.hovered{
+.MathBox.hovered{
   background-color: #E5EEF5;
 /*
   background-color: #f3f3f3;
@@ -1024,14 +1024,14 @@ display: inline-block;
   font-family: courier new;
 }
 
-.MathJax.errored{
+.MathBox.errored{
 /*
   white-space: nowrap;
 display: inline-block;
 */
 }
 
-.MathJax.errored .asciimath, .MathJax.errored .MathJaxText{
+.MathBox.errored .asciimath, .MathBox.errored .MathBoxText{
   color: #c00;
   font-family: courier new;
   font-style: normal;
@@ -1072,7 +1072,7 @@ display: inline-block;
   left: auto;
 }
 
-.MathJax #math-icon-clear{
+.MathBox #math-icon-clear{
   position: absolute;
 right: -20px;
 width: 20px;
@@ -1084,7 +1084,7 @@ top: 0;
   cursor: pointer;
 }
 
-.MathJax #math-icon-edit{
+.MathBox #math-icon-edit{
   position: absolute;
 left: -20px;
 width: 20px;
@@ -1097,7 +1097,7 @@ cursor: pointer;
 }
 
 /*
-.MathJax *{
+.MathBox *{
   -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: none;
