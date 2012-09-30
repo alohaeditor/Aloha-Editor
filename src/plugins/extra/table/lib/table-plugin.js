@@ -152,7 +152,7 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     row.after(newrow);
                 }
             });
-            this._deleterow = Ui.adopt("deleterow", Button, {
+            this._deleterowButton = Ui.adopt("deleterow", Button, {
                 tooltip: "Delete row",
                 icon: "aloha-icon aloha-icon-deleterow",
                 scope: this.name + '.row',
@@ -165,7 +165,7 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     row.remove();
                 }
             });
-            this._deleteColumn = Ui.adopt("deletecolumn", Button, {
+            this._deleteColumnButton = Ui.adopt("deletecolumn", Button, {
                 tooltip: "Delete column",
                 icon: "aloha-icon aloha-icon-deletecolumn",
                 scope: this.name + '.column',
@@ -181,6 +181,38 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     if(table.find("td,th").length==0){
                         table.remove();
                     }
+                }
+            });
+            this._addColumnBefore = Ui.adopt("addcolumnbefore", Button, {
+                tooltip: "Add new column before",
+                icon: "aloha-icon aloha-icon-addcolumnbefore",
+                scope: this.name + '.column',
+                click: function(){
+                    var cell = getActiveCell();
+                    if(cell === null){ return; }
+                    var idx = cell[0].cellIndex;
+                    var table = cell.parents('.aloha-editable table');
+                    table.find("tr").each(function(){
+                        var toclone = $(this).find('td,th').eq(idx);
+                        var newcell = toclone.clone().html('\u00a0');
+                        toclone.before(newcell);
+                    });
+                }
+            });
+            this._addColumnAfter = Ui.adopt("addcolumnafter", Button, {
+                tooltip: "Add new column after",
+                icon: "aloha-icon aloha-icon-addcolumnafter",
+                scope: this.name + '.column',
+                click: function(){
+                    var cell = getActiveCell();
+                    if(cell === null){ return; }
+                    var idx = cell[0].cellIndex;
+                    var table = cell.parents('.aloha-editable table');
+                    table.find("tr").each(function(){
+                        var toclone = $(this).find('td,th').eq(idx);
+                        var newcell = toclone.clone().html('\u00a0');
+                        toclone.after(newcell);
+                    });
                 }
             });
         },

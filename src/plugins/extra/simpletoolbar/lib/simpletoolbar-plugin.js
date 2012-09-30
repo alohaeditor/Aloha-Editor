@@ -5,7 +5,7 @@
   toolbarSettings = [
     'bold', 'italic', 'underline', '', 'insertImage', 'insertFigure', {
       text: 'Table',
-      subMenu: ['createTable', 'addrowbefore', 'addrowafter', 'deleterow', 'deletecolumn']
+      subMenu: ['createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']
     }
   ];
 

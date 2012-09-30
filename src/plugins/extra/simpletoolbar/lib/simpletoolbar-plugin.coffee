@@ -1,7 +1,7 @@
 # including "ui/settings" has weird side effects, namely most of the buttons don't load
 toolbarSettings = [
  'bold', 'italic', 'underline', '', 'insertImage', 'insertFigure',
- { text: 'Table', subMenu: [ 'createTable', 'addrowbefore',  'addrowafter', 'deleterow', 'deletecolumn'] }
+ { text: 'Table', subMenu: [ 'createTable', 'addrowbefore',  'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] }
 ]
 
 define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmenu/appmenu', "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!simpletoolbar/css/simpletoolbar.css" ], (Aloha, Plugin, Ui, Ribbon, appmenu, i18n, i18nCore) ->
