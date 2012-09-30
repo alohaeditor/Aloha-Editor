@@ -81,7 +81,7 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
         if (cell.parents('.aloha-editable table').length == 0){
             return null;
         }
-        return cell;
+        return cell.closest('td,th');
     }
 
     function getActiveRow(){
@@ -172,10 +172,10 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                 click: function(){
                     var cell = getActiveCell();
                     if(cell === null){ return; }
-                    var idx = cell.closest("td,th").prevAll("td,th").length;
+                    var idx = cell[0].cellIndex;
                     var table = cell.parents('.aloha-editable table');
                     table.find("tr").each(function(){
-                        $(this).find("td:eq("+idx+"),th:eq("+idx+")").remove();
+                        this.removeChild(this.cells[idx]);
                     });
                     // If the table is now devoid of any rows, delete it
                     if(table.find("td,th").length==0){
