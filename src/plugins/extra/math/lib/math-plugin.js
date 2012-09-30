@@ -49,6 +49,8 @@ var currentEditor = null;
 var currentLength = -1;
 var editorToOffset = { };
 
+var aolDictionary = { };
+var aol = 'radio_latex';
 
 function convertToConcrete(character, ele, leVal, currentOffset) {
     var i = 0;
@@ -955,6 +957,11 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       // Retrieves the closest mathjax element
       var mathJax = $(".math-editor").closest(".MathBox");
       // Retrieves the math editor's text
+      console.log($(".math-editor"))
+      if($(".math-editor").length == 0) {
+          // no math editor currently exists to be closed. This can be triggered by a click on the HTML without an existing math editor
+          return;
+      }
       var mathSource = getFullStr($(".math-editor").find(".math-source").childNodes);
       /* Checks if the override's string length is non zero or the 'radio button(I don't know which yet) is checked' 
          And that  the hint text is zero
@@ -1180,6 +1187,7 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
   }
 
 function getFullStr(allChildren) {
+    console.log(allChildren)
     var str = '';
     for(var i = 0; i < allChildren.length; i++) {
         var ele = allChildren[i];
