@@ -144,6 +144,19 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     row.after(newrow);
                 }
             });
+            this._deleterow = Ui.adopt("deleterow", Button, {
+                tooltip: "Delete row",
+                icon: "aloha-icon aloha-icon-deleterow",
+                scope: this.name + '.row',
+                click: function(){
+                    var row = getActiveRow();
+                    if (row === null){
+                        this.error('Selection is not in a table!');
+                        return;
+                    }
+                    row.remove();
+                }
+            });
         },
         getActiveRow: function(){
             var range = Aloha.Selection.getRangeObject();
