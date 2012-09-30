@@ -75,10 +75,18 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
         return tr;
     }
 
-    function getActiveRow(){
+    function getActiveCell(){
         var range = Aloha.Selection.getRangeObject();
         var cell = jQuery(range.commonAncestorContainer);
         if (cell.parents('.aloha-editable table').length == 0){
+            return null;
+        }
+        return cell;
+    }
+
+    function getActiveRow(){
+        var cell = getActiveCell();
+        if (cell === 0){
             return null;
         }
         return cell.closest('tr');
@@ -157,15 +165,24 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     row.remove();
                 }
             });
-        },
-        getActiveRow: function(){
-            var range = Aloha.Selection.getRangeObject();
-            var cell = jQuery(range.commonAncestorContainer);
-            if (cell.parents('.aloha-editable table').length == 0){
-                this.error('Selection is not in a table!');
-                return null;
-            }
-            var row = cell.closest('tr');
+            this._deleteColumn = Ui.adopt("deletecolumn", Button, {
+                tooltip: "Delete column",
+                icon: "aloha-icon aloha-icon-deletecolumn",
+                scope: this.name + '.column',
+                click: function(){
+                    var cell = getActiveCell();
+                    if(cell === null){ return; }
+                    var idx = cell.closest("td,th").prevAll("td,th").length;
+                    var table = cell.parents('.aloha-editable table');
+                    table.find("tr").each(function(){
+                        $(this).find("td:eq("+idx+"),th:eq("+idx+")").remove();
+                    });
+                    // If the table is now devoid of any rows, delete it
+                    if(table.find("td,th").length==0){
+                        table.remove();
+                    }
+                }
+            });
         },
 	    isSelectionInTable: function (){
             var range = Aloha.Selection.getRangeObject();
