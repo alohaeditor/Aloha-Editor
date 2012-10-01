@@ -428,6 +428,8 @@ define('RepositoryBrowser', [
 				this._currentFolder = folder;
 				this._fetchItems(folder);
 			}
+
+			this.folderSelected(folder);
 		},
 
 		/**
@@ -457,8 +459,19 @@ define('RepositoryBrowser', [
 
 			var that = this;
 
+			// Bind the jsree select node event
 			$tree.bind('select_node.jstree', function ($event, data) {
 				that._onTreeNodeSelected($event, data);
+			});
+
+			// Bind the jsree open node event
+			$tree.bind('open_node.jstree', function ($event, data) {
+				that.folderOpened(data.rslt.obj);
+			});
+
+			// Bind the jsree close node event
+			$tree.bind('close_node.jstree', function ($event, data) {
+				that.folderClosed(data.rslt.obj);
 			});
 
 			$tree.jstree({
@@ -1175,8 +1188,48 @@ define('RepositoryBrowser', [
 			if (this._currentFolder) {
 				this._fetchItems(this._currentFolder);
 			}
-		}
+		},
 
+		/**
+		 * This function gets called when a folder in the tree is opened
+		 * 
+		 * @param {object} obj	folder data object							
+		 */
+		folderOpened: function(obj) {
+			var folder = this._getObjectFromCache(obj);
+
+			if (folder) {
+				if (this.repositoryManager) {
+					this.repositoryManager.folderOpened(folder);
+				}
+			}
+		},
+
+		/**
+		 * This function gets called when a folder in the tree is closed
+		 * 
+		 * @param {object} obj	folder data object							
+		 */
+		folderClosed: function(obj) {
+			var folder = this._getObjectFromCache(obj);
+
+			if (folder) {
+				if (this.repositoryManager) {
+					this.repositoryManager.folderClosed(folder);
+				}
+			}
+		},
+
+		/**
+		 * This function gets called when a folder in the tree is selected
+		 * 
+		 * @param {object} obj	folder data object							
+		 */
+		folderSelected: function(obj) {
+			if (this.repositoryManager) {
+				this.repositoryManager.folderSelected(obj);
+			}
+		}
 	});
 
 	return RepositoryBrowser;
