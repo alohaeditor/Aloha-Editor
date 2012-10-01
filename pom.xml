@@ -3,7 +3,7 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.22.2-hotfix-SNAPSHOT</version>
+	<version>0.22.2-gpl-hotfix-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
@@ -21,7 +21,21 @@
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
 		<build.profile>build-profile-with-common-extra-plugins</build.profile>
+		<build.license>gpl</build.license>
+		<build.licenseType>GPLv2 or later</build.licenseType>
+		<build.licenseUrl>http://www.gnu.org/licenses/gpl-2.0.html</build.licenseUrl>
 	</properties>
+	
+	<profiles>
+		<profile>
+			<id>commercial</id>
+			<properties>
+				<build.license>commercial</build.license>
+				<build.licenseType>Aloha Editor commercial license</build.licenseType>
+				<build.licenseUrl>-</build.licenseUrl>
+			</properties>
+		</profile>
+	</profiles>
 
 	<dependencies>
 		<dependency>
@@ -44,10 +58,9 @@
 		<url>https://github.com/alohaeditor/Aloha-Editor</url>
 	</scm>
 
-
 	<build>
-		<plugins>
 
+	<plugins>
 			<plugin>
 				<groupId>com.googlecode.jslint4java</groupId>
 				<artifactId>jslint4java-maven-plugin</artifactId>
@@ -195,6 +208,29 @@
 				<outputDirectory>${project.basedir}/src/css</outputDirectory> <includes> 
 				<include>aloha.less</include> </includes> <compress>true</compress> <force>true</force> 
 				</configuration> </execution> </executions> </plugin> -->
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/extra-resources</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/build/filtered</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
@@ -214,7 +250,8 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-full/</jsDestinationFolder>
 						</configuration>
 					</execution>
-						<execution>
+					
+					<execution>
 						<id>aloha-${build.profile}-debug-full</id>
 						<phase>compile</phase>
 						<goals>
@@ -227,6 +264,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-full/</jsDestinationFolder>
 						</configuration>
 					</execution>
+					
 					<!-- Bare version of aloha (Without jquery and requirejs) -->
 					<execution>
 						<id>aloha-${build.profile}-debug-bare</id>
@@ -241,6 +279,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-bare/</jsDestinationFolder>
 						</configuration>
 					</execution>
+					
 					<execution>
 						<id>aloha-${build.profile}-minified-bare</id>
 						<phase>compile</phase>
@@ -278,7 +317,7 @@
 					<contextFolder>${basedir}</contextFolder>
 					<buildDirectory>${basedir}</buildDirectory>
 					<ignoreMissingResources>false</ignoreMissingResources>
-					<wroFile>${basedir}/build/wro/wro.xml</wroFile>
+					<wroFile>${basedir}/target/extra-resources/wro.xml</wroFile>
 					<wroManagerFactory>ro.isdc.wro.extensions.manager.standalone.GoogleStandaloneManagerFactory</wroManagerFactory>
 				</configuration>
 			</plugin>
