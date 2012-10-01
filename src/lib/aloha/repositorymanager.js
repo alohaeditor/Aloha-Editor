@@ -42,11 +42,14 @@ define( [
 
 		repositories  : [],
 		settings: {},
+		initialized: false,
 
 		/**
 		 * Initialize all registered repositories
 		 * Before we invoke each repositories init method, we merge the global
 		 * repository settings into each repository's custom settings
+		 * Warning: testing has shown that repositories are maybe not loaded yet
+		 * (found that case in IE7), so don't rely on that in this init function.
 		 *
 		 * @todo: Write unit tests to check that global and custom settings are
 		 * applied correctly
@@ -55,10 +58,7 @@ define( [
 		 * @hide
 		 */
 		init: function() {
-			var repositories = this.repositories,
-			    i = 0,
-			    j = repositories.length,
-			    repository;
+			var repositories = this.repositories;
 
 			if ( Aloha.settings && Aloha.settings.repositories ) {
 				this.settings = Aloha.settings.repositories;
@@ -66,23 +66,14 @@ define( [
 			
 			// use the configured repository manger query timeout or 5 sec
 			this.settings.timeout = this.settings.timeout || 5000;
-			
-			for ( ; i < j; ++i ) {
-				repository = repositories[ i ];
 
-				if ( !repository.settings ) {
-					repository.settings = {};
-				}
-
-				if ( this.settings[ repository.repositoryId ] ) {
-					jQuery.extend(
-						repository.settings,
-						this.settings[ repository.repositoryId ]
-					);
-				}
-
-				repository.init();
+			var count_repositories = repositories.length;
+			for (var i=0; i < count_repositories; ++i) {
+				var repository = repositories[i];
+				this.initRepository(repository);
 			}
+
+			this.initialized = true;
 		},
 
 		/**
@@ -93,11 +84,38 @@ define( [
 		register: function( repository ) {
 			if ( !this.getRepository( repository.repositoryId ) ) {
 				this.repositories.push( repository );
+
+				// If we have initialized already we have to call
+				// this on our own (late-loading)
+				if (this.initialized) {
+					this.initRepository(repository);
+				}
 			} else {
 				console.warn( this, 'A repository with name { ' +
 					repository.repositoryId +
 					' } already registerd. Ignoring this.' );
 			}
+		},
+
+		/**
+		 * Initializes a repository.
+		 *
+		 * @param {Aloha.Repository} repository Repository to initialize
+		 */
+		initRepository: function(repository) {
+
+			if (!repository.settings) {
+				repository.settings = {};
+			}
+
+			if (this.settings[repository.repositoryId]) {
+				jQuery.extend(
+					repository.settings,
+					this.settings[repository.repositoryId]
+				);
+			}
+
+			repository.init();
 		},
 
 		/**
@@ -579,6 +597,48 @@ define( [
 						callback.call( this, items );
 					} );
 				}
+			}
+		},
+
+		/**
+		 * This function gets called by the repository browser when a folder is opened.
+		 * At the moment this forwards the call to the repository only.
+		 * 
+		 * @param {object}	folder	object that gets forwarded
+		 */
+		folderOpened: function(folder) {
+			var repository = this.getRepository(folder.repositoryId);
+
+			if (typeof repository.folderOpened === 'function') {
+				repository.folderOpened(folder);
+			}
+		},
+
+		/**
+		 * This function gets called by the repository browser when a folder is closed.
+		 * At the moment this forwards the call to the repository only.
+		 * 
+		 * @param {object}	folder	object that gets forwarded
+		 */
+		folderClosed: function(folder) {
+			var repository = this.getRepository(folder.repositoryId);
+
+			if (typeof repository.folderClosed === 'function') {
+				repository.folderClosed(folder);
+			}
+		},
+
+		/**
+		 * This function gets called by the repository browser when a folder is selected.
+		 * At the moment this forwards the call to the repository only.
+		 * 
+		 * @param {object}	folder	object that gets forwarded
+		 */
+		folderSelected: function(folder) {
+			var repository = this.getRepository(folder.repositoryId);
+
+			if (typeof repository.folderSelected === 'function') {
+				repository.folderSelected(folder);
 			}
 		},
 
