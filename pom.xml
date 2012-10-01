@@ -26,17 +26,6 @@
 		<build.licenseUrl>http://www.gnu.org/licenses/gpl-2.0.html</build.licenseUrl>
 	</properties>
 	
-	<profiles>
-		<profile>
-			<id>commercial</id>
-			<properties>
-				<build.license>commercial</build.license>
-				<build.licenseType>Aloha Editor commercial license</build.licenseType>
-				<build.licenseUrl>-</build.licenseUrl>
-			</properties>
-		</profile>
-	</profiles>
-
 	<dependencies>
 		<dependency>
 			<groupId>rhino</groupId>
