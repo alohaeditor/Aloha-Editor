@@ -24,6 +24,12 @@
 		<build.license>gpl</build.license>
 		<build.licenseType>GPLv2 or later</build.licenseType>
 		<build.licenseUrl>http://www.gnu.org/licenses/gpl-2.0.html</build.licenseUrl>
+		<snapshots.repoUrl>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</snapshots.repoUrl>
+		<snapshots.repoName>Gentics Public Snapshots Repository</snapshots.repoName>
+		<snapshots.repoId>archiva.com.gentics.public_snapshots</snapshots.repoId>
+		<releases.repoUrl>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</releases.repoUrl>
+		<releases.repoName>Gentics Public Repository</releases.repoName>
+		<releases.repoId>archiva.com.gentics.public</releases.repoId>
 	</properties>
 	
 	<dependencies>
@@ -388,14 +394,14 @@
 
 	<distributionManagement>
 		<repository>
-			<id>archiva.com.gentics.public</id>
-			<name>Gentics Public Repository</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+			<id>${releases.repoId}</id>
+			<name>${releases.repoName}</name>
+			<url>${releases.repoUrl}</url>
 		</repository>
 		<snapshotRepository>
-			<id>archiva.com.gentics.public_snapshots</id>
-			<name>Gentics Public Snapshots Repository</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</url>
+			<id>${snapshots.repoId}</id>
+			<name>${snapshots.repoName}</name>
+			<url>${snapshots.repoUrl}</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
