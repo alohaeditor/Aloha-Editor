@@ -17,29 +17,8 @@ define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 
     else if (@isDraggable())
       this._setupDragDropForBlockElements()
       this._disableUglyInternetExplorerDragHandles()
-
-  BlockManager._blockify = (element, instanceDefaults) ->
-    $element = jQuery(element)
-
-    tagName = $element[0].tagName.toLowerCase()
-    #if (tagName != 'span' and tagName != 'div')
-      # PHIL Aloha.Log.error('block/blockmanager', 'Blocks can only be created from <div> or <span> element. You passed ' + tagName + '.');
-      # PHIL return;
-
-    attributes = @getConfig($element, instanceDefaults)
-
-    if (not @blockTypes.has(attributes['aloha-block-type']))
-      Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['aloha-block-type'] + ' not found!')
-      return
-
-    block = new (@blockTypes.get(attributes['aloha-block-type']))($element)
-    block.$element.addClass('aloha-block-' + attributes['aloha-block-type'])
-    jQuery.each(attributes, (k, v) ->
-      block._setAttribute(k, v)
-    )
-
-    # Register block
-    @blocks.register(block.getId(), block)
+    @_hideDragHandlesIfDragDropDisabled()
+    @_attachDropzoneHighlightEvents()
 
 
   ###
