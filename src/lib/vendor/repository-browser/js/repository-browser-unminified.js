@@ -101,6 +101,12 @@ define('RepositoryBrowser', [
 		_orderBy: null,
 
 		/**
+		 * @private
+		 * @type <string> prefilled value of the search field
+		 */
+		_prefilledValue: null,
+
+		/**
 		 * @type {jsGrid<HTMLElement>}
 		 */
 		$_grid: null,
@@ -151,6 +157,7 @@ define('RepositoryBrowser', [
 
 			jQuery.extend(this, options);
 
+			this._prefilledValue = this._i18n('Input search text...');
 			this._cachedRepositoryObjects = {};
 			this._searchQuery = null;
 			this._orderBy = null;
@@ -452,9 +459,7 @@ define('RepositoryBrowser', [
 			if (folder) {
 				// reset paging and search
 				this._pagingOffset = 0;
-				this._searchQuery = null;
-				var $searchField = this.$_grid.find('input.repository-browser-search-field');
-				$searchField.val('');
+				this._clearSearch();
 
 				this._currentFolder = folder;
 				this._fetchItems(folder);
@@ -690,6 +695,15 @@ define('RepositoryBrowser', [
 			return $list;
 		},
 
+		/**
+		 * Clear the search
+		 */
+		_clearSearch: function () {
+			var $searchField = this.$_grid.find('.repository-browser-search-field');
+			$searchField.val(this._prefilledValue).addClass('repository-browser-search-field-empty');
+			this._searchQuery = null;
+		},
+
 		_createTitlebar: function ($container) {
 			var $bar = $container.find('.ui-jqgrid-titlebar');
 
@@ -716,12 +730,9 @@ define('RepositoryBrowser', [
 					that._triggerSearch();
 				});
 
-			var prefilledValue = this._i18n('Input search text...');
-
 			var $searchField = $bar.find('.repository-browser-search-field');
 
-			$searchField.val(prefilledValue)
-			            .addClass("repository-browser-search-field-empty");
+			this._clearSearch();
 
 			$searchField.keypress(function (event) {
 				// On ENTER.
@@ -731,7 +742,7 @@ define('RepositoryBrowser', [
 			});
 
 			$searchField.focus(function () {
-				if (jQuery(this).val() === prefilledValue) {
+				if (jQuery(this).val() === that._prefilledValue) {
 					jQuery(this)
 						.val('')
 						.removeClass('repository-browser-search-field-empty');
@@ -740,9 +751,7 @@ define('RepositoryBrowser', [
 
 			$searchField.blur(function () {
 				if (jQuery(this).val() === '') {
-					jQuery(this)
-						.val(prefilledValue)
-						.addClass('repository-browser-search-field-empty');
+					that._clearSearch();
 				}
 			});
 
