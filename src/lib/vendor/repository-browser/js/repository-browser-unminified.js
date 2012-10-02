@@ -35,6 +35,8 @@ define('RepositoryBrowser', [
 		treeWidth: 300,
 		listWidth: 'auto',
 		pageSize: 8,
+		adaptPageSize: false,
+		rowHeight: 32,
 		rootPath: '',
 		rootFolderId: 'aloha',
 		columns: {
@@ -187,7 +189,7 @@ define('RepositoryBrowser', [
 			this.element.width(this.maxWidth);
 
 			this.$_grid = this._createGrid(this.element).resize();
-			this._setIntialHeight();
+			this._setInitialHeight();
 			this.$_tree = this._createTree(this.$_grid.find('.ui-layout-west'));
 			this.$_list = this._createList(this.$_grid.find('.ui-layout-center'));
 
@@ -235,12 +237,15 @@ define('RepositoryBrowser', [
 			jQuery('.repository-browser-grid').css('width', this.maxWidth);
 
 			this.close();
+
+			// adapt the page size
+			this._adaptPageSize();
 		},
 
 		/**
 		 * Sets the initial height of the repository browser using the minHeight maxHeight setting.
 		 */
-		_setIntialHeight: function () {
+		_setInitialHeight: function () {
 
 			var overflow = this.maxHeight - jQuery(window).height() + this.verticalPadding;
 			var targetHeight = overflow > 0 ? Math.max(this.minHeight, this.maxHeight - overflow) : this.maxHeight;
@@ -253,12 +258,34 @@ define('RepositoryBrowser', [
 		 * between minWidth and maxWidth.
 		 */
 		_onWindowResized: function () {
-			var overflow = this.maxWidth - jQuery(window).width() + this.horizontalPadding;
+			var overflow = this.maxWidth - jQuery(window).width() + this.horizontalPadding, $header, $container;
 			var target = overflow > 0
 			           ? Math.max(this.minWidth, this.maxWidth - overflow)
 					   : this.maxWidth;
 			this.element.width(target);
 			this.$_grid.width(target);
+
+			this._setInitialHeight();
+
+			// adapt tree
+			$header = this.$_grid.find('.repository-browser-tree-header');
+			this.$_tree.height(this.$_grid.height() - $header.outerHeight(true));
+
+			// adapt list
+			$container = this.$_grid.find('.ui-layout-center');
+			$container.find('.ui-jqgrid-bdiv').height(this.$_grid.height() - (
+				$container.find('.ui-jqgrid-titlebar').height() +
+				$container.find('.ui-jqgrid-hdiv').height() +
+				$container.find('.ui-jqgrid-pager').height()
+			));
+
+			// adapt paging
+			if (this._adaptPageSize()) {
+				// if the pagesize changed, we need to refresh the list
+				if (this._currentFolder) {
+					this._fetchItems(this._currentFolder);
+				}
+			}
 		},
 
 		/**
@@ -423,11 +450,17 @@ define('RepositoryBrowser', [
 			var folder = this._getObjectFromCache(data.rslt.obj);
 
 			if (folder) {
+				// reset paging and search
 				this._pagingOffset = 0;
 				this._searchQuery = null;
+				var $searchField = this.$_grid.find('input.repository-browser-search-field');
+				$searchField.val('');
+
 				this._currentFolder = folder;
 				this._fetchItems(folder);
 			}
+
+			this.folderSelected(folder);
 		},
 
 		/**
@@ -457,8 +490,19 @@ define('RepositoryBrowser', [
 
 			var that = this;
 
+			// Bind the jsree select node event
 			$tree.bind('select_node.jstree', function ($event, data) {
 				that._onTreeNodeSelected($event, data);
+			});
+
+			// Bind the jsree open node event
+			$tree.bind('open_node.jstree', function ($event, data) {
+				that.folderOpened(data.rslt.obj);
+			});
+
+			// Bind the jsree close node event
+			$tree.bind('close_node.jstree', function ($event, data) {
+				that.folderClosed(data.rslt.obj);
 			});
 
 			$tree.jstree({
@@ -768,6 +812,10 @@ define('RepositoryBrowser', [
 				break;
 			case 'prev':
 				this._pagingOffset -= this.pageSize;
+				// avoid "ot of bounds" situation
+				if (this._pagingOffset < 0) {
+					this._pagingOffset = 0;
+				}
 				break;
 			}
 			this._fetchItems(this._currentFolder);
@@ -852,10 +900,10 @@ define('RepositoryBrowser', [
 				$btns.first.add($btns.prev).removeClass(CSS_DISABLED);
 			}
 
-			if (jQuery.isNumeric(this._pagingCount)) {
+			if (!jQuery.isNumeric(this._pagingCount)) {
 				$btns.end.addClass(CSS_DISABLED);
 
-				if (data.length < this.pageSize) {
+				if (data.length <= this.pageSize) {
 					$btns.next.addClass(CSS_DISABLED);
 				} else {
 					$btns.next.removeClass(CSS_DISABLED);
@@ -1175,8 +1223,82 @@ define('RepositoryBrowser', [
 			if (this._currentFolder) {
 				this._fetchItems(this._currentFolder);
 			}
-		}
+		},
 
+		/**
+		 * This function gets called when a folder in the tree is opened
+		 * 
+		 * @param {object} obj	folder data object							
+		 */
+		folderOpened: function(obj) {
+			var folder = this._getObjectFromCache(obj);
+
+			if (folder) {
+				if (this.repositoryManager) {
+					this.repositoryManager.folderOpened(folder);
+				}
+			}
+		},
+
+		/**
+		 * This function gets called when a folder in the tree is closed
+		 * 
+		 * @param {object} obj	folder data object							
+		 */
+		folderClosed: function(obj) {
+			var folder = this._getObjectFromCache(obj);
+
+			if (folder) {
+				if (this.repositoryManager) {
+					this.repositoryManager.folderClosed(folder);
+				}
+			}
+		},
+
+		/**
+		 * This function gets called when a folder in the tree is selected
+		 * 
+		 * @param {object} obj	folder data object							
+		 */
+		folderSelected: function(obj) {
+			if (this.repositoryManager) {
+				this.repositoryManager.folderSelected(obj);
+			}
+		},
+
+		/**
+		 * Adapt the page size.
+		 * @return true if the page size was actually changed, false if not
+		 */
+		_adaptPageSize: function () {
+			var listHeight, newPageSize, container;
+
+			// if this is off, don't do anything
+			if (!this.adaptPageSize || !this.$_list || !this.rowHeight) {
+				return false;
+			}
+
+			// get the current height of the container
+			container = this.$_grid.find('.ui-jqgrid-bdiv');
+			// reduce by 20 px to leave place for a scrollbar
+			listHeight = container.innerHeight() - 20;
+
+			// do the math
+			if (listHeight) {
+				newPageSize = Math.floor(listHeight / this.rowHeight);
+				if (newPageSize <= 0) {
+					newPageSize = 1;
+				}
+				if (newPageSize !== this.pageSize) {
+					this.pageSize = newPageSize;
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
 	});
 
 	return RepositoryBrowser;
