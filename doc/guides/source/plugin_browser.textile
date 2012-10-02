@@ -60,7 +60,13 @@ Here we can see the default options:
 			minimalWidth: 660,
 			treeWidth : 300,
 			listWidth : 'auto',
+			// fixed page size (if adaptPageSize is false)
 			pageSize  : 10,
+			// set this to true for adaptive page size (based on the
+			// available height and the configured rowHeight)
+			adaptPageSize: false,
+			// expected row height for adaptive page size.
+			rowHeight: 32,
 			columns : {
 				icon    : {title: '',        width: 30,  sortable: false, resizable: false},
 				name    : {title: 'Name',    width: 250, sorttype: 'text'},
