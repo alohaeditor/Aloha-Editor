@@ -11,9 +11,10 @@ endprologue.
 
 h3. Concept
 
-A repository is a service or data source, which provides resource items and is registered with the repositoryManager. The repositoryManager manages all available repositories and routes queries to all registered repositories. Any plugin may make requests to the repositoryManager for resource items, and specify one or more kinds of items it wishes to have returned, such as “website” or “localanchor” (where “localanchor” could be a headline provided by a document repository implementation).
+A repository is a service or data source, which provides resource items and is registered with the Repository Manager (@RepositoryManager@). The Repository Manger manages all available repositories and routes queries to all registered repositories. Any plugin may make requests to the Repository Manager for resource items, and specify one or more kinds of items it wishes to have returned, such as @website@ or @localanchor@ (where @localanchor@ could be a headline provided by a document repository implementation).
 Usually a CMS back-end would provide data such as links to sites, images, videos, files that should be available during the
-editing process. The repository data are resource items that contain JSON data with at least the following attributes: id, name, url, type. All other attributes are optional and depend on the item's resourceObjectType. A repository may provide resource items of a freely definable resourceObjectType. We suggest the types to be <a href="http://www.iana.org/assignments/media-types/index.html">mimetypes</a> eg.: “image/png”, “text/html”, “video/H264”.
+editing process.
+The repository data are resource items that contain JSON data with at least the following attributes: @id@, @name@, @url@, @type@. All other attributes are optional and depend on the item's @type@. A repository may provide resource items of a freely definable @type@. We suggest @type@ to be a <a href="http://www.iana.org/assignments/media-types/index.html">mimetype</a>, e.g.: @image/png@, @text/html@, @video/H264@, @application/pdf@ …. However, this is _not required_.
 
 h3. Configuring the repositoryManager
 
