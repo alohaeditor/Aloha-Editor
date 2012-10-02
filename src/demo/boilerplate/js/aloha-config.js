@@ -1,6 +1,6 @@
 ( function ( window, undefined ) {
 	var Aloha = window.Aloha || ( window.Aloha = {} );
-	
+
 	Aloha.settings = {
 		logLevels: { 'error': true, 'warn': true, 'info': true, 'debug': false, 'deprecated': true },
 		errorhandling: false,
@@ -52,7 +52,7 @@
 			link: {
 				// all elements with no specific configuration may insert links
 				config: [ 'a' ],
-				hotKey: { 
+				hotKey: {
 					// use ctrl+l instead of ctrl+k as hotkey for inserting a link
 					//insertLink: 'ctrl+l'
 				},
@@ -167,7 +167,7 @@
 					// numeratedactive will also accept "true" and "1" as true values
 					// false and "false" for false
 					numeratedactive: false,
-					// if the headingselector is empty, the button will not be shown at all                     
+					// if the headingselector is empty, the button will not be shown at all
 					headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
 					baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable
 				}

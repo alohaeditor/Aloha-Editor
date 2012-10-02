@@ -1,9 +1,9 @@
 /* table-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -60,7 +60,7 @@ define([
 	Utils
 ) {
 	var GENTICS = window.GENTICS;
-	
+
 	/**
 	 * Register the TablePlugin as Aloha.Plugin
 	 */
@@ -117,10 +117,10 @@ define([
    * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
   */
   TablePlugin.checkConfig = function (c){
-        
+
     if (typeof c == 'object' && c.length) {
       var newC = [];
-      
+
       for (var i = 0; i < c.length; i++) {
         if (c[i]) {
           newC.push({
@@ -131,15 +131,15 @@ define([
           });
         }
       }
-      
+
       c = newC;
     } else {
       c = [];
     }
-    
+
     return c;
   };
-  
+
 	/**
 	 * Init method of the Table-plugin transforms all tables in the document
 	 *
@@ -153,7 +153,8 @@ define([
 		this.tableConfig = this.checkConfig(this.tableConfig||this.settings.tableConfig);
 		this.columnConfig = this.checkConfig(this.columnConfig||this.settings.columnConfig);
 		this.rowConfig = this.checkConfig(this.rowConfig||this.settings.rowConfig);
-		
+		this.cellConfig = this.checkConfig(this.cellConfig||this.settings.cellConfig);
+
 		// add reference to the create layer object
 		this.createLayer = new CreateLayer( this );
 
@@ -176,7 +177,7 @@ define([
 					// table.activate();
 					TablePlugin.TableRegistry.push( table );
 				}
-				
+
 				TablePlugin.checkForNestedTables( editable.obj );
 			} );
 		} );
@@ -241,9 +242,9 @@ define([
 			if (table) {
 				TablePlugin.updateFloatingMenuScope();
 			} else {
-				that.activeTable.selection.cellSelectionMode = false; 
+				that.activeTable.selection.cellSelectionMode = false;
 				that.activeTable.selection.baseCellPosition = null;
-				that.activeTable.selection.lastSelectionRange = null; 
+				that.activeTable.selection.lastSelectionRange = null;
 				that.activeTable.focusOut();
 			}
 		});
@@ -280,7 +281,7 @@ define([
 					table.activate();
 					TablePlugin.TableRegistry.push( table );
 				}
-				
+
 				TablePlugin.checkForNestedTables( props.editable.obj );
 			});
 		});
@@ -299,28 +300,28 @@ define([
 				tr[i].deactivate();
 			}
 		});
-		
+
 		Aloha.bind( 'aloha-smart-content-changed', function ( event ) {
 			if ( Aloha.activeEditable ) {
 				Aloha.activeEditable.obj.find( 'table' ).each( function () {
 					if ( TablePlugin.indexOfTableInRegistry( this ) == -1 &&
 							!TablePlugin.isWithinTable( this ) ) {
 						this.id = GENTICS.Utils.guid();
-						
+
 						var table = new Table( this, TablePlugin );
 						table.parentEditable = Aloha.activeEditable;
 						TablePlugin.TableRegistry.push( table );
 						table.activate();
 					}
-					
+
 					TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
 				} );
 			}
 		} );
 
 		if ( this.settings.summaryinsidebar ) {
-			Aloha.ready( function () { 
-				that.initSidebar( Aloha.Sidebar.right.show() );  
+			Aloha.ready( function () {
+				that.initSidebar( Aloha.Sidebar.right.show() );
 			} );
 		}
 	};
@@ -345,20 +346,20 @@ define([
 		var pl = this;
 		pl.sidebar = sidebar;
 		pl.sidebarPanel = sidebar.addPanel({
-            
+
             id       : nsClass('sidebar-panel'),
             title    : i18n.t('table.sidebar.title'),
             content  : '',
             expanded : true,
             activeOn : 'table',
-            
+
             onInit   : function () {
             	var that = this,
 	            content = this.setContent(
 	                '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" >' + i18n.t('table.label.target') + '</label>' +
 	                	'<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
-	            
-            	jQuery(nsSel('textarea')).live('keyup', function() { 
+
+            	jQuery(nsSel('textarea')).live('keyup', function() {
 					//The original developer thought that escaping the
 					//quote characters of the textarea value are
 					//necessary to work around a bug in IE. I could not
@@ -369,7 +370,7 @@ define([
  					var waiDiv = jQuery('div[class*="wai"]', 'table#' + jQuery(that.effective).attr('id'));
  					waiDiv.removeClass(pl.get('waiGreen'));
  					waiDiv.removeClass(pl.get('waiRed'));
- 				    
+
  					if (jQuery(nsSel('textarea')).val().trim() != '') {
  						waiDiv.addClass(pl.get('waiGreen'));
 				    } else {
@@ -377,13 +378,13 @@ define([
 				    }
  				});
             },
-            
+
             onActivate: function (effective) {
             	var that = this;
 				that.effective = effective;
 				jQuery(nsSel('textarea')).val(jQuery(that.effective).attr('summary'));
             }
-            
+
         });
 		sidebar.show();
 	};
@@ -395,25 +396,25 @@ define([
 	TablePlugin.isEditableTable = function (table) {
 		return GENTICS.Utils.Dom.isEditable( table );
 	};
-	
+
 	/**
 	 * @param {DOMElement} table
 	 * @return {Number}
 	 */
 	TablePlugin.indexOfTableInRegistry = function ( table ) {
 		var registry = this.TableRegistry;
-		
+
 		for ( var i = 0; i < registry.length; i++ ) {
-			// We need to find exactly the same object from the 
+			// We need to find exactly the same object from the
 			// registry since we could also deal with cloned objects
 			if ( registry[ i ].obj[ 0 ].id == table.id ) {
 				return i;
 			}
 		}
-		
+
 		return -1;
 	};
-	
+
 	/**
 	 * @param {DOMElement} table
 	 * @return {Table}
@@ -425,7 +426,7 @@ define([
 		}
 		return null;
 	};
-	
+
 	/**
 	 * Checks whether the current selection is inside a table within an
 	 * editable
@@ -435,31 +436,31 @@ define([
 	TablePlugin.isSelectionInTable = function () {
 		var range = Aloha.Selection.getRangeObject();
 		var container = jQuery( range.commonAncestorContainer );
-		
+
 		if ( container.length == 0 ) {
 			return  false;
 		}
-		
+
 		if ( container.parents( '.aloha-editable table' ).length ) {
 			return true;
 		}
-		
+
 		return false;
 	};
-	
+
 	TablePlugin.preventNestedTables = function () {
 		if ( this.isSelectionInTable() ) {
 			Dialog.alert({
 				title : i18n.t( 'Table' ),
 				text  : i18n.t( 'table.createTable.nestedTablesNoSupported' )
 			});
-			
+
 			return true;
 		}
-		
+
 		return false;
 	};
-	
+
 	/**
 	 * Checks if the given element is within a table.
 	 *
@@ -471,7 +472,7 @@ define([
 					.parents( '.aloha-editable table' )
 						.length > 0 );
 	};
-	
+
 	/**
 	 * Checks for the presence of nested tables in the given editable.
 	 * @todo complete
@@ -562,7 +563,7 @@ define([
 			}
 		});
 	};
-	
+
 	/**
 	 * Adds default row buttons, and custom formatting buttons to floating menu
 	 */
@@ -619,7 +620,7 @@ define([
     	  			cell,
     	  			isHeader = that.activeTable.selection.isHeader(),
     				allHeaders = true; // flag for header check
-    				
+
     				// loop through selected cells, determine if any are not already headers
     				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
     					cell = that.activeTable.selection.selectedCells[j];
@@ -628,16 +629,16 @@ define([
 							break;
 						}
     				}
-    				
+
     				// updated selected cells
     				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
 			    		cell = that.activeTable.selection.selectedCells[j];
 						if ( allHeaders ) {
 			        		cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
-						} else { 
+						} else {
 			        		cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'row' ).get(0);
 						}
-						
+
 						jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
 							var wrapper = jQuery(this).children('div').eq(0);
 							// lovely IE ;-)
@@ -646,9 +647,9 @@ define([
 							}, 1);
 							// unselect cells
 						});
-						
+
 					}
-					
+
 					// select the row
 					that.activeTable.refresh();
 					that.activeTable.selection.unselectCells();
@@ -656,7 +657,7 @@ define([
 				}
 			}
 		});
-		
+
 		// generate formatting buttons
 		this.rowMSItems = [];
 		jQuery.each(this.rowConfig, function (j, itemConf) {
@@ -680,7 +681,7 @@ define([
 										jQuery(sc[i]).removeClass(that.rowConfig[f].cssClass);
 									}
 								}
-								
+
 							}
 						}
 						// selection could have changed.
@@ -689,7 +690,7 @@ define([
 				}
 			});
 		});
-		
+
 		if (this.rowMSItems.length > 0) {
 			this.rowMSItems.push({
 				name    : 'removeFormat',
@@ -712,7 +713,7 @@ define([
  				}
 			});
 		}
-		
+
 		this.rowMSButton = MultiSplitButton({
 			items: this.rowMSItems,
 			name: 'formatRow',
@@ -773,12 +774,12 @@ define([
 			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
-    				var 
+    				var
     	  			selectedColumnIdxs = that.activeTable.selection.selectedColumnIdxs,
     	  			cell,
     	  			isHeader = that.activeTable.selection.isHeader(),
     				allHeaders = true; // flag for header check
-    				
+
     				// loop through selected cells, determine if any are not already headers
     				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
     					cell = that.activeTable.selection.selectedCells[j];
@@ -787,16 +788,16 @@ define([
 							break;
 						}
     				}
-    				
+
     				// updated selected cells
     				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
 			    		cell = that.activeTable.selection.selectedCells[j];
 						if ( allHeaders ) {
 			        		cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
-						} else { 
+						} else {
 			        		cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'row' ).get(0);
 						}
-						
+
 						jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
 							var wrapper = jQuery(this).children('div').eq(0);
 							// lovely IE ;-)
@@ -805,9 +806,9 @@ define([
 							}, 1);
 							// unselect cells
 						});
-						
+
 					}
-    				
+
 					// select the column
 					that.activeTable.refresh();
 					that.activeTable.selection.unselectCells();
@@ -815,7 +816,7 @@ define([
 				}
 			}
 		});
-		
+
 		// generate formatting buttons
 		this.columnMSItems = [];
 		jQuery.each(this.columnConfig, function (j, itemConf) {
@@ -846,10 +847,10 @@ define([
 					}
 				}
 			};
-			
+
 			that.columnMSItems.push(item);
 		});
-		
+
 		if (this.columnMSItems.length > 0) {
 			this.columnMSItems.push({
 				name	: 'removeFormat',
@@ -872,7 +873,7 @@ define([
 				}
 			});
 		}
-		
+
 		this.columnMSButton = MultiSplitButton({
 			items: this.columnMSItems,
 			name: 'formatColumn',
@@ -880,6 +881,99 @@ define([
 			scope: this.name + '.column'
 		});
 	};
+
+	/**
+	 * Adds custom formatting buttons for cells to floating menu
+	 */
+	TablePlugin.initCellBtns = function () {
+		var that = this;
+
+		var selectedOrActiveCells = function() {
+			var sc = that.activeTable.selection.selectedCells;
+
+			// if there are no selected cells,
+			// set the active cell as the selected cell.
+			if (!sc || sc.length < 1) {
+				var activeCell = function() {
+					var range = Aloha.Selection.getRangeObject();
+					if (Aloha.activeEditable) {
+						return range.findMarkup( function() {
+								return this.nodeName.toLowerCase() === 'td';
+						}, Aloha.activeEditable.obj );
+					} else {
+						return null;
+					}
+				}
+
+				var active_cell = activeCell();
+				return (active_cell ? [ active_cell ] : []);
+			} else {
+				return sc;
+			}
+		}
+
+		// generate formatting buttons
+		this.cellMSItems = [];
+		jQuery.each(this.cellConfig, function (j, itemConf) {
+			var item = {
+				name	  : itemConf.name,
+				text	  : i18n.t(itemConf.text),
+				tooltip	  : i18n.t(itemConf.tooltip),
+				iconClass : 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
+				click	  : function (x,y,z) {
+					if (that.activeTable) {
+						var sc = selectedOrActiveCells();
+
+						// if a selection was made, transform the selected cells
+						for (var i = 0; i < sc.length; i++) {
+							if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
+								jQuery(sc[i]).removeClass(itemConf.cssClass);
+							} else {
+								jQuery(sc[i]).addClass(itemConf.cssClass);
+								// remove all column formattings
+								for (var f = 0; f < that.cellConfig.length; f++) {
+									if (that.cellConfig[f].cssClass != itemConf.cssClass) {
+										jQuery(sc[i]).removeClass(that.cellConfig[f].cssClass);
+									}
+								}
+							}
+						}
+					}
+				}
+			};
+
+			that.cellMSItems.push(item);
+		});
+
+		if (this.cellMSItems.length > 0) {
+			this.cellMSItems.push({
+				name	: 'removeFormat',
+				text	: i18n.t('button.removeFormat.text'),
+				tooltip	: i18n.t('button.removeFormat.tooltip'),
+				'cls'   : 'aloha-ui-multisplit-fullwidth',
+				wide	: true,
+				click	: function () {
+					if (that.activeTable) {
+						var sc = selectedOrActiveCells();
+						// if a selection was made, transform the selected cells
+						for (var i = 0; i < sc.length; i++) {
+							for (var f = 0; f < that.cellConfig.length; f++) {
+								jQuery(sc[i]).removeClass(that.cellConfig[f].cssClass);
+							}
+						}
+					}
+				}
+			});
+		}
+
+		this.cellMSButton = MultiSplitButton({
+			items: this.cellMSItems,
+			name: 'formatCell',
+			hideIfEmpty: true,
+			scope: this.name + '.cell'
+		});
+	};
+
 
 	/**
 	 * initialize the buttons and register them on floating menu
@@ -909,13 +1003,16 @@ define([
 		// generate formatting buttons for rows
 		this.initRowsBtns();
 
+		// generate formatting buttons for cells
+		this.initCellBtns();
+
 		this.initMergeSplitCellsBtns();
 
 		// generate formatting buttons for tables
 		this.tableMSItems = [];
-		
+
 		var tableConfig = this.tableConfig;
-		
+
 		jQuery.each(tableConfig, function(j, itemConf){
 			that.tableMSItems.push({
 				name: itemConf.name,
@@ -933,7 +1030,7 @@ define([
 				}
 			});
 		});
-		
+
 		if(this.tableMSItems.length > 0) {
 			this.tableMSItems.push({
 				name    : 'removeFormat',
@@ -951,7 +1048,7 @@ define([
 				}
 			});
 		}
-		
+
 		this.tableMSButton = MultiSplitButton({
 			items : this.tableMSItems,
 			name : 'formatTable',
@@ -1001,7 +1098,7 @@ define([
 			noTargetHighlight: true,
 			scope: this.name + '.cell'
 		} );
-		
+
 		this.summary.addListener( 'keyup', function( event ) {
 			that.activeTable.checkWai();
 		} );
@@ -1075,7 +1172,7 @@ define([
 		if ( this.preventNestedTables() ) {
 			return;
 		}
-		
+
 		// Check if there is an active Editable and that it contains an element (= .obj)
 		if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
 			// create a dom-table object
@@ -1096,19 +1193,19 @@ define([
 				tbody.appendChild( tr );
 			}
 			table.appendChild( tbody );
-			
+
 			prepareRangeContainersForInsertion(
 				Aloha.Selection.getRangeObject(), table );
-			
+
 			// insert the table at the current selection
 			GENTICS.Utils.Dom.insertIntoDOM(
 				jQuery( table ),
 				Aloha.Selection.getRangeObject(),
 				Aloha.activeEditable.obj
 			);
-			
+
 			cleanupAfterInsertion();
-			
+
 			var tableReloadedFromDOM = document.getElementById( tableId );
 
 			if ( !TablePlugin.isWithinTable( tableReloadedFromDOM ) ) {
@@ -1131,7 +1228,7 @@ define([
 
 				TablePlugin.TableRegistry.push( tableObj );
 			}
-			
+
 			TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
 
 			// The selection starts out in the first cell of the new
@@ -1146,7 +1243,7 @@ define([
 				inserted!' );
 		}
 	};
-	
+
 	TablePlugin.setFocusedTable = function(focusTable) {
 		var that = this;
 
@@ -1175,7 +1272,7 @@ define([
 			this.tableMSButton.showItem(this.tableMSItems[i].name);
 		}
 		this.tableMSButton.setActiveItem();
-		
+
 		if (this.activeTable) {
 			for (var i = 0; i < this.tableConfig.length; i++) {
 				if (this.activeTable.obj.hasClass(this.tableConfig[i].cssClass)) {
@@ -1288,7 +1385,7 @@ define([
 			}
 		} );
 	};
-	
+
 	/**
 	 * String representation of the Table-object
 	 *
@@ -1303,9 +1400,9 @@ define([
 			Scopes.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
 		}
 	};
-	
+
 	PluginManager.register(TablePlugin);
-	
+
 	/**
 	 * Detects a situation where we are about to insert content into a
 	 * selection that looks like this: <p> [</p>...
@@ -1324,7 +1421,7 @@ define([
 	 * display empty paragraphs if they are content-editable. So a <br />
 	 * inside an empty content-editable paragraph will result in 2 lines to be
 	 * shown instead of 1 in IE.
-	 * 
+	 *
 	 * @param {Object} range
 	 * @param {DOMElement} table
 	 */
@@ -1333,22 +1430,22 @@ define([
 			sNode = range.startContainer,
 			eNodeLength = ( eNode.nodeType == 3 )
 				? eNode.length
-				: eNode.childNodes.length;		
-		
-		
+				: eNode.childNodes.length;
+
+
 		if ( sNode.nodeType == 3 &&
 				sNode.parentNode.tagName == 'P' &&
 					sNode.parentNode.childNodes.length == 1 &&
 						/^(\s|%A0)$/.test( escape( sNode.data ) ) ) {
 			sNode.data = '';
 			range.startOffset = 0;
-			
+
 			// In case ... <p> []</p>
 			if ( eNode == sNode ) {
 				range.endOffset = 0;
 			}
 		}
-		
+
 		// If the table is not allowed to be nested inside the startContainer,
 		// then it will have to be split in order to insert the table.
 		// We will therefore check if the selection touches the start and/or
@@ -1357,19 +1454,19 @@ define([
 		// split we can check whether or not they should be removed
 		if ( !GENTICS.Utils.Dom.allowsNesting(
 				sNode.nodeType == 3 ? sNode.parentNode : sNode, table ) ) {
-			
+
 			if ( range.startOffset == 0 ) {
 				jQuery( sNode.nodeType == 3 ? sNode.parentNode : sNode )
 					.addClass( 'aloha-table-cleanme' );
 			}
-			
+
 			if ( range.endOffset == eNodeLength ) {
 				jQuery( eNode.nodeType == 3 ? eNode.parentNode : eNode )
 					.addClass( 'aloha-table-cleanme' );
 			}
 		}
 	};
-	
+
 	/**
 	 * Looks for elements marked with "aloha-table-cleanme", and removes them
 	 * if they are absolutely empty.
@@ -1380,12 +1477,12 @@ define([
 	function cleanupAfterInsertion () {
 		var dirty = jQuery( '.aloha-table-cleanme' ).removeClass(
 						'aloha-table-cleanme' );
-		
+
 		for ( var i = 0; i < dirty.length; i++ ) {
 			if ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' &&
 					!GENTICS.Utils.Dom.isEditingHost( dirty[ i ] ) ) {
 				jQuery( dirty[ i ] ).remove();
-				
+
 				/*
 				// For debugging: to see what we are deleting
 				jQuery( dirty[ i ] ).css({
@@ -1396,6 +1493,6 @@ define([
 			}
 		}
 	};
-	
+
 	return TablePlugin;
 });
