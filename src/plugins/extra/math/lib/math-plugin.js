@@ -788,7 +788,7 @@ function onAsciiCharChange(evt,  mathEditorContainer, eqId) {
 function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj, newMathEditContainer) {
     var newElId = wrapPrefix+cntEq;
     var range = Aloha.Selection.getRangeObject();
-    var newMathContainer = $('<div id="'+newElId+'" class="MathBox MathBoxNew selected">'+openDelimiter + closeDelimiter+'</div>');
+    var newMathContainer = $('<span id="'+newElId+'" class="MathBox MathBoxNew selected">'+openDelimiter + closeDelimiter+'</span>');
    /* Generates the math editor */ 
     GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $( Aloha.activeEditable.obj ) ); // Inserts the math container into the aloha 'editable' object
 
