@@ -1,10 +1,11 @@
 h2. The Repository API
 
-This guide describes
+After reading this guide, you will
 
-* configuring the repository manager
-* implement the repository API
-* resource item data layout
+* Understand the concept
+* Know how to configure the Repository Manager
+* Know how to implementing the Repository API
+* Resource item data structure
 
 endprologue.
 
