@@ -76,11 +76,14 @@ function convertToConcrete(character, ele, leVal, currentOffset) {
 
 
 function insertFunc(ele, leVal, offset) {
+    console.log('Inside insertFunc')
     var currentNode = window.getSelection().focusNode;
+    console.log(currentNode.className)
     var completeStr = currentNode.textContent;
+    console.log(completeStr);
 
     // happens if first character typed generates a virtual character
-    if(currentNode.tagName == "DIV") {
+    if(currentNode.className == "math-source") {
         currentNode = currentNode.childNodes[0];
     }
 
@@ -136,7 +139,7 @@ function generateInserted(offset, character, additionalCharacter) {
     var completeStr = currentNode.textContent;
 
     // happens if first character typed generates a virtual character
-    if(currentNode.tagName == "DIV") {
+    if(currentNode.className == "math-source") {
         currentNode = currentNode.childNodes[0];
     }
 
@@ -308,16 +311,27 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     // Gbenga's variables
     var mathEditBox = mathEditorContainer.find(".math-source");
 
+    console.log('Math edit box:')
+    console.log(mathEditBox)
+
     var currentNode = window.getSelection().focusNode;
-    if(currentNode.tagName == "DIV") {
+
+    if(currentNode.className == "math-source") {
         currentNode = currentNode.childNodes[0];
     }
 
+    console.log('onTexChange Checkpoint 0')
     var range = window.getSelection().getRangeAt(0);
     var offset = range.startOffset;
     var ch = currentNode.textContent[offset];
     var ele = $('#'+evt.currentTarget.id);
     var leVal = getFullStr(mathEditBox[0].childNodes);
+    console.log('onTexChange Checkpoint 0.1 '+leVal)
+    if(leVal == "Enter your math notation here") {
+        inChange = false;
+        return;
+    }
+
     console.log('onTexChange Checkpoint 1')
 
     var i = 0;
@@ -442,15 +456,18 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     var leVal = getFullStr(mathEditBox[0].childNodes);
     var diff = leVal.length - currentLength;
 
+    console.log('onTexChange Checpoint 3.1')
+
 
     if(leVal.length < currentLength && currentLength - leVal.length > 1) {
+        console.log('onTexChange Checpoint 3.2')
         // bulk delete
         var startDelete = range.startContainer;
-        if(startDelete.tagName == "DIV") {
+        if(startDelete.className == "math-source") {
             startDelete = startDelete.childNodes[0];
         }
         var endDelete = range.endContainer;
-        if(endDelete.tagName == "DIV") {
+        if(endDelete.className == "math-source") {
             endDelete = endDelete.childNodes[0];
         }
 
@@ -721,13 +738,13 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         }
     }
     console.log('onTexChange Checkpoint 6')
-
+    console.log(mathEditBox);
 
     if(leVal.length - currentLength > 0) {
         switch(ch) {
             case(')'):
             case('}'):
-                convertToConcrete(ch, ele, leVal, offset);
+                convertToConcrete(ch, mathEditBox[0], leVal, offset);
                 break;
             case('{'):
                 generateInserted(offset, '}', '');
@@ -737,10 +754,10 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                 break;
             case('^'):
             case('_'):
-                insertBraces(ele, leVal, offset);
+                insertBraces(mathEditBox[0], leVal, offset);
                 break;
             case('\\'):
-                insertFunc(ele, leVal, offset);
+                insertFunc(mathEditBox[0], leVal, offset);
                 break;
         }
     }
@@ -748,13 +765,12 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
 
     leVal = getFullStr(mathEditBox[0].childNodes);
     console.log('LEVAL is: '+leVal);
-    if(leVal != "Enter your math notation here") {
-        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-    }
+    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
     console.log('onTexChange Checkpoint 8')
     inChange = false;
     currentLength = leVal.length;
 }
+
 function onAsciiCharChange(evt,  mathEditorContainer, eqId) {
         // var eqId = evt.currentTarget.id.substring(5);
         console.log("Refreshing ascii rendering");
@@ -788,6 +804,7 @@ function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction
 
             MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
                    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],"\\displaystyle{"+equation+"}"]);
+                   
             }]);
         } 
         else {
@@ -929,6 +946,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       /* If the math-editor is empty then it's replaced w/ default text */
       if (equation == "&nbsp\;") {
         mathEditorContainer.find(".math-source").append('<span class="math-source-hint-text">Enter your math notation here</span>');
+        //GENTICS.Utils.Dom.setCursorInto( mathEditorContainer.find(".math-source")[0] );
       } 
       else {
         /* Appends the equation to the text in the editor */
