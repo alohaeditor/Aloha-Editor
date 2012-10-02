@@ -45,8 +45,7 @@ define( [
 	'ui/toggleButton',
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'aloha/console',
-	'link/../extra/linklist'
+	'aloha/console'
 ], function (
 	Aloha,
 	Plugin,
