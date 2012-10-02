@@ -1,6 +1,6 @@
 # including "ui/settings" has weird side effects, namely most of the buttons don't load
 toolbarSettings = [
- 'bold', 'italic', 'underline', '', 'insertImage', 'insertFigure',
+ 'bold', 'italic', 'underline',
  { text: 'Table', subMenu: [ 'createTable', 'addrowbefore',  'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] }
 ]
 
