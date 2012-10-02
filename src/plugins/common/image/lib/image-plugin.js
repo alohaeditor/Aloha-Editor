@@ -805,6 +805,85 @@ define([
 				// FIXME for some reason execution breaks at this point
 			}
 
+			// Wrap the image in a div so we can add the alt text and attribution.
+			function handleMetadata() {
+				//Extract the metadata from the image.
+				/*
+				@alt
+				@data-author-url
+				@data-author-name
+				// .caption
+				// .title
+				*/
+			
+				//Please provid a description of this image
+				var metadata = jQuery('<div></div>').addClass('aloha-image-attrib');
+				currentImage.after(metadata);
+				currentImage.appendTo(metadata);
+			
+				function hideMetadata() {
+				  metadata.after(currentImage);
+				  metadata.remove();
+				};
+			
+				Aloha.bind('aloha-selection-changed', function (event, rangeObject, originalEvent) {
+					if (originalEvent && originalEvent.target) {
+						// Ignore clicks inside the image( title, caption, etc)
+						if (typeof(rangeObject.commonAncestorContainer) == 'undefined' || rangeObject.commonAncestorContainer == metadata[0] || jQuery(rangeObject.commonAncestorContainer).parents('aloha-image-attrib').length) {
+						// Ignore the event.
+						} else {
+							hideMetadata();
+						}
+					}
+				});
+
+			
+				function DynamicAttribute(context, attrName) {
+					var input = jQuery('<input/>').addClass('aloha-image-attr-' + attrName);
+					var value = context.attr(attrName);
+					input.val(value);
+					input.on('change', function() {
+						if (input.val()) {
+							context.attr(attrName, input.val());
+						} else {
+							context.removeAttr(attrName);
+						}
+					});
+					return input;
+				};
+
+				function DynamicEditable(context, cssNode, newTemplate) {
+					var el = context.find(cssNode);
+					if (el.length == 0) {
+						el = jQuery(newTemplate);
+						context.append(el);
+					}
+					el.on('change', function() {
+						//TODO disable things like multiple paragraphs maybe
+					});
+
+					return el;
+				};
+
+
+				var altText = DynamicAttribute(currentImage, 'alt');
+				var authorUrl = DynamicAttribute(currentImage, 'data-author-url');
+				var authorName = DynamicAttribute(currentImage, 'data-author-name');
+
+				metadata.append('<div class="label">Please provide a description of this image for the visually impaired</div>');
+				metadata.append(altText);
+				metadata.append('<div class="label">Who is the original author of this image?</div>');
+				metadata.append(authorName);
+				metadata.append('<div class="label">What is the original URL of this image?</div>');
+				metadata.append(authorUrl);
+      
+	      var own = jQuery('<input type="radio"/>').addClass('aloha-image-attrib-own').appendTo(metadata);
+  	    var allowed = jQuery('<input/>').addClass('aloha-image-attrib-own').appendTo(metadata);
+			};
+			if (currentImage.parents('.aloha-image-attrib').length == 0) {
+				handleMetadata();
+			}
+
 			if (plugin.settings.ui.resizable) {
 				plugin.startResize();
 			}
@@ -813,6 +892,7 @@ define([
 			if (plugin.settings.autoResize) {
 				plugin.autoResize();
 			}
+			
 			Aloha.Selection.preventSelectionChangedFlag = false;
 			Aloha.trigger('aloha-image-selected');
 		},
@@ -1021,7 +1101,10 @@ define([
 					// changes are on one single point.
 					
 					// Create a div that allows the user to drop an image, upload, or provide a URL
-					var uploadBox = jQuery('<div class="aloha-image-upload-drop-box ui-wrapper" contentEditable="false">');
+					var uploadBox = jQuery('<div></div>');
+					uploadBox.addClass('aloha-image-upload-drop-box');
+					// uploadBox.addClass('ui-wrapper'); This is a jQuery class
+					uploadBox.attr('contentEditable', false);
 					uploadBox.on('click', function() {
 					  alert('TODO: A browse button would look great here');
 					});
