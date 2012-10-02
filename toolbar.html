@@ -56,6 +56,22 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
   padding: 100px 0;
   cursor: pointer;
 }
+
+/* Metadata fields that occur around the image */
+.aloha-image-attrib {
+  
+}
+.aloha-image-attrib .aloha-image-attr-alt::before {
+  content: "Please provide a description of this image for the visually impaired";
+  color: #ccc;
+  display: block;
+}
+/* Just some formatting of the input boxes */
+.aloha-image-attrib input { display: block; }
+.aloha-image-attrib .aloha-image-attr-alt {
+  width: 400px;
+  display: block;
+}
 	</style>
 
 	<style>
