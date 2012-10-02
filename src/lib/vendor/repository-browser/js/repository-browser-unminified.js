@@ -1162,11 +1162,15 @@ define('RepositoryBrowser', [
 
 				$element.stop().show();
 
+				// recalculate sizes
+				this._onWindowResized();
+				this.$_grid.resize();
+
 				var win	= jQuery(window);
 
 				$element.css({
-					left: (win.width() - $element.width()) / 2 - 30,
-					top: (win.height() - $element.height()) / 3 + 10
+					left: this.horizontalPadding / 2,
+					top: this.verticalPadding / 2
 				}).draggable({
 					handle: $element.find('.repository-browser-grab-handle')
 				});
@@ -1192,10 +1196,10 @@ define('RepositoryBrowser', [
 					opacity: 1,
 					filter: 'progid:DXImageTransform.Microsoft.gradient(enabled=false)'
 				});
-				//$element.find('.repository-browser-close-btn').hide();
+				this._onWindowResized();
+				this.$_grid.resize();
 			}
 
-			this._onWindowResized();
 			++numOpenedBrowsers;
 		},
 
