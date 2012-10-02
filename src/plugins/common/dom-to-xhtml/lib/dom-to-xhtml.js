@@ -168,9 +168,13 @@ function(
 			}
 		}
 		for (i = 0, len = attrs.length; i < len; i++) {
-			// The XHTML spec says attributes are lowercase
+			// The XHTML spec says attributes are lowercase, but this does
+            // not apply for other namespaces.
 			var attr  = attrs[i];
-			var name  = attr[0].toLowerCase();
+			var name  = attr[0];
+            if(!name.match(/:/)){
+                name  = name.toLowerCase();
+            }
 			var value = attr[1];
 
 			if (ephemera && Ephemera.isAttrEphemeral(element, name, ephemera.attrMap || {}, ephemera.attrRxs || {})) {
@@ -273,8 +277,7 @@ function(
 	 *        of the given element, or otherwise the first sibling of child that is not considered
 	 *        a child of the given element.
 	 */
-<<<<<<< HEAD
-	function serializeElement(element, child, unrecognized, xhtml) {
+	function serializeElement(element, child, unrecognized, ephemera, xhtml) {
         var elementName = element.nodeName;
         var nsDeclaration;
 
@@ -289,11 +292,6 @@ function(
 			nsDeclaration = ' xmlns="' + element.namespaceURI + '"';
 		}
 		
-=======
-	function serializeElement(element, child, unrecognized, ephemera, xhtml) {
-		// TODO: we should only lowercase element names if they are in an HTML namespace
-		var elementName = element.nodeName.toLowerCase();
->>>>>>> official
 		// This is a hack around an IE bug which strips the namespace prefix
 		// of element.nodeName if it occurs inside an contentEditable=true.
 		if (element.scopeName && 'HTML' != element.scopeName && -1 === elementName.indexOf(':')) {
@@ -302,13 +300,8 @@ function(
 		if (!unrecognized && null == child && emptyElements[elementName]) {
 			xhtml.push('<' + elementName + makeAttrString(element, ephemera) + '/>');
 		} else {
-<<<<<<< HEAD
 			xhtml.push('<' + elementName + nsDeclaration + makeAttrString(element) + '>');
-			child = serializeChildren(element, child, unrecognized,  xhtml);
-=======
-			xhtml.push('<' + elementName + makeAttrString(element, ephemera) + '>');
-			child = serializeChildren(element, child, unrecognized,  ephemera, xhtml);
->>>>>>> official
+			child = serializeChildren(element, child, unrecognized, ephemera, xhtml);
 			xhtml.push('</' + elementName + '>');
 		}
 		return child;
