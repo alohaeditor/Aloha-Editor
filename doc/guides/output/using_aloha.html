@@ -56,42 +56,25 @@
           <hr style="clear:both;">
           <dl class="L">
     <dt>Start Here</dt>
-      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
-      <dd><a href="functional_description.html">Functional Description</a></dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd>Configuring Aloha Editor</dd>
-      <dd>Aloha Editor and jQuery</dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
-      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
-      <dd><a href="repository.html">Working with repositories</a></dd>
+      <dd><a href="using_aloha.html">Use</a></dd>
+      <dd><a href="develop_aloha.html">Develop</a></dd>
+      <dd><a href="dependencies.html">Dependencies</a></dd>
     <dt>The Core</dt>
-      <dd><a href="core.html">The Core</a></dd>
-    <dt>Commands</dt>
-      <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor UI</a></dd>
-      <dd>Aloha Editor toolbar</dd>
-      <dd>Aloha Editor sidebar</dd>
-      <dd>Aloha Editor UI API</dd>
+      <dd><a href="events.html">Events</a></dd>
+      <dd><a href="using_commands.html">Commands</a></dd>
+      <dd><a href="repository.html">Repositories</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="internals.html">Internals</a></dd>
 </dl>
 <dl class="R">
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd><a href="core_hotkey.html">Hotkeys</a></dd>
     <dt>Plugins</dt>
-      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
-      <dd><a href="plugin_block.html">Block</a></dd>
-      <dd><a href="plugin_image.html">Image</a></dd>
-      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
-      <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd>Numerated Headers</dd>
-      <dd><a href="plugin_undo.html">Undo</a></dd>
-      <dd><a href="plugin_table.html">Table</a></dd>
-      <dd><a href="plugin_paste.html">Paste</a></dd>
-      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
-      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
-      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
+      <dd><a href="plugins.html">Available Plugins</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
-      <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
 </dl>
@@ -174,62 +157,32 @@
 &lt;/body&gt;
 </pre></div>
 <div class="note"><p>In this example, the <span class="caps">HTML</span> element is made editable in the event handler of the <ins>Aloha.ready</ins> event. This ensures that aloha is fully loaded, before actually using it and is therefore the recommended way of using Aloha Editor.</p></div>
-<h3 id="requirejs">4 requirejs</h3>
-<p>Aloha uses <a href="http://requirejs.org/">requirejs</a> to load modules at runtime.</p>
-<p>It is necessary, for development and when using aloha-bare.js, to include requirejs before Aloha. It is not necessary to include requirejs when using aloha-full.js, as that already includes requirejs (as well as jQuery).</p>
-<p>It is possible to build a custom version of Aloha that does not need requirejs, although that has not been tested at the time of this writing and requires a customized build profile. See <a href="develop_aloha.html">Customized builds</a> for more information.</p>
-<h3 id="custom-jquery-jqueryui-and-other-modules">5 Custom jQuery, jQueryUI and other modules</h3>
-<p>Aloha requires many third party modules. If these modules are not combined during building, they will be loaded at runtime by requirejs. Two of the most prominent modules are jQuery and jQueryUI.</p>
-<h4 id="custom-jquery">5.1 Custom jQuery</h4>
-<p>The simplest way to make Aloha use a jQuery that you give it, and to prevent Aloha from loading its own jQuery, is by doing either of the following</p>
+<p>The follwing reverts an editable to its non-editable form</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-&lt;script src=&quot;aloha/lib/require.js&quot;&gt;&lt;/script&gt;
-&lt;script&gt;Aloha = {}; Aloha.settings = {}; Aloha.settings.jQuery = window.jQuery;&lt;/script&gt;
-&lt;script src=&quot;aloha/lib/aloha.js&quot; data-aloha-plugins=&quot;...&quot;&gt;&lt;/script&gt;
-</pre></div><p>In the above example Aloha will prefer Aloha.settings.jQuery over loading its own jquery via requirejs.</p>
+    $('#editable').mahalo();
+</pre></div><p>This should also remove the attributes added by aloha (classes, contenteditable=true, etc.).</p>
+<h3 id="supported-elements">4 Supported elements</h3>
+<p>Aloha can be used with the following <span class="caps">HTML</span> text elements:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-&lt;script src=&quot;aloha/lib/require.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;aloha/lib/vendor/jquery-1.7.2.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;aloha/lib/aloha.js&quot; data-aloha-plugins=&quot;...&quot;&gt;&lt;/script&gt;
-</pre></div><p>In the above example, first jQuery is included, which will call the global define() function exposed by requirejs to define the &#8216;jquery&#8217; module, and afterwards Aloha is included, which will pick up the &#8216;jquery&#8217; module that was previously defined.</p>
-<p>The jQuery that is given to Aloha should be the same version as the one Aloha would load itself, which should be the most recent version of jQuery. Older versions may work, but since older versions are not tested against, please expect for things to break.</p>
-<p>Please also note that the given jQuery will be extended by jQuery plugins.</p>
-<h4 id="customizing-other-modules">5.2 Customizing other modules</h4>
-<p>There are other ways to customize the module loading for modules beside jQuery.</p>
-<ul>
-	<li>Use requirejs directly (preferred)</li>
-</ul>
+	[ 'a', 'abbr', 'address', 'article', 'aside',
+	'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
+	'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer',
+	'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i',
+	'ins', 'menu', 'nav', 'p', 'pre', 'q', 'ruby',
+	'section', 'small', 'span', 'strong', 'sub', 'sup',
+	'textarea', 'var' ]
+</pre></div><p>Not supported <span class="caps">HTML</span> elements:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-define('jquery', function(){ return window.jQuery; })
-define('jqueryui', function(){ return window.jQuery.ui; })
-</pre></div><ul>
-	<li>Use Aloha.settings.predefinedModules &#8211; does a define() call as above, except it also works if   requirejs is bundled as part of Aloha (aloha-full.js).   Using requirejs defines like above is preferred.</li>
-</ul>
-<div class="code_container">
-<pre class="brush: javascript; gutter: false; toolbar: false">
-  
-Aloha.settings.predefinedModules = {'jquery': window.jQuery, 'jqueryui': window.jQuery.ui};
-</pre></div><ul>
-	<li>Customize the requirejs path configuration &#8211; this will only work if   jQuery was not already defined via a call to define() as above.   Using requirejs defines like above is preferred.</li>
-</ul>
-<div class="code_container">
-<pre class="brush: javascript; gutter: false; toolbar: false">
-
-  Aloha.settings.requireConfig.paths = {'jquery': 'path/to/jquery.js', 'jqueryui': 'path/to/jqueryui.js'};
-</pre></div><ul>
-	<li>Customize the <a href="https://github.com/jrburke/r.js/">r.js</a> path   configuration &#8211; the r.js build profiles also contain path   configuration, like Aloha.settings.requireConfig.paths above, that can be   adapted. This is different from the other methods in that this   controls how Aloha will be combined, whereas the other methods control   runtime module loading. See <a href="develop_aloha.html">Customized builds</a> for more information.</li>
-</ul>
-<p>Please note that if a &#8216;jqueryui&#8217; module is given this way, a &#8216;jquery&#8217; module must also be given this way, and the given &#8216;jqueryui&#8217; module must extend the given &#8216;jquery&#8217; module. The same rule holds for any other jQuery plugins.</p>
-<p>Also note that if a jQuery instance is given with Aloha.setings.predefinedModules or Aloha.settings.jQuery, it will be extended (jquery plugins will be registered on it).</p>
-<p>Care must be taken with both settings. Passing in a version of a module that differs from what Aloha expects may result in unpredictable behaviour.</p>
-<p>Also, the third part libraries that come with Aloha may have been patched to fix bugs or address Aloha specific issues. See the git log for each third party library for further information before redefining it.</p>
-<p>For this reason, if you experiencing problems when using custom versions of some modules, please go back to using the modules packaged with Aloha before making a bugreport.</p>
+	[ 'canvas', 'audio', 'br', 'embed', 'fieldset', 'hgroup', 'hr',
+	'iframe', 'img', 'input', 'map', 'script', 'select', 'style',
+	'svg', 'table', 'ul', 'video', 'ol', 'form', 'noscript' ]
+</pre></div><p>Note if you are using a textarea with Aloha: If the textarea has a <span class="caps">HTML</span> ID (eg. mytxtarea) the ID of the Aloha editable will be &#8220;-aloha&#8221; suffixed (eg. mytxtarea-aloha).</p>
 
       </div>
         <div id="subCol">
@@ -238,11 +191,8 @@ Aloha.settings.predefinedModules = {'jquery': window.jQuery, 'jqueryui': window.
             <li><a href="#prerequisites"><p>Prerequisites</p>
 </a></li><li><a href="#embed-aloha-editor"><p>Embed Aloha Editor</p>
 </a></li><li><a href="#create-editables"><p>Create editables</p>
-</a></li><li><a href="#requirejs"><p>requirejs</p>
-</a></li><li><a href="#custom-jquery-jqueryui-and-other-modules"><p>Custom jQuery, jQueryUI and other modules</p>
-</a><ul><li><a href="#custom-jquery"><p>Custom jQuery</p>
-</a></li> <li><a href="#customizing-other-modules"><p>Customizing other modules</p>
-</a></li></ul></li>
+</a></li><li><a href="#supported-elements"><p>Supported elements</p>
+</a></li>
           </ol>
         </div>
     </div>

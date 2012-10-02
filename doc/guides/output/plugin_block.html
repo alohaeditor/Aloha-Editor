@@ -56,42 +56,25 @@
           <hr style="clear:both;">
           <dl class="L">
     <dt>Start Here</dt>
-      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
-      <dd><a href="functional_description.html">Functional Description</a></dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd>Configuring Aloha Editor</dd>
-      <dd>Aloha Editor and jQuery</dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
-      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
-      <dd><a href="repository.html">Working with repositories</a></dd>
+      <dd><a href="using_aloha.html">Use</a></dd>
+      <dd><a href="develop_aloha.html">Develop</a></dd>
+      <dd><a href="dependencies.html">Dependencies</a></dd>
     <dt>The Core</dt>
-      <dd><a href="core.html">The Core</a></dd>
-    <dt>Commands</dt>
-      <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor UI</a></dd>
-      <dd>Aloha Editor toolbar</dd>
-      <dd>Aloha Editor sidebar</dd>
-      <dd>Aloha Editor UI API</dd>
+      <dd><a href="events.html">Events</a></dd>
+      <dd><a href="using_commands.html">Commands</a></dd>
+      <dd><a href="repository.html">Repositories</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="internals.html">Internals</a></dd>
 </dl>
 <dl class="R">
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd><a href="core_hotkey.html">Hotkeys</a></dd>
     <dt>Plugins</dt>
-      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
-      <dd><a href="plugin_block.html">Block</a></dd>
-      <dd><a href="plugin_image.html">Image</a></dd>
-      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
-      <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd>Numerated Headers</dd>
-      <dd><a href="plugin_undo.html">Undo</a></dd>
-      <dd><a href="plugin_table.html">Table</a></dd>
-      <dd><a href="plugin_paste.html">Paste</a></dd>
-      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
-      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
-      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
+      <dd><a href="plugins.html">Available Plugins</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
-      <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
 </dl>
@@ -124,7 +107,7 @@
 <p>Some properties of blocks:</p>
 <ul>
 	<li>Blocks can occur inside or outside of Aloha Editables</li>
-	<li>Both <tt>&lt;span&gt;</tt> and <tt>&lt;div&gt;</tt> elements can be blockified (i.e. converted to blocks)</li>
+	<li>Both <tt>&lt;span&gt;</tt> and <tt>&lt;div&gt;</tt> elements can be blockified (i.e. converted to blocks). You may however <a href="#changing-the-root-tags">change the list of root tags</a> if you have further requirements.</li>
 	<li>Blocks can contain nested editable areas</li>
 	<li>Blocks can be copy/pasted and dragged/dropped if they are inside an Aloha editable</li>
 	<li>Blocks can be deleted using backspace or <span class="caps">DEL</span> if inside an editable</li>
@@ -471,6 +454,20 @@ Aloha.settings.plugins.block.editables = {
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.settings.plugins.block.dropzones = [ '#editable-1', '#editable-2' ];
+</pre></div><h4 id="changing-the-root-tags">6.7 Changing the root tags</h4>
+<div class="warning"><p>Please note that changing the root tags will result in undesired behaviour when using Drag/Drop functionality of the block plugin. You must stick to span and div if you want to use Drag/Drop.</p></div>
+<p>The block plugin will only allow for <tt>&lt;span&gt;</tt> and <tt>&lt;div&gt;</tt> elements as root tags when creating blocks. You can however change that using the following setting:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+// add tables and paragraphs to the default
+// list of root tags
+Aloha.settings.plugins.block.rootTags = [ 
+	'span', 
+	'div', 
+	'table', 
+	'p' 
+];
 </pre></div><h3 id="internals">7 Internals</h3>
 <p>For this work, numerous IE hacks were needed. Especially in areas like Drag/Drop, Deletion and Copy/Paste with regards to IE7 and IE8, which differ considerably in their behavior. See the compatibility matrix below for the tests which have been run.</p>
 <h4 id="browser-compatibility-matrix">7.1 Browser Compatibility Matrix</h4>
@@ -666,6 +663,7 @@ Aloha.settings.plugins.block.dropzones = [ '#editable-1', '#editable-2' ];
 </a></li> <li><a href="#preventing-switch-of-scope-for-a-block"><p>Preventing switch of scope for a block</p>
 </a></li> <li><a href="#enabling-disabling-drag-drop-for-blocks"><p>Enabling/Disabling drag &amp; drop for blocks</p>
 </a></li> <li><a href="#defining-dropzones"><p>Defining Dropzones</p>
+</a></li> <li><a href="#changing-the-root-tags"><p>Changing the root tags</p>
 </a></li></ul></li><li><a href="#internals"><p>Internals</p>
 </a><ul><li><a href="#browser-compatibility-matrix"><p>Browser Compatibility Matrix</p>
 </a></li></ul></li>

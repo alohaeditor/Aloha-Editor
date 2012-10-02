@@ -25,6 +25,7 @@ define([
 
 	var GENTICS = window.GENTICS;
 	var overlayByConfig = {};
+	var _savedRange;
 
 	function CharacterOverlay(onSelectCallback) {
 		var self = this;
@@ -234,6 +235,7 @@ define([
 				scope: 'Aloha.continuoustext',
 				click: function() {
 					if (false !== self.characterOverlay) {
+						_savedRange = Aloha.Selection.rangeObject;
 						self.characterOverlay.show(this.element);
 					}
 				}
@@ -259,6 +261,7 @@ define([
 		},
 
 		getOverlayForEditable: function(editable) {
+			var that = this;
 			// Each editable may have its own configuration and as
 			// such may have its own overlay.
 			var config = this.getEditableConfig(editable.obj),
@@ -280,18 +283,19 @@ define([
 			}
 			return overlay;
 		}
-	});
 
+	});
+	
+			
 	/**
 	 * insert a character after selecting it from the list
-	*/
+	 */
 	function onCharacterSelect (character) {
 		if (Aloha.activeEditable) {
-			// set focux to editable
-			Aloha.activeEditable.obj.focus();
+			//Select the range that was selected before the overlay was opened
+			_savedRange.select();
 			Aloha.execCommand('insertHTML', false, character);
 		}
 	}
+
 });
-	
-// vim: noexpandtab

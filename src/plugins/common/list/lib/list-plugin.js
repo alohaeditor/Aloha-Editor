@@ -52,6 +52,49 @@ define([
 	'use strict';
 
 	var GENTICS = window.GENTICS;
+	
+	/**
+	 * Transforms the given list element and its sub elements (if they are in the selection) into
+	 * the given transformTo target.
+	 * @param domToTransform - The list object that should be transformed
+	 * @param transformTo - Transformationtarget e.g. 'ul' / 'ol'
+	 */
+	function transformExistingListAndSubLists (domToTransform, transformTo) {
+		// find and transform sublists if they are in the selection
+		jQuery(domToTransform).find(domToTransform.nodeName).each(function(){
+			if (isListInSelection(this)) {
+				Aloha.Markup.transformDomObject(this, transformTo, Aloha.Selection.rangeObject);
+			}
+		});
+
+		// the element itself
+		Aloha.Markup.transformDomObject(domToTransform, transformTo, Aloha.Selection.rangeObject);
+	}
+
+	/**
+	 * Checks if a dom element is in the given Slectiontree.
+	 * @param needle - the searched element
+	 * @return returns true if the needle is found in the current selection tree.
+	 */
+	function isListInSelection(needle) {
+		var selectionTree = Aloha.Selection.getSelectionTree();
+		return checkSelectionTreeEntryForElement(selectionTree, needle);
+	}
+
+	/**
+	 * Checks if the given needle is in the given treeElement or in one of its sub elements.
+	 * @param treeElement - the tree element to be searched in
+	 * @param needle - the searched element
+	 */
+	function checkSelectionTreeEntryForElement(treeElementArray, needle) {
+		var found = false;
+		jQuery.each(treeElementArray, function(index, element){
+			if ((element.domobj === needle && element.selection !== "none") || checkSelectionTreeEntryForElement(element.children, needle)) {
+				found = true;
+			}
+		});
+		return found;
+	}
 
 	/**
 	 * Register the ListPlugin as Aloha.Plugin
@@ -181,23 +224,6 @@ define([
 				}
 
 			}
-		},
-		
-		/**
-		 * Make the given jQuery object (representing an editable) clean for saving
-		 * Find all li tags and remove editing attributes
-		 * @param obj jQuery object to make clean
-		 * @return void
-		 */
-		makeClean: function (obj) {
-			// find all li tags
-			obj.find('li').each(function () {
-				// Remove IE attributes
-				jQuery(this).removeAttr('hidefocus');
-				jQuery(this).removeAttr('hideFocus');
-				jQuery(this).removeAttr('tabindex');
-				jQuery(this).removeAttr('tabIndex');
-			});
 		},
 
 		/**
@@ -341,15 +367,15 @@ define([
 				// we are in an unordered list and shall transform it to an ordered list
 
 				// transform the ul into an ol
-				Aloha.Markup.transformDomObject(domToTransform, 'ol', Aloha.Selection.rangeObject);
-
+				transformExistingListAndSubLists(domToTransform, 'ol');
+				
 				// merge adjacent lists
 				this.mergeAdjacentLists(jQuery(domToTransform));
 			} else if (nodeName == 'ol' && !ordered) {
 				// we are in an ordered list and shall transform it to an unordered list
 
 				// transform the ol into an ul
-				Aloha.Markup.transformDomObject(domToTransform, 'ul', Aloha.Selection.rangeObject);
+				transformExistingListAndSubLists(domToTransform, 'ul');
 
 				// merge adjacent lists
 				this.mergeAdjacentLists(jQuery(domToTransform));
@@ -464,6 +490,7 @@ define([
 			// refresh the selection
 			this.refreshSelection();
 		},
+
 
 		/**
 		 * Indent the selected list items by moving them into a new created, nested list
