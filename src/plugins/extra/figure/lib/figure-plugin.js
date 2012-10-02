@@ -37,7 +37,7 @@
           click: function(evt) {
             var markup, rangeObject;
             console.log('sdkjfh');
-            markup = jQuery("<figure><span class='media'><img src='" + (Aloha.getPluginUrl('image')) + "/img/blank.jpg'/></span><figcaption class='aloha-editable'>Enter Caption Here</figcaption></figure>");
+            markup = jQuery("<figure><span class='media'><img src='" + (Aloha.getPluginUrl('image')) + "/img/blank.jpg'/></span><figcaption>Enter Caption Here</figcaption></figure>");
             rangeObject = Aloha.Selection.getRangeObject();
             GENTICS.Utils.Dom.insertIntoDOM(markup, rangeObject, jQuery(Aloha.activeEditable.obj));
             markup.alohaBlock({

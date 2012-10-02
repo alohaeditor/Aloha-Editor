@@ -31,7 +31,7 @@ define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 
         tooltip: 'Create Figure'
         click: (evt) ->
           console.log 'sdkjfh'
-          markup = jQuery("<figure><span class='media'><img src='#{Aloha.getPluginUrl('image')}/img/blank.jpg'/></span><figcaption class='aloha-editable'>Enter Caption Here</figcaption></figure>")
+          markup = jQuery("<figure><span class='media'><img src='#{Aloha.getPluginUrl('image')}/img/blank.jpg'/></span><figcaption>Enter Caption Here</figcaption></figure>")
           rangeObject = Aloha.Selection.getRangeObject()
           GENTICS.Utils.Dom.insertIntoDOM(markup, rangeObject, jQuery(Aloha.activeEditable.obj))
           markup.alohaBlock({'aloha-block-type': 'FigureBlock'})
