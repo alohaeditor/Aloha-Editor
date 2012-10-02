@@ -94,16 +94,21 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
 
     function prepareTable(table){
         // Wrap table in ui-wrappper
-        table.wrap('<div class="aloha-ui-wrapper" />');
+        var w1 = Aloha.jQuery('<div class="canvas-wrap aloha-ui-wrapper" />');
+        var w2 = Aloha.jQuery('<div class="table canvas aloha-ui-wrapper" />');
+        var w3 = Aloha.jQuery('<div class="canvas-inner aloha-ui-wrapper" />');
 
+        table.wrap(w1).wrap(w2).wrap(w3);
+
+        w1.attr('contentEditable', 'false');
         // glue a mouseover event onto it
         table.on('mouseenter', function(e){
             // We will later use this to bring up ui
-            console && console.log(e.target);
+            //console && console.log(e.target);
         });
         table.on('mouseleave', function(e){
             // We will later use this to hide ui
-            console && console.log(e.target);
+            //console && console.log(e.target);
         });
     }
 
@@ -111,7 +116,6 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
         defaults: {
         },
         init: function(){
-            console && console.log('Initialising tables plugin');
             this.createLayer = new CreateLayer(this);
             this.initButtons();
             Aloha.bind('aloha-editable-created', function(event, editable){
@@ -309,9 +313,8 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                 GENTICS.Utils.Dom.insertIntoDOM(jQuery(table),
                     Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
 
-                prepareTable(Aloha.jQuery(table));
-
                 cleanupAfterInsertion();
+                prepareTable(Aloha.jQuery(table));
                 var ev = jQuery.Event();
                 ev.type = 'blur';
                 Aloha.activeEditable.smartContentChange(ev);
