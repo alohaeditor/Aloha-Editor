@@ -92,6 +92,21 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
         return cell.closest('tr');
     }
 
+    function prepareTable(table){
+        // Wrap table in ui-wrappper
+        table.wrap('<div class="aloha-ui-wrapper" />');
+
+        // glue a mouseover event onto it
+        table.on('mouseenter', function(e){
+            // We will later use this to bring up ui
+            console && console.log(e.target);
+        });
+        table.on('mouseleave', function(e){
+            // We will later use this to hide ui
+            console && console.log(e.target);
+        });
+    }
+
     return plugin.create('table', {
         defaults: {
         },
@@ -99,6 +114,11 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
             console && console.log('Initialising tables plugin');
             this.createLayer = new CreateLayer(this);
             this.initButtons();
+            Aloha.bind('aloha-editable-created', function(event, editable){
+                editable.obj.find('table').each(function(){
+                    prepareTable(Aloha.jQuery(this));
+                });
+            });
         },
         initButtons: function(){
             var that = this;
@@ -281,14 +301,16 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     tbody.appendChild(tr);
                 }
                 table.appendChild(tbody);
-                
+
                 prepareRangeContainersForInsertion(
                     Aloha.Selection.getRangeObject(), table);
                 
                 // insert the table at the current selection
                 GENTICS.Utils.Dom.insertIntoDOM(jQuery(table),
                     Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
-                
+
+                prepareTable(Aloha.jQuery(table));
+
                 cleanupAfterInsertion();
                 var ev = jQuery.Event();
                 ev.type = 'blur';
