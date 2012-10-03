@@ -280,8 +280,8 @@ function ( jQuery, PluginManager ) {
 		 */
 		activateEditable: function (editable) {
 
-			// blur all editables, which are currently active
-			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
+			// Don't cache Aloha.editables.length since editables may be removed on blur.
+			for (var i = 0; i < Aloha.editables.length; i++) {
 				if (Aloha.editables[i] != editable && Aloha.editables[i].isActive) {
 					Aloha.editables[i].blur();
 				}
