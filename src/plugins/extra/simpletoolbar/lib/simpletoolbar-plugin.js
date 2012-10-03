@@ -47,7 +47,6 @@
               return _results;
             })();
             subMenu = new appmenu.Menu(subItems);
-            subMenu.el.addClass('aloha');
             menuItem = new appmenu.ToolButton(item.text, {
               subMenu: subMenu
             });

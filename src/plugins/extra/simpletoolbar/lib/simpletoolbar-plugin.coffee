@@ -36,7 +36,6 @@ define [
           subItems = for subItem in item.subMenu or []
             recurse subItem, lookupMap
           subMenu = new appmenu.Menu subItems
-          subMenu.el.addClass 'aloha' # Hack to get the Aloha icons working
           menuItem = new appmenu.ToolButton item.text,
             subMenu: subMenu
           return menuItem
