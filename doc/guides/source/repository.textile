@@ -3,9 +3,9 @@ h2. The Repository API
 After reading this guide, you will
 
 * Understand the concept
+* Repository item data structure
 * Know how to configure the Repository Manager
 * Know how to implementing the Repository API
-* Repository item data structure
 
 endprologue.
 
@@ -25,6 +25,112 @@ Notable differences are:
 * @query()@
 ** @queryString@: In the CMIS spec comes with its own query language; we limit ourselves to a full text search.
 ** @renditionFilter@: Instead of @termlist@ an array of @type@ is expected. If the empty array or @null@ is passed,  all renditions are returned. See the "CMIS specification about @renditionFilter@":http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310.
+
+h3. Repository item data structure
+
+The API and data layout is inspired by <a href="http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416972">CMIS</a>.
+
+h4. ObjectTypes
+
+The object concept from CMIS is inconsistent and too complicated for Aloha Editor's needs. So we opted for a much simpler model, which allows one to implement CMIS, but is easier to use for developers.
+<a href="http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416977">CMIS objects</a>
+
+There are 2 BaseTypes: document and folder. All other objectTypes may extend either document or folder. Extended Objects may not be extended any more.
+
+h4. Document
+
+* id MUST
+* repositoryId MUST
+* name MUST
+* baseType MUST (document|folder)
+* type MUST
+* parentId OPTIONAL
+* renditions OPTIONAL
+* localName OPTIONAL
+* createdBy OPTIONAL
+* creationDate OPTIONAL
+* lastModifiedBy OPTIONAL
+* lastModificationDate OPTIONAL
+* length OPTIONAL
+* mimeType OPTIONAL
+* fileName OPTIONAL
+* url OPTIONAL
+
+h4. Folder
+
+* id MUST
+* repositoryId MUST
+* name MUST
+* baseType MUST (document|folder)
+* type MUST
+* parentId MUST
+* localName OPTIONAL
+* createdBy OPTIONAL
+* creationDate OPTIONAL
+* lastModifiedBy OPTIONAL
+* lastModificationDate OPTIONAL
+
+h4. Rendition
+
+* documentId ID identifies the rendition document (baseObjectType == document)
+* url URL identifies the rendition stream.
+* mimeType String The MIME type of the rendition stream.
+* filename String The filename of the rendition stream
+* length Integer (optional)The length of the rendition stream in bytes.
+* name String (optional) Human readable information about the rendition.
+* kind String A categorization String associated with the rendition. 
+** square - an image square 75x75
+** thumbnail - a thumbnail version of the object
+** small	- 240 on longest side
+** medium-  500 on longest side
+** large - 1024 on longest side (only exists for very large original images)
+** docx - Microsoft docx Version of the content
+** lang_de - same content in German language
+** lang_fr - same content in French language
+** pdf - pdf version of the content
+* height Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
+* width Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
+
+
+h5. What are renditions, and why are they so useful?
+
+A repository may implement renditions for any object that has "document" as its baseObjectType.
+A rendition is simply an alternative representation (rendering) of a given object.
+A document may have any number of renditions.
+For example: a page document in a repository may be rendered in 3 different languages.
+Each of these 3 variations of that page can be served by the repository as a rendition of
+any of the other 2 translations that correspond with it.
+Each of these pages may be a stand-alone document in the repository as well.
+In fact, different renditions for a single document type will likely be different files
+which the repository will serve back in response to a request for a specific rendition of a given object.
+
+h4. Example: Flickr Image Object  (Document Object)
+
+* id - gailenejane/5008283282
+* name - Quiet moment
+* baseType - document
+* type - image
+* url http://www.flickr.com/photos/gailenejane/5008283282/
+
+The JSON response could look like:
+
+<shell>
+{
+id: 'gailenejane/5008283282’,
+repositoryId: 'flickr',
+name: 'Quiet moment’,
+type: ‘image/jpeg’,
+url: 'http://www.flickr.com/photos/gailenejane/5008283282/‘,
+renditions: [{
+  url: 'http://farm5.static.flickr.com/4128/5008283282_f3162bc6b7_s.jpg’,
+  mimeType: ‘image/jpeg’,
+  filename: '4128/5008283282_f3162bc6b7_s.jpg’,
+  kind: ’thumbnail’,
+  height: 75,
+  width: 75
+  }]
+}
+</shell>
 
 h3. Configuring the repositoryManager
 
@@ -209,110 +315,4 @@ function ( Aloha, jQuery ) {
 	}))(); 
 
 });
-</shell>
-
-h3. Recommendation of repository item attributes
-
-The API and data layout is inspired by <a href="http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416972">CMIS</a>.
-
-h4. ObjectTypes
-
-The object concept from CMIS is inconsistent and too complicated for Aloha Editor's needs. So we opted for a much simpler model, which allows one to implement CMIS, but is easier to use for developers.
-<a href="http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416977">CMIS objects</a>
-
-There are 2 BaseTypes: document and folder. All other objectTypes may extend either document or folder. Extended Objects may not be extended any more.
-
-h4. Document
-
-* id MUST
-* repositoryId MUST
-* name MUST
-* baseType MUST (document|folder)
-* type MUST
-* parentId OPTIONAL
-* renditions OPTIONAL
-* localName OPTIONAL
-* createdBy OPTIONAL
-* creationDate OPTIONAL
-* lastModifiedBy OPTIONAL
-* lastModificationDate OPTIONAL
-* length OPTIONAL
-* mimeType OPTIONAL
-* fileName OPTIONAL
-* url OPTIONAL
-
-h4. Folder
-
-* id MUST
-* repositoryId MUST
-* name MUST
-* baseType MUST (document|folder)
-* type MUST
-* parentId MUST
-* localName OPTIONAL
-* createdBy OPTIONAL
-* creationDate OPTIONAL
-* lastModifiedBy OPTIONAL
-* lastModificationDate OPTIONAL
-
-h4. Rendition
-
-* documentId ID identifies the rendition document (baseObjectType == document)
-* url URL identifies the rendition stream.
-* mimeType String The MIME type of the rendition stream.
-* filename String The filename of the rendition stream
-* length Integer (optional)The length of the rendition stream in bytes.
-* name String (optional) Human readable information about the rendition.
-* kind String A categorization String associated with the rendition. 
-** square - an image square 75x75
-** thumbnail - a thumbnail version of the object
-** small	- 240 on longest side
-** medium-  500 on longest side
-** large - 1024 on longest side (only exists for very large original images)
-** docx - Microsoft docx Version of the content
-** lang_de - same content in German language
-** lang_fr - same content in French language
-** pdf - pdf version of the content
-* height Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
-* width Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
-
-
-h5. What are renditions, and why are they so useful?
-
-A repository may implement renditions for any object that has "document" as its baseObjectType.
-A rendition is simply an alternative representation (rendering) of a given object.
-A document may have any number of renditions.
-For example: a page document in a repository may be rendered in 3 different languages.
-Each of these 3 variations of that page can be served by the repository as a rendition of
-any of the other 2 translations that correspond with it.
-Each of these pages may be a stand-alone document in the repository as well.
-In fact, different renditions for a single document type will likely be different files
-which the repository will serve back in response to a request for a specific rendition of a given object.
-
-h4. Example: Flickr Image Object  (Document Object)
-
-* id - gailenejane/5008283282
-* name - Quiet moment
-* baseType - document
-* type - image
-* url http://www.flickr.com/photos/gailenejane/5008283282/
-
-The JSON response could look like:
-
-<shell>
-{
-id: 'gailenejane/5008283282’,
-repositoryId: 'flickr',
-name: 'Quiet moment’,
-type: ‘image/jpeg’,
-url: 'http://www.flickr.com/photos/gailenejane/5008283282/‘,
-renditions: [{
-  url: 'http://farm5.static.flickr.com/4128/5008283282_f3162bc6b7_s.jpg’,
-  mimeType: ‘image/jpeg’,
-  filename: '4128/5008283282_f3162bc6b7_s.jpg’,
-  kind: ’thumbnail’,
-  height: 75,
-  width: 75
-  }]
-}
 </shell>
