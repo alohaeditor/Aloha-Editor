@@ -22,89 +22,98 @@ Aloha Editor's Repository API is based on the "CMIS specification":http://docs.o
 
 Notable differences are:
 
+* @ObjecTypes@ is based on "CMIS' Document Object-Type definition":http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416977
 * @query()@
 ** @queryString@: In the CMIS spec comes with its own query language; we limit ourselves to a full text search.
 ** @renditionFilter@: Instead of @termlist@ an array of @type@ is expected. If the empty array or @null@ is passed,  all renditions are returned. See the "CMIS specification about @renditionFilter@":http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310.
 
 h3. Repository item data structure
 
-The API and data layout is inspired by <a href="http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416972">CMIS</a>.
+The API and data layout is "inspired by CMIS":http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416972.
 
-h4. ObjectTypes
+h4. Repository Item types
 
-The object concept from CMIS is inconsistent and too complicated for Aloha Editor's needs. So we opted for a much simpler model, which allows one to implement CMIS, but is easier to use for developers.
-<a href="http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416977">CMIS objects</a>
+The object concept from CMIS is inconsistent and too complicated for Aloha Editor's needs. So we opted for a much simpler model, which is easier to use for developers (but still allows one to implement CMIS if desirable).
 
-There are 2 BaseTypes: document and folder. All other objectTypes may extend either document or folder. Extended Objects may not be extended any more.
+h5. @type@, @baseType@ and @mimeType@
+Each repository item must have at least the @type@ attribute defined, but may optionally also have a @mimeType@ attribute defined. See below for more details.
 
-h4. Document
+Besides @type@ being required, @baseType@ is also required. @baseType@ must be either @document@ or @folder@. That indeed means that you can "subclass" @document@ and @folder@ to fullfill your domain-specific or site-specific needs. Note that you can not set @baseType@ to anything else than @document@ or @folder@ -- from an OOP point of view, this implies that you can only do single level inheritance, not multiple levels of inheritance.
 
-* id REQUIRED
-* repositoryId REQUIRED
-* name REQUIRED
-* baseType REQUIRED (document|folder)
-* type REQUIRED
-* parentId OPTIONAL
-* renditions OPTIONAL
-* localName OPTIONAL
-* createdBy OPTIONAL
-* creationDate OPTIONAL
-* lastModifiedBy OPTIONAL
-* lastModificationDate OPTIONAL
-* length OPTIONAL
-* mimeType OPTIONAL
-* fileName OPTIONAL
-* url OPTIONAL
+@folder@ is used only for browsing your repository, and it probably makes less sense to define your own, more specific type for @type = folder@ repository items. An example could be that each user in your system has his own folder with content, so you could then define a @ownFolder@, so this one could be styled differently in the repository browser.
 
-h4. Folder
+However, for @type = document@ repository items, it makes a _lot_ of sense: @documents@ are the actual content your users are looking for; it's the whole reason the Repository API exists. Many different types of content likely exist: videos, audio, text, rich text, vector graphics, photographs, and so on.
+You could define @type@ to be equal to the @mimetype@. But you could also come up with your own types to discern between repository items that have the same @mimeType@, such as @internalImage@ for images that are part of your site/CMS, @flickrImage@ for external images hosted by Flickr, and @externalImage@ for other externally hosted images.
 
-* id REQUIRED
-* repositoryId REQUIRED
-* name REQUIRED
-* baseType REQUIRED (document|folder)
-* type REQUIRED
-* parentId REQUIRED
-* localName OPTIONAL
-* createdBy OPTIONAL
-* creationDate OPTIONAL
-* lastModifiedBy OPTIONAL
-* lastModificationDate OPTIONAL
+h5. Document
 
-h4. Rendition
+* @id@ REQUIRED
+* @repositoryId@ REQUIRED
+* @name@ REQUIRED
+* @baseType@ REQUIRED @(document|folder)@
+* @type@ REQUIRED -- This is the type you can freely define.
+* @parentId@ OPTIONAL
+* @renditions@ OPTIONAL
+* @localName@ OPTIONAL
+* @createdBy@ OPTIONAL
+* @creationDate@ OPTIONAL
+* @lastModifiedBy@ OPTIONAL
+* @lastModificationDate@ OPTIONAL
+* @length@ OPTIONAL
+* @mimeType@ OPTIONAL
+* @fileName@ OPTIONAL
+* @url@ OPTIONAL
 
-* documentId ID identifies the rendition document (baseObjectType == document)
-* url URL identifies the rendition stream.
-* mimeType String The MIME type of the rendition stream.
-* filename String The filename of the rendition stream
-* length Integer (optional)The length of the rendition stream in bytes.
-* name String (optional) Human readable information about the rendition.
-* kind String A categorization String associated with the rendition. 
-** square - an image square 75x75
-** thumbnail - a thumbnail version of the object
-** small	- 240 on longest side
-** medium-  500 on longest side
-** large - 1024 on longest side (only exists for very large original images)
-** docx - Microsoft docx Version of the content
-** lang_de - same content in German language
-** lang_fr - same content in French language
-** pdf - pdf version of the content
-* height Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
-* width Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
+h5. Folder
+
+* @id@ REQUIRED
+* @repositoryId@ REQUIRED
+* @name@ REQUIRED
+* @baseType@ REQUIRED @(document|folder)@
+* @type@ REQUIRED
+* @parentId@ REQUIRED
+* @localName@ OPTIONAL
+* @createdBy@ OPTIONAL
+* @creationDate@ OPTIONAL
+* @lastModifiedBy@ OPTIONAL
+* @lastModificationDate@ OPTIONAL
 
 
-h5. What are renditions, and why are they so useful?
+h4. Repository Item Renditions
 
-A repository may implement renditions for any object that has "document" as its baseObjectType.
-A rendition is simply an alternative representation (rendering) of a given object.
-A document may have any number of renditions.
-For example: a page document in a repository may be rendered in 3 different languages.
-Each of these 3 variations of that page can be served by the repository as a rendition of
-any of the other 2 translations that correspond with it.
-Each of these pages may be a stand-alone document in the repository as well.
-In fact, different renditions for a single document type will likely be different files
-which the repository will serve back in response to a request for a specific rendition of a given object.
+For some @type = document@ repository items, it makes sense to have multiple representations. For example, for rich text documents, you could have @.rtf@, @.docx@, @.odf@ and @pdf@ renditions (or _representations_ or _renderings_ or _derivatives_ or _variations_ or … inaccurately, but often used: _versions_). Another example: a vector graphics file in both @svg@ and @pdf@ format.
 
-h4. Example: Flickr Image Object  (Document Object)
+The most archetypical example is probably the case of images: you typically have the "original" image, of which many derivatives are generated: a medium version, a small version and a thumbnail. These call all be renditions!
+
+A more complete example: a page document in a repository may be rendered in 3 different languages.
+Each of these 3 variations of that page can be served by the repository as a rendition of any of the other 2 translations that correspond with it. Each of these pages may be a stand-alone document in the repository as well. In fact, different renditions for a single document type will likely be different files which the repository will serve back in response to a request for a specific rendition of a given object.
+
+No matter what your renditions (and there is no limit on their number) turn out to be, you can assign it your own naming scheme, so that you can make it fit your needs. The name of a rendition is called its @kind@.
+
+
+h5. Rendition
+
+* @documentId@ ID REQUIRED identifies the rendition document (The @baseType@ _must_ be @document@)
+* @url@ URL REQUIRED identifies the rendition stream.
+* @mimeType@ String REQUIRED The MIME type of the rendition stream.
+* @filename@ String REQUIRED The filename of the rendition stream
+* @length@ Integer OPTIONAL The length of the rendition stream in bytes.
+* @name@ String OPTIONAL Human readable information about the rendition.
+* @kind@ String REQUIRED A categorization associated with the rendition. This is freely definable. An example could be:
+** @square@ - an image square 75x75
+** @thumbnail@ - a thumbnail version of the object
+** @small@ - 240 on longest side
+** @medium@-  500 on longest side
+** @large@ - 1024 on longest side (only exists for very large original images)
+** @docx@ - Microsoft docx Version of the content
+** @lang_de@ - same content in German language
+** @lang_fr@ - same content in French language
+** @pdf@ - pdf version of the content
+* @height@ Integer OPTIONAL Typically used for image @type@ renditions (expressed as pixels). SHOULD be present if @kind@ equals @thumbnail@.
+* @width@ Integer OPTIONAL Typically used for image @type@ renditions (expressed as pixels). SHOULD be present if @kind@ equals @thumbnail@.
+
+
+h5. Example: Flickr Image Repository Item
 
 * id - gailenejane/5008283282
 * name - Quiet moment
