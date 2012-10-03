@@ -4,9 +4,7 @@
   background-color: whiteSmoke;
   border-top: 1px solid #E5E5E5;
   border-bottom: 1px solid #E5E5E5;
-  padding: 5px;
-  padding-left: 70px;
-  padding-right: 90px;
+  padding: 5px 1em;
   box-shadow: 0 2px 3px 0 #ccc;
 }
 .tool-bar > .menu-item {
