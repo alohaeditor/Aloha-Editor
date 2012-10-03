@@ -3,7 +3,7 @@
   var toolbarSettings;
 
   toolbarSettings = [
-    'bold', 'italic', 'underline', '', 'insertImage', 'insertFigure', {
+    'bold', 'italic', 'underline', {
       text: 'Table',
       subMenu: ['createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']
     }
