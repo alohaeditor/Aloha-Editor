@@ -132,24 +132,6 @@ renditions: [{
 }
 </shell>
 
-h3. Configuring the repositoryManager
-
-You may define a timeout when the repository manger should stop waiting for repository implementation response.
- 
-<shell>
-var Aloha = {
-	settings : {
-		repositories: {
-			timeout: 10000 // default 5000 (5 sec)
-		}
-	}
-};
-</shell>
-
-If you want to figure out the optimal value for your timeout, you should test the server-side script for your repository to find
-its typical response times under heavy load. After determining the maximum time it takes to load a result you might want to add
-a buffer (e.g. 2–5 seconds) to allow for adapting to even higher server load.
-
 h3. Repository API 
 
 h4. query
@@ -316,3 +298,21 @@ function ( Aloha, jQuery ) {
 
 });
 </shell>
+
+h3. Configuring the repositoryManager
+
+You may define a timeout when the repository manger should stop waiting for repository implementation response.
+
+<shell>
+var Aloha = {
+	settings : {
+		repositories: {
+			timeout: 10000 // default 5000 (5 sec)
+		}
+	}
+};
+</shell>
+
+If you want to figure out the optimal value for your timeout, you should test the server-side script for your repository to find
+its typical response times under heavy load. After determining the maximum time it takes to load a result you might want to add
+a buffer (e.g. 2–5 seconds) to allow for adapting to even higher server load.
