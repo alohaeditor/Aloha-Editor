@@ -39,11 +39,11 @@ There are 2 BaseTypes: document and folder. All other objectTypes may extend eit
 
 h4. Document
 
-* id MUST
-* repositoryId MUST
-* name MUST
-* baseType MUST (document|folder)
-* type MUST
+* id REQUIRED
+* repositoryId REQUIRED
+* name REQUIRED
+* baseType REQUIRED (document|folder)
+* type REQUIRED
 * parentId OPTIONAL
 * renditions OPTIONAL
 * localName OPTIONAL
@@ -58,12 +58,12 @@ h4. Document
 
 h4. Folder
 
-* id MUST
-* repositoryId MUST
-* name MUST
-* baseType MUST (document|folder)
-* type MUST
-* parentId MUST
+* id REQUIRED
+* repositoryId REQUIRED
+* name REQUIRED
+* baseType REQUIRED (document|folder)
+* type REQUIRED
+* parentId REQUIRED
 * localName OPTIONAL
 * createdBy OPTIONAL
 * creationDate OPTIONAL
