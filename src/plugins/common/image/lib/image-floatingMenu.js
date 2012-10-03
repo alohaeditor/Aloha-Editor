@@ -60,14 +60,30 @@ function (
 
 			Scopes.createScope(plugin.name, 'Aloha.empty');
 
-			this._addUIInsertButton();
-			this._addUIMetaButtons();
-			this._addUIResetButton();
-			this._addUIAlignButtons();
-			this._addUIMarginButtons();
-			this._addUICropButtons();
-			this._addUIResizeButtons();
-			this._addUIAspectRatioToggleButton();
+			if (plugin.settings.ui.insert) {
+				this._addUIInsertButton();
+			}
+			if (plugin.settings.ui.meta) {
+				this._addUIMetaButtons();
+			}
+			if (plugin.settings.ui.reset) {
+				this._addUIResetButton();
+			}
+			if (plugin.settings.ui.align) {
+				this._addUIAlignButtons();
+			}
+			if (plugin.settings.ui.margin) {
+				this._addUIMarginButtons();
+			}
+			if (plugin.settings.ui.crop) {
+				this._addUICropButtons();
+			}
+			if (plugin.settings.ui.resize) {
+				this._addUIResizeButtons();
+			}
+			if (plugin.settings.ui.aspectRatioToggle) {
+				this._addUIAspectRatioToggleButton();
+			}
 
 //			 TODO fix the function and reenable this button 
 //			this._addNaturalSizeButton();
