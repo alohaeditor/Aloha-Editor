@@ -299,9 +299,9 @@ function ( Aloha, jQuery ) {
 });
 </shell>
 
-h3. Configuring the repositoryManager
+h3. Configuring the Repository Manager
 
-You may define a timeout when the repository manger should stop waiting for repository implementation response.
+You may define a timeout (in milliseconds) when the Repository Manager should stop waiting for any repository implementation's response.
 
 <shell>
 var Aloha = {
