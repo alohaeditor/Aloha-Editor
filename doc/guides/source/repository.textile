@@ -16,6 +16,16 @@ Usually a CMS back-end would provide data such as links to sites, images, videos
 editing process.
 The repository data are resource items that contain JSON data with at least the following attributes: @id@, @name@, @url@, @type@. All other attributes are optional and depend on the item's @type@. A repository may provide resource items of a freely definable @type@. We suggest @type@ to be a <a href="http://www.iana.org/assignments/media-types/index.html">mimetype</a>, e.g.: @image/png@, @text/html@, @video/H264@, @application/pdf@ …. However, this is _not required_.
 
+h4. Origins
+
+Aloha Editor's Repository API is based on the "CMIS specification":http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc234072402.
+
+Notable differences are:
+
+* @query()@
+** @queryString@: In the CMIS spec comes with its own query language; we limit ourselves to a full text search.
+** @renditionFilter@: Instead of @termlist@ an array of @type@ is expected. If the empty array or @null@ is passed,  all renditions are returned. See the "CMIS specification about @renditionFilter@":http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310.
+
 h3. Configuring the repositoryManager
 
 You may define a timeout when the repository manger should stop waiting for repository implementation response.
@@ -38,28 +48,37 @@ h3. Repository API
 
 h4. query
 
-http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc234072402
+The implementation should perform a full text search on all attributes and properties of the resource items.
 
-Does a full text search in all attributes and properties which have '''fulltextIndexed == true’’’.
-This differs from the CMIS spec because we do not support a query language and do always a full text search.
+@query()@ receives two parameters: @p@, which contains all the parameters the query should take into account (if it supports them), and @callback@, which should be called whenever the results of the query are available.
 
-h5. Input attributes
+h5. Parameters
 
-* queryString [String]
-* filter [array] OPTIONAL Attributes that will be returned. 
-* orderBy [array] OPTIONAL ex. [{lastModificationDate:’DESC’, name:’ASC’}]
-* maxItems [Integer] OPTIONAL
-* in FolderId [ResourceItem] OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId.
-* inTreeId [ResourceItem] OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId.
-* skipCount [Integer]  OPTIONAL This is tricky in a merged multi repository scenario
-* renditionFilter [array] OPTIONAL
-** Instead of termlist an array of '''kind''' or '''mimetype''' is expected. If '''null''' or '''array.length == 0''' all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
+Parameters are passed as properties of @p@.
 
-h5. Output attributes
+Required parameters:
 
-* [array] Objects Aloha objects as result of a full text search
-* Boolean hasMoreItems
-* Integer numItems OPTIONAL
+* @queryString@ [String]
+
+Optional parameters:
+
+* @filter@ [array] OPTIONAL Attributes that will be returned.
+* @orderBy@ [array] OPTIONAL e.g. @[{lastModificationDate: 'DESC', name: 'ASC'}]@
+* @maxItems@ [Integer] OPTIONAL
+* @inFolderId@ [ResourceItem] OPTIONAL This is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given @inFolderId@.
+* @inTreeId@ [ResourceItem] OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given @inTreeId@.
+* @skipCount@ [Integer] OPTIONAL This is tricky in a merged multi repository scenario.
+* @renditionFilter@ [array] OPTIONAL An array of zero or more @type@ s and @kind@ s; if empty, then _all_ renditions are returned.
+
+
+h5. Return values
+
+Required return values:
+* @objects@ [Object][] Array of Aloha objects as result of a full text search.
+* @hasMoreItems@ Boolean
+
+Optional return values:
+* @numItems@ [Integer] OPTIONAL
 
 h4. getChildren
 
@@ -112,15 +131,6 @@ function ( Aloha, jQuery ) {
 		 * The returned object items must be an array of Aloha.Repository.Object
 		 * 
 		 * @param {object} params object with properties
-		 * @property {String} queryString 
-		 * @property {array} objectTypeFilter OPTIONAL Object types that will be returned.
-		 * @property {array} filter OPTIONAL Attributes that will be returned.
-		 * @property {string} inFolderId OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).
-		 * @property {string} inTreeId OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId (objectId).
-		 * @property {array} orderBy OPTIONAL ex. [{lastModificationDate:’DESC’}, {name:’ASC’}]
-		 * @property {Integer} maxItems OPTIONAL number items to return as result
-		 * @property {Integer} skipCount OPTIONAL This is tricky in a merged multi repository scenario
-		 * @property {array} renditionFilter OPTIONAL Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
 		 * @param {function} callback this method must be called with all result items
 		 */
 		query: function ( p, callback ) {
