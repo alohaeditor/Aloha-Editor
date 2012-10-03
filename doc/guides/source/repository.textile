@@ -5,16 +5,16 @@ After reading this guide, you will
 * Understand the concept
 * Know how to configure the Repository Manager
 * Know how to implementing the Repository API
-* Resource item data structure
+* Repository item data structure
 
 endprologue.
 
 h3. Concept
 
-A repository is a service or data source, which provides resource items and is registered with the Repository Manager (@RepositoryManager@). The Repository Manger manages all available repositories and routes queries to all registered repositories. Any plugin may make requests to the Repository Manager for resource items, and specify one or more kinds of items it wishes to have returned, such as @website@ or @localanchor@ (where @localanchor@ could be a headline provided by a document repository implementation).
+A repository is a service or data source, which provides repository items and is registered with the Repository Manager (@RepositoryManager@). The Repository Manger manages all available repositories and routes queries to all registered repositories. Any plugin may make requests to the Repository Manager for repository items, and specify one or more kinds of items it wishes to have returned, such as @website@ or @localanchor@ (where @localanchor@ could be a headline provided by a document repository implementation).
 Usually a CMS back-end would provide data such as links to sites, images, videos, files that should be available during the
 editing process.
-The repository data are resource items that contain JSON data with at least the following attributes: @id@, @name@, @url@, @type@. All other attributes are optional and depend on the item's @type@. A repository may provide resource items of a freely definable @type@. We suggest @type@ to be a <a href="http://www.iana.org/assignments/media-types/index.html">mimetype</a>, e.g.: @image/png@, @text/html@, @video/H264@, @application/pdf@ …. However, this is _not required_.
+The repository data are repository items that contain JSON data with at least the following attributes: @id@, @name@, @url@, @type@. All other attributes are optional and depend on the item's @type@. A repository may provide repository items of a freely definable @type@. We suggest @type@ to be a <a href="http://www.iana.org/assignments/media-types/index.html">mimetype</a>, e.g.: @image/png@, @text/html@, @video/H264@, @application/pdf@ …. However, this is _not required_.
 
 h4. Origins
 
@@ -48,7 +48,7 @@ h3. Repository API
 
 h4. query
 
-The implementation should perform a full text search on all attributes and properties of the resource items.
+The implementation should perform a full text search on all attributes and properties of the repository items.
 
 @query()@ receives two parameters: @p@, which contains all the parameters the query should take into account (if it supports them), and @callback@, which should be called whenever the results of the query are available.
 
@@ -65,8 +65,8 @@ Optional parameters:
 * @filter@ [array] OPTIONAL Attributes that will be returned.
 * @orderBy@ [array] OPTIONAL e.g. @[{lastModificationDate: 'DESC', name: 'ASC'}]@
 * @maxItems@ [Integer] OPTIONAL
-* @inFolderId@ [ResourceItem] OPTIONAL This is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given @inFolderId@.
-* @inTreeId@ [ResourceItem] OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given @inTreeId@.
+* @inFolderId@ [RepositoryItem] OPTIONAL This is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given @inFolderId@.
+* @inTreeId@ [RepositoryItem] OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given @inTreeId@.
 * @skipCount@ [Integer] OPTIONAL This is tricky in a merged multi repository scenario.
 * @renditionFilter@ [array] OPTIONAL An array of zero or more @type@ s and @kind@ s; if empty, then _all_ renditions are returned.
 
@@ -84,7 +84,7 @@ h4. getChildren
 
 h5. Input attributes
  
-* folderId [ResourceItem]  OPTIONAL If null the root folderId should be used
+* folderId [RepositoryItem]  OPTIONAL If null the root folderId should be used
 * maxItems [Integer] OPTIONAL
 * skipCount [Integer] OPTIONAL This is tricky in a merged multi repository scenario
 * filter [array] OPTIONAL Attributes that will be returned
@@ -127,11 +127,11 @@ function ( Aloha, jQuery ) {
 		
 		
 		/** 
-		 * Searches a repository for object items matching queryString if none found returns null.
-		 * The returned object items must be an array of Aloha.Repository.Object
+		 * Searches a repository for repository items matching queryString if none found returns null.
+		 * The returned repository items must be an array of Aloha.Repository.Object
 		 * 
 		 * @param {object} params object with properties
-		 * @param {function} callback this method must be called with all result items
+		 * @param {function} callback this method must be called with all resulting repository items
 		 */
 		query: function ( p, callback ) {
 			callback.call( this, [
@@ -155,7 +155,7 @@ function ( Aloha, jQuery ) {
 		 * @property {Integer} maxItems OPTIONAL number items to return as result
 		 * @property {Integer} skipCount OPTIONAL This is tricky in a merged multi repository scenario
 		 * @property {array} renditionFilter OPTIONAL Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
-		 * @param {function} callback this method must be called with all result items
+		 * @param {function} callback this method must be called with all resulting repository items
 		 */
 		getChildren: function ( p, callback ) {
 			callback.call( this, [
@@ -193,7 +193,7 @@ function ( Aloha, jQuery ) {
 		 * @return void
 		 */
 		markObject: function (obj, repositoryItem) {
-			obj.attr('data-myRepository-temporary-data').text( resourceItem.name );
+			obj.attr('data-myRepository-temporary-data').text( repositoryItem.name );
 		},
 
 		/**
