@@ -7,6 +7,9 @@
       text: 'Table',
       icon: 'aloha-table-insert',
       subMenu: ['createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']
+    }, {
+      text: 'insertImage',
+      icon: 'aloha-image-insert'
     }
   ];
 
@@ -47,12 +50,19 @@
               }
               return _results;
             })();
-            subMenu = new appmenu.Menu(subItems);
             icon = item.icon || null;
-            menuItem = new appmenu.ToolButton(item.text, {
-              subMenu: subMenu,
-              iconCls: icon
-            });
+            if (subItems.length) {
+              subMenu = new appmenu.Menu(subItems);
+              menuItem = new appmenu.ToolButton(item.text, {
+                subMenu: subMenu,
+                iconCls: icon
+              });
+            } else {
+              menuItem = new appmenu.ToolButton(item.text, {
+                iconCls: icon
+              });
+              lookupMap[item.text] = menuItem;
+            }
             return menuItem;
           }
         };
