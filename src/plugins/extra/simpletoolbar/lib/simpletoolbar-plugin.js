@@ -3,7 +3,7 @@
   var toolbarSettings;
 
   toolbarSettings = [
-    'bold', 'italic', 'underline', {
+    'bold', 'italic', 'underline', 'superscript', 'subscript', {
       text: 'Table',
       icon: 'aloha-table-insert',
       subMenu: ['createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']

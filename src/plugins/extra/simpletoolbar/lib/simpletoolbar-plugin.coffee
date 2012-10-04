@@ -1,6 +1,6 @@
 # including "ui/settings" has weird side effects, namely most of the buttons don't load
 toolbarSettings = [
- 'bold', 'italic', 'underline',
+ 'bold', 'italic', 'underline', 'superscript', 'subscript',
  { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] }
 ]
 
