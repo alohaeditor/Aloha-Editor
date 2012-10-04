@@ -31,10 +31,10 @@
   background-position: -288px 0;
 }
 .toolbar-container .menu-icon.aloha-icon-unorderedlist {
-    background-position: -584px 0;
+  background-position: -584px 0;
 }
-.toolbar-container .menu-icon.aloha-icon-orderedlist{
-    background-position: -254px 0;
+.toolbar-container .menu-icon.aloha-icon-orderedlist {
+  background-position: -254px 0;
 }
 .menu > .menu-item > .menu-icon {
   left: 7px !important;
