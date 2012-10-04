@@ -371,7 +371,7 @@ define('RepositoryBrowser', [
 		 * @return {object} An object that is compatible with the tree component.
 		 */
 		_processRepoObject: function (obj) {
-			var icon, state, children, that = this;
+			var icon, state, children, that = this, liAttr;
 
 			switch (obj.baseType) {
 			case 'folder':
@@ -394,13 +394,24 @@ define('RepositoryBrowser', [
 				});
 			}
 
+			if (this._currentFolder && this._currentFolder.id === obj.id) {
+				window.setTimeout(function () {
+					that.$_tree.jstree("select_node", "li[data-repo-obj='" + obj.uid + "']");
+				}, 0);
+			}
+
+			liAttr = {
+				rel: obj.type,
+				'data-repo-obj': obj.uid
+			};
+
 			return {
 				data: {
 					title: obj.name,
 					attr: {'data-repo-obj': obj.uid},
 					icon: icon || ''
 				},
-				attr: obj.type ? {rel: obj.type} : undefined,
+				attr: liAttr,
 				state: state,
 				resource: obj,
 				children: children
@@ -414,6 +425,11 @@ define('RepositoryBrowser', [
 		 *                                    retrieved folder structure.
 		 */
 		_fetchRepoRoot: function (callback) {
+			if (!this._currentFolder) {
+				// get the selected folder
+				this._currentFolder = this.getSelectedFolder();
+			}
+
 			if (this.repositoryManager) {
 				this.getRepoChildren({
 					inFolderId: this.rootFolderId,
@@ -1276,6 +1292,18 @@ define('RepositoryBrowser', [
 		folderSelected: function(obj) {
 			if (this.repositoryManager) {
 				this.repositoryManager.folderSelected(obj);
+			}
+		},
+
+		/**
+		 * Get the selected folder
+		 * @return {object} selected folder or undefined
+		 */
+		getSelectedFolder: function () {
+			if (this.repositoryManager) {
+				if (typeof this.repositoryManager.getSelectedFolder === 'function') {
+					return this.repositoryManager.getSelectedFolder();
+				}
 			}
 		},
 

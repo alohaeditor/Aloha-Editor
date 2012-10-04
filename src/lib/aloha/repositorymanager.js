@@ -643,6 +643,23 @@ define( [
 		},
 
 		/**
+		 * Get the selected folder
+		 * @returns selected folder or undefined
+		 */
+		getSelectedFolder: function () {
+			var i, len = this.repositories.length, selected;
+
+			for (i = 0; i < len; ++i) {
+				if (typeof this.repositories[i].getSelectedFolder === 'function') {
+					selected = this.repositories[i].getSelectedFolder();
+					if (selected) {
+						return selected;
+					}
+				}
+			}
+		},
+
+		/**
 		 * @return {String} name of repository manager object
 		 */
 		toString: function() {
