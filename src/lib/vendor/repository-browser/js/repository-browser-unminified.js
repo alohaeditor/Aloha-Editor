@@ -384,6 +384,9 @@ define('RepositoryBrowser', [
 
 			// set the node state
 			state = (obj.hasMoreItems || obj.baseType === 'folder') ? 'closed' : null;
+			if (obj.hasMoreItems === false) {
+				state = null;
+			}
 
 			// process children (if any)
 			if (obj.children) {
