@@ -24,6 +24,12 @@
 .toolbar-container .menu-icon.aloha-table-insert {
   background-position: -455px 0;
 }
+.toolbar-container .menu-icon.aloha-icon-undo {
+  background-position: -518px 0;
+}
+.toolbar-container .menu-icon.aloha-icon-redo {
+  background-position: -288px 0;
+}
 .menu > .menu-item > .menu-icon {
   left: 7px !important;
   width: 17px;
