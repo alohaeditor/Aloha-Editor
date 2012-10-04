@@ -8,4 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 - **BUG**: Fix base tag breaks Aloha Editor UI
+- **ENHANCEMENT**: Trigger the 'aloha-smart-content-changed' event with `triggerType` = `block-change` whenever an attribute of an Aloha Block is changed.
 

@@ -899,6 +899,16 @@ define( [
 					'getSnapshotContent' : getSnapshotContent
 				} );
 
+			} else if ( event && event.type === 'block-change' ) {
+				Aloha.trigger( 'aloha-smart-content-changed', {
+					'editable'        : me,
+					'keyIdentifier'   : null,
+					'keyCode'         : null,
+					'char'            : null,
+					'triggerType'     : 'block-change',
+					'snapshotContent' : me.getSnapshotContent()
+				} );
+
 			} else if ( uniChar !== null ) {
 				// in the rare case idle time is lower then delay time
 				clearTimeout( this.sccTimerDelay );
