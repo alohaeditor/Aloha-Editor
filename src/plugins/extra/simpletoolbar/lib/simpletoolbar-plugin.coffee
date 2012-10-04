@@ -1,10 +1,15 @@
-# including "ui/settings" has weird side effects, namely most of the buttons don't load
+# TODO: The settings below really should be configurable via Aloha.settings
 toolbarSettings = [
- 'bold', 'italic', 'underline',
- { text: 'Table', subMenu: [ 'createTable', 'addrowbefore',  'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] }
+ 'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '',
+ { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
+ { text: 'insertImage', icon: 'aloha-image-insert' }
 ]
 
-define [ "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu', "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!simpletoolbar/css/simpletoolbar.css" ], (Aloha, Plugin, Ui, appmenu, i18n, i18nCore) ->
+define [
+    "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu',
+    "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console",
+    "css!simpletoolbar/css/simpletoolbar.css" ], (
+    Aloha, Plugin, Ui, appmenu, i18n, i18nCore) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
@@ -31,10 +36,15 @@ define [ "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu', "i18n!format
         else
           subItems = for subItem in item.subMenu or []
             recurse subItem, lookupMap
-          subMenu = new appmenu.Menu subItems
-          subMenu.el.addClass 'aloha' # Hack to get the Aloha icons working
-          menuItem = new appmenu.ToolButton item.text,
-            subMenu: subMenu
+          icon = item.icon or null
+          if subItems.length
+            subMenu = new appmenu.Menu subItems
+            menuItem = new appmenu.ToolButton item.text,
+              subMenu: subMenu, iconCls: icon
+          else
+            menuItem = new appmenu.ToolButton item.text,
+              iconCls: icon
+            lookupMap[item.text] = menuItem
           return menuItem
 
       for item in toolbarSettings

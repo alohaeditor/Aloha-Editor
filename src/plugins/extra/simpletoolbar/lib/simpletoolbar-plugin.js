@@ -3,9 +3,13 @@
   var toolbarSettings;
 
   toolbarSettings = [
-    'bold', 'italic', 'underline', {
+    'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '', {
       text: 'Table',
+      icon: 'aloha-table-insert',
       subMenu: ['createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']
+    }, {
+      text: 'insertImage',
+      icon: 'aloha-image-insert'
     }
   ];
 
@@ -27,7 +31,7 @@
         toolbar.el.addClass('aloha');
         toolbarLookup = {};
         recurse = function(item, lookupMap) {
-          var menuItem, subItem, subItems, subMenu;
+          var icon, menuItem, subItem, subItems, subMenu;
           if ('string' === $.type(item)) {
             if ('' === item) {
               return new appmenu.Separator();
@@ -46,11 +50,19 @@
               }
               return _results;
             })();
-            subMenu = new appmenu.Menu(subItems);
-            subMenu.el.addClass('aloha');
-            menuItem = new appmenu.ToolButton(item.text, {
-              subMenu: subMenu
-            });
+            icon = item.icon || null;
+            if (subItems.length) {
+              subMenu = new appmenu.Menu(subItems);
+              menuItem = new appmenu.ToolButton(item.text, {
+                subMenu: subMenu,
+                iconCls: icon
+              });
+            } else {
+              menuItem = new appmenu.ToolButton(item.text, {
+                iconCls: icon
+              });
+              lookupMap[item.text] = menuItem;
+            }
             return menuItem;
           }
         };
