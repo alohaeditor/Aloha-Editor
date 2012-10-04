@@ -906,7 +906,7 @@ define( [
 					'keyCode'         : null,
 					'char'            : null,
 					'triggerType'     : 'block-change',
-					'snapshotContent' : me.getSnapshotContent()
+					'getSnapshotContent' : getSnapshotContent
 				} );
 
 			} else if ( uniChar !== null ) {
