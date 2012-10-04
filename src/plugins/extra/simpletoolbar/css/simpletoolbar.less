@@ -2,26 +2,34 @@
     width: 32px;
     height: 32px;
     background: url(../img/toolbar.png) no-repeat;
+    &.aloha-icon-bold {
+        background-position: -56px 0;
+    }
+    &.aloha-icon-italic {
+        background-position: -155px 0;
+    }
+    &.aloha-icon-underline {
+        background-position: -485px 0;
+    }
+    &.aloha-image-insert {
+        background-position: -125px 0;
+    }
+    &.aloha-table-insert {
+        background-position: -455px 0;
+    }
 }
 
-.toolbar-container .menu-icon.aloha-icon-bold {
-	background-position: -56px 0;
-}
+.menu {
+    &> .menu-item > .menu-icon {
+        left: 7px !important;
+        width: 17px;
+        height: 17px;
+    }
 
-.toolbar-container .menu-icon.aloha-icon-italic {
-	background-position: -155px 0;
-}
-
-.toolbar-container .menu-icon.aloha-icon-underline {
-	background-position: -485px 0;
-}
-
-.toolbar-container .menu-icon.aloha-image-insert {
-	background-image: url(../../../common/image/img/image.gif);
-}
-
-.toolbar-container .menu-icon.aloha-icon-createTable{
-    background-position: -452px 0;
+    &> .menu-item > .menu-icon.aloha-icon-createTable {
+        background: url(../img/toolbar.png) no-repeat;
+        background-position: -460px -9px;
+    }
 }
 
 .toolbar-container {

@@ -13,10 +13,19 @@
   background-position: -485px 0;
 }
 .toolbar-container .menu-icon.aloha-image-insert {
-  background-image: url(../../../common/image/img/image.gif);
+  background-position: -125px 0;
 }
-.toolbar-container .menu-icon.aloha-icon-createTable {
-  background-position: -452px 0;
+.toolbar-container .menu-icon.aloha-table-insert {
+  background-position: -455px 0;
+}
+.menu > .menu-item > .menu-icon {
+  left: 7px !important;
+  width: 17px;
+  height: 17px;
+}
+.menu > .menu-item > .menu-icon.aloha-icon-createTable {
+  background: url(../img/toolbar.png) no-repeat;
+  background-position: -460px -9px;
 }
 .toolbar-container {
   width: 100%;
