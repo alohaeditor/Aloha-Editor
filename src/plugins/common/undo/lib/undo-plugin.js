@@ -50,9 +50,9 @@ function( Aloha, jQuery, Plugin) {
 		 * Initialize the plugin and set initialize flag on true
 		 */
 		init: function () {
-
-			var stack = new Undo.Stack(),
-			    EditCommand = Undo.Command.extend({
+			this.stack = new Undo.Stack();
+            var that = this;
+			var EditCommand = Undo.Command.extend({
 					constructor: function(editable, patch) {
 						this.editable = editable;
 						this.patch = patch;
@@ -105,7 +105,7 @@ function( Aloha, jQuery, Plugin) {
 					}
 				});
 
-			stack.changed = function() {
+			this.stack.changed = function() {
 				// update UI
 			};
 
@@ -123,9 +123,9 @@ function( Aloha, jQuery, Plugin) {
 				}
 
 				if (event.shiftKey) {
-					stack.canRedo() && stack.redo();
+                    that.redo();
 				} else {
-					stack.canUndo() && stack.undo();
+                    that.undo();
 				}
 			});
 
@@ -138,7 +138,7 @@ function( Aloha, jQuery, Plugin) {
 				    patch = dmp.patch_make(oldValue, newValue);
 				// only push an EditCommand if something actually changed.
 				if (0 !== patch.length) {
-					stack.execute( new EditCommand( aevent.editable, patch ) );
+					that.stack.execute( new EditCommand( aevent.editable, patch ) );
 				}
 			});
 		},
@@ -150,7 +150,20 @@ function( Aloha, jQuery, Plugin) {
 		 */
 		toString: function () {
 			return 'undo';
-		}
+		},
+        undo: function () {
+            if ( null !== Aloha.getActiveEditable() ) {
+                Aloha.getActiveEditable().smartContentChange({type : 'blur'});
+            }
+            this.stack.canUndo() && this.stack.undo();
+        },
+        redo: function () {
+            if ( null !== Aloha.getActiveEditable() ) {
+                Aloha.getActiveEditable().smartContentChange({type : 'blur'});
+            }
+            this.stack.canRedo() && this.stack.redo();
+        },
+        stack: undefined // Defined in init above
 
 	});
 });
