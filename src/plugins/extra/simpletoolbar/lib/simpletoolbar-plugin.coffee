@@ -1,7 +1,7 @@
 # including "ui/settings" has weird side effects, namely most of the buttons don't load
 toolbarSettings = [
  'bold', 'italic', 'underline',
- { text: 'Table', subMenu: [ 'createTable', 'addrowbefore',  'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] }
+ { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] }
 ]
 
 define [
@@ -36,8 +36,9 @@ define [
           subItems = for subItem in item.subMenu or []
             recurse subItem, lookupMap
           subMenu = new appmenu.Menu subItems
+          icon = item.icon or null
           menuItem = new appmenu.ToolButton item.text,
-            subMenu: subMenu
+            subMenu: subMenu, iconCls: icon
           return menuItem
 
       for item in toolbarSettings

@@ -5,6 +5,7 @@
   toolbarSettings = [
     'bold', 'italic', 'underline', {
       text: 'Table',
+      icon: 'aloha-table-insert',
       subMenu: ['createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']
     }
   ];
@@ -27,7 +28,7 @@
         toolbar.el.addClass('aloha');
         toolbarLookup = {};
         recurse = function(item, lookupMap) {
-          var menuItem, subItem, subItems, subMenu;
+          var icon, menuItem, subItem, subItems, subMenu;
           if ('string' === $.type(item)) {
             if ('' === item) {
               return new appmenu.Separator();
@@ -47,8 +48,10 @@
               return _results;
             })();
             subMenu = new appmenu.Menu(subItems);
+            icon = item.icon || null;
             menuItem = new appmenu.ToolButton(item.text, {
-              subMenu: subMenu
+              subMenu: subMenu,
+              iconCls: icon
             });
             return menuItem;
           }
