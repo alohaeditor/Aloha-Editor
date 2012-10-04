@@ -101,6 +101,9 @@
   position: absolute;
   left: 3px;
 }
+.menu > .menu-item > .tool-tip {
+  display: none;
+}
 .hidden {
   display: none;
 }

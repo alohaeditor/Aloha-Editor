@@ -87,12 +87,13 @@
   /*display: inline;*/
 }
 
-.menu > .menu-item > .menu-icon {
-  position: absolute;
-  left: 3px;
+.menu > .menu-item {
+  &> .menu-icon {
+    position: absolute;
+    left: 3px;
+  }
+  &> .tool-tip { display: none; }
 }
-
-
 
 .hidden {
   display: none;
