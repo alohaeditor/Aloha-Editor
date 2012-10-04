@@ -1,4 +1,4 @@
-# including "ui/settings" has weird side effects, namely most of the buttons don't load
+# TODO: The settings below really should be configurable via Aloha.settings
 toolbarSettings = [
  'bold', 'italic', 'underline', 'superscript', 'subscript',
  { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
