@@ -1,6 +1,6 @@
 # TODO: The settings below really should be configurable via Aloha.settings
 toolbarSettings = [
- 'undo', 'redo', 'bold', 'italic', 'underline', 'superscript', 'subscript',
+ 'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '',
  { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
  { text: 'insertImage', icon: 'aloha-image-insert' }
 ]
