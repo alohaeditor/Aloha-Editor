@@ -144,7 +144,9 @@ define( [
 				if ( typeof elemToEnforce === 'string' ||
 						elemToEnforce.nodeName ||
 							elemToEnforce instanceof jQuery ) {
-					this.addEditableToEnforcementList( jQuery( elemToEnforce )[0] );
+					jQuery(elemToEnforce).each(function(){
+						that.addEditableToEnforcementList( this );
+					});
 				} else {
 					console.warn(
 						'Aloha List Enforcer Plugin',
@@ -165,8 +167,11 @@ define( [
 			});
 
 			Aloha.bind('aloha-smart-content-changed', function ($event, params) {
-				enforce( params.editable.obj,
-					'<ul><li><br /></li></ul>');
+				//We only want to do this is if the editable is actually active
+			 	if (Aloha.activeEditable && Aloha.activeEditable.isActive === true) {
+			 		enforce( params.editable.obj,
+			 			'<ul><li><br /></li></ul>');
+			 	}
 			});
 		},
 

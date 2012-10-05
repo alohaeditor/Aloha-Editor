@@ -7,15 +7,6 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
-- **BUG**: all repositories have been queried even if a target repository 
+- **BUG**: All repositories have been queried even if a target repository 
 	
 	has been spezified. Now only the spezified repository is queried.
-
-- **BUG**: added the del format button to the possible format plugin buttons
-
-	The del button is not enabled by default. To enable it, it has to
-	be configured. For example
-
-	Aloha.settings.plugins.format.config = ['del', ...];
-
-	See http://aloha-editor.org/guides/plugin_format.html

@@ -27,6 +27,15 @@ h3. Embed Aloha Editor
 
 To embed Aloha Editor, you just need to load a single css +/javascripts/aloha/css/aloha.css+ and a javascript file +/javascripts/aloha/lib/aloha.js+ into the *head* section of your page.
 
+NOTE: Aloha Editor currently depends on requirejs. In the future, we
+      would like to give the user the option to omit this dependency for
+      production deployments.
+
+NOTE: Aloha Editor may load additional dependencies asynchronously with
+      requirejs. Please see "dependencies":dependencies.html if you want
+      to control dependency loading, which is particularly relevant if
+      you already have a version of jQuery in your page.
+
 <html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -90,6 +99,8 @@ h3. Supported elements
 
 Aloha can be used with the following HTML text elements:
 
+NOTE: When using calling .aloha() on a textarea, if the textarea has a HTML ID (eg. mytxtarea) the ID of the Aloha editable will be "-aloha" suffixed (eg. mytxtarea-aloha).
+
 <javascript>
 	[ 'a', 'abbr', 'address', 'article', 'aside',
 	'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
@@ -108,5 +119,3 @@ Not supported HTML elements:
 	'svg', 'table', 'ul', 'video', 'ol', 'form', 'noscript' ]
 </javascript>
 
-Note if you are using a textarea with Aloha:
-If the textarea has a HTML ID (eg. mytxtarea) the ID of the Aloha editable will be "-aloha" suffixed (eg. mytxtarea-aloha).

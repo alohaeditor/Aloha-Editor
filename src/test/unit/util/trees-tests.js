@@ -20,14 +20,14 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 	};
 	var preprunedTree = {
 		tree: [
-			{ array: [ 11, 12, 13 ], map: { "a": 14, "b": 15, "c": 16 } },
-			[ { array: [], "g": 17, "h": 18, "i": 19 } ]
+			{ array: [ 1, 2, 3 ], map: { "a": 4, "b": 5, "c": 6 } },
+			[ { array: [], "g": 7, "h": 8, "i": 9 } ]
 		]
 	};
 	var postprunedTree = {
 		tree: [
-			{ array: [ 11, 12, 13 ], map: { "a": 14, "b": 15, "c": 16 } },
-			[ { "g": 17, "h": 18, "i": 19 } ]
+			{ array: [ 1, 2, 3 ], map: { "a": 4, "b": 5, "c": 6 } },
+			[ { "g": 7, "h": 8, "i": 9 } ]
 		]
 	};
 
@@ -87,6 +87,7 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 		var cloneB = Trees.clone(tree);
 		deepEqual(cloneA, tree);
 		deepEqual(cloneB, tree);
+		ok(cloneA !== cloneB && cloneA !== tree && cloneB !== tree);
 	});
 
 	test('flatten', function () {
@@ -98,15 +99,30 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 	});
 
 	test('prewalk, postwalk', function () {
-		var premodifiedTree  = Trees.prewalk (tree, function (node){ return modifyNode(node, false); }, modifyLeaf);
-		var postmodifiedTree = Trees.postwalk(tree, function (node){ return modifyNode(node, true ); }, modifyLeaf);
+		var premodifiedTree  = Trees.prewalk (tree, function (node){
+			node = modifyNode(node, false);
+			if (isLeaf(node)) {
+				node = modifyLeaf(node);
+			}
+			return node;
+		});
+		var postmodifiedTree = Trees.postwalk(tree, function (node){
+			if (isLeaf(node)) {
+				node = modifyLeaf(node);
+			}
+			return modifyNode(node, true );
+		});
 		deepEqual(premodifiedTree , modifiedTree);
 		deepEqual(postmodifiedTree, modifiedTree);
 	});
 
 	test('preprune, postprune', function () {
-		var prepruned  = Trees.preprune (tree, function (node){ return pruneCharsAndEmptyArrays(node, "def"); }, modifyLeaf);
-		var postpruned = Trees.postprune(tree, function (node){ return pruneCharsAndEmptyArrays(node, "DEF"); }, modifyLeaf);
+		var prepruned  = Trees.preprune (tree, function (node){
+			return pruneCharsAndEmptyArrays(node, "def");
+		});
+		var postpruned = Trees.postprune(tree, function (node){
+			return pruneCharsAndEmptyArrays(node, "def");
+		});
 		deepEqual(prepruned, preprunedTree);
 		deepEqual(postpruned, postprunedTree);
 	});
@@ -116,8 +132,18 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 		var expected = {a:"Xa", b:"Xb", c:"Xc"};
 		var inputA = Trees.clone(tree);
 		var inputB = Trees.clone(tree);
-		var resultA = Trees.prewalk (inputA, function (node) { return node; }, function (leaf) { return "X" + leaf; }, true);
-		var resultB = Trees.postwalk(inputB, function (node) { return node; }, function (leaf) { return "X" + leaf; }, true);
+		var resultA = Trees.prewalk (inputA, function (node) {
+			if (typeof node === 'string') {
+				node = 'X' + node;
+			}
+			return node;
+		}, true);
+		var resultB = Trees.postwalk(inputB, function (node) {
+			if (typeof node === 'string') {
+				node = 'X' + node;
+			}
+			return node;
+		}, true);
 		deepEqual(resultA, inputA);
 		deepEqual(resultA, expected);
 		deepEqual(resultB, inputB);
@@ -129,24 +155,24 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 						{three: "three", four: "four"}],
 					b: {alpha: ["beta", ["gamma"]],
 						delta:"delta"}};
-		var expected = {a: [{one: "Xone", two: "Xtwo", X: "XX"},
-							{three: "Xthree", four: "Xfour", X: "XX"},
-						    "XX"],
-						b: {alpha: ["Xbeta", ["Xgamma", "XX"], "XX"],
-							delta: "Xdelta",
-						    X: "XX"},
-					    X: "XX"};
+		var expected = {a: [{one: "Zone", two: "Ztwo", X: "ZXX"},
+							{three: "Zthree", four: "Zfour", X: "ZXX"},
+						    "ZXX"],
+						b: {alpha: ["Zbeta", ["Zgamma", "ZXX"], "ZXX"],
+							delta: "Zdelta",
+						    X: "ZXX"},
+					    X: "ZXX"};
 
 		var inputA = Trees.clone(tree);
 		var resultA = Trees.prewalk(inputA, function (node) {
 			if ($.type(node) === 'array') {
-				node.push("X");
+				node.push("XX");
 			} else if ($.type(node) === 'object') {
-				node.X = "X";
+				node.X = "XX";
+			} else {
+				node =  "Z" + node;
 			}
 			return node;
-		}, function (leaf) {
-			return "X" + leaf;
 		}, true);
 		deepEqual(resultA, expected);
 		deepEqual(resultA, inputA);
@@ -156,19 +182,19 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 		var tree = $('<div><span><b><i></i></b></span></div>')[0];
 		var expected = $('<div><span></span></div>')[0].outerHTML;
 		var result;
-		result = Trees.prepruneNodes(tree, function (node) {
+		result = Trees.prepruneDom(tree, function (node) {
 			return node.nodeName === 'B';
 		});
 		equal(result.outerHTML, expected);
 		notEqual(result.outerHTML, tree.outerHTML);
-		result = Trees.postpruneNodes(tree, function (node) {
+		result = Trees.postpruneDom(tree, function (node) {
 			return node.nodeName === 'B';
 		});
 		equal(result.outerHTML, expected);
 		notEqual(result.outerHTML, tree.outerHTML);
 	});
 
-	test('prewalkNodes inplace, postwalkNodes inplace', function () {
+	test('prewalkDom inplace, postwalkDom inplace', function () {
 		var tree = $('<div><span><b><i></i></b><p><b></b></p><div><i></i></div></span></div>')[0];
 		var expected = $('<div><span><b>'
 						 + '<i><span>X</span></i>'
@@ -183,23 +209,19 @@ Aloha.require(['jquery', 'util/trees'], function($, Trees){
 
 		var inputA = tree.cloneNode(true);
 		var descendedIntoModifiedNode = 0;
-		var resultA = Trees.prewalkNodes(inputA, function (node) {
+		var resultA = Trees.prewalkDom(inputA, function (node) {
 			if ($('<span>X</span>')[0].outerHTML !== node.outerHTML) {
 				$(node).append('<span>X</span>');
 			} else {
 				descendedIntoModifiedNode += 1;
 			}
 			return node;
-		}, function (leaf) {
-			return leaf;
 		}, true);
 
 		var inputB = tree.cloneNode(true);
-		var resultB = Trees.postwalkNodes(inputB, function (node) {
+		var resultB = Trees.postwalkDom(inputB, function (node) {
 			$(node).append('<span>X</span>');
 			return node;
-		}, function (leaf) {
-			return leaf;
 		}, true);
 
 		equal(descendedIntoModifiedNode, 8);

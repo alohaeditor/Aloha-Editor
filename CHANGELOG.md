@@ -5,14 +5,88 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 All changes are categorized into one of the following keywords:
 
-- **BUG**: The change fixes a bug.
-- **ENHANCEMENT**: The change improves the software, but otherwise makes no
-                   functional change to any feature.
+- **MANUAL CHANGE**: The change requires changes to existing implementation.
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
-- **MANUAL CHANGE**: The change requires changes to existing implementation.
+- **ENHANCEMENT**: The change improves the software, but otherwise makes no
+                   functional change to any feature.
+- **BUG**: The change fixes a bug.
 
 # 0.22.x
+
+## 0.22.1 - 2012/09/26
+
+- **FEATURE**: core: Added method Aloha.getEditableHost() to get the editable, that contains the given jQuery object.
+
+- **FEATURE**: repository browser: If one of the repositories runs into a timeout during query, the browser will now call the method handleTimeout().
+
+- **FEATURE**: abbr-plugin: We added a remove abbreviation button to make the functionality more consistent with the wai-lang plugin.
+
+- **FEATURE**: metaview: We now also display HR tags in the metaview. We also 
+				removed the dependency to the flag-icons plugin.
+
+- **FEATURE**: list-plugin: When transforming a list from ul to ol or back all sub elements that are selected are also transformed.
+
+- **ENHANCEMENT**: Aloha Blocks will now publish a message on the channel
+                   "aloha.blocks.initialized" when a block is fully initialized.
+                   
+- **ENHANCEMENT**: The Block Plugin now allows you to configure your own root tags 
+				   for block creation. Every time you create a new block, the block 
+				   plugin will check if its root node is supported. You may now change 
+				   the roots nodes and use your own list root tags. If you want 
+				   to use Aloha Blocks drag'n drop functionalities we strongly 
+				   suggest that you do not use other root tags than div and span.
+				   See the guides at http://www.aloha-editor.org/guides/plugin_block.html 
+				   for further information.
+
+- **ENHANCEMENT**: Aloha Editor will no longer annotate end <br> tags, which
+				   are used to prop up empty block-level elements that would be
+				   otherwise rendererd invisbly, with the "aloha-end-br" class.
+				   This should result in cleaner markup.
+
+
+                   
+
+- **BUG**: Added missing icon for the block plugins toggledragdrop button
+
+- **BUG**: Rangy Core: Patches Rangy to include a workaround for html5shiv's
+        violation of document.createElement().
+
+        As detailed in this discussion:
+        https://github.com/aFarkas/html5shiv/issues/64: html5shiv monkey
+        patches the native document.createElement() function in browsers like
+        IE8 and older, which do no support HTML5.  However, it does in a way
+        that seriously deviates from the contract that the native
+        document.createElement() function establishes, because it creates
+        elements which have non-null siblings and parentNode.
+
+        This violation causes Rangy to throw an exception in IE8 or IE7.
+
+        The workaround prevents this error by detaching the element that was
+        created via html4shiv's implementation of document.createElement() from
+        its parentNode, near the critical area of code where the exception
+        occurs.
+
+- **BUG**: Moved call to execCommand('enableObjectResizing', false, false) to init method of editable.
+		Otherwise, FF 15 (and above) will throw a JS error, if execCommand('enableObjectResizing', false, false)
+		is called with no contenteditable elements found in the page.
+
+- **BUG**: Fixed Javascript error when doing searches in the repository browser (which caused to search to not be done).
+
+- **BUG**: added the del format button to the possible format plugin buttons
+
+	The del button is not enabled by default. To enable it, it has to
+	be configured. For example
+
+	Aloha.settings.plugins.format.config = ['del', ...];
+
+	See http://aloha-editor.org/guides/plugin_format.html
+
+- **BUG**: characterpicker-plugin: Fixed a bug that when inserting a special character using the character picker plugin, the focus would be sometimes set to the start of the active editable (e.g. when inserting into a table cell).
+
+- **BUG**: listenforcer-plugin: Fixed a bug that would only mark the first editable matching a configured selector as an enforced editable. Also when leaving an editable, we now remove the added list properly.
+
+- **BUG**: core: Sometimes when putting the cursor at the first position of an editable, the cursor would vanish or be put outside the editable. This has been fixed.
 
 ## 0.22.0 - 2012/09/03
 
@@ -539,6 +613,18 @@ All changes are categorized into one of the following keywords:
 
 
 # 0.20.x
+
+## 0.20.24 - 2012/09/26
+
+- **FEATURE**: metaview: We now also display HR tags in the metaview. We also removed the dependency to the flag-icons plugin.
+- **FEATURE**: list-plugin: When transforming a list from ul to ol or back all sub elements that are selected are also transformed.
+- **FEATURE**: core: Added method Aloha.getEditableHost() to get the editable, that contains the given jQuery object.
+- **FEATURE**: repository browser: If one of the repositories runs into a timeout during query, the browser will now call the method handleTimeout().
+- **BUG**: characterpicker-plugin: Fixed a bug that when inserting a special character using the character picker plugin, the focus would be sometimes set to the start of the active editable (e.g. when inserting into a table cell).
+- **BUG**: listenforcer-plugin: Fixed a bug that would only mark the first editable matching a configured selector as an enforced editable. Also when leaving an editable, we now remove the added list properly.
+- **BUG**: floatingmenu: Fixed a bug in the floating menu that the position would not be adjusted if the height of the floating menu changed. This is needed in the topalign mode to not hide parts of the editable.
+- **BUG**: core: Sometimes when putting the cursor at the first position of an editable, the cursor would vanish or be put outside the editable. This has been fixed.
+- **BUG**: abbr-plugin: A possible dereference error was fixed in the plugin.
 
 ## 0.20.23 - 2012/08/24
 

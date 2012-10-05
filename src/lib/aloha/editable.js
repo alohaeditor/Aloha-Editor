@@ -33,7 +33,9 @@ define( [
 	'aloha/markup',
 	'aloha/contenthandlermanager',
 	'aloha/console',
-	'aloha/block-jump'
+	'aloha/block-jump',
+	'aloha/ephemera',
+	'util/dom2'
 ], function(
 	Aloha,
 	Class,
@@ -43,7 +45,9 @@ define( [
 	Markup,
 	ContentHandlerManager,
 	console,
-	BlockJump
+	BlockJump,
+	Ephemera,
+	Dom
 ) {
 	'use strict';
 
@@ -80,69 +84,6 @@ define( [
 
 	var contentSerializer = defaultContentSerializer;
 
-	var BasicContentHandler = ContentHandlerManager.createHandler({
-
-		/**
-		 * @param {string} content Content to process.
-		 * @return {string} Processed content.
-		 */
-		handleContent: function (content) {
-			// Remove the contenteditable attribute from the final html in IE8
-			// We need to do this this way because removeAttr is not working 
-			// in IE8 in IE8-compatibilitymode for those attributes.
-			if (jQuery.browser.msie && jQuery.browser.version < 8) {
-				content = content.replace(/(<table\s+[^>]*?)contenteditable=['\"\w]+/gi, "$1");
-			}
-			
-			content = this.stringFizzleSizzle(content);
-
-			return content;
-		},
-		
-		/**
-		 * Removes nodeIndex, sizcache and sizset attributes.
-		 * @param {string} content to process.
-		 */
-		stringFizzleSizzle: function (content) {
-			var replaced = content;
-			while (content !== (replaced = content.replace(/(<[^>]*?)(nodeIndex|sizcache|sizset|jquery)[\w\d]*="[^"]*"/gi, '$1'))) {
-				content = replaced;
-			}
-			return content;
-		}
-
-	});
-
-	// Register the basic contenthandler
-	ContentHandlerManager.register('basic', BasicContentHandler);
-
-	/**
-	 * Cleans the given content by manipulating the jquery content object. 
-	 * @param {Object} $content jQuery object that represents the content
-	 */ 
-	function makeClean($content) {
-		if (jQuery.browser.msie && jQuery.browser.version < 8) {
-			$content = jQuery($content);
-			
-			$content.find('[hidefocus]').each(function () {
-				jQuery(this).removeAttr('hidefocus');
-			});
-			
-			$content.find('[hideFocus]').each(function () {
-				jQuery(this).removeAttr('hideFocus');
-			});
-			
-			$content.find('[tabindex]').each(function () {
-				jQuery(this).removeAttr('tabindex');
-			});
-			
-			$content.find('[tabIndex]').each(function () {
-				jQuery(this).removeAttr('tabIndex');
-			});
-		}
-	}
-
-	
 	/**
 	 * Editable object
 	 * @namespace Aloha
@@ -803,14 +744,16 @@ define( [
 				BlockJump.removeZeroWidthTextNodeFix();
 
 				var $clone = this.obj.clone(false);
-				$clone.find( '.aloha-cleanme' ).remove();
 				this.removePlaceholder($clone);
+				$clone = jQuery(Ephemera.prune($clone[0]));
 				PluginManager.makeClean($clone);
-				makeClean($clone);
+
+				// TODO rewrite ContentHandlerManager to accept DOM trees instead of strings
 				$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
 					contenthandler: Aloha.settings.contentHandler.getContents,
 					command: 'getContents'
 				}) + '</div>');
+
 				cache = editableContentCache[this.getId()] = {};
 				cache.raw = raw;
 				cache.element = $clone;
@@ -953,6 +896,16 @@ define( [
 					'keyCode'         : null,
 					'char'            : null,
 					'triggerType'     : 'blur',
+					'getSnapshotContent' : getSnapshotContent
+				} );
+
+			} else if ( event && event.type === 'block-change' ) {
+				Aloha.trigger( 'aloha-smart-content-changed', {
+					'editable'        : me,
+					'keyIdentifier'   : null,
+					'keyCode'         : null,
+					'char'            : null,
+					'triggerType'     : 'block-change',
 					'getSnapshotContent' : getSnapshotContent
 				} );
 

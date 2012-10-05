@@ -28,7 +28,6 @@ define([
 	'aloha/plugin',
 	'ui/ui',
 	'ui/toggleButton',
-	'flag-icons/flag-icons-plugin',
 	'i18n!metaview/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'jquery'
@@ -36,13 +35,11 @@ define([
 	Plugin,
     Ui,
 	ToggleButton,
-	FlagIcons,
 	i18n,
 	i18nCore,
 	jQuery
 ) {
 	'use strict';
-
 	var GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
