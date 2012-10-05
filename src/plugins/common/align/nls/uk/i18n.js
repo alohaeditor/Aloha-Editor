@@ -1,6 +1,6 @@
 define({
-	"button.alignright.tooltip": "",
-	"button.alignleft.tooltip": "",
-	"button.aligncenter.tooltip": "",
-	"button.alignjustify.tooltip": ""
+	"button.alignright.tooltip": "Вирівняти справа",
+	"button.alignleft.tooltip": "Вирівняти зліва",
+	"button.aligncenter.tooltip": "По центру",
+	"button.alignjustify.tooltip": "За форматом"
 });

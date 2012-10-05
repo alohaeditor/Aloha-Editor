@@ -116,8 +116,6 @@ define( [
 
 	return Plugin.create( 'listenforcer', {
 
-		languages: [ 'en', 'de' ],
-
 		_constructor: function() {
 			this._super( 'listenforcer' );
 		},

@@ -1,6 +1,6 @@
 define({
-	"button.addimage.tooltip": "",
-	"button.removeimage.tooltip": "",
-	"newimage.defaulttext": "",
-	"floatingmenu.tab.img": ""
+	"button.addimage.tooltip": "Вставити зображення",
+	"button.removeimage.tooltip": "Видалити зображення",
+	"newimage.defaulttext": "Нове зображення",
+	"floatingmenu.tab.img": "Зображення"
 });

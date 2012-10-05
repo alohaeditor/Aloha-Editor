@@ -1,0 +1,1 @@
+* improved translation export from gengo.com to Aloha Editor

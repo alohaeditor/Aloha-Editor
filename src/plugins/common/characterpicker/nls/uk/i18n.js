@@ -1,3 +1,3 @@
 define({
-	"button.addcharacter.tooltip": ""
+	"button.addcharacter.tooltip": "вибрати спецсимвол"
 });

@@ -6,7 +6,7 @@ define({
 	"link.target.self": "Gleiches Fenster",
 	"link.target.blank": "Neues Fenster",
 	"link.target.parent": "Elternfenster",
-	"link.target.top": "",
+	"link.target.top": "Hauptfenster",
 	"link.target.framename": "Framename",
 	"link.target.legend": "Ziel",
 	"link.title.legend": "Titel",

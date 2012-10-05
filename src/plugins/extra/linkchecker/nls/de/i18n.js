@@ -3,10 +3,10 @@ define({
 	"error.400": "Bad Request. Die Anfrage enthält Syntaxfehler. Der Server kann die Anfrage deshalb nicht bearbeiten.",
 	"error.401": "Unauthorized.  Die angeforderten Daten sind zugangsgeschützt.",
 	"error.402": "Payment Required. Die angeforderten Daten sind kostenpflichtig.",
-	"error.403": "Forbidden. Der Server möchte die angeforderten Daten nicht herausgeben. ",
+	"error.403": "Forbidden. Der Server möchte die angeforderten Daten nicht herausgeben.",
 	"error.404": "Not found. Der angeforderte URI existiert zur Zeit nicht, kann aber in Zukunft verfügbar sein.",
 	"error.405": "Method Not Allowed. Die angegebene Übertragungsmethode ist auf dem Server nicht erlaubt.",
-	"error.406": "Not Acceptable. Die Anfrage ist in dieser Form nicht akzeptabel. ",
+	"error.406": "Not Acceptable. Die Anfrage ist in dieser Form nicht akzeptabel.",
 	"error.407": "Proxy Authentication Required. Die Anfrage soll über einen Proxy-Server geleitet werden. Der Proxy-Server ist aber zugangsgeschützt und leitet Anfragen erst nach dem Erhalt einer gültigen Zugangskennung weiter",
 	"error.408": "Request Timeout. Der Server hat eine erwartete Anfrage nicht innerhalb des dafür festgelegten Maximalzeitraums erhalten.",
 	"error.409": "Conflict. Der Server kann die angeforderten Daten nicht senden, weil ein Konflikt mit einem anderen Prozess aufgetaucht ist.",
@@ -23,6 +23,6 @@ define({
 	"error.501": "Not Implemented. Die Anfrage enthält Anforderungen, die der Server nicht bearbeiten kann, weil die Voraussetzungen dazu nicht implementiert sind.",
 	"error.502": "Bad Gateway. Zum Bearbeiten der Anfrage musste der Server einen anderen Server aufrufen, erhielt dabei jedoch eine Fehlermeldung.",
 	"error.503": "Service Unavailable. Der Server kann die Anfrage wegen Überlastung nicht bearbeiten. Normalerweise ist das ein temporärer Zustand.",
-	"error.504": "Gateway Timeout. Zum Bearbeiten der Anfrage musste der Server einen anderen Server aufrufen, erhielt dabei jedoch nach einem festgelegten Maximalzeitraum keine Antwort. ",
+	"error.504": "Gateway Timeout. Zum Bearbeiten der Anfrage musste der Server einen anderen Server aufrufen, erhielt dabei jedoch nach einem festgelegten Maximalzeitraum keine Antwort.",
 	"error.505": "HTTP Version Not Supported. Der Server unterstützt die im HTTP-Header der Anfrage angegebene HTTP-Version nicht."
 });

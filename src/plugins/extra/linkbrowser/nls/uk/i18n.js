@@ -1,6 +1,6 @@
 define({
-	"button.addlink.tooltip": "",
-	"button.removelink.tooltip": "",
-	"newlink.defaulttext": "",
-	"floatingmenu.tab.link": ""
+	"button.addlink.tooltip": "Вставити посилання",
+	"button.removelink.tooltip": "Видалити посилання",
+	"newlink.defaulttext": "Нове посилання",
+	"floatingmenu.tab.link": "Посилання"
 });

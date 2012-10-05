@@ -1,4 +1,4 @@
 define({
-	"cite.button.add.quote": "",
-	"cite.button.add.blockquote": ""
+	"cite.button.add.quote": "Форматувати виділене як цитату",
+	"cite.button.add.blockquote": "Форматувати виділене як блок цитати"
 });

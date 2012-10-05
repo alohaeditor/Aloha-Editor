@@ -1,6 +1,6 @@
 define({
-	"headerids.label.target": "",
-	"headerids.button.reset": "",
-	"headerids.button.set": "",
-	"internal_hyperlink": ""
+	"headerids.label.target": "Ціль",
+	"headerids.button.reset": "Скинути",
+	"headerids.button.set": "Встановити",
+	"internal_hyperlink": "Внутрішнє посилання"
 });

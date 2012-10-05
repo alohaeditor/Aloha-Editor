@@ -1,3 +1,3 @@
 define({
-	"button.addhr.tooltip": ""
+	"button.addhr.tooltip": "Додати горизонтальну лінійку"
 });

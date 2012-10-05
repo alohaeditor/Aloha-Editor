@@ -55,11 +55,6 @@ define([
 	 */
 	return Plugin.create( 'abbr', {
 		/**
-		 * Configure the available languages
-		 */
-		languages: [ 'en', 'de' ],
-
-		/**
 		 * default button configuration
 		 */
 		config: [ 'abbr' ],

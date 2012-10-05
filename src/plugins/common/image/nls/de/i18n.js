@@ -27,6 +27,6 @@ define({
 	"height": "Höhe",
 	"width": "Breite",
 	"button.toggle.tooltip": "Seitenverhältnis beibehalten",
-	"field.img.src.label": "",
-	"field.img.src.tooltip": ""
+	"field.img.src.label": "Quelle",
+	"field.img.src.tooltip": "Quelle"
 });

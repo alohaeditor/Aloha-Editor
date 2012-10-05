@@ -43,7 +43,7 @@ define({
 	"formatH5": "Alt+Ctrl+5",
 	"formatH6": "Alt+Ctrl+6",
 	"formatPre": "Alt+Ctrl+P",
-	"formatDel": "Ctrl+\",
+	"formatDel": "Ctrl+\\",
 	"formatSub": "Ctrl+,",
 	"formatSup": "Ctrl+.",
 	"floatingmenu.tab.format": "Format",

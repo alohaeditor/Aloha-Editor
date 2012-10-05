@@ -22,7 +22,7 @@ define({
 	"button.splitcells.tooltip": "Zellen teilen",
 	"table.label.target": "Zusammenfassung",
 	"table.sidebar.title": "Tabelle",
-	"table.mergeCells.notRectangular": "Es kann nur eine rechteckige Auswahl verknüpft werden ",
+	"table.mergeCells.notRectangular": "Es kann nur eine rechteckige Auswahl verknüpft werden",
 	"table.addColumns.nonConsecutive": "Bitte einzelne oder aufeinanderfolgende Reihen auswählen",
 	"table.createTable.nestedTablesNoSupported": "Verschachtelte Tabellen werden nicht unterstützt"
 });

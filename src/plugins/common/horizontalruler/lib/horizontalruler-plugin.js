@@ -47,7 +47,6 @@ define([
 		_constructor: function(){
 			this._super('horizontalruler');
 		},
-		languages: ['en'],
 		config: ['hr'],
 		init: function() {
 			var that = this;

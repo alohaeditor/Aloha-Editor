@@ -69,11 +69,6 @@ define( [
 	
 	return Plugin.create( 'link', {
 		/**
-		 * Configure the available languages
-		 */
-		languages: [ 'en', 'de', 'fr', 'ru', 'pl' ],
-		
-		/**
 		 * Default configuration allows links everywhere
 		 */
 		config: [ 'a' ],

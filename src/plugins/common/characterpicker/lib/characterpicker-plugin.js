@@ -213,7 +213,6 @@ define([
 		_constructor: function () {
 			this._super('characterpicker');
 		},
-		languages: ['en'],
 
 		/**
 		 * Default configuration

@@ -1,5 +1,5 @@
 define({
-	"headerids.label.target": "",
-	"headerids.button.reset": "",
-	"headerids.button.set": ""
+	"headerids.label.target": "Ціль",
+	"headerids.button.reset": "Скинути",
+	"headerids.button.set": "Встановити"
 });

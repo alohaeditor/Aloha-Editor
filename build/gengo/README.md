@@ -6,8 +6,8 @@ usage:
 change: define("ENVIRONMENT_LIVE", false);
 set to true for live environment
 
-php -f mygengo-export.php
+php -f gengo-export.php
 
 
 *** import strings from aloha editor to mygengo ***
-php -f mygengo-export.php
+php -f gengo-export.php

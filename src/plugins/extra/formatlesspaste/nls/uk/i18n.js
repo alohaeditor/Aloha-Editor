@@ -1,3 +1,3 @@
 define({
-	"button.formatlessPaste.tooltip": ""
+	"button.formatlessPaste.tooltip": "Перемикач вставки без форматування"
 });
