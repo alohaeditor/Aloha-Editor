@@ -20,19 +20,19 @@ We stick to the "ISO-639-1 languages codes":http://en.wikipedia.org/wiki/List_of
 
 h3. Import strings from gengo.com
 
-To import all 100 % translated languages into Aloha Editor navigate to +build/gengo/+ (in the development version you got from Github) and run the following command from in the terminal:
+To import all 100 % translated languages into Aloha Editor navigate to +build/gengo/+ (in the development version you got from Github) and run the following command in the terminal:
 <shell>
 	php gengo-export.php
 </shell>
 
-If you want to import a specific translation (eg. german with the ISO code +de+) run the following command:
+If you want to import a specific translation (eg. German with the ISO code +de+) run the following command:
 <shell>
 	php gengo-export.php de
 </shell>
-Note that in that case it's not required that the translation is 100 % complete.
+Note that in this case it's not required that the translation is 100 % complete.
 
 
-See available options / help:
+To see a list of the available languages / a short help message type:
 <shell>
 	php gengo-export.php -h
 </shell>
@@ -40,16 +40,17 @@ See available options / help:
 
 h3. Configuration and available translations
 
-To configure Aloha Editor to use a specific language (in this case german) use the following configuration:
+To configure Aloha Editor to use a specific language (in this case German) use the following configuration:
 <javascript>
 Aloha.settings.locale = "de";
 </javascript>
 
 By default all languages which are 100 % translated are available.
 
-For a list of available languages see: "gengo.com":http://gengo.com/string/p/aloha-editor-1/) or have a look at +lib/aloha/nls/+
+For a list of available languages in Aloha Editor see: "gengo.com":http://gengo.com/string/p/aloha-editor-1/) or have a look at +lib/aloha/nls/+
 
 
 h3. Notes
 
-When writing a plugin you'll just need to add the master file (en). That can be imported into gengo.com -- translations should always be exported from gengo.com (for plugins which are in the Aloha Editor repository)
+When writing a plugin which is hosted on http://github.com/alohaeditor/ you'll just need to add the master file for English -- this can be imported into gengo.com
+Translations for other languages should always be exported from gengo.com

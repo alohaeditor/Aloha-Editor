@@ -5,7 +5,7 @@
 		logLevels: { 'error': true, 'warn': true, 'info': true, 'debug': false, 'deprecated': true },
 		errorhandling: false,
 		ribbon: {enable: true},
-		locale: 'uk',
+		locale: 'en',
 		//waitSeconds: 300, // This can be turned on to avoid requirejs timeouts if Aloha startup code needs to be debugged
 		placeholder: {
 			'#placeholder-test': '<img src="http://aloha-editor.org/logo/Aloha%20Editor%20HTML5%20technology%20class%2016.png" alt="Aloha Editor"/>&nbsp;Placeholder Image'
