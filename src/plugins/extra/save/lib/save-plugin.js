@@ -53,7 +53,6 @@ define([
 	 */
 	return Plugin.create(namespace, {
 
-		languages: ['en'],
 		backendUrl: null,
 
 		init: function () {
