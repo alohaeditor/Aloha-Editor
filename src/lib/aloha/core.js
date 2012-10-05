@@ -223,25 +223,6 @@ function ( jQuery, PluginManager ) {
 				Aloha.OSName = 'Linux';
 			}
 
-			try {
-				// this will disable browsers image resizing facilities
-				// disable resize handles
-				var supported;
-				try {
-					supported = document.queryCommandSupported( 'enableObjectResizing' );
-				} catch ( e ) {
-					supported = false;
-					Aloha.Log.log( 'enableObjectResizing is not supported.' );
-				}
-				
-				if ( supported ) {
-					document.execCommand( 'enableObjectResizing', false, false);
-					Aloha.Log.log( 'enableObjectResizing disabled.' );
-				}
-			} catch (e) {
-				Aloha.Log.error( e, 'Could not disable enableObjectResizing' );
-				// this is just for others, who will not support disabling enableObjectResizing
-			}
 			// Forward
 			next();
 		},
@@ -336,7 +317,7 @@ function ( jQuery, PluginManager ) {
 		},
 
 		/**
-		 * Checks wheater an object is a registered Aloha Editable.
+		 * Checks whether an object is a registered Aloha Editable.
 		 * @param {jQuery} obj the jQuery object to be checked.
 		 * @return {boolean}
 		 */
@@ -347,6 +328,29 @@ function ( jQuery, PluginManager ) {
 				}
 			}
 			return false;
+		},
+
+		/**
+		 * Get the nearest editable parent of the given jQuery object
+		 * @param {jQuery} $obj jQuery object
+		 * @return {Aloha.Editable} editable or undefined if none found
+		 */
+		getEditableHost: function ($obj) {
+			var $parents, i, $editable, editablesLength = Aloha.editables.length;
+			if (!$obj) {
+				return;
+			}
+
+			$parents = $obj.parents().andSelf().each(function () {
+				for (i = 0; i < editablesLength; i++) {
+					if (Aloha.editables[i].originalObj.get(0) === this) {
+						$editable = Aloha.editables[i];
+						return false;
+					}
+				}
+			});
+
+			return $editable;
 		},
 
 		/**
@@ -440,8 +444,33 @@ function ( jQuery, PluginManager ) {
 				}
 			}
 			return url;
-		}
+		},
 
+		/**
+		 * Disable object resizing by executing command 'enableObjectResizing',
+		 * if the browser supports this
+		 */
+		disableObjectResizing: function () {
+			try {
+				// this will disable browsers image resizing facilities
+				// disable resize handles
+				var supported;
+				try {
+					supported = document.queryCommandSupported( 'enableObjectResizing' );
+				} catch ( e ) {
+					supported = false;
+					Aloha.Log.log( 'enableObjectResizing is not supported.' );
+				}
+				
+				if ( supported ) {
+					document.execCommand( 'enableObjectResizing', false, false);
+					Aloha.Log.log( 'enableObjectResizing disabled.' );
+				}
+			} catch (e) {
+				Aloha.Log.error( e, 'Could not disable enableObjectResizing' );
+				// this is just for others, who will not support disabling enableObjectResizing
+			}
+		}
 	});
 
 	return Aloha;

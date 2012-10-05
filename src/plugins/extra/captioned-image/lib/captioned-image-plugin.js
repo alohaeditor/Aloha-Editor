@@ -505,8 +505,12 @@ define([
 			this.$_caption.addClass('aloha-captioned-image-caption')
 			              .addClass('aloha-editable')
 			              .bind('blur', this.onblur);
-			this.$element.removeClass('align-left align-right align-center')
-			             .addClass('align-' + this.attr('align'));
+			this.$element.removeClass('align-left align-right align-center');
+			var alignment = this.attr('align');
+
+			if (alignment) {
+				this.$element.addClass('align-' + alignment);
+			}
 
 			// Indicate which CaptionedImage blocks have an empty caption, so
 			// we can hide their caption areas whenever these blocks are not

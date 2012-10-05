@@ -1,10 +1,4 @@
-h2. Writing Plugins
-
-After reading this guide, you will be able to:
-
-* Create plugins to adjust Aloha Editor to your needs.
-* Load and define dependencies with RequireJS.
-* Include other resources from your plugins
+h2. RequireJS
 
 endprologue.
 

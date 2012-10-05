@@ -136,6 +136,7 @@ function (
 			
 			this.imgSrcField = AttributeField({
 				label: i18n.t('field.img.src.label'),
+				labelClass: 'aloha-image-input-label',
 				tooltip: i18n.t('field.img.src.tooltip'),
 				name: 'imageSource',
 				scope: plugin.name
@@ -144,6 +145,7 @@ function (
 			
 			this.imgTitleField = AttributeField({
 				label: i18n.t('field.img.title.label'),
+				labelClass: 'aloha-image-input-label',
 				tooltip: i18n.t('field.img.title.tooltip'),
 				name: 'imageTitle',
 				scope: plugin.name
@@ -247,6 +249,7 @@ function (
 			// Manual resize fields
 			this.imgResizeHeightField = AttributeField({
 				label:  i18n.t('height'),
+				labelClass: 'aloha-image-input-label',
 				name: "imageResizeHeight",
 				width: 50,
 				scope: plugin.name
@@ -256,6 +259,7 @@ function (
 			
 			this.imgResizeWidthField = AttributeField({
 				label:  i18n.t('width'),				
+				labelClass: 'aloha-image-input-label',
 				name: "imageResizeWidth",
 				width: 50,
 				scope: plugin.name

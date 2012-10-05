@@ -724,7 +724,11 @@ define([
 			plugin.imageObj = jQuery(e.target);
 			var currentImage = plugin.imageObj;
 			
-			
+			// Ignore any images that are part of the ui (e.g. block edit and delete icons)
+			if (currentImage.hasClass('aloha-ui')) {
+				return;
+			}
+
 			plugin.ui.setScope();
 			
 			var editable = currentImage.closest('.aloha-editable');

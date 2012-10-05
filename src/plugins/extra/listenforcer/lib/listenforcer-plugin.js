@@ -66,8 +66,13 @@ define( [
 
 		// Remove all temporary <br>s in the editable, which we may have
 		// inserted when we activated this editable and found it empty. These
-		// <br>s are needed to make the otherwise emty <li> visible (in IE).
-		$editable.find( '.aloha-end-br' ).remove();
+		// <br>s are needed to make the otherwise empty <li> visible (in IE).
+		//
+		// Note: We no longer insert  temporary <br>s with the "aloha-end-br"
+		// class on them.  But we should leave this removal here to ensure that
+		// content that was generated with legacy Aloha Editor is cleaned
+		// correctly.
+		$editable.find('.aloha-end-br').remove();
 
 		// Check for the presence of at least one non-empty list. We consider
 		// a list to be not empty if it has atleast one item whose contents are
@@ -141,7 +146,9 @@ define( [
 				if ( typeof elemToEnforce === 'string' ||
 						elemToEnforce.nodeName ||
 							elemToEnforce instanceof jQuery ) {
-					this.addEditableToEnforcementList( jQuery( elemToEnforce )[0] );
+					jQuery(elemToEnforce).each(function(){
+						that.addEditableToEnforcementList( this );
+					});
 				} else {
 					console.warn(
 						'Aloha List Enforcer Plugin',
@@ -152,19 +159,22 @@ define( [
 				}
 			}
 
-			Aloha.bind( 'aloha-editable-activated', function( $event, params ) {
-				enforce( params.editable.obj,
-					'<ul><li><br class="aloha-end-br" /></li></ul>' );
-			} );
+			Aloha.bind('aloha-editable-activated', function ($event, params) {
+				enforce(params.editable.obj,
+					'<ul><li><br /></li></ul>');
+			});
 
-			Aloha.bind( 'aloha-editable-deactivated', function( $event, params ) {
-				enforce( params.editable.obj, '' );
-			} );
+			Aloha.bind('aloha-editable-deactivated', function ($event, params) {
+				enforce(params.editable.obj, '');
+			});
 
-			Aloha.bind( 'aloha-smart-content-changed', function( $event, params ) {
-				enforce( params.editable.obj,
-					'<ul><li><br class="aloha-end-br" /></li></ul>' );
-			} );
+			Aloha.bind('aloha-smart-content-changed', function ($event, params) {
+				//We only want to do this is if the editable is actually active
+			 	if (Aloha.activeEditable && Aloha.activeEditable.isActive === true) {
+			 		enforce( params.editable.obj,
+			 			'<ul><li><br /></li></ul>');
+			 	}
+			});
 		},
 
 		/**

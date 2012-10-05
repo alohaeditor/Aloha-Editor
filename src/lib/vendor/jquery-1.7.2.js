@@ -9411,6 +9411,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 // and https://github.com/alohaeditor/Aloha-Editor/issues/397
 if (!jQuery.support.getSetAttribute) {
 	jQuery.removeAttr = function(elem, name) {
+		if (name === 'class') {
+			name = 'className';
+		}
 		elem.removeAttribute(name);
 	};
 }

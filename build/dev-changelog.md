@@ -1,22 +1,12 @@
-- **BUG**: In the sidebar the panel entry for the format plugin was always shown; now when the formatOptions is empty the empty (useless) sidebar panel will be hidden
-- **BUG**: Align Plugin button status was not shown correctly
-- **FEATURE**: Image Caption Plugin: caption now supports sanitize contenthandler & disable / enable of line breaks;
-	<code>
-	Aloha.settings.contentHandler.handler: {
-		sanitize: {
-			'.aloha-captioned-image-caption': { elements: [ 'em', 'strong' ] }
-		}
-	}
-	</code>
+All changes are categorized into one of the following keywords:
 
-	<code>
-	Aloha.settings.plugins: {
-		captionedImage: {
-			allowLinebreak: [ 'p' ], // ['br', 'p'], true or false (default)
-		}
-	}
-	</code>
+- **BUG**: The change fixes a bug.
+- **ENHANCEMENT**: The change improves the software, but otherwise makes no
+                   functional change to any feature.
+- **FEATURE**: The change introduces a new feature, or modifies the function,
+               usage, or intent of an existing one.
 
-- **MANUAL CHANGE**: Updated UI CSS regarding button selector;
-- **MANUAL CHANGE**: Added a demo of placeholders to boilerplate;
+----
+- **BUG**: Fix base tag breaks Aloha Editor UI
+- **ENHANCEMENT**: Trigger the 'aloha-smart-content-changed' event with `triggerType` = `block-change` whenever an attribute of an Aloha Block is changed.
 

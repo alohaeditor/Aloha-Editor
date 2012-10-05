@@ -11,9 +11,8 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 						'bold', 'strong', 'italic', 'emphasis', '\n',
 						'subscript', 'superscript', 'strikethrough', 'quote'
 					], [
-						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', '\n',
-						'toggleMetaView', 'wailang', 'toggleFormatlessPaste', '\n',
-						'toggleDragDrop'
+						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n',
+						'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
 					], [
 						'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
 						'orderedList', 'unorderedList', 'indentList', 'outdentList'
@@ -43,19 +42,20 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
                 label: "tab.img.label",
                 showOn: {scope: 'image'},
                 components: [
-                    [ "imageSource", "imageTitle",
-                      "imageAlignLeft", "imageAlignRight", "imageAlignNone",
-                      "imageIncPadding", "imageDecPadding",
-                      "imageBrowser",
-                      "imageCropButton", "imageCnrReset", "imageCnrRatio",
-                      "imageResizeWidth", "imageResizeHeight" ]
+					[ "imageSource", "\n",
+					  "imageTitle" ],
+					[ "imageResizeWidth", "\n",
+					  "imageResizeHeight" ],
+					[ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "\n",
+					  "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ],
+					[ "imageBrowser" ]
                 ]
             },
             // Abbr Tab
             {   label: "tab.abbr.label",
                 showOn: { scope: 'abbr' },
                 components: [
-                    [ "abbrText" ]
+                    [ "abbrText", "removeAbbr" ]
                 ]
             },
             // Wailang Tab

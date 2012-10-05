@@ -36,8 +36,8 @@ second paragraph.
 To fix this situation, Aloha Editor will instead generate HTML like this
 (note the additional +<br>+s added):
 <html>
-<p>First paragraph<br class="aloha-end-br"/></p>
-<p>[]<br class="aloha-end-br"/></p>
+<p>First paragraph<br /></p>
+<p>[]<br /></p>
 </html>
 
 Everything is fine now, the additional +<br>+s at the end of +<p>+s do not
@@ -48,11 +48,12 @@ IE is the only browser, that renders even empty +<p>+, when found in +contentedi
 areas, and - even worse - would add additional empty lines if +<br>+s are found
 at the end of +<p>+s.
 
-When using Internet Exporer 7, however, things get much worse: Internet Exporer 7 renders
-empty +<p>+ only, if they are the _last_ elements. If you have an empty +<p>+ between two
-non-empty +<p>+, it will not be rendered. If the last +<p>+ contains the aloha-end-br, it
-would show an additional line (but this is only true for the _last_ +<p>+. Therefore, the
-Implementation of Aloha Editor for Internet Exporer 7 is special, as described below.
+When using Internet Exporer 7, however, things get much worse: Internet Exporer
+7 renders empty +<p>+ only, if they are the _last_ elements. If you have an
+empty +<p>+ between two non-empty +<p>+, it will not be rendered. If the last
++<p>+ contains the propping end <br>, it would show an additional line (but
+this is only true for the _last_ +<p>+. Therefore, the Implementation of Aloha
+Editor for Internet Exporer 7 is special, as described below.
 
 h4. Main goal in Aloha Editor
 
@@ -70,20 +71,18 @@ The current implementation of Aloha Editor regarding block level elements is lik
 
 When initializing an editable
 * remove all empty block level elements (since they are invisible anyway)
-* remove all +<br class="aloha-end-br"/>+ when using Internet Explorer (since they would
-add additional lines while editing)
 * add zero-width spaces to all empty block level elements when using Internet Explorer 7
-* add +<br class="aloha-end-br"/>+ to all +<li>+ elements, except for Internet Exporer
+* add +<br />+ to all +<li>+ elements, except when in Internet Exporer
 
 While editing
 * For every operation, that might lead to an empty block level elements (hitting +ENTER+, deleting, ...),
-fix the empty block level element by appending a +<br class="aloha-end-br"/>+ (except for Internet Explorer).
-For Internet Explorer 7, instead of +<br class="aloha-end-br"/>+ the zero-width spaces will be used.
+fix the empty block level element by appending a +<br />+ (except when editing in Internet Explorer).
+For Internet Explorer 7, instead of +<br />+ the zero-width spaces will be used.
 
 When getting the editable's content (e.g. for saving) with the _getContents()_ method
-* Make sure that every block level element contains a single +<br class="aloha-end-br"/>+ as
+* Make sure that every block level element contains a single +<br />+ as
 last child.
-* Remove all +<br class="aloha-end-br"/>+ contained in +<li>+.
+* Remove all end +<br />+ tags contained in +<li>+.
 
 The current implementation handles
 * +<p>+

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor ephemeral Test Suite</title>
+	
+	<!-- include qunit -->
+	<link rel="stylesheet" href="../../vendor/qunit.css" type="text/css"/>
+	<script type="text/javascript" src="../../vendor/qunit.js"></script>
+
+	<!-- include jquery -->
+	<script	src="../../../lib/vendor/jquery-1.7.2.js" ></script>
+	<script type="text/javascript" src="../../vendor/jquery.simulate.js"></script>
+
+	<!-- include aloha -->
+	<script>
+		var Aloha = {
+			settings: {
+				jQuery: $,
+				baseUrl: '../../../lib'
+			}
+		};
+	</script>
+	<script src="../../../lib/require.js"></script>
+	<script src="../../../lib/aloha.js" data-aloha-plugins="common/dom-to-xhtml"></script>
+	
+	<!-- include testswarm inject script -->
+	<script>
+		var url = window.location.search;
+		url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
+		if ( url && url.indexOf("http") === 0 ) {
+			require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
+		}
+	</script>
+
+</head>
+<body>
+	<!-- include the tests -->
+	<script>
+		require( ['ephemera-tests'] );
+	</script>
+	<h1 id="qunit-header">Aloha Editor ephemeral Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">
+	<div id="test-editable"></div>
+	</div>
+</body>
+</html>
