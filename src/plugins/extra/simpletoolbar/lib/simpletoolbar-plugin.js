@@ -13,6 +13,7 @@
 
     return Plugin.create("simpletoolbar", {
       defaults: {
+        'initfloat': false,
         'menu': [
           'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '', {
             text: 'Table',
@@ -25,7 +26,7 @@
         ]
       },
       init: function() {
-        var applyHeading, item, labels, order, recurse, toolbar, toolbarLookup, _i, _len, _ref;
+        var applyHeading, item, labels, order, plugin, recurse, toolbar, toolbarLookup, _i, _len, _ref;
         window.toolbar = toolbar = new appmenu.ToolBar();
         toolbar.el.appendTo(CONTAINER_JQUERY);
         toolbar.el.addClass('aloha');
@@ -72,8 +73,16 @@
           toolbar.append(recurse(item, toolbarLookup));
         }
         Ui.__old_adopt = Ui.adopt;
+        plugin = this;
         Ui.adopt = function(slot, type, settings) {
           var ItemRelay;
+          if (plugin.settings.initfloat) {
+            try {
+              Ui.__old_adopt(slot, type, settings);
+            } catch (err) {
+
+            }
+          }
           ItemRelay = (function() {
 
             function ItemRelay(items) {

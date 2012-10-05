@@ -13,6 +13,7 @@ define [
   ###
   Plugin.create "simpletoolbar",
     defaults: {
+        'initfloat': false, # Whether to also initialise aloha default toolbar
         'menu': [
              'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript',
              'subscript', '', 'unorderedList', 'orderedList', '',
@@ -55,7 +56,17 @@ define [
       Ui.__old_adopt = Ui.adopt
 
       # Hijack the toolbar buttons so we can customize where they are placed.
+      plugin = @
       Ui.adopt = (slot, type, settings) ->
+        if plugin.settings.initfloat
+            # Pass through initialisation to old toolbar. Sometimes useful
+            # to use both.
+            try
+                Ui.__old_adopt(slot, type, settings)
+            catch err
+              # pass
+
+        #console and console.log(type)
         # This class adapts button functions Aloha expects to functions the appmenu uses
         class ItemRelay
           constructor: (@items) ->
