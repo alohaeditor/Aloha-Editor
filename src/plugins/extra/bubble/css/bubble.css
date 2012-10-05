@@ -1,0 +1,6 @@
+div.bubble {
+  border: 1px solid #666;
+  background-color: white;
+  padding: 0.5em;
+  box-shadow: 0 2px 2px #aaa;
+}

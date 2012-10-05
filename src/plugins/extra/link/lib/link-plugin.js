@@ -42,6 +42,7 @@ define( [
 	'ui/surface',
 	'ui/button',
 	'ui/toggleButton',
+	'../../bubble/lib/bubble-plugin',
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
@@ -56,6 +57,7 @@ define( [
 	Surface,
 	Button,
 	ToggleButton,
+	Bubble,
 	i18n,
 	i18nCore,
 	console
@@ -390,6 +392,17 @@ define( [
 					return false;
 				}
 			} );
+			
+			var displayer = function($el, $bubble) {
+				var href = $el.attr('href');
+				var a = $bubble.append('<a target="_window"></a>');
+				a.attr('href', href);
+				a.append(href); // Put the URL in the body
+				$bubble.append(' - ');
+				$bubble.append('<a href="#">Change</a>').on('click', function() {that.showModalDialog($el, null)});
+				
+			};
+			Bubble(jQuery(link), displayer);
 		},
 
 		/**
@@ -696,7 +709,7 @@ define( [
 
       newLink = Aloha.activeEditable.obj.find( 'a.aloha-new-link' );
       newLink.each( function ( i ) {
-        that.addLinkEventHandlers( that );
+        that.addLinkEventHandlers( this );
         jQuery(this).removeClass( 'aloha-new-link' );
       } );
 
