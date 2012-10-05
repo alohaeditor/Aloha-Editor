@@ -12,7 +12,7 @@ define [
    register the plugin with unique name
   ###
   Plugin.create "simpletoolbar",
-    defaults: {
+    defaultSettings: {
         'initfloat': false, # Whether to also initialise aloha default toolbar
         'menu': [
              'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript',
@@ -22,6 +22,7 @@ define [
         ]
     },
     init: ->
+      @settings = jQuery.extend(true, @defaultSettings, @settings)
       window.toolbar = toolbar = new appmenu.ToolBar()
       toolbar.el.appendTo CONTAINER_JQUERY
       toolbar.el.addClass 'aloha'

@@ -12,7 +12,7 @@
     */
 
     return Plugin.create("simpletoolbar", {
-      defaults: {
+      defaultSettings: {
         'initfloat': false,
         'menu': [
           'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '', {
@@ -27,6 +27,7 @@
       },
       init: function() {
         var applyHeading, item, labels, order, plugin, recurse, toolbar, toolbarLookup, _i, _len, _ref;
+        this.settings = jQuery.extend(true, this.defaultSettings, this.settings);
         window.toolbar = toolbar = new appmenu.ToolBar();
         toolbar.el.appendTo(CONTAINER_JQUERY);
         toolbar.el.addClass('aloha');
