@@ -26,7 +26,7 @@
         ]
       },
       init: function() {
-        var applyHeading, item, labels, order, plugin, recurse, toolbar, toolbarLookup, _i, _len, _ref;
+        var applyHeading, h, headingButtons, headingsButton, item, labels, order, plugin, recurse, toolbar, toolbarLookup, _i, _len, _ref;
         this.settings = jQuery.extend(true, this.defaultSettings, this.settings);
         window.toolbar = toolbar = new appmenu.ToolBar();
         toolbar.el.appendTo(CONTAINER_JQUERY);
@@ -178,16 +178,18 @@
           item.element = item.el;
           return new ItemRelay([item]);
         };
-        applyHeading = function() {
-          var $newEl, $oldEl, rangeObject;
-          rangeObject = Aloha.Selection.getRangeObject();
-          if (rangeObject.isCollapsed()) {
-            GENTICS.Utils.Dom.extendToWord(rangeObject);
-          }
-          Aloha.Selection.changeMarkupOnSelection(Aloha.jQuery(this.markup));
-          $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer());
-          $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer());
-          return $newEl.addClass($oldEl.attr('class'));
+        applyHeading = function(hTag) {
+          return function() {
+            var $newEl, $oldEl, rangeObject;
+            rangeObject = Aloha.Selection.getRangeObject();
+            if (rangeObject.isCollapsed()) {
+              GENTICS.Utils.Dom.extendToWord(rangeObject);
+            }
+            Aloha.Selection.changeMarkupOnSelection(Aloha.jQuery("<" + hTag + "></" + hTag + ">"));
+            $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer());
+            $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer());
+            return $newEl.addClass($oldEl.attr('class'));
+          };
         };
         order = ['p', 'h1', 'h2', 'h3'];
         labels = {
@@ -196,13 +198,42 @@
           'h2': 'Heading 2',
           'h3': 'Heading 3'
         };
+        headingButtons = (function() {
+          var _j, _len1, _results;
+          _results = [];
+          for (_j = 0, _len1 = order.length; _j < _len1; _j++) {
+            h = order[_j];
+            _results.push(new appmenu.custom.Heading("<" + h + " />", labels[h], {
+              accel: "Ctrl+" + (h.charAt(1) || 0),
+              action: applyHeading(h)
+            }));
+          }
+          return _results;
+        })();
+        headingsButton = new appmenu.ToolButton("Heading 1", {
+          subMenu: new appmenu.Menu(headingButtons)
+        });
+        toolbar.prepend(new appmenu.Separator());
+        toolbar.prepend(headingsButton);
+        Aloha.bind('aloha-editable-activated', function(e, params) {
+          return toolbar.setAccelContainer(params.editable.obj);
+        });
+        Aloha.bind('aloha-editable-deactivated', function(e, params) {
+          return toolbar.setAccelContainer();
+        });
         return Aloha.bind("aloha-selection-changed", function(event, rangeObject) {
-          var $el, h, i, isActive, _j, _len1, _results;
+          var $el, i, isActive, _j, _len1, _results;
           $el = Aloha.jQuery(rangeObject.startContainer);
           _results = [];
           for (i = _j = 0, _len1 = order.length; _j < _len1; i = ++_j) {
             h = order[i];
-            _results.push(isActive = $el.parents(h).length > 0);
+            isActive = $el.parents(h).length > 0;
+            headingButtons[i].setChecked(isActive);
+            if (isActive) {
+              _results.push(headingsButton.setText(labels[h]));
+            } else {
+              _results.push(void 0);
+            }
           }
           return _results;
         });
