@@ -1,6 +1,6 @@
 define [
     "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu',
-    "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console",
+    "i18n!format/nls/i18n", "i18n!aloha/nls/i18n",
     "css!simpletoolbar/css/simpletoolbar.css" ], (
     Aloha, Plugin, Ui, appmenu, i18n, i18nCore) ->
 
