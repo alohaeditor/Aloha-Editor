@@ -39,11 +39,6 @@ define([
 	return Plugin.create('wai-lang', {
 
 		/**
-		 * Configure the available languages (i18n) for this plugin
-		 */
-		languages: [ 'en', 'de' ],
-
-		/**
 		 * Default configuration allows spans everywhere
 		 */
 		config: [ 'span' ],

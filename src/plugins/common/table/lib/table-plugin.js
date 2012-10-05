@@ -74,11 +74,6 @@ define([
 	TablePlugin.createLayer = undefined;
 
 	/**
-	 * Configure the available languages
-	 */
-	TablePlugin.languages = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
-
-	/**
 	 * default button configuration
 	 */
 	TablePlugin.config = [ 'table' ];

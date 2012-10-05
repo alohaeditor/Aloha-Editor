@@ -54,6 +54,8 @@ NOTE: Aloha Editor may load additional dependencies asynchronously with
 </body>
 </html>
 
+See also: https://github.com/alohaeditor/Aloha-Editor/issues/707
+
 h3. Create editables
 
 An editable is an HTML element that should be editable by Aloha Editor. You can specify the element with a jQuery selector, and simply call +.aloha+ for it.
