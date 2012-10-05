@@ -1,18 +1,28 @@
-# import / export string translations to / from mygengo.com
-
-see: guides/translations.html
-
-## export strings from gengo.com to aloha editor
-import all 100 % translated strings
-
-php gengo-export.php
-
-import a specific language (in this case german with iso code 'de')
-php gengo-export.php de
+# Import / export string translations to / from gengo.com
 
 
-## import strings from aloha editor to gengo.com
+## Export strings from gengo.com to Aloha Editor
 
-this will prepare data to manually import to gengo.com
+To import all 100 % translated strings use the following command:
 
-php gengo-export.php
+    php gengo-export.php
+
+To import a specific language (in this case German with the ISO 639-1 code 'de') use:
+
+    php gengo-export.php de
+
+To get a list of all available languages type:
+
+    php gengo-export.php -h
+
+
+## Import strings from Aloha Editor to gengo.com
+
+The following command will prepare the data to manually import it to gengo.com:
+
+    php gengo-export.php
+
+
+## Further information
+
+For further information navigate to the [Translation Guide](http://aloha-editor.org/guides/translations.html)
