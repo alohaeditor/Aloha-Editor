@@ -101,11 +101,6 @@ define([
 	 */
 	var ListPlugin = Plugin.create('list', {
 		/**
-		 * Configure the available languages
-		 */
-		languages: ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it'],
-
-		/**
 		 * default button configuration
 		 */
 		config: [ 'ul', 'ol' ],
