@@ -1,8 +1,8 @@
 define [
     "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu',
-    "i18n!format/nls/i18n", "i18n!aloha/nls/i18n",
+    "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "PubSub", "ui/scopes",
     "css!simpletoolbar/css/simpletoolbar.css" ], (
-    Aloha, Plugin, Ui, appmenu, i18n, i18nCore) ->
+    Aloha, Plugin, Ui, appmenu, i18n, i18nCore, PubSub, Scopes) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
@@ -18,9 +18,28 @@ define [
              'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript',
              'subscript', '', 'unorderedList', 'orderedList', '',
              { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
-             { text: 'insertImage', icon: 'aloha-image-insert' }
+             { text: 'insertImage', icon: 'aloha-image-insert' }],
+        'dialogs': [
+            label: 'Image'
+            scope: 'image'
+            # I'm sorry for this long line, but sometimes coffeescript is bollocks!
+            components: [ [ "imageSource", "\n", "imageTitle" ], [ "imageResizeWidth", "\n", "imageResizeHeight" ], [ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "\n", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ], [ "imageBrowser" ] ]
         ]
     },
+    initDialogs: (dialogMap, itemMap) ->
+        for d in @settings.dialogs
+          dialog = Aloha.jQuery('<div />', id: 'aloha-simpletoolbar-scope-' + d.scope)
+          for group in d.components
+            gdiv = Aloha.jQuery('<div />')
+            for line in group
+              if line.length <= 1 #TODO: handle newline properly
+                continue
+              item = Aloha.jQuery('<span />', id: 'aloha-simpletoolbar-dialogitem-' + line)
+              gdiv.append(item)
+              itemMap[line] = item
+            dialog.append(gdiv)
+          dialog.dialog(title: d.label, autoOpen: false)
+          dialogMap[d.scope] = dialog
     init: ->
       @settings = jQuery.extend(true, @defaultSettings, @settings)
       window.toolbar = toolbar = new appmenu.ToolBar()
@@ -52,6 +71,10 @@ define [
 
       for item in @settings.menu
           toolbar.append (recurse item, toolbarLookup)
+
+      dialogLookup = {}
+      dialogItemLookup = {}
+      @initDialogs(dialogLookup, dialogItemLookup)
 
       # Keep a reference to our old ui
       Ui.__old_adopt = Ui.adopt
@@ -86,6 +109,14 @@ define [
 
         if slot of toolbarLookup
           item = toolbarLookup[slot]
+        else if slot of dialogItemLookup
+          # Item should be placed in the relevant dialog block. This item is
+          # going to be of type Component, so we use the upstream ui API.
+          Type = if settings then type.extend(settings) else type
+          component = new Type();
+          component.adoptParent(plugin)
+          dialogItemLookup[slot].append(component.element)
+          item = new appmenu.ToolButton 'DUMMY_ITEM_THAT_SQUASHES_STATE_CHANGES'
         else
           item = new appmenu.ToolButton 'DUMMY_ITEM_THAT_SQUASHES_STATE_CHANGES'
                     
@@ -139,6 +170,21 @@ define [
           # Update the toolbar to show the current heading level
           if isActive
             headingsButton.setText labels[h]
+
+      plugin.openDialog = null
+      # Scope change is deprecated, but it is still widely used
+      PubSub.sub 'aloha.ui.scope.change', () ->
+        # Find a dialog for this scope
+        scope = Scopes.getPrimaryScope()
+        for d in plugin.settings.dialogs
+          if d.scope == scope
+            if plugin.openDialog
+              plugin.openDialog.dialog('close')
+            plugin.openDialog = dialogLookup[scope]
+            plugin.openDialog.dialog('open')
+            break
+        console and console.log('Scope change to ' + scope)
+
 
     ###
      toString method
