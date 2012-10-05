@@ -1,6 +1,6 @@
 define({
-	"button.addlink.tooltip": "Link einfügen",
-	"button.removelink.tooltip": "Link entfernen",
-	"newlink.defaulttext": "Neuer Link",
-	"floatingmenu.tab.link": "Link"
+	"button.addlink.tooltip": "Verweis einfügen",
+	"button.removelink.tooltip": "Verweis entfernen",
+	"newlink.defaulttext": "Neuer Verweis",
+	"floatingmenu.tab.link": "Verweis"
 });

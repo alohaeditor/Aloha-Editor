@@ -1,3 +1,3 @@
 define({
-	"button.switch-metaview.tooltip": "Meta-Ansicht ein-/ausblenden"
+	"button.switch-metaview.tooltip": "Zwischen Metaansicht und normaler Ansicht umschalten"
 });
