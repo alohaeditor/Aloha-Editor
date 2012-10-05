@@ -1,10 +1,3 @@
-# TODO: The settings below really should be configurable via Aloha.settings
-toolbarSettings = [
- 'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '',
- { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
- { text: 'insertImage', icon: 'aloha-image-insert' }
-]
-
 define [
     "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu',
     "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console",
@@ -19,6 +12,14 @@ define [
    register the plugin with unique name
   ###
   Plugin.create "simpletoolbar",
+    defaults: {
+        'menu': [
+             'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript',
+             'subscript', '', 'unorderedList', 'orderedList', '',
+             { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
+             { text: 'insertImage', icon: 'aloha-image-insert' }
+        ]
+    },
     init: ->
       window.toolbar = toolbar = new appmenu.ToolBar()
       toolbar.el.appendTo CONTAINER_JQUERY
@@ -47,11 +48,13 @@ define [
             lookupMap[item.text] = menuItem
           return menuItem
 
-      for item in toolbarSettings
+      for item in @settings.menu
           toolbar.append (recurse item, toolbarLookup)
 
+      # Keep a reference to our old ui
+      Ui.__old_adopt = Ui.adopt
+
       # Hijack the toolbar buttons so we can customize where they are placed.
-      
       Ui.adopt = (slot, type, settings) ->
         # This class adapts button functions Aloha expects to functions the appmenu uses
         class ItemRelay
