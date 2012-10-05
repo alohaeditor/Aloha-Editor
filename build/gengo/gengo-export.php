@@ -8,6 +8,10 @@ $export_translation = false;
 $all_translations = array('en' => 'English' , 'ar' => 'Arabic' , 'be' => 'Belarussian' , 'bn' => 'Bengali' , 'pt-br' => 'Brazilian' , 'bg' => 'Bulgarian' , 'ca' => 'Catalan' , 'zh-hans' => 'Chinese, Simplified' , 'zh-hant' => 'Chinese, Traditional' , 'cs' => 'Czech' , 'da' => 'Danish' , 'nl' => 'Dutch' , 'en-pi' => 'English, Pirate' , 'eo' => 'Esperanto' , 'et' => 'Estonian' , 'fi' => 'Finnish' , 'fr' => 'French' , 'gl' => 'Galician' , 'de' => 'German' , 'el' => 'Greek' , 'he' => 'Hebrew' , 'hi' => 'Hindi' , 'hu' => 'Hungarian' , 'it' => 'Italian' , 'jp' => 'Japanese' , 'ko' => 'Korean' , 'lt' => 'Lithuanian' , 'mk' => 'Macedonian' , 'mr' => 'Marathi' , 'nb-no' => 'Norwegian' , 'fa' => 'Persian' , 'pl' => 'Polish' , 'pt' => 'Portuguese' , 'ro' => 'Romanian' , 'ru' => 'Russian' , 'sr' => 'Serbian' , 'sl' => 'Slovenian', 'sk' => 'Slovak' , 'es' => 'Spanish' , 'sw' => 'Swahili' , 'sv' => 'Swedish' , 'tl' => 'Tagalog' , 'ta' => 'Tamil' , 'th' => 'Thai' , 'tr' => 'Turkish' , 'uk' => 'Ukrainian' , 'cy' => 'Welsh');
 
 
+if (!empty($argv[1])) {
+	$argv[1] = strtolower($argv[1]);
+}
+
 // print the help message
 if (!empty($argv[1]) && in_array($argv[1], array('--help', '-help', '-h', '-?'))) {
 	echo "\nExport translations from gengo.com to Aloha Editor\n\n";
