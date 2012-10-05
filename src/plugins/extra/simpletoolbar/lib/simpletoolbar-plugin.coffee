@@ -1,7 +1,8 @@
 define [
     "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu',
     "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "PubSub", "ui/scopes",
-    "css!simpletoolbar/css/simpletoolbar.css" ], (
+    "css!simpletoolbar/css/simpletoolbar.css",
+    "css!../../../common/ui/css/jquery-ui-1.9m6.css"], (
     Aloha, Plugin, Ui, appmenu, i18n, i18nCore, PubSub, Scopes) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
@@ -28,7 +29,8 @@ define [
     },
     initDialogs: (dialogMap, itemMap) ->
         for d in @settings.dialogs
-          dialog = Aloha.jQuery('<div />', id: 'aloha-simpletoolbar-scope-' + d.scope)
+          dialog = Aloha.jQuery('<div />',
+            id: 'aloha-simpletoolbar-scope-' + d.scope, class: 'aloha')
           for group in d.components
             gdiv = Aloha.jQuery('<div />')
             for line in group
