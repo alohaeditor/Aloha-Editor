@@ -7,3 +7,5 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
+
+- **BUG**: table-plugin: Fixed javascript error that occured when removing the whole table.
