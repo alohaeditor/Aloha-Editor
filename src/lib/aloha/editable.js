@@ -24,38 +24,25 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define( [
-	'aloha/core',
-	'util/class',
-	'jquery',
-	'aloha/pluginmanager',
-	'aloha/selection',
-	'aloha/markup',
-	'aloha/contenthandlermanager',
-	'aloha/console',
-	'aloha/block-jump',
-	'aloha/ephemera',
-	'util/dom2'
-], function(
-	Aloha,
-	Class,
-	jQuery,
-	PluginManager,
-	Selection,
-	Markup,
-	ContentHandlerManager,
-	console,
-	BlockJump,
-	Ephemera,
-	Dom
-) {
+define(['aloha/core', 'util/class', 'jquery', 'aloha/pluginmanager', 'aloha/selection', 'aloha/markup', 'aloha/contenthandlermanager', 'aloha/console', 'aloha/block-jump', 'aloha/ephemera', 'util/dom2'], function (
+Aloha,
+Class,
+jQuery,
+PluginManager,
+Selection,
+Markup,
+ContentHandlerManager,
+console,
+BlockJump,
+Ephemera,
+Dom) {
 	'use strict';
 
 	var unescape = window.unescape,
-	    GENTICS = window.GENTICS,
+		GENTICS = window.GENTICS,
 
-	    // True, if the next editable activate event should not be handled
-	    ignoreNextActivateEvent = false;
+		// True, if the next editable activate event should not be handled
+		ignoreNextActivateEvent = false;
 
 	/**
 	 * A cache to hold information derived, and used in getContents().
@@ -67,18 +54,18 @@ define( [
 	// default supported and custom content handler settings
 	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
-	Aloha.defaults.contentHandler.initEditable = [ 'blockelement', 'sanitize' ];
-	Aloha.defaults.contentHandler.getContents = [ 'blockelement', 'sanitize', 'basic'];
+	Aloha.defaults.contentHandler.initEditable = ['blockelement', 'sanitize'];
+	Aloha.defaults.contentHandler.getContents = ['blockelement', 'sanitize', 'basic'];
 
 	// The insertHtml contenthandler ( paste ) will, by default, use all
 	// registered content handlers.
 	//Aloha.defaults.contentHandler.insertHtml = void 0;
 
-	if ( typeof Aloha.settings.contentHandler === 'undefined' ) {
+	if (typeof Aloha.settings.contentHandler === 'undefined') {
 		Aloha.settings.contentHandler = {};
 	}
 
-	var defaultContentSerializer = function(editableElement){
+	var defaultContentSerializer = function (editableElement) {
 		return jQuery(editableElement).html();
 	};
 
@@ -92,13 +79,13 @@ define( [
 	 * @constructor
 	 * @param {Object} obj jQuery object reference to the object
 	 */
-	Aloha.Editable = Class.extend( {
+	Aloha.Editable = Class.extend({
 
-		_constructor: function( obj ) {
+		_constructor: function (obj) {
 			// check wheter the object has an ID otherwise generate and set
 			// globally unique ID
-			if ( !obj.attr( 'id' ) ) {
-				obj.attr( 'id', GENTICS.Utils.guid() );
+			if (!obj.attr('id')) {
+				obj.attr('id', GENTICS.Utils.guid());
 			}
 
 			// store object reference
@@ -109,8 +96,8 @@ define( [
 			// delimiters, timer and idle for smartContentChange
 			// smartContentChange triggers -- tab: '\u0009' - space: '\u0020' - enter: 'Enter'
 			// backspace: U+0008 - delete: U+007F
-			this.sccDelimiters = [ ':', ';', '.', '!', '?', ',',
-				unescape( '%u0009' ), unescape( '%u0020' ), unescape( '%u0008' ), unescape( '%u007F' ), 'Enter' ];
+			this.sccDelimiters = [':', ';', '.', '!', '?', ',',
+			unescape('%u0009'), unescape('%u0020'), unescape('%u0008'), unescape('%u007F'), 'Enter'];
 			this.sccIdle = 5000;
 			this.sccDelay = 500;
 			this.sccTimerIdle = false;
@@ -118,46 +105,46 @@ define( [
 
 			// see keyset http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 			this.keyCodeMap = {
-				 93 : 'Apps',         // The Application key
-				 18 : 'Alt',          // The Alt ( Menu ) key.
-				 20 : 'CapsLock',     // The Caps Lock ( Capital ) key.
-				 17 : 'Control',      // The Control ( Ctrl ) key.
-				 40 : 'Down',         // The Down Arrow key.
-				 35 : 'End',          // The End key.
-				 13 : 'Enter',        // The Enter key.
-				112 : 'F1',           // The F1 key.
-				113 : 'F2',           // The F2 key.
-				114 : 'F3',           // The F3 key.
-				115 : 'F4',           // The F4 key.
-				116 : 'F5',           // The F5 key.
-				117 : 'F6',           // The F6 key.
-				118 : 'F7',           // The F7 key.
-				119 : 'F8',           // The F8 key.
-				120 : 'F9',           // The F9 key.
-				121 : 'F10',          // The F10 key.
-				122 : 'F11',          // The F11 key.
-				123 : 'F12',          // The F12 key.
+				93: 'Apps', // The Application key
+				18: 'Alt', // The Alt ( Menu ) key.
+				20: 'CapsLock', // The Caps Lock ( Capital ) key.
+				17: 'Control', // The Control ( Ctrl ) key.
+				40: 'Down', // The Down Arrow key.
+				35: 'End', // The End key.
+				13: 'Enter', // The Enter key.
+				112: 'F1', // The F1 key.
+				113: 'F2', // The F2 key.
+				114: 'F3', // The F3 key.
+				115: 'F4', // The F4 key.
+				116: 'F5', // The F5 key.
+				117: 'F6', // The F6 key.
+				118: 'F7', // The F7 key.
+				119: 'F8', // The F8 key.
+				120: 'F9', // The F9 key.
+				121: 'F10', // The F10 key.
+				122: 'F11', // The F11 key.
+				123: 'F12', // The F12 key.
 
 				// Anybody knows the keycode for F13-F24?
-				 36 : 'Home',         // The Home key.
-				 45 : 'Insert',       // The Insert ( Ins ) key.
-				 37 : 'Left',         // The Left Arrow key.
-				224 : 'Meta',         // The Meta key.
-				 34 : 'PageDown',     // The Page Down ( Next ) key.
-				 33 : 'PageUp',       // The Page Up key.
-				 19 : 'Pause',        // The Pause key.
-				 44 : 'PrintScreen',  // The Print Screen ( PrintScrn, SnapShot ) key.
-				 39 : 'Right',        // The Right Arrow key.
-				145 : 'Scroll',       // The scroll lock key
-				 16 : 'Shift',        // The Shift key.
-				 38 : 'Up',           // The Up Arrow key.
-				 91 : 'Win',          // The left Windows Logo key.
-				 92 : 'Win'           // The right Windows Logo key.
+				36: 'Home', // The Home key.
+				45: 'Insert', // The Insert ( Ins ) key.
+				37: 'Left', // The Left Arrow key.
+				224: 'Meta', // The Meta key.
+				34: 'PageDown', // The Page Down ( Next ) key.
+				33: 'PageUp', // The Page Up key.
+				19: 'Pause', // The Pause key.
+				44: 'PrintScreen', // The Print Screen ( PrintScrn, SnapShot ) key.
+				39: 'Right', // The Right Arrow key.
+				145: 'Scroll', // The scroll lock key
+				16: 'Shift', // The Shift key.
+				38: 'Up', // The Up Arrow key.
+				91: 'Win', // The left Windows Logo key.
+				92: 'Win' // The right Windows Logo key.
 			};
 
 			this.placeholderClass = 'aloha-placeholder';
 
-			Aloha.registerEditable( this );
+			Aloha.registerEditable(this);
 
 			this.init();
 		},
@@ -167,7 +154,7 @@ define( [
 		 * @return void
 		 * @hide
 		 */
-		init: function() {
+		init: function () {
 			var me = this;
 
 			// TODO make editables their own settings.
@@ -175,65 +162,65 @@ define( [
 
 			// smartContentChange settings
 			// @TODO move to new config when implemented in Aloha
-			if ( Aloha.settings && Aloha.settings.smartContentChange ) {
-				if ( Aloha.settings.smartContentChange.delimiters ) {
+			if (Aloha.settings && Aloha.settings.smartContentChange) {
+				if (Aloha.settings.smartContentChange.delimiters) {
 					this.sccDelimiters = Aloha.settings.smartContentChange.delimiters;
 				}
 
-				if ( Aloha.settings.smartContentChange.idle ) {
+				if (Aloha.settings.smartContentChange.idle) {
 					this.sccIdle = Aloha.settings.smartContentChange.idle;
 				}
 
-				if ( Aloha.settings.smartContentChange.delay ) {
+				if (Aloha.settings.smartContentChange.delay) {
 					this.sccDelay = Aloha.settings.smartContentChange.delay;
 				}
 			}
 
 			// check if Aloha can handle the obj as Editable
-			if ( !this.check( this.obj ) ) {
+			if (!this.check(this.obj)) {
 				//Aloha.log( 'warn', this, 'Aloha cannot handle {' + this.obj[0].nodeName + '}' );
 				this.destroy();
 				return;
 			}
 
 			// apply content handler to clean up content
-			if ( typeof Aloha.settings.contentHandler.getContents === 'undefined' ) {
+			if (typeof Aloha.settings.contentHandler.getContents === 'undefined') {
 				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
 			}
 
 			// apply content handler to clean up content
-			if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
+			if (typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
 				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
 			}
-			
+
 			var content = me.obj.html();
-			content = ContentHandlerManager.handleContent( content, {
+			content = ContentHandlerManager.handleContent(content, {
 				contenthandler: Aloha.settings.contentHandler.initEditable,
 				command: 'initEditable'
-			} );
-			me.obj.html( content );
+			});
+			me.obj.html(content);
 
 			// only initialize the editable when Aloha is fully ready (including plugins)
-			Aloha.bind( 'aloha-ready', function() {
+			Aloha.bind('aloha-ready', function () {
 				// initialize the object
-				me.obj.addClass( 'aloha-editable' ).contentEditable( true );
+				me.obj.addClass('aloha-editable').contentEditable(true);
 
 				// add focus event to the object to activate
-				me.obj.mousedown( function( e ) {
+				me.obj.mousedown(function (e) {
 					// check whether the mousedown was already handled
-					if ( !Aloha.eventHandled ) {
+					if (!Aloha.eventHandled) {
 						Aloha.eventHandled = true;
-						return me.activate( e );
+						return me.activate(e);
 					}
-				} );
+				});
 
-				me.obj.mouseup( function( e ) {
+				me.obj.mouseup(function (e) {
 					Aloha.eventHandled = false;
-				} );
+				});
 
-				me.obj.focus( function( e ) {
-					return me.activate( e );
-				} );
+				me.obj.focus(function (e) {
+					return me.activate(e);
+				});
 
 				// by catching the keydown we can prevent the browser from doing its own thing
 				// if it does not handle the keyStroke it returns true and therefore all other
@@ -241,36 +228,36 @@ define( [
 				//me.obj.keydown( function( event ) {
 				//me.obj.add('.aloha-block', me.obj).live('keydown', function (event) { // live not working but would be usefull
 				me.obj.add('.aloha-block', me.obj).keydown(function (event) {
-					var letEventPass = Markup.preProcessKeyStrokes( event );
+					var letEventPass = Markup.preProcessKeyStrokes(event);
 					me.keyCode = event.which;
 
 					if (!letEventPass) {
 						// the event will not proceed to key press, therefore trigger smartContentChange
-						me.smartContentChange( event );
+						me.smartContentChange(event);
 					}
 					return letEventPass;
-				} );
+				});
 
 				// handle keypress
-				me.obj.keypress( function( event ) {
+				me.obj.keypress(function (event) {
 					// triggers a smartContentChange to get the right charcode
 					// To test try http://www.w3.org/2002/09/tests/keys.html
-					Aloha.activeEditable.smartContentChange( event );
-				} );
+					Aloha.activeEditable.smartContentChange(event);
+				});
 
 				// handle shortcut keys
-				me.obj.keyup( function( event ) {
-					if ( event.keyCode === 27 ) {
+				me.obj.keyup(function (event) {
+					if (event.keyCode === 27) {
 						Aloha.deactivateEditable();
 						return false;
 					}
-				} );
+				});
 
 				// register the onSelectionChange Event with the Editable field
-				me.obj.contentEditableSelectionChange( function( event ) {
-					Selection.onChange( me.obj, event );
+				me.obj.contentEditableSelectionChange(function (event) {
+					Selection.onChange(me.obj, event);
 					return me.obj;
-				} );
+				});
 
 				// mark the editable as unmodified
 				me.setUnmodified();
@@ -278,19 +265,19 @@ define( [
 				// we don't do the sanitizing on aloha ready, since some plugins add elements into the content and bind
 				// events to it. If we sanitize by replacing the html, all events would get lost. TODO: think about a
 				// better solution for the sanitizing, without destroying the events  apply content handler to clean up content
-//				var content = me.obj.html();
-//				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
-//					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
-//				}
-//				content = ContentHandlerManager.handleContent( content, {
-//					contenthandler: Aloha.settings.contentHandler.initEditable
-//				} );
-//				me.obj.html( content );
+				//				var content = me.obj.html();
+				//				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
+				//					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
+				//				}
+				//				content = ContentHandlerManager.handleContent( content, {
+				//					contenthandler: Aloha.settings.contentHandler.initEditable
+				//				} );
+				//				me.obj.html( content );
 
 				me.snapshotContent = me.getContents();
 
 				// FF bug: check for empty editable contents ( no <br>; no whitespace )
-				if ( jQuery.browser.mozilla ) {
+				if (jQuery.browser.mozilla) {
 					me.initEmptyEditable();
 				}
 
@@ -302,9 +289,9 @@ define( [
 				// we do this in here and with a slight delay, because
 				// starting with FF 15, this would cause a JS error
 				// if done before the first DOM object is made contentEditable.
-				window.setTimeout( function() {
+				window.setTimeout(function () {
 					Aloha.disableObjectResizing();
-				}, 20 );
+				}, 20);
 
 				// throw a new event when the editable has been created
 				/**
@@ -313,8 +300,8 @@ define( [
 				 * @param {Event} e the event object
 				 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 				 */
-				Aloha.trigger( 'aloha-editable-created', [ me ] );
-			} );
+				Aloha.trigger('aloha-editable-created', [me]);
+			});
 		},
 
 		/**
@@ -342,7 +329,7 @@ define( [
 		 * @return {boolean } editable true if Aloha Editor can handle else false
 		 * @hide
 		 */
-		check: function() {
+		check: function () {
 			/* TODO check those elements
 			'map', 'meter', 'object', 'output', 'progress', 'samp',
 			'time', 'area', 'datalist', 'figure', 'kbd', 'keygen',
@@ -350,62 +337,52 @@ define( [
 			*/
 
 			// Extract El
-			var	me = this,
-			    obj = this.obj,
-			    el = obj.get( 0 ),
-			    nodeName = el.nodeName.toLowerCase(),
+			var me = this,
+				obj = this.obj,
+				el = obj.get(0),
+				nodeName = el.nodeName.toLowerCase(),
 
 				// supported elements
-			    textElements = [ 'a', 'abbr', 'address', 'article', 'aside',
-						'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
-						'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer',
-						'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i',
-						'ins', 'menu', 'nav', 'p', 'pre', 'q', 'ruby',
-						'section', 'small', 'span', 'strong', 'sub', 'sup',
-						'var' ],
-			    i, div;
+				textElements = ['a', 'abbr', 'address', 'article', 'aside', 'b', 'bdo', 'blockquote', 'cite', 'code', 'command', 'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'menu', 'nav', 'p', 'pre', 'q', 'ruby', 'section', 'small', 'span', 'strong', 'sub', 'sup', 'var'],
+				i, div;
 
-			for ( i = 0; i < textElements.length; ++i ) {
-				if ( nodeName === textElements[ i ] ) {
+			for (i = 0; i < textElements.length; ++i) {
+				if (nodeName === textElements[i]) {
 					return true;
 				}
 			}
 
 			// special handled elements
-			switch ( nodeName ) {
-				case 'label':
-				case 'button':
-					// TODO need some special handling.
-					break;
-				case 'textarea':
-				case 'input':
-					// Create a div alongside the textarea
-					div = jQuery( '<div id="' + this.getId() +
-							'-aloha" class="aloha-' + nodeName + '" />' )
-								.insertAfter( obj );
+			switch (nodeName) {
+			case 'label':
+			case 'button':
+				// TODO need some special handling.
+				break;
+			case 'textarea':
+			case 'input':
+				// Create a div alongside the textarea
+				div = jQuery('<div id="' + this.getId() + '-aloha" class="aloha-' + nodeName + '" />').insertAfter(obj);
 
-					// Resize the div to the textarea and
-					// Populate the div with the value of the textarea
-					// Then, hide the textarea
-					div.height( obj.height() )
-					   .width( obj.width() )
-					   .html( obj.val() );
+				// Resize the div to the textarea and
+				// Populate the div with the value of the textarea
+				// Then, hide the textarea
+				div.height(obj.height()).width(obj.width()).html(obj.val());
 
-					obj.hide();
+				obj.hide();
 
-					// Attach a onsubmit to the form to place the HTML of the
-					// div back into the textarea
-					obj.parents( 'form:first' ).submit( function() {
-						obj.val( me.getContents() );
-					} );
+				// Attach a onsubmit to the form to place the HTML of the
+				// div back into the textarea
+				obj.parents('form:first').submit(function () {
+					obj.val(me.getContents());
+				});
 
-					// Swap textarea reference with the new div
-					this.obj = div;
+				// Swap textarea reference with the new div
+				this.obj = div;
 
-					// Supported
-					return true;
-				default:
-					break;
+				// Supported
+				return true;
+			default:
+				break;
 			}
 
 			// the following elements are not supported
@@ -422,8 +399,8 @@ define( [
 		 *
 		 * @return void
 		 */
-		initPlaceholder: function() {
-			if ( Aloha.settings.placeholder && this.isEmpty() ) {
+		initPlaceholder: function () {
+			if (Aloha.settings.placeholder && this.isEmpty()) {
 				this.addPlaceholder();
 			}
 		},
@@ -433,10 +410,10 @@ define( [
 		 *
 		 * @return {Boolean}
 		 */
-		isEmpty: function() {
-			var editableTrimedContent = jQuery.trim( this.getContents() ),
-				onlyBrTag = ( editableTrimedContent === '<br>' ) ? true : false;
-			return ( editableTrimedContent.length === 0 || onlyBrTag );
+		isEmpty: function () {
+			var editableTrimedContent = jQuery.trim(this.getContents()),
+				onlyBrTag = (editableTrimedContent === '<br>') ? true : false;
+			return (editableTrimedContent.length === 0 || onlyBrTag);
 		},
 
 		/**
@@ -445,10 +422,10 @@ define( [
 		 *
 		 * @return {undefined}
 		 */
-		initEmptyEditable: function( ) {
+		initEmptyEditable: function () {
 			var obj = this.obj;
-			if ( this.empty( this.getContents() ) ) {
-				jQuery( obj ).prepend( '<br class="aloha-cleanme" />' );
+			if (this.empty(this.getContents())) {
+				jQuery(obj).prepend('<br class="aloha-cleanme" />');
 			}
 		},
 
@@ -457,32 +434,32 @@ define( [
 		 *
 		 * @return void
 		 */
-		addPlaceholder: function() {
-			var div = jQuery( '<div>' ),
-			    span = jQuery( '<span>' ),
-			    el,
-			    obj = this.obj;
+		addPlaceholder: function () {
+			var div = jQuery('<div>'),
+				span = jQuery('<span>'),
+				el,
+				obj = this.obj;
 
-			if ( GENTICS.Utils.Dom.allowsNesting( obj[0], div[0] ) ) {
+			if (GENTICS.Utils.Dom.allowsNesting(obj[0], div[0])) {
 				el = div;
 			} else {
 				el = span;
 			}
-			if ( jQuery( "." + this.placeholderClass, obj ).length !== 0 ) {
+			if (jQuery("." + this.placeholderClass, obj).length !== 0) {
 				return;
 			}
-			jQuery( obj ).append( el.addClass( this.placeholderClass ) );
+			jQuery(obj).append(el.addClass(this.placeholderClass));
 			jQuery.each(
-				Aloha.settings.placeholder,
-				function( selector, selectorConfig ) {
-					if ( obj.is( selector ) ) {
-						el.html( selectorConfig );
-					}
+			Aloha.settings.placeholder,
+
+			function (selector, selectorConfig) {
+				if (obj.is(selector)) {
+					el.html(selectorConfig);
 				}
-			);
+			});
 
 			// remove browser br
-			jQuery( 'br', obj ).remove();
+			jQuery('br', obj).remove();
 
 			// delete div, span, el;
 		},
@@ -496,24 +473,24 @@ define( [
 		 *
 		 * @return void
 		 */
-		removePlaceholder: function( obj, setCursor ) {
+		removePlaceholder: function (obj, setCursor) {
 			var placeholderClass = this.placeholderClass,
-			    range;
-			if ( jQuery("." + this.placeholderClass, obj ).length === 0 ) {
+				range;
+			if (jQuery("." + this.placeholderClass, obj).length === 0) {
 				return;
-			} 
+			}
 			// set the cursor // remove placeholder
-			if ( setCursor === true ) {
-				window.setTimeout( function() {
+			if (setCursor === true) {
+				window.setTimeout(function () {
 					range = new Selection.SelectionRange();
 					range.startContainer = range.endContainer = obj.get(0);
 					range.startOffset = range.endOffset = 0;
-					jQuery( '.' + placeholderClass, obj ).remove();
+					jQuery('.' + placeholderClass, obj).remove();
 					range.select();
-				
-				}, 100 );
+
+				}, 100);
 			} else {
-				jQuery( '.' + placeholderClass, obj ).remove();
+				jQuery('.' + placeholderClass, obj).remove();
 			}
 		},
 
@@ -521,41 +498,39 @@ define( [
 		 * destroy the editable
 		 * @return void
 		 */
-		destroy: function() {
+		destroy: function () {
 			// leave the element just to get sure
-			if ( this === Aloha.getActiveEditable() ) {
+			if (this === Aloha.getActiveEditable()) {
 				this.blur();
 			}
 
 			// special handled elements
-			switch ( this.originalObj.get(0).nodeName.toLowerCase() ) {
-				case 'label':
-				case 'button':
-					// TODO need some special handling.
-					break;
-				case 'textarea':
-				case 'input':
-					// restore content to original textarea
-					this.originalObj.val( this.getContents() );
-					this.obj.remove();
-					this.originalObj.show();
-					break;
-				default:
-					break;
+			switch (this.originalObj.get(0).nodeName.toLowerCase()) {
+			case 'label':
+			case 'button':
+				// TODO need some special handling.
+				break;
+			case 'textarea':
+			case 'input':
+				// restore content to original textarea
+				this.originalObj.val(this.getContents());
+				this.obj.remove();
+				this.originalObj.show();
+				break;
+			default:
+				break;
 			}
 
 			// now the editable is not ready any more
 			this.ready = false;
 
 			// remove the placeholder if needed.
-			this.removePlaceholder( this.obj );
+			this.removePlaceholder(this.obj);
 
 			// initialize the object and disable contentEditable
 			// unbind all events
 			// TODO should only unbind the specific handlers.
-			this.obj.removeClass( 'aloha-editable' )
-			    .contentEditable( false )
-			    .unbind( 'mousedown click dblclick focus keydown keypress keyup' );
+			this.obj.removeClass('aloha-editable').contentEditable(false).unbind('mousedown click dblclick focus keydown keypress keyup');
 
 			/* TODO remove this event, it should implemented as bind and unbind
 			// register the onSelectionChange Event with the Editable field
@@ -572,10 +547,10 @@ define( [
 			 * @param {Event} e the event object
 			 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 			 */
-			Aloha.trigger( 'aloha-editable-destroyed', [ this ] );
+			Aloha.trigger('aloha-editable-destroyed', [this]);
 
 			// finally register the editable with Aloha
-			Aloha.unregisterEditable( this );
+			Aloha.unregisterEditable(this);
 		},
 
 		/**
@@ -583,7 +558,7 @@ define( [
 		 * that it's contents have been saved
 		 * @method
 		 */
-		setUnmodified: function() {
+		setUnmodified: function () {
 			this.originalContent = this.getContents();
 		},
 
@@ -592,7 +567,7 @@ define( [
 		 * @method
 		 * @return boolean true if the editable has been modified, false otherwise
 		 */
-		isModified: function() {
+		isModified: function () {
 			return this.originalContent !== this.getContents();
 		},
 
@@ -601,32 +576,31 @@ define( [
 		 * @method
 		 * @return Aloha.Editable
 		 */
-		toString: function() {
+		toString: function () {
 			return 'Aloha.Editable';
 		},
 
 		/**
 		 * check whether the editable has been disabled
 		 */
-		isDisabled: function() {
-			return !this.obj.contentEditable() ||
-				this.obj.contentEditable() === 'false';
+		isDisabled: function () {
+			return !this.obj.contentEditable() || this.obj.contentEditable() === 'false';
 		},
 
 		/**
 		 * disable this editable
 		 * a disabled editable cannot be written on by keyboard
 		 */
-		disable: function() {
-			return this.isDisabled() || this.obj.contentEditable( false );
+		disable: function () {
+			return this.isDisabled() || this.obj.contentEditable(false);
 		},
 
 		/**
 		 * enable this editable
 		 * reenables a disabled editable to be writteable again
 		 */
-		enable: function() {
-			return this.isDisabled() && this.obj.contentEditable( true );
+		enable: function () {
+			return this.isDisabled() && this.obj.contentEditable(true);
 		},
 
 
@@ -635,7 +609,7 @@ define( [
 		 * disables all other active items
 		 * @method
 		 */
-		activate: function( e ) {
+		activate: function (e) {
 			// get active Editable before setting the new one.
 			var oldActive = Aloha.getActiveEditable();
 
@@ -643,7 +617,7 @@ define( [
 			// This flag will only be set to true before the removePlaceholder method
 			// is called since that method invokes a focus event which will again trigger
 			// this method. We want to avoid double invokation of this method.
-			if ( ignoreNextActivateEvent ) {
+			if (ignoreNextActivateEvent) {
 				ignoreNextActivateEvent = false;
 				return;
 			}
@@ -652,23 +626,22 @@ define( [
 			// in this case the "focus" event would be triggered on the parent element
 			// which actually shifts the focus away to it's parent. this if is here to
 			// prevent this situation
-			if ( e && e.type === 'focus' && oldActive !== null &&
-			     oldActive.obj.parent().get( 0 ) === e.currentTarget ) {
+			if (e && e.type === 'focus' && oldActive !== null && oldActive.obj.parent().get(0) === e.currentTarget) {
 				return;
 			}
 
 			// leave immediately if this is already the active editable
-			if ( this.isActive || this.isDisabled() ) {
+			if (this.isActive || this.isDisabled()) {
 				// we don't want parent editables to be triggered as well, so return false
 				return;
 			}
 
-			this.obj.addClass( 'aloha-editable-active' );
+			this.obj.addClass('aloha-editable-active');
 
-			Aloha.activateEditable( this );
+			Aloha.activateEditable(this);
 
 			ignoreNextActivateEvent = true;
-			this.removePlaceholder ( this.obj, true );
+			this.removePlaceholder(this.obj, true);
 			ignoreNextActivateEvent = false;
 
 			this.isActive = true;
@@ -681,10 +654,10 @@ define( [
 			 * as the currently active editable on it's second position
 			 */
 			// trigger a 'general' editableActivated event
-			Aloha.trigger( 'aloha-editable-activated', {
-				'oldActive' : oldActive,
-				'editable'  : this
-			} );
+			Aloha.trigger('aloha-editable-activated', {
+				'oldActive': oldActive,
+				'editable': this
+			});
 		},
 
 		/**
@@ -693,11 +666,11 @@ define( [
 		 * eg. when a table within an editable is selected
 		 * @hide
 		 */
-		blur: function() {
+		blur: function () {
 			this.obj.blur();
 			this.isActive = false;
 			this.initPlaceholder();
-			this.obj.removeClass( 'aloha-editable-active' );
+			this.obj.removeClass('aloha-editable-active');
 
 			/**
 			 * @event editableDeactivated fires after the editable has been activated by clicking on it.
@@ -705,12 +678,16 @@ define( [
 			 * @param {Event} e the event object
 			 * @param {Array} a an array which contains a reference to this editable
 			 */
-			Aloha.trigger( 'aloha-editable-deactivated', { editable : this } );
+			Aloha.trigger('aloha-editable-deactivated', {
+				editable: this
+			});
 
 			/**
 			 * @event smartContentChanged
 			 */
-			Aloha.activeEditable.smartContentChange( { type : 'blur' }, null );
+			Aloha.activeEditable.smartContentChange({
+				type: 'blur'
+			}, null);
 		},
 
 		/**
@@ -719,10 +696,9 @@ define( [
 		 * @return true if empty or string is null, false otherwise
 		 * @hide
 		 */
-		empty: function( str ) {
+		empty: function (str) {
 			// br is needed for chrome
-			return ( null === str ) ||
-				( jQuery.trim( str ) === '' || str === '<br/>' );
+			return (null === str) || (jQuery.trim(str) === '' || str === '<br/>');
 		},
 
 		/**
@@ -775,21 +751,23 @@ define( [
 		 * @param return as object or html string
 		 * @return contents of the editable
 		 */
-		setContents: function( content, asObject ) {
+		setContents: function (content, asObject) {
 			var reactivate = null;
 
-			if ( Aloha.getActiveEditable() === this ) {
+			if (Aloha.getActiveEditable() === this) {
 				Aloha.deactivateEditable();
 				reactivate = this;
 			}
 
-			this.obj.html( content );
+			this.obj.html(content);
 
-			if ( null !== reactivate ) {
+			if (null !== reactivate) {
 				reactivate.activate();
 			}
 
-			this.smartContentChange({type : 'set-contents'});
+			this.smartContentChange({
+				type: 'set-contents'
+			});
 
 			return asObject ? this.obj.contents() : contentSerializer(this.obj[0]);
 		},
@@ -799,8 +777,8 @@ define( [
 		 * @method
 		 * @return id of this editable
 		 */
-		getId: function() {
-			return this.obj.attr( 'id' );
+		getId: function () {
+			return this.obj.attr('id');
 		},
 
 		/**
@@ -817,42 +795,42 @@ define( [
 		 * @param {Event} event
 		 * @hide
 		 */
-		smartContentChange: function( event ) {
+		smartContentChange: function (event) {
 			var me = this,
-			    uniChar = null,
-			    re,
-			    match;
+				uniChar = null,
+				re,
+				match;
 
 			// ignore meta keys like crtl+v or crtl+l and so on
-			if ( event && ( event.metaKey || event.crtlKey || event.altKey ) ) {
+			if (event && (event.metaKey || event.crtlKey || event.altKey)) {
 				return false;
 			}
 
-			if ( event && event.originalEvent ) {
+			if (event && event.originalEvent) {
 				// regex to strip unicode
-				re = new RegExp( "U\\+(\\w{4})" );
-				match = re.exec( event.originalEvent.keyIdentifier );
+				re = new RegExp("U\\+(\\w{4})");
+				match = re.exec(event.originalEvent.keyIdentifier);
 
 				// Use keyIdentifier if available
-				if ( event.originalEvent.keyIdentifier && 1 === 2 ) {
+				if (event.originalEvent.keyIdentifier && 1 === 2) {
 					// @fixme: Because of "&& 1 === 2" above, this block is
 					// unreachable code
-					if ( match !== null ) {
-						uniChar = unescape( '%u' + match[1] );
+					if (match !== null) {
+						uniChar = unescape('%u' + match[1]);
 					}
-					if ( uniChar === null ) {
+					if (uniChar === null) {
 						uniChar = event.originalEvent.keyIdentifier;
 					}
 
-				// FF & Opera don't support keyIdentifier
+					// FF & Opera don't support keyIdentifier
 				} else {
 					// Use among browsers reliable which http://api.jquery.com/keypress
-					uniChar = ( this.keyCodeMap[ this.keyCode ] ||
-								String.fromCharCode( event.which ) || 'unknown' );
+					uniChar = (this.keyCodeMap[this.keyCode] || String.fromCharCode(event.which) || 'unknown');
 				}
 			}
 
 			var snapshot = null;
+
 			function getSnapshotContent() {
 				if (null == snapshot) {
 					snapshot = me.getSnapshotContent();
@@ -862,67 +840,66 @@ define( [
 
 			// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
 			// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
-			if ( jQuery.inArray( uniChar, this.sccDelimiters ) >= 0 ) {
-				clearTimeout( this.sccTimerIdle );
-				clearTimeout( this.sccTimerDelay );
+			if (jQuery.inArray(uniChar, this.sccDelimiters) >= 0) {
+				clearTimeout(this.sccTimerIdle);
+				clearTimeout(this.sccTimerDelay);
 
-				this.sccTimerDelay = window.setTimeout( function() {
-					Aloha.trigger( 'aloha-smart-content-changed', {
-						'editable'        : me,
-						'keyIdentifier'   : event.originalEvent.keyIdentifier,
-						'keyCode'         : event.keyCode,
-						'char'            : uniChar,
-						'triggerType'     : 'keypress', // keypress, timer, blur, paste
-						'getSnapshotContent' : getSnapshotContent
-					} );
+				this.sccTimerDelay = window.setTimeout(function () {
+					Aloha.trigger('aloha-smart-content-changed', {
+						'editable': me,
+						'keyIdentifier': event.originalEvent.keyIdentifier,
+						'keyCode': event.keyCode,
+						'char': uniChar,
+						'triggerType': 'keypress', // keypress, timer, blur, paste
+						'getSnapshotContent': getSnapshotContent
+					});
 
-					console.debug( 'Aloha.Editable',
-						'smartContentChanged: event type keypress triggered' );
-				}, this.sccDelay );
-			} else if ( event && event.type === 'paste' ) {
-				Aloha.trigger( 'aloha-smart-content-changed', {
-					'editable'        : me,
-					'keyIdentifier'   : null,
-					'keyCode'         : null,
-					'char'            : null,
-					'triggerType'     : 'paste',
-					'getSnapshotContent' : getSnapshotContent
-				} );
+					console.debug('Aloha.Editable', 'smartContentChanged: event type keypress triggered');
+				}, this.sccDelay);
+			} else if (event && event.type === 'paste') {
+				Aloha.trigger('aloha-smart-content-changed', {
+					'editable': me,
+					'keyIdentifier': null,
+					'keyCode': null,
+					'char': null,
+					'triggerType': 'paste',
+					'getSnapshotContent': getSnapshotContent
+				});
 
-			} else if ( event && event.type === 'blur' ) {
-				Aloha.trigger( 'aloha-smart-content-changed', {
-					'editable'        : me,
-					'keyIdentifier'   : null,
-					'keyCode'         : null,
-					'char'            : null,
-					'triggerType'     : 'blur',
-					'getSnapshotContent' : getSnapshotContent
-				} );
+			} else if (event && event.type === 'blur') {
+				Aloha.trigger('aloha-smart-content-changed', {
+					'editable': me,
+					'keyIdentifier': null,
+					'keyCode': null,
+					'char': null,
+					'triggerType': 'blur',
+					'getSnapshotContent': getSnapshotContent
+				});
 
-			} else if ( event && event.type === 'block-change' ) {
-				Aloha.trigger( 'aloha-smart-content-changed', {
-					'editable'        : me,
-					'keyIdentifier'   : null,
-					'keyCode'         : null,
-					'char'            : null,
-					'triggerType'     : 'block-change',
-					'getSnapshotContent' : getSnapshotContent
-				} );
+			} else if (event && event.type === 'block-change') {
+				Aloha.trigger('aloha-smart-content-changed', {
+					'editable': me,
+					'keyIdentifier': null,
+					'keyCode': null,
+					'char': null,
+					'triggerType': 'block-change',
+					'getSnapshotContent': getSnapshotContent
+				});
 
-			} else if ( uniChar !== null ) {
+			} else if (uniChar !== null) {
 				// in the rare case idle time is lower then delay time
-				clearTimeout( this.sccTimerDelay );
-				clearTimeout( this.sccTimerIdle );
-				this.sccTimerIdle = window.setTimeout( function() {
-					Aloha.trigger( 'aloha-smart-content-changed', {
-						'editable'        : me,
-						'keyIdentifier'   : null,
-						'keyCode'         : null,
-						'char'            : null,
-						'triggerType'     : 'idle',
-						'getSnapshotContent' : getSnapshotContent
-					} );
-				}, this.sccIdle );
+				clearTimeout(this.sccTimerDelay);
+				clearTimeout(this.sccTimerIdle);
+				this.sccTimerIdle = window.setTimeout(function () {
+					Aloha.trigger('aloha-smart-content-changed', {
+						'editable': me,
+						'keyIdentifier': null,
+						'keyCode': null,
+						'char': null,
+						'triggerType': 'idle',
+						'getSnapshotContent': getSnapshotContent
+					});
+				}, this.sccIdle);
 			}
 		},
 
@@ -931,12 +908,12 @@ define( [
 		 * @hide
 		 * @return snapshot of the editable
 		 */
-		getSnapshotContent: function() {
+		getSnapshotContent: function () {
 			var ret = this.snapshotContent;
 			this.snapshotContent = this.getContents();
 			return ret;
 		}
-	} );
+	});
 
 	/**
 	 * Sets the content serializer function.

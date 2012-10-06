@@ -25,17 +25,18 @@
  * recipients can access the Corresponding Source.
  */
 define(
-[ 'aloha/core', 'util/class'],
-function( Aloha, Class ) {
+['aloha/core', 'util/class'],
+
+function (Aloha, Class) {
 	"use strict";
-	
+
 	var
-//		Aloha = window.Aloha,
-//		Class = window.Class,
+	//		Aloha = window.Aloha,
+	//		Class = window.Class,
 	GENTICS = window.GENTICS;
 
-	Aloha.RepositoryObject = function() {};
-	
+	Aloha.RepositoryObject = function () {};
+
 	/**
 	 * @namespace Aloha.Repository
 	 * @class Document
@@ -76,34 +77,31 @@ function( Aloha, Class ) {
 	 *
 	 */
 	Aloha.RepositoryDocument = Class.extend({
-			_constructor: function (properties) {
-	
-				var p = properties;
-	
-				this.type = 'document';
-	
-				// Basic error checking for MUST attributes
-				if (!p.id ||
-					!p.name ||
-					!p.repositoryId
-				) {
-	//				Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
-					return;
-				}
-	
-				GENTICS.Utils.applyProperties(this, properties);
-	
-				this.baseType = 'document';
+		_constructor: function (properties) {
+
+			var p = properties;
+
+			this.type = 'document';
+
+			// Basic error checking for MUST attributes
+			if (!p.id || !p.name || !p.repositoryId) {
+				//				Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
+				return;
 			}
-	//		/**
-	//		 * Not implemented method to generate this JS API doc correctly.
-	//		 */
-	//		,empty = function() }
-	
-		});
-	
-	
-	
+
+			GENTICS.Utils.applyProperties(this, properties);
+
+			this.baseType = 'document';
+		}
+		//		/**
+		//		 * Not implemented method to generate this JS API doc correctly.
+		//		 */
+		//		,empty = function() }
+
+	});
+
+
+
 	/**
 	 * @namespace Aloha.Repository
 	 * @class Folder
@@ -137,31 +135,28 @@ function( Aloha, Class ) {
 	 *
 	 */
 	Aloha.RepositoryFolder = Class.extend({
-		
-		_constructor: function(properties) {
-	
+
+		_constructor: function (properties) {
+
 			var p = properties;
-		
+
 			this.type = 'folder';
-		
+
 			// Basic error checking for MUST attributes
-			if (!p.id ||
-				!p.name ||
-				!p.repositoryId
-			) {
-		//		Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
+			if (!p.id || !p.name || !p.repositoryId) {
+				//		Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
 				return;
 			}
-		
+
 			GENTICS.Utils.applyProperties(this, properties);
-		
+
 			this.baseType = 'folder';
-			
+
 		}
-	//	/**
-	//	* Not implemented method to generate this JS API doc correctly.
-	//	*/
-	//	,empty = function() {};
-	
+		//	/**
+		//	* Not implemented method to generate this JS API doc correctly.
+		//	*/
+		//	,empty = function() {};
+
 	});
 });

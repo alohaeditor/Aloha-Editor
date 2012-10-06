@@ -26,9 +26,10 @@
  */
 define(
 ['aloha/core', 'jquery', 'util/class', 'aloha/pluginmanager', 'aloha/console'],
-function(Aloha, jQuery, Class, PluginManager, console ) {
+
+function (Aloha, jQuery, Class, PluginManager, console) {
 	"use strict";
-	
+
 	/**
 	 * Abstract Plugin Object
 	 * @namespace Aloha
@@ -37,7 +38,7 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 	 * @param {String} pluginPrefix unique plugin prefix
 	 */
 	var Plugin = Class.extend({
-		
+
 		name: null,
 
 		/**
@@ -51,7 +52,7 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		 * @cfg {Object} settings the plugins settings stored in an object
 		 */
 		settings: {},
-		
+
 		/**
 		 * Names of other plugins which must be loaded in order for this plugin to
 		 * function.
@@ -59,7 +60,7 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		 */
 		dependencies: [],
 
-		_constructor: function( name ) {
+		_constructor: function (name) {
 			/**
 			 * Settings of the plugin
 			 */
@@ -73,19 +74,19 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		/**
 		 * @return true if dependencies satisfied, false otherwise
 		 */
-		checkDependencies: function() {
-			var 
-				dependenciesSatisfied = true, 
+		checkDependencies: function () {
+			var
+			dependenciesSatisfied = true,
 				that = this;
-			
-			jQuery.each(this.dependencies, function() {
-				
+
+			jQuery.each(this.dependencies, function () {
+
 				if (!Aloha.isPluginLoaded(this)) {
 					dependenciesSatisfied = false;
 					console.error('plugin.' + that.name, 'Required plugin "' + this + '" not found.');
 				}
 			});
-			
+
 			return dependenciesSatisfied;
 		},
 
@@ -94,7 +95,7 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		 * @return void
 		 * @hide
 		 */
-		init: function() {},
+		init: function () {},
 
 		/**
 		 * Get the configuration settings for an editable obj.
@@ -166,10 +167,10 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 				configSpecified = false,
 				that = this;
 
-			if ( this.settings.editables ) {
+			if (this.settings.editables) {
 				// check if the editable's selector matches and if so add its configuration to object configuration
-				jQuery.each( this.settings.editables, function (selector, selectorConfig) {
-					if ( obj.is(selector) ) {
+				jQuery.each(this.settings.editables, function (selector, selectorConfig) {
+					if (obj.is(selector)) {
 						configSpecified = true;
 						if (selectorConfig instanceof Array) {
 							configObj = [];
@@ -178,14 +179,14 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 							configObj = {};
 							configObj['aloha-editable-selector'] = selector;
 							for (var k in selectorConfig) {
-								if ( selectorConfig.hasOwnProperty(k) ) {
+								if (selectorConfig.hasOwnProperty(k)) {
 									if (selectorConfig[k] instanceof Array) {
 										//configObj[k] = [];
 										//configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
 										configObj[k] = selectorConfig[k];
 									} else if (typeof selectorConfig[k] === "object") {
 										configObj[k] = {};
-										configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);									
+										configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
 									} else {
 										configObj[k] = selectorConfig[k];
 									}
@@ -199,8 +200,8 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 			}
 
 			// fall back to default configuration
-			if ( !configSpecified ) {
-				if ( typeof this.settings.config === 'undefined' || !this.settings.config ) {
+			if (!configSpecified) {
+				if (typeof this.settings.config === 'undefined' || !this.settings.config) {
 					configObj = this.config;
 				} else {
 					configObj = this.settings.config;
@@ -215,7 +216,7 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		 * @param obj jQuery object to make clean
 		 * @return void
 		 */
-		makeClean: function ( obj ) {},
+		makeClean: function (obj) {},
 
 		/**
 		 * Make a system-wide unique id out of a plugin-wide unique id by prefixing it with the plugin prefix
@@ -224,8 +225,8 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		 * @hide
 		 * @deprecated
 		 */
-		getUID: function(id) {
-			console.deprecated ('plugin', 'getUID() is deprecated. Use plugin.name instead.');
+		getUID: function (id) {
+			console.deprecated('plugin', 'getUID() is deprecated. Use plugin.name instead.');
 			return this.name;
 		},
 
@@ -235,10 +236,10 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		 * @hide
 		 * @deprecated
 		 */
-		toString: function() {
+		toString: function () {
 			return this.name;
 		},
-		
+
 		/**
 		 * Log a plugin message to the logger
 		 * @param level log level
@@ -248,23 +249,23 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		 * @deprecated
 		 */
 		log: function (level, message) {
-			console.deprecated ('plugin', 'log() is deprecated. Use Aloha.console instead.');
+			console.deprecated('plugin', 'log() is deprecated. Use Aloha.console instead.');
 			console.log(level, this, message);
 		}
 	});
-	
+
 	/**
 	 * Static method used as factory to create plugins.
 	 * 
 	 * @param {String} pluginName name of the plugin
 	 * @param {Object} definition definition of the plugin, should have at least an "init" and "destroy" method.
 	 */
-	Plugin.create = function(pluginName, definition) {
-		
-		var pluginInstance = new ( Plugin.extend( definition ) )( pluginName );
-		pluginInstance.settings = jQuery.extendObjects( true, pluginInstance.defaults, Aloha.settings[pluginName] );
-		PluginManager.register( pluginInstance );
-		
+	Plugin.create = function (pluginName, definition) {
+
+		var pluginInstance = new(Plugin.extend(definition))(pluginName);
+		pluginInstance.settings = jQuery.extendObjects(true, pluginInstance.defaults, Aloha.settings[pluginName]);
+		PluginManager.register(pluginInstance);
+
 		return pluginInstance;
 	};
 
