@@ -24,10 +24,19 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(
-['aloha/core', 'jquery', 'util/class', 'aloha/pluginmanager', 'aloha/console'],
-
-function (Aloha, jQuery, Class, PluginManager, console) {
+define([
+	'aloha/core',
+	'jquery',
+	'util/class',
+	'aloha/pluginmanager',
+	'aloha/console'
+], function (
+	Aloha,
+	jQuery,
+	Class,
+	PluginManager,
+	console
+) {
 	"use strict";
 
 	/**
@@ -75,8 +84,7 @@ function (Aloha, jQuery, Class, PluginManager, console) {
 		 * @return true if dependencies satisfied, false otherwise
 		 */
 		checkDependencies: function () {
-			var
-			dependenciesSatisfied = true,
+			var dependenciesSatisfied = true,
 				that = this;
 
 			jQuery.each(this.dependencies, function () {
@@ -170,6 +178,7 @@ function (Aloha, jQuery, Class, PluginManager, console) {
 			if (this.settings.editables) {
 				// check if the editable's selector matches and if so add its configuration to object configuration
 				jQuery.each(this.settings.editables, function (selector, selectorConfig) {
+					var k;
 					if (obj.is(selector)) {
 						configSpecified = true;
 						if (selectorConfig instanceof Array) {
@@ -178,7 +187,7 @@ function (Aloha, jQuery, Class, PluginManager, console) {
 						} else if (typeof selectorConfig === "object") {
 							configObj = {};
 							configObj['aloha-editable-selector'] = selector;
-							for (var k in selectorConfig) {
+							for (k in selectorConfig) {
 								if (selectorConfig.hasOwnProperty(k)) {
 									if (selectorConfig[k] instanceof Array) {
 										//configObj[k] = [];
@@ -262,7 +271,7 @@ function (Aloha, jQuery, Class, PluginManager, console) {
 	 */
 	Plugin.create = function (pluginName, definition) {
 
-		var pluginInstance = new(Plugin.extend(definition))(pluginName);
+		var pluginInstance = new (Plugin.extend(definition))(pluginName);
 		pluginInstance.settings = jQuery.extendObjects(true, pluginInstance.defaults, Aloha.settings[pluginName]);
 		PluginManager.register(pluginInstance);
 

@@ -23,10 +23,21 @@
  * source code without the copy of the GNU GPL normally required,
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
- */"use strict";
-define(['aloha/core', 'aloha/registry', 'aloha/engine', 'util/dom', 'aloha/contenthandlermanager'],
-
-function (Aloha, Registry, Engine, Dom, ContentHandlerManager) {
+ */
+define([
+	'aloha/core',
+	'aloha/registry',
+	'aloha/engine',
+	'util/dom',
+	'aloha/contenthandlermanager'
+], function (
+	Aloha,
+	Registry,
+	Engine,
+	Dom,
+	ContentHandlerManager
+) {
+	"use strict";
 
 	//			Action: What the command does when executed via execCommand(). Every command defined
 	//			in CommandManager specification has an action defined for it in the relevant section. For example, 
@@ -75,7 +86,7 @@ function (Aloha, Registry, Engine, Dom, ContentHandlerManager) {
 			var evtObj = {
 				commandId: commandId,
 				preventDefault: false
-			}
+			};
 			Aloha.trigger('aloha-command-will-execute', evtObj);
 
 			if (evtObj.preventDefault === true) {
@@ -191,19 +202,20 @@ function (Aloha, Registry, Engine, Dom, ContentHandlerManager) {
 		},
 		querySupportedCommands: function () {
 
-			var
-			commands = [],
+			var commands = [],
 				command;
 
 			for (command in Engine.commands) {
-				commands.push(command);
+				if (Engine.commands.hasOwnProperty(command)) {
+					commands.push(command);
+				}
 			}
 			return commands;
 		}
 	};
 
 	// create an instance
-	CommandManager = new(Registry.extend(CommandManager))();
+	CommandManager = new (Registry.extend(CommandManager))();
 
 	/**
 	 * Executes a registered command.
@@ -213,7 +225,7 @@ function (Aloha, Registry, Engine, Dom, ContentHandlerManager) {
 	 * @param showUI has no effect for Aloha Editor and is only here because in spec...
 	 * @param value depends on the used command and it impementation 
 	 * @range optional a range on which the command will be executed if not specified 
-	 * 		  the current selection will be used as range
+	 *        the current selection will be used as range
 	 */
 	Aloha.execCommand = CommandManager.execCommand;
 
@@ -232,7 +244,7 @@ function (Aloha, Registry, Engine, Dom, ContentHandlerManager) {
 	 * If command is not enabled, return false.
 	 * @param command name of the command
 	 * @range optional a range on which the command will be executed if not specified 
-	 * 		  the current selection will be used as range
+	 *        the current selection will be used as range
 	 * @return true if command is indeterminate, otherwise false.
 	 */
 	Aloha.queryCommandIndeterm = CommandManager.queryCommandIndeterm;

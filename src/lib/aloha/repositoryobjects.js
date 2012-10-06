@@ -24,16 +24,16 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(
-['aloha/core', 'util/class'],
-
-function (Aloha, Class) {
+define([
+	'aloha/core',
+	'util/class'
+], function (
+	Aloha,
+	Class
+) {
 	"use strict";
 
-	var
-	//		Aloha = window.Aloha,
-	//		Class = window.Class,
-	GENTICS = window.GENTICS;
+	var	GENTICS = window.GENTICS;
 
 	Aloha.RepositoryObject = function () {};
 

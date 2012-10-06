@@ -24,14 +24,15 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(
-['jquery'],
-
-function (jQuery, undefined) {
+define([
+	'jquery'
+], function (
+	jQuery,
+	undefined
+) {
 	"use strict";
 
-	var
-	$ = jQuery;
+	var $ = jQuery;
 
 	return {
 		_eventHandlers: null,
@@ -50,7 +51,7 @@ function (jQuery, undefined) {
 			}
 			this._eventHandlers[eventType].push({
 				handler: handler,
-				scope: (scope ? scope : window)
+				scope: (scope || window)
 			});
 		},
 

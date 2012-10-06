@@ -23,12 +23,126 @@
  * source code without the copy of the GNU GPL normally required,
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
- */"use strict";
-define(
-['aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/console', 'PubSub', 'aloha/engine', 'aloha/ecma5shims', 'aloha/rangy-core'],
+ */
+define([
+	'aloha/core',
+	'jquery',
+	'util/class',
+	'util/range',
+	'util/arrays',
+	'util/strings',
+	'aloha/console',
+	'PubSub',
+	'aloha/engine',
+	'aloha/ecma5shims',
+	'aloha/rangy-core'
+], function (
+	Aloha,
+	jQuery,
+	Class,
+	Range,
+	Arrays,
+	Strings,
+	console,
+	PubSub,
+	Engine,
+	e5s
+) {
+	"use strict";
 
-function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine, e5s) {
 	var GENTICS = window.GENTICS;
+
+	function isCollapsedAndEmptyOrEndBr(rangeObject) {
+		var firstChild;
+		if (rangeObject.startContainer !== rangeObject.endContainer) {
+			return false;
+		}
+		// check whether the container starts in an element node
+		if (rangeObject.startContainer.nodeType != 1) {
+			return false;
+		}
+		firstChild = rangeObject.startContainer.firstChild;
+		return (!firstChild || (!firstChild.nextSibling && firstChild.nodeName == 'BR'));
+	}
+
+	function isCollapsedAndEndBr(rangeObject) {
+		if (rangeObject.startContainer !== rangeObject.endContainer) {
+			return false;
+		}
+		if (rangeObject.startContainer.nodeType != 1) {
+			return false;
+		}
+		return Engine.isEndBreak(rangeObject.startContainer);
+	}
+
+	var prevStartContext = null;
+	var prevEndContext = null;
+
+	function makeContextHtml(node, parents) {
+		var result = [],
+			parent,
+			len,
+			i;
+		if (1 === node.nodeType && node.nodeName !== 'BODY' && node.nodeName !== 'HTML') {
+			result.push(node.cloneNode(false).outerHTML);
+		} else {
+			result.push('#' + node.nodeType);
+		}
+		for (i = 0, len = parents.length; i < len; i++) {
+			parent = parents[i];
+			if (parent.nodeName === 'BODY' || parent.nodeName === 'HTML') {
+				// Although we limit the ancestors in most cases to the
+				// active editable, in some cases (copy&paste) the
+				// parent may be outside.
+				// On IE7 this means the following code may clone the
+				// HTML node too, which causes the browser to crash.
+				// On other browsers, this is just an optimization
+				// because the body and html elements should probably
+				// not be considered part of the context of an edit
+				// operation.
+				break;
+			}
+			result.push(parent.cloneNode(false).outerHTML);
+		}
+		return result.join('');
+	}
+
+	function getChangedContext(node, context) {
+		var until = Aloha.activeEditable ? Aloha.activeEditable.obj.parent()[0] : null;
+		var parents = jQuery(node).parentsUntil(until).get();
+		var html = makeContextHtml(node, parents);
+		var equal = (context && node === context.node && Arrays.equal(context.parents, parents) && html === context.html);
+		return equal ? null : {
+			node: node,
+			parents: parents,
+			html: html
+		};
+	}
+
+	function triggerSelectionContextChanged(rangeObject, event) {
+		var startContainer = rangeObject.startContainer;
+		var endContainer = rangeObject.endContainer;
+		if (!startContainer || !endContainer) {
+			console.warn("aloha/selection", "encountered range object without start or end container");
+			return;
+		}
+		var startContext = getChangedContext(startContainer, prevStartContext);
+		var endContext = getChangedContext(endContainer, prevEndContext);
+		if (!startContext && !endContext) {
+			return;
+		}
+		prevStartContext = startContext;
+		prevEndContext = endContext;
+
+		/**
+		 * @api documented in the guides
+		 */
+		PubSub.pub('aloha.selection.context-change', {
+			range: rangeObject,
+			event: event
+		});
+	}
+
 	/**
 	 * @namespace Aloha
 	 * @class Selection
@@ -378,9 +492,8 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 			if (visible !== 'undefined') {
 				if (visible === 'true') {
 					return true;
-				} else {
-					return false;
 				}
+				return false;
 			}
 			return false;
 		},
@@ -472,9 +585,7 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 			this.inselection = false;
 
 			// before getting the selection tree, we do a cleanup
-			if (GENTICS.Utils.Dom.doCleanup({
-				'merge': true
-			}, rangeObject)) {
+			if (GENTICS.Utils.Dom.doCleanup({ 'merge': true }, rangeObject)) {
 				rangeObject.update();
 				rangeObject.select();
 			}
@@ -502,7 +613,8 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 					startOffset = false,
 					endOffset = false,
 					collapsedFound = false,
-					i, elementsLength,
+					i,
+				    elementsLength,
 					noneFound = false,
 					partialFound = false,
 					fullFound = false;
@@ -669,8 +781,7 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 		 * @hide
 		 */
 		isRangeObjectWithinMarkup: function (rangeObject, startOrEnd, markupObject, tagComparator, limitObject) {
-			var
-			domObj = !startOrEnd ? rangeObject.startContainer : rangeObject.endContainer,
+			var domObj = !startOrEnd ? rangeObject.startContainer : rangeObject.endContainer,
 				that = this,
 				parents = jQuery(domObj).parents(),
 				returnVal = false,
@@ -742,9 +853,8 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 					return false;
 				}
 				return true;
-			} else {
-				Aloha.Log.debug(this, 'only element nodes (nodeType == 1) can be compared');
 			}
+			Aloha.Log.debug(this, 'only element nodes (nodeType == 1) can be compared');
 			return false;
 		},
 
@@ -766,9 +876,8 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 					return false;
 				}
 				return true;
-			} else {
-				Aloha.Log.debug(this, 'only element nodes (nodeType == 1) can be compared');
 			}
+			Aloha.Log.debug(this, 'only element nodes (nodeType == 1) can be compared');
 			return false;
 		},
 
@@ -797,15 +906,18 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 		 * @hide
 		 */
 		changeMarkup: function (rangeObject, markupObject, tagComparator) {
-			var
-			tagName = markupObject[0].tagName.toLowerCase(),
-				newCAC, limitObject,
+			var tagName = markupObject[0].tagName.toLowerCase(),
+				newCAC,
+			    limitObject,
 				backupRangeObject,
 				relevantMarkupObjectsAtSelectionStart = this.isRangeObjectWithinMarkup(rangeObject, false, markupObject, tagComparator, limitObject),
 				relevantMarkupObjectsAtSelectionEnd = this.isRangeObjectWithinMarkup(rangeObject, true, markupObject, tagComparator, limitObject),
-				nextSibling, relevantMarkupObjectAfterSelection,
-				prevSibling, relevantMarkupObjectBeforeSelection,
+				nextSibling,
+			    relevantMarkupObjectAfterSelection,
+				prevSibling,
+			    relevantMarkupObjectBeforeSelection,
 				extendedRangeObject;
+			var parentElement;
 
 			// if the element is a replacing element (like p/h1/h2/h3/h4/h5/h6...), which must not wrap each other
 			// use a clone of rangeObject
@@ -827,10 +939,9 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 
 				// store the information, that the markupObject can be replaced (not must be!!) inside the jQuery markup object
 				markupObject.isReplacingElement = true;
-			}
-			// if the element is NOT a replacing element, then something needs to be selected, otherwise it can not be wrapped
-			// therefor the method can return false, if nothing is selected ( = rangeObject is collapsed)
-			else {
+			} else {
+				// if the element is NOT a replacing element, then something needs to be selected, otherwise it can not be wrapped
+				// therefor the method can return false, if nothing is selected ( = rangeObject is collapsed)
 				if (rangeObject.isCollapsed()) {
 					Aloha.Log.debug(this, 'early returning from applying markup because nothing is currently selected');
 					return false;
@@ -845,7 +956,7 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 			}
 
 			if (!markupObject.isReplacingElement && rangeObject.startOffset === 0) { // don't care about replacers, because they never extend
-				if (prevSibling = this.getTextNodeSibling(false, rangeObject.commonAncestorContainer.parentNode, rangeObject.startContainer)) {
+				if (null != (prevSibling = this.getTextNodeSibling(false, rangeObject.commonAncestorContainer.parentNode, rangeObject.startContainer))) {
 					relevantMarkupObjectBeforeSelection = this.isRangeObjectWithinMarkup({
 						startContainer: prevSibling,
 						startOffset: 0
@@ -853,7 +964,7 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 				}
 			}
 			if (!markupObject.isReplacingElement && (rangeObject.endOffset === rangeObject.endContainer.length)) { // don't care about replacers, because they never extend
-				if (nextSibling = this.getTextNodeSibling(true, rangeObject.commonAncestorContainer.parentNode, rangeObject.endContainer)) {
+				if (null != (nextSibling = this.getTextNodeSibling(true, rangeObject.commonAncestorContainer.parentNode, rangeObject.endContainer))) {
 					relevantMarkupObjectAfterSelection = this.isRangeObjectWithinMarkup({
 						startContainer: nextSibling,
 						startOffset: 0
@@ -869,19 +980,15 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 				this.prepareForRemoval(rangeObject.getSelectionTree(), markupObject, tagComparator);
 				jQuery(relevantMarkupObjectsAtSelectionStart).addClass('preparedForRemoval');
 				this.insertCroppedMarkups(relevantMarkupObjectsAtSelectionStart, rangeObject, false, tagComparator);
-			}
-
-			// Alternative B: from markup to markup:
-			// remove selected markup (=split existing markup if single, shrink if two different)
-			else if (!markupObject.isReplacingElement && relevantMarkupObjectsAtSelectionStart && relevantMarkupObjectsAtSelectionEnd) {
+			} else if (!markupObject.isReplacingElement && relevantMarkupObjectsAtSelectionStart && relevantMarkupObjectsAtSelectionEnd) {
+				// Alternative B: from markup to markup:
+				// remove selected markup (=split existing markup if single, shrink if two different)
 				Aloha.Log.info(this, 'markup 2 markup');
 				this.prepareForRemoval(rangeObject.getSelectionTree(), markupObject, tagComparator);
 				this.splitRelevantMarkupObject(relevantMarkupObjectsAtSelectionStart, relevantMarkupObjectsAtSelectionEnd, rangeObject, tagComparator);
-			}
-
-			// Alternative C: from no-markup to markup OR with next2markup:
-			// new markup is wrapped from selection start to end of originalmarkup, original is remove afterwards
-			else if (!markupObject.isReplacingElement && ((!relevantMarkupObjectsAtSelectionStart && relevantMarkupObjectsAtSelectionEnd) || relevantMarkupObjectAfterSelection || relevantMarkupObjectBeforeSelection)) { //
+			} else if (!markupObject.isReplacingElement && ((!relevantMarkupObjectsAtSelectionStart && relevantMarkupObjectsAtSelectionEnd) || relevantMarkupObjectAfterSelection || relevantMarkupObjectBeforeSelection)) { //
+				// Alternative C: from no-markup to markup OR with next2markup:
+				// new markup is wrapped from selection start to end of originalmarkup, original is remove afterwards
 				Aloha.Log.info(this, 'non-markup 2 markup OR with next2markup');
 				// move end of rangeObject to end of relevant markups
 				if (relevantMarkupObjectBeforeSelection && relevantMarkupObjectAfterSelection) {
@@ -915,10 +1022,8 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 				} else {
 					this.extendExistingMarkupWithSelection(relevantMarkupObjectsAtSelectionEnd, rangeObject, true, tagComparator);
 				}
-			}
-
-			// Alternative D: no-markup to no-markup: easy
-			else if (markupObject.isReplacingElement || (!relevantMarkupObjectsAtSelectionStart && !relevantMarkupObjectsAtSelectionEnd && !relevantMarkupObjectBeforeSelection && !relevantMarkupObjectAfterSelection)) {
+			} else if (markupObject.isReplacingElement || (!relevantMarkupObjectsAtSelectionStart && !relevantMarkupObjectsAtSelectionEnd && !relevantMarkupObjectBeforeSelection && !relevantMarkupObjectAfterSelection)) {
+				// Alternative D: no-markup to no-markup: easy
 				Aloha.Log.info(this, 'non-markup 2 non-markup');
 
 				// workaround to keep the caret at the right position if it's an empty element
@@ -948,29 +1053,28 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 					backupRangeObject.startOffset = 0;
 					backupRangeObject.endOffset = 0;
 					return;
-				} else {
-					this.applyMarkup(rangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator, {
-						setRangeObject2NewMarkup: true
-					});
-					backupRangeObject.startContainer = rangeObject.startContainer;
-					backupRangeObject.endContainer = rangeObject.endContainer;
-					backupRangeObject.startOffset = rangeObject.startOffset;
-					backupRangeObject.endOffset = rangeObject.endOffset;
 				}
+				this.applyMarkup(rangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator, {
+					setRangeObject2NewMarkup: true
+				});
+				backupRangeObject.startContainer = rangeObject.startContainer;
+				backupRangeObject.endContainer = rangeObject.endContainer;
+				backupRangeObject.startOffset = rangeObject.startOffset;
+				backupRangeObject.endOffset = rangeObject.endOffset;
 			}
 
 			if (markupObject.isReplacingElement) {
 				//Check if the startContainer is one of the zapped elements
 				if (backupRangeObject && backupRangeObject.startContainer.className && backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1) {
 					//var parentElement = jQuery(backupRangeObject.startContainer).closest(markupObject[0].tagName).get(0);
-					var parentElement = jQuery(backupRangeObject.startContainer).parents(markupObject[0].tagName).get(0);
+					parentElement = jQuery(backupRangeObject.startContainer).parents(markupObject[0].tagName).get(0);
 					backupRangeObject.startContainer = parentElement;
 					rangeObject.startContainer = parentElement;
 				}
 				//check if the endContainer is one of the zapped elements
 				if (backupRangeObject && backupRangeObject.endContainer.className && backupRangeObject.endContainer.className.indexOf('preparedForRemoval') > -1) {
 					//var parentElement = jQuery(backupRangeObject.endContainer).closest(markupObject[0].tagName).get(0);
-					var parentElement = jQuery(backupRangeObject.endContainer).parents(markupObject[0].tagName).get(0);
+					parentElement = jQuery(backupRangeObject.endContainer).parents(markupObject[0].tagName).get(0);
 					backupRangeObject.endContainer = parentElement;
 					rangeObject.endContainer = parentElement;
 				}
@@ -1076,8 +1180,7 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 		 * @hide
 		 */
 		intersectRelevantMarkupObjects: function (relevantMarkupObjectsAtSelectionStart, relevantMarkupObjectsAtSelectionEnd) {
-			var intersection = false,
-				i, elStart, j, elEnd, relMarkupStart, relMarkupEnd;
+			var intersection = false, i, elStart, j, elEnd, relMarkupStart, relMarkupEnd;
 			if (!relevantMarkupObjectsAtSelectionStart || !relevantMarkupObjectsAtSelectionEnd) {
 				return intersection; // we can only intersect, if we have to arrays!
 			}
@@ -1257,8 +1360,7 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 		 */
 		applyMarkup: function (selectionTree, rangeObject, markupObject, tagComparator, options) {
 			var optimizedSelectionTree, i, el, breakpoint;
-
-			options = options ? options : {};
+			options = options || {};
 			// first same tags from within fully selected nodes for removal
 			this.prepareForRemoval(selectionTree, markupObject, tagComparator);
 
@@ -1323,8 +1425,7 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 				};
 				break;
 
-			case 'textLevelSemantics':
-				/* falls through */
+			//case 'textLevelSemantics' covered by default
 			default:
 				result = function (domobj, markupObject) {
 					return that.standardTextLevelSemanticsComparator(domobj, markupObject);
@@ -1343,8 +1444,7 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 		 * @hide
 		 */
 		prepareForRemoval: function (selectionTree, markupObject, tagComparator) {
-			var that = this,
-				i, el;
+			var that = this, i, el;
 
 			// check if a comparison method was passed as parameter ...
 			if (typeof tagComparator !== 'undefined' && typeof tagComparator !== 'function') {
@@ -1391,9 +1491,9 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 				textNode2Start,
 				textnodes,
 				newMarkup,
-				i, el, middleText;
-
-
+				i,
+			    el,
+			    middleText;
 
 			Aloha.Log.debug(this, 'The formatting <' + markupObject[0].tagName + '> will be wrapped around the selection');
 
@@ -1510,15 +1610,14 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 		 * @hide
 		 */
 		getTextNodeSibling: function (previousOrNext, commonAncestorContainer, currentTextNode) {
-			var textNodes = jQuery(commonAncestorContainer).textNodes(true),
-				newIndex, index;
+			var textNodes = jQuery(commonAncestorContainer).textNodes(true), newIndex, index;
 
 			index = textNodes.index(currentTextNode);
 			if (index == -1) { // currentTextNode was not found
 				return false;
 			}
 			newIndex = index + (!previousOrNext ? -1 : 1);
-			return textNodes[newIndex] ? textNodes[newIndex] : false;
+			return textNodes[newIndex] || false;
 		},
 
 		/**
@@ -1533,8 +1632,10 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 				outerGroupIndex = 0,
 				innerGroupIndex = 0,
 				that = this,
-				i, j,
-				endPosition, startPosition;
+				i,
+			    j,
+				endPosition,
+			    startPosition;
 
 			if (typeof tagComparator === 'undefined') {
 				tagComparator = function (domobj, markupObject) {
@@ -1554,9 +1655,8 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 						groupMap[outerGroupIndex].elements[innerGroupIndex] = selectionTree[i];
 						outerGroupIndex++;
 
-					} else
-					// now check, if the children of our item could be wrapped all together by the markup object
-					if (this.canMarkupBeApplied2ElementAsWhole([selectionTree[i]], markupObject)) {
+					} else if (this.canMarkupBeApplied2ElementAsWhole([selectionTree[i]], markupObject)) {
+						// now check, if the children of our item could be wrapped all together by the markup object
 						// if yes, add it to the current group
 						if (groupMap[outerGroupIndex] === undefined) {
 							groupMap[outerGroupIndex] = {};
@@ -1725,9 +1825,10 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 		 * @hide
 		 */
 		mayInsertTag: function (tagName) {
+			var i;
 			if (typeof this.rangeObject.unmodifiableMarkupAtStart == 'object') {
 				// iterate over all DOM elements outside of the editable part
-				for (var i = 0; i < this.rangeObject.unmodifiableMarkupAtStart.length; ++i) {
+				for (i = 0; i < this.rangeObject.unmodifiableMarkupAtStart.length; ++i) {
 					// check whether an element may not wrap the given
 					if (!this.canTag1WrapTag2(this.rangeObject.unmodifiableMarkupAtStart[i].nodeName, tagName)) {
 						// found a DOM element which forbids to insert the given tag, we are done
@@ -1737,10 +1838,9 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 
 				// all of the found DOM elements allow inserting the given tag
 				return true;
-			} else {
-				Aloha.Log.warn(this, 'Unable to determine whether tag ' + tagName + ' may be inserted');
-				return true;
 			}
+			Aloha.Log.warn(this, 'Unable to determine whether tag ' + tagName + ' may be inserted');
+			return true;
 		},
 
 		/**
@@ -1927,11 +2027,11 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 				this.markupEffectiveAtStart = [];
 				this.unmodifiableMarkupAtStart = [];
 
-				var
-				parents = this.getStartContainerParents(),
+				var parents = this.getStartContainerParents(),
 					limitFound = false,
 					splitObjectWasSet,
-					i, el;
+					i,
+				    el;
 
 				for (i = 0; i < parents.length; i++) {
 					el = parents[i];
@@ -1962,7 +2062,10 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 				if (Aloha.editables && Aloha.editables.length > 0) {
 					var parents = this.getStartContainerParents(),
 						editables = Aloha.editables,
-						i, el, j, editable;
+						i,
+					    el,
+					    j,
+					    editable;
 					for (i = 0; i < parents.length; i++) {
 						el = parents[i];
 						for (j = 0; j < editables.length; j++) {
@@ -2256,7 +2359,7 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 	 * @param window optional - specifices the window to get the selection of
 	 */
 	Aloha.getSelection = function (target) {
-		var target = (target !== document || target !== window) ? window : target;
+		target = (target !== document || target !== window) ? window : target;
 		// Aloha.Selection.refresh()
 		// implement Aloha Selection 
 		// TODO cache
@@ -2279,98 +2382,6 @@ function (Aloha, jQuery, Class, Range, Arrays, Strings, console, PubSub, Engine,
 
 	var selection = new Selection();
 	Aloha.Selection = selection;
-
-
-	function isCollapsedAndEmptyOrEndBr(rangeObject) {
-		var firstChild;
-		if (rangeObject.startContainer !== rangeObject.endContainer) {
-			return false;
-		}
-		// check whether the container starts in an element node
-		if (rangeObject.startContainer.nodeType != 1) {
-			return false;
-		}
-		firstChild = rangeObject.startContainer.firstChild;
-		return (!firstChild || (!firstChild.nextSibling && firstChild.nodeName == 'BR'));
-	}
-
-	function isCollapsedAndEndBr(rangeObject) {
-		if (rangeObject.startContainer !== rangeObject.endContainer) {
-			return false;
-		}
-		if (rangeObject.startContainer.nodeType != 1) {
-			return false;
-		}
-		return Engine.isEndBreak(rangeObject.startContainer);
-	}
-
-	var prevStartContext = null;
-	var prevEndContext = null;
-
-	function makeContextHtml(node, parents) {
-		var result = [],
-			parent,
-			len,
-			i;
-		if (1 === node.nodeType && node.nodeName !== 'BODY' && node.nodeName !== 'HTML') {
-			result.push(node.cloneNode(false).outerHTML);
-		} else {
-			result.push('#' + node.nodeType);
-		}
-		for (i = 0, len = parents.length; i < len; i++) {
-			parent = parents[i];
-			if (parent.nodeName === 'BODY' || parent.nodeName === 'HTML') {
-				// Although we limit the ancestors in most cases to the
-				// active editable, in some cases (copy&paste) the
-				// parent may be outside.
-				// On IE7 this means the following code may clone the
-				// HTML node too, which causes the browser to crash.
-				// On other browsers, this is just an optimization
-				// because the body and html elements should probably
-				// not be considered part of the context of an edit
-				// operation.
-				break;
-			}
-			result.push(parent.cloneNode(false).outerHTML);
-		}
-		return result.join('');
-	}
-
-	function getChangedContext(node, context) {
-		var until = Aloha.activeEditable ? Aloha.activeEditable.obj.parent()[0] : null;
-		var parents = jQuery(node).parentsUntil(until).get();
-		var html = makeContextHtml(node, parents);
-		var equal = (context && node === context.node && Arrays.equal(context.parents, parents) && html === context.html);
-		return equal ? null : {
-			node: node,
-			parents: parents,
-			html: html
-		};
-	}
-
-	function triggerSelectionContextChanged(rangeObject, event) {
-		var startContainer = rangeObject.startContainer;
-		var endContainer = rangeObject.endContainer;
-		if (!startContainer || !endContainer) {
-			console.warn("aloha/selection", "encountered range object without start or end container");
-			return;
-		}
-		var startContext = getChangedContext(startContainer, prevStartContext);
-		var endContext = getChangedContext(endContainer, prevEndContext);
-		if (!startContext && !endContext) {
-			return;
-		}
-		prevStartContext = startContext;
-		prevEndContext = endContext;
-
-		/**
-		 * @api documented in the guides
-		 */
-		PubSub.pub('aloha.selection.context-change', {
-			range: rangeObject,
-			event: event
-		});
-	}
 
 	return selection;
 });

@@ -24,13 +24,16 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(
-
-['jquery', 'aloha/pluginmanager'],
-
-function (jQuery, PluginManager) {
+define([
+	'jquery',
+	'aloha/pluginmanager'
+], function (
+	jQuery,
+	PluginManager
+) {
 	"use strict";
 
+	var Aloha = window.Aloha;
 	//----------------------------------------
 	// Private variables
 	//----------------------------------------
@@ -159,10 +162,10 @@ function (jQuery, PluginManager) {
 
 			// check browser version on init
 			// this has to be revamped, as
-			if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4
-			jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9 || // FF 3.5
-			jQuery.browser.msie && jQuery.browser.version < 7 || // IE 7
-			jQuery.browser.opera && jQuery.browser.version < 11) { // right now, Opera needs some work
+			if ((jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5) // Chrome/Safari 4
+			         || (jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9) // FF 3.5
+				     || (jQuery.browser.msie && jQuery.browser.version < 7) // IE 7
+				     || (jQuery.browser.opera && jQuery.browser.version < 11)) { // right now, Opera needs some work
 				if (window.console && window.console.log) {
 					window.console.log('Your browser is not supported.');
 				}
@@ -237,11 +240,12 @@ function (jQuery, PluginManager) {
 		 * @return void
 		 */
 		initGui: function (next) {
+			var i, editablesLength;
 
 			Aloha.RepositoryManager.init();
 
 			// activate registered editables
-			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
+			for (i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
 				if (!Aloha.editables[i].ready) {
 					Aloha.editables[i].init();
 				}
@@ -257,9 +261,10 @@ function (jQuery, PluginManager) {
 		 * @return void
 		 */
 		activateEditable: function (editable) {
+			var i;
 
 			// Don't cache Aloha.editables.length since editables may be removed on blur.
-			for (var i = 0; i < Aloha.editables.length; i++) {
+			for (i = 0; i < Aloha.editables.length; i++) {
 				if (Aloha.editables[i] != editable && Aloha.editables[i].isActive) {
 					Aloha.editables[i].blur();
 				}
@@ -297,6 +302,7 @@ function (jQuery, PluginManager) {
 		 * @return {Aloha.Editable} editable
 		 */
 		getEditableById: function (id) {
+			var i, editablesLength;
 
 			// if the element is a textarea than route to the editable div
 			if (jQuery('#' + id).get(0).nodeName.toLowerCase() === 'textarea') {
@@ -304,7 +310,7 @@ function (jQuery, PluginManager) {
 			}
 
 			// serach all editables for id
-			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
+			for (i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
 				if (Aloha.editables[i].getId() == id) {
 					return Aloha.editables[i];
 				}
@@ -319,7 +325,9 @@ function (jQuery, PluginManager) {
 		 * @return {boolean}
 		 */
 		isEditable: function (obj) {
-			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
+			var i, editablesLength;
+
+			for (i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
 				if (Aloha.editables[i].originalObj.get(0) === obj) {
 					return true;
 				}
@@ -359,7 +367,9 @@ function (jQuery, PluginManager) {
 		 * @hide
 		 */
 		log: function (level, component, message) {
-			if (typeof Aloha.Log !== "undefined") Aloha.Log.log(level, component, message);
+			if (typeof Aloha.Log !== "undefined") {
+				Aloha.Log.log(level, component, message);
+			}
 		},
 
 		/**
@@ -399,8 +409,10 @@ function (jQuery, PluginManager) {
 		 * @return {boolean} true when at least one editable was modified, false if not
 		 */
 		isModified: function () {
+			var i;
+
 			// check if something needs top be saved
-			for (var i = 0; i < Aloha.editables.length; i++) {
+			for (i = 0; i < Aloha.editables.length; i++) {
 				if (Aloha.editables[i].isModified && Aloha.editables[i].isModified()) {
 					return true;
 				}
@@ -462,8 +474,8 @@ function (jQuery, PluginManager) {
 					document.execCommand('enableObjectResizing', false, false);
 					Aloha.Log.log('enableObjectResizing disabled.');
 				}
-			} catch (e) {
-				Aloha.Log.error(e, 'Could not disable enableObjectResizing');
+			} catch (e2) {
+				Aloha.Log.error(e2, 'Could not disable enableObjectResizing');
 				// this is just for others, who will not support disabling enableObjectResizing
 			}
 		}

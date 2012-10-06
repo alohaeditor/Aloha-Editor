@@ -30,10 +30,17 @@
  * Instead use the define(...) mechanism to define a module and to
  * import it where you need it.
  */
-define(['aloha/core', 'aloha/selection', 'jquery', 'aloha/console'], function (Aloha,
-Selection,
-jQuery,
-console) {
+define([
+	'aloha/core',
+	'aloha/selection',
+	'jquery',
+	'aloha/console'
+], function (
+	Aloha,
+	Selection,
+	jQuery,
+	console
+) {
 	'use strict';
 
 	var XMLSerializer = window.XMLSerializer;
@@ -48,9 +55,7 @@ console) {
 	 * @param offset character offset from the start where the content should be inserted
 	 */
 	jQuery.fn.between = function (content, offset) {
-		var
-		offSize,
-		fullText;
+		var offSize, fullText;
 
 		if (this[0].nodeType !== 3) {
 			// we are not in a text node, just insert the element at the corresponding position
@@ -104,10 +109,12 @@ console) {
 			if (typeof $el[0].isContentEditable === 'undefined') {
 				console.warn('Could not determine whether the is editable or not. I assume it is.');
 				return true;
-			} else {
-				return $el[0].isContentEditable;
 			}
-		} else if (b === '') {
+
+			return $el[0].isContentEditable;
+		}
+
+		if (b === '') {
 			$el.removeAttr(ce);
 		} else {
 			if (b && b !== 'false') {
@@ -135,7 +142,7 @@ console) {
 			$this.each(function () {
 				// create a new aloha editable object for each passed object
 				if (!Aloha.isEditable(this)) {
-					new Aloha.Editable(jQuery(this));
+					new Aloha.Editable(jQuery(this)).init();
 				}
 			});
 		});
@@ -207,23 +214,20 @@ console) {
 	 * @return {String} outerHtml
 	 */
 	jQuery.fn.outerHtml = jQuery.fn.outerHtml || function () {
-		var
-		$el = jQuery(this),
+		var $el = jQuery(this),
 			el = $el.get(0);
 		if (typeof el.outerHTML != 'undefined') {
 			return el.outerHTML;
-		} else {
-			try {
-				// Gecko-based browsers, Safari, Opera.
-				return (new XMLSerializer()).serializeToString(el);
-			} catch (e) {
-				try {
-					// Internet Explorer.
-					return el.xml;
-				} catch (e) {}
-			}
 		}
-
+		try {
+			// Gecko-based browsers, Safari, Opera.
+			return (new XMLSerializer()).serializeToString(el);
+		} catch (e) {
+			try {
+				// Internet Explorer.
+				return el.xml;
+			} catch (e2) {}
+		}
 	};
 
 	jQuery.fn.zap = function () {
@@ -233,14 +237,13 @@ console) {
 	};
 
 	jQuery.fn.textNodes = function (excludeBreaks, includeEmptyTextNodes) {
-		var
-		ret = [],
+		var ret = [],
 			doSomething = function (el) {
-				if (
-				(el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) || (el.nodeType === 3 && includeEmptyTextNodes) || (el.nodeName == "BR" && !excludeBreaks)) {
+				var i, childLength;
+				if ((el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) || (el.nodeType === 3 && includeEmptyTextNodes) || (el.nodeName == "BR" && !excludeBreaks)) {
 					ret.push(el);
 				} else {
-					for (var i = 0, childLength = el.childNodes.length; i < childLength; ++i) {
+					for (i = 0, childLength = el.childNodes.length; i < childLength; ++i) {
 						doSomething(el.childNodes[i]);
 					}
 				}
@@ -254,19 +257,21 @@ console) {
 	/**
 	 * extendObjects is like jQuery.extend, but it does not extend arrays
 	 */
-	jQuery.extendObjects = jQuery.fn.extendObjects = function () {
+	jQuery.extendObjects = jQuery.fn.extendObjects = function (arg1, arg2) {
 		var options, name, src, copy, copyIsArray, clone,
-		target = arguments[0] || {},
-		i = 1,
+		    start = 1,
+		    target = arg1 || {},
 			length = arguments.length,
-			deep = false;
+		    deep = false,
+		    i;
+
 
 		// Handle a deep copy situation
 		if (typeof target === "boolean") {
 			deep = target;
-			target = arguments[1] || {};
+			target = arg2 || {};
 			// skip the boolean and the target
-			i = 2;
+			start = 2;
 		}
 
 		// Handle case when target is a string or something (possible in deep copy)
@@ -275,45 +280,48 @@ console) {
 		}
 
 		// extend jQuery itself if only one argument is passed
-		if (length === i) {
+		if (length === start) {
 			target = this;
-			--i;
+			--start;
 		}
 
-		for (; i < length; i++) {
+		for (i = start; i < length; i++) {
 			// Only deal with non-null/undefined values
 			if ((options = arguments[i]) != null) {
 				// Extend the base object
 				for (name in options) {
-					src = target[name];
-					copy = options[name];
+					if (options.hasOwnProperty(name)) {
 
-					// Prevent never-ending loop
-					if (target === copy) {
-						continue;
-					}
+						src = target[name];
+						copy = options[name];
 
-					// Recurse if we're merging plain objects or arrays
-					if (deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)))) {
-						if (copyIsArray) {
-							copyIsArray = false;
-							clone = src && jQuery.isArray(src) ? src : [];
-
-						} else {
-							clone = src && jQuery.isPlainObject(src) ? src : {};
+						// Prevent never-ending loop
+						if (target === copy) {
+							continue;
 						}
 
-						// Never move original objects, clone them
-						if (jQuery.isArray(copy)) {
-							// don't extend arrays
+						// Recurse if we're merging plain objects or arrays
+						if (deep && copy && (jQuery.isPlainObject(copy) || true === (copyIsArray = jQuery.isArray(copy)))) {
+							if (copyIsArray) {
+								copyIsArray = false;
+								clone = src && jQuery.isArray(src) ? src : [];
+
+							} else {
+								clone = src && jQuery.isPlainObject(src) ? src : {};
+							}
+
+							// Never move original objects, clone them
+							if (jQuery.isArray(copy)) {
+								// don't extend arrays
+								target[name] = copy;
+							} else {
+								target[name] = jQuery.extendObjects(deep, clone, copy);
+							}
+
+							// Don't bring in undefined values
+						} else if (copy !== undefined) {
 							target[name] = copy;
-						} else {
-							target[name] = jQuery.extendObjects(deep, clone, copy);
 						}
-
-						// Don't bring in undefined values
-					} else if (copy !== undefined) {
-						target[name] = copy;
 					}
 				}
 			}
@@ -424,16 +432,18 @@ console) {
 	}
 
 	function keyHandler(handleObj) {
+		var origHandler, keys, handle, i;
+
 		// Only care when a possible input has been specified
 		if (typeof handleObj.data !== "string") {
 			return;
 		}
 
-		var origHandler = handleObj.handler,
-			keys = handleObj.data.toLowerCase().split(" "),
-			handle = {};
+		origHandler = handleObj.handler;
+		keys = handleObj.data.toLowerCase().split(" ");
+		handle = {};
 
-		for (var i = 0; i < keys.length; i++) {
+		for (i = 0; i < keys.length; i++) {
 			handle[keys[i]] = true;
 		}
 
