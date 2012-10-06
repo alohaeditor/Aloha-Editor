@@ -302,11 +302,11 @@ define( [
 
 			Aloha.bind('aloha-editable-activated', function() {
 				if (isEnabled[Aloha.activeEditable.getId()]) {
-					that._formatLinkButton.show(true);
-					that._insertLinkButton.show(true);
+					that._formatLinkButton.show();
+					that._insertLinkButton.show();
 				} else {
-					that._formatLinkButton.show(false);
-					that._insertLinkButton.show(false);
+					that._formatLinkButton.hide();
+					that._insertLinkButton.hide();
 				}
 			});
 
@@ -326,6 +326,23 @@ define( [
 				}
 				insideLinkScope = enteredLinkScope;
 			});
+
+			// Fixes problem: if one clicks from inside an aloha link
+			// outside the editable and thereby deactivates the
+			// editable, the link scope will remain active.
+			var linkPlugin = this;
+			Aloha.bind('aloha-editable-deactivated', function () {
+				if (insideLinkScope) {
+					// Leave the link scope lazily to avoid flickering
+					// when switching between anchor element editables.
+					setTimeout(function () {
+						if (!insideLinkScope) {
+							linkPlugin.toggleLinkScope(false);
+						}
+					}, 100);
+					insideLinkScope = false;
+				}
+			});
 		},
 
 		/**
@@ -334,22 +351,39 @@ define( [
 		 */
 		toggleLinkScope: function ( show ) {
 			// Check before doing anything as a performance improvement.
-			if (this._isScopeActive === show) {
+			// The _isScopeActive_editableId check ensures that when
+			// changing from a normal link in an editable to an editable
+			// that is a link itself, the removeLinkButton will be
+			// hidden.
+			if (this._isScopeActive === show && Aloha.activeEditable && this._isScopeActive_editableId === Aloha.activeEditable.getId()) {
 				return;
 			}
 			this._isScopeActive = show;
+			this._isScopeActive_editableId = Aloha.activeEditable && Aloha.activeEditable.getId();
 			if ( show ) {
 				this.hrefField.show();
-				this._insertLinkButton.show(false);
-				this._removeLinkButton.show(true);
+				this._insertLinkButton.hide();
+				// Never show the removeLinkButton when the link itself
+				// is the editable.
+				if (Aloha.activeEditable && Aloha.activeEditable.obj[0].nodeName === 'A') {
+					this._removeLinkButton.hide();
+				} else {
+					this._removeLinkButton.show();
+				}
 				this._formatLinkButton.setState(true);
-				Scopes.enterScope(this.name);
+				Scopes.enterScope(this.name, 'link');
 			} else {
 				this.hrefField.hide();
-				this._insertLinkButton.show(true);
-				this._removeLinkButton.show(false);
+				this._insertLinkButton.show();
+				this._removeLinkButton.hide();
 				this._formatLinkButton.setState(false);
-				Scopes.leaveScope(this.name);
+				// The calls to enterScope and leaveScope by the link
+				// plugin are not balanced.
+				// When the selection is changed from one link to
+				// another, the link scope is incremented more than
+				// decremented, which necessitates the force=true
+				// argument to leaveScope.
+				Scopes.leaveScope(this.name, 'link', true);
 			}
 		},
 		
@@ -555,9 +589,15 @@ define( [
 				range = Aloha.Selection.getRangeObject();
 			}
 			if ( Aloha.activeEditable ) {
-				return range.findMarkup( function () {
-					return this.nodeName.toLowerCase() == 'a';
-				}, Aloha.activeEditable.obj );
+				// If the anchor element itself is the editable, we
+				// still want to show the link tab.
+				var limit = Aloha.activeEditable.obj;
+				if (limit[0] && limit[0].nodeName === 'A') {
+					limit = limit.parent();
+				}
+				return range.findMarkup(function () {
+					return this.nodeName == 'A';
+				}, limit);
 			} else {
 				return null;
 			}
