@@ -24,27 +24,27 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([],function(){
-	'use strict'
+define([], function () {
+	'use strict';
 
-    /**
-     * Implements unique() using the browser's sort().
-     *
-     * @param a
-     *        The array to sort and strip of duplicate values.
+	/**
+	 * Implements unique() using the browser's sort().
+	 *
+	 * @param a
+	 *        The array to sort and strip of duplicate values.
 	 *        Warning: this array will be modified in-place.
-     * @param compFn
-     *        A custom comparison function that accepts two values a and
-     *        b from the given array and returns -1, 0, 1 depending on
-     *        whether a < b, a == b, a > b respectively.
+	 * @param compFn
+	 *        A custom comparison function that accepts two values a and
+	 *        b from the given array and returns -1, 0, 1 depending on
+	 *        whether a < b, a == b, a > b respectively.
 	 *
 	 *        If no compFn is provided, the algorithm will use the
-     *        browsers default sort behaviour and loose comparison to
-     *        detect duplicates.
-     * @return
-     *        The given array.
-     */
-    function sortUnique(a, compFn){
+	 *        browsers default sort behaviour and loose comparison to
+	 *        detect duplicates.
+	 * @return
+	 *        The given array.
+	 */
+	function sortUnique(a, compFn) {
 		var i;
 		if (compFn) {
 			a.sort(compFn);
@@ -82,7 +82,8 @@ define([],function(){
 	 *        True if all items in a and b are equal, false if not.
 	 */
 	function equal(a, b, equalFn) {
-		var i = 0, len = a.length;
+		var i = 0,
+			len = a.length;
 		if (len !== b.length) {
 			return false;
 		}
@@ -132,9 +133,9 @@ define([],function(){
 	 */
 	function filter(a, pred) {
 		var i,
-		    len,
-		    value,
-		    result = [];
+		len,
+		value,
+		result = [];
 		for (i = 0, len = a.length; i < len; i++) {
 			value = a[i];
 			if (pred(value)) {
@@ -152,7 +153,7 @@ define([],function(){
 	 */
 	function indexOf(a, value) {
 		var i,
-		    len;
+		len;
 		for (i = 0, len = a.length; i < len; i++) {
 			if (value === a[i]) {
 				return i;
@@ -178,7 +179,7 @@ define([],function(){
 	 */
 	function reduce(a, init, fn) {
 		var i,
-		    len;
+		len;
 		for (i = 0, len = a.length; i < len; i++) {
 			init = fn(init, a[i]);
 		}
@@ -192,7 +193,7 @@ define([],function(){
 	 * This is a utility function to be used with reduce().
 	 */
 	function applyNotNull(value, fn) {
-		return value == null ? null : fn(value);		
+		return value == null ? null : fn(value);
 	}
 
 	return {
