@@ -395,7 +395,7 @@ define( [
 			
 			var displayer = function($el, $bubble) {
 				var href = $el.attr('href');
-				var a = $bubble.append('<a target="_window"></a>');
+				var a = jQuery('<a target="_window"></a>').appendTo($bubble);
 				a.attr('href', href);
 				a.append(href); // Put the URL in the body
 				$bubble.append(' - ');
