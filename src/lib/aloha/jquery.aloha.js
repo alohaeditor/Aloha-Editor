@@ -30,15 +30,10 @@
  * Instead use the define(...) mechanism to define a module and to
  * import it where you need it.
  */
-define([
-	'aloha/core',
-	'aloha/selection',
-	'jquery',
-	'aloha/console'
-], function (Aloha,
-             Selection,
-			 jQuery,
-			 console) {
+define(['aloha/core', 'aloha/selection', 'jquery', 'aloha/console'], function (Aloha,
+Selection,
+jQuery,
+console) {
 	'use strict';
 
 	var XMLSerializer = window.XMLSerializer;
@@ -54,8 +49,8 @@ define([
 	 */
 	jQuery.fn.between = function (content, offset) {
 		var
-			offSize,
-			fullText;
+		offSize,
+		fullText;
 
 		if (this[0].nodeType !== 3) {
 			// we are not in a text node, just insert the element at the corresponding position
@@ -66,7 +61,7 @@ define([
 			if (offset <= 0) {
 				this.prepend(content);
 			} else {
-				this.children().eq(offset -1).after(content);
+				this.children().eq(offset - 1).after(content);
 			}
 		} else {
 			// we are in a text node so we have to split it at the correct position
@@ -86,23 +81,23 @@ define([
 	/**
 	 * Make the object contenteditable. Care about browser version (name of contenteditable attribute depends on it)
 	 */
-	jQuery.fn.contentEditable = function ( b ) {
+	jQuery.fn.contentEditable = function (b) {
 		// ie does not understand contenteditable but contentEditable
 		// contentEditable is not xhtml compatible.
-		var	$el = jQuery(this);
-		var	ce = 'contenteditable';
+		var $el = jQuery(this);
+		var ce = 'contenteditable';
 
 		// Check
-		if (jQuery.browser.msie && parseInt(jQuery.browser.version,10) == 7 ) {
+		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) == 7) {
 			ce = 'contentEditable';
 		}
 
-		if (typeof b === 'undefined' ) {
+		if (typeof b === 'undefined') {
 
 			// For chrome use this specific attribute. The old ce will only
 			// return 'inherit' for nested elements of a contenteditable.
 			// The isContentEditable is a w3c standard compliant property which works in IE7,8,FF36+, Chrome 12+
-			if (typeof $el[0] === 'undefined' ) {
+			if (typeof $el[0] === 'undefined') {
 				console.warn('The jquery object did not contain any valid elements.'); // die silent
 				return undefined;
 			}
@@ -134,13 +129,13 @@ define([
 	 * @api
 	 */
 	jQuery.fn.aloha = function () {
-		var $this = jQuery( this );
+		var $this = jQuery(this);
 
-		Aloha.bind( 'aloha-ready', function () {
-			$this.each( function () {
+		Aloha.bind('aloha-ready', function () {
+			$this.each(function () {
 				// create a new aloha editable object for each passed object
-				if ( !Aloha.isEditable( this ) ) {
-					new Aloha.Editable( jQuery( this ) );
+				if (!Aloha.isEditable(this)) {
+					new Aloha.Editable(jQuery(this));
 				}
 			});
 		});
@@ -173,7 +168,7 @@ define([
 		var that = this;
 
 		// update selection when keys are pressed
-		this.keyup(function (event){
+		this.keyup(function (event) {
 			var rangeObject = Selection.getRangeObject();
 			callback(event);
 		});
@@ -184,7 +179,7 @@ define([
 		});
 
 		// update selection when text is selected
-		this.mousedown(function (event){
+		this.mousedown(function (event) {
 			// remember that a selection was started
 			that.selectionStarted = true;
 		});
@@ -211,41 +206,41 @@ define([
 	 * @license MIT License {@link http://creativecommons.org/licenses/MIT/}
 	 * @return {String} outerHtml
 	 */
-	jQuery.fn.outerHtml = jQuery.fn.outerHtml || function (){
+	jQuery.fn.outerHtml = jQuery.fn.outerHtml || function () {
 		var
-			$el = jQuery(this),
+		$el = jQuery(this),
 			el = $el.get(0);
-			if (typeof el.outerHTML != 'undefined') {
-				return el.outerHTML;
-			} else {
+		if (typeof el.outerHTML != 'undefined') {
+			return el.outerHTML;
+		} else {
+			try {
+				// Gecko-based browsers, Safari, Opera.
+				return (new XMLSerializer()).serializeToString(el);
+			} catch (e) {
 				try {
-					// Gecko-based browsers, Safari, Opera.
-					return (new XMLSerializer()).serializeToString(el);
-				 } catch (e) {
-					try {
-					  // Internet Explorer.
-					  return el.xml;
-					} catch (e) {}
-				}
+					// Internet Explorer.
+					return el.xml;
+				} catch (e) {}
 			}
+		}
 
 	};
 
 	jQuery.fn.zap = function () {
-		return this.each(function (){ jQuery(this.childNodes).insertBefore(this); }).remove();
+		return this.each(function () {
+			jQuery(this.childNodes).insertBefore(this);
+		}).remove();
 	};
 
 	jQuery.fn.textNodes = function (excludeBreaks, includeEmptyTextNodes) {
 		var
-			ret = [],
+		ret = [],
 			doSomething = function (el) {
 				if (
-					(el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) ||
-					(el.nodeType === 3 && includeEmptyTextNodes) ||
-					(el.nodeName =="BR" && !excludeBreaks)) {
+				(el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) || (el.nodeType === 3 && includeEmptyTextNodes) || (el.nodeName == "BR" && !excludeBreaks)) {
 					ret.push(el);
 				} else {
-					for (var i=0, childLength = el.childNodes.length; i < childLength; ++i) {
+					for (var i = 0, childLength = el.childNodes.length; i < childLength; ++i) {
 						doSomething(el.childNodes[i]);
 					}
 				}
@@ -261,13 +256,13 @@ define([
 	 */
 	jQuery.extendObjects = jQuery.fn.extendObjects = function () {
 		var options, name, src, copy, copyIsArray, clone,
-			target = arguments[0] || {},
-			i = 1,
+		target = arguments[0] || {},
+		i = 1,
 			length = arguments.length,
 			deep = false;
 
 		// Handle a deep copy situation
-		if ( typeof target === "boolean" ) {
+		if (typeof target === "boolean") {
 			deep = target;
 			target = arguments[1] || {};
 			// skip the boolean and the target
@@ -275,32 +270,32 @@ define([
 		}
 
 		// Handle case when target is a string or something (possible in deep copy)
-		if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
+		if (typeof target !== "object" && !jQuery.isFunction(target)) {
 			target = {};
 		}
 
 		// extend jQuery itself if only one argument is passed
-		if ( length === i ) {
+		if (length === i) {
 			target = this;
 			--i;
 		}
 
-		for ( ; i < length; i++ ) {
+		for (; i < length; i++) {
 			// Only deal with non-null/undefined values
-			if ( (options = arguments[ i ]) != null ) {
+			if ((options = arguments[i]) != null) {
 				// Extend the base object
-				for ( name in options ) {
-					src = target[ name ];
-					copy = options[ name ];
+				for (name in options) {
+					src = target[name];
+					copy = options[name];
 
 					// Prevent never-ending loop
-					if ( target === copy ) {
+					if (target === copy) {
 						continue;
 					}
 
 					// Recurse if we're merging plain objects or arrays
-					if ( deep && copy && ( jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)) ) ) {
-						if ( copyIsArray ) {
+					if (deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)))) {
+						if (copyIsArray) {
 							copyIsArray = false;
 							clone = src && jQuery.isArray(src) ? src : [];
 
@@ -311,14 +306,14 @@ define([
 						// Never move original objects, clone them
 						if (jQuery.isArray(copy)) {
 							// don't extend arrays
-							target[ name ] = copy;
+							target[name] = copy;
 						} else {
-							target[ name ] = jQuery.extendObjects( deep, clone, copy );
+							target[name] = jQuery.extendObjects(deep, clone, copy);
 						}
 
-					// Don't bring in undefined values
-					} else if ( copy !== undefined ) {
-						target[ name ] = copy;
+						// Don't bring in undefined values
+					} else if (copy !== undefined) {
+						target[name] = copy;
 					}
 				}
 			}
@@ -338,53 +333,111 @@ define([
 	 *
 	 * Original idea by:
 	 * Binny V A, http://www.openjs.com/scripts/events/keyboard_shortcuts/
-	*/
+	 */
 
 	jQuery.hotkeys = {
 		version: "0.8",
 
 		specialKeys: {
-			8: "backspace", 9: "tab", 13: "return", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause",
-			20: "capslock", 27: "esc", 32: "space", 33: "pageup", 34: "pagedown", 35: "end", 36: "home",
-			37: "left", 38: "up", 39: "right", 40: "down", 45: "insert", 46: "del",
-			96: "0", 97: "1", 98: "2", 99: "3", 100: "4", 101: "5", 102: "6", 103: "7",
-			104: "8", 105: "9", 106: "*", 107: "+", 109: "-", 110: ".", 111 : "/",
-			112: "f1", 113: "f2", 114: "f3", 115: "f4", 116: "f5", 117: "f6", 118: "f7", 119: "f8",
-			120: "f9", 121: "f10", 122: "f11", 123: "f12", 144: "numlock", 145: "scroll", 191: "/", 224: "meta"
+			8: "backspace",
+			9: "tab",
+			13: "return",
+			16: "shift",
+			17: "ctrl",
+			18: "alt",
+			19: "pause",
+			20: "capslock",
+			27: "esc",
+			32: "space",
+			33: "pageup",
+			34: "pagedown",
+			35: "end",
+			36: "home",
+			37: "left",
+			38: "up",
+			39: "right",
+			40: "down",
+			45: "insert",
+			46: "del",
+			96: "0",
+			97: "1",
+			98: "2",
+			99: "3",
+			100: "4",
+			101: "5",
+			102: "6",
+			103: "7",
+			104: "8",
+			105: "9",
+			106: "*",
+			107: "+",
+			109: "-",
+			110: ".",
+			111: "/",
+			112: "f1",
+			113: "f2",
+			114: "f3",
+			115: "f4",
+			116: "f5",
+			117: "f6",
+			118: "f7",
+			119: "f8",
+			120: "f9",
+			121: "f10",
+			122: "f11",
+			123: "f12",
+			144: "numlock",
+			145: "scroll",
+			191: "/",
+			224: "meta"
 		},
 
 		shiftNums: {
-			"`": "~", "1": "!", "2": "@", "3": "#", "4": "$", "5": "%", "6": "^", "7": "&",
-			"8": "*", "9": "(", "0": ")", "-": "_", "=": "+", ";": ": ", "'": "\"", ",": "<",
-			".": ">",  "/": "?",  "\\": "|"
+			"`": "~",
+			"1": "!",
+			"2": "@",
+			"3": "#",
+			"4": "$",
+			"5": "%",
+			"6": "^",
+			"7": "&",
+			"8": "*",
+			"9": "(",
+			"0": ")",
+			"-": "_",
+			"=": "+",
+			";": ": ",
+			"'": "\"",
+			",": "<",
+			".": ">",
+			"/": "?",
+			"\\": "|"
 		}
 	};
 
 	function applyKeyHandler(handler, context, args, event) {
 		// Don't fire in text-accepting inputs that we didn't directly bind to
-		if ( context !== event.target
-			 && (/textarea|input|select/i.test( event.target.nodeName )
-				 || event.target.type === "text") ) {
+		if (context !== event.target && (/textarea|input|select/i.test(event.target.nodeName) || event.target.type === "text")) {
 			return;
 		}
 		return handler.apply(context, args);
 	}
 
-	function keyHandler( handleObj ) {
+	function keyHandler(handleObj) {
 		// Only care when a possible input has been specified
-		if ( typeof handleObj.data !== "string" ) {
+		if (typeof handleObj.data !== "string") {
 			return;
 		}
 
 		var origHandler = handleObj.handler,
-		    keys = handleObj.data.toLowerCase().split(" "),
-		    handle = {};
+			keys = handleObj.data.toLowerCase().split(" "),
+			handle = {};
 
 		for (var i = 0; i < keys.length; i++) {
 			handle[keys[i]] = true;
 		}
 
-		handleObj.handler = function(event) {
+		handleObj.handler = function (event) {
 			// The original comment that was added with this condition says:
 			// "Don't fire in contentEditable true elements"
 			// But this is incorrect.
@@ -408,29 +461,29 @@ define([
 			}
 
 			// Keypress represents characters, not special keys
-			var special = event.type !== "keypress" && jQuery.hotkeys.specialKeys[ event.which ],
-			    modif = "",
-			    character;
+			var special = event.type !== "keypress" && jQuery.hotkeys.specialKeys[event.which],
+				modif = "",
+				character;
 
 			// check combinations (alt|ctrl|shift+anything)
-			if ( event.altKey && special !== "alt" ) {
+			if (event.altKey && special !== "alt") {
 				modif += "alt+";
 			}
 
-			if ( event.ctrlKey && special !== "ctrl" ) {
+			if (event.ctrlKey && special !== "ctrl") {
 				modif += "ctrl+";
 			}
 
 			// TODO: Need to make sure this works consistently across platforms
-			if ( event.metaKey && !event.ctrlKey && special !== "meta" ) {
+			if (event.metaKey && !event.ctrlKey && special !== "meta") {
 				modif += "meta+";
 			}
 
-			if ( event.shiftKey && special !== "shift" ) {
+			if (event.shiftKey && special !== "shift") {
 				modif += "shift+";
 			}
 
-			if ( special ) {
+			if (special) {
 				if (handle[modif + special]) {
 					return applyKeyHandler(origHandler, this, arguments, event);
 				}
@@ -456,7 +509,9 @@ define([
 	}
 
 	jQuery.each(['keydown', 'keyup', 'keypress'], function () {
-		jQuery.event.special[this] = {add: keyHandler};
+		jQuery.event.special[this] = {
+			add: keyHandler
+		};
 	});
 
 });

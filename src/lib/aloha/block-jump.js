@@ -40,7 +40,7 @@
  * TODO: this file currently doesn't contain all the code to implement
  *       block jumping. Some of it is currently implemented in markup.js.
  */
-define(['aloha/core', 'jquery'], function(Aloha, $){
+define(['aloha/core', 'jquery'], function (Aloha, $) {
 
 	var zeroWidthNode = null;
 
@@ -130,7 +130,7 @@ define(['aloha/core', 'jquery'], function(Aloha, $){
 		} else {
 			$(block).before(zeroWidthNode);
 		}
-		Aloha.bind('aloha-selection-changed', function(event){
+		Aloha.bind('aloha-selection-changed', function (event) {
 			removeZeroWidthTextNodeFix();
 			Aloha.unbind(event);
 		});

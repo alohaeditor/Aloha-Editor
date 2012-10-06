@@ -32,6 +32,7 @@
  */
 define(
 ['jquery', 'aloha/observable', 'util/class'],
+
 function (jQuery, Observable, Class) {
 	"use strict";
 

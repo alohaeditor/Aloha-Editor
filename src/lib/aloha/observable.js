@@ -26,11 +26,12 @@
  */
 define(
 ['jquery'],
-function(jQuery, undefined) {
+
+function (jQuery, undefined) {
 	"use strict";
-	
+
 	var
-		$ = jQuery;
+	$ = jQuery;
 
 	return {
 		_eventHandlers: null,
@@ -42,7 +43,7 @@ function(jQuery, undefined) {
 		 * @param {Function} handler A function to execute each time the event is triggered
 		 * @param {Object} scope Optional. Set the scope in which handler is executed
 		 */
-		bind: function(eventType, handler, scope) {
+		bind: function (eventType, handler, scope) {
 			this._eventHandlers = this._eventHandlers || {};
 			if (!this._eventHandlers[eventType]) {
 				this._eventHandlers[eventType] = [];
@@ -59,7 +60,7 @@ function(jQuery, undefined) {
 		 * @param {String} eventType A string containing the event name to unbind
 		 * @param {Function} handler The function that is to be no longer executed. Optional. If not given, unregisters all functions for the given event.
 		 */
-		unbind: function(eventType, handler) {
+		unbind: function (eventType, handler) {
 			this._eventHandlers = this._eventHandlers || {};
 			if (!this._eventHandlers[eventType]) {
 				return;
@@ -68,7 +69,7 @@ function(jQuery, undefined) {
 				// No handler function given, unbind all event handlers for the eventType
 				this._eventHandlers[eventType] = [];
 			} else {
-				this._eventHandlers[eventType] = $.grep(this._eventHandlers[eventType], function(element) {
+				this._eventHandlers[eventType] = $.grep(this._eventHandlers[eventType], function (element) {
 					if (element.handler === handler) {
 						return false;
 					}
@@ -83,7 +84,7 @@ function(jQuery, undefined) {
 		 *
 		 * @param (String} eventType A string containing the event name for which the event handlers should be invoked.
 		 */
-		trigger: function(eventType) {
+		trigger: function (eventType) {
 			this._eventHandlers = this._eventHandlers || {};
 			if (!this._eventHandlers[eventType]) {
 				return;
@@ -91,13 +92,13 @@ function(jQuery, undefined) {
 
 			// preparedArguments contains all arguments except the first one.
 			var preparedArguments = [];
-			$.each(arguments, function(i, argument) {
-				if (i>0) {
+			$.each(arguments, function (i, argument) {
+				if (i > 0) {
 					preparedArguments.push(argument);
 				}
 			});
 
-			$.each(this._eventHandlers[eventType], function(index, element) {
+			$.each(this._eventHandlers[eventType], function (index, element) {
 				element.handler.apply(element.scope, preparedArguments);
 			});
 		},
@@ -105,7 +106,7 @@ function(jQuery, undefined) {
 		/**
 		 * Clears all event handlers. Call this method when cleaning up.
 		 */
-		unbindAll: function() {
+		unbindAll: function () {
 			this._eventHandlers = null;
 		}
 	};
