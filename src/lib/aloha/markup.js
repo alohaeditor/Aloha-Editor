@@ -24,15 +24,26 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(['aloha/core', 'util/class', 'jquery', 'aloha/ecma5shims', 'aloha/console', 'aloha/block-jump'],
-
-function (Aloha, Class, jQuery, shims, console, BlockJump) {
-
+define([
+	'aloha/core',
+	'util/class',
+	'jquery',
+	'aloha/ecma5shims',
+	'aloha/console',
+	'aloha/block-jump'
+], function (
+	Aloha,
+	Class,
+	jQuery,
+	shims,
+	console,
+	BlockJump
+) {
 	"use strict";
 
 	var GENTICS = window.GENTICS;
 
-	var isOldIE = !! (jQuery.browser.msie && 9 > parseInt(jQuery.browser.version, 10));
+	var isOldIE = !!(jQuery.browser.msie && 9 > parseInt(jQuery.browser.version, 10));
 
 	function isBR(node) {
 		return 'BR' === node.nodeName;
@@ -48,6 +59,17 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 
 	function nodeLength(node) {
 		return !node ? 0 : (isTextNode(node) ? node.length : node.childNodes.length);
+	}
+
+	/**
+	 * Determines whether the given text node is visible to the the user,
+	 * based on our understanding that browsers will not display
+	 * superfluous white spaces.
+	 *
+	 * @param {HTMLEmenent} node The text node to be checked.
+	 */
+	function isVisibleTextNode(node) {
+		return 0 < node.data.replace(/\s+/g, '').length;
 	}
 
 	function nextVisibleNode(node) {
@@ -107,17 +129,6 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 		return null;
 	}
 
-	/**
-	 * Determines whether the given text node is visible to the the user,
-	 * based on our understanding that browsers will not display
-	 * superfluous white spaces.
-	 *
-	 * @param {HTMLEmenent} node The text node to be checked.
-	 */
-	function isVisibleTextNode(node) {
-		return 0 < node.data.replace(/\s+/g, '').length;
-	}
-
 	function isFrontPosition(node, offset) {
 		return (0 === offset) || (offset <= node.data.length - node.data.replace(/^\s+/, '').length);
 	}
@@ -160,6 +171,28 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 		return node;
 	}
 
+	function nodeContains(node1, node2) {
+		return isOldIE ? (shims.compareDocumentPosition(node1, node2) & 16) : 0 < jQuery(node1).find(node2).length;
+	}
+
+	function isInsidePlaceholder(range) {
+		var start = range.startContainer;
+		var end = range.endContainer;
+		var $placeholder = window.$_alohaPlaceholder;
+
+		return $placeholder.is(start) || $placeholder.is(end) || nodeContains($placeholder[0], start) || nodeContains($placeholder[0], end);
+	}
+
+	function cleanupPlaceholders(range) {
+		if (window.$_alohaPlaceholder && !isInsidePlaceholder(range)) {
+			if (0 === window.$_alohaPlaceholder.html().replace(/^(&nbsp;)*$/, '').length) {
+				window.$_alohaPlaceholder.remove();
+			}
+
+			window.$_alohaPlaceholder = null;
+		}
+	}
+
 	/**
 	 * @TODO(petro): We need to be more intelligent about whether we insert a
 	 *               block-level placeholder or a phrasing level element.
@@ -193,9 +226,15 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 			// an element node. Both these cases require a hack in some
 			// browsers.
 			var moveToBoundaryPositionInIE = ( // To the beginning or end of a text node?
-			(currentRange.startContainer.nodeType === 3 && currentRange.startContainer === currentRange.endContainer && currentRange.startContainer.nodeValue !== "" && (isGoingLeft ? currentRange.startOffset === 1 : currentRange.endOffset + 1 === currentRange.endContainer.length)) ||
-			// Leaving an element node?
-			(currentRange.startContainer.nodeType === 1 && (!currentRange.startOffset || currentRange.startContainer.childNodes[currentRange.startOffset] && currentRange.startContainer.childNodes[currentRange.startOffset].nodeType === 1)));
+				(currentRange.startContainer.nodeType === 3
+				 && currentRange.startContainer === currentRange.endContainer
+				 && currentRange.startContainer.nodeValue !== ""
+				 && (isGoingLeft ? currentRange.startOffset === 1 : currentRange.endOffset + 1 === currentRange.endContainer.length))
+				// Leaving an element node?
+					|| (currentRange.startContainer.nodeType === 1
+						&& (!currentRange.startOffset
+							|| (currentRange.startContainer.childNodes[currentRange.startOffset] && currentRange.startContainer.childNodes[currentRange.startOffset].nodeType === 1)))
+			);
 
 			if (moveToBoundaryPositionInIE) {
 				// The cursor is moving to the beginning or end of a text
@@ -223,28 +262,6 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 
 		Aloha.trigger('aloha-block-selected', block);
 		Aloha.Selection.preventSelectionChanged();
-	}
-
-	function nodeContains(node1, node2) {
-		return isOldIE ? (shims.compareDocumentPosition(node1, node2) & 16) : 0 < jQuery(node1).find(node2).length;
-	}
-
-	function isInsidePlaceholder(range) {
-		var start = range.startContainer;
-		var end = range.endContainer;
-		var $placeholder = window.$_alohaPlaceholder;
-
-		return $placeholder.is(start) || $placeholder.is(end) || nodeContains($placeholder[0], start) || nodeContains($placeholder[0], end);
-	}
-
-	function cleanupPlaceholders(range) {
-		if (window.$_alohaPlaceholder && !isInsidePlaceholder(range)) {
-			if (0 === window.$_alohaPlaceholder.html().replace(/^(&nbsp;)*$/, '').length) {
-				window.$_alohaPlaceholder.remove();
-			}
-
-			window.$_alohaPlaceholder = null;
-		}
 	}
 
 	/**
@@ -282,7 +299,7 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 
 		insertBreak: function () {
 			var range = Aloha.Selection.rangeObject,
-				onWSIndex,
+				nonWSIndex,
 				nextTextNode,
 				newBreak;
 
@@ -294,9 +311,10 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 			GENTICS.Utils.Dom.insertIntoDOM(newBreak, range, Aloha.activeEditable.obj);
 
 			nextTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(
-			newBreak.parent().get(0),
-			GENTICS.Utils.Dom.getIndexInParent(newBreak.get(0)) + 1,
-			false);
+				newBreak.parent().get(0),
+				GENTICS.Utils.Dom.getIndexInParent(newBreak.get(0)) + 1,
+				false
+			);
 
 			if (nextTextNode) {
 				// trim leading whitespace
@@ -325,8 +343,8 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 			}
 
 			var rangeObject,
-			handlers,
-			i;
+			    handlers,
+			    i;
 
 			if (this.keyHandlers[event.keyCode]) {
 				handlers = this.keyHandlers[event.keyCode];
@@ -369,10 +387,9 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 				if (event.shiftKey) {
 					Aloha.execCommand('insertlinebreak', false);
 					return false;
-				} else {
-					Aloha.execCommand('insertparagraph', false);
-					return false;
 				}
+				Aloha.execCommand('insertparagraph', false);
+				return false;
 			}
 
 			return true;
@@ -408,13 +425,13 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 				return true;
 			}
 
-			var sibling;
+			var sibling, offset;
 
 			// special handling for moving Cursor around zero-width whitespace in IE7
 			if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) <= 7 && isTextNode(node)) {
 				if (keyCode == 37) {
 					// moving left -> skip zwsp to the left
-					var offset = range.startOffset;
+					offset = range.startOffset;
 					while (offset > 0 && node.data.charAt(offset - 1) === '\u200b') {
 						offset--;
 					}
@@ -427,7 +444,7 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 					}
 				} else if (keyCode == 39) {
 					// moving right -> skip zwsp to the right
-					var offset = range.startOffset;
+					offset = range.startOffset;
 					while (offset < node.data.length && node.data.charAt(offset) === '\u200b') {
 						offset++;
 					}
@@ -456,11 +473,12 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 				}
 			}
 
+			var isLeft;
 			if (!sibling) {
 				// True if keyCode denotes LEFT or UP arrow key, otherwise they
 				// keyCode is for RIGHT or DOWN in which this value will be false.
-				var isLeft = (37 === keyCode || 38 === keyCode);
-				var offset = range.startOffset;
+				isLeft = (37 === keyCode || 38 === keyCode);
+				offset = range.startOffset;
 
 				if (isTextNode(node)) {
 					if (isLeft) {
@@ -473,8 +491,7 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 					}
 
 				} else {
-					node = node.childNodes[
-					offset === nodeLength(node) ? offset - 1 : offset];
+					node = node.childNodes[offset === nodeLength(node) ? offset - 1 : offset];
 				}
 
 				sibling = isLeft ? prevVisibleNode(node) : nextVisibleNode(node);
@@ -506,11 +523,11 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 			if (rangeObject.splitObject) {
 				// now comes a very evil hack for ie, when the enter is pressed in a text node in an li element, we just append an empty text node
 				// if ( jQuery.browser.msie
-				// 		&& GENTICS.Utils.Dom
-				// 				.isListElement( rangeObject.splitObject ) ) {
-				// 	jQuery( rangeObject.splitObject ).append(
-				// 			jQuery( document.createTextNode( '' ) ) );
-				// }
+				//      && GENTICS.Utils.Dom
+				//           .isListElement( rangeObject.splitObject ) ) {
+				//  jQuery( rangeObject.splitObject ).append(
+				//          jQuery( document.createTextNode( '' ) ) );
+				//  }
 				this.splitRangeObject(rangeObject);
 			} else { // if there is no split object, the Editable is the paragraph type itself (e.g. a p or h2)
 				this.insertHTMLBreak(rangeObject.getSelectionTree(), rangeObject);
@@ -533,16 +550,16 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 		 */
 		insertHTMLBreak: function (selectionTree, rangeObject, inBetweenMarkup) {
 			var i,
-			treeLength,
-			el,
-			jqEl,
-			jqElBefore,
-			jqElAfter,
-			tmpObject,
-			offset,
-			checkObj;
+			    treeLength,
+			    el,
+			    jqEl,
+			    jqElBefore,
+			    jqElAfter,
+			    tmpObject,
+			    offset,
+			    checkObj;
 
-			inBetweenMarkup = inBetweenMarkup ? inBetweenMarkup : jQuery('<br/>');
+			inBetweenMarkup = inBetweenMarkup || jQuery('<br/>');
 
 			for (i = 0, treeLength = selectionTree.length; i < treeLength; ++i) {
 				el = selectionTree[i];
@@ -573,8 +590,7 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 
 					} else if (el.domobj && el.domobj.nodeType === 3) { // textNode
 						// when the textnode is immediately followed by a blocklevel element (like p, h1, ...) we need to add an additional br in between
-						if (el.domobj.nextSibling && el.domobj.nextSibling.nodeType == 1 && Aloha.Selection.replacingElements[
-						el.domobj.nextSibling.nodeName.toLowerCase()]) {
+						if (el.domobj.nextSibling && el.domobj.nextSibling.nodeType == 1 && Aloha.Selection.replacingElements[el.domobj.nextSibling.nodeName.toLowerCase()]) {
 							// TODO check whether this depends on the browser
 							jqEl.after('<br/>');
 						}
@@ -686,8 +702,7 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 		 * @return selected text from that level (incluiding all sublevels)
 		 */
 		getFromSelectionTree: function (selectionTree, astext) {
-			var text = '',
-				i, treeLength, el, clone;
+			var text = '', i, treeLength, el, clone;
 			for (i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
 				el = selectionTree[i];
 				if (el.selection == 'partial') {
@@ -769,12 +784,7 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 		removeFromSelectionTree: function (selectionTree, newRange) {
 			// remember the first found partially selected element node (in case we need
 			// to merge it with the last found partially selected element node)
-			var firstPartialElement,
-			newdata,
-			i,
-			el,
-			adjacentTextNode,
-			treeLength;
+			var firstPartialElement, newdata, i, el, adjacentTextNode, treeLength;
 
 			// iterate through the selection tree
 			for (i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
@@ -823,11 +833,13 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 					// eventually set the new range (if not done before)
 					if (!newRange.startContainer) {
 						adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(
-						el.domobj.parentNode,
-						GENTICS.Utils.Dom.getIndexInParent(el.domobj) + 1,
-						false, {
-							'blocklevel': false
-						});
+							el.domobj.parentNode,
+							GENTICS.Utils.Dom.getIndexInParent(el.domobj) + 1,
+							false,
+							{
+								'blocklevel': false
+							}
+						);
 
 						if (adjacentTextNode) {
 							newRange.startContainer = newRange.endContainer = adjacentTextNode;
@@ -853,9 +865,10 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 		splitRangeObject: function (rangeObject, markup) {
 			// UAAAA: first check where the markup can be inserted... *grrrrr*, then decide where to split
 			// object which is split up
-			var
-			splitObject = jQuery(rangeObject.splitObject),
-				selectionTree, insertAfterObject, followUpContainer;
+			var splitObject = jQuery(rangeObject.splitObject),
+				selectionTree,
+			    insertAfterObject,
+			    followUpContainer;
 
 			// update the commonAncestor with the splitObject (so that the selectionTree is correct)
 			rangeObject.update(rangeObject.splitObject); // set the splitObject as new commonAncestorContainer and update the selectionTree
@@ -966,9 +979,8 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 		getFillUpElement: function (splitObject) {
 			if (jQuery.browser.msie) {
 				return false;
-			} else {
-				return jQuery('<br class="aloha-cleanme"/>');
 			}
+			return jQuery('<br class="aloha-cleanme"/>');
 		},
 
 		/**
@@ -980,7 +992,8 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 			var correction = 0,
 				removeLater = [],
 				i,
-				el, removeIndex;
+				el,
+			    removeIndex;
 
 			for (i = 0; i < domArray.length; ++i) {
 				el = domArray[i];
@@ -1004,8 +1017,7 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 		 * @param inBetweenMarkup jQuery object to be inserted between the two split parts. will be either a <br> (if no followUpContainer is passed) OR e.g. a table, which must be inserted between the splitobject AND the follow up
 		 * @return void
 		 */
-		splitRangeObjectHelper: function (selectionTree, rangeObject,
-		followUpContainer, inBetweenMarkup) {
+		splitRangeObjectHelper: function (selectionTree, rangeObject, followUpContainer, inBetweenMarkup) {
 			if (!followUpContainer) {
 				Aloha.Log.warn(this, 'no followUpContainer, no inBetweenMarkup, nothing to do...');
 			}
@@ -1188,6 +1200,7 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 					returnObj = jQuery('<p></p>');
 					return returnObj;
 				}
+				break;
 			}
 
 			return jQuery(rangeObject.splitObject.outerHTML);
@@ -1214,9 +1227,7 @@ function (Aloha, Class, jQuery, shims, console, BlockJump) {
 			if (attributes) {
 				for (i = 0; i < attributes.length; ++i) {
 					if (typeof attributes[i].specified === 'undefined' || attributes[i].specified) {
-						jqNewObj.attr(
-						attributes[i].nodeName,
-						attributes[i].nodeValue);
+						jqNewObj.attr(attributes[i].nodeName, attributes[i].nodeValue);
 					}
 				}
 			}

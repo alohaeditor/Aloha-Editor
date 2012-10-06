@@ -61,18 +61,31 @@
  *       content - similar to make clean, but for single elements to reduce
  *       overhead.
  */
-define(['jquery', 'aloha/core', 'aloha/console', 'util/strings', 'util/trees', 'util/arrays', 'util/maps', 'util/dom2', 'util/functions', 'util/misc', 'PubSub'], function (
-$,
-Aloha,
-console,
-Strings,
-Trees,
-Arrays,
-Maps,
-Dom,
-Functions,
-Misc,
-PubSub) {
+define([
+	'jquery',
+	'aloha/core',
+	'aloha/console',
+	'util/strings',
+	'util/trees',
+	'util/arrays',
+	'util/maps',
+	'util/dom2',
+	'util/functions',
+	'util/misc',
+	'PubSub'
+], function (
+	$,
+	Aloha,
+	console,
+	Strings,
+	Trees,
+	Arrays,
+	Maps,
+	Dom,
+	Functions,
+	Misc,
+	PubSub
+) {
 	'use strict';
 
 	var ephemeraMap = {
@@ -96,10 +109,6 @@ PubSub) {
 
 	var commonClsSubstr = 'aloha-';
 
-	if (Aloha.settings.ephemera) {
-		ephemera(Aloha.settings.ephemera);
-	}
-
 	/**
 	 * Checks whether the given classes contain the substring common to
 	 * all ephemeral classes. If the check fails, an warning will be
@@ -108,7 +117,8 @@ PubSub) {
 	 * otherwise have gained.
 	 */
 	function checkCommonSubstr(clss) {
-		for (var i = 0, len = clss.length; i < len; i++) {
+		var i, len;
+		for (i = 0, len = clss.length; i < len; i++) {
 			if (-1 === clss[i].indexOf(commonClsSubstr)) {
 				console.warn('Class "' + clss[i] + '" was set to be ephemeral,' + 'which hurts peformance.' + ' Add the common substring "' + commonClsSubstr + '" to the class to fix this problem.');
 				commonClsSubstr = '';
@@ -290,10 +300,12 @@ PubSub) {
 	function pruneMarkedAttrs(elem) {
 		var $elem = $(elem);
 		var data = $elem.attr('data-aloha-ui-attr');
+		var i;
+		var attrs;
 		$elem.removeAttr('data-aloha-ui-attr');
 		if (typeof data === 'string') {
-			var attrs = Strings.words(data);
-			for (var i = 0; i < attrs.length; i++) {
+			attrs = Strings.words(data);
+			for (i = 0; i < attrs.length; i++) {
 				$elem.removeAttr(attrs[i]);
 			}
 		}
@@ -315,8 +327,10 @@ PubSub) {
 	function pruneEmapAttrs(elem, emap) {
 		var $elem = null,
 			attrs = Dom.attrNames(elem),
-			name;
-		for (var i = 0, len = attrs.length; i < len; i++) {
+		    name,
+		    i,
+		    len;
+		for (i = 0, len = attrs.length; i < len; i++) {
 			name = attrs[i];
 			if (isAttrEphemeral(elem, name, emap.attrMap, emap.attrRxs)) {
 				$elem = $elem || $(elem);
@@ -422,6 +436,10 @@ PubSub) {
 			return pruneStep(emap, pruneStepClosure, node);
 		}
 		return pruneStepClosure(elem)[0];
+	}
+
+	if (Aloha.settings.ephemera) {
+		ephemera(Aloha.settings.ephemera);
 	}
 
 	return {

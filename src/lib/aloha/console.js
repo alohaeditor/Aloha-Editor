@@ -24,18 +24,18 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(
-['aloha/core', 'util/class', 'jquery'],
-
-function (Aloha, Class, jQuery) {
+define([
+	'aloha/core',
+	'util/class',
+	'jquery'
+], function (
+	Aloha,
+	Class,
+	jQuery
+) {
 	"use strict";
 
-	var
-	//		$ = jQuery,
-	//		Aloha = window.Aloha,
-	console = window.console;
-	//		Class = window.Class
-	//		GENTICS = window.GENTICS;
+	var console = window.console;
 
 	/**
 	 * This is the aloha Log
@@ -43,7 +43,7 @@ function (Aloha, Class, jQuery) {
 	 * @class Log
 	 * @singleton
 	 */
-	var alohaConsole = Class.extend({
+	var AlohaConsole = Class.extend({
 		/**
 		 * Initialize the logging
 		 * @hide
@@ -229,7 +229,7 @@ function (Aloha, Class, jQuery) {
 		deprecated: function (component, message) {
 			this.log('warn', component, message);
 			// help the developer to locate the call.
-			if (Aloha.settings.logLevels['deprecated']) {
+			if (Aloha.settings.logLevels.deprecated) {
 				throw new Error(message);
 			}
 		},
@@ -339,9 +339,9 @@ function (Aloha, Class, jQuery) {
 	 * Create the Log object
 	 * @hide
 	 */
-	alohaConsole = new alohaConsole();
+	AlohaConsole = new AlohaConsole();
 
 	// add to log namespace for compatiblility.
-	return Aloha.Log = Aloha.Console = alohaConsole;
-
+	Aloha.Log = Aloha.Console = AlohaConsole;
+	return AlohaConsole;
 });

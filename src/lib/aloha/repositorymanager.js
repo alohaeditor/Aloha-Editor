@@ -24,7 +24,17 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha, Class, jQuery, console) {
+define([
+	'aloha/core',
+	'util/class',
+	'jquery',
+	'aloha/console'
+], function (
+	Aloha,
+	Class,
+	jQuery,
+	console
+) {
 	'use strict';
 
 	/**
@@ -51,7 +61,7 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 		 */
 		init: function () {
 			var repositories = this.repositories,
-				i = 0,
+				i,
 				j = repositories.length,
 				repository;
 
@@ -62,7 +72,7 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 			// use the configured repository manger query timeout or 5 sec
 			this.settings.timeout = this.settings.timeout || 5000;
 
-			for (; i < j; ++i) {
+			for (i = 0; i < j; ++i) {
 				repository = repositories[i];
 
 				if (!repository.settings) {
@@ -71,8 +81,9 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 
 				if (this.settings[repository.repositoryId]) {
 					jQuery.extend(
-					repository.settings,
-					this.settings[repository.repositoryId]);
+						repository.settings,
+						this.settings[repository.repositoryId]
+					);
 				}
 
 				repository.init();
@@ -100,10 +111,10 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 		 */
 		getRepository: function (repositoryId) {
 			var repositories = this.repositories,
-				i = 0,
+				i,
 				j = repositories.length;
 
-			for (; i < j; ++i) {
+			for (i = 0; i < j; ++i) {
 				if (repositories[i].repositoryId === repositoryId) {
 					return repositories[i];
 				}
@@ -168,7 +179,8 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 				// allitems will be returned to the calling client, and
 				// numOpenCallbacks will be reset to 0
 				timer,
-				i, j,
+			    i,
+			    j,
 				/**
 				 * Invoked by each repository when it wants to present its
 				 * results to the manager.
@@ -288,14 +300,18 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 
 			j = repoQueue.length;
 
+			function makeCallback(repo) {
+				return function () {
+					processResults.apply(repo, arguments);
+				};
+			}
+
 			for (i = 0; i < j; ++i) {
 				repo = repoQueue[i];
 				repo.query(
-				params,
-
-				function () {
-					processResults.apply(repo, arguments);
-				});
+					params,
+					makeCallback(repo)
+				);
 			}
 
 			// If none of the repositories implemented the query method, then
@@ -375,7 +391,8 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 				// allitems will be returned to the calling client, and
 				// numOpenCallbacks will be reset to 0
 				timer,
-				i, j,
+				i,
+			    j,
 				processResults = function (items) {
 					if (numOpenCallbacks === 0) {
 						return;
@@ -402,22 +419,21 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 					repo = this.repositories[i];
 					if (!hasRepoFilter || jQuery.inArray(repo.repositoryId, repoFilter) > -1) {
 						repositories.push(
-						new Aloha.RepositoryFolder({
-							id: repo.repositoryId,
-							name: repo.repositoryName,
-							repositoryId: repo.repositoryId,
-							type: 'repository',
-							hasMoreItems: true
-						}));
+							new Aloha.RepositoryFolder({
+								id: repo.repositoryId,
+								name: repo.repositoryName,
+								repositoryId: repo.repositoryId,
+								type: 'repository',
+								hasMoreItems: true
+							})
+						);
 					}
 				}
-
 				that.getChildrenCallback(callback, repositories, null);
-
 				return;
-			} else {
-				repositories = this.repositories;
 			}
+
+			repositories = this.repositories;
 
 			var timeout = parseInt(params.timeout, 10) || this.settings.timeout;
 			timer = window.setTimeout(function () {
@@ -426,6 +442,12 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 			}, timeout);
 
 			j = repositories.length;
+
+			function makeCallback(repo) {
+				return function () {
+					processResults.apply(repo, arguments);
+				};
+			}
 
 			for (i = 0; i < j; ++i) {
 				repo = repositories[i];
@@ -436,11 +458,9 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 					++numOpenCallbacks;
 
 					repo.getChildren(
-					params,
-
-					function () {
-						processResults.apply(repo, arguments);
-					});
+						params,
+						makeCallback(repo)
+					);
 				}
 			}
 
@@ -485,8 +505,9 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 
 			// find all repository tags
 			obj.find('[data-gentics-aloha-repository=' + this.prefix + ']').each(function () {
-				for (; i < j; ++i) {
+				while (i < j) {
 					repository.makeClean(obj);
+					i += 1;
 				}
 				console.debug(that, 'Passing contents of HTML Element with id { ' + this.attr('id') + ' } for cleaning to repository { ' + repository.repositoryId + ' }');
 				repository.makeClean(this);

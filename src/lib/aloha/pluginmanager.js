@@ -25,11 +25,10 @@
  * recipients can access the Corresponding Source.
  */
 // Do not add dependencies that require depend on aloha/core
-define(
-['jquery', 'util/class'],
-
-function (jQuery, Class) {
+define(['jquery', 'util/class'], function (jQuery, Class) {
 	"use strict";
+
+	var Aloha = window.Aloha;
 
 	/**
 	 * The Plugin Manager controls the lifecycle of all Aloha Plugins.
@@ -38,7 +37,7 @@ function (jQuery, Class) {
 	 * @class PluginManager
 	 * @singleton
 	 */
-	return new(Class.extend({
+	return new (Class.extend({
 		plugins: {},
 
 		/**
@@ -47,9 +46,7 @@ function (jQuery, Class) {
 		 * @hide
 		 */
 		init: function (next, userPlugins) {
-
-			var
-			me = this,
+			var me = this,
 				globalSettings = (Aloha && Aloha.settings) ? Aloha.settings.plugins || {} : {},
 				i,
 				plugin,

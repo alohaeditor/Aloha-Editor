@@ -40,9 +40,46 @@
  * TODO: this file currently doesn't contain all the code to implement
  *       block jumping. Some of it is currently implemented in markup.js.
  */
-define(['aloha/core', 'jquery'], function (Aloha, $) {
+define([
+	'aloha/core',
+	'jquery'
+], function (
+	Aloha,
+	$
+) {
+	'use strict';
 
 	var zeroWidthNode = null;
+
+	/**
+	 * Replaces the text in given text with the given text.
+	 *
+	 * @param node
+	 *        A text node attached to the DOM.
+	 * @param text
+	 *        A string that is to replace the text of the given text node.
+	 */
+	function replaceMergeTextNode(node, text) {
+		node.deleteData(0, node.length);
+		if ('' !== text) {
+			if (node.nextSibling && 3 === node.nextSibling.nodeType) {
+				node.nextSibling.insertData(0, text);
+			} else if (node.previousSibling && 3 === node.previousSibling.nodeType) {
+				node.previousSibling.insertData(node.previousSibling.length, text);
+			} else {
+				node.insertData(0, text);
+			}
+		}
+		// We don't remove the node immediately to avoid intefering with a
+		// caller's range object that may have a start or end containers
+		// equal to this node. Removing it in a timeout may still interfere
+		// with the selection, but that was not a problem during testing.
+		setTimeout(function () {
+			if (0 === node.length) {
+				$(node).remove();
+			}
+		}, 0);
+	}
 
 	/**
 	 * Removes a previously inserted zero width text node.
@@ -61,36 +98,6 @@ define(['aloha/core', 'jquery'], function (Aloha, $) {
 		}
 		replaceMergeTextNode(zeroWidthNode, text);
 		zeroWidthNode = null;
-	}
-
-	/**
-	 * Replaces the text in given text with the given text.
-	 *
-	 * @param node
-	 *        A text node attached to the DOM.
-	 * @param text
-	 *        A string that is to replace the text of the given text node.
-	 */
-	function replaceMergeTextNode(node, text) {
-		node.deleteData(0, node.length);
-		if ("" === text) {
-			// already deleted above
-		} else if (node.nextSibling && 3 === node.nextSibling.nodeType) {
-			node.nextSibling.insertData(0, text);
-		} else if (node.previousSibling && 3 === node.previousSibling.nodeType) {
-			node.previousSibling.insertData(node.previousSibling.length, text);
-		} else {
-			node.insertData(0, text);
-		}
-		// We don't remove the node immediately to avoid intefering with a
-		// caller's range object that may have a start or end containers
-		// equal to this node. Removing it in a timeout may still interfere
-		// with the selection, but that was not a problem during testing.
-		setTimeout(function () {
-			if (0 === node.length) {
-				$(node).remove();
-			}
-		}, 0);
 	}
 
 	/**
