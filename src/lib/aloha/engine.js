@@ -6402,16 +6402,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 					isBr = isNamedHtmlElement(node.childNodes[offset - 1], "br") || false;
 					isHr = isNamedHtmlElement(node.childNodes[offset - 1], "hr") || false;
 				}
-
 				// "If offset is zero and node's previousSibling is an editable
 				// invisible node, remove node's previousSibling from its parent."
 				if (offset == 0 && isEditable(node.previousSibling) && isInvisible(node.previousSibling)) {
 					node.parentNode.removeChild(node.previousSibling);
-
-					// "Otherwise, if node has a child with index offset − 1 and that
-					// child is an editable invisible node, remove that child from
-					// node, then subtract one from offset."
-				} else if (0 <= offset - 1 && offset - 1 < node.childNodes.length && isEditable(node.childNodes[offset - 1]) && (isInvisible(node.childNodes[offset - 1]) || isBr || isHr)) {
+					continue;
+				}
+				// "Otherwise, if node has a child with index offset − 1 and that
+				// child is an editable invisible node, remove that child from
+				// node, then subtract one from offset."
+				if (0 <= offset - 1 && offset - 1 < node.childNodes.length && isEditable(node.childNodes[offset - 1]) && (isInvisible(node.childNodes[offset - 1]) || isBr || isHr)) {
 					node.removeChild(node.childNodes[offset - 1]);
 					offset--;
 					if (isBr || isHr) {
@@ -6419,32 +6419,37 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 						range.setEnd(node, offset);
 						return;
 					}
+					continue;
 
-					// "Otherwise, if offset is zero and node is an inline node, or if
-					// node is an invisible node, set offset to the index of node, then
-					// set node to its parent."
-				} else if ((offset == 0 && isInlineNode(node)) || isInvisible(node)) {
+				}
+				// "Otherwise, if offset is zero and node is an inline node, or if
+				// node is an invisible node, set offset to the index of node, then
+				// set node to its parent."
+				if ((offset == 0 && isInlineNode(node)) || isInvisible(node)) {
 					offset = getNodeIndex(node);
 					node = node.parentNode;
-
-					// "Otherwise, if node has a child with index offset − 1 and that
-					// child is an editable a, remove that child from node, preserving
-					// its descendants. Then abort these steps."
-				} else if (0 <= offset - 1 && offset - 1 < node.childNodes.length && isEditable(node.childNodes[offset - 1]) && isNamedHtmlElement(node.childNodes[offset - 1], "a")) {
+					continue;
+				}
+				// "Otherwise, if node has a child with index offset − 1 and that
+				// child is an editable a, remove that child from node, preserving
+				// its descendants. Then abort these steps."
+				if (0 <= offset - 1 && offset - 1 < node.childNodes.length && isEditable(node.childNodes[offset - 1]) && isNamedHtmlElement(node.childNodes[offset - 1], "a")) {
 					removePreservingDescendants(node.childNodes[offset - 1], range);
 					return;
 
-					// "Otherwise, if node has a child with index offset − 1 and that
-					// child is not a block node or a br or an img, set node to that
-					// child, then set offset to the length of node."
 				}
-
+				// "Otherwise, if node has a child with index offset − 1 and that
+				// child is not a block node or a br or an img, set node to that
+				// child, then set offset to the length of node."
 				if (0 <= offset - 1 && offset - 1 < node.childNodes.length && !isBlockNode(node.childNodes[offset - 1]) && !isHtmlElementInArray(node.childNodes[offset - 1], ["br", "img"])) {
 					node = node.childNodes[offset - 1];
 					offset = getNodeLength(node);
-
-					// "Otherwise, break from this loop."
-				} else {
+					continue;
+				}
+				// "Otherwise, break from this loop."
+				// brk is a quick and dirty jslint workaround since I don't want to rewrite this loop
+				var brk = true;
+				if (brk) {
 					break;
 				}
 			}
