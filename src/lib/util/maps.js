@@ -34,8 +34,11 @@ define([], function () {
 	 * @return {boolean} True if the object is empty. eg: isEmpty({}) == true
 	 */
 	function isEmpty(obj) {
-		for (var name in obj) if (obj.hasOwnProperty(name)) {
-			return false;
+		var name;
+		for (name in obj) {
+			if (obj.hasOwnProperty(name)) {
+				return false;
+			}
 		}
 		return true;
 	}

@@ -25,16 +25,40 @@
  * recipients can access the Corresponding Source.
  */
 // Ensure GENTICS Namespace
-GENTICS = window.GENTICS || {};
-GENTICS.Utils = GENTICS.Utils || {};
+window.GENTICS = window.GENTICS || {};
+window.GENTICS.Utils = window.GENTICS.Utils || {};
 
-define(
-['jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
-
-function (jQuery, Dom, Class, console, rangy) {
+define([
+	'jquery',
+	'util/dom',
+	'util/class',
+	'aloha/console',
+	'aloha/rangy-core'
+], function (jQuery, Dom, Class, console, rangy) {
 	"use strict";
 
 	var GENTICS = window.GENTICS;
+	var Aloha = window.Aloha;
+
+	function selfAndParentsUntil(container, limit) {
+		var parents = [],
+			cur;
+		if (1 === container.nodeType) {
+			cur = container;
+		} else {
+			cur = container.parentNode;
+		}
+		for (;;) {
+			if (!cur || cur === limit || 9 === cur.nodeType) {
+				break;
+			}
+			if (1 === cur.nodeType) {
+				parents.push(cur);
+			}
+			cur = cur.parentNode;
+		}
+		return parents;
+	}
 
 	/**
 	 * @namespace GENTICS.Utils
@@ -236,9 +260,11 @@ function (jQuery, Dom, Class, console, rangy) {
 		 */
 		getCollapsedIERange: function (container, offset) {
 			// create a text range
-			var
-			ieRange = document.body.createTextRange(),
-				tmpRange, right, parent, left;
+			var ieRange = document.body.createTextRange(),
+				tmpRange,
+			    right,
+			    parent,
+			    left;
 
 			// search to the left for the next element
 			left = this.searchElementToLeft(container, offset);
@@ -254,35 +280,20 @@ function (jQuery, Dom, Class, console, rangy) {
 				} else {
 					// this is a hack, when we are at the start of a text node, move the range anyway
 					ieRange.moveStart('character', 1);
-					ieRange.moveStart('character', - 1);
+					ieRange.moveStart('character', -1);
 				}
 			} else {
 				// found nothing to the left, so search right
 				right = this.searchElementToRight(container, offset);
-				if (false && right.element) {
-					// found an element, set the start to the start of that element
-					tmpRange = document.body.createTextRange();
-					tmpRange.moveToElementText(right.element);
-					ieRange.setEndPoint('StartToStart', tmpRange);
+				// also found no element to the right, use the container itself
+				parent = container.nodeType == 3 ? container.parentNode : container;
+				tmpRange = document.body.createTextRange();
+				tmpRange.moveToElementText(parent);
+				ieRange.setEndPoint('StartToStart', tmpRange);
 
-					// and correct the start
-					if (right.characters !== 0) {
-						ieRange.moveStart('character', - right.characters);
-					} else {
-						ieRange.moveStart('character', - 1);
-						ieRange.moveStart('character', 1);
-					}
-				} else {
-					// also found no element to the right, use the container itself
-					parent = container.nodeType == 3 ? container.parentNode : container;
-					tmpRange = document.body.createTextRange();
-					tmpRange.moveToElementText(parent);
-					ieRange.setEndPoint('StartToStart', tmpRange);
-
-					// and correct the start
-					if (left.characters !== 0) {
-						ieRange.moveStart('character', left.characters);
-					}
+				// and correct the start
+				if (left.characters !== 0) {
+					ieRange.moveStart('character', left.characters);
 				}
 			}
 			ieRange.collapse();
@@ -323,9 +334,8 @@ function (jQuery, Dom, Class, console, rangy) {
 		 * @hide
 		 */
 		searchElementToLeft: function (container, offset) {
-			var
-			checkElement,
-			characters = 0;
+			var checkElement,
+			    characters = 0;
 
 			if (container.nodeType === 3) {
 				// start is in a text node
@@ -359,9 +369,8 @@ function (jQuery, Dom, Class, console, rangy) {
 		 * @hide
 		 */
 		searchElementToRight: function (container, offset) {
-			var
-			checkElement,
-			characters = 0;
+			var checkElement,
+			    characters = 0;
 
 			if (container.nodeType === 3) {
 				// start is in a text node
@@ -408,8 +417,7 @@ function (jQuery, Dom, Class, console, rangy) {
 		 * @hide
 		 */
 		initializeFromUserSelection: function (event) {
-			var
-			selection = rangy.getSelection(),
+			var selection = rangy.getSelection(),
 				browserRange;
 
 			if (!selection) {
@@ -446,12 +454,11 @@ function (jQuery, Dom, Class, console, rangy) {
 		 * @method
 		 */
 		correctRange: function () {
-			var
-			adjacentTextNode,
-			textNode,
-			checkedElement,
-			parentNode,
-			offset;
+			var adjacentTextNode,
+			    textNode,
+			    checkedElement,
+			    parentNode,
+			    offset;
 
 			this.clearCaches();
 			if (this.isCollapsed()) {
@@ -576,8 +583,7 @@ function (jQuery, Dom, Class, console, rangy) {
 							// previous sibling is a text node, move end into here (at the end)
 							this.endContainer = this.endContainer.previousSibling;
 							this.endOffset = this.endContainer.data.length;
-						} else if (
-						this.endContainer.previousSibling.nodeType === 1 && this.endContainer.previousSibling.childNodes && this.endContainer.previousSibling.childNodes.length > 0) {
+						} else if (this.endContainer.previousSibling.nodeType === 1 && this.endContainer.previousSibling.childNodes && this.endContainer.previousSibling.childNodes.length > 0) {
 							// previous sibling is another element node with children,
 							// move end into here (at the end)
 							this.endContainer = this.endContainer.previousSibling;
@@ -816,10 +822,10 @@ function (jQuery, Dom, Class, console, rangy) {
 		 */
 		findMarkup: function (comparator, limit, atEnd) {
 			var container = atEnd ? this.endContainer : this.startContainer,
-				limit = limit ? limit[0] : null,
 				parents,
 				i,
 				len;
+			limit = limit ? limit[0] : null;
 			if (!container) {
 				return;
 			}
@@ -840,31 +846,29 @@ function (jQuery, Dom, Class, console, rangy) {
 		getText: function () {
 			if (this.isCollapsed()) {
 				return '';
-			} else {
-				return this.recursiveGetText(this.getRangeTree());
 			}
+			return this.recursiveGetText(this.getRangeTree());
 		},
 
 		recursiveGetText: function (tree) {
 			if (!tree) {
 				return '';
-			} else {
-				var that = this,
-					text = '';
-				jQuery.each(tree, function () {
-					if (this.type == 'full') {
-						// fully selected element/text node
-						text += jQuery(this.domobj).text();
-					} else if (this.type == 'partial' && this.domobj.nodeType === 3) {
-						// partially selected text node
-						text += jQuery(this.domobj).text().substring(this.startOffset, this.endOffset);
-					} else if (this.type == 'partial' && this.domobj.nodeType === 1 && this.children) {
-						// partially selected element node
-						text += that.recursiveGetText(this.children);
-					}
-				});
-				return text;
 			}
+			var that = this,
+			    text = '';
+			jQuery.each(tree, function () {
+				if (this.type == 'full') {
+					// fully selected element/text node
+					text += jQuery(this.domobj).text();
+				} else if (this.type == 'partial' && this.domobj.nodeType === 3) {
+					// partially selected text node
+					text += jQuery(this.domobj).text().substring(this.startOffset, this.endOffset);
+				} else if (this.type == 'partial' && this.domobj.nodeType === 1 && this.children) {
+					// partially selected element node
+					text += that.recursiveGetText(this.children);
+				}
+			});
+			return text;
 		}
 	});
 
@@ -908,46 +912,6 @@ function (jQuery, Dom, Class, console, rangy) {
 		 */
 		children: []
 	});
-
-	function selfAndParentsUntil(container, limit) {
-		var parents = [],
-			cur;
-		if (1 === container.nodeType) {
-			cur = container;
-		} else {
-			cur = container.parentNode;
-		}
-		for (;;) {
-			if (!cur || cur === limit || 9 === cur.nodeType) {
-				break;
-			}
-			if (1 === cur.nodeType) {
-				parents.push(cur);
-			}
-			cur = cur.parentNode;
-		}
-		return parents;
-	}
-
-	function selfAndParentsUntil(container, limit) {
-		var parents = [],
-			cur;
-		if (1 === container.nodeType) {
-			cur = container;
-		} else {
-			cur = container.parentNode;
-		}
-		for (;;) {
-			if (!cur || cur === limit || 9 === cur.nodeType) {
-				break;
-			}
-			if (1 === cur.nodeType) {
-				parents.push(cur);
-			}
-			cur = cur.parentNode;
-		}
-		return parents;
-	}
 
 	return GENTICS.Utils.RangeObject;
 });

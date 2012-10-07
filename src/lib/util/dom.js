@@ -25,17 +25,13 @@
  * recipients can access the Corresponding Source.
  */
 // Ensure GENTICS Namespace
-GENTICS = window.GENTICS || {};
-GENTICS.Utils = GENTICS.Utils || {};
+window.GENTICS = window.GENTICS || {};
+window.GENTICS.Utils = window.GENTICS.Utils || {};
 
-define(
-['jquery', 'util/class', 'aloha/ecma5shims'],
-
-function (jQuery, Class, $_) {
+define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_) {
 	"use strict";
 
-	var
-	GENTICS = window.GENTICS,
+	var	GENTICS = window.GENTICS,
 		//		Class = window.Class,
 		// http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-1841493061
 		Node = {
@@ -263,14 +259,23 @@ function (jQuery, Class, $_) {
 		 * @method
 		 */
 		split: function (range, limit, atEnd) {
-			var
-			splitElement = jQuery(range.startContainer),
+			var splitElement = jQuery(range.startContainer),
 				splitPosition = range.startOffset,
-				updateRange, path, parents,
-				newDom, insertElement, secondPart,
-				i, pathLength, element, jqelement, children, newElement,
-				next, prev, offset;
-
+				updateRange,
+			    path,
+			    parents,
+				newDom,
+			    insertElement,
+			    secondPart,
+				i,
+			    pathLength,
+			    element,
+			    jqelement,
+			    children,
+			    newElement,
+				next,
+			    prev,
+			    offset;
 
 			if (atEnd) {
 				splitElement = jQuery(range.endContainer);
@@ -290,10 +295,10 @@ function (jQuery, Class, $_) {
 
 			jQuery.each(parents, function (index, element) {
 				var isLimit = limit.filter(
-
-				function () {
-					return this == element;
-				}).length;
+					function () {
+						return this == element;
+					}
+				).length;
 				if (isLimit) {
 					if (index > 0) {
 						path = parents.slice(0, index);
@@ -416,8 +421,8 @@ function (jQuery, Class, $_) {
 				return true;
 			}
 
-			if (jQuery.isArray(this.tags[this.children[outerNodeName]]) && jQuery.inArray(innerNodeName,
-			this.tags[this.children[outerNodeName]]) >= 0) {
+			if (jQuery.isArray(this.tags[this.children[outerNodeName]])
+				    && jQuery.inArray(innerNodeName, this.tags[this.children[outerNodeName]]) >= 0) {
 				return true;
 			}
 
@@ -433,13 +438,13 @@ function (jQuery, Class, $_) {
 		 */
 		addMarkup: function (rangeObject, markup, nesting) {
 			// split partially contained text nodes at the start and end of the range
-			if (rangeObject.startContainer.nodeType === 3 && rangeObject.startOffset > 0 && rangeObject.startOffset < rangeObject.startContainer.data.length) {
-				this.split(rangeObject, jQuery(rangeObject.startContainer).parent(),
-				false);
+			if (rangeObject.startContainer.nodeType === 3
+				    && rangeObject.startOffset > 0
+				    && rangeObject.startOffset < rangeObject.startContainer.data.length) {
+				this.split(rangeObject, jQuery(rangeObject.startContainer).parent(), false);
 			}
 			if (rangeObject.endContainer.nodeType === 3 && rangeObject.endOffset > 0 && rangeObject.endOffset < rangeObject.endContainer.data.length) {
-				this.split(rangeObject, jQuery(rangeObject.endContainer).parent(),
-				true);
+				this.split(rangeObject, jQuery(rangeObject.endContainer).parent(), true);
 			}
 
 			// get the range tree
@@ -488,14 +493,13 @@ function (jQuery, Class, $_) {
 					}
 				} else {
 					// TODO check whether the object may be replaced by the given markup
-					if (false) {
-						// TODO replace
-					} else {
-						// recurse into the children (if any), but not if nesting is not
-						// allowed and the object is of the markup to be added
-						if ((nesting || (rangeTree[i].domobj && rangeTree[i].domobj.nodeName !== markup.get(0).nodeName)) && rangeTree[i].children && rangeTree[i].children.length > 0) {
-							this.recursiveAddMarkup(rangeTree[i].children, markup);
-						}
+					//if (false) {
+					// TODO replace
+					//} else {
+					// recurse into the children (if any), but not if nesting is not
+					// allowed and the object is of the markup to be added
+					if ((nesting || (rangeTree[i].domobj && rangeTree[i].domobj.nodeName !== markup.get(0).nodeName)) && rangeTree[i].children && rangeTree[i].children.length > 0) {
+						this.recursiveAddMarkup(rangeTree[i].children, markup);
 					}
 				}
 			}
@@ -517,14 +521,14 @@ function (jQuery, Class, $_) {
 			// this will be the highest found markup object (up to a limit object)
 			var highestObject,
 			// blah
-			testObject = start,
+			    testObject = start,
 				// helper function to stop when we reach a limit object
 				isLimit = limit ? function () {
 					return limit.filter(
-
-					function () {
-						return testObject == this;
-					}).length;
+						function () {
+							return testObject == this;
+						}
+					).length;
 				} : function () {
 					return false;
 				};
@@ -554,7 +558,9 @@ function (jQuery, Class, $_) {
 				startSplitLimit = this.findHighestElement(rangeObject.startContainer, nodeName, limit),
 				endSplitLimit = this.findHighestElement(rangeObject.endContainer, nodeName, limit),
 				didSplit = false,
-				highestObject, root, rangeTree;
+				highestObject,
+			    root,
+			    rangeTree;
 
 			if (startSplitLimit && rangeObject.startOffset > 0) {
 				// when the start is in the start of its container, we don't split
@@ -647,7 +653,11 @@ function (jQuery, Class, $_) {
 		 */
 		doCleanup: function (cleanup, rangeObject, start) {
 			var that = this,
-				prevNode, modifiedRange, startObject, startOffset, endOffset;
+				prevNode,
+			    modifiedRange,
+			    startObject,
+			    startOffset,
+			    endOffset;
 
 			if (typeof cleanup === 'undefined') {
 				cleanup = {};
@@ -823,10 +833,6 @@ function (jQuery, Class, $_) {
 						prevNode.data += this.data;
 
 						// remove empty text nodes	
-					} else if (this.nodeValue === '' && cleanup.removeempty) {
-						// do nothing here.
-
-						// remember it as the last text node if not empty
 					} else if (!(this.nodeValue === '' && cleanup.removeempty)) {
 						prevNode = this;
 						// we are finish here don't delete this node
@@ -907,8 +913,7 @@ function (jQuery, Class, $_) {
 				return false;
 			}
 
-			var
-			index = 0,
+			var index = 0,
 				check = node.previousSibling;
 
 			while (check) {
@@ -931,9 +936,8 @@ function (jQuery, Class, $_) {
 			}
 			if (node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.blockLevelElements) >= 0) {
 				return true;
-			} else {
-				return false;
 			}
+			return false;
 		},
 
 		/**
@@ -1016,9 +1020,8 @@ function (jQuery, Class, $_) {
 				searchleft = true;
 			}
 
-			var
-			nextNode,
-			currentParent = parent;
+			var nextNode,
+			    currentParent = parent;
 
 			// start at the node left/right of the given position
 			if (searchleft && index > 0) {
@@ -1037,27 +1040,32 @@ function (jQuery, Class, $_) {
 					if (stopat.blocklevel && this.isBlockLevelElement(currentParent)) {
 						// do not leave block level elements
 						return false;
-					} else if (stopat.list && this.isListElement(currentParent)) {
+					}
+					if (stopat.list && this.isListElement(currentParent)) {
 						// do not leave list elements
 						return false;
-					} else {
-						// continue with the parent
-						nextNode = searchleft ? currentParent.previousSibling : currentParent.nextSibling;
-						currentParent = currentParent.parentNode;
 					}
+					// continue with the parent
+					nextNode = searchleft ? currentParent.previousSibling : currentParent.nextSibling;
+					currentParent = currentParent.parentNode;
+					continue;
 				} else if (nextNode.nodeType === 3 && jQuery.trim(nextNode.data).length > 0) {
 					// we are lucky and found a notempty text node
 					return nextNode;
-				} else if (stopat.blocklevel && this.isBlockLevelElement(nextNode)) {
+				}
+				if (stopat.blocklevel && this.isBlockLevelElement(nextNode)) {
 					// we found a blocklevel element, stop here
 					return false;
-				} else if (stopat.linebreak && this.isLineBreakElement(nextNode)) {
+				}
+				if (stopat.linebreak && this.isLineBreakElement(nextNode)) {
 					// we found a linebreak, stop here
 					return false;
-				} else if (stopat.list && this.isListElement(nextNode)) {
+				}
+				if (stopat.list && this.isListElement(nextNode)) {
 					// we found a linebreak, stop here
 					return false;
-				} else if (nextNode.nodeType === 3) {
+				}
+				if (nextNode.nodeType === 3) {
 					// we found an empty text node, so step to the next
 					nextNode = searchleft ? nextNode.previousSibling : nextNode.nextSibling;
 				} else {
@@ -1096,7 +1104,10 @@ function (jQuery, Class, $_) {
 			var parentElements = range.getContainerParents(limit, atEnd),
 				that = this,
 				newParent,
-				container, offset, splitParts, contents;
+				container,
+			    offset,
+			    splitParts,
+			    contents;
 
 			if (!limit) {
 				limit = jQuery(document.body);
@@ -1145,23 +1156,21 @@ function (jQuery, Class, $_) {
 							jQuery(container).append(object);
 						}
 						return true;
-					} else {
-						// insert right after the element at offset-1
-						jQuery(container).contents().eq(offset - 1).after(object);
-						return true;
 					}
-				} else if (splitParts) {
+					// insert right after the element at offset-1
+					jQuery(container).contents().eq(offset - 1).after(object);
+					return true;
+				}
+				if (splitParts) {
 					// if the DOM could be split, we insert the new object in between the split parts
 					splitParts.eq(0).after(object);
 					return true;
-				} else {
-					// could not split, so could not insert
-					return false;
 				}
-			} else {
-				// found no possible new parent, so we shall not insert
+				// could not split, so could not insert
 				return false;
 			}
+			// found no possible new parent, so we shall not insert
+			return false;
 		},
 
 		/**
@@ -1201,8 +1210,6 @@ function (jQuery, Class, $_) {
 				this.doCleanup({
 					'merge': true
 				}, range, parent);
-			} else {
-				// TODO
 			}
 		},
 
@@ -1224,13 +1231,13 @@ function (jQuery, Class, $_) {
 			}
 
 			// split partially contained text nodes at the start and end of the range
-			if (rangeObject.startContainer.nodeType == 3 && rangeObject.startOffset > 0 && rangeObject.startOffset < rangeObject.startContainer.data.length) {
-				this.split(rangeObject, jQuery(rangeObject.startContainer).parent(),
-				false);
+			if (rangeObject.startContainer.nodeType == 3
+				    && rangeObject.startOffset > 0
+				    && rangeObject.startOffset < rangeObject.startContainer.data.length) {
+				this.split(rangeObject, jQuery(rangeObject.startContainer).parent(), false);
 			}
 			if (rangeObject.endContainer.nodeType == 3 && rangeObject.endOffset > 0 && rangeObject.endOffset < rangeObject.endContainer.data.length) {
-				this.split(rangeObject, jQuery(rangeObject.endContainer).parent(),
-				true);
+				this.split(rangeObject, jQuery(rangeObject.endContainer).parent(), true);
 			}
 
 			// construct the range tree
@@ -1255,7 +1262,8 @@ function (jQuery, Class, $_) {
 
 		recursiveRemoveRange: function (rangeTree, rangeObject) {
 			// iterate over the rangetree objects of this level
-			for (var i = 0; i < rangeTree.length; ++i) {
+			var i;
+			for (i = 0; i < rangeTree.length; ++i) {
 				// check for nodes fully in the range
 				if (rangeTree[i].type == 'full') {
 					// if the domobj is the startcontainer, or the startcontainer is inside the domobj, we need to update the rangeObject
@@ -1334,7 +1342,9 @@ function (jQuery, Class, $_) {
 				searchleft = true;
 			}
 			var boundaryFound = false,
-				wordBoundaryPos, tempWordBoundaryPos, textNode;
+				wordBoundaryPos,
+			    tempWordBoundaryPos,
+			    textNode;
 			while (!boundaryFound) {
 				// check the node type
 				if (container.nodeType === 3) {
@@ -1359,8 +1369,7 @@ function (jQuery, Class, $_) {
 						tempWordBoundaryPos = wordBoundaryPos;
 						while (tempWordBoundaryPos != -1) {
 							wordBoundaryPos = tempWordBoundaryPos;
-							tempWordBoundaryPos = container.data.substring(
-							wordBoundaryPos + 1, offset).search(this.nonWordRegex);
+							tempWordBoundaryPos = container.data.substring(wordBoundaryPos + 1, offset).search(this.nonWordRegex);
 							if (tempWordBoundaryPos != -1) {
 								tempWordBoundaryPos = tempWordBoundaryPos + wordBoundaryPos + 1;
 							}
@@ -1466,7 +1475,8 @@ function (jQuery, Class, $_) {
 			}
 
 			// all other nodes are not empty if they contain at least one child which is not empty
-			for (var i = 0, childNodes = domObject.childNodes.length; i < childNodes; ++i) {
+			var i, childNodes;
+			for (i = 0, childNodes = domObject.childNodes.length; i < childNodes; ++i) {
 				if (!this.isEmpty(domObject.childNodes[i])) {
 					return false;
 				}
@@ -1482,8 +1492,7 @@ function (jQuery, Class, $_) {
 		 * @method
 		 */
 		setCursorAfter: function (domObject) {
-			var
-			newRange = new GENTICS.Utils.RangeObject(),
+			var newRange = new GENTICS.Utils.RangeObject(),
 				index = this.getIndexInParent(domObject),
 				targetNode,
 				offset;
@@ -1550,11 +1559,10 @@ function (jQuery, Class, $_) {
 		 * @method
 		 */
 		isEditingHost: function (node) {
-			return node && node.nodeType == 1 //ELEMENT_NODE
-			&&
-			(node.contentEditable == "true" || (node.parentNode && node.parentNode.nodeType == 9 //DOCUEMENT_NODE
-			&&
-			node.parentNode.designMode == "on"));
+			return node
+				&& node.nodeType == 1 //ELEMENT_NODE
+				&& (node.contentEditable == "true" || (node.parentNode && node.parentNode.nodeType == 9 //DOCUEMENT_NODE
+													   && node.parentNode.designMode == "on"));
 		},
 
 		/**
@@ -1567,9 +1575,10 @@ function (jQuery, Class, $_) {
 		isEditable: function (node) {
 			// This is slightly a lie, because we're excluding non-HTML elements with
 			// contentEditable attributes.
-			return node && !this.isEditingHost(node) && (node.nodeType != 1 || node.contentEditable != "false") // ELEMENT_NODE
-			&&
-			(this.isEditingHost(node.parentNode) || this.isEditable(node.parentNode));
+			return node
+				&& !this.isEditingHost(node)
+				&& (node.nodeType != 1 || node.contentEditable != "false") // ELEMENT_NODE
+				&& (this.isEditingHost(node.parentNode) || this.isEditable(node.parentNode));
 		},
 
 		/**
@@ -1582,15 +1591,15 @@ function (jQuery, Class, $_) {
 		getEditingHostOf: function (node) {
 			if (this.isEditingHost(node)) {
 				return node;
-			} else if (this.isEditable(node)) {
+			}
+			if (this.isEditable(node)) {
 				var ancestor = node.parentNode;
 				while (!this.isEditingHost(ancestor)) {
 					ancestor = ancestor.parentNode;
 				}
 				return ancestor;
-			} else {
-				return null;
 			}
+			return null;
 		},
 
 		/**
@@ -1635,7 +1644,8 @@ function (jQuery, Class, $_) {
 			}
 
 			// otherwise traverse through the children
-			for (var i = 0; i < node.childNodes.length; ++i) {
+			var i;
+			for (i = 0; i < node.childNodes.length; ++i) {
 				var visibleChild = this.getFirstVisibleChild(node.childNodes[i], true);
 				if (visibleChild != null) {
 					return visibleChild;
@@ -1668,7 +1678,8 @@ function (jQuery, Class, $_) {
 			}
 
 			// otherwise traverse through the children
-			for (var i = node.childNodes.length - 1; i >= 0; --i) {
+			var i;
+			for (i = node.childNodes.length - 1; i >= 0; --i) {
 				var visibleChild = this.getLastVisibleChild(node.childNodes[i], true);
 				if (visibleChild != null) {
 					return visibleChild;

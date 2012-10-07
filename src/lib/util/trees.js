@@ -189,8 +189,8 @@ define(['jquery'], function ($) {
 
 	function walkDomInplace(form, step) {
 		var subResult,
-		child,
-		nextChild;
+		    child,
+		    nextChild;
 		if (1 === form.nodeType) {
 			child = form.firstChild;
 			while (child) {
@@ -282,9 +282,8 @@ define(['jquery'], function ($) {
 		function leafStep(form) {
 			if (isLeaf(form)) {
 				return [leaf(form)];
-			} else {
-				return identityStep(leafStep, leafWalk, form);
 			}
+			return identityStep(leafStep, leafWalk, form);
 		}
 		return leafStep(form)[0];
 	}

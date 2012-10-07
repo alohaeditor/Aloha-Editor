@@ -25,6 +25,7 @@
  * recipients can access the Corresponding Source.
  */
 define(['jquery', 'util/maps', 'util/strings', 'util/browser'], function ($, Maps, Strings, Browser) {
+	'use strict';
 
 	var spacesRx = /\s+/;
 	var attrRegex = /\s([^<\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^\s]+))?/g;
@@ -82,14 +83,21 @@ define(['jquery', 'util/maps', 'util/strings', 'util/browser'], function ($, Map
 	 *        Attribute values will always be strings, but possibly empty strings.
 	 */
 	function attrs(elem) {
-		var attrs = [];
+		var as = [];
 		var names = attrNames(elem);
-		for (var i = 0, len = names.length; i < len; i++) {
+		var i;
+		var len;
+		for (i = 0, len = names.length; i < len; i++) {
 			var name = names[i];
 			var value = $.attr(elem, name);
-			attrs.push([name, (null == value ? "" : "" + value)]);
+			if (null == value) {
+				value = "";
+			} else {
+				value = value.toString();
+			}
+			as.push([name, value]);
 		}
-		return attrs;
+		return as;
 	}
 
 	/**
@@ -98,13 +106,13 @@ define(['jquery', 'util/maps', 'util/strings', 'util/browser'], function ($, Map
 	 */
 	function indexByClassHaveList(elems, classMap) {
 		var index = {},
-		indexed,
-		classes,
-		elem,
-		cls,
-		len,
-		i,
-		j;
+		    indexed,
+		    classes,
+		    elem,
+		    cls,
+		    len,
+		    i,
+		    j;
 		for (i = 0, len = elems.length; i < len; i++) {
 			elem = elems[i];
 			if (elem.className) {
@@ -225,8 +233,8 @@ define(['jquery', 'util/maps', 'util/strings', 'util/browser'], function ($, Map
 	 */
 	function indexByName(root, names) {
 		var i,
-		index = {},
-		len;
+		    index = {},
+		    len;
 		for (i = 0, len = names.length; i < len; i++) {
 			var name = names[i];
 			index[name] = $.makeArray(root.getElementsByTagName(name));

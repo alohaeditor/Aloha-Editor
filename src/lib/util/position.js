@@ -26,15 +26,12 @@
  */
 // Start Closure
 // Ensure GENTICS Namespace
-GENTICS = window.GENTICS || {};
-GENTICS.Utils = GENTICS.Utils || {};
-define(['jquery'],
-
-function (jQuery) {
+window.GENTICS = window.GENTICS || {};
+window.GENTICS.Utils = window.GENTICS.Utils || {};
+define(['jquery'], function (jQuery) {
 	"use strict";
 
-	var
-	$ = jQuery,
+	var	$ = jQuery,
 		GENTICS = window.GENTICS,
 		Class = window.Class,
 		console = window.console;
@@ -98,8 +95,7 @@ function (jQuery) {
 	 */
 	GENTICS.Utils.Position.update = function () {
 		// update scroll position
-		var
-		st = this.w.scrollTop(),
+		var st = this.w.scrollTop(),
 			sl = this.w.scrollLeft(),
 			i;
 

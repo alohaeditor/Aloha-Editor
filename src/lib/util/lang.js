@@ -25,16 +25,17 @@
  * recipients can access the Corresponding Source.
  */
 // Ensure GENTICS Namespace
-GENTICS = window.GENTICS || {};
-GENTICS.Utils = GENTICS.Utils || {};
+window.GENTICS = window.GENTICS || {};
+window.GENTICS.Utils = window.GENTICS.Utils || {};
 
-define('util/lang', [], function () {});
+define('util/lang', [], function () {
+	'use strict';
+});
 
 // Start Closure
 (function (window, undefined) {
 	"use strict";
-	var
-	jQuery = window.alohaQuery || window.jQuery,
+	var jQuery = window.alohaQuery || window.jQuery,
 		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Class = window.Class,
@@ -85,4 +86,4 @@ define('util/lang', [], function () {});
 		return (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4());
 	};
 
-})(window);
+}(window));

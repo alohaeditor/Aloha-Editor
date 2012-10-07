@@ -82,19 +82,19 @@ define([], function () {
 	 *        True if all items in a and b are equal, false if not.
 	 */
 	function equal(a, b, equalFn) {
-		var i = 0,
+		var i,
 			len = a.length;
 		if (len !== b.length) {
 			return false;
 		}
 		if (equalFn) {
-			for (; i < len; i++) {
+			for (i = 0; i < len; i++) {
 				if (!equalFn(a[i], b[i])) {
 					return false;
 				}
 			}
 		} else {
-			for (; i < len; i++) {
+			for (i = 0; i < len; i++) {
 				if (a[i] !== b[i]) {
 					return false;
 				}
@@ -133,9 +133,9 @@ define([], function () {
 	 */
 	function filter(a, pred) {
 		var i,
-		len,
-		value,
-		result = [];
+		    len,
+		    value,
+		    result = [];
 		for (i = 0, len = a.length; i < len; i++) {
 			value = a[i];
 			if (pred(value)) {
@@ -153,7 +153,7 @@ define([], function () {
 	 */
 	function indexOf(a, value) {
 		var i,
-		len;
+		    len;
 		for (i = 0, len = a.length; i < len; i++) {
 			if (value === a[i]) {
 				return i;
@@ -179,7 +179,7 @@ define([], function () {
 	 */
 	function reduce(a, init, fn) {
 		var i,
-		len;
+		    len;
 		for (i = 0, len = a.length; i < len; i++) {
 			init = fn(init, a[i]);
 		}
