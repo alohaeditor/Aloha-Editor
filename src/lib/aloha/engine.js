@@ -3736,7 +3736,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 	commands.backcolor = {
 		// Copy-pasted, same as hiliteColor
-		action: function (value) {
+		action: function (value, range) {
 			// Action is further copy-pasted, same as foreColor
 
 			// "If value is not a valid CSS color, prepend "#" to it."
@@ -3753,7 +3753,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// "Set the selection's value to value."
-			setSelectionValue("backcolor", value);
+			setSelectionValue("backcolor", value, range);
 		},
 		standardInlineValueCommand: true,
 		relevantCssProperty: "backgroundColor",
@@ -3791,7 +3791,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The createLink command /////
 	//@{
 	commands.createlink = {
-		action: function (value) {
+		action: function (value, range) {
 			// "If value is the empty string, abort these steps and do nothing."
 			if (value === "") {
 				return;
@@ -3812,7 +3812,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			});
 
 			// "Set the selection's value to value."
-			setSelectionValue("createlink", value);
+			setSelectionValue("createlink", value, range);
 		},
 		standardInlineValueCommand: true
 	};
@@ -3821,9 +3821,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The fontName command /////
 	//@{
 	commands.fontname = {
-		action: function (value) {
+		action: function (value, range) {
 			// "Set the selection's value to value."
-			setSelectionValue("fontname", value);
+			setSelectionValue("fontname", value, range);
 		},
 		standardInlineValueCommand: true,
 		relevantCssProperty: "fontFamily"
@@ -3834,7 +3834,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 
 	commands.fontsize = {
-		action: function (value) {
+		action: function (value, range) {
 			// "If value is the empty string, abort these steps and do nothing."
 			if (value === "") {
 				return;
@@ -3852,7 +3852,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// "Set the selection's value to value."
-			setSelectionValue("fontsize", value);
+			setSelectionValue("fontsize", value, range);
 		},
 		indeterm: function () {
 			// "True if among editable Text nodes that are effectively contained in
@@ -3890,7 +3890,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The foreColor command /////
 	//@{
 	commands.forecolor = {
-		action: function (value) {
+		action: function (value, range) {
 			// Copy-pasted, same as backColor and hiliteColor
 
 			// "If value is not a valid CSS color, prepend "#" to it."
@@ -3907,7 +3907,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// "Set the selection's value to value."
-			setSelectionValue("forecolor", value);
+			setSelectionValue("forecolor", value, range);
 		},
 		standardInlineValueCommand: true,
 		relevantCssProperty: "color",
@@ -3924,7 +3924,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 	commands.hilitecolor = {
 		// Copy-pasted, same as backColor
-		action: function (value) {
+		action: function (value, range) {
 			// Action is further copy-pasted, same as foreColor
 
 			// "If value is not a valid CSS color, prepend "#" to it."
@@ -3941,7 +3941,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// "Set the selection's value to value."
-			setSelectionValue("hilitecolor", value);
+			setSelectionValue("hilitecolor", value, range);
 		},
 		indeterm: function () {
 			// "True if among editable Text nodes that are effectively contained in
@@ -3986,7 +3986,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The removeFormat command /////
 	//@{
 	commands.removeformat = {
-		action: function () {
+		action: function (value, range) {
 			var newEnd, newStart, newNode;
 
 			// "A removeFormat candidate is an editable HTML element with local
@@ -4065,7 +4065,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// "For each of the entries in the following list, in the given order,
 			// set the selection's value to null, with command as given."
 			$_(["subscript", "bold", "fontname", "fontsize", "forecolor", "hilitecolor", "italic", "strikethrough", "underline"]).forEach(function (command) {
-				setSelectionValue(command, null);
+				setSelectionValue(command, null, range);
 			});
 		}
 	};
@@ -4074,14 +4074,14 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The strikethrough command /////
 	//@{
 	commands.strikethrough = {
-		action: function () {
+		action: function (value, range) {
 			// "If queryCommandState("strikethrough") returns true, set the
 			// selection's value to null. Otherwise set the selection's value to
 			// "line-through"."
-			if (myQueryCommandState("strikethrough")) {
-				setSelectionValue("strikethrough", null);
+			if (myQueryCommandState("strikethrough", range)) {
+				setSelectionValue("strikethrough", null, range);
 			} else {
-				setSelectionValue("strikethrough", "line-through");
+				setSelectionValue("strikethrough", "line-through", range);
 			}
 		},
 		inlineCommandActivatedValues: ["line-through"]
@@ -4091,16 +4091,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The subscript command /////
 	//@{
 	commands.subscript = {
-		action: function () {
+		action: function (value, range) {
 			// "Call queryCommandState("subscript"), and let state be the result."
-			var state = myQueryCommandState("subscript");
+			var state = myQueryCommandState("subscript", range);
 
 			// "Set the selection's value to null."
-			setSelectionValue("subscript", null);
+			setSelectionValue("subscript", null, range);
 
 			// "If state is false, set the selection's value to "subscript"."
 			if (!state) {
-				setSelectionValue("subscript", "subscript");
+				setSelectionValue("subscript", "subscript", range);
 			}
 		},
 		indeterm: function () {
@@ -4124,17 +4124,17 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The superscript command /////
 	//@{
 	commands.superscript = {
-		action: function () {
+		action: function (value, range) {
 			// "Call queryCommandState("superscript"), and let state be the
 			// result."
-			var state = myQueryCommandState("superscript");
+			var state = myQueryCommandState("superscript", range);
 
 			// "Set the selection's value to null."
-			setSelectionValue("superscript", null);
+			setSelectionValue("superscript", null, range);
 
 			// "If state is false, set the selection's value to "superscript"."
 			if (!state) {
-				setSelectionValue("superscript", "superscript");
+				setSelectionValue("superscript", "superscript", range);
 			}
 		},
 		indeterm: function () {
@@ -4161,13 +4161,13 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The underline command /////
 	//@{
 	commands.underline = {
-		action: function () {
+		action: function (value, range) {
 			// "If queryCommandState("underline") returns true, set the selection's
 			// value to null. Otherwise set the selection's value to "underline"."
-			if (myQueryCommandState("underline")) {
-				setSelectionValue("underline", null);
+			if (myQueryCommandState("underline", range)) {
+				setSelectionValue("underline", null, range);
 			} else {
-				setSelectionValue("underline", "underline");
+				setSelectionValue("underline", "underline", range);
 			}
 		},
 		inlineCommandActivatedValues: ["underline"]
@@ -7534,8 +7534,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 	commands.insertorderedlist = {
 		// "Toggle lists with tag name "ol"."
-		action: function () {
-			toggleLists("ol");
+		action: function (value, range) {
+			toggleLists("ol", range);
 		},
 		// "True if the selection's list state is "mixed" or "mixed ol", false
 		// otherwise."
@@ -8023,8 +8023,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 	commands.insertunorderedlist = {
 		// "Toggle lists with tag name "ul"."
-		action: function () {
-			toggleLists("ul");
+		action: function (value, range) {
+			toggleLists("ul", range);
 		},
 		// "True if the selection's list state is "mixed" or "mixed ul", false
 		// otherwise."
