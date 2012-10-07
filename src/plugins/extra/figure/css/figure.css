@@ -1,0 +1,11 @@
+.x-figure .area .label {
+  display: inline-block;
+  width: 5em;
+  font-weight: bold;
+}
+
+.x-figure .area .value {
+  display: inline-block;
+  min-width: 10em;
+  border: 1px solid black;
+}

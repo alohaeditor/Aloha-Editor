@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -59,7 +58,7 @@
 	</script>
 
 	<script src="src/lib/require.js"></script>
-	<script src="src/lib/aloha.js" data-aloha-plugins="extra/toolbar,common/ui,common/format,common/paste,common/block,user/blockdemo,common/list,common/table,extra/draganddropfiles,common/image,extra/figure,extra/ribbon,extra/no-floating"></script>
+	<script src="src/lib/aloha.js" data-aloha-plugins="extra/toolbar,common/ui,common/format,common/paste,common/block,user/blockdemo,common/list,common/table,extra/draganddropfiles,common/image,extra/figure,extra/ribbon,extra/no-floating,extra/link,extra/bubble"></script>
 
 	<link rel="stylesheet" href="src/css/aloha.css" type="text/css">
 	<style type="text/css">
@@ -72,6 +71,30 @@
 
 figure { counter-increment: figure; }
 figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weight: bold; }
+
+.aloha-image-upload-drop-box {
+  text-align: center;
+  border: 1px dashed #ccc;
+  width: 400px;
+  padding: 100px 0;
+  cursor: pointer;
+}
+
+/* Metadata fields that occur around the image */
+.aloha-image-attrib {
+  
+}
+.aloha-image-attrib .aloha-image-attr-alt::before {
+  content: "Please provide a description of this image for the visually impaired";
+  color: #ccc;
+  display: block;
+}
+/* Just some formatting of the input boxes */
+.aloha-image-attrib input { display: block; }
+.aloha-image-attrib .aloha-image-attr-alt {
+  width: 400px;
+  display: block;
+}
 	</style>
 
 	<style>
