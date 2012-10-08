@@ -51,3 +51,19 @@
   top: 0;
   z-index: 1;
 }
+.ui-dialog .aloha-simpletoolbar-dialog-group {
+  white-space: nowrap;
+}
+.ui-dialog .aloha-ui-label span.aloha-ui-label-text {
+  margin-right: 0.25em;
+}
+.ui-dialog .aloha-ui-label input,
+.ui-dialog .aloha-ui-label select,
+.ui-dialog .aloha-ui-label textarea,
+.ui-dialog .aloha-ui-label button {
+  margin-right: 1em;
+}
+.ui-dialog .ui-icon-closethick {
+  background-image: url(../img/ui-icons_222222_256x240.png);
+  background-position: -96px -128px;
+}
