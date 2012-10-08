@@ -11,7 +11,7 @@
   padding: 5px 1em;
   box-shadow: 0 2px 3px 0 #ccc;
   
-  &> .menu-item {
+  > .menu-item {
     vertical-align: middle;
     display: inline-block;
     opacity: 0.70;
@@ -27,17 +27,17 @@
     }
     &.disabled.selected { border: 1px solid transparent; }
     &.checked { background-color: @lightGray; opacity: 1.0; border: 1px solid #ccc; }
-    &> .checked-icon { display: none; }
+    > .checked-icon { display: none; }
 
-    &> .accel { display: none; }
-    &> .tool-tip { display: none; }
-    &> .menu-icon { display: inline-block; }
-    &> .text {
+    > .accel { display: none; }
+    > .tool-tip { display: none; }
+    > .menu-icon { display: inline-block; }
+    > .text {
       display: inline-block;
       font-weight: bold;
     }
     &.icon > .text { display: none; }
-    &> .submenu {
+    > .submenu {
       display: inline-block;
       position: relative;
       padding-left: 3px;
@@ -68,8 +68,8 @@
   
   &.checked.icon .checked-icon { display: none; }
   
-  &> .accel { position: absolute; right: 5px; }
-  &> .submenu {
+  > .accel { position: absolute; right: 5px; }
+  > .submenu {
     position: absolute;
     font-size: 70%;
     right: 10px;
@@ -114,13 +114,13 @@
   z-index: 1000;
 
 
-  &> .menu-item {
+  > .menu-item {
     padding: 6px 23px 6px 30px;
     cursor: default;
     line-height: 16px;
   }
 
-  &> .checked > .checked-icon {
+  > .checked > .checked-icon {
     position: absolute;
     left: 3px;
     top: 40%;
@@ -136,12 +136,12 @@
   padding-left: 70px;
   padding-right: 90px;
 
-  &> .menu-button {
+  > .menu-button {
     display: inline; padding: 6px 7px;
 
-    &> .text { display: inline; }
-    &> .submenu { display: none; }
-    &> .menu-icon { display: none; }
+    > .text { display: inline; }
+    > .submenu { display: none; }
+    > .menu-icon { display: none; }
   }
 }
 
