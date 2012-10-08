@@ -39,8 +39,7 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           d = _ref[_i];
           dialog = Aloha.jQuery('<div />', {
-            id: 'aloha-simpletoolbar-scope-' + d.scope,
-            "class": 'aloha'
+            id: 'aloha-simpletoolbar-scope-' + d.scope
           });
           _ref1 = d.components;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -61,7 +60,8 @@
           }
           dialog.dialog({
             title: d.label,
-            autoOpen: false
+            autoOpen: false,
+            dialogClass: 'aloha'
           });
           _results.push(dialogMap[d.scope] = dialog);
         }
@@ -291,19 +291,19 @@
         plugin.openDialog = null;
         return PubSub.sub('aloha.ui.scope.change', function() {
           var d, scope, _j, _len1, _ref1;
-          scope = Scopes.getPrimaryScope();
+          if (plugin.openDialog) {
+            plugin.openDialog.dialog('close');
+          }
           _ref1 = plugin.settings.dialogs;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             d = _ref1[_j];
-            if (d.scope === scope) {
-              if (plugin.openDialog) {
-                plugin.openDialog.dialog('close');
-              }
-              plugin.openDialog = dialogLookup[scope];
+            if (Scopes.isActiveScope(d.scope)) {
+              plugin.openDialog = dialogLookup[d.scope];
               plugin.openDialog.dialog('open');
               break;
             }
           }
+          scope = Scopes.getPrimaryScope();
           return console && console.log('Scope change to ' + scope);
         });
       },

@@ -30,7 +30,7 @@ define [
     initDialogs: (dialogMap, itemMap) ->
         for d in @settings.dialogs
           dialog = Aloha.jQuery('<div />',
-            id: 'aloha-simpletoolbar-scope-' + d.scope, class: 'aloha')
+            id: 'aloha-simpletoolbar-scope-' + d.scope)
           for group in d.components
             gdiv = Aloha.jQuery('<div />')
             for line in group
@@ -40,7 +40,7 @@ define [
               gdiv.append(item)
               itemMap[line] = item
             dialog.append(gdiv)
-          dialog.dialog(title: d.label, autoOpen: false)
+          dialog.dialog(title: d.label, autoOpen: false, dialogClass: 'aloha')
           dialogMap[d.scope] = dialog
     init: ->
       @settings = jQuery.extend(true, @defaultSettings, @settings)
@@ -174,17 +174,18 @@ define [
             headingsButton.setText labels[h]
 
       plugin.openDialog = null
-      # Scope change is deprecated, but it is still widely used
       PubSub.sub 'aloha.ui.scope.change', () ->
+        # If there is a dialog open, close it.
+        if plugin.openDialog
+          plugin.openDialog.dialog('close')
         # Find a dialog for this scope
-        scope = Scopes.getPrimaryScope()
         for d in plugin.settings.dialogs
-          if d.scope == scope
-            if plugin.openDialog
-              plugin.openDialog.dialog('close')
-            plugin.openDialog = dialogLookup[scope]
+          if Scopes.isActiveScope(d.scope)
+            plugin.openDialog = dialogLookup[d.scope]
             plugin.openDialog.dialog('open')
             break
+        # XXX Debug stuff
+        scope = Scopes.getPrimaryScope()
         console and console.log('Scope change to ' + scope)
 
 
