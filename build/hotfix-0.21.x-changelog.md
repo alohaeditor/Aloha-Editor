@@ -8,4 +8,3 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUG**: table-plugin: Fixed javascript error that occured when removing the whole table.
