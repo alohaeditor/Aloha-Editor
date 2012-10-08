@@ -1,15 +1,8 @@
-# TODO: The settings below really should be configurable via Aloha.settings
-toolbarSettings = [
- 'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '',
- { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
- { text: 'insertImage', icon: 'aloha-image-insert' }
-]
-
 define [
     "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu',
-    "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console",
-    "css!simpletoolbar/css/simpletoolbar.css" ], (
-    Aloha, Plugin, Ui, appmenu, i18n, i18nCore) ->
+    "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "PubSub", "ui/scopes",
+    "css!simpletoolbar/css/simpletoolbar.css"], (
+    Aloha, Plugin, Ui, appmenu, i18n, i18nCore, PubSub, Scopes) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
@@ -19,7 +12,44 @@ define [
    register the plugin with unique name
   ###
   Plugin.create "simpletoolbar",
+    defaultSettings: {
+        'initfloat': false, # Whether to also initialise aloha default toolbar
+        'menu': [
+             'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript',
+             'subscript', '', 'unorderedList', 'orderedList', '',
+             { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
+             { text: 'insertImage', icon: 'aloha-image-insert' }],
+        'dialogs': [
+            label: 'Image'
+            scope: 'image'
+            # I'm sorry for this long line, but sometimes coffeescript is bollocks!
+            components: [ [ "imageSource", "", "imageTitle" ], [ "imageResizeWidth", "", "imageResizeHeight" ], [ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ], [ "imageBrowser" ] ]
+        ]
+    },
+    initDialogs: (dialogMap, itemMap) ->
+        for d in @settings.dialogs
+          dialog = Aloha.jQuery('<div />',
+            id: 'aloha-simpletoolbar-scope-' + d.scope)
+          for group in d.components
+            gdiv = Aloha.jQuery('<div class="aloha-simpletoolbar-dialog-group"/>')
+            for line in group
+              if line.length == 0
+                gdiv.append('<br />')
+                continue
+              item = Aloha.jQuery('<span />', id: 'aloha-simpletoolbar-dialogitem-' + line)
+              gdiv.append(item)
+              itemMap[line] = item
+            dialog.append(gdiv)
+          dialog.dialog
+            title: d.label
+            autoOpen: false
+            dialogClass: 'aloha'
+            width: 'auto'
+            close: (event, ui) ->
+              Scopes.setScope('Aloha.empty')
+          dialogMap[d.scope] = dialog
     init: ->
+      @settings = jQuery.extend(true, @defaultSettings, @settings)
       window.toolbar = toolbar = new appmenu.ToolBar()
       toolbar.el.appendTo CONTAINER_JQUERY
       toolbar.el.addClass 'aloha'
@@ -47,12 +77,28 @@ define [
             lookupMap[item.text] = menuItem
           return menuItem
 
-      for item in toolbarSettings
+      for item in @settings.menu
           toolbar.append (recurse item, toolbarLookup)
 
+      dialogLookup = {}
+      dialogItemLookup = {}
+      @initDialogs(dialogLookup, dialogItemLookup)
+
+      # Keep a reference to our old ui
+      Ui.__old_adopt = Ui.adopt
+
       # Hijack the toolbar buttons so we can customize where they are placed.
-      
+      plugin = @
       Ui.adopt = (slot, type, settings) ->
+        if plugin.settings.initfloat
+            # Pass through initialisation to old toolbar. Sometimes useful
+            # to use both.
+            try
+                Ui.__old_adopt(slot, type, settings)
+            catch err
+              # pass
+
+        #console and console.log(type)
         # This class adapts button functions Aloha expects to functions the appmenu uses
         class ItemRelay
           constructor: (@items) ->
@@ -71,6 +117,14 @@ define [
 
         if slot of toolbarLookup
           item = toolbarLookup[slot]
+        else if slot of dialogItemLookup
+          # Item should be placed in the relevant dialog block. This item is
+          # going to be of type Component, so we use the upstream ui API.
+          Type = if settings then type.extend(settings) else type
+          component = new Type();
+          component.adoptParent(plugin)
+          dialogItemLookup[slot].append(component.element)
+          item = new appmenu.ToolButton 'DUMMY_ITEM_THAT_SQUASHES_STATE_CHANGES'
         else
           item = new appmenu.ToolButton 'DUMMY_ITEM_THAT_SQUASHES_STATE_CHANGES'
                     
@@ -125,6 +179,22 @@ define [
           # Update the toolbar to show the current heading level
           if isActive
             headingsButton.setText labels[h]
+
+      plugin.openDialog = null
+      PubSub.sub 'aloha.ui.scope.change', () ->
+        # If there is a dialog open, close it.
+        if plugin.openDialog
+          plugin.openDialog.dialog('close')
+        # Find a dialog for this scope
+        for d in plugin.settings.dialogs
+          if Scopes.isActiveScope(d.scope)
+            plugin.openDialog = dialogLookup[d.scope]
+            plugin.openDialog.dialog('open')
+            break
+        # XXX Debug stuff
+        scope = Scopes.getPrimaryScope()
+        console and console.log('Scope change to ' + scope)
+
 
     ###
      toString method
