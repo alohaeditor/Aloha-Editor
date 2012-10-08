@@ -122,7 +122,8 @@ function (jQuery) {
                     var headerrows = Number(dialog.find(
                         '#include-row-header').is(':checked'));
 
-					that.TablePlugin.createTable(cols, rows, headerrows);
+					that.TablePlugin.createTable(cols, rows - headerrows,
+                        headerrows);
 					that.hide();
 				});
 
