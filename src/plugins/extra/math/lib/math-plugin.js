@@ -869,6 +869,8 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
 */
   function mathClickNew(openDelimiter, closeDelimiter, charChangeFunction) {
     console.log("mathClickNew ");
+    // Prevents multiple editors from being opened at the same time
+    mathEditorRemove("");
     var equation = getSelectionText();
     // Pops up the math-editor if the user hasn't selected text
     if (equation == '') {
