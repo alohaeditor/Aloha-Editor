@@ -1,4 +1,4 @@
-define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui' ], (Aloha, Plugin, block, BlockManager, Ui, i18n, i18nCore) -> 
+define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 'css!figure/css/figure.css' ], (Aloha, Plugin, block, BlockManager, Ui, i18n, i18nCore) -> 
 
 
   ###
@@ -88,18 +88,49 @@ define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui' ]
       initializeFigures = ($figures) ->
         # $figures.find('figcaption').aloha()
 
-        $figures.find('figcaption').on 'dblclick', () ->
-          dialog = $('<div></div>')
-          captionArea = $('<div></div>').appendTo(dialog)
-          captionArea[0].innerHTML = @.innerHTML
-          caption = $(@)
-          figure = caption.parent()
+        $figures.on 'click', () ->
+          dialog = $('<div class="x-figure"></div>')
+          titleRow = $('<div class="title area"><span class="label">Title</span><span class="value"/></div>').appendTo dialog
+          imageRow = $('<div class="image area"><span class="label">Image (drop to change)</span><span class="value"/></div>').appendTo dialog
+          captionRow = $('<div class="caption area"><span class="label">caption</span><span class="value"/></div>').appendTo dialog
+          
+          figure = $(@)
+          
+          title = figure.children('.title')
+          caption = figure.children('figcaption')
+          images = figure.children(':not(.aloha-block-handle)').not(title).not(caption)
+
+          editTitle = titleRow.children('.value')
+          editTitle.append title.contents()
+          editImage = imageRow.children('.value')
+          editImage.append images
+          editCaption = captionRow.children('.value')
+          editCaption.append caption.contents()
+          
+          # editTitle.add(editImage).add(editCaption).aloha()
+          dialog.find('.value').aloha()
+          
           dialog.dialog
+            buttons: { 'Close': () -> dialog.dialog('close') }
             close: () ->
-              captionArea.mahalo()
-              caption[0].innerHTML = captionArea[0].innerHTML
+              dialog.find('.value').mahalo()
+              figure.contents().remove()
+              # 4 cases for each element:
+              # - It doesn't already exist and we don't need to do anything
+              # - It doesn't already exist and we DO    need to ADD it
+              # - It DOES    already exist and we DO    need to CHANGE it
+              # - It DOES    already exist and we DO    need to REMOVE it
+              appender = (parent, contents, elName='', cls='') ->
+                if elName
+                  el = $("<#{elName}></#{elName}>").appendTo(parent)
+                  el.addClass(cls) if cls
+                  el.append contents
+                else
+                  parent.append contents
               
-          captionArea.aloha()
+              appender(figure, editTitle.contents(), 'span', 'title') if editTitle.text()
+              appender(figure, editImage.contents()) if editImage.children().length
+              appender(figure, editCaption.contents(), 'figcaption', '') if editCaption.text()
 
         # register drop handlers to store the dropped file as a data URI
         $figures.find('img').on 'drop', (dropEvent) ->

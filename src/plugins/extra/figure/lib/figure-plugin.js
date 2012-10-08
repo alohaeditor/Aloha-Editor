@@ -1,7 +1,7 @@
 (function() {
   var __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(["aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui'], function(Aloha, Plugin, block, BlockManager, Ui, i18n, i18nCore) {
+  define(["aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 'css!figure/css/figure.css'], function(Aloha, Plugin, block, BlockManager, Ui, i18n, i18nCore) {
     /*
        Monkey patch a couple of things in Aloha so figures can be draggable blocks
     */    block.AbstractBlock.prototype._postProcessElementIfNeeded = function() {
@@ -87,20 +87,56 @@
         });
         BlockManager.registerBlockType('FigureBlock', FigureBlock);
         initializeFigures = function($figures) {
-          $figures.find('figcaption').on('dblclick', function() {
-            var caption, captionArea, dialog, figure;
-            dialog = $('<div></div>');
-            captionArea = $('<div></div>').appendTo(dialog);
-            captionArea[0].innerHTML = this.innerHTML;
-            caption = $(this);
-            figure = caption.parent();
-            dialog.dialog({
+          $figures.on('click', function() {
+            var caption, captionRow, dialog, editCaption, editImage, editTitle, figure, imageRow, images, title, titleRow;
+            dialog = $('<div class="x-figure"></div>');
+            titleRow = $('<div class="title area"><span class="label">Title</span><span class="value"/></div>').appendTo(dialog);
+            imageRow = $('<div class="image area"><span class="label">Image (drop to change)</span><span class="value"/></div>').appendTo(dialog);
+            captionRow = $('<div class="caption area"><span class="label">caption</span><span class="value"/></div>').appendTo(dialog);
+            figure = $(this);
+            title = figure.children('.title');
+            caption = figure.children('figcaption');
+            images = figure.children(':not(.aloha-block-handle)').not(title).not(caption);
+            editTitle = titleRow.children('.value');
+            editTitle.append(title.contents());
+            editImage = imageRow.children('.value');
+            editImage.append(images);
+            editCaption = captionRow.children('.value');
+            editCaption.append(caption.contents());
+            dialog.find('.value').aloha();
+            return dialog.dialog({
+              buttons: {
+                'Close': function() {
+                  return dialog.dialog('close');
+                }
+              },
               close: function() {
-                captionArea.mahalo();
-                return caption[0].innerHTML = captionArea[0].innerHTML;
+                var appender;
+                dialog.find('.value').mahalo();
+                figure.contents().remove();
+                appender = function(parent, contents, elName, cls) {
+                  var el;
+                  if (elName == null) elName = '';
+                  if (cls == null) cls = '';
+                  if (elName) {
+                    el = $("<" + elName + "></" + elName + ">").appendTo(parent);
+                    if (cls) el.addClass(cls);
+                    return el.append(contents);
+                  } else {
+                    return parent.append(contents);
+                  }
+                };
+                if (editTitle.text()) {
+                  appender(figure, editTitle.contents(), 'span', 'title');
+                }
+                if (editImage.children().length) {
+                  appender(figure, editImage.contents());
+                }
+                if (editCaption.text()) {
+                  return appender(figure, editCaption.contents(), 'figcaption', '');
+                }
               }
             });
-            return captionArea.aloha();
           });
           return $figures.find('img').on('drop', function(dropEvent) {
             var dt, img, readFile;

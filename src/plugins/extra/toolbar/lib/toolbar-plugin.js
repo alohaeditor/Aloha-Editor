@@ -7,7 +7,7 @@
       subMenu: ["bold", "italic", "underline", "subscript", "superscript"]
     }, {
       text: "Insert",
-      subMenu: ["insertImage", 'insertFigure']
+      subMenu: ["insertImage", 'insertFigure', 'insertLink']
     }, {
       text: "Table",
       subMenu: [
@@ -25,7 +25,7 @@
     }
   ];
 
-  toolbarSettings = ['bold', 'italic', 'underline', '', 'insertImage', 'insertFigure', '', 'orderedList', 'unorderedList', 'outdentList', 'indentList'];
+  toolbarSettings = ['bold', 'italic', 'underline', '', 'insertLink', 'insertImage', 'insertFigure', '', 'orderedList', 'unorderedList', 'outdentList', 'indentList'];
 
   define(["aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmenu/appmenu', "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!toolbar/css/toolbar.css"], function(Aloha, Plugin, Ui, Ribbon, appmenu, i18n, i18nCore) {
     var CONTAINER_JQUERY;
@@ -233,8 +233,8 @@
         headingsButton = new appmenu.ToolButton("Heading 1", {
           subMenu: new appmenu.Menu(headingButtons, 'custom-headings')
         });
-        toolbar.append(headingsButton);
-        toolbar.append(new appmenu.Separator());
+        toolbar.prepend(new appmenu.Separator());
+        toolbar.prepend(headingsButton);
         Aloha.bind('aloha-editable-activated', function(e, params) {
           menubar.setAccelContainer(params.editable.obj);
           return toolbar.setAccelContainer(params.editable.obj);

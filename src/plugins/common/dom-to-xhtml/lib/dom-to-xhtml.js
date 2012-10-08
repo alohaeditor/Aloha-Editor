@@ -48,6 +48,19 @@ function( Aloha, $, console) {
 			var attr = attrs[ i ];
 			if ( typeof attr.specified === "undefined" || attr.specified ) {
 				var name = attr.nodeName;
+				
+				// Ignore attributes belonging to the xmlns namespace
+				// Otherwise include the namespace unless
+				// it is an XHTML attribute.
+				if ('http://www.w3.org/2000/xmlns/' == attr.namespaceURI) {
+					continue;
+				} else if ('http://www.w3.org/1999/xhtml' == attr.namespaceURI || null == attr.namespaceURI) {
+					// Leave the name alone. It will get lowercased later.
+				} else {
+					// Uses CSS namespace syntax
+					name = attr.namespaceURI + '|' + name;
+				}
+				
 				// Use jQuery to get a corrected style attribute on IE.
 				// Otherwise prefer getAttribute() over attr.nodeValue as the
 				// latter stringifies the attribute value.
@@ -110,11 +123,38 @@ function( Aloha, $, console) {
 	 *        given element, separated by space. The string will have a leading space.
 	 */
 	function makeAttrString(element) {
+		var nsElement = element.namespaceURI;
 		var attrs = getAttrs(element);
 		var str = "";
 		for (var i = 0; i < attrs.length; i++) {
+
 			// The XHTML spec says attributes are lowercase
-			var name  = attrs[i][0].toLowerCase();
+			// but attributes belonging to other namespaces like xlink:href
+			// should preserve their case and include a namespaceURI
+			var namespace, name, nsExtra;
+			var nsName = attrs[i][0];
+            // getAttrs adds a separator if the attribute has a namespace
+			if (nsName.indexOf('|') >= 0) {
+				namespace = nsName.split('|')[0];
+				name = nsName.split('|')[1];
+			} else {
+				namespace = null;
+				name = nsName;
+			}
+			if (namespace == null || namespace == 'http://www.w3.org/1999/xhtml') {
+				// Check if the element belongs to the HTML namespace.
+				// If not, then don't lowercase the attribute
+				if (nsElement == null || nsElement == 'http://www.w3.org/1999/xhtml') {
+					name = name.toLowerCase();
+					nsExtra = '';
+				} else {
+					// name = name.toLowerCase();
+					nsExtra = '';
+				}
+			} else {
+				name = 'ns' + i + ':' + name;
+				nsExtra = 'xmlns:ns' + i + '="' + namespace + '" ';
+			}
 			var value = attrs[i][1];
 
 			//TODO it's only a boolean attribute if the element is in an HTML namespace
@@ -127,7 +167,7 @@ function( Aloha, $, console) {
 			}
 
 			// For boolean attributes, the mere existence of the attribute means it is true.
-			str += " " + name + '="' + encodeDqAttrValue("" + (isBool ? name : value)) + '"';
+			str += " " + nsExtra + name + '="' + encodeDqAttrValue("" + (isBool ? name : value)) + '"';
 		}
 		return str;
 	}
@@ -202,8 +242,20 @@ function( Aloha, $, console) {
 	 *        a child of the given element.
 	 */
 	function serializeElement(element, child, unrecognized, xhtml) {
-		// TODO: we should only lowercase element names if they are in an HTML namespace
-		var elementName = element.nodeName.toLowerCase();
+        var elementName = element.nodeName;
+        var nsDeclaration;
+
+		// Elements belonging to other namespaces like svg:textPath
+		// should preserve their case and include a namespaceURI
+		if (element.namespaceURI == "http://www.w3.org/1999/xhtml") {
+			elementName = elementName.toLowerCase();
+			nsDeclaration = '';
+		} else if ('http://www.w3.org/2000/svg' == element.namespaceURI && elementName != 'svg') {
+			nsDeclaration = '';
+		} else {
+			nsDeclaration = ' xmlns="' + element.namespaceURI + '"';
+		}
+		
 		// This is a hack around an IE bug which strips the namespace prefix
 		// of element.nodeName if it occurs inside an contentEditable=true.
 		if (element.scopeName && 'HTML' != element.scopeName && -1 === elementName.indexOf(':')) {
@@ -212,7 +264,7 @@ function( Aloha, $, console) {
 		if ( ! unrecognized && null == child && -1 !== $.inArray(elementName, emptyElements) ) {
 			xhtml.push('<' + elementName + makeAttrString(element) + '/>');
 		} else {
-			xhtml.push('<' + elementName + makeAttrString(element) + '>');
+			xhtml.push('<' + elementName + nsDeclaration + makeAttrString(element) + '>');
 			child = serializeChildren(element, child, unrecognized,  xhtml);
 			xhtml.push('</' + elementName + '>');
 		}

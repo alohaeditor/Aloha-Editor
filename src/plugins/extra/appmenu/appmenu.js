@@ -72,6 +72,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           item = _ref[_i];
           this._closeEverythingBut(item);
+          item.parent = this;
           this.el.append(item.el);
         }
       }
@@ -86,7 +87,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             child = _ref[_i];
             if (child.subMenu && child !== item) {
-              _results.push(child.subMenu.close());
+              _results.push(child.subMenu._closeSubMenu());
             } else {
               _results.push(void 0);
             }
@@ -95,41 +96,90 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         });
       };
 
+      Menu.prototype.prepend = function(item) {
+        item.parent = this;
+        this.items.unshift(item);
+        return item.el.prependTo(this.el);
+      };
+
       Menu.prototype.append = function(item) {
+        item.parent = this;
         this.items.push(item);
         return item.el.appendTo(this.el);
       };
 
-      Menu.prototype.open = function(position) {
+      Menu.prototype._setSelectedBubbledUp = function(child, dir) {
+        var ariaDown, ariaLeft, ariaParent, ariaRight, ariaUp, that;
+        that = this;
+        child.setSelected(false);
+        ariaParent = function() {
+          that.setSelected(false);
+          return that.parent.setSelected(that);
+        };
+        ariaUp = function() {
+          var i, newSelection;
+          i = that.items.indexOf(child);
+          newSelection = that.items[(i + that.items.length - 1) % that.items.length];
+          return newSelection._setSelected(true);
+        };
+        ariaDown = function() {
+          var i, newSelection;
+          i = that.items.indexOf(child);
+          newSelection = that.items[(i + that.items.length + 1) % that.items.length];
+          return newSelection._setSelected(true);
+        };
+        ariaLeft = function() {
+          return that.parent._setSelectedBubbledUp(true, false);
+        };
+        ariaRight = function() {
+          that.setSelected(false);
+          return that.parent._setSelectedBubbledUp(true, true);
+        };
+        switch (dir) {
+          case 'up':
+            return ariaUp();
+          case 'down':
+            return ariaDown();
+          case 'left':
+            return ariaLeft();
+          case 'right':
+            return ariaRight();
+        }
+      };
+
+      Menu.prototype._openSubMenuAt = function(position) {
         var $canvas, that;
         $canvas = $('body');
         position.top -= $canvas.scrollTop();
         position.left -= $canvas.scrollLeft();
         this.el.css(position).appendTo($canvas);
         this.el.show();
+        this.isOpened = true;
         that = this;
         return $('body').one('mousedown', function() {
-          return setTimeout(that.close.bind(that), 10);
+          return setTimeout(that._closeSubMenu.bind(that), 10);
         });
       };
 
-      Menu.prototype.close = function() {
+      Menu.prototype._closeSubMenu = function() {
         var item, _i, _len, _ref;
         _ref = this.items;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           item = _ref[_i];
-          if (item.subMenu) item.subMenu.close();
+          if (item.subMenu) item.subMenu._closeSubMenu();
         }
-        return this.el.hide();
+        this.el.hide();
+        return this.isOpened = false;
       };
 
-      Menu.prototype.setAccelContainer = function($accel) {
+      Menu.prototype.setAccelContainer = function($keyBinder) {
         var item, _i, _len, _ref, _results;
+        this.$keyBinder = $keyBinder;
         _ref = this.items;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           item = _ref[_i];
-          _results.push(item.setAccelContainer($accel));
+          _results.push(item.setAccelContainer(this.$keyBinder));
         }
         return _results;
       };
@@ -174,12 +224,12 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         }
         that = this;
         this.setAction(this.action);
-        this.setAccelContainer($('body'));
-        this.el.bind('mouseenter', function() {
-          return that.el.addClass('selected');
+        this.setAccelContainer($(document));
+        this.el.on('mouseenter', function(evt) {
+          return that.setSelected(true);
         });
-        this.el.bind('mouseleave', function() {
-          return that.el.removeClass('selected');
+        this.el.on('mouseleave', function(evt) {
+          return that.setSelected(false);
         });
         this._addEvents();
       }
@@ -212,12 +262,12 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
             top: top,
             left: left
           };
-          return this.subMenu.open(position);
+          return this.subMenu._openSubMenuAt(position);
         }
       };
 
       MenuItem.prototype._closeSubMenu = function() {
-        return this.subMenu.close();
+        if (this.subMenu) return this.subMenu._closeSubMenu();
       };
 
       MenuItem.prototype._cssToggler = function(val, cls) {
@@ -287,17 +337,57 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         return this.el.children('.text')[0].innerHTML = this.text;
       };
 
-      MenuItem.prototype.setAccelContainer = function($accel) {
+      MenuItem.prototype._setSelected = function(isSelected) {
+        this.isSelected = isSelected;
+        return this._cssToggler(this.isSelected, 'selected');
+      };
+
+      MenuItem.prototype.setSelected = function(isSelected) {
+        var ariaDown, ariaEnter, ariaLeft, ariaParent, ariaRight, ariaUp, that;
+        this._setSelected(isSelected);
+        that = this;
+        ariaParent = function(direction) {
+          that.setSelected(false);
+          that._closeSubMenu();
+          return that.parent._setSelectedBubbledUp(that, direction);
+        };
+        ariaUp = function() {
+          return ariaParent('up');
+        };
+        ariaDown = function() {
+          return ariaParent('down');
+        };
+        ariaLeft = function() {
+          return ariaParent('left');
+        };
+        ariaRight = function() {
+          return ariaParent('right');
+        };
+        ariaEnter = function() {
+          return that.action();
+        };
+        if (isSelected) {
+          this.$keyBinder.bind('keydown.appmenuaria', 'up', ariaUp);
+          this.$keyBinder.bind('keydown.appmenuaria', 'down', ariaDown);
+          this.$keyBinder.bind('keydown.appmenuaria', 'left', ariaLeft);
+          this.$keyBinder.bind('keydown.appmenuaria', 'right', ariaRight);
+          return this.$keyBinder.bind('keydown.appmenuaria', 'enter', ariaEnter);
+        } else {
+          return this.$keyBinder.off('keydown.appmenuaria');
+        }
+      };
+
+      MenuItem.prototype.setAccelContainer = function($keyBinder) {
         var that;
-        if (this.$accel) this.$accel.unbind('keydown.appmenu');
-        this.$accel = $accel;
-        if ((this.accel != null) && this.$accel) {
+        if (this.$keyBinder) this.$keyBinder.unbind('keydown.appmenu');
+        this.$keyBinder = $keyBinder;
+        if ((this.accel != null) && this.$keyBinder) {
           that = this;
           if (this.action) {
-            this.$accel.bind('keydown.appmenu', this.accel, this.action);
+            this.$keyBinder.bind('keydown.appmenu', this.accel, this.action);
           }
         }
-        if (this.subMenu) return this.subMenu.setAccelContainer($accel);
+        if (this.subMenu) return this.subMenu.setAccelContainer($keyBinder);
       };
 
       return MenuItem;
@@ -330,7 +420,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         this.el.removeClass('menu');
       }
 
-      ToolBar.prototype.close = function() {};
+      ToolBar.prototype._closeSubMenu = function() {};
 
       return ToolBar;
 
@@ -371,12 +461,37 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
       __extends(MenuBar, _super);
 
       function MenuBar(items) {
+        var that;
         MenuBar.__super__.constructor.call(this, items);
         this.el.addClass('menu-bar');
         this.el.removeClass('menu');
+        that = this;
+        this.el.on('click', function(evt) {
+          var item, _i, _len, _ref, _results;
+          _ref = that.items;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            item = _ref[_i];
+            if ($(evt.target).parent('.menu-item')[0] === item.el[0]) {
+              _results.push(item._openSubMenu(false));
+            } else {
+              _results.push(void 0);
+            }
+          }
+          return _results;
+        });
       }
 
-      MenuBar.prototype.close = function() {};
+      MenuBar.prototype._closeSubMenu = function() {
+        var item, _i, _len, _ref, _results;
+        _ref = this.items;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          _results.push(item._closeSubMenu());
+        }
+        return _results;
+      };
 
       return MenuBar;
 
@@ -395,9 +510,6 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
       MenuButton.prototype._addEvents = function() {
         var that;
         that = this;
-        this.el.bind('click', function(evt) {
-          return that._openSubMenu(false);
-        });
         return this.el.bind('mouseenter', function(evt) {
           var openMenu, _i, _len, _ref, _results;
           _ref = $('.menu');
