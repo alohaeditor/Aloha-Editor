@@ -1,8 +1,7 @@
 define [
     "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu',
     "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "PubSub", "ui/scopes",
-    "css!simpletoolbar/css/simpletoolbar.css",
-    "css!../../../common/ui/css/jquery-ui-1.9m6.css"], (
+    "css!simpletoolbar/css/simpletoolbar.css"], (
     Aloha, Plugin, Ui, appmenu, i18n, i18nCore, PubSub, Scopes) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')

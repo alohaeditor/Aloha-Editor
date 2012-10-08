@@ -19,7 +19,7 @@
   background-position: -385px 0;
 }
 .toolbar-container .menu-icon.aloha-image-insert {
-  background-position: -123px 0;
+  background: url(../img/toolbar.png) no-repeat -123px 0 !important;
 }
 .toolbar-container .menu-icon.aloha-table-insert {
   background-position: -455px 0;
