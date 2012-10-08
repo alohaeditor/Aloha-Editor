@@ -28,7 +28,7 @@
           {
             label: 'Image',
             scope: 'image',
-            components: [["imageSource", "\n", "imageTitle"], ["imageResizeWidth", "\n", "imageResizeHeight"], ["imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "\n", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding"], ["imageBrowser"]]
+            components: [["imageSource", "", "imageTitle"], ["imageResizeWidth", "", "imageResizeHeight"], ["imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding"], ["imageBrowser"]]
           }
         ]
       },
@@ -44,10 +44,11 @@
           _ref1 = d.components;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             group = _ref1[_j];
-            gdiv = Aloha.jQuery('<div />');
+            gdiv = Aloha.jQuery('<div class="aloha-simpletoolbar-dialog-group"/>');
             for (_k = 0, _len2 = group.length; _k < _len2; _k++) {
               line = group[_k];
-              if (line.length <= 1) {
+              if (line.length === 0) {
+                gdiv.append('<br />');
                 continue;
               }
               item = Aloha.jQuery('<span />', {
@@ -61,7 +62,11 @@
           dialog.dialog({
             title: d.label,
             autoOpen: false,
-            dialogClass: 'aloha'
+            dialogClass: 'aloha',
+            width: 'auto',
+            close: function(event, ui) {
+              return console && console.log('TODO close event');
+            }
           });
           _results.push(dialogMap[d.scope] = dialog);
         }

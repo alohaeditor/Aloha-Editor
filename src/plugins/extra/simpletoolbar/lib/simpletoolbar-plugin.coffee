@@ -23,7 +23,7 @@ define [
             label: 'Image'
             scope: 'image'
             # I'm sorry for this long line, but sometimes coffeescript is bollocks!
-            components: [ [ "imageSource", "\n", "imageTitle" ], [ "imageResizeWidth", "\n", "imageResizeHeight" ], [ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "\n", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ], [ "imageBrowser" ] ]
+            components: [ [ "imageSource", "", "imageTitle" ], [ "imageResizeWidth", "", "imageResizeHeight" ], [ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ], [ "imageBrowser" ] ]
         ]
     },
     initDialogs: (dialogMap, itemMap) ->
@@ -31,15 +31,22 @@ define [
           dialog = Aloha.jQuery('<div />',
             id: 'aloha-simpletoolbar-scope-' + d.scope)
           for group in d.components
-            gdiv = Aloha.jQuery('<div />')
+            gdiv = Aloha.jQuery('<div class="aloha-simpletoolbar-dialog-group"/>')
             for line in group
-              if line.length <= 1 #TODO: handle newline properly
+              if line.length == 0
+                gdiv.append('<br />')
                 continue
               item = Aloha.jQuery('<span />', id: 'aloha-simpletoolbar-dialogitem-' + line)
               gdiv.append(item)
               itemMap[line] = item
             dialog.append(gdiv)
-          dialog.dialog(title: d.label, autoOpen: false, dialogClass: 'aloha')
+          dialog.dialog
+            title: d.label
+            autoOpen: false
+            dialogClass: 'aloha'
+            width: 'auto'
+            close: (event, ui) ->
+              console and console.log('TODO close event')
           dialogMap[d.scope] = dialog
     init: ->
       @settings = jQuery.extend(true, @defaultSettings, @settings)
