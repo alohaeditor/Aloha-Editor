@@ -46,7 +46,7 @@ define [
             dialogClass: 'aloha'
             width: 'auto'
             close: (event, ui) ->
-              console and console.log('TODO close event')
+              Scopes.setScope('Aloha.empty')
           dialogMap[d.scope] = dialog
     init: ->
       @settings = jQuery.extend(true, @defaultSettings, @settings)

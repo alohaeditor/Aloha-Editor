@@ -65,7 +65,7 @@
             dialogClass: 'aloha',
             width: 'auto',
             close: function(event, ui) {
-              return console && console.log('TODO close event');
+              return Scopes.setScope('Aloha.empty');
             }
           });
           _results.push(dialogMap[d.scope] = dialog);
