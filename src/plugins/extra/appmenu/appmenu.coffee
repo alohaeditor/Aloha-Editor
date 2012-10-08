@@ -53,8 +53,9 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
   
   
   class appmenu.Menu extends appmenu.MenuBase
-    constructor: (@items=[]) ->
+    constructor: (@items=[], cls=null) ->
       @el = @_newDiv('menu')
+      @el.addClass(cls) if cls?
   
       for item in @items
         @_closeEverythingBut(item)

@@ -231,7 +231,7 @@
           return _results;
         })();
         headingsButton = new appmenu.ToolButton("Heading 1", {
-          subMenu: new appmenu.Menu(headingButtons)
+          subMenu: new appmenu.Menu(headingButtons, 'custom-headings')
         });
         toolbar.append(headingsButton);
         toolbar.append(new appmenu.Separator());

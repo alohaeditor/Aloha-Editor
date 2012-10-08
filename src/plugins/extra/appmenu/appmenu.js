@@ -62,10 +62,12 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
 
       __extends(Menu, _super);
 
-      function Menu(items) {
+      function Menu(items, cls) {
         var item, _i, _len, _ref;
         this.items = items != null ? items : [];
+        if (cls == null) cls = null;
         this.el = this._newDiv('menu');
+        if (cls != null) this.el.addClass(cls);
         _ref = this.items;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           item = _ref[_i];
