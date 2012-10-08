@@ -102,7 +102,8 @@ define [
         'h2': 'Heading 2'
         'h3': 'Heading 3'
 
-      headingButtons = (new appmenu.custom.Heading("<#{ h } />", labels[h], {accel: "Ctrl+#{ h.charAt(1) or 0 }", action: applyHeading(h) }) for h in order)
+      # headingButtons = (new appmenu.custom.Heading("<#{ h } />", labels[h], {accel: "Ctrl+#{ h.charAt(1) or 0 }", action: applyHeading(h) }) for h in order)
+      headingButtons = (new appmenu.custom.Heading("<#{ h } />", labels[h], { action: applyHeading(h) }) for h in order)
       
       headingsButton = new appmenu.ToolButton("Heading 1", {subMenu: new appmenu.Menu(headingButtons)})
       toolbar.prepend(new appmenu.Separator())
