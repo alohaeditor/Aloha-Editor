@@ -910,9 +910,8 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
 
       }
       //mathEditorContainer.removeClass("temporarily-hide");
+      // Inserts the 'arrow' which points to the currently edited eqation into the dom
       $(".math-editor").append('<div id="math-editor-arrow"> </div>');
-      // Represents how wide the content window is
-      var rightEdge = $("#content") .innerWidth;
       // Defines how offset the math-editor arrow should be from the edit box
       var arrowOffset = 0;
       // Retrieves the math editor's relative position
@@ -1185,10 +1184,42 @@ function mathClick(mathEditorContainer, e) {
         // Otherwise  it just appends nbsp
         mathEditorContainer.find(".math-source").append("&nbsp\;");
       }
-    
+      // Inserts the 'arrow' which points to the currently edited eqation into the dom
+      $(".math-editor").append('<div id="math-editor-arrow"> </div>');
+      // Defines how offset the math-editor arrow should be from the edit box
+      var arrowOffset = 0;
+      // Retrieves the math editor's relative position
+      var arrow = $("#math-editor-arrow");
+      var oldArrowPos = arrow.position().left;
       // Repositions the editor next to the mathjax
       var newB = mathEditorContainer.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
       var newL = mathEditorContainer.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 wfor mysterious good measure
+      // Retrieves the aloha-editor's absolute position and the editor position 
+      var content = $("#content");
+      var editor = $(".math-editor");
+      // Sets the originally calculated positions so that offset() retrieves the right position
+      $(".math-editor").css("bottom", newB + "px");
+      $(".math-editor").css("left", newL + "px");
+      // Calculates the delta between their position to see if the editor is out of bounds
+      var leftPositionDelta = editor.offset().left - content.offset().left;
+      var rightPositionDelta = (content.offset().left + content.width()) - (editor.offset().left  + editor.width());
+      // Adjusts the math edit box if it's outside the content area 
+      if (leftPositionDelta < 0)  {
+        console.log("Adjusting for left side");
+        arrowOffset = leftPositionDelta;
+        newL = newL - leftPositionDelta;
+        //Positions the math-editor's arrow in relation to the math-editor box
+        $("#math-editor-arrow").css("left", oldArrowPos + arrowOffset + "px");
+
+      }
+      else if (rightPositionDelta < 0) {
+        console.log("Adjusting for right side");
+        arrowOffset = rightPositionDelta;
+        newL = newL + rightPositionDelta;
+        //Positions the math-editor's arrow in relation to the math-editor box
+        $("#math-editor-arrow").css("left", oldArrowPos - arrowOffset + "px");
+      }
+
       $(".math-editor").css("bottom", newB + "px");
       $(".math-editor").css("left", newL  +  "px");
       placeCaretAtEnd($(".math-source").get(0));
