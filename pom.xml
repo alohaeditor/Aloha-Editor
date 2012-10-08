@@ -3,15 +3,15 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.22.2-commercial-SNAPSHOT</version>
+	<version>0.22.2-commercial</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
 	<licenses>
 		<license>
-			<name>GPL 2.0 or later</name>
-			<url>http://www.gnu.org/licenses/gpl-2.0.html</url>
+			<name>${build.licenseType}</name>
+			<url>${build.licenseUrl}</url>
 		</license>
 	</licenses>
 	<properties>
