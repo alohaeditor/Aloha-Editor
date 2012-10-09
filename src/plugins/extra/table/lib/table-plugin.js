@@ -94,9 +94,9 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
 
     function prepareTable(plugin, table){
         // Wrap table in ui-wrappper
-        var w1 = Aloha.jQuery('<div class="canvas-wrap aloha-ui-wrapper" />');
-        var w2 = Aloha.jQuery('<div class="table canvas aloha-ui-wrapper" />');
-        var w3 = Aloha.jQuery('<div class="canvas-inner aloha-ui-wrapper" />');
+        var w1 = jQuery('<div class="canvas-wrap aloha-ui-wrapper" />');
+        var w2 = jQuery('<div class="table canvas aloha-ui-wrapper" />');
+        var w3 = jQuery('<div class="canvas-inner aloha-ui-wrapper" />');
 
         table.wrap(w1).wrap(w2).wrap(w3);
 
@@ -124,7 +124,7 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
             this.initButtons();
             Aloha.bind('aloha-editable-created', function(event, editable){
                 editable.obj.find('table').each(function(){
-                    prepareTable(plugin, Aloha.jQuery(this));
+                    prepareTable(plugin, jQuery(this));
                 });
             });
         },
@@ -316,7 +316,7 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
 
                 cleanupAfterInsertion();
-                prepareTable(this, Aloha.jQuery(table));
+                prepareTable(this, jQuery(table));
                 var ev = jQuery.Event();
                 ev.type = 'blur';
                 Aloha.activeEditable.smartContentChange(ev);
