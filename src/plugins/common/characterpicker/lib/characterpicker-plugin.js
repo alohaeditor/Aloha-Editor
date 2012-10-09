@@ -1,26 +1,18 @@
 /*global window:true, define:true, document:true */
 
 /*
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-define([
-	'aloha', 
-	'jquery', 
-	'aloha/plugin', 
-	'ui/ui', 
-	'ui/button',
-	'i18n!characterpicker/nls/i18n', 
-	'i18n!aloha/nls/i18n'
-], function(Aloha,
-            jQuery,
-			Plugin,
-			Ui,
-			Button,
-			i18n,
-			i18nCore) {
+ * Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
+define(['aloha', 'jquery', 'aloha/plugin', 'ui/ui', 'ui/button', 'i18n!characterpicker/nls/i18n', 'i18n!aloha/nls/i18n'], function (Aloha,
+jQuery,
+Plugin,
+Ui,
+Button,
+i18n,
+i18nCore) {
 	'use strict';
 
 	var GENTICS = window.GENTICS;
@@ -59,7 +51,7 @@ define([
 			self._overlayActive = true;
 		},
 
-		hide: function() {
+		hide: function () {
 			this.$node.hide();
 			this._overlayActive = false;
 		},
@@ -86,11 +78,11 @@ define([
 				if (!self._overlayActive) {
 					return;
 				}
-				if (// don't consider clicks to the overlay itself
-				       e.target !== self.$node[0]
-				    // and don't consider clicks to the 'show' button.
-					&& !jQuery(e.target).is(buttonSelector)
-					&& !jQuery(e.target).find(buttonSelector).length) {
+				if ( // don't consider clicks to the overlay itself
+				e.target !== self.$node[0]
+				// and don't consider clicks to the 'show' button.
+				&&
+				!jQuery(e.target).is(buttonSelector) && !jQuery(e.target).find(buttonSelector).length) {
 					self.hide();
 				}
 			});
@@ -178,11 +170,11 @@ define([
 			textarea.innerHTML = characters;
 			characters = textarea.value;
 			var characterList = jQuery.grep(
-				characters.split(' '),
-				function filterOutEmptyOnces(e) {
-					return e !== '';
-				}
-			);
+			characters.split(' '),
+
+			function filterOutEmptyOnces(e) {
+				return e !== '';
+			});
 			var charTable = ['<tr>'];
 			var i = 0;
 			var chr;
@@ -195,9 +187,7 @@ define([
 				i++;
 			}
 			charTable.push('</tr>');
-			self.$tbody
-				.empty()
-				.append(charTable.join(''));
+			self.$tbody.empty().append(charTable.join(''));
 			self.$node.delegate('td', 'mouseover', function () {
 				jQuery(this).addClass('mouseover');
 			}).delegate('td', 'mouseout', function () {
@@ -223,16 +213,15 @@ define([
 		init: function () {
 			var self = this;
 
-			if ( typeof Aloha.settings.plugins != 'undefined' 
-				&& typeof Aloha.settings.plugins.characterpicker != 'undefined' ) {
+			if (typeof Aloha.settings.plugins != 'undefined' && typeof Aloha.settings.plugins.characterpicker != 'undefined') {
 				self.settings = Aloha.settings.plugins.characterpicker;
 			}
-			
+
 			this._characterPickerButton = Ui.adopt("characterPicker", Button, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
 				icon: "aloha-icon-characterpicker",
 				scope: 'Aloha.continuoustext',
-				click: function() {
+				click: function () {
 					if (false !== self.characterOverlay) {
 						_savedRange = Aloha.Selection.rangeObject;
 						self.characterOverlay.show(this.element);
@@ -241,11 +230,16 @@ define([
 			});
 
 			// Populate the cache lazily
-			setTimeout(function(){ initCache(0); }, 100);
+			setTimeout(function () {
+				initCache(0);
+			}, 100);
+
 			function initCache(i) {
 				if (i < Aloha.editables.length) {
 					self.getOverlayForEditable(Aloha.editables[i]);
-					setTimeout(function(){ initCache(i + 1); }, 100);
+					setTimeout(function () {
+						initCache(i + 1);
+					}, 100);
 				}
 			}
 
@@ -259,13 +253,13 @@ define([
 			});
 		},
 
-		getOverlayForEditable: function(editable) {
+		getOverlayForEditable: function (editable) {
 			var that = this;
 			// Each editable may have its own configuration and as
 			// such may have its own overlay.
 			var config = this.getEditableConfig(editable.obj),
-			    overlay;
-			if ( ! config ) {
+				overlay;
+			if (!config) {
 				return false;
 			}
 			if (jQuery.isArray(config)) {
@@ -275,7 +269,7 @@ define([
 			// have the same configuration, only a single overlay will
 			// be created that will be used by all editables.
 			overlay = overlayByConfig[config];
-			if ( ! overlay ) {
+			if (!overlay) {
 				overlay = new CharacterOverlay(onCharacterSelect);
 				overlay.setCharacters(config);
 				overlayByConfig[config] = overlay;
@@ -284,12 +278,12 @@ define([
 		}
 
 	});
-	
-			
+
+
 	/**
 	 * insert a character after selecting it from the list
 	 */
-	function onCharacterSelect (character) {
+	function onCharacterSelect(character) {
 		if (Aloha.activeEditable) {
 			//Select the range that was selected before the overlay was opened
 			_savedRange.select();

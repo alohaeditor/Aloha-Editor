@@ -1,10 +1,11 @@
 define(
 ['jquery'],
+
 function (jQuery) {
 	/**
 	 * Initialize of the CreateLayer object
 	 */
-	CreateLayer = function(TablePlugin){
+	CreateLayer = function (TablePlugin) {
 		this.TablePlugin = TablePlugin;
 	};
 
@@ -13,11 +14,11 @@ function (jQuery) {
 	 */
 	CreateLayer.prototype.parameters = {
 		elemId: 'aloha-table-createLayer', // id of the create-table panel
-		className: 'aloha-table-createdialog',   // class-name of the create-table panel
-		numX: 10,	         // Number of cols in the create-layer
-		numY: 10,            // Number of rows in the create-layer vertically
-		layer: undefined,    // Attribute holding the create-layer
-		target: undefined    // the clicktarget which was clicked on (mostly the button of the floatingmenu)
+		className: 'aloha-table-createdialog', // class-name of the create-table panel
+		numX: 10, // Number of cols in the create-layer
+		numY: 10, // Number of rows in the create-layer vertically
+		layer: undefined, // Attribute holding the create-layer
+		target: undefined // the clicktarget which was clicked on (mostly the button of the floatingmenu)
 	};
 
 	/**
@@ -38,13 +39,13 @@ function (jQuery) {
 	 *
 	 * @return void
 	 */
-	CreateLayer.prototype.show = function(){
+	CreateLayer.prototype.show = function () {
 		var layer = this.get('layer');
 
 		// create the panel if the layer doesn't exist
 		if (layer == null) {
 			this.create();
-		}else {
+		} else {
 			// or reposition, cleanup and show the layer
 			this.setPosition(layer);
 			layer.find('td').removeClass('hover');
@@ -80,11 +81,17 @@ function (jQuery) {
 					td.addClass('hover');
 				}
 
-				td.bind('mouseover', {rowId: i, colId: j}, function(e) {
+				td.bind('mouseover', {
+					rowId: i,
+					colId: j
+				}, function (e) {
 					that.handleMouseOver(e, table);
 				});
 
-				td.bind('click', {rowId: i, colId: j}, function(e){
+				td.bind('click', {
+					rowId: i,
+					colId: j
+				}, function (e) {
 					var rows = e.data.rowId + 1;
 					var cols = e.data.colId + 1;
 
@@ -103,15 +110,15 @@ function (jQuery) {
 		this.setPosition();
 
 		// stop bubbling the click on the create-dialog up to the body event
-		layer.bind('click', function(e) {
+		layer.bind('click', function (e) {
 			e.stopPropagation();
-		}).mousedown(function(e) {
+		}).mousedown(function (e) {
 			e.stopPropagation();
 		});
 
 		// append layer to body and
 		// hide the create layer if user clicks anywhere in the body
-		jQuery('body').append(layer).bind('click', function(e) {
+		jQuery('body').append(layer).bind('click', function (e) {
 			// If the layer is visible and the event target is not the
 			// button itself or a descendant of the button, hide the
 			// layer.
@@ -127,7 +134,7 @@ function (jQuery) {
 	 * @param table the aeffected table
 	 * @return void
 	 */
-	CreateLayer.prototype.handleMouseOver = function(e, table) {
+	CreateLayer.prototype.handleMouseOver = function (e, table) {
 		var rowId = e.data.rowId;
 		var colId = e.data.colId;
 		var innerRows = table.find('tr');
@@ -150,7 +157,7 @@ function (jQuery) {
 	 *
 	 *  @return void
 	 */
-	CreateLayer.prototype.setPosition = function() {
+	CreateLayer.prototype.setPosition = function () {
 		var targetObj = jQuery(this.get('target'));
 		var pos = targetObj.offset();
 		this.get('layer').css('left', pos.left + 'px');
@@ -163,7 +170,7 @@ function (jQuery) {
 	 * @see jQuery().hide()
 	 * @return void
 	 */
-	CreateLayer.prototype.hide = function() {
+	CreateLayer.prototype.hide = function () {
 		this.get('layer').hide();
 		this.visible = false;
 	};
@@ -176,7 +183,7 @@ function (jQuery) {
 	 * @param property
 	 * @return void
 	 */
-	CreateLayer.prototype.get = function(property) {
+	CreateLayer.prototype.get = function (property) {
 		// return param from the config
 		if (this.config[property]) {
 			return this.config[property];
@@ -204,7 +211,7 @@ function (jQuery) {
 			this.config[key] = value;
 
 			// otherwise "add" it to the parameters-object
-		}else{
+		} else {
 			this.parameters[key] = value;
 		}
 	};

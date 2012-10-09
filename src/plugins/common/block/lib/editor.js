@@ -29,7 +29,8 @@
  * @namespace Block attribute editors
  */
 define(['jquery', 'aloha/observable', 'util/class'],
-function(jQuery, Observable, Class) {
+
+function (jQuery, Observable, Class) {
 	"use strict";
 
 	/**
@@ -41,8 +42,7 @@ function(jQuery, Observable, Class) {
 	 * @class An abstract editor
 	 */
 	var AbstractEditor = Class.extend(Observable,
-	/** @lends block.editor.AbstractEditor */
-	{
+	/** @lends block.editor.AbstractEditor */ {
 		/**
 		 * Schema of the current element
 		 *
@@ -54,7 +54,7 @@ function(jQuery, Observable, Class) {
 		/**
 		 * @constructor
 		 */
-		_constructor: function(schema) {
+		_constructor: function (schema) {
 			this.schema = schema;
 		},
 
@@ -66,7 +66,7 @@ function(jQuery, Observable, Class) {
 		 * @return {jQuery}
 		 * @api
 		 */
-		render: function() {
+		render: function () {
 			// Implement in subclass!
 		},
 
@@ -78,7 +78,7 @@ function(jQuery, Observable, Class) {
 		 * @return {String}
 		 * @api
 		 */
-		getValue: function() {
+		getValue: function () {
 			// Implement in subclass!
 		},
 
@@ -92,7 +92,7 @@ function(jQuery, Observable, Class) {
 		 * @param {String} value
 		 * @api
 		 */
-		setValue: function(value) {
+		setValue: function (value) {
 			// Implement in subclass!
 		},
 
@@ -100,7 +100,7 @@ function(jQuery, Observable, Class) {
 		 * Destroy the editor elements and unbind events
 		 * @api
 		 */
-		destroy: function() {
+		destroy: function () {
 			// Implement in subclass!
 		},
 
@@ -109,7 +109,7 @@ function(jQuery, Observable, Class) {
 		 *
 		 * @private
 		 */
-		_deactivate: function() {
+		_deactivate: function () {
 			this.trigger('change', this.getValue());
 			this.destroy();
 		}
@@ -124,8 +124,7 @@ function(jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractEditor
 	 */
 	var AbstractFormElementEditor = AbstractEditor.extend(
-	/** @lends block.editor.AbstractFormElementEditor */
-	{
+	/** @lends block.editor.AbstractFormElementEditor */ {
 
 		/**
 		 * Input element HTML definition
@@ -149,7 +148,7 @@ function(jQuery, Observable, Class) {
 		 * Render the label and form element
 		 * @return {jQuery}
 		 */
-		render: function() {
+		render: function () {
 			var $wrapper = jQuery('<div class="aloha-block-editor" />');
 			var guid = GENTICS.Utils.guid();
 			$wrapper.append(this.renderLabel().attr('id', guid));
@@ -163,7 +162,7 @@ function(jQuery, Observable, Class) {
 		 *
 		 * @return {jQuery}
 		 */
-		renderLabel: function() {
+		renderLabel: function () {
 			var element = jQuery('<label />');
 			element.html(this.schema.label);
 			return element;
@@ -173,13 +172,13 @@ function(jQuery, Observable, Class) {
 		 * Render the form input element
 		 * @return {jQuery}
 		 */
-		renderFormElement: function() {
+		renderFormElement: function () {
 			var that = this;
 			this._$formInputElement = jQuery(this.formInputElementDefinition);
 
 			this.afterRenderFormElement(this._$formInputElement);
 
-			this._$formInputElement.change(function() {
+			this._$formInputElement.change(function () {
 				that.trigger('change', that.getValue());
 			});
 
@@ -193,28 +192,28 @@ function(jQuery, Observable, Class) {
 		 * @param {jQuery} $formElement the form element being rendered
 		 * @api
 		 */
-		afterRenderFormElement: function($formElement) {
+		afterRenderFormElement: function ($formElement) {
 
 		},
 
 		/**
 		 * @return {String}
 		 */
-		getValue: function() {
+		getValue: function () {
 			return this._$formInputElement.val();
 		},
 
 		/**
 		 * We do not throw any change event here, as we need to break the loop "Block" -> "Editor" -> "Block"
 		 */
-		setValue: function(value) {
+		setValue: function (value) {
 			this._$formInputElement.val(value);
 		},
 
 		/**
 		 * Cleanup and remove the input element
 		 */
-		destroy: function() {
+		destroy: function () {
 			this._$formInputElement.remove();
 		}
 
@@ -226,8 +225,7 @@ function(jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var StringEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.StringEditor */
-	{
+	/** @lends block.editor.StringEditor */ {
 		formInputElementDefinition: '<input type="text" />'
 	});
 
@@ -237,12 +235,11 @@ function(jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var NumberEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.NumberEditor */
-	{
+	/** @lends block.editor.NumberEditor */ {
 		// TODO Range should be an option
 		formInputElementDefinition: '<input type="range" />',
 
-		afterRenderFormElement: function($formElement) {
+		afterRenderFormElement: function ($formElement) {
 			if (!this.schema.range) return;
 
 			if (this.schema.range.min) {
@@ -265,8 +262,7 @@ function(jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var UrlEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.UrlEditor */
-	{
+	/** @lends block.editor.UrlEditor */ {
 		formInputElementDefinition: '<input type="url" />'
 	});
 
@@ -276,8 +272,7 @@ function(jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var EmailEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.EmailEditor */
-	{
+	/** @lends block.editor.EmailEditor */ {
 		formInputElementDefinition: '<input type="email" />'
 	});
 
@@ -287,12 +282,11 @@ function(jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var SelectEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.SelectEditor */
-	{
+	/** @lends block.editor.SelectEditor */ {
 		formInputElementDefinition: '<select />',
 
-		afterRenderFormElement: function($formElement) {
-			jQuery.each(this.schema.values, function() {
+		afterRenderFormElement: function ($formElement) {
+			jQuery.each(this.schema.values, function () {
 				var el = this;
 				$formElement.append(jQuery('<option />').attr('value', el.key).html(el.label));
 			});
@@ -305,14 +299,13 @@ function(jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var ButtonEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.SelectEditor */
-	{
+	/** @lends block.editor.SelectEditor */ {
 		formInputElementDefinition: '<button />',
 
-		afterRenderFormElement: function($formElement) {
+		afterRenderFormElement: function ($formElement) {
 			var that = this;
 			$formElement.html(this.schema.buttonLabel);
-			$formElement.click(function() {
+			$formElement.click(function () {
 				that.schema.callback();
 			})
 		}

@@ -24,8 +24,9 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager', 'util/class'],
-	function (jQuery, BlockManager, Sidebar, EditorManager, Class) {
+define(['jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager', 'util/class'],
+
+function (jQuery, BlockManager, Sidebar, EditorManager, Class) {
 	"use strict";
 
 	/**
@@ -36,16 +37,15 @@ define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager',
 	 * @name block.sidebarattributeeditor
 	 * @class Sidebar attribute editor singleton
 	 */
-	return new (Class.extend(
-	/** @lends block.sidebarattributeeditor */
-	{
+	return new(Class.extend(
+	/** @lends block.sidebarattributeeditor */ {
 
 		_sidebar: null,
 
 		/**
 		 * Initialize the sidebar attribute editor and bind events
 		 */
-		init: function() {
+		init: function () {
 			this._sidebar = Sidebar.right.show();
 
 			BlockManager.bind('block-selection-change', this._onBlockSelectionChange, this);
@@ -54,7 +54,7 @@ define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager',
 		/**
 		 * @param {Array} selectedBlocks
 		 */
-		_onBlockSelectionChange: function(selectedBlocks) {
+		_onBlockSelectionChange: function (selectedBlocks) {
 			var that = this;
 			if (!this._sidebar) {
 				return;
@@ -64,7 +64,7 @@ define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager',
 			// that._sidebar.container.find('.aloha-sidebar-panels').children().remove();
 			// that._sidebar.panels = {};
 
-			jQuery.each(selectedBlocks, function() {
+			jQuery.each(selectedBlocks, function () {
 				var schema = this.getSchema(),
 					block = this,
 					editors = [];
@@ -77,22 +77,22 @@ define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager',
 				that._sidebar.addPanel({
 					title: block.getTitle(),
 					expanded: true,
-					onInit: function() {
+					onInit: function () {
 						var $form = jQuery('<form />');
-						$form.submit(function() {
+						$form.submit(function () {
 							// Disable form submission
 							return false;
 						});
-						jQuery.each(schema, function(attributeName, definition) {
+						jQuery.each(schema, function (attributeName, definition) {
 							var editor = EditorManager.createEditor(definition);
 
 							// Editor -> Block binding
-							editor.bind('change', function(value) {
+							editor.bind('change', function (value) {
 								block.attr(attributeName, value);
 							});
 
 							// Block -> Editor binding
-							block.bind('change', function() {
+							block.bind('change', function () {
 								editor.setValue(block.attr(attributeName));
 							})
 
@@ -106,10 +106,10 @@ define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager',
 						this.setContent($form);
 					},
 
-					deactivate: function() {
+					deactivate: function () {
 						// On deactivating the panel, we need to tell each editor to deactivate itself,
 						// so it can throw another change event if the value has been modified.
-						jQuery.each(editors, function(index, editor) {
+						jQuery.each(editors, function (index, editor) {
 							editor._deactivate();
 						});
 

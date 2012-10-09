@@ -30,19 +30,12 @@
  * (in so far as the DOM of the editables itself is valid).
  * Attributes described by Ehpemera.ephemera() will be removed.
  */
-define([
-	'aloha',
-	'jquery',
-	'aloha/plugin',
-	'aloha/ephemera',
-	'dom-to-xhtml/dom-to-xhtml'
-], function (
-	Aloha,
-	$,
-	Plugin,
-	Ephemera,
-	domToXhtml
-) {
+define(['aloha', 'jquery', 'aloha/plugin', 'aloha/ephemera', 'dom-to-xhtml/dom-to-xhtml'], function (
+Aloha,
+$,
+Plugin,
+Ephemera,
+domToXhtml) {
 	'use strict';
 
 	return Plugin.create('dom-to-xhtml', {
@@ -53,17 +46,14 @@ define([
 		 */
 		init: function () {
 			var that = this;
-			Aloha.Editable.setContentSerializer(function(editableElement) {
-				if ( !that.settings.editables && !that.settings.config ) {
+			Aloha.Editable.setContentSerializer(function (editableElement) {
+				if (!that.settings.editables && !that.settings.config) {
 					return domToXhtml.contentsToXhtml(editableElement);
 				}
 
-				if ( that.settings.editables &&
-					that.settings.editables['#'+$(editableElement).attr('id')] == 'dom-to-xhtml' ) {
+				if (that.settings.editables && that.settings.editables['#' + $(editableElement).attr('id')] == 'dom-to-xhtml') {
 					return domToXhtml.contentsToXhtml(editableElement, Ephemera.ephemera());
-				} else if ( that.settings.config &&
-					that.settings.config == 'dom-to-xhtml' &&
-					!that.settings.editables['#'+$(editableElement).attr('id')] ) {
+				} else if (that.settings.config && that.settings.config == 'dom-to-xhtml' && !that.settings.editables['#' + $(editableElement).attr('id')]) {
 					return domToXhtml.contentsToXhtml(editableElement, Ephemera.ephemera());
 				} else {
 					return $(editableElement).html();

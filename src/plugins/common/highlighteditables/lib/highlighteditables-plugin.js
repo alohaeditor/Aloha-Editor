@@ -24,20 +24,20 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define('highlighteditables/highlighteditables-plugin',
-['aloha', 'jquery', 'aloha/plugin'],
-function(Aloha, jQuery, Plugin) {
+define('highlighteditables/highlighteditables-plugin', ['aloha', 'jquery', 'aloha/plugin'],
+
+function (Aloha, jQuery, Plugin) {
 	"use strict";
 
 	var
-		GENTICS = window.GENTICS;
+	GENTICS = window.GENTICS;
 
 	return Plugin.create('highlighteditables', {
 
 		/**
 		 * default button configuration
 		 */
-		config: [ 'highlight' ],
+		config: ['highlight'],
 
 		init: function () {
 
@@ -48,13 +48,13 @@ function(Aloha, jQuery, Plugin) {
 			// highlight editables as long as the mouse is moving
 			GENTICS.Utils.Position.addMouseMoveCallback(function () {
 				var i,
-					editable;
+				editable;
 
-				for ( i = 0; i < Aloha.editables.length; i++) {
+				for (i = 0; i < Aloha.editables.length; i++) {
 					editable = Aloha.editables[i];
-					config = that.getEditableConfig( editable.obj );
+					config = that.getEditableConfig(editable.obj);
 
-					if ( !Aloha.activeEditable && !editable.isDisabled() && config == 'highlight' ) {
+					if (!Aloha.activeEditable && !editable.isDisabled() && config == 'highlight') {
 						editable.obj.addClass('aloha-editable-highlight');
 					}
 				}
@@ -66,12 +66,11 @@ function(Aloha, jQuery, Plugin) {
 			});
 
 			// mark active Editable with a css class
-			Aloha.bind(
-					"aloha-editable-activated",
-					function (jEvent, aEvent) {
-						that.fade();
-					}
-			);
+			Aloha.bind("aloha-editable-activated",
+
+			function (jEvent, aEvent) {
+				that.fade();
+			});
 
 		},
 		/**
@@ -79,19 +78,17 @@ function(Aloha, jQuery, Plugin) {
 		 */
 		fade: function () {
 			var
-				i, editable,
-				animateEnd = function () {
-					jQuery(this).css('outline', '');
-				};
-			for ( i = 0; i < Aloha.editables.length; i++) {
+			i, editable,
+			animateEnd = function () {
+				jQuery(this).css('outline', '');
+			};
+			for (i = 0; i < Aloha.editables.length; i++) {
 				editable = Aloha.editables[i].obj;
 				if (editable.hasClass('aloha-editable-highlight')) {
 					// IE8 fix - hardcode 5px because editable.css('outlineWidth') sometimes causes a javascript error
-					editable.css('outline', editable.css('outlineColor') + ' ' + editable.css('outlineStyle') + ' 5px')
-						.removeClass('aloha-editable-highlight')
-						.animate({
-							outlineWidth : '0px'
-						}, 300, 'swing', animateEnd);
+					editable.css('outline', editable.css('outlineColor') + ' ' + editable.css('outlineStyle') + ' 5px').removeClass('aloha-editable-highlight').animate({
+						outlineWidth: '0px'
+					}, 300, 'swing', animateEnd);
 				}
 			}
 		}

@@ -33,30 +33,22 @@
  *              Aloha.Profiler.profileAlohaComponent('Markup.preProcessKeyStrokes')
  *              Aloha.Profiler.profileAlohaComponent('Selection._updateSelection')
  */
-window.define( [
-	'aloha/core',
-	'aloha/plugin',
-	'aloha/editable',
-	// 'aloha/sidebar',
-	'aloha/selection',
-	'aloha/markup',
-	'aloha/contenthandlermanager',
-	'aloha/console',
-	'css!profiler/css/profiler'
-], function( Aloha, Plugin, /* Sidebar */ Editable, Selection, Markup,
-             ContentHandlerManager, console ) {
+window.define(['aloha/core', 'aloha/plugin', 'aloha/editable',
+// 'aloha/sidebar',
+'aloha/selection', 'aloha/markup', 'aloha/contenthandlermanager', 'aloha/console', 'css!profiler/css/profiler'], function (Aloha, Plugin, /* Sidebar */ Editable, Selection, Markup,
+ContentHandlerManager, console) {
 	// 'caller', 'callee', and 'arguments' properties may not be accessed on
 	// strict mode functions or the arguments objects for calls to them
 	// 'use strict';
 
 	var jQuery = Aloha.jQuery,
-	    profiledFunctions = [],
+		profiledFunctions = [],
 
-	    // get the arguments string literal of this function, and split it into
-	    // an array of names
-	    argsStr = ( /function[^\(]*\(([^\)]+)/g ).exec( arguments.callee.toString() ),
-	    argNames = argsStr ? argsStr[1].replace( /^\s+|\s+$/g, '' ).split( /\,\s*/ ) : [],
-	    args = Array.prototype.slice.call( arguments );
+		// get the arguments string literal of this function, and split it into
+		// an array of names
+		argsStr = (/function[^\(]*\(([^\)]+)/g).exec(arguments.callee.toString()),
+		argNames = argsStr ? argsStr[1].replace(/^\s+|\s+$/g, '').split(/\,\s*/) : [],
+		args = Array.prototype.slice.call(arguments);
 
 	var FloatingMenu = {}; /* plugin needs rewrite */
 	var msg = 'Plugin Profiler: This plugin is not working right now. Please deactivate it';
@@ -75,26 +67,22 @@ window.define( [
 	 * @return {?} Object
 	 */
 	function resolvePath(path, obj) {
-		if ( typeof path !== 'string' ) {
+		if (typeof path !== 'string') {
 			return path;
 		}
 
-		if ( !obj || typeof obj !== 'object' ) {
+		if (!obj || typeof obj !== 'object') {
 			obj = window;
 		}
 
-		var parts = path.split( '.' ),
-		    i = 0,
+		var parts = path.split('.'),
+			i = 0,
 			j = parts.length;
 
-		for ( ; i < j; ++i ) {
-			obj = obj[ parts[ i ] ];
-			if ( typeof obj === 'undefined' ) {
-				console.error(
-					'Aloha.Profiler',
-					'Property "' + parts[ i ] + '" does not exist' +
-						( i ? ' in object ' + parts.slice( 0, i ).join( '.' ) : '' )
-				);
+		for (; i < j; ++i) {
+			obj = obj[parts[i]];
+			if (typeof obj === 'undefined') {
+				console.error('Aloha.Profiler', 'Property "' + parts[i] + '" does not exist' + (i ? ' in object ' + parts.slice(0, i).join('.') : ''));
 
 				return null;
 			}
@@ -103,81 +91,72 @@ window.define( [
 		return obj;
 	};
 
-	function parseObjectPath( path, obj ) {
-		if ( typeof path !== 'string' ) {
+	function parseObjectPath(path, obj) {
+		if (typeof path !== 'string') {
 			return null;
 		}
 
-		var parts = path.split( '.' ),
-		    pathToProp = parts.slice( 0, Math.max( 1, parts.length - 1 ) ).join( '.' ),
+		var parts = path.split('.'),
+			pathToProp = parts.slice(0, Math.max(1, parts.length - 1)).join('.'),
 			prop;
 
-		obj = resolvePath( pathToProp, obj );
+		obj = resolvePath(pathToProp, obj);
 
-		if ( !obj ) {
+		if (!obj) {
 			return null;
 		}
 
-		if ( parts.length > 1 ) {
-			var lastProp = parts[ parts.length - 1 ];
-			if ( typeof obj[ lastProp ] === 'undefined' ) {
-				console.error( 'Aloha.Profiler',
-					'Property "' + lastProp + '" does not exist in object ' +
-					pathToProp );
+		if (parts.length > 1) {
+			var lastProp = parts[parts.length - 1];
+			if (typeof obj[lastProp] === 'undefined') {
+				console.error('Aloha.Profiler', 'Property "' + lastProp + '" does not exist in object ' + pathToProp);
 			} else {
 				prop = lastProp;
 			}
 		}
 
 		return {
-			obj       : obj[ prop ],
-			path      : path,
-			parentObj : obj,
-			propName  : prop
+			obj: obj[prop],
+			path: path,
+			parentObj: obj,
+			propName: prop
 		};
 	};
 
 	var panel;
+
 	function initSidebarPanel(sidebar) {
-		sidebar.addPanel( {
-			id       : 'aloha-devtool-profiler-panel',
-			title    : 'Aloha Profiler',
-			expanded : true,
-			activeOn : true,
-			content  : '' +
-				'<div id="aloha-devtool-profiler-container">' +
-					'<input id="aloha-devtool-profiler-input" ' +
-						'value="Aloha.Profiler.profileAlohaComponent(\'Markup.preProcessKeyStrokes\')" />' +
-					'<ul id="aloha-devtool-profiler-console"></ul>' +
-				'</div>',
-			onInit   : function() {
-				this.content.find( 'input#aloha-devtool-profiler-input' ).keydown( function( event ) {
+		sidebar.addPanel({
+			id: 'aloha-devtool-profiler-panel',
+			title: 'Aloha Profiler',
+			expanded: true,
+			activeOn: true,
+			content: '' + '<div id="aloha-devtool-profiler-container">' + '<input id="aloha-devtool-profiler-input" ' + 'value="Aloha.Profiler.profileAlohaComponent(\'Markup.preProcessKeyStrokes\')" />' + '<ul id="aloha-devtool-profiler-console"></ul>' + '</div>',
+			onInit: function () {
+				this.content.find('input#aloha-devtool-profiler-input').keydown(function (event) {
 					// Handle ENTER
-					if ( event.keyCode === 13 ) {
-						var input = jQuery( this );
+					if (event.keyCode === 13) {
+						var input = jQuery(this);
 						var value = input.val();
-						if ( value ) {
-							eval( value );
-							PanelConsole.log( value );
-							input.val( '' );
+						if (value) {
+							eval(value);
+							PanelConsole.log(value);
+							input.val('');
 						}
 					}
-				} );
+				});
 			}
-		} );
+		});
 		sidebar.show().open();
 	};
-	
+
 	var PanelConsole = {
-		log: function() {
-			jQuery( '#aloha-devtool-profiler-console' )
-				.prepend( '<li>' +
-					Array.prototype.slice.call( arguments ).join( ' ' ) +
-					'</li>' );
+		log: function () {
+			jQuery('#aloha-devtool-profiler-console').prepend('<li>' + Array.prototype.slice.call(arguments).join(' ') + '</li>');
 		}
 	}
 
-	Aloha.Profiler = Plugin.create( 'profiler', {
+	Aloha.Profiler = Plugin.create('profiler', {
 
 		/**
 		 * Explose all dependencies to allow easy access. eg:
@@ -185,37 +164,37 @@ window.define( [
 		 * Aloha.Profiler.profile(Aloha.Profiler.alohaObjects[4], 'preProcessKeyStrokes')
 		 * would start profiling the Markup.preProcessKeyStrokes method.
 		 */
-		loadedDependencies: Array.prototype.slice.call( arguments ),
+		loadedDependencies: Array.prototype.slice.call(arguments),
 
 		/**
 		 * Provides a better interface to access various components of Aloha.
 		 * eg: Aloha.Profiler.profile(Aloha.Profiler.alohaComponents[ 'Markup' ], 'preProcessKeyStrokes')
 		 */
 		alohaComponents: {},
-		
+
 		panel: null,
 
 		/**
 		 * Initializes Profiler plugin by populating alohaComponents with all
 		 * arguments of our define function, mapping name, to object
 		 */
-		init: function() {
+		init: function () {
 			var j = argNames.length;
-			while ( --j >= 0 ) {
-				this.alohaComponents[ argNames[ j ] ] = args[ j ];
+			while (--j >= 0) {
+				this.alohaComponents[argNames[j]] = args[j];
 			}
-			
+
 			var that = this;
-			
-			Aloha.ready( function() {
-				if ( Aloha.Sidebar && Aloha.Sidebar.right ) {
-					that.panel = initSidebarPanel( Aloha.Sidebar.right );
+
+			Aloha.ready(function () {
+				if (Aloha.Sidebar && Aloha.Sidebar.right) {
+					that.panel = initSidebarPanel(Aloha.Sidebar.right);
 				}
-			} );
+			});
 		},
 
-		log: function() {
-			PanelConsole.log.apply( PanelConsole, arguments );
+		log: function () {
+			PanelConsole.log.apply(PanelConsole, arguments);
 		},
 
 		/**
@@ -225,9 +204,9 @@ window.define( [
 		 * @param {String} path
 		 * @param {String} fnName
 		 */
-		profileAlohaComponent: function( path, fnName ) {
-			var parts = parseObjectPath( path, this.alohaComponents );
-			return this.profile( parts.parentObj, fnName || parts.propName );
+		profileAlohaComponent: function (path, fnName) {
+			var parts = parseObjectPath(path, this.alohaComponents);
+			return this.profile(parts.parentObj, fnName || parts.propName);
 		},
 
 		/**
@@ -239,61 +218,60 @@ window.define( [
 		 * @param {?Function(Function, Array):Boolean} intercept functiont to
 		 *                 call each time this method is invoked
 		 */
-		profile: function( obj, fnName, intercept ) {
+		profile: function (obj, fnName, intercept) {
 			var path,
-			    parts,
-			    objIndex = -1,
-			    i;
+			parts,
+			objIndex = -1,
+				i;
 
-			if ( typeof obj === 'string' ) {
-				parts = parseObjectPath( obj );
+			if (typeof obj === 'string') {
+				parts = parseObjectPath(obj);
 				obj = parts.parentObj;
-				path = parts.path + ( fnName ? '.' + fnName : '' );
-				if ( parts.propName ) {
-					if ( typeof parts.obj === 'function' ) {
+				path = parts.path + (fnName ? '.' + fnName : '');
+				if (parts.propName) {
+					if (typeof parts.obj === 'function') {
 						fnName = parts.propName;
-					} else if ( parts.obj === 'object' ) {
+					} else if (parts.obj === 'object') {
 						obj = parts.obj;
 					}
 				}
 			}
 
-			if ( !obj || !fnName || typeof obj[ fnName ] !== 'function' ) {
+			if (!obj || !fnName || typeof obj[fnName] !== 'function') {
 				return;
 			}
 
-			for ( i = 0; i < profiledFunctions.length; ++i ) {
-				if ( profiledFunctions[ i ] === obj ) {
+			for (i = 0; i < profiledFunctions.length; ++i) {
+				if (profiledFunctions[i] === obj) {
 					objIndex = i;
-					if ( profiledFunctions[ i ][ fnName ] ) {
+					if (profiledFunctions[i][fnName]) {
 						return;
 					}
 				}
 			}
 
-			var fn = obj[ fnName ];
+			var fn = obj[fnName];
 			var that = this;
 
 			// In IE typeof window.console.log returns "object!!!"
-			if ( window.console && window.console.log ) {
-				if ( objIndex === -1 ) {
-					objIndex = profiledFunctions.push( obj ) - 1;
+			if (window.console && window.console.log) {
+				if (objIndex === -1) {
+					objIndex = profiledFunctions.push(obj) - 1;
 				}
 
-				profiledFunctions[ objIndex ][ fnName ] = fn;
+				profiledFunctions[objIndex][fnName] = fn;
 
-				obj[ fnName ] = function() {
-					if ( typeof intercept === 'function' ) {
-						intercept( fn, arguments );
+				obj[fnName] = function () {
+					if (typeof intercept === 'function') {
+						intercept(fn, arguments);
 					}
 
 					// window.console.time( fnName );
-					var start = +( new Date() );
-					var returnValue = fn.apply( obj, arguments );
+					var start = +(new Date());
+					var returnValue = fn.apply(obj, arguments);
 
 					// window.console.timeEnd( fnName );
-					that.log( ( path || fnName ) + ': ' +
-						( ( new Date() ) - start ) + 'ms' );
+					that.log((path || fnName) + ': ' + ((new Date()) - start) + 'ms');
 
 					return returnValue;
 				};
@@ -303,10 +281,10 @@ window.define( [
 		/**
 		 * @return {String} "Aloha.Profiler"
 		 */
-		toString: function() {
+		toString: function () {
 			return 'Aloha.Profiler';
 		}
-	} );
+	});
 
 	return Aloha.Profiler;
-} );
+});

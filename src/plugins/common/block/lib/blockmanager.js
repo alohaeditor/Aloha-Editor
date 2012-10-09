@@ -24,29 +24,19 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha',
-	'jquery',
-	'ui/scopes',
-	'aloha/observable',
-	'aloha/registry',
-	'util/class',
-	'util/strings',
-	'util/maps'
-], function(
-	Aloha,
-	jQuery,
-	Scopes,
-	Observable,
-	Registry,
-	Class,
-	Strings,
-	Maps
-){
+define(['aloha', 'jquery', 'ui/scopes', 'aloha/observable', 'aloha/registry', 'util/class', 'util/strings', 'util/maps'], function (
+Aloha,
+jQuery,
+Scopes,
+Observable,
+Registry,
+Class,
+Strings,
+Maps) {
 	"use strict";
 
 	var
-		GENTICS = window.GENTICS;
+	GENTICS = window.GENTICS;
 
 	/**
 	 * This is the block manager, which is the central entity for maintaining the lifecycle of blocks.
@@ -54,9 +44,8 @@ define([
 	 * @name block.blockmanager
 	 * @class Block manager singleton
 	 */
-	var BlockManager = new (Class.extend(Observable,
-	/** @lends block.blockmanager */
-	{
+	var BlockManager = new(Class.extend(Observable,
+	/** @lends block.blockmanager */ {
 
 		/**
 		 * @name block.blockmanager#block-selection-change
@@ -115,7 +104,7 @@ define([
 		 *
 		 * @constructor
 		 */
-		_constructor: function() {
+		_constructor: function () {
 			Scopes.createScope('Aloha.Block');
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
@@ -128,7 +117,7 @@ define([
 		 *
 		 * @private
 		 */
-		registerEventHandlers: function() {
+		registerEventHandlers: function () {
 			var that = this;
 			this._registerEventHandlersForDeactivatingAlohaBlock();
 			this._registerEventHandlersForDeterminingCurrentlyActiveBlock();
@@ -136,7 +125,7 @@ define([
 			this._registerEventHandlersForCutCopyPaste();
 
 			// TODO: not sure if we still need the code below. it is somehow related to caret handling
-			Aloha.bind('aloha-selection-changed', function(evt, selection, originalEvent) {
+			Aloha.bind('aloha-selection-changed', function (evt, selection, originalEvent) {
 				// the following line is needed to de-select blocks when navigating over them using the mouse cursors.
 				// We only want to execute it though, if we are not inside a block, as it would otherwise
 				// directly deselect the block we just selected. This is just a hotfix and not the final solution yet.
@@ -151,15 +140,13 @@ define([
 		 * Register the event handlers which deactivate Aloha blocks when the
 		 * user clicks outside a block.
 		 */
-		_registerEventHandlersForDeactivatingAlohaBlock: function() {
+		_registerEventHandlersForDeactivatingAlohaBlock: function () {
 			var that = this;
-			jQuery(document).bind('click', function(event) {
+			jQuery(document).bind('click', function (event) {
 				if (Maps.isEmpty(that._highlightedBlocks)) {
 					return;
 				}
-				if (jQuery(event.target)
-				        .closest('.aloha-ui,.aloha-block-do-not-deactivate,.aloha-block')
-				        .length > 0) {
+				if (jQuery(event.target).closest('.aloha-ui,.aloha-block-do-not-deactivate,.aloha-block').length > 0) {
 					// A ui element has been clicked; ignore this event.
 					return;
 				}
@@ -171,9 +158,9 @@ define([
 		 * Register the event handler which listens to block-selection-change, and
 		 * sets _activeBlock accordingly.
 		 */
-		_registerEventHandlersForDeterminingCurrentlyActiveBlock: function() {
+		_registerEventHandlersForDeterminingCurrentlyActiveBlock: function () {
 			var that = this;
-			this.bind('block-selection-change', function(highlightedBlocks) {
+			this.bind('block-selection-change', function (highlightedBlocks) {
 				if (highlightedBlocks.length > 0) {
 					that._activeBlock = highlightedBlocks[0];
 				} else {
@@ -186,7 +173,7 @@ define([
 		 * Implementation of block deletions, both when the block is the only selected element,
 		 * and when the block is part of a bigger selection which should be deleted.
 		 */
-		_registerEventHandlersForBlockDeletion: function() {
+		_registerEventHandlersForBlockDeletion: function () {
 			var that = this;
 
 			// This case executes in:
@@ -196,13 +183,15 @@ define([
 			// - IE7+8 for inline blocks and for block-level blocks which are part of a bigger selection
 			// it does NOT execute in the following cases:
 			// - IE7+8 for block-level blocks which are NOT part of a bigger selection. This case is handled separately below.
-			Aloha.bind('aloha-command-will-execute', function(e, data) {
+			Aloha.bind('aloha-command-will-execute', function (e, data) {
 				var commandId = data.commandId;
 
 				// Internet Explorer *magically* sets the range to the "Body" object after deselecting everything. yeah :-D
 				var onlyBlockSelected = (Aloha.getSelection().getRangeCount() === 0) // Firefox / Chrome
-					|| (Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).endContainer === jQuery('body')[0]) // Internet explorer: Inline Elements
-					|| (Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).startOffset + 1 === Aloha.getSelection().getRangeAt(0).endOffset); // Internet explorer: Block level elements
+				||
+				(Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).endContainer === jQuery('body')[0]) // Internet explorer: Inline Elements
+				||
+				(Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).startOffset + 1 === Aloha.getSelection().getRangeAt(0).endOffset); // Internet explorer: Block level elements
 
 				if (that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && onlyBlockSelected) {
 					// Deletion when a block is currently selected
@@ -214,9 +203,9 @@ define([
 					// Deletion when a block is inside a bigger selection currently
 					// In this case, we check if we find an aloha-block. If yes, we delete it right away as the browser does not delete it correctly by default
 					var traverseSelectionTree;
-					traverseSelectionTree = function(selectionTree) {
+					traverseSelectionTree = function (selectionTree) {
 						var el;
-						for (var i=0, l=selectionTree.length; i<l; i++) {
+						for (var i = 0, l = selectionTree.length; i < l; i++) {
 							el = selectionTree[i];
 							if (el.domobj.nodeType === 1) { // DOM node
 								var $el = jQuery(el.domobj);
@@ -234,12 +223,12 @@ define([
 
 			// - IE7/8 Workaround
 			// - deletion of blocks inside block collection
-			jQuery(window.document).keydown(function(e) {
+			jQuery(window.document).keydown(function (e) {
 
 				// Pressing DEL or BACKSPACE in a sidebar attribute editor form input
 				// causes the destruction of the block;
 				// if the keypress comes from a form element do nothing
-				if ( typeof e.srcElement !== 'undefined' && typeof e.srcElement.form !== 'undefined' ) {
+				if (typeof e.srcElement !== 'undefined' && typeof e.srcElement.form !== 'undefined') {
 					return true;
 				}
 
@@ -253,7 +242,7 @@ define([
 						that._activeBlock.destroy();
 						e.preventDefault();
 						return false;
-					} else if(that._activeBlock.shouldDestroy()) {
+					} else if (that._activeBlock.shouldDestroy()) {
 						// .. in this case, the block should be destroyed because it
 						// is part of a block collection.
 
@@ -270,13 +259,13 @@ define([
 		 *
 		 * When pasting, the blockcontenthandler is triggered. This takes care of the pasting process.
 		 */
-		_registerEventHandlersForCutCopyPaste: function() {
+		_registerEventHandlersForCutCopyPaste: function () {
 			var that = this,
 				currentlyCopying = false,
 				currentlyCutting = false,
 				selectionBeforeCopying = null;
 
-			jQuery(window.document).keydown(function(e) {
+			jQuery(window.document).keydown(function (e) {
 				// IF: Ctrl/Command C pressed -- COPY
 				if (that._activeBlock && (e.ctrlKey || e.metaKey) && e.which === 67) {
 					currentlyCopying = true;
@@ -293,7 +282,7 @@ define([
 					GENTICS.Utils.Dom.selectDomNode(that._activeBlock.$element[0]);
 				}
 			});
-			jQuery(window.document).keyup(function(e) {
+			jQuery(window.document).keyup(function (e) {
 				// IF: Release of ctrl / command C
 				if (!currentlyCutting && currentlyCopying && (e.which === 67 || e.which === 18 || e.which === 91)) {
 					currentlyCopying = false;
@@ -304,7 +293,7 @@ define([
 					}
 				}
 				// IF: Release of ctrl / command X
-				if (currentlyCutting  && (e.which === 67 || e.which === 18 || e.which === 88)) {
+				if (currentlyCutting && (e.which === 67 || e.which === 18 || e.which === 88)) {
 					currentlyCutting = false;
 				}
 			});
@@ -315,15 +304,15 @@ define([
 		 * inside the Block Manager, as we want all editables to become possible
 		 * drop targets for block-level aloha blocks.
 		 */
-		initializeBlockLevelDragDrop: function() {
+		initializeBlockLevelDragDrop: function () {
 			var that = this;
-			jQuery.each( Aloha.editables, function(i, editable) {
-				editable.obj.data( "block-dragdrop", that._dragdropEnabled );
-				that.createBlockLevelSortableForEditableOrBlockCollection( editable.obj );
+			jQuery.each(Aloha.editables, function (i, editable) {
+				editable.obj.data("block-dragdrop", that._dragdropEnabled);
+				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
 			});
-			Aloha.bind('aloha-editable-created', function(e, editable) {
-				editable.obj.data( "block-dragdrop", that._dragdropEnabled );
-				that.createBlockLevelSortableForEditableOrBlockCollection( editable.obj );
+			Aloha.bind('aloha-editable-created', function (e, editable) {
+				editable.obj.data("block-dragdrop", that._dragdropEnabled);
+				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
 			});
 		},
 
@@ -333,7 +322,7 @@ define([
 		 *
 		 * This is an internal method a user should never call!
 		 */
-		createBlockLevelSortableForEditableOrBlockCollection: function($editableOrBlockCollection) {
+		createBlockLevelSortableForEditableOrBlockCollection: function ($editableOrBlockCollection) {
 			var that = this;
 
 			if (!$editableOrBlockCollection.hasClass('aloha-block-blocklevel-sortable')) {
@@ -351,18 +340,18 @@ define([
 					handle: ".aloha-block-draghandle-blocklevel",
 					connectWith: ".aloha-block-blocklevel-sortable.aloha-block-dropzone", // we want to be able to drag an element to other editables
 					disabled: !that._dragdropEnabled, // if drag & drop is disabled, sortable should also be disabled
-					start: function(event, ui) {
+					start: function (event, ui) {
 						// check if the block's parent is a dropzone
-						ui.item.data( "block-sort-allowed", (ui.item.parents( ".aloha-block-dropzone" ).length > 0) );
+						ui.item.data("block-sort-allowed", (ui.item.parents(".aloha-block-dropzone").length > 0));
 					},
-					change: function(event, ui) {
-						ui.item.data( "block-sort-allowed", (ui.placeholder.parents( ".aloha-block-dropzone" ).length > 0) );
+					change: function (event, ui) {
+						ui.item.data("block-sort-allowed", (ui.placeholder.parents(".aloha-block-dropzone").length > 0));
 					},
-					stop: function(event, ui) { 
-						if ( !ui.item.data( "block-sort-allowed" ) ) {
-							jQuery( this ).sortable( "cancel" );
-						} 
-						ui.item.removeData( "block-sort-allowed" );
+					stop: function (event, ui) {
+						if (!ui.item.data("block-sort-allowed")) {
+							jQuery(this).sortable("cancel");
+						}
+						ui.item.removeData("block-sort-allowed");
 					}
 				});
 
@@ -413,7 +402,7 @@ define([
 		 * @param {Class} A class that extends block.block.AbstractBlock
 		 * @api
 		 */
-		registerBlockType: function(identifier, blockType) {
+		registerBlockType: function (identifier, blockType) {
 			Scopes.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
 			this.blockTypes.register(identifier, blockType);
 		},
@@ -424,7 +413,7 @@ define([
 		 *
 		 * @private
 		 */
-		_blockify: function(element, instanceDefaults) {
+		_blockify: function (element, instanceDefaults) {
 			var that = this,
 				$element = jQuery(element),
 				BlockPlugin = Aloha.require('block/block-plugin'),
@@ -433,9 +422,7 @@ define([
 				block;
 
 			if (jQuery.inArray(tagName, BlockPlugin.settings.rootTags) === -1) {
-				Aloha.Log.error('block/blockmanager', 'Blocks can only be created from [' +
-					BlockPlugin.settings.rootTags.join(', ') + ']' +
-					'] element. You passed ' + tagName + '.');
+				Aloha.Log.error('block/blockmanager', 'Blocks can only be created from [' + BlockPlugin.settings.rootTags.join(', ') + ']' + '] element. You passed ' + tagName + '.');
 				return;
 			}
 
@@ -448,12 +435,12 @@ define([
 				return;
 			}
 
-			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element, attributes);
+			block = new(this.blockTypes.get(attributes['aloha-block-type']))($element, attributes);
 			block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
-//			jQuery.each(attributes, function(k, v) {
-//				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
-//				block._setAttribute(k, v);
-//			});
+			//			jQuery.each(attributes, function(k, v) {
+			//				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
+			//				block._setAttribute(k, v);
+			//			});
 
 			// Register block
 			this.blocks.register(block.getId(), block);
@@ -476,7 +463,7 @@ define([
 		 *
 		 * @private
 		 */
-		getConfig: function(blockElement, instanceDefaults) {
+		getConfig: function (blockElement, instanceDefaults) {
 			// Clone the element before getting the data to fix an IE7 crash.
 			// We use jQuery.clone(true) because the sortableItem attribute isn't returned
 			// if we do a normal cloneNode(...).
@@ -494,12 +481,10 @@ define([
 					data[Strings.camelCaseToDashes(key)] = dataCamelCase[key];
 				}
 			}
-			return jQuery.extend(
-				{},
-				this.defaults,
-				instanceDefaults,
-				data
-			);
+			return jQuery.extend({},
+			this.defaults,
+			instanceDefaults,
+			data);
 		},
 
 		/**
@@ -511,7 +496,7 @@ define([
 		 * @return {block.block.AbstractBlock} Block instance
 		 * @api
 		 */
-		getBlock: function(idOrDomNode) {
+		getBlock: function (idOrDomNode) {
 			var id, domNode;
 			if (typeof idOrDomNode === 'object') {
 				domNode = jQuery(idOrDomNode);
@@ -534,7 +519,7 @@ define([
 		 *
 		 * @param {Object|String} blockOrBlockId Block or block id
 		 */
-		_unregisterBlock: function(blockOrBlockId) {
+		_unregisterBlock: function (blockOrBlockId) {
 			var id;
 			if (typeof blockOrBlockId === 'object') {
 				id = blockOrBlockId.getId();
@@ -554,8 +539,8 @@ define([
 		 *
 		 * @private
 		 */
-		_deactivateHighlightedBlocks: function() {
-			jQuery.each(jQuery.extend({}, this._highlightedBlocks), function(id) {
+		_deactivateHighlightedBlocks: function () {
+			jQuery.each(jQuery.extend({}, this._highlightedBlocks), function (id) {
 				var block = BlockManager.getBlock(id);
 				if (block) {
 					block.deactivate();
@@ -568,9 +553,9 @@ define([
 		 *
 		 * @return {Object}
 		 */
-		_getHighlightedBlocks: function() {
+		_getHighlightedBlocks: function () {
 			var _highlightedBlocks = {};
-			jQuery.each(this.blocks.getEntries(), function(blockId, block) {
+			jQuery.each(this.blocks.getEntries(), function (blockId, block) {
 				if (block.isActive()) {
 					_highlightedBlocks[blockId] = block;
 				}
@@ -578,11 +563,11 @@ define([
 			return _highlightedBlocks;
 		},
 
-		_setHighlighted: function(block) {
+		_setHighlighted: function (block) {
 			this._highlightedBlocks[block.id] = true;
 		},
 
-		_setUnhighlighted: function(block) {
+		_setUnhighlighted: function (block) {
 			delete this._highlightedBlocks[block.id];
 		}
 	}))();

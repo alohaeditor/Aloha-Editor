@@ -24,60 +24,53 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-    'jquery',
-    'aloha/plugin',
-    'ui/menuButton',
-    'ui/utils',
-    'jqueryui'
-], function (
-	$,
-	Plugin,
-	MenuButton,
-	Utils
-) {
+define(['jquery', 'aloha/plugin', 'ui/menuButton', 'ui/utils', 'jqueryui'], function (
+$,
+Plugin,
+MenuButton,
+Utils) {
 	'use strict';
 
 	var ribbon = Plugin.create('ribbon', {
 
 		init: function () {
-			if (!this.settings.enable &&
-				typeof this.settings.enable !== 'undefined') {
+			if (!this.settings.enable && typeof this.settings.enable !== 'undefined') {
 				return;
 			}
 
 			var that = this;
 			this._visible = false;
-            this._toolbar = $('<div>', {'class':
-				'aloha-ribbon-toolbar ui-menubar ui-widget-header ui-helper-clearfix'});
+			this._toolbar = $('<div>', {
+				'class': 'aloha-ribbon-toolbar ui-menubar ui-widget-header ui-helper-clearfix'
+			});
 
-			var fadeIn = Utils.makeButtonElement({'class': 'aloha-ribbon-in'})
-				.button()
-				.hide()
-				.click(function () {
-					that._toolbar.animate({
-						'left': 0
-					});
-					$('body').animate({paddingTop: 30});
-					fadeIn.hide();
-				})
-			    .appendTo(this._toolbar);
+			var fadeIn = Utils.makeButtonElement({
+				'class': 'aloha-ribbon-in'
+			}).button().hide().click(function () {
+				that._toolbar.animate({
+					'left': 0
+				});
+				$('body').animate({
+					paddingTop: 30
+				});
+				fadeIn.hide();
+			}).appendTo(this._toolbar);
 
-			var fadeOut = Utils.makeButtonElement({'class': 'aloha-ribbon-out'})
-				.button()
-				.click(function () {
-					that._toolbar.animate({
-						'left': -that._toolbar.outerWidth()
-						        + fadeIn.outerWidth()
-						        + 10
-					});
-					$('body').animate({paddingTop: 0});
-					fadeIn.show();
-				})
-				.appendTo(this._toolbar);
+			var fadeOut = Utils.makeButtonElement({
+				'class': 'aloha-ribbon-out'
+			}).button().click(function () {
+				that._toolbar.animate({
+					'left': -that._toolbar.outerWidth() + fadeIn.outerWidth() + 10
+				});
+				$('body').animate({
+					paddingTop: 0
+				});
+				fadeIn.show();
+			}).appendTo(this._toolbar);
 
-			var wrapper = $('<div>', {'class': 'aloha aloha-ribbon'})
-				.appendTo('body');
+			var wrapper = $('<div>', {
+				'class': 'aloha aloha-ribbon'
+			}).appendTo('body');
 
 			this._icon = $('<div>').prependTo(this._toolbar);
 			this.setIcon('');
@@ -105,7 +98,9 @@ define([
 			if (!this._toolbar) {
 				return;
 			}
-			props = $.extend({}, props, {'siblingContainer': this._toolbar});
+			props = $.extend({}, props, {
+				'siblingContainer': this._toolbar
+			});
 			this._toolbar.append(MenuButton.makeMenuButton(props));
 		},
 

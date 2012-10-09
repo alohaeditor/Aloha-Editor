@@ -45,24 +45,25 @@ define(['jquery', 'jqueryui'], function ($) {
 	 *       A new label element that wraps the given element.
 	 */
 	function wrapWithLabel(labelText, element) {
-		return $('<label>', {'class': 'aloha-ui-label'})
-			.append($('<span>', {'class': 'aloha-ui-label-text', 'text': labelText}))
-			.append(element);
+		return $('<label>', {
+			'class': 'aloha-ui-label'
+		}).append($('<span>', {
+			'class': 'aloha-ui-label-text',
+			'text': labelText
+		})).append(element);
 	}
 
 	function makeButton(button, props, hasMenu) {
 		button.button({
 			label: makeButtonLabel(props),
-			text: !!(props.text || props.html),
+			text: !! (props.text || props.html),
 			icons: {
 				primary: props.icon || (props.iconUrl && 'aloha-ui-inline-icon-container') || null,
 				secondary: (hasMenu && 'aloha-jqueryui-icon ui-icon-triangle-1-s') || null
 			}
 		});
 		if (props.iconUrl) {
-			button.button('widget')
-				.children('.ui-button-icon-primary')
-				.append(makeButtonIconFromUrl(props.iconUrl));
+			button.button('widget').children('.ui-button-icon-primary').append(makeButtonIconFromUrl(props.iconUrl));
 		}
 		return button;
 	}

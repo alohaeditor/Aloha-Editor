@@ -26,7 +26,8 @@
  */
 define(
 ['aloha/registry'],
-function(Registry) {
+
+function (Registry) {
 	"use strict";
 
 	/**
@@ -35,16 +36,15 @@ function(Registry) {
 	 * @name block.editormanager
 	 * @class Editor manager singleton
 	 */
-	return new (Registry.extend(
-	/** @lends block.editormanager */
-	{
+	return new(Registry.extend(
+	/** @lends block.editormanager */ {
 		/**
 		 * Create an editor from the given definition. Acts as a factory method
 		 * for editors.
 		 *
 		 * @param {Object} definition
 		 */
-		createEditor: function(definition) {
+		createEditor: function (definition) {
 			if (!this.has(definition.type)) {
 				throw 'Editor for type "' + definition.type + '" not found.';
 			}

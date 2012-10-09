@@ -10,26 +10,27 @@
  * Provides a set of language codes and images
  */
 define(['aloha', 'jquery', 'flag-icons/flag-icons-plugin', 'aloha/console', 'wai-lang/wai-lang-plugin'],
-function(Aloha, jQuery, FlagIcons, console) {
+
+function (Aloha, jQuery, FlagIcons, console) {
 	'use strict';
-	
+
 	/**
 	 * global Deferred Object
 	 */
 	var deferred = jQuery.Deferred();
 
-	return new (Aloha.AbstractRepository.extend({
+	return new(Aloha.AbstractRepository.extend({
 
 		/**
 		 * Set of language codes
 		 */
 		languageCodes: [],
-		
+
 		/**
 		 * Set default locale
 		 */
 		locale: 'de',
-		
+
 		/**
 		 * Set default iso
 		 */
@@ -48,7 +49,7 @@ function(Aloha, jQuery, FlagIcons, console) {
 		 * Initialize WAI Languages, load the language file and prepare the data.
 		 */
 		init: function () {
-			
+
 			var that = this;
 			var waiLang = Aloha.require('wai-lang/wai-lang-plugin');
 			var locale = Aloha.settings.locale;
@@ -65,12 +66,12 @@ function(Aloha, jQuery, FlagIcons, console) {
 			this.flags = waiLang.flags;
 
 			this.repositoryName = 'WaiLanguages';
-			
+
 			Aloha.require(['wai-lang/' + this.iso + '-' + this.locale], function (data) {
 				that.storeLanguageCodes(data);
 				deferred.resolve();
 			});
-			
+
 		},
 
 		markObject: function (obj, item) {
@@ -102,9 +103,9 @@ function(Aloha, jQuery, FlagIcons, console) {
 				el.type = 'language';
 				if (that.flags) {
 					if (el.flag) {
-						el.url =  FlagIcons.path + '/img/flags/' + el.flag + '.png';
+						el.url = FlagIcons.path + '/img/flags/' + el.flag + '.png';
 					} else {
-						el.url =  waiLangPath + '/img/button.png';
+						el.url = waiLangPath + '/img/button.png';
 					}
 				}
 				// el.renditions.url = "img/flags/" + e.id + ".png";
@@ -112,7 +113,7 @@ function(Aloha, jQuery, FlagIcons, console) {
 				that.languageCodes.push(new Aloha.RepositoryDocument(el));
 			});
 		},
-		
+
 		/**
 		 * Searches a repository for object items matching query if objectTypeFilter.
 		 * If none found it returns null.
@@ -120,22 +121,22 @@ function(Aloha, jQuery, FlagIcons, console) {
 		 */
 		_searchInLanguageCodes: function (p, callback) {
 			var query = new RegExp('^' + p.queryString, 'i'),
-		    i,
-		    d = [],
-		    matchesName,
-		    matchesType,
-		    currentElement;
+				i,
+				d = [],
+				matchesName,
+				matchesType,
+				currentElement;
 
 			for (i = 0; i < this.languageCodes.length; ++i) {
 				currentElement = this.languageCodes[i];
 				matchesName = (!p.queryString || currentElement.name.match(query));
 				matchesType = (!p.objectTypeFilter || (!p.objectTypeFilter.length) || jQuery.inArray(currentElement.type, p.objectTypeFilter) > -1);
-	
+
 				if (matchesName && matchesType) {
 					d.push(currentElement);
 				}
 			}
-	
+
 			callback.call(this, d);
 		},
 
@@ -145,11 +146,11 @@ function(Aloha, jQuery, FlagIcons, console) {
 		 */
 		query: function (p, callback) {
 			var that = this;
-			
-			deferred.done(function(){
+
+			deferred.done(function () {
 				that._searchInLanguageCodes(p, callback);
 			});
-			
+
 		},
 
 		/**

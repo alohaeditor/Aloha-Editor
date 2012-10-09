@@ -28,38 +28,21 @@
  * @name block
  * @namespace Block plugin
  */
-define([
-	'aloha',
-	'aloha/plugin',
-	'jquery',
-	'aloha/contenthandlermanager',
-	'block/blockmanager',
-	'block/sidebarattributeeditor',
-	'block/block',
-	'block/editormanager',
-	'block/blockcontenthandler',
-	'block/editor',
-	'ui/ui',
-	'ui/toggleButton',
-	'i18n!block/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'jqueryui'
-], function(
-	Aloha,
- 	Plugin,
- 	jQuery,
- 	ContentHandlerManager, 
-	BlockManager,
- 	SidebarAttributeEditor,
- 	block,
- 	EditorManager,
- 	BlockContentHandler,
- 	editor,
- 	Ui,
- 	ToggleButton, 
-	i18n,
-	i18nCore
-) {
+define(['aloha', 'aloha/plugin', 'jquery', 'aloha/contenthandlermanager', 'block/blockmanager', 'block/sidebarattributeeditor', 'block/block', 'block/editormanager', 'block/blockcontenthandler', 'block/editor', 'ui/ui', 'ui/toggleButton', 'i18n!block/nls/i18n', 'i18n!aloha/nls/i18n', 'jqueryui'], function (
+Aloha,
+Plugin,
+jQuery,
+ContentHandlerManager,
+BlockManager,
+SidebarAttributeEditor,
+block,
+EditorManager,
+BlockContentHandler,
+editor,
+Ui,
+ToggleButton,
+i18n,
+i18nCore) {
 	"use strict";
 
 	var defaultRootTags = ['div', 'span'];
@@ -67,12 +50,12 @@ define([
 	/**
 	 * Register the 'block' plugin
 	 */
-	var BlockPlugin = Plugin.create( 'block', {
-		
+	var BlockPlugin = Plugin.create('block', {
+
 		/**
 		 * default button configuration
 		 */
-		config: [], 
+		config: [],
 
 		settings: {},
 
@@ -118,7 +101,7 @@ define([
 			// set the dropzones for the initialized editable
 			Aloha.bind('aloha-editable-created', function (e, editable) {
 				that.setDropzones(editable.obj);
- 			});
+			});
 
 			// apply specific configuration if an editable has been activated
 			Aloha.bind('aloha-editable-activated', function (e, params) {
@@ -162,17 +145,11 @@ define([
 			// toggle drag & drop option can be set as
 			// config: {'toggeleDragdrop': true} or
 			// config: ['toggleDragdrop']
-			var toggleDragdropConfigured = function() {
-				return (config[0] === "toggleDragdrop") ||
-								config.toggleDragdrop == true   ||
-								config.toggleDragdrop == 'true' ||
-								config.toggleDragdrop == 1      ||
-								config.toggleDragdrop == '1'
+			var toggleDragdropConfigured = function () {
+				return (config[0] === "toggleDragdrop") || config.toggleDragdrop == true || config.toggleDragdrop == 'true' || config.toggleDragdrop == 1 || config.toggleDragdrop == '1'
 			};
 
-			var toggleGloballyOrPerEditable =
-				((this.settings && this.settings.config && this.settings.config.toggleDragdropGlobal) ||
-				 toggleDragdropConfigured());
+			var toggleGloballyOrPerEditable = ((this.settings && this.settings.config && this.settings.config.toggleDragdropGlobal) || toggleDragdropConfigured());
 			return toggleGloballyOrPerEditable && this.isDragDropEnabled();
 		},
 
@@ -188,9 +165,7 @@ define([
 		 *        globally, or for the given editable.
 		 */
 		_getDragdropState: function (editable) {
-			return ((this.settings && this.settings.config && this.settings.config.toggleDragdropGlobal) ?
-					BlockManager.getDragDropState() :
-					editable.obj.data("block-dragdrop"));
+			return ((this.settings && this.settings.config && this.settings.config.toggleDragdropGlobal) ? BlockManager.getDragDropState() : editable.obj.data("block-dragdrop"));
 		},
 
 		/**
@@ -227,11 +202,11 @@ define([
 		createButtons: function () {
 			var that = this;
 
-			this._toggleDragDropButton = Ui.adopt( "toggleDragDrop", ToggleButton, {
-				tooltip: i18n.t( 'button.toggledragdrop.tooltip' ),
+			this._toggleDragDropButton = Ui.adopt("toggleDragDrop", ToggleButton, {
+				tooltip: i18n.t('button.toggledragdrop.tooltip'),
 				icon: 'aloha-icon aloha-icon-toggledragdrop',
 				scope: 'Aloha.continuoustext',
-				click: function() {
+				click: function () {
 					that._toggleDragdropState(Aloha.activeEditable);
 				}
 			});
@@ -246,11 +221,11 @@ define([
 			var config = that.getEditableConfig(editable);
 			var dropzones = (config && config.dropzones) || that.settings.dropzones;
 
-			if ( dropzones ) {
-				editable.data( 'block-dropzones', dropzones );	
+			if (dropzones) {
+				editable.data('block-dropzones', dropzones);
 			} else {
 				// if dropzones are undefined all editables should be dropzones
-				editable.data( 'block-dropzones', [".aloha-editable"] );	
+				editable.data('block-dropzones', [".aloha-editable"]);
 			}
 		},
 
@@ -258,15 +233,11 @@ define([
 		 * Checks whether drag & drop is enabled for blocks.
 		 * @return boolean 
 		 */
-		isDragDropEnabled: function() {
-			if ( this.settings && typeof this.settings.dragdrop !== "undefined" ) {
+		isDragDropEnabled: function () {
+			if (this.settings && typeof this.settings.dragdrop !== "undefined") {
 				// Normalize config
 				return (
-					this.settings.dragdrop === true   ||
-					this.settings.dragdrop === 'true' ||
-					this.settings.dragdrop === 1      ||
-					this.settings.dragdrop === '1'
-				);
+				this.settings.dragdrop === true || this.settings.dragdrop === 'true' || this.settings.dragdrop === 1 || this.settings.dragdrop === '1');
 			} else {
 				return true; // by default dragdrop is activated 
 			}
@@ -275,34 +246,34 @@ define([
 		/**
 		 * Create blocks from default settings
 		 */
-		_createBlocks: function() {
+		_createBlocks: function () {
 			if (!this.settings.defaults) {
 				this.settings.defaults = {};
 			}
-			jQuery.each( this.settings.defaults, function(selector, instanceDefaults) {
-				jQuery( selector ).alohaBlock( instanceDefaults );
+			jQuery.each(this.settings.defaults, function (selector, instanceDefaults) {
+				jQuery(selector).alohaBlock(instanceDefaults);
 			});
 		},
 
 		/**
 		 * Set the drag & drop state for the given editable.
 		 */
-		_setDragDropStateForEditable: function($editable, state) {
-			$editable.data( "block-dragdrop", state );
+		_setDragDropStateForEditable: function ($editable, state) {
+			$editable.data("block-dragdrop", state);
 
-			if ( $editable.hasClass("ui-sortable") ) {
-				$editable.sortable( "option", "disabled", !state );	
+			if ($editable.hasClass("ui-sortable")) {
+				$editable.sortable("option", "disabled", !state);
 			}
 
-			$editable.find( ".aloha-block.ui-draggable" ).each( function() {
-				jQuery( this ).draggable( "option", "disabled", !state );	
+			$editable.find(".aloha-block.ui-draggable").each(function () {
+				jQuery(this).draggable("option", "disabled", !state);
 			});
 
-			$editable.find( ".aloha-block-handle" ).each( function() {
+			$editable.find(".aloha-block-handle").each(function () {
 				if (state) {
-					jQuery( this ).addClass( "aloha-block-draghandle" );	
+					jQuery(this).addClass("aloha-block-draghandle");
 				} else {
-					jQuery( this ).removeClass( "aloha-block-draghandle" );	
+					jQuery(this).removeClass("aloha-block-draghandle");
 				}
 			});
 		}
@@ -321,14 +292,14 @@ define([
 	 * @api
 	 * @param {Object} instanceDefaults
 	 */
-	jQuery.fn.alohaBlock = function(instanceDefaults) {
+	jQuery.fn.alohaBlock = function (instanceDefaults) {
 		instanceDefaults = instanceDefaults || {};
-		jQuery( this ).each( function(index, element) {
-			BlockManager._blockify( element, instanceDefaults );
+		jQuery(this).each(function (index, element) {
+			BlockManager._blockify(element, instanceDefaults);
 		});
 
 		// Chain
-		return jQuery( this );
+		return jQuery(this);
 	};
 
 	/**
@@ -337,7 +308,7 @@ define([
 	 * 
 	 * @api
 	 */
-	jQuery.fn.mahaloBlock = function() {
+	jQuery.fn.mahaloBlock = function () {
 		jQuery(this).each(function (index, element) {
 			BlockManager._unblockify(element);
 		});

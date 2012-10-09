@@ -1,8 +1,6 @@
-define([
-	'jquery',
-	'ui/component'
-],
-function($, Component) {
+define(['jquery', 'ui/component'],
+
+function ($, Component) {
 	'use strict';
 
 	function makeDialogDiv(props) {
@@ -20,8 +18,8 @@ function($, Component) {
 		// Buttons automatically close the dialog for convenience
 		for (var title in buttons) {
 			if (buttons.hasOwnProperty(title)) {
-				buttons[title] = (function(orgCallback){
-					return function(){
+				buttons[title] = (function (orgCallback) {
+					return function () {
 						orgCallback.apply(this);
 						$(this).dialog('destroy').remove();
 					};
@@ -31,7 +29,7 @@ function($, Component) {
 		return buttons;
 	}
 
-	function makeDialogProps(props, defaultTitle){
+	function makeDialogProps(props, defaultTitle) {
 		// All root elements of widgets added to the page by aloha should have the class 'aloha'.
 		// aloha-dialog is used for a hack to prevent a click in the
 		// dialog from bluggin the editable search for aloha-dialog in
@@ -65,34 +63,32 @@ function($, Component) {
 		 *                  callback with the answer as a boolean argument. Does not interfere with yes and
 		 *                  no properties.
 		 *            cls - the root element of the dialog will receive this class
-         *        buttons - an object where the properties are button titles and the values are callbacks
+		 *        buttons - an object where the properties are button titles and the values are callbacks
 		 *        Button callbacks will receive the dialog element as context.
 		 *        Pressing any buttons in the dialog will automatically close the dialog.
 		 * @return
 		 *        A function that can be called to close the dialog.
-		 */
-		'confirm': function(props) {
+		 */'confirm': function (props) {
 			var buttons = props.buttons || {};
 			buttons['Yes'] = buttons['Yes'] || props.yes || $.noop;
-			buttons['No']  = buttons['No']  || props.no  || $.noop;
+			buttons['No'] = buttons['No'] || props.no || $.noop;
 			if (props.answer) {
 				var yes = buttons['Yes'];
-				var no  = buttons['No'];
-				buttons['Yes'] = function(){
+				var no = buttons['No'];
+				buttons['Yes'] = function () {
 					yes();
 					props.answer(true);
 				};
-				buttons['No'] = function(){
+				buttons['No'] = function () {
 					no();
 					props.answer(false);
 				};
 			}
 			var dialog = makeDialogDiv(props).dialog(
-				$.extend(makeDialogProps(props, 'Confirm'), {
-					'buttons': wrapDialogButtons(buttons)
-				})
-			);
-			return function() {
+			$.extend(makeDialogProps(props, 'Confirm'), {
+				'buttons': wrapDialogButtons(buttons)
+			}));
+			return function () {
 				dialog.dialog('destroy').remove();
 			};
 		},
@@ -108,16 +104,14 @@ function($, Component) {
 		 *        cls - the root element of the dialog will receive this class
 		 * @return
 		 *        A function that can be called to close the dialog.
-		 */
-		'alert': function(props) {
+		 */'alert': function (props) {
 			var dialog = makeDialogDiv(props).dialog(
-				$.extend(makeDialogProps(props, 'Alert'), {
-					'buttons': wrapDialogButtons({
-						'Dismiss': $.noop
-					})
+			$.extend(makeDialogProps(props, 'Alert'), {
+				'buttons': wrapDialogButtons({
+					'Dismiss': $.noop
 				})
-			);
-			return function() {
+			}));
+			return function () {
 				dialog.dialog('destroy').remove();
 			};
 		},
@@ -136,22 +130,22 @@ function($, Component) {
 		 * @return
 		 *        A function that can be called to update the progress bar with a value from 0 to 100.
 		 *        If null or undefined is passed, the dialog will be closed.
-		 */
-		'progress': function(props) {
+		 */'progress': function (props) {
 			var progressbar = $("<div>").progressbar({
 				// TODO if no initial value is specific, show a full but an animated progress bar instead
 				value: null != props.value ? props.value : 100
 			});
 			var dialog = makeDialogDiv(props).dialog(
-				$.extend(makeDialogProps(props, 'Progress'), {
-					open: function(){
-						$(this).append(progressbar);
-					}
-				})
-			);
-			return function(value){
+			$.extend(makeDialogProps(props, 'Progress'), {
+				open: function () {
+					$(this).append(progressbar);
+				}
+			}));
+			return function (value) {
 				if (null != value) {
-					progressbar.progressbar({ value: value });
+					progressbar.progressbar({
+						value: value
+					});
 				} else {
 					dialog.dialog('destroy').remove();
 				}

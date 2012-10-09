@@ -24,23 +24,14 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'jquery',
-	'aloha/plugin',
-	'ui/ui',
-	'ui/toggleButton',
-	'i18n!numerated-headers/nls/i18n',
-	'i18n!aloha/nls/i18n'
-], function (
-	Aloha,
-	$,
-	Plugin,
-	Ui,
-	ToggleButton,
-	i18n,
-	i18nCore
-) {
+define(['aloha/core', 'jquery', 'aloha/plugin', 'ui/ui', 'ui/toggleButton', 'i18n!numerated-headers/nls/i18n', 'i18n!aloha/nls/i18n'], function (
+Aloha,
+$,
+Plugin,
+Ui,
+ToggleButton,
+i18n,
+i18nCore) {
 	'use strict';
 
 	/**
@@ -68,19 +59,19 @@ define([
 			var that = this;
 
 			this._formatNumeratedHeadersButton = Ui.adopt('formatNumeratedHeaders',
-				ToggleButton, {
-					tooltip: i18n.t('button.numeratedHeaders.tooltip'),
-					icon: 'aloha-icon aloha-icon-numerated-headers',
-					scope: 'Aloha.continuoustext',
-					click: function () {
-						var buttonPressed = that._formatNumeratedHeadersButton.getState();
-						if (!buttonPressed) {
-							that.removeNumerations();
-						} else {
-							that.createNumeratedHeaders();
-						}
+			ToggleButton, {
+				tooltip: i18n.t('button.numeratedHeaders.tooltip'),
+				icon: 'aloha-icon aloha-icon-numerated-headers',
+				scope: 'Aloha.continuoustext',
+				click: function () {
+					var buttonPressed = that._formatNumeratedHeadersButton.getState();
+					if (!buttonPressed) {
+						that.removeNumerations();
+					} else {
+						that.createNumeratedHeaders();
 					}
-				});
+				}
+			});
 
 
 			// We need to bind to smart-content-changed event to recognize
@@ -91,7 +82,7 @@ define([
 					that.createNumeratedHeaders();
 				}
 			});
-			
+
 			// We need to listen to that event, when a block is formatted to
 			// header format. smart-content-changed would be not fired in 
 			// that case
@@ -173,12 +164,9 @@ define([
 		 */
 		showNumbers: function () {
 			return (
-				Aloha.activeEditable &&
-				this.isNumeratingOn() &&
-				(Aloha.activeEditable.obj.attr('aloha-numerated-headers') === 'true')
-			);
+			Aloha.activeEditable && this.isNumeratingOn() && (Aloha.activeEditable.obj.attr('aloha-numerated-headers') === 'true'));
 		},
-		
+
 		/**
 		 * Remove all annotations in the current editable.
 		 */
@@ -190,7 +178,7 @@ define([
 			}
 			this._saveRemoveAnnotations($(active_editable_obj).find('span[role=annotation]'));
 		},
-		
+
 		/**
 		 * Savely removes a jQuery collection of annotations.
 		 * @param annotationcollection the collection of annotations.
@@ -201,12 +189,12 @@ define([
 			var rangemod = false;
 			annotationcollection.each(function () {
 				if (range.startContainer === this || $.inArray(this, $(range.startContainer).parents()) > -1) {
-			        range.startContainer = that._prevNode(this);
-			        range.startOffset = 0;
-			        rangemod = true;
+					range.startContainer = that._prevNode(this);
+					range.startOffset = 0;
+					rangemod = true;
 				}
 				if (range.startContainer === this.parentNode && range.startOffset >= $(this).index() && range.startOffset > 0) {
-					range.startOffset --;
+					range.startOffset--;
 					rangemod = true;
 				}
 				//Check if the selection ends inside the annotation
@@ -216,7 +204,7 @@ define([
 					rangemod = true;
 				}
 				if (range.endContainer === this.parentNode && range.endOffset >= $(this).index() && range.endOffset > 0) {
-					range.endOffset --;
+					range.endOffset--;
 					rangemod = true;
 				}
 				$(this).remove();
@@ -226,7 +214,7 @@ define([
 				range.select();
 			}
 		},
-		
+
 		/**
 		 * Prepends the annotation to the given prependElement.
 		 */
@@ -234,21 +222,20 @@ define([
 			var range = Aloha.Selection.getRangeObject();
 			var rangemod = false;
 			if (range.startContainer === prependElem) {
-				range.startOffset ++;
+				range.startOffset++;
 				rangemod = true;
 			}
 			if (range.endContainer === prependElem) {
-				range.endOffset ++;
+				range.endOffset++;
 				rangemod = true;
 			}
-			$(prependElem).prepend('<span role="annotation">' +
-					annotationcontent + '</span>');
+			$(prependElem).prepend('<span role="annotation">' + annotationcontent + '</span>');
 			if (rangemod === true) {
 				range.update();
 				range.select();
 			}
 		},
-		
+
 		/**
 		 * Navigates to the previous node.
 		 */
@@ -262,30 +249,29 @@ define([
 			}
 			return prev;
 		},
-		
+
 
 		/**
 		 * Removed and disables numeration for the current editable.
 		 */
-		removeNumerations : function () {
+		removeNumerations: function () {
 			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
 			this.cleanNumerations();
 		},
 
 		getBaseElement: function () {
 			if (typeof this.baseobjectSelector !== 'undefined') {
-				return ($(this.baseobjectSelector).length > 0) ?
-						$(this.baseobjectSelector) : null;
+				return ($(this.baseobjectSelector).length > 0) ? $(this.baseobjectSelector) : null;
 			}
 			return Aloha.activeEditable ? Aloha.activeEditable.obj : null;
 		},
 
 		/*
-		* checks if the given Object contains a note Tag that looks like this:
-		* <span annotation=''>
-		*
-		* @param {HTMLElement} obj The DOM object to check.
-		*/
+		 * checks if the given Object contains a note Tag that looks like this:
+		 * <span annotation=''>
+		 *
+		 * @param {HTMLElement} obj The DOM object to check.
+		 */
 		hasNote: function (obj) {
 			if (!obj || $(obj).length <= 0) {
 				return false;
@@ -294,20 +280,17 @@ define([
 		},
 
 		/*
-		* checks if the given Object has textual content.
-		* A possible "<span annotation=''>" tag will be ignored
-		*
-		* @param {HTMLElement} obj The DOM object to check
-		*/
+		 * checks if the given Object has textual content.
+		 * A possible "<span annotation=''>" tag will be ignored
+		 *
+		 * @param {HTMLElement} obj The DOM object to check
+		 */
 		hasContent: function (obj) {
 			if (!obj || 0 === $(obj).length) {
 				return false;
 			}
 			// we have to check the content of this object without the annotation span
-			var $objCleaned = $(obj).clone()
-			                        .find('span[role=annotation]')
-			                        .remove()
-			                        .end();
+			var $objCleaned = $(obj).clone().find('span[role=annotation]').remove().end();
 			// check for text, also in other possible sub tags
 			return $.trim($objCleaned.text()).length > 0;
 		},
@@ -384,7 +367,8 @@ define([
 
 					prev_rank = current_rank;
 
-					var annotation_result = '', i;
+					var annotation_result = '',
+						i;
 					if (config.trailingdot === true) {
 						annotation_result = '';
 						for (i = 0; i < current_annotation.length; i++) {
@@ -406,7 +390,7 @@ define([
 					if (that.hasNote(this)) {
 						$(this).find('span[role=annotation]').html(annotation_result);
 					} else {
-						
+
 						that._prependAnnotation(annotation_result, this);
 					}
 				} else {

@@ -6,42 +6,29 @@
  * Licensed under the terms of http://www.aloha-editor.com/license.html
  */
 
-define([
-	'aloha',
-	'jquery',
-	'aloha/plugin',
-	'ui/ui',
-	'ui/scopes',
-	'ui/button',
-	'ui/toggleButton',
-	'ui/port-helper-attribute-field',
-	'i18n!wai-lang/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'wai-lang/languages'
-], function(
-	Aloha,
-	jQuery,
-	Plugin,
-	Ui,
-	Scopes,
-	Button,
-	ToggleButton,
-	AttributeField,
-	i18n,
-	i18nCore
-) {
+define(['aloha', 'jquery', 'aloha/plugin', 'ui/ui', 'ui/scopes', 'ui/button', 'ui/toggleButton', 'ui/port-helper-attribute-field', 'i18n!wai-lang/nls/i18n', 'i18n!aloha/nls/i18n', 'wai-lang/languages'], function (
+Aloha,
+jQuery,
+Plugin,
+Ui,
+Scopes,
+Button,
+ToggleButton,
+AttributeField,
+i18n,
+i18nCore) {
 	'use strict';
 
 	var WAI_LANG_CLASS = 'aloha-wai-lang',
-	    GENTICS = window.GENTICS,
-	    langField;
+		GENTICS = window.GENTICS,
+		langField;
 
 	return Plugin.create('wai-lang', {
 
 		/**
 		 * Default configuration allows spans everywhere
 		 */
-		config: [ 'span' ],
+		config: ['span'],
 
 		/**
 		 * Define the exact standard of language codes to use (possible values are 'iso639-1' and 'iso639-2', default is 'iso639-1')
@@ -56,11 +43,11 @@ define([
 		/**
 		 * the defined object types to be used for this instance
 		 */
-		objectTypeFilter: [ 'language' ],
-		
+		objectTypeFilter: ['language'],
+
 		/**
 		 * HotKeys used for special actions
-		*/
+		 */
 		hotKey: {
 			insertAnnotation: i18n.t('insertAnnotation', 'ctrl+shift+l')
 		},
@@ -100,8 +87,8 @@ define([
 			Aloha.bind('aloha-editable-activated', function (event, rangeObject) {
 				var config;
 				// show/hide the button according to the configuration
-				config = that.getEditableConfig( Aloha.activeEditable.obj );
-				if ( jQuery.inArray( 'span', config ) !== -1 ) {
+				config = that.getEditableConfig(Aloha.activeEditable.obj);
+				if (jQuery.inArray('span', config) !== -1) {
 					that._wailangButton.show();
 				} else {
 					that._wailangButton.hide();
@@ -110,7 +97,7 @@ define([
 			});
 
 			// add the event handler for selection change
-			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
+			Aloha.bind('aloha-selection-changed', function (event, rangeObject) {
 				var foundMarkup = that._foundLangMarkupAtSelection = that.findLangMarkup(rangeObject);
 				if (foundMarkup) {
 					that._wailangButton.setState(true);
@@ -135,10 +122,10 @@ define([
 				tooltip: i18n.t('button.add-wai-lang.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang',
 				scope: 'Aloha.continuoustext',
-				click: function(){
+				click: function () {
 					that.addRemoveMarkupToSelection();
 				}
-			} );
+			});
 
 			Scopes.createScope('wai-lang', 'Aloha.continuoustext');
 
@@ -148,21 +135,12 @@ define([
 				valueField: 'id',
 				minChars: 1,
 				scope: 'wai-lang'
-			} );
+			});
 
 			if (this.flags) {
-				langField.setTemplate(
-					'<div class="aloha-wai-lang-img-item">' +
-					'<img class="aloha-wai-lang-img" src="{url}" />' +
-					'<div class="aloha-wai-lang-label-item">{name} ({id})</div>' +
-					'</div>'
-				);
+				langField.setTemplate('<div class="aloha-wai-lang-img-item">' + '<img class="aloha-wai-lang-img" src="{url}" />' + '<div class="aloha-wai-lang-label-item">{name} ({id})</div>' + '</div>');
 			} else {
-				langField.setTemplate(
-					'<div class="aloha-wai-lang-img-item">' +
-					'<div class="aloha-wai-lang-label-item">{name} ({id})</div>' +
-					'</div>'
-				);
+				langField.setTemplate('<div class="aloha-wai-lang-img-item">' + '<div class="aloha-wai-lang-label-item">{name} ({id})</div>' + '</div>');
 			}
 
 			langField.setObjectTypeFilter(this.objectTypeFilter);
@@ -171,10 +149,10 @@ define([
 				tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
 				icon: 'aloha-icon aloha-icon-wai-lang-remove',
 				scope: 'wai-lang',
-				click: function(){
+				click: function () {
 					that.removeLangMarkup();
 				}
-			} );
+			});
 		},
 
 		/**
@@ -188,9 +166,8 @@ define([
 			range = range || Aloha.Selection.getRangeObject();
 			if (Aloha.activeEditable) {
 				return range.findMarkup(function () {
-					return jQuery(this).hasClass(WAI_LANG_CLASS) ||
-							jQuery(this).is('[lang]');
-			    }, Aloha.activeEditable.obj);
+					return jQuery(this).hasClass(WAI_LANG_CLASS) || jQuery(this).is('[lang]');
+				}, Aloha.activeEditable.obj);
 			}
 			return null;
 		},
@@ -219,17 +196,17 @@ define([
 		 */
 		removeLangMarkup: function () {
 			var range = Aloha.Selection.getRangeObject(),
-			    foundMarkup = this.findLangMarkup(range);
+				foundMarkup = this.findLangMarkup(range);
 
-		    if (foundMarkup) {
-		        // remove the abbr
-		        GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
+			if (foundMarkup) {
+				// remove the abbr
+				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
 
-		        // select the (possibly modified) range
-		        range.select();
+				// select the (possibly modified) range
+				range.select();
 				Scopes.setScope('Aloha.continuoustext');
 				langField.setTargetObject(null);
-		    }
+			}
 		},
 
 		/**
@@ -255,9 +232,9 @@ define([
 			 * Find all existing spans and register hotkey hotkeys and make
 			 * annotations of languages visible.
 			 */
-			function enhanceEditable (editable) {
+			function enhanceEditable(editable) {
 				// Hotkey for adding new language annotations: CTRL+I
-				editable.obj.bind( 'keydown', that.hotKey.insertAnnotation, function () {
+				editable.obj.bind('keydown', that.hotKey.insertAnnotation, function () {
 					that.insertLanguageAnnotation();
 				});
 				// Find all spans with lang attributes and add some css and
@@ -272,13 +249,13 @@ define([
 		 * @param {Event} e
 		 * @return {?Boolean}
 		 */
-		insertLanguageAnnotation: function() {
+		insertLanguageAnnotation: function () {
 
 			// In IE8 the handleKeyDown will trigger outside of the context 
 			// of the wai-lang plugin. In that case we just omitt handling
 			// the event. Otherwise a javascript error will occure. 
 			if (typeof this.findLangMarkup === 'function') {
-				if ( this.findLangMarkup() ) {
+				if (this.findLangMarkup()) {
 					langField.foreground();
 					langField.focus();
 				} else {
@@ -320,7 +297,7 @@ define([
 		/**
 		 * Toggles markup around selection.
 		 */
-		addRemoveMarkupToSelection: function() {
+		addRemoveMarkupToSelection: function () {
 			if (this._foundLangMarkupAtSelection) {
 				this.removeLangMarkup();
 			} else {
@@ -341,7 +318,7 @@ define([
 			}
 
 			langField.foreground();
-			Scopes.setScope( 'wai-lang' );
+			Scopes.setScope('wai-lang');
 
 			if (range.isCollapsed()) {
 				GENTICS.Utils.Dom.extendToWord(range);
@@ -349,8 +326,8 @@ define([
 
 			if (!range.isCollapsed()) {
 				GENTICS.Utils.Dom.addMarkup(range,
-					jQuery('<span class="' + WAI_LANG_CLASS + '"></span>'),
-					false);
+				jQuery('<span class="' + WAI_LANG_CLASS + '"></span>'),
+				false);
 			}
 
 			range.select();
@@ -362,7 +339,7 @@ define([
 		 */
 		removeMarkup: function () {
 			var foundMarkup = this.findLangMarkup(),
-			    range;
+				range;
 
 			if (foundMarkup) {
 				range = Aloha.Selection.getRangeObject();

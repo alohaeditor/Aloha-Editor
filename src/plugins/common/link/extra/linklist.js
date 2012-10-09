@@ -29,8 +29,9 @@
  * A simple demo repository of links.
  */
 define(
-[ 'aloha', 'aloha/jquery' ],
-function ( Aloha, jQuery ) {
+['aloha', 'aloha/jquery'],
+
+function (Aloha, jQuery) {
 	'use strict';
 
 	/**
@@ -45,17 +46,28 @@ function ( Aloha, jQuery ) {
 	 *
 	 * @private
 	 */
-	var urls = [
-		{ name: 'Aloha Editor - The HTML5 Editor', url: 'http://aloha-editor.org', type: 'website' },
-		{ name: 'Aloha Editor - Wiki', url: 'http://github.com/alohaeditor/Aloha-Editor/wiki', type: 'website' },
-		{ name: 'Aloha Editor - GitHub', url: 'http://github.com/alohaeditor/Aloha-Editor', type: 'website' },
-		{ name: 'Aloha Logo', url: 'http://www.aloha-editor.com/images/aloha-editor-logo.png', type: 'image' }
-	];
+	var urls = [{
+		name: 'Aloha Editor - The HTML5 Editor',
+		url: 'http://aloha-editor.org',
+		type: 'website'
+	}, {
+		name: 'Aloha Editor - Wiki',
+		url: 'http://github.com/alohaeditor/Aloha-Editor/wiki',
+		type: 'website'
+	}, {
+		name: 'Aloha Editor - GitHub',
+		url: 'http://github.com/alohaeditor/Aloha-Editor',
+		type: 'website'
+	}, {
+		name: 'Aloha Logo',
+		url: 'http://www.aloha-editor.com/images/aloha-editor-logo.png',
+		type: 'image'
+	}];
 
-	new ( Aloha.AbstractRepository.extend( {
+	new(Aloha.AbstractRepository.extend({
 
 		_constructor: function () {
-			this._super( 'linklist' );
+			this._super('linklist');
 		},
 
 		/**
@@ -69,9 +81,7 @@ function ( Aloha, jQuery ) {
 		 * additional properties to the items.
 		 */
 		init: function () {
-			if ( Aloha.settings.repositories &&
-			     Aloha.settings.repositories.linklist &&
-			     Aloha.settings.repositories.linklist.data ) {
+			if (Aloha.settings.repositories && Aloha.settings.repositories.linklist && Aloha.settings.repositories.linklist.data) {
 				urls = urls.concat(Aloha.settings.repositories.linklist.data);
 			}
 
@@ -79,16 +89,16 @@ function ( Aloha, jQuery ) {
 			// But we will be very conservative and add to this single array
 			// object so that we do not tamper with the native Array prototype
 			// object.
-			if ( !( 'filter' in Array.prototype ) ) {
-				urls.filter = function ( filter, that /*opt*/ ) {
+			if (!('filter' in Array.prototype)) {
+				urls.filter = function (filter, that /*opt*/ ) {
 					var other = [],
-					    v,
-					    i = 0,
-					    n = this.length;
+						v,
+						i = 0,
+						n = this.length;
 
-					for ( ; i < n; i++ ) {
-						if ( i in this && filter.call( that, v = this[ i ], i, this ) ) {
-							other.push( v );
+					for (; i < n; i++) {
+						if (i in this && filter.call(that, v = this[i], i, this)) {
+							other.push(v);
 						}
 					}
 
@@ -99,31 +109,31 @@ function ( Aloha, jQuery ) {
 			var l = urls.length;
 
 			// generate folder structure
-		    for ( var i = 0; i < l; ++i ) {
-		    	var e = urls[ i ];
-		    	e.repositoryId = this.repositoryId;
-		    	e.id = e.id ? e.id : e.url;
+			for (var i = 0; i < l; ++i) {
+				var e = urls[i];
+				e.repositoryId = this.repositoryId;
+				e.id = e.id ? e.id : e.url;
 
-		    	var u = e.uri = this.parseUri( e.url ),
+				var u = e.uri = this.parseUri(e.url),
 					// add hostname as root folder
-		    	    path = this.addFolder( '', u.host ),
-				    pathparts = u.path.split( '/' );
+					path = this.addFolder('', u.host),
+					pathparts = u.path.split('/');
 
-		    	for ( var j = 0; j < pathparts.length; j++ ) {
-		    		if ( pathparts[ j ] &&
-		    			 // It's a file because it has an extension.
-		    			 // Could improve this one :)
-		    			 pathparts[ j ].lastIndexOf( '.' ) < 0 ) {
-			    		path = this.addFolder( path, pathparts[ j ] );
-		    		}
-		    	}
+				for (var j = 0; j < pathparts.length; j++) {
+					if (pathparts[j] &&
+					// It's a file because it has an extension.
+					// Could improve this one :)
+					pathparts[j].lastIndexOf('.') < 0) {
+						path = this.addFolder(path, pathparts[j]);
+					}
+				}
 
-		    	e.parentId = path;
+				e.parentId = path;
 
-				urls[ i ] = new Aloha.RepositoryDocument( e );
-		    }
+				urls[i] = new Aloha.RepositoryDocument(e);
+			}
 
-		    this.repositoryName = 'Linklist';
+			this.repositoryName = 'Linklist';
 		},
 
 		/**
@@ -131,18 +141,18 @@ function ( Aloha, jQuery ) {
 		 * @param {String} name
 		 * @return {String}
 		 */
-		addFolder: function ( path, name ) {
+		addFolder: function (path, name) {
 			var type = path ? 'folder' : 'hostname';
 			var p = path ? path + '/' + name : name;
 
-			if ( name && !this.folder[ p ] ) {
-				this.folder[ p ] = new Aloha.RepositoryFolder( {
+			if (name && !this.folder[p]) {
+				this.folder[p] = new Aloha.RepositoryFolder({
 					id: p,
 					name: name || p,
 					parentId: path,
 					type: 'host',
 					repositoryId: this.repositoryId
-				} );
+				});
 			}
 
 			return p;
@@ -155,18 +165,16 @@ function ( Aloha, jQuery ) {
 		 * @param {Object} p
 		 * @param {Function} callback
 		 */
-		query: function ( p, callback ) {
+		query: function (p, callback) {
 			// Not supported; filter, orderBy, maxItems, skipcount, renditionFilter
-			var r = new RegExp( p.queryString, 'i' );
-			var d = urls.filter( function ( e, i, a ) {
+			var r = new RegExp(p.queryString, 'i');
+			var d = urls.filter(function (e, i, a) {
 				return (
-					( !p.queryString || e.name.match( r ) || e.url.match( r ) ) &&
-					( !p.objectTypeFilter || ( !p.objectTypeFilter.length ) || jQuery.inArray( e.type, p.objectTypeFilter ) > -1 ) &&
-					true //( !p.inFolderId || p.inFolderId == e.parentId )
+				(!p.queryString || e.name.match(r) || e.url.match(r)) && (!p.objectTypeFilter || (!p.objectTypeFilter.length) || jQuery.inArray(e.type, p.objectTypeFilter) > -1) && true //( !p.inFolderId || p.inFolderId == e.parentId )
 				);
-			} );
+			});
 
-			callback.call( this, d );
+			callback.call(this, d);
 		},
 
 		/**
@@ -175,40 +183,41 @@ function ( Aloha, jQuery ) {
 		 * @param {Object} p
 		 * @param {Function} callback
 		 */
-		getChildren: function ( p, callback ) {
-			var d = [], e;
+		getChildren: function (p, callback) {
+			var d = [],
+				e;
 
-			for ( e in this.folder ) {
-				var l = this.folder[ e ].parentId;
-				if ( typeof this.folder[ e ] != 'function' && ( // extjs prevention
-					this.folder[ e ].parentId == p.inFolderId || // all subfolders
-					( !this.folder[ e ].parentId && p.inFolderId == this.repositoryId ) // the hostname
-				) ) {
-					d.push( this.folder[ e ] );
+			for (e in this.folder) {
+				var l = this.folder[e].parentId;
+				if (typeof this.folder[e] != 'function' && ( // extjs prevention
+				this.folder[e].parentId == p.inFolderId || // all subfolders
+				(!this.folder[e].parentId && p.inFolderId == this.repositoryId) // the hostname
+				)) {
+					d.push(this.folder[e]);
 				}
 			}
 
-			callback.call( this, d );
+			callback.call(this, d);
 		},
 
 		//parseUri 1.2.2
 		//(c) Steven Levithan <stevenlevithan.com>
 		//MIT License
 		//http://blog.stevenlevithan.com/archives/parseuri
-		parseUri: function(str) {
-			var	o = {
-					strictMode: false,
-					key: [ "source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
-					q: {
-						name: "queryKey",
-						parser: /(?:^|&)([^&=]*)=?([^&]*)/g
-					},
-					parser: {
-						strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
-						loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
-					}
+		parseUri: function (str) {
+			var o = {
+				strictMode: false,
+				key: ["source", "protocol", "authority", "userInfo", "user", "password", "host", "port", "relative", "path", "directory", "file", "query", "anchor"],
+				q: {
+					name: "queryKey",
+					parser: /(?:^|&)([^&=]*)=?([^&]*)/g
 				},
-				m = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
+				parser: {
+					strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+					loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+				}
+			},
+			m = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
 				uri = {},
 				i = 14;
 
@@ -228,18 +237,18 @@ function ( Aloha, jQuery ) {
 		 * @param itemId {String} id of the repository item to fetch
 		 * @param callback {function} callback function
 		 */
-		getObjectById: function ( itemId, callback ) {
+		getObjectById: function (itemId, callback) {
 			var i = 0,
-			    l = urls.length,
-			    d = [];
+				l = urls.length,
+				d = [];
 
-			for ( ; i < l; i++ ) {
-				if ( urls[ i ].id == itemId ) {
-					d.push( urls[ i ] );
+			for (; i < l; i++) {
+				if (urls[i].id == itemId) {
+					d.push(urls[i]);
 				}
 			}
 
-			callback.call( this, d );
+			callback.call(this, d);
 		}
 
 	}))();

@@ -24,87 +24,49 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'aloha/plugin',
-	'jquery',
-	'ui/ui', 
-	'ui/toggleButton',
-	'formatlesspaste/formatlesshandler',
-	'aloha/contenthandlermanager',
-	'i18n!formatlesspaste/nls/i18n',
-	'i18n!aloha/nls/i18n'
-], function(Aloha,
-            Plugin,
-            jQuery,
-            Ui,
-            ToggleButton,
-            FormatlessPasteHandler,
-            ContentHandlerManager,
-            i18n,
-            i18nCore) {
+define(['aloha/core', 'aloha/plugin', 'jquery', 'ui/ui', 'ui/toggleButton', 'formatlesspaste/formatlesshandler', 'aloha/contenthandlermanager', 'i18n!formatlesspaste/nls/i18n', 'i18n!aloha/nls/i18n'], function (Aloha,
+Plugin,
+jQuery,
+Ui,
+ToggleButton,
+FormatlessPasteHandler,
+ContentHandlerManager,
+i18n,
+i18nCore) {
 	'use strict';
 
 	// Public Methods
 	return Plugin.create('formatlesspaste', {
-		
-		
+
+
 		/**
 		 * Configure Formatless pasting
 		 */
-		formatlessPasteOption: false, 
-		
+		formatlessPasteOption: false,
+
 		/**
 		 * Whether to display a button in the floating menu that allows to switch formatless pasting on and off
 		 */
 		button: true,
-		
+
 		//Here we removes the text-level semantic and edit elements (http://dev.w3.org/html5/spec/text-level-semantics.html#usage-summary)
-		strippedElements : [
-			"a",
-			"em",
-			"strong",
-			"small",
-			"s",
-			"cite",
-			"q",
-			"dfn",
-			"abbr",
-			"time",
-			"code",
-			"var",
-			"samp",
-			"kbd",
-			"sub",
-			"sup",
-			"i",
-			"b",
-			"u",
-			"mark",
-			"ruby",
-			"rt",
-			"rp",
-			"bdi",
-			"bdo",
-			"ins",
-			"del" 
-		],
+		strippedElements: ["a", "em", "strong", "small", "s", "cite", "q", "dfn", "abbr", "time", "code", "var", "samp", "kbd", "sub", "sup", "i", "b", "u", "mark", "ruby", "rt", "rp", "bdi", "bdo", "ins", "del"],
 
 		/**
 		 * Initialize the PastePlugin
 		 */
-		init: function() {
+		init: function () {
 			var that = this;
 
 			// look for old configuration directly in settings
-			if ( typeof this.settings.formatlessPasteOption !== 'undefined') {
+			if (typeof this.settings.formatlessPasteOption !== 'undefined') {
 				this.formatlessPasteOption = this.settings.formatlessPasteOption;
 			}
-			
-			if ( typeof this.settings.strippedElements !== 'undefined') {
+
+			if (typeof this.settings.strippedElements !== 'undefined') {
 				this.strippedElements = this.settings.strippedElements;
 			}
-			
+
 			// look for newer config in settings.config
 			if (this.settings.config) {
 				if (this.settings.config.formatlessPasteOption) {
@@ -117,11 +79,11 @@ define([
 					this.button = false;
 				}
 			}
-			
-			this.registerFormatlessPasteHandler(); 
+
+			this.registerFormatlessPasteHandler();
 			var formatlessPasteHandlerLastState;
-			Aloha.bind( 'aloha-editable-activated', function( event, params) {
-				var config = that.getEditableConfig( params.editable.obj );
+			Aloha.bind('aloha-editable-activated', function (event, params) {
+				var config = that.getEditableConfig(params.editable.obj);
 				if (!config) {
 					return;
 				}
@@ -149,8 +111,8 @@ define([
 						config.formatlessPasteOption = true;
 					}
 				}
-				
-				if ( config.strippedElements ) {
+
+				if (config.strippedElements) {
 					FormatlessPasteHandler.strippedElements = config.strippedElements;
 				}
 				if (config.formatlessPasteOption === true) {
@@ -160,7 +122,7 @@ define([
 					that._toggleFormatlessPasteButton.setState(false);
 					FormatlessPasteHandler.enabled = false;
 				}
-				if ( config.button === false ) {
+				if (config.button === false) {
 					that._toggleFormatlessPasteButton.show(false);
 				} else {
 					that._toggleFormatlessPasteButton.show(true);
@@ -171,8 +133,8 @@ define([
 		/**
 		 * Register Formatless paste handler
 		 */
-		registerFormatlessPasteHandler: function(){
-			ContentHandlerManager.register( 'formatless', FormatlessPasteHandler );
+		registerFormatlessPasteHandler: function () {
+			ContentHandlerManager.register('formatless', FormatlessPasteHandler);
 			FormatlessPasteHandler.strippedElements = this.strippedElements;
 			// add button to toggle format-less pasting
 
@@ -180,7 +142,7 @@ define([
 				tooltip: i18n.t('button.formatlessPaste.tooltip'),
 				icon: 'aloha-icon aloha-icon-formatless-paste',
 				scope: 'Aloha.continuoustext',
-				click: function () { 
+				click: function () {
 					//toggle the value of allowFormatless
 					FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
 				}
@@ -191,7 +153,7 @@ define([
 				this._toggleFormatlessPasteButton.setState(true);
 				FormatlessPasteHandler.enabled = true;
 			}
-			
+
 			// hide button by default if configured
 			if (this.button === false) {
 				this._toggleFormatlessPasteButton.show(false);

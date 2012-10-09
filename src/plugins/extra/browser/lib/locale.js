@@ -11,16 +11,11 @@
  * an use this value to choose which of the jgrid_* objects, Aloha.jQuery.jgrid
  * should point to
  */
-define( [
-	'aloha/jquery',
-	'i18n!browser/nls/i18n',
-	'browser/../vendor/grid.locale.en',
-	'browser/../vendor/grid.locale.de'
-], function ( jQuery, i18n ) {
-	var locale = i18n[ 'jgrid.locale' ] || 'en';
-	if ( typeof jQuery.jgrid == 'undefined' ) {
+define(['aloha/jquery', 'i18n!browser/nls/i18n', 'browser/../vendor/grid.locale.en', 'browser/../vendor/grid.locale.de'], function (jQuery, i18n) {
+	var locale = i18n['jgrid.locale'] || 'en';
+	if (typeof jQuery.jgrid == 'undefined') {
 		jQuery.jgrid = {};
 	}
-	jQuery.extend( jQuery.jgrid, jQuery[ 'jgrid_' + locale ] );
+	jQuery.extend(jQuery.jgrid, jQuery['jgrid_' + locale]);
 	jQuery.jgrid_en = jQuery.jgrid_de = void 0;
-} );
+});

@@ -18,15 +18,10 @@
  * constant lookup times when grouping containers.
  */
 
-define([
-	'jquery',
-	'util/class',
-	'ui/scopes'
-], function(
-	$,
-	Class,
-	Scopes
-) {
+define(['jquery', 'util/class', 'ui/scopes'], function (
+$,
+Class,
+Scopes) {
 	'use strict';
 
 	var uid = 0;
@@ -57,7 +52,7 @@ define([
 	 */
 	function toggleContainers(containers, show) {
 		var action = show ? 'show' : 'hide',
-		    i;
+			i;
 		for (i = 0; i < containers.length; i++) {
 			containers[i][action]();
 		}
@@ -65,7 +60,7 @@ define([
 
 	var scopeFns = {};
 
-	var returnTrue = function() {
+	var returnTrue = function () {
 		return true;
 	};
 
@@ -84,7 +79,7 @@ define([
 				if (scopeFns[showOn.scope]) {
 					return scopeFns[showOn.scope];
 				}
-				return scopeFns[showOn.scope] = function() {
+				return scopeFns[showOn.scope] = function () {
 					return Scopes.isActiveScope(showOn.scope);
 				};
 			} else {
@@ -116,10 +111,10 @@ define([
 		 * @param {object=} settings Optional properties, and override methods.
 		 * @constructor
 		 */
-		_constructor: function(context, settings) {
+		_constructor: function (context, settings) {
 			var showOn = normalizeShowOn(this, settings.showOn),
-			    key = getShowOnId(showOn),
-			    group = context.containers[key];
+				key = getShowOnId(showOn),
+				group = context.containers[key];
 			this.context = context;
 			if (!group) {
 				group = context.containers[key] = {
@@ -140,36 +135,36 @@ define([
 		/**
 		 * A container is also a component; this is part of the component API.
 		 */
-		show: function() {},
+		show: function () {},
 		/**
 		 * A container is also a component; this is part of the component API.
 		 */
-		hide: function() {},
+		hide: function () {},
 		/**
 		 * A container is also a component; this is part of the component API.
 		 */
-		focus: function() {},
+		focus: function () {},
 		/**
 		 * A container is also a component; this is part of the component API.
 		 */
-		foreground: function() {},
+		foreground: function () {},
 
 		/**
 		 * The container was previously hidden, and now has become visible. This
 		 * allows a container to let its children react to this.
 		 */
-		childVisible: function(childComponent, visible) {},
+		childVisible: function (childComponent, visible) {},
 		/**
 		 * The container was given focus; this method must give focus to all
 		 * children of the container.
 		 * Optional. (E.g. tab.js doesn't implement this.)
 		 */
-		childFocus: function(childComponent) {},
+		childFocus: function (childComponent) {},
 		/**
 		 * The container was foregrounded; this method must foreground all children
 		 * of the container.
 		 */
-		childForeground: function(childComponent) {}
+		childForeground: function (childComponent) {}
 
 		/**
 		 * @} End of "ingroup api".
@@ -179,7 +174,7 @@ define([
 
 	// static fields
 
-	$.extend( Container, {
+	$.extend(Container, {
 		/**
 		 * Given an array of elements, show appropriate containers.
 		 *
@@ -187,10 +182,10 @@ define([
 		 * @param {string} eventType Type of the event triggered (optional)
 		 * @static
 		 */
-		showContainersForContext: function(context, eventType) {
+		showContainersForContext: function (context, eventType) {
 			var group,
-			    groupKey,
-			    containerGroups;
+			groupKey,
+			containerGroups;
 			if (!context.containers) {
 				// No containers were constructed for the given context, so
 				// there is nothing for us to do.

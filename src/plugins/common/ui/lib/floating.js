@@ -1,16 +1,9 @@
-define([
-	'jquery',
-	'aloha/core',
-	'ui/surface',
-	'ui/subguarded',
-	'vendor/amplify.store'
-], function (
-	$,
-	Aloha,
-	Surface,
-	subguarded,
-	amplifyStore
-) {
+define(['jquery', 'aloha/core', 'ui/surface', 'ui/subguarded', 'vendor/amplify.store'], function (
+$,
+Aloha,
+Surface,
+subguarded,
+amplifyStore) {
 	'use strict';
 
 	/**
@@ -155,8 +148,7 @@ define([
 			duration = DURATION;
 		}
 
-		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
-		              + (parseInt($('body').css('paddingTop'), 10) || 0);
+		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0) + (parseInt($('body').css('paddingTop'), 10) || 0);
 
 		var $element = surface.$element;
 		var surfaceOrientation = $element.offset();
@@ -164,8 +156,7 @@ define([
 		var scrollTop = $window.scrollTop();
 		var availableSpace = editableOrientation.top - scrollTop - topGutter;
 		var left = editableOrientation.left;
-		var horizontalOverflow = left + $element.width()
-		                       - $window.width() - PADDING;
+		var horizontalOverflow = left + $element.width() - $window.width() - PADDING;
 
 		if (horizontalOverflow > 0) {
 			left -= horizontalOverflow;
@@ -174,8 +165,7 @@ define([
 		if (availableSpace >= $element.height()) {
 			editableOrientation.top -= scrollTop;
 			floatAbove($element, editableOrientation, duration, callback);
-		} else if (availableSpace + $element.height() >
-				editableOrientation.top + editable.obj.height()) {
+		} else if (availableSpace + $element.height() > editableOrientation.top + editable.obj.height()) {
 			floatBelow($element, {
 				top: editableOrientation.top + editable.obj.height(),
 				left: left
@@ -224,10 +214,7 @@ define([
 	}
 
 	function makeFloating(surface, SurfaceTypeManager) {
-		subguarded([
-			'aloha-selection-changed',
-			'aloha.ui.container.selected'
-		], onActivatedSurface, surface, function () {
+		subguarded(['aloha-selection-changed', 'aloha.ui.container.selected'], onActivatedSurface, surface, function () {
 			surface._move();
 		});
 

@@ -28,14 +28,11 @@
  * register the plugin with unique name
  */
 
-define([
-    'aloha',
-	'aloha/plugin',
-], function CiteClosure (Aloha, Plugin ) {
+define(['aloha', 'aloha/plugin', ], function CiteClosure(Aloha, Plugin) {
 	'use strict';
 
 	var jQuery = Aloha.jQuery;
-	
+
 	var FloatingMenu = {}; /* plugin needs rewrite */
 	var msg = 'Plugin GoogleTranslate: This plugin is not working right now. Please deactivate it';
 	if (window.console) {
@@ -46,54 +43,51 @@ define([
 	return;
 
 	return Plugin.create('googletranslate', {
-		
+
 		/**
 		 * Configure the available languages to translate to. A complete list of supported languages can be found here:
 		 * http://code.google.com/apis/language/translate/v2/using_rest.html
 		 */
-		translateLangs: [ 'en', 'de', 'fr', 'it' ],
-		
+		translateLangs: ['en', 'de', 'fr', 'it'],
+
 		/**
 		 * Google translate API key
 		 */
 		apiKey: "AIzaSyBgsTE6JQ5wsgERpi6m2xBY-9pCn2I5zcA",
-		
+
 		/**
 		 * Initialize the plugin
 		 */
 		init: function () {
 			var that = this;
-			
-			Aloha.require( ['css!googletranslate/css/googletranslate.css']);
-		
+
+			Aloha.require(['css!googletranslate/css/googletranslate.css']);
+
 			// use configured api key
 			if (this.settings.apiKey) {
 				this.apiKey = this.settings.apiKey;
 			}
-		
+
 			// create buttons for all translation langs
-			for (var i=0; i<this.translateLangs.length; i++) {
-			    FloatingMenu.addButton(
-			        'Aloha.continuoustext',
-			        new Aloha.ui.Button({
-			            'iconClass' : 'GENTICS_button GENTICS_button_googleTranslate_' + that.translateLangs[i],
-			            'size' : 'small',
-			            'onclick' : function (a,b,c) {
-			        		// determine target lang using the icon class
-			        		// there should obviously be a better way to
-			        		// determine which button has been clicked...
-			        		var targetLang = a.iconCls.replace("GENTICS_button GENTICS_button_googleTranslate_", "");
-			        		that.translate(targetLang);
-			        	},
-			            'tooltip' : that.translateLangs[i],
-			            'toggle' : false
-			        }),
-			        'Translate',
-			        1
-			    );
+			for (var i = 0; i < this.translateLangs.length; i++) {
+				FloatingMenu.addButton('Aloha.continuoustext',
+				new Aloha.ui.Button({
+					'iconClass': 'GENTICS_button GENTICS_button_googleTranslate_' + that.translateLangs[i],
+					'size': 'small',
+					'onclick': function (a, b, c) {
+						// determine target lang using the icon class
+						// there should obviously be a better way to
+						// determine which button has been clicked...
+						var targetLang = a.iconCls.replace("GENTICS_button GENTICS_button_googleTranslate_", "");
+						that.translate(targetLang);
+					},
+					'tooltip': that.translateLangs[i],
+					'toggle': false
+				}), 'Translate',
+				1);
 			}
 		},
-		
+
 		/**
 		 * translate a text using the google translate api
 		 * @param target language
@@ -104,39 +98,36 @@ define([
 			var tree = Aloha.Selection.getRangeObject().getSelectionTree();
 			var tSource = new Array();
 			var c; // the current item
-			for (var i=0; i<tree.length; i++) {
+			for (var i = 0; i < tree.length; i++) {
 				c = tree[i];
 				if (c.selection != "none") {
 					if (c.selection == "full") {
 						tSource.push(jQuery(c.domobj).text());
 					} else if (c.selection == "partial") {
 						tSource.push(
-							jQuery(c.domobj).text().substring(c.startOffset, c.endOffset)
-						);
+						jQuery(c.domobj).text().substring(c.startOffset, c.endOffset));
 					}
 				}
 			}
-		
+
 			if (tSource.length > 0) {
 				var qparams = "";
-				for (var i=0; i < tSource.length; i++) {
+				for (var i = 0; i < tSource.length; i++) {
 					qparams += "&q=" + tSource[i];
 				}
-		
-				jQuery.ajax({ type: "GET",
+
+				jQuery.ajax({
+					type: "GET",
 					dataType: "jsonp",
 					targetLang: targetLang, // store a reference to the target language to have it available when success function is triggered
-					url: 'https://www.googleapis.com/language/translate/v2' +
-						'?key=' + this.apiKey +
-						'&target=' + targetLang + '&prettyprint=false' +
-						qparams,
-					success: function(res) {
+					url: 'https://www.googleapis.com/language/translate/v2' + '?key=' + this.apiKey + '&target=' + targetLang + '&prettyprint=false' + qparams,
+					success: function (res) {
 						// handle errors
 						if (typeof res.error == "object") {
 							that.log("ERROR", "Unable to translate. Error: [" + res.error.code + "] " + res.error.message);
 							return false;
 						}
-		
+
 						// translation successful
 						if (res.data && res.data.translations) {
 							that.applyTranslation(res.data.translations, tree, this.targetLang);
@@ -145,7 +136,7 @@ define([
 				});
 			}
 		},
-		
+
 		/**
 		 * apply a translation provided by google to the current selection
 		 * @param translations list of translations provided by google
@@ -154,7 +145,7 @@ define([
 		 */
 		applyTranslation: function (translations, tree, lang) {
 			var key = 0;
-			for (var i=0; i<tree.length; i++) {
+			for (var i = 0; i < tree.length; i++) {
 
 				var c = tree[i];
 
@@ -171,7 +162,7 @@ define([
 				}
 			}
 		},
-		
+
 		/**
 		 * replace text in a selectionTree
 		 * @param selectionTreeEntry a single selection tree entry where the text should be replaced
@@ -182,27 +173,23 @@ define([
 			// GoogleTranslate API will trim spaces so we have to check if
 			// there was a leading or trailing space
 			// check if the first char of the original string is a space
-			if (selectionTreeEntry.domobj.textContent.substring(0,1) == ' ') {
+			if (selectionTreeEntry.domobj.textContent.substring(0, 1) == ' ') {
 				text = ' ' + text;
 			}
-		
+
 			// check if the last character of the original string is a space
 			if (selectionTreeEntry.domobj.textContent.substring(
-					selectionTreeEntry.domobj.textContent.length-1,selectionTreeEntry.domobj.textContent.length) == ' ') {
+			selectionTreeEntry.domobj.textContent.length - 1, selectionTreeEntry.domobj.textContent.length) == ' ') {
 				text = text + ' ';
 			}
-		
+
 			// special treatment for text nodes, which have to be replaced
 			if (selectionTreeEntry.domobj.nodeType == 3) {
-				jQuery(selectionTreeEntry.domobj)
-					.replaceWith(document
-					.createTextNode(text)
-				);
+				jQuery(selectionTreeEntry.domobj).replaceWith(document.createTextNode(text));
 			} else {
-				jQuery(selectionTreeEntry.domobj)
-					.html(text)
-					// set the language attribute for non-text-nodes
-					.attr('lang', lang);
+				jQuery(selectionTreeEntry.domobj).html(text)
+				// set the language attribute for non-text-nodes
+				.attr('lang', lang);
 			}
 		}
 	});
