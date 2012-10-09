@@ -1111,13 +1111,17 @@ cursor: pointer;
   background-color: #c5dae9;
   position: absolute;
   z-index: 400;
-left: -50%;
-left: -150px;
+  left: -50%;
+  left: -150px;
   bottom: -30%;
   bottom: 100%;
   padding: .75em;
   box-shadow: 0px 0px 5px #aaa;
   text-align: left;
+  /*
+  border-style:solid;
+  border-width:5px;
+  border-color:red;*/
 
 /*
    -moz-user-select: none !important;
@@ -1148,8 +1152,27 @@ top: 50%;
   top: 500px;
   z-index: 402;
 }*/
-
-.math-editor:after { /* Taken from "sandeep" at http://stackoverflow.com/questions/9450733/css-triangle-custom-border-color */
+/* Taken from "sandeep" at http://stackoverflow.com/questions/9450733/css-triangle-custom-border-color */
+#math-editor-arrow { 
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 401;
+  bottom: -14px;
+  right: 200px;
+  width: 25px;
+  height: 25px;
+  background: #C5DAE9;
+  border-right:1px solid #1b86d2;
+  border-bottom:1px solid #1b86d2;
+  -moz-transform:rotate(45deg);
+  -webkit-transform:rotate(45deg);
+  /*border-style:solid
+  border-width:5px;
+  border-color:purple;*/
+}
+/* Taken from "sandeep" at http://stackoverflow.com/questions/9450733/css-triangle-custom-border-color */
+/*.math-editor:after { 
   content: '';
   display: block;
   position: absolute;
@@ -1163,7 +1186,10 @@ right: 200px;
   border-bottom:1px solid #1b86d2;
   -moz-transform:rotate(45deg);
   -webkit-transform:rotate(45deg);
-}
+  border-style:solid;
+  border-width:5px;
+  border-color:blue;
+}*/
 
 .math-editor-close{
   float: right;
