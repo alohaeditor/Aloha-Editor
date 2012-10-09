@@ -1,5 +1,5 @@
 define({
 	root: {
-		"button.save.tooltip":"Save"
+		"save.button.save.tooltip":"Save"
 	}
 });
