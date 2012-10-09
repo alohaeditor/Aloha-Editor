@@ -1,4 +1,15 @@
 define({
-	root: {"floatingmenu.tab.abbr":"Abbreviation","button.addabbr.tooltip":"insert abbreviation","button.abbr.tooltip":"format as abbreviation","newabbr.defaulttext":"Abbr"}
-,	"de":true
+	"root":  {
+		"floatingmenu.tab.abbr": "Abbreviation",
+		"button.addabbr.tooltip": "insert abbreviation",
+		"button.abbr.tooltip": "format as abbreviation",
+		"newabbr.defaulttext": "Abbr"
+	},
+		"ca": true,
+		"de": true,
+		"mk": true,
+		"pt-br": true,
+		"ru": true,
+		"uk": true,
+		"zh-hans": true
 });

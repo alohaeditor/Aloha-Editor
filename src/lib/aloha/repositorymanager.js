@@ -1,9 +1,9 @@
 /* repositorymanager.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -231,6 +231,10 @@ define( [
 						} else {
 							allmetainfo.hasMoreItems = undefined;
 						}
+
+						if (metainfo.timeout) {
+							allmetainfo.timeout = true;
+						}
 					} else {
 						// at least one repository did not return metainfo, so
 						// we have no aggregated metainfo at all
@@ -251,10 +255,13 @@ define( [
 			var timeout = parseInt( params.timeout, 10 ) || this.settings.timeout;
 			timer = window.setTimeout( function() {
 				if (numOpenCallbacks > 0) {
-					console.warn(this, numOpenCallbacks 
-							+ " repositories did not return before the configured timeout of " + timeout + "ms.");
+					console.warn(this, numOpenCallbacks +
+							" repositories did not return before the configured timeout of " + timeout + "ms.");
 				}
 				numOpenCallbacks = 0;
+				// store in the metainfo, that a timeout occurred
+				allmetainfo = allmetainfo || {};
+				allmetainfo.timeout = true;
 				that.queryCallback( callback, allitems, allmetainfo, timer );
 			}, timeout );
 
@@ -279,7 +286,10 @@ define( [
 			for ( i = 0; i < j; ++i ) {
 				repo = repositories[ i ];
 
-				if ( typeof repo.query === 'function' ) {
+				// if no repositoryId is given query all repositories
+				// if a repositoryID is given only query if it is the right repository
+				if ( ( !params.repositoryId || repo.repositoryId === params.repositoryId ) &&
+					typeof repo.query === 'function' ) {
 					++numOpenCallbacks;
 					repoQueue.push( repo );
 				}
@@ -337,6 +347,7 @@ define( [
 			if ( metainfo ) {
 				result.numItems = metainfo.numItems;
 				result.hasMoreItems = metainfo.hasMoreItems;
+				result.timeout = metainfo.timeout;
 			}
 
 			callback.call( this, result );
@@ -429,7 +440,11 @@ define( [
 			for ( i = 0; i < j; ++i ) {
 				repo = repositories[ i ];
 
-				if ( typeof repo.getChildren === 'function' ) {
+				// if no repositoryId is given query all repositories
+				// if a repositoryID is given only query if it is the right repository
+				if ( ( !params.repositoryId || repo.repositoryId === params.repositoryId ) &&
+					typeof repo.getChildren === 'function'
+					) {
 					++numOpenCallbacks;
 
 					repo.getChildren(

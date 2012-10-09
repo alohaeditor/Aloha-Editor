@@ -1,25 +1,23 @@
 h2. The Image Plugin
 
-The Image Plugin will allow for basic image manipulation right within your content:
+The Image Plugin allows for the basic manipulation of images right within the content of an editable. It has support for:
 
-* resize (by dragging and entering values)
-* resizing with fixed aspect ratio
-* resetting the image to it's initial state
-* Image cropping
-* Insert a Image
-* Support for dragging the image around
-* Support for changing the title, src and alt attributes
-* Support for resizing the image
-* Support for changing the image padding
+* insertion,
+* resizing by dragging or entering values, both with and without fixed aspect ratio,
+* cropping,
+* dragging the image around,
+* changing the title, src and alt attributes,
+* changing the image padding,
+* resetting the image to it's initial state after changing some of its properties.
 
-NOTE: You need a server side script like ImageMagick which will handle actual cropping for you.
+NOTE: Crop feature now uses CANVAS api with HTML5 browsers.
 
 endprologue.
 
 h3. Enable the image browser button
 
 If you have configured or integrated a repository containing images, you can enable an image browser button in the floating menu image scope.
-I will help user to choose an image picked from the repository. To enable this feature, just add 'extra/imagebrowser' to the plugins list to be loaded.
+To enable this feature, just add 'extra/imagebrowser' to the plugins list to be loaded.
 
 h4. Configuration settings
 
@@ -102,6 +100,15 @@ Aloha.plugins.image = {
 	}
 };
 </javascript>
+
+h3. Notes
+
+h4. Ignoring images
+
+To make the image plugin ignore image elements that are contained in an
+editable but not part of the content, for example UI elements that
+enhance the editor's interactivity, or other elements that are transient
+in nature, mark them with the class 'aloha-ui'.
 
 h4. Components
 

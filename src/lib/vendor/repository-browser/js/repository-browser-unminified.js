@@ -640,7 +640,7 @@ define('RepositoryBrowser', [
 			var $btns = jQuery(
 				'<div class="repository-browser-btns">\
 					<input type="text" class="repository-browser-search-field" />\
-					<span class="repositroy-browser-btn repository-browser-search-btn">\
+					<span class="repository-browser-btn repository-browser-search-btn">\
 						<span class="repository-browser-search-icon"></span>\
 					</span>\
 					<span class="repository-browser-btn repository-browser-close-btn">' +
@@ -709,7 +709,7 @@ define('RepositoryBrowser', [
 			var searchValue = $searchField.val();
 
 			if (jQuery($searchField).hasClass('aloha-browser-search-field-empty') ||
-			    '' == searchValue.val()) {
+			    '' === searchValue) {
 				searchValue = null;
 			}
 			this._pagingOffset = 0;
@@ -814,6 +814,12 @@ define('RepositoryBrowser', [
 			}
 		},
 
+		/**
+		 * Handle repository timeouts
+		 */
+		handleTimeout: function () {
+		},
+
 		_processItems: function (data, metainfo) {
 			// If the total number of items is known, we can calculate the
 			// number of pages.
@@ -866,6 +872,11 @@ define('RepositoryBrowser', [
 				(jQuery.isNumeric(this._pagingCount)
 					? this._pageingCount : this._i18n('numerous'))
 			);
+
+			// when the repository manager reports a timeout, we handle it
+			if (metainfo && metainfo.timeout) {
+				this.handleTimeout();
+			}
 		},
 
 		_createOverlay: function () {
@@ -940,7 +951,8 @@ define('RepositoryBrowser', [
 					that._processRepoResponse(
 						(response.results > 0) ? response.items : [], {
 							numItems: response.numItems,
-							hasMoreItems: response.hasMoreItems
+							hasMoreItems: response.hasMoreItems,
+							timeout: response.timeout
 						}, callback
 					);
 				});

@@ -147,11 +147,6 @@ define('format/format-plugin', [
 	 */
 	return Plugin.create('format', {
 		/**
-		 * Configure the available languages
-		 */
-		languages: ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'],
-
-		/**
 		 * default button configuration
 		 */
 		config: [ 'b', 'i', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
@@ -159,9 +154,9 @@ define('format/format-plugin', [
 		/**
 		 * available options / buttons
 		 * 
-		 * @todo new buttons needed for 'del', 'code'
+		 * @todo new buttons needed for 'code'
 		 */
-		availableButtons: [ 'u', 'strong', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+		availableButtons: [ 'u', 'strong', 'del', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
 
 		/**
 		 * HotKeys used for special actions

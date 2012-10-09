@@ -678,8 +678,8 @@ define([
 					//If the summary should be modified in the sidebar
 					//we activate the sidebar panel
 					if (that.tablePlugin.settings.summaryinsidebar) {
+						that.tablePlugin.sidebar.open();
 						that.tablePlugin.sidebarPanel.activate(that.obj);
-						that.tablePlugin.sidebar.show();
 						that.tablePlugin.sidebar.correctHeight();
 					}
 
@@ -1033,8 +1033,12 @@ define([
 			// we will set the cursor right before the removed table
 			var newRange = Aloha.Selection.rangeObject;
 			// TODO set the correct range here (cursor shall be right before the removed table)
-			newRange.startContainer = newRange.endContainer = this.obj.get(0).parentNode;
-			newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.obj.get(0).parentNode);
+			newRange.endContainer = this.obj.get(0).parentNode;
+			newRange.startContainer = newRange.endContainer;
+
+			newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.obj.get(0));
+			newRange.startOffset = newRange.endOffset;
+
 			newRange.clearCaches();
 
 			this.obj.remove();

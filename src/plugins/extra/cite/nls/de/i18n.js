@@ -1,1 +1,4 @@
-define({ "cite.button.add.quote": "Selektion als Zitat formatieren", "cite.button.add.blockquote": "Selektion als Blockzitat formatieren" });
+define({
+	"cite.button.add.quote": "Auswahl als Zitat formatieren",
+	"cite.button.add.blockquote": "Auswahl als Zitat formatieren"
+});

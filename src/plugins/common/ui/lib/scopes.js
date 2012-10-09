@@ -51,31 +51,75 @@ define([
 	var Scopes = {
 
 		/**
+		 * Increments the scope counter for the given scope and requestor.
+		 *
+		 * A counter is maintained per scope and requestor. The counter
+		 * can be incremented/decremented with enterScope/leaveScope.
+		 *
+		 * The first increment of the counter (the increment to 1) will
+		 * make the scope active (isActiveScope() returns true) and
+		 * publish the aloha.ui.scope.change event. Further increments
+		 * will do nothing except increment the counter, which will
+		 * require more leaveScope calls to be made to leave the scope.
+		 *
+		 * The last decrement of the counter (the decrement to 0) will
+		 * make the scope inactive (isActiveScope() returns false) and
+		 * publish the aloha.ui.scope.change event. Further decrements
+		 * will do nothing.
+		 *
+		 * @param scope
+		 *        The scope to enter.
+		 * @param requestor
+		 *        The subsystem or plugin that requests to leave the
+		 *        scope. Can be used to isolate the scope counter to a
+		 *        particular subsystem, usually a plugin. If not given,
+		 *        a global counter will be used instead.
 		 * @deprecated
 		 *     Scopes don't provide any additional functionality since
 		 *     the visibility of containers and components can be
 		 *     controlled individually.
 		 */
-		enterScope: function(scope) {
-			var counter = addedScopes[scope] || 0;
-			addedScopes[scope] = counter + 1;
+		enterScope: function(scope, requestor) {
+			requestor = requestor || '_globalCounter';
+			var counters = addedScopes[scope];
+			if (!counters) {
+				counters = addedScopes[scope] =  {};
+			}
+			var counter = counters[requestor] || 0;
+			counter += 1;
+			counters[requestor] = counter;
 			if (!counter) {
 				PubSub.pub('aloha.ui.scope.change');
 			}
 		},
 
 		/**
+		 * Decrements the scope counter for the given scope and requestor.
+		 *
+		 * @param force
+		 *        True when the scope should be left even if the counter
+		 *        is non-zero after decrementing it.
+		 * @see enterScope()
 		 * @deprecated
 		 *     Scopes don't provide any additional functionality since
 		 *     the visibility of containers and components can be
 		 *     controlled individually.
 		 */
-		leaveScope: function(scope) {
-			var counter = addedScopes[scope] - 1;
-			if (counter) {
-				addedScopes[scope] = counter;
+		leaveScope: function(scope, requestor, force) {
+			requestor = requestor || '_globalCounter';
+			var counters = addedScopes[scope];
+			if (!counters) {
+				return;
+			}
+			var counter = counters[requestor];
+			if (!counter) {
+				return;
+			}
+			counter -= 1;
+			if (counter && !force) {
+				counters[requestor] = counter;
 			} else {
-				delete addedScopes[scope];
+				delete counters[requestor];
 				PubSub.pub('aloha.ui.scope.change');
 			}
 		},

@@ -24,6 +24,7 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
+/*global define:true */
 /**
  * Registry base class.
  * TODO: document that it also contains Observable.
@@ -31,48 +32,100 @@
  */
 define(
 ['jquery', 'aloha/observable', 'util/class'],
-function(jQuery, Observable, Class) {
+function (jQuery, Observable, Class) {
 	"use strict";
 
 	return Class.extend(Observable, {
 
+		/**
+		 * Object containing the registered entries by key.
+		 */
 		_entries: null,
 
-		_constructor: function() {
+		/**
+		 * Array containing the registered ids in order
+		 * of registry
+		 */
+		_ids: null,
+
+		_constructor: function () {
 			this._entries = {};
+			this._ids = [];
 		},
 
 		/**
+		 * Register an entry with an id
+		 * 
 		 * @event register
-		 * @param entry
-		 * @param id
+		 * @param id id of the registered entry
+		 * @param entry registered entry
 		 */
-		register: function(id, entry) {
+		register: function (id, entry) {
+			// TODO check whether an entry with the id is already registered
 			this._entries[id] = entry;
+			this._ids.push(id);
 			this.trigger('register', entry, id);
 		},
 
 		/**
+		 * Unregister the entry with given id
+		 * 
 		 * @event unregister
-		 * @param id
+		 * @param id id of the registered entry
 		 */
-		unregister: function(id) {
-			var oldEntry = this._entries[id];
+		unregister: function (id) {
+			// TODO check whether an entry was registered
+			var i, oldEntry = this._entries[id];
 			delete this._entries[id];
+			for (i in this._ids) {
+				if (this._ids.hasOwnProperty(i) && this._ids[i] === id) {
+					this._ids.splice(i, 1);
+					break;
+				}
+			}
 			this.trigger('unregister', oldEntry, id);
 		},
-		
-		get: function(id) {
+
+		/**
+		 * Get the entry registered with the given id
+		 * 
+		 * @param id id of the registered entry
+		 * @return registered entry
+		 */
+		get: function (id) {
 			return this._entries[id];
 		},
-		
-		has: function(id) {
+
+		/**
+		 * Check whether an entry was registered with given id
+		 * 
+		 * @param id id to check
+		 * @return true if an entry was registered, false if not
+		 */
+		has: function (id) {
 			return (this._entries[id] ? true : false);
 		},
-		
-		getEntries: function() {
+
+		/**
+		 * Get an object mapping the ids (properties) to the registered entries
+		 * Note, that iterating over the properties of the returned object
+		 * will return the entries in an unspecified order
+		 * 
+		 * @return object containing the registered entries
+		 */
+		getEntries: function () {
 			// clone the entries so the user does not accidentally modify our _entries object.
 			return jQuery.extend({}, this._entries);
+		},
+
+		/**
+		 * Get the ids of the registered objects as array.
+		 * The array will contain the ids in order of registry
+		 * 
+		 * @return array if registered ids
+		 */
+		getIds: function () {
+			return jQuery.extend([], this._ids);
 		}
 	});
 });

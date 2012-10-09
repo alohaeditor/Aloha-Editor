@@ -26,10 +26,8 @@
  */
 window.TestUtils = window.TestUtils || {};
 
-define(	[ '../../lib/aloha/ecma5shims' ], function($_) {
-	"use strict";
-	
-	var jQuery = window.jQuery;
+define(['jquery', '../../lib/aloha/ecma5shims'], function(jQuery, $_) {
+	'use strict';
 
 	/**
 	 * TestUtils class
@@ -434,7 +432,38 @@ define(	[ '../../lib/aloha/ecma5shims' ], function($_) {
 							: range.startContainer.childNodes[range.startOffset]);
 					}
 				}
+			},
+
+		/**
+		 * Return an array containing all possible permutations of the elements in the given array
+		 * 
+		 * @param {array} array array of elements
+		 * @param {array} fix array of elements that need to be contained in all returned arrays
+		 * @return {array} array containing arrays of all possible permutations
+		 */
+		permutations: function (array, fix) {
+			// iterate over the entries
+			var i, entry, newArray, subArrays, subI, permsArray = [];
+			for (i in array) {
+				if (array.hasOwnProperty(i)) {
+					entry = array[i];
+					if (Aloha.jQuery.isArray(fix) && Aloha.jQuery.inArray(entry, fix) >= 0) {
+						continue;
+					}
+					newArray = Aloha.jQuery.extend([], fix);
+					newArray.push(entry);
+					permsArray.push(newArray);
+					subArrays = this.permutations(array, newArray);
+					for (subI in subArrays) {
+						if (subArrays.hasOwnProperty(subI)) {
+							permsArray.push(subArrays[subI]);
+						}
+					}
+				}
 			}
+
+			return permsArray;
+		}
 	});
 	
 

@@ -36,14 +36,16 @@ define([
        'block/blockmanager',
        'aloha/observable',
        'ui/scopes',
-       'util/class'
+       'util/class',
+       'PubSub'
 ], function(
        Aloha,
        jQuery,
        BlockManager,
        Observable,
        Scopes,
-       Class
+       Class,
+	   PubSub
 ){
 	"use strict";
 
@@ -120,10 +122,14 @@ define([
 		 *
 		 * This function shall only be called through the BlockManager. See BlockManager::_blockify().
 		 *
+		 * When a block is fully initialized, an "aloha.block.initialized"
+		 * message is published.
+		 *
 		 * @param {jQuery} $element Element that declares the block
+		 * @param {Object} attributes that shall be set to the block
 		 * @constructor
 		 */
-		_constructor: function($element) {
+		_constructor: function ($element, attributes) {
 			var that = this;
 
 			this.$element = $element;
@@ -145,8 +151,13 @@ define([
 				$element.find('a').attr('draggable', 'false');
 			}
 
+			// set the attributes
+			jQuery.each(attributes, function (k, v) {
+				that._setAttribute(k, v);
+			});
+
 			// While the event handler is defined here, it is connected to the DOM element inside "_connectThisBlockToDomElement"
-			this._onElementClickHandler = function(event) {
+			this._onElementClickHandler = function (event) {
 				// We only activate ourselves if we are the innermost aloha-block.
 				// If we are not the innermost aloha-block, we get highlighted (but not activated) automatically
 				// by the innermost block.
@@ -157,8 +168,9 @@ define([
 			};
 
 			// Register event handlers on the block
-			this._connectThisBlockToDomElement($element);
-
+			this._connectThisBlockToDomElement($element, function () {
+				PubSub.pub('aloha.block.initialized', {block: that});
+			});
 
 			// This is executed when a block is selected through caret handling
 			// TODO!
@@ -167,7 +179,6 @@ define([
 			//		that.activate();
 			//	}
 			//});
-
 
 			this._initialized = true;
 		},
@@ -207,7 +218,7 @@ define([
 		 * a block inside a nested block with editable in between is detected
 		 * as inconsistent.
 		 */
-		_connectThisBlockToDomElement: function(newElement) {
+		_connectThisBlockToDomElement: function(newElement, callback) {
 			var that = this;
 			var $newElement = jQuery(newElement);
 			this._disconnectFromDomElement();
@@ -230,6 +241,9 @@ define([
 				// post-processing) to the next JavaScript Run Loop using a small timeout.
 				window.setTimeout(function() {
 					that._postProcessElementIfNeeded();
+					if (callback) {
+						callback();
+					}
 				}, 5);
 			});
 		},
@@ -788,7 +802,7 @@ define([
 
 							var hasOnlyProppingBr = (
 								1 === jQuery(this).contents().length &&
-								1 === jQuery(this).children('br.aloha-end-br').length
+								1 === jQuery(this).children('br').length
 							);
 							$currentDraggable = ui.draggable;
 
@@ -1139,6 +1153,7 @@ define([
 			if (attributeChanged && !suppressEvents) {
 				this._update();
 				this.trigger('change');
+				Aloha.activeEditable.smartContentChange( { type: 'block-change' } );
 			}
 			return null;
 		},

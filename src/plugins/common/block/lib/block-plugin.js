@@ -61,6 +61,9 @@ define([
 	i18nCore
 ) {
 	"use strict";
+
+	var defaultRootTags = ['div', 'span'];
+
 	/**
 	 * Register the 'block' plugin
 	 */
@@ -75,6 +78,11 @@ define([
 
 		init: function () {
 			var that = this;
+
+			// set default root tags
+			if (!this.settings.rootTags) {
+				this.settings.rootTags = defaultRootTags;
+			}
 
 			// Register default block types			
 			BlockManager.registerBlockType('DebugBlock', block.DebugBlock);

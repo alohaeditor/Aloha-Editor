@@ -1,9 +1,9 @@
 /* editable.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -33,7 +33,9 @@ define( [
 	'aloha/markup',
 	'aloha/contenthandlermanager',
 	'aloha/console',
-	'aloha/block-jump'
+	'aloha/block-jump',
+	'aloha/ephemera',
+	'util/dom2'
 ], function(
 	Aloha,
 	Class,
@@ -43,7 +45,9 @@ define( [
 	Markup,
 	ContentHandlerManager,
 	console,
-	BlockJump
+	BlockJump,
+	Ephemera,
+	Dom
 ) {
 	'use strict';
 
@@ -80,69 +84,6 @@ define( [
 
 	var contentSerializer = defaultContentSerializer;
 
-	var BasicContentHandler = ContentHandlerManager.createHandler({
-
-		/**
-		 * @param {string} content Content to process.
-		 * @return {string} Processed content.
-		 */
-		handleContent: function (content) {
-			// Remove the contenteditable attribute from the final html in IE8
-			// We need to do this this way because removeAttr is not working 
-			// in IE8 in IE8-compatibilitymode for those attributes.
-			if (jQuery.browser.msie && jQuery.browser.version < 8) {
-				content = content.replace(/(<table\s+[^>]*?)contenteditable=['\"\w]+/gi, "$1");
-			}
-			
-			content = this.stringFizzleSizzle(content);
-
-			return content;
-		},
-		
-		/**
-		 * Removes nodeIndex, sizcache and sizset attributes.
-		 * @param {string} content to process.
-		 */
-		stringFizzleSizzle: function (content) {
-			var replaced = content;
-			while (content !== (replaced = content.replace(/(<[^>]*?)(nodeIndex|sizcache|sizset|jquery)[\w\d]*="[^"]*"/gi, '$1'))) {
-				content = replaced;
-			}
-			return content;
-		}
-
-	});
-
-	// Register the basic contenthandler
-	ContentHandlerManager.register('basic', BasicContentHandler);
-
-	/**
-	 * Cleans the given content by manipulating the jquery content object. 
-	 * @param {Object} $content jQuery object that represents the content
-	 */ 
-	function makeClean($content) {
-		if (jQuery.browser.msie && jQuery.browser.version < 8) {
-			$content = jQuery($content);
-			
-			$content.find('[hidefocus]').each(function () {
-				jQuery(this).removeAttr('hidefocus');
-			});
-			
-			$content.find('[hideFocus]').each(function () {
-				jQuery(this).removeAttr('hideFocus');
-			});
-			
-			$content.find('[tabindex]').each(function () {
-				jQuery(this).removeAttr('tabindex');
-			});
-			
-			$content.find('[tabIndex]').each(function () {
-				jQuery(this).removeAttr('tabIndex');
-			});
-		}
-	}
-
-	
 	/**
 	 * Editable object
 	 * @namespace Aloha
@@ -334,10 +275,9 @@ define( [
 				// mark the editable as unmodified
 				me.setUnmodified();
 
-				// we don't do the sanitizing on aloha ready, since some plugins add elements into the content and bind events to it.
-				// if we sanitize by replacing the html, all events would get lost. TODO: think about a better solution for the sanitizing, without
-				// destroying the events
-//				// apply content handler to clean up content
+				// we don't do the sanitizing on aloha ready, since some plugins add elements into the content and bind
+				// events to it. If we sanitize by replacing the html, all events would get lost. TODO: think about a
+				// better solution for the sanitizing, without destroying the events  apply content handler to clean up content
 //				var content = me.obj.html();
 //				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
 //					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
@@ -357,6 +297,14 @@ define( [
 				me.initPlaceholder();
 
 				me.ready = true;
+
+				// disable object resizing.
+				// we do this in here and with a slight delay, because
+				// starting with FF 15, this would cause a JS error
+				// if done before the first DOM object is made contentEditable.
+				window.setTimeout( function() {
+					Aloha.disableObjectResizing();
+				}, 20 );
 
 				// throw a new event when the editable has been created
 				/**
@@ -661,8 +609,8 @@ define( [
 		 * check whether the editable has been disabled
 		 */
 		isDisabled: function() {
-			return !this.obj.contentEditable()
-				|| this.obj.contentEditable() === 'false';
+			return !this.obj.contentEditable() ||
+				this.obj.contentEditable() === 'false';
 		},
 
 		/**
@@ -704,8 +652,8 @@ define( [
 			// in this case the "focus" event would be triggered on the parent element
 			// which actually shifts the focus away to it's parent. this if is here to
 			// prevent this situation
-			if ( e && e.type === 'focus' && oldActive !== null
-			     && oldActive.obj.parent().get( 0 ) === e.currentTarget ) {
+			if ( e && e.type === 'focus' && oldActive !== null &&
+			     oldActive.obj.parent().get( 0 ) === e.currentTarget ) {
 				return;
 			}
 
@@ -773,8 +721,8 @@ define( [
 		 */
 		empty: function( str ) {
 			// br is needed for chrome
-			return ( null === str )
-				|| ( jQuery.trim( str ) === '' || str === '<br/>' );
+			return ( null === str ) ||
+				( jQuery.trim( str ) === '' || str === '<br/>' );
 		},
 
 		/**
@@ -796,14 +744,16 @@ define( [
 				BlockJump.removeZeroWidthTextNodeFix();
 
 				var $clone = this.obj.clone(false);
-				$clone.find( '.aloha-cleanme' ).remove();
 				this.removePlaceholder($clone);
+				$clone = jQuery(Ephemera.prune($clone[0]));
 				PluginManager.makeClean($clone);
-				makeClean($clone);
+
+				// TODO rewrite ContentHandlerManager to accept DOM trees instead of strings
 				$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
 					contenthandler: Aloha.settings.contentHandler.getContents,
 					command: 'getContents'
 				}) + '</div>');
+
 				cache = editableContentCache[this.getId()] = {};
 				cache.raw = raw;
 				cache.element = $clone;
@@ -946,6 +896,16 @@ define( [
 					'keyCode'         : null,
 					'char'            : null,
 					'triggerType'     : 'blur',
+					'getSnapshotContent' : getSnapshotContent
+				} );
+
+			} else if ( event && event.type === 'block-change' ) {
+				Aloha.trigger( 'aloha-smart-content-changed', {
+					'editable'        : me,
+					'keyIdentifier'   : null,
+					'keyCode'         : null,
+					'char'            : null,
+					'triggerType'     : 'block-change',
 					'getSnapshotContent' : getSnapshotContent
 				} );
 

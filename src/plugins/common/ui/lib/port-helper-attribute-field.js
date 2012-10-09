@@ -9,6 +9,7 @@ define([
 	'ui/component',
 	'ui/scopes',
 	'ui/context',
+	'ui/utils',
 	'aloha/repositorymanager',
 	'aloha/selection',
 	'aloha/console',
@@ -19,6 +20,7 @@ define([
 	Component,
 	Scopes,
 	Context,
+	Utils,
 	RepositoryManager,
 	Selection,
 	console
@@ -38,13 +40,33 @@ define([
 	// * repository manager markObject on the target object if a repository
 	//   item was selected (example link plugin)
 
+	/**
+	 * Creates a new attribute field.
+	 *
+	 * @param {!Object} props
+	 *        A map containing the following properties
+	 *        name         -
+	 *        label        - some text that will be displayed alongside
+	 *                       the attribute field,
+	 *        labelClass   - a class to identify the label element,
+	 *        valueField   -
+	 *        displayField -
+	 *        objectTypeFilter -
+	 *        placeholder  -
+	 *        noTargetHighlight -
+	 *        cls          -
+	 *        width        -
+	 *        scope        -
+	 *        element      - the <input> element to use.
+	 *                       If not supplied, a new one will be created.
+	 */
 	var AttributeField = function (props) {
 		var valueField = props.valueField || 'id',
 		    displayField = props.displayField || 'name',
 		    objectTypeFilter = props.objectTypeFilter || ['all'],
 		    placeholder = props.placeholder,
 		    noTargetHighlight = !!props.noTargetHighlight,
-		    element = $('<input id="aloha-attribute-field-' + props.name + '">'),
+		    element = props.element ? $(props.element) : $('<input id="aloha-attribute-field-' + props.name + '">'),
 		    component,
 		    template,
 		    resourceItem,
@@ -61,11 +83,23 @@ define([
 		}
 
 		component = Ui.adopt(props.name, Component, {
+			scope: props.scope,
 			init: function(){
 
-				// Why do we have to wrap the element in a span? It
-				// doesn't seem to work otherwise.
-				this.element = $('<span>').append(element);
+				if (props.element) {
+					this.element = element;
+				} else {
+					if (props.label) {
+						this.element = Utils.wrapWithLabel(props.label, element);
+						if (props.labelClass) {
+							this.element.addClass(props.labelClass);
+						}
+					} else {
+						// Why do we have to wrap the element in a span? It
+						// doesn't seem to work otherwise.
+						this.element = $('<span>').append(element);
+					}
+				}
 
 				element.autocomplete({
 					'html': true,
@@ -86,10 +120,8 @@ define([
 					},
 					"select": onSelect
 				});
-			},
-			scope: props.scope
-		})
-
+			}
+		});
 
 		element
 			.bind("focus", onFocus)
@@ -181,6 +213,12 @@ define([
 			if (noTargetHighlight) {
 				return;
 			}
+
+			// Make sure that multiple invokations of
+			// changeTargetBackground don't set an incorrect
+			// data-original-background-color.
+			restoreTargetBackground();
+
 			// set background color to give visual feedback which link is modified
 			var	target = $(targetObject);
 			if (target && target.context && target.context.style &&

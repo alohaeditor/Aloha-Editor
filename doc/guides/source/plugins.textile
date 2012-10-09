@@ -106,7 +106,7 @@ Plugins in the @extra@ directory:
 
 
 Community Plugins:
-* "colorselector°":https://github.com/mihaisimi/Aloha-Plugin-Colorselector - add font color or background color
+* "colorselector":https://github.com/deliminator/Aloha-Plugin-Colorselector - add font color or background color
 * "fontsize°":https://github.com/jstrouse/Aloha-Plugin-FontSize - select the font size
 * "fontfamily°":https://github.com/jstrouse/Aloha-Plugin-FontFamily - select the font family
 * "undoredo°":https://github.com/jstrouse/Aloha-Plugin-UndoRedo - Undo/Redo plugin
@@ -114,5 +114,4 @@ Community Plugins:
 
 
 
-° this plugin is currently not working within AE 0.21.x
-
+° this plugin is currently not working within Aloha Editor 0.22.x

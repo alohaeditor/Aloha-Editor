@@ -422,7 +422,7 @@ var Browser = Class.extend({
 			this.repositoryManager.query(params, function (response) {
 				that.processRepoResponse(
 					(response.results > 0) ? response.items : [],
-					{ numItems: response.numItems, hasMoreItems: response.hasMoreItems},
+					{ numItems: response.numItems, hasMoreItems: response.hasMoreItems, timeout: response.timeout},
 					callback
 				);
 			});
@@ -1004,7 +1004,13 @@ var Browser = Class.extend({
 			);
 		});
 	},
-	
+
+	/**
+	 * Handle repository timeouts
+	 */
+	handleTimeout: function () {
+	},
+
 	processItems: function (data, metainfo) {
 		var btns = this._pagingBtns;
 		var disabled = 'ui-state-disabled';
@@ -1055,6 +1061,12 @@ var Browser = Class.extend({
 					          + ' - '  + (to)
 					          + ' ' + i18n.t('of') + ' ' + (jQuery.isNumeric(this._pagingCount) ? this._pagingCount : i18n.t('numerous'))
 		);
+
+
+		// when the repository manager reports a timeout, we handle it
+		if (metainfo && metainfo.timeout) {
+			this.handleTimeout();
+		}
 	},
 	
 	createOverlay: function () {

@@ -1,4 +1,4 @@
-h2. Using Aloha Editor
+h2. Develop Aloha Editor
 
 endprologue.
 
@@ -84,7 +84,9 @@ The resulting css will be generated in src/css/aloha.css.
 h4. Other OS: 
 * Microsoft Windows: Not yet supported
 
-h4. Customized builds:
+h4. Customized Builds:
+
+h5. Javavscript
 
 Aloha-Editor uses maven to build a distributable package (includes
 documentation etc.). To build just the javascript, it suffices to invoke
@@ -96,11 +98,11 @@ node build/r.js -o build/aloha/build.js
 
 To customize the build to your needs, you can modify the build profile
 in build/aloha/build.js. The most likely customization you want to make
-is to remove or add plugins from the include property of the 'aloha'
+is to remove or add plugins from the 'include' property of the 'aloha'
 module definition.
 
-To include i18n files in your build, define the locale property. If the
-locale property is not defined, the appropriate i18n files will be
+To include i18n files in your build, set the 'locale' property. If the
+locale property is not set, the appropriate i18n files will be
 loaded dynamically by requirejs. Remember to configure Aloha.locale
 as well.
 
@@ -109,6 +111,8 @@ build profile, or use a locale that was not defined during building, no
 additional files should be downloaded by requirejs. In the future
 requirejs may be replaced with an AMD stub such that requirejs is not
 necessary for production deployments.
+
+h5. CSS
 
 Css building can be customized by adding or removing entries in
 src/css/aloha-common-extra.css. If you removed or added plugins in the
@@ -123,18 +127,18 @@ The resulting css will be generated in src/css/aloha.css.
 
 If you want to redefine modules in the build profile, for example if you
 want to use your own jqueryui, please first read "Custom jQuery,
-jQueryUI and other modules":using_aloha.html
+jQueryUI and other modules":dependencies.html
 
 h3. Developing CSS
 
 src/css/aloha.css is a concatenated and minified version of
 src/css/aloha-common-extra.css. To develop CSS without rebuilding the
-CSS everytime, temporarily copy src/css/aloha-comm-extra.css over
+CSS everytime, temporarily copy src/css/aloha-common-extra.css over
 src/css/aloha.css.
 
-Having the built version be included during development makes it
-possible to develop Aloha without having to worry too much about the IE
-maximum stylesheet limit.
+Commiting the built CSS to the repository as the default CSS that is
+loaded by the Aloha-Editor demos makes it possible to develop Aloha
+without having to worry too much about the IE maximum stylesheet limit.
 
 Every CSS class must have either an 'aloha-' prefix, or must be limited
 to occur within an '.aloha' context. For example:
@@ -147,8 +151,8 @@ to occur within an '.aloha' context. For example:
 This is to avoid interference with the CSS of the host page.
 
 If UI elements are added to the DOM with the purpose of absolute
-posistioning, which is common when implementing UI widgets, they should
-be appended to the ui/context module:
+positioning, which is common when implementing UI widgets, they should
+be appended to the element exposed by the ui/context module:
 
 <javascript>
 define(['ui/context'], function(Context) {
@@ -161,7 +165,7 @@ define(['ui/context'], function(Context) {
 });
 </javascript>
 
-h3. Guide 
+h3. Guides
 
 * "Textile manual":http://redcloth.org/hobix.com/textile/
 

@@ -50,12 +50,6 @@ function(jQuery, Plugin, i18nCore) {
 	Aloha.LinkChecker = new Aloha.Plugin('linkchecker');
 
 	/**
-	 * Configure the available languages
-	 * http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
-	 */
-	Aloha.LinkChecker.languages = ['en'];
-
-	/**
 	 * All error codes that have an explanation.
 	 */
 	Aloha.LinkChecker.errorCodes = [400, 401, 402, 403, 404, 405,

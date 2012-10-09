@@ -1,14 +1,15 @@
-- **BUG**: In the sidebar the panel entry for the format plugin was always shown; now when the formatOptions is empty the empty (useless) sidebar panel will be hidden
-- **BUG**: Align Plugin button status was not shown correctly
-- **FEATURE**: Image Caption Plugin: caption now supports sanitize contenthandler & disable / enable of line breaks;
-	<code>
-	Aloha.settings.contentHandler.handler: {
-		sanitize: {
-			'.aloha-captioned-image-caption': { elements: [ 'em', 'strong' ] }
-		}
-	}
-	</code>
+All changes are categorized into one of the following keywords:
 
+- **BUG**: The change fixes a bug.
+- **ENHANCEMENT**: The change improves the software, but otherwise makes no
+                   functional change to any feature.
+- **FEATURE**: The change introduces a new feature, or modifies the function,
+               usage, or intent of an existing one.
+
+----
+- **BUG**: Fix base tag breaks Aloha Editor UI
+- **ENHANCEMENT**: Trigger the 'aloha-smart-content-changed' event with `triggerType` = `block-change` whenever an attribute of an Aloha Block is changed.
+- **FEATURE**: improved translation export from gengo.com to Aloha Editor
 	<code>
 	Aloha.settings.plugins: {
 		captionedImage: {
@@ -19,4 +20,8 @@
 
 - **MANUAL CHANGE**: Updated UI CSS regarding button selector;
 - **MANUAL CHANGE**: Added a demo of placeholders to boilerplate;
-
+- **BUG**: Fix calling mahalo in a blur event handler
+- **BUG**: Fix support for editable anchor elements
+- **BUG**: images-plugin: global fix and debug interactions with draganddropfiles
+- **BUG**: draganddropfiles-plugin: fix for Firefox in order to send fileName
+- *ENHANCEMENT**: draganddropfiles-plugin: Send id target element in headers to inform the server where in page the file has been dropped
