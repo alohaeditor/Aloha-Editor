@@ -260,7 +260,6 @@
           for (_j = 0, _len1 = order.length; _j < _len1; _j++) {
             h = order[_j];
             _results.push(new appmenu.custom.Heading("<" + h + " />", labels[h], {
-              accel: "Ctrl+" + (h.charAt(1) || 0),
               action: applyHeading(h)
             }));
           }
