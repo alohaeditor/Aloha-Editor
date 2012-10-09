@@ -92,7 +92,7 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
         return cell.closest('tr');
     }
 
-    function prepareTable(table){
+    function prepareTable(plugin, table){
         // Wrap table in ui-wrappper
         var w1 = Aloha.jQuery('<div class="canvas-wrap aloha-ui-wrapper" />');
         var w2 = Aloha.jQuery('<div class="table canvas aloha-ui-wrapper" />');
@@ -110,26 +110,28 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
             // We will later use this to hide ui
             //console && console.log(e.target);
         });
+        table.on('click', function(e){
+            Scopes.enterScope(plugin.name);
+        });
     }
 
     return plugin.create('table', {
         defaults: {
         },
         init: function(){
+            var plugin = this;
             this.createLayer = new CreateLayer(this);
             this.initButtons();
             Aloha.bind('aloha-editable-created', function(event, editable){
                 editable.obj.find('table').each(function(){
-                    prepareTable(Aloha.jQuery(this));
+                    prepareTable(plugin, Aloha.jQuery(this));
                 });
             });
         },
         initButtons: function(){
             var that = this;
             // generate the new scopes
-            Scopes.createScope(this.name + '.row', 'Aloha.continuoustext');
-            Scopes.createScope(this.name + '.column', 'Aloha.continuoustext');
-            Scopes.createScope(this.name + '.cell', 'Aloha.continuoustext');
+            Scopes.createScope(this.name, 'Aloha.continuoustext');
 
             this._createTableButton = Ui.adopt("createTable", Button, {
                 tooltip: "Create Table",
@@ -314,7 +316,7 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
 
                 cleanupAfterInsertion();
-                prepareTable(Aloha.jQuery(table));
+                prepareTable(this, Aloha.jQuery(table));
                 var ev = jQuery.Event();
                 ev.type = 'blur';
                 Aloha.activeEditable.smartContentChange(ev);
