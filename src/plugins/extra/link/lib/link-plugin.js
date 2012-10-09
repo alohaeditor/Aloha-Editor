@@ -57,7 +57,7 @@ define( [
 	Surface,
 	Button,
 	ToggleButton,
-	Bubble,
+	Bubbler,
 	i18n,
 	i18nCore,
 	console
@@ -393,16 +393,17 @@ define( [
 				}
 			} );
 			
-			var displayer = function($el, $bubble) {
-				var href = $el.attr('href');
-				var a = jQuery('<a target="_window"></a>').appendTo($bubble);
-				a.attr('href', href);
-				a.append(href); // Put the URL in the body
-				$bubble.append(' - ');
-				$bubble.append('<a href="#">Change</a>').on('click', function() {that.showModalDialog($el, null)});
-				
-			};
-			Bubble(jQuery(link), displayer);
+			new Bubbler(this._createDisplayer, jQuery(link));
+		},
+
+		_createDisplayer: function($el, $bubble) {
+			var href = $el.attr('href');
+			var a = jQuery('<a target="_window"></a>').appendTo($bubble);
+			a.attr('href', href);
+			a.append(href); // Put the URL in the body
+			$bubble.append(' - ');
+			$bubble.append('<a href="#">Change</a>').on('mousedown', function() {that.showModalDialog($el, null);});
+			
 		},
 
 		/**
@@ -831,6 +832,10 @@ define( [
 			
 			if (foundMarkup) {
 				that.toggleLinkScope(true);
+				
+				// Pop up a bubble
+				jQuery(foundMarkup).trigger('open', true);
+
 
 				// now we are ready to set the target object
 				that.hrefField.setTargetObject(foundMarkup, 'href');
