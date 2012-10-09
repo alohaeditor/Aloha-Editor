@@ -1,7 +1,7 @@
 define(
-['aloha', 'aloha/plugin', 'jquery', 'ui/ui', 'ui/button', 'ui/scopes',
+['aloha', 'aloha/plugin', 'jquery', 'ui/ui', 'ui/button', 'PubSub',
     'ui/dialog', 'table/table-create-layer', 'css!table/css/table.css'],
-function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
+function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
     "use strict";
 
 	var GENTICS = window.GENTICS;
@@ -110,9 +110,6 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
             // We will later use this to hide ui
             //console && console.log(e.target);
         });
-        table.on('click', function(e){
-            Scopes.enterScope(plugin.name);
-        });
     }
 
     return plugin.create('table', {
@@ -127,12 +124,29 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     prepareTable(plugin, jQuery(this));
                 });
             });
+            PubSub.sub('aloha.selection.context-change', function(m){
+                if ($(m.range.markupEffectiveAtStart).parent('table')
+                        .length > 0) {
+                    // We're inside a table, enable those functions
+                    plugin._addrowbeforeButton.enable(true);
+                    plugin._addrowafterButton.enable(true);
+                    plugin._deleterowButton.enable(true);
+                    plugin._deleteColumnButton.enable(true);
+                    plugin._addColumnBefore.enable(true);
+                    plugin._addColumnAfter.enable(true);
+                } else {
+                    // Disable table functions
+                    plugin._addrowbeforeButton.enable(false);
+                    plugin._addrowafterButton.enable(false);
+                    plugin._deleterowButton.enable(false);
+                    plugin._deleteColumnButton.enable(false);
+                    plugin._addColumnBefore.enable(false);
+                    plugin._addColumnAfter.enable(false);
+                }
+            });
         },
         initButtons: function(){
             var that = this;
-            // generate the new scopes
-            Scopes.createScope(this.name, 'Aloha.continuoustext');
-
             this._createTableButton = Ui.adopt("createTable", Button, {
                 tooltip: "Create Table",
                 icon: "aloha-icon aloha-icon-createTable",
@@ -241,6 +255,14 @@ function(Aloha, plugin, jQuery, Ui, Button, Scopes, Dialog, CreateLayer) {
                     });
                 }
             });
+            // Disable the table functions by default, they are enabled when
+            // a selection is inside a table
+            this._addrowbeforeButton.enable(false);
+            this._addrowafterButton.enable(false);
+            this._deleterowButton.enable(false);
+            this._deleteColumnButton.enable(false);
+            this._addColumnBefore.enable(false);
+            this._addColumnAfter.enable(false);
         },
 	    isSelectionInTable: function (){
             var range = Aloha.Selection.getRangeObject();
