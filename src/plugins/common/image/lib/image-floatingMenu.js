@@ -81,7 +81,7 @@ function (
 
 			this._imageCnrRatioButton = Ui.adopt("imageCnrRatio", ToggleButton, {
 				tooltip: i18n.t('button.toggle.tooltip'),
-				icon: 'aloha-icon-cnr-ratio',
+				icon: 'aloha-img aloha-icon-cnr-ratio',
 				scope: plugin.name,
 				click: function(){
 					plugin.toggleKeepAspectRatio();
@@ -104,7 +104,7 @@ function (
 
 			this._imageCnrResetButton = Ui.adopt("imageCnrReset", Button, {
 				tooltip: i18n.t('Reset'),
-				icon: 'aloha-icon-cnr-reset',
+				icon: 'aloha-img aloha-icon-cnr-reset',
 				scope: plugin.name,
 				click: function(){
 					plugin.reset();
@@ -120,7 +120,7 @@ function (
 
 			this._insertImageButton = Ui.adopt("insertImage", Button, {
 				tooltip: i18n.t('button.addimg.tooltip'),
-				icon: 'aloha-button aloha-image-insert',
+				icon: 'aloha-img aloha-image-insert',
 				scope: 'Aloha.continuoustext',
 				click: function(){
 					plugin.insertImg();
@@ -228,7 +228,7 @@ function (
 
 			this._imageCropButton = Ui.adopt("imageCropButton", ToggleButton, {
 				tooltip: i18n.t('Crop'),
-				icon: 'aloha-icon-cnr-crop',
+				icon: 'aloha-img aloha-icon-cnr-crop',
 				scope: plugin.name,
 				click: function () {
 					if (this.getState()) {
