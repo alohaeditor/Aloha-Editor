@@ -102,7 +102,7 @@ define [
         # This class adapts button functions Aloha expects to functions the appmenu uses
         class ItemRelay
           constructor: (@items) ->
-          show: () -> item.setHidden false for item in @items
+          show: (bool=true) -> item.setHidden not bool for item in @items
           hide: () -> item.setHidden true for item in @items
           setActive: (bool) -> item.setChecked bool for item in @items
           setState: (bool) -> @setActive bool
