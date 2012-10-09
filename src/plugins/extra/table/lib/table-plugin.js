@@ -148,7 +148,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
         initButtons: function(){
             var that = this;
             this._createTableButton = Ui.adopt("createTable", Button, {
-                tooltip: "Create Table",
+                tooltip: "Add a new table",
                 icon: "aloha-icon aloha-icon-createTable",
                 scope: 'Aloha.continuoustext',
                 click: function(e){
