@@ -109,7 +109,7 @@
 }
 .menu {
   position: fixed;
-  background-color: white;
+  background-color: whiteSmoke;
   border: 1px solid black;
   -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -119,7 +119,7 @@
   z-index: 1000;
 }
 .menu > .menu-item {
-  padding: 6px 7em 6px 30px;
+  padding: 6px 23px 6px 30px;
   cursor: default;
   line-height: 16px;
 }

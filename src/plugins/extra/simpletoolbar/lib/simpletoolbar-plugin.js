@@ -18,7 +18,7 @@
           'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '', {
             text: 'Table',
             icon: 'aloha-table-insert',
-            subMenu: ['createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']
+            subMenu: ['createTable', '', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']
           }, {
             text: 'insertImage',
             icon: 'aloha-image-insert'
