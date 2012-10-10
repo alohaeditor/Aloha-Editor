@@ -1539,7 +1539,9 @@ function mathLeave(mathEditorContainer,e) {
                     { 
                         $(MathJax.Hub.getAllJax()).each(function()
                         { 
+                            console.log(this.originalText);
                             var pp = parentOfParent(document.getElementById(this.inputID));
+                            console.log(this);
                             if(pp == null || pp.className != "MathJax_MathContainer")
                             {
                                 console.log("Initializing... "+this.inputID);
@@ -1552,6 +1554,13 @@ function mathLeave(mathEditorContainer,e) {
                                     append(elpr).append(elfr).append(el)
                                     .data('equation', this.originalText);
                                 outerEqWrapper.append(eqWrapper);
+
+                                if(this.inputJax == "AsciiMath") { 
+                                    aolDictionary[wrapPrefix+cntEq] = 'radio_ascii';
+                                } else if(this.inputJax == "TeX") {
+                                    aolDictionary[wrapPrefix+cntEq] = 'radio_latex';
+                                }
+                                console.log('JAX: '+this.inputJax);
 
                                 cntEq++;
                             }
