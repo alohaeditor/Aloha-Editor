@@ -49,12 +49,6 @@ define([
 		},
 		
 		config: [ 'metaview' ],
-		
-		/**
-		 * Configure the available languages
-		 */
-		languages: ['en', 'de'],
-
 		/**
 		 * Initialize the plugin
 		 */

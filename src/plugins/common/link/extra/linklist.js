@@ -29,7 +29,7 @@
  * A simple demo repository of links.
  */
 define(
-[ 'aloha', 'jquery' ],
+[ 'aloha', 'aloha/jquery' ],
 function ( Aloha, jQuery ) {
 	'use strict';
 

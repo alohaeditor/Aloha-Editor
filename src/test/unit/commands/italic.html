@@ -8,10 +8,14 @@
 
 	<script type="text/javascript" src="../../vendor/qunit.js"></script>
 
+	<script src="../../../lib/require.js" ></script>
 	<!-- include jquery -->
 	<script	src="../../../lib/vendor/jquery-1.7.2.js" ></script>
 	<script type="text/javascript" src="../../vendor/jquery.simulate.js"></script>
 	<script>
+        require.config({
+		    baseUrl: "../"
+        });
 		var Aloha = {
 			settings: {
 				jQuery: $,
@@ -21,15 +25,11 @@
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../../lib/require.js" ></script>
 	<script src="../../../lib/aloha.js" ></script>
 
 	<!-- inject into testswarm -->
 	<script type="text/javascript" src="../../vendor/swarminject.js"></script>
 	<script>
-    require.config({
-      baseUrl: "../"
-    });
 		// load command test suite
 		require( ['commandtest'] );
 	</script>

@@ -24,10 +24,17 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-/*global define:true */
-define(
-['jquery', 'aloha/registry', 'util/class', 'aloha/console'],
-function (jQuery, Registry, Class, console) {
+define([
+	'jquery',
+	'aloha/registry',
+	'util/class',
+	'aloha/console'
+], function (
+	jQuery,
+	Registry,
+	Class,
+	console
+) {
 	"use strict";
 
 	/**
@@ -39,7 +46,7 @@ function (jQuery, Registry, Class, console) {
 	return new (Registry.extend({
 
 		createHandler: function (definition) {
-			
+
 			if (typeof definition.handleContent !== 'function') {
 				throw 'ContentHandler has no function handleContent().';
 			}
@@ -49,13 +56,14 @@ function (jQuery, Registry, Class, console) {
 					// Implement in subclass!
 				}
 			}, definition);
-			
+
 			return new AbstractContentHandler();
 		},
-		
+
 		handleContent: function (content, options) {
-			var handler, id,
-				ids = this.getIds();
+			var handler,
+			    id,
+			    ids = this.getIds();
 
 			if (typeof options.contenthandler === 'undefined') {
 				options.contenthandler = [];

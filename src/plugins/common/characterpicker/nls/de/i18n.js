@@ -1,1 +1,3 @@
-define({"button.addcharacter.tooltip": "Sonderzeichen einf&uuml;gen"});
+define({
+	"button.addcharacter.tooltip": "Sonderzeichen wählen"
+});

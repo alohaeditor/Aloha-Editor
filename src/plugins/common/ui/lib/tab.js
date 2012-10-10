@@ -74,7 +74,7 @@ define([
 			this.panels = this.container.data('panels');
 			this.id = 'tab-ui-container-' + (++idCounter);
 			this.panel = $('<div>', {id : this.id, 'unselectable': 'on'});
-			this.handle = $('<li><a href="#' + this.id + '">' +
+			this.handle = $('<li><a href="' + location.href.replace(/#.*$/, '') + '#' + this.id + '">' +
 				settings.label + '</a></li>');
 
 			for (i = 0; i < components.length; i++) {

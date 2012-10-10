@@ -30,9 +30,15 @@
  * TODO: document that it also contains Observable.
  *
  */
-define(
-['jquery', 'aloha/observable', 'util/class'],
-function (jQuery, Observable, Class) {
+define([
+	'jquery',
+	'aloha/observable',
+	'util/class'
+], function (
+	jQuery,
+	Observable,
+	Class
+) {
 	"use strict";
 
 	return Class.extend(Observable, {
