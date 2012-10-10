@@ -250,16 +250,16 @@
         order = ['p', 'h1', 'h2', 'h3'];
         labels = {
           'p': 'Normal Text',
-          'h1': 'Heading 1',
-          'h2': 'Heading 2',
-          'h3': 'Heading 3'
+          'h1': 'Heading Level 1',
+          'h2': 'Heading Level 2',
+          'h3': 'Heading Level 3'
         };
         headingButtons = (function() {
           var _j, _len1, _results;
           _results = [];
           for (_j = 0, _len1 = order.length; _j < _len1; _j++) {
             h = order[_j];
-            _results.push(new appmenu.custom.Heading("<" + h + " />", labels[h], {
+            _results.push(new appmenu.custom.Heading('<span class="menu-item">', labels[h], {
               action: applyHeading(h)
             }));
           }

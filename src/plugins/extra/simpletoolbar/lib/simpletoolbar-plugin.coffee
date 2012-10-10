@@ -15,8 +15,10 @@ define [
     defaultSettings: {
         'initfloat': false, # Whether to also initialise aloha default toolbar
         'menu': [
-             'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript',
-             'subscript', '', 'unorderedList', 'orderedList', '',
+             'undo', 'redo', '', 
+             'bold', 'italic', 'underline', 'superscript',  'subscript', '', 
+             # 'insertLink', 'removeLink', '',
+             'unorderedList', 'orderedList', '',
              { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
              { text: 'insertImage', icon: 'aloha-image-insert' }],
         'dialogs': [
@@ -152,12 +154,12 @@ define [
       order = [ 'p', 'h1', 'h2', 'h3' ]
       labels =
         'p':  'Normal Text'
-        'h1': 'Heading 1'
-        'h2': 'Heading 2'
-        'h3': 'Heading 3'
+        'h1': 'Heading Level 1'
+        'h2': 'Heading Level 2'
+        'h3': 'Heading Level 3'
 
       # headingButtons = (new appmenu.custom.Heading("<#{ h } />", labels[h], {accel: "Ctrl+#{ h.charAt(1) or 0 }", action: applyHeading(h) }) for h in order)
-      headingButtons = (new appmenu.custom.Heading("<#{ h } />", labels[h], { action: applyHeading(h) }) for h in order)
+      headingButtons = (new appmenu.custom.Heading('<span class="menu-item">', labels[h], { action: applyHeading(h) }) for h in order)
       
       headingsButton = new appmenu.ToolButton("Heading 1", {subMenu: new appmenu.Menu(headingButtons)})
       toolbar.prepend(new appmenu.Separator())
