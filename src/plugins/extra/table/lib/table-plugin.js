@@ -86,7 +86,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
 
     function getActiveRow(){
         var cell = getActiveCell();
-        if (cell === 0){
+        if (cell === null){
             return null;
         }
         return cell.closest('tr');
@@ -100,7 +100,6 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
 
         table.wrap(w1).wrap(w2).wrap(w3);
 
-        w1.attr('contentEditable', 'false');
         // glue a mouseover event onto it
         table.on('mouseenter', function(e){
             // We will later use this to bring up ui
@@ -110,6 +109,17 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
             // We will later use this to hide ui
             //console && console.log(e.target);
         });
+    }
+
+    function selectCell(cell){
+        var range = Aloha.createRange(),
+            begin = cell,
+            end = cell;
+        range.setStart(begin.get(0), 0);
+        range.setEnd(end.get(0), 1);
+
+        Aloha.getSelection().removeAllRanges();
+        Aloha.getSelection().addRange(range);
     }
 
     return plugin.create('table', {
@@ -122,6 +132,32 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
             Aloha.bind('aloha-editable-created', function(event, editable){
                 editable.obj.find('table').each(function(){
                     prepareTable(plugin, jQuery(this));
+                });
+                editable.obj.bind('keydown', 'tab', function(e){
+                    var $cell = jQuery(
+                        Aloha.Selection.rangeObject.markupEffectiveAtStart)
+                        .closest('td,th');
+                    if ($cell.length > 0){
+                        if ($cell.is('td:last-child,th:last-child')) {
+                            var nextrow = $cell.closest('tr').next('tr');
+                            if (nextrow.length > 0){
+                                var nextcell = jQuery(nextrow[0].cells[0]);
+                                selectCell(nextcell);
+                            } else {
+                                // Last column, last row
+                                // Add more
+                                var newrow = plugin.addRowAfter();
+                                if (newrow !== null){
+                                    selectCell($(newrow).find('td,th').first());
+                                }
+                            }
+                        } else {
+                            var nextcell = $cell.next('td,th');
+                            selectCell(nextcell);
+                        }
+                    }
+                    e.preventDefault();
+                    e.stopPropagation();
                 });
             });
             PubSub.sub('aloha.selection.context-change', function(m){
@@ -182,14 +218,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                 icon: "aloha-icon aloha-icon-addrowafter",
                 scope: this.name + '.row',
                 click: function(){
-                    var row = getActiveRow();
-                    if (row === null){
-                        this.error('Selection is not in a table!');
-                        return;
-                    }
-                    var rowcount = row.find('*').length;
-                    var newrow = createRow(rowcount);
-                    row.after(newrow);
+                    that.addRowAfter();
                 }
             });
             this._deleterowButton = Ui.adopt("deleterow", Button, {
@@ -263,6 +292,18 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
             this._deleteColumnButton.enable(false);
             this._addColumnBefore.enable(false);
             this._addColumnAfter.enable(false);
+        },
+        addRowAfter: function(){
+            // Factored out because we re-use this when tabbing through the
+            // table.
+            var row = getActiveRow();
+            if (row !== null){
+                var rowcount = row.find('td,th').length;
+                var newrow = createRow(rowcount);
+                row.after(newrow);
+                return newrow;
+            }
+            return null;
         },
 	    isSelectionInTable: function (){
             var range = Aloha.Selection.getRangeObject();
