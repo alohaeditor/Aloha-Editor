@@ -1552,14 +1552,25 @@ function mathLeave(mathEditorContainer,e) {
 
                                 var eqWrapper = $('<span id="sub'+wrapPrefix+cntEq+'"/>').
                                     append(elpr).append(elfr).append(el)
-                                    .data('equation', this.originalText);
+                                    .data('equation', '$'+this.originalText+'$');
                                 outerEqWrapper.append(eqWrapper);
 
                                 if(this.inputJax == "AsciiMath") { 
                                     aolDictionary[wrapPrefix+cntEq] = 'radio_ascii';
+/*
+                                    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, wrapPrefix+cntEq, function() { 
+                                           MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax('sub'+wrapPrefix+cntEq)[0],equation]);
+                                    }]);
+*/
                                 } else if(this.inputJax == "TeX") {
                                     aolDictionary[wrapPrefix+cntEq] = 'radio_latex';
+                                    /*
+                                    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, mathJaxElId, function() { 
+                                           MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(mathJaxElId)[0],"\\displaystyle{"+equation+"}"]);
+                                    }]);
+                                    */
                                 }
+                                //MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax('sub'+wrapPrefix+cntEq)[0],"\\displaystyle{"+this.originalText+"}"]);
                                 console.log('JAX: '+this.inputJax);
 
                                 cntEq++;
