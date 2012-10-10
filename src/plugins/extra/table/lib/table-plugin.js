@@ -100,6 +100,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
 
         table.wrap(w1).wrap(w2).wrap(w3);
 
+        w1.attr('contentEditable', 'false');
         // glue a mouseover event onto it
         table.on('mouseenter', function(e){
             // We will later use this to bring up ui
@@ -111,13 +112,10 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
         });
     }
 
-    function selectCell(cell){
-        var range = Aloha.createRange(),
-            begin = cell,
-            end = cell;
-        range.setStart(begin.get(0), 0);
-        range.setEnd(end.get(0), 1);
-
+    function placeCursor(cell){
+        var range = Aloha.createRange();
+        range.setStart(cell.get(0), 0);
+        range.setEnd(cell.get(0), 0);
         Aloha.getSelection().removeAllRanges();
         Aloha.getSelection().addRange(range);
     }
@@ -142,23 +140,31 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                             var nextrow = $cell.closest('tr').next('tr');
                             if (nextrow.length > 0){
                                 var nextcell = jQuery(nextrow[0].cells[0]);
-                                selectCell(nextcell);
+                                placeCursor(nextcell);
                             } else {
                                 // Last column, last row
                                 // Add more
                                 var newrow = plugin.addRowAfter();
                                 if (newrow !== null){
-                                    selectCell($(newrow).find('td,th').first());
+                                    placeCursor($(newrow).find('td,th').first());
                                 }
                             }
                         } else {
                             var nextcell = $cell.next('td,th');
-                            selectCell(nextcell);
+                            placeCursor(nextcell);
                         }
                     }
                     e.preventDefault();
                     e.stopPropagation();
                 });
+                // Disable firefox's inline table editing.
+                try {
+                    document.execCommand("enableInlineTableEditing", null, false);
+                } catch(ignore){}
+                // Place the cursor at the start of the editable. If you don't
+                // do this, Firefox goes weird when placing the cursor in a
+                // table cell.
+                placeCursor(editable.obj);
             });
             PubSub.sub('aloha.selection.context-change', function(m){
                 if ($(m.range.markupEffectiveAtStart).parent('table')
