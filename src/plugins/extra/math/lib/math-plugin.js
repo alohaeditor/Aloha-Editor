@@ -791,8 +791,7 @@ function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction
     var range = Aloha.Selection.getRangeObject();
     var newMathContainer = $('<span id="'+newElId+'" class="MathBox MathBoxNew selected">'+openDelimiter + closeDelimiter+'</span>');
    /* Generates the math editor */ 
-    // GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $( Aloha.activeEditable.obj ) ); // Inserts the math container into the aloha 'editable' object
-    GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $("#content")) // Inserts the math container into the aloha 'editable' object
+    GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $("#content"));
 
     console.log("Editable obj is: " + $( Aloha.activeEditable.obj ).attr("id"));
     console.log("ID is: " + newElId);
@@ -1517,11 +1516,12 @@ function mathLeave(mathEditorContainer,e) {
                     { 
                         $(MathJax.Hub.getAllJax()).each(function()
                         { 
-                            console.log("Initializing...?");
+                            console.log("Initializing... "+this.inputID);
                             var elfr = $('#'+this.inputID+'-Frame'),
                                 el = $('#'+this.inputID),
                                 elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0),
-                                eqWrapper = $('<span id="'+wrapPrefix+cntEq+'" />').insertBefore(elpr)
+
+                                eqWrapper = $('<span id="'+wrapPrefix+cntEq+'" class="MathBox MathBoxNew"/>').insertBefore(elpr)
                                     .append(elpr).append(elfr).append(el)
                                     .data('equation', this.originalText);
                            console.log("elfr is: " + elfr) ;
@@ -1565,4 +1565,9 @@ function mathLeave(mathEditorContainer,e) {
         }
     });
 });
-    
+
+function editor_focus() {
+    document.getElementById('content').focus();
+}
+window.onload = editor_focus;
+
