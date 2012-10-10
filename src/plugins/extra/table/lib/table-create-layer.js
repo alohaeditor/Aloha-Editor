@@ -78,7 +78,7 @@ function (jQuery) {
 
         // Option for including a header row
         var options = jQuery('<div id="table-options"></div>')
-            .append('<input type="checkbox" id="include-row-header" />')
+            .append('<input type="checkbox" id="include-row-header" checked="checked" />')
             .append('<label for="include-row-header">Include header row</label>')
             .css('margin', '0.5em 0.25em')
             .on('click', function(e){
@@ -104,6 +104,9 @@ function (jQuery) {
 
 			for (var j = 0; j < this.get('numX'); j++) {
 				td = jQuery('<td>\u00a0</td>');
+                if (i == 0){
+                    td.addClass("header");
+                }
 
 				if (i == 0 && j == 0) {
 					td.addClass('hover');
@@ -122,7 +125,8 @@ function (jQuery) {
                     var headerrows = Number(dialog.find(
                         '#include-row-header').is(':checked'));
 
-					that.TablePlugin.createTable(cols, rows, headerrows);
+					that.TablePlugin.createTable(cols, rows - headerrows,
+                        headerrows);
 					that.hide();
 				});
 

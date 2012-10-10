@@ -18,7 +18,7 @@
           'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '', {
             text: 'Table',
             icon: 'aloha-table-insert',
-            subMenu: ['createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']
+            subMenu: ['createTable', '', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']
           }, {
             text: 'insertImage',
             icon: 'aloha-image-insert'
@@ -140,13 +140,16 @@
               this.items = items;
             }
 
-            ItemRelay.prototype.show = function() {
+            ItemRelay.prototype.show = function(bool) {
               var _j, _len1, _ref1, _results;
+              if (bool == null) {
+                bool = true;
+              }
               _ref1 = this.items;
               _results = [];
               for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
                 item = _ref1[_j];
-                _results.push(item.setHidden(false));
+                _results.push(item.setHidden(!bool));
               }
               return _results;
             };

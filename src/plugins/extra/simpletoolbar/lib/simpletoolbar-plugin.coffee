@@ -16,10 +16,10 @@ define [
         'initfloat': false, # Whether to also initialise aloha default toolbar
         'menu': [
              'undo', 'redo', '', 
-             'bold', 'italic', 'underline', 'superscript',  'subscript', '', 
+             'bold', 'italic', 'underline', 'superscript', 'subscript', '', 
              # 'insertLink', 'removeLink', '',
              'unorderedList', 'orderedList', '',
-             { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
+             { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', '', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
              { text: 'insertImage', icon: 'aloha-image-insert' }],
         'dialogs': [
             label: 'Image'
@@ -104,7 +104,7 @@ define [
         # This class adapts button functions Aloha expects to functions the appmenu uses
         class ItemRelay
           constructor: (@items) ->
-          show: () -> item.setHidden false for item in @items
+          show: (bool=true) -> item.setHidden not bool for item in @items
           hide: () -> item.setHidden true for item in @items
           setActive: (bool) -> item.setChecked bool for item in @items
           setState: (bool) -> @setActive bool
