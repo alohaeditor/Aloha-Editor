@@ -765,6 +765,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
 
     leVal = getFullStr(mathEditBox[0].childNodes);
     console.log('LEVAL is: '+leVal);
+    console.log('EQID is: '+eqId);
     MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
     // console.log('onTexChange Checkpoint 8')
     inChange = false;
@@ -1531,6 +1532,13 @@ function mathLeave(mathEditorContainer,e) {
     return ed;
   }
 
+  function parentOfParent(ele) {
+      if(ele == null) return null;
+      var tmp = ele.parentNode;
+      if(tmp == null) return null;
+      return tmp.parentNode;
+  }
+
     
             scopes.createScope('math', 'Aloha.empty');
             /* Configure the 'insert latex' math */
@@ -1562,21 +1570,31 @@ function mathLeave(mathEditorContainer,e) {
                         // Wraps each mathjax element
                         $(MathJax.Hub.getAllJax()).each(function()
                         { 
-                            console.log("Initializing... "+this.inputID);
-                            var elfr = $('#'+this.inputID+'-Frame');
-                            var el = $('#'+this.inputID);
-                            var elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0);
-                            var outerEqWrapper = $('<span id="'+wrapPrefix+cntEq+'" class="MathBox MathBoxNew"/>').insertBefore(elpr);
+                            console.log(this.originalText);
+                            var pp = parentOfParent(document.getElementById(this.inputID));
+                            console.log(this);
+                            if(pp == null || pp.className != "MathJax_MathContainer")
+                            {
+                                console.log("Initializing... "+this.inputID);
+                                var elfr = $('#'+this.inputID+'-Frame');
+                                var el = $('#'+this.inputID);
+                                var elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0);
+                                var outerEqWrapper = $('<span id="'+wrapPrefix+cntEq+'" class="MathBox MathBoxNew"/>').insertBefore(elpr);
 
-                            var eqWrapper = $('<span id="sub'+wrapPrefix+cntEq+'"/>').append(elpr).append(elfr).append(el)
-                                .data('equation', this.originalText);
-                            outerEqWrapper.append(eqWrapper);
-                           console.log("elfr is: " + elfr) ;
-                           console.log("el is: " + el );
-                           console.log("elpr is: " + elpr);
-                            MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(this.inputID)[0],"\\displaystyle{"+this.originalText+"}"]);
-                            
-                           cntEq++;
+                                var eqWrapper = $('<span id="sub'+wrapPrefix+cntEq+'"/>').
+                                    append(elpr).append(elfr).append(el)
+                                    .data('equation', this.originalText);
+                                outerEqWrapper.append(eqWrapper);
+
+                                if(this.inputJax == "AsciiMath") { 
+                                    aolDictionary[wrapPrefix+cntEq] = 'radio_ascii';
+                                } else if(this.inputJax == "TeX") {
+                                    aolDictionary[wrapPrefix+cntEq] = 'radio_latex';
+                                }
+                                console.log('JAX: '+this.inputJax);
+
+                                cntEq++;
+                            }                            
                         }); 
                     }]);
                 })();
