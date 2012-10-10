@@ -33,44 +33,45 @@ For a very basic plugin, nothing else than a plugin module in @lib/@ has to be
 created. The module is named as +pluginname-plugin.js+.
 
 <javascript filename="/custom/helloworld/lib/helloworld-plugin.js">
-define(
-[ 'aloha/plugin' ],
-function( plugin ) {
-    "use strict";
+define(['aloha/plugin'], function (Plugin) {
+    'use strict';
 
-    return plugin.create( 'helloworld', {
-        init: function() {
+    return Plugin.create('helloworld', {
+        init: function () {
             // Executed on plugin initialization
         }
     });
 });
 </javascript>
 
-NOTE: If your plugin should be published to the public you should consider writing a @package.json@ file with metadata about the plugin. Furthermore, the name of your plugin name should be globally unique.
+NOTE: If your plugin should be published to the public you should
+      consider writing a @package.json@ file with metadata about the
+      plugin. Furthermore, the name of your plugin name should be globally
+      unique.
 
-This code requires the core plugin module (which defines the @plugin@ class) and creates a plugin with the name @pluginA@.
+This code requires the core plugin module (which defines the @plugin@
+class) and creates a plugin with the name @pluginA@.
 
 <javascript filename="pluginA/lib/pluginA-plugin.js">
-define(
-[ 'aloha/plugin', 'aloha/console'],
-function( plugin, console ) {
-    "use strict";
+define(['aloha/plugin', 'aloha/console'], function (Plugin, console) {
+    'use strict';
 
-    return plugin.create( 'pluginA', {
+    return Plugin.create('pluginA', {
     	defaults: {
     		value: 10
     	},
-        init: function() {
+        init: function () {
             // Executed on plugin initialization
-			console.log( this.settings.value );
+			console.log(this.settings.value);
         }
     });
 });
 </javascript>
 
-
-As developer you can define plugin default settings by specifying +Aloha.defaults.pluginA+ and these default setting will be merged with the +Aloha.setttings+. Once defined as default you can always access the settings without extensive checking its existence.  
-
+As developer you can define plugin default settings by specifying
++Aloha.defaults.pluginA+ and these default setting will be merged with
+the +Aloha.setttings+. Once defined as default you can always access the
+settings without extensive checking its existence.
 
 To read the settings of a specific plugin you can use 
 
@@ -78,19 +79,93 @@ To read the settings of a specific plugin you can use
 	var settings = Aloha.require('pluginA/pluginA-plugin').settings;
 </javascript>
 
+h3. Ephemera
+
+Somtimes a plugin must inject non-content into the editable. For
+example, a plugin may add a class to a link to for visual
+highlighting. Or elements are injected to make the content more
+interactive.
+
+For example, the table plugin alters the table structure in order to
+display row and column handles that can be clicked to select a row or
+column.
+
+In Aloha Editor we call this "ephemeral content".
+
+After this ephemeral conten was injected into the editable, it must be
+removed again before the actual content of the editable can be retrieved.
+
+There are two mechanisms currently in place.
+
+h4. makeClean
+
+The first mechanism is the Plugin.makeClean method. This method can be
+overridden and implemented by a plugin to provide custom cleaning of the
+editable. The Plugin.makeClean method will receive the editable element
+as a jQuery object.
+
+The makeClean mechanism is not as fast and flexible as the second
+approach, and should therefore be considered deprecated.
+
+h4. aloha/ephemera
+
+The second mechanism is the aloha/ephemera module.
+
+In the aloha/ephemera module a global registry is maintained where
+plugins register their ephemeral classes or attributes.
+
+<javascript>
+define(['aloha/plugin', 'aloha/ephemera'], function (Plugin, Ephemera) {
+    'use strict';
+
+    Ephemera.classes('aloha-my-plugin-custom-class');
+    Ephemera.attributes('SOME-ELEMENT.some-attribute');
+
+    ...
+});
+</javascript>
+
+The above works for well known classes and attributes that are
+considered ephemeral at a global scope.
+
+Individual elements and attributes can be "marked"
+
+<javascript>
+define(['aloha/plugin', 'aloha/ephemera'], function (Plugin, Ephemera) {
+    'use strict';
+
+    // my-element and descendants elements are all marked as ephemeral.
+    Ephemera.markElement($('#my-element')[0]);
+
+    // some-attribute of my-element-2 is marked as ephemeral.
+    Ephemera.markAttribute($('#my-element-2')[0], 'some-attribute');
+  
+    // my-wrapper itself is marked as ephemeral, but descendant elements are not.
+    Ephemera.markWrapper($('#my-wrapper')[0]);
+
+    ...
+});
+</javascript>
+
+When it is time to get the contents of an editable by calling
+editable.getContents() the ephemeral content will be automatically
+pruned by a call to Ephemera.prune(), which removes all ephemera from a
+copy of the editable's content before the copy is returned.
 
 h3. Localization
 
-If you have some labels in your plugin, these need to be made available in multiple languages, as
-Aloha is capable showing its user interface in a wide variety of languages.
+If you have some labels in your plugin, these need to be made available
+in multiple languages, as Aloha is capable showing its user interface in
+a wide variety of languages.
 
-INFO: Localization is done using a slightly adjusted version of the "@i18n@ module of
-RequireJS":http://requirejs.org/docs/api.html#i18n
+INFO: Localization is done using a slightly adjusted version of the
+      "@i18n@ module of RequireJS":http://requirejs.org/docs/api.html#i18n
 
 h4. Folder Structure for Labels
 
-Localized strings are stored in the folder @nls@ (Natural Language Support) of your plugin. The file/directory
-structure inside @nls@ is as follows:
+Localized strings are stored in the folder @nls@ (Natural Language
+Support) of your plugin. The file/directory structure inside @nls@ is as
+follows:
 
 * @nls/@
 ** @i18n.js@ - contains the English strings, used as fallback.
@@ -134,10 +209,7 @@ Now, if we want to use the "your.key.here" key inside our application, we can us
 correct language version for us:
 
 <javascript filename="myplugin/lib/something.js">
-define(
-['i18n!myplugin/nls/i18n'],
-function(i18n) {
-
+define(['i18n!myplugin/nls/i18n'], function (i18n) {
 	// your code...
 	var localizedString = i18n.t('your.key.here');
 	// your code...
@@ -148,12 +220,6 @@ By defining +i18n!myplugin/nls/i18n+ as requirement, we get a special object inj
 all localized strings. There exists a +t('key')+ method on this object which returns the translation
 for the passed key.
 
-h3. Loading resources
-
-
-
-
-
 h3. Including CSS files
 
 When your Aloha plugin needs some CSS files, you should place them in
@@ -161,15 +227,13 @@ the @css@ folder of your plugin. Your plugin can load the CSS file as
 follows:
 
 <javascript filename="myplugin/lib/myplugin-plugin.js">
-define(
-['core/plugin', 'css!myplugin/css/myplugin.css'],
-function(Plugin) {
-    "use strict";
+define(['aloha/plugin', 'css!myplugin/css/myplugin.css'], function (Plugin) {
+    'use strict';
 	
 	// Add this stage css is loaded
 	
     return Plugin.create('myplugin', {
-        init: function() {
+        init: function () {
             // Executed on plugin initialization
         }
     });
@@ -204,27 +268,24 @@ Currently there are 2 different stages of Aloha plugins
 
 h3. Dependencies between plugins
 
-If a plugin A needs plugin B to work, you should not specify it as a dependency of plugin A in the +define()+ methode, as this will break without a meaningful error message to the user.
+If a plugin A needs plugin B to work, you should not specify it as a
+dependency of plugin A in the +define()+ methode, as this will break
+without a meaningful error message to the user.
 
 Let's see how to define a dependency to the @block@-Plugin:
 
 <javascript filename="pluginA/lib/pluginA-plugin.js">
-define(
-[ 'aloha/plugin' ],
-function( Plugin ) {
-    "use strict";
+define(['aloha/plugin'], function (Plugin) {
+    'use strict';
 
     return Plugin.create('pluginA', {
-    	
     	dependencies: ['pluginB'],
-
-        init: function() {
+        init: function () {
         	
             // Executed on pluginA initialization
         	// pluginB ist not available here 
         
-        	Aloha.require( 'pluginA/module', function( module ) {
-
+        	Aloha.require('pluginA/module', function (Module) {
         		// Use pluginB's module here
         	});
         }
@@ -232,10 +293,9 @@ function( Plugin ) {
 });
 </javascript>
 
-Here, we specify a dependency to another plugin using the +dependencies+ property of our @Plugin@. Then, the plugin manager makes sure that the dependent plugin is actually loaded, and outpus an error message if not.
-When everything is loaded, we can access a module from the other plugin by using the requireAloha() statement, as shown for the +pluginB+ in the example above.
-
-h3. Changelog
-
-* July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek
-* Sept 11, 2011: Adopted to current plugin lifecycle in sync with tests added resource loading by "Haymo Meran":credits#haymo
+Here, we specify a dependency to another plugin using the +dependencies+
+property of our @Plugin@. Then, the plugin manager makes sure that the
+dependent plugin is actually loaded, and outpus an error message if not.
+When everything is loaded, we can access a module from the other plugin
+by using the requireAloha() statement, as shown for the +pluginB+ in the
+example above.

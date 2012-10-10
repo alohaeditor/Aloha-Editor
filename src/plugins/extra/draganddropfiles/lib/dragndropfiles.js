@@ -39,10 +39,7 @@ function($, Plugin,DropFilesRepository) {
 	var jQuery = $,
 	    GENTICS = window.GENTICS,	Aloha = window.Aloha;
 	return Plugin.create('draganddropfiles', {
-		/**
-		 * Configure the available languages
-		 */
-		languages:['en','fr'],
+
 		/**
 		 * Default config, each editable may have his own stuff.
 		 */

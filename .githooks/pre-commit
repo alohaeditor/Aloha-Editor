@@ -28,3 +28,71 @@ checkDiff() {
 checkDiff "debugger"
 checkDiff "alert("
 checkDiff "console.log"
+
+# Run jslint on the files that are about to be committed.
+# Be careful: the file in the working tree will be linted, not the files
+# in the staging area.
+# Some files known to have jslint errors are excluded.
+
+exclude="^(some-random-string-29573"
+while read path; do exclude=$exclude"|"$path; done <<HERE
+src/lib/util/class.js
+src/lib/util/json2.js
+src/plugins/common/abbr
+src/plugins/common/block
+src/plugins/common/commands
+src/plugins/common/dom-to-xhtml
+src/plugins/common/highlighteditables
+src/plugins/common/image
+src/plugins/common/list
+src/plugins/common/table
+src/plugins/common/undo
+src/plugins/common/align
+src/plugins/common/characterpicker
+src/plugins/common/contenthandler
+src/plugins/common/format
+src/plugins/common/horizontalruler
+src/plugins/common/link
+src/plugins/common/paste
+src/plugins/common/ui
+src/plugins/extra/attributes
+src/plugins/extra/cite
+src/plugins/extra/flag-icons
+src/plugins/extra/headerids
+src/plugins/extra/linkbrowser
+src/plugins/extra/metaview
+src/plugins/extra/proxy
+src/plugins/extra/speak
+src/plugins/extra/zemanta
+src/plugins/extra/browser
+src/plugins/extra/comments
+src/plugins/extra/formatlesspaste
+src/plugins/extra/hints
+src/plugins/extra/linkchecker
+src/plugins/extra/numerated-headers
+src/plugins/extra/ribbon
+src/plugins/extra/toc
+src/plugins/extra/captioned-image
+src/plugins/extra/draganddropfiles
+src/plugins/extra/googletranslate
+src/plugins/extra/imagebrowser
+src/plugins/extra/listenforcer
+src/plugins/extra/profiler
+src/plugins/extra/sourceview
+src/plugins/extra/wai-lang
+src/lib/vendor
+HERE
+exclude=$exclude")"
+
+for FILE in `git diff-index --name-only HEAD -- | egrep '*.js' | egrep -v $exclude`; do
+
+	jslint --regexp --continue --nomen --plusplus --predef=define --bitwise --browser --vars --eqeq $FILE
+
+	if [ $? -ne 0 ]; then
+		echo "Commit aborted."
+		echo ""
+		echo "If you know what you are doing you can add an exclusion in .git/hooks/pre-commit"
+		echo "or commit with --no-verify. But take care not to break the build."
+		exit 1
+	fi
+done
