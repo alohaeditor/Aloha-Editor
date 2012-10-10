@@ -119,7 +119,7 @@ function convertToConcrete(character, ele, leVal, currentOffset) {
 }
 
 
-function insertFunc(ele, leVal, offset) {
+function insertFunc(ele, leVal, offset, dummyName) {
     console.log('Inside insertFunc')
     var currentNode = window.getSelection().focusNode;
     console.log(currentNode.className)
@@ -143,7 +143,7 @@ function insertFunc(ele, leVal, offset) {
     var newSpan = document.createElement('span');
     newSpan.style.display="inline";
     newSpan.style.color="#999999";
-    var newText = document.createTextNode('func');
+    var newText = document.createTextNode(dummyName);
     newSpan.appendChild(newText);
 
     var postEle = null;
@@ -371,10 +371,13 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     var ele = $('#'+evt.currentTarget.id);
     var leVal = getFullStr(mathEditBox[0].childNodes);
     // console.log('onTexChange Checkpoint 0.1 '+leVal)
-    if(leVal == "Enter your math notation here") {
-        inChange = false;
-        return;
+
+    console.log("HELO");
+    if(currentNode.length == 1 && currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
+        currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
+        currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
     }
+    console.log(currentNode);
 
     // console.log('onTexChange Checkpoint 1')
 
@@ -383,7 +386,6 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         console.log(Inserted[i].open.parentNode);
         console.log(Inserted[i].close.parentNode);
         if(Inserted[i].open.parentNode == null || Inserted[i].close.parentNode == null) {
-            console.log('removing a');
             if(Inserted[i].open.parentNode != null) {
                 concretize(Inserted[i].open);
             } 
@@ -801,7 +803,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                 insertBraces(mathEditBox[0], leVal, offset);
                 break;
             case('\\'):
-                insertFunc(mathEditBox[0], leVal, offset);
+                insertFunc(mathEditBox[0], leVal, offset, 'func');
                 break;
         }
     }
@@ -973,8 +975,20 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       /* If the math-editor is empty then it's replaced w/ default text */
       if (equation == "&nbsp\;") {
         mathEditorContainer.find(".math-source").append('<span class="math-source-hint-text">Enter your math notation here</span>');
+        /*
+        var newSpan = document.createElement('span');
+        newSpan.style.display="inline";
+        newSpan.style.color="#999999";
+        var newText = document.createTextNode("Enter your math notation here");
+        newSpan.appendChild(newText);
+        mathEditorContainer.find(".math-source")[0].appendChild(newSpan);
+        */
+
+        //insertFunc(mathEditorContainer.find(".math-source")[0], '', 0, "Enter your math notation here");
+
         console.log("Inserting the cursor at the beginning of the editor");
         placeCaretAtBeginning($(".math-source").get(0));
+
         //GENTICS.Utils.Dom.setCursorInto( mathEditorContainer.find(".math-source")[0] );
       } 
       // Not sure if this case will ever be hit
@@ -984,6 +998,8 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         console.log("Inserting the cursor at the end of the editor");
         placeCaretAtEnd($(".math-source").get(0));
       }
+      console.log("Current contents of container are:");
+      console.log($(".math-source").get(0));
       /*if ( $("#cheat-sheet").css("display") != 'none' ) $("#cheat-sheet-activator").attr("checked",true);
       $("#cheat-sheet-wrap").slideUp("fast", function(){
         $(this).show();
