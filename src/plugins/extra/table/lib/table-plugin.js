@@ -131,15 +131,27 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                 editable.obj.find('table').each(function(){
                     prepareTable(plugin, jQuery(this));
                 });
-                editable.obj.bind('keydown', 'tab', function(e){
+                editable.obj.bind('keydown', 'tab shift+tab', function(e){
                     var $cell = jQuery(
                         Aloha.Selection.rangeObject.markupEffectiveAtStart)
                         .closest('td,th');
                     if ($cell.length > 0){
-                        if ($cell.is('td:last-child,th:last-child')) {
-                            var nextrow = $cell.closest('tr').next('tr');
+                        var next = function(ob, filter){
+                            if (e.shiftKey){
+                                return ob.prev(filter);
+                            } else {
+                                return ob.next(filter);
+                            }
+                        }
+                        var border = 'td:last-child,th:last-child';
+                        if (e.shiftKey){
+                            border = 'td:first-child,th:first-child';
+                        }
+                        if ($cell.is(border)) {
+                            var nextrow = next($cell.closest('tr'), 'tr');
                             if (nextrow.length > 0){
-                                var nextcell = jQuery(nextrow[0].cells[0]);
+                                var offset = e.shiftKey ? nextrow[0].cells.length-1 : 0;
+                                var nextcell = jQuery(nextrow[0].cells[offset]);
                                 placeCursor(nextcell);
                             } else {
                                 // Last column, last row
@@ -151,6 +163,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                             }
                         } else {
                             var nextcell = $cell.next('td,th');
+                            var nextcell = next($cell, 'td,th');
                             placeCursor(nextcell);
                         }
                     }
