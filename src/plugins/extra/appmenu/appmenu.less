@@ -1,17 +1,19 @@
 /* ---------------------------------------- */
 
+@lightGray: #e5e5e5;
+
 .tool-bar {
   width: 100%;
   background-color: whiteSmoke;
-  border-top: 1px solid #E5E5E5;
-  border-bottom: 1px solid #E5E5E5;
+  border-top: 1px solid @lightGray;
+  border-bottom: 1px solid @lightGray;
   //min-height: 30px;
   padding: 5px;
   padding-left: 70px;
   padding-right: 90px;
   box-shadow: 0 2px 3px 0 #ccc;
   
-  &> .menu-item {
+  > .menu-item {
     vertical-align: middle;
     display: inline-block;
     opacity: 0.70;
@@ -26,18 +28,18 @@
       box-shadow: 0 1px 1px rgba(0, 0, 0, .1);
     }
     &.disabled.selected { border: 1px solid transparent; }
-    &.checked { background-color: #eee; opacity: 1.0; border: 1px solid #ccc; }
-    &> .checked-icon { display: none; }
+    &.checked { background-color: @lightGray; opacity: 1.0; border: 1px solid #ccc; }
+    > .checked-icon { display: none; }
 
-    &> .accel { display: none; }
-    &> .tool-tip { display: none; }
-    &> .menu-icon { display: inline-block; }
-    &> .text {
+    > .accel { display: none; }
+    > .tool-tip { display: none; }
+    > .menu-icon { display: inline-block; }
+    > .text {
       display: inline-block;
       font-weight: bold;
     }
     &.icon > .text { display: none; }
-    &> .submenu {
+    > .submenu {
       display: inline-block;
       position: relative;
       padding-left: 3px;
@@ -68,8 +70,8 @@
   
   &.checked.icon .checked-icon { display: none; }
   
-  &> .accel { position: absolute; right: 5px; }
-  &> .submenu {
+  > .accel { position: absolute; right: 5px; }
+  > .submenu {
     position: absolute;
     font-size: 70%;
     right: 10px;
@@ -104,7 +106,8 @@
 .menu {
   position: fixed;
   background-color: white;
-  border: 1px solid black;
+  border: 1px solid @lightGray;
+  border: 1px solid rgba(0, 0, 0, .2);
   -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   padding: 6px 0;
@@ -112,12 +115,12 @@
   z-index: 1000;
 
 
-  &> .menu-item {
+  > .menu-item {
     padding: 6px 7em 6px 30px;
     cursor: default;
   }
 
-  &> .checked > .checked-icon {
+  > .checked > .checked-icon {
     position: absolute;
     left: 3px;
     top: 40%;
@@ -133,12 +136,12 @@
   padding-left: 70px;
   padding-right: 90px;
 
-  &> .menu-button {
+  > .menu-button {
     display: inline; padding: 6px 7px;
 
-    &> .text { display: inline; }
-    &> .submenu { display: none; }
-    &> .menu-icon { display: none; }
+    > .text { display: inline; }
+    > .submenu { display: none; }
+    > .menu-icon { display: none; }
   }
 }
 
@@ -160,7 +163,13 @@
 }
 
 
-.menu-item .custom-heading::before {
-  position: static;
-  margin-right: 0.5em;
+.menu.custom-headings {
+  padding: 0;
+  .menu-item {
+    border-bottom: 1px solid @lightGray;
+    &::before {
+      position: static;
+      margin-right: 0.5em;
+    }
+  }
 }

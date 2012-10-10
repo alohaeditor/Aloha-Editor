@@ -57,7 +57,7 @@ define( [
 	Surface,
 	Button,
 	ToggleButton,
-	Bubble,
+	Bubbler,
 	i18n,
 	i18nCore,
 	console
@@ -393,16 +393,26 @@ define( [
 				}
 			} );
 			
-			var displayer = function($el, $bubble) {
-				var href = $el.attr('href');
-				var a = jQuery('<a target="_window"></a>').appendTo($bubble);
-				a.attr('href', href);
-				a.append(href); // Put the URL in the body
-				$bubble.append(' - ');
-				$bubble.append('<a href="#">Change</a>').on('click', function() {that.showModalDialog($el, null)});
-				
-			};
-			Bubble(jQuery(link), displayer);
+			new Bubbler(this._createDisplayer.bind(this), jQuery(link));
+		},
+
+		_createDisplayer: function($el, $bubble) {
+			var that = this;
+			var href = $el.attr('href');
+			var a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble);
+			a.attr('href', href);
+			a.append(href); // Put the URL in the body
+			$bubble.append(' - ');
+			var change = jQuery('<a href="javascript:void">Change</a>');
+			change.appendTo($bubble).on('mousedown', function() {
+				var dialog = that.showModalDialog($el);
+				dialog.on('dialogclose', function() {
+					a.attr('href', $el.attr('href'));
+					a.contents().remove();
+					a.append($el.attr('href'));
+				});
+			});
+			
 		},
 
 		/**
@@ -597,7 +607,7 @@ define( [
      * an existing one. callback is passed 1 non-null argument
      * If the dialog is cancelled.
      */
-    showModalDialog: function ( $a, callback ) {
+    showModalDialog: function ( $a ) {
       var root = Aloha.activeEditable.obj;
       var dialog = jQuery('<div class="link-chooser">');
       var select = jQuery('<select class="link-list" size="5"></select>');
@@ -641,18 +651,16 @@ define( [
 			var onOk = function() {
 				// Validate and save the href if something is selected.
 				if(select.val()) {
-				  $a.attr('href',  select.val());
+					$a.attr('href',  select.val());
 					jQuery(this).dialog('close');
 				}
 			};
 			
 			var onCancel = function() {
-			  cancelled = true;
 				jQuery(this).dialog('close');
 			};
 			
 			var onClose = function() {
-			  callback(cancelled);
 			};
 
       dialog.dialog({
@@ -661,8 +669,8 @@ define( [
 					'OK': onOk,
 					'Cancel': onCancel
         },
-        close: onClose
       });
+      return dialog;
     },
     
 		/**
@@ -685,7 +693,7 @@ define( [
 			// do not nest a link inside a link
 			var isLink = this.findLinkMarkup( range );
 			if (isLink) {
-				this.showModalDialog(jQuery(isLink), function(){console.log('PHIL: callback');});
+				this.showModalDialog(jQuery(isLink));
 				return;
 			}
 			
@@ -730,7 +738,7 @@ define( [
         that.hrefChange();
       }; // callback
 
-			this.showModalDialog(newLink, callback);
+			this.showModalDialog(newLink);
 		},
 
 		/**
@@ -831,6 +839,10 @@ define( [
 			
 			if (foundMarkup) {
 				that.toggleLinkScope(true);
+				
+				// Pop up a bubble
+				jQuery(foundMarkup).trigger('open', true);
+
 
 				// now we are ready to set the target object
 				that.hrefField.setTargetObject(foundMarkup, 'href');

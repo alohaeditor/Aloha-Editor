@@ -7,6 +7,9 @@
     <style type="text/css">
 .aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
 .aloha-toolbar { display: none !important; }    
+
+/* Add some padding on the top so the toolbar has room to float in */
+.document { margin: 3em; }
     </style>
 	<script language="javascript">
 		Aloha = window.Aloha || {};
@@ -101,10 +104,10 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
 	</style>
 </head>
 <body>
-  <h1>Figures in Aloha</h1>
-	<div class="document">
+  <div class="document">
+    <h1>Figures in Aloha</h1>
 		<p>This example uses the figure plugin.</p>
-		<p>You can move a figure around and eventually should be able to create/paste new ones in.</p>
+		<p>You can move a figure around and <a href="http://cnx.org">link in original</a> eventually should be able to create/paste new ones in.</p>
     <figure class="figure">
       <img src="src/test/AlohaEditorLogo.png"/>
       <figcaption>This is a caption on a figure</figcaption>
