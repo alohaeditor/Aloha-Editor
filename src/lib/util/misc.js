@@ -35,7 +35,9 @@ define([], function () {
 	 * against str.
 	 */
 	function anyRx(rxs, str) {
-		for (var i = 0, len = rxs.length; i < len; i++) {
+		var i,
+		    len;
+		for (i = 0, len = rxs.length; i < len; i++) {
 			if (rxs[i].test(str)) {
 				return true;
 			}
@@ -45,5 +47,5 @@ define([], function () {
 
 	return {
 		anyRx: anyRx
-	}
+	};
 });

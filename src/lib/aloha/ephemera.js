@@ -103,17 +103,11 @@ define([
 			'TABLE.contenteditable': true,
 			'TABLE.contentEditable': true
 		},
-		attrRxs: [
-			/^(?:nodeIndex|sizcache|sizset|jquery)[\w\d]*$/i
-		],
+		attrRxs: [/^(?:nodeIndex|sizcache|sizset|jquery)[\w\d]*$/i],
 		pruneFns: []
 	};
 
 	var commonClsSubstr = 'aloha-';
-
-	if (Aloha.settings.ephemera) {
-		ephemera(Aloha.settings.ephemera);
-	}
 
 	/**
 	 * Checks whether the given classes contain the substring common to
@@ -123,12 +117,10 @@ define([
 	 * otherwise have gained.
 	 */
 	function checkCommonSubstr(clss) {
-		for (var i = 0, len = clss.length; i < len; i++) {
-			if (-1 === clss[i].indexOf(commonClsSubstr)){
-				console.warn('Class "' + clss[i] + '" was set to be ephemeral,'
-							 + 'which hurts peformance.'
-							 + ' Add the common substring "' + commonClsSubstr
-							 + '" to the class to fix this problem.');
+		var i, len;
+		for (i = 0, len = clss.length; i < len; i++) {
+			if (-1 === clss[i].indexOf(commonClsSubstr)) {
+				console.warn('Class "' + clss[i] + '" was set to be ephemeral,' + 'which hurts peformance.' + ' Add the common substring "' + commonClsSubstr + '" to the class to fix this problem.');
 				commonClsSubstr = '';
 			}
 		}
@@ -155,7 +147,10 @@ define([
 		var clss = Array.prototype.slice.call(arguments);
 		Maps.fillKeys(ephemeraMap.classMap, clss, true);
 		checkCommonSubstr(clss);
-		PubSub.pub('aloha.ephemera.classes', {ephemera: ephemeraMap, newClasses: clss});
+		PubSub.pub('aloha.ephemera.classes', {
+			ephemera: ephemeraMap,
+			newClasses: clss
+		});
 	}
 
 	/**
@@ -167,9 +162,12 @@ define([
 	function attributes() {
 		var attrs = Array.prototype.slice.call(arguments);
 		Maps.fillKeys(ephemeraMap.attrMap, attrs, true);
-		PubSub.pub('aloha.ephemera.attributes', {ephemera: ephemeraMap, newAttributes: attrs});
+		PubSub.pub('aloha.ephemera.attributes', {
+			ephemera: ephemeraMap,
+			newAttributes: attrs
+		});
 	}
-	
+
 	/**
 	 * Merges a map containing values to identify ephemeral content into
 	 * a global registry.
@@ -199,14 +197,14 @@ define([
 	 * * classes specified by classMap will be removed
 	 * * attributes specified by attrMap or attrRxs will be removed
 	 * * functions specified by pruneFns will be called as the DOM tree
-     *   is descended into (pre-order), with each node (element, text,
-     *   etc.) as a single argument. The function is free to modify the
-     *   element and return it, or return a new element which will
-     *   replace the given element in the pruned tree. If null or
-     *   undefined is returned, the element will be removed from the
-     *   tree. As per contract of Maps.walkDomInplace, it is allowed to
-     *   insert/remove children in the parent node as long as the given
-     *   node is not removed.
+	 *   is descended into (pre-order), with each node (element, text,
+	 *   etc.) as a single argument. The function is free to modify the
+	 *   element and return it, or return a new element which will
+	 *   replace the given element in the pruned tree. If null or
+	 *   undefined is returned, the element will be removed from the
+	 *   tree. As per contract of Maps.walkDomInplace, it is allowed to
+	 *   insert/remove children in the parent node as long as the given
+	 *   node is not removed.
 	 *
 	 * Also see classes() and attributes().
 	 *
@@ -220,7 +218,7 @@ define([
 				$.extend(ephemeraMap.classMap, emap.classMap);
 			}
 			if (emap.attrMap) {
-				$.extend(ephemeraMap.attrMap , emap.attrMap);
+				$.extend(ephemeraMap.attrMap, emap.attrMap);
 			}
 			if (emap.attrRxs) {
 				ephemeraMap.attrRxs = ephemeraMap.attrRxs.concat(emap.attrRxs);
@@ -228,7 +226,10 @@ define([
 			if (emap.pruneFns) {
 				ephemeraMap.pruneFns = ephemeraMap.pruneFns.concat(emap.pruneFns);
 			}
-			PubSub.pub('aloha.ephemera', {ephemera: ephemeraMap, newEphemera: emap});
+			PubSub.pub('aloha.ephemera', {
+				ephemera: ephemeraMap,
+				newEphemera: emap
+			});
 		}
 		return ephemeraMap;
 	}
@@ -299,10 +300,12 @@ define([
 	function pruneMarkedAttrs(elem) {
 		var $elem = $(elem);
 		var data = $elem.attr('data-aloha-ui-attr');
+		var i;
+		var attrs;
 		$elem.removeAttr('data-aloha-ui-attr');
 		if (typeof data === 'string') {
-			var attrs = Strings.words(data);
-			for (var i = 0; i < attrs.length; i++) {
+			attrs = Strings.words(data);
+			for (i = 0; i < attrs.length; i++) {
 				$elem.removeAttr(attrs[i]);
 			}
 		}
@@ -314,9 +317,7 @@ define([
 	 * See Ephemera.ephemera() for an explanation of attrMap and attrRxs.
 	 */
 	function isAttrEphemeral(elem, attrName, attrMap, attrRxs) {
-		return attrMap[attrName]
-			|| Misc.anyRx(attrRxs, attrName)
-			|| attrMap[elem.nodeName + '.' + attrName];
+		return attrMap[attrName] || Misc.anyRx(attrRxs, attrName) || attrMap[elem.nodeName + '.' + attrName];
 	}
 
 	/**
@@ -325,9 +326,11 @@ define([
 	 */
 	function pruneEmapAttrs(elem, emap) {
 		var $elem = null,
-		    attrs = Dom.attrNames(elem),
-		    name;
-		for (var i = 0, len = attrs.length; i < len; i++) {
+			attrs = Dom.attrNames(elem),
+		    name,
+		    i,
+		    len;
+		for (i = 0, len = attrs.length; i < len; i++) {
 			name = attrs[i];
 			if (isAttrEphemeral(elem, name, emap.attrMap, emap.attrRxs)) {
 				$elem = $elem || $(elem);
@@ -359,8 +362,7 @@ define([
 			}
 
 			// Ephemera.markWrapper() and Ephemera.markFiller()
-			if (-1 !== Arrays.indexOf(classes, 'aloha-ui-wrapper') ||
-				-1 !== Arrays.indexOf(classes, 'aloha-ui-filler')) {
+			if (-1 !== Arrays.indexOf(classes, 'aloha-ui-wrapper') || -1 !== Arrays.indexOf(classes, 'aloha-ui-filler')) {
 				Dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
 				$.removeData(elem);
 				return false;
@@ -429,10 +431,15 @@ define([
 	 */
 	function prune(elem, emap) {
 		emap = emap || ephemeraMap;
+
 		function pruneStepClosure(node) {
 			return pruneStep(emap, pruneStepClosure, node);
 		}
 		return pruneStepClosure(elem)[0];
+	}
+
+	if (Aloha.settings.ephemera) {
+		ephemera(Aloha.settings.ephemera);
 	}
 
 	return {
