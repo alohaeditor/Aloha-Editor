@@ -311,8 +311,8 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     // Gbenga's variables
     var mathEditBox = mathEditorContainer.find(".math-source");
 
-    console.log('Math edit box:')
-    console.log(mathEditBox)
+    // console.log('Math edit box:')
+    // console.log(mathEditBox)
 
     var currentNode = window.getSelection().focusNode;
 
@@ -795,7 +795,7 @@ function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction
    /* Generates the math editor */ 
     GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $("#content"));
 
-    console.log("Editable obj is: " + $( Aloha.activeEditable.obj ).attr("id"));
+    // console.log("Editable obj is: " + $( Aloha.activeEditable.obj ).attr("id"));
     console.log("ID is: " + newElId);
     if(equation == '' || equation == "&nbsp\;") {
         MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, mathJaxElId, function() { 
@@ -814,7 +814,7 @@ function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction
         } 
         else {
 
-            MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
+            MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, mathJaxElId, function() { 
                    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(mathJaxElId)[0],equation]);
             }]);
         }
@@ -887,9 +887,9 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       // Changes status of math button to selected
       $('button[title="Math"]').addClass("selected");
     
-      console.log("Building the math editor");
+      // console.log("Building the math editor");
       var mathEditor = buildMathEditor();
-      console.log("Delimiter is: " + openDelimiter);
+      // console.log("Delimiter is: " + openDelimiter);
     // pasteHtmlAtCaret('<span id="" class="MathBox selected MathBoxNew" contenteditable="false">' + exText + '</span>');
     // Generates and inserts a new math equation container
      var newElId = generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj);
@@ -900,7 +900,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       // Inserts the math editor
       mathEditorContainer.prepend(mathEditor);
 
-      console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
+      // console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
       // Sets the radio button depending on the saved global preferences. Optional if Kathi wants this feature
       if (aol == 'radio_latex')
         mathEditorContainer.find("#radio_latex").attr('checked','checked');
@@ -929,11 +929,15 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       /* If the math-editor is empty then it's replaced w/ default text */
       if (equation == "&nbsp\;") {
         mathEditorContainer.find(".math-source").append('<span class="math-source-hint-text">Enter your math notation here</span>');
+        console.log("Inserting the cursor at the beginning of the editor");
+        placeCaretAtBeginning($(".math-source").get(0));
         //GENTICS.Utils.Dom.setCursorInto( mathEditorContainer.find(".math-source")[0] );
       } 
+      // Not sure if this case will ever be hit
       else {
-        /* Appends the equation to the text in the editor */
+        /* Appends the equation to the text in the editor and sets the cursor at the beginning of the beginning of the editor */
         mathEditorContainer.find(".math-source").append(equation);
+        console.log("Inserting the cursor at the end of the editor");
         placeCaretAtEnd($(".math-source").get(0));
       }
       /*if ( $("#cheat-sheet").css("display") != 'none' ) $("#cheat-sheet-activator").attr("checked",true);
@@ -1001,17 +1005,17 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         if (text == '') {
             $(".math-editor").find(".math-source").append("&nbsp\;");
         }
-        console.log("Modified1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
+        // console.log("Modified1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), mathJaxElId);
        });
       $(".math-editor").find(".math-source-wrap").on('DOMNodeInserted', function(e) {
-        console.log("Inserted1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
+        // console.log("Inserted1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), mathJaxElId);
     });
   }
   function mathEditorRemove(override) {
      try {
-      console.log("mathEditorRemove, override is: " + override);
+      // console.log("mathEditorRemove, override is: " + override);
       // If the new math element is empty then unselect and unhover it
       $(".MathBox").removeClass("selected");
       $(".MathBox").removeClass("hovered");
@@ -1224,8 +1228,12 @@ function mathClick(mathEditorContainer, e) {
     });*/
     e.stopPropagation();
   }
-
+  /// Clears the editor help text when a user clicks on the math editor editable
   $(".math-source").live("click", function(e){
+    $(this).find(".math-source-hint-text").replaceWith("&nbsp\;");
+  });
+  // Clears the editor help text when a user types in the math editor
+  $(".math-source").live("DOMCharacterDataModified", function(e){
     $(this).find(".math-source-hint-text").replaceWith("&nbsp\;");
   });
 // Appends and positions the arrow of the math-editor pop-up that points to the current equation
@@ -1316,11 +1324,33 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
         var sel = window.getSelection();
         sel.removeAllRanges();
         sel.addRange(range);
+        console.log("In the if case");
     } else if (typeof document.body.createTextRange != "undefined") {
         var textRange = document.body.createTextRange();
         textRange.moveToElementText(el);
         textRange.collapse(false);
         textRange.select();
+        console.log("in the else if case");
+    }
+  }
+
+  function placeCaretAtBeginning(el) { // From Tim Down at http://stackoverflow.com/questions/4233265/contenteditable-set-caret-at-the-end-of-the-text-cross-browser
+    el.focus();
+    if (typeof window.getSelection != "undefined"
+            && typeof document.createRange != "undefined") {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(true);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        console.log("In the if case");
+    } else if (typeof document.body.createTextRange != "undefined") {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(el);
+        textRange.collapse(true);
+        textRange.select();
+        console.log("in the else if case");
     }
   }
 
@@ -1388,7 +1418,7 @@ function mathLeave(mathEditorContainer,e) {
       $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
       $(this).children('.canvas').removeClass("canvas-hovered");
     });*/
-    console.log("Entering math");
+    // console.log("Entering math");
     mathEditorContainer.addClass("hovered");
     // If the length is zero then add the original text back
     if(!mathEditorContainer.find(".math-editor").length) {
@@ -1537,6 +1567,7 @@ function mathLeave(mathEditorContainer,e) {
                     parsedJax = true;
                     MathJax.Hub.Queue(["Typeset",MathJax.Hub, null, function()
                     { 
+                        // Wraps each mathjax element
                         $(MathJax.Hub.getAllJax()).each(function()
                         { 
                             console.log(this.originalText);
@@ -1574,8 +1605,7 @@ function mathLeave(mathEditorContainer,e) {
                                 console.log('JAX: '+this.inputJax);
 
                                 cntEq++;
-                            }
-                            
+                            }                            
                         }); 
                     }]);
                 })();
