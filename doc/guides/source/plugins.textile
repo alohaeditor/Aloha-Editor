@@ -106,4 +106,4 @@ Plugins in the @extra@ directory:
 
 
 Community Plugins:
-* "colorselector":https://github.com/mihaisimi/Aloha-Plugin-Colorselector - add font color or background color
+* "colorselector":https://github.com/deliminator/Aloha-Plugin-Colorselector - add font color or background color

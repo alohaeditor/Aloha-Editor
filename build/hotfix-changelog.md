@@ -7,4 +7,7 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
+- **BUG**: All repositories have been queried even if a target repository
+
+	has been spezified. Now only the spezified repository is queried.
 

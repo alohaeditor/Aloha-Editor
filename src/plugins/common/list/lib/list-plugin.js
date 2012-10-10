@@ -95,15 +95,11 @@ define([
 		});
 		return found;
 	}
+
 	/**
 	 * Register the ListPlugin as Aloha.Plugin
 	 */
 	var ListPlugin = Plugin.create('list', {
-		/**
-		 * Configure the available languages
-		 */
-		languages: ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it'],
-
 		/**
 		 * default button configuration
 		 */
@@ -223,23 +219,6 @@ define([
 				}
 
 			}
-		},
-		
-		/**
-		 * Make the given jQuery object (representing an editable) clean for saving
-		 * Find all li tags and remove editing attributes
-		 * @param obj jQuery object to make clean
-		 * @return void
-		 */
-		makeClean: function (obj) {
-			// find all li tags
-			obj.find('li').each(function () {
-				// Remove IE attributes
-				jQuery(this).removeAttr('hidefocus');
-				jQuery(this).removeAttr('hideFocus');
-				jQuery(this).removeAttr('tabindex');
-				jQuery(this).removeAttr('tabIndex');
-			});
 		},
 
 		/**
@@ -384,7 +363,7 @@ define([
 
 				// transform the ul into an ol
 				transformExistingListAndSubLists(domToTransform, 'ol');
-
+				
 				// merge adjacent lists
 				this.mergeAdjacentLists(jQuery(domToTransform));
 			} else if (nodeName == 'ol' && !ordered) {
@@ -506,6 +485,7 @@ define([
 			// refresh the selection
 			this.refreshSelection();
 		},
+
 
 		/**
 		 * Indent the selected list items by moving them into a new created, nested list

@@ -8,7 +8,8 @@ To use the Aloha-Editor UI, the UI plugin must be added to the list of
 plugins that are to be loaded. For example:
 
 <html>
-<script src="aloha.js" data-aloha-plugins="common/ui,common/format"></script>
+<script src="aloha.js"
+        data-aloha-plugins="common/ui,common/format"></script>
 </html>
 
 Most plugins depend on the UI plugin and JavaScript errors will occur if

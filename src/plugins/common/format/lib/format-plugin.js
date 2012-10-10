@@ -147,11 +147,6 @@ define('format/format-plugin', [
 	 */
 	return Plugin.create('format', {
 		/**
-		 * Configure the available languages
-		 */
-		languages: ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'],
-
-		/**
 		 * default button configuration
 		 */
 		config: [ 'b', 'i', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],

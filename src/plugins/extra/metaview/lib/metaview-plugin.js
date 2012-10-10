@@ -40,7 +40,6 @@ define([
 	jQuery
 ) {
 	'use strict';
-
 	var GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
@@ -50,12 +49,6 @@ define([
 		},
 		
 		config: [ 'metaview' ],
-		
-		/**
-		 * Configure the available languages
-		 */
-		languages: ['en', 'de'],
-
 		/**
 		 * Initialize the plugin
 		 */

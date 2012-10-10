@@ -382,6 +382,10 @@
 			return jQueryThatWasPassedToUs || jQuery;
 		});
 
+		// Initialize this early so that the user doesn't have to use
+		// Aloha.ready().
+		Aloha.jQuery = jQueryThatWasPassedToUs;
+
 		define('aloha', [
 			'aloha/jquery',
 			'util/json2',
@@ -406,8 +410,7 @@
 			'aloha/contenthandlermanager'
 		], function(jQuery) {
 
-			// Provide Aloha.jQuery for compatibility with old implementations
-			// that which expect it to be there.
+			// Set it again in case jQuery was loaded asynchronously.
 			Aloha.jQuery = jQuery;
 
 			// Some core files provide default settings in Aloha.defaults.
