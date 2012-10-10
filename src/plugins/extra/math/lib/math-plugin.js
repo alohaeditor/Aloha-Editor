@@ -1605,16 +1605,18 @@ function mathLeave(mathEditorContainer,e) {
                         $(MathJax.Hub.getAllJax()).each(function()
                         { 
                             console.log("Initializing... "+this.inputID);
-                            var elfr = $('#'+this.inputID+'-Frame'),
-                                el = $('#'+this.inputID),
-                                elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0),
+                            var elfr = $('#'+this.inputID+'-Frame');
+                            var el = $('#'+this.inputID);
+                            var elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0);
+                            var outerEqWrapper = $('<span id="'+wrapPrefix+cntEq+'" class="MathBox MathBoxNew"/>').insertBefore(elpr);
 
-                                eqWrapper = $('<span id="'+wrapPrefix+cntEq+'" class="MathBox MathBoxNew"/>').insertBefore(elpr)
-                                    .append(elpr).append(elfr).append(el)
-                                    .data('equation', this.originalText);
+                            var eqWrapper = $('<span id="sub'+wrapPrefix+cntEq+'"/>').append(elpr).append(elfr).append(el)
+                                .data('equation', this.originalText);
+                            outerEqWrapper.append(eqWrapper);
                            console.log("elfr is: " + elfr) ;
                            console.log("el is: " + el );
                            console.log("elpr is: " + elpr);
+                            //MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(this.inputID)[0],"\\displaystyle{"+this.originalText+"}"]);
                             
                            cntEq++;
                         }); 
