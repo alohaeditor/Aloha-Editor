@@ -75,9 +75,24 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
         return tr;
     }
 
+    // Re-implementing this, cause Aloha.Selection gets out of sync
+    // and causes weirdness.
+    getSelection = (function(window, document){
+        if (window.getSelection) {
+            return window.getSelection;
+        } else if (document.getSelection) {
+            return document.getSelection;
+        }
+        return function(){ throw "getSelection not implemented"; }
+    })(window, document);
+
     function getActiveCell(){
-        var range = Aloha.Selection.getRangeObject();
-        var cell = jQuery(range.commonAncestorContainer);
+        var selection = getSelection();
+        if (selection.rangeCount == 0){
+            return null;
+        }
+        var range = selection.getRangeAt(0);
+        var cell = jQuery(range.commonAncestorContainer).closest('td,th');
         if (cell.parents('.aloha-editable table').length == 0){
             return null;
         }
