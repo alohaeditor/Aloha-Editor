@@ -361,6 +361,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     var currentNode = window.getSelection().focusNode;
 
     if(currentNode.className == "math-source") {
+        console.log("Going to child nodes");
         currentNode = currentNode.childNodes[0];
     }
 
@@ -371,10 +372,11 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     }
     var range = window.getSelection().getRangeAt(0);
     var leVal = getFullStr(mathEditBox[0].childNodes);
-    var offset = range.startOffset+(leVal.length-currentLength);
+    var offset = range.startOffset+(leVal.length-currentLength)-1;
     var ch = currentNode.textContent[offset];
     var ele = $('#'+evt.currentTarget.id);
     console.log(currentNode);
+    console.log('CHANGE IN LENGTH IS '+(leVal.length-currentLength));
     console.log('CURRENT OFFSET IS ['+range.startOffset+'->'+range.endOffset+']');
     console.log('SO CH IS '+ch);
     console.log('CURRENT LENGTH '+currentLength);
