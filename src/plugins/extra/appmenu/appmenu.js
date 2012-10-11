@@ -318,7 +318,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
           return $('.menu').hide();
         });
         if (this.action) {
-          return this.el.on('click', that.action);
+          return this.el.on('click.appmenu.action', that.action);
         }
       };
 
@@ -335,12 +335,12 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         this.isDisabled = isDisabled;
         this._cssToggler(this.isDisabled, 'disabled');
         if (this.isDisabled && this.action) {
-          this.el.off('click', this.action);
+          this.el.off('click.appmenu.action');
           if (this.accel) {
             return this.el.off('keydown.appmenu', this.accel, this.action);
           }
         } else if (!this.isDisabled && this.action) {
-          this.el.on('click', this.action);
+          this.el.off('click.appmenu.action').on('click.appmenu.action', this.action);
           if (this.accel) {
             return this.el.on('keydown.appmenu', this.accel, this.action);
           }

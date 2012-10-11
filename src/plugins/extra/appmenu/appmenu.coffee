@@ -218,14 +218,18 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
   
     setAction: (@action) ->
       that = @
-      @el.off 'click' # Unbind if an event was set
+      # Unbind any old events
+      @el.off 'click'
+      # Bind a handler that hides the old menu, and prevents default action
       @el.on 'click', (evt) ->
         evt.preventDefault()
         # TODO: Hide all menus
         $('.menu').hide()
 
+      # If an action was provided, set click handler, but namespace it for
+      # easy removal
       if @action
-        @el.on 'click', that.action
+        @el.on 'click.appmenu.action', that.action
   
     setChecked: (@isChecked) ->
       @_cssToggler @isChecked, 'checked'
@@ -237,11 +241,11 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
     setDisabled: (@isDisabled) ->
       @_cssToggler @isDisabled, 'disabled'
       if @isDisabled and @action
-        @el.off 'click', @action
+        @el.off 'click.appmenu.action'
         if @accel
           @el.off 'keydown.appmenu', @accel, @action
       else if not @isDisabled and @action
-        @el.on 'click', @action
+        @el.off('click.appmenu.action').on('click.appmenu.action', @action)
         if @accel
           @el.on 'keydown.appmenu', @accel, @action
   
@@ -363,8 +367,6 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
   
     _addEvents: () ->
       that = @
-      # Open the menu on click
-  
       # On mouseover close all other menus (except submenu)
       @el.on 'mouseenter', (evt) ->
         for openMenu in $('.menu')
