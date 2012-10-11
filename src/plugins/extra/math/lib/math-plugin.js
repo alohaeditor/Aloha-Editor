@@ -1,9 +1,51 @@
+  
+  var aolDictionary = { };
+  var cntEq = 0;
+  function parentOfParent(ele) {
+      if(ele == null) return null;
+      var tmp = ele.parentNode;
+      if(tmp == null) return null;
+      return tmp.parentNode;
+  }
+
+  function existingEquationConfig() {
+        $(MathJax.Hub.getAllJax()).each(function()
+        { 
+            console.log(this.originalText);
+            var pp = parentOfParent(document.getElementById(this.inputID));
+            console.log(this);
+            if(pp == null || pp.className != "MathJax_MathContainer")
+            {
+                console.log("Initializing... "+this.inputID);
+                var elfr = $('#'+this.inputID+'-Frame');
+                var el = $('#'+this.inputID);
+                var elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0);
+                var outerEqWrapper = $('<span id="'+'eqprefix-'+cntEq+'" class="MathBox MathBoxNew"/>').insertBefore(elpr);
+
+                var eqWrapper = $('<span id="sub'+'eqprefix-'+cntEq+'"/>').
+                    append(elpr).append(elfr).append(el)
+                    .data('equation', '$'+this.originalText+'$');
+                outerEqWrapper.append(eqWrapper);
+
+                if(this.inputJax == "AsciiMath") { 
+                    aolDictionary['eqprefix-'+cntEq] = 'radio_ascii';
+
+                } else if(this.inputJax == "TeX") {
+                    aolDictionary['eqprefix-'+cntEq] = 'radio_latex';
+
+                }
+                console.log('JAX: '+this.inputJax);
+
+                cntEq++;
+            } 
+        });
+  }
+
 define([ 'aloha/plugin', 'jquery', 'ui/ui', 'ui/button', 'ui/port-helper-attribute-field', 'ui/scopes' ],
         function( plugin, $, ui, button, attributeField, scopes, floatingMenu ) 
         {
         "use strict";
 
-        var cntEq = 0;
 
         return plugin.create( 'mathedit', 
             {
@@ -17,6 +59,8 @@ init: function()
 var editableObj = null;
 var self = this,
 wrapPrefix = this.settings.wrapPrefix;
+
+
 
 // MathJax init
 var script0 = document.createElement("script");
@@ -35,7 +79,8 @@ $(script0).html( 'MathJax.Hub.Config({'
 var script = document.createElement("script");
 script.type = "text/javascript";
 script.src  = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default";
-var config = 'MathJax.Hub.Startup.onload();';
+
+var config = 'MathJax.Hub.Register.StartupHook("End", function() { existingEquationConfig(); }); MathJax.Hub.Startup.onload();';
 $(script).html(config);
 
 document.getElementsByTagName("head")[0].appendChild(script0);
@@ -49,7 +94,6 @@ var currentEditor = null;
 var currentLength = -1;
 var editorToOffset = { };
 
-var aolDictionary = { };
 var aol = 'radio_latex';
 
 function convertToConcrete(character, ele, leVal, currentOffset) {
@@ -75,7 +119,7 @@ function convertToConcrete(character, ele, leVal, currentOffset) {
 }
 
 
-function insertFunc(ele, leVal, offset) {
+function insertFunc(ele, leVal, offset, dummyName) {
     console.log('Inside insertFunc')
     var currentNode = window.getSelection().focusNode;
     console.log(currentNode.className)
@@ -99,7 +143,7 @@ function insertFunc(ele, leVal, offset) {
     var newSpan = document.createElement('span');
     newSpan.style.display="inline";
     newSpan.style.color="#999999";
-    var newText = document.createTextNode('func');
+    var newText = document.createTextNode(dummyName);
     newSpan.appendChild(newText);
 
     var postEle = null;
@@ -320,17 +364,21 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         currentNode = currentNode.childNodes[0];
     }
 
-    // console.log('onTexChange Checkpoint 0')
+    if(currentNode.length == 1 && currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
+        currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
+        currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
+        currentLength = 0;
+    }
     var range = window.getSelection().getRangeAt(0);
     var offset = range.startOffset;
     var ch = currentNode.textContent[offset];
     var ele = $('#'+evt.currentTarget.id);
     var leVal = getFullStr(mathEditBox[0].childNodes);
-    // console.log('onTexChange Checkpoint 0.1 '+leVal)
-    if(leVal == "Enter your math notation here") {
-        inChange = false;
-        return;
-    }
+    console.log(currentNode);
+    console.log('CURRENT OFFSET IS '+offset);
+    console.log('SO CH IS '+ch);
+    console.log('CURRENT LENGTH '+currentLength);
+
 
     // console.log('onTexChange Checkpoint 1')
     var i = 0;
@@ -338,7 +386,6 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         console.log(Inserted[i].open.parentNode);
         console.log(Inserted[i].close.parentNode);
         if(Inserted[i].open.parentNode == null || Inserted[i].close.parentNode == null) {
-            console.log('removing a');
             if(Inserted[i].open.parentNode != null) {
                 concretize(Inserted[i].open);
             } 
@@ -355,7 +402,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         }
     }
 
-    // console.log('onTexChange Checkpoint 2')
+    console.log('onTexChange Checkpoint 2')
     if(leVal.length > currentLength && leVal.length - currentLength == 1) {
         for(var i = 0; i < Inserted.length; i++) {
             if(currentNode.parentNode == Inserted[i].close) {
@@ -445,7 +492,6 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             }
         }
     }
-    // console.log('onTexChange Checkpoint 3')
 
     range = window.getSelection().getRangeAt(0);
     offset = range.startOffset;
@@ -458,6 +504,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     // console.log('onTexChange Checpoint 3.1')
 
 
+     console.log('onTexChange Checkpoint 3')
     if(leVal.length < currentLength && currentLength - leVal.length > 1) {
         // console.log('onTexChange Checpoint 3.2')
         // bulk delete
@@ -516,7 +563,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         currentLength = leVal.length;
         return;
     }
-    // console.log('onTexChange Checkpoint 4')
+    console.log('onTexChange Checkpoint 4')
 
     if(leVal.length < currentLength && currentLength - leVal.length == 1) {
         for(var i = 0; i < Inserted.length; i++) {
@@ -715,7 +762,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             }
         }
     }
-    // console.log('onTexChange Checkpoint 5')
+    console.log('onTexChange Checkpoint 5')
 
 
 
@@ -736,8 +783,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             i = i + 1;
         }
     }
-    // console.log('onTexChange Checkpoint 6')
-    console.log(mathEditBox);
+    console.log('CH IS '+ch);
 
     if(leVal.length - currentLength > 0) {
         switch(ch) {
@@ -756,7 +802,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                 insertBraces(mathEditBox[0], leVal, offset);
                 break;
             case('\\'):
-                insertFunc(mathEditBox[0], leVal, offset);
+                insertFunc(mathEditBox[0], leVal, offset, 'func');
                 break;
         }
     }
@@ -775,6 +821,7 @@ function onAsciiCharChange(evt,  mathEditorContainer, eqId) {
         // var eqId = evt.currentTarget.id.substring(5);
         console.log("Refreshing ascii rendering");
         var mathEditBox = mathEditorContainer.find(".math-source");
+
         //var eqId = evt.currentTarget.id.substring(5);
         // var mathEditBox = $('#'+evt.currentTarget.id);
         // var leVal = mathEditBox.val() || mathEditBox.text();
@@ -928,8 +975,20 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       /* If the math-editor is empty then it's replaced w/ default text */
       if (equation == "&nbsp\;") {
         mathEditorContainer.find(".math-source").append('<span class="math-source-hint-text">Enter your math notation here</span>');
+        /*
+        var newSpan = document.createElement('span');
+        newSpan.style.display="inline";
+        newSpan.style.color="#999999";
+        var newText = document.createTextNode("Enter your math notation here");
+        newSpan.appendChild(newText);
+        mathEditorContainer.find(".math-source")[0].appendChild(newSpan);
+        */
+
+        //insertFunc(mathEditorContainer.find(".math-source")[0], '', 0, "Enter your math notation here");
+
         console.log("Inserting the cursor at the beginning of the editor");
         placeCaretAtBeginning($(".math-source").get(0));
+
         //GENTICS.Utils.Dom.setCursorInto( mathEditorContainer.find(".math-source")[0] );
       } 
       // Not sure if this case will ever be hit
@@ -939,6 +998,8 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         console.log("Inserting the cursor at the end of the editor");
         placeCaretAtEnd($(".math-source").get(0));
       }
+      console.log("Current contents of container are:");
+      console.log($(".math-source").get(0));
       /*if ( $("#cheat-sheet").css("display") != 'none' ) $("#cheat-sheet-activator").attr("checked",true);
       $("#cheat-sheet-wrap").slideUp("fast", function(){
         $(this).show();
@@ -1542,12 +1603,8 @@ function mathLeave(mathEditorContainer,e) {
     return ed;
   }
 
-  function parentOfParent(ele) {
-      if(ele == null) return null;
-      var tmp = ele.parentNode;
-      if(tmp == null) return null;
-      return tmp.parentNode;
-  }
+
+  
 
     
             scopes.createScope('math', 'Aloha.empty');
@@ -1568,59 +1625,57 @@ function mathLeave(mathEditorContainer,e) {
                 }*/
             });
             
-            var parsedJax = false; 
-            Aloha.bind('aloha-editable-activated', function (event, data) 
-            {
-                
-                !parsedJax && (function()
-                {
-                    parsedJax = true;
-                    MathJax.Hub.Queue(["Typeset",MathJax.Hub, null, function()
-                    { 
-                        // Wraps each mathjax element
-                        $(MathJax.Hub.getAllJax()).each(function()
-                        { 
-                            console.log(this.originalText);
-                            var pp = parentOfParent(document.getElementById(this.inputID));
-                            console.log(this);
-                            if(pp == null || pp.className != "MathJax_MathContainer")
-                            {
-                                console.log("Initializing... "+this.inputID);
-                                var elfr = $('#'+this.inputID+'-Frame');
-                                var el = $('#'+this.inputID);
-                                var elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0);
-                                var outerEqWrapper = $('<span id="'+wrapPrefix+cntEq+'" class="MathBox MathBoxNew"/>').insertBefore(elpr);
+            //var parsedJax = false; 
+            //Aloha.bind('aloha-editable-activated', function (event, data) 
+            //{
+            //    
+            //    !parsedJax && (function()
+            //    {
+            //        parsedJax = true;
+            //        //MathJax.Hub.Queue(["Typeset",MathJax.Hub, null, function()
+            //        //{ 
+            //        //    // Wraps each mathjax element
+            //        //    //$(MathJax.Hub.getAllJax()).each(function()
+            //        //    //{ 
+            //        //    //    console.log(this.originalText);
+            //        //    //    var pp = parentOfParent(document.getElementById(this.inputID));
+            //        //    //    console.log(this);
+            //        //    //    if(pp == null || pp.className != "MathJax_MathContainer")
+            //        //    //    {
+            //        //    //        //console.log("Initializing... "+this.inputID);
+            //        //    //        //var elfr = $('#'+this.inputID+'-Frame');
+            //        //    //        //var el = $('#'+this.inputID);
+            //        //    //        //var elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0);
+            //        //    //        //var outerEqWrapper = $('<span id="'+wrapPrefix+cntEq+'" class="MathBox MathBoxNew"/>').insertBefore(elpr);
 
-                                var eqWrapper = $('<span id="sub'+wrapPrefix+cntEq+'"/>').
-                                    append(elpr).append(elfr).append(el)
-                                    .data('equation', '$'+this.originalText+'$');
-                                outerEqWrapper.append(eqWrapper);
+            //        //    //        //var eqWrapper = $('<span id="sub'+wrapPrefix+cntEq+'"/>').
+            //        //    //        //    append(elpr).append(elfr).append(el)
+            //        //    //        //    .data('equation', '$'+this.originalText+'$');
+            //        //    //        //outerEqWrapper.append(eqWrapper);
 
-                                if(this.inputJax == "AsciiMath") { 
-                                    aolDictionary[wrapPrefix+cntEq] = 'radio_ascii';
-/*
-                                    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, wrapPrefix+cntEq, function() { 
-                                           MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax('sub'+wrapPrefix+cntEq)[0],equation]);
-                                    }]);
-*/
-                                } else if(this.inputJax == "TeX") {
-                                    aolDictionary[wrapPrefix+cntEq] = 'radio_latex';
-                                    /*
-                                    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, mathJaxElId, function() { 
-                                           MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(mathJaxElId)[0],"\\displaystyle{"+equation+"}"]);
-                                    }]);
-                                    */
-                                }
-                                //MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax('sub'+wrapPrefix+cntEq)[0],"\\displaystyle{"+this.originalText+"}"]);
-                                console.log('JAX: '+this.inputJax);
+            //        //    //        //if(this.inputJax == "AsciiMath") { 
+            //        //    //        //    aolDictionary[wrapPrefix+cntEq] = 'radio_ascii';
 
-                                cntEq++;
-                            }                            
-                        }); 
-                    }]);
-                })();
-                self._mathCtrl.show();
-            });
+            //        //    //        //    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, 'sub'+wrapPrefix+cntEq, function() { 
+            //        //    //        //           MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax('sub'+wrapPrefix+cntEq)[0],this.originalText]);
+            //        //    //        //    }]);
+
+            //        //    //        //} else if(this.inputJax == "TeX") {
+            //        //    //        //    aolDictionary[wrapPrefix+cntEq] = 'radio_latex';
+
+            //        //    //        //    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, 'sub'+wrapPrefix+cntEq, function() { 
+            //        //    //        //           MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax('sub'+wrapPrefix+cntEq)[0],"\\displaystyle{"+this.originalText+"}"]);
+            //        //    //        //    }]);
+            //        //    //        //}
+            //        //    //        //console.log('JAX: '+this.inputJax);
+
+            //        //    //        //cntEq++;
+            //        //    //    }                            
+            //        //    //});
+            //        //}]);
+            //    })();
+            //    self._mathCtrl.show();
+            //});
             
            
             Aloha.bind('aloha-editable-created', function (event, editable) 
