@@ -130,15 +130,51 @@ define([
 			group.containers.push(this);
 		},
 
-		// must be implemented by extending classes
+		/**
+		 * Must be implemented by extending classes.
+		 *
+		 * @ingroup api
+		 * @{
+		 */
+
+		/**
+		 * A container is also a component; this is part of the component API.
+		 */
 		show: function() {},
+		/**
+		 * A container is also a component; this is part of the component API.
+		 */
 		hide: function() {},
+		/**
+		 * A container is also a component; this is part of the component API.
+		 */
 		focus: function() {},
+		/**
+		 * A container is also a component; this is part of the component API.
+		 */
 		foreground: function() {},
 
+		/**
+		 * The container was previously hidden, and now has become visible. This
+		 * allows a container to let its children react to this.
+		 */
 		childVisible: function(childComponent, visible) {},
+		/**
+		 * The container was given focus; this method must give focus to all
+		 * children of the container.
+		 * Optional. (E.g. tab.js doesn't implement this.)
+		 */
 		childFocus: function(childComponent) {},
+		/**
+		 * The container was foregrounded; this method must foreground all children
+		 * of the container.
+		 */
 		childForeground: function(childComponent) {}
+
+		/**
+		 * @} End of "ingroup api".
+		 */
+
 	});
 
 	// static fields
