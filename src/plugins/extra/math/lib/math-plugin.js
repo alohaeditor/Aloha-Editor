@@ -1074,7 +1074,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         /* Replaces the current text with a '&nbsp;' if the user removes all the text */
         var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
         // var text = $(".math-editor").find(".math-source").text();
-        console.log("The retrieved text is: " + text);
+        // console.log("The retrieved text is: " + text);
         // $(".math-editor").find(".math-source").text(text);
         if (text == '') {
             console.log("Appending nsbsp");
