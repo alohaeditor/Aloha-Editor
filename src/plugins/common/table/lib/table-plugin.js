@@ -198,6 +198,8 @@ Utils) {
 			}
 
 			// show hide buttons regarding configuration and DOM position
+			// @todo nested tables check: https://getsatisfaction.com/aloha_editor/topics/tables_as_editable_containers
+			// https://github.com/alohaeditor/Aloha-Editor/issues/745
 			if (isEnabled[Aloha.activeEditable.getId()] && Aloha.Selection.mayInsertTag('table')) {
 				that._createTableButton.show();
 			} else {

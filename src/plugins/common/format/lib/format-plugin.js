@@ -452,19 +452,28 @@ i18nCore) {
 
 
 		initSidebar: function (sidebar) {
-			// @todo check for existing class and pre-select
-			// @todo make is possible to remove a class
 			// @todo use config per editable not just default config
-			// example config: {'p': {'class': {'foo': 'Foo Style', 'bar': 'BAR CSS'}}},
+			// example Aloha.settings.plugins.format.config: {'p': {'class': {'foo': 'Foo Style', 'bar': 'BAR CSS'}}},
 			var pl = this;
 			pl.sidebar = sidebar;
+
+			var keys = [];
+			var cssOptions = pl.settings.config;
+			var activeOnPattern = false;
+			for (var key in cssOptions) {
+				if (cssOptions.hasOwnProperty(key)) {
+					keys.push(key);
+				}
+			}
+			activeOnPattern = keys.join(',');
+
 			sidebar.addPanel({
 
 				id: pl.nsClass('sidebar-panel-class'),
 				title: i18n.t('floatingmenu.tab.format'),
 				content: '',
 				expanded: true,
-				activeOn: 'p' || false, // pl.formatOptions not working ... 
+				activeOn: activeOnPattern || false, // 'p, h1' pl.formatOptions not working ... 
 
 				onInit: function () {},
 
@@ -479,21 +488,32 @@ i18nCore) {
 
 					var dom = jQuery('<div>').attr('class', pl.nsClass('target-container'));
 					var fieldset = jQuery('<fieldset>');
-					fieldset.append(jQuery('<legend>' + that.format + ' ' + i18n.t('format.class.legend')).append(jQuery('<select>')));
+					fieldset.append(jQuery('<legend>').text(i18n.t('format.class.legend') + ' - ' + that.format));
+					
+					var select = jQuery('<select>').attr('class', pl.nsClass('cssclass')).attr('name', 'targetGroup');
+					fieldset.append(select);
+					
+					var option = jQuery('<option>').text(i18n.t('format.class.none')).attr('value', '').appendTo(fieldset);
+					select.append(option);
 
-					dom.append(fieldset);
-
-					var html = '<div class="' + pl.nsClass('target-container') + '"><fieldset>' + '<legend>' + i18n.t('format.class.legend') + '</legend>' + '<select name="targetGroup" class="' + pl.nsClass('cssclass') + '">' + '<option value="">' + i18n.t('format.class.none') + '</option>';
-
-					if (pl.settings.config[that.format] && pl.settings.config[that.format]['class']) {
+					var isSelected = false;
+					if (pl.settings && pl.settings.config && pl.settings.config[that.format] && pl.settings.config[that.format]['class']) {
 						jQuery.each(pl.settings.config[that.format]['class'], function (i, v) {
-							html += '<option value="' + i + '" >' + v + '</option>';
+							isSelected = jQuery(that.effective).hasClass(i);
+							option = jQuery('<option>').text(v).attr('value', i).attr('selected', isSelected);
+							select.append(option);
 						});
 					}
 
-					html += '</select></fieldset></div>';
+					dom.append(fieldset);
+
+					pl.content = this.setContent(dom).content;
 
 					jQuery(pl.nsSel('cssclass')).change(function () {
+						jQuery.each(pl.settings.config[that.format]['class'], function (i, v) {
+							jQuery(that.effective).removeClass(i);
+						});
+
 						jQuery(that.effective).addClass(jQuery(this).val().replace('\"', '&quot;').replace("'", "&#39;"));
 					});
 				}
