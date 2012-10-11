@@ -59,25 +59,18 @@ define [ "aloha", "jquery", "css!bubble/css/bubble.css" ], (Aloha, jQuery) ->
 
 
   class Bubbler
-    constructor: (@displayer, $nodes=null, @placement={vertical:'below',horizontal:'start'}) ->
-      @applyTo($nodes) if $nodes?
-      
-    setPlacement: (vertical='below', horizontal='start') ->
-      @placement.vertical = vertical
-      @placement.horizontal = horizontal
-    
-    applyTo: ($nodes) ->
+    constructor: (@displayer, $context, selector, @placement={vertical:'below',horizontal:'start'}) ->
       that = @
       
       # Custom event to open the bubble used by setTimeout below
-      $nodes.on 'open', (evt, force) ->
+      $context.delegate selector, 'open', (evt, force) ->
         $el = jQuery(@)
         clearTimeout($el.data('aloha-bubble-openTimer'))
         makeBubble(@, that.displayer, that.placement)
         if force
           $el.data('aloha-bubble-clicked', true)
             
-      $nodes.on 'close', () ->
+      $context.delegate selector, 'close', () ->
         $el = jQuery(@)
         $el.data('aloha-bubble-clicked', false)
         $bubble = $el.data('aloha-bubble-el')
@@ -89,7 +82,7 @@ define [ "aloha", "jquery", "css!bubble/css/bubble.css" ], (Aloha, jQuery) ->
           jQuery(self).trigger(eventName)
         , ms)
         
-      $nodes.on 'mouseenter', (evt) ->
+      $context.delegate selector, 'mouseenter', (evt) ->
         $el = jQuery(@)
         $el.data('aloha-bubble-openTimer', delayTimeout(@, 'open'))
         $el.one 'mouseleave', () ->
@@ -108,5 +101,8 @@ define [ "aloha", "jquery", "css!bubble/css/bubble.css" ], (Aloha, jQuery) ->
         
         that.originalRange = rangeObject
       
+    setPlacement: (vertical='below', horizontal='start') ->
+      @placement.vertical = vertical
+      @placement.horizontal = horizontal
 
   return Bubbler
