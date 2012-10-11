@@ -304,7 +304,7 @@ function hasChild(parentNode, childNode) {
 }
 
 function onTexCharChange(evt, mathEditorContainer, eqId) {
-    // console.log('Entering onTexChange '+inChange+' on '+eqId)
+    console.log('Entering onTexChange '+inChange+' on '+eqId)
     if(inChange) return;
     inChange = true;
 
@@ -333,7 +333,6 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     }
 
     // console.log('onTexChange Checkpoint 1')
-
     var i = 0;
     while(i < Inserted.length) {
         console.log(Inserted[i].open.parentNode);
@@ -1003,12 +1002,23 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         /* Replaces the current text with a '&nbsp;' if the user removes all the text */
         var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
         if (text == '') {
+            console.log("Appendeing nsbsp");
             $(".math-editor").find(".math-source").append("&nbsp\;");
         }
         // console.log("Modified1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), mathJaxElId);
        });
+
       $(".math-editor").find(".math-source-wrap").on('DOMNodeInserted', function(e) {
+        /* Replaces the current text with a '&nbsp;' if the user removes all the text */
+        var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
+        // var text = $(".math-editor").find(".math-source").text();
+        console.log("The retrieved text is: " + text);
+        // $(".math-editor").find(".math-source").text(text);
+        if (text == '') {
+            console.log("Appending nsbsp");
+            $(".math-editor").find(".math-source").append("&nbsp\;");
+        }
         // console.log("Inserted1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), mathJaxElId);
     });
