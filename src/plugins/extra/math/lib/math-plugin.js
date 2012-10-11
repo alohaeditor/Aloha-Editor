@@ -364,18 +364,18 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         currentNode = currentNode.childNodes[0];
     }
 
-    if(currentNode.length == 1 && currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
+    if(currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
         currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
         currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
         currentLength = 0;
     }
     var range = window.getSelection().getRangeAt(0);
-    var offset = range.startOffset;
+    var leVal = getFullStr(mathEditBox[0].childNodes);
+    var offset = range.startOffset+(leVal.length-currentLength);
     var ch = currentNode.textContent[offset];
     var ele = $('#'+evt.currentTarget.id);
-    var leVal = getFullStr(mathEditBox[0].childNodes);
     console.log(currentNode);
-    console.log('CURRENT OFFSET IS '+offset);
+    console.log('CURRENT OFFSET IS ['+range.startOffset+'->'+range.endOffset+']');
     console.log('SO CH IS '+ch);
     console.log('CURRENT LENGTH '+currentLength);
 
