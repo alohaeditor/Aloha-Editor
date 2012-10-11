@@ -364,20 +364,21 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         currentNode = currentNode.childNodes[0];
     }
 
-    // console.log('onTexChange Checkpoint 0')
+    if(currentNode.length == 1 && currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
+        currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
+        currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
+        currentLength = 0;
+    }
     var range = window.getSelection().getRangeAt(0);
     var offset = range.startOffset;
     var ch = currentNode.textContent[offset];
     var ele = $('#'+evt.currentTarget.id);
     var leVal = getFullStr(mathEditBox[0].childNodes);
-    // console.log('onTexChange Checkpoint 0.1 '+leVal)
-
-    console.log("HELO");
-    if(currentNode.length == 1 && currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
-        currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
-        currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
-    }
     console.log(currentNode);
+    console.log('CURRENT OFFSET IS '+offset);
+    console.log('SO CH IS '+ch);
+    console.log('CURRENT LENGTH '+currentLength);
+
 
     // console.log('onTexChange Checkpoint 1')
 
@@ -402,7 +403,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         }
     }
 
-    // console.log('onTexChange Checkpoint 2')
+    console.log('onTexChange Checkpoint 2')
     if(leVal.length > currentLength && leVal.length - currentLength == 1) {
         for(var i = 0; i < Inserted.length; i++) {
             if(currentNode.parentNode == Inserted[i].close) {
@@ -492,7 +493,6 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             }
         }
     }
-    // console.log('onTexChange Checkpoint 3')
 
     range = window.getSelection().getRangeAt(0);
     offset = range.startOffset;
@@ -505,6 +505,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
     // console.log('onTexChange Checpoint 3.1')
 
 
+     console.log('onTexChange Checkpoint 3')
     if(leVal.length < currentLength && currentLength - leVal.length > 1) {
         // console.log('onTexChange Checpoint 3.2')
         // bulk delete
@@ -563,7 +564,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         currentLength = leVal.length;
         return;
     }
-    // console.log('onTexChange Checkpoint 4')
+    console.log('onTexChange Checkpoint 4')
 
     if(leVal.length < currentLength && currentLength - leVal.length == 1) {
         for(var i = 0; i < Inserted.length; i++) {
@@ -762,7 +763,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             }
         }
     }
-    // console.log('onTexChange Checkpoint 5')
+    console.log('onTexChange Checkpoint 5')
 
 
 
@@ -783,8 +784,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             i = i + 1;
         }
     }
-    // console.log('onTexChange Checkpoint 6')
-    console.log(mathEditBox);
+    console.log('CH IS '+ch);
 
     if(leVal.length - currentLength > 0) {
         switch(ch) {
@@ -822,6 +822,7 @@ function onAsciiCharChange(evt,  mathEditorContainer, eqId) {
         // var eqId = evt.currentTarget.id.substring(5);
         console.log("Refreshing ascii rendering");
         var mathEditBox = mathEditorContainer.find(".math-source");
+
         //var eqId = evt.currentTarget.id.substring(5);
         // var mathEditBox = $('#'+evt.currentTarget.id);
         // var leVal = mathEditBox.val() || mathEditBox.text();
