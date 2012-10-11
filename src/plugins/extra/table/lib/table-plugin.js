@@ -241,8 +241,8 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                         this.error('Selection is not in a table!');
                         return;
                     }
-                    var rowcount = row.find('*').length;
-                    var newrow = createRow(rowcount);
+                    var colcount = row.find('td,th').length;
+                    var newrow = createRow(colcount);
                     row.before(newrow);
                 }
             });
@@ -332,8 +332,8 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
             // table.
             var row = getActiveRow();
             if (row !== null){
-                var rowcount = row.find('td,th').length;
-                var newrow = createRow(rowcount);
+                var colcount = row.find('td,th').length;
+                var newrow = createRow(colcount);
                 row.after(newrow);
                 return newrow;
             }
