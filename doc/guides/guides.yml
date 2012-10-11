@@ -63,3 +63,6 @@ index:
     - title: "Documentation Guidelines"
       url: "documentation_guidelines"
       text: "Writing and generating jsdoc documentation."
+    - title: Translations
+      url: translations
+      text: "Translate Aloha Editor into your language."

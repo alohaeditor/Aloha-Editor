@@ -92,9 +92,6 @@ define([
 
 	// Create and register Image Plugin
 	return Plugin.create('image', {
-
-		languages: ['en', 'fr', 'de', 'ru', 'cz'],
-
 		defaultSettings: {
 			'maxWidth': 1600,
 			'minWidth': 3,

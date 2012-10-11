@@ -56,7 +56,7 @@ define(['jquery'], function ($) {
 	 *        Should be all lowercase and should not begin with a dash
 	 */
 	function dashesToCamelCase(s) {
-		return s.replace(/[-]([a-z])/gi, function (all, upper) {
+		return s.replace(/[\-]([a-z])/gi, function (all, upper) {
 			return upper.toUpperCase();
 		});
 	}

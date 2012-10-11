@@ -54,12 +54,6 @@ define([
 		_constructor: function(){
 			this._super('align');
 		},
-
-		/**
-		 * Configure the available languages
-		 */
-		languages: ['en', 'fr'],
-
 		/**
 		 * Configuration (available align options)
 		 */

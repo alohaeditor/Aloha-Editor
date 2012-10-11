@@ -30,10 +30,10 @@
  */
 
 define([
-    'aloha/core',
-    'jquery',
-    'aloha/selection',
-    'PubSub'
+	'aloha/core',
+	'jquery',
+	'aloha/selection',
+	'PubSub'
 ], function (
 	Aloha,
 	$,
@@ -42,22 +42,36 @@ define([
 ) {
 	'use strict';
 
-	var uid  = +(new Date());
+	var uid = +(new Date());
 
 	// Extend jQuery easing animations.
 	//debugger;
 	if (!$.easing.easeOutExpo) {
 		$.extend($.easing, {
 			easeOutExpo: function (x, t, b, c, d) {
-				return (t==d)?b+c:c*(-Math.pow(2,-10*t/d)+1)+b;
+				return (t == d) ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b;
 			},
 			easeOutElastic: function (x, t, b, c, d) {
-				var m=Math,s=1.70158,p=0,a=c;
-				if(!t)return b;
-				if((t/=d)==1)return b+c;
-				if(!p)p=d*.3;
-				if(a<m.abs(c)){a=c;var s=p/4;}else var s=p/(2*m.PI)*m.asin(c/a);
-				return a*m.pow(2,-10*t)*m.sin((t*d-s)*(2*m.PI)/p)+c+b;
+				var m = Math,
+					s = 1.70158,
+					p = 0,
+					a = c;
+				if (!t) {
+					return b;
+				}
+				if ((t /= d) == 1) {
+					return b + c;
+				}
+				if (!p) {
+					p = d * 0.3;
+				}
+				if (a < m.abs(c)) {
+					a = c;
+					s = p / 4;
+				} else {
+					s = p / (2 * m.PI) * m.asin(c / a);
+				}
+				return a * m.pow(2, -10 * t) * m.sin((t * d - s) * (2 * m.PI) / p) + c + b;
 			}
 		});
 	}
@@ -65,17 +79,10 @@ define([
 	var Panel = function Panel(opts) {
 		this.id = null;
 		this.folds = {};
-		this.button	= null;
-		this.title = $('<div class="aloha-sidebar-panel-title">' +
-				'<span class="aloha-sidebar-panel-title-arrow"></span>' +
-				'<span class="aloha-sidebar-panel-title-text">Untitled</span>' +
-			'</div>');
-		this.content = $('<div class="aloha-sidebar-panel-content">' +
-				'<div class="aloha-sidebar-panel-content-inner">' +
-					'<div class="aloha-sidebar-panel-content-inner-text"></div>' +
-				'</div>' +
-			'</div>');
-		this.element  = null;
+		this.button = null;
+		this.title = $('<div class="aloha-sidebar-panel-title">' + '<span class="aloha-sidebar-panel-title-arrow"></span>' + '<span class="aloha-sidebar-panel-title-text">Untitled</span>' + '</div>');
+		this.content = $('<div class="aloha-sidebar-panel-content">' + '<div class="aloha-sidebar-panel-content-inner">' + '<div class="aloha-sidebar-panel-content-inner-text"></div>' + '</div>' + '</div>');
+		this.element = null;
 		this.effectiveElement = null;
 		this.expanded = false;
 		this.isActive = true;
@@ -86,14 +93,7 @@ define([
 		var sidebar = this;
 		this.id = 'aloha-sidebar-' + (++uid);
 		this.panels = {};
-		this.container = $('<div class="aloha-ui aloha-sidebar-bar">' +
-				'<div class="aloha-sidebar-handle">' +
-					'<span class="aloha-sidebar-handle-icon"></span>' +
-				'</div>' +
-				'<div class="aloha-sidebar-inner">' +
-					'<ul class="aloha-sidebar-panels"></ul>' +
-				'</div>' +
-			'</div>');
+		this.container = $('<div class="aloha-ui aloha-sidebar-bar">' + '<div class="aloha-sidebar-handle">' + '<span class="aloha-sidebar-handle-icon"></span>' + '</div>' + '<div class="aloha-sidebar-inner">' + '<ul class="aloha-sidebar-panels"></ul>' + '</div>' + '</div>');
 		this.width = 300;
 		this.opened = false;
 		this.isOpen = false;
@@ -104,13 +104,12 @@ define([
 			// ugliness.  Our solution is to fallback to swapping icon images.
 			// We set this as a sidebar property so that it can overridden by
 			// whoever thinks they are smarter than we are.
-			rotateIcons : !$.browser.msie,
-			overlayPage : true
+			rotateIcons: !$.browser.msie,
+			overlayPage: true
 		};
 
 		$(function () {
-			if (!((typeof Aloha.settings.sidebar !== 'undefined') &&
-					Aloha.settings.sidebar.disabled)) {
+			if (!((typeof Aloha.settings.sidebar !== 'undefined') && Aloha.settings.sidebar.disabled)) {
 				sidebar.init(opts);
 			}
 		});
@@ -150,10 +149,9 @@ define([
 				bar.addClass('aloha-sidebar-right');
 			}
 
-			bar.hide()
-			   .appendTo($('body'))
-			   .click(function () { that.barClicked.apply(that, arguments); })
-			   .find('.aloha-sidebar-panels').width(this.width);
+			bar.hide().appendTo($('body')).click(function () {
+				that.barClicked.apply(that, arguments);
+			}).find('.aloha-sidebar-panels').width(this.width);
 
 			// IE7 needs us to explicitly set the container width, since it is
 			// unable to determine it on its own.
@@ -163,8 +161,7 @@ define([
 			this.updateHeight();
 			this.initToggler();
 
-			this.container.css(this.position === 'right'
-				? 'marginRight' : 'marginLeft', -this.width);
+			this.container.css(this.position === 'right' ? 'marginRight' : 'marginLeft', -this.width);
 
 			if (this.opened) {
 				this.open(0);
@@ -187,7 +184,7 @@ define([
 		},
 
 		hide: function () {
-			this.container.css('display','none');
+			this.container.css('display', 'none');
 			return this;
 		},
 
@@ -201,8 +198,7 @@ define([
 		checkActivePanels: function (range) {
 			var effective = [];
 
-			if (typeof range !== 'undefined' &&
-					typeof range.markupEffectiveAtStart !== 'undefined') {
+			if (typeof range !== 'undefined' && typeof range.markupEffectiveAtStart !== 'undefined') {
 				var l = range.markupEffectiveAtStart.length;
 				var i;
 				for (i = 0; i < l; ++i) {
@@ -266,10 +262,12 @@ define([
 			var activePanelIds = [];
 			var panels = [];
 			var panelId;
-			for (panelId in this.panels) if (this.panels.hasOwnProperty(panelId)) {
-				if (this.panels[panelId].isActive) {
-					panels.push(this.panels[panelId]);
-					activePanelIds.push(panelId);
+			for (panelId in this.panels) {
+				if (this.panels.hasOwnProperty(panelId)) {
+					if (this.panels[panelId].isActive) {
+						panels.push(this.panels[panelId]);
+						activePanelIds.push(panelId);
+					}
 				}
 			}
 
@@ -279,9 +277,8 @@ define([
 
 			activePanelIds = activePanelIds.sort().join(',');
 
-			if (previousActivePanelIds === activePanelIds &&
-			    previousViewportHeight === viewportHeight) {
-			 	return;
+			if (previousActivePanelIds === activePanelIds && previousViewportHeight === viewportHeight) {
+				return;
 			}
 
 			previousViewportHeight = viewportHeight;
@@ -394,64 +391,73 @@ define([
 
 			// configure the position of the sidebar handle
 			$(function () {
-				if (typeof Aloha.settings.sidebar !== 'undefined' &&
-						Aloha.settings.sidebar.handle &&
-						Aloha.settings.sidebar.handle.top) {
-					$(bar.find('.aloha-sidebar-handle'))[0].style.top =
-						Aloha.settings.sidebar.handle.top;
+				if (typeof Aloha.settings.sidebar !== 'undefined' && Aloha.settings.sidebar.handle && Aloha.settings.sidebar.handle.top) {
+					$(bar.find('.aloha-sidebar-handle'))[0].style.top = Aloha.settings.sidebar.handle.top;
 				}
 			});
 
-			bar.find('.aloha-sidebar-handle')
-				.click(function () {
-					if (bounceTimer) {
-						clearInterval(bounceTimer);
-					}
+			bar.find('.aloha-sidebar-handle').click(function () {
+				if (bounceTimer) {
+					clearInterval(bounceTimer);
+				}
 
-					icon.stop().css('marginLeft', 4);
+				icon.stop().css('marginLeft', 4);
 
-					if (that.isOpen) {
-						$(this).removeClass(toggledClass);
-						that.close();
-						that.isOpen = false;
-					} else {
-						$(this).addClass(toggledClass);
-						that.open();
-						that.isOpen = true;
-					}
-				}).hover(function () {
-					var flag = that.isOpen ? -1 : 1;
+				if (that.isOpen) {
+					$(this).removeClass(toggledClass);
+					that.close();
+					that.isOpen = false;
+				} else {
+					$(this).addClass(toggledClass);
+					that.open();
+					that.isOpen = true;
+				}
+			}).hover(function () {
+				var flag = that.isOpen ? -1 : 1;
 
-					if (bounceTimer) {
-						clearInterval(bounceTimer);
-					}
+				if (bounceTimer) {
+					clearInterval(bounceTimer);
+				}
 
-					icon.stop();
+				icon.stop();
 
-					$(this).stop().animate(
-						isRight ? {marginLeft: '-=' + (flag * 5)}
-								: {marginRight: '-=' + (flag * 5)},
-						200);
+				$(this).stop().animate(
+					isRight ? {
+						marginLeft: '-=' + (flag * 5)
+					} : {
+						marginRight: '-=' + (flag * 5)
+					},
+					200
+				);
 
-					bounceTimer = setInterval(function () {
-						flag *= -1;
-						icon.animate(
-							isRight ? {left: '-=' + (flag * 4)}
-									: {right: '-=' + (flag * 4)},
-							300
-						);
-					}, 300);
-				}, function () {
-					if (bounceTimer) {
-						clearInterval(bounceTimer);
-					}
+				bounceTimer = setInterval(function () {
+					flag *= -1;
+					icon.animate(
+						isRight ? {
+							left: '-=' + (flag * 4)
+						} : {
+							right: '-=' + (flag * 4)
+						},
+						300
+					);
+				}, 300);
+			}, function () {
+				if (bounceTimer) {
+					clearInterval(bounceTimer);
+				}
 
-					icon.stop().css(isRight ? 'left' : 'right', 5);
+				icon.stop().css(isRight ? 'left' : 'right', 5);
 
-					$(this).stop().animate(
-						isRight ? {marginLeft: 0} : {marginRight: 0},
-						600, 'easeOutElastic');
-				});
+				$(this).stop().animate(
+					isRight ? {
+						marginLeft: 0
+					} : {
+						marginRight: 0
+					},
+					600,
+					'easeOutElastic'
+				);
+			});
 		},
 
 		/**
@@ -467,9 +473,7 @@ define([
 			var topClass = 'aloha-sidebar-panel-top';
 			var bottomClass = 'aloha-sidebar-panel-bottom';
 
-			bar.find('.aloha-sidebar-panel-top, .aloha-sidebar-panel-bottom')
-			   .removeClass(topClass)
-			   .removeClass(bottomClass);
+			bar.find('.aloha-sidebar-panel-top, .aloha-sidebar-panel-bottom').removeClass(topClass).removeClass(bottomClass);
 
 			lis.first().find('.aloha-sidebar-panel-title').addClass(topClass);
 			lis.last().find('.aloha-sidebar-panel-content').addClass(bottomClass);
@@ -501,9 +505,7 @@ define([
 		handleBarclick: function (el) {
 			if (el.hasClass('aloha-sidebar-panel-title')) {
 				this.togglePanel(el);
-			} else if (!el.hasClass('aloha-sidebar-panel-content') &&
-                       !el.hasClass('aloha-sidebar-handle') &&
-                       !el.hasClass('aloha-sidebar-bar')) {
+			} else if (!el.hasClass('aloha-sidebar-panel-content') && !el.hasClass('aloha-sidebar-handle') && !el.hasClass('aloha-sidebar-bar')) {
 				this.handleBarclick(el.parent());
 			}
 		},
@@ -531,21 +533,22 @@ define([
 		 */
 		rotateHandleIcon: function (angle, duration) {
 			var arr = this.container.find('.aloha-sidebar-handle-icon');
-			arr.animate({angle: angle}, {
-				duration : (typeof duration === 'number' ||
-                            typeof duration === 'string') ? duration : 500,
-				easing   : 'easeOutExpo',
-				step     : function (val, fx) {
+			arr.animate({
+				angle: angle
+			}, {
+				duration: (typeof duration === 'number' || typeof duration === 'string') ? duration : 500,
+				easing: 'easeOutExpo',
+				step: function (val, fx) {
 					arr.css({
-						'-o-transform'      : 'rotate(' + val + 'deg)',
-						'-webkit-transform' : 'rotate(' + val + 'deg)',
-						'-moz-transform'    : 'rotate(' + val + 'deg)',
-						'-ms-transform'     : 'rotate(' + val + 'deg)'
-					  // We cannot use Microsoft Internet Explorer filters
-					  // because Microsoft Internet Explore 8 does not support
-					  // Microsoft Internet Explorer filters correctly. It
-					  // breaks the layout
-					  // filter             : 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + (angle / 90) + ')'
+						'-o-transform': 'rotate(' + val + 'deg)',
+						'-webkit-transform': 'rotate(' + val + 'deg)',
+						'-moz-transform': 'rotate(' + val + 'deg)',
+						'-ms-transform': 'rotate(' + val + 'deg)'
+						// We cannot use Microsoft Internet Explorer filters
+						// because Microsoft Internet Explore 8 does not support
+						// Microsoft Internet Explorer filters correctly. It
+						// breaks the layout
+						// filter             : 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + (angle / 90) + ')'
 					});
 				}
 			});
@@ -585,25 +588,32 @@ define([
 			}
 
 			var isRight = (this.position === 'right');
-			var anim = isRight ? {marginRight: 0} : {marginLeft: 0};
+			var anim = isRight ? {
+				marginRight: 0
+			} : {
+				marginLeft: 0
+			};
 			var sidebar = this;
 
 			this.toggleHandleIcon(true);
-			this.container.animate(anim,
-				(typeof duration === 'number' || typeof duration === 'string')
-					? duration : 500,
-				'easeOutExpo');
+			this.container.animate(anim, (typeof duration === 'number' || typeof duration === 'string') ? duration : 500, 'easeOutExpo');
 
 			if (!this.settings.overlayPage) {
 				$('body').animate(
-					isRight ? {marginRight: '+=' + this.width}
-					        : {marginLeft: '+=' + this.width},
-					500, 'easeOutExpo', function () {
+					isRight ? {
+						marginRight: '+=' + this.width
+					} : {
+						marginLeft: '+=' + this.width
+					},
+					500,
+					'easeOutExpo',
+					function () {
 						sidebar.isCompletelyOpen = true;
 						if (sidebar.correctHeightWhenCompletelyOpen) {
 							sidebar.correctHeight();
 						}
-					});
+					}
+				);
 			}
 
 			this.isOpen = true;
@@ -625,19 +635,25 @@ define([
 			}
 
 			var isRight = (this.position === 'right');
-			var anim = isRight ? {marginRight: -this.width} : {marginLeft: -this.width};
+			var anim = isRight ? {
+				marginRight: -this.width
+			} : {
+				marginLeft: -this.width
+			};
 
 			this.toggleHandleIcon(false);
-			this.container.animate(anim,
-				(typeof duration === 'number' || typeof duration === 'string')
-					? duration : 500,
-				'easeOutExpo');
+			this.container.animate(anim, (typeof duration === 'number' || typeof duration === 'string') ? duration : 500, 'easeOutExpo');
 
 			if (!this.settings.overlayPage) {
 				$('body').animate(
-					isRight ? {marginRight: '-=' + this.width}
-					        : {marginLeft: '-=' + this.width},
-					500, 'easeOutExpo');
+					isRight ? {
+						marginRight: '-=' + this.width
+					} : {
+						marginLeft: '-=' + this.width
+					},
+					500,
+					'easeOutExpo'
+				);
 			}
 
 			this.isOpen = false;
@@ -758,8 +774,7 @@ define([
 				this.id = 'aloha-sidebar-' + (++uid);
 			}
 
-			var li = this.element =
-				$('<li id="' + this.id + '">').append(this.title, this.content);
+			var li = this.element = $('<li id="' + this.id + '">').append(this.title, this.content);
 
 			if (this.expanded) {
 				this.content.height('auto');
@@ -769,10 +784,11 @@ define([
 			this.coerceActiveOn();
 
 			// Disable text selection on title element.
-			this.title
-				.attr('unselectable', 'on')
-				.css('-moz-user-select', 'none')
-				.each(function () { this.onselectstart = function () { return false; }; });
+			this.title.attr('unselectable', 'on').css('-moz-user-select', 'none').each(function () {
+				this.onselectstart = function () {
+					return false;
+				};
+			});
 
 			if (typeof this.onInit === 'function') {
 				this.onInit.apply(this);
@@ -872,7 +888,9 @@ define([
 			var old_h = el.height();
 			var new_h = el.height('auto').height();
 			el.height(old_h).stop().animate(
-				{height: new_h}, 500, 'easeOutExpo',
+				{height: new_h},
+				500,
+				'easeOutExpo',
 				function () {
 					if (typeof callback === 'function') {
 						callback.call(that);
@@ -891,12 +909,16 @@ define([
 		collapse: function (duration, callback) {
 			var that = this;
 			this.element.addClass('collapsed');
-			this.content.stop().animate({height: 5}, 250, 'easeOutExpo',
+			this.content.stop().animate(
+				{ height: 5 },
+				250,
+				'easeOutExpo',
 				function () {
 					if (typeof callback === 'function') {
 						callback.call(that);
 					}
-				});
+				}
+			);
 			this.toggleTitleIcon(false);
 			this.expanded = false;
 			return this;
@@ -931,16 +953,18 @@ define([
 
 		rotateTitleIcon: function (angle, duration) {
 			var arr = this.title.find('.aloha-sidebar-panel-title-arrow');
-			arr.animate({angle: angle}, {
-				duration : (typeof duration === 'number') ? duration : 500,
-				easing   : 'easeOutExpo',
-				step     : function (val, fx) {
+			arr.animate({
+				angle: angle
+			}, {
+				duration: (typeof duration === 'number') ? duration : 500,
+				easing: 'easeOutExpo',
+				step: function (val, fx) {
 					arr.css({
-						'-o-transform'      : 'rotate(' + val + 'deg)',
-						'-webkit-transform' : 'rotate(' + val + 'deg)',
-						'-moz-transform'    : 'rotate(' + val + 'deg)',
-						'-ms-transform'     : 'rotate(' + val + 'deg)'
-					 // filter              : 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + (angle / 90) + ')'
+						'-o-transform': 'rotate(' + val + 'deg)',
+						'-webkit-transform': 'rotate(' + val + 'deg)',
+						'-moz-transform': 'rotate(' + val + 'deg)',
+						'-ms-transform': 'rotate(' + val + 'deg)'
+						// filter              : 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + (angle / 90) + ')'
 					});
 				}
 			});
@@ -973,18 +997,15 @@ define([
 					while (l--) {
 						pathRev.push(path[l]);
 					}
-					content.push('<div class="aloha-sidebar-panel-parent">' +
-						'<div class="aloha-sidebar-panel-parent-path">' +
-							pathRev.join('') +
-						'</div>' +
-						'<div class="aloha-sidebar-panel-parent-content' +
-							'aloha-sidebar-opened">' + (
-							(typeof renderer === 'function')
-								? renderer(el)
-								: '----'
-							) +
-						'</div>' +
-					 '</div>');
+					content.push(
+						'<div class="aloha-sidebar-panel-parent">'
+							+ '<div class="aloha-sidebar-panel-parent-path">'
+							+ pathRev.join('')
+							+ '</div>'
+							+ '<div class="aloha-sidebar-panel-parent-content'
+							+ 'aloha-sidebar-opened">'
+							+ ((typeof renderer === 'function') ? renderer(el) : '----') + '</div>' + '</div>'
+					);
 				}
 				el = el.parent();
 			}
@@ -992,8 +1013,7 @@ define([
 			this.setContent(content.join(''));
 
 			$('.aloha-sidebar-panel-parent-path').click(function () {
-				var $content = $(this).parent().find(
-					'.aloha-sidebar-panel-parent-content');
+				var $content = $(this).parent().find('.aloha-sidebar-panel-parent-content');
 				if ($content.hasClass('aloha-sidebar-opened')) {
 					$content.hide().removeClass('aloha-sidebar-opened');
 				} else {
@@ -1001,25 +1021,24 @@ define([
 				}
 			});
 
-			this.content.height('auto').find(
-				'.aloha-sidebar-panel-content-inner').height('auto');
+			this.content.height('auto').find('.aloha-sidebar-panel-content-inner').height('auto');
 		}
 
 	});
 
 	var left = new Sidebar({
-		position : 'left',
-		width	 : 250 // TODO define in config
+		position: 'left',
+		width: 250 // TODO define in config
 	});
 
 	var right = new Sidebar({
-		position : 'right',
-		width	 : 250 // TODO define in config
+		position: 'right',
+		width: 250 // TODO define in config
 	});
 
 	Aloha.Sidebar = {
-		left  : left,
-		right : right
+		left: left,
+		right: right
 	};
 
 	return Aloha.Sidebar;

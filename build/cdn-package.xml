@@ -6,19 +6,47 @@
 	<formats>
 		<format>zip</format>
 	</formats>
+	
+	
+	<fileSets>
+		<!-- Other non core files -->
+		<fileSet>
+			<directory>${project.basedir}/target/${build.profile}/rjs-output</directory>
+			<outputDirectory>/</outputDirectory>
+			<excludes>
+				<!-- Don't include the core -->
+				<exclude>lib/aloha/*.js</exclude>
+				<exclude>lib/aloha.js</exclude>
+				<exclude>**/*.less</exclude>
+				<exclude>test/**</exclude>
+				<exclude>**/.gitmodules</exclude>
+				<!-- Don't include the examples -->
+				<exclude>**/test/**</exclude>
+				<exclude>**/example/**</exclude>
+				<exclude>**/demo/**</exclude>
+			</excludes>
+		</fileSet>
+
+		<!-- Workaround for jquery-ui dependency -->
+		<fileSet>
+			<directory>${project.basedir}/target/${build.profile}/rjs-output</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>lib/aloha/jquery-ui.js</include>
+			</includes>
+		</fileSet>
+		
+	</fileSets>
+	
 	<files>
 		<!-- License -->
 		<file>
-			<source>${project.basedir}/LICENSE.txt</source>
+			<source>${project.basedir}/build/LICENSE.${build.license}.txt</source>
 			<outputDirectory>/</outputDirectory>
+			<destName>LICENSE.txt</destName>
 		</file>
 		
-		<!-- package.json file -->
-		<file>
-			<source>${project.basedir}/src/package.json</source>
-			<outputDirectory>/</outputDirectory>
-			<filtered>true</filtered>
-		</file>
+		
 		
 		<!-- Bare Version (No require, No jquery) - minified -->
 		<file>
@@ -58,38 +86,16 @@
 			<destName>aloha.js</destName>
 			<filtered>true</filtered>
 		</file>
+		
+		<!-- package.json file -->
+		<file>
+			<source>${project.basedir}/src/package.json</source>
+			<outputDirectory>/</outputDirectory>
+			<filtered>true</filtered>
+		</file>
 	</files>
 
 
-	<fileSets>
-		<!-- Other non core files -->
-		<fileSet>
-			<directory>${project.basedir}/target/${build.profile}/rjs-output</directory>
-			<outputDirectory>/</outputDirectory>
-			<excludes>
-				<!-- Don't include the core -->
-				<exclude>lib/aloha/*.js</exclude>
-				<exclude>lib/aloha.js</exclude>
-				<exclude>**/*.less</exclude>
-				<exclude>test/**</exclude>
-				<exclude>**/.gitmodules</exclude>
-				<!-- Don't include the examples -->
-				<exclude>**/test/**</exclude>
-				<exclude>**/example/**</exclude>
-				<exclude>**/demo/**</exclude>
-			</excludes>
-		</fileSet>
-
-		<!-- Workaround for jquery-ui dependency -->
-		<fileSet>
-			<directory>${project.basedir}/target/${build.profile}/rjs-output</directory>
-			<outputDirectory>/</outputDirectory>
-			<includes>
-				<include>lib/aloha/jquery-ui.js</include>
-			</includes>
-		</fileSet>
-		
-	</fileSets>
 
 	<includeBaseDirectory>false</includeBaseDirectory>
 </assembly>

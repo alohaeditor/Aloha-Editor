@@ -37,8 +37,8 @@
 
 	"licenses": [
 		{
-			"type": "GPLv2 or later",
-			"url": "http://www.gnu.org/licenses/gpl-2.0.html"
+			"type": "${build.licenseType}",
+			"url": "${build.licenseUrl}"
 		}
 	],
 
