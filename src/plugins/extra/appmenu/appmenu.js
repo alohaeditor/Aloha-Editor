@@ -54,7 +54,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         }
         $el = $(markup);
         $el.addClass(cls);
-        $el.bind('mousedown', function(evt) {
+        $el.on('mousedown', function(evt) {
           evt.stopPropagation();
           return evt.preventDefault();
         });
@@ -84,7 +84,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
       Menu.prototype._closeEverythingBut = function(item) {
         var that;
         that = this;
-        return item.el.bind('mouseenter', function() {
+        return item.el.on('mouseenter', function() {
           var child, _i, _len, _ref, _results;
           _ref = that.items;
           _results = [];
@@ -248,7 +248,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         var that;
         if (this.subMenu != null) {
           that = this;
-          return this.el.bind('mouseenter', function() {
+          return this.el.on('mouseenter', function() {
             return that._openSubMenu(true);
           });
         }
@@ -313,12 +313,12 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         this.action = action;
         that = this;
         this.el.off('click');
-        this.el.bind('click', function(evt) {
+        this.el.on('click', function(evt) {
           evt.preventDefault();
           return $('.menu').hide();
         });
         if (this.action) {
-          return this.el.bind('click', that.action);
+          return this.el.on('click', that.action);
         }
       };
 
@@ -337,12 +337,12 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         if (this.isDisabled && this.action) {
           this.el.off('click', this.action);
           if (this.accel) {
-            return this.el.unbind('keydown.appmenu', this.accel, this.action);
+            return this.el.off('keydown.appmenu', this.accel, this.action);
           }
         } else if (!this.isDisabled && this.action) {
           this.el.on('click', this.action);
           if (this.accel) {
-            return this.el.bind('keydown.appmenu', this.accel, this.action);
+            return this.el.on('keydown.appmenu', this.accel, this.action);
           }
         }
       };
@@ -387,11 +387,11 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
           return that.action();
         };
         if (isSelected) {
-          this.$keyBinder.bind('keydown.appmenuaria', 'up', ariaUp);
-          this.$keyBinder.bind('keydown.appmenuaria', 'down', ariaDown);
-          this.$keyBinder.bind('keydown.appmenuaria', 'left', ariaLeft);
-          this.$keyBinder.bind('keydown.appmenuaria', 'right', ariaRight);
-          return this.$keyBinder.bind('keydown.appmenuaria', 'enter', ariaEnter);
+          this.$keyBinder.on('keydown.appmenuaria', 'up', ariaUp);
+          this.$keyBinder.on('keydown.appmenuaria', 'down', ariaDown);
+          this.$keyBinder.on('keydown.appmenuaria', 'left', ariaLeft);
+          this.$keyBinder.on('keydown.appmenuaria', 'right', ariaRight);
+          return this.$keyBinder.on('keydown.appmenuaria', 'enter', ariaEnter);
         } else {
           return this.$keyBinder.off('keydown.appmenuaria');
         }
@@ -400,13 +400,13 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
       MenuItem.prototype.setAccelContainer = function($keyBinder) {
         var that;
         if (this.$keyBinder) {
-          this.$keyBinder.unbind('keydown.appmenu');
+          this.$keyBinder.off('keydown.appmenu');
         }
         this.$keyBinder = $keyBinder;
         if ((this.accel != null) && this.$keyBinder) {
           that = this;
           if (this.action) {
-            this.$keyBinder.bind('keydown.appmenu', this.accel, this.action);
+            this.$keyBinder.on('keydown.appmenu', this.accel, this.action);
           }
         }
         if (this.subMenu) {
@@ -478,7 +478,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         }
         if (this.subMenu != null) {
           that = this;
-          return this.el.bind('click', function() {
+          return this.el.on('click', function() {
             return that._openSubMenu(false);
           });
         }
@@ -541,7 +541,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
       MenuButton.prototype._addEvents = function() {
         var that;
         that = this;
-        return this.el.bind('mouseenter', function(evt) {
+        return this.el.on('mouseenter', function(evt) {
           var openMenu, _i, _len, _ref, _results;
           _ref = $('.menu');
           _results = [];
