@@ -8,50 +8,57 @@ TIP: We suggest that you open up the block demo located at +src/demo/block/index
 
 h3. What are Aloha Blocks?
 
-*Aloha Blocks* (Blocks) are non-editable areas of a website, which often have
-some properties being editable through the Aloha user interface.
+*Aloha Blocks* (Blocks) are non-editable areas of a website that often have
+some properties that can be edited via the Aloha user interface.
 
 Some use cases for blocks include:
 
 * Displaying a vCard of a person from an address book as a paragraph inside
-  an editable, where the person can be chosen through the Aloha UI
-* Display a custom "inline image" in continuous text, which could float either left or right,
-  and where the image caption is again changeable using Aloha
-* Show a listing of news inside or outside an editable.
-* Create a "column" container which can contain other blocks or other contents
+  an editable, where the person whose information is to be displayed can be chosen through the Aloha UI
+* Displaying a custom "inline image" in continuous text, which could float either left or right,
+  with an image caption that can be set using Aloha
+* Showing a list of news inside or outside an editable.
+* Creating a "column" container that can contain other blocks or other contents
 
 Some properties of blocks:
 
 * Blocks can occur inside or outside of Aloha Editables
-* Both +<span>+ and +<div>+ elements can be blockified (i.e. converted to blocks)
-* can contain nested editable areas
-* can be copy/pasted and dragged/dropped if they are inside an Aloha editable
-* can be deleted using backspace or DEL if inside an editable
+* Both +<span>+ and +<div>+ elements can be blockified (i.e. converted to blocks). You may however "change the list of root tags":#changing-the-root-tags if you have further requirements.
+* Blocks can contain nested editable areas
+* Blocks can be copy/pasted and dragged/dropped if they are inside an Aloha editable
+* Blocks can be deleted using backspace or DEL if inside an editable
 
 
 h3. Enabling the Block Plugin
 
 Aloha Blocks are implemented as a plugin called @block@, which is part of the @common@ bundle.
 
-Furthermore, you need to load the @paste@ plugin. Thus, just add +common/block,common/paste+ to the @data-aloha-plugins@ loading list.
+Furthermore, the @paste@ plugin is also a requirement in order to use blocks. Thus, just add +common/block,common/paste+ to the @data-aloha-plugins@ loading list.
 
 WARNING: As the @contenthandler@ plugin currently cleans up the HTML very rigidly, this can interfere with blocks. If you use them together, make sure to test thoroughly that no unwanted HTML is removed.
 
 h4. Initializing  Blocks
 
-Blocks need to be initialized before they can be used. Most conveniently, it should be done when the page is loaded. The most simple way to initialize a block is by using the +.alohaBlock()+ function on a jQuery collection, i.e. to make @.vcard@ a block, just use @jQuery('.vcard').alohaBlock()@.
+Blocks need to be initialized before they can be used. Most conveniently, it should be done when the page is loaded. The simplest way to initialize a block is by using the +.alohaBlock()+ function on a jQuery collection. For example, to make @.vcard@ a block, just use @jQuery('.vcard').alohaBlock()@.
 
 TIP: Make sure to wrap the initialization code inside an @Aloha.ready()@ callback, to make
      sure Aloha is fully loaded by then.
 
+TIP: You can use the reverse function +.mahaloBlock()+ to "unblock" the elements in a jQuery collection.
+
 NOTE: It is only allowed to convert @span@ or @div@ elements into an Aloha Block. Otherwise,
       an error will be thrown. So watch the browser's console output when debugging!
+      The reason is that edit-icons can't otherwise be added to the block root
+      element. For example, edit-icons wouldn't work correctly in an 'a' root
+      element. The reason that edit-icons have to be added to the blockified
+      element instead of being absolutely positioned is that absolutely
+      positioned edit-icons may overlap with content.
 
 The @alohaBlock@ function takes a configuration object of *Block Attributes*, which are set on the block.
 
 h4. Block Attributes
 
-Each block can have multiple *block attributes*, which are like configuration parameters and can influence the rendering of blocks. A block attribute key is only allowed to be lowercase, and shall contain only @a-z, 0-9, -@ and @_@ in the name. The block attribute value must be a string:
+Each block can have multiple *block attributes*, which are like configuration parameters and can influence the rendering of blocks. A block attribute key may only be lowercase, and can contain only @a-z, 0-9, -@ and @_@ in the name. The block attribute value must be a string:
 
 <javascript>
 // Valid block attributes
@@ -77,16 +84,18 @@ NOTE: Because block attributes are stored as @data@ attributes on the block DOM 
 
 Block attributes can be set at construction time through +.alohaBlock(attrs)+ or using the +block.attr()+ function at runtime.
 
-All block attributes which start with +aloha-block-+ are *internal* and can *only* be set during construction time.
+All block attributes that start with +aloha-block-+ are *internal* and can *only* be set during construction time.
 
 h4. Block Types
 
 One special block attribute is called +aloha-block-type+, which must be set to one of the block types registered at the @BlockManager@. It can be only set during construction time, and if it is not set, the @DefaultBlock@ is automatically chosen.
 
-Depending on the block type, a different @Block@ class is being instanciated. Later, you will be introduced in writing your own block type.
+Depending on the block type, a different @Block@ class will be instantiated. Later, you will be introduced to writing your own block type.
 
-TIP: Aloha shows configuration errors on the firebug or webkit console; so watch this place
-     for any errors, f.e. because block types were not found.
+The stripped-down @EmptyBlock@ type is available by default and is provided as a minimal block implementation with no additional behavior. 
+
+TIP: Aloha shows configuration errors on the Firebug or WebKit console; so watch this area
+     for any errors, for example block types not being found.
 
 h4. Block Attribute Overriding Sources
 
@@ -96,7 +105,7 @@ When calling @.alohaBlock@ on an element, the following data is merged together:
 * The block attributes specified in the @.alohaBlock(attr)@ function
 * All @data-@ attributes on the corresponding DOM node.
 
-That is, if a DOM node which should be blockified has a @data-aloha-block-type@ property, this one is always used. Else, the @aloha-block-type@ property from the @.alohaBlock()@ function is used (if given). If nothing is specified, the @DefaultBlock@ is used.
+That is, if a DOM node that should be blockified has a @data-aloha-block-type@ property, this property is always used. Otherwise, the @aloha-block-type@ property from the @.alohaBlock()@ function is used (if given). If nothing is specified, the @DefaultBlock@ is used.
 
 The same is done for all block attributes, not only @aloha-block-type@.
 
@@ -115,7 +124,7 @@ Aloha.ready(function() {
 });
 </javascript>
 
-To make such initialization code more easy to write and more declarative, this can be also written inside the Aloha settings:
+To make such initialization code easier to write and more declarative, this can also be written inside the Aloha settings:
 
 <javascript>
 Aloha.settings.plugins.block.defaults {
@@ -128,7 +137,7 @@ Aloha.settings.plugins.block.defaults {
 }
 </javascript>
 
-Using Aloha settings is the preferred way of initialization, as it is more easy to read.
+Using Aloha settings is the preferred way of initialization, as it is easier to read.
 
 h3. Interacting with Blocks
 
@@ -148,23 +157,24 @@ require(['block/blockmanager'], function(BlockManager) {
 });
 </javascript>
 
-After you retrieved a block instance, you can use the public API of it. The most important
+After you retrieved have a block instance, you can use the public API of it. The most important
 methods are:
 
 * +attr(key, value)+ to set @key@ to @value@
 * +attr({key1: value1, key2: value2})+ to set multiple values simultaneously
 * +attr(key)+ to retrieve the value for @key@
-* +attr()+ to retrieve all key/values as objecz
+* +attr()+ to retrieve all key/values as object
 * +activate()+ to activate the block
 * +deactivate()+ to deactivate the block
+* +unblock()+ to remove this block, but retain the DOM Element
 
 When an attribute is changed through @attr@, the block is re-rendered automatically.
 
 h3. Writing a Custom Aloha Block
 
 When writing a custom block, you should do so in your own *aloha plugin*.
-Inside the *plugin module*, you need to register the Aloha Blocks at the
-Block Manager. An example skeleton follows:
+Inside the *plugin module*, you need to register the Aloha Blocks with the
+Block Manager. An example skeleton is as follows:
 
 <javascript>
 define([
@@ -198,17 +208,17 @@ Now, you can implement the main API of the block, as explained in the next secti
 
 h4. Initialization and Rendering API
 
-The first method you can override is the +init($element, postProcessFn)+ method. There, you get the jQuery @$element@ as argument, and can use it to register f.e. custom event handlers or initialize the block contents. The second parameter is a function which needs to be run *always* after init() is complete. Furthermore, you can set block attributes using the @attr()@ method if needed.
+The first method you can override is the +init($element, postProcessFn)+ method. There, you get the jQuery @$element@ as argument, and can use it to register custom event handlers or initialize the block contents, for example. The second parameter is a function that *always* needs to be executed after init() is complete. Furthermore, you can set block attributes using the @attr()@ method if needed.
 
 NOTE: init() requires you to call *postProcessFn*, as this enables you to do asynchronous queries inside init().
 
 WARNING: +init()+ can be called multiple times under some circumstances; so do *not* rely on the fact that init is only run once in your code. See the API doc about @init()@ for further explanations on this.
 
-After the +init()+ method, the @$element@ is *augumented* by additional DOM nodes, which are needed f.e. for the drag/drop handles of the block.
+After the +init()+ method, the @$element@ is *augmented* by additional DOM nodes, which are needed f.e. for the drag/drop handles of the block.
 
-The second place you will most certainly override is the +update($element, postProcessFn)+ method. This method is called always when one or multiple block attributes changed, so you are able to run any code you want inside there, manipulating @$element@.
+The second place you will most certainly override is the +update($element, postProcessFn)+ method. This method is always called when one or multiple block attributes have changed, so you are able to run any code you want inside there, manipulating @$element@.
 
-In some use cases, you will want to do some asynchronous work inside the @update()@ method, like fetching an updated rendering of the element via AJAX from the server side. That is the reason of the @postProcessFn@ callback function you get as second method argument: This function must be *always called* after the @$element@ has been modified, as it renders the drag/drop handles if necessary.
+In some use cases, you will want to do some asynchronous work inside the @update()@ method, like fetching an updated rendering of the element via AJAX from the server side. That is the reason of the @postProcessFn@ callback function you get as second method argument: This function must *always be called* after the @$element@ has been modified, as it renders the drag/drop handles, if necessary.
 
 Because we add some special DOM nodes to the @$element@ (for displaying the drag/drop handles for example), you should not rely on stuff like the number of child elements of @$element@. If you still need to do this, make sure to filter out all elements which have an +aloha-block-handle+ CSS class applied (as they are internal elements).
 
@@ -219,9 +229,9 @@ If you wish to write custom block handles, e.g. for deleting a block or adding n
 There are two rules to follow:
 
 * First, the method must be *idempotent*, that is, it needs to have the same behavior
-  no matter how often it is called. This means f.e. that if this method inserts a drag handle,
+  no matter how often it is called. This means, for example, that if this method inserts a drag handle,
   it is only allowed to do so if the drag handle is not yet inserted.
-* Second, the method must mark all DOM nodes which are added with the CSS class
+* Second, the method must mark all DOM nodes that are added with the CSS class
   +aloha-block-handle+ such that they are marked as internal.
 
 The default block handles function looks as follows, rendering a drag handle:
@@ -236,13 +246,17 @@ renderBlockHandlesIfNeeded: function() {
 }
 </javascript>
 
+NOTE: if you use image elements as icons, mark them with the class
+      'aloha-ui', otherwise the image plugin will pick them up as normal
+      content images that can be resized etc.
+
 h4. Nested Aloha Editables
 
-If you want to mark a certain area inside a block as aloha editable again, you just need to apply the +aloha-editable+ CSS class to it. If the default behavior is not what you want, you can also call @$element.find(...).aloha()@ in the @init()@ and/or @update()@ method.
+If you want to mark a certain area inside a block as Aloha editable again, you just need to apply the +aloha-editable+ CSS class to it. If the default behavior is not what you want, you can also call @$element.find(...).aloha()@ in the @init()@ and/or @update()@ method.
 
 h3. Editing API
 
-The attributes of an Aloha Block can be edited through an automatically generated User Interface in the *Aloha Sidebar*. Of course, this user interface needs to know which block attributes are editable. For that, an Aloha Block can contain a *schema* which defines this information. Simply override the @getSchema()@ method and make it return a schema.
+The attributes of an Aloha Block can be edited through an automatically generated User Interface in the *Aloha Sidebar*. Of course, this user interface needs to know which block attributes are editable. For that, an Aloha Block can contain a *schema* that defines this information. Simply override the @getSchema()@ method and make it return a schema.
 
 A basic schema can look like this:
 
@@ -259,7 +273,7 @@ getSchema: function() {
 
 It just defines that the block attribute +symbol+ is of type @string@ and has a certain label.
 
-Additionally, the Aloha Block needs a title which is shown in the sidebar. Just set the +title+ property of your block, or for more advanced computations override the @getTitle()@ method.
+Additionally, the Aloha Block needs a title, which is shown in the sidebar. Just set the +title+ property of your block, or for more advanced computations override the @getTitle()@ method.
 
 h4. Introducing Editors
 
@@ -359,7 +373,7 @@ h4. Writing a Custom Editor
 
 For writing custom editors, just check the +AbstractEditor+ and +AbstractFormElementEditor+ inside @lib/editor.js@, as well as the default editor implementations. It should be quite self-explanatory :-)
 
-In case you do not extend the @AbstractFormElementEditor@ you just need to remember one thing -- Make sure to throw a +change+ event on the editor class, with the changed value as parameter:
+In case you do not extend the @AbstractFormElementEditor@ you just need to remember one thing -- Make sure to throw a +change+ event on the editor class, with the changed value as a parameter:
 
 <javascript>
 this.trigger('change', this.getValue());
@@ -367,17 +381,17 @@ this.trigger('change', this.getValue());
 
 Then the framework takes care of updating the attribute in the Aloha Block accordingly.
 
-If you subclass +AbstractFormElementEditor+, you mostly do not need to deal with the event handling yourself, as this is done for you. This can greatly simplify the editors.
+If you subclass +AbstractFormElementEditor+, you mostly do not need to deal with event handling yourself, as this is done for you. This can greatly simplify the editors.
 
 TIP: Check the example editors in @plugins/common/block/lib/editor.js@, they are really easy and small.
 
 h3. Advanced Topics
 
-Here, we want to show some advanced integration tips and tricks.
+Here, we will give an overview of some advanced integration tips and tricks.
 
 h4. Block Collections
 
-Sometimes, you want to create blocks which are mainly a container for other blocks. An example is a "Column" block, which should accomodate other blocks. Now, there are two supported possibilities for that.
+Sometimes, you want to create blocks that are mainly a container for other blocks. An example is a "Column" block, which should accomodate other blocks. Now, there are two supported possibilities for that.
 
 First, you can mark your columns with the CSS class +aloha-editable+, and then these columns can contain other blocks. Use this when you want to allow content to be placed *between* your blocks.
 
@@ -387,7 +401,7 @@ Check the example blocks for a demo of this feature.
 
 h4. Custom Floating Menu
 
-When the Aloha Blocks are active, we set a custom Floating Menu scope called:  +Aloha.Block.(alohaBlockType}+. so for example @Aloha.Block.DefaultBlock@, so you add buttons to the floating menu if you want to show them when a specific block is active.
+When the Aloha Blocks are active, we set a custom Floating Menu scope called  +Aloha.Block.(alohaBlockType}+, so, for example, @Aloha.Block.DefaultBlock@. You add buttons to the floating menu if you want to show them when a specific block is active.
 
 h4. Disabling the sidebar editor
 
@@ -400,20 +414,99 @@ Aloha.settings.plugins.block.sidebarAttributeEditor = false;
 Then, you need to listen to some events on the BlockManager, most notably the +block-selection-change+ event, which is triggered each time the block selection changes.
 
 <javascript>
-BlockManager.bind('block-selection-change', function(blocks) {
+BlockManager.bind('block-selection-change', function (blocks) {
 	// blocks is an array now, where the first element is the selected block
 	// and the other elements are the ancestor blocs.
 	// If the array is empty, no block has been selected.
 });
 </javascript>
 
+The block-selection-change is cumbersome to rely on when you don't care
+about the global state of "which blocks are selected" but when you do
+care about the local state of each block, i.e. when you want to do
+things whenever a block gets or loses focus, use the
+block-activate and block-deactivate events.
+
+<javascript>
+BlockManager.bind('block-activate', function (blocks) { });
+BlockManager.bind('block-deactivate', function (blocks) { });
+</javascript>
+
 h4. Preventing switch of scope for a block
 
-The block plugin will switch the current scope to a block-specific one whenever a block is activated. To prevent it from doing so just add the @data-block-skip-scope="true"@ attribute to the element you plan to turn into a block. As long as it's value is "true" the scope will not be switched. 
+The block plugin will switch the current scope to be block-specific whenever a block is activated. To prevent it from doing so just add the @data-block-skip-scope="true"@ attribute to the element you plan to turn into a block. As long as its value is "true" the scope will not be switched. 
+
+h4. Enabling/Disabling drag & drop for blocks 
+
+If a block is placed inside an editable, it can be draged/dropped by default. If you want to prevent drag/drop behaviour for all blocks, add the following configuration option:
+
+<javascript>
+Aloha.settings.plugins.block.dragdrop = false;
+</javascript>
+
+Also, it is possible to allow users to toggle the drag/drop behaviour per editable by placing a button in the floating menu. To define the toggle drag/drop button for all editables, use the following configuration:
+
+<javascript>
+Aloha.settings.plugins.block.config.toggleDragdrop = true;
+</javascript>
+
+Alternatively, you can show this button only for selected editables:
+
+<javascript>
+Aloha.settings.plugins.block.editables = {
+	'#editable-1': { 'toggleDragdrop': true },
+	'#editable-2': { 'toggleDragdrop': false },
+};
+</javascript>
+
+With the following settings the toggle button can be made to toggle the
+drag and drop feature for all editables instead of per-editable. Turning
+this setting on will override any of the per-editable settings above and
+will make the toggle button always visible.
+
+<javascript>
+Aloha.settings.plugins.block.config.toggleDragdropGlobal = true;
+</javascript>
+
+h4. Defining Dropzones
+
+When a block is being dragged, it can be dropped to any editable available in the page by default. To specify explicit drop targets for blocks inside an editable, use the `dropzones` option.
+
+<javascript>
+Aloha.settings.plugins.block.editables = {
+	'#editable-1': { 'dropzones': [ '#editable-1', '#editable-2' ]},
+	'#editable-2': { 'dropzones': [ '#editable-2' ]},
+};
+</javascript>
+
+In the above example, blocks defined in "#editable-1" can be dragged to either "#editable-1" or "#editable-2". However, blocks in "#editable-2" can only be dragged within itself.
+
+You can also define the dropzones globally.
+
+<javascript>
+Aloha.settings.plugins.block.dropzones = [ '#editable-1', '#editable-2' ];
+</javascript>
+
+h4. Changing the root tags
+
+WARNING: Please note that changing the root tags will result in undesired behaviour when using Drag/Drop functionality of the block plugin. You must stick to span and div if you want to use Drag/Drop.
+
+The block plugin will only allow for +<span>+ and +<div>+ elements as root tags when creating blocks. You can however change that using the following setting:
+
+<javascript>
+// add tables and paragraphs to the default
+// list of root tags
+Aloha.settings.plugins.block.rootTags = [ 
+	'span', 
+	'div', 
+	'table', 
+	'p' 
+];
+</javascript>
 
 h3. Internals
 
-For this work, numerous IE hacks were needed. Especially in areas like Drag/Drop, Deletion and Copy/Paste, especially IE7 and IE8 differ considerably in their behavior. See the compatibility matrix below for the tests which have been run.
+For this work, numerous IE hacks were needed. Especially in areas like Drag/Drop, Deletion and Copy/Paste with regards to IE7 and IE8, which differ considerably in their behavior. See the compatibility matrix below for the tests which have been run.
 
 h4. Browser Compatibility Matrix
 

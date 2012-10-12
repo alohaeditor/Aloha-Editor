@@ -81,6 +81,7 @@ Plugins in the @extra@ directory:
 
 * "extra/attributes":plugin_attributes.html - 
 * "extra/browser":plugin_browser.html - provides a browser for the Repository API to insert links or images
+* "extra/captioned-image":plugin_captioned-image.html - provides images with captions as AE Block
 * "extra/cite":plugin_cite.html - provides the possibility to add references to content quoted from another source
 * "extra/comments":plugin_comments.html - add inline comments which are stored in the DOM
 * "extra/draganddropfiles":plugin_draganddropfiles.html - use Drag and Drop to upload files
@@ -105,4 +106,4 @@ Plugins in the @extra@ directory:
 
 
 Community Plugins:
-* "colorselector":https://github.com/mihaisimi/Aloha-Plugin-Colorselector - add font color or background color
+* "colorselector":https://github.com/deliminator/Aloha-Plugin-Colorselector - add font color or background color

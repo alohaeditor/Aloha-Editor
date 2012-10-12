@@ -11,7 +11,7 @@ menuSettings = [
 ]
 
 toolbarSettings = [
- 'bold', 'italic', 'underline', '', 'insertLink', 'insertImage', 'insertFigure', '', 'orderedList', 'unorderedList', 'outdentList', 'indentList'
+ 'bold', 'italic', 'underline', '', 'insertLink', 'insertImage', 'insertFigure', '', 'orderedList', 'unorderedList', 'outdentList', 'indentList', 'createTable'
 ]
 
 define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmenu/appmenu', "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, Ribbon, appmenu, i18n, i18nCore) ->
@@ -40,7 +40,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
         if 'string' == $.type item
           if '' == item
             return new appmenu.Separator()
-          menuItem = new appmenu.MenuItem 'EMPTY_LABEL'
+          menuItem = new appmenu.MenuItem item
           lookupMap[item] = menuItem
           return menuItem
         else
@@ -89,8 +89,8 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
         if slot of menuLookup and slot of toolbarLookup
           item = menuLookup[slot]
           item2 = toolbarLookup[slot]
-          item.element = item.el # CreateTable and some others do onclick () -> this.element
-          item2.element = item2.el # CreateTable and some others do onclick () -> this.element
+          item.el[0].element = item.el # CreateTable and some others do onclick () -> this.element
+          item2.el[0].element = item2.el # CreateTable and some others do onclick () -> this.element
 
           item.setText(settings.tooltip)
           item.setIcon(settings.icon)

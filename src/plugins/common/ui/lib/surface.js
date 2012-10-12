@@ -11,16 +11,13 @@ define([
 ) {
 	'use strict';
 
-	var Surface;
-
 	/**
 	 * The Surface class and manager.
 	 *
 	 * @class
 	 * @base
 	 */
-	Surface = Class.extend({
-
+	var Surface = Class.extend({
 		_constructor: function(context) {
 			context.surfaces.push(this);
 		},
@@ -34,12 +31,11 @@ define([
 		isActive: function() {
 			return true;
 		}
-
 	});
 
 	// Static fields for the Surface class.
 
-	$.extend( Surface, {
+	$.extend(Surface, {
 
 		/**
 		 * The range of the current selection.

@@ -62,6 +62,7 @@ define([
 				tooltip: i18n.t('button.addimage.tooltip'),
 				icon: 'aloha-icon-tree',
 				scope: 'Aloha.continuoustext',
+				'class': 'aloha-imagebrowser-button',
 				click: function () { browser.open(); }
 			});
 

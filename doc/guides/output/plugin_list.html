@@ -43,7 +43,7 @@
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
         <h2><a href="/"></a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -56,39 +56,25 @@
           <hr style="clear:both;">
           <dl class="L">
     <dt>Start Here</dt>
-      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
-      <dd><a href="functional_description.html">Functional Description</a></dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
-      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
-      <dd><a href="repository.html">Working with repositories</a></dd>
+      <dd><a href="using_aloha.html">Use</a></dd>
+      <dd><a href="develop_aloha.html">Develop</a></dd>
+      <dd><a href="dependencies.html">Dependencies</a></dd>
     <dt>The Core</dt>
-      <dd><a href="core.html">The Core</a></dd>
-    <dt>Commands</dt>
-      <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd><a href="events.html">Events</a></dd>
+      <dd><a href="using_commands.html">Commands</a></dd>
+      <dd><a href="repository.html">Repositories</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="internals.html">Internals</a></dd>
 </dl>
 <dl class="R">
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd><a href="core_hotkey.html">Hotkeys</a></dd>
     <dt>Plugins</dt>
-      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
-      <dd><a href="plugin_block.html">Block</a></dd>
-      <dd><a href="plugin_image.html">Image</a></dd>
-      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
-      <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd>Numerated Headers</dd>
-      <dd><a href="plugin_undo.html">Undo</a></dd>
-      <dd><a href="plugin_table.html">Table</a></dd>
-      <dd><a href="plugin_paste.html">Paste</a></dd>
-      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
-      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
+      <dd><a href="plugins.html">Available Plugins</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
-      <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
 </dl>
@@ -113,13 +99,7 @@
 <p>Move the cursor to your desired position and click on the ordered <tt>&lt;ol&gt;</tt> or unordered <tt>&lt;ul&gt;</tt> list icon at the Aloha Editor to start creating a list. Now you can enter list elements and add a new ones by pressing enter on your keyboard. To end adding new list elements press enter twice. Now you are able to enter paragraphs again. In order to add new elements or edit existing elements just move to cursor to the desired position of the list and add via pressing enter or edit elements. To delete an element or the whole list mark the element(s) and press backspace. If you want to delete the formatting but not the content of a list, just mark the list elements and click on the unordered or ordered list button on the &#8220;Format&#8221; tab again.</p>
 <p>You can use the tab key to indent lists or use shift-tab to outdent them if you are inside of a nested list. The type of lists and nested lists may be changed from ordered to unordered lists and vice versa by clicking the ordered list or unordered list button from the FloatingMenu.</p>
 <p>You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.</p>
-<h3 id="components">2 Components</h3>
-<p>The List Plugin provides two components</p>
-<ul>
-	<li>ul &#8211; for inserting unordered lists</li>
-	<li>ol &#8211; for inserting ordered lists</li>
-</ul>
-<h3 id="configuration-settings">3 Configuration settings</h3>
+<h3 id="configuration-settings">2 Configuration settings</h3>
 <p>Add the available components <tt>'ol', 'ul'</tt> to the editables where you want to use them:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -133,15 +113,20 @@
 			}
 		}
 	}
-</pre></div>
+</pre></div><h3 id="components">3 Components</h3>
+<p>The List Plugin provides two components</p>
+<ul>
+	<li>ul &#8211; for inserting unordered lists</li>
+	<li>ol &#8211; for inserting ordered lists</li>
+</ul>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
             <li><a href="#functional-description"><p>Functional Description</p>
-</a></li><li><a href="#components"><p>Components</p>
 </a></li><li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li><li><a href="#components"><p>Components</p>
 </a></li>
           </ol>
         </div>

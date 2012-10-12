@@ -18,7 +18,11 @@ function (jQuery, Component, Utils) {
 	 * is--anything that is not a label) will most probably extend the Button
 	 * component.
 	 *
-	 * Buttons have no state, they only respond to click events.
+	 * An extending class should optionally define the following properties
+	 * tooltip - the internationalized tooltip text,
+	 * icon    - the icon class,
+	 * class   - an additional class to add to the button element,
+	 * click   - the click handler for the button.
 	 *
 	 * @class
 	 * @name Button
@@ -83,8 +87,12 @@ function (jQuery, Component, Utils) {
 		 * @return {jQuery<HTMLElement>}
 		 */
 		createButtonElement: function () {
-			this.element = this.buttonElement = Utils.makeButtonElement();
-			return this.buttonElement;
+			var button = Utils.makeButtonElement();
+			if (this['class']) {
+				button.addClass(this['class']);
+			}
+			this.element = this.buttonElement = button;
+			return button;
 		},
 
 		/**

@@ -1,0 +1,72 @@
+.toolbar-container .menu-icon {
+    width: 32px;
+    height: 32px;
+    background: url(../img/toolbar.png) no-repeat;
+    &.aloha-icon-bold {
+        background-position: -56px 0;
+    }
+    &.aloha-icon-italic {
+        background-position: -155px 0;
+    }
+    &.aloha-icon-underline {
+        background-position: -485px 0;
+    }
+    &.aloha-icon-superscript {
+        background-position: -420px 0;
+    }
+    &.aloha-icon-subscript {
+        background-position: -385px 0;
+    }
+    &.aloha-image-insert {
+        background: url(../img/toolbar.png) no-repeat -123px 0 !important;
+    }
+    &.aloha-table-insert {
+        background-position: -455px 0;
+    }
+    &.aloha-icon-undo {
+        background-position: -518px 0;
+    }
+    &.aloha-icon-redo {
+        background-position: -288px 0;
+    }
+    &.aloha-icon-unorderedlist {
+        background-position: -584px 0;
+    }
+    &.aloha-icon-orderedlist{
+        background-position: -254px 0;
+    }
+}
+
+.menu {
+    &> .menu-item > .menu-icon {
+        left: 7px !important;
+        width: 17px;
+        height: 17px;
+    }
+}
+
+.toolbar-container {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+}
+
+.ui-dialog {
+    & .aloha-simpletoolbar-dialog-group {
+        white-space: nowrap;
+    }
+    & .aloha-ui-label {
+        & span.aloha-ui-label-text {
+            margin-right: 0.25em;
+        }
+        & input, & select, & textarea, & button {
+            margin-right: 1em;
+        }
+    }
+    & .ui-icon-closethick {
+        background-image: url(../img/ui-icons_222222_256x240.png);
+        background-position: -96px -128px;
+    }
+}
+

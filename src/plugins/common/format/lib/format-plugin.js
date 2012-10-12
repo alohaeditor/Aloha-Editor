@@ -159,9 +159,9 @@ define('format/format-plugin', [
 		/**
 		 * available options / buttons
 		 * 
-		 * @todo new buttons needed for 'del', 'code'
+		 * @todo new buttons needed for 'code'
 		 */
-		availableButtons: [ 'u', 'strong', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+		availableButtons: [ 'u', 'strong', 'del', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
 
 		/**
 		 * HotKeys used for special actions
@@ -437,7 +437,7 @@ define('format/format-plugin', [
 					title    : i18n.t( 'floatingmenu.tab.format' ),
 					content  : '',
 					expanded : true,
-					activeOn : this.formatOptions,
+					activeOn : this.formatOptions || false,
 
 					onInit: function () {
 					},

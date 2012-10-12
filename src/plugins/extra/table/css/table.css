@@ -1,0 +1,67 @@
+.aloha-editable table {
+    table-layout: fixed;
+    width: 98%;
+    margin: 0.25em 1em;
+    border-top: 1px solid #666666;
+    border-left: 1px solid #666666;
+    border-collapse: collapse;
+}
+
+.aloha-editable table td, .aloha-editable table th {
+    border-bottom: 1px solid #666666;
+    border-right: 1px solid #666666;
+}
+
+.aloha-editable table caption {
+    padding-top: 0.25em;
+    text-align: left;
+    caption-side: bottom;
+    color: #336699;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.aloha-editable th {
+    background-color: #F3F3F3;
+    text-align: left;
+}
+
+/* create dialog */
+.aloha-table-createdialog {
+	z-index: 99999;
+	position: absolute;
+	background-color: #F0F0F0;
+	border: 1px solid #cccccc;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+}
+.aloha-table-createdialog table {
+	padding: 0px;
+	margin: 0px;
+    border-collapse: collapse;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+}
+.aloha-table-createdialog table td {
+	margin: 0px;
+	padding: 0px;
+	border: 1px solid #AFAFAF;
+	font-size: 8px;
+	width: 15px;
+	height: 15px;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+}
+.aloha-table-createdialog table td.hover {
+	background-color: #1c94c4;
+}
+.aloha-table-createdialog #table-size-info {
+	text-align: center;
+	font-size: 0.8em;
+}
+
+.aloha-table-createdialog table td.header {
+    background-color: #AAAAAA !important;
+}

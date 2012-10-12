@@ -9,6 +9,7 @@ define([
 	'ui/component',
 	'ui/scopes',
 	'ui/context',
+	'ui/utils',
 	'aloha/repositorymanager',
 	'aloha/selection',
 	'aloha/console',
@@ -19,6 +20,7 @@ define([
 	Component,
 	Scopes,
 	Context,
+	Utils,
 	RepositoryManager,
 	Selection,
 	console
@@ -38,6 +40,24 @@ define([
 	// * repository manager markObject on the target object if a repository
 	//   item was selected (example link plugin)
 
+	/**
+	 * Creates a new attribute field.
+	 *
+	 * @param {!Object} props
+	 *        A map containing the following properties
+	 *        name         -
+	 *        label        - some text that will be displayed alongside
+	 *                       the attribute field,
+	 *        labelClass   - a class to identify the label element,
+	 *        valueField   -
+	 *        displayField -
+	 *        objectTypeFilter -
+	 *        placeholder  -
+	 *        noTargetHighlight -
+	 *        cls          -
+	 *        width        -
+	 *        scope        -
+	 */
 	var AttributeField = function (props) {
 		var valueField = props.valueField || 'id',
 		    displayField = props.displayField || 'name',
@@ -61,11 +81,19 @@ define([
 		}
 
 		component = Ui.adopt(props.name, Component, {
+			scope: props.scope,
 			init: function(){
 
-				// Why do we have to wrap the element in a span? It
-				// doesn't seem to work otherwise.
-				this.element = $('<span>').append(element);
+				if (props.label) {
+					this.element = Utils.wrapWithLabel(props.label, element);
+					if (props.labelClass) {
+						this.element.addClass(props.labelClass);
+					}
+				} else {
+					// Why do we have to wrap the element in a span? It
+					// doesn't seem to work otherwise.
+					this.element = $('<span>').append(element);
+				}
 
 				element.autocomplete({
 					'html': true,
@@ -86,10 +114,8 @@ define([
 					},
 					"select": onSelect
 				});
-			},
-			scope: props.scope
-		})
-
+			}
+		});
 
 		element
 			.bind("focus", onFocus)
