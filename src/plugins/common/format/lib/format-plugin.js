@@ -473,7 +473,7 @@ i18nCore) {
 				title: i18n.t('floatingmenu.tab.format'),
 				content: '',
 				expanded: true,
-				activeOn: activeOnPattern || false, // 'p, h1' pl.formatOptions not working ... 
+				activeOn: activeOnPattern || false,
 
 				onInit: function () {},
 
