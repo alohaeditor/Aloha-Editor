@@ -53,49 +53,41 @@ define [ "aloha", "jquery", "css!bubble/css/bubble.css" ], (Aloha, jQuery) ->
     
     $bubble.on 'mouseenter', () ->
     clearTimeout($el.data('aloha-bubble-closeTimer'))
-    if not $el.data('aloha-bubble-clicked')
+    if $el.data('aloha-bubble-hovered')
       $bubble.on 'mouseleave', () ->
         jQuery(@).remove()
 
 
   class Bubbler
-    constructor: (@displayer, $nodes=null, @placement={vertical:'below',horizontal:'start'}) ->
-      @applyTo($nodes) if $nodes?
-      
-    setPlacement: (vertical='below', horizontal='start') ->
-      @placement.vertical = vertical
-      @placement.horizontal = horizontal
-    
-    applyTo: ($nodes) ->
+    constructor: (@displayer, $context, selector, @placement={vertical:'below',horizontal:'start'}) ->
       that = @
       
       # Custom event to open the bubble used by setTimeout below
-      $nodes.on 'open', (evt, force) ->
+      $context.delegate selector, 'open.bubble', (evt, force=false) ->
         $el = jQuery(@)
         clearTimeout($el.data('aloha-bubble-openTimer'))
         makeBubble(@, that.displayer, that.placement)
-        if force
-          $el.data('aloha-bubble-clicked', true)
+        $el.data('aloha-bubble-hovered', force)
             
-      $nodes.on 'close', () ->
+      $context.delegate selector, 'close.bubble', () ->
         $el = jQuery(@)
-        $el.data('aloha-bubble-clicked', false)
+        $el.data('aloha-bubble-hovered', false)
         $bubble = $el.data('aloha-bubble-el')
         $bubble.remove() if $bubble
 
       
       delayTimeout = (self, eventName, ms=MILLISECS) ->
         return setTimeout(() ->
-          jQuery(self).trigger(eventName)
+          jQuery(self).trigger(eventName, true) # true means it's triggered by a hover event
         , ms)
         
-      $nodes.on 'mouseenter', (evt) ->
+      $context.delegate selector, 'mouseenter', (evt) ->
         $el = jQuery(@)
-        $el.data('aloha-bubble-openTimer', delayTimeout(@, 'open'))
+        $el.data('aloha-bubble-openTimer', delayTimeout(@, 'open.bubble'))
         $el.one 'mouseleave', () ->
           clearTimeout($el.data('aloha-bubble-openTimer'))
-          if not $el.data('aloha-bubble-clicked')
-            $el.data('aloha-bubble-closeTimer', delayTimeout(@, 'close', MILLISECS / 2))
+          if $el.data('aloha-bubble-hovered')
+            $el.data('aloha-bubble-closeTimer', delayTimeout(@, 'close.bubble', MILLISECS / 2))
       
       # TODO: Aloha.bind 'selection-changed??', close bubble if tag changed not always
       Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
@@ -104,9 +96,12 @@ define [ "aloha", "jquery", "css!bubble/css/bubble.css" ], (Aloha, jQuery) ->
           if origEl != rangeObject.getCommonAncestorContainer()
             $orig = jQuery(origEl)
             $orig.data('aloha-bubble-el')
-            $orig.trigger('close')
+            $orig.trigger('close.bubble')
         
         that.originalRange = rangeObject
       
+    setPlacement: (vertical='below', horizontal='start') ->
+      @placement.vertical = vertical
+      @placement.horizontal = horizontal
 
   return Bubbler
