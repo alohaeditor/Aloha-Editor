@@ -215,6 +215,9 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       else
         @el.removeClass('icon')
         @el.children('.menu-icon').remove()
+
+    addClass: (cls) ->
+      @el.addClass(cls)
   
     setAction: (@action) ->
       that = @

@@ -308,6 +308,10 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         }
       };
 
+      MenuItem.prototype.addClass = function(cls) {
+        return this.el.addClass(cls);
+      };
+
       MenuItem.prototype.setAction = function(action) {
         var that;
         this.action = action;

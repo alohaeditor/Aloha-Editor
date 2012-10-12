@@ -15,6 +15,7 @@ define [
     defaultSettings: {
         'initfloat': false, # Whether to also initialise aloha default toolbar
         'menu': [
+             'saveButton', '',
              'undo', 'redo', '', 
              'bold', 'italic', 'underline', 'superscript', 'subscript', '', 
              # 'insertLink', 'removeLink', '',
@@ -133,6 +134,7 @@ define [
         item.setText(settings.tooltip)
         item.setIcon(settings.icon)
         item.setAction(settings.click)
+        item.addClass settings.class if settings.class
         item.element = item.el # CreateTable and some others do onclick () -> this.element
 
         return new ItemRelay([item])
