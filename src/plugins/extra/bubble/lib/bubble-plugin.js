@@ -47,10 +47,10 @@
           console.error('Invalid horizontal placement');
       }
       $bubble.css(offset);
-      $bubble.on('mouseenter', function() {});
+      $bubble.on('mouseenter.bubble', function() {});
       clearTimeout($el.data('aloha-bubble-closeTimer'));
       if ($el.data('aloha-bubble-hovered')) {
-        return $bubble.on('mouseleave', function() {
+        return $bubble.on('mouseleave.bubble', function() {
           return jQuery(this).remove();
         });
       }
@@ -92,11 +92,11 @@
             return jQuery(self).trigger(eventName, true);
           }, ms);
         };
-        $context.delegate(selector, 'mouseenter', function(evt) {
+        $context.delegate(selector, 'mouseenter.bubble', function(evt) {
           var $el;
           $el = jQuery(this);
           $el.data('aloha-bubble-openTimer', delayTimeout(this, 'open.bubble'));
-          return $el.one('mouseleave', function() {
+          return $el.one('mouseleave.bubble', function() {
             clearTimeout($el.data('aloha-bubble-openTimer'));
             if ($el.data('aloha-bubble-hovered')) {
               return $el.data('aloha-bubble-closeTimer', delayTimeout(this, 'close.bubble', MILLISECS / 2));

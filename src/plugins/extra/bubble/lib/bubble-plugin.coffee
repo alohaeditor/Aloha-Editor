@@ -9,7 +9,7 @@ define [ "aloha", "jquery", "css!bubble/css/bubble.css" ], (Aloha, jQuery) ->
   # - User moves over a link and then clicks inside it (bubble disappears when selection changes)
   
   
-  canvas = jQuery('body') # Where these bubbles get appended
+  canvas = jQuery('body') # Where these bubbles get appended.
   MILLISECS = 2000
 
   # For now only one popup box on the page.
@@ -51,10 +51,10 @@ define [ "aloha", "jquery", "css!bubble/css/bubble.css" ], (Aloha, jQuery) ->
   
     $bubble.css(offset)
     
-    $bubble.on 'mouseenter', () ->
+    $bubble.on 'mouseenter.bubble', () ->
     clearTimeout($el.data('aloha-bubble-closeTimer'))
     if $el.data('aloha-bubble-hovered')
-      $bubble.on 'mouseleave', () ->
+      $bubble.on 'mouseleave.bubble', () ->
         jQuery(@).remove()
 
 
@@ -81,10 +81,10 @@ define [ "aloha", "jquery", "css!bubble/css/bubble.css" ], (Aloha, jQuery) ->
           jQuery(self).trigger(eventName, true) # true means it's triggered by a hover event
         , ms)
         
-      $context.delegate selector, 'mouseenter', (evt) ->
+      $context.delegate selector, 'mouseenter.bubble', (evt) ->
         $el = jQuery(@)
         $el.data('aloha-bubble-openTimer', delayTimeout(@, 'open.bubble'))
-        $el.one 'mouseleave', () ->
+        $el.one 'mouseleave.bubble', () ->
           clearTimeout($el.data('aloha-bubble-openTimer'))
           if $el.data('aloha-bubble-hovered')
             $el.data('aloha-bubble-closeTimer', delayTimeout(@, 'close.bubble', MILLISECS / 2))
