@@ -246,6 +246,9 @@ define([
 		 */
 		restoreProps: [],
 
+		/**
+		 * the defined object types to be used for this instance
+		 */
 		objectTypeFilter: [],
 
 		/**
@@ -257,7 +260,9 @@ define([
 			
 			var imagePluginUrl = Aloha.getPluginUrl('image');
 			
-			
+			if ( typeof this.settings.objectTypeFilter != 'undefined' ) {
+				this.objectTypeFilter = this.settings.objectTypeFilter;
+			}
 			
 			// Extend the default settings with the custom ones (done by default)
 			plugin.startAspectRatio = plugin.settings.fixedAspectRatio; 
