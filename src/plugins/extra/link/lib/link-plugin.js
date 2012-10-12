@@ -87,37 +87,29 @@ define( [
 			var that = this,
 			    isEnabled = {};
 
-			Aloha.bind('aloha-editable-created', function(event, editable) {
-				new Bubbler(that._createDisplayer.bind(that), jQuery(editable.obj), 'a');
+			Aloha.bind('aloha-editable-activated', function(event, data) {
+				new Bubbler(that._createDisplayer.bind(that), jQuery(data.editable.obj), 'a');
 			});
 
-			// add the event handler for creation of editables
-/*
-			Aloha.bind('aloha-editable-created', function (event, editable) {
-				var config = that.getEditableConfig(editable.obj),
-				    enabled = (jQuery.inArray('a', config) !== -1);
-
-				editable.obj.find('a').each(function() {
-					that.addLinkEventHandlers(this);
-				});
+			Aloha.bind('aloha-editable-deactivated', function(event, data) {
+				// TODO: Deactivate the delegated events
 			});
-*/
+
 			var insideLinkScope = false;
 
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject){
 				var enteredLinkScope = false;
 				if (Aloha.activeEditable) {
 					enteredLinkScope = selectionChangeHandler(that, rangeObject);
-					// Only foreground the tab containing the href field
-					// the first time the user enters the link scope to
-					// avoid intefering with the user's manual tab
-					// selection.
+					// Trigger bubble changes when the selection changes
+					// from being in a link to being out of a link
+					// No need to trigger if moving within a link
 					if (insideLinkScope !== enteredLinkScope) {
 						var link = rangeObject.getCommonAncestorContainer();
 						if (enteredLinkScope) {
-							jQuery(link).trigger('open');
+							jQuery(link).trigger('open.bubble');
 						} else {
-							jQuery(Aloha.activeEditable.obj).trigger('close');
+							jQuery(Aloha.activeEditable.obj).find('a').trigger('close.bubble');
 						}
 						
 					}
@@ -172,20 +164,6 @@ define( [
 				}, Aloha.activeEditable.obj );
 			} else {
 				return null;
-			}
-		},
-
-		/**
-		 * Format the current selection or if collapsed the current word as
-		 * link. If inside a link tag the link is removed.
-		 */
-		formatLink: function () {
-			if ( Aloha.activeEditable ) {
-				if ( this.findLinkMarkup( Aloha.Selection.getRangeObject() ) ) {
-					this.removeLink();
-				} else {
-					this.insertLink();
-				}
 			}
 		},
 
@@ -260,155 +238,7 @@ define( [
       return dialog;
     },
     
-		/**
-		 * Insert a new link at the current selection. When the selection is
-		 * collapsed, the link will have a default link text, otherwise the
-		 * selected text will be the link text.
-		 */
-		insertLink: function ( extendToWord ) {
-			var that = this,
-			    range = Aloha.Selection.getRangeObject(),
-			    linkText,
-			    newLink;
-			
-			// There are occasions where we do not get a valid range, in such
-			// cases we should not try and add a link
-			if ( !( range.startContainer && range.endContainer ) ) {
-				return;
-			}
-			
-			// do not nest a link inside a link
-			var isLink = this.findLinkMarkup( range );
-			if (isLink) {
-				this.showModalDialog(jQuery(isLink));
-				return;
-			}
-			
-			// if selection is collapsed then extend to the word.
-			if ( range.isCollapsed() && extendToWord !== false ) {
-				GENTICS.Utils.Dom.extendToWord( range );
-			}
-
-      if ( range.isCollapsed() ) {
-        // insert a link with text here
-        linkText = i18n.t( 'newlink.defaulttext' );
-        newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link">' + linkText + '</a>' );
-        GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
-        range.startContainer = range.endContainer = newLink.contents().get( 0 );
-        range.startOffset = 0;
-        range.endOffset = linkText.length;
-      } else {
-        newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
-        GENTICS.Utils.Dom.addMarkup( range, newLink, false );
-      }
-
-      newLink = Aloha.activeEditable.obj.find( 'a.aloha-new-link' );
-      newLink.each( function ( i ) {
-        that.addLinkEventHandlers( this );
-        jQuery(this).removeClass( 'aloha-new-link' );
-      } );
-
-
-      var callback = function() {
-        range.select();
-  
-        // focus has to become before prefilling the attribute, otherwise
-        // Chrome and Firefox will not focus the element correctly.
-        that.hrefField.focus();
-              
-        // prefill and select the new href
-        // We need this guard because sometimes the element has not yet been initialized
-        if ( that.hrefField.hasInputElem() ) {
-          jQuery( that.hrefField.getInputElem() ).attr( 'value', that.hrefValue ).select();
-        }
-        
-        that.hrefChange();
-      }; // callback
-
-			this.showModalDialog(newLink);
-		},
-
-		/**
-		 * Remove an a tag and clear the current item from the hrefField
-		 */
-		removeLink: function ( terminateLinkScope ) {
-			var	range = Aloha.Selection.getRangeObject(),
-			    foundMarkup = this.findLinkMarkup();
-			
-			// clear the current item from the href field
-			this.hrefField.setItem(null);
-			if ( foundMarkup ) {
-				// remove the link
-				GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
-
-				range.startContainer = range.endContainer;
-				range.startOffset = range.endOffset;
-
-				// select the (possibly modified) range
-				range.select();
-				
-				if ( typeof terminateLinkScope == 'undefined' ||
-						terminateLinkScope === true ) {
-					Scopes.setScope('Aloha.continuoustext');
-				}
-			}
-		},
-
-		/**
-		 * Updates the link object depending on the src field
-		 */
-		hrefChange: function () {
-			var that = this;
-
-			// For now hard coded attribute handling with regex.
-			// Avoid creating the target attribute, if it's unnecessary, so
-			// that XSS scanners (AntiSamy) don't complain.
-			if ( this.target != '' ) {
-				this.hrefField.setAttribute(
-					'target',
-					this.target,
-					this.targetregex,
-					this.hrefField.getValue()
-				);
-			}
-			
-			this.hrefField.setAttribute(
-				'class',
-				this.cssclass,
-				this.cssclassregex,
-				this.hrefField.getValue()
-			);
-			
-			Aloha.trigger( 'aloha-link-href-change', {
-				 obj: that.hrefField.getTargetObject(),
-				 href: that.hrefField.getValue(),
-				 item: that.hrefField.getItem()
-			} );
-			
-			if ( typeof this.onHrefChange == 'function' ) {
-				this.onHrefChange.call(
-					this,
-					this.hrefField.getTargetObject(),
-					this.hrefField.getValue(),
-					this.hrefField.getItem()
-				);
-			}
-		},
 		
-		/**
-		 * Make the given jQuery object (representing an editable) clean for saving
-		 * Find all links and remove editing objects
-		 * @param obj jQuery object to make clean
-		 * @return void
-		 */
-		makeClean: function ( obj ) {
-			// find all link tags
-			obj.find( 'a' ).each( function () {
-				jQuery( this )
-					.removeClass( 'aloha-link-pointer' )
-					.removeClass( 'aloha-link-text' );
-			} );
-		}
 	} );
 
 	function selectionChangeHandler(that, rangeObject) {

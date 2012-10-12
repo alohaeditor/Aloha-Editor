@@ -49,7 +49,7 @@
       $bubble.css(offset);
       $bubble.on('mouseenter', function() {});
       clearTimeout($el.data('aloha-bubble-closeTimer'));
-      if (!$el.data('aloha-bubble-clicked')) {
+      if ($el.data('aloha-bubble-hovered')) {
         return $bubble.on('mouseleave', function() {
           return jQuery(this).remove();
         });
@@ -65,19 +65,19 @@
           horizontal: 'start'
         };
         that = this;
-        $context.delegate(selector, 'open', function(evt, force) {
+        $context.delegate(selector, 'open.bubble', function(evt, force) {
           var $el;
           $el = jQuery(this);
           clearTimeout($el.data('aloha-bubble-openTimer'));
           makeBubble(this, that.displayer, that.placement);
           if (force) {
-            return $el.data('aloha-bubble-clicked', true);
+            return $el.data('aloha-bubble-hovered', true);
           }
         });
-        $context.delegate(selector, 'close', function() {
+        $context.delegate(selector, 'close.bubble', function() {
           var $bubble, $el;
           $el = jQuery(this);
-          $el.data('aloha-bubble-clicked', false);
+          $el.data('aloha-bubble-hovered', false);
           $bubble = $el.data('aloha-bubble-el');
           if ($bubble) {
             return $bubble.remove();
@@ -88,17 +88,17 @@
             ms = MILLISECS;
           }
           return setTimeout(function() {
-            return jQuery(self).trigger(eventName);
+            return jQuery(self).trigger(eventName, true);
           }, ms);
         };
         $context.delegate(selector, 'mouseenter', function(evt) {
           var $el;
           $el = jQuery(this);
-          $el.data('aloha-bubble-openTimer', delayTimeout(this, 'open'));
+          $el.data('aloha-bubble-openTimer', delayTimeout(this, 'open.bubble'));
           return $el.one('mouseleave', function() {
             clearTimeout($el.data('aloha-bubble-openTimer'));
-            if (!$el.data('aloha-bubble-clicked')) {
-              return $el.data('aloha-bubble-closeTimer', delayTimeout(this, 'close', MILLISECS / 2));
+            if ($el.data('aloha-bubble-hovered')) {
+              return $el.data('aloha-bubble-closeTimer', delayTimeout(this, 'close.bubble', MILLISECS / 2));
             }
           });
         });
@@ -109,7 +109,7 @@
             if (origEl !== rangeObject.getCommonAncestorContainer()) {
               $orig = jQuery(origEl);
               $orig.data('aloha-bubble-el');
-              $orig.trigger('close');
+              $orig.trigger('close.bubble');
             }
           }
           return that.originalRange = rangeObject;
