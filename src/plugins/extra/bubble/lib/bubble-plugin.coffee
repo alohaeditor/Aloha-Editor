@@ -63,12 +63,11 @@ define [ "aloha", "jquery", "css!bubble/css/bubble.css" ], (Aloha, jQuery) ->
       that = @
       
       # Custom event to open the bubble used by setTimeout below
-      $context.delegate selector, 'open.bubble', (evt, force) ->
+      $context.delegate selector, 'open.bubble', (evt, force=false) ->
         $el = jQuery(@)
         clearTimeout($el.data('aloha-bubble-openTimer'))
         makeBubble(@, that.displayer, that.placement)
-        if force
-          $el.data('aloha-bubble-hovered', true)
+        $el.data('aloha-bubble-hovered', force)
             
       $context.delegate selector, 'close.bubble', () ->
         $el = jQuery(@)

@@ -67,12 +67,13 @@
         that = this;
         $context.delegate(selector, 'open.bubble', function(evt, force) {
           var $el;
+          if (force == null) {
+            force = false;
+          }
           $el = jQuery(this);
           clearTimeout($el.data('aloha-bubble-openTimer'));
           makeBubble(this, that.displayer, that.placement);
-          if (force) {
-            return $el.data('aloha-bubble-hovered', true);
-          }
+          return $el.data('aloha-bubble-hovered', force);
         });
         $context.delegate(selector, 'close.bubble', function() {
           var $bubble, $el;
