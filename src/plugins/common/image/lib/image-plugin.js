@@ -418,6 +418,7 @@ define([
 						if (plugin.settings.ui.meta) {
 							plugin.ui.imgSrcField.setTargetObject(foundMarkup, 'src');
 							plugin.ui.imgTitleField.setTargetObject(foundMarkup, 'title');
+							plugin.ui.imgAltField.setTargetObject(foundMarkup, 'alt');
 						}
 						plugin.ui.imgSrcField.foreground();
 						plugin.ui.imgSrcField.focus();
@@ -758,6 +759,7 @@ define([
 			if (plugin.settings.ui.meta) {
 				plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
 				plugin.ui.imgTitleField.setTargetObject(plugin.imageObj, 'title');
+				plugin.ui.imgAltField.setTargetObject(plugin.imageObj, 'alt');
 			}
 			Aloha.Selection.preventSelectionChanged();
 			try {
@@ -818,6 +820,10 @@ define([
 						if (! result.src) {
 							result.src = ''; 
 						}
+
+                        if (!result.alt) {
+                            result.alt = '';
+                        }
 						return result;
 					}
 					else {
@@ -977,7 +983,7 @@ define([
 					// TODO I would suggest to call the srcChange method. So all image src
 					// changes are on one single point.
 					imagestyle = "max-width: " + config.maxWidth + "; max-height: " + config.maxHeight;
-					imagetag = '<img style="' + imagestyle + '" src="' + imagePluginUrl + '/img/blank.jpg" title="" />';
+					imagetag = '<img style="' + imagestyle + '" src="' + imagePluginUrl + '/img/blank.jpg" title="" alt="" />';
 					newImg = jQuery(imagetag);
 					// add the click selection handler
 					//newImg.click( Aloha.Image.clickImage ); - Using delegate now
