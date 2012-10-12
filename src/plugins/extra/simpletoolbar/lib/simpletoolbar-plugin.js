@@ -28,7 +28,7 @@
           {
             label: 'Image',
             scope: 'image',
-            components: [["imageSource", "", "imageTitle"], ["imageResizeWidth", "", "imageResizeHeight"], ["imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding"], ["imageBrowser"]]
+            components: [["imageSource", "", "imageTitle", "", "imageAlt"], ["imageResizeWidth", "", "imageResizeHeight"], ["imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding"], ["imageBrowser"]]
           }
         ]
       },

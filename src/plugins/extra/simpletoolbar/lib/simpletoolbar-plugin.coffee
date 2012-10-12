@@ -26,7 +26,7 @@ define [
             label: 'Image'
             scope: 'image'
             # I'm sorry for this long line, but sometimes coffeescript is bollocks!
-            components: [ [ "imageSource", "", "imageTitle" ], [ "imageResizeWidth", "", "imageResizeHeight" ], [ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ], [ "imageBrowser" ] ]
+            components: [ [ "imageSource", "", "imageTitle", "", "imageAlt" ], [ "imageResizeWidth", "", "imageResizeHeight" ], [ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ], [ "imageBrowser" ] ]
         ]
     },
     initDialogs: (dialogMap, itemMap) ->
