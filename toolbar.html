@@ -3,9 +3,17 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Figures!</title>
+
+	<link rel="stylesheet" href="src/css/aloha.css" type="text/css">
+
     <style type="text/css">
 .aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
-.aloha-toolbar { display: none !important; }    
+.aloha-toolbar { display: none !important; }
+.toolbar-container, .menu {
+  font-family: Arial, sans-serif; /* .aloha.menu-item sets font:inherit so we need to set the font around the menu-item */
+  font-size: 13px;
+}
+
 
 /* Add some padding on the top so the toolbar has room to float in */
 .document { margin: 3em; }
@@ -78,7 +86,6 @@
 	  extra/bubble
 	"></script>
 
-	<link rel="stylesheet" href="src/css/aloha.css" type="text/css">
 	<style type="text/css">
 	  .toolbar-container {
       width: 100%;
