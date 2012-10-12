@@ -18,7 +18,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
-    CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container').appendTo('body')
+    CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container aloha').appendTo('body')
   
   ###
    register the plugin with unique name
@@ -31,7 +31,6 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
 
       window.toolbar = toolbar = new appmenu.ToolBar()
       toolbar.el.appendTo CONTAINER_JQUERY
-      toolbar.el.addClass 'aloha'
 
       menuLookup = {}
       toolbarLookup = {}
@@ -47,7 +46,6 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
           subItems = for subItem in item.subMenu or []
             recurse subItem, lookupMap
           subMenu = new appmenu.Menu subItems
-          subMenu.el.addClass 'aloha' # Hack to get the Aloha icons working
           menuItem = new appmenu.MenuItem item.text,
             subMenu: subMenu
           return menuItem
@@ -58,7 +56,6 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
           recurse item, menuLookup
 
         menu = new appmenu.Menu subMenuItems
-        menu.el.addClass 'aloha' # Added so the CSS for aloha icons gets matched
         
         menubar.append(new appmenu.MenuButton tab.text, menu)
 
