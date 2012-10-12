@@ -1,5 +1,5 @@
 /* ---------------------------------------- */
-.tool-bar {
+div.tool-bar {
   width: 100%;
   background-color: whiteSmoke;
   border-top: 1px solid #e5e5e5;
@@ -7,7 +7,7 @@
   padding: 5px 1em;
   box-shadow: 0 2px 3px 0 #ccc;
 }
-.tool-bar > .menu-item {
+div.tool-bar > .menu-item {
   vertical-align: middle;
   display: inline-block;
   opacity: 0.70;
@@ -16,39 +16,39 @@
   padding: 5px;
   cursor: pointer;
 }
-.tool-bar > .menu-item.selected {
+div.tool-bar > .menu-item.selected {
   opacity: 1.0;
   border: 1px solid #ccc;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
-.tool-bar > .menu-item.disabled.selected {
+div.tool-bar > .menu-item.disabled.selected {
   border: 1px solid transparent;
 }
-.tool-bar > .menu-item.checked {
+div.tool-bar > .menu-item.checked {
   background-color: #e5e5e5;
   opacity: 1.0;
   border: 1px solid #ccc;
 }
-.tool-bar > .menu-item > .checked-icon {
+div.tool-bar > .menu-item > .checked-icon {
   display: none;
 }
-.tool-bar > .menu-item > .accel {
+div.tool-bar > .menu-item > .accel {
   display: none;
 }
-.tool-bar > .menu-item > .tool-tip {
+div.tool-bar > .menu-item > .tool-tip {
   display: none;
 }
-.tool-bar > .menu-item > .menu-icon {
+div.tool-bar > .menu-item > .menu-icon {
   display: inline-block;
 }
-.tool-bar > .menu-item > .text {
+div.tool-bar > .menu-item > .text {
   display: inline-block;
   font-weight: bold;
 }
-.tool-bar > .menu-item.icon > .text {
+div.tool-bar > .menu-item.icon > .text {
   display: none;
 }
-.tool-bar > .menu-item > .submenu {
+div.tool-bar > .menu-item > .submenu {
   display: inline-block;
   position: relative;
   padding-left: 3px;
@@ -109,7 +109,7 @@
 }
 .menu {
   position: fixed;
-  background-color: whiteSmoke;
+  background-color: white;
   border: 1px solid #e5e5e5;
   border: 1px solid rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -129,24 +129,24 @@
   left: 3px;
   top: 40%;
 }
-.menu-bar {
+div.menu-bar {
   background-color: white;
   min-height: 30px;
   padding: 5px;
   padding-left: 70px;
   padding-right: 90px;
 }
-.menu-bar > .menu-button {
+div.menu-bar > .menu-button {
   display: inline;
   padding: 6px 7px;
 }
-.menu-bar > .menu-button > .text {
+div.menu-bar > .menu-button > .text {
   display: inline;
 }
-.menu-bar > .menu-button > .submenu {
+div.menu-bar > .menu-button > .submenu {
   display: none;
 }
-.menu-bar > .menu-button > .menu-icon {
+div.menu-bar > .menu-button > .menu-icon {
   display: none;
 }
 .menu > .separator {
@@ -155,9 +155,10 @@
   margin-top: 6px;
   margin-bottom: 7px;
 }
-.tool-bar > .separator {
+div.tool-bar > .separator {
   display: inline-block;
-  border-right: 1px solid;
+  border-right: 1px solid #e5e5e5;
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
   width: 0;
   height: 10px;
   /* a little higher than the buttons */
