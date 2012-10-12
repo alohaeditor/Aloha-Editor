@@ -77,7 +77,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
 
     // Re-implementing this, cause Aloha.Selection gets out of sync
     // and causes weirdness.
-    getSelection = (function(window, document){
+    var getSelection = (function(window, document){
         if (window.getSelection) {
             return window.getSelection;
         } else if (document.getSelection) {
