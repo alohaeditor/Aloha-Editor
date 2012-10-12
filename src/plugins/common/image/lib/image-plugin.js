@@ -98,6 +98,7 @@ i18n) {
 			'autoResize': false,
 			//Image manipulation options - ONLY in default config section
 			ui: {
+<<<<<<< HEAD
 				oneTab: false, //Place all ui components within one tab
 				insert: true, // Shows an insert button on std floatingMenu scope
 				reset: true, // Reset to default size
@@ -111,6 +112,14 @@ i18n) {
 				handles: 'ne, se, sw, nw' // set handles for resize
 			},
 
+=======
+				meta		: true, // If imageResizeWidth and imageResizeHeight are displayed, then you will want to set this to true, so that the width and height text fields are updated automatically.
+				crop		: true, // If imageCropButton is displayed, then you have to enable this.
+				resizable	: true	// Resizable ui-drag image
+			},
+			handles     : 'ne, se, sw, nw',   // set handles for resize
+			
+>>>>>>> 27110c00ba8f37e8b921bd1074c7c166ddcda58b
 			/**
 			 * Crop callback is triggered after the user clicked accept to accept his crop
 			 * @param image jquery image object reference
@@ -246,6 +255,9 @@ i18n) {
 		 */
 		restoreProps: [],
 
+		/**
+		 * the defined object types to be used for this instance
+		 */
 		objectTypeFilter: [],
 
 		/**
@@ -254,10 +266,11 @@ i18n) {
 		init: function () {
 
 			var plugin = this;
-
 			var imagePluginUrl = Aloha.getPluginUrl('image');
-
-
+			
+			if ( typeof this.settings.objectTypeFilter != 'undefined' ) {
+				this.objectTypeFilter = this.settings.objectTypeFilter;
+			}
 
 			// Extend the default settings with the custom ones (done by default)
 			plugin.startAspectRatio = plugin.settings.fixedAspectRatio;
