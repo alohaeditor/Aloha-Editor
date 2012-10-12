@@ -1,0 +1,3 @@
+date	size'/'remotesize	flags(request:Update,Range state:File response:Modified,Chunked,gZipped)	statuscode	status ('servermsg')	MIME	Etag|Date	URL	localfile	(from URL)
+16:12:25	175942/175942	---M--	200	added ('OK')	text/html	etag:%22eb5468-2af46-468cb780%22	http://mountainbunker.org/~maxwell/oerpub/editor-ideas/tables-05.html	mountainbunker.org/_maxwell/oerpub/editor-ideas/tables-05.html	(from )
+16:12:27	26/26	---M--	200	added ('OK')	text/plain	etag:%223367e2-1a-f4a4e000%22	http://mountainbunker.org/robots.txt		(from )
