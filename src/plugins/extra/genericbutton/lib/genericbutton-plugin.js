@@ -22,11 +22,14 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub ) {
                             PubSub.pub(button.event);
                         }
                     });
-                    this._buttons.push(ob);
+                    this._buttons[button.id] = ob;
                 }
             }
         },
-        _buttons: []
+        getButtons: function(){
+            return this._buttons;
+        },
+        _buttons: {}
     });
 
 });
