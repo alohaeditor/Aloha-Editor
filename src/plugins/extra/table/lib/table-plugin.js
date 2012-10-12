@@ -177,7 +177,6 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                                 }
                             }
                         } else {
-                            var nextcell = $cell.next('td,th');
                             var nextcell = next($cell, 'td,th');
                             placeCursor(nextcell);
                         }
