@@ -177,16 +177,13 @@ define [
       Aloha.bind "aloha-selection-changed", (event, rangeObject) ->
         # Squirrel away the range because clicking the button changes focus and removed the range
         $el = Aloha.jQuery(rangeObject.startContainer)
-        updated = false
+        headingsButton.setText labels['p']
         for h, i in order
           isActive = $el.parents(h).length > 0
           headingButtons[i].setChecked(isActive)
           # Update the toolbar to show the current heading level
           if isActive
             headingsButton.setText labels[h]
-            updated = true
-        if not updated
-          headingsButton.setText labels['p']
 
       plugin.openDialog = null
       PubSub.sub 'aloha.ui.scope.change', () ->
