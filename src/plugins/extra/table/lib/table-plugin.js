@@ -75,9 +75,24 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
         return tr;
     }
 
+    // Re-implementing this, cause Aloha.Selection gets out of sync
+    // and causes weirdness.
+    var getSelection = (function(window, document){
+        if (window.getSelection) {
+            return window.getSelection;
+        } else if (document.getSelection) {
+            return document.getSelection;
+        }
+        return function(){ throw "getSelection not implemented"; }
+    })(window, document);
+
     function getActiveCell(){
-        var range = Aloha.Selection.getRangeObject();
-        var cell = jQuery(range.commonAncestorContainer);
+        var selection = getSelection();
+        if (selection.rangeCount == 0){
+            return null;
+        }
+        var range = selection.getRangeAt(0);
+        var cell = jQuery(range.commonAncestorContainer).closest('td,th');
         if (cell.parents('.aloha-editable table').length == 0){
             return null;
         }
@@ -100,6 +115,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
 
         table.wrap(w1).wrap(w2).wrap(w3);
 
+        w1.attr('contentEditable', 'false');
         // glue a mouseover event onto it
         table.on('mouseenter', function(e){
             // We will later use this to bring up ui
@@ -111,13 +127,10 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
         });
     }
 
-    function selectCell(cell){
-        var range = Aloha.createRange(),
-            begin = cell,
-            end = cell;
-        range.setStart(begin.get(0), 0);
-        range.setEnd(end.get(0), 1);
-
+    function placeCursor(cell){
+        var range = Aloha.createRange();
+        range.setStart(cell.get(0), 0);
+        range.setEnd(cell.get(0), 0);
         Aloha.getSelection().removeAllRanges();
         Aloha.getSelection().addRange(range);
     }
@@ -133,32 +146,52 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                 editable.obj.find('table').each(function(){
                     prepareTable(plugin, jQuery(this));
                 });
-                editable.obj.bind('keydown', 'tab', function(e){
+                editable.obj.bind('keydown', 'tab shift+tab', function(e){
                     var $cell = jQuery(
                         Aloha.Selection.rangeObject.markupEffectiveAtStart)
                         .closest('td,th');
                     if ($cell.length > 0){
-                        if ($cell.is('td:last-child,th:last-child')) {
-                            var nextrow = $cell.closest('tr').next('tr');
+                        var next = function(ob, filter){
+                            if (e.shiftKey){
+                                return ob.prev(filter);
+                            } else {
+                                return ob.next(filter);
+                            }
+                        }
+                        var border = 'td:last-child,th:last-child';
+                        if (e.shiftKey){
+                            border = 'td:first-child,th:first-child';
+                        }
+                        if ($cell.is(border)) {
+                            var nextrow = next($cell.closest('tr'), 'tr');
                             if (nextrow.length > 0){
-                                var nextcell = jQuery(nextrow[0].cells[0]);
-                                selectCell(nextcell);
+                                var offset = e.shiftKey ? nextrow[0].cells.length-1 : 0;
+                                var nextcell = jQuery(nextrow[0].cells[offset]);
+                                placeCursor(nextcell);
                             } else {
                                 // Last column, last row
                                 // Add more
                                 var newrow = plugin.addRowAfter();
                                 if (newrow !== null){
-                                    selectCell($(newrow).find('td,th').first());
+                                    placeCursor($(newrow).find('td,th').first());
                                 }
                             }
                         } else {
-                            var nextcell = $cell.next('td,th');
-                            selectCell(nextcell);
+                            var nextcell = next($cell, 'td,th');
+                            placeCursor(nextcell);
                         }
                     }
                     e.preventDefault();
                     e.stopPropagation();
                 });
+                // Disable firefox's inline table editing.
+                try {
+                    document.execCommand("enableInlineTableEditing", null, false);
+                } catch(ignore){}
+                // Place the cursor at the start of the editable. If you don't
+                // do this, Firefox goes weird when placing the cursor in a
+                // table cell.
+                placeCursor(editable.obj);
             });
             PubSub.sub('aloha.selection.context-change', function(m){
                 if ($(m.range.markupEffectiveAtStart).parent('table')
@@ -207,8 +240,8 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                         this.error('Selection is not in a table!');
                         return;
                     }
-                    var rowcount = row.find('*').length;
-                    var newrow = createRow(rowcount);
+                    var colcount = row.find('td,th').length;
+                    var newrow = createRow(colcount);
                     row.before(newrow);
                 }
             });
@@ -298,8 +331,8 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
             // table.
             var row = getActiveRow();
             if (row !== null){
-                var rowcount = row.find('td,th').length;
-                var newrow = createRow(rowcount);
+                var colcount = row.find('td,th').length;
+                var newrow = createRow(colcount);
                 row.after(newrow);
                 return newrow;
             }

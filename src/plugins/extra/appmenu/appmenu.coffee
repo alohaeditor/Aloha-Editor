@@ -45,7 +45,7 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       $el.addClass(cls)
       
       # Don't propagate the mousedown so we don't lose focus from the editable area
-      $el.bind 'mousedown', (evt) ->
+      $el.on 'mousedown', (evt) ->
         evt.stopPropagation()
         evt.preventDefault()
       
@@ -63,7 +63,7 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
   
     _closeEverythingBut: (item) ->
       that = @
-      item.el.bind 'mouseenter', () ->
+      item.el.on 'mouseenter', () ->
         for child in that.items
           if child.subMenu and child != item
             child.subMenu._closeSubMenu()
@@ -179,7 +179,7 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
     _addEvents: () ->
       if @subMenu?
         that = @
-        @el.bind 'mouseenter', () ->
+        @el.on 'mouseenter', () ->
           that._openSubMenu(true) # true == open-to-the-right
   
     _openSubMenu: (toTheRight = false) ->
@@ -207,7 +207,7 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
   
     setIcon: (@iconCls) ->
       if @iconCls?
-        @el.addClass('icon')
+        @el.removeClass('no-icon').addClass('icon')
         if @el.children('.menu-icon').length
           @el.children('.menu-icon').addClass(@iconCls)
         else
@@ -215,17 +215,24 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       else
         @el.removeClass('icon')
         @el.children('.menu-icon').remove()
+
+    addClass: (cls) ->
+      @el.addClass(cls)
   
     setAction: (@action) ->
       that = @
-      @el.off 'click' # Unbind if an event was set
-      @el.bind 'click', (evt) ->
+      # Unbind any old events
+      @el.off 'click'
+      # Bind a handler that hides the old menu, and prevents default action
+      @el.on 'click', (evt) ->
         evt.preventDefault()
         # TODO: Hide all menus
         $('.menu').hide()
 
+      # If an action was provided, set click handler, but namespace it for
+      # easy removal
       if @action
-        @el.bind 'click', that.action
+        @el.on 'click.appmenu.action', that.action
   
     setChecked: (@isChecked) ->
       @_cssToggler @isChecked, 'checked'
@@ -237,13 +244,13 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
     setDisabled: (@isDisabled) ->
       @_cssToggler @isDisabled, 'disabled'
       if @isDisabled and @action
-        @el.off 'click', @action
+        @el.off 'click.appmenu.action'
         if @accel
-          @el.unbind 'keydown.appmenu', @accel, @action
+          @el.off 'keydown.appmenu', @accel, @action
       else if not @isDisabled and @action
-        @el.on 'click', @action
+        @el.off('click.appmenu.action').on('click.appmenu.action', @action)
         if @accel
-          @el.bind 'keydown.appmenu', @accel, @action
+          @el.on 'keydown.appmenu', @accel, @action
   
     setHidden: (@isHidden) ->
       @_cssToggler @isHidden, 'hidden'
@@ -268,11 +275,11 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
         that.action()
       if isSelected
         # Add key binders
-        @$keyBinder.bind 'keydown.appmenuaria', 'up', ariaUp
-        @$keyBinder.bind 'keydown.appmenuaria', 'down', ariaDown
-        @$keyBinder.bind 'keydown.appmenuaria', 'left', ariaLeft
-        @$keyBinder.bind 'keydown.appmenuaria', 'right', ariaRight
-        @$keyBinder.bind 'keydown.appmenuaria', 'enter', ariaEnter
+        @$keyBinder.on 'keydown.appmenuaria', 'up', ariaUp
+        @$keyBinder.on 'keydown.appmenuaria', 'down', ariaDown
+        @$keyBinder.on 'keydown.appmenuaria', 'left', ariaLeft
+        @$keyBinder.on 'keydown.appmenuaria', 'right', ariaRight
+        @$keyBinder.on 'keydown.appmenuaria', 'enter', ariaEnter
       else
         # Remove key binders
         @$keyBinder.off 'keydown.appmenuaria'
@@ -281,13 +288,13 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
     # As the editable region changes we have to rebind the key handler
     setAccelContainer: ($keyBinder) ->
       if @$keyBinder
-        @$keyBinder.unbind 'keydown.appmenu'
+        @$keyBinder.off 'keydown.appmenu'
       @$keyBinder = $keyBinder
 
       if @accel? and @$keyBinder
         that = @
         if @action
-          @$keyBinder.bind 'keydown.appmenu', @accel, @action
+          @$keyBinder.on 'keydown.appmenu', @accel, @action
       if @subMenu
         @subMenu.setAccelContainer($keyBinder)
   
@@ -315,6 +322,7 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       conf.subMenuChar = conf.subMenuChar || '\u25BC'
       super(text, conf)
       @el.addClass 'tool-button'
+      @el.addClass 'no-icon'
       @toolTip = conf.toolTip || null
     
     _addEvents: () ->
@@ -328,7 +336,7 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
   
       if @subMenu?
         that = @
-        @el.bind 'click', () ->
+        @el.on 'click', () ->
           that._openSubMenu(false) # false == open-below
   
   # ---- Specific to MenuBar ---
@@ -363,10 +371,8 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
   
     _addEvents: () ->
       that = @
-      # Open the menu on click
-  
       # On mouseover close all other menus (except submenu)
-      @el.bind 'mouseenter', (evt) ->
+      @el.on 'mouseenter', (evt) ->
         for openMenu in $('.menu')
           if openMenu != that.el[0]
             $(openMenu).hide()

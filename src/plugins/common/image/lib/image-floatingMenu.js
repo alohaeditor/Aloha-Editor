@@ -151,6 +151,15 @@ function (
 				scope: plugin.name
 			});
 			this.imgTitleField.setObjectTypeFilter();
+
+            this.imgAltField = AttributeField({
+				label: i18n.t('field.img.alt.label'),
+				labelClass: 'aloha-image-input-label',
+				tooltip: i18n.t('field.img.alt.tooltip'),
+				name: 'imageAlt',
+				scope: plugin.name
+            });
+            this.imgTitleField.setObjectTypeFilter();
 		},
 		
 		/**
