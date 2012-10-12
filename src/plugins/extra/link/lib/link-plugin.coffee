@@ -4,70 +4,7 @@
 # 
 define ['aloha', 'aloha/plugin', 'jquery', 'ui/port-helper-attribute-field', 'ui/ui', 'ui/scopes', 'ui/surface', 'ui/button', 'ui/toggleButton', '../../bubble/lib/bubble-plugin', 'i18n!link/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console', 'link/../extra/linklist'], (Aloha, Plugin, jQuery, AttributeField, Ui, Scopes, Surface, Button, ToggleButton, Bubbler, i18n, i18nCore, console) ->
   
-  # Validate and save the href if something is selected.
-  selectionChangeHandler = (that, rangeObject) ->
-    enteredLinkScope = false
-    
-    # Check if we need to ignore this selection changed event for
-    # now and check whether the selection was placed within a
-    # editable area.
-    if not that.ignoreNextSelectionChangedEvent and Aloha.Selection.isSelectionEditable() and Aloha.activeEditable?
-      foundMarkup = that.findLinkMarkup(rangeObject)
-      enteredLinkScope = foundMarkup
-    enteredLinkScope
-  'use strict'
-  GENTICS = window.GENTICS
-  pluginNamespace = 'aloha-bubble-link'
-  oldValue = ''
-  newValue = undefined
-  return Plugin.create('bubble-link',
-    init: ->
-      that = this
-      Aloha.bind 'aloha-editable-activated', (event, data) ->
-        new Bubbler(that._createDisplayer.bind(that), jQuery(data.editable.obj), 'a')
-
-      insideLinkScope = false
-      Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
-        enteredLinkScope = false
-        if Aloha.activeEditable
-          enteredLinkScope = selectionChangeHandler(that, rangeObject)
-          if insideLinkScope isnt enteredLinkScope
-            link = rangeObject.getCommonAncestorContainer()
-            if enteredLinkScope
-              jQuery(link).trigger 'open.bubble'
-            else
-              jQuery(Aloha.activeEditable.obj).find('a').trigger 'close.bubble'
-        insideLinkScope = enteredLinkScope
-
-
-    addLinkEventHandlers: (link) ->
-      new Bubbler(@_createDisplayer.bind(this), jQuery(link))
-
-    _createDisplayer: ($el, $bubble) ->
-      that = this
-      href = $el.attr('href')
-      a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble)
-      a.attr 'href', href
-      a.append href
-      $bubble.append ' - '
-      change = jQuery('<a href="javascript:void">Change</a>')
-      change.appendTo($bubble).on 'mousedown', ->
-        dialog = that.showModalDialog($el)
-        dialog.addClass 'aloha'
-        dialog.on 'dialogclose', ->
-          a.attr 'href', $el.attr('href')
-          a.contents().remove()
-          a.append $el.attr('href')
-
-    findLinkMarkup: (range=Aloha.Selection.getRangeObject()) ->
-      if Aloha.activeEditable
-        range.findMarkup (->
-          @nodeName.toLowerCase() is 'a'
-        ), Aloha.activeEditable.obj
-      else
-        null
-
-    showModalDialog: ($a) ->
+  showModalDialog = ($a) ->
       root = Aloha.activeEditable.obj
       dialog = jQuery('<div class="link-chooser">')
       select = jQuery('<select class="link-list" size="5"></select>')
@@ -97,7 +34,6 @@ define ['aloha', 'aloha/plugin', 'jquery', 'ui/port-helper-attribute-field', 'ui
         appendOption id, caption
 
       select.val $a.attr('href')
-      cancelled = null
       onOk = ->
         if select.val()
           $a.attr 'href', select.val()
@@ -106,13 +42,100 @@ define ['aloha', 'aloha/plugin', 'jquery', 'ui/port-helper-attribute-field', 'ui
       onCancel = ->
         jQuery(this).dialog 'close'
 
-      onClose = ->
-
       dialog.dialog
+        dialogClass: 'aloha link-editor' # Need aloha because jquery-ui styles are prefixed with it
         modal: true
         buttons:
           OK: onOk
           Cancel: onCancel
 
       dialog
+
+  selector = 'a'
+  filter = ->
+    @nodeName.toLowerCase() is 'a'
+
+  populator = ($el, $bubble) ->
+      that = this
+      href = $el.attr('href')
+      a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble)
+      a.attr 'href', href
+      a.append href
+      $bubble.append ' - '
+      change = jQuery('<a href="javascript:void">Change</a>')
+      change.appendTo($bubble).on 'mousedown', ->
+        dialog = showModalDialog($el)
+        dialog.addClass 'aloha'
+        dialog.on 'dialogclose', ->
+          a.attr 'href', $el.attr('href')
+          a.contents().remove()
+          a.append $el.attr('href')
+
+  
+  helpers = []
+  class Helper
+    constructor: (@selector, @populator, @filter) ->
+    start: (editable) -> new Bubbler(@populator, jQuery(editable.obj), @selector)
+    stop: (editable) ->
+      # Remove all events and close all bubbles
+      jQuery(editable.obj).undelegate(@selector, '.bubble')
+      $nodes = jQuery(editable.obj).find(@selector)
+      $nodes.data('aloha-bubble-el', null)
+      $nodes.data('aloha-bubble-openTimer', 0)
+      $nodes.data('aloha-bubble-closeTimer', 0)
+      $nodes.data('aloha-bubble-hovered', false)
+      
+      # TODO: bubbles are attached to a canvas. clear the canvas, not all bubbles
+      jQuery('body').find('.bubble').remove()
+	
+  helpers.push(new Helper(selector, populator, filter))
+
+  findMarkup = (range=Aloha.Selection.getRangeObject(), filter) ->
+    if Aloha.activeEditable
+      range.findMarkup filter, Aloha.activeEditable.obj
+    else
+      null
+
+  # Validate and save the href if something is selected.
+  selectionChangeHandler = (rangeObject, filter) ->
+    enteredLinkScope = false
+    
+    # Check if we need to ignore this selection changed event for
+    # now and check whether the selection was placed within a
+    # editable area.
+    if Aloha.Selection.isSelectionEditable() and Aloha.activeEditable?
+      foundMarkup = findMarkup(rangeObject, filter)
+      enteredLinkScope = foundMarkup
+    enteredLinkScope
+
+  GENTICS = window.GENTICS
+  pluginNamespace = 'aloha-bubble-link'
+  oldValue = ''
+  newValue = undefined
+  return Plugin.create('bubble-link',
+    init: ->
+      that = this
+      jQuery.each helpers, (i, helper) ->
+        
+        # These are reset when the editor is deactivated
+        insideScope = false
+        enteredLinkScope = false
+
+        Aloha.bind 'aloha-editable-activated', (event, data) ->
+          helper.start(data.editable)  
+        Aloha.bind 'aloha-editable-deactivated', (event, data) ->
+          helper.stop(data.editable)
+          insideScope = false
+          enteredLinkScope = false
+  
+        Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
+          if Aloha.activeEditable
+            enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter)
+            if insideScope isnt enteredLinkScope
+              link = rangeObject.getCommonAncestorContainer()
+              if enteredLinkScope
+                jQuery(link).trigger 'open.bubble'
+              else
+                jQuery(Aloha.activeEditable.obj).find(helper.selector).trigger 'close.bubble'
+          insideScope = enteredLinkScope
   )
