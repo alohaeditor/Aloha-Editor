@@ -207,7 +207,7 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
   
     setIcon: (@iconCls) ->
       if @iconCls?
-        @el.addClass('icon')
+        @el.removeClass('no-icon').addClass('icon')
         if @el.children('.menu-icon').length
           @el.children('.menu-icon').addClass(@iconCls)
         else
@@ -319,6 +319,7 @@ define [ "jquery", "css!./appmenu.css" ], ($) ->
       conf.subMenuChar = conf.subMenuChar || '\u25BC'
       super(text, conf)
       @el.addClass 'tool-button'
+      @el.addClass 'no-icon'
       @toolTip = conf.toolTip || null
     
     _addEvents: () ->

@@ -296,7 +296,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
       MenuItem.prototype.setIcon = function(iconCls) {
         this.iconCls = iconCls;
         if (this.iconCls != null) {
-          this.el.addClass('icon');
+          this.el.removeClass('no-icon').addClass('icon');
           if (this.el.children('.menu-icon').length) {
             return this.el.children('.menu-icon').addClass(this.iconCls);
           } else {
@@ -462,6 +462,7 @@ ToolButton > MenuItem = [ tooltop+, (checked means pressed) ]
         conf.subMenuChar = conf.subMenuChar || '\u25BC';
         ToolButton.__super__.constructor.call(this, text, conf);
         this.el.addClass('tool-button');
+        this.el.addClass('no-icon');
         this.toolTip = conf.toolTip || null;
       }
 
