@@ -280,20 +280,21 @@
           return toolbar.setAccelContainer();
         });
         Aloha.bind("aloha-selection-changed", function(event, rangeObject) {
-          var $el, i, isActive, _j, _len1, _results;
+          var $el, i, isActive, updated, _j, _len1;
           $el = Aloha.jQuery(rangeObject.startContainer);
-          _results = [];
+          updated = false;
           for (i = _j = 0, _len1 = order.length; _j < _len1; i = ++_j) {
             h = order[i];
             isActive = $el.parents(h).length > 0;
             headingButtons[i].setChecked(isActive);
             if (isActive) {
-              _results.push(headingsButton.setText(labels[h]));
-            } else {
-              _results.push(void 0);
+              headingsButton.setText(labels[h]);
+              updated = true;
             }
           }
-          return _results;
+          if (!updated) {
+            return headingsButton.setText(labels['p']);
+          }
         });
         plugin.openDialog = null;
         return PubSub.sub('aloha.ui.scope.change', function() {
