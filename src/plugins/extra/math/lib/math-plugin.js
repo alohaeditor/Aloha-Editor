@@ -100,20 +100,16 @@ function convertToConcrete(character, ele, leVal, currentOffset) {
     var i = 0;
     var currentNode = window.getSelection().focusNode;
     while(i < Inserted.length) {
-        if(currentNode.nextSibling == Inserted[i].close && currentNode.nextSibling.childNodes[0].textContent == character) {
+        if(currentNode.nextSibling == Inserted[i].close && currentNode.nextSibling.childNodes[0].textContent == character && 
+            currentOffset == currentNode.textContent.length-1) {
             break;
         }
         i = i + 1;
     }
 
     if(i != Inserted.length) {
-
-        console.log('removing g');
-        if(Inserted.length == 1) {
-            Inserted = [];
-        } else {
-            Inserted.splice(i, 1);
-        }
+        concretize(Inserted[i].open);
+        removeFromInserted(i);
         currentNode.parentNode.removeChild(currentNode.nextSibling);
     }
 }
@@ -376,86 +372,62 @@ function checkForOrphans() {
 function handleInsertsInsideSpans(leVal, currentNode, ch) {
     if(leVal.length > currentLength && leVal.length - currentLength == 1) {
         for(var i = 0; i < Inserted.length; i++) {
+
+            var enclosing = null;
+            var isMatchingCharacter = false;
+            var isClose = false;
+
             if(currentNode.parentNode == Inserted[i].close) {
-                var enclosing = Inserted[i].close;
-                if(currentNode.textContent[0] == ')' || currentNode.textContent[0] == '}') {
-                    // character inserted after closer
-
-                    var text = getTextBetweenElementsInclusive(Inserted[i].open, Inserted[i].close);
-                    var curr = Inserted[i].open;
-                    var end = Inserted[i].close.nextSibling;
-                    var parentNode = Inserted[i].close.parentNode;
-
-                    while(curr != end) {
-                        var next = curr.nextSibling;
-                        curr.parentNode.removeChild(curr);
-                        curr = next;
-                    }
-
-                    var newText = document.createTextNode(text);
-                    parentNode.insertBefore(newText, end);
-                    GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
-                    return newText;
-                } else {
-                    // character inserted in front of closer
-                    var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
-                    var curr = Inserted[i].open.nextSibling;
-                    var parentNode = Inserted[i].close.parentNode;
-                    Inserted[i].close.textContent = Inserted[i].close.textContent[1];
-
-                    while(curr != Inserted[i].close) {
-                        var next = curr.nextSibling;
-                        parentNode.removeChild(curr);
-                        curr = next;
-                    }
-                    text += ch;
-
-                    var newText = document.createTextNode(text);
-                    parentNode.insertBefore(newText, Inserted[i].close);
-                    GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
-                    window.getSelection().getRangeAt(0).setEnd(newText, newText.textContent.length);
-                    return newText;
-                }
+                enclosing = Inserted[i].close;
+                isClose = true;
+                isMatchingCharacter = currentNode.textContent[0] == ')' || currentNode.textContent[0] == '}';
             } else if(currentNode.parentNode == Inserted[i].open) {
-                var enclosing = Inserted[i].open;
-                if(currentNode.textContent[1] == '(' || currentNode.textContent[1] == '{') {
-                    // character inserted in front of opener
+                enclosing = Inserted[i].open;
+                isClose = false;
+                isMatchingCharacter = currentNode.textContent[1] == '(' || currentNode.textContent[1] == '{';
+            }
+
+            if(enclosing != null) {
+                if(isMatchingCharacter) {
                     var text = getTextBetweenElementsInclusive(Inserted[i].open, Inserted[i].close);
+                    text = text.slice(0, text.length-1)
                     var curr = Inserted[i].open;
                     var end = Inserted[i].close.nextSibling;
                     var parentNode = Inserted[i].close.parentNode;
+
                     while(curr != end) {
                         var next = curr.nextSibling;
                         curr.parentNode.removeChild(curr);
                         curr = next;
                     }
+
                     var newText = document.createTextNode(text);
                     parentNode.insertBefore(newText, end);
                     GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, 1);
-                    window.getSelection().getRangeAt(0).setEnd(newText, 1);
+                    window.getSelection().getRangeAt(0).setStart(newText, (isClose ? newText.textContent.length : 1));
                     return newText;
                 } else {
-                    // character inserted after opener
                     var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
+                    console.log('TEXT IS: '+text);
                     var curr = Inserted[i].open.nextSibling;
                     var parentNode = Inserted[i].close.parentNode;
-                    Inserted[i].open.textContent = Inserted[i].open.textContent[0];
+                    enclosing.textContent = enclosing.textContent[(isClose ? 1 : 0)];
 
                     while(curr != Inserted[i].close) {
                         var next = curr.nextSibling;
                         parentNode.removeChild(curr);
                         curr = next;
                     }
-                    text = ch+text;
+                    if(isClose) {
+                        text = text+ch;
+                    } else {
+                        text = ch+text;
+                    }
 
                     var newText = document.createTextNode(text);
                     parentNode.insertBefore(newText, Inserted[i].close);
                     GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, 1);
-                    window.getSelection().getRangeAt(0).setEnd(newText, 1);
+                    window.getSelection().getRangeAt(0).setStart(newText, (isClose ? newText.textContent.length : 1));
                     return newText;
                 }
             }
@@ -510,7 +482,7 @@ function handleBulkDelete(leVal, range) {
     return false;
 }
 
-function handleSingleCharacterOperation(leVal, currentNode) {
+function handleSingleCharacterOperation(leVal, currentNode, ch, mathEditBox, eqId) {
     if(leVal.length < currentLength && currentLength - leVal.length == 1) {
         for(var i = 0; i < Inserted.length; i++) {
 
@@ -704,92 +676,92 @@ function checkLeftScope(currentNode) {
 function onTexCharChange(evt, mathEditorContainer, eqId) {
     if(inChange) return;
     inChange = true;
-    console.log('Entering onTexCharChange');
-
     var mathEditBox = mathEditorContainer.find(".math-source");
 
-    var currentNode = window.getSelection().focusNode;
+    try {
+        var currentNode = window.getSelection().focusNode;
 
-    if(currentNode.className == "math-source") {
-        currentNode = currentNode.childNodes[0];
-    }
+        if(currentNode.className == "math-source") currentNode = currentNode.childNodes[0];
 
-    if(currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
-        currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
-        currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
-        currentLength = 0;
-    }
-
-    var range = window.getSelection().getRangeAt(0);
-    var leVal = getFullStr(mathEditBox[0].childNodes);
-    var offset = range.startOffset+(leVal.length-currentLength)-1;
-    var ch = currentNode.textContent[offset];
-    var ele = $('#'+evt.currentTarget.id);
-    console.log(currentNode);
-    console.log('CHANGE IN LENGTH IS '+(leVal.length-currentLength));
-    console.log('CURRENT OFFSET IS ['+range.startOffset+'->'+range.endOffset+']');
-    console.log('SO CH IS '+ch);
-    console.log('CURRENT LENGTH '+currentLength);
-
-
-    checkForOrphans();
-
-    console.log('onTexChange Checkpoint 2')
-
-    var newCurrent = handleInsertsInsideSpans(leVal, currentLength, currentNode, ch);
-    if(newCurrent != null) currentNode = newCurrent;
-    
-    range = window.getSelection().getRangeAt(0);
-    offset = range.startOffset;
-    leVal = getFullStr(mathEditBox[0].childNodes);
-    var diff = leVal.length - currentLength;
-
-    console.log('onTexChange Checkpoint 3')
-    if(handleBulkDelete(leVal, range) ) {
-        return;
-    }
-    
-    console.log('onTexChange Checkpoint 4')
-
-    if(handleSingleCharacterOperation(leVal, currentNode)) {
-        return;
-    }
-
-    console.log('onTexChange Checkpoint 5')
-
-    // moved beyond the scope of a parens or braces
-    checkLeftScope(currentNode);
-    console.log('CH IS '+ch);
-
-    if(leVal.length - currentLength > 0) {
-        switch(ch) {
-            case(')'):
-            case('}'):
-                convertToConcrete(ch, mathEditBox[0], leVal, offset);
-                break;
-            case('{'):
-                generateInserted(offset, '}', '');
-                break;
-            case('('):
-                generateInserted(offset, ')', '');
-                break;
-            case('^'):
-            case('_'):
-                insertBraces(mathEditBox[0], leVal, offset);
-                break;
-            case('\\'):
-                insertFunc(mathEditBox[0], leVal, offset, 'func');
-                break;
+        if(currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
+            currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
+            currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
+            currentLength = 0;
         }
-    }
 
-    leVal = getFullStr(mathEditBox[0].childNodes);
-    console.log('onTexChange Checkpoint 7 '+eqId)
-    console.log('LEVAL is: '+leVal);
-    console.log('EQID is: '+eqId);
-    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-    inChange = false;
+        var range = window.getSelection().getRangeAt(0);
+        var leVal = getFullStr(mathEditBox[0].childNodes);
+        var offset = range.startOffset+(leVal.length-currentLength)-1;
+        var ch = currentNode.textContent[offset];
+        var ele = $('#'+evt.currentTarget.id);
+        console.log(currentNode);
+        console.log('CHANGE IN LENGTH IS '+(leVal.length-currentLength));
+        console.log('CURRENT OFFSET IS ['+range.startOffset+'->'+range.endOffset+']');
+        console.log('SO CH IS '+ch);
+        console.log('CURRENT LENGTH '+currentLength);
+
+
+        checkForOrphans();
+
+        console.log('onTexChange Checkpoint 2')
+
+        var newCurrent = handleInsertsInsideSpans(leVal, currentNode, ch);
+        if(newCurrent != null) currentNode = newCurrent;
+        
+        range = window.getSelection().getRangeAt(0);
+        offset = range.startOffset;
+        leVal = getFullStr(mathEditBox[0].childNodes);
+        var diff = leVal.length - currentLength;
+
+        console.log('onTexChange Checkpoint 3')
+        if(handleBulkDelete(leVal, range) ) {
+            return;
+        }
+        
+        console.log('onTexChange Checkpoint 4')
+
+        if(handleSingleCharacterOperation(leVal, currentNode, ch, mathEditBox)) {
+            return;
+        }
+
+        console.log('onTexChange Checkpoint 5')
+
+        // moved beyond the scope of a parens or braces
+        checkLeftScope(currentNode);
+        console.log('CH IS '+ch);
+
+        if(leVal.length - currentLength > 0) {
+            switch(ch) {
+                case(')'):
+                case('}'):
+                    convertToConcrete(ch, mathEditBox[0], leVal, offset);
+                    break;
+                case('{'):
+                    generateInserted(offset, '}', '');
+                    break;
+                case('('):
+                    generateInserted(offset, ')', '');
+                    break;
+                case('^'):
+                case('_'):
+                    insertBraces(mathEditBox[0], leVal, offset);
+                    break;
+                case('\\'):
+                    insertFunc(mathEditBox[0], leVal, offset, 'func');
+                    break;
+            }
+        }
+
+        console.log('onTexChange Checkpoint 7 '+eqId)
+        console.log('LEVAL is: '+leVal);
+        console.log('EQID is: '+eqId);
+        leVal = getFullStr(mathEditBox[0].childNodes);
+        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+    } catch(err) {
+        leVal = getFullStr(mathEditBox[0].childNodes);
+    }
     currentLength = leVal.length;
+    inChange = false;
 }
 
 function onAsciiCharChange(evt,  mathEditorContainer, eqId) {
