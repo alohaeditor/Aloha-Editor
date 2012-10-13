@@ -498,7 +498,9 @@ GENTICS.Utils.RangeObject = Class.extend({
 			// when the selection is in a text node at the start, look for an adjacent text node and if one found, move into that at the end
 			if (this.startContainer.nodeType === 3 && this.startOffset === 0) {
 				adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.Dom.getIndexInParent(this.startContainer), true);
-				if (adjacentTextNode) {
+				//only move the selection if the adjacentTextNode is inside the current editable
+			 	//the cursor should not be outside the editable
+				if (adjacentTextNode && jQuery(adjacentTextNode).closest(Aloha.activeEditable.obj).length > 0) {
 					this.startContainer = this.endContainer = adjacentTextNode;
 					this.startOffset = this.endOffset = adjacentTextNode.data.length;
 				}

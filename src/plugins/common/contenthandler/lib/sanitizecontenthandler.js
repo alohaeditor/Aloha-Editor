@@ -24,17 +24,18 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(
-[ 'aloha/core', 'jquery', 'aloha/contenthandlermanager', 'aloha/console', 'vendor/sanitize' ],
-function( Aloha, jQuery, ContentHandlerManager, console ) {
+define([
+	'aloha/core',
+	'jquery',
+	'aloha/contenthandlermanager',
+	'aloha/plugin',
+	'aloha/console',
+	'vendor/sanitize'
+],
+function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 	"use strict";
 	
 	var sanitize;
-	
-	// needed minimum sanitize configuration for Aloha itselft
-	/*Aloha.defaults.supports = jQuery.merge(Aloha.defaults.supports, {
-			elements: [ 'br', 'div', 'p', 'span' ]
-	});*/
 	
 	// predefined set of sanitize options if no dynamic or custom config is used
 	if( !Aloha.defaults.sanitize ) {
@@ -83,20 +84,21 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 
 		attributes: {
 			'a': ['href', 'title', 'id', 'class', 'target', 'data-gentics-aloha-repository', 'data-gentics-aloha-object-id'],
-			'div': [ 'id', 'class'],
+			'div': ['id','class','style'],
 			'abbr': ['title'],
 			'blockquote': ['cite'],
 			'br': ['class'],
 			'col': ['span', 'width'],
 			'colgroup': ['span', 'width'],
-			'img': ['align', 'alt', 'height', 'src', 'title', 'width', 'class'],
+			'img': ['align', 'alt', 'height', 'src', 'title', 'width', 'class', 'data-caption', 'data-align', 'data-width', 'data-original-image'],
 			'ol': ['start', 'type'],
+			'p': ['class', 'style', 'id'],
 			'q': ['cite'],
 			'table': ['summary', 'width'],
 			'td': ['abbr', 'axis', 'colspan', 'rowspan', 'width'],
 			'th': ['abbr', 'axis', 'colspan', 'rowspan', 'scope', 'width'],
 			'ul': ['type'],
-			'span': ['class','style','lang','xml:lang']
+			'span': ['class','style','lang','xml:lang','role']
 		},
 
 		protocols: {
@@ -107,29 +109,34 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		}
 	}
 
-	function initSanitize () {
+	function initSanitize (configAllows) {
 		var 
 			filter = [ 'restricted', 'basic', 'relaxed' ],
 			config = Aloha.defaults.supports; // @TODO: needs to be implemented into all plugins
-		
+
 		// @TODO think about Aloha.settings.contentHandler.sanitize name/options
-		if ( Aloha.settings.contentHandler.sanitize && jQuery.inArray(Aloha.settings.contentHandler.sanitize, filter) > -1 ) {
+		if (Aloha.settings.contentHandler.sanitize &&
+			jQuery.inArray(Aloha.settings.contentHandler.sanitize, filter) > -1) {
 			config = Aloha.defaults.sanitize[Aloha.settings.contentHandler.sanitize];
 		} else {
 			// use relaxed filter by default
 			config = Aloha.defaults.sanitize.relaxed;
 		}
-		
+
 		// @TODO move to Aloha.settings.contentHandler.sanitize.allows ?
-		if ( Aloha.settings.contentHandler.allows ) {
+		if (Aloha.settings.contentHandler.allows) {
 			config = Aloha.settings.contentHandler.allows;
+		}
+
+		if (configAllows) {
+			config = configAllows;
 		}
 
 		// add a filter to stop cleaning elements with contentEditable "false"
 		config.filters = [function( elem ) {
 			return elem.contentEditable != "false";
 		}];
-		sanitize = new Sanitize( config );
+		sanitize = new Sanitize( config, jQuery );
 	}
 
 	var SanitizeContentHandler = ContentHandlerManager.createHandler({
@@ -138,14 +145,31 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		 * @param content
 		 */
 		handleContent: function( content )  {
-			// sanitize does not work in IE7. It tries to set the style attribute via setAttributeNode() and this is know to not work in IE7
-			// (see http://www.it-blogger.com/2007-06-22/microsofts-internetexplorer-und-mitglied-nicht-gefunden/ as a reference)
-			if (jQuery.browser.msie && jQuery.browser.version <= 7) {
-				return content;
+			var sanitizeConfig,
+				contentHandlerConfig;
+
+			if (Aloha.activeEditable &&
+				Aloha.settings.contentHandler &&
+				Aloha.settings.contentHandler.handler && Aloha.settings.contentHandler.handler.sanitize) {
+				// individual sanitize config per editable -- should support merging of configs from other plugins ...
+				if ( Aloha.settings.contentHandler.handler.sanitize ) {
+					contentHandlerConfig = Aloha.settings.contentHandler.handler.sanitize;
+				}
+				var containerId = contentHandlerConfig['#' + Aloha.activeEditable.getId()];
+				if (typeof containerId !== 'undefined') {
+					sanitizeConfig = contentHandlerConfig;
+				} else {
+					var containerClasses = Aloha.activeEditable.obj.attr('class').split(' ');
+					for ( var i=0; i < containerClasses.length; i++) {
+						if (typeof contentHandlerConfig['.' + containerClasses[i]] !== 'undefined') {
+							sanitizeConfig = contentHandlerConfig['.' + containerClasses[i]];
+						}
+					}
+				}
 			}
 
-			if ( typeof sanitize === 'undefined' ) {
-			   initSanitize();
+			if ( typeof sanitize === 'undefined' || typeof sanitizeConfig !== 'undefined') {
+				initSanitize( sanitizeConfig );
 			}
 
 			if ( typeof content === 'string' ){
@@ -157,6 +181,6 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			return jQuery('<div>').append(sanitize.clean_node(content)).html();
 		}
 	});
-	
+
 	return SanitizeContentHandler;
 });

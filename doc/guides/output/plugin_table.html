@@ -43,7 +43,7 @@
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
         <h2><a href="/"></a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -56,39 +56,25 @@
           <hr style="clear:both;">
           <dl class="L">
     <dt>Start Here</dt>
-      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
-      <dd><a href="functional_description.html">Functional Description</a></dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
-      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
-      <dd><a href="repository.html">Working with repositories</a></dd>
+      <dd><a href="using_aloha.html">Use</a></dd>
+      <dd><a href="develop_aloha.html">Develop</a></dd>
+      <dd><a href="dependencies.html">Dependencies</a></dd>
     <dt>The Core</dt>
-      <dd><a href="core.html">The Core</a></dd>
-    <dt>Commands</dt>
-      <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+      <dd><a href="events.html">Events</a></dd>
+      <dd><a href="using_commands.html">Commands</a></dd>
+      <dd><a href="repository.html">Repositories</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="internals.html">Internals</a></dd>
 </dl>
 <dl class="R">
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd><a href="core_hotkey.html">Hotkeys</a></dd>
     <dt>Plugins</dt>
-      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
-      <dd><a href="plugin_block.html">Block</a></dd>
-      <dd><a href="plugin_image.html">Image</a></dd>
-      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
-      <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd>Numerated Headers</dd>
-      <dd><a href="plugin_undo.html">Undo</a></dd>
-      <dd><a href="plugin_table.html">Table</a></dd>
-      <dd><a href="plugin_paste.html">Paste</a></dd>
-      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
-      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
+      <dd><a href="plugins.html">Available Plugins</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
-      <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
 </dl>
@@ -124,28 +110,7 @@
 <p>Each cell, row or column can have an individual style applied. You only have to select the rows or columns and choose one layout from the table layout list.</p>
 <h4 id="table-caption-summary">2.6 Table caption &amp; summary</h4>
 <p>To add a caption to a table click inside of one cell and click the button table caption. A summary may be added by using the according field in the sidebar.</p>
-<h3 id="components">3 Components</h3>
-<ul>
-	<li>table &#8211; insert a table into the content</li>
-	<li>addrowbefore &#8211; adds a row before the current row</li>
-	<li>addrowafter &#8211; adds a row after the current row</li>
-	<li>deleterow &#8211; deletes the current row</li>
-	<li>deletecolumn &#8211; deletes the current column</li>
-	<li>rowheader &#8211; turns current row into a row of headers</li>
-	<li>columnheader &#8211; turns current column into a column of headers</li>
-	<li>romergecells &#8211; merge all cells within this row</li>
-	<li>rowsplitcells &#8211; split merged cells within this row</li>
-	<li>columnmergecells &#8211; merge all cells within this column</li>
-	<li>columnsplitcells &#8211; split merged cells within this column</li>
-	<li>addcolumnleft &#8211; add a column left of the current column</li>
-	<li>addcolumnright &#8211; add a column right of the current column</li>
-	<li>tablemergecells &#8211; merge selected cells</li>
-	<li>tablesplitcells &#8211; split selected cells</li>
-	<li>mergecells &#8211; merge selected cells</li>
-	<li>splitcells &#8211; split selected cells</li>
-	<li>tablecaption &#8211; input field which allows you to add a caption to the table</li>
-</ul>
-<h3 id="configuration-settings">4 Configuration settings</h3>
+<h3 id="configuration-settings">3 Configuration settings</h3>
 <p>The table configuration allows for some special settings:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -180,7 +145,27 @@ Aloha.settings.plugins: {
 		]
 	}
 };
-</pre></div>
+</pre></div><h3 id="components">4 Components</h3>
+<ul>
+	<li>table &#8211; insert a table into the content</li>
+	<li>addrowbefore &#8211; adds a row before the current row</li>
+	<li>addrowafter &#8211; adds a row after the current row</li>
+	<li>deleterow &#8211; deletes the current row</li>
+	<li>deletecolumn &#8211; deletes the current column</li>
+	<li>rowheader &#8211; turns current row into a row of headers</li>
+	<li>columnheader &#8211; turns current column into a column of headers</li>
+	<li>romergecells &#8211; merge all cells within this row</li>
+	<li>rowsplitcells &#8211; split merged cells within this row</li>
+	<li>columnmergecells &#8211; merge all cells within this column</li>
+	<li>columnsplitcells &#8211; split merged cells within this column</li>
+	<li>addcolumnleft &#8211; add a column left of the current column</li>
+	<li>addcolumnright &#8211; add a column right of the current column</li>
+	<li>tablemergecells &#8211; merge selected cells</li>
+	<li>tablesplitcells &#8211; split selected cells</li>
+	<li>mergecells &#8211; merge selected cells</li>
+	<li>splitcells &#8211; split selected cells</li>
+	<li>tablecaption &#8211; input field which allows you to add a caption to the table</li>
+</ul>
 
       </div>
         <div id="subCol">
@@ -194,8 +179,8 @@ Aloha.settings.plugins: {
 </a></li> <li><a href="#merge-and-split-cells"><p>Merge and split cells</p>
 </a></li> <li><a href="#table-layout"><p>Table layout</p>
 </a></li> <li><a href="#table-caption-summary"><p>Table caption &amp; summary</p>
-</a></li></ul></li><li><a href="#components"><p>Components</p>
-</a></li><li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li></ul></li><li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li><li><a href="#components"><p>Components</p>
 </a></li>
           </ol>
         </div>

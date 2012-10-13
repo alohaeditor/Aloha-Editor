@@ -187,8 +187,13 @@ function() {
 		test('boolean attributes', function() {
 			testGc('<input type="checkbox" checked>',
 				   [ '<input type="checkbox" checked="checked"/>',
+					 // different order than the previous
+					 '<input checked="checked" type="checkbox"/>',
 					 // IE8 adds the value="on" even though it's not specified
-				     '<input type="checkbox" checked="checked" value="on"/>' ]);
+				     '<input type="checkbox" checked="checked" value="on"/>',
+					 // the following two are just differently ordered than the last
+					 '<input value="on" checked="checked" type="checkbox"/>',
+					 '<input type="checkbox" value="on" checked="checked"/>']);
 			testGc('<button disabled>',
 				   [ '<button disabled="disabled"></button>',
 					 // IE8 adds the type="submit" even though it's not specified

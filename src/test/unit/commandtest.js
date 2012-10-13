@@ -29,19 +29,19 @@ define(
 function( TestUtils ) {
 	"use strict";
 	
-	var aQuery = Aloha.jQuery;
+	var jQuery = window.jQuery;
 
 	var browser, browserversion;
-	if (aQuery.browser.msie) {
+	if (jQuery.browser.msie) {
 		browser = "msie";
-	} else if (aQuery.browser.webkit) {
+	} else if (jQuery.browser.webkit) {
 		browser = "webkit";
-	} else if (aQuery.browser.opera) {
+	} else if (jQuery.browser.opera) {
 		browser = "opera";
-	} else if (aQuery.browser.mozilla) {
+	} else if (jQuery.browser.mozilla) {
 		browser = "mozilla";
 	}
-	browserversion = browser + aQuery.browser.version;
+	browserversion = browser + jQuery.browser.version;
 
 	// Test whether Aloha is properly initialized
 	asyncTest( 'Aloha Startup Test', function() {
@@ -60,9 +60,9 @@ function( TestUtils ) {
 	Aloha.ready( function() {
 
 		var 
-			editable = aQuery( '#edit' ),
-			converterResult = aQuery('<div>'),
-			converter = aQuery('<div>');
+			editable = jQuery( '#edit' ),
+			converterResult = jQuery('<div>'),
+			converter = jQuery('<div>');
 
 		// aloha'fy the editable
 		editable.aloha();
@@ -182,7 +182,7 @@ function( TestUtils ) {
 						result.html(resultHtml);
 						// get the contents of the editable
 						result = result.contents();
-						execResult = aQuery( '<div>' + check.execResult + '</div>' );
+						execResult = jQuery( '<div>' + check.execResult + '</div>' );
 						
 						// remove browser specific elements from expected results
 						if (browser) {
@@ -233,7 +233,7 @@ function( TestUtils ) {
 							range = rangy.getSelection().getRangeAt(0);
 							TestUtils.addBrackets(range);
 							result = Aloha.editables[0].getContents( true );			
-							execToggle = aQuery( '<div>' + check.execToggle + '</div>' ).contents();
+							execToggle = jQuery( '<div>' + check.execToggle + '</div>' ).contents();
 							deepEqual( result.extractHTML( check.attributes ), execToggle.extractHTML( check.attributes ), 'execCommand toggle result' );
 						}
 						
