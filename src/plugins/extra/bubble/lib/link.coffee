@@ -6,7 +6,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
   
   showModalDialog = ($a) ->
       root = Aloha.activeEditable.obj
-      dialog = jQuery('<div class="link-chooser">')
+      dialog = jQuery('<div class="link-chooser"></div>')
       select = jQuery('<select class="link-list" size="5"></select>')
       select.appendTo dialog
       appendOption = (id, contentsToClone) ->
@@ -55,14 +55,15 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
   filter = ->
     @nodeName.toLowerCase() is 'a'
 
-  populator = ($el, $bubble) ->
-      that = this
+  populator = ($bubble) ->
+      $el = @
       href = $el.attr('href')
       a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble)
       a.attr 'href', href
       a.append href
       $bubble.append ' - '
       change = jQuery('<a href="javascript:void">Change</a>')
+      # TODO: Convert the mousedown to a click. To do that the aloha-deactivated event need to not hide the bubbles yet and instead fire a 'hide' event
       change.appendTo($bubble).on 'mousedown', ->
         dialog = showModalDialog($el)
         dialog.addClass 'aloha'
