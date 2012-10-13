@@ -6,7 +6,7 @@
     showModalDialog = function($a) {
       var appendOption, dialog, figuresAndTables, onCancel, onOk, orgElements, root, select;
       root = Aloha.activeEditable.obj;
-      dialog = jQuery('<div class="link-chooser">');
+      dialog = jQuery('<div class="link-chooser"></div>');
       select = jQuery('<select class="link-list" size="5"></select>');
       select.appendTo(dialog);
       appendOption = function(id, contentsToClone) {
@@ -60,9 +60,9 @@
     filter = function() {
       return this.nodeName.toLowerCase() === 'a';
     };
-    populator = function($el, $bubble) {
-      var a, change, href, that;
-      that = this;
+    populator = function($bubble) {
+      var $el, a, change, href;
+      $el = this;
       href = $el.attr('href');
       a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble);
       a.attr('href', href);
