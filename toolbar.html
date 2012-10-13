@@ -18,10 +18,19 @@
 /* Add some padding on the top so the toolbar has room to float in */
 .document { margin: 3em; }
     </style>
+
+
+	<!-- Manually link to jQuery because bootstrap relies on this for loading -->
+	<script src="src/lib/vendor/jquery-1.7.2.js"></script>
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.css" type="text/css"/>
+	<link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" type="text/css"/>
+	<script src="bootstrap/js/bootstrap.js"></script>
+
 	<script language="javascript">
 		Aloha = window.Aloha || {};
 
 		Aloha.settings = {
+			jQuery: window.jQuery,
 			logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
 			errorhandling : true,
 
@@ -84,6 +93,7 @@
 	  extra/no-floating,
 	  extra/bubble
 	"></script>
+
 
 	<style type="text/css">
 	  .toolbar-container {
