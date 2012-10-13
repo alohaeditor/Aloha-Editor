@@ -45,7 +45,7 @@ AttributeField) {
 		 * Initialize Floating menu buttons according to plugin config
 		 */
 		init: function (plugin) {
-			plugin.floatingMenuControl = this;
+			plugin.uiControl = this;
 			this.plugin = plugin;
 
 			Scopes.createScope(plugin.name, 'Aloha.empty');
