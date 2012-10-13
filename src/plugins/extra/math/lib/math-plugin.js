@@ -904,7 +904,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         /* Replaces the current text with a '&nbsp;' if the user removes all the text */
         var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
         if (text == '') {
-            $(".math-editor").find(".math-source").append("&nbsp\;");
+            //$(".math-editor").find(".math-source").append("&nbsp\;");
         }
         // console.log("Modified1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), mathJaxElId);
