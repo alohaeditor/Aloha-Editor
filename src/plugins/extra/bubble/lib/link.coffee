@@ -7,6 +7,35 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
   showModalDialog = ($a) ->
       root = Aloha.activeEditable.obj
       dialog = jQuery('<div class="link-chooser"></div>')
+      
+      if not $a.children()[0]
+        jQuery('<label>Text to display</label>').appendTo(dialog)
+        linkContents = jQuery('<input class="contents"></input>').appendTo(dialog)
+        linkContents.val($a.text())
+      
+      # Build the link options and then populate one of them.
+      externalDiv = jQuery('''<div class="link-location">
+        <div class="link-radio">
+          <input type="radio" name="link-to-where" id="ltw-external"/>
+        </div>
+        <label for="ltw-external">Link to webpage</label>
+      </div>''').appendTo(dialog)
+      externalHref = jQuery('<input class="href external"></input>').appendTo(externalDiv)
+
+
+      externalDiv.find('input[name=link-to-where]').on 'change', () ->
+        checked = jQuery(@).attr('checked')
+        externalHref.addClass('disabled') if not checked
+        externalHref.removeClass('disabled') if checked
+        
+      
+      href = $a.attr('href')
+      
+      if href.match(/^https?:\/\//)
+        externalHref.val(href)
+        externalHref.removeClass('disabled')
+
+      
       select = jQuery('<select class="link-list" size="5"></select>')
       select.appendTo dialog
       appendOption = (id, contentsToClone) ->
@@ -35,9 +64,13 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
 
       select.val $a.attr('href')
       onOk = ->
+        if linkContents.val() and linkContents.val().trim()
+          $a.contents().remove()
+          $a.append(linkContents.val())
+
         if select.val()
           $a.attr 'href', select.val()
-          jQuery(this).dialog 'close'
+        jQuery(this).dialog 'close'
 
       onCancel = ->
         jQuery(this).dialog 'close'
