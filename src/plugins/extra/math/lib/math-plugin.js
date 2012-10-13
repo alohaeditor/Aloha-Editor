@@ -347,47 +347,17 @@ function hasChild(parentNode, childNode) {
     return false;
 }
 
-function onTexCharChange(evt, mathEditorContainer, eqId) {
-    // console.log('Entering onTexChange '+inChange+' on '+eqId)
-    if(inChange) return;
-    inChange = true;
-
-    // Gbenga's variables
-    var mathEditBox = mathEditorContainer.find(".math-source");
-
-    // console.log('Math edit box:')
-    // console.log(mathEditBox)
-
-    var currentNode = window.getSelection().focusNode;
-
-    if(currentNode.className == "math-source") {
-        console.log("Going to child nodes");
-        currentNode = currentNode.childNodes[0];
+function removeFromInserted(index) {
+    if(Inserted.length == 1) {
+        Inserted = [ ]
+    } else {
+        Inserted.splice(index, 1);
     }
+}
 
-    if(currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
-        currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
-        currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
-        currentLength = 0;
-    }
-    var range = window.getSelection().getRangeAt(0);
-    var leVal = getFullStr(mathEditBox[0].childNodes);
-    var offset = range.startOffset+(leVal.length-currentLength)-1;
-    var ch = currentNode.textContent[offset];
-    var ele = $('#'+evt.currentTarget.id);
-    console.log(currentNode);
-    console.log('CHANGE IN LENGTH IS '+(leVal.length-currentLength));
-    console.log('CURRENT OFFSET IS ['+range.startOffset+'->'+range.endOffset+']');
-    console.log('SO CH IS '+ch);
-    console.log('CURRENT LENGTH '+currentLength);
-
-
-    // console.log('onTexChange Checkpoint 1')
-
+function checkForOrphans() {
     var i = 0;
     while(i < Inserted.length) {
-        console.log(Inserted[i].open.parentNode);
-        console.log(Inserted[i].close.parentNode);
         if(Inserted[i].open.parentNode == null || Inserted[i].close.parentNode == null) {
             if(Inserted[i].open.parentNode != null) {
                 concretize(Inserted[i].open);
@@ -395,17 +365,15 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             if(Inserted[i].close.parentNode != null) {
                 concretize(Inserted[i].close);
             } 
-            if(Inserted.length == 1) {
-                Inserted = [];
-            } else {
-                Inserted.splice(i, 1);
-            }
+            removeFromInserted(i);
+
         } else {
             i = i + 1;
         }
     }
+}
 
-    console.log('onTexChange Checkpoint 2')
+function handleInsertsInsideSpans(leVal, currentNode, ch) {
     if(leVal.length > currentLength && leVal.length - currentLength == 1) {
         for(var i = 0; i < Inserted.length; i++) {
             if(currentNode.parentNode == Inserted[i].close) {
@@ -423,11 +391,12 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                         curr.parentNode.removeChild(curr);
                         curr = next;
                     }
+
                     var newText = document.createTextNode(text);
                     parentNode.insertBefore(newText, end);
                     GENTICS.Utils.Dom.setCursorInto( newText );
                     window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
-                    currentNode = newText;
+                    return newText;
                 } else {
                     // character inserted in front of closer
                     var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
@@ -447,9 +416,8 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                     GENTICS.Utils.Dom.setCursorInto( newText );
                     window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
                     window.getSelection().getRangeAt(0).setEnd(newText, newText.textContent.length);
-                    currentNode = newText;
+                    return newText;
                 }
-                break;
             } else if(currentNode.parentNode == Inserted[i].open) {
                 var enclosing = Inserted[i].open;
                 if(currentNode.textContent[1] == '(' || currentNode.textContent[1] == '{') {
@@ -468,7 +436,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                     GENTICS.Utils.Dom.setCursorInto( newText );
                     window.getSelection().getRangeAt(0).setStart(newText, 1);
                     window.getSelection().getRangeAt(0).setEnd(newText, 1);
-                    currentNode = newText;
+                    return newText;
                 } else {
                     // character inserted after opener
                     var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
@@ -488,28 +456,16 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                     GENTICS.Utils.Dom.setCursorInto( newText );
                     window.getSelection().getRangeAt(0).setStart(newText, 1);
                     window.getSelection().getRangeAt(0).setEnd(newText, 1);
-                    currentNode = newText;
+                    return newText;
                 }
-                
-                break;
             }
         }
     }
+    return null;
+}
 
-    range = window.getSelection().getRangeAt(0);
-    offset = range.startOffset;
-    //ch = currentNode.textContent[offset];
-    
-    //var eqId = evt.currentTarget.id.substring(5);
-    var leVal = getFullStr(mathEditBox[0].childNodes);
-    var diff = leVal.length - currentLength;
-
-    // console.log('onTexChange Checpoint 3.1')
-
-
-     console.log('onTexChange Checkpoint 3')
+function handleBulkDelete(leVal, range) {
     if(leVal.length < currentLength && currentLength - leVal.length > 1) {
-        // console.log('onTexChange Checpoint 3.2')
         // bulk delete
         var startDelete = range.startContainer;
         if(startDelete.className == "math-source") {
@@ -536,38 +492,25 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             if(deleteOpen && deleteClose) {
                 parentNode.removeChild(open);
                 parentNode.removeChild(close);
-                console.log('removing b');
-                if(Inserted.length == 1) {
-                    Inserted = [];
-                } else {
-                    Inserted.splice(i, 1);
-                }
+                removeFromInserted(i);
             } else if(deleteOpen) {
                 parentNode.removeChild(open);
-                console.log('removing c');
-                if(Inserted.length == 1) {
-                    Inserted = [];
-                } else {
-                    Inserted.splice(i, 1);
-                }
+                removeFromInserted(i);
             } else if(deleteClose) {
                 parentNode.removeChild(close);
-                console.log('removing d');
-                if(Inserted.length == 1) {
-                    Inserted = [];
-                } else {
-                    Inserted.splice(i, 1);
-                }
+                removeFromInserted(i);
             }
         }
-        leVal = getFullStr(mathEditBox[0].childNodes);
-        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+        var tmp = getFullStr(mathEditBox[0].childNodes);
+        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+tmp+"}"]);
         inChange = false;
-        currentLength = leVal.length;
-        return;
+        currentLength = tmp.length;
+        return true;
     }
-    console.log('onTexChange Checkpoint 4')
+    return false;
+}
 
+function handleSingleCharacterOperation(leVal, currentNode) {
     if(leVal.length < currentLength && currentLength - leVal.length == 1) {
         for(var i = 0; i < Inserted.length; i++) {
 
@@ -601,18 +544,13 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                         window.getSelection().getRangeAt(0).setStart(newText, 0);
                     }
 
-                    console.log('removing e');
-                    if(Inserted.length == 1) {
-                        Inserted = [];
-                    } else {
-                        Inserted.splice(i, 1);
-                    }
+                    removeFromInserted(i);
 
-                    leVal = getFullStr(mathEditBox[0].childNodes);
-                    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                    var tmp = getFullStr(mathEditBox[0].childNodes);
+                    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+tmp+"}"]);
                     inChange = false;
-                    currentLength = leVal.length;
-                    return;
+                    currentLength = tmp.length;
+                    return true;
                 } else {
                     // if this delete was on the opening character of a virtual closing character and there is space between
                     var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
@@ -635,17 +573,13 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                     window.getSelection().getRangeAt(0).setStart(newText, 0);
                     window.getSelection().getRangeAt(0).setEnd(newText, 0);
 
-                    if(Inserted.length == 1) {
-                        Inserted = [];
-                    } else {
-                        Inserted[i].splice(i, 1);
-                    }
+                    removeFromInserted(i);
 
-                    leVal = getFullStr(mathEditBox[0].childNodes);
-                    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                    var tmp = getFullStr(mathEditBox[0].childNodes);
+                    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+tmp+"}"]);
                     inChange = false;
-                    currentLength = leVal.length;
-                    return;
+                    currentLength = tmp.length;
+                    return true;
                 }
             } else if(currentNode.parentNode == Inserted[i].close) {
                 var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
@@ -668,22 +602,15 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                 window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
                 window.getSelection().getRangeAt(0).setEnd(newText, newText.textContent.length);
 
+                removeFromInserted(i);
 
-                if(Inserted.length == 1) {
-                    Inserted = [];
-                } else {
-                    Inserted[i].splice(i, 1);
-                }
-
-                leVal = getFullStr(mathEditBox[0].childNodes);
-                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                var tmp = getFullStr(mathEditBox[0].childNodes);
+                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+tmp+"}"]);
                 inChange = false;
-                currentLength = leVal.length;
-                return;
-
+                currentLength = tmp.length;
+                return true;
             }
         }
-
 
         // delete inside function, make it real
         for(var i = 0; i < FuncInserted.length; i++) {
@@ -711,17 +638,13 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                     window.getSelection().getRangeAt(0).setStart(newText, offset+1);
                 }
 
-                if(FuncInserted.length == 1) {
-                    FuncInserted = [];
-                } else {
-                    FuncInserted.splice(i, 1);
-                }
+                removeFromInserted(i);
 
-                leVal = getFullStr(mathEditBox[0].childNodes);
-                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                var tmp = getFullStr(mathEditBox[0].childNodes);
+                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+tmp+"}"]);
                 inChange = false;
-                currentLength = leVal.length;
-                return;
+                currentLength = tmp.length;
+                return true;
             }
         }
     } else if(leVal.length > currentLength && leVal.length - currentLength == 1) {
@@ -751,41 +674,91 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                     window.getSelection().getRangeAt(0).setStart(newText, 1);
                 }
 
-                if(FuncInserted.length == 1) {
-                    FuncInserted = [];
-                } else {
-                    FuncInserted.splice(i, 1);
-                }
+                removeFromInserted(i);
 
-                leVal = getFullStr(mathEditBox[0].childNodes);
-                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                var tmp = getFullStr(mathEditBox[0].childNodes);
+                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+tmp+"}"]);
                 inChange = false;
-                currentLength = leVal.length;
-                return;
+                currentLength = tmp.length;
+                return true;
             }
         }
     }
-    console.log('onTexChange Checkpoint 5')
+    return false;
+}
 
-
-
-    // moved beyond the scope of a parens or braces
+function checkLeftScope(currentNode) {
     var i = 0;
     while(i < Inserted.length) {
         if(isAfterOther(currentNode, Inserted[i].close) || isBeforeOther(currentNode, Inserted[i].open)) {
             concretize(Inserted[i].open);
             concretize(Inserted[i].close);
 
-            console.log('removing f');
-            if(Inserted.length == 1) {
-                Inserted = [];
-            } else {
-                Inserted.splice(i, 1);
-            }
+            removeFromInserted(i);
         } else {
             i = i + 1;
         }
     }
+}
+
+function onTexCharChange(evt, mathEditorContainer, eqId) {
+    if(inChange) return;
+    inChange = true;
+    console.log('Entering onTexCharChange');
+
+    var mathEditBox = mathEditorContainer.find(".math-source");
+
+    var currentNode = window.getSelection().focusNode;
+
+    if(currentNode.className == "math-source") {
+        currentNode = currentNode.childNodes[0];
+    }
+
+    if(currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
+        currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
+        currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
+        currentLength = 0;
+    }
+
+    var range = window.getSelection().getRangeAt(0);
+    var leVal = getFullStr(mathEditBox[0].childNodes);
+    var offset = range.startOffset+(leVal.length-currentLength)-1;
+    var ch = currentNode.textContent[offset];
+    var ele = $('#'+evt.currentTarget.id);
+    console.log(currentNode);
+    console.log('CHANGE IN LENGTH IS '+(leVal.length-currentLength));
+    console.log('CURRENT OFFSET IS ['+range.startOffset+'->'+range.endOffset+']');
+    console.log('SO CH IS '+ch);
+    console.log('CURRENT LENGTH '+currentLength);
+
+
+    checkForOrphans();
+
+    console.log('onTexChange Checkpoint 2')
+
+    var newCurrent = handleInsertsInsideSpans(leVal, currentLength, currentNode, ch);
+    if(newCurrent != null) currentNode = newCurrent;
+    
+    range = window.getSelection().getRangeAt(0);
+    offset = range.startOffset;
+    leVal = getFullStr(mathEditBox[0].childNodes);
+    var diff = leVal.length - currentLength;
+
+    console.log('onTexChange Checkpoint 3')
+    if(handleBulkDelete(leVal, range) ) {
+        return;
+    }
+    
+    console.log('onTexChange Checkpoint 4')
+
+    if(handleSingleCharacterOperation(leVal, currentNode)) {
+        return;
+    }
+
+    console.log('onTexChange Checkpoint 5')
+
+    // moved beyond the scope of a parens or braces
+    checkLeftScope(currentNode);
     console.log('CH IS '+ch);
 
     if(leVal.length - currentLength > 0) {
@@ -809,13 +782,12 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
                 break;
         }
     }
-    console.log('onTexChange Checkpoint 7 '+eqId)
 
     leVal = getFullStr(mathEditBox[0].childNodes);
+    console.log('onTexChange Checkpoint 7 '+eqId)
     console.log('LEVAL is: '+leVal);
     console.log('EQID is: '+eqId);
     MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-    // console.log('onTexChange Checkpoint 8')
     inChange = false;
     currentLength = leVal.length;
 }
