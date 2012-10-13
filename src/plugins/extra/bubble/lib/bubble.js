@@ -17,6 +17,8 @@
         $el.data('aloha-bubble-el', jQuery('<div class="bubble"></div>'));
       }
       $bubble = $el.data('aloha-bubble-el');
+      $bubble.addClass(placement.vertical);
+      $bubble.addClass(placement.horizontal);
       $bubble.contents().remove();
       $bubble.appendTo(canvas);
       displayer.bind($el)($bubble);

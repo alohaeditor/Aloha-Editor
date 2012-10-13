@@ -4,9 +4,31 @@
   define(['aloha', 'jquery', 'aloha/console'], function(Aloha, jQuery, console) {
     var filter, populator, selector, showModalDialog;
     showModalDialog = function($a) {
-      var appendOption, dialog, figuresAndTables, onCancel, onOk, orgElements, root, select;
+      var appendOption, dialog, externalDiv, externalHref, figuresAndTables, href, linkContents, onCancel, onOk, orgElements, root, select;
       root = Aloha.activeEditable.obj;
       dialog = jQuery('<div class="link-chooser"></div>');
+      if (!$a.children()[0]) {
+        jQuery('<label>Text to display</label>').appendTo(dialog);
+        linkContents = jQuery('<input class="contents"></input>').appendTo(dialog);
+        linkContents.val($a.text());
+      }
+      externalDiv = jQuery('<div class="link-location">\n  <div class="link-radio">\n    <input type="radio" name="link-to-where" id="ltw-external"/>\n  </div>\n  <label for="ltw-external">Link to webpage</label>\n</div>').appendTo(dialog);
+      externalHref = jQuery('<input class="href external"></input>').appendTo(externalDiv);
+      externalDiv.find('input[name=link-to-where]').on('change', function() {
+        var checked;
+        checked = jQuery(this).attr('checked');
+        if (!checked) {
+          externalHref.addClass('disabled');
+        }
+        if (checked) {
+          return externalHref.removeClass('disabled');
+        }
+      });
+      href = $a.attr('href');
+      if (href.match(/^https?:\/\//)) {
+        externalHref.val(href);
+        externalHref.removeClass('disabled');
+      }
       select = jQuery('<select class="link-list" size="5"></select>');
       select.appendTo(dialog);
       appendOption = function(id, contentsToClone) {
@@ -38,10 +60,14 @@
       });
       select.val($a.attr('href'));
       onOk = function() {
+        if (linkContents.val() && linkContents.val().trim()) {
+          $a.contents().remove();
+          $a.append(linkContents.val());
+        }
         if (select.val()) {
           $a.attr('href', select.val());
-          return jQuery(this).dialog('close');
         }
+        return jQuery(this).dialog('close');
       };
       onCancel = function() {
         return jQuery(this).dialog('close');
