@@ -225,12 +225,13 @@ define([
 			var that = this;
 
 			if ( typeof range === 'undefined' ) {
-		        var range = Aloha.Selection.getRangeObject();
-		    }
+				var range = Aloha.Selection.getRangeObject();
+			}
+
 			if ( Aloha.activeEditable ) {
 				return range.findMarkup(function() {
 					return jQuery(this).css('text-align') == that.alignment;
-			    }, Aloha.activeEditable.obj);
+				}, Aloha.activeEditable.obj);
 			} else {
 				return null;
 			}
@@ -246,38 +247,81 @@ define([
 			this.lastAlignment = this.alignment;
 			this.alignment = tempAlignment;
 
-		    if (Aloha.activeEditable) {
-		        if ( this.findAlignMarkup( range ) ) {
-		            this.removeAlign();
-		        } else {
-		        	this.insertAlign();
-		        }
-		    }
+// 			if ( Aloha.activeEditable ) {
+// 				if ( this.findAlignMarkup( range ) ) {
+// 					this.removeAlign( range );
+// 				} else {
+					this.insertAlign( range );
+//				}
+//			}
+		},
+
+		toggleAlign: function ( domObj ) {
+			var currentAlignment = jQuery( domObj ).css( 'text-align' );
+
+			console.log(currentAlignment);
+			console.log(this.alignment);
+
+			if (currentAlignment == this.alignment) {
+				jQuery( domObj ).css( 'text-align', '' );
+			} else {
+				jQuery( domObj ).css( 'text-align', this.alignment );
+			}
 		},
 
 		/**
 		 * Align the selection
 		 */
-		insertAlign: function () {
+		insertAlign: function ( range ) {
+
 			var that = this;
 
-			// do not align the range
-			if ( this.findAlignMarkup( range ) ) {
-					return;
+			if ( typeof range === 'undefined' ) {
+				var range = Aloha.Selection.getRangeObject();
 			}
-			// current selection or cursor position
-			var range = Aloha.Selection.getRangeObject();
+
+			// do not align the range
+			// if ( this.findAlignMarkup( range ) ) {
+			// 		return;
+			// }
+
+			var rangeParent = range.getCommonAncestorContainer();
 
 			// Check if the parent node is not the main editable node and align
 			// OR iterates the whole selectionTree and align
-			if (!GENTICS.Utils.Dom.isEditingHost(range.getCommonAncestorContainer()))
-				jQuery(range.getCommonAncestorContainer()).css('text-align', this.alignment);
-			else
+
+			if (!GENTICS.Utils.Dom.isEditingHost(rangeParent)) {
+				this.toggleAlign( rangeParent );
+				//jQuery(rangeParent).css('text-align', this.alignment);
+			}	else {
 				jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
-					if(this.selection !== 'none' && this.domobj.nodeType !== 3) {
-						jQuery(this.domobj).css('text-align', that.alignment);
+					if (this.selection !== 'none' && this.domobj.nodeType !== 3) {
+						this.toggleAlign( this.domobj );
+						//jQuery(this.domobj).css('text-align', that.alignment);
+					} else {
+
+						// align content within a table cell(s)
+
+						var selectedCell;
+						var activeTable = range.findMarkup(function() {
+								if ( jQuery(this).is( 'td,th' ) ) {
+									selectedCell = this;
+								}
+								return jQuery( this ).is( 'table.aloha-table' );
+		        }, Aloha.activeEditable.obj);
+
+						var selectedCells = jQuery( activeTable ).find( '.aloha-cell-selected' );
+
+						if ( selectedCells.length ) {
+							this.toggleAlign( selectedCells );
+							//selectedCells.css( 'text-align', that.alignment );
+						} else {
+							this.toggleAlign( selectedCell );
+							//jQuery(selectedCell).css( 'text-align', that.alignment );
+						}
 					}
 				});
+			}
 
 			if(this.alignment != this.lastAlignment)
 			{
@@ -308,20 +352,18 @@ define([
 		/**
 		 * Remove the alignment
 		 */
-		removeAlign: function () {
+		removeAlign: function ( range ) {
 
-		    var range = Aloha.Selection.getRangeObject();
+			if ( this.findAlignMarkup( range ) ) {
 
-		    if ( this.findAlignMarkup( range ) ) {
+				// Remove the alignment
+				range.findMarkup(function() {
+							jQuery(this).css('text-align', '');
+					}, Aloha.activeEditable.obj);
 
-		    	// Remove the alignment
-		    	range.findMarkup(function() {
-		            jQuery(this).css('text-align', '');
-		        }, Aloha.activeEditable.obj);
-
-		        // select the (possibly modified) range
-		        range.select();
-		    }
+					// select the (possibly modified) range
+					range.select();
+			}
 		}
 
 	});
