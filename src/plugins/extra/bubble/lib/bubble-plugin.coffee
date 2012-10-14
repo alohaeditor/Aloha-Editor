@@ -14,27 +14,6 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], 
 
   # Monkeypatch the bootstrap Popover so we can inject clickable buttons
   if true  
-    Bootstrap_Popover_setContent = () ->
-      $tip = @tip()
-      title = @getTitle()
-      content = @getContent()
-      html = 'text'
-      html = 'html' if @options.html
-    
-      $tip.find('.popover-title')[html](title)
-
-      if html == 'html'
-        # Start: new code
-        popContent = $tip.find('.popover-content > *')
-        popContent.contents().remove()
-        popContent.append(content)
-        # End: new code
-        #$tip.find('.popover-content > *').html(content)
-      else
-        $tip.find('.popover-content > *')['text'](content)
-    
-      $tip.removeClass('fade top bottom left right in')
-    
     Bootstrap_Popover_show = () ->
       if @hasContent() and @enabled
         $tip = @tip()
@@ -73,12 +52,11 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], 
         $tip.css(tp).addClass(placement).addClass "in"
     
     # Apply the monkey patch 
-    hack = () ->
+    monkeyPatch = () ->
       console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
       proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype
-      proto.setContent = Bootstrap_Popover_setContent
       proto.show = Bootstrap_Popover_show
-    hack()
+    monkeyPatch()
   
 
   helpers = []
@@ -87,21 +65,26 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], 
     start: (editable) ->
         that = @
         $el = jQuery(editable.obj)
-        $el.one 'mouseenter', @selector, () ->
-            $newEl = jQuery(@)
-            $newEl.popover
+
+        makePopover = ($node) ->
+            $node.popover
                 placement: 'bottom'
                 trigger: 'hover'
-                delay: {show: 2000, hide: 2000}
+                delay: { show: 1000, hide: 3000 }
                 content: () ->
                     that.populator.bind(jQuery(@))()
-            setTimeout(() ->
-              $newEl.trigger('mouseenter')
-            , 100)
+        makePopover($el.find(@selector))
+        # THe only reason I map mouseenter is so I can catch new elements that are added to the DOM
+        $el.on 'mouseenter.bubble', @selector, () ->
+            $newEl = jQuery(@)
+            if not $newEl.data('popover')
+                makePopover($newEl)
+                setTimeout(() ->
+                  $newEl.trigger('mouseenter')
+                , 1000)
             
         #new Bubbler(@populator, jQuery(editable.obj), @selector)
     stop: (editable) ->
-      return
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
       $nodes = jQuery(editable.obj).find(@selector)
@@ -109,9 +92,7 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], 
       $nodes.data('aloha-bubble-openTimer', 0)
       $nodes.data('aloha-bubble-closeTimer', 0)
       $nodes.data('aloha-bubble-hovered', false)
-      
-      # TODO: bubbles are attached to a canvas. clear the canvas, not all bubbles
-      jQuery('body').find('.bubble').remove()
+      $nodes.popover('destroy')
 	
   for cfg in [linkConfig, figureConfig]
     helpers.push(new Helper(cfg.selector, cfg.populator, cfg.filter))

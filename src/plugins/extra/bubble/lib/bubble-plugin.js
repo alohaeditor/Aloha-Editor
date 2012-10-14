@@ -2,27 +2,8 @@
 (function() {
 
   define(['aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure'], function(Aloha, jQuery, Plugin, Bubbler, linkConfig, figureConfig) {
-    var Bootstrap_Popover_setContent, Bootstrap_Popover_show, GENTICS, Helper, cfg, findMarkup, hack, helpers, newValue, oldValue, pluginNamespace, selectionChangeHandler, _i, _len, _ref;
+    var Bootstrap_Popover_show, GENTICS, Helper, cfg, findMarkup, helpers, monkeyPatch, newValue, oldValue, pluginNamespace, selectionChangeHandler, _i, _len, _ref;
     if (true) {
-      Bootstrap_Popover_setContent = function() {
-        var $tip, content, html, popContent, title;
-        $tip = this.tip();
-        title = this.getTitle();
-        content = this.getContent();
-        html = 'text';
-        if (this.options.html) {
-          html = 'html';
-        }
-        $tip.find('.popover-title')[html](title);
-        if (html === 'html') {
-          popContent = $tip.find('.popover-content > *');
-          popContent.contents().remove();
-          popContent.append(content);
-        } else {
-          $tip.find('.popover-content > *')['text'](content);
-        }
-        return $tip.removeClass('fade top bottom left right in');
-      };
       Bootstrap_Popover_show = function() {
         var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
         if (this.hasContent() && this.enabled) {
@@ -69,14 +50,13 @@
           return $tip.css(tp).addClass(placement).addClass("in");
         }
       };
-      hack = function() {
+      monkeyPatch = function() {
         var proto;
         console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable');
         proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype;
-        proto.setContent = Bootstrap_Popover_setContent;
         return proto.show = Bootstrap_Popover_show;
       };
-      hack();
+      monkeyPatch();
     }
     helpers = [];
     Helper = (function() {
@@ -88,39 +68,44 @@
       }
 
       Helper.prototype.start = function(editable) {
-        var $el, that;
+        var $el, makePopover, that;
         that = this;
         $el = jQuery(editable.obj);
-        return $el.one('mouseenter', this.selector, function() {
-          var $newEl;
-          $newEl = jQuery(this);
-          $newEl.popover({
+        makePopover = function($node) {
+          return $node.popover({
             placement: 'bottom',
             trigger: 'hover',
             delay: {
-              show: 2000,
-              hide: 2000
+              show: 1000,
+              hide: 3000
             },
             content: function() {
               return that.populator.bind(jQuery(this))();
             }
           });
-          return setTimeout(function() {
-            return $newEl.trigger('mouseenter');
-          }, 100);
+        };
+        makePopover($el.find(this.selector));
+        return $el.on('mouseenter.bubble', this.selector, function() {
+          var $newEl;
+          $newEl = jQuery(this);
+          if (!$newEl.data('popover')) {
+            makePopover($newEl);
+            return setTimeout(function() {
+              return $newEl.trigger('mouseenter');
+            }, 1000);
+          }
         });
       };
 
       Helper.prototype.stop = function(editable) {
         var $nodes;
-        return;
         jQuery(editable.obj).undelegate(this.selector, '.bubble');
         $nodes = jQuery(editable.obj).find(this.selector);
         $nodes.data('aloha-bubble-el', null);
         $nodes.data('aloha-bubble-openTimer', 0);
         $nodes.data('aloha-bubble-closeTimer', 0);
         $nodes.data('aloha-bubble-hovered', false);
-        return jQuery('body').find('.bubble').remove();
+        return $nodes.popover('destroy');
       };
 
       return Helper;
