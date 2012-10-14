@@ -215,75 +215,15 @@ define([
 		},
 
 		/**
-		 * Check whether inside a align tag
-		 * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
-		 * @return markup
-		 * @hide
-		 */
-		findAlignMarkup: function ( range ) {
-
-			var that = this;
-
-			if ( typeof range === 'undefined' ) {
-				var range = Aloha.Selection.getRangeObject();
-			}
-
-			if ( Aloha.activeEditable ) {
-				return range.findMarkup(function() {
-					return jQuery(this).css('text-align') == that.alignment;
-				}, Aloha.activeEditable.obj);
-			} else {
-				return null;
-			}
-		},
-
-		/**
 		 * Align the selection or remove it
 		 */
 		align: function ( tempAlignment ) {
 
+			var that = this;
 			var range = Aloha.Selection.getRangeObject();
 
 			this.lastAlignment = this.alignment;
 			this.alignment = tempAlignment;
-
-// 			if ( Aloha.activeEditable ) {
-// 				if ( this.findAlignMarkup( range ) ) {
-// 					this.removeAlign( range );
-// 				} else {
-					this.insertAlign( range );
-//				}
-//			}
-		},
-
-		toggleAlign: function ( domObj ) {
-			var currentAlignment = jQuery( domObj ).css( 'text-align' );
-
-			console.log(currentAlignment);
-			console.log(this.alignment);
-
-			if (currentAlignment == this.alignment) {
-				jQuery( domObj ).css( 'text-align', '' );
-			} else {
-				jQuery( domObj ).css( 'text-align', this.alignment );
-			}
-		},
-
-		/**
-		 * Align the selection
-		 */
-		insertAlign: function ( range ) {
-
-			var that = this;
-
-			if ( typeof range === 'undefined' ) {
-				var range = Aloha.Selection.getRangeObject();
-			}
-
-			// do not align the range
-			// if ( this.findAlignMarkup( range ) ) {
-			// 		return;
-			// }
 
 			var rangeParent = range.getCommonAncestorContainer();
 
@@ -291,13 +231,11 @@ define([
 			// OR iterates the whole selectionTree and align
 
 			if (!GENTICS.Utils.Dom.isEditingHost(rangeParent)) {
-				this.toggleAlign( rangeParent );
-				//jQuery(rangeParent).css('text-align', this.alignment);
+				that.toggleAlign( rangeParent );
 			}	else {
 				jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
 					if (this.selection !== 'none' && this.domobj.nodeType !== 3) {
-						this.toggleAlign( this.domobj );
-						//jQuery(this.domobj).css('text-align', that.alignment);
+						that.toggleAlign( this.domobj, true );
 					} else {
 
 						// align content within a table cell(s)
@@ -313,11 +251,9 @@ define([
 						var selectedCells = jQuery( activeTable ).find( '.aloha-cell-selected' );
 
 						if ( selectedCells.length ) {
-							this.toggleAlign( selectedCells );
-							//selectedCells.css( 'text-align', that.alignment );
+							that.toggleAlign( selectedCells );
 						} else {
-							this.toggleAlign( selectedCell );
-							//jQuery(selectedCell).css( 'text-align', that.alignment );
+							that.toggleAlign( selectedCell );
 						}
 					}
 				});
@@ -345,25 +281,32 @@ define([
 				}
 			}
 
-		    // select the (possibly modified) range
-		    range.select();
+			// select the (possibly modified) range
+			range.select();
+
 		},
 
 		/**
-		 * Remove the alignment
+		 * Toggle the align property of given DOM object(s)
 		 */
-		removeAlign: function ( range ) {
+		toggleAlign: function ( domObj, isCollection ) {
 
-			if ( this.findAlignMarkup( range ) ) {
+			var that = this;
 
-				// Remove the alignment
-				range.findMarkup(function() {
-							jQuery(this).css('text-align', '');
-					}, Aloha.activeEditable.obj);
+			isCollection = isCollection || ( jQuery( domObj ).length > 1 );
 
-					// select the (possibly modified) range
-					range.select();
-			}
+			jQuery( domObj ).each( function() {
+
+				var currentAlignment = jQuery( this ).css( 'text-align' );
+
+				if ( ( currentAlignment == that.alignment ) && !isCollection ) {
+					jQuery( this ).css( 'text-align', '' );
+				} else {
+					jQuery( this ).css( 'text-align', that.alignment );
+				}
+
+			});
+
 		}
 
 	});
