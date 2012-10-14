@@ -4,33 +4,16 @@
   define(['aloha', 'jquery', 'aloha/console'], function(Aloha, jQuery, console) {
     var filter, populator, selector, showModalDialog;
     showModalDialog = function($a) {
-      var appendOption, dialog, externalDiv, externalHref, figuresAndTables, href, linkContents, onCancel, onOk, orgElements, root, select;
+      var appendOption, dialog, figuresAndTables, href, linkContents, linkExternal, linkInternal, linkSave, orgElements, root;
       root = Aloha.activeEditable.obj;
-      dialog = jQuery('<div class="link-chooser"></div>');
+      dialog = jQuery('<div class="modal" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">\n  <div class="modal-header">\n    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>\n    <h3 id="linkModalLabel">Edit Link</h3>\n  </div>\n  <div class="modal-body">\n    <label for="link-contents">Text to display</label>\n    <input id="link-contents" class="input-long" type="text" placeholder="Enter a phrase here"/>\n    <div class="tabbable tabs-left"> <!-- Only required for left/right tabs -->\n      <ul class="nav nav-tabs">\n        <li><a href="#link-tab-external" data-toggle="tab">External</a></li>\n        <li><a href="#link-tab-internal" data-toggle="tab">Internal</a></li>\n      </ul>\n      <div class="tab-content">\n        <div class="tab-pane" id="link-tab-external">\n          <label for="link-external">Link to webpage</label>\n          <input class="link-external" id="link-external" type="text" placeholder="http://"/>\n        </div>\n        <div class="tab-pane" id="link-tab-internal">\n          <label for="link-internal">Link to a part in this document</label>\n          <select class="link-internal" id="link-internal" size="5" multiple="multiple"></select>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div class="modal-footer">\n    <button class="btn btn-primary link-save">Save changes</button>\n    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>\n  </div>\n</div>');
       if (!$a.children()[0]) {
-        jQuery('<label>Text to display</label>').appendTo(dialog);
-        linkContents = jQuery('<input class="contents"></input>').appendTo(dialog);
+        linkContents = dialog.find('#link-contents');
         linkContents.val($a.text());
       }
-      externalDiv = jQuery('<div class="link-location">\n  <div class="link-radio">\n    <input type="radio" name="link-to-where" id="ltw-external"/>\n  </div>\n  <label for="ltw-external">Link to webpage</label>\n</div>').appendTo(dialog);
-      externalHref = jQuery('<input class="href external"></input>').appendTo(externalDiv);
-      externalDiv.find('input[name=link-to-where]').on('change', function() {
-        var checked;
-        checked = jQuery(this).attr('checked');
-        if (!checked) {
-          externalHref.addClass('disabled');
-        }
-        if (checked) {
-          return externalHref.removeClass('disabled');
-        }
-      });
-      href = $a.attr('href');
-      if (href.match(/^https?:\/\//)) {
-        externalHref.val(href);
-        externalHref.removeClass('disabled');
-      }
-      select = jQuery('<select class="link-list" size="5"></select>');
-      select.appendTo(dialog);
+      linkExternal = dialog.find('.link-external');
+      linkInternal = dialog.find('.link-internal');
+      linkSave = dialog.find('.link-save');
       appendOption = function(id, contentsToClone) {
         var clone, contents, option;
         clone = contentsToClone[0].cloneNode(true);
@@ -38,7 +21,7 @@
         option = jQuery('<option></option>');
         option.attr('value', '#' + id);
         option.append(contents);
-        return option.appendTo(select);
+        return option.appendTo(linkInternal);
       };
       orgElements = root.find('h1,h2,h3,h4,h5,h6');
       figuresAndTables = root.find('figure,table');
@@ -58,27 +41,38 @@
         caption = item.find('caption,figcaption');
         return appendOption(id, caption);
       });
-      select.val($a.attr('href'));
-      onOk = function() {
+      href = null;
+      dialog.find('.link-tab-external').on('shown', function() {
+        return href = linkExternal.val();
+      });
+      dialog.find('.link-tab-internal').on('shown', function() {
+        return href = linkInternal.val();
+      });
+      linkExternal.add(linkInternal).on('change', function() {
+        return href = jQuery(this).val();
+      });
+      href = $a.attr('href');
+      dialog.find('.active').removeClass('active');
+      if (href.match(/^#/)) {
+        linkInternal.val(href);
+        dialog.find('#link-tab-internal').addClass('active');
+        dialog.find('a[href=#link-tab-internal]').parent().addClass('active');
+      } else {
+        linkExternal.val(href);
+        dialog.find('#link-tab-external').addClass('active');
+        dialog.find('a[href=#link-tab-external]').parent().addClass('active');
+      }
+      linkSave.on('click', function() {
         if (linkContents.val() && linkContents.val().trim()) {
           $a.contents().remove();
           $a.append(linkContents.val());
         }
-        if (select.val()) {
-          $a.attr('href', select.val());
-        }
-        return jQuery(this).dialog('close');
-      };
-      onCancel = function() {
-        return jQuery(this).dialog('close');
-      };
-      dialog.dialog({
-        dialogClass: 'aloha link-editor',
-        modal: true,
-        buttons: {
-          OK: onOk,
-          Cancel: onCancel
-        }
+        $a.attr('href', href);
+        return dialog.modal('hide');
+      });
+      dialog.modal('show');
+      dialog.on('hidden', function() {
+        return dialog.remove();
       });
       return dialog;
     };
@@ -99,13 +93,7 @@
       change.appendTo($bubble);
       change.on('mousedown', function() {
         var dialog;
-        dialog = showModalDialog($el);
-        dialog.addClass('aloha');
-        return dialog.on('dialogclose', function() {
-          a.attr('href', $el.attr('href'));
-          a.contents().remove();
-          return a.append($el.attr('href'));
-        });
+        return dialog = showModalDialog($el);
       });
       return $bubble.contents();
     };
