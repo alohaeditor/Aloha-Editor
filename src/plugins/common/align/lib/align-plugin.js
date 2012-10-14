@@ -227,36 +227,37 @@ define([
 
 			var rangeParent = range.getCommonAncestorContainer();
 
-			// Check if the parent node is not the main editable node and align
-			// OR iterates the whole selectionTree and align
+			// check if the selection range is inside a table
 
-			if (!GENTICS.Utils.Dom.isEditingHost(rangeParent)) {
-				that.toggleAlign( rangeParent );
-			}	else {
-				jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
-					if (this.selection !== 'none' && this.domobj.nodeType !== 3) {
-						that.toggleAlign( this.domobj, true );
-					} else {
+			var selectedCell;
+			var activeTable = range.findMarkup(function() {
+				if ( jQuery(this).is( 'td,th' ) ) {
+					selectedCell = this;
+				}
+				return jQuery( this ).is( 'table.aloha-table' );
+			}, Aloha.activeEditable.obj);
 
-						// align content within a table cell(s)
+			var selectedCells = jQuery( activeTable ).find( '.aloha-cell-selected' );
 
-						var selectedCell;
-						var activeTable = range.findMarkup(function() {
-								if ( jQuery(this).is( 'td,th' ) ) {
-									selectedCell = this;
-								}
-								return jQuery( this ).is( 'table.aloha-table' );
-		        }, Aloha.activeEditable.obj);
+			if ( selectedCells.length ) {
+				that.toggleAlign( selectedCells );
+			} else if ( selectedCell ){
+				that.toggleAlign( selectedCell );
+			} else {
 
-						var selectedCells = jQuery( activeTable ).find( '.aloha-cell-selected' );
+				// Check if the parent node is not the main editable node and align
+				// OR iterates the whole selectionTree and align
 
-						if ( selectedCells.length ) {
-							that.toggleAlign( selectedCells );
-						} else {
-							that.toggleAlign( selectedCell );
+				if (!GENTICS.Utils.Dom.isEditingHost(rangeParent)) {
+					that.toggleAlign( rangeParent );
+				}	else {
+					jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
+						if (this.selection !== 'none' && this.domobj.nodeType !== 3) {
+							that.toggleAlign( this.domobj, true );
 						}
-					}
-				});
+					});
+				}
+
 			}
 
 			if(this.alignment != this.lastAlignment)
