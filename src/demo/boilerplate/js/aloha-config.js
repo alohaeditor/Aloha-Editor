@@ -6,6 +6,10 @@
 		errorhandling: false,
 		ribbon: {enable: true},
 		locale: 'en',
+		//waitSeconds: 300, // This can be turned on to avoid requirejs timeouts if Aloha startup code needs to be debugged
+		placeholder: {
+			'#placeholder-test': '<img src="http://aloha-editor.org/logo/Aloha%20Editor%20HTML5%20technology%20class%2016.png" alt="Aloha Editor"/>&nbsp;Placeholder Image'
+		},
 		repositories: {
 			linklist: {
 				data: [
@@ -167,6 +171,9 @@
 					headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
 					baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable
 				}
+			},
+			'wai-lang': {
+				flags: true
 			}
 		}
 	};

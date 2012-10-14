@@ -16,18 +16,18 @@
 
 
 /* IE8 will use outline for highlighting */
-.ext-ie8 .aloha-block:hover {
+.aloha-ie8 .aloha-block:hover {
 	outline: 3px solid #FFE767; /* IE does not support box-shadow, thus we need to use border */
 }
-.ext-ie8 .aloha-block.aloha-block-active, .ext-ie8 .aloha-block.aloha-block-active:hover {
+.aloha-ie8 .aloha-block.aloha-block-active, .aloha-ie8 .aloha-block.aloha-block-active:hover {
 	outline: 3px solid #80B5F2; /* IE does not support box-shadow, thus we need to use border */
 }
 /* IE7 will use border for outlining */
-.ext-ie7 .aloha-block:hover {
+.aloha-ie7 .aloha-block:hover {
 	border: 3px solid #FFE767; /* IE does not support box-shadow, thus we need to use border */
 	margin: -3px;
 }
-.ext-ie7 .aloha-block.aloha-block-active, .ext-ie7 .aloha-block.aloha-block-active:hover {
+.aloha-ie7 .aloha-block.aloha-block-active, .aloha-ie7 .aloha-block.aloha-block-active:hover {
 	border: 3px solid #80B5F2; /* IE does not support box-shadow, thus we need to use border */
 	margin: -3px;
 }
@@ -38,7 +38,7 @@
 	border-left: 1px solid red;
 	margin-left:-1px;
 }
-.ext-ie7 .aloha-block-droppable {
+.aloha-ie7 .aloha-block-droppable {
 	margin-left:0; /* IE7 cannot handle the negative margin... */
 }
 
@@ -97,8 +97,14 @@
 	display:block;
 }
 
-
-
 .aloha-block-dropInlineElementIntoEmptyBlock {
 	border: 1px solid red;
+}
+
+.aloha-block-dropzone {
+	background-color: #eeeeff;
+}
+
+.aloha .ui-state-default .aloha-icon.aloha-icon-toggledragdrop {
+	background: url(../../../../img/base.png) -416px 0px;
 }

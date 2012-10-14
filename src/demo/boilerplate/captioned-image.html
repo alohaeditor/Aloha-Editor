@@ -27,16 +27,25 @@
 				toolbar: {
 					tabs: [{
 						label: 'Captioned Image',
-						showOn: { scope: 'Aloha.captionedimage' },
-						components: [ 'imgFloatLeft', 'imgFloatRight', 'imgFloatClear' ]
+						showOn: { scope: '__hidden__' },
+						components: [
+							'imgAlignLeft',
+							'imgAlignRight',
+							'imgAlignCenter',
+							'imgAlignClear'
+						]
 					}]
 				},
 				plugins: {
 					captionedImage: {
 						/*
+						selector: 'img.aloha-captioned-image',
 						render: function (properties, callback, error) {
 							error({message: 'noop'});
-						}
+						},
+						defaultCSS: false,
+						captionedImageClass: 'aloha-captioned-image',
+						blockClass: 'mycms-captioned-image-block',
 						*/
 					}
 				}
@@ -47,12 +56,13 @@
 	        data-aloha-plugins="common/ui,
 	                            common/format,
 	                            common/block,
+	                            common/align,
 	                            extra/captioned-image"></script>
 </head>
 <body>
 	<div id="content">
-			<div class="aloha-captioned-image"
-			     data-source="http://www.aloha-editor.org/images/aloha-editor-logo.png"></div>
+			<img class="aloha-captioned-image"
+			     src="http://www.aloha-editor.org/images/aloha-editor-logo.png" />
 			<p>
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
 			convallis nisl eu mi posuere et congue metus posuere. Etiam sodales
@@ -79,10 +89,10 @@
 			sit amet lacus. Curabitur lobortis magna a est ultrices sagittis
 			non eget nibh. In lobortis arcu odio.
 			</p>
-			<div class="aloha-captioned-image"
-			     data-source="http://www.aloha-editor.org/images/aloha-editor-logo.png"
-				 data-caption="Praesent commodo molestie adipiscing. Mauris
-				 lorem justo, tincidunt eget iaculis et, fermentum nec odio."></div>
+			<img src="http://www.aloha-editor.org/images/aloha-editor-logo.png"
+				data-caption="Praesent commodo molestie adipiscing. Mauris
+				 lorem justo, tincidunt eget iaculis et, fermentum nec odio."
+				class="aloha-captioned-image" />
 			<p>
 			Praesent commodo molestie adipiscing. Mauris lorem justo, tincidunt eget iaculis et, fermentum nec odio. Ut pulvinar tristique quam, ut congue diam accumsan eleifend. Nulla sagittis tincidunt lacus, sit amet condimentum nibh ornare quis. Nulla ac nibh eu nunc rhoncus consectetur nec et velit. Cras nec dolor non felis placerat lobortis ut vitae ante. Curabitur at lectus non sem ultricies dictum.
 			</p>

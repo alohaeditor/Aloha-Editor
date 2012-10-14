@@ -2,15 +2,13 @@
 
 @lightGray: #e5e5e5;
 
-.tool-bar {
+div.tool-bar { //Note: setting the div explicitly so Aloha doesn't squash styles like padding
   width: 100%;
   background-color: whiteSmoke;
   border-top: 1px solid @lightGray;
   border-bottom: 1px solid @lightGray;
   //min-height: 30px;
-  padding: 5px;
-  padding-left: 70px;
-  padding-right: 90px;
+  padding: 5px 1em;
   box-shadow: 0 2px 3px 0 #ccc;
   
   > .menu-item {
@@ -91,12 +89,13 @@
   /*display: inline;*/
 }
 
-.menu > .menu-item > .menu-icon {
-  position: absolute;
-  left: 3px;
+.menu > .menu-item {
+  > .menu-icon {
+    position: absolute;
+    left: 3px;
+  }
+  > .tool-tip { display: none; }
 }
-
-
 
 .hidden {
   display: none;
@@ -116,8 +115,9 @@
 
 
   > .menu-item {
-    padding: 6px 7em 6px 30px;
+    padding: 6px 23px 6px 30px;
     cursor: default;
+    line-height: 16px;
   }
 
   > .checked > .checked-icon {
@@ -129,7 +129,7 @@
 }
 
 
-.menu-bar {
+div.menu-bar { //Note: setting the div explicitly so Aloha doesn't squash styles like padding
   background-color: white;
   min-height: 30px;
   padding: 5px;
@@ -153,9 +153,10 @@
   margin-bottom: 7px;
 }
 
-.tool-bar > .separator {
+div.tool-bar > .separator {
   display: inline-block;
-  border-right: 1px solid;
+  border-right: 1px solid @lightGray;
+  border-right: 1px solid rgba(0, 0, 0, .2);
   width: 0;
   height: 10px; /* a little higher than the buttons */
   padding: 5px 0;

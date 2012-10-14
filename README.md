@@ -18,3 +18,29 @@ To get updates you can:
 - Subscribe to GitHub updates by clicking the "watch" button up the top right of this page.
 - Subscribe to RSS feed updates for the [dev branch](https://github.com/alohaeditor/Aloha-Editor/commits/dev.atom) and/or [master branch](https://github.com/alohaeditor/Aloha-Editor/commits/master.atom)
 
+
+## Repository Directory Structure
+
+* /bin - Build scripts
+* /build - Build configuration
+* /doc
+* /doc/api - The API documentation
+* /doc/guides - This document
+* /vendor - Vendor source code. (e.g. ExtJS, require-js, jquery)
+* /target - Build output folder
+* /src
+* /src/css - Aloha core css files
+* /src/demo - Aloha demos
+* /src/img - Aloha core images
+* /src/lib - Require plugins and bootstrap files
+* /src/lib/aloha - Main Aloha Editor core sources
+* /src/lib/vendor - Vendor source code. E.g. ExtJS, jquery
+* /src/lib/util - Utility sources. (e.g. json2.js, class.js)
+* /src/plugins
+* /src/plugins/common - Common plugin bundle
+* /src/plugins/extra - Extra plugin bundle
+* /src/test - QUnit tests
+
+## Feeds
+ 
+- Subscribe to RSS feed updates for the [dev branch](https://github.com/alohaeditor/Aloha-Editor/commits/dev.atom) and/or [master branch](https://github.com/alohaeditor/Aloha-Editor/commits/master.atom)

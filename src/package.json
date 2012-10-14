@@ -1,6 +1,6 @@
 {
 	"name": "aloha-editor",
-	"version": "0.10.0",
+	"version": "${version}",
 	"description": "The HTML5 WYSIWYG Editor",
 	"homepage": "https://github.com/alohaeditor/Aloha-Editor",
 	"keywords": [

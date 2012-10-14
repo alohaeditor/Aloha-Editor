@@ -96,28 +96,45 @@ var editorToOffset = { };
 
 var aol = 'radio_latex';
 
+function removeFromInserted(index) {
+    if(Inserted.length == 1) {
+        Inserted = [ ]
+    } else {
+        Inserted.splice(index, 1);
+    }
+}
+
+function removeFromFuncInserted(index) {
+    if(FuncInserted.length == 1) {
+        FuncInserted = [ ]
+    } else {
+        FuncInserted.splice(index, 1);
+    }
+
+}
+
 function convertToConcrete(character, ele, leVal, currentOffset) {
     var i = 0;
     var currentNode = window.getSelection().focusNode;
     while(i < Inserted.length) {
-        if(currentNode.nextSibling == Inserted[i].close && currentNode.nextSibling.childNodes[0].textContent == character) {
+        if(currentNode.nextSibling == Inserted[i].close && currentNode.nextSibling.childNodes[0].textContent == character && 
+            currentOffset == currentNode.textContent.length-1) {
             break;
         }
         i = i + 1;
     }
 
     if(i != Inserted.length) {
-
-        console.log('removing g');
-        if(Inserted.length == 1) {
-            Inserted = [];
-        } else {
-            Inserted.splice(i, 1);
-        }
+        concretize(Inserted[i].open);
+        removeFromInserted(i);
         currentNode.parentNode.removeChild(currentNode.nextSibling);
     }
 }
 
+
+function insertAfter(newChild, refChild) { 
+    refChild.parentNode.insertBefore(newChild,refChild.nextSibling); 
+} 
 
 function insertFunc(ele, leVal, offset, dummyName) {
     console.log('Inside insertFunc')
@@ -173,9 +190,6 @@ function insertBraces(ele, leVal, offset) {
     generateInserted(offset+1, '}', '{');
 }
 
-function insertAfter(newChild, refChild) { 
-    refChild.parentNode.insertBefore(newChild,refChild.nextSibling); 
-} 
 
 
 function generateInserted(offset, character, additionalCharacter) {
@@ -250,7 +264,7 @@ function isAfterOther(testNode, searchFor) {
     var curr = testNode;
     while(curr != null) {
         if(curr == searchFor) return true;
-        curr = curr.prevSibling;
+        curr = curr.previousSibling;
     }
     return false;
 }
@@ -347,6 +361,7 @@ function hasChild(parentNode, childNode) {
     return false;
 }
 
+<<<<<<< HEAD
 function onTexCharChange(evt, mathEditorContainer, eqId) {
     console.log('Entering onTexChange '+inChange+' on '+eqId)
     if(inChange) return;
@@ -381,10 +396,13 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
 
 
     // console.log('onTexChange Checkpoint 1')
+=======
+
+
+function checkForOrphans() {
+>>>>>>> f6b5c7549a0e18946d0ce859e54a1477d26999bb
     var i = 0;
     while(i < Inserted.length) {
-        console.log(Inserted[i].open.parentNode);
-        console.log(Inserted[i].close.parentNode);
         if(Inserted[i].open.parentNode == null || Inserted[i].close.parentNode == null) {
             if(Inserted[i].open.parentNode != null) {
                 concretize(Inserted[i].open);
@@ -392,121 +410,59 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             if(Inserted[i].close.parentNode != null) {
                 concretize(Inserted[i].close);
             } 
-            if(Inserted.length == 1) {
-                Inserted = [];
-            } else {
-                Inserted.splice(i, 1);
-            }
-        } else {
+            removeFromInserted(i);
+
+        } else if(Inserted[i].open.childNodes[0].textContent.length == 0) {
+            Inserted[i].open.parentNode.removeChild(Inserted[i].open);
+            concretize(Inserted[i].close);
+            removeFromInserted(i);
+        } else if(Inserted[i].close.childNodes[0].textContent.length == 0) {
+            Inserted[i].close.parentNode.removeChild(Inserted[i].close);
+            concretize(Inserted[i].open);
+            removeFromInserted(i);
+        }else {
             i = i + 1;
         }
     }
+}
 
-    console.log('onTexChange Checkpoint 2')
-    if(leVal.length > currentLength && leVal.length - currentLength == 1) {
+function handleInsertsInsideSpans(leVal, currentNode, ch) {
+    if(leVal.length > currentLength) {
         for(var i = 0; i < Inserted.length; i++) {
+
+            var enclosing = null;
+            var isInsertedAtFrontOfSpan = false;
+
             if(currentNode.parentNode == Inserted[i].close) {
-                var enclosing = Inserted[i].close;
-                if(currentNode.textContent[0] == ')' || currentNode.textContent[0] == '}') {
-                    // character inserted after closer
-
-                    var text = getTextBetweenElementsInclusive(Inserted[i].open, Inserted[i].close);
-                    var curr = Inserted[i].open;
-                    var end = Inserted[i].close.nextSibling;
-                    var parentNode = Inserted[i].close.parentNode;
-
-                    while(curr != end) {
-                        var next = curr.nextSibling;
-                        curr.parentNode.removeChild(curr);
-                        curr = next;
-                    }
-                    var newText = document.createTextNode(text);
-                    parentNode.insertBefore(newText, end);
-                    GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
-                    currentNode = newText;
-                } else {
-                    // character inserted in front of closer
-                    var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
-                    var curr = Inserted[i].open.nextSibling;
-                    var parentNode = Inserted[i].close.parentNode;
-                    Inserted[i].close.textContent = Inserted[i].close.textContent[1];
-
-                    while(curr != Inserted[i].close) {
-                        var next = curr.nextSibling;
-                        parentNode.removeChild(curr);
-                        curr = next;
-                    }
-                    text += ch;
-
-                    var newText = document.createTextNode(text);
-                    parentNode.insertBefore(newText, Inserted[i].close);
-                    GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
-                    window.getSelection().getRangeAt(0).setEnd(newText, newText.textContent.length);
-                    currentNode = newText;
-                }
-                break;
+                enclosing = Inserted[i].close;
+                isInsertedAtFrontOfSpan = currentNode.textContent[0] == ch[0];
             } else if(currentNode.parentNode == Inserted[i].open) {
-                var enclosing = Inserted[i].open;
-                if(currentNode.textContent[1] == '(' || currentNode.textContent[1] == '{') {
-                    // character inserted in front of opener
-                    var text = getTextBetweenElementsInclusive(Inserted[i].open, Inserted[i].close);
-                    var curr = Inserted[i].open;
-                    var end = Inserted[i].close.nextSibling;
-                    var parentNode = Inserted[i].close.parentNode;
-                    while(curr != end) {
-                        var next = curr.nextSibling;
-                        curr.parentNode.removeChild(curr);
-                        curr = next;
-                    }
-                    var newText = document.createTextNode(text);
-                    parentNode.insertBefore(newText, end);
-                    GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, 1);
-                    window.getSelection().getRangeAt(0).setEnd(newText, 1);
-                    currentNode = newText;
+                enclosing = Inserted[i].open;
+                isInsertedAtFrontOfSpan = currentNode.textContent[0] == ch[0];
+            }
+
+            if(enclosing != null) {
+                if(isInsertedAtFrontOfSpan) {
+                    var prevElement = currentNode.parentNode.previousSibling;
+                    var newText = document.createTextNode(ch);
+                    currentNode.parentNode.parentNode.insertBefore(newText, currentNode.parentNode);
+                    currentNode.parentNode.textContent = currentNode.parentNode.textContent.slice(currentNode.parentNode.textContent.length-1, currentNode.parentNode.textContent.length);
+                    return { "newNode": newText, "setAfter": true };
                 } else {
-                    // character inserted after opener
-                    var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
-                    var curr = Inserted[i].open.nextSibling;
-                    var parentNode = Inserted[i].close.parentNode;
-                    Inserted[i].open.textContent = Inserted[i].open.textContent[0];
-
-                    while(curr != Inserted[i].close) {
-                        var next = curr.nextSibling;
-                        parentNode.removeChild(curr);
-                        curr = next;
-                    }
-                    text = ch+text;
-
-                    var newText = document.createTextNode(text);
-                    parentNode.insertBefore(newText, Inserted[i].close);
-                    GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, 1);
-                    window.getSelection().getRangeAt(0).setEnd(newText, 1);
-                    currentNode = newText;
+                    var nextElement = currentNode.parentNode.nextSibling;
+                    var newText = document.createTextNode(ch);
+                    insertAfter(newText, currentNode.parentNode);
+                    currentNode.parentNode.textContent = currentNode.parentNode.textContent.slice(0,1);
+                    return { "newNode": newText, "setAfter": false };
                 }
-                
-                break;
             }
         }
     }
+    return { "newNode": null, "setAfter": false };
+}
 
-    range = window.getSelection().getRangeAt(0);
-    offset = range.startOffset;
-    //ch = currentNode.textContent[offset];
-    
-    //var eqId = evt.currentTarget.id.substring(5);
-    var leVal = getFullStr(mathEditBox[0].childNodes);
-    var diff = leVal.length - currentLength;
-
-    // console.log('onTexChange Checpoint 3.1')
-
-
-     console.log('onTexChange Checkpoint 3')
+function handleBulkDelete(leVal, range) {
     if(leVal.length < currentLength && currentLength - leVal.length > 1) {
-        // console.log('onTexChange Checpoint 3.2')
         // bulk delete
         var startDelete = range.startContainer;
         if(startDelete.className == "math-source") {
@@ -514,10 +470,12 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         }
         var endDelete = range.endContainer;
         if(endDelete.className == "math-source") {
-            endDelete = endDelete.childNodes[0];
+            endDelete = endDelete.childNodes[endDelete.childNodes.length-1];
         }
 
-        for(var i = 0; i < Inserted.length; i++) {
+        var i = 0;
+        while(i < Inserted.length) {
+
             var open = Inserted[i].open;
             var close = Inserted[i].close;
             var deleteOpen = false;
@@ -533,288 +491,208 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
             if(deleteOpen && deleteClose) {
                 parentNode.removeChild(open);
                 parentNode.removeChild(close);
-                console.log('removing b');
-                if(Inserted.length == 1) {
-                    Inserted = [];
-                } else {
-                    Inserted.splice(i, 1);
-                }
+                removeFromInserted(i);
             } else if(deleteOpen) {
+                concretize(close);
                 parentNode.removeChild(open);
-                console.log('removing c');
-                if(Inserted.length == 1) {
-                    Inserted = [];
-                } else {
-                    Inserted.splice(i, 1);
-                }
+                removeFromInserted(i);
             } else if(deleteClose) {
+                concretize(open);
                 parentNode.removeChild(close);
-                console.log('removing d');
-                if(Inserted.length == 1) {
-                    Inserted = [];
-                } else {
-                    Inserted.splice(i, 1);
-                }
+                removeFromInserted(i);
+            } else {
+                i = i+1;
             }
         }
-        leVal = getFullStr(mathEditBox[0].childNodes);
-        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+
+        //for(var i = 0; i < FuncInserted.length; i++) {
+        //    var span = FuncInserted[i].span;
+        //    var open = FuncInserted[i].open;
+        //    var deleteOpen = false;
+        //    var deleteSpan = false;
+
+        //    if(isAfterOther(open, startDelete) && isBeforeOther(open, endDelete)) {
+        //        deleteOpen = true;
+        //    }
+        //    if((span.childNodes[0] == startDelete || isAfterOther(span, startDelete)) && (span.childNodes[0] == endDelete || isBeforeOther(span, endDelete))) {
+        //        deleteSpan= true;
+        //    }
+
+        //    if(deleteOpen && deleteSpan) {
+        //        parentNode.removeChild(open);
+        //        //parentNode.removeChild(span);
+        //        concretize(span);
+        //        removeFromInserted(i);
+        //    } else if(deleteOpen) {
+        //        concretize(span);
+        //        parentNode.removeChild(open);
+        //        removeFromInserted(i);
+        //    } else if(deleteSpan) {
+        //        concretize(open);
+        //        concretize(span);
+        //        //parentNode.removeChild(span);
+        //        removeFromInserted(i);
+        //    } else {
+        //        i = i+1;
+        //    }
+
+        //}
+
+        var tmp = getFullStr(mathEditBox[0].childNodes);
+        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+tmp+"}"]);
         inChange = false;
-        currentLength = leVal.length;
-        return;
+        currentLength = tmp.length;
+        return true;
     }
-    console.log('onTexChange Checkpoint 4')
+    return false;
+}
 
-    if(leVal.length < currentLength && currentLength - leVal.length == 1) {
-        for(var i = 0; i < Inserted.length; i++) {
+function handleFunctionReplacement(leVal, currentNode, ch, mathEditBox, eqId, offset) {
+    console.log('IN FUNC REPLACE '+FuncInserted.length);
+    for(var i = 0; i < FuncInserted.length; i++) {
+        console.log('Checking in func replace')
+        console.log(FuncInserted[i].span);
+        if(currentNode.parentNode == FuncInserted[i].span) {
+            console.log('FOUND IN FUNC REPLACE')
+            var saveStr = currentNode.textContent;
+            var prev = currentNode.parentNode.previousSibling.previousSibling;
+            var next = currentNode.parentNode.nextSibling;
+            var parentNode = currentNode.parentNode.parentNode;
+            parentNode.removeChild(currentNode.parentNode);
+            parentNode.removeChild(FuncInserted[i].open);
 
-            if(currentNode.parentNode == Inserted[i].open) {
-                if(getTextBetweenElements(Inserted[i].open, Inserted[i].close).length == 0 ) {
-                    // if this delete was on the opening character of a virtual closing character and there is no content in between
-                    diff = diff - 1;
-
-                    var prev = Inserted[i].open.previousSibling;
-                    var next = Inserted[i].close.nextSibling;
-                    var parentNode = Inserted[i].open.parentNode;
-                    var curr = Inserted[i].open;
-
-                    while(curr != Inserted[i].close) {
-                        var next = curr.nextSibling;
-                        parentNode.removeChild(curr);
-                        curr = next;
-                    }
-                    parentNode.removeChild(Inserted[i].close);
-                    
-                    if(prev != null && prev.tagName != 'SPAN') {
-                        GENTICS.Utils.Dom.setCursorInto( prev );
-                        window.getSelection().getRangeAt(0).setStart(prev, prev.textContent.length);
-                    } else if(next != null && next.tagName != 'SPAN') {
-                        GENTICS.Utils.Dom.setCursorInto( next );
-                        window.getSelection().getRangeAt(0).setStart(next, 0);
-                    } else {
-                        var newText = document.createTextNode('');
-                        parentNode.insertBefore(newText, next);
-                        GENTICS.Utils.Dom.setCursorInto( newText );
-                        window.getSelection().getRangeAt(0).setStart(newText, 0);
-                    }
-
-                    console.log('removing e');
-                    if(Inserted.length == 1) {
-                        Inserted = [];
-                    } else {
-                        Inserted.splice(i, 1);
-                    }
-
-                    leVal = getFullStr(mathEditBox[0].childNodes);
-                    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-                    inChange = false;
-                    currentLength = leVal.length;
-                    return;
-                } else {
-                    // if this delete was on the opening character of a virtual closing character and there is space between
-                    var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
-                    text += Inserted[i].close.childNodes[0].textContent;
-                    var next = Inserted[i].close.nextSibling;
-                    var open = Inserted[i].open;
-                    var close = Inserted[i].close;
-                    var parentNode = open.parentNode;
-                    var newText = document.createTextNode(text);
-                    var curr = open;
-
-                    while(curr != next) {
-                        var tmp = curr.nextSibling;
-                        parentNode.removeChild(curr);
-                        curr = tmp;
-                    }
-
-                    parentNode.insertBefore(newText, next);
-                    GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, 0);
-                    window.getSelection().getRangeAt(0).setEnd(newText, 0);
-
-                    if(Inserted.length == 1) {
-                        Inserted = [];
-                    } else {
-                        Inserted[i].splice(i, 1);
-                    }
-
-                    leVal = getFullStr(mathEditBox[0].childNodes);
-                    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-                    inChange = false;
-                    currentLength = leVal.length;
-                    return;
-                }
-            } else if(currentNode.parentNode == Inserted[i].close) {
-                var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
-                text = Inserted[i].open.childNodes[0].textContent + text ;
-                var next = Inserted[i].close.nextSibling;
-                var open = Inserted[i].open;
-                var close = Inserted[i].close;
-                var parentNode = open.parentNode;
-                var newText = document.createTextNode(text);
-                var curr = open;
-
-                while(curr != next) {
-                    var tmp = curr.nextSibling;
-                    parentNode.removeChild(curr);
-                    curr = tmp;
-                }
-
+            if(leVal.length - currentLength < 0) {
+                var newText = document.createTextNode('\\'+saveStr);
                 parentNode.insertBefore(newText, next);
                 GENTICS.Utils.Dom.setCursorInto( newText );
-                window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
-                window.getSelection().getRangeAt(0).setEnd(newText, newText.textContent.length);
-
-
-                if(Inserted.length == 1) {
-                    Inserted = [];
-                } else {
-                    Inserted[i].splice(i, 1);
-                }
-
-                leVal = getFullStr(mathEditBox[0].childNodes);
-                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-                inChange = false;
-                currentLength = leVal.length;
-                return;
-
+                window.getSelection().getRangeAt(0).setStart(newText, offset+2);
+            } else if(leVal.length - currentLength > 0) {
+                var newText = document.createTextNode('\\'+ch);
+                parentNode.insertBefore(newText, next);
+                GENTICS.Utils.Dom.setCursorInto( newText );
+                window.getSelection().getRangeAt(0).setStart(newText, 1+ch.length);
             }
-        }
 
+            removeFromFuncInserted(i);
 
-        // delete inside function, make it real
-        for(var i = 0; i < FuncInserted.length; i++) {
-            if(currentNode.parentNode == FuncInserted[i].span) {
-
-                var saveStr = currentNode.textContent;
-                var prev = currentNode.parentNode.previousSibling.previousSibling;
-                var next = currentNode.parentNode.nextSibling;
-                var parentNode = currentNode.parentNode.parentNode;
-                parentNode.removeChild(currentNode.parentNode);
-                parentNode.removeChild(FuncInserted[i].open);
-
-                if(prev != null && prev.tagName != 'SPAN') {
-                    prev.textContent += ('\\'+saveStr);
-                    GENTICS.Utils.Dom.setCursorInto( prev );
-                    window.getSelection().getRangeAt(0).setStart(prev, prev.textContent.length-(3-offset));
-                } else if(next != null && next.tagName != 'SPAN') {
-                    next.textContent = ('\\'+saveStr + next.textContent);
-                    GENTICS.Utils.Dom.setCursorInto( next );
-                    window.getSelection().getRangeAt(0).setStart(next, 0);
-                } else {
-                    var newText = document.createTextNode('\\'+saveStr);
-                    parentNode.insertBefore(newText, next);
-                    GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, offset+1);
-                }
-
-                if(FuncInserted.length == 1) {
-                    FuncInserted = [];
-                } else {
-                    FuncInserted.splice(i, 1);
-                }
-
-                leVal = getFullStr(mathEditBox[0].childNodes);
-                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-                inChange = false;
-                currentLength = leVal.length;
-                return;
-            }
-        }
-    } else if(leVal.length > currentLength && leVal.length - currentLength == 1) {
-
-        // if something typed inside of an existing function span, clear that span out
-        for(var i = 0; i < FuncInserted.length; i++) {
-            if(currentNode.parentNode == FuncInserted[i].span) {
-
-                var prev = currentNode.parentNode.previousSibling.previousSibling;
-                var next = currentNode.parentNode.nextSibling;
-                var parentNode = currentNode.parentNode.parentNode;
-                parentNode.removeChild(currentNode.parentNode);
-                parentNode.removeChild(FuncInserted[i].open);
-
-                if(prev != null && prev.tagName != 'SPAN') {
-                    prev.textContent += ('\\'+ch);
-                    GENTICS.Utils.Dom.setCursorInto( prev );
-                    window.getSelection().getRangeAt(0).setStart(prev, prev.textContent.length);
-                } else if(next != null && next.tagName != 'SPAN') {
-                    next.textContent = ('\\'+ch + next.textContent);
-                    GENTICS.Utils.Dom.setCursorInto( next );
-                    window.getSelection().getRangeAt(0).setStart(next, 1);
-                } else {
-                    var newText = document.createTextNode('\\'+ch);
-                    parentNode.insertBefore(newText, next);
-                    GENTICS.Utils.Dom.setCursorInto( newText );
-                    window.getSelection().getRangeAt(0).setStart(newText, 1);
-                }
-
-                if(FuncInserted.length == 1) {
-                    FuncInserted = [];
-                } else {
-                    FuncInserted.splice(i, 1);
-                }
-
-                leVal = getFullStr(mathEditBox[0].childNodes);
-                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-                inChange = false;
-                currentLength = leVal.length;
-                return;
-            }
+            var tmp = getFullStr(mathEditBox[0].childNodes);
+            MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+tmp+"}"]);
+            inChange = false;
+            currentLength = tmp.length;
+            return true;
         }
     }
-    console.log('onTexChange Checkpoint 5')
+    return false;
+}
 
-
-
-    // moved beyond the scope of a parens or braces
+function checkLeftScope(currentNode) {
     var i = 0;
     while(i < Inserted.length) {
         if(isAfterOther(currentNode, Inserted[i].close) || isBeforeOther(currentNode, Inserted[i].open)) {
             concretize(Inserted[i].open);
             concretize(Inserted[i].close);
-
-            console.log('removing f');
-            if(Inserted.length == 1) {
-                Inserted = [];
-            } else {
-                Inserted.splice(i, 1);
-            }
+            removeFromInserted(i);
         } else {
             i = i + 1;
         }
     }
-    console.log('CH IS '+ch);
+}
 
-    if(leVal.length - currentLength > 0) {
-        switch(ch) {
-            case(')'):
-            case('}'):
-                convertToConcrete(ch, mathEditBox[0], leVal, offset);
-                break;
-            case('{'):
-                generateInserted(offset, '}', '');
-                break;
-            case('('):
-                generateInserted(offset, ')', '');
-                break;
-            case('^'):
-            case('_'):
-                insertBraces(mathEditBox[0], leVal, offset);
-                break;
-            case('\\'):
-                insertFunc(mathEditBox[0], leVal, offset, 'func');
-                break;
+function onTexCharChange(evt, mathEditorContainer, eqId) {
+    if(inChange) return;
+    inChange = true;
+    var mathEditBox = mathEditorContainer.find(".math-source");
+
+    try {
+        var currentNode = window.getSelection().focusNode;
+
+        if(currentNode.className == "math-source") currentNode = currentNode.childNodes[0];
+
+        if(currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
+            currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
+            currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
+            currentLength = 0;
         }
-    }
-    console.log('onTexChange Checkpoint 7 '+eqId)
 
-    leVal = getFullStr(mathEditBox[0].childNodes);
-    console.log('LEVAL is: '+leVal);
-    console.log('EQID is: '+eqId);
-    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-    // console.log('onTexChange Checkpoint 8')
-    inChange = false;
+        var range = window.getSelection().getRangeAt(0);
+        var leVal = getFullStr(mathEditBox[0].childNodes);
+        var offset= - 1;
+        var ch = '\0';
+        if(leVal.length-currentLength > 0) {
+            offset = range.startOffset+(leVal.length-currentLength)-1;
+            ch = currentNode.textContent.slice(range.startOffset, range.startOffset+(leVal.length-currentLength));
+        } else {
+            offset = range.startOffset-1;
+            ch = currentNode.textContent.slice(offset, offset+1);
+        }
+        var ele = $('#'+evt.currentTarget.id);
+        console.log('-----------------------------------------');
+        console.log(currentNode);
+        console.log(range.startContainer);
+        console.log(range.endContainer);
+        console.log('LEVAL IS \"'+leVal+'\" : LENGTH '+leVal.length);
+        console.log('CHANGE IN LENGTH IS '+(leVal.length-currentLength));
+        console.log('RANGE IS ['+range.startOffset+'->'+range.endOffset+']');
+        console.log('OFFSET IS '+offset);
+        console.log('SO CH IS '+ch);
+        console.log('CURRENT LENGTH '+currentLength);
+
+
+        var newCurrent = handleInsertsInsideSpans(leVal, currentNode, ch);
+        if(newCurrent["newNode"] != null) {
+            currentNode = newCurrent["newNode"];
+            GENTICS.Utils.Dom.setCursorInto( currentNode );
+            offset= ch.length;
+            window.getSelection().getRangeAt(0).setStart(currentNode, offset);
+        }
+
+        //range = window.getSelection().getRangeAt(0);
+        //offset = range.startOffset;
+        leVal = getFullStr(mathEditBox[0].childNodes);
+        var diff = leVal.length - currentLength;
+
+
+        if(!handleBulkDelete(leVal, range) ) {
+            handleFunctionReplacement(leVal, currentNode, ch, mathEditBox, eqId, offset);
+        }
+
+        
+        checkForOrphans();
+        checkLeftScope(currentNode);
+        console.log('CH IS '+ch);
+
+        if(leVal.length - currentLength > 0) {
+            switch(ch) {
+                case(')'):
+                case('}'):
+                    convertToConcrete(ch, mathEditBox[0], leVal, offset);
+                    break;
+                case('{'):
+                    generateInserted(offset, '}', '');
+                    break;
+                case('('):
+                    generateInserted(offset, ')', '');
+                    break;
+                case('^'):
+                case('_'):
+                    insertBraces(mathEditBox[0], leVal, offset);
+                    break;
+                case('\\'):
+                    insertFunc(mathEditBox[0], leVal, offset, 'func');
+                    break;
+            }
+        }
+
+        console.log('LEVAL is: '+leVal);
+        console.log('EQID is: '+eqId);
+        leVal = getFullStr(mathEditBox[0].childNodes);
+        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+    } catch(err) {
+        leVal = getFullStr(mathEditBox[0].childNodes);
+    }
     currentLength = leVal.length;
+    console.log('Setting current length to '+currentLength);
+    inChange = false;
 }
 
 function onAsciiCharChange(evt,  mathEditorContainer, eqId) {
@@ -1063,8 +941,12 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         /* Replaces the current text with a '&nbsp;' if the user removes all the text */
         var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
         if (text == '') {
+<<<<<<< HEAD
             console.log("Appendeing nsbsp");
             $(".math-editor").find(".math-source").append("&nbsp\;");
+=======
+            //$(".math-editor").find(".math-source").append("&nbsp\;");
+>>>>>>> f6b5c7549a0e18946d0ce859e54a1477d26999bb
         }
         // console.log("Modified1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), mathJaxElId);
@@ -1619,65 +1501,9 @@ function mathLeave(mathEditorContainer,e) {
                     // Generates a new math editor
                     mathClickNew('${','}$', onTexCharChange);
                     aol = radio_latex;
-                    // e.stopPropagation();
                 }
-                /*onclick: function() {
-                    console.log("Test");
-                }*/
             });
-            
-            //var parsedJax = false; 
-            //Aloha.bind('aloha-editable-activated', function (event, data) 
-            //{
-            //    
-            //    !parsedJax && (function()
-            //    {
-            //        parsedJax = true;
-            //        //MathJax.Hub.Queue(["Typeset",MathJax.Hub, null, function()
-            //        //{ 
-            //        //    // Wraps each mathjax element
-            //        //    //$(MathJax.Hub.getAllJax()).each(function()
-            //        //    //{ 
-            //        //    //    console.log(this.originalText);
-            //        //    //    var pp = parentOfParent(document.getElementById(this.inputID));
-            //        //    //    console.log(this);
-            //        //    //    if(pp == null || pp.className != "MathJax_MathContainer")
-            //        //    //    {
-            //        //    //        //console.log("Initializing... "+this.inputID);
-            //        //    //        //var elfr = $('#'+this.inputID+'-Frame');
-            //        //    //        //var el = $('#'+this.inputID);
-            //        //    //        //var elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0);
-            //        //    //        //var outerEqWrapper = $('<span id="'+wrapPrefix+cntEq+'" class="MathBox MathBoxNew"/>').insertBefore(elpr);
-
-            //        //    //        //var eqWrapper = $('<span id="sub'+wrapPrefix+cntEq+'"/>').
-            //        //    //        //    append(elpr).append(elfr).append(el)
-            //        //    //        //    .data('equation', '$'+this.originalText+'$');
-            //        //    //        //outerEqWrapper.append(eqWrapper);
-
-            //        //    //        //if(this.inputJax == "AsciiMath") { 
-            //        //    //        //    aolDictionary[wrapPrefix+cntEq] = 'radio_ascii';
-
-            //        //    //        //    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, 'sub'+wrapPrefix+cntEq, function() { 
-            //        //    //        //           MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax('sub'+wrapPrefix+cntEq)[0],this.originalText]);
-            //        //    //        //    }]);
-
-            //        //    //        //} else if(this.inputJax == "TeX") {
-            //        //    //        //    aolDictionary[wrapPrefix+cntEq] = 'radio_latex';
-
-            //        //    //        //    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, 'sub'+wrapPrefix+cntEq, function() { 
-            //        //    //        //           MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax('sub'+wrapPrefix+cntEq)[0],"\\displaystyle{"+this.originalText+"}"]);
-            //        //    //        //    }]);
-            //        //    //        //}
-            //        //    //        //console.log('JAX: '+this.inputJax);
-
-            //        //    //        //cntEq++;
-            //        //    //    }                            
-            //        //    //});
-            //        //}]);
-            //    })();
-            //    self._mathCtrl.show();
-            //});
-            
+                      
            
             Aloha.bind('aloha-editable-created', function (event, editable) 
             {
@@ -1685,21 +1511,18 @@ function mathLeave(mathEditorContainer,e) {
                 
                 editable.obj.bind('keydown', self.hotKey.insertTexMath, function() 
                 {
-                    //generateMathContainer('${','}$', onTexCharChange, '', editable.obj);
                     aol = 'radio_latex';
                     mathClickNew('${','}$', onTexCharChange); // Generates a new math container and binds the 'latex' callback function
                 });
 
                 editable.obj.bind('keydown', self.hotKey.insertAsciiMath, function() 
                 {
-                    //generateMathContainer('`','`', onAsciiCharChange, '', editable.obj);
                     aol = 'radio_ascii';
                     mathClickNew('`','`', onAsciiCharChange); // Generates a new math container and binds the 'asciimath' callback functoin
                     console.log("Setting the radio default");
                 });
                 editable.obj.bind('keydown', self.hotKey.insertMLMath, function() 
                 {
-                    // generateMathContainer('<math>','</math>', onAsciiCharChange, '', editable.obj);
                     aol = 'radio_mathml';
                     mathClickNew('<math>','</math>', onAsciiCharChange); // Generates a new math container and binds the 'asciimathml' callback functoin
                 });

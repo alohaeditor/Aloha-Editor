@@ -86,7 +86,8 @@ function(Aloha, jQuery, Plugin) {
 			for ( i = 0; i < Aloha.editables.length; i++) {
 				editable = Aloha.editables[i].obj;
 				if (editable.hasClass('aloha-editable-highlight')) {
-					editable.css('outline', editable.css('outlineColor') + ' ' + editable.css('outlineStyle') + ' ' + editable.css('outlineWidth'))
+					// IE8 fix - hardcode 5px because editable.css('outlineWidth') sometimes causes a javascript error
+					editable.css('outline', editable.css('outlineColor') + ' ' + editable.css('outlineStyle') + ' 5px')
 						.removeClass('aloha-editable-highlight')
 						.animate({
 							outlineWidth : '0px'

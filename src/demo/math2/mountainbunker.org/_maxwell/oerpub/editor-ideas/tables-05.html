@@ -40,11 +40,11 @@
 		}
 	</style>
 
-	<script src="../../../../../../lib/require.js"></script>
+	<!--<script src="../../../../../../lib/require.js"></script>
 	<script src="../../../../../../lib/aloha.js"
 	        data-aloha-plugins="common/ui,
 	        					common/format,
-	                            extra/math"></script>
+	                            extra/math"></script> -->
 
     <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery-1.6.4.min.js" type="text/javascript"></script>
 	<!--script src="../../../../../../lib/vendor/jquery-1.7.2.js"></script-->
@@ -60,19 +60,20 @@
     <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.effects.core.min.js" type="text/javascript"></script>
     <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.effects.highlight.min.js" type="text/javascript"></script>
     <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/googlejsapi.js" type="text/javascript"></script>
+    <script type="text/javascript" src="math/math-plugin.js"></script>
 
-	<!--script src="../../../../../../lib/aloha.js"
+	<!--<script src="../../../../../../lib/aloha.js"
 	        data-aloha-plugins="common/ui,
 	        					common/format,
-	                            extra/math"></script-->
-    <script>
+	                            extra/math"></script>
+  <script>
 		Aloha.settings.jQuery = $;
-    </script>
+  </script> 
 	<script src="../../../../../math/js/aloha-config.js"></script>
-    <script src="../../../../../math/ribbon-example.js"></script>
+  <script src="../../../../../math/ribbon-example.js"></script>
 	<link rel="stylesheet" href="../../../../../math/css/style.css">
 	<script src="../../../../../math/js/aloha-boilerplate.js"></script>
-    
+    -->
 
 
 <!--
@@ -96,6 +97,9 @@
     <![endif]-->
 
 
+<script type="text/javascript">
+
+</script>
 <script type="text/javascript">
 
 $(window).resize(function(){
@@ -900,9 +904,11 @@ $(document).ready(function(){
       mec = buildMathEditor(m,e);
       m.prepend(mec);
       var mathtext = m.find(".asciimath").text();
+      console.log("Math text is: " + mathtext);
       if (mathtext.length) {
         m.find(".math-source").append(mathtext);
       } else if ( m.find(".MathJaxText, .MathJaxText2").text().length ) {
+        console.log("The math text is: " + m.find(".MathJaxText, .MathJaxText2").text());
         m.find(".math-source").append(m.find(".MathJaxText, .MathJaxText2").text());
       } else {
         m.find(".math-source").append("&nbsp;");
@@ -929,6 +935,7 @@ $(document).ready(function(){
   var aol = '';
 
   function mathClickNew(aol,e) {
+    console.log("math Click new ");
     var exText = getSelectionText();
     if (exText == '') {
       exText = '&nbsp\;';
@@ -1016,6 +1023,7 @@ $(document).ready(function(){
 
 
   function mathEditorRemove(override) {
+      console.log("mathEditorRemove");
 //    if (!$("#MathJaxNew").length || override.length) { // Hack because propagation doesn't seem to be stopping in mathClickNew2
       $(".MathJax").removeClass("selected");
       $(".MathJax").removeClass("hovered");
@@ -1036,7 +1044,8 @@ $(document).ready(function(){
         if (!mj.find(".asciimath").length) { // This just not to mess up the nice examples in the mock-up.
           if (!ms.trim().length || $("#MathJaxNew").find(".math-source-hint-text").length) {
             mj.remove();
-          } else {
+          } 
+          else {
             mj.html('<span class="MathJaxText">' + ms + '</span>');
           }
         }
@@ -1051,19 +1060,24 @@ $(document).ready(function(){
     }
 //  }
   $(".MathJax").live("mouseenter", function(e){
+    console.log("Editor being entered");
     mathEnter($(this),e);
   });
   $(".MathJax").live("mouseleave", function(e){
+    console.log("Editor being left");    
     mathLeave($(this),e);
   });
   $(".MathJax:not(.selected)").live("click", function(e){
+    console.log("Editor not selected?");    
     mathClick($(this),e);
   });
   $(".math-editor").live("click", function(e){
+    console.log("math editor being clicked");
 //  e.stopPropagation();
     meClick($(this),e);
   });
   function meClick(me,e) {
+    console.log("Stopping propagation");
     e.stopPropagation();
   };
   
@@ -1105,6 +1119,7 @@ $(document).ready(function(){
   });
 
   $("#radio_regular").live("click", function(e){
+    console.log("radio regular being clicked");
     if ($(this).is(":checked")) {
       $(this).closest(".MathJax").find(".MathJaxText").removeClass("MathJaxText").addClass("MathJaxText2");
     } else {
@@ -1162,7 +1177,7 @@ $(document).ready(function(){
     if ($(this).hasClass("math-editor-close")) {
       mathEditorRemove("override");
     } else {
-*/
+*/    console.log("Removing the math editor");
       mathEditorRemove("");
 /*
     }
@@ -4420,7 +4435,7 @@ stars.</div></dd></dl>
     </div>
   </div>
 	
-		<script type="text/javascript">
+<!-- <script type="text/javascript">
 			Aloha.ready( function(){
 				var $ = Aloha.jQuery;
 				// register all editable areas
@@ -4432,7 +4447,7 @@ stars.</div></dd></dl>
 				$('#aloha-loading span').html('Loading Plugins');
 			});
 		</script>
-
+-->
 
   </body>
 

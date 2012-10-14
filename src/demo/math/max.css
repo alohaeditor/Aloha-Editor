@@ -1012,7 +1012,7 @@ display: inline-block;
 }
 
 .MathBox.hovered{
-  background-color: #E5EEF5;
+  background-color: #E5FEF5;
 /*
   background-color: #f3f3f3;
   background-color: #f9f9f9;
@@ -1062,6 +1062,7 @@ display: inline-block;
   display: block;
 }
 
+
 #math-icon-clear .math-icon-message{
 }
 
@@ -1072,6 +1073,7 @@ display: inline-block;
   left: auto;
 }
 
+/*
 .MathBox #math-icon-clear{
   position: absolute;
 right: -20px;
@@ -1095,7 +1097,7 @@ top: 2px;
   background-position: right bottom;
 cursor: pointer;
 }
-
+*/
 /*
 .MathBox *{
   -moz-user-select: none;

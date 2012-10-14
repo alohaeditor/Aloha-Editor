@@ -22,7 +22,8 @@
 
 function Sanitize(){
   var i, e, options;
-  options = arguments[0] || {}
+  options = arguments[0] || {};
+  this.jQuery = arguments[1] || {};
   this.config = {}
   this.config.elements = options.elements ? options.elements : [];
   this.config.attributes = options.attributes ? options.attributes : {};
@@ -139,6 +140,8 @@ Sanitize.prototype.clean_node = function(container) {
   function _clean_element(elem) {
     var i, j, clone, parent_element, name, allowed_attributes, attr, attr_name, attr_node, protocols, del, attr_ok;
     var transform = _transform_element.call(this, elem);
+    var jQuery = this.jQuery;
+    var isIE7 = jQuery.browser.msie && jQuery.browser.version === "7.0";
     
     elem = transform.node;
     name = elem.nodeName.toLowerCase();
@@ -172,9 +175,13 @@ Sanitize.prototype.clean_node = function(container) {
               }
             }
             if(attr_ok) {
-              attr_node = document.createAttribute(attr_name);
-              attr_node.value = attr.nodeValue;
-              this.current_element.setAttributeNode(attr_node);
+            	// sanitize does not work in IE7. It tries to set the style attribute via setAttributeNode() and this is know to not work in IE7
+    			// (see http://www.it-blogger.com/2007-06-22/microsofts-internetexplorer-und-mitglied-nicht-gefunden/ as a reference)	
+              if(!isIE7 || (isIE7 && "style" !== attr_name)) {
+	              attr_node = document.createAttribute(attr_name);
+	              attr_node.value = attr.nodeValue;              
+            	  this.current_element.setAttributeNode(attr_node);
+              }
             }
         }
       }
@@ -182,9 +189,13 @@ Sanitize.prototype.clean_node = function(container) {
       // Add attributes
       if(this.config.add_attributes[name]) {
         for(attr_name in this.config.add_attributes[name]) {
-          attr_node = document.createAttribute(attr_name);
-          attr_node.value = this.config.add_attributes[name][attr_name];
-          this.current_element.setAttributeNode(attr_node);
+        	// sanitize does not work in IE7. It tries to set the style attribute via setAttributeNode() and this is know to not work in IE7
+			// (see http://www.it-blogger.com/2007-06-22/microsofts-internetexplorer-und-mitglied-nicht-gefunden/ as a reference)
+        	if(!isIE7 || (isIE7 && "style" !== attr_name)) {
+	          attr_node = document.createAttribute(attr_name);
+	          attr_node.value = this.config.add_attributes[name][attr_name];
+	          this.current_element.setAttributeNode(attr_node);
+        	}
         }
       }
     } // End checking if element is allowed

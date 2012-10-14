@@ -11,14 +11,14 @@ menuSettings = [
 ]
 
 toolbarSettings = [
- 'bold', 'italic', 'underline', '', 'insertLink', 'insertImage', 'insertFigure', '', 'orderedList', 'unorderedList', 'outdentList', 'indentList'
+ 'bold', 'italic', 'underline', '', 'insertLink', 'insertImage', 'insertFigure', '', 'orderedList', 'unorderedList', 'outdentList', 'indentList', 'createTable'
 ]
 
 define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmenu/appmenu', "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, Ribbon, appmenu, i18n, i18nCore) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
-    CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container').appendTo('body')
+    CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container aloha').appendTo('body')
   
   ###
    register the plugin with unique name
@@ -31,7 +31,6 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
 
       window.toolbar = toolbar = new appmenu.ToolBar()
       toolbar.el.appendTo CONTAINER_JQUERY
-      toolbar.el.addClass 'aloha'
 
       menuLookup = {}
       toolbarLookup = {}
@@ -40,14 +39,13 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
         if 'string' == $.type item
           if '' == item
             return new appmenu.Separator()
-          menuItem = new appmenu.MenuItem 'EMPTY_LABEL'
+          menuItem = new appmenu.MenuItem item
           lookupMap[item] = menuItem
           return menuItem
         else
           subItems = for subItem in item.subMenu or []
             recurse subItem, lookupMap
           subMenu = new appmenu.Menu subItems
-          subMenu.el.addClass 'aloha' # Hack to get the Aloha icons working
           menuItem = new appmenu.MenuItem item.text,
             subMenu: subMenu
           return menuItem
@@ -58,7 +56,6 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
           recurse item, menuLookup
 
         menu = new appmenu.Menu subMenuItems
-        menu.el.addClass 'aloha' # Added so the CSS for aloha icons gets matched
         
         menubar.append(new appmenu.MenuButton tab.text, menu)
 
@@ -89,8 +86,8 @@ define [ "aloha", "aloha/plugin", "ui/ui", 'ribbon/ribbon-plugin', '../../appmen
         if slot of menuLookup and slot of toolbarLookup
           item = menuLookup[slot]
           item2 = toolbarLookup[slot]
-          item.element = item.el # CreateTable and some others do onclick () -> this.element
-          item2.element = item2.el # CreateTable and some others do onclick () -> this.element
+          item.el[0].element = item.el # CreateTable and some others do onclick () -> this.element
+          item2.el[0].element = item2.el # CreateTable and some others do onclick () -> this.element
 
           item.setText(settings.tooltip)
           item.setIcon(settings.icon)

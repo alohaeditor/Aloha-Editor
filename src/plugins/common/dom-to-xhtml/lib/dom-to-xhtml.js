@@ -27,66 +27,88 @@
 /**
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
-define(
-['aloha', 'jquery', 'aloha/console'],
-function( Aloha, $, console) {
+define([
+	'jquery',
+	'util/dom2',
+	'util/misc',
+	'util/browser',
+	'aloha/ephemera',
+	'aloha/console'
+],
+function(
+	$,
+	Dom,
+	Misc,
+	Browser,
+	Ephemera,
+	console
+) {
 	"use strict";
-
-	/**
-	 * Gets the attributes of the given element.
-	 *
-	 * @param element
-	 *        An element to get the attributes for.
-	 * @return
-	 *        An array of consisting of [name, value] tuples for each attribute.
-	 *        Attribute values may be strings, booleans or undefined.
-	 */
-	function getAttrs(element) {
-		var attrs = element.attributes;
-		var cleanAttrs = [];
-		for ( var i = 0; i < attrs.length; i++ ) {
-			var attr = attrs[ i ];
-			if ( typeof attr.specified === "undefined" || attr.specified ) {
-				var name = attr.nodeName;
-				
-				// Ignore attributes belonging to the xmlns namespace
-				// Otherwise include the namespace unless
-				// it is an XHTML attribute.
-				if ('http://www.w3.org/2000/xmlns/' == attr.namespaceURI) {
-					continue;
-				} else if ('http://www.w3.org/1999/xhtml' == attr.namespaceURI || null == attr.namespaceURI) {
-					// Leave the name alone. It will get lowercased later.
-				} else {
-					// Uses CSS namespace syntax
-					name = attr.namespaceURI + '|' + name;
-				}
-				
-				// Use jQuery to get a corrected style attribute on IE.
-				// Otherwise prefer getAttribute() over attr.nodeValue as the
-				// latter stringifies the attribute value.
-				// There seems to be a jQuery bug that returns undefined
-				// for the "checked" attribute on IE7, otherwise we
-				// could always use jquery.
-				var value = ( "style" === name ? $.attr(element, name) : attr.nodeValue );
-				cleanAttrs.push( [ name, value ] );
-			}
-		}
-		return cleanAttrs;
-	}
 
 	/**
 	 * Elements that are to be serialized like <img /> and not like <img></img>
 	 */
-	var emptyElements = [
-		"area", "base", "basefont", "br", "col", "frame", "hr",
-		"img", "input", "isindex", "link", "meta", "param", "embed" ];
+	var emptyElements = {
+		"area": true,
+		"base": true,
+		"basefont": true,
+		"br": true,
+		"col": true,
+		"frame": true,
+		"hr": true,
+		"img": true,
+		"input": true,
+		"isindex": true,
+		"link": true,
+		"meta": true,
+		"param": true,
+		"embed": true
+	};
 
 	/**
 	 * Attributes that are to be serialized like checked="checked" for any attribute value.
 	 */
-	var booleanAttrs = [
-		"checked", "compact", "declare", "defer", "disabled", "ismap", "multiple",
-		"nohref", "noresize", "noshade", "nowrap", "readonly", "selected" ];
+	var booleanAttrs = {
+		"checked": true,
+		"compact": true,
+		"declare": true,
+		"defer": true,
+		"disabled": true,
+		"ismap": true,
+		"multiple": true,
+		"nohref": true,
+		"noresize": true,
+		"noshade": true,
+		"nowrap": true,
+		"readonly": true,
+		"selected": true
+	};
+
+	/**
+	 * Maps element names to a boolean that indicates whether IE7/IE8 doesn't recognize the element.
+	 * This is necessary to repair the broken DOM structure caused by unrecognized elements.
+	 * Contains some intial values to cover most common cases. If an
+	 * element is serialized that is not present here, it will be
+	 * examined (which may be costly) and added dynamically.
+	 * See isUnrecognized().
+	 */
+	var isUnrecognizedMap = {
+		"DIV": false,
+		"SPAN": false,
+		"UL": false,
+		"OL": false,
+		"LI": false,
+		"TABLE": false,
+		"TR": false,
+		"TD": false,
+		"TH": false,
+		"I": false,
+		"B": false,
+		"EM": false,
+		"STRONG": false,
+		"A": false,
+		"P": false
+	};
 
 	/**
 	 * Encodes a string meant to be used wherever parsable character data occurs in XML.
@@ -118,56 +140,58 @@ function( Aloha, $, console) {
 	 *
 	 * @param element
 	 *        An element to serialize the attributes of
+	 * @param ephemera
+	 *        Describes attributes that should be skipped.
+	 *        See Ehpemera.ephemera().
 	 * @return
 	 *        A string made up of name="value" for each attribute of the
 	 *        given element, separated by space. The string will have a leading space.
 	 */
-	function makeAttrString(element) {
-		var nsElement = element.namespaceURI;
-		var attrs = getAttrs(element);
+	function makeAttrString(element, ephemera) {
+		var attrs = Dom.attrs(element);
 		var str = "";
-		for (var i = 0; i < attrs.length; i++) {
-
-			// The XHTML spec says attributes are lowercase
-			// but attributes belonging to other namespaces like xlink:href
-			// should preserve their case and include a namespaceURI
-			var namespace, name, nsExtra;
-			var nsName = attrs[i][0];
-            // getAttrs adds a separator if the attribute has a namespace
-			if (nsName.indexOf('|') >= 0) {
-				namespace = nsName.split('|')[0];
-				name = nsName.split('|')[1];
-			} else {
-				namespace = null;
-				name = nsName;
-			}
-			if (namespace == null || namespace == 'http://www.w3.org/1999/xhtml') {
-				// Check if the element belongs to the HTML namespace.
-				// If not, then don't lowercase the attribute
-				if (nsElement == null || nsElement == 'http://www.w3.org/1999/xhtml') {
-					name = name.toLowerCase();
-					nsExtra = '';
-				} else {
-					// name = name.toLowerCase();
-					nsExtra = '';
+		var i, len;
+		// Dom.attrs() doesn't support some boolean attributes on IE7
+		// which we have to compensate for.
+		if (Browser.ie7) {
+			for (var bool in booleanAttrs) {
+				if (booleanAttrs.hasOwnProperty(bool) && element[bool]) {
+					// We don't want to add duplicate attributes
+					for (i = 0, len = attrs.length; i < len; i++) {
+						if (bool === attrs[i][0].toLowerCase()) {
+							attrs.splice(i, 1);
+							break;
+						}
+					}
+					attrs.push([bool, bool]);
 				}
-			} else {
-				name = 'ns' + i + ':' + name;
-				nsExtra = 'xmlns:ns' + i + '="' + namespace + '" ';
 			}
-			var value = attrs[i][1];
+		}
+		for (i = 0, len = attrs.length; i < len; i++) {
+			// The XHTML spec says attributes are lowercase, but this does
+            // not apply for other namespaces.
+			var attr  = attrs[i];
+			var name  = attr[0];
+            if(!name.match(/:/)){
+                name  = name.toLowerCase();
+            }
+			var value = attr[1];
+
+			if (ephemera && Ephemera.isAttrEphemeral(element, name, ephemera.attrMap || {}, ephemera.attrRxs || {})) {
+				continue;
+			}
 
 			//TODO it's only a boolean attribute if the element is in an HTML namespace
-			var isBool = (-1 !== $.inArray(name.toLowerCase(), booleanAttrs));
+			var isBool = booleanAttrs[name];
 
-			if (!isBool && ("" === value || null == value)) {
+			if (!isBool && "" === value) {
 				// I don't think it is ever an error to make an
 				// attribute not appear if its string value is empty.
 				continue;
 			}
 
 			// For boolean attributes, the mere existence of the attribute means it is true.
-			str += " " + nsExtra + name + '="' + encodeDqAttrValue("" + (isBool ? name : value)) + '"';
+			str += " " + name + '="' + encodeDqAttrValue((isBool ? name : value)) + '"';
 		}
 		return str;
 	}
@@ -186,15 +210,23 @@ function( Aloha, $, console) {
 	 *        causes a broken DOM structure as outlined above.
 	 */
 	function isUnrecognized(element) {
+		var name = element.nodeName;
+		var unrecognized = isUnrecognizedMap[name];
+		if (null != unrecognized) {
+			return unrecognized;
+		}
 		var closingName = "/" + element.nodeName;
 		var sibling = element.nextSibling;
+		unrecognized = false;
 		while (null != sibling) {
 			if (closingName == sibling.nodeName) {
-				return true;
+				unrecognized = true;
+				break;
 			}
 			sibling = sibling.nextSibling;
 		}
-		return false;
+		isUnrecognizedMap[name] = unrecognized;
+		return unrecognized;
 	}
 
 	/**
@@ -205,15 +237,15 @@ function( Aloha, $, console) {
 	 *
 	 * @see serializeElement()
 	 */
-	function serializeChildren(element, child, unrecognized, xhtml) {
+	function serializeChildren(element, child, unrecognized, ephemera, xhtml) {
 		while (null != child) {
 			if (1 === child.nodeType && unrecognized && "/" + element.nodeName == child.nodeName) {
 				child = child.nextSibling;
 				break;
 			} else if (1 === child.nodeType && isUnrecognized(child)) {
-				child = serializeElement(child, child.nextSibling, true, xhtml);
+				child = serializeElement(child, child.nextSibling, true, ephemera, xhtml);
 			} else {
-				serialize(child, xhtml);
+				serialize(child, ephemera, xhtml);
 				child = child.nextSibling;
 			}
 		}
@@ -233,6 +265,10 @@ function( Aloha, $, console) {
 	 *        Whether the given element is unrecognized on IE. If IE doesn't
 	 *        recognize the element, it will create a broken DOM structure
 	 *        which has to be compensated for. See isUnrecognized() for more.
+	 * @param ephemera
+	 *        Describes content that should not be serialized.
+	 *        Only attrMap and attrRxs are supported at the moment.
+	 *        See Ephemera.ephemera().
 	 * @param xhtml
 	 *        An array which receives the serialized element and whic, if joined,
 	 *        will yield the XHTML string.
@@ -241,7 +277,7 @@ function( Aloha, $, console) {
 	 *        of the given element, or otherwise the first sibling of child that is not considered
 	 *        a child of the given element.
 	 */
-	function serializeElement(element, child, unrecognized, xhtml) {
+	function serializeElement(element, child, unrecognized, ephemera, xhtml) {
         var elementName = element.nodeName;
         var nsDeclaration;
 
@@ -261,11 +297,11 @@ function( Aloha, $, console) {
 		if (element.scopeName && 'HTML' != element.scopeName && -1 === elementName.indexOf(':')) {
 			elementName = element.scopeName.toLowerCase() + ':' + elementName;
 		}
-		if ( ! unrecognized && null == child && -1 !== $.inArray(elementName, emptyElements) ) {
-			xhtml.push('<' + elementName + makeAttrString(element) + '/>');
+		if (!unrecognized && null == child && emptyElements[elementName]) {
+			xhtml.push('<' + elementName + makeAttrString(element, ephemera) + '/>');
 		} else {
 			xhtml.push('<' + elementName + nsDeclaration + makeAttrString(element) + '>');
-			child = serializeChildren(element, child, unrecognized,  xhtml);
+			child = serializeChildren(element, child, unrecognized, ephemera, xhtml);
 			xhtml.push('</' + elementName + '>');
 		}
 		return child;
@@ -276,23 +312,27 @@ function( Aloha, $, console) {
 	 *
 	 * @param node
 	 *        A DOM node to serialize.
+	 * @param ephemera
+	 *        Describes content that should not be serialized.
+	 *        Only attrMap and attrRxs are supported at the moment.
+	 *        See Ephemera.ephemera().
 	 * @param xhtml
 	 *        An array that will receive snippets of XHTML,
 	 *        which if joined will yield the XHTML string.
 	 */
-	function serialize(node, xhtml) {
+	function serialize(node, ephemera, xhtml) {
 		var nodeType = node.nodeType;
 		if (1 === nodeType) {
-			serializeElement(node, node.firstChild, isUnrecognized(node), xhtml);
+			serializeElement(node, node.firstChild, isUnrecognized(node), ephemera, xhtml);
 		} else if (3 === node.nodeType) {
 			xhtml.push(encodePcdata(node.nodeValue));
 		} else if (8 === node.nodeType) {
 			xhtml.push('<' + '!--' + node.nodeValue + '-->');
 		} else {
-			console.log('Unknown node type encountered during serialization, ignoring it:'
-						+ ' type=' + node.nodeType
-						+ ' name=' + node.nodeName
-						+ ' value=' + node.nodeValue);
+			console.warn('Unknown node type encountered during serialization, ignoring it:'
+						 + ' type=' + node.nodeType
+						 + ' name=' + node.nodeName
+						 + ' value=' + node.nodeValue);
 		}
 	}
 	
@@ -304,14 +344,18 @@ function( Aloha, $, console) {
 		 *
 		 * @param nodes
 		 *        An array or jQuery object or another array-like object to serialize.
+		 * @param ephemera
+		 *        Describes content that should not be serialized.
+		 *        Only attrMap and attrRxs are supported at the moment.
+		 *        See Ephemera.ephemera().
 		 * @return
 		 *        The serialized XHTML String representing the given DOM nodes in the given array-like object.
 		 *        The result may look like an XML fragment with multiple top-level elements and text nodes.
 		 * @see nodeToXhtml()
 		 */
-		contentsToXhtml: function(element) {
+		contentsToXhtml: function(element, ephemera) {
 			var xhtml = [];
-			serializeChildren(element, element.firstChild, false, xhtml);
+			serializeChildren(element, element.firstChild, false, ephemera, xhtml);
 			return xhtml.join("");
 		},
 
@@ -371,12 +415,16 @@ function( Aloha, $, console) {
 		 *
 		 * @param node
 		 *        A DOM node to serialize
+		 * @param ephemera
+		 *        Describes content that should not be serialized.
+		 *        Only attrMap and attrRxs are supported at the moment.
+		 *        See Ephemera.ephemera().
 		 * @return
 		 *        The serialized XHTML string represnting the given DOM node.
 		 */
-		nodeToXhtml: function(node) {
+		nodeToXhtml: function(node, ephemera) {
 			var xhtml = [];
-			serialize(node, xhtml);
+			serialize(node, ephemera, xhtml);
 			return xhtml.join("");
 		}
 	};
