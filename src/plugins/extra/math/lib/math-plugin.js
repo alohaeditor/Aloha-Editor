@@ -361,46 +361,9 @@ function hasChild(parentNode, childNode) {
     return false;
 }
 
-<<<<<<< HEAD
-function onTexCharChange(evt, mathEditorContainer, eqId) {
-    console.log('Entering onTexChange '+inChange+' on '+eqId)
-    if(inChange) return;
-    inChange = true;
-
-    // Gbenga's variables
-    var mathEditBox = mathEditorContainer.find(".math-source");
-
-    // console.log('Math edit box:')
-    // console.log(mathEditBox)
-
-    var currentNode = window.getSelection().focusNode;
-
-    if(currentNode.className == "math-source") {
-        currentNode = currentNode.childNodes[0];
-    }
-
-    if(currentNode.parentNode.childNodes.length == 2 && currentNode.parentNode.childNodes[0] == currentNode && 
-        currentNode.parentNode.childNodes[1].className == "math-source-hint-text") {
-        currentNode.parentNode.removeChild(currentNode.parentNode.childNodes[1]);
-        currentLength = 0;
-    }
-    var range = window.getSelection().getRangeAt(0);
-    var leVal = getFullStr(mathEditBox[0].childNodes);
-    var offset = range.startOffset+(leVal.length-currentLength);
-    var ch = currentNode.textContent[offset];
-    var ele = $('#'+evt.currentTarget.id);
-    console.log(currentNode);
-    console.log('CURRENT OFFSET IS ['+range.startOffset+'->'+range.endOffset+']');
-    console.log('SO CH IS '+ch);
-    console.log('CURRENT LENGTH '+currentLength);
-
-
-    // console.log('onTexChange Checkpoint 1')
-=======
 
 
 function checkForOrphans() {
->>>>>>> f6b5c7549a0e18946d0ce859e54a1477d26999bb
     var i = 0;
     while(i < Inserted.length) {
         if(Inserted[i].open.parentNode == null || Inserted[i].close.parentNode == null) {
@@ -887,10 +850,24 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
     } 
     /* If the user selects text then that text is converted to whatever was selected */
     else {
+      if( Aloha.activeEditable ) 
+        {
+            var range = Aloha.Selection.getRangeObject()
+                if ( !( range.startContainer && range.endContainer ) ) {
+                    return;
+                }
+
+            // get text from selection
+            var leText = range.getText();
+
+            if( $.trim(leText) === '' ) return;
+
+            GENTICS.Utils.Dom.removeRange(range);
+        }  
       generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj, null);
       // Changes status of math button to be 'unselected'
       $('button[title="Math"]').removeClass("selected");
-      $(".MathBoxNew").removeAttr("id").effect("highlight", { color: "#E5EEF5" }, 1000);
+      // $(".MathBoxNew").removeAttr("id").effect("highlight", { color: "#E5EEF5" }, 1000);
     }
     // e.stopPropagation();
     //e.preventDefault();
@@ -941,12 +918,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         /* Replaces the current text with a '&nbsp;' if the user removes all the text */
         var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
         if (text == '') {
-<<<<<<< HEAD
-            console.log("Appendeing nsbsp");
-            $(".math-editor").find(".math-source").append("&nbsp\;");
-=======
             //$(".math-editor").find(".math-source").append("&nbsp\;");
->>>>>>> f6b5c7549a0e18946d0ce859e54a1477d26999bb
         }
         // console.log("Modified1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), mathJaxElId);
