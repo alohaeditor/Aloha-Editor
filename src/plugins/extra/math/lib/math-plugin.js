@@ -1072,9 +1072,10 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
 
       $(".math-editor").find(".math-source-wrap").on('DOMNodeInserted', function(e) {
         /* Replaces the current text with a '&nbsp;' if the user removes all the text */
-        var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
-        // var text = $(".math-editor").find(".math-source").text();
-        // console.log("The retrieved text is: " + text);
+        // var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
+        var text = $(".math-editor").find(".math-source").text();
+        console.log("The retrieved text is: ");
+        console.log(text);
         // $(".math-editor").find(".math-source").text(text);
         if (text == '') {
             console.log("Appending nsbsp");
