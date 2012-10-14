@@ -11,6 +11,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
   # TODO: Convert the mousedown to a click. To do that the aloha-deactivated event need to not hide the bubbles yet and instead fire a 'hide' event
   populator = ($bubble) ->
       $el = @
+      $bubble = jQuery('<div class="figure-popover"></div>')
       # Buttons to add/remove a title/caption
       if $el.children('.title')[0]
         $button = jQuery('<a href="javascript:void">Remove Title</a>')
@@ -36,6 +37,8 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
           newCaption = jQuery('<figcaption class="aloha-optional aloha-empty">Insert Caption Here</figcaption>')
           $el.append(newCaption)
         $bubble.append($button)
+      
+      $bubble.contents()
 
 
 

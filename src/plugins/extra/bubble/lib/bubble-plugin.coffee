@@ -8,15 +8,100 @@
 # bubble.coffee contains the code to attach all the correct listeners (like mouse events)
 #      moves the bubble to the correct spot, and triggers when the bubble should be populated
 
+
 # This file manages all the Aloha events and removes/adds all the bubble listeners when an editable is enabled/disabled.
 define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], (Aloha, jQuery, Plugin, Bubbler, linkConfig, figureConfig) ->
 
+  # Monkeypatch the bootstrap Popover so we can inject clickable buttons
+  if true  
+    Bootstrap_Popover_setContent = () ->
+      $tip = @tip()
+      title = @getTitle()
+      content = @getContent()
+      html = 'text'
+      html = 'html' if @options.html
+    
+      $tip.find('.popover-title')[html](title)
+
+      if html == 'html'
+        # Start: new code
+        popContent = $tip.find('.popover-content > *')
+        popContent.contents().remove()
+        popContent.append(content)
+        # End: new code
+        #$tip.find('.popover-content > *').html(content)
+      else
+        $tip.find('.popover-content > *')['text'](content)
+    
+      $tip.removeClass('fade top bottom left right in')
+    
+    Bootstrap_Popover_show = () ->
+      if @hasContent() and @enabled
+        $tip = @tip()
+        @setContent()
+        $tip.addClass "fade"  if @options.animation
+        placement = (if typeof @options.placement is "function" then @options.placement.call(this, $tip[0], @$element[0]) else @options.placement)
+        inside = /in/.test(placement)
+        # Start: Don't remove because then you lose all the events attached to the content of the tip
+        #$tip.remove()
+        # End: changes
+        $tip.css(
+          top: 0
+          left: 0
+          display: "block"
+        ).appendTo (if inside then @$element else document.body)
+        pos = @getPosition(inside)
+        actualWidth = $tip[0].offsetWidth
+        actualHeight = $tip[0].offsetHeight
+        switch (if inside then placement.split(" ")[1] else placement)
+          when "bottom"
+            tp =
+              top: pos.top + pos.height
+              left: pos.left + pos.width / 2 - actualWidth / 2
+          when "top"
+            tp =
+              top: pos.top - actualHeight
+              left: pos.left + pos.width / 2 - actualWidth / 2
+          when "left"
+            tp =
+              top: pos.top + pos.height / 2 - actualHeight / 2
+              left: pos.left - actualWidth
+          when "right"
+            tp =
+              top: pos.top + pos.height / 2 - actualHeight / 2
+              left: pos.left + pos.width
+        $tip.css(tp).addClass(placement).addClass "in"
+    
+    # Apply the monkey patch 
+    hack = () ->
+      console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
+      proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype
+      proto.setContent = Bootstrap_Popover_setContent
+      proto.show = Bootstrap_Popover_show
+    hack()
   
+
   helpers = []
   class Helper
     constructor: (@selector, @populator, @filter) ->
-    start: (editable) -> new Bubbler(@populator, jQuery(editable.obj), @selector)
+    start: (editable) ->
+        that = @
+        $el = jQuery(editable.obj)
+        $el.one 'mouseenter', @selector, () ->
+            $newEl = jQuery(@)
+            $newEl.popover
+                placement: 'bottom'
+                trigger: 'hover'
+                delay: {show: 2000, hide: 2000}
+                content: () ->
+                    that.populator.bind(jQuery(@))()
+            setTimeout(() ->
+              $newEl.trigger('mouseenter')
+            , 100)
+            
+        #new Bubbler(@populator, jQuery(editable.obj), @selector)
     stop: (editable) ->
+      return
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
       $nodes = jQuery(editable.obj).find(@selector)

@@ -88,22 +88,25 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
   filter = ->
     @nodeName.toLowerCase() is 'a'
 
-  populator = ($bubble) ->
+  populator = () ->
       $el = @
+      $bubble = jQuery('<div class="link-popover"></div>')
       href = $el.attr('href')
       a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble)
       a.attr 'href', href
       a.append href
       $bubble.append ' - '
-      change = jQuery('<a href="javascript:void">Change</a>')
+      change = jQuery('<button class="btn">Change...</div>')
       # TODO: Convert the mousedown to a click. To do that the aloha-deactivated event need to not hide the bubbles yet and instead fire a 'hide' event
-      change.appendTo($bubble).on 'mousedown', ->
+      change.appendTo($bubble)
+      change.on 'mousedown', ->
         dialog = showModalDialog($el)
         dialog.addClass 'aloha'
         dialog.on 'dialogclose', ->
           a.attr 'href', $el.attr('href')
           a.contents().remove()
           a.append $el.attr('href')
+      $bubble.contents()
 
 
   return {

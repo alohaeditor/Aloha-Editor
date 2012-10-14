@@ -86,16 +86,18 @@
     filter = function() {
       return this.nodeName.toLowerCase() === 'a';
     };
-    populator = function($bubble) {
-      var $el, a, change, href;
+    populator = function() {
+      var $bubble, $el, a, change, href;
       $el = this;
+      $bubble = jQuery('<div class="link-popover"></div>');
       href = $el.attr('href');
       a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble);
       a.attr('href', href);
       a.append(href);
       $bubble.append(' - ');
-      change = jQuery('<a href="javascript:void">Change</a>');
-      return change.appendTo($bubble).on('mousedown', function() {
+      change = jQuery('<button class="btn">Change...</div>');
+      change.appendTo($bubble);
+      change.on('mousedown', function() {
         var dialog;
         dialog = showModalDialog($el);
         dialog.addClass('aloha');
@@ -105,6 +107,7 @@
           return a.append($el.attr('href'));
         });
       });
+      return $bubble.contents();
     };
     return {
       selector: selector,
