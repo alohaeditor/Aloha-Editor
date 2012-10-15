@@ -9,14 +9,21 @@
     <style type="text/css">
 .aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
 .aloha-toolbar { display: none !important; }
-.toolbar-container, .menu {
-  font-family: Arial, sans-serif; /* .aloha.menu-item sets font:inherit so we need to set the font around the menu-item */
-  font-size: 13px;
+
+.toolbar {
+  background-color: whiteSmoke;
+  opacity: 0.95;
+  
+  position: fixed;
+  top: 0;
+  
+  width: 100%;
+  padding-left: 1em;
+  box-shadow: 0 2px 3px 0 #CCC;
 }
 
-
 /* Add some padding on the top so the toolbar has room to float in */
-.document { margin: 3em; }
+.document { margin: 4em; }
     </style>
 
 
@@ -89,8 +96,6 @@
 	  common/table,
 	  extra/draganddropfiles,
 	  common/image,
-	  extra/ribbon,
-	  extra/no-floating,
 	  extra/bubble
 	"></script>
 
@@ -135,6 +140,60 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
 	</style>
 </head>
 <body>
+	
+<div class="toolbar">
+
+<div class="btn-toolbar">
+  <div class="btn-group">
+    <button class="btn action strong"><i class="icon-bold"></i></button>
+    <button class="btn action emphasis"><i class="icon-italic"></i></button>
+    <button class="btn action underline"><i class="icon-text-width"></i></button>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action insertLink"><i class="icon-resize-full"></i></button>
+    <button class="btn action insertFigure"><i class="icon-picture"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" class="action insertImage">Insert Image</a></li>
+      <li><a href="#" class="action insertFigure">Insert Figure</a></li>
+      <li class="divider"></li>
+      <li><a href="#" class="action">Insert Exercise</a></li>
+      <li><a href="#" class="action">Insert Example</a></li>
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action unorderedList"><i class="icon-list"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" class="action orderedList">Insert Ordered List</a></li>
+      <li><a href="#" class="action unorderedList">Insert Unordered List</a></li>
+    </ul>
+    <button class="btn action outdentList"><i class="icon-indent-right"></i></button>
+    <button class="btn action indentList"><i class="icon-indent-left"></i></button>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action createTable"><i class="icon-th"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" class="action addrowbefore">Add Row Before</a></li>
+      <li><a href="#" class="action addrowafter">Add Row After</a></li>
+    </ul>
+  </div>
+
+</div>
+
+</div><!-- / ".toolbar" -->
+
+	
   <div class="document">
     <h1>Figures in Aloha</h1>
 		<p>This example uses the figure plugin.</p>
