@@ -14,7 +14,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
         </div>
         <div class="modal-body">
           <h4>Display Text</h4>
-          <input id="link-contents" class="input-long" type="text" placeholder="Enter a phrase here"/>
+          <input id="link-contents" class="input-xlarge" type="text" placeholder="Enter a phrase here"/>
           <h4>Link Destination</h4>
           <div class="tabbable tabs-left"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-tabs">
