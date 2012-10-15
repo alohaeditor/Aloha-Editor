@@ -10,6 +10,7 @@
     populator = function($bubble) {
       var $button, $el, separator;
       $el = this;
+      $bubble = jQuery('<div class="figure-popover"></div>');
       if ($el.children('.title')[0]) {
         $button = jQuery('<a href="javascript:void">Remove Title</a>');
         $button.on('mousedown', function() {
@@ -32,7 +33,7 @@
         $button.on('mousedown', function() {
           return $el.children('figcaption').remove();
         });
-        return $bubble.append($button);
+        $bubble.append($button);
       } else {
         $button = jQuery('<a href="javascript:void">Add Caption</a>');
         $button.on('mousedown', function() {
@@ -40,8 +41,9 @@
           newCaption = jQuery('<figcaption class="aloha-optional aloha-empty">Insert Caption Here</figcaption>');
           return $el.append(newCaption);
         });
-        return $bubble.append($button);
+        $bubble.append($button);
       }
+      return $bubble.contents();
     };
     return {
       selector: selector,

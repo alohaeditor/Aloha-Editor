@@ -2,7 +2,62 @@
 (function() {
 
   define(['aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure'], function(Aloha, jQuery, Plugin, Bubbler, linkConfig, figureConfig) {
-    var GENTICS, Helper, cfg, findMarkup, helpers, newValue, oldValue, pluginNamespace, selectionChangeHandler, _i, _len, _ref;
+    var Bootstrap_Popover_show, GENTICS, Helper, cfg, findMarkup, helpers, monkeyPatch, newValue, oldValue, pluginNamespace, selectionChangeHandler, _i, _len, _ref;
+    if (true) {
+      Bootstrap_Popover_show = function() {
+        var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
+        if (this.hasContent() && this.enabled) {
+          $tip = this.tip();
+          this.setContent();
+          if (this.options.animation) {
+            $tip.addClass("fade");
+          }
+          placement = (typeof this.options.placement === "function" ? this.options.placement.call(this, $tip[0], this.$element[0]) : this.options.placement);
+          inside = /in/.test(placement);
+          $tip.css({
+            top: 0,
+            left: 0,
+            display: "block"
+          }).appendTo((inside ? this.$element : document.body));
+          pos = this.getPosition(inside);
+          actualWidth = $tip[0].offsetWidth;
+          actualHeight = $tip[0].offsetHeight;
+          switch ((inside ? placement.split(" ")[1] : placement)) {
+            case "bottom":
+              tp = {
+                top: pos.top + pos.height,
+                left: pos.left + pos.width / 2 - actualWidth / 2
+              };
+              break;
+            case "top":
+              tp = {
+                top: pos.top - actualHeight,
+                left: pos.left + pos.width / 2 - actualWidth / 2
+              };
+              break;
+            case "left":
+              tp = {
+                top: pos.top + pos.height / 2 - actualHeight / 2,
+                left: pos.left - actualWidth
+              };
+              break;
+            case "right":
+              tp = {
+                top: pos.top + pos.height / 2 - actualHeight / 2,
+                left: pos.left + pos.width
+              };
+          }
+          return $tip.css(tp).addClass(placement).addClass("in");
+        }
+      };
+      monkeyPatch = function() {
+        var proto;
+        console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable');
+        proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype;
+        return proto.show = Bootstrap_Popover_show;
+      };
+      monkeyPatch();
+    }
     helpers = [];
     Helper = (function() {
 
@@ -13,7 +68,33 @@
       }
 
       Helper.prototype.start = function(editable) {
-        return new Bubbler(this.populator, jQuery(editable.obj), this.selector);
+        var $el, makePopover, that;
+        that = this;
+        $el = jQuery(editable.obj);
+        makePopover = function($node) {
+          return $node.popover({
+            placement: 'bottom',
+            trigger: 'hover',
+            delay: {
+              show: 1000,
+              hide: 3000
+            },
+            content: function() {
+              return that.populator.bind(jQuery(this))();
+            }
+          });
+        };
+        makePopover($el.find(this.selector));
+        return $el.on('mouseenter.bubble', this.selector, function() {
+          var $newEl;
+          $newEl = jQuery(this);
+          if (!$newEl.data('popover')) {
+            makePopover($newEl);
+            return setTimeout(function() {
+              return $newEl.trigger('mouseenter');
+            }, 1000);
+          }
+        });
       };
 
       Helper.prototype.stop = function(editable) {
@@ -24,7 +105,7 @@
         $nodes.data('aloha-bubble-openTimer', 0);
         $nodes.data('aloha-bubble-closeTimer', 0);
         $nodes.data('aloha-bubble-hovered', false);
-        return jQuery('body').find('.bubble').remove();
+        return $nodes.popover('destroy');
       };
 
       return Helper;
