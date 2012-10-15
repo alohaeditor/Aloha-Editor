@@ -128,11 +128,11 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
     }
 
     function placeCursor(cell){
-        var range = Aloha.createRange();
+        var range = document.createRange();
         range.setStart(cell.get(0), 0);
         range.setEnd(cell.get(0), 0);
-        Aloha.getSelection().removeAllRanges();
-        Aloha.getSelection().addRange(range);
+        getSelection().removeAllRanges();
+        getSelection().addRange(range);
     }
 
     return plugin.create('table', {
