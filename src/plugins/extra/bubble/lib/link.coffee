@@ -13,8 +13,9 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
           <h3 id="linkModalLabel">Edit Link</h3>
         </div>
         <div class="modal-body">
-          <label for="link-contents">Text to display</label>
+          <h4>Display Text</h4>
           <input id="link-contents" class="input-long" type="text" placeholder="Enter a phrase here"/>
+          <h4>Link Destination</h4>
           <div class="tabbable tabs-left"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-tabs">
               <li><a href="#link-tab-external" data-toggle="tab">External</a></li>
