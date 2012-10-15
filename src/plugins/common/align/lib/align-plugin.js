@@ -34,7 +34,7 @@ define([
 	'jquery',
 	'PubSub'
 ], function(
-	Aloha,
+		Aloha,
     Plugin,
     Ui,
     ToggleButton,
@@ -58,7 +58,7 @@ define([
 		 * Configuration (available align options)
 		 */
 		config: {
-			alignment: ['right','left','center','justify']
+			alignment: ['right','left','center','justify','top','middle','bottom']
 		},
 
 		/**
@@ -98,7 +98,7 @@ define([
 
 			this.lastAlignment = this.alignment;
 
-			//reset last alignment
+			//reset current alignment
 			this.alignment = '';
 
 			rangeObject.findMarkup(function() {
@@ -180,6 +180,24 @@ define([
 			} else {
 				this._alignJustifyButton.show(false);
 			}
+
+			if ( jQuery.inArray('top', config.alignment) != -1) {
+				this._alignTopButton.show(true);
+			} else {
+				this._alignTopButton.show(false);
+			}
+
+			if ( jQuery.inArray('middle', config.alignment) != -1) {
+				this._alignMiddleButton.show(true);
+			} else {
+				this._alignMiddleButton.show(false);
+			}
+
+			if ( jQuery.inArray('bottom', config.alignment) != -1) {
+				this._alignBottomButton.show(true);
+			} else {
+				this._alignBottomButton.show(false);
+			}
 		},
 
 		createButtons: function () {
@@ -212,6 +230,48 @@ define([
 				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('justify'); }
 			});
+
+			this._alignTopButton = Ui.adopt("alignTop", ToggleButton, {
+				tooltip: i18n.t('button.aligntop.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-top',
+				scope: 'table.cell',
+				click: function(){ that.verticalAlign('top'); }
+			});
+
+			this._alignMiddleButton = Ui.adopt("alignMiddle", ToggleButton, {
+				tooltip: i18n.t('button.alignmiddle.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-middle',
+				scope: 'table.cell',
+				click: function(){ that.verticalAlign('middle'); }
+			});
+
+			this._alignBottomButton = Ui.adopt("alignBottom", ToggleButton, {
+				tooltip: i18n.t('button.alignbottom.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-bottom',
+				scope: 'table.cell',
+				click: function(){ that.verticalAlign('bottom'); }
+			});
+
+		},
+
+		verticalAlign: function ( tempAlignment ) {
+
+			var that = this;
+			var range = Aloha.Selection.getRangeObject();
+
+			this.lastAlignment = this.alignment;
+			this.alignment = tempAlignment;
+
+			// check if the selection range is inside a table
+			var selectedCells = this.getSelectedCells( range );
+
+			if ( selectedCells ) {
+				that.toggleAlign ( selectedCells, 'vertical-align');
+			}
+
+			// select the (possibly modified) range
+			range.select();
+
 		},
 
 		/**
@@ -228,42 +288,28 @@ define([
 			var rangeParent = range.getCommonAncestorContainer();
 
 			// check if the selection range is inside a table
+			var selectedCells = this.getSelectedCells( range );
 
-			var selectedCell;
-			var activeTable = range.findMarkup(function() {
-				if ( jQuery(this).is( 'td,th' ) ) {
-					selectedCell = this;
-				}
-				return jQuery( this ).is( 'table.aloha-table' );
-			}, Aloha.activeEditable.obj);
-
-			var selectedCells = jQuery( activeTable ).find( '.aloha-cell-selected' );
-
-			if ( selectedCells.length ) {
+			if ( selectedCells ) {
 				that.toggleAlign( selectedCells );
-			} else if ( selectedCell ){
-				that.toggleAlign( selectedCell );
-			} else {
+			} else if (!GENTICS.Utils.Dom.isEditingHost(rangeParent)) {
 
-				// Check if the parent node is not the main editable node and align
+				// if the parent node is not the main editable node and align
 				// OR iterates the whole selectionTree and align
-
-				if (!GENTICS.Utils.Dom.isEditingHost(rangeParent)) {
 					that.toggleAlign( rangeParent );
-				}	else {
-					jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
-						if (this.selection !== 'none' && this.domobj.nodeType !== 3) {
-							that.toggleAlign( this.domobj, true );
-						}
-					});
-				}
+			}	else {
+				var alignableElements = [];
+				jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
+					if (this.selection !== 'none' && this.domobj.nodeType !== 3) {
+						alignableElements.push( this.domobj );
+					}
+				});
 
+				that.toggleAlign( alignableElements );
 			}
 
-			if(this.alignment != this.lastAlignment)
-			{
-				switch(this.lastAlignment)
-				{
+			if ( this.alignment != this.lastAlignment ) {
+				switch ( this.lastAlignment ) {
 					case 'right':
 						this._alignRightButton.setState(false);
 						break;
@@ -287,23 +333,54 @@ define([
 
 		},
 
+		getSelectedCells: function( range ) {
+
+			var selectedCell;
+
+			var activeTable = range.findMarkup(function() {
+				if ( jQuery(this).is( 'td,th' ) ) {
+					selectedCell = this;
+				}
+				return jQuery( this ).is( 'table.aloha-table' );
+			}, Aloha.activeEditable.obj);
+
+			var selectedCells = jQuery( activeTable ).find( '.aloha-cell-selected' );
+
+			return (  selectedCells.length ? selectedCells : selectedCell );
+
+		},
+
 		/**
 		 * Toggle the align property of given DOM object(s)
 		 */
-		toggleAlign: function ( domObj, isCollection ) {
+		toggleAlign: function ( domObj, property ) {
 
 			var that = this;
 
-			isCollection = isCollection || ( jQuery( domObj ).length > 1 );
+			property = property || 'text-align';
+
+			var shouldRemoveAlignment = true;
 
 			jQuery( domObj ).each( function() {
 
-				var currentAlignment = jQuery( this ).css( 'text-align' );
+				var currentAlignment = jQuery( this ).css( property );
 
-				if ( ( currentAlignment == that.alignment ) && !isCollection ) {
-					jQuery( this ).css( 'text-align', '' );
+				if ( currentAlignment != that.alignment ) {
+					shouldRemoveAlignment = false;
+					return false;
+				}
+
+			});
+
+
+			jQuery( domObj ).each( function() {
+
+				var currentAlignment = jQuery( this ).css( property );
+
+				if ( ( currentAlignment == that.alignment ) && shouldRemoveAlignment ) {
+					jQuery( this ).css( property, '' );
 				} else {
-					jQuery( this ).css( 'text-align', that.alignment );
+					jQuery( this ).css( property, that.alignment );
 				}
 
 			});

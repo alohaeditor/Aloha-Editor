@@ -93,7 +93,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				label: "tab.cell.label",
 				showOn: { scope: 'table.cell' },
 				components: [
-					[ "formatCell" ]
+					[ "alignTop", "alignMiddle", "alignBottom", "formatCell" ]
 				]
 			}
 
