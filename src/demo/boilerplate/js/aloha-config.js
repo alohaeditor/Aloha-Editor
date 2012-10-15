@@ -102,6 +102,10 @@
 				rowConfig: [
 					{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 					{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+				],
+				cellConfig: [
+					{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
+					{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
 				]
 			},
 			image: {
