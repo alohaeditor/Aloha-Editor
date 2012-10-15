@@ -151,9 +151,9 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
   </div>
 
   <div class="btn-group">
-    <button class="btn action insertLink"><i class="icon-resize-full"></i></button>
-    <button class="btn action insertFigure"><i class="icon-picture"></i></button>
-    <button class="btn dropdown-toggle" data-toggle="dropdown">
+    <button class="btn action insertLink" rel="tooltip" title="Insert Link"><i class="icon-resize-full"></i></button>
+    <button class="btn action insertFigure" rel="tooltip" title="Insert Figure"><i class="icon-picture"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Insert Pictury Things">
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
@@ -166,21 +166,21 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
   </div>
 
   <div class="btn-group">
-    <button class="btn action unorderedList"><i class="icon-list"></i></button>
-    <button class="btn dropdown-toggle" data-toggle="dropdown">
+    <button class="btn action unorderedList" rel="tooltip" title="Insert List"><i class="icon-list"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="List Formats">
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
       <li><a href="#" class="action orderedList">Insert Ordered List</a></li>
       <li><a href="#" class="action unorderedList">Insert Unordered List</a></li>
     </ul>
-    <button class="btn action outdentList"><i class="icon-indent-right"></i></button>
-    <button class="btn action indentList"><i class="icon-indent-left"></i></button>
+    <button class="btn action outdentList" rel="tooltip" title="Indent List"><i class="icon-indent-right"></i></button>
+    <button class="btn action indentList" rel="tooltip" title="Outdent List"><i class="icon-indent-left"></i></button>
   </div>
 
   <div class="btn-group">
-    <button class="btn action createTable"><i class="icon-th"></i></button>
-    <button class="btn dropdown-toggle" data-toggle="dropdown">
+    <button class="btn action createTable" rel="tooltip" title="Create Table"><i class="icon-th"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Table Operations">
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
