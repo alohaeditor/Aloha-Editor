@@ -66,10 +66,14 @@ define([
 		 */
 		alignment: '',
 
+		verticalAlignment: '',
+
 		/**
 		 * Alignment of the selection before modification
 		 */
 		lastAlignment: '',
+
+		lastVerticalAlignment: '',
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
@@ -94,6 +98,11 @@ define([
 		},
 
 		buttonPressed: function (rangeObject) {
+			this.horizontalButtonPressed( rangeObject );
+			this.verticalButtonPressed( rangeObject );
+		},
+
+		horizontalButtonPressed: function(rangeObject) {
 			var that = this;
 
 			this.lastAlignment = this.alignment;
@@ -111,6 +120,7 @@ define([
 				that.alignment = jQuery(this).css('text-align');
 		  }, Aloha.activeEditable.obj);
 
+			// set horizontal button states
 			if (this.alignment != this.lastAlignment) {
 				// reset all button states -- it can only be one active...
 				this._alignRightButton.setState(false);
@@ -131,6 +141,49 @@ define([
 				default:
 					this._alignLeftButton.setState(true);
 					this.alignment = 'left';
+					break;
+				}
+			}
+		},
+
+		verticalButtonPressed: function(rangeObject) {
+			var that = this;
+
+			this.lastVerticalAlignment = this.verticalAlignment;
+
+			//reset current alignment
+			this.verticalAlignment = '';
+
+			rangeObject.findMarkup(function() {
+				// try to find explicitly defined vertical-align style property
+				if(this.style.verticalAlign !== "") {
+					that.verticalAlignment = this.style.verticalAlign;
+					return true;
+				}
+
+				that.verticalAlignment = jQuery(this).css('vertical-align');
+		  }, Aloha.activeEditable.obj);
+
+			// set vertical button states
+			if (this.verticalAlignment != this.lastVerticalAlignment) {
+				// reset all button states -- it can only be one active...
+				this._alignTopButton.setState(false);
+				this._alignMiddleButton.setState(false);
+				this._alignBottomButton.setState(false);
+
+				switch (this.verticalAlignment) {
+				case 'top':
+					this._alignTopButton.setState(true);
+					break;
+				case 'middle':
+					this._alignMiddleButton.setState(true);
+					break;
+				case 'bottom':
+					this._alignBottomButton.setState(true);
+					break;
+				default:
+					this._alignTopButton.setState(true);
+					this.verticalAlignment = 'top';
 					break;
 				}
 			}
@@ -259,14 +312,31 @@ define([
 			var that = this;
 			var range = Aloha.Selection.getRangeObject();
 
-			this.lastAlignment = this.alignment;
-			this.alignment = tempAlignment;
+			this.lastVerticalAlignment = this.verticalAlignment;
+			this.verticalAlignment = tempAlignment;
 
 			// check if the selection range is inside a table
 			var selectedCells = this.getSelectedCells( range );
 
 			if ( selectedCells ) {
 				that.toggleAlign ( selectedCells, 'vertical-align');
+			}
+
+			// reset previous button states
+			if ( this.verticalAlignment != this.lastVerticalAlignment ) {
+				switch ( this.lastVerticalAlignment ) {
+					case 'top':
+						this._alignTopButton.setState(false);
+						break;
+
+					case 'middle':
+						this._alignMiddleButton.setState(false);
+						break;
+
+					case 'bottom':
+						this._alignBottomButton.setState(false);
+						break;
+				}
 			}
 
 			// select the (possibly modified) range
@@ -308,6 +378,7 @@ define([
 				that.toggleAlign( alignableElements );
 			}
 
+			// reset previous button states
 			if ( this.alignment != this.lastAlignment ) {
 				switch ( this.lastAlignment ) {
 					case 'right':
@@ -359,13 +430,15 @@ define([
 
 			property = property || 'text-align';
 
+			var newAlignment = ( property === 'vertical-align' ) ? that.verticalAlignment : that.alignment;
+
 			var shouldRemoveAlignment = true;
 
 			jQuery( domObj ).each( function() {
 
 				var currentAlignment = jQuery( this ).css( property );
 
-				if ( currentAlignment != that.alignment ) {
+				if ( currentAlignment != newAlignment ) {
 					shouldRemoveAlignment = false;
 					return false;
 				}
@@ -377,10 +450,10 @@ define([
 
 				var currentAlignment = jQuery( this ).css( property );
 
-				if ( ( currentAlignment == that.alignment ) && shouldRemoveAlignment ) {
+				if ( ( currentAlignment == newAlignment ) && shouldRemoveAlignment ) {
 					jQuery( this ).css( property, '' );
 				} else {
-					jQuery( this ).css( property, that.alignment );
+					jQuery( this ).css( property, newAlignment );
 				}
 
 			});
