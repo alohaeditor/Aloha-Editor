@@ -92,9 +92,6 @@ define([
 
 	// Create and register Image Plugin
 	return Plugin.create('image', {
-
-		languages: ['en', 'fr', 'de', 'ru', 'cz'],
-
 		defaultSettings: {
 			'maxWidth': 1600,
 			'minWidth': 3,
@@ -108,18 +105,11 @@ define([
 			'autoResize': false,
 			//Image manipulation options - ONLY in default config section
 			ui: {
-				oneTab		: false, //Place all ui components within one tab
-				insert      : true, // Shows an insert button on std floatingMenu scope
-				reset		: true, // Reset to default size
-				aspectRatioToggle: true, // Toggle button for the aspect ratio 
-				align		: true,	// Menu elements to show/hide in menu
-				resize		: true,	// Resize buttons
-				meta		: true, // Shows field for changing src and title attributes of an image
-				margin		: true, // shows button to increase/decrease image margin properties
-				crop		: true, // enable/show crop actions on a image
-				resizable	: true,	// Resizable ui-drag image
-				handles     : 'ne, se, sw, nw'   // set handles for resize
+				meta		: true, // If imageResizeWidth and imageResizeHeight are displayed, then you will want to set this to true, so that the width and height text fields are updated automatically.
+				crop		: true, // If imageCropButton is displayed, then you have to enable this.
+				resizable	: true	// Resizable ui-drag image
 			},
+			handles     : 'ne, se, sw, nw',   // set handles for resize
 			
 			/**
 			 * Crop callback is triggered after the user clicked accept to accept his crop
@@ -256,6 +246,9 @@ define([
 		 */
 		restoreProps: [],
 
+		/**
+		 * the defined object types to be used for this instance
+		 */
 		objectTypeFilter: [],
 
 		/**
@@ -267,7 +260,9 @@ define([
 			
 			var imagePluginUrl = Aloha.getPluginUrl('image');
 			
-			
+			if ( typeof this.settings.objectTypeFilter != 'undefined' ) {
+				this.objectTypeFilter = this.settings.objectTypeFilter;
+			}
 			
 			// Extend the default settings with the custom ones (done by default)
 			plugin.startAspectRatio = plugin.settings.fixedAspectRatio; 

@@ -26,7 +26,7 @@
  */
 define(['jquery'], function ($) {
 	'use strict';
-    return {
+	return {
 		ie7: $.browser.msie && parseInt($.browser.version, 10) < 8
 	};
 });

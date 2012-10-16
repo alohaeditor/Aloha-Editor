@@ -14,6 +14,11 @@ All changes are categorized into one of the following keywords:
 
 # 0.22.x
 
+## 0.22.2 - 2012/10/08
+
+- **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html
+- **BUG**: table-plugin: A javascript error was fixed that occured when removing the whole table.
+
 ## 0.22.1 - 2012/09/26
 
 - **FEATURE**: core: Added method Aloha.getEditableHost() to get the editable, that contains the given jQuery object.

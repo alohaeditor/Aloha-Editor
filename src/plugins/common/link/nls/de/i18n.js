@@ -1,13 +1,14 @@
-define( {
-	'button.addlink.tooltip': 'Verweis einf\u00fcgen',
-	'button.removelink.tooltip': 'Verweis entfernen',
-	'newlink.defaulttext': 'Neuer Verweis',
-	'floatingmenu.tab.link': 'Verweis',
-	'link.target.self': '\u00D6ffnet im selben Fenster',
-	'link.target.blank': '\u00D6ffnet in neuem Fenster',
-	'link.target.parent': 'Parent',
-	'link.target.top': 'Top',
-	'link.target.framename': 'Framename',
-	'link.target.legend': 'Target',
-	'link.title.legend': 'Title'
-} );
+define({
+	"button.addlink.tooltip": "Verweis einfügen",
+	"button.removelink.tooltip": "Verweis entfernen",
+	"newlink.defaulttext": "Neuer Verweis",
+	"floatingmenu.tab.link": "Verweis",
+	"link.target.self": "Gleiches Fenster",
+	"link.target.blank": "Neues Fenster",
+	"link.target.parent": "Elternfenster",
+	"link.target.top": "Hauptfenster",
+	"link.target.framename": "Framename",
+	"link.target.legend": "Ziel",
+	"link.title.legend": "Titel",
+	"insertLink": "Ctrl+k"
+});

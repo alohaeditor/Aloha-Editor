@@ -1,6 +1,5 @@
 define({
-	root: {
-		// format
+	"root":  {
 		"button.bold.label": "Bold",
 		"button.italic.label": "Italic",
 		"button.strikethrough.label": "Strikethrough",
@@ -43,18 +42,10 @@ define({
 
 		// horizontal rule
 		"button.horizontalRule.label": "Insert horizontal rule",
-
-		// language annotation
 		"button.createLanguageAnnotation.label": "Insert language annotation",
-
-		// metaview
 		"button.metaview.label": "Switch between meta and normal view",
-
-		// cite
 		"button.quote.label": "Format selection as quote",
 		"button.blockquote.label": "Format selection as blockquote",
-
-		// Tabs
 		"tab.format.label": "Format",
 		"tab.insert.label": "Insert",
 		"tab.abbr.label": "Abbreviation",
@@ -67,5 +58,11 @@ define({
 		"tab.cell.label": "Table Cell",
 		"tab.wai-lang.label": "Language annotation"
 	},
-	"de": true
+		"ca": true,
+		"de": true,
+		"mk": true,
+		"pt-br": true,
+		"ru": true,
+		"uk": true,
+		"zh-hans": true
 });
