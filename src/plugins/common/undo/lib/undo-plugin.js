@@ -152,7 +152,7 @@ function( Aloha, jQuery, Plugin) {
             if ( null !== Aloha.getActiveEditable() ) {
                 Aloha.getActiveEditable().smartContentChange({type : 'blur'});
             }
-            this.stack.canUndo() && this.stack.undo();
+            this.stack.canRedo() && this.stack.redo();
         },
         stack: undefined // Defined in init above
 
