@@ -121,11 +121,16 @@ function( Aloha, jQuery, Plugin) {
             });
 
 			Aloha.bind('aloha-smart-content-changed', function(jevent, aevent) {
+                // The editable only actually makes a snapshot when
+                // getSnapshotContent is called, so we need to call it now
+                // to ensure such a snapshot is made at all times, even when
+                // resetFlag===true, otherwise the snapshot grows stale.
+				var oldValue = aevent.getSnapshotContent();
+
 				if (resetFlag) {
 					return;
 				}
-				var oldValue = aevent.getSnapshotContent(),
-				    newValue = aevent.editable.getContents(),
+				var newValue = aevent.editable.getContents(),
 				    patch = dmp.patch_make(oldValue, newValue);
 				// only push an EditCommand if something actually changed.
 				if (0 !== patch.length) {
