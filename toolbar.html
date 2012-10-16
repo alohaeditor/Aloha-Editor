@@ -96,9 +96,13 @@
 	  common/table,
 	  extra/draganddropfiles,
 	  common/image,
+	  extra/math,
 	  extra/bubble
 	"></script>
 
+
+	
+	<link rel="stylesheet" href="src/demo/math/max.css"/>
 
 	<style type="text/css">
 	  .toolbar-container {
@@ -194,7 +198,7 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
 </div><!-- / ".toolbar" -->
 
 	
-  <div class="document">
+  <div class="document" id="document">
     <h1>Figures in Aloha</h1>
 		<p>This example uses the figure plugin.</p>
 		<p>You can move a figure around and <a href="http://cnx.org">link in original</a> eventually should be able to create/paste new ones in.</p>
@@ -214,6 +218,7 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
 	<script type="text/javascript">
 	Aloha.ready( function() {
 		Aloha.jQuery('.document').aloha();
+		//$('*[rel=tooltip]').tooltip();
 	});
 	</script>
 </body>
