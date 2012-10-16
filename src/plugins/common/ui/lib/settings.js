@@ -1,98 +1,103 @@
-define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function ($, Arrays, Maps, Trees) {
+define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays, Maps, Trees){
 	var defaultToolbarSettings = {
 		tabs: [
-		// Format Tab
-		{
-			label: 'tab.format.label',
-			showOn: {
-				scope: 'Aloha.continuoustext'
+			// Format Tab
+			{
+				label: 'tab.format.label',
+				showOn: { scope: 'Aloha.continuoustext' },
+				components: [
+					[
+						// strong, emphasis and underline are not shown with the default format plugin button configuration
+						'bold', 'strong', 'italic', 'emphasis', '\n',
+						'subscript', 'superscript', 'strikethrough', 'quote'
+					], [
+						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n',
+						'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
+					], [
+						'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
+						'orderedList', 'unorderedList', 'indentList', 'outdentList'
+					], [
+						'formatBlock'
+					]
+				]
 			},
-			components: [
-				[
-				// strong, emphasis and underline are not shown with the default format plugin button configuration
-				'bold', 'strong', 'italic', 'emphasis', '\n', 'subscript', 'superscript', 'strikethrough', 'quote'],
-				['formatLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n', 'toggleMetaView', 'wailang', 'toggleFormatlessPaste'],
-				['alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n', 'orderedList', 'unorderedList', 'indentList', 'outdentList'],
-				['formatBlock']
-			]
-		},
-		// Insert Tab
-		{
-			label: "tab.insert.label",
-			showOn: {
-				scope: 'Aloha.continuoustext'
+			// Insert Tab
+			{
+				label: "tab.insert.label",
+				showOn: { scope: 'Aloha.continuoustext' },
+				components: [
+					[ "createTable", "characterPicker", "insertLink",
+					  "insertImage", "insertAbbr", "insertToc",
+					  "insertHorizontalRule", "insertTag"]
+				]
 			},
-			components: [
-				["createTable", "characterPicker", "insertLink", "insertImage", "insertAbbr", "insertToc", "insertHorizontalRule", "insertTag"]
-			]
-		},
-		// Link Tab
-		{
-			label: 'tab.link.label',
-			showOn: {
-				scope: 'link'
+			// Link Tab
+			{
+				label: 'tab.link.label',
+				showOn: { scope: 'link' },
+				components: [ 'editLink', 'removeLink', 'linkBrowser' ]
 			},
-			components: ['editLink', 'removeLink', 'linkBrowser']
-		},
-		// Image Tab
-		{
-			label: "tab.img.label",
-			showOn: {
-				scope: 'image'
+            // Image Tab
+            {
+                label: "tab.img.label",
+                showOn: {scope: 'image'},
+                components: [
+					[ "imageSource", "\n",
+					  "imageTitle" ],
+					[ "imageResizeWidth", "\n",
+					  "imageResizeHeight" ],
+					[ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "\n",
+					  "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ],
+					[ "imageBrowser" ]
+                ]
+            },
+            // Abbr Tab
+            {   label: "tab.abbr.label",
+                showOn: { scope: 'abbr' },
+                components: [
+                    [ "abbrText", "removeAbbr" ]
+                ]
+            },
+            // Wailang Tab
+            {   label: "tab.wai-lang.label",
+				showOn: { scope: 'wai-lang' },
+                components: [ [ "wailangfield", "removewailang" ] ]
+            },
+			// Table Tabs
+			{
+				label: "tab.table.label",
+				showOn: { scope: 'table.cell' },
+				components: [
+					[ "mergecells", "splitcells", "tableCaption",
+					  "tableSummary", "formatTable" ]
+				]
 			},
-			components: [
-				["imageSource", "\n", "imageTitle"],
-				["imageResizeWidth", "\n", "imageResizeHeight"],
-				["imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "\n", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding"],
-				["imageBrowser"]
-			]
-		},
-		// Abbr Tab
-		{
-			label: "tab.abbr.label",
-			showOn: {
-				scope: 'abbr'
+			{
+				label: "tab.col.label",
+				showOn: { scope: 'table.column' },
+				components: [
+					[ "addcolumnleft", "addcolumnright", "deletecolumns",
+					  "columnheader", "mergecellsColumn", "splitcellsColumn",
+					  "formatColumn" ]
+				]
 			},
-			components: [
-				["abbrText", "removeAbbr"]
-			]
-		},
-		// Wailang Tab
-		{
-			label: "tab.wai-lang.label",
-			showOn: {
-				scope: 'wai-lang'
+			{
+				label: "tab.row.label",
+				showOn: { scope: 'table.row' },
+				components: [
+					[ "addrowbefore", "addrowafter", "deleterows", "rowheader",
+					  "mergecellsRow", "splitcellsRow", "formatRow" ]
+				]
 			},
-			components: [
-				["wailangfield", "removewailang"]
-			]
-		},
-		// Table Tabs
-		{
-			label: "tab.table.label",
-			showOn: {
-				scope: 'table.cell'
-			},
-			components: [
-				["mergecells", "splitcells", "tableCaption", "tableSummary", "formatTable"]
-			]
-		}, {
-			label: "tab.col.label",
-			showOn: {
-				scope: 'table.column'
-			},
-			components: [
-				["addcolumnleft", "addcolumnright", "deletecolumns", "columnheader", "mergecellsColumn", "splitcellsColumn", "formatColumn"]
-			]
-		}, {
-			label: "tab.row.label",
-			showOn: {
-				scope: 'table.row'
-			},
-			components: [
-				["addrowbefore", "addrowafter", "deleterows", "rowheader", "mergecellsRow", "splitcellsRow", "formatRow"]
-			]
-		}]
+			{
+				label: "tab.cell.label",
+				showOn: { scope: 'table.cell' },
+				components: [
+					[ "alignTop", "alignMiddle", "alignBottom", "formatCell" ]
+				]
+			}
+
+		]
 	};
 
 	/**
@@ -120,14 +125,13 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function ($, Arrays
 	 *        a list of component names and tab labels to ignore
 	 *        in the given defaultTabs configuration.
 	 * @return
-	 *         
+	 *
 	 */
 	function combineToolbarSettings(userTabs, defaultTabs, exclude) {
-		var defaultTabsByLabel = Maps.fillTuples({}, Arrays.map(defaultTabs, function (tab) {
+		var defaultTabsByLabel = Maps.fillTuples({}, Arrays.map(defaultTabs, function(tab) {
 			return [tab.label, tab];
 		}));
 		var exclusionLookup = makeExclusionMap(userTabs, exclude);
-
 		function pruneDefaultComponents(form) {
 			return 'array' === $.type(form) ? !form.length : exclusionLookup[form];
 		};
@@ -138,10 +142,10 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function ($, Arrays
 
 	function remainingDefaultTabs(defaultTabs, exclusionLookup, pruneDefaultComponents) {
 		var i,
-		tab,
-		tabs = [],
-			defaultTab,
-			components;
+		    tab,
+		    tabs = [],
+		    defaultTab,
+		    components;
 		for (i = 0; i < defaultTabs.length; i++) {
 			defaultTab = defaultTabs[i];
 			if (!exclusionLookup[defaultTab.label]) {
@@ -158,12 +162,12 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function ($, Arrays
 
 	function mergeDefaultComponents(userTabs, defaultTabsByLabel, pruneDefaultComponents) {
 		var i,
-		tab,
-		tabs = [],
-			userTab,
-			components,
-			defaultTab,
-			defaultComponents;
+            tab,
+		    tabs = [],
+		    userTab,
+		    components,
+		    defaultTab,
+		    defaultComponents;
 		for (i = 0; i < userTabs.length; i++) {
 			userTab = userTabs[i];
 			components = userTab.components || [];
@@ -183,7 +187,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function ($, Arrays
 
 	function makeExclusionMap(userTabs, exclude) {
 		var i,
-		map = Maps.fillKeys({}, exclude, true);
+		    map = Maps.fillKeys({}, exclude, true);
 		for (i = 0; i < userTabs.length; i++) {
 			map[userTabs[i].label] = true;
 			Maps.fillKeys(map, Trees.flatten(userTabs[i].components), true);

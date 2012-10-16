@@ -35,7 +35,7 @@ NOTE: All contents will be merged into the first cell and all other previously s
 
 h4. Table layout
 
-Each cell, row or column can have an individual style applied. You only have to select the rows or columns and choose one layout from the table layout list.
+Each cell, row or column can have an individual style applied. You only have to select the cells, rows or columns and choose one layout from the table layout list.
 
 h4. Table caption & summary
 
@@ -71,6 +71,10 @@ Aloha.settings.plugins: {
 				{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
 		],
 		rowConfig : [
+				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
+				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+		],
+		cellConfig : [
 				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
 		]
