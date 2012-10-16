@@ -29,8 +29,8 @@ define(
 function( Aloha, jQuery, Plugin) {
 	"use strict";
 	var
-	    dmp = new diff_match_patch,
-	    resetFlag = false;
+		dmp = new diff_match_patch,
+		resetFlag = false;
 
 	function reversePatch(patch) {
 		var reversed = dmp.patch_deepCopy(patch);
@@ -44,14 +44,14 @@ function( Aloha, jQuery, Plugin) {
 
 	/**
 	 * register the plugin with unique name
-     */
+	 */
 	return Plugin.create('undo', {
 		/**
 		 * Initialize the plugin and set initialize flag on true
 		 */
 		init: function () {
 			this.stack = new Undo.Stack();
-            var that = this;
+			var that = this;
 			var EditCommand = Undo.Command.extend({
 					constructor: function(editable, patch) {
 						this.editable = editable;
@@ -68,9 +68,9 @@ function( Aloha, jQuery, Plugin) {
 					},
 					phase: function(patch) {
 						var contents = this.editable.getContents(),
-						    applied = dmp.patch_apply(patch, contents),
-						    newValue = applied[0],
-						    didNotApply = applied[1];
+							applied = dmp.patch_apply(patch, contents),
+							newValue = applied[0],
+							didNotApply = applied[1];
 						if (didNotApply.length) {
 							//error
 						}
@@ -109,29 +109,29 @@ function( Aloha, jQuery, Plugin) {
 				// update UI
 			};
 
-            Aloha.bind('aloha-editable-created', function(e, editable){
-                editable.obj.bind('keydown', 'ctrl+z shift+ctrl+z', function(event){
-                    event.preventDefault();
-                    if (event.shiftKey) {
-                        that.redo();
-                    } else {
-                        that.undo();
-                    }
-                });
-            });
+			Aloha.bind('aloha-editable-created', function(e, editable){
+				editable.obj.bind('keydown', 'ctrl+z shift+ctrl+z', function(event){
+					event.preventDefault();
+					if (event.shiftKey) {
+						that.redo();
+					} else {
+						that.undo();
+					}
+				});
+			});
 
 			Aloha.bind('aloha-smart-content-changed', function(jevent, aevent) {
-                // The editable only actually makes a snapshot when
-                // getSnapshotContent is called, so we need to call it now
-                // to ensure such a snapshot is made at all times, even when
-                // resetFlag===true, otherwise the snapshot grows stale.
+				// The editable only actually makes a snapshot when
+				// getSnapshotContent is called, so we need to call it now
+				// to ensure such a snapshot is made at all times, even when
+				// resetFlag===true, otherwise the snapshot grows stale.
 				var oldValue = aevent.getSnapshotContent();
 
 				if (resetFlag) {
 					return;
 				}
 				var newValue = aevent.editable.getContents(),
-				    patch = dmp.patch_make(oldValue, newValue);
+					patch = dmp.patch_make(oldValue, newValue);
 				// only push an EditCommand if something actually changed.
 				if (0 !== patch.length) {
 					that.stack.execute( new EditCommand( aevent.editable, patch ) );
@@ -147,19 +147,19 @@ function( Aloha, jQuery, Plugin) {
 		toString: function () {
 			return 'undo';
 		},
-        undo: function () {
-            if ( null !== Aloha.getActiveEditable() ) {
-                Aloha.getActiveEditable().smartContentChange({type : 'blur'});
-            }
-            this.stack.canUndo() && this.stack.undo();
-        },
-        redo: function () {
-            if ( null !== Aloha.getActiveEditable() ) {
-                Aloha.getActiveEditable().smartContentChange({type : 'blur'});
-            }
-            this.stack.canRedo() && this.stack.redo();
-        },
-        stack: undefined // Defined in init above
+		undo: function () {
+			if ( null !== Aloha.getActiveEditable() ) {
+				Aloha.getActiveEditable().smartContentChange({type : 'blur'});
+			}
+			this.stack.canUndo() && this.stack.undo();
+		},
+		redo: function () {
+			if ( null !== Aloha.getActiveEditable() ) {
+				Aloha.getActiveEditable().smartContentChange({type : 'blur'});
+			}
+			this.stack.canRedo() && this.stack.redo();
+		},
+		stack: undefined // Defined in init above
 
 	});
 });
