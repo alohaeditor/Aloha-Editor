@@ -68,32 +68,64 @@
       }
 
       Helper.prototype.start = function(editable) {
-        var $el, makePopover, that;
+        var $el, MILLISECS, delayTimeout, makePopover, that;
         that = this;
         $el = jQuery(editable.obj);
+        MILLISECS = 2000;
+        delayTimeout = function($self, eventName, ms, hovered) {
+          if (ms == null) {
+            ms = MILLISECS;
+          }
+          return setTimeout(function() {
+            if (hovered != null) {
+              $self.data('aloha-bubble-hovered', hovered);
+            }
+            return $self.popover(eventName);
+          }, ms);
+        };
         makePopover = function($node) {
-          return $node.popover({
+          $node.popover({
             placement: 'bottom',
-            trigger: 'hover',
-            delay: {
-              show: 1000,
-              hide: 3000
-            },
+            trigger: 'manual',
             content: function() {
               return that.populator.bind(jQuery(this))();
             }
           });
+          $node.on('shown', this.selector, function(evt) {
+            var $n;
+            $n = jQuery(this);
+            return clearTimeout($n.data('aloha-bubble-openTimer'));
+          });
+          return $node.on('hidden', this.selector, function() {
+            var $n;
+            $n = jQuery(this);
+            return $n.data('aloha-bubble-hovered', false);
+          });
         };
         makePopover($el.find(this.selector));
         return $el.on('mouseenter.bubble', this.selector, function() {
-          var $newEl;
-          $newEl = jQuery(this);
-          if (!$newEl.data('popover')) {
-            makePopover($newEl);
-            return setTimeout(function() {
-              return $newEl.trigger('mouseenter');
-            }, 1000);
+          var $node;
+          $node = jQuery(this);
+          if (!$node.data('popover')) {
+            makePopover($node);
           }
+          $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true));
+          return $node.one('mouseleave.bubble', function() {
+            var $tip;
+            clearTimeout($node.data('aloha-bubble-openTimer'));
+            if ($node.data('aloha-bubble-hovered')) {
+              $tip = $node.data('popover').$tip;
+              if ($tip) {
+                $tip.on('mouseenter', function() {
+                  return clearTimeout($node.data('aloha-bubble-closeTimer'));
+                });
+                $tip.on('mouseleave', function() {
+                  return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2));
+                });
+              }
+              return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2));
+            }
+          });
         });
       };
 
@@ -164,9 +196,11 @@
               if (insideScope !== enteredLinkScope) {
                 link = rangeObject.getCommonAncestorContainer();
                 if (enteredLinkScope) {
-                  jQuery(link).trigger('open.bubble');
+                  jQuery(link).data('aloha-bubble-hovered', false);
+                  jQuery(link).popover('show');
+                  jQuery(link).off('.bubble');
                 } else {
-                  jQuery(Aloha.activeEditable.obj).find(helper.selector).trigger('close.bubble');
+                  jQuery(Aloha.activeEditable.obj).find(helper.selector).popover('hide');
                 }
               }
             }

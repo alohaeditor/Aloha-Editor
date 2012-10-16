@@ -66,23 +66,53 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], 
         that = @
         $el = jQuery(editable.obj)
 
+        MILLISECS = 2000
+        delayTimeout = ($self, eventName, ms=MILLISECS, hovered) ->
+          return setTimeout(() ->
+            if hovered?
+              $self.data('aloha-bubble-hovered', hovered)
+            $self.popover(eventName)
+          , ms)
+
         makePopover = ($node) ->
             $node.popover
                 placement: 'bottom'
-                trigger: 'hover'
-                delay: { show: 1000, hide: 3000 }
+                trigger: 'manual'
                 content: () ->
                     that.populator.bind(jQuery(@))()
-        makePopover($el.find(@selector))
-        # THe only reason I map mouseenter is so I can catch new elements that are added to the DOM
-        $el.on 'mouseenter.bubble', @selector, () ->
-            $newEl = jQuery(@)
-            if not $newEl.data('popover')
-                makePopover($newEl)
-                setTimeout(() ->
-                  $newEl.trigger('mouseenter')
-                , 1000)
+            # Custom event to open the bubble used by setTimeout below
+            $node.on 'shown', @selector, (evt) ->
+              $n = jQuery(@)
+              clearTimeout($n.data('aloha-bubble-openTimer'))
             
+            $node.on 'hidden', @selector, () ->
+              $n = jQuery(@)
+              $n.data('aloha-bubble-hovered', false)
+        
+        makePopover($el.find(@selector))
+
+        # The only reason I map mouseenter is so I can catch new elements that are added to the DOM
+        $el.on 'mouseenter.bubble', @selector, () ->
+            $node = jQuery(@)
+            if not $node.data('popover')
+                makePopover($node)
+
+            #PHIL $node.data('aloha-bubble-hovered', true)
+            $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true)) # true=hovered
+            $node.one 'mouseleave.bubble', () ->
+              clearTimeout($node.data('aloha-bubble-openTimer'))
+              if $node.data('aloha-bubble-hovered')
+                # You have 500ms to move from the tag in the DOM to the popover.
+                # If the mouse enters the popover then cancel the 'hide'
+                $tip = $node.data('popover').$tip
+                if $tip
+                  $tip.on 'mouseenter', () ->
+                    clearTimeout($node.data('aloha-bubble-closeTimer'))
+                  $tip.on 'mouseleave', () ->
+                    $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
+
+                $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
+
         #new Bubbler(@populator, jQuery(editable.obj), @selector)
     stop: (editable) ->
       # Remove all events and close all bubbles
@@ -143,8 +173,10 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], 
             if insideScope isnt enteredLinkScope
               link = rangeObject.getCommonAncestorContainer()
               if enteredLinkScope
-                jQuery(link).trigger 'open.bubble'
+                jQuery(link).data('aloha-bubble-hovered', false)
+                jQuery(link).popover 'show'
+                jQuery(link).off('.bubble')
               else
-                jQuery(Aloha.activeEditable.obj).find(helper.selector).trigger 'close.bubble'
+                jQuery(Aloha.activeEditable.obj).find(helper.selector).popover 'hide'
           insideScope = enteredLinkScope
   )
