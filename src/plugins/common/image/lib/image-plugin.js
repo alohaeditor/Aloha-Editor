@@ -1,22 +1,37 @@
-/*global documents: true define: true*/
-/*
- * Aloha Image Plugin - Allow image manipulation in Aloha Editor
+/* image-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Author & Copyright (c) 2011 Gentics Software GmbH
- * aloha-sales@gentics.com
- * Contributors
- *		Johannes Schüth - http://jotschi.de
- *		Nicolas karageuzian - http://nka.re/
- *		Benjamin Athur Lupton - http://www.balupton.com/
- *		Thomas Lete
- *		Nils Dehl
- *		Christopher Hlubek
- *		Edward Tsech
- *		Haymo Meran
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
  *
- * Licensed under the terms of http://www.aloha-editor.com/license.html
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
  */
-
+/* Aloha Image Plugin
+ * -----------------
+ * This plugin provides an interface to allow the user to insert, edit and
+ * remove images within an active editable.
+ * It presents its user interface in the Toolbar.
+ * Clicking on any image inside the editable activates the this plugin's
+ * menu scope.
+ */
 define([
 // js
 'jquery', 'aloha/plugin', 'image/image-ui', 'i18n!aloha/nls/i18n', 'i18n!image/nls/i18n', 'jqueryui', 'image/vendor/jcrop/jquery.jcrop.min', 'image/vendor/mousewheel/mousewheel', 'css!image/css/image.css'], function AlohaImagePlugin(
@@ -266,9 +281,10 @@ i18n) {
 
 			var plugin = this;
 			var imagePluginUrl = Aloha.getPluginUrl('image');
-			
-			if ( typeof this.settings.objectTypeFilter != 'undefined' ) {
-				this.objectTypeFilter = this.settings.objectTypeFilter;
+
+			// @todo settings per editable
+			if ( this.settings.config && typeof this.settings.config.objectTypeFilter != 'undefined' ) {
+				this.objectTypeFilter = this.settings.config.objectTypeFilter;
 			}
 
 			// Extend the default settings with the custom ones (done by default)
@@ -309,18 +325,24 @@ i18n) {
 			if (plugin.settings.ui.meta) {
 				// update image object when src changes
 				plugin.ui.imgSrcField.addListener('keyup', function (event) {
-					plugin.srcChange();
+					if (event.keyCode == 13) {
+						plugin.srcChange();
+					}
 				});
 
 				plugin.ui.imgSrcField.addListener('blur', function (event) {
 					// TODO remove image or do something usefull if the user leaves the
 					// image without defining a valid image src.
 					var img = jQuery(plugin.ui.imgSrcField.getTargetObject());
-					if (img.attr('src') === '') {
+					var imgSrc = plugin.ui.imgSrcField.getValue();
+					if (imgSrc.length < 1) {
 						img.remove();
 					} // image removal when src field is blank
 				});
+				
+				plugin.ui.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
 			}
+
 
 			// Override the default method by using the given one
 			if (plugin.settings.onCropped && typeof plugin.settings.onCropped === "function") {
@@ -1015,15 +1037,80 @@ i18n) {
 		},
 
 		srcChange: function () {
+			var plugin = this;
 			// TODO the src changed. I suggest :
 			// 1. set an loading image (I suggest set src base64 enc) to show the user
 			// we are trying to load an image
 			// 2. start a request to get the image
 			// 3a. the image is ok change the src
 			// 3b. the image is not availbable show an error.
-			this.imageObj.attr('src', this.ui.imgSrcField.getValue()); // (the img tag)
-			//			 jQuery(img).attr('src', this.imgSrcField.getQueryValue()); // (the query value in the inputfield)
-			//			 this.imgSrcField.getItem(); // (optinal a selected resource item)
+			var targetValue = plugin.ui.imgSrcField.getValue();
+			var targetObject = plugin.ui.imgSrcField.getItem();
+
+			if (targetObject) {
+				// @todo using plugin.ui.imgSrcField.setTargetObject is not working correct right now
+				//plugin.ui.imgSrcField.setTargetObject(targetObject, 'url');
+				plugin.ui.imgSrcField.setValue(targetObject.url);
+				plugin.ui.imgTitleField.setValue(targetObject.name);
+				plugin.ui.imgResizeHeightField.setValue(targetObject.height);
+				plugin.ui.imgResizeWidthField.setValue(targetObject.width);
+
+				plugin._setNormalizedFieldValues('width');
+				plugin.setSize(targetObject.width, targetObject.height);
+			} else if (targetValue) {
+				plugin.imageObj.attr('src', targetValue);
+				plugin.imageObj.attr('title', '');
+				plugin.imageObj.width('');
+				plugin.imageObj.height('');
+
+				plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
+				plugin.ui.imgTitleField.setTargetObject(plugin.imageObj, 'title');
+				plugin.ui.imgResizeWidthField.setTargetObject(plugin.imageObj, 'width');
+				plugin.ui.imgResizeHeightField.setTargetObject(plugin.imageObj, 'height');
+
+				plugin.ui.imgSrcField.setValue(targetValue);
+				plugin.ui.imgTitleField.setValue(plugin.imageObj.title);
+				plugin.ui.imgResizeHeightField.setValue(plugin.imageObj.height());
+				plugin.ui.imgResizeWidthField.setValue(plugin.imageObj.width());
+
+				plugin._setNormalizedFieldValues('width');
+				plugin.setSize(plugin.imageObj.width(), plugin.imageObj.height());
+			} else if (!targetValue && !targetObject) {
+				plugin.ui.imgSrcField.setValue('');
+				plugin.ui.imgTitleField.setValue('');
+				plugin.ui.imgResizeWidthField.setValue('');
+				plugin.ui.imgResizeHeightField.setValue('');
+				// remove image
+				plugin.imageObj.remove();
+			}
+
+			if (targetValue.length > 0 && plugin.settings.config && plugin.settings.config.meta && plugin.settings.config.meta.dummy) {
+				// check img src if valid image
+				$.ajax({
+					type: 'HEAD',
+					url: targetValue,
+					error: function() {
+						var h = plugin.ui.imgResizeHeightField.getValue();
+						var w = plugin.ui.imgResizeWidthField.getValue();
+						var lorempic = 'http://lorempixel.com/' + w + '/' + h + '/abstract/Stock-Image/';
+
+						$.ajax({
+							type: 'HEAD',
+							url: lorempic,
+							success: function() {
+								plugin.imageObj.attr('src', lorempic);
+								plugin.imageObj.attr('title', 'Lorem Image (' + w + 'x' + h + ')');
+
+								plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
+								plugin.ui.imgTitleField.setTargetObject(plugin.imageObj, 'title');
+							}
+						});
+
+					}
+				});
+			}
+
+			//*/
 			// TODO additionally implement an srcChange Handler to let implementer
 			// customize
 		},

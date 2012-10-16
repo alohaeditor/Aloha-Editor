@@ -24,9 +24,10 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-/* Aloha Link List Repository
+/* Aloha Editor LinkList Repository
  * --------------------------
- * A simple demo repository of links.
+ * A simple repository of items configured with
+ * Aloha.settings.repositories.linklist
  */
 define(
 ['aloha', 'aloha/jquery'],
@@ -46,26 +47,9 @@ function (Aloha, jQuery) {
 	 *
 	 * @private
 	 */
-	var urls = [{
-		name: 'Aloha Editor - The HTML5 Editor',
-		url: 'http://aloha-editor.org',
-		type: 'website'
-	}, {
-		name: 'Aloha Editor - Wiki',
-		url: 'http://github.com/alohaeditor/Aloha-Editor/wiki',
-		type: 'website'
-	}, {
-		name: 'Aloha Editor - GitHub',
-		url: 'http://github.com/alohaeditor/Aloha-Editor',
-		type: 'website'
-	}, {
-		name: 'Aloha Logo',
-		url: 'http://www.aloha-editor.com/images/aloha-editor-logo.png',
-		type: 'image'
-	}];
+	var urls = [];
 
 	new(Aloha.AbstractRepository.extend({
-
 		_constructor: function () {
 			this._super('linklist');
 		},
@@ -81,8 +65,14 @@ function (Aloha, jQuery) {
 		 * additional properties to the items.
 		 */
 		init: function () {
+			this.repositoryName = 'Linklist';
+
 			if (Aloha.settings.repositories && Aloha.settings.repositories.linklist && Aloha.settings.repositories.linklist.data) {
 				urls = urls.concat(Aloha.settings.repositories.linklist.data);
+			}
+
+			if (urls.length < 1) {
+				return;
 			}
 
 			// Add ECMA262-5 Array method filter if not supported natively.
@@ -132,8 +122,6 @@ function (Aloha, jQuery) {
 
 				urls[i] = new Aloha.RepositoryDocument(e);
 			}
-
-			this.repositoryName = 'Linklist';
 		},
 
 		/**
@@ -170,7 +158,7 @@ function (Aloha, jQuery) {
 			var r = new RegExp(p.queryString, 'i');
 			var d = urls.filter(function (e, i, a) {
 				return (
-				(!p.queryString || e.name.match(r) || e.url.match(r)) && (!p.objectTypeFilter || (!p.objectTypeFilter.length) || jQuery.inArray(e.type, p.objectTypeFilter) > -1) && true //( !p.inFolderId || p.inFolderId == e.parentId )
+					(e.name.match(r) || e.url.match(r)) && (!p.objectTypeFilter || !p.objectTypeFilter.length || (p.objectTypeFilter && e.type == p.objectTypeFilter))
 				);
 			});
 

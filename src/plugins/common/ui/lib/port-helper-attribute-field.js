@@ -165,13 +165,19 @@ console) {
 
 			// This handles attribute updates for non-repository, literal urls typed into the input field.
 			// Input values that refer to a repository item are handled via setItem().
-			if (!resourceItem) {
-				setAttribute(targetAttribute, getValue());
+			// @todo deactivate setAttribute onkeyup for src attr. just in image plugin?!
+			if (!resourceItem && targetAttribute != 'src') {
+				var regex;
+				var reference;
+				setAttribute(targetAttribute, getValue(), regex, reference);
 			}
 
 			if ((event.keyCode == 13 || event.keyCode == 27)) {
 				// Set focus to link element and select the object
-				Selection.getRangeObject().select();
+				try{
+					Aloha.Selection.getRangeObject().select();
+				} catch(err) {
+				}
 				finishEditing();
 			}
 		}

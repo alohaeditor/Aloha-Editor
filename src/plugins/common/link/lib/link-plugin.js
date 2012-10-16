@@ -32,7 +32,7 @@
  * Clicking on any links inside the editable activates the this plugin's
  * floating menu scope.
  */
-define(['aloha', 'aloha/plugin', 'aloha/ephemera', 'jquery', 'ui/port-helper-attribute-field', 'ui/ui', 'ui/scopes', 'ui/surface', 'ui/button', 'ui/toggleButton', 'i18n!link/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console'], function (
+define(['aloha', 'aloha/plugin', 'aloha/ephemera', 'jquery', 'ui/port-helper-attribute-field', 'ui/ui', 'ui/scopes', 'ui/surface', 'ui/button', 'ui/toggleButton', 'i18n!link/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console', 'link/linklist'], function (
 Aloha,
 Plugin,
 Ephemera,
@@ -622,6 +622,7 @@ console) {
 			if (range.isCollapsed() && extendToWord !== false) {
 				GENTICS.Utils.Dom.extendToWord(range);
 			}
+
 			if (range.isCollapsed()) {
 				// insert a link with text here
 				linkText = i18n.t('newlink.defaulttext');
