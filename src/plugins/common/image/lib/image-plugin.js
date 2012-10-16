@@ -113,7 +113,7 @@ i18n) {
 			'autoResize': false,
 			//Image manipulation options - ONLY in default config section
 			ui: {
-/*
+				/*
 				oneTab: false, //Place all ui components within one tab
 				insert: true, // Shows an insert button on std ui scope
 				reset: true, // Reset to default size
@@ -128,12 +128,12 @@ i18n) {
 			},
 
 */
-				meta		: true, // If imageResizeWidth and imageResizeHeight are displayed, then you will want to set this to true, so that the width and height text fields are updated automatically.
-				crop		: true, // If imageCropButton is displayed, then you have to enable this.
-				resizable	: true	// Resizable ui-drag image
+				meta: true, // If imageResizeWidth and imageResizeHeight are displayed, then you will want to set this to true, so that the width and height text fields are updated automatically.
+				crop: true, // If imageCropButton is displayed, then you have to enable this.
+				resizable: true // Resizable ui-drag image
 			},
-			handles     : 'ne, se, sw, nw',   // set handles for resize
-			
+			handles: 'ne, se, sw, nw', // set handles for resize
+
 			/**
 			 * Crop callback is triggered after the user clicked accept to accept his crop
 			 * @param image jquery image object reference
@@ -283,7 +283,7 @@ i18n) {
 			var imagePluginUrl = Aloha.getPluginUrl('image');
 
 			// @todo settings per editable
-			if ( this.settings.config && typeof this.settings.config.objectTypeFilter != 'undefined' ) {
+			if (this.settings.config && typeof this.settings.config.objectTypeFilter != 'undefined') {
 				this.objectTypeFilter = this.settings.config.objectTypeFilter;
 			}
 
@@ -339,7 +339,7 @@ i18n) {
 						img.remove();
 					} // image removal when src field is blank
 				});
-				
+
 				plugin.ui.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
 			}
 
@@ -1089,7 +1089,7 @@ i18n) {
 				$.ajax({
 					type: 'HEAD',
 					url: targetValue,
-					error: function() {
+					error: function () {
 						var h = plugin.ui.imgResizeHeightField.getValue();
 						var w = plugin.ui.imgResizeWidthField.getValue();
 						var lorempic = 'http://lorempixel.com/' + w + '/' + h + '/abstract/Stock-Image/';
@@ -1097,7 +1097,7 @@ i18n) {
 						$.ajax({
 							type: 'HEAD',
 							url: lorempic,
-							success: function() {
+							success: function () {
 								plugin.imageObj.attr('src', lorempic);
 								plugin.imageObj.attr('title', 'Lorem Image (' + w + 'x' + h + ')');
 
