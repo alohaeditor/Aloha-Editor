@@ -282,6 +282,10 @@ i18n) {
 			var plugin = this;
 			var imagePluginUrl = Aloha.getPluginUrl('image');
 
+			if (this.settings && typeof this.settings.objectTypeFilter != 'undefined') {
+				this.objectTypeFilter = this.settings.objectTypeFilter;
+			}
+
 			// @todo settings per editable
 			if (this.settings.config && typeof this.settings.config.objectTypeFilter != 'undefined') {
 				this.objectTypeFilter = this.settings.config.objectTypeFilter;
