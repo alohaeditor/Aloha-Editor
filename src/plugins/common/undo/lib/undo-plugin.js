@@ -109,25 +109,16 @@ function( Aloha, jQuery, Plugin) {
 				// update UI
 			};
 
-			// @todo use aloha hotkeys here
-			jQuery(document).keydown(function(event) {
-				if (!event.metaKey || event.keyCode != 90) {
-					return;
-				}
-				event.preventDefault();
-
-				//Before doing an undo, bring the smartContentChange
-				//event up to date.
-				if ( null !== Aloha.getActiveEditable() ) {
-					Aloha.getActiveEditable().smartContentChange({type : 'blur'});
-				}
-
-				if (event.shiftKey) {
-                    that.redo();
-				} else {
-                    that.undo();
-				}
-			});
+            Aloha.bind('aloha-editable-created', function(e, editable){
+                editable.obj.bind('keydown', 'ctrl+z shift+ctrl+z', function(event){
+                    event.preventDefault();
+                    if (event.shiftKey) {
+                        that.redo();
+                    } else {
+                        that.undo();
+                    }
+                });
+            });
 
 			Aloha.bind('aloha-smart-content-changed', function(jevent, aevent) {
 				if (resetFlag) {
