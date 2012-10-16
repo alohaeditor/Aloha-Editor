@@ -62,6 +62,9 @@ i18nCore) {
 		createButtons: function () {
 			var me = this;
 
+			// add remove button -- https://github.com/csupnig/Aloha-Editor/commit/2ce73cafa9cf596684c1e85d16479b6a29fea7b0
+			// see also: https://github.com/alohaeditor/Aloha-Editor/pull/720
+
 			this._formatAbbrButton = Ui.adopt("formatAbbr", ToggleButton, {
 				tooltip: i18n.t("button.abbr.tooltip"),
 				icon: "aloha-icon aloha-icon-abbr",
