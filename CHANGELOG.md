@@ -15,6 +15,7 @@ All changes are categorized into one of the following keywords:
 # 0.22.x
 
 - **FEATURE**: align-plugin: the align plugin is now capable of aligning table cell contents
+- **FEATURE**: table-plugin: table cells can now have individual classes like rows and columns
 
 ## 0.22.2 - 2012/10/08
 
