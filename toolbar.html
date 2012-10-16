@@ -20,7 +20,9 @@
   width: 100%;
   padding-left: 1em;
   box-shadow: 0 2px 3px 0 #CCC;
+  z-index: 10000;
 }
+
 
 /* Add some padding on the top so the toolbar has room to float in */
 .document { margin: 4em; }
@@ -105,13 +107,15 @@
 	<link rel="stylesheet" href="src/demo/math/max.css"/>
 
 	<style type="text/css">
-	  .toolbar-container {
-      width: 100%;
-      position: fixed;
-      top: 0;
-      z-index: 1;
-    }
 
+/* Needs to occur AFTER the bootstrap.css */
+/* Allows the popover to grow in size */
+.popover {
+  width: initial;
+  min-width: 236px;
+}
+
+	
 figure { counter-increment: figure; }
 figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weight: bold; }
 
