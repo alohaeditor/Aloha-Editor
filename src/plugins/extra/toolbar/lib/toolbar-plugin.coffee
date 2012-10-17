@@ -55,7 +55,9 @@ define [ "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu', "i18n!format
         return new ItemRelay([])
 
       
-      applyHeading = (hTag) -> () ->
+      changeHeading = () ->
+        $el = jQuery(@)
+        hTag = $el.attr('data-tagname')
         rangeObject = Aloha.Selection.getRangeObject()
         GENTICS.Utils.Dom.extendToWord rangeObject  if rangeObject.isCollapsed()
 
@@ -68,37 +70,28 @@ define [ "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu', "i18n!format
         # Setting the id is commented because otherwise collaboration wouldn't register a change in the document
 
       
-      order = [ 'p', 'h1', 'h2', 'h3' ]
-      labels =
-        'p':  'Normal Text'
-        'h1': 'Heading 1'
-        'h2': 'Heading 2'
-        'h3': 'Heading 3'
-
-      headingButtons = (new appmenu.custom.Heading("<#{ h } />", labels[h], {accel: "Ctrl+#{ h.charAt(1) or 0 }", action: applyHeading(h) }) for h in order)
+      headings = CONTAINER_JQUERY.find(".changeHeading")
       
-      headingsButton = new appmenu.ToolButton("Heading 1", {subMenu: new appmenu.Menu(headingButtons, 'custom-headings')})
-      #toolbar.prepend(new appmenu.Separator())
-      #toolbar.prepend(headingsButton)
-
-      #Aloha.bind 'aloha-editable-activated', (e, params) ->
-      #  menubar.setAccelContainer(params.editable.obj)
-      #  toolbar.setAccelContainer(params.editable.obj)
-
-      #Aloha.bind 'aloha-editable-deactivated', (e, params) ->
-      #  menubar.setAccelContainer()
-      #  toolbar.setAccelContainer()
+      headings.on 'click', changeHeading
+      headings.add(headings.parent()).removeClass('disabled missing-a-click-event')
       
       # Keep track of the range because Aloha.Selection.obj seems to go {} sometimes
       Aloha.bind "aloha-selection-changed", (event, rangeObject) ->
         # Squirrel away the range because clicking the button changes focus and removed the range
         $el = Aloha.jQuery(rangeObject.startContainer)
-        for h, i in order
-          isActive = $el.parents(h).length > 0
-          headingButtons[i].setChecked(isActive)
-          # Update the toolbar to show the current heading level
-          if isActive
-            headingsButton.setText labels[h]
+        
+        # Set the default text (changeit if we're in a heading later in the loop)
+        currentHeading = CONTAINER_JQUERY.find('.currentHeading')
+        currentHeading.text(headings.first().text())
+        
+        headings.each () ->
+          heading = jQuery(@)
+          selector = heading.attr('data-tagname')
+          #heading.removeClass('active')
+          if selector and $el.parents(selector)[0]
+            #heading.addClass('active')
+            # Update the toolbar to show the current heading level
+            currentHeading.text(heading.text())
 
     ###
      toString method

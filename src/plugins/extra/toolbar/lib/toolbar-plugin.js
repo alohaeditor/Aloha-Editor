@@ -13,7 +13,7 @@
 
     return Plugin.create("toolbar", {
       init: function() {
-        var applyHeading, h, headingButtons, headingsButton, labels, order;
+        var changeHeading, headings;
         CONTAINER_JQUERY.find('.action').addClass('disabled missing-a-click-event');
         CONTAINER_JQUERY.find('a.action').parent().addClass('disabled missing-a-click-event');
         Ui.adopt = function(slot, type, settings) {
@@ -88,56 +88,35 @@
           });
           return new ItemRelay([]);
         };
-        applyHeading = function(hTag) {
-          return function() {
-            var $newEl, $oldEl, rangeObject;
-            rangeObject = Aloha.Selection.getRangeObject();
-            if (rangeObject.isCollapsed()) {
-              GENTICS.Utils.Dom.extendToWord(rangeObject);
-            }
-            Aloha.Selection.changeMarkupOnSelection(Aloha.jQuery("<" + hTag + "></" + hTag + ">"));
-            $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer());
-            $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer());
-            return $newEl.addClass($oldEl.attr('class'));
-          };
-        };
-        order = ['p', 'h1', 'h2', 'h3'];
-        labels = {
-          'p': 'Normal Text',
-          'h1': 'Heading 1',
-          'h2': 'Heading 2',
-          'h3': 'Heading 3'
-        };
-        headingButtons = (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = order.length; _i < _len; _i++) {
-            h = order[_i];
-            _results.push(new appmenu.custom.Heading("<" + h + " />", labels[h], {
-              accel: "Ctrl+" + (h.charAt(1) || 0),
-              action: applyHeading(h)
-            }));
+        changeHeading = function() {
+          var $el, $newEl, $oldEl, hTag, rangeObject;
+          $el = jQuery(this);
+          hTag = $el.attr('data-tagname');
+          rangeObject = Aloha.Selection.getRangeObject();
+          if (rangeObject.isCollapsed()) {
+            GENTICS.Utils.Dom.extendToWord(rangeObject);
           }
-          return _results;
-        })();
-        headingsButton = new appmenu.ToolButton("Heading 1", {
-          subMenu: new appmenu.Menu(headingButtons, 'custom-headings')
-        });
+          Aloha.Selection.changeMarkupOnSelection(Aloha.jQuery("<" + hTag + "></" + hTag + ">"));
+          $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer());
+          $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer());
+          return $newEl.addClass($oldEl.attr('class'));
+        };
+        headings = CONTAINER_JQUERY.find(".changeHeading");
+        headings.on('click', changeHeading);
+        headings.add(headings.parent()).removeClass('disabled missing-a-click-event');
         return Aloha.bind("aloha-selection-changed", function(event, rangeObject) {
-          var $el, i, isActive, _i, _len, _results;
+          var $el, currentHeading;
           $el = Aloha.jQuery(rangeObject.startContainer);
-          _results = [];
-          for (i = _i = 0, _len = order.length; _i < _len; i = ++_i) {
-            h = order[i];
-            isActive = $el.parents(h).length > 0;
-            headingButtons[i].setChecked(isActive);
-            if (isActive) {
-              _results.push(headingsButton.setText(labels[h]));
-            } else {
-              _results.push(void 0);
+          currentHeading = CONTAINER_JQUERY.find('.currentHeading');
+          currentHeading.text(headings.first().text());
+          return headings.each(function() {
+            var heading, selector;
+            heading = jQuery(this);
+            selector = heading.attr('data-tagname');
+            if (selector && $el.parents(selector)[0]) {
+              return currentHeading.text(heading.text());
             }
-          }
-          return _results;
+          });
         });
       },
       /*

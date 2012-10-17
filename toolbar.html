@@ -152,6 +152,23 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
 <div class="toolbar">
 
 <div class="btn-toolbar">
+  <div class="btn-group headings">
+    <button class="btn currentHeading" rel="tooltip" title="Text Heading">Nothing</button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Change Heading">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <!-- "changeHeading" is important so a click can be attached and
+           data-tagname is used both to identify if the cursor is in one of these and
+	   is used to change one heading to another
+	   -->
+      <li><a href="#" class="action changeHeading" data-tagname="p">Normal Text</a></li>
+      <li><a href="#" class="action changeHeading" data-tagname="h1">Heading</a></li>
+      <li><a href="#" class="action changeHeading" data-tagname="h2">Subheading</a></li>
+      <li><a href="#" class="action changeHeading" data-tagname="h3">SubSubHeading</a></li>
+    </ul>
+  </div>
+
   <div class="btn-group">
     <button class="btn action strong" rel="tooltip" title="Bold"><i class="icon-bold"></i></button>
     <button class="btn action emphasis" rel="tooltip" title="Italics"><i class="icon-italic"></i></button>
