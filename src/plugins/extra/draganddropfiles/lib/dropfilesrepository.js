@@ -210,13 +210,14 @@ function($, repository, i18nCore){
 					xhr.onload = function(load) {
 						try {
 							that.src = that.upload_config.callback.call(that, xhr.responseText);
-							Aloha.trigger('aloha-upload-success',that);
+                            if(xhr.status % 100 == 2){
+                                Aloha.trigger('aloha-upload-success', that);
+                            } else {
+                                Aloha.trigger('aloha-upload-failure', that);
+                            }
 						} catch(e) {
 							Aloha.trigger('aloha-upload-failure', that);
 						}
-//						if (that.delegateUploadEvent(xhr.responseText)) {
-	//
-//						} else {
 					};
 					xhr.onabort = function() {
 						Aloha.trigger('aloha-upload-abort', that);
