@@ -71,7 +71,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
         item = jQuery(this)
         id = item.attr('id')
         caption = item.find('caption,figcaption')
-        appendOption id, caption
+        appendOption id, caption if caption[0]
 
       href = null
       

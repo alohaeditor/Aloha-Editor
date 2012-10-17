@@ -39,7 +39,9 @@
         item = jQuery(this);
         id = item.attr('id');
         caption = item.find('caption,figcaption');
-        return appendOption(id, caption);
+        if (caption[0]) {
+          return appendOption(id, caption);
+        }
       });
       href = null;
       dialog.find('.link-tab-external').on('shown', function() {
