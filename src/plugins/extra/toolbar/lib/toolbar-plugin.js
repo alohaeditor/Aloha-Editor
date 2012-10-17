@@ -84,7 +84,8 @@
           $buttons.on('click', function(evt) {
             evt.preventDefault();
             Aloha.activeEditable = squirreledEditable;
-            return settings.click(evt);
+            this.element = this;
+            return settings.click.bind(this)(evt);
           });
           return new ItemRelay([]);
         };

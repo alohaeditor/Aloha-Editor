@@ -50,7 +50,11 @@ define [ "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu', "i18n!format
         $buttons.on 'click', (evt) ->
           evt.preventDefault()
           Aloha.activeEditable = squirreledEditable
-          settings.click evt
+          # The Table plugin requires this.element to work so it can pop open a
+          # window that selects the number of rows and columns
+          # Also, that's the reason for the bind(@)
+          @element = @
+          settings.click.bind(@)(evt)
 
         return new ItemRelay([])
 
