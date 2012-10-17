@@ -155,7 +155,24 @@ define([
 			 */
 			onResized: function ($image) {
 				Aloha.Log.info('Default onResized invoked', $image);
-			}
+			},
+
+			/**
+			 * Upload callback is triggered after an image was uploaded
+             * to determine the server-side URI of the uploaded image.
+             * The default expects a json-formatted message.
+			 */
+             onUploadSuccess: function(xhr) {
+                var msg = JSON.parse(xhr.response);
+                return msg.url;
+             },
+
+			/**
+			 * Upload callback is triggered after an image failed to upload.
+			 */
+             onUploadFail: function(xhr) {
+				Aloha.Log.info('Default onUploadFail invoked');
+             }
 		},
 		
 		/**
@@ -386,6 +403,19 @@ define([
 				}
 				
 			});
+
+            /* Event handlers for successful/failed uploads */
+			Aloha.bind('aloha-upload-success', function (event, data) {
+                // Get the server-side url from the response, set it
+                // as the src for the image.
+                var url = plugin.settings.onUploadSuccess(data.xhr);
+                $('#' + data.id).attr('src', url);
+            });
+
+			Aloha.bind('aloha-upload-failure', function (event, data) {
+                plugin.settings.onUploadFail(data.xhr);
+            });
+
 			/*
 			 * Add the event handler for selection change
 			 */
