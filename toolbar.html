@@ -23,6 +23,9 @@
   z-index: 10000;
 }
 
+.toolbar .currentHeading {
+  width: 9em;
+}
 
 /* Add some padding on the top so the toolbar has room to float in */
 .document { margin: 4em; }
@@ -116,8 +119,12 @@
 }
 
 	
-figure { counter-increment: figure; }
-figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weight: bold; }
+figure {
+  counter-increment: figure;
+  /* Set inline-block so the figure popover shows up directly under instead of 1/2-way in the page */
+  display: inline-block;
+}
+figure figcaption::before { content: "Figure " counter(figure) " "; font-weight: bold; }
 
 .aloha-image-upload-drop-box {
   text-align: center;
