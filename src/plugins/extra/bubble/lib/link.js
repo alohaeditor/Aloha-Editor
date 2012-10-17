@@ -81,8 +81,9 @@
       return this.nodeName.toLowerCase() === 'a';
     };
     populator = function() {
-      var $bubble, $el, a, change, href;
+      var $bubble, $el, a, change, editable, href;
       $el = this;
+      editable = Aloha.activeEditable;
       $bubble = jQuery('<div class="link-popover"></div>');
       href = $el.attr('href');
       a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble);
@@ -91,8 +92,9 @@
       $bubble.append(' - ');
       change = jQuery('<button class="btn">Change...</div>');
       change.appendTo($bubble);
-      change.on('mousedown', function() {
+      change.on('click', function() {
         var dialog;
+        Aloha.activeEditable = editable;
         return dialog = showModalDialog($el);
       });
       return $bubble.contents();

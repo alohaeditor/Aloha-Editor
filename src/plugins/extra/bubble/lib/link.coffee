@@ -118,6 +118,8 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
 
   populator = () ->
       $el = @
+      # When a click occurs, the activeEditable is cleared so squirrel it
+      editable = Aloha.activeEditable
       $bubble = jQuery('<div class="link-popover"></div>')
       
       href = $el.attr('href')
@@ -128,13 +130,10 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
       change = jQuery('<button class="btn">Change...</div>')
       # TODO: Convert the mousedown to a click. To do that the aloha-deactivated event need to not hide the bubbles yet and instead fire a 'hide' event
       change.appendTo($bubble)
-      change.on 'mousedown', ->
+      change.on 'click', ->
+        # unquirrel the activeEditable
+        Aloha.activeEditable = editable
         dialog = showModalDialog($el)
-        #dialog.addClass 'aloha'
-        #dialog.on 'dialogclose', ->
-        #  a.attr 'href', $el.attr('href')
-        #  a.contents().remove()
-        #  a.append $el.attr('href')
       $bubble.contents()
 
 
