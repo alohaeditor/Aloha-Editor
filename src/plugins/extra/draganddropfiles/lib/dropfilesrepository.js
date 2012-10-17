@@ -210,7 +210,7 @@ function($, repository, i18nCore){
 					xhr.onload = function(load) {
 						try {
 							that.src = that.upload_config.callback.call(that, xhr.responseText);
-                            if(xhr.status % 100 == 2){
+                            if(xhr.status / 100 == 2){
                                 Aloha.trigger('aloha-upload-success', that);
                             } else {
                                 Aloha.trigger('aloha-upload-failure', that);
