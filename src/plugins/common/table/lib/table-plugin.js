@@ -181,14 +181,12 @@ define([
 		this.initTableButtons();
 
 		Aloha.bind( 'aloha-table-selection-changed', function () {
-			if ( null != TablePlugin.activeTable &&
-					0 !== TablePlugin.activeTable.selection.selectedCells.length ) {
-				TablePlugin.updateFloatingMenuScope();
-			}
 
 			// check if selected cells are split/merge able and set button status
 			if ( typeof TablePlugin.activeTable !== 'undefined' &&
 				TablePlugin.activeTable.selection ) {
+
+				TablePlugin.updateFloatingMenuScope();
 
 				if ( TablePlugin.activeTable.selection.cellsAreSplitable() ) {
 					that._splitcellsButton.enable(true);
@@ -236,6 +234,7 @@ define([
 			}, Aloha.activeEditable.obj);
 			if (table) {
 				TablePlugin.updateFloatingMenuScope();
+				TablePlugin.setActiveCellStyle();
 			} else {
 				that.activeTable.selection.cellSelectionMode = false;
 				that.activeTable.selection.baseCellPosition = null;
@@ -883,30 +882,6 @@ define([
 	TablePlugin.initCellBtns = function () {
 		var that = this;
 
-		var selectedOrActiveCells = function() {
-			var sc = that.activeTable.selection.selectedCells;
-
-			// if there are no selected cells,
-			// set the active cell as the selected cell.
-			if (!sc || sc.length < 1) {
-				var activeCell = function() {
-					var range = Aloha.Selection.getRangeObject();
-					if (Aloha.activeEditable) {
-						return range.findMarkup( function() {
-								return this.nodeName.toLowerCase() === 'td';
-						}, Aloha.activeEditable.obj );
-					} else {
-						return null;
-					}
-				}
-
-				var active_cell = activeCell();
-				return (active_cell ? [ active_cell ] : []);
-			} else {
-				return sc;
-			}
-		}
-
 		// generate formatting buttons
 		this.cellMSItems = [];
 		jQuery.each(this.cellConfig, function (j, itemConf) {
@@ -917,7 +892,7 @@ define([
 				iconClass : 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
 				click	  : function (x,y,z) {
 					if (that.activeTable) {
-						var sc = selectedOrActiveCells();
+						var sc = that.selectedOrActiveCells();
 
 						// if a selection was made, transform the selected cells
 						for (var i = 0; i < sc.length; i++) {
@@ -933,6 +908,8 @@ define([
 								}
 							}
 						}
+
+						that.setActiveCellStyle();
 					}
 				}
 			};
@@ -949,13 +926,15 @@ define([
 				wide	: true,
 				click	: function () {
 					if (that.activeTable) {
-						var sc = selectedOrActiveCells();
+						var sc = that.selectedOrActiveCells();
 						// if a selection was made, transform the selected cells
 						for (var i = 0; i < sc.length; i++) {
 							for (var f = 0; f < that.cellConfig.length; f++) {
 								jQuery(sc[i]).removeClass(that.cellConfig[f].cssClass);
 							}
 						}
+
+						that.setActiveCellStyle();
 					}
 				}
 			});
@@ -1390,9 +1369,53 @@ define([
 		return this.prefix;
 	};
 
-	TablePlugin.updateFloatingMenuScope = function () {
+	TablePlugin.updateFloatingMenuScope = function() {
 		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
 			Scopes.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+		}
+	};
+
+	TablePlugin.setActiveCellStyle = function() {
+		var that = this;
+
+		// reset any selected cell styles
+		this.cellMSButton.setActiveItem();
+
+		var selectedCells = that.selectedOrActiveCells();
+
+		jQuery( selectedCells ).each( function() {
+			for (var k = 0; k < that.cellConfig.length; k++) {
+				if ( jQuery(this).hasClass(that.cellConfig[k].cssClass) ) {
+					that.cellMSButton.setActiveItem(that.cellConfig[k].name);
+					k = that.cellConfig.length;
+				}
+			}
+		});
+
+	};
+
+	TablePlugin.selectedOrActiveCells = function() {
+		var that = this;
+		var sc = this.activeTable.selection.selectedCells;
+
+		// if there are no selected cells,
+		// set the active cell as the selected cell.
+		if (!sc || sc.length < 1) {
+			var activeCell = function() {
+			var range = Aloha.Selection.getRangeObject();
+				if (Aloha.activeEditable) {
+					return range.findMarkup( function() {
+							return this.nodeName.toLowerCase() === 'td';
+					}, Aloha.activeEditable.obj );
+				} else {
+					return null;
+				}
+			}
+
+			var active_cell = activeCell();
+			return (active_cell ? [ active_cell ] : []);
+		} else {
+			return sc;
 		}
 	};
 
