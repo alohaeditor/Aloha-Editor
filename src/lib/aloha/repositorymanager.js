@@ -47,6 +47,7 @@ define([
 
 		repositories: [],
 		settings: {},
+		managerInitialized: false,
 
 		/**
 		 * Initialize all registered repositories
@@ -87,6 +88,7 @@ define([
 				}
 
 				repository.init();
+				this.managerInitialized = true;
 			}
 		},
 
@@ -98,6 +100,21 @@ define([
 		register: function (repository) {
 			if (!this.getRepository(repository.repositoryId)) {
 				this.repositories.push(repository);
+				
+				if (this.managerInitialized) {
+					if (!repository.settings) {
+						repository.settings = {};
+					}
+
+					if (this.settings[repository.repositoryId]) {
+						jQuery.extend(
+							repository.settings,
+							this.settings[repository.repositoryId]
+						);
+					}
+
+					repository.init();
+				}
 			} else {
 				console.warn(this, 'A repository with name { ' + repository.repositoryId + ' } already registerd. Ignoring this.');
 			}

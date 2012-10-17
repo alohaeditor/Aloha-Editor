@@ -47,7 +47,13 @@ function (Aloha, jQuery) {
 	 *
 	 * @private
 	 */
-	var urls = [];
+	var urls = [
+			{ name: 'Aloha Editor - The HTML5 WYSIWYG Editor', url: 'http://aloha-editor.org', type: 'website' },
+			{ name: 'Aloha Editor - Wiki', url: 'http://github.com/alohaeditor/Aloha-Editor/wiki', type: 'website' },
+			{ name: 'Aloha Editor - GitHub', url: 'http://github.com/alohaeditor/Aloha-Editor', type: 'website' },
+			{ name: 'Aloha Editor Logo', url: 'http://www.aloha-editor.com/images/aloha-editor-logo.png', type: 'image' },
+			{ name: 'Aloha Editor Logo with HTML5 Logo', url: 'http://aloha-editor.org/logo/Aloha%20Editor%20HTML5%20contenteditable%20transparent%20512.png', type: 'image'}
+		];
 
 	new(Aloha.AbstractRepository.extend({
 		_constructor: function () {
@@ -68,7 +74,7 @@ function (Aloha, jQuery) {
 			this.repositoryName = 'Linklist';
 
 			if (Aloha.settings.repositories && Aloha.settings.repositories.linklist && Aloha.settings.repositories.linklist.data) {
-				urls = urls.concat(Aloha.settings.repositories.linklist.data);
+				urls = Aloha.settings.repositories.linklist.data;
 			}
 
 			if (urls.length < 1) {
