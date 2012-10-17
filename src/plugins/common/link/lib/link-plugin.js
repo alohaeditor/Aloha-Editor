@@ -35,6 +35,7 @@
 define( [
 	'aloha',
 	'aloha/plugin',
+	'aloha/ephemera',
 	'jquery',
 	'ui/port-helper-attribute-field',
 	'ui/ui',
@@ -44,11 +45,11 @@ define( [
 	'ui/toggleButton',
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'aloha/console',
-	'link/../extra/linklist'
+	'aloha/console'
 ], function (
 	Aloha,
 	Plugin,
+	Ephemera,
 	jQuery,
 	AttributeField,
 	Ui,
@@ -67,7 +68,9 @@ define( [
 	    oldValue = '',
 	    newValue;
 	
-	return Plugin.create( 'link', {
+	Ephemera.classes('aloha-link-pointer', 'aloha-link-text');
+
+	return Plugin.create('link', {
 		/**
 		 * Configure the available languages
 		 */
@@ -706,23 +709,8 @@ define( [
 					this.hrefField.getItem()
 				);
 			}
-		},
-		
-		/**
-		 * Make the given jQuery object (representing an editable) clean for saving
-		 * Find all links and remove editing objects
-		 * @param obj jQuery object to make clean
-		 * @return void
-		 */
-		makeClean: function ( obj ) {
-			// find all link tags
-			obj.find( 'a' ).each( function () {
-				jQuery( this )
-					.removeClass( 'aloha-link-pointer' )
-					.removeClass( 'aloha-link-text' );
-			} );
 		}
-	} );
+	});
 
 	function selectionChangeHandler(that, rangeObject) {
 		var foundMarkup,

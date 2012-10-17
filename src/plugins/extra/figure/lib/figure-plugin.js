@@ -13,27 +13,13 @@
       this.renderBlockHandlesIfNeeded();
       if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'span') {
         this._setupDragDropForInlineElements();
-        return this._disableUglyInternetExplorerDragHandles();
+        this._disableUglyInternetExplorerDragHandles();
       } else if (this.isDraggable()) {
         this._setupDragDropForBlockElements();
-        return this._disableUglyInternetExplorerDragHandles();
+        this._disableUglyInternetExplorerDragHandles();
       }
-    };
-    BlockManager._blockify = function(element, instanceDefaults) {
-      var $element, attributes, tagName;
-      $element = jQuery(element);
-      tagName = $element[0].tagName.toLowerCase();
-      attributes = this.getConfig($element, instanceDefaults);
-      if (!this.blockTypes.has(attributes['aloha-block-type'])) {
-        Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['aloha-block-type'] + ' not found!');
-        return;
-      }
-      block = new (this.blockTypes.get(attributes['aloha-block-type']))($element);
-      block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
-      jQuery.each(attributes, function(k, v) {
-        return block._setAttribute(k, v);
-      });
-      return this.blocks.register(block.getId(), block);
+      this._hideDragHandlesIfDragDropDisabled();
+      return this._attachDropzoneHighlightEvents();
     };
     /*
        register the plugin with unique name
@@ -94,7 +80,7 @@
             var caption, captionRow, dialog, editCaption, editImage, editTitle, figure, imageRow, images, title, titleRow;
             dialog = $('<div class="x-figure"></div>');
             titleRow = $('<div class="title area"><span class="label">Title</span><span class="value"/></div>').appendTo(dialog);
-            imageRow = $('<div class="image area"><span class="label">Image (drop to change)</span><span class="value"/></div>').appendTo(dialog);
+            imageRow = $('<div class="image area"><span class="label">Image (drop a file to change)</span><span class="value"/></div>').appendTo(dialog);
             captionRow = $('<div class="caption area"><span class="label">caption</span><span class="value"/></div>').appendTo(dialog);
             figure = $(this);
             title = figure.children('.title');

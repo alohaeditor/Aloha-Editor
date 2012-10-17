@@ -15,6 +15,7 @@ define([
 	'use strict';
 
 	var idCounter = 0;
+	var slottedComponents = {};
 
 	/**
 	 * Defines a Container object that represents a collection of related
@@ -73,7 +74,7 @@ define([
 			this.panels = this.container.data('panels');
 			this.id = 'tab-ui-container-' + (++idCounter);
 			this.panel = $('<div>', {id : this.id, 'unselectable': 'on'});
-			this.handle = $('<li><a href="#' + this.id + '">' +
+			this.handle = $('<li><a href="' + location.href.replace(/#.*$/) + '#' + this.id + '">' +
 				settings.label + '</a></li>');
 
 			for (i = 0; i < components.length; i++) {
@@ -86,15 +87,17 @@ define([
 						this.panel.append(elem);
 					}
 				} else {
+					// Hide the group until the first button is adopted into it.
 					group = $('<div>', {
-						'class': 'aloha-ui-component-group',
+						'class': 'aloha-ui-component-group aloha-ui-hidden',
 						'unselectable': 'on'
 					}).appendTo(this.panel);
 					groupProps = {element: group, visibleCounter: 0};
 					groupedComponents = components[i];
 					for (j = 0; j < groupedComponents.length; j++) {
 						this._groupBySlot[groupedComponents[j]] = groupProps;
-						if (1 === groupedComponents[j].length &&
+						if (groupedComponents[j] &&
+							1 === groupedComponents[j].length &&
 						    groupedComponents[j].charCodeAt(0) === 10) {
 							group.append($('<div>', {'unselectable': 'on'}));
 						} else {
@@ -123,12 +126,16 @@ define([
 			if (!elem) {
 				return false;
 			}
+			slottedComponents[slot] = component;
 			component.adoptParent(this);
 			elem.append(component.element);
 			group = this._groupBySlot[slot];
 			if (group) {
 				this._groupByComponent[component.id] = group;
 				if (component.isVisible()) {
+					if (!group.visibleCounter) {
+						group.element.removeClass('aloha-ui-hidden');
+					}
 					group.visibleCounter += 1;
 				}
 			}
@@ -143,7 +150,25 @@ define([
 			this.foreground();
 		},
 
+		hasVisibleComponents: function () {
+			var siblings = this._elemBySlot;
+			var slot;
+			for (slot in siblings) {
+				if (siblings.hasOwnProperty(slot) && slottedComponents[slot]) {
+					if (slottedComponents[slot].visible) {
+						return true;
+					}
+				}
+			}
+			return false;
+		},
+
 		childVisible: function(childComponent, visible) {
+			if (visible) {
+				childComponent.container.show();
+			} else if (!childComponent.container.hasVisibleComponents()) {
+				childComponent.container.hide();
+			}
 			var group = this._groupByComponent[childComponent.id];
 			if (!group) {
 				return;
@@ -170,6 +195,10 @@ define([
 			}
 			this.handle.show();
 			this.visible = true;
+			
+			// Hiding all tabs may hide the toolbar, so showing the
+			// first tab again must also show the toolbar.
+			this.container.show();
 
 			// If no tabs are selected, then select the tab which was just shown.
 			if (   !this.container.find('.ui-tabs-active').length
@@ -206,7 +235,12 @@ define([
 				// This does not work...
 				// this.container.tabs( 'select', -1 );
 
+				// Why do we remove this class?
 				this.handle.removeClass( 'ui-tabs-active' );
+
+				// It doesn't make any sense to leave the toolbar
+				// visible after all tabs have been hidden.
+				this.container.hide();
 			}
 		}
 

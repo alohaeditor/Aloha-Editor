@@ -31,7 +31,8 @@ define([
 	'ui/toggleButton',
 	'i18n!align/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'jquery'
+	'jquery',
+	'PubSub'
 ], function(
 	Aloha,
     Plugin,
@@ -39,7 +40,8 @@ define([
     ToggleButton,
     i18n,
     i18nCore,
-    jQuery
+    jQuery,
+    PubSub
 ) {
 	'use strict';
 
@@ -88,63 +90,42 @@ define([
 				that.applyButtonConfig(params.editable.obj);
 			});
 
-			// add the event handler for selection change
-		    Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
-		    	if (Aloha.activeEditable) {
-		    		that.buttonPressed(rangeObject);
-		    	}
-		    });
+			PubSub.sub('aloha.selection.context-change', function (message) {
+				var rangeObject = message.range;
+
+				if (Aloha.activeEditable) {
+					that.buttonPressed(rangeObject);
+				}
+			});
 		},
 
 		buttonPressed: function (rangeObject) {
 			var that = this;
-
 			rangeObject.findMarkup(function() {
 		        that.alignment = jQuery(this).css('text-align');
 		    }, Aloha.activeEditable.obj);
 
-			if(this.alignment != this.lastAlignment)
-			{
-				// @FIXME: Switching between editables will not work becuase
-				//         lastAlignment and alignment are shared across
-				//         multiple editables.
-				switch(this.lastAlignment)
-				{
-					case 'right':
-						this._alignRightButton.setState(false);
-						break;
+			if (this.alignment != this.lastAlignment) {
+				// reset all button states -- it can only be one active...
+				this._alignRightButton.setState(false);
+				this._alignLeftButton.setState(false);
+				this._alignCenterButton.setState(false);
+				this._alignJustifyButton.setState(false);
 
-					case 'left':
-						this._alignLeftButton.setState(false);
-						break;
-
-					case 'center':
-						this._alignCenterButton.setState(false);
-						break;
-
-					case 'justify':
-						this._alignJustifyButton.setState(false);
-						break;
-				}
-
-				switch(this.alignment)
-				{
-					case 'right':
-						this._alignRightButton.setState(true);
-						break;
-
-					case 'center':
-						this._alignCenterButton.setState(true);
-						break;
-
-					case 'justify':
-						this._alignJustifyButton.setState(true);
-						break;
-
-					default:
-						this._alignLeftButton.setState(true);
-					    this.alignment = 'left';
-						break;
+				switch (this.alignment) {
+				case 'right':
+					this._alignRightButton.setState(true);
+					break;
+				case 'center':
+					this._alignCenterButton.setState(true);
+					break;
+				case 'justify':
+					this._alignJustifyButton.setState(true);
+					break;
+				default:
+					this._alignLeftButton.setState(true);
+					this.alignment = 'left';
+					break;
 				}
 
 				this.lastAlignment = this.alignment;

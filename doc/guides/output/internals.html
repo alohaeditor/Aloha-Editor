@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Implementation notes</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Use</a></dd>
+      <dd><a href="develop_aloha.html">Develop</a></dd>
+      <dd><a href="dependencies.html">Dependencies</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="events.html">Events</a></dd>
+      <dd><a href="using_commands.html">Commands</a></dd>
+      <dd><a href="repository.html">Repositories</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="internals.html">Internals</a></dd>
+</dl>
+<dl class="R">
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
+      <dd><a href="core_hotkey.html">Hotkeys</a></dd>
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Available Plugins</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Implementation notes</h2>
+
+          </div>
+        <p>.3 Special classes</p>
+<p>Aloha Editor will also add a <span class="caps">CSS</span> class to the html <span class="caps">DOM</span> node during it&#8217;s <code>initAloha</code> stage. The following classes will be used:</p>
+<table>
+	<tr>
+		<th>Browser </th>
+		<th>Class </th>
+	</tr>
+	<tr>
+		<td> Chrome or Safari </td>
+		<td> <code>aloha-webkit</code> </td>
+	</tr>
+	<tr>
+		<td> Opera </td>
+		<td> <code>aloha-opera</code> </td>
+	</tr>
+	<tr>
+		<td> Firefox </td>
+		<td> <code>aloha-mozilla</code> </td>
+	</tr>
+	<tr>
+		<td> Opera </td>
+		<td> <code>aloha-webkit</code> </td>
+	</tr>
+	<tr>
+		<td> Internet Explorer 7* </td>
+		<td> <code>aloha-ie7</code> </td>
+	</tr>
+	<tr>
+		<td> Internet Explorer 8* </td>
+		<td> <code>aloha-ie8</code> </td>
+	</tr>
+	<tr>
+		<td> Internet Explorer 9* </td>
+		<td> <code>aloha-ie9</code> </td>
+	</tr>
+	<tr>
+		<td> Internet Explorer 10* </td>
+		<td> <code>aloha-ie10</code> </td>
+	</tr>
+</table>
+<div class="note"><p>* Internet Explorer Version Numbers will be derived by turning the browser version into an integer</p></div>
+<h3 id="initialization-process">1 Initialization Process</h3>
+<p>When Aloha Editor is loading several steps are completed until the initialization process is finished.</p>
+<div class="warning"><p><span class="caps">TODO</span> add description for init process and events!</p></div>
+
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+// init process taken from core.js
+Aloha.stage = 'loadPlugins';
+Aloha.loadPlugins(function(){
+	Aloha.stage = 'initAloha';
+	Aloha.initAloha(function(){
+		Aloha.stage = 'initPlugins';
+		Aloha.initPlugins(function(){
+			Aloha.stage = 'initGui';
+			Aloha.initGui(function(){
+				Aloha.stage = 'alohaReady';
+				Aloha.trigger('aloha-ready');
+			});
+		});
+	});
+});
+</pre></div>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#initialization-process"><p>Initialization Process</p>
+</a></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>

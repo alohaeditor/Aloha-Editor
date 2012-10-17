@@ -1,0 +1,39 @@
+h2. The Captioned Image Plugin
+
+After reading this guide, you will be able to:
+
+* Understand what Captioned Image Plugin isand how to use it
+
+endprologue.
+
+WARNING: This guide is currently work-in-progress.
+
+h3. What is a Captioned Image?
+
+*Captioned Image* is used in Aloha Editor to display an image with a caption (as AE Block).
+
+<html>
+	<img src="http://www.aloha-editor.org/logo/Aloha%20Editor%20HTML5%20sticker%20transparent%20256.png"
+		alt="Sample alt text"
+		data-caption="Short caption."
+		class="aloha-captioned-image"
+	/>
+</html>
+
+This will create an AE Block containing an image with a caption.
+
+
+h4. Using Configuration
+
+<javascript>
+	Aloha.settings.plugins.captionedImage: {
+		allowLinebreak: false, // ['br', 'p'], true or false (default)
+		selector: 'img.aloha-captioned-image',
+		render: function (properties, callback, error) {
+			error({message: 'noop'});
+		},
+		defaultCSS: false,
+		captionedImageClass: 'aloha-captioned-image',
+		blockClass: 'mycms-captioned-image-block'
+	}
+</javascript>

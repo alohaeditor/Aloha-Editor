@@ -1,0 +1,4459 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  
+<!-- Mirrored from mountainbunker.org/~maxwell/oerpub/editor-ideas/tables-05.html by HTTrack Website Copier/3.x [XR&CO'2010], Wed, 19 Sep 2012 21:12:27 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8"><!-- /Added by HTTrack -->
+<head>
+    <title>
+      Connexions Document Importer
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+	<link rel="stylesheet" href="../../../../../../css/aloha.css" type="text/css">
+
+	<style>
+		/* Basic Styling for Sidebar */
+		.aloha-sidebar {
+		  position: fixed;
+		  right: 0;
+		  top: 0;
+		  width: 250px;
+		  height: 100%;
+		  border: 1px solid #000;
+		  border-width: 0 0 0 1px;
+		  background-color: #fff;
+		  padding: 10px;
+		}
+
+		.aloha-panel {
+		  border: 1px solid #000;
+		}
+
+		.aloha-panel-title {
+		  background-color: #000;
+		  color: #fff;
+		  padding: 5px 10px;
+		}
+
+		.aloha-panel-content {
+		 padding: 5px 10px;
+		}
+	</style>
+
+	<!--<script src="../../../../../../lib/require.js"></script>
+	<script src="../../../../../../lib/aloha.js"
+	        data-aloha-plugins="common/ui,
+	        					common/format,
+	                            extra/math"></script> -->
+
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery-1.6.4.min.js" type="text/javascript"></script>
+	<!--script src="../../../../../../lib/vendor/jquery-1.7.2.js"></script-->
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.ui.core.min.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.ui.position.min.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.ui.widget.min.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.ui.mouse.min.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/draggable.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.ui.droppable.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/scrollto.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.simplemodal.1.4.1.min.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.ui.dialog.min.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.effects.core.min.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/jquery.effects.highlight.min.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/googlejsapi.js" type="text/javascript"></script>
+    <script type="text/javascript" src="math/math-plugin.js"></script>
+
+	<!--<script src="../../../../../../lib/aloha.js"
+	        data-aloha-plugins="common/ui,
+	        					common/format,
+	                            extra/math"></script>
+  <script>
+		Aloha.settings.jQuery = $;
+  </script> 
+	<script src="../../../../../math/js/aloha-config.js"></script>
+  <script src="../../../../../math/ribbon-example.js"></script>
+	<link rel="stylesheet" href="../../../../../math/css/style.css">
+	<script src="../../../../../math/js/aloha-boilerplate.js"></script>
+    -->
+
+
+<!--
+    <script src="helper_files/swordpush.js" type="text/javascript"></script>
+-->
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/swordpush-max-03.js" type="text/javascript"></script>
+    <script src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/hoverIntent.js" type="text/javascript"></script>
+
+    <!-- Max writes: This doesn't need to be the Connexions X ... but it was useful to have something there when making these mock-ups. -->
+    <link rel="shortcut icon" type="image/x-icon" href="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/favicon.ico" />
+
+<link type="text/css" href="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/document-in-oerpub-01.css" media="screen" title="newlook" rel="stylesheet"/>
+
+<!--
+    <link rel="stylesheet" href="helper_files/main.css" type="text/css" media="screen" charset="utf-8" />
+-->
+    <link rel="stylesheet" href="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/main-max-04.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/ui-theme-base/jquery.ui.all.css" type="text/css" media="screen" charset="utf-8" />
+    <!--[if IE 6]>
+    <link rel="stylesheet" href="helper_files/ie6.css" type="text/css" media="screen" charset="utf-8" />
+    <![endif]-->
+
+
+<script type="text/javascript">
+
+</script>
+<script type="text/javascript">
+
+$(window).resize(function(){
+
+  var winh = $(window).height();
+  var headerh = $("#header-container").outerHeight();
+  var wfnh = $("#workflownav-wrap").outerHeight();
+  var contentp = parseInt($("#content").css("paddingTop"));
+  var contentp = contentp + parseInt($("#content").css("paddingBottom"));
+  var phwh = $("#pageheader-wrap").outerHeight();
+  var ma = $("#module-actions .advanced").outerWidth();
+/*
+  var cmt = parseInt($("#canvas").css("marginTop"));
+  var cpt = parseInt($("#canvas").css("paddingTop"));
+*/
+
+  // Make the editor fit exactly inside the remaining space
+//  $("#editor").height(winh - headerh - wfnh - contentp - phwh + 10);
+//  $("#artboard").height(winh - headerh - wfnh - contentp - phwh + 10 - 46 - cmt - cpt*2);
+//  $("#artboard").height(winh - headerh - wfnh - contentp - phwh + 10 - 44);
+  $("#artboard").height(winh - 43);
+  $("#editor").width($(window).width() - 0);
+
+});
+
+
+$(document).ready(function(){
+
+/* Moved this portion back directly into the file because 'headerh' wasn't always correctly calculated when done from the external file. */
+
+  var winh = $(window).height();
+  var headerh = $("#header-container").outerHeight();
+  var wfnh = $("#workflownav-wrap").outerHeight();
+  var contentp = parseInt($("#content").css("paddingTop"));
+  var contentp = contentp + parseInt($("#content").css("paddingBottom"));
+  var phwh = $("#pageheader-wrap").outerHeight();
+  var ma = $("#module-actions .advanced").outerWidth();
+
+  // Make the editor fit exactly inside the remaining space
+//  $("#editor").height(winh - headerh - wfnh - contentp - phwh + 10);
+//  $("#artboard").height(winh - headerh - wfnh - contentp - phwh + 10 - 44);
+//  $("#editor").height(winh - 30);
+//  $("#artboard").height(winh - 43);
+  $("#artboard").css("margin-top",$('#toolbar').outerHeight() + "px");
+  $("#editor").width($(window).width() - 0);
+
+  // Give the page's header the correct top margin (since the elements above it are in a fixed position)
+//  $("#content").css({'margin-top': headerh + wfnh})
+
+  // For the extra space between inline-block elements. From Sime Vidas at http://stackoverflow.com/questions/5078239/how-to-remove-the-space-between-inline-block-elements
+//  $('#icon-set').contents().filter(function() { return this.nodeType === 3; }).remove();
+
+  $(".toolbar-function").not(".disabled").find(".toolbar-icon").hover(function(e){
+//    if ($(this).closest(".toolbar-function").attr("id") != "toolbar-table") {
+      $()
+      $(this).closest(".toolbar-function").addClass("hovered");
+//    }
+  }, function(e){
+//    if ($(this).closest(".toolbar-function").attr("id") != "toolbar-table") {
+      $(this).closest(".toolbar-function").removeClass("hovered");
+//    }
+  });
+
+  $("#toolbar-table").hoverIntent({
+    over: function(e){
+//      selectIcon($(this),aol,e);
+    }, 
+    out: function(e){
+        unSelectIcon($(this),e);
+    },
+    timeout: 300,
+  });
+
+
+  $(".toolbar-icon").click(function(e){
+    fn = $(this).closest(".toolbar-function");
+//    if (fn.not(".disabled") && fn.attr("id") != "toolbar-table") {
+    if (fn.not(".disabled")) {
+      if (fn.hasClass("selected")) {
+        unSelectIcon(fn,e);
+      } else {
+        selectIcon(fn,aol,e);
+      }
+/*
+    } else if (fn.attr("id") == "toolbar-table") {
+      e.stopPropagation();
+*/
+    }
+    return false;
+  });
+
+  function selectIcon(fn,aol,e) {
+    fn.addClass("selected");
+    if (fn.attr("id") == "toolbar-table") {
+      var exText = newTablePlaceHolder(e);
+      fn.append(tableflyout);
+      $("#table-flyout").data("exText", exText);
+    } else if (fn.attr("id") == "toolbar-math") {
+      mathClickNew(aol,e);
+    }
+//    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  }
+  function unSelectIcon(fn,e) {
+    fn.removeClass("selected");
+    if (fn.attr("id") == "toolbar-table") {
+//      $("#table-flyout").remove();
+      tableEditorRemove();
+    } else if (fn.attr("id") == "toolbar-math") {
+//alert("here");
+//$("#MathJaxNew").find(".MathJaxText,.MathJaxText2").removeClass("MathJaxText").addClass(".MathJaxText2");
+//      mathEditorRemove("override");
+      mathEditorRemove("");
+    }
+//    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  }
+
+  var tableflyout = '\
+    <div class="icon-flyout" id="table-flyout">\
+      <div class="flyout-options">\
+        <input type="checkbox" id="include-row-header" checked="checked"> <label for="include-row-header">Include header row</label>\
+      </div>\
+      <div class="flyout-core">\
+        <table>\
+          <tbody>\
+            <tr>\
+              <td class="header">&nbsp\;</td>\
+              <td class="header">&nbsp\;</td>\
+              <td class="header">&nbsp\;</td>\
+              <td class="header">&nbsp\;</td>\
+              <td class="header">&nbsp\;</td>\
+              <td class="header">&nbsp\;</td>\
+            </tr>\
+            <tr>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+            </tr>\
+            <tr>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+            </tr>\
+            <tr>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+            </tr>\
+            <tr>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+            </tr>\
+            <tr>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+              <td>&nbsp\;</td>\
+            </tr>\
+          </tbody>\
+        </table>\
+        <div id="table-dimensions"/>\
+      </div>\
+    </div>\
+  ';
+
+  $("#include-row-header, label[for='include-row-header']").live("click", function(e){
+    if ($(this).is(":checked")) {
+      $("#table-flyout tr:first-child td").each(function(e){
+        $(this).addClass("header")
+      });
+    } else {
+      $("#table-flyout tr:first-child td").each(function(e){
+        $(this).removeClass("header")
+      });
+    }
+    e.stopPropagation();
+  });
+
+  $("#table-flyout td").live("mouseenter", function(e){
+    tfEnter($(this),e);
+  });
+  function tfEnter(td,e) {
+    tfLeave(td.closest("table"),e);
+    var curCol = td.index() + 1;
+    var curRow = td.closest("tr").index() + 1;
+    var totCols = td.siblings().length + 1;
+    var totRows = td.closest("tbody").find("tr").length;
+    // Remove rows if going upwards with 6+ rows
+    if (curRow > 4 && totRows - curRow > 1) {
+      td.closest("tbody").find("tr").last().remove();
+    }
+    // Remove columns if going left with 6+ columns
+    if (curCol > 4 && totCols - curCol > 1) {
+      td.closest("tbody").find("tr").each(function(e){
+        $(this).find("td").last().remove();
+      });
+    }
+    for (i=0; i<curRow; i++) {
+      td.closest("tbody").children("tr").eq(i).each(function(e){
+        for (j=0; j<curCol; j++) {
+          $(this).find("td").eq(j).addClass("hovered");
+        }
+      });
+    }
+    // Add a new row to expand
+    if (curRow > totRows - 1) {
+      var newRows = '';
+      for(k=0; k<totCols; k++) {
+        newRows = newRows + "<td>&nbsp\;</td>";
+      }
+      td.closest("tbody").append("<tr>" + newRows + "</tr>");
+      totRows++;
+    }
+    // Add a new column to expand
+    if (curCol > totCols - 1) {
+      td.closest("tbody").children("tr").each(function(e){
+        if( $(this).index() == 0 && $("#include-row-header").is(":checked") ) {
+          $(this).append('<td class="header">&nbsp\;</td>');
+        } else {
+          $(this).append('<td>&nbsp\;</td>');
+        }
+      });
+      totCols++;
+    }
+    $("#table-dimensions").text(curCol + " x " + curRow);
+  }
+
+  $("#table-flyout table").live("mouseleave", function(e){
+    tfLeave($(this),e);
+  });
+  function tfLeave(table,e) {
+    $("#table-dimensions").text("");
+    table.find("td").removeClass("hovered");
+  }
+
+  $(".toolbar-function.disabled .toolbar-icon").click(function(e){
+    e.preventDefault();
+  });
+
+
+  function preventDefault(e){
+    e.preventDefault();
+  }
+
+  $("#table-flyout").live("click", function(e){
+    return false;
+  });
+  $("#table-flyout td").live("click", function(e){
+    var curCol = $(this).index() + 1;
+    var curRow = $(this).closest("tr").index() + 1;
+    var exText = $(this).closest("#table-flyout").data("exText");
+    if( $("#include-row-header").is(":checked") ) {
+      var rowHeader = true;
+    } else {
+      var rowHeader = false;
+    }
+    newTableFill(curCol,curRow,exText,rowHeader,e);
+    unSelectIcon($("#toolbar-table"),e);
+    e.stopPropagation();
+  });
+  
+  function newTablePlaceHolder(e) {
+    var exText = getSelectionText();
+    if (exText == '') exText = "&nbsp\;";
+    if (exText == "&nbsp\;") {
+      pasteHtmlAtCaret('<span id="TableNew" class="table-temp-empty">' + exText + '</span>');
+    } else {
+       pasteHtmlAtCaret('<span id="TableNew" class="table-temp-text">' + exText + '</span>');
+    }
+    return exText;
+    e.stopPropagation();
+  }
+
+  function newTableFill(dimX,dimY,exText,rowHeader,e) {
+
+    var newTable = '<div class="canvas-wrap" contentEditable="false">\
+      <div class="table canvas">\
+        <div class="canvas-inner">\
+          <table style="border: 1px solid\; width: 100%\;" summary="" align="center" cellpadding="0" cellspacing="0" id="TableNew" contentEditable="false">\
+            <caption class="table-text" align="bottom">\
+              <span class="cnx_label">Table 1&nbsp\;</span>\
+              <strong class="title content-editable-2" style="display: none" contentEditable="true">\
+                <span class="hint-text">&nbsp;Add a title (optional)</span>\
+              </strong>\
+            </caption>\
+            <colgroup>\
+            </colgroup>\
+          </table>\
+        </div>\
+      </div>\
+    </div>';
+
+    $("#TableNew").replaceWith(newTable);
+    addHandles($("#TableNew").closest(".canvas-wrap"));
+    var width = Math.round(100/dimX);
+    for (i=0; i<dimX; i++) {
+      $("#TableNew colgroup").append('<col width="' + width + '%"/>');
+    }
+    if (rowHeader == true) {
+      $("#TableNew").append("<thead></thead>");
+    }
+    if (rowHeader == false || dimY > 1) {
+      $("#TableNew").append("<tbody></tbody>");
+    }
+    for (j=0; j<dimY; j++) {
+      if (j == 0) {
+        if (dimY > 1) {
+          addColumns($("#TableNew thead, #TableNew tbody").first(),dimX,dimY,exText,"",e);
+        } else {
+          addColumns($("#TableNew thead, #TableNew tbody").first(),dimX,dimY,exText,"lastRow",e);
+        }
+      } else if (j == dimY - 1) {
+        addColumns($("#TableNew tbody"),dimX,dimY,"","lastRow",e);
+      } else {
+        addColumns($("#TableNew tbody"),dimX,dimY,"","",e);
+      }
+    }
+    $("#TableNew").closest(".canvas-wrap").effect("highlight", { color: "#E5EEF5" }, 1000);
+    $("#TableNew th, #TableNew td").first().focus();
+    $("#TableNew").removeAttr("id")
+    e.stopPropagation();
+  }
+
+  function addColumns(location,dimX,dimY,exText,lastRow,e) {
+
+    var cols = '';
+    var repText = '';
+    var style = 'text-align: left !important\; border-top: 0 none !important\; border-left: 0 none !important\; ';
+    location.prop("tagName").toLowerCase() == "thead" ? locType = 'th' : locType = 'td';
+    for (k=0; k<dimX; k++) {
+      k == 0 && exText != "" ? repText = exText : repText = "&nbsp\;";
+      if (k == dimX - 1) {
+        style+= "border-right: 0 none !important\; ";
+      } else {
+        style+= "border-right: 1px solid !important\; ";
+      }
+      if (lastRow == "lastRow") {
+        style+= "border-bottom: 0 none !important\;";
+      } else {
+        style+= "border-bottom: 1px solid !important\;";
+      }
+      cols = cols + '<' + locType + ' style="' + style + '" contentEditable="true">' + repText + '</' + locType + '>';
+    }
+    location.append('<tr>' + cols + '</tr>');
+  }
+
+
+
+
+
+  $('.canvas-buddy a').mousedown(function(e){
+//    $(this).css("cursor","url('content_files/closedhand.cur')");
+    $(this).addClass("dragging");
+  });
+  $('.canvas-buddy a').mouseup(function(e){
+//    $(this).css("cursor","url('content_files/openhand.cur')");
+    $(this).removeClass("dragging");
+  });
+
+
+  $("#pedagog .node").mousedown(function(e){
+    $(this).addClass("dragging");
+  });
+  $("#pedagog .node").mouseup(function(e){
+    $(this).removeClass("dragging");
+  });
+
+  $("#pedagog ul a").toggle(function(e){
+    $(this).addClass("pedagog-click");
+  }, function(e){
+    $(this).removeClass("pedagog-click");
+  });
+
+  $("#canvas .para")
+    .before("<div class='droppable-all'/>")
+    .after("<div class='droppable-all'/>");
+
+  $(".droppable-all").each(function(){
+    var pw = $(this).parent().innerWidth();
+    $(this).css("width",pw)
+  });
+
+
+  $(".add-solution-2").click(function(e){
+    buildSolution($(this),e);
+  });
+
+  $("#pedagog .count").hover(function(e){
+    var arrow = "<span class='count-arrow' style='height: ";
+    var height = $(this).outerHeight();
+    var arrow = arrow + height + "px\; width: " + height/2 + "px\;'></span>"
+    $(this).find(".count-total").append(arrow);
+    $(this).parent().removeAttr("title");
+//    $(this).attr("title","Click to view a list of these elements already in the document.")
+    $(this).find(".count-total").addClass("count-total-hover");
+    $(this).find(".node-list").show();
+    pedagogLiLeave($(this).closest(".pedagog"),e);
+    $("#pedagog li.pedagog").die("mouseenter");
+  }, function(e){
+    $(".node-list").hide();
+    $(this).find(".count-total").removeClass("count-total-hover");
+    $(this).find(".count-arrow").remove();
+    if (e.relatedTarget.parentNode.className.indexOf("pedagog") > -1) {
+      pedagogLiEnter($(this).closest(".pedagog"),e);
+    }
+    $("#pedagog li.pedagog").live("mouseenter", function(e){
+      pedagogLiEnter($(this),e);
+    });
+  });
+
+/*
+  function nodeListIn(c,e) {
+    c.find(".node-list").show();
+  }
+  function nodeListOut(c,e) {
+    $(".node-list").hide();
+    c.find(".count-total").removeClass("count-total-hover");
+    c.find(".count-arrow").remove();
+    if (e.relatedTarget.parentNode.className.indexOf("pedagog") > -1) {
+      pedagogLiEnter(c.closest(".pedagog"),e);
+    }
+    $("#pedagog li.pedagog").live("mouseenter", function(e){
+      pedagogLiEnter(c,e);
+    });
+  }
+  $('#pedagog .count').hoverIntent({
+    over: function(e){
+      nodeListIn($(this),e);
+    }, 
+    out: function(e){
+      nodeListOut($(this),e);
+    },
+    interval: 300,
+  });
+
+  $('#pedagog .count').mouseenter(function(e){
+    var arrow = "<span class='count-arrow' style='height: ";
+    var height = $(this).outerHeight();
+    var arrow = arrow + height + "px\; width: " + height/2 + "px\;'></span>"
+    $(this).find(".count-total").append(arrow);
+    $(this).find(".count-total").addClass("count-total-hover");
+    pedagogLiLeave(c.closest(".pedagog"),e);
+    $("#pedagog li.pedagog").die("mouseenter");
+  });
+*/
+
+/*
+  $("#pedagog .count-total").click(function(e){
+    var nl = $(this).parent().find(".node-list");
+    if (nl.css("display") == 'none') {
+      nl.show();
+    } else {
+      nl.hide();
+    }
+    $(this).parent().removeAttr("title");
+    $(this).parent().parent().removeAttr("title");
+  });
+*/
+
+  $(".node-list a").click(function(e){
+/*
+    target = $(this).attr("href");
+    window.location = target;
+*/
+    var canvasOT = $("#canvas").offset().top;
+    e.preventDefault();
+    $('body,html').animate({
+        scrollTop:$(this.hash).offset().top - canvasOT,
+      }, 500);
+    $(this.hash).effect("highlight", { color: "#E5EEF5" }, 1500);
+  });
+
+  $(".node").hover(function(e){
+//    $(this).find(".plus").css("visibility","visible");
+    $(this).find(".plus").css("color","#000");
+    $(this).parent().not(".pedagog-glossary").attr("title","Drag this item to the place you want it on the page.");
+  }, function(e){
+//    $(this).find(".plus").css("visibility","hidden");
+    $(this).find(".plus").css("color","#999");
+  });
+
+  
+  $("#pedagog li.pedagog").live("mouseenter", function(e){
+    pedagogLiEnter($(this),e);
+  });
+  $("#pedagog li.pedagog").live("mouseleave", function(e){
+    pedagogLiLeave($(this),e);
+  });
+  
+  function pedagogLiEnter(pl,e) {
+    pl.addClass("hovered");
+  }
+  function pedagogLiLeave(pl,e) {
+    pl.removeClass("hovered");
+  }
+
+  $(".pedagog-glossary").click(function(e){
+    $(this).find("input").attr("checked","checked");
+    $("#artboard").scrollTo(".glossary-outer",{duration:700,over:0.5,onAfter:function(){
+        $(".glossary-container").show();
+        $("#artboard").scrollTo(".glossary-outer",{duration:500});
+      }
+    });
+  });
+
+  $("em.emphasis,dfn.term").addClass("edhint");
+
+
+/*
+  $("#hints, #hints input").toggle(function(e){
+    if(e.target.type=="checkbox") {
+      $("em.emphasis,dfn.term").removeClass("edhint");
+      $(this).attr("checked",false);
+      e.stopPropagation();
+    } else {
+      $(this).find("input").attr("checked",false);
+      $("em.emphasis,dfn.term").removeClass("edhint");
+    }
+  }, function(e){
+    if(e.target.type=="checkbox") {
+      $("em.emphasis,dfn.term").addClass("edhint");    
+      $(this).attr("checked",true);
+      e.stopPropagation();
+    } else {
+      $(this).find("input").attr("checked",true);
+      $("em.emphasis,dfn.term").addClass("edhint");    
+    }
+  });
+*/
+  $("#hints").click(function(e){
+    if ( $(this).children("input").attr("checked") ) {
+      //e.preventDefault();
+      //$(this).children("input").attr("checked",false);
+      $("em.emphasis,dfn.term").removeClass("edhint");
+    } else {
+      //e.preventDefault();
+      //$(this).find("input").attr("checked",true);
+      $("em.emphasis,dfn.term").addClass("edhint");    
+    }
+  });
+
+
+  $(".canvas-buddy").each(function(e){
+    ttl = $(this).children("a").attr("title");
+    $(this).attr("title",ttl);
+  });
+
+  $(".element-options-tabs li").click(function(e){
+     var eoid = $(this).attr("id").replace("-tab","");
+     $(this).closest(".element-options").find(".element-options-tabs li").removeClass("selected");
+     $(this).addClass("selected");
+     $(this).closest(".element-options").find(".element-options-contents").hide();
+     $("#" + eoid).show();
+     return false;
+  });
+
+  $("input[name='custom-label']").focus(function(e){
+    $("input[value='custom'][name='label']").attr("checked","checked");
+  });
+  $("input[name='custom-label2']").focus(function(e){
+    $("input[value='custom2'][name='label2']").attr("checked","checked");
+  });
+  $("input[name='custom-label3']").focus(function(e){
+    $("input[value='custom3'][name='label3']").attr("checked","checked");
+  });
+
+
+  $(".MathJax").attr("contentEditable","false");
+  $(".canvas-wrap").attr("contentEditable","false");
+
+  var cheatsheet = '\
+    <div id="cheat-sheet-wrap">\
+      <div id="cheat-sheet-open"><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/open-cheat-sheet-01.png"></div>\
+      <div id="cheat-sheet">\
+        <div id="cheat-sheet-close"><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/close-cheat-sheet-01.png"></div>\
+        <div id="cheat-sheet-title">Math Cheat Sheet</div>\
+        <div id="cheat-sheet-type">\
+          <div>\
+            <input type="radio" name="cs-math-type" id="cs_radio_ascii" value="cs_ascii" checked="checked"> <label for="cs_radio_ascii">ASCIIMath</label>\
+          </div>\
+          <div>\
+            <input type="radio" name="cs-math-type" id="cs_radio_latex" value="cs_latex"> <label for="cs_radio_latex">LaTeX</label>\
+          </div>\
+        </div>\
+        <div id="cheat-sheet-ascii" class="cheat-sheet-values">\
+          <table><tbody><tr>\
+            <td style="font-family: helvetica"><strong>Display:</strong></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/root2over2.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/pirsq.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/xltoet0.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/infinity.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/aplusxover2.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/choose.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/integral.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/function-01.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/matrix-01.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/sin-01.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/piecewise-01.gif"/></td>\
+            <td><img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/standard-product-01.gif"/></td>\
+          </tr>\
+          <tr>\
+            <td style="font-family: helvetica"><strong>ASCIIMath code:</strong></td>\
+            <td>sqrt(2)/2</td>\
+            <td>(pi)r^2  or  pi*r^2</td>\
+            <td>x &lt;= 0</td>\
+            <td>x --&gt; infinity</td>\
+            <td>((A+X)/2 , (B+Y)/2)</td>\
+            <td>sum_{k=0}^{s-1} {n choose k}</td>\
+            <td>INT[(4-x^2)dx] from -2 to +2</td>\
+            <td>d/dxf(x)=lim_(h->0)(f(x+h)-f(x))/h</td>\
+            <td>[[a,b],[c,d]]((n),(k))</td>\
+            <td>sin^-1(x)</td>\
+            <td>x/x={(1,if x!=0),(text{undefined},if x=0):}</td>\
+            <td>((a*b))/c</td>\
+          </tr></tbody></table>\
+        </div>\
+        <div id="cheat-sheet-latex" style="display: none;" class="cheat-sheet-values">\
+          Fill in later\
+          <br/>\
+          <br/>\
+          <br/>\
+          <br/>\
+          <br/>\
+          <br/>\
+        </div>\
+        <div style="clear: both"></div>\
+      </div>\
+    </div>\
+  ';
+  $("#artboard-inner").append(cheatsheet);
+  $("#cheat-sheet-wrap, #toolbar").css("width",$('#artboard-inner').outerWidth() + "px");
+
+});
+
+  $(".clear-text-from-input").live("click", function(e){
+    $(this).parent().find("input").val('')
+    return false;
+  });
+
+
+  function tableEditorRemove(e) {
+    $("#table-flyout").remove();
+    $("#toolbar-table").removeClass("selected");
+//    $("#TableNew").remove();
+/*
+    var exText = $("#TableNew").text();
+    if (exText.trim() == '&nbsp\;') {
+*/
+    var exText = $("#TableNew").text().trim();
+    if (exText == '') {
+      $("#TableNew").remove();
+    } else {
+      $("#TableNew").replaceWith(exText);
+    }
+  }
+
+  function mathIconEnter(mi,e){
+    mi.addClass("hovered");
+    mi.closest(".MathJax").removeAttr("title");
+  }
+  function mathIconLeave(mi,e){
+    mi.removeClass("hovered");
+    mi.closest(".MathJax").attr("title","Click anywhere on the math to edit it");
+  }
+  $(".math-icon").live("mouseenter", function(e){
+    mathIconEnter($(this),e);
+  });
+  $(".math-icon").live("mouseleave", function(e){
+    mathIconLeave($(this),e);
+  });
+
+  function mathEnter(m,e) {
+    $('.canvas-wrap').each(function(){
+      $(this).children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
+      $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
+      $(this).children('.canvas').removeClass("canvas-hovered");
+    });
+    m.addClass("hovered");
+    if(!m.find(".math-editor").length) {
+      m.attr("title","Click anywhere on the math to edit it");
+      m.append('<span class="math-icon" id="math-icon-edit"><span class="math-icon-message">Click anywhere on the math to edit it</span></span>');
+      m.append('<span class="math-icon" id="math-icon-clear"><span class="math-icon-message"><span class="math-icon-message-close">X</span> Remove math formatting (revert to plain text)</span></span>');
+    }
+    e.stopPropagation();
+  }
+
+  function mathLeave(m,e) {
+/*
+    if(!m.find(".math-editor").length) {
+      m.removeClass("selected");
+    }
+*/
+    m.removeClass("hovered");
+    m.removeAttr("title");
+    m.find('#math-icon-edit').remove();
+    m.find('#math-icon-clear').remove();
+    if ( !m.parents().closest(".active").length) {
+      m.parent().closest('.canvas-wrap').each(function(){
+        $(this).children().children().children('.canvas-buddy, .canvas-buddy-2').show();
+        $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').show();
+        $(this).children('.canvas').addClass("canvas-hovered");
+      });
+    }
+  }
+  function buildMathEditor(m,e) {
+    var ed = '<div class="math-editor" contenteditable="false">\
+        <span class="math-editor-close">\
+          <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">\
+        </span>\
+        <div class="math-source-wrap">\
+          <span class="math-source" contenteditable="true"></span>\
+          <div id="math-error" contentEditable="false">\
+            <strong>LaTeX error:</strong> <br/>sqrt requires initial backslash: \\sqrt\
+          </div>\
+        </div>\
+        <div class="math-options-activate">\
+          This is:\
+          <input type="radio" name="math-type" id="radio_ascii" value="ascii" checked="checked"> <label for="radio_ascii">ASCIIMath</label>\
+          <input type="radio" name="math-type" id="radio_latex" value="latex"> <label for="radio_latex">LaTeX</label>\
+          <span id="math-type-help" class="math-help" style="display: none\;">(<a href="#asdfasdf">what\'s this?</a>)</span>\
+        </div>\
+        <div id="cheat-sheet-activate" style="text-align: right\; display: block\;">\
+          <input type="checkbox" name="cheat-sheet-activator" id="cheat-sheet-activator">\
+          <label for="cheat-sheet-activator" style="font-weight: normal\; padding-right: .4em\;">Show cheat sheet</label>\
+          <span id="math-editor-help" class="math-editor-help" style="border-left: 1px solid #7D8B94\; padding-left: .6em\;">\
+            <a href="#asdfasdfasdf">See help</a>\
+          </span>\
+        </div>\
+        <div id="math-advanced" style="clear: both\;">\
+        </div>\
+        <div class="math-help-text-wrap">\
+          <div class="math-help-text" id="math-type">\
+            <span class="math-help-text-close">x</span>\
+            ASCIIMath and LaTeX transform plain text into mathematics format.\
+            <ul>\
+              <li>\
+                <strong>ASCIIMath</strong> is a simple input notation similar to that of a graphing calculator.\
+                For example, <span style="font-family: courier new">x^(ab)</span> would render as \
+                <span class="math-style">x<sup style="line-height: .5em; vertical-align: .3em;">ab</sup></span>.\
+                <a href="http\:\/\/www1.chapman.edu\/\~jipsen\/asciimath.html" target="_blank" class="external">Learn more.</a>\
+              </li>\
+              <li>\
+                <strong>LaTeX</strong>, while similar to ASCIIMath, includes some more complex notation for advanced math.\
+                <a href="http\:\/\/en.wikibooks.org/wiki/LaTeX/Mathematics" target="_blank" class="external">Learn more.</a>\
+              </li>\
+            </ul>\
+            Click the "<strong>Show cheat sheet</strong>" box to see examples of each.\
+          </div>\
+          <div class="math-help-text" id="math-editor-help-text">\
+            <span class="math-help-text-close">x</span>\
+            To add math to your document, type math in the text field using either \
+            <a href="#asd" id="math-type-help-2">ASCIIMath or LaTeX notation</a>.\
+            The display math will be rendered below in real time.  When you\'re done, just click anywhere outside the blue box.\
+            <ul>\
+              <li>\
+                <strong>Show cheat sheet</strong>.  Use this to see common examples of notation and their respective display.\
+              </li>\
+              <li>\
+                <strong>Show advanced options</strong>.  Use this to switch between your choice of ASCIIMath or LaTeX.\
+              </li>\
+            </ul>\
+          </div>\
+        </div>\
+      </div>';
+    return ed;
+  }
+  function mathClick(m,e) {
+
+    $("[class*='-header']").die("mouseenter mouseleave"); // Turning hovers off (temporarily)
+    $(".canvas-wrap").die("mouseenter mouseleave"); // Have to do this one separately from above, apparently
+    $(".MathJax").die("mouseenter mouseleave");
+    $("table caption").die("mouseenter mouseleave");
+
+    cwLeave($(".canvas-wrap"),"special");
+
+    if(!m.find(".math-editor").length) {
+      mathEditorRemove("");
+      m.find('#math-icon-edit').remove();
+      m.find('#math-icon-clear').remove();
+      m.removeAttr("title");
+      m.addClass("selected");
+      $("#toolbar-math").addClass("selected");
+
+      mec = buildMathEditor(m,e);
+      m.prepend(mec);
+      var mathtext = m.find(".asciimath").text();
+      console.log("Math text is: " + mathtext);
+      if (mathtext.length) {
+        m.find(".math-source").append(mathtext);
+      } else if ( m.find(".MathJaxText, .MathJaxText2").text().length ) {
+        console.log("The math text is: " + m.find(".MathJaxText, .MathJaxText2").text());
+        m.find(".math-source").append(m.find(".MathJaxText, .MathJaxText2").text());
+      } else {
+        m.find(".math-source").append("&nbsp;");
+      }
+      newB = m.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
+      newL = m.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
+      $(".math-editor").css("bottom", newB + "px");
+      $(".math-editor").css("left", newL + "px");
+      placeCaretAtEnd($(".math-source").get(0));
+    } else {
+      placeCaretAtEnd($(".math-source").get(0));
+    }
+    if ( $("#cheat-sheet").css("display") != 'none' ) $("#cheat-sheet-activator").attr("checked",true);
+    $("#cheat-sheet-wrap").slideUp("fast", function(e){
+      $(this).show();
+    });
+    e.stopPropagation();
+  }
+
+  $(".math-source").live("click", function(e){
+    $(this).find(".math-source-hint-text").replaceWith("&nbsp;");
+  });
+
+  var aol = '';
+
+  function mathClickNew(aol,e) {
+    console.log("math Click new ");
+    var exText = getSelectionText();
+    if (exText == '') {
+      exText = '&nbsp\;';
+      pasteHtmlAtCaret('<span id="MathJaxNew" class="MathJax selected" contenteditable="false">' + exText + '</span>');
+
+      $("[class*='-header']").die("mouseenter mouseleave"); // Turning hovers off (temporarily)
+      $(".canvas-wrap").die("mouseenter mouseleave"); // Have to do this one separately from above, apparently
+      $(".MathJax").die("mouseenter mouseleave");
+      $("table caption").die("mouseenter mouseleave");
+      cwLeave($(".canvas-wrap"),"special");
+      $("#toolbar-math").addClass("selected");
+
+      mec = buildMathEditor();
+      
+      var m = $("#MathJaxNew")
+      m.prepend(mec)
+      if (aol == 'aol-latex') {
+        m.find("#radio_latex").attr("checked",true);
+      } else {
+        m.find("#radio_ascii").attr("checked",true);
+      }
+      //m.removeClass("temporarily-hide");
+      newB = m.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
+      newL = m.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
+      $(".math-editor").css("bottom", newB + "px");
+      $(".math-editor").css("left", newL + "px");
+      if (exText == '&nbsp;') {
+        m.find(".math-source").append('<span class="math-source-hint-text">Enter your math notation here</span>');
+      } else {
+        m.find(".math-source").append(exText);
+        placeCaretAtEnd($(".math-source").get(0));
+      }
+      if ( $("#cheat-sheet").css("display") != 'none' ) $("#cheat-sheet-activator").attr("checked",true);
+      $("#cheat-sheet-wrap").slideUp("fast", function(){
+        $(this).show();
+      });
+
+
+    } else {
+
+      pasteHtmlAtCaret('<span id="MathJaxNew" class="MathJax" contenteditable="false"><span class="MathJaxText">' + exText + '</span></span>');
+      $("#toolbar-math").removeClass("selected");
+      $("#MathJaxNew").removeAttr("id").effect("highlight", { color: "#E5EEF5" }, 1000);
+
+    }
+
+    e.stopPropagation();
+    e.preventDefault();
+
+  }
+
+  function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/questions/6690752/insert-html-at-cursor-in-a-contenteditable-div
+    var sel, range;
+    if (window.getSelection) {
+        // IE9 and non-IE
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+            range = sel.getRangeAt(0);
+            range.deleteContents();
+
+            // Range.createContextualFragment() would be useful here but is
+            // non-standard and not supported in all browsers (IE9, for one)
+            var el = document.createElement("div");
+            el.innerHTML = html;
+            var frag = document.createDocumentFragment(), node, lastNode;
+            while ( (node = el.firstChild) ) {
+                lastNode = frag.appendChild(node);
+            }
+            range.insertNode(frag);
+
+            // Preserve the selection
+            if (lastNode) {
+                range = range.cloneRange();
+                range.setStartAfter(lastNode);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+    } else if (document.selection && document.selection.type != "Control") {
+        // IE < 9
+        document.selection.createRange().pasteHTML(html);
+    }
+  }
+
+
+  function mathEditorRemove(override) {
+      console.log("mathEditorRemove");
+//    if (!$("#MathJaxNew").length || override.length) { // Hack because propagation doesn't seem to be stopping in mathClickNew2
+      $(".MathJax").removeClass("selected");
+      $(".MathJax").removeClass("hovered");
+      if ($("#cheat-sheet-wrap").css("display") != 'none') {
+        $("#cheat-sheet-wrap").slideDown("fast", function(e){
+          $(this).hide();
+        });
+      }
+      var mj = $(".math-editor").closest(".MathJax");
+      var ms = $(".math-editor").find(".math-source").text();
+      if ((override.length || $("#radio_regular").is(":checked")) && !$(".math-source-hint-text").length) {
+        if (ms == "&nbsp\;") {
+          mj.replaceWith("");
+        } else {
+          mj.replaceWith(ms);
+        }
+      } else {
+        if (!mj.find(".asciimath").length) { // This just not to mess up the nice examples in the mock-up.
+          if (!ms.trim().length || $("#MathJaxNew").find(".math-source-hint-text").length) {
+            mj.remove();
+          } 
+          else {
+            mj.html('<span class="MathJaxText">' + ms + '</span>');
+          }
+        }
+      }
+      $(".math-editor").remove();
+      $("#toolbar-math").removeClass("selected");
+      $(".MathJax").each(function(){
+        if ($(this).attr("id") == 'MathJaxNew') {
+          $(this).removeAttr("id");
+        }
+      });
+    }
+//  }
+  $(".MathJax").live("mouseenter", function(e){
+    console.log("Editor being entered");
+    mathEnter($(this),e);
+  });
+  $(".MathJax").live("mouseleave", function(e){
+    console.log("Editor being left");    
+    mathLeave($(this),e);
+  });
+  $(".MathJax:not(.selected)").live("click", function(e){
+    console.log("Editor not selected?");    
+    mathClick($(this),e);
+  });
+  $(".math-editor").live("click", function(e){
+    console.log("math editor being clicked");
+//  e.stopPropagation();
+    meClick($(this),e);
+  });
+  function meClick(me,e) {
+    console.log("Stopping propagation");
+    e.stopPropagation();
+  };
+  
+  $("#cheat-sheet-wrap, .MathJax.selected").live("click", function(e){
+    meClick($(this),e);
+  });
+
+  $("#cheat-sheet-close").live("click", function(e){
+    $("#cheat-sheet").slideUp("fast", function(){
+      $(this).hide();
+    });
+    $("#cheat-sheet-open").show("slow");
+    $("#cheat-sheet-activator").attr("checked",false);
+  });
+  $("#cheat-sheet-open").live("click", function(e){
+    $(this).hide();
+    $("#cheat-sheet").slideDown("fast", function(){
+      $(this).show();
+    });
+    $("#cheat-sheet-activator").attr("checked",true);
+  });
+
+  $("#cheat-sheet-activator").live("click", function(e){
+    if ($(this).is(":checked")) {
+      $("#cheat-sheet-open").hide();
+      $("#cheat-sheet").slideDown("fast");
+    } else {
+      $("#cheat-sheet").slideUp("fast");
+      $("#cheat-sheet-open").show("slow");
+    }
+  });
+
+  $("#math-advanced-activator").live("click", function(e){
+    if ($(this).is(":checked")) {
+      $("#math-advanced").slideDown("fast");
+    } else {
+      $("#math-advanced").slideUp("fast");
+    }
+  });
+
+  $("#radio_regular").live("click", function(e){
+    console.log("radio regular being clicked");
+    if ($(this).is(":checked")) {
+      $(this).closest(".MathJax").find(".MathJaxText").removeClass("MathJaxText").addClass("MathJaxText2");
+    } else {
+      $(this).closest(".MathJax").find(".MathJaxText2").removeClass("MathJaxText2").addClass("MathJaxText");
+    }
+  });
+
+
+  $("#math-icon-clear").live("click", function(e){
+      var mj = $(this).closest(".MathJax");
+//      var ms = mj.contents(":not(.math-icon)").text();
+      var ms = '&nbsp\;';
+      if (mj.find(".asciimath").text().length) {
+        ms = mj.find(".asciimath").text();
+      } else if ( mj.find(".MathJaxText, .MathJaxText2").text().length ) {
+        ms = mj.find(".MathJaxText, .MathJaxText2").text();
+      }
+      mj.replaceWith(ms);
+      return false;
+  });
+
+  $("input[name=math-type]").live("click", function(e){
+    var m = $(this).closest(".MathJax");
+    if ($(this).val() == 'latex') {
+      m.addClass("errored");
+      m.find(".actual-math").hide();
+      m.find(".asciimath").show();
+      $("#math-error").css("width",m.find(".math-source").outerWidth() - 28 + "px"); // 28 = 24 total padding + 2 total border + 2 to appear inset
+      $("#math-error").slideDown(100, function(e){
+        $(this).show();
+      });
+    } else {
+      m.removeClass("errored");
+      m.find(".actual-math").show();
+      m.find(".asciimath").hide();
+      $("#math-error").slideUp(100, function(e){
+        $(this).hide();
+      });
+    }
+  });
+
+  $("input[name=cs-math-type]").live("click", function(e){
+    var cs = $(this).closest("#cheat-sheet");
+    if ($(this).val() == 'cs_latex') {
+      cs.find("#cheat-sheet-ascii").hide();
+      cs.find("#cheat-sheet-latex").show();
+    } else {
+      cs.find("#cheat-sheet-ascii").show();
+      cs.find("#cheat-sheet-latex").hide();
+    }
+  });
+
+  $("html, .math-editor-close, .math-done").live("click", function(e){
+/*
+    if ($(this).hasClass("math-editor-close")) {
+      mathEditorRemove("override");
+    } else {
+*/    console.log("Removing the math editor");
+      mathEditorRemove("");
+/*
+    }
+*/
+    tableEditorRemove(e);
+    // Turn hovers back on ...
+    $(".canvas-wrap").live("mouseenter", function(e){
+      cwEnter($(this),e)
+    });
+    $(".canvas-wrap").live("mouseleave", function(e){
+      cwLeave($(this),e)
+    });
+    $("[class*='-header']").live("mouseenter", function(e){
+      headerEnter($(this),e);
+    });
+    $("[class*='-header']").live("mouseleave", function(e){
+      headerLeave($(this),e);
+    });
+    $(".MathJax").live("mouseenter", function(e){
+      mathEnter($(this),e);
+    });
+    $(".MathJax").live("mouseleave", function(e){
+      mathLeave($(this),e);
+    });
+    $("table caption").live("mouseenter", function(e){
+      headerEnter($(this),e);
+    });
+    $("table caption").live("mouseleave", function(e){
+      tableHeaderLeave($(this),tableTitleHintText,tableCaptionHintText,e);
+    });
+
+  });
+
+  function placeCaretAtEnd(el) { // From Tim Down at http://stackoverflow.com/questions/4233265/contenteditable-set-caret-at-the-end-of-the-text-cross-browser
+    el.focus();
+    if (typeof window.getSelection != "undefined"
+            && typeof document.createRange != "undefined") {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (typeof document.body.createTextRange != "undefined") {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(el);
+        textRange.collapse(false);
+        textRange.select();
+    }
+  }
+
+/*
+  $(function () {
+        $(".canvas-wrap").hoverIntent({
+            over: function(e){
+               cwEnter($(this),e);
+            },
+            out: function(e){
+               cwLeave($(this),e);
+            }, 
+            interval: 0,
+        });
+  });
+*/
+
+  function cwEnter(cw,e) {
+      $('.canvas-wrap').each(function(){
+        $(this).children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
+        $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
+        $(this).children('.canvas').removeClass("canvas-hovered");
+      });
+/*
+      setTimeout(function(){
+        cwEnter2(cw)
+      }, 200);
+*/
+      cw.children('.canvas').addClass("canvas-hovered");
+      cw.children().children().children('.canvas-buddy, .canvas-buddy-2').show();
+      cw.children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').show();
+      if (cw.children('.exercise').length) {
+        cw.children('.exercise').find(".add-solution-2").slideDown("fast");
+      }
+      e.stopPropagation();
+  }
+  function cwEnter2(cw) {
+  }
+  function cwLeave(cw,special) {
+      cw.children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
+      cw.children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
+      cw.children('.canvas').removeClass("canvas-hovered");
+      if ( !cw.parents().closest(".active").length && special != "special") {
+        cw.parent().closest('.canvas-wrap').each(function(){
+          $(this).children().children().children('.canvas-buddy, .canvas-buddy-2').show();
+          $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').show();
+          $(this).children('.canvas').addClass("canvas-hovered");
+        });
+      }
+      if (cw.children('.exercise').length) {
+        cw.children('.exercise').find(".add-solution-2").slideUp("fast");
+      }
+  }
+  $(".canvas-wrap").live("mouseenter", function(e){
+    cwEnter($(this),e);
+  });
+  $(".canvas-wrap").live("mouseleave", function(e){
+    cwLeave($(this),e);
+  });
+
+  function getSelectionText() { // from Tim Down at http://stackoverflow.com/questions/5379120/jquery-get-the-highlighted-text
+    var text = "";
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        text = document.selection.createRange().text;
+    }
+    return text;
+  }
+
+
+  var desctitle = '<span class="hint-text">Add a descriptive title (optional)</span>';
+
+  function headerEnter(h,e) {
+    h.find(".title").show();
+    h.find(".table-caption").show(); // Might not be there for other elements
+  }
+  function headerLeave(h,desctitle,e) {
+    var title = h.find(".title");
+    var label = h.find(".cnx_label");
+    var labelt = label.text().trim();
+    if (h.find(".hint-text").length) {
+      title.hide();
+    } else if (title.text().trim() == '') {
+      title.hide();
+      title.prepend(desctitle);
+      title.blur();
+      if (labelt.substr(labelt.length - 1) == ":") {
+        label.text(labelt.substring(0, labelt.length - 1));
+      }
+    }
+  }
+  function headerClick(h,e) {
+    h.find(".title .hint-text").remove();
+/*
+    // Not sure why I have to have the following in both headerClick and titleFocus. Oh well.
+    var label = h.find(".cnx_label").text().trim();
+    if (label.substr(label.length - 1) != ":") {
+      h.find(".cnx_label").text(label + ": ");
+    }
+*/
+    h.find(".title").focus();
+  }
+  function titleFocus(t,e) {
+    var label = t.parent().find(".cnx_label").text().trim();
+    if (label.substr(label.length - 1) != ":") {
+      t.parent().find(".cnx_label").text(label + ": ");
+    }
+  }
+  function titleBlur(t,desctitle,e) {
+    if (t.text().trim() == '') {
+      t.prepend(desctitle);
+      t.hide();
+    }
+  }
+  $("[class*='-header']").live("mouseenter", function(e){
+    headerEnter($(this),e);
+  });
+  $("[class*='-header']").live("mouseleave", function(e){
+    headerLeave($(this),desctitle,e);
+  });
+  $("[class*='-header']").live("click", function(e){
+    headerClick($(this),e);
+  });
+  $("strong.title:not(table>caption>.title)").live("focus", function(e){
+    titleFocus($(this),e);
+  });
+  $("strong.title").live("blur", function(e){
+    titleBlur($(this),desctitle,e);
+  });
+
+
+  var tableTitleHintText = '<span class="hint-text">&nbsp\;Add a title (optional)</span>';
+  var tableCaptionHintText = '<div class="hint-text">&nbsp\;Add a table caption (optional)</div>';
+
+  function tableTitleClick(tt) {
+    var label = tt.parent().find(".cnx_label").text().trim();
+    tt.children(".hint-text").remove();
+    if (label.substr(label.length - 1) != ":") {
+      tt.parent().find(".cnx_label").text(label + ": ");
+    }
+    tt.focus();
+  }
+/*
+  function tableCaptionClick(tc) {
+    tc.find(".hint-text").remove();
+    tc.focus();
+  }
+*/
+  function tableHeaderLeave(h,desctitle,desccaption) {
+//    var caption = h.find(".table-caption");
+    var title = h.find(".title");
+    var label = h.find(".cnx_label");
+    var labelt = label.text().trim();
+    if (title.find(".hint-text").length) {
+      title.hide();
+    }
+/*
+    if (caption.find(".hint-text").length) {
+      caption.hide();
+    }
+*/
+    if (title.text().trim() == '') {
+      title.hide();
+      title.prepend(desctitle);
+    }
+/*
+    if (caption.text().trim() == '') {
+      caption.hide();
+      caption.prepend(desccaption);
+    }
+*/
+    title.blur();
+//    caption.blur();
+//    if (title.find(".hint-text").length && caption.find(".hint-text").length && labelt.substr(labelt.length - 1) == ":") {
+    if (title.find(".hint-text").length && labelt.substr(labelt.length - 1) == ":") {
+        label.text(labelt.substring(0, labelt.length - 1));
+    }
+  }
+  $("table caption").live("mouseenter", function(e){
+    headerEnter($(this),e);
+  });
+  $("table caption").live("mouseleave", function(e){
+    tableHeaderLeave($(this),tableTitleHintText,tableCaptionHintText,e);
+  });
+  $("table>caption>.title").live("click", function(e){
+    tableTitleClick($(this),e);
+  });
+/*
+  $("table>caption>.table-caption").live("click", function(e){
+    tableCaptionClick($(this),e);
+  });
+*/
+  $("table>caption>strong.title").live("blur", function(e){
+    titleBlur($(this),tableTitleHintText,e);
+  });
+/*
+  $("table>caption>.table-caption").live("blur", function(e){
+    titleBlur($(this),tableCaptionHintText,e);
+  });
+*/
+
+
+
+  function cbEnter(cb) {
+    cb.css("background-color","#666");
+    cb.parent().css("background-color","#f2f2f2");
+    cb.find("img").attr("src","http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-20.png");
+    cb.parent().children(".canvas-buddy-2").hide();
+//    cb.closest(".canvas").addClass("canvas-hovered");
+  }
+  function cbLeave(cb) {
+    cb.css("background-color","transparent");
+    cb.parent().css("background-color","transparent");
+    cb.find("img").attr("src","http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png");
+    cb.parent().children(".canvas-buddy-2").show();
+//    cb.closest(".canvas").removeClass("canvas-hovered");
+  }
+  $(".canvas-buddy").live("mouseenter", function(){
+    cbEnter($(this));
+  });
+  $(".canvas-buddy").live("mouseleave", function(){
+    cbLeave($(this));
+  });
+
+
+  function reEnter(re) {
+    re.parent().css("border-left-width","0");
+    re.parent().parent().children(".canvas-buddy").hide();
+    re.parent().find(".edit-element").hide();
+    re.parent().parent().parent().css("background-color","#f9f9f9");
+    re.parent().parent().addClass("to-remove");
+    re.find("img").attr("src","http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-07.png");
+//    re.closest(".canvas").addClass("canvas-hovered");
+  }
+  function reLeave(re) {
+    re.parent().css("border-left-width","1px");
+    re.parent().parent().children(".canvas-buddy").show();
+    re.parent().find(".edit-element").show();
+    re.parent().parent().parent().css("background-color","transparent");
+    re.parent().parent().removeClass("to-remove");
+    re.find("img").attr("src","http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-06.png");
+//    re.closest(".canvas").removeClass("canvas-hovered");
+  }
+  $(".remove-element").live("mouseenter", function(){
+    reEnter($(this));
+  });
+  $(".remove-element").live("mouseleave", function(){
+    reLeave($(this));
+  });
+
+
+  function removeElement(el,e) {
+/*
+    var c = confirm('Are you sure you want to remove this element?');
+    if (c == true) {
+      $(this).closest('.canvas-wrap').hide("slow", function(){ $(this).remove(); });
+*/
+      var sol = false;
+      var solhint = '';
+      if (el.parent().parent().parent(".solution")) {
+        sol = true;
+        solhint = el.closest(".canvas-wrap").siblings(".add-solution-2");
+      }
+      el.closest(".canvas-wrap").slideUp("slow", function(){
+        $(this).remove();
+        if (sol) { 
+          adjustSolHint(solhint);
+        }
+      });
+/*
+    }
+*/
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  $(".remove-element").live("click", function(e){
+    removeElement($(this),e);
+  });
+
+
+  function eeEnter(ee,e) {
+    ee.find("img").attr("src","http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-06.png");
+    ee.parent().css("background-color","transparent");
+    ee.parent().css("border-left-color","#c2c2c2");
+//    ee.parent().parent().children(".canvas-buddy").hide();
+    ee.parent().parent().parent().css("background-color","#eee");
+//    $(".canvas-wrap").die("mouseenter mouseleave"); // not sure why this isn't working. maybe because it's on a descendant?
+//    ee.closest(".canvas").addClass("canvas-hovered");
+//    e.stopPropagation();
+  }
+  function eeLeave(ee,e) {
+    ee.find("img").attr("src","http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png");
+    ee.parent().css("background-color","#f7f7f7");
+    ee.parent().css("border-left-color","#ddd");
+//    ee.parent().parent().children(".canvas-buddy").show();
+    ee.parent().parent().parent().css("background-color","transparent");
+//    ee.closest(".canvas").removeClass("canvas-hovered");
+/*
+    $(".canvas-wrap").live("mouseenter", function(e){
+      cwEnter($(this),e);
+    });
+    $(".canvas-wrap").live("mouseleave", function(e){
+      cwLeave($(this),e);
+    });
+*/
+//    e.stopPropagation();
+  }
+  $(".edit-element").live("mouseenter", function(e){
+    eeEnter($(this),e);
+  });
+  $(".edit-element").live("mouseleave", function(e){
+    eeLeave($(this),e);
+  });
+
+
+  function addHandles(cw) {
+    var buddies = '\
+      <div style="display: none;" class="canvas-buddy-2">\
+        <a class="edit-element" href="#" title="Edit options for this element">\
+          <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/options-05.png">\
+        </a>\
+        <a class="remove-element" href="#" title="Remove this element">\
+          <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">\
+        </a>\
+      </div>\
+      <div style="display: none;" class="canvas-buddy">\
+        <a class="drag-element" href="#" title="Drag this element to another location">\
+          <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/drag-element-19.png">\
+        </a>\
+      </div>\
+    ';
+    cw.children().children().prepend(buddies);
+  }
+
+  function buildSolution(solhint,e) {
+    var emptysol = '\
+      <div class="canvas-wrap">\
+        <div class="solution canvas">\
+          <div class="canvas-inner">\
+            <h2 class="solution-header">\
+              <span class="cnx_label">Solution</span>\
+            </h2>\
+            <div class="solution-contents">\
+              <p class="para content-editable" contentEditable="true">\
+                &nbsp\;\
+              </p>\
+            </div>\
+          </div>\
+        </div>\
+      </div>\
+    ';
+    solhint.before(emptysol);
+    var sol = solhint.prev();
+    addHandles(sol);
+    adjustSolHint(solhint);
+    sol.find(".solution-contents p").focus();
+    e.preventDefault();
+    e.stopPropagation();
+  }
+//  $(".add-solution-2").live("click focus", function(e){
+  $(".add-solution-2").live("click", function(e){
+    buildSolution($(this),e);
+  });
+
+  function removeHint(ce,e){
+    ce.find(".hint-text").replaceWith("&nbsp;");
+  }
+/*
+  $(".content-editable").live("click focus", function(e){
+    removeHint($(this),e);
+  });
+  $(".content-editable").not("table>caption>.content-editable").live("click focus", function(e){
+    removeHint($(this),e);
+  });
+*/
+/*
+  $(".content-editable").live("click", function(e){
+    removeHint($(this),e);
+  });
+  $(".content-editable").not("table>caption>.content-editable").live("focus", function(e){
+    removeHint($(this),e);
+  });
+*/
+/*
+  $(".content-editable").live("click focus", function(e){
+    removeHint($(this),e);
+  });
+  $(".content-editable-2").live("click", function(e){
+    removeHint($(this),e);
+  });
+*/
+  $(".problem-contents>.content-editable").live("click focus", function(e){
+    removeHint($(this),e);
+  });
+
+
+  function addHintIfEmpty(ce,e) {
+    if (ce.parent(".problem-contents").length && ce.text().trim() == '') {
+      var ht = '<span class="hint-text">Describe problem here</span>';
+      ce.prepend(ht);
+    }
+  }
+  $(".problem-contents>.content-editable").live("blur", function(e){
+    addHintIfEmpty($(this),e);
+  });
+
+  function adjustSolHint(solhint){
+//alert(solhint.attr("class"));
+    solutions = solhint.siblings(".canvas-wrap:has(> .solution)").length;
+    msg = '';
+    if (solutions > 0) {
+      msg = 'Click to add another solution (optional)';
+    } else {
+      msg = 'Click to add a solution (optional)';
+    }
+    solhint.children("a").text(msg);
+  }
+
+  // These two might just be used to show an alternative in the mock-up
+/*
+  function solLeave(sol) {
+    var sol = sol.closest(".canvas-wrap");
+    var solhint = sol.siblings(".add-solution-2");
+    if (sol.find(".solution-contents").text().trim() == '') {
+      sol.remove();
+      adjustSolHint(solhint);
+    }
+  }
+  $(".solution").live("blur mouseleave", function(e){
+    solLeave($(this));
+  });
+*/
+
+  function exerciseOptions(ex) {
+    $("#exercise-options").data('exercise',ex).dialog("open");
+    return false;
+  }
+  function exampleOptions(ex) {
+    $("#example-options").data('example',ex).dialog("open");
+    return false;
+  }
+  function equationOptions(eq) {
+    $("#equation-options").data('equation',eq).dialog("open");
+    return false;
+  }
+  function solutionOptions(so) {
+    $("#solution-options").data('solution',so).dialog("open");
+    return false;
+  }
+  function tableOptions(ta) {
+    $("#table-options").data('table',ta).dialog("open");
+    return false;
+  }
+  $(".edit-element").live("click", function(e){
+    var exercise = $(this).parent().parent().parent(".exercise");
+    var example = $(this).parent().parent().parent(".example");
+    var equation = $(this).parent().parent().parent(".equation");
+    var solution = $(this).parent().parent().parent(".solution");
+    var table = $(this).parent().parent().parent(".table");
+    if (exercise.length) {
+      exerciseOptions(exercise);
+      return false;
+      e.stopPropagation();
+    } else if (example.length) {
+      exampleOptions(example);
+      return false;
+      e.stopPropagation();
+    } else if (equation.length) {
+      equationOptions(equation);
+      return false;
+      e.stopPropagation();
+    } else if (solution.length) {
+      solutionOptions(solution);
+      return false;
+      e.stopPropagation();
+    } else if (table.length) {
+      tableOptions(table);
+      return false;
+      e.stopPropagation();
+    }
+    return false;
+  });
+
+  $("#whats-mathtype-dialog").live("click", function(e){
+    var helptext = $("#whats-mathtype-dialog-text");
+    if (helptext.css("display") == 'none') {
+       helptext.slideDown("fast", function(e){
+         helptext.show();
+       });
+    } else {
+       helptext.slideUp("fast", function(e){
+         helptext.hide();
+       });
+    }
+    e.preventDefault();
+  });
+
+  function mathHelpHideAllFirst(h,e) {
+    if ( !$(".math-help-text").not(":hidden").length ) {
+          mathHelpOpen(h,e);
+    } else {
+      $(".math-help-text").not(":hidden").each(function(e){
+        $(this).animate({
+          left: -250,
+          height: 0,
+        }, "fast", function(e){
+          var hwrap = $(".math-help-text-wrap");
+          $(this).css("height","auto");
+          $(this).hide();
+          if (h.attr("id") != this.id) {
+            mathHelpOpen(h,e);
+/*
+          } else if ( $("input[name=math-type]:checked").val() == 'latex' ) {
+            mathHelpOpen($("#math-error"),e);
+*/
+          }
+        });
+      });
+    }
+    e.preventDefault();
+  }
+
+  function mathHelpOpen(h,e) {
+    var hwrap = $(".math-help-text-wrap");
+    h.show();
+    var hh = h.outerHeight();
+    hwrap.css("height",hh + 17 + "px"); // 17 = padding + border + shadow 
+    h.animate({
+      left: 0,
+      height: hh,
+    }, "fast", function(e){
+    });
+  }
+
+  $(".math-help-text-close").live("click", function(e){
+    mathHelpHideAllFirst($(this).parent(),e);
+  });
+  $("#math-type-help, #math-type-help-2").live("click", function(e){
+    mathHelpHideAllFirst($("#math-type"),e);
+  });
+  $("#math-editor-help").live("click", function(e){
+    mathHelpHideAllFirst($("#math-editor-help-text"),e);
+  });
+
+/*
+  $(".math-help, .math-help-text-close").live("click", function(e){
+  });
+*/
+
+$(function() {
+
+  $("#pedagog .node").draggable({
+   appendTo: "#artboard",
+   containment: "#artboard",
+   refreshPositions: true,
+   scroll: true,
+//    cursorAt: { top: 35, left: 200 },
+//    cursorAt: { top: 40, left: -20 },
+//    cursorAt: { right: -10, top: 25 },
+    drag: function(){
+      $(".droppable-all").not(".droppable-hover").css("height","1px");
+    },
+    helper: function(){
+      var exercisehelper = '\
+        <div class="dragged">\
+          <div class="exercise">\
+            <h2 class="exercise-header">\
+              <span class="cnx_label">' + $(this).clone().children().remove().end().text() + ':</span>\
+            </h2>\
+            <div class="exercise-contents">\
+              <div class="problem">\
+                <div class="problem-contents">\
+                  <p class="para">\
+                    <i>Drag me to the desired location on the canvas.</i>\
+                  </p>\
+                </div>\
+              </div>\
+            </div>\
+          </div>\
+        </div>\
+        ';
+      return exercisehelper;
+    },
+    mouse: "move",
+    revert: "invalid",
+    opacity: "0.8",
+    start: function(){
+      $(".droppable-all").addClass("droppable-active");
+      $("body").addClass("dragging");
+      $("#pedagog .node").addClass("dragging");
+      $("#canvas").addClass("dragging");
+      $("#toolbar").addClass("no-drop");
+      $(".canvas-wrap").unbind("mouseenter mouseleave");
+    },
+    stop: function(){
+      $(".droppable-all").removeClass("droppable-active");
+      $(".droppable-all").css("background-image","none"); // Unsure why this is needed.
+      $("body").removeClass("dragging");
+      $("#pedagog .node").removeClass("dragging");
+      $("#canvas").removeClass("dragging");
+      $("#toolbar").removeClass("no-drop");
+/*
+      $(".canvas-wrap").bind({
+        mouseenter: function(){
+          cwEnter($(this));
+        },
+        mouseleave: function(){
+          cwLeave($(this));
+        },
+      });
+*/
+    },
+  });
+
+  $(".droppable-all").droppable({
+    hoverClass: "droppable-hover",
+    tolerance: "touch",
+    over: function(){
+      $(this).addClass("copy-draggable");
+      var helperHeight = $(".dragged").outerHeight();
+//      $(this).css("height",helperHeight + "px","important");
+      $(this).animate({
+        height: helperHeight + "px",
+      }, "fast");
+      $(".droppable-all").not(this).css("height","1px").removeClass("droppable-hover");
+    },
+    out: function(event,ui) {
+      $("#canvas").removeClass("copy-draggable");
+/*
+      $(this).animate({
+        height: "1px",
+      }, 300);
+*/
+      $(this).css("height","1px");
+    },
+    drop: function( event, ui ) {
+/*
+      $(this).animate({
+        height: "1px",
+      }, 300);
+*/
+//      $(this).css("height","1px");
+      $("body").find(".dragged").remove();
+      var exercisehelper2 = $('\
+        <div class="canvas-wrap">\
+          <div class="exercise canvas">\
+            <div class="canvas-inner">\
+              <h2 class="exercise-header">\
+                <span class="cnx_label">Exercise</span>\
+                <strong class="title content-editable" style="display: none" contentEditable="true">\
+                  <span class="hint-text">Add a descriptive title (optional)</span>\
+                </strong>\
+              </h2>\
+              <div class="exercise-contents">\
+                <div class="problem">\
+                  <div class="problem-contents">\
+                    <p class="para content-editable" contentEditable="true" hint="asdfasdf">\
+                      <span class="hint-text">\
+                        Describe problem here\
+                      </span>\
+                    </p>\
+                  </div>\
+                </div>\
+                <div class="add-solution-2" style="display: block;">\
+                  <a href="#asdf">Click to add a solution (optional)</a>\
+                </div>\
+              </div>\
+            </div>\
+          </div>\
+        </div>\
+      ').hide();
+      $(this).after(exercisehelper2);
+      var newex = $(this).next();
+      addHandles(newex);
+      newex.stop().show("slow");
+      newex.effect("highlight", { color: "#E5EEF5" }, 1000);
+//      newex.find(".problem-contents p").focus();
+      $("#canvas").removeClass("copy-draggable");
+    },
+  });
+
+});
+
+$(function() {
+
+  $("#exercise-options").dialog({
+    width: 600,
+    autoOpen: false,
+    modal: true,
+    zIndex: 500,
+/*
+    drag: function(){
+      $(".draggable-all").unbind("mouseenter mouseleave");
+    },
+*/
+    open: function(){
+      $(this).data("exercise").addClass("element-being-edited");
+    },
+    close: function(){
+      $(this).data("exercise").removeClass("element-being-edited");
+    },
+    buttons: {
+      "Save Changes": function() {
+        $( this ).dialog( "close" );
+      },
+      Cancel: function() {
+        $( this ).dialog( "close" );
+      }
+    }
+  });
+
+  $("#example-options").dialog({
+    width: 600,
+    autoOpen: false,
+    modal: true,
+    zIndex: 500,
+    open: function(){
+      $(this).data("example").addClass("element-being-edited");
+    },
+    close: function(){
+      $(this).data("example").removeClass("element-being-edited");
+    },
+    buttons: {
+      "Save Changes": function() {
+        $(this).dialog( "close" );
+      },
+      Cancel: function() {
+        $(this).dialog( "close" );
+      }
+    }
+  });
+
+  $("#equation-options").dialog({
+    width: 600,
+    autoOpen: false,
+    modal: true,
+    zIndex: 500,
+    open: function(){
+      $(this).data("equation").addClass("element-being-edited");
+    },
+    close: function(){
+      $(this).data("equation").removeClass("element-being-edited");
+    },
+    buttons: {
+      "Save Changes": function() {
+        $(this).dialog( "close" );
+      },
+      Cancel: function() {
+        $(this).dialog( "close" );
+      }
+    }
+  });
+  $("#solution-options").dialog({
+    width: 600,
+    autoOpen: false,
+    modal: true,
+    zIndex: 500,
+    open: function(){
+      $(this).data("solution").addClass("element-being-edited");
+    },
+    close: function(){
+      $(this).data("solution").removeClass("element-being-edited");
+    },
+    buttons: {
+      "Save Changes": function() {
+        $(this).dialog( "close" );
+      },
+      Cancel: function() {
+        $(this).dialog( "close" );
+      }
+    }
+  });
+  $("#table-options").dialog({
+    width: 600,
+    autoOpen: false,
+    modal: true,
+    zIndex: 500,
+    open: function(){
+      $(this).data("table").addClass("element-being-edited");
+    },
+    close: function(){
+      $(this).data("table").removeClass("element-being-edited");
+    },
+    buttons: {
+      "Save Changes": function() {
+        $(this).dialog( "close" );
+      },
+      Cancel: function() {
+        $(this).dialog( "close" );
+      }
+    }
+  });
+
+  $("#ascii-or-latex").dialog({
+    width: 600,
+    autoOpen: false,
+    modal: true,
+    zIndex: 500,
+    open: function(){
+    },
+    close: function(){
+        $(this).data("e").stopPropagation();
+    },
+    buttons: {
+      "Ok": function() {
+        $(this).dialog( "close" );
+        var aol = $("input[name=ascii-or-latex-radio]:checked").attr("id");
+        $("[class*='-header']").die("mouseenter mouseleave"); // Turning hovers off (temporarily)
+        $(".canvas-wrap").die("mouseenter mouseleave"); // Have to do this one separately from above, apparently
+        $(".MathJax").die("mouseenter mouseleave");
+        $("table caption").die("mouseenter mouseleave");
+        cwLeave($(".canvas-wrap"),"special");
+//        mathEditorRemove();
+        $("#toolbar-math").addClass("selected");
+        var e = $(this).data("e");
+        var exText = $(this).data("exText");
+        mathClickNew2(aol,exText,e);
+        e.stopPropagation();
+      },
+      Cancel: function() {
+        $(this).dialog( "close" );
+        var exText = $(this).data("exText");
+        if (exText.trim() == '&nbsp\;') {
+          $("#MathJaxNew").remove();
+        } else {
+          $("#MathJaxNew").replaceWith(exText);
+        }
+        $("#toolbar-math").removeClass("selected");
+        e.stopPropagation();
+      }
+    }
+  });
+
+
+});
+
+</script>
+
+
+<style type="text/css">
+
+#editor{
+  background-color: #bbb;
+  background-color: #c7c7c7;
+  background-color: #ccc;
+}
+#content{
+  padding-left: 0em;
+  padding-right: 0em;
+  padding-bottom: 0em;
+padding-top: 0;
+}
+#pageheader-wrap{
+  margin-top: -10px;
+  margin-left: 2em;
+  margin-right: 2em;
+display: none;
+}
+
+#workflownav-wrap, #header-wrap{
+  display: none;
+}
+
+#toolbar{
+  height: 42px;
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/toolbar/toolbar-bg-01.png);
+  background-repeat: repeat-x;
+  background-position: 0 0;
+  background-color: #fff;
+  padding: 0 1em;
+  border-bottom: 1px solid #aaa;
+  position: relative;
+  z-index: 1;
+clear: both;
+  white-space: nowrap;
+position: fixed;
+top: 0;
+width: 100%;
+z-index: 550;
+  box-shadow: 0 0 5px #bbb;
+  font-size: .9em;
+  font-family: tahoma,verdana,arial,helvetica,sans-serif;
+
+  /* following two are part of a hack learned from PatrikAkerstrand at http://stackoverflow.com/questions/5078239/how-to-remove-the-space-between-inline-block-elements */
+  letter-spacing: -.31em;
+  word-spacing: -.43em;
+}
+
+#icon-set{
+  padding: 4px 0;
+}
+.toolbar-function{
+  position: relative;
+  letter-spacing: normal;
+  word-spacing: normal;
+  height: 33px;
+  width: 33px;
+  display: inline-block;
+}
+.toolbar-icon{
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/toolbar/toolbar-sprite-05.png);
+  outline: 0;
+  height: 33px;
+  width: 33px;
+  display: inline-block;
+  letter-spacing: normal;
+  word-spacing: normal;
+  background-position: -23px -66px;
+}
+
+.disabled a{
+  cursor: default;
+}
+
+.separator{
+  width: 19px;
+  height: 33px;
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/toolbar/toolbar-sprite-05.png);
+  background-position: -3px 0;
+  display: inline-block;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
+.icon-like{
+  padding: 0 6px 0 0;
+  display: inline-block;
+  letter-spacing: normal;
+  word-spacing: normal;
+vertical-align: middle;
+  height: 48px;
+}
+
+.icon-like select{
+  width: 9em;
+  font-family: tahoma,verdana,arial,helvetica,sans-serif;
+}
+
+.icon-like input{
+  font-family: tahoma,verdana,arial,helvetica,sans-serif;
+}
+
+a.menu-like{
+  padding: .3em .4em;
+  color: black;
+  text-decoration: none;
+  white-space: nowrap;
+display: block;
+}
+
+.menu-like:hover{
+  background-color: #ccc;
+  background-color: #fff;
+}
+
+#hints{
+  float: right;
+  padding: 1.2em .4em 0;
+  padding: .9em 0;
+  margin-right: 22px;
+}
+
+#icon-set{
+  padding-right: 10em;
+}
+
+#toolbar-undo a                   { background-position: -518px 0; }
+#toolbar-undo.disabled a          { background-position: -518px -33px; }
+#toolbar-undo.hovered a           { background-position: -518px -66px; }
+#toolbar-undo.selected a          { background-position: -518px -99px; }
+#toolbar-redo a                   { background-position: -287px 0; }
+#toolbar-redo.disabled a          { background-position: -287px -33px; }
+#toolbar-redo.hovered a           { background-position: -287px -66px; }
+#toolbar-redo.selected a          { background-position: -287px -99px; }
+#toolbar-bold a                   { background-position: -56px 0; }
+#toolbar-bold.disabled a          { background-position: -56px -33px; }
+#toolbar-bold.hovered a           { background-position: -56px -66px; }
+#toolbar-bold.selected a          { background-position: -56px -99px; }
+#toolbar-italics a                { background-position: -155px 0; }
+#toolbar-italics.disabled a       { background-position: -155px -33px; }
+#toolbar-italics.hovered a        { background-position: -155px -66px; }
+#toolbar-italics.selected a       { background-position: -155px -99px; }
+#toolbar-underline a              { background-position: -485px 0; }
+#toolbar-underline.disabled a     { background-position: -485px -33px; }
+#toolbar-underline.hovered a      { background-position: -485px -66px; }
+#toolbar-underline.selected a     { background-position: -485px -99px; }
+#toolbar-superscript a            { background-position: -419px 0; }
+#toolbar-superscript.disabled a   { background-position: -419px -33px; }
+#toolbar-superscript.hovered a    { background-position: -419px -66px; }
+#toolbar-superscript.selected a   { background-position: -419px -99px; }
+#toolbar-subscript a              { background-position: -386px 0; }
+#toolbar-subscript.disabled a     { background-position: -386px -33px; }
+#toolbar-subscript.hovered a      { background-position: -386px -66px; }
+#toolbar-subscript.selected a     { background-position: -386px -99px; }
+#toolbar-link a                   { background-position: -188px 0; }
+#toolbar-link.disabled a          { background-position: -188px -33px; }
+#toolbar-link.hovered a           { background-position: -188px -66px; }
+#toolbar-link.selected a          { background-position: -188px -99px; }
+#toolbar-unlink a                 { background-position: -551px 0; }
+#toolbar-unlink.disabled a        { background-position: -551px -33px; }
+#toolbar-unlink.hovered a         { background-position: -551px -66px; }
+#toolbar-unlink.selected a        { background-position: -551px -99px; }
+#toolbar-unorderedlist a          { background-position: -584px 0; }
+#toolbar-unorderedlist.disabled a { background-position: -584px -33px; }
+#toolbar-unorderedlist.hovered a  { background-position: -584px -66px; }
+#toolbar-unorderedlist.selected a { background-position: -584px -99px; }
+#toolbar-orderedlist a            { background-position: -254px 0; }
+#toolbar-orderedlist.disabled a   { background-position: -254px -33px; }
+#toolbar-orderedlist.hovered a    { background-position: -254px -66px; }
+#toolbar-orderedlist.selected a   { background-position: -254px -99px; }
+#toolbar-table a                  { background-position: -452px 0; }
+#toolbar-table.disabled a         { background-position: -452px -33px; }
+#toolbar-table.hovered a          { background-position: -452px -66px; }
+#toolbar-table.selected a         { background-position: -452px -99px; }
+#toolbar-image a                  { background-position: -122px 0; }
+#toolbar-image.disabled a         { background-position: -122px -33px; }
+#toolbar-image.hovered a          { background-position: -122px -66px; }
+#toolbar-image.selected a         { background-position: -122px -99px; }
+#toolbar-math a                   { background-position: -221px 0; }
+#toolbar-math.disabled a          { background-position: -221px -33px; }
+#toolbar-math.hovered a           { background-position: -221px -66px; }
+#toolbar-math.selected a          { background-position: -221px -99px; }
+
+#toolbar-table.selected a{
+  box-shadow: 2px 2px 2px #aaa;
+}
+
+#editor-mode{
+  font-size: .85em;
+  position: relative;
+  z-index: 2;
+  height: 30px;
+background-color: #666;
+display: none;
+}
+
+#editor-mode ul, #editor-mode li{
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+#editor-mode ul{
+  position: absolute;
+  right: 17px;
+  bottom: 0;
+}
+
+#editor-mode li{
+  float: right;
+  padding: .35em 0 .4em;
+}
+
+#editor-mode a{
+  padding: .5em 1em;
+  padding: .35em 1em .4em;
+  border: 1px solid #aaa;
+  background-color: #eee;
+  background-color: #ccc;
+  text-decoration: none;
+  color: black;
+  outline: 0;
+  margin-left: -1px;
+  color: #666;
+font-weight: bold;
+}
+
+#editor-mode a:hover{
+  color: #000;
+}
+
+#editor-mode .current a{
+  color: black;
+  cursor: default;
+  background-color: #fff;
+  border-bottom: 1px solid #fff;
+  font-weight: bold;
+}
+
+#sidebar{
+  float: left;
+  position: fixed;
+  margin: 1em 25px;
+  margin: 0 25px 1em;
+  width: 200px;
+  font-family: tahoma,verdana,arial,helvetica,sans-serif;
+}
+
+#sidebar dl{
+  background-color: #eee;
+  margin: 0 0 15px;
+  padding: 0;
+  border: 1px solid #aaa;
+  box-shadow: 0px 0px 5px #9f9f9f;
+  box-shadow: 0px 0px 5px #aaa;
+  box-shadow: 0px 0px 5px #bbb;
+background-color: transparent;
+/*
+box-shadow: none;
+*/
+border-width: 0;
+}
+
+#sidebar dt{
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+/*
+  background-image: url(toolbar/toolbar-bg-01.png);
+  background-repeat: repeat-x;
+  background-position: 0 0;
+*/
+  background-color: #999;
+  background-color: #666;
+  background-color: #888;
+  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #666;
+  color: white;
+  padding: .25em .5em;
+  padding: .5em 1em .35em;
+/*
+margin-bottom: .5em;
+border-radius: .5em;
+*/
+/*
+border-top-left-radius: .5em;
+border-top-right-radius: .5em;
+*/
+  font-family: tahoma,verdana,arial,helvetica,sans-serif;
+  font-weight: normal;
+  font-size: 1.2em;
+  padding: .3em .7em;
+}
+
+#sidebar dt a{
+  text-decoration: none;
+  color: black;
+  color: white;
+  display: block;
+  padding: .25em .5em;
+  padding: .25em 1.5em .25em .5em;
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/toolbar/arrow-down-white-02.png);
+  background-repeat: no-repeat;
+  background-position: right .35em;
+}
+
+#sidebar dd{
+  margin: 0;
+  padding: .5em 1em;
+padding: .75em .75em !important;
+  background-color: #ccc;
+  background-color: #eee;
+background-color: transparent;
+background-color: #ddd;
+border: 1px solid #999;
+border-top-width: 0;
+/*
+border-bottom-left-radius: .5em;
+border-bottom-right-radius: .5em;
+*/
+}
+
+#artboard{
+  overflow: auto;
+}
+
+#canvas{
+  margin: 1em 25px 2em 250px;
+  background-color: #fff;
+  border: 1px solid #aaa;
+  padding: 2em;
+padding: 30px;
+  box-shadow: 0px 0px 10px #9f9f9f;
+  cursor: text;
+  min-height: 100%;
+position: relative;
+}
+
+
+
+/* =============== from earlier mock-ups (edited) ================ */
+
+
+.example, .definition .example, .rule .example{
+  margin: 0;
+  padding: 0;
+}
+
+.canvas-wrap{
+  margin: 1em -20px;
+  margin: 1em -10px 1em -10px;
+}
+
+.canvas-wrap .canvas-wrap{
+  padding-left: 0;
+  padding-right: 0;
+  margin: 0 .5em 0 1em;
+margin: 0 .5em 0 0;
+margin: 0 .5em 0 -10px;
+margin: 0 -36px 0 -11px;
+}
+
+.canvas{
+  border: 1px solid transparent;
+}
+.canvas-hovered{
+  border-color: #bbb #ccc;
+  border-color: #c8c8c8;
+  border-style: dotted;
+}
+
+.solution.canvas, .proof.canvas, .statement{
+  margin-left: 1.5em;
+margin-left: 0;
+}
+
+.canvas-inner{
+  position: relative;
+  min-height: 35px;
+  padding: .5em;
+  padding-left: .75em;
+  padding: .5em 1em;
+  padding: .5em 30px .5em .75em;
+  padding: .5em 25px .5em 20px;
+  padding: .5em 25px .5em 10px;
+  padding: .5em 35px .5em 10px;
+}
+
+.active{
+  border: 1px dotted #bbb !important;
+  background-image: url('http://mountainbunker.org/~maxwell/oerpub/editor-ideas/source-files/cursor-01.gif');
+  background-repeat: no-repeat;
+  background-position: .75em 1em;
+}
+
+.equation-number{
+  right: 1em;
+  top: 40%;
+  right: 30px;
+  right: 25px;
+}
+
+.canvas-buddy{
+  position: absolute;
+  left: 47%;
+  top: -4px;
+  height: 13px;
+  width: 50px;
+  cursor: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/openhand.cur), default;
+  display: none;
+  overflow: hidden;
+}
+
+.dragging{
+  cursor: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/closedhand.cur), default !important;
+}
+
+.canvas-buddy a{
+}
+
+.canvas-buddy img{
+  display: block;
+}
+
+/*
+.nodrag{
+  cursor: not-allowed !important;
+}
+
+.nodrag img{
+  opacity: .5;
+}
+*/
+
+.canvas-buddy-2{
+  position: absolute;
+  top: 0;
+  left: auto;
+  right: 0;
+  display: none;
+  height: 100%;
+  background-color: #f7f7f7;
+  border-left: 1px solid #ddd;
+  width: 19px;
+}
+
+.canvas-buddy a, .canvas-buddy-2 a{
+  text-decoration: none;
+}
+
+.section-header{
+  position: relative;
+}
+
+.remove-element{
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  cursor: pointer;
+  right: 15px;
+}
+.drag-element{
+/*
+cursor: move;
+cursor: grab;
+cursor: -moz-grab;
+cursor: -webkit-grab;
+cursor: url(https://mail.google.com/mail/images/2/openhand.cur), grab, -moz-grab, -webkit-grab, move, default;
+*/
+cursor: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/openhand.cur), default;
+}
+/*
+.nodrag .drag-element{
+  cursor: not-allowed;
+}
+*/
+.edit-element{
+  position: absolute;
+  top: 25px;
+  cursor: pointer;
+  padding: 2px;
+left: 1px;
+  height: 13px;
+  width: 13px;
+  height: 14px;
+  width: 14px;
+  overflow: hidden;
+}
+.edit-element img{
+  width: 13px;
+  height: 13px;
+  width: 14px;
+  height: 14px;
+  float: left;
+}
+
+.to-remove *{
+  color: #999 !important;
+  color: #bbb !important;
+  background-color: transparent !important;
+}
+.to-remove .edhint, .to-remove .table table, .to-remove .table td, .to-remove .table th{
+  border-color: #bbb !important;
+}
+.to-remove table{
+  border-color: #bbb !important;
+}
+
+.to-remove img{
+  opacity: .25;
+}
+.to-remove .remove-element img{
+  opacity: 1;
+}
+
+
+.active>div>.canvas-buddy, .active>div>.canvas-buddy-2{
+  display: block;
+/*
+  border-style: solid;
+  border-color: #999;
+  background-color: #ddd;
+  border-style: solid;
+*/
+/*
+  opacity: .5;
+*/
+}
+/*
+.active>div>.canvas-buddy{
+  opacity: .75;
+}
+.active>div>.canvas-buddy:hover, .active>div>.canvas-buddy-2:hover{
+  opacity: 1;
+}
+*/
+
+#canvas .section-header{
+  font-size: 1.65em;
+}
+#canvas .section .section .section-header{
+  font-size: 1.25em;
+}
+
+.cnx_label{
+  cursor: default;
+}
+
+.dragged .cnx_label{
+  font-size: .65em !important;
+}
+
+.exericse{
+  margin: 0;
+  padding: 0;
+}
+
+.add-solution{
+  margin: -.5em 20px 1em 3em;
+  margin: -.5em 20px 1em 3em;
+  margin: -1.5em 20px .5em 3em;
+  margin: 0 0 .5em 2em;
+  border: 1px dashed #ccc;
+  padding: .5em 1em;
+  padding: .2em .5em;
+  cursor: text;
+visibility: hidden;
+}
+
+#canvas .add-solution a{
+  color: #888;
+  text-decoration: none;
+  cursor: text;
+}
+
+.add-solution-2{
+  margin: 0 0 .5em 3em;
+margin: 0 0 .5em;
+  border: 1px dashed #ccc;
+  padding: .2em .5em;
+  cursor: text;
+  display: none;
+}
+
+#canvas .add-solution-2 a, .hint-text, .math-source-hint-text{
+  color: #888;
+  text-decoration: none;
+  cursor: text;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.math-source-hint-text{
+  font-family: tahoma;
+}
+
+.drag{
+  position: absolute;
+  margin-top: 0;
+  margin-left: 680px;
+  width: 150px;
+  border: 1px solid #bbb;
+  border-left-width: 0;
+  z-index: 3;
+  background-color: #f2f2f2;
+  padding: 10px;
+}
+
+.drag ul, .drag li{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  float: left;
+}
+
+.drag ul a{
+  width: 55px;
+  text-decoration: none;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin: .5em .5em 0em 0;
+  display: block;
+  padding: .25em .5em;
+  background-color: #e3e3e3;
+  color: #000;
+cursor: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/openhand.cur), default;
+}
+
+.drag ul a:hover{
+  background-color: #fff;
+}
+
+.drag h2{
+  font-size: 1.15em;
+  margin-bottom: .25em;
+  color: #666;
+}
+
+.drag .help{
+  float: right;
+}
+
+.add-glossary{
+  clear: both;
+  font-size: .9em;
+  padding-top: .5em;
+}
+
+.add-glossary span{
+  clear: both;
+  margin-top: .5em;
+  border-top: 1px solid #bbb;
+  padding-top: .75em;
+  display: block;
+}
+
+/* ============== end earlier mock-ups =============== */
+
+#pedagog ul, #pedagog li, #pedagog dd{
+  padding:  0;
+  margin: 0;
+  list-style-type: none;
+  clear: right;
+}
+
+/*
+#pedagog dd{
+  margin-left: 1em;
+}
+*/
+
+#pedagog .node, #pedagog .pedagog-glossary{
+  padding: .5em;
+  display: block;
+  background-color: #eee;
+  border-bottom: 1px solid #999;
+  text-decoration: none;
+  color: black;
+border-radius: 7px;
+border: 1px solid #999;
+margin-bottom: .25em;
+}
+
+#pedagog .node{
+cursor: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/openhand.cur), default;
+}
+
+.plus{
+  visibility: visible;
+  color: #999;
+}
+
+#pedagog .hovered .node{
+  background-color: #C5DAE9;
+}
+#pedagog .hovered .count{
+  background-color: #DFE7EC;
+}
+
+#pedagog node.pedagog-click{
+  background-color: #Ccc;
+}
+
+#pedagog .count{
+  float: right;
+/*
+  padding: .5em 0;
+*/
+  color: #666;
+  font-size: 1em;
+  background-color: #eee;
+  border-left: 1px dotted #bbb;
+  position: relative;
+border: 1px solid #999;
+  border-left: 1px dotted #bbb;
+border-top-right-radius: 7px;
+border-bottom-right-radius: 7px;
+}
+
+#pedagog .count-total{
+  text-decoration: none;
+  color: #000;
+  padding: .5em;
+  float: right;
+padding: .5em;
+}
+
+#pedagog .count-total-hover{
+  background-color: #555;
+  color: white;
+  border: 1px solid #555;
+  margin-top: -1px;
+  margin-left: -1px;
+}
+
+.zero{
+  display: none;
+}
+
+.count-arrow{
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/gray-arrow-01.png);
+  background-repeat: no-repeat;
+  background-position: 100% center;
+  position: absolute;
+  left: 100%;
+  top: -1px;
+  z-index: 451;
+}
+
+.node-list{
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: -1px;
+  background-color: white;
+  white-space: nowrap;
+  padding: .75em 1.5em;
+  border: 1px solid #aaa;
+  box-shadow: 0px 0px 5px #aaa;
+  box-shadow: 2px 2px 5px -2px #aaa;
+  z-index: 450;
+}
+
+.node-list a{
+  color: #369;
+}
+
+.node-list strong{
+  color: black;
+  display: block;
+  margin-bottom: .5em;
+}
+
+.pedagog-glossary{
+  background-color: #e3e3e3 !important;
+  cursor: default;
+background-color: transparent !important;
+border-width: 0 !important;
+padding: .5em 0 0 !important;
+}
+
+.glossary-container{
+  display: none;
+}
+
+em.emphasis.edhint{
+  border-bottom: 1px dashed #999;
+  border-bottom: 2px dotted #333;
+  border-bottom: 2px dotted #6c6;
+  border-bottom: 3px dotted #6c6;
+}
+
+dfn.term.edhint{
+  border-bottom: 2px dotted #6c6;
+  border-bottom: 2px dotted #e70;
+  border-bottom: 2px dotted #f90;
+  border-bottom: 2px dotted #fc0;
+  border-bottom: 3px dotted #d9f;
+}
+
+.section{
+  margin-top: 0;
+}
+
+.note-contents{
+  display: inline;
+}
+
+.equation-contents, .table .canvas-inner{
+  text-align: center;
+  padding-top: .75em;
+}
+
+.table .canvas-inner{
+  padding-top: 1.25em;
+}
+
+.para{ 
+/*
+ margin: .5em 0 !important;
+*/
+}
+
+.droppable-all{
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  border: 1px dashed transparent;
+  border-width: 1px 0;
+  margin-top: -.4em;
+}
+
+.droppable-active{
+  background-repeat: repeat-x;
+  background-position: center center;
+}
+
+.droppable-hover{
+  background-color: #C5DAE9;
+  cursor: copy;
+  border: 1px dashed #1b86d2;
+  position: relative;
+  z-index: 3;
+  margin: .5em 0;
+  left: -1px;
+}
+
+.dragged{
+  position: relative;
+  z-index: 4;
+  border: 1px solid #666;
+  padding: .5em 1em;
+  width: 400px;
+  background-color: white;
+  border-radius: 7px;
+}
+
+.dragged h2, .dragged .para{
+  margin: 0 !important;
+}
+
+.dragged .exercise{
+  margin: 0;
+}
+
+.dragged *{
+  display: inline !important;
+}
+
+.no-drop{
+  cursor: no-drop !important;
+}
+.copy-draggable{
+  cursor: copy !important;
+}
+
+.content-editable, .content-editable-2{
+  outline: 0;
+}
+
+.ui-dialog{
+  font-size: 1em;
+  font-family: tahoma, verdana, arial, helvetica, sans-serif;
+  box-shadow: 0px 0px 5px #aaa;
+padding: 0;
+}
+
+.ui-dialog .ui-widget-header{
+  background-image: none;
+  background-color: #C5DAE9;
+  border-width: 0 0 1px;
+}
+
+.element-being-edited{
+  background-color: #E5EEF5 !important;
+  border-color: #C5DAE9;
+}
+
+.ui-dialog .ui-dialog-buttonpane{
+  border-top-width: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.element-options hr{
+  height: 1px;
+  background-color: #ddd;
+  color: #ddd;
+  border-width: 0;
+  margin: 1em 0;
+}
+
+.element-options-tabs, .element-options-tabs li{
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.element-options-tabs{
+  margin: 1em 0 0;
+  padding: 4px 0 3px;
+}
+
+.element-options-tabs li{
+  font-size: .85em;
+  float: left;
+  border: 1px solid #888;
+  border-bottom-width: 0;
+  margin-right: -1px;
+}
+
+.element-options-tabs a{
+  padding: 5px 1em 5px;
+  position: relative;
+  z-index: 509;
+  text-decoration: none;
+  display: block;
+  color: #444;
+  font-weight: bold;
+  outline: 0;
+  background-color: #f3f3f3;
+}
+
+.element-options-tabs li.selected{
+}
+
+.element-options-tabs li.selected a{
+  z-index: 511;
+  border-bottom: 1px solid #fff;
+  background-color: #fff;
+  color: #000;
+}
+
+.element-options-contents{
+  margin: -1px 0 .5em;
+  border: 1px solid #888;
+  padding: 1em 1em .65em;
+  position: relative;
+  z-index: 510;
+  clear: left;
+  top: -1px;
+}
+
+span.cnx_label{
+  font-size: .9em;
+  color: #369;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-family: arial, helvetica, sans-serif;
+}
+
+.element-options fieldset{
+  margin: 1em 0 0;
+}
+
+.element-options legend{
+  font-weight: bold;
+}
+
+clear-text-from-input{
+  color: #666;
+}
+
+#canvas .problem, #canvas .commentary{
+  margin: 0;
+}
+
+.MathJax{
+  cursor: default;
+  position: relative;
+  padding: .5em .2em;
+  padding: .4em 0;
+  border: 1px solid transparent;
+display: inline-block;
+}
+
+.MathJaxText, .math-style{
+  font-style: italic;
+  font-size: 1.3em;
+  font-family: serif; 
+}
+
+.MathJax.selected{
+  background-color: #E5EEF5;
+  background-color: #c5dae9 !important;
+  background-color: #D4E3EE !important;
+  background-color: #D9E7F1 !important;
+  border: 1px dotted #C5DAE9 !important;
+  border: 1px dotted #1B86D2 !important;
+}
+
+.MathJax.hovered{
+  background-color: #E5EEF5;
+/*
+  background-color: #f3f3f3;
+  background-color: #f9f9f9;
+*/
+  border: 1px dotted #ddd;
+}
+
+.asciimath{
+  font-family: courier new;
+}
+
+.MathJax.errored{
+/*
+  white-space: nowrap;
+display: inline-block;
+*/
+}
+
+.MathJax.errored .asciimath, .MathJax.errored .MathJaxText{
+  color: #c00;
+  font-family: courier new;
+  font-style: normal;
+  font-size: 1em;
+}
+
+.math-icon-message{
+  display: none;
+  border: 1px solid #444;
+  background-color: #f2f2f2;
+  padding: .1em .5em;
+  position: absolute;
+  left: 130%;
+  top: 0;
+  font-size: .85em;
+  white-space: nowrap;
+  border-radius: 3px;
+}
+
+.math-icon-message-close{
+  font-weight: bold;
+  padding-right: .3em;
+  font-size: 1.1em;
+  vertical-align: baseline;
+}
+
+.math-icon.hovered .math-icon-message{
+  display: block;
+}
+
+#math-icon-clear .math-icon-message{
+}
+
+#math-icon-edit .math-icon-message{
+  top: auto;
+  bottom: 0;
+  right: 130%;
+  left: auto;
+}
+
+.MathJax #math-icon-clear{
+  position: absolute;
+right: -20px;
+width: 20px;
+height: 100%;
+top: 0;
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/broom-02.png);
+  background-repeat: no-repeat;
+  background-position: left top;
+  cursor: pointer;
+}
+
+.MathJax #math-icon-edit{
+  position: absolute;
+left: -20px;
+width: 20px;
+height: 100%;
+top: 2px;
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/pencil-02.png);
+  background-repeat: no-repeat;
+  background-position: right bottom;
+cursor: pointer;
+}
+
+/*
+.MathJax *{
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+*/
+
+.math-editor{
+  width: 350px;
+  width: 400px;
+  border: 1px solid #1b86d2;
+  background-color: #c5dae9;
+  position: absolute;
+  z-index: 400;
+left: -50%;
+left: -150px;
+  bottom: -30%;
+  bottom: 100%;
+  padding: .75em;
+  box-shadow: 0px 0px 5px #aaa;
+  text-align: left;
+/*
+   -moz-user-select: none !important;
+   -moz-user-focus: none !important;
+*/
+  font-weight: normal;
+}
+
+/*
+.math-editor *{
+  position: relative;
+  z-index: 402;
+}
+*/
+
+.math-editor:after { /* Taken from "sandeep" at http://stackoverflow.com/questions/9450733/css-triangle-custom-border-color */
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 401;
+bottom: -14px;
+right: 200px;
+  width: 25px;
+  height: 25px;
+  background: #C5DAE9;
+  border-right:1px solid #1b86d2;
+  border-bottom:1px solid #1b86d2;
+  -moz-transform:rotate(45deg);
+  -webkit-transform:rotate(45deg);
+}
+
+.math-editor-close{
+  float: right;
+  margin-right: -3px;
+  position: relative;
+  z-index: 404;
+}
+
+.math-source{
+  border: 1px inset #1b86d2;
+  background-color: #fff;
+  padding: .1em .3em;
+  margin-bottom: .5em !important;
+  cursor: text;
+  margin-right: 18px !important;
+  display: block;
+  font-family: courier new;
+}
+
+.math-source-wrap{
+  position: relative;
+  z-index: 403;
+}
+
+#math-advanced{
+  margin-top: .5em;
+  padding-top: .5em;
+  border-top: 1px solid #A1B2BF;
+  clear: both;
+  display: none;
+}
+
+#math-advanced label{
+  padding-right: .5em;
+}
+
+#math-advanced input{
+  padding: 0;
+  vertical-align: top;
+  margin: 0;
+}
+
+.math-help{
+  padding-left: 0em;
+  cursor: pointer;
+  font-size: .85em;
+}
+
+.math-help-text-wrap{
+  position: absolute;
+  left: 100%;
+  top: 0;
+  margin-top: -1px;
+  margin-left: 1px;
+  width: 279px; /* 250 + padding + border + shadow */
+  overflow: hidden;
+}
+
+.math-help-text{
+  background-color: white;
+  padding: 6px 12px;
+  border: 1px solid #999;
+  width: 250px;
+  box-shadow: 3px 3px 3px #ccc;
+  position: absolute;
+  left: -250px;
+  top: 0;
+  height: auto;
+  display: none;
+}
+
+#math-error{
+  border: 1px solid #c00;
+  background-color: #FFF6D1;
+  border-bottom: 0;
+  background-color: #fee;
+  color: #c00;
+  position: absolute;
+  bottom: 100%;
+  display: none;
+  padding: 6px 12px;
+  width: 100%;
+  left: 0;
+/*
+  box-shadow: -3px -3px 3px #ccc;
+*/
+}
+
+.math-help-text-close{
+  float: right; 
+  margin-left: 1.25em;
+  font-weight: normal;
+  font-size: 1.4em;
+  margin-top: -.1em;
+}
+
+/*
+.math-help-text a{
+  color: #444 !important;
+}
+*/
+
+/*
+.math-done{
+  float: right;
+  text-align: right;
+  position: relative;
+  z-index: 403;
+}
+*/
+
+#cheat-sheet-activate{
+  font-size: .85em;
+  font-weight: normal;
+}
+#cheat-sheet-activator label{
+  font-weight: normal;
+}
+
+.math-options-activate{
+  font-weight: normal;
+  float: left;
+  font-size: .85em;
+}
+
+.math-options-activate label{
+/*
+  padding-right: .25em;
+*/
+}
+
+/*
+.math-editor-help{
+  text-align: right;
+  font-size: .85em;
+}
+*/
+
+#cheat-sheet-wrap{
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  color: #ddd;
+  display: none;
+  z-index: 454;
+}
+
+#cheat-sheet{
+  border-top: 1px solid black;
+/*
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+*/
+  padding: .5em 1em 1em;
+  background-color: #444;
+display: none;
+/*
+  box-shadow: -5px 0 10px #999;
+*/
+  box-shadow: -10px 0 10px #bbb;
+}
+
+#cheat-sheet-close{
+  float: right;
+  cursor: pointer;
+}
+
+#cheat-sheet-open{
+  float: right;
+  background-color: #444;
+  padding: .25em 1em;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  cursor: pointer;
+}
+
+#cheat-sheet-title{
+  margin-bottom: .75em;
+  font-weight: bold;
+}
+
+#cheat-sheet-type{
+  float: left;
+  white-space: nowrap;
+  margin-right: 1em;
+}
+
+#cheat-sheet-type label{
+  font-weight: normal;
+}
+
+.cheat-sheet-values{
+  background-color: #fff;
+  overflow-x: auto;
+  color: #000;
+}
+
+.cheat-sheet-values table{
+  font-family: courier new, courier;
+  border-width: 0;
+  border-collapse: collapse;
+}
+.cheat-sheet-values td{
+  border-width: 0;
+  border-right: 1px solid #444;
+  border-bottom: 1px solid #ccc;
+  text-align: center;
+  white-space: nowrap;
+}
+
+#table-flyout{
+  position: absolute;
+  top: 33px;
+  left: 0;
+  background-color: #e2e2e2;
+  border: 1px solid #b9b9b9;
+  border-bottom-color: #999;
+  border-right-color: #999;
+  box-shadow: 0px 0px 5px #aaa;
+  box-shadow: 3px 3px 5px #aaa;
+  box-shadow: 2px 2px 3px #aaa;
+  padding: .75em .75em;
+}
+
+#table-flyout:before{
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 31px;
+  height: 5px;
+  background-color: #e2e2e2;
+}
+
+/*
+.selected .toolbar-icon{
+  box-shadow: 3px 3px 5px #aaa;
+}
+*/
+
+.flyout-options{
+  margin-bottom: .75em;
+}
+
+#table-flyout label{
+  font-weight: normal;
+}
+
+#table-flyout table{
+  border: 1px solid #555;
+  border-collapse: collapse;
+}
+
+#table-flyout td{
+  border: 1px solid #777;
+/*
+  width: 1.5em;
+  height: 1.5em;
+*/
+width: 1.4em;
+height: 1.4em;
+max-width: 1.4em;
+min-width: 1.4em; 
+max-height: 1.4em; 
+min-height: 1.4em;
+width: 15px;
+height: 17px;
+max-width: 15px;
+min-width: 17px; 
+max-height: 15px; 
+min-height: 17px;
+overflow: hidden;
+  cursor: default;
+}
+
+#table-flyout td.header{
+  border: 1px solid #000;
+  background-color: #cfcfcf;
+}
+
+#table-flyout td.hovered{
+  background-color: #C5DAE9;
+}
+
+#table-flyout td.header.hovered{
+  background-color: #B3C6D4;
+}
+
+#table-dimensions{
+  text-align: center;
+  margin-top: .5em;
+}
+
+.temporarily-hide{
+  display: block !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  left: -10000px;
+  top: -10000px;
+  padding: 0 !important;
+  border-width: 0 !important;
+  margin: 0 !important;
+}
+
+.table-temp-empty{
+  background-color: #D9E7F1;
+  border: 1px dotted #1B86D2;
+  background-color: #1b86d2;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  opacity: .25;
+  margin-left: -8px;
+  border-radius: 10px;
+}
+
+.table-temp-text{
+  background-color: #D9E7F1;
+  border: 1px dotted #1B86D2;
+}
+
+.table-examples{
+  margin-top: .3em;
+}
+
+.table-examples td{
+  vertical-align: top;
+  text-align: center;
+padding: 0 .75em;
+}
+
+.table-examples table{
+  margin: auto;
+}
+
+div.table-example{
+  margin-top: .5em;
+}
+
+.table-examples .table-example table{
+  font-size: .9em;
+  margin-top: 0;
+  border-collapse: collapse;
+  border: 2px solid #000;
+}
+.cell-examples .table-example table{
+  border-width: 1px;
+}
+
+.table-examples .table-example td{
+  margin-top: 0;
+  border-bottom: 1px solid #333;
+  border-right: 1px solid #333;
+padding: 0 .1em;
+}
+.cell-examples .table-example.none td{
+  border-bottom: 1px dotted #ddd;
+  border-right: 1px dotted #ddd;
+}
+
+.table-examples .table-example td.te-right{
+  border-right-width: 0;
+}
+.table-examples .table-example td.te-bottom{
+  border-bottom-width: 0;
+}
+
+</style>
+
+
+  </head>
+
+  <body>
+    
+    
+  <div id="header-wrap">
+    <div id="header-container">
+      <div id="header-functions">
+        <div id="expertmode">
+          <span id="expand-advanced" style="display: inline;">
+            &#171;
+                  </span>
+          <span id="basic-message" style="display: none;">
+            <span class="link-like">Switch to advanced mode</span>
+          </span>
+          <span id="advanced-message" style="display: none;">
+            You are in advanced mode. 
+            <span class="link-like">Return to basic mode.</span>
+          </span>
+        </div>
+        <div id="status">
+          <span id="user-id">You are logged in as: <strong>starkenbury</strong></span>.
+          <a href="#" target="_top">Sign out.</a>
+        </div>
+      </div>
+      <div id="header">
+        <img class="cnxlogo" src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/connexions_icon.png"/>
+        <h1><a href="#">Connexions Importer</a></h1>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="workflownav-wrap">
+    <div id="workflownav-container">
+      <div id="back-steps">
+        <input type="button" class="button" value="&#171; Back: Return to start page" id="back-to-chooser-2"
+               title="Return to the previous screen to choose a different import or editing option" 
+               onclick="window.location = 'choose-27.html'"/>
+      </div>
+      <div id="forward-steps">
+        <input type="button" class="button forward-button" value="Next Step &#187;" id="show-neworexisting"
+               title="Select whether this will be used for a new module or to override the contents of an existing module" />
+      </div>
+    </div>
+  </div>
+
+
+  <div id="ie6-container-wrap">
+    <div id="container">
+      <div id="content">
+
+
+        <div id="pageheader-wrap">
+
+          <div id="module-actions">
+            <div class="advanced" style="display: none;">
+              <h2 class="advanced-label">
+                Advanced
+              </h2>
+              <strong>Module actions: </strong>
+              <a title="Save a ZIP file containing the module's XML and metadata to your local computer." 
+                 id="download-copy" href="#asdfaasdf" style="color: black; text-decoration: none;">
+               <span class="button" style="margin-left: 0;">Download a copy</span>
+              </a>
+              <a title="Make changes to the module by editing its XML code." 
+                 id="edit-xml" href="#asdfaasdf" style="color: black; text-decoration: none;">
+               <span class="button" style="margin-left: 0;">Edit XML</span>
+              </a>
+            </div>
+          </div>
+
+
+          <div id="page-title">
+            <h1>
+              Edit:
+              <span class="metatitle">
+                Conversion of Cooking_with_spam.doc
+              </span>
+            </h1>
+          </div>
+
+          <div id="page-description">
+            <p class="forminfo">
+              Make any changes you would like to the module below.
+            </p>
+          </div>
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+<div id="editor-mode">
+  <ul>
+    <li id="xml-mode">
+      <a href="#">Edit XML Source</a>
+    </li>
+    <li id="visual-mode" class="current">
+      <a href="#">Edit Visually</a>
+    </li>
+  </ul>
+</div>
+
+        <div id="editor">
+
+
+<div id="artboard">
+
+<div id="artboard-inner">
+
+
+<div id="toolbar">
+
+  <span class="icon-like" id="hints">
+    <input type="checkbox" checked="checked"/>
+    <span href="#" class="checkbox"/>Show hints</span>
+  </span>
+
+ <div id="icon-set">
+  <span class="icon-like">
+    <input type="submit" value="Saved" disabled="disabled"/>
+  </span>
+  <span class="icon-like">
+    <input type="submit" value="Preview"/>
+  </span>
+  <span class="icon-like">
+<!--
+    <input type="submit" value="Options ..." class="menu-like"/>
+-->
+    <a href="#" class="menu-like"/>Edit/Options ...</a>
+  </span>
+  <span class="toolbar-function" id="toolbar-undo">
+    <a class="toolbar-icon" href="#" title="Undo">
+    </a>
+  </span>
+  <span class="toolbar-function disabled" id="toolbar-redo">
+    <a  class="toolbar-icon" href="#" title="Redo">
+    </a>
+  </span>
+  <span class="separator">  </span>
+  <span class="icon-like">
+      <select>
+        <option>Normal text</option>
+        <option>Header Level 1</option>
+        <option>Header Level 2</option>
+        <option>Header Level 3</option>
+      </select>
+  </span>
+  <span class="toolbar-function" id="toolbar-bold">
+    <a class="toolbar-icon" href="#" title="Bold (Ctrl + B)">
+    </a>
+  </span>
+  <span class="toolbar-function" id="toolbar-italics">
+    <a class="toolbar-icon" href="#" title="Italics (Ctrl + I)">
+    </a>
+  </span>
+  <span class="toolbar-function" id="toolbar-underline">
+    <a class="toolbar-icon" href="#" title="Underline (Ctrl + U)">
+    </a>
+  </span>
+<!--
+  <span class="toolbar-function" id="toolbar-smallcaps">
+    <a class="toolbar-icon" href="#" title="Small caps">
+    </a>
+  </span>
+  <span class="separator">  </span>
+-->
+  <span class="toolbar-function" id="toolbar-superscript">
+    <a class="toolbar-icon" href="#" title="Superscript">
+    </a>
+  </span>
+  <span class="toolbar-function" id="toolbar-subscript">
+    <a class="toolbar-icon" href="#" title="Subscript">
+    </a>
+  </span>
+  <span class="separator">  </span>
+  <span class="toolbar-function" id="toolbar-link">
+    <a class="toolbar-icon" href="#" title="Link">
+    </a>
+  </span>
+  <span class="toolbar-function disabled" id="toolbar-unlink">
+    <a class="toolbar-icon" href="#" title="Unlink (remove the link, leaving just the text)">
+    </a>
+  </span>
+<!--
+  <span class="toolbar-function" id="toolbar-specialchars">
+    <a class="toolbar-icon" href="#" title="Insert special characters">
+    </a>
+  </span>
+  <span class="toolbar-function" id="toolbar-footnote">
+    <a class="toolbar-icon" href="#" title="Footnote">
+    </a>
+  </span>
+-->
+  <span class="separator">  </span>
+  <span class="toolbar-function" id="toolbar-unorderedlist">
+    <a class="toolbar-icon" href="#" title="Unordered List">
+    </a>
+  </span>
+  <span class="toolbar-function" id="toolbar-orderedlist">
+    <a class="toolbar-icon" href="#" title="Ordered List">
+    </a>
+  </span>
+  <span class="separator">  </span>
+  <span class="toolbar-function" id="toolbar-table">
+    <a class="toolbar-icon" href="#" title="Table">
+    </a>
+  </span>
+  <span class="toolbar-function" id="toolbar-image">
+    <a class="toolbar-icon" href="#" title="Image">
+    </a>
+  </span>
+<!--
+  <span class="toolbar-function" id="toolbar-video">
+    <a class="toolbar-icon" href="#" title="Video">
+    </a>
+  </span>
+  <span class="toolbar-function" id="toolbar-audio">
+    <a class="toolbar-icon" href="#" title="Audio">
+    </a>
+  </span>
+-->
+  <span class="toolbar-function" id="toolbar-math">
+    <a class="toolbar-icon" href="#" title="Math">
+    </a>
+  </span>
+ </div>
+</div>
+
+
+<div id="sidebar">
+<!--
+<dl id="toc">
+  <dt><a href="#">Module contents</a></h2>
+  <dd>asdf</dd>
+</dl>
+-->
+<dl id="pedagog">
+  <dt>Add a new:</dt>
+  <dd>
+    <ul>
+      <li class="pedagog">
+        <div class="count">
+          <a href="#" class="count-total">1</a>
+          <div class="node-list">
+            <strong>Exercises in this document</strong>
+            <ul>
+              <li>
+                <a href="#swsuper" title="Jump to this exercise">Exercise 1</a/>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <a class="node" href="#"><span class="plus">+ </span>Exercise</a>
+      </li>
+      <li class="pedagog">
+        <div class="count zero">0</div>
+        <a class="node" href="#"><span class="plus">+ </span>Definition</a>
+      </li>
+      <li class="pedagog">
+        <div class="count">
+          <div class="node-list">
+            <strong>Examples in this document</strong>
+            <ul>
+              <li>
+                <a href="#ex1" title="Jump to this example">Example 1</a/>
+              </li>
+              <li>
+                <a href="#ex2" title="Jump to this example">Example 2</a/>
+              </li>
+            </ul>
+          </div>
+          <a href="#" class="count-total">2</a>
+        </div>
+        <a class="node" href="#"><span class="plus">+ </span>Example</a>
+      </li>
+<!--
+      <li class="pedagog">
+        <span class="count zero">0</span>
+        <a class="node" href="#"><span class="plus">+ </span>Figure</a>
+      </li>
+      <li class="pedagog">
+        <span class="count zero">0</span>
+        <a class="node" href="#"><span class="plus">+ </span>Block quote</a>
+      </li>
+      <li class="pedagog">
+        <span class="count zero">(0)</span>
+        <a class="node" href="#"><span class="plus">+ </span>Block of code font</a>
+      </li>
+-->
+      <li class="pedagog">
+        <div class="count">
+          <div class="node-list">
+            <strong>Numbered Equations in this document</strong>
+            <ul>
+              <li>
+                <a href="#eq1" title="Jump to this equation">Equation 1</a/>
+              </li>
+              <li>
+                <a href="#eq2" title="Jump to this equation">Equation 2</a/>
+              </li>
+            </ul>
+          </div>
+          <a href="#" class="count-total">2</a>
+        </div>
+        <a class="node" href="#"><span class="plus">+ </span>Numbered Equation</a>
+      </li>
+      <li class="pedagog">
+        <span class="count zero">0</span>
+        <a class="node" href="#"><span class="plus">+ </span>Note</a>
+      </li>
+      <li class="pedagog-glossary">
+        <input type="checkbox"/>
+        <span >Include a Glossary</span>
+      </li>
+    </ul>
+  </dd>
+</dl>
+</div>
+
+<div id="canvas">
+<!--
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+asdf<br/>
+-->
+
+<div class="element-options" id="exercise-options" title="Edit options for this exercise" style="display: none;">
+  <ul class="element-options-tabs">
+    <li class="selected" id="eo-basic-tab">
+      <a href="#">Basic options</a>
+    </li>
+    <li id="eo-advanced-tab">
+      <a href="#">Advanced</a>
+    </li>
+  </ul>
+  <div class="element-options-contents" id="eo-basic">
+    <label>Solution location</label>
+    <div class="forminfo">In print and mobile formats, where should the solutions for this exercise appear?</div>
+    <div>
+      <input type="radio" name="print-placement" id="pp-default" checked="checked" /> <label for="pp-default" style="font-weight: normal;">Default (Let the system decide)</label>
+    </div>
+    <div>
+      <input type="radio" name="print-placement" id="pp-end" /> <label for="pp-end" style="font-weight: normal;">At the end of the chapter</label>
+    </div>
+    <div>
+      <input type="radio" name="print-placement" id="pp-here" /> <label for="pp-here" style="font-weight: normal;">Right after the exercise</label>
+    </div>
+    <hr/>
+    <div>
+      <input type="checkbox" id="ex-commentary"/>
+      <label for="ex-commentary">Add commentary</label>
+      <div class="forminfo">
+      Provides a space for commentary at the end of this exercise.
+      </div>
+    </div>
+  </div>
+  <div class="element-options-contents" id="eo-advanced" style="display: none;">
+    <label>Custom exercise type</label>
+    <div class="forminfo">
+       Give this exercise a new "type".  
+       Nothing obvious will change in your document. 
+       This is for advanced book styling and requires support from the publishing system.
+    </div>
+    <div>
+      <input type="text" />
+      (<a href="#" class="clear-text-from-input">remove</a>)
+    </div>
+  </div>
+</div>
+
+<div class="element-options" id="example-options" title="Edit options for this example" style="display: none;">
+  <ul class="element-options-tabs">
+    <li class="selected" id="eo2-advanced-tab">
+      <a href="#">Advanced</a>
+    </li>
+  </ul>
+  <div class="element-options-contents" id="eo2-advanced">
+    <label>Custom example type</label>
+    <div class="forminfo">
+       Give this example a new "type".  
+       Nothing obvious will change in your document. 
+       This is for advanced book styling and requires support from the publishing system.
+    </div>
+    <div>
+      <input type="text" />
+      (<a href="#" class="clear-text-from-input">remove</a>)
+    </div>
+  </div>
+</div>
+
+<div class="element-options" id="equation-options" title="Edit options for this equation" style="display: none;">
+  <ul class="element-options-tabs">
+    <li class="selected" id="eo3-basic-tab">
+      <a href="#">Basic options</a>
+    </li>
+    <li id="eo3-advanced-tab">
+      <a href="#">Advanced</a>
+    </li>
+  </ul>
+  <div class="element-options-contents" id="eo3-basic">
+    <label>Add a title</label>
+    <div class="forminfo">
+      Provide a descriptive title for this equation.
+    </div>
+    <div>
+      <input type="text" style="width: 95%;">
+    </div>
+  </div>
+  <div class="element-options-contents" id="eo3-advanced" style="display: none;">
+    <label>Custom equation type</label>
+    <div class="forminfo">
+       Give this equation a new "type".  
+       Nothing obvious will change in your document. 
+       This is for advanced book styling and requires support from the publishing system.
+    </div>
+    <div>
+      <input type="text" />
+      (<a href="#" class="clear-text-from-input">remove</a>)
+    </div>
+  </div>
+</div>
+
+<div class="element-options" id="solution-options" title="Edit options for this solution" style="display: none;">
+  <ul class="element-options-tabs">
+    <li class="selected" id="eo4-basic-tab">
+      <a href="#">Basic options</a>
+    </li>
+    <li id="eo4-advanced-tab">
+      <a href="#">Advanced</a>
+    </li>
+  </ul>
+  <div class="element-options-contents" id="eo4-basic">
+    <label>Solution location</label>
+    <div class="forminfo">In print and mobile formats, where should this solution appear?  
+        This overrides the exercise's location setting for this specific solution, in case you want different location settings in multi-solution exercises.
+    </div>
+    <div>
+      <input type="radio" name="s-print-placement" id="spp-default" checked="checked" /> <label for="spp-default" style="font-weight: normal;">Default (Let the system decide)</label>
+    </div>
+    <div>
+      <input type="radio" name="s-print-placement" id="spp-end" /> <label for="spp-end" style="font-weight: normal;">At the end of the chapter</label>
+    </div>
+    <div>
+      <input type="radio" name="s-print-placement" id="spp-here" /> <label for="spp-here" style="font-weight: normal;">Right after the exercise</label>
+    </div>
+    <hr/>
+    <div>
+      <label>Add a title</label>
+      <div class="forminfo">
+        Provide a descriptive title for this solution.
+      </div>
+      <div>
+        <input type="text" style="width: 95%;">
+      </div>
+    </div>
+  </div>
+  <div class="element-options-contents" id="eo4-advanced" style="display: none;">
+    <label>Custom solution type</label>
+    <div class="forminfo">
+       Give this solution a new "type".  
+       Nothing obvious will change in your document. 
+       This is for advanced book styling and requires support from the publishing system.
+    </div>
+    <div>
+      <input type="text" />
+      (<a href="#" class="clear-text-from-input">remove</a>)
+    </div>
+  </div>
+</div>
+
+<div class="element-options" id="table-options" title="Edit options for this table" style="display: none;">
+  <ul class="element-options-tabs">
+    <li class="selected" id="eo5-basic-tab">
+      <a href="#">Basic options</a>
+    </li>
+    <li id="eo5-formatting-tab">
+      <a href="#">Widths and borders</a>
+    </li>
+    <li id="eo5-advanced-tab">
+      <a href="#">Advanced</a>
+    </li>
+  </ul>
+  <div class="element-options-contents" id="eo5-basic">
+    <div>
+      <label>Add a caption</label>
+      <div class="forminfo">
+        Provide a caption for this table to describe it in more detail.
+      </div>
+      <div>
+        <input type="text" style="width: 95%;">
+      </div>
+    </div>
+    <hr/>
+    <div id="table-summary">
+      <label>Add a summary</label>
+      <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/warning-01.png" title="A summary is required for this table to be considered accessible for visually impaired readers."/>
+      <div class="forminfo">
+        Provide an overview of the table structure and its contents so that visually impaired can more easily navigate it.
+      </div>
+      <div>
+        <textarea style="width: 95%;"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="element-options-contents" id="eo5-formatting" style="display: none;">
+    <label>Column width</label>
+    <div class="forminfo">
+      How are the column widths set?
+    </div>
+    <div>
+      <input type="radio" name="table-col-width" id="tcw-full" checked="checked" /> <label for="tcw-full" style="font-weight: normal;">Equal width columns</label>
+    </div>
+    <div>
+      <input type="radio" name="table-col-width" id="tcw-auto" /> <label for="tcw-auto" style="font-weight: normal;">Auto (columns adjust naturally to fill contents)</label>
+    </div>
+    <div>
+      <input type="radio" name="table-col-width" id="tcw-custom" /> <label for="tcw-custom" style="font-weight: normal;">Custom (stretch columns as you see fit)</label>
+    </div>
+    <hr/>
+    <label>Table border</label>
+    <div class="table-examples">
+      <table border="0" cellspacing="0" cellpadding="0" style="white-space: nowrap;">
+        <tbody>
+        <tr>
+          <td>
+            <input type="radio" name="table-border" id="tb-all" checked="checked" /> <label for="tb-all" style="font-weight: normal;">All edges</label>
+            <div class="table-example">
+              <table><tbody>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+              </tbody></table>
+            </div>
+          </td>
+          <td>
+            <input type="radio" name="table-border" id="tb-sides" /> <label for="tb-sides" style="font-weight: normal;">Sides</label>
+            <div class="table-example">
+              <table style="border-top: 1px dotted #ddd; border-bottom: 1px dotted #ddd;"><tbody>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+              </tbody></table>
+            </div>
+          </td>
+          <td>
+            <input type="radio" name="table-border" id="tb-top" /> <label for="tb-top" style="font-weight: normal;">Top</label>
+            <div class="table-example">
+              <table style="border-left: 1px dotted #ddd; border-right: 1px dotted #ddd; border-bottom: 1px dotted #ddd"><tbody>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+              </tbody></table>
+            </div>
+          </td>
+          <td>
+            <input type="radio" name="table-border" id="tb-bottom" /> <label for="tb-bottom" style="font-weight: normal;">Bottom</label>
+            <div class="table-example">
+              <table style="border-top: 1px dotted #ddd; border-left: 1px dotted #ddd; border-right: 1px dotted #ddd;"><tbody>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+              </tbody></table>
+            </div>
+          </td>
+          <td>
+            <input type="radio" name="table-border" id="tb-topbot" /> <label for="tb-topbot" style="font-weight: normal;">Top &amp; Bottom</label>
+            <div class="table-example">
+              <table style="border-left: 1px dotted #ddd; border-right: 1px dotted #ddd;"><tbody>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+              </tbody></table>
+            </div>
+          </td>
+          <td>
+            <input type="radio" name="table-border" id="tb-none" /> <label for="tb-none" style="font-weight: normal;">None</label>
+            <div class="table-example">
+              <table style="border: 1px dotted #ddd;"><tbody>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+              </tbody></table>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <hr/>
+    <label>Cell borders</label>
+    <div class="table-examples cell-examples">
+      <table border="0" cellspacing="0" cellpadding="0" style="white-space: nowrap;">
+        <tbody>
+        <tr>
+          <td>
+            <input type="radio" name="cell-border" id="cb-all" checked="checked" /> <label for="cb-all" style="font-weight: normal;">All</label>
+            <div class="table-example">
+              <table><tbody>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+              </tbody></table>
+            </div>
+          </td>
+          <td>
+            <input type="radio" name="cell-border" id="cb-none" /> <label for="cb-none" style="font-weight: normal;">None</label>
+            <div class="table-example none">
+              <table style=""><tbody>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td>&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;</td><td class="te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+                <tr><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom">&nbsp;&nbsp;&nbsp;</td><td class="te-bottom te-right">&nbsp;&nbsp;&nbsp;</td></tr>
+              </tbody></table>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="element-options-contents" id="eo5-advanced" style="display: none;">
+    <label>Custom table type</label>
+    <div class="forminfo">
+       Give this table a new "type".  
+       Nothing obvious will change in your document. 
+       This is for advanced book styling and requires support from the publishing system.
+    </div>
+    <div>
+      <input type="text" />
+      (<a href="#" class="clear-text-from-input">remove</a>)
+    </div>
+  </div>
+</div>
+
+<div id="ascii-or-latex" style="display: none;">
+  <p>
+    How do you want to enter your math code?
+    <a id="whats-mathtype-dialog" href="#">(What's this?)</a>
+  </p>
+  <p id="whats-mathtype-dialog-text" style="display: none;" class="forminfo">
+    Both ASCIIMath and LaTeX work by transforming the text you type into mathematics.  
+    ASCIIMath is a simple input notation similar to that of a graphing calculator. 
+    <a href="http://www1.chapman.edu/~jipsen/asciimath.html" target="_blank" class="external">More info on ASCIIMath notation.</a>
+    LaTeX, while similar in many respects to ASCIIMath, includes some more complex notation for power users to write advanced math.  
+    <a href="http://en.wikibooks.org/wiki/LaTeX/Mathematics" target="_blank" class="external">More info on LaTeX notation.</a>
+  </p>
+  <div>
+    <input type="radio" name="ascii-or-latex-radio" id="aol-ascii" checked="checked"> <label for="aol-ascii">ASCIIMath</label> (recommended if you aren't sure)
+  </div>
+  <div>
+    <input type="radio" name="ascii-or-latex-radio" id="aol-latex"> <label for="aol-latex">LaTeX</label>
+  </div>
+</div>
+
+
+<div class="canvas2 special-canvas inactive2" style="padding: 0; margin: 0;">
+
+        <div id="cnx_module_header" style="margin-bottom: 1.5em;">
+
+          <h1 class="content-editable" contentEditable="true">Linear and Time-Invariant Systems</h1>
+
+        </div>
+
+        <div xmlns:md="http://cnx.rice.edu/mdml/0.4" xmlns:qml="http://cnx.rice.edu/qml/1.0" xmlns:mod="http://cnx.rice.edu/#moduleIds" 
+xmlns:bib="http://bibtexml.sf.net/" id="cnx_main">
+
+<div class="section" style="display: none;">
+  <h2 class="section-header">
+    <strong class="title">Introduction</strong>
+  </h2>
+  <div class="section"-contents">
+
+    <p class="para" id="p01">
+    This module contains an introduction to the study of electrical engineering
+    and some of the historical points of interest which formed the basis of study
+    in the field.  The overall themes of the cirriculum of the electrical engineering
+    department are discussed.
+    </p>
+
+  </div>
+</div>
+
+
+
+<div class="section">
+  <h2 class="section-header">
+    <strong class="title content-editable" contentEditable="true">Signals</strong>
+  </h2>
+
+  <div class="section-contents">
+
+  <p class="para content-editable" id="para1" contentEditable="true">
+    A signal's complexity is not related to how wiggly it is. Rather, a signal 
+    expert looks for ways of decomposing a given signal into a  <em class="emphasis">sum of 
+    simpler signals</em>, which we term the <dfn class="term">signal decomposition</dfn>. 
+    Though we will never compute a signal's complexity, it essentially equals the 
+    number of terms in its decomposition. In writing a signal as a sum of component 
+    signals, we can change the component signal's gain by multiplying it by a constant 
+    and by delaying it. More complicated decompositions could contain derivatives 
+    or integrals of simple signals. In short, signal decomposition amounts to 
+    thinking of the signal as the output of a linear system having simple signals as 
+    its inputs. We would build such a system, but envisioning the signal's components
+    helps understand the signal's structure. Furthermore, you can readily compute a
+    linear system's output to an input decomposed as a superposition of simple signals.
+    </p>
+
+  <p class="para content-editable" id="para2" contentEditable="true">
+    Because the sinusoid is a superposition of two complex exponentials, the 
+    sinusoid is more complex. We could not prevent ourselves from the pun in 
+    this statement. Clearly, the word "complex" is used in two different ways 
+    here. The complex exponential can also be written (using <a title="Strength 5" class="cnxn" href="http://mountainbunker.org/content/m0004/latest/#3">Euler's relation</a>) as a sum of a sine 
+and a 
+    cosine. We will discover that virtually every signal can be decomposed into a
+    sum of complex exponentials, and that this decomposition is  <em class="emphasis">very 
+    </em>useful. Thus, the complex exponential is more fundamental, and 
+    Euler's relation does not adequately reveal its complexity.
+  </p>
+
+  </div>
+</div>
+
+<div class="glossary-outer">
+<div class="glossary-container" id="cnx_glossary">
+<h2 
+class="glossary-header">Glossary</h2>
+    <dl class="definition glossary" id="side"><dt><dfn class="term">sidereal period:</dfn></dt><dd><div 
+class="meaning">A period determined by or from the 
+stars.</div></dd></dl>
+</div>
+  </div>
+
+
+
+
+
+
+
+
+
+</div>
+</div>
+</div>
+
+        </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!--
+        <div id="footer">
+          <a href="http://www.shuttleworthfoundation.org/" target="_blank"><img src="helper_files/sf150.png" width="150"/></a>
+        </div>
+-->
+
+      </div>
+
+
+    </div>
+  </div>
+
+
+  <div id="neworexisting" style="display: none;">
+    <p><strong>
+      Is this for a new module or will it override an existing one?
+    </strong></p>
+    <div>
+      <span class="button" onclick="window.location = 'metadata-41.html'">New module</span>
+      <div class="forminfo" style="margin: .5em 0 1em;">
+      <div>
+        This is an entirely new module. 
+      </div>
+    </div>
+    <div>
+      <span class="button" onclick="window.location = 'choose-module-16.html'">Override existing module</span>
+      <div class="forminfo" style="margin: .5em 0 1em;">
+      <div>
+        Choose an existing module to apply your import to, replacing its contents.  
+      </div>
+    </div>
+    <div class="headeraction" style="margin: 1.5em 0 0; text-align: center;">
+      <div>
+      <span class="button" id="cancel-neworexisting">Cancel</span>
+    </div>
+  </div>
+	
+<!-- <script type="text/javascript">
+			Aloha.ready( function(){
+				var $ = Aloha.jQuery;
+				// register all editable areas
+				$('#top-text').aloha();
+				$('#content').aloha();
+				$('.area-content').aloha();
+				// hide loading div
+				$('#aloha-loading').hide();
+				$('#aloha-loading span').html('Loading Plugins');
+			});
+		</script>
+-->
+
+  </body>
+
+<!-- Mirrored from mountainbunker.org/~maxwell/oerpub/editor-ideas/tables-05.html by HTTrack Website Copier/3.x [XR&CO'2010], Wed, 19 Sep 2012 21:12:27 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8"><!-- /Added by HTTrack -->
+</html>
+
+
+

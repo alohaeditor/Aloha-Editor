@@ -22,13 +22,19 @@ loadCSS('app/css/aloha-editor-demo.css');
 
 
 /** load javascripts **/
+var alohaEditorPath = '../../';
+
+// load requireJS
+loadJS( alohaEditorPath + 'lib/require.js');
+
+
 /*
 	jQuery
 
 	Here we add our own jQuery version for demonstration usage.
 	You can also just use the jQuery version delivered with Aloha Editor.
 */
-loadJS('app/js/jquery-1.7.min.js');
+loadJS( alohaEditorPath + 'lib/vendor/jquery-1.7.2.js');
 
 /*
 	Load scripts to prepare a demo page
@@ -63,11 +69,11 @@ if ( document.location.href.match(/^file:\/\//gi ) ) {
 //loadJS('app/aloha-config/minimal.js');
 
 // config for demo-app in aloha dev github repos
-var alohaEditorPath = '../../';
 loadJS('app/aloha-config/minimal-demo.js');
 
-
-loadJS( alohaEditorPath + 'lib/aloha.js', 	'common/format, \
+// load Aloha Editor
+loadJS( alohaEditorPath + 'lib/aloha.js', 	'common/ui, \
+													common/format, \
 													common/table, \
 													common/list, \
 													common/link,  \
@@ -79,8 +85,6 @@ loadJS( alohaEditorPath + 'lib/aloha.js', 	'common/format, \
 													common/abbr, \
 													common/image,  \
 													common/contenthandler, \
-													extra/browser, \
-													extra/linkbrowser, \
 													cmsplugin/cms');
 
 loadCSS( alohaEditorPath + 'css/aloha.css');

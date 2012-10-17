@@ -37,7 +37,9 @@ define([
 		// the original comment:
 		// "Only set the specific scope if an event was provided, which means
 		// that somehow an editable was selected"
-		if (typeof originalEvent !== 'undefined' && ! scopeSetDuringSelectionChanged) {
+		if (typeof originalEvent !== 'undefined' &&
+            ! scopeSetDuringSelectionChanged &&
+            $(originalEvent.target).parents('.aloha-editable').length) {
 			Scopes.setScope('Aloha.continuoustext');
 		}
 	});

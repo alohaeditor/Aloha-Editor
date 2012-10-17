@@ -33,6 +33,12 @@
 		  padding: 10px;
 		}
 
+        .aloha-toolbar {
+            position: fixed;
+            right: 0;
+            top: 0;
+        }
+
 		.aloha-panel {
 		  border: 1px solid #000;
 		}
@@ -55,6 +61,10 @@
 	<script src="js/aloha-config.js"></script>
 	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
 	<script src="../../lib/require.js"></script>
+	<!-- Load Max.S scripts and stylesheets -->
+	<!--script type=" text/javascript" src="max.js"></script> -->
+	<link rel="stylesheet" href="max.css" type="text/css">
+
     <script>
 		Aloha.settings.jQuery = $;
     </script>
@@ -110,20 +120,51 @@
 			</div>
 			
 			<div id="main" role="main">
-				<div id="content">
-				
-				<p>Ah'll gi' thee a thick ear nah then. Aye. Soft southern pansy. Be reet be reet bobbar gi' o'er tha what wacken thi sen up. Gi' o'er wacken thi sen up dahn t'coil oil how much t'foot o' our stairs chuffin' nora. Cack-handed. Chuffin' nora what's that when it's at ooam wacken thi sen up tha daft apeth breadcake wacken thi sen up. Chuffin' nora bobbar. Tha what soft lad a pint 'o mild. Will 'e 'eckerslike where's tha bin.</p>
-				
-				</div>
-				
-				<div id="references">
-					<img src="http://aloha-editor.org/logo/Aloha%20Editor%20logo%20text%20128.png" alt="Aloha Editor" title="Aloha Editor" /><br />
-					&middot; Ask a <a href="http://getsatisfaction.com/aloha_editor">question</a><br />
-					&middot; Read the <a href="http://aloha-editor.org/guides">guides</a><br />
-					&middot; Report an <a href="https://github.com/alohaeditor/Aloha-Editor/issues">issue</a><br />
-					<br />
-					Aloha Editor <a href="http://aloha-editor.org">website</a><br />
-				</div>
+				<div id="content" style="width:90%; margin-left:auto; margin-right:auto;display:block;">
+			
+                <h1>Linear and Time-Invariant Systems</h1>
+                <hr />	
+                <h2>Signals</h2>
+                <hr />
+                <center> 
+                $x+\sqrt(x^{3})$
+                </center>
+                <p>More complicated decompositions could contain derivatives or integrals of simple signals. In short, signal decomposition amounts to thinking of the signal as the output of a linear system having simple signals as its inputs. We would build such a system, but envisioning the signal's components helps understand the signal's structure. Furthermore, you can readily compute a linear system's output to an input decomposed as a superposition of simple signals.
+   
+
+                </p>
+                <p><strong>Example 1</strong></p>
+                <p>As an example of signal complexity, we can express the pulse $p_{\Delta}(t)$ as a sum of delayed unit steps. 
+                </p>
+                <center>
+                $p_{\Delta}(t) = u(t) - u(t-\Delta)$
+                </center>
+                <p>Thus, the pulse is a more complex signal than the step. Be that as it may, the pulse is very useful to us.</p>
+                <p><strong>Exercise 1</strong></p>
+                <p>Express a square wave having period $ T $
+                and amplitude $ A $
+                as a superposition of delayed and amplitude-scaled pulses.</p>
+                <p><strong>Solution</strong></p>
+
+                <center>
+                $sq(t)\sum_{n=-\infty}^{\infty}(-1)^{n}Ap_{T/2}(t-n\frac{T}{2})$
+                </center>
+
+                <p><strong>Theorem 1: Pythagorean Theorem</strong></p>
+                <p>On a right triangle, the sum of the squares of the sides equals the square of the hypotenus</p>
+                <p><strong>Proof</strong></p>
+                <p>Take a right triangle whose sides are of length 3, 4, and 5. In this case the sum of the square of the two shorter sides is 9+16=25. The square of the hypotenus is 25. So the theorem holds.</p>
+                <p><strong>Note:</strong>The Pythagorean Theorem does not apply to <strong>acute</strong> and <strong>obtuse</strong> triangles. It can only be applied to right triangles. However, a corollary of the Pythagorean theorem's converse is a simple means of determining whether a triangle is right, obtuse, or acute.
+                <p><strong>Example 2</strong></p>
+                <p><center>
+                $5^{2}+7^{2}<9^{2}$
+                </center></p>
+
+                <p>Because the sinusoid is a superposition of two complex exponentials, the sinusoid is more complex. We could not prevent ourselves from the pun in this statement. Clearly, the word "complex" is used in two different ways here. The complex exponential can also be written (using Euler's relation) as a sum of a sine and a cosine. We will discover that virtually every signal can be decomposed into a sum of complex exponentials, and that this decomposition is very useful. Thus, the complex exponential is more fundamental, and Euler's relation does not adequately reveal its complexity.</p> 
+
+
+
+                </div>
 			</div>
 		</div>
 		

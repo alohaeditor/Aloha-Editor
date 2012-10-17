@@ -1,0 +1,42 @@
+h2. Implementation notes
+
+endprologue.
+
+h3. Special classes
+
+Aloha Editor will also add a CSS class to the html DOM node during it's @initAloha@ stage.
+The following classes will be used:
+
+|_. Browser |_. Class |
+| Chrome or Safari | @aloha-webkit@ |
+| Opera | @aloha-opera@ |
+| Firefox | @aloha-mozilla@ |
+| Opera | @aloha-webkit@ |
+| Internet Explorer 7* | @aloha-ie7@ |
+| Internet Explorer 8* | @aloha-ie8@ |
+| Internet Explorer 9* | @aloha-ie9@ |
+| Internet Explorer 10* | @aloha-ie10@ |
+
+NOTE: * Internet Explorer Version Numbers will be derived by turning the browser version into an integer
+
+h3. Initialization Process
+
+When Aloha Editor is loading several steps are completed until the initialization process is finished.
+
+<javascript>
+// init process taken from core.js
+Aloha.stage = 'loadPlugins';
+Aloha.loadPlugins(function(){
+	Aloha.stage = 'initAloha';
+	Aloha.initAloha(function(){
+		Aloha.stage = 'initPlugins';
+		Aloha.initPlugins(function(){
+			Aloha.stage = 'initGui';
+			Aloha.initGui(function(){
+				Aloha.stage = 'alohaReady';
+				Aloha.trigger('aloha-ready');
+			});
+		});
+	});
+});
+</javascript>
