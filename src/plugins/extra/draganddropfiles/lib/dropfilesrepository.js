@@ -1,4 +1,4 @@
-/* dragndropfiles.js is part of Aloha Editor project http://aloha-editor.org
+/* dropfilesrepository.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
@@ -24,12 +24,8 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-/*
- * Repository
- * Copyright (c) 2010 Nicolas Karageuzian - http://nka.re
- */
-define(['jquery', 'aloha/repository', 'aloha/repository', 'i18n!aloha/nls/i18n'],
 
+define(['jquery', 'aloha/repository', 'i18n!aloha/nls/i18n'],
 function ($, repository, i18nCore) {
 	"use strict";
 	var jQuery = $,
@@ -52,32 +48,22 @@ function ($, repository, i18nCore) {
 
 				this.uploadFolder = uploadFolder;
 				this.objects = [uploadFolder];
+				var that = this;
 				// upload queue FIFO
 				this.uploadQueue = {
-
-					// items queued
-					queue: [],
-
-					// add an item
-					push: function (obj) {
+					queue: [], // items queued
+					push: function (obj) { // add an item
 						this.queue.push(obj);
 					},
-
-					// grabs first item of array and remove it
-					pop: function () {
+					pop: function () { // grabs first item of array and remove it
 						var result = this.queue[0];
 						this.queue = this.queue.splice(1);
 						return result;
 					},
-
-					// Process file uploads
-					processQueue: function () {
+					processQueue: function () { // Process file uploads
 						var file;
-
-						// prevents concurrent runs of processQueue
-						if (!this.processUpload) {
+						if (!this.processUpload) { // prevents concurrent runs of processQueue
 							this.processUpload = true;
-
 							// recalculate queue lenght after each upload
 							while (this.queue.length > 0) {
 								file = this.pop();
@@ -90,6 +76,7 @@ function ($, repository, i18nCore) {
 
 			},
 			config: {
+				// can add more elements for Ext window styling
 				'method': 'POST',
 				'callback': function (resp) {
 					return resp;
@@ -98,32 +85,26 @@ function ($, repository, i18nCore) {
 				'accept': 'application/json',
 				'file_name_param': "filename",
 				'file_name_header': 'X-File-Name',
-
-				//Extra parameters
-				'extra_headers': {},
-
-				//Extra parameters
-				'extra_post_data': {},
-
-				//true for html4 TODO: make browser check
-				'send_multipart_form': false,
+				'extra_headers': {}, //Extra parameters
+				'extra_post_data': {}, //Extra parameters
+				'send_multipart_form': false, //true for html4 TODO: make browser check
+				//'additional_params': {"location":""},
 				'www_encoded': false,
 				'image': {
 					'max_width': 800,
 					'max_height': 800
 				},
 				'fieldName': function () {
-					return 'filename';
+					return 'filename'
 				}
 			},
-
 			/**
 			 * Repository's Query function
 			 */
 			query: function (p, callback) {
 				Aloha.Log.info(this, "Query Uploader");
 				var d = [];
-				if (p.inFolderId === this.repositoryId && p.queryString == null) {
+				if (p.inFolderId == this.repositoryId && p.queryString == null) {
 					d = this.objects;
 				} else {
 					d = this.objects.filter(function (e, i, a) {
@@ -135,18 +116,19 @@ function ($, repository, i18nCore) {
 							}
 						} catch (error) {}
 						return ret;
+						/* (
+					( !queryString || e.displayName.match(r) || e.url.match(r) ) &&
+					( !objectTypeFilter || jQuery.inArray(e.objectType, objectTypeFilter) > -1) &&
+					( !inFolderId || inFolderId == e.parentId )
+				);*/
 					});
 				}
 				callback.call(this, d);
 			},
-
-			/**
-			 * Get children of a given node of the tree
-			 */
 			getChildren: function (p, callback) {
-				var d = [],
-					parentFolder = p.inFolderId.split("")[0];
-				if (parentFolder === "") {
+				d = [];
+				var parentFolder = p.inFolderId.split("")[0];
+				if (parentFolder == "") {
 					parentFolder = "/";
 				}
 				d = this.objects.filter(function (e, i, a) {
@@ -155,36 +137,28 @@ function ($, repository, i18nCore) {
 				});
 				callback.call(this, d);
 			},
-
 			/**
 			 * Triggers an upload
 			 * Resizes if it's an image which is too large
 			 */
-			addFileUpload: function (file, targetid) {
-				var d,
-				len = this.objects.length,
-					id = 'ALOHA_idx_file' + len,
-					merge_conf = {};
+			addFileUpload: function (file) {
+				var type = '';
 
-				// check if given file is already in the repository
-				d = this.objects.filter(function (e, i, a) {
-					if (e.name == file.name) {
-						return true;
-					}
+				var d = this.objects.filter(function (e, i, a) {
+					if (e.name == file.name) return true;
 					return false;
 				});
-				// if so, returns this file
 				if (d.length > 0) {
 					return d[0];
 				}
-
-				// else process the file
+				var len = this.objects.length,
+					id = 'ALOHA_idx_file' + len,
+					merge_conf = {};
 				jQuery.extend(true, merge_conf, this.config);
 
 				this.objects.push(new this.UploadFile({
 					file: file,
 					id: id,
-					targetid: targetid,
 					name: file.name,
 					displayName: file.name,
 					parentId: "Uploads",
@@ -196,21 +170,21 @@ function ($, repository, i18nCore) {
 					parent: this.uploadFolder,
 					repositoryId: this.repositoryId
 				}));
-
+				//			try {
+				//				var repoNode = this.browser.tree.getNodeById("com.gentics.aloha.plugins.DragAndDropFiles");
+				//				repoNode.expand();
+				//				//this.browser.tree.getNodeById("Uploads").select();
+				//			} catch(error) {}
 				return this.objects[len];
 			},
-
-			/** 
-			 * Start upload of a given file
-			 */
 			startFileUpload: function (id, upload_config) {
-				var d = this.objects.filter(function (e, i, a) {
-					if (e.id == id) {
-						return true;
-
-					}
-					return false;
-				});
+				var type = '',
+					d = this.objects.filter(function (e, i, a) {
+						if (e.id == id) {
+							return true;
+						}
+						return false;
+					});
 				if (d.length > 0) {
 					jQuery.extend(true, upload_config, this.upload_conf);
 					d[0].upload_config = upload_config;
@@ -220,20 +194,16 @@ function ($, repository, i18nCore) {
 					Aloha.Log.error(this, "No file with that id");
 				}
 			},
-
-			/**
-			 * Type for an uploadFolder, extends from aloha repository API folder
-			 */
 			UploadFolder: Aloha.RepositoryFolder.extend({
 				_constructor: function (properties) {
 					this._super(properties);
 				},
 				getDataObject: function (record) {
-					var repo = Aloha.RepositoryManager.getRepository(record.data.repositoryId),
-						d = repo.objects.filter(function (e, i, a) {
-							if (e.id === record.data.id && e.file) return true;
-							return false;
-						});
+					repo = Aloha.RepositoryManager.getRepository(record.data.repositoryId);
+					d = repo.objects.filter(function (e, i, a) {
+						if (e.id == record.data.id && e.file) return true;
+						return false;
+					});
 					if (d.length > 0) {
 						return d[0];
 					}
@@ -242,34 +212,35 @@ function ($, repository, i18nCore) {
 			}),
 
 			/**
-			 * Type for a file, extends from aloha repository API file
-			 * Attach an xhr to the file in order to process the upload
+			 * The file class
 			 */
 			UploadFile: Aloha.RepositoryDocument.extend({
 				_constructor: function (properties) {
 					var xhr = this.xhr,
-						uploadFile = this;
-					uploadFile._super(properties);
-					xhr.upload.onprogress = function (rpe) {
-						uploadFile.loaded = rpe.loaded;
-						uploadFile.total = rpe.total;
-						uploadFile.ulProgress = rpe.loaded / rpe.total;
-						Aloha.trigger('aloha-upload-progress', uploadFile);
+						that = this;
+					this._super(properties);
+					xhr.upload['onprogress'] = function (rpe) {
+						that.loaded = rpe.loaded;
+						that.total = rpe.total;
+						that.ulProgress = rpe.loaded / rpe.total;
+						Aloha.trigger('aloha-upload-progress', that);
 						xhr.onload = function (load) {
 							try {
-								uploadFile.src = uploadFile.upload_config.callback(xhr.responseText, uploadFile);
-								Aloha.trigger('aloha-upload-success', uploadFile);
+								that.src = that.upload_config.callback(xhr.responseText);
+								Aloha.trigger('aloha-upload-success', that);
 							} catch (e) {
-								Aloha.trigger('aloha-upload-failure', uploadFile);
+								Aloha.trigger('aloha-upload-failure', that);
 							}
+							// if (that.delegateUploadEvent(xhr.responseText)) {
+							// }
 						};
 						xhr.onabort = function () {
-							Aloha.trigger('aloha-upload-abort', uploadFile);
+							Aloha.trigger('aloha-upload-abort', that);
 						};
 						xhr.onerror = function (e) {
-							Aloha.trigger('aloha-upload-error', uploadFile);
+							Aloha.trigger('aloha-upload-error', that);
 						};
-					};
+					}
 				},
 				xhr: new XMLHttpRequest(),
 				contentTypeHeader: 'text/plain; charset=x-user-defined-binary',
@@ -277,38 +248,30 @@ function ($, repository, i18nCore) {
 				 * Process upload of a file
 				 */
 				startUpload: function () {
-					var data,
-					filename = this.file.fileName,
-						xhr = this.xhr,
+					var xhr = this.xhr,
 						options = this.upload_config,
-						uploadFile = this,
-						targetsize = {},
-						tempimg = new Image();
-
-					if (typeof filename === "undefined") {
-						filename = this.file.name;
-					}
-					if (this.targetid == null) {
-						this.targetid = "";
-					}
-					xhr.open(options.method, typeof (options.url) == "function" ? options.url() : options.url, true);
+						that = this,
+						data;
+					xhr.open(options.method, typeof (options.url) == "function" ? options.url(number) : options.url, true);
 					xhr.setRequestHeader("Cache-Control", "no-cache");
 					xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-					xhr.setRequestHeader(options.file_name_header, filename);
-					xhr.setRequestHeader("X-File-Size", this.file.fileSize);
-					xhr.setRequestHeader("X-drop-targetId", this.targetid);
+					xhr.setRequestHeader(options.file_name_header, that.file.name);
+					xhr.setRequestHeader("X-File-Size", that.file.fileSize);
 					xhr.setRequestHeader("Accept", options.accept);
-					//			l
+
 					if (!options.send_multipart_form) {
-						xhr.setRequestHeader("Content-Type", this.file.type + ";base64");
-						xhr.overrideMimeType(this.file.type);
-						Aloha.Log.debug(Aloha, "Original Data (length:" + this.file.data.length + ") = " + this.file.data.substring(0, 30));
+						xhr.setRequestHeader("Content-Type", that.file.type + ";base64");
+						xhr.overrideMimeType(that.file.type);
+						var canvas = $('<canvas>').first(),
+							targetsize = {},
+							tempimg = new Image();
+						Aloha.Log.debug(Aloha, "Original Data (length:" + that.file.data.length + ") = " + that.file.data.substring(0, 30));
 						tempimg.onload = function () {
-							var canvas = document.createElement('canvas');
 							targetsize = {
 								height: tempimg.height,
 								width: tempimg.width
 							};
+
 							if (tempimg.width > tempimg.height) {
 								if (tempimg.width > options.image.max_width) {
 									targetsize.width = options.image.max_width;
@@ -320,6 +283,8 @@ function ($, repository, i18nCore) {
 									targetsize.width = tempimg.width * options.image.max_height / tempimg.height;
 								}
 							}
+
+							var canvas = document.createElement('canvas');
 							canvas.setAttribute('width', targetsize.width);
 							canvas.setAttribute('height', targetsize.height);
 							canvas.getContext('2d').drawImage(
@@ -332,20 +297,17 @@ function ($, repository, i18nCore) {
 							0,
 							targetsize.width,
 							targetsize.height);
-							data = canvas.toDataURL(uploadFile.file.type);
+							data = canvas.toDataURL(that.file.type);
 							Aloha.Log.debug(Aloha, "Sent Data (length:" + data.length + ") = " + data.substring(0, 30));
 							xhr.send(data);
 						};
 						tempimg.src = this.file.data;
 					} else {
-						//Many thanks to scottt.tw
-						if (window.FormData) {
+						if (window.FormData) { //Many thanks to scottt.tw
 							var f = new FormData();
 							f.append(typeof (options.fieldName) == "function" ? options.fieldName() : options.fieldName, this.file);
 							xhr.send(f);
-						}
-						//Thanks to jm.schelcher
-						else if (this.file.getAsBinary) {
+						} else if (this.file.getAsBinary) { //Thanks to jm.schelcher
 							var boundary = (1000000000000 + Math.floor(Math.random() * 8999999999998)).toString();
 							var dashdash = '--';
 							var crlf = '\r\n';
@@ -382,9 +344,13 @@ function ($, repository, i18nCore) {
 						}
 					}
 
-
 				}
+				// /**
+				// * Method to override to handle backend response
+				// */
+				// delegateUploadEvent: 
 			})
+			//TODO: i18n
 		};
 	return repository.extend(Uploader);
 });
