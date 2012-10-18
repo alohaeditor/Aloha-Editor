@@ -1350,14 +1350,14 @@ define('RepositoryBrowser', [
 define('repository-browser-i18n-de', [], function () {
 	'use strict';
 	return {
-		'Browsing': 'Browsing',
-		'Close': 'Schließn',
+		'Browsing': 'Durchsuchen',
+		'Close': 'Schließen',
 		'in': 'in',
-		'Input search text...': 'Suchtext einfü.gen...',
-		'numerous': 'zahlreich',
+		'Input search text...': 'Suchtext einfügen...',
+		'numerous': 'zahlreiche',
 		'of': 'von',
 		'Repository Browser': 'Repository Browser',
-		'Search': 'Süchen',
+		'Search': 'Suchen',
 		'Searching for': 'Suche nach',
 		'Viewing': 'Anzeige',
 		'button.switch-metaview.tooltip': 'Zwischen Metaansicht und normaler Ansicht umschalten'
