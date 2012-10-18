@@ -22,3 +22,4 @@ All changes are categorized into one of the following keywords:
 - **MANUAL CHANGE**: Added a demo of placeholders to boilerplate;
 - **BUG**: Fix calling mahalo in a blur event handler
 - **BUG**: Fix support for editable anchor elements
+- **ENHANCEMENT**: jquery-ui and jquery.layout were upgraded
