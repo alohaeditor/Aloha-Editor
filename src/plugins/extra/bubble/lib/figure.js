@@ -11,13 +11,7 @@
       var $button, $el, separator;
       $el = this;
       $bubble = jQuery('<div class="figure-popover btn-group"></div>');
-      if ($el.children('.title:not(.empty)')[0]) {
-        $button = jQuery('<button class="btn btn-danger">Remove Title</button>');
-        $button.on('mousedown', function() {
-          return $el.children('.title').remove();
-        });
-        $bubble.append($button);
-      } else {
+      if (!$el.children('.title:not(.empty)')[0]) {
         $button = jQuery('<button class="btn">Add Title</button>');
         $button.on('mousedown', function() {
           var newTitle;
@@ -28,13 +22,7 @@
       }
       separator = jQuery('<span class="divider"></span>');
       $bubble.append(separator);
-      if ($el.children('figcaption:not(.empty)')[0]) {
-        $button = jQuery('<button class="btn btn-danger">Remove Caption</button>');
-        $button.on('mousedown', function() {
-          return $el.children('figcaption').remove();
-        });
-        $bubble.append($button);
-      } else {
+      if (!$el.children('figcaption:not(.empty)')[0]) {
         $button = jQuery('<button class="btn">Add Caption</button>');
         $button.on('mousedown', function() {
           var newCaption;
@@ -43,6 +31,7 @@
         });
         $bubble.append($button);
       }
+      $bubble.append('<button class="btn"><i class="icon-certificate"></i> Advanced Options</button>');
       return $bubble;
     };
     return {
