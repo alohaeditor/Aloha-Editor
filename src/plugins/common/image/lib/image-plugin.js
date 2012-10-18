@@ -163,8 +163,11 @@ define([
              * The default expects a json-formatted message.
 			 */
              onUploadSuccess: function(xhr) {
-                var msg = JSON.parse(xhr.response);
-                return msg.url;
+                try {
+                    var msg = JSON.parse(xhr.response);
+                    return msg.url;
+                } catch(e) {}
+                return null;
              },
 
 			/**
