@@ -12,4 +12,4 @@ All changes are categorized into one of the following keywords:
 	has been spezified. Now only the spezified repository is queried.
 
 - **BUG**: core/aloha-links: Prevents yellow borders around aloha-links blocks
-
+- **BUG**: link-plugin: link scope remains active after the selection leaves an anchor element
