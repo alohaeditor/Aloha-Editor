@@ -250,7 +250,7 @@
 
 		var defaultPaths = {
 			jquery: 'vendor/jquery-1.7.2',
-			jqueryui: 'vendor/jquery-ui-1.9m6'
+			jqueryui: 'vendor/jquery-ui-1.9.0.custom-aloha'
 		};
 
 		var browserPaths = {
