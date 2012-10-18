@@ -5,11 +5,18 @@
 	<title>Figures!</title>
 
 	<link rel="stylesheet" href="src/css/aloha.css" type="text/css">
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.css" type="text/css"/>
+	<link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" type="text/css"/>
+	<!-- <link rel="stylesheet" href="src/demo/math/max.css"/> -->
 
     <style type="text/css">
+/* Remove the annoying WAI button in tables */
 .aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
+
+/* Hide the annoying floating toolbar */
 .aloha-toolbar { display: none !important; }
 
+/* Set some styling on the toolbar */
 .toolbar {
   background-color: whiteSmoke;
   opacity: 0.95;
@@ -23,19 +30,58 @@
   z-index: 10000;
 }
 
+/* Set the width for the Heading/SubHeading dropdown */
 .toolbar .currentHeading {
   width: 9em;
 }
 
 /* Add some padding on the top so the toolbar has room to float in */
 .document { margin: 4em; }
-    </style>
+
+/* Needs to occur AFTER the bootstrap.css */
+/* Allows the popover to grow in size */
+.popover {
+  width: auto;
+}
+
+/* We don't use the title in popovers so hide it... */
+.popover .popover-title { display: none; }
+
+
+	
+figure {
+  counter-increment: figure;
+  /* Set inline-block so the figure popover shows up directly under instead of 1/2-way in the page */
+  display: inline-block;
+}
+figure figcaption::before { content: "Figure " counter(figure) " "; font-weight: bold; }
+
+
+.aloha-image-upload-drop-box {
+  text-align: center;
+  border: 1px dashed #ccc;
+  width: 400px;
+  padding: 100px 0;
+  cursor: pointer;
+}
+
+/* Metadata fields that occur around the image */
+.aloha-image-attrib .aloha-image-attr-alt::before {
+  content: "Please provide a description of this image for the visually impaired";
+  color: #ccc;
+  display: block;
+}
+/* Just some formatting of the input boxes */
+.aloha-image-attrib input { display: block; }
+.aloha-image-attrib .aloha-image-attr-alt {
+  width: 400px;
+  display: block;
+}
+	</style>
 
 
 	<!-- Manually link to jQuery because bootstrap relies on this for loading -->
 	<script src="src/lib/vendor/jquery-1.7.2.js"></script>
-	<link rel="stylesheet" href="bootstrap/css/bootstrap.css" type="text/css"/>
-	<link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" type="text/css"/>
 	<script src="bootstrap/js/bootstrap.js"></script>
 
 	<script language="javascript">
@@ -104,58 +150,12 @@
 	  extra/math,
 	  extra/bubble
 	"></script>
-
-
-	
-	<!-- <link rel="stylesheet" href="src/demo/math/max.css"/> -->
-
-	<style type="text/css">
-
-/* Needs to occur AFTER the bootstrap.css */
-/* Allows the popover to grow in size */
-.popover {
-  width: initial;
-}
-
-/* We don't use the title so hide it... */
-.popover .popover-title { display: none; }
-
-
-	
-figure {
-  counter-increment: figure;
-  /* Set inline-block so the figure popover shows up directly under instead of 1/2-way in the page */
-  display: inline-block;
-}
-figure figcaption::before { content: "Figure " counter(figure) " "; font-weight: bold; }
-
-.aloha-image-upload-drop-box {
-  text-align: center;
-  border: 1px dashed #ccc;
-  width: 400px;
-  padding: 100px 0;
-  cursor: pointer;
-}
-
-/* Metadata fields that occur around the image */
-.aloha-image-attrib {
-  
-}
-.aloha-image-attrib .aloha-image-attr-alt::before {
-  content: "Please provide a description of this image for the visually impaired";
-  color: #ccc;
-  display: block;
-}
-/* Just some formatting of the input boxes */
-.aloha-image-attrib input { display: block; }
-.aloha-image-attrib .aloha-image-attr-alt {
-  width: 400px;
-  display: block;
-}
-	</style>
 </head>
 <body>
 	
+<!-- ================= -->
+<!--  Toolbar Buttons  -->
+<!-- ================= -->
 <div class="toolbar">
 
 <div class="btn-toolbar">
@@ -225,30 +225,36 @@ figure figcaption::before { content: "Figure " counter(figure) " "; font-weight:
 
 </div><!-- / ".toolbar" -->
 
-	
+<!-- ====================== -->
+<!--  The Editable Content  -->
+<!-- ====================== -->
   <div class="document" id="document">
     <h1>Figures in Aloha</h1>
-		<p>This example uses the figure plugin.</p>
-		<p>You can move a figure around and <a href="http://cnx.org">link in original</a> eventually should be able to create/paste new ones in.</p>
+    <p>This example uses the figure plugin.</p>
+    <p>You can move a figure around and <a href="http://cnx.org">link in original</a> eventually should be able to create/paste new ones in.</p>
     <figure class="figure">
-	<div class="title">Some Title</div>
+	<div class="title">A Title for a Figure</div>
       <img src="src/test/AlohaEditorLogo.png"/>
       <figcaption>This is a caption on a figure</figcaption>
     </figure>
     <p>Here is some text after a figure</p>
-    <p>Below is another figure</p>
+    <p>Below is another figure (without a title)</p>
     <figure class="figure">
       <img src="src/test/AlohaEditorLogo.png"/>
       <figcaption>This is a caption on a figure</figcaption>
     </figure>
     <p>And some more text after a figure</p>
 
-	</div>
-	<script type="text/javascript">
-	Aloha.ready( function() {
-		Aloha.jQuery('.document').aloha();
-		//$('*[rel=tooltip]').tooltip();
-	});
-	</script>
+  </div>
+
+<!-- =============== -->
+<!--  Aloha Startup  -->
+<!-- =============== -->
+  <script type="text/javascript">
+    Aloha.ready( function() {
+      Aloha.jQuery('.document').aloha();
+      //$('*[rel=tooltip]').tooltip();
+    });
+  </script>
 </body>
 </html>
