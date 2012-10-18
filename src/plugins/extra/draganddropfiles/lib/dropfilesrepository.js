@@ -249,7 +249,6 @@ function($, repository, i18nCore){
 					var canvas = $('<canvas>').first(),
 						targetsize = {},
 						tempimg = new Image();
-					Aloha.Log.debug(Aloha,"Original Data (length:" + this.file.data.length + ") = " + this.file.data.substring(0,30));
 					tempimg.onload = function() {
 						targetsize = {
 							height: tempimg.height,
@@ -288,52 +287,22 @@ function($, repository, i18nCore){
 						Aloha.Log.debug(Aloha,"Sent Data (length:" + data.length + ") = " + data.substring(0,30));
 						xhr.send(data);
 					};
-					tempimg.src = this.file.data;
+					tempimg.src = this.file.objectURL;
 				} else {
 					if (window.FormData) {//Many thanks to scottt.tw
-						var f = new FormData();
-						f.append(typeof(options.fieldName) == "function" ? options.fieldName() : options.fieldName, this.file);
+						var f = new FormData(),
+                            b = new Blob( [ this.file.data ],
+                                { type: this.file.type } ) ,
+                            fieldname = typeof(options.fieldName) == "function" ? options.fieldName() : options.fieldName;
+                        // Note: Firefox (as of 14.0.1) does not yet support
+                        // the third filename parameter, it will send "blob" as
+                        // filename
+						f.append(fieldname, b, this.file.name);
 						xhr.send(f);
-					}
-					else if (this.file.getAsBinary) {//Thanks to jm.schelcher
-						var boundary = (1000000000000+Math.floor(Math.random()*8999999999998)).toString();
-						var dashdash = '--';
-						var crlf     = '\r\n';
-
-						/* Build RFC2388 string. */
-						var builder = '';
-
-						builder += dashdash;
-						builder += boundary;
-						builder += crlf;
-
-						builder += 'Content-Disposition: form-data; name="'+(typeof(options.fieldName) == "function" ? options.fieldName() : options.fieldName)+'"';
-						builder += '; filename="' + this.file.fileName + '"';
-						builder += crlf;
-
-						builder += 'Content-Type: application/octet-stream';
-						builder += crlf;
-						builder += crlf;
-
-						/* Append binary data. */
-						builder += this.file.getAsBinary();
-						builder += crlf;
-
-						/* Write boundary. */
-						builder += dashdash;
-						builder += boundary;
-						builder += dashdash;
-						builder += crlf;
-
-						xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary);
-						xhr.sendAsBinary(builder);
-					}
-					else {
+					} else {
 						options.onBrowserIncompatible();
 					}
 				}
-
-
 			}
 //			/**
 //			 * Method to override to handle backend response
