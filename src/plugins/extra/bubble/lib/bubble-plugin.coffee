@@ -10,7 +10,16 @@
 
 
 # This file manages all the Aloha events and removes/adds all the bubble listeners when an editable is enabled/disabled.
-define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure', './title-figcaption' ], (Aloha, jQuery, Plugin, Bubbler, linkConfig, figureConfig, figcaptionConfig) ->
+
+#############  The popover pseudo code: #############
+# Here's the flow cases to consider:
+# - User moves over a link and then moves it away (no popup)
+# - User hovers over a link causing a bubble and then moves it away (delayed close to handle next case)
+# - User hovers over a link causing a bubble and then moves it over the bubble (the bubble should not disappear)
+# - User moves over a link and then clicks inside it (bubble shows up immediately and should not disappear)
+# - User clicks on a link (or moves into it with the cursor) and then clicks/moves elsewhere (bubble should pop up immediately and close immediately)
+
+define [ 'aloha', 'jquery', 'aloha/plugin', './link', './figure', './title-figcaption' ], (Aloha, jQuery, Plugin, linkConfig, figureConfig, figcaptionConfig) ->
 
   # Monkeypatch the bootstrap Popover so we can inject clickable buttons
   if true  
@@ -118,8 +127,6 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure', '.
                     $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
 
                 $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
-
-        #new Bubbler(@populator, jQuery(editable.obj), @selector)
     stop: (editable) ->
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
