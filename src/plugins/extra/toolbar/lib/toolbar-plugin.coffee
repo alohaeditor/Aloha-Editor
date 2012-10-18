@@ -12,6 +12,8 @@ define [ "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu', "i18n!format
   Plugin.create "toolbar",
     init: ->
 
+      squirreledEditable = null
+
       # Initially disable all the buttons and only enable them when events are attached to them
       CONTAINER_JQUERY.find('.action').addClass('disabled missing-a-click-event')
       CONTAINER_JQUERY.find('a.action').parent().addClass('disabled missing-a-click-event')
@@ -42,14 +44,9 @@ define [ "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu', "i18n!format
           foreground: (a) ->
             console.log "#{slot} TODO:FOREGROUND:", a
 
-        squirreledEditable = null
-        $buttons.on 'mousedown', (evt) ->
-          squirreledEditable = Aloha.activeEditable
-          evt.preventDefault()
-
         $buttons.on 'click', (evt) ->
           evt.preventDefault()
-          Aloha.activeEditable = squirreledEditable
+          Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
           # The Table plugin requires this.element to work so it can pop open a
           # window that selects the number of rows and columns
           # Also, that's the reason for the bind(@)
@@ -78,6 +75,9 @@ define [ "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu', "i18n!format
       
       headings.on 'click', changeHeading
       headings.add(headings.parent()).removeClass('disabled missing-a-click-event')
+
+      Aloha.bind 'aloha-editable-activated', (event, data) ->
+        squirreledEditable = data.editable
       
       # Keep track of the range because Aloha.Selection.obj seems to go {} sometimes
       Aloha.bind "aloha-selection-changed", (event, rangeObject) ->

@@ -115,8 +115,11 @@
 /* Allows the popover to grow in size */
 .popover {
   width: initial;
-  min-width: 236px;
 }
+
+/* We don't use the title so hide it... */
+.popover .popover-title { display: none; }
+
 
 	
 figure {
@@ -149,9 +152,6 @@ figure figcaption::before { content: "Figure " counter(figure) " "; font-weight:
   width: 400px;
   display: block;
 }
-	</style>
-
-	<style>
 	</style>
 </head>
 <body>
@@ -231,6 +231,7 @@ figure figcaption::before { content: "Figure " counter(figure) " "; font-weight:
 		<p>This example uses the figure plugin.</p>
 		<p>You can move a figure around and <a href="http://cnx.org">link in original</a> eventually should be able to create/paste new ones in.</p>
     <figure class="figure">
+	<div class="title">Some Title</div>
       <img src="src/test/AlohaEditorLogo.png"/>
       <figcaption>This is a caption on a figure</figcaption>
     </figure>

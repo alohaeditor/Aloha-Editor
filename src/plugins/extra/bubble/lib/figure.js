@@ -11,7 +11,7 @@
       var $button, $el, separator;
       $el = this;
       $bubble = jQuery('<div class="figure-popover btn-group"></div>');
-      if ($el.children('.title')[0]) {
+      if ($el.children('.title:not(.empty)')[0]) {
         $button = jQuery('<button class="btn btn-danger">Remove Title</button>');
         $button.on('mousedown', function() {
           return $el.children('.title').remove();
@@ -28,7 +28,7 @@
       }
       separator = jQuery('<span class="divider"></span>');
       $bubble.append(separator);
-      if ($el.children('figcaption')[0]) {
+      if ($el.children('figcaption:not(.empty)')[0]) {
         $button = jQuery('<button class="btn btn-danger">Remove Caption</button>');
         $button.on('mousedown', function() {
           return $el.children('figcaption').remove();

@@ -13,11 +13,12 @@
 
     return Plugin.create("toolbar", {
       init: function() {
-        var changeHeading, headings;
+        var changeHeading, headings, squirreledEditable;
+        squirreledEditable = null;
         CONTAINER_JQUERY.find('.action').addClass('disabled missing-a-click-event');
         CONTAINER_JQUERY.find('a.action').parent().addClass('disabled missing-a-click-event');
         Ui.adopt = function(slot, type, settings) {
-          var $buttons, ItemRelay, squirreledEditable;
+          var $buttons, ItemRelay;
           $buttons = CONTAINER_JQUERY.find(".action." + slot);
           $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event');
           ItemRelay = (function() {
@@ -76,14 +77,9 @@
             return ItemRelay;
 
           })();
-          squirreledEditable = null;
-          $buttons.on('mousedown', function(evt) {
-            squirreledEditable = Aloha.activeEditable;
-            return evt.preventDefault();
-          });
           $buttons.on('click', function(evt) {
             evt.preventDefault();
-            Aloha.activeEditable = squirreledEditable;
+            Aloha.activeEditable = Aloha.activeEditable || squirreledEditable;
             this.element = this;
             return settings.click.bind(this)(evt);
           });
@@ -105,6 +101,9 @@
         headings = CONTAINER_JQUERY.find(".changeHeading");
         headings.on('click', changeHeading);
         headings.add(headings.parent()).removeClass('disabled missing-a-click-event');
+        Aloha.bind('aloha-editable-activated', function(event, data) {
+          return squirreledEditable = data.editable;
+        });
         return Aloha.bind("aloha-selection-changed", function(event, rangeObject) {
           var $el, currentHeading;
           $el = Aloha.jQuery(rangeObject.startContainer);

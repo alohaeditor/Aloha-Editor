@@ -13,7 +13,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
       $el = @
       $bubble = jQuery('<div class="figure-popover btn-group"></div>')
       # Buttons to add/remove a title/caption
-      if $el.children('.title')[0]
+      if $el.children('.title:not(.empty)')[0]
         $button = jQuery('<button class="btn btn-danger">Remove Title</button>')
         $button.on 'mousedown', () -> $el.children('.title').remove()
         $bubble.append($button)
@@ -28,7 +28,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
       separator = jQuery('<span class="divider"></span>')
       $bubble.append(separator)
       
-      if $el.children('figcaption')[0]
+      if $el.children('figcaption:not(.empty)')[0]
         $button = jQuery('<button class="btn btn-danger">Remove Caption</button>')
         $button.on 'mousedown', () -> $el.children('figcaption').remove()
         $bubble.append($button)
