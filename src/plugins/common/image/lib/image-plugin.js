@@ -409,7 +409,9 @@ define([
                 // Get the server-side url from the response, set it
                 // as the src for the image.
                 var url = plugin.settings.onUploadSuccess(data.xhr);
-                $('#' + data.id).attr('src', url);
+                if ( url !== null ) {
+                    $('#' + data.id).attr('src', url);
+                }
             });
 
 			Aloha.bind('aloha-upload-failure', function (event, data) {
