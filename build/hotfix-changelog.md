@@ -12,3 +12,5 @@ All changes are categorized into one of the following keywords:
 	has been spezified. Now only the spezified repository is queried.
 
 - **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html
+- **BUG**: core/aloha-links: Prevents yellow borders around aloha-links blocks
+- **BUG**: link-plugin: link scope remains active after the selection leaves an anchor element
