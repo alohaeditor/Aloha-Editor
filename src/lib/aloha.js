@@ -247,6 +247,10 @@
 			baseUrl: Aloha.settings.baseUrl,
 			map: moduleMap
 		};
+		
+		var DependencyManagement = global.__DEPS__ || (global.__DEPS__ = {});
+		
+		DependencyManagement.lang = defaultConfig.locale;
 
 		var defaultPaths = {
 			jquery: 'vendor/jquery-1.7.2',
