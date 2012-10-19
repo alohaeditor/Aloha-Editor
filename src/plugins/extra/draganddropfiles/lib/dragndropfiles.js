@@ -144,25 +144,19 @@ function($, Plugin,DropFilesRepository) {
 				that = this;
 			reader.file = file;
             reader.onloadend = function() {
-                var objectURL = null;
-                if ( window.URL ){
-                    objectURL = window.URL.createObjectURL(file);
-                } else if (  window.webkitURL ){
-                    objectURL = window.webkitURL.createObjectURL(file);
-                }
                 var currentFile = {
                     name: this.file.name,
                     type: this.file.type,
                     fileSize: this.file.fileSize,
                     fileName: this.file.fileName,
-                    objectURL: objectURL,
-                    data: new Blob([reader.result], { type: this.file.type } )
+                    dataURI: reader.result,
+                    data: this.file
                 };
                 that.filesObjs.push(that.uploader.addFileUpload(currentFile));
                 that.processedFiles++;
                 Aloha.trigger('aloha-file-upload-prepared', currentFile);
             };
-            reader.readAsArrayBuffer(file);
+            reader.readAsDataURL(file);
 		},
 		/**
 		 * Our drop event Handler

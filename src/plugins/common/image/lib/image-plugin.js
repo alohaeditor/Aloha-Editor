@@ -394,9 +394,9 @@ define([
 								"max-width": plugin.maxWidth,
 								"max-height": plugin.maxHeight
 							});
-							img.attr('id', fileObj.id);
-							img.attr('src', fileObj.file.objectURL);
-							GENTICS.Utils.Dom.insertIntoDOM(img, data.range, jQuery(Aloha.activeEditable.obj));
+						  img.attr('id', fileObj.id);
+						  img.attr('src', fileObj.file.dataURI);
+						  GENTICS.Utils.Dom.insertIntoDOM(img, data.range, jQuery(Aloha.activeEditable.obj));
 						}
 					}
 				}
