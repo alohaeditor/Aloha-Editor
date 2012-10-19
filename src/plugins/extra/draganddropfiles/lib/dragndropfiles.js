@@ -144,12 +144,18 @@ function($, Plugin,DropFilesRepository) {
 				that = this;
 			reader.file = file;
             reader.onloadend = function() {
+                var objectURL = null;
+                if ( window.URL ){
+                    objectURL = window.URL.createObjectURL(file);
+                } else if (  window.webkitURL ){
+                    objectURL = window.webkitURL.createObjectURL(file);
+                }
                 var currentFile = {
                     name: this.file.name,
                     type: this.file.type,
                     fileSize: this.file.fileSize,
                     fileName: this.file.fileName,
-                    objectURL: URL.createObjectURL(file),
+                    objectURL: objectURL,
                     data: reader.result
                 };
                 that.filesObjs.push(that.uploader.addFileUpload(currentFile));
