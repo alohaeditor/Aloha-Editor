@@ -156,7 +156,7 @@ function($, Plugin,DropFilesRepository) {
                     fileSize: this.file.fileSize,
                     fileName: this.file.fileName,
                     objectURL: objectURL,
-                    data: reader.result
+                    data: new Blob([reader.result], { type: this.file.type } )
                 };
                 that.filesObjs.push(that.uploader.addFileUpload(currentFile));
                 that.processedFiles++;

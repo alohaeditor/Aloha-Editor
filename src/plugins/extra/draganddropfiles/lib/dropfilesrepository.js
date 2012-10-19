@@ -291,13 +291,11 @@ function($, repository, i18nCore){
 				} else {
 					if (window.FormData) {//Many thanks to scottt.tw
 						var f = new FormData(),
-                            b = new Blob( [ this.file.data ],
-                                { type: this.file.type } ) ,
                             fieldname = typeof(options.fieldName) == "function" ? options.fieldName() : options.fieldName;
                         // Note: Firefox (as of 14.0.1) does not yet support
                         // the third filename parameter, it will send "blob" as
                         // filename
-						f.append(fieldname, b, this.file.name);
+						f.append(fieldname, this.file.data, this.file.name);
 						xhr.send(f);
 					} else {
 						options.onBrowserIncompatible();
