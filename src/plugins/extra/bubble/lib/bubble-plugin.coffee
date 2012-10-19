@@ -19,7 +19,7 @@
 # - User moves over a link and then clicks inside it (bubble shows up immediately and should not disappear)
 # - User clicks on a link (or moves into it with the cursor) and then clicks/moves elsewhere (bubble should pop up immediately and close immediately)
 
-define [ 'aloha', 'jquery', 'aloha/plugin', './link', './figure', './title-figcaption' ], (Aloha, jQuery, Plugin, linkConfig, figureConfig, figcaptionConfig) ->
+define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) ->
 
   # Monkeypatch the bootstrap Popover so we can inject clickable buttons
   if true  
@@ -137,9 +137,6 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './link', './figure', './title-figca
       $nodes.data('aloha-bubble-hovered', false)
       $nodes.popover('destroy')
 	
-  for cfg in [linkConfig, figureConfig, figcaptionConfig]
-    helpers.push(new Helper(cfg))
-
   findMarkup = (range=Aloha.Selection.getRangeObject(), filter) ->
     if Aloha.activeEditable
       range.findMarkup filter, Aloha.activeEditable.obj
@@ -158,41 +155,42 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './link', './figure', './title-figca
       enteredLinkScope = foundMarkup
     enteredLinkScope
 
-  GENTICS = window.GENTICS
-  pluginNamespace = 'aloha-bubble-link'
-  oldValue = ''
-  newValue = undefined
-  return Plugin.create('bubble-link',
-    init: ->
-      that = this
-      jQuery.each helpers, (i, helper) ->
-        
-        # These are reset when the editor is deactivated
-        insideScope = false
-        enteredLinkScope = false
+  bindHelper = (cfg) ->
+    helper = new Helper(cfg)
+    # These are reset when the editor is deactivated
+    insideScope = false
+    enteredLinkScope = false
 
-        Aloha.bind 'aloha-editable-activated', (event, data) ->
-          helper.start(data.editable)  
-        Aloha.bind 'aloha-editable-deactivated', (event, data) ->
-          setTimeout(() ->
-            helper.stop(data.editable)
-          , 100)
-          insideScope = false
-          enteredLinkScope = false
-  
-        Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
-          if Aloha.activeEditable
-            enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter)
-            if insideScope isnt enteredLinkScope
-              link = rangeObject.getCommonAncestorContainer()
-              if enteredLinkScope
-                jQuery(link).data('aloha-bubble-hovered', false)
-                jQuery(link).popover 'show'
-                jQuery(link).off('.bubble')
-                helper.focus.bind(link)() if helper.focus
-              else
-                nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
-                nodes.popover 'hide'
-                helper.blur.bind(nodes)() if helper.blur
-          insideScope = enteredLinkScope
-  )
+    Aloha.bind 'aloha-editable-activated', (event, data) ->
+      helper.start(data.editable)  
+    Aloha.bind 'aloha-editable-deactivated', (event, data) ->
+      setTimeout(() ->
+        helper.stop(data.editable)
+      , 100)
+      insideScope = false
+      enteredLinkScope = false
+
+    Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
+      if Aloha.activeEditable
+        enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter)
+        if insideScope isnt enteredLinkScope
+          link = rangeObject.getCommonAncestorContainer()
+          if enteredLinkScope
+            jQuery(link).data('aloha-bubble-hovered', false)
+            jQuery(link).popover 'show'
+            jQuery(link).off('.bubble')
+            helper.focus.bind(link)() if helper.focus
+          else
+            nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
+            nodes.popover 'hide'
+            helper.blur.bind(nodes)() if helper.blur
+      insideScope = enteredLinkScope
+
+  bindHelper linkConfig
+  bindHelper figureConfig
+  bindHelper figcaptionConfig
+
+  return {
+    register: (cfg) ->
+      bindHelper(new Helper(cfg))
+  }
