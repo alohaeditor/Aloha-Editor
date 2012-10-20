@@ -28,3 +28,4 @@ All changes are categorized into one of the following keywords:
 	Ephemera.ephemera() now doesn't merge the given value any more, but sets it (see function documentation for more information).
 	ephemera.attrMap doesn't accept 'ELEMENT.attribute': true entries any more, instead use 'attribute': ['ELEMENT'].
 	The mark* functions are now optional (modifications performed by these functions are documented and part of the API).
+- **ENHANCEMENT**: jquery-ui and jquery.layout were upgraded

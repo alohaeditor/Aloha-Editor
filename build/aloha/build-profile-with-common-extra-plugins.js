@@ -44,7 +44,7 @@
 
 		// We do include Aloha's patched jquery-ui by default, but the
 		// user can override it if he is adventurous.
-		"jqueryui": 'vendor/jquery-ui-1.9m6',
+		"jqueryui": 'vendor/jquery-ui-1.9.0.custom-aloha',
 
 		// For the repository browser
 		'PubSub': 'vendor/pubsub/js/pubsub-unminified',
@@ -52,7 +52,7 @@
 		'RepositoryBrowser': 'vendor/repository-browser/js/repository-browser-unminified',
 		'jstree': 'vendor/jquery.jstree',              // Mutates jquery
 		'jqgrid': 'vendor/jquery.jqgrid',              // Mutates jquery
-		'jquery-layout': 'vendor/jquery.layout',     // Mutates jquery
+		'jquery-layout': 'vendor/jquery.layout-1.3.0-rc30.7',     // Mutates jquery
 		'jqgrid-locale-en': 'vendor/grid.locale.en', // Mutates jqgrid
 		'jqgrid-locale-de': 'vendor/grid.locale.de', // Mutates jqgrid
 		'repository-browser-i18n-de': 'vendor/repository-browser/js/repository-browser-unminified',
