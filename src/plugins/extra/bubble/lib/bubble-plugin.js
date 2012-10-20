@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'jquery', './link', './figure', './title-figcaption'], function(Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) {
-    var Bootstrap_Popover_show, Helper, bindHelper, findMarkup, helpers, monkeyPatch, selectionChangeHandler;
+    var Bootstrap_Popover_show, Helper, afterHide, afterShow, bindHelper, findMarkup, helpers, monkeyPatch, selectionChangeHandler;
     if (true) {
       Bootstrap_Popover_show = function() {
         var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
@@ -58,6 +58,12 @@
       };
       monkeyPatch();
     }
+    afterShow = function($n) {
+      return clearTimeout($n.data('aloha-bubble-openTimer'));
+    };
+    afterHide = function($n) {
+      return $n.data('aloha-bubble-hovered', false);
+    };
     helpers = [];
     Helper = (function() {
 
@@ -70,34 +76,34 @@
         that = this;
         $el = jQuery(editable.obj);
         MILLISECS = 2000;
-        delayTimeout = function($self, eventName, ms, hovered) {
+        delayTimeout = function($self, eventName, ms, hovered, after) {
           if (ms == null) {
             ms = MILLISECS;
+          }
+          if (after == null) {
+            after = null;
           }
           return setTimeout(function() {
             if (hovered != null) {
               $self.data('aloha-bubble-hovered', hovered);
             }
-            return $self.popover(eventName);
+            $self.popover(eventName);
+            if (after) {
+              return after.bind($self)($self);
+            }
           }, ms);
         };
-        makePopover = function($node, placement) {
-          $node.popover({
-            placement: placement || 'bottom',
-            trigger: 'manual',
-            content: function() {
-              return that.populator.bind(jQuery(this))();
-            }
-          });
-          $node.on('shown', this.selector, function(evt) {
-            var $n;
-            $n = jQuery(this);
-            return clearTimeout($n.data('aloha-bubble-openTimer'));
-          });
-          return $node.on('hidden', this.selector, function() {
-            var $n;
-            $n = jQuery(this);
-            return $n.data('aloha-bubble-hovered', false);
+        makePopover = function($nodes, placement) {
+          return $nodes.each(function() {
+            var $node;
+            $node = jQuery(this);
+            return $node.popover({
+              placement: placement || 'bottom',
+              trigger: 'manual',
+              content: function() {
+                return that.populator.bind($node)($node);
+              }
+            });
           });
         };
         makePopover($el.find(this.selector), this.placement);
@@ -108,7 +114,7 @@
           if (!$node.data('popover')) {
             makePopover($node, that.placement);
           }
-          $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true));
+          $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true, afterShow));
           return $node.one('mouseleave.bubble', function() {
             var $tip;
             clearTimeout($node.data('aloha-bubble-openTimer'));
@@ -119,10 +125,10 @@
                   return clearTimeout($node.data('aloha-bubble-closeTimer'));
                 });
                 $tip.on('mouseleave', function() {
-                  return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2));
+                  return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide));
                 });
               }
-              return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2));
+              return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide));
             }
           });
         });
@@ -185,6 +191,7 @@
             if (enteredLinkScope) {
               jQuery(link).data('aloha-bubble-hovered', false);
               jQuery(link).popover('show');
+              afterShow(jQuery(link));
               jQuery(link).off('.bubble');
               if (helper.focus) {
                 helper.focus.bind(link)();
@@ -192,6 +199,7 @@
             } else {
               nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
               nodes.popover('hide');
+              afterHide(nodes);
               if (helper.blur) {
                 helper.blur.bind(nodes)();
               }

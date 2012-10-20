@@ -68,6 +68,11 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
     monkeyPatch()
   
 
+  afterShow = ($n) ->
+    clearTimeout($n.data('aloha-bubble-openTimer'))
+  afterHide = ($n) ->
+    $n.data('aloha-bubble-hovered', false)
+
   helpers = []
   class Helper
     constructor: (cfg) ->
@@ -81,27 +86,23 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
         $el = jQuery(editable.obj)
 
         MILLISECS = 2000
-        delayTimeout = ($self, eventName, ms=MILLISECS, hovered) ->
+        delayTimeout = ($self, eventName, ms=MILLISECS, hovered, after=null) ->
           return setTimeout(() ->
             if hovered?
               $self.data('aloha-bubble-hovered', hovered)
             $self.popover(eventName)
+            if after
+                after.bind($self)($self)
           , ms)
 
-        makePopover = ($node, placement) ->
-            $node.popover
-                placement: placement or 'bottom'
-                trigger: 'manual'
-                content: () ->
-                    that.populator.bind(jQuery(@))()
-            # Custom event to open the bubble used by setTimeout below
-            $node.on 'shown', @selector, (evt) ->
-              $n = jQuery(@)
-              clearTimeout($n.data('aloha-bubble-openTimer'))
-            
-            $node.on 'hidden', @selector, () ->
-              $n = jQuery(@)
-              $n.data('aloha-bubble-hovered', false)
+        makePopover = ($nodes, placement) ->
+            $nodes.each () ->
+                $node = jQuery(@)
+                $node.popover
+                    placement: placement or 'bottom'
+                    trigger: 'manual'
+                    content: () ->
+                        that.populator.bind($node)($node) # Can't quite decide whether the populator code should use @ or the 1st arg.
         
         makePopover($el.find(@selector), @placement)
         that = this
@@ -112,8 +113,7 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
             if not $node.data('popover')
                 makePopover($node, that.placement)
 
-            #PHIL $node.data('aloha-bubble-hovered', true)
-            $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true)) # true=hovered
+            $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true, afterShow)) # true=hovered
             $node.one 'mouseleave.bubble', () ->
               clearTimeout($node.data('aloha-bubble-openTimer'))
               if $node.data('aloha-bubble-hovered')
@@ -124,9 +124,9 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
                   $tip.on 'mouseenter', () ->
                     clearTimeout($node.data('aloha-bubble-closeTimer'))
                   $tip.on 'mouseleave', () ->
-                    $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
+                    $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide))
 
-                $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
+                $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide))
     stop: (editable) ->
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
@@ -178,11 +178,13 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
           if enteredLinkScope
             jQuery(link).data('aloha-bubble-hovered', false)
             jQuery(link).popover 'show'
+            afterShow(jQuery(link))
             jQuery(link).off('.bubble')
             helper.focus.bind(link)() if helper.focus
           else
             nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
             nodes.popover 'hide'
+            afterHide(nodes)
             helper.blur.bind(nodes)() if helper.blur
       insideScope = enteredLinkScope
 
