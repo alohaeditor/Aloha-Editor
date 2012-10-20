@@ -150,6 +150,19 @@ figure figcaption::before { content: "Figure " counter(figure) " "; font-weight:
 	  extra/math,
 	  extra/bubble
 	"></script>
+
+	<script type="text/x-mathjax-config">MathJax.Hub.Config({
+		jax: ["input/MathML", "input/TeX", "input/AsciiMath", "output/HTML-CSS", "output/NativeMML"],
+		extensions: ["asciimath2jax.js", "tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],
+		tex2jax: { inlineMath: [["$$","$$"], ["\\(", "\\)"]] },
+		asciimath2jax: { inlineMath: [["`", "`"]], delimiters: [["`","`"]] },
+		TeX: {
+			extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"], noErrors: { disabled: true }
+		},
+		AsciiMath: { noErrors: { disabled: true } }
+        });
+	</script>
+	<script src="src/plugins/extra/math/lib/MathJax.js?config=default"></script>
 </head>
 <body>
 	
@@ -230,6 +243,10 @@ figure figcaption::before { content: "Figure " counter(figure) " "; font-weight:
 <!-- ====================== -->
   <div class="document" id="document">
     <h1>Figures in Aloha</h1>
+    <!-- Can't just use the class "math" for elements because MathJax inserts a span with that class -->
+    <p>Here is some ASCII math <span class="math-element">`sqrt(x_1)/(2pi)`</span>.</p>
+    <p>Here is some TEX math <span class="math-element">$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$</span>.</p>
+    
     <p>This example uses the figure plugin.</p>
     <p>You can move a figure around and <a href="http://cnx.org">link in original</a> eventually should be able to create/paste new ones in.</p>
     <figure class="figure">
