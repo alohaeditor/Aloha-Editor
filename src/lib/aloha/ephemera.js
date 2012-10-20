@@ -342,7 +342,7 @@ define([
 			if (true === mapped) {
 				return true;
 			}
-			if (Arrays.indexOf(mapped, elem.nodeName)) {
+			if (-1 !== Arrays.indexOf(mapped, elem.nodeName)) {
 				return true;
 			}
 		}
