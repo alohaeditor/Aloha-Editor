@@ -80,6 +80,7 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
         # @populator
         # @filter
         # @placement
+        # @noHover
         jQuery.extend(@, cfg)
     start: (editable) ->
         that = @
@@ -113,7 +114,8 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
             if not $node.data('popover')
                 makePopover($node, that.placement)
 
-            $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true, afterShow)) # true=hovered
+            if not that.noHover
+                $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true, afterShow)) # true=hovered
             $node.one 'mouseleave.bubble', () ->
               clearTimeout($node.data('aloha-bubble-openTimer'))
               if $node.data('aloha-bubble-hovered')
