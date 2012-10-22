@@ -108,7 +108,9 @@
           if (!$node.data('popover')) {
             makePopover($node, that.placement);
           }
-          $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true));
+          if (!that.noHover) {
+            $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true, afterShow));
+          }
           return $node.one('mouseleave.bubble', function() {
             var $tip;
             clearTimeout($node.data('aloha-bubble-openTimer'));
