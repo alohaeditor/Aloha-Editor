@@ -105,17 +105,11 @@
                 figure.contents().remove();
                 appender = function(parent, contents, elName, cls) {
                   var el;
-                  if (elName == null) {
-                    elName = '';
-                  }
-                  if (cls == null) {
-                    cls = '';
-                  }
+                  if (elName == null) elName = '';
+                  if (cls == null) cls = '';
                   if (elName) {
                     el = $("<" + elName + "></" + elName + ">").appendTo(parent);
-                    if (cls) {
-                      el.addClass(cls);
-                    }
+                    if (cls) el.addClass(cls);
                     return el.append(contents);
                   } else {
                     return parent.append(contents);
