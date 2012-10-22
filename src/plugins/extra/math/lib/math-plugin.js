@@ -786,13 +786,16 @@ function onAsciiCharChange(evt,  mathEditorContainer, eqId) {
     }
 
 function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj, newMathEditContainer) {
+    console.log("Entering generate");
     var newElId = wrapPrefix+cntEq;
     var range = Aloha.Selection.getRangeObject();
     var newMathContainer = $('<span id="'+newElId+'" class="MathBox MathBoxNew selected">'+openDelimiter + closeDelimiter+'</span>');
    /* Generates the math editor */ 
-    GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $( Aloha.activeEditable.obj ) ); // Inserts the math container into the aloha 'editable' object
+    // GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $( Aloha.activeEditable.obj ) ); // Inserts the math container into the aloha 'editable' object
+    GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $("#content")) // Inserts the math container into the aloha 'editable' object
 
-   console.log("ID is: " + newElId);
+    console.log("Editable obj is: " + $( Aloha.activeEditable.obj ).attr("id"));
+    console.log("ID is: " + newElId);
     if(equation == '' || equation == "&nbsp\;") {
         MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
             console.log("Finished typsetting");
@@ -866,6 +869,8 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
 */
   function mathClickNew(openDelimiter, closeDelimiter, charChangeFunction) {
     console.log("mathClickNew ");
+    // Prevents multiple editors from being opened at the same time
+    mathEditorRemove("");
     var equation = getSelectionText();
     // Pops up the math-editor if the user hasn't selected text
     if (equation == '') {
@@ -896,7 +901,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       if (aol == 'radio_latex') {
         console.log("Checking latex radio");
         mathEditorContainer.find("#radio_latex").attr('checked','checked');
-      } 
+      }
 
       else {
         console.log("Checking ascii radio");
@@ -905,10 +910,43 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
 
       }
       //mathEditorContainer.removeClass("temporarily-hide");
+      // Inserts the 'arrow' which points to the currently edited eqation into the dom
+      $(".math-editor").append('<div id="math-editor-arrow"> </div>');
+      // Defines how offset the math-editor arrow should be from the edit box
+      var arrowOffset = 0;
+      // Retrieves the math editor's relative position
+      var arrow = $("#math-editor-arrow");
+      var oldArrowPos = arrow.position().left;
+      
+      // Adjusts the position of the math editor
       var newB = mathEditorContainer.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
       var newL = mathEditorContainer.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
+      // Retrieves the aloha-editor's absolute position and the editor position 
+      var content = $("#content");
+      var editor = $(".math-editor");
+      // Sets the originally calculated positions so that offset() retrieves the right position
       $(".math-editor").css("bottom", newB + "px");
       $(".math-editor").css("left", newL + "px");
+      // Calculates the delta between their position to see if the editor is out of bounds
+      var leftPositionDelta = editor.offset().left - content.offset().left;
+      var rightPositionDelta = (content.offset().left + content.width()) - (editor.offset().left  + editor.width());
+      // Adjusts the math edit box if it's outside the content area 
+      if (leftPositionDelta < 0)  {
+        arrowOffset = leftPositionDelta;
+        newL = newL - leftPositionDelta;
+        //Positions the math-editor's arrow in relation to the math-editor box
+        $("#math-editor-arrow").css("left", oldArrowPos + arrowOffset + "px");
+
+      }
+      else if (rightPositionDelta < 0) {
+        arrowOffset = rightPositionDelta;
+        newL = newL + rightPositionDelta;
+        //Positions the math-editor's arrow in relation to the math-editor box
+        $("#math-editor-arrow").css("left", oldArrowPos - arrowOffset + "px");
+      }
+      $(".math-editor").css("bottom", newB + "px");
+      $(".math-editor").css("left", newL + "px");
+
 
        /* Changes the update function based on what radio button is chosen */
        mathEditorContainer.find("#radio_latex").on("click", function(e){
@@ -1110,9 +1148,12 @@ function mathClick(mathEditorContainer, e) {
       var mathtext = mathEditorContainer.find(".asciimath").text(); // Don't quite know what this is supposed to do
       // Retrieves the  id of the mathjax element
       elementId = mathEditorContainer.closest(".MathBox").attr("id");
-      console.log("Actual math text is: " + actualMathText);
       // Retrieves the original math text by searching for the mathjax element
-      var actualMathText = mathEditorContainer.find('[id^="MathJax-Element-*"], [type^="math/"]').text();
+      // var actualMathText = mathEditorContainer.find('[id^="MathJax-Element-*"], [type^="math/"]').text();
+      // var actualMathText = mathEditorContainer.children('[id^="MathJax-Element-*"], [type^="math/"]').closest(mathEditorContainer).first().text();
+      console.log("Actual math text is: " + mathEditorContainer.children('[id^="MathJax-Element-*"], [type^="math/"]').text());
+      var actualMathText = mathEditorContainer.children('[id^="MathJax-Element-*"], [type^="math/"]').text();
+
       // Retrieves the user rendering preferences for the selected mathjax element. If it can't find it's value then it uses the default value
       var savedAol = aolDictionary[elementId] || 'radio_latex';
       console.log("Retrieved aol with an id of: " + elementId + " is: " + savedAol);
@@ -1143,12 +1184,44 @@ function mathClick(mathEditorContainer, e) {
         // Otherwise  it just appends nbsp
         mathEditorContainer.find(".math-source").append("&nbsp\;");
       }
-    
+      // Inserts the 'arrow' which points to the currently edited eqation into the dom
+      $(".math-editor").append('<div id="math-editor-arrow"> </div>');
+      // Defines how offset the math-editor arrow should be from the edit box
+      var arrowOffset = 0;
+      // Retrieves the math editor's relative position
+      var arrow = $("#math-editor-arrow");
+      var oldArrowPos = arrow.position().left;
       // Repositions the editor next to the mathjax
       var newB = mathEditorContainer.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
-      var newL = mathEditorContainer.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
+      var newL = mathEditorContainer.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 wfor mysterious good measure
+      // Retrieves the aloha-editor's absolute position and the editor position 
+      var content = $("#content");
+      var editor = $(".math-editor");
+      // Sets the originally calculated positions so that offset() retrieves the right position
       $(".math-editor").css("bottom", newB + "px");
       $(".math-editor").css("left", newL + "px");
+      // Calculates the delta between their position to see if the editor is out of bounds
+      var leftPositionDelta = editor.offset().left - content.offset().left;
+      var rightPositionDelta = (content.offset().left + content.width()) - (editor.offset().left  + editor.width());
+      // Adjusts the math edit box if it's outside the content area 
+      if (leftPositionDelta < 0)  {
+        console.log("Adjusting for left side");
+        arrowOffset = leftPositionDelta;
+        newL = newL - leftPositionDelta;
+        //Positions the math-editor's arrow in relation to the math-editor box
+        $("#math-editor-arrow").css("left", oldArrowPos + arrowOffset + "px");
+
+      }
+      else if (rightPositionDelta < 0) {
+        console.log("Adjusting for right side");
+        arrowOffset = rightPositionDelta;
+        newL = newL + rightPositionDelta;
+        //Positions the math-editor's arrow in relation to the math-editor box
+        $("#math-editor-arrow").css("left", oldArrowPos - arrowOffset + "px");
+      }
+
+      $(".math-editor").css("bottom", newB + "px");
+      $(".math-editor").css("left", newL  +  "px");
       placeCaretAtEnd($(".math-source").get(0));
     } 
     else {

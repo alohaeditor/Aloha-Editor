@@ -41,7 +41,7 @@ a:hover, a:active { outline: none; }
 ul, ol { margin-left: 2em; }
 ol { list-style-type: decimal; }
 nav ul, nav li { margin: 0; list-style:none; list-style-image: none; }
-small { font-size: 85%; }
+small { font-size: 50%; }
 strong, th { font-weight: bold; }
 td { vertical-align: top; }
 
@@ -189,10 +189,11 @@ h6,
 }
 
 #whole-site {
-	width: 970px;
+	width: 100%;
 	margin: 0 auto 0 auto;
 	text-align: left;
 	height: 100%;
+    background:#AAAAAA;
 }
 #container {
 	width: 100%;
@@ -226,6 +227,7 @@ h6,
 	width: 100%;
 	clear: both;
 	float: left;
+    background:#AAAAAA;
 }
 #navigation {
 	clear: both;
@@ -282,6 +284,7 @@ h6,
 /*** Main & Content ***/
 #main {
 	width: 100%;
+    height: 100%;
 	clear: both;
 }
 #content {
@@ -296,15 +299,13 @@ h6,
 	border: 1px solid;
 	border-color: #E5E5E5 #DBDBDB #D2D2D2;
 
-	background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#cae7f6));
-	background: -moz-linear-gradient(top, #afa, #eee);
 	
 	float: left;
 	clear: both;
-	width: 60%;
+	width: 100%;
+    height: 100%;
 	
 	padding: 20px;
-	max-width: 930px;
 }
 
 /*** STAGE ***/
