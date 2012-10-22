@@ -390,7 +390,7 @@ function checkForOrphans() {
 }
 
 function handleInsertsInsideSpans(leVal, currentNode, ch) {
-    if(leVal.length > currentLength && leVal.length - currentLength == 1) {
+    if(leVal.length > currentLength) {
         for(var i = 0; i < Inserted.length; i++) {
 
             var enclosing = null;
@@ -398,10 +398,10 @@ function handleInsertsInsideSpans(leVal, currentNode, ch) {
 
             if(currentNode.parentNode == Inserted[i].close) {
                 enclosing = Inserted[i].close;
-                isInsertedAtFrontOfSpan = currentNode.textContent[0] == ch;
+                isInsertedAtFrontOfSpan = currentNode.textContent[0] == ch[0];
             } else if(currentNode.parentNode == Inserted[i].open) {
                 enclosing = Inserted[i].open;
-                isInsertedAtFrontOfSpan = currentNode.textContent[0] == ch;
+                isInsertedAtFrontOfSpan = currentNode.textContent[0] == ch[0];
             }
 
             if(enclosing != null) {
@@ -409,7 +409,7 @@ function handleInsertsInsideSpans(leVal, currentNode, ch) {
                     var prevElement = currentNode.parentNode.previousSibling;
                     var newText = document.createTextNode(ch);
                     currentNode.parentNode.parentNode.insertBefore(newText, currentNode.parentNode);
-                    currentNode.parentNode.textContent = currentNode.parentNode.textContent.slice(1,2);
+                    currentNode.parentNode.textContent = currentNode.parentNode.textContent.slice(currentNode.parentNode.textContent.length-1, currentNode.parentNode.textContent.length);
                     return { "newNode": newText, "setAfter": true };
                 } else {
                     var nextElement = currentNode.parentNode.nextSibling;
@@ -433,10 +433,12 @@ function handleBulkDelete(leVal, range) {
         }
         var endDelete = range.endContainer;
         if(endDelete.className == "math-source") {
-            endDelete = endDelete.childNodes[0];
+            endDelete = endDelete.childNodes[endDelete.childNodes.length-1];
         }
 
-        for(var i = 0; i < Inserted.length; i++) {
+        var i = 0;
+        while(i < Inserted.length) {
+
             var open = Inserted[i].open;
             var close = Inserted[i].close;
             var deleteOpen = false;
@@ -454,13 +456,51 @@ function handleBulkDelete(leVal, range) {
                 parentNode.removeChild(close);
                 removeFromInserted(i);
             } else if(deleteOpen) {
+                concretize(close);
                 parentNode.removeChild(open);
                 removeFromInserted(i);
             } else if(deleteClose) {
+                concretize(open);
                 parentNode.removeChild(close);
                 removeFromInserted(i);
+            } else {
+                i = i+1;
             }
         }
+
+        //for(var i = 0; i < FuncInserted.length; i++) {
+        //    var span = FuncInserted[i].span;
+        //    var open = FuncInserted[i].open;
+        //    var deleteOpen = false;
+        //    var deleteSpan = false;
+
+        //    if(isAfterOther(open, startDelete) && isBeforeOther(open, endDelete)) {
+        //        deleteOpen = true;
+        //    }
+        //    if((span.childNodes[0] == startDelete || isAfterOther(span, startDelete)) && (span.childNodes[0] == endDelete || isBeforeOther(span, endDelete))) {
+        //        deleteSpan= true;
+        //    }
+
+        //    if(deleteOpen && deleteSpan) {
+        //        parentNode.removeChild(open);
+        //        //parentNode.removeChild(span);
+        //        concretize(span);
+        //        removeFromInserted(i);
+        //    } else if(deleteOpen) {
+        //        concretize(span);
+        //        parentNode.removeChild(open);
+        //        removeFromInserted(i);
+        //    } else if(deleteSpan) {
+        //        concretize(open);
+        //        concretize(span);
+        //        //parentNode.removeChild(span);
+        //        removeFromInserted(i);
+        //    } else {
+        //        i = i+1;
+        //    }
+
+        //}
+
         var tmp = getFullStr(mathEditBox[0].childNodes);
         MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+tmp+"}"]);
         inChange = false;
@@ -471,8 +511,12 @@ function handleBulkDelete(leVal, range) {
 }
 
 function handleFunctionReplacement(leVal, currentNode, ch, mathEditBox, eqId, offset) {
+    console.log('IN FUNC REPLACE '+FuncInserted.length);
     for(var i = 0; i < FuncInserted.length; i++) {
+        console.log('Checking in func replace')
+        console.log(FuncInserted[i].span);
         if(currentNode.parentNode == FuncInserted[i].span) {
+            console.log('FOUND IN FUNC REPLACE')
             var saveStr = currentNode.textContent;
             var prev = currentNode.parentNode.previousSibling.previousSibling;
             var next = currentNode.parentNode.nextSibling;
@@ -480,16 +524,16 @@ function handleFunctionReplacement(leVal, currentNode, ch, mathEditBox, eqId, of
             parentNode.removeChild(currentNode.parentNode);
             parentNode.removeChild(FuncInserted[i].open);
 
-            if(currentLength - leVal.length == 1) {
+            if(leVal.length - currentLength < 0) {
                 var newText = document.createTextNode('\\'+saveStr);
                 parentNode.insertBefore(newText, next);
                 GENTICS.Utils.Dom.setCursorInto( newText );
-                window.getSelection().getRangeAt(0).setStart(newText, offset+3);
-            } else if(leVal.length - currentLength == 1) {
+                window.getSelection().getRangeAt(0).setStart(newText, offset+2);
+            } else if(leVal.length - currentLength > 0) {
                 var newText = document.createTextNode('\\'+ch);
                 parentNode.insertBefore(newText, next);
                 GENTICS.Utils.Dom.setCursorInto( newText );
-                window.getSelection().getRangeAt(0).setStart(newText, 2);
+                window.getSelection().getRangeAt(0).setStart(newText, 1+ch.length);
             }
 
             removeFromFuncInserted(i);
@@ -535,38 +579,47 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
 
         var range = window.getSelection().getRangeAt(0);
         var leVal = getFullStr(mathEditBox[0].childNodes);
-        var offset = range.startOffset+(leVal.length-currentLength)-1;
-        var ch = currentNode.textContent[offset];
+        var offset= - 1;
+        var ch = '\0';
+        if(leVal.length-currentLength > 0) {
+            offset = range.startOffset+(leVal.length-currentLength)-1;
+            ch = currentNode.textContent.slice(range.startOffset, range.startOffset+(leVal.length-currentLength));
+        } else {
+            offset = range.startOffset-1;
+            ch = currentNode.textContent.slice(offset, offset+1);
+        }
         var ele = $('#'+evt.currentTarget.id);
+        console.log('-----------------------------------------');
         console.log(currentNode);
+        console.log(range.startContainer);
+        console.log(range.endContainer);
+        console.log('LEVAL IS \"'+leVal+'\" : LENGTH '+leVal.length);
         console.log('CHANGE IN LENGTH IS '+(leVal.length-currentLength));
-        console.log('CURRENT OFFSET IS ['+range.startOffset+'->'+range.endOffset+']');
+        console.log('RANGE IS ['+range.startOffset+'->'+range.endOffset+']');
+        console.log('OFFSET IS '+offset);
         console.log('SO CH IS '+ch);
         console.log('CURRENT LENGTH '+currentLength);
 
 
         var newCurrent = handleInsertsInsideSpans(leVal, currentNode, ch);
         if(newCurrent["newNode"] != null) {
-            console.log('Did insert inside span');
             currentNode = newCurrent["newNode"];
             GENTICS.Utils.Dom.setCursorInto( currentNode );
-            offset= 1;
+            offset= ch.length;
             window.getSelection().getRangeAt(0).setStart(currentNode, offset);
         }
 
-        range = window.getSelection().getRangeAt(0);
+        //range = window.getSelection().getRangeAt(0);
         //offset = range.startOffset;
         leVal = getFullStr(mathEditBox[0].childNodes);
         var diff = leVal.length - currentLength;
 
-        if(handleBulkDelete(leVal, range) ) {
-            return;
-        }
-        
-        if(handleFunctionReplacement(leVal, currentNode, ch, mathEditBox, eqId, offset)) {
-            return;
+
+        if(!handleBulkDelete(leVal, range) ) {
+            handleFunctionReplacement(leVal, currentNode, ch, mathEditBox, eqId, offset);
         }
 
+        
         checkForOrphans();
         checkLeftScope(currentNode);
         console.log('CH IS '+ch);
@@ -601,6 +654,7 @@ function onTexCharChange(evt, mathEditorContainer, eqId) {
         leVal = getFullStr(mathEditBox[0].childNodes);
     }
     currentLength = leVal.length;
+    console.log('Setting current length to '+currentLength);
     inChange = false;
 }
 
@@ -850,7 +904,7 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         /* Replaces the current text with a '&nbsp;' if the user removes all the text */
         var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
         if (text == '') {
-            $(".math-editor").find(".math-source").append("&nbsp\;");
+            //$(".math-editor").find(".math-source").append("&nbsp\;");
         }
         // console.log("Modified1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), mathJaxElId);
@@ -1378,22 +1432,11 @@ function mathLeave(mathEditorContainer,e) {
       </div>';
     return ed;
   }
-<<<<<<< HEAD
-<<<<<<< HEAD
-            
-            var leMathInput = $('<input style="display:none" />');
-            leMathInput.on('change', updateMath );
-            leMathInput.appendTo('body');
-=======
->>>>>>> e3455f8f274c2581c914ab8f7a33cb1c066d4535
-            
-=======
 
 
   
 
     
->>>>>>> c54d6b90d267da869ad650032df194f2a16a71a4
             scopes.createScope('math', 'Aloha.empty');
             /* Configure the 'insert latex' math */
             self._mathCtrl = ui.adopt( 'characterPicker'/*"math"*/, button, 
@@ -1405,76 +1448,9 @@ function mathLeave(mathEditorContainer,e) {
                     // Generates a new math editor
                     mathClickNew('${','}$', onTexCharChange);
                     aol = radio_latex;
-                    // e.stopPropagation();
                 }
-                /*onclick: function() {
-                    console.log("Test");
-                }*/
-<<<<<<< HEAD
             });
-            
-            self._mathEdit = new attributeField
-            ({
-                label: 'Math',/*i18n.t('field.mathedit.label'),*/
-                tooltip: 'Math Edit', /*i18n.t('field.mathedit.tooltip'),*/
-                name: 'matheditSource',
-                scope: 'math'
-=======
->>>>>>> e3455f8f274c2581c914ab8f7a33cb1c066d4535
-            });
-            
-            //var parsedJax = false; 
-            //Aloha.bind('aloha-editable-activated', function (event, data) 
-            //{
-            //    
-            //    !parsedJax && (function()
-            //    {
-            //        parsedJax = true;
-            //        //MathJax.Hub.Queue(["Typeset",MathJax.Hub, null, function()
-            //        //{ 
-            //        //    // Wraps each mathjax element
-            //        //    //$(MathJax.Hub.getAllJax()).each(function()
-            //        //    //{ 
-            //        //    //    console.log(this.originalText);
-            //        //    //    var pp = parentOfParent(document.getElementById(this.inputID));
-            //        //    //    console.log(this);
-            //        //    //    if(pp == null || pp.className != "MathJax_MathContainer")
-            //        //    //    {
-            //        //    //        //console.log("Initializing... "+this.inputID);
-            //        //    //        //var elfr = $('#'+this.inputID+'-Frame');
-            //        //    //        //var el = $('#'+this.inputID);
-            //        //    //        //var elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0);
-            //        //    //        //var outerEqWrapper = $('<span id="'+wrapPrefix+cntEq+'" class="MathBox MathBoxNew"/>').insertBefore(elpr);
-
-            //        //    //        //var eqWrapper = $('<span id="sub'+wrapPrefix+cntEq+'"/>').
-            //        //    //        //    append(elpr).append(elfr).append(el)
-            //        //    //        //    .data('equation', '$'+this.originalText+'$');
-            //        //    //        //outerEqWrapper.append(eqWrapper);
-
-            //        //    //        //if(this.inputJax == "AsciiMath") { 
-            //        //    //        //    aolDictionary[wrapPrefix+cntEq] = 'radio_ascii';
-
-            //        //    //        //    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, 'sub'+wrapPrefix+cntEq, function() { 
-            //        //    //        //           MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax('sub'+wrapPrefix+cntEq)[0],this.originalText]);
-            //        //    //        //    }]);
-
-            //        //    //        //} else if(this.inputJax == "TeX") {
-            //        //    //        //    aolDictionary[wrapPrefix+cntEq] = 'radio_latex';
-
-            //        //    //        //    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, 'sub'+wrapPrefix+cntEq, function() { 
-            //        //    //        //           MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax('sub'+wrapPrefix+cntEq)[0],"\\displaystyle{"+this.originalText+"}"]);
-            //        //    //        //    }]);
-            //        //    //        //}
-            //        //    //        //console.log('JAX: '+this.inputJax);
-
-            //        //    //        //cntEq++;
-            //        //    //    }                            
-            //        //    //});
-            //        //}]);
-            //    })();
-            //    self._mathCtrl.show();
-            //});
-            
+                      
            
             Aloha.bind('aloha-editable-created', function (event, editable) 
             {
@@ -1482,21 +1458,18 @@ function mathLeave(mathEditorContainer,e) {
                 
                 editable.obj.bind('keydown', self.hotKey.insertTexMath, function() 
                 {
-                    //generateMathContainer('${','}$', onTexCharChange, '', editable.obj);
                     aol = 'radio_latex';
                     mathClickNew('${','}$', onTexCharChange); // Generates a new math container and binds the 'latex' callback function
                 });
 
                 editable.obj.bind('keydown', self.hotKey.insertAsciiMath, function() 
                 {
-                    //generateMathContainer('`','`', onAsciiCharChange, '', editable.obj);
                     aol = 'radio_ascii';
                     mathClickNew('`','`', onAsciiCharChange); // Generates a new math container and binds the 'asciimath' callback functoin
                     console.log("Setting the radio default");
                 });
                 editable.obj.bind('keydown', self.hotKey.insertMLMath, function() 
                 {
-                    // generateMathContainer('<math>','</math>', onAsciiCharChange, '', editable.obj);
                     aol = 'radio_mathml';
                     mathClickNew('<math>','</math>', onAsciiCharChange); // Generates a new math container and binds the 'asciimathml' callback functoin
                 });

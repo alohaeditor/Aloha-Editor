@@ -28,7 +28,7 @@ define [ 'aloha', 'jquery', 'css!bubble/css/bubble.css' ], (Aloha, jQuery) ->
     $bubble.contents().remove()
     $bubble.appendTo(canvas)
     
-    displayer($el, $bubble)
+    displayer.bind($el) ($bubble)
   
     # Move the bubble
     offset = $el.offset()

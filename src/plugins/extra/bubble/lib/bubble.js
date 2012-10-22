@@ -19,7 +19,7 @@
       $bubble = $el.data('aloha-bubble-el');
       $bubble.contents().remove();
       $bubble.appendTo(canvas);
-      displayer($el, $bubble);
+      displayer.bind($el)($bubble);
       offset = $el.offset();
       offset.position = 'absolute';
       switch (placement.vertical) {

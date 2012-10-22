@@ -9,7 +9,7 @@
 #      moves the bubble to the correct spot, and triggers when the bubble should be populated
 
 # This file manages all the Aloha events and removes/adds all the bubble listeners when an editable is enabled/disabled.
-define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link' ], (Aloha, jQuery, Plugin, Bubbler, linkConfig) ->
+define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], (Aloha, jQuery, Plugin, Bubbler, linkConfig, figureConfig) ->
 
   
   helpers = []
@@ -28,7 +28,8 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link' ], (Aloha, jQue
       # TODO: bubbles are attached to a canvas. clear the canvas, not all bubbles
       jQuery('body').find('.bubble').remove()
 	
-  helpers.push(new Helper(linkConfig.selector, linkConfig.populator, linkConfig.filter))
+  for cfg in [linkConfig, figureConfig]
+    helpers.push(new Helper(cfg.selector, cfg.populator, cfg.filter))
 
   findMarkup = (range=Aloha.Selection.getRangeObject(), filter) ->
     if Aloha.activeEditable
@@ -64,7 +65,9 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link' ], (Aloha, jQue
         Aloha.bind 'aloha-editable-activated', (event, data) ->
           helper.start(data.editable)  
         Aloha.bind 'aloha-editable-deactivated', (event, data) ->
-          helper.stop(data.editable)
+          setTimeout(() ->
+            helper.stop(data.editable)
+          , 100)
           insideScope = false
           enteredLinkScope = false
   
