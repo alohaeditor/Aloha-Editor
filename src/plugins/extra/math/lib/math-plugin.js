@@ -1,449 +1,810 @@
 define([ 'aloha/plugin', 'jquery', 'ui/ui', 'ui/button', 'ui/port-helper-attribute-field', 'ui/scopes' ],
-function( plugin, $, ui, button, attributeField, scopes, floatingMenu ) 
-{
-    "use strict";
-    
-    var cntEq = 0;
-    
-    return plugin.create( 'mathedit', 
-    {
-        defaults: 
+        function( plugin, $, ui, button, attributeField, scopes, floatingMenu ) 
         {
-            wrapPrefix: 'eqprefix-'
-        },
-        hotKey: { insertTexMath: 'ctrl+m', insertAsciiMath: 'ctrl+j', insertMLMath: 'ctrl+k' },
-        init: function() 
-        {
-            var editableObj = null;
-            var self = this,
-                wrapPrefix = this.settings.wrapPrefix;
-            
-            // MathJax init
-            var script0 = document.createElement("script");
-            script0.type = "text/x-mathjax-config";
-            $(script0).html( 'MathJax.Hub.Config({'
-                    + 'jax: ["input/MathML", "input/TeX", "input/AsciiMath", "output/NativeMML"],'
-                    + 'extensions: ["asciimath2jax.js", "tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],'
-                    + 'tex2jax: { inlineMath: [["$","$"]] },'
-                    + 'asciimath2jax: { inlineMath: [["`", "`"]], delimiters: [["`","`"]] },'
-                    + 'TeX: {'
-                        + 'extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"], noErrors: { disabled: true }'
-                    + '},'
-                    + 'AsciiMath: { noErrors: { disabled: true } }'
-                    + '});');
-            
-            var script = document.createElement("script");
-            script.type = "text/javascript";
-            script.src  = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default";
-            var config = 'MathJax.Hub.Startup.onload();';
-            $(script).html(config);
-            
-            document.getElementsByTagName("head")[0].appendChild(script0);
-            document.getElementsByTagName("head")[0].appendChild(script);
+        "use strict";
 
-            var inChange = false;
+        var cntEq = 0;
 
-            var Inserted = [];
-            var currentEditor = null;
-            var currentLength = -1;
-            var editorToOffset = { };
-            
-
-            function convertToConcrete(character, ele, leVal, currentOffset) {
-                var i = 0;
-                while(i < Inserted.length) {
-                    if(Inserted[i].loc == currentOffset+1 && Inserted[i].character == character) {
-                        break;
-                    }
-                    i = i + 1;
-                }
-                console.log(window.getSelection().focusNode);
-                if(i != Inserted.length) {
-                    Inserted.splice(i, 1);
-                    //console.log(ele.children());
-                    //window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], currentOffset+1);
-                    if(ele.val().length > 0) {
-                        console.log('DOING VAL');
-                        ele.val(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
-                        leVal = ele.val();
-                    } else {
-                        console.log('DOING TEXT');
-                        ele.text(leVal.slice(0,currentOffset+1)+leVal.slice(currentOffset+2));
-                        leVal = ele.text();
-                    }
-                    //console.log(currentOffset)
-                    //console.log(window.getSelection().getRangeAt(0));
-                    //console.log(window.getSelection().focusNode.childNodes);
-                    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], currentOffset+1);
-                    //window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], 3);
-                }
-                return leVal;
-            }
-
-            function generateInserted(ele, leVal, offset, character) {
-                if(ele.val() == leVal) {
-                    ele.val(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
-                    leVal = ele.val();
-                } else {
-                    ele.text(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
-                    leVal = ele.text();
-                }
-                window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset+1);
-                Inserted.push({ start: offset, loc: offset+1, character: character });
-                return leVal;
-            }
-           
-            function onTexCharChange(evt, arg) {
-                if(inChange) return;
-                inChange = true;
-
-                if(evt.type != "DOMCharacterDataModified") {
-                    console.log(evt);
-                }
-
-                var range = window.getSelection().getRangeAt(0);
-                var offset = range.startOffset;
-                var eqId = evt.currentTarget.id.substring(5);
-                var ele = $('#'+evt.currentTarget.id);
-                var leVal = ele.val() || ele.text();
-                var ch = leVal[offset];
-                var diff = 1;
-
-                var didRemove = false;
-                for(var i = 0; i < Inserted.length; i++) {
-
-                    // if this was a delete or backspace that removed a character
-                    if(leVal.length < currentLength) {
-                        // if this delete was on the opening character of a virtual closing character and there is no content in between
-                        if(offset == Inserted[i].start && Inserted[i].loc == Inserted[i].start + 1) {
-                            diff = diff + 1;
-
-                           if(ele.val() == leVal) {
-                               if(offset == leVal.length-1) {
-                                    ele.val(leVal.slice(0,offset));
-                               } else {
-                                    ele.val(leVal.slice(0,offset)+leVal.slice(offset+1));
-                               }
-                               leVal = ele.val();
-                            } else {
-                                if(offset == leVal.length-1) {
-                                    ele.text(leVal.slice(0,offset));
-                                } else {
-                                    ele.text(leVal.slice(0,offset)+leVal.slice(offset+1));
-                                }
-                                leVal = ele.text();
-                            }
-                            Inserted.splice(i, 1);
-                            window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset);
-                            // this can only occur once
-                            didRemove = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(!didRemove) {
-                    var i = 0;
-                    while(i < Inserted.length) {
-                        if(offset > Inserted[i].loc || offset <= Inserted[i].start) {
-                            Inserted.splice(i, 1);
-                        } else {
-                            i = i + 1;
-                        }
-                    }
-                }
-
-                for(var i = 0; i < Inserted.length; i++) {
-
-                    if(Inserted[i].start >= offset) {
-                        if(leVal.length < currentLength) {
-                            Inserted[i].start = Inserted[i].start - diff;
-                        } else {
-                            Inserted[i].start = Inserted[i].start + diff;
-                        }
-                    }
-
-                    if(Inserted[i].loc >= offset) {
-                        if(leVal.length < currentLength) {
-                            Inserted[i].loc = Inserted[i].loc - diff;
-                        } else {
-                            Inserted[i].loc = Inserted[i].loc + diff;
-                        }
-                    }
-                }
-
-                switch(ch) {
-                    case(')'):
-                    case('}'):
-                        leVal = convertToConcrete(ch, ele, leVal, offset);
-                        break;
-                    case('{'):
-                        leVal = generateInserted(ele, leVal, offset, '}');
-                        break;
-                    case('('):
-                        leVal = generateInserted(ele, leVal, offset, ')');
-                        break;
-                }
-                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-                inChange = false;
-                currentLength = leVal.length;
-            }
-
-            function onAsciiCharChange(evt) {
-                var eqId = evt.currentTarget.id.substring(5);
-                var ele = $('#'+evt.currentTarget.id);
-                var leVal = ele.val() || ele.text();
-                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],leVal]);
-            }
-
-            function enableEditor(editor, length) {
-                if(currentEditor != null && currentEditor[0] != editor[0]) {
-                    disableEditor();
-                }
-                currentEditor = editor;
-                currentLength = length;
-                GENTICS.Utils.Dom.setCursorInto( editor[0] );
-                if(editorToOffset[editor[0].id] != null) {
-                    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], editorToOffset[editor[0].id]);
-                }
-                editor.show();
-            }
-
-            function generateInserted(ele, leVal, offset, character) {
-                if(ele.val() == leVal) {
-                    ele.val(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
-                    leVal = ele.val();
-                } else {
-                    ele.text(leVal.slice(0,offset+1)+character+leVal.slice(offset+1));
-                    leVal = ele.text();
-                }
-                window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset+1);
-                Inserted.push({ start: offset, loc: offset+1, character: character });
-                return leVal;
-            }
-           
-            function onTexCharChange(evt, arg) {
-                if(inChange) return;
-                inChange = true;
-
-                var range = window.getSelection().getRangeAt(0);
-                var offset = range.startOffset;
-                /*console.log(Inserted);
-                console.log(range.startOffset+" "+range.endOffset);*/
-                var eqId = evt.currentTarget.id.substring(5);
-                var ele = $('#'+evt.currentTarget.id);
-                var leVal = ele.val() || ele.text();
-                var ch = leVal[offset];
-                var diff = 1;
-
-                var didRemove = false;
-                for(var i = 0; i < Inserted.length; i++) {
-
-                    // if this was a delete or backspace that removed a character
-                    if(leVal.length < currentLength) {
-                        // if this delete was on the opening character of a virtual closing character and there is no content in between
-                        if(offset == Inserted[i].start && Inserted[i].loc == Inserted[i].start + 1) {
-                            diff = diff + 1;
-
-                           if(ele.val() == leVal) {
-                               if(offset == leVal.length-1) {
-                                    ele.val(leVal.slice(0,offset));
-                               } else {
-                                    ele.val(leVal.slice(0,offset)+leVal.slice(offset+1));
-                               }
-                               leVal = ele.val();
-                            } else {
-                                if(offset == leVal.length-1) {
-                                    ele.text(leVal.slice(0,offset));
-                                } else {
-                                    ele.text(leVal.slice(0,offset)+leVal.slice(offset+1));
-                                }
-                                leVal = ele.text();
-                            }
-                            Inserted.splice(i, 1);
-                            window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], offset);
-                            // this can only occur once
-                            didRemove = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(!didRemove) {
-                    var i = 0;
-                    while(i < Inserted.length) {
-                        if(offset > Inserted[i].loc || offset <= Inserted[i].start) {
-                            Inserted.splice(i, 1);
-                        } else {
-                            i = i + 1;
-                        }
-                    }
-                }
-
-                for(var i = 0; i < Inserted.length; i++) {
-
-                    if(Inserted[i].start >= offset) {
-                        if(leVal.length < currentLength) {
-                            Inserted[i].start = Inserted[i].start - diff;
-                        } else {
-                            Inserted[i].start = Inserted[i].start + diff;
-                        }
-                    }
-
-                    if(Inserted[i].loc >= offset) {
-                        if(leVal.length < currentLength) {
-                            Inserted[i].loc = Inserted[i].loc - diff;
-                        } else {
-                            Inserted[i].loc = Inserted[i].loc + diff;
-                        }
-                    }
-                }
-
-                switch(ch) {
-                    case(')'):
-                    case('}'):
-                        leVal = convertToConcrete(ch, ele, leVal, offset);
-                        break;
-                    case('{'):
-                        leVal = generateInserted(ele, leVal, offset, '}');
-                        break;
-                    case('('):
-                        leVal = generateInserted(ele, leVal, offset, ')');
-                        break;
-                }
-                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
-                inChange = false;
-                currentLength = leVal.length;
-            }
-
-            function onAsciiCharChange(evt) {
-                var eqId = evt.currentTarget.id.substring(5);
-                var ele = $('#'+evt.currentTarget.id);
-                var leVal = ele.val() || ele.text();
-                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],leVal]);
-            }
-
-            function enableEditor(editor, length) {
-                if(currentEditor != null && currentEditor[0] != editor[0]) {
-                    disableEditor();
-                }
-                currentEditor = editor;
-                currentLength = length;
-                GENTICS.Utils.Dom.setCursorInto( editor[0] );
-                if(editorToOffset[editor[0].id] != null) {
-                    window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], editorToOffset[editor[0].id]);
-                }
-                editor.show();
-            }
-
-            function disableEditor() {
-                if(currentEditor != null) {
-                    editorToOffset[currentEditor[0].id] = window.getSelection().getRangeAt(0).startOffset;
-                    currentEditor.hide();
-                    currentEditor = null;
-                }
-            }
-
-            function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, initValue, editableObj) {
-                var newElId = wrapPrefix+cntEq;
-                var range = Aloha.Selection.getRangeObject();
-                var newMathEditContainer = $('<div id="edit-'+newElId+'" style="padding:2px;min-height:28px;border:1px solid green;-moz-border-radius: 4px;-webkit-border-radius: 4px;-khtml-border-radius: 4px;border-radius: 4px;background-color:white;">'+initValue+'</div>');
-                var newMathContainer = $('<div id="'+newElId+'" style="left;border:1px dotted grey">'+openDelimiter+closeDelimiter+'</div>');
-                
-                GENTICS.Utils.Dom.insertIntoDOM( newMathEditContainer, range, $( Aloha.activeEditable.obj ) );
-                GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $( Aloha.activeEditable.obj ) );
-                GENTICS.Utils.Dom.setCursorInto( newMathEditContainer[0] );
-                newMathEditContainer.bind('DOMCharacterDataModified', charChangeFunction);
-                newMathEditContainer.bind('DOMNodeInserted', charChangeFunction);
-                newMathEditContainer.hide();
-               
-                if(initValue == '') {
-                    MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
-                        enableEditor(newMathEditContainer, 0);
-                    }]);
-                } else {
-
-                    if(openDelimiter == '${') {
-
-                        MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
-                               enableEditor(newMathEditContainer, initValue.length);
-                               MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],"\\displaystyle{"+initValue+"}"]);
-                        }]);
-                    } else {
-
-                        MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
-                               enableEditor(newMathEditContainer, initValue.length);
-                               MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],initValue]);
-                        }]);
-                    }
-                }
-                                    
-                var blurout = function()
-                {
-                    Inserted = [];
-                    disableEditor();
-                };
-
-                var editableClickBlurout = function(evt) {
-                    if(currentEditor != null) {
-                        var id = evt.target.id;
-                        if(id == null) {
-                            return;
-                        }
-                        if(id.length > 8) {
-                            if(id.substring(0, 8) == 'eqprefix-') {
-                                return;
-                            }
-                        }
-                        if(id.length > 13) {
-                            if(id.substring(0, 13) == 'edit-eqprefix-') {
-                                return;
-                            }
-                        }
-                        disableEditor();
-                    }
-                };
-
-/*
-                $(editableObj).on('blur focusout', blurout);
-                $(editableObj).on('click', editableClickBlurout);
-*/
-                newMathEditContainer.on('focusout', blurout);
-                newMathEditContainer.on('blur', blurout);
-                
-                newMathContainer.on('click', function()
-                {
-                    Inserted = [];
-                    enableEditor(newMathEditContainer, newMathEditContainer.val() ? newMathEditContainer.val().length : newMathEditContainer.text().length );
-                });
-
-                cntEq++;
-
-            }
-
-            function toggleMath()
+        return plugin.create( 'mathedit', 
             {
-                if( Aloha.activeEditable ) 
-                {
-                    var range = Aloha.Selection.getRangeObject()
-                    if ( !( range.startContainer && range.endContainer ) ) {
-                        return;
-                    }
-                    
-                    // get text from selection
-                    var leText = range.getText();
-                    
-                    if( $.trim(leText) === '' ) return;
-                    
-                    GENTICS.Utils.Dom.removeRange(range);
-                    // make a new placeholder for the new equation
+defaults: 
+{
+wrapPrefix: 'eqprefix-'
+},
+hotKey: { insertTexMath: 'ctrl+m', insertAsciiMath: 'ctrl+j', insertMLMath: 'ctrl+k' },
+init: function() 
+{
+var editableObj = null;
+var self = this,
+wrapPrefix = this.settings.wrapPrefix;
 
-                    generateMathContainer('${','}$', onTexCharChange, leText, editableObj);
+// MathJax init
+var script0 = document.createElement("script");
+script0.type = "text/x-mathjax-config";
+$(script0).html( 'MathJax.Hub.Config({'
+        + 'jax: ["input/MathML", "input/TeX", "input/AsciiMath", "output/NativeMML"],'
+        + 'extensions: ["asciimath2jax.js", "tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],'
+        + 'tex2jax: { inlineMath: [["$","$"]] },'
+        + 'asciimath2jax: { inlineMath: [["`", "`"]], delimiters: [["`","`"]] },'
+        + 'TeX: {'
+        + 'extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"], noErrors: { disabled: true }'
+        + '},'
+        + 'AsciiMath: { noErrors: { disabled: true } }'
+        + '});');
+
+var script = document.createElement("script");
+script.type = "text/javascript";
+script.src  = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default";
+var config = 'MathJax.Hub.Startup.onload();';
+$(script).html(config);
+
+document.getElementsByTagName("head")[0].appendChild(script0);
+document.getElementsByTagName("head")[0].appendChild(script);
+
+var inChange = false;
+
+var FuncInserted = [];
+var Inserted = [];
+var currentEditor = null;
+var currentLength = -1;
+var editorToOffset = { };
+
+var aolDictionary = { };
+var aol = 'radio_latex';
+
+function convertToConcrete(character, ele, leVal, currentOffset) {
+    var i = 0;
+    var currentNode = window.getSelection().focusNode;
+    while(i < Inserted.length) {
+        if(currentNode.nextSibling == Inserted[i].close && currentNode.nextSibling.childNodes[0].textContent == character) {
+            break;
+        }
+        i = i + 1;
+    }
+
+    if(i != Inserted.length) {
+
+        console.log('removing g');
+        if(Inserted.length == 1) {
+            Inserted = [];
+        } else {
+            Inserted.splice(i, 1);
+        }
+        currentNode.parentNode.removeChild(currentNode.nextSibling);
+    }
+}
+
+
+function insertFunc(ele, leVal, offset) {
+    var currentNode = window.getSelection().focusNode;
+    var completeStr = currentNode.textContent;
+
+    // happens if first character typed generates a virtual character
+    if(currentNode.tagName == "DIV") {
+        currentNode = currentNode.childNodes[0];
+    }
+
+    //var preEle = document.createTextNode(completeStr.slice(0,offset+1));
+    var replacement = document.createTextNode(completeStr.slice(0, offset));
+
+    var openSpan = document.createElement('span');
+    openSpan.style.display='inline';
+    var openText = document.createTextNode('\\');
+    openSpan.appendChild(openText);
+
+
+    var newSpan = document.createElement('span');
+    newSpan.style.display="inline";
+    newSpan.style.color="#999999";
+    var newText = document.createTextNode('func');
+    newSpan.appendChild(newText);
+
+    var postEle = null;
+    if(completeStr.slice(offset+1).length > 0) {
+        postEle = document.createTextNode(completeStr.slice(offset+1));
+    }
+
+    insertAfter(replacement, currentNode);
+    insertAfter(openSpan, replacement);
+    insertAfter(newSpan, openSpan);
+    
+    if(postEle != null) {
+        insertAfter(postEle, newSpan);
+    }
+
+    currentNode.parentNode.removeChild(currentNode);
+
+    GENTICS.Utils.Dom.setCursorInto( newText );
+    window.getSelection().getRangeAt(0).setStart(newText, 0);
+    window.getSelection().getRangeAt(0).setEnd(newText, 0);
+
+    FuncInserted.push({ span: newSpan, open:openSpan });
+}
+
+
+function insertBraces(ele, leVal, offset) {
+    generateInserted(offset+1, '}', '{');
+}
+
+function insertAfter(newChild, refChild) { 
+    refChild.parentNode.insertBefore(newChild,refChild.nextSibling); 
+} 
+
+
+function generateInserted(offset, character, additionalCharacter) {
+    var currentNode = window.getSelection().focusNode;
+    var completeStr = currentNode.textContent;
+
+    // happens if first character typed generates a virtual character
+    if(currentNode.tagName == "DIV") {
+        currentNode = currentNode.childNodes[0];
+    }
+
+    //var preEle = document.createTextNode(completeStr.slice(0,offset+1));
+    var replacement = null;
+    if(additionalCharacter.length == 0) {
+        replacement = document.createTextNode(completeStr.slice(0, offset));
+    } else {
+        replacement = document.createTextNode(completeStr.slice(0, offset+1));
+    }
+    var openSpan = document.createElement('span');
+    openSpan.style.display="inline";
+    var openText = null;
+    if(additionalCharacter.length == 0) {
+        openText = document.createTextNode(completeStr.slice(offset, offset+1));
+    } else {
+        openText = document.createTextNode(additionalCharacter);
+    }
+    openSpan.appendChild(openText);
+
+    var postEle = null;
+    if(completeStr.slice(offset+1).length > 0) {
+        postEle = document.createTextNode(completeStr.slice(offset+1));
+    }
+    var closeSpan = document.createElement('span');
+    var closeText = document.createTextNode(character);
+    //closeSpan.style.background="#BBBBBB";
+    closeSpan.style.color="#999999";
+    closeSpan.style.display="inline";
+    closeSpan.appendChild(closeText);
+
+    var emptyText = document.createTextNode('');
+
+    insertAfter(replacement, currentNode);
+    insertAfter(openSpan, replacement);
+    insertAfter(emptyText, openSpan);
+    insertAfter(closeSpan, emptyText);
+    
+    if(postEle != null) {
+        insertAfter(postEle, closeSpan);
+    }
+
+    currentNode.parentNode.removeChild(currentNode);
+
+    GENTICS.Utils.Dom.setCursorInto( emptyText );
+    window.getSelection().getRangeAt(0).setStart(emptyText, 0);
+    window.getSelection().getRangeAt(0).setEnd(emptyText, 0);
+
+    Inserted.push({open: openSpan, close: closeSpan });
+
+    //Inserted.push({ start: offset, loc: offset+1, character: character, span: newSpan, text: replacement });
+}
+
+function isBeforeOther(testNode, searchFor) {
+    var curr = testNode;
+    while(curr != null) {
+        if(curr == searchFor) return true;
+        curr = curr.nextSibling;
+    }
+    return false;
+}
+
+function isAfterOther(testNode, searchFor) {
+    var curr = testNode;
+    while(curr != null) {
+        if(curr == searchFor) return true;
+        curr = curr.prevSibling;
+    }
+    return false;
+}
+
+function getTextBetweenElementsInclusive(start, finish) {
+    var curr = start;
+    var acc = '';
+    while(curr != finish) {
+        switch(curr.nodeType) {
+            case(3):
+                acc+=curr.textContent;
+                break;
+            case(1):
+                if(curr.tagName=='SPAN') {
+                    acc+=curr.childNodes[0].textContent;
+                }
+                break;
+            default:
+                break;
+        }
+        curr = curr.nextSibling;
+    }
+    switch(finish.nodeType) {
+        case(3):
+            acc+=finish.textContent;
+            break;
+        case(1):
+            if(finish.tagName=='SPAN') {
+                acc += curr.childNodes[0].textContent;
+            }
+            break;
+        default:
+            break;
+    }
+    return acc;
+}
+
+function getTextBetweenElements(start, finish) {
+    var curr = start.nextSibling;
+    var acc = '';
+    while(curr != finish) {
+        switch(curr.nodeType) {
+            case(3):
+                acc+=curr.textContent;
+                break;
+            case(1):
+                if(curr.tagName=='SPAN') {
+                    acc+=curr.childNodes[0].textContent;
+                }
+                break;
+            default:
+                break;
+        }
+        curr = curr.nextSibling;
+    }
+    return acc;
+}
+
+function concretize(span) {
+    var c = span.childNodes[0].textContent;
+    var prev = span.previousSibling;
+    var next = span.nextSibling;
+    var parentNode = span.parentNode;
+    parentNode.removeChild(span);
+
+    if(prev != null && prev.tagName != 'SPAN') {
+        prev.textContent += c;
+        //GENTICS.Utils.Dom.setCursorInto( prev );
+        //window.getSelection().getRangeAt(0).setStart(prev, prev.textContent.length);
+    } else if(next != null && next.tagName != 'SPAN') {
+        next.textContent = c + next.textContent;
+        //GENTICS.Utils.Dom.setCursorInto( next );
+        //window.getSelection().getRangeAt(0).setStart(next, 0);
+    } else {
+        var newText = document.createTextNode(c);
+        parentNode.insertBefore(newText, next);
+        /*
+        if(window.getSelection().focusNode == span) {
+            GENTICS.Utils.Dom.setCursorInto( newText );
+            window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
+        }
+        */
+    }
+
+}
+
+function hasChild(parentNode, childNode) {
+    var nodes = parentNode.childNodes;
+    for(var i = 0; i < nodes.length; i++) {
+        if(nodes[i] == childNode) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function onTexCharChange(evt, mathEditorContainer, eqId) {
+    console.log('Entering onTexChange '+inChange+' on '+eqId)
+    if(inChange) return;
+    inChange = true;
+
+    // Gbenga's variables
+    var mathEditBox = mathEditorContainer.find(".math-source");
+
+    var currentNode = window.getSelection().focusNode;
+    if(currentNode.tagName == "DIV") {
+        currentNode = currentNode.childNodes[0];
+    }
+
+    var range = window.getSelection().getRangeAt(0);
+    var offset = range.startOffset;
+    var ch = currentNode.textContent[offset];
+    var ele = $('#'+evt.currentTarget.id);
+    var leVal = getFullStr(mathEditBox[0].childNodes);
+    console.log('onTexChange Checkpoint 1')
+
+    var i = 0;
+    while(i < Inserted.length) {
+        console.log(Inserted[i].open.parentNode);
+        console.log(Inserted[i].close.parentNode);
+        if(Inserted[i].open.parentNode == null || Inserted[i].close.parentNode == null) {
+            console.log('removing a');
+            if(Inserted[i].open.parentNode != null) {
+                concretize(Inserted[i].open);
+            } 
+            if(Inserted[i].close.parentNode != null) {
+                concretize(Inserted[i].close);
+            } 
+            if(Inserted.length == 1) {
+                Inserted = [];
+            } else {
+                Inserted.splice(i, 1);
+            }
+        } else {
+            i = i + 1;
+        }
+    }
+
+    console.log('onTexChange Checkpoint 2')
+    if(leVal.length > currentLength && leVal.length - currentLength == 1) {
+        for(var i = 0; i < Inserted.length; i++) {
+            if(currentNode.parentNode == Inserted[i].close) {
+                var enclosing = Inserted[i].close;
+                if(currentNode.textContent[0] == ')' || currentNode.textContent[0] == '}') {
+                    // character inserted after closer
+
+                    var text = getTextBetweenElementsInclusive(Inserted[i].open, Inserted[i].close);
+                    var curr = Inserted[i].open;
+                    var end = Inserted[i].close.nextSibling;
+                    var parentNode = Inserted[i].close.parentNode;
+
+                    while(curr != end) {
+                        var next = curr.nextSibling;
+                        curr.parentNode.removeChild(curr);
+                        curr = next;
+                    }
+                    var newText = document.createTextNode(text);
+                    parentNode.insertBefore(newText, end);
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
+                    currentNode = newText;
+                } else {
+                    // character inserted in front of closer
+                    var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
+                    var curr = Inserted[i].open.nextSibling;
+                    var parentNode = Inserted[i].close.parentNode;
+                    Inserted[i].close.textContent = Inserted[i].close.textContent[1];
+
+                    while(curr != Inserted[i].close) {
+                        var next = curr.nextSibling;
+                        parentNode.removeChild(curr);
+                        curr = next;
+                    }
+                    text += ch;
+
+                    var newText = document.createTextNode(text);
+                    parentNode.insertBefore(newText, Inserted[i].close);
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
+                    window.getSelection().getRangeAt(0).setEnd(newText, newText.textContent.length);
+                    currentNode = newText;
+                }
+                break;
+            } else if(currentNode.parentNode == Inserted[i].open) {
+                var enclosing = Inserted[i].open;
+                if(currentNode.textContent[1] == '(' || currentNode.textContent[1] == '{') {
+                    // character inserted in front of opener
+                    var text = getTextBetweenElementsInclusive(Inserted[i].open, Inserted[i].close);
+                    var curr = Inserted[i].open;
+                    var end = Inserted[i].close.nextSibling;
+                    var parentNode = Inserted[i].close.parentNode;
+                    while(curr != end) {
+                        var next = curr.nextSibling;
+                        curr.parentNode.removeChild(curr);
+                        curr = next;
+                    }
+                    var newText = document.createTextNode(text);
+                    parentNode.insertBefore(newText, end);
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, 1);
+                    window.getSelection().getRangeAt(0).setEnd(newText, 1);
+                    currentNode = newText;
+                } else {
+                    // character inserted after opener
+                    var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
+                    var curr = Inserted[i].open.nextSibling;
+                    var parentNode = Inserted[i].close.parentNode;
+                    Inserted[i].open.textContent = Inserted[i].open.textContent[0];
+
+                    while(curr != Inserted[i].close) {
+                        var next = curr.nextSibling;
+                        parentNode.removeChild(curr);
+                        curr = next;
+                    }
+                    text = ch+text;
+
+                    var newText = document.createTextNode(text);
+                    parentNode.insertBefore(newText, Inserted[i].close);
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, 1);
+                    window.getSelection().getRangeAt(0).setEnd(newText, 1);
+                    currentNode = newText;
+                }
+                
+                break;
+            }
+        }
+    }
+    console.log('onTexChange Checkpoint 3')
+
+    range = window.getSelection().getRangeAt(0);
+    offset = range.startOffset;
+    //ch = currentNode.textContent[offset];
+    
+    //var eqId = evt.currentTarget.id.substring(5);
+    var leVal = getFullStr(mathEditBox[0].childNodes);
+    var diff = leVal.length - currentLength;
+
+
+    if(leVal.length < currentLength && currentLength - leVal.length > 1) {
+        // bulk delete
+        var startDelete = range.startContainer;
+        if(startDelete.tagName == "DIV") {
+            startDelete = startDelete.childNodes[0];
+        }
+        var endDelete = range.endContainer;
+        if(endDelete.tagName == "DIV") {
+            endDelete = endDelete.childNodes[0];
+        }
+
+        for(var i = 0; i < Inserted.length; i++) {
+            var open = Inserted[i].open;
+            var close = Inserted[i].close;
+            var deleteOpen = false;
+            var deleteClose = false;
+            var parentNode = Inserted[i].open.parentNode;
+
+            if(isAfterOther(open, startDelete) && isBeforeOther(open, endDelete)) {
+                deleteOpen = true;
+            }
+            if(isAfterOther(close, startDelete) && isBeforeOther(close, endDelete)) {
+                deleteClose = true;
+            }
+            if(deleteOpen && deleteClose) {
+                parentNode.removeChild(open);
+                parentNode.removeChild(close);
+                console.log('removing b');
+                if(Inserted.length == 1) {
+                    Inserted = [];
+                } else {
+                    Inserted.splice(i, 1);
+                }
+            } else if(deleteOpen) {
+                parentNode.removeChild(open);
+                console.log('removing c');
+                if(Inserted.length == 1) {
+                    Inserted = [];
+                } else {
+                    Inserted.splice(i, 1);
+                }
+            } else if(deleteClose) {
+                parentNode.removeChild(close);
+                console.log('removing d');
+                if(Inserted.length == 1) {
+                    Inserted = [];
+                } else {
+                    Inserted.splice(i, 1);
                 }
             }
+        }
+        leVal = getFullStr(mathEditBox[0].childNodes);
+        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+        inChange = false;
+        currentLength = leVal.length;
+        return;
+    }
+    console.log('onTexChange Checkpoint 4')
+
+    if(leVal.length < currentLength && currentLength - leVal.length == 1) {
+        for(var i = 0; i < Inserted.length; i++) {
+
+            if(currentNode.parentNode == Inserted[i].open) {
+                if(getTextBetweenElements(Inserted[i].open, Inserted[i].close).length == 0 ) {
+                    // if this delete was on the opening character of a virtual closing character and there is no content in between
+                    diff = diff - 1;
+
+                    var prev = Inserted[i].open.previousSibling;
+                    var next = Inserted[i].close.nextSibling;
+                    var parentNode = Inserted[i].open.parentNode;
+                    var curr = Inserted[i].open;
+
+                    while(curr != Inserted[i].close) {
+                        var next = curr.nextSibling;
+                        parentNode.removeChild(curr);
+                        curr = next;
+                    }
+                    parentNode.removeChild(Inserted[i].close);
+                    
+                    if(prev != null && prev.tagName != 'SPAN') {
+                        GENTICS.Utils.Dom.setCursorInto( prev );
+                        window.getSelection().getRangeAt(0).setStart(prev, prev.textContent.length);
+                    } else if(next != null && next.tagName != 'SPAN') {
+                        GENTICS.Utils.Dom.setCursorInto( next );
+                        window.getSelection().getRangeAt(0).setStart(next, 0);
+                    } else {
+                        var newText = document.createTextNode('');
+                        parentNode.insertBefore(newText, next);
+                        GENTICS.Utils.Dom.setCursorInto( newText );
+                        window.getSelection().getRangeAt(0).setStart(newText, 0);
+                    }
+
+                    console.log('removing e');
+                    if(Inserted.length == 1) {
+                        Inserted = [];
+                    } else {
+                        Inserted.splice(i, 1);
+                    }
+
+                    leVal = getFullStr(mathEditBox[0].childNodes);
+                    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                    inChange = false;
+                    currentLength = leVal.length;
+                    return;
+                } else {
+                    // if this delete was on the opening character of a virtual closing character and there is space between
+                    var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
+                    text += Inserted[i].close.childNodes[0].textContent;
+                    var next = Inserted[i].close.nextSibling;
+                    var open = Inserted[i].open;
+                    var close = Inserted[i].close;
+                    var parentNode = open.parentNode;
+                    var newText = document.createTextNode(text);
+                    var curr = open;
+
+                    while(curr != next) {
+                        var tmp = curr.nextSibling;
+                        parentNode.removeChild(curr);
+                        curr = tmp;
+                    }
+
+                    parentNode.insertBefore(newText, next);
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, 0);
+                    window.getSelection().getRangeAt(0).setEnd(newText, 0);
+
+                    if(Inserted.length == 1) {
+                        Inserted = [];
+                    } else {
+                        Inserted[i].splice(i, 1);
+                    }
+
+                    leVal = getFullStr(mathEditBox[0].childNodes);
+                    MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                    inChange = false;
+                    currentLength = leVal.length;
+                    return;
+                }
+            } else if(currentNode.parentNode == Inserted[i].close) {
+                var text = getTextBetweenElements(Inserted[i].open, Inserted[i].close);
+                text = Inserted[i].open.childNodes[0].textContent + text ;
+                var next = Inserted[i].close.nextSibling;
+                var open = Inserted[i].open;
+                var close = Inserted[i].close;
+                var parentNode = open.parentNode;
+                var newText = document.createTextNode(text);
+                var curr = open;
+
+                while(curr != next) {
+                    var tmp = curr.nextSibling;
+                    parentNode.removeChild(curr);
+                    curr = tmp;
+                }
+
+                parentNode.insertBefore(newText, next);
+                GENTICS.Utils.Dom.setCursorInto( newText );
+                window.getSelection().getRangeAt(0).setStart(newText, newText.textContent.length);
+                window.getSelection().getRangeAt(0).setEnd(newText, newText.textContent.length);
+
+
+                if(Inserted.length == 1) {
+                    Inserted = [];
+                } else {
+                    Inserted[i].splice(i, 1);
+                }
+
+                leVal = getFullStr(mathEditBox[0].childNodes);
+                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                inChange = false;
+                currentLength = leVal.length;
+                return;
+
+            }
+        }
+
+
+        // delete inside function, make it real
+        for(var i = 0; i < FuncInserted.length; i++) {
+            if(currentNode.parentNode == FuncInserted[i].span) {
+
+                var saveStr = currentNode.textContent;
+                var prev = currentNode.parentNode.previousSibling.previousSibling;
+                var next = currentNode.parentNode.nextSibling;
+                var parentNode = currentNode.parentNode.parentNode;
+                parentNode.removeChild(currentNode.parentNode);
+                parentNode.removeChild(FuncInserted[i].open);
+
+                if(prev != null && prev.tagName != 'SPAN') {
+                    prev.textContent += ('\\'+saveStr);
+                    GENTICS.Utils.Dom.setCursorInto( prev );
+                    window.getSelection().getRangeAt(0).setStart(prev, prev.textContent.length-(3-offset));
+                } else if(next != null && next.tagName != 'SPAN') {
+                    next.textContent = ('\\'+saveStr + next.textContent);
+                    GENTICS.Utils.Dom.setCursorInto( next );
+                    window.getSelection().getRangeAt(0).setStart(next, 0);
+                } else {
+                    var newText = document.createTextNode('\\'+saveStr);
+                    parentNode.insertBefore(newText, next);
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, offset+1);
+                }
+
+                if(FuncInserted.length == 1) {
+                    FuncInserted = [];
+                } else {
+                    FuncInserted.splice(i, 1);
+                }
+
+                leVal = getFullStr(mathEditBox[0].childNodes);
+                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                inChange = false;
+                currentLength = leVal.length;
+                return;
+            }
+        }
+    } else if(leVal.length > currentLength && leVal.length - currentLength == 1) {
+
+        // if something typed inside of an existing function span, clear that span out
+        for(var i = 0; i < FuncInserted.length; i++) {
+            if(currentNode.parentNode == FuncInserted[i].span) {
+
+                var prev = currentNode.parentNode.previousSibling.previousSibling;
+                var next = currentNode.parentNode.nextSibling;
+                var parentNode = currentNode.parentNode.parentNode;
+                parentNode.removeChild(currentNode.parentNode);
+                parentNode.removeChild(FuncInserted[i].open);
+
+                if(prev != null && prev.tagName != 'SPAN') {
+                    prev.textContent += ('\\'+ch);
+                    GENTICS.Utils.Dom.setCursorInto( prev );
+                    window.getSelection().getRangeAt(0).setStart(prev, prev.textContent.length);
+                } else if(next != null && next.tagName != 'SPAN') {
+                    next.textContent = ('\\'+ch + next.textContent);
+                    GENTICS.Utils.Dom.setCursorInto( next );
+                    window.getSelection().getRangeAt(0).setStart(next, 1);
+                } else {
+                    var newText = document.createTextNode('\\'+ch);
+                    parentNode.insertBefore(newText, next);
+                    GENTICS.Utils.Dom.setCursorInto( newText );
+                    window.getSelection().getRangeAt(0).setStart(newText, 1);
+                }
+
+                if(FuncInserted.length == 1) {
+                    FuncInserted = [];
+                } else {
+                    FuncInserted.splice(i, 1);
+                }
+
+                leVal = getFullStr(mathEditBox[0].childNodes);
+                MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+                inChange = false;
+                currentLength = leVal.length;
+                return;
+            }
+        }
+    }
+    console.log('onTexChange Checkpoint 5')
+
+
+
+    // moved beyond the scope of a parens or braces
+    var i = 0;
+    while(i < Inserted.length) {
+        if(isAfterOther(currentNode, Inserted[i].close) || isBeforeOther(currentNode, Inserted[i].open)) {
+            concretize(Inserted[i].open);
+            concretize(Inserted[i].close);
+
+            console.log('removing f');
+            if(Inserted.length == 1) {
+                Inserted = [];
+            } else {
+                Inserted.splice(i, 1);
+            }
+        } else {
+            i = i + 1;
+        }
+    }
+    console.log('onTexChange Checkpoint 6')
+
+
+    if(leVal.length - currentLength > 0) {
+        switch(ch) {
+            case(')'):
+            case('}'):
+                convertToConcrete(ch, ele, leVal, offset);
+                break;
+            case('{'):
+                generateInserted(offset, '}', '');
+                break;
+            case('('):
+                generateInserted(offset, ')', '');
+                break;
+            case('^'):
+            case('_'):
+                insertBraces(ele, leVal, offset);
+                break;
+            case('\\'):
+                insertFunc(ele, leVal, offset);
+                break;
+        }
+    }
+    console.log('onTexChange Checkpoint 7 '+eqId)
+
+    leVal = getFullStr(mathEditBox[0].childNodes);
+    console.log('LEVAL is: '+leVal);
+    if(leVal != "Enter your math notation here") {
+        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],"\\displaystyle{"+leVal+"}"]);
+    }
+    console.log('onTexChange Checkpoint 8')
+    inChange = false;
+    currentLength = leVal.length;
+}
+function onAsciiCharChange(evt,  mathEditorContainer, eqId) {
+        // var eqId = evt.currentTarget.id.substring(5);
+        console.log("Refreshing ascii rendering");
+        var mathEditBox = mathEditorContainer.find(".math-source");
+        //var eqId = evt.currentTarget.id.substring(5);
+        // var mathEditBox = $('#'+evt.currentTarget.id);
+        // var leVal = mathEditBox.val() || mathEditBox.text();
+        var leVal = getFullStr(mathEditBox[0].childNodes);
+        //var leVal = mathEditBox.text() || mathEditBox.val();
+        console.log("The ascii eqid is: " + eqId);
+        console.log("The retrieved value is: " + leVal);
+        MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(eqId)[0],leVal]);
+    }
+
+function generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj, newMathEditContainer) {
+    var newElId = wrapPrefix+cntEq;
+    var range = Aloha.Selection.getRangeObject();
+    var newMathContainer = $('<div id="'+newElId+'" class="MathBox MathBoxNew selected">'+openDelimiter + closeDelimiter+'</div>');
+   /* Generates the math editor */ 
+    GENTICS.Utils.Dom.insertIntoDOM( newMathContainer, range, $( Aloha.activeEditable.obj ) ); // Inserts the math container into the aloha 'editable' object
+
+   console.log("ID is: " + newElId);
+    if(equation == '' || equation == "&nbsp\;") {
+        MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
+            console.log("Finished typsetting");
+        }]);
+    } 
+    else {
+
+        if(openDelimiter == '${') {
+
+            MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
+                   MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],"\\displaystyle{"+equation+"}"]);
+            }]);
+        } 
+        else {
+
+            MathJax.Hub.queue.Push(["Typeset", MathJax.Hub, newElId, function() { 
+                   MathJax.Hub.queue.Push(["Text", MathJax.Hub.getAllJax(newElId)[0],equation]);
+            }]);
+        }
+    }
+    cntEq++;
+    return newElId; // Returns the id of the newly inserted math element
+
+}
+
  function insertToolbar() {
     var popOutHtml = buildMathEditor();
-    popOutHtml = '<span id="MathJaxNew" class="MathJax selected" contenteditable="false"' + popOutHtml + '</span>';
+    popOutHtml = '<span id="" class="MathBox selected MathBoxNew" contenteditable="false"' + popOutHtml + '</span>';
     $("#content").append(popOutHtml);
     //$(document.body).append(popOUt);
     //pasteHtmlAtCaret(popOUt);
@@ -482,21 +843,20 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         document.selection.createRange().pasteHTML(html);
     }
   }
-
-
-  // Adds a new editor every time the math button is entered
-
-  function mathClickNew(e) {
-    var aol = 'aol-latex';
+/* 
+ * Converts text to ASCII math or LaTex if the user selected some text.
+ * If not it provides the user with a math-editor
+*/
+  function mathClickNew(openDelimiter, closeDelimiter, charChangeFunction) {
     console.log("mathClickNew ");
-    var exText = getSelectionText();
-    if (exText == '') {
-      exText = '&nbsp\;';
-      pasteHtmlAtCaret('<span id="MathJaxNew" class="MathJax selected" contenteditable="false">' + exText + '</span>');
+    var equation = getSelectionText();
+    // Pops up the math-editor if the user hasn't selected text
+    if (equation == '') {
+      equation = "&nbsp\;";
 
      /* $("[class*='-header']").die("mouseenter mouseleave"); // Turning hovers off (temporarily)
       $(".canvas-wrap").die("mouseenter mouseleave"); // Have to do this one separately from above, apparently
-      $(".MathJax").die("mouseenter mouseleave");
+      $(".MathBox").die("mouseenter mouseleave");
       $("table caption").die("mouseenter mouseleave");*/
       // cwLeave($(".canvas-wrap"),"special");
 
@@ -504,25 +864,75 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
       $('button[title="Math"]').addClass("selected");
     
       console.log("Building the math editor");
-      var mec = buildMathEditor();
-      
-      var m = $("#MathJaxNew");
-      m.prepend(mec);
-      if (aol == 'aol-latex') {
-        m.find("#radio_latex").attr("checked",true);
-      } else {
-        m.find("#radio_ascii").attr("checked",true);
+      var mathEditor = buildMathEditor();
+      console.log("Delimiter is: " + openDelimiter);
+    // pasteHtmlAtCaret('<span id="" class="MathBox selected MathBoxNew" contenteditable="false">' + exText + '</span>');
+     var newElId = generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj)
+      // Retrieves the html element(which has the selected text) it just inserted to the document
+      var mathEditorContainer = $(".MathBoxNew");
+      // Inserts the math editor
+      mathEditorContainer.prepend(mathEditor);
+
+      console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
+      //console.log("The radio button is currently: " + aol);
+      // Sets the radio button depending on the saved global preferences. Optional if Kathi wants this feature
+      if (aol == 'radio_latex') {
+        console.log("Checking latex radio");
+        mathEditorContainer.find("#radio_latex").attr('checked','checked');
+      } 
+
+      else {
+        console.log("Checking ascii radio");
+        mathEditorContainer.find("#radio_ascii").attr('checked','checked');
+        // mathEditorContainer.find("#radio_latex").attr("checked",false);
+
       }
-      //m.removeClass("temporarily-hide");
-      var newB = m.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
-      var newL = m.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
+      //mathEditorContainer.removeClass("temporarily-hide");
+      var newB = mathEditorContainer.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
+      var newL = mathEditorContainer.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
       $(".math-editor").css("bottom", newB + "px");
       $(".math-editor").css("left", newL + "px");
-      if (exText == '&nbsp;') {
-        m.find(".math-source").append('<span class="math-source-hint-text">Enter your math notation here</span>');
+
+       /* Changes the update function based on what radio button is chosen */
+       mathEditorContainer.find("#radio_latex").on("click", function(e){
+            console.log("Changing update function");
+            charChangeFunction = onTexCharChange;
+            /* Updates the current equation */
+            charChangeFunction(e, $(".math-editor"), newElId);
+
+        });
+       mathEditorContainer.find("#radio_ascii").on("click", function(e){
+            console.log("Changing the update function");
+            charChangeFunction = onAsciiCharChange;
+            /* Updates the current equation */
+            charChangeFunction(e, $(".math-editor"), newElId);
+        });
+      // Updates the generated math as the user modifies it
+      $(".math-editor").find(".math-source-wrap").on('DOMCharacterDataModified', function(e) {
+        /* Replaces the current text with a '&nbsp;' if the user removes all the text */
+        var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
+        if (text == '') {
+            $(".math-editor").find(".math-source").append("&nbsp\;");
+            console.log("Inserted nbsp");
+        }
+        else {
+            console.log("Text is:" + text);
+        }
+
+        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
+        charChangeFunction(e, $(".math-editor"), newElId);
+       });
+      $(".math-editor").find(".math-source-wrap").on('DOMNodeInserted', function(e) {
+        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
+        charChangeFunction(e, $(".math-editor"), newElId);
+    });
+      /* If the math-editor is empty then it's replaced w/ default text */
+      if (equation == "&nbsp\;") {
+        mathEditorContainer.find(".math-source").append('<span class="math-source-hint-text">Enter your math notation here</span>');
       } 
       else {
-        m.find(".math-source").append(exText);
+        /* Appends the equation to the text in the editor */
+        mathEditorContainer.find(".math-source").append(equation);
         placeCaretAtEnd($(".math-source").get(0));
       }
       /*if ( $("#cheat-sheet").css("display") != 'none' ) $("#cheat-sheet-activator").attr("checked",true);
@@ -532,77 +942,106 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
 
 
     } 
+    /* If the user selects text then that text is converted to whatever was selected */
     else {
 
-      pasteHtmlAtCaret('<span id="MathJaxNew" class="MathJax" contenteditable="false"><span class="MathJaxText">' + exText + '</span></span>');
+      // pasteHtmlAtCaret('<span id="" class="MathBox MathBoxNew" contenteditable="false"><span class="MathJaxText">' + exText + '</span></span>');
+      generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj, null);
       // Changes status of math button to be 'unselected'
       $('button[title="Math"]').removeClass("selected");
-      $("#MathJaxNew").removeAttr("id").effect("highlight", { color: "#E5EEF5" }, 1000);
-
+      $(".MathBoxNew").removeAttr("id").effect("highlight", { color: "#E5EEF5" }, 1000);
     }
-
     // e.stopPropagation();
     //e.preventDefault();
 
   }
+
   function mathEditorRemove(override) {
-      console.log("mathEditorRemove");
-//    if (!$("#MathJaxNew").length || override.length) { // Hack because propagation doesn't seem to be stopping in mathClickNew2
-      $(".MathJax").removeClass("selected");
-      $(".MathJax").removeClass("hovered");
+      console.log("mathEditorRemove, override is: " + override);
+      // If the new math element is empty then unselect and unhover it
+      $(".MathBox").removeClass("selected");
+      $(".MathBox").removeClass("hovered");
       // This is only related to the math cheat sheet
       /*if ($("#cheat-sheet-wrap").css("display") != 'none') {
         $("#cheat-sheet-wrap").slideDown("fast", function(e){
           $(this).hide();
         });
       }*/
-      var mj = $(".math-editor").closest(".MathJax");
-      var ms = $(".math-editor").find(".math-source").text();
+      // Retrieves the closest mathjax element
+      var mathJax = $(".math-editor").closest(".MathBox");
+      // Retrieves the math editor's text
+      console.log($(".math-editor"))
+      if($(".math-editor").length == 0) {
+          // no math editor currently exists to be closed. This can be triggered by a click on the HTML without an existing math editor
+          return;
+      }
+      var mathSource = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
       /* Checks if the override's string length is non zero or the 'radio button(I don't know which yet) is checked' 
          And that  the hint text is zero
         */
+     // Sets the user preferences to the id of which radio button is checked {}
+      var newAol = $(".math-editor").find('input[name="math-type"]:checked').attr("id");
+      // Saves the preference of the rendering to the global aolDictionary so that their preferenc will be saved depending on which equation they're editing
+      if (newAol != null && mathJax != null) {
+        aol = newAol;      
+        aolDictionary[mathJax.attr("id")] = aol;
+        console.log("Adding a new aol: " + aol + " with id: " + mathJax.attr("id"));
 
+    }
+    
       if ((override.length || $("#radio_regular").is(":checked")) && !$(".math-source-hint-text").length) {
-        if (ms == "&nbsp\;") {
-          mj.replaceWith("");
+        if (mathSource == "&nbsp\;") {
+            // If the math source only has a 'standard space' simply replace it with empty text?
+          //mathJax.replaceWith("");
         } 
         else {
-          mj.replaceWith(ms);
+            // Otherwise update it with the next text
+          // /mathJax.replaceWith(mathSource);
         }
       } 
       else {
-        if (!mj.find(".asciimath").length) { // This just not to mess up the nice examples in the mock-up.
-          if (!ms.trim().length || $("#MathJaxNew").find(".math-source-hint-text").length) {
-            mj.remove();
+        // Removes the mathjax element if the editor is empty
+        if (!mathJax.find(".asciimath").length) { 
+          if (!mathSource.trim().length || $(".MathBoxNew").find(".math-source-hint-text").length) {
+            mathJax.remove();
           } 
           else {
-            mj.html('<span class="MathJaxText">' + ms + '</span>');
+            //mathJax.html('<span class="MathJaxText">' + mathSource + '</span>');
           }
         }
       }
+      /* Clears all the 'insert' dictionaries */
+      Inserted = [];
+      FuncInserted = [];
+      // Removes every math editor open
       $(".math-editor").remove();
       $('button[title="Math"]').removeClass("selected"); //Unselects the button
-      // Removes every math editor
-      $(".MathJax").each(function(){
-        if ($(this).attr("id") == 'MathJaxNew') {
-          $(this).removeAttr("id");
+      // For every math element it removes the 'MathBoxNew' class from the element
+      $(".MathBox").each(function(){
+        if ($(this).hasClass('MathBoxNew')) {
+          $(this).removeClass("MathBoxNew"); // Removes its 'new status from it'
         }
       });
     }
-    // Sets a callback on the aloha button by looking for an element whose title=math
+    /* Sets a callback on the aloha button by looking for an element whose title=math,
+     * This is used to prevent the math editor being closed by another callback function keyed on the entire html document. 
+     * it does this by calling e.stopPropogation()
+     */
+
     $('button[title="Math"]').live("click", function(e) {
         console.log("Button being clicked");
         e.stopPropagation();
     });
-  $(".MathJax").live("mouseenter", function(e){
+    /* Generates events everytime the inserted equation is being interacted with */
+  $(".MathBox").live("mouseenter", function(e){
     console.log("Editor being entered");
     mathEnter($(this),e);
   });
-  $(".MathJax").live("mouseleave", function(e){
+  $(".MathBox").live("mouseleave", function(e){
     console.log("Editor being left");    
     mathLeave($(this),e);
   });
-  $(".MathJax:not(.selected)").live("click", function(e){
+  $(".MathBox:not(.selected)").live("click", function(e){
     console.log("Editor not selected?");    
     mathClick($(this),e);
 
@@ -614,46 +1053,132 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
   });
 
 
-
+  function removeMathWrapper(mathText) {
+    /*var latexRegexPattern = "(?<=\\displaystyle{)(.*)(?=})";
+    latexRegexPattern = "\\displaystyle{.*}";*/
+    var latexRegex = /\\displaystyle{(.*)}/;
+    var asciiRegex = /`(.*)`}/; 
+    var actualMathTextFromLatex = latexRegex.exec(mathText);
+    var actualMathTextFromAscii = asciiRegex.exec(mathText);
+    var actualMathText = actualMathTextFromLatex || actualMathTextFromAscii;
+    if (actualMathText == null) {
+        return mathText;       
+    }
+    return actualMathText[1];
+  }
   function meClick(me,e) {
     e.stopPropagation();
   };
-function mathClick(m,e) {
+function mathClick(mathEditorContainer, e) {
 
    /* $("[class*='-header']").die("mouseenter mouseleave"); // Turning hovers off (temporarily)
    // $(".canvas-wrap").die("mouseenter mouseleave"); // Have to do this one separately from above, apparently
-    $(".MathJax").die("mouseenter mouseleave");
+    $(".MathBox").die("mouseenter mouseleave");
     $("table caption").die("mouseenter mouseleave");*/
     console.log("Math click being called");
    /* cwLeave($(".canvas-wrap"),"special");*/
-
-    if(!m.find(".math-editor").length) {
+    var charChangeFunction, elementId;
+    if(!mathEditorContainer.find(".math-editor").length) {
       mathEditorRemove("");
-      m.find('#math-icon-edit').remove();
-      m.find('#math-icon-clear').remove();
-      m.removeAttr("title");
-      m.addClass("selected");
+      mathEditorContainer.find('#math-icon-edit').remove();
+      mathEditorContainer.find('#math-icon-clear').remove();
+      mathEditorContainer.removeAttr("title");
+      mathEditorContainer.addClass("selected");
       // Changes status of button to selected
       $('button[title="Math"]').addClass("selected");
+      /* Inserts the math editor */
+      var mathEditor = buildMathEditor(mathEditorContainer,e);
+      mathEditorContainer.prepend(mathEditor);
+      var mathtext = mathEditorContainer.find(".asciimath").text(); // Don't quite know what this is supposed to do
+      // Retrieves the  id of the mathjax element
+      elementId = mathEditorContainer.closest(".MathBox").attr("id");
+      console.log("Actual math text is: " + actualMathText);
+      // Retrieves the original math text by searching for the mathjax element
+      var actualMathText = mathEditorContainer.find('[id^="MathJax-Element-*"], [type^="math/"]').text();
+      // Retrieves the user rendering preferences for the selected mathjax element. If it can't find it's value then it uses the default value
+      var savedAol = aolDictionary[elementId] || 'radio_latex';
+      console.log("Retrieved aol with an id of: " + elementId + " is: " + savedAol);
 
-      var mec = buildMathEditor(m,e);
-      m.prepend(mec);
-      var mathtext = m.find(".asciimath").text();
-      if (mathtext.length) {
-        m.find(".math-source").append(mathtext);
-      } else if ( m.find(".MathJaxText, .MathJaxText2").text().length ) {
-        m.find(".math-source").append(m.find(".MathJaxText, .MathJaxText2").text());
-      } else {
-        m.find(".math-source").append("&nbsp;");
+    // Checks the radio button based on what was last chosen, then sets the update function based on what the user chooses
+      if ( savedAol == 'radio_latex') {
+        mathEditorContainer.find("#radio_latex").attr('checked','checked');
+        charChangeFunction = onTexCharChange;
+        actualMathText = removeMathWrapper(actualMathText);
+      } 
+      else 
+      {
+        mathEditorContainer.find("#radio_ascii").attr('checked','checked');
+        charChangeFunction = onAsciiCharChange;
+        console.log("Setting the onAsciiCharChange");
+        actualMathText = removeMathWrapper(actualMathText);
+        console.log("The retrieved math looks like: " + actualMathText);
       }
-      newB = m.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
-      newL = m.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
+      if (mathtext.length) {
+        console.log("themathtext is not empty");
+        mathEditorContainer.find(".math-source").append(mathtext);
+      } 
+      else if (actualMathText.length) {
+        // Drops the text into the math editor if the text is non-empty
+        mathEditorContainer.find(".math-source").append(actualMathText);
+      } 
+      else {
+        // Otherwise  it just appends nbsp
+        mathEditorContainer.find(".math-source").append("&nbsp\;");
+      }
+    
+      // Repositions the editor next to the mathjax
+      var newB = mathEditorContainer.outerHeight() + 14; // 14 = approx. positive value of :after's "bottom" property
+      var newL = mathEditorContainer.outerWidth() / 2 - parseInt($(".math-editor").css("width")) / 2 - 7; // 7 for mysterious good measure
       $(".math-editor").css("bottom", newB + "px");
       $(".math-editor").css("left", newL + "px");
       placeCaretAtEnd($(".math-source").get(0));
-    } else {
+    } 
+    else {
+      /*elementId = $("#content").find('[id^="eqprefix-"]').attr("id");
+             // Retrieves the user rendering preferences for the selected mathjax element. If it can't find it's value then it uses the default value
+      var savedAol = aolDictionary[elementId] || 'radio_latex';
+      console.log("Retrieved aol with an id of: " + elementId + " is: " + savedAol);
+    // Checks the radio button based on what was last chosen, then sets the update function based on what the user chooses
+      if ( savedAol == 'radio_latex') {
+        mathEditorContainer.find("#radio_latex").attr("checked",true);
+        charChangeFunction = onTexCharChange;
+      } 
+      else {
+        mathEditorContainer.find("#radio_ascii").attr("checked",true);
+        charChangeFunction = onAsciiCharChange;
+      }*/
       placeCaretAtEnd($(".math-source").get(0));
     }
+    /* Changes the update function based on what radio button is chosen */
+    mathEditorContainer.find("#radio_latex").on("click", function(e){
+        console.log("changing update function");
+        charChangeFunction = onTexCharChange;
+        /* Updates the current equation */
+        charChangeFunction(e, $(".math-editor"), elementId);
+
+    });
+   mathEditorContainer.find("#radio_ascii").on("click", function(e){
+        console.log("changing update function");
+        charChangeFunction = onAsciiCharChange;
+        /* Updates the current equation */
+        charChangeFunction(e, $(".math-editor"), elementId);
+    });
+    // Updates the generated math as the user modifies it
+      $(".math-editor").find(".math-source-wrap").on('DOMCharacterDataModified', function(e) {
+        /* Replaces the current text with a '&nbsp;' if the user removes all the text */
+        var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
+        if (text == '') {
+            $(".math-editor").find(".math-source").append("&nbsp\;");
+            console.log("Inserted nbsp");
+        }
+        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
+        charChangeFunction(e, $(".math-editor"), elementId);
+    });
+      $(".math-editor").find(".math-source-wrap").on('DOMNodeInserted', function(e) {
+        console.log("Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
+        charChangeFunction(e, $(".math-editor"), elementId);
+    });
+     
     /*if ( $("#cheat-sheet").css("display") != 'none' ) $("#cheat-sheet-activator").attr("checked",true);
     $("#cheat-sheet-wrap").slideUp("fast", function(e){
       $(this).show();
@@ -662,7 +1187,7 @@ function mathClick(m,e) {
   }
 
   $(".math-source").live("click", function(e){
-    $(this).find(".math-source-hint-text").replaceWith("&nbsp;");
+    $(this).find(".math-source-hint-text").replaceWith("&nbsp\;");
   });
 function getSelectionText() { // from Tim Down at http://stackoverflow.com/questions/5379120/jquery-get-the-highlighted-text
     var text = "";
@@ -673,6 +1198,7 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
     }
     return text;
   }
+
   function placeCaretAtEnd(el) { // From Tim Down at http://stackoverflow.com/questions/4233265/contenteditable-set-caret-at-the-end-of-the-text-cross-browser
     el.focus();
     if (typeof window.getSelection != "undefined"
@@ -690,16 +1216,56 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
         textRange.select();
     }
   }
-    function mathLeave(m,e) {
-    if(!m.find(".math-editor").length) {
-      m.removeClass("selected");
+
+function getFullStr(allChildren) {
+    var str = '';
+    for(var i = 0; i < allChildren.length; i++) {
+        var ele = allChildren[i];
+        switch(ele.nodeType) {
+            case(3):
+                str = str + ele.textContent;
+                break;
+            case(1):
+                if(ele.tagName=='SPAN') {
+                    str = str + ele.childNodes[0].textContent;
+                }
+                break;
+            default:
+                break;
+        }
     }
-    m.removeClass("hovered");
-    m.removeAttr("title");
-    m.find('#math-icon-edit').remove();
-    m.find('#math-icon-clear').remove();
-  /*  if ( !m.parents().closest(".active").length) {
-      m.parent().closest('.canvas-wrap').each(function(){
+    return str;
+}
+
+function enableEditor(editor, length) {
+    if(currentEditor != null && currentEditor[0] != editor[0]) {
+        disableEditor();
+    }
+    currentEditor = editor;
+    currentLength = length;
+    GENTICS.Utils.Dom.setCursorInto( editor[0] );
+    if(editorToOffset[editor[0].id] != null) {
+        window.getSelection().getRangeAt(0).setStart(window.getSelection().focusNode.childNodes[0], editorToOffset[editor[0].id]);
+    }
+    editor.show();
+}
+function disableEditor() {
+    if(currentEditor != null) {
+        editorToOffset[currentEditor[0].id] = window.getSelection().getRangeAt(0).startOffset;
+        currentEditor.hide();
+        currentEditor = null;
+    }
+}
+function mathLeave(mathEditorContainer,e) {
+    if(!mathEditorContainer.find(".math-editor").length) {
+      mathEditorContainer.removeClass("selected");
+    }
+    mathEditorContainer.removeClass("hovered");
+    mathEditorContainer.removeAttr("title");
+    mathEditorContainer.find('#math-icon-edit').remove();
+    mathEditorContainer.find('#math-icon-clear').remove();
+  /*  if ( !mathEditorContainer.parents().closest(".active").length) {
+      mathEditorContainer.parent().closest('.canvas-wrap').each(function(){
         $(this).children().children().children('.canvas-buddy, .canvas-buddy-2').show();
         $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').show();
         $(this).children('.canvas').addClass("canvas-hovered");
@@ -707,7 +1273,7 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
     }*/
   }
 
-   function mathEnter(m,e) {
+   function mathEnter(mathEditorContainer,e) {
     
     /* Wraps the text */
     /*$('.canvas-wrap').each(function(){
@@ -715,42 +1281,59 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
       $(this).children().children().children().children().children('.canvas-buddy, .canvas-buddy-2').hide();
       $(this).children('.canvas').removeClass("canvas-hovered");
     });*/
-    //console.log("Entering math")
-    m.addClass("hovered");
+    console.log("Entering math");
+    mathEditorContainer.addClass("hovered");
     // If the length is zero then add the original text back
-    if(!m.find(".math-editor").length) {
-      m.attr("title","Click anywhere on the math to edit it");
-      m.append('<span class="math-icon" id="math-icon-edit"><span class="math-icon-message">Click anywhere on the math to edit it</span></span>');
-      m.append('<span class="math-icon" id="math-icon-clear"><span class="math-icon-message"><span class="math-icon-message-close">X</span> Remove math formatting (revert to plain text)</span></span>');
+    if(!mathEditorContainer.find(".math-editor").length) {
+      mathEditorContainer.attr("title","Click anywhere on the math to edit it");
+      mathEditorContainer.append('<span class="math-icon" id="math-icon-edit"><span class="math-icon-message">Click anywhere on the math to edit it</span></span>');
+      mathEditorContainer.append('<span class="math-icon" id="math-icon-clear"><span class="math-icon-message"><span class="math-icon-message-close">X</span> Remove math formatting (revert to plain text)</span></span>');
     }
     e.stopPropagation();
   }
   // Removes the math editor when the html document is clicked. I don't know where the '.math-done' class is used b/c  I don't see it used in the page
    $("html, .math-editor-close, .math-done").live("click", function(e){
-/*
-    if ($(this).hasClass("math-editor-close")) {
-      mathEditorRemove("override");
-    } else {
-*/    console.log("Removing the math editor");
+      console.log("Removing the math editor");
       mathEditorRemove("");
-/*
-    }
-*/
-    $(".MathJax").live("mouseenter", function(e){
+    /* Establishes a listener for mouse movements to on the math mathjax box */
+    $(".MathBox").live("mouseenter", function(e){
       mathEnter($(this),e);
     });
-    $(".MathJax").live("mouseleave", function(e){
+    $(".MathBox").live("mouseleave", function(e){
       mathLeave($(this),e);
     });
 
-  });
+   });
 
   $(".math-editor").live("click", function(e){
         console.log("Stopping propagation");
         meClick($(this),e);
   });
 
-  function buildMathEditor(m,e) {
+    function toggleMath()
+    {
+        if( Aloha.activeEditable ) 
+        {
+            var range = Aloha.Selection.getRangeObject()
+                if ( !( range.startContainer && range.endContainer ) ) {
+                    return;
+                }
+
+            // get text from selection
+            var leText = range.getText();
+
+            if( $.trim(leText) === '' ) return;
+
+            GENTICS.Utils.Dom.removeRange(range);
+            // make a new placeholder for the new equation
+
+            generateMathContainer('${','}$', onTexCharChange, leText, editableObj);
+        }
+    }
+
+  /* Builds the math editor html */
+
+  function buildMathEditor(mathEditorContainer,e) {
     var ed = '<div class="math-editor" contenteditable="false" id="meditor">\
         <span class="math-editor-close">\
           <img src="http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/remove-element-01.png">\
@@ -764,7 +1347,7 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
         <div class="math-options-activate">\
           This is:\
           <input type="radio" name="math-type" id="radio_ascii" value="ascii" checked="checked"> <label for="radio_ascii">ASCIIMath</label>\
-          <input type="radio" name="math-type" id="radio_latex" value="latex"> <label for="radio_latex">LaTeX</label>\
+          <input type="radio" name="math-type" id="radio_latex" value="latex" checked=""> <label for="radio_latex">LaTeX</label>\
           <span id="math-type-help" class="math-help" style="display: none\;">(<a href="#asdfasdf">what\'s this?</a>)</span>\
         </div>\
         <div id="cheat-sheet-activate" style="text-align: right\; display: block\;">\
@@ -813,6 +1396,7 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
     return ed;
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
             
             var leMathInput = $('<input style="display:none" />');
             leMathInput.on('change', updateMath );
@@ -820,15 +1404,21 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
 =======
 >>>>>>> e3455f8f274c2581c914ab8f7a33cb1c066d4535
             
+=======
+
+    
+>>>>>>> c54d6b90d267da869ad650032df194f2a16a71a4
             scopes.createScope('math', 'Aloha.empty');
-            
+            /* Configure the 'insert latex' math */
             self._mathCtrl = ui.adopt( 'characterPicker'/*"math"*/, button, 
             {
                 tooltip: 'Math', /*i18n.t('button.addmath.tooltip'),*/
-                icon: "M",
+                icon: "mathEditorContainer",
                 click: function() {
                     console.log("Math button being clicked");
-                    mathClickNew();
+                    // Generates a new math editor
+                    mathClickNew('${','}$', onTexCharChange);
+                    aol = radio_latex;
                     // e.stopPropagation();
                 }
                 /*onclick: function() {
@@ -858,14 +1448,18 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
                     { 
                         $(MathJax.Hub.getAllJax()).each(function()
                         { 
+                            console.log("Initializing...?");
                             var elfr = $('#'+this.inputID+'-Frame'),
                                 el = $('#'+this.inputID),
                                 elpr = $('#'+this.inputID+'-Frame').prevAll('.MathJax_Preview').eq(0),
                                 eqWrapper = $('<span id="'+wrapPrefix+cntEq+'" />').insertBefore(elpr)
                                     .append(elpr).append(elfr).append(el)
                                     .data('equation', this.originalText);
+                           console.log("elfr is: " + elfr) ;
+                           console.log("el is: " + el );
+                           console.log("elpr is: " + elpr);
                             
-                            cntEq++;
+                           cntEq++;
                         }); 
                     }]);
                 })();
@@ -879,19 +1473,27 @@ function getSelectionText() { // from Tim Down at http://stackoverflow.com/quest
                 
                 editable.obj.bind('keydown', self.hotKey.insertTexMath, function() 
                 {
-                    generateMathContainer('${','}$', onTexCharChange, '', editable.obj);
+                    //generateMathContainer('${','}$', onTexCharChange, '', editable.obj);
+                    aol = 'radio_latex';
+                    mathClickNew('${','}$', onTexCharChange); // Generates a new math container and binds the 'latex' callback function
                 });
 
                 editable.obj.bind('keydown', self.hotKey.insertAsciiMath, function() 
                 {
-                    generateMathContainer('`','`', onAsciiCharChange, '', editable.obj);
+                    //generateMathContainer('`','`', onAsciiCharChange, '', editable.obj);
+                    aol = 'radio_ascii';
+                    mathClickNew('`','`', onAsciiCharChange); // Generates a new math container and binds the 'asciimath' callback functoin
+                    console.log("Setting the radio default");
                 });
                 editable.obj.bind('keydown', self.hotKey.insertMLMath, function() 
                 {
-                    generateMathContainer('<math>','</math>', onAsciiCharChange, '', editable.obj);
+                    // generateMathContainer('<math>','</math>', onAsciiCharChange, '', editable.obj);
+                    aol = 'radio_mathml';
+                    mathClickNew('<math>','</math>', onAsciiCharChange); // Generates a new math container and binds the 'asciimathml' callback functoin
                 });
             });
 
         }
     });
 });
+    
