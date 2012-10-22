@@ -32,7 +32,7 @@
     var CONTAINER_JQUERY;
     CONTAINER_JQUERY = jQuery('.toolbar');
     if (CONTAINER_JQUERY.length === 0) {
-      CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container').appendTo('body');
+      CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container aloha').appendTo('body');
     }
     /*
        register the plugin with unique name
@@ -45,7 +45,6 @@
         menubar.el.appendTo(CONTAINER_JQUERY);
         window.toolbar = toolbar = new appmenu.ToolBar();
         toolbar.el.appendTo(CONTAINER_JQUERY);
-        toolbar.el.addClass('aloha');
         menuLookup = {};
         toolbarLookup = {};
         recurse = function(item, lookupMap) {
@@ -69,7 +68,6 @@
               return _results;
             })();
             subMenu = new appmenu.Menu(subItems);
-            subMenu.el.addClass('aloha');
             menuItem = new appmenu.MenuItem(item.text, {
               subMenu: subMenu
             });
@@ -89,7 +87,6 @@
             return _results;
           })();
           menu = new appmenu.Menu(subMenuItems);
-          menu.el.addClass('aloha');
           menubar.append(new appmenu.MenuButton(tab.text, menu));
         }
         for (_j = 0, _len1 = toolbarSettings.length; _j < _len1; _j++) {

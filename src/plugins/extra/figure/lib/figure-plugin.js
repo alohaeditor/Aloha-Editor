@@ -80,7 +80,7 @@
             var caption, captionRow, dialog, editCaption, editImage, editTitle, figure, imageRow, images, title, titleRow;
             dialog = $('<div class="x-figure"></div>');
             titleRow = $('<div class="title area"><span class="label">Title</span><span class="value"/></div>').appendTo(dialog);
-            imageRow = $('<div class="image area"><span class="label">Image (drop to change)</span><span class="value"/></div>').appendTo(dialog);
+            imageRow = $('<div class="image area"><span class="label">Image (drop a file to change)</span><span class="value"/></div>').appendTo(dialog);
             captionRow = $('<div class="caption area"><span class="label">caption</span><span class="value"/></div>').appendTo(dialog);
             figure = $(this);
             title = figure.children('.title');
@@ -105,11 +105,17 @@
                 figure.contents().remove();
                 appender = function(parent, contents, elName, cls) {
                   var el;
-                  if (elName == null) elName = '';
-                  if (cls == null) cls = '';
+                  if (elName == null) {
+                    elName = '';
+                  }
+                  if (cls == null) {
+                    cls = '';
+                  }
                   if (elName) {
                     el = $("<" + elName + "></" + elName + ">").appendTo(parent);
-                    if (cls) el.addClass(cls);
+                    if (cls) {
+                      el.addClass(cls);
+                    }
                     return el.append(contents);
                   } else {
                     return parent.append(contents);

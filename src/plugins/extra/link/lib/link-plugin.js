@@ -42,7 +42,6 @@ define( [
 	'ui/surface',
 	'ui/button',
 	'ui/toggleButton',
-	'../../bubble/lib/bubble-plugin',
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
@@ -57,7 +56,6 @@ define( [
 	Surface,
 	Button,
 	ToggleButton,
-	Bubbler,
 	i18n,
 	i18nCore,
 	console
@@ -392,27 +390,6 @@ define( [
 					return false;
 				}
 			} );
-			
-			new Bubbler(this._createDisplayer.bind(this), jQuery(link));
-		},
-
-		_createDisplayer: function($el, $bubble) {
-			var that = this;
-			var href = $el.attr('href');
-			var a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble);
-			a.attr('href', href);
-			a.append(href); // Put the URL in the body
-			$bubble.append(' - ');
-			var change = jQuery('<a href="javascript:void">Change</a>');
-			change.appendTo($bubble).on('mousedown', function() {
-				var dialog = that.showModalDialog($el);
-				dialog.on('dialogclose', function() {
-					a.attr('href', $el.attr('href'));
-					a.contents().remove();
-					a.append($el.attr('href'));
-				});
-			});
-			
 		},
 
 		/**
@@ -607,7 +584,7 @@ define( [
      * an existing one. callback is passed 1 non-null argument
      * If the dialog is cancelled.
      */
-    showModalDialog: function ( $a ) {
+    showModalDialog: function ( $a, callback ) {
       var root = Aloha.activeEditable.obj;
       var dialog = jQuery('<div class="link-chooser">');
       var select = jQuery('<select class="link-list" size="5"></select>');
@@ -651,16 +628,18 @@ define( [
 			var onOk = function() {
 				// Validate and save the href if something is selected.
 				if(select.val()) {
-					$a.attr('href',  select.val());
+				  $a.attr('href',  select.val());
 					jQuery(this).dialog('close');
 				}
 			};
 			
 			var onCancel = function() {
+			  cancelled = true;
 				jQuery(this).dialog('close');
 			};
 			
 			var onClose = function() {
+			  callback(cancelled);
 			};
 
       dialog.dialog({
@@ -669,8 +648,8 @@ define( [
 					'OK': onOk,
 					'Cancel': onCancel
         },
+        close: onClose
       });
-      return dialog;
     },
     
 		/**
@@ -693,7 +672,7 @@ define( [
 			// do not nest a link inside a link
 			var isLink = this.findLinkMarkup( range );
 			if (isLink) {
-				this.showModalDialog(jQuery(isLink));
+				this.showModalDialog(jQuery(isLink), function(){console.log('PHIL: callback');});
 				return;
 			}
 			
@@ -717,7 +696,7 @@ define( [
 
       newLink = Aloha.activeEditable.obj.find( 'a.aloha-new-link' );
       newLink.each( function ( i ) {
-        that.addLinkEventHandlers( this );
+        that.addLinkEventHandlers( that );
         jQuery(this).removeClass( 'aloha-new-link' );
       } );
 
@@ -738,7 +717,7 @@ define( [
         that.hrefChange();
       }; // callback
 
-			this.showModalDialog(newLink);
+			this.showModalDialog(newLink, callback);
 		},
 
 		/**
@@ -839,10 +818,6 @@ define( [
 			
 			if (foundMarkup) {
 				that.toggleLinkScope(true);
-				
-				// Pop up a bubble
-				jQuery(foundMarkup).trigger('open', true);
-
 
 				// now we are ready to set the target object
 				that.hrefField.setTargetObject(foundMarkup, 'href');
