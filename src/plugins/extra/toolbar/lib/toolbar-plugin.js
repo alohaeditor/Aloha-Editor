@@ -50,11 +50,20 @@
               if (bool == null) {
                 bool = true;
               }
-              if (!bool) {
-                $buttons.addClass('disabled');
-              }
-              if (bool) {
-                return $buttons.removeClass('disabled');
+              if ($buttons.is('.btn')) {
+                if (!bool) {
+                  $buttons.attr('disabled', 'disabled');
+                }
+                if (bool) {
+                  return $buttons.attr('disabled', null);
+                }
+              } else {
+                if (!bool) {
+                  $buttons.parent().addClass('disabled');
+                }
+                if (bool) {
+                  return $buttons.parent().removeClass('disabled');
+                }
               }
             };
 

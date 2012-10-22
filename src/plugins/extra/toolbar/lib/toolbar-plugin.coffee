@@ -34,8 +34,14 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
             $buttons.addClass('active') if bool
           setState: (bool) -> @setActive bool
           enable: (bool=true) ->
-            $buttons.addClass('disabled') if !bool
-            $buttons.removeClass('disabled') if bool
+            # If it is a button, set the disabled attribute, otherwise find the
+            # parent list item and set disabled on that.
+            if $buttons.is('.btn')
+              $buttons.attr('disabled', 'disabled') if !bool
+              $buttons.attr('disabled', null) if bool
+            else
+              $buttons.parent().addClass('disabled') if !bool
+              $buttons.parent().removeClass('disabled') if bool
           disable: () -> @enable(false)
           setActiveButton: (a, b) ->
             console.log "#{slot} TODO:SETACTIVEBUTTON:", a, b
