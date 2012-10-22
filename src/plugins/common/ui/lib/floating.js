@@ -68,6 +68,20 @@ define([
 	var $WINDOW = $(window);
 
 	/**
+	 * The "position" style value.
+	 *
+	 * IE 7 does not support "fixed" position styling.  Since "fixed" position
+	 * results in smoother animation the use of "absolute" is made as a special
+	 * accomodation for IE 7.
+	 *
+	 * @type {string}
+	 * @const
+	 */
+	var POSITION_STYLE = ($.browser.msie && /^7\.\d+/.test($.browser.version))
+	                   ? 'absolute'
+	                   : 'fixed';
+
+	/**
 	 * Animates a surface element to the given position.
 	 *
 	 * @param {jQuery.<HTMLElement>} $element jQuery unit set of the DOM
@@ -80,6 +94,10 @@ define([
 	 *                            completes.
 	 */
 	function floatTo($element, position, duration, callback) {
+		if ('absolute' === POSITION_STYLE) {
+			position.top += $WINDOW.scrollTop();
+			position.left += $WINDOW.scrollLeft();
+		}
 		$element.stop().animate(position, duration, function () {
 			callback(position);
 		});
@@ -282,14 +300,14 @@ define([
 		if ($.browser.msie) {
 			var $parent = surface.$element.parent();
 			surface.$element.appendTo('body');
-			surface.$element.css('position', 'fixed');
+			surface.$element.css('position', POSITION_STYLE);
 			if ($parent.length) {
 				surface.$element.appendTo($parent);
 			} else {
 				surface.$element.detach();
 			}
 		} else {
-			surface.$element.css('position', 'fixed');
+			surface.$element.css('position', POSITION_STYLE);
 		}
 	}
 
