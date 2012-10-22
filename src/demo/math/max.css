@@ -1559,5 +1559,12 @@ padding: 0 .1em;
 .table-examples .table-example td.te-bottom{
   border-bottom-width: 0;
 }
+/* Hide aloha default toolbar */
+.aloha-table-wrapper div.aloha-wai-red {
+    background-image: none !important;
+}
 
+.aloha-toolbar {
+    display: none !important;
+}
 </style>
