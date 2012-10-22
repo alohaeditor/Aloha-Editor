@@ -850,10 +850,24 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
     } 
     /* If the user selects text then that text is converted to whatever was selected */
     else {
+      if( Aloha.activeEditable ) 
+        {
+            var range = Aloha.Selection.getRangeObject()
+                if ( !( range.startContainer && range.endContainer ) ) {
+                    return;
+                }
+
+            // get text from selection
+            var leText = range.getText();
+
+            if( $.trim(leText) === '' ) return;
+
+            GENTICS.Utils.Dom.removeRange(range);
+        }  
       generateMathContainer(openDelimiter, closeDelimiter, charChangeFunction, equation, editableObj, null);
       // Changes status of math button to be 'unselected'
       $('button[title="Math"]').removeClass("selected");
-      $(".MathBoxNew").removeAttr("id").effect("highlight", { color: "#E5EEF5" }, 1000);
+      // $(".MathBoxNew").removeAttr("id").effect("highlight", { color: "#E5EEF5" }, 1000);
     }
     // e.stopPropagation();
     //e.preventDefault();
@@ -909,7 +923,18 @@ function pasteHtmlAtCaret(html) { // From Tim Down at http://stackoverflow.com/q
         // console.log("Modified1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), mathJaxElId);
        });
+
       $(".math-editor").find(".math-source-wrap").on('DOMNodeInserted', function(e) {
+        /* Replaces the current text with a '&nbsp;' if the user removes all the text */
+        // var text = getFullStr($(".math-editor").find(".math-source")[0].childNodes);
+        var text = $(".math-editor").find(".math-source").text();
+        console.log("The retrieved text is: ");
+        console.log(text);
+        // $(".math-editor").find(".math-source").text(text);
+        if (text == '') {
+            console.log("Appending nsbsp");
+            $(".math-editor").find(".math-source").append("&nbsp\;");
+        }
         // console.log("Inserted1: Editor text is: " + getFullStr($(".math-editor").find(".math-source")[0].childNodes));
         charChangeFunction(e, $(".math-editor"), mathJaxElId);
     });

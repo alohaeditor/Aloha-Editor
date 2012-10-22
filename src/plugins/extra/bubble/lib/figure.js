@@ -10,14 +10,9 @@
     populator = function($bubble) {
       var $button, $el, separator;
       $el = this;
-      if ($el.children('.title')[0]) {
-        $button = jQuery('<a href="javascript:void">Remove Title</a>');
-        $button.on('mousedown', function() {
-          return $el.children('.title').remove();
-        });
-        $bubble.append($button);
-      } else {
-        $button = jQuery('<a href="javascript:void">Add Title</a>');
+      $bubble = jQuery('<div class="figure-popover btn-group"></div>');
+      if (!$el.children('.title:not(.empty)')[0]) {
+        $button = jQuery('<button class="btn">Add Title</button>');
         $button.on('mousedown', function() {
           var newTitle;
           newTitle = jQuery('<div class="title aloha-optional aloha-empty">Insert Title Here</div>');
@@ -25,23 +20,19 @@
         });
         $bubble.append($button);
       }
-      separator = jQuery('<span class="separator"> | </span>');
+      separator = jQuery('<span class="divider"></span>');
       $bubble.append(separator);
-      if ($el.children('figcaption')[0]) {
-        $button = jQuery('<a href="javascript:void">Remove Caption</a>');
-        $button.on('mousedown', function() {
-          return $el.children('figcaption').remove();
-        });
-        return $bubble.append($button);
-      } else {
-        $button = jQuery('<a href="javascript:void">Add Caption</a>');
+      if (!$el.children('figcaption:not(.empty)')[0]) {
+        $button = jQuery('<button class="btn">Add Caption</button>');
         $button.on('mousedown', function() {
           var newCaption;
           newCaption = jQuery('<figcaption class="aloha-optional aloha-empty">Insert Caption Here</figcaption>');
           return $el.append(newCaption);
         });
-        return $bubble.append($button);
+        $bubble.append($button);
       }
+      $bubble.append('<button class="btn"><i class="icon-certificate"></i> Advanced Options</button>');
+      return $bubble;
     };
     return {
       selector: selector,

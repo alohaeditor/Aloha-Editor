@@ -5,23 +5,90 @@
 	<title>Figures!</title>
 
 	<link rel="stylesheet" href="src/css/aloha.css" type="text/css">
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.css" type="text/css"/>
+	<link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" type="text/css"/>
+	<!-- <link rel="stylesheet" href="src/demo/math/max.css"/> -->
 
     <style type="text/css">
+/* Remove the annoying WAI button in tables */
 .aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
+
+/* Hide the annoying floating toolbar */
 .aloha-toolbar { display: none !important; }
-.toolbar-container, .menu {
-  font-family: Arial, sans-serif; /* .aloha.menu-item sets font:inherit so we need to set the font around the menu-item */
-  font-size: 13px;
+
+/* Set some styling on the toolbar */
+.toolbar {
+  background-color: whiteSmoke;
+  opacity: 0.95;
+  
+  position: fixed;
+  top: 0;
+  
+  width: 100%;
+  padding-left: 1em;
+  box-shadow: 0 2px 3px 0 #CCC;
+  z-index: 10000;
 }
 
+/* Set the width for the Heading/SubHeading dropdown */
+.toolbar .currentHeading {
+  width: 9em;
+}
 
 /* Add some padding on the top so the toolbar has room to float in */
-.document { margin: 3em; }
-    </style>
+.document { margin: 4em; }
+
+/* Needs to occur AFTER the bootstrap.css */
+/* Allows the popover to grow in size */
+.popover {
+  width: auto;
+}
+
+/* We don't use the title in popovers so hide it... */
+.popover .popover-title { display: none; }
+
+
+	
+figure {
+  counter-increment: figure;
+  /* Set inline-block so the figure popover shows up directly under instead of 1/2-way in the page */
+  display: inline-block;
+}
+figure figcaption::before { content: "Figure " counter(figure) " "; font-weight: bold; }
+
+
+.aloha-image-upload-drop-box {
+  text-align: center;
+  border: 1px dashed #ccc;
+  width: 400px;
+  padding: 100px 0;
+  cursor: pointer;
+}
+
+/* Metadata fields that occur around the image */
+.aloha-image-attrib .aloha-image-attr-alt::before {
+  content: "Please provide a description of this image for the visually impaired";
+  color: #ccc;
+  display: block;
+}
+/* Just some formatting of the input boxes */
+.aloha-image-attrib input { display: block; }
+.aloha-image-attrib .aloha-image-attr-alt {
+  width: 400px;
+  display: block;
+}
+	</style>
+
+
+	<!-- Manually link to jQuery because bootstrap relies on this for loading -->
+	<script src="src/lib/vendor/jquery-1.7.2.js"></script>
+	<script src="bootstrap/js/bootstrap.js"></script>
+
 	<script language="javascript">
 		Aloha = window.Aloha || {};
 
 		Aloha.settings = {
+			jQuery: window.jQuery,
 			logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
 			errorhandling : true,
 
@@ -80,72 +147,114 @@
 	  common/table,
 	  extra/draganddropfiles,
 	  common/image,
-	  extra/ribbon,
-	  extra/no-floating,
+	  extra/math,
 	  extra/bubble
 	"></script>
-
-	<style type="text/css">
-	  .toolbar-container {
-      width: 100%;
-      position: fixed;
-      top: 0;
-      z-index: 1;
-    }
-
-figure { counter-increment: figure; }
-figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weight: bold; }
-
-.aloha-image-upload-drop-box {
-  text-align: center;
-  border: 1px dashed #ccc;
-  width: 400px;
-  padding: 100px 0;
-  cursor: pointer;
-}
-
-/* Metadata fields that occur around the image */
-.aloha-image-attrib {
-  
-}
-.aloha-image-attrib .aloha-image-attr-alt::before {
-  content: "Please provide a description of this image for the visually impaired";
-  color: #ccc;
-  display: block;
-}
-/* Just some formatting of the input boxes */
-.aloha-image-attrib input { display: block; }
-.aloha-image-attrib .aloha-image-attr-alt {
-  width: 400px;
-  display: block;
-}
-	</style>
-
-	<style>
-	</style>
 </head>
 <body>
-  <div class="document">
+	
+<!-- ================= -->
+<!--  Toolbar Buttons  -->
+<!-- ================= -->
+<div class="toolbar">
+
+<div class="btn-toolbar">
+  <div class="btn-group headings">
+    <button class="btn currentHeading" rel="tooltip" title="Text Heading">Nothing</button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Change Heading">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <!-- "changeHeading" is important so a click can be attached and
+           data-tagname is used both to identify if the cursor is in one of these and
+	   is used to change one heading to another
+	   -->
+      <li><a href="#" class="action changeHeading" data-tagname="p">Normal Text</a></li>
+      <li><a href="#" class="action changeHeading" data-tagname="h1">Heading</a></li>
+      <li><a href="#" class="action changeHeading" data-tagname="h2">Subheading</a></li>
+      <li><a href="#" class="action changeHeading" data-tagname="h3">SubSubHeading</a></li>
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action strong" rel="tooltip" title="Bold"><i class="icon-bold"></i></button>
+    <button class="btn action emphasis" rel="tooltip" title="Italics"><i class="icon-italic"></i></button>
+    <button class="btn action underline" rel="tooltip" title="Underline"><i class="icon-text-width"></i></button>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action insertLink" rel="tooltip" title="Insert Link"><i class="icon-resize-full"></i></button>
+    <button class="btn action insertFigure" rel="tooltip" title="Insert Figure"><i class="icon-picture"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Insert Pictury Things">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" class="action insertImage">Insert Image</a></li>
+      <li><a href="#" class="action insertFigure">Insert Figure</a></li>
+      <li class="divider"></li>
+      <li><a href="#" class="action">Insert Exercise</a></li>
+      <li><a href="#" class="action">Insert Example</a></li>
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action unorderedList" rel="tooltip" title="Insert List"><i class="icon-list"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="List Formats">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" class="action orderedList">Insert Ordered List</a></li>
+      <li><a href="#" class="action unorderedList">Insert Unordered List</a></li>
+    </ul>
+    <button class="btn action outdentList" rel="tooltip" title="Indent List"><i class="icon-indent-right"></i></button>
+    <button class="btn action indentList" rel="tooltip" title="Outdent List"><i class="icon-indent-left"></i></button>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action createTable" rel="tooltip" title="Create Table"><i class="icon-th"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Table Operations">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" class="action addrowbefore">Add Row Before</a></li>
+      <li><a href="#" class="action addrowafter">Add Row After</a></li>
+    </ul>
+  </div>
+
+</div>
+
+</div><!-- / ".toolbar" -->
+
+<!-- ====================== -->
+<!--  The Editable Content  -->
+<!-- ====================== -->
+  <div class="document" id="document">
     <h1>Figures in Aloha</h1>
-		<p>This example uses the figure plugin.</p>
-		<p>You can move a figure around and <a href="http://cnx.org">link in original</a> eventually should be able to create/paste new ones in.</p>
+    <p>This example uses the figure plugin.</p>
+    <p>You can move a figure around and <a href="http://cnx.org">link in original</a> eventually should be able to create/paste new ones in.</p>
     <figure class="figure">
+	<div class="title">A Title for a Figure</div>
       <img src="src/test/AlohaEditorLogo.png"/>
       <figcaption>This is a caption on a figure</figcaption>
     </figure>
     <p>Here is some text after a figure</p>
-    <p>Below is another figure</p>
+    <p>Below is another figure (without a title)</p>
     <figure class="figure">
       <img src="src/test/AlohaEditorLogo.png"/>
       <figcaption>This is a caption on a figure</figcaption>
     </figure>
     <p>And some more text after a figure</p>
 
-	</div>
-	<script type="text/javascript">
-	Aloha.ready( function() {
-		Aloha.jQuery('.document').aloha();
-	});
-	</script>
+  </div>
+
+<!-- =============== -->
+<!--  Aloha Startup  -->
+<!-- =============== -->
+  <script type="text/javascript">
+    Aloha.ready( function() {
+      Aloha.jQuery('.document').aloha();
+      //$('*[rel=tooltip]').tooltip();
+    });
+  </script>
 </body>
 </html>

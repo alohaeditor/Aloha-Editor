@@ -8,14 +8,125 @@
 # bubble.coffee contains the code to attach all the correct listeners (like mouse events)
 #      moves the bubble to the correct spot, and triggers when the bubble should be populated
 
-# This file manages all the Aloha events and removes/adds all the bubble listeners when an editable is enabled/disabled.
-define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], (Aloha, jQuery, Plugin, Bubbler, linkConfig, figureConfig) ->
 
+# This file manages all the Aloha events and removes/adds all the bubble listeners when an editable is enabled/disabled.
+
+#############  The popover pseudo code: #############
+# Here's the flow cases to consider:
+# - User moves over a link and then moves it away (no popup)
+# - User hovers over a link causing a bubble and then moves it away (delayed close to handle next case)
+# - User hovers over a link causing a bubble and then moves it over the bubble (the bubble should not disappear)
+# - User moves over a link and then clicks inside it (bubble shows up immediately and should not disappear)
+# - User clicks on a link (or moves into it with the cursor) and then clicks/moves elsewhere (bubble should pop up immediately and close immediately)
+
+define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) ->
+
+  # Monkeypatch the bootstrap Popover so we can inject clickable buttons
+  if true  
+    Bootstrap_Popover_show = () ->
+      if @hasContent() and @enabled
+        $tip = @tip()
+        @setContent()
+        $tip.addClass "fade"  if @options.animation
+        placement = (if typeof @options.placement is "function" then @options.placement.call(this, $tip[0], @$element[0]) else @options.placement)
+        inside = /in/.test(placement)
+        # Start: Don't remove because then you lose all the events attached to the content of the tip
+        #$tip.remove()
+        # End: changes
+        $tip.css(
+          top: 0
+          left: 0
+          display: "block"
+        ).appendTo (if inside then @$element else document.body)
+        pos = @getPosition(inside)
+        actualWidth = $tip[0].offsetWidth
+        actualHeight = $tip[0].offsetHeight
+        switch (if inside then placement.split(" ")[1] else placement)
+          when "bottom"
+            tp =
+              top: pos.top + pos.height
+              left: pos.left + pos.width / 2 - actualWidth / 2
+          when "top"
+            tp =
+              top: pos.top - actualHeight
+              left: pos.left + pos.width / 2 - actualWidth / 2
+          when "left"
+            tp =
+              top: pos.top + pos.height / 2 - actualHeight / 2
+              left: pos.left - actualWidth
+          when "right"
+            tp =
+              top: pos.top + pos.height / 2 - actualHeight / 2
+              left: pos.left + pos.width
+        $tip.css(tp).addClass(placement).addClass "in"
+    
+    # Apply the monkey patch 
+    monkeyPatch = () ->
+      console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
+      proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype
+      proto.show = Bootstrap_Popover_show
+    monkeyPatch()
   
+
   helpers = []
   class Helper
-    constructor: (@selector, @populator, @filter) ->
-    start: (editable) -> new Bubbler(@populator, jQuery(editable.obj), @selector)
+    constructor: (cfg) ->
+        # @selector
+        # @populator
+        # @filter
+        # @placement
+        jQuery.extend(@, cfg)
+    start: (editable) ->
+        that = @
+        $el = jQuery(editable.obj)
+
+        MILLISECS = 2000
+        delayTimeout = ($self, eventName, ms=MILLISECS, hovered) ->
+          return setTimeout(() ->
+            if hovered?
+              $self.data('aloha-bubble-hovered', hovered)
+            $self.popover(eventName)
+          , ms)
+
+        makePopover = ($node, placement) ->
+            $node.popover
+                placement: placement or 'bottom'
+                trigger: 'manual'
+                content: () ->
+                    that.populator.bind(jQuery(@))()
+            # Custom event to open the bubble used by setTimeout below
+            $node.on 'shown', @selector, (evt) ->
+              $n = jQuery(@)
+              clearTimeout($n.data('aloha-bubble-openTimer'))
+            
+            $node.on 'hidden', @selector, () ->
+              $n = jQuery(@)
+              $n.data('aloha-bubble-hovered', false)
+        
+        makePopover($el.find(@selector), @placement)
+        that = this
+
+        # The only reason I map mouseenter is so I can catch new elements that are added to the DOM
+        $el.on 'mouseenter.bubble', @selector, () ->
+            $node = jQuery(@)
+            if not $node.data('popover')
+                makePopover($node, that.placement)
+
+            #PHIL $node.data('aloha-bubble-hovered', true)
+            $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true)) # true=hovered
+            $node.one 'mouseleave.bubble', () ->
+              clearTimeout($node.data('aloha-bubble-openTimer'))
+              if $node.data('aloha-bubble-hovered')
+                # You have 500ms to move from the tag in the DOM to the popover.
+                # If the mouse enters the popover then cancel the 'hide'
+                $tip = $node.data('popover').$tip
+                if $tip
+                  $tip.on 'mouseenter', () ->
+                    clearTimeout($node.data('aloha-bubble-closeTimer'))
+                  $tip.on 'mouseleave', () ->
+                    $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
+
+                $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
     stop: (editable) ->
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
@@ -24,13 +135,8 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], 
       $nodes.data('aloha-bubble-openTimer', 0)
       $nodes.data('aloha-bubble-closeTimer', 0)
       $nodes.data('aloha-bubble-hovered', false)
-      
-      # TODO: bubbles are attached to a canvas. clear the canvas, not all bubbles
-      jQuery('body').find('.bubble').remove()
+      $nodes.popover('destroy')
 	
-  for cfg in [linkConfig, figureConfig]
-    helpers.push(new Helper(cfg.selector, cfg.populator, cfg.filter))
-
   findMarkup = (range=Aloha.Selection.getRangeObject(), filter) ->
     if Aloha.activeEditable
       range.findMarkup filter, Aloha.activeEditable.obj
@@ -49,36 +155,42 @@ define [ 'aloha', 'jquery', 'aloha/plugin', './bubble', './link', './figure' ], 
       enteredLinkScope = foundMarkup
     enteredLinkScope
 
-  GENTICS = window.GENTICS
-  pluginNamespace = 'aloha-bubble-link'
-  oldValue = ''
-  newValue = undefined
-  return Plugin.create('bubble-link',
-    init: ->
-      that = this
-      jQuery.each helpers, (i, helper) ->
-        
-        # These are reset when the editor is deactivated
-        insideScope = false
-        enteredLinkScope = false
+  bindHelper = (cfg) ->
+    helper = new Helper(cfg)
+    # These are reset when the editor is deactivated
+    insideScope = false
+    enteredLinkScope = false
 
-        Aloha.bind 'aloha-editable-activated', (event, data) ->
-          helper.start(data.editable)  
-        Aloha.bind 'aloha-editable-deactivated', (event, data) ->
-          setTimeout(() ->
-            helper.stop(data.editable)
-          , 100)
-          insideScope = false
-          enteredLinkScope = false
-  
-        Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
-          if Aloha.activeEditable
-            enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter)
-            if insideScope isnt enteredLinkScope
-              link = rangeObject.getCommonAncestorContainer()
-              if enteredLinkScope
-                jQuery(link).trigger 'open.bubble'
-              else
-                jQuery(Aloha.activeEditable.obj).find(helper.selector).trigger 'close.bubble'
-          insideScope = enteredLinkScope
-  )
+    Aloha.bind 'aloha-editable-activated', (event, data) ->
+      helper.start(data.editable)  
+    Aloha.bind 'aloha-editable-deactivated', (event, data) ->
+      setTimeout(() ->
+        helper.stop(data.editable)
+      , 100)
+      insideScope = false
+      enteredLinkScope = false
+
+    Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
+      if Aloha.activeEditable
+        enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter)
+        if insideScope isnt enteredLinkScope
+          link = rangeObject.getCommonAncestorContainer()
+          if enteredLinkScope
+            jQuery(link).data('aloha-bubble-hovered', false)
+            jQuery(link).popover 'show'
+            jQuery(link).off('.bubble')
+            helper.focus.bind(link)() if helper.focus
+          else
+            nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
+            nodes.popover 'hide'
+            helper.blur.bind(nodes)() if helper.blur
+      insideScope = enteredLinkScope
+
+  bindHelper linkConfig
+  bindHelper figureConfig
+  bindHelper figcaptionConfig
+
+  return {
+    register: (cfg) ->
+      bindHelper(new Helper(cfg))
+  }
