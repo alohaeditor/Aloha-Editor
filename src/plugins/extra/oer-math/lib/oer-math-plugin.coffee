@@ -97,14 +97,31 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
       $el = jQuery(@)
         
       $el = $el.parents('.math-element') if not $el.is('.math-element')
-      Aloha.Selection.updateSelection evt
-      # Create a custom Range object with the entire math selected instead one of the internam MathJax nodes
-      #range = Aloha.Selection.getRangeObject()
+
+      # Make sure the math element is never editable
+      $el.contentEditable(false)
+      
+      # Select (in the browser) the entire math
+      #range = rangy.createRange()
+      #range.selectNode($el[0])
+      #sel = rangy.getSelection()
+      #sel.setSingleRange(range)
+
+      # Update what Aloha thinks is the selection
+      # Can't just use Aloha.Selection.updateSelection because the thing that was clicked isn't editable
+      # and setSelection will just silently return without triggering the selection update.
       range = new GENTICS.Utils.RangeObject()
       range.startContainer = range.endContainer = $el[0]
       range.startOffset = range.endOffset = 0
       Aloha.Selection.rangeObject = range
+      
+      #evt.target = evt.currentTarget = $el[0]
       Aloha.trigger('aloha-selection-changed', range)
+      
+      # Since the click is on the math-element or its children
+      # (the math element is just a little horizontal bar but its children stick out above and below it)
+      # Don't handle the same event for each child
+      evt.stopPropagation()
 
   Bubble.register
     selector: '.math-element'
