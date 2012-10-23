@@ -1028,7 +1028,7 @@ define([
 					  alert('TODO: A browse button would look great here');
 					});
 					
-					uploadBox.append('Click to upload an image or dop one here');
+					uploadBox.append('Click to upload an image or drop one here');
 					GENTICS.Utils.Dom.insertIntoDOM(uploadBox, range, jQuery(Aloha.activeEditable.obj));
 
 			} else {
