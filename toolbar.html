@@ -174,7 +174,16 @@ table td:first-child { min-width: 1em; }
 <!-- ================= -->
 <!--  Toolbar Buttons  -->
 <!-- ================= -->
-<div class="toolbar">
+<div class="toolbar aloha-dialog">
+  <!-- ============= -->
+  <!-- HACK add class aloha-dialog so the editor never blurs -->
+  <!-- See src/lib/aloha.js
+       if (Aloha.activeEditable && !jQuery(".aloha-dialog").is(':visible') && !Aloha.eventHandled) {
+         Aloha.activeEditable.blur();
+       ...
+  -->
+  <!-- ============== -->
+
 
 <div class="btn-toolbar">
   <div class="btn-group headings">
@@ -248,6 +257,7 @@ table td:first-child { min-width: 1em; }
 <!-- ====================== -->
   <div class="document" id="document">
     <h1>Figures in Aloha</h1>
+    <p>This page has been tested in <strong>Chromium</strong>. Results in other browsers may vary</p>
     <!-- Can't just use the class "math" for elements because MathJax inserts a span with that class -->
     <p>Here is some ASCII math <span class="math-element">`sqrt(x_1)/(2pi)`</span>.</p>
     <p>Here is some TEX math <span class="math-element">$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$</span>.</p>
