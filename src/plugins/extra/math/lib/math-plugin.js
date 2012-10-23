@@ -66,7 +66,7 @@ wrapPrefix = this.settings.wrapPrefix;
 var script0 = document.createElement("script");
 script0.type = "text/x-mathjax-config";
 $(script0).html( 'MathJax.Hub.Config({'
-        + 'jax: ["input/MathML", "input/TeX", "input/AsciiMath", "output/NativeMML"],'
+        + 'jax: ["input/MathML", "input/TeX", "input/AsciiMath", "output/HTML-CSS", "output/NativeMML"],'
         + 'extensions: ["asciimath2jax.js", "tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],'
         + 'tex2jax: { inlineMath: [["$","$"]] },'
         + 'asciimath2jax: { inlineMath: [["`", "`"]], delimiters: [["`","`"]] },'
