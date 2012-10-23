@@ -1,14 +1,3 @@
-.math-element,
-.math-element * {
-  cursor: pointer;
-  -webkit-user-modify: read-only;
-     -moz-user-modift: read-only;
-}
-
-.math-element {
-  display: inline-block;
-}
-
-.math-element:hover {
-  background-color: #eee;
+.aloha-icon-math {
+    background: url( '../img/icon.png' );
 }
