@@ -1,4 +1,11 @@
 <?php
+//
+// usage: 
+// navigate into the ./build/ directory und run the following command:
+//
+// php base64-image-encode.php > ../src/css/aloha.img-encode.css
+//
+
 //$url = '../src/';
 $url = 'http://cdn.aloha-editor.org/latest/';
 

@@ -166,7 +166,7 @@ console) {
 			// This handles attribute updates for non-repository, literal urls typed into the input field.
 			// Input values that refer to a repository item are handled via setItem().
 			// @todo deactivate setAttribute onkeyup for src attr. just in image plugin?!
-			if (!resourceItem && targetAttribute != 'src') {
+			if (!resourceItem && !(targetObject.is('img') && targetAttribute === 'src')) {
 				var regex;
 				var reference;
 				setAttribute(targetAttribute, getValue(), regex, reference);
