@@ -115,19 +115,19 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
 
             if not that.noHover
                 $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true, afterShow)) # true=hovered
-            $node.one 'mouseleave.bubble', () ->
-              clearTimeout($node.data('aloha-bubble-openTimer'))
-              if $node.data('aloha-bubble-hovered')
-                # You have 500ms to move from the tag in the DOM to the popover.
-                # If the mouse enters the popover then cancel the 'hide'
-                $tip = $node.data('popover').$tip
-                if $tip
-                  $tip.on 'mouseenter', () ->
-                    clearTimeout($node.data('aloha-bubble-closeTimer'))
-                  $tip.on 'mouseleave', () ->
-                    $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
-
-                $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
+                $node.one 'mouseleave.bubble', () ->
+                  clearTimeout($node.data('aloha-bubble-openTimer'))
+                  if $node.data('aloha-bubble-hovered')
+                    # You have 500ms to move from the tag in the DOM to the popover.
+                    # If the mouse enters the popover then cancel the 'hide'
+                    $tip = $node.data('popover').$tip
+                    if $tip
+                      $tip.on 'mouseenter', () ->
+                        clearTimeout($node.data('aloha-bubble-closeTimer'))
+                      $tip.on 'mouseleave', () ->
+                        $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide))
+    
+                    $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide))
     stop: (editable) ->
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
@@ -151,7 +151,7 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
     # Check if we need to ignore this selection changed event for
     # now and check whether the selection was placed within a
     # editable area.
-    if Aloha.Selection.isSelectionEditable() and Aloha.activeEditable?
+    if Aloha.activeEditable? #HACK things like math aren't SelectionEditable but we still want a popup: Aloha.Selection.isSelectionEditable() and Aloha.activeEditable?
       foundMarkup = findMarkup(rangeObject, filter)
       enteredLinkScope = foundMarkup
     enteredLinkScope
@@ -175,17 +175,19 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
       if Aloha.activeEditable
         enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter)
         if insideScope isnt enteredLinkScope
-          link = rangeObject.getCommonAncestorContainer()
+          insideScope = enteredLinkScope
+          $el = jQuery(rangeObject.getCommonAncestorContainer())
           if enteredLinkScope
-            jQuery(link).data('aloha-bubble-hovered', false)
-            jQuery(link).popover 'show'
-            jQuery(link).off('.bubble')
-            helper.focus.bind(link)() if helper.focus
-          else
+            $el.data('aloha-bubble-hovered', false)
+            $el.popover 'show'
+            afterShow($el)
+            $el.off('.bubble')
+            helper.focus.bind($el[0])() if helper.focus
+          if $el[0] # HACK: not sure why, but selectionChanged occurs twice on uneditable math
             nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
+            nodes = nodes.not($el)
             nodes.popover 'hide'
             helper.blur.bind(nodes)() if helper.blur
-      insideScope = enteredLinkScope
 
   bindHelper linkConfig
   bindHelper figureConfig

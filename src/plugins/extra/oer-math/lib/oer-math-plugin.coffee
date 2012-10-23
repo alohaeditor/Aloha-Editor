@@ -1,7 +1,7 @@
-define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-plugin', 'ui/ui', 'css!../../../extra/math/css/math.css' ], (Aloha, Plugin, jQuery, Bubble, UI) ->
+define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-plugin', 'ui/ui', 'css!../../../extra/oer-math/css/math.css' ], (Aloha, Plugin, jQuery, Bubble, UI) ->
 
   EDITOR_HTML = '''
-    <div class="math-editor">
+    <div class="math-editor-dialog">
         <div>
             <input type="text" class="formula"/>
         </div>
@@ -94,19 +94,15 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
     editable = data.editable
     jQuery(editable.obj).on 'click.matheditor', '.math-element, .math-element *', (evt) ->
       $el = jQuery(@)
-      ###
-      #range = new rangy.DomRange()
-      range = new GENTICS.Utils.RangeObject()
         
-      if $el.hasClass('math-element')
-        $mathEl = $el
-      else
-        $mathEl = $el.parents('.math-element')
-      range.startContainer = range.endContainer = $mathEl[0]
-      range.startOffset = range.endOffset = 0
-      ###
+      $el = $el.parents('.math-element') if not $el.is('.math-element')
       Aloha.Selection.updateSelection evt
-      range = Aloha.Selection.getRangeObject()
+      # Create a custom Range object with the entire math selected instead one of the internam MathJax nodes
+      #range = Aloha.Selection.getRangeObject()
+      range = new GENTICS.Utils.RangeObject()
+      range.startContainer = range.endContainer = $el[0]
+      range.startOffset = range.endOffset = 0
+      Aloha.Selection.rangeObject = range
       Aloha.trigger('aloha-selection-changed', range)
 
   Bubble.register

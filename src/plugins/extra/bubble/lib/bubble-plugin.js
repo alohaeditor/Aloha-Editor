@@ -110,23 +110,23 @@
           }
           if (!that.noHover) {
             $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true, afterShow));
-          }
-          return $node.one('mouseleave.bubble', function() {
-            var $tip;
-            clearTimeout($node.data('aloha-bubble-openTimer'));
-            if ($node.data('aloha-bubble-hovered')) {
-              $tip = $node.data('popover').$tip;
-              if ($tip) {
-                $tip.on('mouseenter', function() {
-                  return clearTimeout($node.data('aloha-bubble-closeTimer'));
-                });
-                $tip.on('mouseleave', function() {
-                  return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2));
-                });
+            return $node.one('mouseleave.bubble', function() {
+              var $tip;
+              clearTimeout($node.data('aloha-bubble-openTimer'));
+              if ($node.data('aloha-bubble-hovered')) {
+                $tip = $node.data('popover').$tip;
+                if ($tip) {
+                  $tip.on('mouseenter', function() {
+                    return clearTimeout($node.data('aloha-bubble-closeTimer'));
+                  });
+                  $tip.on('mouseleave', function() {
+                    return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide));
+                  });
+                }
+                return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide));
               }
-              return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2));
-            }
-          });
+            });
+          }
         });
       };
 
@@ -157,7 +157,7 @@
     selectionChangeHandler = function(rangeObject, filter) {
       var enteredLinkScope, foundMarkup;
       enteredLinkScope = false;
-      if (Aloha.Selection.isSelectionEditable() && (Aloha.activeEditable != null)) {
+      if (Aloha.activeEditable != null) {
         foundMarkup = findMarkup(rangeObject, filter);
         enteredLinkScope = foundMarkup;
       }
@@ -179,28 +179,31 @@
         return enteredLinkScope = false;
       });
       return Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
-        var link, nodes;
+        var $el, nodes;
         if (Aloha.activeEditable) {
           enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter);
           if (insideScope !== enteredLinkScope) {
-            link = rangeObject.getCommonAncestorContainer();
+            insideScope = enteredLinkScope;
+            $el = jQuery(rangeObject.getCommonAncestorContainer());
             if (enteredLinkScope) {
-              jQuery(link).data('aloha-bubble-hovered', false);
-              jQuery(link).popover('show');
-              jQuery(link).off('.bubble');
+              $el.data('aloha-bubble-hovered', false);
+              $el.popover('show');
+              afterShow($el);
+              $el.off('.bubble');
               if (helper.focus) {
-                helper.focus.bind(link)();
+                helper.focus.bind($el[0])();
               }
-            } else {
+            }
+            if ($el[0]) {
               nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
+              nodes = nodes.not($el);
               nodes.popover('hide');
               if (helper.blur) {
-                helper.blur.bind(nodes)();
+                return helper.blur.bind(nodes)();
               }
             }
           }
         }
-        return insideScope = enteredLinkScope;
       });
     };
     bindHelper(linkConfig);
