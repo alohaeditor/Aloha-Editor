@@ -1040,8 +1040,9 @@ define([
                         $form.show();
                     });
                     $input.on('change', function(evt){
-                        // TODO: Actually upload it
-                        alert('xxx');
+                        // Turn this into a drop event and let the relevant
+                        // plugin handle it
+                        Aloha.trigger('aloha-upload-file', evt.target);
                     });
 
 					GENTICS.Utils.Dom.insertIntoDOM(uploadBox, range, jQuery(Aloha.activeEditable.obj));
