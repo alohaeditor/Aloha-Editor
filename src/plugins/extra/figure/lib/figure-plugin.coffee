@@ -1,4 +1,4 @@
-define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 'css!figure/css/figure.css' ], (Aloha, Plugin, block, BlockManager, Ui, i18n, i18nCore) -> 
+define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 'aloha/ephemera', 'jquery', 'css!figure/css/figure.css' ], (Aloha, Plugin, block, BlockManager, Ui, Ephemera, $) ->
 
 
   ###
@@ -21,6 +21,10 @@ define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 
     @_attachDropzoneHighlightEvents()
 
 
+  # Register ephemerals. Some of these likely belong in the block plugin.
+  Ephemera.classes('aloha-block', 'aloha-block-FigureBlock')
+  Ephemera.attributes('data-aloha-block-type')
+
   ###
    register the plugin with unique name
   ###
@@ -31,9 +35,9 @@ define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 
         tooltip: 'Create Figure'
         click: (evt) ->
           console.log 'sdkjfh'
-          markup = jQuery("<figure><span class='media'><img src='#{Aloha.getPluginUrl('image')}/img/blank.jpg'/></span><figcaption>Enter Caption Here</figcaption></figure>")
+          markup = $("<figure><span class='media'><img src='#{Aloha.getPluginUrl('image')}/img/blank.jpg'/></span><figcaption>Enter Caption Here</figcaption></figure>")
           rangeObject = Aloha.Selection.getRangeObject()
-          GENTICS.Utils.Dom.insertIntoDOM(markup, rangeObject, jQuery(Aloha.activeEditable.obj))
+          GENTICS.Utils.Dom.insertIntoDOM(markup, rangeObject, $(Aloha.activeEditable.obj))
           markup.alohaBlock({'aloha-block-type': 'FigureBlock'})
           initializeFigures markup
 
@@ -59,7 +63,7 @@ define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 
         
         _preventSelectionChangedEventHandler: (evt) ->
           console.log 'Ignoring figure mousedown/focus/something'
-          window.setTimeout (() -> jQuery(this).trigger( 'focus' )), 1
+          window.setTimeout (() -> $(this).trigger( 'focus' )), 1
 
 
       BlockManager.registerBlockType('FigureBlock', FigureBlock)
@@ -113,7 +117,7 @@ define [ "aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 
 
         # register drop handlers to store the dropped file as a data URI
         $figures.find('img').on 'drop', (dropEvent) ->
-          img = jQuery(dropEvent.target)
+          img = $(dropEvent.target)
           dropEvent.preventDefault()
           
           readFile = (file) ->
