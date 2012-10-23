@@ -94,7 +94,7 @@
           });
           return new ItemRelay([]);
         };
-        changeHeading = function() {
+        changeHeading = function(evt) {
           var $el, $newEl, $oldEl, hTag, rangeObject;
           $el = jQuery(this);
           hTag = $el.attr('data-tagname');
@@ -105,7 +105,8 @@
           Aloha.Selection.changeMarkupOnSelection(Aloha.jQuery("<" + hTag + "></" + hTag + ">"));
           $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer());
           $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer());
-          return $newEl.addClass($oldEl.attr('class'));
+          $newEl.addClass($oldEl.attr('class'));
+          return evt.preventDefault();
         };
         headings = CONTAINER_JQUERY.find(".changeHeading");
         headings.on('click', changeHeading);

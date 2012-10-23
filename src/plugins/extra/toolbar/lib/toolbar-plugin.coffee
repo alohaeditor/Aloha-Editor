@@ -62,7 +62,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
         return new ItemRelay([])
 
       
-      changeHeading = () ->
+      changeHeading = (evt) ->
         $el = jQuery(@)
         hTag = $el.attr('data-tagname')
         rangeObject = Aloha.Selection.getRangeObject()
@@ -73,6 +73,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
         $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer())
         $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer())
         $newEl.addClass($oldEl.attr('class'))
+        evt.preventDefault()
         # $newEl.attr('id', $oldEl.attr('id))
         # Setting the id is commented because otherwise collaboration wouldn't register a change in the document
 
