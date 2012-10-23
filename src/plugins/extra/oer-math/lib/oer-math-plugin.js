@@ -74,12 +74,13 @@
         if (!$el.is('.math-element')) {
           $el = $el.parents('.math-element');
         }
-        Aloha.Selection.updateSelection(evt);
+        $el.contentEditable(false);
         range = new GENTICS.Utils.RangeObject();
         range.startContainer = range.endContainer = $el[0];
         range.startOffset = range.endOffset = 0;
         Aloha.Selection.rangeObject = range;
-        return Aloha.trigger('aloha-selection-changed', range);
+        Aloha.trigger('aloha-selection-changed', range);
+        return evt.stopPropagation();
       });
     });
     return Bubble.register({
