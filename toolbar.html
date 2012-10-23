@@ -243,27 +243,32 @@ table td:first-child { min-width: 1em; }
 <!--  The Editable Content  -->
 <!-- ====================== -->
   <div class="document" id="document">
-    <h1>Figures in Aloha</h1>
+    <h1>Linear and Time-Invariant Systems</h1>
+    <h2>Signals</h2>
     <p>This page has been tested in <strong>Chromium</strong>. Results in other browsers may vary</p>
-    <!-- Can't just use the class "math" for elements because MathJax inserts a span with that class -->
-    <p>Here is some ASCII math <span class="math-element">`sqrt(x_1)/(2pi)`</span>.</p>
-    <p>Here is some TEX math <span class="math-element">$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$</span>.</p>
-    
-    <p>This example uses the figure plugin.</p>
-    <p>You can move a figure around and <a href="http://cnx.org">link in original</a> eventually should be able to create/paste new ones in.</p>
+    <p>A signal's complexity is not related to how wiggly it is. Rather, a signal expert looks for ways of <a href="http://cnx.org/content/m9003">decomposing a given signal</a> into a <strong>sum of simpler signals</strong>, which we term the <strong>signal decomposition</strong>. Though we will never compute a signal's complexity, it essentially equals the number of terms in its decomposition. In writing a signal as a sum of component signals, we can change the component signal's gain by multiplying it by a constant and by delaying it.</p>
+
     <figure class="figure">
 	<div class="title">A Title for a Figure</div>
       <img src="src/test/AlohaEditorLogo.png"/>
       <figcaption>This is a caption on a figure</figcaption>
     </figure>
-    <p>Here is some text after a figure</p>
-    <p>Below is another figure (without a title)</p>
-    <figure class="figure">
-      <img src="src/test/AlohaEditorLogo.png"/>
-      <figcaption>This is a caption on a figure</figcaption>
-    </figure>
-    <p>And some more text after a figure</p>
 
+    <!-- Can't just use the class "math" for elements because MathJax inserts a span with that class -->
+    <p>More complicated decompositions could contain derivatives or integrals of simple signals. In short, signal decomposition amounts to thinking of the signal as the output of a linear system having simple signals as its inputs. We would build such a system, but envisioning the signal's components helps understand the signal's structure. Furthermore, you can readily compute a linear system's output to an input decomposed as a superposition of simple signals. <span class="math-element">`x+sqrt(1-x^2)`</span>.</p>
+    <p>Here is some TEX math <span class="math-element">$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$</span>.</p>
+
+    <h3>Example</h3>
+    <p>As an example of signal complexity, we can express the pulse <span class="math-element">`p_\Delta(t)`</span> as a sum of delayed unit steps.</p>
+    <p><span class="math-element">`p_\Delta(t)=u(t)-u(t-\Delta)`</span></p>
+    <p>Thus, the pulse is a more complex signal than the step. Be that as it may, the pulse is very useful to us.</p>
+    
+    <h3>Exercise</h3>
+    <p>Express a square wave having period <span class="math-element">`T`</span> and amplitude  <span class="math-element">`A`</span>  as a superposition of delayed and amplitude-scaled pulses.</p>
+    <h4>Solution</h4>
+    <p><span class="math-element">`sq(t) sum_(n=-infty)^infty (-1)^n A p_{p/2}{t-n{T/2}}`</span></p>
+
+    <p>That's it so far!</p>
   </div>
 
 <!-- =============== -->
