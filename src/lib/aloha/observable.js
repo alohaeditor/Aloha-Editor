@@ -27,8 +27,7 @@
 define([
 	'jquery'
 ], function (
-	jQuery,
-	undefined
+	jQuery
 ) {
 	"use strict";
 
