@@ -191,16 +191,17 @@
               afterShow($el);
               $el.off('.bubble');
               if (helper.focus) {
-                helper.focus.bind($el[0])();
+                helper.focus.bind($el[0])($el.data('popover').$tip);
               }
             }
             if ($el[0]) {
               nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
               nodes = nodes.not($el);
-              nodes.popover('hide');
               if (helper.blur) {
-                return helper.blur.bind(nodes)();
+                helper.blur.bind(nodes)($el.data('popover').$tip);
               }
+              nodes.popover('hide');
+              return afterHide(nodes);
             }
           }
         }

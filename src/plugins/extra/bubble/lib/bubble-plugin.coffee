@@ -182,12 +182,13 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
             $el.popover 'show'
             afterShow($el)
             $el.off('.bubble')
-            helper.focus.bind($el[0])() if helper.focus
+            helper.focus.bind($el[0])($el.data('popover').$tip) if helper.focus
           if $el[0] # HACK: not sure why, but selectionChanged occurs twice on uneditable math
             nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
             nodes = nodes.not($el)
+            helper.blur.bind(nodes)($el.data('popover').$tip) if helper.blur
             nodes.popover 'hide'
-            helper.blur.bind(nodes)() if helper.blur
+            afterHide(nodes)
 
   bindHelper linkConfig
   bindHelper figureConfig
