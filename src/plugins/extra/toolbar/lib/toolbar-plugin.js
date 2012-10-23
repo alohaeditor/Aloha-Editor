@@ -15,8 +15,12 @@
       init: function() {
         var changeHeading, headings, squirreledEditable;
         squirreledEditable = null;
-        CONTAINER_JQUERY.find('.action').addClass('disabled missing-a-click-event');
-        CONTAINER_JQUERY.find('a.action').parent().addClass('disabled missing-a-click-event');
+        CONTAINER_JQUERY.find('.action').addClass('disabled missing-a-click-event').on('click', function(evt) {
+          return evt.preventDefault();
+        });
+        CONTAINER_JQUERY.find('a.action').parent().addClass('disabled missing-a-click-event').on('click', function(evt) {
+          return evt.preventDefault();
+        });
         Ui.adopt = function(slot, type, settings) {
           var $buttons, ItemRelay;
           $buttons = CONTAINER_JQUERY.find(".action." + slot);
@@ -86,6 +90,7 @@
             return ItemRelay;
 
           })();
+          $buttons.off('click');
           $buttons.on('click', function(evt) {
             evt.preventDefault();
             Aloha.activeEditable = Aloha.activeEditable || squirreledEditable;

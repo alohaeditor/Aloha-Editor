@@ -15,8 +15,12 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
       squirreledEditable = null
 
       # Initially disable all the buttons and only enable them when events are attached to them
-      CONTAINER_JQUERY.find('.action').addClass('disabled missing-a-click-event')
-      CONTAINER_JQUERY.find('a.action').parent().addClass('disabled missing-a-click-event')
+      CONTAINER_JQUERY.find('.action').addClass(
+        'disabled missing-a-click-event').on('click',
+        (evt) -> evt.preventDefault())
+      CONTAINER_JQUERY.find('a.action').parent().addClass(
+        'disabled missing-a-click-event').on('click',
+        (evt) -> evt.preventDefault())
       
       # Hijack the toolbar buttons so we can customize where they are placed.
       Ui.adopt = (slot, type, settings) ->
@@ -50,6 +54,8 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
           foreground: (a) ->
             console.log "#{slot} TODO:FOREGROUND:", a
 
+        # Remove any stale click handlers
+        $buttons.off('click')
         $buttons.on 'click', (evt) ->
           evt.preventDefault()
           Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
