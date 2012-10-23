@@ -1024,11 +1024,26 @@ define([
 					var uploadBox = jQuery('<div></div>');
 					uploadBox.addClass('aloha-image-upload-drop-box aloha-ui-wrapper');
 					uploadBox.attr('contentEditable', false);
-					uploadBox.on('click', function() {
-					  alert('TODO: A browse button would look great here');
-					});
-					
-					uploadBox.append('Click to upload an image or drop one here');
+					uploadBox.append('<span class="aloha-cleanme">Click to upload an image or drop one here</span>');
+
+
+                    // Create upload form and add upload code for it
+                    var $form = $(
+                        '<form />', {method: 'POST',
+                            enctype: 'multipart/form-data'});
+                    var $input = $('<input />', {type: 'file', name: 'upload'});
+                    $form.hide().append($input).addClass('aloha-cleanme');
+                    uploadBox.append($form);
+                    uploadBox.on('click', function(evt){
+                        uploadBox.find('span').remove();
+                        uploadBox.off('click');
+                        $form.show();
+                    });
+                    $input.on('change', function(evt){
+                        // TODO: Actually upload it
+                        alert('xxx');
+                    });
+
 					GENTICS.Utils.Dom.insertIntoDOM(uploadBox, range, jQuery(Aloha.activeEditable.obj));
 
 			} else {
