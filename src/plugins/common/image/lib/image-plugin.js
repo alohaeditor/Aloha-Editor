@@ -1022,8 +1022,7 @@ define([
 					
 					// Create a div that allows the user to drop an image, upload, or provide a URL
 					var uploadBox = jQuery('<div></div>');
-					uploadBox.addClass('aloha-image-upload-drop-box');
-					// uploadBox.addClass('ui-wrapper'); This is a jQuery class
+					uploadBox.addClass('aloha-image-upload-drop-box aloha-ui-wrapper');
 					uploadBox.attr('contentEditable', false);
 					uploadBox.on('click', function() {
 					  alert('TODO: A browse button would look great here');
