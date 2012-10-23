@@ -173,6 +173,15 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
       enteredLinkScope = false
 
     Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
+      # Hide all popovers except for the current one maybe?
+      $el = jQuery(rangeObject.getCommonAncestorContainer())
+      nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
+      if $el[0]
+        nodes = nodes.not($el)
+        helper.blur.bind(nodes)($el.data('popover').$tip) if helper.blur and $el.data('popover')
+        nodes.popover 'hide'
+        afterHide(nodes)
+      
       if Aloha.activeEditable
         enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter)
         if insideScope isnt enteredLinkScope
@@ -180,16 +189,16 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
           $el = jQuery(rangeObject.getCommonAncestorContainer())
           if enteredLinkScope
             $el.data('aloha-bubble-hovered', false)
+            if not $el.data('popover')
+                $el.popover
+                    placement: helper.selector or 'bottom'
+                    trigger: 'manual'
+                    content: () ->
+                        helper.populator.bind($el)($el) # Can't quite decide whether the populator code should use @ or the 1st arg.
             $el.popover 'show'
             afterShow($el)
             $el.off('.bubble')
             helper.focus.bind($el[0])($el.data('popover').$tip) if helper.focus
-          if $el[0] # HACK: not sure why, but selectionChanged occurs twice on uneditable math
-            nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
-            nodes = nodes.not($el)
-            helper.blur.bind(nodes)($el.data('popover').$tip) if helper.blur
-            nodes.popover 'hide'
-            afterHide(nodes)
 
   bindHelper linkConfig
   bindHelper figureConfig
