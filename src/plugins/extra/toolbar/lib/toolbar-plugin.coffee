@@ -94,6 +94,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
         # Set the default text (changeit if we're in a heading later in the loop)
         currentHeading = CONTAINER_JQUERY.find('.currentHeading')
         currentHeading.text(headings.first().text())
+        currentHeading.on('click', (evt) -> evt.preventDefault())
         
         headings.each () ->
           heading = jQuery(@)

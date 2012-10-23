@@ -119,6 +119,9 @@
           $el = Aloha.jQuery(rangeObject.startContainer);
           currentHeading = CONTAINER_JQUERY.find('.currentHeading');
           currentHeading.text(headings.first().text());
+          currentHeading.on('click', function(evt) {
+            return evt.preventDefault();
+          });
           return headings.each(function() {
             var heading, selector;
             heading = jQuery(this);
