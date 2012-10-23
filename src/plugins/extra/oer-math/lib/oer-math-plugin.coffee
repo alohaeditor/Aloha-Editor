@@ -71,6 +71,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
       triggerMathJax($span, formulaWrapped)
       # TODO: Async save the input when MathJax correctly parses and typesets the text
       $span.data('math-formula', formula)
+      $formula.trigger('focus')
 
     $formula.data('math-old', $formula.val())
     $formula.on 'keyup', () ->
@@ -112,4 +113,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
     noHover: true
     filter: () ->
         jQuery(@).hasClass('math-element') or jQuery(@).parents('.math-element')[0]
+    focus: ($popover) ->
+      # Give focus to the text box
+      setTimeout( () ->
+        $popover.find('.formula').trigger('focus')
+      , 10)
     
