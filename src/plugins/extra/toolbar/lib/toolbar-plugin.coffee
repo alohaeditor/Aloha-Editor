@@ -1,6 +1,6 @@
 # including "ui/settings" has weird side effects, namely most of the buttons don't load
 
-define [ "aloha", "aloha/plugin", "ui/ui", '../../appmenu/appmenu', "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, appmenu, i18n, i18nCore) ->
+define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, i18n, i18nCore) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0

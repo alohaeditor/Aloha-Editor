@@ -22,7 +22,7 @@
       var $bubble, $el, deleteBtn, editable;
       $el = this;
       editable = Aloha.activeEditable;
-      $bubble = jQuery('<button class="btn btn-danger action-delete"><i class="icon-ban-circle icon-white"></i> Remove</button>');
+      $bubble = jQuery('<button class="btn btn-danger"><i class="icon-remove icon-white"></i> Remove</button>');
       deleteBtn = $bubble.on('click', function() {
         $el.text('');
         $el.removeClass('focus');
