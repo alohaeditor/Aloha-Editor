@@ -180,6 +180,16 @@
       });
       return Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
         var $el, nodes;
+        $el = jQuery(rangeObject.getCommonAncestorContainer());
+        nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
+        if ($el[0]) {
+          nodes = nodes.not($el);
+          if (helper.blur && $el.data('popover')) {
+            helper.blur.bind(nodes)($el.data('popover').$tip);
+          }
+          nodes.popover('hide');
+          afterHide(nodes);
+        }
         if (Aloha.activeEditable) {
           enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter);
           if (insideScope !== enteredLinkScope) {
@@ -187,21 +197,21 @@
             $el = jQuery(rangeObject.getCommonAncestorContainer());
             if (enteredLinkScope) {
               $el.data('aloha-bubble-hovered', false);
+              if (!$el.data('popover')) {
+                $el.popover({
+                  placement: helper.selector || 'bottom',
+                  trigger: 'manual',
+                  content: function() {
+                    return helper.populator.bind($el)($el);
+                  }
+                });
+              }
               $el.popover('show');
               afterShow($el);
               $el.off('.bubble');
               if (helper.focus) {
-                helper.focus.bind($el[0])($el.data('popover').$tip);
+                return helper.focus.bind($el[0])($el.data('popover').$tip);
               }
-            }
-            if ($el[0]) {
-              nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
-              nodes = nodes.not($el);
-              if (helper.blur) {
-                helper.blur.bind(nodes)($el.data('popover').$tip);
-              }
-              nodes.popover('hide');
-              return afterHide(nodes);
             }
           }
         }
