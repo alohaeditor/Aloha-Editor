@@ -167,7 +167,18 @@ table td:first-child { min-width: 1em; }
 		AsciiMath: { noErrors: { disabled: true } }
         });
 	</script>
-	<script src="src/plugins/extra/math/lib/MathJax.js?config=default"></script>
+	<script src="src/plugins/extra/math/lib/MathJax.js?config=default&delayStartupUntil=configured"></script>
+	<!--
+	<script>
+	  /* These are here for debugging MathJax. Uncomment them to use them */
+	  MathJax.Hub.Startup.signal.Interest(function (message) {
+	    console.log("MathJax Startup: ",message);
+	  });
+	  MathJax.Hub.signal.Interest(function (message) {
+	    console.log("MathJax Hub: ",message);
+	  });
+	</script>
+	-->
 </head>
 <body>
 	
@@ -290,6 +301,8 @@ table td:first-child { min-width: 1em; }
   <script type="text/javascript">
     Aloha.ready( function() {
       Aloha.jQuery('.document').aloha();
+      // Wait until Aloha is started before loading MathJax
+      MathJax.Hub.Configured();
       //$('*[rel=tooltip]').tooltip();
     });
   </script>
