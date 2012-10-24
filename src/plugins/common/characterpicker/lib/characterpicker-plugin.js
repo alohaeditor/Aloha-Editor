@@ -57,6 +57,10 @@ define([
 			self.$node.find('.focused').removeClass('focused');
 			jQuery(self.$node.find('td')[0]).addClass('focused');
 			self._overlayActive = true;
+
+			jQuery(window).scroll(function() {
+				self.$node.css(jQuery(insertButton).offset());
+			});
 		},
 
 		hide: function() {
