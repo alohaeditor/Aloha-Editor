@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Figures!</title>
+
+	<link rel="stylesheet" href="src/css/aloha.css" type="text/css">
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.css" type="text/css"/>
+	<link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" type="text/css"/>
+	<!-- <link rel="stylesheet" href="src/demo/math/max.css"/> -->
+
+    <style type="text/css">
+/* Remove the annoying WAI button in tables */
+.aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
+
+/* Hide the annoying floating toolbar */
+.aloha-toolbar { display: none !important; }
+
+/* Set some styling on the toolbar */
+.toolbar {
+  background-color: whiteSmoke;
+  opacity: 0.95;
+  
+  position: fixed;
+  top: 0;
+  
+  width: 100%;
+  padding-left: 1em;
+  box-shadow: 0 2px 3px 0 #CCC;
+  z-index: 10000;
+}
+
+/* Set the width for the Heading/SubHeading dropdown */
+.toolbar .currentHeading {
+  width: 9em;
+}
+
+/* Add some padding on the top so the toolbar has room to float in */
+.document { margin: 4em; }
+
+/* Needs to occur AFTER the bootstrap.css */
+/* Allows the popover to grow in size */
+.popover {
+  width: auto;
+}
+
+/* We don't use the title in popovers so hide it... */
+.popover .popover-title { display: none; }
+
+
+	
+figure {
+  counter-increment: figure;
+  /* Set inline-block so the figure popover shows up directly under instead of 1/2-way in the page */
+  display: inline-block;
+}
+figure figcaption::before { content: "Figure " counter(figure) " "; font-weight: bold; }
+
+
+.aloha-image-upload-drop-box {
+  text-align: center;
+  border: 1px dashed #ccc;
+  width: 400px;
+  padding: 100px 0;
+  cursor: pointer;
+}
+
+/* Metadata fields that occur around the image */
+.aloha-image-attrib .aloha-image-attr-alt::before {
+  content: "Please provide a description of this image for the visually impaired";
+  color: #ccc;
+  display: block;
+}
+/* Just some formatting of the input boxes */
+.aloha-image-attrib input { display: block; }
+.aloha-image-attrib .aloha-image-attr-alt {
+  width: 400px;
+  display: block;
+}
+
+
+/* Rough Table Styling */
+table td { min-width: 5em; }
+table td:first-child { min-width: 1em; }
+	</style>
+
+
+	<!-- Manually link to jQuery because bootstrap relies on this for loading -->
+	<script src="src/lib/vendor/jquery-1.7.2.js"></script>
+	<script src="bootstrap/js/bootstrap.js"></script>
+
+	<script language="javascript">
+		Aloha = window.Aloha || {};
+
+		Aloha.settings = {
+			jQuery: window.jQuery,
+			logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
+			errorhandling : true,
+
+			plugins: {
+			  // This whole thing is what's needed to:
+			  // - set a custom URL to send files to
+			  // - register a callback that updates the IMG with the new src
+			  draganddropfiles: {
+          upload: {
+            config: {
+              method: "POST",
+              url: "",
+              callback: function(resp) {
+                // If the response is a URL then change the Image source to it
+                // The URL could be absolute (/^http/) or relative (/\// or [a-z])
+                if (resp.match(/^http/) || resp.match(/^\//) || resp.match(/^[a-z]/) ) {
+                } else {
+                  alert('You dropped a file and we sent a message to the server to do something with it.\nIt responded with some gibberish so we are showing you some other file to show it worked');
+                  resp = "src/test/AlohaEditorLogo.png";
+                }
+
+                Aloha.jQuery('#' + this.id).attr('src', resp);
+                console.log('Updated Image src as a result of upload');
+              }
+            }
+          }
+			  },
+				block: {
+					defaults : {
+						'.default-block': {
+						},
+						'figure': {
+							'aloha-block-type': 'EditableImageBlock'
+						},
+					}
+				}
+			},
+			bundles: {
+				// Path for custom bundle relative from require.js path
+				user: '../demo/block'
+			}
+		};
+
+	</script>
+
+	<script src="src/lib/require.js"></script>
+	<script src="src/lib/aloha.js" data-aloha-plugins="
+	  extra/toolbar,
+	  common/ui,
+	  common/format,
+	  common/link,
+	  common/paste,
+	  common/block,
+	  user/blockdemo,
+	  common/list,
+	  common/table,
+	  extra/draganddropfiles,
+	  common/image,
+	  extra/oer-math,
+	  extra/bubble
+	"></script>
+
+	<script type="text/x-mathjax-config">MathJax.Hub.Config({
+		jax: ["input/MathML", "input/TeX", "input/AsciiMath", "output/HTML-CSS", "output/NativeMML"],
+		extensions: ["asciimath2jax.js", "tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],
+		tex2jax: { inlineMath: [["$$","$$"], ["\\(", "\\)"]] },
+		asciimath2jax: { inlineMath: [["`", "`"]], delimiters: [["`","`"]] },
+		TeX: {
+			extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"], noErrors: { disabled: true }
+		},
+		AsciiMath: { noErrors: { disabled: true } }
+        });
+	</script>
+	<script src="src/plugins/extra/math/lib/MathJax.js?config=default&delayStartupUntil=configured"></script>
+	<!--
+	<script>
+	  /* These are here for debugging MathJax. Uncomment them to use them */
+	  MathJax.Hub.Startup.signal.Interest(function (message) {
+	    console.log("MathJax Startup: ",message);
+	  });
+	  MathJax.Hub.signal.Interest(function (message) {
+	    console.log("MathJax Hub: ",message);
+	  });
+	</script>
+	-->
+</head>
+<body>
+	
+<!-- ================= -->
+<!--  Toolbar Buttons  -->
+<!-- ================= -->
+<div class="toolbar aloha-dialog">
+  <!-- ============= -->
+  <!-- HACK add class aloha-dialog so the editor never blurs -->
+  <!-- See src/lib/aloha.js
+       if (Aloha.activeEditable && !jQuery(".aloha-dialog").is(':visible') && !Aloha.eventHandled) {
+         Aloha.activeEditable.blur();
+       ...
+  -->
+  <!-- ============== -->
+
+
+<div class="btn-toolbar">
+  <div class="btn-group headings">
+    <button class="btn currentHeading" rel="tooltip" title="Text Heading">Nothing</button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Change Heading">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <!-- "changeHeading" is important so a click can be attached and
+           data-tagname is used both to identify if the cursor is in one of these and
+	   is used to change one heading to another
+	   -->
+      <li><a href="#" class="action changeHeading" data-tagname="p">Normal Text</a></li>
+      <li><a href="#" class="action changeHeading" data-tagname="h1">Heading</a></li>
+      <li><a href="#" class="action changeHeading" data-tagname="h2">Subheading</a></li>
+      <li><a href="#" class="action changeHeading" data-tagname="h3">SubSubHeading</a></li>
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action strong" rel="tooltip" title="Bold"><i class="icon-bold"></i></button>
+    <button class="btn action emphasis" rel="tooltip" title="Italics"><i class="icon-italic"></i></button>
+    <button class="btn action underline" rel="tooltip" title="Underline"><i class="icon-text-width"></i></button>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action insertLink" rel="tooltip" title="Insert Link"><i class="icon-resize-full"></i></button>
+    <button class="btn action insertFigure" rel="tooltip" title="Insert Figure"><i class="icon-picture"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Insert Pictury Things">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" class="action insertImage">Insert Image</a></li>
+      <li><a href="#" class="action insertFigure">Insert Figure</a></li>
+      <li class="divider"></li>
+      <li><a href="#" class="action">Insert Exercise</a></li>
+      <li><a href="#" class="action">Insert Example</a></li>
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action unorderedList" rel="tooltip" title="Insert List"><i class="icon-list"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="List Formats">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" class="action orderedList">Insert Ordered List</a></li>
+      <li><a href="#" class="action unorderedList">Insert Unordered List</a></li>
+    </ul>
+    <button class="btn action outdentList" rel="tooltip" title="Indent List"><i class="icon-indent-right"></i></button>
+    <button class="btn action indentList" rel="tooltip" title="Outdent List"><i class="icon-indent-left"></i></button>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn action createTable" rel="tooltip" title="Create Table"><i class="icon-th"></i></button>
+    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Table Operations">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#" class="action addrowbefore">Add Row Before</a></li>
+      <li><a href="#" class="action addrowafter">Add Row After</a></li>
+    </ul>
+  </div>
+
+</div>
+
+</div><!-- / ".toolbar" -->
+
+<!-- ====================== -->
+<!--  The Editable Content  -->
+<!-- ====================== -->
+  <div class="document" id="document">
+    <h1>Linear and Time-Invariant Systems</h1>
+    <h2>Signals</h2>
+    <p>This page has been tested in <strong>Chromium</strong>. Results in other browsers may vary</p>
+    <p>A signal's complexity is not related to how wiggly it is. Rather, a signal expert looks for ways of <a href="http://cnx.org/content/m9003">decomposing a given signal</a> into a <strong>sum of simpler signals</strong>, which we term the <strong>signal decomposition</strong>. Though we will never compute a signal's complexity, it essentially equals the number of terms in its decomposition. In writing a signal as a sum of component signals, we can change the component signal's gain by multiplying it by a constant and by delaying it.</p>
+
+    <figure class="figure">
+	<div class="title">A Title for a Figure</div>
+      <img src="src/test/AlohaEditorLogo.png"/>
+      <figcaption>This is a caption on a figure</figcaption>
+    </figure>
+
+    <!-- Can't just use the class "math" for elements because MathJax inserts a span with that class -->
+    <p>More complicated decompositions could contain derivatives or integrals of simple signals. In short, signal decomposition amounts to thinking of the signal as the output of a linear system having simple signals as its inputs. We would build such a system, but envisioning the signal's components helps understand the signal's structure. Furthermore, you can readily compute a linear system's output to an input decomposed as a superposition of simple signals. <span class="math-element">`x+sqrt(1-x^2)`</span>.</p>
+    <p>Here is some TEX math <span class="math-element">$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$</span>.</p>
+
+    <h3>Example</h3>
+    <p>As an example of signal complexity, we can express the pulse <span class="math-element">`p_\Delta(t)`</span> as a sum of delayed unit steps.</p>
+    <p><span class="math-element">`p_\Delta(t)=u(t)-u(t-\Delta)`</span></p>
+    <p>Thus, the pulse is a more complex signal than the step. Be that as it may, the pulse is very useful to us.</p>
+    
+    <h3>Exercise</h3>
+    <p>Express a square wave having period <span class="math-element">`T`</span> and amplitude  <span class="math-element">`A`</span>  as a superposition of delayed and amplitude-scaled pulses.</p>
+    <h4>Solution</h4>
+    <p><span class="math-element">`sq(t) sum_(n=-infty)^infty (-1)^n A p_{p/2}{t-n{T/2}}`</span></p>
+
+    <p>That's it so far!</p>
+  </div>
+
+<!-- =============== -->
+<!--  Aloha Startup  -->
+<!-- =============== -->
+  <script type="text/javascript">
+    Aloha.ready( function() {
+      Aloha.jQuery('.document').aloha();
+      // Wait until Aloha is started before loading MathJax
+      MathJax.Hub.Configured();
+      //$('*[rel=tooltip]').tooltip();
+    });
+  </script>
+</body>
+</html>

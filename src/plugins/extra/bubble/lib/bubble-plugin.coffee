@@ -68,6 +68,11 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
     monkeyPatch()
   
 
+  afterShow = ($n) ->
+    clearTimeout($n.data('aloha-bubble-openTimer'))
+  afterHide = ($n) ->
+    $n.data('aloha-bubble-hovered', false)
+
   helpers = []
   class Helper
     constructor: (cfg) ->
@@ -75,33 +80,30 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
         # @populator
         # @filter
         # @placement
+        # @noHover
         jQuery.extend(@, cfg)
     start: (editable) ->
         that = @
         $el = jQuery(editable.obj)
 
         MILLISECS = 2000
-        delayTimeout = ($self, eventName, ms=MILLISECS, hovered) ->
+        delayTimeout = ($self, eventName, ms=MILLISECS, hovered, after=null) ->
           return setTimeout(() ->
             if hovered?
               $self.data('aloha-bubble-hovered', hovered)
             $self.popover(eventName)
+            if after
+                after.bind($self)($self)
           , ms)
 
-        makePopover = ($node, placement) ->
-            $node.popover
-                placement: placement or 'bottom'
-                trigger: 'manual'
-                content: () ->
-                    that.populator.bind(jQuery(@))()
-            # Custom event to open the bubble used by setTimeout below
-            $node.on 'shown', @selector, (evt) ->
-              $n = jQuery(@)
-              clearTimeout($n.data('aloha-bubble-openTimer'))
-            
-            $node.on 'hidden', @selector, () ->
-              $n = jQuery(@)
-              $n.data('aloha-bubble-hovered', false)
+        makePopover = ($nodes, placement) ->
+            $nodes.each () ->
+                $node = jQuery(@)
+                $node.popover
+                    placement: placement or 'bottom'
+                    trigger: 'manual'
+                    content: () ->
+                        that.populator.bind($node)($node) # Can't quite decide whether the populator code should use @ or the 1st arg.
         
         makePopover($el.find(@selector), @placement)
         that = this
@@ -112,21 +114,21 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
             if not $node.data('popover')
                 makePopover($node, that.placement)
 
-            #PHIL $node.data('aloha-bubble-hovered', true)
-            $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true)) # true=hovered
-            $node.one 'mouseleave.bubble', () ->
-              clearTimeout($node.data('aloha-bubble-openTimer'))
-              if $node.data('aloha-bubble-hovered')
-                # You have 500ms to move from the tag in the DOM to the popover.
-                # If the mouse enters the popover then cancel the 'hide'
-                $tip = $node.data('popover').$tip
-                if $tip
-                  $tip.on 'mouseenter', () ->
-                    clearTimeout($node.data('aloha-bubble-closeTimer'))
-                  $tip.on 'mouseleave', () ->
-                    $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
-
-                $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2))
+            if not that.noHover
+                $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true, afterShow)) # true=hovered
+                $node.one 'mouseleave.bubble', () ->
+                  clearTimeout($node.data('aloha-bubble-openTimer'))
+                  if $node.data('aloha-bubble-hovered')
+                    # You have 500ms to move from the tag in the DOM to the popover.
+                    # If the mouse enters the popover then cancel the 'hide'
+                    $tip = $node.data('popover').$tip
+                    if $tip
+                      $tip.on 'mouseenter', () ->
+                        clearTimeout($node.data('aloha-bubble-closeTimer'))
+                      $tip.on 'mouseleave', () ->
+                        $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide))
+    
+                    $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide))
     stop: (editable) ->
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
@@ -150,7 +152,7 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
     # Check if we need to ignore this selection changed event for
     # now and check whether the selection was placed within a
     # editable area.
-    if Aloha.Selection.isSelectionEditable() and Aloha.activeEditable?
+    if Aloha.activeEditable? #HACK things like math aren't SelectionEditable but we still want a popup: Aloha.Selection.isSelectionEditable() and Aloha.activeEditable?
       foundMarkup = findMarkup(rangeObject, filter)
       enteredLinkScope = foundMarkup
     enteredLinkScope
@@ -171,20 +173,32 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
       enteredLinkScope = false
 
     Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
+      # Hide all popovers except for the current one maybe?
+      $el = jQuery(rangeObject.getCommonAncestorContainer())
+      nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
+      if $el[0]
+        nodes = nodes.not($el)
+        helper.blur.bind(nodes)($el.data('popover').$tip) if helper.blur and $el.data('popover')
+        nodes.popover 'hide'
+        afterHide(nodes)
+      
       if Aloha.activeEditable
         enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter)
         if insideScope isnt enteredLinkScope
-          link = rangeObject.getCommonAncestorContainer()
+          insideScope = enteredLinkScope
+          $el = jQuery(rangeObject.getCommonAncestorContainer())
           if enteredLinkScope
-            jQuery(link).data('aloha-bubble-hovered', false)
-            jQuery(link).popover 'show'
-            jQuery(link).off('.bubble')
-            helper.focus.bind(link)() if helper.focus
-          else
-            nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
-            nodes.popover 'hide'
-            helper.blur.bind(nodes)() if helper.blur
-      insideScope = enteredLinkScope
+            $el.data('aloha-bubble-hovered', false)
+            if not $el.data('popover')
+                $el.popover
+                    placement: helper.placement or 'bottom'
+                    trigger: 'manual'
+                    content: () ->
+                        helper.populator.bind($el)($el) # Can't quite decide whether the populator code should use @ or the 1st arg.
+            $el.popover 'show'
+            afterShow($el)
+            $el.off('.bubble')
+            helper.focus.bind($el[0])($el.data('popover').$tip) if helper.focus
 
   bindHelper linkConfig
   bindHelper figureConfig

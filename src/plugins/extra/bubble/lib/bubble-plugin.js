@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'jquery', './link', './figure', './title-figcaption'], function(Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) {
-    var Bootstrap_Popover_show, Helper, bindHelper, findMarkup, helpers, monkeyPatch, selectionChangeHandler;
+    var Bootstrap_Popover_show, Helper, afterHide, afterShow, bindHelper, findMarkup, helpers, monkeyPatch, selectionChangeHandler;
     if (true) {
       Bootstrap_Popover_show = function() {
         var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
@@ -58,6 +58,12 @@
       };
       monkeyPatch();
     }
+    afterShow = function($n) {
+      return clearTimeout($n.data('aloha-bubble-openTimer'));
+    };
+    afterHide = function($n) {
+      return $n.data('aloha-bubble-hovered', false);
+    };
     helpers = [];
     Helper = (function() {
 
@@ -70,34 +76,34 @@
         that = this;
         $el = jQuery(editable.obj);
         MILLISECS = 2000;
-        delayTimeout = function($self, eventName, ms, hovered) {
+        delayTimeout = function($self, eventName, ms, hovered, after) {
           if (ms == null) {
             ms = MILLISECS;
+          }
+          if (after == null) {
+            after = null;
           }
           return setTimeout(function() {
             if (hovered != null) {
               $self.data('aloha-bubble-hovered', hovered);
             }
-            return $self.popover(eventName);
+            $self.popover(eventName);
+            if (after) {
+              return after.bind($self)($self);
+            }
           }, ms);
         };
-        makePopover = function($node, placement) {
-          $node.popover({
-            placement: placement || 'bottom',
-            trigger: 'manual',
-            content: function() {
-              return that.populator.bind(jQuery(this))();
-            }
-          });
-          $node.on('shown', this.selector, function(evt) {
-            var $n;
-            $n = jQuery(this);
-            return clearTimeout($n.data('aloha-bubble-openTimer'));
-          });
-          return $node.on('hidden', this.selector, function() {
-            var $n;
-            $n = jQuery(this);
-            return $n.data('aloha-bubble-hovered', false);
+        makePopover = function($nodes, placement) {
+          return $nodes.each(function() {
+            var $node;
+            $node = jQuery(this);
+            return $node.popover({
+              placement: placement || 'bottom',
+              trigger: 'manual',
+              content: function() {
+                return that.populator.bind($node)($node);
+              }
+            });
           });
         };
         makePopover($el.find(this.selector), this.placement);
@@ -108,23 +114,25 @@
           if (!$node.data('popover')) {
             makePopover($node, that.placement);
           }
-          $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true));
-          return $node.one('mouseleave.bubble', function() {
-            var $tip;
-            clearTimeout($node.data('aloha-bubble-openTimer'));
-            if ($node.data('aloha-bubble-hovered')) {
-              $tip = $node.data('popover').$tip;
-              if ($tip) {
-                $tip.on('mouseenter', function() {
-                  return clearTimeout($node.data('aloha-bubble-closeTimer'));
-                });
-                $tip.on('mouseleave', function() {
-                  return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2));
-                });
+          if (!that.noHover) {
+            $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, true, afterShow));
+            return $node.one('mouseleave.bubble', function() {
+              var $tip;
+              clearTimeout($node.data('aloha-bubble-openTimer'));
+              if ($node.data('aloha-bubble-hovered')) {
+                $tip = $node.data('popover').$tip;
+                if ($tip) {
+                  $tip.on('mouseenter', function() {
+                    return clearTimeout($node.data('aloha-bubble-closeTimer'));
+                  });
+                  $tip.on('mouseleave', function() {
+                    return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide));
+                  });
+                }
+                return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, false, afterHide));
               }
-              return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2));
-            }
-          });
+            });
+          }
         });
       };
 
@@ -155,7 +163,7 @@
     selectionChangeHandler = function(rangeObject, filter) {
       var enteredLinkScope, foundMarkup;
       enteredLinkScope = false;
-      if (Aloha.Selection.isSelectionEditable() && (Aloha.activeEditable != null)) {
+      if (Aloha.activeEditable != null) {
         foundMarkup = findMarkup(rangeObject, filter);
         enteredLinkScope = foundMarkup;
       }
@@ -177,28 +185,42 @@
         return enteredLinkScope = false;
       });
       return Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
-        var link, nodes;
+        var $el, nodes;
+        $el = jQuery(rangeObject.getCommonAncestorContainer());
+        nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
+        if ($el[0]) {
+          nodes = nodes.not($el);
+          if (helper.blur && $el.data('popover')) {
+            helper.blur.bind(nodes)($el.data('popover').$tip);
+          }
+          nodes.popover('hide');
+          afterHide(nodes);
+        }
         if (Aloha.activeEditable) {
           enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter);
           if (insideScope !== enteredLinkScope) {
-            link = rangeObject.getCommonAncestorContainer();
+            insideScope = enteredLinkScope;
+            $el = jQuery(rangeObject.getCommonAncestorContainer());
             if (enteredLinkScope) {
-              jQuery(link).data('aloha-bubble-hovered', false);
-              jQuery(link).popover('show');
-              jQuery(link).off('.bubble');
-              if (helper.focus) {
-                helper.focus.bind(link)();
+              $el.data('aloha-bubble-hovered', false);
+              if (!$el.data('popover')) {
+                $el.popover({
+                  placement: helper.placement || 'bottom',
+                  trigger: 'manual',
+                  content: function() {
+                    return helper.populator.bind($el)($el);
+                  }
+                });
               }
-            } else {
-              nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
-              nodes.popover('hide');
-              if (helper.blur) {
-                helper.blur.bind(nodes)();
+              $el.popover('show');
+              afterShow($el);
+              $el.off('.bubble');
+              if (helper.focus) {
+                return helper.focus.bind($el[0])($el.data('popover').$tip);
               }
             }
           }
         }
-        return insideScope = enteredLinkScope;
       });
     };
     bindHelper(linkConfig);
