@@ -52,7 +52,7 @@
       };
       monkeyPatch = function() {
         var proto;
-        console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable');
+        console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable');
         proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype;
         return proto.show = Bootstrap_Popover_show;
       };
