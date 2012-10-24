@@ -5,6 +5,35 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
     CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container aloha').appendTo('body')
+
+  makeItemRelay = (slot, $buttons) ->
+    # This class adapts button functions Aloha expects to functions the toolbar
+    # uses
+    class ItemRelay
+      constructor: () ->
+      show: () -> $buttons.removeClass('hidden')
+      hide: () -> #$buttons.addClass('hidden')
+      setActive: (bool) ->
+        $buttons.removeClass('active') if not bool
+        $buttons.addClass('active') if bool
+      setState: (bool) -> @setActive bool
+      enable: (bool=true) ->
+        # If it is a button, set the disabled attribute, otherwise find the
+        # parent list item and set disabled on that.
+        if $buttons.is('.btn')
+          $buttons.attr('disabled', 'disabled') if !bool
+          $buttons.attr('disabled', null) if bool
+        else
+          $buttons.parent().addClass('disabled') if !bool
+          $buttons.parent().removeClass('disabled') if bool
+      disable: () -> @enable(false)
+      setActiveButton: (a, b) ->
+        console.log "#{slot} TODO:SETACTIVEBUTTON:", a, b
+      focus: (a) ->
+        console.log "#{slot} TODO:FOCUS:", a
+      foreground: (a) ->
+        console.log "#{slot} TODO:FOREGROUND:", a
+    return new ItemRelay()
   
   ###
    register the plugin with unique name
@@ -28,32 +57,6 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
         # Since each button was initially disabled, enable it
         #   also, sine actions in a submenu are an anchor tag, remove the "disabled" in the parent() <li>
         $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event')
-        # This class adapts button functions Aloha expects to functions the appmenu uses
-        class ItemRelay
-          constructor: (@items) ->
-          show: () -> $buttons.removeClass('hidden')
-          hide: () -> #$buttons.addClass('hidden')
-          setActive: (bool) ->
-            $buttons.removeClass('active') if not bool
-            $buttons.addClass('active') if bool
-          setState: (bool) -> @setActive bool
-          enable: (bool=true) ->
-            # If it is a button, set the disabled attribute, otherwise find the
-            # parent list item and set disabled on that.
-            if $buttons.is('.btn')
-              $buttons.attr('disabled', 'disabled') if !bool
-              $buttons.attr('disabled', null) if bool
-            else
-              $buttons.parent().addClass('disabled') if !bool
-              $buttons.parent().removeClass('disabled') if bool
-          disable: () -> @enable(false)
-          setActiveButton: (a, b) ->
-            console.log "#{slot} TODO:SETACTIVEBUTTON:", a, b
-          focus: (a) ->
-            console.log "#{slot} TODO:FOCUS:", a
-          foreground: (a) ->
-            console.log "#{slot} TODO:FOREGROUND:", a
-
         # Remove any stale click handlers
         $buttons.off('click')
         $buttons.on 'click', (evt) ->
@@ -65,7 +68,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
           @element = @
           settings.click.bind(@)(evt)
 
-        return new ItemRelay([])
+        return makeItemRelay slot, $buttons
 
       
       changeHeading = (evt) ->

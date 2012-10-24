@@ -2,11 +2,78 @@
 (function() {
 
   define(["aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!toolbar/css/toolbar.css"], function(Aloha, Plugin, Ui, i18n, i18nCore) {
-    var CONTAINER_JQUERY;
+    var CONTAINER_JQUERY, makeItemRelay;
     CONTAINER_JQUERY = jQuery('.toolbar');
     if (CONTAINER_JQUERY.length === 0) {
       CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container aloha').appendTo('body');
     }
+    makeItemRelay = function(slot, $buttons) {
+      var ItemRelay;
+      ItemRelay = (function() {
+
+        function ItemRelay() {}
+
+        ItemRelay.prototype.show = function() {
+          return $buttons.removeClass('hidden');
+        };
+
+        ItemRelay.prototype.hide = function() {};
+
+        ItemRelay.prototype.setActive = function(bool) {
+          if (!bool) {
+            $buttons.removeClass('active');
+          }
+          if (bool) {
+            return $buttons.addClass('active');
+          }
+        };
+
+        ItemRelay.prototype.setState = function(bool) {
+          return this.setActive(bool);
+        };
+
+        ItemRelay.prototype.enable = function(bool) {
+          if (bool == null) {
+            bool = true;
+          }
+          if ($buttons.is('.btn')) {
+            if (!bool) {
+              $buttons.attr('disabled', 'disabled');
+            }
+            if (bool) {
+              return $buttons.attr('disabled', null);
+            }
+          } else {
+            if (!bool) {
+              $buttons.parent().addClass('disabled');
+            }
+            if (bool) {
+              return $buttons.parent().removeClass('disabled');
+            }
+          }
+        };
+
+        ItemRelay.prototype.disable = function() {
+          return this.enable(false);
+        };
+
+        ItemRelay.prototype.setActiveButton = function(a, b) {
+          return console.log("" + slot + " TODO:SETACTIVEBUTTON:", a, b);
+        };
+
+        ItemRelay.prototype.focus = function(a) {
+          return console.log("" + slot + " TODO:FOCUS:", a);
+        };
+
+        ItemRelay.prototype.foreground = function(a) {
+          return console.log("" + slot + " TODO:FOREGROUND:", a);
+        };
+
+        return ItemRelay;
+
+      })();
+      return new ItemRelay();
+    };
     /*
        register the plugin with unique name
     */
@@ -22,74 +89,9 @@
           return evt.preventDefault();
         });
         Ui.adopt = function(slot, type, settings) {
-          var $buttons, ItemRelay;
+          var $buttons;
           $buttons = CONTAINER_JQUERY.find(".action." + slot);
           $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event');
-          ItemRelay = (function() {
-
-            function ItemRelay(items) {
-              this.items = items;
-            }
-
-            ItemRelay.prototype.show = function() {
-              return $buttons.removeClass('hidden');
-            };
-
-            ItemRelay.prototype.hide = function() {};
-
-            ItemRelay.prototype.setActive = function(bool) {
-              if (!bool) {
-                $buttons.removeClass('active');
-              }
-              if (bool) {
-                return $buttons.addClass('active');
-              }
-            };
-
-            ItemRelay.prototype.setState = function(bool) {
-              return this.setActive(bool);
-            };
-
-            ItemRelay.prototype.enable = function(bool) {
-              if (bool == null) {
-                bool = true;
-              }
-              if ($buttons.is('.btn')) {
-                if (!bool) {
-                  $buttons.attr('disabled', 'disabled');
-                }
-                if (bool) {
-                  return $buttons.attr('disabled', null);
-                }
-              } else {
-                if (!bool) {
-                  $buttons.parent().addClass('disabled');
-                }
-                if (bool) {
-                  return $buttons.parent().removeClass('disabled');
-                }
-              }
-            };
-
-            ItemRelay.prototype.disable = function() {
-              return this.enable(false);
-            };
-
-            ItemRelay.prototype.setActiveButton = function(a, b) {
-              return console.log("" + slot + " TODO:SETACTIVEBUTTON:", a, b);
-            };
-
-            ItemRelay.prototype.focus = function(a) {
-              return console.log("" + slot + " TODO:FOCUS:", a);
-            };
-
-            ItemRelay.prototype.foreground = function(a) {
-              return console.log("" + slot + " TODO:FOREGROUND:", a);
-            };
-
-            return ItemRelay;
-
-          })();
           $buttons.off('click');
           $buttons.on('click', function(evt) {
             evt.preventDefault();
@@ -97,7 +99,7 @@
             this.element = this;
             return settings.click.bind(this)(evt);
           });
-          return new ItemRelay([]);
+          return makeItemRelay(slot, $buttons);
         };
         changeHeading = function(evt) {
           var $el, $newEl, $oldEl, hTag, rangeObject;
