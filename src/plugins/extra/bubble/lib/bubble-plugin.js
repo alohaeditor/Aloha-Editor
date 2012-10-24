@@ -199,7 +199,7 @@
               $el.data('aloha-bubble-hovered', false);
               if (!$el.data('popover')) {
                 $el.popover({
-                  placement: helper.selector || 'bottom',
+                  placement: helper.placement || 'bottom',
                   trigger: 'manual',
                   content: function() {
                     return helper.populator.bind($el)($el);

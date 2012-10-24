@@ -190,7 +190,7 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
             $el.data('aloha-bubble-hovered', false)
             if not $el.data('popover')
                 $el.popover
-                    placement: helper.selector or 'bottom'
+                    placement: helper.placement or 'bottom'
                     trigger: 'manual'
                     content: () ->
                         helper.populator.bind($el)($el) # Can't quite decide whether the populator code should use @ or the 1st arg.
