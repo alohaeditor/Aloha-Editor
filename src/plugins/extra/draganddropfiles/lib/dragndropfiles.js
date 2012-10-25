@@ -141,7 +141,6 @@ function($, Plugin,DropFilesRepository) {
 		prepareFileUpload: function(file) {
 			var 
 				reader = new FileReader(),
-				fileObj,
 				that = this;
 			reader.file = file;
             reader.onloadend = function() {
@@ -150,11 +149,12 @@ function($, Plugin,DropFilesRepository) {
                     type: this.file.type,
                     fileSize: this.file.fileSize,
                     fileName: this.file.fileName,
-                    data: reader.result
+                    dataURI: reader.result,
+                    data: this.file
                 };
                 that.filesObjs.push(that.uploader.addFileUpload(currentFile));
                 that.processedFiles++;
-                Aloha.trigger('aloha-file-upload-prepared',fileObj);
+                Aloha.trigger('aloha-file-upload-prepared', currentFile);
             };
             reader.readAsDataURL(file);
 		},
@@ -290,6 +290,21 @@ function($, Plugin,DropFilesRepository) {
 
 				// sets the default handler
 				this.mydoc[this.methodName](this.onstr+"drop", function(event) {that.dropEventHandler(event)} , false);
+
+                // Also bind aloha-upload-file so we can trigger file uploads
+                // from other plugins without directly introducing a
+                // dependency. The passed target is an input of type "file".
+                Aloha.bind('aloha-upload-file', function(event, target) {
+                    var dropevt = $.Event();
+                    dropevt.type = 'drop';
+                    dropevt.target = target;
+                    dropevt.dataTransfer = {
+                        files: target.files
+                    };
+
+                    that.dropEventHandler(dropevt);
+                } , false);
+
 			// TODO: improve below to allow default comportment behaviour if drop event is not a files drop event
 			this.mydoc[this.methodName](this.onstr+"dragenter", function(event) {
 				if (event.preventDefault)

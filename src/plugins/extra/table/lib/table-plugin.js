@@ -75,9 +75,24 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
         return tr;
     }
 
+    // Re-implementing this, cause Aloha.Selection gets out of sync
+    // and causes weirdness.
+    var getSelection = (function(window, document){
+        if (window.getSelection) {
+            return window.getSelection;
+        } else if (document.getSelection) {
+            return document.getSelection;
+        }
+        return function(){ throw "getSelection not implemented"; }
+    })(window, document);
+
     function getActiveCell(){
-        var range = Aloha.Selection.getRangeObject();
-        var cell = jQuery(range.commonAncestorContainer);
+        var selection = getSelection();
+        if (selection.rangeCount == 0){
+            return null;
+        }
+        var range = selection.getRangeAt(0);
+        var cell = jQuery(range.commonAncestorContainer).closest('td,th');
         if (cell.parents('.aloha-editable table').length == 0){
             return null;
         }
@@ -86,7 +101,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
 
     function getActiveRow(){
         var cell = getActiveCell();
-        if (cell === 0){
+        if (cell === null){
             return null;
         }
         return cell.closest('tr');
@@ -112,6 +127,14 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
         });
     }
 
+    function placeCursor(cell){
+        var range = document.createRange();
+        range.setStart(cell.get(0), 0);
+        range.setEnd(cell.get(0), 0);
+        getSelection().removeAllRanges();
+        getSelection().addRange(range);
+    }
+
     return plugin.create('table', {
         defaults: {
         },
@@ -123,11 +146,58 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                 editable.obj.find('table').each(function(){
                     prepareTable(plugin, jQuery(this));
                 });
+                editable.obj.bind('keydown', 'tab shift+tab', function(e){
+                    var $cell = jQuery(
+                        getSelection().focusNode).closest('td,th');
+                    if ($cell.length > 0){
+                        var next = function(ob, filter){
+                            if (e.shiftKey){
+                                return ob.prev(filter);
+                            } else {
+                                return ob.next(filter);
+                            }
+                        }
+                        var border = 'td:last-child,th:last-child';
+                        if (e.shiftKey){
+                            border = 'td:first-child,th:first-child';
+                        }
+                        if ($cell.is(border)) {
+                            var nextrow = next($cell.closest('tr'), 'tr');
+                            if (nextrow.length > 0){
+                                var offset = e.shiftKey ? nextrow[0].cells.length-1 : 0;
+                                var nextcell = jQuery(nextrow[0].cells[offset]);
+                                placeCursor(nextcell);
+                            } else {
+                                // Last column, last row
+                                // Add more
+                                var newrow = plugin.addRowAfter();
+                                if (newrow !== null){
+                                    placeCursor($(newrow).find('td,th').first());
+                                }
+                            }
+                        } else {
+                            var nextcell = next($cell, 'td,th');
+                            placeCursor(nextcell);
+                        }
+                    }
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+                // Disable firefox's inline table editing.
+                try {
+                    document.execCommand("enableInlineTableEditing", null, false);
+                } catch(ignore){}
+                // Place the cursor at the start of the editable. If you don't
+                // do this, Firefox goes weird when placing the cursor in a
+                // table cell.
+                placeCursor(editable.obj);
             });
             PubSub.sub('aloha.selection.context-change', function(m){
                 if ($(m.range.markupEffectiveAtStart).parent('table')
                         .length > 0) {
-                    // We're inside a table, enable those functions
+                    // We're inside a table, disable
+                    // table insertion, enable others
+                    plugin._createTableButton.enable(false);
                     plugin._addrowbeforeButton.enable(true);
                     plugin._addrowafterButton.enable(true);
                     plugin._deleterowButton.enable(true);
@@ -135,7 +205,8 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                     plugin._addColumnBefore.enable(true);
                     plugin._addColumnAfter.enable(true);
                 } else {
-                    // Disable table functions
+                    // Disable table functions, enable table insertion
+                    plugin._createTableButton.enable(true);
                     plugin._addrowbeforeButton.enable(false);
                     plugin._addrowafterButton.enable(false);
                     plugin._deleterowButton.enable(false);
@@ -171,8 +242,8 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                         this.error('Selection is not in a table!');
                         return;
                     }
-                    var rowcount = row.find('*').length;
-                    var newrow = createRow(rowcount);
+                    var colcount = row.find('td,th').length;
+                    var newrow = createRow(colcount);
                     row.before(newrow);
                 }
             });
@@ -182,14 +253,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                 icon: "aloha-icon aloha-icon-addrowafter",
                 scope: this.name + '.row',
                 click: function(){
-                    var row = getActiveRow();
-                    if (row === null){
-                        this.error('Selection is not in a table!');
-                        return;
-                    }
-                    var rowcount = row.find('*').length;
-                    var newrow = createRow(rowcount);
-                    row.after(newrow);
+                    that.addRowAfter();
                 }
             });
             this._deleterowButton = Ui.adopt("deleterow", Button, {
@@ -264,32 +328,19 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
             this._addColumnBefore.enable(false);
             this._addColumnAfter.enable(false);
         },
-	    isSelectionInTable: function (){
-            var range = Aloha.Selection.getRangeObject();
-            var container = jQuery(range.commonAncestorContainer);
-            if (container.length == 0){
-                return  false;
+        addRowAfter: function(){
+            // Factored out because we re-use this when tabbing through the
+            // table.
+            var row = getActiveRow();
+            if (row !== null){
+                var colcount = row.find('td,th').length;
+                var newrow = createRow(colcount);
+                row.after(newrow);
+                return newrow;
             }
-            if (container.parents('.aloha-editable table').length){
-                return true;
-            }
-            return false;
+            return null;
         },
-	    preventNestedTables: function (){
-            if (this.isSelectionInTable()) {
-                Dialog.alert({
-                    title : 'Table',
-                    text  : 'Nested tables are not supported'
-                });
-                return true;
-            }
-            return false;
-	    },
         createTable: function(cols, rows, headerrows){
-            if (this.preventNestedTables()){
-                return;
-            }
-            
             // Check if there is an active Editable and that it contains an element (= .obj)
             if (Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined'){
                 // create a dom-table object

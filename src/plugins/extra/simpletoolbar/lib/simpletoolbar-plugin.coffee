@@ -15,6 +15,7 @@ define [
     defaultSettings: {
         'initfloat': false, # Whether to also initialise aloha default toolbar
         'menu': [
+             'saveButton', '',
              'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript',
              'subscript', '', 'unorderedList', 'orderedList', '',
              { text: 'Table', icon: 'aloha-table-insert', subMenu: [ 'createTable', '', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn'] },
@@ -23,7 +24,7 @@ define [
             label: 'Image'
             scope: 'image'
             # I'm sorry for this long line, but sometimes coffeescript is bollocks!
-            components: [ [ "imageSource", "", "imageTitle" ], [ "imageResizeWidth", "", "imageResizeHeight" ], [ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ], [ "imageBrowser" ] ]
+            components: [ [ "imageSource", "", "imageTitle", "", "imageAlt" ], [ "imageResizeWidth", "", "imageResizeHeight" ], [ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ], [ "imageBrowser" ] ]
         ]
     },
     initDialogs: (dialogMap, itemMap) ->
@@ -131,6 +132,7 @@ define [
         item.setText(settings.tooltip)
         item.setIcon(settings.icon)
         item.setAction(settings.click)
+        item.addClass settings.class if settings.class
         item.element = item.el # CreateTable and some others do onclick () -> this.element
 
         return new ItemRelay([item])

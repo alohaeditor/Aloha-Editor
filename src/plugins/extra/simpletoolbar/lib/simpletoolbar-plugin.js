@@ -15,7 +15,7 @@
       defaultSettings: {
         'initfloat': false,
         'menu': [
-          'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '', {
+          'saveButton', '', 'undo', 'redo', '', 'bold', 'italic', 'underline', 'superscript', 'subscript', '', 'unorderedList', 'orderedList', '', {
             text: 'Table',
             icon: 'aloha-table-insert',
             subMenu: ['createTable', '', 'addrowbefore', 'addrowafter', 'addcolumnbefore', 'addcolumnafter', '', 'deleterow', 'deletecolumn']
@@ -28,7 +28,7 @@
           {
             label: 'Image',
             scope: 'image',
-            components: [["imageSource", "", "imageTitle"], ["imageResizeWidth", "", "imageResizeHeight"], ["imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding"], ["imageBrowser"]]
+            components: [["imageSource", "", "imageTitle", "", "imageAlt"], ["imageResizeWidth", "", "imageResizeHeight"], ["imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding", "", "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding"], ["imageBrowser"]]
           }
         ]
       },
@@ -234,6 +234,9 @@
           item.setText(settings.tooltip);
           item.setIcon(settings.icon);
           item.setAction(settings.click);
+          if (settings["class"]) {
+            item.addClass(settings["class"]);
+          }
           item.element = item.el;
           return new ItemRelay([item]);
         };
