@@ -19,7 +19,7 @@
 # - User moves over a link and then clicks inside it (bubble shows up immediately and should not disappear)
 # - User clicks on a link (or moves into it with the cursor) and then clicks/moves elsewhere (bubble should pop up immediately and close immediately)
 
-define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) ->
+define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcaption' ], (Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) ->
 
   # Monkeypatch the bootstrap Popover so we can inject clickable buttons
   if true  
@@ -68,11 +68,6 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
     monkeyPatch()
   
 
-  afterShow = ($n) ->
-    clearTimeout($n.data('aloha-bubble-openTimer'))
-  afterHide = ($n) ->
-    $n.data('aloha-bubble-hovered', false)
-
   helpers = []
   class Helper
     constructor: (cfg) ->
@@ -85,6 +80,13 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
     start: (editable) ->
         that = @
         $el = jQuery(editable.obj)
+
+        afterShow = ($n) ->
+          clearTimeout($n.data('aloha-bubble-openTimer'))
+          that.focus.bind($n[0])($n.data('popover').$tip) if that.focus
+          
+        afterHide = ($n) ->
+          $n.data('aloha-bubble-hovered', false)
 
         MILLISECS = 2000
         delayTimeout = ($self, eventName, ms=MILLISECS, hovered, after=null) ->
@@ -159,6 +161,14 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
 
   bindHelper = (cfg) ->
     helper = new Helper(cfg)
+
+    afterShow = ($n) ->
+      clearTimeout($n.data('aloha-bubble-openTimer'))
+      helper.focus.bind($n[0])($n.data('popover').$tip) if helper.focus
+      
+    afterHide = ($n) ->
+      $n.data('aloha-bubble-hovered', false)
+
     # These are reset when the editor is deactivated
     insideScope = false
     enteredLinkScope = false
@@ -166,9 +176,7 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
     Aloha.bind 'aloha-editable-activated', (event, data) ->
       helper.start(data.editable)  
     Aloha.bind 'aloha-editable-deactivated', (event, data) ->
-      setTimeout(() ->
-        helper.stop(data.editable)
-      , 100)
+      helper.stop(data.editable)
       insideScope = false
       enteredLinkScope = false
 
@@ -198,7 +206,6 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
             $el.popover 'show'
             afterShow($el)
             $el.off('.bubble')
-            helper.focus.bind($el[0])($el.data('popover').$tip) if helper.focus
 
   bindHelper linkConfig
   bindHelper figureConfig
