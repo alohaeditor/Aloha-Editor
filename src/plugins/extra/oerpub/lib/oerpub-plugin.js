@@ -1,0 +1,4 @@
+define(['./dialogs'], function(){
+  return {
+  }
+});
