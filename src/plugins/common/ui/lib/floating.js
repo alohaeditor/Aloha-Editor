@@ -98,6 +98,7 @@ define([
 			position.top += $WINDOW.scrollTop();
 			position.left += $WINDOW.scrollLeft();
 		}
+
 		$element.stop().animate(position, duration, function () {
 			callback(position);
 		});
@@ -374,6 +375,7 @@ define([
 		getPinState: getPinState,
 		makeFloating: makeFloating,
 		floatSurface: floatSurface,
-		togglePinSurface: togglePinSurface
+		togglePinSurface: togglePinSurface,
+		POSITION_STYLE: POSITION_STYLE
 	};
 });
