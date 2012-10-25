@@ -1,5 +1,5 @@
 define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
-    "i18n!aloha/nls/i18n", "PubSub", "css!toolbar/css/toolbar.css" ], (
+    "i18n!aloha/nls/i18n", "PubSub" ], (
     Aloha, Plugin, Ui, i18n, i18nCore, PubSub) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
@@ -45,12 +45,9 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
       squirreledEditable = null
 
       # Initially disable all the buttons and only enable them when events are attached to them
-      CONTAINER_JQUERY.find('.action').addClass(
-        'disabled missing-a-click-event').on('click',
-        (evt) -> evt.preventDefault())
-      CONTAINER_JQUERY.find('a.action').parent().addClass(
-        'disabled missing-a-click-event').on('click',
-        (evt) -> evt.preventDefault())
+      CONTAINER_JQUERY.find('.action').add(CONTAINER_JQUERY.find('a.action').parent())
+      .addClass('disabled missing-a-click-event')
+      .on 'click', (evt) -> evt.preventDefault()
       
       # Hijack the toolbar buttons so we can customize where they are placed.
       Ui.adopt = (slot, type, settings) ->
