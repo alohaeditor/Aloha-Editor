@@ -62,7 +62,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
     
     # Apply the monkey patch 
     monkeyPatch = () ->
-      console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
+      console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
       proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype
       proto.show = Bootstrap_Popover_show
     monkeyPatch()

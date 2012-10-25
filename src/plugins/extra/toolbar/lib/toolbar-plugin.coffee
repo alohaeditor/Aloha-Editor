@@ -1,10 +1,39 @@
-# including "ui/settings" has weird side effects, namely most of the buttons don't load
-
-define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, i18n, i18nCore) ->
+define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
+    "i18n!aloha/nls/i18n", "PubSub", "css!toolbar/css/toolbar.css" ], (
+    Aloha, Plugin, Ui, i18n, i18nCore, PubSub) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
     CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container aloha').appendTo('body')
+
+  makeItemRelay = (slot, $buttons) ->
+    # This class adapts button functions Aloha expects to functions the toolbar
+    # uses
+    class ItemRelay
+      constructor: () ->
+      show: () -> $buttons.removeClass('hidden')
+      hide: () -> #$buttons.addClass('hidden')
+      setActive: (bool) ->
+        $buttons.removeClass('active') if not bool
+        $buttons.addClass('active') if bool
+      setState: (bool) -> @setActive bool
+      enable: (bool=true) ->
+        # If it is a button, set the disabled attribute, otherwise find the
+        # parent list item and set disabled on that.
+        if $buttons.is('.btn')
+          $buttons.attr('disabled', 'disabled') if !bool
+          $buttons.attr('disabled', null) if bool
+        else
+          $buttons.parent().addClass('disabled') if !bool
+          $buttons.parent().removeClass('disabled') if bool
+      disable: () -> @enable(false)
+      setActiveButton: (a, b) ->
+        console && console.log "#{slot} TODO:SETACTIVEBUTTON:", a, b
+      focus: (a) ->
+        console && console.log "#{slot} TODO:FOCUS:", a
+      foreground: (a) ->
+        console && console.log "#{slot} TODO:FOREGROUND:", a
+    return new ItemRelay()
   
   ###
    register the plugin with unique name
@@ -12,38 +41,39 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
   Plugin.create "toolbar",
     init: ->
 
+      toolbar = @
       squirreledEditable = null
 
       # Initially disable all the buttons and only enable them when events are attached to them
-      CONTAINER_JQUERY.find('.action').addClass('disabled missing-a-click-event')
-      CONTAINER_JQUERY.find('a.action').parent().addClass('disabled missing-a-click-event')
+      CONTAINER_JQUERY.find('.action').addClass(
+        'disabled missing-a-click-event').on('click',
+        (evt) -> evt.preventDefault())
+      CONTAINER_JQUERY.find('a.action').parent().addClass(
+        'disabled missing-a-click-event').on('click',
+        (evt) -> evt.preventDefault())
       
       # Hijack the toolbar buttons so we can customize where they are placed.
       Ui.adopt = (slot, type, settings) ->
+        # publish an adoption event, if item finds a home, return the
+        # constructed component
+        evt = $.Event('aloha.toolbar.adopt')
+        $.extend(evt,
+            params:
+                slot: slot,
+                type: type,
+                settings: settings
+            component: null)
+        PubSub.pub(evt.type, evt)
+        if evt.isDefaultPrevented()
+          evt.component.adoptParent(toolbar)
+          return evt.component
+
         $buttons = CONTAINER_JQUERY.find(".action.#{slot}")
         # Since each button was initially disabled, enable it
         #   also, sine actions in a submenu are an anchor tag, remove the "disabled" in the parent() <li>
         $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event')
-        # This class adapts button functions Aloha expects to functions the appmenu uses
-        class ItemRelay
-          constructor: (@items) ->
-          show: () -> $buttons.removeClass('hidden')
-          hide: () -> #$buttons.addClass('hidden')
-          setActive: (bool) ->
-            $buttons.removeClass('active') if not bool
-            $buttons.addClass('active') if bool
-          setState: (bool) -> @setActive bool
-          enable: (bool=true) ->
-            $buttons.addClass('disabled') if !bool
-            $buttons.removeClass('disabled') if bool
-          disable: () -> @enable(false)
-          setActiveButton: (a, b) ->
-            console.log "#{slot} TODO:SETACTIVEBUTTON:", a, b
-          focus: (a) ->
-            console.log "#{slot} TODO:FOCUS:", a
-          foreground: (a) ->
-            console.log "#{slot} TODO:FOREGROUND:", a
-
+        # Remove any stale click handlers
+        $buttons.off('click')
         $buttons.on 'click', (evt) ->
           evt.preventDefault()
           Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
@@ -53,10 +83,10 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
           @element = @
           settings.click.bind(@)(evt)
 
-        return new ItemRelay([])
+        return makeItemRelay slot, $buttons
 
       
-      changeHeading = () ->
+      changeHeading = (evt) ->
         $el = jQuery(@)
         hTag = $el.attr('data-tagname')
         rangeObject = Aloha.Selection.getRangeObject()
@@ -67,6 +97,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
         $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer())
         $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer())
         $newEl.addClass($oldEl.attr('class'))
+        evt.preventDefault()
         # $newEl.attr('id', $oldEl.attr('id))
         # Setting the id is commented because otherwise collaboration wouldn't register a change in the document
 
@@ -87,6 +118,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
         # Set the default text (changeit if we're in a heading later in the loop)
         currentHeading = CONTAINER_JQUERY.find('.currentHeading')
         currentHeading.text(headings.first().text())
+        currentHeading.on('click', (evt) -> evt.preventDefault())
         
         headings.each () ->
           heading = jQuery(@)

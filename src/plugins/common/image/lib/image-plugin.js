@@ -155,7 +155,27 @@ define([
 			 */
 			onResized: function ($image) {
 				Aloha.Log.info('Default onResized invoked', $image);
-			}
+			},
+
+			/**
+			 * Upload callback is triggered after an image was uploaded
+             * to determine the server-side URI of the uploaded image.
+             * The default expects a json-formatted message.
+			 */
+             onUploadSuccess: function(xhr) {
+                try {
+                    var msg = JSON.parse(xhr.response);
+                    return msg.url;
+                } catch(e) {}
+                return null;
+             },
+
+			/**
+			 * Upload callback is triggered after an image failed to upload.
+			 */
+             onUploadFail: function(xhr) {
+				Aloha.Log.info('Default onUploadFail invoked');
+             }
 		},
 		
 		/**
@@ -367,32 +387,42 @@ define([
 						// If the user is dropping onto an existing image change the existing img tag
 						if (data.range.startContainer === data.range.endContainer && data.range.startContainer.tagName && data.range.startContainer.tagName.toLowerCase() == 'img') {
 						  img = jQuery(data.range.startContainer);
-							img.attr('src', fileObj.file.data);
+						  img.attr('src', fileObj.file.objectURL);
 						} else {
-              img = jQuery('<img/>');
-              img.css({
-                "max-width": plugin.maxWidth,
-                "max-height": plugin.maxHeight
-              });
-              img.attr('id', fileObj.id);
-              //if (typeof fileObj.src !== 'undefined') {
-              //	img.attr('src', fileObj.src);
-              //} else {
-                img.attr('src', fileObj.file.data);
-              //}
-              
-              var start = jQuery(data.range.startContainer).parents('.aloha-image-upload-drop-box');
-              if (start.length != 0) {
+							img = jQuery('<img/>');
+							img.css({
+								"max-width": plugin.maxWidth,
+								"max-height": plugin.maxHeight
+							});
+							img.attr('id', fileObj.id);
+							img.attr('src', fileObj.file.dataURI);
+
+							var start = jQuery(data.range.startContainer).parents('.aloha-image-upload-drop-box');
+							if (start.length != 0) {
 								// Replace the box with the image tag.
 								start.replaceWith(img);
 							} else {
-	              GENTICS.Utils.Dom.insertIntoDOM(img, data.range, jQuery(Aloha.activeEditable.obj));
+								GENTICS.Utils.Dom.insertIntoDOM(img, data.range, jQuery(Aloha.activeEditable.obj));
 							}
-            }
+						}
 					}
 				}
-				
 			});
+
+            /* Event handlers for successful/failed uploads */
+			Aloha.bind('aloha-upload-success', function (event, data) {
+                // Get the server-side url from the response, set it
+                // as the src for the image.
+                var url = plugin.settings.onUploadSuccess(data.xhr);
+                if ( url !== null ) {
+                    $('#' + data.id).attr('src', url);
+                }
+            });
+
+			Aloha.bind('aloha-upload-failure', function (event, data) {
+                plugin.settings.onUploadFail(data.xhr);
+            });
+
 			/*
 			 * Add the event handler for selection change
 			 */
@@ -425,6 +455,7 @@ define([
 						if (plugin.settings.ui.meta) {
 							plugin.ui.imgSrcField.setTargetObject(foundMarkup, 'src');
 							plugin.ui.imgTitleField.setTargetObject(foundMarkup, 'title');
+							plugin.ui.imgAltField.setTargetObject(foundMarkup, 'alt');
 						}
 						plugin.ui.imgSrcField.foreground();
 						plugin.ui.imgSrcField.focus();
@@ -765,6 +796,7 @@ define([
 			if (plugin.settings.ui.meta) {
 				plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
 				plugin.ui.imgTitleField.setTargetObject(plugin.imageObj, 'title');
+				plugin.ui.imgAltField.setTargetObject(plugin.imageObj, 'alt');
 			}
 			Aloha.Selection.preventSelectionChanged();
 			try {
@@ -825,6 +857,10 @@ define([
 						if (! result.src) {
 							result.src = ''; 
 						}
+
+                        if (!result.alt) {
+                            result.alt = '';
+                        }
 						return result;
 					}
 					else {
@@ -986,14 +1022,29 @@ define([
 					
 					// Create a div that allows the user to drop an image, upload, or provide a URL
 					var uploadBox = jQuery('<div></div>');
-					uploadBox.addClass('aloha-image-upload-drop-box');
-					// uploadBox.addClass('ui-wrapper'); This is a jQuery class
+					uploadBox.addClass('aloha-image-upload-drop-box aloha-ui-wrapper');
 					uploadBox.attr('contentEditable', false);
-					uploadBox.on('click', function() {
-					  alert('TODO: A browse button would look great here');
-					});
-					
-					uploadBox.append('Click to upload an image or dop one here');
+					uploadBox.append('<span class="aloha-cleanme">Click to upload an image or drop one here</span>');
+
+
+                    // Create upload form and add upload code for it
+                    var $form = $(
+                        '<form />', {method: 'POST',
+                            enctype: 'multipart/form-data'});
+                    var $input = $('<input />', {type: 'file', name: 'upload'});
+                    $form.hide().append($input).addClass('aloha-cleanme');
+                    uploadBox.append($form);
+                    uploadBox.on('click', function(evt){
+                        uploadBox.find('span').remove();
+                        uploadBox.off('click');
+                        $form.show();
+                    });
+                    $input.on('change', function(evt){
+                        // Turn this into a drop event and let the relevant
+                        // plugin handle it
+                        Aloha.trigger('aloha-upload-file', evt.target);
+                    });
+
 					GENTICS.Utils.Dom.insertIntoDOM(uploadBox, range, jQuery(Aloha.activeEditable.obj));
 
 			} else {

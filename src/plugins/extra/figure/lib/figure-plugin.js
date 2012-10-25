@@ -2,7 +2,7 @@
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  define(["aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 'css!figure/css/figure.css'], function(Aloha, Plugin, block, BlockManager, Ui, i18n, i18nCore) {
+  define(["aloha", "aloha/plugin", 'block/block', "block/blockmanager", 'ui/ui', 'aloha/ephemera', 'jquery', 'css!figure/css/figure.css'], function(Aloha, Plugin, block, BlockManager, Ui, Ephemera, $) {
     /*
        Monkey patch a couple of things in Aloha so figures can be draggable blocks
     */
@@ -21,6 +21,8 @@
       this._hideDragHandlesIfDragDropDisabled();
       return this._attachDropzoneHighlightEvents();
     };
+    Ephemera.classes('aloha-block', 'aloha-block-FigureBlock');
+    Ephemera.attributes('data-aloha-block-type');
     /*
        register the plugin with unique name
     */
@@ -37,9 +39,9 @@
           click: function(evt) {
             var markup, rangeObject;
             console.log('sdkjfh');
-            markup = jQuery("<figure><span class='media'><img src='" + (Aloha.getPluginUrl('image')) + "/img/blank.jpg'/></span><figcaption>Enter Caption Here</figcaption></figure>");
+            markup = $("<figure><span class='media'><img src='" + (Aloha.getPluginUrl('image')) + "/img/blank.jpg'/></span><figcaption>Enter Caption Here</figcaption></figure>");
             rangeObject = Aloha.Selection.getRangeObject();
-            GENTICS.Utils.Dom.insertIntoDOM(markup, rangeObject, jQuery(Aloha.activeEditable.obj));
+            GENTICS.Utils.Dom.insertIntoDOM(markup, rangeObject, $(Aloha.activeEditable.obj));
             markup.alohaBlock({
               'aloha-block-type': 'FigureBlock'
             });
@@ -70,7 +72,7 @@
           _preventSelectionChangedEventHandler: function(evt) {
             console.log('Ignoring figure mousedown/focus/something');
             return window.setTimeout((function() {
-              return jQuery(this).trigger('focus');
+              return $(this).trigger('focus');
             }), 1);
           }
         });
@@ -135,7 +137,7 @@
           });
           return $figures.find('img').on('drop', function(dropEvent) {
             var dt, img, readFile;
-            img = jQuery(dropEvent.target);
+            img = $(dropEvent.target);
             dropEvent.preventDefault();
             readFile = function(file) {
               var majorType, minorType, reader, _ref;
