@@ -1,6 +1,6 @@
 # including "ui/settings" has weird side effects, namely most of the buttons don't load
 
-define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "aloha/console", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, i18n, i18nCore) ->
+define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, i18n, i18nCore) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
@@ -28,11 +28,11 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
           $buttons.parent().removeClass('disabled') if bool
       disable: () -> @enable(false)
       setActiveButton: (a, b) ->
-        console.log "#{slot} TODO:SETACTIVEBUTTON:", a, b
+        console && console.log "#{slot} TODO:SETACTIVEBUTTON:", a, b
       focus: (a) ->
-        console.log "#{slot} TODO:FOCUS:", a
+        console && console.log "#{slot} TODO:FOCUS:", a
       foreground: (a) ->
-        console.log "#{slot} TODO:FOREGROUND:", a
+        console && console.log "#{slot} TODO:FOREGROUND:", a
     return new ItemRelay()
   
   ###
