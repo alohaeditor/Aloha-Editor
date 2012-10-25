@@ -4,10 +4,13 @@
   require(['testutils'], function(TestUtils) {
     return Aloha.ready(function() {
       return Aloha.require(['bubble/bubble-plugin'], function(Bubble) {
-        var POPOVER_VISIBLE, POPULATED, timeout;
+        var MILLISECS, MS_LONG, MS_SHORT, POPOVER_VISIBLE, POPULATED, timeout;
         timeout = function(ms, func) {
           return setTimeout(func, ms);
         };
+        MILLISECS = 3000;
+        MS_SHORT = 100;
+        MS_LONG = MILLISECS * 2;
         POPULATED = null;
         POPOVER_VISIBLE = null;
         Bubble.register({
@@ -49,7 +52,7 @@
           this.edit.focus();
           ok(!POPULATED, 'The popover hould not have displayed yet');
           $interesting.trigger('mouseenter');
-          return timeout(3000, function() {
+          return timeout(MILLISECS, function() {
             ok(POPULATED, 'The popover should have popped up');
             return start();
           });
@@ -63,7 +66,7 @@
           TestUtils.setCursor(this.edit, $boring[0], 1);
           ok(!POPULATED, 'The popover should not have displayed yet');
           TestUtils.setCursor(this.edit, $interesting[0], 1);
-          return timeout(2000, function() {
+          return timeout(MILLISECS, function() {
             ok(POPULATED, 'The popover should have popped up');
             return start();
           });
@@ -77,13 +80,13 @@
           TestUtils.setCursor(this.edit, $boring[0], 1);
           ok(!POPULATED, 'The popover should not have displayed yet');
           $interesting.trigger('mouseenter');
-          return timeout(3000, function() {
+          return timeout(MILLISECS, function() {
             ok(POPULATED, 'The popover should have popped up');
             ok(POPOVER_VISIBLE, 'The popover should be visible');
             $interesting.trigger('mouseleave');
-            return timeout(100, function() {
+            return timeout(MS_SHORT, function() {
               POPULATED.popover.trigger('mouseenter');
-              return timeout(5000, function() {
+              return timeout(MS_LONG, function() {
                 ok(POPOVER_VISIBLE, 'Popover should still be visible');
                 return start();
               });

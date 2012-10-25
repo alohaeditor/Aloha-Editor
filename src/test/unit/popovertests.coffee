@@ -8,6 +8,12 @@ require ['testutils'], (TestUtils) ->
       # setTimeout has the millisecs argument come after the function (which is annoying)
       timeout = (ms, func) -> setTimeout(func, ms)
       
+      # The popover takes some time do do things (2000ms)
+      # This time ensures enough time has passed (This should be configured on the popover plugin)
+      MILLISECS = 3000
+      MS_SHORT = 100 # Needs to be <500ms (the time it takes to move the mouse from the element onto the popover)
+      MS_LONG = MILLISECS * 2
+      
       # Use this to see if the Popover rendered. Set it to null before the popover should show up
       POPULATED = null
       POPOVER_VISIBLE = null # Could be null, true (visible), or false (hidden)
@@ -46,7 +52,7 @@ require ['testutils'], (TestUtils) ->
         @edit.focus()
         ok not POPULATED, 'The popover hould not have displayed yet'
         $interesting.trigger 'mouseenter'
-        timeout 3000, ->
+        timeout MILLISECS, ->
           ok POPULATED, 'The popover should have popped up'
           start()
 
@@ -60,7 +66,7 @@ require ['testutils'], (TestUtils) ->
         TestUtils.setCursor @edit, $boring[0], 1
         ok not POPULATED, 'The popover should not have displayed yet'
         TestUtils.setCursor @edit, $interesting[0], 1 # Using index 1 because of webkit bug. see rangy.createModule.selProto.addRange 'Happens in WebKit with, for example, a selection placed at the start of a text node'
-        timeout 2000, ->
+        timeout MILLISECS, ->
           ok POPULATED, 'The popover should have popped up'
           start()
 
@@ -84,7 +90,7 @@ require ['testutils'], (TestUtils) ->
         # 1. Hover over the text (causing the popover to show up)
         $interesting.trigger 'mouseenter'
         # 2. Wait for the popover to show up
-        timeout 3000, ->
+        timeout MILLISECS, ->
           ok POPULATED, 'The popover should have popped up'
           ok POPOVER_VISIBLE, 'The popover should be visible'
           
@@ -92,10 +98,10 @@ require ['testutils'], (TestUtils) ->
           $interesting.trigger 'mouseleave'
           
           # 4. Move the mouse onto the popover (<500ms)
-          timeout 100, ->
+          timeout MS_SHORT, ->
             POPULATED.popover.trigger('mouseenter')
             # 5. Wait 5 seconds
-            timeout 5000, ->
+            timeout MS_LONG, ->
               # 6. Confirm the popover did not disappear
               ok(POPOVER_VISIBLE, 'Popover should still be visible')
               start()
