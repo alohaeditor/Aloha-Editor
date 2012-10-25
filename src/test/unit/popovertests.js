@@ -83,7 +83,7 @@
             $interesting.trigger('mouseleave');
             return timeout(100, function() {
               POPULATED.popover.trigger('mouseenter');
-              return timeout(3000, function() {
+              return timeout(5000, function() {
                 ok(POPOVER_VISIBLE, 'Popover should still be visible');
                 return start();
               });

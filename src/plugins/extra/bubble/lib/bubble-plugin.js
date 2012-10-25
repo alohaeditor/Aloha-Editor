@@ -76,7 +76,10 @@
           }
         };
         afterHide = function($n) {
-          return $n.data('aloha-bubble-hovered', false);
+          $n.data('aloha-bubble-hovered', false);
+          if (that.blur) {
+            return that.blur.bind($n[0])();
+          }
         };
         MILLISECS = 2000;
         delayTimeout = function($self, eventName, ms, hovered, after) {
@@ -182,7 +185,10 @@
         }
       };
       afterHide = function($n) {
-        return $n.data('aloha-bubble-hovered', false);
+        $n.data('aloha-bubble-hovered', false);
+        if (helper.blur) {
+          return helper.blur.bind($n[0])();
+        }
       };
       insideScope = false;
       enteredLinkScope = false;
@@ -200,9 +206,6 @@
         nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
         if ($el[0]) {
           nodes = nodes.not($el);
-          if (helper.blur && $el.data('popover')) {
-            helper.blur.bind(nodes)($el.data('popover').$tip);
-          }
           nodes.popover('hide');
           afterHide(nodes);
         }

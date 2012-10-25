@@ -87,6 +87,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
           
         afterHide = ($n) ->
           $n.data('aloha-bubble-hovered', false)
+          that.blur.bind($n[0])() if that.blur
 
         MILLISECS = 2000
         delayTimeout = ($self, eventName, ms=MILLISECS, hovered, after=null) ->
@@ -168,6 +169,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
       
     afterHide = ($n) ->
       $n.data('aloha-bubble-hovered', false)
+      helper.blur.bind($n[0])() if helper.blur
 
     # These are reset when the editor is deactivated
     insideScope = false
@@ -186,7 +188,6 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
       nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
       if $el[0]
         nodes = nodes.not($el)
-        helper.blur.bind(nodes)($el.data('popover').$tip) if helper.blur and $el.data('popover')
         nodes.popover 'hide'
         afterHide(nodes)
       

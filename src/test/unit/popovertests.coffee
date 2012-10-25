@@ -69,7 +69,7 @@ require ['testutils'], (TestUtils) ->
       # 2. Wait for the popover to show up
       # 3. Move the mouse off of the element
       # 4. Move the mouse onto the popover (<500ms)
-      # 5. Wait 3 seconds
+      # 5. Wait 5 seconds
       # 6. Confirm the popover did not disappear
       asyncTest 'popover mouseenter (Make sure the popover does not hide when mouse moves onto the popover)', ->
         expect 4
@@ -94,8 +94,8 @@ require ['testutils'], (TestUtils) ->
           # 4. Move the mouse onto the popover (<500ms)
           timeout 100, ->
             POPULATED.popover.trigger('mouseenter')
-            # 5. Wait 3 seconds
-            timeout 3000, ->
+            # 5. Wait 5 seconds
+            timeout 5000, ->
               # 6. Confirm the popover did not disappear
               ok(POPOVER_VISIBLE, 'Popover should still be visible')
               start()
