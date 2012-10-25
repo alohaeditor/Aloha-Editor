@@ -1,6 +1,6 @@
 # including "ui/settings" has weird side effects, namely most of the buttons don't load
 
-define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, i18n, i18nCore) ->
+define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/nls/i18n", "PubSub", "ui/scopes", "css!toolbar/css/toolbar.css" ], (Aloha, Plugin, Ui, i18n, i18nCore, PubSub, Scopes) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
@@ -41,6 +41,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
   Plugin.create "toolbar",
     init: ->
 
+      plugin = @
       squirreledEditable = null
 
       # Initially disable all the buttons and only enable them when events are attached to them
@@ -53,6 +54,14 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
       
       # Hijack the toolbar buttons so we can customize where they are placed.
       Ui.adopt = (slot, type, settings) ->
+        $placeholder = CONTAINER_JQUERY.find(".component.#{slot}")
+        if $placeholder.length
+          Type = if settings then type.extend(settings) else type
+          component = new Type()
+          component.adoptParent(plugin)
+          $placeholder.append(component.element)
+          return component
+
         $buttons = CONTAINER_JQUERY.find(".action.#{slot}")
         # Since each button was initially disabled, enable it
         #   also, sine actions in a submenu are an anchor tag, remove the "disabled" in the parent() <li>
@@ -113,6 +122,14 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n", "i18n!aloha/n
             #heading.addClass('active')
             # Update the toolbar to show the current heading level
             currentHeading.text(heading.text())
+
+      # Subscribe to scope changes (deprecated, but still in use)
+      PubSub.sub 'aloha.ui.scope.change', () ->
+        scope = Scopes.getPrimaryScope()
+        # hide other open dialogs
+        $('.scope.modal.in').modal('hide')
+        $(".scope.#{scope}").modal({backdrop: false}).off('hide').on(
+            'hide', -> Scopes.setScope('Aloha.empty'))
 
     ###
      toString method
