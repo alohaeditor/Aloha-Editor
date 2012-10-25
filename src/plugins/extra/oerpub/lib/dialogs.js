@@ -7,8 +7,8 @@ define(['aloha', 'jquery', 'PubSub', 'bubble/bubble-plugin'], function(
 
     // Subscribe to adoption event, register components
     PubSub.sub('aloha.toolbar.adopt', function(evt){
-        CONTAINER_JQUERY = jQuery('.toolbar');
-        $placeholder = CONTAINER_JQUERY.find(".component.#{evt.slot}");
+        CONTAINER_JQUERY = $('.toolbar');
+        $placeholder = CONTAINER_JQUERY.find(".component." + evt.params.slot);
         if($placeholder.length){
             Type = evt.params.settings ? evt.params.type.extend(evt.params.settings) : evt.params.type;
             evt.component = new Type();
@@ -20,7 +20,19 @@ define(['aloha', 'jquery', 'PubSub', 'bubble/bubble-plugin'], function(
     // Register bubble for images
     bubbleconfig = {
         selector: 'img',
-        populator: function(){ return $('<a href="#">Test</a>'); },
+        populator: function(){
+            var $bubble = $('<div />', {class: 'link-popover'});
+            var $button = $('<button class="btn"><i class="icon-certificate"></i> Advanced Options</button>');
+            $bubble.append($button);
+
+            editable = Aloha.activeEditable; //squirel squirel
+            $bubble.on('click', function(e){
+                Aloha.activeEditable = editable;
+                $('.scope.image').modal({backdrop: false});
+                e.preventDefault();
+            });
+            return $bubble;
+        },
         filter: function(){ return this.nodeName.toLowerCase() === 'img'; },
         placement: 'bottom',
         focus: function(){},
