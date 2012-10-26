@@ -80,7 +80,7 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
         that = @
         $el = jQuery(editable.obj)
 
-        MILLISECS = 2000
+        MILLISECS = 1200
         delayTimeout = ($self, eventName, ms=MILLISECS, hovered) ->
           return setTimeout(() ->
             if hovered?

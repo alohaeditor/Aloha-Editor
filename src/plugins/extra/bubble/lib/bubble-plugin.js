@@ -69,7 +69,7 @@
         var $el, MILLISECS, delayTimeout, makePopover, that;
         that = this;
         $el = jQuery(editable.obj);
-        MILLISECS = 2000;
+        MILLISECS = 1200;
         delayTimeout = function($self, eventName, ms, hovered) {
           if (ms == null) {
             ms = MILLISECS;
