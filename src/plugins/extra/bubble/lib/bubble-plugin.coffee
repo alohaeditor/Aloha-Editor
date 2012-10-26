@@ -68,6 +68,11 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
     monkeyPatch()
   
 
+  afterShow = ($n) ->
+    clearTimeout($n.data('aloha-bubble-openTimer'))
+  afterHide = ($n) ->
+    $n.data('aloha-bubble-hovered', false)
+
   helpers = []
   class Helper
     constructor: (cfg) ->
@@ -82,27 +87,23 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
         $el = jQuery(editable.obj)
 
         MILLISECS = 1200
-        delayTimeout = ($self, eventName, ms=MILLISECS, hovered) ->
+        delayTimeout = ($self, eventName, ms=MILLISECS, hovered, after=null) ->
           return setTimeout(() ->
             if hovered?
               $self.data('aloha-bubble-hovered', hovered)
             $self.popover(eventName)
+            if after
+                after.bind($self)($self)
           , ms)
 
-        makePopover = ($node, placement) ->
-            $node.popover
-                placement: placement or 'bottom'
-                trigger: 'manual'
-                content: () ->
-                    that.populator.bind(jQuery(@))()
-            # Custom event to open the bubble used by setTimeout below
-            $node.on 'shown', @selector, (evt) ->
-              $n = jQuery(@)
-              clearTimeout($n.data('aloha-bubble-openTimer'))
-            
-            $node.on 'hidden', @selector, () ->
-              $n = jQuery(@)
-              $n.data('aloha-bubble-hovered', false)
+        makePopover = ($nodes, placement) ->
+            $nodes.each () ->
+                $node = jQuery(@)
+                $node.popover
+                    placement: placement or 'bottom'
+                    trigger: 'manual'
+                    content: () ->
+                        that.populator.bind($node)($node) # Can't quite decide whether the populator code should use @ or the 1st arg.
         
         makePopover($el.find(@selector), @placement)
         that = this

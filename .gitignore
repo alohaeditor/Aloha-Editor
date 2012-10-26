@@ -8,3 +8,4 @@ doc/guides/staging
 *.swp
 .externalToolBuilders
 node_modules
+src/plugins/extra/math/lib/math-plugin-orig.js
