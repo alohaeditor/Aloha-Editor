@@ -154,6 +154,25 @@
           });
         });
       },
+      childVisible: function(childComponent, visible) {
+        var evt;
+        evt = $.Event('aloha.toolbar.childvisible');
+        evt.component = childComponent;
+        evt.visible = visible;
+        return PubSub.pub(evt.type, evt);
+      },
+      childFocus: function(childComponent) {
+        var evt;
+        evt = $.Event('aloha.toolbar.childfocus');
+        evt.component = childComponent;
+        return PubSub.pub(evt.type, evt);
+      },
+      childForeground: function(childComponent) {
+        var evt;
+        evt = $.Event('aloha.toolbar.childforeground');
+        evt.component = childComponent;
+        return PubSub.pub(evt.type, evt);
+      },
       /*
            toString method
       */

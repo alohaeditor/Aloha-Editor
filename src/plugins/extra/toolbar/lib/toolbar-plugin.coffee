@@ -129,6 +129,27 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
             # Update the toolbar to show the current heading level
             currentHeading.text(heading.text())
 
+
+    # Components of which we are the parent (not buttons) will call
+    # these when they are activated. Change it into an event so it can
+    # be implemented elsewhere.
+    childVisible: (childComponent, visible) ->
+        # publish an event
+        evt = $.Event('aloha.toolbar.childvisible')
+        evt.component = childComponent
+        evt.visible = visible
+        PubSub.pub(evt.type, evt)
+    childFocus: (childComponent) ->
+        # publish an event
+        evt = $.Event('aloha.toolbar.childfocus')
+        evt.component = childComponent
+        PubSub.pub(evt.type, evt)
+    childForeground: (childComponent) ->
+        # publish an event
+        evt = $.Event('aloha.toolbar.childforeground')
+        evt.component = childComponent
+        PubSub.pub(evt.type, evt)
+
     ###
      toString method
     ###
