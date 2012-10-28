@@ -38,6 +38,14 @@ There are 3 variables that are stored on each element;
     |   | (select via keyboard (left/right/up/down))
     |   |
     |   \----> (S) [opened, _, selected]
+    |           |   |
+    |           |   | (click elsewhere (not $el/$tip)
+    |           |   |
+    |           |   \----> [closed, _, _]
+    |           |
+    |           | ($el/$tip.mouseenter)
+    |           |
+    |           \----> Nothing happens (unlike the other mouseenter case)
     |
     | ($el.mouseenter)
     |
