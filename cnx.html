@@ -292,6 +292,32 @@ table td:first-child { min-width: 1em; }
     <h4>Solution</h4>
     <p><span class="math-element">`sq(t) sum_(n=-infty)^infty (-1)^n A p_{p/2}{t-n{T/2}}`</span></p>
 
+    <h2>Math Examples</h2>
+    <p>These are examples of math in the text.</p>
+    <p>This example is a span with backticks in it (ASCIIMath) <span class="math-element">`sq(t) sum_(n=-infty)^infty (-1)^n A p_{p/2}{t-n{T/2}}`</span> <strong>Note: This is not MathML</strong>.</p>
+    <p>This example is a span with Dollar signs in it (LaTeX) <span class="math-element">$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}$$</span> <strong>Note: This is not MathML</strong>.</p>
+    <p>This example is Content Math converted to Presentation Math
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>x</mi><mn>2</mn></msup>
+<annotation-xml encoding="MathML-Content">
+  <apply>
+    <power/>
+    <ci>x</ci>
+    <cn>2</cn>
+  </apply>
+</annotation-xml>
+</semantics>
+</math>
+. (Simple Content MathML)</p>
+
+    <p>This example is Presentation Math with some LaTeX Source
+<span class="math-element">
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mi>x</mi><mn>2</mn></mfrac>
+<annotation encoding="TeX">\frac{x} 2</annotation>
+</semantics>
+</math>
+</span>
+. (Simple Content MathML)</p>
+    
     <p>That's it so far!</p>
   </div>
 
@@ -302,6 +328,9 @@ table td:first-child { min-width: 1em; }
     Aloha.ready( function() {
       Aloha.jQuery('.document').aloha();
       // Wait until Aloha is started before loading MathJax
+      // Also, wrap all math in a span/div. MathJax replaces the MathJax element
+      // losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
+      jQuery('math').wrap('<span class="math-element"></span>')
       MathJax.Hub.Configured();
       //$('*[rel=tooltip]').tooltip();
     });
