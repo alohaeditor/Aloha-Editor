@@ -3,7 +3,7 @@
 
   define(['aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-plugin', 'ui/ui', 'css!../../../extra/oer-math/css/math.css'], function(Aloha, Plugin, jQuery, Bubble, UI) {
     var EDITOR_HTML, LANGUAGES, buildEditor, triggerMathJax;
-    EDITOR_HTML = '<div class="math-editor-dialog">\n    <div>\n        <input type="text" class="formula"/>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="checkbox inline">\n      <input type="checkbox" class="show-cheatsheet"/>\n      Show Cheat Sheet\n    </label>\n    <span class="separator"> | </span>\n    <a class="btn btn-link see-help">See Help</a>\n</div>';
+    EDITOR_HTML = '<div class="math-editor-dialog">\n    <div>\n        <textarea type="text" class="formula" rows="1"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <label class="checkbox inline">\n      <input type="checkbox" class="show-cheatsheet"/>\n      Show Cheat Sheet\n    </label>\n    <span class="separator"> | </span>\n    <a class="btn btn-link see-help">See Help</a>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
         open: '`',
@@ -12,6 +12,9 @@
       'math/tex': {
         open: '\\(',
         close: '\\)'
+      },
+      'math/mml': {
+        raw: true
       }
     };
     triggerMathJax = function($el) {
@@ -40,9 +43,13 @@
         var formulaWrapped;
         formula = jQuery(this).val();
         mimeType = $editor.find('input[name=mime-type]:checked').val();
-        formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close;
-        $span.text(formulaWrapped);
-        triggerMathJax($span, formulaWrapped);
+        if (LANGUAGES[mimeType].raw) {
+          $span[0].innerHTML = formula;
+        } else {
+          formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close;
+          $span.text(formulaWrapped);
+        }
+        triggerMathJax($span);
         $span.data('math-formula', formula);
         return $formula.trigger('focus');
       };
@@ -86,6 +93,7 @@
     return Bubble.register({
       selector: '.math-element',
       populator: buildEditor,
+      placement: 'top',
       noHover: true,
       filter: function() {
         return jQuery(this).hasClass('math-element') || jQuery(this).parents('.math-element')[0];

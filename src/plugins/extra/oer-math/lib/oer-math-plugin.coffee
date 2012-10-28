@@ -3,7 +3,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
   EDITOR_HTML = '''
     <div class="math-editor-dialog">
         <div>
-            <input type="text" class="formula"/>
+            <textarea type="text" class="formula" rows="1"></textarea>
         </div>
         <span>This is:</span>
         <label class="radio inline">
@@ -11,6 +11,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
         </label>
         <label class="radio inline">
             <input type="radio" name="mime-type" value="math/tex"> LaTeX
+        </label>
+        <label class="radio inline">
+            <input type="radio" name="mime-type" value="math/mml"> MathML
         </label>
         <label class="checkbox inline">
           <input type="checkbox" class="show-cheatsheet"/>
@@ -24,6 +27,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
   LANGUAGES =
     'math/asciimath': {open: '`', close: '`'}
     'math/tex': {open: '\\(', close: '\\)'}
+    'math/mml': {raw: true}
 
   # Register the button with an action
   #UI.adopt 'openMathEditor', null,
@@ -66,9 +70,12 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
       # Try and parse it as ASCIIMath
       formula = jQuery(@).val() # $span.data('math-formula')
       mimeType = $editor.find('input[name=mime-type]:checked').val()
-      formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close
-      $span.text(formulaWrapped)
-      triggerMathJax($span, formulaWrapped)
+      if LANGUAGES[mimeType].raw
+        $span[0].innerHTML = formula
+      else
+        formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close
+        $span.text(formulaWrapped)
+      triggerMathJax($span)
       # TODO: Async save the input when MathJax correctly parses and typesets the text
       $span.data('math-formula', formula)
       $formula.trigger('focus')
@@ -126,7 +133,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
   Bubble.register
     selector: '.math-element'
     populator: buildEditor
-    # placement: 'right'
+    placement: 'top'
     noHover: true
     filter: () ->
         jQuery(@).hasClass('math-element') or jQuery(@).parents('.math-element')[0]
