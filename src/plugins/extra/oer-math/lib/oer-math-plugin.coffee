@@ -130,13 +130,15 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
       # Don't handle the same event for each child
       evt.stopPropagation()
 
+  SELECTOR = '.math-element' # ,.MathJax[role="textbox"][aria-readonly="true"],.MathJax_Display[role="textbox"][aria-readonly="true"]'
   Bubble.register
-    selector: '.math-element'
+    selector: SELECTOR
     populator: buildEditor
     placement: 'top'
     noHover: true
     filter: () ->
-        jQuery(@).hasClass('math-element') or jQuery(@).parents('.math-element')[0]
+        $el = jQuery(@)
+        $el.is(SELECTOR) or $el.parents(SELECTOR)[0]
     focus: ($popover) ->
       # Give focus to the text box
       setTimeout( () ->

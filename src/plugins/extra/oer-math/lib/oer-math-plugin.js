@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-plugin', 'ui/ui', 'css!../../../extra/oer-math/css/math.css'], function(Aloha, Plugin, jQuery, Bubble, UI) {
-    var EDITOR_HTML, LANGUAGES, buildEditor, triggerMathJax;
+    var EDITOR_HTML, LANGUAGES, SELECTOR, buildEditor, triggerMathJax;
     EDITOR_HTML = '<div class="math-editor-dialog">\n    <div>\n        <textarea type="text" class="formula" rows="1"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <label class="checkbox inline">\n      <input type="checkbox" class="show-cheatsheet"/>\n      Show Cheat Sheet\n    </label>\n    <span class="separator"> | </span>\n    <a class="btn btn-link see-help">See Help</a>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
@@ -90,13 +90,16 @@
         return evt.stopPropagation();
       });
     });
+    SELECTOR = '.math-element';
     return Bubble.register({
-      selector: '.math-element',
+      selector: SELECTOR,
       populator: buildEditor,
       placement: 'top',
       noHover: true,
       filter: function() {
-        return jQuery(this).hasClass('math-element') || jQuery(this).parents('.math-element')[0];
+        var $el;
+        $el = jQuery(this);
+        return $el.is(SELECTOR) || $el.parents(SELECTOR)[0];
       },
       focus: function($popover) {
         return setTimeout(function() {
