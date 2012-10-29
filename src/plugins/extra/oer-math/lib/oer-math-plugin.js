@@ -96,11 +96,6 @@
       populator: buildEditor,
       placement: 'top',
       noHover: true,
-      filter: function() {
-        var $el;
-        $el = jQuery(this);
-        return $el.is(SELECTOR) || $el.parents(SELECTOR)[0];
-      },
       focus: function($popover) {
         return setTimeout(function() {
           return $popover.find('.formula').trigger('focus');

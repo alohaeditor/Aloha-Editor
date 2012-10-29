@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'jquery', 'aloha/console'], function(Aloha, jQuery, console) {
-    var filter, populator, selector, showModalDialog;
+    var populator, selector, showModalDialog;
     showModalDialog = function($a) {
       var appendOption, dialog, figuresAndTables, href, linkContents, linkExternal, linkInternal, linkSave, orgElements, root;
       root = Aloha.activeEditable.obj;
@@ -79,9 +79,6 @@
       return dialog;
     };
     selector = 'a';
-    filter = function() {
-      return this.nodeName.toLowerCase() === 'a';
-    };
     populator = function() {
       var $bubble, $el, a, change, editable, href;
       $el = this;
@@ -103,8 +100,7 @@
     };
     return {
       selector: selector,
-      populator: populator,
-      filter: filter
+      populator: populator
     };
   });
 

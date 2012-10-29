@@ -2,11 +2,8 @@
 (function() {
 
   define(['aloha', 'jquery', 'aloha/console'], function(Aloha, jQuery, console) {
-    var filter, populator, selector;
+    var populator, selector;
     selector = 'figure';
-    filter = function() {
-      return this.nodeName.toLowerCase() === 'figure' || jQuery(this).parents('figure')[0];
-    };
     populator = function($bubble) {
       var $button, $el, separator;
       $el = this;
@@ -36,8 +33,7 @@
     };
     return {
       selector: selector,
-      populator: populator,
-      filter: filter
+      populator: populator
     };
   });
 

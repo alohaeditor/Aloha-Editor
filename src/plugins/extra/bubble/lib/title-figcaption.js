@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'jquery', 'aloha/console', 'css!./title-figcaption.css'], function(Aloha, jQuery, console) {
-    var buildTitle, filter, populator, selector;
+    var buildTitle, populator, selector;
     buildTitle = function($el, content) {
       if (content == null) {
         content = null;
@@ -15,9 +15,6 @@
       }
     };
     selector = '.title,figcaption';
-    filter = function() {
-      return jQuery(this).hasClass('title') || this.nodeName.toLowerCase() === 'figcaption';
-    };
     populator = function() {
       var $bubble, $el, deleteBtn, editable;
       $el = this;
@@ -33,7 +30,6 @@
     return {
       selector: selector,
       populator: populator,
-      filter: filter,
       placement: 'right',
       focus: function() {
         var $el;

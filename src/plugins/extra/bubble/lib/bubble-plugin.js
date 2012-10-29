@@ -246,21 +246,27 @@ There are 3 variables that are stored on each element;
       return Helper;
 
     })();
-    findMarkup = function(range, filter) {
+    findMarkup = function(range, selector) {
+      var filter;
       if (range == null) {
         range = Aloha.Selection.getRangeObject();
       }
       if (Aloha.activeEditable) {
+        filter = function() {
+          var $el;
+          $el = jQuery(this);
+          return $el.is(selector) || $el.parents(selector)[0];
+        };
         return range.findMarkup(filter, Aloha.activeEditable.obj);
       } else {
         return null;
       }
     };
-    selectionChangeHandler = function(rangeObject, filter) {
+    selectionChangeHandler = function(rangeObject, selector) {
       var enteredLinkScope, foundMarkup;
       enteredLinkScope = false;
       if (Aloha.activeEditable != null) {
-        foundMarkup = findMarkup(rangeObject, filter);
+        foundMarkup = findMarkup(rangeObject, selector);
         enteredLinkScope = foundMarkup;
       }
       return enteredLinkScope;
@@ -287,17 +293,20 @@ There are 3 variables that are stored on each element;
       return Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
         var $el, nodes;
         $el = jQuery(rangeObject.getCommonAncestorContainer());
-        nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
-        if ($el[0]) {
-          nodes = nodes.not($el);
-          nodes.popover('hide');
-          afterHide(nodes);
+        if (!$el.is(helper.selector)) {
+          $el = $el.parents(helper.selector);
         }
+        nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
+        nodes = nodes.not($el);
+        nodes.popover('hide');
+        afterHide(nodes);
         if (Aloha.activeEditable) {
-          enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter);
+          enteredLinkScope = selectionChangeHandler(rangeObject, helper.selector);
           if (insideScope !== enteredLinkScope) {
             insideScope = enteredLinkScope;
-            $el = jQuery(rangeObject.getCommonAncestorContainer());
+            if (!$el.is(helper.selector)) {
+              $el = $el.parents(helper.selector);
+            }
             if (enteredLinkScope) {
               $el.data('aloha-bubble-selected', true);
               if (!$el.data('popover')) {
@@ -310,8 +319,10 @@ There are 3 variables that are stored on each element;
                 });
               }
               $el.popover('show');
+              $el.data('aloha-bubble-selected', true);
               afterShow($el);
-              return $el.off('.bubble');
+              $el.off('.bubble');
+              return event.stopPropagation();
             }
           }
         }

@@ -136,9 +136,6 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
     populator: buildEditor
     placement: 'top'
     noHover: true
-    filter: () ->
-        $el = jQuery(@)
-        $el.is(SELECTOR) or $el.parents(SELECTOR)[0]
     focus: ($popover) ->
       # Give focus to the text box
       setTimeout( () ->
