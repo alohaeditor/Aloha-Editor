@@ -128,8 +128,6 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
     populator: buildEditor
     # placement: 'right'
     noHover: true
-    filter: () ->
-        jQuery(@).hasClass('math-element') or jQuery(@).parents('.math-element')[0]
     focus: ($popover) ->
       # Give focus to the text box
       setTimeout( () ->

@@ -5,8 +5,6 @@
 define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
   
   selector = 'figure'
-  filter = ->
-    @nodeName.toLowerCase() is 'figure' or jQuery(@).parents('figure')[0]
 
   # TODO: Convert the mousedown to a click. To do that the aloha-deactivated event need to not hide the bubbles yet and instead fire a 'hide' event
   populator = ($bubble) ->
@@ -39,5 +37,4 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
   return {
     selector: selector
     populator: populator
-    filter: filter
   }

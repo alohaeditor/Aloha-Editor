@@ -117,8 +117,6 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
       dialog
 
   selector = 'a'
-  filter = ->
-    @nodeName.toLowerCase() is 'a'
 
   populator = () ->
       $el = @
@@ -144,5 +142,4 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
   return {
     selector: selector
     populator: populator
-    filter: filter
   }

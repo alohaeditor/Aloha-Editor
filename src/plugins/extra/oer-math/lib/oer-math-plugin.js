@@ -87,9 +87,6 @@
       selector: '.math-element',
       populator: buildEditor,
       noHover: true,
-      filter: function() {
-        return jQuery(this).hasClass('math-element') || jQuery(this).parents('.math-element')[0];
-      },
       focus: function($popover) {
         return setTimeout(function() {
           return $popover.find('.formula').trigger('focus');

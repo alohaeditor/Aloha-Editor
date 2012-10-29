@@ -3,7 +3,6 @@
 # - selector: css selector for determining which elements to attach bubble events to
 # - populator: Javscript function that gets (a) the element and (b) the div that represents the bubble.
 #               This function will populate the bubble with buttons like "Add Title", "Change", etc
-# - filter: Javascript function that determines whether the @ element is an anchor (used when cursor moves around the doc)
 
 # bubble.coffee contains the code to attach all the correct listeners (like mouse events)
 #      moves the bubble to the correct spot, and triggers when the bubble should be populated
@@ -154,7 +153,6 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
     constructor: (cfg) ->
         # @selector
         # @populator
-        # @filter
         # @placement
         # @noHover
         jQuery.extend(@, cfg)
@@ -230,21 +228,24 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
       $nodes.removeData('aloha-bubble-selected', false)
       $nodes.popover('destroy')
 	
-  findMarkup = (range=Aloha.Selection.getRangeObject(), filter) ->
+  findMarkup = (range=Aloha.Selection.getRangeObject(), selector) ->
     if Aloha.activeEditable
+      filter = () ->
+        $el = jQuery(@)
+        $el.is(selector) or $el.parents(selector)[0]
       range.findMarkup filter, Aloha.activeEditable.obj
     else
       null
 
   # Validate and save the href if something is selected.
-  selectionChangeHandler = (rangeObject, filter) ->
+  selectionChangeHandler = (rangeObject, selector) ->
     enteredLinkScope = false
     
     # Check if we need to ignore this selection changed event for
     # now and check whether the selection was placed within a
     # editable area.
     if Aloha.activeEditable? #HACK things like math aren't SelectionEditable but we still want a popup: Aloha.Selection.isSelectionEditable() and Aloha.activeEditable?
-      foundMarkup = findMarkup(rangeObject, filter)
+      foundMarkup = findMarkup(rangeObject, selector)
       enteredLinkScope = foundMarkup
     enteredLinkScope
 
@@ -273,18 +274,20 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
     Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
       # Hide all popovers except for the current one maybe?
       $el = jQuery(rangeObject.getCommonAncestorContainer())
+      $el = $el.parents(helper.selector) if not $el.is(helper.selector)
+
+      # Hide other tooltips of the same type
       nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector)
-      if $el[0]
-        nodes = nodes.not($el)
-        helper.blur.bind(nodes)($el.data('popover').$tip) if helper.blur and $el.data('popover')
-        nodes.popover 'hide'
-        afterHide(nodes)
+      nodes = nodes.not($el)
+      nodes.popover 'hide'
+      afterHide(nodes)
       
       if Aloha.activeEditable
-        enteredLinkScope = selectionChangeHandler(rangeObject, helper.filter)
+        enteredLinkScope = selectionChangeHandler(rangeObject, helper.selector)
         if insideScope isnt enteredLinkScope
           insideScope = enteredLinkScope
-          $el = jQuery(rangeObject.getCommonAncestorContainer())
+          if not $el.is(helper.selector)
+            $el = $el.parents(helper.selector)
           if enteredLinkScope
             $el.data('aloha-bubble-selected', true)
             if not $el.data('popover')
@@ -294,9 +297,10 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
                     content: () ->
                         helper.populator.bind($el)($el) # Can't quite decide whether the populator code should use @ or the 1st arg.
             $el.popover 'show'
+            $el.data('aloha-bubble-selected', true)
             afterShow($el)
             $el.off('.bubble')
-            helper.focus.bind($el[0])($el.data('popover').$tip) if helper.focus
+            event.stopPropagation()
 
   bindHelper linkConfig
   bindHelper figureConfig
