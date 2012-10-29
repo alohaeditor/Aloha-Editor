@@ -92,7 +92,7 @@ define( [
 		 * all links that match the cssclassregex will get set the css class
 		 * e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
 		 */
-		cssclassregex: '',
+		cssclassregex: null,
 		
 		/**
 		  * this target is set when either cssclassregex matches or not set
@@ -723,12 +723,14 @@ define( [
 				);
 			}
 			
-			this.hrefField.setAttribute(
-				'class',
-				this.cssclass,
-				this.cssclassregex,
-				this.hrefField.getValue()
-			);
+			if (null != this.cssclassregex) {
+				this.hrefField.setAttribute(
+					'class',
+					this.cssclass,
+					this.cssclassregex,
+					this.hrefField.getValue()
+				);
+			}
 			
 			Aloha.trigger( 'aloha-link-href-change', {
 				 obj: that.hrefField.getTargetObject(),
