@@ -345,11 +345,21 @@ define([
 		subscribeEvents: function () {
 			var	plugin = this;
 			var config = this.settings;
-			
+			var isEnabled = {};
+
+			// @todo: document config.globalselector!
 			jQuery('img').filter(config.globalselector).unbind();
 			jQuery('img').filter(config.globalselector).click(function (event) {
 				plugin.clickImage(event);
 			});
+
+			var buttonVisibilityHelper = function() {
+				if (isEnabled[Aloha.activeEditable.getId()]) {
+					plugin.ui._insertImageButton.show();
+				} else {
+					plugin.ui._insertImageButton.hide();
+				}
+			};
 
 			Aloha.bind('aloha-drop-files-in-editable', function (event, data) {
 				var img, len = data.filesObjs.length, fileObj, config;
@@ -392,14 +402,8 @@ define([
 
 				if (Aloha.activeEditable !== null) {
 					foundMarkup = plugin.findImgMarkup(rangeObject);
-					config = plugin.getEditableConfig(Aloha.activeEditable.obj);
 
-					if (typeof config !== 'undefined') {
-						plugin.ui._insertImageButton.show();
-					} else {
-						plugin.ui._insertImageButton.hide();
-						return;
-					}
+					buttonVisibilityHelper();
 
 					// Enable image specific ui components if the element is an image
 					if (foundMarkup) { // TODO : this is always null (below is dead code, moving it to clickImage)
@@ -421,8 +425,16 @@ define([
 				}
 
 			});
-			
+
 			Aloha.bind('aloha-editable-created', function (event, editable) {
+				var config = plugin.getEditableConfig(editable.obj),
+				    enabled = (jQuery.inArray('img', config) !== -1);
+
+				isEnabled[editable.getId()] = enabled;
+
+				if (!enabled) {
+					return;
+				}
 
 				try {
 					// this will disable mozillas image resizing facilities
@@ -439,6 +451,10 @@ define([
 					plugin.clickImage(event);
 					event.stopPropagation();
 				});
+			});
+
+			Aloha.bind('aloha-editable-activated', function() {
+				buttonVisibilityHelper();
 			});
 
 			plugin._subscribeToResizeFieldEvents();
