@@ -159,6 +159,16 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
         if @focus or @blur
           console and console.warn 'Popover.focus and Popover.blur are deprecated in favor of listening to the "shown-popover" or "hidden-popover" events on the original DOM element'
 
+    _makePopover: ($node) ->
+        that = @
+        # Make sure we don't create more than one popover for an element.
+        if not $node.data('popover')
+            $node.popover
+                placement: that.placement or 'bottom'
+                trigger: 'manual'
+                content: () ->
+                    that.populator.bind($node)($node) # Can't quite decide whether the populator code should use @ or the 1st arg.
+
     start: (editable) ->
         that = @
         $el = jQuery(editable.obj)
@@ -179,7 +189,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
                 after.bind($self)($self)
           , ms)
 
-        makePopover = ($nodes, placement) ->
+        makePopovers = ($nodes, placement) ->
             $nodes.each () ->
                 $node = jQuery(@)
                 if that.focus
@@ -188,13 +198,9 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
                 if that.blur
                     $node.on 'hidden-popover', () ->
                         that.blur.bind($node[0])()
-                $node.popover
-                    placement: placement or 'bottom'
-                    trigger: 'manual'
-                    content: () ->
-                        that.populator.bind($node)($node) # Can't quite decide whether the populator code should use @ or the 1st arg.
+                that._makePopover($node)
         
-        makePopover($el.find(@selector), @placement)
+        makePopovers($el.find(@selector), @placement)
         that = this
 
         # The only reason I map mouseenter is so I can catch new elements that are added to the DOM
@@ -202,7 +208,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
             $node = jQuery(@)
             clearTimeout($node.data('aloha-bubble-closeTimer'))
             if not $node.data('popover')
-                makePopover($node, that.placement)
+                makePopovers($node, that.placement)
 
             if not that.noHover
                 $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, afterShow)) # true=hovered
@@ -290,12 +296,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
             $el = $el.parents(helper.selector)
           if enteredLinkScope
             $el.data('aloha-bubble-selected', true)
-            if not $el.data('popover')
-                $el.popover
-                    placement: helper.placement or 'bottom'
-                    trigger: 'manual'
-                    content: () ->
-                        helper.populator.bind($el)($el) # Can't quite decide whether the populator code should use @ or the 1st arg.
+            helper._makePopover($el)
             $el.popover 'show'
             $el.data('aloha-bubble-selected', true)
             afterShow($el)
