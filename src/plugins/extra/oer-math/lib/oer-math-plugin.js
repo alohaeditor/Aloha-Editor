@@ -40,7 +40,7 @@
       mimeType = $span.find('script[type]').attr('type') || 'math/asciimath';
       mimeType = mimeType.split(';')[0];
       formula = $span.find('script[type]').html();
-      if (mimeType = 'math/mml') {
+      if (mimeType === 'math/mml') {
         $tmp = jQuery('<div></div>').html($span.find('script[type]').text());
         $annotation = $tmp.find('annotation');
         lang = $annotation.attr('encoding');
