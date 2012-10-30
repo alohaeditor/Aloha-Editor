@@ -1060,7 +1060,11 @@ i18n) {
 				plugin.ui.imgResizeWidthField.setValue(targetObject.width);
 
 				plugin._setNormalizedFieldValues('width');
-				plugin.setSize(targetObject.width, targetObject.height);
+				plugin.setSizeByFieldValue();
+				//plugin.setSize(targetObject.width, targetObject.height);
+				
+				plugin.autoResize();
+				
 			} else if (targetValue) {
 				plugin.imageObj.attr('src', targetValue);
 				plugin.imageObj.attr('title', '');
@@ -1078,14 +1082,20 @@ i18n) {
 				plugin.ui.imgResizeWidthField.setValue(plugin.imageObj.width());
 
 				plugin._setNormalizedFieldValues('width');
-				plugin.setSize(plugin.imageObj.width(), plugin.imageObj.height());
+				plugin.setSizeByFieldValue();
+				//plugin.setSize(plugin.imageObj.width(), plugin.imageObj.height());
+
+				plugin.autoResize();
+
 			} else if (!targetValue && !targetObject) {
+				/* not working after "insert image action"
 				plugin.ui.imgSrcField.setValue('');
 				plugin.ui.imgTitleField.setValue('');
 				plugin.ui.imgResizeWidthField.setValue('');
 				plugin.ui.imgResizeHeightField.setValue('');
 				// remove image
 				plugin.imageObj.remove();
+				*/
 			}
 
 			if (targetValue.length > 0 && plugin.settings.config && plugin.settings.config.meta && plugin.settings.config.meta.dummy) {

@@ -166,7 +166,11 @@ console) {
 			// This handles attribute updates for non-repository, literal urls typed into the input field.
 			// Input values that refer to a repository item are handled via setItem().
 			// @todo deactivate setAttribute onkeyup for src attr. just in image plugin?!
-			if (!resourceItem && !(targetObject.is('img') && targetAttribute === 'src')) {
+			//
+			// --> not working with abbr. plugin
+			// if (!resourceItem && !(targetObject.is('img') && targetAttribute === 'src')) {
+			//
+			if (!resourceItem && targetAttribute != 'src') {
 				var regex;
 				var reference;
 				setAttribute(targetAttribute, getValue(), regex, reference);
@@ -234,6 +238,10 @@ console) {
 		}
 
 		function parse(template, item) {
+			/* temp quick fix / hack for image plugin width / height field
+			if (!template) {
+				return;
+			}*/
 			return template.replace(/\{([^}]+)\}/g, function (_, name) {
 				return name in item ? item[name] : "";
 			});

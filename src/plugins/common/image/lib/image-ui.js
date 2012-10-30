@@ -149,7 +149,8 @@ AttributeField) {
 				scope: plugin.name
 			});
 
-			this.imgSrcField.setTemplate('<span><b>{name}</b><br/>{url}</span>');
+			//this.imgSrcField.setTemplate('<span><b>{name}</b><br/>{url}</span>');
+			this.imgSrcField.setTemplate('<img width="50px" src="{url}"><span><b>{name}</b><br/>{description}</span>');
 			this.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
 
 			this.imgTitleField = AttributeField({
