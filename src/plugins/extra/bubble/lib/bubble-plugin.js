@@ -31,7 +31,7 @@
               break;
             case "top":
               tp = {
-                top: pos.top - actualHeight,
+                top: pos.top - actualHeight - 10,
                 left: pos.left + pos.width / 2 - actualWidth / 2
               };
               break;

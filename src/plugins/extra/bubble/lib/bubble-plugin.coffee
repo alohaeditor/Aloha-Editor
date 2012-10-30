@@ -48,7 +48,7 @@ define [ 'aloha', 'jquery', './link', './figure', './title-figcaption' ], (Aloha
               left: pos.left + pos.width / 2 - actualWidth / 2
           when "top"
             tp =
-              top: pos.top - actualHeight
+              top: pos.top - actualHeight - 10 # minus 10px for the arrow
               left: pos.left + pos.width / 2 - actualWidth / 2
           when "left"
             tp =
