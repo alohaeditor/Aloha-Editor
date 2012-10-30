@@ -102,7 +102,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
       headings = CONTAINER_JQUERY.find(".changeHeading")
       
       headings.on 'click', changeHeading
-      headings.add(headings.parent()).removeClass('disabled missing-a-click-event')
+      headings.add(headings.parent()).removeClass('disabled missing-a-click-event').attr('disabled', undefined)
 
       Aloha.bind 'aloha-editable-activated', (event, data) ->
         squirreledEditable = data.editable

@@ -129,7 +129,7 @@
         };
         headings = CONTAINER_JQUERY.find(".changeHeading");
         headings.on('click', changeHeading);
-        headings.add(headings.parent()).removeClass('disabled missing-a-click-event');
+        headings.add(headings.parent()).removeClass('disabled missing-a-click-event').attr('disabled', void 0);
         Aloha.bind('aloha-editable-activated', function(event, data) {
           return squirreledEditable = data.editable;
         });
