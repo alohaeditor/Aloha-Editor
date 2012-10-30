@@ -16,7 +16,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
           <div id="link-text">
             <h4>Text to display</h4>
             <div>
-              <input id="link-contents" class="input-xlarge" type="text" placeholder="Enter a phrase here"/>
+              <input id="link-contents" class="input-xlarge" type="text" style="width: 90%;" placeholder="Enter a phrase here"/>
             </div>
           </div>
           <h4 style="display: none">Link Destination</h4>
@@ -28,7 +28,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
             <div class="tab-content">
               <div class="tab-pane" id="link-tab-external">
                 <h4 for="link-external">Link to webpage</h4>
-                <input class="link-external" id="link-external" type="text" placeholder="http://"/>
+                <input class="link-external" id="link-external" type="text" style="width: 90%;" placeholder="http://"/>
               </div>
               <div class="tab-pane" id="link-tab-internal" style="display: none">
                 <label for="link-internal">Link to a part in this document</label>
