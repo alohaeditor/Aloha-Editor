@@ -30,10 +30,7 @@ define(['aloha', 'jquery', 'bubble/bubble-plugin', 'image/image-plugin'], functi
             });
             return $bubble;
         },
-        filter: function(){ return this.nodeName.toLowerCase() === 'img'; },
         placement: 'bottom',
-        focus: function(){},
-        blur: function(){}
     };
     BubblePlugin.register(bubbleconfig)
 });
