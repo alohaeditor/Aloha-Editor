@@ -1,4 +1,4 @@
-define(['./dialogs'], function(){
+define(['./dialogs', './bubbles'], function(){
   return {
   }
 });
