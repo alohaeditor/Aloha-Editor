@@ -30,17 +30,18 @@ function( Aloha, jquery, plugin, tipsy ) {
 	return plugin.create( 'hints', {
 		
 		// define defaults
-		delayIn:    0,      // delay before showing tooltip (ms)
-		delayOut:   0.5,    // delay before hiding tooltip (ms)
-		fade:       true,   // fade tooltips in/out?
-		fallback:   '',     // fallback text to use when no tooltip text
-		gravity:    'w',    // gravity
-		html:       false,  // is tooltip content HTML?
-		live:       false,  // use live event support?
-		offset:     0,      // pixel offset of tooltip from element
-		opacity:    0.7,    // opacity of tooltip
-		title:      'title',// attribute/callback containing tooltip text
-		trigger:    'focus',// how tooltip is triggered - hover | focus | manual
+		delayIn:    Aloha.settings.plugins.hints.delayIn,      // delay before showing tooltip (ms)
+		delayOut:   Aloha.settings.plugins.hints.delayOut,    // delay before hiding tooltip (ms)
+		fade:       Aloha.settings.plugins.hints.fade,   // fade tooltips in/out?
+		fallback:   Aloha.settings.plugins.hints.fallback,     // fallback text to use when no tooltip text
+		gravity:    Aloha.settings.plugins.hints.gravity,    // gravity
+		html:       Aloha.settings.plugins.hints.html,  // is tooltip content HTML?
+		live:       Aloha.settings.plugins.hints.live,  // use live event support?
+		offset:     Aloha.settings.plugins.hints.offset,      // pixel offset of tooltip from element
+		opacity:    Aloha.settings.plugins.hints.opacity,    // opacity of tooltip
+		title:      Aloha.settings.plugins.hints.title,// attribute/callback containing tooltip text
+		trigger:    Aloha.settings.plugins.hints.trigger,// how tooltip is triggered - hover | focus | manual
+
 
 		// initialize plugin
 		init: function() {
