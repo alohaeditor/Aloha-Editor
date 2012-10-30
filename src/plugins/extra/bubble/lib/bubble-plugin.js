@@ -148,8 +148,22 @@ There are 3 variables that are stored on each element;
         }
       }
 
+      Helper.prototype._makePopover = function($node) {
+        var that;
+        that = this;
+        if (!$node.data('popover')) {
+          return $node.popover({
+            placement: that.placement || 'bottom',
+            trigger: 'manual',
+            content: function() {
+              return that.populator.bind($node)($node);
+            }
+          });
+        }
+      };
+
       Helper.prototype.start = function(editable) {
-        var $el, MILLISECS, afterHide, afterShow, delayTimeout, makePopover, that;
+        var $el, MILLISECS, afterHide, afterShow, delayTimeout, makePopovers, that;
         that = this;
         $el = jQuery(editable.obj);
         afterShow = function($n) {
@@ -175,7 +189,7 @@ There are 3 variables that are stored on each element;
             }
           }, ms);
         };
-        makePopover = function($nodes, placement) {
+        makePopovers = function($nodes, placement) {
           return $nodes.each(function() {
             var $node;
             $node = jQuery(this);
@@ -189,23 +203,17 @@ There are 3 variables that are stored on each element;
                 return that.blur.bind($node[0])();
               });
             }
-            return $node.popover({
-              placement: placement || 'bottom',
-              trigger: 'manual',
-              content: function() {
-                return that.populator.bind($node)($node);
-              }
-            });
+            return that._makePopover($node);
           });
         };
-        makePopover($el.find(this.selector), this.placement);
+        makePopovers($el.find(this.selector), this.placement);
         that = this;
         return $el.on('mouseenter.bubble', this.selector, function() {
           var $node;
           $node = jQuery(this);
           clearTimeout($node.data('aloha-bubble-closeTimer'));
           if (!$node.data('popover')) {
-            makePopover($node, that.placement);
+            makePopovers($node, that.placement);
           }
           if (!that.noHover) {
             $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, afterShow));
@@ -309,15 +317,7 @@ There are 3 variables that are stored on each element;
             }
             if (enteredLinkScope) {
               $el.data('aloha-bubble-selected', true);
-              if (!$el.data('popover')) {
-                $el.popover({
-                  placement: helper.placement || 'bottom',
-                  trigger: 'manual',
-                  content: function() {
-                    return helper.populator.bind($el)($el);
-                  }
-                });
-              }
+              helper._makePopover($el);
               $el.popover('show');
               $el.data('aloha-bubble-selected', true);
               afterShow($el);
