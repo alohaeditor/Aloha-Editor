@@ -3,7 +3,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
   EDITOR_HTML = '''
     <div class="math-editor-dialog">
         <div>
-            <input type="text" class="formula"/>
+            <textarea type="text" class="formula" rows="1"></textarea>
         </div>
         <span>This is:</span>
         <label class="radio inline">
@@ -11,6 +11,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
         </label>
         <label class="radio inline">
             <input type="radio" name="mime-type" value="math/tex"> LaTeX
+        </label>
+        <label class="radio inline">
+            <input type="radio" name="mime-type" value="math/mml"> MathML
         </label>
         <label class="checkbox inline">
           <input type="checkbox" class="show-cheatsheet"/>
@@ -24,6 +27,11 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
   LANGUAGES =
     'math/asciimath': {open: '`', close: '`'}
     'math/tex': {open: '\\(', close: '\\)'}
+    'math/mml': {raw: true}
+  
+  MATHML_ANNOTATION_ENCODINGS =
+    'TeX':       'math/tex'
+    'ASCIIMath': 'math/asciimath'
 
   # Register the button with an action
   #UI.adopt 'openMathEditor', null,
@@ -45,6 +53,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
   # $span contains the span with LaTex/ASCIIMath
   buildEditor = ($span) ->
     $editor = jQuery(EDITOR_HTML);
+    $formula = $editor.find('.formula')
 
     # Set the formula in jQuery data if it hasn't been set before
     #$span.data('math-formula', $span.data('math-formula') or $span.attr('data-math-formula') or $span.text())
@@ -53,10 +62,18 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
     # tex could be "math/tex; mode=display" so split in the semicolon
     mimeType = mimeType.split(';')[0]
     
-    formula = $span.find('script[type]').html()
-    
-    $formula = $editor.find('.formula')
 
+    formula = $span.find('script[type]').html()
+
+    # If the input is MathML try and pull out the formula from the mml:annotation element
+    if mimeType = 'math/mml'
+      $tmp = jQuery('<div></div>').html($span.find('script[type]').text())
+      $annotation = $tmp.find('annotation')
+      lang = $annotation.attr('encoding')
+      if MATHML_ANNOTATION_ENCODINGS[lang]
+        mimeType = MATHML_ANNOTATION_ENCODINGS[lang]
+        formula = $annotation.text()
+    
     # Set the language and fill in the formula
     $editor.find("input[name=mime-type][value='#{mimeType}']").attr('checked', true)
     $formula.val(formula)
@@ -66,9 +83,12 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
       # Try and parse it as ASCIIMath
       formula = jQuery(@).val() # $span.data('math-formula')
       mimeType = $editor.find('input[name=mime-type]:checked').val()
-      formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close
-      $span.text(formulaWrapped)
-      triggerMathJax($span, formulaWrapped)
+      if LANGUAGES[mimeType].raw
+        $span[0].innerHTML = formula
+      else
+        formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close
+        $span.text(formulaWrapped)
+      triggerMathJax($span)
       # TODO: Async save the input when MathJax correctly parses and typesets the text
       $span.data('math-formula', formula)
       $formula.trigger('focus')
@@ -123,10 +143,11 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
       # Don't handle the same event for each child
       evt.stopPropagation()
 
+  SELECTOR = '.math-element' # ,.MathJax[role="textbox"][aria-readonly="true"],.MathJax_Display[role="textbox"][aria-readonly="true"]'
   Bubble.register
-    selector: '.math-element'
+    selector: SELECTOR
     populator: buildEditor
-    # placement: 'right'
+    placement: 'top'
     noHover: true
     focus: ($popover) ->
       # Give focus to the text box
