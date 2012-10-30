@@ -66,7 +66,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
     formula = $span.find('script[type]').html()
 
     # If the input is MathML try and pull out the formula from the mml:annotation element
-    if mimeType = 'math/mml'
+    if mimeType == 'math/mml'
       $tmp = jQuery('<div></div>').html($span.find('script[type]').text())
       $annotation = $tmp.find('annotation')
       lang = $annotation.attr('encoding')
