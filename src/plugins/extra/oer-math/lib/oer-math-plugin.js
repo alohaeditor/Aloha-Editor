@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-plugin', 'ui/ui', 'css!../../../extra/oer-math/css/math.css'], function(Aloha, Plugin, jQuery, Bubble, UI) {
-    var EDITOR_HTML, LANGUAGES, SELECTOR, buildEditor, triggerMathJax;
+    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, buildEditor, triggerMathJax;
     EDITOR_HTML = '<div class="math-editor-dialog">\n    <div>\n        <textarea type="text" class="formula" rows="1"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <label class="checkbox inline">\n      <input type="checkbox" class="show-cheatsheet"/>\n      Show Cheat Sheet\n    </label>\n    <span class="separator"> | </span>\n    <a class="btn btn-link see-help">See Help</a>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
@@ -17,6 +17,10 @@
         raw: true
       }
     };
+    MATHML_ANNOTATION_ENCODINGS = {
+      'TeX': 'math/tex',
+      'ASCIIMath': 'math/asciimath'
+    };
     triggerMathJax = function($el) {
       var id;
       if (!$el.attr('id')) {
@@ -30,12 +34,21 @@
       return MathJax.Hub.queue.Push(['Typeset', MathJax.Hub, id]);
     };
     buildEditor = function($span) {
-      var $editor, $formula, formula, keyDelay, keyTimeout, mimeType, radios;
+      var $annotation, $editor, $formula, $tmp, formula, keyDelay, keyTimeout, lang, mimeType, radios;
       $editor = jQuery(EDITOR_HTML);
+      $formula = $editor.find('.formula');
       mimeType = $span.find('script[type]').attr('type') || 'math/asciimath';
       mimeType = mimeType.split(';')[0];
       formula = $span.find('script[type]').html();
-      $formula = $editor.find('.formula');
+      if (mimeType = 'math/mml') {
+        $tmp = jQuery('<div></div>').html($span.find('script[type]').text());
+        $annotation = $tmp.find('annotation');
+        lang = $annotation.attr('encoding');
+        if (MATHML_ANNOTATION_ENCODINGS[lang]) {
+          mimeType = MATHML_ANNOTATION_ENCODINGS[lang];
+          formula = $annotation.text();
+        }
+      }
       $editor.find("input[name=mime-type][value='" + mimeType + "']").attr('checked', true);
       $formula.val(formula);
       keyTimeout = null;

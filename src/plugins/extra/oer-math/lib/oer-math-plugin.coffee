@@ -28,6 +28,10 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
     'math/asciimath': {open: '`', close: '`'}
     'math/tex': {open: '\\(', close: '\\)'}
     'math/mml': {raw: true}
+  
+  MATHML_ANNOTATION_ENCODINGS =
+    'TeX':       'math/tex'
+    'ASCIIMath': 'math/asciimath'
 
   # Register the button with an action
   #UI.adopt 'openMathEditor', null,
@@ -49,6 +53,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
   # $span contains the span with LaTex/ASCIIMath
   buildEditor = ($span) ->
     $editor = jQuery(EDITOR_HTML);
+    $formula = $editor.find('.formula')
 
     # Set the formula in jQuery data if it hasn't been set before
     #$span.data('math-formula', $span.data('math-formula') or $span.attr('data-math-formula') or $span.text())
@@ -57,10 +62,18 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
     # tex could be "math/tex; mode=display" so split in the semicolon
     mimeType = mimeType.split(';')[0]
     
-    formula = $span.find('script[type]').html()
-    
-    $formula = $editor.find('.formula')
 
+    formula = $span.find('script[type]').html()
+
+    # If the input is MathML try and pull out the formula from the mml:annotation element
+    if mimeType = 'math/mml'
+      $tmp = jQuery('<div></div>').html($span.find('script[type]').text())
+      $annotation = $tmp.find('annotation')
+      lang = $annotation.attr('encoding')
+      if MATHML_ANNOTATION_ENCODINGS[lang]
+        mimeType = MATHML_ANNOTATION_ENCODINGS[lang]
+        formula = $annotation.text()
+    
     # Set the language and fill in the formula
     $editor.find("input[name=mime-type][value='#{mimeType}']").attr('checked', true)
     $formula.val(formula)
