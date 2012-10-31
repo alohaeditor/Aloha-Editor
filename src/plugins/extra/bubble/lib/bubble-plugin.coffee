@@ -148,7 +148,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
   afterHide = ($n) ->
     $n.data('aloha-bubble-hovered', false)
 
-  helpers = []
+  helpers = {}
   class Helper
     constructor: (cfg) ->
         # @selector
@@ -168,6 +168,8 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
                 trigger: 'manual'
                 content: () ->
                     that.populator.bind($node)($node) # Can't quite decide whether the populator code should use @ or the 1st arg.
+
+        $node.data('popover')
 
     start: (editable) ->
         that = @
@@ -190,6 +192,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
           , ms)
 
         makePopovers = ($nodes, placement) ->
+            popovers = []
             $nodes.each () ->
                 $node = jQuery(@)
                 if that.focus
@@ -198,7 +201,9 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
                 if that.blur
                     $node.on 'hidden-popover', () ->
                         that.blur.bind($node[0])()
-                that._makePopover($node)
+                popover = that._makePopover($node)
+                popovers.push popover
+            return popovers
         
         makePopovers($el.find(@selector), @placement)
         that = this
@@ -256,7 +261,11 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
     enteredLinkScope
 
   bindHelper = (cfg) ->
+    if helpers[cfg]
+      return helpers[cfg]
+
     helper = new Helper(cfg)
+    helpers[cfg] = helper
 
     afterShow = ($n) ->
       clearTimeout($n.data('aloha-bubble-openTimer'))
@@ -303,11 +312,14 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
             $el.off('.bubble')
             event.stopPropagation()
 
+    return helper
+
   bindHelper linkConfig
   bindHelper figureConfig
   bindHelper figcaptionConfig
 
   return {
+    helpers: helpers,
     register: (cfg) ->
       bindHelper(new Helper(cfg))
   }
