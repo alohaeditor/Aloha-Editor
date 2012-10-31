@@ -236,14 +236,8 @@ table td:first-child { min-width: 1em; }
   </div>
 
   <div class="btn-group">
-    <button class="btn action unorderedList" rel="tooltip" title="Insert List"><i class="icon-list"></i></button>
-    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="List Formats">
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu">
-      <li><a href="#" class="action orderedList">Insert Ordered List</a></li>
-      <li><a href="#" class="action unorderedList">Insert Unordered List</a></li>
-    </ul>
+    <button class="btn action unorderedList" rel="tooltip" title="Unordered List"><i class="icon-list"></i></button>
+    <button class="btn action orderedList" rel="tooltip" title="Ordered List"><i class="icon-list"></i></button>
     <button class="btn action outdentList" rel="tooltip" title="Indent List"><i class="icon-indent-right"></i></button>
     <button class="btn action indentList" rel="tooltip" title="Outdent List"><i class="icon-indent-left"></i></button>
   </div>
@@ -269,7 +263,7 @@ table td:first-child { min-width: 1em; }
   <div class="document" id="document">
     <h1>Linear and Time-Invariant Systems</h1>
     <h2>Signals</h2>
-    <p>This page has been tested in <strong>Chromium</strong>. Results in other browsers may vary</p>
+    <p>This page has been tested in <strong>Webkit</strong> and <strong>Firefox</strong>. Results in other browsers may vary</p>
     <p>A signal's complexity is not related to how wiggly it is. Rather, a signal expert looks for ways of <a href="http://cnx.org/content/m9003">decomposing a given signal</a> into a <strong>sum of simpler signals</strong>, which we term the <strong>signal decomposition</strong>. Though we will never compute a signal's complexity, it essentially equals the number of terms in its decomposition. In writing a signal as a sum of component signals, we can change the component signal's gain by multiplying it by a constant and by delaying it.</p>
 
     <figure class="figure">
