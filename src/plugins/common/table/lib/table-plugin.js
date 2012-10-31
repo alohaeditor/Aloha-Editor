@@ -232,6 +232,11 @@ define([
 		this.rowConfig = this.checkConfig(this.rowConfig||this.settings.rowConfig);
 		this.cellConfig = this.checkConfig(this.cellConfig||this.settings.cellConfig);
 
+		// col/row resize settings
+		this.colResize = this.settings.colResize === undefined ? true : this.settings.colResize;
+		this.rowResize = this.settings.rowResize === undefined ? true : this.settings.rowResize;
+		this.liveResize = this.settings.liveResize === undefined ? true : this.settings.liveResize;
+
 		// add reference to the create layer object
 		this.createLayer = new CreateLayer( this );
 
@@ -239,6 +244,8 @@ define([
 		Aloha.bind( 'aloha-editable-created', function (event, editable) {
 			var config = that.getEditableConfig(editable.obj);
 			isEnabled[editable.getId()] = (-1 !== jQuery.inArray('table', config));
+
+
 
 			// add a mousedown event to all created editables to check if focus leaves a table
 			editable.obj.bind( 'mousedown', function ( jqEvent ) {
@@ -337,6 +344,7 @@ define([
 				// registry.
 				createNewTable(this);
 			});
+
 		});
 
 		Aloha.bind('aloha-editable-deactivated', function () {
