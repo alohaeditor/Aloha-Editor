@@ -168,7 +168,7 @@ console) {
 			// @todo deactivate setAttribute onkeyup for src attr. just in image plugin?!
 			//
 			// --> not working with abbr. plugin
-			// if (!resourceItem && !(targetObject.is('img') && targetAttribute === 'src')) {
+			//if (!resourceItem && !(targetObject.is('img') && targetAttribute === 'src')) {
 			//
 			if (!resourceItem && targetAttribute != 'src') {
 				var regex;
@@ -177,11 +177,14 @@ console) {
 			}
 
 			if ((event.keyCode == 13 || event.keyCode == 27)) {
+				/*
+				// not used?!
 				// Set focus to link element and select the object
 				try{
-					Aloha.Selection.getRangeObject().select();
+					//Aloha.Selection.getRangeObject().select();
 				} catch(err) {
 				}
+				*/
 				finishEditing();
 			}
 		}
@@ -239,9 +242,12 @@ console) {
 
 		function parse(template, item) {
 			/* temp quick fix / hack for image plugin width / height field
+			// if not commented out it produces a error eg also in the abbr field
+			// if used it will show the repos autocompleate with width, height, abbr field
 			if (!template) {
 				return;
-			}*/
+			}
+			*/
 			return template.replace(/\{([^}]+)\}/g, function (_, name) {
 				return name in item ? item[name] : "";
 			});
