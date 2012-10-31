@@ -12,8 +12,6 @@ define ['aloha', 'jquery', 'aloha/console', 'css!./title.css'], (Aloha, jQuery, 
       $el.addClass('empty')
   
   selector = '.title,figcaption'
-  filter = ->
-    jQuery(@).hasClass('title') or @nodeName.toLowerCase() is 'figcaption'
 
   populator = () ->
       $el = @
@@ -31,7 +29,6 @@ define ['aloha', 'jquery', 'aloha/console', 'css!./title.css'], (Aloha, jQuery, 
   return {
     selector: selector
     populator: populator
-    filter: filter
     placement: 'right'
     focus: () ->
       $el = jQuery(@)
