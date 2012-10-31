@@ -13,3 +13,4 @@ All changes are categorized into one of the following keywords:
 
 - **BUG**: core/aloha-links: Prevents yellow borders around aloha-links blocks
 - **BUG**: link-plugin: link scope remains active after the selection leaves an anchor element
+- **BUG**: characterpicker: popup now follows the floating menu while scrolling
