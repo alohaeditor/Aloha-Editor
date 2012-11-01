@@ -71,6 +71,16 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
             $dialog.append('<div class="modal-footer"><a href="#" class="btn action insert">Insert</a><a href="#" class="btn" data-dismiss="modal">Cancel</a></div>');
             $body.append(DIALOG);
 
+            // Set onerror of preview image
+            (function(img, baseurl){
+               img.onerror = function(){
+                   var errimg = baseurl + '/../plugins/oerpub/image/img/warning.png';
+                   if(img.src != errimg){
+                       img.src = errimg;
+                    }
+               };
+            })($body.find('.placeholder.preview img')[0], Aloha.settings.baseUrl);
+
             // Add click handlers
             $body.find('.upload-image-link').on('click', function(e){
                 $body.find('.upload-url-form').hide();
