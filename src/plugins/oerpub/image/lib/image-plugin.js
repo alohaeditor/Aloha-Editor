@@ -35,9 +35,12 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
     }
 
     return plugin.create('image', {
-        defaults: {
+        defaultSettings: {
+            uploadmethod: 'POST',
+            uploadfield: 'upload'
         },
         init: function(){
+            this.settings = jQuery.extend(true, this.defaultSettings, this.settings);
             var plugin = this;
             Aloha.bind('aloha-editable-created', function(event, editable){
                 editable.obj.find('table').each(function(){
@@ -100,7 +103,6 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                     alt = $body.find('.image-alt textarea').val();
 
                 if($uploadform.is(':visible')){
-                    // TODO Upload and insert
                     var range = Aloha.Selection.getRangeObject(),
                         files = $uploadform.find('input[type=file]')[0].files;
                     if(range.isCollapsed() && files.length > 0){
@@ -152,19 +154,22 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
             reader.readAsDataURL(file);
         },
         _uploadImage: function(file, callback){
+            var plugin = this;
             var xhr = new XMLHttpRequest();
             if(xhr.upload){
+                if(!plugin.settings.uploadurl){
+                    throw new Error("uploadurl not defined");
+                }
                 xhr.onload = function(){
                     // TODO, probably make this pluggable
                     var msg = JSON.parse(xhr.response);
                     callback(msg.url);
                 };
 
-                // TODO make url and field name configurable
-                xhr.open("POST", '/upload_dnd', true);
+                xhr.open(plugin.settings.uploadmethod, plugin.settings.uploadurl, true);
 				xhr.setRequestHeader("Cache-Control", "no-cache");
                 var f = new FormData();
-                f.append('upload', file, file.name);
+                f.append(plugin.settings.uploadfield, file, file.name);
                 xhr.send(f);
             }
         },
