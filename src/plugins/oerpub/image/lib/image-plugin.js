@@ -101,6 +101,14 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
 
                 if($uploadform.is(':visible')){
                     // TODO Upload and insert
+                    var range = Aloha.Selection.getRangeObject(),
+                        files = $uploadform.find('input[type=file]')[0].files;
+                    if(range.isCollapsed() && files.length > 0){
+                        plugin._uploadImage(files[0], function(url){
+                            $img = $('<img />').attr('src', url).attr('alt', alt);
+                            GENTICS.Utils.Dom.insertIntoDOM($img, range, $(Aloha.activeEditable.obj));
+                        });
+                    }
                 } else {
                     // Just insert, url is a remote url
                     var url = $urlform.find('.image-url').val(),
@@ -142,6 +150,23 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                 $img.attr('src', reader.result);
             };
             reader.readAsDataURL(file);
+        },
+        _uploadImage: function(file, callback){
+            var xhr = new XMLHttpRequest();
+            if(xhr.upload){
+                xhr.onload = function(){
+                    // TODO, probably make this pluggable
+                    var msg = JSON.parse(xhr.response);
+                    callback(msg.url);
+                };
+
+                // TODO make url and field name configurable
+                xhr.open("POST", '/upload_dnd', true);
+				xhr.setRequestHeader("Cache-Control", "no-cache");
+                var f = new FormData();
+                f.append('upload', file, file.name);
+                xhr.send(f);
+            }
         },
         _createImageButton: undefined
     });
