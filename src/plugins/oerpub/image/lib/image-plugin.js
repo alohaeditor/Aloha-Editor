@@ -95,14 +95,25 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                 return e.preventDefault();
             });
             $dialog.find('.action.insert').on('click', function(e){
-                var $img = $('<img src="/static/images/connexions.png" />');
-                var range = Aloha.Selection.getRangeObject();
-                if (range.isCollapsed()) {
-                    GENTICS.Utils.Dom.insertIntoDOM($img, range, $(Aloha.activeEditable.obj));
+                var $uploadform = $body.find('.upload-image-form'),
+                    $urlform = $body.find('.upload-url-form'),
+                    alt = $body.find('.image-alt textarea').val();
+
+                if($uploadform.is(':visible')){
+                    // TODO Upload and insert
+                } else {
+                    // Just insert, url is a remote url
+                    var url = $urlform.find('.image-url').val(),
+                        $img = $('<img />').attr('src', url).attr('alt', alt);
+                    var range = Aloha.Selection.getRangeObject();
+                    if (range.isCollapsed()) {
+                        GENTICS.Utils.Dom.insertIntoDOM($img, range, $(Aloha.activeEditable.obj));
+                    }
                 }
+
                 return e.preventDefault();
             });
-            $dialog.find('.upload-image-form .action.preview').on('click', function(e){
+            $body.find('.upload-image-form .action.preview').on('click', function(e){
                 var files = $dialog.find('.upload-image-form input[type=file]')[0].files;
                 if(files.length > 0){
                     var $placeholder = $dialog.find('.placeholder.preview'),
@@ -112,7 +123,7 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                 }
                 return e.preventDefault();
             });
-            $dialog.find('.upload-url-form .action.preview').on('click', function(e){
+            $body.find('.upload-url-form .action.preview').on('click', function(e){
                     var $placeholder = $dialog.find('.placeholder.preview'),
                         $img = $placeholder.find('img'),
                         url = $dialog.find('.upload-url-form .image-url').val();
