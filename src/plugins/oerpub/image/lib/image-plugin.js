@@ -35,9 +35,15 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
     }
 
     return plugin.create('image', {
+        // Settings:
+        // uploadurl - where to upload to
+        // uploadfield - field name to use in multipart/form upload
+        // parseresponse - takes the xhr.response from server, return an
+        //                 url to be used for the image. Default expects
+        //                 a json response with an url member.
         defaultSettings: {
-            uploadmethod: 'POST',
-            uploadfield: 'upload'
+            uploadfield: 'upload',
+            parseresponse: function(xhr){ return JSON.parse(xhr.response).url; }
         },
         init: function(){
             this.settings = jQuery.extend(true, this.defaultSettings, this.settings);
@@ -109,6 +115,7 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                         plugin._uploadImage(files[0], function(url){
                             $img = $('<img />').attr('src', url).attr('alt', alt);
                             GENTICS.Utils.Dom.insertIntoDOM($img, range, $(Aloha.activeEditable.obj));
+                            plugin._hideModal();
                         });
                     }
                 } else {
@@ -118,6 +125,7 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                     var range = Aloha.Selection.getRangeObject();
                     if (range.isCollapsed()) {
                         GENTICS.Utils.Dom.insertIntoDOM($img, range, $(Aloha.activeEditable.obj));
+                        plugin._hideModal();
                     }
                 }
 
@@ -161,17 +169,21 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                     throw new Error("uploadurl not defined");
                 }
                 xhr.onload = function(){
-                    // TODO, probably make this pluggable
-                    var msg = JSON.parse(xhr.response);
-                    callback(msg.url);
+                    callback(plugin.settings.parseresponse(xhr));
                 };
-
-                xhr.open(plugin.settings.uploadmethod, plugin.settings.uploadurl, true);
+                xhr.open("POST", plugin.settings.uploadurl, true);
 				xhr.setRequestHeader("Cache-Control", "no-cache");
                 var f = new FormData();
                 f.append(plugin.settings.uploadfield, file, file.name);
                 xhr.send(f);
             }
+        },
+        _hideModal: function(){
+            var $modal = $('.plugin.image');
+            $modal.find('.placeholder.preview').hide();
+            $modal.find('.upload-url-form').hide();
+            $modal.find('.upload-image-form').hide();
+            $modal.modal('hide');
         },
         _createImageButton: undefined
     });
