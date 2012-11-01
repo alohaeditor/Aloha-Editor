@@ -133,7 +133,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
       # TODO: Convert the mousedown to a click. To do that the aloha-deactivated event need to not hide the bubbles yet and instead fire a 'hide' event
       change.appendTo($bubble)
       change.on 'click', ->
-        # unquirrel the activeEditable
+        # unsquirrel the activeEditable
         Aloha.activeEditable = editable
         dialog = showModalDialog($el)
       $bubble.contents()
