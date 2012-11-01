@@ -16,13 +16,7 @@ define(['aloha', 'jquery', 'bubble/bubble-plugin', 'image/image-plugin'], functi
             editable = Aloha.activeEditable; //squirel squirel
             $button1.on('click', function(e){
                 Aloha.activeEditable = editable;
-
-                // Simulate the click so image plugin initialises the dialog
-                evt = $.Event('click')
-                evt.target = $el[0]
-                ImagePlugin.clickImage(evt);
-
-                $('.scope.image').modal({backdrop: false});
+                // TODO call something on ImagePlugin for editing image
                 e.preventDefault();
             });
             $button2.on('click', function(e){
@@ -31,6 +25,7 @@ define(['aloha', 'jquery', 'bubble/bubble-plugin', 'image/image-plugin'], functi
             return $bubble;
         },
         placement: 'bottom',
+        toString: function(){ return 'image'; }
     };
     BubblePlugin.register(bubbleconfig)
 });
