@@ -133,12 +133,20 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
       originalHide.bind(this)()
       @$element.trigger('hidden-popover')
 
+  # There's a bug in bootstrap's destroy(). It says this.hide().$element.off(...)
+  # But it should be this.hide().off(...)
+  Bootstrap_Popover_destroy = () ->
+    @hide().off('.' + @type).removeData(@type)
+
+
+
   # Apply the monkey patch
   monkeyPatch = () ->
     console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
     proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype
     proto.show = Bootstrap_Popover_show
     proto.hide = Bootstrap_Popover_hide(proto.hide)
+    proto.destroy = Bootstrap_Popover_destroy
   monkeyPatch()
 
 
