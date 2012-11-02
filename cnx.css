@@ -1,3 +1,7 @@
+.math-element .MathJax .math .annotation {
+  display: none;
+}
+
 /* Remove the annoying WAI button in tables */
 .aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
 
