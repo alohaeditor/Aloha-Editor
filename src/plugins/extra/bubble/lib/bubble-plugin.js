@@ -126,7 +126,8 @@ There are 3 variables that are stored on each element;
       Bootstrap_Popover_hide = function(originalHide) {
         return function() {
           originalHide.bind(this)();
-          return this.$element.trigger('hidden-popover');
+          this.$element.trigger('hidden-popover');
+          return this;
         };
       };
       monkeyPatch = function() {
@@ -161,7 +162,7 @@ There are 3 variables that are stored on each element;
             placement: that.placement || 'bottom',
             trigger: 'manual',
             content: function() {
-              return that.populator.bind($node)($node);
+              return that.populator.bind($node)($node, that);
             }
           });
         }
@@ -259,6 +260,13 @@ There are 3 variables that are stored on each element;
         $nodes.removeData('aloha-bubble-closeTimer', 0);
         $nodes.removeData('aloha-bubble-selected', false);
         return $nodes.popover('destroy');
+      };
+
+      Helper.prototype.stopOne = function($node) {
+        $node.removeData('aloha-bubble-openTimer', 0);
+        $node.removeData('aloha-bubble-closeTimer', 0);
+        $node.removeData('aloha-bubble-selected', false);
+        return $node.popover('destroy');
       };
 
       return Helper;

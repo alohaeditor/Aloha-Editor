@@ -4,7 +4,7 @@ define(['aloha', 'jquery', 'bubble/bubble-plugin', 'image/image-plugin'], functi
     // Register bubble for images
     bubbleconfig = {
         selector: 'img',
-        populator: function(){
+        populator: function($node, helper){
             var $el = this;
             var $bubble = $('<div />', {class: 'link-popover'});
             var $button1 = $('<button class="btn"><i class="icon-certificate"></i> Advanced Options</button>');
@@ -20,12 +20,12 @@ define(['aloha', 'jquery', 'bubble/bubble-plugin', 'image/image-plugin'], functi
                 e.preventDefault();
             });
             $button2.on('click', function(e){
+                helper.stopOne($el);
                 $el.remove();
             });
             return $bubble;
         },
-        placement: 'bottom',
-        toString: function(){ return 'image'; }
+        placement: 'bottom'
     };
     BubblePlugin.register(bubbleconfig)
 });

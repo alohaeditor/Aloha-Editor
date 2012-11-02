@@ -91,7 +91,7 @@ There are 3 variables that are stored on each element;
 define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcaption' ], (Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) ->
 
   # Monkeypatch the bootstrap Popover so we can inject clickable buttons
-  if true  
+  if true
     Bootstrap_Popover_show = () ->
       if @hasContent() and @enabled
         $tip = @tip()
@@ -131,19 +131,20 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
 
         ### Trigger the shown event ###
         @$element.trigger('shown-popover')
-    
+
     Bootstrap_Popover_hide = (originalHide) -> () ->
         originalHide.bind(this)()
         @$element.trigger('hidden-popover')
-    
-    # Apply the monkey patch 
+        return @
+
+    # Apply the monkey patch
     monkeyPatch = () ->
       console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
       proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype
       proto.show = Bootstrap_Popover_show
       proto.hide = Bootstrap_Popover_hide(proto.hide)
     monkeyPatch()
-  
+
 
   afterShow = ($n) ->
     clearTimeout($n.data('aloha-bubble-openTimer'))
@@ -168,7 +169,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
                 placement: that.placement or 'bottom'
                 trigger: 'manual'
                 content: () ->
-                    that.populator.bind($node)($node) # Can't quite decide whether the populator code should use @ or the 1st arg.
+                    that.populator.bind($node)($node, that) # Can't quite decide whether the populator code should use @ or the 1st arg.
 
         $node.data('popover')
 
@@ -178,7 +179,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
 
         afterShow = ($n) ->
           clearTimeout($n.data('aloha-bubble-openTimer'))
-          
+
         afterHide = ($n) ->
           $n.data('aloha-bubble-selected', false)
 
@@ -205,7 +206,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
                 popover = that._makePopover($node)
                 popovers.push popover
             return popovers
-        
+
         makePopovers($el.find(@selector), @placement)
         that = this
 
@@ -229,7 +230,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
                         clearTimeout($node.data('aloha-bubble-closeTimer'))
                       $tip.on 'mouseleave', () ->
                         $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, afterHide)) if not $node.data('aloha-bubble-closeTimer')
-    
+
                     $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, afterHide)) if not $node.data('aloha-bubble-closeTimer')
     stop: (editable) ->
       # Remove all events and close all bubbles
@@ -239,6 +240,12 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
       $nodes.removeData('aloha-bubble-closeTimer', 0)
       $nodes.removeData('aloha-bubble-selected', false)
       $nodes.popover('destroy')
+
+    stopOne: ($node) ->
+      $node.removeData('aloha-bubble-openTimer', 0)
+      $node.removeData('aloha-bubble-closeTimer', 0)
+      $node.removeData('aloha-bubble-selected', false)
+      $node.popover('destroy')
 	
   findMarkup = (range=Aloha.Selection.getRangeObject(), selector) ->
     if Aloha.activeEditable
@@ -252,7 +259,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
   # Validate and save the href if something is selected.
   selectionChangeHandler = (rangeObject, selector) ->
     enteredLinkScope = false
-    
+
     # Check if we need to ignore this selection changed event for
     # now and check whether the selection was placed within a
     # editable area.
@@ -269,7 +276,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
 
     afterShow = ($n) ->
       clearTimeout($n.data('aloha-bubble-openTimer'))
-      
+
     afterHide = ($n) ->
       $n.data('aloha-bubble-selected', false)
 
@@ -278,7 +285,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
     enteredLinkScope = false
 
     Aloha.bind 'aloha-editable-activated', (event, data) ->
-      helper.start(data.editable)  
+      helper.start(data.editable)
     Aloha.bind 'aloha-editable-deactivated', (event, data) ->
       setTimeout(() ->
         helper.stop(data.editable)
@@ -296,7 +303,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
       nodes = nodes.not($el)
       nodes.popover 'hide'
       afterHide(nodes)
-      
+
       if Aloha.activeEditable
         enteredLinkScope = selectionChangeHandler(rangeObject, helper.selector)
         if insideScope isnt enteredLinkScope
