@@ -639,7 +639,7 @@ define( [
 				that.addLinkEventHandlers( this );
 				// launch Edit Link dialog box ...
 				link = jQuery(this);
-				LinkHelper = BubblePlugin.helpers[BubbleLink];
+				LinkHelper = BubbleLink.helper;
 				popover = LinkHelper._makePopover(link);
 				if ( popover ) {
 					popover.setContent();

@@ -3,6 +3,8 @@
 # - selector: css selector for determining which elements to attach bubble events to
 # - populator: Javscript function that gets (a) the element and (b) the div that represents the bubble.
 #               This function will populate the bubble with buttons like "Add Title", "Change", etc
+# - helper: This member will be set when you register your bubble with
+#           register/bindHelper. Don't use it for something else.
 
 # bubble.coffee contains the code to attach all the correct listeners (like mouse events)
 #      moves the bubble to the correct spot, and triggers when the bubble should be populated
@@ -148,7 +150,6 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
   afterHide = ($n) ->
     $n.data('aloha-bubble-hovered', false)
 
-  helpers = {}
   class Helper
     constructor: (cfg) ->
         # @selector
@@ -261,11 +262,10 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
     enteredLinkScope
 
   bindHelper = (cfg) ->
-    if helpers[cfg]
-      return helpers[cfg]
-
     helper = new Helper(cfg)
-    helpers[cfg] = helper
+    # Place the created helper back onto the registering module, so we might
+    # locate it later
+    $.extend(cfg, helper: helper)
 
     afterShow = ($n) ->
       clearTimeout($n.data('aloha-bubble-openTimer'))
@@ -319,7 +319,6 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
   bindHelper figcaptionConfig
 
   return {
-    helpers: helpers,
     register: (cfg) ->
       bindHelper(new Helper(cfg))
   }

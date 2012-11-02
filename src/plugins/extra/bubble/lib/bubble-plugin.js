@@ -71,7 +71,7 @@ There are 3 variables that are stored on each element;
 (function() {
 
   define(['aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcaption'], function(Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) {
-    var Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, afterHide, afterShow, bindHelper, findMarkup, helpers, monkeyPatch, selectionChangeHandler;
+    var Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, afterHide, afterShow, bindHelper, findMarkup, monkeyPatch, selectionChangeHandler;
     if (true) {
       Bootstrap_Popover_show = function() {
         var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
@@ -144,7 +144,6 @@ There are 3 variables that are stored on each element;
     afterHide = function($n) {
       return $n.data('aloha-bubble-hovered', false);
     };
-    helpers = {};
     Helper = (function() {
 
       function Helper(cfg) {
@@ -292,11 +291,10 @@ There are 3 variables that are stored on each element;
     };
     bindHelper = function(cfg) {
       var enteredLinkScope, helper, insideScope;
-      if (helpers[cfg]) {
-        return helpers[cfg];
-      }
       helper = new Helper(cfg);
-      helpers[cfg] = helper;
+      $.extend(cfg, {
+        helper: helper
+      });
       afterShow = function($n) {
         return clearTimeout($n.data('aloha-bubble-openTimer'));
       };
@@ -350,7 +348,6 @@ There are 3 variables that are stored on each element;
     bindHelper(figureConfig);
     bindHelper(figcaptionConfig);
     return {
-      helpers: helpers,
       register: function(cfg) {
         return bindHelper(new Helper(cfg));
       }
