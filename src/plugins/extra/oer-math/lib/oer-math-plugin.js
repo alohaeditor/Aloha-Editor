@@ -10,8 +10,8 @@
         close: '`'
       },
       'math/tex': {
-        open: '\\(',
-        close: '\\)'
+        open: '[TEX_START]',
+        close: '[TEX_END]'
       },
       'math/mml': {
         raw: true

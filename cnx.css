@@ -1,4 +1,5 @@
-.math-element .MathJax .math .annotation {
+/* Apparently MathJax still renders the annotation element as plain text */
+.math-element .MathJax .math .annotation, annotation {
   display: none;
 }
 
