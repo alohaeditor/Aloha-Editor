@@ -1,6 +1,6 @@
 define(
 ['aloha', 'aloha/plugin', 'jquery', 'ui/ui', 'ui/button', 'PubSub',
-    'css!table/css/table.css'],
+    'css!image/css/image.css'],
 function(Aloha, plugin, $, Ui, Button, PubSub) {
     "use strict";
 
@@ -67,7 +67,14 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                 icon: "aloha-button aloha-image-insert",
                 scope: 'Aloha.continuoustext',
                 click: function(e){
-                    $('.plugin.image').modal({backdrop: false});
+
+                    var range = Aloha.Selection.getRangeObject(),
+                        $placeholder = $('<span class="aloha-cleanme image-placeholder"> </span>');
+                    if (range.isCollapsed()) {
+                        GENTICS.Utils.Dom.insertIntoDOM($placeholder, range, $(Aloha.activeEditable.obj));
+                        $('.plugin.image').data('placeholder', $placeholder)
+                            .modal({backdrop: false});
+                    }
                 }
             });
         },
@@ -109,12 +116,11 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                     alt = $body.find('.image-alt textarea').val();
 
                 if($uploadform.is(':visible')){
-                    var range = Aloha.Selection.getRangeObject(),
-                        files = $uploadform.find('input[type=file]')[0].files;
-                    if(range.isCollapsed() && files.length > 0){
+                    var files = $uploadform.find('input[type=file]')[0].files;
+                    if(files.length > 0){
                         plugin._uploadImage(files[0], function(url){
-                            $img = $('<img />').attr('src', url).attr('alt', alt);
-                            GENTICS.Utils.Dom.insertIntoDOM($img, range, $(Aloha.activeEditable.obj));
+                            var $img = $('<img />').attr('src', url).attr('alt', alt);
+                            $dialog.data('placeholder').replaceWith($img);
                             plugin._hideModal();
                         });
                     }
@@ -122,11 +128,8 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                     // Just insert, url is a remote url
                     var url = $urlform.find('.image-url').val(),
                         $img = $('<img />').attr('src', url).attr('alt', alt);
-                    var range = Aloha.Selection.getRangeObject();
-                    if (range.isCollapsed()) {
-                        GENTICS.Utils.Dom.insertIntoDOM($img, range, $(Aloha.activeEditable.obj));
-                        plugin._hideModal();
-                    }
+                    $dialog.data('placeholder').replaceWith($img);
+                    plugin._hideModal();
                 }
 
                 return e.preventDefault();
