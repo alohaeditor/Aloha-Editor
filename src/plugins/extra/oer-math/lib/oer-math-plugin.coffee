@@ -12,15 +12,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
         <label class="radio inline">
             <input type="radio" name="mime-type" value="math/tex"> LaTeX
         </label>
-        <label class="radio inline">
+        <label class="radio inline mime-type-mathml">
             <input type="radio" name="mime-type" value="math/mml"> MathML
         </label>
-        <label class="checkbox inline">
-          <input type="checkbox" class="show-cheatsheet"/>
-          Show Cheat Sheet
-        </label>
-        <span class="separator"> | </span>
-        <a class="btn btn-link see-help">See Help</a>
     </div>
   '''
 
@@ -28,7 +22,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
     'math/asciimath': {open: '`', close: '`'}
     'math/tex': {open: '\\(', close: '\\)'}
     'math/mml': {raw: true}
-  
+
   MATHML_ANNOTATION_ENCODINGS =
     'TeX':       'math/tex'
     'ASCIIMath': 'math/asciimath'
@@ -46,7 +40,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
       id = 0
       id++ while jQuery('#autogen-math-' + id)[0]
       $el.attr('id', 'autogen-math-' + id)
-    
+
     id = $el.attr('id')
     MathJax.Hub.queue.Push ['Typeset', MathJax.Hub, id]
 
@@ -61,7 +55,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
     mimeType = $span.find('script[type]').attr('type') or 'math/asciimath'
     # tex could be "math/tex; mode=display" so split in the semicolon
     mimeType = mimeType.split(';')[0]
-    
+
 
     formula = $span.find('script[type]').html()
 
@@ -73,10 +67,13 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
       if MATHML_ANNOTATION_ENCODINGS[lang]
         mimeType = MATHML_ANNOTATION_ENCODINGS[lang]
         formula = $annotation.text()
-    
+
     # Set the language and fill in the formula
     $editor.find("input[name=mime-type][value='#{mimeType}']").attr('checked', true)
     $formula.val(formula)
+
+    # If the language isn't MathML then hide the MathML radio
+    $editor.find("label.mime-type-mathml").remove() if mimeType != 'math/mml'
 
     keyTimeout = null
     keyDelay = () ->
@@ -100,7 +97,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
           $formula.data('math-old', val)
           clearTimeout(keyTimeout)
           setTimeout(keyDelay.bind(@), 500)
-    
+
     # Grr, Bootstrap doesn't set the cheked value properly on radios
     radios = $editor.find('input[name=mime-type]')
     radios.on 'click', () ->
@@ -108,19 +105,19 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
         jQuery(@).attr('checked', true)
         clearTimeout(keyTimeout)
         setTimeout(keyDelay.bind($formula), 500)
-    
+
     $editor
 
   Aloha.bind 'aloha-editable-activated', (event, data) ->
     editable = data.editable
     jQuery(editable.obj).on 'click.matheditor', '.math-element, .math-element *', (evt) ->
       $el = jQuery(@)
-        
+
       $el = $el.parents('.math-element') if not $el.is('.math-element')
 
       # Make sure the math element is never editable
       $el.contentEditable(false)
-      
+
       # Select (in the browser) the entire math
       #range = rangy.createRange()
       #range.selectNode($el[0])
@@ -134,10 +131,10 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
       range.startContainer = range.endContainer = $el[0]
       range.startOffset = range.endOffset = 0
       Aloha.Selection.rangeObject = range
-      
+
       #evt.target = evt.currentTarget = $el[0]
       Aloha.trigger('aloha-selection-changed', range)
-      
+
       # Since the click is on the math-element or its children
       # (the math element is just a little horizontal bar but its children stick out above and below it)
       # Don't handle the same event for each child
@@ -154,4 +151,4 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
       setTimeout( () ->
         $popover.find('.formula').trigger('focus')
       , 10)
-    
+
