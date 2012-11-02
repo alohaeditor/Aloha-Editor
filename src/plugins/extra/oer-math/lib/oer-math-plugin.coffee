@@ -20,7 +20,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-pl
 
   LANGUAGES =
     'math/asciimath': {open: '`', close: '`'}
-    'math/tex': {open: '\\(', close: '\\)'}
+    'math/tex': {open: '[TEX_START]', close: '[TEX_END]'}
     'math/mml': {raw: true}
 
   MATHML_ANNOTATION_ENCODINGS =
