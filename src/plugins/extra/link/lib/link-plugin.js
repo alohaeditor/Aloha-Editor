@@ -640,30 +640,19 @@ define( [
 				// launch Edit Link dialog box ...
 				link = jQuery(this);
 				LinkHelper = BubbleLink.helper;
+				// create empty popover
 				popover = LinkHelper._makePopover(link);
 				if ( popover ) {
+					// populate popover
 					popover.setContent();
 					$tip = popover.tip();
+					// simulate a click on the chnage button in the link popover
 					changeButton = $tip.find("button.btn");
 					changeButton.click();
 				}
 				jQuery(this).removeClass( 'aloha-new-link' );
 				Aloha.activeEditable = editable;
 			} );
-
-			range.select();
-
-			// focus has to become before prefilling the attribute, otherwise
-			// Chrome and Firefox will not focus the element correctly.
-			this.hrefField.focus();
-			
-			// prefill and select the new href
-			// We need this guard because sometimes the element has not yet been initialized
-			if ( this.hrefField.hasInputElem() ) {
-				jQuery( this.hrefField.getInputElem() ).attr( 'value', that.hrefValue ).select();
-			}
-			
-			this.hrefChange();
 		},
 
 		/**
