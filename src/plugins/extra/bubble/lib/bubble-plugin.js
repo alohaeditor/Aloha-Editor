@@ -71,7 +71,7 @@ There are 3 variables that are stored on each element;
 (function() {
 
   define(['aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcaption'], function(Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) {
-    var Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, afterHide, afterShow, bindHelper, findMarkup, monkeyPatch, selectionChangeHandler;
+    var Bootstrap_Popover_destroy, Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, afterHide, afterShow, bindHelper, findMarkup, monkeyPatch, selectionChangeHandler;
     Bootstrap_Popover_show = function() {
       var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
       if (this.hasContent() && this.enabled) {
@@ -129,12 +129,16 @@ There are 3 variables that are stored on each element;
         return this;
       };
     };
+    Bootstrap_Popover_destroy = function() {
+      return this.hide().off('.' + this.type).removeData(this.type);
+    };
     monkeyPatch = function() {
       var proto;
       console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable');
       proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype;
       proto.show = Bootstrap_Popover_show;
-      return proto.hide = Bootstrap_Popover_hide(proto.hide);
+      proto.hide = Bootstrap_Popover_hide(proto.hide);
+      return proto.destroy = Bootstrap_Popover_destroy;
     };
     monkeyPatch();
     afterShow = function($n) {
