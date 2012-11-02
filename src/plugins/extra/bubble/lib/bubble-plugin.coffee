@@ -240,6 +240,12 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
       $nodes.removeData('aloha-bubble-closeTimer', 0)
       $nodes.removeData('aloha-bubble-selected', false)
       $nodes.popover('destroy')
+
+    stopOne: ($node) ->
+      $node.removeData('aloha-bubble-openTimer', 0)
+      $node.removeData('aloha-bubble-closeTimer', 0)
+      $node.removeData('aloha-bubble-selected', false)
+      $node.popover('destroy')
 	
   findMarkup = (range=Aloha.Selection.getRangeObject(), selector) ->
     if Aloha.activeEditable

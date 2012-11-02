@@ -262,6 +262,13 @@ There are 3 variables that are stored on each element;
         return $nodes.popover('destroy');
       };
 
+      Helper.prototype.stopOne = function($node) {
+        $node.removeData('aloha-bubble-openTimer', 0);
+        $node.removeData('aloha-bubble-closeTimer', 0);
+        $node.removeData('aloha-bubble-selected', false);
+        return $node.popover('destroy');
+      };
+
       return Helper;
 
     })();
