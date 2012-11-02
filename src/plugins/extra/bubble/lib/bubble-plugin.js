@@ -126,7 +126,8 @@ There are 3 variables that are stored on each element;
       Bootstrap_Popover_hide = function(originalHide) {
         return function() {
           originalHide.bind(this)();
-          return this.$element.trigger('hidden-popover');
+          this.$element.trigger('hidden-popover');
+          return this;
         };
       };
       monkeyPatch = function() {

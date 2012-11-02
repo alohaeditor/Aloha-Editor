@@ -135,6 +135,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
     Bootstrap_Popover_hide = (originalHide) -> () ->
         originalHide.bind(this)()
         @$element.trigger('hidden-popover')
+        return @
 
     # Apply the monkey patch
     monkeyPatch = () ->
