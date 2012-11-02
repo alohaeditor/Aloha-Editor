@@ -169,7 +169,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
                 placement: that.placement or 'bottom'
                 trigger: 'manual'
                 content: () ->
-                    that.populator.bind($node)($node) # Can't quite decide whether the populator code should use @ or the 1st arg.
+                    that.populator.bind($node)($node, that) # Can't quite decide whether the populator code should use @ or the 1st arg.
 
         $node.data('popover')
 

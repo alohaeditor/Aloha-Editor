@@ -162,7 +162,7 @@ There are 3 variables that are stored on each element;
             placement: that.placement || 'bottom',
             trigger: 'manual',
             content: function() {
-              return that.populator.bind($node)($node);
+              return that.populator.bind($node)($node, that);
             }
           });
         }
