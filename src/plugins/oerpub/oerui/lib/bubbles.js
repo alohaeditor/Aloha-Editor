@@ -24,8 +24,7 @@ define(['aloha', 'jquery', 'bubble/bubble-plugin', 'image/image-plugin'], functi
             });
             return $bubble;
         },
-        placement: 'bottom',
-        toString: function(){ return 'image'; }
+        placement: 'bottom'
     };
     BubblePlugin.register(bubbleconfig)
 });
