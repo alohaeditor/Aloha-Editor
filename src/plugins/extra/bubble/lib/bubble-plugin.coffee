@@ -91,59 +91,59 @@ There are 3 variables that are stored on each element;
 define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcaption' ], (Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) ->
 
   # Monkeypatch the bootstrap Popover so we can inject clickable buttons
-  if true
-    Bootstrap_Popover_show = () ->
-      if @hasContent() and @enabled
-        $tip = @tip()
-        @setContent()
-        $tip.addClass "fade"  if @options.animation
-        placement = (if typeof @options.placement is "function" then @options.placement.call(this, $tip[0], @$element[0]) else @options.placement)
-        inside = /in/.test(placement)
-        # Start: Don't remove because then you lose all the events attached to the content of the tip
-        #$tip.remove()
-        # End: changes
-        $tip.css(
-          top: 0
-          left: 0
-          display: "block"
-        ).appendTo (if inside then @$element else document.body)
-        pos = @getPosition(inside)
-        actualWidth = $tip[0].offsetWidth
-        actualHeight = $tip[0].offsetHeight
-        switch (if inside then placement.split(" ")[1] else placement)
-          when "bottom"
-            tp =
-              top: pos.top + pos.height
-              left: pos.left + pos.width / 2 - actualWidth / 2
-          when "top"
-            tp =
-              top: pos.top - actualHeight - 10 # minus 10px for the arrow
-              left: pos.left + pos.width / 2 - actualWidth / 2
-          when "left"
-            tp =
-              top: pos.top + pos.height / 2 - actualHeight / 2
-              left: pos.left - actualWidth
-          when "right"
-            tp =
-              top: pos.top + pos.height / 2 - actualHeight / 2
-              left: pos.left + pos.width
-        $tip.css(tp).addClass(placement).addClass "in"
+  Bootstrap_Popover_show = () ->
+    if @hasContent() and @enabled
+      $tip = @tip()
+      @setContent()
+      $tip.addClass "fade"  if @options.animation
+      placement = (if typeof @options.placement is "function" then @options.placement.call(this, $tip[0], @$element[0]) else @options.placement)
+      inside = /in/.test(placement)
+      # Start: Don't remove because then you lose all the events attached to the content of the tip
+      #$tip.remove()
+      # End: changes
+      $tip.css(
+        top: 0
+        left: 0
+        display: "block"
+      ).appendTo (if inside then @$element else document.body)
+      pos = @getPosition(inside)
+      actualWidth = $tip[0].offsetWidth
+      actualHeight = $tip[0].offsetHeight
+      switch (if inside then placement.split(" ")[1] else placement)
+        when "bottom"
+          tp =
+            top: pos.top + pos.height
+            left: pos.left + pos.width / 2 - actualWidth / 2
+        when "top"
+          tp =
+            top: pos.top - actualHeight - 10 # minus 10px for the arrow
+            left: pos.left + pos.width / 2 - actualWidth / 2
+        when "left"
+          tp =
+            top: pos.top + pos.height / 2 - actualHeight / 2
+            left: pos.left - actualWidth
+        when "right"
+          tp =
+            top: pos.top + pos.height / 2 - actualHeight / 2
+            left: pos.left + pos.width
+      $tip.css(tp).addClass(placement).addClass "in"
 
-        ### Trigger the shown event ###
-        @$element.trigger('shown-popover')
+      ### Trigger the shown event ###
+      @$element.trigger('shown-popover')
 
-    Bootstrap_Popover_hide = (originalHide) -> () ->
-        originalHide.bind(this)()
-        @$element.trigger('hidden-popover')
-        return @
+  Bootstrap_Popover_hide = (originalHide) -> () ->
+      originalHide.bind(this)()
+      @$element.trigger('hidden-popover')
+      return @
 
-    # Apply the monkey patch
-    monkeyPatch = () ->
-      console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
-      proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype
-      proto.show = Bootstrap_Popover_show
-      proto.hide = Bootstrap_Popover_hide(proto.hide)
-    monkeyPatch()
+  # Apply the monkey patch
+  monkeyPatch = () ->
+    console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
+    proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype
+    proto.show = Bootstrap_Popover_show
+    proto.hide = Bootstrap_Popover_hide(proto.hide)
+  monkeyPatch()
+
 
 
   afterShow = ($n) ->
@@ -153,85 +153,80 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
 
   class Helper
     constructor: (cfg) ->
-        # @selector
-        # @populator
-        # @placement
-        # @noHover
-        jQuery.extend(@, cfg)
-        if @focus or @blur
-          console and console.warn 'Popover.focus and Popover.blur are deprecated in favor of listening to the "shown-popover" or "hidden-popover" events on the original DOM element'
+      # @selector
+      # @populator
+      # @placement
+      # @noHover
+      jQuery.extend(@, cfg)
+      if @focus or @blur
+        console and console.warn 'Popover.focus and Popover.blur are deprecated in favor of listening to the "shown-popover" or "hidden-popover" events on the original DOM element'
 
     _makePopover: ($node) ->
-        that = @
-        # Make sure we don't create more than one popover for an element.
-        if not $node.data('popover')
-            $node.popover
-                placement: that.placement or 'bottom'
-                trigger: 'manual'
-                content: () ->
-                    that.populator.bind($node)($node, that) # Can't quite decide whether the populator code should use @ or the 1st arg.
-
-        $node.data('popover')
+      that = @
+      # Make sure we don't create more than one popover for an element.
+      if not $node.data('popover')
+        $node.popover
+          placement: that.placement or 'bottom'
+          trigger: 'manual'
+          content: () ->
+            that.populator.bind($node)($node, that) # Can't quite decide whether the populator code should use @ or the 1st arg.
 
     start: (editable) ->
-        that = @
-        $el = jQuery(editable.obj)
+      that = @
+      $el = jQuery(editable.obj)
 
-        afterShow = ($n) ->
-          clearTimeout($n.data('aloha-bubble-openTimer'))
+      afterShow = ($n) ->
+        clearTimeout($n.data('aloha-bubble-openTimer'))
 
-        afterHide = ($n) ->
-          $n.data('aloha-bubble-selected', false)
+      afterHide = ($n) ->
+        $n.data('aloha-bubble-selected', false)
 
-        MILLISECS = 1200
-        delayTimeout = ($self, eventName, ms=MILLISECS, after=null) ->
-          return setTimeout(() ->
-            $self.popover(eventName)
-            $self.removeData('aloha-bubble-openTimer')
-            $self.removeData('aloha-bubble-closeTimer')
-            if after
-                after.bind($self)($self)
-          , ms)
+      MILLISECS = 2000
+      delayTimeout = ($self, eventName, ms=MILLISECS, after=null) ->
+        return setTimeout(() ->
+          $self.popover(eventName)
+          $self.removeData('aloha-bubble-openTimer')
+          $self.removeData('aloha-bubble-closeTimer')
+          if after
+            after.bind($self)($self)
+        , ms)
 
-        makePopovers = ($nodes, placement) ->
-            popovers = []
-            $nodes.each () ->
-                $node = jQuery(@)
-                if that.focus
-                    $node.on 'shown-popover', () ->
-                        that.focus.bind($node[0])($node.data('popover').$tip)
-                if that.blur
-                    $node.on 'hidden-popover', () ->
-                        that.blur.bind($node[0])()
-                popover = that._makePopover($node)
-                popovers.push popover
-            return popovers
+      makePopovers = ($nodes, placement) ->
+        $nodes.each () ->
+          $node = jQuery(@)
+          if that.focus
+            $node.on 'shown-popover', () ->
+              that.focus.bind($node[0])($node.data('popover').$tip)
+          if that.blur
+            $node.on 'hidden-popover', () ->
+              that.blur.bind($node[0])()
+          that._makePopover($node)
 
-        makePopovers($el.find(@selector), @placement)
-        that = this
+      makePopovers($el.find(@selector), @placement)
+      that = this
 
-        # The only reason I map mouseenter is so I can catch new elements that are added to the DOM
-        $el.on 'mouseenter.bubble', @selector, () ->
-            $node = jQuery(@)
-            clearTimeout($node.data('aloha-bubble-closeTimer'))
-            if not $node.data('popover')
-                makePopovers($node, that.placement)
+      # The only reason I map mouseenter is so I can catch new elements that are added to the DOM
+      $el.on 'mouseenter.bubble', @selector, () ->
+        $node = jQuery(@)
+        clearTimeout($node.data('aloha-bubble-closeTimer'))
+        if not $node.data('popover')
+          makePopovers($node, that.placement)
 
-            if not that.noHover
-                $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, afterShow)) # true=hovered
-                $node.one 'mouseleave.bubble', () ->
-                  clearTimeout($node.data('aloha-bubble-openTimer'))
-                  if not $node.data('aloha-bubble-selected')
-                    # You have 500ms to move from the tag in the DOM to the popover.
-                    # If the mouse enters the popover then cancel the 'hide'
-                    $tip = $node.data('popover').$tip
-                    if $tip
-                      $tip.on 'mouseenter', () ->
-                        clearTimeout($node.data('aloha-bubble-closeTimer'))
-                      $tip.on 'mouseleave', () ->
-                        $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, afterHide)) if not $node.data('aloha-bubble-closeTimer')
+        if not that.noHover
+          $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, afterShow)) # true=hovered
+          $node.one 'mouseleave.bubble', () ->
+            clearTimeout($node.data('aloha-bubble-openTimer'))
+            if not $node.data('aloha-bubble-selected')
+              # You have 500ms to move from the tag in the DOM to the popover.
+              # If the mouse enters the popover then cancel the 'hide'
+              $tip = $node.data('popover').$tip
+              if $tip
+                $tip.on 'mouseenter', () ->
+                  clearTimeout($node.data('aloha-bubble-closeTimer'))
+                $tip.on 'mouseleave', () ->
+                  $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, afterHide)) if not $node.data('aloha-bubble-closeTimer')
 
-                    $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, afterHide)) if not $node.data('aloha-bubble-closeTimer')
+              $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, afterHide)) if not $node.data('aloha-bubble-closeTimer')
     stop: (editable) ->
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
