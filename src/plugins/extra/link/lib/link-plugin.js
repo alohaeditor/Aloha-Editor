@@ -46,7 +46,6 @@ define( [
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
-	'bubble/bubble-plugin',
 	'bubble/link'
 ], function (
 	Aloha,
@@ -62,7 +61,6 @@ define( [
 	i18n,
 	i18nCore,
 	console,
-	BubblePlugin,
 	BubbleLink
 ) {
 	'use strict';
