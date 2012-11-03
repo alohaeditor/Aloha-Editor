@@ -235,7 +235,6 @@ define([
 		// col/row resize settings
 		this.colResize = this.settings.colResize === undefined ? true : this.settings.colResize;
 		this.rowResize = this.settings.rowResize === undefined ? true : this.settings.rowResize;
-		this.liveResize = this.settings.liveResize === undefined ? true : this.settings.liveResize;
 
 		// add reference to the create layer object
 		this.createLayer = new CreateLayer( this );

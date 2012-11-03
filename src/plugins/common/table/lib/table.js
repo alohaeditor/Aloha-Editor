@@ -332,21 +332,21 @@ define([
 				if ( jQuery( this ).hasClass( 'aloha-table-selectrow' ) || jQuery( this ).closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ))
 					return;
 
-				var distanceFromRightBorder = function(cell) {
-					return jQuery( cell ).outerWidth() - ( e.pageX - jQuery( cell ).offset().left );
+				var distanceFromLeftBorder = function(cell) {
+					return ( e.pageX - jQuery( cell ).offset().left );
 				};
 
-				var distanceFromBottomBorder = function(cell) {
-					return jQuery( cell ).outerHeight() - ( e.pageY - jQuery( cell ).offset().top );
+				var distanceFromTopBorder = function(cell) {
+					return ( e.pageY - jQuery( cell ).offset().top );
 				};
 
 				var colResize = that.tablePlugin.colResize;
 				var rowResize = that.tablePlugin.rowResize;
 
-				if ( colResize && distanceFromRightBorder( this ) < 5 ) {
-					jQuery( this ).css( 'cursor', 'col-resize' );
-					return that.attachColumnResize( this );
-				} else if ( rowResize && distanceFromBottomBorder( this ) < 5 ) {
+				if ( colResize && distanceFromLeftBorder( this ) < 3 ) {
+					 	jQuery( this ).css( 'cursor', 'col-resize' );
+					 	return that.attachColumnResize(this );
+				} else if ( rowResize && distanceFromTopBorder( this ) < 3 ) {
 					jQuery( this ).css( 'cursor', 'row-resize' );
 					return that.attachRowResize( this );
 				} else {
@@ -1523,39 +1523,53 @@ define([
 
 		var that = this;
 
-		var liveResize = that.tablePlugin.liveResize;
-
 		//unbind any exisiting resize event handlers
 		that.detachRowColResize( cell );
 
-		var resizeColumn = function(e) {
-			var width = ( e.pageX - jQuery( cell ).offset().left );
+		var resizeColumns = function(curCell, pageX, basepoint) {
+			var pixelsMoved = ( pageX - basepoint );
+			console.log( "pixels moved:" + pixelsMoved);
 
-			// apply the width to all cells in the column
-			var columnId = jQuery( cell ).closest( 'tr' ).children().index( cell );
-			var rows = jQuery( cell ).closest( 'table' ).find( 'tr' );
+			var columnId = curCell.closest( 'tr' ).children().index( curCell );
+			var rows = curCell.closest( 'table' ).find( 'tr' );
 
-			for ( var i = 0; i < rows.length; i++ ) {
-				jQuery( jQuery( rows[i] ).children()[ columnId ] ).css( 'width', width );
-			}
+			//for ( var i = 0; i < rows.length; i++ ) {
+				var expandingCell = jQuery( jQuery( rows[1] ).children()[ columnId - 1 ] );
+				expandingCell.css( 'width', expandingCell.width() + pixelsMoved );
+
+				var reducingCell = jQuery( jQuery( rows[1] ).children()[ columnId ] )
+				reducingCell.css( 'width', reducingCell.width() - pixelsMoved );
+			//}
 		};
 
 		jQuery( cell ).bind( 'mousedown.resize', function(){
 
-			if ( liveResize ) {
-				jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
-					resizeColumn( e );
-				});
-			}
+			var basepoint = jQuery( cell ).offset().left;
+
+			// create a guide
+			var guide = jQuery( '<div></div>' );
+			guide.css({
+				'height': jQuery( cell ).closest( 'table' ).innerHeight(),
+				'width': jQuery( cell ).outerWidth() - jQuery( cell ).innerWidth(),
+				'top': jQuery( cell ).closest( 'table' ).offset().top,
+				'left': jQuery( cell ).offset().left,
+				'position': 'absolute',
+				'background-color': '#80B5F2',
+				'cursor': 'col-resize'
+			});
+
+			jQuery( 'body' ).append( guide );
+
+			jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
+				//resizeColumns( jQuery( cell ), e.pageX, basepoint );
+				guide.css('left', e.pageX);
+			});
 
 			jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
-				if ( liveResize ) {
-					jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
-				} else {
-					resizeColumn( e );
-				}
-
+				resizeColumns( jQuery( cell ), e.pageX, basepoint );
+			//	jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
 				jQuery( 'body' ).unbind( 'mouseup.dnd_col_resize' );
+				guide.remove();
 			});
 
 		});
@@ -1571,8 +1585,6 @@ define([
 
 		var that = this;
 
-		var liveResize = that.tablePlugin.liveResize;
-
 		//unbind any exisiting resize event handlers
 		that.detachRowColResize( cell );
 
@@ -1586,20 +1598,12 @@ define([
 
 		jQuery( cell ).bind( 'mousedown.resize', function(){
 
-			if ( liveResize ) {
-				jQuery( 'body' ).bind( 'mousemove.dnd_row_resize', function(e) {
-					resizeRow( e );
-				});
-			}
+			jQuery( 'body' ).bind( 'mousemove.dnd_row_resize', function(e) {
+				resizeRow( e );
+			});
 
 			jQuery( 'body' ).bind( 'mouseup.dnd_row_resize', function(e) {
-
-				if ( liveResize ) {
-					jQuery( 'body' ).unbind( 'mousemove.dnd_row_resize' );
-				} else {
-					resizeRow( e );
-				}
-
+				jQuery( 'body' ).unbind( 'mousemove.dnd_row_resize' );
 				jQuery( 'body' ).unbind( 'mouseup.dnd_row_resize' );
 			});
 
