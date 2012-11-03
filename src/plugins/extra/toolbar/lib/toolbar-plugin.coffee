@@ -102,7 +102,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "PubSub" ], (
       headings = CONTAINER_JQUERY.find(".changeHeading")
 
       headings.on 'click', changeHeading
-      headings.add(headings.parent()).removeClass('disabled missing-a-click-event')
+      headings.add(headings.parent()).removeClass('disabled missing-a-click-event').attr('disabled', undefined)
 
       Aloha.bind 'aloha-editable-activated', (event, data) ->
         squirreledEditable = data.editable
@@ -125,6 +125,27 @@ define [ "aloha", "aloha/plugin", "ui/ui", "PubSub" ], (
             #heading.addClass('active')
             # Update the toolbar to show the current heading level
             currentHeading.text(heading.text())
+
+
+    # Components of which we are the parent (not buttons) will call
+    # these when they are activated. Change it into an event so it can
+    # be implemented elsewhere.
+    childVisible: (childComponent, visible) ->
+        # publish an event
+        evt = $.Event('aloha.toolbar.childvisible')
+        evt.component = childComponent
+        evt.visible = visible
+        PubSub.pub(evt.type, evt)
+    childFocus: (childComponent) ->
+        # publish an event
+        evt = $.Event('aloha.toolbar.childfocus')
+        evt.component = childComponent
+        PubSub.pub(evt.type, evt)
+    childForeground: (childComponent) ->
+        # publish an event
+        evt = $.Event('aloha.toolbar.childforeground')
+        evt.component = childComponent
+        PubSub.pub(evt.type, evt)
 
     ###
      toString method

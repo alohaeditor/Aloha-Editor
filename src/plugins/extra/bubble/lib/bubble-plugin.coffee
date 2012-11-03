@@ -3,6 +3,8 @@
 # - selector: css selector for determining which elements to attach bubble events to
 # - populator: Javscript function that gets (a) the element and (b) the div that represents the bubble.
 #               This function will populate the bubble with buttons like "Add Title", "Change", etc
+# - helper: This member will be set when you register your bubble with
+#           register/bindHelper. Don't use it for something else.
 
 # bubble.coffee contains the code to attach all the correct listeners (like mouse events)
 #      moves the bubble to the correct spot, and triggers when the bubble should be populated
@@ -150,7 +152,6 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
   monkeyPatch()
 
 
-  helpers = []
   class Helper
     constructor: (cfg) ->
       # @selector
@@ -169,7 +170,7 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
           placement: that.placement or 'bottom'
           trigger: 'manual'
           content: () ->
-            that.populator.bind($node)($node) # Can't quite decide whether the populator code should use @ or the 1st arg.
+            that.populator.bind($node)($node, that) # Can't quite decide whether the populator code should use @ or the 1st arg.
 
     start: (editable) ->
       that = @
@@ -231,9 +232,15 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
       $nodes = jQuery(editable.obj).find(@selector)
-      $nodes.removeData('aloha-bubble-openTimer', 0)
-      $nodes.removeData('aloha-bubble-closeTimer', 0)
-      $nodes.removeData('aloha-bubble-selected', false)
+      $nodes.removeData('aloha-bubble-openTimer')
+      $nodes.removeData('aloha-bubble-closeTimer')
+      $nodes.removeData('aloha-bubble-selected')
+      $nodes.popover('destroy')
+
+    stopOne: ($nodes) ->
+      $nodes.removeData('aloha-bubble-openTimer')
+      $nodes.removeData('aloha-bubble-closeTimer')
+      $nodes.removeData('aloha-bubble-selected')
       $nodes.popover('destroy')
 
   findMarkup = (range=Aloha.Selection.getRangeObject(), selector) ->
@@ -259,6 +266,9 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
 
   bindHelper = (cfg) ->
     helper = new Helper(cfg)
+    # Place the created helper back onto the registering module, so we might
+    # locate it later
+    $.extend(cfg, helper: helper)
 
     afterShow = ($n) ->
       clearTimeout($n.data('aloha-bubble-openTimer'))
@@ -302,6 +312,8 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
             afterShow($el)
             $el.off('.bubble')
             event.stopPropagation()
+
+    return helper
 
   bindHelper linkConfig
   bindHelper figureConfig

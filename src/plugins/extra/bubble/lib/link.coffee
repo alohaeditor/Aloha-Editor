@@ -1,21 +1,25 @@
 # Aloha Link Plugin
 # * -----------------
 # * This plugin provides a bubble next to a link when it is selected
-# 
-define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
-  
+#
+define ['aloha', 'jquery', 'aloha/console', 'css!bubble/css/link.css'], (Aloha, jQuery, console) ->
+
   showModalDialog = ($a) ->
       root = Aloha.activeEditable.obj
       dialog = jQuery '''
       <div class="modal" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-          <h3 id="linkModalLabel">Edit Link</h3>
+          <h3 id="linkModalLabel">Edit link</h3>
         </div>
         <div class="modal-body">
-          <h4>Display Text</h4>
-          <input id="link-contents" class="input-xlarge" type="text" placeholder="Enter a phrase here"/>
-          <h4>Link Destination</h4>
+          <div id="link-text">
+            <h4>Text to display</h4>
+            <div>
+              <input id="link-contents" class="input-xlarge" type="text" placeholder="Enter a phrase here"/>
+            </div>
+          </div>
+          <h4 id="link-destination">Link Destination</h4>
           <div class="tabbable tabs-left"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-tabs">
               <li><a href="#link-tab-external" data-toggle="tab">External</a></li>
@@ -23,7 +27,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
             </ul>
             <div class="tab-content">
               <div class="tab-pane" id="link-tab-external">
-                <label for="link-external">Link to webpage</label>
+                <h4 for="link-external">Link to webpage</h4>
                 <input class="link-external" id="link-external" type="text" placeholder="http://"/>
               </div>
               <div class="tab-pane" id="link-tab-internal">
@@ -34,15 +38,15 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-primary link-save">Save changes</button>
+          <button class="btn btn-primary link-save">Submit</button>
           <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
         </div>
       </div>'''
-      
+
       if not $a.children()[0]
         linkContents = dialog.find('#link-contents')
         linkContents.val($a.text())
-      
+
       # Build the link options and then populate one of them.
       linkExternal = dialog.find('.link-external')
       linkInternal = dialog.find('.link-internal')
@@ -74,12 +78,12 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
         appendOption id, caption if caption[0]
 
       href = null
-      
+
       dialog.find('.link-tab-external').on 'shown', () -> href = linkExternal.val()
       dialog.find('.link-tab-internal').on 'shown', () -> href = linkInternal.val()
-      
+
       linkExternal.add(linkInternal).on 'change', () -> href = jQuery(@).val()
-      
+
       # Activate the current tab
       href = $a.attr('href')
 
@@ -119,7 +123,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
       # When a click occurs, the activeEditable is cleared so squirrel it
       editable = Aloha.activeEditable
       $bubble = jQuery('<div class="link-popover"></div>')
-      
+
       href = $el.attr('href')
       a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble)
       a.attr 'href', href
@@ -129,7 +133,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
       # TODO: Convert the mousedown to a click. To do that the aloha-deactivated event need to not hide the bubbles yet and instead fire a 'hide' event
       change.appendTo($bubble)
       change.on 'click', ->
-        # unquirrel the activeEditable
+        # unsquirrel the activeEditable
         Aloha.activeEditable = editable
         dialog = showModalDialog($el)
       $bubble.contents()

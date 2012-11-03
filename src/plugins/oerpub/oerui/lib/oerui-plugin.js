@@ -1,0 +1,4 @@
+define(['./bubbles'], function(){
+  return {
+  }
+});

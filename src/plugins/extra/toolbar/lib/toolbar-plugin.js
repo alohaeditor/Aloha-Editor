@@ -129,7 +129,7 @@
         };
         headings = CONTAINER_JQUERY.find(".changeHeading");
         headings.on('click', changeHeading);
-        headings.add(headings.parent()).removeClass('disabled missing-a-click-event');
+        headings.add(headings.parent()).removeClass('disabled missing-a-click-event').attr('disabled', void 0);
         Aloha.bind('aloha-editable-activated', function(event, data) {
           return squirreledEditable = data.editable;
         });
@@ -150,6 +150,25 @@
             }
           });
         });
+      },
+      childVisible: function(childComponent, visible) {
+        var evt;
+        evt = $.Event('aloha.toolbar.childvisible');
+        evt.component = childComponent;
+        evt.visible = visible;
+        return PubSub.pub(evt.type, evt);
+      },
+      childFocus: function(childComponent) {
+        var evt;
+        evt = $.Event('aloha.toolbar.childfocus');
+        evt.component = childComponent;
+        return PubSub.pub(evt.type, evt);
+      },
+      childForeground: function(childComponent) {
+        var evt;
+        evt = $.Event('aloha.toolbar.childforeground');
+        evt.component = childComponent;
+        return PubSub.pub(evt.type, evt);
       },
       /*
            toString method

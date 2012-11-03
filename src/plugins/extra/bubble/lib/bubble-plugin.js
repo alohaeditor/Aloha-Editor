@@ -71,7 +71,7 @@ There are 3 variables that are stored on each element;
 (function() {
 
   define(['aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcaption'], function(Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) {
-    var Bootstrap_Popover_destroy, Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, bindHelper, findMarkup, helpers, monkeyPatch, selectionChangeHandler;
+    var Bootstrap_Popover_destroy, Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, bindHelper, findMarkup, monkeyPatch, selectionChangeHandler;
     Bootstrap_Popover_show = function() {
       var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
       if (this.hasContent() && this.enabled) {
@@ -140,7 +140,6 @@ There are 3 variables that are stored on each element;
       return proto.destroy = Bootstrap_Popover_destroy;
     };
     monkeyPatch();
-    helpers = [];
     Helper = (function() {
 
       function Helper(cfg) {
@@ -158,7 +157,7 @@ There are 3 variables that are stored on each element;
             placement: that.placement || 'bottom',
             trigger: 'manual',
             content: function() {
-              return that.populator.bind($node)($node);
+              return that.populator.bind($node)($node, that);
             }
           });
         }
@@ -247,9 +246,16 @@ There are 3 variables that are stored on each element;
         var $nodes;
         jQuery(editable.obj).undelegate(this.selector, '.bubble');
         $nodes = jQuery(editable.obj).find(this.selector);
-        $nodes.removeData('aloha-bubble-openTimer', 0);
-        $nodes.removeData('aloha-bubble-closeTimer', 0);
-        $nodes.removeData('aloha-bubble-selected', false);
+        $nodes.removeData('aloha-bubble-openTimer');
+        $nodes.removeData('aloha-bubble-closeTimer');
+        $nodes.removeData('aloha-bubble-selected');
+        return $nodes.popover('destroy');
+      };
+
+      Helper.prototype.stopOne = function($nodes) {
+        $nodes.removeData('aloha-bubble-openTimer');
+        $nodes.removeData('aloha-bubble-closeTimer');
+        $nodes.removeData('aloha-bubble-selected');
         return $nodes.popover('destroy');
       };
 
@@ -284,6 +290,9 @@ There are 3 variables that are stored on each element;
     bindHelper = function(cfg) {
       var afterHide, afterShow, enteredLinkScope, helper, insideScope;
       helper = new Helper(cfg);
+      $.extend(cfg, {
+        helper: helper
+      });
       afterShow = function($n) {
         return clearTimeout($n.data('aloha-bubble-openTimer'));
       };
@@ -300,7 +309,7 @@ There are 3 variables that are stored on each element;
         insideScope = false;
         return enteredLinkScope = false;
       });
-      return Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
+      Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
         var $el, nodes;
         $el = jQuery(rangeObject.getCommonAncestorContainer());
         if (!$el.is(helper.selector)) {
@@ -329,6 +338,7 @@ There are 3 variables that are stored on each element;
           }
         }
       });
+      return helper;
     };
     bindHelper(linkConfig);
     bindHelper(figureConfig);
