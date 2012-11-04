@@ -328,30 +328,32 @@ define([
 	//
 			eventContainer.delegate( 'td', 'mousemove', function( e ) {
 
+				var jqObj = jQuery( this );
+
 				// filter out the control cells
 				if ( jQuery( this ).hasClass( 'aloha-table-selectrow' ) || jQuery( this ).closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ))
 					return;
 
 				var distanceFromLeftBorder = function(cell) {
-					return ( e.pageX - jQuery( cell ).offset().left );
+					return ( e.pageX - cell.offset().left );
 				};
 
 				var distanceFromTopBorder = function(cell) {
-					return ( e.pageY - jQuery( cell ).offset().top );
+					return ( e.pageY - cell.offset().top );
 				};
 
 				var colResize = that.tablePlugin.colResize;
 				var rowResize = that.tablePlugin.rowResize;
 
-				if ( colResize && distanceFromLeftBorder( this ) < 3 ) {
-					 	jQuery( this ).css( 'cursor', 'col-resize' );
-					 	return that.attachColumnResize(this );
-				} else if ( rowResize && distanceFromTopBorder( this ) < 3 ) {
-					jQuery( this ).css( 'cursor', 'row-resize' );
-					return that.attachRowResize( this );
+				if ( colResize && distanceFromLeftBorder( jqObj ) < 3 ) {
+					 	jqObj.css( 'cursor', 'col-resize' );
+					 	return that.attachColumnResize( jqObj );
+				} else if ( rowResize && distanceFromTopBorder( jqObj ) < 3 ) {
+					jqObj.css( 'cursor', 'row-resize' );
+					return that.attachRowResize( jqObj );
 				} else {
-					jQuery( this ).css( 'cursor', 'default' );
-					return that.detachRowColResize( this );
+					jqObj.css( 'cursor', 'default' );
+					return that.detachRowColResize( jqObj );
 				}
 			});
 
@@ -1526,48 +1528,52 @@ define([
 		//unbind any exisiting resize event handlers
 		that.detachRowColResize( cell );
 
-		var resizeColumns = function(curCell, pageX, basepoint) {
-			var pixelsMoved = ( pageX - basepoint );
-			console.log( "pixels moved:" + pixelsMoved);
+		var resizeColumns = function(pixelsMoved) {
+			var columnId = cell.closest( 'tr' ).children().index( cell );
+			var rows = cell.closest( 'table' ).find( 'tr' );
 
-			var columnId = curCell.closest( 'tr' ).children().index( curCell );
-			var rows = curCell.closest( 'table' ).find( 'tr' );
+			var expandingBaseCell = jQuery( jQuery( rows[1] ).children()[ columnId - 1 ] );
+			var reducingBaseCell = jQuery( jQuery( rows[1] ).children()[ columnId ] );
 
-			//for ( var i = 0; i < rows.length; i++ ) {
-				var expandingCell = jQuery( jQuery( rows[1] ).children()[ columnId - 1 ] );
-				expandingCell.css( 'width', expandingCell.width() + pixelsMoved );
+			var expandToWidth = expandingBaseCell.width() + pixelsMoved;
+			var reduceToWidth = reducingBaseCell.width() - pixelsMoved;
 
-				var reducingCell = jQuery( jQuery( rows[1] ).children()[ columnId ] )
-				reducingCell.css( 'width', reducingCell.width() - pixelsMoved );
-			//}
+			for ( var i = 0; i < rows.length; i++ ) {
+				var expandingCell = jQuery( jQuery( rows[i] ).children()[ columnId - 1 ] );
+				jQuery( expandingCell ).css( 'width', expandToWidth );
+				jQuery( expandingCell ).find('div').css( 'width', expandToWidth );
+
+				var reducingCell = jQuery( jQuery( rows[i] ).children()[ columnId ] );
+				jQuery( reducingCell ).css( 'width', reduceToWidth );
+				jQuery( reducingCell ).find('div').css( 'width', reduceToWidth );
+			}
+
 		};
 
-		jQuery( cell ).bind( 'mousedown.resize', function(){
-
-			var basepoint = jQuery( cell ).offset().left;
+		cell.bind( 'mousedown.resize', function() {
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
 			guide.css({
-				'height': jQuery( cell ).closest( 'table' ).innerHeight(),
+				'height': jQuery( cell ).closest( 'tbody' ).innerHeight(),
 				'width': jQuery( cell ).outerWidth() - jQuery( cell ).innerWidth(),
-				'top': jQuery( cell ).closest( 'table' ).offset().top,
+				'top': jQuery( cell ).closest( 'tbody' ).offset().top,
 				'left': jQuery( cell ).offset().left,
 				'position': 'absolute',
 				'background-color': '#80B5F2',
 				'cursor': 'col-resize'
 			});
-
 			jQuery( 'body' ).append( guide );
 
+			// handle resizing
 			jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
-				//resizeColumns( jQuery( cell ), e.pageX, basepoint );
-				guide.css('left', e.pageX);
+				guide.css( 'left', e.pageX );
 			});
 
 			jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
-				resizeColumns( jQuery( cell ), e.pageX, basepoint );
-			//	jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
+				var pixelsMoved = e.pageX - cell.offset().left;
+				resizeColumns( pixelsMoved );
+				jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
 				jQuery( 'body' ).unbind( 'mouseup.dnd_col_resize' );
 				guide.remove();
 			});
@@ -1588,26 +1594,49 @@ define([
 		//unbind any exisiting resize event handlers
 		that.detachRowColResize( cell );
 
-		var resizeRow = function(e) {
-			var height = ( e.pageY - jQuery( cell ).offset().top );
+		var resizeRows = function(pixelsMoved) {
+			var reducingRow = cell.closest( 'tr' );
+			var expandingRow = reducingRow.prev( 'tr' );
 
-			// apply the height to all cells in the row
-			var row = jQuery( cell ).closest( "tr" );
-			row.find( "td" ).css( 'height', height );
+			var expandingBaseCell = jQuery( expandingRow.children( 'td' )[ 1 ] );
+			var expandToHeight = expandingBaseCell.height() + pixelsMoved;
+
+			expandingRow.find( 'td' ).each( function() {
+				jQuery( this ).css( 'height', expandToHeight );
+				jQuery( this ).find('div').css( 'height', expandToHeight );
+			});
+
 		};
 
 		jQuery( cell ).bind( 'mousedown.resize', function(){
 
+			// create a guide
+			var guide = jQuery( '<div></div>' );
+			guide.css({
+				'width': jQuery( cell ).closest( 'tbody' ).innerWidth(),
+				'height': jQuery( cell ).outerHeight() - jQuery( cell ).innerHeight(),
+				'top': jQuery( cell ).offset().top,
+				'left': jQuery( cell ).closest( 'tbody' ).offset().left,
+				'position': 'absolute',
+				'background-color': '#80B5F2',
+				'cursor': 'row-resize'
+			});
+			jQuery( 'body' ).append( guide );
+
 			jQuery( 'body' ).bind( 'mousemove.dnd_row_resize', function(e) {
-				resizeRow( e );
+				guide.css( 'top', e.pageY );
 			});
 
 			jQuery( 'body' ).bind( 'mouseup.dnd_row_resize', function(e) {
+				var pixelsMoved = e.pageY - cell.offset().top;
+				resizeRows( pixelsMoved );
 				jQuery( 'body' ).unbind( 'mousemove.dnd_row_resize' );
 				jQuery( 'body' ).unbind( 'mouseup.dnd_row_resize' );
+				guide.remove();
 			});
 
 		});
+
 	};
 
 	/**
@@ -1617,7 +1646,7 @@ define([
 	 * @return void
 	 */
 	Table.prototype.detachRowColResize = function(cell) {
-		return jQuery(cell).unbind('mousedown.resize');
+		return cell.unbind('mousedown.resize');
 	};
 
 	/**
