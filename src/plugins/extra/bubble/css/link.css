@@ -3,6 +3,8 @@
  * as defined in bubble/link
  */
 
+/* hide future features */
+
 #link-destination {
   display: none;
 }
@@ -15,10 +17,29 @@ ul.nav.nav-tabs {
   display: none;
 }
 
+/* style the  Edit LInk dialog box */
+
+#linkModal {
+  height: auto;
+  width: 600px;
+}
+
+#linkModal .modal-header {
+  background-color: #9ABCDC; /* Connexions Blue */
+}
+
 #link-contents {
-  width: 90%;
+  width: 97%;
 }
 
 #link-external {
-  width: 90%;
+  width: 97%;
+}
+
+#link-text label {
+  font-weight: normal;
+}
+
+#link-tab-external label {
+  font-weight: normal;
 }

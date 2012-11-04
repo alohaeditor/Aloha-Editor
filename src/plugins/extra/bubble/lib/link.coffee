@@ -14,7 +14,7 @@ define ['aloha', 'jquery', 'aloha/console', 'css!bubble/css/link.css'], (Aloha, 
         </div>
         <div class="modal-body">
           <div id="link-text">
-            <h4>Text to display</h4>
+            <label>Text to display</label>
             <div>
               <input id="link-contents" class="input-xlarge" type="text" placeholder="Enter a phrase here"/>
             </div>
@@ -27,7 +27,7 @@ define ['aloha', 'jquery', 'aloha/console', 'css!bubble/css/link.css'], (Aloha, 
             </ul>
             <div class="tab-content">
               <div class="tab-pane" id="link-tab-external">
-                <h4 for="link-external">Link to webpage</h4>
+                <label for="link-external">Link to webpage</label>
                 <input class="link-external" id="link-external" type="text" placeholder="http://"/>
               </div>
               <div class="tab-pane" id="link-tab-internal">
