@@ -1560,16 +1560,16 @@ define([
 				'top': jQuery( cell ).closest( 'tbody' ).offset().top,
 				'left': jQuery( cell ).offset().left,
 				'position': 'absolute',
-				'background-color': '#80B5F2',
-				'cursor': 'col-resize'
+				'background-color': '#80B5F2'
 			});
 			jQuery( 'body' ).append( guide );
 
-			// handle resizing
+			// move the guide while dragging
 			jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
 				guide.css( 'left', e.pageX );
 			});
 
+			// do the actual resizing after drag stops
 			jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
 				var pixelsMoved = e.pageX - cell.offset().left;
 				resizeColumns( pixelsMoved );
@@ -1618,15 +1618,16 @@ define([
 				'top': jQuery( cell ).offset().top,
 				'left': jQuery( cell ).closest( 'tbody' ).offset().left,
 				'position': 'absolute',
-				'background-color': '#80B5F2',
-				'cursor': 'row-resize'
+				'background-color': '#80B5F2'
 			});
 			jQuery( 'body' ).append( guide );
 
+			// move the guide while dragging
 			jQuery( 'body' ).bind( 'mousemove.dnd_row_resize', function(e) {
 				guide.css( 'top', e.pageY );
 			});
 
+			// do the actual resizing after drag stops
 			jQuery( 'body' ).bind( 'mouseup.dnd_row_resize', function(e) {
 				var pixelsMoved = e.pageY - cell.offset().top;
 				resizeRows( pixelsMoved );
