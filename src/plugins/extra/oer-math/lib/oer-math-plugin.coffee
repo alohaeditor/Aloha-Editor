@@ -1,4 +1,4 @@
-define [ 'aloha', 'aloha/plugin', 'jquery', '../../../extra/bubble/lib/bubble-plugin', 'ui/ui', 'css!../../../extra/oer-math/css/math.css' ], (Aloha, Plugin, jQuery, Bubble, UI) ->
+define [ 'aloha', 'aloha/plugin', 'jquery', 'bubble', 'ui/ui', 'css!../../../extra/oer-math/css/math.css' ], (Aloha, Plugin, jQuery, Bubble, UI) ->
 
   EDITOR_HTML = '''
     <div class="math-editor-dialog">

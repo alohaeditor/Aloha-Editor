@@ -70,7 +70,7 @@ There are 3 variables that are stored on each element;
 
 (function() {
 
-  define(['aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcaption'], function(Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) {
+  define('bubble', ['aloha', 'jquery'], function(Aloha, jQuery) {
     var Bootstrap_Popover_destroy, Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, afterHide, afterShow, bindHelper, findMarkup, monkeyPatch, selectionChangeHandler;
     Bootstrap_Popover_show = function() {
       var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
@@ -349,9 +349,6 @@ There are 3 variables that are stored on each element;
       });
       return helper;
     };
-    bindHelper(linkConfig);
-    bindHelper(figureConfig);
-    bindHelper(figcaptionConfig);
     return {
       register: function(cfg) {
         return bindHelper(new Helper(cfg));
