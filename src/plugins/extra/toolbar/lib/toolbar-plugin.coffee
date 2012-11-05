@@ -34,7 +34,45 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
       foreground: (a) ->
         console && console.log "#{slot} TODO:FOREGROUND:", a
     return new ItemRelay()
-  
+
+  # Initially disable all the buttons and only enable them when events are attached to them
+  CONTAINER_JQUERY.find('.action').add(CONTAINER_JQUERY.find('a.action').parent())
+  .addClass('disabled missing-a-click-event')
+  .on 'click', (evt) -> evt.preventDefault()
+
+  # Hijack the toolbar buttons so we can customize where they are placed.
+  Ui.adopt = (slot, type, settings) ->
+    # publish an adoption event, if item finds a home, return the
+    # constructed component
+    evt = $.Event('aloha.toolbar.adopt')
+    $.extend(evt,
+        params:
+            slot: slot,
+            type: type,
+            settings: settings
+        component: null)
+    PubSub.pub(evt.type, evt)
+    if evt.isDefaultPrevented()
+      evt.component.adoptParent(toolbar)
+      return evt.component
+
+    $buttons = CONTAINER_JQUERY.find(".action.#{slot}")
+    # Since each button was initially disabled, enable it
+    #   also, sine actions in a submenu are an anchor tag, remove the "disabled" in the parent() <li>
+    $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event')
+    # Remove any stale click handlers
+    $buttons.off('click')
+    $buttons.on 'click', (evt) ->
+      evt.preventDefault()
+      Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
+      # The Table plugin requires this.element to work so it can pop open a
+      # window that selects the number of rows and columns
+      # Also, that's the reason for the bind(@)
+      @element = @
+      settings.click.bind(@)(evt)
+
+    return makeItemRelay slot, $buttons
+
   ###
    register the plugin with unique name
   ###
@@ -44,45 +82,6 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
       toolbar = @
       squirreledEditable = null
 
-      # Initially disable all the buttons and only enable them when events are attached to them
-      CONTAINER_JQUERY.find('.action').add(CONTAINER_JQUERY.find('a.action').parent())
-      .addClass('disabled missing-a-click-event')
-      .on 'click', (evt) -> evt.preventDefault()
-      
-      # Hijack the toolbar buttons so we can customize where they are placed.
-      Ui.adopt = (slot, type, settings) ->
-        # publish an adoption event, if item finds a home, return the
-        # constructed component
-        evt = $.Event('aloha.toolbar.adopt')
-        $.extend(evt,
-            params:
-                slot: slot,
-                type: type,
-                settings: settings
-            component: null)
-        PubSub.pub(evt.type, evt)
-        if evt.isDefaultPrevented()
-          evt.component.adoptParent(toolbar)
-          return evt.component
-
-        $buttons = CONTAINER_JQUERY.find(".action.#{slot}")
-        # Since each button was initially disabled, enable it
-        #   also, sine actions in a submenu are an anchor tag, remove the "disabled" in the parent() <li>
-        $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event')
-        # Remove any stale click handlers
-        $buttons.off('click')
-        $buttons.on 'click', (evt) ->
-          evt.preventDefault()
-          Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
-          # The Table plugin requires this.element to work so it can pop open a
-          # window that selects the number of rows and columns
-          # Also, that's the reason for the bind(@)
-          @element = @
-          settings.click.bind(@)(evt)
-
-        return makeItemRelay slot, $buttons
-
-      
       changeHeading = (evt) ->
         $el = jQuery(@)
         hTag = $el.attr('data-tagname')
