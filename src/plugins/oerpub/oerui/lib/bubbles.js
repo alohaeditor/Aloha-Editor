@@ -1,4 +1,4 @@
-define(['aloha', 'jquery', 'bubble', 'image/image-plugin'], function(
+define(['aloha', 'jquery', 'popover', 'image/image-plugin'], function(
     Aloha, $, BubblePlugin, ImagePlugin){
 
     // Register bubble for images
