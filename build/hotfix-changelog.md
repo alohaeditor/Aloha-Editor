@@ -14,3 +14,7 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html
 - **BUG**: core/aloha-links: Prevents yellow borders around aloha-links blocks
 - **BUG**: link-plugin: link scope remains active after the selection leaves an anchor element
+- **BUG**: blocks: The floating menu will appear when the editor double-clicks
+           in an editable block.
+- **BUG**: core/selection: Aloha no longer inadvertently removes ranges that
+		   are outside of editables.

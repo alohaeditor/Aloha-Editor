@@ -434,7 +434,7 @@ define([
 
 			if (jQuery.inArray(tagName, BlockPlugin.settings.rootTags) === -1) {
 				Aloha.Log.error('block/blockmanager', 'Blocks can only be created from [' +
-					BlockPlugin.settings.rootTags.join(', ') + ']' +
+					BlockPlugin.settings.rootTags.join(', ') +
 					'] element. You passed ' + tagName + '.');
 				return;
 			}

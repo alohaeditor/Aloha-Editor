@@ -50,7 +50,7 @@ define([
 		 * @constructor
 		 * @override
 		 */
-		_constructor: function(context, tabs) {
+		_constructor: function (context, tabs) {
 			var tabSettings,
 			    tabInstance,
 			    i,
@@ -80,7 +80,7 @@ define([
 			floating.makeFloating(this, Toolbar);
 		},
 
-		adoptInto: function(slot, component){
+		adoptInto: function (slot, component) {
 			var tab = this._tabBySlot[slot];
 			return tab && tab.adoptInto(slot, component);
 		},
@@ -93,27 +93,33 @@ define([
 			return this.$_container.data('aloha-tabs');
 		},
 
+		/**
+		 * Moves the toolbar into position near the active editable.
+		 *
+		 * @param {number} duration The length of time the moving animation
+		 *                          should run.
+		 */
 		_move: function (duration) {
 			// We need to order the invocation of the floating animation to
-			// occur after a sequence point so that the element's height will
-			// be correct.
-			var that = this;
-			if (this._moveTimeout) {
-				clearTimeout(this._moveTimeout);
+			// occur after the the height of the toolbar's DOM been caluclated.
+			var toolbar = this;
+			if (toolbar._moveTimeout) {
+				clearTimeout(toolbar._moveTimeout);
 			}
-			this._moveTimeout = setTimeout(function () {
-				that._moveTimeout = null;
+			toolbar._moveTimeout = setTimeout(function () {
+				toolbar._moveTimeout = null;
 				if (Aloha.activeEditable && Toolbar.isFloatingMode) {
-					that.$element.stop();
-					floating.floatSurface(that, Aloha.activeEditable, duration,
-						function (position) {
-							Toolbar.setFloatingPosition(position);
-						});
+					floating.floatSurface(
+						toolbar,
+						Aloha.activeEditable,
+						duration,
+						Toolbar.setFloatingPosition
+					);
 				}
-				// 20ms should be small enough to be near instant to
-				// the user but large enough to avoid doing unnecessary
-				// work when selection changes multiple times during a
-				// short time frame.
+				// 20ms should be small enough to appear instantaneous to the
+				// user but large enough to avoid doing unnecessary work when
+				// the selection changes multiple times within a short time
+				// frame.
 			}, 20);
 		},
 
