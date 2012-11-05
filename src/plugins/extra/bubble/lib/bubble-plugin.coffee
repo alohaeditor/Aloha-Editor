@@ -88,7 +88,7 @@ There are 3 variables that are stored on each element;
 
 ###
 
-define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcaption' ], (Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) ->
+define 'bubble', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
 
   # Monkeypatch the bootstrap Popover so we can inject clickable buttons
   Bootstrap_Popover_show = () ->
@@ -314,10 +314,6 @@ define [ 'aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcap
             event.stopPropagation()
 
     return helper
-
-  bindHelper linkConfig
-  bindHelper figureConfig
-  bindHelper figcaptionConfig
 
   return {
     register: (cfg) ->
