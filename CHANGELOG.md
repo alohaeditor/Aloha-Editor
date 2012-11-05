@@ -12,9 +12,10 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUG**: The change fixes a bug.
 
-# 0.22.x
+# 0.22.3
 
-- **FEATURE**: align-plugin: the align plugin is now capable of aligning table cell contents
+- **FEATURE**: align-plugin: The align plugin is now capable of aligning table cell contents.
+- **BUG**: table-plugin: Fixed a javascript error that occured when pressing enter in the table wai attribute field.
 
 ## 0.22.2 - 2012/10/08
 
