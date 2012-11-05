@@ -28,12 +28,17 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
     'ASCIIMath': 'math/asciimath'
 
   # Register the button with an action
-  #UI.adopt 'openMathEditor', null,
-  #  click: () ->
-  #      console.log 'math clicked!'
-  #      # Either insert a new span around the cursor and open the box or just open the box
-  #      if Aloha.activeEditable
-  #          openMathDialog($el)
+  UI.adopt 'insertMath', null,
+    click: () ->
+        # Either insert a new span around the cursor and open the box or just open the box
+        $el = jQuery('<span class="math-element">`x^2`</span>')
+        GENTICS.Utils.Dom.insertIntoDOM $el,
+          Aloha.Selection.getRangeObject(),
+          Aloha.activeEditable.obj
+        triggerMathJax($el)
+        MathJax.Hub.Typeset $el[0], ->
+          # Callback opens up the math editor by "clicking" on it
+          $el.trigger 'click'
 
   triggerMathJax = ($el) ->
     if not $el.attr('id')
