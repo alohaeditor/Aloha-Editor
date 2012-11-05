@@ -88,7 +88,7 @@ There are 3 variables that are stored on each element;
 
 ###
 
-define 'bubble', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
+define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
 
   # Monkeypatch the bootstrap Popover so we can inject clickable buttons
   Bootstrap_Popover_show = () ->

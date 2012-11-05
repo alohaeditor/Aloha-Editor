@@ -70,7 +70,7 @@ There are 3 variables that are stored on each element;
 
 (function() {
 
-  define('bubble', ['aloha', 'jquery'], function(Aloha, jQuery) {
+  define('popover', ['aloha', 'jquery'], function(Aloha, jQuery) {
     var Bootstrap_Popover_destroy, Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, bindHelper, findMarkup, monkeyPatch, selectionChangeHandler;
     Bootstrap_Popover_show = function() {
       var $tip, actualHeight, actualWidth, inside, placement, pos, tp;

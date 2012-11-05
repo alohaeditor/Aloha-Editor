@@ -2,7 +2,7 @@
 # * -----------------
 # * This plugin provides a bubble next to a link when it is selected
 #
-define ['aloha', 'jquery', 'aloha/console', 'css!bubble/css/link.css'], (Aloha, jQuery, console) ->
+define ['aloha', 'jquery', 'aloha/console', 'css!./link.css'], (Aloha, jQuery, console) ->
 
   showModalDialog = ($a) ->
       root = Aloha.activeEditable.obj
