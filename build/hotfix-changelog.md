@@ -15,3 +15,5 @@ All changes are categorized into one of the following keywords:
 - **BUG**: link-plugin: link scope remains active after the selection leaves an anchor element
 - **BUG**: blocks: The floating menu will appear when the editor double-clicks
            in an editable block.
+- **BUG**: core/selection: Aloha no longer inadvertently removes ranges that
+		   are outside of editables.
