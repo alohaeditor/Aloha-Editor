@@ -21,6 +21,17 @@
       'TeX': 'math/tex',
       'ASCIIMath': 'math/asciimath'
     };
+    UI.adopt('insertMath', null, {
+      click: function() {
+        var $el;
+        $el = jQuery('<span class="math-element">`x^2`</span>');
+        GENTICS.Utils.Dom.insertIntoDOM($el, Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
+        triggerMathJax($el);
+        return MathJax.Hub.Typeset($el[0], function() {
+          return $el.trigger('click');
+        });
+      }
+    });
     triggerMathJax = function($el) {
       var id;
       if (!$el.attr('id')) {
