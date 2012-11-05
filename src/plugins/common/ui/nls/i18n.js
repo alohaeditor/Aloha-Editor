@@ -41,6 +41,7 @@ define({
 		"tab.table.label": "Table",
 		"tab.col.label": "Table Column",
 		"tab.row.label": "Table Row",
+		"tab.cell.label": "Table Cell",
 		"tab.wai-lang.label": "Language annotation"
 	},
 		"ca": true,
