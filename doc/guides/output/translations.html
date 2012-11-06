@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: WAI Language Plugin</title>
+  <title>: Translate Aloha Editor and Plugins</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -90,64 +90,53 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2><span class="caps">WAI</span> Language Plugin</h2>
-<p>The <span class="caps">WAI</span> Language Plugin enables the editor to add language annotations to the content.</p>
+            <h2>Translate Aloha Editor and Plugins</h2>
+<p>In this guide you will learn how to use translations within Aloha Editor.</p>
 
           </div>
-        <h3 id="overview">1 Overview</h3>
-<p>If you use a number of different languages on a page, the <span class="caps">WAI</span> Lang plugin makes it easy to add &#8220;lang&#8221; attributes to the parts of the content where are language changes.</p>
-<h3 id="usage">2 Usage</h3>
-<p>Include the <tt>extra/wai-lang</tt> plugin in the plugin list of the Aloha-Editor.</p>
-<p>Select the text you want to annotate and click the &#8220;Add language annotation&#8221; button. <img src="images/plugins/wai-lang-add-annotation.png" style="width:620px"></p>
-<p>Start typing the language name or code in the input field and select the desired entry. <img src="images/plugins/wai-lang-select.png" style="width:620px"></p>
-<p>The text is surrounded with a span-tag with a <code>lang</code> attribute. As language code there will be the either the <span class="caps">ISO</span> 639‑1 two-letter code (default) or the <span class="caps">ISO</span> 639-2 three-letter code used. <img src="images/plugins/wai-lang-code.png" style="width:620px"></p>
+        <p>Aloha Editor and plugins (UI components) can be translated into your favorite language. Translations are made on gengo.com and will be imported via a build script.</p>
+<h3 id="translate-strings-on-gengo-com">1 Translate strings on gengo.com</h3>
+<p>Navigate to the translation interface on <a href="http://gengo.com/string/p/aloha-editor-1/">gengo.com</a></p>
+<p>If you are not already registerd you can <a href="http://gengo.com/string/p/aloha-editor-1/access/request">request access</a> to the Aloha Editor project &#8212; please tell us what language you would like to translate.</p>
+<h3 id="iso-codes">2 <span class="caps">ISO</span> Codes</h3>
+<p>We stick to the <a href="http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes"><span class="caps">ISO</span>-639-1 languages codes</a></p>
+<h3 id="import-strings-from-gengo-com">3 Import strings from gengo.com</h3>
+<p>To import all 100 % translated languages into Aloha Editor navigate to <tt>build/gengo/</tt> (in the development version you got from Github) and run the following command in the terminal:</p>
 <div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
+<pre class="brush: plain; gutter: false; toolbar: false">
 
-&lt;span 
-	class=&quot;aloha-wai-lang&quot; 
-	lang=&quot;de&quot; 
-	data-gentics-aloha-repository=&quot;wai-languages&quot; 
-	data-gentics-aloha-object-id=&quot;de&quot;&gt;
-	Guten Tag
-&lt;/span&gt;
-</pre></div><h3 id="components">3 Components</h3>
-<ul>
-	<li>Add language annotation button</li>
-	<li>Language annotation tab with input field for the language and a button to remove a annotation</li>
-</ul>
-<h3 id="configuration">4 Configuration</h3>
-<p>The <span class="caps">WAI</span> Language plugin provides the following configuration options:</p>
+	php gengo-export.php
+</pre></div><p>If you want to import a specific translation (eg. German with the <span class="caps">ISO</span> code <tt>de</tt>) run the following command:</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+	php gengo-export.php de
+</pre></div><p>Note that in this case it&#8217;s not required that the translation is 100 % complete.</p>
+<p>To see a list of the available languages / a short help message type:</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+	php gengo-export.php -h
+</pre></div><h3 id="configuration-and-available-translations">4 Configuration and available translations</h3>
+<p>To configure Aloha Editor to use a specific language (in this case German) use the following configuration:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-Aloha.settings.plugins: {
-	'wai-lang': {
-		iso639: 'iso639-1', // iso639-2 for three letter codes
-		flags: false,		// whether to show flags in the dropdown
-		config: [ 'span' ],
-		editables: {
-			// Don't allow wai-lang in top-text
-			'#top-text': [ ]
-		}
-	}
-};
-</pre></div><h3 id="further-information">5 Further Information</h3>
-<ul>
-	<li>Web Content Accessibility Guidelines: <a href="http://www.w3.org/TR/WAI-WEBCONTENT/#gl-abbreviated-and-foreign">w3c.org</a></li>
-	<li><span class="caps">HTML</span> Techniques for Web Content Accessibility Guidelines: <a href="http://www.w3.org/TR/WCAG10-HTML-TECHS/#language">w3c.org</a></li>
-	<li>Language code reference: <a href="http://www.loc.gov/standards/iso639-2/langhome.html">loc.gov</a></li>
-</ul>
+Aloha.settings.locale = &quot;de&quot;;
+</pre></div><p>By default all languages which are 100 % translated are available.</p>
+<p>For a list of available languages in Aloha Editor see: <a href="http://gengo.com/string/p/aloha-editor-1/">gengo.com</a>) or have a look at <tt>lib/aloha/nls/</tt></p>
+<h3 id="notes">5 Notes</h3>
+<p>When writing a plugin which is hosted on http://github.com/alohaeditor/ you&#8217;ll just need to add the master file for English &#8212; this can be imported into gengo.com Translations for other languages should always be exported from gengo.com</p>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#overview"><p>Overview</p>
-</a></li><li><a href="#usage"><p>Usage</p>
-</a></li><li><a href="#components"><p>Components</p>
-</a></li><li><a href="#configuration"><p>Configuration</p>
-</a></li><li><a href="#further-information"><p>Further Information</p>
+            <li><a href="#translate-strings-on-gengo-com"><p>Translate strings on gengo.com</p>
+</a></li><li><a href="#iso-codes"><p><span class="caps">ISO</span> Codes</p>
+</a></li><li><a href="#import-strings-from-gengo-com"><p>Import strings from gengo.com</p>
+</a></li><li><a href="#configuration-and-available-translations"><p>Configuration and available translations</p>
+</a></li><li><a href="#notes"><p>Notes</p>
 </a></li>
           </ol>
         </div>

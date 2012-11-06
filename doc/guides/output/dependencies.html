@@ -77,6 +77,7 @@
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+      <dd><a href="translations.html">Translations</a></dd>
 </dl>
 
 
@@ -97,8 +98,9 @@
 <p>It is necessary to include requirejs before Aloha. It is not necessary to include requirejs when using aloha-full.js, as that already includes requirejs (as well as jQuery).</p>
 <p>It is possible to build a custom version of Aloha that does not need requirejs, although that has not been tested at the time of this writing and requires a customized build profile. See <a href="develop_aloha.html">Customized Builds</a> for more information.</p>
 <h3 id="custom-jquery-jqueryui-and-other-modules">2 Custom jQuery, jQueryUI and other modules</h3>
+<div class="note"><p>If you experiencing problems when using custom versions of some modules, please go back to using the modules packaged with Aloha before making a bugreport.</p></div>
 <p>Aloha requires many third party modules. If these modules are not combined during building, they will be loaded at runtime by requirejs. Two of the most prominent modules are jQuery and jQueryUI.</p>
-<h4 id="custom-jquery-and-jquery-ui">2.1 Custom jQuery and jQuery UI</h4>
+<h4 id="custom-jquery">2.1 Custom jQuery</h4>
 <p>Requirejs exports the two functions require() and define() into the global namespace. If you define a module yourself using the global define(), requirejs will use that instead of loading it from its default location:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -117,12 +119,13 @@ if ( typeof define === &quot;function&quot; &amp;&amp; define.amd &amp;&amp; def
 
 &lt;!-- exports require() and define() into the global namespace --&gt;
 &lt;script src=&quot;aloha/src/lib/require.js&quot;&gt;&lt;/script&gt;
-&lt;!-- define('jquery'...); --&gt; 
+&lt;!-- defines the 'jquery' module --&gt; 
 &lt;script src=&quot;aloha/src/lib/vendor/jquery-1.7.2.js&quot;&gt;&lt;/script&gt;
-&lt;!-- Uses the jquery defined above --&gt;
+&lt;!-- uses the 'jquery' module defined above --&gt;
 &lt;script src=&quot;aloha/src/lib/aloha.js&quot;&gt;&lt;/script&gt;
-</pre></div><p>Note: if you include jQuery twice (once for your own project, and once       for aloha), the &#8216;jquery&#8217; module will be defined twice and aloha       will use one of those two &#8211; I don&#8217;t know exactly which.</p>
-<p>In addition to the define() mechanism above, it&#8217;s also possible to explicitly tell aloha to use the jQuery that you pass to it. This way you could load two different jQuery versions in the page and make sure aloha uses the right one.</p>
+</pre></div>
+<div class="note"><p>if you include jQuery twice (once for your own project, and once for aloha), the &#8216;jquery&#8217; module will be defined twice and aloha will use one of those two &#8211; I don&#8217;t know exactly which.</p></div>
+<p>In addition to the define() mechanism above, it&#8217;s also possible to explicitly tell aloha to use the jQuery that you pass to it. This way you could load two different versions of jQuery in the page and make sure aloha uses the right one.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
@@ -138,12 +141,22 @@ Aloha.settings.jQuery = window.jQuery.noConflict(true);
 &lt;/script&gt;
 &lt;script src=&quot;aloha/src/lib/require.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;aloha/src/lib/aloha.js&quot;&gt;&lt;/script&gt;
+</pre></div><p>When using multiple jQuery instances in the host page, you must use Aloha&#8217;s jQuery when you want to call aloha():</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+// Aloha.ready() is only necessary if jQuery was loaded asynchronously
+// instead of being passed directly to Aloha as explained above.
+Aloha.ready(function(){
+    Aloha.jQuery('#editable').aloha();
+});
 </pre></div><p>The above should always work for any project without causing any problems.</p>
-<p>But, the above would cause two versions of jQuery and two versions of jQuery UI to be loaded (a second jQuery UI would be loaded asynchronously by aloha). For optimal performance your only want to load one of each.</p>
-<p>Loading a single jQuery should be possible if the project that Aloha is part of uses a 1.7.x version of jQuery.</p>
+<p>If the host page already includes a version of jQuery, you can try to pass that to aloha instead of including an extra jQuery just for aloha. This may or may not work depending on the particular version of jQuery used by Aloha and the host page.</p>
+<div class="note"><p>at the time of this writing, aloha doesn&#8217;t yet support jquery-1.8.&#215;.</p></div>
+<h4 id="custom-jquery-ui">2.2 Custom jQuery UI</h4>
 <p>Loading a single jQuery UI is more problematic because aloha uses a not yet stable version of jQuery UI. The jQuery UI used by aloha is located in src/lib/vendor/jquery-ui-1.9m6.js.</p>
-<p>If the project Aloha is part of also uses jQuery UI, then we have an additionaly problem: when loading just a single jQuery, but two different versions of jQuery UI, either aloha or your project will end up with the wrong version of jQuery UI, because both instances of jQuery UI modify a single jQuery instance.</p>
-<p>We currently don&#8217;t have a workaround for this problem. The following example attempts to use jQuery.sub() to create a copy of jQuery so that two different jQuery UI versions can be used, but it doesn&#8217;t work &#8211; on Chrome I get the error &#8220;Uncaught TypeError: Object #<Object> has no method &#8216;easeOutExpo&#8217;&#8221;.</p>
+<p>If the host page also uses jQuery UI, then we have an additionaly problem: when loading just a single jQuery, but two different versions of jQuery UI, either aloha or your project will end up with the wrong version of jQuery UI, because both instances of jQuery UI modify a single jQuery instance.</p>
+<p>We currently don&#8217;t have a workaround for this problem. The following example attempts to use jQuery.sub() to create a copy of jQuery so that two different jQuery UI versions can be used, but it doesn&#8217;t work &#8211; on Chrome I get the error &#8220;Uncaught TypeError: Object #<Object> has no method &#8216;easeOutExpo&#8217;&#8221;. Any help with getting this working would be appreciated.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
@@ -156,16 +169,11 @@ Aloha.settings.jQuery = window.jQuery.sub();
 &lt;/script&gt;
 &lt;script src=&quot;aloha/src/lib/require.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;aloha/src/lib/aloha.js&quot;&gt;&lt;/script&gt;
-</pre></div><p>Note: you will need to access Aloha&#8217;s jQuery when you want to call aloha():</p>
-<div class="code_container">
-<pre class="brush: javascript; gutter: false; toolbar: false">
+</pre></div>
+<div class="note"><p>Aloha may work with older or newer versions of jQuery and jQuery UI, but since they are not tested against, please expect for things to break.</p></div>
 
-Aloha.ready(function(){
-    Aloha.jQuery('#editable').aloha();
-});
-</pre></div><p>Note: the jQuery that is given to Aloha should be the same version as       the one Aloha would load itself, which should be the most recent       version of jQuery. Older versions may work, but since older       versions are not tested against, please expect for things to       break.</p>
-<p>Note: the jQuery object that is given to Aloha will be extended by       Aloha.</p>
-<h4 id="customizing-other-modules">2.2 Customizing other modules</h4>
+<div class="note"><p>the jQuery object that is given to aloha will be extended (mutated) by multiple jQuery plugins that are part of aloha. If the host page also contains jQuery plugins, they may overlap potentially causing errors.</p></div>
+<h4 id="customizing-other-modules">2.3 Customizing other modules</h4>
 <p>There are other ways to customize the module loading for modules beside jQuery.</p>
 <ul>
 	<li>Use requirejs directly (preferred)</li>
@@ -173,7 +181,7 @@ Aloha.ready(function(){
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-define('jquery', function(){ return window.jQuery; })
+define('jquery'  , function(){ return window.jQuery; })
 define('jqueryui', function(){ return window.jQuery.ui; })
 </pre></div><ul>
 	<li>Use Aloha.settings.predefinedModules &#8211; does a define() call as above, except it also works if   requirejs is bundled as part of Aloha (aloha-full.js).   Using requirejs defines like above is preferred.</li>
@@ -181,22 +189,27 @@ define('jqueryui', function(){ return window.jQuery.ui; })
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
   
-Aloha.settings.predefinedModules = {'jquery': window.jQuery, 'jqueryui': window.jQuery.ui};
+Aloha.settings.predefinedModules = {
+	'jquery': window.jQuery,
+	'jqueryui': window.jQuery.ui
+};
 </pre></div><ul>
 	<li>Customize the requirejs path configuration &#8211; this will only work if   jQuery was not already defined via a call to define() as above.   Using requirejs defines like above is preferred.</li>
 </ul>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-  Aloha.settings.requireConfig.paths = {'jquery': 'path/to/jquery.js', 'jqueryui': 'path/to/jqueryui.js'};
+Aloha.settings.requireConfig.paths = {
+	'jquery': 'path/to/jquery.js',
+	'jqueryui': 'path/to/jqueryui.js'
+};
 </pre></div><ul>
 	<li>Customize the <a href="https://github.com/jrburke/r.js/">r.js</a> path   configuration &#8211; the r.js build profiles also contain path   configuration, like Aloha.settings.requireConfig.paths above, that can be   adapted. This is different from the other methods in that this   controls how Aloha will be combined, whereas the other methods control   runtime module loading. See <a href="develop_aloha.html">Customized Builds</a> for more information.</li>
 </ul>
 <p>Please note that if a &#8216;jqueryui&#8217; module is given this way, a &#8216;jquery&#8217; module must also be given this way, and the given &#8216;jqueryui&#8217; module must extend the given &#8216;jquery&#8217; module. The same rule holds for any other jQuery plugins.</p>
 <p>Also note that if a jQuery instance is given with Aloha.setings.predefinedModules or Aloha.settings.jQuery, it will be extended (jquery plugins will be registered on it).</p>
 <p>Care must be taken with both settings. Passing in a version of a module that differs from what Aloha expects may result in unpredictable behaviour.</p>
-<p>Also, the third part libraries that come with Aloha may have been patched to fix bugs or address Aloha specific issues. See the git log for each third party library for further information before redefining it.</p>
-<p>For this reason, if you experiencing problems when using custom versions of some modules, please go back to using the modules packaged with Aloha before making a bugreport.</p>
+<p>Also, the third party libraries that come with Aloha may have been patched to fix bugs or address Aloha specific issues. See the git log for each third party library for further information before redefining it.</p>
 
       </div>
         <div id="subCol">
@@ -204,7 +217,8 @@ Aloha.settings.predefinedModules = {'jquery': window.jQuery, 'jqueryui': window.
           <ol class="chapters">
             <li><a href="#requirejs"><p>requirejs</p>
 </a></li><li><a href="#custom-jquery-jqueryui-and-other-modules"><p>Custom jQuery, jQueryUI and other modules</p>
-</a><ul><li><a href="#custom-jquery-and-jquery-ui"><p>Custom jQuery and jQuery UI</p>
+</a><ul><li><a href="#custom-jquery"><p>Custom jQuery</p>
+</a></li> <li><a href="#custom-jquery-ui"><p>Custom jQuery UI</p>
 </a></li> <li><a href="#customizing-other-modules"><p>Customizing other modules</p>
 </a></li></ul></li>
           </ol>
