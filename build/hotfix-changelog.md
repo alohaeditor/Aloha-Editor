@@ -17,3 +17,5 @@ All changes are categorized into one of the following keywords:
            in an editable block.
 - **BUG**: core/selection: Aloha no longer inadvertently removes ranges that
 		   are outside of editables.
+- **BUG**: formatlesspaste-plugin: Formatless Paste Plugin fixed to correctly
+           process configuration settings.
