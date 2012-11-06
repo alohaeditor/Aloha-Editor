@@ -687,7 +687,7 @@ define([
 					that.focus();
 					that.selection.selectAll();
 
-					// set the selection type before updateing the scope
+					// set the selection type before updating the scope
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
@@ -1564,6 +1564,9 @@ define([
 			});
 			jQuery( 'body' ).append( guide );
 
+			// unset the selection type
+			that.selection.resizeMode = true;
+
 			// move the guide while dragging
 			jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
 				guide.css( 'left', e.pageX );
@@ -1573,8 +1576,13 @@ define([
 			jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
 				var pixelsMoved = e.pageX - cell.offset().left;
 				resizeColumns( pixelsMoved );
+
 				jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
 				jQuery( 'body' ).unbind( 'mouseup.dnd_col_resize' );
+
+				// unset the selection resize mode
+				that.selection.resizeMode = false;
+
 				guide.remove();
 			});
 
@@ -1622,6 +1630,9 @@ define([
 			});
 			jQuery( 'body' ).append( guide );
 
+			// set the selection resize mode
+			that.selection.resizeMode = true;
+
 			// move the guide while dragging
 			jQuery( 'body' ).bind( 'mousemove.dnd_row_resize', function(e) {
 				guide.css( 'top', e.pageY );
@@ -1631,8 +1642,13 @@ define([
 			jQuery( 'body' ).bind( 'mouseup.dnd_row_resize', function(e) {
 				var pixelsMoved = e.pageY - cell.offset().top;
 				resizeRows( pixelsMoved );
+
 				jQuery( 'body' ).unbind( 'mousemove.dnd_row_resize' );
 				jQuery( 'body' ).unbind( 'mouseup.dnd_row_resize' );
+
+				// unset the selection resize mode
+				that.selection.resizeMode = false;
+
 				guide.remove();
 			});
 
