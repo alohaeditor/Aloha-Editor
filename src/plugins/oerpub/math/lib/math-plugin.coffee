@@ -15,6 +15,10 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
         <label class="radio inline mime-type-mathml">
             <input type="radio" name="mime-type" value="math/mml"> MathML
         </label>
+        <div class="footer">
+            <button class="btn btn-primary done">Done</button>
+            <button class="btn btn-danger remove"><i class="icon-remove icon-white"></i> Remove</button>
+        </div>
     </div>
   '''
 
@@ -38,20 +42,25 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
         triggerMathJax($el)
         MathJax.Hub.Typeset $el[0], ->
           # Callback opens up the math editor by "clicking" on it
-          $el.trigger 'click'
+          $el.trigger 'mouseenter' # HACK To bind the popover events on the element
+          $el.trigger 'show'
 
-  triggerMathJax = ($el) ->
-    if not $el.attr('id')
-      id = 0
-      id++ while jQuery('#autogen-math-' + id)[0]
-      $el.attr('id', 'autogen-math-' + id)
-
-    id = $el.attr('id')
-    MathJax.Hub.queue.Push ['Typeset', MathJax.Hub, id]
+  triggerMathJax = ($el, cb) ->
+    MathJax.Hub.Typeset $el[0], cb
 
   # $span contains the span with LaTex/ASCIIMath
   buildEditor = ($span) ->
     $editor = jQuery(EDITOR_HTML);
+
+
+    # Bind some actions for the buttons
+    $editor.find('.done').on 'click', =>
+      $span.popover('hide')
+    $editor.find('.remove').on 'click', =>
+      $span.popover('hide')
+      $span.remove()
+
+
     $formula = $editor.find('.formula')
 
     # Set the formula in jQuery data if it hasn't been set before

@@ -166,6 +166,16 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       that = @
       # Make sure we don't create more than one popover for an element.
       if not $node.data('popover')
+        $node.on 'show', =>
+          clearTimeout($node.data('aloha-bubble-openTimer'))
+          $node.removeData('aloha-bubble-openTimer')
+          $node.removeData('aloha-bubble-closeTimer')
+          $node.popover 'show'
+        $node.on 'hide', =>
+          $node.removeData('aloha-bubble-openTimer')
+          $node.removeData('aloha-bubble-closeTimer')
+          $node.data('aloha-bubble-selected', false)
+          $node.popover 'hide'
         $node.popover
           placement: that.placement or 'bottom'
           trigger: 'manual'
@@ -176,20 +186,10 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       that = @
       $el = jQuery(editable.obj)
 
-      afterShow = ($n) ->
-        clearTimeout($n.data('aloha-bubble-openTimer'))
-
-      afterHide = ($n) ->
-        $n.data('aloha-bubble-selected', false)
-
       MILLISECS = 2000
-      delayTimeout = ($self, eventName, ms=MILLISECS, after=null) ->
+      delayTimeout = ($self, eventName, ms) ->
         return setTimeout(() ->
-          $self.popover(eventName)
-          $self.removeData('aloha-bubble-openTimer')
-          $self.removeData('aloha-bubble-closeTimer')
-          if after
-            after.bind($self)($self)
+          $self.trigger eventName
         , ms)
 
       makePopovers = ($nodes, placement) ->
@@ -214,7 +214,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
           makePopovers($node, that.placement)
 
         if not that.noHover
-          $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, afterShow)) # true=hovered
+          $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS))
           $node.one 'mouseleave.bubble', () ->
             clearTimeout($node.data('aloha-bubble-openTimer'))
             if not $node.data('aloha-bubble-selected')
@@ -225,9 +225,9 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
                 $tip.on 'mouseenter', () ->
                   clearTimeout($node.data('aloha-bubble-closeTimer'))
                 $tip.on 'mouseleave', () ->
-                  $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, afterHide)) if not $node.data('aloha-bubble-closeTimer')
+                  $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2)) if not $node.data('aloha-bubble-closeTimer')
 
-              $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, afterHide)) if not $node.data('aloha-bubble-closeTimer')
+              $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2)) if not $node.data('aloha-bubble-closeTimer')
     stop: (editable) ->
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
