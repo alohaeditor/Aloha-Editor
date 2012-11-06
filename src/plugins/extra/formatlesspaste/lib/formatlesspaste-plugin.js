@@ -209,6 +209,10 @@ define([
 
 			Aloha.bind('aloha-editable-activated', function ($event, data) {
 				var config = getEditableConfig(plugin, data.editable);
+				if (!config) {
+					return;
+				}
+
 				var pasteButton = plugin._toggleFormatlessPasteButton;
 
 				if (true === config.formatlessPasteOption) {
