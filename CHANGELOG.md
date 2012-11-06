@@ -12,7 +12,7 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUG**: The change fixes a bug.
 
-# 0.22.3
+## 0.22.3 - 2012/11/06
 
 - **MANUAL CHANGE**: Updated UI CSS regarding button selector;
 - **MANUAL CHANGE**: Added a demo of placeholders to boilerplate;
