@@ -1564,17 +1564,33 @@ define([
 			});
 			jQuery( 'body' ).append( guide );
 
+			// set the maximum and minimum resize
+			var maxPageX = ( jQuery( cell ).offset().left + jQuery( cell ).width() );
+			var minPageX = jQuery( cell ).prev().offset().left + ( jQuery( cell ).prev().outerWidth() - jQuery( cell ).prev().width());
+
 			// unset the selection type
 			that.selection.resizeMode = true;
 
 			// move the guide while dragging
 			jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
-				guide.css( 'left', e.pageX );
+				// limit the maximum resize
+				if ( e.pageX > minPageX && e.pageX < maxPageX ) {
+					guide.css( 'left', e.pageX );
+				}
 			});
 
 			// do the actual resizing after drag stops
 			jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
-				var pixelsMoved = e.pageX - cell.offset().left;
+				var pixelsMoved = 0;
+
+				if ( e.pageX < minPageX ) {
+					pixelsMoved = minPageX - cell.offset().left;
+				} else if ( e.pageX > minPageX && e.pageX < maxPageX ) {
+					pixelsMoved = e.pageX - cell.offset().left;
+				} else {
+				  pixelsMoved = maxPageX - cell.offset().left;
+				}
+
 				resizeColumns( pixelsMoved );
 
 				jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
