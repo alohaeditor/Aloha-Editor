@@ -3,7 +3,7 @@
 
   define(['aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oerpub/math/css/math.css'], function(Aloha, Plugin, jQuery, Bubble, UI) {
     var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, buildEditor, triggerMathJax;
-    EDITOR_HTML = '<div class="math-editor-dialog">\n    <div>\n        <textarea type="text" class="formula" rows="1"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n</div>';
+    EDITOR_HTML = '<div class="math-editor-dialog">\n    <div>\n        <textarea type="text" class="formula" rows="1"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n        <button class="btn btn-danger remove"><i class="icon-remove icon-white"></i> Remove</button>\n    </div>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
         open: '`',
@@ -28,25 +28,25 @@
         GENTICS.Utils.Dom.insertIntoDOM($el, Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
         triggerMathJax($el);
         return MathJax.Hub.Typeset($el[0], function() {
-          return $el.trigger('click');
+          $el.trigger('mouseenter');
+          return $el.trigger('show');
         });
       }
     });
-    triggerMathJax = function($el) {
-      var id;
-      if (!$el.attr('id')) {
-        id = 0;
-        while (jQuery('#autogen-math-' + id)[0]) {
-          id++;
-        }
-        $el.attr('id', 'autogen-math-' + id);
-      }
-      id = $el.attr('id');
-      return MathJax.Hub.queue.Push(['Typeset', MathJax.Hub, id]);
+    triggerMathJax = function($el, cb) {
+      return MathJax.Hub.Typeset($el[0], cb);
     };
     buildEditor = function($span) {
-      var $annotation, $editor, $formula, $tmp, formula, keyDelay, keyTimeout, lang, mimeType, radios;
+      var $annotation, $editor, $formula, $tmp, formula, keyDelay, keyTimeout, lang, mimeType, radios,
+        _this = this;
       $editor = jQuery(EDITOR_HTML);
+      $editor.find('.done').on('click', function() {
+        return $span.popover('hide');
+      });
+      $editor.find('.remove').on('click', function() {
+        $span.popover('hide');
+        return $span.remove();
+      });
       $formula = $editor.find('.formula');
       mimeType = $span.find('script[type]').attr('type') || 'math/asciimath';
       mimeType = mimeType.split(';')[0];
