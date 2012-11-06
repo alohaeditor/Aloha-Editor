@@ -2,7 +2,7 @@
 # * -----------------
 # * This plugin provides a bubble next to a link when it is selected
 #
-define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console', 'css!./link.css'], (Aloha, jQuery, Popover, UI, console) ->
+define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery, Popover, UI, console) ->
 
   DIALOG_HTML = '''
     <form class="modal" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">
@@ -14,7 +14,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console', 'css!./link.css'
         <div id="link-text">
           <h4>Text to display</h4>
           <div>
-            <input id="link-contents" class="input-xlarge" type="text" placeholder="Enter a phrase here"/>
+            <input id="link-contents" class="input-xlarge" type="text" placeholder="Enter a phrase here" required />
           </div>
         </div>
         <h4 id="link-destination">Link Destination</h4>
@@ -26,11 +26,11 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console', 'css!./link.css'
           <div class="tab-content">
             <div class="tab-pane" id="link-tab-external">
               <h4 for="link-external">Link to webpage</h4>
-              <input class="link-external" id="link-external" type="url" placeholder="http://"/>
+              <input class="link-input link-external" id="link-external" type="url" placeholder="http://"/>
             </div>
             <div class="tab-pane" id="link-tab-internal">
               <label for="link-internal">Link to a part in this document</label>
-              <select class="link-internal" id="link-internal" size="5" multiple="multiple"></select>
+              <select class="link-input link-internal" id="link-internal" size="5" multiple="multiple"></select>
             </div>
           </div>
         </div>
@@ -54,6 +54,8 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console', 'css!./link.css'
       linkInternal = dialog.find('.link-internal')
       linkSave     = dialog.find('.link-save')
 
+      # Combination of linkExternal and linkInternal
+      linkInput    = dialog.find('.link-input')
 
       appendOption = (id, contentsToClone) ->
         clone = contentsToClone[0].cloneNode(true)
@@ -66,25 +68,24 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console', 'css!./link.css'
       orgElements = root.find('h1,h2,h3,h4,h5,h6')
       figuresAndTables = root.find('figure,table')
       orgElements.filter(':not([id])').each ->
-        jQuery(this).attr 'id', GENTICS.Utils.guid()
+        jQuery(@).attr 'id', GENTICS.Utils.guid()
 
       orgElements.each ->
-        item = jQuery(this)
+        item = jQuery(@)
         id = item.attr('id')
         appendOption id, item
 
       figuresAndTables.each ->
-        item = jQuery(this)
+        item = jQuery(@)
         id = item.attr('id')
         caption = item.find('caption,figcaption')
         appendOption id, caption if caption[0]
 
-      href = null
-
-      dialog.find('.link-tab-external').on 'shown', () -> href = linkExternal.val()
-      dialog.find('.link-tab-internal').on 'shown', () -> href = linkInternal.val()
-
-      linkExternal.add(linkInternal).on 'change', () -> href = jQuery(@).val()
+      dialog.find('a[data-toggle=tab]').on 'shown', (evt) ->
+        prevTab = jQuery(jQuery(evt.relatedTarget).attr('href'))
+        newTab  = jQuery(jQuery(evt.target).attr('href'))
+        prevTab.find('.link-input').removeAttr('required')
+        newTab.find('.link-input').attr('required', true)
 
       # Activate the current tab
       href = $el.attr('href')
@@ -92,17 +93,16 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console', 'css!./link.css'
       # Clear up the active tabs
       dialog.find('.active').removeClass('active')
 
-      if href.match(/^#/)
-        linkInternal.val(href)
-        #dialog.find('#link-tab-internal').tab('show')
-        dialog.find('#link-tab-internal').addClass('active')
-        dialog.find('a[href=#link-tab-internal]').parent().addClass('active')
-      else # if href.match(/^https?:\/\//)
-        linkExternal.val(href)
-        #dialog.find('#link-tab-external').tab('show')
-        dialog.find('#link-tab-external').addClass('active')
-        dialog.find('a[href=#link-tab-external]').parent().addClass('active')
+      linkInputId = '#link-tab-external'
+      linkInputId = '#link-tab-internal' if $el.attr('href').match(/^#/)
 
+      #dialog.find('#link-tab-internal').tab('show')
+      dialog.find(linkInputId)
+      .addClass('active')
+      .find('.link-input')
+      .attr('required', true)
+      .val(href)
+      dialog.find("a[href=#{linkInputId}]").parent().addClass('active')
 
       dialog.on 'submit', (evt) =>
         evt.preventDefault()
@@ -112,6 +112,8 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console', 'css!./link.css'
           $el.append(linkContents.val())
 
         # Set the href based on the active tab
+        active = dialog.find('.link-input[required]')
+        href = active.val()
         $el.attr 'href', href
         dialog.modal('hide')
 
