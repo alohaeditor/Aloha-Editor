@@ -35,6 +35,7 @@
 define( [
 	'aloha',
 	'aloha/plugin',
+	'aloha/ephemera',
 	'jquery',
 	'ui/port-helper-attribute-field',
 	'ui/ui',
@@ -45,10 +46,11 @@ define( [
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
-	'link/../extra/linklist'
+	'bubble/link'
 ], function (
 	Aloha,
 	Plugin,
+	Ephemera,
 	jQuery,
 	AttributeField,
 	Ui,
@@ -58,7 +60,8 @@ define( [
 	ToggleButton,
 	i18n,
 	i18nCore,
-	console
+	console,
+	BubbleLink
 ) {
 	'use strict';
 	
@@ -67,7 +70,9 @@ define( [
 	    oldValue = '',
 	    newValue;
 	
-	return Plugin.create( 'link', {
+	Ephemera.classes('aloha-link-pointer', 'aloha-link-text');
+
+	return Plugin.create('link', {
 		/**
 		 * Configure the available languages
 		 */
@@ -579,79 +584,6 @@ define( [
 			}
 		},
 
-    /**
-     * Pops up a dialog that either creates a new link or changes 
-     * an existing one. callback is passed 1 non-null argument
-     * If the dialog is cancelled.
-     */
-    showModalDialog: function ( $a, callback ) {
-      var root = Aloha.activeEditable.obj;
-      var dialog = jQuery('<div class="link-chooser">');
-      var select = jQuery('<select class="link-list" size="5"></select>');
-      select.appendTo(dialog);
-      
-      var appendOption = function(id, contentsToClone) {
-        var clone = contentsToClone[0].cloneNode(true);
-        var contents = jQuery(clone).contents();
-        
-        var option = jQuery('<option></option>');
-        option.attr('value', '#' + id);
-        option.append(contents);
-        option.appendTo(select);
-      }      
-
-      // Append all the headings and then all the figure/table captions
-			var orgElements = root.find('h1,h2,h3,h4,h5,h6');
-			var figuresAndTables = root.find('figure,table');
-			
-			// HACK: Slap id's on the headings if they don't have any
-			orgElements.filter(':not([id])').each(function() {
-			  jQuery(this).attr('id', GENTICS.Utils.guid());
-			});
-
-			orgElements.each(function() {
-			  var item = jQuery(this);
-			  var id = item.attr('id');
-			  appendOption(id, item);
-			});
-			figuresAndTables.each(function() {
-			  var item = jQuery(this);
-			  var id = item.attr('id');
-			  var caption = item.find('caption,figcaption');
-			  appendOption(id, caption);
-			});
-			
-			// Try to select if the link already matches one of the options
-			select.val($a.attr('href'));
-			
-			var cancelled = null;
-			var onOk = function() {
-				// Validate and save the href if something is selected.
-				if(select.val()) {
-				  $a.attr('href',  select.val());
-					jQuery(this).dialog('close');
-				}
-			};
-			
-			var onCancel = function() {
-			  cancelled = true;
-				jQuery(this).dialog('close');
-			};
-			
-			var onClose = function() {
-			  callback(cancelled);
-			};
-
-      dialog.dialog({
-        modal: true,
-        buttons: {
-					'OK': onOk,
-					'Cancel': onCancel
-        },
-        close: onClose
-      });
-    },
-    
 		/**
 		 * Insert a new link at the current selection. When the selection is
 		 * collapsed, the link will have a default link text, otherwise the
@@ -670,54 +602,55 @@ define( [
 			}
 			
 			// do not nest a link inside a link
-			var isLink = this.findLinkMarkup( range );
-			if (isLink) {
-				this.showModalDialog(jQuery(isLink), function(){console.log('PHIL: callback');});
+			if ( this.findLinkMarkup( range ) ) {
 				return;
 			}
+			
+			// activate floating menu tab
+			this.hrefField.foreground();
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
 				GENTICS.Utils.Dom.extendToWord( range );
 			}
+			if ( range.isCollapsed() ) {
+				// insert a link with text here
+				linkText = i18n.t( 'newlink.defaulttext' );
+				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link">' + linkText + '</a>' );
+				GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
+				range.startContainer = range.endContainer = newLink.contents().get( 0 );
+				range.startOffset = 0;
+				range.endOffset = linkText.length;
+			} else {
+				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
+				GENTICS.Utils.Dom.addMarkup( range, newLink, false );
+			}
 
-      if ( range.isCollapsed() ) {
-        // insert a link with text here
-        linkText = i18n.t( 'newlink.defaulttext' );
-        newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link">' + linkText + '</a>' );
-        GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
-        range.startContainer = range.endContainer = newLink.contents().get( 0 );
-        range.startOffset = 0;
-        range.endOffset = linkText.length;
-      } else {
-        newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
-        GENTICS.Utils.Dom.addMarkup( range, newLink, false );
-      }
+			Aloha.activeEditable.obj.find( 'a.aloha-new-link' ).each( function ( i ) {
+				var popover;
+				var LinkHelper;
+				var link;
+				var $tip;
+				var changeButton;
 
-      newLink = Aloha.activeEditable.obj.find( 'a.aloha-new-link' );
-      newLink.each( function ( i ) {
-        that.addLinkEventHandlers( that );
-        jQuery(this).removeClass( 'aloha-new-link' );
-      } );
-
-
-      var callback = function() {
-        range.select();
-  
-        // focus has to become before prefilling the attribute, otherwise
-        // Chrome and Firefox will not focus the element correctly.
-        that.hrefField.focus();
-              
-        // prefill and select the new href
-        // We need this guard because sometimes the element has not yet been initialized
-        if ( that.hrefField.hasInputElem() ) {
-          jQuery( that.hrefField.getInputElem() ).attr( 'value', that.hrefValue ).select();
-        }
-        
-        that.hrefChange();
-      }; // callback
-
-			this.showModalDialog(newLink, callback);
+				var editable = Aloha.activeEditable;
+				that.addLinkEventHandlers( this );
+				// launch Edit Link dialog box ...
+				link = jQuery(this);
+				LinkHelper = BubbleLink.helper;
+				// create empty popover
+				popover = LinkHelper._makePopover(link);
+				if ( popover ) {
+					// populate popover
+					popover.setContent();
+					$tip = popover.tip();
+					// simulate a click on the chnage button in the link popover
+					changeButton = $tip.find("button.btn");
+					changeButton.click();
+				}
+				jQuery(this).removeClass( 'aloha-new-link' );
+				Aloha.activeEditable = editable;
+			} );
 		},
 
 		/**
@@ -785,23 +718,8 @@ define( [
 					this.hrefField.getItem()
 				);
 			}
-		},
-		
-		/**
-		 * Make the given jQuery object (representing an editable) clean for saving
-		 * Find all links and remove editing objects
-		 * @param obj jQuery object to make clean
-		 * @return void
-		 */
-		makeClean: function ( obj ) {
-			// find all link tags
-			obj.find( 'a' ).each( function () {
-				jQuery( this )
-					.removeClass( 'aloha-link-pointer' )
-					.removeClass( 'aloha-link-text' );
-			} );
 		}
-	} );
+	});
 
 	function selectionChangeHandler(that, rangeObject) {
 		var foundMarkup,

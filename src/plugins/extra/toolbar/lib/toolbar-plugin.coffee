@@ -1,6 +1,6 @@
-define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
-    "i18n!aloha/nls/i18n", "PubSub" ], (
-    Aloha, Plugin, Ui, i18n, i18nCore, PubSub) ->
+# including "ui/settings" has weird side effects, namely most of the buttons don't load
+define [ "aloha", "aloha/plugin", "ui/ui", "PubSub" ], (
+    Aloha, Plugin, Ui, PubSub) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
@@ -34,7 +34,45 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
       foreground: (a) ->
         console && console.log "#{slot} TODO:FOREGROUND:", a
     return new ItemRelay()
-  
+
+  # Initially disable all the buttons and only enable them when events are attached to them
+  CONTAINER_JQUERY.find('.action').add(CONTAINER_JQUERY.find('a.action').parent())
+  .addClass('disabled missing-a-click-event')
+  .on 'click', (evt) -> evt.preventDefault()
+
+  # Hijack the toolbar buttons so we can customize where they are placed.
+  Ui.adopt = (slot, type, settings) ->
+    # publish an adoption event, if item finds a home, return the
+    # constructed component
+    evt = $.Event('aloha.toolbar.adopt')
+    $.extend(evt,
+        params:
+            slot: slot,
+            type: type,
+            settings: settings
+        component: null)
+    PubSub.pub(evt.type, evt)
+    if evt.isDefaultPrevented()
+      evt.component.adoptParent(toolbar)
+      return evt.component
+
+    $buttons = CONTAINER_JQUERY.find(".action.#{slot}")
+    # Since each button was initially disabled, enable it
+    #   also, sine actions in a submenu are an anchor tag, remove the "disabled" in the parent() <li>
+    $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event')
+    # Remove any stale click handlers
+    $buttons.off('click')
+    $buttons.on 'click', (evt) ->
+      evt.preventDefault()
+      Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
+      # The Table plugin requires this.element to work so it can pop open a
+      # window that selects the number of rows and columns
+      # Also, that's the reason for the bind(@)
+      @element = @
+      settings.click.bind(@)(evt)
+
+    return makeItemRelay slot, $buttons
+
   ###
    register the plugin with unique name
   ###
@@ -44,45 +82,6 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
       toolbar = @
       squirreledEditable = null
 
-      # Initially disable all the buttons and only enable them when events are attached to them
-      CONTAINER_JQUERY.find('.action').add(CONTAINER_JQUERY.find('a.action').parent())
-      .addClass('disabled missing-a-click-event')
-      .on 'click', (evt) -> evt.preventDefault()
-      
-      # Hijack the toolbar buttons so we can customize where they are placed.
-      Ui.adopt = (slot, type, settings) ->
-        # publish an adoption event, if item finds a home, return the
-        # constructed component
-        evt = $.Event('aloha.toolbar.adopt')
-        $.extend(evt,
-            params:
-                slot: slot,
-                type: type,
-                settings: settings
-            component: null)
-        PubSub.pub(evt.type, evt)
-        if evt.isDefaultPrevented()
-          evt.component.adoptParent(toolbar)
-          return evt.component
-
-        $buttons = CONTAINER_JQUERY.find(".action.#{slot}")
-        # Since each button was initially disabled, enable it
-        #   also, sine actions in a submenu are an anchor tag, remove the "disabled" in the parent() <li>
-        $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event')
-        # Remove any stale click handlers
-        $buttons.off('click')
-        $buttons.on 'click', (evt) ->
-          evt.preventDefault()
-          Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
-          # The Table plugin requires this.element to work so it can pop open a
-          # window that selects the number of rows and columns
-          # Also, that's the reason for the bind(@)
-          @element = @
-          settings.click.bind(@)(evt)
-
-        return makeItemRelay slot, $buttons
-
-      
       changeHeading = (evt) ->
         $el = jQuery(@)
         hTag = $el.attr('data-tagname')
@@ -98,25 +97,25 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
         # $newEl.attr('id', $oldEl.attr('id))
         # Setting the id is commented because otherwise collaboration wouldn't register a change in the document
 
-      
+
       headings = CONTAINER_JQUERY.find(".changeHeading")
-      
+
       headings.on 'click', changeHeading
-      headings.add(headings.parent()).removeClass('disabled missing-a-click-event')
+      headings.add(headings.parent()).removeClass('disabled missing-a-click-event').attr('disabled', undefined)
 
       Aloha.bind 'aloha-editable-activated', (event, data) ->
         squirreledEditable = data.editable
-      
+
       # Keep track of the range because Aloha.Selection.obj seems to go {} sometimes
       Aloha.bind "aloha-selection-changed", (event, rangeObject) ->
         # Squirrel away the range because clicking the button changes focus and removed the range
         $el = Aloha.jQuery(rangeObject.startContainer)
-        
+
         # Set the default text (changeit if we're in a heading later in the loop)
         currentHeading = CONTAINER_JQUERY.find('.currentHeading')
         currentHeading.text(headings.first().text())
         currentHeading.on('click', (evt) -> evt.preventDefault())
-        
+
         headings.each () ->
           heading = jQuery(@)
           selector = heading.attr('data-tagname')
@@ -125,6 +124,27 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
             #heading.addClass('active')
             # Update the toolbar to show the current heading level
             currentHeading.text(heading.text())
+
+
+    # Components of which we are the parent (not buttons) will call
+    # these when they are activated. Change it into an event so it can
+    # be implemented elsewhere.
+    childVisible: (childComponent, visible) ->
+        # publish an event
+        evt = $.Event('aloha.toolbar.childvisible')
+        evt.component = childComponent
+        evt.visible = visible
+        PubSub.pub(evt.type, evt)
+    childFocus: (childComponent) ->
+        # publish an event
+        evt = $.Event('aloha.toolbar.childfocus')
+        evt.component = childComponent
+        PubSub.pub(evt.type, evt)
+    childForeground: (childComponent) ->
+        # publish an event
+        evt = $.Event('aloha.toolbar.childforeground')
+        evt.component = childComponent
+        PubSub.pub(evt.type, evt)
 
     ###
      toString method

@@ -70,75 +70,76 @@ There are 3 variables that are stored on each element;
 
 (function() {
 
-  define(['aloha', 'jquery', 'bubble/link', 'bubble/figure', 'bubble/title-figcaption'], function(Aloha, jQuery, linkConfig, figureConfig, figcaptionConfig) {
-    var Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, bindHelper, findMarkup, helpers, monkeyPatch, selectionChangeHandler;
-    if (true) {
-      Bootstrap_Popover_show = function() {
-        var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
-        if (this.hasContent() && this.enabled) {
-          $tip = this.tip();
-          this.setContent();
-          if (this.options.animation) {
-            $tip.addClass("fade");
-          }
-          placement = (typeof this.options.placement === "function" ? this.options.placement.call(this, $tip[0], this.$element[0]) : this.options.placement);
-          inside = /in/.test(placement);
-          $tip.css({
-            top: 0,
-            left: 0,
-            display: "block"
-          }).appendTo((inside ? this.$element : document.body));
-          pos = this.getPosition(inside);
-          actualWidth = $tip[0].offsetWidth;
-          actualHeight = $tip[0].offsetHeight;
-          switch ((inside ? placement.split(" ")[1] : placement)) {
-            case "bottom":
-              tp = {
-                top: pos.top + pos.height,
-                left: pos.left + pos.width / 2 - actualWidth / 2
-              };
-              break;
-            case "top":
-              tp = {
-                top: pos.top - actualHeight - 10,
-                left: pos.left + pos.width / 2 - actualWidth / 2
-              };
-              break;
-            case "left":
-              tp = {
-                top: pos.top + pos.height / 2 - actualHeight / 2,
-                left: pos.left - actualWidth
-              };
-              break;
-            case "right":
-              tp = {
-                top: pos.top + pos.height / 2 - actualHeight / 2,
-                left: pos.left + pos.width
-              };
-          }
-          $tip.css(tp).addClass(placement).addClass("in");
-          /* Trigger the shown event
-          */
-
-          return this.$element.trigger('shown-popover');
+  define('popover', ['aloha', 'jquery'], function(Aloha, jQuery) {
+    var Bootstrap_Popover_destroy, Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, bindHelper, findMarkup, monkeyPatch, selectionChangeHandler;
+    Bootstrap_Popover_show = function() {
+      var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
+      if (this.hasContent() && this.enabled) {
+        $tip = this.tip();
+        this.setContent();
+        if (this.options.animation) {
+          $tip.addClass("fade");
         }
+        placement = (typeof this.options.placement === "function" ? this.options.placement.call(this, $tip[0], this.$element[0]) : this.options.placement);
+        inside = /in/.test(placement);
+        $tip.css({
+          top: 0,
+          left: 0,
+          display: "block"
+        }).appendTo((inside ? this.$element : document.body));
+        pos = this.getPosition(inside);
+        actualWidth = $tip[0].offsetWidth;
+        actualHeight = $tip[0].offsetHeight;
+        switch ((inside ? placement.split(" ")[1] : placement)) {
+          case "bottom":
+            tp = {
+              top: pos.top + pos.height,
+              left: pos.left + pos.width / 2 - actualWidth / 2
+            };
+            break;
+          case "top":
+            tp = {
+              top: pos.top - actualHeight - 10,
+              left: pos.left + pos.width / 2 - actualWidth / 2
+            };
+            break;
+          case "left":
+            tp = {
+              top: pos.top + pos.height / 2 - actualHeight / 2,
+              left: pos.left - actualWidth
+            };
+            break;
+          case "right":
+            tp = {
+              top: pos.top + pos.height / 2 - actualHeight / 2,
+              left: pos.left + pos.width
+            };
+        }
+        $tip.css(tp).addClass(placement).addClass("in");
+        /* Trigger the shown event
+        */
+
+        return this.$element.trigger('shown-popover');
+      }
+    };
+    Bootstrap_Popover_hide = function(originalHide) {
+      return function() {
+        originalHide.bind(this)();
+        return this.$element.trigger('hidden-popover');
       };
-      Bootstrap_Popover_hide = function(originalHide) {
-        return function() {
-          originalHide.bind(this)();
-          return this.$element.trigger('hidden-popover');
-        };
-      };
-      monkeyPatch = function() {
-        var proto;
-        console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable');
-        proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype;
-        proto.show = Bootstrap_Popover_show;
-        return proto.hide = Bootstrap_Popover_hide(proto.hide);
-      };
-      monkeyPatch();
-    }
-    helpers = [];
+    };
+    Bootstrap_Popover_destroy = function() {
+      return this.hide().off('.' + this.type).removeData(this.type);
+    };
+    monkeyPatch = function() {
+      var proto;
+      console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable');
+      proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype;
+      proto.show = Bootstrap_Popover_show;
+      proto.hide = Bootstrap_Popover_hide(proto.hide);
+      return proto.destroy = Bootstrap_Popover_destroy;
+    };
+    monkeyPatch();
     Helper = (function() {
 
       function Helper(cfg) {
@@ -149,44 +150,40 @@ There are 3 variables that are stored on each element;
       }
 
       Helper.prototype._makePopover = function($node) {
-        var that;
+        var that,
+          _this = this;
         that = this;
         if (!$node.data('popover')) {
+          $node.on('show', function() {
+            clearTimeout($node.data('aloha-bubble-openTimer'));
+            $node.removeData('aloha-bubble-openTimer');
+            $node.removeData('aloha-bubble-closeTimer');
+            return $node.popover('show');
+          });
+          $node.on('hide', function() {
+            $node.removeData('aloha-bubble-openTimer');
+            $node.removeData('aloha-bubble-closeTimer');
+            $node.data('aloha-bubble-selected', false);
+            return $node.popover('hide');
+          });
           return $node.popover({
             placement: that.placement || 'bottom',
             trigger: 'manual',
             content: function() {
-              return that.populator.bind($node)($node);
+              return that.populator.bind($node)($node, that);
             }
           });
         }
       };
 
       Helper.prototype.start = function(editable) {
-        var $el, MILLISECS, afterHide, afterShow, delayTimeout, makePopovers, that;
+        var $el, MILLISECS, delayTimeout, makePopovers, that;
         that = this;
         $el = jQuery(editable.obj);
-        afterShow = function($n) {
-          return clearTimeout($n.data('aloha-bubble-openTimer'));
-        };
-        afterHide = function($n) {
-          return $n.data('aloha-bubble-selected', false);
-        };
         MILLISECS = 2000;
-        delayTimeout = function($self, eventName, ms, after) {
-          if (ms == null) {
-            ms = MILLISECS;
-          }
-          if (after == null) {
-            after = null;
-          }
+        delayTimeout = function($self, eventName, ms) {
           return setTimeout(function() {
-            $self.popover(eventName);
-            $self.removeData('aloha-bubble-openTimer');
-            $self.removeData('aloha-bubble-closeTimer');
-            if (after) {
-              return after.bind($self)($self);
-            }
+            return $self.trigger(eventName);
           }, ms);
         };
         makePopovers = function($nodes, placement) {
@@ -216,7 +213,7 @@ There are 3 variables that are stored on each element;
             makePopovers($node, that.placement);
           }
           if (!that.noHover) {
-            $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS, afterShow));
+            $node.data('aloha-bubble-openTimer', delayTimeout($node, 'show', MILLISECS));
             return $node.one('mouseleave.bubble', function() {
               var $tip;
               clearTimeout($node.data('aloha-bubble-openTimer'));
@@ -228,12 +225,12 @@ There are 3 variables that are stored on each element;
                   });
                   $tip.on('mouseleave', function() {
                     if (!$node.data('aloha-bubble-closeTimer')) {
-                      return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, afterHide));
+                      return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2));
                     }
                   });
                 }
                 if (!$node.data('aloha-bubble-closeTimer')) {
-                  return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2, afterHide));
+                  return $node.data('aloha-bubble-closeTimer', delayTimeout($node, 'hide', MILLISECS / 2));
                 }
               }
             });
@@ -245,9 +242,16 @@ There are 3 variables that are stored on each element;
         var $nodes;
         jQuery(editable.obj).undelegate(this.selector, '.bubble');
         $nodes = jQuery(editable.obj).find(this.selector);
-        $nodes.removeData('aloha-bubble-openTimer', 0);
-        $nodes.removeData('aloha-bubble-closeTimer', 0);
-        $nodes.removeData('aloha-bubble-selected', false);
+        $nodes.removeData('aloha-bubble-openTimer');
+        $nodes.removeData('aloha-bubble-closeTimer');
+        $nodes.removeData('aloha-bubble-selected');
+        return $nodes.popover('destroy');
+      };
+
+      Helper.prototype.stopOne = function($nodes) {
+        $nodes.removeData('aloha-bubble-openTimer');
+        $nodes.removeData('aloha-bubble-closeTimer');
+        $nodes.removeData('aloha-bubble-selected');
         return $nodes.popover('destroy');
       };
 
@@ -282,6 +286,9 @@ There are 3 variables that are stored on each element;
     bindHelper = function(cfg) {
       var afterHide, afterShow, enteredLinkScope, helper, insideScope;
       helper = new Helper(cfg);
+      $.extend(cfg, {
+        helper: helper
+      });
       afterShow = function($n) {
         return clearTimeout($n.data('aloha-bubble-openTimer'));
       };
@@ -298,7 +305,7 @@ There are 3 variables that are stored on each element;
         insideScope = false;
         return enteredLinkScope = false;
       });
-      return Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
+      Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
         var $el, nodes;
         $el = jQuery(rangeObject.getCommonAncestorContainer());
         if (!$el.is(helper.selector)) {
@@ -327,10 +334,8 @@ There are 3 variables that are stored on each element;
           }
         }
       });
+      return helper;
     };
-    bindHelper(linkConfig);
-    bindHelper(figureConfig);
-    bindHelper(figcaptionConfig);
     return {
       register: function(cfg) {
         return bindHelper(new Helper(cfg));
