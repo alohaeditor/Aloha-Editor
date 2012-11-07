@@ -140,8 +140,6 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
   Bootstrap_Popover_destroy = () ->
     @hide().off('.' + @type).removeData(@type)
 
-
-
   # Apply the monkey patch
   monkeyPatch = () ->
     console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
@@ -151,6 +149,10 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
     proto.destroy = Bootstrap_Popover_destroy
   monkeyPatch()
 
+
+  Popover =
+    MILLISECS: 2000
+    register: (cfg) -> bindHelper(new Helper(cfg))
 
   class Helper
     constructor: (cfg) ->
@@ -165,7 +167,6 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
     startAll: (editable) ->
       $el = jQuery(editable.obj)
 
-      MILLISECS = 2000
       delayTimeout = ($self, eventName, ms) ->
         return setTimeout(() ->
           $self.trigger eventName
@@ -214,7 +215,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
 
         if not @noHover
           ## (STATE_*) -> (STATE_WC)
-          $node.data('aloha-bubble-timer', delayTimeout($node, 'show', MILLISECS)) ## (STATE_WC) -> (STATE_O)
+          $node.data('aloha-bubble-timer', delayTimeout($node, 'show', Popover.MILLISECS)) ## (STATE_WC) -> (STATE_O)
           $node.on 'mouseleave.bubble', =>
             if not $node.data('aloha-bubble-selected')
               # You have 500ms to move from the tag in the DOM to the popover.
@@ -227,9 +228,9 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
                 $tip.on 'mouseleave', =>
                   clearTimeout($node.data('aloha-bubble-timer'))
                   if not $node.data('aloha-bubble-selected')
-                    $node.data('aloha-bubble-timer', delayTimeout($node, 'hide', MILLISECS / 2)) ## (STATE_WO) -> (STATE_*)
+                    $node.data('aloha-bubble-timer', delayTimeout($node, 'hide', Popover.MILLISECS / 2)) ## (STATE_WO) -> (STATE_*)
 
-              $node.data('aloha-bubble-timer', delayTimeout($node, 'hide', MILLISECS / 2)) if not $node.data('aloha-bubble-timer')
+              $node.data('aloha-bubble-timer', delayTimeout($node, 'hide', Popover.MILLISECS / 2)) if not $node.data('aloha-bubble-timer')
     stopAll: (editable) ->
       # Remove all events and close all bubbles
       jQuery(editable.obj).undelegate(@selector, '.bubble')
@@ -305,7 +306,4 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
 
     return helper
 
-  return {
-    register: (cfg) ->
-      bindHelper(new Helper(cfg))
-  }
+  return Popover
