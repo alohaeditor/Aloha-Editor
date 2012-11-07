@@ -80,9 +80,8 @@
       return dialog;
     };
     selector = 'a';
-    populator = function() {
-      var $bubble, $el, a, change, editable, href;
-      $el = this;
+    populator = function($el) {
+      var $bubble, a, change, editable, href;
       editable = Aloha.activeEditable;
       $bubble = jQuery('<div class="link-popover"></div>');
       href = $el.attr('href');

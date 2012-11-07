@@ -13,8 +13,7 @@ define ['aloha', 'jquery', 'aloha/console', 'css!./title-figcaption.css'], (Aloh
 
   selector = '.title,figcaption'
 
-  populator = () ->
-      $el = @
+  populator = ($el) ->
       # When a click occurs, the activeEditable is cleared so squirrel it
       editable = Aloha.activeEditable
       $bubble = jQuery '<button class="btn btn-danger"><i class="icon-remove icon-white"></i> Remove</button>'

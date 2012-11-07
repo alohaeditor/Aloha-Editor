@@ -4,9 +4,8 @@
   define(['aloha', 'jquery', 'aloha/console'], function(Aloha, jQuery, console) {
     var populator, selector;
     selector = 'figure';
-    populator = function($bubble) {
-      var $button, $el, separator;
-      $el = this;
+    populator = function($el) {
+      var $bubble, $button, separator;
       $bubble = jQuery('<div class="figure-popover btn-group"></div>');
       if (!$el.children('.title:not(.empty)')[0]) {
         $button = jQuery('<button class="btn">Add Title</button>');
