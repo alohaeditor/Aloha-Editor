@@ -7,20 +7,6 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
-- **BUG**: Fix base tag breaks Aloha Editor UI
-- **ENHANCEMENT**: Trigger the 'aloha-smart-content-changed' event with `triggerType` = `block-change` whenever an attribute of an Aloha Block is changed.
-- **FEATURE**: improved translation export from gengo.com to Aloha Editor
-	<code>
-	Aloha.settings.plugins: {
-		captionedImage: {
-			allowLinebreak: [ 'p' ], // ['br', 'p'], true or false (default)
-		}
-	}
-	</code>
-
-- **MANUAL CHANGE**: Updated UI CSS regarding button selector;
-- **MANUAL CHANGE**: Added a demo of placeholders to boilerplate;
-- **BUG**: Fix calling mahalo in a blur event handler
 - **BUG**: Fix support for editable anchor elements
 - **ENHANCEMENT**: The Ephmera API was changed
 	aloha-cleanme class has been renamed to aloha-ephemera.
@@ -30,4 +16,4 @@ All changes are categorized into one of the following keywords:
 	The mark* functions are now optional (modifications performed by these functions are documented and part of the API).
 - **ENHANCEMENT**: jquery-ui and jquery.layout were upgraded
 - **BUG**: Fixes image path in css file in repository browser #764
-
+- **BUG**: link-plugin: Fix anchor class would always be set to cssclass even when cssclassregex was not configured

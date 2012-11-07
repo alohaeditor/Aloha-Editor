@@ -7,8 +7,6 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
-- **BUG**: All repositories have been queried even if a target repository
 
-	has been spezified. Now only the spezified repository is queried.
-
-- **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html
+- **BUG**: formatlesspaste-plugin: Formatless Paste Plugin fixed to correctly
+           process configuration settings.
