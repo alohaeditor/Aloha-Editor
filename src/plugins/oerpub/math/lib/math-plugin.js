@@ -28,7 +28,6 @@
         GENTICS.Utils.Dom.insertIntoDOM($el, Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
         triggerMathJax($el);
         return MathJax.Hub.Typeset($el[0], function() {
-          $el.trigger('mouseenter');
           return $el.trigger('show');
         });
       }
@@ -41,10 +40,10 @@
         _this = this;
       $editor = jQuery(EDITOR_HTML);
       $editor.find('.done').on('click', function() {
-        return $span.popover('hide');
+        return $span.trigger('hide');
       });
       $editor.find('.remove').on('click', function() {
-        $span.popover('hide');
+        $span.trigger('hide');
         return $span.remove();
       });
       $formula = $editor.find('.formula');
