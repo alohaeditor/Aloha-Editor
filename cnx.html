@@ -268,7 +268,7 @@
       jQuery('<div></div>').insertBefore('.document').load('cnx-toolbar.html').children().unwrap();
     //});
     Aloha.ready( function() {
-      Aloha.jQuery('.document').aloha();
+      Aloha.jQuery('.document').aloha().focus();
       // Wait until Aloha is started before loading MathJax
       // Also, wrap all math in a span/div. MathJax replaces the MathJax element
       // losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
