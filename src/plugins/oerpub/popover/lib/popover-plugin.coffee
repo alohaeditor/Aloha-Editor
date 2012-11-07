@@ -169,18 +169,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       if @focus or @blur
         console and console.warn 'Popover.focus and Popover.blur are deprecated in favor of listening to the "shown-popover" or "hidden-popover" events on the original DOM element'
 
-    _makePopover: ($node) ->
-      that = @
-      # Make sure we don't create more than one popover for an element.
-      if not $node.data('popover')
-        $node.popover
-          placement: that.placement or 'bottom'
-          trigger: 'manual'
-          content: () ->
-            that.populator.bind($node)($node, that) # Can't quite decide whether the populator code should use @ or the 1st arg.
-
     startAll: (editable) ->
-      that = @
       $el = jQuery(editable.obj)
 
       MILLISECS = 2000
@@ -189,29 +178,35 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
           $self.trigger eventName
         , ms)
 
-      makePopovers = ($nodes, placement) ->
-        $nodes.each () ->
-          $node = jQuery(@)
-          if that.focus
-            $node.on 'shown-popover', () ->
-              that.focus.bind($node[0])($node.data('popover').$tip)
-          if that.blur
-            $node.on 'hidden-popover', () ->
-              that.blur.bind($node[0])()
-          that._makePopover($node)
+      makePopovers = ($nodes) =>
+        $nodes.each (i, node) =>
+          $node = jQuery(node)
+          if @focus
+            $node.on 'shown-popover', =>
+              @focus.bind($node[0])($node.data('popover').$tip)
+          if @blur
+            $node.on 'hidden-popover', =>
+              @blur.bind($node[0])()
 
-      makePopovers($el.find(@selector), @placement)
-      that = @
+          # Make sure we don't create more than one popover for an element.
+          if not $node.data('popover')
+            $node.popover
+              placement: @placement or 'bottom'
+              trigger: 'manual'
+              content: =>
+                @populator.bind($node)($node, @) # Can't quite decide whether the populator code should use @ or the 1st arg.
 
-      $el.on 'show', @selector, ->
-        $node = jQuery(@)
+      $el.on 'show', @selector, (evt) =>
+        $node = jQuery(evt.target)
         clearTimeout($node.data('aloha-bubble-timer'))
         $node.removeData('aloha-bubble-timer')
         if not $node.data('aloha-bubble-visible')
+          # If the popover data hasn't been configured yet then configure it
+          makePopovers($node)
           $node.popover 'show'
           $node.data('aloha-bubble-visible', true)
-      $el.on 'hide', @selector, ->
-        $node = jQuery(@)
+      $el.on 'hide', @selector, (evt) =>
+        $node = jQuery(evt.target)
         clearTimeout($node.data('aloha-bubble-timer'))
         $node.removeData('aloha-bubble-timer')
         $node.data('aloha-bubble-selected', false)
@@ -220,25 +215,23 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
           $node.removeData('aloha-bubble-visible')
 
       # The only reason I map mouseenter is so I can catch new elements that are added to the DOM
-      $el.on 'mouseenter.bubble', @selector, () ->
-        $node = jQuery(@)
+      $el.on 'mouseenter.bubble', @selector, (evt) =>
+        $node = jQuery(evt.target)
         clearTimeout($node.data('aloha-bubble-timer'))
-        if not $node.data('popover')
-          makePopovers($node, that.placement)
 
-        if not that.noHover
+        if not @noHover
           ## (STATE_*) -> (STATE_WC)
           $node.data('aloha-bubble-timer', delayTimeout($node, 'show', MILLISECS)) ## (STATE_WC) -> (STATE_O)
-          $node.on 'mouseleave.bubble', () ->
+          $node.on 'mouseleave.bubble', =>
             if not $node.data('aloha-bubble-selected')
               # You have 500ms to move from the tag in the DOM to the popover.
               # If the mouse enters the popover then cancel the 'hide'
               $tip = $node.data('popover').$tip
               if $tip
-                $tip.on 'mouseenter', () ->
+                $tip.on 'mouseenter', =>
                   ## (STATE_WO) -> (STATE_TIP)
                   clearTimeout($node.data('aloha-bubble-timer'))
-                $tip.on 'mouseleave', () ->
+                $tip.on 'mouseleave', =>
                   clearTimeout($node.data('aloha-bubble-timer'))
                   if not $node.data('aloha-bubble-selected')
                     $node.data('aloha-bubble-timer', delayTimeout($node, 'hide', MILLISECS / 2)) ## (STATE_WO) -> (STATE_*)
@@ -312,8 +305,6 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
           if not $el.is(helper.selector)
             $el = $el.parents(helper.selector)
           if enteredLinkScope
-            $el.data('aloha-bubble-selected', true)
-            helper._makePopover($el)
             $el.trigger 'show'
             $el.data('aloha-bubble-selected', true)
             $el.off('.bubble')
