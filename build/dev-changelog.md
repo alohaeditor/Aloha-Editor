@@ -15,4 +15,5 @@ All changes are categorized into one of the following keywords:
 	ephemera.attrMap doesn't accept 'ELEMENT.attribute': true entries any more, instead use 'attribute': ['ELEMENT'].
 	The mark* functions are now optional (modifications performed by these functions are documented and part of the API).
 - **ENHANCEMENT**: jquery-ui and jquery.layout were upgraded
+- **ENHANCEMENT**: used hints from #749 to improve file size of icons
 - **BUG**: link-plugin: Fix anchor class would always be set to cssclass even when cssclassregex was not configured
