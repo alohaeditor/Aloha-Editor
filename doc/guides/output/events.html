@@ -77,6 +77,7 @@
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+      <dd><a href="translations.html">Translations</a></dd>
 </dl>
 
 
@@ -92,13 +93,24 @@
             <h2>Aloha Editor Events</h2>
 
           </div>
-        <p>Aloha has two mechanisms for subscribing to and publishing events.</p>
+        <h3 id="two-event-mechanisms">1 Two event mechanisms</h3>
+<p>Aloha has two mechanisms for subscribing to and publishing events.</p>
 <p>The old bind/trigger mechanism uses jQuery&#8217;s bind() and trigger() behind the scenes and currently handles most of the events fired by Aloha:</p>
-Aloha.bind(&#8216;event-name&#8217;, function (jQuery.Event, eventArgument) {});
-Aloha.trigger(&#8216;event-name&#8217;, eventArgument);
-<p>We are now in the process of replacing this <span class="caps">API</span> with a PubSub mechanism that we implement ourselves. The advantage of implementing it ourselves is that we have greater flexibility when we need to make extensions to the event system in the future. Also, the PubSub mechanism has less overhead (important for IE7) and a slightly cleaner <span class="caps">API</span> (requirejs module; forces a map argument; no event object).</p>
-<p>define([&#8216;PubSub&#8217;], function (PubSub) {     PubSub.sub(&#8216;event.name&#8217;, function (eventArgument) {});     PusSub.pub(&#8216;event.name&#8217;, {key: value}); });</p>
-<h4>aloha-command-will-execute Event</h4>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.bind('event-name', function (jQuery.Event, eventArgument) {});
+Aloha.trigger('event-name', eventArgument);
+</pre></div><p>We are now in the process of replacing this <span class="caps">API</span> with a PubSub mechanism that we implement ourselves. The advantage of implementing it ourselves is that we have greater flexibility when we need to make extensions to the event system in the future. Also, the PubSub mechanism has less overhead (important for IE7) and a slightly cleaner <span class="caps">API</span> (requirejs module; forces a map argument; no event object).</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define(['PubSub'], function (PubSub) {
+    PubSub.sub('event.name', function (eventArgument) {});
+    PusSub.pub('event.name', {key: value});
+});
+</pre></div><h3 id="available-events">2 Available events</h3>
+<h4 id="aloha-command-will-execute-event">2.1 aloha-command-will-execute Event</h4>
 <p>This event is triggered before a command will be executed. The commandId hold the command which should be executed (eg. bold).</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -107,31 +119,31 @@ Aloha.trigger( 'aloha-command-will-execute', {
 	'commandId'			: , // the command as string
 	'preventDefault'	: , // boolean; default: false
 } );
-</pre></div><h4>aloha-command-executed Event</h4>
+</pre></div><h4 id="aloha-command-executed-event">2.2 aloha-command-executed Event</h4>
 <p>This event is triggered after a command was executed with the <tt>Engine.execCommand</tt> method.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-command-executed', // command as string );
-</pre></div><h4>aloha-logger-ready Event</h4>
+</pre></div><h4 id="aloha-logger-ready-event">2.3 aloha-logger-ready Event</h4>
 <p>This event is triggered when the Aloha Editor logger is fully initialized.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-logger-ready' );
-</pre></div><h4>aloha-log-full Event</h4>
+</pre></div><h4 id="aloha-log-full-event">2.4 aloha-log-full Event</h4>
 <p>This event is triggered when the Aloha Editor log history is fully (definded by <tt>Aloha.settings.logHistory.maxEntries</tt>).</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-log-full' );
-</pre></div><h4>aloha-ready Event</h4>
+</pre></div><h4 id="aloha-ready-event">2.5 aloha-ready Event</h4>
 <p>When Aloha Editor is fully initialized (the core, plugins and UI) the <tt>aloha-ready</tt> event is triggered.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-ready' );
-</pre></div><h4>aloha-editable-created Event</h4>
+</pre></div><h4 id="aloha-editable-created-event">2.6 aloha-editable-created Event</h4>
 <p>This event fires after a new editable has been created, eg. via <tt>$( '#editme' ).aloha()</tt></p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -139,7 +151,7 @@ Aloha.trigger( 'aloha-ready' );
 Aloha.trigger( 'aloha-editable-created', [
 	// jQuery object reference of an editable
 ] );
-</pre></div><h4>aloha-editable-destroyed Event</h4>
+</pre></div><h4 id="aloha-editable-destroyed-event">2.7 aloha-editable-destroyed Event</h4>
 <p>This event fires after a new editable has been destroyed, eg. via <tt>$( '#editme' ).mahalo()</tt></p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -147,7 +159,7 @@ Aloha.trigger( 'aloha-editable-created', [
 Aloha.trigger( 'aloha-editable-destroyed', [ 
 	// jQuery object reference of an editable
 ] );
-</pre></div><h4>aloha-editable-activated Event</h4>
+</pre></div><h4 id="aloha-editable-activated-event">2.8 aloha-editable-activated Event</h4>
 <p>This event notifies the system that an editable has been activated by clicking on it.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -156,7 +168,7 @@ Aloha.trigger( 'aloha-editable-activated', {
 	'oldActive'		: , //object of the editable
 	'editable'		: , //object of the editable
 } );
-</pre></div><h4>aloha-editable-deactivated Event</h4>
+</pre></div><h4 id="aloha-editable-deactivated-event">2.9 aloha-editable-deactivated Event</h4>
 <p>When an editable has been deactivated by clicking on a non editable part of the page or on an other editable this event is triggered.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -164,9 +176,9 @@ Aloha.trigger( 'aloha-editable-activated', {
 Aloha.trigger( 'aloha-editable-deactivated', {
 	'editable'		: , //object of the editable
 } );
-</pre></div><h4>aloha-smart-content-changed Event</h4>
+</pre></div><h4 id="aloha-smart-content-changed-event">2.10 aloha-smart-content-changed Event</h4>
 <p>A smart content change occurs when a special editing action, or a combination of interactions are performed by the user during the course of editing within an editable.</p>
-<p>The smart content change event would therefore signal to any component that is listening to this event, that content has been inserted into the editable that may need to be prococessed in a special way. The smart content change event is also triggered after an idle period that follows rapid, basic changes to the contents of an editable such as when the user is typing.</p>
+<p>The smart content change event would therefore signal to any component that is listening to this event, that content has been inserted (or changed) into the editable that may need to be processed in a special way. It even lets you know when an Aloha Block has changed (i.e. when any of its attributes have changed). The smart content change event is also triggered after an idle period that follows rapid, basic changes to the contents of an editable such as when the user is typing.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
@@ -175,10 +187,10 @@ Aloha.trigger( 'aloha-smart-content-changed', {
 	'keyIdentifier'		: , // char | null
 	'keyCode'			: , // char | null
 	'char'				: , // char | null
-	'triggerType'		: , // keypress, idle, blur, paste
+	'triggerType'		: , // keypress, idle, blur, paste, block-change
 	'snapshotContent'	: , // snapshot content of the editable as HTML String
 } );
-</pre></div><h4>aloha-block-selected Event</h4>
+</pre></div><h4 id="aloha-block-selected-event">2.11 aloha-block-selected Event</h4>
 <p>Processing of cursor keys will currently detect blocks (elements with contenteditable=false) and selects them (normally the cursor would jump right past them). This will also trigger the <tt>aloha-block-selected</tt> event.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -186,7 +198,7 @@ Aloha.trigger( 'aloha-smart-content-changed', {
 Aloha.trigger( 'aloha-block-selected', 
 	// DOM object (range selection)
 );
-</pre></div><h4>aloha-selection-changed Event</h4>
+</pre></div><h4 id="aloha-selection-changed-event">2.12 aloha-selection-changed Event</h4>
 <p>This event is triggered when there are changes of the selection (using the mouse or cursor).</p>
 <p>It is not recommended to bind to this event unless you know what you are doing. Instead consider subscribing to &#8216;aloha.selection.context-change&#8217;.</p>
 <div class="code_container">
@@ -196,7 +208,7 @@ Aloha.trigger( 'aloha-selection-changed', [
 	this.rangeObject, // range object
 	event // browser event object
 ] );
-</pre></div><h4>aloha.selection.context-change Event</h4>
+</pre></div><h4 id="aloha-selection-context-change-event">2.13 aloha.selection.context-change Event</h4>
 The argument to the event handler contains two properties
 <ul>
 	<li>range the current value of Aloha.Selection.getRangeObject()</li>
@@ -216,35 +228,35 @@ because it does not fire as often, and because it is not fired at all
 when the user is just typing. To be able to type without introducing
 perceptible lag is an important aspect of editor-performance;
 unnecessary processing should therefore be avoided whenever possible.
-<h3 id="plugin-image">1 Plugin: Image</h3>
+<h3 id="plugin-image">3 Plugin: Image</h3>
 <p>Events provided by the Image Plugin.</p>
-<h4 id="aloha-image-unselected-event">1.1 aloha-image-unselected Event</h4>
+<h4 id="aloha-image-unselected-event">3.1 aloha-image-unselected Event</h4>
 <p>When an image is unselected by the user.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-image-unselected' );
-</pre></div><h4 id="aloha-image-selected-event">1.2 aloha-image-selected Event</h4>
+</pre></div><h4 id="aloha-image-selected-event">3.2 aloha-image-selected Event</h4>
 <p>When an image is selected by the user.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-image-selected' );
-</pre></div><h3 id="plugin-link">2 Plugin: Link</h3>
+</pre></div><h3 id="plugin-link">4 Plugin: Link</h3>
 <p>Events provided by the Link Plugin.</p>
-<h4 id="aloha-link-selected-event">2.1 aloha-link-selected Event</h4>
+<h4 id="aloha-link-selected-event">4.1 aloha-link-selected Event</h4>
 <p>Triggers when a link is selected.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-link-selected' );
-</pre></div><h4 id="aloha-link-unselected-event">2.2 aloha-link-unselected Event</h4>
+</pre></div><h4 id="aloha-link-unselected-event">4.2 aloha-link-unselected Event</h4>
 <p>Triggers when a link was selected and the selection is removed.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-link-unselected' );
-</pre></div><h4 id="aloha-link-href-change-event">2.3 aloha-link-href-change Event</h4>
+</pre></div><h4 id="aloha-link-href-change-event">4.3 aloha-link-href-change Event</h4>
 <p>Triggers when a href attribute of a link is changed.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -254,29 +266,29 @@ Aloha.trigger( 'aloha-link-href-change', {
 	 'href'			: , // URL of the repository item displayed to the user as string
 	 'item'			: , // object of the repository item which is used
 } );
-</pre></div><h3 id="plugin-table">3 Plugin: Table</h3>
+</pre></div><h3 id="plugin-table">5 Plugin: Table</h3>
 <p>Events provided by the Table Plugin.</p>
-<h4 id="aloha-table-selection-changed-event">3.1 aloha-table-selection-changed Event</h4>
+<h4 id="aloha-table-selection-changed-event">5.1 aloha-table-selection-changed Event</h4>
 <p>Triggers when one or more cells of a table are selected or unselected.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-table-selection-changed' );
-</pre></div><h4 id="aloha-table-activated-event">3.2 aloha-table-activated Event</h4>
+</pre></div><h4 id="aloha-table-activated-event">5.2 aloha-table-activated Event</h4>
 <p>After an existing dom-table is transformed into an editable Aloha Editor table this event is triggered.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-table-activated' );
-</pre></div><h3 id="plugin-draganddropfiles">4 Plugin: DragAndDropFiles</h3>
+</pre></div><h3 id="plugin-draganddropfiles">6 Plugin: DragAndDropFiles</h3>
 <p>Events provided by the DragAndDropFiles Plugin.</p>
-<h4 id="aloha-allfiles-upload-prepared-event">4.1 aloha-allfiles-upload-prepared Event</h4>
+<h4 id="aloha-allfiles-upload-prepared-event">6.1 aloha-allfiles-upload-prepared Event</h4>
 <p>After all files are prepared for the upload (<tt>aloha-file-upload-prepared</tt>) this event is triggered.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-allfiles-upload-prepared' );
-</pre></div><h4 id="aloha-drop-files-in-editable-event">4.2 aloha-drop-files-in-editable Event</h4>
+</pre></div><h4 id="aloha-drop-files-in-editable-event">6.2 aloha-drop-files-in-editable Event</h4>
 <p>Is triggerd when files are dropped into an editable part.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -286,51 +298,51 @@ Aloha.trigger( 'aloha-drop-files-in-editable', {
 	'range'			: , // range object of the target
 	'editable'		: , // jQuery object of the target editable
 } );
-</pre></div><h4 id="aloha-drop-files-in-page-event">4.3 aloha-drop-files-in-page Event</h4>
+</pre></div><h4 id="aloha-drop-files-in-page-event">6.3 aloha-drop-files-in-page Event</h4>
 <p>Is triggerd when files are dropped into the page and not an editable.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-drop-files-in-page', // object of dropped files );
-</pre></div><h4 id="aloha-file-upload-prepared-event">4.4 aloha-file-upload-prepared Event</h4>
+</pre></div><h4 id="aloha-file-upload-prepared-event">6.4 aloha-file-upload-prepared Event</h4>
 <p>When a single file of many dropped files is ready for uploading.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-file-upload-prepared', // object of dropped files );
-</pre></div><h4 id="aloha-upload-progress-event">4.5 aloha-upload-progress Event</h4>
+</pre></div><h4 id="aloha-upload-progress-event">6.5 aloha-upload-progress Event</h4>
 <p>When the upload is still in progress this event is triggered after each uploaded file.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-upload-progress', // Aloha.RepositoryDocument object );
-</pre></div><h4 id="aloha-upload-success-event">4.6 aloha-upload-success Event</h4>
+</pre></div><h4 id="aloha-upload-success-event">6.6 aloha-upload-success Event</h4>
 <p>A file is uploaded successfully.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-upload-success', // Aloha.RepositoryDocument object );
-</pre></div><h4 id="aloha-upload-failure-event">4.7 aloha-upload-failure Event</h4>
+</pre></div><h4 id="aloha-upload-failure-event">6.7 aloha-upload-failure Event</h4>
 <p>An error occurred while file upload.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-upload-failure', // Aloha.RepositoryDocument object );
-</pre></div><h4 id="aloha-upload-abort-event">4.8 aloha-upload-abort Event</h4>
+</pre></div><h4 id="aloha-upload-abort-event">6.8 aloha-upload-abort Event</h4>
 <p>An upload was aborted by the user or a script (IE/Safari only).</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-upload-abort', // Aloha.RepositoryDocument object );
-</pre></div><h4 id="aloha-upload-error-event">4.9 aloha-upload-error Event</h4>
+</pre></div><h4 id="aloha-upload-error-event">6.9 aloha-upload-error Event</h4>
 <p>When there occurred an error while uploading the files this event is triggered.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 Aloha.trigger( 'aloha-upload-error', // Aloha.RepositoryDocument object );
-</pre></div><h3 id="plugin-linkbrowser">5 Plugin: LinkBrowser</h3>
+</pre></div><h3 id="plugin-linkbrowser">7 Plugin: LinkBrowser</h3>
 <p>Events provided by the LinkBrowser Plugin.</p>
-<h4 id="aloha-link-selected-in-linkbrowser-event">5.1 aloha-link-selected-in-linkbrowser Event</h4>
+<h4 id="aloha-link-selected-in-linkbrowser-event">7.1 aloha-link-selected-in-linkbrowser Event</h4>
 <p>When a link is selected in the link browser this event is triggerd.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -382,7 +394,22 @@ Aloha.trigger( 'aloha-link-selected-in-linkbrowser' , // Aloha );
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#plugin-image"><p>Plugin: Image</p>
+            <li><a href="#two-event-mechanisms"><p>Two event mechanisms</p>
+</a></li><li><a href="#available-events"><p>Available events</p>
+</a><ul><li><a href="#aloha-command-will-execute-event"><p>aloha-command-will-execute Event</p>
+</a></li> <li><a href="#aloha-command-executed-event"><p>aloha-command-executed Event</p>
+</a></li> <li><a href="#aloha-logger-ready-event"><p>aloha-logger-ready Event</p>
+</a></li> <li><a href="#aloha-log-full-event"><p>aloha-log-full Event</p>
+</a></li> <li><a href="#aloha-ready-event"><p>aloha-ready Event</p>
+</a></li> <li><a href="#aloha-editable-created-event"><p>aloha-editable-created Event</p>
+</a></li> <li><a href="#aloha-editable-destroyed-event"><p>aloha-editable-destroyed Event</p>
+</a></li> <li><a href="#aloha-editable-activated-event"><p>aloha-editable-activated Event</p>
+</a></li> <li><a href="#aloha-editable-deactivated-event"><p>aloha-editable-deactivated Event</p>
+</a></li> <li><a href="#aloha-smart-content-changed-event"><p>aloha-smart-content-changed Event</p>
+</a></li> <li><a href="#aloha-block-selected-event"><p>aloha-block-selected Event</p>
+</a></li> <li><a href="#aloha-selection-changed-event"><p>aloha-selection-changed Event</p>
+</a></li> <li><a href="#aloha-selection-context-change-event"><p>aloha.selection.context-change Event</p>
+</a></li></ul></li><li><a href="#plugin-image"><p>Plugin: Image</p>
 </a><ul><li><a href="#aloha-image-unselected-event"><p>aloha-image-unselected Event</p>
 </a></li> <li><a href="#aloha-image-selected-event"><p>aloha-image-selected Event</p>
 </a></li></ul></li><li><a href="#plugin-link"><p>Plugin: Link</p>

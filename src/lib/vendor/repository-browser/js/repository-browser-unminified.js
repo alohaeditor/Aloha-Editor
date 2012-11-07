@@ -35,6 +35,8 @@ define('RepositoryBrowser', [
 		treeWidth: 300,
 		listWidth: 'auto',
 		pageSize: 8,
+		adaptPageSize: false,
+		rowHeight: 32,
 		rootPath: '',
 		rootFolderId: 'aloha',
 		columns: {
@@ -56,37 +58,6 @@ define('RepositoryBrowser', [
 			'Viewing': 'Viewing'
 		}
 	};
-
-	/**
-	 * Processes and returns an object that is usable with the tree component.
-	 *
-	 * @param {object} obj An object that represents a repository object.
-	 * @return {object} An object that is compatible with the tree component.
-	 */
-	function processRepoObject(obj) {
-		var icon;
-		switch (obj.baseType) {
-		case 'folder':
-			icon = 'folder';
-			break;
-		case 'document':
-			icon = 'document';
-			break;
-		}
-
-		return {
-			data: {
-				title: obj.name,
-				attr: {'data-repo-obj': obj.uid},
-				icon: icon || ''
-			},
-			attr: obj.type ? {rel: obj.type} : undefined,
-			state: (obj.hasMoreItems || 'folder' === obj.baseType)
-				? 'closed'
-				: null,
-			resource: obj
-		};
-	}
 
 	/**
 	 * Prevents native browser selection on the given element.
@@ -128,6 +99,12 @@ define('RepositoryBrowser', [
 		 * @type <?>
 		 */
 		_orderBy: null,
+
+		/**
+		 * @private
+		 * @type <string> prefilled value of the search field
+		 */
+		_prefilledValue: null,
 
 		/**
 		 * @type {jsGrid<HTMLElement>}
@@ -180,6 +157,7 @@ define('RepositoryBrowser', [
 
 			jQuery.extend(this, options);
 
+			this._prefilledValue = this._i18n('Input search text...');
 			this._cachedRepositoryObjects = {};
 			this._searchQuery = null;
 			this._orderBy = null;
@@ -218,7 +196,7 @@ define('RepositoryBrowser', [
 			this.element.width(this.maxWidth);
 
 			this.$_grid = this._createGrid(this.element).resize();
-			this._setIntialHeight();
+			this._setInitialHeight();
 			this.$_tree = this._createTree(this.$_grid.find('.ui-layout-west'));
 			this.$_list = this._createList(this.$_grid.find('.ui-layout-center'));
 
@@ -266,12 +244,15 @@ define('RepositoryBrowser', [
 			jQuery('.repository-browser-grid').css('width', this.maxWidth);
 
 			this.close();
+
+			// adapt the page size
+			this._adaptPageSize();
 		},
 
 		/**
 		 * Sets the initial height of the repository browser using the minHeight maxHeight setting.
 		 */
-		_setIntialHeight: function () {
+		_setInitialHeight: function () {
 
 			var overflow = this.maxHeight - jQuery(window).height() + this.verticalPadding;
 			var targetHeight = overflow > 0 ? Math.max(this.minHeight, this.maxHeight - overflow) : this.maxHeight;
@@ -284,12 +265,34 @@ define('RepositoryBrowser', [
 		 * between minWidth and maxWidth.
 		 */
 		_onWindowResized: function () {
-			var overflow = this.maxWidth - jQuery(window).width() + this.horizontalPadding;
+			var overflow = this.maxWidth - jQuery(window).width() + this.horizontalPadding, $header, $container;
 			var target = overflow > 0
 			           ? Math.max(this.minWidth, this.maxWidth - overflow)
 					   : this.maxWidth;
 			this.element.width(target);
 			this.$_grid.width(target);
+
+			this._setInitialHeight();
+
+			// adapt tree
+			$header = this.$_grid.find('.repository-browser-tree-header');
+			this.$_tree.height(this.$_grid.height() - $header.outerHeight(true));
+
+			// adapt list
+			$container = this.$_grid.find('.ui-layout-center');
+			$container.find('.ui-jqgrid-bdiv').height(this.$_grid.height() - (
+				$container.find('.ui-jqgrid-titlebar').height() +
+				$container.find('.ui-jqgrid-hdiv').height() +
+				$container.find('.ui-jqgrid-pager').height()
+			));
+
+			// adapt paging
+			if (this._adaptPageSize()) {
+				// if the pagesize changed, we need to refresh the list
+				if (this._currentFolder) {
+					this._fetchItems(this._currentFolder);
+				}
+			}
 		},
 
 		/**
@@ -358,7 +361,64 @@ define('RepositoryBrowser', [
 					uid: uid,
 					loaded: false
 				});
-			return processRepoObject(this._cachedRepositoryObjects[uid]);
+			return this._processRepoObject(this._cachedRepositoryObjects[uid]);
+		},
+
+		/**
+		 * Processes and returns an object that is usable with the tree component.
+		 *
+		 * @param {object} obj An object that represents a repository object.
+		 * @return {object} An object that is compatible with the tree component.
+		 */
+		_processRepoObject: function (obj) {
+			var icon, state, children, that = this, liAttr;
+
+			switch (obj.baseType) {
+			case 'folder':
+				icon = 'folder';
+				break;
+			case 'document':
+				icon = 'document';
+				break;
+			}
+
+			// set the node state
+			state = (obj.hasMoreItems || obj.baseType === 'folder') ? 'closed' : null;
+			if (obj.hasMoreItems === false) {
+				state = null;
+			}
+
+			// process children (if any)
+			if (obj.children) {
+				children = [];
+				jQuery.each(obj.children, function () {
+					children.push(that._harvestRepoObject(this));
+					state = 'open';
+				});
+			}
+
+			if (this._currentFolder && this._currentFolder.id === obj.id) {
+				window.setTimeout(function () {
+					that.$_tree.jstree("select_node", "li[data-repo-obj='" + obj.uid + "']");
+				}, 0);
+			}
+
+			liAttr = {
+				rel: obj.type,
+				'data-repo-obj': obj.uid
+			};
+
+			return {
+				data: {
+					title: obj.name,
+					attr: {'data-repo-obj': obj.uid},
+					icon: icon || ''
+				},
+				attr: liAttr,
+				state: state,
+				resource: obj,
+				children: children
+			};
 		},
 
 		/**
@@ -368,6 +428,11 @@ define('RepositoryBrowser', [
 		 *                                    retrieved folder structure.
 		 */
 		_fetchRepoRoot: function (callback) {
+			if (!this._currentFolder) {
+				// get the selected folder
+				this._currentFolder = this.getSelectedFolder();
+			}
+
 			if (this.repositoryManager) {
 				this.getRepoChildren({
 					inFolderId: this.rootFolderId,
@@ -411,11 +476,15 @@ define('RepositoryBrowser', [
 			var folder = this._getObjectFromCache(data.rslt.obj);
 
 			if (folder) {
+				// reset paging and search
 				this._pagingOffset = 0;
-				this._searchQuery = null;
+				this._clearSearch();
+
 				this._currentFolder = folder;
 				this._fetchItems(folder);
 			}
+
+			this.folderSelected(folder);
 		},
 
 		/**
@@ -445,8 +514,19 @@ define('RepositoryBrowser', [
 
 			var that = this;
 
+			// Bind the jsree select node event
 			$tree.bind('select_node.jstree', function ($event, data) {
 				that._onTreeNodeSelected($event, data);
+			});
+
+			// Bind the jsree open node event
+			$tree.bind('open_node.jstree', function ($event, data) {
+				that.folderOpened(data.rslt.obj);
+			});
+
+			// Bind the jsree close node event
+			$tree.bind('close_node.jstree', function ($event, data) {
+				that.folderClosed(data.rslt.obj);
 			});
 
 			$tree.jstree({
@@ -634,6 +714,15 @@ define('RepositoryBrowser', [
 			return $list;
 		},
 
+		/**
+		 * Clear the search
+		 */
+		_clearSearch: function () {
+			var $searchField = this.$_grid.find('.repository-browser-search-field');
+			$searchField.val(this._prefilledValue).addClass('repository-browser-search-field-empty');
+			this._searchQuery = null;
+		},
+
 		_createTitlebar: function ($container) {
 			var $bar = $container.find('.ui-jqgrid-titlebar');
 
@@ -660,12 +749,9 @@ define('RepositoryBrowser', [
 					that._triggerSearch();
 				});
 
-			var prefilledValue = this._i18n('Input search text...');
-
 			var $searchField = $bar.find('.repository-browser-search-field');
 
-			$searchField.val(prefilledValue)
-			            .addClass("repository-browser-search-field-empty");
+			this._clearSearch();
 
 			$searchField.keypress(function (event) {
 				// On ENTER.
@@ -675,7 +761,7 @@ define('RepositoryBrowser', [
 			});
 
 			$searchField.focus(function () {
-				if (jQuery(this).val() === prefilledValue) {
+				if (jQuery(this).val() === that._prefilledValue) {
 					jQuery(this)
 						.val('')
 						.removeClass('repository-browser-search-field-empty');
@@ -684,9 +770,7 @@ define('RepositoryBrowser', [
 
 			$searchField.blur(function () {
 				if (jQuery(this).val() === '') {
-					jQuery(this)
-						.val(prefilledValue)
-						.addClass('repository-browser-search-field-empty');
+					that._clearSearch();
 				}
 			});
 
@@ -756,6 +840,10 @@ define('RepositoryBrowser', [
 				break;
 			case 'prev':
 				this._pagingOffset -= this.pageSize;
+				// avoid "ot of bounds" situation
+				if (this._pagingOffset < 0) {
+					this._pagingOffset = 0;
+				}
 				break;
 			}
 			this._fetchItems(this._currentFolder);
@@ -840,10 +928,10 @@ define('RepositoryBrowser', [
 				$btns.first.add($btns.prev).removeClass(CSS_DISABLED);
 			}
 
-			if (jQuery.isNumeric(this._pagingCount)) {
+			if (!jQuery.isNumeric(this._pagingCount)) {
 				$btns.end.addClass(CSS_DISABLED);
 
-				if (data.length < this.pageSize) {
+				if (data.length <= this.pageSize) {
 					$btns.next.addClass(CSS_DISABLED);
 				} else {
 					$btns.next.removeClass(CSS_DISABLED);
@@ -870,7 +958,7 @@ define('RepositoryBrowser', [
 				(from) + ' - '  +
 				(to) + ' ' + this._i18n('of') + ' ' +
 				(jQuery.isNumeric(this._pagingCount)
-					? this._pageingCount : this._i18n('numerous'))
+					? this._pagingCount : this._i18n('numerous'))
 			);
 
 			// when the repository manager reports a timeout, we handle it
@@ -1102,11 +1190,15 @@ define('RepositoryBrowser', [
 
 				$element.stop().show();
 
+				// recalculate sizes
+				this._onWindowResized();
+				this.$_grid.resize();
+
 				var win	= jQuery(window);
 
 				$element.css({
-					left: (win.width() - $element.width()) / 2 - 30,
-					top: (win.height() - $element.height()) / 3 + 10
+					left: this.horizontalPadding / 2,
+					top: this.verticalPadding / 2
 				}).draggable({
 					handle: $element.find('.repository-browser-grab-handle')
 				});
@@ -1132,10 +1224,10 @@ define('RepositoryBrowser', [
 					opacity: 1,
 					filter: 'progid:DXImageTransform.Microsoft.gradient(enabled=false)'
 				});
-				//$element.find('.repository-browser-close-btn').hide();
+				this._onWindowResized();
+				this.$_grid.resize();
 			}
 
-			this._onWindowResized();
 			++numOpenedBrowsers;
 		},
 
@@ -1163,8 +1255,94 @@ define('RepositoryBrowser', [
 			if (this._currentFolder) {
 				this._fetchItems(this._currentFolder);
 			}
-		}
+		},
 
+		/**
+		 * This function gets called when a folder in the tree is opened
+		 * 
+		 * @param {object} obj	folder data object							
+		 */
+		folderOpened: function(obj) {
+			var folder = this._getObjectFromCache(obj);
+
+			if (folder) {
+				if (this.repositoryManager) {
+					this.repositoryManager.folderOpened(folder);
+				}
+			}
+		},
+
+		/**
+		 * This function gets called when a folder in the tree is closed
+		 * 
+		 * @param {object} obj	folder data object							
+		 */
+		folderClosed: function(obj) {
+			var folder = this._getObjectFromCache(obj);
+
+			if (folder) {
+				if (this.repositoryManager) {
+					this.repositoryManager.folderClosed(folder);
+				}
+			}
+		},
+
+		/**
+		 * This function gets called when a folder in the tree is selected
+		 * 
+		 * @param {object} obj	folder data object							
+		 */
+		folderSelected: function(obj) {
+			if (this.repositoryManager) {
+				this.repositoryManager.folderSelected(obj);
+			}
+		},
+
+		/**
+		 * Get the selected folder
+		 * @return {object} selected folder or undefined
+		 */
+		getSelectedFolder: function () {
+			if (this.repositoryManager) {
+				if (typeof this.repositoryManager.getSelectedFolder === 'function') {
+					return this.repositoryManager.getSelectedFolder();
+				}
+			}
+		},
+
+		/**
+		 * Adapt the page size.
+		 * @return true if the page size was actually changed, false if not
+		 */
+		_adaptPageSize: function () {
+			var listHeight, newPageSize, container;
+
+			// if this is off, don't do anything
+			if (!this.adaptPageSize || !this.$_list || !this.rowHeight) {
+				return false;
+			}
+
+			// get the current height of the container
+			container = this.$_grid.find('.ui-jqgrid-bdiv');
+			// reduce by 20 px to leave place for a scrollbar
+			listHeight = container.innerHeight() - 20;
+
+			// do the math
+			if (listHeight) {
+				newPageSize = Math.floor(listHeight / this.rowHeight);
+				if (newPageSize <= 0) {
+					newPageSize = 1;
+				}
+				if (newPageSize !== this.pageSize) {
+					this.pageSize = newPageSize;
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
 	});
 
 	return RepositoryBrowser;
@@ -1172,14 +1350,14 @@ define('RepositoryBrowser', [
 define('repository-browser-i18n-de', [], function () {
 	'use strict';
 	return {
-		'Browsing': 'Browsing',
-		'Close': 'Schließn',
+		'Browsing': 'Durchsuchen',
+		'Close': 'Schließen',
 		'in': 'in',
-		'Input search text...': 'Suchtext einfü.gen...',
-		'numerous': 'zahlreich',
+		'Input search text...': 'Suchtext einfügen...',
+		'numerous': 'zahlreiche',
 		'of': 'von',
 		'Repository Browser': 'Repository Browser',
-		'Search': 'Süchen',
+		'Search': 'Suchen',
 		'Searching for': 'Suche nach',
 		'Viewing': 'Anzeige',
 		'button.switch-metaview.tooltip': 'Zwischen Metaansicht und normaler Ansicht umschalten'

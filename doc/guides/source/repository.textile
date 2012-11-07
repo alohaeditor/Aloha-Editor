@@ -308,6 +308,85 @@ function ( Aloha, jQuery ) {
 });
 </shell>
 
+h3. Reccomandation of repository item attributes
+
+The API and data layout is inspired by <a href="http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416972">CMIS</a>.
+
+h4. ObjectTypes
+
+The object concept from CMIS is inconsistent and to complicated for Aloha Editors needs. So we changed to a much simpler model, which allows to implement CMIS, but is easier to use for developers.
+<a href="http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416977">CMIS objects</a>
+
+There are 2 BaseTypes: document and folder. All other objectTypes may extend either document or folder. Extended Objects may not be extended any more.
+
+h4. Document
+
+* id MUST
+* repositoryId MUST
+* name MUST
+* baseType MUST (document|folder)
+* type MUST
+* parentId OPTIONAL
+* renditions OPTIONAL
+* localName OPTIONAL
+* createdBy OPTIONAL
+* creationDate OPTIONAL
+* lastModifiedBy OPTIONAL
+* lastModificationDate OPTIONAL
+* length OPTIONAL
+* mimeType OPTIONAL
+* fileName OPTIONAL
+* url OPTIONAL
+
+h4. Folder
+
+* id MUST
+* repositoryId MUST
+* name MUST
+* baseType MUST (document|folder)
+* type MUST
+* parentId MUST
+* localName OPTIONAL
+* createdBy OPTIONAL
+* creationDate OPTIONAL
+* lastModifiedBy OPTIONAL
+* lastModificationDate OPTIONAL
+* children OPTIONAL (array of child folders objects)
+
+h4. Rendition
+
+* documentId ID identfies the rendition document (baseObjectType == document)
+* url URL identifies the rendition stream.
+* mimeType String The MIME type of the rendition stream.
+* filename String The filename of the rendition stream
+* length Integer (optional)The length of the rendition stream in bytes.
+* name String (optional) Human readable information about the rendition.
+* kind String A categorization String associated with the rendition. 
+** square - an image square 75x75
+** thumbnail - a thumbnail version of the object
+** small	- 240 on longest side
+** medium-  500 on longest side
+** large - 1024 on longest side (only exists for very large original images)
+** docx - Microsoft docx Version of the content
+** lang_de - same content in german language
+** lang_fr - same content in frensh language
+** pdf - pdf version of the content
+* height Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
+* width Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
+
+
+h5. What are renditions, and why are they so useful?
+
+A repository may implement renditions for any object that has "document" as its baseObjectType.
+A rendition is simply an alternative representation (rendering) of a given object.
+Any document may have any number of renditions.
+For example: A page document in a repositroy may be rendered in 3 different languages.
+Each of these 3 variations of that page can be served by the repository as a rendition of
+any of the other 2 translations that correspond with it.
+Each of these pages may be a stand-alone document in the repository as well.
+In fact, different renditions for a single document type will likely be different files
+which the repository will server back in response to a request for a specific rendition of a given object.
+
 h3. Configuring the Repository Manager
 
 You may define a timeout (in milliseconds) when the Repository Manager should stop waiting for any repository implementation's response.
