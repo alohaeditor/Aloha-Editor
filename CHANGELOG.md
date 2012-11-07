@@ -12,7 +12,37 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUG**: The change fixes a bug.
 
-# 0.22.x
+## 0.22.3 - 2012/11/06
+
+- **MANUAL CHANGE**: Updated UI CSS regarding button selector;
+- **MANUAL CHANGE**: Added a demo of placeholders to boilerplate;
+- **FEATURE**: align-plugin: The align plugin is now capable of aligning table cell contents.
+- **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html
+- **FEATURE**: improved translation export from gengo.com to Aloha Editor
+	<code>
+	Aloha.settings.plugins: {
+		captionedImage: {
+			allowLinebreak: [ 'p' ], // ['br', 'p'], true or false (default)
+		}
+	}
+	</code>
+- **ENHANCEMENT**: browser: The old browser plugin was removed. The browser-plugin was replaced by the repository browser vendor plugin. 
+- **ENHANCEMENT**: RepositoryBrowser: The repository browser will now correctly handle localisation for the languages english and german.
+- **ENHANCEMENT**: Trigger the 'aloha-smart-content-changed' event with `triggerType` = `block-change` whenever an attribute of an Aloha Block is changed.
+- **BUG**: table-plugin: Fixed a javascript error that occurred when pressing enter in the table wai attribute field.
+- **BUG**: Fix base tag breaks Aloha Editor UI
+- **BUG**: Fix calling mahalo in a blur event handler
+- **BUG**: Fix support for editable anchor elements
+- **BUG**: All repositories have been queried even if a target repository
+
+	has been specified. Now only the specified repository is queried.
+
+- **BUG**: core/aloha-links: Prevents yellow borders around aloha-links blocks
+- **BUG**: link-plugin: link scope remains active after the selection leaves an anchor element
+- **BUG**: blocks: The floating menu will appear when the editor double-clicks
+           in an editable block.
+- **BUG**: core/selection: Aloha no longer inadvertently removes ranges that
+		   are outside of editables.
 
 ## 0.22.2 - 2012/10/08
 

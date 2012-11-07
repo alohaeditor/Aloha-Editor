@@ -50,7 +50,7 @@
 		    plugins = Aloha.settings.plugins && Aloha.settings.plugins.load,
 		    baseUrl = Aloha.settings.baseUrl,
 		    pluginsAttr,
-		    regexAlohaJs = /\/aloha\.js$/,
+		    regexAlohaJs = /\/aloha.js(\?\S*)?$/,
             regexStripFilename = /\/[^\/]*\.js$/,
 		    i;
 
@@ -247,6 +247,10 @@
 			baseUrl: Aloha.settings.baseUrl,
 			map: moduleMap
 		};
+		
+		var DependencyManagement = global.__DEPS__ || (global.__DEPS__ = {});
+		
+		DependencyManagement.lang = defaultConfig.locale;
 
 		var defaultPaths = {
 			jquery: 'vendor/jquery-1.7.2',

@@ -77,6 +77,7 @@
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+      <dd><a href="translations.html">Translations</a></dd>
 </dl>
 
 
@@ -197,6 +198,33 @@ What is the new development version for &quot;Aloha Editor&quot;? (org.alohaedit
 	<li>Add the release to the artifactItems of https://github.com/alohaeditor/Aloha-Editor-<span class="caps">CDN</span>/blob/master/pom.xml and reinvoke synchronisation of the <span class="caps">CDN</span>.</li>
 	<li>Tweet about the release</li>
 </ul>
+<h4 id="commercial-releases">3.2 Commercial Releases</h4>
+<p>It is also possible to create a commercial release by specifying a different maven profile. A commerical release of aloha editor will contain different license texts.</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+ 
+	mvn release:prepare  -Pcommercial -Darguments=-Pcommercial
+	mvn release:perform  -Pcommercial -Darguments=-Pcommercial
+</pre></div>
+<div class="code_container">
+<div class="filename">settings.xml</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+&lt;profile&gt;
+	&lt;id&gt;commercial&lt;/id&gt;
+	&lt;properties&gt;
+		&lt;build.license&gt;commercial&lt;/build.license&gt;
+		&lt;build.licenseType&gt;Aloha Editor commercial license&lt;/build.licenseType&gt;
+		&lt;build.licenseUrl&gt;-&lt;/build.licenseUrl&gt;
+		&lt;snapshots.repoUrl&gt;http://REPOHOST:8080/archiva/repository/snapshots&lt;/snapshots.repoUrl&gt;
+		&lt;snapshots.repoName&gt;Snapshots Repository&lt;/snapshots.repoName&gt;
+		&lt;snapshots.repoId&gt;archiva.snapshots&lt;/snapshots.repoId&gt;
+		&lt;releases.repoUrl&gt;http://REPOHOST:8080/archiva/repository/releases&lt;/releases.repoUrl&gt;
+		&lt;releases.repoName&gt;Releases Repository&lt;/releases.repoName&gt;
+		&lt;releases.repoId&gt;archiva.releases&lt;/releases.repoId&gt;
+	&lt;/properties&gt;
+&lt;/profile&gt;
+</pre></div>
 
       </div>
         <div id="subCol">
@@ -209,6 +237,7 @@ What is the new development version for &quot;Aloha Editor&quot;? (org.alohaedit
 </a></li></ul></li><li><a href="#practical-maven-feature-release-example-for-version-0-20-0"><p>Practical Maven Feature Release Example For Version 0.20.0</p>
 </a></li><li><a href="#practical-maven-hotfix-release-example"><p>Practical Maven Hotfix Release Example</p>
 </a><ul><li><a href="#post-release-steps"><p>Post Release Steps</p>
+</a></li> <li><a href="#commercial-releases"><p>Commercial Releases</p>
 </a></li></ul></li>
           </ol>
         </div>
