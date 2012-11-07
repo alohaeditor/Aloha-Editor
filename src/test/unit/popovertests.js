@@ -3,7 +3,7 @@
 
   require(['testutils'], function(TestUtils) {
     return Aloha.ready(function() {
-      return Aloha.require(['bubble/bubble-plugin'], function(Bubble) {
+      return Aloha.require(['popover'], function(Bubble) {
         var MILLISECS, MS_LONG, MS_SHORT, POPOVER_VISIBLE, POPULATED, timeout;
         timeout = function(ms, func) {
           return setTimeout(func, ms);

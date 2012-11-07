@@ -1,19 +1,19 @@
 
 # Load local testutils.js
 require ['testutils'], (TestUtils) ->
-  
+
   # Once Aloha is configured load the Popover (Bubble) plugin
   Aloha.ready ->
-    Aloha.require ['bubble/bubble-plugin'], (Bubble) ->
+    Aloha.require ['popover'], (Bubble) ->
       # setTimeout has the millisecs argument come after the function (which is annoying)
       timeout = (ms, func) -> setTimeout(func, ms)
-      
+
       # The popover takes some time do do things (2000ms)
       # This time ensures enough time has passed (This should be configured on the popover plugin)
       MILLISECS = 3000
       MS_SHORT = 100 # Needs to be <500ms (the time it takes to move the mouse from the element onto the popover)
       MS_LONG = MILLISECS * 2
-      
+
       # Use this to see if the Popover rendered. Set it to null before the popover should show up
       POPULATED = null
       POPOVER_VISIBLE = null # Could be null, true (visible), or false (hidden)
@@ -47,7 +47,7 @@ require ['testutils'], (TestUtils) ->
         Aloha.jQuery('<span class="boring">boring</span><span class="interesting">interesting</span>').appendTo @edit
         $boring = @edit.find('.boring')
         $interesting = @edit.find('.interesting')
-        
+
         # Click somewhere in the editor so popover events get bound
         @edit.focus()
         ok not POPULATED, 'The popover hould not have displayed yet'
@@ -61,7 +61,7 @@ require ['testutils'], (TestUtils) ->
         Aloha.jQuery('<span class="boring">boring</span><span class="interesting">interesting</span>').appendTo @edit
         $boring = @edit.find('.boring')
         $interesting = @edit.find('.interesting')
-        
+
         # Click somewhere in the editor so popover events get bound
         TestUtils.setCursor @edit, $boring[0], 1
         ok not POPULATED, 'The popover should not have displayed yet'
@@ -70,7 +70,7 @@ require ['testutils'], (TestUtils) ->
           ok POPULATED, 'The popover should have popped up'
           start()
 
-      
+
       # 1. Hover over the text (causing the popover to show up)
       # 2. Wait for the popover to show up
       # 3. Move the mouse off of the element
@@ -82,21 +82,21 @@ require ['testutils'], (TestUtils) ->
         Aloha.jQuery('<span class="boring">boring</span><span class="interesting">interesting</span>').appendTo @edit
         $boring = @edit.find('.boring')
         $interesting = @edit.find('.interesting')
-        
+
         # Click somewhere in the editor so popover events get bound
         TestUtils.setCursor @edit, $boring[0], 1
         ok not POPULATED, 'The popover should not have displayed yet'
-        
+
         # 1. Hover over the text (causing the popover to show up)
         $interesting.trigger 'mouseenter'
         # 2. Wait for the popover to show up
         timeout MILLISECS, ->
           ok POPULATED, 'The popover should have popped up'
           ok POPOVER_VISIBLE, 'The popover should be visible'
-          
+
           # 3. Move the mouse off of the element
           $interesting.trigger 'mouseleave'
-          
+
           # 4. Move the mouse onto the popover (<500ms)
           timeout MS_SHORT, ->
             POPULATED.popover.trigger('mouseenter')
