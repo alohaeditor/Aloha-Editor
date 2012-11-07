@@ -78,9 +78,52 @@ function (jQuery, Utils) {
 				};
 			}
 			
-			that._editableMouseDown( jqEvent );
+			that.tableObj.selection.baseCellPosition = [that._virtualY(), that._virtualX()];
+			
+			if (jqEvent.shiftKey) {
+				// shift-click to select a coherent cell range
+				//
+				// in IE it's not possible to select multiple cells when you "select+drag" over other cells
+				// click into the first cell and then "shift-click" into the last cell of the coherent cell range you want to select
+				var right = that.tableObj.selection.lastBaseCellPosition[1];
+				var bottom = that.tableObj.selection.lastBaseCellPosition[0];
+				var topLeft = that.tableObj.selection.baseCellPosition;
+				var left = topLeft[1];
+				if (left > right) {
+					left = right;
+					right = topLeft[1];
+				}
+				var top = topLeft[0];
+				if (top > bottom) {
+					top = bottom;
+					bottom = topLeft[0];
+				}
+				var rect = {"top": top, "right": right, "bottom": bottom, "left": left};
 
-			that._startCellSelection();
+				var table = that.tableObj;
+				var $rows = table.obj.children().children('tr');
+				var grid = Utils.makeGrid($rows);
+
+				table.selection.selectedCells = [];
+				var selectClass = table.get('classCellSelected');
+				Utils.walkGrid(grid, function (cellInfo, j, i) {
+					if ( Utils.containsDomCell(cellInfo) ) {
+						if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
+							jQuery( cellInfo.cell ).addClass(selectClass);
+							table.selection.selectedCells.push(cellInfo.cell);
+						} else {
+							jQuery( cellInfo.cell ).removeClass(selectClass);
+						}
+					}
+				});
+
+				table.selection.notifyCellsSelected();
+			} else {
+				that.tableObj.selection.lastBaseCellPosition = that.tableObj.selection.baseCellPosition;
+				that._editableMouseDown( jqEvent );
+				that._startCellSelection();
+			}
+
 		} );
 		wrapper.bind( 'blur',      function ( jqEvent ) { that._editableBlur( jqEvent );    });
 		wrapper.bind( 'keyup',     function ( jqEvent ) { that._editableKeyUp( jqEvent );   });
@@ -97,8 +140,10 @@ function (jQuery, Utils) {
 			window.setTimeout( function () {
 				that.wrapper.trigger( 'focus' );
 			}, 1 );
-			that.tableObj.selection.unselectCells();
-	        that._startCellSelection();       
+			if (!jqEvent.shiftKey) {
+				that.tableObj.selection.unselectCells();
+				that._startCellSelection();
+			}
 			jqEvent.stopPropagation();
 		} );
 
@@ -235,12 +280,9 @@ function (jQuery, Utils) {
 			var that = this;
 			jQuery('body').bind('mouseup.cellselection', function(){
 				that._endCellSelection();
-				
 			});
 
 			this.tableObj.selection.baseCellPosition = [this._virtualY(), this._virtualX()];
-			
-			
 		}
 	};
 
