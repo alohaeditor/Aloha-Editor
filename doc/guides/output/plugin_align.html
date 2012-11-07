@@ -77,6 +77,7 @@
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+      <dd><a href="translations.html">Translations</a></dd>
 </dl>
 
 
@@ -91,12 +92,13 @@
           <div class="headerSection">
             <h2>Align Plugin</h2>
 <div class="warning"><p>The Align Plugin is not working correctly right now.</p></div>
-<p>The Align Plugin allows you to align contents left, right, center, or justify the flow of text.</p>
+<p>The Align Plugin allows you to align contents left, right, center, or justify the flow of text. You can also define vertical align options (top, middle and bottom) for table cells.</p>
 
           </div>
         <h3 id="configuration-settings">1 Configuration settings</h3>
-<p>The align plugin allows you to configure which of it&#8217;s buttons are available. Available options: <tt>'right', 'left', 'center', 'justify'</tt> or use an empty array to deactivate the plugin for an editable.</p>
+<p>The align plugin allows you to configure which of it&#8217;s buttons are available. Available options: <tt>'right', 'left', 'center', 'justify'</tt> as well as <tt>'top', 'middle', 'bottom'</tt> for table cells. Use an empty array to deactivate the plugin for an editable.</p>
 <p>All editables with no special configuration will have the align options <tt>'right', 'left', 'center', 'justify'</tt>. The align plugin for the editable with ID &#8216;one&#8217; has the <tt>[ 'right', 'left' ]</tt> align buttons enabled. The plugin is deactivated for the editable with the ID &#8216;two&#8217;.</p>
+<p>Editable denoted by ID &#8216;three&#8217;, has both horizontal and vertical alignment options.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
@@ -106,7 +108,8 @@
 
 			editables: {
 				'#one': [ 'right', 'left' ],
-				'#two': [ ]
+				'#two': [ ],
+				'#three': [ 'left', 'right', 'top', 'middle', 'bottom' ]
 			}
 		}
 	};
@@ -116,6 +119,9 @@
 	<li>alignRight &#8211; align selected text right</li>
 	<li>alignCenter &#8211; center selected text</li>
 	<li>alignJustify &#8211; justify selected text</li>
+	<li>alignTop &#8211; align cell contents to the top</li>
+	<li>alignMiddle &#8211; align cell contents to the middle</li>
+	<li>alignBottom &#8211; align cell contents to the bottom</li>
 </ul>
 
       </div>

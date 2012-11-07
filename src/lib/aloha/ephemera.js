@@ -262,10 +262,14 @@ define([
 	 * These modifications can be made directly without recurse to this
 	 * function, if that is more convenient.
 	 */
-	function markAttribute(elem, attr) {
+	function markAttr(elem, attr) {
 		elem = $(elem);
 		var data = elem.attr('data-aloha-ephemera-attr');
-		data = (null == data || '' === data ? attr : data + ' ' + attr);
+		if (null == data || '' === data) {
+			data = attr;
+		} else if (-1 === Arrays.indexOf(Strings.words(data), attr)) {
+			data += ' ' + attr;
+		}
 		elem.attr('data-aloha-ephemera-attr', data);
 		elem.addClass('aloha-ephemera-attr');
 	}
@@ -397,7 +401,7 @@ define([
 				return false;
 			}
 
-			// Ephemera.markAttribute()
+			// Ephemera.markAttr()
 			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-attr')) {
 				pruneMarkedAttrs(elem);
 			}
@@ -447,7 +451,7 @@ define([
 	 * Prunes the given element of all ephemeral data.
 	 *
 	 * Elements marked with Ephemera.markElement() will be removed.
-	 * Attributes marked with Ephemera.markAttribute() will be removed.
+	 * Attributes marked with Ephemera.markAttr() will be removed.
 	 * Elements marked with Ephemera.markWrapper() or
 	 * Ephemera.markFiller() will be replaced with their children.
 	 *
@@ -472,7 +476,7 @@ define([
 		classes: classes,
 		attributes: attributes,
 		markElement: markElement,
-		markAttr: markAttribute,
+		markAttr: markAttr,
 		markWrapper: markWrapper,
 		markFiller: markFiller,
 		prune: prune,

@@ -86,6 +86,9 @@ string values. Boolean @false@, @'false'@ or @'0'@ will hide the button while bo
 You can also have configurations for individual editables:
 
 <javascript>
+	Aloha.settings.contentHandler = {
+		insertHtml: ["formatless"]
+	};
 	Aloha.settings.plugins: {
 		formatlesspaste: {
 			config: {

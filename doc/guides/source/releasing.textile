@@ -10,7 +10,6 @@ h4. Feature Release
 
 For every feature release a new release branch will be created. This branch must be named using the targeted release version. If you want to release 0.20.0 it will be named: +release-0.20.0+. The release branch will always be created from the +dev+ branch. 
 
-
 h4. Hotfix Release
 
 A hotfix release can be done from an existing hotfix branch. The hotfix level of the version will be raised one leve. (eg. 0.20.0 -> 0.20.1)
@@ -115,3 +114,32 @@ h4. Post Release Steps
 * Upload the released zip file to https://github.com/alohaeditor/Aloha-Editor/downloads
 * Add the release to the artifactItems of https://github.com/alohaeditor/Aloha-Editor-CDN/blob/master/pom.xml and reinvoke synchronisation of the CDN.
 * Tweet about the release
+
+h4. Commercial Releases
+
+It is also possible to create a commercial release by specifying a different maven profile. A commerical release of aloha editor will contain different license texts.
+<shell> 
+	mvn release:prepare  -Pcommercial -Darguments=-Pcommercial
+	mvn release:perform  -Pcommercial -Darguments=-Pcommercial
+</shell>
+
+
+<javascript filename="settings.xml">
+<profile>
+	<id>commercial</id>
+	<properties>
+		<build.license>commercial</build.license>
+		<build.licenseType>Aloha Editor commercial license</build.licenseType>
+		<build.licenseUrl>-</build.licenseUrl>
+		<snapshots.repoUrl>http://REPOHOST:8080/archiva/repository/snapshots</snapshots.repoUrl>
+		<snapshots.repoName>Snapshots Repository</snapshots.repoName>
+		<snapshots.repoId>archiva.snapshots</snapshots.repoId>
+		<releases.repoUrl>http://REPOHOST:8080/archiva/repository/releases</releases.repoUrl>
+		<releases.repoName>Releases Repository</releases.repoName>
+		<releases.repoId>archiva.releases</releases.repoId>
+	</properties>
+</profile>
+</javascript>
+
+
+
