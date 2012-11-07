@@ -1,4 +1,4 @@
-define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oerpub/math/css/math.css' ], (Aloha, Plugin, jQuery, Bubble, UI) ->
+define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oerpub/math/css/math.css' ], (Aloha, Plugin, jQuery, Popover, UI) ->
 
   EDITOR_HTML = '''
     <div class="math-editor-dialog">
@@ -154,7 +154,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
       evt.stopPropagation()
 
   SELECTOR = '.math-element' # ,.MathJax[role="textbox"][aria-readonly="true"],.MathJax_Display[role="textbox"][aria-readonly="true"]'
-  Bubble.register
+  Popover.register
     selector: SELECTOR
     populator: buildEditor
     placement: 'top'
