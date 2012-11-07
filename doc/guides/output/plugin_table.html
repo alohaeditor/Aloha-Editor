@@ -77,6 +77,7 @@
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+      <dd><a href="translations.html">Translations</a></dd>
 </dl>
 
 
@@ -107,7 +108,7 @@
 <p>In order to merge two or more cells select the desired cells, rows or columns and click the merge cells button at the Aloha Editor. The content of all cells will be displayed in on cell. To split cells just select the cells, rows or column and click the split cells button.</p>
 <div class="note"><p>All contents will be merged into the first cell and all other previously split cells will be empty.</p></div>
 <h4 id="table-layout">2.5 Table layout</h4>
-<p>Each cell, row or column can have an individual style applied. You only have to select the rows or columns and choose one layout from the table layout list.</p>
+<p>Each cell, row or column can have an individual style applied. You only have to select the cells, rows or columns and choose one layout from the table layout list.</p>
 <h4 id="table-caption-summary">2.6 Table caption &amp; summary</h4>
 <p>To add a caption to a table click inside of one cell and click the button table caption. A summary may be added by using the according field in the sidebar.</p>
 <h3 id="configuration-settings">3 Configuration settings</h3>
@@ -140,6 +141,10 @@ Aloha.settings.plugins: {
 				{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
 		],
 		rowConfig : [
+				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
+				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+		],
+		cellConfig : [
 				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
 		]
