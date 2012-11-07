@@ -39,7 +39,8 @@ function() {
 		runGetChildrenTests,
 		runQueryTests,
 		runQueryResponseTests,
-		runOverlappingQueryTests
+		runOverlappingQueryTests,
+		runLadeLoadingInitializationTest
 	];
 		
 	function str (str) {
@@ -505,4 +506,39 @@ function() {
 		);
 	};
 	
+	//-------------------------------------------------------------------------
+	// Tests for managing multiple repositories
+	//-------------------------------------------------------------------------
+	
+	function runLadeLoadingInitializationTest () {
+		var initialized = false;
+		
+		// Create, a second repository
+		new (repository.extend({
+			_constructor: function() {
+				this._super(repositoryId2, 'testRepository2Name');
+			},
+			// Will always immediately return one object
+			query: function (params, callback) {
+				callback([{}]);
+			},
+			init: function() {
+				initialized = true;
+			}
+		}))();
+		
+		module("Initialization TEST: CHECK IF INITIALIZED");
+		
+		test(
+			'Test that we have 2 repositories registered',
+			function () {
+				equal(
+					initialized, true,
+					'Check that repository has initialized'
+				);
+
+				start();
+			}
+		);
+	};
 });

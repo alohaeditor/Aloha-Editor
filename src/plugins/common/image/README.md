@@ -21,13 +21,9 @@ Image Plugin for enabling basic images manipulations in Aloha Editor
 				'max_height': '50px',
 				//Image manipulation options - ONLY in default config section
 				'ui': {
-					'align': true,       // Menu elements to show/hide in menu
-					'resize': true,		 //resize buttons
-					'meta': true,
-					'margin': true,
-					'crop':true,
+					'meta': true, // If imageResizeWidth and imageResizeHeight are displayed, then you will want to set this to true, so that the width and height text fields are updated automatically.
+					'crop':true, // If imageCropButton is displayed, then you have to enable this.
 					'resizable': true,   //resizable ui-drag image
-					'aspectRatio': true
 				},
 				/**
 				 * crop callback is triggered after the user clicked accept to accept his crop
@@ -46,6 +42,8 @@ Image Plugin for enabling basic images manipulations in Aloha Editor
 				'onReset': function (image) { return false; }
 			}
 		}
+
+To show or hide specific Image plug-in buttons, please configure @Aloha.settings.toolbar@, look at the "Image tab" example in @src/plugins/common/ui/lib/settings.js@.
 
 ## TODO
 

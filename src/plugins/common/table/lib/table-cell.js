@@ -125,7 +125,7 @@ function (jQuery, Utils) {
 				cell._editableMouseDown($event);
 				cell._startCellSelection();
 			}
-		} );
+		});
 
 		$wrapper.bind('blur',      function ($event) { cell._editableBlur($event);    });
 		$wrapper.bind('keyup',     function ($event) { cell._editableKeyUp($event);   });
@@ -150,7 +150,6 @@ function (jQuery, Utils) {
 			}
 			$event.stopPropagation();
 		});
-
 
 		if ($elem.get(0)) {
 			$elem.get(0).onselectstart = function () { return false; };
