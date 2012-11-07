@@ -471,7 +471,7 @@ define([
 			// Browsers do not remove the cursor, so we enforce it when an aditable is clicked.
 			// However, when the user clicked inside a nested editable, we will not remove the cursor (as the user wants to start typing then)
 			// small HACK: we also do not deactivate if we are inside an aloha-table-cell-editable.
-			if (jQuery(eventTarget).closest('.aloha-editable,.aloha-block,.aloha-table-cell-editable').first().hasClass('aloha-block')) {
+			if (jQuery(eventTarget).closest('.aloha-editable,.aloha-block,.aloha-table-cell-editable,.aloha-table-cell_active').first().hasClass('aloha-block')) {
 				this._isInsideNestedEditable = false;
 				Aloha.getSelection().removeAllRanges();
 			} else {
