@@ -1074,7 +1074,9 @@ define([
 		} );
 
 		this.summary.addListener( 'keyup', function( event ) {
-			that.activeTable.checkWai();
+			if (that.activeTable) {
+				that.activeTable.checkWai();
+			}
 		} );
 	};
 

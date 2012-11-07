@@ -77,6 +77,7 @@
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+      <dd><a href="translations.html">Translations</a></dd>
 </dl>
 
 
@@ -122,13 +123,11 @@
 <div class="filename">/custom/helloworld/lib/helloworld-plugin.js</div>
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-define(
-[ 'aloha/plugin' ],
-function( plugin ) {
-    &quot;use strict&quot;;
+define(['aloha/plugin'], function (Plugin) {
+    'use strict';
 
-    return plugin.create( 'helloworld', {
-        init: function() {
+    return Plugin.create('helloworld', {
+        init: function () {
             // Executed on plugin initialization
         }
     });
@@ -140,18 +139,16 @@ function( plugin ) {
 <div class="filename">pluginA/lib/pluginA-plugin.js</div>
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-define(
-[ 'aloha/plugin', 'aloha/console'],
-function( plugin, console ) {
-    &quot;use strict&quot;;
+define(['aloha/plugin', 'aloha/console'], function (Plugin, console) {
+    'use strict';
 
-    return plugin.create( 'pluginA', {
+    return Plugin.create('pluginA', {
     	defaults: {
     		value: 10
     	},
-        init: function() {
+        init: function () {
             // Executed on plugin initialization
-			console.log( this.settings.value );
+			console.log(this.settings.value);
         }
     });
 });
@@ -161,10 +158,53 @@ function( plugin, console ) {
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 	var settings = Aloha.require('pluginA/pluginA-plugin').settings;
-</pre></div><h3 id="localization">3 Localization</h3>
+</pre></div><h3 id="ephemera">3 Ephemera</h3>
+<p>Somtimes a plugin must inject non-content into the editable. For example, a plugin may add a class to a link to for visual highlighting. Or elements are injected to make the content more interactive.</p>
+<p>For example, the table plugin alters the table structure in order to display row and column handles that can be clicked to select a row or column.</p>
+<p>In Aloha Editor we call this &#8220;ephemeral content&#8221;.</p>
+<p>After this ephemeral conten was injected into the editable, it must be removed again before the actual content of the editable can be retrieved.</p>
+<p>There are two mechanisms currently in place.</p>
+<h4 id="makeclean">3.1 makeClean</h4>
+<p>The first mechanism is the Plugin.makeClean method. This method can be overridden and implemented by a plugin to provide custom cleaning of the editable. The Plugin.makeClean method will receive the editable element as a jQuery object.</p>
+<p>The makeClean mechanism is not as fast and flexible as the second approach, and should therefore be considered deprecated.</p>
+<h4 id="aloha-ephemera">3.2 aloha/ephemera</h4>
+<p>The second mechanism is the aloha/ephemera module.</p>
+<p>In the aloha/ephemera module a global registry is maintained where plugins register their ephemeral classes or attributes.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define(['aloha/plugin', 'aloha/ephemera'], function (Plugin, Ephemera) {
+    'use strict';
+
+    Ephemera.classes('aloha-my-plugin-custom-class');
+    Ephemera.attributes('SOME-ELEMENT.some-attribute');
+
+    ...
+});
+</pre></div><p>The above works for well known classes and attributes that are considered ephemeral at a global scope.</p>
+<p>Individual elements and attributes can be &#8220;marked&#8221;</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define(['aloha/plugin', 'aloha/ephemera'], function (Plugin, Ephemera) {
+    'use strict';
+
+    // my-element and descendants elements are all marked as ephemeral.
+    Ephemera.markElement($('#my-element')[0]);
+
+    // some-attribute of my-element-2 is marked as ephemeral.
+    Ephemera.markAttribute($('#my-element-2')[0], 'some-attribute');
+  
+    // my-wrapper itself is marked as ephemeral, but descendant elements are not.
+    Ephemera.markWrapper($('#my-wrapper')[0]);
+
+    ...
+});
+</pre></div><p>When it is time to get the contents of an editable by calling editable.getContents() the ephemeral content will be automatically pruned by a call to Ephemera.prune(), which removes all ephemera from a copy of the editable&#8217;s content before the copy is returned.</p>
+<h3 id="localization">4 Localization</h3>
 <p>If you have some labels in your plugin, these need to be made available in multiple languages, as Aloha is capable showing its user interface in a wide variety of languages.</p>
 <div class="info"><p>Localization is done using a slightly adjusted version of the <a href="http://requirejs.org/docs/api.html#i18n"><code>i18n</code> module of RequireJS</a></p></div>
-<h4 id="folder-structure-for-labels">3.1 Folder Structure for Labels</h4>
+<h4 id="folder-structure-for-labels">4.1 Folder Structure for Labels</h4>
 <p>Localized strings are stored in the folder <code>nls</code> (Natural Language Support) of your plugin. The file/directory structure inside <code>nls</code> is as follows:</p>
 <ul>
 	<li><code>nls/</code>
@@ -206,37 +246,31 @@ define({
 	&quot;your.other.key.here&quot;: &quot;Noch mehr Text&quot;,
 	// continue here for all labels
 });
-</pre></div><h4 id="using-localized-strings">3.2 Using localized strings</h4>
+</pre></div><h4 id="using-localized-strings">4.2 Using localized strings</h4>
 <p>Now, if we want to use the &#8220;your.key.here&#8221; key inside our application, we can use RequireJS to inject the correct language version for us:</p>
 <div class="code_container">
 <div class="filename">myplugin/lib/something.js</div>
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-define(
-['i18n!myplugin/nls/i18n'],
-function(i18n) {
-
+define(['i18n!myplugin/nls/i18n'], function (i18n) {
 	// your code...
 	var localizedString = i18n.t('your.key.here');
 	// your code...
 });
 </pre></div><p>By defining <tt>i18n!myplugin/nls/i18n</tt> as requirement, we get a special object injected which contains all localized strings. There exists a <tt>t('key')</tt> method on this object which returns the translation for the passed key.</p>
-<h3 id="loading-resources">4 Loading resources</h3>
 <h3 id="including-css-files">5 Including <span class="caps">CSS</span> files</h3>
 <p>When your Aloha plugin needs some <span class="caps">CSS</span> files, you should place them in the <code>css</code> folder of your plugin. Your plugin can load the <span class="caps">CSS</span> file as follows:</p>
 <div class="code_container">
 <div class="filename">myplugin/lib/myplugin-plugin.js</div>
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-define(
-['core/plugin', 'css!myplugin/css/myplugin.css'],
-function(Plugin) {
-    &quot;use strict&quot;;
+define(['aloha/plugin', 'css!myplugin/css/myplugin.css'], function (Plugin) {
+    'use strict';
 	
 	// Add this stage css is loaded
 	
     return Plugin.create('myplugin', {
-        init: function() {
+        init: function () {
             // Executed on plugin initialization
         }
     });
@@ -257,33 +291,23 @@ function(Plugin) {
 <div class="filename">pluginA/lib/pluginA-plugin.js</div>
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-define(
-[ 'aloha/plugin' ],
-function( Plugin ) {
-    &quot;use strict&quot;;
+define(['aloha/plugin'], function (Plugin) {
+    'use strict';
 
     return Plugin.create('pluginA', {
-    	
     	dependencies: ['pluginB'],
-
-        init: function() {
+        init: function () {
         	
             // Executed on pluginA initialization
         	// pluginB ist not available here 
         
-        	Aloha.require( 'pluginA/module', function( module ) {
-
+        	Aloha.require('pluginA/module', function (Module) {
         		// Use pluginB's module here
         	});
         }
     });
 });
 </pre></div><p>Here, we specify a dependency to another plugin using the <tt>dependencies</tt> property of our <code>Plugin</code>. Then, the plugin manager makes sure that the dependent plugin is actually loaded, and outpus an error message if not. When everything is loaded, we can access a module from the other plugin by using the requireAloha() statement, as shown for the <tt>pluginB</tt> in the example above.</p>
-<h3 id="changelog">8 Changelog</h3>
-<ul>
-	<li>July 3, 2011: Initial version by <a href="credits.html#skurfuerst">Sebastian Kurfürst</a> and <a href="credits.html#hlubek">Christopher Hlubek</a></li>
-	<li>Sept 11, 2011: Adopted to current plugin lifecycle in sync with tests added resource loading by <a href="credits#haymo">Haymo Meran</a></li>
-</ul>
 
       </div>
         <div id="subCol">
@@ -291,14 +315,15 @@ function( Plugin ) {
           <ol class="chapters">
             <li><a href="#what-s-a-plugin"><p>What&#8217;s a plugin?</p>
 </a></li><li><a href="#a-basic-aloha-plugin"><p>A basic Aloha plugin</p>
-</a></li><li><a href="#localization"><p>Localization</p>
+</a></li><li><a href="#ephemera"><p>Ephemera</p>
+</a><ul><li><a href="#makeclean"><p>makeClean</p>
+</a></li> <li><a href="#aloha-ephemera"><p>aloha/ephemera</p>
+</a></li></ul></li><li><a href="#localization"><p>Localization</p>
 </a><ul><li><a href="#folder-structure-for-labels"><p>Folder Structure for Labels</p>
 </a></li> <li><a href="#using-localized-strings"><p>Using localized strings</p>
-</a></li></ul></li><li><a href="#loading-resources"><p>Loading resources</p>
-</a></li><li><a href="#including-css-files"><p>Including <span class="caps">CSS</span> files</p>
+</a></li></ul></li><li><a href="#including-css-files"><p>Including <span class="caps">CSS</span> files</p>
 </a></li><li><a href="#lifecycle-of-plugins"><p>Lifecycle of Plugins</p>
 </a></li><li><a href="#dependencies-between-plugins"><p>Dependencies between plugins</p>
-</a></li><li><a href="#changelog"><p>Changelog</p>
 </a></li>
           </ol>
         </div>

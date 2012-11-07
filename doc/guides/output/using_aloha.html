@@ -77,6 +77,7 @@
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+      <dd><a href="translations.html">Translations</a></dd>
 </dl>
 
 
@@ -111,6 +112,10 @@
 </pre></div><p>Aloha Editor is located in the path <tt>/javascripts</tt> of your web server.</p>
 <h3 id="embed-aloha-editor">2 Embed Aloha Editor</h3>
 <p>To embed Aloha Editor, you just need to load a single css <tt>/javascripts/aloha/css/aloha.css</tt> and a javascript file <tt>/javascripts/aloha/lib/aloha.js</tt> into the <strong>head</strong> section of your page.</p>
+<div class="note"><p>Aloha Editor currently depends on requirejs. In the future, we would like to give the user the option to omit this dependency for production deployments.</p></div>
+
+<div class="note"><p>Aloha Editor may load additional dependencies asynchronously with requirejs. Please see <a href="dependencies.html">dependencies</a> if you want to control dependency loading, which is particularly relevant if you already have a version of jQuery in your page.</p></div>
+
 <div class="code_container">
 <pre class="brush: xml; gutter: false; toolbar: false">
 
@@ -129,7 +134,8 @@
 		&lt;div id=&quot;content&quot;&gt;&lt;p&gt;Getting started with Aloha Editor!&lt;/p&gt;&lt;/div&gt;
 	&lt;/div&gt;
 &lt;/body&gt;
-</pre></div><h3 id="create-editables">3 Create editables</h3>
+</pre></div><p>See also: https://github.com/alohaeditor/Aloha-Editor/issues/707</p>
+<h3 id="create-editables">3 Create editables</h3>
 <p>An editable is an <span class="caps">HTML</span> element that should be editable by Aloha Editor. You can specify the element with a jQuery selector, and simply call <tt>.aloha</tt> for it.</p>
 <p>When we want to make the div with ID <strong>content</strong> editable, we add the script</p>
 <div class="code_container">
@@ -165,6 +171,8 @@
 </pre></div><p>This should also remove the attributes added by aloha (classes, contenteditable=true, etc.).</p>
 <h3 id="supported-elements">4 Supported elements</h3>
 <p>Aloha can be used with the following <span class="caps">HTML</span> text elements:</p>
+<div class="note"><p>When using calling .aloha() on a textarea, if the textarea has a <span class="caps">HTML</span> ID (eg. mytxtarea) the ID of the Aloha editable will be &#8220;-aloha&#8221; suffixed (eg. mytxtarea-aloha).</p></div>
+
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
@@ -182,7 +190,7 @@
 	[ 'canvas', 'audio', 'br', 'embed', 'fieldset', 'hgroup', 'hr',
 	'iframe', 'img', 'input', 'map', 'script', 'select', 'style',
 	'svg', 'table', 'ul', 'video', 'ol', 'form', 'noscript' ]
-</pre></div><p>Note if you are using a textarea with Aloha: If the textarea has a <span class="caps">HTML</span> ID (eg. mytxtarea) the ID of the Aloha editable will be &#8220;-aloha&#8221; suffixed (eg. mytxtarea-aloha).</p>
+</pre></div>
 
       </div>
         <div id="subCol">

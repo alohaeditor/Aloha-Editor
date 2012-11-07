@@ -77,6 +77,7 @@
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+      <dd><a href="translations.html">Translations</a></dd>
 </dl>
 
 
@@ -136,7 +137,13 @@
 			minimalWidth: 660,
 			treeWidth : 300,
 			listWidth : 'auto',
+			// fixed page size (if adaptPageSize is false)
 			pageSize  : 10,
+			// set this to true for adaptive page size (based on the
+			// available height and the configured rowHeight)
+			adaptPageSize: false,
+			// expected row height for adaptive page size.
+			rowHeight: 32,
 			columns : {
 				icon    : {title: '',        width: 30,  sortable: false, resizable: false},
 				name    : {title: 'Name',    width: 250, sorttype: 'text'},
