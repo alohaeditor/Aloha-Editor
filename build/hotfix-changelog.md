@@ -8,3 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUG**: formatlesspaste-plugin: Formatless Paste Plugin fixed to correctly
+           process configuration settings.
