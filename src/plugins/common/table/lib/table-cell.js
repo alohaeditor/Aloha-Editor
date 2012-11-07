@@ -48,46 +48,48 @@ function (jQuery, Utils) {
 	TableCell.prototype.hasFocus = false;
 
 	TableCell.prototype.activate = function () {
+		var cell = this;
+		var $elem = cell.obj;
+
 		// wrap the created div into the contents of the cell
-		this.obj.wrapInner( '<div/>' );
+		$elem.wrapInner('<div/>');
 
 		// create the editable wrapper for the cells
-		var wrapper = this.obj.children( 'div' ).eq( 0 );
-
-		wrapper.contentEditable( true );
-		wrapper.addClass( 'aloha-table-cell-editable' );
-
-		var that = this;
+		var $wrapper = $elem.children('div').eq(0);
+		$wrapper.contentEditable(true);
+		$wrapper.addClass('aloha-table-cell-editable');
 		
 		// attach events to the editable div-object
-		wrapper.bind( 'focus', function ( jqEvent ) {
-			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
-			if ( jqEvent.currentTarget ) {
-				jqEvent.currentTarget.indexOf = function () {
+		$wrapper.bind('focus', function ($event) {
+			// ugly workaround for ext-js-adapter problem in
+			// ext-jquery-adapter-debug.js:1020
+			if ($event.currentTarget) {
+				$event.currentTarget.indexOf = function () {
 					return -1;
 				};
 			}
-			that._editableFocus( jqEvent );
-		} );
+			cell._editableFocus($event);
+		});
 		
-		wrapper.bind( 'mousedown', function ( jqEvent ) {
-			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
-			if ( jqEvent.currentTarget ) {
-				jqEvent.currentTarget.indexOf = function () {
+		$wrapper.bind('mousedown', function ($event) {
+			// ugly workaround for ext-js-adapter problem in
+			// ext-jquery-adapter-debug.js:1020
+			if ($event.currentTarget) {
+				$event.currentTarget.indexOf = function () {
 					return -1;
 				};
 			}
 			
-			that.tableObj.selection.baseCellPosition = [that._virtualY(), that._virtualX()];
+			cell.tableObj.selection.baseCellPosition = [cell._virtualY(), cell._virtualX()];
 			
-			if (jqEvent.shiftKey) {
+			if ($event.shiftKey) {
 				// shift-click to select a coherent cell range
 				//
 				// in IE it's not possible to select multiple cells when you "select+drag" over other cells
 				// click into the first cell and then "shift-click" into the last cell of the coherent cell range you want to select
-				var right = that.tableObj.selection.lastBaseCellPosition[1];
-				var bottom = that.tableObj.selection.lastBaseCellPosition[0];
-				var topLeft = that.tableObj.selection.baseCellPosition;
+				var right = cell.tableObj.selection.lastBaseCellPosition[1];
+				var bottom = cell.tableObj.selection.lastBaseCellPosition[0];
+				var topLeft = cell.tableObj.selection.baseCellPosition;
 				var left = topLeft[1];
 				if (left > right) {
 					left = right;
@@ -100,7 +102,7 @@ function (jQuery, Utils) {
 				}
 				var rect = {"top": top, "right": right, "bottom": bottom, "left": left};
 
-				var table = that.tableObj;
+				var table = cell.tableObj;
 				var $rows = table.obj.children().children('tr');
 				var grid = Utils.makeGrid($rows);
 
@@ -119,47 +121,52 @@ function (jQuery, Utils) {
 
 				table.selection.notifyCellsSelected();
 			} else {
-				that.tableObj.selection.lastBaseCellPosition = that.tableObj.selection.baseCellPosition;
-				that._editableMouseDown( jqEvent );
-				that._startCellSelection();
+				cell.tableObj.selection.lastBaseCellPosition = cell.tableObj.selection.baseCellPosition;
+				cell._editableMouseDown($event);
+				cell._startCellSelection();
 			}
-
 		} );
-		wrapper.bind( 'blur',      function ( jqEvent ) { that._editableBlur( jqEvent );    });
-		wrapper.bind( 'keyup',     function ( jqEvent ) { that._editableKeyUp( jqEvent );   });
-		wrapper.bind( 'keydown',   function ( jqEvent ) { that._editableKeyDown( jqEvent ); });
-		wrapper.bind( 'mouseover', function ( jqEvent ) { that._selectCellRange();          });
+
+		$wrapper.bind('blur',      function ($event) { cell._editableBlur($event);    });
+		$wrapper.bind('keyup',     function ($event) { cell._editableKeyUp($event);   });
+		$wrapper.bind('keydown',   function ($event) { cell._editableKeyDown($event); });
+		$wrapper.bind('mouseover', function ($event) { cell._selectCellRange();       });
 
 		// we will treat the wrapper just like an editable
-		wrapper.contentEditableSelectionChange( function ( event ) {
-			Aloha.Selection.onChange( wrapper, event );
-			return wrapper;
-		} );
+		$wrapper.contentEditableSelectionChange(function ($event) {
+			Aloha.Selection.onChange($wrapper, $event);
+			return $wrapper;
+		});
 
-		this.obj.bind( 'mousedown', function ( jqEvent ) {
-			window.setTimeout( function () {
-				that.wrapper.trigger( 'focus' );
-			}, 1 );
-			if (!jqEvent.shiftKey) {
-				that.tableObj.selection.unselectCells();
-				that._startCellSelection();
+		$elem.bind('mousedown', function ($event) {
+			window.setTimeout(function () {
+				// Select the entire cell's content.
+				cell.wrapper.trigger('focus');
+				cell._selectAll($wrapper);
+			}, 1);
+			if (!$event.shiftKey) {
+				cell.tableObj.selection.unselectCells();
+				cell._startCellSelection();
 			}
-			jqEvent.stopPropagation();
-		} );
+			$event.stopPropagation();
+		});
 
-		if ( this.obj.get( 0 ) ) {
-			this.obj.get( 0 ).onselectstart = function ( jqEvent ) { return false; };
+
+		if ($elem.get(0)) {
+			$elem.get(0).onselectstart = function () { return false; };
 		}
 
 		// set contenteditable wrapper div
-		this.wrapper = this.obj.children();
-		if ( this.wrapper.get( 0 ) ) {
-			this.wrapper.get( 0 ).onselectstart = function () {
+		this.wrapper = $elem.children();
+		if (this.wrapper.get(0)) {
+			this.wrapper.get(0).onselectstart = function () {
 				window.event.cancelBubble = true;
 			};
-			// Disabled the dragging of content, since it makes cell selection difficult
-			this.wrapper.get( 0 ).ondragstart = function () { return false };
+			// Disabled the dragging of content, since it makes cell selection
+			// difficult.
+			this.wrapper.get(0).ondragstart = function () { return false };
 		}
+
 		return this;
 	};
 
