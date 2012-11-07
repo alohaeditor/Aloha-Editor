@@ -42,7 +42,6 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
         triggerMathJax($el)
         MathJax.Hub.Typeset $el[0], ->
           # Callback opens up the math editor by "clicking" on it
-          $el.trigger 'mouseenter' # HACK To bind the popover events on the element
           $el.trigger 'show'
 
   triggerMathJax = ($el, cb) ->
@@ -55,9 +54,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
 
     # Bind some actions for the buttons
     $editor.find('.done').on 'click', =>
-      $span.popover('hide')
+      $span.trigger 'hide'
     $editor.find('.remove').on 'click', =>
-      $span.popover('hide')
+      $span.trigger 'hide'
       $span.remove()
 
 
