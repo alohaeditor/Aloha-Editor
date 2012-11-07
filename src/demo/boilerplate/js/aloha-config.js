@@ -49,6 +49,10 @@
 					'#top-text': []
 				}
 			},
+			hints: {
+				fallback: 'fallback text',
+				trigger: 'hover'
+			},
 			link: {
 				// all elements with no specific configuration may insert links
 				config: [ 'a' ],
