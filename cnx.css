@@ -14,10 +14,6 @@
   background-color: whiteSmoke;
   opacity: 0.95;
 
-  position: fixed;
-  top: 0;
-
-  width: 100%;
   padding-left: 1em;
   box-shadow: 0 2px 3px 0 #CCC;
   z-index: 10000;
