@@ -287,7 +287,7 @@ function($, repository, i18nCore){
 						Aloha.Log.debug(Aloha,"Sent Data (length:" + data.length + ") = " + data.substring(0,30));
 						xhr.send(data);
 					};
-					tempimg.src = this.file.objectURL;
+					tempimg.src = this.file.objectURL || this.file.dataURI;
 				} else {
 					if (window.FormData) {//Many thanks to scottt.tw
 						var f = new FormData(),
