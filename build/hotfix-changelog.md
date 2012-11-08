@@ -10,3 +10,7 @@ All changes are categorized into one of the following keywords:
 
 - **BUG**: formatlesspaste-plugin: Formatless Paste Plugin fixed to correctly
            process configuration settings.
+- **BUG**: table-plugin: Ensures that the range is maintained when clicking
+		   inside table cells.
+- **BUG**: the underline button didn't show up in the toolbar
+           after adding the 'u' in the format-plugin configuration.

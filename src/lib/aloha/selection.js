@@ -541,7 +541,7 @@ define([
 			if (range && range.startContainer && range.endContainer) {
 				var inEditable =
 						jQuery(range.commonAncestorContainer)
-							.closest('.aloha-editable').length;
+							.closest('.aloha-editable').length > 0;
 
 				if (inEditable) {
 					var validStartPosition = !(3 === range.startContainer.nodeType &&
