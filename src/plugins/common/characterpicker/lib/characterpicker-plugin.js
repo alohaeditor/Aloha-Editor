@@ -1,24 +1,47 @@
-/*global window:true, define:true, document:true */
+/* characterpicker-plugin.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * 
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * 
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ */
 
-/*
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
 define([
 	'aloha', 
 	'jquery', 
 	'aloha/plugin', 
 	'ui/ui', 
 	'ui/button',
+	'ui/floating',
+	'PubSub',
 	'i18n!characterpicker/nls/i18n', 
-	'i18n!aloha/nls/i18n'
+	'i18n!aloha/nls/i18n',
 ], function(Aloha,
             jQuery,
 			Plugin,
 			Ui,
 			Button,
+			Floating,
+			PubSub,
 			i18n,
 			i18nCore) {
 	'use strict';
@@ -42,16 +65,37 @@ define([
 		self._initCursorFocus(onSelectCallback);
 		self._initEvents();
 	}
+	
+	function calculateOffset(widget, $element) {
+		var offset = $element.offset();
+		var calculatedOffset = { top: 0, left: 0 };
+
+		if ('fixed' === Floating.POSITION_STYLE) {
+			offset.top -= jQuery(window).scrollTop();
+			offset.left -= jQuery(window).scrollLeft();
+		}
+
+		calculatedOffset.top = widget.offset.top + (offset.top - widget.offset.top);
+		calculatedOffset.left = widget.offset.left + (offset.left - widget.offset.left);
+		
+		return calculatedOffset;
+	}
 
 	CharacterOverlay.prototype = {
+		
+		offset: {top: 0, left: 0},
+		
 		/**
 		 * Show the character overlay at the insert button's position
 		 * @param insertButton insert button
 		 */
-		show: function (insertButton) {
+		show: function ($insertButton) {
 			var self = this;
+
 			// position the overlay relative to the insert-button
-			self.$node.css(jQuery(insertButton).offset());
+			self.$node.css(calculateOffset(self, $insertButton));
+			self.$node.css('position', Floating.POSITION_STYLE);
+			
 			self.$node.show();
 			// focus the first character
 			self.$node.find('.focused').removeClass('focused');
@@ -256,6 +300,11 @@ define([
 				} else {
 					self._characterPickerButton.hide();
 				}
+			});
+			
+			PubSub.sub('aloha.floating.changed', function(message) {
+				self.characterOverlay.offset = message.position.offset;
+				self.characterOverlay.$node.css(calculateOffset(self.characterOverlay, self._characterPickerButton.element));
 			});
 		},
 

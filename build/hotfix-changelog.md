@@ -14,3 +14,4 @@ All changes are categorized into one of the following keywords:
 		   inside table cells.
 - **BUG**: the underline button didn't show up in the toolbar
            after adding the 'u' in the format-plugin configuration.
+- **BUG**: characterpicker: popup now follows the floating menu while scrolling
