@@ -1567,12 +1567,12 @@ define([
 				}
 			}
 
-			var fakeCell = cell.find( 'div' ).clone();
-			fakeCell.css( 'text-index', -9999 );
+			var fakeCell = jQuery("<span></span>");
+			fakeCell.css( 'text-indent', -9999 );
 			fakeCell.css( 'display', 'inline' );
 			fakeCell.text( largestWord );
 
-			jQuery( "body" ).append( fakeCell );
+			jQuery( cell ).append( fakeCell );
 
 			var width = fakeCell.width();
 
@@ -1596,10 +1596,9 @@ define([
 			jQuery( 'body' ).append( guide );
 
 			// set the maximum and minimum resize
-			var maxPageX =  ( jQuery( cell ).offset().left + jQuery( cell ).outerWidth() ) - ( getMaxColWidth( jQuery( cell ) ) + ( jQuery( cell).outerWidth() - jQuery( cell ).width() ) ); //( jQuery( cell ).offset().left + jQuery( cell ).width() );
-			console.log(maxPageX);
-			var minPageX = jQuery( cell ).prev().offset().left + (jQuery( cell ).prev().outerWidth() - jQuery( cell ).prev().width()) + getMaxColWidth( jQuery( cell ).prev() ); //jQuery( cell ).prev().offset().left + ( jQuery( cell ).prev().outerWidth() - jQuery( cell ).prev().width());
-			console.log(minPageX);
+			//console.log( getMaxColWidth( jQuery( cell ) ) );
+			var maxPageX =  ( jQuery( cell ).offset().left + jQuery( cell ).outerWidth() ) - ( getMaxColWidth( jQuery( cell ) ) + ( jQuery( cell).outerWidth() - jQuery( cell ).width() ) );
+			var minPageX = jQuery( cell ).prev().offset().left + (jQuery( cell ).prev().outerWidth() - jQuery( cell ).prev().width()) + getMaxColWidth( jQuery( cell ).prev() );
 
 			// unset the selection type
 			that.selection.resizeMode = true;
