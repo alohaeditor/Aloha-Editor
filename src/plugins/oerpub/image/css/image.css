@@ -9,3 +9,7 @@
     position: absolute;
     width: 20px;
 }
+
+div.image-alt textarea {
+    width: 97%;
+}
