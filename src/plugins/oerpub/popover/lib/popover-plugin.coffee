@@ -126,6 +126,16 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
           tp =
             top: pos.top + pos.height / 2 - actualHeight / 2
             left: pos.left + pos.width
+
+      if tp.top < 0 or tp.left < 0
+        placement = 'bottom'
+        tp.top = pos.top + pos.height
+
+      if tp.left < 0
+        tp.left = 10 # so it's not right at the edge of the page
+
+      # TODO move the arrow if placement='top/bottom'
+
       $tip.css(tp).addClass(placement).addClass "in"
 
       ### Trigger the shown event ###
@@ -143,7 +153,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
   # Apply the monkey patch
   monkeyPatch = () ->
     console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable')
-    proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype
+    proto = jQuery.fn.popover.Constructor.prototype
     proto.show = Bootstrap_Popover_show
     proto.hide = Bootstrap_Popover_hide(proto.hide)
     proto.destroy = Bootstrap_Popover_destroy
