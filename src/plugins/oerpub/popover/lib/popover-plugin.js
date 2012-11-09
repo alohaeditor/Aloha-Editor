@@ -115,6 +115,13 @@ There are 3 variables that are stored on each element;
               left: pos.left + pos.width
             };
         }
+        if (tp.top < 0 || tp.left < 0) {
+          placement = 'bottom';
+          tp.top = pos.top + pos.height;
+        }
+        if (tp.left < 0) {
+          tp.left = 10;
+        }
         $tip.css(tp).addClass(placement).addClass("in");
         /* Trigger the shown event
         */
@@ -134,7 +141,7 @@ There are 3 variables that are stored on each element;
     monkeyPatch = function() {
       var proto;
       console && console.warn('Monkey patching Bootstrap popovers so the buttons in them are clickable');
-      proto = jQuery('<div></div>').popover({}).data('popover').constructor.prototype;
+      proto = jQuery.fn.popover.Constructor.prototype;
       proto.show = Bootstrap_Popover_show;
       proto.hide = Bootstrap_Popover_hide(proto.hide);
       return proto.destroy = Bootstrap_Popover_destroy;
