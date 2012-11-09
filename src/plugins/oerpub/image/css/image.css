@@ -13,3 +13,7 @@
 div.image-alt textarea {
     width: 97%;
 }
+
+div.upload-url-form input.preview {
+  display: none;
+}
