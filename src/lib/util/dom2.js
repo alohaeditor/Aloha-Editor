@@ -28,7 +28,7 @@ define(['jquery', 'util/maps', 'util/strings', 'util/browser'], function ($, Map
 	'use strict';
 
 	var spacesRx = /\s+/;
-	var attrRegex = /\s([^<\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^\s]+))?/g;
+	var attrRegex = /\s([^\/<>\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^\s]+))?/g;
 
 	/**
 	 * Like insertBefore, inserts firstChild into parent before

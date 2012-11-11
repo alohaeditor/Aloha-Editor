@@ -15,3 +15,7 @@ All changes are categorized into one of the following keywords:
 - **BUG**: the underline button didn't show up in the toolbar
            after adding the 'u' in the format-plugin configuration.
 - **BUG**: characterpicker: popup now follows the floating menu while scrolling
+
+- **BUG**: dom utils: fixes potential bug that may cause attributes with the
+	   slash '/' character in the name to appear in the result of
+	   getContents().
