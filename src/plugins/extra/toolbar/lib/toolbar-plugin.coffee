@@ -22,7 +22,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
         # parent list item and set disabled on that.
         if $buttons.is('.btn')
           $buttons.attr('disabled', 'disabled') if !bool
-          $buttons.attr('disabled', null) if bool
+          $buttons.removeAttr('disabled') if bool
         else
           $buttons.parent().addClass('disabled') if !bool
           $buttons.parent().removeClass('disabled') if bool
@@ -102,7 +102,7 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
       headings = CONTAINER_JQUERY.find(".changeHeading")
       
       headings.on 'click', changeHeading
-      headings.add(headings.parent()).removeClass('disabled missing-a-click-event').attr('disabled', undefined)
+      headings.add(headings.parent()).removeClass('disabled missing-a-click-event').removeAttr('disabled')
 
       Aloha.bind 'aloha-editable-activated', (event, data) ->
         squirreledEditable = data.editable
