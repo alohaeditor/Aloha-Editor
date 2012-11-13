@@ -1528,7 +1528,7 @@ define([
 		//unbind any exisiting resize event handlers
 		that.detachRowColResize( cell );
 
-		var resizeColumns = function(pixelsMoved) {
+		var resizeColumns = function(pixelsMoved, reduce) {
 			var columnId = cell.closest( 'tr' ).children().index( cell );
 			var rows = cell.closest( 'table' ).find( 'tr' );
 
@@ -1543,9 +1543,11 @@ define([
 				jQuery( expandingCell ).css( 'width', expandToWidth );
 				jQuery( expandingCell ).find('div').css( 'width', expandToWidth );
 
-				var reducingCell = jQuery( jQuery( rows[i] ).children()[ columnId ] );
-				jQuery( reducingCell ).css( 'width', reduceToWidth );
-				jQuery( reducingCell ).find('div').css( 'width', reduceToWidth );
+				if(reduce) {
+					var reducingCell = jQuery( jQuery( rows[i] ).children()[ columnId ] );
+					jQuery( reducingCell ).css( 'width', reduceToWidth );
+					jQuery( reducingCell ).find('div').css( 'width', reduceToWidth );
+				}
 			}
 
 		};
@@ -1596,9 +1598,8 @@ define([
 			jQuery( 'body' ).append( guide );
 
 			// set the maximum and minimum resize
-			//console.log( getMaxColWidth( jQuery( cell ) ) );
-			var maxPageX =  ( jQuery( cell ).offset().left + jQuery( cell ).outerWidth() ) - ( getMaxColWidth( jQuery( cell ) ) + ( jQuery( cell).outerWidth() - jQuery( cell ).width() ) );
-			var minPageX = jQuery( cell ).prev().offset().left + (jQuery( cell ).prev().outerWidth() - jQuery( cell ).prev().width()) + getMaxColWidth( jQuery( cell ).prev() );
+			var maxPageX = ( cell.offset().left + cell.width() ) - getMaxColWidth( cell );
+			var minPageX = cell.prev().offset().left + ( cell.prev().innerWidth() - cell.prev().width() ) + getMaxColWidth( cell.prev() );
 
 			// unset the selection type
 			that.selection.resizeMode = true;
@@ -1619,11 +1620,20 @@ define([
 					pixelsMoved = minPageX - cell.offset().left;
 				} else if ( e.pageX > minPageX && e.pageX < maxPageX ) {
 					pixelsMoved = e.pageX - cell.offset().left;
-				} else {
+				} else if ( e.pageX > maxPageX ) {
 				  pixelsMoved = maxPageX - cell.offset().left;
 				}
 
-				resizeColumns( pixelsMoved );
+				// In this instance there's no room to reduce one cell
+				// to make room to other
+				// hence, we expand the whole table
+				if (e.pageX > cell.offset().left && pixelsMoved < 0) {
+					resizeColumns( e.pageX - cell.offset().left, false );
+				} else {
+					// It's possible to reduce one cell and
+					// to make room to the other
+					resizeColumns( pixelsMoved, true );
+				}
 
 				jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
 				jQuery( 'body' ).unbind( 'mouseup.dnd_col_resize' );
