@@ -135,6 +135,33 @@ define [
         dialog.remove()
       dialog
 
+  unlink = ($a) ->
+      a = $a.get(0)
+      
+      # remove the link's popover HTML et al, before unwrapping the link/anchor
+      # see popover-plugin soptOne() method:
+      $a.removeData('aloha-bubble-openTimer', 0)
+      $a.removeData('aloha-bubble-closeTimer', 0)
+      $a.removeData('aloha-bubble-selected', false)
+      $a.popover('destroy')
+
+      # create a range based on the anchor node and select it, see GENTICS.Utils.Dom.selectDomNode
+      newRange = new GENTICS.Utils.RangeObject()
+      newRange.startContainer = newRange.endContainer = a.parentNode
+      newRange.startOffset = GENTICS.Utils.Dom.getIndexInParent a
+      newRange.endOffset = newRange.startOffset + 1
+      newRange.select()
+
+      # remove the anchor but preserve its contents
+      preserveContents = true
+      GENTICS.Utils.Dom.removeFromDOM a, newRange, preserveContents
+      
+      # select the new, colapsed range
+      newRange.startContainer = newRange.endContainer
+      newRange.startOffset = newRange.endOffset
+      newRange.select()
+      newRange
+      
   selector = 'a'
 
   populator = ($el) ->
@@ -143,17 +170,45 @@ define [
       $bubble = jQuery('<div class="link-popover"></div>')
       
       href = $el.attr('href')
-      a = jQuery('<a target="_blank" rel="noreferrer"></a>').appendTo($bubble)
-      a.attr 'href', href
-      a.append href
-      $bubble.append ' - '
-      change = jQuery('<button class="btn">Change...</div>')
-      # TODO: Convert the mousedown to a click. To do that the aloha-deactivated event need to not hide the bubbles yet and instead fire a 'hide' event
-      change.appendTo($bubble)
-      change.on 'click', ->
-        # unsquirrel the activeEditable
-        Aloha.activeEditable = editable
-        dialog = showModalDialog($el)
+      
+      # we find the images relative to where require.js lives aka Aloha.settings.baseUrl
+      #     http://localhost:xxxx/aloha/src/lib
+      # the below png files live here: aloha/src/plugins/oerpub/assorted/img/pencil_cnx.png
+      # thus the png files relative path is:  ../plugins/oerpub/assorted/img/
+      # and the absolute path is: Aloha.settings.baseUrl + /../plugins/oerpub/assorted/img/
+      baseUrl = Aloha.settings.baseUrl
+      details = jQuery '''
+          <div class="link-popover-details">
+            <a class="edit-link" >
+              <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/pencil_cnx.png" />
+              <span title="Edit link">Edit link ...</span>
+            </a>
+            &nbsp; | &nbsp;
+            <a class="delete-link">
+              <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/delete_icon.png" />
+              <span title="Unlink (remove the link, leaving just the text)">Unlink</span>
+            </a>
+            &nbsp; | &nbsp;
+            <span  class="visit-link">
+              <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/external-link-02.png" />
+              <a href="''' + href + '''">''' + href + '''</a>
+            </span>
+          </div>
+          <br/>
+      '''
+      $bubble.append details
+      $edit = details.find '.edit-link'
+      $edit.on 'click', ->
+          # unsquirrel the activeEditable
+          Aloha.activeEditable = editable
+          dialog = showModalDialog($el)
+
+      $remove = details.find '.delete-link'
+      $remove.on 'click', ->
+          # unsquirrel the activeEditable
+          Aloha.activeEditable = editable
+          unlink($el)
+      
       $bubble.contents()
 
 
