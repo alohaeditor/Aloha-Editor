@@ -230,7 +230,10 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
             if not $node.data('aloha-bubble-selected')
               # You have 500ms to move from the tag in the DOM to the popover.
               # If the mouse enters the popover then cancel the 'hide'
-              $tip = $node.data('popover').$tip
+              try
+                $tip = $node.data('popover').$tip
+              catch err
+                $tip = null
               if $tip
                 $tip.on 'mouseenter', =>
                   ## (STATE_WO) -> (STATE_TIP)

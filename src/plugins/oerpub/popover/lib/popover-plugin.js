@@ -227,7 +227,11 @@ There are 3 variables that are stored on each element;
             return $node.on('mouseleave.bubble', function() {
               var $tip;
               if (!$node.data('aloha-bubble-selected')) {
-                $tip = $node.data('popover').$tip;
+                try {
+                  $tip = $node.data('popover').$tip;
+                } catch (err) {
+                  $tip = null;
+                }
                 if ($tip) {
                   $tip.on('mouseenter', function() {
                     return clearTimeout($node.data('aloha-bubble-timer'));
