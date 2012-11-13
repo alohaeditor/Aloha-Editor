@@ -69,7 +69,7 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                 click: function(e){
 
                     var range = Aloha.Selection.getRangeObject(),
-                        $placeholder = $('<span class="aloha-cleanme image-placeholder"> </span>');
+                        $placeholder = $('<span class="aloha-ephemera image-placeholder"> </span>');
                     if (range.isCollapsed()) {
                         GENTICS.Utils.Dom.insertIntoDOM($placeholder, range, $(Aloha.activeEditable.obj));
                         $('.plugin.image').data('placeholder', $placeholder)

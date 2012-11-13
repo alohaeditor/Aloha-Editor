@@ -1022,9 +1022,9 @@ define([
 					
 					// Create a div that allows the user to drop an image, upload, or provide a URL
 					var uploadBox = jQuery('<div></div>');
-					uploadBox.addClass('aloha-image-upload-drop-box aloha-ui-wrapper');
+					uploadBox.addClass('aloha-image-upload-drop-box aloha-ephemera-wrapper');
 					uploadBox.attr('contentEditable', false);
-					uploadBox.append('<span class="aloha-cleanme">Click to upload an image or drop one here</span>');
+					uploadBox.append('<span class="aloha-ephemera">Click to upload an image or drop one here</span>');
 
 
                     // Create upload form and add upload code for it
@@ -1032,7 +1032,7 @@ define([
                         '<form />', {method: 'POST',
                             enctype: 'multipart/form-data'});
                     var $input = $('<input />', {type: 'file', name: 'upload'});
-                    $form.hide().append($input).addClass('aloha-cleanme');
+                    $form.hide().append($input).addClass('aloha-ephemera');
                     uploadBox.append($form);
                     uploadBox.on('click', function(evt){
                         uploadBox.find('span').remove();
