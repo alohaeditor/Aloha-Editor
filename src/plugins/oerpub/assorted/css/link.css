@@ -43,3 +43,18 @@ ul.nav.nav-tabs {
 #link-tab-external label {
   font-weight: normal;
 }
+
+/* style the link popover */
+
+div.link-popover-details .edit-link {
+  white-space: nowrap;
+}
+
+div.link-popover-details .delete-link {
+  white-space: nowrap;
+}
+
+div.link-popover-details .visit-link {
+  white-space: nowrap;
+}
+
