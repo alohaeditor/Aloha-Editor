@@ -7,10 +7,10 @@ Register a couple of assorted oer plugins
 
 (function() {
 
-  define(['popover', './link', './figure', './title-figcaption'], function(Bubble, linkConfig, figureConfig, figcaptionConfig) {
-    Bubble.register(linkConfig);
-    Bubble.register(figureConfig);
-    return Bubble.register(figcaptionConfig);
+  define(['popover', './link', './figure', './title-figcaption'], function(Popover, linkConfig, figureConfig, figcaptionConfig) {
+    Popover.register(linkConfig);
+    Popover.register(figureConfig);
+    return Popover.register(figcaptionConfig);
   });
 
 }).call(this);

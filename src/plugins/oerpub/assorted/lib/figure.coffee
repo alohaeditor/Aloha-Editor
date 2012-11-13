@@ -1,14 +1,13 @@
 # Aloha Link Plugin
 # * -----------------
 # * This plugin provides a bubble next to a link when it is selected
-# 
+#
 define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
-  
+
   selector = 'figure'
 
   # TODO: Convert the mousedown to a click. To do that the aloha-deactivated event need to not hide the bubbles yet and instead fire a 'hide' event
-  populator = ($bubble) ->
-      $el = @
+  populator = ($el) ->
       $bubble = jQuery('<div class="figure-popover btn-group"></div>')
       # Buttons to add/remove a title/caption
       if not $el.children('.title:not(.empty)')[0]
@@ -18,10 +17,10 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
           $el.prepend(newTitle)
           #TODO: Select the title
         $bubble.append($button)
-      
+
       separator = jQuery('<span class="divider"></span>')
       $bubble.append(separator)
-      
+
       if not $el.children('figcaption:not(.empty)')[0]
         $button = jQuery('<button class="btn">Add Caption</button>')
         $button.on 'mousedown', () ->

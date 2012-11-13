@@ -124,8 +124,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
 
   selector = 'a'
 
-  populator = () ->
-      $el = @
+  populator = ($el) ->
       # When a click occurs, the activeEditable is cleared so squirrel it
       editable = Aloha.activeEditable
       $bubble = jQuery('<div class="link-popover"></div>')
