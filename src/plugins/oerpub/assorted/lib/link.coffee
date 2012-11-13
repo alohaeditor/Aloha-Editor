@@ -2,7 +2,20 @@
 # * -----------------
 # * This plugin provides a bubble next to a link when it is selected
 #
-define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery, Popover, UI, console) ->
+define [
+  'aloha', 
+  'jquery', 
+  'popover', 
+  'ui/ui', 
+  'aloha/console',
+  'css!assorted/css/link.css'
+], (
+  Aloha, 
+  jQuery, 
+  Popover, 
+  UI, 
+  console
+) ->
 
   DIALOG_HTML = '''
     <form class="modal" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">
