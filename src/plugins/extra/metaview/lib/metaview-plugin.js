@@ -73,7 +73,7 @@ define([
 						} else {
 							that._toggleMetaViewButton.show(false);
 							return;
-						} 
+						}
 						
 						if ( /* that.button && */ jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
 							that._toggleMetaViewButton.setState(true);
