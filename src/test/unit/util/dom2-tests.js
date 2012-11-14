@@ -8,6 +8,13 @@ Aloha.require(['jquery', 'util/dom2'], function($, Dom){
 
 	module('Dom');
 
+	test('attrNames', function () {
+		var result = Dom.attrNames($('<hr>')[0]);
+		deepEqual(result, []);
+		var result = Dom.attrNames($('<li data-attr="some value">')[0]);
+		deepEqual(result, ['data-attr']);
+	});
+
 	test('indexByClass', function () {
 		var result = Dom.indexByClass(input, {'some-class': true, 'some-class-4': true});
 		deepEqual(result, {'some-class': $(input).find('.some-class').get(),

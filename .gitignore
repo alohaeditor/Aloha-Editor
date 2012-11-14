@@ -7,3 +7,4 @@ doc/guides/staging
 *.orig
 *.swp
 .externalToolBuilders
+doc/guides/output
