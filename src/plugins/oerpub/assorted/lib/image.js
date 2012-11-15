@@ -79,7 +79,11 @@
         evt.preventDefault();
         $el.attr('src', imageSource);
         $el.attr('alt', dialog.find('[name=alt]').val());
-        return dialog.modal('hide');
+        dialog.modal('hide');
+        if ($uploadImage[0].files.length) {
+          $el[0].files = $uploadImage[0].files;
+          return Aloha.trigger('aloha-upload-file', $el[0]);
+        }
       });
       dialog.on('hidden', function() {
         return dialog.remove();
