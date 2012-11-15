@@ -7,9 +7,9 @@ Register a couple of assorted oer plugins
 
 (function() {
 
-  define(['popover', './link', './figure', './title-figcaption'], function(Popover, linkConfig, figureConfig, figcaptionConfig) {
+  define(['popover', './link', './image', './figure', './title-figcaption'], function(Popover, linkConfig, imageConfig, figureConfig, figcaptionConfig) {
     Popover.register(linkConfig);
-    Popover.register(figureConfig);
+    Popover.register(imageConfig);
     return Popover.register(figcaptionConfig);
   });
 
