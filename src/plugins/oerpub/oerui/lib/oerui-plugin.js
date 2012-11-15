@@ -1,4 +1,0 @@
-define(['./bubbles'], function(){
-  return {
-  }
-});
