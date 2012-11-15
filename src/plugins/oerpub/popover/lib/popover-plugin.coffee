@@ -142,6 +142,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       @$element.trigger('shown-popover')
 
   Bootstrap_Popover_hide = (originalHide) -> () ->
+      @$element.trigger('hide-popover')
       originalHide.bind(@)()
       @$element.trigger('hidden-popover')
 
@@ -172,7 +173,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       # @noHover
       jQuery.extend(@, cfg)
       if @focus or @blur
-        console and console.warn 'Popover.focus and Popover.blur are deprecated in favor of listening to the "shown-popover" or "hidden-popover" events on the original DOM element'
+        console and console.warn 'Popover.focus and Popover.blur are deprecated in favor of listening to the "shown-popover" or "hide-popover" events on the original DOM element'
 
     startAll: (editable) ->
       $el = jQuery(editable.obj)
@@ -189,8 +190,8 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
             $node.on 'shown-popover', =>
               @focus.bind($node[0])($node.data('popover').$tip)
           if @blur
-            $node.on 'hidden-popover', =>
-              @blur.bind($node[0])()
+            $node.on 'hide-popover', =>
+              @blur.bind($node[0])($node.data('popover').$tip)
 
           # Make sure we don't create more than one popover for an element.
           if not $node.data('popover')
