@@ -49,7 +49,7 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
             this.settings = jQuery.extend(true, this.defaultSettings, this.settings);
             var plugin = this;
             Aloha.bind('aloha-editable-created', function(event, editable){
-                editable.obj.find('table').each(function(){
+                editable.obj.find('img').each(function(){
                     prepareImage(plugin, $(this));
                 });
             });
