@@ -126,6 +126,12 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
 
         dialog.modal('hide')
 
+        # Start uploading if a local file was chosen
+        if $uploadImage[0].files.length
+          # HACK to get the dragndropfiles to recognize this image and upload it
+          $el[0].files = $uploadImage[0].files
+          Aloha.trigger 'aloha-upload-file', $el[0]
+
       dialog.on 'hidden', () ->
         dialog.remove()
       dialog
