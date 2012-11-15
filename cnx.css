@@ -16,7 +16,10 @@
 
   padding-left: 1em;
   box-shadow: 0 2px 3px 0 #CCC;
-  z-index: 10000;
+  /* This is the same z-index as popovers so the popover renders above the toolbar
+   * but Math (which is also raised) still shows up below the toolbar
+   */
+  z-index: 1010;
 }
 
 /* Set the width for the Heading/SubHeading dropdown */
