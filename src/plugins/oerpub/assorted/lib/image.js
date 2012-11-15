@@ -18,6 +18,7 @@
       imageAltText = $el.attr('alt');
       dialog.find('[name=alt]').val(imageAltText);
       if (/^https?:\/\//.test(imageSource)) {
+        $uploadUrl.val(imageSource);
         $uploadUrl.show();
       }
       (function(img, baseurl) {

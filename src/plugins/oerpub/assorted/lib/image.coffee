@@ -60,7 +60,9 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
       imageAltText = $el.attr('alt')
       dialog.find('[name=alt]').val(imageAltText)
 
-      $uploadUrl.show() if /^https?:\/\//.test(imageSource)
+      if /^https?:\/\//.test(imageSource)
+        $uploadUrl.val(imageSource)
+        $uploadUrl.show()
 
       # Set onerror of preview image
       ((img, baseurl) ->
