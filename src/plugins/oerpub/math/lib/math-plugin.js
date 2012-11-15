@@ -26,8 +26,7 @@
         var $el;
         $el = jQuery('<span class="math-element">`x^2`</span>');
         GENTICS.Utils.Dom.insertIntoDOM($el, Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
-        triggerMathJax($el);
-        return MathJax.Hub.Typeset($el[0], function() {
+        return triggerMathJax($el, function() {
           return $el.trigger('show');
         });
       }
@@ -75,7 +74,18 @@
           formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close;
           $span.text(formulaWrapped);
         }
-        triggerMathJax($span);
+        triggerMathJax($span, function() {
+          var $math;
+          $math = $span.find('math');
+          if ($math[0]) {
+            $annotation = $math.find('annotation');
+            if (!($annotation[0] != null)) {
+              $annotation = jQuery('<annotation></annotation>').prependTo($math);
+            }
+            $annotation.attr('encoding', mimeType);
+            return $annotation.text(formula);
+          }
+        });
         $span.data('math-formula', formula);
         return $formula.trigger('focus');
       };

@@ -131,6 +131,7 @@ There are 3 variables that are stored on each element;
     };
     Bootstrap_Popover_hide = function(originalHide) {
       return function() {
+        this.$element.trigger('hide-popover');
         originalHide.bind(this)();
         return this.$element.trigger('hidden-popover');
       };
@@ -158,7 +159,7 @@ There are 3 variables that are stored on each element;
       function Helper(cfg) {
         jQuery.extend(this, cfg);
         if (this.focus || this.blur) {
-          console && console.warn('Popover.focus and Popover.blur are deprecated in favor of listening to the "shown-popover" or "hidden-popover" events on the original DOM element');
+          console && console.warn('Popover.focus and Popover.blur are deprecated in favor of listening to the "shown-popover" or "hide-popover" events on the original DOM element');
         }
       }
 
@@ -181,8 +182,8 @@ There are 3 variables that are stored on each element;
               });
             }
             if (_this.blur) {
-              $node.on('hidden-popover', function() {
-                return _this.blur.bind($node[0])();
+              $node.on('hide-popover', function() {
+                return _this.blur.bind($node[0])($node.data('popover').$tip);
               });
             }
             if (!$node.data('popover')) {

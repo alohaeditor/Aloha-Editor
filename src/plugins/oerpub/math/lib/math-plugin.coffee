@@ -39,8 +39,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
         GENTICS.Utils.Dom.insertIntoDOM $el,
           Aloha.Selection.getRangeObject(),
           Aloha.activeEditable.obj
-        triggerMathJax($el)
-        MathJax.Hub.Typeset $el[0], ->
+        triggerMathJax $el, ->
           # Callback opens up the math editor by "clicking" on it
           $el.trigger 'show'
 
@@ -98,7 +97,16 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
       else
         formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close
         $span.text(formulaWrapped)
-      triggerMathJax($span)
+      triggerMathJax $span, ->
+        # Save the Edited text into the math annotation element
+        $math = $span.find('math')
+        if $math[0] # Webkit browsers don't natively support MathML
+          $annotation = $math.find('annotation')
+          if not $annotation[0]?
+            $annotation = jQuery('<annotation></annotation>').prependTo($math)
+          $annotation.attr('encoding', mimeType)
+          $annotation.text(formula)
+
       # TODO: Async save the input when MathJax correctly parses and typesets the text
       $span.data('math-formula', formula)
       $formula.trigger('focus')
@@ -164,4 +172,3 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
       setTimeout( () ->
         $popover.find('.formula').trigger('focus')
       , 10)
-
