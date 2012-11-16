@@ -1,6 +1,5 @@
-define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
-    "i18n!aloha/nls/i18n", "PubSub" ], (
-    Aloha, Plugin, Ui, i18n, i18nCore, PubSub) ->
+define [ "aloha", "aloha/plugin", "ui/ui", "PubSub" ], (
+    Aloha, Plugin, Ui, PubSub) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
@@ -97,25 +96,25 @@ define [ "aloha", "aloha/plugin", "ui/ui", "i18n!format/nls/i18n",
         # $newEl.attr('id', $oldEl.attr('id))
         # Setting the id is commented because otherwise collaboration wouldn't register a change in the document
 
-      
+
       headings = CONTAINER_JQUERY.find(".changeHeading")
-      
+
       headings.on 'click', changeHeading
       headings.add(headings.parent()).removeClass('disabled missing-a-click-event').removeAttr('disabled')
 
       Aloha.bind 'aloha-editable-activated', (event, data) ->
         squirreledEditable = data.editable
-      
+
       # Keep track of the range because Aloha.Selection.obj seems to go {} sometimes
       Aloha.bind "aloha-selection-changed", (event, rangeObject) ->
         # Squirrel away the range because clicking the button changes focus and removed the range
         $el = Aloha.jQuery(rangeObject.startContainer)
-        
+
         # Set the default text (changeit if we're in a heading later in the loop)
         currentHeading = CONTAINER_JQUERY.find('.currentHeading')
         currentHeading.text(headings.first().text())
         currentHeading.on('click', (evt) -> evt.preventDefault())
-        
+
         headings.each () ->
           heading = jQuery(@)
           selector = heading.attr('data-tagname')
