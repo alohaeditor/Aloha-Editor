@@ -2,7 +2,7 @@
 # * -----------------
 # * This plugin handles when the insertImage button is clicked and provides a bubble next to an image when it is selected
 #
-define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery, Popover, UI, console) ->
+define ['aloha', 'jquery', 'popover', 'ui/ui'], (Aloha, jQuery, Popover, UI) ->
 
   # This will be prefixed with Aloha.settings.baseUrl
   WARNING_IMAGE_PATH = '/../plugins/oerpub/image/img/warning.png'
