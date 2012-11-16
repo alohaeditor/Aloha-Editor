@@ -40,7 +40,7 @@ define([
 	Aloha,
 	Plugin,
 	$,
-	Commands, // Is this needed?
+	Commands,
 	console
 ) {
 	'use strict';
@@ -135,8 +135,8 @@ define([
 	function getRange() {
 		var selection = Aloha.getSelection();
 		return (selection._nativeSelection._ranges.length
-					? selection.getRangeAt(0)
-					: null);
+				? selection.getRangeAt(0)
+				: null);
 	}
 
 	/**
@@ -165,7 +165,7 @@ define([
 
 		var from = getEditableAtRange(range);
 		if (from) {
-			from.obj.blur(); // TODO test in IE
+			from.obj.blur();
 		}
 
 		// Place the selection inside the target element.
@@ -175,7 +175,6 @@ define([
 			startOffset: 0,
 			endOffset: 0
 		});
-
 		$target.focus();
 	}
 
@@ -287,7 +286,7 @@ define([
 		// Manually unset the metaKey property so that the
 		// smartContentChange method will not process this event if the
 		// metaKey property happens to be set.
-		$event.metaKey = null; // undefined?
+		$event.metaKey = null;
 		$event.stopPropagation();
 
 		// Allows for a small execution window to ensure that the pasted
