@@ -207,25 +207,28 @@ function($, repository, i18nCore){
 					that.total = rpe.total;
 					that.ulProgress = rpe.loaded / rpe.total;
 					Aloha.trigger('aloha-upload-progress',that);
-					xhr.onload = function(load) {
-						try {
-							that.src = that.upload_config.callback.call(that, xhr.responseText);
-                            if(xhr.status / 100 == 2){
-                                Aloha.trigger('aloha-upload-success', that);
-                            } else {
-                                Aloha.trigger('aloha-upload-failure', that);
-                            }
-						} catch(e) {
-							Aloha.trigger('aloha-upload-failure', that);
-						}
-					};
-					xhr.onabort = function() {
-						Aloha.trigger('aloha-upload-abort', that);
-					};
-					xhr.onerror = function(e) {
-						Aloha.trigger('aloha-upload-error', that);
-					};
 				}
+
+                xhr.onload = function(load) {
+                    try {
+                        that.src = that.upload_config.callback.call(that, xhr.responseText);
+                        if(xhr.status / 100 == 2){
+                            Aloha.trigger('aloha-upload-success', that);
+                        } else {
+                            Aloha.trigger('aloha-upload-failure', that);
+                        }
+                    } catch(e) {
+                        Aloha.trigger('aloha-upload-failure', that);
+                    }
+                };
+
+                xhr.onabort = function() {
+                    Aloha.trigger('aloha-upload-abort', that);
+                };
+
+                xhr.onerror = function(e) {
+                    Aloha.trigger('aloha-upload-error', that);
+                };
 			},
 			xhr: new XMLHttpRequest(),
 			contentTypeHeader: 'text/plain; charset=x-user-defined-binary',
