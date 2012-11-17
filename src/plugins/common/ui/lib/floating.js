@@ -32,12 +32,14 @@ define([
 	'aloha/core',
 	'ui/surface',
 	'ui/subguarded',
+	'PubSub',
 	'vendor/amplify.store'
 ], function (
 	$,
 	Aloha,
 	Surface,
 	subguarded,
+	PubSub,
 	amplifyStore
 ) {
 	'use strict';
@@ -82,6 +84,19 @@ define([
 	                   : 'fixed';
 
 	/**
+	 * The position of the floating menu
+	 *
+	 * So we can float dialoges (eg special char picker) with the floating menu
+	*/
+	var POSITION = {
+		style: POSITION_STYLE,
+		offset: {
+			top: 0,
+			left: 0
+			}
+		};
+
+	/**
 	 * Animates a surface element to the given position.
 	 *
 	 * @param {jQuery.<HTMLElement>} $element jQuery unit set of the DOM
@@ -98,8 +113,12 @@ define([
 			position.top += $WINDOW.scrollTop();
 			position.left += $WINDOW.scrollLeft();
 		}
+		
+		POSITION.offset = position;
+
 		$element.stop().animate(position, duration, function () {
 			callback(position);
+			PubSub.pub('aloha.floating.changed', {position: POSITION});
 		});
 	}
 
@@ -374,6 +393,7 @@ define([
 		getPinState: getPinState,
 		makeFloating: makeFloating,
 		floatSurface: floatSurface,
-		togglePinSurface: togglePinSurface
+		togglePinSurface: togglePinSurface,
+		POSITION_STYLE: POSITION_STYLE
 	};
 });
