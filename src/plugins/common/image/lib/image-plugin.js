@@ -159,23 +159,19 @@ define([
 
 			/**
 			 * Upload callback is triggered after an image was uploaded
-             * to determine the server-side URI of the uploaded image.
-             * The default expects a json-formatted message.
+			 * to determine the server-side URI of the uploaded image.
+			 * The default expects a json-formatted message.
 			 */
-             onUploadSuccess: function(xhr) {
-                try {
-                    var msg = JSON.parse(xhr.response);
-                    return msg.url;
-                } catch(e) {}
-                return null;
-             },
+			onUploadSuccess: function(xhr) {
+				return xhr.response;
+			},
 
 			/**
 			 * Upload callback is triggered after an image failed to upload.
 			 */
-             onUploadFail: function(xhr) {
+			onUploadFail: function(xhr) {
 				Aloha.Log.info('Default onUploadFail invoked');
-             }
+			}
 		},
 		
 		/**
