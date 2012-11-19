@@ -140,13 +140,11 @@ function($, repository, i18nCore){
 				merge_conf = {};
 			jQuery.extend(true,merge_conf, this.config);
 
-
-
 			this.objects.push(new this.UploadFile({
-				file:file,
+				file: file,
 				id: id,
 				name: file.name,
-				displayName:file.name,
+				displayName: file.name,
 				parentId:"Uploads",
 				path:"Uploads",
 				url:"Uploads",
