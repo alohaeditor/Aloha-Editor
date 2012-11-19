@@ -1,7 +1,88 @@
-define(
-['jquery'],
-function ($) {
+define(['jquery'], function ($) {
+
+	'use strict';
+
+	/**
+	 * Checks whether the markup describes a paragraph that is propped by
+	 * a <br> tag but is otherwise empty.
+	 * 
+	 * Will return true for:
+	 *
+	 * <p id="foo"><br class="bar" /></p>
+	 *
+	 * as well as:
+	 *
+	 * <p><br></p>
+	 *
+	 * @param {string} html Markup
+	 * @return {boolean} True if html describes a propped paragraph.
+	 */
+	function isProppedParagraph(html) {
+		var trimmed = $.trim(html);
+		if (!trimmed) {
+			return false;
+		}
+		var node = $('<div>' + trimmed + '</div>')[0];
+		var containsSingleP = node.firstChild === node.lastChild
+		                   && 'p' === node.firstChild.nodeName.toLowerCase();
+		if (containsSingleP) {
+			var kids = node.firstChild.children;
+			return (kids && 1 === kids.length &&
+					'br' === kids[0].nodeName.toLowerCase());
+		}
+		return false;
+	}
+
 	var Utils = {
+
+		/**
+		 * Transforms all tables in the given content to make them ready to for
+		 * use with Aloha's table handling.
+		 *
+		 * Cleans tables of their unwanted attributes.
+		 * Normalizes table cells.
+		 *
+		 * @param {jQuery.<HTMLElement>} $content
+		 */
+		'prepareContent': function ($content) {
+			// Because Aloha does not provide a way for the editor to
+			// manipulate borders, cellspacing, cellpadding in tables.
+			// @todo what about width, height?
+			$content.find('table').removeAttr('border')
+				                  .removeAttr('cellspacing')
+				                  .removeAttr('cellpadding');
+
+			$content.find('td').each(function () {
+				var td = this;
+
+				// Because cells with a single empty paragraph are rendered to
+				// appear like empty cells, it simplifies the handeling of
+				// cells to normalize these table cells to contain actual white
+				// space instead.
+				if (isProppedParagraph(td.innerHTML)) {
+					td.innerHTML = '&nbsp;';
+				}
+
+				// Because Aloha table handling uses an editable <div> inside
+				// every table cell, <p> tags that wrap the contents of table
+				// cells are superfluous and can be removed.
+				var $p = $('>p', td);
+				if (1 === $p.length) {
+					$p.contents().unwrap();
+				}
+			});
+
+			// Because Aloha does not provide a means for editors to manipulate
+			// these properties.
+			$content.find('td,tr').removeAttr('width')
+			                      .removeAttr('height')
+			                      .removeAttr('valign');
+
+			// Because Aloha table handling simply does not regard colgroups.
+			// @TODO Use sanitize.js?
+			$content.find('colgroup').remove();
+		},
+
 		/**
 		 * Translates the DOM-Element column offset of a table-cell to the
 		 * column offset of a grid-cell, which is the column index adjusted
@@ -352,5 +433,6 @@ function ($) {
 			return true;
 		}
 	};
+
 	return Utils;
 });
