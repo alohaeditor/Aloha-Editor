@@ -126,10 +126,30 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
 
         dialog.modal('hide')
 
+        # Wait until the dialog is closed before inserting it into the DOM
+        # That way if it is cancelled nothing is inserted
+        if not $el.parent()[0]
+
+          # Either insert a new span around the cursor and open the box or just open the box
+          range = Aloha.Selection.getRangeObject()
+          # Insert the img into the DOM
+          #GENTICS.Utils.Dom.addMarkup(range, newEl, false)
+          $el.addClass('aloha-new-image')
+          GENTICS.Utils.Dom.insertIntoDOM $el,
+            range,
+            Aloha.activeEditable.obj
+          $el = Aloha.jQuery('.aloha-new-image')
+          $el.removeClass('aloha-new-image')
+
         # Start uploading if a local file was chosen
         if $uploadImage[0].files.length
           # HACK to get the dragndropfiles to recognize this image and upload it
           $el[0].files = $uploadImage[0].files
+
+          # Add a class so we can style the image while it's being uploaded
+          # Also, it's required because the DnD mechanism doesn't have a way
+          # of identifying which <img> was uploaded when the callback occurs.
+          $el.addClass('aloha-image-uploading')
           Aloha.trigger 'aloha-upload-file', $el[0]
 
       dialog.on 'hidden', () ->
@@ -162,21 +182,6 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
     click: () ->
       newEl = jQuery('<img/>')
       dialog = showModalDialog(newEl)
-
-      # Wait until the dialog is closed before inserting it into the DOM
-      # That way if it is cancelled nothing is inserted
-      dialog.on 'hidden', =>
-
-        # If the user cancelled then don't create the link
-        if not newEl.attr 'src'
-          return
-        # Either insert a new span around the cursor and open the box or just open the box
-        range = Aloha.Selection.getRangeObject()
-        # Insert the img into the DOM
-        #GENTICS.Utils.Dom.addMarkup(range, newEl, false)
-        GENTICS.Utils.Dom.insertIntoDOM newEl,
-          range,
-          Aloha.activeEditable.obj
 
       # Finally show the dialog
       dialog.modal('show')

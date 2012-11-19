@@ -76,12 +76,21 @@
         return $placeholder.show();
       });
       dialog.on('submit', function(evt) {
+        var range;
         evt.preventDefault();
         $el.attr('src', imageSource);
         $el.attr('alt', dialog.find('[name=alt]').val());
         dialog.modal('hide');
+        if (!$el.parent()[0]) {
+          range = Aloha.Selection.getRangeObject();
+          $el.addClass('aloha-new-image');
+          GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
+          $el = Aloha.jQuery('.aloha-new-image');
+          $el.removeClass('aloha-new-image');
+        }
         if ($uploadImage[0].files.length) {
           $el[0].files = $uploadImage[0].files;
+          $el.addClass('aloha-image-uploading');
           return Aloha.trigger('aloha-upload-file', $el[0]);
         }
       });
@@ -109,18 +118,9 @@
     };
     UI.adopt('insertImage-oer', null, {
       click: function() {
-        var dialog, newEl,
-          _this = this;
+        var dialog, newEl;
         newEl = jQuery('<img/>');
         dialog = showModalDialog(newEl);
-        dialog.on('hidden', function() {
-          var range;
-          if (!newEl.attr('src')) {
-            return;
-          }
-          range = Aloha.Selection.getRangeObject();
-          return GENTICS.Utils.Dom.insertIntoDOM(newEl, range, Aloha.activeEditable.obj);
-        });
         return dialog.modal('show');
       }
     });
