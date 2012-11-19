@@ -55,17 +55,16 @@ define(['jquery'], function ($) {
 			$content.find('td').each(function () {
 				var td = this;
 
-				// Because cells with a single empty paragraph are rendered to
-				// appear like empty cells, it simplifies the handeling of
-				// cells to normalize these table cells to contain actual white
-				// space instead.
+				// Because cells with a single empty <p> are rendered to appear
+				// like empty cells, it simplifies the handeling of cells to
+				// normalize these table cells to contain actual white space
+				// instead.
 				if (isProppedParagraph(td.innerHTML)) {
 					td.innerHTML = '&nbsp;';
 				}
 
-				// Because Aloha table handling uses an editable <div> inside
-				// every table cell, <p> tags that wrap the contents of table
-				// cells are superfluous and can be removed.
+				// Because a single <p> wrapping the contents of a <td> is
+				// initially superfluous.
 				var $p = $('>p', td);
 				if (1 === $p.length) {
 					$p.contents().unwrap();
