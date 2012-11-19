@@ -105,7 +105,7 @@
         newLink = jQuery('<a href="" class="aloha-new-link"></a>');
         dialog = showModalDialog(newLink);
         return dialog.on('hidden', function() {
-          var linkText, range;
+          var range;
           if (!newLink.attr('href')) {
             return;
           }
@@ -114,12 +114,10 @@
             GENTICS.Utils.Dom.extendToWord(range);
           }
           if (range.isCollapsed()) {
-            linkText = 'New Link';
-            newLink.append(linkText);
             GENTICS.Utils.Dom.insertIntoDOM(newLink, range, Aloha.activeEditable.obj);
             range.startContainer = range.endContainer = newLink.contents()[0];
             range.startOffset = 0;
-            range.endOffset = linkText.length;
+            range.endOffset = newLink.text().length;
           } else {
             GENTICS.Utils.Dom.addMarkup(range, newLink, false);
           }

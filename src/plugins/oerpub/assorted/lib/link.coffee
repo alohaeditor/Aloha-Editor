@@ -166,15 +166,12 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
 
         if range.isCollapsed()
           # insert a link with text here
-          # linkText = i18n.t( 'newlink.defaulttext' )
-          linkText = 'New Link'
-          newLink.append(linkText)
           GENTICS.Utils.Dom.insertIntoDOM newLink,
             range,
             Aloha.activeEditable.obj
           range.startContainer = range.endContainer = newLink.contents()[0]
           range.startOffset = 0
-          range.endOffset = linkText.length
+          range.endOffset = newLink.text().length
         else
           GENTICS.Utils.Dom.addMarkup(range, newLink, false)
 
