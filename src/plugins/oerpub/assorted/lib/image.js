@@ -102,7 +102,7 @@
       return dialog;
     };
     selector = 'img';
-    populator = function($el) {
+    populator = function($el, pover) {
       var $bubble, editable, href;
       editable = Aloha.activeEditable;
       $bubble = jQuery('<div class="link-popover">\n  <button class="btn change">Change...</button>\n  <button class="btn btn-danger remove">Remove</button>\n</div>');
@@ -114,6 +114,7 @@
         return dialog.modal('show');
       });
       $bubble.find('.remove').on('click', function() {
+        pover.stopOne($el);
         return $el.remove();
       });
       return $bubble.contents();
