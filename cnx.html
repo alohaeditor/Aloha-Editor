@@ -2,94 +2,53 @@
 <html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<title>Figures!</title>
+	<title>OER Editor</title>
 
-	<link rel="stylesheet" href="src/css/aloha.css" type="text/css">
+	<link rel="stylesheet" href="src/css/aloha.css" type="text/css"/>
 	<link rel="stylesheet" href="bootstrap/css/bootstrap.css" type="text/css"/>
 	<link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" type="text/css"/>
-	<!-- <link rel="stylesheet" href="src/demo/math/max.css"/> -->
-
-    <style type="text/css">
-/* Remove the annoying WAI button in tables */
-.aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
-
-/* Hide the annoying floating toolbar */
-.aloha-toolbar { display: none !important; }
-
-/* Set some styling on the toolbar */
-.toolbar {
-  background-color: whiteSmoke;
-  opacity: 0.95;
-  
-  position: fixed;
-  top: 0;
-  
-  width: 100%;
-  padding-left: 1em;
-  box-shadow: 0 2px 3px 0 #CCC;
-  z-index: 10000;
-}
-
-/* Set the width for the Heading/SubHeading dropdown */
-.toolbar .currentHeading {
-  width: 9em;
-}
-
-/* Add some padding on the top so the toolbar has room to float in */
-.document { margin: 4em; }
-
-/* Needs to occur AFTER the bootstrap.css */
-/* Allows the popover to grow in size */
-.popover {
-  width: auto;
-}
-
-/* We don't use the title in popovers so hide it... */
-.popover .popover-title { display: none; }
-
-
-	
-figure {
-  counter-increment: figure;
-  /* Set inline-block so the figure popover shows up directly under instead of 1/2-way in the page */
-  display: inline-block;
-}
-figure figcaption::before { content: "Figure " counter(figure) " "; font-weight: bold; }
-
-
-.aloha-image-upload-drop-box {
-  text-align: center;
-  border: 1px dashed #ccc;
-  width: 400px;
-  padding: 100px 0;
-  cursor: pointer;
-}
-
-/* Metadata fields that occur around the image */
-.aloha-image-attrib .aloha-image-attr-alt::before {
-  content: "Please provide a description of this image for the visually impaired";
-  color: #ccc;
-  display: block;
-}
-/* Just some formatting of the input boxes */
-.aloha-image-attrib input { display: block; }
-.aloha-image-attrib .aloha-image-attr-alt {
-  width: 400px;
-  display: block;
-}
-
-
-/* Rough Table Styling */
-table td { min-width: 5em; }
-table td:first-child { min-width: 1em; }
-	</style>
+	<link rel="stylesheet" type="text/css" href="cnx.css"/>
 
 
 	<!-- Manually link to jQuery because bootstrap relies on this for loading -->
 	<script src="src/lib/vendor/jquery-1.7.2.js"></script>
 	<script src="bootstrap/js/bootstrap.js"></script>
+  <script src="src/lib/require.js"></script>
 
-	<script language="javascript">
+  <script src="src/plugins/extra/math/lib/MathJax.js?config=TeX-MML-AM_HTMLorMML-full&amp;delayStartupUntil=configured"></script>
+
+
+  <!-- ============================= -->
+  <!--  Configure MathJax and Aloha  -->
+  <!-- ============================= -->
+  <script type="text/x-mathjax-config">MathJax.Hub.Config({
+    jax: ["input/MathML", "input/TeX", "input/AsciiMath", "output/NativeMML", "output/HTML-CSS"],
+    extensions: ["asciimath2jax.js", "tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],
+    tex2jax: { inlineMath: [["[TEX_START]","[TEX_END]"], ["\\(", "\\)"]] },
+    // Apparently we can't change the escape sequence for ASCIIMath (MathJax doesn't find it)
+    // asciimath2jax: { inlineMath: [["[ASCIIMATH_START]", "[ASCIIMATH_END]"]], },
+
+    // The default for Firefox is "HTML" for some reason so change it to MML
+    MMLorHTML: {prefer:{MSIE:"MML",Firefox:"MML",Opera:"HTML",Chrome:"HTML",Safari:"HTML",other:"HTML"}},
+    TeX: {
+      extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"], noErrors: { disabled: true }
+    },
+    AsciiMath: { noErrors: { disabled: true } }
+        });
+  </script>
+  <!--
+  <script>
+    /* These are here for debugging MathJax. Uncomment them to use them */
+    MathJax.Hub.Startup.signal.Interest(function (message) {
+      console.log("MathJax Startup: ",message);
+    });
+    MathJax.Hub.signal.Interest(function (message) {
+      console.log("MathJax Hub: ",message);
+    });
+  </script>
+  -->
+
+	<script type="text/javascript">
 		Aloha = window.Aloha || {};
 
 		Aloha.settings = {
@@ -104,9 +63,20 @@ table td:first-child { min-width: 1em; }
 			  draganddropfiles: {
           upload: {
             config: {
-              method: "POST",
-              url: "",
+              method: 'POST',
+              url: '/resources',
+              fieldName: 'data',
+              send_multipart_form: true,
               callback: function(resp) {
+                //TODO: add xhr to Aloha.trigger('aloha-upload-*') in dropfilesrepository.js
+                // dropfilesrepository.js triggers 'aloha-upload-success'
+                // and 'aloha-upload-failure' but does not provide the
+                // response text (URL).
+                // We should probably change dropfilesrepository.js to be
+                //  Aloha.trigger('aloha-upload-success', that, xhr);
+
+                // Then, instead of configuring a callback we could just listen to that event
+
                 // If the response is a URL then change the Image source to it
                 // The URL could be absolute (/^http/) or relative (/\// or [a-z])
                 if (resp.match(/^http/) || resp.match(/^\//) || resp.match(/^[a-z]/) ) {
@@ -139,12 +109,10 @@ table td:first-child { min-width: 1em; }
 
 	</script>
 
-	<script src="src/lib/require.js"></script>
 	<script src="src/lib/aloha.js" data-aloha-plugins="
 	  extra/toolbar,
 	  common/ui,
 	  common/format,
-	  common/link,
 	  common/paste,
 	  common/block,
 	  user/blockdemo,
@@ -152,128 +120,128 @@ table td:first-child { min-width: 1em; }
 	  common/table,
 	  extra/draganddropfiles,
 	  common/image,
-	  extra/oer-math,
-	  extra/bubble
+    oerpub/popover,
+    oerpub/math,
+    oerpub/assorted
 	"></script>
 
-	<script type="text/x-mathjax-config">MathJax.Hub.Config({
-		jax: ["input/MathML", "input/TeX", "input/AsciiMath", "output/HTML-CSS", "output/NativeMML"],
-		extensions: ["asciimath2jax.js", "tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],
-		tex2jax: { inlineMath: [["$$","$$"], ["\\(", "\\)"]] },
-		asciimath2jax: { inlineMath: [["`", "`"]], delimiters: [["`","`"]] },
-		TeX: {
-			extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"], noErrors: { disabled: true }
-		},
-		AsciiMath: { noErrors: { disabled: true } }
-        });
-	</script>
-	<script src="src/plugins/extra/math/lib/MathJax.js?config=default&delayStartupUntil=configured"></script>
-	<!--
-	<script>
-	  /* These are here for debugging MathJax. Uncomment them to use them */
-	  MathJax.Hub.Startup.signal.Interest(function (message) {
-	    console.log("MathJax Startup: ",message);
-	  });
-	  MathJax.Hub.signal.Interest(function (message) {
-	    console.log("MathJax Hub: ",message);
-	  });
-	</script>
-	-->
 </head>
 <body>
-	
-<!-- ================= -->
-<!--  Toolbar Buttons  -->
-<!-- ================= -->
-<div class="toolbar aloha-dialog">
-  <!-- ============= -->
-  <!-- HACK add class aloha-dialog so the editor never blurs -->
-  <!-- See src/lib/aloha.js
-       if (Aloha.activeEditable && !jQuery(".aloha-dialog").is(':visible') && !Aloha.eventHandled) {
-         Aloha.activeEditable.blur();
-       ...
-  -->
-  <!-- ============== -->
-
-
-<div class="btn-toolbar">
-  <div class="btn-group headings">
-    <button class="btn currentHeading" rel="tooltip" title="Text Heading">Nothing</button>
-    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Change Heading">
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu">
-      <!-- "changeHeading" is important so a click can be attached and
-           data-tagname is used both to identify if the cursor is in one of these and
-	   is used to change one heading to another
-	   -->
-      <li><a href="#" class="action changeHeading" data-tagname="p">Normal Text</a></li>
-      <li><a href="#" class="action changeHeading" data-tagname="h1">Heading</a></li>
-      <li><a href="#" class="action changeHeading" data-tagname="h2">Subheading</a></li>
-      <li><a href="#" class="action changeHeading" data-tagname="h3">SubSubHeading</a></li>
-    </ul>
-  </div>
-
-  <div class="btn-group">
-    <button class="btn action strong" rel="tooltip" title="Bold"><i class="icon-bold"></i></button>
-    <button class="btn action emphasis" rel="tooltip" title="Italics"><i class="icon-italic"></i></button>
-    <button class="btn action underline" rel="tooltip" title="Underline"><i class="icon-text-width"></i></button>
-  </div>
-
-  <div class="btn-group">
-    <button class="btn action insertLink" rel="tooltip" title="Insert Link"><i class="icon-resize-full"></i></button>
-    <button class="btn action insertFigure" rel="tooltip" title="Insert Figure"><i class="icon-picture"></i></button>
-    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Insert Pictury Things">
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu">
-      <li><a href="#" class="action insertImage">Insert Image</a></li>
-      <li><a href="#" class="action insertFigure">Insert Figure</a></li>
-      <li class="divider"></li>
-      <li><a href="#" class="action">Insert Exercise</a></li>
-      <li><a href="#" class="action">Insert Example</a></li>
-    </ul>
-  </div>
-
-  <div class="btn-group">
-    <button class="btn action unorderedList" rel="tooltip" title="Insert List"><i class="icon-list"></i></button>
-    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="List Formats">
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu">
-      <li><a href="#" class="action orderedList">Insert Ordered List</a></li>
-      <li><a href="#" class="action unorderedList">Insert Unordered List</a></li>
-    </ul>
-    <button class="btn action outdentList" rel="tooltip" title="Indent List"><i class="icon-indent-right"></i></button>
-    <button class="btn action indentList" rel="tooltip" title="Outdent List"><i class="icon-indent-left"></i></button>
-  </div>
-
-  <div class="btn-group">
-    <button class="btn action createTable" rel="tooltip" title="Create Table"><i class="icon-th"></i></button>
-    <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Table Operations">
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu">
-      <li><a href="#" class="action addrowbefore">Add Row Before</a></li>
-      <li><a href="#" class="action addrowafter">Add Row After</a></li>
-    </ul>
-  </div>
-
-</div>
-
-</div><!-- / ".toolbar" -->
 
 <!-- ====================== -->
 <!--  The Editable Content  -->
 <!-- ====================== -->
   <div class="document" id="document">
+    <h1>Math Examples</h1>
+    <p>These are examples of math in the text.</p>
+    <p>MathML with ASCIIMath in it:
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+  <annotation encoding="ASCIIMath">sq(t) sum_(n=-infty)^infty (-1)^n A p_{p/2}{t-n{T/2}}</annotation>
+  <mstyle displaystyle="true">
+    <mi>s</mi>
+    <mi>q</mi>
+    <mrow>
+      <mo>(</mo>
+      <mi>t</mi>
+      <mo>)</mo>
+    </mrow>
+    <mrow>
+      <munderover>
+        <mo>&#x2211;</mo>
+        <mrow>
+          <mi>n</mi>
+          <mo>=</mo>
+          <mo>-</mo>
+          <mo>&#x221E;</mo>
+        </mrow>
+        <mo>&#x221E;</mo>
+      </munderover>
+    </mrow>
+    <msup>
+      <mrow>
+        <mo>(</mo>
+        <mo>-</mo>
+        <mn>1</mn>
+        <mo>)</mo>
+      </mrow>
+      <mi>n</mi>
+    </msup>
+    <mi>A</mi>
+    <msub>
+      <mi>p</mi>
+      <mrow>
+        <mfrac>
+          <mi>p</mi>
+          <mn>2</mn>
+        </mfrac>
+      </mrow>
+    </msub>
+    <mrow>
+      <mo>{</mo>
+      <mi>t</mi>
+      <mo>-</mo>
+      <mi>n</mi>
+      <mrow>
+        <mo>{</mo>
+        <mfrac>
+          <mi>T</mi>
+          <mn>2</mn>
+        </mfrac>
+        <mo>}</mo>
+      </mrow>
+      <mo>}</mo>
+    </mrow>
+  </mstyle>
+</math>
+
+</p>
+    <p>MathML with TeX in it:
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <annotation encoding="TeX">x = {-b \pm \sqrt{b^2-4ac} \over 2a}</annotation>
+  <mi>x</mi>
+  <mo>=</mo>
+  <mfrac>
+    <mrow>
+      <mo>&#x2212;<!-- − --></mo>
+      <mi>b</mi>
+      <mo>&#x00B1;<!-- ± --></mo>
+      <msqrt>
+        <msup>
+          <mi>b</mi>
+          <mn>2</mn>
+        </msup>
+        <mo>&#x2212;<!-- − --></mo>
+        <mn>4</mn>
+        <mi>a</mi>
+        <mi>c</mi>
+      </msqrt>
+    </mrow>
+    <mrow>
+      <mn>2</mn>
+      <mi>a</mi>
+    </mrow>
+  </mfrac>
+</math></p>
+    <p>MathML with Content Math inside it:
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>x</mi><mn>2</mn></msup>
+<annotation-xml encoding="MathML-Content">
+  <apply>
+    <power/>
+    <ci>x</ci>
+    <cn>2</cn>
+  </apply>
+</annotation-xml>
+</semantics>
+</math>
+</p>
+
     <h1>Linear and Time-Invariant Systems</h1>
     <h2>Signals</h2>
-    <p>This page has been tested in <strong>Chromium</strong>. Results in other browsers may vary</p>
+    <p>This page has been tested in <strong>Webkit</strong> and <strong>Firefox</strong>. Results in other browsers may vary</p>
     <p>A signal's complexity is not related to how wiggly it is. Rather, a signal expert looks for ways of <a href="http://cnx.org/content/m9003">decomposing a given signal</a> into a <strong>sum of simpler signals</strong>, which we term the <strong>signal decomposition</strong>. Though we will never compute a signal's complexity, it essentially equals the number of terms in its decomposition. In writing a signal as a sum of component signals, we can change the component signal's gain by multiplying it by a constant and by delaying it.</p>
 
     <figure class="figure">
-	<div class="title">A Title for a Figure</div>
+    	<div class="title">A Title for a Figure</div>
       <img src="src/test/AlohaEditorLogo.png"/>
       <figcaption>This is a caption on a figure</figcaption>
     </figure>
@@ -286,7 +254,7 @@ table td:first-child { min-width: 1em; }
     <p>As an example of signal complexity, we can express the pulse <span class="math-element">`p_\Delta(t)`</span> as a sum of delayed unit steps.</p>
     <p><span class="math-element">`p_\Delta(t)=u(t)-u(t-\Delta)`</span></p>
     <p>Thus, the pulse is a more complex signal than the step. Be that as it may, the pulse is very useful to us.</p>
-    
+
     <h3>Exercise</h3>
     <p>Express a square wave having period <span class="math-element">`T`</span> and amplitude  <span class="math-element">`A`</span>  as a superposition of delayed and amplitude-scaled pulses.</p>
     <h4>Solution</h4>
@@ -299,9 +267,22 @@ table td:first-child { min-width: 1em; }
 <!--  Aloha Startup  -->
 <!-- =============== -->
   <script type="text/javascript">
+    // I'm running the load immediately (not in jQuery.ready) because the
+    // Toolbar immediately tries to find the right elements to attach listeners
+    // and updaters.
+
+    //Aloha.jQuery.ready(function() {
+      // Load the toolbar from the HTML file and put it right before the document
+      // This doesn't need to be in Aloha.ready... it could be in jQuery().ready
+      jQuery('<div></div>').insertBefore('.document').load('cnx-toolbar.html').children().unwrap();
+    //});
     Aloha.ready( function() {
-      Aloha.jQuery('.document').aloha();
+      Aloha.jQuery('.document').aloha().focus();
       // Wait until Aloha is started before loading MathJax
+      // Also, wrap all math in a span/div. MathJax replaces the MathJax element
+      // losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
+      // add aloha-cleanme so this span is unwrapped
+      jQuery('math').wrap('<span class="math-element aloha-cleanme"></span>')
       MathJax.Hub.Configured();
       //$('*[rel=tooltip]').tooltip();
     });

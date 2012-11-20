@@ -109,9 +109,9 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
 
     function prepareTable(plugin, table){
         // Wrap table in ui-wrappper
-        var w1 = jQuery('<div class="canvas-wrap aloha-ui-wrapper" />');
-        var w2 = jQuery('<div class="table canvas aloha-ui-wrapper" />');
-        var w3 = jQuery('<div class="canvas-inner aloha-ui-wrapper" />');
+        var w1 = jQuery('<div class="canvas-wrap aloha-ephemera-wrapper" />');
+        var w2 = jQuery('<div class="table canvas aloha-ephemera-wrapper" />');
+        var w3 = jQuery('<div class="canvas-inner aloha-ephemera-wrapper" />');
 
         table.wrap(w1).wrap(w2).wrap(w3);
 

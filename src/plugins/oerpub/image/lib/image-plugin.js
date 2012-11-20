@@ -49,7 +49,7 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
             this.settings = jQuery.extend(true, this.defaultSettings, this.settings);
             var plugin = this;
             Aloha.bind('aloha-editable-created', function(event, editable){
-                editable.obj.find('table').each(function(){
+                editable.obj.find('img').each(function(){
                     prepareImage(plugin, $(this));
                 });
             });
@@ -69,7 +69,7 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                 click: function(e){
 
                     var range = Aloha.Selection.getRangeObject(),
-                        $placeholder = $('<span class="aloha-cleanme image-placeholder"> </span>');
+                        $placeholder = $('<span class="aloha-ephemera image-placeholder"> </span>');
                     if (range.isCollapsed()) {
                         GENTICS.Utils.Dom.insertIntoDOM($placeholder, range, $(Aloha.activeEditable.obj));
                         $('.plugin.image').data('placeholder', $placeholder)

@@ -15,9 +15,8 @@
       }
     };
     selector = '.title,figcaption';
-    populator = function() {
-      var $bubble, $el, deleteBtn, editable;
-      $el = this;
+    populator = function($el) {
+      var $bubble, deleteBtn, editable;
       editable = Aloha.activeEditable;
       $bubble = jQuery('<button class="btn btn-danger"><i class="icon-remove icon-white"></i> Remove</button>');
       deleteBtn = $bubble.on('click', function() {
