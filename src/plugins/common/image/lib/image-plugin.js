@@ -411,7 +411,19 @@ define([
                 // as the src for the image.
                 var url = plugin.settings.onUploadSuccess(data.xhr);
                 if ( url !== null && data.file.droptarget) {
-					jQuery(data.file.droptarget).attr('src', url);
+                    var $target = jQuery(data.file.droptarget);
+                    if ($target.is('img')){
+                        jQuery(data.file.droptarget).attr('src', url);
+                    } else {
+                        var $img = jQuery('<img/>');
+                        $img.css({
+                            "max-width": plugin.maxWidth,
+                            "max-height": plugin.maxHeight
+                        });
+                        $img.attr('src', url);
+                        var range = Aloha.Selection.getRangeObject();
+                        GENTICS.Utils.Dom.insertIntoDOM($img, range, $target);
+                    }
                 }
             });
 
