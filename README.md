@@ -1,3 +1,23 @@
+# Welcome to the WYSIWHAT fork of the Aloha Editor
+
+Thanks for checking us out! You can play with some of our demos by going to our [Demo Page](http://wysiwhat.github.com/Aloha-Editor/)
+
+Most of our development is done in the `dev` branch, specifically in the [Plugins](src/plugins) directory.
+
+Additionally, there are long-lived 2 branches we created that serve as production branches for our groups:
+
+* `cnx-master` : Used by http://cnx.org
+* `oerpub-master` : Used by http://oerpub.org
+
+These branches may also contain code snippets specific to those organizations (ie toolbar configs)
+
+The `gh-pages` branch contains demo HTML files that point to CDN versions of external packages so people can play with the demos.
+
+Original Aloha Readme follows.
+
+---
+
+
 # [Aloha Editor - The HTML5 WYSIWYG Editor](http://aloha-editor.org/)
 
 ## New Documentation
@@ -42,5 +62,5 @@ To get updates you can:
 * /src/test - QUnit tests
 
 ## Feeds
- 
+
 - Subscribe to RSS feed updates for the [dev branch](https://github.com/alohaeditor/Aloha-Editor/commits/dev.atom) and/or [master branch](https://github.com/alohaeditor/Aloha-Editor/commits/master.atom)
