@@ -27,3 +27,6 @@ All changes are categorized into one of the following keywords:
 - **BUG**: dom utils: fixes potential bug that may cause attributes with the
 	   slash '/' character in the name to appear in the result of
 	   getContents().
+- **BUG**: word content handler: Fixed handling of pasted MS Word content to
+           not result in broken markup when the content contains tables with
+           cells that are all empty.
