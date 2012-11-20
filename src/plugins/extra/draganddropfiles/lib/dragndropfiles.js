@@ -138,7 +138,7 @@ function($, Plugin,DropFilesRepository) {
 		/**
 		 * Prepare upload
 		 */
-		prepareFileUpload: function(file) {
+		prepareFileUpload: function(file, target) {
 			var 
 				reader = new FileReader(),
 				that = this;
@@ -150,7 +150,8 @@ function($, Plugin,DropFilesRepository) {
                     fileSize: this.file.fileSize,
                     fileName: this.file.fileName,
                     dataURI: reader.result,
-                    data: this.file
+                    data: this.file,
+                    droptarget: target
                 };
                 that.filesObjs.push(that.uploader.addFileUpload(currentFile));
                 that.processedFiles++;
@@ -224,13 +225,13 @@ function($, Plugin,DropFilesRepository) {
 							  edConfig.upload.config.image)
 						) {
 						if (files[len].size <= that.settings.max_file_size) {
-							that.prepareFileUpload(files[len]);
+							that.prepareFileUpload(files[len], event.target);
 						} else {
 							this.processedFiles++;
 							Aloha.Log.warn(that,"max_file_size exeeded, upload of " + files[len].name + " aborted");
 						}
 					} else {
-						that.prepareFileUpload(files[len]);
+						that.prepareFileUpload(files[len], event.target);
 					}
 				}
 			} else {
@@ -253,13 +254,13 @@ function($, Plugin,DropFilesRepository) {
 							  dropimg)
 						) {
 						if (files[len].size <= edConfig.max_file_size) {
-							that.prepareFileUpload(files[len]);
+							that.prepareFileUpload(files[len], event.target);
 						} else {
 							this.processedFiles++;
 							Aloha.Log.warn(that,"max_file_size exeeded, upload of " + files[len].name + " aborted");
 						}
 					} else {
-						that.prepareFileUpload(files[len]);
+						that.prepareFileUpload(files[len], event.target);
 					}
 				} //while
 			}
@@ -293,13 +294,14 @@ function($, Plugin,DropFilesRepository) {
 
                 // Also bind aloha-upload-file so we can trigger file uploads
                 // from other plugins without directly introducing a
-                // dependency. The passed target is an input of type "file".
-                Aloha.bind('aloha-upload-file', function(event, target) {
+                // dependency. The passed data contains the drop-target and the
+                // dropped files as members.
+                Aloha.bind('aloha-upload-file', function(event, data) {
                     var dropevt = $.Event();
                     dropevt.type = 'drop';
-                    dropevt.target = target;
+                    dropevt.target = data.target;
                     dropevt.dataTransfer = {
-                        files: target.files
+                        files: data.files
                     };
 
                     that.dropEventHandler(dropevt);

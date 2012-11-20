@@ -410,8 +410,8 @@ define([
                 // Get the server-side url from the response, set it
                 // as the src for the image.
                 var url = plugin.settings.onUploadSuccess(data.xhr);
-                if ( url !== null ) {
-                    $('#' + data.id).attr('src', url);
+                if ( url !== null && data.file.droptarget) {
+					jQuery(data.file.droptarget).attr('src', url);
                 }
             });
 
@@ -1038,7 +1038,7 @@ define([
                     $input.on('change', function(evt){
                         // Turn this into a drop event and let the relevant
                         // plugin handle it
-                        Aloha.trigger('aloha-upload-file', evt.target);
+                        Aloha.trigger('aloha-upload-file', {target: uploadBox[0], files: evt.target.files});
                     });
 
 					GENTICS.Utils.Dom.insertIntoDOM(uploadBox, range, jQuery(Aloha.activeEditable.obj));

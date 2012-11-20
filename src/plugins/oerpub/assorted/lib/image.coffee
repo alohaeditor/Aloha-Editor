@@ -143,14 +143,12 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
 
         # Start uploading if a local file was chosen
         if $uploadImage[0].files.length
-          # HACK to get the dragndropfiles to recognize this image and upload it
-          $el[0].files = $uploadImage[0].files
-
           # Add a class so we can style the image while it's being uploaded
           # Also, it's required because the DnD mechanism doesn't have a way
           # of identifying which <img> was uploaded when the callback occurs.
           $el.addClass('aloha-image-uploading')
-          Aloha.trigger 'aloha-upload-file', $el[0]
+          Aloha.trigger 'aloha-upload-file',
+            target: $el[0], files: $uploadImage[0].files
 
       dialog.on 'hidden', () ->
         dialog.remove()
@@ -185,7 +183,6 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
 
       # Finally show the dialog
       dialog.modal('show')
-
 
   Popover.register
     hover: true

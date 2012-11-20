@@ -89,9 +89,11 @@
           $el.removeClass('aloha-new-image');
         }
         if ($uploadImage[0].files.length) {
-          $el[0].files = $uploadImage[0].files;
           $el.addClass('aloha-image-uploading');
-          return Aloha.trigger('aloha-upload-file', $el[0]);
+          return Aloha.trigger('aloha-upload-file', {
+            target: $el[0],
+            files: $uploadImage[0].files
+          });
         }
       });
       dialog.on('hidden', function() {
