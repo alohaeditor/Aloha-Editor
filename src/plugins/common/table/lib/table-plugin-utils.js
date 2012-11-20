@@ -48,9 +48,13 @@ define(['jquery'], function ($) {
 			// Because Aloha does not provide a way for the editor to
 			// manipulate borders, cellspacing, cellpadding in tables.
 			// @todo what about width, height?
-			$content.find('table').removeAttr('border')
-				                  .removeAttr('cellspacing')
-				                  .removeAttr('cellpadding');
+			$content.find('table').removeAttr('cellpadding')
+			                      .removeAttr('cellspacing')
+			                      .removeAttr('border')
+			                      .removeAttr('border-top')
+			                      .removeAttr('border-bottom')
+			                      .removeAttr('border-left')
+			                      .removeAttr('border-right');
 
 			$content.find('td').each(function () {
 				var td = this;
@@ -64,7 +68,7 @@ define(['jquery'], function ($) {
 				}
 
 				// Because a single <p> wrapping the contents of a <td> is
-				// initially superfluous.
+				// initially superfluous and should be stripped out.
 				var $p = $('>p', td);
 				if (1 === $p.length) {
 					$p.contents().unwrap();
