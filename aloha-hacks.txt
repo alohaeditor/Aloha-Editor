@@ -1,0 +1,3 @@
+Changed src/plugins/extra/draganddropfiles/lib/dropfilesrepository.js
+- tempimg.src = this.file.objectURL || this.file.dataURI; (added dataURI option)
+
