@@ -31,16 +31,18 @@
  * before being copied into the active editable, at the current range.
  */
 define([
+	'jquery',
 	'aloha/core',
 	'aloha/plugin',
-	'jquery',
 	'aloha/command',
+	'contenthandler/contenthandler-utils',
 	'aloha/console'
 ], function (
+	$,
 	Aloha,
 	Plugin,
-	$,
 	Commands,
+	ContentHandlerUtils,
 	console
 ) {
 	'use strict';
@@ -63,6 +65,9 @@ define([
 
 	/**
 	 * Matches as string consisting of a single white space character.
+	 *
+	 * '%A0' is used instead of '&nbsp;' because it seems that IE transforms
+	 * non-breaking spaces into atomic tokens.
 	 *
 	 * @type {RegExp}
 	 * @const
@@ -180,42 +185,66 @@ define([
 
 	/**
 	 * Detects a situation where paste is about to be done into a selection
-	 * that looks like this: <p> [</p>...
+	 * beginning inside markup that looks exactly like this:
 	 *
-	 * The nbsp inside the <p> node was placed there to make the empty
-	 * paragraph visible in HTML5 conformant rendering engines, like WebKit.
-	 * Without the white space, such browsers would correctly render an empty
-	 * <p> as invisible.
+	 * '<p> </p>'
 	 *
-	 * Note that we do not "prop up" otherwise empty paragraph nodes using a
-	 * <br/>, as WebKit does, because IE does display empty paragraphs that are
-	 * content-editable and so a <br/> results in 2 lines instead of 1 being
-	 * shown inside the paragraph.
+	 * or roughly like this:
+	 *
+	 * '<p><br/></p>'
+	 *
+	 * Both markups denote a "propped" paragraph.  A propped paragraph is one
+	 * which contains content that has been placed in it for the sole purpose
+	 * of forcing the layout engine to render the node visibly.  HTML5 standard
+	 * conformance requires that empty block elements like <p> be rendered
+	 * invisibly, and comformant browsers like WebKit would place <br> nodes
+	 * inside content-editable paragraphs so that they can be visible for
+	 * editing.
+	 *
+	 * IE is _not_ standard comformant however, because it renders empty <p>
+	 * with a line-height of 1.  Adding a <br> elements inside it results in
+	 * the <p> appearing with 2 lines.
 	 *
 	 * If we detect this situation, the white space is removed so that after
 	 * pasting a new paragraph into the paragraph, it will not be split leaving
-	 * an empty paragraph on top of the pasted content.
-	 *
-	 * We use
-	 *
-	 *		"/^(\s|%A0)$/.test(escape("
-	 *
-	 * instead of
-	 *
-	 *		"/^(\s|&nbsp;)$/.test( escape("
-	 *
-	 * because it seems that IE transforms non-breaking spaces into atomic
-	 * tokens.
+	 * an empty paragraph on top of the pasted content.  Therefore when working
+	 * in IE, a space is placed inside an empty paragraph rather than a <br>.
+	 * Hence markup like '<p> </p>'.
 	 *
 	 * @param {WrappedRange} range
 	 * @return {boolean} True if range starts in propping node.
 	 */
-	function rangeStartsAtProppedNode(range) {
+	function rangeStartsAtProppedParagraph(range) {
 		var start = range.startContainer;
-		return (3 === start.nodeType
-				&& 'p' === start.parentNode.nodeName.toLowerCase()
-					&& 1 === start.parentNode.childNodes.length
-						&& PROPPING_SPACE.test(window.escape(start.data)));
+		if (1 === start.nodeType) {
+			return ('p' === start.nodeName.toLowerCase() &&
+					ContentHandlerUtils.isProppedParagraph(start.outerHTML));
+		}
+		return (3 === start.nodeType &&
+				'p' === start.parentNode.nodeName.toLowerCase() &&
+					1 === start.parentNode.childNodes.length &&
+						PROPPING_SPACE.test(window.escape(start.data)));
+	}
+
+	/**
+	 * Prepare the nodes around where pasted content is to land.
+	 * 
+	 * @param {WrappedRange} range
+	 */
+	function prepRangeForPaste(range) {
+		if (rangeStartsAtProppedParagraph(range)) {
+			if (3 === range.startContainer.nodeType) {
+				range.startContainer.data = '';
+			} else {
+				range.startContainer.innerHTML = ' ';
+			}
+			range.startOffset = 0;
+
+			// Because of situations like <p>[ ]</p> or <p>[<br/>]</p>
+			if (range.endContainer === range.startContainer) {
+				range.endOffset = 0;
+			}
+		}
 	}
 
 	/**
@@ -233,29 +262,19 @@ define([
 	 *                             pasting is completed.
 	 */
 	function paste($clipboard, range, callback) {
-		// Insert the content into the editable at the original user selection.
 		if (range) {
-			restoreSelection(range);
-
 			var content = $clipboard.html();
 
-			// It is necessary to remove an insidious nbsp that IE inserts into
-			// the content during pasting.  Leaving it would otherwise result
-			// in an empty paragraph being created right before the pasted
-			// content when the pasted content is a paragraph.
+			// Because IE inserts and an insidious nbsp into the content during
+			// pasting that needs to be removed.  Leaving it would otherwise
+			// result in an empty paragraph being created right before the
+			// pasted content when the pasted content is a paragraph.
 			if (IS_IE && /^&nbsp;/.test(content)) {
 				content = content.substring(6);
 			}
 
-			if (rangeStartsAtProppedNode(range)) {
-				range.startContainer.data = '';
-				range.startOffset = 0;
-
-				// In case of ... <p> []</p>
-				if (range.endContainer === range.startContainer) {
-					range.endOffset = 0;
-				}
-			}
+			restoreSelection(range);
+			prepRangeForPaste(range);
 
 			if (Aloha.queryCommandSupported('insertHTML')) {
 				Aloha.execCommand('insertHTML', false, content);
