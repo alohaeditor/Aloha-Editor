@@ -11,6 +11,7 @@
  * @name contenthandler
  */
 define([
+	'jquery',
 	'aloha/plugin',
 	'aloha/contenthandlermanager',
 	'contenthandler/wordcontenthandler',
@@ -18,6 +19,7 @@ define([
 	'contenthandler/sanitizecontenthandler',
 	'contenthandler/blockelementcontenthandler'
 ], function (
+	$,
 	Plugin,
 	ContentHandlerManager,
 	WordContentHandler,
@@ -41,7 +43,7 @@ define([
 		blockelement: BlockelementContentHandler
 	};
 
-	var ContentHandlerPlugin = Plugin.create('contenthandler', {
+	var ContentHandler = Plugin.create('contenthandler', {
 
 		/**
 		 * Will simply register the default content handlers.
@@ -59,5 +61,5 @@ define([
 		}
 	});
 
-	return ContentHandlerPlugin;
+	return ContentHandler;
 });
