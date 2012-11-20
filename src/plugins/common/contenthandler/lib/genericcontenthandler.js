@@ -25,36 +25,33 @@
  * recipients can access the Corresponding Source.
  */
 define([
-	'aloha',
 	'jquery',
+	'aloha',
 	'aloha/contenthandlermanager',
+	'contenthandler/contenthandler-utils',
 	'table/table-plugin-utils'
 ], function (
-	Aloha,
 	$,
-	ContentHandlerManager,
+	Aloha,
+	Manager,
+	Utils,
 	TableUtils
 ) {
 	'use strict';
 
-	var GenericContentHandler = ContentHandlerManager.createHandler({
+	var GenericContentHandler = Manager.createHandler({
 
 		/**
 		 * Transforms pasted content to make it safe and ready to be used in
 		 * Aloha Editables.
 		 *
 		 * @param {jQuery.<HTMLElement>|string} content
+		 * @return {string} Clean HTML
 		 */
 		handleContent: function (content) {
-			if (null === content) {
-				return;
-			}
-
-			var $content;
-			if (typeof content === 'string'){
-				$content = $('<div>' + content + '</div>');
-			} else if (content instanceof $) {
-				$content = $('<div>').append(content);
+			var $content = Utils.wrapContent(content);
+			if (!$content) {
+				return content;
 			}
 
 			// If an aloha-block is found inside the pasted content, no modify
