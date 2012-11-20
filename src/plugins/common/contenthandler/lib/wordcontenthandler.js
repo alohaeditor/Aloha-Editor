@@ -1,9 +1,9 @@
 /* wordcontenthandler.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -29,11 +29,13 @@ define([
 	'aloha',
 	'aloha/contenthandlermanager',
 	'contenthandler/contenthandler-utils',
+	'util/dom'
 ], function (
 	$,
 	Aloha,
 	Manager,
-	Utils
+	Utils,
+	Dom
 ) {
 	'use strict';
 
@@ -46,6 +48,33 @@ define([
 	 * @const
 	 */
 	var MSO = /mso/;
+
+	/**
+	 * Matches string starting with "#".
+	 *
+	 * @type {RexExp}
+	 * @const
+	 */
+	var HASH_HREF = /^#(.*)/;
+
+	/**
+	 * Checks whether the given node is empty, ignoring white spaces.
+	 *
+	 * @param {jQuery.<HTMLElement>} $node
+	 * @return {boolean} True if $node is empty.
+	 */
+	function isEmpty($node) {
+		switch ($node[0].nodeName.toLowerCase()) {
+		case 'table':
+			return 0 === $node.find('tbody,tr').length;
+		case 'tbody':
+			return 0 === $node.find('tr').length;
+		case 'tr':
+			return 0 === $node.find('td,th').length;
+		default:
+			return '' === $.trim($node.text());
+		}
+	}
 
 	/**
 	 * Checks whether the given content element can be assumed to originate
@@ -78,6 +107,57 @@ define([
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Cleanup MS Word HTML.
+	 *
+	 * @param {jQuery.<HTMLElement>} $content
+	 */
+	function clean($content) {
+		var $nodes = $content.find('*');
+		var nodeName;
+		var $node;
+		var href;
+		var i;
+		for (i = 0; i < $nodes.length; i++) {
+			$node = $nodes.eq(i);
+			nodeName = $node[0].nodeName.toLowerCase();
+
+			if ('a' === nodeName) {
+
+				// Because when a href starts with #, it's the link to an
+				// anchor and should be removed.
+				href = $node.attr('href');
+				if (href && HASH_HREF.test($.trim(href))) {
+					$node.contents().unwrap();
+				}
+			} else if ('div' === nodeName || 'span' === nodeName) {
+
+				// Because footnotes for example are wrapped in divs and should
+				// be unwrap.
+				$node.contents().unwrap();
+			} else if ('td' !== nodeName && isEmpty($node)) {
+
+				// Because any empty element (like spaces wrapped in spans) are
+				// not needed, except table cells.
+				$node.contents().unwrap();
+			}
+		}
+	}
+
+	/**
+	 * Transform Title and Subtitle from MS Word.
+	 *
+	 * @param {jQuery.<HTMLElement>} $content
+	 */
+	function transformTitles($content) {
+		$content.find('p.MsoTitle').each(function () {
+			Aloha.Markup.transformDomObject($(this), 'h1');
+		});
+		$content.find('p.MsoSubtitle').each(function () {
+			Aloha.Markup.transformDomObject($(this), 'h2');
+		});
 	}
 
 	var WordContentHandler = Manager.createHandler({
@@ -299,54 +379,6 @@ define([
 				});
 			}
 		},
-
-		/**
-		 * Transform Title and Subtitle pasted from word
-		 * @param content
-		 */
-		transformTitles: function(content) {
-			content.find('p.MsoTitle').each(function() {
-				// titles will be transformed to h1
-				Aloha.Markup.transformDomObject(jQuery(this), 'h1');
-			});
-			content.find('p.MsoSubtitle').each(function() {
-				// sub titles will be transformed to h2
-				Aloha.Markup.transformDomObject(jQuery(this), 'h2');
-			});
-		},
-		
-		/**
-		 * Cleanup MS Word HTML
-		 * @param content
-		 */
-		cleanHtml: function ( content ) {
-			
-			// unwrap empty tags
-			// do not remove them here because of eg. spaces wrapped in spans which are needed
-			// we don't want to unwrap empty table cells
-			content.find('*').filter( function() {
-				return jQuery.trim(jQuery(this).text()) == '' && !jQuery(this).is("td");
-			}).contents().unwrap();
-			
-			// unwrap all spans
-			content.find('span').contents().unwrap();
-			
-			// when href starts with #, it's the link to an anchor. remove it.
-			content.find('a').each(function() {
-				if ( jQuery(this).attr('href') && jQuery.trim(jQuery(this).attr('href')).match(/^#(.*)$/) ) {
-					jQuery(this).contents().unwrap();
-				}
-			});
-			
-			// eg. footnotes are wrapped in divs. unwrap them.
-			content.find('div').contents().unwrap();
-			
-			// remove empty tags (we don't want to remove empty table cells)
-			content.find('*').filter( function() {
-			    return jQuery.trim(jQuery(this).text()) == '' && !jQuery(this).is("td");
-			}).remove();
-			
-		},
 		
 		/**
 		 * Remove paragraph numbering from TOC feature
@@ -420,8 +452,8 @@ define([
 			this.transformToc($content);
 			this.removeParagraphNumbering($content);
 			this.transformListsFromWord($content);
-			this.transformTitles($content);
-			this.cleanHtml($content);
+			transformTitles($content);
+			clean($content);
 		}
 	});
 	
