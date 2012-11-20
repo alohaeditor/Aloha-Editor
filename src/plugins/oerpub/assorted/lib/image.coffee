@@ -2,7 +2,7 @@
 # * -----------------
 # * This plugin handles when the insertImage button is clicked and provides a bubble next to an image when it is selected
 #
-define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery, Popover, UI, console) ->
+define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (Aloha, jQuery, Popover, UI) ->
 
   # This will be prefixed with Aloha.settings.baseUrl
   WARNING_IMAGE_PATH = '/../plugins/oerpub/image/img/warning.png'
@@ -53,11 +53,17 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
       # * selects an image from the filesystem
       # * enters a URL (TODO: Verify it's an image)
       # * drops an image into the drop div
-      #
-      # On submit $el.attr('src') will point to what is set in this variable
-      imageSource = $el.attr('src')
-      # Set the alt text if editing an image
-      imageAltText = $el.attr('alt')
+
+      # $el might not be an image, it might be a placeholder for a future image
+      if $el.is('img')
+        # On submit $el.attr('src') will point to what is set in this variable
+        # preserve the alt text if editing an image
+        imageSource = $el.attr('src')
+        imageAltText = $el.attr('alt')
+      else
+        imageSource = ''
+        imageAltText = ''
+
       dialog.find('[name=alt]').val(imageAltText)
 
       if /^https?:\/\//.test(imageSource)
@@ -118,41 +124,29 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
       dialog.on 'submit', (evt) =>
         evt.preventDefault() # Don't submit the form
 
-        # Set the image source if one is set
-        $el.attr 'src', imageSource
-
-        # Set the alt text
-        $el.attr('alt', dialog.find('[name=alt]').val())
+        # Set the image source and alt text if set. If element is an image
+        # update it, otherwise replace it (placeholder case)
+        if $el.is('img')
+          $el.attr 'src', imageSource
+          $el.attr 'alt', dialog.find('[name=alt]').val()
+        else
+          img = jQuery('<img/>')
+          img.attr 'src', imageSource
+          img.attr 'alt', dialog.find('[name=alt]').val()
+          $el = $el.replaceWith(img)
 
         dialog.modal('hide')
 
-        # Wait until the dialog is closed before inserting it into the DOM
-        # That way if it is cancelled nothing is inserted
-        if not $el.parent()[0]
-
-          # Either insert a new span around the cursor and open the box or just open the box
-          range = Aloha.Selection.getRangeObject()
-          # Insert the img into the DOM
-          #GENTICS.Utils.Dom.addMarkup(range, newEl, false)
-          $el.addClass('aloha-new-image')
-          GENTICS.Utils.Dom.insertIntoDOM $el,
-            range,
-            Aloha.activeEditable.obj
-          $el = Aloha.jQuery('.aloha-new-image')
-          $el.removeClass('aloha-new-image')
-
-        # Start uploading if a local file was chosen
-        if $uploadImage[0].files.length
-          # Add a class so we can style the image while it's being uploaded
-          # Also, it's required because the DnD mechanism doesn't have a way
-          # of identifying which <img> was uploaded when the callback occurs.
-          $el.addClass('aloha-image-uploading')
-          Aloha.trigger 'aloha-upload-file',
-            target: $el[0], files: $uploadImage[0].files
-
+      deferred = $.Deferred()
       dialog.on 'hidden', () ->
         dialog.remove()
-      dialog
+        if $el.attr 'src'
+          deferred.resolve(target: $el[0], files: $uploadImage[0].files)
+        else
+          deferred.reject(target: $el[0])
+      # Return promise, with an added show method
+      jQuery.extend true, deferred.promise(),
+        show: () -> dialog.modal 'show'
 
   selector = 'img'
 
@@ -169,8 +163,15 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
       $bubble.find('.change').on 'click', ->
         # unsquirrel the activeEditable
         Aloha.activeEditable = editable
-        dialog = showModalDialog($el)
-        dialog.modal('show')
+        promise = showModalDialog($el)
+ 
+        promise.done (data)->
+          # Uploading if a local file was chosen
+          if data.files.length
+            Aloha.trigger 'aloha-upload-file',
+              target: data.target, files: data.files
+        promise.show()
+
       $bubble.find('.remove').on 'click', ->
         pover.stopOne($el)
         $el.remove()
@@ -180,10 +181,21 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
   UI.adopt 'insertImage-oer', null,
     click: () ->
       newEl = jQuery('<img/>')
-      dialog = showModalDialog(newEl)
+      promise = showModalDialog(newEl)
+
+      promise.done (data)->
+        # Insert the img into the DOM
+        range = Aloha.Selection.getRangeObject()
+        GENTICS.Utils.Dom.insertIntoDOM newEl, range, Aloha.activeEditable.obj
+
+        # Uploading if a local file was chosen
+        if data.files.length
+          newEl.addClass('aloha-image-uploading')
+          Aloha.trigger 'aloha-upload-file',
+            target: data.target, files: data.files
 
       # Finally show the dialog
-      dialog.modal('show')
+      promise.show()
 
   Popover.register
     hover: true
