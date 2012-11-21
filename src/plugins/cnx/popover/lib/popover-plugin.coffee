@@ -196,6 +196,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
           # Make sure we don't create more than one popover for an element.
           if not $node.data('popover')
             $node.popover
+              html: true # bootstrap changed the default for this config option so set it to HTML
               placement: @placement or 'bottom'
               trigger: 'manual'
               content: =>

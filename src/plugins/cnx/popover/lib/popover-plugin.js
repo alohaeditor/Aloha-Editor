@@ -188,6 +188,7 @@ There are 3 variables that are stored on each element;
             }
             if (!$node.data('popover')) {
               return $node.popover({
+                html: true,
                 placement: _this.placement || 'bottom',
                 trigger: 'manual',
                 content: function() {
