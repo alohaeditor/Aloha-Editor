@@ -37,7 +37,7 @@ define(['jquery', 'util/class'], function (jQuery, Class) {
 	 * @class PluginManager
 	 * @singleton
 	 */
-	return new (Class.extend({
+	return new(Class.extend({
 		plugins: {},
 
 		/**

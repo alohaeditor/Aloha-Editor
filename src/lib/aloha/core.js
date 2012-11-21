@@ -24,13 +24,9 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'jquery',
-	'aloha/pluginmanager'
-], function (
-	jQuery,
-	PluginManager
-) {
+define(['jquery', 'aloha/pluginmanager'], function (
+jQuery,
+PluginManager) {
 	"use strict";
 
 	var Aloha = window.Aloha;
@@ -163,9 +159,12 @@ define([
 			// check browser version on init
 			// this has to be revamped, as
 			if ((jQuery.browser.webkit && parseInt(jQuery.browser.version, 10) < 20) // Chrome/Safari 4
-			         || (jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9) // FF 3.5
-				     || (jQuery.browser.msie && jQuery.browser.version < 7) // IE 7
-				     || (jQuery.browser.opera && jQuery.browser.version < 11)) { // right now, Opera needs some work
+			||
+			(jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9) // FF 3.5
+			||
+			(jQuery.browser.msie && jQuery.browser.version < 7) // IE 7
+			||
+			(jQuery.browser.opera && jQuery.browser.version < 11)) { // right now, Opera needs some work
 				if (window.console && window.console.log) {
 					window.console.log('Your browser is not supported.');
 				}

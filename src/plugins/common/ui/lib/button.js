@@ -4,12 +4,8 @@
  *    component (this.element = this.buttonElement)?
  */
 
-define([
-	'jquery',
-	'ui/component',
-	'ui/utils',
-	'jqueryui'
-],
+define(['jquery', 'ui/component', 'ui/utils', 'jqueryui'],
+
 function (jQuery, Component, Utils) {
 	'use strict';
 
@@ -42,27 +38,24 @@ function (jQuery, Component, Utils) {
 		init: function () {
 			this._super();
 			this.createButtonElement();
-			Utils.makeButton(this.buttonElement, this)
-				.button('widget')
-				.tooltip({
-					tooltipClass: 'aloha aloha-ui-tooltip',
-					position: {
-						my: 'left top',
-						at: 'right bottom'
-					}
-				})
-				.click(jQuery.proxy(function () {
+			Utils.makeButton(this.buttonElement, this).button('widget').tooltip({
+				tooltipClass: 'aloha aloha-ui-tooltip',
+				position: {
+					my: 'left top',
+					at: 'right bottom'
+				}
+			}).click(jQuery.proxy(function () {
 
-					// Ensure tooltips are always hidden after a button
-					// is clicked because sometimes the tooltip doesn't
-					// get closed automatically, for example after table
-					// cells are merged or split.
-					// IE needs the force argument to be true, Chrome doesn't.
-					// The event argument can be ignored.
-					this.buttonElement.tooltip('close', null/*event*/, true/*force*/);
+				// Ensure tooltips are always hidden after a button
+				// is clicked because sometimes the tooltip doesn't
+				// get closed automatically, for example after table
+				// cells are merged or split.
+				// IE needs the force argument to be true, Chrome doesn't.
+				// The event argument can be ignored.
+				this.buttonElement.tooltip('close', null /*event*/ , true /*force*/ );
 
-					this._onClick();
-				}, this));
+				this._onClick();
+			}, this));
 		},
 
 		/**
@@ -98,14 +91,14 @@ function (jQuery, Component, Utils) {
 		/**
 		 * Shows the button in a greyed-out inactive (unclickable) state.
 		 */
-		disable: function() {
+		disable: function () {
 			this.element.button('option', 'disabled', false);
 		},
 
 		/**
 		 * Enables the button again after it has previously been disabled.
 		 */
-		enable: function(enable_opt) {
+		enable: function (enable_opt) {
 			this.element.button('option', 'disabled', enable_opt === false);
 		}
 	});

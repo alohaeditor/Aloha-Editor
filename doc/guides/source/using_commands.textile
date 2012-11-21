@@ -32,7 +32,7 @@ action for a command if clicked, or a script might run an action without user in
 to achieve some particular effect.
 
 <shell>
-Aloha.exeCommand( 'bold', false, '' );
+Aloha.execCommand( 'bold', false, '' );
 </shell>
 
 h4. queryIndeterm

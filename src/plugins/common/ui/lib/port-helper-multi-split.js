@@ -4,17 +4,11 @@
  * ui-attributefield.js in the aloha core to the new ui-plugin.
  * This interface is obsolete and must not be used for new implementations.
  */
-define([
-	'aloha/core',
-	'jquery',
-	'ui/ui',
-	'ui/multiSplit'
-], function (
-	Aloha,
-	jQuery,
-	Ui,
-	MultiSplit
-) {
+define(['aloha/core', 'jquery', 'ui/ui', 'ui/multiSplit'], function (
+Aloha,
+jQuery,
+Ui,
+MultiSplit) {
 	'use strict';
 
 	function MultiSplitButton(props) {

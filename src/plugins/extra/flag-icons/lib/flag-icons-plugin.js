@@ -40,7 +40,9 @@
  *     // ...
  * });
  */
-define( function () {
+define(function () {
 	'use strict'
-	return { path: Aloha.getPluginUrl( 'flag-icons' ) };
-} );
+	return {
+		path: Aloha.getPluginUrl('flag-icons')
+	};
+});

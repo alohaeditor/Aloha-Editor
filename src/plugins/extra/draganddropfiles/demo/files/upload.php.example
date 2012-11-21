@@ -8,22 +8,21 @@
  */
 
 class upload {
-
 	public function writeFile($rawContent) {
 		$headers = getallheaders();
 		$filename = $headers['X-File-Name'];
 		$filecontent = $rawContent;
+		$filecontent = substr($filecontent, (strpos($filecontent, ',')+1));
+		$filecontent = base64_decode($filecontent);
 
 		$fp = fopen($filename, 'w');
 		fwrite($fp, $filecontent);
 		fclose($fp);
 
-		return $filename;
+		return dirname($_SERVER['SCRIPT_NAME']) . '/' . $filename;
 	}
-
 }
 
 $file = new upload();
 echo $file->writeFile($HTTP_RAW_POST_DATA);
-
 ?>

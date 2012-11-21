@@ -3,17 +3,11 @@
  * The multiSplit component groups multiple buttons and other
  * button-like items into an expandable menu.
  */
-define([
-	'jquery',
-	'ui/component',
-	'ui/button',
-	'ui/utils'
-], function (
-	$,
-	Component,
-	Button,
-	Utils
-) {
+define(['jquery', 'ui/component', 'ui/button', 'ui/utils'], function (
+$,
+Component,
+Button,
+Utils) {
 	'use strict';
 
 	/**
@@ -59,9 +53,7 @@ define([
 			}
 
 			$('body').click(function (event) {
-				if (multiSplit._isOpen &&
-			        !multiSplit.element.is(event.target) &&
-			        0 === multiSplit.element.find(event.target).length) {
+				if (multiSplit._isOpen && !multiSplit.element.is(event.target) && 0 === multiSplit.element.find(event.target).length) {
 					multiSplit.close();
 				}
 			});
@@ -95,7 +87,7 @@ define([
 		addButton: function (props) {
 			var multiSplit = this;
 
-			var component = new (Button.extend({
+			var component = new(Button.extend({
 				tooltip: props.tooltip,
 				icon: props.wide ? props.icon : 'aloha-large-icon ' + props.icon,
 				iconOnly: props.wide ? false : true,
@@ -138,13 +130,11 @@ define([
 				name = null;
 			}
 			if (null !== this._activeButton) {
-				this.buttons[this._activeButton]
-				    .element.removeClass('aloha-multisplit-active');
+				this.buttons[this._activeButton].element.removeClass('aloha-multisplit-active');
 			}
 			this._activeButton = name;
 			if (null !== name) {
-				this.buttons[name]
-				    .element.addClass('aloha-multisplit-active');
+				this.buttons[name].element.addClass('aloha-multisplit-active');
 			}
 		},
 

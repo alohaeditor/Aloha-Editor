@@ -24,30 +24,17 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'jquery',
-	'util/class',
-	'util/range',
-	'util/arrays',
-	'util/strings',
-	'aloha/console',
-	'PubSub',
-	'aloha/engine',
-	'aloha/ecma5shims',
-	'aloha/rangy-core'
-], function (
-	Aloha,
-	jQuery,
-	Class,
-	Range,
-	Arrays,
-	Strings,
-	console,
-	PubSub,
-	Engine,
-	e5s
-) {
+define(['aloha/core', 'jquery', 'util/class', 'util/range', 'util/arrays', 'util/strings', 'aloha/console', 'PubSub', 'aloha/engine', 'aloha/ecma5shims', 'aloha/rangy-core'], function (
+Aloha,
+jQuery,
+Class,
+Range,
+Arrays,
+Strings,
+console,
+PubSub,
+Engine,
+e5s) {
 	"use strict";
 
 	var GENTICS = window.GENTICS;
@@ -520,8 +507,7 @@ define([
 		 * @hide
 		 */
 		_updateSelection: function (event, range) {
-			if (event && event.originalEvent &&
-					true === event.originalEvent.stopSelectionUpdate) {
+			if (event && event.originalEvent && true === event.originalEvent.stopSelectionUpdate) {
 				return false;
 			}
 
@@ -529,8 +515,7 @@ define([
 				return false;
 			}
 
-			this.rangeObject = range =
-					range || new Aloha.Selection.SelectionRange(true);
+			this.rangeObject = range = range || new Aloha.Selection.SelectionRange(true);
 
 			// Determine the common ancestor container and update the selection
 			// tree.
@@ -539,16 +524,12 @@ define([
 			// Workaround for nasty IE bug that allows the user to select
 			// text nodes inside areas with contenteditable "false"
 			if (range && range.startContainer && range.endContainer) {
-				var inEditable =
-						jQuery(range.commonAncestorContainer)
-							.closest('.aloha-editable').length > 0;
+				var inEditable = jQuery(range.commonAncestorContainer).closest('.aloha-editable').length > 0;
 
 				if (inEditable) {
-					var validStartPosition = !(3 === range.startContainer.nodeType &&
-							!jQuery(range.startContainer.parentNode).contentEditable());
+					var validStartPosition = !(3 === range.startContainer.nodeType && !jQuery(range.startContainer.parentNode).contentEditable());
 
-					var validEndPosition = !(3 === range.endContainer.nodeType &&
-							!jQuery(range.endContainer.parentNode).contentEditable());
+					var validEndPosition = !(3 === range.endContainer.nodeType && !jQuery(range.endContainer.parentNode).contentEditable());
 
 					if (!validStartPosition || !validEndPosition) {
 						Aloha.getSelection().removeAllRanges();
@@ -600,7 +581,9 @@ define([
 			this.inselection = false;
 
 			// before getting the selection tree, we do a cleanup
-			if (GENTICS.Utils.Dom.doCleanup({ 'merge': true }, rangeObject)) {
+			if (GENTICS.Utils.Dom.doCleanup({
+				'merge': true
+			}, rangeObject)) {
 				rangeObject.update();
 				rangeObject.select();
 			}
@@ -629,7 +612,7 @@ define([
 					endOffset = false,
 					collapsedFound = false,
 					i,
-				    elementsLength,
+					elementsLength,
 					noneFound = false,
 					partialFound = false,
 					fullFound = false;
@@ -923,14 +906,14 @@ define([
 		changeMarkup: function (rangeObject, markupObject, tagComparator) {
 			var tagName = markupObject[0].tagName.toLowerCase(),
 				newCAC,
-			    limitObject,
+				limitObject,
 				backupRangeObject,
 				relevantMarkupObjectsAtSelectionStart = this.isRangeObjectWithinMarkup(rangeObject, false, markupObject, tagComparator, limitObject),
 				relevantMarkupObjectsAtSelectionEnd = this.isRangeObjectWithinMarkup(rangeObject, true, markupObject, tagComparator, limitObject),
 				nextSibling,
-			    relevantMarkupObjectAfterSelection,
+				relevantMarkupObjectAfterSelection,
 				prevSibling,
-			    relevantMarkupObjectBeforeSelection,
+				relevantMarkupObjectBeforeSelection,
 				extendedRangeObject;
 			var parentElement;
 
@@ -1195,7 +1178,8 @@ define([
 		 * @hide
 		 */
 		intersectRelevantMarkupObjects: function (relevantMarkupObjectsAtSelectionStart, relevantMarkupObjectsAtSelectionEnd) {
-			var intersection = false, i, elStart, j, elEnd, relMarkupStart, relMarkupEnd;
+			var intersection = false,
+				i, elStart, j, elEnd, relMarkupStart, relMarkupEnd;
 			if (!relevantMarkupObjectsAtSelectionStart || !relevantMarkupObjectsAtSelectionEnd) {
 				return intersection; // we can only intersect, if we have to arrays!
 			}
@@ -1440,7 +1424,7 @@ define([
 				};
 				break;
 
-			//case 'textLevelSemantics' covered by default
+				//case 'textLevelSemantics' covered by default
 			default:
 				result = function (domobj, markupObject) {
 					return that.standardTextLevelSemanticsComparator(domobj, markupObject);
@@ -1459,7 +1443,8 @@ define([
 		 * @hide
 		 */
 		prepareForRemoval: function (selectionTree, markupObject, tagComparator) {
-			var that = this, i, el;
+			var that = this,
+				i, el;
 
 			// check if a comparison method was passed as parameter ...
 			if (typeof tagComparator !== 'undefined' && typeof tagComparator !== 'function') {
@@ -1507,8 +1492,8 @@ define([
 				textnodes,
 				newMarkup,
 				i,
-			    el,
-			    middleText;
+				el,
+				middleText;
 
 			Aloha.Log.debug(this, 'The formatting <' + markupObject[0].tagName + '> will be wrapped around the selection');
 
@@ -1625,7 +1610,8 @@ define([
 		 * @hide
 		 */
 		getTextNodeSibling: function (previousOrNext, commonAncestorContainer, currentTextNode) {
-			var textNodes = jQuery(commonAncestorContainer).textNodes(true), newIndex, index;
+			var textNodes = jQuery(commonAncestorContainer).textNodes(true),
+				newIndex, index;
 
 			index = textNodes.index(currentTextNode);
 			if (index == -1) { // currentTextNode was not found
@@ -1648,9 +1634,9 @@ define([
 				innerGroupIndex = 0,
 				that = this,
 				i,
-			    j,
+				j,
 				endPosition,
-			    startPosition;
+				startPosition;
 
 			if (typeof tagComparator === 'undefined') {
 				tagComparator = function (domobj, markupObject) {
@@ -2046,7 +2032,7 @@ define([
 					limitFound = false,
 					splitObjectWasSet,
 					i,
-				    el;
+					el;
 
 				for (i = 0; i < parents.length; i++) {
 					el = parents[i];
@@ -2078,9 +2064,9 @@ define([
 					var parents = this.getStartContainerParents(),
 						editables = Aloha.editables,
 						i,
-					    el,
-					    j,
-					    editable;
+						el,
+						j,
+						editable;
 					for (i = 0; i < parents.length; i++) {
 						el = parents[i];
 						for (j = 0; j < editables.length; j++) {

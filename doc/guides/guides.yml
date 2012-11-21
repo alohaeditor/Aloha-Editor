@@ -1,4 +1,4 @@
-﻿title: Aloha Editor Guides
+title: Aloha Editor Guides
 description: These guides help you to make your content editable and to develop Aloha Editor.
 
 index:
@@ -52,6 +52,7 @@ index:
     - title: "Writing Plugins"
       url: writing_plugins
       text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha Editor."
+
 
   Contributing to Aloha Editor:
     - title: Releasing

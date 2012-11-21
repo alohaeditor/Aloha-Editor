@@ -186,7 +186,7 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 				// numOpenCallbacks will be reset to 0
 				timer,
 				i,
-			    j,
+				j,
 				/**
 				 * Invoked by each repository when it wants to present its
 				 * results to the manager.
@@ -395,7 +395,7 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 				// numOpenCallbacks will be reset to 0
 				timer,
 				i,
-			    j,
+				j,
 				processResults = function (items) {
 					if (numOpenCallbacks === 0) {
 						return;
