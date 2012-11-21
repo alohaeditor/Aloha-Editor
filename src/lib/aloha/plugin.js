@@ -24,19 +24,12 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'jquery',
-	'util/class',
-	'aloha/pluginmanager',
-	'aloha/console'
-], function (
-	Aloha,
-	jQuery,
-	Class,
-	PluginManager,
-	console
-) {
+define(['aloha/core', 'jquery', 'util/class', 'aloha/pluginmanager', 'aloha/console'], function (
+Aloha,
+jQuery,
+Class,
+PluginManager,
+console) {
 	"use strict";
 
 	/**
@@ -271,7 +264,7 @@ define([
 	 */
 	Plugin.create = function (pluginName, definition) {
 
-		var pluginInstance = new (Plugin.extend(definition))(pluginName);
+		var pluginInstance = new(Plugin.extend(definition))(pluginName);
 		pluginInstance.settings = jQuery.extendObjects(true, pluginInstance.defaults, Aloha.settings[pluginName]);
 		PluginManager.register(pluginInstance);
 

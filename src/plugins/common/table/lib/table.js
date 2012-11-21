@@ -1,12 +1,4 @@
 /**
- * Place selection outside of table.
- * Select a column and delete it.
- * Now try and click another column.
- * You get and index out of bounds error caused
- * the fact that the selection is gone
- */
-
-/**
  * Aloha Table Plugin
  * ------------------
  * This plugin provides advanced support for manipulating tables in Aloha

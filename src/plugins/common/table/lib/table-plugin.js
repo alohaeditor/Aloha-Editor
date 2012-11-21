@@ -1076,9 +1076,11 @@ Utils) {
 			scope: this.name + '.cell'
 		});
 
-		this.summary.addListener('keyup', function (event) {
-			that.activeTable.checkWai();
-		});
+		this.summary.addListener( 'keyup', function( event ) {
+			if (that.activeTable) {
+				that.activeTable.checkWai();
+			}
+		} );
 	};
 
 	/**

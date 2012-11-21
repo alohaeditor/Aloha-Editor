@@ -192,8 +192,11 @@ PubSub) {
 		 *
 		 * NOTE: Purely internal, "this" is not available inside this method!
 		 */
-		_preventSelectionChangedEventHandler: function () {
-			Aloha.Selection.preventSelectionChanged();
+		_preventSelectionChangedEventHandler: function ($event) {
+			if (('dblclick' !== $event.type)
+					&& !jQuery($event.target).is('.aloha-editable')) {
+				Aloha.Selection.preventSelectionChanged();
+			}
 		},
 
 		/**
@@ -460,7 +463,7 @@ PubSub) {
 			// Browsers do not remove the cursor, so we enforce it when an aditable is clicked.
 			// However, when the user clicked inside a nested editable, we will not remove the cursor (as the user wants to start typing then)
 			// small HACK: we also do not deactivate if we are inside an aloha-table-cell-editable.
-			if (jQuery(eventTarget).closest('.aloha-editable,.aloha-block,.aloha-table-cell-editable').first().hasClass('aloha-block')) {
+			if (jQuery(eventTarget).closest('.aloha-editable,.aloha-block,.aloha-table-cell-editable,.aloha-table-cell_active').first().hasClass('aloha-block')) {
 				this._isInsideNestedEditable = false;
 				Aloha.getSelection().removeAllRanges();
 			} else {

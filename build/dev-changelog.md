@@ -7,6 +7,9 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 
+----
+
+
 - **BUG**: Fix base tag breaks Aloha Editor UI
 - **ENHANCEMENT**: Trigger the 'aloha-smart-content-changed' event with `triggerType` = `block-change` whenever an attribute of an Aloha Block is changed.
 - **FEATURE**: improved translation export from gengo.com to Aloha Editor
@@ -32,3 +35,8 @@ All changes are categorized into one of the following keywords:
 	ephemera.attrMap doesn't accept 'ELEMENT.attribute': true entries any more, instead use 'attribute': ['ELEMENT'].
 	The mark* functions are now optional (modifications performed by these functions are documented and part of the API).
 - **ENHANCEMENT**: jquery-ui and jquery.layout were upgraded
+- **BUG**: Fixes image path in css file in repository browser #764
+- **ENHANCEMENT**: used hints from #749 to improve file size of icons
+- **BUG**: link-plugin: Fix anchor class would always be set to cssclass even when cssclassregex was not configured
+- **BUG**: link-plugin: Fix metaKey + click doesn't follow link (still doesn't work on IE7)
+

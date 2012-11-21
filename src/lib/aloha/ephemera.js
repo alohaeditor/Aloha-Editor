@@ -61,31 +61,18 @@
  *       content - similar to make clean, but for single elements to reduce
  *       overhead.
  */
-define([
-	'jquery',
-	'aloha/core',
-	'aloha/console',
-	'util/strings',
-	'util/trees',
-	'util/arrays',
-	'util/maps',
-	'util/dom2',
-	'util/functions',
-	'util/misc',
-	'PubSub'
-], function (
-	$,
-	Aloha,
-	console,
-	Strings,
-	Trees,
-	Arrays,
-	Maps,
-	Dom,
-	Functions,
-	Misc,
-	PubSub
-) {
+define(['jquery', 'aloha/core', 'aloha/console', 'util/strings', 'util/trees', 'util/arrays', 'util/maps', 'util/dom2', 'util/functions', 'util/misc', 'PubSub'], function (
+$,
+Aloha,
+console,
+Strings,
+Trees,
+Arrays,
+Maps,
+Dom,
+Functions,
+Misc,
+PubSub) {
 	'use strict';
 
 	var ephemeraMap = {
@@ -262,10 +249,14 @@ define([
 	 * These modifications can be made directly without recurse to this
 	 * function, if that is more convenient.
 	 */
-	function markAttribute(elem, attr) {
+	function markAttr(elem, attr) {
 		elem = $(elem);
 		var data = elem.attr('data-aloha-ephemera-attr');
-		data = (null == data || '' === data ? attr : data + ' ' + attr);
+		if (null == data || '' === data) {
+			data = attr;
+		} else if (-1 === Arrays.indexOf(Strings.words(data), attr)) {
+			data += ' ' + attr;
+		}
 		elem.attr('data-aloha-ephemera-attr', data);
 		elem.addClass('aloha-ephemera-attr');
 	}
@@ -356,9 +347,9 @@ define([
 	function pruneEmapAttrs(elem, emap) {
 		var $elem = null,
 			attrs = Dom.attrNames(elem),
-		    name,
-		    i,
-		    len;
+			name,
+			i,
+			len;
 		for (i = 0, len = attrs.length; i < len; i++) {
 			name = attrs[i];
 			if (isAttrEphemeral(elem, name, emap.attrMap, emap.attrRxs)) {
@@ -397,7 +388,7 @@ define([
 				return false;
 			}
 
-			// Ephemera.markAttribute()
+			// Ephemera.markAttr()
 			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-attr')) {
 				pruneMarkedAttrs(elem);
 			}
@@ -447,7 +438,7 @@ define([
 	 * Prunes the given element of all ephemeral data.
 	 *
 	 * Elements marked with Ephemera.markElement() will be removed.
-	 * Attributes marked with Ephemera.markAttribute() will be removed.
+	 * Attributes marked with Ephemera.markAttr() will be removed.
 	 * Elements marked with Ephemera.markWrapper() or
 	 * Ephemera.markFiller() will be replaced with their children.
 	 *
@@ -472,7 +463,7 @@ define([
 		classes: classes,
 		attributes: attributes,
 		markElement: markElement,
-		markAttr: markAttribute,
+		markAttr: markAttr,
 		markWrapper: markWrapper,
 		markFiller: markFiller,
 		prune: prune,

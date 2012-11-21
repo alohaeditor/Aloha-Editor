@@ -24,73 +24,53 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'jquery',
-	'aloha/registry',
-	'util/class',
-	'aloha/console'
-], function (
-	jQuery,
-	Registry,
-	Class,
-	console
-) {
-	"use strict";
+define(['aloha/registry', 'util/class', 'aloha/console'], function (
+Registry,
+Class,
+console) {
+	'use strict';
 
 	/**
-	 * Create an contentHandler from the given definition. Acts as a factory method
-	 * for contentHandler.
+	 * Create an contentHandler from the given definition.  Acts as a factory
+	 * method for contentHandler.
 	 *
-	 * @param {Object} definition
+	 * @param {ContentHandlerManager} definition
 	 */
-	return new (Registry.extend({
+	var ContentHandlerManager = Registry.extend({
 
 		createHandler: function (definition) {
-
 			if (typeof definition.handleContent !== 'function') {
 				throw 'ContentHandler has no function handleContent().';
 			}
-
 			var AbstractContentHandler = Class.extend({
 				handleContent: function (content) {
 					// Implement in subclass!
 				}
 			}, definition);
-
 			return new AbstractContentHandler();
 		},
 
 		handleContent: function (content, options) {
-			var handler,
-			    id,
-			    ids = this.getIds();
-
-			if (typeof options.contenthandler === 'undefined') {
-				options.contenthandler = [];
-				for (id in ids) {
-					if (ids.hasOwnProperty(id)) {
-						options.contenthandler.push(ids[id]);
+			var manager = this;
+			var handlers = options.contenthandler || manager.getIds();
+			var handler;
+			var i;
+			for (i = 0; i < handlers.length; i++) {
+				handler = manager.get(handlers[i]);
+				if (handler) {
+					if (typeof handler.handleContent === 'function') {
+						content = handler.handleContent(content, options);
+					} else {
+						console.error('A valid content handler needs the method handleContent.');
 					}
 				}
-			}
-
-			for (id in options.contenthandler) {
-				if (options.contenthandler.hasOwnProperty(id)) {
-					handler = this.get(options.contenthandler[id]);
-					if (handler) {
-						if (typeof handler.handleContent === 'function') {
-							content = handler.handleContent(content, options);
-						} else {
-							console.error('A valid content handler needs the method handleContent.');
-						}
-					}
-					if (null === content) {
-						break;
-					}
+				if (null === content) {
+					break;
 				}
 			}
-
 			return content;
 		}
-	}))();
+	});
+
+	return new ContentHandlerManager();
 });

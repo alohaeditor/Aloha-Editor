@@ -20,7 +20,7 @@ define({
 		"button.h4.tooltip": "Heading 4",
 		"button.h5.tooltip": "Heading 5",
 		"button.h6.tooltip": "Heading 6",
-		"button.pre.tooltip": "Pre formated text",
+		"button.pre.tooltip": "Preformatted text",
 		"button.title.tooltip": "Title",
 		"button.removeFormat.tooltip": "Remove formatting",
 		"button.removeFormat.text": "Remove formatting",

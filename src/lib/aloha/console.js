@@ -24,15 +24,10 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'util/class',
-	'jquery'
-], function (
-	Aloha,
-	Class,
-	jQuery
-) {
+define(['aloha/core', 'util/class', 'jquery'], function (
+Aloha,
+Class,
+jQuery) {
 	"use strict";
 
 	/**

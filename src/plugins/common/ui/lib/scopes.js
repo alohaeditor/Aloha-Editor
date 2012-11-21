@@ -1,6 +1,12 @@
-define(['jquery', 'PubSub'], function (
-$,
-PubSub) {
+define([
+	'jquery',
+	'PubSub',
+	'util/maps'
+], function (
+	$,
+	PubSub,
+	Maps
+) {
 	'use strict';
 
 	var scopes = {
@@ -116,6 +122,9 @@ PubSub) {
 				counters[requestor] = counter;
 			} else {
 				delete counters[requestor];
+				if (Maps.isEmpty(counters)) {
+					delete addedScopes[scope];
+				}
 				PubSub.pub('aloha.ui.scope.change');
 			}
 		},

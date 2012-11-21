@@ -24,17 +24,7 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'util/class',
-	'jquery',
-	'aloha/console'
-], function (
-	Aloha,
-	Class,
-	jQuery,
-	console
-) {
+define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha, Class, jQuery, console) {
 	'use strict';
 
 	/**
@@ -47,12 +37,14 @@ define([
 
 		repositories: [],
 		settings: {},
-		managerInitialized: false,
+		initialized: false,
 
 		/**
 		 * Initialize all registered repositories
 		 * Before we invoke each repositories init method, we merge the global
 		 * repository settings into each repository's custom settings
+		 * Warning: testing has shown that repositories are maybe not loaded yet
+		 * (found that case in IE7), so don't rely on that in this init function.
 		 *
 		 * @todo: Write unit tests to check that global and custom settings are
 		 * applied correctly
@@ -61,10 +53,7 @@ define([
 		 * @hide
 		 */
 		init: function () {
-			var repositories = this.repositories,
-				i,
-				j = repositories.length,
-				repository;
+			var repositories = this.repositories;
 
 			if (Aloha.settings && Aloha.settings.repositories) {
 				this.settings = Aloha.settings.repositories;
@@ -73,23 +62,14 @@ define([
 			// use the configured repository manger query timeout or 5 sec
 			this.settings.timeout = this.settings.timeout || 5000;
 
-			for (i = 0; i < j; ++i) {
-				repository = repositories[i];
-
-				if (!repository.settings) {
-					repository.settings = {};
-				}
-
-				if (this.settings[repository.repositoryId]) {
-					jQuery.extend(
-						repository.settings,
-						this.settings[repository.repositoryId]
-					);
-				}
-
-				repository.init();
-				this.managerInitialized = true;
+			var count_repositories = repositories.length;
+			var i;
+			for (i = 0; i < count_repositories; ++i) {
+				var repository = repositories[i];
+				this.initRepository(repository);
 			}
+
+			this.initialized = true;
 		},
 
 		/**
@@ -100,24 +80,33 @@ define([
 		register: function (repository) {
 			if (!this.getRepository(repository.repositoryId)) {
 				this.repositories.push(repository);
-				
-				if (this.managerInitialized) {
-					if (!repository.settings) {
-						repository.settings = {};
-					}
 
-					if (this.settings[repository.repositoryId]) {
-						jQuery.extend(
-							repository.settings,
-							this.settings[repository.repositoryId]
-						);
-					}
-
-					repository.init();
+				// If we have initialized already we have to call
+				// this on our own (late-loading)
+				if (this.initialized) {
+					this.initRepository(repository);
 				}
 			} else {
 				console.warn(this, 'A repository with name { ' + repository.repositoryId + ' } already registerd. Ignoring this.');
 			}
+		},
+
+		/**
+		 * Initializes a repository.
+		 *
+		 * @param {Aloha.Repository} repository Repository to initialize
+		 */
+		initRepository: function (repository) {
+
+			if (!repository.settings) {
+				repository.settings = {};
+			}
+
+			if (this.settings[repository.repositoryId]) {
+				jQuery.extend(repository.settings, this.settings[repository.repositoryId]);
+			}
+
+			repository.init();
 		},
 
 		/**
@@ -196,8 +185,8 @@ define([
 				// allitems will be returned to the calling client, and
 				// numOpenCallbacks will be reset to 0
 				timer,
-			    i,
-			    j,
+				i,
+				j,
 				/**
 				 * Invoked by each repository when it wants to present its
 				 * results to the manager.
@@ -317,7 +306,7 @@ define([
 
 			j = repoQueue.length;
 
-			function makeCallback(repo) {
+			function makeApplyRepoToProcessResults(repo) {
 				return function () {
 					processResults.apply(repo, arguments);
 				};
@@ -325,10 +314,7 @@ define([
 
 			for (i = 0; i < j; ++i) {
 				repo = repoQueue[i];
-				repo.query(
-					params,
-					makeCallback(repo)
-				);
+				repo.query(params, makeApplyRepoToProcessResults(repo));
 			}
 
 			// If none of the repositories implemented the query method, then
@@ -409,7 +395,7 @@ define([
 				// numOpenCallbacks will be reset to 0
 				timer,
 				i,
-			    j,
+				j,
 				processResults = function (items) {
 					if (numOpenCallbacks === 0) {
 						return;
@@ -435,18 +421,18 @@ define([
 				for (i = 0; i < j; ++i) {
 					repo = this.repositories[i];
 					if (!hasRepoFilter || jQuery.inArray(repo.repositoryId, repoFilter) > -1) {
-						repositories.push(
-							new Aloha.RepositoryFolder({
-								id: repo.repositoryId,
-								name: repo.repositoryName,
-								repositoryId: repo.repositoryId,
-								type: 'repository',
-								hasMoreItems: true
-							})
-						);
+						repositories.push(new Aloha.RepositoryFolder({
+							id: repo.repositoryId,
+							name: repo.repositoryName,
+							repositoryId: repo.repositoryId,
+							type: 'repository',
+							hasMoreItems: true
+						}));
 					}
 				}
+
 				that.getChildrenCallback(callback, repositories, null);
+
 				return;
 			}
 
@@ -460,7 +446,7 @@ define([
 
 			j = repositories.length;
 
-			function makeCallback(repo) {
+			function makeApplyRepoToProcessResults(repo) {
 				return function () {
 					processResults.apply(repo, arguments);
 				};
@@ -473,11 +459,7 @@ define([
 				// if a repositoryID is given only query if it is the right repository
 				if ((!params.repositoryId || repo.repositoryId === params.repositoryId) && typeof repo.getChildren === 'function') {
 					++numOpenCallbacks;
-
-					repo.getChildren(
-						params,
-						makeCallback(repo)
-					);
+					repo.getChildren(params, makeApplyRepoToProcessResults(repo));
 				}
 			}
 
@@ -596,6 +578,66 @@ define([
 						that.itemCache[repository.repositoryId][itemId] = items[0];
 						callback.call(this, items);
 					});
+				}
+			}
+		},
+
+		/**
+		 * This function gets called by the repository browser when a folder is opened.
+		 * At the moment this forwards the call to the repository only.
+		 * 
+		 * @param {object}	folder	object that gets forwarded
+		 */
+		folderOpened: function (folder) {
+			var repository = this.getRepository(folder.repositoryId);
+
+			if (typeof repository.folderOpened === 'function') {
+				repository.folderOpened(folder);
+			}
+		},
+
+		/**
+		 * This function gets called by the repository browser when a folder is closed.
+		 * At the moment this forwards the call to the repository only.
+		 * 
+		 * @param {object}	folder	object that gets forwarded
+		 */
+		folderClosed: function (folder) {
+			var repository = this.getRepository(folder.repositoryId);
+
+			if (typeof repository.folderClosed === 'function') {
+				repository.folderClosed(folder);
+			}
+		},
+
+		/**
+		 * This function gets called by the repository browser when a folder is selected.
+		 * At the moment this forwards the call to the repository only.
+		 * 
+		 * @param {object}	folder	object that gets forwarded
+		 */
+		folderSelected: function (folder) {
+			var repository = this.getRepository(folder.repositoryId);
+
+			if (typeof repository.folderSelected === 'function') {
+				repository.folderSelected(folder);
+			}
+		},
+
+		/**
+		 * Get the selected folder
+		 * @returns selected folder or undefined
+		 */
+		getSelectedFolder: function () {
+			var i, len = this.repositories.length,
+				selected;
+
+			for (i = 0; i < len; ++i) {
+				if (typeof this.repositories[i].getSelectedFolder === 'function') {
+					selected = this.repositories[i].getSelectedFolder();
+					if (selected) {
+						return selected;
+					}
 				}
 			}
 		},

@@ -24,15 +24,10 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'util/class',
-	'aloha/repositorymanager'
-], function (
-	Aloha,
-	Class,
-	RepositoryManager
-) {
+define(['aloha/core', 'util/class', 'aloha/repositorymanager'], function (
+Aloha,
+Class,
+RepositoryManager) {
 	"use strict";
 
 	//	var

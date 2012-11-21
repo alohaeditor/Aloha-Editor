@@ -24,31 +24,18 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'util/class',
-	'jquery',
-	'aloha/pluginmanager',
-	'aloha/selection',
-	'aloha/markup',
-	'aloha/contenthandlermanager',
-	'aloha/console',
-	'aloha/block-jump',
-	'aloha/ephemera',
-	'util/dom2'
-], function (
-	Aloha,
-	Class,
-	jQuery,
-	PluginManager,
-	Selection,
-	Markup,
-	ContentHandlerManager,
-	console,
-	BlockJump,
-	Ephemera,
-	Dom
-) {
+define(['aloha/core', 'util/class', 'jquery', 'aloha/pluginmanager', 'aloha/selection', 'aloha/markup', 'aloha/contenthandlermanager', 'aloha/console', 'aloha/block-jump', 'aloha/ephemera', 'util/dom2'], function (
+Aloha,
+Class,
+jQuery,
+PluginManager,
+Selection,
+Markup,
+ContentHandlerManager,
+console,
+BlockJump,
+Ephemera,
+Dom) {
 	'use strict';
 
 	var unescape = window.unescape,
@@ -110,7 +97,7 @@ define([
 			// smartContentChange triggers -- tab: '\u0009' - space: '\u0020' - enter: 'Enter'
 			// backspace: U+0008 - delete: U+007F
 			this.sccDelimiters = [':', ';', '.', '!', '?', ',',
-								  unescape('%u0009'), unescape('%u0020'), unescape('%u0008'), unescape('%u007F'), 'Enter'];
+			unescape('%u0009'), unescape('%u0020'), unescape('%u0008'), unescape('%u007F'), 'Enter'];
 			this.sccIdle = 5000;
 			this.sccDelay = 500;
 			this.sccTimerIdle = false;
@@ -356,7 +343,7 @@ define([
 				// supported elements
 				textElements = ['a', 'abbr', 'address', 'article', 'aside', 'b', 'bdo', 'blockquote', 'cite', 'code', 'command', 'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'menu', 'nav', 'p', 'pre', 'q', 'ruby', 'section', 'small', 'span', 'strong', 'sub', 'sup', 'var'],
 				i,
-			    div;
+				div;
 
 			for (i = 0; i < textElements.length; ++i) {
 				if (nodeName === textElements[i]) {
