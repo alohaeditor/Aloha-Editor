@@ -151,7 +151,8 @@
     return Popover.register({
       hover: true,
       selector: selector,
-      populator: populator
+      populator: populator,
+      noHover: true
     });
   });
 

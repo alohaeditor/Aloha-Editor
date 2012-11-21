@@ -253,3 +253,4 @@ define [
     hover: true
     selector: selector
     populator: populator
+    noHover: true
