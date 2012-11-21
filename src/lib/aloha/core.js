@@ -162,7 +162,7 @@ define([
 
 			// check browser version on init
 			// this has to be revamped, as
-			if ((jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5) // Chrome/Safari 4
+			if ((jQuery.browser.webkit && parseInt(jQuery.browser.version, 10) < 20) // Chrome/Safari 4
 			         || (jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9) // FF 3.5
 				     || (jQuery.browser.msie && jQuery.browser.version < 7) // IE 7
 				     || (jQuery.browser.opera && jQuery.browser.version < 11)) { // right now, Opera needs some work
