@@ -31,8 +31,8 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
         </div>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary action insert">Save</button>
-        <button class="btn" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary action insert">Save</button>
+        <button class="btn action cancel">Cancel</button>
       </div>
     </form>'''
 
@@ -44,7 +44,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
       $placeholder = dialog.find('.placeholder.preview')
       $uploadImage = dialog.find('.upload-image-input').hide()
       $uploadUrl =   dialog.find('.upload-url-input').hide()
-      $submit = dialog.find('.submit')
+      $submit = dialog.find('.action.insert')
 
       # If we're editing an image pull in the src.
       # It will be undefined if this is a new image.
@@ -121,29 +121,31 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
         $placeholder.show()
 
       # On save update the actual img tag
-      dialog.on 'submit', (evt) =>
+      deferred = $.Deferred()
+      dialog.on 'click', '.btn.action', (evt) =>
         evt.preventDefault() # Don't submit the form
 
-        # Set the image source and alt text if set. If element is an image
-        # update it, otherwise replace it (placeholder case)
-        if $el.is('img')
-          $el.attr 'src', imageSource
-          $el.attr 'alt', dialog.find('[name=alt]').val()
-        else
-          img = jQuery('<img/>')
-          img.attr 'src', imageSource
-          img.attr 'alt', dialog.find('[name=alt]').val()
-          $el = $el.replaceWith(img)
-
-        dialog.modal('hide')
-
-      deferred = $.Deferred()
-      dialog.on 'hidden', () ->
-        dialog.remove()
-        if $el.attr 'src'
+        if jQuery(evt.target).is('.action.insert')
+          # Set the image source and alt text if set. If element is an image
+          # update it, otherwise replace it (placeholder case)
+          if $el.is('img')
+            $el.attr 'src', imageSource
+            $el.attr 'alt', dialog.find('[name=alt]').val()
+          else
+            img = jQuery('<img/>')
+            img.attr 'src', imageSource
+            img.attr 'alt', dialog.find('[name=alt]').val()
+            $el.replaceWith(img)
+            $el = img
           deferred.resolve(target: $el[0], files: $uploadImage[0].files)
         else
           deferred.reject(target: $el[0])
+        dialog.modal('hide')
+
+      dialog.on 'hidden', (event) ->
+        # Clean up after dialog was hidden
+        dialog.remove()
+
       # Return promise, with an added show method
       jQuery.extend true, deferred.promise(),
         show: () -> dialog.modal 'show'
@@ -180,19 +182,22 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
 
   UI.adopt 'insertImage-oer', null,
     click: () ->
-      newEl = jQuery('<img/>')
+      newEl = jQuery('<span class="aloha-ephemera image-placeholder"> </span>')
+      GENTICS.Utils.Dom.insertIntoDOM newEl, Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj
       promise = showModalDialog(newEl)
 
       promise.done (data)->
-        # Insert the img into the DOM
-        range = Aloha.Selection.getRangeObject()
-        GENTICS.Utils.Dom.insertIntoDOM newEl, range, Aloha.activeEditable.obj
-
         # Uploading if a local file was chosen
         if data.files.length
           newEl.addClass('aloha-image-uploading')
           Aloha.trigger 'aloha-upload-file',
             target: data.target, files: data.files
+
+      promise.fail (data) ->
+        # Clean up placeholder if needed
+        $target = jQuery(data.target)
+        if not $target.is('img')
+          $target.remove()
 
       # Finally show the dialog
       promise.show()
