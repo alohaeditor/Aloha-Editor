@@ -1,0 +1,63 @@
+#!/usr/bin/php
+<?php
+//
+// usage: 
+// navigate into the ./build/ directory und run the following command:
+//
+// php jsbeautify
+//
+// This will use the "js-beautify -t -j -r" command to cleanup js files
+//
+
+$root_directories = array(
+	'../src/lib/aloha/',
+	'../src/plugins/common/',
+	'../src/plugins/extra/'
+);
+
+$js_pattern = '*.js';
+
+foreach($root_directories as $root) {
+	$dirs = get_directories($root);
+	//print_r($dirs);
+	
+	if ($root == '../src/lib/aloha/') {
+		$dir = $root.$js_pattern;
+		echo exec('js-beautify -t -j -r '.$dir);
+		echo $dir."\n";
+	} elseif (is_array($dirs)) {
+		foreach($dirs as $dir) {
+			$dir = $root.$dir.'/lib/'.$js_pattern;
+			echo exec('js-beautify -t -j -r '.$dir);
+			echo $dir."\n";
+		}
+	}
+}
+
+
+function get_directories( $dir = '../', $dir_path = false) {
+    
+    if (!is_dir($dir)) {
+        return array();
+    }
+    
+	$files = scandir( $dir ); 
+	$result = array();
+	
+	if ( empty($dir_path) ) {
+		$dir_path = substr($dir, 1, 0);
+	}
+	
+	foreach ( $files as $file )  {
+		$data = false;
+		
+		if ( $file === '.' || $file === '..' || $file === '.DS_Store' ) { 
+			continue; 
+		} else if (is_dir($dir.$file)) { 
+			$data = $dir_path.$file;
+			array_push($result, $data);
+		} 
+	}
+
+	return $result; 
+}
