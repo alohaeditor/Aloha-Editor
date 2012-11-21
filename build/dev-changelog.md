@@ -22,12 +22,12 @@ All changes are categorized into one of the following keywords:
 	</code>
 
 - **MANUAL CHANGE**: Updated UI CSS regarding button selector;
-- **MANUAL CHANGE**: Added a demo of placeholders to boilerplate;
+- **ENHANCEMENT**: Added a demo of placeholders to boilerplate;
 - **BUG**: Fix calling mahalo in a blur event handler
 - **BUG**: Fix support for editable anchor elements
 - **BUG**: images-plugin: global fix and debug interactions with draganddropfiles
 - **BUG**: draganddropfiles-plugin: fix for Firefox in order to send fileName
-- *ENHANCEMENT**: draganddropfiles-plugin: Send id target element in headers to inform the server where in page the file has been dropped
+- **ENHANCEMENT**: draganddropfiles-plugin: Send id target element in headers to inform the server where in page the file has been dropped
 - **ENHANCEMENT**: The Ephmera API was changed
 	aloha-cleanme class has been renamed to aloha-ephemera.
 	aloha-ui-* classes have been renamed to aloha-ephemera-*.

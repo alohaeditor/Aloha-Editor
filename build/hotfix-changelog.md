@@ -8,6 +8,7 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **ENHANCEMENT**: table plugin: IE fix -- the selection of multiple cells was not possible when the selection started in the text; there was no workaround so it's now possible to select coherent cells when you "shift-click" into the second cell of the range you want to select.
 - **BUG**: formatlesspaste-plugin: Formatless Paste Plugin fixed to correctly
            process configuration settings.
 - **BUG**: table-plugin: Ensures that the range is maintained when clicking

@@ -23,10 +23,6 @@ define({
 		"button.ul.label": "Insert unordered list",
 		"button.indent.label": "Indent list",
 		"button.outdent.label": "Outdent list",
-		"button.createLink.label": "Insert link",
-		"button.removeLink.label": "Remove link",
-		"button.createAbbr.label": "Insert abbreviation",
-		"button.characterPicker.label": "Pick special characters",
 
 		// link
 		"button.createLink.label": "Insert link",

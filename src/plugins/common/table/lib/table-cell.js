@@ -80,9 +80,53 @@ function (jQuery, Utils) {
 					return -1;
 				};
 			}
-			cell._editableMouseDown($event);
-			cell._startCellSelection();
-		});
+			
+			cell.tableObj.selection.baseCellPosition = [cell._virtualY(), cell._virtualX()];
+			
+			if ($event.shiftKey) {
+				// shift-click to select a coherent cell range
+				//
+				// in IE it's not possible to select multiple cells when you "select+drag" over other cells
+				// click into the first cell and then "shift-click" into the last cell of the coherent cell range you want to select
+				var right = cell.tableObj.selection.lastBaseCellPosition[1];
+				var bottom = cell.tableObj.selection.lastBaseCellPosition[0];
+				var topLeft = cell.tableObj.selection.baseCellPosition;
+				var left = topLeft[1];
+				if (left > right) {
+					left = right;
+					right = topLeft[1];
+				}
+				var top = topLeft[0];
+				if (top > bottom) {
+					top = bottom;
+					bottom = topLeft[0];
+				}
+				var rect = {"top": top, "right": right, "bottom": bottom, "left": left};
+
+				var table = cell.tableObj;
+				var $rows = table.obj.children().children('tr');
+				var grid = Utils.makeGrid($rows);
+
+				table.selection.selectedCells = [];
+				var selectClass = table.get('classCellSelected');
+				Utils.walkGrid(grid, function (cellInfo, j, i) {
+					if ( Utils.containsDomCell(cellInfo) ) {
+						if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
+							jQuery( cellInfo.cell ).addClass(selectClass);
+							table.selection.selectedCells.push(cellInfo.cell);
+						} else {
+							jQuery( cellInfo.cell ).removeClass(selectClass);
+						}
+					}
+				});
+
+				table.selection.notifyCellsSelected();
+			} else {
+				cell.tableObj.selection.lastBaseCellPosition = cell.tableObj.selection.baseCellPosition;
+				cell._editableMouseDown($event);
+				cell._startCellSelection();
+			}
+		} );
 
 		$wrapper.bind('blur', function ($event) {
 			cell._editableBlur($event);
@@ -109,10 +153,13 @@ function (jQuery, Utils) {
 				cell.wrapper.trigger('focus');
 				cell._selectAll($wrapper);
 			}, 1);
-			cell.tableObj.selection.unselectCells();
-			cell._startCellSelection();
+			if (!$event.shiftKey) {
+				cell.tableObj.selection.unselectCells();
+				cell._startCellSelection();
+			}
 			$event.stopPropagation();
 		});
+
 
 		if ($elem.get(0)) {
 			$elem.get(0).onselectstart = function () {
@@ -252,12 +299,9 @@ function (jQuery, Utils) {
 			var that = this;
 			jQuery('body').bind('mouseup.cellselection', function () {
 				that._endCellSelection();
-
 			});
 
 			this.tableObj.selection.baseCellPosition = [this._virtualY(), this._virtualX()];
-
-
 		}
 	};
 

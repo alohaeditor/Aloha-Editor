@@ -33,6 +33,8 @@ In order to merge two or more cells select the desired cells, rows or columns an
 
 NOTE: All contents will be merged into the first cell and all other previously split cells will be empty.
 
+NOTE: In Internet Explorer it is not possible to select cells when you select a cell (the text in it) and drag the mouse over the other cells you want to select -- you'll have to click and drag on the table cell border which is sometimes quite tricky. In that case you can click into the first cell and then "shift-click" into the last cell of the coherent cell range you want to select.
+
 h4. Table layout
 
 Each cell, row or column can have an individual style applied. You only have to select the cells, rows or columns and choose one layout from the table layout list.
