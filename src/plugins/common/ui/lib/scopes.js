@@ -1,12 +1,7 @@
-define([
-	'jquery',
-	'PubSub',
-	'util/maps'
-], function (
-	$,
-	PubSub,
-	Maps
-) {
+define(['jquery', 'PubSub', 'util/maps'], function (
+$,
+PubSub,
+Maps) {
 	'use strict';
 
 	var scopes = {

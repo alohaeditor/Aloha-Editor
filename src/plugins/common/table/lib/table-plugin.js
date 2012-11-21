@@ -161,13 +161,13 @@ Utils) {
 		// initialize the table buttons
 		this.initTableButtons();
 
-		Aloha.bind( 'aloha-table-selection-changed', function () {
+		Aloha.bind('aloha-table-selection-changed', function () {
 			// check if selected cells are split/merge able and set button status
 			if (typeof TablePlugin.activeTable !== 'undefined' && TablePlugin.activeTable.selection) {
 
 				TablePlugin.updateFloatingMenuScope();
 
-				if ( TablePlugin.activeTable.selection.cellsAreSplitable() ) {
+				if (TablePlugin.activeTable.selection.cellsAreSplitable()) {
 					that._splitcellsButton.enable(true);
 					that._splitcellsRowButton.enable(true);
 					that._splitcellsColumnButton.enable(true);
@@ -1076,11 +1076,11 @@ Utils) {
 			scope: this.name + '.cell'
 		});
 
-		this.summary.addListener( 'keyup', function( event ) {
+		this.summary.addListener('keyup', function (event) {
 			if (that.activeTable) {
 				that.activeTable.checkWai();
 			}
-		} );
+		});
 	};
 
 	/**
@@ -1380,7 +1380,7 @@ Utils) {
 		}
 	};
 
-	TablePlugin.setActiveCellStyle = function() {
+	TablePlugin.setActiveCellStyle = function () {
 		var that = this;
 
 		// reset any selected cell styles
@@ -1388,9 +1388,9 @@ Utils) {
 
 		var selectedCells = that.selectedOrActiveCells();
 
-		jQuery( selectedCells ).each( function() {
+		jQuery(selectedCells).each(function () {
 			for (var k = 0; k < that.cellConfig.length; k++) {
-				if ( jQuery(this).hasClass(that.cellConfig[k].cssClass) ) {
+				if (jQuery(this).hasClass(that.cellConfig[k].cssClass)) {
 					that.cellMSButton.setActiveItem(that.cellConfig[k].name);
 					k = that.cellConfig.length;
 				}
@@ -1399,26 +1399,26 @@ Utils) {
 
 	};
 
-	TablePlugin.selectedOrActiveCells = function() {
+	TablePlugin.selectedOrActiveCells = function () {
 		var that = this;
 		var sc = this.activeTable.selection.selectedCells;
 
 		// if there are no selected cells,
 		// set the active cell as the selected cell.
 		if (!sc || sc.length < 1) {
-			var activeCell = function() {
-			var range = Aloha.Selection.getRangeObject();
+			var activeCell = function () {
+				var range = Aloha.Selection.getRangeObject();
 				if (Aloha.activeEditable) {
-					return range.findMarkup( function() {
-							return this.nodeName.toLowerCase() === 'td';
-					}, Aloha.activeEditable.obj );
+					return range.findMarkup(function () {
+						return this.nodeName.toLowerCase() === 'td';
+					}, Aloha.activeEditable.obj);
 				} else {
 					return null;
 				}
 			}
 
 			var active_cell = activeCell();
-			return (active_cell ? [ active_cell ] : []);
+			return (active_cell ? [active_cell] : []);
 		} else {
 			return sc;
 		}

@@ -42,7 +42,8 @@ function (jQuery, Observable, Class) {
 	 * @class An abstract editor
 	 */
 	var AbstractEditor = Class.extend(Observable,
-	/** @lends block.editor.AbstractEditor */ {
+	/** @lends block.editor.AbstractEditor */
+	{
 		/**
 		 * Schema of the current element
 		 *
@@ -124,7 +125,8 @@ function (jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractEditor
 	 */
 	var AbstractFormElementEditor = AbstractEditor.extend(
-	/** @lends block.editor.AbstractFormElementEditor */ {
+	/** @lends block.editor.AbstractFormElementEditor */
+	{
 
 		/**
 		 * Input element HTML definition
@@ -225,7 +227,8 @@ function (jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var StringEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.StringEditor */ {
+	/** @lends block.editor.StringEditor */
+	{
 		formInputElementDefinition: '<input type="text" />'
 	});
 
@@ -235,7 +238,8 @@ function (jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var NumberEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.NumberEditor */ {
+	/** @lends block.editor.NumberEditor */
+	{
 		// TODO Range should be an option
 		formInputElementDefinition: '<input type="range" />',
 
@@ -262,7 +266,8 @@ function (jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var UrlEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.UrlEditor */ {
+	/** @lends block.editor.UrlEditor */
+	{
 		formInputElementDefinition: '<input type="url" />'
 	});
 
@@ -272,7 +277,8 @@ function (jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var EmailEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.EmailEditor */ {
+	/** @lends block.editor.EmailEditor */
+	{
 		formInputElementDefinition: '<input type="email" />'
 	});
 
@@ -282,7 +288,8 @@ function (jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var SelectEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.SelectEditor */ {
+	/** @lends block.editor.SelectEditor */
+	{
 		formInputElementDefinition: '<select />',
 
 		afterRenderFormElement: function ($formElement) {
@@ -299,7 +306,8 @@ function (jQuery, Observable, Class) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var ButtonEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.SelectEditor */ {
+	/** @lends block.editor.SelectEditor */
+	{
 		formInputElementDefinition: '<button />',
 
 		afterRenderFormElement: function ($formElement) {

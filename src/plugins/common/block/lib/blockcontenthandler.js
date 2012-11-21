@@ -37,7 +37,8 @@ function (jQuery, ContentHandlerManager, BlockManager) {
 	 * block markup will be replaced by a newly created block instance.
 	 */
 	var BlockContentHandler = ContentHandlerManager.createHandler(
-	/** @lends block.BlockContentHandler */ {
+	/** @lends block.BlockContentHandler */
+	{
 		/**
 		 * Handle the pasting. Remove all unwanted stuff.
 		 *

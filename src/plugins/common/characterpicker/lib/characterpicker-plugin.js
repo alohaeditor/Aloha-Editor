@@ -25,25 +25,15 @@
  * recipients can access the Corresponding Source.
  */
 
-define([
-	'aloha', 
-	'jquery', 
-	'aloha/plugin', 
-	'ui/ui', 
-	'ui/button',
-	'ui/floating',
-	'PubSub',
-	'i18n!characterpicker/nls/i18n', 
-	'i18n!aloha/nls/i18n'
-], function(Aloha,
-            jQuery,
-			Plugin,
-			Ui,
-			Button,
-			Floating,
-			PubSub,
-			i18n,
-			i18nCore) {
+define(['aloha', 'jquery', 'aloha/plugin', 'ui/ui', 'ui/button', 'ui/floating', 'PubSub', 'i18n!characterpicker/nls/i18n', 'i18n!aloha/nls/i18n'], function (Aloha,
+jQuery,
+Plugin,
+Ui,
+Button,
+Floating,
+PubSub,
+i18n,
+i18nCore) {
 	'use strict';
 
 	var GENTICS = window.GENTICS;
@@ -65,10 +55,13 @@ define([
 		self._initCursorFocus(onSelectCallback);
 		self._initEvents();
 	}
-	
+
 	function calculateOffset(widget, $element) {
 		var offset = $element.offset();
-		var calculatedOffset = { top: 0, left: 0 };
+		var calculatedOffset = {
+			top: 0,
+			left: 0
+		};
 
 		if ('fixed' === Floating.POSITION_STYLE) {
 			offset.top -= jQuery(window).scrollTop();
@@ -77,14 +70,17 @@ define([
 
 		calculatedOffset.top = widget.offset.top + (offset.top - widget.offset.top);
 		calculatedOffset.left = widget.offset.left + (offset.left - widget.offset.left);
-		
+
 		return calculatedOffset;
 	}
 
 	CharacterOverlay.prototype = {
-		
-		offset: {top: 0, left: 0},
-		
+
+		offset: {
+			top: 0,
+			left: 0
+		},
+
 		/**
 		 * Show the character overlay at the insert button's position
 		 * @param insertButton insert button
@@ -95,7 +91,7 @@ define([
 			// position the overlay relative to the insert-button
 			self.$node.css(calculateOffset(self, $insertButton));
 			self.$node.css('position', Floating.POSITION_STYLE);
-			
+
 			self.$node.show();
 			// focus the first character
 			self.$node.find('.focused').removeClass('focused');
@@ -303,8 +299,8 @@ define([
 					self._characterPickerButton.hide();
 				}
 			});
-			
-			PubSub.sub('aloha.floating.changed', function(message) {
+
+			PubSub.sub('aloha.floating.changed', function (message) {
 				self.characterOverlay.offset = message.position.offset;
 				self.characterOverlay.$node.css(calculateOffset(self.characterOverlay, self._characterPickerButton.element));
 			});

@@ -37,7 +37,8 @@ function (Registry) {
 	 * @class Editor manager singleton
 	 */
 	return new(Registry.extend(
-	/** @lends block.editormanager */ {
+	/** @lends block.editormanager */
+	{
 		/**
 		 * Create an editor from the given definition. Acts as a factory method
 		 * for editors.

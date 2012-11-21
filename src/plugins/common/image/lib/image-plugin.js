@@ -1064,11 +1064,11 @@ i18n) {
 				plugin._setNormalizedFieldValues('width');
 				plugin.setSizeByFieldValue();
 				//plugin.setSize(targetObject.width, targetObject.height);
-				
+
 				plugin.autoResize();
-				
+
 				// @todo set width / height attr for image
-				
+
 			} else if (targetValue) {
 				plugin.imageObj.attr('src', targetValue);
 				plugin.imageObj.attr('title', '');

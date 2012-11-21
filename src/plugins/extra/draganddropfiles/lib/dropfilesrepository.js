@@ -26,6 +26,7 @@
  */
 
 define(['jquery', 'aloha/repository', 'i18n!aloha/nls/i18n'],
+
 function ($, repository, i18nCore) {
 	"use strict";
 	var jQuery = $,

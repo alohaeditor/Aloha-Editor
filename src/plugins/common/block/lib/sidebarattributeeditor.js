@@ -38,7 +38,8 @@ function (jQuery, BlockManager, Sidebar, EditorManager, Class) {
 	 * @class Sidebar attribute editor singleton
 	 */
 	return new(Class.extend(
-	/** @lends block.sidebarattributeeditor */ {
+	/** @lends block.sidebarattributeeditor */
+	{
 
 		_sidebar: null,
 

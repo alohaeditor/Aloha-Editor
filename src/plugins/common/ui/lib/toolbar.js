@@ -106,11 +106,10 @@ i18n) {
 				toolbar._moveTimeout = null;
 				if (Aloha.activeEditable && Toolbar.isFloatingMode) {
 					floating.floatSurface(
-						toolbar,
-						Aloha.activeEditable,
-						duration,
-						Toolbar.setFloatingPosition
-					);
+					toolbar,
+					Aloha.activeEditable,
+					duration,
+					Toolbar.setFloatingPosition);
 				}
 				// 20ms should be small enough to appear instantaneous to the
 				// user but large enough to avoid doing unnecessary work when

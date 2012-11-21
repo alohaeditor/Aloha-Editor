@@ -489,10 +489,10 @@ i18nCore) {
 					var dom = jQuery('<div>').attr('class', pl.nsClass('target-container'));
 					var fieldset = jQuery('<fieldset>');
 					fieldset.append(jQuery('<legend>').text(i18n.t('format.class.legend') + ' - ' + that.format));
-					
+
 					var select = jQuery('<select>').attr('class', pl.nsClass('cssclass')).attr('name', 'targetGroup');
 					fieldset.append(select);
-					
+
 					var option = jQuery('<option>').text(i18n.t('format.class.none')).attr('value', '').appendTo(fieldset);
 					select.append(option);
 

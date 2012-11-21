@@ -41,7 +41,7 @@ define(['aloha/plugin', 'i18n!aloha/nls/i18n'], function (Plugin, i18nCore) {
 		init: function () {
 			var that = this;
 
-			Aloha.require(['speak/speak', 'css!speak/css/speak.css']);
+			Aloha.require(['speak/vendor/speak', 'css!speak/css/speak.css']);
 
 			Aloha.jQuery('body').append('<div id="audio"></div>')
 

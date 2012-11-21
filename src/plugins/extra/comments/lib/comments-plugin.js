@@ -205,6 +205,7 @@ function (Aloha, Plugin, jQuery, i18n, i18nCore) {
 				function L(k, d) {
 					return (k << d) | (k >>> (32 - d))
 				}
+
 				function K(G, k) {
 					var I, d, F, H, x;
 					F = (G & 2147483648);
@@ -225,34 +226,43 @@ function (Aloha, Plugin, jQuery, i18n, i18nCore) {
 						return (x ^ F ^ H)
 					}
 				}
+
 				function r(d, F, k) {
 					return (d & F) | ((~d) & k)
 				}
+
 				function q(d, F, k) {
 					return (d & k) | (F & (~k))
 				}
+
 				function p(d, F, k) {
 					return (d ^ F ^ k)
 				}
+
 				function n(d, F, k) {
 					return (F ^ (d | (~k)))
 				}
+
 				function u(G, F, aa, Z, k, H, I) {
 					G = K(G, K(K(r(F, aa, Z), k), I));
 					return K(L(G, H), F)
 				}
+
 				function f(G, F, aa, Z, k, H, I) {
 					G = K(G, K(K(q(F, aa, Z), k), I));
 					return K(L(G, H), F)
 				}
+
 				function D(G, F, aa, Z, k, H, I) {
 					G = K(G, K(K(p(F, aa, Z), k), I));
 					return K(L(G, H), F)
 				}
+
 				function t(G, F, aa, Z, k, H, I) {
 					G = K(G, K(K(n(F, aa, Z), k), I));
 					return K(L(G, H), F)
 				}
+
 				function e(G) {
 					var Z;
 					var F = G.length;
@@ -275,6 +285,7 @@ function (Aloha, Plugin, jQuery, i18n, i18nCore) {
 					aa[I - 1] = F >>> 29;
 					return aa
 				}
+
 				function B(x) {
 					var k = "",
 						F = "",
@@ -286,6 +297,7 @@ function (Aloha, Plugin, jQuery, i18n, i18nCore) {
 					}
 					return k
 				}
+
 				function J(k) {
 					k = k.replace(/\r\n/g, "\n");
 					var d = "";

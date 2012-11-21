@@ -25,6 +25,7 @@
  * recipients can access the Corresponding Source.
  */
 define(['jquery', 'aloha/plugin', 'draganddropfiles/dropfilesrepository'],
+
 function ($, Plugin, DropFilesRepository) {
 	"use strict";
 	var jQuery = $,
