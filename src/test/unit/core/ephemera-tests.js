@@ -33,7 +33,7 @@ Aloha.require(['jquery', 'aloha/ephemera', 'dom-to-xhtml/dom-to-xhtml'], functio
 		//      it will work even better, removing the entire attribute,
 		//      which results in
 		//      ...<span class="attr">...
-		Ephemera.markAttribute($(input).find('.attr')[0], 'contentEditable');
+		Ephemera.markAttr($(input).find('.attr')[0], 'contentEditable');
 		Ephemera.markElement($(input).find('.ephemeral')[0]);
 		Ephemera.markWrapper($(input).find('.wrapper')[0]);
 		Ephemera.markFiller($(input).find('.filler')[0]);
