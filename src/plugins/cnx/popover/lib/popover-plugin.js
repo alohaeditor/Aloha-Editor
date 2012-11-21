@@ -71,58 +71,66 @@ There are 3 variables that are stored on each element;
 (function() {
 
   define('popover', ['aloha', 'jquery'], function(Aloha, jQuery) {
-    var Bootstrap_Popover_destroy, Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, Popover, bindHelper, findMarkup, monkeyPatch, selectionChangeHandler;
+    var Bootstrap_Popover__position, Bootstrap_Popover_destroy, Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, Popover, bindHelper, findMarkup, monkeyPatch, selectionChangeHandler;
+    Bootstrap_Popover__position = function($tip) {
+      var actualHeight, actualWidth, inside, placement, pos, tp;
+      placement = (typeof this.options.placement === "function" ? this.options.placement.call(this, $tip[0], this.$element[0]) : this.options.placement);
+      inside = /in/.test(placement);
+      if (!$tip.parents()[0]) {
+        $tip.appendTo((inside ? this.$element : document.body));
+      }
+      pos = this.getPosition(inside);
+      actualWidth = $tip[0].offsetWidth;
+      actualHeight = $tip[0].offsetHeight;
+      switch ((inside ? placement.split(" ")[1] : placement)) {
+        case "bottom":
+          tp = {
+            top: pos.top + pos.height,
+            left: pos.left + pos.width / 2 - actualWidth / 2
+          };
+          break;
+        case "top":
+          tp = {
+            top: pos.top - actualHeight - 10,
+            left: pos.left + pos.width / 2 - actualWidth / 2
+          };
+          break;
+        case "left":
+          tp = {
+            top: pos.top + pos.height / 2 - actualHeight / 2,
+            left: pos.left - actualWidth
+          };
+          break;
+        case "right":
+          tp = {
+            top: pos.top + pos.height / 2 - actualHeight / 2,
+            left: pos.left + pos.width
+          };
+      }
+      if (tp.top < 0 || tp.left < 0) {
+        placement = 'bottom';
+        tp.top = pos.top + pos.height;
+      }
+      if (tp.left < 0) {
+        tp.left = 10;
+      }
+      return $tip.css(tp).addClass(placement);
+    };
     Bootstrap_Popover_show = function() {
-      var $tip, actualHeight, actualWidth, inside, placement, pos, tp;
+      var $tip;
       if (this.hasContent() && this.enabled) {
         $tip = this.tip();
         this.setContent();
         if (this.options.animation) {
           $tip.addClass("fade");
         }
-        placement = (typeof this.options.placement === "function" ? this.options.placement.call(this, $tip[0], this.$element[0]) : this.options.placement);
-        inside = /in/.test(placement);
         $tip.css({
           top: 0,
           left: 0,
           display: "block"
-        }).appendTo((inside ? this.$element : document.body));
-        pos = this.getPosition(inside);
-        actualWidth = $tip[0].offsetWidth;
-        actualHeight = $tip[0].offsetHeight;
-        switch ((inside ? placement.split(" ")[1] : placement)) {
-          case "bottom":
-            tp = {
-              top: pos.top + pos.height,
-              left: pos.left + pos.width / 2 - actualWidth / 2
-            };
-            break;
-          case "top":
-            tp = {
-              top: pos.top - actualHeight - 10,
-              left: pos.left + pos.width / 2 - actualWidth / 2
-            };
-            break;
-          case "left":
-            tp = {
-              top: pos.top + pos.height / 2 - actualHeight / 2,
-              left: pos.left - actualWidth
-            };
-            break;
-          case "right":
-            tp = {
-              top: pos.top + pos.height / 2 - actualHeight / 2,
-              left: pos.left + pos.width
-            };
-        }
-        if (tp.top < 0 || tp.left < 0) {
-          placement = 'bottom';
-          tp.top = pos.top + pos.height;
-        }
-        if (tp.left < 0) {
-          tp.left = 10;
-        }
-        $tip.css(tp).addClass(placement).addClass("in");
+        });
+        Bootstrap_Popover__position.bind(this)($tip);
+        $tip.addClass("in");
         /* Trigger the shown event
         */
 
@@ -150,6 +158,7 @@ There are 3 variables that are stored on each element;
     monkeyPatch();
     Popover = {
       MILLISECS: 2000,
+      MOVE_INTERVAL: 100,
       register: function(cfg) {
         return bindHelper(new Helper(cfg));
       }
@@ -199,20 +208,28 @@ There are 3 variables that are stored on each element;
           });
         };
         $el.on('show', this.selector, function(evt) {
-          var $node;
+          var $node, movePopover;
           $node = jQuery(evt.target);
+          movePopover = function() {
+            var that;
+            that = $node.data('popover');
+            return Bootstrap_Popover__position.bind(that)(that.$tip);
+          };
           clearTimeout($node.data('aloha-bubble-timer'));
           $node.removeData('aloha-bubble-timer');
           if (!$node.data('aloha-bubble-visible')) {
             makePopovers($node);
             $node.popover('show');
-            return $node.data('aloha-bubble-visible', true);
+            $node.data('aloha-bubble-visible', true);
           }
+          clearInterval($node.data('aloha-bubble-move-timer'));
+          return $node.data('aloha-bubble-move-timer', setInterval(movePopover, Popover.MOVE_INTERVAL));
         });
         $el.on('hide', this.selector, function(evt) {
           var $node;
           $node = jQuery(evt.target);
           clearTimeout($node.data('aloha-bubble-timer'));
+          clearInterval($node.data('aloha-bubble-move-timer'));
           $node.removeData('aloha-bubble-timer');
           $node.data('aloha-bubble-selected', false);
           if ($node.data('aloha-bubble-visible')) {
@@ -223,7 +240,7 @@ There are 3 variables that are stored on each element;
         return $el.on('mouseenter.bubble', this.selector, function(evt) {
           var $node;
           $node = jQuery(evt.target);
-          clearTimeout($node.data('aloha-bubble-timer'));
+          clearInterval($node.data('aloha-bubble-timer'));
           if (_this.hover) {
             $node.data('aloha-bubble-timer', delayTimeout($node, 'show', Popover.MILLISECS));
             return $node.on('mouseleave.bubble', function() {

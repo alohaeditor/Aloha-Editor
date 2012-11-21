@@ -90,22 +90,18 @@ There are 3 variables that are stored on each element;
 
 define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
 
-  # Monkeypatch the bootstrap Popover so we can inject clickable buttons
-  Bootstrap_Popover_show = () ->
-    if @hasContent() and @enabled
-      $tip = @tip()
-      @setContent()
-      $tip.addClass "fade"  if @options.animation
+
+  # This position code was refactored out because it is also used to move the
+  # Popover when the document changes
+  # Assumes @ is the Popover
+  Bootstrap_Popover__position = ($tip) ->
       placement = (if typeof @options.placement is "function" then @options.placement.call(@, $tip[0], @$element[0]) else @options.placement)
       inside = /in/.test(placement)
       # Start: Don't remove because then you lose all the events attached to the content of the tip
       #$tip.remove()
       # End: changes
-      $tip.css(
-        top: 0
-        left: 0
-        display: "block"
-      ).appendTo (if inside then @$element else document.body)
+      if not $tip.parents()[0]
+        $tip.appendTo (if inside then @$element else document.body)
       pos = @getPosition(inside)
       actualWidth = $tip[0].offsetWidth
       actualHeight = $tip[0].offsetHeight
@@ -134,9 +130,25 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       if tp.left < 0
         tp.left = 10 # so it's not right at the edge of the page
 
+      $tip.css(tp).addClass(placement)
+
+  # Monkeypatch the bootstrap Popover so we can inject clickable buttons
+  Bootstrap_Popover_show = () ->
+    if @hasContent() and @enabled
+      $tip = @tip()
+      @setContent()
+      $tip.addClass "fade"  if @options.animation
+
+      $tip.css(
+        top: 0
+        left: 0
+        display: "block"
+      )
+
+      Bootstrap_Popover__position.bind(@)($tip)
       # TODO move the arrow if placement='top/bottom'
 
-      $tip.css(tp).addClass(placement).addClass "in"
+      $tip.addClass "in"
 
       ### Trigger the shown event ###
       @$element.trigger('shown-popover')
@@ -163,6 +175,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
 
   Popover =
     MILLISECS: 2000
+    MOVE_INTERVAL: 100
     register: (cfg) -> bindHelper(new Helper(cfg))
 
   class Helper
@@ -204,6 +217,10 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
 
       $el.on 'show', @selector, (evt) =>
         $node = jQuery(evt.target)
+        movePopover = () ->
+          that = $node.data('popover')
+          Bootstrap_Popover__position.bind(that)(that.$tip)
+
         clearTimeout($node.data('aloha-bubble-timer'))
         $node.removeData('aloha-bubble-timer')
         if not $node.data('aloha-bubble-visible')
@@ -211,9 +228,13 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
           makePopovers($node)
           $node.popover 'show'
           $node.data('aloha-bubble-visible', true)
+        # As long as the popover is open  move it around if the document changes ($el updates)
+        clearInterval($node.data('aloha-bubble-move-timer'))
+        $node.data('aloha-bubble-move-timer', setInterval(movePopover, Popover.MOVE_INTERVAL))
       $el.on 'hide', @selector, (evt) =>
         $node = jQuery(evt.target)
         clearTimeout($node.data('aloha-bubble-timer'))
+        clearInterval($node.data('aloha-bubble-move-timer'))
         $node.removeData('aloha-bubble-timer')
         $node.data('aloha-bubble-selected', false)
         if $node.data('aloha-bubble-visible')
@@ -223,7 +244,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       # The only reason I map mouseenter is so I can catch new elements that are added to the DOM
       $el.on 'mouseenter.bubble', @selector, (evt) =>
         $node = jQuery(evt.target)
-        clearTimeout($node.data('aloha-bubble-timer'))
+        clearInterval($node.data('aloha-bubble-timer'))
 
         if @hover
           ## (STATE_*) -> (STATE_WC)
