@@ -1,22 +1,17 @@
-define([
-	'jquery',
-	'PubSub',
-	'util/maps'
-], function (
-	$,
-	PubSub,
-	Maps
-) {
+define(['jquery', 'PubSub', 'util/maps'], function (
+$,
+PubSub,
+Maps) {
 	'use strict';
 
 	var scopes = {
-		    'Aloha.empty': [],
-		    'Aloha.global': ['Aloha.empty'],
-		    'Aloha.continuoustext': ['Aloha.global']
-	    },
-	    activeScopes = [],
-	    addedScopes = {},
-	    scopeSetDuringSelectionChanged = false;
+		'Aloha.empty': [],
+		'Aloha.global': ['Aloha.empty'],
+		'Aloha.continuoustext': ['Aloha.global']
+	},
+	activeScopes = [],
+		addedScopes = {},
+		scopeSetDuringSelectionChanged = false;
 
 	function pushScopeAncestors(ancestorScopes, scope) {
 		if (!scopes.hasOwnProperty(scope)) {
@@ -39,7 +34,7 @@ define([
 		// the original comment:
 		// "Only set the specific scope if an event was provided, which means
 		// that somehow an editable was selected"
-		if (typeof originalEvent !== 'undefined' && ! scopeSetDuringSelectionChanged) {
+		if (typeof originalEvent !== 'undefined' && !scopeSetDuringSelectionChanged) {
 			Scopes.setScope('Aloha.continuoustext');
 		}
 	});
@@ -81,11 +76,11 @@ define([
 		 *     the visibility of containers and components can be
 		 *     controlled individually.
 		 */
-		enterScope: function(scope, requestor) {
+		enterScope: function (scope, requestor) {
 			requestor = requestor || '_globalCounter';
 			var counters = addedScopes[scope];
 			if (!counters) {
-				counters = addedScopes[scope] =  {};
+				counters = addedScopes[scope] = {};
 			}
 			var counter = counters[requestor] || 0;
 			counter += 1;
@@ -107,7 +102,7 @@ define([
 		 *     the visibility of containers and components can be
 		 *     controlled individually.
 		 */
-		leaveScope: function(scope, requestor, force) {
+		leaveScope: function (scope, requestor, force) {
 			requestor = requestor || '_globalCounter';
 			var counters = addedScopes[scope];
 			if (!counters) {
@@ -135,7 +130,7 @@ define([
 		 *     the visibility of containers and components can be
 		 *     controlled individually.
 		 */
-		isActiveScope: function(scope){
+		isActiveScope: function (scope) {
 			if (addedScopes[scope]) {
 				return true;
 			}
@@ -150,7 +145,7 @@ define([
 		 * @deprecated
 		 *     See setScope()
 		 */
-		getPrimaryScope: function() {
+		getPrimaryScope: function () {
 			return activeScopes[0];
 		},
 
@@ -160,7 +155,7 @@ define([
 		 *     Example: table plugin and link plugin - you want to be able to set both table and link scopes.
 		 *     Use enterScope and leaveScope instead.
 		 */
-		setScope: function(scope) {
+		setScope: function (scope) {
 			scopeSetDuringSelectionChanged = true;
 			if (activeScopes[0] != scope) {
 				activeScopes = [scope];
@@ -175,8 +170,8 @@ define([
 		 *     It is unknonwn what problem scope ancestry solved, and
 		 *     the method is therefore deprecated.
 		 */
-		createScope: function(scope, parentScopes){
-			if ( ! parentScopes ) {
+		createScope: function (scope, parentScopes) {
+			if (!parentScopes) {
 				parentScopes = ['Aloha.empty'];
 			} else if (typeof parentScopes === 'string') {
 				parentScopes = [parentScopes];

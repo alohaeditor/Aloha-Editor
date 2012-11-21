@@ -25,25 +25,15 @@
  * recipients can access the Corresponding Source.
  */
 
-define([
-	'aloha', 
-	'jquery', 
-	'aloha/plugin', 
-	'ui/ui', 
-	'ui/button',
-	'ui/floating',
-	'PubSub',
-	'i18n!characterpicker/nls/i18n', 
-	'i18n!aloha/nls/i18n'
-], function(Aloha,
-            jQuery,
-			Plugin,
-			Ui,
-			Button,
-			Floating,
-			PubSub,
-			i18n,
-			i18nCore) {
+define(['aloha', 'jquery', 'aloha/plugin', 'ui/ui', 'ui/button', 'ui/floating', 'PubSub', 'i18n!characterpicker/nls/i18n', 'i18n!aloha/nls/i18n'], function (Aloha,
+jQuery,
+Plugin,
+Ui,
+Button,
+Floating,
+PubSub,
+i18n,
+i18nCore) {
 	'use strict';
 
 	var GENTICS = window.GENTICS;
@@ -65,10 +55,13 @@ define([
 		self._initCursorFocus(onSelectCallback);
 		self._initEvents();
 	}
-	
+
 	function calculateOffset(widget, $element) {
 		var offset = $element.offset();
-		var calculatedOffset = { top: 0, left: 0 };
+		var calculatedOffset = {
+			top: 0,
+			left: 0
+		};
 
 		if ('fixed' === Floating.POSITION_STYLE) {
 			offset.top -= jQuery(window).scrollTop();
@@ -77,14 +70,17 @@ define([
 
 		calculatedOffset.top = widget.offset.top + (offset.top - widget.offset.top);
 		calculatedOffset.left = widget.offset.left + (offset.left - widget.offset.left);
-		
+
 		return calculatedOffset;
 	}
 
 	CharacterOverlay.prototype = {
-		
-		offset: {top: 0, left: 0},
-		
+
+		offset: {
+			top: 0,
+			left: 0
+		},
+
 		/**
 		 * Show the character overlay at the insert button's position
 		 * @param insertButton insert button
@@ -95,7 +91,7 @@ define([
 			// position the overlay relative to the insert-button
 			self.$node.css(calculateOffset(self, $insertButton));
 			self.$node.css('position', Floating.POSITION_STYLE);
-			
+
 			self.$node.show();
 			// focus the first character
 			self.$node.find('.focused').removeClass('focused');
@@ -103,7 +99,7 @@ define([
 			self._overlayActive = true;
 		},
 
-		hide: function() {
+		hide: function () {
 			this.$node.hide();
 			this._overlayActive = false;
 		},
@@ -130,11 +126,11 @@ define([
 				if (!self._overlayActive) {
 					return;
 				}
-				if (// don't consider clicks to the overlay itself
-				       e.target !== self.$node[0]
-				    // and don't consider clicks to the 'show' button.
-					&& !jQuery(e.target).is(buttonSelector)
-					&& !jQuery(e.target).find(buttonSelector).length) {
+				if ( // don't consider clicks to the overlay itself
+				e.target !== self.$node[0]
+				// and don't consider clicks to the 'show' button.
+				&&
+				!jQuery(e.target).is(buttonSelector) && !jQuery(e.target).find(buttonSelector).length) {
 					self.hide();
 				}
 			});
@@ -222,11 +218,11 @@ define([
 			textarea.innerHTML = characters;
 			characters = textarea.value;
 			var characterList = jQuery.grep(
-				characters.split(' '),
-				function filterOutEmptyOnces(e) {
-					return e !== '';
-				}
-			);
+			characters.split(' '),
+
+			function filterOutEmptyOnces(e) {
+				return e !== '';
+			});
 			var charTable = ['<tr>'];
 			var i = 0;
 			var chr;
@@ -239,9 +235,7 @@ define([
 				i++;
 			}
 			charTable.push('</tr>');
-			self.$tbody
-				.empty()
-				.append(charTable.join(''));
+			self.$tbody.empty().append(charTable.join(''));
 			self.$node.delegate('td', 'mouseover', function () {
 				jQuery(this).addClass('mouseover');
 			}).delegate('td', 'mouseout', function () {
@@ -267,16 +261,15 @@ define([
 		init: function () {
 			var self = this;
 
-			if ( typeof Aloha.settings.plugins != 'undefined' 
-				&& typeof Aloha.settings.plugins.characterpicker != 'undefined' ) {
+			if (typeof Aloha.settings.plugins != 'undefined' && typeof Aloha.settings.plugins.characterpicker != 'undefined') {
 				self.settings = Aloha.settings.plugins.characterpicker;
 			}
-			
+
 			this._characterPickerButton = Ui.adopt("characterPicker", Button, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
 				icon: "aloha-icon-characterpicker",
 				scope: 'Aloha.continuoustext',
-				click: function() {
+				click: function () {
 					if (false !== self.characterOverlay) {
 						_savedRange = Aloha.Selection.rangeObject;
 						self.characterOverlay.show(this.element);
@@ -285,11 +278,16 @@ define([
 			});
 
 			// Populate the cache lazily
-			setTimeout(function(){ initCache(0); }, 100);
+			setTimeout(function () {
+				initCache(0);
+			}, 100);
+
 			function initCache(i) {
 				if (i < Aloha.editables.length) {
 					self.getOverlayForEditable(Aloha.editables[i]);
-					setTimeout(function(){ initCache(i + 1); }, 100);
+					setTimeout(function () {
+						initCache(i + 1);
+					}, 100);
 				}
 			}
 
@@ -301,20 +299,20 @@ define([
 					self._characterPickerButton.hide();
 				}
 			});
-			
-			PubSub.sub('aloha.floating.changed', function(message) {
+
+			PubSub.sub('aloha.floating.changed', function (message) {
 				self.characterOverlay.offset = message.position.offset;
 				self.characterOverlay.$node.css(calculateOffset(self.characterOverlay, self._characterPickerButton.element));
 			});
 		},
 
-		getOverlayForEditable: function(editable) {
+		getOverlayForEditable: function (editable) {
 			var that = this;
 			// Each editable may have its own configuration and as
 			// such may have its own overlay.
 			var config = this.getEditableConfig(editable.obj),
-			    overlay;
-			if ( ! config ) {
+				overlay;
+			if (!config) {
 				return false;
 			}
 			if (jQuery.isArray(config)) {
@@ -324,7 +322,7 @@ define([
 			// have the same configuration, only a single overlay will
 			// be created that will be used by all editables.
 			overlay = overlayByConfig[config];
-			if ( ! overlay ) {
+			if (!overlay) {
 				overlay = new CharacterOverlay(onCharacterSelect);
 				overlay.setCharacters(config);
 				overlayByConfig[config] = overlay;
@@ -333,12 +331,12 @@ define([
 		}
 
 	});
-	
-			
+
+
 	/**
 	 * insert a character after selecting it from the list
 	 */
-	function onCharacterSelect (character) {
+	function onCharacterSelect(character) {
 		if (Aloha.activeEditable) {
 			//Select the range that was selected before the overlay was opened
 			_savedRange.select();

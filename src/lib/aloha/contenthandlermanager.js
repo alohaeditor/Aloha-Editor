@@ -24,15 +24,10 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/registry',
-	'util/class',
-	'aloha/console'
-], function (
-	Registry,
-	Class,
-	console
-) {
+define(['aloha/registry', 'util/class', 'aloha/console'], function (
+Registry,
+Class,
+console) {
 	'use strict';
 
 	/**
@@ -66,9 +61,7 @@ define([
 					if (typeof handler.handleContent === 'function') {
 						content = handler.handleContent(content, options);
 					} else {
-						console.error(
-							'A valid content handler needs the method handleContent.'
-						);
+						console.error('A valid content handler needs the method handleContent.');
 					}
 				}
 				if (null === content) {

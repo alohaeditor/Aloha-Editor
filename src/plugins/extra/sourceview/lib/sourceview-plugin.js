@@ -7,13 +7,7 @@
  * @overfiew: Provides a development tool for Aloha Editor that shows the
  *            source around the selection inside an editable.
  */
-define([
-	'aloha',
-	'jquery',
-	'../../../../test/unit/testutils',
-	'../../../../test/unit/htmlbeautifier',
-	'css!sourceview/css/sourceview'
-], function (Aloha, jQuery, TestUtils) {
+define(['aloha', 'jquery', '../../../../test/unit/testutils', '../../../../test/unit/htmlbeautifier', 'css!sourceview/css/sourceview'], function (Aloha, jQuery, TestUtils) {
 	'use strict';
 
 	var viewArea;
@@ -80,15 +74,8 @@ define([
 	function showSource(container) {
 		var source = window.style_html(container.html());
 		source = Aloha.jQuery('<div>').text(source).html();
-		source = source.replace(/ /g, '&nbsp;')
-		               .replace(/[\r\n]/g, '<br/>')
-		               .replace(/\t/g, '&nbsp;&nbsp;')
-		               .replace(/([\[\{])/,
-		                  '<span class="aloha-devtool-source-viewer-marker"\
-		                     style="background:#70a5e2; color:#fff">$1')
-		               .replace(/([\]\}])/, '$1</span>')
-		               .replace(/([\[\]\{\}])/g,
-		                  '<b style="background:#0c53a4; color:#fff;">$1</b>');
+		source = source.replace(/ /g, '&nbsp;').replace(/[\r\n]/g, '<br/>').replace(/\t/g, '&nbsp;&nbsp;').replace(/([\[\{])/, '<span class="aloha-devtool-source-viewer-marker"\
+		                     style="background:#70a5e2; color:#fff">$1').replace(/([\]\}])/, '$1</span>').replace(/([\[\]\{\}])/g, '<b style="background:#0c53a4; color:#fff;">$1</b>');
 		viewArea.html(source);
 		var marker = viewArea.find('.aloha-devtool-source-viewer-marker');
 
@@ -106,9 +93,7 @@ define([
 			});
 
 			// Scroll the view to the start of the selection.
-			viewArea.scrollTop(0)
-			        .scrollTop(Math.max(0, (marker.offset().top -
-						viewArea.offset().top) - 30));
+			viewArea.scrollTop(0).scrollTop(Math.max(0, (marker.offset().top - viewArea.offset().top) - 30));
 		}
 	}
 
@@ -143,23 +128,17 @@ define([
 			var sidebar = this.sidebar;
 			var originalWidth = sidebar.width;
 			viewArea = this.content.find('#aloha-devtool-source-viewer-content');
-			this.title.find('.aloha-devtool-source-viewer-ckbx')
-				.click(function (ev) {
-					ev.stopPropagation();
-				});
-			this.title.find('#aloha-devtool-source-viewer-widen-ckbx')
-				.change(function () {
-					sidebar.width = jQuery(this).attr('checked')
-						? 600
-						: originalWidth;
-					sidebar.container.width(sidebar.width)
-						.find('.aloha-sidebar-panels').width(sidebar.width);
-					sidebar.open(0);
-				});
-			this.title.find('#aloha-devtool-source-viewer-entire-ckbx')
-				.change(function () {
-					showEntireEditableSource = !!jQuery(this).attr('checked');
-				});
+			this.title.find('.aloha-devtool-source-viewer-ckbx').click(function (ev) {
+				ev.stopPropagation();
+			});
+			this.title.find('#aloha-devtool-source-viewer-widen-ckbx').change(function () {
+				sidebar.width = jQuery(this).attr('checked') ? 600 : originalWidth;
+				sidebar.container.width(sidebar.width).find('.aloha-sidebar-panels').width(sidebar.width);
+				sidebar.open(0);
+			});
+			this.title.find('#aloha-devtool-source-viewer-entire-ckbx').change(function () {
+				showEntireEditableSource = !! jQuery(this).attr('checked');
+			});
 
 			Aloha.bind('aloha-selection-changed', function (event, range) {
 				if (!Aloha.Sidebar.right.isOpen) {
@@ -179,10 +158,8 @@ define([
 
 				// Add marker classes onto the container nodes, or their
 				// parentNodes if the containers are textNodes.
-				jQuery(sNode.nodeType === 3 ? sNode.parentNode : sNode)
-					.addClass(sClass);
-				jQuery(eNode.nodeType === 3 ? eNode.parentNode : eNode)
-					.addClass(eClass);
+				jQuery(sNode.nodeType === 3 ? sNode.parentNode : sNode).addClass(sClass);
+				jQuery(eNode.nodeType === 3 ? eNode.parentNode : eNode).addClass(eClass);
 
 				// We determine which element's source to show.  If either the
 				// startContainer or the endContainer is a text node, we will
@@ -190,13 +167,10 @@ define([
 				// will use the parent node of the commonAncestorContainer.
 				var common;
 
-				if (showEntireEditableSource && Aloha.activeEditable &&
-						 Aloha.activeEditable.obj) {
+				if (showEntireEditableSource && Aloha.activeEditable && Aloha.activeEditable.obj) {
 					common = Aloha.activeEditable.obj[0];
 				} else {
-					if ((sNode.nodeType === 3 || eNode.nodeType === 3) &&
-							!jQuery(range.commonAncestorContainer)
-								.is('.aloha-editable')) {
+					if ((sNode.nodeType === 3 || eNode.nodeType === 3) && !jQuery(range.commonAncestorContainer).is('.aloha-editable')) {
 						common = range.commonAncestorContainer.parentNode;
 					} else {
 						common = range.commonAncestorContainer;
@@ -208,18 +182,13 @@ define([
 				}
 
 				var clonedContainer = jQuery(common.outerHTML);
-				var clonedStartContainer = clonedContainer.is('.' + sClass)
-						? clonedContainer
-						: clonedContainer.find('.' + sClass);
-				var clonedEndContainer = clonedContainer.is('.' + eClass)
-						? clonedContainer
-						: clonedContainer.find('.' + eClass);
+				var clonedStartContainer = clonedContainer.is('.' + sClass) ? clonedContainer : clonedContainer.find('.' + sClass);
+				var clonedEndContainer = clonedContainer.is('.' + eClass) ? clonedContainer : clonedContainer.find('.' + eClass);
 
 				// We may not find clonedStart- and clonedEnd- Containers if
 				// the selection range is outside of of the active editable
 				// (something that can happen when doing CTRL+A).
-				if (clonedStartContainer.length === 0 &&
-						clonedEndContainer.length === 0) {
+				if (clonedStartContainer.length === 0 && clonedEndContainer.length === 0) {
 					return;
 				}
 

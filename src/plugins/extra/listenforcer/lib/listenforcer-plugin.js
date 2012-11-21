@@ -31,12 +31,7 @@
  * editables will be permitted to contain, exactly one top-level element which
  * must be a (OL or a UL) list element.
  */
-define( [
-	'aloha',
-	'jquery',
-	'aloha/plugin',
-	'aloha/console'
-], function( Aloha, jQuery, Plugin, console ) {
+define(['aloha', 'jquery', 'aloha/plugin', 'aloha/console'], function (Aloha, jQuery, Plugin, console) {
 	'use strict';
 
 	/**
@@ -58,9 +53,9 @@ define( [
 	 * @param {jQuery} $editable
 	 * @param {String} placeHolderListString
 	 */
-	function enforce ( $editable, placeHolderListString ) {
+	function enforce($editable, placeHolderListString) {
 		// Check if this editable is configured to enforce lists
-		if ( jQuery.inArray( $editable[ 0 ], listEnforcedEditables ) === -1 ) {
+		if (jQuery.inArray($editable[0], listEnforcedEditables) === -1) {
 			return;
 		}
 
@@ -80,44 +75,44 @@ define( [
 
 		var hasList = false;
 
-		$editable.find( 'li' ).each( function(){
+		$editable.find('li').each(function () {
 			// nb: jQuery text() method returns the text contents of the
 			// element without <br>s being rendered.
-			if ( jQuery.trim( jQuery( this ).text() ) !== '' ) {
+			if (jQuery.trim(jQuery(this).text()) !== '') {
 				hasList = true;
 				// Stop looking for lists as soon as we find our first
 				// non-empty list
 				return false;
 			}
-		} );
+		});
 
 		// If we found no non-empty list, then we add our empty dummy list that
 		// the user can work with.
-		if ( !hasList ) {
-			$editable.html( placeHolderListString );
+		if (!hasList) {
+			$editable.html(placeHolderListString);
 		}
 
 		// Concatinate all top-level lists into the first, before, thereby
 		// merging all top-level lists into one.
-		var $lists = $editable.find( '>ul,>ol' ),
-		    j = $lists.length,
-		    i;
-		if ( j > 1 ) {
-			var $firstList = jQuery( $lists[0] );
-			for ( i = 1; i < j; ++i ) {
-				$firstList.append( jQuery( $lists[ i ] ).find( '>li' ) );
-				jQuery( $lists[ i ] ).remove();
+		var $lists = $editable.find('>ul,>ol'),
+			j = $lists.length,
+			i;
+		if (j > 1) {
+			var $firstList = jQuery($lists[0]);
+			for (i = 1; i < j; ++i) {
+				$firstList.append(jQuery($lists[i]).find('>li'));
+				jQuery($lists[i]).remove();
 			}
 		}
 
 		// Remove all top-level elements which are not lists
-		$editable.find( '>*:not(ul,ol)' ).remove();
+		$editable.find('>*:not(ul,ol)').remove();
 	};
 
-	return Plugin.create( 'listenforcer', {
+	return Plugin.create('listenforcer', {
 
-		_constructor: function() {
-			this._super( 'listenforcer' );
+		_constructor: function () {
+			this._super('listenforcer');
 		},
 
 		/**
@@ -129,9 +124,9 @@ define( [
 		 * which we will process the current active editable and enfore lists
 		 * in it.
 		 */
-		init: function() {
+		init: function () {
 			var that = this,
-			    elemsToEnforce = this.settings.editables || [],
+				elemsToEnforce = this.settings.editables || [],
 				elemToEnforce,
 				i,
 				j = elemsToEnforce.length;
@@ -139,27 +134,19 @@ define( [
 			// Register all editables that are to enforce lists.
 			// The following types of items can be used as jQuery selectors:
 			// String, DOMElement, and jQuery
-			for ( i = 0; i < j; i++ ) {
-				elemToEnforce = elemsToEnforce[ i ];
-				if ( typeof elemToEnforce === 'string' ||
-						elemToEnforce.nodeName ||
-							elemToEnforce instanceof jQuery ) {
-					jQuery(elemToEnforce).each(function(){
-						that.addEditableToEnforcementList( this );
+			for (i = 0; i < j; i++) {
+				elemToEnforce = elemsToEnforce[i];
+				if (typeof elemToEnforce === 'string' || elemToEnforce.nodeName || elemToEnforce instanceof jQuery) {
+					jQuery(elemToEnforce).each(function () {
+						that.addEditableToEnforcementList(this);
 					});
 				} else {
-					console.warn(
-						'Aloha List Enforcer Plugin',
-						'Object "' + elemToEnforce.toString() + '" can not ' +
-						'be used as a jQuery selector with which to register' +
-						' an editable to be list enforced.'
-					);
+					console.warn('Aloha List Enforcer Plugin', 'Object "' + elemToEnforce.toString() + '" can not ' + 'be used as a jQuery selector with which to register' + ' an editable to be list enforced.');
 				}
 			}
 
 			Aloha.bind('aloha-editable-activated', function ($event, params) {
-				enforce(params.editable.obj,
-					'<ul><li><br /></li></ul>');
+				enforce(params.editable.obj, '<ul><li><br /></li></ul>');
 			});
 
 			Aloha.bind('aloha-editable-deactivated', function ($event, params) {
@@ -168,10 +155,9 @@ define( [
 
 			Aloha.bind('aloha-smart-content-changed', function ($event, params) {
 				//We only want to do this is if the editable is actually active
-			 	if (Aloha.activeEditable && Aloha.activeEditable.isActive === true) {
-			 		enforce( params.editable.obj,
-			 			'<ul><li><br /></li></ul>');
-			 	}
+				if (Aloha.activeEditable && Aloha.activeEditable.isActive === true) {
+					enforce(params.editable.obj, '<ul><li><br /></li></ul>');
+				}
 			});
 		},
 
@@ -180,11 +166,11 @@ define( [
 		 *
 		 * @param {DOMElement} editable
 		 */
-		addEditableToEnforcementList: function( editable ) {
-			if ( editable ) {
-				listEnforcedEditables.push( editable );
+		addEditableToEnforcementList: function (editable) {
+			if (editable) {
+				listEnforcedEditables.push(editable);
 			}
 		}
 
-	} );
-} );
+	});
+});

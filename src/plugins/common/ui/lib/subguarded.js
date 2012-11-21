@@ -1,12 +1,7 @@
-define([
-	'aloha/core',
-	'jquery',
-	'PubSub'
-], function (
-	Aloha,
-	jQuery,
-	PubSub
-) {
+define(['aloha/core', 'jquery', 'PubSub'], function (
+Aloha,
+jQuery,
+PubSub) {
 	'use strict';
 
 	/**

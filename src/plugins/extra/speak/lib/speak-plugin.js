@@ -24,40 +24,42 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-    'aloha/plugin',
-	'aloha/floatingmenu',
-	'i18n!aloha/nls/i18n'
-], function ( Plugin, FloatingMenu, i18nCore ) {
+define(['aloha/plugin', 'i18n!aloha/nls/i18n'], function (Plugin, i18nCore) {
 	'use strict';
-	
+
+	var FloatingMenu = {}; /* plugin needs rewrite */
+	var msg = 'Plugin Speak: This plugin is not working right now. Please deactivate it';
+	if (window.console) {
+		window.console.log(msg);
+	} else {
+		alert(msg);
+	}
+	return;
+
 	return Plugin.create('speak', {
-		
+
 		init: function () {
 			var that = this;
-			
-			Aloha.require(['speak/speak','css!speak/css/speak.css']);
-			
+
+			Aloha.require(['speak/vendor/speak', 'css!speak/css/speak.css']);
+
 			Aloha.jQuery('body').append('<div id="audio"></div>')
-			
+
 			var button = new Aloha.ui.Button({
-				name      : 'speak',
-				text      : 'Speak',					// that.i18n('button.' + button + '.text'),
-				iconClass : 'GENTICS_button_speak',
-				size      : 'small',
-				onclick   : function() {
-					var range = Aloha.getSelection().getRangeAt( 0 );
-					speak( Aloha.jQuery(range.startContainer.parentNode).text() );
+				name: 'speak',
+				text: 'Speak', // that.i18n('button.' + button + '.text'),
+				iconClass: 'GENTICS_button_speak',
+				size: 'small',
+				onclick: function () {
+					var range = Aloha.getSelection().getRangeAt(0);
+					speak(Aloha.jQuery(range.startContainer.parentNode).text());
 				}
 			});
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				button,
-				i18nCore.t('floatingmenu.tab.format'),
-				1
-			);
+			FloatingMenu.addButton('Aloha.continuoustext',
+			button,
+			i18nCore.t('floatingmenu.tab.format'),
+			1);
 		}
 	});
-	
-});
 
+});

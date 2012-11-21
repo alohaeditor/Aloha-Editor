@@ -1,21 +1,11 @@
-define([
-	'jquery',
-	'aloha/core',
-	'ui/surface',
-	'ui/tab',
-	'ui/floating',
-	'ui/context',
-	'i18n!ui/nls/i18n',
-	'jqueryui'
-], function (
-	$,
-	Aloha,
-	Surface,
-	Tab,
-	floating,
-	Context,
-	i18n
-) {
+define(['jquery', 'aloha/core', 'ui/surface', 'ui/tab', 'ui/floating', 'ui/context', 'i18n!ui/nls/i18n', 'jqueryui'], function (
+$,
+Aloha,
+Surface,
+Tab,
+floating,
+Context,
+i18n) {
 	'use strict';
 
 	/**
@@ -52,11 +42,14 @@ define([
 		 */
 		_constructor: function (context, tabs) {
 			var tabSettings,
-			    tabInstance,
-			    i,
-			    key;
+			tabInstance,
+			i,
+			key;
 			this._super(context);
-			this.$element = $('<div>', {'class': 'aloha-ui aloha-ui-toolbar', 'unselectable': 'on'});
+			this.$element = $('<div>', {
+				'class': 'aloha-ui aloha-ui-toolbar',
+				'unselectable': 'on'
+			});
 			this.$_container = Tab.createContainer().appendTo(this.$element);
 			this._tabBySlot = {};
 
@@ -72,7 +65,10 @@ define([
 						this._tabBySlot[key] = tabInstance;
 					}
 				}
-				this._tabs.push({tab: tabInstance, settings: tabSettings});
+				this._tabs.push({
+					tab: tabInstance,
+					settings: tabSettings
+				});
 			}
 
 			// Pinning behaviour is global in that if one toolbar is pinned,
@@ -110,11 +106,10 @@ define([
 				toolbar._moveTimeout = null;
 				if (Aloha.activeEditable && Toolbar.isFloatingMode) {
 					floating.floatSurface(
-						toolbar,
-						Aloha.activeEditable,
-						duration,
-						Toolbar.setFloatingPosition
-					);
+					toolbar,
+					Aloha.activeEditable,
+					duration,
+					Toolbar.setFloatingPosition);
 				}
 				// 20ms should be small enough to appear instantaneous to the
 				// user but large enough to avoid doing unnecessary work when
@@ -223,7 +218,9 @@ define([
 
 			// In the built aloha.js, init will happend before the body has
 			// finished loading, so we have to defer appending the element.
-			$(function () { Toolbar.$surfaceContainer.appendTo('body'); });
+			$(function () {
+				Toolbar.$surfaceContainer.appendTo('body');
+			});
 			Surface.trackRange(Toolbar.$surfaceContainer);
 			var pinState = floating.getPinState();
 			Toolbar.pinTop = pinState.top;

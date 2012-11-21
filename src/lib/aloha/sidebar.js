@@ -29,17 +29,11 @@
  *        - Make overlayPage setting settable from external config.
  */
 
-define([
-	'aloha/core',
-	'jquery',
-	'aloha/selection',
-	'PubSub'
-], function (
-	Aloha,
-	$,
-	Selection,
-	PubSub
-) {
+define(['aloha/core', 'jquery', 'aloha/selection', 'PubSub'], function (
+Aloha,
+$,
+Selection,
+PubSub) {
 	'use strict';
 
 	var uid = +(new Date());
@@ -49,7 +43,7 @@ define([
 	if (!$.easing.easeOutExpo) {
 		$.extend($.easing, {
 			easeOutExpo: function (x, t, b, c, d) {
-				return (t == d) ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b;
+				return (t == d) ? b + c : c * (-Math.pow(2, - 10 * t / d) + 1) + b;
 			},
 			easeOutElastic: function (x, t, b, c, d) {
 				var m = Math,
@@ -71,7 +65,7 @@ define([
 				} else {
 					s = p / (2 * m.PI) * m.asin(c / a);
 				}
-				return a * m.pow(2, -10 * t) * m.sin((t * d - s) * (2 * m.PI) / p) + c + b;
+				return a * m.pow(2, - 10 * t) * m.sin((t * d - s) * (2 * m.PI) / p) + c + b;
 			}
 		});
 	}
@@ -161,7 +155,7 @@ define([
 			this.updateHeight();
 			this.initToggler();
 
-			this.container.css(this.position === 'right' ? 'marginRight' : 'marginLeft', -this.width);
+			this.container.css(this.position === 'right' ? 'marginRight' : 'marginLeft', - this.width);
 
 			if (this.opened) {
 				this.open(0);
@@ -305,9 +299,8 @@ define([
 					panelInner = panel.content.find('.aloha-sidebar-panel-content-inner');
 
 					targetHeight = math.min(
-						panelInner.height('auto').height(),
-						math.floor(remainingHeight / (j + 1))
-					);
+					panelInner.height('auto').height(),
+					math.floor(remainingHeight / (j + 1)));
 
 					panelInner.height(targetHeight);
 					remainingHeight -= targetHeight;
@@ -422,24 +415,22 @@ define([
 				icon.stop();
 
 				$(this).stop().animate(
-					isRight ? {
-						marginLeft: '-=' + (flag * 5)
-					} : {
-						marginRight: '-=' + (flag * 5)
-					},
-					200
-				);
+				isRight ? {
+					marginLeft: '-=' + (flag * 5)
+				} : {
+					marginRight: '-=' + (flag * 5)
+				},
+				200);
 
 				bounceTimer = setInterval(function () {
 					flag *= -1;
 					icon.animate(
-						isRight ? {
-							left: '-=' + (flag * 4)
-						} : {
-							right: '-=' + (flag * 4)
-						},
-						300
-					);
+					isRight ? {
+						left: '-=' + (flag * 4)
+					} : {
+						right: '-=' + (flag * 4)
+					},
+					300);
 				}, 300);
 			}, function () {
 				if (bounceTimer) {
@@ -449,14 +440,12 @@ define([
 				icon.stop().css(isRight ? 'left' : 'right', 5);
 
 				$(this).stop().animate(
-					isRight ? {
-						marginLeft: 0
-					} : {
-						marginRight: 0
-					},
-					600,
-					'easeOutElastic'
-				);
+				isRight ? {
+					marginLeft: 0
+				} : {
+					marginRight: 0
+				},
+				600, 'easeOutElastic');
 			});
 		},
 
@@ -600,20 +589,19 @@ define([
 
 			if (!this.settings.overlayPage) {
 				$('body').animate(
-					isRight ? {
-						marginRight: '+=' + this.width
-					} : {
-						marginLeft: '+=' + this.width
-					},
-					500,
-					'easeOutExpo',
-					function () {
-						sidebar.isCompletelyOpen = true;
-						if (sidebar.correctHeightWhenCompletelyOpen) {
-							sidebar.correctHeight();
-						}
+				isRight ? {
+					marginRight: '+=' + this.width
+				} : {
+					marginLeft: '+=' + this.width
+				},
+				500, 'easeOutExpo',
+
+				function () {
+					sidebar.isCompletelyOpen = true;
+					if (sidebar.correctHeightWhenCompletelyOpen) {
+						sidebar.correctHeight();
 					}
-				);
+				});
 			}
 
 			this.isOpen = true;
@@ -646,14 +634,12 @@ define([
 
 			if (!this.settings.overlayPage) {
 				$('body').animate(
-					isRight ? {
-						marginRight: '-=' + this.width
-					} : {
-						marginLeft: '-=' + this.width
-					},
-					500,
-					'easeOutExpo'
-				);
+				isRight ? {
+					marginRight: '-=' + this.width
+				} : {
+					marginLeft: '-=' + this.width
+				},
+				500, 'easeOutExpo');
 			}
 
 			this.isOpen = false;
@@ -887,16 +873,16 @@ define([
 			var el = this.content;
 			var old_h = el.height();
 			var new_h = el.height('auto').height();
-			el.height(old_h).stop().animate(
-				{height: new_h},
-				500,
-				'easeOutExpo',
-				function () {
-					if (typeof callback === 'function') {
-						callback.call(that);
-					}
+			el.height(old_h).stop().animate({
+				height: new_h
+			},
+			500, 'easeOutExpo',
+
+			function () {
+				if (typeof callback === 'function') {
+					callback.call(that);
 				}
-			);
+			});
 			this.element.removeClass('collapsed');
 			this.toggleTitleIcon(true);
 			this.expanded = true;
@@ -909,16 +895,16 @@ define([
 		collapse: function (duration, callback) {
 			var that = this;
 			this.element.addClass('collapsed');
-			this.content.stop().animate(
-				{ height: 5 },
-				250,
-				'easeOutExpo',
-				function () {
-					if (typeof callback === 'function') {
-						callback.call(that);
-					}
+			this.content.stop().animate({
+				height: 5
+			},
+			250, 'easeOutExpo',
+
+			function () {
+				if (typeof callback === 'function') {
+					callback.call(that);
 				}
-			);
+			});
 			this.toggleTitleIcon(false);
 			this.expanded = false;
 			return this;
@@ -997,15 +983,7 @@ define([
 					while (l--) {
 						pathRev.push(path[l]);
 					}
-					content.push(
-						'<div class="aloha-sidebar-panel-parent">'
-							+ '<div class="aloha-sidebar-panel-parent-path">'
-							+ pathRev.join('')
-							+ '</div>'
-							+ '<div class="aloha-sidebar-panel-parent-content'
-							+ 'aloha-sidebar-opened">'
-							+ ((typeof renderer === 'function') ? renderer(el) : '----') + '</div>' + '</div>'
-					);
+					content.push('<div class="aloha-sidebar-panel-parent">' + '<div class="aloha-sidebar-panel-parent-path">' + pathRev.join('') + '</div>' + '<div class="aloha-sidebar-panel-parent-content' + 'aloha-sidebar-opened">' + ((typeof renderer === 'function') ? renderer(el) : '----') + '</div>' + '</div>');
 				}
 				el = el.parent();
 			}

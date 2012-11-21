@@ -13,31 +13,31 @@
  * 2 - all css rules should have a .aloha context class, and the common
  *     parent provides this class.
  */
-define([
-	'aloha',
-	'jquery',
-	'util/class'
-], function(
-	Aloha,
-	$,
-	Class
-) {
+define(['aloha', 'jquery', 'util/class'], function (
+Aloha,
+$,
+Class) {
 	'use strict';
 
 	var id = 'aloha-ui-context',
-	    selector = '#' + id,
-	    element;
+		selector = '#' + id,
+		element;
 
 	// There is just a single context element in the page
 	element = $(selector);
 	if (!element.length) {
-		element = $('<div>', {'class': 'aloha', 'id': id});
+		element = $('<div>', {
+			'class': 'aloha',
+			'id': id
+		});
 		// In the built aloha.js, init will happend before the body has
 		// finished loading, so we have to defer appending the element.
-		$(function(){ element.appendTo('body'); });
+		$(function () {
+			element.appendTo('body');
+		});
 	}
 
-	var Context =  Class.extend({
+	var Context = Class.extend({
 		surfaces: [],
 		containers: []
 	});

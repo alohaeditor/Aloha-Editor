@@ -120,9 +120,9 @@ define([], function () {
 				result = native_method.call(obj, filterFunc, that);
 			} else {
 				var other = [],
-				    v,
-				    i,
-				    n;
+					v,
+					i,
+					n;
 				for (i = 0, n = obj.length; i < n; i++) {
 					if (undefined !== obj[i] && filterFunc.call(that, v = obj[i], i, obj)) {
 						other.push(v);

@@ -201,7 +201,7 @@
 	right: 0.4em;
 	width: 20px;
 	height: 10px;
-	background: url('../../../../img/pin.png') no-repeat;
+	background: url(../../../../img/pin.png) no-repeat;
 	cursor: pointer;
 }
 .aloha .aloha-ui-toolbar .aloha-ui-pin-down {
@@ -439,7 +439,7 @@
 
 .aloha .ui-state-default .aloha-large-icon {
     /* TODO merge with icons image file */
-	background-image: url("../img/format-block.png");
+	background-image: url(../img/format-block.png);
 	width: 54px;
 	height: 44px;
 	/* TODO doesn't work without important */
@@ -542,7 +542,7 @@
 .aloha .aloha-multisplit .aloha-ui-multisplit-fullwidth {
 	display: block;
 	width: 100%;
-	background: #f0f0f0 url('../img/removeformat.png') no-repeat 6px 3px;
+	background: #f0f0f0 url(../img/removeformat.png) no-repeat 6px 3px;
 	border: 1px solid #bbb;
 	padding-left: 18px;
 	text-align: left;

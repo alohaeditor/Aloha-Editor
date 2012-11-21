@@ -24,25 +24,15 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'aloha/plugin',
-	'jquery',
-	'ui/ui',
-	'ui/toggleButton',
-	'formatlesspaste/formatlesshandler',
-	'aloha/contenthandlermanager',
-	'i18n!formatlesspaste/nls/i18n'
-], function (
-	Aloha,
-	Plugin,
-	$,
-	Ui,
-	ToggleButton,
-	FormatlessPasteHandler,
-	ContentHandlerManager,
-	i18n
-) {
+define(['aloha/core', 'aloha/plugin', 'jquery', 'ui/ui', 'ui/toggleButton', 'formatlesspaste/formatlesshandler', 'aloha/contenthandlermanager', 'i18n!formatlesspaste/nls/i18n'], function (
+Aloha,
+Plugin,
+$,
+Ui,
+ToggleButton,
+FormatlessPasteHandler,
+ContentHandlerManager,
+i18n) {
 	'use strict';
 
 	/**
@@ -65,8 +55,7 @@ define([
 	function parseConfiguration(config) {
 		var parsed = {};
 		if (typeof config.formatlessPasteOption !== 'undefined') {
-			parsed.formatlessPasteOption =
-					normalizeToBoolean(config.formatlessPasteOption);
+			parsed.formatlessPasteOption = normalizeToBoolean(config.formatlessPasteOption);
 		}
 		if (typeof config.strippedElements !== 'undefined') {
 			parsed.strippedElements = config.strippedElements;
@@ -85,17 +74,15 @@ define([
 		ContentHandlerManager.register('formatless', FormatlessPasteHandler);
 		FormatlessPasteHandler.strippedElements = plugin.strippedElements;
 
-		plugin._toggleFormatlessPasteButton =
-			Ui.adopt('toggleFormatlessPaste', ToggleButton, {
-				tooltip : i18n.t('button.formatlessPaste.tooltip'),
-				icon    : 'aloha-icon aloha-icon-formatless-paste',
-				scope   : 'Aloha.continuoustext',
-				click   : function () {
-					// Toggle the value of allowFormatless
-					FormatlessPasteHandler.enabled =
-						!FormatlessPasteHandler.enabled;
-				}
-			});
+		plugin._toggleFormatlessPasteButton = Ui.adopt('toggleFormatlessPaste', ToggleButton, {
+			tooltip: i18n.t('button.formatlessPaste.tooltip'),
+			icon: 'aloha-icon aloha-icon-formatless-paste',
+			scope: 'Aloha.continuoustext',
+			click: function () {
+				// Toggle the value of allowFormatless
+				FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
+			}
+		});
 
 		plugin._toggleFormatlessPasteButton.show(plugin.button);
 
@@ -168,33 +155,7 @@ define([
 		 *
 		 * @type {Array.<string>}
 		 */
-		strippedElements: ['a',
-		                   'abbr',
-		                   'b',
-		                   'bdi',
-		                   'bdo',
-		                   'cite',
-		                   'code',
-		                   'del',
-		                   'dfn',
-		                   'em',
-		                   'i',
-		                   'ins',
-		                   'kbd',
-		                   'mark',
-		                   'q',
-		                   'rp',
-		                   'rt',
-		                   'ruby',
-		                   's',
-		                   'samp',
-		                   'small',
-		                   'strong',
-		                   'sub',
-		                   'sup',
-		                   'time',
-		                   'u',
-		                   'var'],
+		strippedElements: ['a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'code', 'del', 'dfn', 'em', 'i', 'ins', 'kbd', 'mark', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'strong', 'sub', 'sup', 'time', 'u', 'var'],
 
 		/**
 		 * Initializes formatless copying and pasting.

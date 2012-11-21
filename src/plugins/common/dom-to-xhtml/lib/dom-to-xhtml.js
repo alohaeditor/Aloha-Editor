@@ -27,22 +27,15 @@
 /**
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
-define([
-	'jquery',
-	'util/dom2',
-	'util/misc',
-	'util/browser',
-	'aloha/ephemera',
-	'aloha/console'
-],
-function(
-	$,
-	Dom,
-	Misc,
-	Browser,
-	Ephemera,
-	console
-) {
+define(['jquery', 'util/dom2', 'util/misc', 'util/browser', 'aloha/ephemera', 'aloha/console'],
+
+function (
+$,
+Dom,
+Misc,
+Browser,
+Ephemera,
+console) {
 	"use strict";
 
 	/**
@@ -169,8 +162,8 @@ function(
 		}
 		for (i = 0, len = attrs.length; i < len; i++) {
 			// The XHTML spec says attributes are lowercase
-			var attr  = attrs[i];
-			var name  = attr[0].toLowerCase();
+			var attr = attrs[i];
+			var name = attr[0].toLowerCase();
 			var value = attr[1];
 
 			if (ephemera && Ephemera.isAttrEphemeral(element, name, ephemera.attrMap || {}, ephemera.attrRxs || {})) {
@@ -285,7 +278,7 @@ function(
 			xhtml.push('<' + elementName + makeAttrString(element, ephemera) + '/>');
 		} else {
 			xhtml.push('<' + elementName + makeAttrString(element, ephemera) + '>');
-			child = serializeChildren(element, child, unrecognized,  ephemera, xhtml);
+			child = serializeChildren(element, child, unrecognized, ephemera, xhtml);
 			xhtml.push('</' + elementName + '>');
 		}
 		return child;
@@ -313,13 +306,10 @@ function(
 		} else if (8 === node.nodeType) {
 			xhtml.push('<' + '!--' + node.nodeValue + '-->');
 		} else {
-			console.warn('Unknown node type encountered during serialization, ignoring it:'
-						 + ' type=' + node.nodeType
-						 + ' name=' + node.nodeName
-						 + ' value=' + node.nodeValue);
+			console.warn('Unknown node type encountered during serialization, ignoring it:' + ' type=' + node.nodeType + ' name=' + node.nodeName + ' value=' + node.nodeValue);
 		}
 	}
-	
+
 	return {
 		/**
 		 * Serializes a number of DOM nodes in an array-like object to an XHTML string.
@@ -337,7 +327,7 @@ function(
 		 *        The result may look like an XML fragment with multiple top-level elements and text nodes.
 		 * @see nodeToXhtml()
 		 */
-		contentsToXhtml: function(element, ephemera) {
+		contentsToXhtml: function (element, ephemera) {
 			var xhtml = [];
 			serializeChildren(element, element.firstChild, false, ephemera, xhtml);
 			return xhtml.join("");
@@ -406,7 +396,7 @@ function(
 		 * @return
 		 *        The serialized XHTML string represnting the given DOM node.
 		 */
-		nodeToXhtml: function(node, ephemera) {
+		nodeToXhtml: function (node, ephemera) {
 			var xhtml = [];
 			serialize(node, ephemera, xhtml);
 			return xhtml.join("");

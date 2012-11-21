@@ -1,19 +1,14 @@
 /*global define:true */
 /*!
-* Aloha Editor
-* Author & Copyright (c) 2010-2012 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-define([
-	'aloha',
-	'jquery',
-	'aloha/contenthandlermanager'
-], function (
-	Aloha,
-	jQuery,
-	ContentHandlerManager
-) {
+ * Aloha Editor
+ * Author & Copyright (c) 2010-2012 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
+define(['aloha', 'jquery', 'aloha/contenthandlermanager'], function (
+Aloha,
+jQuery,
+ContentHandlerManager) {
 	'use strict';
 
 	var IS_BLOCK = {
@@ -48,10 +43,7 @@ define([
 	 */
 	var needsEndBr = function (block) {
 		return (
-			IS_BLOCK[block.nodeName]
-			&&
-			!(block.lastChild && IS_BR[block.lastChild.nodeName])
-		);
+		IS_BLOCK[block.nodeName] && !(block.lastChild && IS_BR[block.lastChild.nodeName]));
 	};
 
 	/**
@@ -61,8 +53,7 @@ define([
 		var $element = jQuery(element);
 
 		// Remove empty blocklevel elements which are invisible
-		$element.filter('h1:empty,h2:empty,h3:empty,h4:empty,h5:empty,h6:empty,'
-			+ 'p:empty,pre:empty,blockquote:empty').remove();
+		$element.filter('h1:empty,h2:empty,h3:empty,h4:empty,h5:empty,h6:empty,' + 'p:empty,pre:empty,blockquote:empty').remove();
 
 		if (!jQuery.browser.msie) {
 			$element.filter('li').each(function () {
@@ -88,8 +79,7 @@ define([
 	 */
 	var prepareEditingIE7 = function (index, element) {
 		var $element = jQuery(element);
-		$element.filter('h1:empty,h2:empty,h3:empty,h4:empty,h5:empty,h6:empty,'
-			+ 'p:empty,pre:empty,blockquote:empty').append('\u200b');
+		$element.filter('h1:empty,h2:empty,h3:empty,h4:empty,h5:empty,h6:empty,' + 'p:empty,pre:empty,blockquote:empty').append('\u200b');
 		$element.children(':not(.aloha-block)').each(prepareEditingIE7);
 	};
 

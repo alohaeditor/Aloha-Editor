@@ -1,0 +1,109 @@
+h2. The Drag and Drop files Plugin
+
+The Drag and drop files plugin allows a file of any type to be dropped on the page and handled with aloha.
+
+It can automatically insert image to an editable if used with the image Plugin.
+
+
+endprologue.
+
+h4. Configuration settings
+
+Here are the default configuration values.
+Each can be overriden.
+
+<javascript>
+	Aloha.settings.plugins.draganddropfiles: {
+					upload : { 
+						'uploader_instance':new DropFilesRepository( 'draganddropfilesrepository', 'Dropped Files' ),
+						'config': {
+					
+							/* what to do with the server response, must return the new file location,
+								if server return an error, throws an exception (throw "error") 
+								the resp parameter is the body of the server answer
+							*/
+							'callback': function(resp) { return resp;}, 
+							'method':'POST',
+							'url': "",
+							'accept': 'application/json',
+							'file_name_param':"filename", // sets the file name param for html4 post
+							
+							'file_name_header':'X-File-Name', // Header name for an HTML5 style upload
+							//Add extra header parameters
+							'extra_headers':{},
+							//Extra parameters for post data
+							'extra_post_data': {}, 
+							//set it to true for sending old-style html4 POST
+							'send_multipart_form': false, 
+							'image': {
+								'max_width': 800,
+								'max_height': 800
+							},
+							//'additional_params': {"location":""},
+							'www_encoded': false
+						} // config
+					} // upload
+				};
+</javascript>
+
+h4. Events of the DragAndDrop plugin
+
+The plugin developper may want to handle specific actions when file is dropped.
+
+* 'aloha-file-upload-prepared' - a file is ready to be uploaded, attachs the same file object given in parameter of addFileUpload
+
+* 'aloha-allfiles-upload-prepared' all the dropped files are ready
+
+* 'aloha-drop-files-in-editable' - files have been dropped into an editable
+
+* 'aloha-drop-files-in-page' - Files have been dropped onto the page but outside any editable
+
+* 'aloha-upload-success' - A file has been uploaded, carries an object containing attributes file the unique upload id (see below)
+and src : the url where uploaded file can be found extracted from server response using callback given in config
+
+* 'aloha-upload-failure'
+
+* 'aloha-upload-progress'
+
+* 'aloha-upload-error'
+
+* 'aloha-upload-abort'
+
+h4. The uploader instance
+
+The provided uploader instance implements as well a repository of uploaded file. It allows integration with exporer features like the imagebrowser plugin.
+
+If you choose to implement your own uploader, your object MUST implement at least these two functions :
+
+<javascript>
+	{
+		/**
+		 * Adds a file to the uploader, this may not start immediately the upload.
+		 * If it starts immediately the upload, it shoud be asynchronous.
+		 * TargetId is the id of the element on the page where the file was dropped.
+		 * It can ben sent to the server by your implementation.
+		 * file parameter is an object with the following informations :
+		 *     {
+		 *           name: "TheFile.name",
+		 *           type: "mime/type",
+		 *           fileSize: fileSize,
+		 *           fileName: "TheFile.fileName", // due to browser diffs, this info appears twice
+		 *           data: fileData // FileReader data readAsDataURL (base64 encoded)
+		 *       }
+		 * It must return an object containing :
+		 * {
+		 *   file: file, //the object given as parameter
+		 *   id: id // a unique id for the file
+		 * }
+		 */
+		addFileUpload: function( file, targetid ) {},
+		/**
+		 * Starts uploading of the given file, gives the default config or the editable config if applicable
+		 * This is asynchronous.
+		 */
+		startFileUpload: function( fileId, config ) {}
+	}										
+</javascript>
+
+and your uploader MUST as well throw the 'aloha-upload-success', 'aloha-upload-progress', 'aloha-upload-failure' 
+

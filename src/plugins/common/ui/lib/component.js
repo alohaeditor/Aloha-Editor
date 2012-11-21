@@ -1,12 +1,7 @@
-define([
-	'aloha/core',
-	'jquery',
-	'util/class'
-], function (
-	Aloha,
-	$,
-	Class
-) {
+define(['aloha/core', 'jquery', 'util/class'], function (
+Aloha,
+$,
+Class) {
 	'use strict';
 
 	var idCounter = 0;

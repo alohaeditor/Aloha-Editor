@@ -26,7 +26,8 @@
  */
 define(
 ['aloha', 'jquery', 'aloha/contenthandlermanager'],
-function( Aloha, jQuery, ContentHandlerManager ) {
+
+function (Aloha, jQuery, ContentHandlerManager) {
 	"use strict";
 
 	var WordContentHandler = ContentHandlerManager.createHandler({
@@ -34,12 +35,12 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 		 * Handle the pasting. Try to detect content pasted from word and transform to clean html
 		 * @param content
 		 */
-		handleContent: function( content ) {
+		handleContent: function (content) {
 
-			if ( typeof content === 'string' ){
-				content = jQuery( '<div>' + content + '</div>' );
-			} else if ( content instanceof jQuery ) {
-				content = jQuery( '<div>' ).append(content);
+			if (typeof content === 'string') {
+				content = jQuery('<div>' + content + '</div>');
+			} else if (content instanceof jQuery) {
+				content = jQuery('<div>').append(content);
 			}
 
 			if (this.detectWordContent(content)) {
@@ -58,7 +59,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			var wordDetected = false;
 			// check every element which was pasted.
 
-			content.find('*').each(function() {
+			content.find('*').each(function () {
 				// get the element style
 				var style = jQuery(this).attr('style'),
 					clazz;
@@ -89,7 +90,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 		 * @param listSpan
 		 * @return true for ordered lists, false for unordered
 		 */
-		isOrderedList: function(listSpan) {
+		isOrderedList: function (listSpan) {
 			// when the span has fontFamily "Wingdings" it is an unordered list
 			if (listSpan.css('fontFamily') == 'Wingdings' || listSpan.css('fontFamily') == 'Symbol') {
 				return false;
@@ -114,7 +115,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			// first step is to find all paragraphs which will be converted into list elements and mark them by adding the class 'aloha-list-element'
 			detectionFilter = 'p.MsoListParagraphCxSpFirst,p.MsoListParagraphCxSpMiddle,p.MsoListParagraphCxSpLast,p.MsoListParagraph,p span';
 			paragraphs = content.find(detectionFilter);
-			paragraphs.each(function() {
+			paragraphs.each(function () {
 				var jqElem = jQuery(this),
 					fontFamily = jqElem.css('font-family') || '',
 					msoList = jqElem.css('mso-list') || '',
@@ -137,11 +138,11 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			// now we search for paragraphs with three levels of nested spans, where the innermost span contains nothing but &nbsp;
 			detectionFilter = 'p span span span';
 			spans = content.find(detectionFilter);
-			spans.each(function() {
+			spans.each(function () {
 				var jqElem = jQuery(this),
-				    innerText = jQuery.trim(jqElem.text()).replace(/&nbsp;/g, ''),
+					innerText = jQuery.trim(jqElem.text()).replace(/&nbsp;/g, ''),
 					outerText;
-				
+
 				if (innerText.length === 0) {
 					// check whether the outermost of the three spans contains nothing more than numbering
 					outerText = jQuery.trim(jqElem.parent().parent().text()).replace(/&nbsp;/g, '');
@@ -169,13 +170,13 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			paragraphs = content.find(detectionFilter);
 
 			if (paragraphs.length > 0) {
-				paragraphs.each(function() {
+				paragraphs.each(function () {
 					var jqElem = jQuery(this),
 						jqNewLi, jqList, ordered, firstSpan, following, lists, margin, nestLevel;
 
 					jqElem.removeClass(listElementClass);
 					// first remove all font tags
-					jqElem.find('font').each(function() {
+					jqElem.find('font').each(function () {
 						jQuery(this).contents().unwrap();
 					});
 
@@ -216,17 +217,17 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 					jqElem.replaceWith(jqList);
 
 					// now proceed all following list elements
-					following.each(function() {
+					following.each(function () {
 						var jqElem = jQuery(this),
 							newMargin, jqNewList;
-						
+
 						if (jqElem.is('font')) {
 							//Fix for IE9
 							return;
 						}
 
 						// remove all font tags
-						jqElem.find('font').each(function() {
+						jqElem.find('font').each(function () {
 							jQuery(this).contents().unwrap();
 						});
 						// check the new margin
@@ -235,7 +236,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 						if (isNaN(newMargin)) {
 							newMargin = 0;
 						}
-						
+
 						// get the first span
 						firstSpan = jQuery(jqElem.find('span.' + bulletClass));
 						if (firstSpan.length === 0) {
@@ -260,7 +261,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 							nestLevel.push(newMargin);
 							margin = newMargin;
 						} else if (newMargin < margin && nestLevel.length > 0) {
-							while(nestLevel.length > 0 && nestLevel[nestLevel.length - 1] > newMargin) {
+							while (nestLevel.length > 0 && nestLevel[nestLevel.length - 1] > newMargin) {
 								nestLevel.pop();
 								lists.pop();
 							}
@@ -286,93 +287,93 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 		 * Transform Title and Subtitle pasted from word
 		 * @param content
 		 */
-		transformTitles: function(content) {
-			content.find('p.MsoTitle').each(function() {
+		transformTitles: function (content) {
+			content.find('p.MsoTitle').each(function () {
 				// titles will be transformed to h1
 				Aloha.Markup.transformDomObject(jQuery(this), 'h1');
 			});
-			content.find('p.MsoSubtitle').each(function() {
+			content.find('p.MsoSubtitle').each(function () {
 				// sub titles will be transformed to h2
 				Aloha.Markup.transformDomObject(jQuery(this), 'h2');
 			});
 		},
-		
+
 		/**
 		 * Cleanup MS Word HTML
 		 * @param content
 		 */
-		cleanHtml: function ( content ) {
-			
+		cleanHtml: function (content) {
+
 			// unwrap empty tags
 			// do not remove them here because of eg. spaces wrapped in spans which are needed
 			// we don't want to unwrap empty table cells
-			content.find('*').filter( function() {
+			content.find('*').filter(function () {
 				return jQuery.trim(jQuery(this).text()) == '' && !jQuery(this).is("td");
 			}).contents().unwrap();
-			
+
 			// unwrap all spans
 			content.find('span').contents().unwrap();
-			
+
 			// when href starts with #, it's the link to an anchor. remove it.
-			content.find('a').each(function() {
-				if ( jQuery(this).attr('href') && jQuery.trim(jQuery(this).attr('href')).match(/^#(.*)$/) ) {
+			content.find('a').each(function () {
+				if (jQuery(this).attr('href') && jQuery.trim(jQuery(this).attr('href')).match(/^#(.*)$/)) {
 					jQuery(this).contents().unwrap();
 				}
 			});
-			
+
 			// eg. footnotes are wrapped in divs. unwrap them.
 			content.find('div').contents().unwrap();
-			
+
 			// remove empty tags (we don't want to remove empty table cells)
-			content.find('*').filter( function() {
-			    return jQuery.trim(jQuery(this).text()) == '' && !jQuery(this).is("td");
+			content.find('*').filter(function () {
+				return jQuery.trim(jQuery(this).text()) == '' && !jQuery(this).is("td");
 			}).remove();
-			
+
 		},
-		
+
 		/**
 		 * Remove paragraph numbering from TOC feature
 		 * @param content
-		*/
-		removeParagraphNumbering: function( content ) {
+		 */
+		removeParagraphNumbering: function (content) {
 			var detectionFilter = 'h1,h2,h3,h4,h5,h6',
 				paragraphs = content.find(detectionFilter);
-			
+
 			if (paragraphs.length > 0) {
-				paragraphs.each(function() {
+				paragraphs.each(function () {
 					var jqElem = jQuery(this),
 						spans = jqElem.find('span'),
 						links = jqElem.find('a');
-				
+
 					// remove TOC numbering
-					spans.each(function() {
-						if ( jQuery.trim(jQuery(this).text()).match(/^([\.\(]?[\d\D][\.\(]?){1,4}$/) ) {
+					spans.each(function () {
+						if (jQuery.trim(jQuery(this).text()).match(/^([\.\(]?[\d\D][\.\(]?){1,4}$/)) {
 							jQuery(this).remove();
 						}
 					})
-				
+
 					// remove TOC anchor links
-					links.each(function() {
+					links.each(function () {
 						// no href, so it's an anchor
-						if ( typeof jQuery(this).attr('href') === 'undefined' ) {
+						if (typeof jQuery(this).attr('href') === 'undefined') {
 							jQuery(this).contents().unwrap();
 						}
 					});
-				
+
 				});
 			}
 		},
 
-		
+
 		/**
 		 * Transform TOC
 		 * @param content
-		*/
-		transformToc: function( content ) {
+		 */
+		transformToc: function (content) {
 			var detectionFilter = '[class*=MsoToc]',
 				paragraphs = content.find(detectionFilter);
 
-			paragraphs.each(function() {
+			paragraphs.each(function () {
 				var jqElem = jQuery(this),
 					spans = jqElem.find('span'),
 					links = jqElem.find('a');
@@ -380,15 +381,15 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 				// a table of contents entry looks like
 				// 1. Title text ... 5
 				// we get rid of the "... 5" part which repesents the page number
-				spans.each(function() {
-					if ( jQuery(this).attr('style') && jQuery(this).attr('style').search('mso-hide') > -1 ) {
+				spans.each(function () {
+					if (jQuery(this).attr('style') && jQuery(this).attr('style').search('mso-hide') > -1) {
 						jQuery(this).remove();
 					}
 					jQuery(this).contents().unwrap();
 				});
 
 				// remove the anchor link of the toc item
-				links.each(function() {
+				links.each(function () {
 					jQuery(this).contents().unwrap();
 				});
 			});
@@ -398,23 +399,23 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 		 * This is the main transformation method
 		 * @param content
 		 */
-		transformWordContent: function( content ) {
+		transformWordContent: function (content) {
 			// transform table of contents
-			this.transformToc( content );
+			this.transformToc(content);
 
 			// remove paragraph numbering
-			this.removeParagraphNumbering( content );
+			this.removeParagraphNumbering(content);
 
 			// transform lists
-			this.transformListsFromWord( content );
+			this.transformListsFromWord(content);
 
 			// transform titles
-			this.transformTitles( content );
+			this.transformTitles(content);
 
 			// clean html
-			this.cleanHtml( content );
+			this.cleanHtml(content);
 		}
 	});
-	
+
 	return WordContentHandler;
 });

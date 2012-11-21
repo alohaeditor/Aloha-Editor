@@ -1,0 +1,238 @@
+<!doctype html>
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+<head>
+	<title>The Aloha Editor Boilerplate - Just another demo page</title>
+
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="description" content="The Aloha Editor Boilerplate - Just another demo page">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+	<!--
+		Load the CSS styles for Aloha Editor
+	-->
+	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
+
+	<style>
+		/* Basic Styling for Sidebar */
+		.aloha-sidebar {
+		  position: fixed;
+		  right: 0;
+		  top: 0;
+		  width: 250px;
+		  height: 100%;
+		  border: 1px solid #000;
+		  border-width: 0 0 0 1px;
+		  background-color: #fff;
+		  padding: 10px;
+		}
+
+		.aloha-panel {
+		  border: 1px solid #000;
+		}
+
+		.aloha-panel-title {
+		  background-color: #000;
+		  color: #fff;
+		  padding: 5px 10px;
+		}
+
+		.aloha-panel-content {
+		 padding: 5px 10px;
+		}
+	</style>
+
+	<!--
+		All configuration for Aloha Editor for this demo is stored in js/aloha-config.js
+		It can also be placed inline here before loading Aloha Editor itself.
+	-->
+	<script src="js/aloha-config-plugins.js"></script>
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
+    <script>
+	  // Passing jQuery into Aloha explicitly is not necessary since
+	  // newer versions of jQuery will make a call to define which will
+	  // be picked up in aloha.js
+	  //Aloha.settings.jQuery = $.noConflict(true);
+    </script>
+	<!--
+		Load the Aloha Editor library.
+		The plugin list could also be added to the configuration.
+	-->
+	<script src="../../lib/aloha.js"
+	        data-aloha-plugins="
+	                            common/abbr,
+	                            common/align,
+	                            common/block,
+	                            common/characterpicker,
+	                            common/commands,
+	                            common/contenthandler,
+	                            common/dom-to-xhtml,
+	                            common/format,
+	                            common/highlighteditables,
+	                            common/horizontalruler,
+	                            common/image,
+	                            common/link,
+	                            common/list,
+	                            common/paste,
+	                            common/table,
+	                            common/ui,
+	                            common/undo,
+
+	                            extra/attributes,
+	                            extra/browser,
+	                            extra/captioned-image,
+	                            extra/cite,
+	                            extra/comments,
+	                            extra/draganddropfiles,
+	                            extra/flag-icons,
+	                            extra/formatlesspaste,
+	                            extra/googletranslate,
+	                            extra/headerids,
+	                            extra/hints,
+	                            extra/imagebrowser,
+	                            extra/linkbrowser,
+	                            extra/linkchecker,
+	                            extra/listenforcer,
+	                            extra/metaview,
+	                            extra/microdata,
+	                            extra/numerated-headers,
+	                            extra/profiler,
+	                            extra/proxy,
+	                            extra/ribbon,
+	                            extra/sourceview,
+	                            extra/speak,
+	                            extra/toc,
+	                            extra/wai-lang,
+	                            extra/zemanta
+	"></script>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<div id="whole-site">
+		<div id="aloha-loading"><span>Loading Aloha Editor</span> <img src="img/loading1.gif" title="Loading Aloha Editor ..."/></div>
+		<div id="container">
+			<div id="header">
+				<a id="editor-logo" href="#"><img src="img/aloha-editor-logo.png" alt="Aloha Editor" /></a>
+				<p id="top-text">The Aloha Boilerplate.</p>
+			</div>
+			<div id="navigation">
+				<ul>
+					<li><a href="#">formatting</a></li>
+					<li><a href="#">images</a></li>
+					<li><a href="#">tables</a></li>
+					<li><a href="#">boxes</a></li>
+					<li><a href="#">comments</a></li>
+				</ul>
+			</div>
+			<div id="main" role="main">
+				<div id="content">
+					<p>Here you'll find some <b>example content</b> to show Aloha's <i>possibilities</i> regarding any kind of formatting.</p>
+					<h1>Headline 1</h1>
+					<h2>Headline 2</h2>
+					<h3>Headline 3</h3>
+					<h4>Headline 4</h4>
+					<h5>Headline 5</h5>
+					<h6>Headline 6</h6>
+					<p>Here we test, a <a title="" href="http://aloha-editor.org">link</a> and other formattings such as 
+					<b>bold</b>, <i>italic</i> or <del>deleted text</del>. You may also use formattings for maths 2
+					<sup>2</sup> = 4 or chemical formulas like CO<sub>2</sub>.
+					Or you may edit tables as you do in office products.</p>
+					<table summary="demo content for aloha tables">
+						<tbody>
+							<tr><td >This</td><td >is</td><td>a</td><td>demo</td></tr>
+							<tr><td>table</td><td colspan=2 rowspan=2>with</td><td>an</td></tr>
+							<tr><td>awesome</td><td>column</td></tr>
+							<tr><td>and</td><td>row</td><td>span</td><td>!</td></tr>
+						</tbody>
+						<caption>describe the table</caption>
+					</table>
+					<p>To describe code you would use fixed style <i>pre</i></p>
+					<pre>
+&lt;script&gt;
+	// make content editable
+	$('#content').aloha();
+	$('.top-text').aloha();
+&lt;/script&gt;
+					</pre>
+					<ul>
+						<li>List entry
+							<ul>
+								<li>List entry</li>
+								<li>List entry
+									<ul>
+										<li>List entry</li>
+										<li>List entry</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li>List entry</li>
+						<li>List entry</li>
+						<li>List entry</li>
+					</ul>
+					<p><br/></p>
+					<ol>
+						<li>List entry
+							<ol>
+								<li>List entry</li>
+								<li>List entry
+									<ol>
+										<li>List entry</li>
+										<li>List entry</li>
+									</ol>
+								</li>
+							</ol>
+						</li>
+						<li>List entry</li>
+						<li>List entry</li>
+						<li>List entry</li>
+					</ol>
+					<p>For better sematical understanding and <abbr title="Web Accessibility Initiative">WAI</abbr> compatibility you can describe abbreviations
+					like <abbr title="Hyper Text Markup Language">HTML</abbr> and 
+					<abbr title="Cascading Style Sheets">CSS</abbr>.
+					</p>
+					<p><img class="inline-image" src="http://aloha-editor.org/logo/Aloha%20Editor%20HTML5%20technology%20128.png" alt="Aloha Editor" title="Aloha Editor" /></p>
+					<p>More Demos: <a href="http://aloha-editor.org/demos/" title="Aloha Editor Demos"> http://aloha-editor.org/demos/</a></p>
+					<pre>foo bar</pre>
+				</div>
+				
+				<div id="references">
+					<img src="http://aloha-editor.org/logo/Aloha%20Editor%20logo%20text%20128.png" alt="Aloha Editor" title="Aloha Editor" /><br />
+					&middot; Ask a <a href="http://getsatisfaction.com/aloha_editor">question</a><br />
+					&middot; Read the <a href="http://aloha-editor.org/guides">guides</a><br />
+					&middot; Report an <a href="https://github.com/alohaeditor/Aloha-Editor/issues">issue</a><br />
+					<br />
+					Aloha Editor <a href="http://aloha-editor.org">website</a><br /><br />
+					
+					<p><span id="placeholder-test"></span></p>
+				</div>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			Aloha.ready( function(){
+				var $ = Aloha.jQuery;
+				// register all editable areas
+				$('#top-text').aloha();
+				$('#content').aloha();
+				$('.area-content').aloha();
+				$('#placeholder-test').aloha();
+				// hide loading div
+				$('#aloha-loading').hide();
+				$('#aloha-loading span').html('Loading Plugins');
+			});
+		</script>
+	</div>
+	<!--[if lt IE 7 ]>
+	<script src="js/libs/dd_belatedpng.js"></script>
+	<script> DD_belatedPNG.fix('img, .png_bg');</script>
+	<![endif]-->
+</body>
+</html>

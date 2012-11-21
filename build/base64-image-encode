@@ -1,0 +1,35 @@
+#!/usr/bin/php
+<?php
+//
+// usage: 
+// navigate into the ./build/ directory und run the following command:
+//
+// php base64-image-encode > ../src/css/aloha.img-encode.css
+//
+// This will generate a CSS file named aloha.img-encode.css with the images encoded as base64 string
+// If there are changes / images which are not available on the CDN please adjust the $url parameter.
+//
+
+if (!isCli()) {
+	die('This is a command line utility');
+}
+
+// select your local or a public server
+//$url = '/Users/Developer/Projects/Aloha-Editor/src/';
+//$url = 'http://aloha.local/aloha-editor/';
+$url = 'http://cdn.aloha-editor.org/latest/';
+
+$css_file = 'aloha.css';
+
+$css_orig = file_get_contents($url.'css/'.$css_file);
+$css_base64 = str_replace('url(../', 'url('.$url.'', $css_orig);
+$css_base64 = preg_replace("#url\(((\w+://)?(\w+)?([a-zA-Z0-9\-/?=_&%:\.]+)\.(png|gif|jpg))\)#e",
+							"'url(data:image/\\5;base64,'.base64_encode(@file_get_contents('\\1')).')'",
+							$css_base64);
+
+echo $css_base64;
+
+function isCli() {
+	return php_sapi_name()==="cli";
+}
+?>

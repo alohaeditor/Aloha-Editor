@@ -24,11 +24,8 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'jquery'
-], function (
-	jQuery
-) {
+define(['jquery'], function (
+jQuery) {
 	"use strict";
 
 	var $ = jQuery;

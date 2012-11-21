@@ -61,31 +61,18 @@
  *       content - similar to make clean, but for single elements to reduce
  *       overhead.
  */
-define([
-	'jquery',
-	'aloha/core',
-	'aloha/console',
-	'util/strings',
-	'util/trees',
-	'util/arrays',
-	'util/maps',
-	'util/dom2',
-	'util/functions',
-	'util/misc',
-	'PubSub'
-], function (
-	$,
-	Aloha,
-	console,
-	Strings,
-	Trees,
-	Arrays,
-	Maps,
-	Dom,
-	Functions,
-	Misc,
-	PubSub
-) {
+define(['jquery', 'aloha/core', 'aloha/console', 'util/strings', 'util/trees', 'util/arrays', 'util/maps', 'util/dom2', 'util/functions', 'util/misc', 'PubSub'], function (
+$,
+Aloha,
+console,
+Strings,
+Trees,
+Arrays,
+Maps,
+Dom,
+Functions,
+Misc,
+PubSub) {
 	'use strict';
 
 	var ephemeraMap = {
@@ -360,9 +347,9 @@ define([
 	function pruneEmapAttrs(elem, emap) {
 		var $elem = null,
 			attrs = Dom.attrNames(elem),
-		    name,
-		    i,
-		    len;
+			name,
+			i,
+			len;
 		for (i = 0, len = attrs.length; i < len; i++) {
 			name = attrs[i];
 			if (isAttrEphemeral(elem, name, emap.attrMap, emap.attrRxs)) {

@@ -3,6 +3,8 @@ define({
 		"button.addlink.tooltip": "Insert Link",
 		"button.removelink.tooltip": "Remove Link",
 		"newlink.defaulttext": "New Link",
+		"padding.decrease": "Decrease padding",
+		"padding.increase": "Increase padding",
 		"floatingmenu.tab.link": "Link",
 		"link.target.self": "Self",
 		"link.target.blank": "Blank",
