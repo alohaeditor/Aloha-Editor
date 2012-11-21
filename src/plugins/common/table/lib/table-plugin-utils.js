@@ -1,5 +1,6 @@
 define(
 ['jquery'],
+
 function ($) {
 	var Utils = {
 		/**
@@ -12,10 +13,9 @@ function ($) {
 		 * @param colIdx the index in rows[row].cells of the cell to get the grid column index of
 		 * @return the grid column index of the cell at the given rowIdx and colIdx, or null
 		 *   if the given rowIdx and colIdx coordinates point to a cell outside of the table.
-		 */
-		'cellIndexToGridColumn': function (rows, rowIdx, colIdx) {
+		 */'cellIndexToGridColumn': function (rows, rowIdx, colIdx) {
 			var gridColumn = null;
-			Utils.walkCells(rows, function(ri, ci, walkedGridColumn, rowspan, colspan) {
+			Utils.walkCells(rows, function (ri, ci, walkedGridColumn, rowspan, colspan) {
 				if (ri === rowIdx && ci === colIdx) {
 					gridColumn = walkedGridColumn;
 					return false;
@@ -34,8 +34,7 @@ function ($) {
 		 *   o rowspan the rowspan attribute of the table-cell (as a number)
 		 *   returning false from the callback will terminate the walk early.
 		 * @return void
-		 */
-		'walkCells': function (rows, callback) {
+		 */'walkCells': function (rows, callback) {
 			var adjust = [];
 			for (var ri = 0; ri < rows.length; ri++) {
 				var cells = rows[ri].cells;
@@ -44,7 +43,7 @@ function ($) {
 					var cell = cells[ci];
 					var colspan = Utils.colspan(cell);
 					var rowspan = Utils.rowspan(cell);
-					
+
 					while (adjust[ci + skip]) {
 						adjust[ci + skip] -= 1;
 						skip += 1;
@@ -53,9 +52,9 @@ function ($) {
 					if (false === callback(ri, ci, ci + skip, colspan, rowspan)) {
 						return;
 					}
-					
+
 					for (var i = 0; i < colspan; i++) {
-						if (adjust[ci + skip + i] ) {
+						if (adjust[ci + skip + i]) {
 							throw "an impossible case has occurred";
 						}
 						adjust[ci + skip + i] = rowspan - 1;
@@ -87,18 +86,17 @@ function ($) {
 		 *  rowspan: the rowspan attribute of the DOM object (as a number)
 		 *  spannedX: the row offset of the grid-cell in the table-cell (0 based)
 		 *  spannedY: the column offset of the grid-cll in the table-cell (0 based)
-		 */
-		'makeGrid': function (rows) {
+		 */'makeGrid': function (rows) {
 			var grid = [];
-			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
+			Utils.walkCells(rows, function (ri, ci, gridCi, colspan, rowspan) {
 				var cell = rows[ri].cells[ci];
 				for (var spannedY = 0; spannedY < rowspan; spannedY++) {
 					grid[ri + spannedY] = grid[ri + spannedY] || [];
 					for (var spannedX = 0; spannedX < colspan; spannedX++) {
 						grid[ri + spannedY][gridCi + spannedX] = {
-							'cell'    : cell,
-							'colspan' : colspan,
-							'rowspan' : rowspan,
+							'cell': cell,
+							'colspan': colspan,
+							'rowspan': rowspan,
 							'spannedX': spannedX,
 							'spannedY': spannedY
 						};
@@ -115,8 +113,7 @@ function ($) {
 		 * contains a dom-cell.
 		 * @param cellInfo a cell in the grid returned by makeGrid()
 		 * @return whether the given grid-cell maps to a dom-cell
-		 */
-		'containsDomCell': function (cellInfo) {
+		 */'containsDomCell': function (cellInfo) {
 			return 0 === cellInfo.spannedX && 0 === cellInfo.spannedY;
 		},
 		/**
@@ -134,13 +131,12 @@ function ($) {
 		 * @param ci the column index into the grid
 		 * @return the DOM-Element either at or to the left of the grid-cell
 		 *   a the given coordinates.
-		 */
-		'leftDomCell': function (grid, ri, gridCi) {
+		 */'leftDomCell': function (grid, ri, gridCi) {
 			do {
 				var cellInfo = grid[ri][gridCi];
-				if ( 0 === cellInfo.spannedY ) {
+				if (0 === cellInfo.spannedY) {
 					return cellInfo.cell;
-				} 
+				}
 				gridCi -= cellInfo.spannedX + 1;
 			} while (gridCi >= 0);
 			return null;
@@ -155,21 +151,20 @@ function ($) {
 		 * @param cell
 		 *        the cell to split
 		 * @param createCell
- 		 *        a callback that will be invoked rowspan * colspan - 1
+		 *        a callback that will be invoked rowspan * colspan - 1
 		 *        times, and which must return a table cell (td/th) that
 		 *        will be inserted into the table
-		 */
-		'splitCell': function (cell, createCell) {
+		 */'splitCell': function (cell, createCell) {
 			var $cell = $(cell);
-			var colspan = Utils.colspan( cell );
-			var rowspan = Utils.rowspan( cell );
+			var colspan = Utils.colspan(cell);
+			var rowspan = Utils.rowspan(cell);
 
 			//catch the most common case early
 			if (1 === colspan && 1 === rowspan) {
 				return;
 			}
 
-			var $row  = $cell.parent();
+			var $row = $cell.parent();
 			var $rows = $row.parent().children();
 			var rowIdx = $row.index();
 			var colIdx = $cell.index();
@@ -181,7 +176,7 @@ function ($) {
 					if (null == leftCell) {
 						$rows.eq(rowIdx + i).prepend(createCell());
 					} else {
-						$( leftCell ).after(createCell());
+						$(leftCell).after(createCell());
 					}
 				}
 			}
@@ -194,18 +189,16 @@ function ($) {
 		 *        the DOM node for a table cell (td/th)
 		 * @return
 		 *        a numeric value indicating the number of rows the cell spans
-		 */
-		'rowspan': function (cell) {
-			return parseInt( $( cell ).attr('rowspan') ) || 1;
+		 */'rowspan': function (cell) {
+			return parseInt($(cell).attr('rowspan')) || 1;
 		},
 		/**
 		 * @param cell
 		 *        the DOM node for a table cell (td/th)
 		 * @return
 		 *        a numeric value indicating the number of columns the cell spans
-		 */
-		'colspan': function (cell) {
-			return parseInt( $( cell ).attr('colspan') ) || 1;
+		 */'colspan': function (cell) {
+			return parseInt($(cell).attr('colspan')) || 1;
 		},
 		/**
 		 * Calls the given callback with each object in the given
@@ -221,11 +214,10 @@ function ($) {
 		 *        o y the offset in the outer array (veritcal axis)
 		 *        If the callback returns a value identical to false,
 		 *        the walk will be aborted early.
-		 */
-		'walkGrid': function (grid, callback) {
-			for ( var i = 0; i < grid.length; i++ ) {
-				for ( var j = 0; j < grid[i].length; j++ ) {
-					if ( false === callback( grid[ i ][ j ], j, i ) ) {
+		 */'walkGrid': function (grid, callback) {
+			for (var i = 0; i < grid.length; i++) {
+				for (var j = 0; j < grid[i].length; j++) {
+					if (false === callback(grid[i][j], j, i)) {
 						return;
 					}
 				}
@@ -244,11 +236,10 @@ function ($) {
 		 *        A callback to invoke for each item in the given
 		 *        two-dimensional array. See walkGrid() for the
 		 *        specification of this parameter.
-		 */
-		'walkGridInsideRect': function ( grid, rect, callback ) {
-			Utils.walkGrid( grid, function ( cellInfo, x, y ) {
-				if ( y >= rect.top && y < rect.bottom && x >= rect.left && x < rect.right ) {
-					return callback( cellInfo, x, y );
+		 */'walkGridInsideRect': function (grid, rect, callback) {
+			Utils.walkGrid(grid, function (cellInfo, x, y) {
+				if (y >= rect.top && y < rect.bottom && x >= rect.left && x < rect.right) {
+					return callback(cellInfo, x, y);
 				}
 			});
 		},
@@ -259,11 +250,10 @@ function ($) {
 		 *        the array to slice null or undefined items off from
 		 * @return
 		 *        a new array with the remaining items
-		 */
-		'leftTrimArray': function ( array ) {
+		 */'leftTrimArray': function (array) {
 			for (var i = 0; i < array.length; i++) {
-				if ( null != array[i] ) {
-					return array.slice( i, array.length );
+				if (null != array[i]) {
+					return array.slice(i, array.length);
 				}
 			}
 			return [];
@@ -289,33 +279,37 @@ function ($) {
 		 *        right:  an array of the greatest horizontal offsets
 		 *        bottom: an array of the greatest vertical offsets
 		 *        left:   an array of the smallest horizontal offsets
-		 */
-		'makeContour': function ( grid, hasContour ) {
+		 */'makeContour': function (grid, hasContour) {
 			var left = [];
 			var right = [];
 			var top = [];
 			var bottom = [];
-			Utils.walkGrid( grid, function ( item, x, y ) {
-				if ( hasContour( item, x, y ) ) {
-					if ( null == left[ y ] || x < left[ y ] ) {
-						left[ y ] = x;
+			Utils.walkGrid(grid, function (item, x, y) {
+				if (hasContour(item, x, y)) {
+					if (null == left[y] || x < left[y]) {
+						left[y] = x;
 					}
-					if ( null == right[ y ] || x > right[ y ] ) {
-						right[ y ] = x;
+					if (null == right[y] || x > right[y]) {
+						right[y] = x;
 					}
-					if ( null == top[ x ] || y < top[ x ] ) {
-						top[ x ] = y;
+					if (null == top[x] || y < top[x]) {
+						top[x] = y;
 					}
-					if ( null == bottom[ x ] || y > bottom[ x ] ) {
-						bottom[ x ] = y;
+					if (null == bottom[x] || y > bottom[x]) {
+						bottom[x] = y;
 					}
 				}
 			});
-			left   = Utils.leftTrimArray(left);
-			right  = Utils.leftTrimArray(right);
-			top    = Utils.leftTrimArray(top);
+			left = Utils.leftTrimArray(left);
+			right = Utils.leftTrimArray(right);
+			top = Utils.leftTrimArray(top);
 			bottom = Utils.leftTrimArray(bottom);
-			return {'left': left, 'right': right, 'top': top, 'bottom': bottom};
+			return {
+				'left': left,
+				'right': right,
+				'top': top,
+				'bottom': bottom
+			};
 		},
 		/**
 		 * Returns the index of the first item that doesn't match the given value
@@ -327,10 +321,9 @@ function ($) {
 		 * @return
 		 *        The offset of the first item in the given array that doesn't match the given value.
 		 *        If no such item was found, -1 is returned.
-		 */
-		'indexOfAnyBut': function ( array, but ) {
-			for ( var i = 0; i < array.length; i++ ) {
-				if ( but !== array[ i ] ) {
+		 */'indexOfAnyBut': function (array, but) {
+			for (var i = 0; i < array.length; i++) {
+				if (but !== array[i]) {
 					return i;
 				}
 			}
@@ -342,10 +335,9 @@ function ($) {
 		 * @return
 		 *        true if each item in the given array has a
 		 *        difference to its neighbor of exactly 1
-		 */
-		'isConsecutive': function ( array ) {
-			for ( var i = 1; i < array.length; i++ ) {
-				if ( 1 !== Math.abs( array[ i ] - array[ i - 1 ] ) ) {
+		 */'isConsecutive': function (array) {
+			for (var i = 1; i < array.length; i++) {
+				if (1 !== Math.abs(array[i] - array[i - 1])) {
 					return false;
 				}
 			}

@@ -24,26 +24,18 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'util/class',
-	'jquery',
-	'aloha/ecma5shims',
-	'aloha/console',
-	'aloha/block-jump'
-], function (
-	Aloha,
-	Class,
-	jQuery,
-	shims,
-	console,
-	BlockJump
-) {
+define(['aloha/core', 'util/class', 'jquery', 'aloha/ecma5shims', 'aloha/console', 'aloha/block-jump'], function (
+Aloha,
+Class,
+jQuery,
+shims,
+console,
+BlockJump) {
 	"use strict";
 
 	var GENTICS = window.GENTICS;
 
-	var isOldIE = !!(jQuery.browser.msie && 9 > parseInt(jQuery.browser.version, 10));
+	var isOldIE = !! (jQuery.browser.msie && 9 > parseInt(jQuery.browser.version, 10));
 
 	function isBR(node) {
 		return 'BR' === node.nodeName;
@@ -226,15 +218,10 @@ define([
 			// an element node. Both these cases require a hack in some
 			// browsers.
 			var moveToBoundaryPositionInIE = ( // To the beginning or end of a text node?
-				(currentRange.startContainer.nodeType === 3
-				 && currentRange.startContainer === currentRange.endContainer
-				 && currentRange.startContainer.nodeValue !== ""
-				 && (isGoingLeft ? currentRange.startOffset === 1 : currentRange.endOffset + 1 === currentRange.endContainer.length))
-				// Leaving an element node?
-					|| (currentRange.startContainer.nodeType === 1
-						&& (!currentRange.startOffset
-							|| (currentRange.startContainer.childNodes[currentRange.startOffset] && currentRange.startContainer.childNodes[currentRange.startOffset].nodeType === 1)))
-			);
+			(currentRange.startContainer.nodeType === 3 && currentRange.startContainer === currentRange.endContainer && currentRange.startContainer.nodeValue !== "" && (isGoingLeft ? currentRange.startOffset === 1 : currentRange.endOffset + 1 === currentRange.endContainer.length))
+			// Leaving an element node?
+			||
+			(currentRange.startContainer.nodeType === 1 && (!currentRange.startOffset || (currentRange.startContainer.childNodes[currentRange.startOffset] && currentRange.startContainer.childNodes[currentRange.startOffset].nodeType === 1))));
 
 			if (moveToBoundaryPositionInIE) {
 				// The cursor is moving to the beginning or end of a text
@@ -311,10 +298,9 @@ define([
 			GENTICS.Utils.Dom.insertIntoDOM(newBreak, range, Aloha.activeEditable.obj);
 
 			nextTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(
-				newBreak.parent().get(0),
-				GENTICS.Utils.Dom.getIndexInParent(newBreak.get(0)) + 1,
-				false
-			);
+			newBreak.parent().get(0),
+			GENTICS.Utils.Dom.getIndexInParent(newBreak.get(0)) + 1,
+			false);
 
 			if (nextTextNode) {
 				// trim leading whitespace
@@ -343,8 +329,8 @@ define([
 			}
 
 			var rangeObject,
-			    handlers,
-			    i;
+			handlers,
+			i;
 
 			if (this.keyHandlers[event.keyCode]) {
 				handlers = this.keyHandlers[event.keyCode];
@@ -550,14 +536,14 @@ define([
 		 */
 		insertHTMLBreak: function (selectionTree, rangeObject, inBetweenMarkup) {
 			var i,
-			    treeLength,
-			    el,
-			    jqEl,
-			    jqElBefore,
-			    jqElAfter,
-			    tmpObject,
-			    offset,
-			    checkObj;
+			treeLength,
+			el,
+			jqEl,
+			jqElBefore,
+			jqElAfter,
+			tmpObject,
+			offset,
+			checkObj;
 
 			inBetweenMarkup = inBetweenMarkup || jQuery('<br/>');
 
@@ -702,7 +688,8 @@ define([
 		 * @return selected text from that level (incluiding all sublevels)
 		 */
 		getFromSelectionTree: function (selectionTree, astext) {
-			var text = '', i, treeLength, el, clone;
+			var text = '',
+				i, treeLength, el, clone;
 			for (i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
 				el = selectionTree[i];
 				if (el.selection == 'partial') {
@@ -833,13 +820,11 @@ define([
 					// eventually set the new range (if not done before)
 					if (!newRange.startContainer) {
 						adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(
-							el.domobj.parentNode,
-							GENTICS.Utils.Dom.getIndexInParent(el.domobj) + 1,
-							false,
-							{
-								'blocklevel': false
-							}
-						);
+						el.domobj.parentNode,
+						GENTICS.Utils.Dom.getIndexInParent(el.domobj) + 1,
+						false, {
+							'blocklevel': false
+						});
 
 						if (adjacentTextNode) {
 							newRange.startContainer = newRange.endContainer = adjacentTextNode;
@@ -867,8 +852,8 @@ define([
 			// object which is split up
 			var splitObject = jQuery(rangeObject.splitObject),
 				selectionTree,
-			    insertAfterObject,
-			    followUpContainer;
+				insertAfterObject,
+				followUpContainer;
 
 			// update the commonAncestor with the splitObject (so that the selectionTree is correct)
 			rangeObject.update(rangeObject.splitObject); // set the splitObject as new commonAncestorContainer and update the selectionTree
@@ -993,7 +978,7 @@ define([
 				removeLater = [],
 				i,
 				el,
-			    removeIndex;
+				removeIndex;
 
 			for (i = 0; i < domArray.length; ++i) {
 				el = domArray[i];

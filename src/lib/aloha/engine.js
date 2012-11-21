@@ -57,7 +57,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	function isNamedHtmlElement(node, name) {
 		return node && node.nodeType == 1 && isHtmlNamespace(node.namespaceURI)
 		// This function is passed in a mix of upper and lower case names
-			&& name.toUpperCase() === node.nodeName;
+		&&
+		name.toUpperCase() === node.nodeName;
 	}
 
 	// TODO remove when isHtmlElementInArray is removed
@@ -75,7 +76,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	function isHtmlElementInArray(node, array) {
 		return node && node.nodeType == 1 && isHtmlNamespace(node.namespaceURI)
 		// This function is passed in a mix of upper and lower case names
-			&& arrayContainsInsensitive(array, node.nodeName);
+		&&
+		arrayContainsInsensitive(array, node.nodeName);
 	}
 
 	// map must have all-uppercase keys
@@ -103,7 +105,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			return node.style.length;
 		}
 
-		/*jslint forin: true*/ //not sure whether node.style.hasOwnProperty is valid
+		/*jslint forin: true*/
+		//not sure whether node.style.hasOwnProperty is valid
 		for (s in node.style) {
 			if (node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
 				styleLength++;
@@ -120,7 +123,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		}
 		var array = [],
 			i,
-		    l = obj.length;
+			l = obj.length;
 		// iterate backwards ensuring that length is an UInt32
 		i = l >>> 0;
 		while (i--) {
@@ -573,11 +576,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 
 	var getStateOverride,
-	    setStateOverride,
-	    unsetStateOverride,
-	    getValueOverride,
-	    setValueOverride,
-	    unsetValueOverride;
+	setStateOverride,
+	unsetStateOverride,
+	getValueOverride,
+	setValueOverride,
+	unsetValueOverride;
 
 	var executionStackDepth = 0;
 
@@ -1258,7 +1261,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 		// "If the "display" property of some ancestor of node has resolved value
 		// "none", return true."
-		if ($_(getAncestors(node)).some(function (ancestor) { return ancestor.nodeType == $_.Node.ELEMENT_NODE && $_.getComputedStyle(ancestor).display == "none"; })) {
+		if ($_(getAncestors(node)).some(function (ancestor) {
+			return ancestor.nodeType == $_.Node.ELEMENT_NODE && $_.getComputedStyle(ancestor).display == "none";
+		})) {
 			return true;
 		}
 
@@ -1326,9 +1331,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			return false;
 		}
 
-		if ($_(getAncestors(node).concat(node))
-			    .filter(function (node) { return node.nodeType == $_.Node.ELEMENT_NODE; }, true)
-			    .some(function (node) { return $_.getComputedStyle(node).display == "none"; })) {
+		if ($_(getAncestors(node).concat(node)).filter(function (node) {
+			return node.nodeType == $_.Node.ELEMENT_NODE;
+		}, true).some(function (node) {
+			return $_.getComputedStyle(node).display == "none";
+		})) {
 			return false;
 		}
 
@@ -1823,7 +1830,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// "For each node in node list, append node as the last child of new
 			// parent, preserving ranges."
 			for (i = 0; i < nodeList.length; i++) {
-				movePreservingRanges(nodeList[i], newParent, -1, range);
+				movePreservingRanges(nodeList[i], newParent, - 1, range);
 			}
 
 			// "Otherwise:"
@@ -1865,7 +1872,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// "While new parent's nextSibling has children, append its first child
 			// as the last child of new parent, preserving ranges."
 			while (newParent.nextSibling.hasChildNodes()) {
-				movePreservingRanges(newParent.nextSibling.firstChild, newParent, -1, range);
+				movePreservingRanges(newParent.nextSibling.firstChild, newParent, - 1, range);
 			}
 
 			// "Remove new parent's nextSibling from its parent."
@@ -2205,13 +2212,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// node or is not a Text node or range's start offset is zero; and either
 		// range's end node is not a descendant of node or is not a Text node or
 		// range's end offset is its end node's length."
-		if (node.hasChildNodes() && $_(node.childNodes).every(function (child) { return isEffectivelyContained(child, range); })
-			    && (!isDescendant(range.startContainer, node)
-					|| range.startContainer.nodeType != $_.Node.TEXT_NODE
-					|| range.startOffset == 0)
-			    && (!isDescendant(range.endContainer, node)
-					|| range.endContainer.nodeType != $_.Node.TEXT_NODE
-					|| range.endOffset == getNodeLength(range.endContainer))) {
+		if (node.hasChildNodes() && $_(node.childNodes).every(function (child) {
+			return isEffectivelyContained(child, range);
+		}) && (!isDescendant(range.startContainer, node) || range.startContainer.nodeType != $_.Node.TEXT_NODE || range.startOffset == 0) && (!isDescendant(range.endContainer, node) || range.endContainer.nodeType != $_.Node.TEXT_NODE || range.endOffset == getNodeLength(range.endContainer))) {
 			return true;
 		}
 
@@ -2745,7 +2748,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		node.parentNode.insertBefore(candidate, node.nextSibling);
 
 		// "Append the node as the last child of candidate, preserving ranges."
-		movePreservingRanges(node, candidate, -1, range);
+		movePreservingRanges(node, candidate, - 1, range);
 	}
 
 	var recordValuesCommands = ["subscript", "bold", "fontname", "fontsize", "forecolor", "hilitecolor", "italic", "strikethrough", "underline"];
@@ -2938,15 +2941,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// value is loosely equivalent to new value and false otherwise, and
 			// with new parent instructions returning null."
 			wrap(
-				[node],
-				function (node) {
-					return isSimpleModifiableElement(node) && areEquivalentValues(command, getSpecifiedCommandValue(node, command), newValue) && areLooselyEquivalentValues(command, getEffectiveCommandValue(node, command), newValue);
-				},
-				function () {
-					return null;
-				},
-				range
-			);
+			[node],
+
+			function (node) {
+				return isSimpleModifiableElement(node) && areEquivalentValues(command, getSpecifiedCommandValue(node, command), newValue) && areLooselyEquivalentValues(command, getEffectiveCommandValue(node, command), newValue);
+			},
+
+			function () {
+				return null;
+			},
+			range);
 		}
 
 		// "If the effective command value of command is loosely equivalent to new
@@ -3317,15 +3321,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 		// "If there is no editable text node effectively contained in the active
 		// range:"
-		if (!$_(getAllEffectivelyContainedNodes(range)).filter(function (node) { return node.nodeType == $_.Node.TEXT_NODE; }, true).some(isEditable)) {
+		if (!$_(getAllEffectivelyContainedNodes(range)).filter(function (node) {
+			return node.nodeType == $_.Node.TEXT_NODE;
+		}, true).some(isEditable)) {
 			// "If command has inline command activated values, set the state
 			// override to true if new value is among them and false if it's not."
 			if (commands[command].hasOwnProperty("inlineCommandActivatedValues")) {
 				setStateOverride(
-					command,
-					$_(commands[command].inlineCommandActivatedValues).indexOf(newValue) != -1,
-					range
-				);
+				command,
+				$_(commands[command].inlineCommandActivatedValues).indexOf(newValue) != -1,
+				range);
 			}
 
 			// "If command is "subscript", unset the state override for
@@ -4113,9 +4118,13 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function (node) {
 				return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE;
 			});
-			return (($_(nodes).some(function (node) { return getEffectiveCommandValue(node, "subscript") == "subscript"; })
-					 && $_(nodes).some(function (node) { return getEffectiveCommandValue(node, "subscript") != "subscript"; }))
-					|| $_(nodes).some(function (node) { return getEffectiveCommandValue(node, "subscript") == "mixed"; }));
+			return (($_(nodes).some(function (node) {
+				return getEffectiveCommandValue(node, "subscript") == "subscript";
+			}) && $_(nodes).some(function (node) {
+				return getEffectiveCommandValue(node, "subscript") != "subscript";
+			})) || $_(nodes).some(function (node) {
+				return getEffectiveCommandValue(node, "subscript") == "mixed";
+			}));
 		},
 		inlineCommandActivatedValues: ["subscript"]
 	};
@@ -4145,14 +4154,18 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// effectively contained in the active range with effective command
 			// value "mixed".  Otherwise false."
 			var nodes = getAllEffectivelyContainedNodes(
-				getActiveRange(),
-				function (node) {
-					return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE;
-				}
-			);
-			return (($_(nodes).some(function (node) { return getEffectiveCommandValue(node, "superscript") == "superscript"; })
-					 && $_(nodes).some(function (node) { return getEffectiveCommandValue(node, "superscript") != "superscript"; }))
-					|| $_(nodes).some(function (node) { return getEffectiveCommandValue(node, "superscript") == "mixed"; }));
+			getActiveRange(),
+
+			function (node) {
+				return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE;
+			});
+			return (($_(nodes).some(function (node) {
+				return getEffectiveCommandValue(node, "superscript") == "superscript";
+			}) && $_(nodes).some(function (node) {
+				return getEffectiveCommandValue(node, "superscript") != "superscript";
+			})) || $_(nodes).some(function (node) {
+				return getEffectiveCommandValue(node, "superscript") == "mixed";
+			}));
 		},
 		inlineCommandActivatedValues: ["superscript"]
 	};
@@ -4241,7 +4254,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 		} else {
 			var s;
-			/*jslint forin: true*/ //not sure whether node.style.hasOwnProperty is valid
+			/*jslint forin: true*/
+			//not sure whether node.style.hasOwnProperty is valid
 			for (s in node.style) {
 				if (/^(-[a-z]+-)?margin/.test(s) && node.style[s] && node.style[s] !== 0) {
 					return true;
@@ -4285,7 +4299,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 		} else {
 			var s;
-			/*jslint forin: true*/ //not sure whether node.style.hasOwnProperty is valid
+			/*jslint forin: true*/
+			//not sure whether node.style.hasOwnProperty is valid
 			for (s in node.style) {
 				// This is approximate, but it works well enough for my purposes.
 				if (!/^(-[a-z]+-)?(margin|border|padding)/.test(s) && node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
@@ -4374,8 +4389,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// "If node is not an allowed child of any of its ancestors in the same
 		// editing host, and is not an HTML element with local name equal to the
 		// default single-line container name:"
-		if ($_(getAncestors(node)).every(function (ancestor) { return !inSameEditingHost(node, ancestor) || !isAllowedChild(node, ancestor); })
-			    && !isHtmlElement_obsolete(node, defaultSingleLineContainerName)) {
+		if ($_(getAncestors(node)).every(function (ancestor) {
+			return !inSameEditingHost(node, ancestor) || !isAllowedChild(node, ancestor);
+		}) && !isHtmlElement_obsolete(node, defaultSingleLineContainerName)) {
 			// "If node is a dd or dt, wrap the one-node list consisting of node,
 			// with sibling criteria returning true for any dl with no attributes
 			// and false otherwise, and new parent instructions returning the
@@ -4383,15 +4399,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// abort these steps."
 			if (isHtmlElementInArray(node, ["dd", "dt"])) {
 				wrap(
-					[node],
-					function (sibling) {
-						return isNamedHtmlElement(sibling, 'dl') && !sibling.attributes.length;
-					},
-					function () {
-						return document.createElement("dl");
-					},
-					range
-				);
+				[node],
+
+				function (sibling) {
+					return isNamedHtmlElement(sibling, 'dl') && !sibling.attributes.length;
+				},
+
+				function () {
+					return document.createElement("dl");
+				},
+				range);
 				return;
 			}
 
@@ -4594,7 +4611,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// "If some ancestor container of start node is an li, set start offset to
 		// the index of the last such li in tree order, and set start node to that
 		// li's parent."
-		var liAncestors = $_(getAncestors(startNode).concat(startNode)).filter(function (ancestor) { return isNamedHtmlElement(ancestor, 'li'); }).slice(-1);
+		var liAncestors = $_(getAncestors(startNode).concat(startNode)).filter(function (ancestor) {
+			return isNamedHtmlElement(ancestor, 'li');
+		}).slice(-1);
 		if (liAncestors.length) {
 			startOffset = getNodeIndex(liAncestors[0]);
 			startNode = liAncestors[0].parentNode;
@@ -4630,7 +4649,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// "If some ancestor container of end node is an li, set end offset to one
 		// plus the index of the last such li in tree order, and set end node to
 		// that li's parent."
-		liAncestors = $_(getAncestors(endNode).concat(endNode)).filter(function (ancestor) { return isNamedHtmlElement(ancestor, 'li'); }).slice(-1);
+		liAncestors = $_(getAncestors(endNode).concat(endNode)).filter(function (ancestor) {
+			return isNamedHtmlElement(ancestor, 'li');
+		}).slice(-1);
 		if (liAncestors.length) {
 			endOffset = 1 + getNodeIndex(liAncestors[0]);
 			endNode = liAncestors[0].parentNode;
@@ -4696,38 +4717,30 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// "If every member of node list is either an ol or the child of an ol or
 		// the child of an li child of an ol, and none is a ul or an ancestor of a
 		// ul, return "ol"."
-		if ($_(nodeList).every(function (node) { return (isNamedHtmlElement(node, 'ol')
-														 || isNamedHtmlElement(node.parentNode, "ol")
-														 || (isNamedHtmlElement(node.parentNode, "li")
-															 && isNamedHtmlElement(node.parentNode.parentNode, "ol"))); })
-			    && !$_(nodeList).some(function (node) { return isNamedHtmlElement(node, 'ul') || (node.querySelector && node.querySelector("ul")); })) {
+		if ($_(nodeList).every(function (node) {
+			return (isNamedHtmlElement(node, 'ol') || isNamedHtmlElement(node.parentNode, "ol") || (isNamedHtmlElement(node.parentNode, "li") && isNamedHtmlElement(node.parentNode.parentNode, "ol")));
+		}) && !$_(nodeList).some(function (node) {
+			return isNamedHtmlElement(node, 'ul') || (node.querySelector && node.querySelector("ul"));
+		})) {
 			return "ol";
 		}
 
 		// "If every member of node list is either a ul or the child of a ul or the
 		// child of an li child of a ul, and none is an ol or an ancestor of an ol,
 		// return "ul"."
-		if ($_(nodeList).every(function (node) { return (isNamedHtmlElement(node, 'ul')
-														 || isNamedHtmlElement(node.parentNode, "ul")
-														 || (isNamedHtmlElement(node.parentNode, "li")
-															 && isNamedHtmlElement(node.parentNode.parentNode, "ul"))); })
-			    && !$_(nodeList).some(function (node) { return isNamedHtmlElement(node, 'ol') || (node.querySelector && node.querySelector("ol")); })) {
+		if ($_(nodeList).every(function (node) {
+			return (isNamedHtmlElement(node, 'ul') || isNamedHtmlElement(node.parentNode, "ul") || (isNamedHtmlElement(node.parentNode, "li") && isNamedHtmlElement(node.parentNode.parentNode, "ul")));
+		}) && !$_(nodeList).some(function (node) {
+			return isNamedHtmlElement(node, 'ol') || (node.querySelector && node.querySelector("ol"));
+		})) {
 			return "ul";
 		}
 
 		var hasOl = $_(nodeList).some(function (node) {
-			return (isNamedHtmlElement(node, 'ol')
-					|| isNamedHtmlElement(node.parentNode, "ol")
-					|| (node.querySelector && node.querySelector("ol"))
-					|| (isNamedHtmlElement(node.parentNode, "li")
-						&& isNamedHtmlElement(node.parentNode.parentNode, "ol")));
+			return (isNamedHtmlElement(node, 'ol') || isNamedHtmlElement(node.parentNode, "ol") || (node.querySelector && node.querySelector("ol")) || (isNamedHtmlElement(node.parentNode, "li") && isNamedHtmlElement(node.parentNode.parentNode, "ol")));
 		});
 		var hasUl = $_(nodeList).some(function (node) {
-			return (isNamedHtmlElement(node, 'ul')
-					|| isNamedHtmlElement(node.parentNode, "ul")
-					|| (node.querySelector && node.querySelector("ul"))
-					|| (isNamedHtmlElement(node.parentNode, "li")
-						&& isNamedHtmlElement(node.parentNode.parentNode, "ul")));
+			return (isNamedHtmlElement(node, 'ul') || isNamedHtmlElement(node.parentNode, "ul") || (node.querySelector && node.querySelector("ul")) || (isNamedHtmlElement(node.parentNode, "li") && isNamedHtmlElement(node.parentNode.parentNode, "ul")));
 		});
 		// "If some member of node list is either an ol or the child or ancestor of
 		// an ol or the child of an li child of an ol, and some member of node list
@@ -4768,7 +4781,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 		var resolvedValue = $_.getComputedStyle(node).textAlign
 		// Hack around browser non-standardness
-			.replace(/^-(moz|webkit)-/, "").replace(/^auto$/, "start");
+		.replace(/^-(moz|webkit)-/, "").replace(/^auto$/, "start");
 
 		// "If node's "text-align" property has resolved value "start", return
 		// "left" if the directionality of node is "ltr", "right" if it is "rtl"."
@@ -4918,12 +4931,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 					// and node's effective command value for "fontSize" is not loosely
 					// equivalent to override: call execCommand("fontSize", false,
 					// override)."
-				} else if (typeof override == "string"
-						   && command == "fontsize"
-						   && ((getValueOverride("fontsize", range) !== undefined
-								&& getValueOverride("fontsize", range) !== override)
-							   || (getValueOverride("fontsize", range) === undefined
-								   && !areLooselyEquivalentValues(command, getEffectiveCommandValue(node, "fontsize"), override)))) {
+				} else if (typeof override == "string" && command == "fontsize" && ((getValueOverride("fontsize", range) !== undefined && getValueOverride("fontsize", range) !== override) || (getValueOverride("fontsize", range) === undefined && !areLooselyEquivalentValues(command, getEffectiveCommandValue(node, "fontsize"), override)))) {
 					myExecCommand("fontsize", false, override, range);
 
 					// "Otherwise, continue this loop from the beginning."
@@ -5189,8 +5197,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			flags = arg5;
 		}
 
-		var blockMerging = null != flags.blockMerging ? !!flags.blockMerging : true;
-		var stripWrappers = null != flags.stripWrappers ? !!flags.stripWrappers : true;
+		var blockMerging = null != flags.blockMerging ? !! flags.blockMerging : true;
+		var stripWrappers = null != flags.stripWrappers ? !! flags.stripWrappers : true;
 
 		// "If range is null, abort these steps and do nothing."
 		if (!range) {
@@ -5386,11 +5394,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// member of node list (if any) is not an ancestor of node; node is
 		// editable; and node is not a thead, tbody, tfoot, tr, th, or td."
 		var nodeList = getContainedNodes(
-			range,
-			function (node) {
-				return isEditable(node) && !isHtmlElementInArray(node, ["thead", "tbody", "tfoot", "tr", "th", "td"]);
-			}
-		);
+		range,
+
+		function (node) {
+			return isEditable(node) && !isHtmlElementInArray(node, ["thead", "tbody", "tfoot", "tr", "th", "td"]);
+		});
 
 		// "For each node in node list:"
 		for (i = 0; i < nodeList.length; i++) {
@@ -5590,7 +5598,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// "For each node in nodes to move, append node as the last child of
 			// start block, preserving ranges."
 			$_(nodesToMove).forEach(function (node) {
-				movePreservingRanges(node, startBlock, -1, range);
+				movePreservingRanges(node, startBlock, - 1, range);
 			});
 
 			// "If the nextSibling of reference node is a br, remove it from its
@@ -5619,7 +5627,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// "While end block has children, append the first child of end block
 			// to start block, preserving ranges."
 			while (endBlock.hasChildNodes()) {
-				movePreservingRanges(endBlock.firstChild, startBlock, -1, range);
+				movePreservingRanges(endBlock.firstChild, startBlock, - 1, range);
 			}
 
 			// "While end block has no children, let parent be the parent of end
@@ -5713,15 +5721,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// instructions returning the result of calling createElement(tag) on
 			// the ownerDocument of first node."
 			wrap(
-				nodeList,
-				function (node) {
-					return isHtmlElement_obsolete(node, tag);
-				},
-				function () {
-					return firstNode.ownerDocument.createElement(tag);
-				},
-				range
-			);
+			nodeList,
+
+			function (node) {
+				return isHtmlElement_obsolete(node, tag);
+			},
+
+			function () {
+				return firstNode.ownerDocument.createElement(tag);
+			},
+			range);
 
 			// "Abort these steps."
 			return;
@@ -5732,15 +5741,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// returning the result of calling createElement("blockquote") on the
 		// ownerDocument of first node. Let new parent be the result."
 		var newParent = wrap(
-			nodeList,
-			function (node) {
-				return isSimpleIndentationElement(node);
-			},
-			function () {
-				return firstNode.ownerDocument.createElement("blockquote");
-			},
-			range
-		);
+		nodeList,
+
+		function (node) {
+			return isSimpleIndentationElement(node);
+		},
+
+		function () {
+			return firstNode.ownerDocument.createElement("blockquote");
+		},
+		range);
 
 		// "Fix disallowed ancestors of new parent."
 		fixDisallowedAncestors(newParent, range);
@@ -5921,15 +5931,15 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		(function () {
 			var ancestorContainer;
 			for (ancestorContainer = range.endContainer;
-				     ancestorContainer != range.commonAncestorContainer;
-				     ancestorContainer = ancestorContainer.parentNode) {
+			ancestorContainer != range.commonAncestorContainer;
+			ancestorContainer = ancestorContainer.parentNode) {
 				if (isNamedHtmlElement(ancestorContainer, "li")) {
 					items.unshift(ancestorContainer);
 				}
 			}
 			for (ancestorContainer = range.startContainer;
-				     ancestorContainer;
-				     ancestorContainer = ancestorContainer.parentNode) {
+			ancestorContainer;
+			ancestorContainer = ancestorContainer.parentNode) {
 				if (isNamedHtmlElement(ancestorContainer, "li")) {
 					items.unshift(ancestorContainer);
 				}
@@ -5967,15 +5977,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 					// "Wrap children, with sibling criteria returning true for an
 					// HTML element with local name tag name and false otherwise."
 					wrap(
-						children,
-						function (node) {
-							return isHtmlElement_obsolete(node, tagName);
-						},
-						function () {
-							return null;
-						},
-						range
-					);
+					children,
+
+					function (node) {
+						return isHtmlElement_obsolete(node, tagName);
+					},
+
+					function () {
+						return null;
+					},
+					range);
 
 					// "Restore the values from values."
 					restoreValues(values, range);
@@ -6141,11 +6152,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 						// returning the result of calling createElement("li") on
 						// the context object. Append the result to sublist."
 						sublist.push(wrap(
-							nodesToWrap,
-							undefined,
-							createLi,
-							range
-						));
+						nodesToWrap,
+						undefined,
+						createLi,
+						range));
 					}
 				}
 
@@ -6171,11 +6181,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 					// and new parent instructions returning the result of calling
 					// createElement(tag name) on the context object."
 					wrap(
-						sublist,
-						makeIsElementPred(tagName),
-						makeCreateElement(tagName),
-						range
-					);
+					sublist,
+					makeIsElementPred(tagName),
+					makeCreateElement(tagName),
+					range);
 
 					// "Restore the values from values."
 					restoreValues(values, range);
@@ -6190,11 +6199,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 				// . . .
 				// "Fix disallowed ancestors of the previous step's result."
 				fixDisallowedAncestors(wrap(
-					sublist,
-					makeIsElementPred(tagName),
-					makeCreateElementSublist(tagName, sublist, range),
-					range
-				), range);
+				sublist,
+				makeIsElementPred(tagName),
+				makeCreateElementSublist(tagName, sublist, range),
+				range), range);
 			}
 		}
 	}
@@ -6216,7 +6224,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		var elementList = getAllContainedNodes(newRange, function (node) {
 			return node.nodeType == $_.Node.ELEMENT_NODE && isEditable(node)
 			// Ignoring namespaces here
-				&& (hasAttribute(node, "align") || node.style.textAlign != "" || isNamedHtmlElement(node, 'center'));
+			&&
+			(hasAttribute(node, "align") || node.style.textAlign != "" || isNamedHtmlElement(node, 'center'));
 		});
 
 		// "For each element in element list:"
@@ -6307,11 +6316,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// context object, then set its CSS property "text-align" to alignment
 			// and return the result."
 			wrap(
-				sublist,
-				makeIsAlignedDiv(alignment),
-				makeCreateAlignedDiv(alignment),
-				range
-			);
+			sublist,
+			makeIsAlignedDiv(alignment),
+			makeCreateAlignedDiv(alignment),
+			range);
 		}
 	}
 
@@ -6534,7 +6542,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 				// its ancestors in the same editing host, set the tag name of node
 				// to the default single-line container name and let node be the
 				// result."
-				if (isHtmlElementInArray(node, ["dd", "dt"]) && $_(getAncestors(node)).every(function (ancestor) { return !inSameEditingHost(node, ancestor) || !isAllowedChild(node, ancestor); })) {
+				if (isHtmlElementInArray(node, ["dd", "dt"]) && $_(getAncestors(node)).every(function (ancestor) {
+					return !inSameEditingHost(node, ancestor) || !isAllowedChild(node, ancestor);
+				})) {
 					node = setTagName(node, defaultSingleLineContainerName, range);
 				}
 
@@ -6577,7 +6587,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 			// "If offset is zero, and node has an editable ancestor container in
 			// the same editing host that's an indentation element:"
-			if (offset == 0 && $_(getAncestors(node).concat(node)).filter(function (ancestor) { return isEditable(ancestor) && inSameEditingHost(ancestor, node) && isIndentationElement(ancestor); }).length) {
+			if (offset == 0 && $_(getAncestors(node).concat(node)).filter(function (ancestor) {
+				return isEditable(ancestor) && inSameEditingHost(ancestor, node) && isIndentationElement(ancestor);
+			}).length) {
 				// "Block-extend the range whose start and end are both (node, 0),
 				// and let new range be the result."
 				var newRange = Aloha.createRange();
@@ -6628,11 +6640,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// "If offset is zero; and either the child of start node with index
 			// start offset minus one is an hr, or the child is a br whose
 			// previousSibling is either a br or not an inline node:"
-			if (offset == 0
-				    && (isNamedHtmlElement(startNode.childNodes[startOffset - 1], "hr")
-						|| (isNamedHtmlElement(startNode.childNodes[startOffset - 1], "br")
-							&& (isNamedHtmlElement(startNode.childNodes[startOffset - 1].previousSibling, "br")
-								|| !isInlineNode(startNode.childNodes[startOffset - 1].previousSibling))))) {
+			if (offset == 0 && (isNamedHtmlElement(startNode.childNodes[startOffset - 1], "hr") || (isNamedHtmlElement(startNode.childNodes[startOffset - 1], "br") && (isNamedHtmlElement(startNode.childNodes[startOffset - 1].previousSibling, "br") || !isInlineNode(startNode.childNodes[startOffset - 1].previousSibling))))) {
 				// "Call collapse(node, offset) on the Selection."
 				range.setStart(node, offset);
 				range.setEnd(node, offset);
@@ -6733,7 +6741,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// "If value begins with a "<" character and ends with a ">" character,
 			// remove the first and last characters from it."
 			if (/^<.*>$/.test(value)) {
-				value = value.slice(1, -1);
+				value = value.slice(1, - 1);
 			}
 
 			// "Let value be converted to ASCII lowercase."
@@ -6764,10 +6772,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 			function makeIsEditableElementInSameEditingHostDoesNotContainProhibitedParagraphChildren(node) {
 				return function (ancestor) {
-					return (isEditable(ancestor)
-							&& inSameEditingHost(ancestor, node)
-							&& isHtmlElement_obsolete(ancestor, formattableBlockNames)
-							&& !$_(getDescendants(ancestor)).some(isProhibitedParagraphChild));
+					return (isEditable(ancestor) && inSameEditingHost(ancestor, node) && isHtmlElement_obsolete(ancestor, formattableBlockNames) && !$_(getDescendants(ancestor)).some(isProhibitedParagraphChild));
 				};
 			}
 
@@ -6854,11 +6859,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 				// createElement(value) on the context object. Then fix disallowed
 				// ancestors of the result."
 				fixDisallowedAncestors(wrap(
-					sublist,
-					jQuery.inArray(value, ["div", "p"]) == -1 ? makeIsElementWithoutAttributes(value) : returnFalse,
-					makeCreateElement(value),
-					newRange
-				), newRange);
+				sublist,
+				jQuery.inArray(value, ["div", "p"]) == -1 ? makeIsElementWithoutAttributes(value) : returnFalse,
+				makeCreateElement(value),
+				newRange), newRange);
 			}
 		},
 		indeterm: function () {
@@ -7673,15 +7677,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 				// createElement(tag) on the context object. Set container to the
 				// result."
 				container = wrap(
-					nodeList,
-					function () {
-						return false;
-					},
-					function () {
-						return document.createElement(tag);
-					},
-					range
-				);
+				nodeList,
+
+				function () {
+					return false;
+				},
+
+				function () {
+					return document.createElement(tag);
+				},
+				range);
 			}
 
 			// "If container's local name is "address", "listing", or "pre":"
@@ -7745,7 +7750,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 				// any of its ancestors in the same editing host, set the tag name
 				// of container to the default single-line container name and let
 				// container be the result."
-				if (isHtmlElementInArray(container, ["dd", "dt"]) && $_(getAncestors(container)).every(function (ancestor) { return !inSameEditingHost(container, ancestor) || !isAllowedChild(container, ancestor); })) {
+				if (isHtmlElementInArray(container, ["dd", "dt"]) && $_(getAncestors(container)).every(function (ancestor) {
+					return !inSameEditingHost(container, ancestor) || !isAllowedChild(container, ancestor);
+				})) {
 					container = setTagName(container, defaultSingleLineContainerName, range);
 				}
 
@@ -8053,8 +8060,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function (node) {
 				return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 			});
-			return $_(nodes).some(function (node) { return getAlignmentValue(node) == "center"; })
-				&& $_(nodes).some(function (node) { return getAlignmentValue(node) != "center"; });
+			return $_(nodes).some(function (node) {
+				return getAlignmentValue(node) == "center";
+			}) && $_(nodes).some(function (node) {
+				return getAlignmentValue(node) != "center";
+			});
 		},
 		state: function () {
 			// "Block-extend the active range. Return true if there is at least one
@@ -8098,8 +8108,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function (node) {
 				return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 			});
-			return $_(nodes).some(function (node) { return getAlignmentValue(node) == "justify"; })
-				&& $_(nodes).some(function (node) { return getAlignmentValue(node) != "justify"; });
+			return $_(nodes).some(function (node) {
+				return getAlignmentValue(node) == "justify";
+			}) && $_(nodes).some(function (node) {
+				return getAlignmentValue(node) != "justify";
+			});
 		},
 		state: function () {
 			// "Block-extend the active range. Return true if there is at least one
@@ -8143,8 +8156,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function (node) {
 				return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 			});
-			return $_(nodes).some(function (node) { return getAlignmentValue(node) == "left"; })
-				&& $_(nodes).some(function (node) { return getAlignmentValue(node) != "left"; });
+			return $_(nodes).some(function (node) {
+				return getAlignmentValue(node) == "left";
+			}) && $_(nodes).some(function (node) {
+				return getAlignmentValue(node) != "left";
+			});
 		},
 		state: function () {
 			// "Block-extend the active range. Return true if there is at least one
@@ -8188,8 +8204,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function (node) {
 				return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 			});
-			return $_(nodes).some(function (node) { return getAlignmentValue(node) == "right"; })
-				&& $_(nodes).some(function (node) { return getAlignmentValue(node) != "right"; });
+			return $_(nodes).some(function (node) {
+				return getAlignmentValue(node) == "right";
+			}) && $_(nodes).some(function (node) {
+				return getAlignmentValue(node) != "right";
+			});
 		},
 		state: function () {
 			// "Block-extend the active range. Return true if there is at least one
@@ -8232,15 +8251,15 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			(function () {
 				var ancestorContainer;
 				for (ancestorContainer = getActiveRange().endContainer;
-					     ancestorContainer != getActiveRange().commonAncestorContainer;
-					     ancestorContainer = ancestorContainer.parentNode) {
+				ancestorContainer != getActiveRange().commonAncestorContainer;
+				ancestorContainer = ancestorContainer.parentNode) {
 					if (isNamedHtmlElement(ancestorContainer, "li")) {
 						items.unshift(ancestorContainer);
 					}
 				}
 				for (ancestorContainer = getActiveRange().startContainer;
-					     ancestorContainer;
-					     ancestorContainer = ancestorContainer.parentNode) {
+				ancestorContainer;
+				ancestorContainer = ancestorContainer.parentNode) {
 					if (isNamedHtmlElement(ancestorContainer, "li")) {
 						items.unshift(ancestorContainer);
 					}
@@ -8398,8 +8417,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// not one of the given values."
 			if (null != commands[command].inlineCommandActivatedValues && null == commands[command].indeterm) {
 				commands[command].indeterm = function (range) {
-					var values = $_(getAllEffectivelyContainedNodes(range, function (node) { return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE; }))
-						.map(function (node) { return getEffectiveCommandValue(node, command); });
+					var values = $_(getAllEffectivelyContainedNodes(range, function (node) {
+						return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE;
+					})).map(function (node) {
+						return getEffectiveCommandValue(node, command);
+					});
 
 					var matchingValues = $_(values).filter(function (value) {
 						return $_(commands[command].inlineCommandActivatedValues).indexOf(value) != -1;
@@ -8440,8 +8462,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// value of the active range's start node."
 			if (null != commands[command].standardInlineValueCommand) {
 				commands[command].indeterm = function () {
-					var values = $_(getAllEffectivelyContainedNodes(getActiveRange())).filter(function (node) { return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE; }, true)
-						.map(function (node) { return getEffectiveCommandValue(node, command); });
+					var values = $_(getAllEffectivelyContainedNodes(getActiveRange())).filter(function (node) {
+						return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE;
+					}, true).map(function (node) {
+						return getEffectiveCommandValue(node, command);
+					});
 					var i;
 					for (i = 1; i < values.length; i++) {
 						if (values[i] != values[i - 1]) {

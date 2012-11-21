@@ -1,26 +1,14 @@
-define([
-	'aloha',
-	'jquery',
-	'aloha/plugin',
-	'aloha/pluginmanager',
-	'ui/ui',
-	'ui/button',
-	'link/link-plugin',
-	'RepositoryBrowser',
-	'i18n!linkbrowser/nls/i18n',
-	'i18n!aloha/nls/i18n'
-], function(
-	Aloha,
-	jQuery,
-	Plugin,
-	PluginManager,
-	Ui,
-	Button,
-	Links,
-	RepositoryBrowser,
-	i18n,
-	i18nCore
-) {
+define(['aloha', 'jquery', 'aloha/plugin', 'aloha/pluginmanager', 'ui/ui', 'ui/button', 'link/link-plugin', 'RepositoryBrowser', 'i18n!linkbrowser/nls/i18n', 'i18n!aloha/nls/i18n'], function (
+Aloha,
+jQuery,
+Plugin,
+PluginManager,
+Ui,
+Button,
+Links,
+RepositoryBrowser,
+i18n,
+i18nCore) {
 	'use strict';
 
 	var LinkBrowser = RepositoryBrowser.extend({
@@ -84,9 +72,9 @@ define([
 
 		renderRowCols: function (item) {
 			var row = {},
-			    pluginUrl = this.url,
-			    icon = '__page__',
-			    idMatch = item.id.match(/(\d+)\./);
+			pluginUrl = this.url,
+				icon = '__page__',
+				idMatch = item.id.match(/(\d+)\./);
 
 			jQuery.each(this.columns, function (colName, v) {
 				switch (colName) {
@@ -100,19 +88,19 @@ define([
 					}
 
 					var rends = item.renditions,
-					    i = rends.length,
-					    strBldr = [],
-					    r;
+						i = rends.length,
+						strBldr = [],
+						r;
 
 					for (; i > 0; --i) {
 						r = rends[i];
 						if (r.kind == 'translation') {
 							strBldr.push(
-								//'<a href="' + repo_host + r.url + '">' +
-								'<img src="'   + pluginUrl  + 'img/flags/' + r.language + '.png"\
-									  alt="'   + r.language + '"\
+							//'<a href="' + repo_host + r.url + '">' +
+							'<img src="' + pluginUrl + 'img/flags/' + r.language + '.png"\
+									  alt="' + r.language + '"\
 									  title="' + r.filename + '" />'
-								//'</a>'
+							//'</a>'
 							);
 						}
 					}
@@ -139,18 +127,35 @@ define([
 
 		init: function () {
 			var config = {
-				repositoryManager : Aloha.RepositoryManager,
-				repositoryFilter  : [],
-				objectTypeFilter  : ['website', 'file', 'image', 'language' /*, '*' */],
-				renditionFilter	  : ['*'],
-				filter			  : ['language'],
-				columns : {
-					icon         : {title: '',     width: 30,  sortable: false, resizable: false},
-					name         : {title: 'Name', width: 320, sorttype: 'text'},
-					language     : {title: '',     width: 30,  sorttype: 'text'},
-					translations : {title: '',     width: 350, sorttype: 'text'}
+				repositoryManager: Aloha.RepositoryManager,
+				repositoryFilter: [],
+				objectTypeFilter: ['website', 'file', 'image', 'language' /*, '*' */ ],
+				renditionFilter: ['*'],
+				filter: ['language'],
+				columns: {
+					icon: {
+						title: '',
+						width: 30,
+						sortable: false,
+						resizable: false
+					},
+					name: {
+						title: 'Name',
+						width: 320,
+						sorttype: 'text'
+					},
+					language: {
+						title: '',
+						width: 30,
+						sorttype: 'text'
+					},
+					translations: {
+						title: '',
+						width: 350,
+						sorttype: 'text'
+					}
 				},
-				rootPath : Aloha.settings.baseUrl + '/vendor/repository-browser/'
+				rootPath: Aloha.settings.baseUrl + '/vendor/repository-browser/'
 			};
 
 			this.browser = new LinkBrowser(config);

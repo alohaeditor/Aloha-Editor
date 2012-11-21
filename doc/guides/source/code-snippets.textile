@@ -1,0 +1,27 @@
+h2. Code Snippets
+
+Here we'll collect some code snippets you can use to solve frequently asked questions.
+
+endprologue.
+
+
+h3. Aloha/UI
+
+* "Toolbar with fixed position / shown on page load":https://gist.github.com/3508356 - The toolbar will show directly after page load (without waiting for a click or keypress) and stay at the top of a editable
+* "Using the commands API for a custom UI":https://gist.github.com/3509018 - Use the commands API with your own UI
+
+
+h3. Aloha/Events
+
+
+h3. Aloha/jQuery
+
+* "Using jQuery UI sortable":https://gist.github.com/1835700 - Elements are dragable and editable
+
+
+h3. Aloha/Core
+
+* "Save content to backend":https://gist.github.com/1448270 - Send content via ajax to a backend php script to save the data 
+* "Using a textarea":https://gist.github.com/1708306 - Use a textarea as editable container (replace your current WYSIWYG editor)
+* "Aloha Editor and RequireJS":https://gist.github.com/1846236 - Use Aloha Editor in your require.js environment
+

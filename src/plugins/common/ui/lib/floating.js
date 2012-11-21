@@ -27,21 +27,13 @@
  * @overview
  * Implements floating animation effect for UI surfaces.
  */
-define([
-	'jquery',
-	'aloha/core',
-	'ui/surface',
-	'ui/subguarded',
-	'PubSub',
-	'vendor/amplify.store'
-], function (
-	$,
-	Aloha,
-	Surface,
-	subguarded,
-	PubSub,
-	amplifyStore
-) {
+define(['jquery', 'aloha/core', 'ui/surface', 'ui/subguarded', 'PubSub', 'vendor/amplify.store'], function (
+$,
+Aloha,
+Surface,
+subguarded,
+PubSub,
+amplifyStore) {
 	'use strict';
 
 	/**
@@ -79,22 +71,20 @@ define([
 	 * @type {string}
 	 * @const
 	 */
-	var POSITION_STYLE = ($.browser.msie && /^7\.\d+/.test($.browser.version))
-	                   ? 'absolute'
-	                   : 'fixed';
+	var POSITION_STYLE = ($.browser.msie && /^7\.\d+/.test($.browser.version)) ? 'absolute' : 'fixed';
 
 	/**
 	 * The position of the floating menu
 	 *
 	 * So we can float dialoges (eg special char picker) with the floating menu
-	*/
+	 */
 	var POSITION = {
 		style: POSITION_STYLE,
 		offset: {
 			top: 0,
 			left: 0
-			}
-		};
+		}
+	};
 
 	/**
 	 * Animates a surface element to the given position.
@@ -113,12 +103,14 @@ define([
 			position.top += $WINDOW.scrollTop();
 			position.left += $WINDOW.scrollLeft();
 		}
-		
+
 		POSITION.offset = position;
 
 		$element.stop().animate(position, duration, function () {
 			callback(position);
-			PubSub.pub('aloha.floating.changed', {position: POSITION});
+			PubSub.pub('aloha.floating.changed', {
+				position: POSITION
+			});
 		});
 	}
 
@@ -238,16 +230,14 @@ define([
 			duration = DURATION;
 		}
 
-		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
-		              + (parseInt($('body').css('paddingTop'), 10) || 0);
+		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0) + (parseInt($('body').css('paddingTop'), 10) || 0);
 		var $element = surface.$element;
 		var surfaceOrientation = $element.offset();
 		var editableOrientation = editable.obj.offset();
 		var scrollTop = $WINDOW.scrollTop();
 		var availableSpace = editableOrientation.top - scrollTop - topGutter;
 		var left = editableOrientation.left;
-		var horizontalOverflow = left + $element.width() - $WINDOW.width()
-		                       - DISTANCE;
+		var horizontalOverflow = left + $element.width() - $WINDOW.width() - DISTANCE;
 
 		if (horizontalOverflow > 0) {
 			left -= horizontalOverflow;
@@ -256,8 +246,7 @@ define([
 		if (availableSpace >= $element.height()) {
 			editableOrientation.top -= scrollTop;
 			floatAbove($element, editableOrientation, duration, callback);
-		} else if (availableSpace + $element.height() >
-				editableOrientation.top + editable.obj.height()) {
+		} else if (availableSpace + $element.height() > editableOrientation.top + editable.obj.height()) {
 			floatBelow($element, {
 				top: editableOrientation.top + editable.obj.height(),
 				left: left
@@ -341,10 +330,7 @@ define([
 	 * @param {object} SurfaceTypeManager
 	 */
 	function makeFloating(surface, SurfaceTypeManager) {
-		subguarded([
-			'aloha-selection-changed',
-			'aloha.ui.container.selected'
-		], onActivatedSurface, surface, function () {
+		subguarded(['aloha-selection-changed', 'aloha.ui.container.selected'], onActivatedSurface, surface, function () {
 			surface._move();
 		});
 

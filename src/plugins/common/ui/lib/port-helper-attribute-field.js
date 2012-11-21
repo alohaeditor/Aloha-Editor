@@ -3,28 +3,16 @@
  * ui-attributefield.js in the aloha core to the new ui-plugin.
  * This interface is obsolete and must not be used for new implementations.
  */
-define([
-	'jquery',
-	'ui/ui',
-	'ui/component',
-	'ui/scopes',
-	'ui/context',
-	'ui/utils',
-	'aloha/repositorymanager',
-	'aloha/selection',
-	'aloha/console',
-	'ui/vendor/jquery-ui-autocomplete-html'
-], function (
-	$,
-	Ui,
-	Component,
-	Scopes,
-	Context,
-	Utils,
-	RepositoryManager,
-	Selection,
-	console
-) {
+define(['jquery', 'ui/ui', 'ui/component', 'ui/scopes', 'ui/context', 'ui/utils', 'aloha/repositorymanager', 'aloha/selection', 'aloha/console', 'ui/vendor/jquery-ui-autocomplete-html'], function (
+$,
+Ui,
+Component,
+Scopes,
+Context,
+Utils,
+RepositoryManager,
+Selection,
+console) {
 	'use strict';
 
 	// Main responsibilities implemented by the attribute-field are
@@ -62,18 +50,18 @@ define([
 	 */
 	var AttributeField = function (props) {
 		var valueField = props.valueField || 'id',
-		    displayField = props.displayField || 'name',
-		    objectTypeFilter = props.objectTypeFilter || ['all'],
-		    placeholder = props.placeholder,
-		    noTargetHighlight = !!props.noTargetHighlight,
-		    element = props.element ? $(props.element) : $('<input id="aloha-attribute-field-' + props.name + '">'),
-		    component,
-		    template,
-		    resourceItem,
-		    resourceValue,
-		    targetObject,
-		    targetAttribute,
-		    lastAttributeValue;
+			displayField = props.displayField || 'name',
+			objectTypeFilter = props.objectTypeFilter || ['all'],
+			placeholder = props.placeholder,
+			noTargetHighlight = !! props.noTargetHighlight,
+			element = props.element ? $(props.element) : $('<input id="aloha-attribute-field-' + props.name + '">'),
+			component,
+			template,
+			resourceItem,
+			resourceValue,
+			targetObject,
+			targetAttribute,
+			lastAttributeValue;
 
 		if (props.cls) {
 			element.addClass(props.cls);
@@ -84,7 +72,7 @@ define([
 
 		component = Ui.adopt(props.name, Component, {
 			scope: props.scope,
-			init: function(){
+			init: function () {
 
 				if (props.element) {
 					this.element = element;
@@ -104,12 +92,12 @@ define([
 				element.autocomplete({
 					'html': true,
 					'appendTo': Context.selector,
-					'source': function( req, res ) {
+					'source': function (req, res) {
 						RepositoryManager.query({
 							queryString: req.term,
 							objectTypeFilter: objectTypeFilter
-						}, function( data ) {
-							res($.map(data.items, function(item) {
+						}, function (data) {
+							res($.map(data.items, function (item) {
 								return {
 									label: parse(template, item),
 									value: item.name,
@@ -123,11 +111,7 @@ define([
 			}
 		});
 
-		element
-			.bind("focus", onFocus)
-			.bind("blur", onBlur)
-		    .bind("keydown", onKeyDown)
-			.bind("keyup", onKeyup);
+		element.bind("focus", onFocus).bind("blur", onBlur).bind("keydown", onKeyDown).bind("keyup", onKeyup);
 
 		setPlaceholder();
 
@@ -143,7 +127,7 @@ define([
 		}
 
 		function onFocus(event, ui) {
-			if ( ! $(event.target).is(':visible') ) {
+			if (!$(event.target).is(':visible')) {
 				// The check for visible fixes the bug that the background
 				// color of the target element is not restored.
 				// Rationale: it's possible for the input to receive the focus event,
@@ -163,9 +147,9 @@ define([
 			}
 		}
 
-		function onKeyDown(event){
+		function onKeyDown(event) {
 			// on ENTER or ESC leave the editing
-			if ( event.keyCode == 13 || event.keyCode == 27 ) {
+			if (event.keyCode == 13 || event.keyCode == 27) {
 				event.preventDefault();
 			}
 		}
@@ -181,13 +165,26 @@ define([
 
 			// This handles attribute updates for non-repository, literal urls typed into the input field.
 			// Input values that refer to a repository item are handled via setItem().
-			if ( ! resourceItem ) {
-				setAttribute(targetAttribute, getValue());
+			// @todo deactivate setAttribute onkeyup for src attr. just in image plugin?!
+			//
+			// --> not working with abbr. plugin
+			//if (!resourceItem && !(targetObject.is('img') && targetAttribute === 'src')) {
+			//
+			if (!resourceItem && targetAttribute != 'src') {
+				var regex;
+				var reference;
+				setAttribute(targetAttribute, getValue(), regex, reference);
 			}
 
-			if ( ( event.keyCode == 13 || event.keyCode == 27 ) ) {
+			if ((event.keyCode == 13 || event.keyCode == 27)) {
+				/*
+				// not used?!
 				// Set focus to link element and select the object
-				Selection.getRangeObject().select();
+				try{
+					//Aloha.Selection.getRangeObject().select();
+				} catch(err) {
+				}
+				*/
 				finishEditing();
 			}
 		}
@@ -195,13 +192,13 @@ define([
 		function finishEditing() {
 			restoreTargetBackground();
 
-			if ( ! targetObject || lastAttributeValue === $(targetObject).attr(targetAttribute)) {
+			if (!targetObject || lastAttributeValue === $(targetObject).attr(targetAttribute)) {
 				return;
 			}
 
 			// when no resource item was selected, remove any marking of the target object
-			if ( ! resourceItem ) {
-				RepositoryManager.markObject( targetObject );
+			if (!resourceItem) {
+				RepositoryManager.markObject(targetObject);
 			}
 
 			if (getValue() === '') {
@@ -220,11 +217,10 @@ define([
 			restoreTargetBackground();
 
 			// set background color to give visual feedback which link is modified
-			var	target = $(targetObject);
-			if (target && target.context && target.context.style &&
-				target.context.style['background-color']) {
+			var target = $(targetObject);
+			if (target && target.context && target.context.style && target.context.style['background-color']) {
 				target.attr('data-original-background-color',
-							target.context.style['background-color']);
+				target.context.style['background-color']);
 			}
 			target.css('background-color', '#80B5F2');
 		}
@@ -245,8 +241,15 @@ define([
 		}
 
 		function parse(template, item) {
-			return template.replace( /\{([^}]+)\}/g, function(_, name) {
-				return name in item ? item[ name ] : "";
+			/* temp quick fix / hack for image plugin width / height field
+			// if not commented out it produces a error eg also in the abbr field
+			// if used it will show the repos autocompleate with width, height, abbr field
+			if (!template) {
+				return;
+			}
+			*/
+			return template.replace(/\{([^}]+)\}/g, function (_, name) {
+				return name in item ? item[name] : "";
 			});
 		}
 
@@ -258,7 +261,7 @@ define([
 			element.val(placeholder);
 		}
 
-		function setTemplate(tmpl){
+		function setTemplate(tmpl) {
 			template = tmpl;
 		}
 
@@ -323,14 +326,14 @@ define([
 				var setAttr = true;
 				if (typeof reference != 'undefined') {
 					var regxp = new RegExp(regex);
-					if ( ! reference.match(regxp) ) {
+					if (!reference.match(regxp)) {
 						setAttr = false;
 					}
 				}
 
 				// if no regex was successful or no reference value
 				// was submitted remove the attribute
-				if ( setAttr ) {
+				if (setAttr) {
 					$(targetObject).attr(attr, value);
 				} else {
 					$(targetObject).removeAttr(attr);
@@ -349,7 +352,7 @@ define([
 			targetAttribute = attr;
 
 			setItem(null);
-			
+
 			if (obj && attr) {
 				lastAttributeValue = $(obj).attr(attr);
 				setValue($(targetObject).attr(targetAttribute));
@@ -359,11 +362,11 @@ define([
 			}
 
 			// check whether a repository item is linked to the object
-			RepositoryManager.getObject( obj, function ( items ) {
+			RepositoryManager.getObject(obj, function (items) {
 				if (items && items.length > 0) {
 					setItem(items[0]);
 				}
-			} );
+			});
 		}
 
 		function getTargetObject() {
@@ -387,7 +390,7 @@ define([
 			element.hide();
 		}
 
-		function getInputId(){
+		function getInputId() {
 			return element.attr("id");
 		}
 

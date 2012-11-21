@@ -78,3 +78,26 @@ Aloha.settings.plugins.format = {
 };
 </javascript>
 
+
+h4. Experimental feature: assign CSS classes to elements via the sidebar
+
+If you specify an object in the following form you'll get in the sidebar a dropdown menu to select a CSS class for that HTML element.
+
+<javascript>
+Aloha.settings.plugins.format = {
+	config : {
+		'p': {'class': {'foo': 'Foo Style', 'bar': 'Bar Style'}},
+		'h1': {'class': {'foo-h1': 'Foo Style H1', 'bar-h1': 'Bar Style H1'}},
+		'h2': {},
+		'h3': {},
+		'em': {},
+		'strong': {},
+		'sub': {},
+		'sup': {}
+	},
+	editables : {
+		'#teaser'	: [ 'strong', 'em' ]
+	}
+};
+</javascript>
+

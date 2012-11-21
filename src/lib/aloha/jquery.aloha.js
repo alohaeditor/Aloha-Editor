@@ -30,17 +30,11 @@
  * Instead use the define(...) mechanism to define a module and to
  * import it where you need it.
  */
-define([
-	'aloha/core',
-	'aloha/selection',
-	'jquery',
-	'aloha/console'
-], function (
-	Aloha,
-	Selection,
-	jQuery,
-	console
-) {
+define(['aloha/core', 'aloha/selection', 'jquery', 'aloha/console'], function (
+Aloha,
+Selection,
+jQuery,
+console) {
 	'use strict';
 
 	var XMLSerializer = window.XMLSerializer;
@@ -259,11 +253,11 @@ define([
 	 */
 	jQuery.extendObjects = jQuery.fn.extendObjects = function (arg1, arg2) {
 		var options, name, src, copy, copyIsArray, clone,
-		    start = 1,
-		    target = arg1 || {},
+		start = 1,
+			target = arg1 || {},
 			length = arguments.length,
-		    deep = false,
-		    i;
+			deep = false,
+			i;
 
 
 		// Handle a deep copy situation

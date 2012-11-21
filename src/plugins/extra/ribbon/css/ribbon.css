@@ -43,11 +43,11 @@
 .aloha .aloha-ribbon-toolbar .aloha-ribbon-in {
 	/* Override jquery-ui float:left for menubar buttons */
 	float: right !important;
-	background-image: url('../img/fade-in.png') !important;
+	background-image: url(../img/fade-in.png) !important;
 }
 .aloha .aloha-ribbon-toolbar .aloha-ribbon-out {
 	float: left;
-	background-image: url('../img/fade-out.png') !important;
+	background-image: url(../img/fade-out.png) !important;
 }
 .aloha .aloha-ribbon-icon {
 	float: left;

@@ -86,14 +86,11 @@
  * error that will emerge unexpectedly if that require is ever removed.
  */
 
-define('ui/ui', [
-	'jquery',
-	'ui/ui-plugin'
-],
-function(
-	$,
-	UiPlugin
-) {
+define('ui/ui', ['jquery', 'ui/ui-plugin'],
+
+function (
+$,
+UiPlugin) {
 	'use strict';
 
 	/**
@@ -140,14 +137,16 @@ function(
 	 */
 	function adopt(name, SuperTypeOrInstance, settings) {
 		var Type,
-		    component;
+		component;
 
 		if ('string' !== $.type(name)) {
 			settings = SuperTypeOrInstance;
 			SuperTypeOrInstance = name;
 			name = settings.name;
 		} else {
-			settings = $.extend({name: name}, settings);
+			settings = $.extend({
+				name: name
+			}, settings);
 		}
 
 		if (!SuperTypeOrInstance.isInstance) {

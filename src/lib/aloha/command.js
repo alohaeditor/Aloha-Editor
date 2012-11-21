@@ -24,19 +24,12 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([
-	'aloha/core',
-	'aloha/registry',
-	'aloha/engine',
-	'util/dom',
-	'aloha/contenthandlermanager'
-], function (
-	Aloha,
-	Registry,
-	Engine,
-	Dom,
-	ContentHandlerManager
-) {
+define(['aloha/core', 'aloha/registry', 'aloha/engine', 'util/dom', 'aloha/contenthandlermanager'], function (
+Aloha,
+Registry,
+Engine,
+Dom,
+ContentHandlerManager) {
 	"use strict";
 
 	//			Action: What the command does when executed via execCommand(). Every command defined
@@ -215,7 +208,7 @@ define([
 	};
 
 	// create an instance
-	CommandManager = new (Registry.extend(CommandManager))();
+	CommandManager = new(Registry.extend(CommandManager))();
 
 	/**
 	 * Executes a registered command.
