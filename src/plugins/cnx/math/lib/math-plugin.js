@@ -131,7 +131,6 @@
       selector: SELECTOR,
       populator: buildEditor,
       placement: 'top',
-      noHover: true,
       focus: function($popover) {
         return setTimeout(function() {
           return $popover.find('.formula').trigger('focus');

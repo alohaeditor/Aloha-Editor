@@ -20,6 +20,7 @@ require ['testutils'], (TestUtils) ->
       POPULATED = null
       POPOVER_VISIBLE = null # Could be null, true (visible), or false (hidden)
       Popover.register
+        hover: true # When the user hovers over text the popover shows up
         selector: '.interesting'
         filter: ->
           Aloha.jQuery(@).hasClass 'interesting'

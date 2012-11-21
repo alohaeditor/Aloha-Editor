@@ -26,6 +26,7 @@ define ['aloha', 'jquery', 'aloha/console', 'css!./title-figcaption.css'], (Aloh
 
 
   return {
+    hover: true
     selector: selector
     populator: populator
     placement: 'right'

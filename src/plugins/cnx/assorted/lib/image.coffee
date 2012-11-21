@@ -188,5 +188,6 @@ define ['aloha', 'jquery', 'popover', 'ui/ui'], (Aloha, jQuery, Popover, UI) ->
 
 
   Popover.register
+    hover: true
     selector: selector
     populator: populator

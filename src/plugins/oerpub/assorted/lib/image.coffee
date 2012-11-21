@@ -188,5 +188,6 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console'], (Aloha, jQuery,
 
 
   Popover.register
+    hover: true
     selector: selector
     populator: populator

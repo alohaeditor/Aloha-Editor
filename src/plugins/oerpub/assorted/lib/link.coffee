@@ -250,5 +250,6 @@ define [
 
 
   Popover.register
+    hover: true
     selector: selector
     populator: populator

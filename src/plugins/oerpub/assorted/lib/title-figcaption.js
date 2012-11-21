@@ -27,6 +27,7 @@
       return $bubble;
     };
     return {
+      hover: true,
       selector: selector,
       populator: populator,
       placement: 'right',

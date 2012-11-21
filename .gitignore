@@ -9,3 +9,5 @@ doc/guides/staging
 .externalToolBuilders
 node_modules
 src/plugins/extra/math/lib/math-plugin-orig.js
+
+local.html

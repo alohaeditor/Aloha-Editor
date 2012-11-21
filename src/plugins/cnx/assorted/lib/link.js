@@ -127,6 +127,7 @@
       }
     });
     return Popover.register({
+      hover: true,
       selector: selector,
       populator: populator
     });

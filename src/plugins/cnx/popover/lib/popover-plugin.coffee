@@ -170,7 +170,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       # @selector
       # @populator
       # @placement
-      # @noHover
+      # @hover - Show the popover when the user hovers over an element
       jQuery.extend(@, cfg)
       if @focus or @blur
         console and console.warn 'Popover.focus and Popover.blur are deprecated in favor of listening to the "shown-popover" or "hide-popover" events on the original DOM element'
@@ -225,7 +225,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
         $node = jQuery(evt.target)
         clearTimeout($node.data('aloha-bubble-timer'))
 
-        if not @noHover
+        if @hover
           ## (STATE_*) -> (STATE_WC)
           $node.data('aloha-bubble-timer', delayTimeout($node, 'show', Popover.MILLISECS)) ## (STATE_WC) -> (STATE_O)
           $node.on 'mouseleave.bubble', =>

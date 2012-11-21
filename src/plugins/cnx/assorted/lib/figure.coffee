@@ -34,6 +34,7 @@ define ['aloha', 'jquery', 'aloha/console'], (Aloha, jQuery, console) ->
 
 
   return {
+    hover: true
     selector: selector
     populator: populator
   }

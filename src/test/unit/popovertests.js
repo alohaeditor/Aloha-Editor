@@ -15,6 +15,7 @@
         POPULATED = null;
         POPOVER_VISIBLE = null;
         Popover.register({
+          hover: true,
           selector: '.interesting',
           filter: function() {
             return Aloha.jQuery(this).hasClass('interesting');
