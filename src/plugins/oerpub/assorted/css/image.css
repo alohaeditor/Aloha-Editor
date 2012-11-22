@@ -18,3 +18,7 @@ form.plugin.image .upload-url-input,
 form.plugin.image .upload-image-input {
     width: 97%;
 }
+
+form.linkModal:focus {
+    outline: none;
+}
