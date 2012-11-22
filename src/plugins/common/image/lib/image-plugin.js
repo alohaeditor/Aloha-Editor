@@ -441,7 +441,7 @@ define([
 					if (plugin.settings.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
 						plugin.endResize();
 						plugin.imageObj = null;
-						Aloha.trigger('aloha-image-unselected');
+						Aloha.trigger('aloha-image-unselected', originalEvent.target);
 					}
 				}
 
@@ -822,7 +822,7 @@ define([
 			}
 			
 			Aloha.Selection.preventSelectionChangedFlag = false;
-			Aloha.trigger('aloha-image-selected');
+			Aloha.trigger('aloha-image-selected', e.target);
 		},
 
 		/**
