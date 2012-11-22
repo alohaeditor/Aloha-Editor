@@ -11,14 +11,26 @@
 }
 
 form.plugin.image textarea {
-    width: 97%;
+    width: 99%;
+    padding: 0.25em;
 }
 
 form.plugin.image .upload-url-input,
 form.plugin.image .upload-image-input {
-    width: 97%;
+    width: 98%;
 }
 
-form.linkModal:focus {
+form#linkModal:focus {
     outline: none;
+}
+
+.placeholder.preview {
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    margin: 1em 0;
+    padding: 0.5em;
+}
+
+.placeholder.preview h4 {
+    margin: 0 0 1em 0;
 }
