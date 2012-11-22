@@ -30,3 +30,6 @@ All changes are categorized into one of the following keywords:
 - **BUG**: word content handler: Fixed handling of pasted MS Word content to
            not result in broken markup when the content contains tables with
            cells that are all empty.
+- **BUG**: core/plugins: Fixed plugin initialization to ensure that the
+           "aloha-ready" event is not fired before all plugins have notified
+           that they are fully initialized.
