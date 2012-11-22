@@ -7,10 +7,15 @@ Register a couple of assorted oer plugins
 
 (function() {
 
-  define(['popover', './link', './image', './figure', './title-figcaption'], function(Popover, linkConfig, imageConfig, figureConfig, figcaptionConfig) {
-    Popover.register(linkConfig);
-    Popover.register(imageConfig);
-    return Popover.register(figcaptionConfig);
+  define(['aloha/plugin', 'popover', './link', './image', './figure', './title-figcaption'], function(Plugin, Popover, linkConfig, imageConfig, figureConfig, figcaptionConfig) {
+    return Plugin.create('assorted', {
+      defaultSettings: {},
+      init: function() {
+        Popover.register(linkConfig);
+        Popover.register(imageConfig);
+        return Popover.register(figcaptionConfig);
+      }
+    });
   });
 
 }).call(this);
