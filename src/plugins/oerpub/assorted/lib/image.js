@@ -156,6 +156,16 @@
       });
       return $bubble.contents();
     };
+    Aloha.bind('aloha-image-selected', function(event, target) {
+      var $el, nodes;
+      $el = jQuery(target);
+      nodes = jQuery(Aloha.activeEditable.obj).find(selector);
+      nodes = nodes.not($el);
+      nodes.trigger('hide');
+      $el.trigger('show');
+      $el.data('aloha-bubble-selected', true);
+      return $el.off('.bubble');
+    });
     UI.adopt('insertImage-oer', null, {
       click: function() {
         var newEl, promise;
@@ -183,8 +193,7 @@
     });
     return {
       selector: selector,
-      populator: populator,
-      hover: true
+      populator: populator
     };
   });
 

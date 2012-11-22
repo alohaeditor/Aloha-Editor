@@ -191,6 +191,17 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
       $bubble.contents()
 
 
+  Aloha.bind 'aloha-image-selected', (event, target) ->
+      # Hide other tooltips of the same type
+      $el = jQuery(target)
+      nodes = jQuery(Aloha.activeEditable.obj).find(selector)
+      nodes = nodes.not($el)
+      nodes.trigger 'hide'
+      $el.trigger 'show'
+      $el.data('aloha-bubble-selected', true)
+      $el.off('.bubble')
+
+
   UI.adopt 'insertImage-oer', null,
     click: () ->
       newEl = jQuery('<span class="aloha-ephemera image-placeholder"> </span>')
@@ -216,4 +227,3 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
   # Return config
   selector: selector
   populator: populator
-  hover: true
