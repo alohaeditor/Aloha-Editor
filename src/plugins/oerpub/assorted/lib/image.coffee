@@ -39,6 +39,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
     </form>'''
 
   showModalDialog = ($el) ->
+      settings = Aloha.require('assorted/assorted-plugin').settings
       root = Aloha.activeEditable.obj
       dialog = jQuery(DIALOG_HTML)
 
@@ -88,7 +89,8 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
       loadLocalFile = (file, $img, callback) ->
         reader = new FileReader()
         reader.onloadend = () ->
-          $img.attr('src', reader.result)
+          if $img
+            $img.attr('src', reader.result)
           # If we get an image then update the modal's imageSource
           setImageSource(reader.result)
           callback(reader.result) if callback
@@ -111,16 +113,20 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
         files = $uploadImage[0].files
         # Parse the file and if it's an image set the imageSource
         if files.length > 0
-          $previewImg = $placeholder.find('img')
-          loadLocalFile files[0], $previewImg
-          $placeholder.show()
+          if settings.image.preview
+            $previewImg = $placeholder.find('img')
+            loadLocalFile files[0], $previewImg
+            $placeholder.show()
+          else
+            loadLocalFile files[0]
 
       $uploadUrl.on 'change', () ->
         $previewImg = $placeholder.find('img')
         url = $uploadUrl.val()
         setImageSource(url)
-        $previewImg.attr 'src', url
-        $placeholder.show()
+        if settings.image.preview
+          $previewImg.attr 'src', url
+          $placeholder.show()
 
       # On save update the actual img tag. Use the submit event because this
       # allows the use of html5 validation.
