@@ -107,6 +107,11 @@
         return dialog.modal('hide');
       });
       dialog.on('hidden', function(event) {
+        if (deferred.state() === 'pending') {
+          deferred.reject({
+            target: $el[0]
+          });
+        }
         return dialog.remove();
       });
       return jQuery.extend(true, deferred.promise(), {

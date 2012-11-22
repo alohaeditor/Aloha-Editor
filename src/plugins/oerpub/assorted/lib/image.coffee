@@ -143,6 +143,9 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
         dialog.modal('hide')
 
       dialog.on 'hidden', (event) ->
+        # If hidden without being confirmed/cancelled, reject
+        if deferred.state()=='pending'
+          deferred.reject(target: $el[0])
         # Clean up after dialog was hidden
         dialog.remove()
 
