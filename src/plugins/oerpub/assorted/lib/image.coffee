@@ -8,7 +8,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
   WARNING_IMAGE_PATH = '/../plugins/oerpub/image/img/warning.png'
 
   DIALOG_HTML = '''
-    <form class="plugin image modal hide fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">
+    <form class="plugin image modal hide fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true" data-backdrop="false">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3>Edit Image</h3>
@@ -27,7 +27,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
           Please provide a description of this image for the visually impaired.
         </div>
         <div>
-          <textarea name="alt" type="text" required placeholder="Enter description ..."></textarea>
+          <textarea name="alt" type="text" required="required" placeholder="Enter description ..."></textarea>
         </div>
       </div>
       <div class="modal-footer">
