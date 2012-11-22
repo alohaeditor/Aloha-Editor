@@ -183,7 +183,8 @@
     });
     return {
       selector: selector,
-      populator: populator
+      populator: populator,
+      hover: true
     };
   });
 
