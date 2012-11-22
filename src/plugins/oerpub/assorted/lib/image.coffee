@@ -137,6 +137,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
           $el.replaceWith(img)
           $el = img
         deferred.resolve(target: $el[0], files: $uploadImage[0].files)
+        dialog.modal('hide')
 
       dialog.on 'click', '.btn.action.cancel', (evt) =>
         evt.preventDefault() # Don't submit the form

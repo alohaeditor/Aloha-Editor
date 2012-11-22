@@ -94,10 +94,11 @@
           $el.replaceWith(img);
           $el = img;
         }
-        return deferred.resolve({
+        deferred.resolve({
           target: $el[0],
           files: $uploadImage[0].files
         });
+        return dialog.modal('hide');
       });
       dialog.on('click', '.btn.action.cancel', function(evt) {
         evt.preventDefault();
