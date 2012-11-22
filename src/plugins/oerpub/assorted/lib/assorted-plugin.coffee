@@ -10,5 +10,5 @@ define [ 'aloha/plugin', 'jquery', 'popover', './link', './image', './figure', '
       @settings = $.extend true, @defaultSettings, @settings
       Popover.register linkConfig
       Popover.register imageConfig
-      # Popover.register figureConfig
-      Popover.register figcaptionConfig
+      #Popover.register figureConfig
+      #Popover.register figcaptionConfig

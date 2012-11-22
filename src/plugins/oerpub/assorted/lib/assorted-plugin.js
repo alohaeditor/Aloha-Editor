@@ -17,8 +17,7 @@ Register a couple of assorted oer plugins
       init: function() {
         this.settings = $.extend(true, this.defaultSettings, this.settings);
         Popover.register(linkConfig);
-        Popover.register(imageConfig);
-        return Popover.register(figcaptionConfig);
+        return Popover.register(imageConfig);
       }
     });
   });
