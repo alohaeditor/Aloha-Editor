@@ -13,25 +13,27 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3>Edit Image</h3>
       </div>
-      <div class="image-options">
-          <button class="btn btn-link upload-image-link">Choose a file</button> OR <button class="btn btn-link upload-url-link">get file from the Web</button>
-          <div class="placeholder preview hide">
-            <h4>Preview</h4>
-            <img class="preview-image"/>
-          </div>
-          <input type="file" class="upload-image-input" />
-          <input type="url" class="upload-url-input" placeholder="Enter URL of image ..."/>
-      </div>
-      <div class="image-alt">
-        <div class="forminfo">
-          Please provide a description of this image for the visually impaired.
+      <div class="modal-body">
+        <div class="image-options">
+            <button class="btn btn-link upload-image-link">Choose a file</button> OR <button class="btn btn-link upload-url-link">get file from the Web</button>
+            <div class="placeholder preview hide">
+              <h4>Preview</h4>
+              <img class="preview-image"/>
+            </div>
+            <input type="file" class="upload-image-input" />
+            <input type="url" class="upload-url-input" placeholder="Enter URL of image ..."/>
         </div>
-        <div>
-          <textarea name="alt" type="text" required="required" placeholder="Enter description ..."></textarea>
+        <div class="image-alt">
+          <div class="forminfo">
+            Please provide a description of this image for the visually impaired.
+          </div>
+          <div>
+            <textarea name="alt" type="text" required="required" placeholder="Enter description ..."></textarea>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary action insert">Save</button>
+        <button type="submit" class="btn btn-primary action insert">Save</button>
         <button class="btn action cancel">Cancel</button>
       </div>
     </form>'''
@@ -120,26 +122,25 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
         $previewImg.attr 'src', url
         $placeholder.show()
 
-      # On save update the actual img tag
+      # On save update the actual img tag. Use the submit event because this
+      # allows the use of html5 validation.
       deferred = $.Deferred()
-      dialog.on 'click', '.btn.action', (evt) =>
+      dialog.on 'submit', (evt) =>
         evt.preventDefault() # Don't submit the form
-
-        if jQuery(evt.target).is('.action.insert')
-          # Set the image source and alt text if set. If element is an image
-          # update it, otherwise replace it (placeholder case)
-          if $el.is('img')
-            $el.attr 'src', imageSource
-            $el.attr 'alt', dialog.find('[name=alt]').val()
-          else
-            img = jQuery('<img/>')
-            img.attr 'src', imageSource
-            img.attr 'alt', dialog.find('[name=alt]').val()
-            $el.replaceWith(img)
-            $el = img
-          deferred.resolve(target: $el[0], files: $uploadImage[0].files)
+        if $el.is('img')
+          $el.attr 'src', imageSource
+          $el.attr 'alt', dialog.find('[name=alt]').val()
         else
-          deferred.reject(target: $el[0])
+          img = jQuery('<img/>')
+          img.attr 'src', imageSource
+          img.attr 'alt', dialog.find('[name=alt]').val()
+          $el.replaceWith(img)
+          $el = img
+        deferred.resolve(target: $el[0], files: $uploadImage[0].files)
+
+      dialog.on 'click', '.btn.action.cancel', (evt) =>
+        evt.preventDefault() # Don't submit the form
+        deferred.reject(target: $el[0])
         dialog.modal('hide')
 
       dialog.on 'hidden', (event) ->
