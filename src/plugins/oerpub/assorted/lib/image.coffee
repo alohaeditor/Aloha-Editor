@@ -11,7 +11,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
     <form class="plugin image modal hide fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true" data-backdrop="false">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3>Edit Image</h3>
+        <h3>Insert image</h3>
       </div>
       <div class="modal-body">
         <div class="image-options">
@@ -160,7 +160,10 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
 
       # Return promise, with an added show method
       jQuery.extend true, deferred.promise(),
-        show: () -> dialog.modal 'show'
+        show: (title) ->
+            if title
+              dialog.find('.modal-header h3').text(title)
+            dialog.modal 'show'
 
   selector = 'img'
 
@@ -184,7 +187,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
           if data.files.length
             Aloha.trigger 'aloha-upload-file',
               target: data.target, files: data.files
-        promise.show()
+        promise.show('Edit image')
 
       $bubble.find('.remove').on 'click', ->
         pover.stopOne($el)
