@@ -15,7 +15,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
       </div>
       <div class="modal-body">
         <div class="image-options">
-            <button class="btn btn-link upload-image-link">Choose a file</button> OR <button class="btn btn-link upload-url-link">get file from the Web</button>
+            <a class="upload-image-link">Choose a file</a> OR <a class="upload-url-link">get file from the Web</a>
             <div class="placeholder preview hide">
               <h4>Preview</h4>
               <img class="preview-image"/>
