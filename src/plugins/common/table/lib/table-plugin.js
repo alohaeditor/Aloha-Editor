@@ -313,10 +313,10 @@ define([
 			}
 		} );
 
-		if ( this.settings.summaryinsidebar ) {
-			Aloha.ready( function () {
-				that.initSidebar( Aloha.Sidebar.right.show() );
-			} );
+		if (this.settings.summaryinsidebar) {
+			Aloha.bind('aloha-plugins-loaded', function () {
+				that.initSidebar(Aloha.Sidebar.right.show());
+			});
 		}
 	};
 

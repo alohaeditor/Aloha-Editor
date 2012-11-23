@@ -211,14 +211,12 @@ define([
 			});
 			me.obj.html(content);
 
-			// only initialize the editable when Aloha is fully ready (including plugins)
-			Aloha.bind('aloha-ready', function () {
-				// initialize the object
+			// Because editables can only properly be initialized when Aloha
+			// plugins are loaded.
+			Aloha.bind('aloha-plugins-loaded', function () {
 				me.obj.addClass('aloha-editable').contentEditable(true);
 
-				// add focus event to the object to activate
 				me.obj.mousedown(function (e) {
-					// check whether the mousedown was already handled
 					if (!Aloha.eventHandled) {
 						Aloha.eventHandled = true;
 						return me.activate(e);

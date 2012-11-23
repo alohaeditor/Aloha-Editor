@@ -190,10 +190,10 @@ define('format/format-plugin', [
 
 				this.initButtons();
 
-				Aloha.ready( function () {
+				Aloha.bind('aloha-plugins-loaded', function () {
 					// @todo add config option for sidebar panel
-					me.initSidebar( Aloha.Sidebar.right ); 
-				} );
+					me.initSidebar(Aloha.Sidebar.right);
+				});
 
 				// apply specific configuration if an editable has been activated
 				Aloha.bind('aloha-editable-activated',function (e, params) {

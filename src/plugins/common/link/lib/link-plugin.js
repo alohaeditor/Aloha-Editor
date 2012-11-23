@@ -168,9 +168,9 @@ define( [
 			this.subscribeEvents();
 			this.bindInteractions();
 			
-			Aloha.ready( function () { 
-				that.initSidebar( Aloha.Sidebar.right ); 
-			} );
+			Aloha.bind('aloha-plugins-ready', function () {
+				that.initSidebar( Aloha.Sidebar.right );
+			});
 		},
 
 		nsSel: function () {

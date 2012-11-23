@@ -31,23 +31,23 @@
  * @namespace block/block
  */
 define([
-       'aloha',
-       'jquery',
-       'block/blockmanager',
-       'aloha/observable',
-       'ui/scopes',
-       'util/class',
-       'PubSub'
+	'aloha',
+	'jquery',
+	'block/blockmanager',
+	'aloha/observable',
+	'ui/scopes',
+	'util/class',
+	'PubSub'
 ], function(
-       Aloha,
-       jQuery,
-       BlockManager,
-       Observable,
-       Scopes,
-       Class,
-	   PubSub
+	Aloha,
+	jQuery,
+	BlockManager,
+	Observable,
+	Scopes,
+	Class,
+	PubSub
 ){
-	"use strict";
+	'use strict';
 
 	var GENTICS = window.GENTICS;
 

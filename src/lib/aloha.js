@@ -307,21 +307,21 @@
 			return alohaRequire.apply(this, arguments);
 		};
 
-		var deferredReady;
-
 		Aloha.bind = function (type, fn) {
-			Aloha.require(['aloha/jquery'], function (jQuery) {
-				// We will only need to load jQuery once ...
+			Aloha.require(['aloha/jquery'], function ($) {
+				// Because will only need to load jQuery once ...
 				Aloha.bind = function (type, fn) {
-					deferredReady = deferredReady || jQuery.Deferred();
-					if ('aloha-ready' === type) {
-						if ('alohaReady' !== Aloha.stage) {
-							deferredReady.done(fn);
-						} else {
-							fn();
-						}
+					var stage = Aloha.initialization.getStageForEvent(type);
+					if (null === stage) {
+						$(Aloha, 'body').bind(type, fn);
+					} else if (stage & Aloha.stage) {
+						fn();
 					} else {
-						jQuery(Aloha, 'body').bind(type, fn);
+						var phase = Aloha.initialization.phases[stage];
+						if (!phase.deferred) {
+							phase.deferred = $.Deferred();
+						}
+						phase.deferred.done(fn);
 					}
 					return this;
 				};
@@ -331,13 +331,16 @@
 		};
 
 		Aloha.trigger = function (type, data) {
-			Aloha.require(['aloha/jquery'], function (jQuery) {
+			Aloha.require(['aloha/jquery'], function ($) {
 				Aloha.trigger = function (type, data) {
-					deferredReady = deferredReady || jQuery.Deferred();
-					if ('aloha-ready' === type) {
-						jQuery(deferredReady.resolve);
+					var stage = Aloha.initialization.getStageForEvent(type);
+					if (stage) {
+						var phase = Aloha.initialization.phases[stage];
+						if (phase.deferred) {
+							$(phase.deferred.resolve);
+						}
 					}
-					jQuery(Aloha, 'body').trigger(type, data);
+					$(Aloha, 'body').trigger(type, data);
 					return this;
 				};
 				Aloha.trigger(type, data);
