@@ -63,6 +63,11 @@ define([
 					function (jEvent, aEvent) {
 						var config;
 						config = that.getEditableConfig( Aloha.activeEditable.obj );
+
+						if (jQuery.type(config) === 'array' && jQuery.inArray( 'enabled', config ) !== -1) {
+							jQuery(Aloha.activeEditable.obj).addClass('aloha-metaview');
+						}
+
  						if (jQuery.type(config) === 'array' && jQuery.inArray( 'metaview', config ) !== -1) {
 							that._toggleMetaViewButton.show(true);
 						} else {

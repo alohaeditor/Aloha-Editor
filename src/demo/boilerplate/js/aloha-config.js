@@ -41,6 +41,11 @@
 			listenforcer: {
 				editables: [ '.aloha-enforce-lists' ]
 			},
+			/*metaview: {
+				editables: {
+					'#top-text': ['metaview','enabled']
+				}
+			},*/
 			abbr: {
 				// all elements with no specific configuration get an UL, just for fun :)
 				config: [ 'abbr' ],
