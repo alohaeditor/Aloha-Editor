@@ -1306,7 +1306,7 @@ define([
 			// however I could not manage to hide them completely
 			jQuery('.ui-wrapper')
 				.attr('contentEditable', false)
-				.addClass('aloha-image-box-active Aloha_Image_Resize aloha')
+				.addClass('aloha-ephemera-wrapper aloha-image-box-active Aloha_Image_Resize aloha')
 				.css({
 					position: 'relative',
 					display: 'inline-block',
