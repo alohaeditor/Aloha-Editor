@@ -58,6 +58,7 @@
         evt.preventDefault();
         $placeholder.hide();
         $uploadUrl.hide();
+        $uploadImage.click();
         return $uploadImage.show();
       });
       dialog.find('.upload-url-link').on('click', function(evt) {

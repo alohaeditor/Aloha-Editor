@@ -101,6 +101,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
         evt.preventDefault()
         $placeholder.hide()
         $uploadUrl.hide()
+        $uploadImage.click()
         $uploadImage.show()
 
       dialog.find('.upload-url-link').on 'click', (evt) ->
