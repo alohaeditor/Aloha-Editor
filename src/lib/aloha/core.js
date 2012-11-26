@@ -185,20 +185,20 @@ define([
 	/**
 	 * Initialization stages.
 	 *
-	 * These stages denote the 5 initialization states which Aloha will goes
+	 * These stages denote the 5 initialization states which Aloha will go
 	 * through from "LOADING" to "READY."
 	 *
 	 * LOADING (1) : Waiting for initialization to begin.
 	 *   ALOHA (2) : DOM is ready; performing compatibility checks, and
 	 *               setting up basic properties.
 	 * PLUGINS (4) : Initial checks have passed; commencing initialization of
-	 *               all configured (other wise all default) plugins.  At this
-	 *               point, editables can be aloha()fied.
+	 *               all configured (or default) plugins.  At this
+	 *               point editables can be aloha()fied.
 	 *     GUI (8) : Plugins have all begun their initialization process, but
 	 *               it is not necessary that their have completed. Preparing
 	 *               user interface (and repositories?).
 	 *  READY (16) : Gui is in place; all plugins have completed their
-	 *               initialization--whether asynchronous or otherwise.
+	 *               initialization--both synchonous and asynchronous.
 	 *
 	 * @type {Enum<number>}
 	 */
@@ -234,7 +234,7 @@ define([
 		/**
 		 * Phases of initialization.
 		 *
-		 *        fn : The process that to be invoked during this phase.
+		 *        fn : The process that is to be invoked during this phase.
 		 *     event : The event name, which if provided, will be fired after
 		 *             the phase has been started.
 		 *  deferred : A $.Deferred() object to hold event binding until that
@@ -244,12 +244,7 @@ define([
 		 */
 		phases: (function () {
 			var phases = {};
-			var noop = function (next) {
-				next();
-			};
-			phases[STAGES.LOADING] = {
-				fn: noop
-			};
+			phases[STAGES.LOADING] = {};
 			phases[STAGES.ALOHA] = {
 				fn: initAloha
 			};
@@ -262,7 +257,6 @@ define([
 				fn: initGui
 			};
 			phases[STAGES.READY] = {
-				fn: noop,
 				event: 'aloha-ready',
 				deferred: null
 			};
@@ -279,7 +273,7 @@ define([
 		},
 
 		/**
-		 * Proceeds to next initialization phases.
+		 * Proceeds to next initialization phase.
 		 *
 		 * @param {number} index The current initialization phase, as an index
 		 *                       into `order'.
@@ -291,10 +285,17 @@ define([
 			if (index < order.length) {
 				Aloha.stage = order[index];
 				var phase = initialization.phases[Aloha.stage];
-				// ASSERT(phase)
-				phase.fn(function () {
+				var next = function () {
 					initialization.proceed(++index, order, callback);
-				});
+				};
+				// ASSERT(phase)
+				if (phase.fn) {
+					phase.fn(function () {
+						setTimeout(next, 1);
+					});
+				} else {
+					setTimeout(next, 1);
+				}
 				if (phase.event) {
 					Aloha.trigger(phase.event);
 				}
