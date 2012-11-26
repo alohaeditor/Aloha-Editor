@@ -183,148 +183,6 @@ define([
 	}
 
 	/**
-	 * Initialization stages.
-	 *
-	 * These stages denote the 5 initialization states which Aloha will go
-	 * through from "LOADING" to "READY."
-	 *
-	 * LOADING (1) : Waiting for initialization to begin.
-	 *   ALOHA (2) : DOM is ready; performing compatibility checks, and
-	 *               setting up basic properties.
-	 * PLUGINS (4) : Initial checks have passed; commencing initialization of
-	 *               all configured (or default) plugins.  At this
-	 *               point editables can be aloha()fied.
-	 *     GUI (8) : Plugins have all begun their initialization process, but
-	 *               it is not necessary that their have completed. Preparing
-	 *               user interface (and repositories?).
-	 *  READY (16) : Gui is in place; all plugins have completed their
-	 *               initialization--both synchonous and asynchronous.
-	 *
-	 * @type {Enum<number>}
-	 */
-	var STAGES = {
-		LOADING : 1 << 0,
-		ALOHA   : 1 << 1,
-		PLUGINS : 1 << 2,
-		GUI     : 1 << 3,
-		READY   : 1 << 4
-	};
-
-	/**
-	 * The order in which initialization phases should sequenced.
-	 *
-	 * See initialization.phases to see what happens in each of these phases.
-	 *
-	 * @type {Array.<number>}
-	 * @const
-	 */
-	var ORDER = [
-		STAGES.LOADING,
-		STAGES.ALOHA,
-		STAGES.PLUGINS,
-		STAGES.GUI,
-		STAGES.READY
-	];
-
-	/**
-	 * Initialization facilities.
-	 */
-	var initialization = {
-
-		/**
-		 * Phases of initialization.
-		 *
-		 *        fn : The process that is to be invoked during this phase.
-		 *     event : The event name, which if provided, will be fired after
-		 *             the phase has been started.
-		 *  deferred : A $.Deferred() object to hold event binding until that
-		 *             initialization phase has been done.
-		 *
-		 * @type {Array.<object>}
-		 */
-		phases: (function () {
-			var phases = {};
-			phases[STAGES.LOADING] = {};
-			phases[STAGES.ALOHA] = {
-				fn: initAloha
-			};
-			phases[STAGES.PLUGINS] = {
-				fn: initPlugins,
-				event: 'aloha-plugins-loaded',
-				deferred: null
-			};
-			phases[STAGES.GUI] = {
-				fn: initGui
-			};
-			phases[STAGES.READY] = {
-				event: 'aloha-ready',
-				deferred: null
-			};
-			return phases;
-		}()),
-
-		/**
-		 * Starts the initialization phases.
-		 *
-		 * @param {function}
-		 */
-		start: function (callback) {
-			initialization.proceed(0, ORDER, callback);
-		},
-
-		/**
-		 * Proceeds to next initialization phase.
-		 *
-		 * @param {number} index The current initialization phase, as an index
-		 *                       into `order'.
-		 * @param {Array.<number>} order The order to the initialization phases.
-		 * @param {function=} callback Callback function to invoke at the end
-		 *                             of the initialization order.
-		 */
-		proceed: function (index, order, callback) {
-			if (index < order.length) {
-				Aloha.stage = order[index];
-				var phase = initialization.phases[Aloha.stage];
-				var next = function () {
-					initialization.proceed(++index, order, callback);
-				};
-				// ASSERT(phase)
-				if (phase.fn) {
-					phase.fn(function () {
-						setTimeout(next, 1);
-					});
-				} else {
-					setTimeout(next, 1);
-				}
-				if (phase.event) {
-					Aloha.trigger(phase.event);
-				}
-			} else if (callback) {
-				callback();
-			}
-		},
-
-		/**
-		 * Given and the name of an event, returns a corresponding
-		 * initialization phase.
-		 *
-		 * @param {string} eventName
-		 * @param {object|null} An initialization phase that corresponds to the
-		 *                      specified event name; null otherwise.
-		 */
-		getStageForEvent: function (eventName) {
-			var stage;
-			for (stage in initialization.phases) {
-				if (initialization.phases.hasOwnProperty(stage) &&
-						eventName === initialization.phases[stage].event) {
-					return stage;
-				}
-			}
-			return null;
-		}
-	};
-
-	/**
 	 * Base Aloha Object
 	 * @namespace Aloha
 	 * @class Aloha The Aloha base object, which contains all the core functionality
@@ -386,13 +244,6 @@ define([
 		stage: null,
 
 		/**
-		 * Initialization facilities.
-		 *
-		 * @type {object}
-		 */
-		initialization: initialization,
-
-		/**
 		 * A list of loaded plugin names. Available after the
 		 * "loadPlugins" stage.
 		 *
@@ -411,7 +262,11 @@ define([
 		 * Start the initialization process.
 		 */
 		init: function () {
-			initialization.start();
+			var phases = {};
+			phases[Aloha.Initialization.STAGES.ALOHA] = initAloha;
+			phases[Aloha.Initialization.STAGES.PLUGINS] = initPlugins;
+			phases[Aloha.Initialization.STAGES.GUI] = initGui;
+			Aloha.Initialization.start(phases);
 		},
 
 		/**

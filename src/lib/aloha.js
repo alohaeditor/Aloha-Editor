@@ -28,6 +28,169 @@
 	'use strict';
 
 	/**
+	 * Initialization stages.
+	 *
+	 * These stages denote the 5 initialization states which Aloha will go
+	 * through from "LOADING" to "READY."
+	 *
+	 * LOADING (1) : Waiting for initialization to begin.
+	 *   ALOHA (2) : DOM is ready; performing compatibility checks, and
+	 *               setting up basic properties.
+	 * PLUGINS (4) : Initial checks have passed; commencing initialization of
+	 *               all configured (or default) plugins.  At this
+	 *               point editables can be aloha()fied.
+	 *     GUI (8) : Plugins have all begun their initialization process, but
+	 *               it is not necessary that their have completed. Preparing
+	 *               user interface (and repositories?).
+	 *  READY (16) : Gui is in place; all plugins have completed their
+	 *               initialization--both synchonous and asynchronous.
+	 *
+	 * @type {Enum<number>}
+	 */
+	var STAGES = {
+		LOADING : 1 << 0,
+		ALOHA   : 1 << 1,
+		PLUGINS : 1 << 2,
+		GUI     : 1 << 3,
+		READY   : 1 << 4
+	};
+
+	/**
+	 * The order in which initialization phases should sequenced.
+	 *
+	 * See initialization.phases to see what happens in each of these phases.
+	 *
+	 * @type {Array.<number>}
+	 * @const
+	 */
+	var ORDER = [
+		STAGES.LOADING,
+		STAGES.ALOHA,
+		STAGES.PLUGINS,
+		STAGES.GUI,
+		STAGES.READY
+	];
+
+	/**
+	 * Initialization facilities.
+	 */
+	var Initialization = {
+
+		STAGES: STAGES,
+		ORDER: ORDER,
+
+		/**
+		 * Phases of initialization.
+		 *
+		 * Each phase object contains the following properties:
+		 *        fn : The process that is to be invoked during this phase
+		 *             (optional).
+		 *     event : The event name, which if provided, will be fired after
+		 *             the phase has been started (optional).
+		 *  deferred : A $.Deferred() object to hold event binding until that
+		 *             initialization phase has been done (optional).
+		 *
+		 * @type {Array.<phase>}
+		 */
+		phases: (function () {
+			var phases = {};
+			phases[STAGES.LOADING] = {
+				fn: null,
+				event: null,
+				deferred: null
+			};
+			phases[STAGES.ALOHA] = {
+				fn: null,
+				event: null,
+				deferred: null
+			};
+			phases[STAGES.PLUGINS] = {
+				fn: null,
+				event: 'aloha-plugins-loaded',
+				deferred: null
+			};
+			phases[STAGES.GUI] = {
+				fn: null,
+				event: null,
+				deferred: null
+			};
+			phases[STAGES.READY] = {
+				fn: null,
+				event: 'aloha-ready',
+				deferred: null
+			};
+			return phases;
+		}()),
+
+		/**
+		 * Starts the initialization phases.
+		 *
+		 * @param {function}
+		 */
+		start: function (phases, callback) {
+			var phase;
+			for (phase in phases) {
+				if (phases.hasOwnProperty(phase)) {
+					Aloha.Initialization.phases[phase].fn = phases[phase];
+				}
+			}
+			Initialization.proceed(0, ORDER, callback);
+		},
+
+		/**
+		 * Proceeds to next initialization phase.
+		 *
+		 * @param {number} index The current initialization phase, as an index
+		 *                       into `order'.
+		 * @param {Array.<number>} order The order to the initialization phases.
+		 * @param {function=} callback Callback function to invoke at the end
+		 *                             of the initialization order.
+		 */
+		proceed: function (index, order, callback) {
+			if (index < order.length) {
+				var stage = order[index];
+				Aloha.stage |= stage;
+				var phase = Initialization.phases[stage];
+				var next = function () {
+					Initialization.proceed(++index, order, callback);
+				};
+				// ASSERT(phase)
+				if (phase.fn) {
+					phase.fn(function () {
+						setTimeout(next, 1);
+					});
+				} else {
+					setTimeout(next, 1);
+				}
+				if (phase.event) {
+					Aloha.trigger(phase.event);
+				}
+			} else if (callback) {
+				callback();
+			}
+		},
+
+		/**
+		 * Given and the name of an event, returns a corresponding
+		 * initialization phase.
+		 *
+		 * @param {string} eventName
+		 * @param {object|null} An initialization phase that corresponds to the
+		 *                      specified event name; null otherwise.
+		 */
+		getStageForEvent: function (eventName) {
+			var stage;
+			for (stage in Initialization.phases) {
+				if (Initialization.phases.hasOwnProperty(stage) &&
+						eventName === Initialization.phases[stage].event) {
+					return parseInt(stage, 10);
+				}
+			}
+			return null;
+		}
+	};
+
+	/**
 	 * Gets the configuration for loading Aloha.
 	 *
 	 * If Aloha.settings.baseUrl is not specified, it will be taken from
@@ -200,7 +363,7 @@
 	}
 
 	function load() {
-
+		Aloha.Initialization = Initialization;
 		Aloha.defaults = {};
 		Aloha.settings = Aloha.settings || {};
 
@@ -282,8 +445,8 @@
 			requireConfig.paths
 		);
 
-		// Create define() wrappers that will provide the initialized objects that
-		// the user passes into Aloha via require() calls.
+		// Create define() wrappers that will provide the initialized objects
+		// that the user passes into Aloha via require() calls.
 		var predefinedModules = Aloha.settings.predefinedModules || {};
 
 		if (Aloha.settings.jQuery) {
@@ -311,13 +474,13 @@
 			Aloha.require(['aloha/jquery'], function ($) {
 				// Because will only need to load jQuery once ...
 				Aloha.bind = function (type, fn) {
-					var stage = Aloha.initialization.getStageForEvent(type);
+					var stage = Initialization.getStageForEvent(type);
 					if (null === stage) {
 						$(Aloha, 'body').bind(type, fn);
 					} else if (stage & Aloha.stage) {
 						fn();
 					} else {
-						var phase = Aloha.initialization.phases[stage];
+						var phase = Initialization.phases[stage];
 						if (!phase.deferred) {
 							phase.deferred = $.Deferred();
 						}
@@ -333,9 +496,9 @@
 		Aloha.trigger = function (type, data) {
 			Aloha.require(['aloha/jquery'], function ($) {
 				Aloha.trigger = function (type, data) {
-					var stage = Aloha.initialization.getStageForEvent(type);
+					var stage = Initialization.getStageForEvent(type);
 					if (stage) {
-						var phase = Aloha.initialization.phases[stage];
+						var phase = Initialization.phases[stage];
 						if (phase.deferred) {
 							$(phase.deferred.resolve);
 						}
@@ -349,9 +512,9 @@
 		};
 
 		Aloha.unbind = function (typeOrEvent) {
-			Aloha.require(['aloha/jquery'], function (jQuery) {
+			Aloha.require(['aloha/jquery'], function ($) {
 				Aloha.unbind = function (typeOrEvent) {
-					jQuery(Aloha, 'body').unbind(typeOrEvent);
+					$(Aloha, 'body').unbind(typeOrEvent);
 				};
 				Aloha.unbind(typeOrEvent);
 			});
@@ -383,10 +546,10 @@
 		 * passed in to us.
 		 */
 		var jQueryThatWasPassedToUs = Aloha.settings.jQuery;
-		define('aloha/jquery', ['jquery'], function (jQuery) {
+		define('aloha/jquery', ['jquery'], function ($) {
 			// We prefer Aloha.settings.jQuery, since a dynamically loaded
 			// jQuery may have been redefined by a user's jQuery.
-			return jQueryThatWasPassedToUs || jQuery;
+			return jQueryThatWasPassedToUs || $;
 		});
 
 		// Initialize this early so that the user doesn't have to use
@@ -415,30 +578,31 @@
 			'aloha/repository',
 			'aloha/repositoryobjects',
 			'aloha/contenthandlermanager'
-		], function(jQuery) {
-
+		], function($) {
 			// Set it again in case jQuery was loaded asynchronously.
-			Aloha.jQuery = jQuery;
+			Aloha.jQuery = $;
 
 			// Some core files provide default settings in Aloha.defaults.
-			Aloha.settings = jQuery.extendObjects( true, {}, Aloha.defaults, Aloha.settings );
+			Aloha.settings = $.extendObjects(true, {}, Aloha.defaults,
+					Aloha.settings);
 
 			return Aloha;
 		});
 
-		// TODO aloha should not make the require call itself. Instead,
-		// user code should require and initialize aloha.
+		// TODO aloha should not make the require call itself.  Instead, user
+		// code should require and initialize aloha.
 		Aloha.stage = 'loadingAloha';
-		require(requireConfig, ['aloha', 'aloha/jquery'], function (Aloha, jQuery) {
+		require(requireConfig, ['aloha', 'aloha/jquery'], function (Aloha, $) {
 			Aloha.stage = 'loadPlugins';
-			require(requireConfig, pluginConfig.entryPoints, function() {
-				jQuery(function(){
-					// Rangy must be initialized only after the body
-					// is available since it accesses the body
-					// element during initialization.
+			require(requireConfig, pluginConfig.entryPoints, function () {
+				$(function () {
+					// Rangy must be initialized only after the body is
+					// available since it accesses the body element during
+					// initialization.
 					window.rangy.init();
-					// The same for Aloha, but probably only because it
-					// depends on rangy.
+
+					// The same for Aloha, but probably only because it depends
+					// on rangy.
 					Aloha.init();
 				});
 			});
