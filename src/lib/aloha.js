@@ -56,9 +56,7 @@
 	};
 
 	/**
-	 * The order in which initialization phases should sequenced.
-	 *
-	 * See initialization.phases to see what happens in each of these phases.
+	 * The order in which initialization phases should be sequenced.
 	 *
 	 * @type {Array.<number>}
 	 * @const
@@ -83,11 +81,11 @@
 		 * Phases of initialization.
 		 *
 		 * Each phase object contains the following properties:
-		 *        fn : The process that is to be invoked during this phase
-		 *             (optional).
+		 *        fn : The process that is to be invoked during this phase.
+		 *             Will 2 functions: event() and next() (optional).
 		 *     event : The event name, which if provided, will be fired after
 		 *             the phase has been started (optional).
-		 *  deferred : A $.Deferred() object to hold event binding until that
+		 *  deferred : A $.Deferred() object to hold event handlers until that
 		 *             initialization phase has been done (optional).
 		 *
 		 * @type {Array.<phase>}
@@ -125,7 +123,11 @@
 		/**
 		 * Starts the initialization phases.
 		 *
-		 * @param {function}
+		 * @param {object.<STAGES, function>} phases Functions to be called at
+		 *                                           given initialization
+		 *                                           stages.
+		 * @param {function} callback Callback function to be invoked when
+		 *                            initialization is completed.
 		 */
 		start: function (phases, callback) {
 			var phase;
@@ -154,16 +156,17 @@
 				var next = function () {
 					Initialization.proceed(++index, order, callback);
 				};
+				var event = function () {
+					if (phase.event) {
+						Aloha.trigger(phase.event);
+					}
+				};
 				// ASSERT(phase)
 				if (phase.fn) {
-					phase.fn(function () {
-						setTimeout(next, 1);
-					});
+					phase.fn(event, next);
 				} else {
-					setTimeout(next, 1);
-				}
-				if (phase.event) {
-					Aloha.trigger(phase.event);
+					event();
+					next();
 				}
 			} else if (callback) {
 				callback();
@@ -501,6 +504,7 @@
 						var phase = Initialization.phases[stage];
 						if (phase.deferred) {
 							$(phase.deferred.resolve);
+							phase.deferred = null;
 						}
 					}
 					$(Aloha, 'body').trigger(type, data);

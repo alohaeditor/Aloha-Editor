@@ -94,7 +94,7 @@ define([
 	 *
 	 * @param {function} next Function to call after initialization.
 	 */
-	function initAloha(next) {
+	function initAloha(event, next) {
 		if (!isBrowserSupported()) {
 			var console = window.console;
 			if (console) {
@@ -141,6 +141,7 @@ define([
 			};
 		}
 
+		event();
 		next();
 	}
 
@@ -153,7 +154,7 @@ define([
 	 *                                        loaded synchronously, plugins may
 	 *                                        initialize asynchronously.
 	 */
-	function initPlugins(onPluginsInitialized) {
+	function initPlugins(event, next) {
 		// Because if there are no loadedPlugins specified, then the default is
 		// to initialized all available plugins.
 		if (0 === Aloha.loadedPlugins.length) {
@@ -165,13 +166,26 @@ define([
 				}
 			}
 		}
-		PluginManager.init(onPluginsInitialized, Aloha.loadedPlugins);
+
+		var fired = false;
+
+		PluginManager.init(function () {
+			if (!fired) {
+				event();
+				fired = true;
+			}
+			next();
+		}, Aloha.loadedPlugins);
+
+		if (!fired) {
+			event();
+		}
 	}
 
 	/**
 	 * Loads GUI components.
 	 */
-	function initGui(next) {
+	function initGui(event, next) {
 		Aloha.RepositoryManager.init();
 		var i;
 		for (i = 0; i < Aloha.editables.length; i++) {
@@ -179,6 +193,7 @@ define([
 				Aloha.editables[i].init();
 			}
 		}
+		event();
 		next();
 	}
 
