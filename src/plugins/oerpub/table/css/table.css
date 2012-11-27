@@ -65,3 +65,36 @@
 .aloha-table-createdialog table td.header {
     background-color: #AAAAAA !important;
 }
+
+.aloha-editable .add-row-before {
+  border-top: 1.5em solid #C5DAE9;
+}
+.aloha-editable .add-row-after {
+  border-bottom: 1.5em solid #C5DAE9;
+}
+.aloha-editable th.add-column-before,
+.aloha-editable td.add-column-before {
+  border-left: 2em solid #C5DAE9 !important;
+}
+.aloha-editable th.add-column-after,
+.aloha-editable td.add-column-after {
+  border-right: 2em solid #C5DAE9 !important;
+}
+.aloha-editable td.aloha-current-cell,
+.aloha-editable th.aloha-current-cell {
+    background-image: url("../img/currentcell.png") !important;
+    background-color: #E5EEF5;
+}
+.aloha-editable tr.delete-row {
+    opacity: .25;
+    color: #bbb;
+    background-image: url("../img/remove.png");
+    background-color: #888 !important;
+}
+.aloha-editable td.delete-column,
+.aloha-editable th.delete-column {
+    opacity: .25;
+    color: #bbb;
+    background-image: url("../img/remove.png");
+    background-color: #888 !important;
+}

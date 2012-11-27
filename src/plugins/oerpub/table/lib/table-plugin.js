@@ -1,7 +1,7 @@
 define(
 ['aloha', 'aloha/plugin', 'jquery', 'ui/ui', 'ui/button', 'PubSub',
-    'ui/dialog', 'table/table-create-layer', 'css!table/css/table.css'],
-function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
+    'ui/dialog', 'aloha/ephemera', 'table/table-create-layer', 'css!table/css/table.css'],
+function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLayer) {
     "use strict";
 
 	var GENTICS = window.GENTICS;
@@ -125,6 +125,10 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
             var plugin = this;
             this.createLayer = new CreateLayer(this);
             this.initButtons();
+
+            // Mark some classes as ephemeral
+            Ephemera.classes('aloha-current-cell', 'aloha-current-row');
+
             Aloha.bind('aloha-editable-created', function(event, editable){
                 editable.obj.find('table').each(function(){
                     prepareTable(plugin, jQuery(this));
@@ -149,18 +153,18 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                             if (nextrow.length > 0){
                                 var offset = e.shiftKey ? nextrow[0].cells.length-1 : 0;
                                 var nextcell = jQuery(nextrow[0].cells[offset]);
-                                placeCursor(nextcell);
+                                plugin.focusCell(nextcell);
                             } else {
                                 // Last column, last row
                                 // Add more
                                 var newrow = plugin.addRowAfter();
                                 if (newrow !== null){
-                                    placeCursor($(newrow).find('td,th').first());
+                                    plugin.focusCell($(newrow).find('td,th').first());
                                 }
                             }
                         } else {
                             var nextcell = next($cell, 'td,th');
-                            placeCursor(nextcell);
+                            plugin.focusCell(nextcell);
                         }
                     }
                     e.preventDefault();
@@ -198,6 +202,16 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                     plugin._addColumnAfter.enable(false);
                 }
             });
+            jQuery('body').on('click', function(e){
+                // Click outside table deselects current row and cell
+                if(!e.isDefaultPrevented()){
+                    plugin.currentCell.length && plugin.currentCell.removeClass('aloha-current-cell');
+                    plugin.currentRow.length && plugin.currentRow.removeClass('aloha-current-row');
+                    plugin.currentRow = jQuery();
+                    plugin.currentCell = jQuery();
+                    plugin.currentTable = jQuery();
+                }
+            });
         },
         initButtons: function(){
             var that = this;
@@ -224,6 +238,12 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                     var colcount = that.currentRow.find('td,th').length;
                     var newrow = createRow(colcount);
                     that.currentRow.before(newrow);
+                },
+                preview: function(e){
+                    that.currentRow.length && that.currentRow.addClass("add-row-before");
+                },
+                unpreview: function(e){
+                    that.currentRow.length && that.currentRow.removeClass("add-row-before");
                 }
             });
 
@@ -233,6 +253,12 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                 scope: this.name + '.row',
                 click: function(){
                     that.addRowAfter();
+                },
+                preview: function(e){
+                    that.currentRow.length && that.currentRow.addClass("add-row-after");
+                },
+                unpreview: function(e){
+                    that.currentRow.length && that.currentRow.removeClass("add-row-after");
                 }
             });
             this._deleterowButton = Ui.adopt("deleterow", Button, {
@@ -243,6 +269,16 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                     if(!that.currentRow.length){ return; }
                     that.currentRow.remove();
                     that.currentRow = jQuery();
+                    if(that.currentTable.find("td,th").length==0){
+                        that.currentTable.remove();
+                        that.currentTable = jQuery();
+                    }
+                },
+                preview: function(){
+                    that.currentRow.length && that.currentRow.addClass("delete-row");
+                },
+                unpreview: function(){
+                    that.currentRow.length && that.currentRow.removeClass("delete-row");
                 }
             });
             this._deleteColumnButton = Ui.adopt("deletecolumn", Button, {
@@ -252,14 +288,25 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                 click: function(){
                     if(!that.currentCell.length){ return; }
                     var idx = that.currentCell[0].cellIndex;
-                    var table = that.currentCell.parents('.aloha-editable table');
-                    table.find("tr").each(function(){
+                    that.currentTable.find("tr").each(function(){
                         this.removeChild(this.cells[idx]);
                     });
                     // If the table is now devoid of any rows, delete it
-                    if(table.find("td,th").length==0){
-                        table.remove();
+                    if(that.currentTable.find("td,th").length==0){
+                        that.currentTable.remove();
+                        that.currentTable = jQuery();
                     }
+                },
+                preview: function(){
+                    if(!that.currentCell.length){ return; }
+                    var idx = that.currentCell[0].cellIndex;
+                    that.currentTable.find("tr").each(function(){
+                        jQuery(this.cells[idx]).addClass("delete-column");
+                    });
+                },
+                unpreview: function(){
+                    that.currentTable.find('td,th')
+                        .removeClass('delete-column');
                 }
             });
             this._addColumnBefore = Ui.adopt("addcolumnbefore", Button, {
@@ -275,6 +322,17 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                         var newcell = toclone.clone().html('\u00a0');
                         toclone.before(newcell);
                     });
+                },
+                preview: function(e){
+                    if(!that.currentCell.length){ return; }
+                    var idx = that.currentCell[0].cellIndex;
+                    that.currentTable.find("tr").each(function(){
+                        jQuery(this.cells[idx]).addClass("add-column-before");
+                    });
+                },
+                unpreview: function(e){
+                    that.currentTable.find('td,th')
+                        .removeClass('add-column-before');
                 }
             });
             this._addColumnAfter = Ui.adopt("addcolumnafter", Button, {
@@ -284,12 +342,22 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
                 click: function(){
                     if(!that.currentCell.length){ return; }
                     var idx = that.currentCell[0].cellIndex;
-                    var table = that.currentCell.parents('.aloha-editable table');
-                    table.find("tr").each(function(){
+                    that.currentTable.find("tr").each(function(){
                         var toclone = $(this).find('td,th').eq(idx);
                         var newcell = toclone.clone().html('\u00a0');
                         toclone.after(newcell);
                     });
+                },
+                preview: function(e){
+                    if(!that.currentCell.length){ return; }
+                    var idx = that.currentCell[0].cellIndex;
+                    that.currentTable.find("tr").each(function(){
+                        jQuery(this.cells[idx]).addClass("add-column-after");
+                    });
+                },
+                unpreview: function(e){
+                    that.currentTable.find('td,th')
+                        .removeClass('add-column-after');
                 }
             });
             // Disable the table functions by default, they are enabled when
@@ -370,14 +438,25 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, CreateLayer) {
             }
         },
         clickTable: function(e){
+            this.currentCell.length && this.currentCell.removeClass('aloha-current-cell');
+            this.currentRow.length && this.currentRow.removeClass('aloha-current-row');
             this.currentCell = jQuery(e.target).closest('td,th');
             this.currentRow = jQuery(e.target).closest('tr');
+            this.currentTable = jQuery(e.target).closest('table');
+            this.currentCell.length && this.currentCell.addClass('aloha-current-cell');
+            this.currentRow.length && this.currentRow.addClass('aloha-current-row');
+            e.preventDefault();
+        },
+        focusCell: function(cell){
+            placeCursor(cell);
+            cell.click();
         },
 	    error: function(msg){
             Aloha.Log.error(this, msg);
         },
         currentCell: jQuery(), // Defined when clicked
         currentRow: jQuery(),  // Defined when clicked
+        currentTable: jQuery(), // Defined when clicked
         createLayer: undefined // Defined in init above.
     });
 });
