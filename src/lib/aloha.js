@@ -33,26 +33,26 @@
 	 * These stages denote the 5 initialization states which Aloha will go
 	 * through from "LOADING" to "READY."
 	 *
-	 * LOADING (1) : Waiting for initialization to begin.
-	 *   ALOHA (2) : DOM is ready; performing compatibility checks, and
+	 * LOADING (0) : Waiting for initialization to begin.
+	 *   ALOHA (1) : DOM is ready; performing compatibility checks, and
 	 *               setting up basic properties.
-	 * PLUGINS (4) : Initial checks have passed; commencing initialization of
+	 * PLUGINS (2) : Initial checks have passed; commencing initialization of
 	 *               all configured (or default) plugins.  At this
 	 *               point editables can be aloha()fied.
-	 *     GUI (8) : Plugins have all begun their initialization process, but
+	 *     GUI (3) : Plugins have all begun their initialization process, but
 	 *               it is not necessary that their have completed. Preparing
 	 *               user interface (and repositories?).
-	 *  READY (16) : Gui is in place; all plugins have completed their
+	 *  READY  (4) : Gui is in place; all plugins have completed their
 	 *               initialization--both synchonous and asynchronous.
 	 *
 	 * @type {Enum<number>}
 	 */
 	var STAGES = {
-		LOADING : 1 << 0,
-		ALOHA   : 1 << 1,
-		PLUGINS : 1 << 2,
-		GUI     : 1 << 3,
-		READY   : 1 << 4
+		LOADING : 0,
+		ALOHA   : 1,
+		PLUGINS : 2,
+		GUI     : 3,
+		READY   : 4
 	};
 
 	/**
@@ -151,12 +151,12 @@
 		proceed: function (index, order, callback) {
 			if (index < order.length) {
 				var stage = order[index];
-				Aloha.stage |= stage;
 				var phase = Initialization.phases[stage];
 				var next = function () {
 					Initialization.proceed(++index, order, callback);
 				};
 				var event = function () {
+					Aloha.stage = stage;
 					if (phase.event) {
 						Aloha.trigger(phase.event);
 					}
@@ -475,12 +475,12 @@
 
 		Aloha.bind = function (type, fn) {
 			Aloha.require(['aloha/jquery'], function ($) {
-				// Because will only need to load jQuery once ...
+				// Because we will only need to load jQuery once
 				Aloha.bind = function (type, fn) {
 					var stage = Initialization.getStageForEvent(type);
 					if (null === stage) {
 						$(Aloha, 'body').bind(type, fn);
-					} else if (stage & Aloha.stage) {
+					} else if (stage <= Aloha.stage) {
 						fn();
 					} else {
 						var phase = Initialization.phases[stage];
