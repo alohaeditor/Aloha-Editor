@@ -179,6 +179,7 @@ define([
 
 		if (!fired) {
 			event();
+			fired = true;
 		}
 	}
 
