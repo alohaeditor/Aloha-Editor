@@ -45,7 +45,8 @@ define( [
 	'ui/toggleButton',
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'aloha/console'
+	'aloha/console',
+	'PubSub'
 ], function (
 	Aloha,
 	Plugin,
@@ -59,7 +60,8 @@ define( [
 	ToggleButton,
 	i18n,
 	i18nCore,
-	console
+	console,
+	PubSub
 ) {
 	'use strict';
 	
@@ -463,14 +465,16 @@ define( [
 				}
 			});
 			
-			this.hrefField = AttributeField( {
+			this.hrefField = AttributeField({
 				name: 'editLink',
 				width: 320,
 				valueField: 'url',
 				cls: 'aloha-link-href-field',
-				scope: 'Aloha.continuoustext'
-			} );
-			this.hrefField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
+				scope: 'Aloha.continuoustext',
+				noTargetHighlight: true,
+				targetHighlightClass: 'aloha-focus'
+			});
+			this.hrefField.setTemplate('<span><b>{name}</b><br/>{url}</span>');
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
 
 			this._removeLinkButton = Ui.adopt("removeLink", Button, {
@@ -661,6 +665,12 @@ define( [
 				jQuery( this.hrefField.getInputElem() ).attr( 'value', that.hrefValue ).select();
 			}
 			
+			// because the Aloha Selection is deprecated I need to convert it to a ragne
+			var apiRange = Aloha.createRange();
+			apiRange.setStart(range.startContainer, range.startOffset);
+			apiRange.setEnd(range.endContainer, range.endOffset);
+
+			PubSub.pub('aloha.link.insert', {range: apiRange});
 			this.hrefChange();
 		},
 
@@ -669,7 +679,7 @@ define( [
 		 */
 		removeLink: function ( terminateLinkScope ) {
 			var	range = Aloha.Selection.getRangeObject(),
-			    foundMarkup = this.findLinkMarkup();
+				foundMarkup = this.findLinkMarkup();
 			
 			// clear the current item from the href field
 			this.hrefField.setItem(null);
