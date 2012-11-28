@@ -69,6 +69,14 @@ define [ "aloha", "aloha/plugin", "ui/ui", "PubSub" ], (
       # Also, that's the reason for the bind(@)
       @element = @
       settings.click.bind(@)(evt)
+    if settings.preview
+      $buttons.off 'mouseenter'
+      $buttons.on 'mouseenter', (evt) ->
+        settings.preview.bind(@)(evt)
+    if settings.unpreview
+      $buttons.off 'mouseleave'
+      $buttons.on 'mouseleave', (evt) ->
+        settings.unpreview.bind(@)(evt)
 
     return makeItemRelay slot, $buttons
 
