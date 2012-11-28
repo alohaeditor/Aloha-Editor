@@ -1156,7 +1156,9 @@ define([
 			if (attributeChanged && !suppressEvents) {
 				this._update();
 				this.trigger('change');
-				Aloha.activeEditable.smartContentChange( { type: 'block-change' } );
+				if (Aloha.activeEditable) {
+					Aloha.activeEditable.smartContentChange({type: 'block-change'});
+				}
 			}
 			return null;
 		},
