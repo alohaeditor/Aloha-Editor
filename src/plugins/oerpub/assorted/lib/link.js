@@ -148,12 +148,10 @@
         });
       }
     });
-    return Popover.register({
-      hover: true,
+    return {
       selector: selector,
-      populator: populator,
-      noHover: true
-    });
+      populator: populator
+    };
   });
 
 }).call(this);

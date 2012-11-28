@@ -249,8 +249,6 @@ define [
         newLink.removeClass('aloha-new-link')
 
 
-  Popover.register
-    hover: true
-    selector: selector
-    populator: populator
-    noHover: true
+  # Return config
+  selector: selector
+  populator: populator

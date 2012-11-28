@@ -172,11 +172,10 @@
         return promise.show();
       }
     });
-    return Popover.register({
-      hover: true,
+    return {
       selector: selector,
       populator: populator
-    });
+    };
   });
 
 }).call(this);
