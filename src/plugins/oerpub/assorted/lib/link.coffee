@@ -180,17 +180,17 @@ define [
       details = jQuery '''
           <div class="link-popover-details">
             <a class="edit-link" >
-              <img src="''' + baseUrl + '''/../plugins/cnx/assorted/img/pencil_cnx.png" />
+              <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/pencil_cnx.png" />
               <span title="Edit link">Edit link ...</span>
             </a>
             &nbsp; | &nbsp;
             <a class="delete-link">
-              <img src="''' + baseUrl + '''/../plugins/cnx/assorted/img/delete_icon.png" />
+              <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/delete_icon.png" />
               <span title="Unlink (remove the link, leaving just the text)">Unlink</span>
             </a>
             &nbsp; | &nbsp;
             <span  class="visit-link">
-              <img src="''' + baseUrl + '''/../plugins/cnx/assorted/img/external-link-02.png" />
+              <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/external-link-02.png" />
               <a href="''' + href + '''">''' + href + '''</a>
             </span>
           </div>
