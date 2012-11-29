@@ -164,6 +164,32 @@ define [
 
   selector = 'a'
 
+  # see http://stackoverflow.com/questions/10903002/shorten-url-for-display-with-beginning-and-end-preserved-firebug-net-panel-st
+  shortUrl = (linkurl, l) ->
+    l = (if typeof (l) isnt "undefined" then l else 50)
+    chunk_l = (l / 2)
+    linkurl = linkurl.replace("http://", "")
+    linkurl = linkurl.replace("https://", "")
+    return linkurl  if linkurl.length <= l
+    start_chunk = shortString(linkurl, chunk_l, false)
+    end_chunk   = shortString(linkurl, chunk_l, true)
+    start_chunk + ".." + end_chunk
+
+  shortString = (s, l, reverse) ->
+    stop_chars = [" ", "/", "&"]
+    acceptable_shortness = l * 0.80 # When to start looking for stop characters
+    reverse = (if typeof (reverse) isnt "undefined" then reverse else false)
+    s = (if reverse then s.split("").reverse().join("") else s)
+    short_s = ""
+    i = 0
+
+    while i < l - 1
+      short_s += s[i]
+      break  if i >= acceptable_shortness and stop_chars.indexOf(s[i]) >= 0
+      i++
+    return short_s.split("").reverse().join("")  if reverse
+    short_s
+    
   populator = ($el) ->
       # When a click occurs, the activeEditable is cleared so squirrel it
       editable = Aloha.activeEditable
@@ -191,12 +217,15 @@ define [
             &nbsp; | &nbsp;
             <span  class="visit-link">
               <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/external-link-02.png" />
-              <a href="''' + href + '''">''' + href + '''</a>
+              <a href="''' + href + '''">''' + shortUrl(href,30) + '''</a>
             </span>
           </div>
           <br/>
       '''
+      # to add a tooltip to the link in the popover (gives the popover its own popover):
+      # <a href="''' + href + '''" title="''' + href + '''">''' + shortUrl(href,30) + '''</a>
       $bubble.append details
+
       $edit = details.find '.edit-link'
       $edit.on 'click', ->
           # unsquirrel the activeEditable
