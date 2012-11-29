@@ -25,7 +25,7 @@ define [
       </div>
       <div class="modal-body">
         <div id="link-text">
-          <h4>Text to display</h4>
+          <span>Text to display</span>
           <div>
             <input id="link-contents" class="input-xlarge" type="text" placeholder="Enter a phrase here" required />
           </div>
@@ -38,7 +38,7 @@ define [
           </ul>
           <div class="tab-content">
             <div class="tab-pane" id="link-tab-external">
-              <h4 for="link-external">Link to webpage</h4>
+              <span for="link-external">Link to webpage</span>
               <input class="link-input link-external" id="link-external" type="url" placeholder="http://"/>
             </div>
             <div class="tab-pane" id="link-tab-internal">
