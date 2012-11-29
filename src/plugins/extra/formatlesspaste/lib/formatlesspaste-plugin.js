@@ -134,7 +134,7 @@ define([
 	}
 
 	Aloha.bind('aloha-editable-destroyed', function ($event, data) {
-		clearEditableConfig(data.editable);
+		clearEditableConfig(data);
 	});
 
 	return Plugin.create('formatlesspaste', {
