@@ -102,6 +102,18 @@
         this.element = this;
         return settings.click.bind(this)(evt);
       });
+      if (settings.preview) {
+        $buttons.off('mouseenter');
+        $buttons.on('mouseenter', function(evt) {
+          return settings.preview.bind(this)(evt);
+        });
+      }
+      if (settings.unpreview) {
+        $buttons.off('mouseleave');
+        $buttons.on('mouseleave', function(evt) {
+          return settings.unpreview.bind(this)(evt);
+        });
+      }
       return makeItemRelay(slot, $buttons);
     };
     /*
