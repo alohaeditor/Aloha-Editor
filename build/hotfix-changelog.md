@@ -38,3 +38,7 @@ All changes are categorized into one of the following keywords:
 		   included in the page.
 - **BUG**: block-plugin: Fixed activation of correct block when active editable
 		   is changed using Keys (Tab, Shift-Tab) or programmatically.
+- **BUG**: block-plugin: Fixed handling of copy & paste in editables that are
+		   nested inside blocks. Before this fix, when pressing CTRL-C to copy
+		   the current selection in an editable nested inside a block, the whole
+		   block was selected and copied.
