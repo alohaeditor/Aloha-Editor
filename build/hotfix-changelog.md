@@ -36,3 +36,5 @@ All changes are categorized into one of the following keywords:
 - **BUG**: characterpicker & horizontalruler: Fixes icon styling to display
 		   correct images event when a user-specified jquery ui stylsheet is
 		   included in the page.
+- **BUG**: block-plugin: Fixed activation of correct block when active editable
+		   is changed using Keys (Tab, Shift-Tab) or programmatically.

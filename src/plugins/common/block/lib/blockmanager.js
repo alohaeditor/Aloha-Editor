@@ -134,6 +134,7 @@ define([
 			this._registerEventHandlersForDeterminingCurrentlyActiveBlock();
 			this._registerEventHandlersForBlockDeletion();
 			this._registerEventHandlersForCutCopyPaste();
+			this._registerEVentHandlersForEditableActivated();
 
 			// TODO: not sure if we still need the code below. it is somehow related to caret handling
 			Aloha.bind('aloha-selection-changed', function(evt, selection, originalEvent) {
@@ -306,6 +307,22 @@ define([
 				// IF: Release of ctrl / command X
 				if (currentlyCutting  && (e.which === 67 || e.which === 18 || e.which === 88)) {
 					currentlyCutting = false;
+				}
+			});
+		},
+
+		/**
+		 * When editables are activated (e.g. by moving the focus with Tab or Shift-Tab or programmatically),
+		 * we need to activate the enclosing blocks. 
+		 */
+		_registerEVentHandlersForEditableActivated: function () {
+			var that = this;
+			Aloha.bind('aloha-editable-activated', function (event, arg) {
+				if (arg.editable) {
+					var block = that.getBlock(arg.editable.obj.closest('.aloha-block'));
+					if (block) {
+						block.activate();
+					}
 				}
 			});
 		},
