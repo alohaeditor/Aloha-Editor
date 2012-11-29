@@ -204,7 +204,8 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
             });
             jQuery('body').on('click', function(e){
                 // Click outside table deselects current row and cell
-                if(!e.isDefaultPrevented()){
+                if(!e.isDefaultPrevented() &&
+                        $(e.target).parents('.aloha-editable').length){
                     plugin.currentCell.length && plugin.currentCell.removeClass('aloha-current-cell');
                     plugin.currentRow.length && plugin.currentRow.removeClass('aloha-current-row');
                     plugin.currentRow = jQuery();
