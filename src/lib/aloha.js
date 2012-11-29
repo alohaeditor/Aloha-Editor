@@ -366,9 +366,9 @@
 	}
 
 	function load() {
-		Aloha.Initialization = Initialization;
 		Aloha.defaults = {};
 		Aloha.settings = Aloha.settings || {};
+		Aloha.Initialization = Initialization;
 
 		var loadConfig = getLoadConfig();
 		var pluginConfig = getPluginLoadConfig(loadConfig.plugins);
@@ -595,9 +595,7 @@
 
 		// TODO aloha should not make the require call itself.  Instead, user
 		// code should require and initialize aloha.
-		Aloha.stage = 'loadingAloha';
 		require(requireConfig, ['aloha', 'aloha/jquery'], function (Aloha, $) {
-			Aloha.stage = 'loadPlugins';
 			require(requireConfig, pluginConfig.entryPoints, function () {
 				$(function () {
 					// Rangy must be initialized only after the body is

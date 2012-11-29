@@ -260,11 +260,10 @@ define([
 		stage: null,
 
 		/**
-		 * A list of loaded plugin names. Available after the
-		 * "loadPlugins" stage.
+		 * A list of loaded plugin names, available after the STAGES.PLUGINS
+		 * initialization phase.
 		 *
-		 * @property
-		 * @type array
+		 * @type {Array.<string>}
 		 * @internal
 		 */
 		loadedPlugins: [],
