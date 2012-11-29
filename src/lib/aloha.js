@@ -366,6 +366,7 @@
 	}
 
 	function load() {
+		Aloha.features = {};
 		Aloha.defaults = {};
 		Aloha.settings = Aloha.settings || {};
 		Aloha.Initialization = Initialization;
@@ -583,6 +584,8 @@
 			'aloha/repositoryobjects',
 			'aloha/contenthandlermanager'
 		], function($) {
+			Aloha.features.jquery = true;
+
 			// Set it again in case jQuery was loaded asynchronously.
 			Aloha.jQuery = $;
 

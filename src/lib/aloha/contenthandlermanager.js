@@ -55,8 +55,9 @@ define([
 			return new AbstractContentHandler();
 		},
 
-		handleContent: function (content, options) {
+		handleContent: function (content, options, editable) {
 			var manager = this;
+			// Because if no handler is given, then use all that are available.
 			var handlers = options.contenthandler || manager.getIds();
 			var handler;
 			var i;
@@ -64,7 +65,8 @@ define([
 				handler = manager.get(handlers[i]);
 				if (handler) {
 					if (typeof handler.handleContent === 'function') {
-						content = handler.handleContent(content, options);
+						content = handler.handleContent(content, options,
+								editable || Aloha.activeEditable);
 					} else {
 						console.error(
 							'A valid content handler needs the method handleContent.'

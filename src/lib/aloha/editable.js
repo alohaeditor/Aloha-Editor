@@ -35,7 +35,8 @@ define([
 	'aloha/console',
 	'aloha/block-jump',
 	'aloha/ephemera',
-	'util/dom2'
+	'util/dom2',
+	'PubSub'
 ], function (
 	Aloha,
 	Class,
@@ -47,7 +48,8 @@ define([
 	console,
 	BlockJump,
 	Ephemera,
-	Dom
+	Dom,
+	PubSub
 ) {
 	'use strict';
 
@@ -208,7 +210,7 @@ define([
 			content = ContentHandlerManager.handleContent(content, {
 				contenthandler: Aloha.settings.contentHandler.initEditable,
 				command: 'initEditable'
-			});
+			}, me);
 			me.obj.html(content);
 
 			// Because editables can only properly be initialized when Aloha
@@ -310,6 +312,7 @@ define([
 				 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 				 */
 				Aloha.trigger('aloha-editable-created', [me]);
+				PubSub.pub('aloha.editable.created', {data: me});
 			});
 		},
 
@@ -555,6 +558,7 @@ define([
 			 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 			 */
 			Aloha.trigger('aloha-editable-destroyed', [this]);
+			PubSub.pub('aloha.editable.destroyed', {data: this});
 
 			// finally register the editable with Aloha
 			Aloha.unregisterEditable(this);
@@ -735,7 +739,7 @@ define([
 				$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
 					contenthandler: Aloha.settings.contentHandler.getContents,
 					command: 'getContents'
-				}) + '</div>');
+				}, this) + '</div>');
 
 				cache = editableContentCache[this.getId()] = {};
 				cache.raw = raw;
@@ -894,6 +898,12 @@ define([
 					});
 				}, this.sccIdle);
 			}
+
+			window.console.log('SMART CONTENT CHANGE');
+			ContentHandlerManager.handleContent(me.getContents(), {
+				contenthandler:
+						Aloha.settings.contentHandler.smartContentChange,
+			}, me);
 		},
 
 		/**
