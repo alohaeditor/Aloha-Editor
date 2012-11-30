@@ -1,43 +1,204 @@
 h2. The Validation Plugin
 
-The validation plugin ...
+The validation plugin allows editables to be validated against predefined tests
+for correctness, and then have specific processes be undertaken in response to
+the result of these tests.
 
 endprologue.
 
-h3. Usage
+h3. Dependencies
 
-The Undo Plugin allows you to undo changes to an editable by pressing
-<notextile><code>Ctrl&#43;Z</code></notextile> (or
-<notextile><code>Cmd&#43;Z</code></notextile> on Mac). You may also
-reapply changes made undone by pressing <notextile><code>Ctrl&#43;Shift&#43;Z</code></notextile> or
-<notextile><code>Cmd&#43;Shift&#43;Z</code></notextile> on Mac. The Undo Plugin has no UI and no
-components.
+In order to use editable validation in Aloha Editor, the first thing you will
+need to do is to include the @extra/validation@ and @common/contenthandler@
+plugins in your @data-aloha-plugins@ list in the script tag which loads
+@aloha.js@.
+
+<html>
+	<script src="aloha.js" data-aloha-plugins"common/highlighteditables,
+	                                          extra/validation"></script>
+</html>
+
+NOTE: @common/contenthandler@ is must be included for @extra/validation@ to
+	  work because the validation plugin uses
+	  "Content Handlers":plugin_contenthandler.html internally and therefore
+	  depends on them.
 
 h3. Configuration
 
-This plugin does not provide any configuration settings itself.
+Loading the necessary plugins will make the validation features available in
+Aloha Editor, but that alone will not result in any editables being validated.
+For that to happen, you must configure which editables you wish to be
+validated, and what tests to run on each editable to validated it.
 
-However, the Undo plugin relies on the @aloha-smart-content-changed@
-event for creating undo snapshots. All undo and redo actions will jump
-from one undo snapshot to another.
+At least two properties must be configured in the
+@Aloha.settings.plugins.validation@ object for you to start seeing validation
+at work: *@config@*, which indicates *what* should be validated and *how*
+validity is tested, and at least one of either *@hooks@*, @channels@, or
+@events@, which will indicate *when* validation should be run.
 
-The @aloha-smart-content-changed@ fires after content changes. The event
-doesn't fire immediately, but only if the content didn't change again
-for a certain amount of time. By default the timeout is 5 seconds (the
-@idle@ setting). If the user types a character that is in the list
-configured by the @delimiters@ settings, the timeout is drastically
-shortened to half a second (the @delay@ setting).
+h4. *@config@*
 
-The timeouts and delimiters can be configured as follows (timeouts are in milliseconds):
+@config@ is an object that maps strings of jQuery selectors against functions
+or regular expressions which will test the validity of any editable that is
+matched by the selector
+
+NOTE: You may be interested know that an editable is "matched" by a selector
+	  when an editable and a selector string has an
+	  "$.fn.is&#40;&#41;":http://api.jquery.com/is/ relationship.
+
+*Example:*
 
 <javascript>
-Aloha.settings.smartContentChange = {
-    delimiters: [ ':', ';', '.', '!', '?', ',', unescape( '%u0009' ), unescape( '%u0020' ), 'Enter' ],
-    idle: 5000,
-    delay: 500
-};
+	Aloha.settings.plugins.validation = {
+		config: {
+
+			// Tests all editables.
+			// Editable is invalid if it contains any <script>, or <style>
+			// elements.
+			"*": function (content, editable, $) {
+				0 === $('<div>' + content + '</div>').find('script,style');
+			},
+
+			// Tests editables with the id "weekday".
+			// Editable is invalid unless the entirety of its contents is a
+			// name of one of the weekdays.
+			"#weekday": /^(monday|tuesday|wednesday|thursday|friday)$/i
+
+			// Will be ignored with an error.
+			"span": "<b>Lorem ipsum</b>"
+		}
+	}
 </javascript>
 
+It is important to know that an editable with the id "weekday" matches both
+configured selectors and therefore will be subject to both validation tests.
+Notice that both functions, and regular expression are allowed as validation
+tests, but anything else is invalid configuration.
+
+WARNING: Anything other than a function or a regular expression will result in
+		 an error message, and that test being ignored.  So the above example
+		 will cause the following message to be logged in the console: *@validation/validation-plugin: Encountered property "<b>Lorem ipsum</b>" of type string when a RegExp or Function is required.@*
+
+Consider the test function:
+<javascript>
+	function (content, editable, $) {
+		0 === $('<div>' + content + '</div>').find('script,style');
+	},
+</javascript>
+
+There are a couple of things about the above example function to that are
+important to take note of as rules:
+
+ * All such functions receive 3 parameters: The first arguments is a string,
+   the second, an Aloha.Editable object, and the third is a refernce to the
+   jQuery that is used by Aloha Editor internally.
+ * All such functions must be a predicate (returns truthy or falsey values).
+ * The function is a "pure" function--meaning that it does not alter external
+   state outside of itself.
+ * The function is not asynchonous.
+ * The function is relatively cheap, and not space/time-complex.
+
+So the correct signature form of the function will look like this (in "Google
+Closure Compiler
+Annotation":https://developers.google.com/closure/compiler/docs/js-for-compiler form):
+*@function(string, Aloha.Editable, jQuery):boolean@*
+
+WARNING: It is strongly discouraged for your tests to alter the parameters that
+         are passed to it, or any external state.
+
+h4. *@events@, @hooks@, and @channels@*
+
+It is possible to have validation be triggered automatically at predefined
+interaction points using one or more of the properties @events@, @hooks@, or
+@channels@.
+
+Each one is a list of strings of PubSub channels, events names, or content
+handler triggers hooks.
+
+*Example:*
+
+<javascript>
+	Aloha.settings.plugins.validation = {
+
+		// Validate the involved editable when one of these content handling
+		// triggers is fired.
+		hooks: ['initEditable', 'smartContentChange'],
+
+		// Validate the active editable when this event is fired.
+		events: ['aloha-editable-deactivated'],
+
+		// Validte the active editable when a message is published to this
+		// channel.
+		channels: ['aloha.selection.context-change']
+	}
+</javascript>
+
+h4. *@onValidation@*
+
+If you provide a @onValidation@ function in your settings, each time that an
+editable is validated, your function will be called.  It will receive the
+editable that was last validated as the first argument, and a boolean
+indicating whether or not the editable failed validation as the second
+argument.
+
+*Example:*
+
+<javascript>
+	Aloha.settings.plugins.validation = {
+		onValidation: function (editable, isValid) {
+			if (isValid) {
+				editable.obj.removeClass('validation-failed');
+			} else {
+				editable.obj.addClass('validation-failed');
+			}
+		}
+	}
+</javascript>
+
+WARNING: @onValidation@ must be a function.
+
+h4. *@enabled@*
+
+As with other Aloha Editor plugins, it is possible to disable the use of validation
+by setting the @enabled@ property to @false@.
+
+h3. validate(): Manual validation
+
+It is also possible to manually trigger validation when automatic triggers are
+not suitable using the @Validation.validate()@ function.
+
+The @validate()@ function call be called with a single editable, or a list of
+editables.  All editable that are given to the function will be validated.  If
+nothing is passed into the function then all available editables will be
+validated.  This is useful for doing such things are pre-saving validation in
+your application.
+
+@validate()@ returns a set of all editable that failed validation.
+
+*Example:*
+
+<javascript>
+	if (Aloha.features.validation) {
+		Aloha.require(['validation/validation-plugin'], function (Validation) {
+			var failures = Validation.validate();
+			if (failures.length) {
+				console.error(failures.length + ' editables failed validation.');
+			} else {
+				console.log('All editables are valid.');
+			}
+		});
+	}
+</javascript>
+
+NOTE: Notice that you can determine whether or not the @extra/validation@
+plugin is loaded and enabled based on whether the @Aloha.features.validation@
+flag is set to @true@.
+
+
 h3. References
-* "http://www.whatwg.org/specs/web-apps/current-work":http://www.whatwg.org/specs/web-apps/current-work/#undo
-* "Undo/Redo Stack Abstraction by Jörn Zaefferer from jQuery UI":https://github.com/jzaefferer/undo 
+ * "Google Closure Compiler
+    Annotation":https://developers.google.com/closure/compiler/docs/js-for-compiler 
+ * "Content Handlers":plugin_contenthandler.html
+ * "Events":events.html
+ * "Dependencies":dependencies.html
+
