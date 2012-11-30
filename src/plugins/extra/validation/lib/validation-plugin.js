@@ -66,26 +66,40 @@ define([
 		var validators = [];
 		var selector;
 		var validator;
-		var fn;
 		var type;
 		for (selector in config) {
 			if (config.hasOwnProperty(selector)) {
 				validator = config[selector];
 				type = $.type(validator);
 				if ('regexp' === type) {
-					fn = normalizeRegExp(validator);
+					validators.push([selector, normalizeRegExp(validator)]);
 				} else if ('function' === type) {
-					fn = validator;
+					validators.push([selector, validator]);
 				} else {
 					Aloha.Log.error('validation/validation-plugin',
 						'Encountered property "' + validator + '" of type '
 						+ type + ' when a RegExp or Function is required.');
-					continue;
 				}
-				validators.push([selector, fn]);
 			}
 		}
 		return validators;
+	}
+
+	/**
+	 * Register the validation content handler into the the given hooks.
+	 *
+	 * @param {object} handlers Content handler settings.
+	 * @param {Array.<string>} hooks Content handler hooks.
+	 */
+	function hookHandler(handlers, hooks) {
+		var i;
+		for (i = 0; i < hooks.length; i++) {
+			if (!handlers[hooks[i]]) {
+				handlers[hooks[i]] = ['validation'];
+			} else {
+				handlers[hooks[i]].push('validation');
+			}
+		}
 	}
 
 	/**
@@ -159,11 +173,17 @@ define([
 
 	/**
 	 * Out parameter
+	 *
+	 * Creates a closure around a single variable, and returns a function that
+	 * is a getter and setter to the variable.
+	 *
+	 * @param {*=} value An optional object of any type.
+	 * @return {function(*=):*} A getter and setter.
 	 */
-	var OutParameter = function (value) {
-		var _value = value;
+	var outParameter = function (value) {
+		var _value = value || null;
 		var reference = function reference(value) {
-			if (typeof value !== 'undefined') {
+			if (Array.prototype.slice.apply(arguments).length) {
 				_value = value;
 			}
 			return _value;
@@ -191,7 +211,7 @@ define([
 			editables = [editables];
 		}
 		var failures = [];
-		var valid = OutParameter(true);
+		var valid = outParameter(true);
 		var i;
 		for (i = 0; i < editables.length; i++) {
 			valid(true);
@@ -206,10 +226,12 @@ define([
 
 	if (!SETTINGS || false !== SETTINGS.enabled) {
 		Aloha.features.validation = true;
+
+		if (SETTINGS && SETTINGS.hooks) {
+			hookHandler(Aloha.settings.contentHandler, SETTINGS.hooks);
+		}
+
 		Manager.register('validation', ValidationContentHandler);
-		PubSub.sub('aloha.editable.created', function (message) {
-			Validation.validate(message.data);
-		});
 	}
 
 	return Validation;
