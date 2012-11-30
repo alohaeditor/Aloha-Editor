@@ -54,12 +54,14 @@ define [
       </div>
     </form>'''
 
+    
   showModalDialog = ($el) ->
       root = Aloha.activeEditable.obj
       dialog = jQuery(DIALOG_HTML)
 
-      if not $el.children()[0]
-        linkContents = dialog.find('#link-contents')
+      a = $el.get(0)
+      linkContents = dialog.find('#link-contents')
+      if a.childNodes.length > 0
         linkContents.val($el.text())
 
       # Build the link options and then populate one of them.
@@ -122,7 +124,7 @@ define [
 
         if linkContents.val() and linkContents.val().trim()
           $el.contents().remove()
-          $el.append(linkContents.val())
+          $el.append linkContents.val()
 
         # Set the href based on the active tab
         active = dialog.find('.link-input[required]')
@@ -135,6 +137,7 @@ define [
         dialog.remove()
       dialog
 
+      
   unlink = ($a) ->
       a = $a.get(0)
 
@@ -164,6 +167,7 @@ define [
 
   selector = 'a'
 
+  
   # see http://stackoverflow.com/questions/10903002/shorten-url-for-display-with-beginning-and-end-preserved-firebug-net-panel-st
   shortUrl = (linkurl, l) ->
     l = (if typeof (l) isnt "undefined" then l else 50)
@@ -175,6 +179,7 @@ define [
     end_chunk   = shortString(linkurl, chunk_l, true)
     start_chunk + ".." + end_chunk
 
+    
   shortString = (s, l, reverse) ->
     stop_chars = [" ", "/", "&"]
     acceptable_shortness = l * 0.80 # When to start looking for stop characters
@@ -189,6 +194,7 @@ define [
       i++
     return short_s.split("").reverse().join("")  if reverse
     short_s
+    
     
   populator = ($el) ->
       # When a click occurs, the activeEditable is cleared so squirrel it
@@ -241,41 +247,88 @@ define [
       $bubble.contents()
 
 
+  getContainerAnchor = (a) ->
+    el = a
+    while el
+      return el if el.nodeName.toLowerCase() is "a"
+      el = el.parentNode
+    false
+
+    
   UI.adopt 'insertLink', null,
     click: () ->
-      newLink = jQuery('<a href="" class="aloha-new-link"></a>')
-      dialog = showModalDialog(newLink)
+      editable = Aloha.activeEditable
 
+      # if range => selection is an anchor / link
+      #   do not create a new link, use existing link in call to showModalDialog()
+      # else
+      #   create a new link
+      #   extend selection to word boundaries, range.select()
+      #   get text from range/selection
+      #   call showModalDialog with text and empty link
+      # endif
+      
+      range = Aloha.Selection.getRangeObject()
+      if range.startContainer is range.endContainer
+        a = getContainerAnchor range.startContainer
+        if a
+          # want to prevent creating links within links so if the selection
+          # is contained within a link we edit that link
+          $a = jQuery a
+          range.startContainer = range.endContainer = a
+          range.startOffset = 0
+          range.endOffset = a.childNodes.length
+          dialog = showModalDialog $a
+        else
+          # creating a new link aka inserting a new link
+          GENTICS.Utils.Dom.extendToWord range
+          range.select()
+          $a = jQuery '<a href="" class="aloha-new-link"></a>'
+          linkText = if range.isCollapsed() then "" else range.getText()
+          $a.append linkText
+          dialog = showModalDialog $a
+      else
+        # link must be within a single container.  
+        # user needs to modify their selection and try again
+        return
+      
       # Wait until the dialog is closed before inserting it into the DOM
       # That way if it is cancelled nothing is inserted
       dialog.on 'hidden', =>
 
-        # If the user cancelled then don't create the link
-        if not newLink.attr 'href'
-          return
-        # Either insert a new span around the cursor and open the box or just open the box
-        range = Aloha.Selection.getRangeObject()
+        Aloha.activeEditable = editable
 
-        # Extend to the whole word 1st
-        if range.isCollapsed()
-          # if selection is collapsed then extend to the word.
-          GENTICS.Utils.Dom.extendToWord(range)
+        # link is now populated with dialog box values.
+        # Case 1: link is an existing link and we are good to go
+        # Case 2: link is a new link and needs to replace the selected text
 
-        if range.isCollapsed()
-          # insert a link with text here
-          GENTICS.Utils.Dom.insertIntoDOM newLink,
-            range,
-            Aloha.activeEditable.obj
-          range.startContainer = range.endContainer = newLink.contents()[0]
-          range.startOffset = 0
-          range.endOffset = newLink.text().length
-        else
-          GENTICS.Utils.Dom.addMarkup(range, newLink, false)
+        if $a.hasClass 'aloha-new-link'
+          # this is a new link
 
-        # addMarkup takes a template so we need to look up the inserted object
-        #   and remove the marker class
-        newLink = Aloha.activeEditable.obj.find('.aloha-new-link')
-        newLink.removeClass('aloha-new-link')
+          # If the user cancelled then don't create the link
+          if not $a.attr 'href'
+            return
+
+          # Either insert a new span around the cursor and open the box
+          # or just open the box
+          range = Aloha.Selection.getRangeObject()
+
+          if range.isCollapsed()
+            # insert a link with text here
+            GENTICS.Utils.Dom.insertIntoDOM $a,
+              range,
+              Aloha.activeEditable.obj
+            range.startContainer = range.endContainer = $a.contents()[0]
+            range.startOffset = 0
+            range.endOffset = $a.text().length
+          else
+            GENTICS.Utils.Dom.removeRange range
+            GENTICS.Utils.Dom.insertIntoDOM $a, range, Aloha.activeEditable.obj
+
+          # addMarkup takes a template so we need to look up the inserted object
+          #   and remove the marker class
+          newLink = Aloha.activeEditable.obj.find '.aloha-new-link'
+          newLink.removeClass 'aloha-new-link'
 
 
   # Return config
