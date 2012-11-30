@@ -899,7 +899,6 @@ define([
 				}, this.sccIdle);
 			}
 
-			window.console.log('SMART CONTENT CHANGE');
 			ContentHandlerManager.handleContent(me.getContents(), {
 				contenthandler:
 						Aloha.settings.contentHandler.smartContentChange,
