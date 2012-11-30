@@ -86,23 +86,6 @@ define([
 	}
 
 	/**
-	 * Register the validation content handler into the the given hooks.
-	 *
-	 * @param {object} handlers Content handler settings.
-	 * @param {Array.<string>} hooks Content handler hooks.
-	 */
-	function hookHandler(handlers, hooks) {
-		var i;
-		for (i = 0; i < hooks.length; i++) {
-			if (!handlers[hooks[i]]) {
-				handlers[hooks[i]] = ['validation'];
-			} else {
-				handlers[hooks[i]].push('validation');
-			}
-		}
-	}
-
-	/**
 	 * An associative array which maps editable selectors with user specified
 	 * validation functions.
 	 *
@@ -172,7 +155,57 @@ define([
 	});
 
 	/**
-	 * Out parameter
+	 * Validate the active editable.
+	 */
+	function validateActiveEditable() {
+		Validation.validate(Aloha.activeEditable);
+	}
+
+	/**
+	 * Register the active editable to be validated when a message is published
+	 * at the given subscriptions.
+	 *
+	 * @param {Array.<string>} subscriptions
+	 */
+	function registerSubscriptions(subscriptions) {
+		var i;
+		for (i = 0; i < subscriptions.length; i++) {
+			PubSub.sub(subscriptions[i], validateActiveEditable);
+		}
+	}
+
+	/**
+	 * Register the active editable to be validated at the given
+	 * events.
+	 *
+	 * @param {Array.<string>} events
+	 */
+	function registerEvents(events) {
+		var i;
+		for (i = 0; i < events.length; i++) {
+			Aloha.bind(events[i], validateActiveEditable);
+		}
+	}
+
+	/**
+	 * Register the validation content handler into the the given hooks.
+	 *
+	 * @param {Array.<string>} hooks Content handler hooks.
+	 */
+	function registerHooks(hooks) {
+		var handlers = Aloha.settings.contentHandler;
+		var i;
+		for (i = 0; i < hooks.length; i++) {
+			if (!handlers[hooks[i]]) {
+				handlers[hooks[i]] = ['validation'];
+			} else {
+				handlers[hooks[i]].push('validation');
+			}
+		}
+	}
+
+	/**
+	 * Out parameter.
 	 *
 	 * Creates a closure around a single variable, and returns a function that
 	 * is a getter and setter to the variable.
@@ -227,8 +260,18 @@ define([
 	if (!SETTINGS || false !== SETTINGS.enabled) {
 		Aloha.features.validation = true;
 
-		if (SETTINGS && SETTINGS.hooks) {
-			hookHandler(Aloha.settings.contentHandler, SETTINGS.hooks);
+		if (SETTINGS) {
+			if (SETTINGS.hooks) {
+				registerHooks(SETTINGS.hooks);
+			}
+
+			if (SETTINGS.events) {
+				registerEvents(SETTINGS.events);
+			}
+
+			if (SETTINGS.subscriptions) {
+				registerSubscriptions(SETTINGS.subscriptions);
+			}
 		}
 
 		Manager.register('validation', ValidationContentHandler);

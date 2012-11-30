@@ -86,6 +86,12 @@ define([
 
 	var contentSerializer = defaultContentSerializer;
 
+	function handleSmartContentChange(editable) {
+		ContentHandlerManager.handleContent(editable.getContents(), {
+			contenthandler: Aloha.settings.contentHandler.smartContentChange
+		}, editable);
+	}
+
 	/**
 	 * Editable object
 	 * @namespace Aloha
@@ -850,9 +856,12 @@ define([
 						'triggerType': 'keypress', // keypress, timer, blur, paste
 						'getSnapshotContent': getSnapshotContent
 					});
+					handleSmartContentChange(me);
 
-					console.debug('Aloha.Editable', 'smartContentChanged: event type keypress triggered');
+					console.debug('Aloha.Editable',
+							'smartContentChanged: event type keypress triggered');
 				}, this.sccDelay);
+
 			} else if (event && event.type === 'paste') {
 				Aloha.trigger('aloha-smart-content-changed', {
 					'editable': me,
@@ -862,6 +871,7 @@ define([
 					'triggerType': 'paste',
 					'getSnapshotContent': getSnapshotContent
 				});
+				handleSmartContentChange(me);
 
 			} else if (event && event.type === 'blur') {
 				Aloha.trigger('aloha-smart-content-changed', {
@@ -872,6 +882,7 @@ define([
 					'triggerType': 'blur',
 					'getSnapshotContent': getSnapshotContent
 				});
+				handleSmartContentChange(me);
 
 			} else if (event && event.type === 'block-change') {
 				Aloha.trigger('aloha-smart-content-changed', {
@@ -882,6 +893,7 @@ define([
 					'triggerType': 'block-change',
 					'getSnapshotContent': getSnapshotContent
 				});
+				handleSmartContentChange(me);
 
 			} else if (uniChar !== null) {
 				// in the rare case idle time is lower then delay time
@@ -896,13 +908,9 @@ define([
 						'triggerType': 'idle',
 						'getSnapshotContent': getSnapshotContent
 					});
+					handleSmartContentChange(me);
 				}, this.sccIdle);
 			}
-
-			ContentHandlerManager.handleContent(me.getContents(), {
-				contenthandler:
-						Aloha.settings.contentHandler.smartContentChange,
-			}, me);
 		},
 
 		/**
