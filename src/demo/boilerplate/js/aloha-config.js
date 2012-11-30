@@ -21,37 +21,7 @@
 				]
 			}
 		},
-		contentHandler: {
-			initEditable: ['validation'],
-			smartContentChange: ['validation']
-		},
 		plugins: {
-				validation: {
-				hooks: ['smartContentChanged', 'getContents'],
-				config: {
-					// Fail if "boilerplate" is not found
-					'.aloha-editable': /boilerplate/i,
-					// Fail if <img> is found
-					'#content': function (content, editable, $) {
-						return 0 === $(content).find('img').length;
-					},
-					// Fail if <br> is found
-					'p': function (content, editable, $) {
-						return !/<br(\s[^>]*)?\/?>/.test(content);
-					},
-					'.this-should-fail-with-error': 'this is not a regexp or function'
-				},
-				onValidation: function (editable, isValid, data) {
-					if (isValid) {
-						editable.obj.css('border', '');
-					} else {
-						editable.obj.css('border', '4px solid #f45');
-						if (data) {
-							console.error('FAILED PREDICATE:', data.toString());
-						}
-					}
-				}
-			},
 			format: {
 				// all elements with no specific configuration get this configuration
 				//config: [  'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
