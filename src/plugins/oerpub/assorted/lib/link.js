@@ -139,7 +139,7 @@
       $bubble = jQuery('<div class="link-popover"></div>');
       href = $el.attr('href');
       baseUrl = Aloha.settings.baseUrl;
-      details = jQuery('<div class="link-popover-details">\n  <a class="edit-link" >\n    <img src="' + baseUrl + '/../plugins/oerpub/assorted/img/pencil_cnx.png" />\n  <span title="Edit link">Edit link ...</span>\n</a>\n&nbsp; | &nbsp;\n<a class="delete-link">\n  <img src="' + baseUrl + '/../plugins/oerpub/assorted/img/delete_icon.png" />\n  <span title="Unlink (remove the link, leaving just the text)">Unlink</span>\n</a>\n&nbsp; | &nbsp;\n<span  class="visit-link">\n  <img src="' + baseUrl + '/../plugins/oerpub/assorted/img/external-link-02.png" />\n<a href="' + href + '">' + shortUrl(href, 30) + '</a>\n  </span>\n</div>\n<br/>');
+      details = jQuery('<div class="link-popover-details">\n  <a class="edit-link" href="#">\n    <img src="' + baseUrl + '/../plugins/oerpub/assorted/img/edit-link-03.png" />\n  <span title="Change the link\'s text, location, or other properties">Edit link...</span>\n</a>\n&nbsp; | &nbsp;\n<a class="delete-link" href="#">\n  <img src="' + baseUrl + '/../plugins/oerpub/assorted/img/unlink-link-02.png" />\n  <span title="Remove the link, leaving just the text">Unlink</span>\n</a>\n&nbsp; | &nbsp;\n<a  class="visit-link" href="' + href + '" target="_blank">\n<img src="' + baseUrl + '/../plugins/oerpub/assorted/img/external-link-02.png" />\n<a href="' + href + '" target="_blank" title="Visit the link in a new window or tab">' + shortUrl(href, 30) + '</a>\n  </a>\n</div>\n<br/>');
       $bubble.append(details);
       $edit = details.find('.edit-link');
       $edit.on('click', function() {

@@ -211,20 +211,20 @@ define [
       baseUrl = Aloha.settings.baseUrl
       details = jQuery '''
           <div class="link-popover-details">
-            <a class="edit-link" >
-              <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/pencil_cnx.png" />
-              <span title="Edit link">Edit link ...</span>
+            <a class="edit-link" href="#">
+              <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/edit-link-03.png" />
+              <span title="Change the link's text, location, or other properties">Edit link...</span>
             </a>
             &nbsp; | &nbsp;
-            <a class="delete-link">
-              <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/delete_icon.png" />
-              <span title="Unlink (remove the link, leaving just the text)">Unlink</span>
+            <a class="delete-link" href="#">
+              <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/unlink-link-02.png" />
+              <span title="Remove the link, leaving just the text">Unlink</span>
             </a>
             &nbsp; | &nbsp;
-            <span  class="visit-link">
+            <a  class="visit-link" href="''' + href + '''" target="_blank">
               <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/external-link-02.png" />
-              <a href="''' + href + '''">''' + shortUrl(href,30) + '''</a>
-            </span>
+              <a href="''' + href + '''" target="_blank" title="Visit the link in a new window or tab">''' + shortUrl(href,30) + '''</a>
+            </a>
           </div>
           <br/>
       '''
