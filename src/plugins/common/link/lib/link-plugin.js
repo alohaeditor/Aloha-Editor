@@ -646,7 +646,10 @@ define( [
 				range.endOffset = linkText.length;
 			} else {
 				newLink = jQuery( '<a href="' + that.hrefValue + '"></a>' );
-				GENTICS.Utils.Dom.addMarkup( range, newLink, false );
+				GENTICS.Utils.Dom.addMarkup( range, newLink, false, {
+					'namespace': pluginNamespace,
+					'type': 'link'
+				});
 			}
 
 			range.select();
