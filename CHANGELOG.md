@@ -12,6 +12,54 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUG**: The change fixes a bug.
 
+## 0.22.4 - 2012/12/03
+
+- **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html
+- **ENHANCEMENT**: table plugin: IE fix -- the selection of multiple cells was not possible when the selection started in the text; there was no workaround so it's now possible to select coherent cells when you "shift-click" into the second cell of the range you want to select
+- **ENHANCEMENT**: The metaview view can now be enabled per editable.
+Aloha.settings = {
+			plugins: {
+				metaview: {
+					editables: {
+						'#top-text': ['metaview','enabled']
+					}
+				}
+			}
+		};
+
+- **BUG**: formatlesspaste-plugin: Formatless Paste Plugin fixed to correctly
+           process configuration settings.
+- **BUG**: table-plugin: Ensures that the range is maintained when clicking
+		   inside table cells.
+- **BUG**: the underline button didn't show up in the toolbar
+           after adding the 'u' in the format-plugin configuration.
+- **BUG**: All repositories have been queried even if a target repository has been spezified. Now only the spezified repository is queried.
+- **BUG**: core/aloha-links: Prevents yellow borders around aloha-links blocks
+- **BUG**: link-plugin: link scope remains active after the selection leaves an anchor element
+- **BUG**: blocks: The floating menu will appear when the editor double-clicks
+           in an editable block.
+- **BUG**: core/selection: Aloha no longer inadvertently removes ranges that
+		   are outside of editables.
+- **BUG**: characterpicker: popup now follows the floating menu while scrolling
+- **BUG**: dom utils: fixes potential bug that may cause attributes with the
+		   slash '/' character in the name to appear in the result of
+		   getContents().
+- **BUG**: word content handler: Fixed handling of pasted MS Word content to
+           not result in broken markup when the content contains tables with
+           cells that are all empty.
+- **BUG**: core/plugins: Fixed plugin initialization to ensure that the
+		   "aloha-ready" event is not fired before all plugins have notified
+		   that they are fully initialized.
+- **BUG**: characterpicker & horizontalruler: Fixes icon styling to display
+		   correct images event when a user-specified jquery ui stylsheet is
+		   included in the page.
+- **BUG**: block-plugin: Fixed activation of correct block when active editable
+		   is changed using Keys (Tab, Shift-Tab) or programmatically.
+- **BUG**: block-plugin: Fixed handling of copy & paste in editables that are
+		   nested inside blocks. Before this fix, when pressing CTRL-C to copy
+		   the current selection in an editable nested inside a block, the whole
+		   block was selected and copied.
+
 ## 0.22.3 - 2012/11/06
 
 - **MANUAL CHANGE**: Updated UI CSS regarding button selector;
