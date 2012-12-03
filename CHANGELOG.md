@@ -91,6 +91,8 @@ Aloha.settings = {
            in an editable block.
 - **BUG**: core/selection: Aloha no longer inadvertently removes ranges that
 		   are outside of editables.
+- **BUG**: added aloha-cleanme class to aloha-block-handle to prevent potential
+		   issues with temporary elements not being cleaned up.
 
 ## 0.22.2 - 2012/10/08
 
