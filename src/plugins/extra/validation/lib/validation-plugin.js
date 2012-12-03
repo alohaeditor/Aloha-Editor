@@ -220,10 +220,10 @@ define([
 	 *
 	 * @param {Array.<string>} subscriptions
 	 */
-	function registerSubscriptions(subscriptions) {
+	function registerSubscriptions(channels) {
 		var i;
-		for (i = 0; i < subscriptions.length; i++) {
-			PubSub.sub(subscriptions[i], validateActiveEditable);
+		for (i = 0; i < channels.length; i++) {
+			PubSub.sub(channels[i], validateActiveEditable);
 		}
 	}
 
@@ -269,8 +269,8 @@ define([
 				registerEvents(SETTINGS.events);
 			}
 
-			if (SETTINGS.subscriptions) {
-				registerSubscriptions(SETTINGS.subscriptions);
+			if (SETTINGS.channels) {
+				registerSubscriptions(SETTINGS.channels);
 			}
 		}
 
