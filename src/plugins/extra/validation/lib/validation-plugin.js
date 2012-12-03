@@ -11,8 +11,6 @@
  * Also defines a ValidationContentHandler that is used internally.
  *
  * @todo:
- * Consider customized validation failure messages.
- * Consider whether to run all validators even after the first one fails.
  * Consider asynchronous validation.
  */
 define([
