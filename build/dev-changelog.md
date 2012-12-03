@@ -7,3 +7,5 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
+
+- **FEATURE**: Introducing validation plugin.

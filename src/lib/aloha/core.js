@@ -94,7 +94,7 @@ define([
 	 *
 	 * @param {function} next Function to call after initialization.
 	 */
-	function initAloha(next) {
+	function initAloha(event, next) {
 		if (!isBrowserSupported()) {
 			var console = window.console;
 			if (console) {
@@ -141,6 +141,7 @@ define([
 			};
 		}
 
+		event();
 		next();
 	}
 
@@ -153,7 +154,7 @@ define([
 	 *                                        loaded synchronously, plugins may
 	 *                                        initialize asynchronously.
 	 */
-	function initPlugins(onPluginsInitialized) {
+	function initPlugins(event, next) {
 		// Because if there are no loadedPlugins specified, then the default is
 		// to initialized all available plugins.
 		if (0 === Aloha.loadedPlugins.length) {
@@ -165,13 +166,27 @@ define([
 				}
 			}
 		}
-		PluginManager.init(onPluginsInitialized, Aloha.loadedPlugins);
+
+		var fired = false;
+
+		PluginManager.init(function () {
+			if (!fired) {
+				event();
+				fired = true;
+			}
+			next();
+		}, Aloha.loadedPlugins);
+
+		if (!fired) {
+			event();
+			fired = true;
+		}
 	}
 
 	/**
 	 * Loads GUI components.
 	 */
-	function initGui(next) {
+	function initGui(event, next) {
 		Aloha.RepositoryManager.init();
 		var i;
 		for (i = 0; i < Aloha.editables.length; i++) {
@@ -179,149 +194,9 @@ define([
 				Aloha.editables[i].init();
 			}
 		}
+		event();
 		next();
 	}
-
-	/**
-	 * Initialization stages.
-	 *
-	 * These stages denote the 5 initialization states which Aloha will goes
-	 * through from "LOADING" to "READY."
-	 *
-	 * LOADING (1) : Waiting for initialization to begin.
-	 *   ALOHA (2) : DOM is ready; performing compatibility checks, and
-	 *               setting up basic properties.
-	 * PLUGINS (4) : Initial checks have passed; commencing initialization of
-	 *               all configured (other wise all default) plugins.  At this
-	 *               point, editables can be aloha()fied.
-	 *     GUI (8) : Plugins have all begun their initialization process, but
-	 *               it is not necessary that their have completed. Preparing
-	 *               user interface (and repositories?).
-	 *  READY (16) : Gui is in place; all plugins have completed their
-	 *               initialization--whether asynchronous or otherwise.
-	 *
-	 * @type {Enum<number>}
-	 */
-	var STAGES = {
-		LOADING : 1 << 0,
-		ALOHA   : 1 << 1,
-		PLUGINS : 1 << 2,
-		GUI     : 1 << 3,
-		READY   : 1 << 4
-	};
-
-	/**
-	 * The order in which initialization phases should sequenced.
-	 *
-	 * See initialization.phases to see what happens in each of these phases.
-	 *
-	 * @type {Array.<number>}
-	 * @const
-	 */
-	var ORDER = [
-		STAGES.LOADING,
-		STAGES.ALOHA,
-		STAGES.PLUGINS,
-		STAGES.GUI,
-		STAGES.READY
-	];
-
-	/**
-	 * Initialization facilities.
-	 */
-	var initialization = {
-
-		/**
-		 * Phases of initialization.
-		 *
-		 *        fn : The process that to be invoked during this phase.
-		 *     event : The event name, which if provided, will be fired after
-		 *             the phase has been started.
-		 *  deferred : A $.Deferred() object to hold event binding until that
-		 *             initialization phase has been done.
-		 *
-		 * @type {Array.<object>}
-		 */
-		phases: (function () {
-			var phases = {};
-			var noop = function (next) {
-				next();
-			};
-			phases[STAGES.LOADING] = {
-				fn: noop
-			};
-			phases[STAGES.ALOHA] = {
-				fn: initAloha
-			};
-			phases[STAGES.PLUGINS] = {
-				fn: initPlugins,
-				event: 'aloha-plugins-loaded',
-				deferred: null
-			};
-			phases[STAGES.GUI] = {
-				fn: initGui
-			};
-			phases[STAGES.READY] = {
-				fn: noop,
-				event: 'aloha-ready',
-				deferred: null
-			};
-			return phases;
-		}()),
-
-		/**
-		 * Starts the initialization phases.
-		 *
-		 * @param {function}
-		 */
-		start: function (callback) {
-			initialization.proceed(0, ORDER, callback);
-		},
-
-		/**
-		 * Proceeds to next initialization phases.
-		 *
-		 * @param {number} index The current initialization phase, as an index
-		 *                       into `order'.
-		 * @param {Array.<number>} order The order to the initialization phases.
-		 * @param {function=} callback Callback function to invoke at the end
-		 *                             of the initialization order.
-		 */
-		proceed: function (index, order, callback) {
-			if (index < order.length) {
-				Aloha.stage = order[index];
-				var phase = initialization.phases[Aloha.stage];
-				// ASSERT(phase)
-				phase.fn(function () {
-					initialization.proceed(++index, order, callback);
-				});
-				if (phase.event) {
-					Aloha.trigger(phase.event);
-				}
-			} else if (callback) {
-				callback();
-			}
-		},
-
-		/**
-		 * Given and the name of an event, returns a corresponding
-		 * initialization phase.
-		 *
-		 * @param {string} eventName
-		 * @param {object|null} An initialization phase that corresponds to the
-		 *                      specified event name; null otherwise.
-		 */
-		getStageForEvent: function (eventName) {
-			var stage;
-			for (stage in initialization.phases) {
-				if (initialization.phases.hasOwnProperty(stage) &&
-						eventName === initialization.phases[stage].event) {
-					return stage;
-				}
-			}
-			return null;
-		}
-	};
 
 	/**
 	 * Base Aloha Object
@@ -385,18 +260,10 @@ define([
 		stage: null,
 
 		/**
-		 * Initialization facilities.
+		 * A list of loaded plugin names, available after the STAGES.PLUGINS
+		 * initialization phase.
 		 *
-		 * @type {object}
-		 */
-		initialization: initialization,
-
-		/**
-		 * A list of loaded plugin names. Available after the
-		 * "loadPlugins" stage.
-		 *
-		 * @property
-		 * @type array
+		 * @type {Array.<string>}
 		 * @internal
 		 */
 		loadedPlugins: [],
@@ -410,7 +277,11 @@ define([
 		 * Start the initialization process.
 		 */
 		init: function () {
-			initialization.start();
+			var phases = {};
+			phases[Aloha.Initialization.STAGES.ALOHA] = initAloha;
+			phases[Aloha.Initialization.STAGES.PLUGINS] = initPlugins;
+			phases[Aloha.Initialization.STAGES.GUI] = initGui;
+			Aloha.Initialization.start(phases);
 		},
 
 		/**
