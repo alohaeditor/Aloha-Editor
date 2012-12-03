@@ -1102,7 +1102,7 @@ define([
 		renderBlockHandlesIfNeeded: function() {
 			if (this.isDraggable()) {
 				if (this.$element.children('.aloha-block-draghandle').length === 0) {
-					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
+					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle aloha-cleanme"></span>');
 				}
 			}
 		},
