@@ -11,8 +11,6 @@
  * Also defines a ValidationContentHandler that is used internally.
  *
  * @todo:
- * Consider customized validation failure messages.
- * Consider whether to run all validators even after the first one fails.
  * Consider asynchronous validation.
  */
 define([
@@ -29,18 +27,6 @@ define([
 	Aloha
 ) {
 	'use strict';
-
-	/**
-	 * Settings object for editable validation.
-	 *
-	 * @type {object=}
-	 * @const
-	 */
-	var SETTINGS = Aloha.settings
-				&& Aloha.settings.plugins
-				// Because Aloha.settings are mutable, so a defensive copy is
-				// necessary to guarentee immutability within this module.
-				&& $.extend({}, Aloha.settings.plugins.validation);
 
 	/**
 	 * Wraps a validator that is expressed as a regular expression into a
@@ -95,18 +81,16 @@ define([
 	 * have to change.
 	 *
 	 * @type {object<string, function(string, Aloha.Editable, jQuery)>:boolean}
-	 * @const
 	 */
-	var PREDICATES = SETTINGS ? parseValidators(SETTINGS.config) : [];
+	var predicates;
 
 	/**
 	 * An optional callback that will be invoked each a validation on an
 	 * editable is complete.
 	 *
 	 * @type {function(Aloha.Editable, boolean, object|function)=}
-	 * @const
 	 */
-	var onValidation = (SETTINGS && SETTINGS.onValidation) || null;
+	var onValidation;
 
 	/**
 	 * Validation content handler for internal use.
@@ -120,45 +104,92 @@ define([
 		 * until the first one to fail.
 		 *
 		 * Unlike the conventional handleContent() method, this one receives
-		 * and out parameter which will record whether or not validation failed
-		 * (ala C#).
+		 * and out parameter `out_isValid' which will record whether or not
+		 * validation failed (ala C#).
 		 *
 		 * @override
+		 * @param {function(boolean):boolean} out_isValid
 		 */
-		handleContent: function (content, __options__, editable, outparam) {
-			if (!editable || 0 === PREDICATES.length) {
+		handleContent: function (content, __options__, editable, out_isValid) {
+			if (!editable || 0 === predicates.length) {
 				return content;
 			}
 			var id = editable.getId();
 			var valid = true;
-			var failed;
 			var i;
-			for (i = 0; i < PREDICATES.length; i++) {
-				if (editable.obj.is(PREDICATES[i][0])) {
-					if (!PREDICATES[i][1](content, editable, $)) {
+			for (i = 0; i < predicates.length; i++) {
+				if (editable.obj.is(predicates[i][0])) {
+					if (!predicates[i][1](content, editable, $)) {
 						// Because to fail one predicate is to fail all
 						// validation.
 						valid = false;
-						failed = PREDICATES[i][1];
 						break;
 					}
 				}
 			}
 			if (onValidation) {
-				onValidation(editable, valid, failed || null);
+				onValidation(editable, valid);
 			}
-			if (outparam) {
-				outparam(!failed);
+			if (out_isValid) {
+				out_isValid(valid);
 			}
 			return content;
 		}
 	});
 
 	/**
+	 * Out parameter.
+	 *
+	 * Creates a closure around a single variable, and returns a function that
+	 * is a getter and setter to the variable.
+	 *
+	 * @param {*=} value An optional object of any type.
+	 * @return {function(*=):*} A getter and setter.
+	 */
+	var outParameter = function (value) {
+		var _value = value || null;
+		var reference = function reference(value) {
+			if (Array.prototype.slice.apply(arguments).length) {
+				_value = value;
+			}
+			return _value;
+		};
+		return reference;
+	};
+
+	/**
+	 * Validates the an editable, or a list of editables.
+	 *
+	 * If no arguments are given, then all available editables are validated.
+	 *
+	 * @param {Aloha.Editable|Array.<Aloha.Editable>|null} editables
+	 */
+	function validate(editables) {
+		var type = $.type(editables);
+		if ('undefined' === type) {
+			editables = Aloha.editables;
+		} else if ('array' !== type) {
+			editables = [editables];
+		}
+		var failures = [];
+		var valid = outParameter(true);
+		var i;
+		for (i = 0; i < editables.length; i++) {
+			valid(true);
+			ValidationContentHandler.handleContent(editables[i].getContents(),
+					null, editables[i], valid);
+			if (!valid()) {
+				failures.push(editables[i]);
+			}
+		}
+		return failures;
+	}
+
+	/**
 	 * Validate the active editable.
 	 */
 	function validateActiveEditable() {
-		Validation.validate(Aloha.activeEditable);
+		validate(Aloha.activeEditable);
 	}
 
 	/**
@@ -167,16 +198,15 @@ define([
 	 *
 	 * @param {Array.<string>} subscriptions
 	 */
-	function registerSubscriptions(subscriptions) {
+	function registerSubscriptions(channels) {
 		var i;
-		for (i = 0; i < subscriptions.length; i++) {
-			PubSub.sub(subscriptions[i], validateActiveEditable);
+		for (i = 0; i < channels.length; i++) {
+			PubSub.sub(channels[i], validateActiveEditable);
 		}
 	}
 
 	/**
-	 * Register the active editable to be validated at the given
-	 * events.
+	 * Register the active editable to be validated at the given events.
 	 *
 	 * @param {Array.<string>} events
 	 */
@@ -205,77 +235,43 @@ define([
 	}
 
 	/**
-	 * Out parameter.
-	 *
-	 * Creates a closure around a single variable, and returns a function that
-	 * is a getter and setter to the variable.
-	 *
-	 * @param {*=} value An optional object of any type.
-	 * @return {function(*=):*} A getter and setter.
-	 */
-	var outParameter = function (value) {
-		var _value = value || null;
-		var reference = function reference(value) {
-			if (Array.prototype.slice.apply(arguments).length) {
-				_value = value;
-			}
-			return _value;
-		};
-		return reference;
-	};
-
-	/**
 	 * @type {Plugin}
 	 */
-	var Validation = Plugin.create('validation', {});
+	var Validation = Plugin.create('validation', {
 
-	/**
-	 * Validates the an editable, or a list of editables.
-	 *
-	 * If no arguments are given, then all available editables are validated.
-	 *
-	 * @param {Aloha.Editable|Array.<Aloha.Editable>|null} editables
-	 */
-	Validation.validate = function validate(editables) {
-		var type = $.type(editables);
-		if ('undefined' === type) {
-			editables = Aloha.editables;
-		} else if ('array' !== type) {
-			editables = [editables];
-		}
-		var failures = [];
-		var valid = outParameter(true);
-		var i;
-		for (i = 0; i < editables.length; i++) {
-			valid(true);
-			ValidationContentHandler.handleContent(editables[i].getContents(),
-					null, editables[i], valid);
-			if (!valid()) {
-				failures.push(editables[i]);
+		init: function () {
+			var settings =  Aloha.settings.plugins
+			            // Because Aloha.settings are mutable, so a defensive
+			            // copy is necessary to guarentee immutability within
+			            // this module.
+			            && $.extend({}, Aloha.settings.plugins.validation);
+
+			predicates = settings ? parseValidators(settings.config) : [];
+			onValidation = (settings && settings.onValidation) || null;
+
+			if (!settings || false !== settings.enabled) {
+				Aloha.features.validation = true;
+
+				if (settings) {
+					if (settings.hooks) {
+						registerHooks(settings.hooks);
+					}
+
+					if (settings.events) {
+						registerEvents(settings.events);
+					}
+
+					if (settings.channels) {
+						registerSubscriptions(settings.channels);
+					}
+				}
+
+				Manager.register('validation', ValidationContentHandler);
 			}
 		}
-		return failures;
-	};
+	});
 
-	if (!SETTINGS || false !== SETTINGS.enabled) {
-		Aloha.features.validation = true;
-
-		if (SETTINGS) {
-			if (SETTINGS.hooks) {
-				registerHooks(SETTINGS.hooks);
-			}
-
-			if (SETTINGS.events) {
-				registerEvents(SETTINGS.events);
-			}
-
-			if (SETTINGS.subscriptions) {
-				registerSubscriptions(SETTINGS.subscriptions);
-			}
-		}
-
-		Manager.register('validation', ValidationContentHandler);
-	}
+	Validation.validate = validate;
 
 	return Validation;
 });

@@ -14,14 +14,14 @@ plugins in your @data-aloha-plugins@ list in the script tag which loads
 @aloha.js@.
 
 <html>
-	<script src="aloha.js" data-aloha-plugins"common/highlighteditables,
+	<script src="aloha.js" data-aloha-plugins"common/contenthandler,
 	                                          extra/validation"></script>
 </html>
 
-NOTE: @common/contenthandler@ is must be included for @extra/validation@ to
-	  work because the validation plugin uses
-	  "Content Handlers":plugin_contenthandler.html internally and therefore
-	  depends on them.
+NOTE: @common/contenthandler@ must be included for @extra/validation@ to work
+	  because the validation plugin uses "Content
+	  Handlers":plugin_contenthandler.html internally and therefore depends on
+	  them.
 
 h3. Configuration
 
@@ -33,8 +33,8 @@ validated, and what tests to run on each editable to validated it.
 At least two properties must be configured in the
 @Aloha.settings.plugins.validation@ object for you to start seeing validation
 at work: *@config@*, which indicates *what* should be validated and *how*
-validity is tested, and at least one of either *@hooks@*, @channels@, or
-@events@, which will indicate *when* validation should be run.
+validity is tested, and at least one of either *@hooks@*, *@channels@*, or
+*@events@*, which will indicate *when* validation should be run.
 
 h4. *@config@*
 
@@ -42,9 +42,8 @@ h4. *@config@*
 or regular expressions which will test the validity of any editable that is
 matched by the selector
 
-NOTE: You may be interested know that an editable is "matched" by a selector
-	  when an editable and a selector string has an
-	  "$.fn.is&#40;&#41;":http://api.jquery.com/is/ relationship.
+NOTE: An editable is "matched" by a selector when an editable and a selector
+	  string has an "$.fn.is&#40;&#41;":http://api.jquery.com/is/ relationship.
 
 *Example:*
 
@@ -77,7 +76,9 @@ tests, but anything else is invalid configuration.
 
 WARNING: Anything other than a function or a regular expression will result in
 		 an error message, and that test being ignored.  So the above example
-		 will cause the following message to be logged in the console: *@validation/validation-plugin: Encountered property "<b>Lorem ipsum</b>" of type string when a RegExp or Function is required.@*
+		 will cause the following message to be logged in the console:
+		 *@validation/validation-plugin: Encountered property "<b>Lorem
+		 ipsum</b>" of type string when a RegExp or Function is required.@*
 
 Consider the test function:
 <javascript>
@@ -86,21 +87,24 @@ Consider the test function:
 	},
 </javascript>
 
-There are a couple of things about the above example function to that are
-important to take note of as rules:
+There are a couple of things about the above example function that are
+important to take note of as strong guidelines concerning how to write your own
+functions:
 
  * All such functions receive 3 parameters: The first arguments is a string,
    the second, an Aloha.Editable object, and the third is a refernce to the
-   jQuery that is used by Aloha Editor internally.
- * All such functions must be a predicate (returns truthy or falsey values).
+   jQuery instance that is used by Aloha Editor internally.
+ * All such functions must be predicates (functions that return truthy or
+   falsey values).
  * The function is a "pure" function--meaning that it does not alter external
    state outside of itself.
  * The function is not asynchonous.
- * The function is relatively cheap, and not space/time-complex.
+ * The function is relatively cheap, and is not space/time-complex.
 
-So the correct signature form of the function will look like this (in "Google
+So the correct signature of the function will look like this (in "Google
 Closure Compiler
-Annotation":https://developers.google.com/closure/compiler/docs/js-for-compiler form):
+Annotation":https://developers.google.com/closure/compiler/docs/js-for-compiler
+form):
 *@function(string, Aloha.Editable, jQuery):boolean@*
 
 WARNING: It is strongly discouraged for your tests to alter the parameters that
@@ -127,18 +131,18 @@ handler triggers hooks.
 		// Validate the active editable when this event is fired.
 		events: ['aloha-editable-deactivated'],
 
-		// Validte the active editable when a message is published to this
+		// Validate the active editable when a message is published to this
 		// channel.
 		channels: ['aloha.selection.context-change']
 	}
 </javascript>
 
-h4. *@onValidation@*
+h4. *@onValidation()@*
 
-If you provide a @onValidation@ function in your settings, each time that an
+If you provide a @onValidation()@ function in your settings, each time that an
 editable is validated, your function will be called.  It will receive the
-editable that was last validated as the first argument, and a boolean
-indicating whether or not the editable failed validation as the second
+editable that was last validated as the first argument, and a boolean,
+indicating whether or not the editable failed validation, as the second
 argument.
 
 *Example:*
@@ -155,12 +159,19 @@ argument.
 	}
 </javascript>
 
-WARNING: @onValidation@ must be a function.
+WARNING: @onValidation()@ must be a function.
 
 h4. *@enabled@*
 
-As with other Aloha Editor plugins, it is possible to disable the use of validation
-by setting the @enabled@ property to @false@.
+As with other Aloha Editor plugins, it is possible to disable the use of
+validation by setting the @enabled@ property to @false@.
+
+h3. Aloha.features.validation
+
+If @extra/validation@ is loaded, and the @enabled@ option is set to *not* set
+to @false@, then the @Aloha.features.validation@ flag will be @true@, if
+these two conditions are not met the value of @Aloha.features.validation@ will
+be @undefined@.
 
 h3. validate(): Manual validation
 
@@ -193,7 +204,6 @@ your application.
 NOTE: Notice that you can determine whether or not the @extra/validation@
 plugin is loaded and enabled based on whether the @Aloha.features.validation@
 flag is set to @true@.
-
 
 h3. References
  * "Google Closure Compiler
