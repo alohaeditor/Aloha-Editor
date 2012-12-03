@@ -37,10 +37,10 @@ define([
 	 * @const
 	 */
 	var SETTINGS = Aloha.settings
-				&& Aloha.settings.plugins
-				// Because Aloha.settings are mutable, so a defensive copy is
-				// necessary to guarentee immutability within this module.
-				&& $.extend({}, Aloha.settings.plugins.validation);
+	            && Aloha.settings.plugins
+	            // Because Aloha.settings are mutable, so a defensive copy is
+	            // necessary to guarentee immutability within this module.
+	            && $.extend({}, Aloha.settings.plugins.validation);
 
 	/**
 	 * Wraps a validator that is expressed as a regular expression into a
