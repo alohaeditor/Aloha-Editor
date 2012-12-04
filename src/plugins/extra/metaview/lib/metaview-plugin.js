@@ -62,20 +62,35 @@ define([
 					"aloha-editable-activated",
 					function (jEvent, aEvent) {
 						var config;
-						config = that.getEditableConfig( Aloha.activeEditable.obj );
+						config = that.getEditableConfig(Aloha.activeEditable.obj);
 
-						if (jQuery.type(config) === 'array' && jQuery.inArray( 'enabled', config ) !== -1) {
+						if (jQuery.type(config) === 'array' && jQuery.inArray('enabled', config) !== -1) {
 							jQuery(Aloha.activeEditable.obj).addClass('aloha-metaview');
 						}
 
- 						if (jQuery.type(config) === 'array' && jQuery.inArray( 'metaview', config ) !== -1) {
+ 						if (jQuery.type(config) === 'array' && jQuery.inArray('metaview', config) !== -1) {
 							that._toggleMetaViewButton.show(true);
 						} else {
 							that._toggleMetaViewButton.show(false);
 							return;
 						}
 						
-						if ( /* that.button && */ jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
+						if (jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
+							that._toggleMetaViewButton.setState(true);
+						} else {
+							that._toggleMetaViewButton.setState(false);
+						}
+					}
+			);
+			Aloha.bind(
+					"aloha-editable-deactivated",
+					function (jEvent, aEvent) {
+						var config;
+						config = that.getEditableConfig(Aloha.activeEditable.obj);
+
+						jQuery(Aloha.activeEditable.obj).removeClass('aloha-metaview');
+						
+						if (jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
 							that._toggleMetaViewButton.setState(true);
 						} else {
 							that._toggleMetaViewButton.setState(false);
