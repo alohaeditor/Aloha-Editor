@@ -1,5 +1,6 @@
 define({
 	"root":  {
+		"button.dismiss.label": "Dismiss",
 		"button.bold.label": "Bold",
 		"button.italic.label": "Italic",
 		"button.strikethrough.label": "Strikethrough",
