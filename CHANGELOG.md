@@ -12,6 +12,13 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUG**: The change fixes a bug.
 
+## 0.22.5 - 2012/12/04
+
+- **FEATURE**: validation-plugin: Introducing [validation plugin](http://www.aloha-editor.org/guides/plugin_validation.html)
+- **BUG**: metaview-plugin: We now disable the metaview once the editable is deactivated.
+- **BUG**: core: Some i18n strings within some modal dialog buttons were fixed.  
+- **BUG**: core: Fixed Aloha's initialization order to ensure that repositorymanager will be initialized before plugins are initialized.
+
 ## 0.22.4 - 2012/12/03
 
 - **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html

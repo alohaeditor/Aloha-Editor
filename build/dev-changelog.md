@@ -8,4 +8,3 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **FEATURE**: Introducing validation plugin.
