@@ -240,34 +240,26 @@ define([
 	var Validation = Plugin.create('validation', {
 
 		init: function () {
-			var settings =  Aloha.settings.plugins
-			            // Because Aloha.settings are mutable, so a defensive
-			            // copy is necessary to guarentee immutability within
-			            // this module.
-			            && $.extend({}, Aloha.settings.plugins.validation);
+			var settings = Aloha.settings.plugins
+			            && Aloha.settings.plugins.validation;
 
 			predicates = settings ? parseValidators(settings.config) : [];
 			onValidation = (settings && settings.onValidation) || null;
 
-			if (!settings || false !== settings.enabled) {
-				Aloha.features.validation = true;
-
-				if (settings) {
-					if (settings.hooks) {
-						registerHooks(settings.hooks);
-					}
-
-					if (settings.events) {
-						registerEvents(settings.events);
-					}
-
-					if (settings.channels) {
-						registerSubscriptions(settings.channels);
-					}
+			if (settings) {
+				if (settings.hooks) {
+					registerHooks(settings.hooks);
 				}
-
-				Manager.register('validation', ValidationContentHandler);
+				if (settings.events) {
+					registerEvents(settings.events);
+				}
+				if (settings.channels) {
+					registerSubscriptions(settings.channels);
+				}
 			}
+
+			Manager.register('validation', ValidationContentHandler);
+			Aloha.features.validation = true;
 		}
 	});
 
