@@ -119,7 +119,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .aloha .ui-menu .ui-menu-item { margin: 0; padding: 0; zoom: 1; width: 100%; }
 .aloha .ui-menu .ui-menu-item a { text-decoration: none; display: block; padding: 2px .4em; line-height: 1.5; zoom: 1; font-weight: normal; }
 .aloha .ui-menu .ui-menu-item a.ui-state-focus,
-.aloha .ui-menu .ui-menu-item a.ui-state-active { font-weight: normal; margin: -1px; }
+.aloha .ui-menu .ui-menu-item a.ui-state-active { font-weight: normal; border: none; }
 
 .aloha .ui-menu li.ui-state-disabled { font-weight: normal; padding: .0em .4em; margin: .4em 0 .2em; line-height: 1.5; }
 
