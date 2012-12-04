@@ -146,6 +146,15 @@ define([
 	}
 
 	/**
+	 * Initialize managers
+	 */
+	function initRepositoryManager(event, next) {
+		Aloha.RepositoryManager.init();
+		event();
+		next();
+	}
+
+	/**
 	 * Initialize Aloha plugins.
 	 *
 	 * @param {function} onPluginsInitialized Callback that will be invoked
@@ -154,7 +163,7 @@ define([
 	 *                                        loaded synchronously, plugins may
 	 *                                        initialize asynchronously.
 	 */
-	function initPlugins(event, next) {
+	function initPluginManager(event, next) {
 		// Because if there are no loadedPlugins specified, then the default is
 		// to initialized all available plugins.
 		if (0 === Aloha.loadedPlugins.length) {
@@ -184,10 +193,9 @@ define([
 	}
 
 	/**
-	 * Loads GUI components.
+	 * Begin initialize editables.
 	 */
-	function initGui(event, next) {
-		Aloha.RepositoryManager.init();
+	function initEditables(event, next) {
 		var i;
 		for (i = 0; i < Aloha.editables.length; i++) {
 			if (!Aloha.editables[i].ready) {
@@ -197,6 +205,74 @@ define([
 		event();
 		next();
 	}
+
+	/**
+	 * Initialization phases.
+	 *
+	 * These stages denote the initialization states which Aloha will go
+	 * through from loading to ready.
+	 *
+	 * Each phase object contains the following properties:
+	 *        fn : The process that is to be invoked during this phase.
+	 *             Will take two functions: event() and next().
+	 *     event : The event name, which if provided, will be fired after the
+	 *             phase has been started (optional).
+	 *  deferred : A $.Deferred() object to hold event handlers until that
+	 *             initialization phase has been done (optional).
+	 *
+	 * @type {Array.<phase>}
+	 */
+	var phases = [
+		// Phase 0: Waiting for initialization to begin.  This is the state
+		//          before at load-time.
+		{
+			fn: null,
+			event: null,
+			deferred: null
+		},
+
+		// Phase 1: DOM is ready; performing compatibility checks, and
+		{
+			fn: null,
+			event: null,
+			deferred: null
+		},
+
+		// Phase 2: Initial checks have passed; Initialize repository manger.
+		{
+			fn: initRepositoryManager,
+			event: null,
+			deferred: null
+		},
+
+		// Phase 3: Repository manager is ready for use; commence
+		//          initialization of all configured (or default) plugins.
+		{
+			fn: initPluginManager,
+			event: 'aloha-plugins-loaded',
+			deferred: null
+		},
+
+		// Phase 4: Plugins have all begun their initialization process, but it
+		//          is not necessary that their have completed.  Start editable
+		//          initializing editable, along with their scaffolding UI.
+		//          Editables will not be fully initialized however, until
+		//          plugins have fully finished initialization.
+		{
+			fn: initEditables,
+			event: null,
+			deferred: null
+		},
+
+		// Phase 5: The "ready" state.  Notify the system that Aloha is fully
+		//          loaded, and ready for use.
+		{
+			fn: null,
+			event: 'aloha-ready',
+			deferred: null
+		}
+	];
+
 
 	/**
 	 * Base Aloha Object
@@ -253,13 +329,6 @@ define([
 		OSName: 'Unknown',
 
 		/**
-		 * Which stage is the aloha init process at?
-		 * @property
-		 * @type string
-		 */
-		stage: null,
-
-		/**
 		 * A list of loaded plugin names, available after the STAGES.PLUGINS
 		 * initialization phase.
 		 *
@@ -277,11 +346,7 @@ define([
 		 * Start the initialization process.
 		 */
 		init: function () {
-			var phases = {};
-			phases[Aloha.Initialization.STAGES.ALOHA] = initAloha;
-			phases[Aloha.Initialization.STAGES.PLUGINS] = initPlugins;
-			phases[Aloha.Initialization.STAGES.GUI] = initGui;
-			Aloha.Initialization.start(phases);
+			Aloha.initialize(phases);
 		},
 
 		/**

@@ -168,8 +168,8 @@ define( [
 			this.subscribeEvents();
 			this.bindInteractions();
 			
-			Aloha.bind('aloha-plugins-ready', function () {
-				that.initSidebar( Aloha.Sidebar.right );
+			Aloha.bind('aloha-plugins-loaded', function () {
+				that.initSidebar(Aloha.Sidebar.right);
 			});
 		},
 
