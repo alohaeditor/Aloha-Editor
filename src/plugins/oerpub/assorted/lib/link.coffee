@@ -122,6 +122,12 @@ define [
       .val(href)
       dialog.find("a[href=#{linkInputId}]").parent().addClass('active')
 
+      linkExternal.on 'blur', (evt) ->
+        url = linkExternal.val()
+        if not /^https?:\/\//.test(url)
+          linkExternal.val 'http://' + url 
+
+        
       dialog.on 'submit', (evt) =>
         evt.preventDefault()
 

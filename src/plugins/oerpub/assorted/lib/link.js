@@ -63,6 +63,13 @@
       }
       dialog.find(linkInputId).addClass('active').find('.link-input').attr('required', true).val(href);
       dialog.find("a[href=" + linkInputId + "]").parent().addClass('active');
+      linkExternal.on('blur', function(evt) {
+        var url;
+        url = linkExternal.val();
+        if (!/^https?:\/\//.test(url)) {
+          return linkExternal.val('http://' + url);
+        }
+      });
       dialog.on('submit', function(evt) {
         var active;
         evt.preventDefault();
