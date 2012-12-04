@@ -1,4 +1,5 @@
 define({
+	"button.dismiss.label": "Ausblenden",
 	"button.bold.label": "Fett",
 	"button.italic.label": "Kursiv",
 	"button.strikethrough.label": "Durchgestrichen",
