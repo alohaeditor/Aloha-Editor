@@ -28,140 +28,63 @@
 	'use strict';
 
 	/**
-	 * Initialization stages.
-	 *
-	 * These stages denote the 5 initialization states which Aloha will go
-	 * through from "LOADING" to "READY."
-	 *
-	 * LOADING (0) : Waiting for initialization to begin.
-	 *   ALOHA (1) : DOM is ready; performing compatibility checks, and
-	 *               setting up basic properties.
-	 * PLUGINS (2) : Initial checks have passed; commencing initialization of
-	 *               all configured (or default) plugins.  At this
-	 *               point editables can be aloha()fied.
-	 *     GUI (3) : Plugins have all begun their initialization process, but
-	 *               it is not necessary that their have completed. Preparing
-	 *               user interface (and repositories?).
-	 *  READY  (4) : Gui is in place; all plugins have completed their
-	 *               initialization--both synchonous and asynchronous.
-	 *
-	 * @type {Enum<number>}
-	 */
-	var STAGES = {
-		LOADING : 0,
-		ALOHA   : 1,
-		PLUGINS : 2,
-		GUI     : 3,
-		READY   : 4
-	};
-
-	/**
-	 * The order in which initialization phases should be sequenced.
-	 *
-	 * @type {Array.<number>}
-	 * @const
-	 */
-	var ORDER = [
-		STAGES.LOADING,
-		STAGES.ALOHA,
-		STAGES.PLUGINS,
-		STAGES.GUI,
-		STAGES.READY
-	];
-
-	/**
 	 * Initialization facilities.
 	 */
 	var Initialization = {
 
-		STAGES: STAGES,
-		ORDER: ORDER,
+		/**
+		 * A list of all stages that are passed into the Initialization.start()
+		 * function.  Unless failure happens, every single one of these phases
+		 * will be passed.
+		 *
+		 * @type {Array.<object>}
+		 */
+		phases: [],
 
 		/**
-		 * Phases of initialization.
+		 * Completed phases.
 		 *
-		 * Each phase object contains the following properties:
-		 *        fn : The process that is to be invoked during this phase.
-		 *             Will 2 functions: event() and next() (optional).
-		 *     event : The event name, which if provided, will be fired after
-		 *             the phase has been started (optional).
-		 *  deferred : A $.Deferred() object to hold event handlers until that
-		 *             initialization phase has been done (optional).
+		 * This array grows as the initialization process progresses through
+		 * the initialization phases.  Each phases which is completed is pushed
+		 * to the bottom of the list.
 		 *
-		 * @type {Array.<phase>}
+		 * @type {Array.<object>}
 		 */
-		phases: (function () {
-			var phases = {};
-			phases[STAGES.LOADING] = {
-				fn: null,
-				event: null,
-				deferred: null
-			};
-			phases[STAGES.ALOHA] = {
-				fn: null,
-				event: null,
-				deferred: null
-			};
-			phases[STAGES.PLUGINS] = {
-				fn: null,
-				event: 'aloha-plugins-loaded',
-				deferred: null
-			};
-			phases[STAGES.GUI] = {
-				fn: null,
-				event: null,
-				deferred: null
-			};
-			phases[STAGES.READY] = {
-				fn: null,
-				event: 'aloha-ready',
-				deferred: null
-			};
-			return phases;
-		}()),
+		completed: [],
 
 		/**
 		 * Starts the initialization phases.
 		 *
-		 * @param {object.<STAGES, function>} phases Functions to be called at
-		 *                                           given initialization
-		 *                                           stages.
+		 * @param {object.<object>} phases Initialization phases.
 		 * @param {function} callback Callback function to be invoked when
 		 *                            initialization is completed.
 		 */
 		start: function (phases, callback) {
-			var phase;
-			for (phase in phases) {
-				if (phases.hasOwnProperty(phase)) {
-					Aloha.Initialization.phases[phase].fn = phases[phase];
-				}
-			}
-			Initialization.proceed(0, ORDER, callback);
+			Initialization.phases = Initialization.phases.concat(phases);
+			Initialization.proceed(0, phases, callback);
 		},
 
 		/**
 		 * Proceeds to next initialization phase.
 		 *
 		 * @param {number} index The current initialization phase, as an index
-		 *                       into `order'.
-		 * @param {Array.<number>} order The order to the initialization phases.
+		 *                       into `phases'.
+		 * @param {Array.<object>} phases
 		 * @param {function=} callback Callback function to invoke at the end
-		 *                             of the initialization order.
+		 *                             of the initialization phases.
 		 */
-		proceed: function (index, order, callback) {
-			if (index < order.length) {
-				var stage = order[index];
-				var phase = Initialization.phases[stage];
+		proceed: function (index, phases, callback) {
+			if (index < phases.length) {
+				var phase = phases[index];
 				var next = function () {
-					Initialization.proceed(++index, order, callback);
+					Initialization.proceed(++index, phases, callback);
 				};
 				var event = function () {
-					Aloha.stage = stage;
+					Initialization.completed.push(phase);
 					if (phase.event) {
 						Aloha.trigger(phase.event);
 					}
 				};
-				// ASSERT(phase)
 				if (phase.fn) {
 					phase.fn(event, next);
 				} else {
@@ -174,22 +97,39 @@
 		},
 
 		/**
-		 * Given and the name of an event, returns a corresponding
-		 * initialization phase.
+		 * Retreives an phase object whose `event' property string matches the
+		 * given event name.
 		 *
-		 * @param {string} eventName
-		 * @param {object|null} An initialization phase that corresponds to the
-		 *                      specified event name; null otherwise.
+		 * @param {string} event The event name.
+		 * @return {object} A phase object or null.
 		 */
-		getStageForEvent: function (eventName) {
-			var stage;
-			for (stage in Initialization.phases) {
-				if (Initialization.phases.hasOwnProperty(stage) &&
-						eventName === Initialization.phases[stage].event) {
-					return parseInt(stage, 10);
+		getPhaseByEvent: function (event) {
+			var i;
+			for (i = 0; i < Initialization.phases.length; i++) {
+				if (event === Initialization.phases[i].event) {
+					return Initialization.phases[i];
 				}
 			}
 			return null;
+		},
+
+		/**
+		 * Given and the name of an event, returns a corresponding readiness
+		 * state concerning what should be done with that event at the current
+		 * stage in the initialization phase.
+		 *
+		 * @param {string} event Name of event.
+		 * @return {string} One of either "immediate", "deferred", or "noraml".
+		 */
+		getReadiness: function (event) {
+			var i;
+			for (i = 0; i < Initialization.completed.length; i++) {
+				if (event === Initialization.completed[i].event) {
+					return 'immediate';
+				}
+			}
+			return Initialization.getPhaseByEvent(event) ? 'deferred'
+			                                             : 'normal';
 		}
 	};
 
@@ -369,7 +309,7 @@
 		Aloha.features = {};
 		Aloha.defaults = {};
 		Aloha.settings = Aloha.settings || {};
-		Aloha.Initialization = Initialization;
+		Aloha.initialize = Initialization.start;
 
 		var loadConfig = getLoadConfig();
 		var pluginConfig = getPluginLoadConfig(loadConfig.plugins);
@@ -474,25 +414,35 @@
 			return alohaRequire.apply(this, arguments);
 		};
 
-		Aloha.bind = function (type, fn) {
+		/**
+		 *
+		 * @param {string} event Name of event
+		 * @param {function} fn Event handler
+		 */
+		Aloha.bind = function (event, fn) {
 			Aloha.require(['aloha/jquery'], function ($) {
 				// Because we will only need to load jQuery once
-				Aloha.bind = function (type, fn) {
-					var stage = Initialization.getStageForEvent(type);
-					if (null === stage) {
-						$(Aloha, 'body').bind(type, fn);
-					} else if (stage <= Aloha.stage) {
-						fn();
-					} else {
-						var phase = Initialization.phases[stage];
+				Aloha.bind = function (event, fn) {
+					switch(Initialization.getReadiness(event)) {
+					case 'deferred':
+						var phase = Initialization.getPhaseByEvent(event);
 						if (!phase.deferred) {
 							phase.deferred = $.Deferred();
 						}
 						phase.deferred.done(fn);
+						break;
+					case 'immediate':
+						fn();
+						break;
+					case 'normal':
+						$(Aloha, 'body').bind(event, fn);
+						break;
+					default:
+						throw 'Unknown readiness';
 					}
 					return this;
 				};
-				Aloha.bind(type, fn);
+				Aloha.bind(event, fn);
 			});
 			return this;
 		};
@@ -500,9 +450,8 @@
 		Aloha.trigger = function (type, data) {
 			Aloha.require(['aloha/jquery'], function ($) {
 				Aloha.trigger = function (type, data) {
-					var stage = Initialization.getStageForEvent(type);
-					if (stage) {
-						var phase = Initialization.phases[stage];
+					var phase = Initialization.getPhaseByEvent(type);
+					if (phase) {
 						if (phase.deferred) {
 							$(phase.deferred.resolve);
 							phase.deferred = null;
