@@ -59,6 +59,9 @@ define [
       root = Aloha.activeEditable.obj
       dialog = jQuery(DIALOG_HTML)
 
+      # not going to change the backdrop when displaying the modal dialog box
+      dialog.attr 'data-backdrop', false
+
       a = $el.get(0)
       linkContents = dialog.find('#link-contents')
       if a.childNodes.length > 0
@@ -119,6 +122,12 @@ define [
       .val(href)
       dialog.find("a[href=#{linkInputId}]").parent().addClass('active')
 
+      linkExternal.on 'blur', (evt) ->
+        url = linkExternal.val()
+        if not /^https?:\/\//.test(url)
+          linkExternal.val 'http://' + url 
+
+        
       dialog.on 'submit', (evt) =>
         evt.preventDefault()
 
@@ -211,12 +220,12 @@ define [
       baseUrl = Aloha.settings.baseUrl
       details = jQuery '''
           <div class="link-popover-details">
-            <a class="edit-link" href="#">
+            <a class="edit-link">
               <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/edit-link-03.png" />
               <span title="Change the link's text, location, or other properties">Edit link...</span>
             </a>
             &nbsp; | &nbsp;
-            <a class="delete-link" href="#">
+            <a class="delete-link">
               <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/unlink-link-02.png" />
               <span title="Remove the link, leaving just the text">Unlink</span>
             </a>
@@ -334,3 +343,4 @@ define [
   # Return config
   selector: selector
   populator: populator
+  markerclass: 'link-popover'
