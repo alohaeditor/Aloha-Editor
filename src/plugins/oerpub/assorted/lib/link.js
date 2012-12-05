@@ -223,7 +223,8 @@
     });
     return {
       selector: selector,
-      populator: populator
+      populator: populator,
+      markerclass: 'link-popover'
     };
   });
 

@@ -343,3 +343,4 @@ define [
   # Return config
   selector: selector
   populator: populator
+  markerclass: 'link-popover'
