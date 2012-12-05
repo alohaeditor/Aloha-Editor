@@ -86,8 +86,15 @@ define([
 
 	var contentSerializer = defaultContentSerializer;
 
+	/**
+	 * Triggers smartContentChange handlers.
+	 *
+	 * @param {Aloha.Editable}
+	 * @return {string} Content that has been processed by getContent handlers
+	 *                  and smartContentChange handlers.
+	 */
 	function handleSmartContentChange(editable) {
-		ContentHandlerManager.handleContent(editable.getContents(), {
+		return ContentHandlerManager.handleContent(editable.getContents(), {
 			contenthandler: Aloha.settings.contentHandler.smartContentChange
 		}, editable);
 	}
