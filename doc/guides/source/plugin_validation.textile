@@ -9,9 +9,9 @@ endprologue.
 h3. Dependencies
 
 In order to use editable validation in Aloha Editor, the first thing you will
-need to do is to include the +extra/validation+ and +common/contenthandler+
-plugins in your +data-aloha-plugins+ list in the script tag which loads
-+aloha.js+.
+need to do is to include the @extra/validation@ and @common/contenthandler@
+plugins in your @data-aloha-plugins@ list in the script tag which loads
+@aloha.js@.
 
 <html>
 	<script src="aloha.js" data-aloha-plugins"common/contenthandler,
@@ -95,7 +95,7 @@ important guidelines concerning how to write your own validation functions:
    contents of the editable that is to be validated, the second, an
    Aloha.Editable object, and the third is a refernce to the jQuery instance
    that is used by Aloha Editor internally.
- * It is a predicate (a function that return truthy or falsey values).
+ * It is a predicate (a function that returns truthy or falsey values).
  * It is a "pure" function--meaning that it does not alter external state
    outside of itself.
  * It is not asynchonous.
@@ -107,23 +107,25 @@ Annotation":https://developers.google.com/closure/compiler/docs/js-for-compiler
 form) will look like this:
 *@function(string, Aloha.Editable, jQuery):boolean@*
 
-WARNING: It is strongly discouraged for tests function to alter the parameters
-		 that are passed to it, or any external state.  *Please see the section
-		 on "Advanced Configuration" to learn how to accomplish such things as
-		 validation failure messages.*
+WARNING: It is strongly encouraged for test functions to *not* alter the
+		 parameters that are passed to it, or any external state.  However it
+		 may be necessary to change something outside the function to implement
+		 more advanced validation. *Please see the section on "Advanced
+		 Configuration" to learn how to accomplish such things as validation
+		 failure messages.*
 
+*Cavet about the content string:* The content string that is passed as the
+first argument into the test functions contains the contents of the editable
+which is to be validated.  This  string will be the result of calling
+getContents() on the respective editable.  It means that all content handlers
+that have been configured to process the content when getContents() is called,
+would have handled the content before it reaches the validation test functions.
+Also, if your validation tests are being triggered from the
+@smartContentChange@ hook, then the content string will also be subject to any
+content handlers that have been registered for @smartContentChange@, and in the
+order they are configured.
 
-*Cavet about the content string*
-The first argument is a string containing the contents of the editable which is
-to be validated.  This content string will be the result of calling
-getContent() on the respective editable.  It means that all content handlers
-that have been configured to process the content when getContent() is called,
-would have handled the content before it reaches this point.  Also, if your
-validation tests are being triggered from the +smartContentChange+ hook, then
-the content string will also be subject to any content handlers that have been
-registered for +smartContentChange+, and in the order they are configured.
-
-Example
+Therefore:
 <javascript>
 Aloha.settings.contentHandler = {
 	smartContentChange: ['word', 'validation', 'sanitize']
@@ -134,12 +136,12 @@ In the above example, the content string that is passed to your validation
 tests will have been processed by the "word" content handler but not the
 "sanitize" content handler.
 
-h4. hooks, and channels
+h4. hooks, events, and channels
 
 It is possible to have validation be triggered automatically at predefined
-interaction points using one or more of the properties +hooks+, or +channels+.
-Each one is a list of strings of PubSub channels, or content handler triggers
-hooks.
+interaction points using one or more of the properties +hooks+, +events+, or
++channels+.  Each one is a list of strings of PubSub channels, or content
+handler triggers hooks, or event names.
 
 *Example:*
 
@@ -159,12 +161,12 @@ hooks.
 	}
 </javascript>
 
-NOTE: There are four hooks available content handler hooks: *insertHtml*,
+NOTE: There are four available content handler hooks: *insertHtml*,
       *initEditable*, *getContents*, *smartContentChange*
 
 h4. onValidation()
 
-If you provide a +onValidation()+ function in your settings, each time that an
+If you provide a @onValidation()@ function in your settings, each time that an
 editable is validated, your function will be called.  It will receive the
 editable that was last validated as the first argument, and a boolean,
 indicating whether or not the editable failed validation, as the second
@@ -185,23 +187,23 @@ argument.
 </javascript>
 
 
-NOTE: Beware that validation on an editable is "fail-fast"--that is, as soon a
-	  the first validation tests fails, the editable is considered invalid, and
-	  no furthser tests are run.
+NOTE: Be aware that validation on each editable is "fail-fast"--that is, as
+	  soon a the first validation tests fails, the editable is considered
+	  invalid, and no furthser tests are run.
 
 h3. validate(): Manual validation
 
-There may be times where it is necessary to manually triggere validation, when
-manutal triggeres are not suitable.  In these cases, the
-@Validation.validate()@ function is useful.
+There may be times where it is necessary to manually trigger validation, when
+automatic hooks are not suitable.  In these cases, the @Validation.validate()@
+function is useful.
 
 The @validate()@ function call be called with a single editable, or a list of
-editables.  All editable that are given to the function will be validated.  If
-nothing is passed into the function then all available editables will be
-validated.  This is useful for doing such things are pre-saving validation in
+editables.  All editables that are given to the function will be validated.  If
+nothing is passed into the function, then all available editables will be
+validated.  This is useful for doing such things are pre-save validation in
 your application.
 
-The return value of @validate()@ is the set of all editable that failed
+The return value of @validate()@ is the set of all editables that failed
 validation.
 
 *Example:*
