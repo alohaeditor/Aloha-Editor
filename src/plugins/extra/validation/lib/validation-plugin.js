@@ -75,18 +75,13 @@ define([
 	 * An associative array which maps editable selectors with user specified
 	 * validation functions.
 	 *
-	 * NOTE:
-	 * For the time being this symbol will be deemed a constant, but should we
-	 * choose to provide an addValidator() function to the API, then this would
-	 * have to change.
-	 *
 	 * @type {object<string, function(string, Aloha.Editable, jQuery)>:boolean}
 	 */
 	var predicates;
 
 	/**
-	 * An optional callback that will be invoked each a validation on an
-	 * editable is complete.
+	 * An optional callback which, if specified, will be invoked each time
+	 * validation on an editable is complete.
 	 *
 	 * @type {function(Aloha.Editable, boolean, object|function)=}
 	 */
@@ -100,15 +95,25 @@ define([
 	var ValidationContentHandler = Manager.createHandler({
 
 		/**
-		 * Calls all validation predicates that apply to thie given editable
-		 * until the first one to fail.
+		 * Calls all validation predicates that apply to the given editable, or
+		 * until one fails.
 		 *
-		 * Unlike the conventional handleContent() method, this one receives
-		 * and out parameter `out_isValid' which will record whether or not
+		 * Unlike the conventional handleContent() method, this one receives an
+		 * out parameter `out_isValid' which will record whether or not
 		 * validation failed (ala C#).
 		 *
 		 * @override
-		 * @param {function(boolean):boolean} out_isValid
+		 * @param {string} content Contents of the editable, which have been
+		 *                         processed by getContent handlers.
+		 * @param {object} __options__ Content handler options (unused).
+		 * @param {Aloha.Editable} editable The editable that is to be
+		 *                                  validated.
+		 * @param {function(boolean):boolean} out_isValid Out paramter that
+		 *                                                receives a flag
+		 *                                                indicating whether
+		 *                                                the editable passed
+		 *                                                validation or not.
+		 * @return {string} Per handleContent() contract.
 		 */
 		handleContent: function (content, __options__, editable, out_isValid) {
 			if (!editable || 0 === predicates.length) {
@@ -146,7 +151,7 @@ define([
 	 * @param {*=} value An optional object of any type.
 	 * @return {function(*=):*} A getter and setter.
 	 */
-	var outParameter = function (value) {
+	function outParameter(value) {
 		var _value = value || null;
 		var reference = function reference(value) {
 			if (Array.prototype.slice.apply(arguments).length) {
@@ -155,7 +160,7 @@ define([
 			return _value;
 		};
 		return reference;
-	};
+	}
 
 	/**
 	 * Validates the an editable, or a list of editables.
