@@ -223,6 +223,9 @@ There are 3 variables that are stored on each element;
           if (!$node.data('aloha-bubble-visible')) {
             makePopovers($node);
             $node.popover('show');
+            if (_this.markerclass) {
+              $node.data('popover').$tip.addClass(_this.markerclass);
+            }
             $node.data('aloha-bubble-visible', true);
           }
           clearInterval($node.data('aloha-bubble-move-timer'));

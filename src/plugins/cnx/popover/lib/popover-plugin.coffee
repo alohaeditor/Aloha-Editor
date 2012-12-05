@@ -229,6 +229,8 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
           # If the popover data hasn't been configured yet then configure it
           makePopovers($node)
           $node.popover 'show'
+          if @markerclass
+            $node.data('popover').$tip.addClass(@markerclass)
           $node.data('aloha-bubble-visible', true)
         # As long as the popover is open  move it around if the document changes ($el updates)
         clearInterval($node.data('aloha-bubble-move-timer'))
