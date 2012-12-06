@@ -65,6 +65,14 @@
 .aloha-table-createdialog table td.header {
     background-color: #AAAAAA !important;
 }
+.aloha-table-createdialog input[type=checkbox] {
+    vertical-align: middle;
+    margin: 0;
+}
+.aloha-table-createdialog label {
+    display: inline;
+    margin: 0.25em;
+}
 
 .aloha-editable .add-row-before {
   border-top: 1.5em solid #C5DAE9;
