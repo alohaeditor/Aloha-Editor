@@ -185,14 +185,38 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
         promise.done (data)->
           # Uploading if a local file was chosen
           if data.files.length
-            Aloha.trigger 'aloha-upload-file',
-              target: data.target, files: data.files
+            jQuery(data.target).addClass('aloha-image-uploading')
+            uploadImage data.files[0], (url) ->
+              jQuery(data.target).attr('src', url).removeClass(
+                'aloha-image-uploading')
         promise.show('Edit image')
 
       $bubble.find('.remove').on 'click', ->
         pover.stopOne($el)
         $el.remove()
       $bubble.contents()
+
+
+  uploadImage = (file, callback) ->
+    plugin = @
+    settings = Aloha.require('assorted/assorted-plugin').settings
+    xhr = new XMLHttpRequest()
+    if xhr.upload
+      if not settings.image.uploadurl
+        throw new Error("uploadurl not defined")
+
+      xhr.onload = () ->
+        if settings.image.parseresponse
+          url = parseresponse(xhr)
+        else
+          url = JSON.parse(xhr.response).url
+        callback(url)
+
+      xhr.open("POST", settings.image.uploadurl, true)
+      xhr.setRequestHeader("Cache-Control", "no-cache")
+      f = new FormData()
+      f.append(settings.image.uploadfield or 'upload', file, file.name)
+      xhr.send(f)
 
 
   Aloha.bind 'aloha-image-selected', (event, target) ->
@@ -216,8 +240,9 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
         # Uploading if a local file was chosen
         if data.files.length
           newEl.addClass('aloha-image-uploading')
-          Aloha.trigger 'aloha-upload-file',
-            target: data.target, files: data.files
+          uploadImage data.files[0], (url) ->
+            jQuery(data.target).attr('src', url)
+            newEl.removeClass('aloha-image-uploading')
 
       promise.fail (data) ->
         # Clean up placeholder if needed

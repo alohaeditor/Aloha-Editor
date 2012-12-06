@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], function(Aloha, jQuery, Popover, UI) {
-    var DIALOG_HTML, WARNING_IMAGE_PATH, populator, selector, showModalDialog;
+    var DIALOG_HTML, WARNING_IMAGE_PATH, populator, selector, showModalDialog, uploadImage;
     WARNING_IMAGE_PATH = '/../plugins/oerpub/image/img/warning.png';
     DIALOG_HTML = '<form class="plugin image modal hide fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true" data-backdrop="false">\n  <div class="modal-header">\n    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\n    <h3>Insert image</h3>\n  </div>\n  <div class="modal-body">\n    <div class="image-options">\n        <a class="upload-image-link">Choose a file</a> OR <a class="upload-url-link">get file from the Web</a>\n        <div class="placeholder preview hide">\n          <h4>Preview</h4>\n          <img class="preview-image"/>\n        </div>\n        <input type="file" class="upload-image-input" />\n        <input type="url" class="upload-url-input" placeholder="Enter URL of image ..."/>\n    </div>\n    <div class="image-alt">\n      <div class="forminfo">\n        Please provide a description of this image for the visually impaired.\n      </div>\n      <div>\n        <textarea name="alt" type="text" required="required" placeholder="Enter description ..."></textarea>\n      </div>\n    </div>\n  </div>\n  <div class="modal-footer">\n    <button type="submit" class="btn btn-primary action insert">Save</button>\n    <button class="btn action cancel">Cancel</button>\n  </div>\n</form>';
     showModalDialog = function($el) {
@@ -146,9 +146,9 @@
         promise = showModalDialog($el);
         promise.done(function(data) {
           if (data.files.length) {
-            return Aloha.trigger('aloha-upload-file', {
-              target: data.target,
-              files: data.files
+            jQuery(data.target).addClass('aloha-image-uploading');
+            return uploadImage(data.files[0], function(url) {
+              return jQuery(data.target).attr('src', url).removeClass('aloha-image-uploading');
             });
           }
         });
@@ -159,6 +159,31 @@
         return $el.remove();
       });
       return $bubble.contents();
+    };
+    uploadImage = function(file, callback) {
+      var f, plugin, settings, xhr;
+      plugin = this;
+      settings = Aloha.require('assorted/assorted-plugin').settings;
+      xhr = new XMLHttpRequest();
+      if (xhr.upload) {
+        if (!settings.image.uploadurl) {
+          throw new Error("uploadurl not defined");
+        }
+        xhr.onload = function() {
+          var url;
+          if (settings.image.parseresponse) {
+            url = parseresponse(xhr);
+          } else {
+            url = JSON.parse(xhr.response).url;
+          }
+          return callback(url);
+        };
+        xhr.open("POST", settings.image.uploadurl, true);
+        xhr.setRequestHeader("Cache-Control", "no-cache");
+        f = new FormData();
+        f.append(settings.image.uploadfield || 'upload', file, file.name);
+        return xhr.send(f);
+      }
     };
     Aloha.bind('aloha-image-selected', function(event, target) {
       var $el, nodes;
@@ -179,9 +204,9 @@
         promise.done(function(data) {
           if (data.files.length) {
             newEl.addClass('aloha-image-uploading');
-            return Aloha.trigger('aloha-upload-file', {
-              target: data.target,
-              files: data.files
+            return uploadImage(data.files[0], function(url) {
+              jQuery(data.target).attr('src', url);
+              return newEl.removeClass('aloha-image-uploading');
             });
           }
         });
