@@ -14,8 +14,8 @@ function (jQuery) {
 	CreateLayer.prototype.parameters = {
 		elemId: 'aloha-table-createLayer', // id of the create-table panel
 		className: 'aloha-table-createdialog',   // class-name of the create-table panel
-		numX: 10,	         // Number of cols in the create-layer
-		numY: 10,            // Number of rows in the create-layer vertically
+		numX: 6,	         // Number of cols in the create-layer
+		numY: 6,            // Number of rows in the create-layer vertically
 		layer: undefined,    // Attribute holding the create-layer
 		target: undefined    // the clicktarget which was clicked on (mostly the button of the floatingmenu)
 	};

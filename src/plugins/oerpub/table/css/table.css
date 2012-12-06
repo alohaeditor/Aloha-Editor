@@ -36,6 +36,7 @@
 	-moz-border-radius: 2px;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
+    padding: 0.5em;
 }
 .aloha-table-createdialog table {
 	padding: 0px;
@@ -51,8 +52,6 @@
 	font-size: 8px;
 	width: 15px;
 	height: 15px;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
 }
 .aloha-table-createdialog table td.hover {
 	background-color: #1c94c4;
@@ -64,6 +63,7 @@
 
 .aloha-table-createdialog table td.header {
     background-color: #AAAAAA !important;
+	border: 1px solid black;
 }
 .aloha-table-createdialog input[type=checkbox] {
     vertical-align: middle;
