@@ -89,12 +89,17 @@
     opacity: .25;
     color: #bbb;
     background-image: url("../img/remove.png");
-    background-color: #888 !important;
+    background-color: #666 !important;
+}
+.aloha-editable tr.delete-row td.aloha-current-cell,
+.aloha-editable tr.delete-row th.aloha-current-cell {
+    background-image: url("../img/remove.png") !important;
+    background-color: #666 !important;
 }
 .aloha-editable td.delete-column,
 .aloha-editable th.delete-column {
     opacity: .25;
     color: #bbb;
     background-image: url("../img/remove.png");
-    background-color: #888 !important;
+    background-color: #666 !important;
 }
