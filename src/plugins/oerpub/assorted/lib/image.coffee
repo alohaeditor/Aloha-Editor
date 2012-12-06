@@ -171,9 +171,16 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
       # When a click occurs, the activeEditable is cleared so squirrel it
       editable = Aloha.activeEditable
       $bubble = jQuery '''
-        <div class="link-popover">
-          <button class="btn change">Change...</button>
-          <button class="btn btn-danger remove">Remove</button>
+        <div class="link-popover-details">
+            <a class="change">
+              <img src="''' + Aloha.settings.baseUrl + '''/../plugins/oerpub/assorted/img/edit-link-03.png" />
+              <span title="Change the image's properties">Edit image...</span>
+            </a>
+            &nbsp; | &nbsp;
+            <a class="remove">
+              <img src="''' + Aloha.settings.baseUrl + '''/../plugins/oerpub/assorted/img/unlink-link-02.png" />
+              <span title="Remove the image">Remove</span>
+            </a>
         </div>'''
 
       href = $el.attr('src')
