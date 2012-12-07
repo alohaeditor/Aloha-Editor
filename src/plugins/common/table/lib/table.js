@@ -326,6 +326,8 @@ define([
 	//		return false;
 	//	});
 	//
+
+	 // handle column/row resize
 			eventContainer.delegate( 'td', 'mousemove', function( e ) {
 
 				var jqObj = jQuery( this );
@@ -346,8 +348,8 @@ define([
 				var rowResize = that.tablePlugin.rowResize;
 
 				if ( colResize && distanceFromLeftBorder( jqObj ) < 3 ) {
-					 	jqObj.css( 'cursor', 'col-resize' );
-					 	return that.attachColumnResize( jqObj );
+					jqObj.css( 'cursor', 'col-resize' );
+					return that.attachColumnResize( jqObj );
 				} else if ( rowResize && distanceFromTopBorder( jqObj ) < 3 ) {
 					jqObj.css( 'cursor', 'row-resize' );
 					return that.attachRowResize( jqObj );
@@ -355,6 +357,23 @@ define([
 					jqObj.css( 'cursor', 'default' );
 					return that.detachRowColResize( jqObj );
 				}
+			});
+
+			eventContainer.bind( 'mousemove', function( e ) {
+
+				var jqObj = jQuery( this ).closest( 'table' );
+
+				var isTableRightBorder = function( table ) {
+					var cursorOffset = e.pageX - ( table.offset().left + table.outerWidth() );
+					return cursorOffset > -5 && cursorOffset < 5;
+				};
+
+				var tableResize = that.tablePlugin.tableResize;
+
+				if ( tableResize && isTableRightBorder( jqObj ) ) {
+					return that.attachTableResize( jqObj );
+				}
+
 			});
 
 			eventContainer.bind( 'mousedown', function ( jqEvent ) {
@@ -1516,6 +1535,42 @@ define([
 	};
 
 	/**
+	 * Get the minimum column width based on the word size
+	 *
+	 * @return the width as an integer value
+	 */
+	Table.prototype.getMinColWidth = function(cell) {
+		var columnId = cell.closest( 'tr' ).children().index( cell );
+		var rows = cell.closest( 'table' ).find( 'tr' );
+		var largestWord = "";
+
+		for ( var i = 0; i < rows.length; i++ ) {
+			var curCell = jQuery( jQuery( rows[i] ).children()[ columnId ] );
+			var cellWords = curCell.text().split(" ");
+
+			// pick the largest word in the cell
+			for ( var j = 0; j < cellWords.length; j++ ) {
+				if ( cellWords[j].length > largestWord.length ) {
+					largestWord = cellWords[j];
+				}
+			}
+		}
+
+		var fakeCell = jQuery("<span></span>");
+		fakeCell.css( 'text-indent', -9999 );
+		fakeCell.css( 'display', 'inline' );
+		fakeCell.text( largestWord );
+
+		jQuery( cell ).append( fakeCell );
+
+		var width = fakeCell.width();
+
+		jQuery( fakeCell ).remove();
+
+		return width;
+	};
+
+	/**
 	 * Attach the event for column resize for the given cell.
 	 * @param {DOMElement} tableCell
 	 *
@@ -1528,7 +1583,7 @@ define([
 		//unbind any exisiting resize event handlers
 		that.detachRowColResize( cell );
 
-		var resizeColumns = function(pixelsMoved, reduce) {
+		var resizeColumns = function(pixelsMoved) {
 			var columnId = cell.closest( 'tr' ).children().index( cell );
 			var rows = cell.closest( 'table' ).find( 'tr' );
 
@@ -1543,44 +1598,10 @@ define([
 				jQuery( expandingCell ).css( 'width', expandToWidth );
 				jQuery( expandingCell ).find('div').css( 'width', expandToWidth );
 
-				if(reduce) {
-					var reducingCell = jQuery( jQuery( rows[i] ).children()[ columnId ] );
-					jQuery( reducingCell ).css( 'width', reduceToWidth );
-					jQuery( reducingCell ).find('div').css( 'width', reduceToWidth );
-				}
+				var reducingCell = jQuery( jQuery( rows[i] ).children()[ columnId ] );
+				jQuery( reducingCell ).css( 'width', reduceToWidth );
+				jQuery( reducingCell ).find('div').css( 'width', reduceToWidth );
 			}
-
-		};
-
-		var getMaxColWidth = function(cell) {
-			var columnId = cell.closest( 'tr' ).children().index( cell );
-			var rows = cell.closest( 'table' ).find( 'tr' );
-			var largestWord = "";
-
-			for ( var i = 0; i < rows.length; i++ ) {
-				var curCell = jQuery( jQuery( rows[i] ).children()[ columnId ] );
-				var cellWords = curCell.text().split(" ");
-
-				// pick the largest word in the cell
-				for ( var j = 0; j < cellWords.length; j++ ) {
-					if ( cellWords[j].length > largestWord.length ) {
-						largestWord = cellWords[j];
-					}
-				}
-			}
-
-			var fakeCell = jQuery("<span></span>");
-			fakeCell.css( 'text-indent', -9999 );
-			fakeCell.css( 'display', 'inline' );
-			fakeCell.text( largestWord );
-
-			jQuery( cell ).append( fakeCell );
-
-			var width = fakeCell.width();
-
-			jQuery( fakeCell ).remove();
-
-			return width;
 		};
 
 		cell.bind( 'mousedown.resize', function() {
@@ -1598,8 +1619,11 @@ define([
 			jQuery( 'body' ).append( guide );
 
 			// set the maximum and minimum resize
-			var maxPageX = ( cell.offset().left + cell.width() ) - getMaxColWidth( cell );
-			var minPageX = cell.prev().offset().left + ( cell.prev().innerWidth() - cell.prev().width() ) + getMaxColWidth( cell.prev() );
+			var maxPageX = ( cell.offset().left + cell.width() ) - that.getMinColWidth( cell );
+
+			var borderWidth = ( (cell.prev().outerWidth() - cell.prev().innerWidth()) / 2 );
+			var padding = ( cell.prev().innerWidth() - cell.prev().width() );
+			var minPageX = cell.prev().offset().left + borderWidth  + padding + that.getMinColWidth( cell.prev() );
 
 			// unset the selection type
 			that.selection.resizeMode = true;
@@ -1624,15 +1648,8 @@ define([
 				  pixelsMoved = maxPageX - cell.offset().left;
 				}
 
-				// In this instance there's no room to reduce one cell
-				// to make room to other
-				// hence, we expand the whole table
-				if (e.pageX > cell.offset().left && pixelsMoved < 0) {
-					resizeColumns( e.pageX - cell.offset().left, false );
-				} else {
-					// It's possible to reduce one cell and
-					// to make room to the other
-					resizeColumns( pixelsMoved, true );
+				if ( pixelsMoved !== 0 ) {
+					resizeColumns( pixelsMoved );
 				}
 
 				jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
@@ -1703,6 +1720,91 @@ define([
 
 				jQuery( 'body' ).unbind( 'mousemove.dnd_row_resize' );
 				jQuery( 'body' ).unbind( 'mouseup.dnd_row_resize' );
+
+				// unset the selection resize mode
+				that.selection.resizeMode = false;
+
+				guide.remove();
+			});
+
+		});
+
+	};
+
+	/**
+	 * Attach the table resize event.
+	 * @param {DOMElement} tableCell
+	 *
+	 * @return void
+	 */
+	Table.prototype.attachTableResize = function(table) {
+
+		var that = this;
+		var tableContainer = table.closest('.aloha-table-wrapper')
+		var lastCell = table.find("tr:not(.aloha-table-selectcolumn):first td:last");
+
+		// change the cursor
+		tableContainer.css( 'cursor', 'col-resize' );
+
+		// unbind the mousedown event handler
+		// if it wasn't invoked within a certain period
+		var mousedownTimeout = window.setTimeout(function() {
+			tableContainer.unbind( 'mousedown.resize' );
+			tableContainer.css( 'cursor', 'default' );
+		}, 5000);
+
+		tableContainer.bind( 'mousedown.resize', function() {
+
+			// clear the timeout
+			window.clearTimeout( mousedownTimeout );
+
+			// create a guide
+			var guide = jQuery( '<div></div>' );
+			guide.css({
+				'height': table.innerHeight(),
+				'width': lastCell.outerWidth() - lastCell.innerWidth(),
+				'top': table.offset().top,
+				'left': table.offset().left + table.outerWidth(),
+				'position': 'absolute',
+				'background-color': '#80B5F2'
+			});
+			jQuery( 'body' ).append( guide );
+
+			// set the maximum and minimum resize
+			var maxPageX = tableContainer.offset().left + tableContainer.outerWidth();
+			var minPageX = lastCell.offset().left + ( lastCell.innerWidth() - lastCell.width() ) + that.getMinColWidth( lastCell );
+
+			// unset the selection type
+			that.selection.resizeMode = true;
+
+			// move the guide while dragging
+			jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
+				// limit the maximum resize
+				if ( e.pageX > minPageX && e.pageX < maxPageX ) {
+					guide.css( 'left', e.pageX );
+				}
+			});
+
+			// do the actual resizing after drag stops
+			jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
+				var pixelsMoved = 0;
+
+				if ( e.pageX < minPageX ) {
+				 	pixelsMoved = minPageX - table.offset().left;
+				} else if ( e.pageX > minPageX && e.pageX < maxPageX ) {
+					pixelsMoved = e.pageX - table.offset().left;
+				} else if ( e.pageX > maxPageX ) {
+				  pixelsMoved = maxPageX - table.offset().left;
+				}
+
+				// set the table width
+				table.css( 'width', pixelsMoved );
+
+				// unbind the events and reset the cursor
+				jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
+				jQuery( 'body' ).unbind( 'mouseup.dnd_col_resize' );
+				tableContainer.unbind( 'mousedown.resize' );
+				tableContainer.css( 'cursor', 'default' );
 
 				// unset the selection resize mode
 				that.selection.resizeMode = false;
