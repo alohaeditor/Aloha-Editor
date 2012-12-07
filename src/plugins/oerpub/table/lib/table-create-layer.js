@@ -73,6 +73,7 @@ function (jQuery) {
 	CreateLayer.prototype.create = function () {
 		var that = this;
 		var layer = jQuery('<div></div>');
+        var measure = jQuery('<div class="table-size-info">0 x 0</div>');
 		layer.id = this.get('elemId');
 		layer.addClass(this.get('className'));
 
@@ -135,9 +136,16 @@ function (jQuery) {
 			table.append(tr);
 		}
 		layer.append(table);
+        layer.append(measure);
 
 		// set attributes
 		this.set('layer', layer);
+
+        table.on('mouseover', 'td', function(e){
+            var col = e.target.cellIndex + 1;
+            var row = jQuery(e.target).parent().index() + 1;
+            measure.html(row + " x " + col);
+        });
 
 		// stop bubbling the click on the create-dialog up to the body event
 		layer.bind('click', function(e) {

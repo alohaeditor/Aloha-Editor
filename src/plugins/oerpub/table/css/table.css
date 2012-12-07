@@ -56,7 +56,7 @@
 .aloha-table-createdialog table td.hover {
 	background-color: #1c94c4;
 }
-.aloha-table-createdialog #table-size-info {
+.aloha-table-createdialog .table-size-info {
 	text-align: center;
 	font-size: 0.8em;
 }
