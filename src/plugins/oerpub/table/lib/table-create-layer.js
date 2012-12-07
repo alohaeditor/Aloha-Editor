@@ -113,10 +113,6 @@ function (jQuery) {
 					td.addClass('hover');
 				}
 
-				td.bind('mouseover', {rowId: i, colId: j}, function(e) {
-					that.handleMouseOver(e, table);
-				});
-
 				td.bind('click', {rowId: i, colId: j}, function(e){
 					var rows = e.data.rowId + 1;
 					var cols = e.data.colId + 1;
@@ -142,9 +138,24 @@ function (jQuery) {
 		this.set('layer', layer);
 
         table.on('mouseover', 'td', function(e){
-            var col = e.target.cellIndex + 1;
-            var row = jQuery(e.target).parent().index() + 1;
-            measure.html(row + " x " + col);
+            var col = e.target.cellIndex;
+            var row = jQuery(e.target).parent().index();
+            measure.html((row+1) + " x " + (col+1));
+            that.handleMouseOver(e, table, row, col);
+        });
+
+        table.on('click', 'td', function(e){
+            var rows = jQuery(e.target).parent().index() + 1;
+            var cols = e.target.cellIndex + 1;
+
+            var dialog = jQuery(e.target)
+                .closest('div.aloha-table-createdialog');
+            var headerrows = Number(dialog.find(
+                '#include-row-header').is(':checked'));
+
+            that.TablePlugin.createTable(cols, rows - headerrows,
+                headerrows);
+            that.hide();
         });
 
 		// stop bubbling the click on the create-dialog up to the body event
@@ -172,9 +183,7 @@ function (jQuery) {
 	 * @param table the aeffected table
 	 * @return void
 	 */
-	CreateLayer.prototype.handleMouseOver = function(e, table) {
-		var rowId = e.data.rowId;
-		var colId = e.data.colId;
+	CreateLayer.prototype.handleMouseOver = function(e, table, rowId, colId) {
 		var innerRows = table.find('tr');
 
 		for (var n = 0; n <= innerRows.length; n++) {
