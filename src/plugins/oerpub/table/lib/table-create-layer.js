@@ -96,7 +96,7 @@ function (jQuery) {
         layer.append(options);
 
 		var table = jQuery('<table></table>');
-		table.css('width', (this.get('numX') + 6) * 15);
+		table.css('min-width', this.get('numX') * 25);
 		var tr;
 		var td;
 
@@ -141,6 +141,45 @@ function (jQuery) {
             var col = e.target.cellIndex;
             var row = jQuery(e.target).parent().index();
             measure.html((row+1) + " x " + (col+1));
+
+            // Check if we are close to the edge of the selector
+            var r = table.find('tr'),
+                rowcount = r.length;
+                colcount = r.eq(0).children().length;
+            tx = that.get('numX');
+            ty = that.get('numY');
+            if(col+2>colcount){
+                // Add a column
+                table.find('tr').each(function(idx, el){
+                    var td = jQuery('<td>\u00a0</td>');
+                    if(idx==0){ td.addClass('header'); }
+                    jQuery(el).append(td);
+                });
+                colcount++;
+            } else if (colcount > ty) {
+                console && console.log('oversized');
+                // Remove columns until we're just big enough
+                var ly = Math.max(ty, col+1);
+                table.find('tr').each(function(idx, el){
+                    jQuery(el).children().slice(ly+1).remove();
+                });
+                colcount = ly+1;
+            }
+            if(row+2>rowcount){
+                // Add a row
+                var tr = jQuery('<tr></tr>');
+                for(var i = 0; i < colcount; i++){
+                    tr.append('<td>\u00a0</td>');
+                }
+                table.append(tr);
+                rowcount++;
+            } else if (rowcount > tx){
+                // Remove rows until we're just big enough
+                var lx = Math.max(tx, row+1);
+                table.find('tr').slice(lx+1).remove();
+                rowcount = lx+1;
+            }
+
             that.handleMouseOver(e, table, row, col);
         });
 
