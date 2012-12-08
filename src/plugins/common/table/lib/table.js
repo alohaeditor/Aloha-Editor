@@ -1618,12 +1618,17 @@ define([
 			});
 			jQuery( 'body' ).append( guide );
 
-			// set the maximum and minimum resize
-			var maxPageX = ( cell.offset().left + cell.width() ) - that.getMinColWidth( cell );
+			// calculate the maximum and minimum resize
+			var borderWidth = function(c) {
+				return ( (c.outerWidth() - c.innerWidth()) / 2 );
+			}
 
-			var borderWidth = ( (cell.prev().outerWidth() - cell.prev().innerWidth()) / 2 );
-			var padding = ( cell.prev().innerWidth() - cell.prev().width() );
-			var minPageX = cell.prev().offset().left + borderWidth  + padding + that.getMinColWidth( cell.prev() );
+			var padding = function(c) {
+				return ( c.innerWidth() - c.width() );
+			}
+
+			var maxPageX = cell.offset().left + borderWidth(cell) + cell.width() - that.getMinColWidth( cell );
+			var minPageX = cell.prev().offset().left + borderWidth(cell.prev()) + padding(cell.prev()) + that.getMinColWidth( cell.prev() );
 
 			// unset the selection type
 			that.selection.resizeMode = true;
@@ -1753,6 +1758,27 @@ define([
 			tableContainer.css( 'cursor', 'default' );
 		}, 5000);
 
+		var resizeColumns = function(pixelsMoved) {
+			var tableRows = table.children( 'tbody' ).children( 'tr' );
+			var lastCellRow = lastCell.closest( 'tr' );
+			var gridId = Utils.cellIndexToGridColumn( tableRows,
+																								tableRows.index( lastCellRow ),
+																								lastCellRow.children().index( lastCell )
+																							);
+			var rows = table.find( 'tr' );
+			var expandToWidth = pixelsMoved;
+
+			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
+				if (gridCi === gridId ) {
+					var expandingCell = jQuery( jQuery( rows[ri] ).children()[ ci ] )
+					jQuery( expandingCell ).css( 'width', expandToWidth );
+					jQuery( expandingCell ).find('div').css( 'width', expandToWidth );
+
+					return true;
+				}
+			});
+		};
+
 		tableContainer.bind( 'mousedown.resize', function() {
 
 			// clear the timeout
@@ -1761,7 +1787,7 @@ define([
 			// create a guide
 			var guide = jQuery( '<div></div>' );
 			guide.css({
-				'height': table.innerHeight(),
+				'height': table.children( 'tbody' ).innerHeight(),
 				'width': lastCell.outerWidth() - lastCell.innerWidth(),
 				'top': table.offset().top,
 				'left': table.offset().left + table.outerWidth(),
@@ -1790,15 +1816,15 @@ define([
 				var pixelsMoved = 0;
 
 				if ( e.pageX < minPageX ) {
-				 	pixelsMoved = minPageX - table.offset().left;
+				 	pixelsMoved = minPageX - lastCell.offset().left;
 				} else if ( e.pageX > minPageX && e.pageX < maxPageX ) {
-					pixelsMoved = e.pageX - table.offset().left;
+					pixelsMoved = e.pageX - lastCell.offset().left;
 				} else if ( e.pageX > maxPageX ) {
-				  pixelsMoved = maxPageX - table.offset().left;
+				  pixelsMoved = maxPageX - lastCell.offset().left;
 				}
 
 				// set the table width
-				table.css( 'width', pixelsMoved );
+				resizeColumns( pixelsMoved );
 
 				// unbind the events and reset the cursor
 				jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
