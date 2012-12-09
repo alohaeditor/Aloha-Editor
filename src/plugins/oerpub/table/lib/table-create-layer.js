@@ -159,7 +159,7 @@ function (jQuery) {
             } else if (colcount > ty) {
                 console && console.log('oversized');
                 // Remove columns until we're just big enough
-                var ly = Math.max(ty, col+1);
+                var ly = Math.max(ty-1, col+1);
                 table.find('tr').each(function(idx, el){
                     jQuery(el).children().slice(ly+1).remove();
                 });
@@ -175,7 +175,7 @@ function (jQuery) {
                 rowcount++;
             } else if (rowcount > tx){
                 // Remove rows until we're just big enough
-                var lx = Math.max(tx, row+1);
+                var lx = Math.max(tx-1, row+1);
                 table.find('tr').slice(lx+1).remove();
                 rowcount = lx+1;
             }
