@@ -42,3 +42,5 @@ All changes are categorized into one of the following keywords:
 		   nested inside blocks. Before this fix, when pressing CTRL-C to copy
 		   the current selection in an editable nested inside a block, the whole
 		   block was selected and copied.
+- **BUG**: table-plugin: Tables inside blocks will no longer be transformed
+           into editable Aloha tables.
