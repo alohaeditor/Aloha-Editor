@@ -1535,42 +1535,6 @@ define([
 	};
 
 	/**
-	 * Get the minimum column width based on the word size
-	 *
-	 * @return the width as an integer value
-	 */
-	Table.prototype.getMinColWidth = function(cell) {
-		var columnId = cell.closest( 'tr' ).children().index( cell );
-		var rows = cell.closest( 'table' ).find( 'tr' );
-		var largestWord = "";
-
-		for ( var i = 0; i < rows.length; i++ ) {
-			var curCell = jQuery( jQuery( rows[i] ).children()[ columnId ] );
-			var cellWords = curCell.text().split(" ");
-
-			// pick the largest word in the cell
-			for ( var j = 0; j < cellWords.length; j++ ) {
-				if ( cellWords[j].length > largestWord.length ) {
-					largestWord = cellWords[j];
-				}
-			}
-		}
-
-		var fakeCell = jQuery("<span></span>");
-		fakeCell.css( 'text-indent', -9999 );
-		fakeCell.css( 'display', 'inline' );
-		fakeCell.text( largestWord );
-
-		jQuery( cell ).append( fakeCell );
-
-		var width = fakeCell.width();
-
-		jQuery( fakeCell ).remove();
-
-		return width;
-	};
-
-	/**
 	 * Attach the event for column resize for the given cell.
 	 * @param {DOMElement} tableCell
 	 *
@@ -1583,25 +1547,42 @@ define([
 		//unbind any exisiting resize event handlers
 		that.detachRowColResize( cell );
 
+		var rows = cell.closest( 'tbody' ).children( 'tr' );
+		var cellRow = cell.closest( 'tr' );
+		var gridId = Utils.cellIndexToGridColumn( rows,
+																							rows.index( cellRow ),
+																							cellRow.children().index( cell )
+																						);
+
 		var resizeColumns = function(pixelsMoved) {
-			var columnId = cell.closest( 'tr' ).children().index( cell );
-			var rows = cell.closest( 'table' ).find( 'tr' );
+			var expandToWidth, reduceToWidth;
 
-			var expandingBaseCell = jQuery( jQuery( rows[1] ).children()[ columnId - 1 ] );
-			var reducingBaseCell = jQuery( jQuery( rows[1] ).children()[ columnId ] );
+			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
+				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] );
 
-			var expandToWidth = expandingBaseCell.width() + pixelsMoved;
-			var reduceToWidth = reducingBaseCell.width() - pixelsMoved;
+				// skip the select & cells with colspans
+				if ( currentCell.hasClass( 'aloha-table-selectrow' ) || currentCell.closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ) || colspan > 1 ) {
+					return true;
+				}
 
-			for ( var i = 0; i < rows.length; i++ ) {
-				var expandingCell = jQuery( jQuery( rows[i] ).children()[ columnId - 1 ] );
-				jQuery( expandingCell ).css( 'width', expandToWidth );
-				jQuery( expandingCell ).find('div').css( 'width', expandToWidth );
+				if (gridCi === gridId ) {
+					if (!reduceToWidth) {
+						reduceToWidth = currentCell.width() - pixelsMoved;
+					}
 
-				var reducingCell = jQuery( jQuery( rows[i] ).children()[ columnId ] );
-				jQuery( reducingCell ).css( 'width', reduceToWidth );
-				jQuery( reducingCell ).find('div').css( 'width', reduceToWidth );
-			}
+					Utils.resizeCellWidth( currentCell, reduceToWidth );
+
+				} else if (gridCi === gridId - 1) {
+					if (!expandToWidth) {
+						expandToWidth = currentCell.width() + pixelsMoved;
+					}
+
+					Utils.resizeCellWidth( currentCell, expandToWidth );
+
+				}
+
+				return true;
+			});
 		};
 
 		cell.bind( 'mousedown.resize', function() {
@@ -1618,52 +1599,43 @@ define([
 			});
 			jQuery( 'body' ).append( guide );
 
-			// calculate the maximum and minimum resize
-			var borderWidth = function(c) {
-				return ( (c.outerWidth() - c.innerWidth()) / 2 );
-			}
+			Utils.getCellResizeBoundaries(gridId, rows, function(maxPageX, minPageX) {
 
-			var padding = function(c) {
-				return ( c.innerWidth() - c.width() );
-			}
+				// unset the selection type
+				that.selection.resizeMode = true;
 
-			var maxPageX = cell.offset().left + borderWidth(cell) + cell.width() - that.getMinColWidth( cell );
-			var minPageX = cell.prev().offset().left + borderWidth(cell.prev()) + padding(cell.prev()) + that.getMinColWidth( cell.prev() );
+				// move the guide while dragging
+				jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
+					// limit the maximum resize
+					if ( e.pageX > minPageX && e.pageX < maxPageX ) {
+						guide.css( 'left', e.pageX );
+					}
+				});
 
-			// unset the selection type
-			that.selection.resizeMode = true;
+				// do the actual resizing after drag stops
+				jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
+					var pixelsMoved = 0;
 
-			// move the guide while dragging
-			jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
-				// limit the maximum resize
-				if ( e.pageX > minPageX && e.pageX < maxPageX ) {
-					guide.css( 'left', e.pageX );
-				}
-			});
+					if ( e.pageX < minPageX ) {
+						pixelsMoved = minPageX - cell.offset().left;
+					} else if ( e.pageX > minPageX && e.pageX < maxPageX ) {
+						pixelsMoved = e.pageX - cell.offset().left;
+					} else if ( e.pageX > maxPageX ) {
+						pixelsMoved = maxPageX - cell.offset().left;
+					}
 
-			// do the actual resizing after drag stops
-			jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
-				var pixelsMoved = 0;
+					if ( pixelsMoved !== 0 ) {
+						resizeColumns( pixelsMoved );
+					}
 
-				if ( e.pageX < minPageX ) {
-					pixelsMoved = minPageX - cell.offset().left;
-				} else if ( e.pageX > minPageX && e.pageX < maxPageX ) {
-					pixelsMoved = e.pageX - cell.offset().left;
-				} else if ( e.pageX > maxPageX ) {
-				  pixelsMoved = maxPageX - cell.offset().left;
-				}
+					jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
+					jQuery( 'body' ).unbind( 'mouseup.dnd_col_resize' );
 
-				if ( pixelsMoved !== 0 ) {
-					resizeColumns( pixelsMoved );
-				}
+					// unset the selection resize mode
+					that.selection.resizeMode = false;
 
-				jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
-				jQuery( 'body' ).unbind( 'mouseup.dnd_col_resize' );
-
-				// unset the selection resize mode
-				that.selection.resizeMode = false;
-
-				guide.remove();
+					guide.remove();
+				});
 			});
 
 		});
@@ -1710,17 +1682,32 @@ define([
 			});
 			jQuery( 'body' ).append( guide );
 
+			// set the minimum resize
+			var prevRow = cell.closest( 'tr' ).prev();
+			var minCellHeight = parseInt( prevRow.find( 'div' ).css('line-height') );
+			var minPageY = prevRow.offset().top + minCellHeight;
+
 			// set the selection resize mode
 			that.selection.resizeMode = true;
 
 			// move the guide while dragging
 			jQuery( 'body' ).bind( 'mousemove.dnd_row_resize', function(e) {
-				guide.css( 'top', e.pageY );
+				if ( e.pageY > minPageY) {
+					guide.css( 'top', e.pageY );
+				}
 			});
 
 			// do the actual resizing after drag stops
 			jQuery( 'body' ).bind( 'mouseup.dnd_row_resize', function(e) {
-				var pixelsMoved = e.pageY - cell.offset().top;
+
+				var pixelsMoved = 0;
+
+				if ( e.pageY < minPageY ) {
+					pixelsMoved = minPageY - cell.offset().top;
+				} else {
+					pixelsMoved = e.pageY - cell.offset().top;
+				}
+
 				resizeRows( pixelsMoved );
 
 				jQuery( 'body' ).unbind( 'mousemove.dnd_row_resize' );
@@ -1746,43 +1733,40 @@ define([
 
 		var that = this;
 		var tableContainer = table.closest('.aloha-table-wrapper')
-		var lastCell = table.find("tr:not(.aloha-table-selectcolumn):first td:last");
+		var lastColumn = table.find("tr:not(.aloha-table-selectcolumn) td:last-child");
+		var lastCell = jQuery( lastColumn[0] );
 
 		// change the cursor
-		tableContainer.css( 'cursor', 'col-resize' );
-
-		// unbind the mousedown event handler
-		// if it wasn't invoked within a certain period
-		var mousedownTimeout = window.setTimeout(function() {
-			tableContainer.unbind( 'mousedown.resize' );
-			tableContainer.css( 'cursor', 'default' );
-		}, 5000);
+		lastColumn.css( 'cursor', 'col-resize' );
 
 		var resizeColumns = function(pixelsMoved) {
-			var tableRows = table.children( 'tbody' ).children( 'tr' );
+			var rows = table.find( 'tr' );
 			var lastCellRow = lastCell.closest( 'tr' );
-			var gridId = Utils.cellIndexToGridColumn( tableRows,
-																								tableRows.index( lastCellRow ),
+			var gridId = Utils.cellIndexToGridColumn( rows,
+																								rows.index( lastCellRow ),
 																								lastCellRow.children().index( lastCell )
 																							);
-			var rows = table.find( 'tr' );
 			var expandToWidth = pixelsMoved;
 
 			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
-				if (gridCi === gridId ) {
-					var expandingCell = jQuery( jQuery( rows[ri] ).children()[ ci ] )
-					jQuery( expandingCell ).css( 'width', expandToWidth );
-					jQuery( expandingCell ).find('div').css( 'width', expandToWidth );
+				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] )
 
+				// skip the select cells and cells with colspans
+				if ( currentCell.hasClass( 'aloha-table-selectrow' ) || currentCell.closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ) || colspan > 1 ) {
 					return true;
 				}
+
+				if (gridCi === gridId ) {
+					Utils.resizeCellWidth( currentCell, expandToWidth );
+				} else {
+					Utils.resizeCellWidth( currentCell, currentCell.width() );
+				}
+
+				return true;
 			});
 		};
 
-		tableContainer.bind( 'mousedown.resize', function() {
-
-			// clear the timeout
-			window.clearTimeout( mousedownTimeout );
+		lastColumn.bind( 'mousedown.resize', function() {
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
@@ -1797,8 +1781,8 @@ define([
 			jQuery( 'body' ).append( guide );
 
 			// set the maximum and minimum resize
-			var maxPageX = tableContainer.offset().left + tableContainer.outerWidth();
-			var minPageX = lastCell.offset().left + ( lastCell.innerWidth() - lastCell.width() ) + that.getMinColWidth( lastCell );
+			var maxPageX = tableContainer.offset().left + tableContainer.innerWidth();
+			var minPageX = lastCell.offset().left + ( lastCell.innerWidth() - lastCell.width() ) + Utils.getMinColWidth( lastCell );
 
 			// unset the selection type
 			that.selection.resizeMode = true;
@@ -1829,8 +1813,8 @@ define([
 				// unbind the events and reset the cursor
 				jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
 				jQuery( 'body' ).unbind( 'mouseup.dnd_col_resize' );
-				tableContainer.unbind( 'mousedown.resize' );
-				tableContainer.css( 'cursor', 'default' );
+				lastColumn.unbind( 'mousedown.resize' );
+				lastColumn.css( 'cursor', 'default' );
 
 				// unset the selection resize mode
 				that.selection.resizeMode = false;
