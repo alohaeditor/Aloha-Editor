@@ -231,9 +231,10 @@ define([
 			deferred: null
 		},
 
-		// Phase 1: DOM is ready; performing compatibility checks, and
+		// Phase 1: DOM is ready; performing compatibility checks, registering
+		//          basic events, and initialize logging.
 		{
-			fn: null,
+			fn: initAloha,
 			event: null,
 			deferred: null
 		},
