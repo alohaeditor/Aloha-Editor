@@ -12,6 +12,10 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUG**: The change fixes a bug.
 
+## 0.22.6 - 2012/12/10
+
+- **ENHANCEMENT**: documentation: Guides and documentation was improved for the validation plugin 
+
 ## 0.22.5 - 2012/12/04
 
 - **FEATURE**: validation-plugin: Introducing [validation plugin](http://www.aloha-editor.org/guides/plugin_validation.html)
