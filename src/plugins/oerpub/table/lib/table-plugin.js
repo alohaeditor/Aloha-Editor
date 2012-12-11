@@ -273,6 +273,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                     if(that.currentTable.find("td,th").length==0){
                         that.currentTable.remove();
                         that.currentTable = jQuery();
+                        that.renumberCaptions();
                     }
                 },
                 preview: function(){
@@ -296,6 +297,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                     if(that.currentTable.find("td,th").length==0){
                         that.currentTable.remove();
                         that.currentTable = jQuery();
+                        that.renumberCaptions();
                     }
                 },
                 preview: function(){
@@ -392,7 +394,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                 // Create caption
                 var caption = document.createElement('caption');
                 jQuery(caption).attr('contentEditable', 'false');
-                var captiontext = document.createTextNode('Table ' + (jQuery('.aloha-editable table').length+1));
+                var captiontext = document.createTextNode('Table 0');
                 caption.appendChild(captiontext);
                 table.appendChild(caption);
 
@@ -432,12 +434,18 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
 
                 cleanupAfterInsertion();
                 prepareTable(this, jQuery(table));
+                this.renumberCaptions();
                 var ev = jQuery.Event();
                 ev.type = 'blur';
                 Aloha.activeEditable.smartContentChange(ev);
             } else {
                 this.error('There is no active Editable where the table can be inserted!');
             }
+        },
+        renumberCaptions: function(){
+            Aloha.activeEditable.obj.find('table caption').each(function(idx, el){
+                jQuery(el).html('Table ' + (idx + 1));
+            });
         },
         clickTable: function(e){
             this.currentCell.length && this.currentCell.removeClass('aloha-current-cell');
