@@ -391,6 +391,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
 
                 // Create caption
                 var caption = document.createElement('caption');
+                jQuery(caption).attr('contentEditable', 'false');
                 var captiontext = document.createTextNode('Table ' + (jQuery('.aloha-editable table').length+1));
                 caption.appendChild(captiontext);
                 table.appendChild(caption);
