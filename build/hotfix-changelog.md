@@ -8,7 +8,7 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-
 - **BUG**: table-plugin: Tables inside blocks will no longer be transformed
            into editable Aloha tables.
-
+- **BUG**: table-plugin: Fixed the cursor problem with ie7. Now ie7 shows the 
+           system default arrows.
