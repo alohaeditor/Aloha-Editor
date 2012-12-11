@@ -312,6 +312,22 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                         .removeClass('delete-column');
                 }
             });
+            this._deleteTableButton = Ui.adopt("deletetable", Button, {
+                tooltip: "Delete table",
+                icon: "aloha-icon aloha-icon-deletetable",
+                scope: this.name,
+                click: function(){
+                    that.currentTable.remove();
+                    that.currentTable = jQuery();
+                    that.renumberCaptions();
+                },
+                preview: function(){
+                    that.currentTable.addClass("delete-table");
+                },
+                unpreview: function(){
+                    that.currentTable.removeClass('delete-table');
+                }
+            });
             this._addColumnBefore = Ui.adopt("addcolumnbefore", Button, {
                 tooltip: "Add new column before",
                 icon: "aloha-icon aloha-icon-addcolumnbefore",

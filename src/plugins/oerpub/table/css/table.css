@@ -102,5 +102,10 @@
 .aloha-editable th.delete-column {
     opacity: .25;
     color: #bbb;
-    background-image: url("../img/remove.png");
+    background-image: url("../img/remove.png") !important;
+}
+.aloha-editable table.delete-table td,
+.aloha-editable table.delete-table th {
+    background-image: url("../img/remove.png") !important;
+    color: #bbb;
 }
