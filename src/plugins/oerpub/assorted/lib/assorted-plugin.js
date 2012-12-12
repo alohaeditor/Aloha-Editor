@@ -7,7 +7,7 @@ Register a couple of assorted oer plugins
 
 (function() {
 
-  define(['aloha/plugin', 'jquery', 'popover', './link', './image', './figure', './title-figcaption'], function(Plugin, $, Popover, linkConfig, imageConfig, figureConfig, figcaptionConfig) {
+  define(['aloha/plugin', 'jquery', 'popover', './link', './image', './figure', './title-figcaption', './list'], function(Plugin, $, Popover, linkConfig, imageConfig, figureConfig, figcaptionConfig) {
     return Plugin.create('assorted', {
       defaultSettings: {
         image: {
