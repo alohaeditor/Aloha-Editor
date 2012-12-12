@@ -102,31 +102,14 @@ function (jQuery) {
 
 		for (var i = 0; i < this.get('numY'); i++) {
 			tr = jQuery('<tr></tr>');
-
 			for (var j = 0; j < this.get('numX'); j++) {
 				td = jQuery('<td>\u00a0</td>');
                 if (i == 0){
                     td.addClass("header");
                 }
-
 				if (i == 0 && j == 0) {
 					td.addClass('hover');
 				}
-
-				td.bind('click', {rowId: i, colId: j}, function(e){
-					var rows = e.data.rowId + 1;
-					var cols = e.data.colId + 1;
-
-                    var dialog = jQuery(e.target)
-                        .closest('div.aloha-table-createdialog');
-                    var headerrows = Number(dialog.find(
-                        '#include-row-header').is(':checked'));
-
-					that.TablePlugin.createTable(cols, rows - headerrows,
-                        headerrows);
-					that.hide();
-				});
-
 				tr.append(td);
 			}
 			table.append(tr);
