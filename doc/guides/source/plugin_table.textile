@@ -4,7 +4,6 @@ the Table plugin provides specialized controls for table insertion and manipulat
 
 endprologue.
 
-
 h3. Table Plugin
 
 The Table Plugin will allow you to edit tables within your contents. You can do pretty much everything that you'd expect from editing tables, like adding and deleting rows and columns as well as merging and splitting cells. You can use the tab key to jump from one cell to the next.
@@ -34,6 +33,9 @@ In order to merge two or more cells select the desired cells, rows or columns an
 NOTE: All contents will be merged into the first cell and all other previously split cells will be empty.
 
 NOTE: In Internet Explorer it is not possible to select cells when you select a cell (the text in it) and drag the mouse over the other cells you want to select -- you'll have to click and drag on the table cell border which is sometimes quite tricky. In that case you can click into the first cell and then "shift-click" into the last cell of the coherent cell range you want to select.
+h4. Reize rows and columns
+
+When enabled from settings, table rows and columns can be resize by drag and drop. The cursor will change to indicate resizeable rows or columns. On some occasions, you may need to increase the table width before increasing the width of individual columns.
 
 h4. Table layout
 
@@ -79,7 +81,13 @@ Aloha.settings.plugins: {
 		cellConfig : [
 				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
-		]
+		],
+		// allow resizing the table width (default: true)
+		tableResize: true,
+		// allow resizing the column width (default: true)
+		colResize: true,
+		// allow resizing the row height (default: true)
+		rowResize: true
 	}
 };
 </javascript>
