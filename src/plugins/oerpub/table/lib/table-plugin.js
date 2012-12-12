@@ -133,6 +133,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                 editable.obj.find('table').each(function(){
                     prepareTable(plugin, jQuery(this));
                 });
+                plugin.renumberCaptions(editable.obj);
                 editable.obj.bind('keydown', 'tab shift+tab', function(e){
                     var $cell = jQuery(
                         getSelection().focusNode).closest('td,th');
@@ -273,7 +274,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                     if(that.currentTable.find("td,th").length==0){
                         that.currentTable.remove();
                         that.currentTable = jQuery();
-                        that.renumberCaptions();
+                        that.renumberCaptions(Aloha.activeEditable.obj);
                     }
                 },
                 preview: function(){
@@ -297,7 +298,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                     if(that.currentTable.find("td,th").length==0){
                         that.currentTable.remove();
                         that.currentTable = jQuery();
-                        that.renumberCaptions();
+                        that.renumberCaptions(Aloha.activeEditable.obj);
                     }
                 },
                 preview: function(){
@@ -319,7 +320,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                 click: function(){
                     that.currentTable.remove();
                     that.currentTable = jQuery();
-                    that.renumberCaptions();
+                    that.renumberCaptions(Aloha.activeEditable.obj);
                 },
                 preview: function(){
                     that.currentTable.addClass("delete-table");
@@ -450,7 +451,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
 
                 cleanupAfterInsertion();
                 prepareTable(this, jQuery(table));
-                this.renumberCaptions();
+                this.renumberCaptions(Aloha.activeEditable.obj);
                 var ev = jQuery.Event();
                 ev.type = 'blur';
                 Aloha.activeEditable.smartContentChange(ev);
@@ -458,9 +459,14 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                 this.error('There is no active Editable where the table can be inserted!');
             }
         },
-        renumberCaptions: function(){
-            Aloha.activeEditable.obj.find('table caption').each(function(idx, el){
-                jQuery(el).html('Table ' + (idx + 1));
+        renumberCaptions: function(editor){
+            editor.find('table').each(function(idx, el){
+                var caption = jQuery(el).find('caption');
+                if(caption.length){
+                    caption.html('Table ' + (idx + 1));
+                } else {
+                    jQuery(el).prepend('<caption>Table ' + (idx+1) + '</caption>');
+                }
             });
         },
         clickTable: function(e){
