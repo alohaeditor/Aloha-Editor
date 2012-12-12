@@ -1766,8 +1766,16 @@ define([
 
 		var that = this;
 		var tableContainer = table.closest('.aloha-table-wrapper')
-		var lastColumn = table.find("tr:not(.aloha-table-selectcolumn) td:last-child");
-		var lastCell = jQuery( lastColumn[0] );
+		var lastColumn = table.find("tr:not(.aloha-table-selectcolumn) td:last-child")
+		var lastCell;
+
+		jQuery.each( lastColumn, function() {
+			// don't use colspanned cell as the base cell
+			if ( !jQuery( this ).attr('colspan') || jQuery( this ).attr('colspan') < 2 ) {
+				lastCell = jQuery( this );
+				return false;
+			}
+		});
 
 		// change the cursor
 		lastColumn.css( 'cursor', 'col-resize' );
@@ -1779,7 +1787,7 @@ define([
 																								rows.index( lastCellRow ),
 																								lastCellRow.children().index( lastCell )
 																							);
-			var expandToWidth = pixelsMoved;
+			var expandToWidth = pixelsMoved - Utils.getCellBorder(lastCell) - Utils.getCellPadding(lastCell);
 
 			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
 				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] )
@@ -1814,7 +1822,7 @@ define([
 			jQuery( 'body' ).append( guide );
 
 			// set the maximum and minimum resize
-			var maxPageX = tableContainer.offset().left + tableContainer.innerWidth();
+			var maxPageX = tableContainer.offset().left + tableContainer.width();
 			var minPageX = lastCell.offset().left + ( lastCell.innerWidth() - lastCell.width() ) + Utils.getMinColWidth( lastCell );
 
 			// unset the selection type
@@ -1832,7 +1840,7 @@ define([
 			jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
 				var pixelsMoved = 0;
 
-				if ( e.pageX < minPageX ) {
+				if ( e.pageX <= minPageX ) {
 				 	pixelsMoved = minPageX - lastCell.offset().left;
 				} else if ( e.pageX > minPageX && e.pageX < maxPageX ) {
 					pixelsMoved = e.pageX - lastCell.offset().left;

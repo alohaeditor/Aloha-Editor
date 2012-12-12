@@ -521,14 +521,6 @@ define(['jquery'], function ($) {
 		'getCellResizeBoundaries': function(gridId, rows, callback) {
 			var maxPageX, minPageX;
 
-			var borderWidth = function(cell) {
-				return ( (cell.outerWidth() - cell.innerWidth()) / 2 );
-			};
-
-			var padding = function(cell) {
-				return ( cell.innerWidth() - cell.width() );
-			};
-
 			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
 				var currentCell = $( $( rows[ri] ).children()[ ci ] );
 
@@ -538,11 +530,11 @@ define(['jquery'], function ($) {
 				};
 
 				if (gridCi === gridId && colspan === 1) {
-					maxPageX = currentCell.offset().left + borderWidth(currentCell) + currentCell.width() - Utils.getMinColWidth( currentCell );
+					maxPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + currentCell.width() - Utils.getMinColWidth( currentCell );
 				}
 
 				if (gridCi === gridId - 1 && colspan === 1) {
-					minPageX = currentCell.offset().left + borderWidth(currentCell) + padding(currentCell) + Utils.getMinColWidth( currentCell );
+					minPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + Utils.getCellPadding(currentCell) + Utils.getMinColWidth( currentCell );
 				}
 
 				// if both max page x and min page x is set,
@@ -552,6 +544,32 @@ define(['jquery'], function ($) {
 					return false;
 				}
 			});
+		},
+
+		/**
+		 * Get the border width of the cell
+		 *
+		 * @param cell
+		 *        the DOM node for a table cell (td/th)
+		 *
+		 * @return
+		 * 				the border width as an integer value
+		 */
+		'getCellBorder': function(cell) {
+			return ( (cell.outerWidth() - cell.innerWidth()) / 2 );
+		},
+
+		/**
+		 * Get the padding of the cell
+		 *
+		 * @param cell
+		 *        the DOM node for a table cell (td/th)
+		 *
+		 * @return
+		 * 				the padding as an integer value
+		 */
+		'getCellPadding': function(cell) {
+			return ( cell.innerWidth() - cell.width() );
 		}
 
 	};
