@@ -1806,7 +1806,7 @@ define([
 			guide.css({
 				'height': table.children( 'tbody' ).innerHeight(),
 				'width': lastCell.outerWidth() - lastCell.innerWidth(),
-				'top': table.offset().top,
+				'top': table.find('tbody').offset().top,
 				'left': table.offset().left + table.outerWidth(),
 				'position': 'absolute',
 				'background-color': '#80B5F2'
