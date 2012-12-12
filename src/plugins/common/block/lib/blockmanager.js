@@ -33,8 +33,7 @@ define([
 	'aloha/registry',
 	'util/class',
 	'util/strings',
-	'util/maps',
-	'util/copypaste'
+	'util/maps'
 ], function (
 	Aloha,
 	$,
@@ -43,43 +42,13 @@ define([
 	Registry,
 	Class,
 	Strings,
-	Maps,
-	CopyPaste
+	Maps
 ) {
 	'use strict';
 
 	var jQuery = $;
 
 	var GENTICS = window.GENTICS;
-
-	var KEYCODES = {
-		65: 'a'
-	};
-
-	function registerKeyEventHandlers(manager) {
-
-		function onKeydown($event) {
-			if (!manager._activeBlock) {
-				return true;
-			}
-			switch (KEYCODES[$event.which]) {
-			case 'a':
-				if ($event.ctrlKey) {
-					var editable =
-							CopyPaste.getEditableAt(CopyPaste.getRange());
-					if (editable) {
-						CopyPaste.selectAllOf(editable.obj[0]);
-					}
-				}
-				break;
-			default:
-				return true;
-			}
-			return false;
-		}
-
-		$(document).keydown(onKeydown);
-	}
 
 	/**
 	 * This is the block manager, which is the central entity for maintaining the lifecycle of blocks.
@@ -168,8 +137,6 @@ define([
 			this._registerEventHandlersForBlockDeletion();
 			this._registerEventHandlersForCutCopyPaste();
 			this._registerEventHandlersForEditableActivated();
-
-			registerKeyEventHandlers(this);
 
 			// TODO: not sure if we still need the code below. it is somehow related to caret handling
 			Aloha.bind('aloha-selection-changed', function (evt, selection, originalEvent) {
