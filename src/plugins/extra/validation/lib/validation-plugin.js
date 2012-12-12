@@ -100,7 +100,7 @@ define([
 		 *
 		 * Unlike the conventional handleContent() method, this one receives an
 		 * out parameter `out_isValid' which will record whether or not
-		 * validation failed (ala C#).
+		 * validation failed.
 		 *
 		 * @override
 		 * @param {string} content Contents of the editable, which have been
@@ -146,7 +146,7 @@ define([
 	 * Out parameter.
 	 *
 	 * Creates a closure around a single variable, and returns a function that
-	 * is a getter and setter to the variable.
+	 * is a getter and setter to that variable.
 	 *
 	 * @param {*=} value An optional object of any type.
 	 * @return {function(*=):*} A getter and setter.
@@ -163,11 +163,14 @@ define([
 	}
 
 	/**
-	 * Validates the an editable, or a list of editables.
+	 * Validates an editable, or a list of editables.
 	 *
 	 * If no arguments are given, then all available editables are validated.
 	 *
-	 * @param {Aloha.Editable|Array.<Aloha.Editable>|null} editables
+	 * @param {Aloha.Editable|Array.<Aloha.Editable>|null} editables Optional
+	 *                                                               editables
+	 *                                                               to test.
+	 * @return {Array.<Aloha.Editables>} Editables that failed validation.
 	 */
 	function validate(editables) {
 		var type = $.type(editables);
@@ -198,8 +201,8 @@ define([
 	}
 
 	/**
-	 * Register the active editable to be validated when a message is published
-	 * at the given subscriptions.
+	 * Registers the active editable to be validated when a message is
+	 * published at the given subscriptions.
 	 *
 	 * @param {Array.<string>} subscriptions
 	 */
@@ -211,7 +214,7 @@ define([
 	}
 
 	/**
-	 * Register the active editable to be validated at the given events.
+	 * Registers the active editable to be validated at the given events.
 	 *
 	 * @param {Array.<string>} events
 	 */
@@ -223,7 +226,7 @@ define([
 	}
 
 	/**
-	 * Register the validation content handler into the the given hooks.
+	 * Registers the validation content handler into the the given hooks.
 	 *
 	 * @param {Array.<string>} hooks Content handler hooks.
 	 */
@@ -240,7 +243,7 @@ define([
 	}
 
 	/**
-	 * @type {Plugin}
+	 * @type {Aloha.Plugin}
 	 */
 	var Validation = Plugin.create('validation', {
 
