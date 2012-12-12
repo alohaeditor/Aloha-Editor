@@ -9,8 +9,20 @@ define ['aloha', 'jquery', 'ui/ui', 'PubSub'], (Aloha, $, Ui, PubSub) ->
       rangeObject = message.range
       for effectiveMarkup in rangeObject.markupEffectiveAtStart
         if Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>')) or Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))
-          ListPlugin._indentListButton.enable(true)
-          ListPlugin._outdentListButton.enable(true)
+          depth = $(rangeObject.commonAncestorContainer).parentsUntil(
+            Aloha.activeEditable.obj, 'li').andSelf().length
+
+          $item = jQuery(rangeObject.commonAncestorContainer)
+
+          # Top most list, you can only indent if you're not the top-most
+          # item in the top-most list
+          console.log "depth is " + depth + "item is " + $item + ", index is " + $item.index()
+          if $item.is('li') and $item.index() > 0
+            ListPlugin._indentListButton.enable(true)
+
+          # If this item is nested deeper than top, we can outdent
+          if depth > 1
+            ListPlugin._outdentListButton.enable(true)
         else
           ListPlugin._indentListButton.enable(false)
           ListPlugin._outdentListButton.enable(false)

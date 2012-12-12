@@ -8,15 +8,24 @@
         return ListPlugin._outdentListButton.enable(false);
       });
       return PubSub.sub('aloha.selection.context-change', function(message) {
-        var effectiveMarkup, rangeObject, _i, _len, _ref, _results;
+        var $item, depth, effectiveMarkup, rangeObject, _i, _len, _ref, _results;
         rangeObject = message.range;
         _ref = rangeObject.markupEffectiveAtStart;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           effectiveMarkup = _ref[_i];
           if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>')) || Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
-            ListPlugin._indentListButton.enable(true);
-            _results.push(ListPlugin._outdentListButton.enable(true));
+            depth = $(rangeObject.commonAncestorContainer).parentsUntil(Aloha.activeEditable.obj, 'li').andSelf().length;
+            $item = jQuery(rangeObject.commonAncestorContainer);
+            console.log("depth is " + depth + "item is " + $item + ", index is " + $item.index());
+            if ($item.is('li') && $item.index() > 0) {
+              ListPlugin._indentListButton.enable(true);
+            }
+            if (depth > 1) {
+              _results.push(ListPlugin._outdentListButton.enable(true));
+            } else {
+              _results.push(void 0);
+            }
           } else {
             ListPlugin._indentListButton.enable(false);
             _results.push(ListPlugin._outdentListButton.enable(false));
