@@ -336,23 +336,37 @@ define([
 				if ( jQuery( this ).hasClass( 'aloha-table-selectrow' ) || jQuery( this ).closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ))
 					return;
 
-				var distanceFromLeftBorder = function(cell) {
-					return ( e.pageX - cell.offset().left );
+				var closeToLeftBorder = function(cell) {
+					return ( ( e.pageX - cell.offset().left ) < 3 );
 				};
 
-				var distanceFromTopBorder = function(cell) {
-					return ( e.pageY - cell.offset().top );
+				var closeToTopBorder = function(cell) {
+					return ( ( e.pageY - cell.offset().top ) < 3 );
 				};
+
+				var closeToTableBottom = function(cell) {
+					var row = cell.closest( 'tr');
+					// check if it's the last row
+					if ( row.next( 'tr').length > 0 ) {
+						return false
+					}
+
+					var cursorOffset = e.pageY - ( row.offset().top + row.outerHeight() );
+					return cursorOffset > -3 && cursorOffset < 3;
+				}
 
 				var colResize = that.tablePlugin.colResize;
 				var rowResize = that.tablePlugin.rowResize;
 
-				if ( colResize && distanceFromLeftBorder( jqObj ) < 3 ) {
+				if ( colResize && closeToLeftBorder( jqObj ) ) {
 					jqObj.css( 'cursor', 'col-resize' );
 					return that.attachColumnResize( jqObj );
-				} else if ( rowResize && distanceFromTopBorder( jqObj ) < 3 ) {
+				} else if ( rowResize && closeToTopBorder( jqObj ) ) {
 					jqObj.css( 'cursor', 'row-resize' );
 					return that.attachRowResize( jqObj );
+				} else if (closeToTableBottom( jqObj ) ) {
+					jqObj.css( 'cursor', 'row-resize' );
+					return that.attachRowResize( jqObj, true );
 				} else {
 					jqObj.css( 'cursor', 'default' );
 					return that.detachRowColResize( jqObj );
@@ -371,7 +385,7 @@ define([
 				var tableResize = that.tablePlugin.tableResize;
 
 				if ( tableResize && isTableRightBorder( jqObj ) ) {
-					return that.attachTableResize( jqObj );
+					return that.attachTableResizeWidth( jqObj );
 				}
 
 			});
@@ -1647,7 +1661,7 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.attachRowResize = function(cell) {
+	Table.prototype.attachRowResize = function(cell, lastRow) {
 
 		var that = this;
 
@@ -1655,44 +1669,63 @@ define([
 		that.detachRowColResize( cell );
 
 		var resizeRows = function(pixelsMoved) {
-			var reducingRow = cell.closest( 'tr' );
-			var expandingRow = reducingRow.prev( 'tr' );
+			var expandingRow;
 
-			var expandingBaseCell = jQuery( expandingRow.children( 'td' )[ 1 ] );
-			var expandToHeight = expandingBaseCell.height() + pixelsMoved;
+			if (lastRow) {
+				expandingRow = cell.closest( 'tr' );
+			} else {
+				expandingRow = cell.closest( 'tr' ).prev( 'tr' );
+			}
 
-			expandingRow.find( 'td' ).each( function() {
-				jQuery( this ).css( 'height', expandToHeight );
-				jQuery( this ).find('div').css( 'height', expandToHeight );
-			});
+			var currentRowHeight = expandingRow.height();
+			var expandToHeight = currentRowHeight + pixelsMoved;
 
+			// correct if the height is a minus value
+			if ( expandToHeight < 0 ) {
+				expandToHeight = 1;
+			}
+
+			expandingRow.css( 'height', expandToHeight );
 		};
 
-		jQuery( cell ).bind( 'mousedown.resize', function(){
+		cell.bind( 'mousedown.resize', function(){
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
+
+			var guideTop = function() {
+				if (lastRow) {
+					return cell.offset().top + cell.outerHeight();
+				} else {
+					return cell.offset().top;
+				}
+			};
+
 			guide.css({
-				'width': jQuery( cell ).closest( 'tbody' ).innerWidth(),
-				'height': jQuery( cell ).outerHeight() - jQuery( cell ).innerHeight(),
-				'top': jQuery( cell ).offset().top,
-				'left': jQuery( cell ).closest( 'tbody' ).offset().left,
+				'width': cell.closest( 'tbody' ).innerWidth(),
+				'height': cell.outerHeight() - cell.innerHeight(),
+				'top': guideTop(),
+				'left': cell.closest( 'tbody' ).offset().left,
 				'position': 'absolute',
 				'background-color': '#80B5F2'
 			});
 			jQuery( 'body' ).append( guide );
 
 			// set the minimum resize
-			var prevRow = cell.closest( 'tr' ).prev();
-			var minCellHeight = parseInt( prevRow.find( 'div' ).css('line-height') );
-			var minPageY = prevRow.offset().top + minCellHeight;
+			var minHeight = function() {
+				if (lastRow) {
+					return cell.closest('tr').offset().top;
+				} else {
+					return cell.closest('tr').prev( 'tr' ).offset().top;
+				}
+			};
 
 			// set the selection resize mode
 			that.selection.resizeMode = true;
 
 			// move the guide while dragging
 			jQuery( 'body' ).bind( 'mousemove.dnd_row_resize', function(e) {
-				if ( e.pageY > minPageY) {
+				if ( e.pageY > minHeight() ) {
 					guide.css( 'top', e.pageY );
 				}
 			});
@@ -1702,8 +1735,8 @@ define([
 
 				var pixelsMoved = 0;
 
-				if ( e.pageY < minPageY ) {
-					pixelsMoved = minPageY - cell.offset().top;
+				if (lastRow) {
+					pixelsMoved = e.pageY - ( cell.offset().top + cell.outerHeight() );
 				} else {
 					pixelsMoved = e.pageY - cell.offset().top;
 				}
@@ -1724,12 +1757,12 @@ define([
 	};
 
 	/**
-	 * Attach the table resize event.
-	 * @param {DOMElement} tableCell
+	 * Attach the table width resize event.
+	 * @param {DOMElement} table
 	 *
 	 * @return void
 	 */
-	Table.prototype.attachTableResize = function(table) {
+	Table.prototype.attachTableResizeWidth = function(table) {
 
 		var that = this;
 		var tableContainer = table.closest('.aloha-table-wrapper')
