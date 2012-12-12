@@ -12,3 +12,5 @@ All changes are categorized into one of the following keywords:
            into editable Aloha tables.
 - **BUG**: table-plugin: Fixed the cursor problem with ie7. Now ie7 shows the 
            system default arrows.
+- **BUG**: core: getEditableHost() returns nearest editable rather than the
+           furthest.
