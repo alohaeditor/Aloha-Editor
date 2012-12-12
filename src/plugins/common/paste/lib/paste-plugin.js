@@ -36,14 +36,16 @@ define([
 	'aloha/plugin',
 	'aloha/command',
 	'contenthandler/contenthandler-utils',
-	'aloha/console'
+	'aloha/console',
+	'util/copypaste'
 ], function (
 	$,
 	Aloha,
 	Plugin,
 	Commands,
 	ContentHandlerUtils,
-	console
+	Console,
+	CopyPaste
 ) {
 	'use strict';
 
@@ -96,30 +98,7 @@ define([
 	var ieRangeBeforePaste = null;
 
 	/**
-	 * Retrieve the editable host in which the given range is contained.
-	 *
-	 * @param {WrappedRange} range
-	 * @return {jQuery.<HTMLElement>} The editable host element.
-	 */
-	function getEditableAtRange(range) {
-		return Aloha.getEditableHost($(range.commonAncestorContainer));
-	}
-
-	/**
-	 * Set the selection to the given range
-	 *
-	 * @param {WrappedRange} range
-	 */
-	function setSelection(range) {
-		Aloha.getSelection().removeAllRanges();
-		var newRange = Aloha.createRange();
-		newRange.setStart(range.startContainer, range.startOffset);
-		newRange.setEnd(range.endContainer, range.endOffset);
-		Aloha.getSelection().addRange(newRange);
-	}
-
-	/**
-	 * Set the selection to the given range and function on the editable inwhich
+	 * Set the selection to the given range and focus on the editable inwhich
 	 * the selection is in (if any).
 	 *
 	 * This function is used to restore the selection to what it was before
@@ -128,23 +107,11 @@ define([
 	 * @param {WrappedRange} range The range to restore.
 	 */
 	function restoreSelection(range) {
-		var editable = getEditableAtRange(range);
+		var editable = CopyPaste.getEditableAt(range);
 		if (editable) {
 			editable.obj.focus();
 		}
-		setSelection(range);
-	}
-
-	/**
-	 * Retrieves the current range.
-	 *
-	 * @return {WrappedRange}
-	 */
-	function getRange() {
-		var selection = Aloha.getSelection();
-		return (selection._nativeSelection._ranges.length
-				? selection.getRangeAt(0)
-				: null);
+		CopyPaste.setSelectionAt(range);
 	}
 
 	/**
@@ -171,13 +138,13 @@ define([
 			left: $WINDOW.scrollLeft() - 200 // Why 200?
 		}).contents().remove();
 
-		var from = getEditableAtRange(range);
+		var from = CopyPaste.getEditableAt(range);
 		if (from) {
 			from.obj.blur();
 		}
 
 		// Because the selection should end up inside the target element.
-		setSelection({
+		CopyPaste.setSelectionAt({
 			startContainer: $target[0],
 			endContainer: $target[0],
 			startOffset: 0,
@@ -282,7 +249,7 @@ define([
 			if (Aloha.queryCommandSupported('insertHTML')) {
 				Aloha.execCommand('insertHTML', false, content);
 			} else {
-				console.error('Common.Paste', 'Command "insertHTML" not ' +
+				Console.error('Common.Paste', 'Command "insertHTML" not ' +
 				                              'available. Enable the plugin ' +
 				                              '"common/commands".');
 			}
@@ -340,13 +307,13 @@ define([
 		// if (IS_IE && !hasClipboardAccess) {
 		if (IS_IE) {
 			$editable.bind('beforepaste', function ($event) {
-				ieRangeBeforePaste = getRange();
+				ieRangeBeforePaste = CopyPaste.getRange();
 				redirect(ieRangeBeforePaste, $CLIPBOARD);
 				$event.stopPropagation();
 			});
 		} else {
 			$editable.bind('paste', function ($event) {
-				var range = getRange();
+				var range = CopyPaste.getRange();
 				redirect(range, $CLIPBOARD);
 				if (IS_IE) {
 					var tmpRange = document.selection.createRange();
@@ -388,7 +355,7 @@ define([
 		 * @param pasteHandler paste handler to be registered
 		 */
 		register: function (pasteHandler) {
-			console.deprecated('Plugins.Paste', 'register() for pasteHandler' +
+			Console.deprecated('Plugins.Paste', 'register() for pasteHandler' +
 			                                    ' is deprecated.  Use the ' +
 			                                    'ContentHandler Plugin ' +
 			                                    'instead.');

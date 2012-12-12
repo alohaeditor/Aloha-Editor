@@ -14,3 +14,6 @@ All changes are categorized into one of the following keywords:
            system default arrows.
 - **BUG**: core: getEditableHost() returns nearest editable rather than the
            furthest.
+- **BUG**: blocks: Selecting with <CTRL>+A, when inside of a nested editable,
+           will now only select all of the contents of the immediate editable,
+           rather the contents of parent editables as well.
