@@ -19,7 +19,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub ) {
                         class: 'button-' + button.id,
                         scope: button.scope || 'Aloha.continuoustext',
                         click: function(){
-                            PubSub.pub(button.event);
+                            PubSub.pub(button.event, button);
                         }
                     });
                     this._buttons[button.id] = ob;
