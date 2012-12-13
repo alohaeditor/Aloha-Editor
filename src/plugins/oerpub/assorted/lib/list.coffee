@@ -16,7 +16,6 @@ define ['aloha', 'jquery', 'ui/ui', 'PubSub'], (Aloha, $, Ui, PubSub) ->
 
           # Top most list, you can only indent if you're not the top-most
           # item in the top-most list
-          console.log "depth is " + depth + "item is " + $item + ", index is " + $item.index()
           if $item.is('li') and $item.index() > 0
             ListPlugin._indentListButton.enable(true)
 

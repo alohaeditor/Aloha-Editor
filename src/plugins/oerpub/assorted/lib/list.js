@@ -17,7 +17,6 @@
           if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>')) || Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
             depth = $(rangeObject.commonAncestorContainer).parentsUntil(Aloha.activeEditable.obj, 'li').andSelf().length;
             $item = jQuery(rangeObject.commonAncestorContainer);
-            console.log("depth is " + depth + "item is " + $item + ", index is " + $item.index());
             if ($item.is('li') && $item.index() > 0) {
               ListPlugin._indentListButton.enable(true);
             }
