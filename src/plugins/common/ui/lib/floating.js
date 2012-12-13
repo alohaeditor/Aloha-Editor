@@ -256,7 +256,6 @@ define([
 		}
 
 		if (availableSpace >= $element.height()) {
-			top -= scrollTop;
 			floatAbove($element, {
 				top: top - scrollTop,
 				left: left
