@@ -223,7 +223,7 @@ define([
 	}
 
 	/**
-	 * Float a surface to the appropriate position around the given editable.
+	 * Floats a surface to the appropriate position around the given editable.
 	 *
 	 * @param {Surface} surface The surface to be positioned.
 	 * @param {Aloha.Editable} editable The editable around which the surface
@@ -241,25 +241,27 @@ define([
 		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
 		              + (parseInt($('body').css('paddingTop'), 10) || 0);
 		var $element = surface.$element;
-		var surfaceOrientation = $element.offset();
-		var editableOrientation = editable.obj.offset();
+		var offset = editable.obj.offset();
+		var top = offset.top;
+		var left = offset.left;
 		var scrollTop = $WINDOW.scrollTop();
-		var availableSpace = editableOrientation.top - scrollTop - topGutter;
-		var left = editableOrientation.left;
-		var horizontalOverflow = left + $element.width() - $WINDOW.width()
-		                       - DISTANCE;
+		var availableSpace = top - scrollTop - topGutter;
+		var horizontalOverflow = left + $element.width() - $WINDOW.width();
 
 		if (horizontalOverflow > 0) {
-			left -= horizontalOverflow;
+			left = Math.max(0, left - horizontalOverflow);
 		}
 
 		if (availableSpace >= $element.height()) {
-			editableOrientation.top -= scrollTop;
-			floatAbove($element, editableOrientation, duration, callback);
+			top -= scrollTop;
+			floatAbove($element, {
+				top: top - scrollTop,
+				left: left
+			}, duration, callback);
 		} else if (availableSpace + $element.height() >
-				editableOrientation.top + editable.obj.height()) {
+				top + editable.obj.height()) {
 			floatBelow($element, {
-				top: editableOrientation.top + editable.obj.height(),
+				top: top + editable.obj.height(),
 				left: left
 			}, duration, callback);
 		} else {

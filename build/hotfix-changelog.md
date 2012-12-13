@@ -17,3 +17,5 @@ All changes are categorized into one of the following keywords:
 - **BUG**: blocks: Selecting with <CTRL>+A, when inside of a nested editable,
            will now only select all of the contents of the immediate editable,
            rather the contents of parent editables as well.
+- **BUG**: ui: Floating toolbar will attempt to adjust is positioning to remain
+		   entirely in the viewport whenever possible.
