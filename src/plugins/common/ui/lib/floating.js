@@ -25,7 +25,7 @@
  * recipients can access the Corresponding Source.
  *
  * @overview
- * Implements floating animation effect for UI surfaces.
+ * Implements position and floating animation effect for UI surfaces.
  */
 define([
 	'jquery',
@@ -45,8 +45,8 @@ define([
 	'use strict';
 
 	/**
-	 * The distance the floating surface should maintain from the editable it
-	 * is floating to.
+	 * The distance that the floating surface should maintain from the editable
+	 * it is floating to.
 	 *
 	 * @type {string}
 	 * @const
@@ -84,17 +84,20 @@ define([
 	                   : 'fixed';
 
 	/**
-	 * The position of the floating menu
+	 * The position of the floating menu.
 	 *
-	 * So we can float dialoges (eg special char picker) with the floating menu
-	*/
+	 * Used to float dialoges (eg special character-picker) with the floating
+	 * menu.
+	 *
+	 * @type {object<string,*>}
+	 */
 	var POSITION = {
 		style: POSITION_STYLE,
 		offset: {
 			top: 0,
 			left: 0
-			}
-		};
+		}
+	};
 
 	/**
 	 * Animates a surface element to the given position.
@@ -113,7 +116,7 @@ define([
 			position.top += $WINDOW.scrollTop();
 			position.left += $WINDOW.scrollLeft();
 		}
-		
+
 		POSITION.offset = position;
 
 		$element.stop().animate(position, duration, function () {
