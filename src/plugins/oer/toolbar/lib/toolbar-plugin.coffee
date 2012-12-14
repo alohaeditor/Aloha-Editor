@@ -1,5 +1,5 @@
-define [ "aloha", "aloha/plugin", "ui/ui", "PubSub" ], (
-    Aloha, Plugin, Ui, PubSub) ->
+define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
+    jQuery, Aloha, Plugin, Ui, PubSub) ->
 
   CONTAINER_JQUERY = jQuery('.toolbar')
   if CONTAINER_JQUERY.length == 0
