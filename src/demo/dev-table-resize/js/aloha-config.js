@@ -100,7 +100,10 @@
 						rowConfig : [
 										{name:'bigbold', iconClass:'GENTICS_button_row_bigbold'},
 										{name:'redwhite', iconClass:'GENTICS_button_row_redwhite'}
-							]
+							],
+						colResize: true,
+						tableResize: true,
+						rowResize: true
 
 					},
 					"image": {
