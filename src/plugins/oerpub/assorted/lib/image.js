@@ -138,7 +138,7 @@
     populator = function($el, pover) {
       var $bubble, editable, href;
       editable = Aloha.activeEditable;
-      $bubble = jQuery('<div class="link-popover-details">\n    <a class="change">\n      <img src="' + Aloha.settings.baseUrl + '/../plugins/oerpub/assorted/img/edit-link-03.png" />\n  <span title="Change the image\'s properties">Edit image...</span>\n</a>\n&nbsp; | &nbsp;\n<a class="remove">\n  <img src="' + Aloha.settings.baseUrl + '/../plugins/oerpub/assorted/img/unlink-link-02.png" />\n      <span title="Remove the image">Remove</span>\n    </a>\n</div>');
+      $bubble = jQuery('<div class="link-popover-details">\n    <a class="change">\n      <img src="' + Aloha.settings.baseUrl + '/../plugins/oerpub/assorted/img/edit-link-03.png" />\n  <span title="Change the image\'s properties">Edit image...</span>\n</a>\n&nbsp; | &nbsp;\n<a class="remove">\n  <img src="' + Aloha.settings.baseUrl + '/../plugins/oerpub/assorted/img/unlink-link-02.png" />\n      <span title="Delete the image">Delete</span>\n    </a>\n</div>');
       href = $el.attr('src');
       $bubble.find('.change').on('click', function() {
         var promise;

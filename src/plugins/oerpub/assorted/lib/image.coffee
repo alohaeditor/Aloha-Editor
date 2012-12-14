@@ -179,7 +179,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
             &nbsp; | &nbsp;
             <a class="remove">
               <img src="''' + Aloha.settings.baseUrl + '''/../plugins/oerpub/assorted/img/unlink-link-02.png" />
-              <span title="Remove the image">Remove</span>
+              <span title="Delete the image">Delete</span>
             </a>
         </div>'''
 
