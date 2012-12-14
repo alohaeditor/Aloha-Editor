@@ -591,6 +591,8 @@ define([
 	};
 
 	TablePlugin.initNaturalFitBtn = function() {
+		var that = this;
+
 		if (this.colResize || this.rowResize) {
 			this._tableNaturalFitButton = Ui.adopt("naturalFit", Button, {
 				tooltip: i18n.t("button.naturalfit.tooltip"),
