@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>Oerpub Editor</title>
+        <metal:css_macro define-macro="css">
+            <link rel="stylesheet" type="text/css" href="/aloha/src/css/aloha.css"
+                  tal:attributes="href string:${request.application_url}/aloha/src/css/aloha.css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css"
+                  tal:attributes="href string:${request.application_url}/bootstrap/docs/assets/css/bootstrap.css" type="text/css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet"  href=""
+                  tal:attributes="href string:${request.application_url}/bootstrap/docs/assets/css/bootstrap-responsive.css" type="text/css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet" type="text/css" href="/editor/css/bootstrap.css"
+                  tal:attributes="href string:${request.application_url}/editor/css/bootstrap.css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet" type="text/css" href="/editor/css/aloha.css"
+                  tal:attributes="href string:${request.application_url}/editor/css/aloha.css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet" type="text/css" href="/editor/css/html5_metacontent.css"
+                  tal:attributes="href string:${request.application_url}/editor/css/html5_metacontent.css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet" type="text/css" href="/editor/css/html5_content_in_oerpub.css"
+                  tal:attributes="href string:${request.application_url}/editor/css/html5_content_in_oerpub.css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet" type="text/css" href="/editor/css/style.css"
+                  tal:attributes="href string:${request.application_url}/editor/css/style.css"> <!-- xhtml --></link>
+            <link rel="stylesheet" type="text/css" href="/editor/css/toolbar.css"
+                  tal:attributes="href string:${request.application_url}/editor/css/toolbar.css"> <!-- xhtml --></link>
+        </metal:css_macro>
+        <metal:js_macro define-macro="javascript">
+            <base href="/editor/sandbox/"
+                  tal:attributes="href body_base"/>
+            <script src="/editor/js/jquery-1.7.1.min.js"
+                    tal:replace="nothing"> <!-- xhtml --></script>
+            <script src="/editor/js/jquery.center.js"
+                    tal:replace="nothing"> <!-- xhtml --></script>
+            <!-- Aloha editor -->
+            <script type="text/javascript" src="/aloha/src/lib/require.js"
+                    tal:attributes="src string:${request.application_url}/aloha/src/lib/require.js"> <!-- xhtml workaround --></script>
+
+            <!-- Mathjax -->
+            <script type="text/javascript"
+                    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full&amp;delayStartupUntil=configured"
+                    tal:attributes="src string:${request.application_url}/mathjax/MathJax.js?config=TeX-MML-AM_HTMLorMML-full&amp;delayStartupUntil=configured"> <!-- xhtml --></script>
+
+            <script type="text/x-mathjax-config">MathJax.Hub.Config({
+              jax: ["input/MathML", "input/TeX", "input/AsciiMath", "output/NativeMML", "output/HTML-CSS"],
+              extensions: ["asciimath2jax.js", "tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],
+              tex2jax: { inlineMath: [["[TEX_START]","[TEX_END]"], ["\\(", "\\)"]] },
+              // Apparently we can't change the escape sequence for ASCIIMath (MathJax doesn't find it)
+              // asciimath2jax: { inlineMath: [["[ASCIIMATH_START]", "[ASCIIMATH_END]"]], },
+
+              // The default for Firefox is "HTML" for some reason so change it to MML
+              MMLorHTML: {prefer:{MSIE:"MML",Firefox:"MML",Opera:"HTML",Chrome:"HTML",Safari:"HTML",other:"HTML"}},
+              TeX: {
+                extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"], noErrors: { disabled: true }
+              },
+              AsciiMath: { noErrors: { disabled: true } }
+            });</script>
+
+            <script type="text/javascript" src="/editor/js/aloha-settings.js"
+                    tal:attributes="src string:${request.static_url('oerpub.rhaptoslabs.swordpushweb:static/aloha-settings.js')}"> <!-- xhtml workaround --></script>
+            <script type="text/javascript" src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"
+                    tal:attributes="src string:${request.application_url}/bootstrap/docs/assets/js/bootstrap.js"> <!-- xhtml workaround --></script>
+            <script type="text/javascript" src="/aloha/src/lib/aloha.js"
+                    tal:attributes="src string:${request.application_url}/aloha/src/lib/aloha.js"
+                data-aloha-plugins="common/ui,
+                                    oer/toolbar,
+                                    cnx/popover,
+                                    common/format,
+                                    common/paste,
+                                    common/block,
+                                    common/list,
+                                    oerpub/table,
+                                    cnx/math,
+                                    extra/draganddropfiles,
+                                    common/image,
+                                    oerpub/assorted,
+                                    common/undo,
+                                    oerpub/undobutton,
+                                    oerpub/genericbutton,
+                                    common/dom-to-xhtml"> <!-- xhtml workaround --></script>
+
+                <script type="text/javascript"
+                        tal:content="string:var body_url = '${body_url}';">
+                    var body_url = '/editor/sandbox/index.html';</script>
+                <script type="text/javascript"
+                        tal:content="string:var save_url = '${request.route_url('preview_save')}';">
+                    var save_url = null;</script>
+                <script type="text/javascript">
+                Aloha.ready(function(){
+                    Aloha.require(['PubSub', 'genericbutton/genericbutton-plugin'],
+                            function(PubSub, GenericButton){
+                        // Save button is disabled until something is changed
+                        GenericButton.getButtons()["save"].enable(false);
+                        $('.btn.save').html('Saved');
+
+                        function savePreview(callback_function){
+                            var editor = Aloha.getEditableById('canvas');
+                            if(editor.isModified()){
+                                // setUnmodified, to avoid another concurrent save from
+                                // firing while this one is still ongoing.
+                                editor.setUnmodified();
+
+                                var $html = $('<html />');
+                                $html.attr('xmlns',      'http://www.w3.org/1999/xhtml');
+                                $html.attr('xmlns:c',    'http://cnx.rice.edu/cnxml');
+                                $html.attr('xmlns:md',   'http://cnx.rice.edu/mdml/0.4');
+                                $html.attr('xmlns:qml',  'http://cnx.rice.edu/qml/1.0');
+                                $html.attr('xmlns:mod',  'http://cnx.rice.edu/#moduleIds' ); 
+                                $html.attr('xmlns:bib',  'http://bibtexml.sf.net/');
+                                $html.attr('xmlns:data', 'http://dev.w3.org/html5/spec/#custom');
+
+                                var $body = $('<body />');
+                                $body.attr('class', 'content');
+                                $body.append(editor.getContents());
+
+                                // This is going to break in IE. Which is fine, because
+                                // we don't support that right now. Hint to poor person
+                                // who has to develop that: ActiveXObject 
+                                // Microsoft.XMLDOM
+                                var html = (new XMLSerializer()).serializeToString(
+                                    $html.append($body).get(0));
+                                if(save_url !== null){
+                                    $.post(save_url,
+                                            {html: html}, function(data, statustext){
+                                        if(data.error){
+                                            $('#statusmessage').data('message')(data.error, 'error');
+                                        } else {
+                                            $('#statusmessage').data('message')('Saved');
+                                            GenericButton.getButtons()["save"].enable(false);
+                                            $('.btn.save').html('Saved');
+                                            if (callback_function) {
+                                                callback_function();
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+
+                        // Attach save handler to Save button
+                        PubSub.sub('swordpushweb.save', function(data){
+                            if(data && data.callback){
+                                data.callback();
+                            }
+                            savePreview();
+                        });
+
+                        // Set up status message area
+                        var statusarea = $('#statusmessage');
+                        statusarea.data('message', function(message, type) {
+                            type = type || 'info';
+                            $("<div />", {'class': type, text: message}).hide()
+                                .appendTo(statusarea).center().fadeIn(700)
+                                .delay(1500).fadeOut(800, function() { $(this).remove(); });
+                        });
+
+                        // Fetch the preview
+                        $('#statusmessage').data('message')('Loading preview...');
+                        Aloha.jQuery.get(body_url, function(data){
+                            var $editable = Aloha.jQuery('#canvas').html(data);
+
+                            // Remove the pyramid debug toolbar from the preview
+                            // if it exists. This code should do nothing in production
+                            $editable.find('#pDebug').remove();
+                            $editable.aloha().focus();
+
+                            MathJax.Hub.Configured();
+
+                            // Auto-save periodically. This only does anything if
+                            // editor.isModified().
+                            window.setInterval(savePreview, 30000);
+
+                            // Bind a handler for the changed event
+                            var editor = Aloha.getEditableById('canvas');
+                            Aloha.bind('aloha-smart-content-changed', function(){
+                                if(editor.isModified()){
+                                    $('.btn.save').html('Save');
+                                    GenericButton.getButtons()["save"].enable(true);
+                                }
+                            });
+                            Aloha.jQuery('#statusmessage').data('message')('Preview loaded');
+                        });
+                    });
+                });
+                </script>
+
+        </metal:js_macro>
+    </head>
+    <body>
+        <div id="ie6-container-wrap">
+            <div id="container">
+                <!-- ================= -->
+                <!--  Toolbar Buttons  -->
+                <!-- ================= -->
+                <metal:toolbar define-macro="toolbar">
+                <div class="toolbar aloha-dialog">
+                    <div class="btn-toolbar">
+                      <div class="btn-group">
+                        <button class="btn action save" rel="tooltip" title="Save">Save</button>
+                      </div>
+                      <span class="separator"> </span>
+                      <div class="btn-group">
+                        <button class="btn action undo" rel="tooltip" title="Undo"><i class="icon-undo"></i></button>
+                        <button class="btn action redo" rel="tooltip" title="Redo"><i class="icon-redo"></i></button>
+                      </div>
+                      <span class="separator"> </span>
+                      <div class="btn-group headings">
+                        <button class="btn heading dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Text Heading">
+                          <span class="currentHeading">Nothing</span>
+                          <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                          <!-- "changeHeading" is important so a click can be attached and
+                               data-tagname is used both to identify if the cursor is in one of these and
+                           is used to change one heading to another
+                           -->
+                          <li><a href="#" class="action changeHeading" data-tagname="p">Normal Text</a></li>
+                          <li><a href="#" class="action changeHeading" data-tagname="pre">Code</a></li>
+                          <li><a href="#" class="action changeHeading" data-tagname="h1">Heading</a></li>
+                          <li><a href="#" class="action changeHeading" data-tagname="h2">Subheading</a></li>
+                          <li><a href="#" class="action changeHeading" data-tagname="h3">SubSubHeading</a></li>
+                        </ul>
+                      </div>
+                      <span class="separator"> </span>
+                      <div class="btn-group">
+                        <button class="btn action strong" rel="tooltip" title="Bold"><i class="icon-bold"></i></button>
+                        <button class="btn action emphasis" rel="tooltip" title="Italics"><i class="icon-italic"></i></button>
+                        <button class="btn action underline" rel="tooltip" title="Underline"><i class="icon-underline"></i></button>
+                        <button class="btn action superscript" rel="tooltip" title="Superscript"><i class="icon-superscript"></i></button>
+                        <button class="btn action subscript" rel="tooltip" title="Subscript"><i class="icon-subscript"></i></button>
+                      </div>
+                      <span class="separator"> </span>
+                      <div class="btn-group">
+                        <button class="btn action insertLink" rel="tooltip" title="Insert Link"><i class="icon-link-insert"></i></button>
+                        <!-- <button class="btn action changeHeading" data-tagname="pre" rel="tooltip" title="Code">Code</button> -->
+                      </div>
+                      <span class="separator"> </span>
+                      <div class="btn-group">
+                        <button class="btn action unorderedList" rel="tooltip" title="Insert Unordered List"><i class="icon-unordered-list"></i></button>
+                        <button class="btn action orderedList" rel="tooltip" title="Insert Ordered List"><i class="icon-ordered-list"></i></button>
+                        <button class="btn action indentList" rel="tooltip" title="Indent list item (move right)"><i class="icon-indent-list"></i></button>
+                        <button class="btn action outdentList" rel="tooltip" title="Unindent list item (move left)"><i class="icon-outdent-list"></i></button>
+                      </div>
+                      <span class="separator"> </span>
+                      <div class="btn-group">
+                        <button class="btn action insertImage-oer" rel="tooltip" title="Insert Image"><i class="icon-image-insert"></i></button>
+                        <button class="btn action createTable" rel="tooltip" title="Create Table"><i class="icon-table-insert"></i></button>
+                        <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Table Operations">
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a href="#" class="action addrowbefore">Add Row Before</a></li>
+                          <li><a href="#" class="action addrowafter">Add Row After</a></li>
+                          <li><a href="#" class="action addcolumnbefore">Add Column Before</a></li>
+                          <li><a href="#" class="action addcolumnafter">Add Column After</a></li>
+                          <li><a href="#" class="action deleterow">Delete Row</a></li>
+                          <li><a href="#" class="action deletecolumn">Delete Column</a></li>
+                          <li><a href="#" class="action deletetable">Delete Table</a></li>
+                        </ul>
+                        <button class="btn action insertMath" rel="tooltip" title="Insert Math"><i class="icon-math-insert"></i></button>
+                      </div>
+
+                    </div>
+
+                </div><!-- / ".toolbar" -->
+                </metal:toolbar>
+
+                <div id="content">
+                <div id="artboard">
+                    <metal:editor define-macro="editor">
+                    <div id="statusmessage"></div>
+                    <div id="editor">
+                        <div id="canvas">
+                        </div>
+                    </div>
+                    </metal:editor>
+                </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

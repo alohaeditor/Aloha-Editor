@@ -1,0 +1,255 @@
+/* Remove the annoying WAI button in tables */
+.aloha-table-wrapper div.aloha-wai-red {
+  background-image: none !important;
+}
+/* Hide the annoying floating toolbar */
+.aloha-toolbar {
+  display: none !important;
+}
+/* Add some padding on the top so the toolbar has room to float in */
+.document {
+  margin: 4em;
+}
+/* Needs to occur AFTER the bootstrap.css */
+/* Allows the popover to grow in size */
+.popover {
+  width: auto;
+}
+/* We don't use the title in popovers so hide it... */
+.popover .popover-title {
+  display: none;
+}
+figure {
+  counter-increment: figure;
+  /* Set inline-block so the figure popover shows up directly under instead of 1/2-way in the page */
+
+  display: inline-block;
+}
+figure figcaption::before {
+  content: "Figure " counter(figure) " ";
+  font-weight: bold;
+}
+.aloha-image-upload-drop-box {
+  text-align: center;
+  border: 1px dashed #ccc;
+  width: 400px;
+  padding: 100px 0;
+  cursor: pointer;
+}
+/* Metadata fields that occur around the image */
+.aloha-image-attrib .aloha-image-attr-alt::before {
+  content: "Please provide a description of this image for the visually impaired";
+  color: #ccc;
+  display: block;
+}
+/* Just some formatting of the input boxes */
+.aloha-image-attrib input {
+  display: block;
+}
+.aloha-image-attrib .aloha-image-attr-alt {
+  width: 400px;
+  display: block;
+}
+/* Toolbar icons */
+.toolbar {
+  background-color: whiteSmoke;
+  opacity: 0.95;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding-left: 1em;
+  box-shadow: 0 2px 3px 0 #CCC;
+  z-index: 1010;
+}
+.toolbar [class^="icon-"] {
+  margin: 0;
+  height: 33px;
+  width: 33px;
+  background-image: url("../images/toolbar.png");
+}
+.toolbar .btn {
+  padding: 0;
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+}
+.toolbar .btn-toolbar {
+  margin: 3px 0;
+}
+.toolbar .btn-group > .btn + .dropdown-toggle {
+  height: 37px;
+  width: 20px;
+  box-shadow: none;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+}
+.toolbar .icon-undo {
+  background-position: -518px 0;
+}
+.toolbar .icon-redo {
+  background-position: -288px 0;
+}
+.toolbar .icon-bold {
+  background-position: -56px 0;
+}
+.toolbar .icon-italic {
+  background-position: -155px 0;
+}
+.toolbar .icon-superscript {
+  background-position: -419px 0;
+}
+.toolbar .icon-subscript {
+  background-position: -386px 0;
+}
+.toolbar .icon-underline {
+  background-position: -485px 0;
+}
+.toolbar .icon-image-insert {
+  background-position: -122px 0;
+}
+.toolbar .icon-link-insert {
+  background-position: -188px 0;
+}
+.toolbar .icon-unordered-list {
+  background-position: -584px 0;
+}
+.toolbar .icon-ordered-list {
+  background-position: -254px 0;
+}
+.toolbar .icon-indent-list {
+  background-position: -650px 0;
+}
+.toolbar .icon-outdent-list {
+  background-position: -683px 0;
+}
+.toolbar .icon-table-insert {
+  background-position: -452px 0;
+}
+.toolbar .icon-math-insert {
+  background-position: -221px 0;
+}
+.toolbar .btn.heading {
+  width: 9em;
+  height: 24px;
+  border: 1px solid #999999;
+  text-align: left;
+  padding: 0 0.5em;
+}
+.toolbar .btn.heading .caret {
+  position: absolute;
+  right: 0.5em;
+}
+.toolbar .btn.heading .currentHeading {
+  text-align: left;
+}
+.toolbar .btn.save {
+  height: 24px;
+  width: 4em;
+  border: 1px solid #999999;
+}
+.toolbar .dropdown-menu a {
+  padding: 3px 0.5em;
+}
+.toolbar .btn-group > .btn:hover .icon-undo,
+.toolbar .btn-group > .btn:focus .icon-undo,
+.toolbar .btn-group > .btn:active .icon-undo,
+.toolbar .btn-group > .btn.active .icon-undo {
+  background-position: -518px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-redo,
+.toolbar .btn-group > .btn:focus .icon-redo,
+.toolbar .btn-group > .btn:active .icon-redo,
+.toolbar .btn-group > .btn.active .icon-redo {
+  background-position: -288px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-bold,
+.toolbar .btn-group > .btn:focus .icon-bold,
+.toolbar .btn-group > .btn:active .icon-bold,
+.toolbar .btn-group > .btn.active .icon-bold {
+  background-position: -56px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-italic,
+.toolbar .btn-group > .btn:focus .icon-italic,
+.toolbar .btn-group > .btn:active .icon-italic,
+.toolbar .btn-group > .btn.active .icon-italic {
+  background-position: -155px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-superscript,
+.toolbar .btn-group > .btn:focus .icon-superscript,
+.toolbar .btn-group > .btn:active .icon-superscript,
+.toolbar .btn-group > .btn.active .icon-superscript {
+  background-position: -419px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-subscript,
+.toolbar .btn-group > .btn:focus .icon-subscript,
+.toolbar .btn-group > .btn:active .icon-subscript,
+.toolbar .btn-group > .btn.active .icon-subscript {
+  background-position: -386px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-underline,
+.toolbar .btn-group > .btn:focus .icon-underline,
+.toolbar .btn-group > .btn:active .icon-underline,
+.toolbar .btn-group > .btn.active .icon-underline {
+  background-position: -485px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-image-insert,
+.toolbar .btn-group > .btn:focus .icon-image-insert,
+.toolbar .btn-group > .btn:active .icon-image-insert,
+.toolbar .btn-group > .btn.active .icon-image-insert {
+  background-position: -122px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-link-insert,
+.toolbar .btn-group > .btn:focus .icon-link-insert,
+.toolbar .btn-group > .btn:active .icon-link-insert,
+.toolbar .btn-group > .btn.active .icon-link-insert {
+  background-position: -188px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-unordered-list,
+.toolbar .btn-group > .btn:focus .icon-unordered-list,
+.toolbar .btn-group > .btn:active .icon-unordered-list,
+.toolbar .btn-group > .btn.active .icon-unordered-list {
+  background-position: -584px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-ordered-list,
+.toolbar .btn-group > .btn:focus .icon-ordered-list,
+.toolbar .btn-group > .btn:active .icon-ordered-list,
+.toolbar .btn-group > .btn.active .icon-ordered-list {
+  background-position: -254px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-indent-list,
+.toolbar .btn-group > .btn:focus .icon-indent-list,
+.toolbar .btn-group > .btn:active .icon-indent-list,
+.toolbar .btn-group > .btn.active .icon-indent-list {
+  background-position: -650px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-outdent-list,
+.toolbar .btn-group > .btn:focus .icon-outdent-list,
+.toolbar .btn-group > .btn:active .icon-outdent-list,
+.toolbar .btn-group > .btn.active .icon-outdent-list {
+  background-position: -683px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-table-insert,
+.toolbar .btn-group > .btn:focus .icon-table-insert,
+.toolbar .btn-group > .btn:active .icon-table-insert,
+.toolbar .btn-group > .btn.active .icon-table-insert {
+  background-position: -452px -66px;
+}
+.toolbar .btn-group > .btn:hover .icon-math-insert,
+.toolbar .btn-group > .btn:focus .icon-math-insert,
+.toolbar .btn-group > .btn:active .icon-math-insert,
+.toolbar .btn-group > .btn.active .icon-math-insert {
+  background-position: -221px -66px;
+}
+.separator {
+  background-image: url("../images/toolbar.png");
+  background-position: -3px 0;
+  display: inline-block;
+  height: 33px;
+  letter-spacing: normal;
+  width: 20px;
+  word-spacing: normal;
+  vertical-align: middle;
+}

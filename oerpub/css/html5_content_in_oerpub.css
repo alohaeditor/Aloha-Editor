@@ -1,0 +1,651 @@
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+   See /stylesheets/README.txt for an explanation of
+   any CSS browser detection hacks used in this file
+   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
+
+/* =========== headers =========== */
+
+#canvas .section-header{
+  font-size: 1.5em;
+}
+#canvas  .section .section .section-header{
+  font-size: 1.05em;
+}
+
+
+/* ========== the "befores" ========== */
+
+/*
+#cnx_module #cnx_main span.cnx_label, .solution-toggle, .footnote-reference, 
+.equation-number, .view-math, .view-math a, .references-header, 
+.glossary-header, .bibtex-reference, .footnotes-header{
+*/
+#canvas span.cnx_label, .dragged span.cnx_label, .solution-toggle, .footnote-reference, 
+.equation-number, .view-math, .view-math a, .references-header, 
+.glossary-header, .bibtex-reference, .footnotes-header{
+  font-size: .9em;
+  color: #369;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-family: arial, helvetica, sans-serif;
+}
+
+/* ========== section & section headers ========== */
+
+#canvas h1{
+  color: #369;
+  padding: 0 0 .1em;
+  border: 0 solid #369;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+  font-weight: bold;
+  font-size: 1.5em;
+  letter-spacing: -1px;
+  line-height: 1.5em;
+}
+
+#canvas h2, #canvas h3, #canvas h4, #canvas h5, #canvas h6, #canvas dl, #canvas dt, #canvas dd{
+  color: #369;
+  padding: 0 0 .1em;
+  border: 0 solid #369;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+  font-weight: bold;
+  font-size: 1em;
+  margin: 0;
+  letter-spacing: -1px;
+  line-height: 1.5em;
+}
+
+.section .section h1, .section .section h2, .section .section h3, .section .section h4, .section .section h4, .section .section h5, .section .section h6{
+  border: 0 solid #369;
+  border-left-width: 1px;
+  border-bottom-width: 1px;
+  font-size: 1.05em;
+  padding: 0 0 .1em .4em;
+  letter-spacing: 0;
+}
+
+.example .section-header, .proof .section-header, .problem 
+.section-header, .solution .section-header, .statement .section-header{
+  font-weight: normal; 
+  border: 0 solid #369;
+  border-bottom-width: 1px;
+  padding: 0 0 .1em 0;
+  font-size: 1em;
+  letter-spacing: 0;
+}
+
+.example .section, .problem .section, .solution .section, .statement 
+.section, .proof .section{
+  margin-top: .75em;
+  margin-bottom: 2.5em;
+  margin-left: 3em;
+}
+
+.qmlitem .section{
+  margin-top: 0;
+}
+
+/* ========== list & item ========== */
+
+div.list{
+  margin: 1em 0;
+}
+
+.list ul, .list ol{
+  display: block;
+  padding: 0;
+  margin: 0 0 0 2.5em;
+  list-style-image: none;
+}
+
+.list ol{
+  margin-left: 3em;
+}
+
+ol.arabic{ list-style-type: decimal; }
+ol.upper-roman{ list-style-type: upper-roman; }
+ol.lower-roman{ list-style-type: lower-roman; }
+ol.upper-alpha{ list-style-type: upper-alpha; }
+ol.lower-alpha{ list-style-type: lower-alpha; }
+ul.bullet{ list-style-type: disc; }
+ul.open-circle{ list-style-type: circle; }
+ul.other{ list-style-type: none; }
+ol.other{ list-style-type: none; }
+ul.labeled-item{ list-style-type: none; }
+
+ol.other, ul.other, ul.labeled-item{
+  margin-left: 1.5em;
+}
+
+.list li{
+  margin: 0 0 .7em;
+  line-height: 1.5em;
+}
+
+.list-header{
+  margin: 1em 0 .5em;
+}
+
+span .list-header{
+  display: inline;
+}
+
+div.list .item-decoration{
+  margin-right: .5em;
+}
+
+/* ========== para ========== */
+
+.para{
+  display: block;
+  margin: 1em 0 !important;
+}
+
+.para-header{
+  margin: 1em 0 -.5em;
+}
+
+#cnx_main{
+  line-height: 1.5em;
+}
+
+/* ========== diff highlighting ========== */
+
+/*
+ins{
+  color: #060;
+}
+
+del{
+  color: #c00;
+}
+*/
+
+/* ========== codeblock & codeline ========== */
+
+code{
+  font-family: courier, courier new, monospace;
+  font-size: 1.18em;
+  color: #060;
+  font-style: normal;
+}
+
+div.code{
+  margin: 1em 0;
+}
+
+pre.codeblock{
+  margin: 0;
+  text-align: left;
+  line-height: normal;
+  font-family: courier, courier new, monospace;
+  font-size: 1em;
+}
+
+code blockquote, blockquote code{
+  font-style: normal;
+}
+
+.cnx_label code{
+  text-transform: none;
+}
+
+/* ======== preformat ======== */
+
+div.preformat{
+  margin: .5em 0;
+}
+
+pre.preformatted{
+  font-family: tahoma, verdana, arial, helvetica, sans-serif;
+  font-size: 1em;
+  margin: .5em 0;
+}
+
+span.preformat{
+  font-family: courier, courier new, monospace;
+  font-size: 1.18em;
+}
+
+/* ========== quote ========== */
+
+blockquote{
+  font-style: italic;
+  margin: 1em 3em;
+  line-height: normal;
+}
+
+.quote-source{
+  font-style: normal;
+}
+
+.quote-header{
+  margin: 1em 3em -.75em;
+}
+
+/* ========== example ========== */
+
+.example{
+  margin: 1.2em 3em;
+  padding: 1em;
+  border: 1px solid #333;
+  border-top-color: #ccc;
+  border-left-color: #ccc;
+}
+
+.example .para{
+  margin: .5em 0;
+}
+
+.definition .example{
+  margin: .5em 3em;
+}
+
+.definition .example, .rule .example{
+  padding: .5em .8em;
+}
+
+.definition .example .para, .rule .example .para{
+  margin: .5em 0;
+}
+
+.example.labview, .example.musical{
+  margin: 0;
+  text-align: center;
+  border: 0;
+}
+
+/* ========== exercise ========== */
+
+.problemset-header{
+  margin: 2em 0 1em;
+  font-size: 1.15em;
+}
+
+.exercise{
+  margin: 1em 0;
+}
+
+.problem, .commentary{
+  margin: .5em 0;
+}
+
+.solution{
+  margin: .5em 0 .5em 3em;
+}
+
+.solution-toggles{
+  text-align: center;
+  margin-top: 1em;
+}
+
+.solution-toggles a{
+  text-decoration: none;
+}
+
+/* ========== assorted inline elements ========== */
+
+.cnxn, em{
+  font-weight: bold;
+}
+
+.smallcaps{
+  font-variant: small-caps;
+}
+
+cite, em, i.emphasis .cite-title i{
+  font-style: normal;
+}
+
+i em, i cite, .foreign cite, .foreign em, blockquote em, blockquote cite{
+  font-style: italic;
+}
+
+.normal{
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+  font-variant: normal;
+}
+
+.normal em{
+  font-style: normal;
+}
+
+.cnxn-target{
+  text-transform: capitalize;
+}
+
+.bibtex-reference{
+  vertical-align: .5em;
+  line-height: .1em;
+  font-style: normal;
+}
+
+i .foreign, .foreign i, blockquote i, blockquote .foreign, i blockquote, .foreign blockquote{
+  font-style: normal;
+}
+
+.foreign, blockquote i .foreign, blockquote .foreign i{
+  font-style: italic;
+}
+
+/* ========== term & definition ========== */
+
+.term{
+  font-weight: bold;
+  font-style: normal;
+  display: inline;
+}
+
+.term .hovlink{
+  text-decoration: none;
+  border-bottom: 1px dotted #369;
+}
+
+.term .hovlink:visited{
+  border-color: #647;
+}
+
+.lensinfo a{
+  text-decoration: none !important;
+  border-bottom-width: 0 !important;
+}
+
+.lensinfo .term a{
+  color: #369;
+}
+
+.definition{
+  margin: 1em 0;
+}
+
+.meaning, .seealso{
+  margin: .5em 0 .5em 3em;
+  padding: .2em 0;
+}
+
+.seealso{
+  margin: .2em 0 .2em 3em;
+}
+
+/* ========== equation ========== */
+
+.equation{
+  margin: .5em 0 1em;
+  position: relative;
+}
+
+* html .equation{
+  width: 100%;
+  z-index: -1;
+}
+
+.equation-number{
+  position: absolute;
+  top: 50%;
+  right: 0;
+}
+
+.equation .title{
+  display: block;
+  margin-bottom: 1em;
+}
+
+/* ========== figure, subfigure & caption ========== */
+
+.figure{
+  margin: 1.5em auto;
+}
+
+.inner-figure{
+  text-align: center;
+}
+
+.inner-figure{
+  border: 0 #999 solid;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+  padding: .5em 0 .75em;
+}
+
+.horizontal-subfigure-name, .inner-horizontal-subfigure, .horizontal-subfigure-caption{
+  padding: 0 .3em;
+  text-align: center;
+}
+
+.horizontal-subfigure-name{
+  padding-bottom: .5em;
+}
+
+.vertical-subfigure, .vertical-subfigure-name, .figure-name{
+  text-align: center;
+}
+
+.horizontal-subfigure, .vertical-subfigure{
+  margin: .5em auto 0;
+}
+
+.horizontal-subfigure-caption, .vertical-subfigure-caption{
+  padding-bottom: .5em;
+}
+
+.figure-caption, .horizontal-subfigure-caption, .vertical-subfigure-caption{
+  font-weight: normal;
+  font-size: .9em;
+  padding-top: .3em;
+  line-height: normal;
+  text-align: left;
+}
+
+.horizontal-subfigure-caption{
+  vertical-align: top;
+}
+
+.vertical-subfigure-caption{
+  text-align: center;
+  padding-top: 0;
+}
+
+.figure div.code, .figure .table{
+  margin: 0;
+}
+
+/* ========== table ========== */
+
+.table{
+  margin: 1.5em 0;
+  text-align: center;
+  width: 100%;
+}
+
+.table table, .old-table{
+  border-collapse: collapse;
+  border: 1px solid #666 !important;
+}
+
+.table-name{
+  padding-bottom: .5em;
+  text-align: center;
+}
+
+.old-table td, .old-table th{
+  text-align: left;
+}
+
+.table td, .table th{
+  padding: .3em !important;
+  border: 1px solid #666 !important;
+}
+
+.table-text{
+  text-align: left;
+  line-height: normal;
+  padding-top: .3em;
+}
+
+div.table-caption{
+  margin-top: .5em;
+}
+
+.table-caption, .code-caption{
+  font-size: .9em;
+}
+
+.code-caption{
+  text-align: left;
+  border-top: 1px solid #999;
+  margin: .75em auto 0;
+  line-height: normal;
+  padding-top: .5em;
+}
+
+.code td{
+  padding: 0;
+}
+
+/* ========== math ========== */
+
+semantics annotation-xml{
+  display: none;
+}
+
+math{
+  font-size: 140%;
+}
+
+/* ========== note ========== */
+
+div.note{
+  padding: .75em;
+  margin: .5em 3em .75em;
+  border: 1px solid #333;
+  border-top-color: #ccc;
+  border-left-color: #ccc;
+}
+
+.note-header{
+  display: inline;
+}
+
+.footnote-reference{
+  vertical-align: .5em;
+  line-height: .1em;
+}
+
+/* ========== rule ========== */
+
+.rule{
+  margin: .75em 0;
+}
+
+.statement{
+  margin: .75em 0 .5em 3em;
+}
+
+.proof{ 
+  margin: .4em 0 .2em 3em;
+}
+
+.statement .para, .proof .para{
+  margin: .5em 0 1em;
+}
+
+/* ========== glossary & bibtexml & foonotes ========== */
+
+.glossary-container, .references, .footnotes{
+  margin: 2em 0 1em;
+  border-top: 1px #ccc solid;
+  padding: .5em 0;
+}
+
+.glossary-header, .references-header, .footnotes-header{
+  font-size: 1em;
+  margin-top: 0;
+}
+
+#canvas .glossary{
+  margin: 1.2em 0 1.2em 3em;
+}
+
+.glossary-container .glossary div, .glossary h3, .glossary h4, .glossary h5, 
+.glossary h6, .glossary p, .glossary dt, .glossary dd{
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+#canvas .glossary dt{
+  margin-left: -3em;
+}
+
+#canvas .glossary dd, #canvas .glossary .example-header{
+  margin-left: .5em;
+}
+
+#canvas .glossary .lensinfo dd{
+  margin-left: 0;
+}
+
+#canvas .glossary .seealso{
+  display: block;
+  margin: .75em 0 0 0;
+}
+
+/* ===== newline & space ===== */
+
+.newline hr{     
+  height: 0;
+  margin: 1.4em 0 .25em;
+  border: 0 solid black;  
+  border-width: 0 0 1px;
+}
+
+* html .newline hr{ margin: .5em 0 -.2em; }
+*+html .newline hr{ margin: .5em 0 -.2em; }
+
+pre.underline{
+  text-decoration: underline;              
+}
+
+pre.space{
+  display: inline;
+}
+
+/* ========== QML ========== */
+
+.feedback{
+  font-weight: bold;
+  margin: 1em 0 1em 2em;
+}
+
+.hint, .feedback{
+  display: none;
+  margin-top: .5em;
+}
+
+.answer{
+  margin-top: .5em;
+}
+
+.hint{
+  font-style: italic;
+}
+
+.qmlitem input{
+  border-width: 0;
+}
+
+.qmlitem .button{
+  margin: .5em 0 0;
+  padding: .05em .5em;
+  background-color: #69c;
+  font-weight: bold;
+  color: white;
+  border: 1px solid #1d3955;
+  border-left-color: #c1d1e0;
+  border-top-color: #c1d1e0;
+}
