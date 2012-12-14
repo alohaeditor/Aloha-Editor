@@ -57,18 +57,12 @@ define('aloha/copypaste', [
 	/**
 	 * Retrieves the current range.
 	 *
-	 * Until Aloha's Selection is improved and completed, it will be necessary
-	 * to look into the selection object's internals in order to guard against
-	 * index-out-of-bounds errors.
-	 *
 	 * @return {WrappedRange|null} Range at current selection or null of non
 	 *                             exists.
 	 */
 	function getRange() {
 		var selection = Aloha.getSelection();
-		return (selection._nativeSelection._ranges.length
-				? selection.getRangeAt(0)
-				: null);
+		return selection.getRangeCount() ? selection.getRangeAt(0) : null;
 	}
 
 	/**
