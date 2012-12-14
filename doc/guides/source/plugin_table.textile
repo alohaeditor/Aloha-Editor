@@ -37,6 +37,10 @@ h4. Reize rows and columns
 
 When enabled from settings, table rows and columns can be resize by drag and drop. The cursor will change to indicate resizeable rows or columns. On some occasions, you may need to increase the table width before increasing the width of individual columns.
 
+You can reset resized tables to its default form by using the `naturalfit` option available under Table toolbar.
+
+WARNING: Resize functionality is not optimized for IE7. There might be bugs/glitches. Use it at your own risk.
+
 h4. Table layout
 
 Each cell, row or column can have an individual style applied. You only have to select the cells, rows or columns and choose one layout from the table layout list.
@@ -112,3 +116,4 @@ h3. Components
 * mergecells - merge selected cells
 * splitcells - split selected cells
 * tablecaption - input field which allows you to add a caption to the table
+* naturalfit - removes defined widths and heights from rows and columns 

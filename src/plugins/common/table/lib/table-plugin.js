@@ -1091,6 +1091,24 @@ define([
 			}
 		});
 
+		this._tableNaturalFitButton = Ui.adopt("naturalFit", Button, {
+			tooltip: i18n.t("button.naturalfit.tooltip"),
+			icon: "aloha-icon aloha-icon-table-naturalfit",
+			scope: this.name + '.cell',
+			click: function() {
+				if (that.activeTable) {
+					var tableObj = that.activeTable.obj;
+					tableObj.find('td').each(function() {
+						jQuery(this).find('div').css('width', '');
+						jQuery(this).css('width', '');
+					});
+					tableObj.find('tr').each(function() {
+						jQuery(this).css('height', '');
+					});
+				}
+			}
+		});
+
 		this.summary = AttributeField( {
 			width : 275,
 			name  : 'tableSummary',
