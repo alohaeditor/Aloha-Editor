@@ -583,6 +583,28 @@ define([
 		});
 	};
 
+	TablePlugin.initNaturalFitBtn = function() {
+		if (this.colResize || this.rowResize) {
+			this._tableNaturalFitButton = Ui.adopt("naturalFit", Button, {
+				tooltip: i18n.t("button.naturalfit.tooltip"),
+				icon: "aloha-icon aloha-icon-table-naturalfit",
+				scope: this.name + '.cell',
+				click: function() {
+					if (that.activeTable) {
+						var tableObj = that.activeTable.obj;
+						tableObj.find('td').each(function() {
+							jQuery(this).find('div').css('width', '');
+							jQuery(this).css('width', '');
+						});
+						tableObj.find('tr').each(function() {
+							jQuery(this).css('height', '');
+						});
+					}
+				}
+			});
+		}
+	};
+
 	/**
 	 * Adds default row buttons, and custom formatting buttons to floating menu
 	 */
@@ -1007,6 +1029,8 @@ define([
 
 		this.initMergeSplitCellsBtns();
 
+		this.initNaturalFitBtn();
+
 		// generate formatting buttons for tables
 		this.tableMSItems = [];
 
@@ -1087,24 +1111,6 @@ define([
 							Aloha.Selection.updateSelection();
 						}
 					}
-				}
-			}
-		});
-
-		this._tableNaturalFitButton = Ui.adopt("naturalFit", Button, {
-			tooltip: i18n.t("button.naturalfit.tooltip"),
-			icon: "aloha-icon aloha-icon-table-naturalfit",
-			scope: this.name + '.cell',
-			click: function() {
-				if (that.activeTable) {
-					var tableObj = that.activeTable.obj;
-					tableObj.find('td').each(function() {
-						jQuery(this).find('div').css('width', '');
-						jQuery(this).css('width', '');
-					});
-					tableObj.find('tr').each(function() {
-						jQuery(this).css('height', '');
-					});
 				}
 			}
 		});

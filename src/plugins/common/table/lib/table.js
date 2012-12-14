@@ -364,7 +364,7 @@ define([
 				} else if ( rowResize && closeToTopBorder( jqObj ) ) {
 					jqObj.css( 'cursor', 'row-resize' );
 					return that.attachRowResize( jqObj );
-				} else if (closeToTableBottom( jqObj ) ) {
+				} else if ( rowResize && closeToTableBottom( jqObj ) ) {
 					jqObj.css( 'cursor', 'row-resize' );
 					return that.attachRowResize( jqObj, true );
 				} else {
