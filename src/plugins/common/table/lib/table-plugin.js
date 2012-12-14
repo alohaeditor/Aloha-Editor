@@ -232,10 +232,17 @@ define([
 		this.rowConfig = this.checkConfig(this.rowConfig||this.settings.rowConfig);
 		this.cellConfig = this.checkConfig(this.cellConfig||this.settings.cellConfig);
 
-		// col/row resize settings
+		// table resize settings
 		this.tableResize = this.settings.tableResize === undefined ? true : this.settings.tableResize;
 		this.colResize = this.settings.colResize === undefined ? true : this.settings.colResize;
 		this.rowResize = this.settings.rowResize === undefined ? true : this.settings.rowResize;
+
+		// disable table resize settings on browsers below IE8
+		if (jQuery.browser.msie && jQuery.browser.version < 8) {
+			this.tableResize = false;
+			this.colResize = false;
+			this.rowResize = false;
+		}
 
 		// add reference to the create layer object
 		this.createLayer = new CreateLayer( this );

@@ -39,7 +39,7 @@ When enabled from settings, table rows and columns can be resize by drag and dro
 
 You can reset resized tables to its default form by using the `naturalfit` option available under Table toolbar.
 
-WARNING: Resize functionality is not optimized for IE7. There might be bugs/glitches. Use it at your own risk.
+WARNING: This feature will not work on IE 7 or below.
 
 h4. Table layout
 
