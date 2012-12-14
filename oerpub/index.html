@@ -3,34 +3,34 @@
     <head>
         <title>Oerpub Editor</title>
         <metal:css_macro define-macro="css">
-            <link rel="stylesheet" type="text/css" href="/aloha/src/css/aloha.css"
+            <link rel="stylesheet" type="text/css" href="/src/css/aloha.css"
                   tal:attributes="href string:${request.application_url}/aloha/src/css/aloha.css"> <!-- xhtml workaround --></link>
             <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css"
                   tal:attributes="href string:${request.application_url}/bootstrap/docs/assets/css/bootstrap.css" type="text/css"> <!-- xhtml workaround --></link>
             <link rel="stylesheet"  href=""
                   tal:attributes="href string:${request.application_url}/bootstrap/docs/assets/css/bootstrap-responsive.css" type="text/css"> <!-- xhtml workaround --></link>
-            <link rel="stylesheet" type="text/css" href="/editor/css/bootstrap.css"
-                  tal:attributes="href string:${request.application_url}/editor/css/bootstrap.css"> <!-- xhtml workaround --></link>
-            <link rel="stylesheet" type="text/css" href="/editor/css/aloha.css"
-                  tal:attributes="href string:${request.application_url}/editor/css/aloha.css"> <!-- xhtml workaround --></link>
-            <link rel="stylesheet" type="text/css" href="/editor/css/html5_metacontent.css"
-                  tal:attributes="href string:${request.application_url}/editor/css/html5_metacontent.css"> <!-- xhtml workaround --></link>
-            <link rel="stylesheet" type="text/css" href="/editor/css/html5_content_in_oerpub.css"
-                  tal:attributes="href string:${request.application_url}/editor/css/html5_content_in_oerpub.css"> <!-- xhtml workaround --></link>
-            <link rel="stylesheet" type="text/css" href="/editor/css/style.css"
-                  tal:attributes="href string:${request.application_url}/editor/css/style.css"> <!-- xhtml --></link>
-            <link rel="stylesheet" type="text/css" href="/editor/css/toolbar.css"
-                  tal:attributes="href string:${request.application_url}/editor/css/toolbar.css"> <!-- xhtml --></link>
+            <link rel="stylesheet" type="text/css" href="/Aloha-Editor/oerpub/css/bootstrap.css"
+                  tal:attributes="href string:${request.application_url}/aloha/oerpub/css/bootstrap.css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet" type="text/css" href="/Aloha-Editor/oerpub/css/aloha.css"
+                  tal:attributes="href string:${request.application_url}/aloha/oerpub/css/aloha.css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet" type="text/css" href="/Aloha-Editor/oerpub/css/html5_metacontent.css"
+                  tal:attributes="href string:${request.application_url}/aloha/oerpub/css/html5_metacontent.css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet" type="text/css" href="/Aloha-Editor/oerpub/css/html5_content_in_oerpub.css"
+                  tal:attributes="href string:${request.application_url}/aloha/oerpub/css/html5_content_in_oerpub.css"> <!-- xhtml workaround --></link>
+            <link rel="stylesheet" type="text/css" href="/Aloha-Editor/oerpub/css/style.css"
+                  tal:attributes="href string:${request.application_url}/aloha/oerpub/css/style.css"> <!-- xhtml --></link>
+            <link rel="stylesheet" type="text/css" href="/Aloha-Editor/oerpub/css/toolbar.css"
+                  tal:attributes="href string:${request.application_url}/aloha/oerpub/css/toolbar.css"> <!-- xhtml --></link>
         </metal:css_macro>
         <metal:js_macro define-macro="javascript">
-            <base href="/editor/sandbox/"
+            <base href="/Aloha-Editor/oerpub/sandbox/"
                   tal:attributes="href body_base"/>
-            <script src="/editor/js/jquery-1.7.1.min.js"
+            <script src="/Aloha-Editor/oerpub/js/jquery-1.7.1.min.js"
                     tal:replace="nothing"> <!-- xhtml --></script>
-            <script src="/editor/js/jquery.center.js"
+            <script src="/Aloha-Editor/oerpub/js/jquery.center.js"
                     tal:replace="nothing"> <!-- xhtml --></script>
             <!-- Aloha editor -->
-            <script type="text/javascript" src="/aloha/src/lib/require.js"
+            <script type="text/javascript" src="/src/lib/require.js"
                     tal:attributes="src string:${request.application_url}/aloha/src/lib/require.js"> <!-- xhtml workaround --></script>
 
             <!-- Mathjax -->
@@ -53,11 +53,11 @@
               AsciiMath: { noErrors: { disabled: true } }
             });</script>
 
-            <script type="text/javascript" src="/editor/js/aloha-settings.js"
+            <script type="text/javascript" src="/Aloha-Editor/oerpub/js/aloha-settings.js"
                     tal:attributes="src string:${request.static_url('oerpub.rhaptoslabs.swordpushweb:static/aloha-settings.js')}"> <!-- xhtml workaround --></script>
             <script type="text/javascript" src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"
                     tal:attributes="src string:${request.application_url}/bootstrap/docs/assets/js/bootstrap.js"> <!-- xhtml workaround --></script>
-            <script type="text/javascript" src="/aloha/src/lib/aloha.js"
+            <script type="text/javascript" src="/src/lib/aloha.js"
                     tal:attributes="src string:${request.application_url}/aloha/src/lib/aloha.js"
                 data-aloha-plugins="common/ui,
                                     oer/toolbar,
@@ -78,7 +78,7 @@
 
                 <script type="text/javascript"
                         tal:content="string:var body_url = '${body_url}';">
-                    var body_url = '/editor/sandbox/index.html';</script>
+                    var body_url = '/Aloha-Editor/oerpub/sandbox/index.html';</script>
                 <script type="text/javascript"
                         tal:content="string:var save_url = '${request.route_url('preview_save')}';">
                     var save_url = null;</script>
