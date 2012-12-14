@@ -29,7 +29,7 @@
  * Various utility functions that are useful when working with selections, and
  * ranges for copy/paste functionality.
  */
-define('util/copypaste', [
+define('aloha/copypaste', [
 	'jquery',
 	'aloha/core'
 ], function (

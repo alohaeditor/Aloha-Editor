@@ -37,7 +37,7 @@ define([
 	'aloha/command',
 	'contenthandler/contenthandler-utils',
 	'aloha/console',
-	'util/copypaste'
+	'aloha/copypaste'
 ], function (
 	$,
 	Aloha,

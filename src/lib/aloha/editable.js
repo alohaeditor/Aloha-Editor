@@ -37,7 +37,7 @@ define([
 	'aloha/ephemera',
 	'util/dom2',
 	'PubSub',
-	'util/copypaste'
+	'aloha/copypaste'
 ], function (
 	Aloha,
 	Class,
