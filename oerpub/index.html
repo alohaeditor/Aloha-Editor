@@ -3,7 +3,7 @@
     <head>
         <title>Oerpub Editor</title>
         <metal:css_macro define-macro="css">
-            <link rel="stylesheet" type="text/css" href="/src/css/aloha.css"
+            <link rel="stylesheet" type="text/css" href="/Aloha-Editor/src/css/aloha.css"
                   tal:attributes="href string:${request.application_url}/aloha/src/css/aloha.css"> <!-- xhtml workaround --></link>
             <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css"
                   tal:attributes="href string:${request.application_url}/bootstrap/docs/assets/css/bootstrap.css" type="text/css"> <!-- xhtml workaround --></link>
@@ -30,7 +30,7 @@
             <script src="/Aloha-Editor/oerpub/js/jquery.center.js"
                     tal:replace="nothing"> <!-- xhtml --></script>
             <!-- Aloha editor -->
-            <script type="text/javascript" src="/src/lib/require.js"
+            <script type="text/javascript" src="/Aloha-Editor/src/lib/require.js"
                     tal:attributes="src string:${request.application_url}/aloha/src/lib/require.js"> <!-- xhtml workaround --></script>
 
             <!-- Mathjax -->
@@ -57,7 +57,7 @@
                     tal:attributes="src string:${request.static_url('oerpub.rhaptoslabs.swordpushweb:static/aloha-settings.js')}"> <!-- xhtml workaround --></script>
             <script type="text/javascript" src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"
                     tal:attributes="src string:${request.application_url}/bootstrap/docs/assets/js/bootstrap.js"> <!-- xhtml workaround --></script>
-            <script type="text/javascript" src="/src/lib/aloha.js"
+            <script type="text/javascript" src="/Aloha-Editor/src/lib/aloha.js"
                     tal:attributes="src string:${request.application_url}/aloha/src/lib/aloha.js"
                 data-aloha-plugins="common/ui,
                                     oer/toolbar,
