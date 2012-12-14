@@ -39,7 +39,7 @@ define [
           <div class="tab-content">
             <div class="tab-pane" id="link-tab-external">
               <span for="link-external">Link to webpage</span>
-              <input class="link-input link-external" id="link-external" type="url" placeholder="http://"/>
+              <input class="link-input link-external" id="link-external" type="url"/>
             </div>
             <div class="tab-pane" id="link-tab-internal">
               <label for="link-internal">Link to a part in this document</label>
