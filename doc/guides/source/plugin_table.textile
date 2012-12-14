@@ -33,13 +33,29 @@ In order to merge two or more cells select the desired cells, rows or columns an
 NOTE: All contents will be merged into the first cell and all other previously split cells will be empty.
 
 NOTE: In Internet Explorer it is not possible to select cells when you select a cell (the text in it) and drag the mouse over the other cells you want to select -- you'll have to click and drag on the table cell border which is sometimes quite tricky. In that case you can click into the first cell and then "shift-click" into the last cell of the coherent cell range you want to select.
-h4. Reize rows and columns
 
-When enabled from settings, table rows and columns can be resize by drag and drop. The cursor will change to indicate resizeable rows or columns. On some occasions, you may need to increase the table width before increasing the width of individual columns.
+h4. Resizing rows and columns
 
-You can reset resized tables to its default form by using the `naturalfit` option available under Table toolbar.
+WARNING: This feature is not available for IE 7 or below.
 
-WARNING: This feature will not work on IE 7 or below.
+Table columns and rows can be resized using drag & drop. When hovering over a cells bottom or right edge the cursor will change to indicate that the cell can be resized.
+
+To enable table resizing the following options are available:
+
+<javascript>
+Aloha.settings.plugins.table: {
+	// allow resizing the table width (default: false)
+	tableResize: true,
+	// allow resizing the column width (default: false)
+	colResize: true,
+	// allow resizing the row height (default: false)
+	rowResize: true
+};
+</javascript>
+
+NOTE: Cell resizing won't allow you to resize a cell *smaller* than the size of its contents. You might need to increase the width of the table first before resizing is possible.
+
+To reset a table's size, after it has been resized, use the "reset size" button from the toolbar.
 
 h4. Table layout
 
