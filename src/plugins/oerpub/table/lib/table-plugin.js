@@ -192,6 +192,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                     plugin._deleteColumnButton.enable(true);
                     plugin._addColumnBefore.enable(true);
                     plugin._addColumnAfter.enable(true);
+                    plugin._deleteTableButton.enable(true);
                 } else {
                     // Disable table functions, enable table insertion
                     plugin._createTableButton.enable(true);
@@ -201,6 +202,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                     plugin._deleteColumnButton.enable(false);
                     plugin._addColumnBefore.enable(false);
                     plugin._addColumnAfter.enable(false);
+                    plugin._deleteTableButton.enable(false);
                 }
             });
             jQuery('body').on('click', function(e){
@@ -388,6 +390,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
             this._deleteColumnButton.enable(false);
             this._addColumnBefore.enable(false);
             this._addColumnAfter.enable(false);
+            this._deleteTableButton.enable(false);
         },
         addRowAfter: function(){
             // Factored out because we re-use this when tabbing through the
