@@ -649,3 +649,31 @@ pre.space{
   border-left-color: #c1d1e0;
   border-top-color: #c1d1e0;
 }
+#canvas table {
+    table-layout: fixed;
+    width: 98%;
+    margin: 0.25em 1em;
+    border-top: 1px solid #666666;
+    border-left: 1px solid #666666;
+    border-collapse: collapse;
+}
+
+#canvas table td, #canvas table th {
+    border-bottom: 1px solid #666666;
+    border-right: 1px solid #666666;
+}
+
+#canvas table caption {
+    padding-top: 0.25em;
+    text-align: left;
+    caption-side: bottom;
+    color: #336699;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+#canvas th {
+    background-color: #F3F3F3;
+    text-align: left;
+}
