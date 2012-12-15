@@ -89,15 +89,9 @@
         $span.data('math-formula', formula);
         return $formula.trigger('focus');
       };
-      $formula.data('math-old', $formula.val());
-      $formula.on('keyup', function() {
-        var val;
-        val = jQuery(this).val();
-        if ($formula.data('math-old') !== val) {
-          $formula.data('math-old', val);
-          clearTimeout(keyTimeout);
-          return setTimeout(keyDelay.bind(this), 500);
-        }
+      $formula.on('input', function() {
+        clearTimeout(keyTimeout);
+        return setTimeout(keyDelay.bind(this), 500);
       });
       radios = $editor.find('input[name=mime-type]');
       radios.on('click', function() {

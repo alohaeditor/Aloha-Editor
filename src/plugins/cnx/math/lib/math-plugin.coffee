@@ -111,13 +111,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       $span.data('math-formula', formula)
       $formula.trigger('focus')
 
-    $formula.data('math-old', $formula.val())
-    $formula.on 'keyup', () ->
-        val = jQuery(@).val()
-        if $formula.data('math-old') != val
-          $formula.data('math-old', val)
-          clearTimeout(keyTimeout)
-          setTimeout(keyDelay.bind(@), 500)
+    $formula.on 'input', () ->
+        clearTimeout(keyTimeout)
+        setTimeout(keyDelay.bind(@), 500)
 
     # Grr, Bootstrap doesn't set the cheked value properly on radios
     radios = $editor.find('input[name=mime-type]')
