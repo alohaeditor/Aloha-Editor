@@ -34,7 +34,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
   # Register the button with an action
   UI.adopt 'insertMath', null,
     click: () ->
-        # Either insert a new span around the cursor and open the box or just open the box
+        # Either insert a new span around the cursor and open the box or just
+        # open the box
         $el = jQuery('<span class="math-element">`x^2`</span>')
         GENTICS.Utils.Dom.insertIntoDOM $el,
           Aloha.Selection.getRangeObject(),
