@@ -131,6 +131,7 @@
       selector: SELECTOR,
       populator: buildEditor,
       placement: 'top',
+      markerclass: 'math-popover',
       focus: function($popover) {
         return setTimeout(function() {
           return $popover.find('.formula').trigger('focus');
