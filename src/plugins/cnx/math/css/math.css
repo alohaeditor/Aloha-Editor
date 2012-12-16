@@ -12,3 +12,44 @@
 .math-element:hover {
   background-color: #eee;
 }
+
+.math-popover {
+    min-width: 40em;
+}
+
+.math-popover textarea.formula {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.math-container {
+    position: relative;
+}
+
+.math-container textarea, 
+.math-container pre {
+  margin: 0;
+  padding: 5px;
+  outline: 0;
+  border: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.math-container textarea {
+  /* Hide any scrollbars */
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  /* Remove WebKit user-resize widget */
+  resize: none;
+}
+
+.math-container pre {
+  display: block;
+  visibility: hidden;
+}

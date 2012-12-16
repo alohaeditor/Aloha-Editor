@@ -36,14 +36,3 @@
 #statusmessage div.error {
     background-color: red;
 }
-
-.math-popover {
-    min-width: 40em;
-}
-
-.math-popover textarea.formula {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    width: 100%;
-}

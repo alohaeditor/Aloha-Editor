@@ -3,7 +3,7 @@
 
   define(['aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css'], function(Aloha, Plugin, jQuery, Popover, UI) {
     var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, buildEditor, triggerMathJax;
-    EDITOR_HTML = '<div class="math-editor-dialog">\n    <div>\n        <textarea type="text" class="formula" rows="1"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n        <button class="btn btn-danger remove"><i class="icon-remove icon-white"></i> Remove</button>\n    </div>\n</div>';
+    EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n        <button class="btn btn-danger remove"><i class="icon-remove icon-white"></i> Remove</button>\n    </div>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
         open: '`',
@@ -60,6 +60,7 @@
       }
       $editor.find("input[name=mime-type][value='" + mimeType + "']").attr('checked', true);
       $formula.val(formula);
+      $editor.find('.math-container pre span').text(formula);
       if (mimeType !== 'math/mml') {
         $editor.find("label.mime-type-mathml").remove();
       }
@@ -91,7 +92,8 @@
       };
       $formula.on('input', function() {
         clearTimeout(keyTimeout);
-        return setTimeout(keyDelay.bind(this), 500);
+        setTimeout(keyDelay.bind(this), 500);
+        return $editor.find('.math-container pre span').text($editor.find('.formula').val());
       });
       radios = $editor.find('input[name=mime-type]');
       radios.on('click', function() {

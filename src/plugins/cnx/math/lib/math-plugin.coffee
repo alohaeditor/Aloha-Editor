@@ -2,7 +2,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
   EDITOR_HTML = '''
     <div class="math-editor-dialog">
-        <div>
+        <div class="math-container">
+            <pre><span></span><br></pre>
             <textarea type="text" class="formula" rows="1"></textarea>
         </div>
         <span>This is:</span>
@@ -85,6 +86,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $editor.find("input[name=mime-type][value='#{mimeType}']").attr('checked', true)
     $formula.val(formula)
 
+    # Set the hidden pre that causes auto-sizing to the same value
+    $editor.find('.math-container pre span').text(formula)
+
     # If the language isn't MathML then hide the MathML radio
     $editor.find("label.mime-type-mathml").remove() if mimeType != 'math/mml'
 
@@ -115,6 +119,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $formula.on 'input', () ->
         clearTimeout(keyTimeout)
         setTimeout(keyDelay.bind(@), 500)
+        $editor.find('.math-container pre span').text(
+            $editor.find('.formula').val())
 
     # Grr, Bootstrap doesn't set the cheked value properly on radios
     radios = $editor.find('input[name=mime-type]')
