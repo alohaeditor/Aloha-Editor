@@ -331,17 +331,19 @@ define([
 			eventContainer.delegate( 'td', 'mousemove', function( e ) {
 
 				var jqObj = jQuery( this );
+				// offset to be used for activating the resize cursor near a table border
+				var mouseOffset = 3; 
 
 				// filter out the control cells
 				if ( jQuery( this ).hasClass( 'aloha-table-selectrow' ) || jQuery( this ).closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ))
 					return;
 
 				var closeToLeftBorder = function(cell) {
-					return ( ( e.pageX - cell.offset().left ) < 3 );
+					return ( ( e.pageX - cell.offset().left ) < mouseOffset );
 				};
 
 				var closeToTopBorder = function(cell) {
-					return ( ( e.pageY - cell.offset().top ) < 3 );
+					return ( ( e.pageY - cell.offset().top ) < mouseOffset );
 				};
 
 				var closeToTableBottom = function(cell) {
@@ -352,7 +354,7 @@ define([
 					}
 
 					var cursorOffset = e.pageY - ( row.offset().top + row.outerHeight() );
-					return cursorOffset > -3 && cursorOffset < 3;
+					return cursorOffset > (mouseOffset * -1) && cursorOffset < mouseOffset;
 				}
 
 				var colResize = that.tablePlugin.colResize;

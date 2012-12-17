@@ -447,7 +447,7 @@ define(['jquery'], function ($) {
 
 		'resizeCellWidth': function(cell, width) {
 			$( cell ).css( 'width', width );
-			$( cell ).find('div').css({
+			$( cell ).find('.aloha-table-cell-editable').eq(0).css({
 				'width': width,
 				'word-wrap': 'normal'
 			});

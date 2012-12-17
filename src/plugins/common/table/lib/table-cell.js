@@ -60,11 +60,6 @@ function (jQuery, Utils) {
 		$wrapper.contentEditable(true);
 		$wrapper.addClass('aloha-table-cell-editable');
 
-		$wrapper.contentEditable( true );
-		$wrapper.addClass( 'aloha-table-cell-editable' );
-
-		var that = this;
-
 		// attach events to the editable div-object
 		$wrapper.bind('focus', function ($event) {
 			// ugly workaround for ext-js-adapter problem in
@@ -74,18 +69,18 @@ function (jQuery, Utils) {
 					return -1;
 				};
 			}
-			that._editableFocus( $event );
-		} );
+			cell._editableFocus($event);
+		});
 
-		$wrapper.bind( 'mousedown', function ($event) {
+		$wrapper.bind('mousedown', function ($event) {
 			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
-			if ( $event.currentTarget ) {
+			if ($event.currentTarget) {
 				$event.currentTarget.indexOf = function () {
 					return -1;
 				};
 			}
 
-			that._editableMouseDown( $event );
+			cell._editableMouseDown($event);
 
 			cell.tableObj.selection.baseCellPosition = [cell._virtualY(), cell._virtualX()];
 
@@ -297,8 +292,8 @@ function (jQuery, Utils) {
 	/**
 	 * Starts the cell selection mode
 	 */
-	TableCell.prototype._startCellSelection = function(){
-		if( !this.tableObj.selection.cellSelectionMode ){
+	TableCell.prototype._startCellSelection = function () {
+		if(!this.tableObj.selection.cellSelectionMode) {
 
 			//unselect currently selected cells
 			this.tableObj.selection.unselectCells();
@@ -321,8 +316,8 @@ function (jQuery, Utils) {
 	/**
 	 * Ends the cell selection mode
 	 */
-	TableCell.prototype._endCellSelection = function(){
-		if(this.tableObj.selection.cellSelectionMode){
+	TableCell.prototype._endCellSelection = function() {
+		if(this.tableObj.selection.cellSelectionMode) {
 			this.tableObj.selection.cellSelectionMode = false;
 			this.tableObj.selection.baseCellPosition = null;
 			this.tableObj.selection.lastSelectionRange = null;
@@ -360,8 +355,8 @@ function (jQuery, Utils) {
 	 * Toggles selection of cell.
 	 * This works only when cell selection mode is active.
 	 */
-	TableCell.prototype._selectCellRange = function(){
-		if( this.tableObj.selection.resizeMode || !this.tableObj.selection.cellSelectionMode) {
+	TableCell.prototype._selectCellRange = function() {
+		if(this.tableObj.selection.resizeMode || !this.tableObj.selection.cellSelectionMode) {
 			return;
 		}
 

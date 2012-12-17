@@ -238,7 +238,7 @@ define([
 		this.rowResize = this.settings.rowResize === undefined ? false : this.settings.rowResize;
 
 		// disable table resize settings on browsers below IE8
-		if (jQuery.browser.msie && jQuery.browser.version < 8) {
+		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
 			this.tableResize = false;
 			this.colResize = false;
 			this.rowResize = false;
