@@ -8,3 +8,7 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+
+- **BUG**: table-plugin: Tables inside blocks will no longer be transformed
+           into editable Aloha tables.
+
