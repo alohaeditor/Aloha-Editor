@@ -56,6 +56,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     # Bind some actions for the buttons
     $editor.find('.done').on 'click', =>
       $span.trigger 'hide'
+      # If math is empty, remove the box
+      if jQuery.trim($editor.find('.formula').val()).length == 0
+        $span.remove()
     $editor.find('.remove').on 'click', =>
       $span.trigger 'hide'
       $span.remove()

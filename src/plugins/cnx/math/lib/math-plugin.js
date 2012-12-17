@@ -39,7 +39,10 @@
         _this = this;
       $editor = jQuery(EDITOR_HTML);
       $editor.find('.done').on('click', function() {
-        return $span.trigger('hide');
+        $span.trigger('hide');
+        if (jQuery.trim($editor.find('.formula').val()).length === 0) {
+          return $span.remove();
+        }
       });
       $editor.find('.remove').on('click', function() {
         $span.trigger('hide');
