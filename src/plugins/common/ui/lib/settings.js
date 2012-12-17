@@ -68,7 +68,8 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				showOn: { scope: 'table.cell' },
 				components: [
 					[ "mergecells", "splitcells", "tableCaption",
-					  "tableSummary", "formatTable", "naturalFit" ]
+					  "tableSummary", "naturalFit" ],
+					[ "formatTable" ]
 				]
 			},
 			{

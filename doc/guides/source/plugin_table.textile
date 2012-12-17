@@ -53,7 +53,7 @@ Aloha.settings.plugins.table: {
 };
 </javascript>
 
-NOTE: Cell resizing won't allow you to resize a cell *smaller* than the size of its contents. You might need to increase the width of the table first before resizing is possible.
+NOTE: Cell resizing won't allow you to resize a cell *smaller* than the size of its contents. You might need to increase the width of the table first before resizing cells is possible.
 
 To reset a table's size, after it has been resized, use the "reset size" button from the toolbar.
 
