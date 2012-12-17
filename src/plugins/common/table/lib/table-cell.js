@@ -60,8 +60,8 @@ function (jQuery, Utils) {
 		$wrapper.contentEditable(true);
 		$wrapper.addClass('aloha-table-cell-editable');
 
-		wrapper.contentEditable( true );
-		wrapper.addClass( 'aloha-table-cell-editable' );
+		$wrapper.contentEditable( true );
+		$wrapper.addClass( 'aloha-table-cell-editable' );
 
 		var that = this;
 
@@ -74,18 +74,18 @@ function (jQuery, Utils) {
 					return -1;
 				};
 			}
-			that._editableFocus( jqEvent );
+			that._editableFocus( $event );
 		} );
 
-		wrapper.bind( 'mousedown', function ( jqEvent ) {
+		$wrapper.bind( 'mousedown', function ($event) {
 			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
-			if ( jqEvent.currentTarget ) {
-				jqEvent.currentTarget.indexOf = function () {
+			if ( $event.currentTarget ) {
+				$event.currentTarget.indexOf = function () {
 					return -1;
 				};
 			}
 
-			that._editableMouseDown( jqEvent );
+			that._editableMouseDown( $event );
 
 			cell.tableObj.selection.baseCellPosition = [cell._virtualY(), cell._virtualX()];
 
