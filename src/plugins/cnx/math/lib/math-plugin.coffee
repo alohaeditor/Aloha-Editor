@@ -18,7 +18,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         </label>
         <div class="footer">
             <button class="btn btn-primary done">Done</button>
-            <button class="btn btn-danger remove"><i class="icon-remove icon-white"></i> Remove</button>
+            <button class="btn btn-danger remove"><i class="icon-remove icon-white"></i> Delete</button>
         </div>
     </div>
   '''
