@@ -53,3 +53,7 @@
   display: block;
   visibility: hidden;
 }
+
+.math-element math annotation {
+    display: none;
+}
