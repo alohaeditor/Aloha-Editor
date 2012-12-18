@@ -451,7 +451,6 @@ define([
 				span = jQuery('<span>'),
 				el,
 				obj = this.obj;
-
 			if (GENTICS.Utils.Dom.allowsNesting(obj[0], div[0])) {
 				el = div;
 			} else {
@@ -460,17 +459,17 @@ define([
 			if (jQuery("." + this.placeholderClass, obj).length !== 0) {
 				return;
 			}
-			jQuery(obj).append(el.addClass(this.placeholderClass));
 			jQuery.each(Aloha.settings.placeholder, function (selector, selectorConfig) {
 				if (obj.is(selector)) {
 					el.html(selectorConfig);
 				}
 			});
-
-			// remove browser br
+			if (!el.is(':empty')) {
+				el.addClass(this.placeholderClass)
+				  .addClass('aloha-ephemera');
+				jQuery(obj).append(el);
+			}
 			jQuery('br', obj).remove();
-
-			// delete div, span, el;
 		},
 
 		/**
