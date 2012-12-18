@@ -62,13 +62,21 @@
 .math-element-destroy {
     display: none;
     position: absolute;
-    top: -0.8em;
-    right: -0.8em;
-    padding: 0.25em 0.5em;
-    z-index: 2;
-    font-size: 75%;
+    right: -16px;
+    width: 16px;
+    top: -1px;
+    height: 16px;
+    background-image: url(../img/remove-01.png);
+    background-repeat: no-repeat;
+    background-position: right top;
+    cursor: pointer;
 }
 
 .math-element:hover .math-element-destroy {
     display: inline-block;
+    text-decoration: none;
+}
+
+.math-element .math-element-destroy:hover {
+    background-image: url(../img/remove-02.png);
 }

@@ -110,7 +110,7 @@
     };
     makeCloseIcon = function($el) {
       var closer;
-      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete math">X</a>');
+      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete math">&nbsp;</a>');
       return $el.append(closer);
     };
     Aloha.bind('aloha-editable-activated', function(event, data) {

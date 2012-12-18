@@ -136,7 +136,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $editor
 
   makeCloseIcon = ($el) ->
-      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete math">X</a>')
+      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete math">&nbsp;</a>')
       $el.append(closer)
 
   Aloha.bind 'aloha-editable-activated', (event, data) ->
