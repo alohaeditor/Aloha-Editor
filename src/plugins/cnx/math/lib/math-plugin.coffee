@@ -18,7 +18,6 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         </label>
         <div class="footer">
             <button class="btn btn-primary done">Done</button>
-            <button class="btn btn-danger remove"><i class="icon-remove icon-white"></i> Delete</button>
         </div>
     </div>
   '''
@@ -38,6 +37,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         # Either insert a new span around the cursor and open the box or just
         # open the box
         $el = jQuery('<span class="math-element">`x^2`</span>')
+        makeCloseIcon($el)
         GENTICS.Utils.Dom.insertIntoDOM $el,
           Aloha.Selection.getRangeObject(),
           Aloha.activeEditable.obj
@@ -135,6 +135,10 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
     $editor
 
+  makeCloseIcon = ($el) ->
+      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete math">X</a>')
+      $el.append(closer)
+
   Aloha.bind 'aloha-editable-activated', (event, data) ->
     editable = data.editable
     jQuery(editable.obj).on 'click.matheditor', '.math-element, .math-element *', (evt) ->
@@ -166,6 +170,14 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       # (the math element is just a little horizontal bar but its children stick out above and below it)
       # Don't handle the same event for each child
       evt.stopPropagation()
+
+    editable.obj.find('.math-element').each () ->
+      makeCloseIcon(jQuery(this))
+
+    editable.obj.on('click.matheditor', '.math-element-destroy', (e) ->
+      jQuery(e.target).closest('.math-element').trigger('hide').remove()
+      e.preventDefault()
+    )
 
   SELECTOR = '.math-element' # ,.MathJax[role="textbox"][aria-readonly="true"],.MathJax_Display[role="textbox"][aria-readonly="true"]'
   Popover.register
