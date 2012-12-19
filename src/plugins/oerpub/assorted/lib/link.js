@@ -3,9 +3,9 @@
 
   define(['aloha', 'jquery', 'popover', 'ui/ui', 'aloha/console', 'css!assorted/css/link.css'], function(Aloha, jQuery, Popover, UI, console) {
     var DIALOG_HTML, getContainerAnchor, populator, selector, shortString, shortUrl, showModalDialog, unlink;
-    DIALOG_HTML = '<form class="modal" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">\n  <div class="modal-header">\n    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>\n    <h3 id="linkModalLabel">Edit link</h3>\n  </div>\n  <div class="modal-body">\n    <div id="link-text">\n      <span>Text to display</span>\n      <div>\n        <input id="link-contents" class="input-xlarge" type="text" placeholder="Enter a phrase here" required />\n      </div>\n    </div>\n    <h4 id="link-destination">Link Destination</h4>\n    <div class="tabbable tabs-left"> <!-- Only required for left/right tabs -->\n      <ul class="nav nav-tabs">\n        <li><a href="#link-tab-external" data-toggle="tab">External</a></li>\n        <li><a href="#link-tab-internal" data-toggle="tab">Internal</a></li>\n      </ul>\n      <div class="tab-content">\n        <div class="tab-pane" id="link-tab-external">\n          <span for="link-external">Link to webpage</span>\n          <input class="link-input link-external" id="link-external" type="url"/>\n        </div>\n        <div class="tab-pane" id="link-tab-internal">\n          <label for="link-internal">Link to a part in this document</label>\n          <select class="link-input link-internal" id="link-internal" size="5" multiple="multiple"></select>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div class="modal-footer">\n    <button class="btn btn-primary link-save">Submit</button>\n    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>\n  </div>\n</form>';
+    DIALOG_HTML = '<form class="modal" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true">\n  <div class="modal-header">\n    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>\n    <h3 id="linkModalLabel">Edit link</h3>\n  </div>\n  <div class="modal-body">\n    <div id="link-text">\n      <span>Text to display</span>\n      <div>\n        <input id="link-contents" class="input-xlarge" type="text" placeholder="Enter a phrase here" required />\n      </div>\n    </div>\n    <h4 id="link-destination">Link Destination</h4>\n    <div class="tabbable tabs-left"> <!-- Only required for left/right tabs -->\n      <ul class="nav nav-tabs">\n        <li><a href="#link-tab-external" data-toggle="tab">External</a></li>\n        <li><a href="#link-tab-internal" data-toggle="tab">Internal</a></li>\n      </ul>\n      <div class="tab-content">\n        <div class="tab-pane" id="link-tab-external">\n          <span for="link-external">Link to webpage</span>\n          <input class="link-input link-external" id="link-external" type="url" pattern="https?://.+"/>\n        </div>\n        <div class="tab-pane" id="link-tab-internal">\n          <label for="link-internal">Link to a part in this document</label>\n          <select class="link-input link-internal" id="link-internal" size="5" multiple="multiple"></select>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div class="modal-footer">\n    <button class="btn btn-primary link-save">Submit</button>\n    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>\n  </div>\n</form>';
     showModalDialog = function($el) {
-      var a, appendOption, dialog, figuresAndTables, href, linkContents, linkExternal, linkInput, linkInputId, linkInternal, linkSave, orgElements, root,
+      var a, appendOption, dialog, figuresAndTables, href, linkContents, linkExternal, linkInput, linkInputId, linkInternal, linkSave, massageUrlInput, orgElements, root,
         _this = this;
       root = Aloha.activeEditable.obj;
       dialog = jQuery(DIALOG_HTML);
@@ -63,12 +63,22 @@
       }
       dialog.find(linkInputId).addClass('active').find('.link-input').attr('required', true).val(href);
       dialog.find("a[href=" + linkInputId + "]").parent().addClass('active');
-      linkExternal.on('blur', function(evt) {
+      massageUrlInput = function($input) {
         var url;
-        url = linkExternal.val();
-        if (!/^https?:\/\//.test(url)) {
-          return linkExternal.val('http://' + url);
+        url = $input.val();
+        if (/^http/.test(url) || /^htp/.test(url) || /^htt/.test(url)) {
+
+        } else {
+          if (!/^https?:\/\//.test(url)) {
+            return $input.val('http://' + url);
+          }
         }
+      };
+      linkExternal.on('blur', function(evt) {
+        return massageUrlInput(linkExternal);
+      });
+      linkExternal.bind('keydown', 'return', function(evt) {
+        return massageUrlInput(linkExternal);
       });
       dialog.on('submit', function(evt) {
         var active;

@@ -39,7 +39,7 @@ define [
           <div class="tab-content">
             <div class="tab-pane" id="link-tab-external">
               <span for="link-external">Link to webpage</span>
-              <input class="link-input link-external" id="link-external" type="url"/>
+              <input class="link-input link-external" id="link-external" type="url" pattern="https?://.+"/>
             </div>
             <div class="tab-pane" id="link-tab-internal">
               <label for="link-internal">Link to a part in this document</label>
@@ -122,11 +122,20 @@ define [
       .val(href)
       dialog.find("a[href=#{linkInputId}]").parent().addClass('active')
 
+      massageUrlInput = ($input) ->
+        url = $input.val()
+        if /^http/.test(url) or /^htp/.test(url) or /^htt/.test(url) 
+          # not missing.  if not valid, form validation will notify
+          # and do not want to add http below in this case
+        else
+          if not /^https?:\/\//.test(url)
+            $input.val 'http://' + url 
+        
       linkExternal.on 'blur', (evt) ->
-        url = linkExternal.val()
-        if not /^https?:\/\//.test(url)
-          linkExternal.val 'http://' + url 
-
+        massageUrlInput linkExternal
+        
+      linkExternal.bind 'keydown', 'return', (evt) ->
+        massageUrlInput linkExternal
         
       dialog.on 'submit', (evt) =>
         evt.preventDefault()
