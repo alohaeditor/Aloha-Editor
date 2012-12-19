@@ -2,8 +2,8 @@
 (function() {
 
   define(['aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css'], function(Aloha, Plugin, jQuery, Popover, UI) {
-    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, buildEditor, triggerMathJax;
-    EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n        <button class="btn btn-danger remove"><i class="icon-remove icon-white"></i> Delete</button>\n    </div>\n</div>';
+    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, buildEditor, makeCloseIcon, triggerMathJax;
+    EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n    </div>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
         open: '`',
@@ -25,6 +25,7 @@
       click: function() {
         var $el;
         $el = jQuery('<span class="math-element">`x^2`</span>');
+        makeCloseIcon($el);
         GENTICS.Utils.Dom.insertIntoDOM($el, Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
         return triggerMathJax($el, function() {
           return $el.trigger('show');
@@ -107,10 +108,15 @@
       });
       return $editor;
     };
+    makeCloseIcon = function($el) {
+      var closer;
+      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete math">&nbsp;</a>');
+      return $el.append(closer);
+    };
     Aloha.bind('aloha-editable-activated', function(event, data) {
       var editable;
       editable = data.editable;
-      return jQuery(editable.obj).on('click.matheditor', '.math-element, .math-element *', function(evt) {
+      jQuery(editable.obj).on('click.matheditor', '.math-element, .math-element *', function(evt) {
         var $el, range;
         $el = jQuery(this);
         if (!$el.is('.math-element')) {
@@ -124,6 +130,25 @@
         Aloha.trigger('aloha-selection-changed', range);
         return evt.stopPropagation();
       });
+      editable.obj.find('.math-element').each(function() {
+        return makeCloseIcon(jQuery(this));
+      });
+      editable.obj.on('click.matheditor', '.math-element-destroy', function(e) {
+        jQuery(e.target).closest('.math-element').trigger('hide').remove();
+        return e.preventDefault();
+      });
+      if (jQuery.ui && jQuery.ui.tooltip) {
+        return editable.obj.tooltip({
+          items: ".math-element",
+          content: 'Click anywhere in math to edit it'
+        });
+      } else {
+        return editable.obj.tooltip({
+          selector: '.math-element',
+          title: 'Click anywhere in math to edit it',
+          trigger: 'hover'
+        });
+      }
     });
     SELECTOR = '.math-element';
     return Popover.register({
