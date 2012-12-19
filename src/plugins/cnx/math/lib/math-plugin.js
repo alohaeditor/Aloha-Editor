@@ -111,6 +111,13 @@
     makeCloseIcon = function($el) {
       var closer;
       closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete math">&nbsp;</a>');
+      if (jQuery.ui && jQuery.ui.tooltip) {
+        closer.tooltip();
+      } else {
+        closer.tooltip({
+          placement: 'bottom'
+        });
+      }
       return $el.append(closer);
     };
     Aloha.bind('aloha-editable-activated', function(event, data) {
@@ -145,6 +152,7 @@
       } else {
         return editable.obj.tooltip({
           selector: '.math-element',
+          placement: 'top',
           title: 'Click anywhere in math to edit it',
           trigger: 'hover'
         });
