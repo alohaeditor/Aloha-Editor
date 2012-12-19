@@ -76,13 +76,13 @@
                                     oerpub/genericbutton,
                                     common/dom-to-xhtml"> <!-- xhtml workaround --></script>
 
-                <script type="text/javascript"
-                        tal:content="string:var body_url = '${body_url}';">
+            <script type="text/javascript"
+                    tal:content="string:var body_url = '${body_url}';">
                     var body_url = '/Aloha-Editor/oerpub/sandbox/index.html';</script>
-                <script type="text/javascript"
-                        tal:content="string:var save_url = '${request.route_url('preview_save')}';">
+            <script type="text/javascript"
+                    tal:content="string:var save_url = '${request.route_url('preview_save')}';">
                     var save_url = null;</script>
-                <script type="text/javascript">
+            <script type="text/javascript">
                 Aloha.ready(function(){
                     Aloha.require(['PubSub', 'genericbutton/genericbutton-plugin'],
                             function(PubSub, GenericButton){
