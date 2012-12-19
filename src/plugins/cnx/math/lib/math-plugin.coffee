@@ -179,6 +179,20 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       e.preventDefault()
     )
 
+    if jQuery.ui and jQuery.ui.tooltip
+      # Use jq.ui tooltip
+      editable.obj.tooltip(
+        items: ".math-element",
+        content: 'Click anywhere in math to edit it')
+    else
+      # This requires a custom version of jquery-ui, to avoid the conflict
+      # between the two .toolbar plugins. This one assumes bootstrap
+      # tooltip
+      editable.obj.tooltip(
+        selector: '.math-element'
+        title: 'Click anywhere in math to edit it'
+        trigger: 'hover')
+
   SELECTOR = '.math-element' # ,.MathJax[role="textbox"][aria-readonly="true"],.MathJax_Display[role="textbox"][aria-readonly="true"]'
   Popover.register
     selector: SELECTOR

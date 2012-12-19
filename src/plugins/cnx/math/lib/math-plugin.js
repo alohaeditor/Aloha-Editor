@@ -133,10 +133,22 @@
       editable.obj.find('.math-element').each(function() {
         return makeCloseIcon(jQuery(this));
       });
-      return editable.obj.on('click.matheditor', '.math-element-destroy', function(e) {
+      editable.obj.on('click.matheditor', '.math-element-destroy', function(e) {
         jQuery(e.target).closest('.math-element').trigger('hide').remove();
         return e.preventDefault();
       });
+      if (jQuery.ui && jQuery.ui.tooltip) {
+        return editable.obj.tooltip({
+          items: ".math-element",
+          content: 'Click anywhere in math to edit it'
+        });
+      } else {
+        return editable.obj.tooltip({
+          selector: '.math-element',
+          title: 'Click anywhere in math to edit it',
+          trigger: 'hover'
+        });
+      }
     });
     SELECTOR = '.math-element';
     return Popover.register({
