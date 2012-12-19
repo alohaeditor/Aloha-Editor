@@ -137,6 +137,10 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
   makeCloseIcon = ($el) ->
       closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete math">&nbsp;</a>')
+      if jQuery.ui and jQuery.ui.tooltip
+        closer.tooltip()
+      else
+        closer.tooltip(placement: 'bottom')
       $el.append(closer)
 
   Aloha.bind 'aloha-editable-activated', (event, data) ->
@@ -190,6 +194,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       # tooltip
       editable.obj.tooltip(
         selector: '.math-element'
+        placement: 'top'
         title: 'Click anywhere in math to edit it'
         trigger: 'hover')
 
