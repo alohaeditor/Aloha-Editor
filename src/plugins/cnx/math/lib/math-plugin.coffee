@@ -4,7 +4,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     <div class="math-editor-dialog">
         <div class="math-container">
             <pre><span></span><br></pre>
-            <textarea type="text" class="formula" rows="1"></textarea>
+            <textarea type="text" class="formula" rows="1"
+                      placeholder="Insert your math notation here"></textarea>
         </div>
         <span>This is:</span>
         <label class="radio inline">
@@ -36,7 +37,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     click: () ->
         # Either insert a new span around the cursor and open the box or just
         # open the box
-        $el = jQuery('<span class="math-element">`x^2`</span>')
+        $el = jQuery('<span class="math-element"></span>')
         makeCloseIcon($el)
         GENTICS.Utils.Dom.insertIntoDOM $el,
           Aloha.Selection.getRangeObject(),
@@ -55,11 +56,13 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
     # Bind some actions for the buttons
     $editor.find('.done').on 'click', =>
+      $span.find('.math-element-destroy').tooltip('destroy')
       $span.trigger 'hide'
       # If math is empty, remove the box
       if jQuery.trim($editor.find('.formula').val()).length == 0
         $span.remove()
     $editor.find('.remove').on 'click', =>
+      $span.find('.math-element-destroy').tooltip('destroy')
       $span.trigger 'hide'
       $span.remove()
 
@@ -179,7 +182,11 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       makeCloseIcon(jQuery(this))
 
     editable.obj.on('click.matheditor', '.math-element-destroy', (e) ->
-      jQuery(e.target).closest('.math-element').trigger('hide').remove()
+      jQuery(e.target).tooltip('destroy')
+      $el = jQuery(e.target).closest('.math-element')
+      # Though the tooltip was bound to the editor and delegates
+      # to these items, you still have to clean it up youself
+      $el.trigger('hide').tooltip('destroy').remove()
       e.preventDefault()
     )
 
