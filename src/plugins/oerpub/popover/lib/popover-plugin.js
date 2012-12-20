@@ -73,56 +73,21 @@ There are 3 variables that are stored on each element;
   define('popover', ['aloha', 'jquery'], function(Aloha, jQuery) {
     var Bootstrap_Popover__position, Bootstrap_Popover_destroy, Bootstrap_Popover_hide, Bootstrap_Popover_show, Helper, Popover, bindHelper, findMarkup, monkeyPatch, selectionChangeHandler;
     Bootstrap_Popover__position = function($tip) {
-      var $el, $insertedSpan, $transcientSpan, actualHeight, actualWidth, currentRange, cursorOffset, el, inside, nowrapHeight, placement, pos, posDom, spansMultipleLines, tp, whiteSpace;
+      var actualHeight, actualWidth, inside, placement, pos, tp;
       placement = (typeof this.options.placement === "function" ? this.options.placement.call(this, $tip[0], this.$element[0]) : this.options.placement);
       inside = /in/.test(placement);
       if (!$tip.parents()[0]) {
         $tip.appendTo((inside ? this.$element : document.body));
-      }
-      $el = this.$element;
-      el = $el.get(0);
-      posDom = {
-        top: el.offsetTop,
-        left: el.offsetLeft,
-        height: el.offsetHeight,
-        width: el.offsetWidth
-      };
-      whiteSpace = $el.css('white-space');
-      $el.css('white-space', 'nowrap');
-      nowrapHeight = $el.height();
-      $el.css('white-space', whiteSpace);
-      spansMultipleLines = nowrapHeight < $el.height();
-      if (spansMultipleLines && this.options.trigger === "manual") {
-        currentRange = Aloha.Selection.getRangeObject();
-        $transcientSpan = jQuery('<span id="YeOldTranscientSpan" />');
-        GENTICS.Utils.Dom.insertIntoDOM($transcientSpan, currentRange, Aloha.activeEditable.obj);
-        $insertedSpan = jQuery('#YeOldTranscientSpan');
-        cursorOffset = $insertedSpan.offset();
-        $insertedSpan.remove();
       }
       pos = this.getPosition(inside);
       actualWidth = $tip[0].offsetWidth;
       actualHeight = $tip[0].offsetHeight;
       switch ((inside ? placement.split(" ")[1] : placement)) {
         case "bottom":
-          if (spansMultipleLines) {
-            if (cursorOffset) {
-              tp = {
-                top: cursorOffset.top + nowrapHeight,
-                left: cursorOffset.left - actualWidth / 2
-              };
-            } else {
-              tp = {
-                top: pos.top + nowrapHeight,
-                left: $el.get(0).offsetLeft - actualWidth / 2
-              };
-            }
-          } else {
-            tp = {
-              top: pos.top + pos.height,
-              left: pos.left + pos.width / 2 - actualWidth / 2
-            };
-          }
+          tp = {
+            top: pos.top + pos.height,
+            left: pos.left + pos.width / 2 - actualWidth / 2
+          };
           break;
         case "top":
           tp = {
@@ -142,7 +107,7 @@ There are 3 variables that are stored on each element;
             left: pos.left + pos.width
           };
       }
-      if (tp.top < 0) {
+      if (tp.top < 0 || tp.left < 0) {
         placement = 'bottom';
         tp.top = pos.top + pos.height;
       }

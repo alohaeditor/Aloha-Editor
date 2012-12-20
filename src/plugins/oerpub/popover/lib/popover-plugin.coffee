@@ -102,55 +102,14 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       # End: changes
       if not $tip.parents()[0]
         $tip.appendTo (if inside then @$element else document.body)
-
-      # Determine if the source element is multi-line.  See  http://jsfiddle.net/nJarj/1/ 
-      $el = @$element
-      el = $el.get(0)
-      posDom =
-        top: el.offsetTop
-        left: el.offsetLeft
-        height: el.offsetHeight
-        width: el.offsetWidth
-      whiteSpace = $el.css('white-space')
-      $el.css('white-space', 'nowrap')
-      nowrapHeight = $el.height()
-      $el.css('white-space', whiteSpace)
-      spansMultipleLines = ( nowrapHeight < $el.height() )
-      if spansMultipleLines and @options.trigger == "manual"
-        # want to place the popover relative to the current cursor position
-        # the clicks on the element, the cursor is set within element, and 
-        # popover display relative to cursor
-        currentRange = Aloha.Selection.getRangeObject()
-        $transcientSpan = jQuery '<span id="YeOldTranscientSpan" />' 
-        GENTICS.Utils.Dom.insertIntoDOM $transcientSpan,
-            currentRange,
-            Aloha.activeEditable.obj
-        $insertedSpan = jQuery '#YeOldTranscientSpan'
-        cursorOffset = $insertedSpan.offset()
-        $insertedSpan.remove()
-
       pos = @getPosition(inside)
       actualWidth = $tip[0].offsetWidth
       actualHeight = $tip[0].offsetHeight
       switch (if inside then placement.split(" ")[1] else placement)
         when "bottom"
-          if spansMultipleLines
-            # need to do something special if source element spans multiple line
-            if cursorOffset
-              # put popover below the cursor (current selection)
-              tp =
-                top: cursorOffset.top + nowrapHeight
-                left: cursorOffset.left - actualWidth / 2
-            else
-              # if popover is triggered via hovering, place popover under the beginning of the source element
-              tp =
-                top: pos.top + nowrapHeight
-                left: $el.get(0).offsetLeft - actualWidth / 2
-          else
-            # expected case
-            tp =
-              top : pos.top + pos.height
-              left: pos.left + pos.width / 2 - actualWidth / 2
+          tp =
+            top: pos.top + pos.height
+            left: pos.left + pos.width / 2 - actualWidth / 2
         when "top"
           tp =
             top: pos.top - actualHeight - 10 # minus 10px for the arrow
@@ -164,7 +123,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
             top: pos.top + pos.height / 2 - actualHeight / 2
             left: pos.left + pos.width
 
-      if tp.top < 0
+      if tp.top < 0 or tp.left < 0
         placement = 'bottom'
         tp.top = pos.top + pos.height
 
