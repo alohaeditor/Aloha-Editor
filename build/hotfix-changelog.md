@@ -19,3 +19,6 @@ All changes are categorized into one of the following keywords:
            rather the contents of parent editables as well.
 - **BUG**: ui: Floating toolbar will attempt to adjust is positioning to remain
 		   entirely in the viewport whenever possible.
+- **BUG**: core: Fixes numerous issues with repository manager including how
+           query() and getChildren() handle immediate, and asynchronous
+           repositories.
