@@ -94,7 +94,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
   # This position code was refactored out because it is also used to move the
   # Popover when the document changes
   # Assumes @ is the Popover
-  Bootstrap_Popover__position = ($tip) ->
+  Bootstrap_Popover__position = ($tip, hint) ->
       placement = (if typeof @options.placement is "function" then @options.placement.call(@, $tip[0], @$element[0]) else @options.placement)
       inside = /in/.test(placement)
       # Start: Don't remove because then you lose all the events attached to the content of the tip
@@ -107,21 +107,41 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       actualHeight = $tip[0].offsetHeight
       switch (if inside then placement.split(" ")[1] else placement)
         when "bottom"
-          tp =
-            top: pos.top + pos.height
-            left: pos.left + pos.width / 2 - actualWidth / 2
+          if hint
+            tp =
+              top: hint.top + 10
+              left: hint.left - actualWidth / 2
+          else
+            tp =
+              top: pos.top + pos.height
+              left: pos.left + pos.width / 2 - actualWidth / 2
         when "top"
-          tp =
-            top: pos.top - actualHeight - 10 # minus 10px for the arrow
-            left: pos.left + pos.width / 2 - actualWidth / 2
+          if hint
+            tp =
+              top: hint.top - actualHeight - 10 # minus 10px for the arrow
+              left: hint.left - actualWidth / 2
+          else
+            tp =
+              top: pos.top - actualHeight - 10 # minus 10px for the arrow
+              left: pos.left + pos.width / 2 - actualWidth / 2
         when "left"
-          tp =
-            top: pos.top + pos.height / 2 - actualHeight / 2
-            left: pos.left - actualWidth
+          if hint
+            tp =
+              top: hint.top - actualHeight / 2
+              left: hint.left - actualWidth
+          else
+            tp =
+              top: pos.top + pos.height / 2 - actualHeight / 2
+              left: pos.left - actualWidth
         when "right"
-          tp =
-            top: pos.top + pos.height / 2 - actualHeight / 2
-            left: pos.left + pos.width
+          if hint
+            tp =
+              top: hint.top - actualHeight / 2
+              left: hint.left
+          else
+            tp =
+              top: pos.top + pos.height / 2 - actualHeight / 2
+              left: pos.left + pos.width
 
       if tp.top < 0 or tp.left < 0
         placement = 'bottom'
@@ -175,7 +195,6 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
 
   Popover =
     MILLISECS: 2000
-    MOVE_INTERVAL: 100
     register: (cfg) -> bindHelper(new Helper(cfg))
 
   class Helper
@@ -216,12 +235,8 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
               content: =>
                 @populator.bind($node)($node, @) # Can't quite decide whether the populator code should use @ or the 1st arg.
 
-      $el.on 'show', @selector, (evt) =>
+      $el.on 'show', @selector, (evt, hint) =>
         $node = jQuery(evt.target)
-        movePopover = () ->
-          that = $node.data('popover')
-          if that and that.$tip
-            Bootstrap_Popover__position.bind(that)(that.$tip)
 
         clearTimeout($node.data('aloha-bubble-timer'))
         $node.removeData('aloha-bubble-timer')
@@ -233,12 +248,12 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
             $node.data('popover').$tip.addClass(@markerclass)
           $node.data('aloha-bubble-visible', true)
         # As long as the popover is open  move it around if the document changes ($el updates)
-        clearInterval($node.data('aloha-bubble-move-timer'))
-        $node.data('aloha-bubble-move-timer', setInterval(movePopover, Popover.MOVE_INTERVAL))
+        that = $node.data('popover')
+        if that and that.$tip
+          Bootstrap_Popover__position.bind(that)(that.$tip, hint)
       $el.on 'hide', @selector, (evt) =>
         $node = jQuery(evt.target)
         clearTimeout($node.data('aloha-bubble-timer'))
-        clearInterval($node.data('aloha-bubble-move-timer'))
         $node.removeData('aloha-bubble-timer')
         $node.data('aloha-bubble-selected', false)
         if $node.data('aloha-bubble-visible')
@@ -322,7 +337,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       insideScope = false
       enteredLinkScope = false
 
-    Aloha.bind 'aloha-selection-changed', (event, rangeObject) ->
+    Aloha.bind 'aloha-selection-changed', (event, rangeObject, originalEvent) ->
       # Hide all popovers except for the current one maybe?
       $el = jQuery(rangeObject.getCommonAncestorContainer())
       $el = $el.parents(helper.selector) if not $el.is(helper.selector)
@@ -339,7 +354,11 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
           if not $el.is(helper.selector)
             $el = $el.parents(helper.selector)
           if enteredLinkScope
-            $el.trigger 'show'
+            if originalEvent.pageX
+              $el.trigger 'show',
+                top: originalEvent.pageY, left: originalEvent.pageX
+            else
+              $el.trigger 'show'
             $el.data('aloha-bubble-selected', true)
             $el.off('.bubble')
             event.stopPropagation()
