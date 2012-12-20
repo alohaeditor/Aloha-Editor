@@ -47,7 +47,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
           $el.trigger 'show'
 
   triggerMathJax = ($el, cb) ->
-    MathJax.Hub.Typeset $el[0], cb
+    MathJax.Hub.Queue ["Typeset", MathJax.Hub, $el[0], cb]
 
   # $span contains the span with LaTex/ASCIIMath
   buildEditor = ($span) ->
