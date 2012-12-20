@@ -33,7 +33,7 @@
       }
     });
     triggerMathJax = function($el, cb) {
-      return MathJax.Hub.Typeset($el[0], cb);
+      return MathJax.Hub.Queue(["Typeset", MathJax.Hub, $el[0], cb]);
     };
     buildEditor = function($span) {
       var $annotation, $editor, $formula, $tmp, formula, keyDelay, keyTimeout, lang, mimeType, radios,
