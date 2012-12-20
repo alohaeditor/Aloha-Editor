@@ -2,8 +2,8 @@
 (function() {
 
   define(['aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css'], function(Aloha, Plugin, jQuery, Popover, UI) {
-    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, buildEditor, makeCloseIcon, triggerMathJax;
-    EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n    </div>\n</div>';
+    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, buildEditor, cleanupFormula, makeCloseIcon, triggerMathJax;
+    EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"\n                  placeholder="Insert your math notation here"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n    </div>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
         open: '`',
@@ -23,31 +23,47 @@
     };
     UI.adopt('insertMath', null, {
       click: function() {
-        var $el;
-        $el = jQuery('<span class="math-element">`x^2`</span>');
-        makeCloseIcon($el);
-        GENTICS.Utils.Dom.insertIntoDOM($el, Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
+        var $el, range;
+        $el = jQuery('<span class="math-element"></span>');
+        range = Aloha.Selection.getRangeObject();
+        if (range.isCollapsed()) {
+          GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
+        } else {
+          $el.text('`' + range.getText() + '`');
+          GENTICS.Utils.Dom.removeRange(range);
+          GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
+        }
         return triggerMathJax($el, function() {
-          return $el.trigger('show');
+          $el.trigger('show');
+          return makeCloseIcon($el);
         });
       }
     });
     triggerMathJax = function($el, cb) {
-      return MathJax.Hub.Typeset($el[0], cb);
+      return MathJax.Hub.Queue(["Typeset", MathJax.Hub, $el[0], cb]);
+    };
+    cleanupFormula = function($editor, $span, destroy) {
+      if (destroy == null) {
+        destroy = false;
+      }
+      $span.trigger('hide');
+      if (destroy || jQuery.trim($editor.find('.formula').val()).length === 0) {
+        $span.find('.math-element-destroy').tooltip('destroy');
+        return $span.remove();
+      }
     };
     buildEditor = function($span) {
       var $annotation, $editor, $formula, $tmp, formula, keyDelay, keyTimeout, lang, mimeType, radios,
         _this = this;
       $editor = jQuery(EDITOR_HTML);
+      $editor.find('.formula').bind('keydown', 'esc', function(e) {
+        return cleanupFormula($editor, $span);
+      });
       $editor.find('.done').on('click', function() {
-        $span.trigger('hide');
-        if (jQuery.trim($editor.find('.formula').val()).length === 0) {
-          return $span.remove();
-        }
+        return cleanupFormula($editor, $span);
       });
       $editor.find('.remove').on('click', function() {
-        $span.trigger('hide');
-        return $span.remove();
+        return cleanupFormula($editor, $span, true);
       });
       $formula = $editor.find('.formula');
       mimeType = $span.find('script[type]').attr('type') || 'math/asciimath';
@@ -88,7 +104,8 @@
               $annotation = jQuery('<annotation></annotation>').prependTo($math);
             }
             $annotation.attr('encoding', mimeType);
-            return $annotation.text(formula);
+            $annotation.text(formula);
+            return makeCloseIcon($span);
           }
         });
         $span.data('math-formula', formula);
@@ -141,7 +158,10 @@
         return makeCloseIcon(jQuery(this));
       });
       editable.obj.on('click.matheditor', '.math-element-destroy', function(e) {
-        jQuery(e.target).closest('.math-element').trigger('hide').remove();
+        var $el;
+        jQuery(e.target).tooltip('destroy');
+        $el = jQuery(e.target).closest('.math-element');
+        $el.trigger('hide').tooltip('destroy').remove();
         return e.preventDefault();
       });
       if (jQuery.ui && jQuery.ui.tooltip) {
