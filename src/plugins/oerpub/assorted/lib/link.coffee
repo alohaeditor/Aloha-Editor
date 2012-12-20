@@ -228,7 +228,7 @@ define [
       # and the absolute path is: Aloha.settings.baseUrl + /../plugins/cnx/assorted/img/
       baseUrl = Aloha.settings.baseUrl
       details = jQuery '''
-          <div class="link-popover-details">
+          <span class="link-popover-details">
             <a class="edit-link">
               <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/edit-link-03.png" />
               <span title="Change the link's text, location, or other properties">Edit link...</span>
@@ -243,7 +243,7 @@ define [
               <img src="''' + baseUrl + '''/../plugins/oerpub/assorted/img/external-link-02.png" />
               <a href="''' + href + '''" target="_blank" title="Visit the link in a new window or tab">''' + shortUrl(href,30) + '''</a>
             </a>
-          </div>
+          </span>
           <br/>
       '''
       # to add a tooltip to the link in the popover (gives the popover its own popover):
