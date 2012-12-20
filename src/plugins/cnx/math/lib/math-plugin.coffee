@@ -38,34 +38,40 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         # Either insert a new span around the cursor and open the box or just
         # open the box
         $el = jQuery('<span class="math-element"></span>')
-        makeCloseIcon($el)
-        GENTICS.Utils.Dom.insertIntoDOM $el,
-          Aloha.Selection.getRangeObject(),
-          Aloha.activeEditable.obj
+        range = Aloha.Selection.getRangeObject()
+        if range.isCollapsed()
+          GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
+        else
+          $el.text('`' + range.getText() + '`')
+          GENTICS.Utils.Dom.removeRange range
+          GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
         triggerMathJax $el, ->
           # Callback opens up the math editor by "clicking" on it
           $el.trigger 'show'
+          makeCloseIcon($el)
 
   triggerMathJax = ($el, cb) ->
     MathJax.Hub.Queue ["Typeset", MathJax.Hub, $el[0], cb]
 
+  cleanupFormula = ($editor, $span, destroy=false) ->
+    # Clean up the formula (tooltips, wrappers if it is empty),
+    # and close the popover
+    $span.trigger 'hide'
+    # If math is empty, remove the box
+    if destroy or jQuery.trim($editor.find('.formula').val()).length == 0
+      $span.find('.math-element-destroy').tooltip('destroy')
+      $span.remove()
+
   # $span contains the span with LaTex/ASCIIMath
   buildEditor = ($span) ->
     $editor = jQuery(EDITOR_HTML);
-
+    $editor.find('.formula').bind('keydown', 'esc', (e) -> cleanupFormula($editor, $span))
 
     # Bind some actions for the buttons
     $editor.find('.done').on 'click', =>
-      $span.find('.math-element-destroy').tooltip('destroy')
-      $span.trigger 'hide'
-      # If math is empty, remove the box
-      if jQuery.trim($editor.find('.formula').val()).length == 0
-        $span.remove()
+      cleanupFormula($editor, $span)
     $editor.find('.remove').on 'click', =>
-      $span.find('.math-element-destroy').tooltip('destroy')
-      $span.trigger 'hide'
-      $span.remove()
-
+      cleanupFormula($editor, $span, true)
 
     $formula = $editor.find('.formula')
 
@@ -117,6 +123,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
             $annotation = jQuery('<annotation></annotation>').prependTo($math)
           $annotation.attr('encoding', mimeType)
           $annotation.text(formula)
+          makeCloseIcon($span)
 
       # TODO: Async save the input when MathJax correctly parses and typesets the text
       $span.data('math-formula', formula)
