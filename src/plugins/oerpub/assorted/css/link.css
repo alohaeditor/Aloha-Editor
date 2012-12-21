@@ -51,8 +51,8 @@ ul.nav.nav-tabs {
   min-width: 236px; /* bootstrap's default popover width */
 }
 
-div.link-popover-details .edit-link,
-div.link-popover-details .delete-link,
-div.link-popover-details .visit-link {
+.link-popover-details .edit-link,
+.link-popover-details .delete-link,
+.link-popover-details .visit-link {
   white-space: nowrap;
 }
