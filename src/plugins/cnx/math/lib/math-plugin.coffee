@@ -65,7 +65,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
   # $span contains the span with LaTex/ASCIIMath
   buildEditor = ($span) ->
     $editor = jQuery(EDITOR_HTML);
-    $editor.find('.formula').bind('keydown', 'esc', (e) -> cleanupFormula($editor, $span))
+    # For now, no keypress for dismissing the popover
+    #$editor.find('.formula').bind('keydown', 'esc', (e) -> cleanupFormula($editor, $span))
 
     # Bind some actions for the buttons
     $editor.find('.done').on 'click', =>

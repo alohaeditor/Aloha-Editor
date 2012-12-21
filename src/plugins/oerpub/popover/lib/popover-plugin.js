@@ -369,6 +369,10 @@ There are 3 variables that are stored on each element;
       });
       Aloha.bind('aloha-selection-changed', function(event, rangeObject, originalEvent) {
         var $el, nodes;
+        if (!Aloha.activeEditable) {
+          insideScope = false;
+          return;
+        }
         $el = jQuery(rangeObject.getCommonAncestorContainer());
         if (!$el.is(helper.selector)) {
           $el = $el.parents(helper.selector);
@@ -376,7 +380,7 @@ There are 3 variables that are stored on each element;
         nodes = jQuery(Aloha.activeEditable.obj).find(helper.selector);
         nodes = nodes.not($el);
         nodes.trigger('hide');
-        if (Aloha.activeEditable) {
+        if ($el.length > 0) {
           enteredLinkScope = selectionChangeHandler(rangeObject, helper.selector);
           if (insideScope !== enteredLinkScope) {
             insideScope = enteredLinkScope;
@@ -406,6 +410,8 @@ There are 3 variables that are stored on each element;
               return $el.trigger('position');
             }
           }
+        } else {
+          return insideScope = false;
         }
       });
       return helper;

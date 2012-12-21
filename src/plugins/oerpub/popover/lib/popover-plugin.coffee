@@ -347,6 +347,11 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       enteredLinkScope = false
 
     Aloha.bind 'aloha-selection-changed', (event, rangeObject, originalEvent) ->
+      # We can't really do anything if there is no activate editable
+      if not Aloha.activeEditable
+        insideScope = false
+        return
+
       # Hide all popovers except for the current one maybe?
       $el = jQuery(rangeObject.getCommonAncestorContainer())
       $el = $el.parents(helper.selector) if not $el.is(helper.selector)
@@ -356,7 +361,7 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       nodes = nodes.not($el)
       nodes.trigger 'hide'
 
-      if Aloha.activeEditable
+      if $el.length > 0
         enteredLinkScope = selectionChangeHandler(rangeObject, helper.selector)
         if insideScope isnt enteredLinkScope
           # Scope has changed, trigger "show" event
@@ -379,6 +384,8 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
               top: originalEvent.pageY, left: originalEvent.pageX
           else
             $el.trigger 'position'
+      else
+        insideScope = false
 
     return helper
 

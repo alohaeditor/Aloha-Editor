@@ -56,9 +56,6 @@
       var $annotation, $editor, $formula, $tmp, formula, keyDelay, keyTimeout, lang, mimeType, radios,
         _this = this;
       $editor = jQuery(EDITOR_HTML);
-      $editor.find('.formula').bind('keydown', 'esc', function(e) {
-        return cleanupFormula($editor, $span);
-      });
       $editor.find('.done').on('click', function() {
         return cleanupFormula($editor, $span);
       });
