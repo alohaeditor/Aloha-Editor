@@ -247,10 +247,19 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
           if @markerclass
             $node.data('popover').$tip.addClass(@markerclass)
           $node.data('aloha-bubble-visible', true)
-        # As long as the popover is open  move it around if the document changes ($el updates)
+        # Position the popover at the cursor position, or if we were given
+        # a hint (original event was a click), place it there.
         that = $node.data('popover')
         if that and that.$tip
           Bootstrap_Popover__position.bind(that)(that.$tip, hint)
+
+      $el.on 'position', @selector, (evt, hint) =>
+        $node = jQuery(evt.target)
+        if $node.data('aloha-bubble-visible')
+          po = $node.data('popover')
+          if po and po.$tip
+            Bootstrap_Popover__position.bind(po)(po.$tip, hint)
+
       $el.on 'hide', @selector, (evt) =>
         $node = jQuery(evt.target)
         clearTimeout($node.data('aloha-bubble-timer'))
@@ -350,11 +359,12 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
       if Aloha.activeEditable
         enteredLinkScope = selectionChangeHandler(rangeObject, helper.selector)
         if insideScope isnt enteredLinkScope
+          # Scope has changed, trigger "show" event
           insideScope = enteredLinkScope
           if not $el.is(helper.selector)
             $el = $el.parents(helper.selector)
           if enteredLinkScope
-            if originalEvent.pageX
+            if originalEvent and originalEvent.pageX
               $el.trigger 'show',
                 top: originalEvent.pageY, left: originalEvent.pageX
             else
@@ -362,6 +372,13 @@ define 'popover', [ 'aloha', 'jquery' ], (Aloha, jQuery) ->
             $el.data('aloha-bubble-selected', true)
             $el.off('.bubble')
             event.stopPropagation()
+        else
+          # Scope hasn't changed, but selection did. Just update item position.
+          if originalEvent and originalEvent.pageX
+            $el.trigger 'position',
+              top: originalEvent.pageY, left: originalEvent.pageX
+          else
+            $el.trigger 'position'
 
     return helper
 

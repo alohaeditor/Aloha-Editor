@@ -253,6 +253,16 @@ There are 3 variables that are stored on each element;
             return Bootstrap_Popover__position.bind(that)(that.$tip, hint);
           }
         });
+        $el.on('position', this.selector, function(evt, hint) {
+          var $node, po;
+          $node = jQuery(evt.target);
+          if ($node.data('aloha-bubble-visible')) {
+            po = $node.data('popover');
+            if (po && po.$tip) {
+              return Bootstrap_Popover__position.bind(po)(po.$tip, hint);
+            }
+          }
+        });
         $el.on('hide', this.selector, function(evt) {
           var $node;
           $node = jQuery(evt.target);
@@ -374,7 +384,7 @@ There are 3 variables that are stored on each element;
               $el = $el.parents(helper.selector);
             }
             if (enteredLinkScope) {
-              if (originalEvent.pageX) {
+              if (originalEvent && originalEvent.pageX) {
                 $el.trigger('show', {
                   top: originalEvent.pageY,
                   left: originalEvent.pageX
@@ -385,6 +395,15 @@ There are 3 variables that are stored on each element;
               $el.data('aloha-bubble-selected', true);
               $el.off('.bubble');
               return event.stopPropagation();
+            }
+          } else {
+            if (originalEvent && originalEvent.pageX) {
+              return $el.trigger('position', {
+                top: originalEvent.pageY,
+                left: originalEvent.pageX
+              });
+            } else {
+              return $el.trigger('position');
             }
           }
         }
