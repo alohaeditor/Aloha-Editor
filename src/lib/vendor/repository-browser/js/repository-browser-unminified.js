@@ -88,6 +88,12 @@ define('RepositoryBrowser', [
 		});
 	}
 
+	/**
+	 * Get icon name from given resource type.
+	 *
+	 * @param {string} type Resource type.
+	 * @return {string} Icon name.
+	 */
 	function getIcon(type) {
 		switch (type) {
 		case 'folder':
@@ -99,21 +105,39 @@ define('RepositoryBrowser', [
 		}
 	}
 
+	/**
+	 * Return unique id.
+	 *
+	 * @return {number}
+	 */
 	function uniqueId() {
 		return ++uid;
 	}
 
 	/**
 	 * FIXME: free cache
+	 *
+	 * @param {RepositoryBrowser} browser
+	 * @param {object} obj
 	 */
 	function cacheWrite(browser, obj) {
 		browser._cachedRepositoryObjects[obj.uid] = obj;
 	}
 
+	/**
+	 * @param {RepositoryBrowser} browser
+	 * @param {object} obj
+	 * @return {object}
+	 */
 	function cacheRead(browser, uid) {
 		return browser._cachedRepositoryObjects[uid];
 	}
 
+	/**
+	 * @param {jQuery.<HTMLElement>} $node
+	 * @return {string} Id of repository object tethered to the given DOM
+	 *                  element.
+	 */
 	function getIdFromTreeNode($node) {
 		return $node.find('a:first').attr('data-repo-obj');
 	}
@@ -524,9 +548,8 @@ define('RepositoryBrowser', [
 				repobrowser._currentFolder = folder;
 				repobrowser._clearSearch();
 				repobrowser._fetchItems(folder);
+				repobrowser.folderSelected(folder);
 			}
-
-			repobrowser.folderSelected(folder);
 		},
 
 		/**
@@ -551,7 +574,9 @@ define('RepositoryBrowser', [
 
 			$tree.bind('loaded.jstree', function ($event, data) {
 				$(this).find('>ul>li:first').css('padding-top', 5);
-				// Because jstree expects a single item for `open_node'.
+				// Because jstree `open_node' will add substree items to every
+				// item matched by the selector, we need to ensure that
+				// `open_node' is invoked for one item at a time.
 				$(this).find('li[rel="repository"]:first').each(
 					function (i, li) {
 						$tree.jstree('open_node', li);
@@ -1304,17 +1329,15 @@ define('RepositoryBrowser', [
 		},
 
 		/**
-		 * This function gets called when a folder in the tree is opened
+		 * Gets called when a folder in the tree is opened.
 		 *
-		 * @param {object} obj	folder data object
+		 * @param {jQuery.<HTMLElement>} $node Tree node.
 		 */
-		folderOpened: function(obj) {
-			var folder = this._getObjectFromCache(obj);
-
+		folderOpened: function($node) {
+			var repobrowser = this;
+			var folder = cacheRead(repobrowser, getIdFromTreeNode($node));
 			if (folder) {
-				if (this.repositoryManager) {
-					this.repositoryManager.folderOpened(folder);
-				}
+				repobrowser.repositoryManager.folderOpened(folder);
 			}
 		},
 
