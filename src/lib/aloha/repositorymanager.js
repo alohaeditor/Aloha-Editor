@@ -40,8 +40,7 @@ define([
 	'use strict';
 
 	/**
-	 * Given an input set, returns the range which maps against the given
-	 * predicate.
+	 * Given an input set, returns the range mapped against the given predicate.
 	 *
 	 * Prefers native Array.prototype.filter() where available (after JavaScript
 	 * 1.6).
@@ -66,7 +65,7 @@ define([
 				return codomain;
 			}
 		);
-	}(Array.prototype.filter));
+	}('filter' in Array.prototype));
 
 
 	/**
@@ -77,19 +76,18 @@ define([
 	 * @param {Array.<Document|Folder>} items Results, collected from all
 	 *                                        repositories.
 	 * @param {object<string, number>} meta Optional object containing metainfo.
+	 * @return {object} Result object.
 	 */
 	function bundle(items, meta) {
 		var result = {
 			items: items,
 			results: items.length
 		};
-
 		if (meta) {
 			result.numItems = meta.numItems;
 			result.hasMoreItems = meta.hasMoreItems;
 			result.timeout = meta.timeout;
 		}
-
 		return result;
 	}
 
@@ -267,8 +265,8 @@ define([
 		 *                                       object identified by the given
 		 *                                       inTreeId (objectId).
 		 *           orderBy: Array   (optional) example: [{
-		 *                                            lastModificationDate: 'DESC',
-		 *                                            name: 'ASC'
+		 *                                           lastModificationDate: 'DESC',
+		 *                                           name: 'ASC'
 		 *                                       }]
 		 *          maxItems: number  (optional) Number of items to include in
 		 *                                       result set.
@@ -379,15 +377,16 @@ define([
 
 				if (metainfo && allmetainfo) {
 					allmetainfo.numItems =
-						($.isNumeric(metainfo.numItems)
-						 && $.isNumeric(allmetainfo.numItems))
+						($.isNumeric(metainfo.numItems) &&
+						 $.isNumeric(allmetainfo.numItems))
 							? allmetainfo.numItems + metainfo.numItems
 							: undefined;
 
-					allmetainfo.hasMoreItems = (typeof metainfo.hasMoreItems === 'boolean'
-					                         && typeof allmetainfo.hasMoreItems === 'boolean')
-					                         ? allmetainfo.hasMoreItems || metainfo.hasMoreItems
-					                         : undefined;
+					allmetainfo.hasMoreItems =
+						(typeof metainfo.hasMoreItems === 'boolean' &&
+						 typeof allmetainfo.hasMoreItems === 'boolean')
+							? allmetainfo.hasMoreItems || metainfo.hasMoreItems
+							: undefined;
 
 					if (metainfo.timeout) {
 						allmetainfo.timeout = true;
