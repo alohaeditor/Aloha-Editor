@@ -22,3 +22,6 @@ All changes are categorized into one of the following keywords:
 - **BUG**: core: Fixes numerous issues with repository manager including how
            query() and getChildren() handle immediate, and asynchronous
            repositories.
+- **BUG**: vendor/repository-browser: Updates repository browser with fix to
+		   not listing repository folders mutliple times into wrong repositories
+		   on the tree.
