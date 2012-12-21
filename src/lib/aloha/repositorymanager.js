@@ -40,7 +40,8 @@ define([
 	'use strict';
 
 	/**
-	 * Given an input set, returns the range mapped against the given predicate.
+	 * Given an input set, returns a new set which is a range of the input set
+	 * that maps to the given predicate.
 	 *
 	 * Prefers native Array.prototype.filter() where available (after JavaScript
 	 * 1.6).
@@ -66,7 +67,6 @@ define([
 			}
 		);
 	}('filter' in Array.prototype));
-
 
 	/**
 	 * Bundles results, and meta information in preparation for the JSON Reader.
@@ -315,20 +315,18 @@ define([
 			// `results' will be returned to the calling client and all further
 			// processing aborted.
 			var timer = window.setTimeout(function () {
-				if (numOpenQueries > 0) {
-					Console.warn(manager, numOpenQueries
-							+ ' repositories did not return before the '
-							+ 'configured timeout of ' + timeout + 'ms.');
-				}
-
-				numOpenQueries = 0;
-
 				// Store in metainfo that a timeout occurred.
 				allmetainfo = allmetainfo || {};
 				allmetainfo.timeout = true;
 
-				report(callback, bundle(results, allmetainfo));
+				if (numOpenQueries > 0) {
+					Console.warn(manager, numOpenQueries
+							+ ' repositories did not return before the '
+							+ 'configured timeout of ' + timeout + 'ms.');
+					numOpenQueries = 0;
+				}
 				clearTimeout(timer);
+				report(callback, bundle(results, allmetainfo));
 			}, timeout);
 
 			/**
@@ -404,8 +402,8 @@ define([
 
 				// TODO: how to return the metainfo here?
 				if (0 === --numOpenQueries) {
-					report(callback, bundle(results, allmetainfo));
 					clearTimeout(timer);
+					report(callback, bundle(results, allmetainfo));
 				}
 			};
 
@@ -418,8 +416,8 @@ define([
 			// If none of the repositories implemented the query method, then
 			// don't wait for the timeout, simply report to the client.
 			if (0 === queue.length) {
-				report(callback, bundle(results, allmetainfo));
 				clearTimeout(timer);
+				report(callback, bundle(results, allmetainfo));
 				return;
 			}
 
@@ -484,9 +482,14 @@ define([
 			           || manager.settings.timeout;
 
 			var timer = window.setTimeout(function () {
-				numOpenQueries = 0;
-				report(callback, results);
+				if (numOpenQueries > 0) {
+					Console.warn(manager, numOpenQueries
+							+ ' repositories did not respond before the '
+							+ 'configured timeout of ' + timeout + 'ms.');
+					numOpenQueries = 0;
+				}
 				clearTimeout(timer);
+				report(callback, results);
 			}, timeout);
 
 			var process = function (items) {
@@ -497,8 +500,8 @@ define([
 					$.merge(results, items);
 				}
 				if (0 === --numOpenQueries) {
-					report(callback, results);
 					clearTimeout(timer);
+					report(callback, results);
 				}
 			};
 
@@ -529,16 +532,16 @@ define([
 					}));
 				}
 
-				report(callback, results);
 				clearTimeout(timer);
+				report(callback, results);
 				return;
 			}
 
 			var queue = filter(repositories, repositoryFilters.getChildren);
 
 			if (0 === queue.length) {
-				report(callback, results);
 				clearTimeout(timer);
+				report(callback, results);
 				return;
 			}
 
