@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css'], function(Aloha, Plugin, jQuery, Popover, UI) {
-    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, buildEditor, cleanupFormula, makeCloseIcon, triggerMathJax;
+    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, buildEditor, cleanupFormula, insertMath, makeCloseIcon, triggerMathJax;
     EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"\n                  placeholder="Insert your math notation here"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n    </div>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
@@ -21,22 +21,28 @@
       'TeX': 'math/tex',
       'ASCIIMath': 'math/asciimath'
     };
-    UI.adopt('insertMath', null, {
-      click: function() {
-        var $el, range;
-        $el = jQuery('<span class="math-element"></span>');
-        range = Aloha.Selection.getRangeObject();
-        if (range.isCollapsed()) {
-          GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
-        } else {
-          $el.text('`' + range.getText() + '`');
-          GENTICS.Utils.Dom.removeRange(range);
-          GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
-        }
+    insertMath = function() {
+      var $el, range;
+      $el = jQuery('<span class="math-element"></span>');
+      range = Aloha.Selection.getRangeObject();
+      if (range.isCollapsed()) {
+        GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
         return triggerMathJax($el, function() {
           $el.trigger('show');
           return makeCloseIcon($el);
         });
+      } else {
+        $el.text('`' + range.getText() + '`');
+        GENTICS.Utils.Dom.removeRange(range);
+        GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
+        return triggerMathJax($el, function() {
+          return makeCloseIcon($el);
+        });
+      }
+    };
+    UI.adopt('insertMath', null, {
+      click: function() {
+        return insertMath();
       }
     });
     triggerMathJax = function($el, cb) {
@@ -134,6 +140,12 @@
       }
       return $el.append(closer);
     };
+    Aloha.bind('aloha-editable-created', function(e, editable) {
+      return editable.obj.bind('keydown', 'ctrl+m', function(evt) {
+        insertMath();
+        return evt.preventDefault();
+      });
+    });
     Aloha.bind('aloha-editable-activated', function(event, data) {
       var editable;
       editable = data.editable;

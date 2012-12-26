@@ -33,22 +33,26 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     'ASCIIMath': 'math/asciimath'
 
   # Register the button with an action
+  insertMath = () ->
+    # Either insert a new span around the cursor and open the box or just
+    # open the box
+    $el = jQuery('<span class="math-element"></span>')
+    range = Aloha.Selection.getRangeObject()
+    if range.isCollapsed()
+      GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
+      triggerMathJax $el, ->
+        # Callback opens up the math editor by "clicking" on it
+        $el.trigger 'show'
+        makeCloseIcon($el)
+    else
+      $el.text('`' + range.getText() + '`')
+      GENTICS.Utils.Dom.removeRange range
+      GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
+      triggerMathJax $el, ->
+        makeCloseIcon($el)
+
   UI.adopt 'insertMath', null,
-    click: () ->
-        # Either insert a new span around the cursor and open the box or just
-        # open the box
-        $el = jQuery('<span class="math-element"></span>')
-        range = Aloha.Selection.getRangeObject()
-        if range.isCollapsed()
-          GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
-        else
-          $el.text('`' + range.getText() + '`')
-          GENTICS.Utils.Dom.removeRange range
-          GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
-        triggerMathJax $el, ->
-          # Callback opens up the math editor by "clicking" on it
-          $el.trigger 'show'
-          makeCloseIcon($el)
+    click: () -> insertMath()
 
   triggerMathJax = ($el, cb) ->
     MathJax.Hub.Queue ["Typeset", MathJax.Hub, $el[0], cb]
@@ -153,6 +157,12 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       else
         closer.tooltip(placement: 'bottom')
       $el.append(closer)
+
+  Aloha.bind 'aloha-editable-created', (e, editable) ->
+    # Bind ctrl+m to math insert/mathify
+    editable.obj.bind 'keydown', 'ctrl+m', (evt) ->
+      insertMath()
+      evt.preventDefault()
 
   Aloha.bind 'aloha-editable-activated', (event, data) ->
     editable = data.editable
