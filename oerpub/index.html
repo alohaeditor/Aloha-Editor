@@ -120,7 +120,7 @@
                                     $.post(save_url,
                                             {html: html}, function(data, statustext){
                                         if(data.error){
-                                            $('#statusmessage').data('message')(data.error, 'error');
+                                            $('#statusmessage').data('message')(data.error, 'error', 30000);
                                         } else {
                                             $('#statusmessage').data('message')('Saved');
                                             GenericButton.getButtons()["save"].enable(false);
@@ -144,11 +144,15 @@
 
                         // Set up status message area
                         var statusarea = $('#statusmessage');
-                        statusarea.data('message', function(message, type) {
+                        statusarea.data('message', function(message, type, delay) {
                             type = type || 'info';
-                            $("<div />", {'class': type, text: message}).hide()
-                                .appendTo(statusarea).center().fadeIn(700)
-                                .delay(1500).fadeOut(800, function() { $(this).remove(); });
+                            delay = delay || 1500;
+                            var ob = $("<div />",
+                              {'class': type, text: message}).hide()
+                              .appendTo(statusarea).center().fadeIn(700);
+                            if(delay>0){
+                                ob.delay(delay).fadeOut(800, function() { $(this).remove(); });
+                            }
                         });
 
                         // Fetch the preview
