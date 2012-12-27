@@ -83,7 +83,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
   # $span contains the span with LaTex/ASCIIMath
   buildEditor = ($span) ->
-    $editor = jQuery(EDITOR_HTML);
+    $editor = jQuery(EDITOR_HTML)
     # Bind some actions for the buttons
     $editor.find('.done').on 'click', =>
       cleanupFormula($editor, $span)
