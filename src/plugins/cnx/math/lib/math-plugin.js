@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css'], function(Aloha, Plugin, jQuery, Popover, UI) {
-    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, buildEditor, cleanupFormula, insertMath, makeCloseIcon, triggerMathJax;
+    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, TOOLTIP_TEMPLATE, buildEditor, cleanupFormula, insertMath, makeCloseIcon, triggerMathJax;
     EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"\n                  placeholder="Insert your math notation here"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n    </div>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
@@ -21,6 +21,7 @@
       'TeX': 'math/tex',
       'ASCIIMath': 'math/asciimath'
     };
+    TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>';
     insertMath = function() {
       var $el, $tail, range;
       $el = jQuery('<span class="math-element"></span>');
@@ -147,7 +148,8 @@
         closer.tooltip();
       } else {
         closer.tooltip({
-          placement: 'bottom'
+          placement: 'bottom',
+          template: TOOLTIP_TEMPLATE
         });
       }
       return $el.append(closer);
@@ -188,14 +190,16 @@
       if (jQuery.ui && jQuery.ui.tooltip) {
         return editable.obj.tooltip({
           items: ".math-element",
-          content: 'Click anywhere in math to edit it'
+          content: 'Click anywhere in math to edit it',
+          template: TOOLTIP_TEMPLATE
         });
       } else {
         return editable.obj.tooltip({
           selector: '.math-element',
           placement: 'top',
           title: 'Click anywhere in math to edit it',
-          trigger: 'hover'
+          trigger: 'hover',
+          template: TOOLTIP_TEMPLATE
         });
       }
     });

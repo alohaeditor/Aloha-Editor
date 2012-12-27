@@ -32,6 +32,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     'TeX':       'math/tex'
     'ASCIIMath': 'math/asciimath'
 
+  TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+
   insertMath = () ->
     $el = jQuery('<span class="math-element"></span>')
     range = Aloha.Selection.getRangeObject()
@@ -165,7 +167,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       if jQuery.ui and jQuery.ui.tooltip
         closer.tooltip()
       else
-        closer.tooltip(placement: 'bottom')
+        closer.tooltip(placement: 'bottom', template: TOOLTIP_TEMPLATE)
       $el.append(closer)
 
   Aloha.bind 'aloha-editable-created', (e, editable) ->
@@ -222,7 +224,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       # Use jq.ui tooltip
       editable.obj.tooltip(
         items: ".math-element",
-        content: 'Click anywhere in math to edit it')
+        content: 'Click anywhere in math to edit it',
+        template: TOOLTIP_TEMPLATE)
     else
       # This requires a custom version of jquery-ui, to avoid the conflict
       # between the two .toolbar plugins. This one assumes bootstrap
@@ -231,7 +234,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         selector: '.math-element'
         placement: 'top'
         title: 'Click anywhere in math to edit it'
-        trigger: 'hover')
+        trigger: 'hover',
+        template: TOOLTIP_TEMPLATE)
 
   SELECTOR = '.math-element' # ,.MathJax[role="textbox"][aria-readonly="true"],.MathJax_Display[role="textbox"][aria-readonly="true"]'
   Popover.register
