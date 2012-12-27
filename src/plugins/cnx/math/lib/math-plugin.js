@@ -22,7 +22,7 @@
       'ASCIIMath': 'math/asciimath'
     };
     insertMath = function() {
-      var $el, range;
+      var $el, $tail, range;
       $el = jQuery('<span class="math-element"></span>');
       range = Aloha.Selection.getRangeObject();
       if (range.isCollapsed()) {
@@ -32,11 +32,23 @@
           return makeCloseIcon($el);
         });
       } else {
+        $tail = jQuery('<span class="aloha-ephemera math-trailer" />');
         $el.text('`' + range.getText() + '`');
         GENTICS.Utils.Dom.removeRange(range);
-        GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
+        GENTICS.Utils.Dom.insertIntoDOM($el.add($tail), range, Aloha.activeEditable.obj);
         return triggerMathJax($el, function() {
-          return makeCloseIcon($el);
+          var r, sel;
+          makeCloseIcon($el);
+          sel = window.getSelection();
+          r = sel.getRangeAt(0);
+          r.selectNodeContents($tail.parent().get(0));
+          r.setEndAfter($tail.get(0));
+          r.setStartAfter($tail.get(0));
+          sel.removeAllRanges();
+          sel.addRange(r);
+          r = new GENTICS.Utils.RangeObject();
+          r.update();
+          return Aloha.Selection.rangeObject = r;
         });
       }
     };

@@ -32,10 +32,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     'TeX':       'math/tex'
     'ASCIIMath': 'math/asciimath'
 
-  # Register the button with an action
   insertMath = () ->
-    # Either insert a new span around the cursor and open the box or just
-    # open the box
     $el = jQuery('<span class="math-element"></span>')
     range = Aloha.Selection.getRangeObject()
     if range.isCollapsed()
@@ -45,12 +42,28 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         $el.trigger 'show'
         makeCloseIcon($el)
     else
+      $tail = jQuery('<span class="aloha-ephemera math-trailer" />')
       $el.text('`' + range.getText() + '`')
       GENTICS.Utils.Dom.removeRange range
-      GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
+      GENTICS.Utils.Dom.insertIntoDOM $el.add($tail), range, Aloha.activeEditable.obj
       triggerMathJax $el, ->
         makeCloseIcon($el)
 
+        # This will likely break in IE
+        sel = window.getSelection()
+        r = sel.getRangeAt(0)
+        r.selectNodeContents($tail.parent().get(0))
+        r.setEndAfter($tail.get(0))
+        r.setStartAfter($tail.get(0))
+        sel.removeAllRanges()
+        sel.addRange(r)
+
+        # Let aloha know what we've done
+        r = new GENTICS.Utils.RangeObject()
+        r.update()
+        Aloha.Selection.rangeObject = r
+
+  # Register the button with an action
   UI.adopt 'insertMath', null,
     click: () -> insertMath()
 
@@ -69,9 +82,6 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
   # $span contains the span with LaTex/ASCIIMath
   buildEditor = ($span) ->
     $editor = jQuery(EDITOR_HTML);
-    # For now, no keypress for dismissing the popover
-    #$editor.find('.formula').bind('keydown', 'esc', (e) -> cleanupFormula($editor, $span))
-
     # Bind some actions for the buttons
     $editor.find('.done').on 'click', =>
       cleanupFormula($editor, $span)
