@@ -155,8 +155,12 @@
                             if(delay>0){
                                 ob.delay(delay).fadeOut(800, function() { $(this).remove(); });
                             } else {
-                                ob.addClass('persistent-error').on('click', function(e){
-                                    $(e.target).off('click').remove();
+                                ob.addClass('persistent-error');
+                                var close = $('<i> </i>');
+                                ob.append(close);
+                                close.on('click', function(e){
+                                    $(e.target).off('click');
+                                    ob.remove();
                                 });
                             }
                         });
