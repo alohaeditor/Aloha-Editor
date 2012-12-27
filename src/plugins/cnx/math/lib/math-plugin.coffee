@@ -34,6 +34,21 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
   TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
 
+  # Monkeypatch the bootstrap tooltips to generate events on hide/show
+  # This might not belong here #FIXME
+  Bootstrap_Tooltip_hide = (originalHide) -> () ->
+      @$element.trigger('hide-tooltip')
+      r = originalHide.bind(@)()
+      @$element.trigger('hidden-tooltip')
+      r
+
+  monkeyPatch = () ->
+    if not (jQuery.ui and jQuery.ui.tooltip)
+      console && console.warn('Monkey patching Bootstrap tooltips to generate events')
+      proto = jQuery.fn.tooltip.Constructor.prototype
+      proto.hide = Bootstrap_Tooltip_hide(proto.hide)
+  monkeyPatch()
+
   insertMath = () ->
     $el = jQuery('<span class="math-element"></span>')
     range = Aloha.Selection.getRangeObject()
