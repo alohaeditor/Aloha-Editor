@@ -139,7 +139,7 @@
         clearTimeout(keyTimeout);
         return setTimeout(keyDelay.bind($formula), 500);
       });
-      $span.on('shown-popover', function() {
+      $span.off('shown-popover').on('shown-popover', function() {
         var $el, tt;
         $el = jQuery(this);
         tt = $el.data('tooltip');
@@ -154,7 +154,7 @@
           }
         }, 10);
       });
-      $span.on('hidden-popover', function() {
+      $span.off('hidden-popover').on('hidden-popover', function() {
         var tt;
         tt = jQuery(this).data('tooltip');
         if (tt) {

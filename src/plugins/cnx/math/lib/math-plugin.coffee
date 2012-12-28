@@ -158,7 +158,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         clearTimeout(keyTimeout)
         setTimeout(keyDelay.bind($formula), 500)
 
-    $span.on 'shown-popover', () ->
+    $span.off('shown-popover').on 'shown-popover', () ->
       $el = jQuery(@)
       tt = $el.data('tooltip')
       tt.hide().disable() if tt
@@ -167,7 +167,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         $popover.$tip.find('.formula').trigger('focus') if $popover
       , 10)
 
-    $span.on 'hidden-popover', () ->
+    $span.off('hidden-popover').on 'hidden-popover', () ->
       tt = jQuery(@).data('tooltip')
       tt.enable() if tt
       cleanupFormula($editor, jQuery(@))
