@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css'], function(Aloha, Plugin, jQuery, Popover, UI) {
-    var Bootstrap_Tooltip_hide, EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, TOOLTIP_TEMPLATE, buildEditor, cleanupFormula, insertMath, makeCloseIcon, monkeyPatch, triggerMathJax;
+    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, TOOLTIP_TEMPLATE, buildEditor, cleanupFormula, insertMath, makeCloseIcon, triggerMathJax;
     EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"\n                  placeholder="Insert your math notation here"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n    </div>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
@@ -22,24 +22,6 @@
       'ASCIIMath': 'math/asciimath'
     };
     TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>';
-    Bootstrap_Tooltip_hide = function(originalHide) {
-      return function() {
-        var r;
-        this.$element.trigger('hide-tooltip');
-        r = originalHide.bind(this)();
-        this.$element.trigger('hidden-tooltip');
-        return r;
-      };
-    };
-    monkeyPatch = function() {
-      var proto;
-      if (!(jQuery.ui && jQuery.ui.tooltip)) {
-        console && console.warn('Monkey patching Bootstrap tooltips to generate events');
-        proto = jQuery.fn.tooltip.Constructor.prototype;
-        return proto.hide = Bootstrap_Tooltip_hide(proto.hide);
-      }
-    };
-    monkeyPatch();
     insertMath = function() {
       var $el, $tail, range;
       $el = jQuery('<span class="math-element"></span>');
