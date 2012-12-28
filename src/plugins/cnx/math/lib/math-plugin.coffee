@@ -73,9 +73,6 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     MathJax.Hub.Queue ["Typeset", MathJax.Hub, $el[0], cb]
 
   cleanupFormula = ($editor, $span, destroy=false) ->
-    # Clean up the formula (tooltips, wrappers if it is empty),
-    # and close the popover
-    $span.trigger 'hide'
     # If math is empty, remove the box
     if destroy or jQuery.trim($editor.find('.formula').val()).length == 0
       $span.find('.math-element-destroy').tooltip('destroy')
@@ -86,8 +83,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $editor = jQuery(EDITOR_HTML)
     # Bind some actions for the buttons
     $editor.find('.done').on 'click', =>
-      cleanupFormula($editor, $span)
+      $span.trigger 'hide'
     $editor.find('.remove').on 'click', =>
+      $span.trigger 'hide'
       cleanupFormula($editor, $span, true)
 
     $formula = $editor.find('.formula')
@@ -161,10 +159,13 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         setTimeout(keyDelay.bind($formula), 500)
 
     $span.on 'shown-popover', () ->
-      jQuery(@).data('tooltip').hide().disable()
+      tt = jQuery(@).data('tooltip')
+      tt.hide().disable() if tt
 
     $span.on 'hidden-popover', () ->
-      jQuery(@).data('tooltip').enable()
+      tt = jQuery(@).data('tooltip')
+      tt.enable() if tt
+      cleanupFormula($editor, jQuery(@))
 
     $editor
 

@@ -65,7 +65,6 @@
       if (destroy == null) {
         destroy = false;
       }
-      $span.trigger('hide');
       if (destroy || jQuery.trim($editor.find('.formula').val()).length === 0) {
         $span.find('.math-element-destroy').tooltip('destroy');
         return $span.remove();
@@ -76,9 +75,10 @@
         _this = this;
       $editor = jQuery(EDITOR_HTML);
       $editor.find('.done').on('click', function() {
-        return cleanupFormula($editor, $span);
+        return $span.trigger('hide');
       });
       $editor.find('.remove').on('click', function() {
+        $span.trigger('hide');
         return cleanupFormula($editor, $span, true);
       });
       $formula = $editor.find('.formula');
@@ -140,10 +140,19 @@
         return setTimeout(keyDelay.bind($formula), 500);
       });
       $span.on('shown-popover', function() {
-        return jQuery(this).data('tooltip').hide().disable();
+        var tt;
+        tt = jQuery(this).data('tooltip');
+        if (tt) {
+          return tt.hide().disable();
+        }
       });
       $span.on('hidden-popover', function() {
-        return jQuery(this).data('tooltip').enable();
+        var tt;
+        tt = jQuery(this).data('tooltip');
+        if (tt) {
+          tt.enable();
+        }
+        return cleanupFormula($editor, jQuery(this));
       });
       return $editor;
     };
