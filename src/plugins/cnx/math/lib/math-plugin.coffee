@@ -159,8 +159,13 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         setTimeout(keyDelay.bind($formula), 500)
 
     $span.on 'shown-popover', () ->
-      tt = jQuery(@).data('tooltip')
+      $el = jQuery(@)
+      tt = $el.data('tooltip')
       tt.hide().disable() if tt
+      setTimeout( () ->
+        $popover = $el.data('popover')
+        $popover.$tip.find('.formula').trigger('focus') if $popover
+      , 10)
 
     $span.on 'hidden-popover', () ->
       tt = jQuery(@).data('tooltip')
@@ -250,8 +255,3 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     populator: buildEditor
     placement: 'top'
     markerclass: 'math-popover'
-    focus: ($popover) ->
-      # Give focus to the text box
-      setTimeout( () ->
-        $popover.find('.formula').trigger('focus')
-      , 10)

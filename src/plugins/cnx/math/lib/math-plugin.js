@@ -140,11 +140,19 @@
         return setTimeout(keyDelay.bind($formula), 500);
       });
       $span.on('shown-popover', function() {
-        var tt;
-        tt = jQuery(this).data('tooltip');
+        var $el, tt;
+        $el = jQuery(this);
+        tt = $el.data('tooltip');
         if (tt) {
-          return tt.hide().disable();
+          tt.hide().disable();
         }
+        return setTimeout(function() {
+          var $popover;
+          $popover = $el.data('popover');
+          if ($popover) {
+            return $popover.$tip.find('.formula').trigger('focus');
+          }
+        }, 10);
       });
       $span.on('hidden-popover', function() {
         var tt;
@@ -223,12 +231,7 @@
       selector: SELECTOR,
       populator: buildEditor,
       placement: 'top',
-      markerclass: 'math-popover',
-      focus: function($popover) {
-        return setTimeout(function() {
-          return $popover.find('.formula').trigger('focus');
-        }, 10);
-      }
+      markerclass: 'math-popover'
     });
   });
 
