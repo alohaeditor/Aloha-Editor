@@ -160,6 +160,12 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         clearTimeout(keyTimeout)
         setTimeout(keyDelay.bind($formula), 500)
 
+    $span.on 'shown-popover', () ->
+      jQuery(@).data('tooltip').hide().disable()
+
+    $span.on 'hidden-popover', () ->
+      jQuery(@).data('tooltip').enable()
+
     $editor
 
   makeCloseIcon = ($el) ->

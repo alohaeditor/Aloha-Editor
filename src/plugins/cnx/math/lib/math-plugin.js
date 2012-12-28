@@ -139,6 +139,12 @@
         clearTimeout(keyTimeout);
         return setTimeout(keyDelay.bind($formula), 500);
       });
+      $span.on('shown-popover', function() {
+        return jQuery(this).data('tooltip').hide().disable();
+      });
+      $span.on('hidden-popover', function() {
+        return jQuery(this).data('tooltip').enable();
+      });
       return $editor;
     };
     makeCloseIcon = function($el) {
