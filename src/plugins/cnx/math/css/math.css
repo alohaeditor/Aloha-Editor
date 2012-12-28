@@ -27,6 +27,7 @@
 
 .math-container {
     position: relative;
+    margin-bottom: 1em;
 }
 
 .math-container textarea, 
