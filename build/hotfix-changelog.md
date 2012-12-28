@@ -25,3 +25,5 @@ All changes are categorized into one of the following keywords:
 - **BUG**: vendor/repository-browser: Updates repository browser with fix to
 		   not listing repository folders mutliple times into wrong repositories
 		   on the tree.
+- **BUG**: core: Fixed disappearing attributes in browsers that do not support
+           outerHTML.
