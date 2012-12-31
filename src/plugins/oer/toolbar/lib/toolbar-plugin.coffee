@@ -67,16 +67,22 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
       # The Table plugin requires this.element to work so it can pop open a
       # window that selects the number of rows and columns
       # Also, that's the reason for the bind(@)
-      @element = @
-      settings.click.bind(@)(evt)
+      $target = jQuery(evt.target)
+      if not ($target.is(':disabled') or $target.parent().is('.disabled'))
+        @element = @
+        settings.click.bind(@)(evt)
     if settings.preview
       $buttons.off 'mouseenter'
       $buttons.on 'mouseenter', (evt) ->
-        settings.preview.bind(@)(evt)
+        $target = jQuery(evt.target)
+        if not ($target.is(':disabled') or $target.parent().is('.disabled'))
+          settings.preview.bind(@)(evt)
     if settings.unpreview
       $buttons.off 'mouseleave'
       $buttons.on 'mouseleave', (evt) ->
-        settings.unpreview.bind(@)(evt)
+        $target = jQuery(evt.target)
+        if not ($target.is(':disabled') or $target.parent().is('.disabled'))
+          settings.unpreview.bind(@)(evt)
 
     return makeItemRelay slot, $buttons
 

@@ -97,21 +97,33 @@
       $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event');
       $buttons.off('click');
       $buttons.on('click', function(evt) {
+        var $target;
         evt.preventDefault();
         Aloha.activeEditable = Aloha.activeEditable || squirreledEditable;
-        this.element = this;
-        return settings.click.bind(this)(evt);
+        $target = jQuery(evt.target);
+        if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
+          this.element = this;
+          return settings.click.bind(this)(evt);
+        }
       });
       if (settings.preview) {
         $buttons.off('mouseenter');
         $buttons.on('mouseenter', function(evt) {
-          return settings.preview.bind(this)(evt);
+          var $target;
+          $target = jQuery(evt.target);
+          if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
+            return settings.preview.bind(this)(evt);
+          }
         });
       }
       if (settings.unpreview) {
         $buttons.off('mouseleave');
         $buttons.on('mouseleave', function(evt) {
-          return settings.unpreview.bind(this)(evt);
+          var $target;
+          $target = jQuery(evt.target);
+          if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
+            return settings.unpreview.bind(this)(evt);
+          }
         });
       }
       return makeItemRelay(slot, $buttons);
