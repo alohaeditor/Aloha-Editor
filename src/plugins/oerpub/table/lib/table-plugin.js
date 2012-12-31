@@ -59,10 +59,6 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
 		}
 	}
 
-	function isWithinTable(elem) {
-		return (jQuery(elem).parents('.aloha-editable table').length > 0);
-	}
-
     function createRow(cols, tagname){
         tagname = tagname || 'td';
         var tr = document.createElement('tr');
