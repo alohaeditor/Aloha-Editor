@@ -177,10 +177,11 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                 placeCursor(editable.obj);
             });
             PubSub.sub('aloha.selection.context-change', function(m){
-                if ($(m.range.markupEffectiveAtStart).parent('table')
-                        .length > 0) {
-                    // We're inside a table, disable
-                    // table insertion, enable others
+                var table = jQuery(m.range.markupEffectiveAtStart)
+                    .parent('table').eq(0);
+                if (table.length > 0) {
+                    // We're inside a table, disable table insertion, enable
+                    // others
                     plugin._createTableButton.enable(false);
                     plugin._addrowbeforeButton.enable(true);
                     plugin._addrowafterButton.enable(true);
@@ -189,6 +190,10 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                     plugin._addColumnBefore.enable(true);
                     plugin._addColumnAfter.enable(true);
                     plugin._deleteTableButton.enable(true);
+                    if(!table.find('th').length){
+                        // only enable header insertion if we have no header
+                        plugin._addHeaderRow.enable(true);
+                    }
                 } else {
                     // Disable table functions, enable table insertion
                     plugin._createTableButton.enable(true);
@@ -199,6 +204,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                     plugin._addColumnBefore.enable(false);
                     plugin._addColumnAfter.enable(false);
                     plugin._deleteTableButton.enable(false);
+                    plugin._addHeaderRow.enable(false);
                 }
             });
             jQuery('body').on('click', function(e){
@@ -378,6 +384,27 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                         .removeClass('add-column-after');
                 }
             });
+            this._addHeaderRow = Ui.adopt("addheaderrow", Button, {
+                tooltip: "Add header row",
+                icon: "aloha-icon aloha-icon-addheaderrow",
+                scope: this.name,
+                click: function(){
+                    if(!that.currentTable.length){ return; }
+                    var firstrow = that.currentTable.find('tr').eq(0),
+                        colcount = firstrow.find('td,th').length;
+                    var newrow = createRow(colcount, 'th');
+                    firstrow.before(newrow);
+                },
+                preview: function(e){
+                    that.currentTable.length && that.currentTable.find('tr').eq(0).addClass("add-row-before");
+                },
+                unpreview: function(e){
+                    // use slice() to remove class from first two rows, cause
+                    // adding a new header row means the preview css is now on
+                    // the second row.
+                    that.currentTable.length && that.currentTable.find('tr').slice(0, 2).removeClass("add-row-before");
+                }
+            });
             // Disable the table functions by default, they are enabled when
             // a selection is inside a table
             this._addrowbeforeButton.enable(false);
@@ -386,6 +413,7 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
             this._deleteColumnButton.enable(false);
             this._addColumnBefore.enable(false);
             this._addColumnAfter.enable(false);
+            this._addHeaderRow.enable(false);
             this._deleteTableButton.enable(false);
         },
         addRowAfter: function(){
