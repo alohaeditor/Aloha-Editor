@@ -394,6 +394,10 @@ function(Aloha, plugin, jQuery, Ui, Button, PubSub, Dialog, Ephemera, CreateLaye
                         colcount = firstrow.find('td,th').length;
                     var newrow = createRow(colcount, 'th');
                     firstrow.before(newrow);
+                    // Disable function now to prevent adding another
+                    // header row. Also cleanup after preview.
+                    that.currentTable.find('tr').slice(0, 2).removeClass("add-row-before");
+                    that._addHeaderRow.enable(false);
                 },
                 preview: function(e){
                     that.currentTable.length && that.currentTable.find('tr').eq(0).addClass("add-row-before");
