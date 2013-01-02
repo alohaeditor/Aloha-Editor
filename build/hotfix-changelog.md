@@ -27,3 +27,5 @@ All changes are categorized into one of the following keywords:
 		   on the tree.
 - **BUG**: core: Fixed disappearing attributes in browsers that do not support
            outerHTML.
+- **BUG**: link-plugins: Fixed inserting of links so that links that span
+           multiple elements are not unnecessarily split into fragments.
