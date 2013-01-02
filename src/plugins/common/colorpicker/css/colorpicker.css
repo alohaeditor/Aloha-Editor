@@ -1,0 +1,36 @@
+.aloha-color-picker-overlay {
+    position: absolute;
+    display: none;
+    float: left;
+    padding: 0;
+    top: 0;
+    left: 0;
+    border: 1px solid #afafaf !important;
+    border-collapse: collapse !important;
+    z-index: 999999;
+}
+
+.aloha-color-picker-overlay {
+	border-collapse:collapse;
+}
+
+.aloha-color-picker-overlay td {
+    width: 1em !important;
+    height: 1em !important;
+    border: 1px solid #afafaf !important;
+    font-size: 1em !important;
+    padding: 0.05em !important;
+		background-color: #ffffff;
+}
+
+.aloha-color-picker-overlay td.mouseover {
+    border: 1px solid #000000 !important;
+}
+
+.aloha-color-picker-overlay td.focused {
+    border: 1px solid #407bcf !important;
+}
+
+.aloha .ui-icon.aloha-icon-colorpicker {
+	background-color: #ffffff;
+}
