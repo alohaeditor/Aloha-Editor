@@ -64,9 +64,9 @@ define([
 	 * XMLSerializer, and an alternative, albeit more expensive option, is
 	 * described.
 	 *
-	 * @type {XMLSerializer}
+	 * @type {XMLSerializer|null}
 	 */
-	var Serializer = new window.XMLSerializer();
+	var Serializer = window.XMLSerializer && new window.XMLSerializer();
 
 	/**
 	 * Gets the serialized HTML that describes the given DOM element and its
@@ -83,7 +83,7 @@ define([
 			return node.outerHTML;
 		}
 		try {
-			return Serializer.serializeToString(node);
+			return Serializer ? Serializer.serializeToString(node) : node.xml;
 		} catch (e) {
 			return node.xml;
 		}
