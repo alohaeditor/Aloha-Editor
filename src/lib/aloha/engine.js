@@ -557,6 +557,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		var matches = /^rgb\(([0-9]+), ([0-9]+), ([0-9]+)\)$/.exec(color);
 		if (matches) {
 			return "#" + parseInt(matches[1], 10).toString(16).replace(/^.$/, "0$&") + parseInt(matches[2], 10).toString(16).replace(/^.$/, "0$&") + parseInt(matches[3], 10).toString(16).replace(/^.$/, "0$&");
+		} else if ( /^#[abcdef0123456789]+$/i.exec(color) ) {
+			// return hexadecimal color values (as returned by IE 7/8)
+			return color;
 		}
 		return null;
 	}
@@ -1378,9 +1381,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		return hasCollapsedBlockPropChild;
 	}
 
-	// Please note: This method is deprecated and will be removed. 
-	// Every command should use the value and range parameter. 
-	// 
+	// Please note: This method is deprecated and will be removed.
+	// Every command should use the value and range parameter.
+	//
 	// "The active range is the first range in the Selection given by calling
 	// getSelection() on the context object, or null if there is no such range."
 	//
@@ -1551,7 +1554,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		}
 
 		// if we're off actual node boundaries this implies that the move was
-		// part of a deletion process (backspace). If that's the case we 
+		// part of a deletion process (backspace). If that's the case we
 		// attempt to fix this by restoring the range to the first index of
 		// the node that has been moved
 		var newRange = null;
@@ -1577,22 +1580,22 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 	/**
 	 * Copy all non empty attributes from an existing to a new element
-	 * 
+	 *
 	 * @param {dom} element The source DOM element
 	 * @param {dom} newElement The new DOM element which will get the attributes of the source DOM element
 	 * @return void
 	 */
 	function copyAttributes(element, newElement) {
 
-		// This is an IE7 workaround. We identified three places that were connected 
+		// This is an IE7 workaround. We identified three places that were connected
 		// to the mysterious ie7 crash:
 		// 1. Add attribute to dom element (Initialization of jquery-ui sortable)
-		// 2. Access the jquery expando attribute. Just reading the name is 
+		// 2. Access the jquery expando attribute. Just reading the name is
 		//    sufficient to make the browser vulnerable for the crash (Press enter)
 		// 3. On editable blur the Aloha.editables[0].getContents(); gets invoked.
-		//    This invokation somehow crashes the ie7. We assume that the access of 
-		//    shared expando attribute updates internal references which are not 
-		//    correclty handled during clone(); 
+		//    This invokation somehow crashes the ie7. We assume that the access of
+		//    shared expando attribute updates internal references which are not
+		//    correclty handled during clone();
 		if (jQuery.browser.msie && jQuery.browser.version >= 7 && typeof element.attributes[jQuery.expando] !== 'undefined') {
 			jQuery(element).removeAttr(jQuery.expando);
 		}
@@ -1606,7 +1609,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 				if (typeof newElement.setAttributeNS === 'function') {
 					newElement.setAttributeNS(attr.namespaceURI, attr.name, attr.value);
 				} else {
-					// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515 
+					// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515
 					newElement.setAttribute(attr.name, attr.value);
 				}
 			}
@@ -3384,7 +3387,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// here as well.  The active range will be temporarily in orphaned
 			// nodes, so calling getActiveRange() after splitText() but before
 			// fixing the range will throw an exception.
-			// TODO: check if this is still neccessary 
+			// TODO: check if this is still neccessary
 			var activeRange = range;
 			var newStart = [activeRange.startContainer, activeRange.startOffset];
 			var newEnd = [activeRange.endContainer, activeRange.endOffset];
@@ -3424,10 +3427,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	 * which is located one step right of the current caret position.
 	 * If an appropriate element is found it will be returned or
 	 * false otherwise
-	 * 
+	 *
 	 * @param {element} node current node we're in
 	 * @param {number} offset current offset within that node
-	 * 
+	 *
 	 * @return the dom node if found or false if no appropriate
 	 * element was found
 	 */
@@ -3475,10 +3478,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	 * which is located right before the current position.
 	 * If an appropriate element is found, it will be returned or
 	 * false otherwise
-	 * 
+	 *
 	 * @param {element} node current node
 	 * @param {offset} offset current offset
-	 * 
+	 *
 	 * @return dom node of found or false if no appropriate
 	 * element was found
 	 */
@@ -5352,7 +5355,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			canonicalizeWhitespace(startNode, startOffset);
 
 			// "Set range's end to its start."
-			// Ok, also set the range's start to its start, because modifying the text 
+			// Ok, also set the range's start to its start, because modifying the text
 			// might have somehow corrupted the range
 			range.setStart(range.startContainer, range.startOffset);
 			range.setEnd(range.startContainer, range.startOffset);
@@ -6317,7 +6320,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 	//@}
 	///// Move the given collapsed range over adjacent zero-width whitespace characters.
-	///// The range is 
+	///// The range is
 	//@{
 	/**
 	 * Move the given collapsed range over adjacent zero-width whitespace characters.
@@ -6473,7 +6476,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// @iebug
-			// when inserting a special char via the plugin 
+			// when inserting a special char via the plugin
 			// there where problems deleting them again with backspace after insertation
 			// see https://github.com/alohaeditor/Aloha-Editor/issues/517
 			if (node.nodeType == $_.Node.TEXT_NODE && offset == 0 && jQuery.browser.msie) {

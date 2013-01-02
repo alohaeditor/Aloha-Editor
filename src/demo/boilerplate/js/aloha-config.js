@@ -193,6 +193,14 @@
 			},
 			'wai-lang': {
 				flags: true
+			},
+			'textcolor': {
+				// configure a set of colors for all editables
+				config: ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder'],
+				editables: {
+					// configure a different set of colors for editable #one
+					'#top-text' : []
+				}
 			}
 		}
 	};
