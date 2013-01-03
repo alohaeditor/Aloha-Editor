@@ -91,6 +91,40 @@
       adoptedActions[slot] = settings;
       return makeItemRelay(slot);
     };
+    Aloha.bind('aloha-ready', function(event, editable) {
+      return jQuery.each(adoptedActions, function(slot, settings) {
+        var selector;
+        selector = ".action." + slot;
+        $ROOT.on('click', selector, function(evt) {
+          var $target;
+          evt.preventDefault();
+          Aloha.activeEditable = Aloha.activeEditable || squirreledEditable;
+          $target = jQuery(evt.target);
+          if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
+            this.element = this;
+            return settings.click.bind(this)(evt);
+          }
+        });
+        if (settings.preview) {
+          $ROOT.on('mouseenter', selector, function(evt) {
+            var $target;
+            $target = jQuery(evt.target);
+            if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
+              return settings.preview.bind(this)(evt);
+            }
+          });
+        }
+        if (settings.unpreview) {
+          return $ROOT.on('mouseleave', selector, function(evt) {
+            var $target;
+            $target = jQuery(evt.target);
+            if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
+              return settings.unpreview.bind(this)(evt);
+            }
+          });
+        }
+      });
+    });
     /*
        register the plugin with unique name
     */
@@ -100,40 +134,6 @@
         var changeHeading, squirreledEditable, toolbar;
         toolbar = this;
         squirreledEditable = null;
-        Aloha.bind('aloha-editable-created', function(event, editable) {
-          return jQuery.each(adoptedActions, function(slot, settings) {
-            var selector;
-            selector = ".action." + slot;
-            $ROOT.on('click', selector, function(evt) {
-              var $target;
-              evt.preventDefault();
-              Aloha.activeEditable = Aloha.activeEditable || squirreledEditable;
-              $target = jQuery(evt.target);
-              if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
-                this.element = this;
-                return settings.click.bind(this)(evt);
-              }
-            });
-            if (settings.preview) {
-              $ROOT.on('mouseenter', selector, function(evt) {
-                var $target;
-                $target = jQuery(evt.target);
-                if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
-                  return settings.preview.bind(this)(evt);
-                }
-              });
-            }
-            if (settings.unpreview) {
-              return $ROOT.on('mouseleave', selector, function(evt) {
-                var $target;
-                $target = jQuery(evt.target);
-                if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
-                  return settings.unpreview.bind(this)(evt);
-                }
-              });
-            }
-          });
-        });
         changeHeading = function(evt) {
           var $el, $newEl, $oldEl, hTag, rangeObject;
           $el = jQuery(this);

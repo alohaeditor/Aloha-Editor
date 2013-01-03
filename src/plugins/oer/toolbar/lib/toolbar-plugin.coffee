@@ -55,6 +55,33 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
     adoptedActions[slot] = settings
     return makeItemRelay slot
 
+
+  # Delegate toolbar actions once all the plugins have initialized and called `UI.adopt`
+  Aloha.bind 'aloha-ready', (event, editable) ->
+    jQuery.each adoptedActions, (slot, settings) ->
+
+      selector = ".action.#{slot}"
+      $ROOT.on 'click', selector, (evt) ->
+        evt.preventDefault()
+        Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
+        # The Table plugin requires this.element to work so it can pop open a
+        # window that selects the number of rows and columns
+        # Also, that's the reason for the bind(@)
+        $target = jQuery(evt.target)
+        if not ($target.is(':disabled') or $target.parent().is('.disabled'))
+          @element = @
+          settings.click.bind(@)(evt)
+      if settings.preview
+        $ROOT.on 'mouseenter', selector, (evt) ->
+          $target = jQuery(evt.target)
+          if not ($target.is(':disabled') or $target.parent().is('.disabled'))
+            settings.preview.bind(@)(evt)
+      if settings.unpreview
+        $ROOT.on 'mouseleave', selector, (evt) ->
+          $target = jQuery(evt.target)
+          if not ($target.is(':disabled') or $target.parent().is('.disabled'))
+            settings.unpreview.bind(@)(evt)
+
   ###
    register the plugin with unique name
   ###
@@ -63,32 +90,6 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
 
       toolbar = @
       squirreledEditable = null
-
-      Aloha.bind 'aloha-editable-created', (event, editable) ->
-        jQuery.each adoptedActions, (slot, settings) ->
-
-          selector = ".action.#{slot}"
-          $ROOT.on 'click', selector, (evt) ->
-            evt.preventDefault()
-            Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
-            # The Table plugin requires this.element to work so it can pop open a
-            # window that selects the number of rows and columns
-            # Also, that's the reason for the bind(@)
-            $target = jQuery(evt.target)
-            if not ($target.is(':disabled') or $target.parent().is('.disabled'))
-              @element = @
-              settings.click.bind(@)(evt)
-          if settings.preview
-            $ROOT.on 'mouseenter', selector, (evt) ->
-              $target = jQuery(evt.target)
-              if not ($target.is(':disabled') or $target.parent().is('.disabled'))
-                settings.preview.bind(@)(evt)
-          if settings.unpreview
-            $ROOT.on 'mouseleave', selector, (evt) ->
-              $target = jQuery(evt.target)
-              if not ($target.is(':disabled') or $target.parent().is('.disabled'))
-                settings.unpreview.bind(@)(evt)
-
 
       changeHeading = (evt) ->
         $el = jQuery(@)
