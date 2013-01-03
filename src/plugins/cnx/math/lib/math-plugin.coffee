@@ -236,7 +236,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       # Use jq.ui tooltip
       editable.obj.tooltip(
         items: ".math-element",
-        content: 'Click anywhere in math to edit it',
+        content: -> 'Click anywhere in math to edit it',
         template: TOOLTIP_TEMPLATE)
     else
       # This requires a custom version of jquery-ui, to avoid the conflict

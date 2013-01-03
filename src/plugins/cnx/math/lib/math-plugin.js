@@ -213,7 +213,9 @@
       if (jQuery.ui && jQuery.ui.tooltip) {
         return editable.obj.tooltip({
           items: ".math-element",
-          content: 'Click anywhere in math to edit it',
+          content: function() {
+            return 'Click anywhere in math to edit it';
+          },
           template: TOOLTIP_TEMPLATE
         });
       } else {
