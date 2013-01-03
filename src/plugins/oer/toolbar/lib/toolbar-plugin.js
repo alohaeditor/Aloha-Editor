@@ -2,29 +2,26 @@
 (function() {
 
   define(['jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub'], function(jQuery, Aloha, Plugin, Ui, PubSub) {
-    var CONTAINER_JQUERY, makeItemRelay;
-    CONTAINER_JQUERY = jQuery('.toolbar');
-    if (CONTAINER_JQUERY.length === 0) {
-      CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container aloha').appendTo('body');
-    }
-    makeItemRelay = function(slot, $buttons) {
+    var $ROOT, adoptedActions, makeItemRelay;
+    $ROOT = jQuery('body');
+    makeItemRelay = function(slot) {
       var ItemRelay;
       ItemRelay = (function() {
 
         function ItemRelay() {}
 
         ItemRelay.prototype.show = function() {
-          return $buttons.removeClass('hidden');
+          return $ROOT.find(".action." + slot).removeClass('hidden');
         };
 
         ItemRelay.prototype.hide = function() {};
 
         ItemRelay.prototype.setActive = function(bool) {
           if (!bool) {
-            $buttons.removeClass('active');
+            $ROOT.find(".action." + slot).removeClass('active');
           }
           if (bool) {
-            return $buttons.addClass('active');
+            return $ROOT.find(".action." + slot).addClass('active');
           }
         };
 
@@ -36,19 +33,19 @@
           if (bool == null) {
             bool = true;
           }
-          if ($buttons.is('.btn')) {
+          if ($ROOT.find(".action." + slot).is('.btn')) {
             if (!bool) {
-              $buttons.attr('disabled', 'disabled');
+              $ROOT.find(".action." + slot).attr('disabled', 'disabled');
             }
             if (bool) {
-              return $buttons.removeAttr('disabled');
+              return $ROOT.find(".action." + slot).removeAttr('disabled');
             }
           } else {
             if (!bool) {
-              $buttons.parent().addClass('disabled');
+              $ROOT.find(".action." + slot).parent().addClass('disabled');
             }
             if (bool) {
-              return $buttons.parent().removeClass('disabled');
+              return $ROOT.find(".action." + slot).parent().removeClass('disabled');
             }
           }
         };
@@ -74,11 +71,9 @@
       })();
       return new ItemRelay();
     };
-    CONTAINER_JQUERY.find('.action').add(CONTAINER_JQUERY.find('a.action').parent()).addClass('disabled missing-a-click-event').on('click', function(evt) {
-      return evt.preventDefault();
-    });
+    adoptedActions = {};
     Ui.adopt = function(slot, type, settings) {
-      var $buttons, evt;
+      var evt;
       evt = $.Event('aloha.toolbar.adopt');
       $.extend(evt, {
         params: {
@@ -93,40 +88,8 @@
         evt.component.adoptParent(toolbar);
         return evt.component;
       }
-      $buttons = CONTAINER_JQUERY.find(".action." + slot);
-      $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event');
-      $buttons.off('click');
-      $buttons.on('click', function(evt) {
-        var $target;
-        evt.preventDefault();
-        Aloha.activeEditable = Aloha.activeEditable || squirreledEditable;
-        $target = jQuery(evt.target);
-        if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
-          this.element = this;
-          return settings.click.bind(this)(evt);
-        }
-      });
-      if (settings.preview) {
-        $buttons.off('mouseenter');
-        $buttons.on('mouseenter', function(evt) {
-          var $target;
-          $target = jQuery(evt.target);
-          if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
-            return settings.preview.bind(this)(evt);
-          }
-        });
-      }
-      if (settings.unpreview) {
-        $buttons.off('mouseleave');
-        $buttons.on('mouseleave', function(evt) {
-          var $target;
-          $target = jQuery(evt.target);
-          if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
-            return settings.unpreview.bind(this)(evt);
-          }
-        });
-      }
-      return makeItemRelay(slot, $buttons);
+      adoptedActions[slot] = settings;
+      return makeItemRelay(slot);
     };
     /*
        register the plugin with unique name
@@ -134,9 +97,41 @@
 
     return Plugin.create("toolbar", {
       init: function() {
-        var changeHeading, headings, squirreledEditable, toolbar;
+        var changeHeading, squirreledEditable, toolbar;
         toolbar = this;
         squirreledEditable = null;
+        jQuery.each(adoptedActions, function(slot, settings) {
+          var selector;
+          selector = ".action." + slot;
+          $ROOT.on('click', selector, function(evt) {
+            var $target;
+            evt.preventDefault();
+            Aloha.activeEditable = Aloha.activeEditable || squirreledEditable;
+            $target = jQuery(evt.target);
+            if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
+              this.element = this;
+              return settings.click.bind(this)(evt);
+            }
+          });
+          if (settings.preview) {
+            $ROOT.on('mouseenter', selector, function(evt) {
+              var $target;
+              $target = jQuery(evt.target);
+              if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
+                return settings.preview.bind(this)(evt);
+              }
+            });
+          }
+          if (settings.unpreview) {
+            return $ROOT.on('mouseleave', selector, function(evt) {
+              var $target;
+              $target = jQuery(evt.target);
+              if (!($target.is(':disabled') || $target.parent().is('.disabled'))) {
+                return settings.unpreview.bind(this)(evt);
+              }
+            });
+          }
+        });
         changeHeading = function(evt) {
           var $el, $newEl, $oldEl, hTag, rangeObject;
           $el = jQuery(this);
@@ -151,16 +146,15 @@
           $newEl.addClass($oldEl.attr('class'));
           return evt.preventDefault();
         };
-        headings = CONTAINER_JQUERY.find(".changeHeading");
-        headings.on('click', changeHeading);
-        headings.add(headings.parent()).removeClass('disabled missing-a-click-event').removeAttr('disabled');
+        $ROOT.on('click', '.action.changeHeading', changeHeading);
         Aloha.bind('aloha-editable-activated', function(event, data) {
           return squirreledEditable = data.editable;
         });
         return Aloha.bind("aloha-selection-changed", function(event, rangeObject) {
-          var $el, currentHeading;
+          var $el, currentHeading, headings;
           $el = Aloha.jQuery(rangeObject.startContainer);
-          currentHeading = CONTAINER_JQUERY.find('.currentHeading');
+          headings = $ROOT.find('.action.changeHeading');
+          currentHeading = $ROOT.find('.action.currentHeading');
           currentHeading.text(headings.first().text());
           currentHeading.on('click', function(evt) {
             return evt.preventDefault();

@@ -1,30 +1,28 @@
 define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
     jQuery, Aloha, Plugin, Ui, PubSub) ->
 
-  CONTAINER_JQUERY = jQuery('.toolbar')
-  if CONTAINER_JQUERY.length == 0
-    CONTAINER_JQUERY = jQuery('<div></div>').addClass('toolbar-container aloha').appendTo('body')
+  $ROOT = jQuery('body') # Could also be configured to some other div
 
-  makeItemRelay = (slot, $buttons) ->
+  makeItemRelay = (slot) ->
     # This class adapts button functions Aloha expects to functions the toolbar
     # uses
     class ItemRelay
       constructor: () ->
-      show: () -> $buttons.removeClass('hidden')
-      hide: () -> #$buttons.addClass('hidden')
+      show: () -> $ROOT.find(".action.#{slot}").removeClass('hidden')
+      hide: () -> #$ROOT.find(".action.#{slot}").addClass('hidden')
       setActive: (bool) ->
-        $buttons.removeClass('active') if not bool
-        $buttons.addClass('active') if bool
+        $ROOT.find(".action.#{slot}").removeClass('active') if not bool
+        $ROOT.find(".action.#{slot}").addClass('active') if bool
       setState: (bool) -> @setActive bool
       enable: (bool=true) ->
         # If it is a button, set the disabled attribute, otherwise find the
         # parent list item and set disabled on that.
-        if $buttons.is('.btn')
-          $buttons.attr('disabled', 'disabled') if !bool
-          $buttons.removeAttr('disabled') if bool
+        if $ROOT.find(".action.#{slot}").is('.btn')
+          $ROOT.find(".action.#{slot}").attr('disabled', 'disabled') if !bool
+          $ROOT.find(".action.#{slot}").removeAttr('disabled') if bool
         else
-          $buttons.parent().addClass('disabled') if !bool
-          $buttons.parent().removeClass('disabled') if bool
+          $ROOT.find(".action.#{slot}").parent().addClass('disabled') if !bool
+          $ROOT.find(".action.#{slot}").parent().removeClass('disabled') if bool
       disable: () -> @enable(false)
       setActiveButton: (a, b) ->
         console && console.log "#{slot} TODO:SETACTIVEBUTTON:", a, b
@@ -34,10 +32,9 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
         console && console.log "#{slot} TODO:FOREGROUND:", a
     return new ItemRelay()
 
-  # Initially disable all the buttons and only enable them when events are attached to them
-  CONTAINER_JQUERY.find('.action').add(CONTAINER_JQUERY.find('a.action').parent())
-  .addClass('disabled missing-a-click-event')
-  .on 'click', (evt) -> evt.preventDefault()
+
+  # Store `{ actionName: action() }` object so we can bind all the clicks when we init the plugin
+  adoptedActions = {}
 
   # Hijack the toolbar buttons so we can customize where they are placed.
   Ui.adopt = (slot, type, settings) ->
@@ -55,36 +52,8 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
       evt.component.adoptParent(toolbar)
       return evt.component
 
-    $buttons = CONTAINER_JQUERY.find(".action.#{slot}")
-    # Since each button was initially disabled, enable it
-    #   also, sine actions in a submenu are an anchor tag, remove the "disabled" in the parent() <li>
-    $buttons.add($buttons.parent()).removeClass('disabled missing-a-click-event')
-    # Remove any stale click handlers
-    $buttons.off('click')
-    $buttons.on 'click', (evt) ->
-      evt.preventDefault()
-      Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
-      # The Table plugin requires this.element to work so it can pop open a
-      # window that selects the number of rows and columns
-      # Also, that's the reason for the bind(@)
-      $target = jQuery(evt.target)
-      if not ($target.is(':disabled') or $target.parent().is('.disabled'))
-        @element = @
-        settings.click.bind(@)(evt)
-    if settings.preview
-      $buttons.off 'mouseenter'
-      $buttons.on 'mouseenter', (evt) ->
-        $target = jQuery(evt.target)
-        if not ($target.is(':disabled') or $target.parent().is('.disabled'))
-          settings.preview.bind(@)(evt)
-    if settings.unpreview
-      $buttons.off 'mouseleave'
-      $buttons.on 'mouseleave', (evt) ->
-        $target = jQuery(evt.target)
-        if not ($target.is(':disabled') or $target.parent().is('.disabled'))
-          settings.unpreview.bind(@)(evt)
-
-    return makeItemRelay slot, $buttons
+    adoptedActions[slot] = settings
+    return makeItemRelay slot
 
   ###
    register the plugin with unique name
@@ -94,6 +63,31 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
 
       toolbar = @
       squirreledEditable = null
+
+      jQuery.each adoptedActions, (slot, settings) ->
+
+        selector = ".action.#{slot}"
+        $ROOT.on 'click', selector, (evt) ->
+          evt.preventDefault()
+          Aloha.activeEditable = Aloha.activeEditable or squirreledEditable
+          # The Table plugin requires this.element to work so it can pop open a
+          # window that selects the number of rows and columns
+          # Also, that's the reason for the bind(@)
+          $target = jQuery(evt.target)
+          if not ($target.is(':disabled') or $target.parent().is('.disabled'))
+            @element = @
+            settings.click.bind(@)(evt)
+        if settings.preview
+          $ROOT.on 'mouseenter', selector, (evt) ->
+            $target = jQuery(evt.target)
+            if not ($target.is(':disabled') or $target.parent().is('.disabled'))
+              settings.preview.bind(@)(evt)
+        if settings.unpreview
+          $ROOT.on 'mouseleave', selector, (evt) ->
+            $target = jQuery(evt.target)
+            if not ($target.is(':disabled') or $target.parent().is('.disabled'))
+              settings.unpreview.bind(@)(evt)
+
 
       changeHeading = (evt) ->
         $el = jQuery(@)
@@ -111,10 +105,7 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
         # Setting the id is commented because otherwise collaboration wouldn't register a change in the document
 
 
-      headings = CONTAINER_JQUERY.find(".changeHeading")
-
-      headings.on 'click', changeHeading
-      headings.add(headings.parent()).removeClass('disabled missing-a-click-event').removeAttr('disabled')
+      $ROOT.on 'click', '.action.changeHeading', changeHeading
 
       Aloha.bind 'aloha-editable-activated', (event, data) ->
         squirreledEditable = data.editable
@@ -124,8 +115,10 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
         # Squirrel away the range because clicking the button changes focus and removed the range
         $el = Aloha.jQuery(rangeObject.startContainer)
 
+        headings = $ROOT.find('.action.changeHeading')
+
         # Set the default text (changeit if we're in a heading later in the loop)
-        currentHeading = CONTAINER_JQUERY.find('.currentHeading')
+        currentHeading = $ROOT.find('.action.currentHeading')
         currentHeading.text(headings.first().text())
         currentHeading.on('click', (evt) -> evt.preventDefault())
 
