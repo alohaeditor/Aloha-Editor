@@ -70,7 +70,10 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     click: () -> insertMath()
 
   triggerMathJax = ($el, cb) ->
-    MathJax.Hub.Queue ["Typeset", MathJax.Hub, $el[0], cb]
+    if MathJax?
+      MathJax.Hub.Queue ["Typeset", MathJax.Hub, $el[0], cb]
+    else
+      console.log 'MathJax was not loaded properly'
 
   cleanupFormula = ($editor, $span, destroy=false) ->
     # If math is empty, remove the box

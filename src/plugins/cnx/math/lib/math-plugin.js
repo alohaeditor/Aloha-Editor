@@ -59,7 +59,11 @@
       }
     });
     triggerMathJax = function($el, cb) {
-      return MathJax.Hub.Queue(["Typeset", MathJax.Hub, $el[0], cb]);
+      if (typeof MathJax !== "undefined" && MathJax !== null) {
+        return MathJax.Hub.Queue(["Typeset", MathJax.Hub, $el[0], cb]);
+      } else {
+        return console.log('MathJax was not loaded properly');
+      }
     };
     cleanupFormula = function($editor, $span, destroy) {
       if (destroy == null) {
