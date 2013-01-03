@@ -79,8 +79,9 @@ define([
 	 * @return {String}
 	 */
 	function outerHtml(node) {
-		if (typeof node.outerHTML !== 'undefined') {
-			return node.outerHTML;
+		var html = node.outerHTML;
+		if (typeof html !== 'undefined') {
+			return html;
 		}
 		try {
 			return Serializer ? Serializer.serializeToString(node) : node.xml;
