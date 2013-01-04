@@ -49,3 +49,11 @@
     height: 16px;
     width: 16px;
 }
+
+.aloha-block.title,
+.aloha-block.title:focus,
+.aloha-block.title:hover {
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0;
+}
