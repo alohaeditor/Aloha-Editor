@@ -223,8 +223,8 @@ define([
 	 * @type {Array.<phase>}
 	 */
 	var phases = [
-		// Phase 0: Waiting for initialization to begin.  This is the state
-		//          before at load-time.
+		// Phase 0: Waiting for initialization to begin.  This is the state at
+		//          load-time.
 		{
 			fn: null,
 			event: null,
@@ -232,14 +232,14 @@ define([
 		},
 
 		// Phase 1: DOM is ready; performing compatibility checks, registering
-		//          basic events, and initialize logging.
+		//          basic events, and initializing logging.
 		{
 			fn: initAloha,
 			event: null,
 			deferred: null
 		},
 
-		// Phase 2: Initial checks have passed; Initialize repository manger.
+		// Phase 2: Initial checks have passed; Initializing repository manger.
 		{
 			fn: initRepositoryManager,
 			event: null,
@@ -247,7 +247,7 @@ define([
 		},
 
 		// Phase 3: Repository manager is ready for use; commence
-		//          initialization of all configured (or default) plugins.
+		//          initialization of configured or default plugins.
 		{
 			fn: initPluginManager,
 			event: 'aloha-plugins-loaded',
@@ -255,10 +255,10 @@ define([
 		},
 
 		// Phase 4: Plugins have all begun their initialization process, but it
-		//          is not necessary that their have completed.  Start editable
+		//          is not necessary that they have completed.  Start
 		//          initializing editable, along with their scaffolding UI.
 		//          Editables will not be fully initialized however, until
-		//          plugins have fully finished initialization.
+		//          plugins have finished initialization.
 		{
 			fn: initEditables,
 			event: null,
