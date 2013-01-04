@@ -1,6 +1,6 @@
 define({
 	"root":  {
-		"button.addcharacter.tooltip": "pick special characters"
+		"button.textcolor.tooltip": "Change text color"
 	},
 		"ca": true,
 		"de": true,

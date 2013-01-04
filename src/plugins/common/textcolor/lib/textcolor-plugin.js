@@ -1,4 +1,4 @@
-/* characterpicker-plugin.js is part of Aloha Editor project http://aloha-editor.org
+/* textcolor-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
@@ -36,7 +36,7 @@ define([
 	'i18n!characterpicker/nls/i18n',
 	'i18n!aloha/nls/i18n'
 ], function(Aloha,
-            jQuery,
+			jQuery,
 			Plugin,
 			Ui,
 			Button,
@@ -101,14 +101,19 @@ define([
 			// focus on the selected swatch
 			self.$node.find('.focused').removeClass('focused');
 
-			var selectedColor = $formatButton.find(".aloha-icon-colorpicker").css("background-color");
+			// select the swatch matching the selected color
+			var selectedColor = $formatButton.find(".aloha-icon-textcolor").css("background-color");
 			self.$node.find('td').each(function() {
-				if (jQuery(this).css('background-color') === selectedColor) {
-					jQuery(this).addClass('focused');
+				if ( jQuery( jQuery(this).find('div') ).css('background-color') === selectedColor ) {
+					jQuery(this).addClass( 'focused' );
 					return false;
 				}
 			});
 
+			// select the first swatch if no matching swatch found
+			if ( self.$node.find('.focused').length < 1 ) {
+				jQuery( self.$node.find('td')[0] ).addClass( 'focused' );
+			}
 
 			self._overlayActive = true;
 		},
@@ -134,7 +139,7 @@ define([
 				e.stopPropagation();
 			});
 
-			var buttonSelector = '.aloha-icon-colorpicker';
+			var buttonSelector = '.aloha-icon-textcolor';
 			// hide the layer if user clicks anywhere in the body
 			jQuery('body').click(function (e) {
 				if (!self._overlayActive) {
@@ -166,9 +171,11 @@ define([
 			var $current, $next, $prev, $nextRow, $prevRow;
 			var movements = {
 				13: function select() {
-					$current = self.$node.find('.focused');
 					self.hide();
-					onSelectCallback($current.css('background-color'));
+
+					$current = self.$node.find('.focused');
+					var swatch = $current.find('div');
+					self._selectColor(swatch);
 				},
 				37: function left() {
 					$current = self.$node.find('.focused');
@@ -225,6 +232,17 @@ define([
 				self.hide();
 			});
 		},
+		_selectColor: function(swatch) {
+			var self = this;
+
+			if (swatch.hasClass('removecolor')) {
+				var color = "removecolor";
+			} else {
+				var color = swatch.css('background-color');
+			}
+
+			self.onSelectCallback(color);
+		},
 		_createSwatchButtons: function (colors) {
 			var self = this;
 			// TODO: shouldn't we do jQuery('<div>' + characters + '</div>').text() here?
@@ -232,7 +250,7 @@ define([
 			var i = 0;
 			var swatch;
 			while ((swatch = colors[i])) {
-				// make a new row every 15 characters
+				// make a new row every 15 colors
 				if (0 !== i && ((i % 15) === 0)) {
 					swatchTable.push('</tr><tr>');
 				}
@@ -241,16 +259,16 @@ define([
 				};
 
 				if ( isColorValue(swatch) ) {
-					swatchTable.push('<td unselectable="on" style="background-color: ' + swatch + '"></td>');
+					swatchTable.push('<td unselectable="on"><div style="background-color: ' + swatch + '"></div></td>');
 				} else {
-					swatchTable.push('<td unselectable="on" class="' + swatch + '"></td>');
+					swatchTable.push('<td unselectable="on"><div class="' + swatch + '"></div></td>');
 				}
 
 				i++;
 			}
 
 			// add remove color option
-			swatchTable.push('<td unselectable="on" class="removecolor">X</td>');
+			swatchTable.push('<td unselectable="on"><div class="removecolor">X</div></td>');
 
 			swatchTable.push('</tr>');
 			self.$tbody
@@ -261,40 +279,40 @@ define([
 			}).delegate('td', 'mouseout', function () {
 				jQuery(this).removeClass('mouseover');
 			}).delegate('td', 'click', function (e) {
-				self.$node.hide();
+				self.hide();
 
-				if (jQuery(this).hasClass('removecolor')) {
-					var color = "removecolor";
-				} else {
-					var color = jQuery(this).css('background-color');
-				}
-
-				self.onSelectCallback(color);
+				var swatch = jQuery(this).find('div');
+				self._selectColor(swatch);
 			});
 		}
 	};
 
-	return Plugin.create('colorpicker', {
+	return Plugin.create('textcolor', {
 		_constructor: function () {
-			this._super('colorpicker');
+			this._super('textcolor');
 		},
 
 		/**
 		 * Default configuration
 		 */
-		config: [ '#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder' ],
+		config: [ '#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder',  '#000000', '#993300',
+				 		'#333300', '#000080', '#333399', '#333333', '#800000', '#FF6600', '#FFFF99', '#CCFFFF',
+				 		'#99CCFF', '#FFFFFF', '#808000', '#008000', '#008080', '#0000FF', '#666699', '#808080',
+				 		'#FF0000', '#FF9900', '#99CC00', '#339966', '#33CCCC', '#3366FF', '#800080', '#999999',
+				 		'#FF00FF', '#FFCC00', '#FFFF00', '#00FF00', '#00FFFF', '#00CCFF', '#993366', '#C0C0C0',
+				 		'#FF99CC', '#FFCC99' ],
 
 		init: function () {
 			var self = this;
 
 			if ( typeof Aloha.settings.plugins != 'undefined'
-				&& typeof Aloha.settings.plugins.colorpicker != 'undefined' ) {
-				self.settings = Aloha.settings.plugins.colorpicker;
+				&& typeof Aloha.settings.plugins.textcolor != 'undefined' ) {
+				self.settings = Aloha.settings.plugins.textcolor;
 			}
 
 			this._colorPickerButton = Ui.adopt("colorPicker", Button, {
-				tooltip: i18n.t('button.colorpicker.tooltip'),
-				icon: "aloha-icon-colorpicker",
+				tooltip: i18n.t('button.textcolor.tooltip'),
+				icon: "aloha-icon-textcolor",
 				scope: 'Aloha.continuoustext',
 				click: function() {
 					if (false !== self.swatchOverlay) {
@@ -339,7 +357,7 @@ define([
 			// such may have its own overlay.
 			var config = this.getEditableConfig(editable.obj),
 			    overlay;
-			if ( ! config ) {
+			if ( ! config || config.length < 1 ) {
 				return false;
 			}
 			// We cache the overlay by configuration. If all editables
@@ -362,11 +380,9 @@ define([
 	 */
 	function onColorSelect (color) {
 		if (Aloha.activeEditable) {
-			//Select the range that was selected before the overlay was opened
-			_savedRange.select();
 
 			//Change the button color
-			jQuery('.aloha-icon-colorpicker').css('background-color', color);
+			jQuery('.aloha-icon-textcolor').css('background-color', color);
 
 			if (color === "removecolor") {
 				var effectiveMarkup;
@@ -386,20 +402,15 @@ define([
 
 	// extracted selection changed function
 	function onSelectionChanged(colorPickerPlugin, rangeObject) {
-		var effectiveMarkup;
-		var selectedColor;
 
-		for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-			effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
+		// The `execCommand` runs asynchronously.
+		// So it fires the selection change event, before actually applying the forecolor.
+		setTimeout(function() {
+			var selectedColor = jQuery(rangeObject.endContainer.parentElement).css('color');
 
-			if (effectiveMarkup.nodeName === "SPAN") {
-				selectedColor = jQuery(effectiveMarkup).css('color');
-				break;
-			}
-			selectedColor = jQuery(effectiveMarkup).css('color');
-		}
+			jQuery('.aloha-icon-textcolor').css('background-color', selectedColor);
+		}, 20);
 
-		jQuery('.aloha-icon-colorpicker').css('background-color', selectedColor);
 	}
 
 });

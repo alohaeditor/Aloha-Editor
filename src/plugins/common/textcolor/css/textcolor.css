@@ -7,6 +7,7 @@
     left: 0;
     border: 1px solid #afafaf !important;
     border-collapse: collapse !important;
+		background: #ffffff;
     z-index: 999999;
 }
 
@@ -15,22 +16,31 @@
 }
 
 .aloha-color-picker-overlay td {
+    font-size: 1em !important;
+    padding: 0.25em !important;
+		background-color: #ffffff;
+		border: 0;
+}
+
+.aloha-color-picker-overlay td div {
     width: 1em !important;
     height: 1em !important;
     border: 1px solid #afafaf !important;
-    font-size: 1em !important;
     padding: 0.05em !important;
-		background-color: #ffffff;
 }
 
-.aloha-color-picker-overlay td.mouseover {
+.aloha-color-picker-overlay td.mouseover div {
+		border: 1px solid #000000 !important
+}
+
+.aloha-color-picker-overlay td.focused div {
     border: 1px solid #000000 !important;
-}
-
-.aloha-color-picker-overlay td.focused {
-    border: 1px solid #407bcf !important;
 }
 
 .aloha .ui-icon.aloha-icon-colorpicker {
 	background-color: #ffffff;
+}
+
+.greenborder {
+	background-color: #99CCFF;
 }

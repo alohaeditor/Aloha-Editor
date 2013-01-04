@@ -200,6 +200,7 @@
 				editables: {
 					// configure a different set of colors for editable #one
 					'#top-text' : []
+					'#content' : []
 				}
 			}
 		}
