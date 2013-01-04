@@ -341,8 +341,10 @@ define([
 			});
 
 			PubSub.sub('aloha.floating.changed', function(message) {
-				self.swatchOverlay.offset = message.position.offset;
-				self.swatchOverlay.$node.css(calculateOffset(self.swatchOverlay, self._colorPickerButton.element));
+				if (self.swatchOverlay) {
+					self.swatchOverlay.offset = message.position.offset;
+					self.swatchOverlay.$node.css(calculateOffset(self.swatchOverlay, self._colorPickerButton.element));
+				}
 			});
 
 			// add the event handler for context selection change
@@ -381,10 +383,14 @@ define([
 	function onColorSelect (color) {
 		if (Aloha.activeEditable) {
 
+			//Select the range that was selected before the overlay was opened
+			_savedRange.select();
+
 			//Change the button color
 			jQuery('.aloha-icon-textcolor').css('background-color', color);
 
 			if (color === "removecolor") {
+				console.log(_savedRange);
 				var effectiveMarkup;
 				for (i = 0; i < _savedRange.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = _savedRange.markupEffectiveAtStart[i];
@@ -406,7 +412,7 @@ define([
 		// The `execCommand` runs asynchronously.
 		// So it fires the selection change event, before actually applying the forecolor.
 		setTimeout(function() {
-			var selectedColor = jQuery(rangeObject.endContainer.parentElement).css('color');
+			var selectedColor = jQuery(rangeObject.endContainer).parent().css('color');
 
 			jQuery('.aloha-icon-textcolor').css('background-color', selectedColor);
 		}, 20);
