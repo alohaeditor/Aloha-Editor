@@ -4,16 +4,14 @@ define [
   'jquery',
   'block/block',
   'block/blockmanager',
-  'aloha/ephemera',
-  'util/strings'
+  'aloha/ephemera'
 ], (
   Aloha,
   Plugin,
   $,
   Block,
   BlockManager,
-  Ephemera,
-  Strings
+  Ephemera
 ) ->
   Ephemera.classes('aloha-block', 'aloha-block-handle', 'aloha-block-TitleBlock', 'aloha-block-active', 'aloha-block-highlighted')
   Ephemera.attributes('data-aloha-block-type', 'contenteditable')
@@ -40,6 +38,27 @@ define [
 
       Aloha.bind 'aloha-editable-created', ($event, editable) ->
         editable.obj.find('div.title:not(.aloha-block)').alohaBlock('aloha-block-type': 'TitleBlock')
+        if editable.obj.is('.title-editor')
+          # Glue key handler to title editor. Remove the old handler, this
+          # editor does not care for all those other handlers
+          editable.obj.off('keydown').on 'keydown', null, 'return', (e) ->
+            e.preventDefault()
+            $p = $('<p><br /></p>')
+            # our parent is the title div
+            editable.obj.parent().after($p)
+
+            # Focus new paragraph
+            range = document.createRange();
+            range.setStart($p[0], 0);
+            range.setEnd($p[0], 0);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+
+            # Let aloha know what we've done
+            r = new GENTICS.Utils.RangeObject()
+            r.update()
+            Aloha.Selection.rangeObject = r
+            false
 
     toString: ->
       "title"
