@@ -48,16 +48,10 @@ define [
             editable.obj.parent().after($p)
 
             # Focus new paragraph
-            range = document.createRange();
-            range.setStart($p[0], 0);
-            range.setEnd($p[0], 0);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-
-            # Let aloha know what we've done
-            r = new GENTICS.Utils.RangeObject()
-            r.update()
-            Aloha.Selection.rangeObject = r
+            range = new GENTICS.Utils.RangeObject()
+            range.startContainer = range.endContainer = $p[0]
+            range.startOffset = range.endOffset = 0
+            range.select()
             false
 
     toString: ->

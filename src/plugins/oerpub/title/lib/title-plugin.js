@@ -34,18 +34,14 @@
           });
           if (editable.obj.is('.title-editor')) {
             return editable.obj.off('keydown').on('keydown', null, 'return', function(e) {
-              var $p, r, range;
+              var $p, range;
               e.preventDefault();
               $p = $('<p><br /></p>');
               editable.obj.parent().after($p);
-              range = document.createRange();
-              range.setStart($p[0], 0);
-              range.setEnd($p[0], 0);
-              window.getSelection().removeAllRanges();
-              window.getSelection().addRange(range);
-              r = new GENTICS.Utils.RangeObject();
-              r.update();
-              Aloha.Selection.rangeObject = r;
+              range = new GENTICS.Utils.RangeObject();
+              range.startContainer = range.endContainer = $p[0];
+              range.startOffset = range.endOffset = 0;
+              range.select();
               return false;
             });
           }
