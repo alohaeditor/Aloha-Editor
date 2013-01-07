@@ -59,7 +59,7 @@ define([
 			// this is content deliberately placed by Aloha and should not be
 			// cleaned.
 			if ($content.find('.aloha-block').length) {
-				return content.html();
+				return $content.html();
 			}
 
 			TableUtils.prepareContent($content);

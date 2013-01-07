@@ -36,11 +36,12 @@ define([
 	'aloha/block-jump',
 	'aloha/ephemera',
 	'util/dom2',
-	'PubSub'
+	'PubSub',
+	'aloha/copypaste'
 ], function (
 	Aloha,
 	Class,
-	jQuery,
+	$,
 	PluginManager,
 	Selection,
 	Markup,
@@ -49,10 +50,12 @@ define([
 	BlockJump,
 	Ephemera,
 	Dom,
-	PubSub
+	PubSub,
+	CopyPaste
 ) {
 	'use strict';
 
+	var jQuery = $;
 	var unescape = window.unescape,
 		GENTICS = window.GENTICS,
 
@@ -98,6 +101,69 @@ define([
 			contenthandler: Aloha.settings.contentHandler.smartContentChange
 		}, editable);
 	}
+
+	/**
+	 * List of observed key, mapped against their keycodes.
+	 *
+	 * @type {object<number, string>}
+	 * @const
+	 */
+	var KEYCODES = {
+		65: 'a'
+	};
+
+	/**
+	 * Handlers for various key combos.
+	 * Each handler ought to return false if they do not want the event to
+	 * continue propagating.
+	 */
+	var keyBindings = {
+		'ctrl+a': function () {
+			var editable = CopyPaste.getEditableAt(CopyPaste.getRange());
+			if (editable) {
+				CopyPaste.selectAllOf(editable.obj[0]);
+				return false;
+			}
+		}
+	}
+
+	/**
+	 * Gets the name of the modifier key if is in effect for the given event.
+	 *
+	 * eg: <Ctrl>+c
+	 *
+	 * @param {jQuery.Event} $event
+	 * @return {string|null} Modifier string or null if no modifier is in
+	 *                       effect.
+	 *                      
+	 */
+	function keyModifier($event) {
+		return $event.altKey ? 'alt' :
+		       $event.ctrlKey ? 'ctrl' :
+		       $event.shiftKey ? 'shift' : null;
+	}
+
+	/**
+	 * Handles keydown events that are fired on the page's document.
+	 *
+	 * @param {jQuery.Event) $event
+	 * @return {boolean} Returns false to stop propagation; undefined otherwise.
+	 */
+	function onKeydown($event) {
+		if (!Aloha.activeEditable) {
+			return;
+		}
+		var key = KEYCODES[$event.which];
+		if (key) {
+			var modifier = keyModifier($event);
+			var combo = (modifier ? modifier + '+' : '') + key;
+			if (keyBindings[combo]) {
+				return keyBindings[combo]($event);
+			}
+		}
+	}
+
+	$(document).keydown(onKeydown);
 
 	/**
 	 * Editable object

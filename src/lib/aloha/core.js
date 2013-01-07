@@ -223,8 +223,8 @@ define([
 	 * @type {Array.<phase>}
 	 */
 	var phases = [
-		// Phase 0: Waiting for initialization to begin.  This is the state
-		//          before at load-time.
+		// Phase 0: Waiting for initialization to begin.  This is the state at
+		//          load-time.
 		{
 			fn: null,
 			event: null,
@@ -232,14 +232,14 @@ define([
 		},
 
 		// Phase 1: DOM is ready; performing compatibility checks, registering
-		//          basic events, and initialize logging.
+		//          basic events, and initializing logging.
 		{
 			fn: initAloha,
 			event: null,
 			deferred: null
 		},
 
-		// Phase 2: Initial checks have passed; Initialize repository manger.
+		// Phase 2: Initial checks have passed; Initializing repository manger.
 		{
 			fn: initRepositoryManager,
 			event: null,
@@ -247,7 +247,7 @@ define([
 		},
 
 		// Phase 3: Repository manager is ready for use; commence
-		//          initialization of all configured (or default) plugins.
+		//          initialization of configured or default plugins.
 		{
 			fn: initPluginManager,
 			event: 'aloha-plugins-loaded',
@@ -255,10 +255,10 @@ define([
 		},
 
 		// Phase 4: Plugins have all begun their initialization process, but it
-		//          is not necessary that their have completed.  Start editable
+		//          is not necessary that they have completed.  Start
 		//          initializing editable, along with their scaffolding UI.
 		//          Editables will not be fully initialized however, until
-		//          plugins have fully finished initialization.
+		//          plugins have finished initialization.
 		{
 			fn: initEditables,
 			event: null,
@@ -456,28 +456,39 @@ define([
 		},
 
 		/**
-		 * Get the nearest editable parent of the DOM element contained in the
+		 * Gets the nearest editable parent of the DOM element contained in the
 		 * given jQuery object.
 		 *
-		 * @param {jQuery} $obj jQuery unit set containing DOM element.
+		 * @param {jQuery} $element jQuery unit set containing DOM element.
 		 * @return {Aloha.Editable} Editable, or null if none found.
 		 */
-		getEditableHost: function ($obj) {
-			if (!$obj) {
-				return null;
-			}
-			var $editable;
-			$obj.parents().andSelf().each(function () {
+		getEditableHost: (function () {
+			var getEditableOf = function (editable) {
 				var i;
 				for (i = 0; i < Aloha.editables.length; i++) {
-					if (Aloha.editables[i].originalObj.get(0) === this) {
-						$editable = Aloha.editables[i];
-						return false;
+					if (Aloha.editables[i].originalObj[0] === editable) {
+						return Aloha.editables[i];
 					}
 				}
-			});
-			return $editable;
-		},
+				return null;
+			};
+
+			return function ($element) {
+				if (!$element || 0 === $element.length) {
+					return null;
+				}
+				var editable = getEditableOf($element[0]);
+				if (!editable) {
+					$element.parents().each(function (__unused__, node) {
+						editable = getEditableOf(node);
+						if (editable) {
+							return false;
+						}
+					});
+				}
+				return editable;
+			};
+		}()),
 
 		/**
 		 * Logs a message to the console.

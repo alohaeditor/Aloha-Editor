@@ -25,7 +25,7 @@
  * recipients can access the Corresponding Source.
  *
  * @overview:
- * The paste plugin intercepts all browser paste events that target aloha-
+ * The paste plugin intercepts all browser paste events that target aloha
  * editables, and redirects the events into a hidden div.  Once pasting is done
  * into this div, its contents will be processed by registered content handlers
  * before being copied into the active editable, at the current range.
@@ -36,14 +36,16 @@ define([
 	'aloha/plugin',
 	'aloha/command',
 	'contenthandler/contenthandler-utils',
-	'aloha/console'
+	'aloha/console',
+	'aloha/copypaste'
 ], function (
 	$,
 	Aloha,
 	Plugin,
 	Commands,
 	ContentHandlerUtils,
-	console
+	Console,
+	CopyPaste
 ) {
 	'use strict';
 
@@ -96,62 +98,30 @@ define([
 	var ieRangeBeforePaste = null;
 
 	/**
-	 * Retrieve the editable host in which the given range is contained.
+	 * Set the selection to the given range and focus on the editable inwhich
+	 * the selection is in (if any).
 	 *
-	 * @param {WrappedRange} range
-	 * @return {jQuery.<HTMLElement>} The editable host element.
-	 */
-	function getEditableAtRange(range) {
-		return Aloha.getEditableHost($(range.commonAncestorContainer));
-	}
-
-	/**
-	 * Set the selection to the given range
-	 *
-	 * @param {WrappedRange} range
-	 */
-	function setSelection(range) {
-		Aloha.getSelection().removeAllRanges();
-		var newRange = Aloha.createRange();
-		newRange.setStart(range.startContainer, range.startOffset);
-		newRange.setEnd(range.endContainer, range.endOffset);
-		Aloha.getSelection().addRange(newRange);
-	}
-
-	/**
-	 * Returns the selection back to the user's selection that was stored
-	 * during before calling redirectPaste().
+	 * This function is used to restore the selection to what it was before
+	 * calling redirectPaste() at the offset of the pasting process.
 	 *
 	 * @param {WrappedRange} range The range to restore.
 	 */
 	function restoreSelection(range) {
-		var editable = getEditableAtRange(range);
+		var editable = CopyPaste.getEditableAt(range);
 		if (editable) {
 			editable.obj.focus();
 		}
-		setSelection(range);
-	}
-
-	/**
-	 * Retrieves the current range.
-	 *
-	 * @return {WrappedRange}
-	 */
-	function getRange() {
-		var selection = Aloha.getSelection();
-		return (selection._nativeSelection._ranges.length
-				? selection.getRangeAt(0)
-				: null);
+		CopyPaste.setSelectionAt(range);
 	}
 
 	/**
 	 * Redirects a paste event from the given range into a specified target
 	 * element.
 	 *
-	 * This function is used to cause paste events that are targeted to
-	 * editables to land instead in an invisible clipboard div that serves as a
-	 * staging area for us to handle the incoming content before actually
-	 * placing it into the intended editable.
+	 * This function is used to cause paste events that are targeting to
+	 * editables to instead land in an invisible clipboard div that serves as a
+	 * staging area to handle the incoming content before actually placing it
+	 * into the intended editable.
 	 *
 	 * @param {WrappedRange} range The range at the time that the paste event
 	 *                             was initiated.
@@ -160,21 +130,21 @@ define([
 	 *                                       is to be directed to.
 	 */
 	function redirect(range, $target) {
-		// The target element is moved to the current scroll position in order
-		// to avoid jittering the viewport when the pasted content moves
-		// between where the range is and target.
+		// Because moving the target element to the current scroll position
+		// avoids jittering the viewport when the pasted content moves between
+		// where the range is and target.
 		$target.css({
 			top: $WINDOW.scrollTop(),
 			left: $WINDOW.scrollLeft() - 200 // Why 200?
 		}).contents().remove();
 
-		var from = getEditableAtRange(range);
+		var from = CopyPaste.getEditableAt(range);
 		if (from) {
 			from.obj.blur();
 		}
 
-		// Place the selection inside the target element.
-		setSelection({
+		// Because the selection should end up inside the target element.
+		CopyPaste.setSelectionAt({
 			startContainer: $target[0],
 			endContainer: $target[0],
 			startOffset: 0,
@@ -265,7 +235,7 @@ define([
 		if (range) {
 			var content = $clipboard.html();
 
-			// Because IE inserts and an insidious nbsp into the content during
+			// Because IE inserts an insidious nbsp into the content during
 			// pasting that needs to be removed.  Leaving it would otherwise
 			// result in an empty paragraph being created right before the
 			// pasted content when the pasted content is a paragraph.
@@ -279,7 +249,7 @@ define([
 			if (Aloha.queryCommandSupported('insertHTML')) {
 				Aloha.execCommand('insertHTML', false, content);
 			} else {
-				console.error('Common.Paste', 'Command "insertHTML" not ' +
+				Console.error('Common.Paste', 'Command "insertHTML" not ' +
 				                              'available. Enable the plugin ' +
 				                              '"common/commands".');
 			}
@@ -302,15 +272,14 @@ define([
 	 *                            is completed.
 	 */
 	function onPaste($event, range, onInsert) {
-		// Manually unset the metaKey property so that the
-		// smartContentChange method will not process this event if the
-		// metaKey property happens to be set.
+		// Because we do not want the smartContentChange method to process this
+		// event if the metaKey property had been set.
 		$event.metaKey = null;
 		$event.stopPropagation();
 
-		// Allows for a small execution window to ensure that the pasted
-		// content has been inserted into the paste div before we attempt to
-		// retrieve it.
+		// Because yeiling here allows for a small execution window to ensure
+		// that the pasted content has been inserted into the paste div before
+		// we attempt to retrieve it.
 		window.setTimeout(function () {
 			paste($CLIPBOARD, range, onInsert);
 			Aloha.activeEditable.smartContentChange($event);
@@ -333,19 +302,18 @@ define([
 	 * @param {boolean} hasClipboardAccess Whether clipboard access is possible.
 	 */
 	function prepare($editable, hasClipboardAccess) {
-		// FIXME: This hack is currently always being used in IE, because the
-		//        alternative method, which relies on clipboard access, leads
-		//        to incorrect cursor positions after pasting.
-		//if (IS_IE && !hasClipboardAccess) {
+		// FIXME: Because the alternative method, which relies on clipboard
+		//        access, leads to incorrect cursor positions after pasting.
+		// if (IS_IE && !hasClipboardAccess) {
 		if (IS_IE) {
 			$editable.bind('beforepaste', function ($event) {
-				ieRangeBeforePaste = getRange();
+				ieRangeBeforePaste = CopyPaste.getRange();
 				redirect(ieRangeBeforePaste, $CLIPBOARD);
 				$event.stopPropagation();
 			});
 		} else {
 			$editable.bind('paste', function ($event) {
-				var range = getRange();
+				var range = CopyPaste.getRange();
 				redirect(range, $CLIPBOARD);
 				if (IS_IE) {
 					var tmpRange = document.selection.createRange();
@@ -371,7 +339,7 @@ define([
 
 			// Bind a handler to the paste event of the pasteDiv to get the
 			// pasted content (but do this only once, not for every editable)
-			//if (IS_IE && !hasClipboardAccess) {
+			// if (IS_IE && !hasClipboardAccess) {
 			if (IS_IE) {
 				$CLIPBOARD.bind('paste', function ($event) {
 					onPaste($event, ieRangeBeforePaste, function () {
@@ -387,7 +355,7 @@ define([
 		 * @param pasteHandler paste handler to be registered
 		 */
 		register: function (pasteHandler) {
-			console.deprecated('Plugins.Paste', 'register() for pasteHandler' +
+			Console.deprecated('Plugins.Paste', 'register() for pasteHandler' +
 			                                    ' is deprecated.  Use the ' +
 			                                    'ContentHandler Plugin ' +
 			                                    'instead.');

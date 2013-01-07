@@ -25,7 +25,7 @@
  * recipients can access the Corresponding Source.
  *
  * @overview
- * Implements floating animation effect for UI surfaces.
+ * Implements position and floating animation effect for UI surfaces.
  */
 define([
 	'jquery',
@@ -45,8 +45,8 @@ define([
 	'use strict';
 
 	/**
-	 * The distance the floating surface should maintain from the editable it
-	 * is floating to.
+	 * The distance that the floating surface should maintain from the editable
+	 * it is floating to.
 	 *
 	 * @type {string}
 	 * @const
@@ -84,17 +84,20 @@ define([
 	                   : 'fixed';
 
 	/**
-	 * The position of the floating menu
+	 * The position of the floating menu.
 	 *
-	 * So we can float dialoges (eg special char picker) with the floating menu
-	*/
+	 * Used to float dialoges (eg special character-picker) with the floating
+	 * menu.
+	 *
+	 * @type {object<string,*>}
+	 */
 	var POSITION = {
 		style: POSITION_STYLE,
 		offset: {
 			top: 0,
 			left: 0
-			}
-		};
+		}
+	};
 
 	/**
 	 * Animates a surface element to the given position.
@@ -113,7 +116,7 @@ define([
 			position.top += $WINDOW.scrollTop();
 			position.left += $WINDOW.scrollLeft();
 		}
-		
+
 		POSITION.offset = position;
 
 		$element.stop().animate(position, duration, function () {
@@ -223,7 +226,7 @@ define([
 	}
 
 	/**
-	 * Float a surface to the appropriate position around the given editable.
+	 * Floats a surface to the appropriate position around the given editable.
 	 *
 	 * @param {Surface} surface The surface to be positioned.
 	 * @param {Aloha.Editable} editable The editable around which the surface
@@ -241,25 +244,26 @@ define([
 		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
 		              + (parseInt($('body').css('paddingTop'), 10) || 0);
 		var $element = surface.$element;
-		var surfaceOrientation = $element.offset();
-		var editableOrientation = editable.obj.offset();
+		var offset = editable.obj.offset();
+		var top = offset.top;
+		var left = offset.left;
 		var scrollTop = $WINDOW.scrollTop();
-		var availableSpace = editableOrientation.top - scrollTop - topGutter;
-		var left = editableOrientation.left;
-		var horizontalOverflow = left + $element.width() - $WINDOW.width()
-		                       - DISTANCE;
+		var availableSpace = top - scrollTop - topGutter;
+		var horizontalOverflow = left + $element.width() - $WINDOW.width();
 
 		if (horizontalOverflow > 0) {
-			left -= horizontalOverflow;
+			left = Math.max(0, left - horizontalOverflow);
 		}
 
 		if (availableSpace >= $element.height()) {
-			editableOrientation.top -= scrollTop;
-			floatAbove($element, editableOrientation, duration, callback);
+			floatAbove($element, {
+				top: top - scrollTop,
+				left: left
+			}, duration, callback);
 		} else if (availableSpace + $element.height() >
-				editableOrientation.top + editable.obj.height()) {
+				top + editable.obj.height()) {
 			floatBelow($element, {
-				top: editableOrientation.top + editable.obj.height(),
+				top: top + editable.obj.height(),
 				left: left
 			}, duration, callback);
 		} else {

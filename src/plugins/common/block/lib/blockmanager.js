@@ -36,7 +36,7 @@ define([
 	'util/maps'
 ], function (
 	Aloha,
-	jQuery,
+	$,
 	Scopes,
 	Observable,
 	Registry,
@@ -44,10 +44,11 @@ define([
 	Strings,
 	Maps
 ) {
-	"use strict";
+	'use strict';
 
-	var
-		GENTICS = window.GENTICS;
+	var jQuery = $;
+
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * This is the block manager, which is the central entity for maintaining the lifecycle of blocks.
@@ -135,7 +136,7 @@ define([
 			this._registerEventHandlersForDeterminingCurrentlyActiveBlock();
 			this._registerEventHandlersForBlockDeletion();
 			this._registerEventHandlersForCutCopyPaste();
-			this._registerEVentHandlersForEditableActivated();
+			this._registerEventHandlersForEditableActivated();
 
 			// TODO: not sure if we still need the code below. it is somehow related to caret handling
 			Aloha.bind('aloha-selection-changed', function (evt, selection, originalEvent) {
@@ -327,7 +328,7 @@ define([
 		 * When editables are activated (e.g. by moving the focus with Tab or Shift-Tab or programmatically),
 		 * we need to activate the enclosing blocks. 
 		 */
-		_registerEVentHandlersForEditableActivated: function () {
+		_registerEventHandlersForEditableActivated: function () {
 			var that = this;
 			Aloha.bind('aloha-editable-activated', function (event, arg) {
 				if (arg.editable) {
