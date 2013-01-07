@@ -33,7 +33,7 @@ define([
 	'ui/button',
 	'ui/floating',
 	'PubSub',
-	'i18n!characterpicker/nls/i18n',
+	'i18n!textcolor/nls/i18n',
 	'i18n!aloha/nls/i18n'
 ], function (Aloha,
 			jQuery,
