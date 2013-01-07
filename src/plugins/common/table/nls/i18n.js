@@ -14,6 +14,7 @@ define({
 		"button.addrowafter.tooltip": "Add Row after",
 		"button.delrows.tooltip": "Delete Rows",
 		"button.caption.tooltip": "Table caption",
+		"button.naturalfit.tooltip": "Reset table sizing",
 		"empty.caption": "Table caption",
 		"button.removeFormat.tooltip": "Remove formatting",
 		"button.removeFormat.text": "Remove formatting",
