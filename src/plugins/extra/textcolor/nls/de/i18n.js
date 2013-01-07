@@ -1,3 +1,3 @@
 define({
-	"button.textcolor.tooltip": "Textfarbe ändern"
+	"button.addcharacter.tooltip": "Sonderzeichen wählen"
 });
