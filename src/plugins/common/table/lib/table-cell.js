@@ -73,13 +73,14 @@ function (jQuery, Utils) {
 		});
 
 		$wrapper.bind('mousedown', function ($event) {
-			// ugly workaround for ext-js-adapter problem in
-			// ext-jquery-adapter-debug.js:1020
+			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
 			if ($event.currentTarget) {
 				$event.currentTarget.indexOf = function () {
 					return -1;
 				};
 			}
+
+			cell._editableMouseDown($event);
 
 			cell.tableObj.selection.baseCellPosition = [cell._virtualY(), cell._virtualX()];
 
@@ -199,7 +200,8 @@ function (jQuery, Utils) {
 		if (wrapper.length) {
 			// unwrap cell contents without re-creating dom nodes
 			wrapper.parent().append(
-			wrapper.contents());
+				wrapper.contents()
+			);
 
 			// remove the contenteditable div and its attached events
 			wrapper.remove();
@@ -271,7 +273,7 @@ function (jQuery, Utils) {
 	};
 
 	/**
-	 * Gives the X (column no) for a cell, after adding colspans 
+	 * Gives the X (column no) for a cell, after adding colspans
 	 */
 	TableCell.prototype._virtualX = function () {
 		var $rows = this.tableObj.obj.children().children('tr');
@@ -281,7 +283,7 @@ function (jQuery, Utils) {
 	};
 
 	/**
-	 * Gives the Y (row no) for a cell, after adding colspans 
+	 * Gives the Y (row no) for a cell, after adding colspans
 	 */
 	TableCell.prototype._virtualY = function () {
 		return this.obj.parent('tr').index();
@@ -291,7 +293,7 @@ function (jQuery, Utils) {
 	 * Starts the cell selection mode
 	 */
 	TableCell.prototype._startCellSelection = function () {
-		if (!this.tableObj.selection.cellSelectionMode) {
+		if(!this.tableObj.selection.cellSelectionMode) {
 
 			//unselect currently selected cells
 			this.tableObj.selection.unselectCells();
@@ -303,17 +305,19 @@ function (jQuery, Utils) {
 			var that = this;
 			jQuery('body').bind('mouseup.cellselection', function () {
 				that._endCellSelection();
+
 			});
 
 			this.tableObj.selection.baseCellPosition = [this._virtualY(), this._virtualX()];
+
 		}
 	};
 
 	/**
 	 * Ends the cell selection mode
 	 */
-	TableCell.prototype._endCellSelection = function () {
-		if (this.tableObj.selection.cellSelectionMode) {
+	TableCell.prototype._endCellSelection = function() {
+		if(this.tableObj.selection.cellSelectionMode) {
 			this.tableObj.selection.cellSelectionMode = false;
 			this.tableObj.selection.baseCellPosition = null;
 			this.tableObj.selection.lastSelectionRange = null;
@@ -349,10 +353,10 @@ function (jQuery, Utils) {
 
 	/**
 	 * Toggles selection of cell.
-	 * This works only when cell selection mode is active. 
+	 * This works only when cell selection mode is active.
 	 */
-	TableCell.prototype._selectCellRange = function () {
-		if (!this.tableObj.selection.cellSelectionMode) {
+	TableCell.prototype._selectCellRange = function() {
+		if(this.tableObj.selection.resizeMode || !this.tableObj.selection.cellSelectionMode) {
 			return;
 		}
 
@@ -467,7 +471,7 @@ function (jQuery, Utils) {
 
 		this._checkForEmptyEvent(jqEvent);
 
-		if (this.obj[0] === this.tableObj.obj.find('tr:last td:last')[0]) {
+		if ( this.obj[0] === this.tableObj.obj.find('tr:last td:last')[0] ) {
 			// only add a row on a single key-press of tab (so check
 			// that alt-, shift- or ctrl-key are NOT pressed)
 			if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey) {
@@ -514,7 +518,7 @@ function (jQuery, Utils) {
 	 * of the cell. The container element may be the given cell itself,
 	 * or a wrapper element, in the case of activated cells.
 	 *
-	 * @param {DomNode} cell 
+	 * @param {DomNode} cell
 	 *        the TH/TD of a TableCell that may or may not be actived.
 	 * @return {DomNode}
 	 *        the element that contains the contents of the given cell.

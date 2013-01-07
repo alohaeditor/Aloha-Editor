@@ -232,6 +232,18 @@ define([
 		this.rowConfig = this.checkConfig(this.rowConfig||this.settings.rowConfig);
 		this.cellConfig = this.checkConfig(this.cellConfig||this.settings.cellConfig);
 
+		// table resize settings
+		this.tableResize = this.settings.tableResize === undefined ? false : this.settings.tableResize;
+		this.colResize = this.settings.colResize === undefined ? false : this.settings.colResize;
+		this.rowResize = this.settings.rowResize === undefined ? false : this.settings.rowResize;
+
+		// disable table resize settings on browsers below IE8
+		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
+			this.tableResize = false;
+			this.colResize = false;
+			this.rowResize = false;
+		}
+
 		// add reference to the create layer object
 		this.createLayer = new CreateLayer( this );
 
@@ -337,6 +349,7 @@ define([
 				// registry.
 				createNewTable(this);
 			});
+
 		});
 
 		Aloha.bind('aloha-editable-deactivated', function () {
@@ -575,6 +588,30 @@ define([
 				}
 			}
 		});
+	};
+
+	TablePlugin.initNaturalFitBtn = function() {
+		var that = this;
+
+		if (this.colResize || this.rowResize) {
+			this._tableNaturalFitButton = Ui.adopt("naturalFit", Button, {
+				tooltip: i18n.t("button.naturalfit.tooltip"),
+				icon: "aloha-icon aloha-icon-table-naturalfit",
+				scope: this.name + '.cell',
+				click: function() {
+					if (that.activeTable) {
+						var tableObj = that.activeTable.obj;
+						tableObj.find('td').each(function() {
+							jQuery(this).find('div').css('width', '');
+							jQuery(this).css('width', '');
+						});
+						tableObj.find('tr').each(function() {
+							jQuery(this).css('height', '');
+						});
+					}
+				}
+			});
+		}
 	};
 
 	/**
@@ -1000,6 +1037,8 @@ define([
 		this.initCellBtns();
 
 		this.initMergeSplitCellsBtns();
+
+		this.initNaturalFitBtn();
 
 		// generate formatting buttons for tables
 		this.tableMSItems = [];

@@ -128,7 +128,7 @@ define(['jquery'], function ($) {
 					var cell = cells[ci];
 					var colspan = Utils.colspan(cell);
 					var rowspan = Utils.rowspan(cell);
-					
+
 					while (adjust[ci + skip]) {
 						adjust[ci + skip] -= 1;
 						skip += 1;
@@ -137,7 +137,7 @@ define(['jquery'], function ($) {
 					if (false === callback(ri, ci, ci + skip, colspan, rowspan)) {
 						return;
 					}
-					
+
 					for (var i = 0; i < colspan; i++) {
 						if (adjust[ci + skip + i] ) {
 							throw "an impossible case has occurred";
@@ -224,7 +224,7 @@ define(['jquery'], function ($) {
 				var cellInfo = grid[ri][gridCi];
 				if ( 0 === cellInfo.spannedY ) {
 					return cellInfo.cell;
-				} 
+				}
 				gridCi -= cellInfo.spannedX + 1;
 			} while (gridCi >= 0);
 			return null;
@@ -434,7 +434,144 @@ define(['jquery'], function ($) {
 				}
 			}
 			return true;
+		},
+
+		/**
+		 * resizes the width of the given cell
+		 *
+		 * @param cell
+		 *        the DOM node for a table cell (td/th)
+		 * @param
+		 *        an integer value indicating the desired width
+		 */
+
+		'resizeCellWidth': function(cell, width) {
+			$( cell ).css( 'width', width );
+			$( cell ).find('.aloha-table-cell-editable').eq(0).css({
+				'width': width,
+				'word-wrap': 'break-word'
+			});
+		},
+
+		/**
+		 * Get the minimum column width based on the word size
+		 *
+		 * @param cell
+		 *        the DOM node for a table cell (td/th)
+		 *
+		 * @return
+		 * 				the minimum width as an integer value
+		 */
+		'getMinColWidth': function(cell) {
+			var rows = cell.closest( 'tbody' ).children( 'tr' );
+			var cellRow = cell.closest( 'tr' );
+			var gridId = Utils.cellIndexToGridColumn( rows,
+																							  rows.index( cellRow ),
+																							  cellRow.children().index( cell )
+																						  );
+
+			var largestWord = "";
+
+			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
+				if (gridCi === gridId) {
+					var curCell = $( $( rows[ri] ).children()[ ci ] );
+
+					// skip the cells with a colspan
+					if (colspan > 1) {
+						return;
+					}
+
+					var cellWords = curCell.text().split(" ");
+
+					// pick the largest word in the cell
+					for ( var j = 0; j < cellWords.length; j++ ) {
+						if ( cellWords[j].length > largestWord.length ) {
+							largestWord = cellWords[j];
+						}
+					}
+				}
+			});
+
+			var fakeCell = $("<span></span>");
+			fakeCell.css( 'text-indent', -9999 );
+			fakeCell.css( 'display', 'inline' );
+			fakeCell.text( largestWord );
+
+			$( cell ).append( fakeCell );
+
+			var width = fakeCell.width();
+
+			$( fakeCell ).remove();
+
+			return width;
+		},
+
+		/**
+		 * Get the maximum and minimum width a cell can be resized.
+		 *
+		 * @param gridId
+		 * 			id of the cell based on the virtual grid
+		 * @param rows
+		 * 			Collection of rows as DOM objects
+		 * @param callback
+		 * 			a callback function
+		 *
+		 * @return void
+		 */
+		'getCellResizeBoundaries': function(gridId, rows, callback) {
+			var maxPageX, minPageX;
+
+			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
+				var currentCell = $( $( rows[ri] ).children()[ ci ] );
+
+				// skip the select cells
+				if ( currentCell.hasClass( 'aloha-table-selectrow' ) || currentCell.closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ) ) {
+					return true;
+				};
+
+				if (gridCi === gridId && colspan === 1) {
+					maxPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + currentCell.width() - Utils.getMinColWidth( currentCell );
+				}
+
+				if (gridCi === gridId - 1 && colspan === 1) {
+					minPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + Utils.getCellPadding(currentCell) + Utils.getMinColWidth( currentCell );
+				}
+
+				// if both max page x and min page x is set,
+				// stop walking over the cells.
+				if ( maxPageX && minPageX ) {
+					callback(maxPageX, minPageX);
+					return false;
+				}
+			});
+		},
+
+		/**
+		 * Get the border width of the cell
+		 *
+		 * @param cell
+		 *        the DOM node for a table cell (td/th)
+		 *
+		 * @return
+		 * 				the border width as an integer value
+		 */
+		'getCellBorder': function(cell) {
+			return ( (cell.outerWidth() - cell.innerWidth()) / 2 );
+		},
+
+		/**
+		 * Get the padding of the cell
+		 *
+		 * @param cell
+		 *        the DOM node for a table cell (td/th)
+		 *
+		 * @return
+		 * 				the padding as an integer value
+		 */
+		'getCellPadding': function(cell) {
+			return ( cell.innerWidth() - cell.width() );
 		}
+
 	};
 
 	return Utils;
