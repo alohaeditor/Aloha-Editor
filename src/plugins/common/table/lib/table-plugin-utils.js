@@ -449,7 +449,7 @@ define(['jquery'], function ($) {
 			$( cell ).css( 'width', width );
 			$( cell ).find('.aloha-table-cell-editable').eq(0).css({
 				'width': width,
-				'word-wrap': 'normal'
+				'word-wrap': 'break-word'
 			});
 		},
 
