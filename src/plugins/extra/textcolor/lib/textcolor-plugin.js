@@ -35,7 +35,7 @@ define([
 	'PubSub',
 	'i18n!characterpicker/nls/i18n',
 	'i18n!aloha/nls/i18n'
-], function(Aloha,
+], function (Aloha,
 			jQuery,
 			Plugin,
 			Ui,
@@ -51,19 +51,19 @@ define([
 	var _savedRange;
 
 	function SwatchOverlay(onSelectCallback) {
-		var self = this;
-		self.$node = jQuery('<table class="aloha-color-picker-overlay" unselectable="on" role="dialog"><tbody></tbody></table>');
+		var that = this;
+		that.$node = jQuery('<table class="aloha-color-picker-overlay" unselectable="on" role="dialog"><tbody></tbody></table>');
 		// don't let the mousedown bubble up. otherwise there won't be an activeEditable
-		self.$node.mousedown(function (e) {
+		that.$node.mousedown(function (e) {
 			return false;
 		});
-		self.onSelectCallback = onSelectCallback;
-		self.$tbody = self.$node.find('tbody');
-		self.$node.appendTo(jQuery('body'));
-		self._initHideOnDocumentClick();
-		self._initHideOnEsc();
-		self._initCursorFocus(onSelectCallback);
-		self._initEvents();
+		that.onSelectCallback = onSelectCallback;
+		that.$tbody = that.$node.find('tbody');
+		that.$node.appendTo(jQuery('body'));
+		that._initHideOnDocumentClick();
+		that._initHideOnEsc();
+		that._initCursorFocus(onSelectCallback);
+		that._initEvents();
 	}
 
 	function calculateOffset(widget, $element) {
@@ -90,35 +90,35 @@ define([
 		 * @param insertButton insert button
 		 */
 		show: function ($formatButton) {
-			var self = this;
+			var that = this;
 
 			// position the overlay relative to the insert-button
-			self.$node.css(calculateOffset(self, $formatButton));
-			self.$node.css('position', Floating.POSITION_STYLE);
+			that.$node.css(calculateOffset(that, $formatButton));
+			that.$node.css('position', Floating.POSITION_STYLE);
 
-			self.$node.show();
+			that.$node.show();
 
 			// focus on the selected swatch
-			self.$node.find('.focused').removeClass('focused');
+			that.$node.find('.focused').removeClass('focused');
 
 			// select the swatch matching the selected color
 			var selectedColor = $formatButton.find(".aloha-icon-textcolor").css("background-color");
-			self.$node.find('td').each(function() {
-				if ( jQuery( jQuery(this).find('div') ).css('background-color') === selectedColor ) {
-					jQuery(this).addClass( 'focused' );
+			that.$node.find('td').each(function () {
+				if (jQuery(jQuery(this).find('div')).css('background-color') === selectedColor) {
+					jQuery(this).addClass('focused');
 					return false;
 				}
 			});
 
 			// select the first swatch if no matching swatch found
-			if ( self.$node.find('.focused').length < 1 ) {
-				jQuery( self.$node.find('td')[0] ).addClass( 'focused' );
+			if (that.$node.find('.focused').length < 1) {
+				jQuery(that.$node.find('td')[0]).addClass('focused');
 			}
 
-			self._overlayActive = true;
+			that._overlayActive = true;
 		},
 
-		hide: function() {
+		hide: function () {
 			this.$node.hide();
 			this._overlayActive = false;
 		},
@@ -132,60 +132,60 @@ define([
 		},
 
 		_initHideOnDocumentClick: function () {
-			var self = this;
+			var that = this;
 			// if the user clicks somewhere outside of the layer, the layer should be closed
 			// stop bubbling the click on the create-dialog up to the body event
-			self.$node.click(function (e) {
+			that.$node.click(function (e) {
 				e.stopPropagation();
 			});
 
 			var buttonSelector = '.aloha-icon-textcolor';
 			// hide the layer if user clicks anywhere in the body
 			jQuery('body').click(function (e) {
-				if (!self._overlayActive) {
+				if (!that._overlayActive) {
 					return;
 				}
-				if (// don't consider clicks to the overlay itself
-				       e.target !== self.$node[0]
+				// don't consider clicks to the overlay itself
+				if (e.target !== that.$node[0]
 				    // and don't consider clicks to the 'show' button.
-					&& !jQuery(e.target).is(buttonSelector)
-					&& !jQuery(e.target).find(buttonSelector).length) {
-					self.hide();
+						&& !jQuery(e.target).is(buttonSelector)
+						&& !jQuery(e.target).find(buttonSelector).length) {
+					that.hide();
 				}
 			});
 		},
 		_initHideOnEsc: function () {
-			var self = this;
+			var that = this;
 			// escape closes the overlay
 			jQuery(document).keyup(function (e) {
-				var overlayVisibleAndEscapeKeyPressed = (self.$node.css('display') === 'table') && (e.keyCode === 27);
+				var overlayVisibleAndEscapeKeyPressed = (that.$node.css('display') === 'table') && (e.keyCode === 27);
 				if (overlayVisibleAndEscapeKeyPressed) {
-					self.hide();
+					that.hide();
 				}
 			});
 		},
 		_initCursorFocus: function (onSelectCallback) {
-			var self = this;
+			var that = this;
 			// you can navigate through the character table with the arrow keys
 			// and select one with the enter key
 			var $current, $next, $prev, $nextRow, $prevRow;
 			var movements = {
 				13: function select() {
-					self.hide();
+					that.hide();
 
-					$current = self.$node.find('.focused');
+					$current = that.$node.find('.focused');
 					var swatch = $current.find('div');
-					self._selectColor(swatch);
+					that._selectColor(swatch);
 				},
 				37: function left() {
-					$current = self.$node.find('.focused');
+					$current = that.$node.find('.focused');
 					$prev = $current.prev().addClass('focused');
 					if ($prev.length > 0) {
 						$current.removeClass('focused');
 					}
 				},
 				38: function up() {
-					$current = self.$node.find('.focused');
+					$current = that.$node.find('.focused');
 					$prevRow = $current.parent().prev();
 					if ($prevRow.length > 0) {
 						$prev = jQuery($prevRow.children()[$current.index()]).addClass('focused');
@@ -195,14 +195,14 @@ define([
 					}
 				},
 				39: function right() {
-					$current = self.$node.find('.focused');
+					$current = that.$node.find('.focused');
 					$next = $current.next().addClass('focused');
 					if ($next.length > 0) {
 						$current.removeClass('focused');
 					}
 				},
 				40: function down() {
-					$current = self.$node.find('.focused');
+					$current = that.$node.find('.focused');
 					$nextRow = $current.parent().next();
 					if ($nextRow.length > 0) {
 						$next = jQuery($nextRow.children()[$current.index()]).addClass('focused');
@@ -214,7 +214,7 @@ define([
 			};
 			jQuery(document).keydown(function (e) {
 				e.stopPropagation();
-				var isOverlayVisible = self.$node.css('display') === 'table';
+				var isOverlayVisible = that.$node.css('display') === 'table';
 				if (isOverlayVisible) {
 					// check if there is a move-command for the pressed key
 					var moveCommand = movements[e.keyCode];
@@ -226,39 +226,40 @@ define([
 			});
 		},
 		_initEvents: function () {
-			var self = this;
+			var that = this;
 			// when the editable is deactivated, hide the layer
 			Aloha.bind('aloha-editable-deactivated', function (event, rangeObject) {
-				self.hide();
+				that.hide();
 			});
 		},
-		_selectColor: function(swatch) {
-			var self = this;
+		_selectColor: function (swatch) {
+			var that = this, color;
 
 			if (swatch.hasClass('removecolor')) {
-				var color = "removecolor";
+				color = "removecolor";
 			} else {
-				var color = swatch.css('background-color');
+				color = swatch.css('background-color');
 			}
 
-			self.onSelectCallback(color);
+			that.onSelectCallback(color);
 		},
 		_createSwatchButtons: function (colors) {
-			var self = this;
+			var that = this;
 			// TODO: shouldn't we do jQuery('<div>' + characters + '</div>').text() here?
 			var swatchTable = ['<tr>'];
 			var i = 0;
 			var swatch;
+			var isColorValue = function (swatch) {
+				return (swatch.indexOf("#") === 0 || swatch.indexOf("rgb") === 0);
+			};
+
 			while ((swatch = colors[i])) {
 				// make a new row every 15 colors
 				if (0 !== i && ((i % 15) === 0)) {
 					swatchTable.push('</tr><tr>');
 				}
-				var isColorValue = function(swatch) {
-					return ( swatch.indexOf("#") === 0 || swatch.indexOf("rgb") === 0 );
-				};
 
-				if ( isColorValue(swatch) ) {
+				if (isColorValue(swatch)) {
 					swatchTable.push('<td unselectable="on"><div style="background-color: ' + swatch + '"></div></td>');
 				} else {
 					swatchTable.push('<td unselectable="on"><div class="' + swatch + '"></div></td>');
@@ -268,119 +269,29 @@ define([
 			}
 
 			// add remove color option
-			swatchTable.push('<td unselectable="on"><div class="removecolor">X</div></td>');
+			swatchTable.push('<td unselectable="on"><div class="removecolor">&#10006</div></td>');
 
 			swatchTable.push('</tr>');
-			self.$tbody
+			that.$tbody
 				.empty()
 				.append(swatchTable.join(''));
-			self.$node.delegate('td', 'mouseover', function () {
+			that.$node.delegate('td', 'mouseover', function () {
 				jQuery(this).addClass('mouseover');
 			}).delegate('td', 'mouseout', function () {
 				jQuery(this).removeClass('mouseover');
 			}).delegate('td', 'click', function (e) {
-				self.hide();
+				that.hide();
 
 				var swatch = jQuery(this).find('div');
-				self._selectColor(swatch);
+				that._selectColor(swatch);
 			});
 		}
 	};
 
-	return Plugin.create('textcolor', {
-		_constructor: function () {
-			this._super('textcolor');
-		},
-
-		/**
-		 * Default configuration
-		 */
-		config: [ '#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder',  '#000000', '#993300',
-				 		'#333300', '#000080', '#333399', '#333333', '#800000', '#FF6600', '#FFFF99', '#CCFFFF',
-				 		'#99CCFF', '#FFFFFF', '#808000', '#008000', '#008080', '#0000FF', '#666699', '#808080',
-				 		'#FF0000', '#FF9900', '#99CC00', '#339966', '#33CCCC', '#3366FF', '#800080', '#999999',
-				 		'#FF00FF', '#FFCC00', '#FFFF00', '#00FF00', '#00FFFF', '#00CCFF', '#993366', '#C0C0C0',
-				 		'#FF99CC', '#FFCC99' ],
-
-		init: function () {
-			var self = this;
-
-			if ( typeof Aloha.settings.plugins != 'undefined'
-				&& typeof Aloha.settings.plugins.textcolor != 'undefined' ) {
-				self.settings = Aloha.settings.plugins.textcolor;
-			}
-
-			this._colorPickerButton = Ui.adopt("colorPicker", Button, {
-				tooltip: i18n.t('button.textcolor.tooltip'),
-				icon: "aloha-icon-textcolor",
-				scope: 'Aloha.continuoustext',
-				click: function() {
-					if (false !== self.swatchOverlay) {
-						_savedRange = Aloha.Selection.rangeObject;
-						self.swatchOverlay.show(this.element);
-					}
-				}
-			});
-
-			// Populate the cache lazily
-			setTimeout(function(){ initCache(0); }, 100);
-			function initCache(i) {
-				if (i < Aloha.editables.length) {
-					self.getOverlayForEditable(Aloha.editables[i]);
-					setTimeout(function(){ initCache(i + 1); }, 100);
-				}
-			}
-
-			Aloha.bind('aloha-editable-activated', function (event, data) {
-				self.swatchOverlay = self.getOverlayForEditable(data.editable);
-				if (self.swatchOverlay) {
-					self._colorPickerButton.show();
-				} else {
-					self._colorPickerButton.hide();
-				}
-			});
-
-			PubSub.sub('aloha.floating.changed', function(message) {
-				if (self.swatchOverlay) {
-					self.swatchOverlay.offset = message.position.offset;
-					self.swatchOverlay.$node.css(calculateOffset(self.swatchOverlay, self._colorPickerButton.element));
-				}
-			});
-
-			// add the event handler for context selection change
-			PubSub.sub('aloha.selection.context-change', function(message) {
-				onSelectionChanged(self, message.range);
-			});
-		},
-
-		getOverlayForEditable: function(editable) {
-			var that = this;
-			// Each editable may have its own configuration and as
-			// such may have its own overlay.
-			var config = this.getEditableConfig(editable.obj),
-			    overlay;
-			if ( ! config || config.length < 1 ) {
-				return false;
-			}
-			// We cache the overlay by configuration. If all editables
-			// have the same configuration, only a single overlay will
-			// be created that will be used by all editables.
-			overlay = overlayByConfig[config];
-			if ( ! overlay ) {
-				overlay = new SwatchOverlay(onColorSelect);
-				overlay.setColors(config);
-				overlayByConfig[config] = overlay;
-			}
-			return overlay;
-		}
-
-	});
-
-
 	/**
 	 * apply color after selecting it from the list
 	 */
-	function onColorSelect (color) {
+	function onColorSelect(color) {
 		if (Aloha.activeEditable) {
 
 			//Select the range that was selected before the overlay was opened
@@ -390,8 +301,7 @@ define([
 			jQuery('.aloha-icon-textcolor').css('background-color', color);
 
 			if (color === "removecolor") {
-				console.log(_savedRange);
-				var effectiveMarkup;
+				var effectiveMarkup, i;
 				for (i = 0; i < _savedRange.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = _savedRange.markupEffectiveAtStart[i];
 
@@ -411,7 +321,7 @@ define([
 
 		// The `execCommand` runs asynchronously.
 		// So it fires the selection change event, before actually applying the forecolor.
-		setTimeout(function() {
+		setTimeout(function () {
 			var selectedColor = jQuery(rangeObject.endContainer).parent().css('color');
 
 			jQuery('.aloha-icon-textcolor').css('background-color', selectedColor);
@@ -419,4 +329,92 @@ define([
 
 	}
 
+	return Plugin.create('textcolor', {
+		_constructor: function () {
+			this._super('textcolor');
+		},
+
+		/**
+		 * Default configuration
+		 */
+		config: ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder',  '#000000', '#993300',
+					'#333300', '#000080', '#333399', '#333333', '#800000', '#FF6600', '#FFFF99', '#CCFFFF',
+					'#99CCFF', '#FFFFFF', '#808000', '#008000', '#008080', '#0000FF', '#666699', '#808080',
+					'#FF0000', '#FF9900', '#99CC00', '#339966', '#33CCCC', '#3366FF', '#800080', '#999999',
+					'#FF00FF', '#FFCC00', '#FFFF00', '#00FF00', '#00FFFF', '#00CCFF', '#993366', '#C0C0C0',
+					'#FF99CC', '#FFCC99' ],
+
+		init: function () {
+			var that = this;
+
+			if (typeof Aloha.settings.plugins != 'undefined'
+					&& typeof Aloha.settings.plugins.textcolor != 'undefined') {
+				that.settings = Aloha.settings.plugins.textcolor;
+			}
+
+			this._colorPickerButton = Ui.adopt("colorPicker", Button, {
+				tooltip: i18n.t('button.textcolor.tooltip'),
+				icon: "aloha-icon-textcolor",
+				scope: 'Aloha.continuoustext',
+				click: function () {
+					if (false !== that.swatchOverlay) {
+						_savedRange = Aloha.Selection.rangeObject;
+						that.swatchOverlay.show(this.element);
+					}
+				}
+			});
+
+			// Populate the cache lazily
+			function initCache(i) {
+				if (i < Aloha.editables.length) {
+					that.getOverlayForEditable(Aloha.editables[i]);
+					setTimeout(function () { initCache(i + 1); }, 100);
+				}
+			}
+			setTimeout(function () { initCache(0); }, 100);
+
+			Aloha.bind('aloha-editable-activated', function (event, data) {
+				that.swatchOverlay = that.getOverlayForEditable(data.editable);
+				if (that.swatchOverlay) {
+					that._colorPickerButton.show();
+				} else {
+					that._colorPickerButton.hide();
+				}
+			});
+
+			PubSub.sub('aloha.floating.changed', function (message) {
+				if (that.swatchOverlay) {
+					that.swatchOverlay.offset = message.position.offset;
+					that.swatchOverlay.$node.css(calculateOffset(that.swatchOverlay, that._colorPickerButton.element));
+				}
+			});
+
+			// add the event handler for context selection change
+			PubSub.sub('aloha.selection.context-change', function (message) {
+				onSelectionChanged(that, message.range);
+			});
+		},
+
+		getOverlayForEditable: function (editable) {
+			var that = this;
+			// Each editable may have its own configuration and as
+			// such may have its own overlay.
+			var config = this.getEditableConfig(editable.obj),
+			    overlay;
+			if (!config || config.length < 1) {
+				return false;
+			}
+			// We cache the overlay by configuration. If all editables
+			// have the same configuration, only a single overlay will
+			// be created that will be used by all editables.
+			overlay = overlayByConfig[config];
+			if (!overlay) {
+				overlay = new SwatchOverlay(onColorSelect);
+				overlay.setColors(config);
+				overlayByConfig[config] = overlay;
+			}
+			return overlay;
+		}
+
+	});
 });

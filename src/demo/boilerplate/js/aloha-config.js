@@ -193,7 +193,7 @@
 				config: ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder'],
 				editables: {
 					// configure a different set of colors for editable #one
-					'#content' : []
+					'#top-text' : []
 				}
 			}
 		}
