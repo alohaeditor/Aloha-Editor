@@ -465,8 +465,7 @@ define([
 				}
 			});
 			if (!el.is(':empty')) {
-				el.addClass(this.placeholderClass)
-				  .addClass('aloha-ephemera');
+				el.addClass(this.placeholderClass).addClass('aloha-ephemera');
 				jQuery(obj).append(el);
 			}
 			jQuery('br', obj).remove();
