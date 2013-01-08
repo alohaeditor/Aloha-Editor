@@ -42,6 +42,7 @@ define([
 	var $ = aQuery;
 	var GENTICS = window.GENTICS;
 	var Aloha = window.Aloha;
+	var resizing = false;
 
 	// Attributes manipulation utilities
 	// Aloha team may want to factorize, it could be useful for other plugins
@@ -396,8 +397,9 @@ define([
 			 */
 			Aloha.bind('aloha-selection-changed', function (event, rangeObject, originalEvent) {
 				var config, foundMarkup;
+
 				if (originalEvent && originalEvent.target) {
-					// Check if the element is currently beeing resized
+					// Check if the element is currently being resized
 					if (plugin.settings.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
 						plugin.endResize();
 						plugin.imageObj = null;
@@ -451,8 +453,10 @@ define([
 				// editable.obj.find('img').contentEditable(false);
 
 				editable.obj.delegate('img', 'mouseup', function (event) {
-					plugin.clickImage(event);
-					event.stopPropagation();
+					if (!resizing) {
+						plugin.clickImage(event);
+						event.stopPropagation();
+					}
 				});
 			});
 
@@ -518,7 +522,7 @@ define([
 		},
 
 		/**
-		 * Toggle the keep aspect ratio functionallity
+		 * Toggle the keep aspect ratio functionality
 		 */
 		toggleKeepAspectRatio: function() {
 
@@ -703,6 +707,8 @@ define([
 
 			var editable = currentImage.closest('.aloha-editable');
 
+			this.ui._imageCnrRatioButton.setState(this.keepAspectRatio);
+
 			// Disabling the content editable. This will disable the resizeHandles in internet explorer
 			// already done in resize on a smaller scope, this block next aloha-selection-change event
 			// to be thrown
@@ -724,8 +730,6 @@ define([
 			var widthField = $('#' + plugin.ui.imgResizeWidthField.getInputId());
 			widthField.val(plugin.imageObj.width());
 			widthField.css('background-color', '');
-
-
 
 			if (plugin.settings.ui.meta) {
 				plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
@@ -1206,6 +1210,7 @@ define([
 		startResize: function () {
 			var plugin = this;
 			var currentImageObj = this.imageObj;
+			var ratio = plugin.keepAspectRatio ? plugin.aspectRatioValue : false;
 
 			currentImageObj = this.imageObj.css({
 				height		: this.imageObj.height(),
@@ -1220,13 +1225,16 @@ define([
 				minHeight : plugin.settings.minHeight,
 				maxWidth  : plugin.settings.maxWidth,
 				minWidth  : plugin.settings.minWidth,
-				aspectRatio : plugin.aspectRatioValue,
+				aspectRatio : ratio,
 				handles: plugin.settings.handles,
 				grid : plugin.settings.grid,
 				resize: function (event, ui) {
+					resizing = true;
 					plugin._onResize(plugin.imageObj);
 				},
 				stop : function (event, ui) {
+					resizing = false;
+
 					plugin._onResized(plugin.imageObj);
 
 					// Workaround to finish cropping
