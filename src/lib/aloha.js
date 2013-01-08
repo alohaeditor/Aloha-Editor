@@ -243,7 +243,11 @@
 
 		var defaultConfig = {
 			context: 'aloha',
-			locale: Aloha.settings.locale || 'en',
+			config: {
+				i18n: {
+					locale: Aloha.settings.locale || 'en'
+				}
+			},
 			baseUrl: Aloha.settings.baseUrl,
 			map: moduleMap
 		};

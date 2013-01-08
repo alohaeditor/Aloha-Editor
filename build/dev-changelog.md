@@ -21,3 +21,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: link-plugin: Fix metaKey + click doesn't follow link (still doesn't work on IE7)
 - **BUG**: core: when a placeholder was defined for an editable, a placeholder wrapper element was injected into
 	         all editables instead of only the editable the placeholder was defined for.
+- **BUG**: core: Aloha.settings.locale property was not honored.
