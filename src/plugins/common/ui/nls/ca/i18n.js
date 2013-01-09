@@ -5,6 +5,8 @@ define({
 	"button.subscript.label": "Subíndex",
 	"button.superscript.label": "Superíndex",
 	"button.underline.label": "Subratllat",
+	"button.yes.label": "Sí",
+	"button.no.label": "No",
 	"button.p.label": "Paràgraf",
 	"button.h1.label": "Encapçalament 1",
 	"button.h2.label": "Encapçalament 2",

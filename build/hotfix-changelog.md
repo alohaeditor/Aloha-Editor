@@ -31,3 +31,4 @@ All changes are categorized into one of the following keywords:
            multiple elements are not unnecessarily split into fragments.
 - **BUG**: image-plugin: Fix numerous bugs with resizing and cropping and
            improve overall usability
+- **BUG**: ui: Fix internationalization in confirm-dialog

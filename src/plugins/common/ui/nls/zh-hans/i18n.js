@@ -5,6 +5,8 @@ define({
 	"button.subscript.label": "下标",
 	"button.superscript.label": "上标",
 	"button.underline.label": "下划线",
+	"button.yes.label": "是",
+	"button.no.label": "不",
 	"button.p.label": "段落",
 	"button.h1.label": "标题1",
 	"button.h2.label": "标题2",

@@ -5,6 +5,8 @@ define({
 	"button.subscript.label": "Нижній індекс",
 	"button.superscript.label": "Верхній індекс",
 	"button.underline.label": "Підкреслений",
+	"button.yes.label": "Так",
+	"button.no.label": "немає",
 	"button.p.label": "Параграф",
 	"button.h1.label": "Заголовок 1",
 	"button.h2.label": "Заголовок 2",
