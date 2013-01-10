@@ -434,9 +434,11 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * @param {GENTICS.Utils.RangeObject} rangeObject range to which the markup shall be added
 		 * @param {jQuery} markup markup to be applied as jQuery object
 		 * @param {boolean} allownesting true when nesting of the added markup is allowed, false if not (default: false)
+		 * $param {string} where the addMarkup came from, optional, for event tracking
 		 * @method
 		 */
-		addMarkup: function (rangeObject, markup, nesting) {
+		addMarkup: function (rangeObject, markup, nesting, from) {
+			Aloha.trigger( 'aloha-add-markup', [markup, from]);
 			// split partially contained text nodes at the start and end of the range
 			if (rangeObject.startContainer.nodeType === 3
 				    && rangeObject.startOffset > 0

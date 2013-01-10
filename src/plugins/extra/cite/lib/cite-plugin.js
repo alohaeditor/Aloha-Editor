@@ -33,6 +33,7 @@ define([
 
 	var $ = jQuery,
 		ns  = 'aloha-cite',
+		pluginNamespace = 'aloha-cite',
 		uid = (new Date()).getTime();
 
 	// namespaced classnames
@@ -482,7 +483,10 @@ define([
 					domUtils.extendToWord(rangeObject);
 				}
 
-				domUtils.addMarkup(rangeObject, markup);
+				domUtils.addMarkup(rangeObject, markup, false, {
+					'namespace': pluginNamespace,
+					'type': 'cite'
+				});
 			}
 
 			// select the modified range

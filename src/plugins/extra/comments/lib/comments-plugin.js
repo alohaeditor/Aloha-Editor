@@ -36,7 +36,8 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 	var  jQuery	= window.alohaQuery || window.jQuery,
 			  $ = jQuery,
 		GENTICS = window.GENTICS,
-		  Aloha	= window.Aloha;
+		  Aloha	= window.Aloha,
+		  pluginNamespace = 'plugin-comments';
 	
 	$.extend($.easing, {
 		easeOutExpo: function (x, t, b, c, d) {
@@ -250,7 +251,10 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				classes = [clss + '-wrapper', id],
 				wrapper = $('<div class="' + classes.join(' ') + '">');
 			
-			dom_util.addMarkup(range, wrapper);
+			dom_util.addMarkup(range, wrapper, false, {
+				'namespace': pluginNamespace,
+				'type': 'comments'
+			});
 			
 			// if the wrapper element does not exist, it means that there
 			// was nothing in the selection to wrap around, indicating an

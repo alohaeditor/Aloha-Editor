@@ -48,7 +48,8 @@ define([
 	i18nCore
 ) {
 	'use strict';
-	var GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS,
+		pluginNamespace = 'aloha-abbr';
 
 	/**
 	 * register the plugin with unique name
@@ -262,7 +263,9 @@ define([
 		        range.endOffset = abbrText.length;
 		    } else {
 		        var newAbbr = jQuery( '<abbr title=""></abbr>' );
-		        GENTICS.Utils.Dom.addMarkup( range, newAbbr, false );
+		        GENTICS.Utils.Dom.addMarkup( range, newAbbr, false, {
+			        namespace: pluginNamespace, type:'abbr'
+		        });
 		    }
 			
 		    range.select();

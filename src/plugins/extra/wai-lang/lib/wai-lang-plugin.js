@@ -34,7 +34,8 @@ define([
 
 	var WAI_LANG_CLASS = 'aloha-wai-lang',
 	    GENTICS = window.GENTICS,
-	    langField;
+	    langField,
+		pluginNamespace = 'aloha-wai-lang';
 
 	return Plugin.create('wai-lang', {
 
@@ -350,7 +351,10 @@ define([
 			if (!range.isCollapsed()) {
 				GENTICS.Utils.Dom.addMarkup(range,
 					jQuery('<span class="' + WAI_LANG_CLASS + '"></span>'),
-					false);
+					false, {
+						'namespace': pluginNamespace,
+						'type': 'wai-lang'
+					});
 			}
 
 			range.select();

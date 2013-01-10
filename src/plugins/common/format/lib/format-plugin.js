@@ -535,7 +535,10 @@ define('format/format-plugin', [
 					}
 
 					// add the markup
-					GENTICS.Utils.Dom.addMarkup( rangeObject, markup );
+					GENTICS.Utils.Dom.addMarkup( rangeObject, markup, false, {
+						'namespace': pluginNamespace,
+						'type': button
+					});
 				}
 				// select the modified range
 				rangeObject.select();
