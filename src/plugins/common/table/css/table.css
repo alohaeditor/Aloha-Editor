@@ -119,3 +119,7 @@ td.aloha-table-selectrow {
 .aloha-table-label {
 	margin-left:5px;
 }
+
+.aloha .ui-state-default .aloha-icon-table-naturalfit {
+	background-position: -432px 0px;
+}

@@ -115,7 +115,13 @@
 				cellConfig: [
 					{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 					{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
-				]
+				],
+				// allow resizing the table width (default: false)
+				tableResize: true,
+				// allow resizing the column width (default: false)
+				colResize: true,
+				// allow resizing the row height (default: false)
+				rowResize: true
 			},
 			image: {
 				config:{
