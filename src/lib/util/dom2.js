@@ -64,6 +64,9 @@ define(['jquery', 'util/maps', 'util/strings', 'util/browser'], function ($, Map
 	function attrNames(elem) {
 		var names = [];
 		var html = elem.cloneNode(false).outerHTML;
+		if (undefined === html) { // some browsers return undefined for outerHTML on non-standard elements
+			html = $("<div>").append(elem.cloneNode(false)).html();
+		}
 		var match;
 		while (null != (match = attrRegex.exec(html))) {
 			names.push(match[1]);
