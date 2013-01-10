@@ -135,7 +135,7 @@ define([
 			// Because all plugins are enabled by default if specific plugins
 			// are not specified.
 			var plugin;
-			if (!plugins || 0 === enabled.length) {
+			if (plugins && 0 === enabled.length) {
 				enabled = [];
 				for (plugin in plugins) {
 					if (plugins.hasOwnProperty(plugin)) {
