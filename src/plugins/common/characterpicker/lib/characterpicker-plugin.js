@@ -26,17 +26,17 @@
  */
 
 define([
-	'aloha', 
-	'jquery', 
-	'aloha/plugin', 
-	'ui/ui', 
+	'aloha',
+	'jquery',
+	'aloha/plugin',
+	'ui/ui',
 	'ui/button',
 	'ui/floating',
 	'PubSub',
-	'i18n!characterpicker/nls/i18n', 
+	'i18n!characterpicker/nls/i18n',
 	'i18n!aloha/nls/i18n'
 ], function(Aloha,
-            jQuery,
+			jQuery,
 			Plugin,
 			Ui,
 			Button,
@@ -53,7 +53,7 @@ define([
 	function CharacterOverlay(onSelectCallback) {
 		var self = this;
 		self.$node = jQuery('<table class="aloha-character-picker-overlay" unselectable="on" role="dialog"><tbody></tbody></table>');
-		// don't let the mousedown bubble up. otherwise there won't be an activeEditable 
+		// don't let the mousedown bubble up. otherwise there won't be an activeEditable
 		self.$node.mousedown(function (e) {
 			return false;
 		});
@@ -65,7 +65,7 @@ define([
 		self._initCursorFocus(onSelectCallback);
 		self._initEvents();
 	}
-	
+
 	function calculateOffset(widget, $element) {
 		var offset = $element.offset();
 		var calculatedOffset = { top: 0, left: 0 };
@@ -77,14 +77,14 @@ define([
 
 		calculatedOffset.top = widget.offset.top + (offset.top - widget.offset.top);
 		calculatedOffset.left = widget.offset.left + (offset.left - widget.offset.left);
-		
+
 		return calculatedOffset;
 	}
 
 	CharacterOverlay.prototype = {
-		
+
 		offset: {top: 0, left: 0},
-		
+
 		/**
 		 * Show the character overlay at the insert button's position
 		 * @param insertButton insert button
@@ -95,7 +95,7 @@ define([
 			// position the overlay relative to the insert-button
 			self.$node.css(calculateOffset(self, $insertButton));
 			self.$node.css('position', Floating.POSITION_STYLE);
-			
+
 			self.$node.show();
 			// focus the first character
 			self.$node.find('.focused').removeClass('focused');
@@ -131,8 +131,8 @@ define([
 					return;
 				}
 				if (// don't consider clicks to the overlay itself
-				       e.target !== self.$node[0]
-				    // and don't consider clicks to the 'show' button.
+						e.target !== self.$node[0]
+					// and don't consider clicks to the 'show' button.
 					&& !jQuery(e.target).is(buttonSelector)
 					&& !jQuery(e.target).find(buttonSelector).length) {
 					self.hide();
@@ -230,6 +230,7 @@ define([
 			var charTable = ['<tr>'];
 			var i = 0;
 			var chr;
+			var $focused;
 			while ((chr = characterList[i])) {
 				// make a new row every 15 characters
 				if (0 !== i && ((i % 15) === 0)) {
@@ -243,9 +244,11 @@ define([
 				.empty()
 				.append(charTable.join(''));
 			self.$node.delegate('td', 'mouseover', function () {
-				jQuery(this).addClass('mouseover');
+				$focused = self.$node.find('.focused');
+				$focused.removeClass('focused');
+				jQuery(this).addClass('focused');
 			}).delegate('td', 'mouseout', function () {
-				jQuery(this).removeClass('mouseover');
+				jQuery(this).removeClass('focused');
 			}).delegate('td', 'click', function (e) {
 				self.$node.hide();
 				var character = jQuery(this).text();
@@ -271,14 +274,20 @@ define([
 				&& typeof Aloha.settings.plugins.characterpicker != 'undefined' ) {
 				self.settings = Aloha.settings.plugins.characterpicker;
 			}
-			
+
 			this._characterPickerButton = Ui.adopt("characterPicker", Button, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
 				icon: "aloha-icon-characterpicker",
 				scope: 'Aloha.continuoustext',
 				click: function() {
 					if (false !== self.characterOverlay) {
+
 						_savedRange = Aloha.Selection.rangeObject;
+
+						copyStyle(_savedRange.startContainer.parentNode, self.characterOverlay.$node, 'font-family');
+						copyStyle(_savedRange.startContainer.parentNode, self.characterOverlay.$node, 'font-weight');
+						copyStyle(_savedRange.startContainer.parentNode, self.characterOverlay.$node, 'font-style');
+
 						self.characterOverlay.show(this.element);
 					}
 				}
@@ -301,7 +310,7 @@ define([
 					self._characterPickerButton.hide();
 				}
 			});
-			
+
 			PubSub.sub('aloha.floating.changed', function(message) {
 				self.characterOverlay.offset = message.position.offset;
 				self.characterOverlay.$node.css(calculateOffset(self.characterOverlay, self._characterPickerButton.element));
@@ -313,7 +322,7 @@ define([
 			// Each editable may have its own configuration and as
 			// such may have its own overlay.
 			var config = this.getEditableConfig(editable.obj),
-			    overlay;
+				overlay;
 			if ( ! config ) {
 				return false;
 			}
@@ -333,17 +342,53 @@ define([
 		}
 
 	});
-	
-			
+
+
 	/**
 	 * insert a character after selecting it from the list
 	 */
 	function onCharacterSelect (character) {
 		if (Aloha.activeEditable) {
-			//Select the range that was selected before the overlay was opened
+			// select the range that was selected before the overlay was opened
 			_savedRange.select();
+
 			Aloha.execCommand('insertHTML', false, character);
+
+			// after the character was inserted, move the selection forward
+			_savedRange.startOffset += 1;
+			_savedRange.endOffset += 1;
+			_savedRange.select();
+
 		}
+	}
+
+
+	/**
+	 * helper function that takes the computed style-property of one element and applies it to another one,
+	 * depending on the browser implementation
+	 * @param source the element of which the style element is taken
+	 * @param target where the style will be applied
+	 * @param styleProp the css property which shall be copied
+	 */
+	function copyStyle(source, target, styleProp) {
+		var style;
+		var camelize = function (str) {
+			return str.replace(/\-(\w)/g, function(str, letter) {
+				return letter.toUpperCase();
+			});
+		};
+
+		if (source.currentStyle) {
+			style = source.currentStyle[camelize(styleProp)];
+		} else if (document.defaultView && document.defaultView.getComputedStyle) {
+			style = document.defaultView.getComputedStyle(source, null).getPropertyValue(styleProp);
+		} else {
+			style = source.style[camelize(styleProp)];
+		}
+
+		if (style !== null) {
+			return target.css(styleProp, style);
+		} else return false;
 	}
 
 });

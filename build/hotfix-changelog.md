@@ -32,3 +32,5 @@ All changes are categorized into one of the following keywords:
 - **BUG**: image-plugin: Fix numerous bugs with resizing and cropping and
            improve overall usability
 - **BUG**: ui: Fix internationalization in confirm-dialog
+- **ENHANCEMENT**: characterpicker-plugin: Various small improvements and fixes;
+           plugin now shows characters in the font of the selected text

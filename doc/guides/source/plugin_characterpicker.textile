@@ -34,6 +34,8 @@ The characterpicker will by default support the following characters:
 | &#8836; | &#8838; | &#8839; | &#8853; | &#8855; | &#8869; | &#8901; | &#8968; | &#8969; | &#8970; | &#8971; | &#9001; | &#9002; | &#9674; | &#9824; |
 | &#9827; | &#9829; | &#9830; |
 
+NOTE: In the overlay, the characters are displayed in the same font and style in which they would be shown in the text. If unicode characters are not implemented in the current font, they may seem broken. This depends on the fonts installed in the operating system and/or browser.
+
 It is possible to configure the global character set and to configure character sets for specific editables (identified by jQuery selectors):
 
 <javascript>
