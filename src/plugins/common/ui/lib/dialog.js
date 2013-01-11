@@ -66,7 +66,7 @@ function($, Component, i18n) {
 		 *                  callback with the answer as a boolean argument. Does not interfere with yes and
 		 *                  no properties.
 		 *            cls - the root element of the dialog will receive this class
-         *        buttons - an object where the properties are button titles and the values are callbacks
+		 *        buttons - an object where the properties are button titles and the values are callbacks
 		 *        Button callbacks will receive the dialog element as context.
 		 *        Pressing any buttons in the dialog will automatically close the dialog.
 		 * @return
@@ -74,16 +74,32 @@ function($, Component, i18n) {
 		 */
 		'confirm': function(props) {
 			var buttons = props.buttons || {};
-			buttons['Yes'] = buttons['Yes'] || props.yes || $.noop;
-			buttons['No']  = buttons['No']  || props.no  || $.noop;
+
+			var yesLabel = i18n.t('button.yes.label');
+			var noLabel = i18n.t('button.no.label');
+
+			// block adds backwards compatibility to still be able to use
+			// 'buttons.Yes/No' for setting functionality of basic buttons
+			if (buttons['Yes'] !== null && yesLabel !== 'Yes') {
+				buttons[yesLabel] = buttons['Yes'];
+				delete buttons['Yes'];
+			}
+			if (buttons['No'] !== null && noLabel !== 'No') {
+				buttons[noLabel] = buttons['No'];
+				delete buttons['No'];
+			}
+
+			buttons[yesLabel] = buttons[yesLabel] || props.yes || $.noop;
+			buttons[noLabel]  = buttons[noLabel]  || props.no  || $.noop;
+
 			if (props.answer) {
-				var yes = buttons['Yes'];
-				var no  = buttons['No'];
-				buttons['Yes'] = function(){
+				var yes = buttons[yesLabel];
+				var no  = buttons[noLabel];
+				buttons[yesLabel] = function(){
 					yes();
 					props.answer(true);
 				};
-				buttons['No'] = function(){
+				buttons[noLabel] = function(){
 					no();
 					props.answer(false);
 				};

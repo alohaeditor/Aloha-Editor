@@ -29,3 +29,8 @@ All changes are categorized into one of the following keywords:
            outerHTML.
 - **BUG**: link-plugins: Fixed inserting of links so that links that span
            multiple elements are not unnecessarily split into fragments.
+- **BUG**: image-plugin: Fix numerous bugs with resizing and cropping and
+           improve overall usability
+- **BUG**: ui: Fix internationalization in confirm-dialog
+- **ENHANCEMENT**: characterpicker-plugin: Various small improvements and fixes;
+           plugin now shows characters in the font of the selected text

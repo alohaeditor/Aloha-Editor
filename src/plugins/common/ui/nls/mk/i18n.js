@@ -5,6 +5,8 @@ define({
 	"button.subscript.label": "Индекс",
 	"button.superscript.label": "Горен индекс",
 	"button.underline.label": "Подцртано",
+	"button.yes.label": "Да",
+	"button.no.label": "Не",
 	"button.p.label": "Параграф",
 	"button.h1.label": "Наслов 1",
 	"button.h2.label": "Наслов 2",

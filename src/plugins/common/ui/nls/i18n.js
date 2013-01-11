@@ -7,6 +7,8 @@ define({
 		"button.subscript.label": "Subscript",
 		"button.superscript.label": "Superscript",
 		"button.underline.label": "Underline",
+		"button.yes.label": "Yes",
+		"button.no.label": "No",
 
 		// paragraph
 		"button.p.label": "Paragraph",
