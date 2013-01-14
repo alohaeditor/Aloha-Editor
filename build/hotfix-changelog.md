@@ -7,3 +7,6 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
+
+**ENHANCEMENT**: Place the caret after the character that is inserted by
+                 characterpicker.

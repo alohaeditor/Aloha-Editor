@@ -280,8 +280,8 @@ define([
 
 			// Because after the character was inserted, move the selection
 			// forward.
-			rangeAtOpen.startOffset += 1;
-			rangeAtOpen.endOffset += 1;
+			rangeAtOpen.endContainer = rangeAtOpen.startContainer;
+			rangeAtOpen.endOffset = ++rangeAtOpen.startOffset;
 			rangeAtOpen.select();
 		}
 	}
