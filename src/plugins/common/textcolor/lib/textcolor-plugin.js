@@ -66,6 +66,13 @@ define([
 		self._initEvents();
 	}
 
+	/**
+	 * calculate the offset to an element from
+	 * the widget.
+	 * @param widget
+	 * @param $element
+	 * @return calculated offset
+	 */
 	function calculateOffset(widget, $element) {
 		var offset = $element.offset();
 		var calculatedOffset = { top: 0, left: 0 };
@@ -83,11 +90,14 @@ define([
 
 	SwatchOverlay.prototype = {
 
+		/**
+		 * Default offset
+		 */
 		offset: {top: 0, left: 0},
 
 		/**
-		 * Show the swatch overlay at the format button's position
-		 * @param insertButton insert button
+		 * Show the swatch overlay at the textcolor button's position
+		 * @param formatButton textcolor button
 		 */
 		show: function ($formatButton) {
 			var self = this;
@@ -118,6 +128,9 @@ define([
 			self._overlayActive = true;
 		},
 
+		/**
+		 * Hide the swatch overlay
+		 */
 		hide: function() {
 			this.$node.hide();
 			this._overlayActive = false;
@@ -154,6 +167,7 @@ define([
 				}
 			});
 		},
+
 		_initHideOnEsc: function () {
 			var self = this;
 			// escape closes the overlay
@@ -164,6 +178,7 @@ define([
 				}
 			});
 		},
+
 		_initCursorFocus: function (onSelectCallback) {
 			var self = this;
 			// you can navigate through the character table with the arrow keys
@@ -225,6 +240,7 @@ define([
 				}
 			});
 		},
+
 		_initEvents: function () {
 			var self = this;
 			// when the editable is deactivated, hide the layer
@@ -232,6 +248,7 @@ define([
 				self.hide();
 			});
 		},
+
 		_selectColor: function(swatch) {
 			var self = this;
 
@@ -243,6 +260,7 @@ define([
 
 			self.onSelectCallback(color);
 		},
+
 		_createSwatchButtons: function (colors) {
 			var self = this;
 			// TODO: shouldn't we do jQuery('<div>' + characters + '</div>').text() here?
@@ -301,7 +319,9 @@ define([
 				 		'#FF0000', '#FF9900', '#99CC00', '#339966', '#33CCCC', '#3366FF', '#800080', '#999999',
 				 		'#FF00FF', '#FFCC00', '#FFFF00', '#00FF00', '#00FFFF', '#00CCFF', '#993366', '#C0C0C0',
 				 		'#FF99CC', '#FFCC99' ],
-
+		/**
+		 * Initialize the plugin
+		 */
 		init: function () {
 			var self = this;
 
@@ -353,6 +373,11 @@ define([
 			});
 		},
 
+		/*
+		 * Get the color swatch overlay for the given editable
+		 * @param editable - given editable object
+		 * @return - SwatchOverlay object
+		 */
 		getOverlayForEditable: function(editable) {
 			var that = this;
 			// Each editable may have its own configuration and as
@@ -376,21 +401,46 @@ define([
 
 	});
 
+	/**
+	 * Expand collapsed range to,
+	 * either existing span element
+	 * or nearest word boundary.
+	 * @param range - currently selected (collapsed) range
+	 */
+	function expandRange (range) {
+		var effectiveMarkup;
+
+		for (i = 0; i < range.markupEffectiveAtStart.length; i++) {
+			effectiveMarkup = range.markupEffectiveAtStart[i];
+
+			if (effectiveMarkup.nodeName === "SPAN") {
+				GENTICS.Utils.Dom.selectDomNode( effectiveMarkup );
+				return;
+			}
+		}
+
+		GENTICS.Utils.Dom.extendToWord( range );
+		range.select();
+	};
 
 	/**
-	 * apply color after selecting it from the list
+	 * Apply color after selecting it from the list
+	 * @param color - selected color as a hex or rgb value or "removecolor"
 	 */
 	function onColorSelect (color) {
 		if (Aloha.activeEditable) {
 
-			//Select the range that was selected before the overlay was opened
-			_savedRange.select();
+			// Select the range that was selected before the overlay was opened
+			if ( _savedRange.isCollapsed() ) {
+				expandRange( _savedRange );
+			} else {
+				_savedRange.select();
+			}
 
-			//Change the button color
+			// Change the button color
 			jQuery('.aloha-icon-textcolor').css('background-color', color);
 
 			if (color === "removecolor") {
-				console.log(_savedRange);
 				var effectiveMarkup;
 				for (i = 0; i < _savedRange.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = _savedRange.markupEffectiveAtStart[i];
@@ -406,7 +456,11 @@ define([
 		}
 	}
 
-	// extracted selection changed function
+	/**
+	 * Change the button color based on selected text
+	 * @param colorPickerPlugin - reference to the plugin
+	 * @param rangeObject - selected range
+	 */
 	function onSelectionChanged(colorPickerPlugin, rangeObject) {
 
 		// The `execCommand` runs asynchronously.
