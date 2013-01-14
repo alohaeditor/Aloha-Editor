@@ -92,7 +92,8 @@ define([
 	/**
 	 * Initialize Aloha.
 	 *
-	 * @param {function} next Function to call after initialization.
+	 * @param {function} event Event to trigger after completing tasks.
+	 * @param {function} next Function to call after completing tasks.
 	 */
 	function initAloha(event, next) {
 		if (!isBrowserSupported()) {
@@ -147,6 +148,9 @@ define([
 
 	/**
 	 * Initialize managers
+	 *
+	 * @param {function} event Event to trigger after completing tasks.
+	 * @param {function} next Function to call after completing tasks.
 	 */
 	function initRepositoryManager(event, next) {
 		Aloha.RepositoryManager.init();
@@ -157,11 +161,12 @@ define([
 	/**
 	 * Initialize Aloha plugins.
 	 *
-	 * @param {function} onPluginsInitialized Callback that will be invoked
-	 *                                        after all plugins have been
-	 *                                        initialized.  Whereas plugins are
-	 *                                        loaded synchronously, plugins may
-	 *                                        initialize asynchronously.
+	 *
+	 * @param {function} event Event to trigger after completing tasks.
+	 * @param {function} next Callback that will be invoked after all plugins
+	 *                        have been initialized.  Whereas plugins are loaded
+	 *                        synchronously, plugins may initialize
+	 *                        asynchronously.
 	 */
 	function initPluginManager(event, next) {
 		// Because if there are no loadedPlugins specified, then the default is
@@ -194,6 +199,9 @@ define([
 
 	/**
 	 * Begin initialize editables.
+	 *
+	 * @param {function} event Event to trigger after completing tasks.
+	 * @param {function} next Function to call after completing tasks.
 	 */
 	function initEditables(event, next) {
 		var i;
