@@ -93,12 +93,12 @@ important guidelines concerning how to write your own validation functions:
 
  * It receives 3 parameters: The first arguments is a string containing the
    contents of the editable that is to be validated, the second, an
-   Aloha.Editable object, and the third is a refernce to the jQuery instance
+   Aloha.Editable object, and the third is a reference to the jQuery instance
    that is used by Aloha Editor internally.
  * It is a predicate (a function that returns truthy or falsey values).
  * It is a "pure" function--meaning that it does not alter external state
    outside of itself.
- * It is not asynchonous.
+ * It is not asynchronous.
  * It is relatively cheap, and is not space/time-complex.
 
 The correct signature of a validation function (in "Google Closure
@@ -189,7 +189,7 @@ argument.
 
 NOTE: Be aware that validation on each editable is "fail-fast"--that is, as
 	  soon a the first validation tests fails, the editable is considered
-	  invalid, and no furthser tests are run.
+	  invalid, and no further tests are run.
 
 h3. validate(): Manual validation
 
