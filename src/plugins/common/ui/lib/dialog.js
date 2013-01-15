@@ -126,6 +126,7 @@ define([
 				dialog.dialog('destroy').remove();
 			};
 		},
+
 		/**
 		 * Shows an alert dialog.
 		 *
@@ -149,6 +150,29 @@ define([
 			);
 			return function () {
 				dialog.dialog('destroy').remove();
+			};
+		},
+
+		/**
+		 * Shows a stripped down modal dialog that can be customized.
+		 *
+		 * @param {object} props Properties with which to customize the
+		 *                       modal.  All properties of
+		 *                       api.jqueryui.com/dialog apply, in addition to
+		 *                       the following optional properties:
+		 *                       html - HTML contents to be placed inside the
+		 *                              modal.
+		 *                        cls - Custom class to be given to the modal's
+		 *                              root element.
+		 * @return {function} A function to close the modal.
+		 */
+		'modal': function (props) {
+			var $dialog = makeDialogDiv(props).dialog(
+				$.extend(makeDialogProps(props, ''), props)
+			);
+			$dialog.parent().find('.ui-dialog-titlebar').remove();
+			return function () {
+				$dialog.dialog('destroy').remove();
 			};
 		},
 
