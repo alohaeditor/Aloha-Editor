@@ -35,7 +35,7 @@ h3. Enabling the Content Handler Plugin
 h4. Using Configuration
 
 <javascript>
-	Aloha.settings.contentHandler: {
+	Aloha.settings.contentHandler = {
 		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
 		initEditable: [ 'sanitize' ],
 		getContents: [ 'blockelement', 'sanitize', 'basic' ],
