@@ -164,16 +164,15 @@ define([
 		 *                              modal.
 		 *                        cls - Custom class to be given to the modal's
 		 *                              root element.
-		 * @return {function} A function to close the modal.
+		 * @return {jQuery.<HTMLElement>} jQuery object containing the dialog
+		 *                                DOM element.
 		 */
 		'modal': function (props) {
 			var $dialog = makeDialogDiv(props).dialog(
 				$.extend(makeDialogProps(props, ''), props)
 			);
 			$dialog.parent().find('.ui-dialog-titlebar').remove();
-			return function () {
-				$dialog.dialog('destroy').remove();
-			};
+			return $dialog;
 		},
 
 		/**
