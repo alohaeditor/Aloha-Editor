@@ -4,7 +4,6 @@ the Table plugin provides specialized controls for table insertion and manipulat
 
 endprologue.
 
-
 h3. Table Plugin
 
 The Table Plugin will allow you to edit tables within your contents. You can do pretty much everything that you'd expect from editing tables, like adding and deleting rows and columns as well as merging and splitting cells. You can use the tab key to jump from one cell to the next.
@@ -34,6 +33,29 @@ In order to merge two or more cells select the desired cells, rows or columns an
 NOTE: All contents will be merged into the first cell and all other previously split cells will be empty.
 
 NOTE: In Internet Explorer it is not possible to select cells when you select a cell (the text in it) and drag the mouse over the other cells you want to select -- you'll have to click and drag on the table cell border which is sometimes quite tricky. In that case you can click into the first cell and then "shift-click" into the last cell of the coherent cell range you want to select.
+
+h4. Resizing rows and columns
+
+WARNING: This feature is not available for IE 7 or below.
+
+Table columns and rows can be resized using drag & drop. When hovering over a cells bottom or right edge the cursor will change to indicate that the cell can be resized.
+
+To enable table resizing the following options are available:
+
+<javascript>
+Aloha.settings.plugins.table: {
+	// allow resizing the table width (default: false)
+	tableResize: true,
+	// allow resizing the column width (default: false)
+	colResize: true,
+	// allow resizing the row height (default: false)
+	rowResize: true
+};
+</javascript>
+
+NOTE: Cell resizing won't allow you to resize a cell *smaller* than the size of its contents. You might need to increase the width of the table first before resizing cells is possible.
+
+To reset a table's size, after it has been resized, use the "reset size" button from the toolbar.
 
 h4. Table layout
 
@@ -79,7 +101,13 @@ Aloha.settings.plugins: {
 		cellConfig : [
 				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
-		]
+		],
+		// allow resizing the table width (default: true)
+		tableResize: true,
+		// allow resizing the column width (default: true)
+		colResize: true,
+		// allow resizing the row height (default: true)
+		rowResize: true
 	}
 };
 </javascript>
@@ -104,3 +132,4 @@ h3. Components
 * mergecells - merge selected cells
 * splitcells - split selected cells
 * tablecaption - input field which allows you to add a caption to the table
+* naturalfit - removes defined widths and heights from rows and columns 
