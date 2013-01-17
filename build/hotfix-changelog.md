@@ -12,3 +12,4 @@ All changes are categorized into one of the following keywords:
                  characterpicker.
 **ENHANCEMENT**: Introducing Modal.modal()--a stripped down modal dialog that
                  can be customized for specific purposes.
+**BUG**:         Prevent scrolling after pasting content into editables
