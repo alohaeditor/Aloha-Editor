@@ -1,3 +1,17 @@
+/* Enable styling of .note elements */
+.note {
+  /* Visually distinguish the nested editable area by giving some left/right padding */
+  margin: 0 15px;
+}
+.note > .title:before {
+  content: "Note Title: ";
+  font-weight: bold;
+}
+
+*:before {
+  color: #999;
+}
+
 /* Apparently MathJax still renders the annotation element as plain text */
 .math-element .MathJax .math .annotation, annotation {
   display: none;
