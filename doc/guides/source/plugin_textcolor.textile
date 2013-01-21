@@ -31,7 +31,7 @@ The textcolor plugin will by default offer the following colors:
 * #FFFFFF 
 * #000000 
 * #000FFF 
-* #FFF000 |
+* #FFF000
 
 It is possible to configure the global color palette and to configure color palettes for specific editables (identified by jQuery selectors):
 You can specify the colors as hex (#FF0000), RGB (rgb(255,0,0)) values or CSS class names (`redcolor`).
