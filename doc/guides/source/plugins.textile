@@ -99,6 +99,7 @@ Plugins in the @extra@ directory:
 * "extra/ribbon":plugin_ribbon.html - this plugin is intended to provide a Ribbon which is displayed on top of the page and some controls can be added to it dynamically
 * "extra/sourceview":plugin_sourceview.html - view the source of an editable including selection marks in the sidebar
 * "extra/speak":plugin_speak.html - integrates speak.js into Aloha Editor
+* "extra/textcolor":plugin_textcolor.html - set textcolor for selected parts of text
 * "extra/toc":plugin_toc.html - add a table of contents into your editable
 * "extra/validation":plugin_validation.html - validates editables
 * "extra/vie":plugin_vie.html - integrates VIE.js into Aloha Editor
