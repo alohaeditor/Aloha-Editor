@@ -326,7 +326,7 @@ define([
 
 		GENTICS.Utils.Dom.extendToWord(range);
 		range.select();
-	};
+	}
 
 	/**
 	 * Apply color after selecting it from the list
