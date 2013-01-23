@@ -8,8 +8,8 @@
   font-weight: bold;
 }
 
-*:before {
-  color: #999;
+.aloha-editable *:before {
+  opacity: 0.8;
 }
 
 /* Apparently MathJax still renders the annotation element as plain text */
