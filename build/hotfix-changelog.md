@@ -13,3 +13,5 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: editables: Initializing empty editables in Firefox will no longer
               result in them aquiring an extra <br/>. This was previously done
 			  to work around a Firefox bug that seems not no longer be an issue.
+- **BUGFIX**: Fix display of values after image-reset and improve the
+              size-check of image-resizing
