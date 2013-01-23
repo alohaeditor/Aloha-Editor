@@ -296,13 +296,6 @@
     //});
     Aloha.ready( function() {
       Aloha.jQuery('.document').aloha().focus();
-      // Wait until Aloha is started before loading MathJax
-      // Also, wrap all math in a span/div. MathJax replaces the MathJax element
-      // losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
-      // add aloha-cleanme so this span is unwrapped
-      jQuery('math').wrap('<span class="math-element aloha-cleanme"></span>')
-      MathJax.Hub.Configured();
-      //$('*[rel=tooltip]').tooltip();
     });
   </script>
 </body>

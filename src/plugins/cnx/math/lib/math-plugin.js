@@ -22,9 +22,15 @@
       'ASCIIMath': 'math/asciimath'
     };
     TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>';
+    Aloha.ready(function() {
+      return MathJax.Hub.Configured();
+    });
+    Aloha.bind('aloha-editable-activated', function(evt, ed) {
+      return ed.editable.obj.find('math').wrap('<span class="math-element aloha-cleanme"></span>');
+    });
     insertMath = function() {
       var $el, $tail, range;
-      $el = jQuery('<span class="math-element"></span>');
+      $el = jQuery('<span class="math-element aloha-cleanme"></span>');
       range = Aloha.Selection.getRangeObject();
       if (range.isCollapsed()) {
         GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
