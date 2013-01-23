@@ -13,3 +13,5 @@ All changes are categorized into one of the following keywords:
 **ENHANCEMENT**: Introducing Modal.modal()--a stripped down modal dialog that
                  can be customized for specific purposes.
 **BUG**:         Prevent scrolling after pasting content into editables
+**BUG**:         Fix display of values after image-reset and improve the
+                 size-check of image-resizing
