@@ -39,7 +39,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
   # losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
   # add aloha-cleanme so this span is unwrapped
   Aloha.ready ->
-    MathJax.Hub.Configured()
+    MathJax.Hub.Configured() if MathJax?
 
   Aloha.bind 'aloha-editable-activated', (evt, ed) ->
     ed.editable.obj.find('math').wrap '<span class="math-element aloha-cleanme"></span>'

@@ -23,7 +23,9 @@
     };
     TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>';
     Aloha.ready(function() {
-      return MathJax.Hub.Configured();
+      if (typeof MathJax !== "undefined" && MathJax !== null) {
+        return MathJax.Hub.Configured();
+      }
     });
     Aloha.bind('aloha-editable-activated', function(evt, ed) {
       return ed.editable.obj.find('math').wrap('<span class="math-element aloha-cleanme"></span>');
