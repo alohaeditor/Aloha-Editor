@@ -22,3 +22,8 @@ All changes are categorized into one of the following keywords:
 - **BUG**: core: when a placeholder was defined for an editable, a placeholder wrapper element was injected into
 	         all editables instead of only the editable the placeholder was defined for.
 - **BUG**: core: Aloha.settings.locale property was not honored.
+- **ENHANCEMENT**: format-plugin: b/strong and i/em handling
+        The "b" button will show as pressed if the selection contains
+	"strong" formatting, and will unformat the "strong" if
+	unpressed. The same behaviour was implemented for the i/em
+	combination.

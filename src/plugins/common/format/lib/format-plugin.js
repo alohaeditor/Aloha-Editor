@@ -28,6 +28,7 @@ define('format/format-plugin', [
 	'aloha',
 	'aloha/plugin',
 	'jquery',
+	'util/arrays',
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
@@ -39,6 +40,7 @@ define('format/format-plugin', [
 	Aloha,
 	Plugin,
 	jQuery,
+	Arrays,
 	Ui,
 	ToggleButton,
 	MultiSplitButton,
@@ -90,6 +92,12 @@ define('format/format-plugin', [
 		'h5': true,
 		'h6': true,
 		'pre': true
+	};
+	var interchangeableNodeNames = {
+		"B": ["STRONG", "B"],
+		"I": ["EM", "I"],
+		"STRONG": ["STRONG", "B"],
+		"EM": ["EM", "I"]
 	};
 
 	function formatInsideTableWorkaround(button) {
@@ -196,10 +204,11 @@ define('format/format-plugin', [
 			return;
 		}
 
-        // check whether the markup is found in the range (at the start of the range)
-        var foundMarkup = rangeObject.findMarkup( function() {
-            return this.nodeName === markup[0].nodeName;
-        }, Aloha.activeEditable.obj );
+		// check whether the markup is found in the range (at the start of the range)
+		var nodeNames = interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
+		var foundMarkup = rangeObject.findMarkup(function() {
+			return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
+		}, Aloha.activeEditable.obj);
 
 		if (foundMarkup) {
 			// remove the markup
@@ -228,17 +237,19 @@ define('format/format-plugin', [
 	}
 
 	function onSelectionChanged(formatPlugin, rangeObject) {
-		var statusWasSet = false, effectiveMarkup,
+		var effectiveMarkup,
 		    foundMultiSplit, i, j, multiSplitItem;
 
 		jQuery.each(formatPlugin.buttons, function (index, button) {
-			statusWasSet = false;
-
+			var statusWasSet = false;
+			var nodeNames = interchangeableNodeNames[button.markup[0].nodeName] || [button.markup[0].nodeName];
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
-				if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
-					button.handle.setState(true);
-					statusWasSet = true;
+				for (j = 0; j < nodeNames.length; j++) {
+					if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
+						button.handle.setState(true);
+						statusWasSet = true;
+					}
 				}
 			}
 			if (!statusWasSet) {
