@@ -148,6 +148,16 @@
           $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer());
           $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer());
           $newEl.addClass($oldEl.attr('class'));
+          $newEl.bind('click', function(event, data) { 
+                                var headingChoices = jQuery('.changeHeading');
+                                for(var i = 0; i < headingChoices.length; i++) {
+                                    if(this.tagName == jQuery(headingChoices[i]).attr('data-tagname').toUpperCase()) {
+                                        newName = headingChoices[i].innerHTML;
+                                        break;
+                                    }
+                                }
+                                jQuery('.currentHeading')[0].innerHTML = newName; 
+                               });
           return evt.preventDefault();
         };
         $ROOT.on('click', '.action.changeHeading', changeHeading);
