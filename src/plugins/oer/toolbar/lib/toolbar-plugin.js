@@ -148,9 +148,9 @@
           $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer());
           $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer());
           $newEl.addClass($oldEl.attr('class'));
-          var headingFunc = function(event, data) { 
-                                jQuery('.currentHeading')[0].innerHTML = getCorrectNewHeadingName(this); 
-                               };
+          //var headingFunc = function(event, data) { 
+          //                      jQuery('.currentHeading')[0].innerHTML = getCorrectNewHeadingName(this); 
+          //                     };
           $newEl.bind('click', headingFunc);
           return evt.preventDefault();
         };
