@@ -219,7 +219,7 @@
                             var headingFunc = function(event, data) { 
                                 Aloha.jQuery('.currentHeading')[0].innerHTML = getCorrectNewHeadingName(this); 
                                };
-                            var testFunc = function(event, data) {
+                            var recursiveHeadingFunc = function(event, data) {
                                 var selection = Aloha.getSelection();
                                 Aloha.jQuery('.currentHeading')[0].innerHTML = getCorrectNewHeadingName(
                                                                                 getClosestHeadingParent(
@@ -227,7 +227,7 @@
                             };
                             // Binds the function to all headers, paragraphs, and pre tags
                             Aloha.jQuery(":header, p, pre").bind('click', headingFunc);
-                            Aloha.jQuery('#canvas').bind('keyup', testFunc);
+                            Aloha.jQuery('#canvas').bind('keyup', recursiveHeadingFunc);
                             Aloha.jQuery('#statusmessage').data('message')('Preview loaded');
                         });
                     });
