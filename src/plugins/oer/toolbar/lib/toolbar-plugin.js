@@ -150,6 +150,7 @@
           $newEl.addClass($oldEl.attr('class'));
           return evt.preventDefault();
         };
+
         $ROOT.on('click', '.action.changeHeading', changeHeading);
         Aloha.bind('aloha-editable-activated', function(event, data) {
           return squirreledEditable = data.editable;
