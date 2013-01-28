@@ -190,6 +190,21 @@
                                     GenericButton.getButtons()["save"].enable(true);
                                 }
                             });
+                            // Binds Update function to all headings. Update function updates the current heading being displayed
+                            var headingFunc = function(event, data) { 
+                                console.log("Updating header");
+                                var headingChoices = Aloha.jQuery('.changeHeading');
+                                for(var i = 0; i < headingChoices.length; i++) {
+                                    if(this.tagName == Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase()) {
+                                        newName = headingChoices[i].innerHTML;
+                                        break;
+                                    }
+                                }
+                                Aloha.jQuery('.currentHeading')[0].innerHTML = newName; 
+                               };
+                            // Binds the function to all headers
+                            Aloha.jQuery(':header').bind('click', headingFunc);
+                            console.log("Adding handler");
                             Aloha.jQuery('#statusmessage').data('message')('Preview loaded');
                         });
                     });
@@ -237,7 +252,7 @@
                         <button class="btn action strong" rel="tooltip" title="Bold"><i class="icon-bold"></i></button>
                         <button class="btn action emphasis" rel="tooltip" title="Italics"><i class="icon-italic"></i></button>
                         <button class="btn action underline" rel="tooltip" title="Underline"><i class="icon-underline"></i></button>
-                        <button class="btn action superscript" rel="tooltip" title="Superscript"><i class="icon-superscript"></i></button>
+                        <button class="btn action  superscript" rel="tooltip" title="Superscript"><i class="icon-superscript"></i></button>
                         <button class="btn action subscript" rel="tooltip" title="Subscript"><i class="icon-subscript"></i></button>
                       </div>
                       <span class="separator"> </span>
