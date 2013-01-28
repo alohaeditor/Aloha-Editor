@@ -84,6 +84,7 @@
                     tal:content="string:var save_url = '${request.route_url('preview_save')}';">
                     var save_url = null;</script>
             <script type="text/javascript">
+
                 Aloha.ready(function(){
                     Aloha.require(['PubSub', 'genericbutton/genericbutton-plugin'],
                             function(PubSub, GenericButton){
@@ -182,6 +183,30 @@
                             // editor.isModified().
                             window.setInterval(savePreview, 30000);
 
+                            var headingChoices = Aloha.jQuery('.changeHeading');
+                            var possibleHeadings = new Array();
+                            for(var i = 0; i < headingChoices.length; i++) {
+                                possibleHeadings[possibleHeadings.length] = Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase();
+                            }
+
+                            function getClosestHeadingParent(ele) {
+                                while(ele != null && (ele.nodeType == 3 || possibleHeadings.indexOf(ele.tagName.toUpperCase()) == -1)) {
+                                    ele = ele.parentNode;
+                                }
+                                return ele;
+                            }
+
+                            function getCorrectNewHeadingName(ele) {
+                                newName = 'Normal Text'; // Default heading display
+                                for(var i = 0; i < headingChoices.length; i++) {
+                                    if(ele.tagName == Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase()) {
+                                        newName = headingChoices[i].innerHTML;
+                                        break;
+                                    }
+                                }
+                                return newName;
+                            }
+
                             // Bind a handler for the changed event
                             var editor = Aloha.getEditableById('canvas');
                             Aloha.bind('aloha-smart-content-changed', function(){
@@ -192,18 +217,17 @@
                             });
                             // Binds Update function to all headings. Update function updates the current heading being displayed
                             var headingFunc = function(event, data) { 
-                                var headingChoices = Aloha.jQuery('.changeHeading');
-                                newName = 'Normal Text'; // Default heading display
-                                for(var i = 0; i < headingChoices.length; i++) {
-                                    if(this.tagName == Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase()) {
-                                        newName = headingChoices[i].innerHTML;
-                                        break;
-                                    }
-                                }
-                                Aloha.jQuery('.currentHeading')[0].innerHTML = newName; 
+                                Aloha.jQuery('.currentHeading')[0].innerHTML = getCorrectNewHeadingName(this); 
                                };
+                            var testFunc = function(event, data) {
+                                var selection = Aloha.getSelection();
+                                Aloha.jQuery('.currentHeading')[0].innerHTML = getCorrectNewHeadingName(
+                                                                                getClosestHeadingParent(
+                                                                                   selection._nativeSelection.anchorNode)); 
+                            };
                             // Binds the function to all headers, paragraphs, and pre tags
                             Aloha.jQuery(":header, p, pre").bind('click', headingFunc);
+                            Aloha.jQuery('#canvas').bind('keyup', testFunc);
                             Aloha.jQuery('#statusmessage').data('message')('Preview loaded');
                         });
                     });
