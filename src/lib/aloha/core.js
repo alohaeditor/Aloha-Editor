@@ -571,7 +571,7 @@ define([
 		 * @return {string} The fully qualified url of this plugin.
 		 */
 		getPluginUrl: function (name) {
-			if (name) {
+			if (!name) {
 				return null;
 			}
 			var url = Aloha.settings._pluginBaseUrlByName[name];
