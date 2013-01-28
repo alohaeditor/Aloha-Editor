@@ -183,12 +183,16 @@
                             // editor.isModified().
                             window.setInterval(savePreview, 30000);
 
+                            // Retrieve HTML elements which are the options in the heading drop down
                             var headingChoices = Aloha.jQuery('.changeHeading');
+                            // Collect the element tags which are generated as headings 
                             var possibleHeadings = new Array();
                             for(var i = 0; i < headingChoices.length; i++) {
                                 possibleHeadings[possibleHeadings.length] = Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase();
                             }
 
+                            // Search through parent links in the DOM until we find an element whose enclosing tag
+                            // is one of the section heading tags
                             function getClosestHeadingParent(ele) {
                                 while(ele != null && (ele.nodeType == 3 || possibleHeadings.indexOf(ele.tagName.toUpperCase()) == -1)) {
                                     ele = ele.parentNode;
@@ -196,6 +200,7 @@
                                 return ele;
                             }
 
+                            // Find the English heading name for a certain tag name (for instance, pre -> Code)
                             function getCorrectNewHeadingName(ele) {
                                 newName = 'Normal Text'; // Default heading display
                                 for(var i = 0; i < headingChoices.length; i++) {
