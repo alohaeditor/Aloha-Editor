@@ -192,8 +192,8 @@
                             });
                             // Binds Update function to all headings. Update function updates the current heading being displayed
                             var headingFunc = function(event, data) { 
-                                console.log("Updating header");
                                 var headingChoices = Aloha.jQuery('.changeHeading');
+                                newName = 'Normal Text'; // Default heading display
                                 for(var i = 0; i < headingChoices.length; i++) {
                                     if(this.tagName == Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase()) {
                                         newName = headingChoices[i].innerHTML;
@@ -202,8 +202,11 @@
                                 }
                                 Aloha.jQuery('.currentHeading')[0].innerHTML = newName; 
                                };
-                            // Binds the function to all headers
+                            // Binds the function to all headers, paragraphs, and pre tags
                             Aloha.jQuery(':header').bind('click', headingFunc);
+                            Aloha.jQuery('p').bind('click', headingFunc);
+                            Aloha.jQuery('pre').bind('click', headingFunc);
+
                             console.log("Adding handler");
                             Aloha.jQuery('#statusmessage').data('message')('Preview loaded');
                         });
