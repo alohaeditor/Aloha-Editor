@@ -162,7 +162,7 @@ function ( Aloha, jQuery ) {
 				return (
 					( !p.queryString || e.name.match( r ) || e.url.match( r ) ) &&
 					( !p.objectTypeFilter || ( !p.objectTypeFilter.length ) || jQuery.inArray( e.type, p.objectTypeFilter ) > -1 ) &&
-					true //( !p.inFolderId || p.inFolderId == e.parentId )
+					( !p.inFolderId || p.inFolderId == e.parentId )
 				);
 			} );
 
