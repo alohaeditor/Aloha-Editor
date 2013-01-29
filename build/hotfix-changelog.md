@@ -15,3 +15,4 @@ All changes are categorized into one of the following keywords:
 **BUG**:         Prevent scrolling after pasting content into editables
 **BUG**:         Fix display of values after image-reset and improve the
                  size-check of image-resizing
+**BUG**:         Fix resetting images and cropping functionality
