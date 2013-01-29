@@ -85,7 +85,70 @@
                     var save_url = null;</script>
             <script type="text/javascript">
 
+                // HTML elements which are the options in the heading drop down
+                var headingChoices = null;
+                // Element tags which are generated as headings 
+                var possibleHeadings = new Array();
+
+                // Search through parent links in the DOM until we find an element whose enclosing tag
+                // is one of the section heading tags
+                function getClosestHeadingParent(ele) {
+                    while(ele != null) {
+                        if(ele.tagName && possibleHeadings.indexOf(ele.tagName.toUpperCase()) != -1) {
+                            break;
+                        }
+
+                        if(ele.classList && ele.classList[0] === 'title-editor') {
+                            break;
+                        }
+                        ele = ele.parentNode;
+                    }
+                    return ele;
+                }
+
+                // Find the English heading name for a certain tag name (for instance, pre -> Code)
+                function getCorrectNewHeadingName(ele) {
+                    newName = 'Normal Text'; // Default heading display
+                    for(var i = 0; i < headingChoices.length; i++) {
+                        var checking  = Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase()
+                        if(ele.tagName == checking) {
+                            newName = headingChoices[i].innerHTML;
+                            break;
+                        }
+                    }
+                    return newName;
+                }
+
+                function headingFuncHelper(ele) {
+                    var button = Aloha.jQuery('#headingbutton')[0];
+                    if(ele.classList[0] === 'title-editor') {
+                        button.disabled=true;
+                        Aloha.jQuery('.currentHeading')[0].innerHTML = 'Title'; 
+                    } else {
+                        button.disabled=false;
+                        var newName = getCorrectNewHeadingName(ele);
+                        Aloha.jQuery('.currentHeading')[0].innerHTML = newName; 
+                    }
+                }
+
+                // Binds Update function to all headings. Update function updates the current heading being displayed
+                function headingFunc(event, data) { 
+                    var ele = this;
+                    headingFuncHelper(ele);
+                }
+
+                function recursiveHeadingFunc(event, data) {
+                    var selection = Aloha.getSelection();
+                    var ele = getClosestHeadingParent(selection._nativeSelection.anchorNode);
+                    headingFuncHelper(ele);
+                }
+
                 Aloha.ready(function(){
+
+                    headingChoices = Aloha.jQuery('.changeHeading');
+                    for(var i = 0; i < headingChoices.length; i++) {
+                        possibleHeadings[possibleHeadings.length] = Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase();
+                    }
                     Aloha.require(['PubSub', 'genericbutton/genericbutton-plugin'],
                             function(PubSub, GenericButton){
                         // Save button is disabled until something is changed
@@ -183,29 +246,6 @@
                             // editor.isModified().
                             window.setInterval(savePreview, 30000);
 
-                            var headingChoices = Aloha.jQuery('.changeHeading');
-                            var possibleHeadings = new Array();
-                            for(var i = 0; i < headingChoices.length; i++) {
-                                possibleHeadings[possibleHeadings.length] = Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase();
-                            }
-
-                            function getClosestHeadingParent(ele) {
-                                while(ele != null && (ele.nodeType == 3 || possibleHeadings.indexOf(ele.tagName.toUpperCase()) == -1)) {
-                                    ele = ele.parentNode;
-                                }
-                                return ele;
-                            }
-
-                            function getCorrectNewHeadingName(ele) {
-                                newName = 'Normal Text'; // Default heading display
-                                for(var i = 0; i < headingChoices.length; i++) {
-                                    if(ele.tagName == Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase()) {
-                                        newName = headingChoices[i].innerHTML;
-                                        break;
-                                    }
-                                }
-                                return newName;
-                            }
 
                             // Bind a handler for the changed event
                             var editor = Aloha.getEditableById('canvas');
@@ -215,19 +255,11 @@
                                     GenericButton.getButtons()["save"].enable(true);
                                 }
                             });
-                            // Binds Update function to all headings. Update function updates the current heading being displayed
-                            var headingFunc = function(event, data) { 
-                                Aloha.jQuery('.currentHeading')[0].innerHTML = getCorrectNewHeadingName(this); 
-                               };
-                            var testFunc = function(event, data) {
-                                var selection = Aloha.getSelection();
-                                Aloha.jQuery('.currentHeading')[0].innerHTML = getCorrectNewHeadingName(
-                                                                                getClosestHeadingParent(
-                                                                                   selection._nativeSelection.anchorNode)); 
-                            };
                             // Binds the function to all headers, paragraphs, and pre tags
                             Aloha.jQuery(":header, p, pre").bind('click', headingFunc);
-                            Aloha.jQuery('#canvas').bind('keyup', testFunc);
+                            Aloha.jQuery('#canvas').bind('keyup', recursiveHeadingFunc);
+                            Aloha.jQuery('#canvas').bind('click', recursiveHeadingFunc);
+                            Aloha.jQuery(".title-editor").bind('click', headingFunc);
                             Aloha.jQuery('#statusmessage').data('message')('Preview loaded');
                         });
                     });
@@ -255,7 +287,7 @@
                       </div>
                       <span class="separator"> </span>
                       <div class="btn-group headings">
-                        <button class="btn heading dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Text Heading">
+                        <button class="btn heading dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Text Heading" id="headingbutton">
                           <span class="currentHeading">Nothing</span>
                           <span class="caret"></span></button>
                         <ul class="dropdown-menu">
