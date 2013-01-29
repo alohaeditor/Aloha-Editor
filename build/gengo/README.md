@@ -20,7 +20,7 @@ To get a list of all available languages type:
 
 The following command will prepare the data to manually import it to gengo.com:
 
-    php gengo-export.php
+    php gengo-import.php
 
 
 ## Further information
