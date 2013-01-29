@@ -174,10 +174,7 @@ define([
 			// No default behaviour defined besides event triggering
 			$('body').trigger('aloha-image-reset', $image);
 
-			$('#' + this.ui.imgResizeHeightField.getInputId()).val($image.height());
-			$('#' + this.ui.imgResizeWidthField.getInputId()).val($image.width());
-
-			// Call the custom resize function
+			// Call the custom reset function
 			return this.onReset($image);
 		},
 
@@ -205,6 +202,8 @@ define([
 
 			$('#' + this.ui.imgResizeHeightField.getInputId()).val($image.height());
 			$('#' + this.ui.imgResizeWidthField.getInputId()).val($image.width());
+			$('#' + this.ui.imgResizeHeightField.getInputId()).css('background-color', '');
+			$('#' + this.ui.imgResizeWidthField.getInputId()).css('background-color', '');
 
 			// Call the custom resize function
 			this.onResized($image);
@@ -693,6 +692,7 @@ define([
 		 */
 		clickImage: function (e) {
 
+
 			var plugin = this;
 			plugin.endResize(); // removes previous resize handler
 			plugin.imageObj = jQuery(e.target);
@@ -716,7 +716,7 @@ define([
 
 			//Store the current props of the image
 			this.restoreProps.push({
-				obj : e.srcElement,
+				obj : plugin.imageObj,
 				src : plugin.imageObj.attr('src'),
 				width : plugin.imageObj.width(),
 				height : plugin.imageObj.height()
@@ -945,6 +945,11 @@ define([
 					secondaryField.css('background-color', '');
 					correctSecondary = true;
 				}
+			}
+
+			// final check for value of secondary field, in case focus was changed
+			if (secondaryField.val() < secondaryMin) {
+				correctSecondary = false;
 			}
 
 			//Success if values are correct or have been adjusted accordingly
@@ -1313,6 +1318,8 @@ define([
 		 * Reset the image to its original properties
 		 */
 		reset: function () {
+			var externalReset;
+
 			if (this.settings.ui.crop) {
 				this.endCrop();
 			}
@@ -1321,20 +1328,25 @@ define([
 				this.endResize();
 			}
 
-			if (this._onReset(this.imageObj)) {
-				// the external reset procedure has already performed a reset, so there is no need to apply an internal reset
-				return;
-			}
+			externalReset = this._onReset(this.imageObj);
 
-			for (var i = 0;i < this.restoreProps.length;i++) {
-				// restore from restoreProps if there is a match
-				if (this.imageObj.get(0) === this.restoreProps[i].obj) {
-					this.imageObj.attr('src', this.restoreProps[i].src);
-					this.imageObj.width(this.restoreProps[i].width);
-					this.imageObj.height(this.restoreProps[i].height);
-					return;
+			// if the external reset procedure has already performed a reset, there is no need to apply an internal reset
+			if (!externalReset) {
+				for (var i = 0;i < this.restoreProps.length;i++) {
+					// restore from restoreProps if there is a match
+					if (this.imageObj.get(0) === this.restoreProps[i].obj.get(0)) {
+						this.imageObj.attr('src', this.restoreProps[i].src);
+						this.imageObj.width(this.restoreProps[i].width);
+						this.imageObj.height(this.restoreProps[i].height);
+					}
 				}
 			}
+
+			// readjust inputfields to show correct height/width
+			$('#' + this.ui.imgResizeHeightField.getInputId()).val(this.imageObj.height());
+			$('#' + this.ui.imgResizeWidthField.getInputId()).val(this.imageObj.width());
+			$('#' + this.ui.imgResizeHeightField.getInputId()).css('background-color', '');
+			$('#' + this.ui.imgResizeWidthField.getInputId()).css('background-color', '');
 		}
 	});
 
