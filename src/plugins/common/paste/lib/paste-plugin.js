@@ -108,10 +108,21 @@ define([
 	 */
 	function restoreSelection(range) {
 		var editable = CopyPaste.getEditableAt(range);
+		var x = window.scrollX || document.documentElement.scrollLeft;
+		var y = window.scrollY || document.documentElement.scrollTop;
 		if (editable) {
 			editable.obj.focus();
+			// most browsers scroll to an element whenever the focus is set on it;
+			// for a larger editable this is not desired, therefore the window is told to
+			// scroll back to its original position
+			window.scrollTo(x, y);
 		}
 		CopyPaste.setSelectionAt(range);
+		// because the Internet Explorer tries to scroll away a second time,
+		// windows position is reset again
+		if (IS_IE) {
+			window.scrollTo(x, y);
+		}
 	}
 
 	/**
