@@ -217,7 +217,7 @@ define('format/format-plugin', [
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, rangeObject, true);
 			} else {
 				// the range is not collapsed, so we remove the markup from the range
-				GENTICS.Utils.Dom.removeMarkup(rangeObject, $(foundMarkup), Aloha.activeEditable.obj);
+				GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
 			}
 		} else {
 			// when the range is collapsed, extend it to a word
