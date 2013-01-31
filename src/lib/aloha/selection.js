@@ -2246,7 +2246,7 @@ define([
 		 * @void
 		 */
 		collapseToEnd: function () {
-			throw "NOT_IMPLEMENTED";
+			this._nativeSelection.collapseToEnd();
 		},
 
 		/**
