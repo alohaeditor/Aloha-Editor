@@ -84,7 +84,78 @@
                     tal:content="string:var save_url = '${request.route_url('preview_save')}';">
                     var save_url = null;</script>
             <script type="text/javascript">
+
+                // HTML elements which are the options in the heading drop down
+                var headingChoices = null;
+                // Element tags which are generated as headings 
+                var possibleHeadings = new Array();
+
+                // Search through parent links in the DOM until we find an element whose enclosing tag
+                // is one of the section heading tags
+                function getClosestHeadingParent(ele) {
+                    console.log('starting');
+                    while(ele != null) {
+                        console.log(ele);
+                        if(ele.tagName && possibleHeadings.indexOf(ele.tagName.toUpperCase()) != -1) {
+                            break;
+                        }
+
+                        if(ele.classList && ele.classList[0] === 'title-editor') {
+                            break;
+                        }
+                        ele = ele.parentNode;
+                    }
+                    console.log('returning');
+                    console.log(ele);
+                    return ele;
+                }
+
+                // Find the English heading name for a certain tag name (for instance, pre -> Code)
+                function getCorrectNewHeadingName(ele) {
+                    newName = 'Normal Text'; // Default heading display
+                    for(var i = 0; i < headingChoices.length; i++) {
+                        var checking  = Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase()
+                        if(ele.tagName == checking) {
+                            newName = headingChoices[i].innerHTML;
+                            break;
+                        }
+                    }
+                    return newName;
+                }
+
+                function headingFuncHelper(ele) {
+                    var button = Aloha.jQuery('#headingbutton')[0];
+                    if(!ele) {
+                        button.disabled = true;
+                        Aloha.jQuery('.currentHeading')[0].innerHTML = 'Unknown'; 
+                    } else if(ele.classList[0] === 'title-editor') {
+                        button.disabled=true;
+                        Aloha.jQuery('.currentHeading')[0].innerHTML = 'Title'; 
+                    } else {
+                        button.disabled=false;
+                        var newName = getCorrectNewHeadingName(ele);
+                        Aloha.jQuery('.currentHeading')[0].innerHTML = newName; 
+                    }
+                }
+
+                // Binds Update function to all headings. Update function updates the current heading being displayed
+                function headingFunc(event, data) { 
+                    var ele = this;
+                    headingFuncHelper(ele);
+                }
+
+                function recursiveHeadingFunc(event, data) {
+                    var selection = Aloha.getSelection();
+                    var ele = getClosestHeadingParent(selection._nativeSelection.anchorNode);
+                    headingFuncHelper(ele);
+                }
+
                 Aloha.ready(function(){
+
+                    headingChoices = Aloha.jQuery('.changeHeading');
+                    for(var i = 0; i < headingChoices.length; i++) {
+                        possibleHeadings[possibleHeadings.length] = Aloha.jQuery(headingChoices[i]).attr('data-tagname').toUpperCase();
+                    }
                     Aloha.require(['PubSub', 'genericbutton/genericbutton-plugin'],
                             function(PubSub, GenericButton){
                         // Save button is disabled until something is changed
@@ -182,6 +253,7 @@
                             // editor.isModified().
                             window.setInterval(savePreview, 30000);
 
+
                             // Bind a handler for the changed event
                             var editor = Aloha.getEditableById('canvas');
                             Aloha.bind('aloha-smart-content-changed', function(){
@@ -190,9 +262,17 @@
                                     GenericButton.getButtons()["save"].enable(true);
                                 }
                             });
+                            // Binds the function to all headers, paragraphs, and pre tags
+                            Aloha.jQuery(":header, p, pre").bind('click', headingFunc);
+                            Aloha.jQuery('#canvas').bind('keyup', recursiveHeadingFunc);
+                            Aloha.jQuery('#canvas').bind('click', recursiveHeadingFunc);
+                            Aloha.jQuery(".title-editor").bind('click', headingFunc);
                             Aloha.jQuery('#statusmessage').data('message')('Preview loaded');
                         });
                     });
+                    var button = Aloha.jQuery('#headingbutton')[0];
+                    button.disabled=true;
+                    Aloha.jQuery('.currentHeading')[0].innerHTML = 'Title'; 
                 });
                 </script>
 
@@ -217,7 +297,7 @@
                       </div>
                       <span class="separator"> </span>
                       <div class="btn-group headings">
-                        <button class="btn heading dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Text Heading">
+                        <button class="btn heading dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Text Heading" id="headingbutton">
                           <span class="currentHeading">Nothing</span>
                           <span class="caret"></span></button>
                         <ul class="dropdown-menu">
@@ -237,7 +317,7 @@
                         <button class="btn action strong" rel="tooltip" title="Bold"><i class="icon-bold"></i></button>
                         <button class="btn action emphasis" rel="tooltip" title="Italics"><i class="icon-italic"></i></button>
                         <button class="btn action underline" rel="tooltip" title="Underline"><i class="icon-underline"></i></button>
-                        <button class="btn action superscript" rel="tooltip" title="Superscript"><i class="icon-superscript"></i></button>
+                        <button class="btn action  superscript" rel="tooltip" title="Superscript"><i class="icon-superscript"></i></button>
                         <button class="btn action subscript" rel="tooltip" title="Subscript"><i class="icon-subscript"></i></button>
                       </div>
                       <span class="separator"> </span>

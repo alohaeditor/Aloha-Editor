@@ -143,11 +143,18 @@
             GENTICS.Utils.Dom.extendToWord(rangeObject);
           }
           Aloha.Selection.changeMarkupOnSelection(Aloha.jQuery("<" + hTag + "></" + hTag + ">"));
+          // Change the lable for the Heading button to match the newly selected formatting
+          jQuery('.currentHeading')[0].innerHTML = $el[0].innerHTML;
           $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer());
           $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer());
           $newEl.addClass($oldEl.attr('class'));
+          //var headingFunc = function(event, data) { 
+          //                      jQuery('.currentHeading')[0].innerHTML = getCorrectNewHeadingName(this); 
+          //                     };
+          $newEl.bind('click', headingFunc);
           return evt.preventDefault();
         };
+
         $ROOT.on('click', '.action.changeHeading', changeHeading);
         Aloha.bind('aloha-editable-activated', function(event, data) {
           return squirreledEditable = data.editable;
