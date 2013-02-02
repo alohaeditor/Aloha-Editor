@@ -130,6 +130,22 @@ function(Aloha, plugin, $, Ui, Button, PubSub, Dialog, Ephemera, CreateLayer) {
                     prepareTable(plugin, $(this));
                 });
                 plugin.renumberCaptions(editable.obj);
+                editable.obj.on('keydown', null, 'return', function(e){
+                    var $canvas = editable.obj;
+                    var $currentTableCell = $canvas.find('.aloha-current-cell');
+                    var inTable = ( $currentTableCell.length > 0 ? true : false );
+                    if ( inTable ) {
+                        // default action for 'return' is to insert a new line,
+                        // so we want this and thus do not call e.preventDefault() here
+                        e.stopPropagation(); 
+                        e.stopImmediatePropagation();
+                    }
+                });
+                // Aloha has its own 'keydown' event handler which will fire before the above handler
+                // and which will cause havoc ... havoc I tell you. Tables will be split!!!
+                // Change the order of the event handlers to suit our own purposes.
+                editable.obj.data('events')['keydown'].unshift(editable.obj.data('events')['keydown'].pop());
+
                 editable.obj.bind('keydown', 'tab shift+tab', function(e){
                     var $cell = $(
                         getSelection().focusNode).closest('td,th');

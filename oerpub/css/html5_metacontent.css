@@ -528,20 +528,31 @@ font-family: tahoma, verdana, arial, helvetica, sans-serif;
 
 /* ====== module header ===== */
 
+.document_title{
+  border-bottom: 1px solid #fc0;
+  margin-bottom: 1em;
+  color: #e70;
+  /*padding: 0 0 .4em;*/
+  font-size: 2.3em;
+  font-weight: normal;
+}
+/*
 .title{
   border-bottom: 1px solid #fc0;
   margin-bottom: 1em;
 }
+*/
 
 * html .title{ height: 1%; }
 *+html .title{ height: 1%; }
-
+/*
 .title{
   color: #e70;
   padding: 0 0 .4em;
   font-size: 2.3em;
   font-weight: normal;
 }
+*/
 
 #cnx_authorship, #cnx_rate, #cnx_abstract{
   margin: 1em 0;

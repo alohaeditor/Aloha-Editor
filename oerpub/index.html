@@ -93,7 +93,9 @@
                 // Search through parent links in the DOM until we find an element whose enclosing tag
                 // is one of the section heading tags
                 function getClosestHeadingParent(ele) {
+                    console.log('starting');
                     while(ele != null) {
+                        console.log(ele);
                         if(ele.tagName && possibleHeadings.indexOf(ele.tagName.toUpperCase()) != -1) {
                             break;
                         }
@@ -103,6 +105,8 @@
                         }
                         ele = ele.parentNode;
                     }
+                    console.log('returning');
+                    console.log(ele);
                     return ele;
                 }
 
@@ -121,7 +125,10 @@
 
                 function headingFuncHelper(ele) {
                     var button = Aloha.jQuery('#headingbutton')[0];
-                    if(ele.classList[0] === 'title-editor') {
+                    if(!ele) {
+                        button.disabled = true;
+                        Aloha.jQuery('.currentHeading')[0].innerHTML = 'Unknown'; 
+                    } else if(ele.classList[0] === 'title-editor') {
                         button.disabled=true;
                         Aloha.jQuery('.currentHeading')[0].innerHTML = 'Title'; 
                     } else {
@@ -263,6 +270,9 @@
                             Aloha.jQuery('#statusmessage').data('message')('Preview loaded');
                         });
                     });
+                    var button = Aloha.jQuery('#headingbutton')[0];
+                    button.disabled=true;
+                    Aloha.jQuery('.currentHeading')[0].innerHTML = 'Title'; 
                 });
                 </script>
 

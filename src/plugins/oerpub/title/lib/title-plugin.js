@@ -10,7 +10,7 @@
         TitleBlock = Block.AbstractBlock.extend({
           title: 'Title',
           init: function($element, postProcessFn) {
-            $element.wrapInner('<div class="title-editor aloha-editable" />');
+            $element.wrapInner('<div class="title-editor document_title aloha-editable" />');
             return postProcessFn();
           },
           update: function($element, postProcessFn) {
