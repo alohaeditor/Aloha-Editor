@@ -247,6 +247,7 @@ function (jQuery) {
         ev.type = 'table-create-layer.closed'
         ev.target = layer;
         layer.trigger(ev);
+        $(this).trigger(ev);
 	};
 
 	/**

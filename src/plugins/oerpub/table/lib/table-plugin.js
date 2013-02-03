@@ -242,8 +242,13 @@ function(Aloha, plugin, $, Ui, Button, PubSub, Dialog, Ephemera, CreateLayer) {
                 icon: "aloha-icon aloha-icon-createTable",
                 scope: 'Aloha.continuoustext',
                 click: function(e){
-                    var layer = that.createLayer.show(e);
-                    layer.on('table-create-layer.closed', function(){
+                    var layer = that.createLayer;
+                    var $insertionEl = $('<span class="aloha-ephemera table-placeholder"> </span>');
+                    GENTICS.Utils.Dom.insertIntoDOM($insertionEl, Aloha.Selection.getRangeObject(),
+                                                    Aloha.activeEditable.obj);
+                    layer.show(e);
+                    $(layer).off('table-create-layer.closed').on('table-create-layer.closed', function(e){
+                        Aloha.activeEditable.obj.find('.table-placeholder').remove();
                         // Once we've managed to make menus sticky, we
                         // will close the menus here.
                         //alert('closed');
@@ -454,6 +459,7 @@ function(Aloha, plugin, $, Ui, Button, PubSub, Dialog, Ephemera, CreateLayer) {
                 var table = document.createElement('table');
                 var tableId = table.id = GENTICS.Utils.guid();
                 var tbody = document.createElement('tbody');
+                var $insertion = Aloha.activeEditable.obj.find('.table-placeholder') || $();
 
                 // Create caption
                 var caption = document.createElement('caption');
@@ -489,12 +495,17 @@ function(Aloha, plugin, $, Ui, Button, PubSub, Dialog, Ephemera, CreateLayer) {
                 }
                 table.appendChild(tbody);
 
-                prepareRangeContainersForInsertion(
-                    Aloha.Selection.getRangeObject(), table);
+               if ( $insertion && $insertion.length > 0 ) {
+                   $insertion.replaceWith($(table));
+               }
+               else {
+                    prepareRangeContainersForInsertion(
+                        Aloha.Selection.getRangeObject(), table);
                 
-                // insert the table at the current selection
-                GENTICS.Utils.Dom.insertIntoDOM($(table),
-                    Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
+                    // insert the table at the current selection
+                    GENTICS.Utils.Dom.insertIntoDOM($(table),
+                        Aloha.Selection.getRangeObject(), Aloha.activeEditable.obj);
+                }
 
                 cleanupAfterInsertion();
                 prepareTable(this, $(table));
