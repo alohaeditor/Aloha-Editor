@@ -173,6 +173,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         setTimeout(keyDelay.bind($formula), 500)
 
     $span.off('shown-popover').on 'shown-popover', () ->
+      $span.css 'background-color', '#E5EEF5'      
       $el = jQuery(@)
       tt = $el.data('tooltip')
       tt.hide().disable() if tt
@@ -182,6 +183,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       , 10)
 
     $span.off('hidden-popover').on 'hidden-popover', () ->
+      $span.css 'background-color', ''      
       tt = jQuery(@).data('tooltip')
       tt.enable() if tt
       cleanupFormula($editor, jQuery(@))

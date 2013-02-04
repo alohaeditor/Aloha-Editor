@@ -153,6 +153,7 @@
       });
       $span.off('shown-popover').on('shown-popover', function() {
         var $el, tt;
+        $span.css('background-color', '#E5EEF5');
         $el = jQuery(this);
         tt = $el.data('tooltip');
         if (tt) {
@@ -168,6 +169,7 @@
       });
       $span.off('hidden-popover').on('hidden-popover', function() {
         var tt;
+        $span.css('background-color', '');
         tt = jQuery(this).data('tooltip');
         if (tt) {
           tt.enable();
