@@ -1,4 +1,4 @@
-/* functions.js is part of Aloha Editor project http://aloha-editor.org
+/* html.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
@@ -24,39 +24,35 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([], function () {
+define(['util/dom2'], function (Dom) {
 	'use strict';
 
-	/**
-	 * The identity function returns its single argument.
-	 * Useful for composition when some default behaviour is needed.
-	 */
-	function identity(arg) {
-		return arg;
+	var inlineFormattableMap = {
+		'A': true,
+		'SPAN': true,
+		'B': true,
+		'I': true,
+		'STRONG': true,
+		'EM': true,
+		'SUB': true,
+		'SUP': true,
+		'U': true,
+		'S': true,
+		'STRIKE': true,
+		'FONT': true
+	};
+
+	function isIgnorableWhitespace(node) {
+		// TODO
+		return 3 === node.nodeType && !node.length;
 	}
 
-	function noop() {
-	}
-
-	function returnTrue() {
-		return true;
-	}
-
-	function returnFalse() {
-		return false;
-	}
-
-	function complement(fn) {
-		return function () {
-			return !fn.apply(this, arguments);
-		};
+	function isInlineFormattable(node) {
+		return inlineFormattableMap[node.nodeName];
 	}
 
 	return {
-		identity: identity,
-		noop: noop,
-		returnTrue: returnTrue,
-		returnFalse: returnFalse,
-		complement: complement
+		isIgnorableWhitespace: isIgnorableWhitespace,
+		isInlineFormattable: isInlineFormattable
 	};
 });

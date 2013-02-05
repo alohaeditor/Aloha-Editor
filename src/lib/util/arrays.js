@@ -57,7 +57,7 @@ define([], function () {
 			a.sort();
 			for (i = 1; i < a.length; i++) {
 				// Use loosely typed comparsion if no compFn is given
-				// to avoid sortUnique( [6, "6", 6] ) => [6, "6", 6]
+				// to avoid sortUnique([6, "6", 6]) => [6, "6", 6]
 				if (a[i] == a[i - 1]) {
 					a.splice(i--, 1);
 				}
@@ -169,6 +169,8 @@ define([], function () {
 	 * Arrays.reduce([2, 3, 4], 1, function (a, b) { return a + b; });
 	 * returns the result of (((1 + 2) + 3) + 4)
 	 *
+	 * Emulates ECMA5 Array.reduce.
+	 *
 	 * @param a
 	 *        An array of values.
 	 * @param init
@@ -187,6 +189,13 @@ define([], function () {
 	}
 
 	/**
+	 * Returns true if the given xs contains the given x.
+	 */
+	function contains(xs, x) {
+		return -1 !== indexOf(xs, x);
+	}
+
+	/**
 	 * Applies the given value to the given function unless the value is
 	 * null, in which case just returns null.
 	 *
@@ -196,13 +205,36 @@ define([], function () {
 		return value == null ? null : fn(value);
 	}
 
+	/**
+	 * Emulates ECMA5 Array.forEach.
+	 */
+	function forEach(xs, cb) {
+		var i,
+		    len;
+		for (i = 0, len = xs.length; i < len; i++) {
+			cb(xs[i], i, xs);
+		}
+	}
+
+	/**
+	 * Returns all items in xs that are also contained in zs.
+	 */
+	function intersect(xs, zs) {
+		return filter(xs, function (x) {
+			return contains(zs, x);
+		});
+	}
+
 	return {
 		filter: filter,
 		indexOf: indexOf,
 		reduce: reduce,
+		forEach: forEach,
+		map: Array.prototype.map ? mapNative : map,
+		contains: contains,
+		equal: equal,
 		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
-		equal: equal,
-		map: Array.prototype.map ? mapNative : map
+		intersect: intersect
 	};
 });

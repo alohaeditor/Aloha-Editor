@@ -22,7 +22,7 @@
 		};
 	</script>
 	<script src="../../../lib/require.js"></script>
-	<script src="../../../lib/aloha.js"></script>
+	<script src="../../../lib/aloha.js" data-aloha-plugins="common/dom-to-xhtml"></script>
 	
 	<!-- include testswarm inject script -->
 	<script>
@@ -37,7 +37,7 @@
 <body>
 	<!-- include the tests -->
 	<script>
-		require( ['trees-tests', 'strings-tests', 'arrays-tests', 'dom2-tests'] );
+		require( ['trees-tests', 'strings-tests', 'arrays-tests', 'dom2-tests', 'range-context-tests'] );
 	</script>
 	<h1 id="qunit-header">Aloha Editor util Test Suite</h1>
 	<h2 id="qunit-banner"></h2>
