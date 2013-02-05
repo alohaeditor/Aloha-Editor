@@ -125,7 +125,7 @@ define([
 				return false;
 			}
 		}
-	}
+	};
 
 	/**
 	 * Gets the name of the modifier key if is in effect for the given event.
@@ -139,8 +139,8 @@ define([
 	 */
 	function keyModifier($event) {
 		return $event.altKey ? 'alt' :
-		       $event.ctrlKey ? 'ctrl' :
-		       $event.shiftKey ? 'shift' : null;
+					$event.ctrlKey ? 'ctrl' :
+						$event.shiftKey ? 'shift' : null;
 	}
 
 	/**

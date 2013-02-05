@@ -66,7 +66,7 @@ define([
 				return codomain;
 			}
 		);
-	}('filter' in Array.prototype));
+	}(Array.prototype.hasOwnProperty('filter')));
 
 	/**
 	 * Bundles results, and meta information in preparation for the JSON Reader.

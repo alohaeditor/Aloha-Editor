@@ -557,7 +557,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		var matches = /^rgb\(([0-9]+), ([0-9]+), ([0-9]+)\)$/.exec(color);
 		if (matches) {
 			return "#" + parseInt(matches[1], 10).toString(16).replace(/^.$/, "0$&") + parseInt(matches[2], 10).toString(16).replace(/^.$/, "0$&") + parseInt(matches[3], 10).toString(16).replace(/^.$/, "0$&");
-		} else if ( /^#[abcdef0123456789]+$/i.exec(color) ) {
+		} else if (/^#[abcdef0123456789]+$/i.exec(color)) {
 			// return hexadecimal color values (as returned by IE 7/8)
 			return color;
 		}
