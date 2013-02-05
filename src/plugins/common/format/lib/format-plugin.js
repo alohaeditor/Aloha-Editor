@@ -327,16 +327,16 @@ define('format/format-plugin', [
 			// Prepare
 			var me = this;
 
-			if ( typeof this.settings.hotKey !== 'undefined' ) {
+			if (typeof this.settings.hotKey !== 'undefined') {
 				jQuery.extend(true, this.hotKey, this.settings.hotKey);
 			}
 
 			this.initButtons();
 
-			Aloha.ready( function () {
+			Aloha.bind('aloha-plugins-loaded', function () {
 				// @todo add config option for sidebar panel
-				me.initSidebar( Aloha.Sidebar.right ); 
-			} );
+				me.initSidebar(Aloha.Sidebar.right);
+			});
 
 			// apply specific configuration if an editable has been activated
 			Aloha.bind('aloha-editable-activated',function (e, params) {
@@ -370,7 +370,6 @@ define('format/format-plugin', [
 		 * @return void
 		 */
 		applyButtonConfig: function (obj) {
-
 			var config = this.getEditableConfig(obj),
 			    button, i, len;
 

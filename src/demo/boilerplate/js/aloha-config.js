@@ -41,6 +41,11 @@
 			listenforcer: {
 				editables: [ '.aloha-enforce-lists' ]
 			},
+			/*metaview: {
+				editables: {
+					'#top-text': ['metaview','enabled']
+				}
+			},*/
 			abbr: {
 				// all elements with no specific configuration get an UL, just for fun :)
 				config: [ 'abbr' ],
@@ -110,7 +115,13 @@
 				cellConfig: [
 					{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 					{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
-				]
+				],
+				// allow resizing the table width (default: false)
+				tableResize: true,
+				// allow resizing the column width (default: false)
+				colResize: true,
+				// allow resizing the row height (default: false)
+				rowResize: true
 			},
 			image: {
 				config:{
@@ -182,6 +193,14 @@
 			},
 			'wai-lang': {
 				flags: true
+			},
+			'textcolor': {
+				// configure a set of colors for all editables
+				config: ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder'],
+				editables: {
+					// configure a different set of colors for editable #one
+					'#top-text' : []
+				}
 			}
 		}
 	};

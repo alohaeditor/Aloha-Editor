@@ -6,7 +6,6 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
-----
 - **BUG**: Fix support for editable anchor elements
 - **ENHANCEMENT**: The Ephmera API was changed
 	aloha-cleanme class has been renamed to aloha-ephemera.

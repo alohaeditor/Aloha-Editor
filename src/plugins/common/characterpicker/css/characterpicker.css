@@ -16,7 +16,9 @@
 	border-collapse:collapse;
 }
 
-.aloha-character-picker-overlay td, .aloha-character-picker-overlay tr, .aloha-character-picker-overlay th {
+.aloha-character-picker-overlay td,
+.aloha-character-picker-overlay tr,
+.aloha-character-picker-overlay th {
 	background-color: #fff !important;
 }
 
@@ -38,6 +40,6 @@
     background-color: #b9d6f9 !important;
 }
 
-.aloha-icon-characterpicker {
-    background: url( '../img/icon.png' );
+.aloha .ui-icon.aloha-icon-characterpicker {
+    background: url('../img/icon.png');
 }

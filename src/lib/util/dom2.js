@@ -24,7 +24,17 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(['jquery', 'util/maps', 'util/strings', 'util/browser'], function ($, Maps, Strings, Browser) {
+define([
+	'jquery',
+	'util/maps',
+	'util/strings',
+	'util/browser'
+], function (
+	$,
+	Maps,
+	Strings,
+	Browser
+) {
 	'use strict';
 
 	var spacesRx = /\s+/;
@@ -40,6 +50,43 @@ define(['jquery', 'util/maps', 'util/strings', 'util/browser'], function ($, Map
 			var nextChild = firstChild.nextSibling;
 			parent.insertBefore(firstChild, refChild);
 			firstChild = nextChild;
+		}
+	}
+
+	/**
+	 * Used to serialize outerHTML of DOM elements in older (pre-HTML5) Gecko,
+	 * Safari, and Opera browsers.
+	 *
+	 * Beware that XMLSerializer generates an XHTML string (<div class="team" />
+	 * instead of <div class="team"></div>).  It is noted here:
+	 * http://stackoverflow.com/questions/1700870/how-do-i-do-outerhtml-in-firefox
+	 * that some browsers (like older versions of Firefox) have problems with
+	 * XMLSerializer, and an alternative, albeit more expensive option, is
+	 * described.
+	 *
+	 * @type {XMLSerializer|null}
+	 */
+	var Serializer = window.XMLSerializer && new window.XMLSerializer();
+
+	/**
+	 * Gets the serialized HTML that describes the given DOM element and its
+	 * innerHTML.
+	 *
+	 * Polyfill for older versions of Gecko, Safari, and Opera browsers.
+	 * @see https://bugzilla.mozilla.org/show_bug.cgi?id=92264 for background.
+	 *
+	 * @param {HTMLElement} node DOM Element.
+	 * @return {String}
+	 */
+	function outerHtml(node) {
+		var html = node.outerHTML;
+		if (typeof html !== 'undefined') {
+			return html;
+		}
+		try {
+			return Serializer ? Serializer.serializeToString(node) : node.xml;
+		} catch (e) {
+			return node.xml;
 		}
 	}
 
@@ -63,7 +110,7 @@ define(['jquery', 'util/maps', 'util/strings', 'util/browser'], function ($, Map
 	 */
 	function attrNames(elem) {
 		var names = [];
-		var html = elem.cloneNode(false).outerHTML;
+		var html = outerHtml(elem.cloneNode(false));
 		var match;
 		while (null != (match = attrRegex.exec(html))) {
 			names.push(match[1]);
@@ -248,6 +295,7 @@ define(['jquery', 'util/maps', 'util/strings', 'util/browser'], function ($, Map
 		attrs: attrs,
 		indexByClass: indexByClass,
 		indexByName: indexByName,
-		indexByClassHaveList: indexByClassHaveList
+		indexByClassHaveList: indexByClassHaveList,
+		outerHtml: outerHtml
 	};
 });

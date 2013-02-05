@@ -82,7 +82,7 @@ function(jQuery, Plugin, i18n, i18nCore) {
 			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) {
 				that.check(params.editable.obj);
 			});
-			Aloha.bind('aloha-ready', function (ev) {
+			Aloha.bind('aloha-plugins-loaded', function (ev) {
 				that.initSidebar(Aloha.Sidebar.right);
 			});
 		},

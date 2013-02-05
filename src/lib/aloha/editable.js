@@ -35,11 +35,13 @@ define([
 	'aloha/console',
 	'aloha/block-jump',
 	'aloha/ephemera',
-	'util/dom2'
+	'util/dom2',
+	'PubSub',
+	'aloha/copypaste'
 ], function (
 	Aloha,
 	Class,
-	jQuery,
+	$,
 	PluginManager,
 	Selection,
 	Markup,
@@ -47,10 +49,13 @@ define([
 	console,
 	BlockJump,
 	Ephemera,
-	Dom
+	Dom,
+	PubSub,
+	CopyPaste
 ) {
 	'use strict';
 
+	var jQuery = $;
 	var unescape = window.unescape,
 		GENTICS = window.GENTICS,
 
@@ -83,6 +88,82 @@ define([
 	};
 
 	var contentSerializer = defaultContentSerializer;
+
+	/**
+	 * Triggers smartContentChange handlers.
+	 *
+	 * @param {Aloha.Editable}
+	 * @return {string} Content that has been processed by getContent handlers
+	 *                  and smartContentChange handlers.
+	 */
+	function handleSmartContentChange(editable) {
+		return ContentHandlerManager.handleContent(editable.getContents(), {
+			contenthandler: Aloha.settings.contentHandler.smartContentChange
+		}, editable);
+	}
+
+	/**
+	 * List of observed key, mapped against their keycodes.
+	 *
+	 * @type {object<number, string>}
+	 * @const
+	 */
+	var KEYCODES = {
+		65: 'a'
+	};
+
+	/**
+	 * Handlers for various key combos.
+	 * Each handler ought to return false if they do not want the event to
+	 * continue propagating.
+	 */
+	var keyBindings = {
+		'ctrl+a': function () {
+			var editable = CopyPaste.getEditableAt(CopyPaste.getRange());
+			if (editable) {
+				CopyPaste.selectAllOf(editable.obj[0]);
+				return false;
+			}
+		}
+	}
+
+	/**
+	 * Gets the name of the modifier key if is in effect for the given event.
+	 *
+	 * eg: <Ctrl>+c
+	 *
+	 * @param {jQuery.Event} $event
+	 * @return {string|null} Modifier string or null if no modifier is in
+	 *                       effect.
+	 *                      
+	 */
+	function keyModifier($event) {
+		return $event.altKey ? 'alt' :
+		       $event.ctrlKey ? 'ctrl' :
+		       $event.shiftKey ? 'shift' : null;
+	}
+
+	/**
+	 * Handles keydown events that are fired on the page's document.
+	 *
+	 * @param {jQuery.Event) $event
+	 * @return {boolean} Returns false to stop propagation; undefined otherwise.
+	 */
+	function onKeydown($event) {
+		if (!Aloha.activeEditable) {
+			return;
+		}
+		var key = KEYCODES[$event.which];
+		if (key) {
+			var modifier = keyModifier($event);
+			var combo = (modifier ? modifier + '+' : '') + key;
+			if (keyBindings[combo]) {
+				return keyBindings[combo]($event);
+			}
+		}
+	}
+
+	$(document).keydown(onKeydown);
 
 	/**
 	 * Editable object
@@ -208,17 +289,15 @@ define([
 			content = ContentHandlerManager.handleContent(content, {
 				contenthandler: Aloha.settings.contentHandler.initEditable,
 				command: 'initEditable'
-			});
+			}, me);
 			me.obj.html(content);
 
-			// only initialize the editable when Aloha is fully ready (including plugins)
-			Aloha.bind('aloha-ready', function () {
-				// initialize the object
+			// Because editables can only properly be initialized when Aloha
+			// plugins are loaded.
+			Aloha.bind('aloha-plugins-loaded', function () {
 				me.obj.addClass('aloha-editable').contentEditable(true);
 
-				// add focus event to the object to activate
 				me.obj.mousedown(function (e) {
-					// check whether the mousedown was already handled
 					if (!Aloha.eventHandled) {
 						Aloha.eventHandled = true;
 						return me.activate(e);
@@ -312,6 +391,7 @@ define([
 				 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 				 */
 				Aloha.trigger('aloha-editable-created', [me]);
+				PubSub.pub('aloha.editable.created', {data: me});
 			});
 		},
 
@@ -555,6 +635,7 @@ define([
 			 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 			 */
 			Aloha.trigger('aloha-editable-destroyed', [this]);
+			PubSub.pub('aloha.editable.destroyed', {data: this});
 
 			// finally register the editable with Aloha
 			Aloha.unregisterEditable(this);
@@ -735,7 +816,7 @@ define([
 				$clone = jQuery('<div>' + ContentHandlerManager.handleContent($clone.html(), {
 					contenthandler: Aloha.settings.contentHandler.getContents,
 					command: 'getContents'
-				}) + '</div>');
+				}, this) + '</div>');
 
 				cache = editableContentCache[this.getId()] = {};
 				cache.raw = raw;
@@ -846,9 +927,12 @@ define([
 						'triggerType': 'keypress', // keypress, timer, blur, paste
 						'getSnapshotContent': getSnapshotContent
 					});
+					handleSmartContentChange(me);
 
-					console.debug('Aloha.Editable', 'smartContentChanged: event type keypress triggered');
+					console.debug('Aloha.Editable',
+							'smartContentChanged: event type keypress triggered');
 				}, this.sccDelay);
+
 			} else if (event && event.type === 'paste') {
 				Aloha.trigger('aloha-smart-content-changed', {
 					'editable': me,
@@ -858,6 +942,7 @@ define([
 					'triggerType': 'paste',
 					'getSnapshotContent': getSnapshotContent
 				});
+				handleSmartContentChange(me);
 
 			} else if (event && event.type === 'blur') {
 				Aloha.trigger('aloha-smart-content-changed', {
@@ -868,6 +953,7 @@ define([
 					'triggerType': 'blur',
 					'getSnapshotContent': getSnapshotContent
 				});
+				handleSmartContentChange(me);
 
 			} else if (event && event.type === 'block-change') {
 				Aloha.trigger('aloha-smart-content-changed', {
@@ -878,6 +964,7 @@ define([
 					'triggerType': 'block-change',
 					'getSnapshotContent': getSnapshotContent
 				});
+				handleSmartContentChange(me);
 
 			} else if (uniChar !== null) {
 				// in the rare case idle time is lower then delay time
@@ -892,6 +979,7 @@ define([
 						'triggerType': 'idle',
 						'getSnapshotContent': getSnapshotContent
 					});
+					handleSmartContentChange(me);
 				}, this.sccIdle);
 			}
 		},

@@ -43,9 +43,14 @@ Aloha.settings.plugins: {
 	metaview: {
 		config: [ 'metaview' ],
 		editables: {
-			'#one': [ 'metaview' ],
-			'#two': [ ]
+			'#one': [ 'metaview', 'enabled' ],
+			'#two': [ ],
+			'#three': [ 'metaview' ],
+			'#four': [ 'enabled' ]
 		}
 	}
 };
 </javascript>
+
+To enable the metaview button for an editable, put the 'metaview'-String in the editable configuration array.
+To enable the metaview view by default for an editable, place the 'enabled'-String in the editable configuration array.

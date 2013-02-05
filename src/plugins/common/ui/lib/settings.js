@@ -14,7 +14,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 						'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
 					], [
 						'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
-						'orderedList', 'unorderedList', 'indentList', 'outdentList'
+						'orderedList', 'unorderedList', 'indentList', 'outdentList', 'colorPicker'
 					], [
 						'formatBlock'
 					]
@@ -68,7 +68,8 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				showOn: { scope: 'table.cell' },
 				components: [
 					[ "mergecells", "splitcells", "tableCaption",
-					  "tableSummary", "formatTable" ]
+					  "tableSummary", "naturalFit" ],
+					[ "formatTable" ]
 				]
 			},
 			{

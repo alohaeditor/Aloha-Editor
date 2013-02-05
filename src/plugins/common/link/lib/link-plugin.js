@@ -69,6 +69,24 @@ define( [
 	    pluginNamespace = 'aloha-link',
 	    oldValue = '',
 	    newValue;
+
+	/**
+	 * Properties for cleaning up markup immediately after inserting new link
+	 * markup.
+	 *
+	 * Successive anchor elements are generally not merged, but an exception
+	 * needs to be made in the process of creating links: fragments of new links
+	 * are coalesced whenever possible.
+	 *
+	 * @type {object}
+	 */
+	var insertLinkPostCleanup = {
+		merge: true,
+		mergeable: function (node) {
+			return ('aloha-new-link' === node.className && node.nextSibling
+			     && 'aloha-new-link' === node.nextSibling.className);
+		}
+	};
 	
 	Ephemera.classes('aloha-link-pointer', 'aloha-link-text');
 
@@ -211,9 +229,9 @@ define( [
 			this.subscribeEvents();
 			this.bindInteractions();
 			
-			Aloha.ready( function () { 
-				that.initSidebar( Aloha.Sidebar.right ); 
-			} );
+			Aloha.bind('aloha-plugins-loaded', function () {
+				that.initSidebar(Aloha.Sidebar.right);
+			});
 		},
 
 		nsSel: function () {
@@ -651,6 +669,7 @@ define( [
 			} else {
 				newLink = jQuery( '<a href="' + that.hrefValue + '"></a>' );
 				GENTICS.Utils.Dom.addMarkup( range, newLink, false );
+				GENTICS.Utils.Dom.doCleanup(insertLinkPostCleanup, range);
 			}
 
 			range.select();

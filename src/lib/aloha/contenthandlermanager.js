@@ -55,26 +55,44 @@ define([
 			return new AbstractContentHandler();
 		},
 
-		handleContent: function (content, options) {
+		/**
+		 * Manipulates the given contents of an editable by invoking content
+		 * handlers over the contents.
+		 *
+		 * @param {string} content The contents of an editable which will be
+		 *                         handled.
+		 * @param {object} options Used to filter limit which content handlers
+		 *                         should be used.
+		 * @param {Aloha.Editable} The editable whose content is being handled.
+		 * @return {string} The handled content.
+		 */
+		handleContent: function (content, options, editable) {
 			var manager = this;
-			var handlers = options.contenthandler || manager.getIds();
-			var handler;
+
+			// Because if no options is specified to indicate which content
+			// handler to use, then all that are available are used.
+			var handlers = options ? options.contenthandler : manager.getIds();
+
+			if (!handlers) {
+				return content;
+			}
+
 			var i;
+			var handler;
 			for (i = 0; i < handlers.length; i++) {
 				handler = manager.get(handlers[i]);
 				if (handler) {
-					if (typeof handler.handleContent === 'function') {
-						content = handler.handleContent(content, options);
-					} else {
-						console.error(
-							'A valid content handler needs the method handleContent.'
-						);
-					}
+					content = handler.handleContent(content, options,
+							editable || Aloha.activeEditable);
 				}
+
+				// FIME: Is it ever valid for content to be null?  This breaks
+				//       the handleContent(string):string contract.
 				if (null === content) {
 					break;
 				}
 			}
+
 			return content;
 		}
 	});

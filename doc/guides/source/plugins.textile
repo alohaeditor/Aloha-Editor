@@ -100,6 +100,7 @@ Plugins in the @extra@ directory:
 * "extra/sourceview":plugin_sourceview.html - view the source of an editable including selection marks in the sidebar
 * "extra/speak":plugin_speak.html - integrates speak.js into Aloha Editor
 * "extra/toc":plugin_toc.html - add a table of contents into your editable
+* "extra/validation":plugin_validation.html - validates editables
 * "extra/vie":plugin_vie.html - integrates VIE.js into Aloha Editor
 * "extra/wai-lang":plugin_wai-lang.html - annotate parts of the content with @lang@ attributes
 * "extra/zemanta":plugin_zemanta.html - integrates Zemanta into Aloha Editor

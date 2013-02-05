@@ -31,23 +31,23 @@
  * @namespace block/block
  */
 define([
-       'aloha',
-       'jquery',
-       'block/blockmanager',
-       'aloha/observable',
-       'ui/scopes',
-       'util/class',
-       'PubSub'
+	'aloha',
+	'jquery',
+	'block/blockmanager',
+	'aloha/observable',
+	'ui/scopes',
+	'util/class',
+	'PubSub'
 ], function(
-       Aloha,
-       jQuery,
-       BlockManager,
-       Observable,
-       Scopes,
-       Class,
-	   PubSub
+	Aloha,
+	jQuery,
+	BlockManager,
+	Observable,
+	Scopes,
+	Class,
+	PubSub
 ){
-	"use strict";
+	'use strict';
 
 	var GENTICS = window.GENTICS;
 
@@ -1102,7 +1102,7 @@ define([
 		renderBlockHandlesIfNeeded: function() {
 			if (this.isDraggable()) {
 				if (this.$element.children('.aloha-block-draghandle').length === 0) {
-					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
+					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle aloha-cleanme"></span>');
 				}
 			}
 		},
@@ -1156,7 +1156,9 @@ define([
 			if (attributeChanged && !suppressEvents) {
 				this._update();
 				this.trigger('change');
-				Aloha.activeEditable.smartContentChange( { type: 'block-change' } );
+				if (Aloha.activeEditable) {
+					Aloha.activeEditable.smartContentChange({type: 'block-change'});
+				}
 			}
 			return null;
 		},

@@ -1,8 +1,9 @@
 define([
 	'jquery',
-	'ui/component'
+	'ui/component',
+	'i18n!ui/nls/i18n'
 ],
-function($, Component) {
+function($, Component, i18n) {
 	'use strict';
 
 	function makeDialogDiv(props) {
@@ -110,11 +111,11 @@ function($, Component) {
 		 *        A function that can be called to close the dialog.
 		 */
 		'alert': function(props) {
+			var propsExtended = {};
+			propsExtended[i18n.t('button.dismiss.label')] = $.noop;
 			var dialog = makeDialogDiv(props).dialog(
 				$.extend(makeDialogProps(props, 'Alert'), {
-					'buttons': wrapDialogButtons({
-						'Dismiss': $.noop
-					})
+					'buttons': wrapDialogButtons(propsExtended)
 				})
 			);
 			return function() {

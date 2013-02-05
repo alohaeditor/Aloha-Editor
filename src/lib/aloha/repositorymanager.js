@@ -24,463 +24,532 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha, Class, jQuery, console) {
+define([
+	'jquery',
+	'util/class',
+	'aloha/core',
+	'aloha/console',
+	'aloha/repositoryobjects' // Provides Aloha.RepositoryFolder
+], function (
+	$,
+	Class,
+	Aloha,
+	Console,
+	__unused__
+) {
 	'use strict';
 
 	/**
-	 * Repository Manager
+	 * Given an input set, returns a new set which is a range of the input set
+	 * that maps to the given predicate.
+	 *
+	 * Prefers native Array.prototype.filter() where available (after JavaScript
+	 * 1.6).
+	 *
+	 * @param {Array} domain
+	 * @param {function:boolean} predicate
+	 * @return {Array} Sub set of domain
+	 */
+	var filter = (function (native) {
+		return (native
+			? function (domain, predicate) {
+				return domain.filter(predicate);
+			}
+			: function (domain, predicate) {
+				var codomain = [];
+				var i;
+				for (i = 0; i < domain.length; i++) {
+					if (predicate(domain[i])) {
+						codomain.push(domain[i]);
+					}
+				}
+				return codomain;
+			}
+		);
+	}('filter' in Array.prototype));
+
+	/**
+	 * Bundles results, and meta information in preparation for the JSON Reader.
+	 *
+	 * Used with query().
+	 *
+	 * @param {Array.<Document|Folder>} items Results, collected from all
+	 *                                        repositories.
+	 * @param {object<string, number>} meta Optional object containing metainfo.
+	 * @return {object} Result object.
+	 */
+	function bundle(items, meta) {
+		var result = {
+			items: items,
+			results: items.length
+		};
+		if (meta) {
+			result.numItems = meta.numItems;
+			result.hasMoreItems = meta.hasMoreItems;
+			result.timeout = meta.timeout;
+		}
+		return result;
+	}
+
+	/**
+	 * Passes all the results we have collected to the client through the
+	 * callback it specified.
+	 *
+	 * TODO: Implement sorting based on repository specification sort
+	 *       items by weight.
+	 * items.sort(function (a, b) {
+	 *	return (b.weight || 0) - (a.weight || 0);
+	 * });
+	 *
+	 * @param {function} callback Callback specified by client when invoking
+	 *                            the query method.
+	 * @param {Array.<Document|Folder>|object<string, number>} results
+	 */
+	function report(callback, results) {
+		callback(results);
+	}
+
+	/**
+	 * Predicates; used to filter lists of repositories based on whether they
+	 * implement a method or not.
+	 *
+	 * @type {object<string, function(Repository):boolean}
+	 */
+	var repositoryFilters = {
+		query: function (repository) {
+			return typeof repository.query === 'function';
+		},
+		getChildren: function (repository) {
+			return typeof repository.getChildren === 'function';
+		},
+		getSelectedFolder: function (repository) {
+			return typeof repository.getSelectedFolder === 'function';
+		}
+	};
+
+	/**
+	 * Repository Manager.
+	 *
 	 * @namespace Aloha
 	 * @class RepositoryManager
 	 * @singleton
 	 */
-	Aloha.RepositoryManager = Class.extend({
+	var RepositoryManager = Class.extend({
 
 		repositories: [],
-		settings: {},
+
+		settings: (Aloha.settings && Aloha.settings.repositories) || {},
+
 		initialized: false,
 
 		/**
-		 * Initialize all registered repositories
-		 * Before we invoke each repositories init method, we merge the global
-		 * repository settings into each repository's custom settings
+		 * Initializes all registered repositories.
+		 *
+		 *                            ???
+		 *                             |
+		 *                             v
+		 *
 		 * Warning: testing has shown that repositories are maybe not loaded yet
-		 * (found that case in IE7), so don't rely on that in this init function.
+		 * (found that case in IE7), so don't rely on that in this init
+		 * function.
 		 *
-		 * @todo: Write unit tests to check that global and custom settings are
-		 * applied correctly
-		 *
-		 * @return void
-		 * @hide
+		 *                             ^
+		 *                             |
+		 *                            !!!
 		 */
 		init: function () {
-			var repositories = this.repositories;
-
-			if (Aloha.settings && Aloha.settings.repositories) {
-				this.settings = Aloha.settings.repositories;
+			var manager = this;
+			if (typeof manager.settings.timeout === 'undefined') {
+				manager.settings.timeout = 5000;
 			}
-
-			// use the configured repository manger query timeout or 5 sec
-			this.settings.timeout = this.settings.timeout || 5000;
-
-			var count_repositories = repositories.length;
 			var i;
-			for (i = 0; i < count_repositories; ++i) {
-				var repository = repositories[i];
-				this.initRepository(repository);
+			for (i = 0; i < manager.repositories.length; i++) {
+				manager.initRepository(manager.repositories[i]);
 			}
-
-			this.initialized = true;
+			manager.initialized = true;
 		},
 
 		/**
-		 * Register a Repository.
+		 * Registers a Repository.
 		 *
-		 * @param {Aloha.Repository} repository Repository to register
+		 * If the repositorie is registered after the Repository Manager is
+		 * initialized it will be automatically initialized.
+		 *
+		 * @param {Repository} repository Repository to register.
 		 */
 		register: function (repository) {
-			if (!this.getRepository(repository.repositoryId)) {
-				this.repositories.push(repository);
-
-				// If we have initialized already we have to call
-				// this on our own (late-loading)
-				if (this.initialized) {
-					this.initRepository(repository);
+			var manager = this;
+			if (!manager.getRepository(repository.repositoryId)) {
+				manager.repositories.push(repository);
+				if (manager.initialized) {
+					manager.initRepository(repository);
 				}
 			} else {
-				console.warn(this, 'A repository with name { ' + repository.repositoryId + ' } already registerd. Ignoring this.');
+				Console.warn(manager, 'A repository with name "'
+						+ repository.repositoryId
+						+ '" already registerd. Ignoring this.');
 			}
 		},
 
 		/**
 		 * Initializes a repository.
 		 *
-		 * @param {Aloha.Repository} repository Repository to initialize
+		 * @param {Repository} repository Repository to initialize.
 		 */
 		initRepository: function (repository) {
-
+			var manager = this;
 			if (!repository.settings) {
 				repository.settings = {};
 			}
-
-			if (this.settings[repository.repositoryId]) {
-				jQuery.extend(repository.settings, this.settings[repository.repositoryId]);
+			if (manager.settings[repository.repositoryId]) {
+				$.extend(repository.settings,
+				         manager.settings[repository.repositoryId]);
 			}
-
 			repository.init();
 		},
 
 		/**
-		 * Returns the repository object identified by repositoryId.
+		 * Returns the repository identified by repositoryId.
 		 *
-		 * @param {String} repositoryId - the name of the repository
-		 * @return {?Aloha.Repository} a repository or null if name not found
+		 * @param {String} id Id of repository to retrieve.
+		 * @return {Repository|null} Repository or null if none with the given
+		 *                           id is found.
 		 */
-		getRepository: function (repositoryId) {
-			var repositories = this.repositories,
-				i,
-				j = repositories.length;
-
-			for (i = 0; i < j; ++i) {
-				if (repositories[i].repositoryId === repositoryId) {
-					return repositories[i];
+		getRepository: function (id) {
+			var manager = this;
+			var i;
+			for (i = 0; i < manager.repositories.length; i++) {
+				if (manager.repositories[i].repositoryId === id) {
+					return manager.repositories[i];
 				}
 			}
-
 			return null;
 		},
 
 		/**
-		 * Searches a all repositories for repositoryObjects matching query and
+		 * Searches all repositories for repositoryObjects matching query and
 		 * repositoryObjectType.
 		 *
-		<pre><code>
-			var params = {
-					queryString: 'hello',
-					objectTypeFilter: ['website'],
-					filter: null,
-					inFolderId: null,
-					orderBy: null,
-					maxItems: null,
-					skipCount: null,
-					renditionFilter: null,
-					repositoryId: null
-			};
-			Aloha.RepositoryManager.query( params, function( items ) {
-				// do something with the result items
-				console.log(items);
-			});
-		</code></pre>
+		 * <pre><code>
+		 *  // Example:
+		 *  var params = {
+		 *      queryString: 'hello',
+		 *      objectTypeFilter: ['website'],
+		 *      filter: null,
+		 *      inFolderId: null,
+		 *      orderBy: null,
+		 *      maxItems: null,
+		 *      skipCount: null,
+		 *      renditionFilter: null,
+		 *      repositoryId: null
+		 *  };
+		 *  Aloha.RepositoryManager.query(params, function (items) {
+		 *      Console.log(items);
+		 *  });
+		 * </code></pre>
 		 *
-		 * @param {Object <String,Mixed>} params object with properties
-		 * <div class="mdetail-params"><ul>
-		 * <li><code> queryString</code> :  String <div class="sub-desc">The query string for full text search</div></li>
-		 * <li><code> objectTypeFilter</code> : array  (optional) <div class="sub-desc">Object types that will be returned.</div></li>
-		 * <li><code> filter</code> : array (optional) <div class="sub-desc">Attributes that will be returned.</div></li>
-		 * <li><code> inFolderId</code> : boolean  (optional) <div class="sub-desc">This is indicates whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).</div></li>
-		 * <li><code> inTreeId</code> : boolean  (optional) <div class="sub-desc">This indicates whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId (objectId).</div></li>
-		 * <li><code> orderBy</code> : array  (optional) <div class="sub-desc">ex. [{lastModificationDate:’DESC’, name:’ASC’}]</div></li>
-		 * <li><code> maxItems</code> : Integer  (optional) <div class="sub-desc">number items to return as result</div></li>
-		 * <li><code> skipCount</code> : Integer  (optional) <div class="sub-desc">This is tricky in a merged multi repository scenario</div></li>
-		 * <li><code> renditionFilter</code> : array  (optional) <div class="sub-desc">Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter</div></li>
-		 * </ul></div>
-		 * @param {Function} callback - defines a callback function( items ) which will be called when all repositories returned their results or after a time out of 5sec.
-		 * "items" is an Array of objects construced with Document/Folder.
-		 * @void
+		 * @param {object<string, mixed>} params
+		 *
+		 *       queryString: String             The query string for full text
+		 *                                       search.
+		 *  objectTypeFilter: Array   (optional) Object types to be retrieved.
+		 *            filter: Array   (optional) Attributes that will be
+		 *                                       included.
+		 *        inFolderId: boolean (optional) Whether or not a candidate
+		 *                                       object is a child-object of the
+		 *                                       folder object identified by the
+		 *                                       given inFolderId (objectId).
+		 *          inTreeId: boolean (optional) This indicates whether or
+		 *                                       not a candidate object is a
+		 *                                       descendant-object of the folder
+		 *                                       object identified by the given
+		 *                                       inTreeId (objectId).
+		 *           orderBy: Array   (optional) example: [{
+		 *                                           lastModificationDate: 'DESC',
+		 *                                           name: 'ASC'
+		 *                                       }]
+		 *          maxItems: number  (optional) Number of items to include in
+		 *                                       result set.
+		 *         skipCount: number  (optional) This is tricky in a merged
+		 *                                       multi repository scenario.
+		 *   renditionFilter: Array   (optional) Instead of termlist, an
+		 *                                       array of kind or mimetype is
+		 *                                       expected.  If null or an empty
+		 *                                       set, then all renditions are
+		 *                                       returned. See
+		 *                                       http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310
+		 *                                       for renditionFilter.
+		 *
+		 * @param {function(Document|Folder)} callback Function to be invoked
+		 *                                             after the repository
+		 *                                             manager has finished
+		 *                                             querying all
+		 *                                             repositories.
 		 */
 		query: function (params, callback) {
-			var that = this,
-				repo,
-				// The merged results, collected from repository responses
-				allitems = [],
-				// the merge metainfo, collected from repository responses
-				allmetainfo = {
-					numItems: 0,
-					hasMoreItems: false
-				},
-				// The set of repositories towhich we want to delegate work
-				repositories = [],
-				// A counting semaphore (working in reverse, ie: 0 means free)
-				numOpenCallbacks = 0,
-				// When this timer times-out, whatever has been collected in
-				// allitems will be returned to the calling client, and
-				// numOpenCallbacks will be reset to 0
-				timer,
-				i,
-			    j,
-				/**
-				 * Invoked by each repository when it wants to present its
-				 * results to the manager.
-				 *
-				 * Collects the results from each repository, and decrements
-				 * the numOpenCallbacks semaphore to indicate that there is one
-				 * less repository for which we are waiting a reponse.
-				 *
-				 * If a repository invokes this callback after all
-				 * openCallbacks have been closed (ie: numOpenCallbacks == 0),
-				 * then the repository was too late ("missed the ship"), and
-				 * will be ignored.
-				 *
-				 * If numOpenCallbacks decrements to 0 during this call, it
-				 * means that the the manager is ready to report the results
-				 * back to the client through the queryCallback method.
-				 *
-				 * nb: "this" is reference to the calling repository.
-				 *
-				 * @param {Array} items - Results returned by the repository
-				 * @param {Object<String,Number>} metainfo - optional Metainfo returned by the repository
-				 */
-				processResults = function (items, metainfo) {
-					if (numOpenCallbacks === 0) {
-						return;
-					}
+			var manager = this;
 
-					var j = items ? items.length : 0;
+			var i;
 
-					if (j) {
-						// Add the repositoryId for each item if a negligent
-						// repository did not do so.
-						if (!items[0].repositoryId) {
-							var repoId = this.repositoryId,
-								i;
-							for (i = 0; i < j; ++i) {
-								items[i].repositoryId = repoId;
-							}
-						}
+			// The merged results, collected from repository responses.
+			var results = [];
 
-						jQuery.merge(allitems, items);
-					}
-
-					if (metainfo && allmetainfo) {
-						if (jQuery.isNumeric(metainfo.numItems) && jQuery.isNumeric(allmetainfo.numItems)) {
-							allmetainfo.numItems += metainfo.numItems;
-						} else {
-							allmetainfo.numItems = undefined;
-						}
-
-						if (typeof metainfo.hasMoreItems === 'boolean' && typeof allmetainfo.hasMoreItems === 'boolean') {
-							allmetainfo.hasMoreItems = allmetainfo.hasMoreItems || metainfo.hasMoreItems;
-						} else {
-							allmetainfo.hasMoreItems = undefined;
-						}
-
-						if (metainfo.timeout) {
-							allmetainfo.timeout = true;
-						}
-					} else {
-						// at least one repository did not return metainfo, so
-						// we have no aggregated metainfo at all
-						allmetainfo = undefined;
-					}
-					console.debug(this, "The repository " + this.repositoryId + " returned with " + j + " results.");
-					// TODO how to return the metainfo here?
-					if (--numOpenCallbacks === 0) {
-						that.queryCallback(callback, allitems, allmetainfo, timer);
-					}
-				};
-
-			// Unless the calling client specifies otherwise, we will wait a
-			// maximum of 5 seconds for all repositories to be queried and
-			// respond. 5 seconds is deemed to be the reasonable time to wait
-			// when querying the repository manager in the context of something
-			// like autocomplete
-			var timeout = parseInt(params.timeout, 10) || this.settings.timeout;
-			timer = window.setTimeout(function () {
-				if (numOpenCallbacks > 0) {
-					console.warn(this, numOpenCallbacks + " repositories did not return before the configured timeout of " + timeout + "ms.");
-				}
-				numOpenCallbacks = 0;
-				// store in the metainfo, that a timeout occurred
-				allmetainfo = allmetainfo || {};
-				allmetainfo.timeout = true;
-				that.queryCallback(callback, allitems, allmetainfo, timer);
-			}, timeout);
-
-			// If repositoryId or a list of repository ids, is not specified in
-			// the params object, then we will query all registered
-			// repositories
-			if (params.repositoryId) {
-				repositories.push(this.getRepository(params.repositoryId));
-			} else {
-				repositories = this.repositories;
-			}
-
-			j = repositories.length;
-
-			var repoQueue = [];
-
-			// We need to know how many callbacks we will open before invoking
-			// the query method on each, so that as soon as the first one does
-			// callback, the correct number of open callbacks will be available
-			// to check.
-
-			for (i = 0; i < j; ++i) {
-				repo = repositories[i];
-
-				// if no repositoryId is given query all repositories
-				// if a repositoryID is given only query if it is the right repository
-				if ((!params.repositoryId || repo.repositoryId === params.repositoryId) && typeof repo.query === 'function') {
-					++numOpenCallbacks;
-					repoQueue.push(repo);
-				}
-			}
-
-			j = repoQueue.length;
-
-			function makeApplyRepoToProcessResults(repo) {
-				return function () {
-					processResults.apply(repo, arguments);
-				};
-			}
-
-			for (i = 0; i < j; ++i) {
-				repo = repoQueue[i];
-				repo.query(params, makeApplyRepoToProcessResults(repo));
-			}
-
-			// If none of the repositories implemented the query method, then
-			// don't wait for the timeout, simply report to the client
-			if (numOpenCallbacks === 0) {
-				this.queryCallback(callback, allitems, allmetainfo, timer);
-			}
-		},
-
-		/**
-		 * Passes all the results we have collected to the client through the
-		 * callback it specified
-		 *
-		 * @param {Function} callback - Callback specified by client when
-		 *								invoking the query method
-		 * @param {Array} items - Results, collected from all repositories
-		 * @param {Object<String,Number>} metainfo - optional object containing metainfo
-		 * @param {Timer} timer - We need to clear this timer
-		 * @return void
-		 * @hide
-		 */
-		queryCallback: function (callback, items, metainfo, timer) {
-			if (timer) {
-				clearTimeout(timer);
-				timer = undefined;
-			}
-
-			// TODO: Implement sorting based on repository specification
-			// sort items by weight
-			//items.sort( function( a, b ) {
-			//	return ( b.weight || 0 ) - ( a.weight || 0 );
-			//} );
-
-			// prepare result data for the JSON Reader
-			var result = {
-				items: items,
-				results: items.length
+			// The merged metainfo, collected from repository responses.
+			var allmetainfo = {
+				numItems: 0,
+				hasMoreItems: false
 			};
 
-			if (metainfo) {
-				result.numItems = metainfo.numItems;
-				result.hasMoreItems = metainfo.hasMoreItems;
-				result.timeout = metainfo.timeout;
-			}
+			// A counting semaphore (working in reverse, ie: 0 means free).
+			var numOpenQueries;
 
-			callback.call(this, result);
-		},
+			// Unless the calling client specifies otherwise, the manager will
+			// wait a maximum of 5 seconds for all repositories to be queried
+			// and respond. 5 seconds is deemed to be the reasonable time to
+			// wait when querying the repository manager in the context of
+			// something like autocomplete.
+			var timeout = (params.timeout && parseInt(params.timeout, 10))
+			           || manager.settings.timeout;
 
-		/**
-		 * @todo: This method needs to be covered with some unit tests
-		 *
-		 * Returns children items. (see query for an example)
-		 * @param {Object<String,Mixed>} params - object with properties
-		 * <div class="mdetail-params"><ul>
-		 * <li><code> objectTypeFilter</code> : array  (optional) <div class="sub-desc">Object types that will be returned.</div></li>
-		 * <li><code> filter</code> : array  (optional) <div class="sub-desc">Attributes that will be returned.</div></li>
-		 * <li><code> inFolderId</code> : boolean  (optional) <div class="sub-desc">This indicates whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).</div></li>
-		 * <li><code> orderBy</code> : array  (optional) <div class="sub-desc">ex. [{lastModificationDate:’DESC’, name:’ASC’}]</div></li>
-		 * <li><code> maxItems</code> : Integer  (optional) <div class="sub-desc">number items to return as result</div></li>
-		 * <li><code> skipCount</code> : Integer  (optional) <div class="sub-desc">This is tricky in a merged multi repository scenario</div></li>
-		 * <li><code> renditionFilter</code> : array  (optional) <div class="sub-desc">Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter</div></li>
-		 * </ul></div>
-		 * @param {Function} callback - defines a callback function( items ) which will be called when all repositories returned their results or after a time out of 5sec.
-		 * "items" is an Array of objects construced with Document/Folder.
-		 * @void
-		 */
-		getChildren: function (params, callback) {
-			var that = this,
-				repo,
-				// The marged results, collected from repository responses
-				allitems = [],
-				// The set of repositories towhich we want to delegate work
-				repositories = [],
-				// A counting semaphore (working in reverse, ie: 0 means free)
-				numOpenCallbacks = 0,
-				// When this timer times-out, whatever has been collected in
-				// allitems will be returned to the calling client, and
-				// numOpenCallbacks will be reset to 0
-				timer,
-				i,
-			    j,
-				processResults = function (items) {
-					if (numOpenCallbacks === 0) {
-						return;
-					}
+			// When this timer times-out, whatever has been collected in
+			// `results' will be returned to the calling client and all further
+			// processing aborted.
+			var timer = window.setTimeout(function () {
+				// Store in metainfo that a timeout occurred.
+				allmetainfo = allmetainfo || {};
+				allmetainfo.timeout = true;
 
-					if (allitems && items) {
-						jQuery.merge(allitems, items);
-					}
+				if (numOpenQueries > 0) {
+					Console.warn(manager, numOpenQueries
+							+ ' repositories did not return before the '
+							+ 'configured timeout of ' + timeout + 'ms.');
+					numOpenQueries = 0;
+				}
+				clearTimeout(timer);
+				report(callback, bundle(results, allmetainfo));
+			}, timeout);
 
-					if (--numOpenCallbacks === 0) {
-						that.getChildrenCallback(callback, allitems, timer);
-					}
-				};
+			/**
+			 * Invoked by each repository when it wants to present its results
+			 * to the manager.
+			 *
+			 * Collects the results from each repository, and decrements the
+			 * numOpenQueries semaphore to indicate that there is one less
+			 * repository for which the manager is waiting for a reponse.
+			 *
+			 * If a repository invokes this callback after all openCallbacks
+			 * have been closed (ie: numOpenQueries == 0), then the repository
+			 * was too late ("missed the ship"), and will be ignored.
+			 *
+			 * If numOpenQueries decrements to 0 during this call, it means that
+			 * the the manager is ready to report the results back to the client
+			 * through the report() method.
+			 *
+			 * @param {Array.<Document|Folder>} items Results returned by the
+			 *                                        repository.
+			 * @param {object<string, number>} metainfo Optional Metainfo
+			 *                                          returned by some
+			 *                                          repositories.
+			 */
+			var process = function (items, metainfo) {
+				var repository = this;
 
-			// If the inFolderId is the default id of 'aloha', then return all
-			// registered repositories
-			if (params.inFolderId === 'aloha') {
-				var repoFilter = params.repositoryFilter,
-					hasRepoFilter = (repoFilter && repoFilter.length);
-
-				j = this.repositories.length;
-
-				for (i = 0; i < j; ++i) {
-					repo = this.repositories[i];
-					if (!hasRepoFilter || jQuery.inArray(repo.repositoryId, repoFilter) > -1) {
-						repositories.push(new Aloha.RepositoryFolder({
-							id: repo.repositoryId,
-							name: repo.repositoryName,
-							repositoryId: repo.repositoryId,
-							type: 'repository',
-							hasMoreItems: true
-						}));
-					}
+				if (0 === numOpenQueries) {
+					return;
 				}
 
-				that.getChildrenCallback(callback, repositories, null);
+				if (items && items.length) {
 
+					// Because some negligent repository implementations do not
+					// set repositoryId properly.
+					if (!items[0].repositoryId) {
+						var id = repository.repositoryId;
+						var i;
+						for (i = 0; i < items.length; i++) {
+							items[i].repositoryId = id;
+						}
+					}
+
+					$.merge(results, items);
+				}
+
+				if (metainfo && allmetainfo) {
+					allmetainfo.numItems =
+						($.isNumeric(metainfo.numItems) &&
+						 $.isNumeric(allmetainfo.numItems))
+							? allmetainfo.numItems + metainfo.numItems
+							: undefined;
+
+					allmetainfo.hasMoreItems =
+						(typeof metainfo.hasMoreItems === 'boolean' &&
+						 typeof allmetainfo.hasMoreItems === 'boolean')
+							? allmetainfo.hasMoreItems || metainfo.hasMoreItems
+							: undefined;
+
+					if (metainfo.timeout) {
+						allmetainfo.timeout = true;
+					}
+				} else {
+
+					// Because if even one repository does not return metainfo,
+					// so we have no aggregated metainfo at all.
+					allmetainfo = undefined;
+				}
+
+				Console.debug(manager, 'The repository '
+						+ repository.repositoryId + 'returned with '
+						+ items.length + ' results.');
+
+				// TODO: how to return the metainfo here?
+				if (0 === --numOpenQueries) {
+					clearTimeout(timer);
+					report(callback, bundle(results, allmetainfo));
+				}
+			};
+
+			var repositories = params.repositoryId
+			                 ? [manager.getRepository(params.repositoryId)]
+			                 : manager.repositories;
+
+			var queue = filter(repositories, repositoryFilters.query);
+
+			// If none of the repositories implemented the query method, then
+			// don't wait for the timeout, simply report to the client.
+			if (0 === queue.length) {
+				clearTimeout(timer);
+				report(callback, bundle(results, allmetainfo));
 				return;
 			}
 
-			repositories = this.repositories;
-
-			var timeout = parseInt(params.timeout, 10) || this.settings.timeout;
-			timer = window.setTimeout(function () {
-				numOpenCallbacks = 0;
-				that.getChildrenCallback(callback, allitems, timer);
-			}, timeout);
-
-			j = repositories.length;
-
-			function makeApplyRepoToProcessResults(repo) {
+			var makeProcess = function (repository) {
 				return function () {
-					processResults.apply(repo, arguments);
+					process.apply(repository, arguments);
 				};
-			}
+			};
 
-			for (i = 0; i < j; ++i) {
-				repo = repositories[i];
+			numOpenQueries = queue.length;
 
-				// if no repositoryId is given query all repositories
-				// if a repositoryID is given only query if it is the right repository
-				if ((!params.repositoryId || repo.repositoryId === params.repositoryId) && typeof repo.getChildren === 'function') {
-					++numOpenCallbacks;
-					repo.getChildren(params, makeApplyRepoToProcessResults(repo));
-				}
-			}
-
-			if (numOpenCallbacks === 0) {
-				this.getChildrenCallback(callback, allitems, timer);
+			for (i = 0; i < queue.length; i++) {
+				queue[i].query(params, makeProcess(queue[i]));
 			}
 		},
 
 		/**
-		 * Returns results for getChildren to calling client
+		 * Retrieves children items.
 		 *
-		 * @return void
-		 * @hide
+		 * @param {object<string,mixed>} params Object with properties.
+		 *
+		 *  objectTypeFilter: Array   (optional) Object types to be retrieved.
+		 *            filter: Array   (optional) Attributes to be retrieved.
+		 *        inFolderId: boolean (optional) This indicates whether or not
+		 *                                       a candidate object is a
+		 *                                       child-object of the folder
+		 *                                       object identified by the given
+		 *                                       inFolderId (objectId).
+		 *           orderBy: Array   (optional) example: [{
+		 *                                           lastModificationDate: 'DESC',
+		 *                                           name: 'ASC'
+		 *                                       }]
+		 *          maxItems: number  (optional) number Items to return as a result.
+		 *         skipCount: number  (optional) This is tricky in a merged
+		 *                                       multi repository scenario.
+		 *   renditionFilter: Array   (optional) Instead of termlist an Array
+		 *                                       of kind or mimetype is
+		 *                                       expected. If null or
+		 *                                       Array.length == 0 all
+		 *                                       renditions are returned. See
+		 *                                       http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310
+		 *                                       for renditionFilter.
+		 *
+		 * @param {function(Document|Folder)} callback Function to be invoked
+		 *                                             after the repository
+		 *                                             manager has finished
+		 *                                             querying all
+		 *                                             repositories.
 		 */
-		getChildrenCallback: function (callback, items, timer) {
-			if (timer) {
+		getChildren: function (params, callback) {
+			var manager = this;
+
+			var i;
+
+			// The marged results, collected from repository responses.
+			var results = [];
+
+			// A counting semaphore (working in reverse, ie: 0 means free).
+			var numOpenQueries = 0;
+
+			var timeout = (params.timeout && parseInt(params.timeout, 10))
+			           || manager.settings.timeout;
+
+			var timer = window.setTimeout(function () {
+				if (numOpenQueries > 0) {
+					Console.warn(manager, numOpenQueries
+							+ ' repositories did not respond before the '
+							+ 'configured timeout of ' + timeout + 'ms.');
+					numOpenQueries = 0;
+				}
 				clearTimeout(timer);
-				timer = undefined;
+				report(callback, results);
+			}, timeout);
+
+			var process = function (items) {
+				if (0 === numOpenQueries) {
+					return;
+				}
+				if (items) {
+					$.merge(results, items);
+				}
+				if (0 === --numOpenQueries) {
+					clearTimeout(timer);
+					report(callback, results);
+				}
+			};
+
+			var repositories = params.repositoryId
+			                 ? [manager.getRepository(params.repositoryId)]
+			                 : manager.repositories;
+
+			if (params.repositoryFilter && params.repositoryFilter.length) {
+				repositories = filter(repositories, function (repository) {
+					return -1 < $.inArray(repository.repositoryId,
+						params.repositoryFilter);
+				});
 			}
 
-			callback.call(this, items);
+			// If the inFolderId is the default id of 'aloha', then return all
+			// registered repositories as the result set.
+			if ('aloha' === params.inFolderId) {
+				var hasRepoFilter = params.repositoryFilter
+				                 && 0 < params.repositoryFilter.length;
+
+				for (i = 0; i < repositories.length; i++) {
+					results.push(new Aloha.RepositoryFolder({
+						id: repositories[i].repositoryId,
+						name: repositories[i].repositoryName,
+						repositoryId: repositories[i].repositoryId,
+						type: 'repository',
+						hasMoreItems: true
+					}));
+				}
+
+				clearTimeout(timer);
+				report(callback, results);
+				return;
+			}
+
+			var queue = filter(repositories, repositoryFilters.getChildren);
+
+			if (0 === queue.length) {
+				clearTimeout(timer);
+				report(callback, results);
+				return;
+			}
+
+			numOpenQueries = queue.length;
+
+			for (i = 0; i < queue.length; i++) {
+				queue[i].getChildren(params, process);
+			}
 		},
 
 		/**
@@ -508,7 +577,7 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 					repository.makeClean(obj);
 					i += 1;
 				}
-				console.debug(that, 'Passing contents of HTML Element with id { ' + this.attr('id') + ' } for cleaning to repository { ' + repository.repositoryId + ' }');
+				Console.debug(that, 'Passing contents of HTML Element with id { ' + this.attr('id') + ' } for cleaning to repository { ' + repository.repositoryId + ' }');
 				repository.makeClean(this);
 			});
 		},
@@ -517,36 +586,41 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 		 * Marks an object as repository of this type and with this item.id.
 		 * Objects can be any DOM objects as A, SPAN, ABBR, etc. or
 		 * special objects such as aloha-aloha_block elements.
-		 * This method marks the target obj with two private attributes:
-		 * (see http://dev.w3.org/html5/spec/elements.html#embedding-custom-non-visible-data)
-		 * * data-gentics-aloha-repository: stores the repositoryId
-		 * * data-gentics-aloha-object-id: stores the object.id
 		 *
-		 * @param {DOMObject} obj - DOM object to mark
-		 * @param {Aloha.Repository.Object} item - the item which is applied to obj,
-		 *		if set to null, the data-GENTICS-... attributes are removed
-		 * @return void
+		 * Marks the target obj with two private attributes:
+		 * (see http://dev.w3.org/html5/spec/elements.html#embedding-custom-non-visible-data)
+		 *	- data-gentics-aloha-repository: stores the repositoryId
+		 *	- data-gentics-aloha-object-id: stores the object.id
+		 *
+		 * @param {HTMLElement} obj DOM object to mark.
+		 * @param {Aloha.Repository.Object} item Item which is applied to obj,
+		 *                                       if set to null, the
+		 *                                       "data-GENTICS-..." attributes
+		 *                                       are removed.
 		 */
 		markObject: function (obj, item) {
 			if (!obj) {
 				return;
 			}
 
-			if (item) {
-				var repository = this.getRepository(item.repositoryId);
+			var manager = this;
 
+			if (item) {
+				var repository = manager.getRepository(item.repositoryId);
 				if (repository) {
-					jQuery(obj).attr({
+					$(obj).attr({
 						'data-gentics-aloha-repository': item.repositoryId,
 						'data-gentics-aloha-object-id': item.id
 					});
-
 					repository.markObject(obj, item);
 				} else {
-					console.error(this, 'Trying to apply a repository { ' + item.name + ' } to an object, but item has no repositoryId.');
+					Console.error(manager, 'Trying to apply a repository "'
+							+ item.name
+							+ '" to an object, but item has no repositoryId.');
 				}
 			} else {
-				jQuery(obj).removeAttr('data-gentics-aloha-repository').removeAttr('data-gentics-aloha-object-id');
+				$(obj).removeAttr('data-gentics-aloha-repository')
+				      .removeAttr('data-gentics-aloha-object-id');
 			}
 		},
 
@@ -554,96 +628,107 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 		 * Get the object for which the given DOM object is marked from the
 		 * repository.
 		 *
-		 * @param {DOMObject} obj - DOM object which probably is marked
-		 * @param {Function} callback - callback function
+		 * Will initialize the item cache (per repository) if not already done.
+		 *
+		 * @param {HTMLElement} element DOM object which probably is marked.
+		 * @param {function} callback
 		 */
-		getObject: function (obj, callback) {
-			var that = this,
-				$obj = jQuery(obj),
-				repository = this.getRepository($obj.attr('data-gentics-aloha-repository')),
-				itemId = $obj.attr('data-gentics-aloha-object-id');
+		getObject: function (element, callback) {
+			var manager = this;
+			var $element = $(element);
+			var itemId = $element.attr('data-gentics-aloha-object-id');
+			var repositoryId = $element.attr('data-gentics-aloha-repository');
+			var repository = manager.getRepository(repositoryId);
 
 			if (repository && itemId) {
-				// initialize the item cache (per repository) if not already done
-				this.itemCache = this.itemCache || [];
-				this.itemCache[repository.repositoryId] = this.itemCache[repository.repositoryId] || [];
+				if (!manager.itemCache) {
+					manager.itemCache = [];
+				}
 
-				// when the item is cached, we just call the callback method
-				if (this.itemCache[repository.repositoryId][itemId]) {
-					callback.call(this, [this.itemCache[repository.repositoryId][itemId]]);
+				var cache = manager.itemCache[repositoryId];
+				if (!cache) {
+					cache = manager.itemCache[repositoryId] = [];
+				}
+
+				if (cache[itemId]) {
+					callback([cache[itemId]]);
 				} else {
-					// otherwise we get the object from the repository
 					repository.getObjectById(itemId, function (items) {
-						// make sure the item is in the cache (for subsequent calls)
-						that.itemCache[repository.repositoryId][itemId] = items[0];
-						callback.call(this, items);
+						cache[itemId] = items[0];
+						callback(items);
 					});
 				}
 			}
 		},
 
 		/**
-		 * This function gets called by the repository browser when a folder is opened.
-		 * At the moment this forwards the call to the repository only.
-		 * 
-		 * @param {object}	folder	object that gets forwarded
+		 * Mark a folder as opened.
+		 *
+		 * Called by a repository client (eg: repository browser) when a folder
+		 * is opened.
+		 *
+		 * @param {object|Folder} folder Object with property repositoryId.
 		 */
 		folderOpened: function (folder) {
 			var repository = this.getRepository(folder.repositoryId);
-
 			if (typeof repository.folderOpened === 'function') {
 				repository.folderOpened(folder);
 			}
 		},
 
 		/**
-		 * This function gets called by the repository browser when a folder is closed.
-		 * At the moment this forwards the call to the repository only.
-		 * 
-		 * @param {object}	folder	object that gets forwarded
+		 * Mark a folder as closed.
+		 *
+		 * Called by a repository client (eg: repository browser) when a folder
+		 * is closed.
+		 *
+		 * @param {object|Folder} folder Object with property repositoryId.
 		 */
 		folderClosed: function (folder) {
 			var repository = this.getRepository(folder.repositoryId);
-
 			if (typeof repository.folderClosed === 'function') {
 				repository.folderClosed(folder);
 			}
 		},
 
 		/**
-		 * This function gets called by the repository browser when a folder is selected.
-		 * At the moment this forwards the call to the repository only.
-		 * 
-		 * @param {object}	folder	object that gets forwarded
+		 * Mark a folder as selected.
+		 *
+		 * Called by a repository client (eg: repository browser) when a folder
+		 * is selected.
+		 *
+		 * @param {object|Folder} folder Object with property repositoryId.
 		 */
 		folderSelected: function (folder) {
 			var repository = this.getRepository(folder.repositoryId);
-
 			if (typeof repository.folderSelected === 'function') {
 				repository.folderSelected(folder);
 			}
 		},
 
 		/**
-		 * Get the selected folder
-		 * @returns selected folder or undefined
+		 * Retrieve the selected folder.
+		 *
+		 * @return {Folder} Selected folder or null if it cannot be found.
 		 */
 		getSelectedFolder: function () {
-			var i, len = this.repositories.length,
-				selected;
-
-			for (i = 0; i < len; ++i) {
-				if (typeof this.repositories[i].getSelectedFolder === 'function') {
-					selected = this.repositories[i].getSelectedFolder();
-					if (selected) {
-						return selected;
-					}
+			var repositories = filter(this.repositories,
+					repositoryFilters.getSelectedFolder);
+			var i;
+			var selected;
+			for (i = 0; i < repositories.length; i++) {
+				selected = repositories[i].getSelectedFolder();
+				if (selected) {
+					return selected;
 				}
 			}
+			return null;
 		},
 
 		/**
-		 * @return {String} name of repository manager object
+		 * Human readable representation of repository manager.
+		 *
+		 * @return {string}
 		 */
 		toString: function () {
 			return 'repositorymanager';
@@ -651,8 +736,7 @@ define(['aloha/core', 'util/class', 'jquery', 'aloha/console'], function (Aloha,
 
 	});
 
-	Aloha.RepositoryManager = new Aloha.RepositoryManager();
+	Aloha.RepositoryManager = new RepositoryManager();
 
-	// We return the constructor, not the instance of Aloha.RepositoryManager
 	return Aloha.RepositoryManager;
 });

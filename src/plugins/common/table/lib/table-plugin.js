@@ -40,7 +40,9 @@ define([
 	'i18n!aloha/nls/i18n',
 	'table/table-create-layer',
 	'table/table',
-	'table/table-plugin-utils'
+	'table/table-plugin-utils',
+	'util/dom',
+	'aloha/console'
 ], function(
 	Aloha,
 	jQuery,
@@ -57,8 +59,11 @@ define([
 	i18nCore,
 	CreateLayer,
 	Table,
-	Utils
+	Utils,
+	Dom,
+	Console
 ) {
+	var $ = jQuery;
 	var GENTICS = window.GENTICS;
 
 	/**
@@ -136,6 +141,83 @@ define([
 	};
 
 	/**
+	 * Checks whether the given DOM element is nested within a table.
+	 *
+	 * @param {jQuery.<HTMLElement>} $element
+	 * @return {boolean} True if the given element is nested in a table.
+	 */
+	function isWithinTable($element) {
+		return 0 < $element.parents('.aloha-editable table').length;
+	}
+
+	/**
+	 * Checks whether the given DOM element is nested within an aloha block.
+	 *
+	 * @param {jQuery.<HTMLElement>} $element
+	 * @return {boolean} True if the given element is nested in an aloha block.
+	 */
+	function isWithinBlock($element) {
+		return 0 < $element.closest('.aloha-block').length;
+	}
+
+	/**
+	 * Checks whether the table is an editable element.
+	 *
+	 * @return {boolean} True if the table's parent element is contentEditable;
+	 *                   false otherwise.
+	 */
+	function isEditableTable(table) {
+		return GENTICS.Utils.Dom.isEditable(table);
+	}
+
+	/**
+	 * Checks for the presence of nested tables in the given element.
+	 *
+	 * @param {jQuery.<HTMLElement>} $element jQuery unit set containing a DOM
+	 *                                        element.
+	 * @return {boolean} True if nested tables were detected; false otherwise.
+	 */
+	function checkForNestedTables($element) {
+		var selector = $element.is('table') ? 'table' : 'table table';
+		if ($element.find(selector).length) {
+			Console.warn('Table Plugin',
+					'Nested tables found. They will not be initialized.');
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Creates a table, if it is allowed, and registers a new Table object for
+	 * the given table DOM element.
+	 *
+	 * If the table's editable parent is activated, the table will also
+	 * automatically be activated.
+	 *
+	 * @param {HTMLElement} element HTML table element.
+	 * @return {Table|null} The created Table object or null if it was not
+	 *                      allowed to create the table.
+	 */
+	function createNewTable(element) {
+		var $table = $(element);
+		var create = isEditableTable(element)
+		          && !isWithinTable($table)
+		          && !isWithinBlock($table);
+		if (create) {
+			var table = new Table(element, TablePlugin);
+			var $host = $(Dom.getEditingHostOf(element));
+			table.parentEditable = Aloha.getEditableById($host.attr('id'));
+			TablePlugin.TableRegistry.push(table);
+			checkForNestedTables($table);
+			if (Aloha.activeEditable === table.parentEditable) {
+				table.activate();
+			}
+			return table;
+		}
+		return null;
+	}
+
+	/**
 	 * Init method of the Table-plugin transforms all tables in the document
 	 *
 	 * @return void
@@ -150,6 +232,18 @@ define([
 		this.rowConfig = this.checkConfig(this.rowConfig||this.settings.rowConfig);
 		this.cellConfig = this.checkConfig(this.cellConfig||this.settings.cellConfig);
 
+		// table resize settings
+		this.tableResize = this.settings.tableResize === undefined ? false : this.settings.tableResize;
+		this.colResize = this.settings.colResize === undefined ? false : this.settings.colResize;
+		this.rowResize = this.settings.rowResize === undefined ? false : this.settings.rowResize;
+
+		// disable table resize settings on browsers below IE8
+		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
+			this.tableResize = false;
+			this.colResize = false;
+			this.rowResize = false;
+		}
+
 		// add reference to the create layer object
 		this.createLayer = new CreateLayer( this );
 
@@ -163,18 +257,9 @@ define([
 				TablePlugin.setFocusedTable( undefined );
 			} );
 
-			editable.obj.find( 'table' ).each( function () {
-				// only convert tables which are editable
-				if ( that.isEditableTable( this ) &&
-						!TablePlugin.isWithinTable( this ) ) {
-					var table = new Table( this, TablePlugin );
-					table.parentEditable = editable;
-					// table.activate();
-					TablePlugin.TableRegistry.push( table );
-				}
-
-				TablePlugin.checkForNestedTables( editable.obj );
-			} );
+			editable.obj.find('table').each(function (__unused__, elem) {
+				createNewTable(elem);
+			});
 		} );
 
 		// initialize the table buttons
@@ -243,10 +328,7 @@ define([
 			}
 		});
 
-		// subscribe for the 'editableActivated' event to activate all tables in the editable
-		Aloha.bind( 'aloha-editable-activated', function (event, props) {
-			// disable all split / merge buttons
-
+		Aloha.bind('aloha-editable-activated', function (__event__, data) {
 			that._splitcellsButton.enable(false);
 			that._mergecellsButton.enable(false);
 			that._splitcellsRowButton.enable(false);
@@ -254,69 +336,49 @@ define([
 			that._splitcellsColumnButton.enable(false);
 			that._mergecellsColumnButton.enable(false);
 
-			props.editable.obj.find('table').each(function () {
-				// shortcut for TableRegistry
-				var tr = TablePlugin.TableRegistry;
-				for (var i = 0; i < tr.length; i++) {
-					if (tr[i].obj.attr('id') == jQuery(this).attr('id')) {
-						// activate the table
-						tr[i].activate();
-						// and continue with the next table tag
+			data.editable.obj.find('table').each(function () {
+				var registry = TablePlugin.TableRegistry;
+				for (var i = 0; i < registry.length; i++) {
+					if (registry[i].obj.attr('id') === jQuery(this).attr('id')) {
+						registry[i].activate();
 						return true;
 					}
 				}
 
-				// if we come here, we did not find the table in our registry, so we need to create a new one
-				// only convert tables which are editable
-				if ( that.isEditableTable( this ) &&
-						!TablePlugin.isWithinTable( this ) ) {
-					var table = new Table( this, TablePlugin );
-					table.parentEditable = props.editable;
-					table.activate();
-					TablePlugin.TableRegistry.push( table );
-				}
-
-				TablePlugin.checkForNestedTables( props.editable.obj );
+				// Because table this is a new table that is not yet in the
+				// registry.
+				createNewTable(this);
 			});
+
 		});
 
-		// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable
-		Aloha.bind( 'aloha-editable-deactivated', function (event, properties) {
+		Aloha.bind('aloha-editable-deactivated', function () {
 			if (TablePlugin.activeTable) {
 				TablePlugin.activeTable.selection.unselectCells();
 			}
 			TablePlugin.setFocusedTable(undefined);
-
-			// shortcut for TableRegistry
-			var tr = TablePlugin.TableRegistry;
-			for (var i = 0; i < tr.length; i++) {
-				// activate the table
-				tr[i].deactivate();
+			var registry = TablePlugin.TableRegistry;
+			for (var i = 0; i < registry.length; i++) {
+				registry[i].deactivate();
 			}
 		});
 
-		Aloha.bind( 'aloha-smart-content-changed', function ( event ) {
-			if ( Aloha.activeEditable ) {
-				Aloha.activeEditable.obj.find( 'table' ).each( function () {
-					if ( TablePlugin.indexOfTableInRegistry( this ) == -1 &&
-							!TablePlugin.isWithinTable( this ) ) {
-						this.id = GENTICS.Utils.guid();
-
-						var table = new Table( this, TablePlugin );
-						table.parentEditable = Aloha.activeEditable;
-						TablePlugin.TableRegistry.push( table );
-						table.activate();
+		Aloha.bind('aloha-smart-content-changed', function () {
+			if (Aloha.activeEditable) {
+				Aloha.activeEditable.obj.find('table').each(function () {
+					if (TablePlugin.indexOfTableInRegistry(this) == -1) {
+						if (createNewTable(this)) {
+							this.id = GENTICS.Utils.guid();
+						}
 					}
-
-					TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
-				} );
+				});
 			}
-		} );
+		});
 
-		if ( this.settings.summaryinsidebar ) {
-			Aloha.ready( function () {
-				that.initSidebar( Aloha.Sidebar.right.show() );
-			} );
+		if (this.settings.summaryinsidebar) {
+			Aloha.bind('aloha-plugins-loaded', function () {
+				that.initSidebar(Aloha.Sidebar.right.show());
+			});
 		}
 	};
 
@@ -455,36 +517,6 @@ define([
 		return false;
 	};
 
-	/**
-	 * Checks if the given element is within a table.
-	 *
-	 * @param {DOMElment} elem
-	 * @return {Boolean} true if elem is nested within a table
-	 */
-	TablePlugin.isWithinTable = function ( elem ) {
-		return ( jQuery( elem )
-					.parents( '.aloha-editable table' )
-						.length > 0 );
-	};
-
-	/**
-	 * Checks for the presence of nested tables in the given editable.
-	 * @todo complete
-	 *		if ( editable.find( 'table table' ).length ) {
-	 *			// show warning
-	 *		} else {
-	 *			// hide warning
-	 *		}
-	 * @param {jQuery} editable
-	 */
-	TablePlugin.checkForNestedTables = function ( editable ) {
-		if ( editable.find( 'table table' ).length ) {
-			// show warning
-		} else {
-			// hide warning
-		}
-	};
-
 	TablePlugin.initMergeSplitCellsBtns = function(){
 		// TODO current it is not possible to add the same buttons to
 		//      multiple tabs. To work around this limitation we are
@@ -556,6 +588,30 @@ define([
 				}
 			}
 		});
+	};
+
+	TablePlugin.initNaturalFitBtn = function() {
+		var that = this;
+
+		if (this.colResize || this.rowResize) {
+			this._tableNaturalFitButton = Ui.adopt("naturalFit", Button, {
+				tooltip: i18n.t("button.naturalfit.tooltip"),
+				icon: "aloha-icon aloha-icon-table-naturalfit",
+				scope: this.name + '.cell',
+				click: function() {
+					if (that.activeTable) {
+						var tableObj = that.activeTable.obj;
+						tableObj.find('td').each(function() {
+							jQuery(this).find('div').css('width', '');
+							jQuery(this).css('width', '');
+						});
+						tableObj.find('tr').each(function() {
+							jQuery(this).css('height', '');
+						});
+					}
+				}
+			});
+		}
 	};
 
 	/**
@@ -982,6 +1038,8 @@ define([
 
 		this.initMergeSplitCellsBtns();
 
+		this.initNaturalFitBtn();
+
 		// generate formatting buttons for tables
 		this.tableMSItems = [];
 
@@ -1183,29 +1241,19 @@ define([
 			cleanupAfterInsertion();
 
 			var tableReloadedFromDOM = document.getElementById( tableId );
+			var tableObj = createNewTable(tableReloadedFromDOM);
 
-			if ( !TablePlugin.isWithinTable( tableReloadedFromDOM ) ) {
-				var tableObj = new Table( tableReloadedFromDOM, TablePlugin );
-				tableObj.parentEditable = Aloha.activeEditable;
-				// transform the table to be editable
-				tableObj.activate();
-
-				// after creating the table, trigger a click into the first cell to
-				// focus the content
-				// for IE set a timeout of 10ms to focus the first cell, other wise it
-				// won't work
-				if ( jQuery.browser.msie ) {
-					window.setTimeout( function () {
-						tableObj.cells[ 0 ].wrapper.get( 0 ).focus();
+			if (tableObj) {
+				// Because without the 10ms delay, we cannot place the cursor
+				// automatically into the first cell in IE.
+				if ($.browser.msie) {
+					window.setTimeout(function () {
+						tableObj.cells[0].wrapper.get(0).focus();
 					}, 20 );
 				} else {
-					tableObj.cells[ 0 ].wrapper.get( 0 ).focus();
+					tableObj.cells[0].wrapper.get(0).focus();
 				}
-
-				TablePlugin.TableRegistry.push( tableObj );
 			}
-
-			TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
 
 			// The selection starts out in the first cell of the new
 			// table. The table tab/scope has to be activated

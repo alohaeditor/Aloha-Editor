@@ -129,26 +129,24 @@ define([
 	};
 
 	/**
-	 * jQuery Aloha Plugin
+	 * jQuery Aloha Plugin.
 	 *
-	 * turn all dom elements to continous text
-	 * @return	jQuery object for the matched elements
+	 * Makes the elements in a jQuery selection set Aloha editables.
+	 *
+	 * @return jQuery container of holding DOM elements that have been
+	 *         aloha()fied.
 	 * @api
 	 */
 	jQuery.fn.aloha = function () {
-		var $this = jQuery(this);
-
-		Aloha.bind('aloha-ready', function () {
-			$this.each(function () {
-				// create a new aloha editable object for each passed object
-				if (!Aloha.isEditable(this)) {
-					new Aloha.Editable(jQuery(this)).init();
+		var $elements = this;
+		Aloha.bind('aloha-plugins-loaded', function () {
+			$elements.each(function (_, elem) {
+				if (!Aloha.isEditable(elem)) {
+					new Aloha.Editable(jQuery(elem)).init();
 				}
 			});
 		});
-
-		// Chain
-		return $this;
+		return $elements;
 	};
 
 	/**

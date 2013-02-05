@@ -148,7 +148,7 @@ define([
 					ev.stopPropagation();
 				});
 			this.title.find('#aloha-devtool-source-viewer-widen-ckbx')
-				.change(function () {
+				.click(function () {
 					sidebar.width = jQuery(this).attr('checked')
 						? 600
 						: originalWidth;

@@ -642,6 +642,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * <pre>
 		 * - merge: merges multiple successive nodes of same type, if this is allowed, starting at the children of the given node (defaults to false)
 		 * - removeempty: removes empty element nodes (defaults to false)
+		 * - mergeable: Custom function to predicate whether or not a given
+		 *              element should be mergeable. Overrides `mergeableTags'.
 		 * </pre>
 		 * Example for calling this method:<br/>
 		 * <code>GENTICS.Utils.Dom.doCleanup({merge:true,removeempty:false}, range)</code>
@@ -745,7 +747,9 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 
 						// when the current node was not removed, we eventually store it as previous (mergeable) tag
 						if (!removed) {
-							if (jQuery.inArray(this.nodeName.toLowerCase(), that.mergeableTags) >= 0) {
+							if (cleanup.mergeable
+									? cleanup.mergeable(this)
+									: jQuery.inArray(this.nodeName.toLowerCase(), that.mergeableTags) >= 0) {
 								prevNode = this;
 							} else {
 								prevNode = false;

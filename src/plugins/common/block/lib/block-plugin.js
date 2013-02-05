@@ -104,10 +104,9 @@ define([
 			BlockManager.registerEventHandlers();
 			BlockManager.initializeBlockLevelDragDrop();
 
-			Aloha.bind('aloha-ready', function () {
-				// When Aloha is fully loaded, we initialize the blocks.
+			Aloha.bind('aloha-plugins-loaded', function () {
 				that._createBlocks();
-				if (that.settings['sidebarAttributeEditor'] !== false) {
+				if (false !== that.settings['sidebarAttributeEditor']) {
 					SidebarAttributeEditor.init();
 				}
 			});
