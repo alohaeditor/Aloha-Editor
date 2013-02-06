@@ -81,3 +81,7 @@
 .math-element .math-element-destroy:hover {
     background-image: url(../img/remove-02.png);
 }
+
+button.done {
+    float: right;
+}

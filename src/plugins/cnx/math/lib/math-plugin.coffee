@@ -7,18 +7,18 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
             <textarea type="text" class="formula" rows="1"
                       placeholder="Insert your math notation here"></textarea>
         </div>
-        <span>This is:</span>
-        <label class="radio inline">
-            <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath
-        </label>
-        <label class="radio inline">
-            <input type="radio" name="mime-type" value="math/tex"> LaTeX
-        </label>
-        <label class="radio inline mime-type-mathml">
-            <input type="radio" name="mime-type" value="math/mml"> MathML
-        </label>
         <div class="footer">
-            <button class="btn btn-primary done">Done</button>
+          <span>This is:</span>
+          <label class="radio inline">
+              <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath
+          </label>
+          <label class="radio inline">
+              <input type="radio" name="mime-type" value="math/tex"> LaTeX
+          </label>
+          <label class="radio inline mime-type-mathml">
+              <input type="radio" name="mime-type" value="math/mml"> MathML
+          </label>
+          <button class="btn btn-primary done">Done</button>
         </div>
     </div>
   '''
