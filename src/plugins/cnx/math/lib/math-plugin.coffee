@@ -191,7 +191,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $editor
 
   makeCloseIcon = ($el) ->
-      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete math">&nbsp;</a>')
+      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete\u00A0math">&nbsp;</a>')
       if jQuery.ui and jQuery.ui.tooltip
         closer.tooltip()
       else

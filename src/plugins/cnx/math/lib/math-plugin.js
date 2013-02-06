@@ -180,7 +180,7 @@
     };
     makeCloseIcon = function($el) {
       var closer;
-      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete math">&nbsp;</a>');
+      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete\u00A0math">&nbsp;</a>');
       if (jQuery.ui && jQuery.ui.tooltip) {
         closer.tooltip();
       } else {
