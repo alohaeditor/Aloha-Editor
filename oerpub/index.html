@@ -201,6 +201,7 @@
                                                 callback_function();
                                             }
                                         }
+                                        PubSub.pub('swordpushweb.saved');
                                     });
                                 }
                             }
@@ -208,10 +209,10 @@
 
                         // Attach save handler to Save button
                         PubSub.sub('swordpushweb.save', function(data){
+                            savePreview();
                             if(data && data.callback){
                                 data.callback();
                             }
-                            savePreview();
                         });
 
                         // Set up status message area
