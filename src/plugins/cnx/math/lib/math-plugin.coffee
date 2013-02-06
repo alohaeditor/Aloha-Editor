@@ -46,7 +46,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
 
   insertMath = () ->
-    $el = jQuery('<span class="math-element aloha-cleanme"></span>')
+    $el = jQuery('<span class="math-element aloha-cleanme">&nbsp;</span>')
     range = Aloha.Selection.getRangeObject()
     if range.isCollapsed()
       GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj

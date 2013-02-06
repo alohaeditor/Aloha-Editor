@@ -32,7 +32,7 @@
     });
     insertMath = function() {
       var $el, $tail, range;
-      $el = jQuery('<span class="math-element aloha-cleanme"></span>');
+      $el = jQuery('<span class="math-element aloha-cleanme">&nbsp;</span>');
       range = Aloha.Selection.getRangeObject();
       if (range.isCollapsed()) {
         GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
