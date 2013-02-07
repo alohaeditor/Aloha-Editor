@@ -40,6 +40,21 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
   # add aloha-cleanme so this span is unwrapped
   Aloha.ready ->
     MathJax.Hub.Configured() if MathJax?
+    jQuery.each MathJax.Hub.getAllJax(), (i, jax) ->
+      $el = jQuery "##{ jax.inputID }"
+      squirrelMath($el)
+
+  getMathFor = (id) ->
+    jax = MathJax?.Hub.getJaxFor id
+    if jax
+      mathStr = jax.root.toMathML()
+      jQuery(mathStr)
+
+  squirrelMath = ($el) ->
+    $mml = getMathFor $el.attr('id')
+    $el.parent().remove('math')
+    $el.parent().append($mml)
+
 
   Aloha.bind 'aloha-editable-activated', (evt, ed) ->
     ed.editable.obj.find('math').wrap '<span class="math-element aloha-cleanme"></span>'
@@ -82,7 +97,12 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
   triggerMathJax = ($el, cb) ->
     if MathJax?
-      MathJax.Hub.Queue ["Typeset", MathJax.Hub, $el[0], cb]
+      # Be sure to squirrel away the MathML because the DOM only contains the HTML+CSS output
+      callback = () ->
+        $mathJaxEl = $el.children('.MathJax')
+        squirrelMath $mathJaxEl
+        cb()
+      MathJax.Hub.Queue ["Typeset", MathJax.Hub, $el[0], callback]
     else
       console.log 'MathJax was not loaded properly'
 

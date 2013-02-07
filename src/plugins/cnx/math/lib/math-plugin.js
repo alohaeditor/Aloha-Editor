@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css'], function(Aloha, Plugin, jQuery, Popover, UI) {
-    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, TOOLTIP_TEMPLATE, buildEditor, cleanupFormula, insertMath, makeCloseIcon, triggerMathJax;
+    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, TOOLTIP_TEMPLATE, buildEditor, cleanupFormula, getMathFor, insertMath, makeCloseIcon, squirrelMath, triggerMathJax;
     EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"\n                  placeholder="Insert your math notation here"></textarea>\n    </div>\n    <span>This is:</span>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n    </label>\n    <label class="radio inline">\n        <input type="radio" name="mime-type" value="math/tex"> LaTeX\n    </label>\n    <label class="radio inline mime-type-mathml">\n        <input type="radio" name="mime-type" value="math/mml"> MathML\n    </label>\n    <div class="footer">\n        <button class="btn btn-primary done">Done</button>\n    </div>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
@@ -24,9 +24,28 @@
     TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>';
     Aloha.ready(function() {
       if (typeof MathJax !== "undefined" && MathJax !== null) {
-        return MathJax.Hub.Configured();
+        MathJax.Hub.Configured();
       }
+      return jQuery.each(MathJax.Hub.getAllJax(), function(i, jax) {
+        var $el;
+        $el = jQuery("#" + jax.inputID);
+        return squirrelMath($el);
+      });
     });
+    getMathFor = function(id) {
+      var jax, mathStr;
+      jax = typeof MathJax !== "undefined" && MathJax !== null ? MathJax.Hub.getJaxFor(id) : void 0;
+      if (jax) {
+        mathStr = jax.root.toMathML();
+        return jQuery(mathStr);
+      }
+    };
+    squirrelMath = function($el) {
+      var $mml;
+      $mml = getMathFor($el.attr('id'));
+      $el.parent().remove('math');
+      return $el.parent().append($mml);
+    };
     Aloha.bind('aloha-editable-activated', function(evt, ed) {
       return ed.editable.obj.find('math').wrap('<span class="math-element aloha-cleanme"></span>');
     });
@@ -67,8 +86,15 @@
       }
     });
     triggerMathJax = function($el, cb) {
+      var callback;
       if (typeof MathJax !== "undefined" && MathJax !== null) {
-        return MathJax.Hub.Queue(["Typeset", MathJax.Hub, $el[0], cb]);
+        callback = function() {
+          var $mathJaxEl;
+          $mathJaxEl = $el.children('.MathJax');
+          squirrelMath($mathJaxEl);
+          return cb();
+        };
+        return MathJax.Hub.Queue(["Typeset", MathJax.Hub, $el[0], callback]);
       } else {
         return console.log('MathJax was not loaded properly');
       }
