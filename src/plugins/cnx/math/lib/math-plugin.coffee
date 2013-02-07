@@ -35,18 +35,15 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
   TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
 
   # Wait until Aloha is started before loading MathJax
-  # Also, wrap all math in a span/div. MathJax replaces the MathJax element
-  # losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
-  # add aloha-cleanme so this span is unwrapped
   Aloha.ready ->
     MathJax.Hub.Configured() if MathJax?
 
   Aloha.bind 'aloha-editable-activated', (evt, ed) ->
-    ed.editable.obj.find('math').wrap '<span class="math-element aloha-cleanme"></span>'
+    ed.editable.obj.find('math').wrap '<span class="math-element"></span>'
 
 
   insertMath = () ->
-    $el = jQuery('<span class="math-element aloha-cleanme">&nbsp;</span>')
+    $el = jQuery('<span class="math-element">&nbsp;</span>')
     range = Aloha.Selection.getRangeObject()
     if range.isCollapsed()
       GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
