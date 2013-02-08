@@ -24,13 +24,8 @@
     TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>';
     Aloha.ready(function() {
       if (typeof MathJax !== "undefined" && MathJax !== null) {
-        MathJax.Hub.Configured();
+        return MathJax.Hub.Configured();
       }
-      return jQuery.each(MathJax.Hub.getAllJax(), function(i, jax) {
-        var $el;
-        $el = jQuery("#" + jax.inputID);
-        return squirrelMath($el);
-      });
     });
     getMathFor = function(id) {
       var jax, mathStr;
@@ -42,16 +37,24 @@
     };
     squirrelMath = function($el) {
       var $mml;
+      $el.parent().children('.MathJax_Preview, .MathJax, script').addClass('aloha-ephemera');
       $mml = getMathFor($el.attr('id'));
       $el.parent().remove('math');
       return $el.parent().append($mml);
     };
     Aloha.bind('aloha-editable-activated', function(evt, ed) {
-      return ed.editable.obj.find('math').wrap('<span class="math-element aloha-cleanme"></span>');
+      ed.editable.obj.find('math').wrap('<span class="math-element aloha-ephemera-wrapper"></span>');
+      return MathJax.Hub.Queue(function() {
+        return jQuery.each(MathJax.Hub.getAllJax(), function(i, jax) {
+          var $el;
+          $el = jQuery("#" + jax.inputID);
+          return squirrelMath($el);
+        });
+      });
     });
     insertMath = function() {
       var $el, $tail, range;
-      $el = jQuery('<span class="math-element aloha-cleanme"></span>');
+      $el = jQuery('<span class="math-element aloha-ephemera-wrapper"></span>');
       range = Aloha.Selection.getRangeObject();
       if (range.isCollapsed()) {
         GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);

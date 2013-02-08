@@ -37,12 +37,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
   # Wait until Aloha is started before loading MathJax
   # Also, wrap all math in a span/div. MathJax replaces the MathJax element
   # losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
-  # add aloha-cleanme so this span is unwrapped
+  # add `aloha-ephemera-wrapper` so this span is unwrapped
   Aloha.ready ->
     MathJax.Hub.Configured() if MathJax?
-    jQuery.each MathJax.Hub.getAllJax(), (i, jax) ->
-      $el = jQuery "##{ jax.inputID }"
-      squirrelMath($el)
 
   getMathFor = (id) ->
     jax = MathJax?.Hub.getJaxFor id
@@ -51,17 +48,22 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       jQuery(mathStr)
 
   squirrelMath = ($el) ->
+    $el.parent().children('.MathJax_Preview, .MathJax, script').addClass 'aloha-ephemera'
     $mml = getMathFor $el.attr('id')
     $el.parent().remove('math')
     $el.parent().append($mml)
 
 
   Aloha.bind 'aloha-editable-activated', (evt, ed) ->
-    ed.editable.obj.find('math').wrap '<span class="math-element aloha-cleanme"></span>'
+    ed.editable.obj.find('math').wrap '<span class="math-element aloha-ephemera-wrapper"></span>'
+    MathJax.Hub.Queue ->
+      jQuery.each MathJax.Hub.getAllJax(), (i, jax) ->
+        $el = jQuery "##{ jax.inputID }"
+        squirrelMath($el)
 
 
   insertMath = () ->
-    $el = jQuery('<span class="math-element aloha-cleanme"></span>')
+    $el = jQuery('<span class="math-element aloha-ephemera-wrapper"></span>')
     range = Aloha.Selection.getRangeObject()
     if range.isCollapsed()
       GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
@@ -224,6 +226,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
   Aloha.bind 'aloha-editable-activated', (event, data) ->
     editable = data.editable
+
     jQuery(editable.obj).on 'click.matheditor', '.math-element, .math-element *', (evt) ->
       $el = jQuery(@)
 
