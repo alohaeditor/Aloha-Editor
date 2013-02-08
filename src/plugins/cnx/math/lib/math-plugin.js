@@ -28,11 +28,11 @@
       }
     });
     Aloha.bind('aloha-editable-activated', function(evt, ed) {
-      return ed.editable.obj.find('math').wrap('<span class="math-element aloha-cleanme"></span>');
+      return ed.editable.obj.find('math').wrap('<span class="math-element"></span>');
     });
     insertMath = function() {
       var $el, $tail, range;
-      $el = jQuery('<span class="math-element aloha-cleanme">&nbsp;</span>');
+      $el = jQuery('<span class="math-element">&nbsp;</span>');
       range = Aloha.Selection.getRangeObject();
       if (range.isCollapsed()) {
         GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
