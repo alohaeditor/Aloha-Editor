@@ -97,6 +97,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $editor = jQuery(EDITOR_HTML)
     # Bind some actions for the buttons
     $editor.find('.done').on 'click', =>
+      if not $span.next().is '.aloha-ephemera-wrapper' 
+        # a math meta-element needs to followed by a non-breaking space in a span
+        $('<space class="aloha-ephemera-wrapper"> \u00A0 </span>').insertAfter($span)
       $span.trigger 'hide'
     $editor.find('.remove').on 'click', =>
       $span.trigger 'hide'
@@ -238,6 +241,10 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
     editable.obj.find('.math-element').each () ->
       makeCloseIcon(jQuery(this))
+      $span = $(this)
+      if not $span.next().is '.aloha-ephemera-wrapper' 
+        # a math meta-element needs to followed by a non-breaking space in a span
+        $('<space class="aloha-ephemera-wrapper"> \u00A0 </span>').insertAfter($span)
 
     editable.obj.on('click.matheditor', '.math-element-destroy', (e) ->
       jQuery(e.target).tooltip('destroy')

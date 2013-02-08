@@ -87,6 +87,9 @@
         _this = this;
       $editor = jQuery(EDITOR_HTML);
       $editor.find('.done').on('click', function() {
+        if (!$span.next().is('.aloha-ephemera-wrapper')) {
+          $('<space class="aloha-ephemera-wrapper"> \u00A0 </span>').insertAfter($span);
+        }
         return $span.trigger('hide');
       });
       $editor.find('.remove').on('click', function() {
@@ -215,7 +218,12 @@
         return evt.stopPropagation();
       });
       editable.obj.find('.math-element').each(function() {
-        return makeCloseIcon(jQuery(this));
+        var $span;
+        makeCloseIcon(jQuery(this));
+        $span = $(this);
+        if (!$span.next().is('.aloha-ephemera-wrapper')) {
+          return $('<space class="aloha-ephemera-wrapper"> \u00A0 </span>').insertAfter($span);
+        }
       });
       editable.obj.on('click.matheditor', '.math-element-destroy', function(e) {
         var $el;
