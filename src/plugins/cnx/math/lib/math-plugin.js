@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css'], function(Aloha, Plugin, jQuery, Popover, UI) {
-    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, TOOLTIP_TEMPLATE, buildEditor, cleanupFormula, insertMath, makeCloseIcon, triggerMathJax;
+    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, TOOLTIP_TEMPLATE, buildEditor, cleanupFormula, getMathFor, insertMath, makeCloseIcon, squirrelMath, triggerMathJax;
     EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"\n                  placeholder="Insert your math notation here"></textarea>\n    </div>\n    <div class="footer">\n      <span>This is:</span>\n      <label class="radio inline">\n          <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n      </label>\n      <label class="radio inline">\n          <input type="radio" name="mime-type" value="math/tex"> LaTeX\n      </label>\n      <label class="radio inline mime-type-mathml">\n          <input type="radio" name="mime-type" value="math/mml"> MathML\n      </label>\n      <button class="btn btn-primary done">Done</button>\n    </div>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
@@ -27,12 +27,34 @@
         return MathJax.Hub.Configured();
       }
     });
+    getMathFor = function(id) {
+      var jax, mathStr;
+      jax = typeof MathJax !== "undefined" && MathJax !== null ? MathJax.Hub.getJaxFor(id) : void 0;
+      if (jax) {
+        mathStr = jax.root.toMathML();
+        return jQuery(mathStr);
+      }
+    };
+    squirrelMath = function($el) {
+      var $mml;
+      $el.parent().children('.MathJax_Preview, .MathJax, .MathJax_Display, script').addClass('aloha-ephemera');
+      $mml = getMathFor($el.attr('id'));
+      $el.parent().remove('math');
+      return $el.parent().append($mml);
+    };
     Aloha.bind('aloha-editable-activated', function(evt, ed) {
-      return ed.editable.obj.find('math').wrap('<span class="math-element"></span>');
+      ed.editable.obj.find('math').wrap('<span class="math-element aloha-ephemera-wrapper"></span>');
+      return MathJax.Hub.Queue(function() {
+        return jQuery.each(MathJax.Hub.getAllJax(), function(i, jax) {
+          var $el;
+          $el = jQuery("#" + jax.inputID);
+          return squirrelMath($el);
+        });
+      });
     });
     insertMath = function() {
       var $el, $tail, range;
-      $el = jQuery('<span class="math-element">&nbsp;</span>');
+      $el = jQuery('<span class="math-element aloha-ephemera-wrapper">&#160;</span>');
       range = Aloha.Selection.getRangeObject();
       if (range.isCollapsed()) {
         GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
@@ -67,8 +89,15 @@
       }
     });
     triggerMathJax = function($el, cb) {
+      var callback;
       if (typeof MathJax !== "undefined" && MathJax !== null) {
-        return MathJax.Hub.Queue(["Typeset", MathJax.Hub, $el[0], cb]);
+        callback = function() {
+          var $mathJaxEl;
+          $mathJaxEl = $el.children('.MathJax');
+          squirrelMath($mathJaxEl);
+          return cb();
+        };
+        return MathJax.Hub.Queue(["Typeset", MathJax.Hub, $el[0], callback]);
       } else {
         return console.log('MathJax was not loaded properly');
       }
@@ -87,6 +116,9 @@
         _this = this;
       $editor = jQuery(EDITOR_HTML);
       $editor.find('.done').on('click', function() {
+        if (!$span.next().is('.aloha-ephemera-wrapper')) {
+          $('<space class="aloha-ephemera-wrapper"> \u00A0 </span>').insertAfter($span);
+        }
         return $span.trigger('hide');
       });
       $editor.find('.remove').on('click', function() {
@@ -216,7 +248,12 @@
         return evt.stopPropagation();
       });
       editable.obj.find('.math-element').each(function() {
-        return makeCloseIcon(jQuery(this));
+        var $span;
+        makeCloseIcon(jQuery(this));
+        $span = $(this);
+        if (!$span.next().is('.aloha-ephemera-wrapper')) {
+          return $('<space class="aloha-ephemera-wrapper"> \u00A0 </span>').insertAfter($span);
+        }
       });
       editable.obj.on('click.matheditor', '.math-element-destroy', function(e) {
         var $el;
