@@ -120,7 +120,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $editor.find('.done').on 'click', =>
       if not $span.next().is '.aloha-ephemera-wrapper'
         # a math meta-element needs to followed by a non-breaking space in a span
-        $('<space class="aloha-ephemera-wrapper"> \u00A0 </span>').insertAfter($span)
+        $('<span class="aloha-ephemera-wrapper">&#160;</span>').insertAfter($span)
       $span.trigger 'hide'
     $editor.find('.remove').on 'click', =>
       $span.trigger 'hide'
@@ -267,7 +267,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       $span = $(this)
       if not $span.next().is '.aloha-ephemera-wrapper'
         # a math meta-element needs to followed by a non-breaking space in a span
-        $('<space class="aloha-ephemera-wrapper"> \u00A0 </span>').insertAfter($span)
+        $('<span class="aloha-ephemera-wrapper">&#160;</span>').insertAfter($span)
 
     editable.obj.on('click.matheditor', '.math-element-destroy', (e) ->
       jQuery(e.target).tooltip('destroy')
