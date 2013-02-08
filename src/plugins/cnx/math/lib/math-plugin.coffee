@@ -174,6 +174,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
           $annotation = $math.find('annotation')
           if not $annotation[0]?
             $annotation = jQuery('<annotation></annotation>').prependTo($math)
+            $math.wrapInner('<semantics></semantics>')
           $annotation.attr('encoding', mimeType)
           $annotation.text(formula)
           makeCloseIcon($span)
