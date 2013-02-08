@@ -161,7 +161,7 @@
           if ($math[0]) {
             $annotation = $math.find('annotation');
             if (!($annotation[0] != null)) {
-              $annotation = jQuery('<annotation></annotation>').prependTo($math);
+              $annotation = jQuery('<annotation></annotation>').appendTo($math);
               $math.wrapInner('<semantics></semantics>');
             }
             $annotation.attr('encoding', mimeType);

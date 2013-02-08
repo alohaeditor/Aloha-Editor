@@ -173,7 +173,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         if $math[0] # Webkit browsers don't natively support MathML
           $annotation = $math.find('annotation')
           if not $annotation[0]?
-            $annotation = jQuery('<annotation></annotation>').prependTo($math)
+            $annotation = jQuery('<annotation></annotation>').appendTo($math)
             $math.wrapInner('<semantics></semantics>')
           $annotation.attr('encoding', mimeType)
           $annotation.text(formula)
