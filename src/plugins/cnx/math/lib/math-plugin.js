@@ -130,6 +130,7 @@
             $annotation = $math.find('annotation');
             if (!($annotation[0] != null)) {
               $annotation = jQuery('<annotation></annotation>').prependTo($math);
+              $math.wrapInner('<semantics></semantics>');
             }
             $annotation.attr('encoding', mimeType);
             $annotation.text(formula);
