@@ -161,6 +161,9 @@
           if ($math[0]) {
             $annotation = $math.find('annotation');
             if (!($annotation[0] != null)) {
+              if ($math.children().length > 1) {
+                $math.wrapInner('<mrow></mrow>');
+              }
               $annotation = jQuery('<annotation></annotation>').appendTo($math);
               $math.wrapInner('<semantics></semantics>');
             }

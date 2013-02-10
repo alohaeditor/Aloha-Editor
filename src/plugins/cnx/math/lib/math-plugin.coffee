@@ -53,7 +53,6 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $el.parent().remove('math')
     $el.parent().append($mml)
 
-
   Aloha.bind 'aloha-editable-activated', (evt, ed) ->
     ed.editable.obj.find('math').wrap '<span class="math-element aloha-ephemera-wrapper"></span>'
     MathJax.Hub.Queue ->
@@ -173,6 +172,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         if $math[0] # Webkit browsers don't natively support MathML
           $annotation = $math.find('annotation')
           if not $annotation[0]?
+            if $math.children().length > 1 # Wrap math equation in mrow if equation is more than one single child
+              $math.wrapInner('<mrow></mrow>')
             $annotation = jQuery('<annotation></annotation>').appendTo($math)
             $math.wrapInner('<semantics></semantics>')
           $annotation.attr('encoding', mimeType)
