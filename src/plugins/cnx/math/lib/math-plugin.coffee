@@ -96,7 +96,6 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $mml.wrap '<span class="mathml-wrapper aloha-ephemera-wrapper"></span>'
     $el.append $mml.parent()
 
-
   Aloha.bind 'aloha-editable-activated', (evt, ed) ->
     # STEP1
     $maths = ed.editable.obj.find('math')
@@ -235,6 +234,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         if $mathml[0] # Webkit browsers don't natively support MathML
           $annotation = $mathml.find('annotation')
           if not $annotation[0]?
+            if $mathml.children().length > 1 # Wrap math equation in mrow if equation is more than one single child
+              $mathml.wrapInner('<mrow></mrow>')
             $annotation = jQuery('<annotation></annotation>').appendTo($mathml)
             $mathml.wrapInner('<semantics></semantics>')
           $annotation.attr('encoding', mimeType)
