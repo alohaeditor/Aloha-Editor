@@ -387,8 +387,11 @@ define([
 			return 'BODY' === node.nodeName;
 		}
 
-		// Because mutate will split the range, an the split must be
-		// reflected in the given range, we wrap the range.
+		// Because we are mutating the range several times and don't
+		// want the caller the in-between updates, and because we are
+		// using trimRange() below to adjust the range's boundary
+		// points, which we don't want the browser to re-adjust (which
+		// some browsers do).
 		var range = Dom.stableRange(liveRange);
 
 		// Because we should avoid splitTextContainers() if this call is a noop.
@@ -408,8 +411,8 @@ define([
 		// <b>one</b><i><b>two</b></i>three
 		Dom.trimRangeClosingOpening(range, Html.isIgnorableWhitespace);
 
-		// The above two are the only cases where we modify the live range.
-		Dom.setRangeFromRange(liveRange, range);
+		// Because above are the only cases where we modify the range.
+		Dom.setRangeFromRef(liveRange, range);
 
 		mutate(range, isUpperBoundary, getOverride, clearOverride, clearOverrideRec, pushDownOverride, hasContext, setContext, unformat);
 	}

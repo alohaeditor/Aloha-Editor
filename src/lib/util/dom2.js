@@ -754,7 +754,6 @@ define([
 		this.endOffset = range.endOffset;
 		this.commonAncestorContainer = range.commonAncestorContainer;
 		this.collapsed = range.collapsed;
-		this.stable = true;
 	}
 
 	StableRange.prototype.update = function () {
@@ -780,7 +779,7 @@ define([
 		this.update();
 	};
 
-	function setRangeFromRange(range, ref) {
+	function setRangeFromRef(range, ref) {
 		range.setStart(ref.startContainer, ref.startOffset);
 		range.setEnd(ref.endContainer, ref.endOffset);
 	}
@@ -794,19 +793,16 @@ define([
 	 * as the first thing in any algorithm.
 	 */
 	function stableRange(range) {
-		return range.stable ? range : new StableRange(range);
+		return new StableRange(range);
 	}
 
 	/**
-	 * Boundary points of the given range should not be inside text
-	 * nodes (splitTextContainers()) because the dom cursor passed to
-	 * ignoreLeft and ignoreRight does not traverse positions inside
-	 * text nodes.
-	 *
-	 * The exact rules for when text node containers are passed are as
-	 * follows: If the left boundary point is inside a text node,
-	 * trimming will start before it. If the right boundary point is
-	 * inside a text node, trimming will start after it.
+	 * The dom cursor passed to ignoreLeft and ignoreRight does not
+	 * traverse positions inside text nodes. The exact rules for when
+	 * text node containers are passed are as follows: If the left
+	 * boundary point is inside a text node, trimming will start before
+	 * it. If the right boundary point is inside a text node, trimming
+	 * will start after it.
 	 */
 	function trimRange(range, ignoreLeft, ignoreRight) {
 		if (range.collapsed) {
@@ -820,6 +816,8 @@ define([
 		}
 		ignoreRight = ignoreRight || ignoreLeft;
 		var setEnd = false;
+		// Because if the right boundary points is inside a text node,
+		// trimming starts after it.
 		if (3 === range.endContainer.nodeType
 			    && range.endOffset > 0
 			    // Because the cursor already normalizes
@@ -883,6 +881,6 @@ define([
 		stableRange: stableRange,
 		trimRange: trimRange,
 		trimRangeClosingOpening: trimRangeClosingOpening,
-		setRangeFromRange: setRangeFromRange
+		setRangeFromRef: setRangeFromRef
 	};
 });
