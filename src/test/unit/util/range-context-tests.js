@@ -112,10 +112,8 @@ Aloha.require([
 		});
 	}
 
-	var testCount = 0;
-
 	function testMutation(title, before, expected, mutate) {
-		test(title + '-' + testCount++, function () {
+		test(title, function () {
 			var dom = $(before)[0];
 			var range = Aloha.createRange();
 			extractBoundaryMarkers(dom, range);
@@ -168,7 +166,7 @@ Aloha.require([
 	}
 
 	function testInsertExtractBoundaryMarkers(title, htmlWithBoundaryMarkers) {
-		test(title + testCount++, function () {
+		test(title, function () {
 			var dom = $(htmlWithBoundaryMarkers)[0];
 			var range = Aloha.createRange();
 			extractBoundaryMarkers(dom, range);
@@ -190,7 +188,7 @@ Aloha.require([
 	}
 
 	var t = function (htmlWithBoundaryMarkers) {
-		testInsertExtractBoundaryMarkers('extractBoundaryMarkers,insertBoundaryMarkers-', htmlWithBoundaryMarkers);
+		testInsertExtractBoundaryMarkers('extractBoundaryMarkers,insertBoundaryMarkers', htmlWithBoundaryMarkers);
 	};
 	t('<p>{Some text.}</p>');
 	t('<p>Some{ }text.</p>');
@@ -227,124 +225,134 @@ Aloha.require([
 	t('<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>',
 	  '<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>');
 
-	var t = function (before, after) {
-		testFormat('RangeContext.format', before, after);
+	var t = function (title, before, after) {
+		testFormat('RangeContext.format -' + title, before, after);
 	};
-	// Tests noop.
-	t('<p><b>[Some text.]</b></p>', '<p><b>{Some text.}</b></p>');
-	t('<p>{<b>Some text.</b>}</p>', '<p>{<b>Some text.</b>}</p>');
-	t('<p><b><i>[Some text.]</i></b></p>', '<p><b><i>{Some text.}</i></b></p>');
 
-	// Tests joining existing context element.s
-	t('<p>{<b>Some</b><b> text.</b>}</p>', '<p>{<b>Some text.</b>}</p>');
+	t('noop1', '<p><b>[Some text.]</b></p>', '<p><b>{Some text.}</b></p>');
+	t('noop2', '<p>{<b>Some text.</b>}</p>', '<p>{<b>Some text.</b>}</p>');
+	t('noop3', '<p><b><i>[Some text.]</i></b></p>', '<p><b><i>{Some text.}</i></b></p>');
 
-	// Tests bolding a node with text boundary points.
-	t('<p>[Some text.]</p>', '<p>{<b>Some text.</b>}</p>');
-	// Tests bolding a node, splitting text.
-	t('<p>So[me te]xt.</p>', '<p>So{<b>me te</b>}xt.</p>');
-	// Tests bolding a node with element boundary points.
-	t('<p>{<i>Some text.</i>}</p>', '<p>{<b><i>Some text.</i></b>}</p>');
+	t('join existing context elements',
+	  '<p>{<b>Some</b><b> text.</b>}</p>',
+	  '<p>{<b>Some text.</b>}</p>');
 
-	// Tests descending two levels down to each boundary point, with
-	// boundary points at start and end of container respectively.
-	t('<p><i>one<em>{Some</em>left</i>text<i>right<em>.}</em>two</i></p>',
+	t('bolding a node with text boundaries',
+	  '<p>[Some text.]</p>',
+	  '<p>{<b>Some text.</b>}</p>');
+
+	t('bolding an node, splitting text',
+	  '<p>So[me te]xt.</p>',
+	  '<p>So{<b>me te</b>}xt.</p>');
+
+	t('bolding a node with element boundaries',
+	  '<p>{<i>Some text.</i>}</p>',
+	  '<p>{<b><i>Some text.</i></b>}</p>');
+
+	t('descending two levels down to each boundary, with boundaries at start and end respectively',
+	  '<p><i>one<em>{Some</em>left</i>text<i>right<em>.}</em>two</i></p>',
 	  '<p><i>one<b><em>{Some</em>left</b></i><b>text</b><i><b>right</b><em><b>.</b>}</em>two</i></p>');
-	// Tests same as above except with boundary points in the the middle
-	// of container.
-	t('<p><i>one<em>!{Some</em>left</i>text<i>right<em>.}!</em>two</i></p>',
+	// Same as above except "with boundaries inside text node"
+	t('descending two levels down to each boundary, with boundaries inside text node',
+	  '<p><i>one<em>!{Some</em>left</i>text<i>right<em>.}!</em>two</i></p>',
 	  '<p><i>one<em>!{<b>Some</b></em><b>left</b></i><b>text</b><i><b>right</b><em><b>.</b>}!</em>two</i></p>');
-	// Tests same as above except with boundary points at end/start of
-	// container respectively.
-	//(without range trimming)
-	//t('<p><i>one<em>!{</em>left</i>text<i>right<em>}!</em>two</i></p>',
-	//  '<p><i>one<em>!{</em><b>left</b></i><b>text</b><i><b>right</b><em>}!</em>two</i></p>');
-	//(with range trimming)
-	t('<p><i>one<em>!{</em>left</i>text<i>right<em>}!</em>two</i></p>',
+	// Same as above except "with boundaries at end/start of container"
+	t('descending two levels down to each boundary, with boundaries at end/start of container',
+	  '<p><i>one<em>!{</em>left</i>text<i>right<em>}!</em>two</i></p>',
 	  '<p><i>one<em>!</em>{<b>left</b></i><b>text</b><i><b>right</b>}<em>!</em>two</i></p>');
-	// Tests same as above except with boundary points in empty container.
-	//(without range trimming)
-	//t('<p><i>one<em>{</em>left</i>text<i>right<em>}</em>two</i></p>',
-	//  '<p><i>one<em>{</em><b>left</b></i><b>text</b><i><b>right</b><em>}</em>two</i></p>');
-	//(with range trimming)
-	t('<p><i>one<em>{</em>left</i>text<i>right<em>}</em>two</i></p>',
+	// Same as above except "with boundaries in empty container"
+	t('descending two levels down to each boundary, with boundaries in empty container',
+	  '<p><i>one<em>{</em>left</i>text<i>right<em>}</em>two</i></p>',
 	  '<p><i>one<em></em>{<b>left</b></i><b>text</b><i><b>right</b>}<em></em>two</i></p>');
 
-	var t = function (before, after) {
-		testFormat('RangeContext.format-restack', before, after);
+	var t = function (title, before, after) {
+		testFormat('RangeContext.format-restack - ' + title, before, after);
 	};
-	// Tests restacking of existing bold element.
-	t('<p><i><u><s><b>Some</b></s></u>{ text}</i></p>',
+
+	t('with existing bold element',
+	  '<p><i><u><s><b>Some</b></s></u>{ text}</i></p>',
 	  '<p><i><b><u><s>Some</s></u>{ text</b>}</i></p>');
-	// Tests no restacking when some non-ignorable content is encountered.
-	t('<p><i><u><s>!<b>Some</b></s></u>{ text}</i></p>',
+
+	t('with non ignorable content before element to restack',
+	  '<p><i><u><s>!<b>Some</b></s></u>{ text}</i></p>',
 	  '<p><i><u><s>!<b>Some</b></s></u>{<b> text</b>}</i></p>');
-	// Tests same as above but with non-ignorable content after bold tag.
-	t('<p><i><u><s><b>Some</b>!</s></u>{ text}</i></p>',
+
+	t('with non ignorable content after element to restack',
+	  '<p><i><u><s><b>Some</b>!</s></u>{ text}</i></p>',
 	  '<p><i><u><s><b>Some</b>!</s></u>{<b> text</b>}</i></p>');
-	// Tests same as above but ith non-ignorable content between between child/parent at end.
-	t('<p><i><u><s><b>Some</b></s>!</u>{ text}</i></p>',
+
+	t('with non ignorable content between child/parent at end',
+	  '<p><i><u><s><b>Some</b></s>!</u>{ text}</i></p>',
 	  '<p><i><u><s><b>Some</b></s>!</u>{<b> text</b>}</i></p>');
-	// Tests same as above but ith non-ignorable content between between child/parent at start.
-	t('<p><i><u>!<s><b>Some</b></s></u>{ text}</i></p>',
+
+	t('with non ignorable content between child/parent at start',
+	  '<p><i><u>!<s><b>Some</b></s></u>{ text}</i></p>',
 	  '<p><i><u>!<s><b>Some</b></s></u>{<b> text</b>}</i></p>');
-	// Tests same as above but ith non-ignorable content as previous sibling to bolded text.
-	t('<p><i><u><s><b>Some</b></s></u>!{ text}</i></p>',
+
+	t('with non ignorable content as previous sibling to bolded text',
+	  '<p><i><u><s><b>Some</b></s></u>!{ text}</i></p>',
 	  '<p><i><u><s><b>Some</b></s></u>!{<b> text</b>}</i></p>');
 
-
-	var t = function (before, after) {
-		testUnformat('RangeContext.unformat', before, after);
+	var t = function (title, before, after) {
+		testUnformat('RangeContext.unformat - ' + title, before, after);
 	};
-	// Tests noop.
-	t('<p>{Some text.}</p>', '<p>{Some text.}</p>');
-	// Tests unbolding parent with text boundary points.
-	t('<p><b>[Some text.]</b></p>', '<p>{Some text.}</p>');
-	// Tests unbolding parent with element boundary points.
-	t('<p><b>{<i>Some text.</i>}</b></p>', '<p>{<i>Some text.</i>}</p>');
-	// Tests unbolding ancestor.
-	t('<p><b><i>{Some text.}</i></b></p>', '<p><i>{Some text.}</i></p>');
 
-	// Tests unbolding end tag of i.
-	t('<p><b><i>one{</i>two}</b></p>',
+	t('noop', '<p>{Some text.}</p>', '<p>{Some text.}</p>');
+
+	t('unbolding parent with text boundaries',
+	  '<p><b>[Some text.]</b></p>',
+	  '<p>{Some text.}</p>');
+
+	t('unbolding parent with element boundaries', 
+	  '<p><b>{<i>Some text.</i>}</b></p>',
+	  '<p>{<i>Some text.</i>}</p>');
+
+	t('unbolding ancestor',
+	  '<p><b><i>{Some text.}</i></b></p>',
+	  '<p><i>{Some text.}</i></p>');
+
+	t('unbolding end tag',
+	  '<p><b><i>one{</i>two}</b></p>',
 	  '<p><b><i>one</i></b>{two}</p>');
-	// Tests same as above, but unbolds start tag of i.
-	t('<p><b>{one<i>}two</i></b></p>',
+	t('unbolding start tag',
+	  '<p><b>{one<i>}two</i></b></p>',
 	  '<p>{one}<b><i>two</i></b></p>');
-	// Tests same as above, but with an additional sibling before the i.
-	t('<p><b>one<i>two{</i>three}</b></p>',
-	  '<p><b>one<i>two</i>{</b>three}</p>');
-	// Tests same as above, but with an additional sibling after the i.
-	t('<p><b>{one<i>}two</i>three</b></p>',
+	t('unbolding end tag with additional previous sibling',
+	  '<p><b>one<i>two{</i>three}</b></p>',
+	  '<p><b>one<i>two</i></b>{three}</p>');
+	t('unbolding start tag with additional next sibling',
+	  '<p><b>{one<i>}two</i>three</b></p>',
 	  '<p>{one}<b><i>two</i>three</b></p>');
 
-	// Tests pushing down through the commonAncestorContainer.
-	t('<p><b>one<i>{Some text.}</i>two</b></p>', '<p><b>one</b><i>{Some text.}</i><b>two</b></p>');
-	// Tests pushing down two levels through the commonAncestorContainer.
-	t('<p><b>one<em>two<i>{Some text.}</i>three</em>four</b></p>',
+	t('pusing down through commonAncestorContainer',
+	  '<p><b>one<i>{Some text.}</i>two</b></p>',
+	  '<p><b>one</b><i>{Some text.}</i><b>two</b></p>');
+
+	t('pushing down two levels through commonAncestorContainer',
+	  '<p><b>one<em>two<i>{Some text.}</i>three</em>four</b></p>',
 	  '<p><b>one</b><em><b>two</b><i>{Some text.}</i><b>three</b></em><b>four</b></p>');
 
-	// Tests pushing down two levels through the commonAncestorContainer
-	// and two levels down to each boundary point, with boundary points
-	// at start and end of container respectively.
-	t('<p><b>1<em>2<i>3<sub>4<u>{Some</u>Z</sub>text<sub>Z<u>.}</u>5</sub>6</i>7</em>8</b></p>',
+	t('pushing down two levels through commonAncestorContainer,'
+	  + ' and two levels down to each boundary,'
+	  + ' with boundaries at start/end respectively',
+	  '<p><b>1<em>2<i>3<sub>4<u>{Some</u>Z</sub>text<sub>Z<u>.}</u>5</sub>6</i>7</em>8</b></p>',
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4</b><u>{Some</u>Z</sub>text<sub>Z<u>.}</u><b>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
-	// Tests same as above except with boundary points in the the middle
-	// of container.
-	t('<p><b>1<em>2<i>3<sub>4<u>left{Some</u>Z</sub>text<sub>Z<u>.}right</u>5</sub>6</i>7</em>8</b></p>',
+	// Same as above except "boundaries in the middle"
+	t('pushing down two levels through commonAncestorContainer,'
+	  + ' and two levels down to each boundary,'
+	  + ' with boundaries in the mioddle',
+	'<p><b>1<em>2<i>3<sub>4<u>left{Some</u>Z</sub>text<sub>Z<u>.}right</u>5</sub>6</i>7</em>8</b></p>',
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4</b><u><b>left</b>{Some</u>Z</sub>text<sub>Z<u>.}<b>right</b></u><b>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
-	// Tests same as above except with boundary points at end/start of
-	// container respectively.
-	//(without range trimming)
-	//t('<p><b>1<em>2<i>3<sub>4<u>Some{</u>Z</sub>text<sub>Z<u>}.</u>5</sub>6</i>7</em>8</b></p>',
-	//  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4</b><u><b>Some</b>{</u>Z</sub>text<sub>Z<u>}<b>.</b></u><b>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
-	//(with range trimming)
-	t('<p><b>1<em>2<i>3<sub>4<u>Some{</u>Z</sub>text<sub>Z<u>}.</u>5</sub>6</i>7</em>8</b></p>',
-	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u>Some</u>{</b>Z</sub>text<sub>Z}<b><u>.</u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
-	// Tests same as above except with boundary points in empty container.
-	//(wtithout range trimming)
-	//t('<p><b>1<em>2<i>3<sub>4<u>{</u>Z</sub>text<sub>Z<u>}</u>5</sub>6</i>7</em>8</b></p>',
-	//  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4</b><u>{</u>Z</sub>text<sub>Z<u>}</u><b>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
-	//(with range trimming)
-	t('<p><b>1<em>2<i>3<sub>4<u>{</u>Z</sub>text<sub>Z<u>}</u>5</sub>6</i>7</em>8</b></p>',
-	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u>{</b>Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
+	// Same as above except "boundaries at end/start respectively"
+	t('pushing down two levels through commonAncestorContainer,'
+	  + ' and two levels down to each boundary,'
+	  + ' with boundaries at start/end respectively',
+	  '<p><b>1<em>2<i>3<sub>4<u>Some{</u>Z</sub>text<sub>Z<u>}.</u>5</sub>6</i>7</em>8</b></p>',
+	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u>Some</u></b>{Z</sub>text<sub>Z}<b><u>.</u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
+	// Same as above except "boundaries in empty container"
+	t('pushing down two levels through commonAncestorContainer,'
+	  + ' and two levels down to each boundary,'
+	  + ' with boundaries in empty container',
+	  '<p><b>1<em>2<i>3<sub>4<u>{</u>Z</sub>text<sub>Z<u>}</u>5</sub>6</i>7</em>8</b></p>',
+	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
 });
