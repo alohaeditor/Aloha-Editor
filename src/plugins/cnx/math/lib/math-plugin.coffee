@@ -1,42 +1,3 @@
-# To be able to edit math, render in MathJax, and serialize out MathML
-# we need to wrap the math element in various elements.
-#
-# Note: Webkit in linux has a bug where `math` elements are always visible so we wrap it in a hidden `span`
-# See http://code.google.com/p/chromium/issues/detail?id=175212
-
-# Example intermediate states:
-#
-# ### Original DOM
-#
-#    <math/>
-
-# ### Before MathJax loads (STEP1)
-#
-#    <span class="math-element aloha-ephemera-wrapper">
-#      <span class="mathjax-wrapper aloha-ephemera"> # Note: This element will be removed completely when serialized
-#        <math/>
-#      </span>
-#    </span>
-
-# ### After MathJax loads (STEP2)
-#
-#    <span class="math-element ...">
-#      <span class="mathjax-wrapper ...">
-#        <span class="MathJax_Display">...</span>
-#        <script type="text/mml">...</script>
-#      </span>
-#    </span>
-
-# ### After Editor loads (STEP3)
-#
-#    <span class="math-element ...">
-#      <span class="mathjax-wrapper ...">...</span>
-#      <span class="mathml-wrapper aloha-ephemera-wrapper">    # This element is to fix the Webkit display bug
-#        <math/>
-#      </span>
-#    </span>
-
-
 define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css' ], (Aloha, Plugin, jQuery, Popover, UI) ->
 
   EDITOR_HTML = '''
@@ -87,45 +48,29 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       jQuery(mathStr)
 
   squirrelMath = ($el) ->
-    # `$el` is the `.math-element`
-
-    $mml = getMathFor $el.find('script').attr('id')
-
-    # STEP3
-    $el.remove('.mathml-wrapper')
-    $mml.wrap '<span class="mathml-wrapper aloha-ephemera-wrapper"></span>'
-    $el.append $mml.parent()
+    $el.parent().children('.MathJax_Preview, .MathJax, .MathJax_Display, script').addClass 'aloha-ephemera'
+    $mml = getMathFor $el.attr('id')
+    $el.parent().remove('math')
+    $el.parent().append($mml)
 
   Aloha.bind 'aloha-editable-activated', (evt, ed) ->
-    # STEP1
-    $maths = ed.editable.obj.find('math')
-    $maths.wrap '<span class="math-element aloha-ephemera-wrapper"><span class="mathjax-wrapper aloha-ephemera"></span></span>'
-
-    # TODO: Explicitly call Mathjax Typeset
-    jQuery.each $maths, (i, el) ->
-      $el = jQuery(el)
-      $mathElement = $el.parent().parent()
-      triggerMathJax $mathElement
-
-    ###
+    ed.editable.obj.find('math').wrap '<span class="math-element aloha-ephemera-wrapper"></span>'
     MathJax.Hub.Queue ->
       jQuery.each MathJax.Hub.getAllJax(), (i, jax) ->
         $el = jQuery "##{ jax.inputID }"
-        # `$el` is the `span` added by MathJax. We are interested in its parent, the `math-element`
-        squirrelMath $el.parent()
-    ###
+        squirrelMath($el)
 
   insertMath = () ->
-    $el = jQuery('<span class="math-element aloha-ephemera-wrapper"><span class="mathjax-wrapper aloha-ephemera">&#160;</span></span>') # nbsp
+    $el = jQuery('<span class="math-element aloha-ephemera-wrapper">&#160;</span>') # nbsp
     range = Aloha.Selection.getRangeObject()
     if range.isCollapsed()
       GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
-      # Callback opens up the math editor by "clicking" on it
-      $el.trigger 'show'
-      makeCloseIcon($el)
+      triggerMathJax $el, ->
+        # Callback opens up the math editor by "clicking" on it
+        $el.trigger 'show'
+        makeCloseIcon($el)
     else
       $tail = jQuery('<span class="aloha-ephemera math-trailer" />')
-      # Assume the user hilighted ASCIIMath (by putting the text in backticks)
       $el.text('`' + range.getText() + '`')
       GENTICS.Utils.Dom.removeRange range
       GENTICS.Utils.Dom.insertIntoDOM $el.add($tail), range, Aloha.activeEditable.obj
@@ -150,15 +95,14 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
   UI.adopt 'insertMath', null,
     click: () -> insertMath()
 
-  # STEP2
-  triggerMathJax = ($mathElement, cb) ->
+  triggerMathJax = ($el, cb) ->
     if MathJax?
-      # keep the `.math-element` parent
       # Be sure to squirrel away the MathML because the DOM only contains the HTML+CSS output
       callback = () ->
-        squirrelMath $mathElement
-        cb?()
-      MathJax.Hub.Queue ["Typeset", MathJax.Hub, $mathElement.find('.mathjax-wrapper')[0], callback]
+        $mathJaxEl = $el.children('.MathJax')
+        squirrelMath $mathJaxEl
+        cb()
+      MathJax.Hub.Queue ["Typeset", MathJax.Hub, $el[0], callback]
     else
       console.log 'MathJax was not loaded properly'
 
@@ -217,22 +161,16 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       # Try and parse it as ASCIIMath
       formula = jQuery(@).val() # $span.data('math-formula')
       mimeType = $editor.find('input[name=mime-type]:checked').val()
-
-      $mathPoint = $span.children('.mathjax-wrapper')
-      if not $mathPoint[0]
-        $mathPoint = jQuery('<span class="mathjax-wrapper aloha-ephemera"></span>')
-        $span.prepend $mathPoint
-
       if LANGUAGES[mimeType].raw
-        $mathPoint.innerHTML = formula
+        $span[0].innerHTML = formula
       else
         formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close
-        $mathPoint.text(formulaWrapped)
+        $span.text(formulaWrapped)
       triggerMathJax $span, ->
         # Save the Edited text into the math annotation element
-        $mathml = $span.find('math')
-        if $mathml[0] # Webkit browsers don't natively support MathML
-          $annotation = $mathml.find('annotation')
+        $math = $span.find('math')
+        if $math[0] # Webkit browsers don't natively support MathML
+          $annotation = $math.find('annotation')
           if not $annotation[0]?
             if $mathml.children().length > 1 # Wrap math equation in mrow if equation is more than one single child
               $mathml.wrapInner('<mrow></mrow>')

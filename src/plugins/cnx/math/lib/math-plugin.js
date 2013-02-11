@@ -37,38 +37,31 @@
     };
     squirrelMath = function($el) {
       var $mml;
-      $mml = getMathFor($el.find('script').attr('id'));
-      $el.remove('.mathml-wrapper');
-      $mml.wrap('<span class="mathml-wrapper aloha-ephemera-wrapper"></span>');
-      return $el.append($mml.parent());
+      $el.parent().children('.MathJax_Preview, .MathJax, .MathJax_Display, script').addClass('aloha-ephemera');
+      $mml = getMathFor($el.attr('id'));
+      $el.parent().remove('math');
+      return $el.parent().append($mml);
     };
     Aloha.bind('aloha-editable-activated', function(evt, ed) {
-      var $maths;
-      $maths = ed.editable.obj.find('math');
-      $maths.wrap('<span class="math-element aloha-ephemera-wrapper"><span class="mathjax-wrapper aloha-ephemera"></span></span>');
-      return jQuery.each($maths, function(i, el) {
-        var $el, $mathElement;
-        $el = jQuery(el);
-        $mathElement = $el.parent().parent();
-        return triggerMathJax($mathElement);
+      ed.editable.obj.find('math').wrap('<span class="math-element aloha-ephemera-wrapper"></span>');
+      return MathJax.Hub.Queue(function() {
+        return jQuery.each(MathJax.Hub.getAllJax(), function(i, jax) {
+          var $el;
+          $el = jQuery("#" + jax.inputID);
+          return squirrelMath($el);
+        });
       });
-      /*
-          MathJax.Hub.Queue ->
-            jQuery.each MathJax.Hub.getAllJax(), (i, jax) ->
-              $el = jQuery "##{ jax.inputID }"
-              # `$el` is the `span` added by MathJax. We are interested in its parent, the `math-element`
-              squirrelMath $el.parent()
-      */
-
     });
     insertMath = function() {
       var $el, $tail, range;
-      $el = jQuery('<span class="math-element aloha-ephemera-wrapper"><span class="mathjax-wrapper aloha-ephemera">&#160;</span></span>');
+      $el = jQuery('<span class="math-element aloha-ephemera-wrapper">&#160;</span>');
       range = Aloha.Selection.getRangeObject();
       if (range.isCollapsed()) {
         GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
-        $el.trigger('show');
-        return makeCloseIcon($el);
+        return triggerMathJax($el, function() {
+          $el.trigger('show');
+          return makeCloseIcon($el);
+        });
       } else {
         $tail = jQuery('<span class="aloha-ephemera math-trailer" />');
         $el.text('`' + range.getText() + '`');
@@ -95,14 +88,16 @@
         return insertMath();
       }
     });
-    triggerMathJax = function($mathElement, cb) {
+    triggerMathJax = function($el, cb) {
       var callback;
       if (typeof MathJax !== "undefined" && MathJax !== null) {
         callback = function() {
-          squirrelMath($mathElement);
-          return typeof cb === "function" ? cb() : void 0;
+          var $mathJaxEl;
+          $mathJaxEl = $el.children('.MathJax');
+          squirrelMath($mathJaxEl);
+          return cb();
         };
-        return MathJax.Hub.Queue(["Typeset", MathJax.Hub, $mathElement.find('.mathjax-wrapper')[0], callback]);
+        return MathJax.Hub.Queue(["Typeset", MathJax.Hub, $el[0], callback]);
       } else {
         return console.log('MathJax was not loaded properly');
       }
@@ -151,25 +146,20 @@
       }
       keyTimeout = null;
       keyDelay = function() {
-        var $mathPoint, formulaWrapped;
+        var formulaWrapped;
         formula = jQuery(this).val();
         mimeType = $editor.find('input[name=mime-type]:checked').val();
-        $mathPoint = $span.children('.mathjax-wrapper');
-        if (!$mathPoint[0]) {
-          $mathPoint = jQuery('<span class="mathjax-wrapper aloha-ephemera"></span>');
-          $span.prepend($mathPoint);
-        }
         if (LANGUAGES[mimeType].raw) {
-          $mathPoint.innerHTML = formula;
+          $span[0].innerHTML = formula;
         } else {
           formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close;
-          $mathPoint.text(formulaWrapped);
+          $span.text(formulaWrapped);
         }
         triggerMathJax($span, function() {
-          var $mathml;
-          $mathml = $span.find('math');
-          if ($mathml[0]) {
-            $annotation = $mathml.find('annotation');
+          var $math;
+          $math = $span.find('math');
+          if ($math[0]) {
+            $annotation = $math.find('annotation');
             if (!($annotation[0] != null)) {
               if ($mathml.children().length > 1) {
                 $mathml.wrapInner('<mrow></mrow>');
