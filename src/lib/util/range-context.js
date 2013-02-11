@@ -283,7 +283,101 @@ define([
 		}
 	}
 
+	function adjustPointShallowRemove(point, left, node) {
+		if (point.node === node) {
+			point.next();
+		}
+	}
+
+	function adjustPointMoveBackWithinRange(point, left, node, ref, atEnd) {
+		if (point.node === node) {
+			// Because Left positions will be moved back with the node,
+			// which is correct, while right positions must stay where
+			// they are.
+			// Because right positions with point.atEnd == true/false
+			// must both stay where they are, we don't need an extra
+			// check for point.atEnd.
+			if (!left) {
+				point.next();
+			}
+		}
+		// Because trimRangeClosingOpening will ensure that the boundary
+		// points will be next to a node that is moved, we don't need
+		// any special handling for ref.
+	}
+
+	function adjustPointWrap(point, left, node, wrapper) {
+		// Because we prefer the range to be outside the wrapper (no
+		// particular reason though).
+		if (point.node === node && !point.atEnd) {
+			point.node = wrapper;
+		}
+	}
+
+	function shallowRemoveAdjust(node, leftPoint, rightPoint) {
+		adjustPointShallowRemove(leftPoint, true, node);
+		adjustPointShallowRemove(rightPoint, false, node);
+		Dom.shallowRemove(node);
+	}
+
+	function wrapAdjust(node, wrapper, leftPoint, rightPoint) {
+		if (wrapper.parentNode) {
+			shallowRemoveAdjust(wrapper, leftPoint, rightPoint);
+		}
+		adjustPointWrap(leftPoint, true, node, wrapper);
+		adjustPointWrap(rightPoint, false, node, wrapper);
+		Dom.wrap(node, wrapper);
+	}
+
+	function insertAdjust(node, ref, atEnd, leftPoint, rightPoint) {
+		adjustPointMoveBackWithinRange(leftPoint, true, node, ref, atEnd);
+		adjustPointMoveBackWithinRange(rightPoint, false, node, ref, atEnd);
+		Dom.insert(node, ref, atEnd);
+	}
+
+	function nextSibling(node) {
+		return node.nextSibling;
+	}
+
+	// TODO when restacking the <b> that wraps "z" in
+	// <u><b>x</b><s><b>z</b></s></u>, join with the <b> that wraps "x".
+	function restackRec(node, hasContext, notIgnoreHorizontal, notIgnoreVertical) {
+		if (1 !== node.nodeType || notIgnoreVertical(node)) {
+			return null;
+		}
+		var maybeContext = Dom.walkUntil(node.firstChild, nextSibling, notIgnoreHorizontal);
+		if (!maybeContext) {
+			return null;
+		}
+		var notIgnorable = Dom.walkUntil(maybeContext.nextSibling, nextSibling, notIgnoreHorizontal);
+		if (notIgnorable) {
+			return null;
+		}
+		if (hasContext(maybeContext)) {
+			return maybeContext;
+		}
+		return restackRec(maybeContext, hasContext, notIgnoreHorizontal, notIgnoreVertical);
+	}
+
+	function restack(node, hasContext, ignoreHorizontal, ignoreVertical, leftPoint, rightPoint) {
+		var notIgnoreHorizontal = function (node) {
+			return hasContext(node) || !ignoreHorizontal(node);
+		};
+		var notIgnoreVertical = Fn.complement(ignoreVertical);
+		if (hasContext(node)) {
+			return true;
+		}
+		var context = restackRec(node, hasContext, notIgnoreHorizontal, notIgnoreVertical);
+		if (!context) {
+			return false;
+		}
+		wrapAdjust(node, context, leftPoint, rightPoint);
+		return true;
+	}
+
 	function format(liveRange, nodeName, unformat) {
+		var leftPoint;
+		var rightPoint;
 
 		function hasContext(node) {
 			if (unformat) {
@@ -307,7 +401,7 @@ define([
 		function clearOverride(node) {
 			var next = node.nextSibling;
 			if (unformat && nodeName === node.nodeName) {
-				Dom.shallowRemovePreserve(node, liveRange);
+				shallowRemoveAdjust(node, leftPoint, rightPoint);
 			}
 			return next;
 		}
@@ -319,7 +413,7 @@ define([
 		function clearContext(node) {
 			var next = node.nextSibling;
 			if (!unformat && nodeName === node.nodeName) {
-				Dom.shallowRemovePreserve(node, liveRange);
+				shallowRemoveAdjust(node, leftPoint, rightPoint);
 			}
 			return next;
 		}
@@ -335,18 +429,18 @@ define([
 				// on the left of the range, and two to join with a
 				// context node that already exists to the left of the
 				// range.
-				Dom.restack(node.previousSibling,
-							hasWrapper,
-							Html.isIgnorableWhitespace,
-							Html.isInlineFormattable,
-							liveRange);
+				restack(node.previousSibling,
+						hasWrapper,
+						Html.isIgnorableWhitespace,
+						Html.isInlineFormattable,
+						leftPoint, rightPoint);
 			}
 			if (node.previousSibling && hasWrapper(node.previousSibling)) {
-				Dom.insertPreserve(node, node.previousSibling, true, liveRange, true);
+				insertAdjust(node, node.previousSibling, true, leftPoint, rightPoint);
 				return true;
 			} else if (!hasWrapper(node)) {
 				var wrapper = document.createElement(nodeName);
-				Dom.wrapPreserve(node, wrapper, liveRange);
+				wrapAdjust(node, wrapper, leftPoint, rightPoint);
 				return true;
 			}
 			return false;
@@ -388,8 +482,8 @@ define([
 		}
 
 		// Because we are mutating the range several times and don't
-		// want the caller the in-between updates, and because we are
-		// using trimRange() below to adjust the range's boundary
+		// want the caller to see the in-between updates, and because we
+		// are using trimRange() below to adjust the range's boundary
 		// points, which we don't want the browser to re-adjust (which
 		// some browsers do).
 		var range = Dom.stableRange(liveRange);
@@ -399,8 +493,9 @@ define([
 			return;
 		}
 
-		// Because trimRangeClosingOpening() and mutate() require
-		// boundary points to be between nodes.
+		// Because trimRangeClosingOpening(), mutate() and
+		// adjustPointMoveBackWithinRange() require boundary points to
+		// be between nodes.
 		Dom.splitTextContainers(range);
 
 		// Because we want unbolding
@@ -409,12 +504,21 @@ define([
 		// <b>one<i>two</i></b>three
 		// and not in
 		// <b>one</b><i><b>two</b></i>three
+		// and because adjustPointMoveBackWithinRange() requires the
+		// left boundary point to be next to a non-ignorable node.
 		Dom.trimRangeClosingOpening(range, Html.isIgnorableWhitespace);
 
-		// Because above are the only cases where we modify the range.
-		Dom.setRangeFromRef(liveRange, range);
+		// Because mutation needs to keep track and adjust boundary
+		// points.
+		leftPoint = Dom.cursorFromBoundaryPoint(range.startContainer, range.startOffset);
+		rightPoint = Dom.cursorFromBoundaryPoint(range.endContainer, range.endOffset);
 
 		mutate(range, isUpperBoundary, getOverride, clearOverride, clearOverrideRec, pushDownOverride, hasContext, setContext, unformat);
+
+		// Because we must reflect the adjusted boundary points in the
+		// given range.
+		Dom.setRangeStartFromCursor(liveRange, leftPoint);
+		Dom.setRangeEndFromCursor(liveRange, rightPoint);
 	}
 
 	return {

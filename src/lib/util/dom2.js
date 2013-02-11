@@ -347,6 +347,25 @@ define([
 		return node;
 	}
 
+	function shallowRemove(node) {
+		var parent = node.parentNode;
+		moveNextAll(parent, node.firstChild, node);
+		parent.removeChild(node);
+	}
+
+	function wrap(node, wrapper) {
+		node.parentNode.replaceChild(wrapper, node);
+		wrapper.appendChild(node);
+	}
+
+	function insert(node, ref, atEnd) {
+		if (atEnd) {
+			ref.appendChild(node);
+		} else {
+			ref.parentNode.insertBefore(node, ref);
+		}
+	}
+
 	function Cursor(node, atEnd) {
 		this.node = node;
 		this.atEnd = atEnd;
@@ -425,30 +444,6 @@ define([
 	Cursor.prototype.clone = function (cursor) {
 		return cursor(cursor.node, cursor.atEnd);
 	};
-
-	Cursor.prototype.setRangeStart = function (range) {
-		if (this.atEnd) {
-			range.setStart(this.node, numChildren(this.node));
-		} else {
-			range.setStart(this.node.parentNode, nodeIndex(this.node));
-		}
-	};
-
-	Cursor.prototype.setRangeEnd = function (range) {
-		if (this.atEnd) {
-			range.setEnd(this.node, numChildren(this.node));
-		} else {
-			range.setEnd(this.node.parentNode, nodeIndex(this.node));
-		}
-	};
-
-	function insert(node, ref, atEnd) {
-		if (atEnd) {
-			ref.appendChild(node);
-		} else {
-			ref.parentNode.insertBefore(node, ref);
-		}
-	}
 
 	Cursor.prototype.insert = function (node) {
 		return insert(node, this.node, this.atEnd);
@@ -571,116 +566,6 @@ define([
 		splitNodeAdjustRange(ec, eo, sc, so, ec, eo, range);
 	}
 
-	function adjustRangeShallowRemove(container, offset, node) {
-		if (container === node) {
-			return [node.parentNode, nodeIndex(node) + offset];
-		}
-		if (container === node.parentNode && offset > nodeIndex(node)) {
-			// Because the node to be removed is already already
-			// included in offset, -1.
-			return [container, offset - 1 + numChildren(node)];
-		}
-		return null;
-	}
-
-	/**
-	 * If the container node equals the node, the boundary point will
-	 * continue to point at node which will be inside the wrapper after
-	 * mutation (no adjustment).
-	 *
-	 * If the container node equals the node's parent, the boundary
-	 * point will continue to point at the node's parent after mutation
-	 * (no adjustment).
-	 */
-	function adjustRangeWrap(container, offset, node, wrapper) {
-		// No adjustments necessary.
-		return null;
-	}
-
-	function adjustRangeInsert(container, offset, node, ref, atEnd, moveRangeWithNode, left) {
-		if (atEnd) {
-			if (container === ref && offset === numChildren(ref)) {
-				if (node.parentNode !== container) {
-					offset += 1;
-				}
-				return [container, offset];
-			}
-		} else {
-			if (container === ref.parentNode && offset > nodeIndex(ref)) {
-				// Because if the node is at or after offset, it
-				// will be moved backwards across offset, increasing
-				// it.
-				if (node.parentNode !== container || nodeIndex(node) >= offset) {
-					offset += 1;
-				}
-				return [container, offset];
-			}
-		}
-		if (container === node.parentNode) {
-			var index = nodeIndex(node);
-			if (left && moveRangeWithNode && (offset === index || offset === index + 1)) {
-				if (atEnd) {
-					return [ref, numChildren(ref) + (offset - index)];
-				} else {
-					return [ref.parentNode, nodeIndex(ref) + (offset - index)];
-				}
-			}
-			if (offset > index) {
-				return [container, offset - 1];
-			}
-		}
-		return null;
-	}
-
-	function adjustRange(range, adjust, mutate, arg1, arg2, arg3, arg4) {
-		var adjustStart, adjustEnd;
-		if (range) {
-			var sc = range.startContainer;
-			var so = range.startOffset;
-			var ec = range.endContainer;
-			var eo = range.endOffset;
-			// Because mutation of the DOM may modify the range, we must
-			// always reset it, even if no adjustment may be necessary
-			// of the values pre-mutation, therefore || [sc, so].
-			adjustStart = adjust(sc, so, arg1, arg2, arg3, arg4, true) || [sc, so];
-			adjustEnd = adjust(ec, eo, arg1, arg2, arg3, arg4, false) || [ec, eo];
-		}
-		mutate(arg1, arg2, arg3, arg4);
-		if (range) {
-			range.setStart.apply(range, adjustStart);
-			range.setEnd.apply(range, adjustEnd);
-		}
-	}
-
-	function shallowRemove(node) {
-		var parent = node.parentNode;
-		moveNextAll(parent, node.firstChild, node);
-		parent.removeChild(node);
-	}
-
-	function wrap(node, wrapper) {
-		node.parentNode.replaceChild(wrapper, node);
-		wrapper.appendChild(node);
-	}
-
-	function shallowRemovePreserve(node, range) {
-		adjustRange(range, adjustRangeShallowRemove, shallowRemove, node);
-	}
-
-	function wrapPreserve(node, wrapper, range) {
-		if (wrapper.parentNode) {
-			shallowRemovePreserve(wrapper, range);
-		}
-		// Because the wrapped node is replaced by wrapper, the removal
-		// of it will not affect adjustment calculation (after mutation
-		// there is a node in its place, so offsets remain correct).
-		adjustRange(range, adjustRangeWrap, wrap, node, wrapper);
-	}
-
-	function insertPreserve(node, ref, atEnd, range, moveRangeWithNode) {
-		adjustRange(range, adjustRangeInsert, insert, node, ref, atEnd, moveRangeWithNode);
-	}
-
 	function walkUntil(node, fn, until, arg) {
 		while (node && !until(node, arg)) {
 			node = fn(node, arg);
@@ -705,46 +590,6 @@ define([
 		return walkUntil(node, fn, function (nextNode) {
 			return nextNode === untilNode;
 		}, arg);
-	}
-
-	function nextSibling(node) {
-		return node.nextSibling;
-	}
-
-	// TODO when restacking the <b> that wraps "z" in
-	// <u><b>x</b><s><b>z</b></s></u>, join with the <b> that wraps "x".
-	function restackRec(node, hasContext, notIgnoreHorizontal, notIgnoreVertical) {
-		if (1 !== node.nodeType || notIgnoreVertical(node)) {
-			return null;
-		}
-		var maybeContext = walkUntil(node.firstChild, nextSibling, notIgnoreHorizontal);
-		if (!maybeContext) {
-			return null;
-		}
-		var notIgnorable = walkUntil(maybeContext.nextSibling, nextSibling, notIgnoreHorizontal);
-		if (notIgnorable) {
-			return null;
-		}
-		if (hasContext(maybeContext)) {
-			return maybeContext;
-		}
-		return restackRec(maybeContext, hasContext, notIgnoreHorizontal, notIgnoreVertical);
-	}
-
-	function restack(node, hasContext, ignoreHorizontal, ignoreVertical, range) {
-		var notIgnoreHorizontal = function (node) {
-			return hasContext(node) || !ignoreHorizontal(node);
-		};
-		var notIgnoreVertical = Fn.complement(ignoreVertical);
-		if (hasContext(node)) {
-			return true;
-		}
-		var context = restackRec(node, hasContext, notIgnoreHorizontal, notIgnoreVertical);
-		if (!context) {
-			return false;
-		}
-		wrapPreserve(node, context, range);
-		return true;
 	}
 
 	function StableRange(range) {
@@ -778,6 +623,22 @@ define([
 		this.endOffset = eo;
 		this.update();
 	};
+
+	function setRangeStartFromCursor(range, cursor) {
+		if (cursor.atEnd) {
+			range.setStart(cursor.node, numChildren(cursor.node));
+		} else {
+			range.setStart(cursor.node.parentNode, nodeIndex(cursor.node));
+		}
+	}
+
+	function setRangeEndFromCursor(range, cursor) {
+		if (cursor.atEnd) {
+			range.setEnd(cursor.node, numChildren(cursor.node));
+		} else {
+			range.setEnd(cursor.node.parentNode, nodeIndex(cursor.node));
+		}
+	}
 
 	function setRangeFromRef(range, ref) {
 		range.setStart(ref.startContainer, ref.startOffset);
@@ -832,10 +693,10 @@ define([
 			setEnd = true;
 		}
 		if (setStart) {
-			start.setRangeStart(range);
+			setRangeStartFromCursor(range, start);
 		}
 		if (setEnd) {
-			end.setRangeEnd(range);
+			setRangeEndFromCursor(range, end);
 		}
 	}
 
@@ -857,6 +718,9 @@ define([
 		indexByName: indexByName,
 		indexByClassHaveList: indexByClassHaveList,
 		outerHtml: outerHtml,
+		shallowRemove: shallowRemove,
+		wrap: wrap,
+		insert: insert,
 		cursor: cursor,
 		cursorFromBoundaryPoint: cursorFromBoundaryPoint,
 		nodeAtOffset: nodeAtOffset,
@@ -870,17 +734,15 @@ define([
 		nodeIndex: nodeIndex,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
-		shallowRemovePreserve: shallowRemovePreserve,
-		wrapPreserve: wrapPreserve,
-		insertPreserve: insertPreserve,
 		walk: walk,
 		walkRec: walkRec,
 		walkUntil: walkUntil,
 		walkUntilNode: walkUntilNode,
-		restack: restack,
 		stableRange: stableRange,
 		trimRange: trimRange,
 		trimRangeClosingOpening: trimRangeClosingOpening,
-		setRangeFromRef: setRangeFromRef
+		setRangeFromRef: setRangeFromRef,
+		setRangeStartFromCursor: setRangeStartFromCursor,
+		setRangeEndFromCursor: setRangeEndFromCursor
 	};
 });
