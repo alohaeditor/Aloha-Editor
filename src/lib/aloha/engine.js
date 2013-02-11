@@ -1,4 +1,4 @@
-define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery) {
+define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'jquery'], function (Aloha, $_, Maps, jQuery) {
 	"use strict";
 
 	function hasAttribute(obj, attr) {
@@ -577,6 +577,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 	var getStateOverride,
 	    setStateOverride,
+	    resetOverrides,
 	    unsetStateOverride,
 	    getValueOverride,
 	    setValueOverride,
@@ -723,22 +724,6 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		} else if (executionStackDepth == 0) {
 			globalRange = null;
 			globalRange = range;
-		}
-
-		// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-		//
-		// We can't throw a real one, but a string will do for our purposes.
-		if (!commands.hasOwnProperty(command)) {
-			throw "NOT_SUPPORTED_ERR";
-		}
-
-		// "If command has no action, raise an INVALID_ACCESS_ERR exception."
-		// "If command has no indeterminacy, raise an INVALID_ACCESS_ERR
-		// exception."
-		// "If command has no state, raise an INVALID_ACCESS_ERR exception."
-		// "If command has no value, raise an INVALID_ACCESS_ERR exception."
-		if (prop != "enabled" && !commands[command].hasOwnProperty(prop)) {
-			throw "INVALID_ACCESS_ERR";
 		}
 
 		executionStackDepth++;
@@ -888,12 +873,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// case-insensitively."
 		command = command.toLowerCase();
 
-		// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-		//
-		// "If command has no value, raise an INVALID_ACCESS_ERR exception."
 		return editCommandMethod(command, "value", range, function () {
-			// "If command is not enabled, return the empty string."
-			if (!myQueryCommandEnabled(command, range)) {
+			// "If command is not supported or has no value, return the empty string."
+			if (!commands.hasOwnProperty(command) || !commands[command].hasOwnProperty("value")) {
 				return "";
 			}
 
@@ -1158,9 +1140,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// https://github.com/alohaeditor/Aloha-Editor/issues/516
 		// look like it works in msie > 7
 		/* if (jQuery.browser.msie && jQuery.browser.version < 8) {
-		br.removeAttribute("style");
-		ref.removeAttribute("style");
-	} */
+		   br.removeAttribute("style");
+		   ref.removeAttribute("style");
+		   } */
 
 		return origHeight == finalHeight;
 	}
@@ -1427,13 +1409,26 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		var valueOverrides = {};
 		var storedRange = null;
 
-		function resetOverrides(range) {
-			if (!storedRange || storedRange.startContainer != range.startContainer || storedRange.endContainer != range.endContainer || storedRange.startOffset != range.startOffset || storedRange.endOffset != range.endOffset) {
-				stateOverrides = {};
-				valueOverrides = {};
-				storedRange = range.cloneRange();
+		resetOverrides = function (range) {
+			if (!storedRange
+				    || storedRange.startContainer != range.startContainer
+				    || storedRange.endContainer != range.endContainer
+				    || storedRange.startOffset != range.startOffset
+				    || storedRange.endOffset != range.endOffset) {
+				storedRange = {
+					startContainer: range.startContainer,
+					endContainer: range.endContainer,
+					startOffset: range.startOffset,
+					endOffset: range.endOffset
+				};
+				if (!Maps.isEmpty(stateOverrides) || !Maps.isEmpty(valueOverrides)) {
+					stateOverrides = {};
+					valueOverrides = {};
+					return true;
+				}
 			}
-		}
+			return false;
+		};
 
 		getStateOverride = function (command, range) {
 			resetOverrides(range);
@@ -4906,7 +4901,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 				// returns something different from override, call
 				// execCommand(command)."
 				if (typeof override == "boolean" && myQueryCommandState(command, range) != override) {
-					myExecCommand(command);
+					myExecCommand(command, false, override, range);
 
 					// "Otherwise, if override is a string, and command is not
 					// "fontSize", and queryCommandValue(command) returns something not
@@ -8007,7 +8002,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// "Restore states and values from overrides."
-			restoreStatesAndValues(overrides);
+			restoreStatesAndValues(overrides, range);
 
 			// "Canonicalize whitespace at the active range's start."
 			canonicalizeWhitespace(range.startContainer, range.startOffset);
@@ -8482,7 +8477,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		isEndBreak: isEndBreak,
 		ensureContainerEditable: ensureContainerEditable,
 		isEditingHost: isEditingHost,
-		isEditable: isEditable
+		isEditable: isEditable,
+		getStateOverride: getStateOverride,
+		setStateOverride: setStateOverride,
+		resetOverrides: resetOverrides,
+		unsetStateOverride: unsetStateOverride
 	};
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker

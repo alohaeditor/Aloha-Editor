@@ -37,7 +37,9 @@ define([
 	'aloha/ephemera',
 	'util/dom2',
 	'PubSub',
-	'aloha/copypaste'
+	'aloha/copypaste',
+	'aloha/command',
+	'aloha/state-override'
 ], function (
 	Aloha,
 	Class,
@@ -51,7 +53,9 @@ define([
 	Ephemera,
 	Dom,
 	PubSub,
-	CopyPaste
+	CopyPaste,
+	Command,
+	StateOverride
 ) {
 	'use strict';
 
@@ -312,21 +316,18 @@ define([
 					return me.activate(e);
 				});
 
-				// by catching the keydown we can prevent the browser from doing its own thing
-				// if it does not handle the keyStroke it returns true and therefore all other
-				// events (incl. browser's) continue
-				//me.obj.keydown( function( event ) {
-				//me.obj.add('.aloha-block', me.obj).live('keydown', function (event) { // live not working but would be usefull
-				me.obj.add('.aloha-block', me.obj).keydown(function (event) {
-					var letEventPass = Markup.preProcessKeyStrokes(event);
-					me.keyCode = event.which;
+				var keyInputElements = me.obj.add('.aloha-block', me.obj)
+					.keydown(function (event) {
+						var letEventPass = Markup.preProcessKeyStrokes(event);
+						me.keyCode = event.which;
 
-					if (!letEventPass) {
-						// the event will not proceed to key press, therefore trigger smartContentChange
-						me.smartContentChange(event);
-					}
-					return letEventPass;
-				});
+						if (!letEventPass) {
+							// the event will not proceed to key press, therefore trigger smartContentChange
+							me.smartContentChange(event);
+						}
+						return letEventPass;
+					})
+					.keypress(StateOverride.keyPressHandler);
 
 				// handle keypress
 				me.obj.keypress(function (event) {

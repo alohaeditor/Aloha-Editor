@@ -27,8 +27,10 @@
 define('format/format-plugin', [
 	'aloha',
 	'aloha/plugin',
+	'aloha/state-override',
 	'jquery',
 	'util/arrays',
+	'util/maps',
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
@@ -39,8 +41,10 @@ define('format/format-plugin', [
 ], function (
 	Aloha,
 	Plugin,
+	StateOverride,
 	jQuery,
 	Arrays,
+	Maps,
 	Ui,
 	ToggleButton,
 	MultiSplitButton,
@@ -223,6 +227,12 @@ define('format/format-plugin', [
 			// when the range is collapsed, extend it to a word
 			if (rangeObject.isCollapsed()) {
 				GENTICS.Utils.Dom.extendToWord(rangeObject);
+				if (rangeObject.isCollapsed()) {
+					if (StateOverride.enabled()) {
+						StateOverride.setWithRangeObject(commandsByElement[button], true, rangeObject);
+						return;
+					}
+				}
 			}
 
 			// add the markup
