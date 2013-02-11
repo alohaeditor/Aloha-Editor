@@ -77,9 +77,38 @@ define(['jquery'], function ($) {
 		});
 	}
 
+	/**
+	 * Split str along pattern, including matches in the result.
+	 *
+	 * Necssary because, although "xzx".split(/(z)/) results in
+	 * ["x", "z", "x"] on most modern browsers, it results in
+	 * ["x", "x"] on IE.
+	 *
+	 * @param pattern must include the g flag, otherwise will result in
+	 * an endless loop.
+	 */
+	function splitIncl(str, pattern) {
+		var result = [];
+		var lastIndex = 0;
+		var match;
+		while (null != (match = pattern.exec(str))) {
+			if (lastIndex < match.index) {
+				result.push(str.substring(lastIndex, match.index));
+				lastIndex = match.index;
+			}
+			lastIndex += match[0].length;
+			result.push(match[0]);
+		}
+		if (lastIndex < str.length) {
+			result.push(str.substring(lastIndex, str.length));
+		}
+		return result;
+	}
+
 	return {
-		'words': words,
-		'dashesToCamelCase': dashesToCamelCase,
-		'camelCaseToDashes': camelCaseToDashes
+		words: words,
+		dashesToCamelCase: dashesToCamelCase,
+		camelCaseToDashes: camelCaseToDashes,
+		splitIncl: splitIncl
 	};
 });
