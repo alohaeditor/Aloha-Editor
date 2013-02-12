@@ -25,10 +25,12 @@
  * recipients can access the Corresponding Source.
  */
 define([
+	'aloha/core',
 	'aloha/registry',
 	'util/class',
 	'aloha/console'
 ], function (
+	Aloha,
 	Registry,
 	Class,
 	console

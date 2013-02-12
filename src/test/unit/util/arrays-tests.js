@@ -3,7 +3,7 @@ Aloha.require(['util/arrays'], function(Arrays){
 
     module('sortUnique');
 
-    test('loose compare', function() {
+    test('lose compare', function() {
         var unique = Arrays.sortUnique( [ 6, 3, 6, 3, "6", 3, "9", 9, 3, 2, 1 ] );
         // Either numeric or string values for "6" and "9" may be chosen
         for ( var i = 0; i < unique.length; i++ ) {

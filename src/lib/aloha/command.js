@@ -211,7 +211,11 @@ define([
 				}
 			}
 			return commands;
-		}
+		},
+		getStateOverride: Engine.getStateOverride,
+		setStateOverride: Engine.setStateOverride,
+		resetOverrides: Engine.resetOverrides,
+		unsetStateOverride: Engine.unsetStateOverride
 	};
 
 	// create an instance

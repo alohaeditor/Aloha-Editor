@@ -54,6 +54,7 @@ define([
 	 *        objectTypeFilter -
 	 *        placeholder  -
 	 *        noTargetHighlight -
+	 *        targetHighlightCass - a class to be identify focused element
 	 *        cls          -
 	 *        width        -
 	 *        scope        -
@@ -62,18 +63,19 @@ define([
 	 */
 	var AttributeField = function (props) {
 		var valueField = props.valueField || 'id',
-		    displayField = props.displayField || 'name',
-		    objectTypeFilter = props.objectTypeFilter || ['all'],
-		    placeholder = props.placeholder,
-		    noTargetHighlight = !!props.noTargetHighlight,
-		    element = props.element ? $(props.element) : $('<input id="aloha-attribute-field-' + props.name + '">'),
-		    component,
-		    template,
-		    resourceItem,
-		    resourceValue,
-		    targetObject,
-		    targetAttribute,
-		    lastAttributeValue;
+			displayField = props.displayField || 'name',
+			objectTypeFilter = props.objectTypeFilter || ['all'],
+			placeholder = props.placeholder,
+			noTargetHighlight = !!props.noTargetHighlight,
+			targetHighlightClass = props.targetHighlightClass,
+			element = props.element ? $(props.element) : $('<input id="aloha-attribute-field-' + props.name + '">'),
+			component,
+			template,
+			resourceItem,
+			resourceValue,
+			targetObject,
+			targetAttribute,
+			lastAttributeValue;
 
 		if (props.cls) {
 			element.addClass(props.cls);
@@ -126,7 +128,7 @@ define([
 		element
 			.bind("focus", onFocus)
 			.bind("blur", onBlur)
-		    .bind("keydown", onKeyDown)
+			.bind("keydown", onKeyDown)
 			.bind("keyup", onKeyup);
 
 		setPlaceholder();
@@ -210,6 +212,11 @@ define([
 		}
 
 		function changeTargetBackground() {
+			var target = $(targetObject);
+			if (target && targetHighlightClass) {
+				target.addClass(targetHighlightClass);
+			}
+
 			if (noTargetHighlight) {
 				return;
 			}
@@ -220,7 +227,6 @@ define([
 			restoreTargetBackground();
 
 			// set background color to give visual feedback which link is modified
-			var	target = $(targetObject);
 			if (target && target.context && target.context.style &&
 				target.context.style['background-color']) {
 				target.attr('data-original-background-color',
@@ -230,16 +236,22 @@ define([
 		}
 
 		function restoreTargetBackground() {
-			if (noTargetHighlight) {
+			var target = $(targetObject);
+			if (targetHighlightClass) {
+				target.removeClass(targetHighlightClass);
+			}
+			if (noTargetHighlight || !target) {
 				return;
 			}
-			var target = $(targetObject);
 			// Remove the highlighting and restore original color if was set before
 			var color = target.attr('data-original-background-color');
 			if (color) {
 				target.css('background-color', color);
 			} else {
 				target.css('background-color', '');
+			}
+			if (!target.attr('style')) {
+				target.removeAttr('style');
 			}
 			target.removeAttr('data-original-background-color');
 		}
@@ -251,7 +263,7 @@ define([
 		}
 
 		function setPlaceholder() {
-			if (null == placeholder) {
+			if (null === placeholder) {
 				return;
 			}
 			element.css('color', '#AAA');
@@ -421,7 +433,7 @@ define([
 		};
 
 		return attrField;
-	}
+	};
 
 	return AttributeField;
 });

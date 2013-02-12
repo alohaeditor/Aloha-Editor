@@ -42,10 +42,12 @@
  */
 define([
 	'aloha/core',
-	'jquery'
+	'jquery',
+	'aloha/console'
 ], function (
 	Aloha,
-	$
+	$,
+	console
 ) {
 	'use strict';
 

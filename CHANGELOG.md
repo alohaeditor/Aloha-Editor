@@ -134,6 +134,9 @@ Aloha.settings = {
 - **BUG**: added aloha-cleanme class to aloha-block-handle to prevent potential
 		   issues with temporary elements not being cleaned up.
 
+- **FEATURE**: align-plugin: the align plugin is now capable of aligning table cell contents
+- **FEATURE**: table-plugin: table cells can now have individual classes like rows and columns
+
 ## 0.22.2 - 2012/10/08
 
 - **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html

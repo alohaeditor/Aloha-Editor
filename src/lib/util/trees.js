@@ -112,6 +112,17 @@
  *
  *     If form is not an array or map, it is simply returned.
  *
+ *     An example using walk() in a custom recursive traversal function:
+ * 
+ *     function doSomething(root) {
+ *         function step(form) {
+ *             form = Trees.walk(form, step);
+ *             // do something with form
+ *             return form ? [form] : [];
+ *         }
+ *         return step(root)[0] || null;
+ *     }
+ *
  * walk(form, recurse)
  *
  *     Short for walk(form, recurse, true)
