@@ -26,3 +26,4 @@ All changes are categorized into one of the following keywords:
 	"strong" formatting, and will unformat the "strong" if
 	unpressed. The same behaviour was implemented for the i/em
 	combination.
+- **BUG**: core: Aloha incorrectly reported that Chrome was not supported.
