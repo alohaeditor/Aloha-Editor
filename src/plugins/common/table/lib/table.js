@@ -14,6 +14,7 @@
  */
 define([
 	'aloha',
+	'aloha/ephemera',
 	'jquery',
 	'ui/scopes',
 	'ui/dialog',
@@ -23,6 +24,7 @@ define([
 	'table/table-plugin-utils'
 ], function (
 	Aloha,
+	Ephemera,
 	jQuery,
 	Scopes,
 	Dialog,
@@ -281,6 +283,10 @@ define([
 			this.obj.attr( 'id', GENTICS.Utils.guid() );
 		}
 
+		Ephemera.markAttr(this.obj, 'id');
+		Ephemera.markAttr(this.obj, 'contenteditable');
+		Ephemera.markAttr(this.obj, 'contentEditable');
+		
 		// unset the selection type
 		this.selection.selectionType = undefined;
 
@@ -298,34 +304,6 @@ define([
 				}
 			}
 		} );
-
-		/*
-		We need to make sure that when the user has selected text inside a
-		table cell we do not delete the entire row, before we activate this
-
-		this.obj.bind( 'keyup', function ( $event ) {
-			if ( $event.keyCode == 46 ) {
-				if ( that.selection.selectedColumnIdxs.length ) {
-					that.deleteColumns();
-					$event.stopPropagation();
-				} else if ( that.selection.selectedRowIdxs.length ) {
-					that.deleteRows();
-					$event.stopPropagation();
-				} else {
-					// Nothing to delete
-				}
-			}
-		} );
-		*/
-
-		// handle click event of the table
-	//	this.obj.bind('click', function(e){
-	//		// stop bubbling the event to the outer divs, a click in the table
-	//		// should only be handled in the table
-	//		e.stopPropagation();
-	//		return false;
-	//	});
-	//
 
 	 // handle column/row resize
 			eventContainer.delegate( 'td', 'mousemove', function( e ) {
@@ -392,24 +370,11 @@ define([
 
 			});
 
-			eventContainer.bind( 'mousedown', function ( jqEvent ) {
+		eventContainer.bind( 'mousedown', function ( jqEvent ) {
 			// focus the table if not already done
 			if ( !that.hasFocus ) {
 				that.focus();
 			}
-
-
-	// DEACTIVATED by Haymo prevents selecting rows
-	//		// if a mousedown is done on the table, just focus the first cell of the table
-	//		setTimeout(function() {
-	//			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-	//			TableSelection.unselectCells();
-	//			jQuery(firstCell).get(0).focus();
-	//			// move focus in first cell
-	//			that.obj.cells[0].wrapper.get(0).focus();
-	//		}, 0);
-
-			// stop bubbling and default-behaviour
 			jqEvent.stopPropagation();
 			jqEvent.preventDefault();
 			return false;
@@ -421,7 +386,7 @@ define([
 		// tha data-block-skip-scope attribute will keep the block plugin from setting the
 		// FloatingMenu's scope when the block is clicked
 		tableWrapper = jQuery(
-			'<div class="' + this.get( 'classTableWrapper' ) + '" data-block-skip-scope="true"></div>'
+			'<div class="' + this.get( 'classTableWrapper' ) + ' aloha-ephemera-wrapper" data-block-skip-scope="true"></div>'
 		);
 		//tableWrapper.contentEditable( false );
 
@@ -521,6 +486,7 @@ define([
 			rowObj = jQuery(rows[i]);
 			columnToInsert = emptyCell.clone();
 			columnToInsert.addClass(this.get('classSelectionColumn'));
+			columnToInsert.addClass('aloha-ephemera');
 			columnToInsert.css('width', this.get('selectionArea') + 'px');
 			//rowObj.find('td:first').before(columnToInsert);
 			rowObj.prepend(columnToInsert);
@@ -703,6 +669,7 @@ define([
 
 		var selectionRow = jQuery('<tr>');
 		selectionRow.addClass(this.get('classSelectionRow'));
+		selectionRow.addClass('aloha-ephemera');
 		selectionRow.css('height', this.get('selectionArea') + 'px');
 
 		for (var i = 0; i < numColumns; i++) {
@@ -1175,6 +1142,7 @@ define([
 			// create the first column, the "select row" column
 			var selectionColumn = jQuery('<td>');
 			selectionColumn.addClass(this.get('classSelectionColumn'));
+			selectionColumn.addClass('aloha-ephemera');
 			this.attachRowSelectionEventsToCell(selectionColumn);
 			insertionRow.append(selectionColumn);
 
