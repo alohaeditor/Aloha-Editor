@@ -92,7 +92,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $mml = getMathFor $el.find('script').attr('id')
 
     # STEP3
-    $el.remove('.mathml-wrapper')
+    $el.find('.mathml-wrapper').remove()
     $mml.wrap '<span class="mathml-wrapper aloha-ephemera-wrapper"></span>'
     $el.append $mml.parent()
 
@@ -236,8 +236,10 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
           if not $annotation[0]?
             if $mathml.children().length > 1 # Wrap math equation in mrow if equation is more than one single child
               $mathml.wrapInner('<mrow></mrow>')
-            $annotation = jQuery('<annotation></annotation>').appendTo($mathml)
-            $mathml.wrapInner('<semantics></semantics>')
+            $semantics = $mathml.find('semantics')
+            if not $semantics[0]
+              $semantics = jQuery('<semantics></semantics>').prependTo($mathml)
+            $annotation = jQuery('<annotation></annotation>').appendTo($semantics)
           $annotation.attr('encoding', mimeType)
           $annotation.text(formula)
           makeCloseIcon($span)

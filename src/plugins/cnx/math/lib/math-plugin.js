@@ -38,7 +38,7 @@
     squirrelMath = function($el) {
       var $mml;
       $mml = getMathFor($el.find('script').attr('id'));
-      $el.remove('.mathml-wrapper');
+      $el.find('.mathml-wrapper').remove();
       $mml.wrap('<span class="mathml-wrapper aloha-ephemera-wrapper"></span>');
       return $el.append($mml.parent());
     };
@@ -166,7 +166,7 @@
           $mathPoint.text(formulaWrapped);
         }
         triggerMathJax($span, function() {
-          var $mathml;
+          var $mathml, $semantics;
           $mathml = $span.find('math');
           if ($mathml[0]) {
             $annotation = $mathml.find('annotation');
@@ -174,8 +174,11 @@
               if ($mathml.children().length > 1) {
                 $mathml.wrapInner('<mrow></mrow>');
               }
-              $annotation = jQuery('<annotation></annotation>').appendTo($mathml);
-              $mathml.wrapInner('<semantics></semantics>');
+              $semantics = $mathml.find('semantics');
+              if (!$semantics[0]) {
+                $semantics = jQuery('<semantics></semantics>').prependTo($mathml);
+              }
+              $annotation = jQuery('<annotation></annotation>').appendTo($semantics);
             }
             $annotation.attr('encoding', mimeType);
             $annotation.text(formula);
