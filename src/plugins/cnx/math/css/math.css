@@ -1,3 +1,21 @@
+/* Rely on MathJax HTML+CSS output but keep the MathML in the DOM (hidden) so it gets serialized */
+math,
+.MathJax .math .annotation {
+  display: none;
+}
+
+/*
+ The math editor uses MathJax to render the math but keeps the MathML in the DOM (for saving).
+ The MathJax is discarded by ephemera when saving and the (hidden via display:none) MathML is kept.
+
+ Chromium is slowly adding support for rendering MathML natively but ignores the display:none
+ so the MathML is wrapped in a span and then hidden here
+ */
+.mathml-wrapper {
+  display: none;
+}
+
+
 .math-element,
 .math-element * {
   cursor: pointer;
@@ -30,7 +48,7 @@
     margin-bottom: 1em;
 }
 
-.math-container textarea, 
+.math-container textarea,
 .math-container pre {
   margin: 0;
   padding: 5px;

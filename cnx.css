@@ -12,12 +12,6 @@
   opacity: 0.8;
 }
 
-/* Rely on MathJax HTML+CSS output but keep the MathML in the DOM (hidden) so it gets serialized */
-math,
-.MathJax .math .annotation {
-  display: none;
-}
-
 /* Remove the annoying WAI button in tables */
 .aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
 
