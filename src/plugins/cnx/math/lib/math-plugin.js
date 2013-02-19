@@ -176,7 +176,8 @@
               }
               $semantics = $mathml.find('semantics');
               if (!$semantics[0]) {
-                $semantics = jQuery('<semantics></semantics>').prependTo($mathml);
+                $mathml.wrapInner('<semantics></semantics>');
+                $semantics = $mathml.find('semantics');
               }
               $annotation = jQuery('<annotation></annotation>').appendTo($semantics);
             }
