@@ -16,3 +16,5 @@ All changes are categorized into one of the following keywords:
             transformed into Aloha Tables as they ought to be.
 **BUGFIX**: Formatting a table row as header will now correctly set the scope of
             the header elements to refer to the column.
+**BUGFIX**: Ensured that the floating menu will not cover small editables
+            whenever possible.
