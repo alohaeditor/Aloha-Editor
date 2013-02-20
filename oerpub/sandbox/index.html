@@ -52,31 +52,8 @@
     
     <h1 id="gd-idp257840" class="title">Laws of Exponents</h1>
 
-      <p id="bnwest-special" class="para">
-      <m:math>
-        <m:semantics>
-          <m:mstyle>
-            <m:msup>
-              <m:mi>a</m:mi>
-              <m:mn>2</m:mn>
-            </m:msup>
-            <m:mo>+</m:mo>
-            <m:msup>
-              <m:mi>b</m:mi>
-              <m:mn>2</m:mn>
-            </m:msup>
-            <m:mo>=</m:mo>
-            <m:msup>
-              <m:mi>c</m:mi>
-              <m:mn>2</m:mn>
-            </m:msup>
-          </m:mstyle>
-          <m:annotation>a^2 + b^2 = c^2</m:annotation>
-        </m:semantics>
-      </m:math>        
-      </p>
-
-      <p id="gd-idp258736" class="para">
+      <p>These are examples of math in the text.</p>
+      <p>MathML with ASCIIMath in it:
 <math xmlns="http://www.w3.org/1998/Math/MathML">
   <annotation encoding="ASCIIMath">sq(t) sum_(n=-infty)^infty (-1)^n A p_{p/2}{t-n{T/2}}</annotation>
   <mstyle displaystyle="true">
@@ -136,5 +113,49 @@
   </mstyle>
 </math>
       </p>
+      
+      <p>MathML with TeX in it:
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <annotation encoding="TeX">x = {-b \pm \sqrt{b^2-4ac} \over 2a}</annotation>
+  <mi>x</mi>
+  <mo>=</mo>
+  <mfrac>
+    <mrow>
+      <mo>&#x2212;<!-- - --></mo>
+      <mi>b</mi>
+      <mo>&#x00B1;<!-- ± --></mo>
+      <msqrt>
+        <msup>
+          <mi>b</mi>
+          <mn>2</mn>
+        </msup>
+        <mo>&#x2212;<!-- - --></mo>
+        <mn>4</mn>
+        <mi>a</mi>
+        <mi>c</mi>
+      </msqrt>
+    </mrow>
+    <mrow>
+      <mn>2</mn>
+      <mi>a</mi>
+    </mrow>
+  </mfrac>
+</math>
+      </p>
+      
+      <p>MathML with Content Math inside it:
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>x</mi><mn>2</mn></msup>
+<annotation-xml encoding="MathML-Content">
+  <apply>
+    <power/>
+    <ci>x</ci>
+    <cn>2</cn>
+  </apply>
+</annotation-xml>
+</semantics>
+</math>
+      </p>
 
-</body></html>
+</body>
+
+</html>
