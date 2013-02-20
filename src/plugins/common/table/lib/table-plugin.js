@@ -29,6 +29,7 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
+	'aloha/ephemera',
 	'ui/ui',
 	'ui/scopes',
 	'ui/button',
@@ -48,6 +49,7 @@ define([
 	jQuery,
 	Plugin,
 	PluginManager,
+	Ephemera,
 	Ui,
 	Scopes,
 	Button,
@@ -1561,6 +1563,12 @@ define([
 			}
 		}
 	};
+
+	Ephemera.classes('aloha-table',
+	                 'aloha-table-selectcolumn',
+	                 'aloha-table-selectrow',
+	                 'aloha-cell-selected',
+	                 'aloha-table-cell_active');
 
 	return TablePlugin;
 });
