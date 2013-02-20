@@ -33,14 +33,16 @@ define([
 	'ui/surface',
 	'ui/subguarded',
 	'PubSub',
-	'vendor/amplify.store'
+	'vendor/amplify.store',
+	'util/browser'
 ], function (
 	$,
 	Aloha,
 	Surface,
 	subguarded,
 	PubSub,
-	amplifyStore
+	amplifyStore,
+	Browser
 ) {
 	'use strict';
 
@@ -79,9 +81,7 @@ define([
 	 * @type {string}
 	 * @const
 	 */
-	var POSITION_STYLE = ($.browser.msie && /^7\.\d+/.test($.browser.version))
-	                   ? 'absolute'
-	                   : 'fixed';
+	var POSITION_STYLE = Browser.ie7 ? 'absolute' : 'fixed';
 
 	/**
 	 * The position of the floating menu.
