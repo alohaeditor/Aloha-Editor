@@ -14,3 +14,5 @@ All changes are categorized into one of the following keywords:
                  can be customized for specific purposes.
 **BUGFIX**: Tables which are inside editables what are inside of blocks will now
             transformed into Aloha Tables as they ought to be.
+**BUGFIX**: Formatting a table row as header will now correctly set the scope of
+            the header elements to refer to the column.
