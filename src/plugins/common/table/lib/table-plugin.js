@@ -1,7 +1,7 @@
 /* table-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * Aloha Editor is free software; you can redistribute it and/or
@@ -157,7 +157,19 @@ define([
 	 * @return {boolean} True if the given element is nested in an aloha block.
 	 */
 	function isWithinBlock($element) {
-		return 0 < $element.closest('.aloha-block').length;
+		var i;
+		var $node;
+		var $parents = $element.parents();
+		for (i = 0; i < $parents.length; i++) {
+			$node = $parents.eq(i);
+			if ($node.is('.aloha-editable')) {
+				return false;
+			}
+			if ($node.is('.aloha-block')) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

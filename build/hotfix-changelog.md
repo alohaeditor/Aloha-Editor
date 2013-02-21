@@ -12,3 +12,5 @@ All changes are categorized into one of the following keywords:
                  characterpicker.
 **ENHANCEMENT**: Introducing Modal.modal()--a stripped down modal dialog that
                  can be customized for specific purposes.
+**BUGFIX**: Tables which are inside editables what are inside of blocks will now
+            transformed into Aloha Tables as they ought to be.
