@@ -231,28 +231,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       triggerMathJax $span, ->
         # Save the Edited text into the math annotation element
         $mathml = $span.find('math')
-        if $mathml[0] # Webkit browsers don't natively support MathML
-          $annotation = $mathml.find('annotation')
-          # ## Finicky MathML structure
-          #
-          # The generated MathML needs:
-          #
-          # - A single `<semantics/>` element
-          # - The semantics element **must** have _exactly_ 2 children
-          # - The second child **must** be the `<annotation/>`
-
-          # If the `<annotation/>` element is not the 2nd child or not in a `<semantics/>`
-          # then MathJax will treat it as a '<mtext/>' and not hide it.
-          if not $annotation[0]?
-            if $mathml.children().length > 1 # Wrap math equation in mrow if equation is more than one single child
-              $mathml.wrapInner('<mrow></mrow>')
-            $semantics = $mathml.find('semantics')
-            if not $semantics[0]
-              $mathml.wrapInner('<semantics></semantics>')
-              $semantics = $mathml.find('semantics')
-            $annotation = jQuery('<annotation></annotation>').appendTo($semantics)
-          $annotation.attr('encoding', mimeType)
-          $annotation.text(formula)
+        addAnnotation $mathml, formula, mimeType
+        if $mathml[0]
           makeCloseIcon($span)
 
       # TODO: Async save the input when MathJax correctly parses and typesets the text
@@ -298,6 +278,30 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       else
         closer.tooltip(placement: 'bottom', template: TOOLTIP_TEMPLATE)
       $el.append(closer)
+
+  addAnnotation = ($mml, formula, mimeType) ->
+    if $mml[0] 
+      $annotation = $mml.find('annotation')
+      # ## Finicky MathML structure
+      #
+      # The generated MathML needs:
+      #
+      # - A single `<semantics/>` element
+      # - The semantics element **must** have _exactly_ 2 children
+      # - The second child **must** be the `<annotation/>`
+
+      # If the `<annotation/>` element is not the 2nd child or not in a `<semantics/>`
+      # then MathJax will treat it as a '<mtext/>' and not hide it.
+      if not $annotation[0]?
+        if $mml.children().length > 1 # Wrap math equation in mrow if equation is more than one single child
+          $mml.wrapInner('<mrow></mrow>')
+        $semantics = $mml.find('semantics')
+        if not $semantics[0]
+          $mml.wrapInner('<semantics></semantics>')
+          $semantics = $mml.find('semantics')
+        $annotation = jQuery('<annotation></annotation>').appendTo($semantics)
+      $annotation.attr('encoding', mimeType)
+      $annotation.text(formula)
 
   Aloha.bind 'aloha-editable-created', (e, editable) ->
     # Bind ctrl+m to math insert/mathify
