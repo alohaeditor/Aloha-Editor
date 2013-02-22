@@ -126,10 +126,12 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     else
       $tail = jQuery('<span class="aloha-ephemera math-trailer" />')
       # Assume the user hilighted ASCIIMath (by putting the text in backticks)
-      $el.text('`' + range.getText() + '`')
+      formula = range.getText()
+      $el.text('`' + formula + '`')
       GENTICS.Utils.Dom.removeRange range
       GENTICS.Utils.Dom.insertIntoDOM $el.add($tail), range, Aloha.activeEditable.obj
       triggerMathJax $el, ->
+        addAnnotation $el, formula,  'math/asciimath'
         makeCloseIcon($el)
 
         # This will likely break in IE
@@ -231,8 +233,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       triggerMathJax $span, ->
         # Save the Edited text into the math annotation element
         $mathml = $span.find('math')
-        addAnnotation $mathml, formula, mimeType
         if $mathml[0]
+          addAnnotation $span, formula, mimeType
           makeCloseIcon($span)
 
       # TODO: Async save the input when MathJax correctly parses and typesets the text
@@ -272,6 +274,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $editor
 
   makeCloseIcon = ($el) ->
+      # $el is <span class="math-element">
       closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete\u00A0math">&nbsp;</a>')
       if jQuery.ui and jQuery.ui.tooltip
         closer.tooltip()
@@ -279,7 +282,9 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         closer.tooltip(placement: 'bottom', template: TOOLTIP_TEMPLATE)
       $el.append(closer)
 
-  addAnnotation = ($mml, formula, mimeType) ->
+  addAnnotation = ($span, formula, mimeType) ->
+      # $span is <span class="math-element">
+    $mml = $span.find('math')
     if $mml[0] 
       $annotation = $mml.find('annotation')
       # ## Finicky MathML structure

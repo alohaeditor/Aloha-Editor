@@ -62,7 +62,7 @@
 
     });
     insertMath = function() {
-      var $el, $tail, range;
+      var $el, $tail, formula, range;
       $el = jQuery('<span class="math-element aloha-ephemera-wrapper"><span class="mathjax-wrapper aloha-ephemera">&#160;</span></span>');
       range = Aloha.Selection.getRangeObject();
       if (range.isCollapsed()) {
@@ -71,11 +71,13 @@
         return makeCloseIcon($el);
       } else {
         $tail = jQuery('<span class="aloha-ephemera math-trailer" />');
-        $el.text('`' + range.getText() + '`');
+        formula = range.getText();
+        $el.text('`' + formula + '`');
         GENTICS.Utils.Dom.removeRange(range);
         GENTICS.Utils.Dom.insertIntoDOM($el.add($tail), range, Aloha.activeEditable.obj);
         return triggerMathJax($el, function() {
           var r, sel;
+          addAnnotation($el, formula, 'math/asciimath');
           makeCloseIcon($el);
           sel = window.getSelection();
           r = sel.getRangeAt(0);
@@ -168,8 +170,8 @@
         triggerMathJax($span, function() {
           var $mathml;
           $mathml = $span.find('math');
-          addAnnotation($mathml, formula, mimeType);
           if ($mathml[0]) {
+            addAnnotation($span, formula, mimeType);
             return makeCloseIcon($span);
           }
         });
@@ -228,8 +230,9 @@
       }
       return $el.append(closer);
     };
-    addAnnotation = function($mml, formula, mimeType) {
-      var $annotation, $semantics;
+    addAnnotation = function($span, formula, mimeType) {
+      var $annotation, $mml, $semantics;
+      $mml = $span.find('math');
       if ($mml[0]) {
         $annotation = $mml.find('annotation');
         if (!($annotation[0] != null)) {
