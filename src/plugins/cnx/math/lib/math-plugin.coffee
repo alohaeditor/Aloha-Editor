@@ -124,13 +124,16 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       $el.trigger 'show'
       makeCloseIcon($el)
     else
+      $tail = jQuery('<span class="aloha-ephemera math-trailer" />')
       # Assume the user highlighted ASCIIMath (by putting the text in backticks)
       formula = range.getText()
-      $el.find('.mathjax-wrapper').text('`' + formula + '`')
+      $el.find('.mathjax-wrapper').text(LANGUAGES['math/asciimath'].open + 
+                                        formula + 
+                                        LANGUAGES['math/asciimath'].close)
       GENTICS.Utils.Dom.removeRange range
-      GENTICS.Utils.Dom.insertIntoDOM $el, range, Aloha.activeEditable.obj
+      GENTICS.Utils.Dom.insertIntoDOM $el.add($tail), range, Aloha.activeEditable.obj
       triggerMathJax $el, ->
-        addAnnotation $el, formula,  'math/asciimath'
+        addAnnotation $el, formula, 'math/asciimath'
         makeCloseIcon($el)
 
         # This will likely break in IE
