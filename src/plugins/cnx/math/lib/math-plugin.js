@@ -62,7 +62,7 @@
 
     });
     insertMath = function() {
-      var $el, $tail, formula, range;
+      var $el, formula, range;
       $el = jQuery('<span class="math-element aloha-ephemera-wrapper"><span class="mathjax-wrapper aloha-ephemera">&#160;</span></span>');
       range = Aloha.Selection.getRangeObject();
       if (range.isCollapsed()) {
@@ -70,11 +70,10 @@
         $el.trigger('show');
         return makeCloseIcon($el);
       } else {
-        $tail = jQuery('<span class="aloha-ephemera math-trailer" />');
         formula = range.getText();
-        $el.text('`' + formula + '`');
+        $el.find('.mathjax-wrapper').text('`' + formula + '`');
         GENTICS.Utils.Dom.removeRange(range);
-        GENTICS.Utils.Dom.insertIntoDOM($el.add($tail), range, Aloha.activeEditable.obj);
+        GENTICS.Utils.Dom.insertIntoDOM($el, range, Aloha.activeEditable.obj);
         return triggerMathJax($el, function() {
           var r, sel;
           addAnnotation($el, formula, 'math/asciimath');
