@@ -218,17 +218,20 @@
       return $editor;
     };
     makeCloseIcon = function($el) {
-      var closer;
-      closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete\u00A0math">&nbsp;</a>');
-      if (jQuery.ui && jQuery.ui.tooltip) {
-        closer.tooltip();
-      } else {
-        closer.tooltip({
-          placement: 'bottom',
-          template: TOOLTIP_TEMPLATE
-        });
+      var $closer;
+      $closer = $el.find('.math-element-destroy');
+      if (!($closer[0] != null)) {
+        $closer = jQuery('<a class="math-element-destroy aloha-ephemera" title="Delete\u00A0math">&nbsp;</a>');
+        if (jQuery.ui && jQuery.ui.tooltip) {
+          $closer.tooltip();
+        } else {
+          $closer.tooltip({
+            placement: 'bottom',
+            template: TOOLTIP_TEMPLATE
+          });
+        }
+        return $el.append($closer);
       }
-      return $el.append(closer);
     };
     addAnnotation = function($span, formula, mimeType) {
       var $annotation, $mml, $semantics;
