@@ -70,7 +70,7 @@
         $el.trigger('show');
         return makeCloseIcon($el);
       } else {
-        $tail = jQuery('<span class="aloha-ephemera math-trailer" />');
+        $tail = $('<span class="aloha-ephemera-wrapper">&#160;</span>');
         formula = range.getText();
         $el.find('.mathjax-wrapper').text(LANGUAGES['math/asciimath'].open + formula + LANGUAGES['math/asciimath'].close);
         GENTICS.Utils.Dom.removeRange(range);

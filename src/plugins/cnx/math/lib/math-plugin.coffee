@@ -124,7 +124,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       $el.trigger 'show'
       makeCloseIcon($el)
     else
-      $tail = jQuery('<span class="aloha-ephemera math-trailer" />')
+      # a math meta-element needs to followed by a non-breaking space in a span
+      $tail = $('<span class="aloha-ephemera-wrapper">&#160;</span>')
       # Assume the user highlighted ASCIIMath (by putting the text in backticks)
       formula = range.getText()
       $el.find('.mathjax-wrapper').text(LANGUAGES['math/asciimath'].open + 
