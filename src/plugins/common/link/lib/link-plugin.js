@@ -1,7 +1,7 @@
 /* link-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  * 
  * Aloha Editor is free software; you can redistribute it and/or
@@ -75,8 +75,8 @@ define( [
 	 * markup.
 	 *
 	 * Successive anchor elements are generally not merged, but an exception
-	 * needs to be made in the process of creating links: fragments of new links
-	 * are coalesced whenever possible.
+	 * needs to be made in the process of creating links: adjacent fragments of
+	 * new links are coalesced whenever possible.
 	 *
 	 * @type {object}
 	 */
