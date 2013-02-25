@@ -46,7 +46,8 @@ define( [
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
-	'PubSub'
+	'PubSub',
+	'util/keys'
 ], function (
 	Aloha,
 	Plugin,
@@ -61,7 +62,8 @@ define( [
 	i18n,
 	i18nCore,
 	console,
-	PubSub
+	PubSub,
+	keys
 ) {
 	'use strict';
 	
@@ -96,12 +98,12 @@ define( [
 				// metaKey for OSX, 17 for PC (we can't check
 				// e.ctrlKey because it's only set on keyup or
 				// keypress, not on keydown).
-				if (e.metaKey || 17 === e.keyCode) {
+				if (e.metaKey || keys.getToken(e.keyCode) === 'control') {
 					jQuery('body').addClass('aloha-link-pointer');
 				}
 			})
 			.bind('keyup.aloha-link.pointer-fix', function (e) {
-				if (e.metaKey || 17 === e.keyCode) {
+				if (e.metaKey || keys.getToken(e.keyCode) === 'control') {
 					jQuery('body').removeClass('aloha-link-pointer');
 				}
 			});
@@ -514,9 +516,7 @@ define( [
 
 			// update link object when src changes
 			this.hrefField.addListener( 'keyup', function ( event ) {
-				// Handle ESC key press: We do a rough check to see if the user
-				// has entered a link or searched for something
-				if ( event.keyCode == 27 ) {
+				if (keys.getToken(event.keyCode) === 'escape') {
 					var curval = that.hrefField.getValue();
 					if ( curval[ 0 ] == '/' || // local link
 						 curval[ 0 ] == '#' || // inner document link
@@ -541,8 +541,8 @@ define( [
 				
 				that.hrefChange();
 				
-				// Handle the enter key. Terminate the link scope and show the final link.
-				if ( event.keyCode == 13 ) {
+				// Terminate the link scope and show the final link.
+				if (keys.getToken(event.keyCode) === 'enter') {
 					// Update the selection and place the cursor at the end of the link.
 					var	range = Aloha.Selection.getRangeObject();
 					
