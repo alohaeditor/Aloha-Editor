@@ -2,7 +2,7 @@
 Get a dev environment for Aloha setup
 =====================================
 
-This sets up a dev environment for the Aloha editor, dev branch, on Ubuntu
+This sets up a development environment for the Aloha editor, master branch, on Ubuntu
 12.04.
 
 System dependencies
@@ -12,7 +12,7 @@ Install git and family::
 
     sudo apt-get install git, tig, gitk
 
-Install nginx::
+Install nginx (or you could use apache and your own instructions)::
 
     sudo apt-get install nginx
 
@@ -40,7 +40,7 @@ Check that you are on the correct branch::
 
     git branch
 
-    You should be on the 'dev' branch.
+    You should be on the 'master' branch.
 
 Get the nginx instance to serve your dev files
 ----------------------------------------------
