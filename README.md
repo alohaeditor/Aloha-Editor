@@ -1,5 +1,8 @@
 # Welcome to the WYSIWHAT fork of the Aloha Editor
 
+We are adapting the Aloha editor for creating books, textbooks and other structured content. We are adding mathematics editing and 
+the ability to add educational features like examples, exercises, equations, and glossary entries.   
+
 Thanks for checking us out! You can play with some of our demos by going to our [Demo Page](http://wysiwhat.github.com/Aloha-Editor/)
 
 Development is done in branches off of `master`, which are then tested on the `dev` branch, specifically in the [Plugins](src/plugins) directory.
