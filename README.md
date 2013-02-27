@@ -3,17 +3,18 @@
 We are adapting the Aloha editor for creating books, textbooks and other structured content. We are adding mathematics editing and 
 the ability to add educational features like examples, exercises, equations, and glossary entries.   
 
-Thanks for checking us out! You can play with some of our demos by going to our [Demo Page](http://wysiwhat.github.com/Aloha-Editor/)
+**Demos:** Thanks for checking us out! You can play with some of our demos by going to our [Demo Page](http://wysiwhat.github.com/Aloha-Editor/)
 
-Development is done in branches off of `master`, which are then tested on the `dev` branch, specifically in the [Plugins](src/plugins) directory.
+**Plugins:** Development is done in branches off of `master`, which are then tested on the `dev` branch, specifically in the [Plugins](src/plugins) directory.
 
-If you develop please look at our [dev workflow](dev-workflow.md)
+**Quickstart:** To get a development enviroment set up quickly and start working on the editor, 
+use the [following instructions](quickstart.rst)
+
+**Development Workflow:** If you develop please look at our [dev workflow](dev-workflow.md)
 
 The `gh-pages` branch contains demo HTML files that point to CDN versions of external packages so people can play with the demos.
 `gh-pages` is periodically merged from `master` when new features are released.
 
-To get a development enviroment set up quickly and start working on the editor, 
-use the [following instructions](quickstart.rst)
 
 ---
 
