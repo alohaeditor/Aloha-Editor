@@ -4,11 +4,13 @@ Thanks for checking us out! You can play with some of our demos by going to our 
 
 Development is done in branches off of `master`, which are then tested on the `dev` branch, specifically in the [Plugins](src/plugins) directory.
 
+If you develop please look at our [dev workflow](workflow.md)
+
 The `gh-pages` branch contains demo HTML files that point to CDN versions of external packages so people can play with the demos.
 `gh-pages` is periodically merged from `master` when new features are released.
 
 To get a development enviroment set up quickly and start working on the editor, 
-use the [following instructions](https://github.com/wysiwhat/Aloha-Editor/blob/master/quickstart.rst)
+use the [following instructions](quickstart.rst)
 
 ---
 
