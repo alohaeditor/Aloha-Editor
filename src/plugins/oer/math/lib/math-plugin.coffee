@@ -37,7 +37,7 @@
 #    </span>
 
 
-define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css' ], (Aloha, Plugin, jQuery, Popover, UI) ->
+define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oer/math/css/math.css' ], (Aloha, Plugin, jQuery, Popover, UI) ->
 
   EDITOR_HTML = '''
     <div class="math-editor-dialog">

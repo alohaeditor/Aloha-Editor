@@ -5,7 +5,7 @@
 define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (Aloha, jQuery, Popover, UI) ->
 
   # This will be prefixed with Aloha.settings.baseUrl
-  WARNING_IMAGE_PATH = '/../plugins/oerpub/image/img/warning.png'
+  WARNING_IMAGE_PATH = '/../plugins/oer/image/img/warning.png'
 
   DIALOG_HTML = '''
     <form class="plugin image modal hide fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true" data-backdrop="false">
@@ -173,12 +173,12 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
       $bubble = jQuery '''
         <div class="link-popover-details">
             <a class="change">
-              <img src="''' + Aloha.settings.baseUrl + '''/../plugins/oerpub/assorted/img/edit-link-03.png" />
+              <img src="''' + Aloha.settings.baseUrl + '''/../plugins/oer/assorted/img/edit-link-03.png" />
               <span title="Change the image's properties">Edit image...</span>
             </a>
             &nbsp; | &nbsp;
             <a class="remove">
-              <img src="''' + Aloha.settings.baseUrl + '''/../plugins/oerpub/assorted/img/unlink-link-02.png" />
+              <img src="''' + Aloha.settings.baseUrl + '''/../plugins/oer/assorted/img/unlink-link-02.png" />
               <span title="Delete the image">Delete</span>
             </a>
         </div>'''
