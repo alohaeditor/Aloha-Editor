@@ -2,18 +2,17 @@
 
 Thanks for checking us out! You can play with some of our demos by going to our [Demo Page](http://wysiwhat.github.com/Aloha-Editor/)
 
-Most of our development is done in the `dev` branch, specifically in the [Plugins](src/plugins) directory.
-
-Additionally, there are long-lived 2 branches we created that serve as production branches for our groups:
-
-* `cnx-master` : Used by http://cnx.org
-* `oerpub-master` : Used by http://oerpub.org
-
-These branches may also contain code snippets specific to those organizations (ie toolbar configs)
+Development is done in branches off of `master`, which are then tested on the `dev` branch, specifically in the [Plugins](src/plugins) directory.
 
 The `gh-pages` branch contains demo HTML files that point to CDN versions of external packages so people can play with the demos.
+`gh-pages` is periodically merged from `master` when new features are released.
 
-Original Aloha Readme follows.
+To get a development enviroment set up quickly and start working on the editor, 
+use the [following instructions](https://github.com/wysiwhat/Aloha-Editor/blob/master/quickstart.rst)
+
+---
+
+# Original Aloha Readme follows.
 
 ---
 
