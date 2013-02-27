@@ -4,7 +4,7 @@ Thanks for checking us out! You can play with some of our demos by going to our 
 
 Development is done in branches off of `master`, which are then tested on the `dev` branch, specifically in the [Plugins](src/plugins) directory.
 
-If you develop please look at our [dev workflow](workflow.md)
+If you develop please look at our [dev workflow](dev-workflow.md)
 
 The `gh-pages` branch contains demo HTML files that point to CDN versions of external packages so people can play with the demos.
 `gh-pages` is periodically merged from `master` when new features are released.
