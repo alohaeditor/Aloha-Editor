@@ -150,6 +150,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         r = new GENTICS.Utils.RangeObject()
         r.update()
         Aloha.Selection.rangeObject = r
+        Aloha.activeEditable.smartContentChange {type: 'block-change'}
 
   # Register the button with an action
   UI.adopt 'insertMath', null,
@@ -239,6 +240,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
         if $mathml[0]
           addAnnotation $span, formula, mimeType
           makeCloseIcon($span)
+        Aloha.activeEditable.smartContentChange {type: 'block-change'}
 
       # TODO: Async save the input when MathJax correctly parses and typesets the text
       $span.data('math-formula', formula)
@@ -365,6 +367,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       # Though the tooltip was bound to the editor and delegates
       # to these items, you still have to clean it up youself
       $el.trigger('hide').tooltip('destroy').remove()
+      Aloha.activeEditable.smartContentChange {type: 'block-change'}
       e.preventDefault()
     )
 
