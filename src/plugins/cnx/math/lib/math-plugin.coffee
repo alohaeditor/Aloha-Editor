@@ -102,10 +102,26 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
     $maths.wrap '<span class="math-element aloha-ephemera-wrapper"><span class="mathjax-wrapper aloha-ephemera"></span></span>'
 
     # TODO: Explicitly call Mathjax Typeset
-    jQuery.each $maths, (i, el) ->
-      $el = jQuery(el)
-      $mathElement = $el.parent().parent()
-      triggerMathJax $mathElement
+    jQuery.each $maths, (i, mml) ->
+      $mml = $(mml)
+      $mathElement = $mml.parent().parent()
+      # replace the MathML with ASCII/LaTeX formula if possible
+      mathParts = findFormula $mml
+      if mathParts.mimeType is "math/asciimath"
+        $mathElement.find('.mathjax-wrapper').text(LANGUAGES['math/asciimath'].open + 
+                                                   mathParts.formula + 
+                                                   LANGUAGES['math/asciimath'].close)
+      else if mathParts.mimeType is "math/tex"
+        $mathElement.find('.mathjax-wrapper').text(LANGUAGES['math/tex'].open + 
+                                                   mathParts.formula + 
+                                                   LANGUAGES['math/tex'].close)
+      triggerMathJax $mathElement, ->
+        if mathParts.mimeType is "math/asciimath" or mathParts.mimeType is "math/tex"
+          addAnnotation $mathElement, mathParts.formula, mathParts.mimeType
+        makeCloseIcon $mathElement
+        if not $mathElement.next().is '.aloha-ephemera-wrapper'
+          # a math meta-element needs to followed by a non-breaking space in a span
+          $('<span class="aloha-ephemera-wrapper">&#160;</span>').insertAfter($mathElement)
 
     ###
     MathJax.Hub.Queue ->
@@ -173,7 +189,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       $span.find('.math-element-destroy').tooltip('destroy')
       $span.remove()
 
-  # $span contains the span with LaTex/ASCIIMath
+  # $span contains the span with LaTeX/ASCIIMath
   buildEditor = ($span) ->
     $editor = jQuery(EDITOR_HTML)
     # Bind some actions for the buttons
@@ -313,6 +329,30 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       $annotation.attr('encoding', mimeType)
       $annotation.text(formula)
 
+  findFormula = ($mml) ->
+    # Looking to precisely match the math we create in the editor
+    #   <math>
+    #     <semantics>
+    #       single math element
+    #       <annotation />
+    #     </semantics>
+    #   </math>
+    formula = null
+    mimeType = "math/mml"
+    if $mml.children().length is 1
+      $firstChild = $($mml.children()[0])
+      if $firstChild.is 'semantics'
+        $semantics = $firstChild
+        if $semantics.children().length is 2
+          $secondChild = $($semantics.children()[1])
+          if $secondChild.is 'annotation[encoding]'
+            $annotation = $secondChild
+            encoding = $annotation.attr 'encoding'
+            formula = $annotation.text()
+            if encoding is 'math/asciimath' or encoding is 'math/tex'
+              return { 'mimeType': encoding, 'formula': formula }
+    return { 'mimeType': mimeType, 'formula': formula }
+
   Aloha.bind 'aloha-editable-created', (e, editable) ->
     # Bind ctrl+m to math insert/mathify
     editable.obj.bind 'keydown', 'ctrl+m', (evt) ->
@@ -351,13 +391,6 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       # (the math element is just a little horizontal bar but its children stick out above and below it)
       # Don't handle the same event for each child
       evt.stopPropagation()
-
-    editable.obj.find('.math-element').each () ->
-      makeCloseIcon(jQuery(this))
-      $span = $(this)
-      if not $span.next().is '.aloha-ephemera-wrapper'
-        # a math meta-element needs to followed by a non-breaking space in a span
-        $('<span class="aloha-ephemera-wrapper">&#160;</span>').insertAfter($span)
 
     editable.obj.on('click.matheditor', '.math-element-destroy', (e) ->
       jQuery(e.target).tooltip('destroy')

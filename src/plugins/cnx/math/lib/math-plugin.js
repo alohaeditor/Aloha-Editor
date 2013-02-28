@@ -2,7 +2,7 @@
 (function() {
 
   define(['aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css'], function(Aloha, Plugin, jQuery, Popover, UI) {
-    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, TOOLTIP_TEMPLATE, addAnnotation, buildEditor, cleanupFormula, getMathFor, insertMath, makeCloseIcon, squirrelMath, triggerMathJax;
+    var EDITOR_HTML, LANGUAGES, MATHML_ANNOTATION_ENCODINGS, SELECTOR, TOOLTIP_TEMPLATE, addAnnotation, buildEditor, cleanupFormula, findFormula, getMathFor, insertMath, makeCloseIcon, squirrelMath, triggerMathJax;
     EDITOR_HTML = '<div class="math-editor-dialog">\n    <div class="math-container">\n        <pre><span></span><br></pre>\n        <textarea type="text" class="formula" rows="1"\n                  placeholder="Insert your math notation here"></textarea>\n    </div>\n    <div class="footer">\n      <span>This is:</span>\n      <label class="radio inline">\n          <input type="radio" name="mime-type" value="math/asciimath"> ASCIIMath\n      </label>\n      <label class="radio inline">\n          <input type="radio" name="mime-type" value="math/tex"> LaTeX\n      </label>\n      <label class="radio inline mime-type-mathml">\n          <input type="radio" name="mime-type" value="math/mml"> MathML\n      </label>\n      <button class="btn btn-primary done">Done</button>\n    </div>\n</div>';
     LANGUAGES = {
       'math/asciimath': {
@@ -46,11 +46,25 @@
       var $maths;
       $maths = ed.editable.obj.find('math');
       $maths.wrap('<span class="math-element aloha-ephemera-wrapper"><span class="mathjax-wrapper aloha-ephemera"></span></span>');
-      return jQuery.each($maths, function(i, el) {
-        var $el, $mathElement;
-        $el = jQuery(el);
-        $mathElement = $el.parent().parent();
-        return triggerMathJax($mathElement);
+      return jQuery.each($maths, function(i, mml) {
+        var $mathElement, $mml, mathParts;
+        $mml = $(mml);
+        $mathElement = $mml.parent().parent();
+        mathParts = findFormula($mml);
+        if (mathParts.mimeType === "math/asciimath") {
+          $mathElement.find('.mathjax-wrapper').text(LANGUAGES['math/asciimath'].open + mathParts.formula + LANGUAGES['math/asciimath'].close);
+        } else if (mathParts.mimeType === "math/tex") {
+          $mathElement.find('.mathjax-wrapper').text(LANGUAGES['math/tex'].open + mathParts.formula + LANGUAGES['math/tex'].close);
+        }
+        return triggerMathJax($mathElement, function() {
+          if (mathParts.mimeType === "math/asciimath" || mathParts.mimeType === "math/tex") {
+            addAnnotation($mathElement, mathParts.formula, mathParts.mimeType);
+          }
+          makeCloseIcon($mathElement);
+          if (!$mathElement.next().is('.aloha-ephemera-wrapper')) {
+            return $('<span class="aloha-ephemera-wrapper">&#160;</span>').insertAfter($mathElement);
+          }
+        });
       });
       /*
           MathJax.Hub.Queue ->
@@ -253,6 +267,35 @@
         return $annotation.text(formula);
       }
     };
+    findFormula = function($mml) {
+      var $annotation, $firstChild, $secondChild, $semantics, encoding, formula, mimeType;
+      formula = null;
+      mimeType = "math/mml";
+      if ($mml.children().length === 1) {
+        $firstChild = $($mml.children()[0]);
+        if ($firstChild.is('semantics')) {
+          $semantics = $firstChild;
+          if ($semantics.children().length === 2) {
+            $secondChild = $($semantics.children()[1]);
+            if ($secondChild.is('annotation[encoding]')) {
+              $annotation = $secondChild;
+              encoding = $annotation.attr('encoding');
+              formula = $annotation.text();
+              if (encoding === 'math/asciimath' || encoding === 'math/tex') {
+                return {
+                  'mimeType': encoding,
+                  'formula': formula
+                };
+              }
+            }
+          }
+        }
+      }
+      return {
+        'mimeType': mimeType,
+        'formula': formula
+      };
+    };
     Aloha.bind('aloha-editable-created', function(e, editable) {
       return editable.obj.bind('keydown', 'ctrl+m', function(evt) {
         insertMath();
@@ -275,14 +318,6 @@
         Aloha.Selection.rangeObject = range;
         Aloha.trigger('aloha-selection-changed', range);
         return evt.stopPropagation();
-      });
-      editable.obj.find('.math-element').each(function() {
-        var $span;
-        makeCloseIcon(jQuery(this));
-        $span = $(this);
-        if (!$span.next().is('.aloha-ephemera-wrapper')) {
-          return $('<span class="aloha-ephemera-wrapper">&#160;</span>').insertAfter($span);
-        }
       });
       editable.obj.on('click.matheditor', '.math-element-destroy', function(e) {
         var $el;
