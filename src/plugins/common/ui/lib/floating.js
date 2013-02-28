@@ -33,14 +33,16 @@ define([
 	'ui/surface',
 	'ui/subguarded',
 	'PubSub',
-	'vendor/amplify.store'
+	'vendor/amplify.store',
+	'util/browser'
 ], function (
 	$,
 	Aloha,
 	Surface,
 	subguarded,
 	PubSub,
-	amplifyStore
+	amplifyStore,
+	Browser
 ) {
 	'use strict';
 
@@ -79,9 +81,7 @@ define([
 	 * @type {string}
 	 * @const
 	 */
-	var POSITION_STYLE = ($.browser.msie && /^7\.\d+/.test($.browser.version))
-	                   ? 'absolute'
-	                   : 'fixed';
+	var POSITION_STYLE = Browser.ie7 ? 'absolute' : 'fixed';
 
 	/**
 	 * The position of the floating menu.
@@ -243,31 +243,31 @@ define([
 
 		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
 		              + (parseInt($('body').css('paddingTop'), 10) || 0);
-		var $element = surface.$element;
+		var $surface = surface.$element;
 		var offset = editable.obj.offset();
 		var top = offset.top;
 		var left = offset.left;
 		var scrollTop = $WINDOW.scrollTop();
 		var availableSpace = top - scrollTop - topGutter;
-		var horizontalOverflow = left + $element.width() - $WINDOW.width();
+		var horizontalOverflow = left + $surface.width() - $WINDOW.width();
 
 		if (horizontalOverflow > 0) {
 			left = Math.max(0, left - horizontalOverflow);
 		}
 
-		if (availableSpace >= $element.height()) {
-			floatAbove($element, {
+		if (availableSpace >= $surface.height()) {
+			floatAbove($surface, {
 				top: top - scrollTop,
 				left: left
 			}, duration, callback);
-		} else if (availableSpace + $element.height() >
-				top + editable.obj.height()) {
-			floatBelow($element, {
+		} else if (availableSpace + $surface.height() >
+		           availableSpace + editable.obj.height()) {
+			floatBelow($surface, {
 				top: top + editable.obj.height(),
 				left: left
 			}, duration, callback);
 		} else {
-			floatBelow($element, {
+			floatBelow($surface, {
 				top: topGutter,
 				left: left
 			}, duration, callback);
