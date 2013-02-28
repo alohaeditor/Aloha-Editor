@@ -200,7 +200,7 @@ define( [
 		 * Initialize the plugin
 		 */
 		init: function () {
-			var that = this;
+			var plugin = this;
 			
 			if ( typeof this.settings.targetregex != 'undefined' ) {
 				this.targetregex = this.settings.targetregex;
@@ -230,9 +230,12 @@ define( [
 			this.createButtons();
 			this.subscribeEvents();
 			this.bindInteractions();
-			
+
 			Aloha.bind('aloha-plugins-loaded', function () {
-				that.initSidebar(Aloha.Sidebar.right);
+				plugin.initSidebar(Aloha.Sidebar.right);
+				PubSub.pub('aloha.link.ready', {
+					plugin: plugin
+				})
 			});
 		},
 
@@ -745,12 +748,21 @@ define( [
 					this.hrefField.getValue()
 				);
 			}
+
+			var href = that.hrefField.getValue();
+			var element = that.hrefField.getTargetObject();
 			
-			Aloha.trigger( 'aloha-link-href-change', {
-				 obj: that.hrefField.getTargetObject(),
-				 href: that.hrefField.getValue(),
+			Aloha.trigger('aloha-link-href-change', {
+				 href: href,
+				 obj: element,
 				 item: that.hrefField.getItem()
-			} );
+			});
+
+			PubSub.pub('aloha.link.changed', {
+				href: href,
+				element: element,
+				input: that.hrefField.getInputElem()
+			});
 			
 			if ( typeof this.onHrefChange == 'function' ) {
 				this.onHrefChange.call(
@@ -802,6 +814,12 @@ define( [
 				}
 				Aloha.trigger('aloha-link-selected');
 				enteredLinkScope = true;
+
+				PubSub.pub('aloha.link.selected', {
+					input: that.hrefField.getInputElem(),
+					href: that.hrefField.getValue(),
+					element: that.hrefField.getTargetObject()
+				});
 			} else {
 				that.toggleLinkScope(false);
 				that.hrefField.setTargetObject(null);
