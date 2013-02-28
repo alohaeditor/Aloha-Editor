@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<groups xmlns="http://www.isdc.ro/wro">
+	<group name="aloha">
+		<css>/src/css/aloha-core.css</css>
+		<css>/src/css/aloha-reset.css</css>
+		<css>/src/css/aloha-sidebar.css</css>
+	</group>
+</groups>
