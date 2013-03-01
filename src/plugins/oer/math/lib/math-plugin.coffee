@@ -37,7 +37,7 @@
 #    </span>
 
 
-define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cnx/math/css/math.css' ], (Aloha, Plugin, jQuery, Popover, UI) ->
+define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oer/math/css/math.css' ], (Aloha, Plugin, jQuery, Popover, UI) ->
 
   EDITOR_HTML = '''
     <div class="math-editor-dialog">
@@ -69,7 +69,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
   MATHML_ANNOTATION_ENCODINGS =
     'TeX':       'math/tex'
-    'ASCIIMath': '3'
+    'ASCIIMath': 'math/asciimath'
 
   TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
 
@@ -108,12 +108,12 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       # replace the MathML with ASCII/LaTeX formula if possible
       mathParts = findFormula $mml
       if mathParts.mimeType is "math/asciimath"
-        $mathElement.find('.mathjax-wrapper').text(LANGUAGES['math/asciimath'].open + 
-                                                   mathParts.formula + 
+        $mathElement.find('.mathjax-wrapper').text(LANGUAGES['math/asciimath'].open +
+                                                   mathParts.formula +
                                                    LANGUAGES['math/asciimath'].close)
       else if mathParts.mimeType is "math/tex"
-        $mathElement.find('.mathjax-wrapper').text(LANGUAGES['math/tex'].open + 
-                                                   mathParts.formula + 
+        $mathElement.find('.mathjax-wrapper').text(LANGUAGES['math/tex'].open +
+                                                   mathParts.formula +
                                                    LANGUAGES['math/tex'].close)
       triggerMathJax $mathElement, ->
         if mathParts.mimeType is "math/asciimath" or mathParts.mimeType is "math/tex"
@@ -144,8 +144,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       $tail = $('<span class="aloha-ephemera-wrapper">&#160;</span>')
       # Assume the user highlighted ASCIIMath (by putting the text in backticks)
       formula = range.getText()
-      $el.find('.mathjax-wrapper').text(LANGUAGES['math/asciimath'].open + 
-                                        formula + 
+      $el.find('.mathjax-wrapper').text(LANGUAGES['math/asciimath'].open +
+                                        formula +
                                         LANGUAGES['math/asciimath'].close)
       GENTICS.Utils.Dom.removeRange range
       GENTICS.Utils.Dom.insertIntoDOM $el.add($tail), range, Aloha.activeEditable.obj
@@ -308,7 +308,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
   addAnnotation = ($span, formula, mimeType) ->
       # $span is <span class="math-element">
     $mml = $span.find('math')
-    if $mml[0] 
+    if $mml[0]
       $annotation = $mml.find('annotation')
       # ## Finicky MathML structure
       #

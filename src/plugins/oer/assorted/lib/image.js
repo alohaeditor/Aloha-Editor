@@ -3,7 +3,7 @@
 
   define(['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], function(Aloha, jQuery, Popover, UI) {
     var DIALOG_HTML, WARNING_IMAGE_PATH, populator, selector, showModalDialog, uploadImage;
-    WARNING_IMAGE_PATH = '/../plugins/oerpub/image/img/warning.png';
+    WARNING_IMAGE_PATH = '/../plugins/oer/image/img/warning.png';
     DIALOG_HTML = '<form class="plugin image modal hide fade" id="linkModal" tabindex="-1" role="dialog" aria-labelledby="linkModalLabel" aria-hidden="true" data-backdrop="false">\n  <div class="modal-header">\n    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\n    <h3>Insert image</h3>\n  </div>\n  <div class="modal-body">\n    <div class="image-options">\n        <a class="upload-image-link">Choose a file</a> OR <a class="upload-url-link">get file from the Web</a>\n        <div class="placeholder preview hide">\n          <h4>Preview</h4>\n          <img class="preview-image"/>\n        </div>\n        <input type="file" class="upload-image-input" />\n        <input type="url" class="upload-url-input" placeholder="Enter URL of image ..."/>\n    </div>\n    <div class="image-alt">\n      <div class="forminfo">\n        Please provide a description of this image for the visually impaired.\n      </div>\n      <div>\n        <textarea name="alt" type="text" required="required" placeholder="Enter description ..."></textarea>\n      </div>\n    </div>\n  </div>\n  <div class="modal-footer">\n    <button type="submit" class="btn btn-primary action insert">Save</button>\n    <button class="btn action cancel">Cancel</button>\n  </div>\n</form>';
     showModalDialog = function($el) {
       var $placeholder, $submit, $uploadImage, $uploadUrl, deferred, dialog, imageAltText, imageSource, loadLocalFile, root, setImageSource, settings,
@@ -138,7 +138,7 @@
     populator = function($el, pover) {
       var $bubble, editable, href;
       editable = Aloha.activeEditable;
-      $bubble = jQuery('<div class="link-popover-details">\n    <a class="change">\n      <img src="' + Aloha.settings.baseUrl + '/../plugins/oerpub/assorted/img/edit-link-03.png" />\n  <span title="Change the image\'s properties">Edit image...</span>\n</a>\n&nbsp; | &nbsp;\n<a class="remove">\n  <img src="' + Aloha.settings.baseUrl + '/../plugins/oerpub/assorted/img/unlink-link-02.png" />\n      <span title="Delete the image">Delete</span>\n    </a>\n</div>');
+      $bubble = jQuery('<div class="link-popover-details">\n    <a class="change">\n      <img src="' + Aloha.settings.baseUrl + '/../plugins/oer/assorted/img/edit-link-03.png" />\n  <span title="Change the image\'s properties">Edit image...</span>\n</a>\n&nbsp; | &nbsp;\n<a class="remove">\n  <img src="' + Aloha.settings.baseUrl + '/../plugins/oer/assorted/img/unlink-link-02.png" />\n      <span title="Delete the image">Delete</span>\n    </a>\n</div>');
       href = $el.attr('src');
       $bubble.find('.change').on('click', function() {
         var promise;
