@@ -48,7 +48,7 @@
       $maths.wrap('<span class="math-element aloha-ephemera-wrapper"><span class="mathjax-wrapper aloha-ephemera"></span></span>');
       return jQuery.each($maths, function(i, mml) {
         var $mathElement, $mml, mathParts;
-        $mml = $(mml);
+        $mml = jQuery(mml);
         $mathElement = $mml.parent().parent();
         mathParts = findFormula($mml);
         if (mathParts.mimeType === "math/asciimath") {
@@ -272,11 +272,11 @@
       formula = null;
       mimeType = "math/mml";
       if ($mml.children().length === 1) {
-        $firstChild = $($mml.children()[0]);
+        $firstChild = jQuery($mml.children()[0]);
         if ($firstChild.is('semantics')) {
           $semantics = $firstChild;
           if ($semantics.children().length === 2) {
-            $secondChild = $($semantics.children()[1]);
+            $secondChild = jQuery($semantics.children()[1]);
             if ($secondChild.is('annotation[encoding]')) {
               $annotation = $secondChild;
               encoding = $annotation.attr('encoding');
