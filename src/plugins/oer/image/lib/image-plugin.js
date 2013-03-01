@@ -90,7 +90,7 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
             // Set onerror of preview image
             (function(img, baseurl){
                img.onerror = function(){
-                   var errimg = baseurl + '/../plugins/oerpub/image/img/warning.png';
+                   var errimg = baseurl + '/../plugins/oer/image/img/warning.png';
                    if(img.src != errimg){
                        img.src = errimg;
                     }
