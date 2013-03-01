@@ -103,7 +103,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
     # TODO: Explicitly call Mathjax Typeset
     jQuery.each $maths, (i, mml) ->
-      $mml = $(mml)
+      $mml = jQuery(mml)
       $mathElement = $mml.parent().parent()
       # replace the MathML with ASCII/LaTeX formula if possible
       mathParts = findFormula $mml
@@ -329,22 +329,22 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
       $annotation.attr('encoding', mimeType)
       $annotation.text(formula)
 
+  # Looking to precisely match the math we create in the editor
+  #    <math>
+  #      <semantics>
+  #        single math element
+  #        <annotation />
+  #      </semantics>
+  #    </math>
   findFormula = ($mml) ->
-    # Looking to precisely match the math we create in the editor
-    #   <math>
-    #     <semantics>
-    #       single math element
-    #       <annotation />
-    #     </semantics>
-    #   </math>
     formula = null
     mimeType = "math/mml"
     if $mml.children().length is 1
-      $firstChild = $($mml.children()[0])
+      $firstChild = jQuery($mml.children()[0])
       if $firstChild.is 'semantics'
         $semantics = $firstChild
         if $semantics.children().length is 2
-          $secondChild = $($semantics.children()[1])
+          $secondChild = jQuery($semantics.children()[1])
           if $secondChild.is 'annotation[encoding]'
             $annotation = $secondChild
             encoding = $annotation.attr 'encoding'
