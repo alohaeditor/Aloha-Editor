@@ -69,7 +69,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
 
   MATHML_ANNOTATION_ENCODINGS =
     'TeX':       'math/tex'
-    'ASCIIMath': 'math/asciimath'
+    'ASCIIMath': '3'
 
   TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
 
@@ -349,7 +349,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../cn
             $annotation = $secondChild
             encoding = $annotation.attr 'encoding'
             formula = $annotation.text()
-            if encoding is 'math/asciimath' or encoding is 'math/tex'
+            if encoding of LANGUAGES
               return { 'mimeType': encoding, 'formula': formula }
     return { 'mimeType': mimeType, 'formula': formula }
 

@@ -19,7 +19,7 @@
     };
     MATHML_ANNOTATION_ENCODINGS = {
       'TeX': 'math/tex',
-      'ASCIIMath': 'math/asciimath'
+      'ASCIIMath': '3'
     };
     TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>';
     Aloha.ready(function() {
@@ -281,7 +281,7 @@
               $annotation = $secondChild;
               encoding = $annotation.attr('encoding');
               formula = $annotation.text();
-              if (encoding === 'math/asciimath' || encoding === 'math/tex') {
+              if (encoding in LANGUAGES) {
                 return {
                   'mimeType': encoding,
                   'formula': formula
