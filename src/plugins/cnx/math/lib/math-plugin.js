@@ -102,7 +102,10 @@
           sel.addRange(r);
           r = new GENTICS.Utils.RangeObject();
           r.update();
-          return Aloha.Selection.rangeObject = r;
+          Aloha.Selection.rangeObject = r;
+          return Aloha.activeEditable.smartContentChange({
+            type: 'block-change'
+          });
         });
       }
     };
@@ -186,8 +189,11 @@
           $mathml = $span.find('math');
           if ($mathml[0]) {
             addAnnotation($span, formula, mimeType);
-            return makeCloseIcon($span);
+            makeCloseIcon($span);
           }
+          return Aloha.activeEditable.smartContentChange({
+            type: 'block-change'
+          });
         });
         $span.data('math-formula', formula);
         return $formula.trigger('focus');
@@ -324,6 +330,9 @@
         jQuery(e.target).tooltip('destroy');
         $el = jQuery(e.target).closest('.math-element');
         $el.trigger('hide').tooltip('destroy').remove();
+        Aloha.activeEditable.smartContentChange({
+          type: 'block-change'
+        });
         return e.preventDefault();
       });
       if (jQuery.ui && jQuery.ui.tooltip) {
