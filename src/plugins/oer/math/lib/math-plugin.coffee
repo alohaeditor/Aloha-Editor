@@ -246,7 +246,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
         $span.prepend $mathPoint
 
       if LANGUAGES[mimeType].raw
-        $mathPoint.innerHTML = formula
+        $formula = $(formula)
+        $mathPoint.text('').append($formula)
       else
         formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close
         $mathPoint.text(formulaWrapped)
@@ -254,7 +255,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
         # Save the Edited text into the math annotation element
         $mathml = $span.find('math')
         if $mathml[0]
-          addAnnotation $span, formula, mimeType
+          if mimeType is "math/asciimath" or mimeType is "math/tex"
+            addAnnotation $span, formula, mimeType
           makeCloseIcon($span)
         Aloha.activeEditable.smartContentChange {type: 'block-change'}
 
