@@ -27,3 +27,7 @@ All changes are categorized into one of the following keywords:
 	unpressed. The same behaviour was implemented for the i/em
 	combination.
 - **BUG**: core: Aloha incorrectly reported that Chrome was not supported.
+- **ENHANCEMENT**: state-override: when pressing a formatting
+	button and the cursor is not within a word, a state override
+	will be set such that any text that is subsequently typed will
+	acquire the appropriate formatting.
