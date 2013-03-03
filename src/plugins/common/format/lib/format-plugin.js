@@ -245,7 +245,6 @@ define('format/format-plugin', [
 					if (StateOverride.enabled()) {
 						StateOverride.setWithRangeObject(
 							commandsByElement[button],
-							true,
 							rangeObject,
 							function (command, rangeObject) {
 								format(formatPlugin, rangeObject, markup);

@@ -61,6 +61,11 @@ define([
 		return new RangeObject(range);
 	}
 
+	function clear() {
+		overrideRange = null;
+		overrides = null;
+	}
+
 	function keyPressHandler(event) {
 		if (!overrides) {
 			return;
@@ -87,17 +92,24 @@ define([
 		event.preventDefault();
 	}
 
-	function setWithRangeObject(command, state, rangeObject, formatFn) {
+	function set(command, range, formatFn) {
 		if (!enabled) {
 			return;
 		}
-		overrideRange = rangeFromRangeObject(rangeObject);
+		overrideRange = range;
 		overrides = overrides || {};
-		overrides[command] = function (command, range) {
+		overrides[command] = formatFn;
+	}
+
+	function setWithRangeObject(command, rangeObject, formatFn) {
+		if (!enabled) {
+			return;
+		}
+		set(command, rangeFromRangeObject(rangeObject), function (command, range) {
 			var rangeObject = rangeObjectFromRange(range);
 			formatFn(command, rangeObject);
 			Dom.setRangeFromRef(range, rangeObject);
-		};
+		});
 		// Because without doing rangeObject.select(), the
 		// next insertText command (see editable.js) will
 		// not be reached and instead the browsers default
@@ -123,8 +135,7 @@ define([
 	// command."
 	Aloha.bind('aloha-selection-changed', function (event, range) {
 		if (overrideRange && !Dom.areRangesEq(overrideRange, range)) {
-			overrideRange = null;
-			overrides = null;
+			clear();
 			// Because the UI may reflect the any potentially state
 			// overrides that are now no longer in effect, we must
 			// redraw the UI according to the current selection.
@@ -138,6 +149,8 @@ define([
 	return {
 		enabled: enabledAccessor,
 		keyPressHandler: keyPressHandler,
-		setWithRangeObject: setWithRangeObject
+		setWithRangeObject: setWithRangeObject,
+		set: set,
+		clear: clear
 	};
 });
