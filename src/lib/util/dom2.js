@@ -30,14 +30,18 @@ define([
 	'util/maps',
 	'util/arrays',
 	'util/strings',
-	'util/browser'
+	'util/browser',
+	'util/dom',
+	'util/range'
 ], function (
 	$,
 	Fn,
 	Maps,
 	Arrays,
 	Strings,
-	Browser
+	Browser,
+	Dom1,
+	RangeObject
 ) {
 	'use strict';
 
@@ -772,6 +776,12 @@ define([
 		range.setStart(range.endContainer, range.endOffset);
 	}
 
+	function extendToWord(range) {
+		var rangeObject = new RangeObject(range);
+		Dom1.extendToWord(rangeObject);
+		setRangeFromRef(range, rangeObject);
+	}
+
 	return {
 		moveNextAll: moveNextAll,
 		attrNames: attrNames,
@@ -809,6 +819,7 @@ define([
 		splitTextNodeAdjustRange: splitTextNodeAdjustRange,
 		insertSelectText: insertSelectText,
 		areRangesEq: areRangesEq,
-		collapseToEnd: collapseToEnd
+		collapseToEnd: collapseToEnd,
+		extendToWord: extendToWord
 	};
 });
