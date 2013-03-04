@@ -736,7 +736,6 @@ define( [
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
-				debugger;
 				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
 				GENTICS.Utils.Dom.addMarkup( range, newLink, false );
 				GENTICS.Utils.Dom.doCleanup(insertLinkPostCleanup, range);
