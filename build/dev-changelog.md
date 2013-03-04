@@ -7,3 +7,9 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 ----
 
+
+- **BUGFIX**: core: Aloha incorrectly reported that Chrome was not supported.
+- **ENHANCEMENT**: state-override: when pressing a formatting
+	button and the cursor is not within a word, a state override
+	will be set such that any text that is subsequently typed will
+	acquire the appropriate formatting.
