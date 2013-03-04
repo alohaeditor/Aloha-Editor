@@ -363,6 +363,10 @@ define( [
 					return false;
 				} );
 
+				editable.obj.find('a').each(function() {
+					that.addLinkEventHandlers(this);
+				});
+
 				if (0 === editablesCreated++) {
 					setupMousePointerFix();
 				}
@@ -463,7 +467,44 @@ define( [
 				Scopes.leaveScope(this.name, 'link', true);
 			}
 		},
-		
+
+		/**
+		 * Add event handlers to the given link object
+		 * @param link object
+		 */
+		addLinkEventHandlers: function ( link ) {
+			var that = this;
+
+			// show pointer on mouse over
+			jQuery( link ).mouseenter( function ( e ) {
+				Aloha.Log.debug( that, 'mouse over link.' );
+				that.mouseOverLink = link;
+				that.updateMousePointer();
+			} );
+
+			// in any case on leave show text cursor
+			jQuery( link ).mouseleave( function ( e ) {
+				Aloha.Log.debug( that, 'mouse left link.' );
+				that.mouseOverLink = null;
+				that.updateMousePointer();
+			} );
+
+			// follow link on ctrl or meta + click
+			jQuery( link ).click( function ( e ) {
+				if ( e.metaKey ) {
+					// blur current editable. user is waiting for the link to load
+					Aloha.activeEditable.blur();
+					// hack to guarantee a browser history entry
+					window.setTimeout( function () {
+						location.href = e.target;
+					}, 0 );
+					e.stopPropagation();
+
+					return false;
+				}
+			} );
+		},
+
 		/**
 		 * Initialize the buttons
 		 */
@@ -590,8 +631,33 @@ define( [
 					}
 				}
 			});
+
+			jQuery( document )
+				.keydown( function ( e ) {
+					Aloha.Log.debug( that, 'Meta key down.' );
+					that.metaKey = e.metaKey;
+					that.updateMousePointer();
+				} ).keyup( function ( e ) {
+					Aloha.Log.debug( that, 'Meta key up.' );
+					that.metaKey = e.metaKey;
+					that.updateMousePointer();
+				} );
 		},
 		
+		/**
+		 * Updates the mouse pointer
+		 */
+		updateMousePointer: function () {
+			if ( this.metaKey && this.mouseOverLink ) {
+				Aloha.Log.debug( this, 'set pointer' );
+				jQuery( this.mouseOverLink ).removeClass( 'aloha-link-text' );
+				jQuery( this.mouseOverLink ).addClass( 'aloha-link-pointer' );
+			} else {
+				jQuery( this.mouseOverLink ).removeClass( 'aloha-link-pointer' );
+				jQuery( this.mouseOverLink ).addClass( 'aloha-link-text' );
+			}
+		},
+
 		/**
 		 * Check whether inside a link tag
 		 * @param {GENTICS.Utils.RangeObject} range range where to insert the
@@ -664,18 +730,25 @@ define( [
 			if ( range.isCollapsed() ) {
 				// insert a link with text here
 				linkText = i18n.t( 'newlink.defaulttext' );
-				newLink = jQuery( '<a href="' + that.hrefValue + '">' + linkText + '</a>' );
+				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link">' + linkText + '</a>' );
 				GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
 				range.startContainer = range.endContainer = newLink.contents().get( 0 );
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
-				newLink = jQuery( '<a href="' + that.hrefValue + '"></a>' );
+				debugger;
+				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
 				GENTICS.Utils.Dom.addMarkup( range, newLink, false );
 				GENTICS.Utils.Dom.doCleanup(insertLinkPostCleanup, range);
 			}
 
+			Aloha.activeEditable.obj.find( 'a.aloha-new-link' ).each( function ( i ) {
+				that.addLinkEventHandlers( this );
+				jQuery(this).removeClass( 'aloha-new-link' );
+			} );
+
 			range.select();
+
 
 			// focus has to become before prefilling the attribute, otherwise
 			// Chrome and Firefox will not focus the element correctly.
