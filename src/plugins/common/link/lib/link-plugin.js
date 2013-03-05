@@ -63,7 +63,7 @@ define( [
 	i18nCore,
 	console,
 	PubSub,
-	keys
+	Keys
 ) {
 	'use strict';
 	
@@ -98,12 +98,12 @@ define( [
 				// metaKey for OSX, 17 for PC (we can't check
 				// e.ctrlKey because it's only set on keyup or
 				// keypress, not on keydown).
-				if (e.metaKey || keys.getToken(e.keyCode) === 'control') {
+				if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
 					jQuery('body').addClass('aloha-link-pointer');
 				}
 			})
 			.bind('keyup.aloha-link.pointer-fix', function (e) {
-				if (e.metaKey || keys.getToken(e.keyCode) === 'control') {
+				if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
 					jQuery('body').removeClass('aloha-link-pointer');
 				}
 			});
@@ -560,7 +560,7 @@ define( [
 
 			// update link object when src changes
 			this.hrefField.addListener( 'keyup', function ( event ) {
-				if (keys.getToken(event.keyCode) === 'escape') {
+				if (Keys.getToken(event.keyCode) === 'escape') {
 					var curval = that.hrefField.getValue();
 					if ( curval[ 0 ] == '/' || // local link
 						 curval[ 0 ] == '#' || // inner document link
@@ -586,7 +586,7 @@ define( [
 				that.hrefChange();
 				
 				// Terminate the link scope and show the final link.
-				if (keys.getToken(event.keyCode) === 'enter') {
+				if (Keys.getToken(event.keyCode) === 'enter') {
 					// Update the selection and place the cursor at the end of the link.
 					var	range = Aloha.Selection.getRangeObject();
 					

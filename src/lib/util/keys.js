@@ -33,21 +33,21 @@ define(['jquery'], function ($) {
 			8  : 'backspace',
 			9  : 'tab',
 			13 : 'enter',
-			16 : 'shift control alt'.split(' '),
+			16 : 'shift control alt',
 			20 : 'capslock',
 			27 : 'escape',
 			32 : 'space',
 			33 : 'pageup',
 			34 : 'pagedown',
-			37 : 'left up right down'.split(' '),
+			37 : 'left up right down',
 			45 : 'insert',
 			46 : 'delete',
-			48 : '0123456789'.split(''),
-			65 : 'abcdefghijklmnopqrstuvwxyz'.split(''),
-			112: 'f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15'.split(' ')
+			48 : '0 1 2 3 4 5 6 7 8 9',
+			65 : 'a b c d e f g h i j k l m n o p q r s t u v w x y z',
+			112: 'f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15',
 		}, function (key, tokens) {
 			var start = parseInt(key, 10);
-			$.each($.isArray(tokens) ? tokens : [tokens], function (i, token) {
+			$.each(tokens.split(' '), function (i, token) {
 				map[start + i] = token;
 			});
 		});
