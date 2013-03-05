@@ -176,6 +176,11 @@ div.code{
   margin: 1em 0;
 }
 
+pre {
+  white-space: nowrap;
+  overflow-y: scroll;
+}
+
 pre.codeblock{
   margin: 0;
   text-align: left;
