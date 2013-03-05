@@ -79,6 +79,9 @@ figure figcaption::before {
 .toolbar .btn-toolbar {
   margin: 3px 0;
 }
+.toolbar .btn[disabled] {
+  opacity: .3;
+}
 .toolbar .btn-group > .btn + .dropdown-toggle {
   height: 37px;
   width: 20px;
