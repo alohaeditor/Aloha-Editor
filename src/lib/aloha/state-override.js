@@ -50,13 +50,6 @@ define([
 	var overrides = null;
 	var overrideRange = null;
 
-	function rangeFromRangeObject(alohaRange) {
-		var range = Aloha.createRange();
-		range.setStart(alohaRange.startContainer, alohaRange.startOffset);
-		range.setEnd(alohaRange.endContainer, alohaRange.endOffset);
-		return range;
-	}
-
 	function rangeObjectFromRange(range) {
 		return new RangeObject(range);
 	}
@@ -105,7 +98,7 @@ define([
 		if (!enabled) {
 			return;
 		}
-		set(command, rangeFromRangeObject(rangeObject), function (command, range) {
+		set(command, Dom.rangeFromRangeObject(rangeObject), function (command, range) {
 			var rangeObject = rangeObjectFromRange(range);
 			formatFn(command, rangeObject);
 			Dom.setRangeFromRef(range, rangeObject);

@@ -107,6 +107,10 @@ define([
 	 * (Dom.splitTextContainers).
 	 */
 	function walkBoundary(liveRange, carryDown, stepOutside, stepPartial, stepInside, arg) {
+		var startEndInbetween;
+		var myStepOutside = function (node, arg) { return stepOutside(node, arg, startEndInbetween); }
+		var myStepPartial = function (node, arg) { return stepPartial(node, arg, startEndInbetween); }
+		var myStepInside  = function (node, arg) { return stepInside(node, arg, startEndInbetween); }
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
@@ -129,24 +133,29 @@ define([
 		// also ancestors of the position).
 		function stepAtStart(node, arg) {
 			return node === start && !startEnd
-				? stepInside(node, arg)
-				: stepPartial(node, arg);
+				? myStepInside(node, arg)
+				: myStepPartial(node, arg);
 		}
 		function stepAtEnd(node, arg) {
 			return node === end && !endEnd
-				? stepOutside(node, arg)
-				: stepPartial(node, arg);
+				? myStepOutside(node, arg)
+				: myStepPartial(node, arg);
 		}
-		ascendWalkSiblings(uptoCacChildStart, startEnd, carryDown, stepOutside, stepAtStart, stepInside, arg);
-		ascendWalkSiblings(uptoCacChildEnd, endEnd, carryDown, stepInside, stepAtEnd, stepOutside, arg);
+		startEndInbetween = "start";
+		ascendWalkSiblings(uptoCacChildStart, startEnd, carryDown, myStepOutside, stepAtStart, myStepInside, arg);
+		startEndInbetween = "end";
+		ascendWalkSiblings(uptoCacChildEnd, endEnd, carryDown, myStepInside, stepAtEnd, myStepOutside, arg);
 		if (cacChildStart && cacChildStart !== cacChildEnd) {
 			var next;
-			Dom.walkUntilNode(cac.firstChild, stepOutside, cacChildStart, arg);
+			startEndInbetween = "start";
+			Dom.walkUntilNode(cac.firstChild, myStepOutside, cacChildStart, arg);
 			next = stepAtStart(cacChildStart, arg);
-			Dom.walkUntilNode(next, stepInside, cacChildEnd, arg);
+			startEndInbetween = "inbetween";
+			Dom.walkUntilNode(next, myStepInside, cacChildEnd, arg);
 			if (cacChildEnd) {
+				startEndInbetween = "end";
 				next = stepAtEnd(cacChildEnd, arg);
-				Dom.walk(next, stepOutside, arg);
+				Dom.walk(next, myStepOutside, arg);
 			}
 		}
 	}
@@ -217,41 +226,42 @@ define([
 	 * @param liveRange range's boundary points should be between nodes
 	 * (Dom.splitTextContainers).
 	 *
-	 * @param isUpperBoundary args (node). Identifies exclusive upper
-	 * boundary element, only elements below which will be modified.
+	 * @param formatter a map with the following properties
+	 *   isUpperBoundary(node) - identifies exclusive upper
+	 *   boundary element, only elements below which will be modified.
 	 *
-	 * @param getOverride(node). Returns a node's override, or
-	 * null if the node does not provide an override. The topmost node
-	 * for which getOverride returns a non-null value is the topmost
-	 * override. If there is a topmost override, and it is below the
-	 * upper boundary element, it will be cleared and pushed down.
+	 *   getOverride(node) - returns a node's override, or
+	 *   null if the node does not provide an override. The topmost node
+	 *   for which getOverride returns a non-null value is the topmost
+	 *   override. If there is a topmost override, and it is below the
+	 *   upper boundary element, it will be cleared and pushed down.
 	 *
-	 * @param clearOverride(node). Should clear the given node of an
-	 * override. The given node may or may not have an override
-	 * set. Will be invoked shallowly for all ancestors of start and end
-	 * containers (up to isUpperBoundary or hasContext). May perform
-	 * mutations as explained above.
+	 *   clearOverride(node) - should clear the given node of an
+	 *   override. The given node may or may not have an override
+	 *   set. Will be invoked shallowly for all ancestors of start and end
+	 *   containers (up to isUpperBoundary or hasContext). May perform
+	 *   mutations as explained above.
 	 *
-	 * @parma clearOverrideRec(node). Like clearOverride but
-	 * should clear the override recursively.
+	 *   clearOverrideRec(node) - like clearOverride but
+	 *   should clear the override recursively.
 	 *
-	 * @param pushDownOverride(node, override). Applies the given
-	 * override to node. Should check whether the given node doesn't
-	 * already provide its own override, in which case the given
-	 * override should not be applied. May perform mutations as
-	 * explained above.
+	 *   pushDownOverride(node, override) - applies the given
+	 *   override to node. Should check whether the given node doesn't
+	 *   already provide its own override, in which case the given
+	 *   override should not be applied. May perform mutations as
+	 *   explained above.
 	 *
-	 * @param hasContext(node). Returns true if the given node
-	 * already provides the context to set.
+	 *   hasContext(node) - returns true if the given node
+	 *   already provides the context to set.
 	 *
-	 * @param setContext(node, hasOverrideAncestor). Applies the context
-	 * to the given node. Should clear overrides recursively. Should
-	 * also clear context recursively to avoid unnecessarily nested
-	 * contexts. hasOverrideAncestor is true if an override is in effect
-	 * above the given node (see explanation above). May perform
-	 * mutations as explained above.
+	 *   setContext(node, hasOverrideAncestor) - applies the context
+	 *   to the given node. Should clear overrides recursively. Should
+	 *   also clear context recursively to avoid unnecessarily nested
+	 *   contexts. hasOverrideAncestor is true if an override is in effect
+	 *   above the given node (see explanation above). May perform
+	 *   mutations as explained above.
 	 */
-	function mutate(liveRange, isUpperBoundary, getOverride, clearOverride, clearOverrideRec, pushDownOverride, hasContext, setContext, rootHasContext) {
+	function mutate(liveRange, formatter, rootHasContext) {
 		if (liveRange.collapsed) {
 			return;
 		}
@@ -262,25 +272,78 @@ define([
 		var bottommostOverrideNode = null;
 		var isNonClearableOverride = false;
 		var upperBoundaryAndBeyond = false;
-		var fromCacToContext = Dom.childAndParentsUntilIncl(cac, hasContext);
+		var fromCacToContext = Dom.childAndParentsUntilIncl(cac, formatter.hasContext);
 		Arrays.forEach(fromCacToContext, function (node) {
-			upperBoundaryAndBeyond = upperBoundaryAndBeyond || isUpperBoundary(node);
-			if (getOverride(node)) {
+			upperBoundaryAndBeyond = upperBoundaryAndBeyond || formatter.isUpperBoundary(node);
+			if (formatter.getOverride(node)) {
 				topmostOverrideNode = node;
 				isNonClearableOverride = upperBoundaryAndBeyond;
 				bottommostOverrideNode = bottommostOverrideNode || node;
 			}
 		});
-		if ((rootHasContext || hasContext(fromCacToContext[fromCacToContext.length - 1]))
+		if ((rootHasContext || formatter.hasContext(fromCacToContext[fromCacToContext.length - 1]))
 			    && !isNonClearableOverride) {
 			var pushDownFrom = topmostOverrideNode || cac;
-			var cacOverride = getOverride(bottommostOverrideNode || cac);
-			pushDownContext(liveRange, pushDownFrom, cacOverride, getOverride, clearOverride, clearOverrideRec, pushDownOverride);
+			var cacOverride = formatter.getOverride(bottommostOverrideNode || cac);
+			pushDownContext(
+				liveRange, pushDownFrom, cacOverride,
+				formatter.getOverride,
+				formatter.clearOverride,
+				formatter.clearOverrideRec,
+				formatter.pushDownOverride
+			);
 		} else {
-			walkBoundary(liveRange, getOverride, pushDownOverride, clearOverride, function (node) {
-				return setContext(node, isNonClearableOverride);
-			});
+			walkBoundary(
+				liveRange,
+				formatter.getOverride,
+				formatter.pushDownOverride,
+				formatter.clearOverride,
+				function (node) {
+					return formatter.setContext(node, isNonClearableOverride);
+				}
+			);
 		}
+	}
+
+	function fixupRange(liveRange, mutate) {
+		// Because we are mutating the range several times and don't
+		// want the caller to see the in-between updates, and because we
+		// are using trimRange() below to adjust the range's boundary
+		// points, which we don't want the browser to re-adjust (which
+		// some browsers do).
+		var range = Dom.stableRange(liveRange);
+
+		// Because we should avoid splitTextContainers() if this call is a noop.
+		if (range.collapsed) {
+			return null;
+		}
+
+		// Because trimRangeClosingOpening(), mutate() and
+		// adjustPointMoveBackWithinRange() require boundary points to
+		// be between nodes.
+		Dom.splitTextContainers(range);
+
+		// Because we want unbolding
+		// <b>one<i>two{</i>three}</b>
+		// to result in
+		// <b>one<i>two</i></b>three
+		// and not in
+		// <b>one</b><i><b>two</b></i>three
+		// and because adjustPointMoveBackWithinRange() requires the
+		// left boundary point to be next to a non-ignorable node.
+		Dom.trimRangeClosingOpening(range, Html.isIgnorableWhitespace);
+
+		// Because mutation needs to keep track and adjust boundary
+		// points.
+		var leftPoint = Dom.cursorFromBoundaryPoint(range.startContainer, range.startOffset);
+		var rightPoint = Dom.cursorFromBoundaryPoint(range.endContainer, range.endOffset);
+
+		mutate(range, leftPoint, rightPoint);
+
+		// Because we must reflect the adjusted boundary points in the
+		// given range.
+		Dom.setRangeStartFromCursor(liveRange, leftPoint);
+		Dom.setRangeEndFromCursor(liveRange, rightPoint);
 	}
 
 	function adjustPointShallowRemove(point, left, node) {
@@ -314,15 +377,15 @@ define([
 		}
 	}
 
-	function shallowRemoveAdjust(node, leftPoint, rightPoint) {
+	function removeShallowAdjust(node, leftPoint, rightPoint) {
 		adjustPointShallowRemove(leftPoint, true, node);
 		adjustPointShallowRemove(rightPoint, false, node);
-		Dom.shallowRemove(node);
+		Dom.removeShallow(node);
 	}
 
 	function wrapAdjust(node, wrapper, leftPoint, rightPoint) {
 		if (wrapper.parentNode) {
-			shallowRemoveAdjust(wrapper, leftPoint, rightPoint);
+			removeShallowAdjust(wrapper, leftPoint, rightPoint);
 		}
 		adjustPointWrap(leftPoint, true, node, wrapper);
 		adjustPointWrap(rightPoint, false, node, wrapper);
@@ -375,35 +438,46 @@ define([
 		return true;
 	}
 
-	function format(liveRange, nodeName, unformat) {
-		var leftPoint;
-		var rightPoint;
+	function ensureWrapper(node, nodeName, hasWrapper, leftPoint, rightPoint) {
+		if (node.previousSibling && !hasWrapper(node.previousSibling)) {
+			// Because restacking here solves two problems: one the
+			// case where the context was unnecessarily pushed down
+			// on the left of the range, and two to join with a
+			// context node that already exists to the left of the
+			// range.
+			restack(node.previousSibling,
+					hasWrapper,
+					Html.isIgnorableWhitespace,
+					Html.isInlineFormattable,
+					leftPoint,
+					rightPoint);
+		}
+		if (node.previousSibling && hasWrapper(node.previousSibling)) {
+			insertAdjust(node, node.previousSibling, true, leftPoint, rightPoint);
+			return true;
+		} else if (!hasWrapper(node)) {
+			var wrapper = document.createElement(nodeName);
+			wrapAdjust(node, wrapper, leftPoint, rightPoint);
+			return true;
+		}
+		return false;
+	}
 
+	function isUpperBoundaryDefaultImpl(node) {
+		return 'BODY' === node.nodeName;
+	}
+
+	function makeNodeFormatter(nodeName, leftPoint, rightPoint) {
 		function hasContext(node) {
-			if (unformat) {
-				// Because we pass rootHasContext=true to mutate.
-				return false;
-			}
 			return nodeName === node.nodeName;
 		}
 
 		function getOverride(node) {
-			if (!unformat) {
-				return false;
-			}
-			return nodeName === node.nodeName;
-		}
-
-		function hasOverride(node) {
-			return !!getOverride(node);
+			return false;
 		}
 
 		function clearOverride(node) {
-			var next = node.nextSibling;
-			if (unformat && nodeName === node.nodeName) {
-				shallowRemoveAdjust(node, leftPoint, rightPoint);
-			}
-			return next;
+			return node.nextSibling;
 		}
 
 		function clearOverrideRec(node) {
@@ -412,8 +486,8 @@ define([
 
 		function clearContext(node) {
 			var next = node.nextSibling;
-			if (!unformat && nodeName === node.nodeName) {
-				shallowRemoveAdjust(node, leftPoint, rightPoint);
+			if (nodeName === node.nodeName) {
+				removeShallowAdjust(node, leftPoint, rightPoint);
 			}
 			return next;
 		}
@@ -422,48 +496,16 @@ define([
 			return Dom.walkRec(node, clearContext);
 		}
 
-		function ensureWrapper(node, hasWrapper) {
-			if (node.previousSibling && !hasWrapper(node.previousSibling)) {
-				// Because restacking here solves two problems: one the
-				// case where the context was unnecessarily pushed down
-				// on the left of the range, and two to join with a
-				// context node that already exists to the left of the
-				// range.
-				restack(node.previousSibling,
-						hasWrapper,
-						Html.isIgnorableWhitespace,
-						Html.isInlineFormattable,
-						leftPoint, rightPoint);
-			}
-			if (node.previousSibling && hasWrapper(node.previousSibling)) {
-				insertAdjust(node, node.previousSibling, true, leftPoint, rightPoint);
-				return true;
-			} else if (!hasWrapper(node)) {
-				var wrapper = document.createElement(nodeName);
-				wrapAdjust(node, wrapper, leftPoint, rightPoint);
-				return true;
-			}
-			return false;
-		}
-
 		function pushDownOverride(node, override) {
-			if (!override) {
-				return node.nextSibling;
-			}
-			if (!unformat) {
-				throw "not implemented";
-			}
-			var next = node.nextSibling;
-			ensureWrapper(node, hasOverride);
-			return next;
+            if (!override) {
+                return node.nextSibling;
+            }
+			throw "not implemented";
 		}
 
 		function setContext(node) {
-			if (unformat) {
-				throw "not implemented";
-			}
 			var next = node.nextSibling;
-			if (ensureWrapper(node, hasContext)) {
+			if (ensureWrapper(node, nodeName, hasContext, leftPoint, rightPoint)) {
 				// Because the node was wrapped with a context, and if
 				// the node itself has the context, it should be cleared
 				// to avoid nested contexts.
@@ -477,52 +519,124 @@ define([
 			return next;
 		}
 
-		function isUpperBoundary(node) {
-			return 'BODY' === node.nodeName;
+		return {
+			hasContext: hasContext,
+			getOverride: getOverride,
+			clearOverride: clearOverride,
+			clearOverrideRec: clearOverrideRec,
+			pushDownOverride: pushDownOverride,
+			setContext: setContext,
+			isUpperBoundary: isUpperBoundaryDefaultImpl
+		};
+	}
+
+	function makeNodeUnformatter(nodeName, leftPoint, rightPoint) {
+		function hasContext(node) {
+			return false;
 		}
 
-		// Because we are mutating the range several times and don't
-		// want the caller to see the in-between updates, and because we
-		// are using trimRange() below to adjust the range's boundary
-		// points, which we don't want the browser to re-adjust (which
-		// some browsers do).
-		var range = Dom.stableRange(liveRange);
-
-		// Because we should avoid splitTextContainers() if this call is a noop.
-		if (range.collapsed) {
-			return;
+		function getOverride(node) {
+			return nodeName === node.nodeName;
 		}
 
-		// Because trimRangeClosingOpening(), mutate() and
-		// adjustPointMoveBackWithinRange() require boundary points to
-		// be between nodes.
-		Dom.splitTextContainers(range);
+		function hasOverride(node) {
+			return !!getOverride(node);
+		}
 
-		// Because we want unbolding
-		// <b>one<i>two{</i>three}</b>
-		// to result in
-		// <b>one<i>two</i></b>three
-		// and not in
-		// <b>one</b><i><b>two</b></i>three
-		// and because adjustPointMoveBackWithinRange() requires the
-		// left boundary point to be next to a non-ignorable node.
-		Dom.trimRangeClosingOpening(range, Html.isIgnorableWhitespace);
+		function clearOverride(node) {
+			var next = node.nextSibling;
+			if (nodeName === node.nodeName) {
+				removeShallowAdjust(node, leftPoint, rightPoint);
+			}
+			return next;
+		}
 
-		// Because mutation needs to keep track and adjust boundary
-		// points.
-		leftPoint = Dom.cursorFromBoundaryPoint(range.startContainer, range.startOffset);
-		rightPoint = Dom.cursorFromBoundaryPoint(range.endContainer, range.endOffset);
+		function clearOverrideRec(node) {
+			return Dom.walkRec(node, clearOverride);
+		}
 
-		mutate(range, isUpperBoundary, getOverride, clearOverride, clearOverrideRec, pushDownOverride, hasContext, setContext, unformat);
+		function pushDownOverride(node, override) {
+			if (!override) {
+				return node.nextSibling;
+			}
+			var next = node.nextSibling;
+			ensureWrapper(node, nodeName, hasOverride, leftPoint, rightPoint);
+			return next;
+		}
 
-		// Because we must reflect the adjusted boundary points in the
-		// given range.
-		Dom.setRangeStartFromCursor(liveRange, leftPoint);
-		Dom.setRangeEndFromCursor(liveRange, rightPoint);
+		function setContext(node) {
+			throw "not implemented";
+		}
+
+		return {
+			hasContext: hasContext,
+			getOverride: getOverride,
+			clearOverride: clearOverride,
+			clearOverrideRec: clearOverrideRec,
+			pushDownOverride: pushDownOverride,
+			setContext: setContext,
+			isUpperBoundary: isUpperBoundaryDefaultImpl
+		};
+	}
+
+	function format(liveRange, nodeName) {
+		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+			mutate(range, makeNodeFormatter(nodeName, leftPoint, rightPoint));
+		});
+	}
+
+	function unformat(liveRange, nodeName) {
+		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+			mutate(range, makeNodeUnformatter(nodeName, leftPoint, rightPoint), true);
+		});
+	}
+
+	function splitBoundary(liveRange, pred, clone) {
+		clone = clone || Dom.cloneShallow;
+		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+
+			var wrapper = null;
+
+			function carryDown(elem, stop) {
+				var ignoreLevel = stop === true || elem === range.commonAncestorContainer;
+				return ignoreLevel ? stop : !pred(elem);
+			}
+
+			function pushDown(node, stop) {
+				var next = node.nextSibling;
+				if (stop || node.parentNode === range.commonAncestorContainer) {
+					return next;
+				}
+				if (!wrapper || node.parentNode.previousSibling !== wrapper) {
+					wrapper = clone(node.parentNode);
+					insertAdjust(wrapper, node.parentNode, false, leftPoint, rightPoint);
+				}
+				insertAdjust(node, wrapper, true, leftPoint, rightPoint);
+				return next;
+			}
+
+			function pushDownOutside(node, stop, startEndInbetween) {
+				if ("start" === startEndInbetween) {
+					return pushDown(node, stop);
+				}
+				return node.nextSibling;
+			}
+
+			function pushDownInside(node, stop, startEndInbetween) {
+				if ("end" === startEndInbetween) {
+					return pushDown(node, stop);
+				}
+				return node.nextSibling;
+			}
+
+			walkBoundary(range, carryDown, pushDownOutside, nextSibling, pushDownInside, null);
+		});
 	}
 
 	return {
 		mutate: mutate,
-		format: format
+		format: format,
+		unformat: unformat,
+		splitBoundary: splitBoundary
 	};
 });
