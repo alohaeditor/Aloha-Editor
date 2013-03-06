@@ -351,7 +351,7 @@ define([
 		return node;
 	}
 
-	function shallowRemove(node) {
+	function removeShallow(node) {
 		var parent = node.parentNode;
 		moveNextAll(parent, node.firstChild, node);
 		parent.removeChild(node);
@@ -776,10 +776,21 @@ define([
 		range.setStart(range.endContainer, range.endOffset);
 	}
 
+	function rangeFromRangeObject(alohaRange) {
+		var range = Aloha.createRange();
+		range.setStart(alohaRange.startContainer, alohaRange.startOffset);
+		range.setEnd(alohaRange.endContainer, alohaRange.endOffset);
+		return range;
+	}
+
 	function extendToWord(range) {
 		var rangeObject = new RangeObject(range);
 		Dom1.extendToWord(rangeObject);
 		setRangeFromRef(range, rangeObject);
+	}
+
+	function cloneShallow(node) {
+		return node.cloneNode(false);
 	}
 
 	return {
@@ -790,7 +801,7 @@ define([
 		indexByName: indexByName,
 		indexByClassHaveList: indexByClassHaveList,
 		outerHtml: outerHtml,
-		shallowRemove: shallowRemove,
+		removeShallow: removeShallow,
 		wrap: wrap,
 		insert: insert,
 		cursor: cursor,
@@ -820,6 +831,8 @@ define([
 		insertSelectText: insertSelectText,
 		areRangesEq: areRangesEq,
 		collapseToEnd: collapseToEnd,
-		extendToWord: extendToWord
+		extendToWord: extendToWord,
+		rangeFromRangeObject: rangeFromRangeObject,
+		cloneShallow: cloneShallow
 	};
 });

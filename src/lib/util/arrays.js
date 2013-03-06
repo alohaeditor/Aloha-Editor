@@ -227,6 +227,13 @@ define([], function () {
 		});
 	}
 
+	/**
+	 * Returns the last item in xs or null.
+	 */
+	function last(xs) {
+		return xs.length ? xs[xs.length - 1] : null;
+	}
+
 	return {
 		filter: filter,
 		indexOf: indexOf,
@@ -237,6 +244,7 @@ define([], function () {
 		equal: equal,
 		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
-		intersect: intersect
+		intersect: intersect,
+		last: last
 	};
 });
