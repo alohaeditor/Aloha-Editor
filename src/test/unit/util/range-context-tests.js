@@ -273,8 +273,11 @@ Aloha.require([
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
 
 	t = function (title, before, after) {
+		function isSplittable(node) {
+			return node.nodeName !== 'STRONG' && Html.isInlineFormattable(node);
+		}
 		testMutation('RangeContext.splitBoundary+format - ' + title, before, after, function (dom, range) {
-			RangeContext.splitBoundary(range, Html.isInlineFormattable);
+			RangeContext.splitBoundary(range, isSplittable);
 			RangeContext.format(range, 'B');
 		});
 	};
@@ -295,9 +298,7 @@ Aloha.require([
 	  '<p><i><u><sub>{</sub></u>a</i>b<i>c<u><sub>}</sub></u></i></p>',
 	  '<p><i><u><sub></sub></u></i><b><i>{a</i>b<i>c</i></b>}<i><u><sub></sub></u></i></p>');
 
-	// Because IE needs this to recoginze a non-HTML element.
-	document.createElement('x');
 	t('only split inline formattable on the left, and with element siblings on the right',
-	  '<p><i><em>-</em><x>Some<em>-{-</em>text</x></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
-	  '<p><i><em>-</em></i><i><x>Some<em>-{<b>-</b></em><b>text</b></x></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
+	  '<p><i><em>-</em><strong>Some<em>-{-</em>text</strong></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
+	  '<p><i><em>-</em></i><i><strong>Some<em>-{<b>-</b></em><b>text</b></strong></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
 });
