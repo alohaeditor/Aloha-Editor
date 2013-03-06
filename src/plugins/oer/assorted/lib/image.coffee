@@ -28,7 +28,7 @@ define ['aloha', 'jquery', 'popover', 'ui/ui', 'css!assorted/css/image.css'], (A
             Please provide a description of this image for the visually impaired.
           </div>
           <div>
-            <textarea name="alt" type="text" required="required" placeholder="Enter description ..."></textarea>
+            <textarea name="alt" type="text" placeholder="Enter description ..."></textarea>
           </div>
         </div>
       </div>
