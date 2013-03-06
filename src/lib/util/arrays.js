@@ -104,10 +104,10 @@ define([], function () {
 	}
 
 	/**
-	 * ECMAScript map replacement
+	 * Emulates ECMAScript edition 5 Arrays.map
 	 * See https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map
 	 * And http://es5.github.com/#x15.4.4.19
-	 * It's not exactly according to standard, but it does exactly what one expects.
+	 * It's not exactly according to standard, but it does what one expects.
 	 */
 	function map(a, fn) {
 		var i, len, result = [];
@@ -169,7 +169,7 @@ define([], function () {
 	 * Arrays.reduce([2, 3, 4], 1, function (a, b) { return a + b; });
 	 * returns the result of (((1 + 2) + 3) + 4)
 	 *
-	 * Emulates ECMA5 Array.reduce.
+	 * Emulates ECMAScript edition 5 Array.reduce.
 	 *
 	 * @param a
 	 *        An array of values.
@@ -206,7 +206,9 @@ define([], function () {
 	}
 
 	/**
-	 * Emulates ECMA5 Array.forEach.
+	 * For each item in xs, call cb(item, index, xs).
+	 *
+	 * Emulates ECMAScript edition 5 Array.forEach.
 	 */
 	function forEach(xs, cb) {
 		var i,
@@ -225,6 +227,13 @@ define([], function () {
 		});
 	}
 
+	/**
+	 * Returns the last item in xs or null.
+	 */
+	function last(xs) {
+		return xs.length ? xs[xs.length - 1] : null;
+	}
+
 	return {
 		filter: filter,
 		indexOf: indexOf,
@@ -235,6 +244,7 @@ define([], function () {
 		equal: equal,
 		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
-		intersect: intersect
+		intersect: intersect,
+		last: last
 	};
 });

@@ -2,106 +2,22 @@ Aloha.require([
 	'aloha/core',
 	'jquery',
 	'util/dom2',
-	'util/trees',
-	'util/arrays',
-	'util/strings',
 	'util/html',
+	'util/boundary-markers',
 	'util/range-context',
 	'dom-to-xhtml/dom-to-xhtml'
 ], function (
 	Aloha,
 	$,
 	Dom,
-	Trees,
-	Arrays,
-	Strings,
 	Html,
+	BoundaryMarkers,
 	RangeContext,
 	DomToXhtml
 ) {
 	'use strict';
 
 	module('RangeContext');
-
-	function insertBoundaryMarkers(range) {
-		var leftMarkerChar  = (3 === range.startContainer.nodeType ? '[' : '{');
-		var rightMarkerChar = (3 === range.endContainer.nodeType   ? ']' : '}');
-		Dom.splitTextContainers(range);
-		var leftMarker = document.createTextNode(leftMarkerChar);
-		var rightMarker = document.createTextNode(rightMarkerChar);
-		var start = Dom.cursorFromBoundaryPoint(range.startContainer, range.startOffset);
-		var end = Dom.cursorFromBoundaryPoint(range.endContainer, range.endOffset);
-		start.insert(leftMarker);
-		end.insert(rightMarker);
-	}
-
-	function extractBoundaryMarkers(rootElem, range) {
-		var markers = ['[', '{', '}', ']'];
-		var markersFound = 0;
-		function setBoundaryPoint(marker, node) {
-			var setFn;
-			if (0 === markersFound) {
-				setFn = 'setStart';
-				if (marker !== '[' && marker !== '{') {
-					throw "end marker before start marker";
-				}
-			} else if (1 === markersFound) {
-				setFn = 'setEnd';
-				if (marker !== ']' && marker !== '}') {
-					throw "start marker before end marker";
-				}
-			} else {
-				throw "Too many markers";
-			}
-			markersFound += 1;
-			if (marker === '[' || marker === ']') {
-				var previousSibling = node.previousSibling;
-				if (!previousSibling || 3 !== previousSibling.nodeType) {
-					previousSibling = document.createTextNode('');
-					node.parentNode.insertBefore(previousSibling, node);
-				}
-				range[setFn].call(range, previousSibling, previousSibling.length);
-				// Because we have set a text offset.
-				return false;
-			} else { // marker === '{' || marker === '}'
-				range[setFn].call(range, node.parentNode, Dom.nodeIndex(node));
-				// Because we have set a non-text offset.
-				return true;
-			}
-		}
-		function extractMarkers(node) {
-			if (3 !== node.nodeType) {
-				return node.nextSibling;
-			}
-			var text = node.nodeValue;
-			var parts = Strings.splitIncl(text, /[\[\{\}\]]/g);
-			// Because modifying every text node when there can be
-			// only two markers seems like too much overhead.
-			if (!Arrays.contains(markers, parts[0]) && parts.length < 2) {
-				return node.nextSibling;
-			}
-			// Because non-text boundary positions must not be joined again.
-			var forceNextSplit = false;
-			Arrays.forEach(parts, function (part, i) {
-				// Because we don't want to join text nodes we haven't split.
-				forceNextSplit = forceNextSplit || (i === 0);
-				if (Arrays.contains(markers, part)) {
-					forceNextSplit = setBoundaryPoint(part, node);
-				} else if (!forceNextSplit && node.previousSibling && 3 === node.previousSibling.nodeType) {
-					node.previousSibling.insertData(node.previousSibling.length, part);
-				} else {
-					node.parentNode.insertBefore(document.createTextNode(part), node);
-				}
-			});
-			var next = node.nextSibling;
-			node.parentNode.removeChild(node);
-			return next;
-		}
-		Dom.walkRec(rootElem, extractMarkers);
-		if (2 !== markersFound) {
-			throw "Missing one or both markers";
-		}
-	}
 
 	function switchElemTextSelection(html) {
 		return html.replace(/[\{\}\[\]]/g, function (match) {
@@ -116,9 +32,9 @@ Aloha.require([
 		test(title, function () {
 			var dom = $(before)[0];
 			var range = Aloha.createRange();
-			extractBoundaryMarkers(dom, range);
+			BoundaryMarkers.extract(dom, range);
 			dom = mutate(dom, range) || dom;
-			insertBoundaryMarkers(range);
+			BoundaryMarkers.insert(range);
 			var actual = DomToXhtml.nodeToXhtml(dom);
 			if ($.type(expected) === 'function') {
 				expected(actual);
@@ -155,13 +71,13 @@ Aloha.require([
 
 	function testFormat(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			RangeContext.format(range, 'B', false);
+			RangeContext.format(range, 'B');
 		});
 	}
 
 	function testUnformat(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			RangeContext.format(range, 'B', true);
+			RangeContext.unformat(range, 'B');
 		});
 	}
 
@@ -169,9 +85,9 @@ Aloha.require([
 		test(title, function () {
 			var dom = $(htmlWithBoundaryMarkers)[0];
 			var range = Aloha.createRange();
-			extractBoundaryMarkers(dom, range);
+			BoundaryMarkers.extract(dom, range);
 			equal(DomToXhtml.nodeToXhtml(dom), htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, ''));
-			insertBoundaryMarkers(range);
+			BoundaryMarkers.insert(range);
 			equal(DomToXhtml.nodeToXhtml(dom), htmlWithBoundaryMarkers);
 		});
 	};
@@ -341,7 +257,7 @@ Aloha.require([
 	t('pushing down two levels through commonAncestorContainer,'
 	  + ' and two levels down to each boundary,'
 	  + ' with boundaries in the mioddle',
-	'<p><b>1<em>2<i>3<sub>4<u>left{Some</u>Z</sub>text<sub>Z<u>.}right</u>5</sub>6</i>7</em>8</b></p>',
+	  '<p><b>1<em>2<i>3<sub>4<u>left{Some</u>Z</sub>text<sub>Z<u>.}right</u>5</sub>6</i>7</em>8</b></p>',
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4</b><u><b>left</b>{Some</u>Z</sub>text<sub>Z<u>.}<b>right</b></u><b>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
 	// Same as above except "boundaries at end/start respectively"
 	t('pushing down two levels through commonAncestorContainer,'
@@ -355,4 +271,33 @@ Aloha.require([
 	  + ' with boundaries in empty container',
 	  '<p><b>1<em>2<i>3<sub>4<u>{</u>Z</sub>text<sub>Z<u>}</u>5</sub>6</i>7</em>8</b></p>',
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
+
+	t = function (title, before, after) {
+		testMutation('RangeContext.splitBoundary+format - ' + title, before, after, function (dom, range) {
+			RangeContext.splitBoundary(range, Html.isInlineFormattable);
+			RangeContext.format(range, 'B');
+		});
+	};
+
+	t('a single level to the right',
+	  '<p>So[me <i>te]xt</i></p>',
+	  '<p>So{<b>me <i>te</i></b>}<i>xt</i></p>');
+
+	t('multiple levels to the right',
+	  '<p>So[me <i>a<u>b]c</u></i></p>',
+	  '<p>So{<b>me <i>a<u>b</u></i></b>}<i><u>c</u></i></p>');
+
+	t('multiple levels to the left and right',
+	  '<p>S<sub>o<em>{m</em></sub>e <i>a<u>b]c</u></i></p>',
+	  '<p>S<sub>o</sub><b><sub><em>{m</em></sub>e <i>a<u>b</u></i></b>}<i><u>c</u></i></p>');
+
+	t('end positions will be skipped and not splitted',
+	  '<p><i><u><sub>{</sub></u>a</i>b<i>c<u><sub>}</sub></u></i></p>',
+	  '<p><i><u><sub></sub></u></i><b><i>{a</i>b<i>c</i></b>}<i><u><sub></sub></u></i></p>');
+
+	// Because IE needs this to recoginze a non-HTML element.
+	document.createElement('x');
+	t('only split inline formattable on the left, and with element siblings on the right',
+	  '<p><i><em>-</em><x>Some<em>-{-</em>text</x></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
+	  '<p><i><em>-</em></i><i><x>Some<em>-{<b>-</b></em><b>text</b></x></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
 });
