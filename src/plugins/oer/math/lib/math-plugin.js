@@ -189,7 +189,7 @@
           var $mathml;
           $mathml = $span.find('math');
           if ($mathml[0]) {
-            if (mimeType === "math/asciimath" || mimeType === "math/tex") {
+            if (mimeType === MATHML_ANNOTATION_ENCODINGS['ASCIIMath'] || mimeType === MATHML_ANNOTATION_ENCODINGS['TeX']) {
               addAnnotation($span, formula, mimeType);
             }
             makeCloseIcon($span);

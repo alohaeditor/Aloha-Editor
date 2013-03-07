@@ -255,7 +255,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
         # Save the Edited text into the math annotation element
         $mathml = $span.find('math')
         if $mathml[0]
-          if mimeType is "math/asciimath" or mimeType is "math/tex"
+          if mimeType is MATHML_ANNOTATION_ENCODINGS['ASCIIMath'] or mimeType is MATHML_ANNOTATION_ENCODINGS['TeX']
             addAnnotation $span, formula, mimeType
           makeCloseIcon($span)
         Aloha.activeEditable.smartContentChange {type: 'block-change'}
