@@ -12,6 +12,17 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.1 - 2013/03/07
+
+**BUGFIX**: Ensured that the floating menu will not cover small editables
+            whenever possible.
+- **ENHANCEMENT**: state-override: when pressing a formatting
+	button and the cursor is not within a word, a state override
+	will be set such that any text that is subsequently typed will
+	acquire the appropriate formatting.
+- **BUGFIX**: core: Aloha incorrectly reported that Chrome was not supported.
+
+
 ## 0.23.0 - 2013/02/28
 
 - **ENHANCEMENT**: format-plugin: b/strong and i/em handling
