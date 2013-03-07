@@ -234,6 +234,13 @@ define([], function () {
 		return xs.length ? xs[xs.length - 1] : null;
 	}
 
+	/**
+	 * Returns the second item in xs.
+	 */
+	function second(xs) {
+		return xs[1];
+	}
+
 	return {
 		filter: filter,
 		indexOf: indexOf,
@@ -245,6 +252,7 @@ define([], function () {
 		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
 		intersect: intersect,
+		second: second,
 		last: last
 	};
 });
