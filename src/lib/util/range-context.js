@@ -25,15 +25,19 @@
  * recipients can access the Corresponding Source.
  */
 define([
+	'jquery',
 	'util/dom2',
 	'util/arrays',
 	'util/trees',
+	'util/strings',
 	'util/functions',
 	'util/html'
 ], function (
+	$,
 	Dom,
 	Arrays,
 	Trees,
+	Strings,
 	Fn,
 	Html
 ) {
@@ -93,6 +97,18 @@ define([
 		}
 	}
 
+	function makePointNodeStep(pointNode, atEnd, stepOutsideInside, stepPartial) {
+		// Because the start node is inside the range, the end node is
+		// outside, and all ancestors of start and end are partially
+		// inside/outside (for startEnd/endEnd positions the nodes are
+		// also ancestors of the position).
+		return function (node, arg) {
+			return (node === pointNode && !atEnd 
+					? stepOutsideInside(node, arg)
+					: stepPartial(node, arg));
+		};
+	}
+
 	/**
 	 * Walks the boundary of the range.
 	 *
@@ -107,10 +123,6 @@ define([
 	 * (Dom.splitTextContainers).
 	 */
 	function walkBoundary(liveRange, carryDown, stepOutside, stepPartial, stepInside, arg) {
-		var startEndInbetween;
-		var myStepOutside = function (node, arg) { return stepOutside(node, arg, startEndInbetween); }
-		var myStepPartial = function (node, arg) { return stepPartial(node, arg, startEndInbetween); }
-		var myStepInside  = function (node, arg) { return stepInside(node, arg, startEndInbetween); }
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
@@ -122,40 +134,23 @@ define([
 		var end      = Dom.nodeAtOffset(ec, eo);
 		var startEnd = Dom.isAtEnd(sc, so);
 		var endEnd   = Dom.isAtEnd(ec, eo);
-		var uptoCacChildStart = Dom.childAndParentsUntilNode(start, cac);
-		var uptoCacChildEnd   = Dom.childAndParentsUntilNode(end,   cac);
-		var cacChildStart = uptoCacChildStart.length ? uptoCacChildStart[uptoCacChildStart.length - 1] : null;
-		var cacChildEnd   = uptoCacChildEnd.length   ? uptoCacChildEnd[uptoCacChildEnd.length - 1] : null;
+		var ascStart = Dom.childAndParentsUntilNode(start, cac);
+		var ascEnd   = Dom.childAndParentsUntilNode(end,   cac);
+		var stepAtStart = makePointNodeStep(start, startEnd, stepInside, stepPartial);
+		var stepAtEnd   = makePointNodeStep(end, endEnd, stepOutside, stepPartial);
 		arg = carryDown(cac, arg) || arg;
-		// Because the start node is inside the range, the end node is
-		// outside, and all ancestors of start and end are partially
-		// inside/outside (for startEnd/endEnd positions the nodes are
-		// also ancestors of the position).
-		function stepAtStart(node, arg) {
-			return node === start && !startEnd
-				? myStepInside(node, arg)
-				: myStepPartial(node, arg);
-		}
-		function stepAtEnd(node, arg) {
-			return node === end && !endEnd
-				? myStepOutside(node, arg)
-				: myStepPartial(node, arg);
-		}
-		startEndInbetween = "start";
-		ascendWalkSiblings(uptoCacChildStart, startEnd, carryDown, myStepOutside, stepAtStart, myStepInside, arg);
-		startEndInbetween = "end";
-		ascendWalkSiblings(uptoCacChildEnd, endEnd, carryDown, myStepInside, stepAtEnd, myStepOutside, arg);
+		ascendWalkSiblings(ascStart, startEnd, carryDown, stepOutside, stepAtStart, stepInside, arg);
+		ascendWalkSiblings(ascEnd, endEnd, carryDown, stepInside, stepAtEnd, stepOutside, arg);
+		var cacChildStart = Arrays.last(ascStart);
+		var cacChildEnd   = Arrays.last(ascEnd);
 		if (cacChildStart && cacChildStart !== cacChildEnd) {
 			var next;
-			startEndInbetween = "start";
-			Dom.walkUntilNode(cac.firstChild, myStepOutside, cacChildStart, arg);
+			Dom.walkUntilNode(cac.firstChild, stepOutside, cacChildStart, arg);
 			next = stepAtStart(cacChildStart, arg);
-			startEndInbetween = "inbetween";
-			Dom.walkUntilNode(next, myStepInside, cacChildEnd, arg);
+			Dom.walkUntilNode(next, stepInside, cacChildEnd, arg);
 			if (cacChildEnd) {
-				startEndInbetween = "end";
 				next = stepAtEnd(cacChildEnd, arg);
-				Dom.walk(next, myStepOutside, arg);
+				Dom.walk(next, stepOutside, arg);
 			}
 		}
 	}
@@ -281,7 +276,7 @@ define([
 				bottommostOverrideNode = bottommostOverrideNode || node;
 			}
 		});
-		if ((rootHasContext || formatter.hasContext(fromCacToContext[fromCacToContext.length - 1]))
+		if ((rootHasContext || formatter.hasContext(Arrays.last(fromCacToContext)))
 			    && !isNonClearableOverride) {
 			var pushDownFrom = topmostOverrideNode || cac;
 			var cacOverride = formatter.getOverride(bottommostOverrideNode || cac);
@@ -472,18 +467,6 @@ define([
 			return nodeName === node.nodeName;
 		}
 
-		function getOverride(node) {
-			return false;
-		}
-
-		function clearOverride(node) {
-			return node.nextSibling;
-		}
-
-		function clearOverrideRec(node) {
-			return Dom.walkRec(node, clearOverride);
-		}
-
 		function clearContext(node) {
 			var next = node.nextSibling;
 			if (nodeName === node.nodeName) {
@@ -494,13 +477,6 @@ define([
 
 		function clearContextRec(node) {
 			return Dom.walkRec(node, clearContext);
-		}
-
-		function pushDownOverride(node, override) {
-            if (!override) {
-                return node.nextSibling;
-            }
-			throw "not implemented";
 		}
 
 		function setContext(node) {
@@ -519,6 +495,22 @@ define([
 			return next;
 		}
 
+		function getOverride(node) {
+			return false;
+		}
+
+		function clearOverride(node) {
+			return node.nextSibling;
+		}
+
+		function clearOverrideRec(node) {
+			return Dom.walkRec(node, clearOverride);
+		}
+
+		function pushDownOverride(node, override) {
+			return node.nextSibling;
+		}
+
 		return {
 			hasContext: hasContext,
 			getOverride: getOverride,
@@ -535,12 +527,11 @@ define([
 			return false;
 		}
 
-		function getOverride(node) {
-			return nodeName === node.nodeName;
+		function setContext(node) {
 		}
 
-		function hasOverride(node) {
-			return !!getOverride(node);
+		function getOverride(node) {
+			return nodeName === node.nodeName;
 		}
 
 		function clearOverride(node) {
@@ -560,12 +551,90 @@ define([
 				return node.nextSibling;
 			}
 			var next = node.nextSibling;
-			ensureWrapper(node, nodeName, hasOverride, leftPoint, rightPoint);
+			ensureWrapper(node, nodeName, getOverride, leftPoint, rightPoint);
 			return next;
 		}
 
+		return {
+			hasContext: hasContext,
+			getOverride: getOverride,
+			clearOverride: clearOverride,
+			clearOverrideRec: clearOverrideRec,
+			pushDownOverride: pushDownOverride,
+			setContext: setContext,
+			isUpperBoundary: isUpperBoundaryDefaultImpl
+		};
+	}
+
+	function makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint) {
+
+		function setStyle(node, styleName, styleValue, prevWrapper) {
+			if (prevWrapper && prevWrapper === node.previousSibling) {
+				insertAdjust(node, prevWrapper, true, leftPoint, rightPoint);
+				return;
+			}
+			if ('SPAN' === node.nodeName) {
+				$(node).css(styleName, styleValue);
+				return;
+			}
+			var wrapper = document.createElement('SPAN');
+			$(wrapper).css(styleName, styleValue);
+			wrapAdjust(node, wrapper, leftPoint, rightPoint);
+			return wrapper;
+		}
+
+		function removeStyle(node, styleName) {
+			var value = $(node).css(styleName);
+			if (1 !== node.nodeType || '' === value || null == value) {
+				return;
+			}
+			$(node).css(styleName, '');
+			if ('SPAN' === node.nodeName
+				    && $(node).attr('style') === ''
+				    && !Arrays.filter(Arrays.map(Dom.attrs(node), Arrays.second),
+									  Fn.complement(Strings.empty)).length) {
+				removeShallowAdjust(node, leftPoint, rightPoint);
+			}
+		}
+
+		function hasContext(node) {
+			return $(node).css(styleName) === styleValue;
+		}
+
+		function getOverride(node) {
+			return $(node).css(styleName);
+		}
+
+		function clearOverride(node) {
+			var next = node.nextSibling;
+			removeStyle(node, styleName);
+			return next;
+		}
+
+		function clearOverrideRec(node) {
+			return Dom.walkRec(node, clearOverride);
+		}
+
+		var overrideWrapper = null;
+		function pushDownOverride(node, override) {
+			var next = node.nextSibling;
+			if ('' === override || null == override) {
+				return next;
+			}
+			var value = $(node).css(styleName);
+			if (null != value && '' !== value)  {
+				return next;
+			}
+			overrideWrapper = setStyle(node, styleName, override, overrideWrapper);
+			return next;
+		}
+
+		var contextWrapper = null;
 		function setContext(node) {
-			throw "not implemented";
+			var next = node.nextSibling;
+			clearOverrideRec(node);
+			contextWrapper = setStyle(node, styleName, styleValue, contextWrapper);
+			return next;
 		}
 
 		return {
@@ -591,6 +660,12 @@ define([
 		});
 	}
 
+	function formatStyle(liveRange, styleName, styleValue) {
+		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+			mutate(range, makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint), false);
+		});
+	}
+
 	function splitBoundary(liveRange, pred, clone) {
 		clone = clone || Dom.cloneShallow;
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
@@ -598,13 +673,12 @@ define([
 			var wrapper = null;
 
 			function carryDown(elem, stop) {
-				var ignoreLevel = stop === true || elem === range.commonAncestorContainer;
-				return ignoreLevel ? stop : !pred(elem);
+				return stop || !pred(elem);
 			}
 
 			function pushDown(node, stop) {
 				var next = node.nextSibling;
-				if (stop || node.parentNode === range.commonAncestorContainer) {
+				if (stop) {
 					return next;
 				}
 				if (!wrapper || node.parentNode.previousSibling !== wrapper) {
@@ -615,21 +689,17 @@ define([
 				return next;
 			}
 
-			function pushDownOutside(node, stop, startEndInbetween) {
-				if ("start" === startEndInbetween) {
-					return pushDown(node, stop);
-				}
-				return node.nextSibling;
-			}
-
-			function pushDownInside(node, stop, startEndInbetween) {
-				if ("end" === startEndInbetween) {
-					return pushDown(node, stop);
-				}
-				return node.nextSibling;
-			}
-
-			walkBoundary(range, carryDown, pushDownOutside, nextSibling, pushDownInside, null);
+			var sc = range.startContainer;
+			var so = range.startOffset;
+			var ec = range.endContainer;
+			var eo = range.endOffset;
+			var cac = range.commonAncestorContainer;
+			var startEnd = Dom.isAtEnd(sc, so);
+			var endEnd   = Dom.isAtEnd(ec, eo);
+			var ascStart = Dom.childAndParentsUntilNode(Dom.nodeAtOffset(sc, so), cac);
+			var ascEnd   = Dom.childAndParentsUntilNode(Dom.nodeAtOffset(ec, eo), cac);
+			ascendWalkSiblings(ascStart, startEnd, carryDown, pushDown, nextSibling, nextSibling, null);
+			ascendWalkSiblings(ascEnd, endEnd, carryDown, pushDown, nextSibling, nextSibling, null);
 		});
 	}
 
@@ -637,6 +707,7 @@ define([
 		mutate: mutate,
 		format: format,
 		unformat: unformat,
+		formatStyle: formatStyle,
 		splitBoundary: splitBoundary
 	};
 });

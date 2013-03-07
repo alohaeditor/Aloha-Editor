@@ -301,4 +301,22 @@ Aloha.require([
 	t('only split inline formattable on the left, and with element siblings on the right',
 	  '<p><i><em>-</em><strong>Some<em>-{-</em>text</strong></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
 	  '<p><i><em>-</em></i><i><strong>Some<em>-{<b>-</b></em><b>text</b></strong></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
+
+	t = function (title, before, after) {
+		testMutation('RangeContext.formatStyle - ' + title, before, after, function (dom, range) {
+			RangeContext.formatStyle(range, 'font-family', 'arial');
+		});
+	};
+
+	t('format some text',
+	  '<p>Some [text]</p>',
+	  '<p>Some {<span style="font-family: arial;">text</span>}</p>');
+
+	t('reuse an existing span',
+	  '<p>Some {<span>text</span>}</p>',
+	  '<p>Some {<span style="font-family: arial;">text</span>}</p>');
+
+	t('alternating overrides (times/verdana); don\'t replace existing override (helvetica); element inbetween overrides (<b>)',
+	  '<p>Some <span style="font-family: times;">a<b><span style="font-family: helvetica;">b</span>c<span style="font-family: verdana;">d{e</span>f</b>g</span>}</p>',
+	  '<p>Some <span style="font-family: times;">a</span><b><span style="font-family: helvetica;">b</span><span style="font-family: times;">c</span><span style="font-family: verdana;">d</span>{<span style="font-family: arial;">ef</span></b><span style="font-family: arial;">g</span>}</p>');
 });
