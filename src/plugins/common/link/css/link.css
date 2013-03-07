@@ -42,14 +42,8 @@
 	padding-bottom: 5px;
 }
 
-.aloha-link-title-container fieldset  input[type=text]{
-	width:auto !important;
-	min-width:180px;
-}
-
-.aloha-link-target-container fieldset  input[type=text]{
-	width:auto !important;
-	min-width:180px;
+.aloha-link-target-container fieldset input[type=text], .aloha-link-title-container fieldset input[type=text] {
+	width: 90%;
 }
 
 .x-form-field.x-form-text.aloha-link-href-field {
