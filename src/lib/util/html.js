@@ -51,8 +51,13 @@ define(['util/dom2'], function (Dom) {
 		return inlineFormattableMap[node.nodeName];
 	}
 
+	function isEditingHost(node) {
+		return 1 === node.nodeType && "true" === node.contentEditable;
+	}
+
 	return {
 		isIgnorableWhitespace: isIgnorableWhitespace,
-		isInlineFormattable: isInlineFormattable
+		isInlineFormattable: isInlineFormattable,
+		isEditingHost: isEditingHost
 	};
 });
