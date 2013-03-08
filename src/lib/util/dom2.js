@@ -510,6 +510,13 @@ define([
 		});
 	}
 
+	function nextUntil(node, until, arg) {
+		while (node && !until(node, arg)) {
+			node = node.nextSibling;
+		}
+		return node;
+	}
+
 	function splitTextNode(node, offset) {
 		// Because node.splitText() is buggy on IE, split it manually.
 		// http://www.quirksmode.org/dom/w3c_core.html
@@ -584,26 +591,30 @@ define([
 
 	function walkUntil(node, fn, until, arg) {
 		while (node && !until(node, arg)) {
-			node = fn(node, arg);
+			var next = node.nextSibling;
+			fn(node, arg);
+			node = next;
 		}
-		return node;
 	}
 
 	function walk(node, fn, arg) {
 		walkUntil(node, fn, Fn.returnFalse, arg);
 	}
 
+	/**
+	 * Depth-first postwalk of the given DOM node.
+	 */
 	function walkRec(node, fn, arg) {
 		if (1 === node.nodeType) {
 			walk(node.firstChild, function (node) {
-				return walkRec(node, fn, arg);
+				walkRec(node, fn, arg);
 			});
 		}
-		return fn(node, arg);
+		fn(node, arg);
 	}
 
 	function walkUntilNode(node, fn, untilNode, arg) {
-		return walkUntil(node, fn, function (nextNode) {
+		walkUntil(node, fn, function (nextNode) {
 			return nextNode === untilNode;
 		}, arg);
 	}
@@ -793,6 +804,22 @@ define([
 		return node.cloneNode(false);
 	}
 
+	/**
+	 * Sets a style on the given element by modifying it's style attribute.
+	 */
+	function setStyle(node, name, value) {
+		// Because only an empty string removes a style.
+		$(node).css(name, null == value ? '' : value);
+	}
+
+	/**
+	 * Gets a style from the given element's style attribute.
+	 * Note that this is different from the computed/inherited style.
+	 */
+	function getStyle(node, name) {
+		return node.nodeType === 1 ? node.style[name] : null;
+	}
+
 	return {
 		moveNextAll: moveNextAll,
 		attrNames: attrNames,
@@ -814,6 +841,7 @@ define([
 		childAndParentsUntilIncl: childAndParentsUntilIncl,
 		childAndParentsUntilNode: childAndParentsUntilNode,
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
+		nextUntil: nextUntil,
 		nodeIndex: nodeIndex,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
@@ -833,6 +861,8 @@ define([
 		collapseToEnd: collapseToEnd,
 		extendToWord: extendToWord,
 		rangeFromRangeObject: rangeFromRangeObject,
-		cloneShallow: cloneShallow
+		cloneShallow: cloneShallow,
+		setStyle: setStyle,
+		getStyle: getStyle
 	};
 });

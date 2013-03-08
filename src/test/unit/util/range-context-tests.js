@@ -240,7 +240,11 @@ Aloha.require([
 	  '<p><b>{one<i>}two</i>three</b></p>',
 	  '<p>{one}<b><i>two</i>three</b></p>');
 
-	t('pusing down through commonAncestorContainer',
+	t('pushing down through commonAncestorContainer',
+	  '<p>-<b>So{me te}xt</b>-</p>',
+	  '<p>-<b>So</b>{me te}<b>xt</b>-</p>');
+
+	t('pushing down one level through commonAncestorContainer',
 	  '<p><b>one<i>{Some text.}</i>two</b></p>',
 	  '<p><b>one</b><i>{Some text.}</i><b>two</b></p>');
 
@@ -294,7 +298,7 @@ Aloha.require([
 	  '<p>S<sub>o<em>{m</em></sub>e <i>a<u>b]c</u></i></p>',
 	  '<p>S<sub>o</sub><b><sub><em>{m</em></sub>e <i>a<u>b</u></i></b>}<i><u>c</u></i></p>');
 
-	t('end positions will be skipped and not splitted',
+	t('end positions will be skipped and not split',
 	  '<p><i><u><sub>{</sub></u>a</i>b<i>c<u><sub>}</sub></u></i></p>',
 	  '<p><i><u><sub></sub></u></i><b><i>{a</i>b<i>c</i></b>}<i><u><sub></sub></u></i></p>');
 
@@ -316,7 +320,15 @@ Aloha.require([
 	  '<p>Some {<span>text</span>}</p>',
 	  '<p>Some {<span style="font-family: arial;">text</span>}</p>');
 
-	t('alternating overrides (times/verdana); don\'t replace existing override (helvetica); element inbetween overrides (<b>)',
+	t('alternating overrides (times/verdana); don\'t replace existing override (helvetica); element inbetween overrides (&lt;b>)',
 	  '<p>Some <span style="font-family: times;">a<b><span style="font-family: helvetica;">b</span>c<span style="font-family: verdana;">d{e</span>f</b>g</span>}</p>',
 	  '<p>Some <span style="font-family: times;">a</span><b><span style="font-family: helvetica;">b</span><span style="font-family: times;">c</span><span style="font-family: verdana;">d</span>{<span style="font-family: arial;">ef</span></b><span style="font-family: arial;">g</span>}</p>');
+
+	t('don\'t push down the cac even if it is an override',
+	  '<p>S<span style="font-family: times;">om{e t}ex</span>t</p>',
+	  '<p>S<span style="font-family: times;">om{<span style="font-family: arial;">e t</span>}ex</span>t</p>');
+
+	t('expand style',
+	  '<p>S<span style="font-family: times;">om{one<span style="font-family: arial;">e t</span>two}ex</span>t</p>',
+	  '<p>S<span style="font-family: times;">om{<span style="font-family: arial;">onee ttwo</span>}ex</span>t</p>');
 });

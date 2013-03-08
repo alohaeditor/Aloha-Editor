@@ -48,14 +48,14 @@ define(['util/dom2', 'util/arrays', 'util/strings'], function (Dom, Arrays, Stri
 		}
 		function extractMarkers(node) {
 			if (3 !== node.nodeType) {
-				return node.nextSibling;
+				return;
 			}
 			var text = node.nodeValue;
 			var parts = Strings.splitIncl(text, /[\[\{\}\]]/g);
 			// Because modifying every text node when there can be
 			// only two markers seems like too much overhead.
 			if (!Arrays.contains(markers, parts[0]) && parts.length < 2) {
-				return node.nextSibling;
+				return;
 			}
 			// Because non-text boundary positions must not be joined again.
 			var forceNextSplit = false;
@@ -70,9 +70,7 @@ define(['util/dom2', 'util/arrays', 'util/strings'], function (Dom, Arrays, Stri
 					node.parentNode.insertBefore(document.createTextNode(part), node);
 				}
 			});
-			var next = node.nextSibling;
 			node.parentNode.removeChild(node);
-			return next;
 		}
 		Dom.walkRec(rootElem, extractMarkers);
 		if (2 !== markersFound) {
