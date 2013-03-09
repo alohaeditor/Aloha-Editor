@@ -5,7 +5,8 @@ Aloha.require([
 	'util/html',
 	'util/boundary-markers',
 	'util/range-context',
-	'dom-to-xhtml/dom-to-xhtml'
+	'dom-to-xhtml/dom-to-xhtml',
+	'aloha/rangy-core',
 ], function (
 	Aloha,
 	$,
@@ -16,6 +17,7 @@ Aloha.require([
 	DomToXhtml
 ) {
 	'use strict';
+	window.rangy.init();
 
 	module('RangeContext');
 
@@ -240,7 +242,11 @@ Aloha.require([
 	  '<p><b>{one<i>}two</i>three</b></p>',
 	  '<p>{one}<b><i>two</i>three</b></p>');
 
-	t('pusing down through commonAncestorContainer',
+	t('pushing down through commonAncestorContainer',
+	  '<p>-<b>So{me te}xt</b>-</p>',
+	  '<p>-<b>So</b>{me te}<b>xt</b>-</p>');
+
+	t('pushing down one level through commonAncestorContainer',
 	  '<p><b>one<i>{Some text.}</i>two</b></p>',
 	  '<p><b>one</b><i>{Some text.}</i><b>two</b></p>');
 
@@ -273,8 +279,11 @@ Aloha.require([
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
 
 	t = function (title, before, after) {
+		function isSplittable(node) {
+			return node.nodeName !== 'STRONG' && Html.isInlineFormattable(node);
+		}
 		testMutation('RangeContext.splitBoundary+format - ' + title, before, after, function (dom, range) {
-			RangeContext.splitBoundary(range, Html.isInlineFormattable);
+			RangeContext.splitBoundary(range, isSplittable);
 			RangeContext.format(range, 'B');
 		});
 	};
@@ -291,13 +300,81 @@ Aloha.require([
 	  '<p>S<sub>o<em>{m</em></sub>e <i>a<u>b]c</u></i></p>',
 	  '<p>S<sub>o</sub><b><sub><em>{m</em></sub>e <i>a<u>b</u></i></b>}<i><u>c</u></i></p>');
 
-	t('end positions will be skipped and not splitted',
+	t('end positions will be skipped and not split',
 	  '<p><i><u><sub>{</sub></u>a</i>b<i>c<u><sub>}</sub></u></i></p>',
 	  '<p><i><u><sub></sub></u></i><b><i>{a</i>b<i>c</i></b>}<i><u><sub></sub></u></i></p>');
 
-	// Because IE needs this to recoginze a non-HTML element.
-	document.createElement('x');
 	t('only split inline formattable on the left, and with element siblings on the right',
-	  '<p><i><em>-</em><x>Some<em>-{-</em>text</x></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
-	  '<p><i><em>-</em></i><i><x>Some<em>-{<b>-</b></em><b>text</b></x></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
+	  '<p><i><em>-</em><strong>Some<em>-{-</em>text</strong></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
+	  '<p><i><em>-</em></i><i><strong>Some<em>-{<b>-</b></em><b>text</b></strong></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
+
+	t = function (title, before, after) {
+		// Because IE7 will display "font-family: xx" without an
+		// ending ";" whereas other browsers will add an ending ";".
+		function expected(actual) {
+			equal(actual.replace(/;"/g, '"'), after.replace(/;"/g, '"'));
+		}
+		// Because IE7 leaves the style attribute as style="font-family:
+		// " after removing the font-family style, which interfers with
+		// the default isPrunable check.
+		function isPrunableIe7(node) {
+			return ('SPAN' === node.nodeName
+					&& (!$(node).css('font-family')
+						|| 'auto' == $(node).css('font-family')));
+		}
+		var isPrunable = ($.browser.msie && parseInt($.browser.version) == 7
+						  ? isPrunableIe7
+						  : null);
+		testMutation('RangeContext.formatStyle - ' + title, before, expected, function (dom, range) {
+			RangeContext.formatStyle(range, 'font-family', 'arial', null, null, null, isPrunable);
+		});
+	};
+
+	t('format some text',
+	  '<p>Some [text]</p>',
+	  '<p>Some {<span style="font-family: arial;">text</span>}</p>');
+
+	t('reuse an existing span',
+	  '<p>Some {<span>text</span>}</p>',
+	  '<p>Some {<span style="font-family: arial;">text</span>}</p>');
+
+	t('alternating overrides (times/verdana); don\'t replace existing override (helvetica); element inbetween overrides (&lt;b>)',
+	  '<p>Some <span style="font-family: times;">a<b><span style="font-family: helvetica;">b</span>c<span style="font-family: verdana;">d{e</span>f</b>g</span>}</p>',
+	  '<p>Some <span style="font-family: times;">a</span><b><span style="font-family: helvetica;">b</span><span style="font-family: times;">c</span><span style="font-family: verdana;">d</span>{<span style="font-family: arial;">ef</span></b><span style="font-family: arial;">g</span>}</p>');
+
+	t('don\'t push down the cac even if it is an override',
+	  '<p>S<span style="font-family: times;">om{e t}ex</span>t</p>',
+	  '<p>S<span style="font-family: times;">om{<span style="font-family: arial;">e t</span>}ex</span>t</p>');
+
+	t('expand style',
+	  '<p>S<span style="font-family: times;">om{one<span style="font-family: arial;">e t</span>two}ex</span>t</p>',
+	  '<p>S<span style="font-family: times;">om{<span style="font-family: arial;">onee ttwo</span>}ex</span>t</p>');
+
+	t('push down through one level',
+	  '<p><span style="font-family: arial;"><span style="font-family: times;">Som{e t}ext</span></span></p>',
+	  '<p><span style="font-family: arial;"><span style="font-family: times;">Som</span>{e t}<span style="font-family: times;">ext</span></span></p>');
+
+	t('reuse outer element',
+	  '<p>one<span style="font-family: times;">[Some text]</span>two</p>',
+	  '<p>one<span style="font-family: arial;">{Some text}</span>two</p>');
+
+	t('reuse outer element one level up',
+	  '<p>one<span style="font-family: times;"><b>[Some text]</b></span>two</p>',
+	  '<p>one<span style="font-family: arial;"><b>{Some text}</b></span>two</p>');
+
+	t('reuse outer element that has neither an override or context',
+	  '<p>one<span><b>[Some text]</b></span>two</p>',
+	  '<p>one<span style="font-family: arial;"><b>{Some text}</b></span>two</p>');
+
+	t('don\'t reuse if there is an obstruction before ("x")',
+	  '<p>one<span style="font-family: times;">x<b>[Some text]</b></span>two</p>',
+	  '<p>one<span style="font-family: times;">x<b>{<span style="font-family: arial;">Some text</span>}</b></span>two</p>');
+
+	t('don\'t reuse if there is an obstruction after ("x")',
+	  '<p>one<span style="font-family: times;"><b>[Some text]x</b></span>two</p>',
+	  '<p>one<span style="font-family: times;"><b>{<span style="font-family: arial;">Some text</span>}x</b></span>two</p>');
+
+	t('don\'t reuse if there is an obstruction above (&lt;code>)',
+	  '<p>one<span style="font-family: times;"><code>[Some text]</code></span>two</p>',
+	  '<p>one<span style="font-family: times;"><code>{<span style="font-family: arial;">Some text</span>}</code></span>two</p>');
 });

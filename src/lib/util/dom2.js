@@ -25,6 +25,7 @@
  * recipients can access the Corresponding Source.
  */
 define([
+	'aloha',
 	'jquery',
 	'util/functions',
 	'util/maps',
@@ -34,6 +35,7 @@ define([
 	'util/dom',
 	'util/range'
 ], function (
+	Aloha,
 	$,
 	Fn,
 	Maps,
@@ -510,6 +512,24 @@ define([
 		});
 	}
 
+	function next(node, until, arg) {
+		while (node && !until(node, arg)) {
+			node = node.nextSibling;
+		}
+		return node;
+	}
+
+	function parent(node, until, arg) {
+		while (node && !until(node, arg)) {
+			node = node.parentNode;
+		}
+		return node;
+	}
+
+	function isTextNode(node) {
+		return 3 === node.nodeType;
+	}
+
 	function splitTextNode(node, offset) {
 		// Because node.splitText() is buggy on IE, split it manually.
 		// http://www.quirksmode.org/dom/w3c_core.html
@@ -584,31 +604,38 @@ define([
 
 	function walkUntil(node, fn, until, arg) {
 		while (node && !until(node, arg)) {
-			node = fn(node, arg);
+			var next = node.nextSibling;
+			fn(node, arg);
+			node = next;
 		}
-		return node;
 	}
 
 	function walk(node, fn, arg) {
 		walkUntil(node, fn, Fn.returnFalse, arg);
 	}
 
+	/**
+	 * Depth-first postwalk of the given DOM node.
+	 */
 	function walkRec(node, fn, arg) {
 		if (1 === node.nodeType) {
 			walk(node.firstChild, function (node) {
-				return walkRec(node, fn, arg);
+				walkRec(node, fn, arg);
 			});
 		}
-		return fn(node, arg);
+		fn(node, arg);
 	}
 
 	function walkUntilNode(node, fn, untilNode, arg) {
-		return walkUntil(node, fn, function (nextNode) {
+		walkUntil(node, fn, function (nextNode) {
 			return nextNode === untilNode;
 		}, arg);
 	}
 
 	function StableRange(range) {
+		if (!range) {
+			return;
+		}
 		this.startContainer = range.startContainer;
 		this.startOffset = range.startOffset;
 		this.endContainer = range.endContainer;
@@ -793,6 +820,42 @@ define([
 		return node.cloneNode(false);
 	}
 
+	/**
+	 * Sets a style on the given element by modifying it's style attribute.
+	 */
+	function setStyle(node, name, value) {
+		// Because only the empty string removes a style.
+		$(node).css(name, null == value ? '' : value);
+	}
+
+	/**
+	 * Gets a style from the given element's style attribute.
+	 * Note that this is different from the computed/inherited style.
+	 */
+	function getStyle(node, name) {
+		// Because IE7 needs dashesToCamelCase().
+		name = Strings.dashesToCamelCase(name);
+		return node.nodeType === 1 ? node.style[name] : null;
+	}
+
+	/**
+	 * Gets the computed/inherited style of the given node.
+	 * @param node may be a text node.
+	 */
+	function getComputedStyle(node, name) {
+		if (node.currentStyle) {
+			return node.currentStyle[name];
+		}
+		var doc = node.ownerDocument;
+		if (doc.defaultView && doc.defaultView.getComputedStyle) {
+			var styles = doc.defaultView.getComputedStyle(node, null);
+			if (styles) {
+				return styles[name] || styles.getPropertyValue(name);
+			}
+		}
+		return null;
+	}
+
 	return {
 		moveNextAll: moveNextAll,
 		attrNames: attrNames,
@@ -814,6 +877,9 @@ define([
 		childAndParentsUntilIncl: childAndParentsUntilIncl,
 		childAndParentsUntilNode: childAndParentsUntilNode,
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
+		next: next,
+		parent: parent,
+		isTextNode: isTextNode,
 		nodeIndex: nodeIndex,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
@@ -833,6 +899,9 @@ define([
 		collapseToEnd: collapseToEnd,
 		extendToWord: extendToWord,
 		rangeFromRangeObject: rangeFromRangeObject,
-		cloneShallow: cloneShallow
+		cloneShallow: cloneShallow,
+		setStyle: setStyle,
+		getStyle: getStyle,
+		getComputedStyle: getComputedStyle
 	};
 });
