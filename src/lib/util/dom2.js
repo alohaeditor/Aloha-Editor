@@ -510,7 +510,7 @@ define([
 		});
 	}
 
-	function nextUntil(node, until, arg) {
+	function next(node, until, arg) {
 		while (node && !until(node, arg)) {
 			node = node.nextSibling;
 		}
@@ -620,6 +620,9 @@ define([
 	}
 
 	function StableRange(range) {
+		if (!range){
+			return;
+		}
 		this.startContainer = range.startContainer;
 		this.startOffset = range.startOffset;
 		this.endContainer = range.endContainer;
@@ -841,7 +844,7 @@ define([
 		childAndParentsUntilIncl: childAndParentsUntilIncl,
 		childAndParentsUntilNode: childAndParentsUntilNode,
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
-		nextUntil: nextUntil,
+		next: next,
 		nodeIndex: nodeIndex,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,

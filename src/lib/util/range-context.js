@@ -26,8 +26,14 @@
  */
 /**
  * TODO improve restacking and joining algorithm
- * TODO detect and ignore insignificant whitespace when pushing down or setting a context
- * TODO check contained-in rules when when pushing down or settting a context
+ * TODO what do do about insignificant whitespace when pushing down or setting a context?
+ * TODO check contained-in rules when when pushing down or setting a context
+ * TODO formatStyle: in the following case the outer "font-family: arial" span should be removed.
+ *      Can be done similar to how findReusableAncestor() works.
+ *      <span style="font-family: arial">
+ *         <span style="font-family: times">one</span>
+ *         <span style="font-family: helvetica">two<span>
+ *      </span>
  */
 define([
 	'jquery',
@@ -238,6 +244,8 @@ define([
 	 *   which getOverride returns a non-null value is the topmost
 	 *   override. If there is a topmost override, and it is below the
 	 *   upper boundary element, it will be cleared and pushed down.
+	 *   A node with an override must not also provide the context:
+	 *   !(null != getOverride(node) && hasContext(node))
 	 *
 	 *   clearOverride(node) - should clear the given node of an
 	 *   override. The given node may or may not have an override
@@ -410,17 +418,15 @@ define([
 		Dom.insert(node, ref, atEnd);
 	}
 
-	// TODO when restacking the <b> that wraps "z" in
-	// <u><b>x</b><s><b>z</b></s></u>, join with the <b> that wraps "x".
 	function restackRec(node, hasContext, notIgnoreHorizontal, notIgnoreVertical) {
 		if (1 !== node.nodeType || notIgnoreVertical(node)) {
 			return null;
 		}
-		var maybeContext = Dom.nextUntil(node.firstChild, notIgnoreHorizontal);
+		var maybeContext = Dom.next(node.firstChild, notIgnoreHorizontal);
 		if (!maybeContext) {
 			return null;
 		}
-		var notIgnorable = Dom.nextUntil(maybeContext.nextSibling, notIgnoreHorizontal);
+		var notIgnorable = Dom.next(maybeContext.nextSibling, notIgnoreHorizontal);
 		if (notIgnorable) {
 			return null;
 		}
@@ -474,9 +480,9 @@ define([
 
 	function isUpperBoundary_default(node) {
 		// Because the body element is an obvious upper boundary, and
-		// when leaving an editable, and because, when we are inside an
-		// editable, we shouldn't make modifications outside (if we are
-		// not inside  editable, we don't care).
+		// because, when we are inside an editable, we shouldn't make
+		// modifications outside the editable (if we are not inside
+		// an editable, we don't care).
 		return 'BODY' === node.nodeName || Html.isEditingHost(node);
 	}
 
@@ -566,10 +572,6 @@ define([
 	}
 
 	function makeStyleFormatter(styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable, leftPoint, rightPoint) {
-		createWrapper = createWrapper || createStyleWrapper_default;
-		isStyleEq = isStyleEq || isStyleEq_default;
-		isReusable = isReusable || isStyleWrapperReusable_default;
-		isPrunable = isPrunable || isStyleWrapperPrunable_default;
 
 		function removeStyle(node, styleName) {
 			if (Strings.empty(Dom.getStyle(node, styleName))) {
@@ -604,7 +606,9 @@ define([
 
 		function getOverride(node) {
 			var override = Dom.getStyle(node, styleName);
-			return Strings.empty(override) ? null : override;
+			return (Strings.empty(override) || isStyleEq(override, styleValue)
+					? null
+					: override);
 		}
 
 		function clearOverride(node) {
@@ -651,14 +655,73 @@ define([
 		});
 	}
 
+	function findReusableAncestor(range, hasContext, getOverride, isUpperBoundary, isReusable) {
+		var start    = Dom.nodeAtOffset(range.startContainer, range.startOffset);
+		var end      = Dom.nodeAtOffset(range.endContainer, range.endOffset);
+		var startEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
+		var endEnd   = Dom.isAtEnd(range.endContainer, range.endOffset);
+		var ascStart = Dom.childAndParentsUntilIncl(start, untilIncl);
+		var ascEnd   = Dom.childAndParentsUntilIncl(end, untilIncl);
+		var reusable = Arrays.last(ascStart);
+		var obstruction = null;
+		function untilIncl(node) {
+			return (null != getOverride(node)
+					|| hasContext(node)
+					|| isReusable(node)
+					|| isUpperBoundary(node));
+		}
+		function beforeAfter(node) {
+			obstruction = obstruction || !Html.isIgnorableWhitespace(node);
+		}
+		function at(node) {
+			// Because the start node is inside the range.
+			if (node === start && !startEnd) {
+				return;
+			}
+			// Because the end node is outside the range.
+			if (node === end && !endEnd) {
+				beforeAfter(node);
+				return;
+			}
+			obstruction = obstruction || !Html.isInlineFormattable(node);
+		}
+		if (!reusable || !isReusable(reusable) || reusable !== Arrays.last(ascEnd)) {
+			return null;
+		}
+		ascendWalkSiblings(ascStart, startEnd, Fn.noop, beforeAfter, at, Fn.noop);
+		if (obstruction) {
+			return null;
+		}
+		ascendWalkSiblings(ascEnd, endEnd, Fn.noop, Fn.noop, at, beforeAfter);
+		if (obstruction) {
+			return null;
+		}
+		return reusable;
+	}
+
 	function formatStyle(liveRange, styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable) {
+		createWrapper = createWrapper || createStyleWrapper_default;
+		isStyleEq = isStyleEq || isStyleEq_default;
+		isReusable = isReusable || isStyleWrapperReusable_default;
+		isPrunable = isPrunable || isStyleWrapperPrunable_default;
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeStyleFormatter(
 				styleName, styleValue,
 				createWrapper, isStyleEq, isReusable, isPrunable,
 				leftPoint, rightPoint
 			);
-			mutate(range, formatter, false);
+			var reusableAncestor = findReusableAncestor(
+				range,
+				formatter.hasContext,
+				formatter.getOverride,
+				formatter.isUpperBoundary,
+				isReusable
+			);
+			if (reusableAncestor) {
+				formatter.setContext(reusableAncestor);
+			} else {
+				mutate(range, formatter, false);
+			}
 		});
 	}
 
