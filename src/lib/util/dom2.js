@@ -25,6 +25,7 @@
  * recipients can access the Corresponding Source.
  */
 define([
+	'aloha',
 	'jquery',
 	'util/functions',
 	'util/maps',
@@ -34,6 +35,7 @@ define([
 	'util/dom',
 	'util/range'
 ], function (
+	Aloha,
 	$,
 	Fn,
 	Maps,
@@ -631,7 +633,7 @@ define([
 	}
 
 	function StableRange(range) {
-		if (!range){
+		if (!range) {
 			return;
 		}
 		this.startContainer = range.startContainer;

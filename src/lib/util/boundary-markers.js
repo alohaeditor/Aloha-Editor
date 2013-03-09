@@ -1,4 +1,5 @@
 define(['util/dom2', 'util/arrays', 'util/strings'], function (Dom, Arrays, Strings) {
+	'use strict';
 
 	function insert(range) {
 		var leftMarkerChar  = (3 === range.startContainer.nodeType ? '[' : '{');
