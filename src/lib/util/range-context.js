@@ -305,7 +305,9 @@ define([
 				Dom.walkRec(node, formatter.clearOverride);
 			};
 			pushDownContext(
-				liveRange, pushDownFrom, cacOverride,
+				liveRange,
+				pushDownFrom,
+				cacOverride,
 				formatter.getOverride,
 				formatter.clearOverride,
 				clearOverrideRec,
@@ -656,13 +658,6 @@ define([
 	}
 
 	function findReusableAncestor(range, hasContext, getOverride, isUpperBoundary, isReusable) {
-		var start    = Dom.nodeAtOffset(range.startContainer, range.startOffset);
-		var end      = Dom.nodeAtOffset(range.endContainer, range.endOffset);
-		var startEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
-		var endEnd   = Dom.isAtEnd(range.endContainer, range.endOffset);
-		var ascStart = Dom.childAndParentsUntilIncl(start, untilIncl);
-		var ascEnd   = Dom.childAndParentsUntilIncl(end, untilIncl);
-		var reusable = Arrays.last(ascStart);
 		var obstruction = null;
 		function untilIncl(node) {
 			return (null != getOverride(node)
@@ -673,6 +668,13 @@ define([
 		function beforeAfter(node) {
 			obstruction = obstruction || !Html.isIgnorableWhitespace(node);
 		}
+		var start    = Dom.nodeAtOffset(range.startContainer, range.startOffset);
+		var end      = Dom.nodeAtOffset(range.endContainer, range.endOffset);
+		var startEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
+		var endEnd   = Dom.isAtEnd(range.endContainer, range.endOffset);
+		var ascStart = Dom.childAndParentsUntilIncl(start, untilIncl);
+		var ascEnd   = Dom.childAndParentsUntilIncl(end, untilIncl);
+		var reusable = Arrays.last(ascStart);
 		function at(node) {
 			// Because the start node is inside the range.
 			if (node === start && !startEnd) {
@@ -706,9 +708,14 @@ define([
 		isPrunable = isPrunable || isStyleWrapperPrunable_default;
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeStyleFormatter(
-				styleName, styleValue,
-				createWrapper, isStyleEq, isReusable, isPrunable,
-				leftPoint, rightPoint
+				styleName,
+				styleValue,
+				createWrapper,
+				isStyleEq,
+				isReusable,
+				isPrunable,
+				leftPoint,
+				rightPoint
 			);
 			var reusableAncestor = findReusableAncestor(
 				range,
