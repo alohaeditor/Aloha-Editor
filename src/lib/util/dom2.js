@@ -517,6 +517,17 @@ define([
 		return node;
 	}
 
+	function parent(node, until, arg) {
+		while (node && !until(node, arg)) {
+			node = node.parentNode;
+		}
+		return node;
+	}
+
+	function isTextNode(node) {
+		return 3 === node.nodeType;
+	}
+
 	function splitTextNode(node, offset) {
 		// Because node.splitText() is buggy on IE, split it manually.
 		// http://www.quirksmode.org/dom/w3c_core.html
@@ -825,6 +836,24 @@ define([
 		return node.nodeType === 1 ? node.style[name] : null;
 	}
 
+	/**
+	 * Gets the computed/inherited style of the given node.
+	 * @param node may be a text node.
+	 */
+	function getComputedStyle(node, name) {
+		if (node.currentStyle) {
+			return node.currentStyle[name];
+		}
+		var doc = node.ownerDocument;
+		if (doc.defaultView && doc.defaultView.getComputedStyle) {
+			var styles = doc.defaultView.getComputedStyle(node, null);
+			if (styles) {
+				return styles[name] || styles.getPropertyValue(name);
+			}
+		}
+		return null;
+	}
+
 	return {
 		moveNextAll: moveNextAll,
 		attrNames: attrNames,
@@ -847,6 +876,8 @@ define([
 		childAndParentsUntilNode: childAndParentsUntilNode,
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
 		next: next,
+		parent: parent,
+		isTextNode: isTextNode,
 		nodeIndex: nodeIndex,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
@@ -868,6 +899,7 @@ define([
 		rangeFromRangeObject: rangeFromRangeObject,
 		cloneShallow: cloneShallow,
 		setStyle: setStyle,
-		getStyle: getStyle
+		getStyle: getStyle,
+		getComputedStyle: getComputedStyle
 	};
 });
