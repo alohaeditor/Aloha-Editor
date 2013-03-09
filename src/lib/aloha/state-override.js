@@ -27,7 +27,6 @@
 define([
 	'aloha/core',
 	'jquery',
-	'aloha/selection',
 	'aloha/command',
 	'util/dom2',
 	'util/maps',
@@ -36,7 +35,6 @@ define([
 ], function (
 	Aloha,
 	jQuery,
-	Selection,
 	Command,
 	Dom,
 	Maps,

@@ -25,7 +25,7 @@
  * recipients can access the Corresponding Source.
  */
 define([
-	'aloha',
+	'aloha/core',
 	'jquery',
 	'util/functions',
 	'util/maps',
