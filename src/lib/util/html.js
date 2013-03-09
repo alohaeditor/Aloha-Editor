@@ -43,7 +43,6 @@ define(['util/dom2'], function (Dom) {
 	};
 
 	function isIgnorableWhitespace(node) {
-		// TODO
 		return 3 === node.nodeType && !node.length;
 	}
 

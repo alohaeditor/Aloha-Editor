@@ -331,4 +331,32 @@ Aloha.require([
 	t('expand style',
 	  '<p>S<span style="font-family: times;">om{one<span style="font-family: arial;">e t</span>two}ex</span>t</p>',
 	  '<p>S<span style="font-family: times;">om{<span style="font-family: arial;">onee ttwo</span>}ex</span>t</p>');
+
+	t('push down through one level',
+	  '<p><span style="font-family: arial;"><span style="font-family: times;">Som{e t}ext</span></span></p>',
+	  '<p><span style="font-family: arial;"><span style="font-family: times;">Som</span>{e t}<span style="font-family: times;">ext</span></span></p>');
+
+	t('reuse outer element',
+	  '<p>one<span style="font-family: times;">[Some text]</span>two</p>',
+	  '<p>one<span style="font-family: arial;">{Some text}</span>two</p>');
+
+	t('reuse outer element one level up',
+	  '<p>one<span style="font-family: times;"><b>[Some text]</b></span>two</p>',
+	  '<p>one<span style="font-family: arial;"><b>{Some text}</b></span>two</p>');
+
+	t('reuse outer element that has neither an override or context',
+	  '<p>one<span><b>[Some text]</b></span>two</p>',
+	  '<p>one<span style="font-family: arial;"><b>{Some text}</b></span>two</p>');
+
+	t('don\'t reuse if there is an obstruction before ("x")',
+	  '<p>one<span style="font-family: times;">x<b>[Some text]</b></span>two</p>',
+	  '<p>one<span style="font-family: times;">x<b>{<span style="font-family: arial;">Some text</span>}</b></span>two</p>');
+
+	t('don\'t reuse if there is an obstruction after ("x")',
+	  '<p>one<span style="font-family: times;"><b>[Some text]x</b></span>two</p>',
+	  '<p>one<span style="font-family: times;"><b>{<span style="font-family: arial;">Some text</span>}x</b></span>two</p>');
+
+	t('don\'t reuse if there is an obstruction above (&lt;code>)',
+	  '<p>one<span style="font-family: times;"><code>[Some text]</code></span>two</p>',
+	  '<p>one<span style="font-family: times;"><code>{<span style="font-family: arial;">Some text</span>}</code></span>two</p>');
 });
