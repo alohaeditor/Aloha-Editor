@@ -5,7 +5,8 @@ Aloha.require([
 	'util/html',
 	'util/boundary-markers',
 	'util/range-context',
-	'dom-to-xhtml/dom-to-xhtml'
+	'dom-to-xhtml/dom-to-xhtml',
+	'aloha/rangy-core',
 ], function (
 	Aloha,
 	$,
@@ -16,6 +17,7 @@ Aloha.require([
 	DomToXhtml
 ) {
 	'use strict';
+	window.rangy.init();
 
 	module('RangeContext');
 
@@ -307,8 +309,24 @@ Aloha.require([
 	  '<p><i><em>-</em></i><i><strong>Some<em>-{<b>-</b></em><b>text</b></strong></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
 
 	t = function (title, before, after) {
-		testMutation('RangeContext.formatStyle - ' + title, before, after, function (dom, range) {
-			RangeContext.formatStyle(range, 'font-family', 'arial');
+		// Because IE7 will display "font-family: xx" without an
+		// ending ";" whereas other browsers will add an ending ";".
+		function expected(actual) {
+			equal(actual.replace(/;"/g, '"'), after.replace(/;"/g, '"'));
+		}
+		// Because IE7 leaves the style attribute as style="font-family:
+		// " after removing the font-family style, which interfers with
+		// the default isPrunable check.
+		function isPrunableIe7(node) {
+			return ('SPAN' === node.nodeName
+					&& (!$(node).css('font-family')
+						|| 'auto' == $(node).css('font-family')));
+		}
+		var isPrunable = ($.browser.msie && parseInt($.browser.version) == 7
+						  ? isPrunableIe7
+						  : null);
+		testMutation('RangeContext.formatStyle - ' + title, before, expected, function (dom, range) {
+			RangeContext.formatStyle(range, 'font-family', 'arial', null, null, null, isPrunable);
 		});
 	};
 

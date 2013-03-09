@@ -811,7 +811,7 @@ define([
 	 * Sets a style on the given element by modifying it's style attribute.
 	 */
 	function setStyle(node, name, value) {
-		// Because only an empty string removes a style.
+		// Because only the empty string removes a style.
 		$(node).css(name, null == value ? '' : value);
 	}
 
@@ -820,6 +820,8 @@ define([
 	 * Note that this is different from the computed/inherited style.
 	 */
 	function getStyle(node, name) {
+		// Because IE7 needs dashesToCamelCase().
+		name = Strings.dashesToCamelCase(name);
 		return node.nodeType === 1 ? node.style[name] : null;
 	}
 
