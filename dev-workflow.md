@@ -1,13 +1,14 @@
 # How we use branches:
-We have two long lived branches -- master and dev. 
+* We have two long lived branches -- master and dev. 
+* Pull requests go from feature and fix branches to master.
+* Releases and gh-pages will run off of master.
+* New features or bug fixes branch from master.
+* Dev is for integration testing. Feature and fix branches get merged here for immediate testing.  
 
-Pull requests go from feature and fix branches to master.
-
-Releases and gh-pages will run off of master.
-
-New features or bug fixes branch from master.
-
-Dev is for integration testing. Feature and fix branches get merged here for immediate testing.  
+# Integration with redmine
+OERPUB is using [redmine.oerpub.org](http://redmine.oerpub.org) for tracking issues to the editor. When developers
+are fixing bugs or adding ticketed features, they should reference the ticket in the commits as explained here:
+[Referencing-issues-in-commit-messages](http://www.redmine.org/projects/redmine/wiki/RedmineSettings#Referencing-issues-in-commit-messages)
 
 # Workflow 1: OERPUB developer creating a new feature or fixing a bug.
 1. Make a feature-or-fix branch off of master.
