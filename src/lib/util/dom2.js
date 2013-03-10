@@ -766,15 +766,15 @@ define([
 		if (!text.length) {
 			return;
 		}
-		splitTextNodeAdjustRange(range.startContainer, range.startOffset, range);
 		var node = nodeAtOffset(range.startContainer, range.startOffset);
 		var atEnd = isAtEnd(range.startContainer, range.startOffset);
 		// Because if the node following the insert position is already
 		// a text node we can just reuse it.
 		if (!atEnd && 3 === node.nodeType) {
-			node.insertData(0, text);
-			range.setStart(node, 0);
-			range.setEnd(node, text.length);
+			var offset = (3 === range.startContainer.nodeType ? range.startOffset : 0);
+			node.insertData(offset, text);
+			range.setStart(node, offset);
+			range.setEnd(node, offset + text.length);
 			return;
 		}
 		// Because if the node preceding the insert position is already
