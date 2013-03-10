@@ -280,7 +280,7 @@ Aloha.require([
 
 	t = function (title, before, after) {
 		function isSplittable(node) {
-			return node.nodeName !== 'STRONG' && Html.isInlineFormattable(node);
+			return node.nodeName !== 'STRONG' && Html.isInlineType(node);
 		}
 		testMutation('RangeContext.splitBoundary+format - ' + title, before, after, function (dom, range) {
 			RangeContext.splitBoundary(range, isSplittable);
@@ -325,8 +325,11 @@ Aloha.require([
 		var isPrunable = ($.browser.msie && parseInt($.browser.version) == 7
 						  ? isPrunableIe7
 						  : null);
+		function isObstruction(node) {
+			return !Html.isInlineType(node) || 'CODE' === node.nodeName;
+		}
 		testMutation('RangeContext.formatStyle - ' + title, before, expected, function (dom, range) {
-			RangeContext.formatStyle(range, 'font-family', 'arial', null, null, null, isPrunable);
+			RangeContext.formatStyle(range, 'font-family', 'arial', null, null, null, isPrunable, isObstruction);
 		});
 	};
 

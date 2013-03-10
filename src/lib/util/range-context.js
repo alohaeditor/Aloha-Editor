@@ -464,7 +464,7 @@ define([
 			restack(node.previousSibling,
 					hasWrapper,
 					Html.isIgnorableWhitespace,
-					Html.isInlineFormattable,
+					Html.isInlineType,
 					leftPoint,
 					rightPoint);
 		}
@@ -657,7 +657,7 @@ define([
 		});
 	}
 
-	function findReusableAncestor(range, hasContext, getOverride, isUpperBoundary, isReusable) {
+	function findReusableAncestor(range, hasContext, getOverride, isUpperBoundary, isReusable, isObstruction) {
 		var obstruction = null;
 		function untilIncl(node) {
 			return (null != getOverride(node)
@@ -685,7 +685,7 @@ define([
 				beforeAfter(node);
 				return;
 			}
-			obstruction = obstruction || !Html.isInlineFormattable(node);
+			obstruction = obstruction || isObstruction(node);
 		}
 		if (!reusable || !isReusable(reusable) || reusable !== Arrays.last(ascEnd)) {
 			return null;
@@ -701,11 +701,12 @@ define([
 		return reusable;
 	}
 
-	function formatStyle(liveRange, styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable) {
+	function formatStyle(liveRange, styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable, isObstruction) {
 		createWrapper = createWrapper || createStyleWrapper_default;
 		isStyleEq = isStyleEq || isStyleEq_default;
 		isReusable = isReusable || isStyleWrapperReusable_default;
 		isPrunable = isPrunable || isStyleWrapperPrunable_default;
+		isObstruction = isObstruction || Fn.complement(Html.isInlineType);
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeStyleFormatter(
 				styleName,
@@ -722,7 +723,8 @@ define([
 				formatter.hasContext,
 				formatter.getOverride,
 				formatter.isUpperBoundary,
-				isReusable
+				isReusable,
+				isObstruction
 			);
 			if (reusableAncestor) {
 				formatter.setContext(reusableAncestor);
