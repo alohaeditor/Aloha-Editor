@@ -1553,7 +1553,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'jquery'], function (Aloh
 		// attempt to fix this by restoring the range to the first index of
 		// the node that has been moved
 		var newRange = null;
-		if (boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length && boundaryPoints[1][1] > boundaryPoints[1][0].childNodes.length) {
+		if (1 === boundaryPoints[0][0].nodeType
+			&& 1 === boundaryPoints[1][0].nodeType
+			&& boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
+			&& boundaryPoints[1][1] > boundaryPoints[1][0].childNodes.length) {
 			range.setStart(node, 0);
 			range.setEnd(node, 0);
 		} else {
