@@ -1554,9 +1554,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'jquery'], function (Aloh
 		// the node that has been moved
 		var newRange = null;
 		if (1 === boundaryPoints[0][0].nodeType
-			&& 1 === boundaryPoints[1][0].nodeType
-			&& boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
-			&& boundaryPoints[1][1] > boundaryPoints[1][0].childNodes.length) {
+			    && 1 === boundaryPoints[1][0].nodeType
+			    && boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
+			    && boundaryPoints[1][1] > boundaryPoints[1][0].childNodes.length) {
 			range.setStart(node, 0);
 			range.setEnd(node, 0);
 		} else {
