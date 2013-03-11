@@ -448,6 +448,9 @@ function(Aloha, plugin, $, Ui, Button, PubSub, Dialog, Ephemera, CreateLayer) {
                 var colcount = this.currentRow.find('td,th').length;
                 var newrow = createRow(colcount);
                 this.currentRow.after(newrow);
+
+                Aloha.activeEditable.smartContentChange({type: 'block-change'});
+
                 return newrow;
             }
             return null;
