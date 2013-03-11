@@ -292,7 +292,7 @@ blockquote{
 
 /* ========== assorted inline elements ========== */
 
-.cnxn, em{
+.cnxn{
   font-weight: bold;
 }
 
@@ -300,7 +300,7 @@ blockquote{
   font-variant: small-caps;
 }
 
-cite, em, i.emphasis .cite-title i{
+cite, i.emphasis .cite-title i{
   font-style: normal;
 }
 
