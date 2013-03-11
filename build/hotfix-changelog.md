@@ -8,3 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+**BUGFIX**: Cursor styles that are added inside tables for resizing are now
+            correctly removed when the table is no longer editable.
