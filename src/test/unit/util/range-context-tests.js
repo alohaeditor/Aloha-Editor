@@ -280,7 +280,7 @@ Aloha.require([
 
 	t = function (title, before, after) {
 		function isSplittable(node) {
-			return node.nodeName !== 'STRONG' && Html.isInlineType(node);
+			return node.nodeName !== 'CODE' && Html.isInlineType(node);
 		}
 		testMutation('RangeContext.splitBoundary+format - ' + title, before, after, function (dom, range) {
 			RangeContext.splitBoundary(range, isSplittable);
@@ -304,9 +304,9 @@ Aloha.require([
 	  '<p><i><u><sub>{</sub></u>a</i>b<i>c<u><sub>}</sub></u></i></p>',
 	  '<p><i><u><sub></sub></u></i><b><i>{a</i>b<i>c</i></b>}<i><u><sub></sub></u></i></p>');
 
-	t('only split inline formattable on the left, and with element siblings on the right',
-	  '<p><i><em>-</em><strong>Some<em>-{-</em>text</strong></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
-	  '<p><i><em>-</em></i><i><strong>Some<em>-{<b>-</b></em><b>text</b></strong></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
+	t('don\'t split obstruction on the left; with element siblings on the right',
+	  '<p><i><em>-</em><code>Some<em>-{-</em>text</code></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
+	  '<p><i><em>-</em></i><i><code>Some<em>-{<b>-</b></em><b>text</b></code></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
 
 	t = function (title, before, after) {
 		// Because IE7 will display "font-family: xx" without an
