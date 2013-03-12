@@ -36,30 +36,59 @@ define([
 	$,
 	Aloha,
 	Plugin,
-    Ui,
+	Ui,
 	ToggleButton,
 	i18n
 ) {
 	'use strict';
 
+	/**
+	 * Map of editable ids against their metaview states.
+	 *
+	 * @type {object<string, boolean>}
+	 */
 	var states = {};
 
+	/**
+	 * Checks whether the given editable is has metaview enabled.
+	 *
+	 * @param {jQuery<HTMLElement>} $editable
+	 * @return {boolean} True if editable is in metaview-enabled state.
+	 */
 	function enabled($editable) {
 		return states[$editable[0].id];
 	}
 
+	/**
+	 * Enables metaview for the given editable, and update UI appropriately.
+	 *
+	 * @param {jQuery<HTMLElement>} $editable
+	 * @param {ToggleButton} button
+	 */
 	function enable($editable, button) {
 		$editable.addClass('aloha-metaview');
 		button.setState(true);
 		states[$editable[0].id] = true;
 	}
 
+	/**
+	 * Disables metaview for the given editable, and update UI appropriately.
+	 *
+	 * @param {jQuery<HTMLElement>} $editable
+	 * @param {ToggleButton} button
+	 */
 	function disable($editable, button) {
 		$editable.removeClass('aloha-metaview');
 		button.setState(false);
 		states[$editable[0].id] = false;
 	}
 
+	/**
+	 * Toggles metaview on the given editable.
+	 *
+	 * @param {jQuery<HTMLElement>} $editable
+	 * @param {ToggleButton} button
+	 */
 	function toggle($editable, button) {
 		if (enabled($editable)) {
 			disable($editable, button);
@@ -84,14 +113,19 @@ define([
 	});
 
 	/**
-	 * TODO: Memoize configuration
+	 * Gets the configuration for the given editable/plugin combination.
+	 *
+	 * TODO: Memoize
+	 *
+	 * @param {Plugin} plugin Instance of metaview plugin
+	 * @param {Editable} editable
 	 */
 	function getConfiguration(plugin, editable) {
 		return plugin.getEditableConfig(editable);
 	}
 
 	/**
-	 * Whether or not meta-view is automatically enable on an editable.
+	 * Checks whether or not meta-view is automatically enable on an editable.
 	 *
 	 * @param {object} The plugin/editable configuration.
 	 * @return {boolean} True if activated.
@@ -103,7 +137,7 @@ define([
 	}
 
 	/**
-	 * Whether or not meta-view is activated for an editable.
+	 * Checks whether or not meta-view is activated for an editable.
 	 *
 	 * @param {object} The plugin/editable configuration.
 	 * @return {boolean} True if activated.
