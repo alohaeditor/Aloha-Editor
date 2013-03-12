@@ -447,8 +447,8 @@ define([
 		return cursor.node === this.node && cursor.atEnd === this.atEnd;
 	};
 
-	Cursor.prototype.clone = function (cursor) {
-		return cursor(cursor.node, cursor.atEnd);
+	Cursor.prototype.clone = function () {
+		return cursor(this.node, this.atEnd);
 	};
 
 	Cursor.prototype.insert = function (node) {
