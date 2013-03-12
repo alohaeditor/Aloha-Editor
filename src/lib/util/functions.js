@@ -52,11 +52,19 @@ define([], function () {
 		};
 	}
 
+	function bind(fn, thisArg) {
+		var args = Array.prototype.slice.call(arguments, 2);
+		return function () {
+			return fn.apply(thisArg, args.concat(Array.prototype.slice.call(arguments, 0)));
+		};
+	}
+
 	return {
 		identity: identity,
 		noop: noop,
 		returnTrue: returnTrue,
 		returnFalse: returnFalse,
-		complement: complement
+		complement: complement,
+		bind: bind
 	};
 });
