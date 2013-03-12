@@ -323,16 +323,19 @@ Aloha.require([
 	t = function (title, before, after) {
 		// Because IE7 will display "font-family: xx" without an
 		// ending ";" whereas other browsers will add an ending ";".
-		function expected(actual) {
-			equal(actual.replace(/;"/g, '"'), after.replace(/;"/g, '"'));
-		}
+		//
 		// Because IE7 leaves the style attribute as style="font-family:
 		// " after removing the font-family style, which interfers with
-		// the default isPrunable check.
+		// the default equal and isPrunable checks.
+		function expected(actual) {
+			equal(actual.replace(/;"/g, '"').replace(/; font-family: "/g, '"'), after.replace(/;"/g, '"'));
+		}
 		function isPrunableIe7(node) {
 			return ('SPAN' === node.nodeName
-					&& (!$(node).css('font-family')
-						|| 'auto' == $(node).css('font-family')));
+					&& (!Dom.getStyle(node, 'font-family')
+						|| 'auto' == Dom.getStyle(node, 'font-family'))
+					&& (!Dom.getStyle(node, 'font-size')
+						|| 'auto' == Dom.getStyle(node, 'font-size')));
 		}
 		var isPrunable = ($.browser.msie && parseInt($.browser.version) == 7
 						  ? isPrunableIe7
