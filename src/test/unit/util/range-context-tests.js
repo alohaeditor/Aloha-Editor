@@ -79,7 +79,7 @@ Aloha.require([
 
 	function testUnformat(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			RangeContext.unformat(range, 'B');
+			RangeContext.format(range, 'B', true);
 		});
 	}
 
@@ -182,6 +182,18 @@ Aloha.require([
 	t('descending two levels down to each boundary, with boundaries in empty container',
 	  '<p><i>one<em>{</em>left</i>text<i>right<em>}</em>two</i></p>',
 	  '<p><i>one<em></em>{<b>left</b></i><b>text</b><i><b>right</b>}<em></em>two</i></p>');
+
+	t('expand a bold range to the right',
+	  '<p><b>one {two</b> three}</p>',
+	  '<p><b>one {two three</b>}</p>');
+
+	t('expand a bold range to the left',
+	  '<p>{one <b>two} three</b></p>',
+	  '<p>{<b>one two} three</b></p>');
+
+	t('expand a bold range to the left and right',
+	  '<p>{one <b>two</b> three}</p>',
+	  '<p>{<b>one two three</b>}</p>');
 
 	var t = function (title, before, after) {
 		testFormat('RangeContext.format-restack - ' + title, before, after);
@@ -341,7 +353,7 @@ Aloha.require([
 	  '<p>Some {<span>text</span>}</p>',
 	  '<p>Some {<span style="font-family: arial;">text</span>}</p>');
 
-	t('alternating overrides (times/verdana); don\'t replace existing override (helvetica); element inbetween overrides (&lt;b>)',
+	t('alternating overrides (times,verdana); don\'t replace existing override (helvetica); element inbetween overrides (b tag)',
 	  '<p>Some <span style="font-family: times;">a<b><span style="font-family: helvetica;">b</span>c<span style="font-family: verdana;">d{e</span>f</b>g</span>}</p>',
 	  '<p>Some <span style="font-family: times;">a</span><b><span style="font-family: helvetica;">b</span><span style="font-family: times;">c</span><span style="font-family: verdana;">d</span>{<span style="font-family: arial;">ef</span></b><span style="font-family: arial;">g</span>}</p>');
 
@@ -377,7 +389,39 @@ Aloha.require([
 	  '<p>one<span style="font-family: times;"><b>[Some text]x</b></span>two</p>',
 	  '<p>one<span style="font-family: times;"><b>{<span style="font-family: arial;">Some text</span>}x</b></span>two</p>');
 
-	t('don\'t reuse if there is an obstruction above (&lt;code>)',
+	t('don\'t reuse if there is an obstruction above (code tag)',
 	  '<p>one<span style="font-family: times;"><code>[Some text]</code></span>two</p>',
 	  '<p>one<span style="font-family: times;"><code>{<span style="font-family: arial;">Some text</span>}</code></span>two</p>');
+
+	t('extend style right 1',
+	  '<p><span style="font-family: arial;">one {two</span> three}</p>',
+	  '<p><span style="font-family: arial;">one {two three</span>}</p>');
+
+	t('extend style left 1',
+	  '<p>{one <span style="font-family: arial;">two} three</span></p>',
+	  '<p>{<span style="font-family: arial;">one two} three</span></p>');
+
+	t('extend style right 2',
+	  '<p><span style="font-size: 18px; font-family: arial;">one {two</span> three}</p>',
+	  '<p><span style="font-size: 18px; font-family: arial;">one {two</span><span style="font-family: arial;"> three</span>}</p>');
+
+	t('extend style left 2',
+	  '<p>{one <span style="font-size: 18px; font-family: arial;">two} three</span></p>',
+	  '<p>{<span style="font-family: arial;">one <span style="font-size: 18px;">two} three</span></span></p>');
+
+	t('push down style without removing wrapper span',
+	  '<p><span style="font-size: 12px; font-family: times;">one {two</span> three}</p>',
+	  '<p><span style="font-size: 12px;"><span style="font-family: times;">one </span>{<span style="font-family: arial;">two</span></span><span style="font-family: arial;"> three</span>}</p>');
+
+	t('merge wrappers with the same styles',
+	  '<p><span style="font-family: arial;">one</span>{two}</p>',
+	  '<p><span style="font-family: arial;">one{two</span>}</p>');
+
+	t('don\'t merge wrappers with additionals styles',
+	  '<p><span style="font-size: 12px; font-family: arial;">one</span>{two}</p>',
+	  '<p><span style="font-size: 12px; font-family: arial;">one</span>{<span style="font-family: arial;">two</span>}</p>');
+
+	t('don\'t merge wrappers with differing values for the same style',
+	  '<p><span style="font-family: times;">one</span>{two}</p>',
+	  '<p><span style="font-family: times;">one</span>{<span style="font-family: arial;">two</span>}</p>');
 });
