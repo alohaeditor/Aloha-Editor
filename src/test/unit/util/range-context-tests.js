@@ -101,7 +101,7 @@ Aloha.require([
 
 	function testTrimRange(title, before, after, switched) {
 		testMutationSwitchElemTextSelection(title, before, after, function (dom, range) {
-			Dom.trimRangeClosingOpening(range, Html.isIgnorableWhitespace);
+			Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace);
 		});
 	}
 
@@ -372,7 +372,7 @@ Aloha.require([
 	  '<p><span style="font-family: arial;"><span style="font-family: times;">Som{e t}ext</span></span></p>',
 	  '<p><span style="font-family: arial;"><span style="font-family: times;">Som</span>{e t}<span style="font-family: times;">ext</span></span></p>');
 
-	t('reuse outer element',
+	t('reuse outer element directly above',
 	  '<p>one<span style="font-family: times;">[Some text]</span>two</p>',
 	  '<p>one<span style="font-family: arial;">{Some text}</span>two</p>');
 
@@ -384,9 +384,14 @@ Aloha.require([
 	  '<p>one<span><b>[Some text]</b></span>two</p>',
 	  '<p>one<span style="font-family: arial;"><b>{Some text}</b></span>two</p>');
 
+	t('prefer to reuse outer elements above commonAncestorContainer',
+	  '<p>one <span style="font-family: times;">{<span style="font-family: helvetica;">two three</span>}</span> four</p>',
+	  '<p>one <span style="font-family: arial;">{two three}</span> four</p>');
+
 	t('don\'t reuse if there is an obstruction before ("x")',
 	  '<p>one<span style="font-family: times;">x<b>[Some text]</b></span>two</p>',
 	  '<p>one<span style="font-family: times;">x<b>{<span style="font-family: arial;">Some text</span>}</b></span>two</p>');
+	  '<p>one<span style="font-family: times;">x</span><b>{<span style="font-family: arial;">Some text</span>}</b>two</p>'
 
 	t('don\'t reuse if there is an obstruction after ("x")',
 	  '<p>one<span style="font-family: times;"><b>[Some text]x</b></span>two</p>',

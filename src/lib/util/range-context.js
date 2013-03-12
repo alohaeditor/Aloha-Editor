@@ -386,7 +386,7 @@ define([
 		// <b>one</b><i><b>two</b></i>three
 		// and because adjustPointMoveBackWithinRange() requires the
 		// left boundary point to be next to a non-ignorable node.
-		Dom.trimRangeClosingOpening(range, Html.isIgnorableWhitespace);
+		Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace);
 
 		// Because mutation needs to keep track and adjust boundary
 		// points.
@@ -496,7 +496,7 @@ define([
 			// range.
 			restack(node.previousSibling,
 					isWrapper,
-					Html.isIgnorableWhitespace,
+					Html.isUnrenderedWhitespace,
 					Html.isInlineType,
 					leftPoint,
 					rightPoint);
@@ -767,44 +767,30 @@ define([
 
 	function findReusableAncestor(range, hasContext, getOverride, isUpperBoundary, isReusable, isObstruction) {
 		var obstruction = null;
-		function untilIncl(node) {
-			return (null != getOverride(node)
-					|| hasContext(node)
-					|| isReusable(node)
-					|| isUpperBoundary(node));
-		}
 		function beforeAfter(node) {
-			obstruction = obstruction || !Html.isIgnorableWhitespace(node);
+			obstruction = (obstruction
+						   || (!Html.isUnrenderedWhitespace(node)
+							   && !hasContext(node)));
 		}
-		var start    = Dom.nodeAtOffset(range.startContainer, range.startOffset);
-		var end      = Dom.nodeAtOffset(range.endContainer, range.endOffset);
-		var startEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
-		var endEnd   = Dom.isAtEnd(range.endContainer, range.endOffset);
-		var ascStart = Dom.childAndParentsUntilIncl(start, untilIncl);
-		var ascEnd   = Dom.childAndParentsUntilIncl(end, untilIncl);
-		var reusable = Arrays.last(ascStart);
-		function at(node) {
-			// Because the start node is inside the range.
-			if (node === start && !startEnd) {
-				return;
-			}
-			// Because the end node is outside the range.
-			if (node === end && !endEnd) {
-				beforeAfter(node);
-				return;
-			}
-			obstruction = obstruction || isObstruction(node);
+		function untilIncl(node) {
+			// Because we prefer a node above the cac if possible.
+			return (cac !== node && isReusable(node)) || isUpperBoundary(node) || isObstruction(node);
 		}
-		if (!reusable || !isReusable(reusable) || reusable !== Arrays.last(ascEnd)) {
-			return null;
-		}
-		ascendWalkSiblings(ascStart, startEnd, Fn.noop, beforeAfter, at, Fn.noop);
+		walkBoundary(range, Fn.noop, beforeAfter, Fn.noop, Fn.noop);
 		if (obstruction) {
 			return null;
 		}
-		ascendWalkSiblings(ascEnd, endEnd, Fn.noop, Fn.noop, at, beforeAfter);
+		var cac = range.commonAncestorContainer;
+		var cacToReusable = Dom.childAndParentsUntilIncl(cac, untilIncl);
+		var reusable = Arrays.last(cacToReusable);
+		if (!isReusable(reusable)) {
+			// Because, although we preferred a node above the cac, we
+			// fall back to the cac.
+			return isReusable(cac) ? cac : null;
+		}
+		ascendWalkSiblings(cacToReusable, false, Fn.noop, beforeAfter, Fn.noop, beforeAfter);
 		if (obstruction) {
-			return null;
+			return isReusable(cac) ? cac : null;
 		}
 		return reusable;
 	}

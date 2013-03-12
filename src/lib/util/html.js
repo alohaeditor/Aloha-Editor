@@ -27,6 +27,9 @@
 define(['util/dom2'], function (Dom) {
 	'use strict';
 
+	// White space characters as defined by HTML 4 (http://www.w3.org/TR/html401/struct/text.html)
+	var nonWhitespaceRx = /[^\r\n\t\f \u200B]/;
+
 	var nonBlockDisplayValuesMap = {
 		"inline": true,
 		"inline-block": true,
@@ -110,12 +113,37 @@ define(['util/dom2'], function (Dom) {
 		return !isBlockType(node);
 	}
 
-	function isIgnorableWhitespace(node) {
-		return 3 === node.nodeType && !node.length;
+	// Taken from
+	// http://code.google.com/p/rangy/source/browse/trunk/src/js/modules/rangy-cssclassapplier.js
+	// under the MIT license.
+	function isUnrenderedWhitespace(node) {
+		if (3 !== node.nodeType) {
+			return false;
+		}
+		if (!node.length) {
+			return true;
+		}
+		if (nonWhitespaceRx.test(node.nodeValue)) {
+			return false;
+		}
+        var cssWhiteSpace = Dom.getComputedStyle(node.parentNode, "whiteSpace");
+        switch (cssWhiteSpace) {
+            case "pre":
+            case "pre-wrap":
+            case "-moz-pre-wrap":
+                return false;
+            case "pre-line":
+                if (/[\r\n]/.test(node.data)) {
+                    return false;
+                }
+        }
+        // We now have a whitespace-only text node that may be rendered depending on its context. If it is adjacent to a
+        // non-inline element, it will not be rendered. This seems to be a good enough definition.
+        return !hasInlineStyle(node.previousSibling) || !hasInlineStyle(node.nextSibling);
 	}
 
 	return {
-		isIgnorableWhitespace: isIgnorableWhitespace,
+		isUnrenderedWhitespace: isUnrenderedWhitespace,
 		hasBlockStyle: hasBlockStyle,
 		hasInlineStyle: hasInlineStyle,
 		isBlockType: isBlockType,
