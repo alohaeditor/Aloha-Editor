@@ -1,9 +1,9 @@
 /* metaview-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -25,101 +25,127 @@
  * recipients can access the Corresponding Source.
  */
 define([
+	'jquery',
+	'aloha/core',
 	'aloha/plugin',
 	'ui/ui',
 	'ui/toggleButton',
 	'i18n!metaview/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'jquery'
-], function(
+	'i18n!aloha/nls/i18n'
+], function (
+	$,
+	Aloha,
 	Plugin,
     Ui,
 	ToggleButton,
-	i18n,
-	i18nCore,
-	jQuery
+	i18n
 ) {
 	'use strict';
-	var GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
 
-     return Plugin.create('metaview', {
-		_constructor: function(){
-			this._super('metaview');
-		},
-		
-		config: [ 'metaview' ],
-		/**
-		 * Initialize the plugin
-		 */
+	var states = {};
+
+	function enabled($editable) {
+		return states[$editable[0].id];
+	}
+
+	function enable($editable, button) {
+		$editable.addClass('aloha-metaview');
+		button.setState(true);
+		states[$editable[0].id] = true;
+	}
+
+	function disable($editable, button) {
+		$editable.removeClass('aloha-metaview');
+		button.setState(false);
+		states[$editable[0].id] = false;
+	}
+
+	function toggle($editable, button) {
+		if (enabled($editable)) {
+			disable($editable, button);
+		} else {
+			enable($editable, button);
+		}
+	}
+
+	/**
+	 * Singleton meta view toggle button to be used across all meta view plugin
+	 * instances.
+	 *
+	 * @type {ToggleButton}
+	 */
+	var METAVIEW_TOGGLE_BUTTON = Ui.adopt('toggleMetaView', ToggleButton, {
+		tooltip : i18n.t('button.switch-metaview.tooltip'),
+		icon: 'aloha-icon aloha-icon-metaview',
+		scope: 'Aloha.continuoustext',
+		click: function () {
+			toggle(Aloha.activeEditable.obj, this);
+		}
+	});
+
+	/**
+	 * TODO: Memoize configuration
+	 */
+	function getConfiguration(plugin, editable) {
+		return plugin.getEditableConfig(editable);
+	}
+
+	/**
+	 * Whether or not meta-view is automatically enable on an editable.
+	 *
+	 * @param {object} The plugin/editable configuration.
+	 * @return {boolean} True if activated.
+	 */
+	function isAutomaticallyEnabled(config) {
+		return (
+			$.type(config) === 'array' && $.inArray('enabled', config) !== -1
+		);
+	}
+
+	/**
+	 * Whether or not meta-view is activated for an editable.
+	 *
+	 * @param {object} The plugin/editable configuration.
+	 * @return {boolean} True if activated.
+	 */
+	function isPluginActivated(config) {
+		return (
+			$.type(config) === 'array' && $.inArray('metaview', config) !== -1
+		);
+	}
+
+    return Plugin.create('metaview', {
+		config: ['metaview'],
 		init: function () {
-			var that = this;
-			
-			this.createButtons();
-	
-			// mark active Editable with a css class
-			Aloha.bind(
-					"aloha-editable-activated",
-					function (jEvent, aEvent) {
-						var config;
-						config = that.getEditableConfig(Aloha.activeEditable.obj);
+			var plugin = this;
 
-						if (jQuery.type(config) === 'array' && jQuery.inArray('enabled', config) !== -1) {
-							jQuery(Aloha.activeEditable.obj).addClass('aloha-metaview');
-						}
+			Aloha.bind('aloha-editable-activated', function () {
+				var config = getConfiguration(plugin, Aloha.activeEditable.obj);
 
- 						if (jQuery.type(config) === 'array' && jQuery.inArray('metaview', config) !== -1) {
-							that._toggleMetaViewButton.show(true);
-						} else {
-							that._toggleMetaViewButton.show(false);
-							return;
-						}
-						
-						if (jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
-							that._toggleMetaViewButton.setState(true);
-						} else {
-							that._toggleMetaViewButton.setState(false);
-						}
+				if (isAutomaticallyEnabled(config)) {
+					enable(Aloha.activeEditable.obj, METAVIEW_TOGGLE_BUTTON);
+				}
+
+				if (isPluginActivated(config)) {
+					METAVIEW_TOGGLE_BUTTON.show(true);
+					if (enabled(Aloha.activeEditable.obj)) {
+						enable(
+							Aloha.activeEditable.obj,
+							METAVIEW_TOGGLE_BUTTON
+						);
+					} else {
+						disable(
+							Aloha.activeEditable.obj,
+							METAVIEW_TOGGLE_BUTTON
+						);
 					}
-			);
-			Aloha.bind(
-					"aloha-editable-deactivated",
-					function (jEvent, aEvent) {
-						var config;
-						config = that.getEditableConfig(Aloha.activeEditable.obj);
+				} else {
+					METAVIEW_TOGGLE_BUTTON.show(false);
+				}
+			});
 
-						jQuery(Aloha.activeEditable.obj).removeClass('aloha-metaview');
-						
-						if (jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
-							that._toggleMetaViewButton.setState(true);
-						} else {
-							that._toggleMetaViewButton.setState(false);
-						}
-					}
-			);
-		},
-		
-		buttonClick: function() {
-			if(jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
-				jQuery(Aloha.activeEditable.obj).removeClass('aloha-metaview');
-				this._toggleMetaViewButton.setState(false);
-			} else {
-				jQuery(Aloha.activeEditable.obj).addClass('aloha-metaview');
-				this._toggleMetaViewButton.setState(true);
-			}
-		},
-		
-		/**
-		 * Initialize the buttons
-		 */
-		createButtons: function () {
-			var that = this;
-	
-			this._toggleMetaViewButton = Ui.adopt("toggleMetaView", ToggleButton, {
-				tooltip : i18n.t('button.switch-metaview.tooltip'),
-				icon: 'aloha-icon aloha-icon-metaview',
-				scope: 'Aloha.continuoustext',
-				click : function () { that.buttonClick(); }
+			Aloha.bind('aloha-editable-deactivated', function () {
+				Aloha.activeEditable.obj.removeClass('aloha-metaview');
 			});
 		}
 	});
