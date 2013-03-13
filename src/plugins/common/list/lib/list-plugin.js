@@ -487,7 +487,6 @@ define([
 				}
 			}
 
-            Aloha.activeEditable.smartContentChange({type: 'block-change'})
 			// refresh the selection
 			this.refreshSelection();
 		},
@@ -532,7 +531,6 @@ define([
 
 				// refresh the selection
 				this.refreshSelection();
-                Aloha.activeEditable.smartContentChange({type: 'block-change'});
 
 				return false;
 			}
@@ -609,7 +607,6 @@ define([
 
 					// refresh the selection
 					this.refreshSelection();
-                    Aloha.activeEditable.smartContentChange({type: 'block-change'})
 				}
 
 				return false;
