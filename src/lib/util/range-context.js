@@ -335,7 +335,7 @@ define([
 			var setContext = function (node, override) {
 				lastContextNode = node;
 				formatter.setContext(node, override, isNonClearableOverride);
-			}
+			};
 			walkBoundary(
 				liveRange,
 				formatter.getOverride,
@@ -501,17 +501,15 @@ define([
 					leftPoint,
 					rightPoint);
 		}
+		var wrapper = null;
 		if (node.previousSibling && isMergable(node.previousSibling)) {
-			var wrapper = node.previousSibling;
+			wrapper = node.previousSibling;
 			insertAdjust(node, wrapper, true, leftPoint, rightPoint);
-			return wrapper;
-		}
-		if (!isWrapper(node)) {
-			var wrapper = createWrapper();
+		} else if (!isWrapper(node)) {
+			wrapper = createWrapper();
 			wrapAdjust(node, wrapper, leftPoint, rightPoint);
-			return wrapper;
 		}
-		return null;
+		return wrapper;
 	}
 
 	function isUpperBoundary_default(node) {
@@ -726,8 +724,16 @@ define([
 			}
 		}
 
+		function clearOverrideRecStep(node) {
+			// Different from clearOverride because clearOverride() only
+			// clears non-context overrides, while during a recursive
+			// clearing we want to clear the override always regardless
+			// of whether it is equal to context.
+			removeStyle(node, styleName);
+		}
+
 		function clearOverrideRec(node) {
-			Dom.walkRec(node, clearOverride);
+			Dom.walkRec(node, clearOverrideRecStep);
 		}
 
 		function pushDownOverride(node, override) {
@@ -772,15 +778,15 @@ define([
 						   || (!Html.isUnrenderedWhitespace(node)
 							   && !hasContext(node)));
 		}
-		function untilIncl(node) {
-			// Because we prefer a node above the cac if possible.
-			return (cac !== node && isReusable(node)) || isUpperBoundary(node) || isObstruction(node);
-		}
 		walkBoundary(range, Fn.noop, beforeAfter, Fn.noop, Fn.noop);
 		if (obstruction) {
 			return null;
 		}
 		var cac = range.commonAncestorContainer;
+		function untilIncl(node) {
+			// Because we prefer a node above the cac if possible.
+			return (cac !== node && isReusable(node)) || isUpperBoundary(node) || isObstruction(node);
+		}
 		var cacToReusable = Dom.childAndParentsUntilIncl(cac, untilIncl);
 		var reusable = Arrays.last(cacToReusable);
 		if (!isReusable(reusable)) {

@@ -432,4 +432,8 @@ Aloha.require([
 	t('don\'t merge wrappers with differing values for the same style',
 	  '<p><span style="font-family: times;">one</span>{two}</p>',
 	  '<p><span style="font-family: times;">one</span>{<span style="font-family: arial;">two</span>}</p>');
+
+	t('reuse outer wrapper and clear nested contexts',
+	  '<p><span style="font-family: times;">{one}<span style="font-family: arial;">two</span></span>three</p>',
+	  '<p><span style="font-family: arial;">{one}two</span>three</p>');
 });
