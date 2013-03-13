@@ -723,8 +723,8 @@ define([
 		var opposite = cursorFromBoundaryPoint(oppositeContainer, oppositeOffset);
 		var changed = false;
 		while (!cursor.equals(opposite)
-			   && ignore(cursor)
-			   && (backwards ? cursor.prev() : cursor.next())) {
+			       && ignore(cursor)
+			       && (backwards ? cursor.prev() : cursor.next())) {
 			changed = true;
 		}
 		if (changed) {

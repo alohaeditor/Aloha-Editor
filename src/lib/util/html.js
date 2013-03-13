@@ -128,14 +128,15 @@ define(['util/dom2'], function (Dom) {
 		}
         var cssWhiteSpace = Dom.getComputedStyle(node.parentNode, "whiteSpace");
         switch (cssWhiteSpace) {
-            case "pre":
-            case "pre-wrap":
-            case "-moz-pre-wrap":
+		case "pre":
+        case "pre-wrap":
+        case "-moz-pre-wrap":
+            return false;
+        case "pre-line":
+            if (/[\r\n]/.test(node.data)) {
                 return false;
-            case "pre-line":
-                if (/[\r\n]/.test(node.data)) {
-                    return false;
-                }
+            }
+			break;
         }
         // We now have a whitespace-only text node that may be rendered depending on its context. If it is adjacent to a
         // non-inline element, it will not be rendered. This seems to be a good enough definition.
