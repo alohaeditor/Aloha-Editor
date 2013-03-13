@@ -200,6 +200,13 @@
                                         }
                                         PubSub.pub('swordpushweb.saved');
                                     });
+                                } else {
+                                    $('#statusmessage').data('message')('Saved');
+                                    GenericButton.getButtons()["save"].enable(false);
+                                    $('.btn.save').html('Saved');
+                                    if (callback_function) {
+                                        callback_function();
+                                    }
                                 }
                             }
                         }
