@@ -63,13 +63,15 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
   '''
 
   LANGUAGES =
-    'math/asciimath': {open: '`', close: '`'}
-    'math/tex': {open: '[TEX_START]', close: '[TEX_END]'}
+    'math/asciimath': {open: '`', close: '`', raw:false}
+    'math/tex': {open: '[TEX_START]', close: '[TEX_END]', raw:false}
     'math/mml': {raw: true}
 
-  MATHML_ANNOTATION_ENCODINGS =
-    'TeX':       'math/tex'
-    'ASCIIMath': 'math/asciimath'
+  MATHML_ANNOTATION_MIME_ENCODINGS    = [ 'math/tex', 'math/asciimath' ]
+  MATHML_ANNOTATION_NONMIME_ENCODINGS =
+    'tex':       'math/tex'
+    'latex':     'math/tex'
+    'asciimath': 'math/asciimath'
 
   TOOLTIP_TEMPLATE = '<div class="aloha-ephemera tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
 
@@ -107,16 +109,12 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
       $mathElement = $mml.parent().parent()
       # replace the MathML with ASCII/LaTeX formula if possible
       mathParts = findFormula $mml
-      if mathParts.mimeType is "math/asciimath"
-        $mathElement.find('.mathjax-wrapper').text(LANGUAGES['math/asciimath'].open +
+      if mathParts.mimeType in MATHML_ANNOTATION_MIME_ENCODINGS
+        $mathElement.find('.mathjax-wrapper').text(LANGUAGES[mathParts.mimeType].open +
                                                    mathParts.formula +
-                                                   LANGUAGES['math/asciimath'].close)
-      else if mathParts.mimeType is "math/tex"
-        $mathElement.find('.mathjax-wrapper').text(LANGUAGES['math/tex'].open +
-                                                   mathParts.formula +
-                                                   LANGUAGES['math/tex'].close)
+                                                   LANGUAGES[mathParts.mimeType].close)
       triggerMathJax $mathElement, ->
-        if mathParts.mimeType is "math/asciimath" or mathParts.mimeType is "math/tex"
+        if mathParts.mimeType in MATHML_ANNOTATION_MIME_ENCODINGS
           addAnnotation $mathElement, mathParts.formula, mathParts.mimeType
         makeCloseIcon $mathElement
         if not $mathElement.next().is '.aloha-ephemera-wrapper'
@@ -212,17 +210,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
     # tex could be "math/tex; mode=display" so split in the semicolon
     mimeType = mimeType.split(';')[0]
 
-
     formula = $span.find('script[type]').html()
-
-    # If the input is MathML try and pull out the formula from the mml:annotation element
-    if mimeType == 'math/mml'
-      $tmp = jQuery('<div></div>').html($span.find('script[type]').text())
-      $annotation = $tmp.find('annotation')
-      lang = $annotation.attr('encoding')
-      if MATHML_ANNOTATION_ENCODINGS[lang]
-        mimeType = MATHML_ANNOTATION_ENCODINGS[lang]
-        formula = $annotation.text()
 
     # Set the language and fill in the formula
     $editor.find("input[name=mime-type][value='#{mimeType}']").attr('checked', true)
@@ -246,7 +234,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
         $span.prepend $mathPoint
 
       if LANGUAGES[mimeType].raw
-        $mathPoint.innerHTML = formula
+        $formula = $(formula)
+        $mathPoint.text('').append($formula)
       else
         formulaWrapped = LANGUAGES[mimeType].open + formula + LANGUAGES[mimeType].close
         $mathPoint.text(formulaWrapped)
@@ -254,7 +243,8 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
         # Save the Edited text into the math annotation element
         $mathml = $span.find('math')
         if $mathml[0]
-          addAnnotation $span, formula, mimeType
+          if mimeType in MATHML_ANNOTATION_MIME_ENCODINGS
+            addAnnotation $span, formula, mimeType
           makeCloseIcon($span)
         Aloha.activeEditable.smartContentChange {type: 'block-change'}
 
@@ -331,6 +321,19 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
       $annotation.attr('encoding', mimeType)
       $annotation.text(formula)
 
+  getEncoding = ($annotation) ->
+    encoding = $annotation.attr 'encoding'
+    #if MATHML_ANNOTATION_MIME_ENCODINGS.contains encoding
+    if encoding in MATHML_ANNOTATION_MIME_ENCODINGS
+      mimeEncoding = encoding
+      return mimeEncoding
+    # cannonicalize the non-mime encodings
+    encoding = encoding.toLowerCase()
+    if encoding of MATHML_ANNOTATION_NONMIME_ENCODINGS
+      mimeEncoding = MATHML_ANNOTATION_NONMIME_ENCODINGS[encoding]
+      return mimeEncoding
+    return null
+
   # Looking to precisely match the math we create in the editor
   #    <math>
   #      <semantics>
@@ -349,7 +352,7 @@ define [ 'aloha', 'aloha/plugin', 'jquery', 'popover', 'ui/ui', 'css!../../../oe
           $secondChild = jQuery($semantics.children()[1])
           if $secondChild.is 'annotation[encoding]'
             $annotation = $secondChild
-            encoding = $annotation.attr 'encoding'
+            encoding = getEncoding $annotation
             formula = $annotation.text()
             if encoding of LANGUAGES
               return { 'mimeType': encoding, 'formula': formula }
