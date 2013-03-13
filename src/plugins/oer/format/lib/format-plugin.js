@@ -541,8 +541,6 @@ define('format/format-plugin', [
 					return this.nodeName === markup[0].nodeName;
 				}, Aloha.activeEditable.obj );
 
-                Aloha.activeEditable.smartContentChange({type: 'block-change'});
-
 				if ( foundMarkup ) {
 					// remove the markup
 					if ( rangeObject.isCollapsed() ) {

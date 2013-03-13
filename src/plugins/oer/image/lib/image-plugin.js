@@ -132,7 +132,6 @@ function(Aloha, plugin, $, Ui, Button, PubSub) {
                     plugin._hideModal();
                 }
 
-                Aloha.activeEditable.smartContentChange({type: 'block-change'});
                 return e.preventDefault();
             });
             $body.find('.upload-image-form .action.preview').on('click', function(e){

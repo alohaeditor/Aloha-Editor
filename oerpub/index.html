@@ -185,7 +185,6 @@
                                 // Microsoft.XMLDOM
                                 var html = (new XMLSerializer()).serializeToString(
                                     $html.append($body).get(0));
-
                                 if(save_url !== null){
                                     $.post(save_url,
                                             {html: html}, function(data, statustext){
@@ -201,13 +200,6 @@
                                         }
                                         PubSub.pub('swordpushweb.saved');
                                     });
-                                } else {
-                                    $('#statusmessage').data('message')('Saved');
-                                    GenericButton.getButtons()["save"].enable(false);
-                                    $('.btn.save').html('Saved');
-                                    if (callback_function) {
-                                        callback_function();
-                                    }
                                 }
                             }
                         }
