@@ -251,15 +251,14 @@
                             // editor.isModified().
                             window.setInterval(savePreview, 30000);
 
-
-                            // Bind a handler for the changed event
-                            var editor = Aloha.getEditableById('canvas');
-                            Aloha.bind('aloha-smart-content-changed', function(){
-                                if(editor.isModified()){
+                            setInterval(function() {
+                                var editor = Aloha.getEditableById('canvas');
+                                if (editor.isModified()) {
                                     $('.btn.save').html('Save');
                                     GenericButton.getButtons()["save"].enable(true);
                                 }
-                            });
+                            }, 250);
+
                             // Binds the function to all headers, paragraphs, and pre tags
                             Aloha.jQuery(":header, p, pre").bind('click', headingFunc);
                             Aloha.jQuery('#canvas').bind('keyup', recursiveHeadingFunc);
