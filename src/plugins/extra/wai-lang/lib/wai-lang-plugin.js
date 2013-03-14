@@ -148,7 +148,7 @@ define([
 		if (range.isCollapsed()) {
 			Dom.extendToWord(range);
 		}
-		Dom.addMarkup(range, $('<span class="' + WAI_LANG_CLASS + '">'), false);
+		Dom.addMarkup(range, $('<span class="' + WAI_LANG_CLASS + '"></span>'), false);
 		range.select();
 	}
 
