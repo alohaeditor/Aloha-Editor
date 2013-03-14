@@ -1,149 +1,173 @@
-/*global define:true */
 /*!
-* Aloha Editor
-* Author & Copyright (c) 2010-2012 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+ * Aloha Editor
+ * Author & Copyright (c) 2010-2013 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 define([
-	'aloha',
 	'jquery',
-	'aloha/contenthandlermanager'
+	'aloha/core',
+	'aloha/contenthandlermanager',
+	'contenthandler/contenthandler-utils',
+	'util/html'
 ], function (
+	$,
 	Aloha,
-	jQuery,
-	ContentHandlerManager
+	ContentHandlerManager,
+	Utils,
+	Html
 ) {
 	'use strict';
 
-	var IS_BLOCK = {
-		h1: true,
-		h2: true,
-		h3: true,
-		h4: true,
-		h5: true,
-		h6: true,
-		p: true,
-		pre: true,
-		blockquote: true,
-		H1: true,
-		H2: true,
-		H3: true,
-		H4: true,
-		H5: true,
-		H6: true,
-		P: true,
-		PRE: true,
-		BLOCKQUOTE: true
-	};
-
-	var IS_BR = {
-		br: true,
-		BR: true
-	};
+	var blocksSelector = Html.BLOCK_TAGNAMES.join();
+	var emptyBlocksSelector = Html.BLOCK_TAGNAMES.join(':empty,') + ':empty';
+	var NOT_ALOHA_BLOCK_FILTER = ':not(.aloha-block)';
 
 	/**
 	 * Determines if the given HTML element needs a trailing <br> tag in order
 	 * for it to be visible.
+	 *
+	 * @param {HTMLElement} block
+	 * @return {boolean}
 	 */
-	var needsEndBr = function (block) {
+	function needsEndBr(block) {
 		return (
-			IS_BLOCK[block.nodeName]
+			Html.isBlock(block)
 			&&
-			!(block.lastChild && IS_BR[block.lastChild.nodeName])
+			(!block.lastChild ||
+				'br' !== block.lastChild.nodeName.toLowerCase())
 		);
-	};
+	}
+
+	/**
+	 * Finds a <br> tag that is at the end of the given container.
+	 * Invisible what spaces are ignored.
+	 *
+	 * @param {HTMLElement} container
+	 * @return {HTMLElement|null} A <br> tag at the end of the container; null
+	 *                            if none is found.
+	 */
+	function findEndBr(container) {
+		var node = container.lastChild;
+		while (node && Html.isIgnorableWhitespace(node)) {
+			node = node.previousSibling;
+		}
+		return ('br' === node.nodeName.toLowerCase()) ? node : null;
+	}
+
+	/**
+	 * Removes the <br> tag that is at the end of the given container.
+	 * Invisible what spaces are ignored.
+	 *
+	 * @param {number} i Unused
+	 * @param {HTMLElement} element
+	 */
+	function removeEndBr(i, element) {
+		var br = findEndBr(element);
+		if (br) {
+			$(br).remove();
+		}
+	}
 
 	/**
 	 * Prepares this content for editing
+	 *
+	 * @param {number} i Unused
+	 * @param {HTMLElement} element
 	 */
-	var prepareEditing = function (index, element) {
-		var $element = jQuery(element);
+	function prepareForEditing(i, element) {
+		var $element = $(element);
 
-		// Remove empty blocklevel elements which are invisible
-		$element.filter('h1:empty,h2:empty,h3:empty,h4:empty,h5:empty,h6:empty,'
-			+ 'p:empty,pre:empty,blockquote:empty').remove();
+		$element.filter(emptyBlocksSelector).remove();
 
-		if (!jQuery.browser.msie) {
-			$element.filter('li').each(function () {
-				if (needsEndBr(this)) {
-					jQuery(this).append('<br/>');
-				}
-			});
-		} else {
+		if ($.browser.msie) {
 			// If editing in IE: remove end-br's.  Content edited by Aloha
 			// Editor is no longer exported with <br>'s that are annotated with
 			// "aloha-end-br" classes,  this clean-up is still done, however,
 			// for content that was edited using legacy Aloha Editor.
 			$element.filter('br.aloha-end-br').remove();
+
+			// Because IE's Trident engine goes against W3C's HTML specification
+			// by rendering empty block-level elements with height if they are
+			// contentEditable.  Propping <br> elements therefore result in 2
+			// lines being displayed rather than 1 (which was the intention of
+			// having the propping <br> element is).  Because these empty
+			// content editable block-level elements are not rendered invisibly
+			// in IE, we can remove the propping <br> in otherwise empty
+			// block-level elements.
+			$element.filter(blocksSelector).each(removeEndBr);
+		} else {
+			$element.filter('li').each(function () {
+				// Does not compute; Html.isBlock(li) === false
+				if (needsEndBr(this)) {
+					$(this).append('<br/>');
+				}
+			});
 		}
-		$element.children(':not(.aloha-block)').each(prepareEditing);
-	};
+		$element.children(NOT_ALOHA_BLOCK_FILTER).each(prepareForEditing);
+	}
 
 	/**
 	 * Prepares the content for editing in IE7.
 	 *
 	 * Ensure that all empty blocklevel elements must contain a zero-width
 	 * whitespace.
+	 *
+	 * @param {number} i Unused
+	 * @param {HTMLElement} element
 	 */
-	var prepareEditingIE7 = function (index, element) {
-		var $element = jQuery(element);
-		$element.filter('h1:empty,h2:empty,h3:empty,h4:empty,h5:empty,h6:empty,'
-			+ 'p:empty,pre:empty,blockquote:empty').append('\u200b');
-		$element.children(':not(.aloha-block)').each(prepareEditingIE7);
-	};
+	function prepareEditingIE7(i, element) {
+		var $element = $(element);
+		$element.filter(emptyBlocksSelector).append('\u200b');
+		$element.children(NOT_ALOHA_BLOCK_FILTER).each(prepareEditingIE7);
+	}
 
 	/**
-	 * For a given DOM element, will make sure that every one of its child
-	 * nodes which is a block-level element ends with a <br> node.
+	 * For a given DOM element, will make sure that it, and every one of its
+	 * child nodes, which is a block-level element ends with a <br> node.
 	 *
 	 * This ensures that a block is rendered visibly (with atleast one
 	 * character height).
+	 *
+	 * @param {number} i Unused
+	 * @param {HTMLElement} element
 	 */
-	var propBlockElements = function (index, element) {
-		var $element = jQuery(element);
-		if ($element.filter('p,h1,h2,h3,h4,h5,h6,pre,blockquote').length > 0) {
-			if (needsEndBr(element)) {
-				jQuery(element).append('<br/>');
-			}
-		}
-		$element.children(':not(.aloha-block)').each(propBlockElements);
-	};
+	function propBlockElements(i, element) {
+		var $element = $(element);
+		$element.filter(emptyBlocksSelector).append('<br/>');
+		$element.children(NOT_ALOHA_BLOCK_FILTER).each(propBlockElements);
+	}
 
-	/**
-	 * Register the blockelement content handler
-	 */
-	var BlockElementContentHandler = ContentHandlerManager.createHandler({
-		/**
-		 * Handle all blockelements
-		 * @param content
-		 * @param options
-		 */
+	return ContentHandlerManager.createHandler({
 		handleContent: function (content, options) {
-			if (typeof content === 'string') {
-				content = jQuery('<div>' + content + '</div>');
-			} else if (content instanceof jQuery) {
-				content = jQuery('<div>').append(content);
+			var $content = Utils.wrapContent(content);
+
+			if (!options || !$content) {
+				return $content && $content.html();
 			}
 
-			options = options || {};
+			switch (options.command) {
+			case 'initEditable':
+				$content.children(NOT_ALOHA_BLOCK_FILTER)
+				        .each(prepareForEditing);
 
-			if (options.command === 'initEditable') {
-				content.children(':not(.aloha-block)').each(prepareEditing);
-				if (jQuery.browser.msie && jQuery.browser.version <= 7) {
-					content.children(':not(.aloha-block)').each(prepareEditingIE7);
+				// TODO: Do we support ie versions below 7?
+				if ($.browser.msie && $.browser.version <= 7) {
+					$content.children(NOT_ALOHA_BLOCK_FILTER)
+					        .each(prepareEditingIE7);
 				}
-			} else if (options.command === 'getContents') {
-				content.children(':not(.aloha-block)').each(propBlockElements);
+				break;
+			case 'getContents':
+				$content.children(NOT_ALOHA_BLOCK_FILTER)
+				        .each(propBlockElements);
 
-				// Remove trailing end br's in li's since they are not
-				// necessary for rendering
-				content.find('li>br:last').remove();
+				// Because trailing end <br>s in <li>s are not necessary for
+				// rendering.
+				$content.find('li>br:last').remove();
+				break;
 			}
 
-			return content.html();
+			return $content.html();
 		}
 	});
-
-	return BlockElementContentHandler;
 });
