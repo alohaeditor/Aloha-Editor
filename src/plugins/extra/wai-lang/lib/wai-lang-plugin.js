@@ -1,6 +1,6 @@
 /*!
  * Aloha Editor
- * Author & Copyright (c) 2011-213 Gentics Software GmbH
+ * Author & Copyright (c) 2011-2013 Gentics Software GmbH
  * aloha-sales@gentics.com
  * Licensed under the terms of http://www.aloha-editor.com/license.html
  */
@@ -172,7 +172,7 @@ define([
 		var range = Selection.getRangeObject();
 
 		// Because we don't want to add markup to an area that already contains
-		// a wai-lang markup.
+		// wai-lang markup.
 		if (!findWaiLangMarkup(range)) {
 			addMarkup(range);
 		}
@@ -264,6 +264,7 @@ define([
 	 * For use with the caching editable configurations.
 	 *
 	 * @param {Plugin} plugin Wai-lang plugin instance
+	 * @return {string} Unique id of plugin instance
 	 */
 	function getPluginInstanceId(plugin) {
 		return plugin._instanceId;
@@ -286,6 +287,7 @@ define([
 	 *
 	 * @param {Editable} editable
 	 * @param {Plugin} plugin A wai-lang plugin instance
+	 * @return {object} configuration
 	 */
 	function getConfig(editable, plugin) {
 		var key = editable.getId() + ':' + getPluginInstanceId(plugin);
@@ -394,7 +396,7 @@ define([
 				this.objectTypeFilter = this.settings.objectTypeFilter;
 			}
 			if (this.settings.hotKey) {
-				// TODO: Is it safe to make this merging shallow?
+				// TODO: Would it be safe to make this merging shallow?
 				$.extend(true, this.hotKey, this.settings.hotKey);
 			}
 			if (this.settings.iso639) {
