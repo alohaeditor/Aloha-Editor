@@ -14,7 +14,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.23.1 - 2013/03/07
 
-**BUGFIX**: Ensured that the floating menu will not cover small editables
+- **BUGFIX**: Ensured that the floating menu will not cover small editables
             whenever possible.
 - **ENHANCEMENT**: state-override: when pressing a formatting
 	button and the cursor is not within a word, a state override
