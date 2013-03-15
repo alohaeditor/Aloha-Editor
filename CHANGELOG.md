@@ -12,6 +12,17 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.2 - 2013/03/15
+
+- **BUGFIX**: Fixed editables losing focus and the toolbar dissapearing
+	when clicking on the toolbar, on a dialog or on an attribute
+	field from a plugin (link, wai-lang)
+
+- **BUGFIX**: Fixed the text selection background color not being removed
+	when selecting something from the attribute field of a plugin (link plugin,
+	wai-lang)
+
+
 ## 0.23.1 - 2013/03/07
 
 - **BUGFIX**: Ensured that the floating menu will not cover small editables
