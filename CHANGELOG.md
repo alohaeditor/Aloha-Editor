@@ -19,7 +19,7 @@ All changes are categorized into one of the following keywords:
 	field from a plugin (link, wai-lang)
 
 - **BUGFIX**: Fixed the text selection background color not being removed
-	when selecting something from the attribute field of a plugin (link plugin,
+	when selecting something from the attribute field of a plugin (link,
 	wai-lang)
 
 
