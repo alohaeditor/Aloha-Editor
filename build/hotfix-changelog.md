@@ -8,3 +8,6 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**: fixed handling of closing angle brackets in the DOM-to-XHTML
+              plugin, which caused problems when these were includes in
+              attributes.
