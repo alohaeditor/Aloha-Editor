@@ -1,11 +1,25 @@
-# How we use branches:
+# How we use branches and pull requests and redmine tickets:
+## Branches
 * We have two long lived branches -- master and dev. 
-* Pull requests go from feature and fix branches to master.
+* Dev is for integration testing. Feature and fix branches get merged here for immediate testing. 
+Dev can be deleted and rebuilt from master if needed.
 * Releases and gh-pages will run off of master.
 * New features or bug fixes branch from master.
-* Dev is for integration testing. Feature and fix branches get merged here for immediate testing.  
+  * Bug fix branches should use the redmine.oerpub.org ticket number in their name.
 
-# Integration with redmine
+## Releases
+* oerpub releases to remix.oerpub.org as close to immediately after new things are merged to master. 
+* Each release will be tagged. Major releases will get release branches. 
+* For releases that accumulate multiple features and fixes, a branch from master should be used to collect all the 
+changes that will be released together.
+
+## Pull requests
+* Pull requests go from feature and fix branches to master.
+* Before merging to master, the pull request must be code reviewed and tested. When each is approved (code review, test)
+a comment on the pull request should indicate the approval. When both approval comments are there, the pull request can
+merged to master
+
+## Integration with redmine
 OERPUB is using [redmine.oerpub.org](http://redmine.oerpub.org) for tracking issues to the editor. When developers
 are fixing bugs or adding ticketed features, they should reference the ticket in the commits as explained here:
 [Referencing-issues-in-commit-messages](http://www.redmine.org/projects/redmine/wiki/RedmineSettings#Referencing-issues-in-commit-messages)
@@ -14,8 +28,9 @@ are fixing bugs or adding ticketed features, they should reference the ticket in
 1. Make a feature-or-fix branch off of master.
 2. Develop and test on the branch.
 3. Merge to dev and build on testing.oerpub.org
-4. When testing passes, issue a pull request from the feature-or-fix branch to master.
-5. Someone not-affiliated with the branch will review the request.
+4. Issue a pull request from the feature-or-fix branch to master. This can be after testing or simultaneous. If after 
+testing, be sure to indicate in a comment on the pull request that testing already passed.
+5. Someone not-affiliated with the branch will review the request and ensure testing passes.
    * 5A. Pull request is accepted
      * merge pull-request into master
      * merge master to gh-pages
