@@ -11,3 +11,8 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: fixed handling of closing angle brackets in the DOM-to-XHTML
               plugin, which caused problems when these were includes in
               attributes.
+
+- **BUGFIX**: Character-plugin: Fixed the overlay not defining a font color
+              for the characters in the overlay and inheriting the color from
+              the content. If the font color was white the text in the overlay
+              wasn't visible.
