@@ -89,54 +89,18 @@ define([
 	}
 
 	/**
-	 * Checks whether this node is('span[lang]').
-	 *
-	 * @this {HTMLElement}
-	 * @return {boolean} True if this element is('span[lang]')
-	 */
-	function filterForLangSpan() {
-		var elem = this;
-		return 'SPAN' === elem.nodeName && $(elem).is('[lang]');
-	}
-
-	/**
-	 * Filters markup at the given range using the specified filter.
-	 *
-	 * @param {RangeObject} range
-	 * @param {Editable} editable
-	 * @param {Function} filter
-	 * @return {HTMLElement|null} The found markup; null otherwise.
-	 */
-	function filterMarkup(range, editable, filter) {
-		return (editable && (range || Selection.getRangeObject()).findMarkup(
-			filter,
-			editable.obj
-		)) || null;
-	}
-
-	/**
 	 * Looks for a wai-Lang wrapper DOM element within the the given range.
 	 *
 	 * @param {RangeObject} range
 	 * @return {HTMLElement|null} Wai-lang wrapper node; null otherwise.
 	 */
 	function findWaiLangMarkup(range) {
-		return filterMarkup(
-			range,
-			Aloha.activeEditable,
-			filterForWaiLangMarkup
+		return (
+			Aloha.activeEditable
+				? range.findMarkup(filterForWaiLangMarkup,
+				                   Aloha.activeEditable.obj)
+				: null
 		);
-	}
-
-	/**
-	 * Looks for a span element that contains a "lang" attribute, in the given
-	 * range.
-	 *
-	 * @param {RangeObject} range
-	 * @return {HTMLELement|null} The found span element; null otherwise.
-	 */
-	function findLangSpanMarkup(range) {
-		return filterMarkup(range, Aloha.activeEditable, filterForLangSpan);
 	}
 
 	/**
@@ -396,7 +360,6 @@ define([
 				this.objectTypeFilter = this.settings.objectTypeFilter;
 			}
 			if (this.settings.hotKey) {
-				// TODO: Would it be safe to make this merging shallow?
 				$.extend(true, this.hotKey, this.settings.hotKey);
 			}
 			if (this.settings.iso639) {
