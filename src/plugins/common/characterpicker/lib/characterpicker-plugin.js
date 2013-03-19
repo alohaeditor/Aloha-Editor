@@ -366,7 +366,7 @@ define([
 	 *                        character picker.
 	 */
 	function generateOverlay(characterpicker, editable) {
-		var config = characterpicker.getEditableConfig(editable);
+		var config = characterpicker.getEditableConfig(editable.obj);
 		if (!config) {
 			return null;
 		}

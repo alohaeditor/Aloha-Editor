@@ -16,3 +16,7 @@ All changes are categorized into one of the following keywords:
               for the characters in the overlay and inheriting the color from
               the content. If the font color was white the text in the overlay
               wasn't visible.
+
+- **BUGFIX**: Character-plugin: Fixed the error
+              "Object [object Object] has no method 'is'" occuring, when clicking
+              into an editable. RT#54057
