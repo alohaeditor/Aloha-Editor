@@ -18,7 +18,7 @@ define([
 	'ui/port-helper-attribute-field',
 	'i18n!wai-lang/nls/i18n',
 	'wai-lang/languages'
-], function (
+], function WaiLangPlugin(
 	Aloha,
 	$,
 	PubSub,
@@ -104,7 +104,7 @@ define([
 	}
 
 	/**
-	 * Wraps the contents at the current range in wai-lang element.
+	 * Wraps the contents at the current range in a wai-lang wrapper element.
 	 *
 	 * @param {RangeObject} range
 	 */
@@ -112,12 +112,16 @@ define([
 		if (range.isCollapsed()) {
 			Dom.extendToWord(range);
 		}
-		Dom.addMarkup(range, $('<span class="' + WAI_LANG_CLASS + '"></span>'), false);
+		Dom.addMarkup(
+			range,
+			$('<span class="' + WAI_LANG_CLASS + '"></span>'),
+			false
+		);
 		range.select();
 	}
 
 	/**
-	 * Removes wai-lang markup.
+	 * Removes wai-lang wrapper on the markup at the given range.
 	 *
 	 * @param {RangeObject} range
 	 */
@@ -190,7 +194,7 @@ define([
 			tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
 			icon: 'aloha-icon aloha-icon-wai-lang-remove',
 			scope: 'wai-lang',
-			click: function () {
+			click: function onButtonClick() {
 				removeMarkup(Selection.getRangeObject());
 			}
 		});
@@ -218,7 +222,7 @@ define([
 	 */
 	var uniqueId = (function (prefix) {
 		var idCounter = 0;
-		return function () {
+		return function uniqueId() {
 			return prefix + '-' + (++idCounter);
 		};
 	}());
@@ -267,28 +271,30 @@ define([
 	 * @param {Plugin} plugin Instance of wai-lang plugin.
 	 */
 	function subscribeEvents(plugin) {
-		PubSub.sub('aloha.editable.activated', function (msg) {
-			var config = getConfig(msg.data.editable, plugin);
-			if ($.inArray('span', config) !== -1) {
-				plugin._wailangButton.show();
-			} else {
-				plugin._wailangButton.hide();
-			}
-		});
+		PubSub.sub('aloha.editable.activated',
+			function onEditableActivated(msg) {
+				var config = getConfig(msg.data.editable, plugin);
+				if ($.inArray('span', config) > -1) {
+					plugin._wailangButton.show();
+				} else {
+					plugin._wailangButton.hide();
+				}
+			});
 
-		PubSub.sub('aloha.selection.context-change', function (msg) {
-			var markup = findWaiLangMarkup(msg.range);
-			if (markup) {
-				plugin._wailangButton.setState(true);
-				FIELD.setTargetObject(markup, 'lang');
-				Scopes.setScope('wai-lang');
-			} else {
-				plugin._wailangButton.setState(false);
-				FIELD.setTargetObject(null);
-			}
-		});
+		Aloha.bind('aloha-selection-changed',
+			function onSelectionChanged($event, range) {
+				var markup = findWaiLangMarkup(range);
+				if (markup) {
+					plugin._wailangButton.setState(true);
+					FIELD.setTargetObject(markup, 'lang');
+					Scopes.setScope('wai-lang');
+				} else {
+					plugin._wailangButton.setState(false);
+					FIELD.setTargetObject(null);
+				}
+			});
 
-		FIELD.addListener('blur', function () {
+		FIELD.addListener('blur', function onFieldBlur() {
 			// @TODO Validate value to not permit values outside the set of
 			//       configured language codes.
 			if (!this.getValue()) {
@@ -296,22 +302,23 @@ define([
 			}
 		});
 
-		Aloha.bind('aloha-editable-created', function ($event, editable) {
-			editable.obj.bind('keydown', plugin.hotKey.insertAnnotation,
-				function () {
-					prepareAnnotation();
+		Aloha.bind('aloha-editable-created',
+			function onEditableCreated($event, editable) {
+				editable.obj.bind('keydown', plugin.hotKey.insertAnnotation,
+					function () {
+						prepareAnnotation();
 
-					// Because on a MAC Safari, cursor would otherwise
-					// automatically jump to location bar.  We therefore prevent
-					// bubbling, so that the editor must hit ESC and then META+I
-					// to manually do that.
-					return false;
+						// Because on a MAC Safari, cursor would otherwise
+						// automatically jump to location bar.  We therefore
+						// prevent bubbling, so that the editor must hit ESC and
+						// then META+I to manually do that.
+						return false;
+					});
+
+				editable.obj.find('span[lang]').each(function () {
+					annotate(this);
 				});
-
-			editable.obj.find('span[lang]').each(function () {
-				annotate(this);
 			});
-		});
 	}
 
 	return Plugin.create('wai-lang', {
@@ -354,7 +361,7 @@ define([
 			insertAnnotation: i18n.t('insertAnnotation', 'ctrl+shift+l')
 		},
 
-		init: function () {
+		init: function init() {
 			this._instanceId = uniqueId('wai-lang');
 			if (this.settings.objectTypeFilter) {
 				this.objectTypeFilter = this.settings.objectTypeFilter;
@@ -366,7 +373,6 @@ define([
 				this.iso639 = this.settings.iso639;
 			}
 			this.flags = isTrue(this.settings.flags);
-
 			prepareUi(this);
 			subscribeEvents(this);
 		},
@@ -378,7 +384,7 @@ define([
 		formatLanguageSpan: toggleAnnotation,
 
 		/**
-		 * Makes the given editable DOM element clean for saving.  Find all
+		 * Makes the given editable DOM element clean for export.  Find all
 		 * elements with lang attributes and remove the attribute.
 		 *
 		 * It also removes data attributes attached by the repository manager.
@@ -387,8 +393,8 @@ define([
 		 * @param {jQuery<HTMLElement>} $element jQuery unit set containing
 		 *                                       element to clean up.
 		 */
-		makeClean: function ($element) {
-			$element.find('span[lang]').each(function () {
+		makeClean: function makeClean($element) {
+			$element.find('span[lang]').each(function onEachLangSpan() {
 				var $span = $(this);
 				$span.removeClass(WAI_LANG_CLASS)
 				     .removeAttr('data-gentics-aloha-repository')
