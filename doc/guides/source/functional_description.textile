@@ -73,6 +73,7 @@ When initializing an editable
 * remove all empty block level elements (since they are invisible anyway)
 * add zero-width spaces to all empty block level elements when using Internet Explorer 7
 * add +<br />+ to all +<li>+ elements, except when in Internet Exporer
+* remove any trailing <br /> element in block level elements if in Internet Explorer
 
 While editing
 * For every operation, that might lead to an empty block level elements (hitting +ENTER+, deleting, ...),
@@ -80,8 +81,6 @@ fix the empty block level element by appending a +<br />+ (except when editing i
 For Internet Explorer 7, instead of +<br />+ the zero-width spaces will be used.
 
 When getting the editable's content (e.g. for saving) with the _getContents()_ method
-* Make sure that every block level element contains a single +<br />+ as
-last child.
 * Remove all end +<br />+ tags contained in +<li>+.
 
 The current implementation handles
