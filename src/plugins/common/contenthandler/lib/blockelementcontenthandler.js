@@ -24,24 +24,8 @@ define([
 	var NOT_ALOHA_BLOCK_FILTER = ':not(.aloha-block)';
 
 	/**
-	 * Determines if the given HTML element needs a trailing <br> tag in order
-	 * for it to be visible.
-	 *
-	 * @param {HTMLElement} block
-	 * @return {boolean}
-	 */
-	function needsEndBr(block) {
-		return (
-			Html.isBlock(block)
-			&&
-			(!block.lastChild ||
-				'br' !== block.lastChild.nodeName.toLowerCase())
-		);
-	}
-
-	/**
 	 * Finds a <br> tag that is at the end of the given container.
-	 * Invisible what spaces are ignored.
+	 * Invisible white spaces are ignored.
 	 *
 	 * @param {HTMLElement} container
 	 * @return {HTMLElement|null} A <br> tag at the end of the container; null
@@ -62,7 +46,7 @@ define([
 	 * @param {number} i Unused
 	 * @param {HTMLElement} element
 	 */
-	function removeEndBr(i, element) {
+	function removeTrailingBr(i, element) {
 		var br = findEndBr(element);
 		if (br) {
 			$(br).remove();
@@ -81,10 +65,10 @@ define([
 		$element.filter(emptyBlocksSelector).remove();
 
 		if ($.browser.msie) {
-			// If editing in IE: remove end-br's.  Content edited by Aloha
-			// Editor is no longer exported with <br>'s that are annotated with
-			// "aloha-end-br" classes,  this clean-up is still done, however,
-			// for content that was edited using legacy Aloha Editor.
+			// Because even though content edited by Aloha Editor is no longer
+			// exported with propping <br>'s that are annotated with
+			// "aloha-end-br" classes,  this clean-up still needs to be done for
+			// content that was edited using legacy Aloha Editor.
 			$element.filter('br.aloha-end-br').remove();
 
 			// Because IE's Trident engine goes against W3C's HTML specification
@@ -95,15 +79,9 @@ define([
 			// content editable block-level elements are not rendered invisibly
 			// in IE, we can remove the propping <br> in otherwise empty
 			// block-level elements.
-			$element.filter(blocksSelector).each(removeEndBr);
-		} else {
-			$element.filter('li').each(function () {
-				// Does not compute; Html.isBlock(li) === false
-				if (needsEndBr(this)) {
-					$(this).append('<br/>');
-				}
-			});
+			$element.filter(blocksSelector).each(removeTrailingBr);
 		}
+
 		$element.children(NOT_ALOHA_BLOCK_FILTER).each(prepareForEditing);
 	}
 
