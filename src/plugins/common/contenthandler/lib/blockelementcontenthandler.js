@@ -118,12 +118,13 @@ define([
 
 	return ContentHandlerManager.createHandler({
 		handleContent: function (content, options) {
-			var $content = Utils.wrapContent(content);
-
-			if (!options || !$content) {
-				return $content && $content.html();
+			if (!options) {
+				return content;
 			}
-
+			var $content = Utils.wrapContent(content);
+			if (!$content) {
+				return content;
+			}
 			switch (options.command) {
 			case 'initEditable':
 				$content.children(NOT_ALOHA_BLOCK_FILTER)
@@ -144,7 +145,6 @@ define([
 				$content.find('li>br:last').remove();
 				break;
 			}
-
 			return $content.html();
 		}
 	});
