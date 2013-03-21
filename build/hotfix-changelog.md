@@ -8,6 +8,9 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**: No longer automatically append <br> elements to block-level
+              elements unless they are empty.
+
 - **BUGFIX**: fixed handling of closing angle brackets in the DOM-to-XHTML
               plugin, which caused problems when these were includes in
               attributes.

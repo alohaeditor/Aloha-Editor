@@ -22,6 +22,9 @@ All changes are categorized into one of the following keywords:
 	when selecting something from the attribute field of a plugin (link,
 	wai-lang)
 
+- **BUGFIX**: No longer automatically append <br> elements to block-level
+              elements unless they are empty.
+
 
 ## 0.23.1 - 2013/03/07
 
