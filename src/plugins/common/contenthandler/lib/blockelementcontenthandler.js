@@ -3,6 +3,11 @@
  * Author & Copyright (c) 2010-2013 Gentics Software GmbH
  * aloha-sales@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ *
+ * @overview
+ * Prepares block-level elements in contents of editables that are initialized
+ * for editing ('initEditing'), or when exporting contents of editable for
+ * saving ('getContents').
  */
 define([
 	'jquery',
@@ -19,8 +24,9 @@ define([
 ) {
 	'use strict';
 
-	var blocksSelector = Html.BLOCK_TAGNAMES.join();
-	var emptyBlocksSelector = Html.BLOCK_TAGNAMES.join(':empty,') + ':empty';
+	var blocksSelector = Html.BLOCKLEVEL_ELEMENTS.join();
+	var emptyBlocksSelector = Html.BLOCKLEVEL_ELEMENTS.join(':empty,')
+	                        + ':empty';
 	var NOT_ALOHA_BLOCK_FILTER = ':not(.aloha-block)';
 
 	/**
@@ -40,8 +46,7 @@ define([
 	}
 
 	/**
-	 * Removes the <br> tag that is at the end of the given container.
-	 * Invisible what spaces are ignored.
+	 * Removes the <br> tag that is at the end of the given container.  * Invisible what spaces are ignored.
 	 *
 	 * @param {number} i Unused
 	 * @param {HTMLElement} element
@@ -104,8 +109,8 @@ define([
 	 * For a given DOM element, will make sure that it, and every one of its
 	 * child nodes, which is a block-level element ends with a <br> node.
 	 *
-	 * This ensures that a block is rendered visibly (with atleast one
-	 * character height).
+	 * This ensures that a block is rendered visibly (with atleast one character
+	 * height).
 	 *
 	 * @param {number} i Unused
 	 * @param {HTMLElement} element
@@ -117,7 +122,7 @@ define([
 	}
 
 	return ContentHandlerManager.createHandler({
-		handleContent: function (content, options) {
+		handleContent: function handleBlockLevelContent(content, options) {
 			if (!options) {
 				return content;
 			}
@@ -130,7 +135,6 @@ define([
 				$content.children(NOT_ALOHA_BLOCK_FILTER)
 				        .each(prepareForEditing);
 
-				// TODO: Do we support ie versions below 7?
 				if ($.browser.msie && $.browser.version <= 7) {
 					$content.children(NOT_ALOHA_BLOCK_FILTER)
 					        .each(prepareEditingIE7);
@@ -139,10 +143,6 @@ define([
 			case 'getContents':
 				$content.children(NOT_ALOHA_BLOCK_FILTER)
 				        .each(propBlockElements);
-
-				// Because trailing end <br>s in <li>s are not necessary for
-				// rendering.
-				$content.find('li>br:last').remove();
 				break;
 			}
 			return $content.html();

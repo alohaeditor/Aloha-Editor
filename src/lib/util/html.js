@@ -50,12 +50,37 @@ define([
 		'U': true
 	};
 
-	// Is this list complete? What about HTML5 semantic tags?
-	var BLOCK_TAGNAMES = [
+	// NB: "block-level" is not technically defined for elements that are new in
+	// HTML5.
+	var BLOCKLEVEL_ELEMENTS = [
+		'address',
+		'article',    // HTML5
+		'aside',      // HTML5
+		'audio',      // HTML5
 		'blockquote',
+		'canvas',     // HTML5
+		'dd',
+		'div',
+		'dl',
+		'fieldset',
+		'figcaption',
+		'figure',
+		'footer',
+		'form',
 		'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+		'header',
+		'hgroup',
+		'hr',
+		'noscript',
+		'ol',
+		'output',
 		'p',
-		'pre'
+		'pre',
+		'section',   // HTML5
+		'table',
+		'tfoot',
+		'ul',
+		'video'      // HTML5
 	];
 
 	/**
@@ -65,10 +90,14 @@ define([
 	 * @type {object<string, boolean>}
 	 */
 	var blocksTagnameMap = {};
-	Maps.fillKeys(blocksTagnameMap, BLOCK_TAGNAMES, true);
-	Maps.fillKeys(blocksTagnameMap, Arrays.map(BLOCK_TAGNAMES, function (str) {
-		return str.toUpperCase();
-	}), true);
+	Maps.fillKeys(blocksTagnameMap, BLOCKLEVEL_ELEMENTS, true);
+	Maps.fillKeys(
+		blocksTagnameMap,
+		Arrays.map(BLOCKLEVEL_ELEMENTS, function (str) {
+			return str.toUpperCase();
+		}),
+		true
+	);
 
 	function isBlock(node) {
 		return blocksTagnameMap[node.nodeName];
@@ -112,7 +141,7 @@ define([
 	}
 
 	return {
-		BLOCK_TAGNAMES: BLOCK_TAGNAMES,
+		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		isBlock: isBlock,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isInlineFormattable: isInlineFormattable,
