@@ -140,11 +140,29 @@ define([
 		return found;
 	}
 
+	/**
+	 * Starting from the given node, and working backwards through the siblings,
+	 * find the node that satisfies the given condition.
+	 *
+	 * @param {HTMLElement} node The node at which to start the search.
+	 * @param {function(HTMLElement):boolean} condition A predicate the receives
+	 *                                        one of children of `node`.
+	 *
+	 * @return {HTMLElement} The first node that meets the given condition.
+	 */
+	function findNodeRight(node, condition) {
+		while (node && !condition(node)) {
+			node = node.previousSibling;
+		}
+		return node;
+	}
+
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		isBlock: isBlock,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isInlineFormattable: isInlineFormattable,
-		isProppedBlock: isProppedBlock
+		isProppedBlock: isProppedBlock,
+		findNodeRight: findNodeRight
 	};
 });
