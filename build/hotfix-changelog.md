@@ -7,22 +7,3 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
-
-- **BUGFIX**: No longer automatically append <br> elements to block-level
-              elements unless they are empty.
-
-- **BUGFIX**: fixed handling of closing angle brackets in the DOM-to-XHTML
-              plugin, which caused problems when these were includes in
-              attributes.
-
-- **BUGFIX**: Character-plugin: Fixed the overlay not defining a font color
-              for the characters in the overlay and inheriting the color from
-              the content. If the font color was white the text in the overlay
-              wasn't visible.
-
-- **BUGFIX**: Character-plugin: Fixed the error
-              "Object [object Object] has no method 'is'" occuring, when clicking
-              into an editable. RT#54057
-
-- **BUGFIX**: No longer remove the last arbitrary <br> element inside <li>
-              elements.

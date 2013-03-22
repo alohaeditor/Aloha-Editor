@@ -12,6 +12,28 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+
+## 0.23.3 - 2013/03/22
+
+- **BUGFIX**: No longer automatically append <br> elements to block-level
+              elements unless they are empty.
+
+- **BUGFIX**: DOM-to-XHTML plugin: Fixed handling of closing angle brackets,
+              which caused problems when these were included in attributes.
+
+- **BUGFIX**: Characterpicker plugin: Fixed the overlay not defining a font color
+              for the characters in the overlay and inheriting the color from
+              the content. If the font color was white the text in the overlay
+              wasn't visible.
+
+- **BUGFIX**: Characterpicker plugin: Fixed the error
+              "Object [object Object] has no method 'is'" occuring, when clicking
+              into an editable.
+
+- **BUGFIX**: No longer remove the last arbitrary <br> element inside <li>
+              elements.
+
+
 ## 0.23.2 - 2013/03/15
 
 - **BUGFIX**: Fixed editables losing focus and the toolbar dissapearing
