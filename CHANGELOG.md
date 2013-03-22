@@ -33,6 +33,9 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: No longer remove the last arbitrary <br> element inside <li>
               elements.
 
+- **BUGFIX**: Sidebar: Fixed the styles in some plugins, which
+			  looked a bit broken and moved some css styles to the core.css.
+
 
 ## 0.23.2 - 2013/03/15
 
