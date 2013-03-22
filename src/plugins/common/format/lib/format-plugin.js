@@ -199,6 +199,19 @@ define('format/format-plugin', [
 		Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
 	}
 
+	function updateUiAfterMutation(formatPlugin, rangeObject) {
+		// select the modified range
+		rangeObject.select();
+		// update Button toggle state. We take 'Aloha.Selection.getRangeObject()'
+		// because rangeObject is not up-to-date
+		onSelectionChanged(formatPlugin, Aloha.Selection.getRangeObject());
+	}
+
+	function format(formatPlugin, rangeObject, markup) {
+		GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
+		updateUiAfterMutation(formatPlugin, rangeObject);
+	}
+
 	function addMarkup(button) {
 		var formatPlugin = this;
 		var markup = jQuery('<'+button+'>');
@@ -223,27 +236,26 @@ define('format/format-plugin', [
 				// the range is not collapsed, so we remove the markup from the range
 				GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
 			}
+			updateUiAfterMutation(formatPlugin, rangeObject);
 		} else {
 			// when the range is collapsed, extend it to a word
 			if (rangeObject.isCollapsed()) {
 				GENTICS.Utils.Dom.extendToWord(rangeObject);
 				if (rangeObject.isCollapsed()) {
 					if (StateOverride.enabled()) {
-						StateOverride.setWithRangeObject(commandsByElement[button], true, rangeObject);
+						StateOverride.setWithRangeObject(
+							commandsByElement[button],
+							rangeObject,
+							function (command, rangeObject) {
+								format(formatPlugin, rangeObject, markup);
+							}
+						);
 						return;
 					}
 				}
 			}
-
-			// add the markup
-			GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
+			format(formatPlugin, rangeObject, markup);
 		}
-		// select the modified range
-		rangeObject.select();
-
-		// update Button toggle state. We take 'Aloha.Selection.getRangeObject()'
-		// because rangeObject is not up-to-date
-		onSelectionChanged(formatPlugin, Aloha.Selection.getRangeObject());
 	}
 
 	function onSelectionChanged(formatPlugin, rangeObject) {

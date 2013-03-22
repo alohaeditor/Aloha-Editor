@@ -24,7 +24,7 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([], function () {
+define(['util/functions'], function (Fn) {
 	'use strict';
 
 	/**
@@ -104,10 +104,10 @@ define([], function () {
 	}
 
 	/**
-	 * ECMAScript map replacement
+	 * Emulates ECMAScript edition 5 Arrays.map
 	 * See https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map
 	 * And http://es5.github.com/#x15.4.4.19
-	 * It's not exactly according to standard, but it does exactly what one expects.
+	 * It's not exactly according to standard, but it does what one expects.
 	 */
 	function map(a, fn) {
 		var i, len, result = [];
@@ -169,7 +169,7 @@ define([], function () {
 	 * Arrays.reduce([2, 3, 4], 1, function (a, b) { return a + b; });
 	 * returns the result of (((1 + 2) + 3) + 4)
 	 *
-	 * Emulates ECMA5 Array.reduce.
+	 * Emulates ECMAScript edition 5 Array.reduce.
 	 *
 	 * @param a
 	 *        An array of values.
@@ -206,7 +206,9 @@ define([], function () {
 	}
 
 	/**
-	 * Emulates ECMA5 Array.forEach.
+	 * For each item in xs, call cb(item, index, xs).
+	 *
+	 * Emulates ECMAScript edition 5 Array.forEach.
 	 */
 	function forEach(xs, cb) {
 		var i,
@@ -214,6 +216,33 @@ define([], function () {
 		for (i = 0, len = xs.length; i < len; i++) {
 			cb(xs[i], i, xs);
 		}
+	}
+
+	/**
+	 * Returns true if the given predicate function returns true for at
+	 * least one item.
+	 *
+	 * Emulates ECMAScript edition 5 Array.some.
+	 */
+	function some(xs, pred) {
+		var i,
+		    len;
+		for (i = 0, len = xs.length; i < len; i++) {
+			if (pred(xs[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns true if the given predicate function returns true for all
+	 * items in xs.
+	 *
+	 * Emulates ECMAScript edition 5 Array.every.
+	 */
+	function every(xs, pred) {
+		return !some(xs, Fn.complement(pred));
 	}
 
 	/**
@@ -225,16 +254,34 @@ define([], function () {
 		});
 	}
 
+	/**
+	 * Returns the last item in xs or null.
+	 */
+	function last(xs) {
+		return xs.length ? xs[xs.length - 1] : null;
+	}
+
+	/**
+	 * Returns the second item in xs.
+	 */
+	function second(xs) {
+		return xs[1];
+	}
+
 	return {
 		filter: filter,
 		indexOf: indexOf,
 		reduce: reduce,
 		forEach: forEach,
+		some: some,
+		every: every,
 		map: Array.prototype.map ? mapNative : map,
 		contains: contains,
 		equal: equal,
 		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
-		intersect: intersect
+		intersect: intersect,
+		second: second,
+		last: last
 	};
 });

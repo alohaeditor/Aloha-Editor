@@ -910,7 +910,7 @@ define([
 			var that = this;
 			this.element.addClass('collapsed');
 			this.content.stop().animate(
-				{ height: 5 },
+				{ height: 3 },
 				250,
 				'easeOutExpo',
 				function () {

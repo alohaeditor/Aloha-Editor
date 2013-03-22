@@ -104,7 +104,6 @@ define([
 	}
 
 	function isIgnorableWhitespace(node) {
-		// TODO
 		return 3 === node.nodeType && !node.length;
 	}
 
@@ -140,11 +139,16 @@ define([
 		return found;
 	}
 
+	function isEditingHost(node) {
+		return 1 === node.nodeType && "true" === node.contentEditable;
+	}
+
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		isBlock: isBlock,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isInlineFormattable: isInlineFormattable,
-		isProppedBlock: isProppedBlock
+		isProppedBlock: isProppedBlock,
+		isEditingHost: isEditingHost
 	};
 });

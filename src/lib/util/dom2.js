@@ -25,19 +25,25 @@
  * recipients can access the Corresponding Source.
  */
 define([
+	'aloha/core',
 	'jquery',
 	'util/functions',
 	'util/maps',
 	'util/arrays',
 	'util/strings',
-	'util/browser'
+	'util/browser',
+	'util/dom',
+	'util/range'
 ], function (
+	Aloha,
 	$,
 	Fn,
 	Maps,
 	Arrays,
 	Strings,
-	Browser
+	Browser,
+	Dom1,
+	RangeObject
 ) {
 	'use strict';
 
@@ -293,7 +299,6 @@ define([
 		return index;
 	}
 
-
 	function nodeIndex(node) {
 		var ret = 0;
 		while (node.previousSibling) {
@@ -304,6 +309,7 @@ define([
 	}
 
 	/**
+	 * Can't use elem.childNodes.length because
 	 * http://www.quirksmode.org/dom/w3c_core.html
 	 * "IE up to 8 does not count empty text nodes."
 	 */
@@ -347,7 +353,7 @@ define([
 		return node;
 	}
 
-	function shallowRemove(node) {
+	function removeShallow(node) {
 		var parent = node.parentNode;
 		moveNextAll(parent, node.firstChild, node);
 		parent.removeChild(node);
@@ -506,6 +512,24 @@ define([
 		});
 	}
 
+	function next(node, until, arg) {
+		while (node && !until(node, arg)) {
+			node = node.nextSibling;
+		}
+		return node;
+	}
+
+	function parent(node, until, arg) {
+		while (node && !until(node, arg)) {
+			node = node.parentNode;
+		}
+		return node;
+	}
+
+	function isTextNode(node) {
+		return 3 === node.nodeType;
+	}
+
 	function splitTextNode(node, offset) {
 		// Because node.splitText() is buggy on IE, split it manually.
 		// http://www.quirksmode.org/dom/w3c_core.html
@@ -543,10 +567,26 @@ define([
 		range[setProp].call(range, container, offset);
 	}
 
-	function splitNodeAdjustRange(splitNode, splitOffset, sc, so, ec, eo, range) {
+	/**
+	 * Splits the given text node at the given offset and, if the given
+	 * range happens to have start or end containers equal to the given
+	 * text node, adjusts it such that start and end position will point
+	 * at the same position in the new text nodes.
+	 *
+	 * It is guaranteed that an adjusted boundary point will not point
+	 * to the end of a text node. Instead, it will point to the next
+	 * node. This guarantee often happens to be useful.
+	 *
+	 * If splitNode is not a text node, does nothing.
+	 */
+	function splitTextNodeAdjustRange(splitNode, splitOffset, range) {
 		if (3 !== splitNode.nodeType) {
 			return;
 		}
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec = range.endContainer;
+		var eo = range.endOffset;
 		var newNodeBeforeSplit = splitTextNode(splitNode, splitOffset);
 		adjustRangeAfterSplit(range, sc, so, 'setStart', splitNode, newNodeBeforeSplit);
 		adjustRangeAfterSplit(range, ec, eo, 'setEnd', splitNode, newNodeBeforeSplit);
@@ -555,44 +595,47 @@ define([
 	function splitTextContainers(range) {
 		var sc = range.startContainer;
 		var so = range.startOffset;
+		splitTextNodeAdjustRange(sc, so, range);
+		// Because the range may have been adjusted.
 		var ec = range.endContainer;
 		var eo = range.endOffset;
-		splitNodeAdjustRange(sc, so, sc, so, ec, eo, range);
-		// Because the range may have been adjusted.
-		sc = range.startContainer;
-		so = range.startOffset;
-		ec = range.endContainer;
-		eo = range.endOffset;
-		splitNodeAdjustRange(ec, eo, sc, so, ec, eo, range);
+		splitTextNodeAdjustRange(ec, eo, range);
 	}
 
 	function walkUntil(node, fn, until, arg) {
 		while (node && !until(node, arg)) {
-			node = fn(node, arg);
+			var next = node.nextSibling;
+			fn(node, arg);
+			node = next;
 		}
-		return node;
 	}
 
 	function walk(node, fn, arg) {
 		walkUntil(node, fn, Fn.returnFalse, arg);
 	}
 
+	/**
+	 * Depth-first postwalk of the given DOM node.
+	 */
 	function walkRec(node, fn, arg) {
 		if (1 === node.nodeType) {
 			walk(node.firstChild, function (node) {
-				return walkRec(node, fn, arg);
+				walkRec(node, fn, arg);
 			});
 		}
-		return fn(node, arg);
+		fn(node, arg);
 	}
 
 	function walkUntilNode(node, fn, untilNode, arg) {
-		return walkUntil(node, fn, function (nextNode) {
+		walkUntil(node, fn, function (nextNode) {
 			return nextNode === untilNode;
 		}, arg);
 	}
 
 	function StableRange(range) {
+		if (!range) {
+			return;
+		}
 		this.startContainer = range.startContainer;
 		this.startOffset = range.startOffset;
 		this.endContainer = range.endContainer;
@@ -710,6 +753,109 @@ define([
 		});
 	}
 
+	function areRangesEq(a, b) {
+		return a.startContainer === b.startContainer
+			&& a.startOffset    === b.startOffset
+			&& a.endContainer   === b.endContainer
+			&& a.endOffset      === b.endOffset;
+	}
+
+	function insertSelectText(text, range) {
+		// Because empty text nodes are generally not nice and even
+		// cause problems with IE8 (elem.childNodes).
+		if (!text.length) {
+			return;
+		}
+		splitTextNodeAdjustRange(range.startContainer, range.startOffset, range);
+		var node = nodeAtOffset(range.startContainer, range.startOffset);
+		var atEnd = isAtEnd(range.startContainer, range.startOffset);
+		// Because if the node following the insert position is already
+		// a text node we can just reuse it.
+		if (!atEnd && 3 === node.nodeType) {
+			node.insertData(0, text);
+			range.setStart(node, 0);
+			range.setEnd(node, text.length);
+			return;
+		}
+		// Because if the node preceding the insert position is already
+		// a text node we can just reuse it.
+		var prev;
+		if (!atEnd) {
+			prev = node.previousSibling;
+		} else {
+			prev = node.lastChild;
+		}
+		if (prev && 3 === prev.nodeType) {
+			prev.insertData(prev.length, text);
+			range.setStart(prev, prev.length - text.length);
+			range.setEnd(prev, prev.length);
+			return;
+		}
+		// Because if we can't reuse any text nodes, we have to insert a
+		// new one.
+		var textNode = document.createTextNode(text);
+		insert(textNode, node, atEnd);
+		range.setStart(textNode, 0);
+		range.setEnd(textNode, textNode.length);
+	}
+
+	function collapseToEnd(range) {
+		range.setStart(range.endContainer, range.endOffset);
+	}
+
+	function rangeFromRangeObject(alohaRange) {
+		var range = Aloha.createRange();
+		range.setStart(alohaRange.startContainer, alohaRange.startOffset);
+		range.setEnd(alohaRange.endContainer, alohaRange.endOffset);
+		return range;
+	}
+
+	function extendToWord(range) {
+		var rangeObject = new RangeObject(range);
+		Dom1.extendToWord(rangeObject);
+		setRangeFromRef(range, rangeObject);
+	}
+
+	function cloneShallow(node) {
+		return node.cloneNode(false);
+	}
+
+	/**
+	 * Sets a style on the given element by modifying it's style attribute.
+	 */
+	function setStyle(node, name, value) {
+		// Because only the empty string removes a style.
+		$(node).css(name, null == value ? '' : value);
+	}
+
+	/**
+	 * Gets a style from the given element's style attribute.
+	 * Note that this is different from the computed/inherited style.
+	 */
+	function getStyle(node, name) {
+		// Because IE7 needs dashesToCamelCase().
+		name = Strings.dashesToCamelCase(name);
+		return node.nodeType === 1 ? node.style[name] : null;
+	}
+
+	/**
+	 * Gets the computed/inherited style of the given node.
+	 * @param node may be a text node.
+	 */
+	function getComputedStyle(node, name) {
+		if (node.currentStyle) {
+			return node.currentStyle[name];
+		}
+		var doc = node.ownerDocument;
+		if (doc.defaultView && doc.defaultView.getComputedStyle) {
+			var styles = doc.defaultView.getComputedStyle(node, null);
+			if (styles) {
+				return styles[name] || styles.getPropertyValue(name);
+			}
+		}
+		return null;
+	}
+
 	return {
 		moveNextAll: moveNextAll,
 		attrNames: attrNames,
@@ -718,7 +864,7 @@ define([
 		indexByName: indexByName,
 		indexByClassHaveList: indexByClassHaveList,
 		outerHtml: outerHtml,
-		shallowRemove: shallowRemove,
+		removeShallow: removeShallow,
 		wrap: wrap,
 		insert: insert,
 		cursor: cursor,
@@ -731,6 +877,9 @@ define([
 		childAndParentsUntilIncl: childAndParentsUntilIncl,
 		childAndParentsUntilNode: childAndParentsUntilNode,
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
+		next: next,
+		parent: parent,
+		isTextNode: isTextNode,
 		nodeIndex: nodeIndex,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
@@ -743,6 +892,16 @@ define([
 		trimRangeClosingOpening: trimRangeClosingOpening,
 		setRangeFromRef: setRangeFromRef,
 		setRangeStartFromCursor: setRangeStartFromCursor,
-		setRangeEndFromCursor: setRangeEndFromCursor
+		setRangeEndFromCursor: setRangeEndFromCursor,
+		splitTextNodeAdjustRange: splitTextNodeAdjustRange,
+		insertSelectText: insertSelectText,
+		areRangesEq: areRangesEq,
+		collapseToEnd: collapseToEnd,
+		extendToWord: extendToWord,
+		rangeFromRangeObject: rangeFromRangeObject,
+		cloneShallow: cloneShallow,
+		setStyle: setStyle,
+		getStyle: getStyle,
+		getComputedStyle: getComputedStyle
 	};
 });

@@ -27,42 +27,38 @@
 define([
 	'aloha/core',
 	'jquery',
-	'aloha/selection',
 	'aloha/command',
 	'util/dom2',
+	'util/maps',
+	'util/range',
 	'PubSub'
 ], function (
 	Aloha,
 	jQuery,
-	Selection,
 	Command,
 	Dom,
+	Maps,
+	RangeObject,
 	PubSub
 ) {
 	'use strict';
 
-	var enabled = Aloha.settings.stateOverride;
+	// Because we want to provide an easy way to disable the state-override feature.
+	var enabled = Aloha.settings.stateOverride !== false;
+	var overrides = null;
+	var overrideRange = null;
 
-	// https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#state-override
-	// "Whenever the number of ranges in the selection changes to
-	// something different, and whenever a boundary point of the range
-	// at a given index in the selection changes to something different,
-	// the state override and value override must be unset for every
-	// command."
-	Aloha.bind('aloha-selection-changed', function (event, range) {
-		if (Command.resetOverrides(range)) {
-			// Because the UI may reflect the any potentially state
-			// overrides that are now no longer in effect, we must
-			// redraw the UI according to the current selection.
-			PubSub.pub('aloha.selection.context-change', {
-				range: range,
-				event: event
-			});
-		}
-	});
+	function rangeObjectFromRange(range) {
+		return new RangeObject(range);
+	}
+
+	function clear() {
+		overrideRange = null;
+		overrides = null;
+	}
 
 	function keyPressHandler(event) {
-		if (!enabled) {
+		if (!overrides) {
 			return;
 		}
 		if (event.altKey || event.ctrlKey || !event.which) {
@@ -74,32 +70,37 @@ define([
 		}
 		var text = String.fromCharCode(event.which);
 		var range = selection.getRangeAt(0);
-		// Because execCommand may invoke for example the bold command,
-		// which selects the inserted text to make it bold, and by doing
-		// so fires a selection-changed event. This is unnecessary and
-		// causes a flicker in the UI where the bold state of the button
-		// switches from bold to unbold and to bold again.
-		Aloha.Selection.preventSelectionChanged();
-		Command.execCommand('insertText', null, text, range);
+		Dom.insertSelectText(text, range);
+		Maps.forEach(overrides, function (formatFn, command) {
+			formatFn(command, range);
+		});
+		Dom.collapseToEnd(range);
+		selection.removeAllRanges();
+		selection.addRange(range);
 		// Because we handled the character insert ourselves via
 		// insertText we must not let the browser's default action
 		// insert the character a second time.
 		event.preventDefault();
 	}
 
-	function rangeFromRangeObject(alohaRange) {
-		var range = Aloha.createRange();
-		range.setStart(alohaRange.startContainer, alohaRange.startOffset);
-		range.setEnd(alohaRange.endContainer, alohaRange.endOffset);
-		return range;
-	}
-
-	function setWithRangeObject(command, state, rangeObject) {
+	function set(command, range, formatFn) {
 		if (!enabled) {
 			return;
 		}
-		var range = rangeFromRangeObject(rangeObject);
-		Command.setStateOverride(command, state, range);
+		overrideRange = range;
+		overrides = overrides || {};
+		overrides[command] = formatFn;
+	}
+
+	function setWithRangeObject(command, rangeObject, formatFn) {
+		if (!enabled) {
+			return;
+		}
+		set(command, Dom.rangeFromRangeObject(rangeObject), function (command, range) {
+			var rangeObject = rangeObjectFromRange(range);
+			formatFn(command, rangeObject);
+			Dom.setRangeFromRef(range, rangeObject);
+		});
 		// Because without doing rangeObject.select(), the
 		// next insertText command (see editable.js) will
 		// not be reached and instead the browsers default
@@ -117,9 +118,30 @@ define([
 		return enabled;
 	}
 
+	// https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#state-override
+	// "Whenever the number of ranges in the selection changes to
+	// something different, and whenever a boundary point of the range
+	// at a given index in the selection changes to something different,
+	// the state override and value override must be unset for every
+	// command."
+	Aloha.bind('aloha-selection-changed', function (event, range) {
+		if (overrideRange && !Dom.areRangesEq(overrideRange, range)) {
+			clear();
+			// Because the UI may reflect the any potentially state
+			// overrides that are now no longer in effect, we must
+			// redraw the UI according to the current selection.
+			PubSub.pub('aloha.selection.context-change', {
+				range: range,
+				event: event
+			});
+		}
+	});
+
 	return {
 		enabled: enabledAccessor,
 		keyPressHandler: keyPressHandler,
-		setWithRangeObject: setWithRangeObject
+		setWithRangeObject: setWithRangeObject,
+		set: set,
+		clear: clear
 	};
 });

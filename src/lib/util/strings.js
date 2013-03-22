@@ -105,10 +105,18 @@ define(['jquery'], function ($) {
 		return result;
 	}
 
+	/**
+	 * Returns true for the empty string, null and undefined.
+	 */
+	function empty(str) {
+		return "" === str || null == str;
+	}
+
 	return {
 		words: words,
 		dashesToCamelCase: dashesToCamelCase,
 		camelCaseToDashes: camelCaseToDashes,
-		splitIncl: splitIncl
+		splitIncl: splitIncl,
+		empty: empty
 	};
 });
