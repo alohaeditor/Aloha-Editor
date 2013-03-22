@@ -23,3 +23,6 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: Character-plugin: Fixed the error
               "Object [object Object] has no method 'is'" occuring, when clicking
               into an editable. RT#54057
+
+- **BUGFIX**: No longer remove the last arbitrary <br> element inside <li>
+              elements.
