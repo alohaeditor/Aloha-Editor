@@ -14,12 +14,14 @@ define([
 	'aloha/core',
 	'aloha/contenthandlermanager',
 	'contenthandler/contenthandler-utils',
+	'util/functions',
 	'util/html'
 ], function (
 	$,
 	Aloha,
 	ContentHandlerManager,
 	Utils,
+	Functions,
 	Html
 ) {
 	'use strict';
@@ -29,39 +31,30 @@ define([
 	                        + ':empty';
 	var NOT_ALOHA_BLOCK_FILTER = ':not(.aloha-block)';
 
-	/**
-	 * Finds a <br> tag that is at the end of the given container.
-	 * Invisible white spaces are ignored.
-	 *
-	 * @param {HTMLElement} container
-	 * @return {HTMLElement|null} A <br> tag at the end of the container; null
-	 *                            if none is found.
-	 */
-	function findEndBr(container) {
-		var node = container.lastChild;
-		while (node && Html.isIgnorableWhitespace(node)) {
-			node = node.previousSibling;
-		}
-		return ('br' === node.nodeName.toLowerCase()) ? node : null;
-	}
+	var isNotIgnorableWhitespace =
+			Functions.complement(Html.isIgnorableWhitespace);
 
 	/**
-	 * Removes the <br> tag that is at the end of the given container.  * Invisible what spaces are ignored.
+	 * Removes the <br> tag that is at the end of the given container.
+	 * Invisible white spaces are ignored.
 	 *
-	 * @param {number} i Unused
-	 * @param {HTMLElement} element
+	 * @param {number} i Index of element in its collection. (Unused)
+	 * @param {HTMLElement} element The container in which to remove the <br>.
 	 */
 	function removeTrailingBr(i, element) {
-		var br = findEndBr(element);
-		if (br) {
-			$(br).remove();
+		var node = Html.findNodeRight(
+			element.lastChild,
+			isNotIgnorableWhitespace
+		);
+		if (node && 'br' === node.nodeName.toLowerCase()) {
+			$(node).remove();
 		}
 	}
 
 	/**
 	 * Prepares this content for editing
 	 *
-	 * @param {number} i Unused
+	 * @param {number} i Index of element in its collection. (Unused)
 	 * @param {HTMLElement} element
 	 */
 	function prepareForEditing(i, element) {
@@ -91,7 +84,7 @@ define([
 	}
 
 	/**
-	 * Prepares the content for editing in IE7.
+	 * Prepares the content for editing in IE versions older than version 8.
 	 *
 	 * Ensure that all empty blocklevel elements must contain a zero-width
 	 * whitespace.
@@ -99,10 +92,10 @@ define([
 	 * @param {number} i Unused
 	 * @param {HTMLElement} element
 	 */
-	function prepareEditingIE7(i, element) {
+	function prepareEditingInOldIE(i, element) {
 		var $element = $(element);
 		$element.filter(emptyBlocksSelector).append('\u200b');
-		$element.children(NOT_ALOHA_BLOCK_FILTER).each(prepareEditingIE7);
+		$element.children(NOT_ALOHA_BLOCK_FILTER).each(prepareEditingInOldIE);
 	}
 
 	/**
@@ -137,7 +130,7 @@ define([
 
 				if ($.browser.msie && $.browser.version <= 7) {
 					$content.children(NOT_ALOHA_BLOCK_FILTER)
-					        .each(prepareEditingIE7);
+					        .each(prepareEditingInOldIE);
 				}
 				break;
 			case 'getContents':
