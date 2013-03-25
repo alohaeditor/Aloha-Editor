@@ -44,7 +44,7 @@ define [
 		# Move all the other children into an editable body div
 		$body = $note.find('.body')
 		if not $body[0]
-			$body = jQuery('<div class="body"></div>')
+			$body = jQuery('<div class="body aloha-ephemera-wrapper"></div>')
 			# Fill the new body element with the original children
 			$note.children().not($title).appendTo $body
 		# Mark that the body div should be unwrapped
