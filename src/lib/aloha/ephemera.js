@@ -396,7 +396,9 @@ define([
 
 			// Ephemera.markWrapper() and Ephemera.markFiller()
 			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-wrapper') || -1 !== Arrays.indexOf(classes, 'aloha-ephemera-filler')) {
-				Dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
+				if (elem.parentNode) {
+					Dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
+				}
 				$.removeData(elem);
 				return false;
 			}
