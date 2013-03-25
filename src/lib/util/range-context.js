@@ -91,7 +91,10 @@ define([
 		var args = [];
 		i = ascendNodes.length;
 		while (i--) {
-			arg = carryDown(ascendNodes[i], arg) || arg;
+			var cd = carryDown(ascendNodes[i], arg);
+			if (null != cd) {
+				arg = cd;
+			}
 			args.push(arg);
 		}
 		args.reverse();
@@ -170,11 +173,12 @@ define([
 	}
 
 	/**
-	 * Pushes down a context to the given range by clearing all
-	 * overrides between pushDownFrom and range.commonAncestorContainer,
-	 * and clearing all overrides inside and along the range's boundary
-	 * (see walkBoundary()), invoking pushDownOverride on all siblings
-	 * of the range boundary that are not contained in it.
+	 * Pushes down an implied context above or at pushDownFrom to the
+	 * given range by clearing all overrides from pushDownFrom
+	 * (inclusive) to range.commonAncestorContainer, and clearing all
+	 * overrides inside and along the range's boundary (see
+	 * walkBoundary()), invoking pushDownOverride on all siblings of the
+	 * range boundary that are not contained in it.
 	 *
 	 * Requires range's boundary points to be between nodes
 	 * (Dom.splitTextContainers).
@@ -244,8 +248,8 @@ define([
 	 *   which getOverride returns a non-null value is the topmost
 	 *   override. If there is a topmost override, and it is below the
 	 *   upper boundary element, it will be cleared and pushed down.
-	 *   A node with an override must not also provide the context:
-	 *   !(null != getOverride(node) && hasContext(node))
+	 *   Should return a non-null value for any node for which
+	 *   hasContext(node) returns true.
 	 *
 	 *   clearOverride(node) - should clear the given node of an
 	 *   override. The given node may or may not have an override
@@ -266,7 +270,7 @@ define([
 	 *   hasContext(node) - returns true if the given node
 	 *   already provides the context to set.
 	 *
-	 *   setContext(node, hasOverrideAncestor) - applies the context
+	 *   setContext(node, override, hasOverrideAncestor) - applies the context
 	 *   to the given node. Should clear overrides recursively. Should
 	 *   also clear context recursively to avoid unnecessarily nested
 	 *   contexts. hasOverrideAncestor is true if an override is in effect
@@ -277,6 +281,8 @@ define([
 		if (liveRange.collapsed) {
 			return;
 		}
+		var end = Dom.nodeAtOffset(liveRange.endContainer, liveRange.endOffset);
+		var endEnd = Dom.isAtEnd(liveRange.endContainer, liveRange.endOffset);
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
@@ -291,7 +297,8 @@ define([
 		});
 		Arrays.forEach(fromCacToContext, function (node) {
 			upperBoundaryAndBeyond = upperBoundaryAndBeyond || formatter.isUpperBoundary(node);
-			if (null != formatter.getOverride(node)) {
+			// Because we are only interested in non-context overrides.
+			if (null != formatter.getOverride(node) && !formatter.hasContext(node)) {
 				topmostOverrideNode = node;
 				isNonClearableOverride = upperBoundaryAndBeyond;
 				bottommostOverrideNode = bottommostOverrideNode || node;
@@ -299,23 +306,35 @@ define([
 		});
 		if ((rootHasImpliedContext || formatter.hasContext(Arrays.last(fromCacToContext)))
 			    && !isNonClearableOverride) {
-			var pushDownFrom = topmostOverrideNode || cac;
-			var cacOverride = formatter.getOverride(bottommostOverrideNode || cac);
 			var clearOverrideRec = formatter.clearOverrideRec || function (node) {
 				Dom.walkRec(node, formatter.clearOverride);
 			};
-			pushDownContext(
-				liveRange,
-				pushDownFrom,
-				cacOverride,
-				formatter.getOverride,
-				formatter.clearOverride,
-				clearOverrideRec,
-				formatter.pushDownOverride
-			);
+			if (!topmostOverrideNode) {
+				walkBoundary(
+					liveRange,
+					formatter.getOverride,
+					formatter.pushDownOverride,
+					formatter.clearOverride,
+					clearOverrideRec
+				);
+			} else {
+				var pushDownFrom = topmostOverrideNode;
+				var cacOverride = formatter.getOverride(bottommostOverrideNode || cac);
+				pushDownContext(
+					liveRange,
+					pushDownFrom,
+					cacOverride,
+					formatter.getOverride,
+					formatter.clearOverride,
+					clearOverrideRec,
+					formatter.pushDownOverride
+				);
+			}
 		} else {
-			var setContext = function (node) {
-				formatter.setContext(node, isNonClearableOverride);
+			var lastContextNode = null;
+			var setContext = function (node, override) {
+				lastContextNode = node;
+				formatter.setContext(node, override, isNonClearableOverride);
 			};
 			walkBoundary(
 				liveRange,
@@ -324,6 +343,20 @@ define([
 				formatter.clearOverride,
 				setContext
 			);
+			// Because we don't have a complete solution for joining nodes
+			// yet (TODO at the top of the file) we solve the most common
+			// case. We only need to do it on the right side because to the
+			// left is already handled by ensureWrapper().
+			if (lastContextNode) {
+				var contextNode = (formatter.hasContext(lastContextNode)
+								   ? lastContextNode
+								   : (formatter.hasContext(lastContextNode.parentNode)
+									  ? lastContextNode.parentNode
+									  : null));
+				if (contextNode && contextNode.nextSibling && formatter.hasContext(contextNode.nextSibling)) {
+					setContext(contextNode.nextSibling);
+				}
+			}
 		}
 	}
 
@@ -353,7 +386,7 @@ define([
 		// <b>one</b><i><b>two</b></i>three
 		// and because adjustPointMoveBackWithinRange() requires the
 		// left boundary point to be next to a non-ignorable node.
-		Dom.trimRangeClosingOpening(range, Html.isIgnorableWhitespace);
+		Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace);
 
 		// Because mutation needs to keep track and adjust boundary
 		// points.
@@ -454,30 +487,29 @@ define([
 		return true;
 	}
 
-	function ensureWrapper(node, nodeName, hasWrapper, leftPoint, rightPoint) {
-		if (node.previousSibling && !hasWrapper(node.previousSibling)) {
+	function ensureWrapper(node, createWrapper, isWrapper, isMergable, leftPoint, rightPoint) {
+		if (node.previousSibling && !isWrapper(node.previousSibling)) {
 			// Because restacking here solves two problems: one the
 			// case where the context was unnecessarily pushed down
 			// on the left of the range, and two to join with a
 			// context node that already exists to the left of the
 			// range.
 			restack(node.previousSibling,
-					hasWrapper,
-					Html.isIgnorableWhitespace,
-					Html.isInlineFormattable,
+					isWrapper,
+					Html.isUnrenderedWhitespace,
+					Html.isInlineType,
 					leftPoint,
 					rightPoint);
 		}
-		if (node.previousSibling && hasWrapper(node.previousSibling)) {
-			insertAdjust(node, node.previousSibling, true, leftPoint, rightPoint);
-			return true;
-		}
-		if (!hasWrapper(node)) {
-			var wrapper = document.createElement(nodeName);
+		var wrapper = null;
+		if (node.previousSibling && isMergable(node.previousSibling)) {
+			wrapper = node.previousSibling;
+			insertAdjust(node, wrapper, true, leftPoint, rightPoint);
+		} else if (!isWrapper(node)) {
+			wrapper = createWrapper();
 			wrapAdjust(node, wrapper, leftPoint, rightPoint);
-			return true;
 		}
-		return false;
+		return wrapper;
 	}
 
 	function isUpperBoundary_default(node) {
@@ -488,8 +520,19 @@ define([
 		return 'BODY' === node.nodeName || Html.isEditingHost(node);
 	}
 
-	function makeNodeFormatter(nodeName, leftPoint, rightPoint) {
+	function makeNodeFormatter(nodeName, leftPoint, rightPoint, unformat) {
+
 		function hasContext(node) {
+			// Because the only difference between formatter and
+			// unformatter is that there isn't for example a no-bold
+			// element - the absence of a bold ancestor results in the
+			// node having a no-bold context, but there is no element to
+			// set a no-bold context explicitly (actually there is,
+			// <span style="font-weight: normal">, but that kind of
+			// functionality isn't implemented yet).
+			if (unformat) {
+				return false;
+			}
 			return nodeName === node.nodeName;
 		}
 
@@ -503,8 +546,31 @@ define([
 			Dom.walkRec(node, clearContext);
 		}
 
-		function setContext(node) {
-			if (ensureWrapper(node, nodeName, hasContext, leftPoint, rightPoint)) {
+		function createWrapper() {
+			return document.createElement(nodeName);
+		}
+
+		function isMergable(node) {
+			// Because we don't want to merge with a context node that
+			// does more than just provide a context (for example a <b>
+			// node may have a class which shouldn't also being wrapped
+			// around the merged-with node).
+			return node.nodeName === nodeName && !Dom.attrs(node).length;
+		}
+
+		function setContext(node, override, isNonClearableOverride) {
+			// Because we don't clear any context overrides, we don't
+			// need to set them either.
+			if (!unformat && override) {
+				return;
+			}
+			if (isNonClearableOverride) {
+				// TODO: when we are for example formatting something
+				// non-bold and can't clear a bold ancestor, we should
+				// wrap the descendant in a <span style="font-weight: normal">.
+				return;
+			}
+			if (ensureWrapper(node, createWrapper, hasContext, isMergable, leftPoint, rightPoint)) {
 				// Because the node was wrapped with a context, and if
 				// the node itself has the context, it should be cleared
 				// to avoid nested contexts.
@@ -516,41 +582,43 @@ define([
 			}
 		}
 
-		return {
-			hasContext: hasContext,
-			getOverride: Fn.noop,
-			clearOverride: Fn.noop,
-			pushDownOverride: Fn.noop,
-			setContext: setContext,
-			isUpperBoundary: isUpperBoundary_default
-		};
-	}
-
-	function makeNodeUnformatter(nodeName, leftPoint, rightPoint) {
-
 		function getOverride(node) {
-			return nodeName === node.nodeName ? true : null;
+			return nodeName === node.nodeName || null;
 		}
 
 		function clearOverride(node) {
+			// Because we don't want to remove any existing context if
+			// not necessary (See pushDownOverride and setContext).
+			if (!unformat && hasContext(node)) {
+				return;
+			}
 			if (nodeName === node.nodeName) {
 				removeShallowAdjust(node, leftPoint, rightPoint);
 			}
+		}
+
+		function isOverrideWrapper(node) {
+			return null != getOverride(node);
 		}
 
 		function pushDownOverride(node, override) {
 			if (!override) {
 				return;
 			}
-			ensureWrapper(node, nodeName, getOverride, leftPoint, rightPoint);
+			// Because we don't clear any context overrides, we don't
+			// need to push them down either.
+			if (!unformat && override) {
+				return;
+			}
+			ensureWrapper(node, createWrapper, isOverrideWrapper, isMergable, leftPoint, rightPoint);
 		}
 
 		return {
-			hasContext: Fn.returnFalse,
-			setContext: Fn.noop,
+			hasContext: hasContext,
 			getOverride: getOverride,
 			clearOverride: clearOverride,
 			pushDownOverride: pushDownOverride,
+			setContext: setContext,
 			isUpperBoundary: isUpperBoundary_default
 		};
 	}
@@ -575,6 +643,9 @@ define([
 
 	function makeStyleFormatter(styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable, leftPoint, rightPoint) {
 
+		// Because we remember any wrappers we created to optimize reuse.
+		var wrappersByStyle = [];
+
 		function removeStyle(node, styleName) {
 			if (Strings.empty(Dom.getStyle(node, styleName))) {
 				return;
@@ -585,21 +656,55 @@ define([
 			}
 		}
 
-		function setStyle(node, styleName, styleValue, prevWrapper) {
-			if (prevWrapper && prevWrapper === node.previousSibling) {
-				insertAdjust(node, prevWrapper, true, leftPoint, rightPoint);
-				removeStyle(node, styleName);
-				return prevWrapper;
-			}
-			if (isReusable(node)) {
-				Dom.setStyle(node, styleName, styleValue);
-				return prevWrapper;
-			}
+		function createStyleWrapper(styleName, styleValue) {
 			var wrapper = createWrapper();
 			Dom.setStyle(wrapper, styleName, styleValue);
-			wrapAdjust(node, wrapper, leftPoint, rightPoint);
-			removeStyle(node, styleName);
+			var styleKey = styleName + "|" + styleValue;
+			var wrappers = wrappersByStyle[styleKey] = wrappersByStyle[styleKey] || [];
+			wrappers.push(wrapper);
 			return wrapper;
+		}
+
+		function isMergableStyleWrapper(styleName, styleValue, node) {
+			if (!isReusable(node)) {
+				return false;
+			}
+			var styleKey = styleName + "|" + styleValue;
+			var wrappers = wrappersByStyle[styleKey] || [];
+			if (Arrays.contains(wrappers, node)) {
+				return true;
+			}
+			// Because we assume something is mergeable if it doesn't
+			// provide any context besides the style we are applying,
+			// and something doesn't provide any context at all if it is
+			// prunable.
+			var existingStyle = Dom.getStyle(node, styleName);
+			if (!Strings.empty(existingStyle) && !isStyleEq(existingStyle, styleValue)) {
+				return false;
+			}
+			var clone = node.cloneNode(false);
+			Dom.setStyle(clone, styleName, null);
+			return isPrunable(clone);
+		}
+
+		function setStyle(node, styleName, styleValue) {
+			var wrapper = ensureWrapper(
+				node,
+				Fn.bind(createStyleWrapper, null, styleName, styleValue),
+				isReusable,
+				Fn.bind(isMergableStyleWrapper, null, styleName, styleValue),
+				leftPoint,
+				rightPoint
+			);
+			if (wrapper) {
+				// Because the node itself may have the style set, and
+				// wrapping it will not unset it.
+				removeStyle(node, styleName);
+			} else {
+				// Because the node wasn't wrapped because it itself is
+				// a wrapper, but possibly without the style.
+				Dom.setStyle(node, styleName, styleValue);
+			}
 		}
 
 		function hasContext(node) {
@@ -608,31 +713,46 @@ define([
 
 		function getOverride(node) {
 			var override = Dom.getStyle(node, styleName);
-			return (Strings.empty(override) || isStyleEq(override, styleValue)
-					? null
-					: override);
+			return !Strings.empty(override) ? override : null;
 		}
 
 		function clearOverride(node) {
+			// Because we don't want to remove any existing context if
+			// not necessary (See pushDownOverride and setContext).
+			if (!isStyleEq(Dom.getStyle(node, styleName), styleValue)) {
+				removeStyle(node, styleName);
+			}
+		}
+
+		function clearOverrideRecStep(node) {
+			// Different from clearOverride because clearOverride() only
+			// clears non-context overrides, while during a recursive
+			// clearing we want to clear the override always regardless
+			// of whether it is equal to context.
 			removeStyle(node, styleName);
 		}
 
 		function clearOverrideRec(node) {
-			Dom.walkRec(node, clearOverride);
+			Dom.walkRec(node, clearOverrideRecStep);
 		}
 
-		var overrideWrapper = null;
 		function pushDownOverride(node, override) {
-			if (Strings.empty(override) || !Strings.empty(Dom.getStyle(node, styleName))) {
+			// Because we don't clear any context overrides, we don't
+			// need to push them down either.
+			if (Strings.empty(override) || !Strings.empty(Dom.getStyle(node, styleName)) || isStyleEq(override, styleValue)) {
 				return;
 			}
-			overrideWrapper = setStyle(node, styleName, override, overrideWrapper);
+			setStyle(node, styleName, override);
 		}
 
-		var contextWrapper = null;
-		function setContext(node) {
+		function setContext(node, override, isNonClearableOverride) {
+			// Because we don't clear any context overrides, we don't
+			// need to set them either.
+			if (isStyleEq(override, styleValue)) {
+				return;
+			}
 			Dom.walk(node.firstChild, clearOverrideRec);
-			contextWrapper = setStyle(node, styleName, styleValue, contextWrapper);
+			setStyle(node, styleName, styleValue);
 		}
 
 		return {
@@ -645,67 +765,48 @@ define([
 		};
 	}
 
-	function format(liveRange, nodeName) {
+	function format(liveRange, nodeName, remove) {
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-			mutate(range, makeNodeFormatter(nodeName, leftPoint, rightPoint));
+			mutate(range, makeNodeFormatter(nodeName, leftPoint, rightPoint, remove), remove);
 		});
 	}
 
-	function unformat(liveRange, nodeName) {
-		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-			mutate(range, makeNodeUnformatter(nodeName, leftPoint, rightPoint), true);
-		});
-	}
-
-	function findReusableAncestor(range, hasContext, getOverride, isUpperBoundary, isReusable) {
+	function findReusableAncestor(range, hasContext, getOverride, isUpperBoundary, isReusable, isObstruction) {
 		var obstruction = null;
-		function untilIncl(node) {
-			return (null != getOverride(node)
-					|| hasContext(node)
-					|| isReusable(node)
-					|| isUpperBoundary(node));
-		}
 		function beforeAfter(node) {
-			obstruction = obstruction || !Html.isIgnorableWhitespace(node);
+			obstruction = (obstruction
+						   || (!Html.isUnrenderedWhitespace(node)
+							   && !hasContext(node)));
 		}
-		var start    = Dom.nodeAtOffset(range.startContainer, range.startOffset);
-		var end      = Dom.nodeAtOffset(range.endContainer, range.endOffset);
-		var startEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
-		var endEnd   = Dom.isAtEnd(range.endContainer, range.endOffset);
-		var ascStart = Dom.childAndParentsUntilIncl(start, untilIncl);
-		var ascEnd   = Dom.childAndParentsUntilIncl(end, untilIncl);
-		var reusable = Arrays.last(ascStart);
-		function at(node) {
-			// Because the start node is inside the range.
-			if (node === start && !startEnd) {
-				return;
-			}
-			// Because the end node is outside the range.
-			if (node === end && !endEnd) {
-				beforeAfter(node);
-				return;
-			}
-			obstruction = obstruction || !Html.isInlineFormattable(node);
-		}
-		if (!reusable || !isReusable(reusable) || reusable !== Arrays.last(ascEnd)) {
-			return null;
-		}
-		ascendWalkSiblings(ascStart, startEnd, Fn.noop, beforeAfter, at, Fn.noop);
+		walkBoundary(range, Fn.noop, beforeAfter, Fn.noop, Fn.noop);
 		if (obstruction) {
 			return null;
 		}
-		ascendWalkSiblings(ascEnd, endEnd, Fn.noop, Fn.noop, at, beforeAfter);
+		var cac = range.commonAncestorContainer;
+		function untilIncl(node) {
+			// Because we prefer a node above the cac if possible.
+			return (cac !== node && isReusable(node)) || isUpperBoundary(node) || isObstruction(node);
+		}
+		var cacToReusable = Dom.childAndParentsUntilIncl(cac, untilIncl);
+		var reusable = Arrays.last(cacToReusable);
+		if (!isReusable(reusable)) {
+			// Because, although we preferred a node above the cac, we
+			// fall back to the cac.
+			return isReusable(cac) ? cac : null;
+		}
+		ascendWalkSiblings(cacToReusable, false, Fn.noop, beforeAfter, Fn.noop, beforeAfter);
 		if (obstruction) {
-			return null;
+			return isReusable(cac) ? cac : null;
 		}
 		return reusable;
 	}
 
-	function formatStyle(liveRange, styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable) {
+	function formatStyle(liveRange, styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable, isObstruction) {
 		createWrapper = createWrapper || createStyleWrapper_default;
 		isStyleEq = isStyleEq || isStyleEq_default;
 		isReusable = isReusable || isStyleWrapperReusable_default;
 		isPrunable = isPrunable || isStyleWrapperPrunable_default;
+		isObstruction = isObstruction || Fn.complement(Html.isInlineType);
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeStyleFormatter(
 				styleName,
@@ -722,7 +823,8 @@ define([
 				formatter.hasContext,
 				formatter.getOverride,
 				formatter.isUpperBoundary,
-				isReusable
+				isReusable,
+				isObstruction
 			);
 			if (reusableAncestor) {
 				formatter.setContext(reusableAncestor);
@@ -769,7 +871,6 @@ define([
 
 	return {
 		format: format,
-		unformat: unformat,
 		formatStyle: formatStyle,
 		splitBoundary: splitBoundary
 	};

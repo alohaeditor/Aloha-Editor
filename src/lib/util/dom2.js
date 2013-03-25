@@ -447,8 +447,8 @@ define([
 		return cursor.node === this.node && cursor.atEnd === this.atEnd;
 	};
 
-	Cursor.prototype.clone = function (cursor) {
-		return cursor(cursor.node, cursor.atEnd);
+	Cursor.prototype.clone = function () {
+		return cursor(this.node, this.atEnd);
 	};
 
 	Cursor.prototype.insert = function (node) {
@@ -700,49 +700,71 @@ define([
 		return new StableRange(range);
 	}
 
+	function seekBoundaryPoint(range, container, offset, oppositeContainer, oppositeOffset, setFn, ignore, backwards) {
+		var cursor = cursorFromBoundaryPoint(container, offset);
+		// Because when seeking backwards, if the boundary point is
+		// inside a text node, trimming starts after it. When seeking
+		// forwards, the cursor starts before the node, which is what
+		// cursorFromBoundaryPoint() does automatically.
+		if (backwards && 3 === container.nodeType && offset > 0 && offset < container.length) {
+			if (backwards ? cursor.next() : cursor.prev()) {
+				if (!ignore(cursor)) {
+					return;
+				}
+				// Bacause the text node can be ignored, we go back
+				// to the initial position.
+				if (backwards) {
+					cursor.prev();
+				} else {
+					cursor.next();
+				}
+			}
+		}
+		var opposite = cursorFromBoundaryPoint(oppositeContainer, oppositeOffset);
+		var changed = false;
+		while (!cursor.equals(opposite)
+			       && ignore(cursor)
+			       && (backwards ? cursor.prev() : cursor.next())) {
+			changed = true;
+		}
+		if (changed) {
+			setFn(range, cursor);
+		}
+	}
+
 	/**
+	 * Starting with the given range's start and end boundary points,
+	 * seek inward using a cursor, passing the cursor to ignoreLeft and
+	 * ignoreRight, stopping when either of these returns true,
+	 * adjusting the given range to the end positions of both cursors.
+	 *
 	 * The dom cursor passed to ignoreLeft and ignoreRight does not
 	 * traverse positions inside text nodes. The exact rules for when
 	 * text node containers are passed are as follows: If the left
 	 * boundary point is inside a text node, trimming will start before
 	 * it. If the right boundary point is inside a text node, trimming
-	 * will start after it.
+	 * will start after it (ignoreRight() is invoked with the cursor
+	 * after the text node that contains the boundary point).
 	 */
 	function trimRange(range, ignoreLeft, ignoreRight) {
+		ignoreRight = ignoreRight || ignoreLeft;
 		if (range.collapsed) {
 			return;
 		}
-		var start = cursorFromBoundaryPoint(range.startContainer, range.startOffset);
-		var end = cursorFromBoundaryPoint(range.endContainer, range.endOffset);
-		var setStart = false;
-		while (!start.equals(end) && ignoreLeft(start) && start.next()) {
-			setStart = true;
-		}
-		ignoreRight = ignoreRight || ignoreLeft;
-		var setEnd = false;
-		// Because if the right boundary points is inside a text node,
-		// trimming starts after it.
-		if (3 === range.endContainer.nodeType
-			    && range.endOffset > 0
-			    // Because the cursor already normalizes
-			    // endOffset == endContainer.length to the node next after it.
-			    && range.endOffset < range.endContainer.length
-			    && end.next()) {
-			if (ignoreRight(end)) {
-				end.prev();
-			}
-		}
-		while (!end.equals(start) && ignoreRight(end) && end.prev()) {
-			setEnd = true;
-		}
-		if (setStart) {
-			setRangeStartFromCursor(range, start);
-		}
-		if (setEnd) {
-			setRangeEndFromCursor(range, end);
-		}
+		// Because range may be mutated, we must store its properties
+		// before doing anything else.
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec = range.endContainer;
+		var eo = range.endOffset;
+		seekBoundaryPoint(range, sc, so, ec, eo, setRangeStartFromCursor, ignoreLeft, false);
+		seekBoundaryPoint(range, ec, eo, sc, so, setRangeEndFromCursor, ignoreRight, true);
 	}
 
+	/**
+	 * Like trimRange() but ignores closing (to the left) and opening
+	 * tags (to the right).
+	 */
 	function trimRangeClosingOpening(range, ignoreLeft, ignoreRight) {
 		ignoreRight = ignoreRight || ignoreLeft;
 		trimRange(range, function (cursor) {
@@ -766,15 +788,15 @@ define([
 		if (!text.length) {
 			return;
 		}
-		splitTextNodeAdjustRange(range.startContainer, range.startOffset, range);
 		var node = nodeAtOffset(range.startContainer, range.startOffset);
 		var atEnd = isAtEnd(range.startContainer, range.startOffset);
 		// Because if the node following the insert position is already
 		// a text node we can just reuse it.
 		if (!atEnd && 3 === node.nodeType) {
-			node.insertData(0, text);
-			range.setStart(node, 0);
-			range.setEnd(node, text.length);
+			var offset = (3 === range.startContainer.nodeType ? range.startOffset : 0);
+			node.insertData(offset, text);
+			range.setStart(node, offset);
+			range.setEnd(node, offset + text.length);
 			return;
 		}
 		// Because if the node preceding the insert position is already

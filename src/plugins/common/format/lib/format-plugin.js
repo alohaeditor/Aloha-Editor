@@ -207,8 +207,12 @@ define('format/format-plugin', [
 		onSelectionChanged(formatPlugin, Aloha.Selection.getRangeObject());
 	}
 
-	function format(formatPlugin, rangeObject, markup) {
-		GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
+	function format(formatPlugin, rangeObject, markup, remove, limit) {
+		if (remove) {
+			GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, limit);
+		} else {
+			GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
+		}
 		updateUiAfterMutation(formatPlugin, rangeObject);
 	}
 
@@ -216,7 +220,8 @@ define('format/format-plugin', [
 		var formatPlugin = this;
 		var markup = jQuery('<'+button+'>');
 		var rangeObject = Aloha.Selection.rangeObject;
-		
+		var limit = Aloha.activeEditable.obj;
+
 		if ( typeof button === "undefined" || button == "" ) {
 			return;
 		}
@@ -225,37 +230,28 @@ define('format/format-plugin', [
 		var nodeNames = interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
 		var foundMarkup = rangeObject.findMarkup(function() {
 			return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
-		}, Aloha.activeEditable.obj);
-
+		}, limit);
 		if (foundMarkup) {
-			// remove the markup
+			markup = jQuery(foundMarkup);
+		}
+
+		if (rangeObject.isCollapsed()) {
+			GENTICS.Utils.Dom.extendToWord(rangeObject);
 			if (rangeObject.isCollapsed()) {
-				// when the range is collapsed, we remove exactly the one DOM element
-				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, rangeObject, true);
-			} else {
-				// the range is not collapsed, so we remove the markup from the range
-				GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
-			}
-			updateUiAfterMutation(formatPlugin, rangeObject);
-		} else {
-			// when the range is collapsed, extend it to a word
-			if (rangeObject.isCollapsed()) {
-				GENTICS.Utils.Dom.extendToWord(rangeObject);
-				if (rangeObject.isCollapsed()) {
-					if (StateOverride.enabled()) {
-						StateOverride.setWithRangeObject(
-							commandsByElement[button],
-							rangeObject,
-							function (command, rangeObject) {
-								format(formatPlugin, rangeObject, markup);
-							}
-						);
-						return;
-					}
+				if (StateOverride.enabled()) {
+					StateOverride.setWithRangeObject(
+						commandsByElement[button],
+						rangeObject,
+						function (command, rangeObject) {
+							format(formatPlugin, rangeObject, markup, foundMarkup, limit);
+						}
+					);
+					return;
 				}
 			}
-			format(formatPlugin, rangeObject, markup);
 		}
+
+		format(formatPlugin, rangeObject, markup, foundMarkup, limit);
 	}
 
 	function onSelectionChanged(formatPlugin, rangeObject) {

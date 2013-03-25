@@ -58,7 +58,7 @@ function (jQuery, Utils) {
 		// create the editable wrapper for the cells
 		var $wrapper = $elem.children('div').eq(0);
 		$wrapper.contentEditable(true);
-		$wrapper.addClass('aloha-table-cell-editable');
+		$wrapper.addClass('aloha-table-cell-editable aloha-ephemera-filler');
 
 		// attach events to the editable div-object
 		$wrapper.bind('focus', function ($event) {

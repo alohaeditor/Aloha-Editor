@@ -79,7 +79,7 @@ Aloha.require([
 
 	function testUnformat(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			RangeContext.unformat(range, 'B');
+			RangeContext.format(range, 'B', true);
 		});
 	}
 
@@ -101,7 +101,7 @@ Aloha.require([
 
 	function testTrimRange(title, before, after, switched) {
 		testMutationSwitchElemTextSelection(title, before, after, function (dom, range) {
-			Dom.trimRangeClosingOpening(range, Html.isIgnorableWhitespace);
+			Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace);
 		});
 	}
 
@@ -182,6 +182,18 @@ Aloha.require([
 	t('descending two levels down to each boundary, with boundaries in empty container',
 	  '<p><i>one<em>{</em>left</i>text<i>right<em>}</em>two</i></p>',
 	  '<p><i>one<em></em>{<b>left</b></i><b>text</b><i><b>right</b>}<em></em>two</i></p>');
+
+	t('expand a bold range to the right',
+	  '<p><b>one {two</b> three}</p>',
+	  '<p><b>one {two three</b>}</p>');
+
+	t('expand a bold range to the left',
+	  '<p>{one <b>two} three</b></p>',
+	  '<p>{<b>one two} three</b></p>');
+
+	t('expand a bold range to the left and right',
+	  '<p>{one <b>two</b> three}</p>',
+	  '<p>{<b>one two three</b>}</p>');
 
 	var t = function (title, before, after) {
 		testFormat('RangeContext.format-restack - ' + title, before, after);
@@ -280,7 +292,7 @@ Aloha.require([
 
 	t = function (title, before, after) {
 		function isSplittable(node) {
-			return node.nodeName !== 'STRONG' && Html.isInlineFormattable(node);
+			return node.nodeName !== 'CODE' && Html.isInlineType(node);
 		}
 		testMutation('RangeContext.splitBoundary+format - ' + title, before, after, function (dom, range) {
 			RangeContext.splitBoundary(range, isSplittable);
@@ -304,29 +316,35 @@ Aloha.require([
 	  '<p><i><u><sub>{</sub></u>a</i>b<i>c<u><sub>}</sub></u></i></p>',
 	  '<p><i><u><sub></sub></u></i><b><i>{a</i>b<i>c</i></b>}<i><u><sub></sub></u></i></p>');
 
-	t('only split inline formattable on the left, and with element siblings on the right',
-	  '<p><i><em>-</em><strong>Some<em>-{-</em>text</strong></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
-	  '<p><i><em>-</em></i><i><strong>Some<em>-{<b>-</b></em><b>text</b></strong></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
+	t('don\'t split obstruction on the left; with element siblings on the right',
+	  '<p><i><em>-</em><code>Some<em>-{-</em>text</code></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
+	  '<p><i><em>-</em></i><i><code>Some<em>-{<b>-</b></em><b>text</b></code></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
 
 	t = function (title, before, after) {
 		// Because IE7 will display "font-family: xx" without an
 		// ending ";" whereas other browsers will add an ending ";".
-		function expected(actual) {
-			equal(actual.replace(/;"/g, '"'), after.replace(/;"/g, '"'));
-		}
+		//
 		// Because IE7 leaves the style attribute as style="font-family:
 		// " after removing the font-family style, which interfers with
-		// the default isPrunable check.
+		// the default equal and isPrunable checks.
+		function expected(actual) {
+			equal(actual.replace(/;"/g, '"').replace(/; font-family: "/g, '"'), after.replace(/;"/g, '"'));
+		}
 		function isPrunableIe7(node) {
 			return ('SPAN' === node.nodeName
-					&& (!$(node).css('font-family')
-						|| 'auto' == $(node).css('font-family')));
+					&& (!Dom.getStyle(node, 'font-family')
+						|| 'auto' == Dom.getStyle(node, 'font-family'))
+					&& (!Dom.getStyle(node, 'font-size')
+						|| 'auto' == Dom.getStyle(node, 'font-size')));
 		}
 		var isPrunable = ($.browser.msie && parseInt($.browser.version) == 7
 						  ? isPrunableIe7
 						  : null);
+		function isObstruction(node) {
+			return !Html.isInlineType(node) || 'CODE' === node.nodeName;
+		}
 		testMutation('RangeContext.formatStyle - ' + title, before, expected, function (dom, range) {
-			RangeContext.formatStyle(range, 'font-family', 'arial', null, null, null, isPrunable);
+			RangeContext.formatStyle(range, 'font-family', 'arial', null, null, null, isPrunable, isObstruction);
 		});
 	};
 
@@ -338,7 +356,7 @@ Aloha.require([
 	  '<p>Some {<span>text</span>}</p>',
 	  '<p>Some {<span style="font-family: arial;">text</span>}</p>');
 
-	t('alternating overrides (times/verdana); don\'t replace existing override (helvetica); element inbetween overrides (&lt;b>)',
+	t('alternating overrides (times,verdana); don\'t replace existing override (helvetica); element inbetween overrides (b tag)',
 	  '<p>Some <span style="font-family: times;">a<b><span style="font-family: helvetica;">b</span>c<span style="font-family: verdana;">d{e</span>f</b>g</span>}</p>',
 	  '<p>Some <span style="font-family: times;">a</span><b><span style="font-family: helvetica;">b</span><span style="font-family: times;">c</span><span style="font-family: verdana;">d</span>{<span style="font-family: arial;">ef</span></b><span style="font-family: arial;">g</span>}</p>');
 
@@ -354,7 +372,7 @@ Aloha.require([
 	  '<p><span style="font-family: arial;"><span style="font-family: times;">Som{e t}ext</span></span></p>',
 	  '<p><span style="font-family: arial;"><span style="font-family: times;">Som</span>{e t}<span style="font-family: times;">ext</span></span></p>');
 
-	t('reuse outer element',
+	t('reuse outer element directly above',
 	  '<p>one<span style="font-family: times;">[Some text]</span>two</p>',
 	  '<p>one<span style="font-family: arial;">{Some text}</span>two</p>');
 
@@ -366,15 +384,56 @@ Aloha.require([
 	  '<p>one<span><b>[Some text]</b></span>two</p>',
 	  '<p>one<span style="font-family: arial;"><b>{Some text}</b></span>two</p>');
 
+	t('prefer to reuse outer elements above commonAncestorContainer',
+	  '<p>one <span style="font-family: times;">{<span style="font-family: helvetica;">two three</span>}</span> four</p>',
+	  '<p>one <span style="font-family: arial;">{two three}</span> four</p>');
+
 	t('don\'t reuse if there is an obstruction before ("x")',
 	  '<p>one<span style="font-family: times;">x<b>[Some text]</b></span>two</p>',
 	  '<p>one<span style="font-family: times;">x<b>{<span style="font-family: arial;">Some text</span>}</b></span>two</p>');
+	  '<p>one<span style="font-family: times;">x</span><b>{<span style="font-family: arial;">Some text</span>}</b>two</p>'
 
 	t('don\'t reuse if there is an obstruction after ("x")',
 	  '<p>one<span style="font-family: times;"><b>[Some text]x</b></span>two</p>',
 	  '<p>one<span style="font-family: times;"><b>{<span style="font-family: arial;">Some text</span>}x</b></span>two</p>');
 
-	t('don\'t reuse if there is an obstruction above (&lt;code>)',
+	t('don\'t reuse if there is an obstruction above (code tag)',
 	  '<p>one<span style="font-family: times;"><code>[Some text]</code></span>two</p>',
 	  '<p>one<span style="font-family: times;"><code>{<span style="font-family: arial;">Some text</span>}</code></span>two</p>');
+
+	t('extend style right 1',
+	  '<p><span style="font-family: arial;">one {two</span> three}</p>',
+	  '<p><span style="font-family: arial;">one {two three</span>}</p>');
+
+	t('extend style left 1',
+	  '<p>{one <span style="font-family: arial;">two} three</span></p>',
+	  '<p>{<span style="font-family: arial;">one two} three</span></p>');
+
+	t('extend style right 2',
+	  '<p><span style="font-size: 18px; font-family: arial;">one {two</span> three}</p>',
+	  '<p><span style="font-size: 18px; font-family: arial;">one {two</span><span style="font-family: arial;"> three</span>}</p>');
+
+	t('extend style left 2',
+	  '<p>{one <span style="font-size: 18px; font-family: arial;">two} three</span></p>',
+	  '<p>{<span style="font-family: arial;">one <span style="font-size: 18px;">two} three</span></span></p>');
+
+	t('push down style without removing wrapper span',
+	  '<p><span style="font-size: 12px; font-family: times;">one {two</span> three}</p>',
+	  '<p><span style="font-size: 12px;"><span style="font-family: times;">one </span>{<span style="font-family: arial;">two</span></span><span style="font-family: arial;"> three</span>}</p>');
+
+	t('merge wrappers with the same styles',
+	  '<p><span style="font-family: arial;">one</span>{two}</p>',
+	  '<p><span style="font-family: arial;">one{two</span>}</p>');
+
+	t('don\'t merge wrappers with additionals styles',
+	  '<p><span style="font-size: 12px; font-family: arial;">one</span>{two}</p>',
+	  '<p><span style="font-size: 12px; font-family: arial;">one</span>{<span style="font-family: arial;">two</span>}</p>');
+
+	t('don\'t merge wrappers with differing values for the same style',
+	  '<p><span style="font-family: times;">one</span>{two}</p>',
+	  '<p><span style="font-family: times;">one</span>{<span style="font-family: arial;">two</span>}</p>');
+
+	t('reuse outer wrapper and clear nested contexts',
+	  '<p><span style="font-family: times;">{one}<span style="font-family: arial;">two</span></span>three</p>',
+	  '<p><span style="font-family: arial;">{one}two</span>three</p>');
 });
