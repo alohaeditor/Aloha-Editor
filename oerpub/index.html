@@ -90,7 +90,6 @@
                 // Search through parent links in the DOM until we find an element whose enclosing tag
                 // is one of the section heading tags
                 function getClosestHeadingParent(ele) {
-                    console.log('starting');
                     while(ele != null) {
                         console.log(ele);
                         if(ele.tagName && possibleHeadings.indexOf(ele.tagName.toUpperCase()) != -1) {
@@ -102,7 +101,6 @@
                         }
                         ele = ele.parentNode;
                     }
-                    console.log('returning');
                     console.log(ele);
                     return ele;
                 }
@@ -339,6 +337,7 @@
                       <span class="separator"> </span>
                       <div class="btn-group">
                         <button class="btn action insertImage-oer" rel="tooltip" title="Insert Image"><i class="icon-image-insert"></i></button>
+                        <button class="btn action insertVideo-oer" rel="tooltip" title="Insert Video"><i class="icon-image-insert"></i></button>
                         <button class="btn action createTable" rel="tooltip" title="Create Table"><i class="icon-table-insert"></i></button>
                         <button class="btn dropdown-toggle" data-toggle="dropdown" rel="tooltip" title="Table Operations">
                           <span class="caret"></span>
