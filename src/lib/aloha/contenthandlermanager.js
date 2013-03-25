@@ -1,7 +1,7 @@
 /* contenthandlermanager.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  * 
  * Aloha Editor is free software; you can redistribute it and/or
@@ -27,24 +27,22 @@
 define([
 	'aloha/core',
 	'aloha/registry',
-	'util/class',
-	'aloha/console'
+	'util/class'
 ], function (
 	Aloha,
 	Registry,
-	Class,
-	console
+	Class
 ) {
 	'use strict';
 
-	/**
-	 * Create an contentHandler from the given definition.  Acts as a factory
-	 * method for contentHandler.
-	 *
-	 * @param {ContentHandlerManager} definition
-	 */
 	var ContentHandlerManager = Registry.extend({
 
+		/**
+		 * Create a contentHandler from the given definition.  Acts as a factory
+		 * method for contentHandler.
+		 *
+		 * @param {object} definition
+		 */
 		createHandler: function (definition) {
 			if (typeof definition.handleContent !== 'function') {
 				throw 'ContentHandler has no function handleContent().';
@@ -59,9 +57,9 @@ define([
 
 		/**
 		 * Manipulates the given contents of an editable by invoking content
-		 * handlers over the contents.
+		 * handlers over it.
 		 *
-		 * @param {string} content The contents of an editable which will be
+		 * @param {string} content The content of an editable which will be
 		 *                         handled.
 		 * @param {object} options Used to filter limit which content handlers
 		 *                         should be used.
@@ -71,7 +69,7 @@ define([
 		handleContent: function (content, options, editable) {
 			var manager = this;
 
-			// Because if no options is specified to indicate which content
+			// Because if no options are specified, to indicate which content
 			// handler to use, then all that are available are used.
 			var handlers = options ? options.contenthandler : manager.getIds();
 
@@ -84,12 +82,15 @@ define([
 			for (i = 0; i < handlers.length; i++) {
 				handler = manager.get(handlers[i]);
 				if (handler) {
-					content = handler.handleContent(content, options,
-							editable || Aloha.activeEditable);
+					content = handler.handleContent(
+						content,
+						options,
+						editable || Aloha.activeEditable
+					);
 				}
 
-				// FIME: Is it ever valid for content to be null?  This breaks
-				//       the handleContent(string):string contract.
+				// FIXME: Is it ever valid for content to be null?  This would
+				//        break the handleContent(string):string contract.
 				if (null === content) {
 					break;
 				}

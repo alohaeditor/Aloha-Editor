@@ -226,16 +226,16 @@ define([
 						var additionalReferenceContainer = '';
 						
 						if (citePlugin.referenceContainer) {
-							additionalReferenceContainer = '<div class="{panel-label}">Note:</div> ' +
+							additionalReferenceContainer = '<label class="{panel-label}" for="{note-field}-textarea">Note</label> ' +
 															'<div class="{panel-field} {note-field}" ' +
 															'style="margin: 5px;">' +
-															'<textarea></textarea></div>';
+															'<textarea id="{note-field}-textarea"></textarea></div>';
 						}
 						
 						var content = this.setContent(renderTemplate(
-								'<div class="{panel-label}">Link:</div>' +
+								'<label class="{panel-label}" for="{link-field}-input">Link</label>' +
 								'<div class="{panel-field} {link-field}" ' + 
-								'style="margin: 5px;"><input type="text" /></div>' +
+								'style="margin: 5px;"><input type="text" id="{link-field}-input" /></div>' +
 								additionalReferenceContainer
 							)).content;
 

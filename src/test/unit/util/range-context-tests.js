@@ -79,7 +79,7 @@ Aloha.require([
 
 	function testUnformat(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			RangeContext.format(range, 'B', true);
+			RangeContext.unformat(range, 'B');
 		});
 	}
 

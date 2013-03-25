@@ -12,6 +12,49 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+
+## 0.23.3 - 2013/03/22
+
+- **BUGFIX**: No longer automatically append &lt;br&gt; elements to block-level
+	elements unless they are empty.
+- **BUGFIX**: DOM-to-XHTML plugin: Fixed handling of closing angle brackets,
+	which caused problems when these were included in attributes.
+- **BUGFIX**: Characterpicker plugin: Fixed the overlay not defining a font color
+	for the characters in the overlay and inheriting the color from
+	the content. If the font color was white the text in the overlay
+	 wasn't visible.
+- **BUGFIX**: Characterpicker plugin: Fixed the error
+	"Object [object Object] has no method 'is'" occuring, when clicking
+	into an editable.
+- **BUGFIX**: No longer remove the last arbitrary &lt;br&gt; element inside &lt;li&gt;
+	elements.
+- **BUGFIX**: Sidebar: Fixed the styles in some plugins, which
+	looked a bit broken and moved some css styles to the core.css.
+
+
+## 0.23.2 - 2013/03/15
+
+- **BUGFIX**: Fixed editables losing focus and the toolbar dissapearing
+	when clicking on the toolbar, on a dialog or on an attribute
+	field from a plugin (link, wai-lang)
+- **BUGFIX**: Fixed the text selection background color not being removed
+	when selecting something from the attribute field of a plugin (link,
+	wai-lang)
+- **BUGFIX**: No longer automatically append &lt;br&gt; elements to block-level
+	elements unless they are empty.
+
+
+## 0.23.1 - 2013/03/07
+
+- **BUGFIX**: Ensured that the floating menu will not cover small editables
+	whenever possible.
+- **ENHANCEMENT**: state-override: when pressing a formatting
+	button and the cursor is not within a word, a state override
+	will be set such that any text that is subsequently typed will
+	acquire the appropriate formatting.
+- **BUGFIX**: core: Aloha incorrectly reported that Chrome was not supported.
+
+
 ## 0.23.0 - 2013/02/28
 
 - **ENHANCEMENT**: format-plugin: b/strong and i/em handling

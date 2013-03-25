@@ -37,13 +37,3 @@ box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 7px 0 rgba(0, 0, 0, 0.8) ins
 .aloha-cite-panel-btns button {
 	width: 100%;
 }
-
-.aloha-cite-panel-field input,
-.aloha-cite-panel-field textarea {
-	width: 190px;
-	padding: 5px;
-	color: #555;
-	font-family: Arial, sans-serif;
-	font-size: 12px;
-	line-height: 1em;
-}

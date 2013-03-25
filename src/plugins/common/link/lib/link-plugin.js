@@ -1,7 +1,7 @@
 /* link-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  * 
  * Aloha Editor is free software; you can redistribute it and/or
@@ -46,7 +46,8 @@ define( [
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
-	'PubSub'
+	'PubSub',
+	'util/keys'
 ], function (
 	Aloha,
 	Plugin,
@@ -61,7 +62,8 @@ define( [
 	i18n,
 	i18nCore,
 	console,
-	PubSub
+	PubSub,
+	Keys
 ) {
 	'use strict';
 	
@@ -75,8 +77,8 @@ define( [
 	 * markup.
 	 *
 	 * Successive anchor elements are generally not merged, but an exception
-	 * needs to be made in the process of creating links: fragments of new links
-	 * are coalesced whenever possible.
+	 * needs to be made in the process of creating links: adjacent fragments of
+	 * new links are coalesced whenever possible.
 	 *
 	 * @type {object}
 	 */
@@ -96,12 +98,12 @@ define( [
 				// metaKey for OSX, 17 for PC (we can't check
 				// e.ctrlKey because it's only set on keyup or
 				// keypress, not on keydown).
-				if (e.metaKey || 17 === e.keyCode) {
+				if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
 					jQuery('body').addClass('aloha-link-pointer');
 				}
 			})
 			.bind('keyup.aloha-link.pointer-fix', function (e) {
-				if (e.metaKey || 17 === e.keyCode) {
+				if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
 					jQuery('body').removeClass('aloha-link-pointer');
 				}
 			});
@@ -198,7 +200,7 @@ define( [
 		 * Initialize the plugin
 		 */
 		init: function () {
-			var that = this;
+			var plugin = this;
 			
 			if ( typeof this.settings.targetregex != 'undefined' ) {
 				this.targetregex = this.settings.targetregex;
@@ -228,9 +230,12 @@ define( [
 			this.createButtons();
 			this.subscribeEvents();
 			this.bindInteractions();
-			
+
 			Aloha.bind('aloha-plugins-loaded', function () {
-				that.initSidebar(Aloha.Sidebar.right);
+				plugin.initSidebar(Aloha.Sidebar.right);
+				PubSub.pub('aloha.link.ready', {
+					plugin: plugin
+				})
 			});
 		},
 
@@ -358,6 +363,10 @@ define( [
 					return false;
 				} );
 
+				editable.obj.find('a').each(function() {
+					that.addLinkEventHandlers(this);
+				});
+
 				if (0 === editablesCreated++) {
 					setupMousePointerFix();
 				}
@@ -458,7 +467,44 @@ define( [
 				Scopes.leaveScope(this.name, 'link', true);
 			}
 		},
-		
+
+		/**
+		 * Add event handlers to the given link object
+		 * @param link object
+		 */
+		addLinkEventHandlers: function ( link ) {
+			var that = this;
+
+			// show pointer on mouse over
+			jQuery( link ).mouseenter( function ( e ) {
+				Aloha.Log.debug( that, 'mouse over link.' );
+				that.mouseOverLink = link;
+				that.updateMousePointer();
+			} );
+
+			// in any case on leave show text cursor
+			jQuery( link ).mouseleave( function ( e ) {
+				Aloha.Log.debug( that, 'mouse left link.' );
+				that.mouseOverLink = null;
+				that.updateMousePointer();
+			} );
+
+			// follow link on ctrl or meta + click
+			jQuery( link ).click( function ( e ) {
+				if ( e.metaKey ) {
+					// blur current editable. user is waiting for the link to load
+					Aloha.activeEditable.blur();
+					// hack to guarantee a browser history entry
+					window.setTimeout( function () {
+						location.href = e.target;
+					}, 0 );
+					e.stopPropagation();
+
+					return false;
+				}
+			} );
+		},
+
 		/**
 		 * Initialize the buttons
 		 */
@@ -514,9 +560,7 @@ define( [
 
 			// update link object when src changes
 			this.hrefField.addListener( 'keyup', function ( event ) {
-				// Handle ESC key press: We do a rough check to see if the user
-				// has entered a link or searched for something
-				if ( event.keyCode == 27 ) {
+				if (Keys.getToken(event.keyCode) === 'escape') {
 					var curval = that.hrefField.getValue();
 					if ( curval[ 0 ] == '/' || // local link
 						 curval[ 0 ] == '#' || // inner document link
@@ -541,8 +585,8 @@ define( [
 				
 				that.hrefChange();
 				
-				// Handle the enter key. Terminate the link scope and show the final link.
-				if ( event.keyCode == 13 ) {
+				// Terminate the link scope and show the final link.
+				if (Keys.getToken(event.keyCode) === 'enter') {
 					// Update the selection and place the cursor at the end of the link.
 					var	range = Aloha.Selection.getRangeObject();
 					
@@ -587,8 +631,33 @@ define( [
 					}
 				}
 			});
+
+			jQuery( document )
+				.keydown( function ( e ) {
+					Aloha.Log.debug( that, 'Meta key down.' );
+					that.metaKey = e.metaKey;
+					that.updateMousePointer();
+				} ).keyup( function ( e ) {
+					Aloha.Log.debug( that, 'Meta key up.' );
+					that.metaKey = e.metaKey;
+					that.updateMousePointer();
+				} );
 		},
 		
+		/**
+		 * Updates the mouse pointer
+		 */
+		updateMousePointer: function () {
+			if ( this.metaKey && this.mouseOverLink ) {
+				Aloha.Log.debug( this, 'set pointer' );
+				jQuery( this.mouseOverLink ).removeClass( 'aloha-link-text' );
+				jQuery( this.mouseOverLink ).addClass( 'aloha-link-pointer' );
+			} else {
+				jQuery( this.mouseOverLink ).removeClass( 'aloha-link-pointer' );
+				jQuery( this.mouseOverLink ).addClass( 'aloha-link-text' );
+			}
+		},
+
 		/**
 		 * Check whether inside a link tag
 		 * @param {GENTICS.Utils.RangeObject} range range where to insert the
@@ -661,18 +730,24 @@ define( [
 			if ( range.isCollapsed() ) {
 				// insert a link with text here
 				linkText = i18n.t( 'newlink.defaulttext' );
-				newLink = jQuery( '<a href="' + that.hrefValue + '">' + linkText + '</a>' );
+				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link">' + linkText + '</a>' );
 				GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
 				range.startContainer = range.endContainer = newLink.contents().get( 0 );
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
-				newLink = jQuery( '<a href="' + that.hrefValue + '"></a>' );
+				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
 				GENTICS.Utils.Dom.addMarkup( range, newLink, false );
 				GENTICS.Utils.Dom.doCleanup(insertLinkPostCleanup, range);
 			}
 
+			Aloha.activeEditable.obj.find( 'a.aloha-new-link' ).each( function ( i ) {
+				that.addLinkEventHandlers( this );
+				jQuery(this).removeClass( 'aloha-new-link' );
+			} );
+
 			range.select();
+
 
 			// focus has to become before prefilling the attribute, otherwise
 			// Chrome and Firefox will not focus the element correctly.
@@ -745,12 +820,21 @@ define( [
 					this.hrefField.getValue()
 				);
 			}
+
+			var href = that.hrefField.getValue();
+			var element = that.hrefField.getTargetObject();
 			
-			Aloha.trigger( 'aloha-link-href-change', {
-				 obj: that.hrefField.getTargetObject(),
-				 href: that.hrefField.getValue(),
+			Aloha.trigger('aloha-link-href-change', {
+				 href: href,
+				 obj: element,
 				 item: that.hrefField.getItem()
-			} );
+			});
+
+			PubSub.pub('aloha.link.changed', {
+				href: href,
+				element: element,
+				input: that.hrefField.getInputElem()
+			});
 			
 			if ( typeof this.onHrefChange == 'function' ) {
 				this.onHrefChange.call(
@@ -802,6 +886,12 @@ define( [
 				}
 				Aloha.trigger('aloha-link-selected');
 				enteredLinkScope = true;
+
+				PubSub.pub('aloha.link.selected', {
+					input: that.hrefField.getInputElem(),
+					href: that.hrefField.getValue(),
+					element: that.hrefField.getTargetObject()
+				});
 			} else {
 				that.toggleLinkScope(false);
 				that.hrefField.setTargetObject(null);

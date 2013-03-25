@@ -747,6 +747,12 @@ define([
 				'oldActive': oldActive,
 				'editable': this
 			});
+			PubSub.pub('aloha.editable.activated', {
+				data: {
+					old: oldActive,
+					editable: this
+				}
+			});
 		},
 
 		/**
