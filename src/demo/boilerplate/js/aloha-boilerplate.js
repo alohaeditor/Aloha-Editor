@@ -20,6 +20,9 @@ Aloha.require(['aloha', 'aloha/jquery', '../plugins/common/link/extra/linklist']
 			var $this = $(this),
 			editable = $this.find('.area-content'), // make stage switcher available thru editable
 			item = $this.find('.stage-item').detach();
+			if (!editable[0]) {
+				return;
+			}
 			editable[0].tab = $this;
 			item.hide();
 			item.appendTo(switcher.parent());
