@@ -170,11 +170,14 @@ define([
 	// command."
 	Aloha.bind('aloha-selection-changed', function (event, range, causeEvent) {
 		if (overrideRange && !Dom.areRangesEq(overrideRange, range)) {
-			clearOverrides();
 			if (causeEvent && isLinebreakEvent(causeEvent)) {
-				overrideRange = range;
-				overrides = overridesForLinebreak;
-				overridesForLinebreak = null;
+				if (overridesForLinebreak) {
+					overrideRange = range;
+					overrides = overridesForLinebreak;
+					overridesForLinebreak = null;
+				}
+			} else {
+				clearOverrides();
 			}
 			// Because the UI may reflect state overrides that are now
 			// no longer in effect, we must redraw the UI according to
