@@ -245,11 +245,9 @@ define('format/format-plugin', [
 			GENTICS.Utils.Dom.extendToWord(rangeObject);
 			if (rangeObject.isCollapsed()) {
 				if (StateOverride.enabled()) {
-					StateOverride.setWithRangeObject(
-						commandsByElement[button],
-						rangeObject,
-						makeFormattingFn(formatPlugin, markup, foundMarkup, limit)
-					);
+					var formatter = makeFormattingFn(formatPlugin, markup, foundMarkup, limit);
+					StateOverride.setWithRangeObject(commandsByElement[button], rangeObject, formatter);
+					StateOverride.setForLinebreakWithRangeObject(commandsByElement[button], rangeObject, formatter);
 					return;
 				}
 			}

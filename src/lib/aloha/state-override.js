@@ -140,7 +140,6 @@ define([
 			return;
 		}
 		setWithFnAndRangeObject(set, command, rangeObject, formatFn);
-		setWithFnAndRangeObject(setForLinebreak, command, rangeObject, formatFn);
 		// Because without doing rangeObject.select(), the
 		// next insertText command (see editable.js) will
 		// not be reached and instead the browsers default
