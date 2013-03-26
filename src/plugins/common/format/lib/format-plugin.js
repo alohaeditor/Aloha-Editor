@@ -216,6 +216,12 @@ define('format/format-plugin', [
 		updateUiAfterMutation(formatPlugin, rangeObject);
 	}
 
+	function makeFormattingFn(formatPlugin, markup, remove, limit) {
+		return function (command, rangeObject) {
+			format(formatPlugin, rangeObject, markup, remove, limit);
+		};
+	}
+
 	function addMarkup(button) {
 		var formatPlugin = this;
 		var markup = jQuery('<'+button+'>');
@@ -242,9 +248,7 @@ define('format/format-plugin', [
 					StateOverride.setWithRangeObject(
 						commandsByElement[button],
 						rangeObject,
-						function (command, rangeObject) {
-							format(formatPlugin, rangeObject, markup, foundMarkup, limit);
-						}
+						makeFormattingFn(formatPlugin, markup, foundMarkup, limit)
 					);
 					return;
 				}
@@ -264,9 +268,17 @@ define('format/format-plugin', [
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (j = 0; j < nodeNames.length; j++) {
-					if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
+					var markup = jQuery('<' + nodeNames[j] + '>');
+					if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, markup)) {
 						button.handle.setState(true);
 						statusWasSet = true;
+						if (StateOverride.enabled()) {
+							StateOverride.setForLinebreakWithRangeObject(
+								commandsByElement[nodeNames[j].toLowerCase()],
+								rangeObject,
+								makeFormattingFn(formatPlugin, markup, null, Aloha.activeEditable.obj)
+							);
+						}
 					}
 				}
 			}

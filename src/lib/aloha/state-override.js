@@ -46,22 +46,41 @@ define([
 	// Because we want to provide an easy way to disable the state-override feature.
 	var enabled = Aloha.settings.stateOverride !== false;
 	var overrides = null;
+	var overridesForLinebreak = null;
 	var overrideRange = null;
 
 	function rangeObjectFromRange(range) {
 		return new RangeObject(range);
 	}
 
-	function clear() {
-		overrideRange = null;
+	function clearOverrides() {
 		overrides = null;
+		if (!overridesForLinebreak) {
+			overrideRange = null;
+		}
+	}
+
+	function clearOverridesForLinebreak() {
+		overridesForLinebreak = null;
+		if (!overrides) {
+			overrideRange = null;
+		}
+	}
+
+	function clearAll() {
+		clearOverrides();
+		clearOverridesForLinebreak();
+	}
+
+	function isLinebreakEvent(event) {
+		return 13 === event.which;
 	}
 
 	function keyPressHandler(event) {
 		if (!overrides) {
 			return;
 		}
-		if (event.altKey || event.ctrlKey || !event.which) {
+		if (event.altKey || event.ctrlKey || !event.which || isLinebreakEvent(event)) {
 			return;
 		}
 		var selection = Aloha.getSelection();
@@ -81,26 +100,47 @@ define([
 		// insertText we must not let the browser's default action
 		// insert the character a second time.
 		event.preventDefault();
+		clearOverrides();
+	}
+
+	function setWithMap(overrideMap, clear, command, range, formatFn) {
+		if (!enabled) {
+			return overrideMap;
+		}
+		if (overrideRange && !Dom.areRangesEq(overrideRange, range)) {
+			clear();
+		}
+		overrideRange = range;
+		overrideMap = overrideMap || {};
+		overrideMap[command] = formatFn;
+		return overrideMap;
 	}
 
 	function set(command, range, formatFn) {
+		overrides = setWithMap(overrides, clearOverrides, command, range, formatFn);
+	}
+
+	function setForLinebreak(command, range, formatFn) {
+		overridesForLinebreak = setWithMap(overridesForLinebreak, clearOverridesForLinebreak, command, range, formatFn);
+	}
+
+	function setWithFnAndRangeObject(setFn, command, rangeObject, formatFn) {
 		if (!enabled) {
 			return;
 		}
-		overrideRange = range;
-		overrides = overrides || {};
-		overrides[command] = formatFn;
+		setFn(command, Dom.rangeFromRangeObject(rangeObject), function (command, range) {
+			var rangeObject = rangeObjectFromRange(range);
+			formatFn(command, rangeObject);
+			Dom.setRangeFromRef(range, rangeObject);
+		});
 	}
 
 	function setWithRangeObject(command, rangeObject, formatFn) {
 		if (!enabled) {
 			return;
 		}
-		set(command, Dom.rangeFromRangeObject(rangeObject), function (command, range) {
-			var rangeObject = rangeObjectFromRange(range);
-			formatFn(command, rangeObject);
-			Dom.setRangeFromRef(range, rangeObject);
-		});
+		setWithFnAndRangeObject(set, command, rangeObject, formatFn);
+		setWithFnAndRangeObject(setForLinebreak, command, rangeObject, formatFn);
 		// Because without doing rangeObject.select(), the
 		// next insertText command (see editable.js) will
 		// not be reached and instead the browsers default
@@ -109,6 +149,10 @@ define([
 		// know the exact reasons why; probably some
 		// stopPropagation somewhere by some plugin.
 		rangeObject.select();
+	}
+
+	function setForLinebreakWithRangeObject(command, rangeObject, formatFn) {
+		setWithFnAndRangeObject(setForLinebreak, command, rangeObject, formatFn);
 	}
 
 	function enabledAccessor(trueFalse) {
@@ -124,12 +168,17 @@ define([
 	// at a given index in the selection changes to something different,
 	// the state override and value override must be unset for every
 	// command."
-	Aloha.bind('aloha-selection-changed', function (event, range) {
+	Aloha.bind('aloha-selection-changed', function (event, range, causeEvent) {
 		if (overrideRange && !Dom.areRangesEq(overrideRange, range)) {
-			clear();
-			// Because the UI may reflect the any potentially state
-			// overrides that are now no longer in effect, we must
-			// redraw the UI according to the current selection.
+			clearOverrides();
+			if (causeEvent && isLinebreakEvent(causeEvent)) {
+				overrideRange = range;
+				overrides = overridesForLinebreak;
+				overridesForLinebreak = null;
+			}
+			// Because the UI may reflect state overrides that are now
+			// no longer in effect, we must redraw the UI according to
+			// the current selection.
 			PubSub.pub('aloha.selection.context-change', {
 				range: range,
 				event: event
@@ -137,11 +186,19 @@ define([
 		}
 	});
 
+	PubSub.sub('aloha.selection.context-change', function (message) {
+		if (message.event && overrideRange && !isLinebreakEvent(message.event)) {
+			clearOverridesForLinebreak();
+		}
+	});
+
 	return {
 		enabled: enabledAccessor,
 		keyPressHandler: keyPressHandler,
-		setWithRangeObject: setWithRangeObject,
 		set: set,
-		clear: clear
+		setWithRangeObject: setWithRangeObject,
+		setForLinebreak: setForLinebreak,
+		setForLinebreakWithRangeObject: setForLinebreakWithRangeObject,
+		clear: clearAll
 	};
 });
