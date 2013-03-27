@@ -104,7 +104,7 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
         $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer())
         $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer())
         $newEl.addClass($oldEl.attr('class'))
-        $newEl.bind('click', headingFunc);
+        $newEl.bind 'click', headingFunc
         evt.preventDefault()
         # $newEl.attr('id', $oldEl.attr('id))
         # Setting the id is commented because otherwise collaboration wouldn't register a change in the document
