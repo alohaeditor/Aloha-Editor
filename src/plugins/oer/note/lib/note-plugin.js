@@ -24,7 +24,7 @@
       }
       $body = $note.find('.body');
       if (!$body[0]) {
-        $body = jQuery('<div class="body"></div>');
+        $body = jQuery('<div class="body aloha-ephemera-wrapper"></div>');
         $note.children().not($title).appendTo($body);
       }
       $body.appendTo($note);
