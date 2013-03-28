@@ -7,3 +7,5 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
+
+- **BUGFIX**: Added missing documentation for the Sidebar.
