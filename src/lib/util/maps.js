@@ -88,6 +88,9 @@ define([], function () {
 		return map;
 	}
 
+	/**
+	 * Returns an array of the map's keys.
+	 */
 	function keys(map) {
 		var ks = [],
 			k;
@@ -99,10 +102,29 @@ define([], function () {
 		return ks;
 	}
 
+	/**
+	 * For each mapping, call cb(value, key, map).
+	 *
+	 * Emulates ECMAScript edition 5 Array.forEach.
+	 *
+	 * Contrary to "for (key in map)" iterates only over the
+	 * "hasOwnProperty" properties of the map, which is usually what you
+	 * want.
+	 */
+	function forEach(map, cb) {
+		var key;
+		for (key in map) {
+			if (map.hasOwnProperty(key)) {
+				cb(map[key], key, map);
+			}
+		}
+	}
+
 	return {
 		isEmpty: isEmpty,
 		fillTuples: fillTuples,
 		fillKeys: fillKeys,
-		keys: keys
+		keys: keys,
+		forEach: forEach
 	};
 });

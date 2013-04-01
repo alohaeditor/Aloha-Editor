@@ -37,7 +37,9 @@ define([
 	'aloha/ephemera',
 	'util/dom2',
 	'PubSub',
-	'aloha/copypaste'
+	'aloha/copypaste',
+	'aloha/command',
+	'aloha/state-override'
 ], function (
 	Aloha,
 	Class,
@@ -51,7 +53,9 @@ define([
 	Ephemera,
 	Dom,
 	PubSub,
-	CopyPaste
+	CopyPaste,
+	Command,
+	StateOverride
 ) {
 	'use strict';
 
@@ -125,7 +129,7 @@ define([
 				return false;
 			}
 		}
-	}
+	};
 
 	/**
 	 * Gets the name of the modifier key if is in effect for the given event.
@@ -139,8 +143,8 @@ define([
 	 */
 	function keyModifier($event) {
 		return $event.altKey ? 'alt' :
-		       $event.ctrlKey ? 'ctrl' :
-		       $event.shiftKey ? 'shift' : null;
+					$event.ctrlKey ? 'ctrl' :
+						$event.shiftKey ? 'shift' : null;
 	}
 
 	/**
@@ -312,21 +316,18 @@ define([
 					return me.activate(e);
 				});
 
-				// by catching the keydown we can prevent the browser from doing its own thing
-				// if it does not handle the keyStroke it returns true and therefore all other
-				// events (incl. browser's) continue
-				//me.obj.keydown( function( event ) {
-				//me.obj.add('.aloha-block', me.obj).live('keydown', function (event) { // live not working but would be usefull
-				me.obj.add('.aloha-block', me.obj).keydown(function (event) {
-					var letEventPass = Markup.preProcessKeyStrokes(event);
-					me.keyCode = event.which;
+				var keyInputElements = me.obj.add('.aloha-block', me.obj)
+					.keydown(function (event) {
+						var letEventPass = Markup.preProcessKeyStrokes(event);
+						me.keyCode = event.which;
 
-					if (!letEventPass) {
-						// the event will not proceed to key press, therefore trigger smartContentChange
-						me.smartContentChange(event);
-					}
-					return letEventPass;
-				});
+						if (!letEventPass) {
+							// the event will not proceed to key press, therefore trigger smartContentChange
+							me.smartContentChange(event);
+						}
+						return letEventPass;
+					})
+					.keypress(StateOverride.keyPressHandler);
 
 				// handle keypress
 				me.obj.keypress(function (event) {
@@ -531,7 +532,6 @@ define([
 				span = jQuery('<span>'),
 				el,
 				obj = this.obj;
-
 			if (GENTICS.Utils.Dom.allowsNesting(obj[0], div[0])) {
 				el = div;
 			} else {
@@ -540,17 +540,16 @@ define([
 			if (jQuery("." + this.placeholderClass, obj).length !== 0) {
 				return;
 			}
-			jQuery(obj).append(el.addClass(this.placeholderClass));
 			jQuery.each(Aloha.settings.placeholder, function (selector, selectorConfig) {
 				if (obj.is(selector)) {
 					el.html(selectorConfig);
 				}
 			});
-
-			// remove browser br
+			if (!el.is(':empty')) {
+				el.addClass(this.placeholderClass).addClass('aloha-ephemera');
+				jQuery(obj).append(el);
+			}
 			jQuery('br', obj).remove();
-
-			// delete div, span, el;
 		},
 
 		/**
@@ -747,6 +746,12 @@ define([
 			Aloha.trigger('aloha-editable-activated', {
 				'oldActive': oldActive,
 				'editable': this
+			});
+			PubSub.pub('aloha.editable.activated', {
+				data: {
+					old: oldActive,
+					editable: this
+				}
 			});
 		},
 

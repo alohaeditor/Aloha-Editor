@@ -33,7 +33,7 @@ define('util/lang', [], function () {
 });
 
 // Start Closure
-(function (window, undefined) {
+(function (window) {
 	"use strict";
 	var jQuery = window.alohaQuery || window.jQuery,
 		$ = jQuery,

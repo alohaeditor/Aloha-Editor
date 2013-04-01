@@ -165,6 +165,21 @@ define([
 	};
 
 	/**
+	 * jQuery alohaText gets contents for an Aloha Editor editable
+	 *
+	 * getContents forall editable
+	 * @return	jQuery object for the matched elements
+	 * @api
+	 */
+	jQuery.fn.alohaText = function () {
+		return this.each(function () {
+			if (Aloha.isEditable(this)) {
+				Aloha.getEditableById(jQuery(this).attr('id')).getContents();
+			}
+		});
+	};
+
+	/**
 	 * jQuery Extension
 	 * new Event which is triggered whenever a selection (length >= 0) is made in
 	 * an Aloha Editable element
@@ -394,6 +409,8 @@ define([
 			123: "f12",
 			144: "numlock",
 			145: "scroll",
+			188: ",",
+			190: ".",
 			191: "/",
 			224: "meta"
 		},

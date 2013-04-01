@@ -52,7 +52,7 @@
 	Dual licensed under the MIT or GPL Version 2 licenses.
 	http://jquery.org/license
 
-* jQuery UI 1.9m6
+* jQuery UI 1.9.0
 	Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
 	Dual licensed under the MIT or GPL Version 2 licenses.
 	http://jquery.org/license

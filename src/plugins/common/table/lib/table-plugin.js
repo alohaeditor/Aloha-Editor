@@ -698,7 +698,7 @@ define([
 						if ( allHeaders ) {
 			        		cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
 						} else {
-			        		cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'row' ).get(0);
+							cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'col' ).get(0);
 						}
 
 						jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
