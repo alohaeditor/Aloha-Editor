@@ -20,7 +20,7 @@ define [
       TitleBlock = Block.AbstractBlock.extend
         title: 'Title'
         init: ($element, postProcessFn) ->
-          $element.wrapInner('<div class="title-editor aloha-editable" />')
+          $element.wrapInner('<div class="title-editor document_title aloha-editable" />')
           postProcessFn()
         update: ($element, postProcessFn) ->
           postProcessFn()

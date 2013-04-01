@@ -98,14 +98,16 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
         GENTICS.Utils.Dom.extendToWord rangeObject  if rangeObject.isCollapsed()
 
         Aloha.Selection.changeMarkupOnSelection Aloha.jQuery("<#{hTag}></#{hTag}>")
+        # Change the label for the Heading button to match the newly selected formatting
+        jQuery('.currentHeading')[0].innerHTML = $el[0].innerHTML
         # Attach the id and classes back onto the new element
         $oldEl = Aloha.jQuery(rangeObject.getCommonAncestorContainer())
         $newEl = Aloha.jQuery(Aloha.Selection.getRangeObject().getCommonAncestorContainer())
         $newEl.addClass($oldEl.attr('class'))
+        $newEl.bind 'click', headingFunc
         evt.preventDefault()
         # $newEl.attr('id', $oldEl.attr('id))
         # Setting the id is commented because otherwise collaboration wouldn't register a change in the document
-
 
       $ROOT.on 'click', '.action.changeHeading', changeHeading
 
