@@ -1,14 +1,22 @@
 h2. The Block Plugin
 
-After reading this guide, you will be able to:
+After reading this guide, you will:
+
+* know what Aloha Editor Blocks are and what they can be used for
+* know which Aloha Editor plugins depend on the Block plugin
+* lern how to enable, initialize and configure the Block plugin
+* be able to create individual Aloha Editor Block types
+* be able to interact with Blocks from other parts of your application
+* learn about the Editing API and Editor
+* be able to use Drag & Drop and Collections for Aloha Editor Blocks
 
 endprologue.
 
 TIP: We suggest that you open up the block demo located at +src/demo/block/index.html+ of the Aloha Source, as it contains lots of usage examples and best practices.
 
-h3. What are Aloha Blocks?
+h3. What are Aloha Editor Blocks?
 
-*Aloha Blocks* (Blocks) are non-editable areas of a website that often have
+*Aloha Editor Blocks* (Blocks) are non-editable areas of a website that often have
 some properties that can be edited via the Aloha user interface.
 
 Some use cases for blocks include:
@@ -31,7 +39,7 @@ Some properties of blocks:
 
 h3. Enabling the Block Plugin
 
-Aloha Blocks are implemented as a plugin called @block@, which is part of the @common@ bundle.
+Aloha Editor Blocks are implemented as a plugin called @block@, which is part of the @common@ bundle.
 
 Furthermore, the @paste@ plugin is also a requirement in order to use blocks. Thus, just add +common/block,common/paste+ to the @data-aloha-plugins@ loading list.
 
@@ -173,7 +181,7 @@ When an attribute is changed through @attr@, the block is re-rendered automatica
 h3. Writing a Custom Aloha Block
 
 When writing a custom block, you should do so in your own *aloha plugin*.
-Inside the *plugin module*, you need to register the Aloha Blocks with the
+Inside the *plugin module*, you need to register the Aloha Editor Blocks with the
 Block Manager. An example skeleton is as follows:
 
 <javascript>
@@ -395,13 +403,13 @@ Sometimes, you want to create blocks that are mainly a container for other block
 
 First, you can mark your columns with the CSS class +aloha-editable+, and then these columns can contain other blocks. Use this when you want to allow content to be placed *between* your blocks.
 
-Second, you can mark your columns with the CSS class +aloha-block-collection+. Then, the Aloha Blocks inside become sortable: You see that they have a drag handle now. Furthermore, they can now be deleted using the standard backspace or delete keys.
+Second, you can mark your columns with the CSS class +aloha-block-collection+. Then, the Aloha Editor Blocks inside become sortable: You see that they have a drag handle now. Furthermore, they can now be deleted using the standard backspace or delete keys.
 
 Check the example blocks for a demo of this feature.
 
 h4. Custom Floating Menu
 
-When the Aloha Blocks are active, we set a custom Floating Menu scope called  +Aloha.Block.(alohaBlockType}+, so, for example, @Aloha.Block.DefaultBlock@. You add buttons to the floating menu if you want to show them when a specific block is active.
+When the Aloha Editor Blocks are active, we set a custom Floating Menu scope called  +Aloha.Block.(alohaBlockType}+, so, for example, @Aloha.Block.DefaultBlock@. You add buttons to the floating menu if you want to show them when a specific block is active.
 
 h4. Disabling the sidebar editor
 
