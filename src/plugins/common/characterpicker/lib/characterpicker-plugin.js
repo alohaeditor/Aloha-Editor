@@ -254,16 +254,20 @@ define([
 	/**
 	 * Calculates the offset at which to position the overlay element.
 	 *
+	 * @param {Overlay} overlay
 	 * @param {jQuery.<HTMLElement>} $element A DOM element around which to
 	 *                                        calculate the offset.
 	 */
-	function calculateOffset($element) {
+	function calculateOffset(overlay, $element) {
 		var offset = $element.offset();
 		if ('fixed' === Floating.POSITION_STYLE) {
 			offset.top -= $WINDOW.scrollTop();
 			offset.left -= $WINDOW.scrollLeft();
 		}
-		return offset;
+		return {
+			top: overlay.offset.top + (offset.top - overlay.offset.top),
+			left: overlay.offset.left + (offset.left - overlay.offset.left)
+		};
 	}
 
 	/**
@@ -327,7 +331,7 @@ define([
 
 			// Because the overlay needs to be reposition relative its button.
 			overlay.$element
-			       .css(calculateOffset($insert))
+			       .css(calculateOffset(overlay, $insert))
 			       .css('position', Floating.POSITION_STYLE)
 			       .show()
 			       .find('.focused')
@@ -453,7 +457,7 @@ define([
 			PubSub.sub('aloha.floating.changed', function (message) {
 				if (characterpicker.overlay) {
 					characterpicker.overlay.$element.css(
-						calculateOffset(button.element)
+						calculateOffset(characterpicker.overlay, button.element)
 					);
 				}
 			});
