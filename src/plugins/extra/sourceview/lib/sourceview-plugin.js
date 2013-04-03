@@ -10,11 +10,10 @@
 define([
 	'aloha',
 	'jquery',
-	'../../../../test/unit/testutils',
-	'../../../../test/unit/htmlbeautifier',
+	'../../sourceview/vendor/htmlbeautifier',
 	'css!sourceview/css/sourceview'
-], function (Aloha, jQuery, TestUtils) {
-	'use strict';
+], function (Aloha, jQuery) {
+	
 
 	var viewArea;
 
@@ -77,18 +76,20 @@ define([
 	 *
 	 * @param {DOMElement} container
 	 */
-	function showSource(container) {
+	function showSource(container, raw) {
 		var source = window.style_html(container.html());
 		source = Aloha.jQuery('<div>').text(source).html();
-		source = source.replace(/ /g, '&nbsp;')
-		               .replace(/[\r\n]/g, '<br/>')
-		               .replace(/\t/g, '&nbsp;&nbsp;')
-		               .replace(/([\[\{])/,
-		                  '<span class="aloha-devtool-source-viewer-marker"\
-		                     style="background:#70a5e2; color:#fff">$1')
-		               .replace(/([\]\}])/, '$1</span>')
-		               .replace(/([\[\]\{\}])/g,
-		                  '<b style="background:#0c53a4; color:#fff;">$1</b>');
+		if (!raw) {
+			source = source.replace(/ /g, '&nbsp;')
+				     .replace(/[\r\n]/g, '<br/>')
+				     .replace(/\t/g, '&nbsp;&nbsp;')
+				     .replace(/([\[\{])/,
+					  '<span class="aloha-devtool-source-viewer-marker"\
+						 style="background:#70a5e2; color:#fff">$1')
+				     .replace(/([\]\}])/, '$1</span>')
+				     .replace(/([\[\]\{\}])/g,
+					  '<b style="background:#0c53a4; color:#fff;">$1</b>');
+		}
 		viewArea.html(source);
 		var marker = viewArea.find('.aloha-devtool-source-viewer-marker');
 
@@ -131,7 +132,7 @@ define([
 							   />\
 						<label for="aloha-devtool-source-viewer-entire-ckbx"\
 							   class="aloha-devtool-source-viewer-ckbx">\
-							   Show all source</label>\
+							   Show All</label>\
 					</span>\
 				<span style="float:clear"></span>',
 		expanded: true,
@@ -162,10 +163,6 @@ define([
 				});
 
 			Aloha.bind('aloha-selection-changed', function (event, range) {
-				if (!Aloha.Sidebar.right.isOpen) {
-					return;
-				}
-
 				var sNode = range.startContainer;
 				var eNode = range.endContainer;
 
@@ -238,15 +235,21 @@ define([
 					endOffset: range.endOffset
 				};
 
-				try {
-					TestUtils.addBrackets(fakeRange);
-				} catch (ex) {
-					viewArea.html('[' + ex + ']');
-					return;
-				}
+				// Enable editing.
+				$('#aloha-devtool-source-viewer-content').attr('contenteditable', 'true');
 
-				showSource(clonedContainer);
-			});
+				// Update the content block html with the source.
+				$('#aloha-devtool-source-viewer-content').on('keyup', function() {
+					var text = $('#aloha-devtool-source-viewer-content').clone(); 
+					var spanToKill = text.find('span.aloha-devtool-source-viewer-marker'); 
+					spanToKill.remove(); 
+					text = text.text();
+					var selectededit = $('.aloha-editable-active'); 
+					selectededit.html(text);
+				});
+				
+				showSource(clonedContainer, true);
+			});			
 		}
 	});
 });
