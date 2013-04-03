@@ -67,7 +67,7 @@ define([
 	var configs = {};
 
 	/**
-	 * Checks whether the character picker overlay.
+	 * Checks whether the character picker overlay is visible.
 	 *
 	 * @param {Overlay} overlay
 	 * @return {boolean} True if the overlay is visible.
@@ -88,7 +88,7 @@ define([
 		});
 
 		$('body').click(function ($event) {
-			// Because we click events on the overlay ui should not cause it to
+			// Because click events on the overlay ui should not cause it to
 			// hide itself.
 			if (!overlay._overlayActive
 					|| ($event.target === overlay.$element[0])
@@ -124,7 +124,7 @@ define([
 	 * @return {jQuery.<HTMLElement>}
 	 */
 	function copyStyle(source, target, styleProp) {
-		// Move to strings.js
+		// TODO: Move to strings.js
 		var camelize = function (str) {
 			return str.replace(/\-(\w)/g, function (str, letter) {
 				return letter.toUpperCase();
@@ -252,6 +252,8 @@ define([
 	}
 
 	/**
+	 * Calculates the offset at which to position the overlay element.
+	 *
 	 * @param {Overlay} overlay
 	 * @param {jQuery.<HTMLElement>} $element A DOM element around which to
 	 *                                        calculate the offset.
@@ -269,7 +271,7 @@ define([
 	}
 
 	/**
-	 * Insert the selected character, at the editor's selection.
+	 * Inserts the selected character, at the editor's selection.
 	 *
 	 * @param {String} character
 	 */
@@ -324,7 +326,7 @@ define([
 		},
 
 		/**
-		 * Show the character overlay at the insert button's position.
+		 * Shows the character overlay at the insert button's position.
 		 *
 		 * @param {jQuery.<HTMLElement>} $insert Insert button.
 		 */
@@ -347,6 +349,9 @@ define([
 			overlay._overlayActive = true;
 		},
 
+		/**
+		 * Hides the character overlay.
+		 */
 		hide: function () {
 			this.$element.hide();
 			this._overlayActive = false;
@@ -354,7 +359,7 @@ define([
 	};
 
 	/**
-	 * Generate an character picker overlay for the given editable.
+	 * Generates an character picker overlay for the given editable.
 	 *
 	 * Because each editable may have its own configuration and therefore may
 	 * have its own overlay.
@@ -423,8 +428,8 @@ define([
 			});
 
 			/**
-			 * Pre-generate overlays to so that they will be ready when the
-			 * editor click on an editable.
+			 * Pre-generates overlays so that they will be ready when the editor
+			 * click on an editable.
 			 *
 			 * @param {number} editableIndex
 			 */
