@@ -6742,7 +6742,14 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'jquery'], function (Aloh
 
 			// "If value is not a formattable block name, abort these steps and do
 			// nothing."
-			if ($_(formattableBlockNames).indexOf(value) == -1) {
+			//
+			// Because we want the possibility to allow blockquote to
+			// act much like h1, h2, etc. as regards to
+			// block-formatting, we allow it here, even though in other
+			// commands (insertparagraph) it behaves differently from
+			// other block types and the spec originally didn't allow it
+			// here.
+			if ($_(formattableBlockNames).indexOf(value) == -1 && value != 'blockquote') {
 				return;
 			}
 
