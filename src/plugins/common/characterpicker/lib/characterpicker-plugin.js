@@ -317,10 +317,6 @@ define([
 	}
 
 	Overlay.prototype = {
-		offset: {
-			top: 0,
-			left: 0
-		},
 
 		/**
 		 * Shows the character overlay at the insert button's position.
@@ -457,7 +453,6 @@ define([
 
 			PubSub.sub('aloha.floating.changed', function (message) {
 				if (characterpicker.overlay) {
-					characterpicker.overlay.offset = message.position.offset;
 					characterpicker.overlay.$element.css(
 						calculateOffset(button.element)
 					);
