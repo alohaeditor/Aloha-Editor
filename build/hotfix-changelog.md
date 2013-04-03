@@ -9,3 +9,4 @@ All changes are categorized into one of the following keywords:
 ----
 
 - **BUGFIX**: Added missing documentation for the Sidebar.
+- **BUGFIX**: Characterpicker now opens in IE

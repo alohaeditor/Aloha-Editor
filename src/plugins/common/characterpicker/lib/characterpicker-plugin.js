@@ -92,8 +92,8 @@ define([
 			// hide itself.
 			if (!overlay._overlayActive
 					|| ($event.target === overlay.$element[0])
-					|| $(event.target).is('.aloha-icon-characterpicker')
-					|| $(event.target).find('.aloha-icon-characterpicker').length) {
+					|| $($event.target).is('.aloha-icon-characterpicker')
+					|| $($event.target).find('.aloha-icon-characterpicker').length) {
 				return;
 			}
 			overlay.hide();
