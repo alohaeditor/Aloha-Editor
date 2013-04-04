@@ -255,20 +255,16 @@ define([
 	/**
 	 * Calculates the offset at which to position the overlay element.
 	 *
-	 * @param {Overlay} overlay
 	 * @param {jQuery.<HTMLElement>} $element A DOM element around which to
 	 *                                        calculate the offset.
 	 */
-	function calculateOffset(overlay, $element) {
+	function calculateOffset($element) {
 		var offset = $element.offset();
 		if ('fixed' === Floating.POSITION_STYLE) {
 			offset.top -= $WINDOW.scrollTop();
 			offset.left -= $WINDOW.scrollLeft();
 		}
-		return {
-			top: overlay.offset.top + (offset.top - overlay.offset.top),
-			left: overlay.offset.left + (offset.left - overlay.offset.left)
-		};
+		return offset;
 	}
 
 	/**
@@ -336,7 +332,7 @@ define([
 
 			// Because the overlay needs to be reposition relative its button.
 			overlay.$element
-			       .css(calculateOffset(overlay, $insert))
+			       .css(calculateOffset($insert))
 			       .css('position', Floating.POSITION_STYLE)
 			       .show()
 			       .find('.focused')
@@ -463,7 +459,7 @@ define([
 				if (characterpicker.overlay) {
 					characterpicker.overlay.offset = message.position.offset;
 					characterpicker.overlay.$element.css(
-						calculateOffset(characterpicker.overlay, button.element)
+						calculateOffset(button.element)
 					);
 				}
 			});
