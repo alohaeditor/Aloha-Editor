@@ -119,11 +119,10 @@ define([
 	 *
 	 * @param {HTMLElement} source The element of which the style element is
 	 *                             taken.
-	 * @param {HTMLElement} target Where the style will be applied.
+	 * @param {jQuery.<HTMLElement>} target Where the style will be applied.
 	 * @param {string} styleProp The css property which shall be copied.
-	 * @return {jQuery.<HTMLElement>}
 	 */
-	function copyStyle(source, target, styleProp) {
+	function copyStyle(source, $target, styleProp) {
 		// TODO: Move to strings.js
 		var camelize = function (str) {
 			return str.replace(/\-(\w)/g, function (str, letter) {
@@ -144,7 +143,9 @@ define([
 			style = source.style[camelize(styleProp)];
 		}
 
-		return style ? target.css(styleProp, style) : null;
+		if (style) {
+			$target.css(styleProp, style);
+		}
 	}
 
 	/**
@@ -416,11 +417,11 @@ define([
 						rangeAtOpen = Aloha.Selection.rangeObject;
 
 						var from = rangeAtOpen.startContainer.parentNode;
-						var to = characterpicker.overlay.$element;
+						var $to = characterpicker.overlay.$element;
 
-						copyStyle(from, to, 'font-family');
-						copyStyle(from, to, 'font-weight');
-						copyStyle(from, to, 'font-style');
+						copyStyle(from, $to, 'font-family');
+						copyStyle(from, $to, 'font-weight');
+						copyStyle(from, $to, 'font-style');
 
 						characterpicker.overlay.show(this.element);
 					}
