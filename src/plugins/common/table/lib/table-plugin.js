@@ -613,7 +613,7 @@ define([
 				click: function() {
 					if (that.activeTable) {
 						var tableObj = that.activeTable.obj;
-						tableObj.find('td').each(function() {
+						tableObj.find('td, th').each(function() {
 							jQuery(this).find('div').css('width', '');
 							jQuery(this).css('width', '');
 						});
