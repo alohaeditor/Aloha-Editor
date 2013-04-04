@@ -61,6 +61,29 @@ define([
         return jQuery.trim(strBldr.join(' '));
     };
 
+	/**
+	 * Returns a jQuery collection of all heading elements in the given editable
+	 * which are safe to have their ids automatically set.
+	 *
+	 * Do not include heading elements which are annotated with the class
+	 * "aloha-customized" because these have had their ids manually set.
+	 *
+	 * Do not include heading elements which are Aloha editables or blocks because
+	 * implementations often use the ids of these elements to track them in the
+	 * DOM.
+	 *
+	 * @param {jQuery.<HTMLElement>} $editable
+	 * @return {jQuery.<HTMLHeadingElement>} A jQuery container with a
+	 *                                       collection of zero or more heading
+	 *                                       elements.
+	 */
+	function getHeadingElements($element) {
+		return (
+			$element.find('h1,h2,h3,h4,h5,h6')
+			        .not('.aloha-customized,.aloha-editable,.aloha-block')
+		);
+	}
+
 	return Plugin.create('headerids', {
 		_constructor: function(){
 			this._super('headerids');
@@ -100,8 +123,8 @@ define([
 		check: function($editable) {
 			var plugin = this;
 			if($.inArray('true', plugin.getEditableConfig($editable)) > -1) {
-				$editable.find('h1,h2,h3,h4,h5,h6').not('.aloha-customized').each(function () {
-					plugin.processH(this);
+				getHeadingElements($editable).each(function (i, heading) {
+					plugin.processH(heading);
 				});
 			}
 		},

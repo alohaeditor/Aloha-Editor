@@ -10,3 +10,6 @@ All changes are categorized into one of the following keywords:
 
 - **BUGFIX**: Added missing documentation for the Sidebar.
 - **BUGFIX**: Characterpicker now opens in IE
+- **BUGFIX**: Headerids plugin no longer changes ids of Aloha Editables, which
+			  was causing implementations to loose track of editables during
+			  saving of example.
