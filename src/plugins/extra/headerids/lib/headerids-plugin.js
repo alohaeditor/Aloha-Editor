@@ -25,20 +25,19 @@
  * recipients can access the Corresponding Source.
  */
 define([
+	'aloha',
 	'jquery',
 	'aloha/plugin',
-	'i18n!headerids/nls/i18n',
-	'i18n!aloha/nls/i18n'
-],
-function(jQuery, Plugin, i18n, i18nCore) {
-	"use strict";
+	'i18n!headerids/nls/i18n'
+], function (
+	Aloha,
+	jQuery,
+	Plugin,
+	i18n
+) {
+	'use strict';
 
-	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
-
-
+	var $ = jQuery;
 
 	// namespace prefix for this plugin
     var ns = 'aloha-headerids';
