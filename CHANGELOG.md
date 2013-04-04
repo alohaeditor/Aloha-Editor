@@ -12,6 +12,15 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.4 - 2013/04/04
+
+- **BUGFIX**: Added missing documentation for the Sidebar.
+- **BUGFIX**: Characterpicker now opens in IE
+- **BUGFIX**: Headerids plugin no longer changes ids of Aloha Editables, which
+			  was causing implementations to loose track of editables during
+			  saving of example.
+- **BUGFIX**: naturalfit-button (reset) in table resize plugin did not remove
+			  width from table head (th) elements
 
 ## 0.23.3 - 2013/03/22
 
