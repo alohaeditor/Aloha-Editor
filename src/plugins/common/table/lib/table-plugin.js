@@ -230,6 +230,39 @@ define([
 	}
 
 	/**
+	 * If the specified style is not already active in all selected cells, it is applied;
+	 * otherwise, it is removed from the cells
+	 *
+	 * @param {Array} config defined styles as defined in the configuration
+	 * @param {String} cssClass
+	 * @param {Array} sc the selection of target table cells
+	 */
+	function applyStyle(config, cssClass, sc) {
+		var appliedToAll = true;
+
+		for (var i = 0; i < sc.length; i++) {
+			if (jQuery(sc[i]).attr('class').indexOf(cssClass) < 0 ) {
+				appliedToAll = false;
+			}
+		}
+
+		if (!appliedToAll) {
+			for (var i = 0; i < sc.length; i++) {
+				jQuery(sc[i]).addClass(cssClass);
+				for (var f = 0; f < config.length; f++) {
+					if (config[f].cssClass != cssClass) {
+						jQuery(sc[i]).removeClass(config[f].cssClass);
+					}
+				}
+			}
+		} else {
+			for (var i = 0; i < sc.length; i++) {
+				jQuery(sc[i]).removeClass(cssClass);
+			}
+		}
+	}
+
+	/**
 	 * Init method of the Table-plugin transforms all tables in the document
 	 *
 	 * @return void
@@ -730,22 +763,8 @@ define([
 				iconClass: 'aloha-icon aloha-row-layout ' + itemConf.iconClass,
 				click: function () {
 					if (that.activeTable) {
-						var sc = that.activeTable.selection.selectedCells;
-						// if a selection was made, transform the selected cells
-						for (var i = 0; i < sc.length; i++) {
-							if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
-								jQuery(sc[i]).removeClass(itemConf.cssClass);
-							} else {
-								jQuery(sc[i]).addClass(itemConf.cssClass);
-								// remove all row formattings
-								for (var f = 0; f < that.rowConfig.length; f++) {
-									if (that.rowConfig[f].cssClass != itemConf.cssClass) {
-										jQuery(sc[i]).removeClass(that.rowConfig[f].cssClass);
-									}
-								}
+						applyStyle(that.rowConfig, itemConf.cssClass, that.activeTable.selection.selectedCells);
 
-							}
-						}
 						// selection could have changed.
 						that.activeTable.selectRows();
 					}
@@ -889,21 +908,8 @@ define([
 				iconClass : 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
 				click	  : function (x,y,z) {
 					if (that.activeTable) {
-						var sc = that.activeTable.selection.selectedCells;
-						// if a selection was made, transform the selected cells
-						for (var i = 0; i < sc.length; i++) {
-							if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
-								jQuery(sc[i]).removeClass(itemConf.cssClass);
-							} else {
-								jQuery(sc[i]).addClass(itemConf.cssClass);
-								// remove all column formattings
-								for (var f = 0; f < that.columnConfig.length; f++) {
-									if (that.columnConfig[f].cssClass != itemConf.cssClass) {
-										jQuery(sc[i]).removeClass(that.columnConfig[f].cssClass);
-									}
-								}
-							}
-						}
+						applyStyle(that.columnConfig, itemConf.cssClass, that.activeTable.selection.selectedCells);
+
 						// selection could have changed.
 						that.activeTable.selectColumns();
 					}
@@ -960,22 +966,7 @@ define([
 				iconClass : 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
 				click	  : function (x,y,z) {
 					if (that.activeTable) {
-						var sc = that.selectedOrActiveCells();
-
-						// if a selection was made, transform the selected cells
-						for (var i = 0; i < sc.length; i++) {
-							if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
-								jQuery(sc[i]).removeClass(itemConf.cssClass);
-							} else {
-								jQuery(sc[i]).addClass(itemConf.cssClass);
-								// remove all column formattings
-								for (var f = 0; f < that.cellConfig.length; f++) {
-									if (that.cellConfig[f].cssClass != itemConf.cssClass) {
-										jQuery(sc[i]).removeClass(that.cellConfig[f].cssClass);
-									}
-								}
-							}
-						}
+						applyStyle(that.cellConfig, itemConf.cssClass, that.selectedOrActiveCells());
 
 						that.setActiveCellStyle();
 					}
@@ -1066,10 +1057,19 @@ define([
 				click: function(){
 					// set table css class
 					if (that.activeTable) {
-						for (var f = 0; f < tableConfig.length; f++) {
-							that.activeTable.obj.removeClass(tableConfig[f].cssClass);
+						if (!that.activeTable.obj.hasClass(itemConf.cssClass)) {
+							for (var f = 0; f < tableConfig.length; f++) {
+								that.activeTable.obj.removeClass(tableConfig[f].cssClass);
+							}
+							that.activeTable.obj.addClass(itemConf.cssClass);
+							that.tableMSButton.setActiveItem(itemConf.cssClass);
 						}
-						that.activeTable.obj.addClass(itemConf.cssClass);
+						else {
+							for (var f = 0; f < tableConfig.length; f++) {
+								that.activeTable.obj.removeClass(tableConfig[f].cssClass);
+							}
+							that.tableMSButton.setActiveItem();
+						}
 					}
 				}
 			});
@@ -1088,6 +1088,7 @@ define([
 						for (var f = 0; f < tableConfig.length; f++) {
 							that.activeTable.obj.removeClass(that.tableConfig[f].cssClass);
 						}
+						that.tableMSButton.setActiveItem();
 					}
 				}
 			});
@@ -1437,23 +1438,36 @@ define([
 		}
 	};
 
+	/**
+	 * Set the cell-style to match the active item, if all selected cells have the same style
+	 */
 	TablePlugin.setActiveCellStyle = function() {
 		var that = this;
+		var allSelected = false;
+		var className;
 
 		// reset any selected cell styles
 		this.cellMSButton.setActiveItem();
 
 		var selectedCells = that.selectedOrActiveCells();
 
-		jQuery( selectedCells ).each( function() {
-			for (var k = 0; k < that.cellConfig.length; k++) {
-				if ( jQuery(this).hasClass(that.cellConfig[k].cssClass) ) {
-					that.cellMSButton.setActiveItem(that.cellConfig[k].name);
-					k = that.cellConfig.length;
-				}
+		for ( var i = 0; i < that.cellConfig.length; i++) {
+			if (jQuery(selectedCells[0]).hasClass(that.cellConfig[i].cssClass) ) {
+				className = that.cellConfig[i].name;
+				allSelected = true;
+				i = that.cellConfig.length;
+			}
+		}
+
+		// if all selected cells have the same class, set it as active
+		jQuery(selectedCells).each(function(index) {
+			if (!jQuery(this).hasClass(className)) {
+				allSelected = false;
 			}
 		});
-
+		if (allSelected) {
+			this.cellMSButton.setActiveItem(className);
+		}
 	};
 
 	TablePlugin.selectedOrActiveCells = function() {
