@@ -25,20 +25,19 @@
  * recipients can access the Corresponding Source.
  */
 define([
+	'aloha',
 	'jquery',
 	'aloha/plugin',
-	'i18n!headerids/nls/i18n',
-	'i18n!aloha/nls/i18n'
-],
-function(jQuery, Plugin, i18n, i18nCore) {
-	"use strict";
+	'i18n!headerids/nls/i18n'
+], function (
+	Aloha,
+	jQuery,
+	Plugin,
+	i18n
+) {
+	'use strict';
 
-	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
-
-
+	var $ = jQuery;
 
 	// namespace prefix for this plugin
     var ns = 'aloha-headerids';
@@ -61,7 +60,30 @@ function(jQuery, Plugin, i18n, i18nCore) {
         $.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
         return jQuery.trim(strBldr.join(' '));
     };
-    
+
+	/**
+	 * Returns a jQuery collection of all heading elements in the given editable
+	 * which are safe to have their ids automatically set.
+	 *
+	 * Do not include heading elements which are annotated with the class
+	 * "aloha-customized" because these have had their ids manually set.
+	 *
+	 * Do not include heading elements which are Aloha editables or blocks because
+	 * implementations often use the ids of these elements to track them in the
+	 * DOM.
+	 *
+	 * @param {jQuery.<HTMLElement>} $editable
+	 * @return {jQuery.<HTMLHeadingElement>} A jQuery container with a
+	 *                                       collection of zero or more heading
+	 *                                       elements.
+	 */
+	function getHeadingElements($element) {
+		return (
+			$element.find('h1,h2,h3,h4,h5,h6')
+			        .not('.aloha-customized,.aloha-editable,.aloha-block')
+		);
+	}
+
 	return Plugin.create('headerids', {
 		_constructor: function(){
 			this._super('headerids');
@@ -86,31 +108,61 @@ function(jQuery, Plugin, i18n, i18nCore) {
 				that.initSidebar(Aloha.Sidebar.right);
 			});
 		},
-		
-		check: function(editable) {
-			var that = this;
-			var config = that.getEditableConfig(editable);
 
-			if(jQuery.inArray('true',config) === -1) {
-				// Return if the plugin should do nothing in this editable
-				return false;
+		/**
+		 * Automatically sets the id attribute of heading elements in the given
+		 * editable element wherever it is safe to do so.
+		 *
+		 * @TODO: This function should be removed from being a plugin method and
+		 *        made a local closure function.
+		 *
+		 * @TODO: Rename to setHeadingIds()
+		 *
+		 * @param {jQuery.<HTMLElement>} $editable
+		 */
+		check: function($editable) {
+			var plugin = this;
+			if($.inArray('true', plugin.getEditableConfig($editable)) > -1) {
+				getHeadingElements($editable).each(function (i, heading) {
+					plugin.processH(heading);
+				});
 			}
+		},
 
-			jQuery(editable).find('h1, h2, h3, h4, h5, h6').not('.aloha-customized').each(function(){ 
-				that.processH(this); 
-			});
+		/**
+		 * Automatically sets the id of the given heading element to a sanitized
+		 * version of the element's content text string.
+		 *
+		 * @TODO: Rename to setHeadingId()
+		 *
+		 * @TODO: Make this function a local closure function rather than a
+		 *        plugin method.
+		 *
+		 * @param {HTMLHeadingElement} heading One of the six HTML heading
+		 *                                     elements.
+		 */
+		processH: function (heading) {
+			var $heading = $(heading);
+			$heading.attr('id', this.sanitize($heading.text()));
+		},
 
+		/**
+		 * Tranforms the given string into a ideal HTMLElement id attribute
+		 * string by replacing non-alphanumeric characters with an underscore.
+		 *
+		 * @TODO: This method should be removed from being a plugin method and
+		 *        made into a local closure function.
+		 *
+		 * @TODO: The regular expression should be defined once (as a constant)
+		 *        outside of the scope of this function.
+		 *
+		 * @param {String} str
+		 * @return {String} Santized copy of `str`.
+		 */
+		sanitize: function (str) {
+			return str.replace(/[^a-z0-9]+/gi, '_');
 		},
-		
-		processH: function(h) {
-			var that = this;
-			jQuery(h).attr('id',that.sanitize(jQuery(h).text()));
-		},
-				
-		sanitize: function(str) {
-			return (str.replace(/[^a-z0-9]+/gi,'_'));
-		},
-		
+
 		//ns = headerids
 		initSidebar: function(sidebar) {
 			var pl = this;
