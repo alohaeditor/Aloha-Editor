@@ -243,6 +243,7 @@ define([
 		for (var i = 0; i < sc.length; i++) {
 			if (jQuery(sc[i]).attr('class').indexOf(cssClass) < 0 ) {
 				appliedToAll = false;
+				break;
 			}
 		}
 
@@ -1063,8 +1064,7 @@ define([
 							}
 							that.activeTable.obj.addClass(itemConf.cssClass);
 							that.tableMSButton.setActiveItem(itemConf.cssClass);
-						}
-						else {
+						} else {
 							for (var f = 0; f < tableConfig.length; f++) {
 								that.activeTable.obj.removeClass(tableConfig[f].cssClass);
 							}
@@ -1440,6 +1440,7 @@ define([
 
 	/**
 	 * Set the cell-style to match the active item, if all selected cells have the same style
+	 * TODO: Algorithm very similar to setActiveStyle in table.js, should be refactored
 	 */
 	TablePlugin.setActiveCellStyle = function() {
 		var that = this;
@@ -1451,11 +1452,11 @@ define([
 
 		var selectedCells = that.selectedOrActiveCells();
 
-		for ( var i = 0; i < that.cellConfig.length; i++) {
+		for (var i = 0; i < that.cellConfig.length; i++) {
 			if (jQuery(selectedCells[0]).hasClass(that.cellConfig[i].cssClass) ) {
 				className = that.cellConfig[i].name;
 				allSelected = true;
-				i = that.cellConfig.length;
+				break;
 			}
 		}
 

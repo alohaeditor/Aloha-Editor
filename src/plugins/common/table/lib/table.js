@@ -270,7 +270,7 @@ define([
 		var allSelected = false;
 
 		// activate all formatting buttons
-		for ( var i = 0; i < items.length; i++ ) {
+		for (var i = 0; i < items.length; i++) {
 			button.showItem(items[i].name);
 		}
 
@@ -278,11 +278,11 @@ define([
 		button.setActiveItem();
 
 		// select class of first element as reference
-		for ( var i = 0; i < config.length; i++) {
-			if (jQuery(selectedCells[0]).hasClass(config[i].cssClass) ) {
+		for (var i = 0; i < config.length; i++) {
+			if (jQuery(selectedCells[0]).hasClass(config[i].cssClass)) {
 				allSelected = true;
 				className = config[i].name;
-				i = config.length;
+				break;
 			}
 		}
 
@@ -1459,14 +1459,14 @@ define([
 	Table.prototype.selectColumns = function ( columns ) {
 		var columnsToSelect;
 
-		if ( columns ) {
+		if (columns) {
 			columnsToSelect = columns;
 		} else {
 			columnsToSelect = this.columnsToSelect;
 		}
 
 		Scopes.setScope(this.tablePlugin.name + '.column');
-		this.selection.selectColumns( columnsToSelect );
+		this.selection.selectColumns(columnsToSelect);
 		this.tablePlugin._columnheaderButton.setState(this.selection.isHeader());
 
 		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
@@ -1491,7 +1491,7 @@ define([
 	Table.prototype.selectRows = function () {
 
 		Scopes.setScope(this.tablePlugin.name + '.row');
-		this.selection.selectRows( this.rowsToSelect );
+		this.selection.selectRows(this.rowsToSelect);
 		this.tablePlugin._rowheaderButton.setState(this.selection.isHeader());
 
 		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
