@@ -12,3 +12,5 @@ All changes are categorized into one of the following keywords:
             of an editable while editing using commands like CTL+A, DEL.
 **BUGFIX**: Cursor styles that are added inside tables for resizing are now
             correctly removed when the table is no longer editable.
+**ENHANCEMENT**: Added missing german translations for table plugin components
+

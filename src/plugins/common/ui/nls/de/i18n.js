@@ -43,5 +43,6 @@ define({
 	"tab.table.label": "Tabelle",
 	"tab.col.label": "Tabellenspalte",
 	"tab.row.label": "Tabellenzeile",
+	"tab.cell.label": "Tabellenzelle",
 	"tab.wai-lang.label": "Sprachauszeichnung"
 });
