@@ -8,3 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **ENHANCEMENT**: Added missing german translations for table plugin components
+
