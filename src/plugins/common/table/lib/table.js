@@ -195,6 +195,7 @@ define([
 		var table = tableObj.obj,
 
 			i,
+			j,
 		    row,
 		    rows = tableObj.getRows(),
 		    rowsNum = rows.length,
@@ -204,7 +205,7 @@ define([
 
 		    colsCount,
 		    maxColsCount = 0,
-		    cachedColsCounts = [],
+		    cachedColsCounts = [rowsNum],
 		    colsCountDiff,
 		    colSpan;
 
@@ -236,10 +237,23 @@ define([
 				colsCount += ( colSpan - 1 );
 			}
 
-			cachedColsCounts.push( colsCount );
+			// if a rowspan is set in the last element of the row, the row(s) below
+			// are supposed to have one less column for every colspan the element has
+			rowSpan = parseInt(cols.last().attr('rowspan'), 10);
+			if (rowSpan > 1) {
+				for (j = 1; j < rowSpan-1; j++) {
+					if (colSpan > 1) {
+						cachedColsCounts[i+j] += colSpan;
+					} else {
+						cachedColsCounts[i+j] += 1;
+					}
+				}
+			}
 
-			if ( colsCount > maxColsCount ) {
-				maxColsCount = colsCount;
+			cachedColsCounts[i] += colsCount;
+
+			if (cachedColsCounts[i] > maxColsCount) {
+				maxColsCount = cachedColsCounts[i];
 			}
 		}
 
