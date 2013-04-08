@@ -8,3 +8,4 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**: A problem was fixed that prevented table-cells to be selected after their header-status was changed.

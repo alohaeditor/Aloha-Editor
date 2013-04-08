@@ -230,6 +230,60 @@ define([
 	}
 
 	/**
+	 * Sets the currently selected elements as headers of the table, or removes header-status
+	 * if the whole selection is already used as a header
+	 *
+	 * @param {Aloha.Table} table the table-object for which the headers are to be set
+	 * @param {string} scope for which the header should be used (i.e. 'row' or 'column')
+	 */
+	function toggleHeaderStatus(selection, table, scope) {
+		var	i,
+			j,
+			allHeaders = selection.isHeader(),
+			domCell, // representation of the cell in the dom
+			tableCell, // table-cell object
+			bufferCell; // temporary buffer
+
+		for (var i = 0; i < table.selection.selectedCells.length; i++) {
+			domCell = table.selection.selectedCells[i];
+
+			// tries to match the current cell with a cell-object in the table
+			for (var j = 0; j < table.cells.length; j++) {
+				if ($(domCell)[0] === table.cells[j].obj[0]) {
+					cell = table.cells[j];
+					break;
+				}
+			}
+
+			// the transformed dom objects are first stored in a buffer, and only applied to
+			// the table-cell-object if a match was found
+			if (allHeaders) {
+				bufferCell = Aloha.Markup.transformDomObject( domCell, 'td' ).removeAttr( 'scope' ).get(0);
+			} else {
+				bufferCell = Aloha.Markup.transformDomObject( domCell, 'th' ).attr( 'scope', scope ).get(0);
+			}
+
+			if (cell != null) {
+				// assign the changed dom-element to the table-cell
+				cell.obj[0] = bufferCell;
+
+				// reactivate the table-cell in order to bind events to the changed dom-object
+				cell.deactivate();
+				cell.activate();
+			}
+
+			// uncommented code-segment, presumably added to force IE to target the wrapper
+			// on mouse-down by applying a timeout after event propagation
+			jQuery( table.selection.selectedCells[i] ).bind( 'mousedown', function ( jqEvent ) {
+				var wrapper = jQuery(this).children('div').eq(0);
+				window.setTimeout(function () {
+					wrapper.trigger( 'focus' );
+				}, 1);
+			});
+		}
+	}
+
+	/**
 	 * Init method of the Table-plugin transforms all tables in the document
 	 *
 	 * @return void
@@ -678,44 +732,12 @@ define([
 			scope: this.name + '.row',
 			click: function() {
 				if (that.activeTable) {
-    				var selectedRowIdxs = that.activeTable.selection.selectedRowIdxs,
-    	  			cell,
-    	  			isHeader = that.activeTable.selection.isHeader(),
-    				allHeaders = true; // flag for header check
-
-    				// loop through selected cells, determine if any are not already headers
-    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
-    					cell = that.activeTable.selection.selectedCells[j];
-						if ( !isHeader ) {
-							allHeaders = false;
-							break;
-						}
-    				}
-
-    				// updated selected cells
-    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
-			    		cell = that.activeTable.selection.selectedCells[j];
-						if ( allHeaders ) {
-			        		cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
-						} else {
-							cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'col' ).get(0);
-						}
-
-						jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
-							var wrapper = jQuery(this).children('div').eq(0);
-							// lovely IE ;-)
-							window.setTimeout(function () {
-			            		wrapper.trigger( 'focus' );
-							}, 1);
-							// unselect cells
-						});
-
-					}
-
-					// select the row
 					that.activeTable.refresh();
+
+					toggleHeaderStatus(that.activeTable, 'column');
+
 					that.activeTable.selection.unselectCells();
-					that.activeTable.selection.selectRows( selectedRowIdxs );
+					that.activeTable.selection.selectRows(that.activeTable.selection.selectedRowIdxs);
 				}
 			}
 		});
@@ -772,7 +794,7 @@ define([
 						// selection could have changed.
 						that.activeTable.selectRows();
 					}
- 				}
+				}
 			});
 		}
 
@@ -830,51 +852,18 @@ define([
 			}
 		});
 
-	    this._columnheaderButton = Ui.adopt("columnheader", ToggleButton, {
+		this._columnheaderButton = Ui.adopt("columnheader", ToggleButton, {
 			tooltip: i18n.t("button.columnheader.tooltip"),
 			icon: "aloha-icon aloha-icon-columnheader",
 			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
-    				var
-    	  			selectedColumnIdxs = that.activeTable.selection.selectedColumnIdxs,
-    	  			cell,
-    	  			isHeader = that.activeTable.selection.isHeader(),
-    				allHeaders = true; // flag for header check
-
-    				// loop through selected cells, determine if any are not already headers
-    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
-    					cell = that.activeTable.selection.selectedCells[j];
-						if ( !isHeader ) {
-							allHeaders = false;
-							break;
-						}
-    				}
-
-    				// updated selected cells
-    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
-			    		cell = that.activeTable.selection.selectedCells[j];
-						if ( allHeaders ) {
-			        		cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
-						} else {
-			        		cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'row' ).get(0);
-						}
-
-						jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
-							var wrapper = jQuery(this).children('div').eq(0);
-							// lovely IE ;-)
-							window.setTimeout(function () {
-			            		wrapper.trigger( 'focus' );
-							}, 1);
-							// unselect cells
-						});
-
-					}
-
-					// select the column
 					that.activeTable.refresh();
+
+					toggleHeaderStatus(that.activeTable, 'row');
+
 					that.activeTable.selection.unselectCells();
-					that.activeTable.selection.selectColumns( selectedColumnIdxs );
+					that.activeTable.selection.selectColumns(that.activeTable.selection.selectedColumnIdxs);
 				}
 			}
 		});
