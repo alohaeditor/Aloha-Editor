@@ -48,6 +48,7 @@ define([
 	var overrides = null;
 	var overridesForLinebreak = null;
 	var overrideRange = null;
+	var linebreakOverridesActive = false;
 
 	function rangeObjectFromRange(range) {
 		return new RangeObject(range);
@@ -55,6 +56,7 @@ define([
 
 	function clearOverrides() {
 		overrides = null;
+		linebreakOverridesActive = false;
 		if (!overridesForLinebreak) {
 			overrideRange = null;
 		}
@@ -121,7 +123,11 @@ define([
 	}
 
 	function setForLinebreak(command, range, formatFn) {
-		overridesForLinebreak = setWithMap(overridesForLinebreak, clearOverridesForLinebreak, command, range, formatFn);
+		if (linebreakOverridesActive) {
+			overrides[command] = formatFn;
+		} else {
+			overridesForLinebreak = setWithMap(overridesForLinebreak, clearOverridesForLinebreak, command, range, formatFn);
+		}
 	}
 
 	function setWithFnAndRangeObject(setFn, command, rangeObject, formatFn) {
@@ -161,6 +167,10 @@ define([
 		return enabled;
 	}
 
+	function isSet(command) {
+		return overrides && overrides.hasOwnProperty(command);
+	}
+
 	// https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#state-override
 	// "Whenever the number of ranges in the selection changes to
 	// something different, and whenever a boundary point of the range
@@ -168,12 +178,20 @@ define([
 	// the state override and value override must be unset for every
 	// command."
 	Aloha.bind('aloha-selection-changed', function (event, range, causeEvent) {
-		if (overrideRange && !Dom.areRangesEq(overrideRange, range)) {
+		// Because we have to fix an edge case that occurs when pressing
+		// shift+enter which causes the selection changed event to occur
+		// one too many times (but not always, try shift enter twice at
+		// the end of the x in <p><b><i>x</i><b><br/></p>).
+		var isShiftEvent = (causeEvent
+							&& 16/*shift*/ === causeEvent.which
+							&& 'keyup' === causeEvent.type);
+		if (overrideRange && !Dom.areRangesEq(overrideRange, range) && !isShiftEvent) {
 			if (causeEvent && isLinebreakEvent(causeEvent)) {
 				if (overridesForLinebreak) {
 					overrideRange = range;
 					overrides = overridesForLinebreak;
 					overridesForLinebreak = null;
+					linebreakOverridesActive = true;
 				}
 			} else {
 				clearOverrides();
@@ -197,6 +215,7 @@ define([
 	return {
 		enabled: enabledAccessor,
 		keyPressHandler: keyPressHandler,
+		isSet: isSet,
 		set: set,
 		setWithRangeObject: setWithRangeObject,
 		setForLinebreak: setForLinebreak,
