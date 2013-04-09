@@ -18,3 +18,13 @@ All changes are categorized into one of the following keywords:
 	writing another word on the next line, the second word will also
 	be bold. This behaviour more closely matches how popular word
 	processors behave.
+- **BUGFIX**: paste: paste from word causes unwanted content
+
+	Pasting from word on OSX with Firefox caused the contents
+	of style elements to be pasted as text.
+
+	This has been fixed in the default sanitize content handler
+	configuration. If you have your own santize configuration, you can
+	adapt it by adding the following property
+
+	remove_contents: ['style', 'script']
