@@ -31,13 +31,14 @@ define [
       # Add a prune function that cleans up the title editor
       emap = Ephemera.ephemera().pruneFns.push (node) ->
         $node = $(node)
-        if $node.is('div.title')
+        if $node.is('div.title') and $node.has('.title-editor')
           $node.text($node.find('.title-editor').text())
           return $node.get(0)
         node
 
       Aloha.bind 'aloha-editable-created', ($event, editable) ->
-        editable.obj.find('div.title:not(.aloha-block)').alohaBlock('aloha-block-type': 'TitleBlock')
+        # Turn the first directly nested title div into a title editor
+        editable.obj.find('> div.title:not(.aloha-block)').alohaBlock('aloha-block-type': 'TitleBlock')
         if editable.obj.is('.title-editor')
           # Glue key handler to title editor. Remove the old handler, this
           # editor does not care for all those other handlers
