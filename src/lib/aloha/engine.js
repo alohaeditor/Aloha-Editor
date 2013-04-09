@@ -1,70 +1,6 @@
 define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], function (Aloha, $_, Maps, Html, jQuery) {
 	"use strict";
 
-	/**
-	 * Checks whether the given node is a visible text node.
-	 *
-	 * @param {HTMLElement} node
-	 * @return {Boolean} True if `node` is a visible text node.
-	 */
-	function isInvisibleTextNode(node) {
-		if (node && node.nodeType !== $_.Node.TEXT_NODE) {
-			return false;
-		}
-		var offset = 0;
-		var data = node.data;
-		var len = data.length;
-		while (offset < len && data.charAt(offset) === '\u200b') {
-			offset++;
-		}
-		return offset === len;
-	}
-
-	/**
-	 * Complement of isInvisibleTextNode().
-	 *
-	 * @param {HTMLElement} node
-	 * @return {Boolean} True if `node` is anything but an invisible text node.
-	 */
-	function isNotInvisibleTextNode(node) {
-		return !isInvisibleTextNode(node);
-	}
-
-	/**
-	 * Checks whether the given node is a otherwise empty block-level element
-	 * containing a propping <br> element.
-	 *
-	 * @param {HTMLElement} node
-	 * @return {Boolean} True if `node` is a propped up block-level element.
-	 */
-	function isProppedBlock(node) {
-		if (!Html.isBlock(node)) {
-			return false;
-		}
-		var child = Html.findNodeRight(node.lastChild, isVisible);
-		return (
-			child
-			&& 'br' === child.nodeName.toLowerCase()
-			&& !Html.findNodeRight(child.previousSibling, isVisible)
-		);
-	}
-
-	/**
-	 * Checks whether the given node is a empty element, or an element that
-	 * would otherwise be empty except for a propping <br>, or an element
-	 * containing only invisible text nodes.
-	 *
-	 * @param {HTMLElement} node
-	 * @return {Boolean} True if `node` can be considered empty.
-	 */
-	function isEmptyNode(node) {
-		return (
-			!node.hasChildNodes()
-			|| isProppedBlock(node)
-			|| !Html.findNodeRight(node.lastChild, isNotInvisibleTextNode)
-		);
-	}
-
 	function hasAttribute(obj, attr) {
 		var native_method = obj.hasAttribute;
 		if (native_method) {
@@ -1425,6 +1361,70 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 		}
 
 		return hasCollapsedBlockPropChild;
+	}
+
+	/**
+	 * Checks whether the given node is a visible text node.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` is a visible text node.
+	 */
+	function isInvisibleTextNode(node) {
+		if (node && node.nodeType !== $_.Node.TEXT_NODE) {
+			return false;
+		}
+		var offset = 0;
+		var data = node.data;
+		var len = data.length;
+		while (offset < len && data.charAt(offset) === '\u200b') {
+			offset++;
+		}
+		return offset === len;
+	}
+
+	/**
+	 * Complement of isInvisibleTextNode().
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` is anything but an invisible text node.
+	 */
+	function isNotInvisibleTextNode(node) {
+		return !isInvisibleTextNode(node);
+	}
+
+	/**
+	 * Checks whether the given node is a otherwise empty block-level element
+	 * containing a propping <br> element.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` is a propped up block-level element.
+	 */
+	function isProppedBlock(node) {
+		if (!Html.isBlock(node)) {
+			return false;
+		}
+		var child = Html.findNodeRight(node.lastChild, isVisible);
+		return (
+			child
+			&& 'br' === child.nodeName.toLowerCase()
+			&& !Html.findNodeRight(child.previousSibling, isVisible)
+		);
+	}
+
+	/**
+	 * Checks whether the given node is a empty element, or an element that
+	 * would otherwise be empty except for a propping <br>, or an element
+	 * containing only invisible text nodes.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` can be considered empty.
+	 */
+	function isEmptyNode(node) {
+		return (
+			!node.hasChildNodes()
+			|| isProppedBlock(node)
+			|| !Html.findNodeRight(node.lastChild, isNotInvisibleTextNode)
+		);
 	}
 
 	// Please note: This method is deprecated and will be removed.
@@ -5706,7 +5706,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 		// "Restore the values from values."
 		restoreValues(values, range);
 
-		// Because otherwise callingDelete() with the given selection:
+		// Because otherwise calling deleteContents() with the given selection:
 		//
 		// <editable><block>[foo</block><block>bar]</block></editable>
 		//
@@ -5718,19 +5718,18 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 		//
 		// <editable>[]</editable>
 		//
-		// Therefore, what the below makes possible is the possibility to
-		// completely empty contents of editing hosts via operations like
-		// CTRL+A, DEL.
+		// Therefore, the below makes it possible to completely empty contents
+		// of editing hosts via operations like CTRL+A, DEL.
 		//
-		// If startBlock is empty, and startBlock is the immediate only child of
-		// its parent editing host, then remove startBlock and collapse the
-		// selection at the beginning of the editing post.
+		// If startBlock is empty, and startBlock is the immediate and only
+		// child of its parent editing host, then remove startBlock and collapse
+		// the selection at the beginning of the editing post.
 		if (
 			startBlock
-			&& isEmptyNode(startBlock)
-			&& isEditingHost(startBlock.parentNode)
-			&& !startBlock.previousSibling
-			&& !startBlock.nextSibling
+				&& isEmptyNode(startBlock)
+					&& isEditingHost(startBlock.parentNode)
+						&& !startBlock.previousSibling
+							&& !startBlock.nextSibling
 		) {
 			var editingHost = startBlock.parentNode;
 			editingHost.removeChild(startBlock);
