@@ -1427,6 +1427,41 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 		);
 	}
 
+	/**
+	 * Check if the given node is a empty element which is the only
+	 * immediate child of a editing host.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` can be regarded as empty and the
+	 *                   only immediate child of its parent editing host.
+	 */
+	function isEmptyOnlyChildOfEditingHost(node) {
+		return (
+			node
+				&& isEmptyNode(node)
+					&& isEditingHost(node.parentNode)
+						&& !node.previousSibling
+							&& !node.nextSibling
+		);
+	}
+
+	/**
+	 * Remove the given node and return the position from where it was
+	 * removed.
+	 *
+	 * @param {HTMLElement} node Element to remove from DOM
+	 * @return {object} Object containing node and offset index.
+	 */
+	function removeNode(node) {
+		var ancestor = node.parentNode;
+		var offset = getNodeIndex(node);
+		ancestor.removeChild(node);
+		return {
+			node: ancestor,
+			offset: offset
+		};
+	}
+
 	// Please note: This method is deprecated and will be removed.
 	// Every command should use the value and range parameter.
 	//
@@ -5513,6 +5548,17 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 			// "Set range's end to its start."
 			range.setEnd(range.startContainer, range.startOffset);
 
+			// Calling delete on the give markup:
+			// <editable><block><br>[]</block></editable>
+			// should result in:
+			// <editable>[]</editable>
+			var block = startBlock || endBlock;
+			if (isEmptyOnlyChildOfEditingHost(block)) {
+				var pos = removeNode(block);
+				range.setStart(pos.node, pos.offset);
+				range.setEnd(pos.node, pos.offset);
+			}
+
 			// "Restore states and values from overrides."
 			restoreStatesAndValues(overrides, range);
 
@@ -5724,18 +5770,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 		// If startBlock is empty, and startBlock is the immediate and only
 		// child of its parent editing host, then remove startBlock and collapse
 		// the selection at the beginning of the editing post.
-		if (
-			startBlock
-				&& isEmptyNode(startBlock)
-					&& isEditingHost(startBlock.parentNode)
-						&& !startBlock.previousSibling
-							&& !startBlock.nextSibling
-		) {
-			var editingHost = startBlock.parentNode;
-			editingHost.removeChild(startBlock);
-			startBlock = editingHost;
-			range.setStart(startBlock, 0);
-			range.setEnd(startBlock, 0);
+		if (isEmptyOnlyChildOfEditingHost(startBlock)) {
+			var pos = removeNode(startBlock);
+			range.setStart(pos.node, pos.offset);
+			range.setEnd(pos.node, pos.offset);
+			startBlock = pos.node;
 		}
 
 		// "If start block has no children, call createElement("br") on the context
