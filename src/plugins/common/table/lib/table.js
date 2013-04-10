@@ -255,6 +255,49 @@ define([
 	};
 
 	/**
+	 * If all of the selected cells have been set to the same predefined style,
+	 * then its style-button is toggled on. Otherwise, all style-buttons are toggled off.
+	 *
+	 * @param selectedCells the cells to be checked
+	 * @param config the list of styles as defined in the aloha-configuration
+	 * @param items the multisplit-toggle-items
+	 * @param button a multisplit-button
+	 *
+	 * @return void
+	 */
+	function setActiveStyle(selectedCells, config, items, button) {
+		var className;
+		var allSelected = false;
+
+		// activate all formatting buttons
+		for (var i = 0; i < items.length; i++) {
+			button.showItem(items[i].name);
+		}
+
+		// clear active style block
+		button.setActiveItem();
+
+		// select class of first element as reference
+		for (var i = 0; i < config.length; i++) {
+			if (jQuery(selectedCells[0]).hasClass(config[i].cssClass)) {
+				allSelected = true;
+				className = config[i].name;
+				break;
+			}
+		}
+
+		// if all selected cells have the same class, set it as active
+		jQuery(selectedCells).each(function(index) {
+			if (!jQuery(this).hasClass(className)) {
+				allSelected = false;
+			}
+		});
+		if (allSelected) {
+			button.setActiveItem(className);
+		}
+	}
+
+	/**
 	 * Transforms the existing dom-table into an editable aloha-table. In fact it
 	 * replaces the td-elements with equivalent TableCell-elements
 	 * with attached events.
@@ -1416,39 +1459,25 @@ define([
 	Table.prototype.selectColumns = function ( columns ) {
 		var columnsToSelect;
 
-		if ( columns ) {
+		if (columns) {
 			columnsToSelect = columns;
 		} else {
 			columnsToSelect = this.columnsToSelect;
 		}
 
-		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
-		// activate all column formatting button
-		for ( var i = 0; i < this.tablePlugin.columnMSItems.length; i++ ) {
-			this.tablePlugin.columnMSButton.showItem(this.tablePlugin.columnMSItems[i].name);
-		}
-
 		Scopes.setScope(this.tablePlugin.name + '.column');
-
+		this.selection.selectColumns(columnsToSelect);
 		this.tablePlugin._columnheaderButton.setState(this.selection.isHeader());
 
-		var rows = this.getRows();
+		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
 
-		// set the first class found as active item in the multisplit button
-		this.tablePlugin.columnMSButton.setActiveItem();
-		for (var k = 0; k < this.tablePlugin.columnConfig.length; k++) {
-			if ( jQuery(rows[0].cells[0]).hasClass(this.tablePlugin.columnConfig[k].cssClass) ) {
-				this.tablePlugin.columnMSButton.setActiveItem(this.tablePlugin.columnConfig[k].name);
-				k = this.tablePlugin.columnConfig.length;
-			}
-		}
+		setActiveStyle(this.selection.selectedCells, this.tablePlugin.columnConfig,
+				this.tablePlugin.columnMSItems,	this.tablePlugin.columnMSButton);
 
 		// ====== END UI specific code - should be handled by UI =======
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
-
-		this.selection.selectColumns( columnsToSelect );
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
@@ -1461,33 +1490,16 @@ define([
 	 */
 	Table.prototype.selectRows = function () {
 
-		// activate all row formatting button
-		for (var i = 0; i < this.tablePlugin.rowMSItems.length; i++ ) {
-			this.tablePlugin.rowMSButton.showItem(this.tablePlugin.rowMSItems[i].name);
-		}
-
-		for (var i = 0; i < this.rowsToSelect.length; i++) {
-			var rowId = this.rowsToSelect[i];
-			var rowCells = jQuery(this.getRows()[rowId].cells).toArray();
-			if (i == 0) {
-				// set the first class found as active item in the multisplit button
-				for (var j = 0; j < rowCells.length; j++) {
-					this.tablePlugin.rowMSButton.setActiveItem();
-					for ( var k = 0; k < this.tablePlugin.rowConfig.length; k++) {
-						if (jQuery(rowCells[j]).hasClass(this.tablePlugin.rowConfig[k].cssClass) ) {
-							this.tablePlugin.rowMSButton.setActiveItem(this.tablePlugin.rowConfig[k].name);
-							k = this.tablePlugin.rowConfig.length;
-						}
-					}
-				}
-			}
-		}
-
-		//    TableSelection.selectionType = 'row';
 		Scopes.setScope(this.tablePlugin.name + '.row');
-
-		this.selection.selectRows( this.rowsToSelect );
+		this.selection.selectRows(this.rowsToSelect);
 		this.tablePlugin._rowheaderButton.setState(this.selection.isHeader());
+
+		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
+
+		setActiveStyle(this.selection.selectedCells, this.tablePlugin.rowConfig,
+				this.tablePlugin.rowMSItems, this.tablePlugin.rowMSButton);
+
+		// ====== END UI specific code - should be handled by UI =======
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
