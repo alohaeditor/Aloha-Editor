@@ -1561,7 +1561,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'jquery'], function (Aloh
 			range.setEnd(node, 0);
 		} else {
 			range.setStart(boundaryPoints[0][0], boundaryPoints[0][1]);
-			range.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
+			if (boundaryPoints[1][1] <= boundaryPoints[1][0].childNodes.length) {
+				range.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
+			}
 
 			Aloha.getSelection().removeAllRanges();
 			for (i = 1; i < ranges.length; i++) {
@@ -1789,7 +1791,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'jquery'], function (Aloh
 				range.setStart(startContainer, startOffset + 1);
 			}
 			if (endContainer == newParent.parentNode && endOffset >= getNodeIndex(newParent)) {
-				range.setEnd(endContainer, endOffset + 1);
+				if (endOffset + 1 < endContainer.childNodes.length) {
+					range.setEnd(endContainer, endOffset + 1);
+				}
 			}
 
 			// Only try to fix the global range. TODO remove globalRange here
@@ -5651,7 +5655,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'jquery'], function (Aloh
 		if (node.hasChildNodes()) {
 			splitParent([].slice.call(toArray(node.childNodes)), range);
 		} else {
-			node.parentNode.removeChild(node);
+			if (node.parentNode) {
+				node.parentNode.removeChild(node);
+			}
 		}
 	}
 
