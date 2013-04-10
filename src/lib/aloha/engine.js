@@ -557,11 +557,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 		var matches = /^rgb\(([0-9]+), ([0-9]+), ([0-9]+)\)$/.exec(color);
 		if (matches) {
 			return "#" + parseInt(matches[1], 10).toString(16).replace(/^.$/, "0$&") + parseInt(matches[2], 10).toString(16).replace(/^.$/, "0$&") + parseInt(matches[3], 10).toString(16).replace(/^.$/, "0$&");
-<<<<<<< HEAD
 		} else if (/^#[abcdef0123456789]+$/i.exec(color)) {
-=======
-		} else if ( /^#[abcdef0123456789]+$/i.exec(color) ) {
->>>>>>> Accept hexadecimal color values for commands (support for IE 7/8)
 			// return hexadecimal color values (as returned by IE 7/8)
 			return color;
 		}
