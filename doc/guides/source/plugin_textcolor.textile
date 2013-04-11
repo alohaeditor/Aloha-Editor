@@ -1,0 +1,54 @@
+h2. TextColor Plugin
+
+The TextColor Plugin allows you to apply colors to your text. Select a portion of text, click the icon and choose the color you'd like to apply from the overlay menu.
+
+endprologue.
+
+h3. Functional Description
+
+In order to apply a color select the text to be highlighted and move the cursor to the "Format" tab in the Aloha Editor. Now click on the textcolor button and choose a color from the list. To remove an applied color click on the "x" icon.
+
+When color is applied to a selection, textual contents will be wrapped in span-tags with a style setting for colors, or a class in case a class was picked.
+
+<html>
+<!-- Marking the whole paragraph and selecting 
+	 #ff0000 from the textcolor swatches ... -->
+<p>This is <i>my</i> text.</p>
+<!-- will result in: -->
+<p><span style="color: #ff0000;">This is <i>my</i> text.</span></p>
+</html>
+
+When applying a color to a collapsed selection, the selection will be extended to word level. When removing colors from text Aloha Editor will attempt to clean up left over span tags.
+
+h4. Components
+
+* colorpicker - brings up the overlay to select a color
+
+h4. Configuration settings
+
+The textcolor plugin will by default offer the following colors:
+
+* #FFFFFF 
+* #000000 
+* #000FFF 
+* #FFF000
+
+It is possible to configure the global color palette and to configure color palettes for specific editables (identified by jQuery selectors):
+You can specify the colors as hex (#FF0000), RGB (rgb(255,0,0)) values or CSS class names (`redcolor`).
+
+<javascript>
+Aloha.settings = {
+	plugins: {
+		textcolor: {
+			// this is the global setting
+			config: ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder'],
+			editables: {
+				// this will disable the textcolor for the header
+				'#header': [],
+				// show only these colors for editables with class 'article'
+				'.article': [ '#FFEEEE', 'rgb(255,255,0)', '#FFFFFF' ] 
+			}
+		}
+	}
+}
+</javascript>

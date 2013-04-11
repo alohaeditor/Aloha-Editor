@@ -35,7 +35,6 @@ input, select { vertical-align: middle; }
 body { font:13px/1.231 sans-serif; *font-size:small; } 
 select, input, textarea, button { font:99% sans-serif; }
 pre, code, kbd, samp { font-family: monospace, sans-serif; }
-
 html { overflow-y: scroll; }
 a:hover, a:active { outline: none; }
 ul, ol { margin-left: 2em; }
@@ -135,6 +134,29 @@ table th {
 	background: #333;
 	color: #fff;
 }
+
+.table-style-bigbold {
+	font-weight: bolder;
+	font-size: 20px;
+}
+
+.table-style-redwhite {
+	color: #c00;
+	font-style: italic;
+}
+
+.hor-minimalist-a {
+	color: #555;
+	font-size: 10px;
+}
+
+.hor-zebra tr:nth-child(even)  {
+	color: #000;
+}
+.hor-zebra tr:nth-child(odd)  {
+	color: #fff;
+}
+
 caption {
 	caption-side: bottom;
 	font-size: 0.8em;
