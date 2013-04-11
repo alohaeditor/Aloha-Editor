@@ -282,6 +282,9 @@ define([
 					wrapper.trigger( 'focus' );
 				}, 1);
 			});
+		}
+	}
+
 	/**
 	 * If the specified style is not already active in all selected cells, it is applied;
 	 * otherwise, it is removed from the cells
