@@ -1,4 +1,4 @@
-define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'jquery'], function (Aloha, $_, Maps, jQuery) {
+define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], function (Aloha, $_, Maps, Dom, jQuery) {
 	"use strict";
 
 	function hasAttribute(obj, attr) {
@@ -1299,21 +1299,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'jquery'], function (Aloh
 		return false;
 	}
 
-	// "Something is visible if it is a node that either is a block node, or a Text
-	// node that is not a collapsed whitespace node, or an img, or a br that is not
-	// an extraneous line break, or any node with a visible descendant; excluding
-	// any node with an ancestor container Element whose "display" property has
-	// resolved value "none"."
-	function isVisible(node) {
+	function isVisibleRec(node) {
 		var i;
 
-		if (!node) {
-			return false;
-		}
-
-		if ($_(getAncestors(node).concat(node))
-			    .filter(function (node) { return node.nodeType == $_.Node.ELEMENT_NODE; }, true)
-			    .some(function (node) { return $_.getComputedStyle(node).display == "none"; })) {
+		if (1 === node.nodeType && 'none' === $_.getComputedStyle(node).display) {
 			return false;
 		}
 
@@ -1322,12 +1311,36 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'jquery'], function (Aloh
 		}
 
 		for (i = 0; i < node.childNodes.length; i++) {
-			if (isVisible(node.childNodes[i])) {
+			if (isVisibleRec(node.childNodes[i])) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	// "Something is visible if it is a node that either is a block node, or a Text
+	// node that is not a collapsed whitespace node, or an img, or a br that is not
+	// an extraneous line break, or any node with a visible descendant; excluding
+	// any node with an ancestor container Element whose "display" property has
+	// resolved value "none"."
+	function isVisible(node) {
+
+		if (!node) {
+			return false;
+		}
+
+		var ancestors = getAncestors(node);
+		var len;
+		var i;
+		for (i = 0, len = ancestors.length; i < len; i++) {
+			var ancestor = ancestors[i];
+			if (1 === ancestor.nodeType && 'none' === $_.getComputedStyle(ancestor).display) {
+				return false;
+			}
+		}
+
+		return isVisibleRec(node);
 	}
 
 	// "Something is invisible if it is a node that is not visible."
