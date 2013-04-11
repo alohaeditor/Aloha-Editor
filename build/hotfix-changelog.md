@@ -17,3 +17,5 @@ All changes are categorized into one of the following keywords:
 **ENHANCEMENT**: Added missing german translations for table plugin components
 **BUGFIX**: A problem was fixed that prevented table-cells to be selected after
             their header-status was changed.
+**BUGFIX**: (table) This fix allows the active cell to be split into its parts
+            if it has a col- or rowspan, even if it is not part of a selection.

@@ -607,8 +607,20 @@ define([
 			icon: "aloha-icon aloha-icon-splitcells",
 			scope: this.name + '.cell',
 			click: function() {
+				var activeCell;
 				if (TablePlugin.activeTable) {
-					TablePlugin.activeTable.selection.splitCells();
+					if (TablePlugin.activeTable.selection.selectedCells.length > 0) {
+						TablePlugin.activeTable.selection.splitCells();
+					} else {
+						// if there is currently no selection, the active cell is split instead
+						activeCell = TablePlugin.selectedOrActiveCells();
+						if (activeCell.length > 0) {
+							Utils.splitCell(activeCell, function () {
+								return TablePlugin.activeTable.newActiveCell().obj;
+							});
+							Aloha.trigger('aloha-table-selection-changed');
+						}
+					}
 				}
 			}
 		});
