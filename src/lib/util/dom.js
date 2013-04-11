@@ -862,7 +862,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 
 					// if this is the last text node in a sequence, we remove any zero-width spaces in the text node,
 					// unless it is the only character
-					if (prevNode && (!prevNode.nextSibling || prevNode.nextSibling.nodeType !== 3)) {
+					if (prevNode && 3 === prevNode.nodeType && (!prevNode.nextSibling || prevNode.nextSibling.nodeType !== 3)) {
 						var pos;
 						for (pos = prevNode.data.length - 1; pos >= 0 && prevNode.data.length > 1; pos--) {
 							if (prevNode.data.charAt(pos) === '\u200b') {
