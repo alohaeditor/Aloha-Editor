@@ -14,3 +14,4 @@ All changes are categorized into one of the following keywords:
             correctly removed when the table is no longer editable.
 **BUGFIX**: A bug was fixed with additional elements being appended to a table,
             if a rowspan was set in its last column.
+**ENHANCEMENT**: Added missing german translations for table plugin components

@@ -5541,6 +5541,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 		// "Canonicalize whitespace at range's end."
 		canonicalizeWhitespace(range.endContainer, range.endOffset);
 
+		// A reference to the position where a node is removed.
+		var pos;
+
 		// "If block merging is false, or start block or end block is null, or
 		// start block is not in the same editing host as end block, or start block
 		// and end block are the same:"
@@ -5554,7 +5557,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 			// <editable>[]</editable>
 			var block = startBlock || endBlock;
 			if (isEmptyOnlyChildOfEditingHost(block)) {
-				var pos = removeNode(block);
+				pos = removeNode(block);
 				range.setStart(pos.node, pos.offset);
 				range.setEnd(pos.node, pos.offset);
 			}
@@ -5771,7 +5774,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 		// child of its parent editing host, then remove startBlock and collapse
 		// the selection at the beginning of the editing post.
 		if (isEmptyOnlyChildOfEditingHost(startBlock)) {
-			var pos = removeNode(startBlock);
+			pos = removeNode(startBlock);
 			range.setStart(pos.node, pos.offset);
 			range.setEnd(pos.node, pos.offset);
 			startBlock = pos.node;
