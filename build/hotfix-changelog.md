@@ -8,15 +8,3 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-**BUGFIX**: (core/engine) It is made possible to completely delete the contents
-            of an editable while editing using commands like CTL+A, DEL.
-**BUGFIX**: Cursor styles that are added inside tables for resizing are now
-            correctly removed when the table is no longer editable.
-**BUGFIX**: A bug was fixed with additional elements being appended to a table,
-            if a rowspan was set in its last column.
-**ENHANCEMENT**: Added missing german translations for table plugin components
-**BUGFIX**: A problem was fixed that prevented table-cells to be selected after
-            their header-status was changed.
-**BUGFIX**: (table) This fix allows the active cell to be split into its parts
-            if it has a col- or rowspan, even if it is not part of a selection.
-**BUGFIX**: Fixed applying predefined styles to tables and table-elements
