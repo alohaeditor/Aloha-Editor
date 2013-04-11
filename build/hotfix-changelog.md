@@ -19,3 +19,4 @@ All changes are categorized into one of the following keywords:
             their header-status was changed.
 **BUGFIX**: (table) This fix allows the active cell to be split into its parts
             if it has a col- or rowspan, even if it is not part of a selection.
+**BUGFIX**: Fixed applying predefined styles to tables and table-elements
