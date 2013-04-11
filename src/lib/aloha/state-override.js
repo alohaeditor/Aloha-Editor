@@ -30,6 +30,8 @@ define([
 	'aloha/command',
 	'util/dom2',
 	'util/maps',
+	'util/html',
+	'util/functions',
 	'util/range',
 	'PubSub'
 ], function (
@@ -38,6 +40,8 @@ define([
 	Command,
 	Dom,
 	Maps,
+	Html,
+	Fn,
 	RangeObject,
 	PubSub
 ) {
@@ -78,6 +82,25 @@ define([
 		return 13 === event.which;
 	}
 
+	function activateLinebreakOverrides(range) {
+		if (overridesForLinebreak) {
+			overrideRange = range;
+			overrides = overridesForLinebreak;
+			overridesForLinebreak = null;
+			linebreakOverridesActive = true;
+		}
+	}
+
+	function keyDownHandler(event) {
+		if (overridesForLinebreak && isLinebreakEvent(event)) {
+			var selection = Aloha.getSelection();
+			if (!selection.getRangeCount()) {
+				return;
+			}
+			activateLinebreakOverrides(selection.getRangeAt(0));
+		}
+	}
+
 	function keyPressHandler(event) {
 		if (!overrides) {
 			return;
@@ -89,19 +112,29 @@ define([
 		if (!selection.getRangeCount()) {
 			return;
 		}
-		var text = String.fromCharCode(event.which);
 		var range = selection.getRangeAt(0);
+		var text = String.fromCharCode(event.which);
 		Dom.insertSelectText(text, range);
 		Maps.forEach(overrides, function (formatFn, command) {
 			formatFn(command, range);
 		});
+
+		// Because, if formattings were applied to the selected text, we
+		// want to continue writing with those formattings applied.
+		Dom.trimRange(range, Fn.returnFalse, function (cursor) {
+			var prevNode = (cursor.atEnd ? cursor.node.lastChild : cursor.node.previousSibling);
+			return prevNode && (3 !== prevNode.nodeType || Html.isUnrenderedWhitespace(prevNode));
+		});
 		Dom.collapseToEnd(range);
+
 		selection.removeAllRanges();
 		selection.addRange(range);
+
 		// Because we handled the character insert ourselves via
 		// insertText we must not let the browser's default action
 		// insert the character a second time.
 		event.preventDefault();
+
 		clearOverrides();
 	}
 
@@ -187,12 +220,7 @@ define([
 							&& 'keyup' === causeEvent.type);
 		if (overrideRange && !Dom.areRangesEq(overrideRange, range) && !isShiftEvent) {
 			if (causeEvent && isLinebreakEvent(causeEvent)) {
-				if (overridesForLinebreak) {
-					overrideRange = range;
-					overrides = overridesForLinebreak;
-					overridesForLinebreak = null;
-					linebreakOverridesActive = true;
-				}
+				activateLinebreakOverrides(range);
 			} else {
 				clearOverrides();
 			}
@@ -215,6 +243,7 @@ define([
 	return {
 		enabled: enabledAccessor,
 		keyPressHandler: keyPressHandler,
+		keyDownHandler: keyDownHandler,
 		isSet: isSet,
 		set: set,
 		setWithRangeObject: setWithRangeObject,

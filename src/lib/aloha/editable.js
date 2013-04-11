@@ -327,7 +327,8 @@ define([
 						}
 						return letEventPass;
 					})
-					.keypress(StateOverride.keyPressHandler);
+					.keypress(StateOverride.keyPressHandler)
+					.keydown(StateOverride.keyDownHandler);
 
 				// handle keypress
 				me.obj.keypress(function (event) {
