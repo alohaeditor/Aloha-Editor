@@ -31,7 +31,7 @@ define [
       # Add a prune function that cleans up the title editor
       emap = Ephemera.ephemera().pruneFns.push (node) ->
         $node = $(node)
-        if $node.is('div.title') and $node.has('.title-editor')
+        if $node.is('div.title') and $node.has('.title-editor').length
           $node.text($node.find('.title-editor').text())
           return $node.get(0)
         node
