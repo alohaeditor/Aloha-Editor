@@ -196,7 +196,7 @@ define([
 	// Taken from
 	// http://code.google.com/p/rangy/source/browse/trunk/src/js/modules/rangy-cssclassapplier.js
 	// under the MIT license.
-	function isUnrenderedWhitespace(node) {
+	function isUnrenderedWhitespaceNoBlockCheck(node) {
 		if (3 !== node.nodeType) {
 			return false;
 		}
@@ -218,11 +218,83 @@ define([
             }
 			break;
         }
-        // We now have a whitespace-only text node that may be rendered
-        // depending on its context. If it is adjacent to a non-inline
-        // element, it will not be rendered. This seems to be a good
-        // enough definition.
-        return !hasInlineStyle(node.previousSibling) || !hasInlineStyle(node.nextSibling);
+		return true;
+	}
+
+	function isVisibleEmptyInlineNode(node) {
+		// Because IMG and BR are the only inline nodes that can be
+		// visible even when they're empty. Idea from engine.js.
+		return 'IMG' === node.nodeName || 'BR' === node.nodeName;
+	}
+
+	function isLinebreakingNode(node) {
+		return 'BR' === node.nodeName || hasBlockStyle(node);
+	}
+
+	function isUnrenderedAtPoint(point) {
+		return (isUnrenderedWhitespaceNoBlockCheck(point.node)
+				|| (1 === point.node.nodeType
+					&& hasInlineStyle(point.node)
+					&& !isVisibleEmptyInlineNode(point.node)));
+	}
+
+	function skipUnrenderedToEndOfLine(point) {
+		var cursor = point.clone();
+		cursor.nextWhile(isUnrenderedAtPoint);
+		if (isLinebreakingNode(cursor.node)) {
+			point.setFrom(cursor);
+			return true;
+		}
+		return false;
+	}
+
+	function skipUnrenderedToStartOfLine(point) {
+		var cursor = point.clone();
+		cursor.prev();
+		cursor.prevWhile(isUnrenderedAtPoint);
+		if (isLinebreakingNode(cursor.node)) {
+			cursor.next();
+			point.setFrom(cursor);
+			return true;
+		}
+		return false;
+	}
+
+	function normalizeBoundary(point) {
+		return (skipUnrenderedToEndOfBlock(point)
+				|| skipUnrenderedToStartOfLine(point));
+	}
+
+	function skipUnrenderedToEndOfBlock(point) {
+		var cursor = point.clone();
+		if (!skipUnrenderedToEndOfLine(cursor)) {
+			return false;
+		}
+		// Because the last br in a block is invisible we skip it as well.
+		if ('BR' === cursor.node.nodeName) {
+			cursor.skipNext();
+			if (!skipUnrenderedToEndOfLine(cursor)) {
+				return false;
+			}
+			if ('BR' === cursor.node.nodeName) {
+				return false;
+			}
+		}
+		// Because we are only interested in the end of a block, not
+		// block siblings.
+		if (!cursor.atEnd) {
+			return false;
+		}
+		point.setFrom(cursor);
+		return true;
+	}
+
+	function isUnrenderedWhitespace(node) {
+		if (!isUnrenderedWhitespaceNoBlockCheck(node)) {
+			return false;
+		}
+		// Algorithm like engine.js isCollapsedWhitespaceNode().
+		return skipUnrenderedToEndOfLine(Dom.cursor(node, false)) || skipUnrenderedToStartOfLine(Dom.cursor(node, false));
 	}
 
 	/**
@@ -290,6 +362,10 @@ define([
 		hasInlineStyle: hasInlineStyle,
 		isBlock: isBlock,
 		isUnrenderedWhitespace: isUnrenderedWhitespace,
+		skipUnrenderedToStartOfLine: skipUnrenderedToStartOfLine,
+		skipUnrenderedToEndOfLine: skipUnrenderedToEndOfLine,
+		skipUnrenderedToEndOfBlock: skipUnrenderedToEndOfBlock,
+		normalizeBoundary: normalizeBoundary,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isEmpty: isEmpty,
 		isProppedBlock: isProppedBlock,

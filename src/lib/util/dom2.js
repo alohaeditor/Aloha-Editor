@@ -521,10 +521,10 @@ define([
 		until = until || Fn.returnFalse;
 		ignore = ignore || Fn.returnFalse;
 		startPoint.prevWhile(function (startPoint) {
-			return !until(startPoint) && (!startPoint.prevSibling() || ignore(startPoint));
+			return !until(startPoint) && (!startPoint.prevSibling() || ignore(startPoint.prevSibling()));
 		});
 		endPoint.nextWhile(function (endPoint) {
-			return !until(endPoint) && (endPoint.atEnd || ignore(startPoint));
+			return !until(endPoint) && (endPoint.atEnd || ignore(endPoint.node));
 		});
 	}
 
@@ -542,31 +542,11 @@ define([
 		until = until || Fn.returnFalse;
 		ignore = ignore || Fn.returnFalse;
 		startPoint.nextWhile(function (startPoint) {
-			return !startPoint.equals(endPoint) && !until(startPoint) && (startPoint.atEnd || ignore(startPoint));
+			return !startPoint.equals(endPoint) && !until(startPoint) && (startPoint.atEnd || ignore(startPoint.node));
 		});
 		endPoint.prevWhile(function (endPoint) {
-			return !startPoint.equals(endPoint) && !until(endPoint) && (!endPoint.prevSibling() || ignore(endPoint));
+			return !startPoint.equals(endPoint) && !until(endPoint) && (!endPoint.prevSibling() || ignore(endPoint.prevSibling()));
 		});
-	}
-
-	/**
-	 * Ensures that the given boundaries are neither in start nor end
-	 * positions. In other words, after this operation, both will have
-	 * preceding and following siblings.
-	 *
-	 * Expansion can be controlled via expandUntil, but may cause one or
-	 * both of the boundaries to remain in start or end position.
-	 *
-	 * A collapsed selection will remain collapsed, but may be moved out
-	 * of and before the node that originally contained it.
-	 */
-	function normalizeBoundaries(startPoint, endPoint, expandUntil, ignore) {
-		var collapsed = startPoint.equals(endPoint);
-		trimBoundaries(startPoint, endPoint, null, ignore);
-		expandBoundaries(startPoint, endPoint, expandUntil, ignore);
-		if (collapsed) {
-			endPoint.setFrom(startPoint);
-		}
 	}
 
 	/**
@@ -629,6 +609,13 @@ define([
 	function nextWhile(node, cond, arg) {
 		while (node && cond(node, arg)) {
 			node = node.nextSibling;
+		}
+		return node;
+	}
+
+	function prevWhile(node, cond, arg) {
+		while (node && cond(node, arg)) {
+			node = node.prevSibling;
 		}
 		return node;
 	}
@@ -788,6 +775,11 @@ define([
 		} else {
 			range.setEnd(cursor.node.parentNode, nodeIndex(cursor.node));
 		}
+	}
+
+	function setRangeFromBoundaries(range, startPoint, endPoint) {
+		setRangeStartFromCursor(range, startPoint);
+		setRangeEndFromCursor(range, endPoint);
 	}
 
 	function setRangeFromRef(range, ref) {
@@ -999,7 +991,6 @@ define([
 		cursorFromBoundaryPoint: cursorFromBoundaryPoint,
 		trimBoundaries: trimBoundaries,
 		expandBoundaries: expandBoundaries,
-		normalizeBoundaries: normalizeBoundaries,
 		nodeAtOffset: nodeAtOffset,
 		isAtEnd: isAtEnd,
 		parentsUntil: parentsUntil,
@@ -1023,6 +1014,7 @@ define([
 		setRangeFromRef: setRangeFromRef,
 		setRangeStartFromCursor: setRangeStartFromCursor,
 		setRangeEndFromCursor: setRangeEndFromCursor,
+		setRangeFromBoundaries: setRangeFromBoundaries,
 		splitTextNodeAdjustRange: splitTextNodeAdjustRange,
 		insertSelectText: insertSelectText,
 		areRangesEq: areRangesEq,

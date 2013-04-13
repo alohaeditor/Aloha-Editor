@@ -34,15 +34,8 @@ Aloha.require([
 
 	function testMutation(title, before, expected, mutate) {
 		test(title, function () {
-			// Because the following tests are not contained in an editable and
-			// hasInline/BlockStyle() will not work on them we have to monkey
-			// patch them for the duration of the test.
-			var hasInlineStyle = Html.hasInlineStyle;
-			var hasBlockStyle = Html.hasBlockStyle;
-			Html.hasInlineStyle = Html.isInlineType;
-			Html.hasBlockStyle = Html.isBlockType;
-
-			var dom = $(before)[0];
+			$('#test-editable').aloha().empty().html(before);
+			var dom = $('#test-editable')[0].firstChild;
 			var range = Aloha.createRange();
 			BoundaryMarkers.extract(dom, range);
 			dom = mutate(dom, range) || dom;
@@ -53,10 +46,6 @@ Aloha.require([
 			} else {
 				equal(actual, expected);
 			}
-
-			// Undo monkey patch from above
-			Html.hasInlineStyle = hasInlineStyle;
-			Html.hasBlockStyle = hasBlockStyle;
 		});
 	}
 
@@ -337,9 +326,21 @@ Aloha.require([
 	  '<div><b><i>1</i><i>{}</i><i>3</i></b></div>',
 	  '<div><b><i>1</i></b>{}<b><i></i><i>3</i></b></div>');
 
-	t('Trim/include the last br',
+	t('trim/include the last br if it is the last child of the block',
 	  '<div><h1>1{<br/></h1><p>2}<br/></p></div>',
 	  '<div><h1>1<br/></h1>{<p>2<br/></p>}</div>');
+
+	t('trim/include the last br if it is the last child of an inline element',
+	  '<div><h1>1{<br/></h1><p><b>2}<br/></b></p></div>',
+	  '<div><h1>1<br/></h1>{<p><b>2<br/></b></p>}</div>');
+
+	t('split ignores unrendered nodes 1',
+	  '<div>  <span> {  </span> <span>text} </span><b> </b> </div>',
+	  '<div>{  <span>   </span> <span>text </span><b> </b> }</div>');
+
+	t('split ignores unrendered nodes 2',
+	  '<div><i><u><sub>{</sub></u>a</i>b<i>c<u><sub>}</sub></u></i></div>',
+	  '<div>{<i><u><sub></sub></u>a</i>b<i>c<u><sub></sub></u></i>}</div>');
 
 	t = function (title, before, after) {
 		testMutation('RangeContext.splitBoundary+format - ' + title, before, after, function (dom, range) {
@@ -363,10 +364,6 @@ Aloha.require([
 	t('multiple levels to the left and right',
 	  '<p>S<sub>o<em>{m</em></sub>e <i>a<u>b]c</u></i></p>',
 	  '<p>S<sub>o</sub>{<b><sub><em>m</em></sub>e <i>a<u>b</u></i></b>}<i><u>c</u></i></p>');
-
-	t('end positions will be skipped and not split',
-	  '<p><i><u><sub>{</sub></u>a</i>b<i>c<u><sub>}</sub></u></i></p>',
-	  '<p><i><u><sub></sub></u></i>{<b><i>a</i>b<i>c</i></b>}<i><u><sub></sub></u></i></p>');
 
 	t('don\'t split obstruction on the left; with element siblings on the right',
 	  '<p><i><em>-</em><code>Some<em>-{-</em>text</code></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',

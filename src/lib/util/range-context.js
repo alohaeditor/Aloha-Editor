@@ -25,17 +25,14 @@
  * recipients can access the Corresponding Source.
  */
 /**
- * TODO improve restacking and joining algorithm
- * TODO what do do about insignificant whitespace when pushing down or
- *      setting a context?
  * TODO check contained-in rules when when pushing down or setting a context
+ * TODO better handling of the last <br/> in a block and generally of
+ *      unrendered whitespace.
  * TODO if formatStyle turns out to be a no-op even though it isn't
  *      collapsed, then text nodes may remain split and should be joined
  *      again.
- * TODO both unrendered whitespace non-content nodes such as comments
- *      and the last <br/> in a block should be skipped when expanding a
- *      range, and ranges should be expanded before mutation to include
- *      them.
+ * TODO canonicalize whitespace
+ * TODO improve restacking and joining algorithm
  * TODO formatStyle: in the following case the outer "font-family:
  *      arial" span should be removed.  Can be done similar to how
  *      findReusableAncestor() works.
@@ -358,40 +355,6 @@ define([
 		}
 	}
 
-	function isUnrendered(node) {
-		return (Html.isUnrenderedWhitespace(node)
-				|| (node.nodeType !== 1 && node.nodeType !== 3));
-	}
-
-	function skipLastBr(container, offset, range, setFn) {
-		var node = Dom.nodeAtOffset(container, offset);
-		if ('BR' !== node.nodeName || !node.parentNode || !Html.hasBlockStyle(node.parentNode)) {
-			return false;
-		}
-		function skip(cursor) {
-			return node === cursor.node || isUnrendered(cursor.node);
-		}
-		var cursor = Dom.cursor(node, false);
-		cursor.prevWhile(skip);
-		if (node.parentNode === cursor.node) {
-			return false;
-		}
-		cursor = Dom.cursor(node, false);
-		cursor.nextWhile(skip);
-		if (!cursor.atEnd) {
-			return false;
-		}
-		setFn(range, cursor);
-	}
-
-	function excludeLastBrAtStart(range) {
-		skipLastBr(range.startContainer, range.startOffset, range, Dom.setRangeStartFromCursor);
-	}
-
-	function includeLastBrAtEnd(range) {
-		skipLastBr(range.endContainer, range.endOffset, range, Dom.setRangeEndFromCursor);
-	}
-
 	function fixupRange(liveRange, mutate) {
 		// Because we are mutating the range several times and don't
 		// want the caller to see the in-between updates, and because we
@@ -404,14 +367,6 @@ define([
 		// adjustPointMoveBackWithinRange() require boundary points to
 		// be between nodes.
 		Dom.splitTextContainers(range);
-
-		// Because the last br inside a otherwise non-empty block is
-		// invisible (except in IE), we skip/include it so that
-		// formatting or splitting the range behaves more as the user
-		// expects when a block is selected but the boundaries don't
-		// exclude/include the last br.
-		excludeLastBrAtStart(range);
-		includeLastBrAtEnd(range);
 
 		// Because we want unbolding
 		// <b>one<i>two{</i>three}</b>
@@ -432,8 +387,7 @@ define([
 
 		// Because we must reflect the adjusted boundary points in the
 		// given range.
-		Dom.setRangeStartFromCursor(liveRange, leftPoint);
-		Dom.setRangeEndFromCursor(liveRange, rightPoint);
+		Dom.setRangeFromBoundaries(liveRange, leftPoint, rightPoint);
 	}
 
 	function adjustPointShallowRemove(point, node) {
@@ -526,11 +480,7 @@ define([
 
 	function ensureWrapper(node, createWrapper, isWrapper, isMergable, leftPoint, rightPoint) {
 		if (node.previousSibling && !isWrapper(node.previousSibling)) {
-			// Because restacking here solves two problems: one the
-			// case where the context was unnecessarily pushed down
-			// on the left of the range, and two to join with a
-			// context node that already exists to the left of the
-			// range.
+			// TODO restacking here is a hack. Should be moved into mutate().
 			restack(node.previousSibling,
 					isWrapper,
 					Html.isUnrenderedWhitespace,
@@ -661,7 +611,7 @@ define([
 
 		function clearOverrideRecStep(node) {
 			// Different from clearOverride because clearOverride() only
-			// clears non-context overrides, while during a recursive
+			// clears context overrides, while during a recursive
 			// clearing we want to clear the override always regardless
 			// of whether it is equal to context.
 			pruneContext(node);
@@ -820,6 +770,9 @@ define([
 			return null;
 		}
 		var cac = range.commonAncestorContainer;
+		if (3 === cac.nodeType) {
+			cac = cac.parentNode;
+		}
 		function untilIncl(node) {
 			// Because we prefer a node above the cac if possible.
 			return (cac !== node && isReusable(node)) || isUpperBoundary(node) || isObstruction(node);
@@ -875,8 +828,36 @@ define([
 		});
 	}
 
-	function splitBoundary(liveRange, clone, belowCacUntil, cacAndAboveUntil, normalizeBoundaries) {
+	/**
+	 * Ensures that the given boundaries are neither in start nor end
+	 * positions. In other words, after this operation, both will have
+	 * preceding and following siblings.
+	 *
+	 * Expansion/trimming can be controlled via expandUntil and
+	 * trimUntil, but may cause one or both of the boundaries to remain
+	 * in start or end position.
+	 */
+	function trimExpandBoundaries(startPoint, endPoint, trimUntil, expandUntil, ignore) {
+		var collapsed = startPoint.equals(endPoint);
+		Dom.trimBoundaries(startPoint, endPoint, trimUntil, ignore);
+		Dom.expandBoundaries(startPoint, endPoint, expandUntil, ignore);
+		if (collapsed) {
+			endPoint.setFrom(startPoint);
+		}
+	}
+
+	function splitBoundary(liveRange, clone, belowCacUntil, cacAndAboveUntil, normalizeBoundaries, boundariesChildrenOfUnsplitNode) {
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+
+			// Because whitespace at the start end of a block and the
+			// last br inside an otherwise non-empty block are invisible
+			// (except the last br in IE), we skip/include it so that
+			// we don't split off a block that ends up invisible.
+			var normalizedLeft = boundariesChildrenOfUnsplitNode ? leftPoint : leftPoint.clone();
+			var normalizedRight = boundariesChildrenOfUnsplitNode ? rightPoint : rightPoint.clone();
+			Html.normalizeBoundary(normalizedLeft);
+			Html.normalizeBoundary(normalizedRight);
+			Dom.setRangeFromBoundaries(range, normalizedLeft, normalizedRight);
 
 			var cac = range.commonAncestorContainer;
 			var collapsed = range.collapsed;
@@ -941,8 +922,8 @@ define([
 			// children of the topmostUnsplitNode. Also, if
 			// belowCacUntil returns true, the selection may be moved
 			// out of an unsplit node which may be unexpected.
-			if (normalizeBoundaries) {
-				Dom.normalizeBoundaries(leftPoint, rightPoint, function (point) {
+			if (boundariesChildrenOfUnsplitNode) {
+				trimExpandBoundaries(leftPoint, rightPoint, null, function (point) {
 					return point.parent() === topmostUnsplitNode;
 				});
 			}
