@@ -183,7 +183,7 @@ Aloha.require([
 
 	t('descending two levels down to each boundary, with boundaries at start and end respectively',
 	  '<p><i>one<em>{Some</em>left</i>text<i>right<em>.}</em>two</i></p>',
-	  '<p><i>one<b><em>{Some</em>left</b></i><b>text</b><i><b>right</b><em><b>.</b>}</em>two</i></p>');
+	  '<p><i>one<b><em>{Some</em>left</b></i><b>text</b><i><b>right<em>.}</em></b>two</i></p>');
 	// Same as above except "with boundaries inside text node"
 	t('descending two levels down to each boundary, with boundaries inside text node',
 	  '<p><i>one<em>!{Some</em>left</i>text<i>right<em>.}!</em>two</i></p>',
@@ -215,7 +215,7 @@ Aloha.require([
 
 	t('across elements',
 	  '<p><i>{one</i>two<i>three<em>four}</em></i></p>',
-	  '<p>{<b><i>one</i>two<i>three<em>four}</em></i></b></p>');
+	  '<p><b><i>{one</i>two<i>three<em>four}</em></i></b></p>');
 
 	t('with existing bold element',
 	  '<p><i><u><s><b>Some</b></s></u>{ text}</i></p>',

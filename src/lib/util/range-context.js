@@ -514,14 +514,14 @@ define([
 			return !hasContext(node) && ignoreHorizontal(node);
 		}
 		if (hasContext(node)) {
-			return true;
+			return node;
 		}
 		var context = restackRec(node, hasContext, myIgnoreHorizontal, ignoreVertical);
 		if (!context) {
-			return false;
+			return node;
 		}
 		wrapAdjust(node, context, leftPoint, rightPoint);
-		return true;
+		return context;
 	}
 
 	function ensureWrapper(node, createWrapper, isWrapper, isMergable, leftPoint, rightPoint) {
@@ -624,6 +624,11 @@ define([
 		}
 
 		function clearOverride(node) {
+			node = restack(node, hasContext, Html.isUnrenderedWhitespace, Html.hasInlineStyle, leftPoint, rightPoint);
+			if (hasContext(node) && ensureWrapper(node, createWrapper, hasContext, isMergable, leftPoint, rightPoint)) {
+				clearContext(node);
+			}
+
 			// Because we don't want to remove any existing context if
 			// not necessary (See pushDownOverride and setContext).
 			if (!unformat && hasContext(node)) {
