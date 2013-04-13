@@ -259,10 +259,10 @@ Aloha.require([
 	  '<p><b><i>{Some text.}</i></b></p>',
 	  '<p><i>{Some text.}</i></p>');
 
-	t('unbolding end tag',
+	t('unbolding end tag 1',
 	  '<p><b><i>one{</i>two}</b></p>',
 	  '<p><b><i>one</i></b>{two}</p>');
-	t('unbolding start tag',
+	t('unbolding start tag 1',
 	  '<p><b>{one<i>}two</i></b></p>',
 	  '<p>{one}<b><i>two</i></b></p>');
 	t('unbolding end tag with additional previous sibling',

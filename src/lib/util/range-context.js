@@ -557,112 +557,9 @@ define([
 		return 'BODY' === node.nodeName || Html.isEditingHost(node);
 	}
 
-	function makeNodeFormatter(nodeName, leftPoint, rightPoint, unformat) {
-
-		function hasContext(node) {
-			// Because the only difference between formatter and
-			// unformatter is that there isn't for example a no-bold
-			// element - the absence of a bold ancestor results in the
-			// node having a no-bold context, but there is no element to
-			// set a no-bold context explicitly (actually there is,
-			// <span style="font-weight: normal">, but that kind of
-			// functionality isn't implemented yet).
-			if (unformat) {
-				return false;
-			}
-			return nodeName === node.nodeName;
-		}
-
-		function clearContext(node) {
-			if (nodeName === node.nodeName) {
-				removeShallowAdjust(node, leftPoint, rightPoint);
-			}
-		}
-
-		function clearContextRec(node) {
-			Dom.walkRec(node, clearContext);
-		}
-
-		function createWrapper() {
-			return document.createElement(nodeName);
-		}
-
-		function isMergable(node) {
-			// Because we don't want to merge with a context node that
-			// does more than just provide a context (for example a <b>
-			// node may have a class which shouldn't also being wrapped
-			// around the merged-with node).
-			return node.nodeName === nodeName && !Dom.attrs(node).length;
-		}
-
-		function setContext(node, override, isNonClearableOverride) {
-			// Because we don't clear any context overrides, we don't
-			// need to set them either.
-			if (!unformat && override) {
-				return;
-			}
-			if (isNonClearableOverride) {
-				// TODO: when we are for example formatting something
-				// non-bold and can't clear a bold ancestor, we should
-				// wrap the descendant in a <span style="font-weight: normal">.
-				return;
-			}
-			if (ensureWrapper(node, createWrapper, hasContext, isMergable, leftPoint, rightPoint)) {
-				// Because the node was wrapped with a context, and if
-				// the node itself has the context, it should be cleared
-				// to avoid nested contexts.
-				clearContextRec(node);
-			} else {
-				// Because the node itself has the context and was not
-				// wrapped, we must only clear its children.
-				Dom.walk(node.firstChild, clearContextRec);
-			}
-		}
-
-		function getOverride(node) {
-			return nodeName === node.nodeName || null;
-		}
-
-		function clearOverride(node) {
-			node = restack(node, hasContext, Html.isUnrenderedWhitespace, Html.hasInlineStyle, leftPoint, rightPoint);
-			if (hasContext(node) && ensureWrapper(node, createWrapper, hasContext, isMergable, leftPoint, rightPoint)) {
-				clearContext(node);
-			}
-
-			// Because we don't want to remove any existing context if
-			// not necessary (See pushDownOverride and setContext).
-			if (!unformat && hasContext(node)) {
-				return;
-			}
-			if (nodeName === node.nodeName) {
-				removeShallowAdjust(node, leftPoint, rightPoint);
-			}
-		}
-
-		function isOverrideWrapper(node) {
-			return null != getOverride(node);
-		}
-
-		function pushDownOverride(node, override) {
-			if (!override) {
-				return;
-			}
-			// Because we don't clear any context overrides, we don't
-			// need to push them down either.
-			if (!unformat && override) {
-				return;
-			}
-			ensureWrapper(node, createWrapper, isOverrideWrapper, isMergable, leftPoint, rightPoint);
-		}
-
-		return {
-			hasContext: hasContext,
-			getOverride: getOverride,
-			clearOverride: clearOverride,
-			pushDownOverride: pushDownOverride,
-			setContext: setContext,
-			isUpperBoundary: isUpperBoundary_default
-		};
+	function isPrunable_default(node) {
+		return Arrays.every(Arrays.map(Dom.attrs(node), Arrays.second),
+							Strings.empty);
 	}
 
 	function createStyleWrapper_default() {
@@ -678,91 +575,87 @@ define([
 	}
 
 	function isStyleWrapperPrunable_default(node) {
-		return ('SPAN' === node.nodeName
-				&& Arrays.every(Arrays.map(Dom.attrs(node), Arrays.second),
-								Strings.empty));
+		return 'SPAN' === node.nodeName && isPrunable_default(node);
 	}
 
-	function makeStyleFormatter(styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable, leftPoint, rightPoint) {
+	function makeFormatter(contextValue, getOverride, hasContext, isContextOverride, hasSomeContextValue, hasContextValue, addContextValue, delContextValue, createWrapper, isReusable, isPrunable, leftPoint, rightPoint) {
 
 		// Because we remember any wrappers we created to optimize reuse.
-		var wrappersByStyle = [];
+		var wrappersByContextValue = [];
 
-		function removeStyle(node, styleName) {
-			if (Strings.empty(Dom.getStyle(node, styleName))) {
+		function pruneContext(node) {
+			if (!hasSomeContextValue(node)) {
 				return;
 			}
-			Dom.setStyle(node, styleName, null);
+			delContextValue(node);
 			if (isPrunable(node)) {
 				removeShallowAdjust(node, leftPoint, rightPoint);
 			}
 		}
 
-		function createStyleWrapper(styleName, styleValue) {
+		function createContextWrapper(value) {
 			var wrapper = createWrapper();
-			Dom.setStyle(wrapper, styleName, styleValue);
-			var styleKey = styleName + "|" + styleValue;
-			var wrappers = wrappersByStyle[styleKey] = wrappersByStyle[styleKey] || [];
+			addContextValue(wrapper, value);
+			var key = ':' + value;
+			var wrappers = wrappersByContextValue[key] = wrappersByContextValue[key] || [];
 			wrappers.push(wrapper);
 			return wrapper;
 		}
 
-		function isMergableStyleWrapper(styleName, styleValue, node) {
+		function isMergableWrapper(value, node) {
 			if (!isReusable(node)) {
 				return false;
 			}
-			var styleKey = styleName + "|" + styleValue;
-			var wrappers = wrappersByStyle[styleKey] || [];
+			var key =  ':' + value;
+			var wrappers = wrappersByContextValue[key] || [];
 			if (Arrays.contains(wrappers, node)) {
 				return true;
 			}
-			var existingStyle = Dom.getStyle(node, styleName);
-			if (!Strings.empty(existingStyle) && !isStyleEq(existingStyle, styleValue)) {
+			if (hasSomeContextValue(node) && !hasContextValue(node, value)) {
 				return false;
 			}
 			// Because we assume something is mergeable if it doesn't
-			// provide any context besides the style we are applying,
-			// and something doesn't provide any context at all if it is
-			// prunable.
+			// provide any context value besides the one we are
+			// applying, and something doesn't provide any context value
+			// at all if it is prunable.
 			var clone = node.cloneNode(false);
-			Dom.setStyle(clone, styleName, null);
+			delContextValue(clone);
 			return isPrunable(clone);
 		}
 
-		function setStyle(node, styleName, styleValue) {
+		function wrapContextValue(node, value) {
 			var wrapper = ensureWrapper(
 				node,
-				Fn.bind(createStyleWrapper, null, styleName, styleValue),
+				Fn.bind(createContextWrapper, null, value),
 				isReusable,
-				Fn.bind(isMergableStyleWrapper, null, styleName, styleValue),
+				Fn.bind(isMergableWrapper, null, value),
 				leftPoint,
 				rightPoint
 			);
 			if (wrapper) {
-				// Because the node itself may have the style set, and
-				// wrapping it will not unset it.
-				removeStyle(node, styleName);
+				// Because the node itself may have the context value
+				// set, and wrapping it will not unset it.
+				pruneContext(node);
 			} else {
 				// Because the node wasn't wrapped because it itself is
-				// a wrapper, but possibly without the style.
-				Dom.setStyle(node, styleName, styleValue);
+				// a wrapper, but possibly not with the given context
+				// value.
+				addContextValue(node, value);
 			}
 		}
 
-		function hasContext(node) {
-			return isStyleEq(Dom.getStyle(node, styleName), styleValue);
-		}
-
-		function getOverride(node) {
-			var override = Dom.getStyle(node, styleName);
-			return !Strings.empty(override) ? override : null;
-		}
-
 		function clearOverride(node) {
+			// TODO Restacking in clearOverride is a hack. Instead we
+			//      should support it as an argument of mutate().
+			node = restack(node, hasContext, Html.isUnrenderedWhitespace, Html.hasInlineStyle, leftPoint, rightPoint);
+			if (hasContext(node) && ensureWrapper(node, createWrapper, hasContext, Fn.bind(isMergableWrapper, null, contextValue), leftPoint, rightPoint)) {
+				pruneContext(node);
+			}
+
 			// Because we don't want to remove any existing context if
 			// not necessary (See pushDownOverride and setContext).
-			if (!isStyleEq(Dom.getStyle(node, styleName), styleValue)) {
-				removeStyle(node, styleName);
+			if (!hasContext(node)) {
+				pruneContext(node);
 			}
 		}
 
@@ -771,7 +664,7 @@ define([
 			// clears non-context overrides, while during a recursive
 			// clearing we want to clear the override always regardless
 			// of whether it is equal to context.
-			removeStyle(node, styleName);
+			pruneContext(node);
 		}
 
 		function clearOverrideRec(node) {
@@ -781,20 +674,20 @@ define([
 		function pushDownOverride(node, override) {
 			// Because we don't clear any context overrides, we don't
 			// need to push them down either.
-			if (Strings.empty(override) || !Strings.empty(Dom.getStyle(node, styleName)) || isStyleEq(override, styleValue)) {
+			if (null == override || hasSomeContextValue(node) || isContextOverride(override)) {
 				return;
 			}
-			setStyle(node, styleName, override);
+			wrapContextValue(node, override);
 		}
 
 		function setContext(node, override, isNonClearableOverride) {
 			// Because we don't clear any context overrides, we don't
 			// need to set them either.
-			if (isStyleEq(override, styleValue)) {
+			if (isContextOverride(override)) {
 				return;
 			}
 			Dom.walk(node.firstChild, clearOverrideRec);
-			setStyle(node, styleName, styleValue);
+			wrapContextValue(node, contextValue);
 		}
 
 		return {
@@ -805,6 +698,104 @@ define([
 			setContext: setContext,
 			isUpperBoundary: isUpperBoundary_default
 		};
+	}
+
+	function makeStyleFormatter(styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable, leftPoint, rightPoint) {
+		function getOverride(node) {
+			var override = Dom.getStyle(node, styleName);
+			return !Strings.empty(override) ? override : null;
+		}
+		function hasContext(node) {
+			return isStyleEq(Dom.getStyle(node, styleName), styleValue);
+		}
+		function isContextOverride(value) {
+			return isStyleEq(value, styleValue);
+		}
+		function hasSomeContextValue(node) {
+			return !Strings.empty(Dom.getStyle(node, styleName));
+		}
+		function hasContextValue(node, value) {
+			return isStyleEq(Dom.getStyle(node, styleName), value);
+		}
+		function addContextValue(node, value) {
+			Dom.setStyle(node, styleName, value);
+		}
+		function delContextValue(node) {
+			Dom.setStyle(node, styleName, null);
+		}
+		return makeFormatter(
+			styleValue,
+			getOverride,
+			hasContext,
+			isContextOverride,
+			hasSomeContextValue,
+			hasContextValue,
+			addContextValue,
+			delContextValue,
+			createWrapper,
+			isReusable,
+			isPrunable,
+			leftPoint,
+			rightPoint
+		);
+	}
+
+	function makeNodeFormatter(nodeName, leftPoint, rightPoint, unformat) {
+		function createWrapper() {
+			return document.createElement(nodeName);
+		}
+		function getOverride(node) {
+			return nodeName === node.nodeName || null;
+		}
+		function hasContext(node) {
+			if (unformat) {
+				// Because the only difference between formatter and
+				// unformatter is that there isn't for example a no-bold
+				// element - the absence of a bold ancestor results in the
+				// node having a no-bold context, but there is no element to
+				// set a no-bold context explicitly (actually there is,
+				// <span style="font-weight: normal">, but that kind of
+				// functionality isn't implemented yet).
+				return false;
+			}
+			return nodeName === node.nodeName;
+		}
+		function isContextOverride(value) {
+			if (unformat) {
+				// Because unformatting has no context value.
+				return false;
+			}
+			return null != value;
+		}
+		function isReusable(node) {
+			// Because we don't want to merge with a context node that
+			// does more than just provide a context (for example a <b>
+			// node may have a class which shouldn't also being wrapped
+			// around the merged-with node).
+			return node.nodeName === nodeName && !Dom.attrs(node).length;
+		}
+		function hasSomeContextValue(node) {
+			return node.nodeName === nodeName;
+		}
+		var hasContextValue = hasContext;
+		var addContextValue = Fn.noop;
+		var delContextValue = Fn.noop;
+		var isPrunable = isPrunable_default;
+		return makeFormatter(
+			nodeName,
+			getOverride,
+			hasContext,
+			isContextOverride,
+			hasSomeContextValue,
+			hasContextValue,
+			addContextValue,
+			delContextValue,
+			createWrapper,
+			isReusable,
+			isPrunable,
+			leftPoint,
+			rightPoint
+		);
 	}
 
 	function format(liveRange, nodeName, remove) {
