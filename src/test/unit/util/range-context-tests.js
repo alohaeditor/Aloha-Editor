@@ -5,6 +5,7 @@ Aloha.require([
 	'util/html',
 	'util/boundary-markers',
 	'util/range-context',
+	'util/functions',
 	'dom-to-xhtml/dom-to-xhtml',
 	'aloha/rangy-core',
 ], function (
@@ -14,6 +15,7 @@ Aloha.require([
 	Html,
 	BoundaryMarkers,
 	RangeContext,
+	Fn,
 	DomToXhtml
 ) {
 	'use strict';
@@ -199,6 +201,10 @@ Aloha.require([
 		testFormat('RangeContext.format-restack - ' + title, before, after);
 	};
 
+	t('across elements',
+	  '<p><i>{one</i>two<i>three<em>four}</em></i></p>',
+	  '<p>{<b><i>one</i>two<i>three<em>four}</em></i></b>}</p>');
+
 	t('with existing bold element',
 	  '<p><i><u><s><b>Some</b></s></u>{ text}</i></p>',
 	  '<p><i><b><u><s>Some</s></u>{ text</b>}</i></p>');
@@ -291,11 +297,45 @@ Aloha.require([
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
 
 	t = function (title, before, after) {
-		function isSplittable(node) {
-			return node.nodeName !== 'CODE' && Html.isInlineType(node);
-		}
+		testMutation('RangeContext.splitBoundary ' + title, before, after, function (dom, range) {
+			function cacAndAboveUntil(node) {
+				return node.nodeName === 'DIV';
+			}
+			RangeContext.splitBoundary(range, Dom.cloneShallow, Fn.returnFalse, cacAndAboveUntil, true);
+		});
+	};
+
+	t('split cac',
+	  '<div><p><b>one</b>{<i>two</i><i>three</i>}<b>four</b></p></div>',
+	  '<div><p><b>one</b></p>{<p><i>two</i><i>three</i></p>}<p><b>four</b></p></div>');
+
+	t('split at start end doesn\'t leave empty nodes 1',
+	  '<div><b>one{</b><i>two</i><b>}three</b></div>',
+	  '<div><b>one</b>{<i>two</i>}<b>three</b></div>');
+
+	t('split at start end doesn\'t leave empty nodes 2',
+	  '<div><b>{one</b><i>two</i><b><em>three</em>}</b></div>',
+	  '<div>{<b>one</b><i>two</i><b><em>three</em></b>}</div>');
+
+	t('split collapsed range 1',
+	  '<div><b><i>1</i><i>2{}</i><i>3</i></b></div>',
+	  '<div><b><i>1</i><i>2</i></b>{}<b><i>3</i></b></div>');
+
+	t('split collapsed range in empty element',
+	  '<div><b><i>1</i><i>{}</i><i>3</i></b></div>',
+	  '<div><b><i>1</i></b>{}<b><i></i><i>3</i></b></div>');
+
+	t('Trim/include the last br',
+	  '<div><h1>1{<br/></h1><p>2}<br/></p></div>',
+	  '<div><h1>1<br/></h1>{<p>2<br/></p>}</div>');
+
+	t = function (title, before, after) {
 		testMutation('RangeContext.splitBoundary+format - ' + title, before, after, function (dom, range) {
-			RangeContext.splitBoundary(range, isSplittable);
+			var cac = range.commonAncestorContainer;
+			function belowCacUntil(node) {
+				return node.nodeName === 'CODE';
+			}
+			RangeContext.splitBoundary(range, Dom.cloneShallow, belowCacUntil, Fn.returnTrue, true);
 			RangeContext.format(range, 'B');
 		});
 	};
@@ -310,11 +350,11 @@ Aloha.require([
 
 	t('multiple levels to the left and right',
 	  '<p>S<sub>o<em>{m</em></sub>e <i>a<u>b]c</u></i></p>',
-	  '<p>S<sub>o</sub><b><sub><em>{m</em></sub>e <i>a<u>b</u></i></b>}<i><u>c</u></i></p>');
+	  '<p>S<sub>o</sub>{<b><sub><em>m</em></sub>e <i>a<u>b</u></i></b>}<i><u>c</u></i></p>');
 
 	t('end positions will be skipped and not split',
 	  '<p><i><u><sub>{</sub></u>a</i>b<i>c<u><sub>}</sub></u></i></p>',
-	  '<p><i><u><sub></sub></u></i><b><i>{a</i>b<i>c</i></b>}<i><u><sub></sub></u></i></p>');
+	  '<p><i><u><sub></sub></u></i>{<b><i>a</i>b<i>c</i></b>}<i><u><sub></sub></u></i></p>');
 
 	t('don\'t split obstruction on the left; with element siblings on the right',
 	  '<p><i><em>-</em><code>Some<em>-{-</em>text</code></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',

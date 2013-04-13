@@ -443,8 +443,61 @@ define([
 		return true;
 	};
 
+	Cursor.prototype.skipPrev = function (cursor) {
+		var prev = this.prevSibling();
+		if (prev) {
+			this.node = prev;
+			this.atEnd = false;
+			return true;
+		}
+		return this.prev();
+	};
+
+	Cursor.prototype.skipNext = function (cursor) {
+		if (this.atEnd) {
+			return this.next();
+		}
+		this.atEnd = true;
+		return this.next();
+	};
+
+	Cursor.prototype.nextWhile = function (cond) {
+		while (cond(this)) {
+			if (!this.next()) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	Cursor.prototype.prevWhile = function (cond) {
+		while (cond(this)) {
+			if (!this.prev()) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	Cursor.prototype.parent = function () {
+		return this.atEnd ? this.node : this.node.parentNode;
+	};
+
+	Cursor.prototype.prevSibling = function () {
+		return this.atEnd ? this.node.lastChild : this.node.previousSibling;
+	}
+
+	Cursor.prototype.nextSibling = function () {
+		return this.atEnd ? null : this.node.nextSibling;
+	};
+
 	Cursor.prototype.equals = function (cursor) {
 		return cursor.node === this.node && cursor.atEnd === this.atEnd;
+	};
+
+	Cursor.prototype.setFrom = function (cursor) {
+		this.node = cursor.node;
+		this.atEnd = cursor.atEnd;
 	};
 
 	Cursor.prototype.clone = function () {
@@ -454,6 +507,67 @@ define([
 	Cursor.prototype.insert = function (node) {
 		return insert(node, this.node, this.atEnd);
 	};
+
+	/**
+	 * Ensures that the given startPoint is not in a start position and
+	 * the given endPoint is not in an end position by moving the points
+	 * to the left and right respectively - that's the exact opposite
+	 * behaviour from trimBoundaries().
+	 *
+	 * If until returns true for either point, it may remain in start or
+	 * end position respectively.
+	 */
+	function expandBoundaries(startPoint, endPoint, until, ignore) {
+		until = until || Fn.returnFalse;
+		ignore = ignore || Fn.returnFalse;
+		startPoint.prevWhile(function (startPoint) {
+			return !until(startPoint) && (!startPoint.prevSibling() || ignore(startPoint));
+		});
+		endPoint.nextWhile(function (endPoint) {
+			return !until(endPoint) && (endPoint.atEnd || ignore(startPoint));
+		});
+	}
+
+	/**
+	 * Ensures that the given startPoint is not in an end position and
+	 * the given endPoint is not in a start position by moving the
+	 * points to the right and left respectively - that's the exact
+	 * opposite behaviour from expandBoundaries().
+	 *
+	 * If the boundaries are equal (collapsed), or become equal during
+	 * this operation, or if until returns true for either point, it
+	 * may remain in start or end position respectively.
+	 */
+	function trimBoundaries(startPoint, endPoint, until, ignore) {
+		until = until || Fn.returnFalse;
+		ignore = ignore || Fn.returnFalse;
+		startPoint.nextWhile(function (startPoint) {
+			return !startPoint.equals(endPoint) && !until(startPoint) && (startPoint.atEnd || ignore(startPoint));
+		});
+		endPoint.prevWhile(function (endPoint) {
+			return !startPoint.equals(endPoint) && !until(endPoint) && (!endPoint.prevSibling() || ignore(endPoint));
+		});
+	}
+
+	/**
+	 * Ensures that the given boundaries are neither in start nor end
+	 * positions. In other words, after this operation, both will have
+	 * preceding and following siblings.
+	 *
+	 * Expansion can be controlled via expandUntil, but may cause one or
+	 * both of the boundaries to remain in start or end position.
+	 *
+	 * A collapsed selection will remain collapsed, but may be moved out
+	 * of and before the node that originally contained it.
+	 */
+	function normalizeBoundaries(startPoint, endPoint, expandUntil, ignore) {
+		var collapsed = startPoint.equals(endPoint);
+		trimBoundaries(startPoint, endPoint, null, ignore);
+		expandBoundaries(startPoint, endPoint, expandUntil, ignore);
+		if (collapsed) {
+			endPoint.setFrom(startPoint);
+		}
+	}
 
 	/**
 	 * @param offset if node is a text node, the offset will be ignored.
@@ -512,16 +626,9 @@ define([
 		});
 	}
 
-	function next(node, until, arg) {
-		while (node && !until(node, arg)) {
+	function nextWhile(node, cond, arg) {
+		while (node && cond(node, arg)) {
 			node = node.nextSibling;
-		}
-		return node;
-	}
-
-	function parent(node, until, arg) {
-		while (node && !until(node, arg)) {
-			node = node.parentNode;
 		}
 		return node;
 	}
@@ -770,8 +877,7 @@ define([
 		trimRange(range, function (cursor) {
 			return cursor.atEnd || ignoreLeft(cursor.node);
 		}, function (cursor) {
-			var prev = cursor.atEnd ? cursor.node.lastChild : cursor.node.previousSibling;
-			return !prev || ignoreRight(prev);
+			return !cursor.prevSibling() || ignoreRight(cursor.prevSibling());
 		});
 	}
 
@@ -891,6 +997,9 @@ define([
 		insert: insert,
 		cursor: cursor,
 		cursorFromBoundaryPoint: cursorFromBoundaryPoint,
+		trimBoundaries: trimBoundaries,
+		expandBoundaries: expandBoundaries,
+		normalizeBoundaries: normalizeBoundaries,
 		nodeAtOffset: nodeAtOffset,
 		isAtEnd: isAtEnd,
 		parentsUntil: parentsUntil,
@@ -899,12 +1008,11 @@ define([
 		childAndParentsUntilIncl: childAndParentsUntilIncl,
 		childAndParentsUntilNode: childAndParentsUntilNode,
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
-		next: next,
-		parent: parent,
 		isTextNode: isTextNode,
 		nodeIndex: nodeIndex,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
+		nextWhile: nextWhile,
 		walk: walk,
 		walkRec: walkRec,
 		walkUntil: walkUntil,

@@ -270,6 +270,18 @@ define([
 		return node;
 	}
 
+	function isEmpty(elem) {
+		var child = elem.firstChild;
+		while (child) {
+			if (!isUnrenderedWhitespace(child)
+				    && (1 === child.nodeType || 3 === child.nodeType)) {
+				return true;
+			}
+			child = child.nextSibling;
+		}
+		return true;
+	}
+
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		isBlockType: isBlockType,
@@ -279,6 +291,7 @@ define([
 		isBlock: isBlock,
 		isUnrenderedWhitespace: isUnrenderedWhitespace,
 		isIgnorableWhitespace: isIgnorableWhitespace,
+		isEmpty: isEmpty,
 		isProppedBlock: isProppedBlock,
 		isEditingHost: isEditingHost,
 		findNodeRight: findNodeRight
