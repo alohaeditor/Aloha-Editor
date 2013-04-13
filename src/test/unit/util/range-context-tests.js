@@ -34,6 +34,14 @@ Aloha.require([
 
 	function testMutation(title, before, expected, mutate) {
 		test(title, function () {
+			// Because the following tests are not contained in an editable and
+			// hasInline/BlockStyle() will not work on them we have to monkey
+			// patch them for the duration of the test.
+			var hasInlineStyle = Html.hasInlineStyle;
+			var hasBlockStyle = Html.hasBlockStyle;
+			Html.hasInlineStyle = Html.isInlineType;
+			Html.hasBlockStyle = Html.isBlockType;
+
 			var dom = $(before)[0];
 			var range = Aloha.createRange();
 			BoundaryMarkers.extract(dom, range);
@@ -45,6 +53,10 @@ Aloha.require([
 			} else {
 				equal(actual, expected);
 			}
+
+			// Undo monkey patch from above
+			Html.hasInlineStyle = hasInlineStyle;
+			Html.hasBlockStyle = hasBlockStyle;
 		});
 	}
 
@@ -203,7 +215,7 @@ Aloha.require([
 
 	t('across elements',
 	  '<p><i>{one</i>two<i>three<em>four}</em></i></p>',
-	  '<p>{<b><i>one</i>two<i>three<em>four}</em></i></b>}</p>');
+	  '<p>{<b><i>one</i>two<i>three<em>four}</em></i></b></p>');
 
 	t('with existing bold element',
 	  '<p><i><u><s><b>Some</b></s></u>{ text}</i></p>',
@@ -381,7 +393,7 @@ Aloha.require([
 						  ? isPrunableIe7
 						  : null);
 		function isObstruction(node) {
-			return !Html.isInlineType(node) || 'CODE' === node.nodeName;
+			return !Html.hasInlineStyle(node) || 'CODE' === node.nodeName;
 		}
 		testMutation('RangeContext.formatStyle - ' + title, before, expected, function (dom, range) {
 			RangeContext.formatStyle(range, 'font-family', 'arial', null, null, null, isPrunable, isObstruction);

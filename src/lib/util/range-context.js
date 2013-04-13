@@ -323,6 +323,7 @@ define([
 				bottommostOverrideNode = bottommostOverrideNode || node;
 			}
 		});
+
 		if ((rootHasImpliedContext || hasContext(Arrays.last(fromCacToContext)))
 			    && !isNonClearableOverride) {
 			if (!topmostOverrideNode) {
@@ -357,15 +358,18 @@ define([
 		}
 	}
 
+	function isUnrendered(node) {
+		return (Html.isUnrenderedWhitespace(node)
+				|| (node.nodeType !== 1 && node.nodeType !== 3));
+	}
+
 	function skipLastBr(container, offset, range, setFn) {
 		var node = Dom.nodeAtOffset(container, offset);
 		if ('BR' !== node.nodeName || !node.parentNode || !Html.hasBlockStyle(node.parentNode)) {
 			return false;
 		}
 		function skip(cursor) {
-			return (node === cursor.node
-					|| Html.isUnrenderedWhitespace(cursor.node)
-					|| (cursor.node.nodeType !== 1 && cursor.node.nodeType !== 3));
+			return node === cursor.node || isUnrendered(cursor.node);
 		}
 		var cursor = Dom.cursor(node, false);
 		cursor.prevWhile(skip);
@@ -401,6 +405,14 @@ define([
 		// be between nodes.
 		Dom.splitTextContainers(range);
 
+		// Because the last br inside a otherwise non-empty block is
+		// invisible (except in IE), we skip/include it so that
+		// formatting or splitting the range behaves more as the user
+		// expects when a block is selected but the boundaries don't
+		// exclude/include the last br.
+		excludeLastBrAtStart(range);
+		includeLastBrAtEnd(range);
+
 		// Because we want unbolding
 		// <b>one<i>two{</i>three}</b>
 		// to result in
@@ -410,14 +422,6 @@ define([
 		// and because adjustPointMoveBackWithinRange() requires the
 		// left boundary point to be next to a non-ignorable node.
 		Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace);
-
-		// Because the last br inside a otherwise non-empty block is
-		// invisible (except in IE), we skip/include it so that
-		// formatting or splitting the range behaves more as the user
-		// expects when a block is selected but the boundaries don't
-		// exclude/include the last br.
-		excludeLastBrAtStart(range);
-		includeLastBrAtEnd(range);
 
 		// Because mutation needs to keep track and adjust boundary
 		// points.
@@ -432,13 +436,19 @@ define([
 		Dom.setRangeEndFromCursor(liveRange, rightPoint);
 	}
 
-	function adjustPointShallowRemove(point, left, node) {
+	function adjustPointShallowRemove(point, node) {
 		if (point.node === node) {
-			point.next();
+			if (!point.node.firstChild) {
+				point.skipNext();
+			} else {
+				point.next();
+			}
 		}
 	}
 
-	function adjustPointMoveBackWithinRange(point, left, node, ref, atEnd) {
+	// NB depends on trimRangeClosingOpening to move the leftPoint out
+	// of an atEnd position to the first node that is to be moved.
+	function adjustPointMoveBackWithinRange(point, node, left) {
 		if (point.node === node) {
 			// Because Left positions will be moved back with the node,
 			// which is correct, while right positions must stay where
@@ -447,15 +457,12 @@ define([
 			// must both stay where they are, we don't need an extra
 			// check for point.atEnd.
 			if (!left) {
-				point.next();
+				point.skipNext();
 			}
 		}
-		// Because trimRangeClosingOpening will ensure that the boundary
-		// points will be next to a node that is moved, we don't need
-		// any special handling for ref.
 	}
 
-	function adjustPointWrap(point, left, node, wrapper) {
+	function adjustPointWrap(point, node, wrapper) {
 		// Because we prefer the range to be outside the wrapper (no
 		// particular reason though).
 		if (point.node === node && !point.atEnd) {
@@ -464,8 +471,8 @@ define([
 	}
 
 	function removeShallowAdjust(node, leftPoint, rightPoint) {
-		adjustPointShallowRemove(leftPoint, true, node);
-		adjustPointShallowRemove(rightPoint, false, node);
+		adjustPointShallowRemove(leftPoint, node);
+		adjustPointShallowRemove(rightPoint, node);
 		Dom.removeShallow(node);
 	}
 
@@ -473,19 +480,19 @@ define([
 		if (wrapper.parentNode) {
 			removeShallowAdjust(wrapper, leftPoint, rightPoint);
 		}
-		adjustPointWrap(leftPoint, true, node, wrapper);
-		adjustPointWrap(rightPoint, false, node, wrapper);
+		adjustPointWrap(leftPoint, node, wrapper);
+		adjustPointWrap(rightPoint, node, wrapper);
 		Dom.wrap(node, wrapper);
 	}
 
-	function insertAdjust(node, ref, atEnd, leftPoint, rightPoint) {
-		adjustPointMoveBackWithinRange(leftPoint, true, node, ref, atEnd);
-		adjustPointMoveBackWithinRange(rightPoint, false, node, ref, atEnd);
+	function moveAdjust(node, ref, atEnd, leftPoint, rightPoint) {
+		adjustPointMoveBackWithinRange(leftPoint, node, true);
+		adjustPointMoveBackWithinRange(rightPoint, node, false);
 		Dom.insert(node, ref, atEnd);
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
-		if (1 !== node.nodeType || ignoreVertical(node)) {
+		if (1 !== node.nodeType || !ignoreVertical(node)) {
 			return null;
 		}
 		var maybeContext = Dom.nextWhile(node.firstChild, ignoreHorizontal);
@@ -527,14 +534,14 @@ define([
 			restack(node.previousSibling,
 					isWrapper,
 					Html.isUnrenderedWhitespace,
-					Html.isInlineType,
+					Html.hasInlineStyle,
 					leftPoint,
 					rightPoint);
 		}
 		var wrapper = null;
 		if (node.previousSibling && isMergable(node.previousSibling)) {
 			wrapper = node.previousSibling;
-			insertAdjust(node, wrapper, true, leftPoint, rightPoint);
+			moveAdjust(node, wrapper, true, leftPoint, rightPoint);
 		} else if (!isWrapper(node)) {
 			wrapper = createWrapper();
 			wrapAdjust(node, wrapper, leftPoint, rightPoint);
@@ -840,7 +847,7 @@ define([
 		isStyleEq = isStyleEq || isStyleEq_default;
 		isReusable = isReusable || isStyleWrapperReusable_default;
 		isPrunable = isPrunable || isStyleWrapperPrunable_default;
-		isObstruction = isObstruction || Fn.complement(Html.isInlineType);
+		isObstruction = isObstruction || Fn.complement(Html.hasInlineStyle);
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
 			return;
@@ -892,9 +899,12 @@ define([
 				var parent = node.parentNode;
 				if (!wrapper || parent.previousSibling !== wrapper) {
 					wrapper = clone(parent);
-					insertAdjust(wrapper, parent, false, leftPoint, rightPoint);
+					Dom.insert(wrapper, parent, false);
+					if (leftPoint.node === parent && !leftPoint.atEnd) {
+						leftPoint.node = wrapper;
+					}
 				}
-				insertAdjust(node, wrapper, true, leftPoint, rightPoint);
+				moveAdjust(node, wrapper, true, leftPoint, rightPoint);
 				if (!parent.firstChild) {
 					removeEmpty.push(parent);
 				}
