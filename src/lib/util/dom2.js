@@ -620,6 +620,14 @@ define([
 		return node;
 	}
 
+	// http://ejohn.org/blog/comparing-document-position/
+	// http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
+	function contains(a, b){
+		return (a.contains
+				? a != b && a.contains(b)
+				: !!(a.compareDocumentPosition(b) & 16));
+	}
+
 	function isTextNode(node) {
 		return 3 === node.nodeType;
 	}
@@ -686,25 +694,36 @@ define([
 		setRange(range, container, offset);
 	}
 
-	function adjustBoundaryPointBeforeJoin(nodeToBeJoined, sibling, prev, container, offset) {
-		if (container === nodeToBeJoined) {
+	function adjustBoundaryPointAfterJoin(container, offset, range, setRange, node, nodeLen, sibling, siblingLen, parentNode, nidx, prev) {
+		if (container === node) {
 			container = sibling;
-			offset += prev ? sibling.length : 0;
+			offset += prev ? siblingLen : 0;
 		} else if (container === sibling) {
-			offset += prev ? 0 : nodeToBeJoined.length;
-		} else if (container === nodeToBeJoined.parentNode) {
-			var nidx = nodeIndex(nodeToBeJoined);
+			offset += prev ? 0 : nodeLen;
+		} else if (container === parentNode) {
 			if (offset === nidx) {
 				container = sibling;
-				offset = prev ? sibling.length : 0;
+				offset = prev ? siblingLen : 0;
 			} else if (!prev && offset === nidx + 1) {
 				container = sibling;
-				offset = nodeToBeJoined.length;
+				offset = nodeLen;
 			} else if (offset > nidx) {
 				offset -= 1;
 			}
 		}
-		return [container, offset];
+		setRange(range, container, offset);
+	}
+
+	function adjustBoundaryPointAfterRemove(container, offset, range, setRange, node, parentNode, nidx) {
+		if (container === node || contains(node, container)) {
+			container = parentNode;
+			offset = nidx;
+		} else if (container === parentNode) {
+			if (offset > nidx) {
+				offset -= 1;
+			}
+		}
+		setRange(range, container, offset);
 	}
 
 	/**
@@ -717,6 +736,8 @@ define([
 		if (3 !== splitNode.nodeType) {
 			return;
 		}
+		// Because the range may change due to the DOM modification
+		// (automatically by the browser).
 		var sc = range.startContainer;
 		var so = range.startOffset;
 		var ec = range.endContainer;
@@ -740,12 +761,20 @@ define([
 		if (!sibling || 3 !== sibling.nodeType) {
 			return node;
 		}
-		var adjustStart = adjustBoundaryPointBeforeJoin(node, sibling, prev, range.startContainer, range.startOffset);
-		var adjustEnd = adjustBoundaryPointBeforeJoin(node, sibling, prev, range.endContainer, range.endOffset);
-		sibling.insertData(prev ? sibling.length : 0, node.data);
-		node.parentNode.removeChild(node);
-		setRangeStart(range, adjustStart[0], adjustStart[1]);
-		setRangeEnd(range, adjustEnd[0], adjustEnd[1]);
+		// Because the range may change due to the DOM modication
+		// (automatically by the browser).
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec = range.endContainer;
+		var eo = range.endOffset;
+		var parentNode = node.parentNode;
+		var nidx = nodeIndex(node);
+		var nodeLen = node.length;
+		var siblingLen = sibling.length;
+		sibling.insertData(prev ? siblingLen : 0, node.data);
+		parentNode.removeChild(node);
+		adjustBoundaryPointAfterJoin(sc, so, range, setRangeStart, node, nodeLen, sibling, siblingLen, parentNode, nidx, prev);
+		adjustBoundaryPointAfterJoin(ec, eo, range, setRangeEnd, node, nodeLen, sibling, siblingLen, parentNode, nidx, prev);
 		return sibling;
 	}
 
@@ -755,6 +784,20 @@ define([
 		}
 		node = joinTextNodeOneWay(node, node.previousSibling, range, true);
 		joinTextNodeOneWay(node, node.nextSibling, range, false);
+	}
+
+	function removePreservingRange(node, range) {
+		// Because the range may change due to the DOM modification
+		// (automatically by the browser).
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec = range.endContainer;
+		var eo = range.endOffset;
+		var parentNode = node.parentNode;
+		var nidx = nodeIndex(node);
+		parentNode.removeChild(node);
+		adjustBoundaryPointAfterRemove(sc, so, range, setRangeStart, node, parentNode, nidx);
+		adjustBoundaryPointAfterRemove(ec, eo, range, setRangeEnd, node, parentNode, nidx);
 	}
 
 	function walkUntil(node, fn, until, arg) {
@@ -1046,6 +1089,7 @@ define([
 		indexByClassHaveList: indexByClassHaveList,
 		outerHtml: outerHtml,
 		removeShallow: removeShallow,
+		removePreservingRange: removePreservingRange,
 		wrap: wrap,
 		insert: insert,
 		cursor: cursor,

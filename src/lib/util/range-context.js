@@ -854,10 +854,6 @@ define([
 	function splitBoundary(liveRange, clone, belowCacUntil, cacAndAboveUntil, boundariesChildrenOfUnsplitNode) {
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 
-			// Because whitespace at the start end of a block and the
-			// last br inside an otherwise non-empty block are invisible
-			// (except the last br in IE), we skip/include it so that
-			// we don't split off a block that ends up invisible.
 			var normalizedLeft = boundariesChildrenOfUnsplitNode ? leftPoint : leftPoint.clone();
 			var normalizedRight = boundariesChildrenOfUnsplitNode ? rightPoint : rightPoint.clone();
 			Html.normalizeBoundary(normalizedLeft);
@@ -881,15 +877,13 @@ define([
 				var parent = node.parentNode;
 				if (!wrapper || parent.previousSibling !== wrapper) {
 					wrapper = clone(parent);
+					removeEmpty.push(parent);
 					Dom.insert(wrapper, parent, false);
 					if (leftPoint.node === parent && !leftPoint.atEnd) {
 						leftPoint.node = wrapper;
 					}
 				}
 				moveAdjust(node, wrapper, true, leftPoint, rightPoint);
-				if (!parent.firstChild) {
-					removeEmpty.push(parent);
-				}
 				return wrapper;
 			}
 
@@ -909,7 +903,9 @@ define([
 			ascendWalkSiblings(fromCacToTop, false, Fn.returnFalse, intoWrapperLeft, Fn.noop, Fn.noop);
 
 			Arrays.forEach(removeEmpty, function (elem) {
-				removeShallowAdjust(elem, leftPoint, rightPoint);
+				if (!elem.firstChild) {
+					removeShallowAdjust(elem, leftPoint, rightPoint);
+				}
 			});
 
 			// Because the selection may still be inside the split

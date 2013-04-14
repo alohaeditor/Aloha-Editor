@@ -1574,9 +1574,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 			range.setEnd(node, 0);
 		} else {
 			range.setStart(boundaryPoints[0][0], boundaryPoints[0][1]);
-			if (boundaryPoints[1][1] <= boundaryPoints[1][0].childNodes.length) {
-				range.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
-			}
+			range.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
 
 			Aloha.getSelection().removeAllRanges();
 			for (i = 1; i < ranges.length; i++) {
@@ -1584,9 +1582,6 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 				newRange.setStart(boundaryPoints[2 * i][0], boundaryPoints[2 * i][1]);
 				newRange.setEnd(boundaryPoints[2 * i + 1][0], boundaryPoints[2 * i + 1][1]);
 				Aloha.getSelection().addRange(newRange);
-			}
-			if (newRange) {
-				range = newRange;
 			}
 		}
 	}
@@ -1673,7 +1668,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 		return replacementElement;
 	}
 
-	function removeExtraneousLineBreaksBefore(node) {
+	function removeExtraneousLineBreaksBefore(node, range) {
 		// "Let ref be the previousSibling of node."
 		var ref = node.previousSibling;
 
@@ -1696,11 +1691,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 		// "If ref is an editable extraneous line break, remove it from its
 		// parent."
 		if (isEditable(ref) && isExtraneousLineBreak(ref)) {
-			ref.parentNode.removeChild(ref);
+			Dom.removePreservingRange(ref, range);
 		}
 	}
 
-	function removeExtraneousLineBreaksAtTheEndOf(node) {
+	function removeExtraneousLineBreaksAtTheEndOf(node, range) {
 		// "Let ref be node."
 		var ref = node;
 
@@ -1718,15 +1713,15 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 		// "If ref is an editable extraneous line break, remove it from its
 		// parent."
 		if (isEditable(ref) && isExtraneousLineBreak(ref)) {
-			ref.parentNode.removeChild(ref);
+			Dom.removePreservingRange(ref, range);
 		}
 	}
 
 	// "To remove extraneous line breaks from a node, first remove extraneous line
 	// breaks before it, then remove extraneous line breaks at the end of it."
-	function removeExtraneousLineBreaksFrom(node) {
-		removeExtraneousLineBreaksBefore(node);
-		removeExtraneousLineBreaksAtTheEndOf(node);
+	function removeExtraneousLineBreaksFrom(node, range) {
+		removeExtraneousLineBreaksBefore(node, range);
+		removeExtraneousLineBreaksAtTheEndOf(node, range);
 	}
 
 	//@}
@@ -1804,7 +1799,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 				range.setStart(startContainer, startOffset + 1);
 			}
 			if (endContainer == newParent.parentNode && endOffset >= getNodeIndex(newParent)) {
-				if (endOffset + 1 < endContainer.childNodes.length) {
+				if (endOffset + 1 <= endContainer.childNodes.length) {
 					range.setEnd(endContainer, endOffset + 1);
 				}
 			}
@@ -1891,7 +1886,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 		}
 
 		// "Remove extraneous line breaks from new parent."
-		removeExtraneousLineBreaksFrom(newParent);
+		removeExtraneousLineBreaksFrom(newParent, range);
 
 		// "Return new parent."
 		return newParent;
@@ -3632,7 +3627,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 		// "If the first child of original parent is in node list, remove
 		// extraneous line breaks before original parent."
 		if (jQuery.inArray(originalParent.firstChild, nodeList) != -1) {
-			removeExtraneousLineBreaksBefore(originalParent);
+			removeExtraneousLineBreaksBefore(originalParent, range);
 		}
 
 		var firstChildInNodeList = jQuery.inArray(originalParent.firstChild, nodeList) != -1;
@@ -3667,7 +3662,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 			}
 
 			// "Remove extraneous line breaks at the end of original parent."
-			removeExtraneousLineBreaksAtTheEndOf(originalParent);
+			removeExtraneousLineBreaksAtTheEndOf(originalParent, range);
 
 			// "Abort these steps."
 			return;
@@ -3712,7 +3707,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 		// an inline node, remove the first child of original parent from original
 		// parent."
 		if (isInlineNode(nodeList[nodeList.length - 1]) && !isNamedHtmlElement(nodeList[nodeList.length - 1], "br") && isNamedHtmlElement(originalParent.firstChild, "br") && !isInlineNode(originalParent)) {
-			originalParent.removeChild(originalParent.firstChild);
+			Dom.removePreservingRange(originalParent.firstChild, range);
 		}
 
 		// "If original parent has no children:"
@@ -3720,13 +3715,17 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 			// if the current range is collapsed and at the end of the originalParent.parentNode
 			// the offset will not be available anymore after the next step (remove child)
 			// that's why we need to fix the range to prevent a bogus offset
-			if (originalParent.parentNode === range.startContainer && originalParent.parentNode === range.endContainer && range.startContainer === range.endContainer && range.startOffset === range.endOffset && originalParent.parentNode.childNodes.length === range.startOffset) {
+			if (originalParent.parentNode === range.startContainer
+				    && originalParent.parentNode === range.endContainer
+				    && range.startContainer === range.endContainer
+				    && range.startOffset === range.endOffset
+				    && originalParent.parentNode.childNodes.length === range.startOffset) {
 				range.startOffset = originalParent.parentNode.childNodes.length - 1;
 				range.endOffset = range.startOffset;
 			}
 
 			// "Remove original parent from its parent."
-			originalParent.parentNode.removeChild(originalParent);
+			Dom.removePreservingRange(originalParent, range);
 
 			// "If precedes line break is true, and the last member of node list
 			// does not precede a line break, call createElement("br") on the
@@ -3738,14 +3737,14 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 
 			// "Otherwise, remove extraneous line breaks before original parent."
 		} else {
-			removeExtraneousLineBreaksBefore(originalParent);
+			removeExtraneousLineBreaksBefore(originalParent, range);
 		}
 
 		// "If node list's last member's nextSibling is null, but its parent is not
 		// null, remove extraneous line breaks at the end of node list's last
 		// member's parent."
 		if (!nodeList[nodeList.length - 1].nextSibling && nodeList[nodeList.length - 1].parentNode) {
-			removeExtraneousLineBreaksAtTheEndOf(nodeList[nodeList.length - 1].parentNode);
+			removeExtraneousLineBreaksAtTheEndOf(nodeList[nodeList.length - 1].parentNode, range);
 		}
 	}
 
@@ -6773,7 +6772,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 			}
 
 			// "Block-extend the active range, and let new range be the result."
-			var newRange = blockExtend(getActiveRange());
+			var range = getActiveRange();
+			var newRange = blockExtend(range);
 
 			// "Let node list be an empty list of nodes."
 			//
@@ -6887,6 +6887,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 					newRange
 				), newRange);
 			}
+			range.setStart(newRange.startContainer, newRange.startOffset);
+			range.setEnd(newRange.endContainer, newRange.endOffset);
 		},
 		indeterm: function () {
 			// "Block-extend the active range, and let new range be the result."

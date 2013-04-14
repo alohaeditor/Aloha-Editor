@@ -260,32 +260,22 @@ define([
 		return false;
 	}
 
+	/**
+	 * Tries to move the given point to the start of line, or end of
+	 * line after a br element if possible and if the point doesn't
+	 * encounter any rendered content on the way. Useful when a line
+	 * is to be modified as a whole.
+	 */
 	function normalizeBoundary(point) {
-		return (skipUnrenderedToEndOfBlock(point)
-				|| skipUnrenderedToStartOfLine(point));
-	}
-
-	function skipUnrenderedToEndOfBlock(point) {
-		var cursor = point.clone();
-		if (!skipUnrenderedToEndOfLine(cursor)) {
+		if (skipUnrenderedToStartOfLine(point)) {
+			return true;
+		}
+		if (!skipUnrenderedToEndOfLine(point)) {
 			return false;
 		}
-		// Because the last br in a block is invisible we skip it as well.
-		if ('BR' === cursor.node.nodeName) {
-			cursor.skipNext();
-			if (!skipUnrenderedToEndOfLine(cursor)) {
-				return false;
-			}
-			if ('BR' === cursor.node.nodeName) {
-				return false;
-			}
+		if ('BR' === point.node.nodeName) {
+			point.skipNext();
 		}
-		// Because we are only interested in the end of a block, not
-		// block siblings.
-		if (!cursor.atEnd) {
-			return false;
-		}
-		point.setFrom(cursor);
 		return true;
 	}
 
@@ -364,7 +354,6 @@ define([
 		isUnrenderedWhitespace: isUnrenderedWhitespace,
 		skipUnrenderedToStartOfLine: skipUnrenderedToStartOfLine,
 		skipUnrenderedToEndOfLine: skipUnrenderedToEndOfLine,
-		skipUnrenderedToEndOfBlock: skipUnrenderedToEndOfBlock,
 		normalizeBoundary: normalizeBoundary,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isEmpty: isEmpty,
