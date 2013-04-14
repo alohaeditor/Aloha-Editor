@@ -186,15 +186,15 @@ Aloha.require([
 	  '<p><i>one<em>{</em>left</i>text<i>right<em>}</em>two</i></p>',
 	  '<p><i>one<em></em>{<b>left</b></i><b>text</b><i><b>right</b>}<em></em>two</i></p>');
 
-	t('expand a bold range to the right',
+	t('expand bold range to the right',
 	  '<p><b>one {two</b> three}</p>',
-	  '<p><b>one {two three</b>}</p>');
+	  '<p><b>one [two three</b>}</p>');
 
-	t('expand a bold range to the left',
+	t('expand bold range to the left',
 	  '<p>{one <b>two} three</b></p>',
-	  '<p>{<b>one two} three</b></p>');
+	  '<p>{<b>one two] three</b></p>');
 
-	t('expand a bold range to the left and right',
+	t('expand bold range to the left and right',
 	  '<p>{one <b>two</b> three}</p>',
 	  '<p>{<b>one two three</b>}</p>');
 
@@ -452,19 +452,19 @@ Aloha.require([
 
 	t('extend style right 1',
 	  '<p><span style="font-family: arial;">one {two</span> three}</p>',
-	  '<p><span style="font-family: arial;">one {two three</span>}</p>');
+	  '<p><span style="font-family: arial;">one [two three</span>}</p>');
 
 	t('extend style left 1',
 	  '<p>{one <span style="font-family: arial;">two} three</span></p>',
-	  '<p>{<span style="font-family: arial;">one two} three</span></p>');
+	  '<p>{<span style="font-family: arial;">one two] three</span></p>');
 
 	t('extend style right 2',
 	  '<p><span style="font-size: 18px; font-family: arial;">one {two</span> three}</p>',
-	  '<p><span style="font-size: 18px; font-family: arial;">one {two</span><span style="font-family: arial;"> three</span>}</p>');
+	  '<p><span style="font-size: 18px; font-family: arial;">one [two</span><span style="font-family: arial;"> three</span>}</p>');
 
 	t('extend style left 2',
 	  '<p>{one <span style="font-size: 18px; font-family: arial;">two} three</span></p>',
-	  '<p>{<span style="font-family: arial;">one <span style="font-size: 18px;">two} three</span></span></p>');
+	  '<p>{<span style="font-family: arial;">one <span style="font-size: 18px;">two] three</span></span></p>');
 
 	t('push down style without removing wrapper span',
 	  '<p><span style="font-size: 12px; font-family: times;">one {two</span> three}</p>',
@@ -472,7 +472,7 @@ Aloha.require([
 
 	t('merge wrappers with the same styles',
 	  '<p><span style="font-family: arial;">one</span>{two}</p>',
-	  '<p><span style="font-family: arial;">one{two</span>}</p>');
+	  '<p><span style="font-family: arial;">one[two</span>}</p>');
 
 	t('don\'t merge wrappers with additionals styles',
 	  '<p><span style="font-size: 12px; font-family: arial;">one</span>{two}</p>',
@@ -484,5 +484,5 @@ Aloha.require([
 
 	t('reuse outer wrapper and clear nested contexts',
 	  '<p><span style="font-family: times;">{one}<span style="font-family: arial;">two</span></span>three</p>',
-	  '<p><span style="font-family: arial;">{one}two</span>three</p>');
+	  '<p><span style="font-family: arial;">{one]two</span>three</p>');
 });

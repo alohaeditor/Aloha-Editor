@@ -640,25 +640,71 @@ define([
 		return before;
 	}
 
-	function adjustRangeAfterSplit(range, container, offset, setProp, splitNode, newNodeBeforeSplit) {
-		if (container !== splitNode) {
-			return;
+	/**
+	 * Normalizes the boundary point represented by container and offset
+	 * such that it will not point to the start or end of a text node
+	 * which reduces the number of different states the range can be in,
+	 * and thereby increases the the robusteness of the code written
+	 * against it slightly.
+	 */
+	function normalizeSetRange(setRange, range, container, offset) {
+		if (!container)debugger;
+		if (3 === container.nodeType && container.parentNode) {
+			if (!offset) {
+				offset = nodeIndex(container);
+				container = container.parentNode;
+			} else if (offset === container.length) {
+				offset = nodeIndex(container) + 1;
+				container = container.parentNode;
+			}
 		}
-		var newNodeLength = newNodeBeforeSplit.length;
-		if (offset === 0) {
-			container = newNodeBeforeSplit.parentNode;
-			offset = nodeIndex(newNodeBeforeSplit);
-		} else if (offset < newNodeLength) {
-			container = newNodeBeforeSplit;
-		} else if (offset === newNodeLength) {
-			container = newNodeBeforeSplit.parentNode;
-			offset = nodeIndex(newNodeBeforeSplit) + 1;
-		} else {// offset > newNodeLength
-			var newNodeAfterSplit = newNodeBeforeSplit.nextSibling;
-			container = newNodeAfterSplit;
-			offset -= newNodeLength;
+		setRange.call(range, container, offset);
+	}
+
+	function setRangeStart(range, container, offset) {
+		normalizeSetRange(range.setStart, range, container, offset);
+	}
+
+	function setRangeEnd(range, container, offset) {
+		normalizeSetRange(range.setEnd, range, container, offset);
+	}
+
+	function adjustRangeAfterSplit(container, offset, range, setRange, splitNode, splitOffset, newNodeBeforeSplit) {
+		if (container === splitNode) {
+			if (offset <= splitOffset || !splitOffset) {
+				container = newNodeBeforeSplit;
+			} else {
+				container = newNodeBeforeSplit.nextSibling;
+				offset -= splitOffset;
+			}
+		} else if (container === newNodeBeforeSplit.parentNode) {
+			var nidx = nodeIndex(newNodeBeforeSplit);
+			if (offset > nidx) {
+				offset += 1;
+			}
 		}
-		range[setProp].call(range, container, offset);
+		setRange(range, container, offset);
+	}
+
+	function adjustBoundaryPointBeforeJoin(nodeToBeJoined, sibling, prev, container, offset) {
+		if (container === nodeToBeJoined) {
+			container = sibling;
+			offset += prev ? sibling.length : 0;
+		} else if (container === sibling) {
+			offset += prev ? 0 : nodeToBeJoined.length;
+		} else if (container === nodeToBeJoined.parentNode) {
+			var nidx = nodeIndex(nodeToBeJoined);
+			if (offset === nidx) {
+				container = sibling;
+				offset = prev ? sibling.length : 0;
+			} else if (!prev && offset === nidx + 1) {
+				container = sibling;
+				offset = nodeToBeJoined.length;
+			} else if (offset > nidx) {
+				offset -= 1;
+			}
+		}
+		return [container, offset];
 	}
 
 	/**
@@ -666,12 +712,6 @@ define([
 	 * range happens to have start or end containers equal to the given
 	 * text node, adjusts it such that start and end position will point
 	 * at the same position in the new text nodes.
-	 *
-	 * It is guaranteed that an adjusted boundary point will not point
-	 * to the end of a text node. Instead, it will point to the next
-	 * node. This guarantee often happens to be useful.
-	 *
-	 * If splitNode is not a text node, does nothing.
 	 */
 	function splitTextNodeAdjustRange(splitNode, splitOffset, range) {
 		if (3 !== splitNode.nodeType) {
@@ -682,8 +722,8 @@ define([
 		var ec = range.endContainer;
 		var eo = range.endOffset;
 		var newNodeBeforeSplit = splitTextNode(splitNode, splitOffset);
-		adjustRangeAfterSplit(range, sc, so, 'setStart', splitNode, newNodeBeforeSplit);
-		adjustRangeAfterSplit(range, ec, eo, 'setEnd', splitNode, newNodeBeforeSplit);
+		adjustRangeAfterSplit(sc, so, range, setRangeStart, splitNode, splitOffset, newNodeBeforeSplit);
+		adjustRangeAfterSplit(ec, eo, range, setRangeEnd, splitNode, splitOffset, newNodeBeforeSplit);
 	}
 
 	function splitTextContainers(range) {
@@ -694,6 +734,27 @@ define([
 		var ec = range.endContainer;
 		var eo = range.endOffset;
 		splitTextNodeAdjustRange(ec, eo, range);
+	}
+
+	function joinTextNodeOneWay(node, sibling, range, prev) {
+		if (!sibling || 3 !== sibling.nodeType) {
+			return node;
+		}
+		var adjustStart = adjustBoundaryPointBeforeJoin(node, sibling, prev, range.startContainer, range.startOffset);
+		var adjustEnd = adjustBoundaryPointBeforeJoin(node, sibling, prev, range.endContainer, range.endOffset);
+		sibling.insertData(prev ? sibling.length : 0, node.data);
+		node.parentNode.removeChild(node);
+		setRangeStart(range, adjustStart[0], adjustStart[1]);
+		setRangeEnd(range, adjustEnd[0], adjustEnd[1]);
+		return sibling;
+	}
+
+	function joinTextNodeAdjustRange(node, range) {
+		if (3 !== node.nodeType) {
+			return;
+		}
+		node = joinTextNodeOneWay(node, node.previousSibling, range, true);
+		joinTextNodeOneWay(node, node.nextSibling, range, false);
 	}
 
 	function walkUntil(node, fn, until, arg) {
@@ -1003,6 +1064,7 @@ define([
 		nodeIndex: nodeIndex,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
+		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
 		nextWhile: nextWhile,
 		walk: walk,
 		walkRec: walkRec,
