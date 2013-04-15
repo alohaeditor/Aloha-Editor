@@ -230,7 +230,7 @@ function() {
 			testGc('<img src="http://www.example.com/?one=two&three&&amp;four">',
 				   '<img src="http://www.example.com/?one=two&amp;three&amp;&amp;four"/>');
 			testGc('<img alt="left << middle >> right">',
-				   '<img alt="left &lt;&lt; middle >> right"/>');
+				   '<img alt="left &lt;&lt; middle &gt;&gt; right"/>');
 			testGc("<img alt='some \"quoted\" text'>",
 				   '<img alt="some &quot;quoted&quot; text"/>');
 		});
