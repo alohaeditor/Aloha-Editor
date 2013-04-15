@@ -308,24 +308,13 @@ define([
 		return ret;
 	}
 
-	/**
-	 * Can't use elem.childNodes.length because
-	 * http://www.quirksmode.org/dom/w3c_core.html
-	 * "IE up to 8 does not count empty text nodes."
-	 */
-	function numChildren(elem) {
-		var count = 0;
-		var child = elem.firstChild;
-		while (child) {
-			count += 1;
-			child = child.nextSibling;
-		}
-		return count;
-	}
-
 	function nodeLength(node) {
 		if (1 === node.nodeType) {
-			return numChildren(node);
+			// Can't use elem.childNodes.length because
+			// http://www.quirksmode.org/dom/w3c_core.html
+			// "IE up to 8 does not count empty text nodes."
+			var lastChild = node.lastChild;
+			return !lastChild ? 0 : nodeIndex(lastChild) + 1;
 		}
 		if (3 === node.nodeType) {
 			return node.length;
@@ -335,7 +324,7 @@ define([
 
 	function isAtEnd(node, offset) {
 		return (1 === node.nodeType
-				&& offset >= numChildren(node))
+				&& offset >= nodeLength(node))
 			|| (3 === node.nodeType
 				&& offset === node.length
 				&& !node.nextSibling);
@@ -345,7 +334,7 @@ define([
 	 * @param node if a text node, should have a parent node.
 	 */
 	function nodeAtOffset(node, offset) {
-		if (1 === node.nodeType && offset < numChildren(node)) {
+		if (1 === node.nodeType && offset < nodeLength(node)) {
 			node = node.childNodes[offset];
 		} else if (3 === node.nodeType && offset === node.length) {
 			node = node.nextSibling || node.parentNode;
@@ -867,7 +856,7 @@ define([
 
 	function setRangeStartFromCursor(range, cursor) {
 		if (cursor.atEnd) {
-			range.setStart(cursor.node, numChildren(cursor.node));
+			range.setStart(cursor.node, nodeLength(cursor.node));
 		} else {
 			range.setStart(cursor.node.parentNode, nodeIndex(cursor.node));
 		}
@@ -875,7 +864,7 @@ define([
 
 	function setRangeEndFromCursor(range, cursor) {
 		if (cursor.atEnd) {
-			range.setEnd(cursor.node, numChildren(cursor.node));
+			range.setEnd(cursor.node, nodeLength(cursor.node));
 		} else {
 			range.setEnd(cursor.node.parentNode, nodeIndex(cursor.node));
 		}
