@@ -854,11 +854,11 @@ define([
 	function splitBoundary(liveRange, clone, belowCacUntil, cacAndAboveUntil, boundariesChildrenOfUnsplitNode) {
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 
-			var normalizedLeft = boundariesChildrenOfUnsplitNode ? leftPoint : leftPoint.clone();
-			var normalizedRight = boundariesChildrenOfUnsplitNode ? rightPoint : rightPoint.clone();
-			Html.normalizeBoundary(normalizedLeft);
-			Html.normalizeBoundary(normalizedRight);
-			Dom.setRangeFromBoundaries(range, normalizedLeft, normalizedRight);
+			var normalizeLeft = boundariesChildrenOfUnsplitNode ? leftPoint : leftPoint.clone();
+			var normalizeRight = boundariesChildrenOfUnsplitNode ? rightPoint : rightPoint.clone();
+			Html.normalizeBoundary(normalizeLeft);
+			Html.normalizeBoundary(normalizeRight);
+			Dom.setRangeFromBoundaries(range, normalizeLeft, normalizeRight);
 
 			var cac = range.commonAncestorContainer;
 			var collapsed = range.collapsed;
