@@ -8,3 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+**BUGFIX**: Previously selected blocks are no longer deleted when hitting
+            backspace from inside an Aloha Editor UI.
