@@ -114,6 +114,16 @@ define([
 		}
 		var range = selection.getRangeAt(0);
 		var text = String.fromCharCode(event.which);
+		if (' ' === text) {
+			var elem = Dom.nodeAtOffset(range.startContainer, range.startOffset);
+			if (1 !== elem.nodeType) {
+				elem = elem.parentNode;
+			}
+			var whiteSpace = Dom.getComputedStyle(elem, 'white-space');
+			if ('pre' !== whiteSpace && 'pre-wrap' !== whiteSpace) {
+				text = '\xa0';
+			}
+		}
 		Dom.insertSelectText(text, range);
 		Maps.forEach(overrides, function (formatFn, command) {
 			formatFn(command, range);
@@ -122,7 +132,7 @@ define([
 		// Because, if formattings were applied to the selected text, we
 		// want to continue writing with those formattings applied.
 		Dom.trimRange(range, Fn.returnFalse, function (cursor) {
-			var prevNode = (cursor.atEnd ? cursor.node.lastChild : cursor.node.previousSibling);
+			var prevNode = cursor.prevSibling();
 			return prevNode && (3 !== prevNode.nodeType || Html.isUnrenderedWhitespace(prevNode));
 		});
 		Dom.collapseToEnd(range);
