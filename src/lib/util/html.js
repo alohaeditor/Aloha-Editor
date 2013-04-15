@@ -160,6 +160,21 @@ define([
 		return node;
 	}
 
+	/**
+	 * Checks if the given editable is a valid container for paragraphs.
+	 *
+	 * @param {Aloha.Editable} editable The editable to be checked
+	 *
+	 * @return {boolean} False if the editable may not contain paragraphs
+	 */
+	function allowNestedParagraph(editable) {
+		if (editable.obj.prop("tagName") === "SPAN" ||
+				editable.obj.prop("tagName") === "P") {
+			return false;
+		}
+		return true;
+	}
+
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		isBlock: isBlock,
@@ -167,6 +182,7 @@ define([
 		isInlineFormattable: isInlineFormattable,
 		isProppedBlock: isProppedBlock,
 		isEditingHost: isEditingHost,
-		findNodeRight: findNodeRight
+		findNodeRight: findNodeRight,
+		allowNestedParagraph: allowNestedParagraph
 	};
 });
