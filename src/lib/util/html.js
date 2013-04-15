@@ -261,10 +261,19 @@ define([
 	}
 
 	/**
-	 * Tries to move the given point to the start of line, or end of
-	 * line after a br element if possible and if the point doesn't
-	 * encounter any rendered content on the way. Useful when a line
-	 * is to be modified as a whole.
+	 * Tries to move the given boundary to the start of line, skipping
+	 * over any unrendered nodes, or if that fails to the end of line
+	 * after the br element (if present), and for the last line in a
+	 * block, to the very end of the block.
+	 *
+	 * If the selection is inside a block with only a single empty line
+	 * (empty except for unrendered nodes), and both boundary points are
+	 * normalized, the selection will be collapsed to the start of the
+	 * block.
+	 *
+	 * For some operations it's useful to think of a block as a number
+	 * of lines, each including its respective br and any preceding and
+	 * following unrendered whitespace.
 	 */
 	function normalizeBoundary(point) {
 		if (skipUnrenderedToStartOfLine(point)) {
@@ -275,6 +284,14 @@ define([
 		}
 		if ('BR' === point.node.nodeName) {
 			point.skipNext();
+			// Because, if this is the last line in a block, any
+			// unrendered whitespace after the last br will not
+			// constitute an independent line, and as such we must
+			// include it in the last line.
+			var endOfBlock = point.clone();
+			if (skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
+				point.setFrom(endOfBlock);
+			}
 		}
 		return true;
 	}
