@@ -131,6 +131,7 @@ define([
 				text = '\xa0';
 			}
 		}
+
 		Dom.insertSelectText(text, range);
 		Maps.forEach(overrides, function (formatFn, command) {
 			formatFn(command, range);
@@ -138,7 +139,11 @@ define([
 
 		// Because, if formattings were applied to the selected text, we
 		// want to continue writing with those formattings applied.
-		Dom.trimRangeClosingOpening(range);
+		Dom.trimRangeClosingOpening(range, Fn.returnFalse, Html.isUnrenderedWhitespace);
+		Dom.trimRange(range, Fn.returnFalse, function (cursor) {
+			var prevNode = cursor.prevSibling();
+			return prevNode && (3 !== prevNode.nodeType || Html.isUnrenderedWhitespace(prevNode));
+		});
 		Dom.collapseToEnd(range);
 
 		selection.removeAllRanges();
