@@ -101,6 +101,10 @@ define([
 		}
 	}
 
+	function isRenderedChar(chr) {
+		return /[a-z0-9;!@#$%^&*()_+={}\[\]~\\\/?|\"\':,.<>-]/.test(chr);
+	}
+
 	function keyPressHandler(event) {
 		if (!overrides) {
 			return;
@@ -108,12 +112,15 @@ define([
 		if (event.altKey || event.ctrlKey || !event.which || isLinebreakEvent(event)) {
 			return;
 		}
+		var text = String.fromCharCode(event.which);
+		if (!isRenderedChar(text)) {
+			return;
+		}
 		var selection = Aloha.getSelection();
 		if (!selection.getRangeCount()) {
 			return;
 		}
 		var range = selection.getRangeAt(0);
-		var text = String.fromCharCode(event.which);
 		if (' ' === text) {
 			var elem = Dom.nodeAtOffset(range.startContainer, range.startOffset);
 			if (1 !== elem.nodeType) {

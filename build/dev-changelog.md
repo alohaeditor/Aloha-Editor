@@ -32,3 +32,8 @@ All changes are categorized into one of the following keywords:
 
 	For example, with the DOM looking like this <p>a<b>b{}</b>c</p>,
 	hitting backspace would not delete the wrapping <b> element.
+- **BUGFIX**: state-overide: insertion of non-visible characters
+
+	When a non-text key such as backspace was pressed when a
+	state-override was active, it may have been inserted as a
+	non-visible character into the HTML text.
