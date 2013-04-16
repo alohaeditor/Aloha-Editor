@@ -953,7 +953,8 @@ define([
 	 * after the text node that contains the boundary point).
 	 */
 	function trimRange(range, ignoreLeft, ignoreRight) {
-		ignoreRight = ignoreRight || ignoreLeft;
+		ignoreLeft = ignoreLeft || Fn.returnFalse;
+		ignoreRight = ignoreRight || Fn.returnFalse;
 		if (range.collapsed) {
 			return;
 		}
@@ -972,7 +973,8 @@ define([
 	 * tags (to the right).
 	 */
 	function trimRangeClosingOpening(range, ignoreLeft, ignoreRight) {
-		ignoreRight = ignoreRight || ignoreLeft;
+		ignoreLeft = ignoreLeft || Fn.returnFalse;
+		ignoreRight = ignoreRight || Fn.returnFalse;
 		trimRange(range, function (cursor) {
 			return cursor.atEnd || ignoreLeft(cursor.node);
 		}, function (cursor) {

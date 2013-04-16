@@ -138,10 +138,7 @@ define([
 
 		// Because, if formattings were applied to the selected text, we
 		// want to continue writing with those formattings applied.
-		Dom.trimRange(range, Fn.returnFalse, function (cursor) {
-			var prevNode = cursor.prevSibling();
-			return prevNode && (3 !== prevNode.nodeType || Html.isUnrenderedWhitespace(prevNode));
-		});
+		Dom.trimRangeClosingOpening(range);
 		Dom.collapseToEnd(range);
 
 		selection.removeAllRanges();
