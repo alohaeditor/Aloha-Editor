@@ -361,7 +361,16 @@ define([
 		return true;
 	}
 
+	// TODO currently this function only knows about 'background-color'
+	// not being inherited, while 'color', 'font-size', 'font-family'
+	// are inherited. Any other relevant styles should be added when
+	// needed.
+	function isStyleInherited(styleName) {
+		return 'background-color' !== styleName;
+	}
+
 	return {
+		isStyleInherited: isStyleInherited,
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		isBlockType: isBlockType,
 		isInlineType: isInlineType,

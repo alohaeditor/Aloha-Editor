@@ -5204,8 +5204,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 			range = Aloha.createRange();
 			range.setStart(arg1, arg2);
 			range.setEnd(arg3, arg4);
-			preserveRange = preserveRange.concat([range]);
 		}
+		preserveRange = preserveRange.concat([range]);
 		if (arguments.length == 2) {
 			flags = arg2 || flags;
 		}

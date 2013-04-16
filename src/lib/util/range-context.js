@@ -199,6 +199,39 @@ define([
 		clearOverride(pushDownFrom);
 	}
 
+	function findReusableAncestor(range, hasContext, getOverride, isUpperBoundary, isReusable, isObstruction) {
+		var obstruction = null;
+		function beforeAfter(node) {
+			obstruction = (obstruction
+						   || (!Html.isUnrenderedWhitespace(node)
+							   && !hasContext(node)));
+		}
+		walkBoundary(range, Fn.noop, beforeAfter, Fn.noop, Fn.noop);
+		if (obstruction) {
+			return null;
+		}
+		var cac = range.commonAncestorContainer;
+		if (3 === cac.nodeType) {
+			cac = cac.parentNode;
+		}
+		function untilIncl(node) {
+			// Because we prefer a node above the cac if possible.
+			return (cac !== node && isReusable(node)) || isUpperBoundary(node) || isObstruction(node);
+		}
+		var cacToReusable = Dom.childAndParentsUntilIncl(cac, untilIncl);
+		var reusable = Arrays.last(cacToReusable);
+		if (!isReusable(reusable)) {
+			// Because, although we preferred a node above the cac, we
+			// fall back to the cac.
+			return isReusable(cac) ? cac : null;
+		}
+		ascendWalkSiblings(cacToReusable, false, Fn.noop, beforeAfter, Fn.noop, beforeAfter);
+		if (obstruction) {
+			return isReusable(cac) ? cac : null;
+		}
+		return reusable;
+	}
+
 	/**
 	 * Walks around the boundary of range and invokes the given
 	 * functions with the nodes it encounters.
@@ -283,7 +316,7 @@ define([
 	 *   above the given node (see explanation above). May perform
 	 *   mutations as explained above.
 	 */
-	function mutate(liveRange, formatter, rootHasImpliedContext) {
+	function mutate(liveRange, formatter) {
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
@@ -292,8 +325,11 @@ define([
 		var getOverride = formatter.getOverride;
 		var pushDownOverride = formatter.pushDownOverride;
 		var hasContext = formatter.hasContext;
+		var hasInheritableContext = formatter.hasInheritableContext;
 		var setContext = formatter.setContext;
 		var clearOverride = formatter.clearOverride;
+		var isObstruction = formatter.isObstruction;
+		var isReusable = formatter.isReusable;
 		var clearOverrideRec = formatter.clearOverrideRec  || function (node) {
 			Dom.walkRec(node, clearOverride);
 		};
@@ -305,7 +341,7 @@ define([
 		var fromCacToContext = Dom.childAndParentsUntilIncl(cac, function (node) {
 			// Because we shouldn't expect hasContext to handle the
 			// document element (which has nodeType 9).
-			return !node.parentNode || 9 === node.parentNode.nodeType || hasContext(node);
+			return !node.parentNode || 9 === node.parentNode.nodeType || hasInheritableContext(node);
 		});
 		Arrays.forEach(fromCacToContext, function (node) {
 			upperBoundaryAndBeyond = upperBoundaryAndBeyond || isUpperBoundary(node);
@@ -317,9 +353,10 @@ define([
 			}
 		});
 
-		if ((rootHasImpliedContext || hasContext(Arrays.last(fromCacToContext)))
-			    && !isNonClearableOverride) {
+		if (hasInheritableContext(Arrays.last(fromCacToContext)) && !isNonClearableOverride) {
 			if (!topmostOverrideNode) {
+				// Because, if there is no override in the way, we only
+				// need to clear the overrides contained in the range.
 				walkBoundary(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec);
 			} else {
 				var pushDownFrom = topmostOverrideNode;
@@ -330,7 +367,12 @@ define([
 			var mySetContext = function (node, override) {
 				setContext(node, override, isNonClearableOverride);
 			};
-			walkBoundary(liveRange, getOverride, pushDownOverride, clearOverride, mySetContext);
+			var reusableAncestor = findReusableAncestor(liveRange, hasContext, getOverride, isUpperBoundary, isReusable, isObstruction);
+			if (reusableAncestor) {
+				mySetContext(reusableAncestor);
+			} else {
+				walkBoundary(liveRange, getOverride, pushDownOverride, clearOverride, mySetContext);
+			}
 		}
 	}
 
@@ -510,7 +552,7 @@ define([
 		return 'SPAN' === node.nodeName && isPrunable_default(node);
 	}
 
-	function makeFormatter(contextValue, getOverride, hasContext, isContextOverride, hasSomeContextValue, hasContextValue, addContextValue, removeContext, createWrapper, isReusable, isPrunable, leftPoint, rightPoint) {
+	function makeFormatter(contextValue, getOverride, hasContext, hasInheritableContext, isContextOverride, hasSomeContextValue, hasContextValue, addContextValue, removeContext, createWrapper, isReusable, isObstruction, isPrunable, leftPoint, rightPoint) {
 
 		// Because we want to optimize reuse, we remembering any wrappers we created.
 		var wrappersByContextValue = {};
@@ -663,6 +705,9 @@ define([
 
 		return {
 			hasContext: hasContext,
+			hasInheritableContext: hasInheritableContext,
+			isReusable: isReusable,
+			isObstruction: isObstruction,
 			getOverride: getOverride,
 			clearOverride: clearOverride,
 			pushDownOverride: pushDownOverride,
@@ -673,13 +718,26 @@ define([
 		};
 	}
 
-	function makeStyleFormatter(styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable, leftPoint, rightPoint) {
+	function makeStyleFormatter(styleName, styleValue, createWrapper, isStyleEq, isReusable, isObstruction, isPrunable, leftPoint, rightPoint) {
 		function getOverride(node) {
 			var override = Dom.getStyle(node, styleName);
 			return !Strings.empty(override) ? override : null;
 		}
 		function hasContext(node) {
 			return isStyleEq(Dom.getStyle(node, styleName), styleValue);
+		}
+		function hasInheritableContext(node) {
+			var value;
+			// Check the body even for non inherited styles, so that we
+			// can get for example a default background color (which is
+			// not inherited) even if non was ever explicitly set in the
+			// DOM.
+			if (Html.isStyleInherited(styleName) || 'BODY' === node.nodeName)  {
+				value = Dom.getComputedStyle(node, styleName);
+			} else {
+				value = Dom.getStyle(node, styleName);
+			}
+			return isStyleEq(value, styleValue);
 		}
 		function isContextOverride(value) {
 			return isStyleEq(value, styleValue);
@@ -700,6 +758,7 @@ define([
 			styleValue,
 			getOverride,
 			hasContext,
+			hasInheritableContext,
 			isContextOverride,
 			hasSomeContextValue,
 			hasContextValue,
@@ -707,13 +766,14 @@ define([
 			removeContext,
 			createWrapper,
 			isReusable,
+			isObstruction,
 			isPrunable,
 			leftPoint,
 			rightPoint
 		);
 	}
 
-	function makeNodeFormatter(nodeName, leftPoint, rightPoint, unformat) {
+	function makeNodeFormatter(nodeName, leftPoint, rightPoint, isObstruction, unformat) {
 		function createWrapper() {
 			return document.createElement(nodeName);
 		}
@@ -732,6 +792,11 @@ define([
 				return false;
 			}
 			return nodeName === node.nodeName;
+		}
+		function hasInheritableContext(node) {
+			// Because there can be no nodes above the body element that
+			// can provide a context.
+			return unformat ? 'BODY' === node.nodeName : hasContext(node);
 		}
 		function isContextOverride(value) {
 			if (unformat) {
@@ -758,6 +823,7 @@ define([
 			nodeName,
 			getOverride,
 			hasContext,
+			hasInheritableContext,
 			isContextOverride,
 			hasSomeContextValue,
 			hasContextValue,
@@ -765,6 +831,7 @@ define([
 			removeContext,
 			createWrapper,
 			isReusable,
+			isObstruction,
 			isPrunable,
 			leftPoint,
 			rightPoint
@@ -772,48 +839,16 @@ define([
 	}
 
 	function format(liveRange, nodeName, remove) {
+		var isObstruction = Fn.complement(Html.hasInlineStyle);
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
 			return;
 		}
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-			var formatter = makeNodeFormatter(nodeName, leftPoint, rightPoint, remove);
-			mutate(range, formatter, remove);
+			var formatter = makeNodeFormatter(nodeName, leftPoint, rightPoint, isObstruction, remove);
+			mutate(range, formatter);
 			return formatter;
 		});
-	}
-
-	function findReusableAncestor(range, hasContext, getOverride, isUpperBoundary, isReusable, isObstruction) {
-		var obstruction = null;
-		function beforeAfter(node) {
-			obstruction = (obstruction
-						   || (!Html.isUnrenderedWhitespace(node)
-							   && !hasContext(node)));
-		}
-		walkBoundary(range, Fn.noop, beforeAfter, Fn.noop, Fn.noop);
-		if (obstruction) {
-			return null;
-		}
-		var cac = range.commonAncestorContainer;
-		if (3 === cac.nodeType) {
-			cac = cac.parentNode;
-		}
-		function untilIncl(node) {
-			// Because we prefer a node above the cac if possible.
-			return (cac !== node && isReusable(node)) || isUpperBoundary(node) || isObstruction(node);
-		}
-		var cacToReusable = Dom.childAndParentsUntilIncl(cac, untilIncl);
-		var reusable = Arrays.last(cacToReusable);
-		if (!isReusable(reusable)) {
-			// Because, although we preferred a node above the cac, we
-			// fall back to the cac.
-			return isReusable(cac) ? cac : null;
-		}
-		ascendWalkSiblings(cacToReusable, false, Fn.noop, beforeAfter, Fn.noop, beforeAfter);
-		if (obstruction) {
-			return isReusable(cac) ? cac : null;
-		}
-		return reusable;
 	}
 
 	function formatStyle(liveRange, styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable, isObstruction) {
@@ -833,23 +868,12 @@ define([
 				createWrapper,
 				isStyleEq,
 				isReusable,
+				isObstruction,
 				isPrunable,
 				leftPoint,
 				rightPoint
 			);
-			var reusableAncestor = findReusableAncestor(
-				range,
-				formatter.hasContext,
-				formatter.getOverride,
-				formatter.isUpperBoundary,
-				isReusable,
-				isObstruction
-			);
-			if (reusableAncestor) {
-				formatter.setContext(reusableAncestor);
-			} else {
-				mutate(range, formatter, false);
-			}
+			mutate(range, formatter);
 			return formatter;
 		});
 	}
