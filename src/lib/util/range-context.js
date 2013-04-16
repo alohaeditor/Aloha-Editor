@@ -453,7 +453,7 @@ define([
 		// <b>one</b><i><b>two</b></i>three
 		// and because adjustPointMoveBackWithinRange() requires the
 		// left boundary point to be next to a non-ignorable node.
-		Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace);
+		Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
 
 		// Because mutation needs to keep track and adjust boundary
 		// points so we can preserve the range.

@@ -106,7 +106,7 @@ Aloha.require([
 
 	function testTrimRange(title, before, after, switched) {
 		testMutationSwitchElemTextSelection(title, before, after, function (dom, range) {
-			Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace);
+			Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
 		});
 	}
 
