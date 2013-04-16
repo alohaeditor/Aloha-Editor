@@ -471,7 +471,7 @@ Aloha.require([
 
 	t('extend style left 2',
 	  '<p>{one <span style="font-size: 18px; font-family: arial;">two} three</span></p>',
-	  '<p>{<span style="font-family: arial;">one <span style="font-size: 18px;">two] three</span></span></p>');
+	  '<p>{<span style="font-family: arial;">one </span><span style="font-size: 18px; font-family: arial;">two] three</span></p>');
 
 	t('push down style without removing wrapper span',
 	  '<p><span style="font-size: 12px; font-family: times;">one {two</span> three}</p>',

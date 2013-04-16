@@ -26,10 +26,7 @@
  */
 /**
  * TODO check contained-in rules when when pushing down or setting a context
- * TODO better handling of the last <br/> in a block and generally of
- *      unrendered whitespace.
  * TODO canonicalize whitespace
- * TODO improve restacking and joining algorithm
  * TODO formatStyle: in the following case the outer "font-family:
  *      arial" span should be removed.  Can be done similar to how
  *      findReusableAncestor() works.
@@ -37,6 +34,8 @@
  *         <span style="font-family: times">one</span>
  *         <span style="font-family: helvetica">two<span>
  *      </span>
+ * TODO better handling of the last <br/> in a block and generally of
+ *      unrendered whitespace.
  */
 define([
 	'jquery',
@@ -328,27 +327,10 @@ define([
 				pushDownContext(liveRange, pushDownFrom, cacOverride, getOverride, clearOverride, clearOverrideRec, pushDownOverride);
 			}
 		} else {
-			var lastContextNode = null;
 			var mySetContext = function (node, override) {
-				lastContextNode = node;
 				setContext(node, override, isNonClearableOverride);
 			};
 			walkBoundary(liveRange, getOverride, pushDownOverride, clearOverride, mySetContext);
-
-			// Because we don't have a complete solution for joining nodes
-			// yet (TODO at the top of the file) we solve the most common
-			// case. We only need to do it on the right side because to the
-			// left is already handled by ensureWrapper().
-			if (lastContextNode) {
-				var contextNode = (hasContext(lastContextNode)
-								   ? lastContextNode
-								   : (hasContext(lastContextNode.parentNode)
-									  ? lastContextNode.parentNode
-									  : null));
-				if (contextNode && contextNode.nextSibling && hasContext(contextNode.nextSibling)) {
-					mySetContext(contextNode.nextSibling);
-				}
-			}
 		}
 	}
 
@@ -435,17 +417,20 @@ define([
 		// points so we can preserve the range.
 		var leftPoint = Dom.cursorFromBoundaryPoint(range.startContainer, range.startOffset);
 		var rightPoint = Dom.cursorFromBoundaryPoint(range.endContainer, range.endOffset);
+		var formatter = mutate(range, leftPoint, rightPoint);
+		if (formatter) {
+			formatter.postprocess();
+		}
 
-		mutate(range, leftPoint, rightPoint);
+		Dom.setRangeFromBoundaries(range, leftPoint, rightPoint);
 
 		// Because we want to ensure that this algorithm doesn't
 		// introduce any additional splits between text nodes.
-		Dom.setRangeFromBoundaries(range, leftPoint, rightPoint);
-		// TODO we should not only join nodes we split, but also all
-		// text nodes that were joined due to wrappers being removed
-		// (unformatting for example).
 		Dom.joinTextNodeAdjustRange(splitStart.node, range);
 		Dom.joinTextNodeAdjustRange(splitEnd.node, range);
+		if (formatter) {
+			formatter.postprocessTextNodes(range);
+		}
 
 		Dom.setRangeFromRef(liveRange, range);
 	}
@@ -477,25 +462,17 @@ define([
 		}
 		var context = restackRec(node, hasContext, myIgnoreHorizontal, ignoreVertical);
 		if (!context) {
-			return node;
+			return null;
 		}
 		wrapAdjust(node, context, leftPoint, rightPoint);
 		return context;
 	}
 
 	function ensureWrapper(node, createWrapper, isWrapper, isMergable, leftPoint, rightPoint) {
-		if (node.previousSibling && !isWrapper(node.previousSibling)) {
-			// TODO restacking here is a hack. Should be moved into mutate().
-			restack(node.previousSibling,
-					isWrapper,
-					Html.isUnrenderedWhitespace,
-					Html.hasInlineStyle,
-					leftPoint,
-					rightPoint);
-		}
 		var wrapper = null;
-		if (node.previousSibling && isMergable(node.previousSibling)) {
-			wrapper = node.previousSibling;
+		var sibling = node.previousSibling;
+		if (sibling && isMergable(sibling) && isMergable(node)) {
+			wrapper = sibling;
 			moveAdjust(node, wrapper, true, leftPoint, rightPoint);
 		} else if (!isWrapper(node)) {
 			wrapper = createWrapper();
@@ -536,7 +513,9 @@ define([
 	function makeFormatter(contextValue, getOverride, hasContext, isContextOverride, hasSomeContextValue, hasContextValue, addContextValue, removeContext, createWrapper, isReusable, isPrunable, leftPoint, rightPoint) {
 
 		// Because we want to optimize reuse, we remembering any wrappers we created.
-		var wrappersByContextValue = [];
+		var wrappersByContextValue = {};
+		var wrappersWithContextValue = [];
+		var removedNodeSiblings = [];
 
 		function pruneContext(node) {
 			if (!hasSomeContextValue(node)) {
@@ -544,6 +523,12 @@ define([
 			}
 			removeContext(node);
 			if (isPrunable(node)) {
+				if (node.previousSibling) {
+					removedNodeSiblings.push(node.previousSibling);
+				}
+				if (node.nextSibling) {
+					removedNodeSiblings.push(node.nextSibling);
+				}
 				removeShallowAdjust(node, leftPoint, rightPoint);
 			}
 		}
@@ -554,6 +539,7 @@ define([
 			var key = ':' + value;
 			var wrappers = wrappersByContextValue[key] = wrappersByContextValue[key] || [];
 			wrappers.push(wrapper);
+			wrappersWithContextValue.push([wrapper, value]);
 			return wrapper;
 		}
 
@@ -600,13 +586,6 @@ define([
 		}
 
 		function clearOverride(node) {
-			// TODO Restacking in clearOverride is a hack. Instead we
-			//      should support it as an argument of mutate().
-			node = restack(node, hasContext, Html.isUnrenderedWhitespace, Html.hasInlineStyle, leftPoint, rightPoint);
-			if (hasContext(node) && ensureWrapper(node, createWrapper, hasContext, Fn.bind(isMergableWrapper, null, contextValue), leftPoint, rightPoint)) {
-				pruneContext(node);
-			}
-
 			// Because we don't want to remove any existing context if
 			// not necessary (See pushDownOverride and setContext).
 			if (!hasContext(node)) {
@@ -645,13 +624,52 @@ define([
 			wrapContextValue(node, contextValue);
 		}
 
+		function restackMergeWrapper(wrapper, contextValue, mergeNext) {
+			var sibling = mergeNext ? wrapper.nextSibling : wrapper.previousSibling;
+			if (!sibling) {
+				return;
+			}
+			function isGivenContextValue(node) {
+				return hasContextValue(node, contextValue);
+			}
+			sibling = restack(sibling, isGivenContextValue, Html.isUnrenderedWhitespace, Html.hasInlineStyle, leftPoint, rightPoint);
+			if (!sibling) {
+				return;
+			}
+			var isMergable = Fn.bind(isMergableWrapper, null, contextValue);
+			var createWrapper = Fn.bind(createContextWrapper, null, contextValue);
+			var mergeNode = mergeNext ? sibling : wrapper;
+			if (ensureWrapper(mergeNode, createWrapper, isReusable, isMergable, leftPoint, rightPoint)) {
+				pruneContext(mergeNode);
+			}
+		}
+
+		function mergeWrapper(wrapper, contextValue) {
+			restackMergeWrapper(wrapper, contextValue, true);
+			restackMergeWrapper(wrapper, contextValue, false);
+		}
+
+		function postprocess() {
+			Arrays.forEach(wrappersWithContextValue, function (wrapperAndContextValue) {
+				mergeWrapper(wrapperAndContextValue[0], wrapperAndContextValue[1]);
+			});
+		}
+
+		function postprocessTextNodes(range) {
+			Arrays.forEach(removedNodeSiblings, function (node) {
+				Dom.joinTextNodeAdjustRange(node, range);
+			});
+		}
+
 		return {
 			hasContext: hasContext,
 			getOverride: getOverride,
 			clearOverride: clearOverride,
 			pushDownOverride: pushDownOverride,
 			setContext: setContext,
-			isUpperBoundary: isUpperBoundary_default
+			isUpperBoundary: isUpperBoundary_default,
+			postprocess: postprocess,
+			postprocessTextNodes: postprocessTextNodes
 		};
 	}
 
@@ -732,7 +750,7 @@ define([
 		function hasSomeContextValue(node) {
 			return node.nodeName === nodeName;
 		}
-		var hasContextValue = hasContext;
+		var hasContextValue = hasSomeContextValue;
 		var addContextValue = Fn.noop;
 		var removeContext = Fn.noop;
 		var isPrunable = isPrunable_default;
@@ -759,7 +777,9 @@ define([
 			return;
 		}
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-			mutate(range, makeNodeFormatter(nodeName, leftPoint, rightPoint, remove), remove);
+			var formatter = makeNodeFormatter(nodeName, leftPoint, rightPoint, remove);
+			mutate(range, formatter, remove);
+			return formatter;
 		});
 	}
 
@@ -830,6 +850,7 @@ define([
 			} else {
 				mutate(range, formatter, false);
 			}
+			return formatter;
 		});
 	}
 
@@ -928,6 +949,8 @@ define([
 					return point.parent() === topmostUnsplitNode;
 				});
 			}
+
+			return null;
 		});
 	}
 
