@@ -474,7 +474,7 @@ define([
 
 	Cursor.prototype.prevSibling = function () {
 		return this.atEnd ? this.node.lastChild : this.node.previousSibling;
-	}
+	};
 
 	Cursor.prototype.nextSibling = function () {
 		return this.atEnd ? null : this.node.nextSibling;
@@ -611,7 +611,7 @@ define([
 
 	// http://ejohn.org/blog/comparing-document-position/
 	// http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
-	function contains(a, b){
+	function contains(a, b) {
 		return (1 === a.nodeType
 				? (a.contains
 				   ? a != b && a.contains(b)
@@ -782,7 +782,7 @@ define([
 		// (automatically by the browser).
 		var boundaries = [];
 		var i;
-		for (i = 0; i < ranges.length; i++ ) {
+		for (i = 0; i < ranges.length; i++) {
 			range = ranges[i];
 			boundaries.push(range);
 			boundaries.push(range.startContainer);
@@ -1048,7 +1048,7 @@ define([
 	}
 
 	/**
-	 * Sets a style on the given element by modifying it's style attribute.
+	 * Sets a style on the given element by modifying its style attribute.
 	 */
 	function setStyle(node, name, value) {
 		// Because only the empty string removes a style.

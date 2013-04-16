@@ -533,16 +533,16 @@ define([
 		return 'SPAN' === node.nodeName && isPrunable_default(node);
 	}
 
-	function makeFormatter(contextValue, getOverride, hasContext, isContextOverride, hasSomeContextValue, hasContextValue, addContextValue, delContextValue, createWrapper, isReusable, isPrunable, leftPoint, rightPoint) {
+	function makeFormatter(contextValue, getOverride, hasContext, isContextOverride, hasSomeContextValue, hasContextValue, addContextValue, removeContext, createWrapper, isReusable, isPrunable, leftPoint, rightPoint) {
 
-		// Because we remember any wrappers we created to optimize reuse.
+		// Because we want to optimize reuse, we remembering any wrappers we created.
 		var wrappersByContextValue = [];
 
 		function pruneContext(node) {
 			if (!hasSomeContextValue(node)) {
 				return;
 			}
-			delContextValue(node);
+			removeContext(node);
 			if (isPrunable(node)) {
 				removeShallowAdjust(node, leftPoint, rightPoint);
 			}
@@ -574,7 +574,7 @@ define([
 			// applying, and something doesn't provide any context value
 			// at all if it is prunable.
 			var clone = node.cloneNode(false);
-			delContextValue(clone);
+			removeContext(clone);
 			return isPrunable(clone);
 		}
 
@@ -675,7 +675,7 @@ define([
 		function addContextValue(node, value) {
 			Dom.setStyle(node, styleName, value);
 		}
-		function delContextValue(node) {
+		function removeContext(node) {
 			Dom.setStyle(node, styleName, null);
 		}
 		return makeFormatter(
@@ -686,7 +686,7 @@ define([
 			hasSomeContextValue,
 			hasContextValue,
 			addContextValue,
-			delContextValue,
+			removeContext,
 			createWrapper,
 			isReusable,
 			isPrunable,
@@ -734,7 +734,7 @@ define([
 		}
 		var hasContextValue = hasContext;
 		var addContextValue = Fn.noop;
-		var delContextValue = Fn.noop;
+		var removeContext = Fn.noop;
 		var isPrunable = isPrunable_default;
 		return makeFormatter(
 			nodeName,
@@ -744,7 +744,7 @@ define([
 			hasSomeContextValue,
 			hasContextValue,
 			addContextValue,
-			delContextValue,
+			removeContext,
 			createWrapper,
 			isReusable,
 			isPrunable,

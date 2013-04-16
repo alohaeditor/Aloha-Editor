@@ -102,7 +102,7 @@ define([
 	}
 
 	function isRenderedChar(chr) {
-		return /[a-z0-9;!@#$%^&*()_+={}\[\]~\\\/?|\"\':,.<>-]/.test(chr);
+		return (/[a-z0-9;!@#$%\^&*()_+={}\[\]~\\\/?|\"\':,.<>\-]/).test(chr);
 	}
 
 	function keyPressHandler(event) {
