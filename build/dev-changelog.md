@@ -28,3 +28,7 @@ All changes are categorized into one of the following keywords:
 	adapt it by adding the following property
 
 	remove_contents: ['style', 'script']
+- **BUGFIX**: backspace: deleting formatted text leaves formatting in place
+
+	For example, with the DOM looking like this <p>a<b>b{}</b>c</p>,
+	hitting backspace would not delete the wrapping <b> element.

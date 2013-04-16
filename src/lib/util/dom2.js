@@ -612,9 +612,11 @@ define([
 	// http://ejohn.org/blog/comparing-document-position/
 	// http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
 	function contains(a, b){
-		return (a.contains
-				? a != b && a.contains(b)
-				: !!(a.compareDocumentPosition(b) & 16));
+		return (1 === a.nodeType
+				? (a.contains
+				   ? a != b && a.contains(b)
+				   : !!(a.compareDocumentPosition(b) & 16))
+				: false);
 	}
 
 	function isTextNode(node) {
@@ -645,7 +647,6 @@ define([
 	 * against it slightly.
 	 */
 	function normalizeSetRange(setRange, range, container, offset) {
-		if (!container)debugger;
 		if (3 === container.nodeType && container.parentNode) {
 			if (!offset) {
 				offset = nodeIndex(container);
@@ -775,18 +776,31 @@ define([
 		joinTextNodeOneWay(node, node.nextSibling, range, false);
 	}
 
-	function removePreservingRange(node, range) {
+	function removePreservingRanges(node, ranges) {
+		var range;
 		// Because the range may change due to the DOM modification
 		// (automatically by the browser).
-		var sc = range.startContainer;
-		var so = range.startOffset;
-		var ec = range.endContainer;
-		var eo = range.endOffset;
+		var boundaries = [];
+		var i;
+		for (i = 0; i < ranges.length; i++ ) {
+			range = ranges[i];
+			boundaries.push(range);
+			boundaries.push(range.startContainer);
+			boundaries.push(range.startOffset);
+			boundaries.push(range.endContainer);
+			boundaries.push(range.endOffset);
+		}
 		var parentNode = node.parentNode;
 		var nidx = nodeIndex(node);
 		parentNode.removeChild(node);
-		adjustBoundaryPointAfterRemove(sc, so, range, setRangeStart, node, parentNode, nidx);
-		adjustBoundaryPointAfterRemove(ec, eo, range, setRangeEnd, node, parentNode, nidx);
+		for (i = 0; i < boundaries.length; i += 5) {
+			adjustBoundaryPointAfterRemove(boundaries[i + 1], boundaries[i + 2], boundaries[i], setRangeStart, node, parentNode, nidx);
+			adjustBoundaryPointAfterRemove(boundaries[i + 3], boundaries[i + 4], boundaries[i], setRangeEnd, node, parentNode, nidx);
+		}
+	}
+
+	function removePreservingRange(node, range) {
+		removePreservingRanges(node, [range]);
 	}
 
 	function walkUntil(node, fn, until, arg) {
@@ -1079,6 +1093,7 @@ define([
 		outerHtml: outerHtml,
 		removeShallow: removeShallow,
 		removePreservingRange: removePreservingRange,
+		removePreservingRanges: removePreservingRanges,
 		wrap: wrap,
 		insert: insert,
 		cursor: cursor,
