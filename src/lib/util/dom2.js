@@ -910,12 +910,6 @@ define([
 		removePreservingRanges(node, [range]);
 	}
 
-	function evacuatePointLeft(point, node) {
-	}
-
-	function evacuatePointRight(point, node) {
-	}
-
 	function preservePointForShallowRemove(node, point) {
 		if (point.node === node) {
 			if (point.node.firstChild) {
@@ -927,8 +921,8 @@ define([
 	}
 
 	function preserveBoundaries(node, points, preserveFn) {
-		var i = 0;
-		for (; i < points.length; i++) {
+		var i;
+		for (i = 0; i < points.length; i++) {
 			preserveFn(node, points[i]);
 		}
 	}
