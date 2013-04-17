@@ -8,5 +8,8 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-**BUGFIX**: Previously selected blocks are no longer deleted when hitting
-            backspace from inside an Aloha Editor UI.
+- **BUGFIX**: Previously selected blocks are no longer deleted when hitting
+              backspace from inside an Aloha Editor UI.
+- **BUGFIX**: This change fixes the behaviour of linebreaks by preventing
+              paragraphs to be inserted inside editable spans and paragraphs,
+              and improves the editor's robustness against errors when inserting paragraphs.

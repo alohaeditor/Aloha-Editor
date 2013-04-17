@@ -7835,6 +7835,12 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 				);
 			}
 
+			// If no container has been set yet, it is not possible to insert a paragraph at this position;
+			// the following steps are skipped in order to prevent critical errors from occurring;
+			if (!container) {
+				return;
+			}
+
 			// "If container's local name is "address", "listing", or "pre":"
 			var oldHeight, newHeight;
 			if (container.tagName == "ADDRESS" || container.tagName == "LISTING" || container.tagName == "PRE") {
