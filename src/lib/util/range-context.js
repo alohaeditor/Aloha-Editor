@@ -376,32 +376,6 @@ define([
 		}
 	}
 
-	function adjustPointShallowRemove(point, node) {
-		if (point.node === node) {
-			if (!point.node.firstChild) {
-				point.skipNext();
-			} else {
-				point.next();
-			}
-		}
-	}
-
-	// NB depends on trimRangeClosingOpening to move the leftPoint out
-	// of an atEnd position to the first node that is to be moved.
-	function adjustPointMoveBackWithinRange(point, node, left) {
-		if (point.node === node) {
-			// Because Left positions will be moved back with the node,
-			// which is correct, while right positions must stay where
-			// they are.
-			// Because right positions with point.atEnd == true/false
-			// must both stay where they are, we don't need an extra
-			// check for point.atEnd.
-			if (!left) {
-				point.skipNext();
-			}
-		}
-	}
-
 	function adjustPointWrap(point, node, wrapper) {
 		// Because we prefer the range to be outside the wrapper (no
 		// particular reason though).
@@ -410,24 +384,20 @@ define([
 		}
 	}
 
-	function removeShallowAdjust(node, leftPoint, rightPoint) {
-		adjustPointShallowRemove(leftPoint, node);
-		adjustPointShallowRemove(rightPoint, node);
-		Dom.removeShallow(node);
-	}
-
-	function wrapAdjust(node, wrapper, leftPoint, rightPoint) {
+	function wrap(node, wrapper, leftPoint, rightPoint) {
 		if (wrapper.parentNode) {
-			removeShallowAdjust(wrapper, leftPoint, rightPoint);
+			Dom.removeShallowPreservingBoundaries(wrapper, [leftPoint, rightPoint]);
 		}
 		adjustPointWrap(leftPoint, node, wrapper);
 		adjustPointWrap(rightPoint, node, wrapper);
 		Dom.wrap(node, wrapper);
 	}
 
-	function moveAdjust(node, ref, atEnd, leftPoint, rightPoint) {
-		adjustPointMoveBackWithinRange(leftPoint, node, true);
-		adjustPointMoveBackWithinRange(rightPoint, node, false);
+	// NB: depends on trimRangeClosingOpening to move the leftPoint out
+	// of an atEnd position to the first node that is to be moved.
+	function moveBackIntoWrapper(node, ref, atEnd, leftPoint, rightPoint) {
+		// Because the points will just be moved with the node, we don't
+		// need to do any special preservation.
 		Dom.insert(node, ref, atEnd);
 	}
 
@@ -451,7 +421,9 @@ define([
 		// <b>one<i>two</i></b>three
 		// and not in
 		// <b>one</b><i><b>two</b></i>three
-		// and because adjustPointMoveBackWithinRange() requires the
+		// even though that would be cleaned up in the restacking pass
+		// afterwards.
+		// Also, because moveBackNodeWithinRange() requires the
 		// left boundary point to be next to a non-ignorable node.
 		Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
 
@@ -506,7 +478,7 @@ define([
 		if (!context) {
 			return null;
 		}
-		wrapAdjust(node, context, leftPoint, rightPoint);
+		wrap(node, context, leftPoint, rightPoint);
 		return context;
 	}
 
@@ -515,10 +487,10 @@ define([
 		var sibling = node.previousSibling;
 		if (sibling && isMergable(sibling) && isMergable(node)) {
 			wrapper = sibling;
-			moveAdjust(node, wrapper, true, leftPoint, rightPoint);
+			moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
 		} else if (!isWrapper(node)) {
 			wrapper = createWrapper();
-			wrapAdjust(node, wrapper, leftPoint, rightPoint);
+			wrap(node, wrapper, leftPoint, rightPoint);
 		}
 		return wrapper;
 	}
@@ -571,7 +543,7 @@ define([
 				if (node.nextSibling) {
 					removedNodeSiblings.push(node.nextSibling);
 				}
-				removeShallowAdjust(node, leftPoint, rightPoint);
+				Dom.removeShallowPreservingBoundaries(node, [leftPoint, rightPoint]);
 			}
 		}
 
@@ -928,7 +900,7 @@ define([
 						leftPoint.node = wrapper;
 					}
 				}
-				moveAdjust(node, wrapper, true, leftPoint, rightPoint);
+				moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
 				return wrapper;
 			}
 
@@ -949,7 +921,7 @@ define([
 
 			Arrays.forEach(removeEmpty, function (elem) {
 				if (!elem.firstChild) {
-					removeShallowAdjust(elem, leftPoint, rightPoint);
+					Dom.removeShallowPreservingBoundaries(elem, [leftPoint, rightPoint]);
 				}
 			});
 

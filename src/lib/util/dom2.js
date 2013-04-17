@@ -342,6 +342,10 @@ define([
 		return node;
 	}
 
+	function remove(node) {
+		node.parentNode.removeChild(node);
+	}
+
 	function removeShallow(node) {
 		var parent = node.parentNode;
 		moveNextAll(parent, node.firstChild, node);
@@ -667,6 +671,109 @@ define([
 		normalizeSetRange(range.setEnd, range, container, offset);
 	}
 
+	function walkUntil(node, fn, until, arg) {
+		while (node && !until(node, arg)) {
+			var next = node.nextSibling;
+			fn(node, arg);
+			node = next;
+		}
+	}
+
+	function walk(node, fn, arg) {
+		walkUntil(node, fn, Fn.returnFalse, arg);
+	}
+
+	/**
+	 * Depth-first postwalk of the given DOM node.
+	 */
+	function walkRec(node, fn, arg) {
+		if (1 === node.nodeType) {
+			walk(node.firstChild, function (node) {
+				walkRec(node, fn, arg);
+			});
+		}
+		fn(node, arg);
+	}
+
+	function walkUntilNode(node, fn, untilNode, arg) {
+		walkUntil(node, fn, function (nextNode) {
+			return nextNode === untilNode;
+		}, arg);
+	}
+
+	function StableRange(range) {
+		if (!range) {
+			return;
+		}
+		this.startContainer = range.startContainer;
+		this.startOffset = range.startOffset;
+		this.endContainer = range.endContainer;
+		this.endOffset = range.endOffset;
+		this.commonAncestorContainer = range.commonAncestorContainer;
+		this.collapsed = range.collapsed;
+	}
+
+	StableRange.prototype.update = function () {
+		if (!this.startContainer || !this.endContainer) {
+			return;
+		}
+		this.collapsed = (this.startContainer === this.endContainer
+						  && this.startOffset === this.endOffset);
+		var start = childAndParentsUntil(this.startContainer, Fn.returnFalse);
+		var end   = childAndParentsUntil(this.endContainer, Fn.returnFalse);
+		this.commonAncestorContainer = Arrays.intersect(start, end)[0];
+	};
+
+	StableRange.prototype.setStart = function (sc, so) {
+		this.startContainer = sc;
+		this.startOffset = so;
+		this.update();
+	};
+
+	StableRange.prototype.setEnd = function (ec, eo) {
+		this.endContainer = ec;
+		this.endOffset = eo;
+		this.update();
+	};
+
+	function setRangeStartFromCursor(range, cursor) {
+		if (cursor.atEnd) {
+			range.setStart(cursor.node, nodeLength(cursor.node));
+		} else {
+			range.setStart(cursor.node.parentNode, nodeIndex(cursor.node));
+		}
+	}
+
+	function setRangeEndFromCursor(range, cursor) {
+		if (cursor.atEnd) {
+			range.setEnd(cursor.node, nodeLength(cursor.node));
+		} else {
+			range.setEnd(cursor.node.parentNode, nodeIndex(cursor.node));
+		}
+	}
+
+	function setRangeFromBoundaries(range, startPoint, endPoint) {
+		setRangeStartFromCursor(range, startPoint);
+		setRangeEndFromCursor(range, endPoint);
+	}
+
+	function setRangeFromRef(range, ref) {
+		range.setStart(ref.startContainer, ref.startOffset);
+		range.setEnd(ref.endContainer, ref.endOffset);
+	}
+
+	/**
+	 * A native range is live, which means that modifying the DOM may
+	 * mutate the range. Also, using setStart/setEnd may not set the
+	 * properties correctly (the browser may perform its own
+	 * normalization of boundary points). The behaviour of a native
+	 * range is very erratic and should be converted to a stable range
+	 * as the first thing in any algorithm.
+	 */
+	function stableRange(range) {
+		return new StableRange(range);
+	}
+
 	function adjustRangeAfterSplit(container, offset, range, setRange, splitNode, splitOffset, newNodeBeforeSplit) {
 		if (container === splitNode) {
 			if (offset <= splitOffset || !splitOffset) {
@@ -803,107 +910,32 @@ define([
 		removePreservingRanges(node, [range]);
 	}
 
-	function walkUntil(node, fn, until, arg) {
-		while (node && !until(node, arg)) {
-			var next = node.nextSibling;
-			fn(node, arg);
-			node = next;
+	function evacuatePointLeft(point, node) {
+	}
+
+	function evacuatePointRight(point, node) {
+	}
+
+	function preservePointForShallowRemove(node, point) {
+		if (point.node === node) {
+			if (point.node.firstChild) {
+				point.next();
+			} else {
+				point.skipNext();
+			}
 		}
 	}
 
-	function walk(node, fn, arg) {
-		walkUntil(node, fn, Fn.returnFalse, arg);
-	}
-
-	/**
-	 * Depth-first postwalk of the given DOM node.
-	 */
-	function walkRec(node, fn, arg) {
-		if (1 === node.nodeType) {
-			walk(node.firstChild, function (node) {
-				walkRec(node, fn, arg);
-			});
-		}
-		fn(node, arg);
-	}
-
-	function walkUntilNode(node, fn, untilNode, arg) {
-		walkUntil(node, fn, function (nextNode) {
-			return nextNode === untilNode;
-		}, arg);
-	}
-
-	function StableRange(range) {
-		if (!range) {
-			return;
-		}
-		this.startContainer = range.startContainer;
-		this.startOffset = range.startOffset;
-		this.endContainer = range.endContainer;
-		this.endOffset = range.endOffset;
-		this.commonAncestorContainer = range.commonAncestorContainer;
-		this.collapsed = range.collapsed;
-	}
-
-	StableRange.prototype.update = function () {
-		if (!this.startContainer || !this.endContainer) {
-			return;
-		}
-		this.collapsed = (this.startContainer === this.endContainer
-						  && this.startOffset === this.endOffset);
-		var start = childAndParentsUntil(this.startContainer, Fn.returnFalse);
-		var end   = childAndParentsUntil(this.endContainer, Fn.returnFalse);
-		this.commonAncestorContainer = Arrays.intersect(start, end)[0];
-	};
-
-	StableRange.prototype.setStart = function (sc, so) {
-		this.startContainer = sc;
-		this.startOffset = so;
-		this.update();
-	};
-
-	StableRange.prototype.setEnd = function (ec, eo) {
-		this.endContainer = ec;
-		this.endOffset = eo;
-		this.update();
-	};
-
-	function setRangeStartFromCursor(range, cursor) {
-		if (cursor.atEnd) {
-			range.setStart(cursor.node, nodeLength(cursor.node));
-		} else {
-			range.setStart(cursor.node.parentNode, nodeIndex(cursor.node));
+	function preserveBoundaries(node, points, preserveFn) {
+		var i = 0;
+		for (; i < points.length; i++) {
+			preserveFn(node, points[i]);
 		}
 	}
 
-	function setRangeEndFromCursor(range, cursor) {
-		if (cursor.atEnd) {
-			range.setEnd(cursor.node, nodeLength(cursor.node));
-		} else {
-			range.setEnd(cursor.node.parentNode, nodeIndex(cursor.node));
-		}
-	}
-
-	function setRangeFromBoundaries(range, startPoint, endPoint) {
-		setRangeStartFromCursor(range, startPoint);
-		setRangeEndFromCursor(range, endPoint);
-	}
-
-	function setRangeFromRef(range, ref) {
-		range.setStart(ref.startContainer, ref.startOffset);
-		range.setEnd(ref.endContainer, ref.endOffset);
-	}
-
-	/**
-	 * A native range is live, which means that modifying the DOM may
-	 * mutate the range. Also, using setStart/setEnd may not set the
-	 * properties correctly (the browser may perform its own
-	 * normalization of boundary points). The behaviour of a native
-	 * range is very erratic and should be converted to a stable range
-	 * as the first thing in any algorithm.
-	 */
-	function stableRange(range) {
-		return new StableRange(range);
+	function removeShallowPreservingBoundaries(node, points) {
+		preserveBoundaries(node, points, preservePointForShallowRemove);
+		removeShallow(node);
 	}
 
 	function seekBoundaryPoint(range, container, offset, oppositeContainer, oppositeOffset, setFn, ignore, backwards) {
@@ -1094,6 +1126,7 @@ define([
 		indexByClassHaveList: indexByClassHaveList,
 		outerHtml: outerHtml,
 		removeShallow: removeShallow,
+		removeShallowPreservingBoundaries: removeShallowPreservingBoundaries,
 		removePreservingRange: removePreservingRange,
 		removePreservingRanges: removePreservingRanges,
 		wrap: wrap,
@@ -1116,6 +1149,7 @@ define([
 		splitTextContainers: splitTextContainers,
 		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
 		nextWhile: nextWhile,
+		contains: contains,
 		walk: walk,
 		walkRec: walkRec,
 		walkUntil: walkUntil,

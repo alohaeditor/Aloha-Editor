@@ -492,4 +492,20 @@ Aloha.require([
 	t('reuse outer wrapper and clear nested contexts',
 	  '<p><span style="font-family: times;">{one}<span style="font-family: arial;">two</span></span>three</p>',
 	  '<p><span style="font-family: arial;">{one]two</span>three</p>');
+
+	t('merge forward',
+	  '<p>[one]<span style="font-family: arial;">two</span></p>',
+	  '<p>{<span style="font-family: arial;">one]two</span></p>');
+
+	t('don\'t merge forward incompatible style',
+	  '<p>[one]<span style="color: black;">two</span></p>',
+	  '<p>{<span style="font-family: arial;">one</span>}<span style="color: black;">two</span></p>');
+
+	t('merge back',
+	  '<p><span style="font-family: arial;">one</span>[two]</p>',
+	  '<p><span style="font-family: arial;">one[two</span>}</p>');
+
+	t('don\'t merge back incompatible style',
+	  '<p><span style="color: black;">one</span>[two]</p>',
+	  '<p><span style="color: black;">one</span>{<span style="font-family: arial">two</span>}</p>');
 });
