@@ -123,11 +123,9 @@ define([
 		var range = selection.getRangeAt(0);
 		if (' ' === text) {
 			var elem = Dom.nodeAtOffset(range.startContainer, range.startOffset);
-			if (1 !== elem.nodeType) {
-				elem = elem.parentNode;
-			}
+			elem = elem.parentNode;
 			var whiteSpace = Dom.getComputedStyle(elem, 'white-space');
-			if ('pre' !== whiteSpace && 'pre-wrap' !== whiteSpace) {
+			if (!Html.isWhiteSpacePreserveStyle(whiteSpace)) {
 				text = '\xa0';
 			}
 		}

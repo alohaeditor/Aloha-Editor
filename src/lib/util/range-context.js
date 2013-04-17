@@ -704,7 +704,7 @@ define([
 			// can get for example a default background color (which is
 			// not inherited) even if non was ever explicitly set in the
 			// DOM.
-			if (Html.isStyleInherited(styleName) || 'BODY' === node.nodeName)  {
+			if (Html.isStyleInherited(styleName) || 'BODY' === node.nodeName) {
 				value = Dom.getComputedStyle(node, styleName);
 			} else {
 				value = Dom.getStyle(node, styleName);

@@ -193,6 +193,12 @@ define([
 		return 3 === node.nodeType && !node.length;
 	}
 
+	function isWhiteSpacePreserveStyle(cssWhiteSpaceValue) {
+		return (cssWhiteSpaceValue === 'pre'
+				|| cssWhiteSpaceValue === 'pre-wrap'
+				|| cssWhiteSpaceValue === '-moz-pre-wrap');
+	}
+
 	// Taken from
 	// http://code.google.com/p/rangy/source/browse/trunk/src/js/modules/rangy-cssclassapplier.js
 	// under the MIT license.
@@ -206,17 +212,14 @@ define([
 		if (nonWhitespaceRx.test(node.nodeValue)) {
 			return false;
 		}
-        var cssWhiteSpace = Dom.getComputedStyle(node.parentNode, "whiteSpace");
-        switch (cssWhiteSpace) {
-		case "pre":
-        case "pre-wrap":
-        case "-moz-pre-wrap":
-            return false;
-        case "pre-line":
+        var cssWhiteSpace = Dom.getComputedStyle(node.parentNode, 'white-space');
+		if (isWhiteSpacePreserveStyle(cssWhiteSpace)) {
+			return false;
+		}
+		if ('pre-line' === cssWhiteSpace) {
             if (/[\r\n]/.test(node.data)) {
                 return false;
             }
-			break;
         }
 		return true;
 	}
@@ -378,6 +381,7 @@ define([
 		hasInlineStyle: hasInlineStyle,
 		isBlock: isBlock,
 		isUnrenderedWhitespace: isUnrenderedWhitespace,
+		isWhiteSpacePreserveStyle: isWhiteSpacePreserveStyle,
 		skipUnrenderedToStartOfLine: skipUnrenderedToStartOfLine,
 		skipUnrenderedToEndOfLine: skipUnrenderedToEndOfLine,
 		normalizeBoundary: normalizeBoundary,
