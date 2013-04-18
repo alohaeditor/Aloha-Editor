@@ -868,9 +868,14 @@ define([
 		}
 	}
 
+	function ascendOffsetUntilInclNode(node, atEnd, carryDown, before, at, after, untilInclNode) {
+		var ascend = Dom.childAndParentsUntilInclNode(node, untilInclNode);
+		var stepAtStart = makePointNodeStep(node, atEnd, after, at);
+		ascendWalkSiblings(ascend, atEnd, carryDown, before, at, after);
+	}
+
 	function splitBoundary(liveRange, clone, belowCacUntil, cacAndAboveUntil, boundariesChildrenOfUnsplitNode) {
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-
 			var normalizeLeft = boundariesChildrenOfUnsplitNode ? leftPoint : leftPoint.clone();
 			var normalizeRight = boundariesChildrenOfUnsplitNode ? rightPoint : rightPoint.clone();
 			Html.normalizeBoundary(normalizeLeft);
@@ -878,19 +883,26 @@ define([
 			Dom.setRangeFromBoundaries(range, normalizeLeft, normalizeRight);
 
 			var cac = range.commonAncestorContainer;
-			var collapsed = range.collapsed;
-			var leftWrapper = null;
-			var inbetweenWrapper = null;
+			var start = Dom.nodeAtOffset(range.startContainer, range.startOffset);
+			var startEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
+			var end = Dom.nodeAtOffset(range.endContainer, range.endOffset);
+			var endEnd = Dom.isAtEnd(range.endContainer, range.endOffset);
+
 			var splitCac = !cacAndAboveUntil(cac);
 			var fromCacToTop = Dom.childAndParentsUntil(cac, cacAndAboveUntil);
 			var topmostUnsplitNode = fromCacToTop.length ? Arrays.last(fromCacToTop).parentNode : cac;
+
+			var wrapper = null;
 			var removeEmpty = [];
 
 			function carryDown(elem, stop) {
 				return stop || belowCacUntil(elem);
 			}
 
-			function intoWrapper(wrapper, node) {
+			function intoWrapper(node, stop) {
+				if (stop || (!splitCac && node.parentNode === cac)) {
+					return;
+				}
 				var parent = node.parentNode;
 				if (!wrapper || parent.previousSibling !== wrapper) {
 					wrapper = clone(parent);
@@ -901,26 +913,20 @@ define([
 					}
 				}
 				moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
-				return wrapper;
 			}
 
-			function intoWrapperLeft(node, stop) {
-				if (!stop && (splitCac || node.parentNode !== cac)) {
-					leftWrapper = intoWrapper(leftWrapper, node);
-				}
-			}
-
-			function intoWrapperInbetween(node) {
-				if (splitCac) {
-					inbetweenWrapper = intoWrapper(inbetweenWrapper, node);
-				}
-			}
-
-			walkBoundaryLeftRightInbetween(range, carryDown, intoWrapperLeft, Fn.noop, intoWrapperLeft, Fn.noop, Fn.noop, intoWrapperInbetween);
-			ascendWalkSiblings(fromCacToTop, false, Fn.returnFalse, intoWrapperLeft, Fn.noop, Fn.noop);
+			ascendOffsetUntilInclNode(start, startEnd, carryDown, intoWrapper, Fn.noop, Fn.noop, cac);
+			ascendWalkSiblings(fromCacToTop, false, Fn.returnFalse, intoWrapper, Fn.noop, Fn.noop);
+			wrapper = null;
+			ascendOffsetUntilInclNode(end, endEnd, carryDown, intoWrapper, Fn.noop, Fn.noop, cac);
+			ascendWalkSiblings(fromCacToTop, false, Fn.returnFalse, intoWrapper, Fn.noop, Fn.noop);
 
 			Arrays.forEach(removeEmpty, function (elem) {
-				if (!elem.firstChild) {
+				// Because if it doesn't have a parentNode, it was
+				// already removed in an earlier iteration, which is
+				// possible because we ascend from the cac twice, which
+				// may get end up cloning the cac twice.
+				if (!elem.firstChild && elem.parentNode) {
 					Dom.removeShallowPreservingBoundaries(elem, [leftPoint, rightPoint]);
 				}
 			});

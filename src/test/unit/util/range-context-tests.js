@@ -36,6 +36,7 @@ Aloha.require([
 
 	function testMutation(title, before, expected, mutate) {
 		test(title, function () {
+			var titleForDebugginDontRemove = title;
 			$('#test-editable').aloha().empty().html(before);
 			var dom = $('#test-editable')[0].firstChild;
 			var range = Aloha.createRange();
@@ -311,6 +312,22 @@ Aloha.require([
 	t('split cac',
 	  '<div><p><b>one</b>{<i>two</i><i>three</i>}<b>four</b></p></div>',
 	  '<div><p><b>one</b></p>{<p><i>two</i><i>three</i></p>}<p><b>four</b></p></div>');
+
+	t('split above incl cac 1',
+	  '<div><p><em><b>one</b>{<i>two</i><i>three</i>}<b>four</b></em></p></div>',
+	  '<div><p><em><b>one</b></em></p>{<p><em><i>two</i><i>three</i></em></p>}<p><em><b>four</b></em></p></div>');
+
+	t('split above incl cac 2',
+	  '<div><p>one<a href="link">t[]wo</a></p></div>',
+	  '<div><p>one<a href="link">t</a></p>{}<p><a href="link">wo</a></p></div>');
+
+	t('split above and below cac 1',
+	  '<div><p><em><b>one</b>{<i>two</i><i>three</i>}<b>four</b></em></p></div>',
+	  '<div><p><em><b>one</b></em></p>{<p><em><i>two</i><i>three</i></em></p>}<p><em><b>four</b></em></p></div>');
+
+	t('split above and below cac 2',
+	  '<div><p><em><b>one</b><strong><u>-{<i>two</i></u><u><i>three</i>}-</u></strong><b>four</b></em></p></div>',
+	  '<div><p><em><b>one</b><strong><u>-</u></strong></em></p>{<p><em><strong><u><i>two</i></u><u><i>three</i></u></strong></em></p>}<p><em><strong><u>-</u></strong><b>four</b></em></p></div>');
 
 	t('split at start end doesn\'t leave empty nodes 1',
 	  '<div><b>one{</b><i>two</i><b>}three</b></div>',
