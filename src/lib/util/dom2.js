@@ -365,6 +365,12 @@ define([
 		}
 	}
 
+	function replaceShallow(node, withNode) {
+		moveNextAll(withNode, node.firstChild, null);
+		insert(withNode, node);
+		remove(node);
+	}
+
 	function Cursor(node, atEnd) {
 		this.node = node;
 		this.atEnd = atEnd;
@@ -1125,6 +1131,7 @@ define([
 		removePreservingRanges: removePreservingRanges,
 		wrap: wrap,
 		insert: insert,
+		replaceShallow: replaceShallow,
 		cursor: cursor,
 		cursorFromBoundaryPoint: cursorFromBoundaryPoint,
 		trimBoundaries: trimBoundaries,

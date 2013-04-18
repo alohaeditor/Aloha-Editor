@@ -29,13 +29,19 @@ define([
 	'aloha',
 	'aloha/contenthandlermanager',
 	'contenthandler/contenthandler-utils',
-	'util/dom'
+	'util/dom',
+	'util/dom2',
+	'util/arrays',
+	'util/strings'
 ], function (
 	$,
 	Aloha,
 	Manager,
 	Utils,
-	Dom
+	Dom,
+	Dom2,
+	Arrays,
+	Strings
 ) {
 	'use strict';
 
@@ -56,6 +62,11 @@ define([
 	 * @const
 	 */
 	var HASH_HREF = /^#(.*)/;
+
+	/**
+	 * CSS styles we want to preserve.
+	 */
+	var preserveStyles = ['font-family', 'font-size', 'color', 'background-color'];
 
 	/**
 	 * Checks whether the given node is empty, ignoring white spaces.
@@ -110,6 +121,26 @@ define([
 	}
 
 	/**
+	 * Return a new span element, copying some preservable properties
+	 * over from the given span element. If there are no preservable
+	 * properties, return null.
+	 */
+	function cleanSpan(elem) {
+		var clean = null;
+		Arrays.forEach(preserveStyles, function (styleName) {
+			var styleValue = Dom2.getStyle(elem, styleName);
+			if (Strings.empty(styleValue)) {
+				return;
+			}
+			if (!clean) {
+				clean = elem.ownerDocument.createElement('SPAN');
+			}
+			Dom2.setStyle(clean, styleName, styleValue);
+		});
+		return clean;
+	}
+
+	/**
 	 * Cleanup MS Word HTML.
 	 *
 	 * @param {jQuery.<HTMLElement>} $content
@@ -132,11 +163,18 @@ define([
 				if (href && HASH_HREF.test($.trim(href))) {
 					$node.contents().unwrap();
 				}
-			} else if ('div' === nodeName || 'span' === nodeName) {
+			} else if ('div' === nodeName) {
 
 				// Because footnotes for example are wrapped in divs and should
-				// be unwrap.
+				// be unwrapped.
 				$node.contents().unwrap();
+			} else if ('span' === nodeName) {
+				var cleanElem = cleanSpan($node[0]);
+				if (cleanElem) {
+					Dom2.replaceShallow($node[0], cleanElem);
+				} else {
+					Dom2.removeShallow($node[0]);
+				}
 			} else if ('td' !== nodeName && isEmpty($node)) {
 
 				// Because any empty element (like spaces wrapped in spans) are

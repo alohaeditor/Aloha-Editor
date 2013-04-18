@@ -37,3 +37,8 @@ All changes are categorized into one of the following keywords:
 	When a non-text key such as backspace was pressed when a
 	state-override was active, it may have been inserted as a
 	non-visible character into the HTML text.
+- **ENHANCEMENT**: wordcontenthandler: CSS styles are preserved on paste
+
+	When pasting from word, CSS styles such as 'background-color',
+	'color', 'font-family' and 'font-size' are now preserved. Before,
+	these styles were stripped.
