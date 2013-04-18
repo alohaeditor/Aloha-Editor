@@ -423,7 +423,7 @@ define([
 		// <b>one</b><i><b>two</b></i>three
 		// even though that would be cleaned up in the restacking pass
 		// afterwards.
-		// Also, because moveBackNodeWithinRange() requires the
+		// Also, because moveBackIntoWrapper() requires the
 		// left boundary point to be next to a non-ignorable node.
 		Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
 
