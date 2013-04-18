@@ -12,6 +12,13 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.6 - 2013/04/18
+
+- **BUGFIX**: Previously selected blocks are no longer deleted when hitting
+              backspace from inside an Aloha Editor UI.
+- **BUGFIX**: This change fixes the behaviour of linebreaks by preventing
+              paragraphs to be inserted inside editable spans and paragraphs,
+              and improves the editor's robustness against errors when inserting paragraphs.
 
 ## 0.23.5 - 2013/04/11
 
