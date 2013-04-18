@@ -27,6 +27,7 @@
 define([
 	'aloha/core',
 	'util/class',
+	'util/html',
 	'jquery',
 	'aloha/ecma5shims',
 	'aloha/console',
@@ -34,6 +35,7 @@ define([
 ], function (
 	Aloha,
 	Class,
+	Html,
 	jQuery,
 	shims,
 	console,
@@ -384,14 +386,13 @@ define([
 
 			// ENTER
 			if (event.keyCode === 13) {
-				if (event.shiftKey) {
+				if (event.shiftKey || !Html.allowNestedParagraph(Aloha.activeEditable)) {
 					Aloha.execCommand('insertlinebreak', false);
 					return false;
 				}
 				Aloha.execCommand('insertparagraph', false);
 				return false;
 			}
-
 			return true;
 		},
 

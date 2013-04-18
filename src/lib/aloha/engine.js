@@ -1,4 +1,4 @@
-define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], function (Aloha, $_, Maps, Dom, jQuery) {
+define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'util/html', 'jquery'], function (Aloha, $_, Maps, Dom, Html, jQuery) {
 	"use strict";
 
 	function hasAttribute(obj, attr) {
@@ -1376,6 +1376,105 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 		}
 
 		return hasCollapsedBlockPropChild;
+	}
+
+	/**
+	 * Checks whether the given node is a visible text node.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` is a visible text node.
+	 */
+	function isInvisibleTextNode(node) {
+		if (node && node.nodeType !== $_.Node.TEXT_NODE) {
+			return false;
+		}
+		var offset = 0;
+		var data = node.data;
+		var len = data.length;
+		while (offset < len && data.charAt(offset) === '\u200b') {
+			offset++;
+		}
+		return offset === len;
+	}
+
+	/**
+	 * Complement of isInvisibleTextNode().
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` is anything but an invisible text node.
+	 */
+	function isNotInvisibleTextNode(node) {
+		return !isInvisibleTextNode(node);
+	}
+
+	/**
+	 * Checks whether the given node is a otherwise empty block-level element
+	 * containing a propping <br> element.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` is a propped up block-level element.
+	 */
+	function isProppedBlock(node) {
+		if (!Html.isBlock(node)) {
+			return false;
+		}
+		var child = Html.findNodeRight(node.lastChild, isVisible);
+		return (
+			child
+			&& 'br' === child.nodeName.toLowerCase()
+			&& !Html.findNodeRight(child.previousSibling, isVisible)
+		);
+	}
+
+	/**
+	 * Checks whether the given node is a empty element, or an element that
+	 * would otherwise be empty except for a propping <br>, or an element
+	 * containing only invisible text nodes.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` can be considered empty.
+	 */
+	function isEmptyNode(node) {
+		return (
+			!node.hasChildNodes()
+			|| isProppedBlock(node)
+			|| !Html.findNodeRight(node.lastChild, isNotInvisibleTextNode)
+		);
+	}
+
+	/**
+	 * Check if the given node is a empty element which is the only
+	 * immediate child of a editing host.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` can be regarded as empty and the
+	 *                   only immediate child of its parent editing host.
+	 */
+	function isEmptyOnlyChildOfEditingHost(node) {
+		return (
+			node
+				&& isEmptyNode(node)
+					&& isEditingHost(node.parentNode)
+						&& !node.previousSibling
+							&& !node.nextSibling
+		);
+	}
+
+	/**
+	 * Remove the given node and return the position from where it was
+	 * removed.
+	 *
+	 * @param {HTMLElement} node Element to remove from DOM
+	 * @return {object} Object containing node and offset index.
+	 */
+	function removeNode(node) {
+		var ancestor = node.parentNode;
+		var offset = getNodeIndex(node);
+		ancestor.removeChild(node);
+		return {
+			node: ancestor,
+			offset: offset
+		};
 	}
 
 	// Please note: This method is deprecated and will be removed.
@@ -4359,6 +4458,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 			return;
 		}
 
+		// Because it is useful to be able to completely empty the contents of
+		// an editing host during editing.  So long as the container's
+		// contenteditable attribute is "true" (as is the case during editing),
+		// the element will be rendered visibly in all browsers.  This fact
+		// allows us to not have to prop up the container with a <br> in order
+		// to keep it accessible to the editor.
+		if (isEditingHost(container)) {
+			return;
+		}
+
 		if (isNamedHtmlElement(container.lastChild, "br")) {
 			return;
 		}
@@ -5298,7 +5407,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 		// range's end to its start and abort these steps."
 		if (getPosition(endNode, endOffset, startNode, startOffset) !== "after") {
 			range.setEnd(range.startContainer, range.startOffset);
-			return;
+			return range;
 		}
 
 		// "If start node is a Text node and start offset is 0, set start offset to
@@ -5388,12 +5497,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 			// and append the result as the last child of parent."
 			// only do this, if the offsetHeight is 0
 			if ((isEditable(parent_) || isEditingHost(parent_)) && !isInlineNode(parent_)) {
-				// TODO is this always correct?
 				ensureContainerEditable(parent_);
 			}
 
 			// "Abort these steps."
-			return;
+			return range;
 		}
 
 		// "If start node is an editable Text node, call deleteData() on it, with
@@ -5458,6 +5566,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 		// "Canonicalize whitespace at range's end."
 		canonicalizeWhitespace(range.endContainer, range.endOffset);
 
+		// A reference to the position where a node is removed.
+		var pos;
+
 		// "If block merging is false, or start block or end block is null, or
 		// start block is not in the same editing host as end block, or start block
 		// and end block are the same:"
@@ -5465,11 +5576,22 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 			// "Set range's end to its start."
 			range.setEnd(range.startContainer, range.startOffset);
 
+			// Calling delete on the give markup:
+			// <editable><block><br>[]</block></editable>
+			// should result in:
+			// <editable>[]</editable>
+			var block = startBlock || endBlock;
+			if (isEmptyOnlyChildOfEditingHost(block)) {
+				pos = removeNode(block);
+				range.setStart(pos.node, pos.offset);
+				range.setEnd(pos.node, pos.offset);
+			}
+
 			// "Restore states and values from overrides."
 			restoreStatesAndValues(overrides, range);
 
 			// "Abort these steps."
-			return;
+			return range;
 		}
 
 		// "If start block has one child, which is a collapsed block prop, remove
@@ -5531,14 +5653,14 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 				restoreStatesAndValues(overrides, range);
 
 				// "Abort these steps."
-				return;
+				return range;
 			}
 
 			// "If end block's firstChild is not an inline node, restore states and
 			// values from overrides, then abort these steps."
 			if (!isInlineNode(endBlock.firstChild)) {
 				restoreStatesAndValues(overrides, range);
-				return;
+				return range;
 			}
 
 			// "Let children be a list of nodes, initially empty."
@@ -5658,12 +5780,39 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 		// "Restore the values from values."
 		restoreValues(values, range);
 
+		// Because otherwise calling deleteContents() with the given selection:
+		//
+		// <editable><block>[foo</block><block>bar]</block></editable>
+		//
+		// would result in:
+		//
+		// <editable><block>[]<br /></block></editable>
+		//
+		// instead of:
+		//
+		// <editable>[]</editable>
+		//
+		// Therefore, the below makes it possible to completely empty contents
+		// of editing hosts via operations like CTRL+A, DEL.
+		//
+		// If startBlock is empty, and startBlock is the immediate and only
+		// child of its parent editing host, then remove startBlock and collapse
+		// the selection at the beginning of the editing post.
+		if (isEmptyOnlyChildOfEditingHost(startBlock)) {
+			pos = removeNode(startBlock);
+			range.setStart(pos.node, pos.offset);
+			range.setEnd(pos.node, pos.offset);
+			startBlock = pos.node;
+		}
+
 		// "If start block has no children, call createElement("br") on the context
 		// object and append the result as the last child of start block."
 		ensureContainerEditable(startBlock);
 
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides, range);
+
+		return range;
 	}
 
 	// "To remove a node node while preserving its descendants, split the parent of
@@ -6733,7 +6882,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 			deleteContents(delRange);
 
 			if (!isAncestorContainer(document.body, range.startContainer)) {
-				if (delRange.startContainer.hasChildNodes() || delRange.startContainer.nodeType == $_.Node.TEXT_NODE) {
+				if (delRange.startContainer.hasChildNodes()
+						|| delRange.startContainer.nodeType == $_.Node.TEXT_NODE
+							|| isEditingHost(delRange.startContainer)) {
 					range.setStart(delRange.startContainer, delRange.startOffset);
 					range.setEnd(delRange.startContainer, delRange.startOffset);
 				} else {
@@ -7194,7 +7345,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 
 			// "Delete the contents of the range with start (node, offset) and end
 			// (end node, end offset)."
-			deleteContents(node, offset, endNode, endOffset);
+			var newRange = deleteContents(node, offset, endNode, endOffset);
+			range.setStart(newRange.startContainer, newRange.startOffset);
+			range.setEnd(newRange.endContainer, newRange.endOffset);
 		}
 	};
 
@@ -7717,6 +7870,12 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'jquery'], f
 					},
 					range
 				);
+			}
+
+			// If no container has been set yet, it is not possible to insert a paragraph at this position;
+			// the following steps are skipped in order to prevent critical errors from occurring;
+			if (!container) {
+				return;
 			}
 
 			// "If container's local name is "address", "listing", or "pre":"

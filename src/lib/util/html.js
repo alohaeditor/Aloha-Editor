@@ -364,6 +364,21 @@ define([
 		return true;
 	}
 
+	/**
+	 * Checks if the given editable is a valid container for paragraphs.
+	 *
+	 * @param {Aloha.Editable} editable The editable to be checked
+	 *
+	 * @return {boolean} False if the editable may not contain paragraphs
+	 */
+	function allowNestedParagraph(editable) {
+		if (editable.obj.prop("tagName") === "SPAN" ||
+				editable.obj.prop("tagName") === "P") {
+			return false;
+		}
+		return true;
+	}
+
 	// TODO currently this function only knows about 'background-color'
 	// not being inherited, while 'color', 'font-size', 'font-family'
 	// are inherited. Any other relevant styles should be added when
@@ -371,7 +386,6 @@ define([
 	function isStyleInherited(styleName) {
 		return 'background-color' !== styleName;
 	}
-
 	return {
 		isStyleInherited: isStyleInherited,
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
@@ -389,6 +403,7 @@ define([
 		isEmpty: isEmpty,
 		isProppedBlock: isProppedBlock,
 		isEditingHost: isEditingHost,
-		findNodeRight: findNodeRight
+		findNodeRight: findNodeRight,
+		allowNestedParagraph: allowNestedParagraph
 	};
 });

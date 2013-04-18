@@ -7,9 +7,11 @@ endprologue.
 
 h3. Overview
 
-If you want to to create internal hyperlinks to the headings on your web page you can use this plugin to achive that.
+If you want to to create internal hyperlinks to the headings on your web page you can use this plugin to achieve that.
 
-When the plugin is activated @id@ attributes to headings (H1 - H6) will be added. Those auto generated headings can be modified in the sidebar.
+When the plugin is activated, @id@ attributes will be automatically generated
+and set to all headings elements (H1 through H6) which are contained inside
+Aloha editables.  Those auto generated headings can be modified in the sidebar.
 
 h3. Usage
 
