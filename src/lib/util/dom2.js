@@ -1136,7 +1136,7 @@ define([
 			var style = $elem.attr('style');
 			// Because concatenating just any input into the regex might
 			// be dangerous.
-			if ((/[^a-zA-Z-]/).test(styleName)) {
+			if ((/[^\w\-]/).test(styleName)) {
 				throw "unrecognized style name " + styleName;
 			}
 			var stripRegex = new RegExp('(:?^|;)\\s*' + styleName + '\\s*:.*?(?=;|$)', 'i');
