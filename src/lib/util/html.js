@@ -244,29 +244,43 @@ define([
 	function skipUnrenderedToEndOfLine(point) {
 		var cursor = point.clone();
 		cursor.nextWhile(isUnrenderedAtPoint);
-		if (isLinebreakingNode(cursor.node)) {
-			point.setFrom(cursor);
-			return true;
+		if (!isLinebreakingNode(cursor.node)) {
+			return false;
 		}
-		return false;
+		point.setFrom(cursor);
+		return true;
 	}
 
 	function skipUnrenderedToStartOfLine(point) {
 		var cursor = point.clone();
 		cursor.prev();
 		cursor.prevWhile(isUnrenderedAtPoint);
-		if (isLinebreakingNode(cursor.node)) {
-			cursor.next();
-			point.setFrom(cursor);
-			return true;
+		if (!isLinebreakingNode(cursor.node)) {
+			return false;
 		}
-		return false;
+		var isBr = ('BR' === cursor.node.nodeName);
+		cursor.next(); // after the br / inside the p
+		// Because point may be after a br at the end of a block, in
+		// which case the line starts before the br.
+		if (isBr) {
+			var endOfBlock = point.clone();
+			if (skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
+				cursor.skipPrev(); // before the br
+				cursor.prevWhile(isUnrenderedAtPoint);
+				if (!isLinebreakingNode(cursor.node)) {
+					return false;
+				}
+				cursor.next(); // after the br / inside the p
+			}
+		}
+		point.setFrom(cursor);
+		return true;
 	}
 
 	/**
 	 * Tries to move the given boundary to the start of line, skipping
 	 * over any unrendered nodes, or if that fails to the end of line
-	 * after the br element (if present), and for the last line in a
+	 * (after a br element if present), and for the last line in a
 	 * block, to the very end of the block.
 	 *
 	 * If the selection is inside a block with only a single empty line
