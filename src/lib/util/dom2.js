@@ -510,41 +510,45 @@ define([
 	/**
 	 * Ensures that the given startPoint is not in a start position and
 	 * the given endPoint is not in an end position by moving the points
-	 * to the left and right respectively - that's the exact opposite
-	 * behaviour from trimBoundaries().
+	 * to the left and right respectively - the opposite of
+	 * trimBoundaries().
 	 *
-	 * If until returns true for either point, it may remain in start or
-	 * end position respectively.
+	 * If until returns true for either point, they may remain in start
+	 * and end positions respectively.
 	 */
 	function expandBoundaries(startPoint, endPoint, until, ignore) {
 		until = until || Fn.returnFalse;
 		ignore = ignore || Fn.returnFalse;
 		startPoint.prevWhile(function (startPoint) {
-			return !until(startPoint) && (!startPoint.prevSibling() || ignore(startPoint.prevSibling()));
+			var prevSibling = startPoint.prevSibling();
+			return prevSibling ? ignore(prevSibling) : !until(startPoint.parent());
 		});
 		endPoint.nextWhile(function (endPoint) {
-			return !until(endPoint) && (endPoint.atEnd || ignore(endPoint.node));
+			return !endPoint.atEnd ? ignore(endPoint.node) : !until(endPoint.parent());
 		});
 	}
 
 	/**
 	 * Ensures that the given startPoint is not in an end position and
 	 * the given endPoint is not in a start position by moving the
-	 * points to the right and left respectively - that's the exact
-	 * opposite behaviour from expandBoundaries().
+	 * points to the right and left respectively - the opposite of
+	 * expandBoundaries().
 	 *
 	 * If the boundaries are equal (collapsed), or become equal during
-	 * this operation, or if until returns true for either point, it
-	 * may remain in start or end position respectively.
+	 * this operation, or if until returns true for either point, they
+	 * may remain in start and end position respectively.
 	 */
 	function trimBoundaries(startPoint, endPoint, until, ignore) {
 		until = until || Fn.returnFalse;
 		ignore = ignore || Fn.returnFalse;
 		startPoint.nextWhile(function (startPoint) {
-			return !startPoint.equals(endPoint) && !until(startPoint) && (startPoint.atEnd || ignore(startPoint.node));
+			return (!startPoint.equals(endPoint)
+					&& (!startPoint.atEnd ? ignore(startPoint.node) : !until(startPoint.parent())));
 		});
 		endPoint.prevWhile(function (endPoint) {
-			return !startPoint.equals(endPoint) && !until(endPoint) && (!endPoint.prevSibling() || ignore(endPoint.prevSibling()));
+			var prevSibling = endPoint.prevSibling();
+			return (!startPoint.equals(endPoint)
+					&& (prevSibling ? ignore(prevSibling) : !until(endPoint.parent())));
 		});
 	}
 

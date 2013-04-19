@@ -947,8 +947,8 @@ define([
 			// belowCacUntil returns true, the selection may be moved
 			// out of an unsplit node which may be unexpected.
 			if (boundariesChildrenOfUnsplitNode) {
-				trimExpandBoundaries(leftPoint, rightPoint, null, function (point) {
-					return point.parent() === topmostUnsplitNode;
+				trimExpandBoundaries(leftPoint, rightPoint, null, function (node) {
+					return node === topmostUnsplitNode;
 				});
 			}
 
