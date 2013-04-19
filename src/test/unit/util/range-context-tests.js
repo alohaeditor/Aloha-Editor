@@ -318,8 +318,8 @@ Aloha.require([
 	  '<div><p><em><b>one</b></em></p>{<p><em><i>two</i><i>three</i></em></p>}<p><em><b>four</b></em></p></div>');
 
 	t('split above incl cac 2',
-	  '<div><p>one<a href="link">t[]wo</a></p></div>',
-	  '<div><p>one<a href="link">t</a></p>{}<p><a href="link">wo</a></p></div>');
+	  '<div><p>one<span class="cls">t[]wo</span></p></div>',
+	  '<div><p>one<span class="cls">t</span></p>{}<p><span class="cls">wo</span></p></div>');
 
 	t('split above and below cac 1',
 	  '<div><p><em><b>one</b>{<i>two</i><i>three</i>}<b>four</b></em></p></div>',
@@ -394,14 +394,16 @@ Aloha.require([
 	  '<p><i><em>-</em></i><i><code>Some<em>-{<b>-</b></em><b>text</b></code></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
 
 	t = function (title, before, after) {
-		// Because IE7 will display "font-family: xx" without an
-		// ending ";" whereas other browsers will add an ending ";".
-		//
-		// Because IE7 leaves the style attribute as style="font-family:
-		// " after removing the font-family style, which interfers with
-		// the default equal and isPrunable checks.
+		// Because different browsers render style attributes
+		// differently we have to normalize them.
 		function expected(actual) {
-			equal(actual.replace(/;"/g, '"').replace(/; font-family: "/g, '"'), after.replace(/;"/g, '"'));
+			actual = actual
+				.replace(/;"/g, '"')
+				.replace(/; font-family: "/g, '"')
+				.replace(/font-family: ; /g, '')
+				.replace(/font-size: 18px; font-family: arial/g, 'font-family: arial; font-size: 18px');
+			after = after.replace(/;"/g, '"');
+			equal(actual, after);
 		}
 		function isPrunableIe7(node) {
 			return ('SPAN' === node.nodeName
@@ -491,16 +493,16 @@ Aloha.require([
 	  '<p>{<span style="font-family: arial;">one </span><span style="font-family: arial; font-size: 18px;">two] three</span></p>');
 
 	t('push down style without removing wrapper span',
-	  '<p><span style="font-size: 12px; font-family: times;">one {two</span> three}</p>',
-	  '<p><span style="font-size: 12px;"><span style="font-family: times;">one </span>{<span style="font-family: arial;">two</span></span><span style="font-family: arial;"> three</span>}</p>');
+	  '<p><span style="font-size: 18px; font-family: times;">one {two</span> three}</p>',
+	  '<p><span style="font-size: 18px;"><span style="font-family: times;">one </span>{<span style="font-family: arial;">two</span></span><span style="font-family: arial;"> three</span>}</p>');
 
 	t('merge wrappers with the same styles',
 	  '<p><span style="font-family: arial;">one</span>{two}</p>',
 	  '<p><span style="font-family: arial;">one[two</span>}</p>');
 
 	t('don\'t merge wrappers with additionals styles',
-	  '<p><span style="font-family: arial; font-size: 12px;">one</span>{two}</p>',
-	  '<p><span style="font-family: arial; font-size: 12px;">one</span>{<span style="font-family: arial;">two</span>}</p>');
+	  '<p><span style="font-family: arial; font-size: 18px;">one</span>{two}</p>',
+	  '<p><span style="font-family: arial; font-size: 18px;">one</span>{<span style="font-family: arial;">two</span>}</p>');
 
 	t('don\'t merge wrappers with differing values for the same style',
 	  '<p><span style="font-family: times;">one</span>{two}</p>',

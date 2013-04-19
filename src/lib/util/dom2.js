@@ -1090,7 +1090,7 @@ define([
 	 */
 	function setStyle(node, name, value) {
 		// Because only the empty string removes a style.
-		$(node).css(name, null == value ? '' : value);
+		$(node).css(name, value);
 	}
 
 	/**
@@ -1109,6 +1109,8 @@ define([
 	 */
 	function getComputedStyle(node, name) {
 		if (node.currentStyle) {
+			// Because IE7 needs dashesToCamelCase().
+			name = Strings.dashesToCamelCase(name);
 			return node.currentStyle[name];
 		}
 		var doc = node.ownerDocument;
@@ -1121,7 +1123,30 @@ define([
 		return null;
 	}
 
+	function removeStyle(elem, styleName) {
+		if (Browser.hasRemoveProperty) {
+			elem.style.removeProperty(styleName);
+		} else {
+			// TODO: this is a hack for browsers that don't support
+			//       removeProperty (ie < 9)and will not work correctly
+			//       for all valid inputs, but it's the simplest thing I
+			//       can come up with without implementing a full css
+			//       parser.
+			var $elem = $(elem);
+			var style = $elem.attr('style');
+			// Because concatenating just any input into the regex might
+			// be dangerous.
+			if ((/[^a-zA-Z-]/).test(styleName)) {
+				throw "unrecognized style name " + styleName;
+			}
+			var stripRegex = new RegExp('(:?^|;)\\s*' + styleName + '\\s*:.*?(?=;|$)', 'i');
+			style = style.replace(stripRegex, '');
+			$elem.attr('style', style);
+		}
+	}
+
 	return {
+		removeStyle: removeStyle,
 		moveNextAll: moveNextAll,
 		attrNames: attrNames,
 		attrs: attrs,

@@ -724,7 +724,7 @@ define([
 			Dom.setStyle(node, styleName, value);
 		}
 		function removeContext(node) {
-			Dom.setStyle(node, styleName, null);
+			Dom.removeStyle(node, styleName);
 		}
 		return makeFormatter(
 			styleValue,

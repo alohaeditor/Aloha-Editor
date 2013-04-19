@@ -26,8 +26,10 @@
  */
 define(['jquery'], function ($) {
 	'use strict';
+	var testElem = document.createElement('div');
 	return {
 		ie7: $.browser.msie && parseInt($.browser.version, 10) < 8,
-		ie: $.browser.msie
+		ie: $.browser.msie,
+		hasRemoveProperty: !!testElem.style.removeProperty
 	};
 });
