@@ -199,9 +199,16 @@ define([
 				|| cssWhiteSpaceValue === '-moz-pre-wrap');
 	}
 
-	// Taken from
-	// http://code.google.com/p/rangy/source/browse/trunk/src/js/modules/rangy-cssclassapplier.js
-	// under the MIT license.
+	/**
+	 * Returns true if the given node is unrendered whitespace, with the
+	 * caveat that it only examines the given node and not any siblings.
+	 * An additional check is necessary to determine whether the
+	 * whitespace occurrs after/before a linebreaking node.
+	 *
+	 * Taken from
+	 * http://code.google.com/p/rangy/source/browse/trunk/src/js/modules/rangy-cssclassapplier.js
+	 * under the MIT license.
+	 */
 	function isUnrenderedWhitespaceNoBlockCheck(node) {
 		if (3 !== node.nodeType) {
 			return false;
@@ -224,23 +231,39 @@ define([
 		return true;
 	}
 
-	function isVisibleEmptyInlineNode(node) {
-		// Because IMG and BR are the only inline nodes that can be
-		// visible even when they're empty. Idea from engine.js.
+	/**
+	 * Empty inline elements are unrendered, with the exception of img
+	 * and br elements. Idea from engine.js.
+	 */
+	function isRenderedEmptyInlineNode(node) {
 		return 'IMG' === node.nodeName || 'BR' === node.nodeName;
 	}
 
+	/**
+	 * Returns true for nodes that introduce linebreaks.
+	 */
 	function isLinebreakingNode(node) {
 		return 'BR' === node.nodeName || hasBlockStyle(node);
 	}
 
+	/**
+	 * Returns true if the node at point is unrendered, with the caveat
+	 * that it only examines the node at point and not any siblings.
+	 * An additional check is necessary to determine whether the
+	 * whitespace occurrs after/before a linebreaking node.
+	 */
 	function isUnrenderedAtPoint(point) {
 		return (isUnrenderedWhitespaceNoBlockCheck(point.node)
 				|| (1 === point.node.nodeType
 					&& hasInlineStyle(point.node)
-					&& !isVisibleEmptyInlineNode(point.node)));
+					&& !isRenderedEmptyInlineNode(point.node)));
 	}
 
+	/**
+	 * Tries to move the given point to the end of the line, stopping to
+	 * the left of a br or block node, ignoring any unrendered
+	 * nodes. Returns true if the point was moved, false if not.
+	 */
 	function skipUnrenderedToEndOfLine(point) {
 		var cursor = point.clone();
 		cursor.nextWhile(isUnrenderedAtPoint);
@@ -251,6 +274,11 @@ define([
 		return true;
 	}
 
+	/**
+	 * Tries to move the given point to the start of the line, stopping
+	 * to the right of a br or block node, ignoring any unrendered
+	 * nodes. Returns true if the point was moved, false if not.
+	 */
 	function skipUnrenderedToStartOfLine(point) {
 		var cursor = point.clone();
 		cursor.prev();
@@ -259,9 +287,9 @@ define([
 			return false;
 		}
 		var isBr = ('BR' === cursor.node.nodeName);
-		cursor.next(); // after the br / inside the p
-		// Because point may be after a br at the end of a block, in
-		// which case the line starts before the br.
+		cursor.next(); // after/out of the linebreaking node
+		// Because point may be to the right of a br at the end of a
+		// block, in which case the line starts before the br.
 		if (isBr) {
 			var endOfBlock = point.clone();
 			if (skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
@@ -270,7 +298,7 @@ define([
 				if (!isLinebreakingNode(cursor.node)) {
 					return false;
 				}
-				cursor.next(); // after the br / inside the p
+				cursor.next(); // after/out of the linebreaking node
 			}
 		}
 		point.setFrom(cursor);
@@ -313,6 +341,9 @@ define([
 		return true;
 	}
 
+	/**
+	 * Returns true if the given node is unrendered whitespace.
+	 */
 	function isUnrenderedWhitespace(node) {
 		if (!isUnrenderedWhitespaceNoBlockCheck(node)) {
 			return false;
