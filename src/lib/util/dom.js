@@ -437,6 +437,14 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * @method
 		 */
 		addMarkup: function (rangeObject, markup, nesting) {
+			// Because addMarkup can't handle a selection like
+			// <p>{xx</p> but it can handle <p>[xx</p>.
+			var sc = rangeObject.startContainer;
+			var so = rangeObject.startOffset;
+			if (1 === sc.nodeType && sc.childNodes[so] && 3 === sc.childNodes[so].nodeType) {
+				rangeObject.correctRange();
+			}
+
 			// split partially contained text nodes at the start and end of the range
 			if (rangeObject.startContainer.nodeType === 3
 				    && rangeObject.startOffset > 0
