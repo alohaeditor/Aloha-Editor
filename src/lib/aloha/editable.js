@@ -197,7 +197,7 @@ define([
 		var chr = String.fromCharCode(event.which);
 		if (Html.isControlCharacter(chr)) {
 			return;
-		}		
+		}
 		Aloha.trigger('aloha-command-will-execute', {commandId: 'delete'});
 		// Because that is what the inserttext does, we call
 		// deleteContents directly with stripWrappers false instead of
