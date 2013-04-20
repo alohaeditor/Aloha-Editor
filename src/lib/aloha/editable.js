@@ -36,9 +36,11 @@ define([
 	'aloha/block-jump',
 	'aloha/ephemera',
 	'util/dom2',
+	'util/html',
 	'PubSub',
 	'aloha/copypaste',
 	'aloha/command',
+	'aloha/engine',
 	'aloha/state-override'
 ], function (
 	Aloha,
@@ -52,9 +54,11 @@ define([
 	BlockJump,
 	Ephemera,
 	Dom,
+	Html,
 	PubSub,
 	CopyPaste,
 	Command,
+	Engine,
 	StateOverride
 ) {
 	'use strict';
@@ -168,6 +172,39 @@ define([
 	}
 
 	$(document).keydown(onKeydown);
+
+	/**
+	 * When selecting some content and pressing backspace or delete, the
+	 * delete is handled by engine.js which provides a correct
+	 * cross-browser implementation. When selecting some content and
+	 * pressing a non-control key (not backspace or delete), the
+	 * selected text must be deleted before inserting the character
+	 * corresponding to the key. The latter must also be handled by
+	 * engine.js.
+	 */
+	function keypressDeleteHandler(event) {
+		if (event.altKey || event.ctrlKey || !event.which) {
+			return;
+		}
+		var selection = Aloha.getSelection();
+		if (!selection.getRangeCount()) {
+			return;
+		}
+		var range = selection.getRangeAt(0);
+		if (range.collapsed) {
+			return;
+		}
+		var chr = String.fromCharCode(event.which);
+		if (Html.isControlCharacter(chr)) {
+			return;
+		}		
+		Aloha.trigger('aloha-command-will-execute', {commandId: 'delete'});
+		// Because that is what the inserttext does, we call
+		// deleteContents directly with stripWrappers false instead of
+		// commands.delete.
+		Engine.deleteContents(range, {stripWrappers: false});
+		Aloha.trigger('aloha-command-executed', 'delete');
+	}
 
 	/**
 	 * Editable object
@@ -327,6 +364,7 @@ define([
 						}
 						return letEventPass;
 					})
+					.keypress(keypressDeleteHandler)
 					.keypress(StateOverride.keyPressHandler)
 					.keydown(StateOverride.keyDownHandler);
 

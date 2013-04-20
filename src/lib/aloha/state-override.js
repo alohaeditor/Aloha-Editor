@@ -101,10 +101,6 @@ define([
 		}
 	}
 
-	function isRenderedChar(chr) {
-		return (/[a-zA-Z0-9;!@#$%\^&*()_+={}\[\]~\\\/?|\"\':,.<>\-]/).test(chr);
-	}
-
 	function keyPressHandler(event) {
 		if (!overrides) {
 			return;
@@ -113,7 +109,7 @@ define([
 			return;
 		}
 		var text = String.fromCharCode(event.which);
-		if (!isRenderedChar(text)) {
+		if (Html.isControlCharacter(text)) {
 			return;
 		}
 		var selection = Aloha.getSelection();

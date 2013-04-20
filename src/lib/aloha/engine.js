@@ -8677,7 +8677,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/dom2', 'util/html',
 		getStateOverride: getStateOverride,
 		setStateOverride: setStateOverride,
 		resetOverrides: resetOverrides,
-		unsetStateOverride: unsetStateOverride
+		unsetStateOverride: unsetStateOverride,
+		deleteContents: deleteContents
 	};
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker

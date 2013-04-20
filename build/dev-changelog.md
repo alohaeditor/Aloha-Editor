@@ -42,3 +42,11 @@ All changes are categorized into one of the following keywords:
 	When pasting from word, CSS styles such as 'background-color',
 	'color', 'font-family' and 'font-size' are now preserved. Before,
 	these styles were stripped.
+
+- **BUGFIX**: delete: inconsistent behaviour when deleting content
+
+	When some content was selected and backspace was pressed, Aloha's
+	custom delete implementation was used. When some content was
+	selected and a non-control key was pressed, the browsers native
+	delete implemention was used. The latter case now also uses
+	Aloha's custom implementation.
