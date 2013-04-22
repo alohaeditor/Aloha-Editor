@@ -65,8 +65,9 @@ define([
 
 	/**
 	 * CSS styles we want to preserve.
+	 * Can be overridden with Aloha.settings.contentHandler.word.preserveStyles.
 	 */
-	var preserveStyles = ['font-family', 'font-size', 'color', 'background-color'];
+	var preserveStylesDefault = ['font-family', 'font-size', 'color', 'background-color'];
 
 	/**
 	 * Checks whether the given node is empty, ignoring white spaces.
@@ -127,6 +128,11 @@ define([
 	 */
 	function cleanSpan(elem) {
 		var clean = null;
+		var preserveStyles = ((Aloha.settings
+							   && Aloha.settings.contentHandler
+							   && Aloha.settings.contentHandler.word
+							   && Aloha.settings.contentHandler.word.preserveStyles)
+							  || preserveStylesDefault);
 		Arrays.forEach(preserveStyles, function (styleName) {
 			var styleValue = Dom2.getStyle(elem, styleName);
 			if (Strings.empty(styleValue)) {

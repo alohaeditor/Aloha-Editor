@@ -43,6 +43,11 @@ All changes are categorized into one of the following keywords:
 	'color', 'font-family' and 'font-size' are now preserved. Before,
 	these styles were stripped.
 
+	It is possible to customize this behaviour by setting the
+	following property to an array of CSS styles to preserve (or the
+	empty array if none should be preserved):
+	Aloha.settings.contentHandler.word.preserveStyles
+
 - **BUGFIX**: delete: inconsistent behaviour when deleting content
 
 	When some content was selected and backspace was pressed, Aloha's
