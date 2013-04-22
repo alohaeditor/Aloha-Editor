@@ -22,14 +22,14 @@
         emap = Ephemera.ephemera().pruneFns.push(function(node) {
           var $node;
           $node = $(node);
-          if ($node.is('div.title')) {
+          if ($node.is('div.title') && $node.has('.title-editor').length) {
             $node.text($node.find('.title-editor').text());
             return $node.get(0);
           }
           return node;
         });
         return Aloha.bind('aloha-editable-created', function($event, editable) {
-          editable.obj.find('div.title:not(.aloha-block)').alohaBlock({
+          editable.obj.find('> div.title:not(.aloha-block)').alohaBlock({
             'aloha-block-type': 'TitleBlock'
           });
           if (editable.obj.is('.title-editor')) {
