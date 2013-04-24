@@ -31,9 +31,8 @@ define [
       # Add a prune function that cleans up the title editor
       emap = Ephemera.ephemera().pruneFns.push (node) ->
         $node = $(node)
-        if $node.is('div.title') and $node.has('.title-editor').length
+        if $node.is('div.title') and $node.find('.title-editor').length
           $node.text($node.find('.title-editor').text())
-          return $node.get(0)
         node
 
       Aloha.bind 'aloha-editable-created', ($event, editable) ->
