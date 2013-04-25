@@ -102,6 +102,8 @@ define([
 				} else {
 					onInit();
 				}
+			} else {
+				onInit();
 			}
 		}
 	}
