@@ -23,10 +23,11 @@ There are some Content Handler available:
 Plugins also provide Content Handler:
 * Block +common/block+ plugin
 
-There are three hooks available:
-* insertHtml in +common/commands+ plugin
-* initEditable in core/editable.js
-
+There are four hooks available:
+* insertHtml in plugin +common/commands+
+* initEditable in +core/editable.js+
+* getContents in +core/editable.js+
+* smartContentChange in +core/editable.js+
 
 h3. Enabling the Content Handler Plugin
 
@@ -34,7 +35,7 @@ h3. Enabling the Content Handler Plugin
 h4. Using Configuration
 
 <javascript>
-	Aloha.settings.contentHandler: {
+	Aloha.settings.contentHandler = {
 		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
 		initEditable: [ 'sanitize' ],
 		getContents: [ 'blockelement', 'sanitize', 'basic' ],

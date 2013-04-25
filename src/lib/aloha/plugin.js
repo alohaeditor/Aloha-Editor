@@ -84,18 +84,17 @@ define([
 		 * @return true if dependencies satisfied, false otherwise
 		 */
 		checkDependencies: function () {
-			var dependenciesSatisfied = true,
-				that = this;
-
-			jQuery.each(this.dependencies, function () {
-
-				if (!Aloha.isPluginLoaded(this)) {
-					dependenciesSatisfied = false;
-					console.error('plugin.' + that.name, 'Required plugin "' + this + '" not found.');
+			var plugin = this;
+			var satisfied = true;
+			jQuery.each(plugin.dependencies, function (i, dependency) {
+				if (!Aloha.isPluginLoaded(dependency.toString())) {
+					satisfied = false;
+					console.error('plugin.' + plugin.name,
+							'Required plugin "' + dependency + '" not found.');
+					return false;
 				}
 			});
-
-			return dependenciesSatisfied;
+			return satisfied;
 		},
 
 		/**

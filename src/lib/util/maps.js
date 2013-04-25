@@ -34,12 +34,15 @@ define([], function () {
 	 * @return {boolean} True if the object is empty. eg: isEmpty({}) == true
 	 */
 	function isEmpty(obj) {
-		for (var name in obj) if (obj.hasOwnProperty(name)) {
-			return false;	
+		var name;
+		for (name in obj) {
+			if (obj.hasOwnProperty(name)) {
+				return false;
+			}
 		}
 		return true;
 	}
- 
+
 	/**
 	 * Fill the given map with the given keys mapped to the given value.
 	 *
@@ -77,7 +80,7 @@ define([], function () {
 	 */
 	function fillTuples(map, tuples) {
 		var i = tuples.length,
-		    tuple;
+			tuple;
 		while (i--) {
 			tuple = tuples[i];
 			map[tuple[0]] = tuple[1];
@@ -85,9 +88,12 @@ define([], function () {
 		return map;
 	}
 
+	/**
+	 * Returns an array of the map's keys.
+	 */
 	function keys(map) {
 		var ks = [],
-		    k;
+			k;
 		for (k in map) {
 			if (map.hasOwnProperty(k)) {
 				ks.push(k);
@@ -96,10 +102,29 @@ define([], function () {
 		return ks;
 	}
 
+	/**
+	 * For each mapping, call cb(value, key, map).
+	 *
+	 * Emulates ECMAScript edition 5 Array.forEach.
+	 *
+	 * Contrary to "for (key in map)" iterates only over the
+	 * "hasOwnProperty" properties of the map, which is usually what you
+	 * want.
+	 */
+	function forEach(map, cb) {
+		var key;
+		for (key in map) {
+			if (map.hasOwnProperty(key)) {
+				cb(map[key], key, map);
+			}
+		}
+	}
+
 	return {
 		isEmpty: isEmpty,
 		fillTuples: fillTuples,
 		fillKeys: fillKeys,
-		keys: keys
+		keys: keys,
+		forEach: forEach
 	};
 });

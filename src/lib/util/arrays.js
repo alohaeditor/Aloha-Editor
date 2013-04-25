@@ -24,27 +24,27 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([],function(){
-	'use strict'
+define(['util/functions'], function (Fn) {
+	'use strict';
 
-    /**
-     * Implements unique() using the browser's sort().
-     *
-     * @param a
-     *        The array to sort and strip of duplicate values.
+	/**
+	 * Implements unique() using the browser's sort().
+	 *
+	 * @param a
+	 *        The array to sort and strip of duplicate values.
 	 *        Warning: this array will be modified in-place.
-     * @param compFn
-     *        A custom comparison function that accepts two values a and
-     *        b from the given array and returns -1, 0, 1 depending on
-     *        whether a < b, a == b, a > b respectively.
+	 * @param compFn
+	 *        A custom comparison function that accepts two values a and
+	 *        b from the given array and returns -1, 0, 1 depending on
+	 *        whether a < b, a == b, a > b respectively.
 	 *
 	 *        If no compFn is provided, the algorithm will use the
-     *        browsers default sort behaviour and loose comparison to
-     *        detect duplicates.
-     * @return
-     *        The given array.
-     */
-    function sortUnique(a, compFn){
+	 *        browsers default sort behaviour and loose comparison to
+	 *        detect duplicates.
+	 * @return
+	 *        The given array.
+	 */
+	function sortUnique(a, compFn) {
 		var i;
 		if (compFn) {
 			a.sort(compFn);
@@ -57,7 +57,7 @@ define([],function(){
 			a.sort();
 			for (i = 1; i < a.length; i++) {
 				// Use loosely typed comparsion if no compFn is given
-				// to avoid sortUnique( [6, "6", 6] ) => [6, "6", 6]
+				// to avoid sortUnique([6, "6", 6]) => [6, "6", 6]
 				if (a[i] == a[i - 1]) {
 					a.splice(i--, 1);
 				}
@@ -82,18 +82,19 @@ define([],function(){
 	 *        True if all items in a and b are equal, false if not.
 	 */
 	function equal(a, b, equalFn) {
-		var i = 0, len = a.length;
+		var i,
+			len = a.length;
 		if (len !== b.length) {
 			return false;
 		}
 		if (equalFn) {
-			for (; i < len; i++) {
+			for (i = 0; i < len; i++) {
 				if (!equalFn(a[i], b[i])) {
 					return false;
 				}
 			}
 		} else {
-			for (; i < len; i++) {
+			for (i = 0; i < len; i++) {
 				if (a[i] !== b[i]) {
 					return false;
 				}
@@ -103,10 +104,10 @@ define([],function(){
 	}
 
 	/**
-	 * ECMAScript map replacement
+	 * Emulates ECMAScript edition 5 Arrays.map
 	 * See https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map
 	 * And http://es5.github.com/#x15.4.4.19
-	 * It's not exactly according to standard, but it does exactly what one expects.
+	 * It's not exactly according to standard, but it does what one expects.
 	 */
 	function map(a, fn) {
 		var i, len, result = [];
@@ -168,6 +169,8 @@ define([],function(){
 	 * Arrays.reduce([2, 3, 4], 1, function (a, b) { return a + b; });
 	 * returns the result of (((1 + 2) + 3) + 4)
 	 *
+	 * Emulates ECMAScript edition 5 Array.reduce.
+	 *
 	 * @param a
 	 *        An array of values.
 	 * @param init
@@ -186,22 +189,99 @@ define([],function(){
 	}
 
 	/**
+	 * Returns true if the given xs contains the given x.
+	 */
+	function contains(xs, x) {
+		return -1 !== indexOf(xs, x);
+	}
+
+	/**
 	 * Applies the given value to the given function unless the value is
 	 * null, in which case just returns null.
 	 *
 	 * This is a utility function to be used with reduce().
 	 */
 	function applyNotNull(value, fn) {
-		return value == null ? null : fn(value);		
+		return value == null ? null : fn(value);
+	}
+
+	/**
+	 * For each item in xs, call cb(item, index, xs).
+	 *
+	 * Emulates ECMAScript edition 5 Array.forEach.
+	 */
+	function forEach(xs, cb) {
+		var i,
+		    len;
+		for (i = 0, len = xs.length; i < len; i++) {
+			cb(xs[i], i, xs);
+		}
+	}
+
+	/**
+	 * Returns true if the given predicate function returns true for at
+	 * least one item.
+	 *
+	 * Emulates ECMAScript edition 5 Array.some.
+	 */
+	function some(xs, pred) {
+		var i,
+		    len;
+		for (i = 0, len = xs.length; i < len; i++) {
+			if (pred(xs[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns true if the given predicate function returns true for all
+	 * items in xs.
+	 *
+	 * Emulates ECMAScript edition 5 Array.every.
+	 */
+	function every(xs, pred) {
+		return !some(xs, Fn.complement(pred));
+	}
+
+	/**
+	 * Returns all items in xs that are also contained in zs.
+	 */
+	function intersect(xs, zs) {
+		return filter(xs, function (x) {
+			return contains(zs, x);
+		});
+	}
+
+	/**
+	 * Returns the last item in xs or null.
+	 */
+	function last(xs) {
+		return xs.length ? xs[xs.length - 1] : null;
+	}
+
+	/**
+	 * Returns the second item in xs.
+	 */
+	function second(xs) {
+		return xs[1];
 	}
 
 	return {
 		filter: filter,
 		indexOf: indexOf,
 		reduce: reduce,
+		forEach: forEach,
+		some: some,
+		every: every,
+		map: Array.prototype.map ? mapNative : map,
+		contains: contains,
+		equal: equal,
 		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
-		equal: equal,
-		map: Array.prototype.map ? mapNative : map
+		intersect: intersect,
+		second: second,
+		last: last
 	};
 });

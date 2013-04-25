@@ -160,5 +160,6 @@ function( Aloha, jQuery, Plugin) {
 			this.stack.canRedo() && this.stack.redo();
 		},
 		stack: undefined // Defined in init above
+
 	});
 });

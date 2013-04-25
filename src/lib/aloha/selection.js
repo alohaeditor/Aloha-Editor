@@ -520,7 +520,8 @@ define([
 		 * @hide
 		 */
 		_updateSelection: function (event, range) {
-			if (event && event.originalEvent && event.originalEvent.stopSelectionUpdate === true) {
+			if (event && event.originalEvent &&
+					true === event.originalEvent.stopSelectionUpdate) {
 				return false;
 			}
 
@@ -528,19 +529,33 @@ define([
 				return false;
 			}
 
-			this.rangeObject = range || new Aloha.Selection.SelectionRange(true);
+			this.rangeObject = range =
+					range || new Aloha.Selection.SelectionRange(true);
 
-			// Only execute the workaround when a valid rangeObject was provided
-			if (typeof this.rangeObject !== "undefined" && typeof this.rangeObject.startContainer !== "undefined" && this.rangeObject.endContainer !== "undefined") {
-				// workaround for a nasty IE bug that allows the user to select text nodes inside areas with contenteditable "false"
-				if ((this.rangeObject.startContainer.nodeType === 3 && !jQuery(this.rangeObject.startContainer.parentNode).contentEditable()) || (this.rangeObject.endContainer.nodeType === 3 && !jQuery(this.rangeObject.endContainer.parentNode).contentEditable())) {
-					Aloha.getSelection().removeAllRanges();
-					return true;
+			// Determine the common ancestor container and update the selection
+			// tree.
+			range.update();
+
+			// Workaround for nasty IE bug that allows the user to select
+			// text nodes inside areas with contenteditable "false"
+			if (range && range.startContainer && range.endContainer) {
+				var inEditable =
+						jQuery(range.commonAncestorContainer)
+							.closest('.aloha-editable').length > 0;
+
+				if (inEditable) {
+					var validStartPosition = !(3 === range.startContainer.nodeType &&
+							!jQuery(range.startContainer.parentNode).contentEditable());
+
+					var validEndPosition = !(3 === range.endContainer.nodeType &&
+							!jQuery(range.endContainer.parentNode).contentEditable());
+
+					if (!validStartPosition || !validEndPosition) {
+						Aloha.getSelection().removeAllRanges();
+						return true;
+					}
 				}
 			}
-
-			// find the CAC (Common Ancestor Container) and update the selection Tree
-			this.rangeObject.update();
 
 			// check if aloha-selection-changed event has been prevented
 			if (this.isSelectionChangedPrevented()) {
@@ -2231,7 +2246,7 @@ define([
 		 * @void
 		 */
 		collapseToEnd: function () {
-			throw "NOT_IMPLEMENTED";
+			this._nativeSelection.collapseToEnd();
 		},
 
 		/**

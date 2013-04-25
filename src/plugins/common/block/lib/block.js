@@ -31,23 +31,23 @@
  * @namespace block/block
  */
 define([
-       'aloha',
-       'jquery',
-       'block/blockmanager',
-       'aloha/observable',
-       'ui/scopes',
-       'util/class',
-       'PubSub'
+	'aloha',
+	'jquery',
+	'block/blockmanager',
+	'aloha/observable',
+	'ui/scopes',
+	'util/class',
+	'PubSub'
 ], function(
-       Aloha,
-       jQuery,
-       BlockManager,
-       Observable,
-       Scopes,
-       Class,
-	   PubSub
+	Aloha,
+	jQuery,
+	BlockManager,
+	Observable,
+	Scopes,
+	Class,
+	PubSub
 ){
-	"use strict";
+	'use strict';
 
 	var GENTICS = window.GENTICS;
 
@@ -200,8 +200,11 @@ define([
 		 *
 		 * NOTE: Purely internal, "this" is not available inside this method!
 		 */
-		_preventSelectionChangedEventHandler: function() {
-			Aloha.Selection.preventSelectionChanged();
+		_preventSelectionChangedEventHandler: function ($event) {
+			if (('dblclick' !== $event.type)
+					&& !jQuery($event.target).is('.aloha-editable')) {
+				Aloha.Selection.preventSelectionChanged();
+			}
 		},
 
 		/**
@@ -468,7 +471,7 @@ define([
 			// Browsers do not remove the cursor, so we enforce it when an aditable is clicked.
 			// However, when the user clicked inside a nested editable, we will not remove the cursor (as the user wants to start typing then)
 			// small HACK: we also do not deactivate if we are inside an aloha-table-cell-editable.
-			if (jQuery(eventTarget).closest('.aloha-editable,.aloha-block,.aloha-table-cell-editable').first().hasClass('aloha-block')) {
+			if (jQuery(eventTarget).closest('.aloha-editable,.aloha-block,.aloha-table-cell-editable,.aloha-table-cell_active').first().hasClass('aloha-block')) {
 				this._isInsideNestedEditable = false;
 				Aloha.getSelection().removeAllRanges();
 			} else {
@@ -1099,7 +1102,7 @@ define([
 		renderBlockHandlesIfNeeded: function() {
 			if (this.isDraggable()) {
 				if (this.$element.children('.aloha-block-draghandle').length === 0) {
-					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
+					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle aloha-cleanme"></span>');
 				}
 			}
 		},
@@ -1153,6 +1156,9 @@ define([
 			if (attributeChanged && !suppressEvents) {
 				this._update();
 				this.trigger('change');
+				if (Aloha.activeEditable) {
+					Aloha.activeEditable.smartContentChange({type: 'block-change'});
+				}
 			}
 			return null;
 		},

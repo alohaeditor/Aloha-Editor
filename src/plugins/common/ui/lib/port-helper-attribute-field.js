@@ -54,24 +54,28 @@ define([
 	 *        objectTypeFilter -
 	 *        placeholder  -
 	 *        noTargetHighlight -
+	 *        targetHighlightCass - a class to be identify focused element
 	 *        cls          -
 	 *        width        -
 	 *        scope        -
+	 *        element      - the <input> element to use.
+	 *                       If not supplied, a new one will be created.
 	 */
 	var AttributeField = function (props) {
 		var valueField = props.valueField || 'id',
-		    displayField = props.displayField || 'name',
-		    objectTypeFilter = props.objectTypeFilter || ['all'],
-		    placeholder = props.placeholder,
-		    noTargetHighlight = !!props.noTargetHighlight,
-		    element = $('<input id="aloha-attribute-field-' + props.name + '">'),
-		    component,
-		    template,
-		    resourceItem,
-		    resourceValue,
-		    targetObject,
-		    targetAttribute,
-		    lastAttributeValue;
+			displayField = props.displayField || 'name',
+			objectTypeFilter = props.objectTypeFilter || ['all'],
+			placeholder = props.placeholder,
+			noTargetHighlight = !!props.noTargetHighlight,
+			targetHighlightClass = props.targetHighlightClass,
+			element = props.element ? $(props.element) : $('<input id="aloha-attribute-field-' + props.name + '">'),
+			component,
+			template,
+			resourceItem,
+			resourceValue,
+			targetObject,
+			targetAttribute,
+			lastAttributeValue;
 
 		if (props.cls) {
 			element.addClass(props.cls);
@@ -84,15 +88,19 @@ define([
 			scope: props.scope,
 			init: function(){
 
-				if (props.label) {
-					this.element = Utils.wrapWithLabel(props.label, element);
-					if (props.labelClass) {
-						this.element.addClass(props.labelClass);
-					}
+				if (props.element) {
+					this.element = element;
 				} else {
-					// Why do we have to wrap the element in a span? It
-					// doesn't seem to work otherwise.
-					this.element = $('<span>').append(element);
+					if (props.label) {
+						this.element = Utils.wrapWithLabel(props.label, element);
+						if (props.labelClass) {
+							this.element.addClass(props.labelClass);
+						}
+					} else {
+						// Why do we have to wrap the element in a span? It
+						// doesn't seem to work otherwise.
+						this.element = $('<span>').append(element);
+					}
 				}
 
 				element.autocomplete({
@@ -120,10 +128,15 @@ define([
 		element
 			.bind("focus", onFocus)
 			.bind("blur", onBlur)
-		    .bind("keydown", onKeyDown)
+			.bind("keydown", onKeyDown)
 			.bind("keyup", onKeyup);
 
 		setPlaceholder();
+
+		// Because IE7 doesn't give us the blur event when the editable
+		// is deactivated and the toolbar disappears (other browsers do).
+		// TODO unbind, otherwise mermory leak
+		Aloha.bind('aloha-editable-deactivated', onBlur);
 
 		function onSelect(event, ui) {
 			if (ui.item) {
@@ -204,12 +217,22 @@ define([
 		}
 
 		function changeTargetBackground() {
+			var target = $(targetObject);
+			if (targetHighlightClass) {
+				target.addClass(targetHighlightClass);
+			}
+
 			if (noTargetHighlight) {
 				return;
 			}
+
+			// Make sure that multiple invokations of
+			// changeTargetBackground don't set an incorrect
+			// data-original-background-color.
+			restoreTargetBackground();
+
 			// set background color to give visual feedback which link is modified
-			var	target = $(targetObject);
-			if (target && target.context && target.context.style &&
+			if (target.context && target.context.style &&
 				target.context.style['background-color']) {
 				target.attr('data-original-background-color',
 							target.context.style['background-color']);
@@ -218,16 +241,18 @@ define([
 		}
 
 		function restoreTargetBackground() {
+			var target = $(targetObject);
+			if (targetHighlightClass) {
+				target.removeClass(targetHighlightClass);
+			}
 			if (noTargetHighlight) {
 				return;
 			}
-			var target = $(targetObject);
 			// Remove the highlighting and restore original color if was set before
 			var color = target.attr('data-original-background-color');
-			if (color) {
-				target.css('background-color', color);
-			} else {
-				target.css('background-color', '');
+			target.css('background-color', color || '');
+			if (!target.attr('style')) {
+				target.removeAttr('style');
 			}
 			target.removeAttr('data-original-background-color');
 		}
@@ -239,7 +264,7 @@ define([
 		}
 
 		function setPlaceholder() {
-			if (null == placeholder) {
+			if (null === placeholder) {
 				return;
 			}
 			element.css('color', '#AAA');
@@ -409,7 +434,7 @@ define([
 		};
 
 		return attrField;
-	}
+	};
 
 	return AttributeField;
 });

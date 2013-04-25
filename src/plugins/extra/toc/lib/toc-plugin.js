@@ -82,8 +82,6 @@ define([
 	 * register the plugin with unique name
 	 */
 	return Plugin.create(namespace, {
-		
-		languages: ['en', 'de'],
 		minEntries: 0,
 		updateInterval: 5000,
 		config: ['toc'],

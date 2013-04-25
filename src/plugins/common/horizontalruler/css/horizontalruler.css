@@ -1,4 +1,3 @@
-
-.aloha-icon-horizontalruler {
-    background: url( '../img/icon.png' );
+.aloha .ui-icon.aloha-icon-horizontalruler {
+    background: url('../img/icon.png');
 }

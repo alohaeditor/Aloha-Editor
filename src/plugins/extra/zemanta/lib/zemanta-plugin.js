@@ -68,10 +68,6 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
 	 * register the plugin with unique name
 	 */
 	return Plugin.create('zemanta', {
-		/**
-		 * Configure the available languages
-		 */
-		languages: ['en'],
 
 		/**
 		 * Initialize the plugin and set initialize flag on true

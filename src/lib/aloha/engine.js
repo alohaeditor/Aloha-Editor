@@ -1,4 +1,4 @@
-define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery) {
+define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], function (Aloha, $_, Maps, Html, jQuery) {
 	"use strict";
 
 	function hasAttribute(obj, attr) {
@@ -557,6 +557,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		var matches = /^rgb\(([0-9]+), ([0-9]+), ([0-9]+)\)$/.exec(color);
 		if (matches) {
 			return "#" + parseInt(matches[1], 10).toString(16).replace(/^.$/, "0$&") + parseInt(matches[2], 10).toString(16).replace(/^.$/, "0$&") + parseInt(matches[3], 10).toString(16).replace(/^.$/, "0$&");
+		} else if (/^#[abcdef0123456789]+$/i.exec(color)) {
+			// return hexadecimal color values (as returned by IE 7/8)
+			return color;
 		}
 		return null;
 	}
@@ -574,6 +577,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 	var getStateOverride,
 	    setStateOverride,
+	    resetOverrides,
 	    unsetStateOverride,
 	    getValueOverride,
 	    setValueOverride,
@@ -720,22 +724,6 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		} else if (executionStackDepth == 0) {
 			globalRange = null;
 			globalRange = range;
-		}
-
-		// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-		//
-		// We can't throw a real one, but a string will do for our purposes.
-		if (!commands.hasOwnProperty(command)) {
-			throw "NOT_SUPPORTED_ERR";
-		}
-
-		// "If command has no action, raise an INVALID_ACCESS_ERR exception."
-		// "If command has no indeterminacy, raise an INVALID_ACCESS_ERR
-		// exception."
-		// "If command has no state, raise an INVALID_ACCESS_ERR exception."
-		// "If command has no value, raise an INVALID_ACCESS_ERR exception."
-		if (prop != "enabled" && !commands[command].hasOwnProperty(prop)) {
-			throw "INVALID_ACCESS_ERR";
 		}
 
 		executionStackDepth++;
@@ -885,12 +873,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// case-insensitively."
 		command = command.toLowerCase();
 
-		// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-		//
-		// "If command has no value, raise an INVALID_ACCESS_ERR exception."
 		return editCommandMethod(command, "value", range, function () {
-			// "If command is not enabled, return the empty string."
-			if (!myQueryCommandEnabled(command, range)) {
+			// "If command is not supported or has no value, return the empty string."
+			if (!commands.hasOwnProperty(command) || !commands[command].hasOwnProperty("value")) {
 				return "";
 			}
 
@@ -1155,9 +1140,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// https://github.com/alohaeditor/Aloha-Editor/issues/516
 		// look like it works in msie > 7
 		/* if (jQuery.browser.msie && jQuery.browser.version < 8) {
-		br.removeAttribute("style");
-		ref.removeAttribute("style");
-	} */
+		   br.removeAttribute("style");
+		   ref.removeAttribute("style");
+		   } */
 
 		return origHeight == finalHeight;
 	}
@@ -1378,9 +1363,108 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		return hasCollapsedBlockPropChild;
 	}
 
-	// Please note: This method is deprecated and will be removed. 
-	// Every command should use the value and range parameter. 
-	// 
+	/**
+	 * Checks whether the given node is a visible text node.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` is a visible text node.
+	 */
+	function isInvisibleTextNode(node) {
+		if (node && node.nodeType !== $_.Node.TEXT_NODE) {
+			return false;
+		}
+		var offset = 0;
+		var data = node.data;
+		var len = data.length;
+		while (offset < len && data.charAt(offset) === '\u200b') {
+			offset++;
+		}
+		return offset === len;
+	}
+
+	/**
+	 * Complement of isInvisibleTextNode().
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` is anything but an invisible text node.
+	 */
+	function isNotInvisibleTextNode(node) {
+		return !isInvisibleTextNode(node);
+	}
+
+	/**
+	 * Checks whether the given node is a otherwise empty block-level element
+	 * containing a propping <br> element.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` is a propped up block-level element.
+	 */
+	function isProppedBlock(node) {
+		if (!Html.isBlock(node)) {
+			return false;
+		}
+		var child = Html.findNodeRight(node.lastChild, isVisible);
+		return (
+			child
+			&& 'br' === child.nodeName.toLowerCase()
+			&& !Html.findNodeRight(child.previousSibling, isVisible)
+		);
+	}
+
+	/**
+	 * Checks whether the given node is a empty element, or an element that
+	 * would otherwise be empty except for a propping <br>, or an element
+	 * containing only invisible text nodes.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` can be considered empty.
+	 */
+	function isEmptyNode(node) {
+		return (
+			!node.hasChildNodes()
+			|| isProppedBlock(node)
+			|| !Html.findNodeRight(node.lastChild, isNotInvisibleTextNode)
+		);
+	}
+
+	/**
+	 * Check if the given node is a empty element which is the only
+	 * immediate child of a editing host.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if `node` can be regarded as empty and the
+	 *                   only immediate child of its parent editing host.
+	 */
+	function isEmptyOnlyChildOfEditingHost(node) {
+		return (
+			node
+				&& isEmptyNode(node)
+					&& isEditingHost(node.parentNode)
+						&& !node.previousSibling
+							&& !node.nextSibling
+		);
+	}
+
+	/**
+	 * Remove the given node and return the position from where it was
+	 * removed.
+	 *
+	 * @param {HTMLElement} node Element to remove from DOM
+	 * @return {object} Object containing node and offset index.
+	 */
+	function removeNode(node) {
+		var ancestor = node.parentNode;
+		var offset = getNodeIndex(node);
+		ancestor.removeChild(node);
+		return {
+			node: ancestor,
+			offset: offset
+		};
+	}
+
+	// Please note: This method is deprecated and will be removed.
+	// Every command should use the value and range parameter.
+	//
 	// "The active range is the first range in the Selection given by calling
 	// getSelection() on the context object, or null if there is no such range."
 	//
@@ -1424,13 +1508,26 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		var valueOverrides = {};
 		var storedRange = null;
 
-		function resetOverrides(range) {
-			if (!storedRange || storedRange.startContainer != range.startContainer || storedRange.endContainer != range.endContainer || storedRange.startOffset != range.startOffset || storedRange.endOffset != range.endOffset) {
-				stateOverrides = {};
-				valueOverrides = {};
-				storedRange = range.cloneRange();
+		resetOverrides = function (range) {
+			if (!storedRange
+				    || storedRange.startContainer != range.startContainer
+				    || storedRange.endContainer != range.endContainer
+				    || storedRange.startOffset != range.startOffset
+				    || storedRange.endOffset != range.endOffset) {
+				storedRange = {
+					startContainer: range.startContainer,
+					endContainer: range.endContainer,
+					startOffset: range.startOffset,
+					endOffset: range.endOffset
+				};
+				if (!Maps.isEmpty(stateOverrides) || !Maps.isEmpty(valueOverrides)) {
+					stateOverrides = {};
+					valueOverrides = {};
+					return true;
+				}
 			}
-		}
+			return false;
+		};
 
 		getStateOverride = function (command, range) {
 			resetOverrides(range);
@@ -1551,7 +1648,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		}
 
 		// if we're off actual node boundaries this implies that the move was
-		// part of a deletion process (backspace). If that's the case we 
+		// part of a deletion process (backspace). If that's the case we
 		// attempt to fix this by restoring the range to the first index of
 		// the node that has been moved
 		var newRange = null;
@@ -1577,22 +1674,22 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 	/**
 	 * Copy all non empty attributes from an existing to a new element
-	 * 
+	 *
 	 * @param {dom} element The source DOM element
 	 * @param {dom} newElement The new DOM element which will get the attributes of the source DOM element
 	 * @return void
 	 */
 	function copyAttributes(element, newElement) {
 
-		// This is an IE7 workaround. We identified three places that were connected 
+		// This is an IE7 workaround. We identified three places that were connected
 		// to the mysterious ie7 crash:
 		// 1. Add attribute to dom element (Initialization of jquery-ui sortable)
-		// 2. Access the jquery expando attribute. Just reading the name is 
+		// 2. Access the jquery expando attribute. Just reading the name is
 		//    sufficient to make the browser vulnerable for the crash (Press enter)
 		// 3. On editable blur the Aloha.editables[0].getContents(); gets invoked.
-		//    This invokation somehow crashes the ie7. We assume that the access of 
-		//    shared expando attribute updates internal references which are not 
-		//    correclty handled during clone(); 
+		//    This invokation somehow crashes the ie7. We assume that the access of
+		//    shared expando attribute updates internal references which are not
+		//    correclty handled during clone();
 		if (jQuery.browser.msie && jQuery.browser.version >= 7 && typeof element.attributes[jQuery.expando] !== 'undefined') {
 			jQuery(element).removeAttr(jQuery.expando);
 		}
@@ -1606,7 +1703,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 				if (typeof newElement.setAttributeNS === 'function') {
 					newElement.setAttributeNS(attr.namespaceURI, attr.name, attr.value);
 				} else {
-					// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515 
+					// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515
 					newElement.setAttribute(attr.name, attr.value);
 				}
 			}
@@ -3384,7 +3481,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// here as well.  The active range will be temporarily in orphaned
 			// nodes, so calling getActiveRange() after splitText() but before
 			// fixing the range will throw an exception.
-			// TODO: check if this is still neccessary 
+			// TODO: check if this is still neccessary
 			var activeRange = range;
 			var newStart = [activeRange.startContainer, activeRange.startOffset];
 			var newEnd = [activeRange.endContainer, activeRange.endOffset];
@@ -3424,10 +3521,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	 * which is located one step right of the current caret position.
 	 * If an appropriate element is found it will be returned or
 	 * false otherwise
-	 * 
+	 *
 	 * @param {element} node current node we're in
 	 * @param {number} offset current offset within that node
-	 * 
+	 *
 	 * @return the dom node if found or false if no appropriate
 	 * element was found
 	 */
@@ -3475,10 +3572,10 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	 * which is located right before the current position.
 	 * If an appropriate element is found, it will be returned or
 	 * false otherwise
-	 * 
+	 *
 	 * @param {element} node current node
 	 * @param {offset} offset current offset
-	 * 
+	 *
 	 * @return dom node of found or false if no appropriate
 	 * element was found
 	 */
@@ -3736,7 +3833,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 	commands.backcolor = {
 		// Copy-pasted, same as hiliteColor
-		action: function (value) {
+		action: function (value, range) {
 			// Action is further copy-pasted, same as foreColor
 
 			// "If value is not a valid CSS color, prepend "#" to it."
@@ -3753,7 +3850,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// "Set the selection's value to value."
-			setSelectionValue("backcolor", value);
+			setSelectionValue("backcolor", value, range);
 		},
 		standardInlineValueCommand: true,
 		relevantCssProperty: "backgroundColor",
@@ -3791,7 +3888,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The createLink command /////
 	//@{
 	commands.createlink = {
-		action: function (value) {
+		action: function (value, range) {
 			// "If value is the empty string, abort these steps and do nothing."
 			if (value === "") {
 				return;
@@ -3812,7 +3909,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			});
 
 			// "Set the selection's value to value."
-			setSelectionValue("createlink", value);
+			setSelectionValue("createlink", value, range);
 		},
 		standardInlineValueCommand: true
 	};
@@ -3821,9 +3918,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The fontName command /////
 	//@{
 	commands.fontname = {
-		action: function (value) {
+		action: function (value, range) {
 			// "Set the selection's value to value."
-			setSelectionValue("fontname", value);
+			setSelectionValue("fontname", value, range);
 		},
 		standardInlineValueCommand: true,
 		relevantCssProperty: "fontFamily"
@@ -3834,7 +3931,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 
 	commands.fontsize = {
-		action: function (value) {
+		action: function (value, range) {
 			// "If value is the empty string, abort these steps and do nothing."
 			if (value === "") {
 				return;
@@ -3852,7 +3949,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// "Set the selection's value to value."
-			setSelectionValue("fontsize", value);
+			setSelectionValue("fontsize", value, range);
 		},
 		indeterm: function () {
 			// "True if among editable Text nodes that are effectively contained in
@@ -3890,7 +3987,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The foreColor command /////
 	//@{
 	commands.forecolor = {
-		action: function (value) {
+		action: function (value, range) {
 			// Copy-pasted, same as backColor and hiliteColor
 
 			// "If value is not a valid CSS color, prepend "#" to it."
@@ -3907,7 +4004,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// "Set the selection's value to value."
-			setSelectionValue("forecolor", value);
+			setSelectionValue("forecolor", value, range);
 		},
 		standardInlineValueCommand: true,
 		relevantCssProperty: "color",
@@ -3924,7 +4021,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 	commands.hilitecolor = {
 		// Copy-pasted, same as backColor
-		action: function (value) {
+		action: function (value, range) {
 			// Action is further copy-pasted, same as foreColor
 
 			// "If value is not a valid CSS color, prepend "#" to it."
@@ -3941,7 +4038,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// "Set the selection's value to value."
-			setSelectionValue("hilitecolor", value);
+			setSelectionValue("hilitecolor", value, range);
 		},
 		indeterm: function () {
 			// "True if among editable Text nodes that are effectively contained in
@@ -3986,7 +4083,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The removeFormat command /////
 	//@{
 	commands.removeformat = {
-		action: function () {
+		action: function (value, range) {
 			var newEnd, newStart, newNode;
 
 			// "A removeFormat candidate is an editable HTML element with local
@@ -4065,7 +4162,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// "For each of the entries in the following list, in the given order,
 			// set the selection's value to null, with command as given."
 			$_(["subscript", "bold", "fontname", "fontsize", "forecolor", "hilitecolor", "italic", "strikethrough", "underline"]).forEach(function (command) {
-				setSelectionValue(command, null);
+				setSelectionValue(command, null, range);
 			});
 		}
 	};
@@ -4074,14 +4171,14 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The strikethrough command /////
 	//@{
 	commands.strikethrough = {
-		action: function () {
+		action: function (value, range) {
 			// "If queryCommandState("strikethrough") returns true, set the
 			// selection's value to null. Otherwise set the selection's value to
 			// "line-through"."
-			if (myQueryCommandState("strikethrough")) {
-				setSelectionValue("strikethrough", null);
+			if (myQueryCommandState("strikethrough", range)) {
+				setSelectionValue("strikethrough", null, range);
 			} else {
-				setSelectionValue("strikethrough", "line-through");
+				setSelectionValue("strikethrough", "line-through", range);
 			}
 		},
 		inlineCommandActivatedValues: ["line-through"]
@@ -4091,16 +4188,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The subscript command /////
 	//@{
 	commands.subscript = {
-		action: function () {
+		action: function (value, range) {
 			// "Call queryCommandState("subscript"), and let state be the result."
-			var state = myQueryCommandState("subscript");
+			var state = myQueryCommandState("subscript", range);
 
 			// "Set the selection's value to null."
-			setSelectionValue("subscript", null);
+			setSelectionValue("subscript", null, range);
 
 			// "If state is false, set the selection's value to "subscript"."
 			if (!state) {
-				setSelectionValue("subscript", "subscript");
+				setSelectionValue("subscript", "subscript", range);
 			}
 		},
 		indeterm: function () {
@@ -4124,17 +4221,17 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The superscript command /////
 	//@{
 	commands.superscript = {
-		action: function () {
+		action: function (value, range) {
 			// "Call queryCommandState("superscript"), and let state be the
 			// result."
-			var state = myQueryCommandState("superscript");
+			var state = myQueryCommandState("superscript", range);
 
 			// "Set the selection's value to null."
-			setSelectionValue("superscript", null);
+			setSelectionValue("superscript", null, range);
 
 			// "If state is false, set the selection's value to "superscript"."
 			if (!state) {
-				setSelectionValue("superscript", "superscript");
+				setSelectionValue("superscript", "superscript", range);
 			}
 		},
 		indeterm: function () {
@@ -4161,13 +4258,13 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	///// The underline command /////
 	//@{
 	commands.underline = {
-		action: function () {
+		action: function (value, range) {
 			// "If queryCommandState("underline") returns true, set the selection's
 			// value to null. Otherwise set the selection's value to "underline"."
-			if (myQueryCommandState("underline")) {
-				setSelectionValue("underline", null);
+			if (myQueryCommandState("underline", range)) {
+				setSelectionValue("underline", null, range);
 			} else {
-				setSelectionValue("underline", "underline");
+				setSelectionValue("underline", "underline", range);
 			}
 		},
 		inlineCommandActivatedValues: ["underline"]
@@ -4337,6 +4434,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	 */
 	function ensureContainerEditable(container) {
 		if (!container) {
+			return;
+		}
+
+		// Because it is useful to be able to completely empty the contents of
+		// an editing host during editing.  So long as the container's
+		// contenteditable attribute is "true" (as is the case during editing),
+		// the element will be rendered visibly in all browsers.  This fact
+		// allows us to not have to prop up the container with a <br> in order
+		// to keep it accessible to the editor.
+		if (isEditingHost(container)) {
 			return;
 		}
 
@@ -4903,7 +5010,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 				// returns something different from override, call
 				// execCommand(command)."
 				if (typeof override == "boolean" && myQueryCommandState(command, range) != override) {
-					myExecCommand(command);
+					myExecCommand(command, false, override, range);
 
 					// "Otherwise, if override is a string, and command is not
 					// "fontSize", and queryCommandValue(command) returns something not
@@ -5274,7 +5381,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// range's end to its start and abort these steps."
 		if (getPosition(endNode, endOffset, startNode, startOffset) !== "after") {
 			range.setEnd(range.startContainer, range.startOffset);
-			return;
+			return range;
 		}
 
 		// "If start node is a Text node and start offset is 0, set start offset to
@@ -5352,7 +5459,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			canonicalizeWhitespace(startNode, startOffset);
 
 			// "Set range's end to its start."
-			// Ok, also set the range's start to its start, because modifying the text 
+			// Ok, also set the range's start to its start, because modifying the text
 			// might have somehow corrupted the range
 			range.setStart(range.startContainer, range.startOffset);
 			range.setEnd(range.startContainer, range.startOffset);
@@ -5365,12 +5472,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// and append the result as the last child of parent."
 			// only do this, if the offsetHeight is 0
 			if ((isEditable(parent_) || isEditingHost(parent_)) && !isInlineNode(parent_)) {
-				// TODO is this always correct?
 				ensureContainerEditable(parent_);
 			}
 
 			// "Abort these steps."
-			return;
+			return range;
 		}
 
 		// "If start node is an editable Text node, call deleteData() on it, with
@@ -5435,6 +5541,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// "Canonicalize whitespace at range's end."
 		canonicalizeWhitespace(range.endContainer, range.endOffset);
 
+		// A reference to the position where a node is removed.
+		var pos;
+
 		// "If block merging is false, or start block or end block is null, or
 		// start block is not in the same editing host as end block, or start block
 		// and end block are the same:"
@@ -5442,11 +5551,22 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			// "Set range's end to its start."
 			range.setEnd(range.startContainer, range.startOffset);
 
+			// Calling delete on the give markup:
+			// <editable><block><br>[]</block></editable>
+			// should result in:
+			// <editable>[]</editable>
+			var block = startBlock || endBlock;
+			if (isEmptyOnlyChildOfEditingHost(block)) {
+				pos = removeNode(block);
+				range.setStart(pos.node, pos.offset);
+				range.setEnd(pos.node, pos.offset);
+			}
+
 			// "Restore states and values from overrides."
 			restoreStatesAndValues(overrides, range);
 
 			// "Abort these steps."
-			return;
+			return range;
 		}
 
 		// "If start block has one child, which is a collapsed block prop, remove
@@ -5508,14 +5628,14 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 				restoreStatesAndValues(overrides, range);
 
 				// "Abort these steps."
-				return;
+				return range;
 			}
 
 			// "If end block's firstChild is not an inline node, restore states and
 			// values from overrides, then abort these steps."
 			if (!isInlineNode(endBlock.firstChild)) {
 				restoreStatesAndValues(overrides, range);
-				return;
+				return range;
 			}
 
 			// "Let children be a list of nodes, initially empty."
@@ -5635,12 +5755,39 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		// "Restore the values from values."
 		restoreValues(values, range);
 
+		// Because otherwise calling deleteContents() with the given selection:
+		//
+		// <editable><block>[foo</block><block>bar]</block></editable>
+		//
+		// would result in:
+		//
+		// <editable><block>[]<br /></block></editable>
+		//
+		// instead of:
+		//
+		// <editable>[]</editable>
+		//
+		// Therefore, the below makes it possible to completely empty contents
+		// of editing hosts via operations like CTRL+A, DEL.
+		//
+		// If startBlock is empty, and startBlock is the immediate and only
+		// child of its parent editing host, then remove startBlock and collapse
+		// the selection at the beginning of the editing post.
+		if (isEmptyOnlyChildOfEditingHost(startBlock)) {
+			pos = removeNode(startBlock);
+			range.setStart(pos.node, pos.offset);
+			range.setEnd(pos.node, pos.offset);
+			startBlock = pos.node;
+		}
+
 		// "If start block has no children, call createElement("br") on the context
 		// object and append the result as the last child of start block."
 		ensureContainerEditable(startBlock);
 
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides, range);
+
+		return range;
 	}
 
 	// "To remove a node node while preserving its descendants, split the parent of
@@ -6317,7 +6464,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 	//@}
 	///// Move the given collapsed range over adjacent zero-width whitespace characters.
-	///// The range is 
+	///// The range is
 	//@{
 	/**
 	 * Move the given collapsed range over adjacent zero-width whitespace characters.
@@ -6402,16 +6549,16 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 					isBr = isNamedHtmlElement(node.childNodes[offset - 1], "br") || false;
 					isHr = isNamedHtmlElement(node.childNodes[offset - 1], "hr") || false;
 				}
-
 				// "If offset is zero and node's previousSibling is an editable
 				// invisible node, remove node's previousSibling from its parent."
 				if (offset == 0 && isEditable(node.previousSibling) && isInvisible(node.previousSibling)) {
 					node.parentNode.removeChild(node.previousSibling);
-
-					// "Otherwise, if node has a child with index offset − 1 and that
-					// child is an editable invisible node, remove that child from
-					// node, then subtract one from offset."
-				} else if (0 <= offset - 1 && offset - 1 < node.childNodes.length && isEditable(node.childNodes[offset - 1]) && (isInvisible(node.childNodes[offset - 1]) || isBr || isHr)) {
+					continue;
+				}
+				// "Otherwise, if node has a child with index offset − 1 and that
+				// child is an editable invisible node, remove that child from
+				// node, then subtract one from offset."
+				if (0 <= offset - 1 && offset - 1 < node.childNodes.length && isEditable(node.childNodes[offset - 1]) && (isInvisible(node.childNodes[offset - 1]) || isBr || isHr)) {
 					node.removeChild(node.childNodes[offset - 1]);
 					offset--;
 					if (isBr || isHr) {
@@ -6419,32 +6566,37 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 						range.setEnd(node, offset);
 						return;
 					}
+					continue;
 
-					// "Otherwise, if offset is zero and node is an inline node, or if
-					// node is an invisible node, set offset to the index of node, then
-					// set node to its parent."
-				} else if ((offset == 0 && isInlineNode(node)) || isInvisible(node)) {
+				}
+				// "Otherwise, if offset is zero and node is an inline node, or if
+				// node is an invisible node, set offset to the index of node, then
+				// set node to its parent."
+				if ((offset == 0 && isInlineNode(node)) || isInvisible(node)) {
 					offset = getNodeIndex(node);
 					node = node.parentNode;
-
-					// "Otherwise, if node has a child with index offset − 1 and that
-					// child is an editable a, remove that child from node, preserving
-					// its descendants. Then abort these steps."
-				} else if (0 <= offset - 1 && offset - 1 < node.childNodes.length && isEditable(node.childNodes[offset - 1]) && isNamedHtmlElement(node.childNodes[offset - 1], "a")) {
+					continue;
+				}
+				// "Otherwise, if node has a child with index offset − 1 and that
+				// child is an editable a, remove that child from node, preserving
+				// its descendants. Then abort these steps."
+				if (0 <= offset - 1 && offset - 1 < node.childNodes.length && isEditable(node.childNodes[offset - 1]) && isNamedHtmlElement(node.childNodes[offset - 1], "a")) {
 					removePreservingDescendants(node.childNodes[offset - 1], range);
 					return;
 
-					// "Otherwise, if node has a child with index offset − 1 and that
-					// child is not a block node or a br or an img, set node to that
-					// child, then set offset to the length of node."
 				}
-
+				// "Otherwise, if node has a child with index offset − 1 and that
+				// child is not a block node or a br or an img, set node to that
+				// child, then set offset to the length of node."
 				if (0 <= offset - 1 && offset - 1 < node.childNodes.length && !isBlockNode(node.childNodes[offset - 1]) && !isHtmlElementInArray(node.childNodes[offset - 1], ["br", "img"])) {
 					node = node.childNodes[offset - 1];
 					offset = getNodeLength(node);
-
-					// "Otherwise, break from this loop."
-				} else {
+					continue;
+				}
+				// "Otherwise, break from this loop."
+				// brk is a quick and dirty jslint workaround since I don't want to rewrite this loop
+				var brk = true;
+				if (brk) {
 					break;
 				}
 			}
@@ -6468,7 +6620,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// @iebug
-			// when inserting a special char via the plugin 
+			// when inserting a special char via the plugin
 			// there where problems deleting them again with backspace after insertation
 			// see https://github.com/alohaeditor/Aloha-Editor/issues/517
 			if (node.nodeType == $_.Node.TEXT_NODE && offset == 0 && jQuery.browser.msie) {
@@ -6703,7 +6855,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			deleteContents(delRange);
 
 			if (!isAncestorContainer(document.body, range.startContainer)) {
-				if (delRange.startContainer.hasChildNodes() || delRange.startContainer.nodeType == $_.Node.TEXT_NODE) {
+				if (delRange.startContainer.hasChildNodes()
+						|| delRange.startContainer.nodeType == $_.Node.TEXT_NODE
+							|| isEditingHost(delRange.startContainer)) {
 					range.setStart(delRange.startContainer, delRange.startOffset);
 					range.setEnd(delRange.startContainer, delRange.startOffset);
 				} else {
@@ -7154,7 +7308,9 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 
 			// "Delete the contents of the range with start (node, offset) and end
 			// (end node, end offset)."
-			deleteContents(node, offset, endNode, endOffset);
+			var newRange = deleteContents(node, offset, endNode, endOffset);
+			range.setStart(newRange.startContainer, newRange.startOffset);
+			range.setEnd(newRange.endContainer, newRange.endOffset);
 		}
 	};
 
@@ -7529,8 +7685,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 	commands.insertorderedlist = {
 		// "Toggle lists with tag name "ol"."
-		action: function () {
-			toggleLists("ol");
+		action: function (value, range) {
+			toggleLists("ol", range);
 		},
 		// "True if the selection's list state is "mixed" or "mixed ol", false
 		// otherwise."
@@ -7677,6 +7833,12 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 					},
 					range
 				);
+			}
+
+			// If no container has been set yet, it is not possible to insert a paragraph at this position;
+			// the following steps are skipped in order to prevent critical errors from occurring;
+			if (!container) {
+				return;
 			}
 
 			// "If container's local name is "address", "listing", or "pre":"
@@ -7999,7 +8161,7 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 			}
 
 			// "Restore states and values from overrides."
-			restoreStatesAndValues(overrides);
+			restoreStatesAndValues(overrides, range);
 
 			// "Canonicalize whitespace at the active range's start."
 			canonicalizeWhitespace(range.startContainer, range.startOffset);
@@ -8018,8 +8180,8 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 	//@{
 	commands.insertunorderedlist = {
 		// "Toggle lists with tag name "ul"."
-		action: function () {
-			toggleLists("ul");
+		action: function (value, range) {
+			toggleLists("ul", range);
 		},
 		// "True if the selection's list state is "mixed" or "mixed ul", false
 		// otherwise."
@@ -8474,7 +8636,11 @@ define(['aloha/core', 'aloha/ecma5shims', 'jquery'], function (Aloha, $_, jQuery
 		isEndBreak: isEndBreak,
 		ensureContainerEditable: ensureContainerEditable,
 		isEditingHost: isEditingHost,
-		isEditable: isEditable
+		isEditable: isEditable,
+		getStateOverride: getStateOverride,
+		setStateOverride: setStateOverride,
+		resetOverrides: resetOverrides,
+		unsetStateOverride: unsetStateOverride
 	};
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker

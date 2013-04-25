@@ -556,13 +556,13 @@ div.repository-browser-modal-window {
 	background: transparent no-repeat center center;
 }
 .repository-browser-icon-page {
-	background: url(../img/gcn-icons/gcn-icon-page.gif) no-repeat center center;
+	background: url(../img/page.png) no-repeat center center;
 }
 .repository-browser-icon-file {
-	background: url(../img/gcn-icons/gcn-icon-file.gif) no-repeat center center;
+	background: url(../img/folder-open.png) no-repeat center center;
 }
 .repository-browser-icon-image {
-	background: url(../img/gcn-icons/gcn-icon-image.gif) no-repeat center center;
+	background: url(../img/picture.png) no-repeat center center;
 }
 .repository-browser-grab-handle {
 	cursor: default;

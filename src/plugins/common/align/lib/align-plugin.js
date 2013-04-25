@@ -1,9 +1,9 @@
 /* align-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -34,7 +34,7 @@ define([
 	'jquery',
 	'PubSub'
 ], function(
-	Aloha,
+		Aloha,
     Plugin,
     Ui,
     ToggleButton,
@@ -54,17 +54,11 @@ define([
 		_constructor: function(){
 			this._super('align');
 		},
-
-		/**
-		 * Configure the available languages
-		 */
-		languages: ['en', 'fr'],
-
 		/**
 		 * Configuration (available align options)
 		 */
 		config: {
-			alignment: ['right','left','center','justify']
+			alignment: ['right','left','center','justify','top','middle','bottom']
 		},
 
 		/**
@@ -72,10 +66,14 @@ define([
 		 */
 		alignment: '',
 
+		verticalAlignment: '',
+
 		/**
 		 * Alignment of the selection before modification
 		 */
 		lastAlignment: '',
+
+		lastVerticalAlignment: '',
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
@@ -100,11 +98,29 @@ define([
 		},
 
 		buttonPressed: function (rangeObject) {
-			var that = this;
-			rangeObject.findMarkup(function() {
-		        that.alignment = jQuery(this).css('text-align');
-		    }, Aloha.activeEditable.obj);
+			this.horizontalButtonPressed( rangeObject );
+			this.verticalButtonPressed( rangeObject );
+		},
 
+		horizontalButtonPressed: function(rangeObject) {
+			var that = this;
+
+			this.lastAlignment = this.alignment;
+
+			//reset current alignment
+			this.alignment = '';
+
+			rangeObject.findMarkup(function() {
+				// try to find explicitly defined text-align style property
+				if(this.style.textAlign !== "") {
+					that.alignment = this.style.textAlign;
+					return true;
+				}
+
+				that.alignment = jQuery(this).css('text-align');
+		  }, Aloha.activeEditable.obj);
+
+			// set horizontal button states
 			if (this.alignment != this.lastAlignment) {
 				// reset all button states -- it can only be one active...
 				this._alignRightButton.setState(false);
@@ -127,8 +143,49 @@ define([
 					this.alignment = 'left';
 					break;
 				}
+			}
+		},
 
-				this.lastAlignment = this.alignment;
+		verticalButtonPressed: function(rangeObject) {
+			var that = this;
+
+			this.lastVerticalAlignment = this.verticalAlignment;
+
+			//reset current alignment
+			this.verticalAlignment = '';
+
+			rangeObject.findMarkup(function() {
+				// try to find explicitly defined vertical-align style property
+				if(this.style.verticalAlign !== "") {
+					that.verticalAlignment = this.style.verticalAlign;
+					return true;
+				}
+
+				that.verticalAlignment = jQuery(this).css('vertical-align');
+		  }, Aloha.activeEditable.obj);
+
+			// set vertical button states
+			if (this.verticalAlignment != this.lastVerticalAlignment) {
+				// reset all button states -- it can only be one active...
+				this._alignTopButton.setState(false);
+				this._alignMiddleButton.setState(false);
+				this._alignBottomButton.setState(false);
+
+				switch (this.verticalAlignment) {
+				case 'top':
+					this._alignTopButton.setState(true);
+					break;
+				case 'middle':
+					this._alignMiddleButton.setState(true);
+					break;
+				case 'bottom':
+					this._alignBottomButton.setState(true);
+					break;
+				default:
+					this._alignTopButton.setState(true);
+					this.verticalAlignment = 'top';
+					break;
+				}
 			}
 		},
 
@@ -176,6 +233,24 @@ define([
 			} else {
 				this._alignJustifyButton.show(false);
 			}
+
+			if ( jQuery.inArray('top', config.alignment) != -1) {
+				this._alignTopButton.show(true);
+			} else {
+				this._alignTopButton.show(false);
+			}
+
+			if ( jQuery.inArray('middle', config.alignment) != -1) {
+				this._alignMiddleButton.show(true);
+			} else {
+				this._alignMiddleButton.show(false);
+			}
+
+			if ( jQuery.inArray('bottom', config.alignment) != -1) {
+				this._alignBottomButton.show(true);
+			} else {
+				this._alignBottomButton.show(false);
+			}
 		},
 
 		createButtons: function () {
@@ -208,28 +283,65 @@ define([
 				scope: 'Aloha.continuoustext',
 				click: function(){ that.align('justify'); }
 			});
+
+			this._alignTopButton = Ui.adopt("alignTop", ToggleButton, {
+				tooltip: i18n.t('button.aligntop.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-top',
+				scope: 'table.cell',
+				click: function(){ that.verticalAlign('top'); }
+			});
+
+			this._alignMiddleButton = Ui.adopt("alignMiddle", ToggleButton, {
+				tooltip: i18n.t('button.alignmiddle.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-middle',
+				scope: 'table.cell',
+				click: function(){ that.verticalAlign('middle'); }
+			});
+
+			this._alignBottomButton = Ui.adopt("alignBottom", ToggleButton, {
+				tooltip: i18n.t('button.alignbottom.tooltip'),
+				icon: 'aloha-icon aloha-icon-align aloha-icon-align-bottom',
+				scope: 'table.cell',
+				click: function(){ that.verticalAlign('bottom'); }
+			});
+
 		},
 
-		/**
-		 * Check whether inside a align tag
-		 * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
-		 * @return markup
-		 * @hide
-		 */
-		findAlignMarkup: function ( range ) {
+		verticalAlign: function ( tempAlignment ) {
 
 			var that = this;
+			var range = Aloha.Selection.getRangeObject();
 
-			if ( typeof range === 'undefined' ) {
-		        var range = Aloha.Selection.getRangeObject();
-		    }
-			if ( Aloha.activeEditable ) {
-				return range.findMarkup(function() {
-					return jQuery(this).css('text-align') == that.alignment;
-			    }, Aloha.activeEditable.obj);
-			} else {
-				return null;
+			this.lastVerticalAlignment = this.verticalAlignment;
+			this.verticalAlignment = tempAlignment;
+
+			// check if the selection range is inside a table
+			var selectedCells = this.getSelectedCells( range );
+
+			if ( selectedCells ) {
+				that.toggleAlign ( selectedCells, 'vertical-align');
 			}
+
+			// reset previous button states
+			if ( this.verticalAlignment != this.lastVerticalAlignment ) {
+				switch ( this.lastVerticalAlignment ) {
+					case 'top':
+						this._alignTopButton.setState(false);
+						break;
+
+					case 'middle':
+						this._alignMiddleButton.setState(false);
+						break;
+
+					case 'bottom':
+						this._alignBottomButton.setState(false);
+						break;
+				}
+			}
+
+			// select the (possibly modified) range
+			range.select();
+
 		},
 
 		/**
@@ -237,48 +349,38 @@ define([
 		 */
 		align: function ( tempAlignment ) {
 
+			var that = this;
 			var range = Aloha.Selection.getRangeObject();
 
 			this.lastAlignment = this.alignment;
 			this.alignment = tempAlignment;
 
-		    if (Aloha.activeEditable) {
-		        if ( this.findAlignMarkup( range ) ) {
-		            this.removeAlign();
-		        } else {
-		        	this.insertAlign();
-		        }
-		    }
-		},
+			var rangeParent = range.getCommonAncestorContainer();
 
-		/**
-		 * Align the selection
-		 */
-		insertAlign: function () {
-			var that = this;
+			// check if the selection range is inside a table
+			var selectedCells = this.getSelectedCells( range );
 
-			// do not align the range
-			if ( this.findAlignMarkup( range ) ) {
-					return;
-			}
-			// current selection or cursor position
-			var range = Aloha.Selection.getRangeObject();
+			if ( selectedCells ) {
+				that.toggleAlign( selectedCells );
+			} else if (!GENTICS.Utils.Dom.isEditingHost(rangeParent)) {
 
-			// Check if the parent node is not the main editable node and align
-			// OR iterates the whole selectionTree and align
-			if (!GENTICS.Utils.Dom.isEditingHost(range.getCommonAncestorContainer()))
-				jQuery(range.getCommonAncestorContainer()).css('text-align', this.alignment);
-			else
+				// if the parent node is not the main editable node and align
+				// OR iterates the whole selectionTree and align
+					that.toggleAlign( rangeParent );
+			}	else {
+				var alignableElements = [];
 				jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
-					if(this.selection !== 'none' && this.domobj.nodeType !== 3) {
-						jQuery(this.domobj).css('text-align', that.alignment);
+					if (this.selection !== 'none' && this.domobj.nodeType !== 3) {
+						alignableElements.push( this.domobj );
 					}
 				});
 
-			if(this.alignment != this.lastAlignment)
-			{
-				switch(this.lastAlignment)
-				{
+				that.toggleAlign( alignableElements );
+			}
+
+			// reset previous button states
+			if ( this.alignment != this.lastAlignment ) {
+				switch ( this.lastAlignment ) {
 					case 'right':
 						this._alignRightButton.setState(false);
 						break;
@@ -297,27 +399,65 @@ define([
 				}
 			}
 
-		    // select the (possibly modified) range
-		    range.select();
+			// select the (possibly modified) range
+			range.select();
+
+		},
+
+		getSelectedCells: function( range ) {
+
+			var selectedCell;
+
+			var activeTable = range.findMarkup(function() {
+				if ( jQuery(this).is( 'td,th' ) ) {
+					selectedCell = this;
+				}
+				return jQuery( this ).is( 'table.aloha-table' );
+			}, Aloha.activeEditable.obj);
+
+			var selectedCells = jQuery( activeTable ).find( '.aloha-cell-selected' );
+
+			return (  selectedCells.length ? selectedCells : selectedCell );
+
 		},
 
 		/**
-		 * Remove the alignment
+		 * Toggle the align property of given DOM object(s)
 		 */
-		removeAlign: function () {
+		toggleAlign: function ( domObj, property ) {
 
-		    var range = Aloha.Selection.getRangeObject();
+			var that = this;
 
-		    if ( this.findAlignMarkup( range ) ) {
+			property = property || 'text-align';
 
-		    	// Remove the alignment
-		    	range.findMarkup(function() {
-		            jQuery(this).css('text-align', '');
-		        }, Aloha.activeEditable.obj);
+			var newAlignment = ( property === 'vertical-align' ) ? that.verticalAlignment : that.alignment;
 
-		        // select the (possibly modified) range
-		        range.select();
-		    }
+			var shouldRemoveAlignment = true;
+
+			jQuery( domObj ).each( function() {
+
+				var currentAlignment = jQuery( this ).css( property );
+
+				if ( currentAlignment != newAlignment ) {
+					shouldRemoveAlignment = false;
+					return false;
+				}
+
+			});
+
+
+			jQuery( domObj ).each( function() {
+
+				var currentAlignment = jQuery( this ).css( property );
+
+				if ( ( currentAlignment == newAlignment ) && shouldRemoveAlignment ) {
+					jQuery( this ).css( property, '' );
+				} else {
+					jQuery( this ).css( property, newAlignment );
+				}
+
+			});
+
 		}
 
 	});

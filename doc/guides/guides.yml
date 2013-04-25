@@ -8,7 +8,7 @@ index:
     - "UI"
     - "Plugins"
     - "Contributing to Aloha Editor"
-    
+
   Start Here:
     - title: "Use"
       url: using_aloha
@@ -19,7 +19,7 @@ index:
     - title: "Dependencies"
       url: dependencies
       text: "In this guide, we will explain how dependencies are managed with Aloha Editor."
-      
+
   The Core:
     - title: "Events"
       url: events
@@ -44,7 +44,10 @@ index:
     - title: "Hotkeys"
       url: core_hotkey
       text: "Key combinations available in Aloha Editor"
-      
+    - title: "Sidebar"
+      url: sidebar
+      text: "Using the Sidebar in your plugins"
+
   Plugins:
     - title: "Available Plugins"
       url: plugins
@@ -63,3 +66,6 @@ index:
     - title: "Documentation Guidelines"
       url: "documentation_guidelines"
       text: "Writing and generating jsdoc documentation."
+    - title: Translations
+      url: translations
+      text: "Translate Aloha Editor into your language."

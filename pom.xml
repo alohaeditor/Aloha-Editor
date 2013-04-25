@@ -3,15 +3,15 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.23.0-dev-SNAPSHOT</version>
+	<version>0.23.7-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
 	<licenses>
 		<license>
-			<name>GPL 2.0 or later</name>
-			<url>http://www.gnu.org/licenses/gpl-2.0.html</url>
+			<name>${build.licenseType}</name>
+			<url>${build.licenseUrl}</url>
 		</license>
 	</licenses>
 	<properties>
@@ -21,8 +21,17 @@
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
 		<build.profile>build-profile-with-common-extra-plugins</build.profile>
+		<build.license>gpl</build.license>
+		<build.licenseType>GPLv2 or later</build.licenseType>
+		<build.licenseUrl>http://www.gnu.org/licenses/gpl-2.0.html</build.licenseUrl>
+		<snapshots.repoUrl>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</snapshots.repoUrl>
+		<snapshots.repoName>Gentics Public Snapshots Repository</snapshots.repoName>
+		<snapshots.repoId>archiva.com.gentics.public_snapshots</snapshots.repoId>
+		<releases.repoUrl>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</releases.repoUrl>
+		<releases.repoName>Gentics Public Repository</releases.repoName>
+		<releases.repoId>archiva.com.gentics.public</releases.repoId>
 	</properties>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>rhino</groupId>
@@ -44,10 +53,9 @@
 		<url>https://github.com/alohaeditor/Aloha-Editor</url>
 	</scm>
 
-
 	<build>
-		<plugins>
 
+	<plugins>
 			<plugin>
 				<groupId>com.googlecode.jslint4java</groupId>
 				<artifactId>jslint4java-maven-plugin</artifactId>
@@ -65,8 +73,8 @@
 					<failOnError>false</failOnError>
 					<!-- See http://docs.jslint4java.googlecode.com/git/2.0.2/apidocs/com/googlecode/jslint4java/Option.html -->
 					<options>
-						<predef>Aloha, window, global, process, define, require, jQuery,
-							GCN</predef>
+						<!-- If names may have dangling _  -->
+						<nomen>true</nomen>
 						<!-- If multiple var statements per function should be allowed -->
 						<vars>true</vars>
 						<!-- If variables can be declared out of order -->
@@ -83,6 +91,8 @@
 						<plusplus>true</plusplus>
 						<!-- Allow non-strict equals -->
 						<eqeq>true</eqeq>
+						<!-- Bitwise operators -->
+						<bitwise>true</bitwise>
 					</options>
 				</configuration>
 				<executions>
@@ -94,9 +104,19 @@
 							<goal>lint</goal>
 						</goals>
 						<configuration>
+							<options>
+								<predef>define, console</predef>
+							</options>
+							<failOnError>true</failOnError>
 							<includes>
 								<include>lib/aloha/**/*.js</include>
+								<include>lib/util/**/*.js</include>
 							</includes>
+							<excludes>
+								<exclude>lib/aloha/nls/**/*.js</exclude>
+								<exclude>lib/util/class.js</exclude>
+								<exclude>lib/util/json2.js</exclude>
+							</excludes>
 							<outputFolder>${project.build.directory}/jslint-core</outputFolder>
 						</configuration>
 					</execution>
@@ -108,6 +128,10 @@
 							<goal>lint</goal>
 						</goals>
 						<configuration>
+							<options>
+								<predef>Aloha, window, global, process, define, require, jQuery, GCN</predef>
+							</options>
+							<failOnError>false</failOnError>
 							<includes>
 								<include>plugins/**/*.js</include>
 							</includes>
@@ -195,6 +219,29 @@
 				<outputDirectory>${project.basedir}/src/css</outputDirectory> <includes> 
 				<include>aloha.less</include> </includes> <compress>true</compress> <force>true</force> 
 				</configuration> </execution> </executions> </plugin> -->
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/extra-resources</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/build/filtered</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
@@ -214,7 +261,8 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-full/</jsDestinationFolder>
 						</configuration>
 					</execution>
-						<execution>
+					
+					<execution>
 						<id>aloha-${build.profile}-debug-full</id>
 						<phase>compile</phase>
 						<goals>
@@ -227,6 +275,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-full/</jsDestinationFolder>
 						</configuration>
 					</execution>
+					
 					<!-- Bare version of aloha (Without jquery and requirejs) -->
 					<execution>
 						<id>aloha-${build.profile}-debug-bare</id>
@@ -241,6 +290,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-bare/</jsDestinationFolder>
 						</configuration>
 					</execution>
+					
 					<execution>
 						<id>aloha-${build.profile}-minified-bare</id>
 						<phase>compile</phase>
@@ -278,7 +328,7 @@
 					<contextFolder>${basedir}</contextFolder>
 					<buildDirectory>${basedir}</buildDirectory>
 					<ignoreMissingResources>false</ignoreMissingResources>
-					<wroFile>${basedir}/build/wro/wro.xml</wroFile>
+					<wroFile>${basedir}/target/extra-resources/wro.xml</wroFile>
 					<wroManagerFactory>ro.isdc.wro.extensions.manager.standalone.GoogleStandaloneManagerFactory</wroManagerFactory>
 				</configuration>
 			</plugin>
@@ -360,14 +410,14 @@
 
 	<distributionManagement>
 		<repository>
-			<id>archiva.com.gentics.public</id>
-			<name>Gentics Public Repository</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+			<id>${releases.repoId}</id>
+			<name>${releases.repoName}</name>
+			<url>${releases.repoUrl}</url>
 		</repository>
 		<snapshotRepository>
-			<id>archiva.com.gentics.public_snapshots</id>
-			<name>Gentics Public Snapshots Repository</name>
-			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</url>
+			<id>${snapshots.repoId}</id>
+			<name>${snapshots.repoName}</name>
+			<url>${snapshots.repoUrl}</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>

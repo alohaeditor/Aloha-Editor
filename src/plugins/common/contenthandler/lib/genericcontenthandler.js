@@ -1,9 +1,9 @@
 /* genericcontenthandler.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,158 +17,195 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(
-['aloha', 'jquery', 'aloha/contenthandlermanager'],
-function(Aloha, jQuery, ContentHandlerManager) {
-	"use strict";
-
-	var
-		GENTICS = window.GENTICS;
+define([
+	'jquery',
+	'aloha',
+	'aloha/contenthandlermanager',
+	'contenthandler/contenthandler-utils'
+], function (
+	$,
+	Aloha,
+	Manager,
+	Utils
+) {
+	'use strict';
 
 	/**
-	 * Register the generic content handler
+	 * Checks whether the markup describes a paragraph that is propped by
+	 * a <br> tag but is otherwise empty.
+	 * 
+	 * Will return true for:
+	 *
+	 * <p id="foo"><br class="bar" /></p>
+	 *
+	 * as well as:
+	 *
+	 * <p><br></p>
+	 *
+	 * @param {string} html Markup
+	 * @return {boolean} True if html describes a propped paragraph.
 	 */
-	var GenericContentHandler = ContentHandlerManager.createHandler({
+	function isProppedParagraph(html) {
+		var trimmed = $.trim(html);
+		if (!trimmed) {
+			return false;
+		}
+		var node = $('<div>' + trimmed + '</div>')[0];
+		var containsSingleP = node.firstChild === node.lastChild
+		    && 'p' === node.firstChild.nodeName.toLowerCase();
+		if (containsSingleP) {
+			var kids = node.firstChild.children;
+			return (kids && 1 === kids.length &&
+					'br' === kids[0].nodeName.toLowerCase());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Transforms all tables in the given content to make them ready to for
+	 * use with Aloha's table handling.
+	 *
+	 * Cleans tables of their unwanted attributes.
+	 * Normalizes table cells.
+	 *
+	 * @param {jQuery.<HTMLElement>} $content
+	 */
+	function prepareTables($content) {
+		// Because Aloha does not provide a way for the editor to
+		// manipulate borders, cellspacing, cellpadding in tables.
+		// @todo what about width, height?
+		$content.find('table')
+			.removeAttr('cellpadding')
+			.removeAttr('cellspacing')
+			.removeAttr('border')
+			.removeAttr('border-top')
+			.removeAttr('border-bottom')
+			.removeAttr('border-left')
+			.removeAttr('border-right');
+
+		$content.find('td').each(function () {
+			var td = this;
+
+			// Because cells with a single empty <p> are rendered to appear
+			// like empty cells, it simplifies the handeling of cells to
+			// normalize these table cells to contain actual white space
+			// instead.
+			if (isProppedParagraph(td.innerHTML)) {
+				td.innerHTML = '&nbsp;';
+			}
+
+			// Because a single <p> wrapping the contents of a <td> is
+			// initially superfluous and should be stripped out.
+			var $p = $('>p', td);
+			if (1 === $p.length) {
+				$p.contents().unwrap();
+			}
+		});
+
+		// Because Aloha does not provide a means for editors to manipulate
+		// these properties.
+		$content.find('td,tr')
+			.removeAttr('width')
+			.removeAttr('height')
+			.removeAttr('valign');
+
+		// Because Aloha table handling simply does not regard colgroups.
+		// @TODO Use sanitize.js?
+		$content.find('colgroup').remove();
+	}
+
+	var GenericContentHandler = Manager.createHandler({
+
 		/**
-		 * Handle the pasting. Remove all unwanted stuff.
-		 * @param content
+		 * Transforms pasted content to make it safe and ready to be used in
+		 * Aloha Editables.
+		 *
+		 * @param {jQuery.<HTMLElement>|string} content
+		 * @return {string} Clean HTML
 		 */
-		handleContent: function( content ) {
-
-			if (null == content) {
-				return;
+		handleContent: function (content) {
+			var $content = Utils.wrapContent(content);
+			if (!$content) {
+				return content;
 			}
 
-			if ( typeof content === 'string' ){
-				content = jQuery( '<div>' + content + '</div>' );
-			} else if ( content instanceof jQuery ) {
-				content = jQuery( '<div>' ).append(content);
+			// If an aloha-block is found inside the pasted content, no modify
+			// should be made in the pasted content because it can be assumed
+			// this is content deliberately placed by Aloha and should not be
+			// cleaned.
+			if ($content.find('.aloha-block').length) {
+				return $content.html();
 			}
 
-			// If we find an aloha-block inside the pasted content,
-			// we do not modify the pasted stuff, as it most probably
-			// comes from Aloha and not from other sources, and does
-			// not need to be cleaned up.
-			if (content.find('.aloha-block').length > 0) {
-				return content.html();
-			}
+			prepareTables($content);
 
-			// clean lists
-			this.cleanLists(content);
+			this.cleanLists($content);
+			this.removeComments($content);
+			this.unwrapTags($content);
+			this.removeStyles($content);
+			this.removeNamespacedElements($content);
+			//this.transformLinks($content);
 
-			// transform tables
-			this.transformTables(content);
+			var transformFormatting = true;
 
-			// remove comments
-			this.removeComments(content);
-
-			// unwrap font and span tags
-			this.unwrapTags(content);
-
-			// remove styles
-			this.removeStyles(content);
-
-			// remove namespaced elements
-			this.removeNamespacedElements(content);
-
-			// transform formattings
-			var transformFormattingsEnabled = true;
-			if ( Aloha.settings 
-				&& Aloha.settings.contentHandler
+			if (Aloha.settings.contentHandler
 				&& Aloha.settings.contentHandler.handler
 				&& Aloha.settings.contentHandler.handler.generic
 				&& typeof Aloha.settings.contentHandler.handler.generic.transformFormattings !== 'undefinded'
 				&& !Aloha.settings.contentHandler.handler.generic.transformFormattings ) {
-					transformFormattingsEnabled = false;
+				transformFormatting = false;
 			}
 
-			if ( transformFormattingsEnabled === true ) {
-			    this.transformFormattings(content);
+			if (transformFormatting) {
+			    this.transformFormattings($content);
 			}
 
-			// transform links
-			//this.transformLinks(content);
-
-			return content.html();
+			return $content.html();
 		},
 
 		/**
-		 * Clean lists: The only allowed children of ol or ul elements are li's. Everything else will be removed
-		 * @param content
+		 * Cleans lists.
+		 * The only allowed children of ol or ul elements are li's. Everything
+		 * else will be removed.
+		 *
+		 * See http://validator.w3.org/check with following invalid markup for
+		 * example:
+		 * <!DOCTYPE html><head><title></title></head><ul><li>ok</li><ol></ol></ul>
+		 *
+		 * @param {jQuery.<HTMLElement>} $content
 		 */
-		cleanLists: function(content) {
-			content.find('ul,ol').each(function() {
-				var $list = jQuery(this);
-				$list.contents(':not(li,ul,ol)').each(function() {
-					jQuery(this).remove();
-				});
-			});
-		},
-
-		/**
-		 * Transform tables which were pasted
-		 * @param content
-		 */
-		transformTables: function(content) {
-			// remove border, cellspacing, cellpadding from all tables
-			// @todo what about width, height?
-			content.find('table').each(function() {
-				jQuery(this).removeAttr('border').removeAttr('cellspacing').removeAttr('cellpadding');
-			});
-			
-			// remove unwanted attributes and cleanup single empty p-tags
-			content.find('td').each(function() {
-				// remove width, height and valign from all table cells
-				jQuery(this).removeAttr('width').removeAttr('height').removeAttr('valign');
-				
-				if ( this.innerHTML.replace(/[\s\xA0]+/g,'') === '<p><br></p>' ) {
-					this.innerHTML = '&nbsp;';
-				}
-				
-				if ( jQuery(this).find('p').length === 1) {
-					jQuery(this).find('p').contents().unwrap();
-				}
-			});
-			
-			// remove unwanted attributes from tr also? (tested with paste from open/libre office)
-			// @todo or do this all via sanitize.js 
-			content.find('tr').each(function() {
-				// remove width, height and valign from all table cells
-				jQuery(this).removeAttr('width').removeAttr('height').removeAttr('valign');
-			});
-			
-			// completely colgroup tags
-			// @TODO should we remove colgroup? use sanitize for that?
-			content.find('colgroup').remove();
+		cleanLists: function ($content) {
+			$content.find('ul,ol').find('>:not(li)').remove();
 		},
 
 		/**
 		 * Transform formattings
 		 * @param content
 		 */
-		transformFormattings: function( content ) {
+		transformFormattings: function ( content ) {
 			// find all formattings we will transform
 			// @todo this makes troubles -- don't change semantics! at least in this way...
-			content.find('strong,em,s,u,strike').each(function() {
+			content.find('strong,em,s,u,strike').each(function () {
 				if (this.nodeName === 'STRONG') {
 					// transform strong to b
-					Aloha.Markup.transformDomObject(jQuery(this), 'b');
+					Aloha.Markup.transformDomObject($(this), 'b');
 				} else if (this.nodeName === 'EM') {
 					// transform em to i
-					Aloha.Markup.transformDomObject(jQuery(this), 'i');
+					Aloha.Markup.transformDomObject($(this), 'i');
 				} else if (this.nodeName === 'S' || this.nodeName == 'STRIKE') {
 					// transform s and strike to del
-					Aloha.Markup.transformDomObject(jQuery(this), 'del');
+					Aloha.Markup.transformDomObject($(this), 'del');
 				} else if (this.nodeName === 'U') {
 					// transform u?
-					jQuery(this).contents().unwrap();
+					$(this).contents().unwrap();
 				}
 			});
 		},
@@ -177,13 +214,13 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * Transform links
 		 * @param content
 		 */
-		transformLinks: function( content ) {
+		transformLinks: function ( content ) {
 			// find all links and remove the links without href (will be destination anchors from word table of contents)
 			// aloha is not supporting anchors at the moment -- maybe rewrite anchors in headings to "invisible"
 			// in the test document there are anchors for whole paragraphs --> the whole P appear as link
-			content.find('a').each(function() {
-				if ( typeof jQuery(this).attr('href') === 'undefined' ) {
-					jQuery(this).contents().unwrap();
+			content.find('a').each(function () {
+				if ( typeof $(this).attr('href') === 'undefined' ) {
+					$(this).contents().unwrap();
 				}
 			});
 		},
@@ -192,16 +229,16 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * Remove all comments
 		 * @param content
 		 */
-		removeComments: function( content ) {
+		removeComments: function ( content ) {
 			var that = this;
 
 			// ok, remove all comments
-			content.contents().each(function() {
+			content.contents().each(function () {
 				if (this.nodeType === 8) {
-					jQuery(this).remove();
+					$(this).remove();
 				} else {
 					// do recursion
-					that.removeComments(jQuery(this));
+					that.removeComments($(this));
 				}
 			});
 		},
@@ -210,22 +247,22 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * Remove some unwanted tags from content pasted
 		 * @param content
 		 */
-		unwrapTags: function( content ) {
+		unwrapTags: function ( content ) {
 			var that = this;
 
 			// Note: we exclude all elements (they will be spans) here, that have the class aloha-wai-lang
 			// TODO find a better solution for this (e.g. invent a more generic aloha class for all elements, that are
 			// somehow maintained by aloha, and are therefore allowed)
-			content.find('span,font,div').not('.aloha-wai-lang').each(function() {
+			content.find('span,font,div').not('.aloha-wai-lang').each(function () {
 				if (this.nodeName == 'DIV') {
 					// safari and chrome cleanup for plain text paste with working linebreaks
 					if (this.innerHTML === '<br>') {
-						jQuery(this).contents().unwrap();
+						$(this).contents().unwrap();
 					} else {
-						jQuery( Aloha.Markup.transformDomObject(jQuery(this), 'p').append('<br>') ).contents().unwrap();
+						$( Aloha.Markup.transformDomObject($(this), 'p').append('<br>') ).contents().unwrap();
 					}
 				} else {
-					jQuery(this).contents().unwrap();
+					$(this).contents().unwrap();
 				}
 			});
 		},
@@ -234,20 +271,20 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * Remove styles
 		 * @param content
 		 */
-		removeStyles: function( content ) {
+		removeStyles: function ( content ) {
 			var that = this;
 
 			// completely remove style tags
-			content.children('style').filter(function() {
+			content.children('style').filter(function () {
 				return this.contentEditable !== 'false';
 			}).remove();
 
 			// remove style attributes and classes
-			content.children().filter(function() {
+			content.children().filter(function () {
 				return this.contentEditable !== 'false';
-			}).each(function() {
-				jQuery(this).removeAttr('style').removeClass();
-				that.removeStyles(jQuery(this));
+			}).each(function () {
+				$(this).removeAttr('style').removeClass();
+				that.removeStyles($(this));
 			});
 		},
 
@@ -255,9 +292,9 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * Remove all elements which are in different namespaces
 		 * @param content
 		 */
-		removeNamespacedElements: function( content ) {
+		removeNamespacedElements: function ($content) {
 			// get all elements
-			content.find('*').each(function() {
+			$content.find('*').each(function () {
 				// try to determine the namespace prefix ('prefix' works for W3C
 				// compliant browsers, 'scopeName' for IE)
 
@@ -266,7 +303,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 				// when the prefix is set (and different from 'HTML'), we remove the
 				// element
 				if ((nsPrefix && nsPrefix !== 'HTML') || this.nodeName.indexOf(':') >= 0 ) {
-					var $this = jQuery(this), $contents = $this.contents();
+					var $this = $(this), $contents = $this.contents();
 					if ($contents.length) {
 						// the element has contents, so unwrap the contents
 						$contents.unwrap();

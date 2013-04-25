@@ -5,16 +5,24 @@
  * Licensed under the terms of http://www.aloha-editor.com/license.html
  */
 define('RepositoryBrowser', [
-	'Class',
 	'jquery',
+	'Class',
 	'PubSub',
-	'repository-browser-i18n-' + ((window && window.__DEPS__ && window.__DEPS__.lang) || 'en'),
+	'repository-browser-i18n-' + (
+		(window && window.__DEPS__ && window.__DEPS__.lang) || 'en'
+	),
 	'jstree',
 	'jqgrid',
 	'jquery-layout'
-], function (Class, jQuery, PubSub, i18n) {
+], function (
+	$,
+	Class,
+	PubSub,
+	i18n
+) {
 	'use strict';
 
+	var jQuery = $;
 	var browserInstances = [];
 	var numOpenedBrowsers = 0;
 	var uid = (new Date()).getTime();
@@ -35,6 +43,8 @@ define('RepositoryBrowser', [
 		treeWidth: 300,
 		listWidth: 'auto',
 		pageSize: 8,
+		adaptPageSize: false,
+		rowHeight: 32,
 		rootPath: '',
 		rootFolderId: 'aloha',
 		columns: {
@@ -58,37 +68,6 @@ define('RepositoryBrowser', [
 	};
 
 	/**
-	 * Processes and returns an object that is usable with the tree component.
-	 *
-	 * @param {object} obj An object that represents a repository object.
-	 * @return {object} An object that is compatible with the tree component.
-	 */
-	function processRepoObject(obj) {
-		var icon;
-		switch (obj.baseType) {
-		case 'folder':
-			icon = 'folder';
-			break;
-		case 'document':
-			icon = 'document';
-			break;
-		}
-
-		return {
-			data: {
-				title: obj.name,
-				attr: {'data-repo-obj': obj.uid},
-				icon: icon || ''
-			},
-			attr: obj.type ? {rel: obj.type} : undefined,
-			state: (obj.hasMoreItems || 'folder' === obj.baseType)
-				? 'closed'
-				: null,
-			resource: obj
-		};
-	}
-
-	/**
 	 * Prevents native browser selection on the given element.
 	 *
 	 * @param {jQuery.<HTMLElement>} element An element on which to prevent
@@ -107,6 +86,116 @@ define('RepositoryBrowser', [
 				   this.onselectstart = function () { return false; };
 				});
 		});
+	}
+
+	/**
+	 * Get icon name from given resource type.
+	 *
+	 * @param {string} type Resource type.
+	 * @return {string} Icon name.
+	 */
+	function getIcon(type) {
+		switch (type) {
+		case 'folder':
+			return 'folder';
+		case 'document':
+			return 'document';
+		default:
+			return '';
+		}
+	}
+
+	/**
+	 * Return unique id.
+	 *
+	 * @return {number}
+	 */
+	function uniqueId() {
+		return ++uid;
+	}
+
+	/**
+	 * FIXME: free cache
+	 *
+	 * @param {RepositoryBrowser} browser
+	 * @param {object} obj
+	 */
+	function cacheWrite(browser, obj) {
+		browser._cachedRepositoryObjects[obj.uid] = obj;
+	}
+
+	/**
+	 * @param {RepositoryBrowser} browser
+	 * @param {object} obj
+	 * @return {object}
+	 */
+	function cacheRead(browser, uid) {
+		return browser._cachedRepositoryObjects[uid];
+	}
+
+	/**
+	 * @param {jQuery.<HTMLElement>} $node
+	 * @return {string} Id of repository object tethered to the given DOM
+	 *                  element.
+	 */
+	function getIdFromTreeNode($node) {
+		return $node.find('a:first').attr('data-repo-obj');
+	}
+
+	/**
+	 * Composite for jqGrid and jsTree
+	 *
+	 * Convert a repository object into an object that can be used with our tree
+	 * component.  Also add a reference to this object in the cache.  According
+	 * to the Repository specification, each object will at least have the
+	 * following properties: id, name, url, and type.  Any and all other
+	 * attributes are optional.
+	 */
+	function createComposite(props, browser) {
+		var uid = uniqueId();
+
+		var state =
+				(false === props.hasMoreItems || 'folder' !== props.baseType)
+				  ? null
+				  : 'closed';
+
+		// Initialize as array instead? will jstree accept empty list?
+		var children = null;
+
+		if (props.children) {
+			state = 'open';
+			children = [];
+			var i;
+			var child;
+			for (i = 0; i < props.children.length; i++) {
+				child = createComposite(props.children[i], browser);
+				children.push(child);
+				cacheWrite(browser, child.resource);
+			}
+		}
+
+		var treeResource = $.extend(props, {
+			uid: uid,
+			loaded: false
+		});
+
+		return {
+			state: state,
+			resource: treeResource,
+			children: children,
+			// jsTreee <li> attributes
+			attr: {
+				rel: props.type,
+				'data-repo-obj': uid
+			},
+			data: {
+				title: props.name,
+				icon: getIcon(props.baseType),
+				attr: {
+					'data-repo-obj': uid
+				}
+			}
+		};
 	}
 
 	var RepositoryBrowser = Class.extend({
@@ -128,6 +217,12 @@ define('RepositoryBrowser', [
 		 * @type <?>
 		 */
 		_orderBy: null,
+
+		/**
+		 * @private
+		 * @type <string> prefilled value of the search field
+		 */
+		_prefilledValue: null,
 
 		/**
 		 * @type {jsGrid<HTMLElement>}
@@ -180,6 +275,7 @@ define('RepositoryBrowser', [
 
 			jQuery.extend(this, options);
 
+			this._prefilledValue = this._i18n('Input search text...');
 			this._cachedRepositoryObjects = {};
 			this._searchQuery = null;
 			this._orderBy = null;
@@ -218,7 +314,7 @@ define('RepositoryBrowser', [
 			this.element.width(this.maxWidth);
 
 			this.$_grid = this._createGrid(this.element).resize();
-			this._setIntialHeight();
+			this._setInitialHeight();
 			this.$_tree = this._createTree(this.$_grid.find('.ui-layout-west'));
 			this.$_list = this._createList(this.$_grid.find('.ui-layout-center'));
 
@@ -266,30 +362,55 @@ define('RepositoryBrowser', [
 			jQuery('.repository-browser-grid').css('width', this.maxWidth);
 
 			this.close();
+
+			// adapt the page size
+			this._adaptPageSize();
 		},
 
 		/**
 		 * Sets the initial height of the repository browser using the minHeight maxHeight setting.
 		 */
-		_setIntialHeight: function () {
+		_setInitialHeight: function () {
 
 			var overflow = this.maxHeight - jQuery(window).height() + this.verticalPadding;
 			var targetHeight = overflow > 0 ? Math.max(this.minHeight, this.maxHeight - overflow) : this.maxHeight;
-			
+
 			this.$_grid.height(targetHeight);
 		},
-		
+
 		/**
 		 * Automatically resize the browser modal, constraining its dimensions
 		 * between minWidth and maxWidth.
 		 */
 		_onWindowResized: function () {
-			var overflow = this.maxWidth - jQuery(window).width() + this.horizontalPadding;
+			var overflow = this.maxWidth - jQuery(window).width() + this.horizontalPadding, $header, $container;
 			var target = overflow > 0
 			           ? Math.max(this.minWidth, this.maxWidth - overflow)
 					   : this.maxWidth;
 			this.element.width(target);
 			this.$_grid.width(target);
+
+			this._setInitialHeight();
+
+			// adapt tree
+			$header = this.$_grid.find('.repository-browser-tree-header');
+			this.$_tree.height(this.$_grid.height() - $header.outerHeight(true));
+
+			// adapt list
+			$container = this.$_grid.find('.ui-layout-center');
+			$container.find('.ui-jqgrid-bdiv').height(this.$_grid.height() - (
+				$container.find('.ui-jqgrid-titlebar').height() +
+				$container.find('.ui-jqgrid-hdiv').height() +
+				$container.find('.ui-jqgrid-pager').height()
+			));
+
+			// adapt paging
+			if (this._adaptPageSize()) {
+				// if the pagesize changed, we need to refresh the list
+				if (this._currentFolder) {
+					this._fetchItems(this._currentFolder);
+				}
+			}
 		},
 
 		/**
@@ -323,42 +444,46 @@ define('RepositoryBrowser', [
 		/**
 		 * Process the received repository items.
 		 *
-		 * @param {Array.<object>} items A list of retrieved items.
+		 * @param {Array.<object>} items List objects retrieved by repository
+		 *                               manager.
+		 * @param {TODO} metainfo
 		 * @param {function} callback Function to receive the processed items.
 		 */
 		_processRepoResponse: function (items, metainfo, callback) {
-			var data = [];
-			var i;
-			// if the second parameter is a function, it is the callback
+			// If the second parameter is a function, it is the callback;
 			if (typeof metainfo === 'function') {
 				callback = metainfo;
 				metainfo = undefined;
 			}
-			for (i = 0; i < items.length; i++) {
-				data.push(this._harvestRepoObject(items[i]));
-			}
-			callback(data, metainfo);
-		},
 
-		/**
-		 * Convert a repository object into an object that can be used with our
-		 * tree component.  Also add a reference to this object in the cache.
-		 * According to the Repository specification, each object will at least
-		 * have the following properties: id, name, url, and type.
-		 * Any and all other attributes are optional.
-		 *
-		 * @param {object} repositoryObject An object received from a
-		 *                                  repository.
-		 * @return {object} The processed repository object.
-		 */
-		_harvestRepoObject: function (repositoryObject) {
-			++uid;
-			this._cachedRepositoryObjects[uid] = jQuery.extend(
-				repositoryObject, {
-					uid: uid,
-					loaded: false
-				});
-			return processRepoObject(this._cachedRepositoryObjects[uid]);
+			var repobrowser = this;
+			var collection = [];
+			var currentFolder = repobrowser._currentFolder
+			                 && repobrowser._currentFolder.id;
+			var open = null;
+			var composite;
+			var i;
+
+			for (i = 0; i < items.length; i++) {
+				composite = createComposite(items[i], repobrowser);
+				collection.push(composite);
+				cacheWrite(repobrowser, composite.resource);
+
+				if (currentFolder === composite.resource.id) {
+					open = composite.resource;
+				}
+			}
+
+			callback(collection, metainfo);
+
+			if (open) {
+				window.setTimeout(function () {
+					repobrowser.$_tree.jstree(
+						'select_node',
+						'li[data-repo-obj="' + open.uid + '"]'
+					);
+				}, 0); // Is this timeout still necessary
+			}
 		},
 
 		/**
@@ -368,6 +493,11 @@ define('RepositoryBrowser', [
 		 *                                    retrieved folder structure.
 		 */
 		_fetchRepoRoot: function (callback) {
+			if (!this._currentFolder) {
+				// get the selected folder
+				this._currentFolder = this.getSelectedFolder();
+			}
+
 			if (this.repositoryManager) {
 				this.getRepoChildren({
 					inFolderId: this.rootFolderId,
@@ -403,18 +533,22 @@ define('RepositoryBrowser', [
 		 *                      jstree node that was clicked.
 		 */
 		_onTreeNodeSelected: function ($event, data) {
-			// Suppresses a bug in jsTree.
+			// Suppress a bug in jsTree.
 			if (data.args[0].context) {
 				return;
 			}
 
-			var folder = this._getObjectFromCache(data.rslt.obj);
+			var repobrowser = this;
+			var folder = cacheRead(repobrowser,
+			                       getIdFromTreeNode(data.rslt.obj));
 
 			if (folder) {
-				this._pagingOffset = 0;
-				this._searchQuery = null;
-				this._currentFolder = folder;
-				this._fetchItems(folder);
+				// Reset paging and search
+				repobrowser._pagingOffset = 0;
+				repobrowser._currentFolder = folder;
+				repobrowser._clearSearch();
+				repobrowser._fetchItems(folder);
+				repobrowser.folderSelected(folder);
 			}
 		},
 
@@ -439,14 +573,31 @@ define('RepositoryBrowser', [
 			$tree.height(this.$_grid.height() - $header.outerHeight(true));
 
 			$tree.bind('loaded.jstree', function ($event, data) {
-				jQuery(this).find('>ul>li:first').css('padding-top', 5);
-				$tree.jstree('open_node', 'li[rel="repository"]');
+				$(this).find('>ul>li:first').css('padding-top', 5);
+				// Because jstree `open_node' will add substree items to every
+				// item matched by the selector, we need to ensure that
+				// `open_node' is invoked for one item at a time.
+				$(this).find('li[rel="repository"]:first').each(
+					function (i, li) {
+						$tree.jstree('open_node', li);
+					});
 			});
 
 			var that = this;
 
+			// Bind the jsree select node event
 			$tree.bind('select_node.jstree', function ($event, data) {
 				that._onTreeNodeSelected($event, data);
+			});
+
+			// Bind the jsree open node event
+			$tree.bind('open_node.jstree', function ($event, data) {
+				that.folderOpened(data.rslt.obj);
+			});
+
+			// Bind the jsree close node event
+			$tree.bind('close_node.jstree', function ($event, data) {
+				that.folderClosed(data.rslt.obj);
 			});
 
 			$tree.jstree({
@@ -532,7 +683,7 @@ define('RepositoryBrowser', [
 				});
 			});
 
-			/* 
+			/*
 			 * jqGrid requires that we use an id, despite what the
 			 * documentation says
 			 * (http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager).
@@ -634,6 +785,15 @@ define('RepositoryBrowser', [
 			return $list;
 		},
 
+		/**
+		 * Clear the search
+		 */
+		_clearSearch: function () {
+			var $searchField = this.$_grid.find('.repository-browser-search-field');
+			$searchField.val(this._prefilledValue).addClass('repository-browser-search-field-empty');
+			this._searchQuery = null;
+		},
+
 		_createTitlebar: function ($container) {
 			var $bar = $container.find('.ui-jqgrid-titlebar');
 
@@ -660,12 +820,9 @@ define('RepositoryBrowser', [
 					that._triggerSearch();
 				});
 
-			var prefilledValue = this._i18n('Input search text...');
-
 			var $searchField = $bar.find('.repository-browser-search-field');
 
-			$searchField.val(prefilledValue)
-			            .addClass("repository-browser-search-field-empty");
+			this._clearSearch();
 
 			$searchField.keypress(function (event) {
 				// On ENTER.
@@ -675,7 +832,7 @@ define('RepositoryBrowser', [
 			});
 
 			$searchField.focus(function () {
-				if (jQuery(this).val() === prefilledValue) {
+				if (jQuery(this).val() === that._prefilledValue) {
 					jQuery(this)
 						.val('')
 						.removeClass('repository-browser-search-field-empty');
@@ -684,9 +841,7 @@ define('RepositoryBrowser', [
 
 			$searchField.blur(function () {
 				if (jQuery(this).val() === '') {
-					jQuery(this)
-						.val(prefilledValue)
-						.addClass('repository-browser-search-field-empty');
+					that._clearSearch();
 				}
 			});
 
@@ -756,6 +911,10 @@ define('RepositoryBrowser', [
 				break;
 			case 'prev':
 				this._pagingOffset -= this.pageSize;
+				// avoid "ot of bounds" situation
+				if (this._pagingOffset < 0) {
+					this._pagingOffset = 0;
+				}
 				break;
 			}
 			this._fetchItems(this._currentFolder);
@@ -840,10 +999,10 @@ define('RepositoryBrowser', [
 				$btns.first.add($btns.prev).removeClass(CSS_DISABLED);
 			}
 
-			if (jQuery.isNumeric(this._pagingCount)) {
+			if (!jQuery.isNumeric(this._pagingCount)) {
 				$btns.end.addClass(CSS_DISABLED);
 
-				if (data.length < this.pageSize) {
+				if (data.length <= this.pageSize) {
 					$btns.next.addClass(CSS_DISABLED);
 				} else {
 					$btns.next.removeClass(CSS_DISABLED);
@@ -870,7 +1029,7 @@ define('RepositoryBrowser', [
 				(from) + ' - '  +
 				(to) + ' ' + this._i18n('of') + ' ' +
 				(jQuery.isNumeric(this._pagingCount)
-					? this._pageingCount : this._i18n('numerous'))
+					? this._pagingCount : this._i18n('numerous'))
 			);
 
 			// when the repository manager reports a timeout, we handle it
@@ -1038,7 +1197,7 @@ define('RepositoryBrowser', [
 		getFieldOfHeader: function ($th) {
 			return $th.find('div.ui-jqgrid-sortable').attr('id').replace('jqgh_', '');
 		},
-	
+
 		_fetchItems: function (folder) {
 			if (!folder) {
 				return;
@@ -1069,7 +1228,7 @@ define('RepositoryBrowser', [
 				filter: this.filter,
 				recursive: recursive
 			}, function (data, metainfo) {
-				that._processItems(data, metainfo);	
+				that._processItems(data, metainfo);
 			});
 		},
 
@@ -1102,11 +1261,15 @@ define('RepositoryBrowser', [
 
 				$element.stop().show();
 
+				// recalculate sizes
+				this._onWindowResized();
+				this.$_grid.resize();
+
 				var win	= jQuery(window);
 
 				$element.css({
-					left: (win.width() - $element.width()) / 2 - 30,
-					top: (win.height() - $element.height()) / 3 + 10
+					left: this.horizontalPadding / 2,
+					top: this.verticalPadding / 2
 				}).draggable({
 					handle: $element.find('.repository-browser-grab-handle')
 				});
@@ -1132,10 +1295,10 @@ define('RepositoryBrowser', [
 					opacity: 1,
 					filter: 'progid:DXImageTransform.Microsoft.gradient(enabled=false)'
 				});
-				//$element.find('.repository-browser-close-btn').hide();
+				this._onWindowResized();
+				this.$_grid.resize();
 			}
 
-			this._onWindowResized();
 			++numOpenedBrowsers;
 		},
 
@@ -1163,8 +1326,92 @@ define('RepositoryBrowser', [
 			if (this._currentFolder) {
 				this._fetchItems(this._currentFolder);
 			}
-		}
+		},
 
+		/**
+		 * Gets called when a folder in the tree is opened.
+		 *
+		 * @param {jQuery.<HTMLElement>} $node Tree node.
+		 */
+		folderOpened: function($node) {
+			var repobrowser = this;
+			var folder = cacheRead(repobrowser, getIdFromTreeNode($node));
+			if (folder) {
+				repobrowser.repositoryManager.folderOpened(folder);
+			}
+		},
+
+		/**
+		 * This function gets called when a folder in the tree is closed
+		 *
+		 * @param {object} obj	folder data object
+		 */
+		folderClosed: function(obj) {
+			var folder = this._getObjectFromCache(obj);
+
+			if (folder) {
+				if (this.repositoryManager) {
+					this.repositoryManager.folderClosed(folder);
+				}
+			}
+		},
+
+		/**
+		 * This function gets called when a folder in the tree is selected
+		 *
+		 * @param {object} obj	folder data object
+		 */
+		folderSelected: function(obj) {
+			if (this.repositoryManager) {
+				this.repositoryManager.folderSelected(obj);
+			}
+		},
+
+		/**
+		 * Get the selected folder
+		 * @return {object} selected folder or undefined
+		 */
+		getSelectedFolder: function () {
+			if (this.repositoryManager) {
+				if (typeof this.repositoryManager.getSelectedFolder === 'function') {
+					return this.repositoryManager.getSelectedFolder();
+				}
+			}
+		},
+
+		/**
+		 * Adapt the page size.
+		 * @return true if the page size was actually changed, false if not
+		 */
+		_adaptPageSize: function () {
+			var listHeight, newPageSize, container;
+
+			// if this is off, don't do anything
+			if (!this.adaptPageSize || !this.$_list || !this.rowHeight) {
+				return false;
+			}
+
+			// get the current height of the container
+			container = this.$_grid.find('.ui-jqgrid-bdiv');
+			// reduce by 20 px to leave place for a scrollbar
+			listHeight = container.innerHeight() - 20;
+
+			// do the math
+			if (listHeight) {
+				newPageSize = Math.floor(listHeight / this.rowHeight);
+				if (newPageSize <= 0) {
+					newPageSize = 1;
+				}
+				if (newPageSize !== this.pageSize) {
+					this.pageSize = newPageSize;
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
 	});
 
 	return RepositoryBrowser;
@@ -1172,14 +1419,14 @@ define('RepositoryBrowser', [
 define('repository-browser-i18n-de', [], function () {
 	'use strict';
 	return {
-		'Browsing': 'Browsing',
-		'Close': 'Schließn',
+		'Browsing': 'Durchsuchen',
+		'Close': 'Schließen',
 		'in': 'in',
-		'Input search text...': 'Suchtext einfü.gen...',
-		'numerous': 'zahlreich',
+		'Input search text...': 'Suchtext einfügen...',
+		'numerous': 'zahlreiche',
 		'of': 'von',
 		'Repository Browser': 'Repository Browser',
-		'Search': 'Süchen',
+		'Search': 'Suchen',
 		'Searching for': 'Suche nach',
 		'Viewing': 'Anzeige',
 		'button.switch-metaview.tooltip': 'Zwischen Metaansicht und normaler Ansicht umschalten'

@@ -1,0 +1,70 @@
+h2. Sidebar
+
+The Sidebar is an HTML container you can use in your own implementation.
+
+endprologue.
+
+
+h3. Overview
+
+Aloha Editor comes with two preconfigured Sidebars that can be referenced via the @Aloha.Sidebar.*@ property:
+
+<javascript>
+Aloha.Sidebar.left; // references the left Sidebar
+Aloha.Sidebar.right; // references the right Sidebar
+</javascript>
+
+h3. Sidebar
+
+Aloha Editor's Sidebar acts as a container for Panels where you can put html content like forms. It comes with an API that allows you to control all of its functions:
+
+<javascript>
+// slide the right sidebar open
+Aloha.Sidebar.right.open();
+</javascript>
+
+h4. Sidebar API
+
+You can use the following Sidebar methods in your implementations:
+
+|_. Method |_. Description |
+| show() | Show the Sidebar |
+| hide() | Hide the Sidebar |
+| getPanelById(id) | Retrieve a Panel by it's id |
+| open() | Slide the Sidebar open |
+| close() | Close the Sidebar |
+| activatePanel(panel, element) | Activates a panel. Expects a panel's id or the actual object for @panel@, and a jQuery object for @element@. @element@ is the object the Panel was activated from (e.g. a button) |
+| expandPanel(panel, callback) | Expands a panel. Put a panel's id or the actual Panel object for @panel@. You can add a @callback@ that triggers after the animation completes |
+| collapsePanel(panel, callback) | Collapse a panel. Put a panel's id or the actual Panel object for @panel@. You can add a @callback@ that triggers after the animation completes |
+| addPanel(panel) | Add a new Panel to the sidebar. Specify your options as an object in @panel@. Also see "Sidebar Panels":#sidebar-panels for additional information |
+
+h3. Sidebar Panels
+
+Each Sidebar is made of Panels that act as containers for your HTML code. Panels provide an API for you to interact with them.
+
+To add a new Panel to a Sidebar use the Sidebar's @addPanel()@ method and specify your options in an object:
+
+<javascript>
+var panel = Aloha.Sidebar.right.addPanel({
+	// the id of your new Panel
+	id: 'new-panel',
+	// title to be set for your Panel
+    title     : 'Sidebar Demo Panel',
+    // initial html content of your panel
+    content     : '<p>Demo content!</p>',
+    // whether the panel should be expanded initially
+    expanded : true
+});
+</javascript>
+
+h4. Panel API
+
+You can use the following Panel methods in your implementations:
+
+|_. Method |_. Description |
+| activate() | Shows the Panel |
+| deactivate() | Hides the Panel |
+| expand() | Expands the panel to display it's contents |
+| collapse() | Collapses the panel so only it's title bar is displayed |
+| setTitle(html) | Update the Panel's title |
+| setContent(html) | Update the Panel's content |

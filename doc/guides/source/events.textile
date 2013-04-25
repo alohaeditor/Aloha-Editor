@@ -128,8 +128,8 @@ A smart content change occurs when a special editing action, or a combination of
 
 The smart content change event would therefore signal to any
 component that is listening to this event, that content has been
-inserted into the editable that may need to be prococessed in a
-special way.
+inserted (or changed) into the editable that may need to be processed in a
+special way. It even lets you know when an Aloha Block has changed (i.e. when any of its attributes have changed).
 The smart content change event is also triggered after an idle period that follows
 rapid, basic changes to the contents of an editable such as when the user is typing.
 
@@ -139,7 +139,7 @@ Aloha.trigger( 'aloha-smart-content-changed', {
 	'keyIdentifier'		: , // char | null
 	'keyCode'			: , // char | null
 	'char'				: , // char | null
-	'triggerType'		: , // keypress, idle, blur, paste
+	'triggerType'		: , // keypress, idle, blur, paste, block-change
 	'snapshotContent'	: , // snapshot content of the editable as HTML String
 } );
 </javascript>

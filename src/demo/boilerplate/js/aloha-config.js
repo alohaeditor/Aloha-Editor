@@ -1,6 +1,6 @@
 ( function ( window, undefined ) {
 	var Aloha = window.Aloha || ( window.Aloha = {} );
-	
+
 	Aloha.settings = {
 		logLevels: { 'error': true, 'warn': true, 'info': true, 'debug': false, 'deprecated': true },
 		errorhandling: false,
@@ -41,6 +41,11 @@
 			listenforcer: {
 				editables: [ '.aloha-enforce-lists' ]
 			},
+			/*metaview: {
+				editables: {
+					'#top-text': ['metaview','enabled']
+				}
+			},*/
 			abbr: {
 				// all elements with no specific configuration get an UL, just for fun :)
 				config: [ 'abbr' ],
@@ -49,10 +54,14 @@
 					'#top-text': []
 				}
 			},
+			hints: {
+				fallback: 'fallback text',
+				trigger: 'hover'
+			},
 			link: {
 				// all elements with no specific configuration may insert links
 				config: [ 'a' ],
-				hotKey: { 
+				hotKey: {
 					// use ctrl+l instead of ctrl+k as hotkey for inserting a link
 					//insertLink: 'ctrl+l'
 				},
@@ -102,7 +111,17 @@
 				rowConfig: [
 					{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 					{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
-				]
+				],
+				cellConfig: [
+					{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
+					{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+				],
+				// allow resizing the table width (default: false)
+				tableResize: true,
+				// allow resizing the column width (default: false)
+				colResize: true,
+				// allow resizing the row height (default: false)
+				rowResize: true
 			},
 			image: {
 				config:{
@@ -167,13 +186,21 @@
 					// numeratedactive will also accept "true" and "1" as true values
 					// false and "false" for false
 					numeratedactive: false,
-					// if the headingselector is empty, the button will not be shown at all                     
+					// if the headingselector is empty, the button will not be shown at all
 					headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
 					baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable
 				}
 			},
 			'wai-lang': {
 				flags: true
+			},
+			'textcolor': {
+				// configure a set of colors for all editables
+				config: ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder'],
+				editables: {
+					// configure a different set of colors for editable #one
+					'#top-text' : []
+				}
 			}
 		}
 	};

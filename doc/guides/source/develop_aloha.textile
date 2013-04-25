@@ -14,10 +14,23 @@ git checkout dev
 
 h3. Pre-commit hook
 
-To avoid accidentally committing debugging code, symlink or copy
-.githooks/pre-commit into .git/hooks. This will check for the most
-common mistakes like 'debugger;' or 'console.log();' statements before
-every commit.
+A precommit hook is provided in .githooks/pre-commit. This file has to
+be symlinked or copied to .git/hooks/pre-commit to be effective.
+
+The pre-commit hook will check for the most common mistakes like
+'debugger;' or 'console.log();' statements.
+
+The pre-commit hook will also invoke the jslint command on every
+javascript file that is to be committed. You can get jslint via npm:
+
+<shell>
+npm install -g jslint
+</shell>
+
+For the appropriate flags please see .githooks/pre-commit.
+
+All commits must be linted before being pushed, or the continous
+integration build may break.
 
 h3. Repository Directory Structure
 
@@ -129,6 +142,11 @@ If you want to redefine modules in the build profile, for example if you
 want to use your own jqueryui, please first read "Custom jQuery,
 jQueryUI and other modules":dependencies.html
 
+h3. Developing on Repository Browser
+
+Currently it is needed to copy the build output of the repository-browser project (git@github.com:gentics/repository-browser.git) over the contents of alohaeditor/src/lib/vendor/repository-browser.
+* Build the repository-browser project and overwrite the files of the named folder with the contents of the generated 'repository-browser-0.1-SNAPSHOT.zip' file.
+ 
 h3. Developing CSS
 
 src/css/aloha.css is a concatenated and minified version of

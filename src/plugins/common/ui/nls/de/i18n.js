@@ -1,68 +1,48 @@
 define({
-	// TODO: fill out missing values
-	// format
+	"button.dismiss.label": "Ausblenden",
 	"button.bold.label": "Fett",
 	"button.italic.label": "Kursiv",
 	"button.strikethrough.label": "Durchgestrichen",
 	"button.subscript.label": "Tiefgestellt",
 	"button.superscript.label": "Hochgestellt",
 	"button.underline.label": "Unterstrichen",
-	
-	// paragraph
+	"button.yes.label": "Ja",
+	"button.no.label": "Nein",
 	"button.p.label": "Absatz",
-	"button.h1.label": "\u00dcberschrift 1",
-	"button.h2.label": "\u00dcberschrift 2",
-	"button.h3.label": "\u00dcberschrift 3",
-	"button.h4.label": "\u00dcberschrift 4",
-	"button.h5.label": "\u00dcberschrift 5",
-	"button.h6.label": "\u00dcberschrift 6",
-	"button.pre.label": "Vorformatierter text",
-	"button.removeFormatting.label": "Formatierung entfernen",
-	
-	// list
-	"button.ol.label": "Sortierte Liste einf\u00fcgen",
-	"button.ul.label": "Unsortierte Liste einf\u00fcgen",
-//	"button.indent.label": "",
-//	"button.outdent.label": "",
-	
-	// link
-	"button.createLink.label": "Verweis einf\u00fcgen",
-	"button.removeLink.label": "Verweis entfernen",
-	
-	// abbr
-	"button.createAbbr.label": "Abk\u00fcrzung einf\u00fcgen",
-	
-	// character picker
-	"button.characterPicker.label": "Sonderzeichen einf&uuml;gen",
-	
-	// justify
-//	"button.justifyLeft.label": "",
-//	"button.justifyRight.label": "",
-//	"button.justifyCenter.label": "",
-//	"button.justifyFull.label": "",
-	
-	// horizontal rule
-//	"button.horizontalRule.label: "",
-
-	// language annotation
-	"button.createLanguageAnnotation.label": "Sprachauszeichnung",
-
-	// metaview
-	"button.metaview.label": "Zwischen Metaansicht und normaler Ansicht umschalten",
-
-	// cite
-	"button.quote.label": "Selektion als Zitat formatieren",
-	"button.blockquote.label": "Selektion als Blockzitat formatieren",
-
-	// Tabs
-	"tab.format.label": "Formatieren",
-	"tab.insert.label": "Einf\u00fcgen",
-	"tab.abbr.label": "Abk\u00fcrzung",
+	"button.h1.label": "Überschrift 1",
+	"button.h2.label": "Überschrift 2",
+	"button.h3.label": "Überschrift 3",
+	"button.h4.label": "Überschrift 4",
+	"button.h5.label": "Überschrift 5",
+	"button.h6.label": "Überschrift 6",
+	"button.pre.label": "Vorformatierter Text",
+	"button.removeFormatting.label": "Format entfernen",
+	"button.ol.label": "Sortierte Liste einfügen",
+	"button.ul.label": "Unsortierte Liste einfügen",
+	"button.indent.label": "Liste einrücken",
+	"button.outdent.label": "Liste ausrücken",
+	"button.createLink.label": "Verweis einfügen",
+	"button.removeLink.label": "Verweis löschen",
+	"button.createAbbr.label": "Abkürzung einfügen",
+	"button.characterPicker.label": "Sonderzeichen einfügen",
+	"button.justifyLeft.label": "Linksbündig ausrichten",
+	"button.justifyRight.label": "Rechtsbündig ausrichten",
+	"button.justifyCenter.label": "Zentriert ausrichten",
+	"button.justifyFull.label": "Als Blocksatz formatieren",
+	"button.horizontalRule.label": "Horizontale Linie einfügen",
+	"button.createLanguageAnnotation.label": "Sprachauszeichnung hinzufügen",
+	"button.metaview.label": "Meta-Ansicht ein-/ausblenden",
+	"button.quote.label": "Zitat einfügen",
+	"button.blockquote.label": "Zitat einfügen",
+	"tab.format.label": "Formatierung",
+	"tab.insert.label": "Einfügen",
+	"tab.abbr.label": "Abkürzung",
 	"tab.img.label": "Bild",
 	"tab.link.label": "Verweis",
 	"tab.list.label": "Liste",
 	"tab.table.label": "Tabelle",
 	"tab.col.label": "Tabellenspalte",
 	"tab.row.label": "Tabellenzeile",
+	"tab.cell.label": "Tabellenzelle",
 	"tab.wai-lang.label": "Sprachauszeichnung"
 });

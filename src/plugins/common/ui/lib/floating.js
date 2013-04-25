@@ -1,106 +1,190 @@
+/* floating.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php
+ *
+ * Aloha Editor is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * As an additional permission to the GNU GPL version 2, you may distribute
+ * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
+ * source code without the copy of the GNU GPL normally required,
+ * provided you include this license notice and a URL through which
+ * recipients can access the Corresponding Source.
+ *
+ * @overview
+ * Implements position and floating animation effect for UI surfaces.
+ */
 define([
 	'jquery',
 	'aloha/core',
 	'ui/surface',
 	'ui/subguarded',
-	'vendor/amplify.store'
+	'PubSub',
+	'vendor/amplify.store',
+	'util/browser'
 ], function (
 	$,
 	Aloha,
 	Surface,
 	subguarded,
-	amplifyStore
+	PubSub,
+	amplifyStore,
+	Browser
 ) {
 	'use strict';
 
 	/**
-	 * The distance the floating surface should remain from the editable it is
-	 * floating to.
+	 * The distance that the floating surface should maintain from the editable
+	 * it is floating to.
 	 *
-	 * @constant
 	 * @type {string}
+	 * @const
 	 */
-	var PADDING = 10;
+	var DISTANCE = 10;
 
 	/**
-	 * The length of time in milliseconds that the floating animation should
-	 * take to complete.
+	 * The duration of the floating animation in milliseconds.
 	 *
-	 * @constant
-	 * @type {string}
+	 * @type {number}
+	 * @const
 	 */
 	var DURATION = 500;
 
 	/**
-	 * Reference to the global window object for quicker lookup.
+	 * jQuery unit set containing a feference to the global window.
+	 *
 	 * @type {jQuery.<window>}
+	 * @const
 	 */
-	var $window = $(window);
+	var $WINDOW = $(window);
 
 	/**
-	 * Animates the given element into the specified position.
+	 * The "position" style value.
 	 *
-	 * @param {jQuery.<HTMLElement>} $element The element to move.
-	 * @param {object} position The top and left position to which the element
-	 *                         should be moved.
+	 * IE 7 does not support "fixed" position styling.  Since "fixed" position
+	 * results in smoother animation the use of "absolute" is made as a special
+	 * accomodation for IE 7.
+	 *
+	 * @type {string}
+	 * @const
+	 */
+	var POSITION_STYLE = Browser.ie7 ? 'absolute' : 'fixed';
+
+	/**
+	 * The position of the floating menu.
+	 *
+	 * Used to float dialoges (eg special character-picker) with the floating
+	 * menu.
+	 *
+	 * @type {object<string,*>}
+	 */
+	var POSITION = {
+		style: POSITION_STYLE,
+		offset: {
+			top: 0,
+			left: 0
+		}
+	};
+
+	/**
+	 * Animates a surface element to the given position.
+	 *
+	 * @param {jQuery.<HTMLElement>} $element jQuery unit set of the DOM
+	 *                                        element to move.
+	 * @param {object} position The x and y position to which the element
+	 *                          should end up.
 	 * @param {number} duration The length of time (in milliseconds) that the
-	 *                         animation should run for.
+	 *                          animation should run for.
 	 * @param {function} callback Function to be invoked when animation
-	 *                           completes.
+	 *                            completes.
 	 */
 	function floatTo($element, position, duration, callback) {
+		if ('absolute' === POSITION_STYLE) {
+			position.top += $WINDOW.scrollTop();
+			position.left += $WINDOW.scrollLeft();
+		}
+
+		POSITION.offset = position;
+
 		$element.stop().animate(position, duration, function () {
 			callback(position);
+			PubSub.pub('aloha.floating.changed', {
+				position: $.extend({}, POSITION)
+			});
 		});
 	}
 
 	/**
-	 * Move the element above the given position.
+	 * Moves an element above the given coordinates.
 	 *
-	 * @param {jQuery.<HTMLElement>} $element The element to move.
-	 * @param {object} position The top and left position to which the element
-	 *                         should be moved.
+	 * @param {jQuery.<HTMLElement>} $element jQuery unit set of the DOM
+	 *                                        element to move.
+	 * @param {object} position The x and y position to which the element
+	 *                          should end up.
 	 * @param {number} duration The length of time (in milliseconds) that the
-	 *                         animation should run for.
+	 *                          animation should run for.
 	 * @param {function} callback Function to be invoked when animation
-	 *                           completes.
+	 *                            completes.
 	 */
 	function floatAbove($element, position, duration, callback) {
-		position.top -= $element.height() + PADDING;
+		position.top -= $element.height() + DISTANCE;
 		floatTo($element, position, duration, callback);
 	}
 
 	/**
-	 * Move the element below the given position.
+	 * Moves the element below the given coordinates.
 	 *
-	 * @param {jQuery.<HTMLElement>} $element The element to move.
-	 * @param {object} position The top and left position to which the element
-	 *                         should be moved.
+	 * @param {jQuery.<HTMLElement>} $element jQuery unit set of the DOM
+	 *                                        element to move.
+	 * @param {object} position The x and y position to which the element
+	 *                          should end up.
 	 * @param {number} duration The length of time (in milliseconds) that the
-	 *                         animation should run for.
+	 *                          animation should run for.
 	 * @param {function} callback Function to be invoked when animation
-	 *                           completes.
+	 *                            completes.
 	 */
 	function floatBelow($element, position, duration, callback) {
-		position.top += PADDING;
+		position.top += DISTANCE;
 		floatTo($element, position, duration, callback);
 	}
 
+	/**
+	 * Persist the "top" and "left" positions of the FloatingMenu surface.
+	 */
 	function storePinPosition(offset) {
 		amplifyStore.store('Aloha.FloatingMenu.pinned', 'true');
 		amplifyStore.store('Aloha.FloatingMenu.top', offset.top);
 		amplifyStore.store('Aloha.FloatingMenu.left', offset.left);
 	}
 
+	/**
+	 * Clears persisted state of the FloatingMenu surface.
+	 */
 	function unstorePinPosition() {
 		amplifyStore.store('Aloha.FloatingMenu.pinned', null);
 		amplifyStore.store('Aloha.FloatingMenu.top', null);
 		amplifyStore.store('Aloha.FloatingMenu.left', null);
 	}
 
+	/**
+	 * Retreive the persisted pinned position of the FloatingMenu surface.
+	 *
+	 * @return {object}
+	 */
 	function getPinState() {
-		var state = {};
-
 		if (amplifyStore.store('Aloha.FloatingMenu.pinned') === 'true') {
 			return {
 				top: parseInt(amplifyStore.store('Aloha.FloatingMenu.top'), 10),
@@ -108,7 +192,6 @@ define([
 				isPinned: true
 			};
 		}
-
 		return {
 			top: null,
 			left: null,
@@ -116,20 +199,26 @@ define([
 		};
 	}
 
+	/**
+	 * Constrains the given position coordinates to be within the viewport.
+	 *
+	 * @param {object} position "Top" and "left" coordinates.
+	 * @param {object} Constrained "top" and "left" coordinates.
+	 */
 	function forcePositionIntoWindow(position) {
 		var left = position.left;
 		var top = position.top;
 
 		if (top < 0) {
 			top = 0;
-		} else if (top > $window.height()) {
-			top = $window.height() / 2;
+		} else if (top > $WINDOW.height()) {
+			top = $WINDOW.height() / 2;
 		}
 
 		if (left < 0) {
 			left = 0;
-		} else if (left > $window.width()) {
-			left = $window.width() / 2;
+		} else if (left > $WINDOW.width()) {
+			left = $WINDOW.width() / 2;
 		}
 
 		return {
@@ -139,10 +228,9 @@ define([
 	}
 
 	/**
-	 * Cause the surface to float to the appropriate position around the given
-	 * editable
+	 * Floats a surface to the appropriate position around the given editable.
 	 *
-	 * @param {Surface} surface The surface to be positioned
+	 * @param {Surface} surface The surface to be positioned.
 	 * @param {Aloha.Editable} editable The editable around which the surface
 	 *                                  should be positioned.
 	 * @param {number} duration The length of time (in milliseconds) for the
@@ -157,31 +245,31 @@ define([
 
 		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
 		              + (parseInt($('body').css('paddingTop'), 10) || 0);
-
-		var $element = surface.$element;
-		var surfaceOrientation = $element.offset();
-		var editableOrientation = editable.obj.offset();
-		var scrollTop = $window.scrollTop();
-		var availableSpace = editableOrientation.top - scrollTop - topGutter;
-		var left = editableOrientation.left;
-		var horizontalOverflow = left + $element.width()
-		                       - $window.width() - PADDING;
+		var $surface = surface.$element;
+		var offset = editable.obj.offset();
+		var top = offset.top;
+		var left = offset.left;
+		var scrollTop = $WINDOW.scrollTop();
+		var availableSpace = top - scrollTop - topGutter;
+		var horizontalOverflow = left + $surface.width() - $WINDOW.width();
 
 		if (horizontalOverflow > 0) {
-			left -= horizontalOverflow;
+			left = Math.max(0, left - horizontalOverflow);
 		}
 
-		if (availableSpace >= $element.height()) {
-			editableOrientation.top -= scrollTop;
-			floatAbove($element, editableOrientation, duration, callback);
-		} else if (availableSpace + $element.height() >
-				editableOrientation.top + editable.obj.height()) {
-			floatBelow($element, {
-				top: editableOrientation.top + editable.obj.height(),
+		if (availableSpace >= $surface.height()) {
+			floatAbove($surface, {
+				top: top - scrollTop,
+				left: left
+			}, duration, callback);
+		} else if (availableSpace + $surface.height() >
+		           availableSpace + editable.obj.height()) {
+			floatBelow($surface, {
+				top: top + editable.obj.height(),
 				left: left
 			}, duration, callback);
 		} else {
-			floatBelow($element, {
+			floatBelow($surface, {
 				top: topGutter,
 				left: left
 			}, duration, callback);
@@ -189,31 +277,32 @@ define([
 	}
 
 	/**
-	 * Pins the given surfaces at the speficied position on the view port.
+	 * Pins a surface at the speficied position on the viewport.
 	 *
 	 * @param {Surface} surfaces The surfaces that are to be pinned.
-	 * @param {object} position The top and left position of where the surface
-	 *                          is to be pinned.
+	 * @param {object} position The "top" and "left" position of where the
+	 *                          surface is to be pinned.
 	 * @param {boolean} isFloating Whether or not the surface type is in
 	 *                             "floating" mode or not.
 	 */
 	function togglePinSurface(surface, position, isFloating) {
-		var $element = surface.$element;
-
+		var $surface = surface.$element;
 		if (isFloating) {
 			unstorePinPosition();
-			$element.find('.aloha-ui-pin').removeClass('aloha-ui-pin-down');
+			$surface.find('.aloha-ui-pin').removeClass('aloha-ui-pin-down');
 		} else {
 			storePinPosition(position);
-			$element.find('.aloha-ui-pin').addClass('aloha-ui-pin-down');
+			$surface.find('.aloha-ui-pin').addClass('aloha-ui-pin-down');
 		}
-
-		$element.css({
+		$surface.css({
 			position: 'fixed',
 			top: position.top
 		});
 	}
 
+	/**
+	 * Filters surface activation events.
+	 */
 	function onActivatedSurface(tuples, eventName, $event, range, nativeEvent) {
 		var i;
 		for (i = 0; i < tuples.length; i++) {
@@ -223,6 +312,40 @@ define([
 		}
 	}
 
+	/**
+	 * Sets the surface's DOM element's "position" property to "fixed."
+	 *
+	 * IE7 will not properly set the position property to "fixed" if our
+	 * element is not rendered.  We therefore have to do a rigmarole to
+	 * temorarily render the element in order to set the position correctly.
+	 *
+	 * @param {Surface} surface
+	 */
+	function setPositionStyleToFixed(surface) {
+		if ($.browser.msie) {
+			var $parent = surface.$element.parent();
+			surface.$element.appendTo('body');
+			surface.$element.css('position', POSITION_STYLE);
+			if ($parent.length) {
+				surface.$element.appendTo($parent);
+			} else {
+				surface.$element.detach();
+			}
+		} else {
+			surface.$element.css('position', POSITION_STYLE);
+		}
+	}
+
+	/**
+	 * Binds floating facilities on a surface.
+	 *
+	 * @TODO:
+	 * Resizable toolbars are possible, and would be a nice feature:
+	 * surface.$element.resizable();
+	 *
+	 * @param {Surface} surface A UI Surface instance.
+	 * @param {object} SurfaceTypeManager
+	 */
 	function makeFloating(surface, SurfaceTypeManager) {
 		subguarded([
 			'aloha-selection-changed',
@@ -236,67 +359,47 @@ define([
 				top: SurfaceTypeManager.pinTop,
 				left: SurfaceTypeManager.pinLeft
 			});
-
 			SurfaceTypeManager.setFloatingPosition(position);
-
 			surface.$element.css({
 				top: position.top,
 				left: position.left
 			});
 		};
 
-		$window.scroll(function () {
+		$WINDOW.scroll(function () {
 			// TODO: only do this for active surfaces.
 			surface._move(0);
 		});
 
-		$window.resize(function () {
+		$WINDOW.resize(function () {
 			if (!SurfaceTypeManager.isFloatingMode) {
 				updateSurfacePosition();
 			}
 		});
 
 		surface.addPin();
-
-		// IE7 will not properly set the position property to "fixed" if our
-		// element is not rendered.  We therefore have to do a rigmarore to
-		// temorarily render the element in order to set the position
-		// correctly.
-		if ($.browser.msie) {
-			var $parent = surface.$element.parent();
-			surface.$element.appendTo('body');
-			surface.$element.css('position', 'fixed');
-			if ($parent.length) {
-				surface.$element.appendTo($parent);
-			} else {
-				surface.$element.detach();
-			}
-		} else {
-			surface.$element.css('position', 'fixed');
-		}
+		setPositionStyleToFixed(surface);
 
 		if (!SurfaceTypeManager.isFloatingMode) {
 			updateSurfacePosition();
 		}
 
 		surface.$element.css('z-index', 10100).draggable({
-			'distance': 20,
-			'stop': function (event, ui) {
+			distance: 20,
+			stop: function (event, ui) {
 				SurfaceTypeManager.setFloatingPosition(ui.position);
 				if (!SurfaceTypeManager.isFloatingMode) {
 					storePinPosition(ui.position);
 				}
 			}
 		});
-
-		// Resizable toolbars are possible, and would be a nice feature.
-		//surface.$element.resizable();
 	}
 
 	return {
 		getPinState: getPinState,
 		makeFloating: makeFloating,
 		floatSurface: floatSurface,
-		togglePinSurface: togglePinSurface
+		togglePinSurface: togglePinSurface,
+		POSITION_STYLE: POSITION_STYLE
 	};
 });

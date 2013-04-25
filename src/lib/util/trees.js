@@ -112,6 +112,17 @@
  *
  *     If form is not an array or map, it is simply returned.
  *
+ *     An example using walk() in a custom recursive traversal function:
+ * 
+ *     function doSomething(root) {
+ *         function step(form) {
+ *             form = Trees.walk(form, step);
+ *             // do something with form
+ *             return form ? [form] : [];
+ *         }
+ *         return step(root)[0] || null;
+ *     }
+ *
  * walk(form, recurse)
  *
  *     Short for walk(form, recurse, true)
@@ -146,12 +157,12 @@ define(['jquery'], function ($) {
 
 	function walk(form, step, inplace) {
 		var type = $.type(form),
-		    subResult,
-		    result,
-		    resultOff,
-		    len,
-		    i,
-		    key;
+			subResult,
+			result,
+			resultOff,
+			len,
+			i,
+			key;
 		if ('array' === type) {
 			result = (inplace ? form : []);
 			resultOff = 0;
@@ -186,7 +197,7 @@ define(['jquery'], function ($) {
 	function walkInplace(form, step) {
 		return walk(form, step, true);
 	}
-	
+
 	function walkDomInplace(form, step) {
 		var subResult,
 		    child,
@@ -235,14 +246,37 @@ define(['jquery'], function ($) {
 		return prepostStep(form)[0];
 	}
 
-	function prewalk     (form,   fn, inplace) { return prepost(  prewalkStep,   fn, inplace ? walkInplace : walk, form); }
-	function postwalk    (form,   fn, inplace) { return prepost( postwalkStep,   fn, inplace ? walkInplace : walk, form); }
-	function preprune    (form, pred, inplace) { return prepost( prepruneStep, pred, inplace ? walkInplace : walk, form); }
-	function postprune   (form, pred, inplace) { return prepost(postpruneStep, pred, inplace ? walkInplace : walk, form); }
-	function prewalkDom  (form,   fn, inplace) { return prepost(  prewalkStep,   fn, walkDomInplace, inplace ? form : form.cloneNode(true)); }
-	function postwalkDom (form,   fn, inplace) { return prepost( postwalkStep,   fn, walkDomInplace, inplace ? form : form.cloneNode(true)); }
-	function prepruneDom (form, pred, inplace) { return prepost( prepruneStep, pred, walkDomInplace, inplace ? form : form.cloneNode(true)); }
-	function postpruneDom(form, pred, inplace) { return prepost(postpruneStep, pred, walkDomInplace, inplace ? form : form.cloneNode(true)); }
+	function prewalk(form, fn, inplace) {
+		return prepost(prewalkStep, fn, inplace ? walkInplace : walk, form);
+	}
+
+	function postwalk(form, fn, inplace) {
+		return prepost(postwalkStep, fn, inplace ? walkInplace : walk, form);
+	}
+
+	function preprune(form, pred, inplace) {
+		return prepost(prepruneStep, pred, inplace ? walkInplace : walk, form);
+	}
+
+	function postprune(form, pred, inplace) {
+		return prepost(postpruneStep, pred, inplace ? walkInplace : walk, form);
+	}
+
+	function prewalkDom(form, fn, inplace) {
+		return prepost(prewalkStep, fn, walkDomInplace, inplace ? form : form.cloneNode(true));
+	}
+
+	function postwalkDom(form, fn, inplace) {
+		return prepost(postwalkStep, fn, walkDomInplace, inplace ? form : form.cloneNode(true));
+	}
+
+	function prepruneDom(form, pred, inplace) {
+		return prepost(prepruneStep, pred, walkDomInplace, inplace ? form : form.cloneNode(true));
+	}
+
+	function postpruneDom(form, pred, inplace) {
+		return prepost(postpruneStep, pred, walkDomInplace, inplace ? form : form.cloneNode(true));
+	}
 
 	function isLeaf(form) {
 		var type = $.type(form);
@@ -255,12 +289,12 @@ define(['jquery'], function ($) {
 
 	function leaves(form, leaf, inplace) {
 		var leafWalk = inplace ? walkInplace : walk;
+
 		function leafStep(form) {
 			if (isLeaf(form)) {
 				return [leaf(form)];
-			} else {
-				return identityStep(leafStep, leafWalk, form);
 			}
+			return identityStep(leafStep, leafWalk, form);
 		}
 		return leafStep(form)[0];
 	}
@@ -275,7 +309,7 @@ define(['jquery'], function ($) {
 	function flatten(form) {
 		var inplace = true;
 		var result = [];
-		leaves(form, function(leaf){
+		leaves(form, function (leaf) {
 			result.push(leaf);
 			return leaf;
 		}, inplace);

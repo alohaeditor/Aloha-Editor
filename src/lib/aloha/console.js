@@ -35,8 +35,6 @@ define([
 ) {
 	"use strict";
 
-	var console = window.console;
-
 	/**
 	 * This is the aloha Log
 	 * @namespace Aloha
@@ -143,6 +141,8 @@ define([
 				'message': message,
 				'date': new Date()
 			});
+
+			var console = window.console;
 
 			switch (level) {
 			case 'error':

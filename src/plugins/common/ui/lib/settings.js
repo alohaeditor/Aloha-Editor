@@ -7,15 +7,14 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
 					[
-						// strong, emphasis and underline are not shown with the default format plugin button configuration
-						'bold', 'strong', 'italic', 'emphasis', '\n',
+						'bold', 'strong', 'italic', 'emphasis', 'underline', '\n',
 						'subscript', 'superscript', 'strikethrough', 'quote'
 					], [
 						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n',
 						'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
 					], [
 						'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
-						'orderedList', 'unorderedList', 'indentList', 'outdentList'
+						'orderedList', 'unorderedList', 'indentList', 'outdentList', 'colorPicker'
 					], [
 						'formatBlock'
 					]
@@ -33,7 +32,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 			},
 			// Link Tab
 			{
-				label: 'tab.link.label', 
+				label: 'tab.link.label',
 				showOn: { scope: 'link' },
 				components: [ 'editLink', 'removeLink', 'linkBrowser' ]
 			},
@@ -69,10 +68,11 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				showOn: { scope: 'table.cell' },
 				components: [
 					[ "mergecells", "splitcells", "tableCaption",
-					  "tableSummary", "formatTable" ]
+					  "tableSummary", "naturalFit" ],
+					[ "formatTable" ]
 				]
 			},
-			{ 
+			{
 				label: "tab.col.label",
 				showOn: { scope: 'table.column' },
 				components: [
@@ -88,7 +88,15 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 					[ "addrowbefore", "addrowafter", "deleterows", "rowheader",
 					  "mergecellsRow", "splitcellsRow", "formatRow" ]
 				]
+			},
+			{
+				label: "tab.cell.label",
+				showOn: { scope: 'table.cell' },
+				components: [
+					[ "alignTop", "alignMiddle", "alignBottom", "formatCell" ]
+				]
 			}
+
 		]
 	};
 
@@ -117,7 +125,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 	 *        a list of component names and tab labels to ignore
 	 *        in the given defaultTabs configuration.
 	 * @return
-	 *         
+	 *
 	 */
 	function combineToolbarSettings(userTabs, defaultTabs, exclude) {
 		var defaultTabsByLabel = Maps.fillTuples({}, Arrays.map(defaultTabs, function(tab) {

@@ -1,0 +1,290 @@
+h2. The Validation Plugin
+
+The validation plugin allows editables to be validated against predefined tests
+for correctness, and then have specific processes be undertaken in response to
+the result of these tests.
+
+endprologue.
+
+h3. Dependencies
+
+In order to use editable validation in Aloha Editor, the first thing you will
+need to do is to include the @extra/validation@ and @common/contenthandler@
+plugins in your @data-aloha-plugins@ list in the script tag which loads
+@aloha.js@.
+
+<html>
+	<script src="aloha.js" data-aloha-plugins"common/contenthandler,
+	                                          extra/validation"></script>
+</html>
+
+NOTE: @common/contenthandler@ must be included for @extra/validation@ to work
+	  because the validation plugin uses "Content
+	  Handlers":plugin_contenthandler.html internally and therefore depends on
+	  them.
+
+h3. Configuration
+
+Loading the necessary plugins will make the validation features available in
+Aloha Editor, but that alone will not result in any editables being validated.
+For that to happen, you must configure which editables you wish to be
+validated, and what tests to run on each editable to validated it.
+
+At least two properties must be configured in the
++Aloha.settings.plugins.validation+ object to see automatic validation at work:
++config+, which indicates *what* should be validated and *how* validity is
+tested, and at least one of either +hooks+, +channels+, or +events+, which will
+indicate *when* validation should be run.
+
+h4. config
+
++config+ is an object that maps strings of jQuery selectors against functions
+or regular expressions which will test the validity of any editable that is
+matched by the selector.
+
+NOTE: An editable is "matched" by a selector when an editable and a selector
+	  string has an "$.fn.is&#40;&#41;":http://api.jquery.com/is/ relationship.
+
+*Example:*
+
+<javascript>
+	Aloha.settings.plugins.validation = {
+		config: {
+
+			// Tests all editables.
+			// Editable is invalid if it contains any <script>, or <style>
+			// elements.
+			"*": function (content, editable, $) {
+				return 0 === $('<div>' + content + '</div>').find('script,style');
+			},
+
+			// Tests editables with the id "weekday".
+			// Editable is invalid unless the entirety of its contents is a
+			// name of one of the weekdays.
+			"#weekday": /^(monday|tuesday|wednesday|thursday|friday)$/i
+		}
+	}
+</javascript>
+
+It is important to know that an editable with the id "weekday" matches both
+configured selectors and therefore will be subject to both validation tests.
+Notice that both functions, and regular expression are allowed as validation
+tests, but anything else is invalid configuration.
+
+WARNING: Anything other than a function or a regular expression will result in
+		 an error message, and that test being ignored.  So a configuration
+		 setting like
+		 @Aloha.settings.plugins.validation.config['#my-editable'] = '<b>Lorem
+		 ipsum</b>';@ will cause the following message to be logged in the
+		 console: *@validation/validation-plugin: Encountered property
+		 "<b>Lorem ipsum</b>" of type string when a RegExp or Function is
+		 required.@*
+
+Consider the example validation function:
+
+<javascript>
+	function (content, editable, $) {
+		return 0 === $('<div>' + content + '</div>').find('script,style');
+	},
+</javascript>
+
+There are a couple of things about the above example to take note of as
+important guidelines concerning how to write your own validation functions:
+
+ * It receives 3 parameters: The first arguments is a string containing the
+   contents of the editable that is to be validated, the second, an
+   Aloha.Editable object, and the third is a reference to the jQuery instance
+   that is used by Aloha Editor internally.
+ * It is a predicate (a function that returns truthy or falsey values).
+ * It is a "pure" function--meaning that it does not alter external state
+   outside of itself.
+ * It is not asynchronous.
+ * It is relatively cheap, and is not space/time-complex.
+
+The correct signature of a validation function (in "Google Closure
+Compiler
+Annotation":https://developers.google.com/closure/compiler/docs/js-for-compiler
+form) will look like this:
+*@function(string, Aloha.Editable, jQuery):boolean@*
+
+WARNING: It is strongly encouraged for test functions to *not* alter the
+		 parameters that are passed to it, or any external state.  However it
+		 may be necessary to change something outside the function to implement
+		 more advanced validation. *Please see the section on "Advanced
+		 Configuration" to learn how to accomplish such things as validation
+		 failure messages.*
+
+*Cavet about the content string:* The content string that is passed as the
+first argument into the test functions contains the contents of the editable
+which is to be validated.  This  string will be the result of calling
+getContents() on the respective editable.  It means that all content handlers
+that have been configured to process the content when getContents() is called,
+would have handled the content before it reaches the validation test functions.
+Also, if your validation tests are being triggered from the
+@smartContentChange@ hook, then the content string will also be subject to any
+content handlers that have been registered for @smartContentChange@, and in the
+order they are configured.
+
+Therefore:
+<javascript>
+Aloha.settings.contentHandler = {
+	smartContentChange: ['word', 'validation', 'sanitize']
+}
+</javascript>
+
+In the above example, the content string that is passed to your validation
+tests will have been processed by the "word" content handler but not the
+"sanitize" content handler.
+
+h4. hooks, events, and channels
+
+It is possible to have validation be triggered automatically at predefined
+interaction points using one or more of the properties +hooks+, +events+, or
++channels+.  Each one is a list of strings of PubSub channels, or content
+handler triggers hooks, or event names.
+
+*Example:*
+
+<javascript>
+	Aloha.settings.plugins.validation = {
+
+		// Validate the involved editable when one of these content handling
+		// triggers is fired.
+		hooks: ['initEditable', 'smartContentChange'],
+
+		// Validate the active editable when this event is fired.
+		events: ['aloha-editable-deactivated'],
+
+		// Validate the active editable when a message is published to this
+		// channel.
+		channels: ['aloha.selection.context-change']
+	}
+</javascript>
+
+NOTE: There are four available content handler hooks: *insertHtml*,
+      *initEditable*, *getContents*, *smartContentChange*
+
+h4. onValidation()
+
+If you provide a @onValidation()@ function in your settings, each time that an
+editable is validated, your function will be called.  It will receive the
+editable that was last validated as the first argument, and a boolean,
+indicating whether or not the editable failed validation, as the second
+argument.
+
+*Example:*
+
+<javascript>
+	Aloha.settings.plugins.validation = {
+		onValidation: function (editable, isValid) {
+			if (isValid) {
+				editable.obj.removeClass('validation-failed');
+			} else {
+				editable.obj.addClass('validation-failed');
+			}
+		}
+	}
+</javascript>
+
+
+NOTE: Be aware that validation on each editable is "fail-fast"--that is, as
+	  soon a the first validation tests fails, the editable is considered
+	  invalid, and no further tests are run.
+
+h3. validate(): Manual validation
+
+There may be times where it is necessary to manually trigger validation, when
+automatic hooks are not suitable.  In these cases, the @Validation.validate()@
+function is useful.
+
+The @validate()@ function call be called with a single editable, or a list of
+editables.  All editables that are given to the function will be validated.  If
+nothing is passed into the function, then all available editables will be
+validated.  This is useful for doing such things are pre-save validation in
+your application.
+
+The return value of @validate()@ is the set of all editables that failed
+validation.
+
+*Example:*
+
+<javascript>
+	if (Aloha.features.validation) {
+		Aloha.require(['validation/validation-plugin'], function (Validation) {
+			var failures = Validation.validate();
+			if (failures.length) {
+				console.error(failures.length + ' editables failed validation.');
+			} else {
+				console.log('All editables are valid.');
+			}
+		});
+	}
+</javascript>
+
+NOTE: Notice that you can determine whether or not the @extra/validation@
+	  plugin is loaded based on whether the +Aloha.features.validation+ flag is
+	  set to @true@.
+
+
+h3. Advanced Configuration Example
+
+<html>
+	<div class="validation-wrapper">
+		<div id="#my-editable">
+			[Write some content in here, but no lists allowed!]
+		</div>
+		<ul class="validation-errors">
+			<li class="validation-error-lists">Lists are not allowed</li>
+			<li class="validation-error-images">Images are not allowed</li>
+			<li class="validation-error-profanity">Profanity is not allowed</li>
+		</ul>
+	</div>
+</html>
+
+<javascript>
+	Aloha.settings.plugins.validation = {
+		config: {
+			'#my-editable': function (content, editable, $) {
+				var valid = 0 === $('<div>' + content + '</div>').find('ul,ol').length;
+				if (!valid) {
+					editable.obj.closest('.validation-wrapper')
+					        .addClass('validation-error-lists');
+				}
+				return valid;
+			}
+		},
+		onValidation: function (editable, isValid) {
+			if (isValid) {
+				editable.obj.closest('.validation-wrapper')
+				        .removeClass('validation-failed')
+				        .removeClass('validation-error-lists');
+			} else {
+				editable.obj.closest('.validation-wrapper')
+				        .addClass('validation-failed');
+			}
+		}
+	}
+
+</javascript>
+
+<css>
+	.validation-errors {
+		display: none;
+	}
+	.validation-error li {
+		display: none;
+	}
+	.validation-failed .validation-errors {
+		display: block;
+	}
+	.validation-error-lists .validation-error-lists {
+		display: block;
+	}
+</css>
+
+h3. References
+ * "Google Closure Compiler
+    Annotation":https://developers.google.com/closure/compiler/docs/js-for-compiler 
+ * "Content Handlers":plugin_contenthandler.html
+ * "Events":events.html
+ * "Dependencies":dependencies.html

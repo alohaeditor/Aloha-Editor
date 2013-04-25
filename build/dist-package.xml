@@ -18,8 +18,9 @@
 		
 		<!-- License -->
 		<file>
-			<source>${project.basedir}/LICENSE.txt</source>
+			<source>${project.basedir}/build/LICENSE.${build.license}.txt</source>
 			<outputDirectory>/alohaeditor-${project.version}</outputDirectory>
+			<destName>LICENSE.txt</destName>
 		</file>
 		
 		<!-- package.json file -->

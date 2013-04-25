@@ -10,9 +10,244 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **ENHANCEMENT**: The change improves the software, but otherwise makes no
                    functional change to any feature.
-- **BUG**: The change fixes a bug.
+- **BUGFIX**: The change fixes a bug.
 
-# 0.22.x
+## 0.23.6 - 2013/04/18
+
+- **BUGFIX**: Previously selected blocks are no longer deleted when hitting
+              backspace from inside an Aloha Editor UI.
+- **BUGFIX**: This change fixes the behaviour of linebreaks by preventing
+              paragraphs to be inserted inside editable spans and paragraphs,
+              and improves the editor's robustness against errors when inserting paragraphs.
+
+## 0.23.5 - 2013/04/11
+
+**ENHANCEMENT**: Added missing german translations for table plugin components
+**BUGFIX**: (core/engine) It is made possible to completely delete the contents
+            of an editable while editing using commands like CTL+A, DEL.
+**BUGFIX**: Cursor styles that are added inside tables for resizing are now
+            correctly removed when the table is no longer editable.
+**BUGFIX**: A bug was fixed with additional elements being appended to a table,
+            if a rowspan was set in its last column.
+**BUGFIX**: A problem was fixed that prevented table-cells to be selected after
+            their header-status was changed.
+**BUGFIX**: (table) This fix allows the active cell to be split into its parts
+            if it has a col- or rowspan, even if it is not part of a selection.
+**BUGFIX**: Fixed applying predefined styles to tables and table-elements
+
+
+## 0.23.4 - 2013/04/04
+
+- **BUGFIX**: Added missing documentation for the Sidebar.
+- **BUGFIX**: Characterpicker now opens in IE
+- **BUGFIX**: Headerids plugin no longer changes ids of Aloha Editables, which
+			  was causing implementations to loose track of editables during
+			  saving of example.
+- **BUGFIX**: naturalfit-button (reset) in table resize plugin did not remove
+			  width from table head (th) elements
+
+## 0.23.3 - 2013/03/22
+
+- **BUGFIX**: No longer automatically append &lt;br&gt; elements to block-level
+	elements unless they are empty.
+- **BUGFIX**: DOM-to-XHTML plugin: Fixed handling of closing angle brackets,
+	which caused problems when these were included in attributes.
+- **BUGFIX**: Characterpicker plugin: Fixed the overlay not defining a font color
+	for the characters in the overlay and inheriting the color from
+	the content. If the font color was white the text in the overlay
+	 wasn't visible.
+- **BUGFIX**: Characterpicker plugin: Fixed the error
+	"Object [object Object] has no method 'is'" occuring, when clicking
+	into an editable.
+- **BUGFIX**: No longer remove the last arbitrary &lt;br&gt; element inside &lt;li&gt;
+	elements.
+- **BUGFIX**: Sidebar: Fixed the styles in some plugins, which
+	looked a bit broken and moved some css styles to the core.css.
+
+
+## 0.23.2 - 2013/03/15
+
+- **BUGFIX**: Fixed editables losing focus and the toolbar dissapearing
+	when clicking on the toolbar, on a dialog or on an attribute
+	field from a plugin (link, wai-lang)
+- **BUGFIX**: Fixed the text selection background color not being removed
+	when selecting something from the attribute field of a plugin (link,
+	wai-lang)
+- **BUGFIX**: No longer automatically append &lt;br&gt; elements to block-level
+	elements unless they are empty.
+
+
+## 0.23.1 - 2013/03/07
+
+- **BUGFIX**: Ensured that the floating menu will not cover small editables
+	whenever possible.
+- **ENHANCEMENT**: state-override: when pressing a formatting
+	button and the cursor is not within a word, a state override
+	will be set such that any text that is subsequently typed will
+	acquire the appropriate formatting.
+- **BUGFIX**: core: Aloha incorrectly reported that Chrome was not supported.
+
+
+## 0.23.0 - 2013/02/28
+
+- **ENHANCEMENT**: format-plugin: b/strong and i/em handling
+                   The "b" button will show as pressed if the selection contains
+                   "strong" formatting, and will unformat the "strong" if
+                   unpressed. The same behaviour was implemented for the i/em
+                   combination.
+- **ENHANCEMENT**: Place the caret after the character that is inserted by
+                   characterpicker.
+- **ENHANCEMENT**: Introducing Modal.modal()--a stripped down modal dialog that
+                   can be customized for specific purposes.
+- **ENHANCEMENT**: The Ephmera API was changed
+	aloha-cleanme class has been renamed to aloha-ephemera.
+	aloha-ui-* classes have been renamed to aloha-ephemera-*.
+	Ephemera.ephemera() now doesn't merge the given value any more, but sets it (see function documentation for more information).
+	ephemera.attrMap doesn't accept 'ELEMENT.attribute': true entries any more, instead use 'attribute': ['ELEMENT'].
+	The mark* functions are now optional (modifications performed by these functions are documented and part of the API).
+- **ENHANCEMENT**: jquery-ui and jquery.layout were upgraded
+- **ENHANCEMENT**: used hints from #749 to improve file size of icons
+- **BUGFIX**: Fix support for editable anchor elements
+- **BUGFIX**: table-plugin: Tables which are inside editables what are inside of blocks will now
+                            transformed into Aloha Tables as they ought to be.
+- **BUGFIX**: table-plugin: Formatting a table row as header will now correctly set the scope of
+                            the header elements to refer to the column.
+- **BUGFIX**: Fixes image path in css file in repository browser #764
+- **BUGFIX**: link-plugin: Fix anchor class would always be set to cssclass even when cssclassregex was not configured
+- **BUGFIX**: link-plugin: Fix metaKey + click doesn't follow link (still doesn't work on IE7)
+- **BUGFIX**: core: when a placeholder was defined for an editable, a placeholder wrapper element was injected into
+	                all editables instead of only the editable the placeholder was defined for.
+- **BUGFIX**: core: Aloha.settings.locale property was not honored.
+
+## 0.22.7 - 2013/01/08
+
+- **FEATURE**: textcolor-plugin: Introducing the textcolor plugin, which will allow you to apply color to sections of text
+- **FEATURE**: table-plugin: Introducing table cell resize capabilities [table plugin](http://www.aloha-editor.org/guides/plugin_table.html) - Note: the feature is currently disabled by default.
+- **BUGFIX**: table-plugin: Tables inside blocks will no longer be transformed
+           into editable Aloha Editor tables.
+- **BUGFIX**: table-plugin: Fixed the cursor problem with ie7. Now ie7 shows the 
+           system default arrows.
+- **BUGFIX**: core: getEditableHost() returns nearest editable rather than the
+           furthest.
+- **BUGFIX**: blocks: Selecting with <CTRL>+A, when inside of a nested editable,
+           will now only select all of the contents of the immediate editable,
+           rather the contents of parent editables as well.
+- **BUGFIX**: ui: Floating toolbar will attempt to adjust is positioning to remain
+		   entirely in the viewport whenever possible.
+- **BUGFIX**: core: Fixes numerous issues with repository manager including how
+           query() and getChildren() handle immediate, and asynchronous
+           repositories.
+- **BUGFIX**: vendor/repository-browser: Updates repository browser with fix to
+		   not listing repository folders multiple times into wrong repositories
+		   on the tree.
+- **BUGFIX**: core: Fixed disappearing attributes in browsers that do not support
+           outerHTML.
+- **BUGFIX**: link-plugins: Fixed inserting of links so that links that span
+           multiple elements are not unnecessarily split into fragments.
+- **BUGFIX**: image-plugin: Fix numerous bugs with resizing and cropping and
+           improve overall usability
+
+
+## 0.22.6 - 2012/12/10
+
+- **ENHANCEMENT**: documentation: Guides and documentation was improved for the validation plugin 
+
+## 0.22.5 - 2012/12/04
+
+- **FEATURE**: validation-plugin: Introducing [validation plugin](http://www.aloha-editor.org/guides/plugin_validation.html)
+- **BUGFIX**: metaview-plugin: We now disable the metaview once the editable is deactivated.
+- **BUGFIX**: core: Some i18n strings within some modal dialog buttons were fixed.  
+- **BUGFIX**: core: Fixed Aloha's initialization order to ensure that repositorymanager will be initialized before plugins are initialized.
+
+## 0.22.4 - 2012/12/03
+
+- **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html
+- **ENHANCEMENT**: table plugin: IE fix -- the selection of multiple cells was not possible when the selection started in the text; there was no workaround so it's now possible to select coherent cells when you "shift-click" into the second cell of the range you want to select
+- **ENHANCEMENT**: The metaview view can now be enabled per editable.
+Aloha.settings = {
+			plugins: {
+				metaview: {
+					editables: {
+						'#top-text': ['metaview','enabled']
+					}
+				}
+			}
+		};
+
+- **BUGFIX**: formatlesspaste-plugin: Formatless Paste Plugin fixed to correctly
+           process configuration settings.
+- **BUGFIX**: table-plugin: Ensures that the range is maintained when clicking
+		   inside table cells.
+- **BUGFIX**: the underline button didn't show up in the toolbar
+           after adding the 'u' in the format-plugin configuration.
+- **BUGFIX**: All repositories have been queried even if a target repository has been spezified. Now only the spezified repository is queried.
+- **BUGFIX**: core/aloha-links: Prevents yellow borders around aloha-links blocks
+- **BUGFIX**: link-plugin: link scope remains active after the selection leaves an anchor element
+- **BUGFIX**: blocks: The floating menu will appear when the editor double-clicks
+           in an editable block.
+- **BUGFIX**: core/selection: Aloha no longer inadvertently removes ranges that
+		   are outside of editables.
+- **BUGFIX**: characterpicker: popup now follows the floating menu while scrolling
+- **BUGFIX**: dom utils: fixes potential bug that may cause attributes with the
+		   slash '/' character in the name to appear in the result of
+		   getContents().
+- **BUGFIX**: word content handler: Fixed handling of pasted MS Word content to
+           not result in broken markup when the content contains tables with
+           cells that are all empty.
+- **BUGFIX**: core/plugins: Fixed plugin initialization to ensure that the
+		   "aloha-ready" event is not fired before all plugins have notified
+		   that they are fully initialized.
+- **BUGFIX**: characterpicker & horizontalruler: Fixes icon styling to display
+		   correct images event when a user-specified jquery ui stylsheet is
+		   included in the page.
+- **BUGFIX**: block-plugin: Fixed activation of correct block when active editable
+		   is changed using Keys (Tab, Shift-Tab) or programmatically.
+- **BUGFIX**: block-plugin: Fixed handling of copy & paste in editables that are
+		   nested inside blocks. Before this fix, when pressing CTRL-C to copy
+		   the current selection in an editable nested inside a block, the whole
+		   block was selected and copied.
+
+## 0.22.3 - 2012/11/06
+
+- **MANUAL CHANGE**: Updated UI CSS regarding button selector;
+- **MANUAL CHANGE**: Added a demo of placeholders to boilerplate;
+- **FEATURE**: align-plugin: The align plugin is now capable of aligning table cell contents.
+- **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html
+- **FEATURE**: improved translation export from gengo.com to Aloha Editor
+	<code>
+	Aloha.settings.plugins: {
+		captionedImage: {
+			allowLinebreak: [ 'p' ], // ['br', 'p'], true or false (default)
+		}
+	}
+	</code>
+- **ENHANCEMENT**: browser: The old browser plugin was removed. The browser-plugin was replaced by the repository browser vendor plugin. 
+- **ENHANCEMENT**: RepositoryBrowser: The repository browser will now correctly handle localisation for the languages english and german.
+- **ENHANCEMENT**: Trigger the 'aloha-smart-content-changed' event with `triggerType` = `block-change` whenever an attribute of an Aloha Block is changed.
+- **BUGFIX**: table-plugin: Fixed a javascript error that occurred when pressing enter in the table wai attribute field.
+- **BUGFIX**: Fix base tag breaks Aloha Editor UI
+- **BUGFIX**: Fix calling mahalo in a blur event handler
+- **BUGFIX**: Fix support for editable anchor elements
+- **BUGFIX**: All repositories have been queried even if a target repository
+
+	has been specified. Now only the specified repository is queried.
+
+- **BUGFIX**: core/aloha-links: Prevents yellow borders around aloha-links blocks
+- **BUGFIX**: link-plugin: link scope remains active after the selection leaves an anchor element
+- **BUGFIX**: blocks: The floating menu will appear when the editor double-clicks
+           in an editable block.
+- **BUGFIX**: core/selection: Aloha no longer inadvertently removes ranges that
+		   are outside of editables.
+- **BUGFIX**: added aloha-cleanme class to aloha-block-handle to prevent potential
+		   issues with temporary elements not being cleaned up.
+
+- **FEATURE**: align-plugin: the align plugin is now capable of aligning table cell contents
+- **FEATURE**: table-plugin: table cells can now have individual classes like rows and columns
+
+## 0.22.2 - 2012/10/08
+
+- **FEATURE**: core: makeClean is in the process of being obsoleted in favor of the aloha/ephemera.js module. See http://aloha-editor.org/guides/writing_plugins.html
+- **BUGFIX**: table-plugin: A javascript error was fixed that occured when removing the whole table.
 
 ## 0.22.1 - 2012/09/26
 
@@ -47,9 +282,9 @@ All changes are categorized into one of the following keywords:
 
                    
 
-- **BUG**: Added missing icon for the block plugins toggledragdrop button
+- **BUGFIX**: Added missing icon for the block plugins toggledragdrop button
 
-- **BUG**: Rangy Core: Patches Rangy to include a workaround for html5shiv's
+- **BUGFIX**: Rangy Core: Patches Rangy to include a workaround for html5shiv's
         violation of document.createElement().
 
         As detailed in this discussion:
@@ -67,13 +302,13 @@ All changes are categorized into one of the following keywords:
         its parentNode, near the critical area of code where the exception
         occurs.
 
-- **BUG**: Moved call to execCommand('enableObjectResizing', false, false) to init method of editable.
+- **BUGFIX**: Moved call to execCommand('enableObjectResizing', false, false) to init method of editable.
 		Otherwise, FF 15 (and above) will throw a JS error, if execCommand('enableObjectResizing', false, false)
 		is called with no contenteditable elements found in the page.
 
-- **BUG**: Fixed Javascript error when doing searches in the repository browser (which caused to search to not be done).
+- **BUGFIX**: Fixed Javascript error when doing searches in the repository browser (which caused to search to not be done).
 
-- **BUG**: added the del format button to the possible format plugin buttons
+- **BUGFIX**: added the del format button to the possible format plugin buttons
 
 	The del button is not enabled by default. To enable it, it has to
 	be configured. For example
@@ -82,11 +317,11 @@ All changes are categorized into one of the following keywords:
 
 	See http://aloha-editor.org/guides/plugin_format.html
 
-- **BUG**: characterpicker-plugin: Fixed a bug that when inserting a special character using the character picker plugin, the focus would be sometimes set to the start of the active editable (e.g. when inserting into a table cell).
+- **BUGFIX**: characterpicker-plugin: Fixed a bug that when inserting a special character using the character picker plugin, the focus would be sometimes set to the start of the active editable (e.g. when inserting into a table cell).
 
-- **BUG**: listenforcer-plugin: Fixed a bug that would only mark the first editable matching a configured selector as an enforced editable. Also when leaving an editable, we now remove the added list properly.
+- **BUGFIX**: listenforcer-plugin: Fixed a bug that would only mark the first editable matching a configured selector as an enforced editable. Also when leaving an editable, we now remove the added list properly.
 
-- **BUG**: core: Sometimes when putting the cursor at the first position of an editable, the cursor would vanish or be put outside the editable. This has been fixed.
+- **BUGFIX**: core: Sometimes when putting the cursor at the first position of an editable, the cursor would vanish or be put outside the editable. This has been fixed.
 
 ## 0.22.0 - 2012/09/03
 
@@ -111,9 +346,9 @@ All changes are categorized into one of the following keywords:
 	}
 	</code>
 
-- **BUG**: In the sidebar the panel entry for the format plugin was always shown; now when the formatOptions is empty the empty (useless) sidebar panel will be hidden.
+- **BUGFIX**: In the sidebar the panel entry for the format plugin was always shown; now when the formatOptions is empty the empty (useless) sidebar panel will be hidden.
 
-- **BUG**: Align Plugin button status was not shown correctly.
+- **BUGFIX**: Align Plugin button status was not shown correctly.
 
 # 0.21.x
 
@@ -123,9 +358,9 @@ All changes are categorized into one of the following keywords:
 
 	This change also rearranges the order of image-plugin components in the toolbar.
 
-- **BUG**: Fixed the ContentHandlerManager to use the content handlers in the correct order.
+- **BUGFIX**: Fixed the ContentHandlerManager to use the content handlers in the correct order.
 
-- **BUG**: Fixed clicking custom block handles activates the image plugin
+- **BUGFIX**: Fixed clicking custom block handles activates the image plugin
 
 ## 0.21.3 - 2012/08/24
 
@@ -148,15 +383,15 @@ All changes are categorized into one of the following keywords:
 
 - **ENHANCEMENT**: Added jQuery method mahaloBlock() to "unblock" the elements from a jQuery collection. Added method .unblock() for Blocks to "unblock" a block instance (in both cases without removing the DOM element from the DOM).
 
-- **BUG**: The sidebar didn't always update the height of panels correctly.
+- **BUGFIX**: The sidebar didn't always update the height of panels correctly.
 
-- **BUG**: Fixed JS error in Aloha.unbind()
+- **BUGFIX**: Fixed JS error in Aloha.unbind()
 
-- **BUG**: Fixed adding of unwanted <span>'S before tables every time an editable was deactivated when the table plugin and block plugin was used.
+- **BUGFIX**: Fixed adding of unwanted <span>'S before tables every time an editable was deactivated when the table plugin and block plugin was used.
 
-- **BUG**: Fixed selecting with keyboard or mouse in editables that are nested in blocks, when using the Internet Explorer.
+- **BUGFIX**: Fixed selecting with keyboard or mouse in editables that are nested in blocks, when using the Internet Explorer.
 
-- **BUG**: Fixed block draghandles are sometimes missing
+- **BUGFIX**: Fixed block draghandles are sometimes missing
 
 ## 0.21.2 - 2012/08/16
 
@@ -178,33 +413,33 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: pubsub/repository-browser: Upgrades the PubSub, and
                    RepositoryBrowser dependencies.
 
-- **BUG**: Editable.getContents(true) doesn't make defensive copies.
+- **BUGFIX**: Editable.getContents(true) doesn't make defensive copies.
 		   Invoking Editable.getContents(true) multiple times in a row would
 		   return the same object, causing unexpected behaviour when client
 		   code modified that object.
 
-- **BUG**: building/undo-plugin: The undo plugin was removed from the list of 
+- **BUGFIX**: building/undo-plugin: The undo plugin was removed from the list of 
            plugins that are included in the build process because it caused some 
            silent javascript errors with content in frameset environments.
 
-- **BUG**: image-plugin: The reset image button function was fixed.  Previously
+- **BUGFIX**: image-plugin: The reset image button function was fixed.  Previously
            a javascript error occured when the button was pressed.
 
-- **BUG**: wai-lang-plugin: Language annotations were not enhanced.
+- **BUGFIX**: wai-lang-plugin: Language annotations were not enhanced.
 		   The short name ('de') of language annotations was displayed instead
 		   of of the full name from the repository ('German').
 
-- **BUG**: block-plugin: Selection was lost when using the cursor keys to move
+- **BUGFIX**: block-plugin: Selection was lost when using the cursor keys to move
            across inline blocks.
 
-- **BUG**: block-plugin: Fixes problem in how droppable containers were being
+- **BUGFIX**: block-plugin: Fixes problem in how droppable containers were being
 		   determined while drapping blocks.  The algorithm was miss-identifing
 		   any container that had a <br> tags with the "aloha-end-br" class as
 		   an "empty" container, even if it contained other content along with
 		   the propping <br>.  We now use a stricter check to remove this false
 		   positive.
 
-- **BUG**: Fixed block formatting (p, h1, ...)
+- **BUGFIX**: Fixed block formatting (p, h1, ...)
 
     To reproduce the error
 
@@ -222,19 +457,19 @@ All changes are categorized into one of the following keywords:
     paragraphs were formatted as h3.
 
 
-- **BUG**: core: We now also remove jquery* attributes before the content is saved.
+- **BUGFIX**: core: We now also remove jquery* attributes before the content is saved.
 
-- **BUG**: core: We now log a warning to the console if repositories run into timeouts.
+- **BUGFIX**: core: We now log a warning to the console if repositories run into timeouts.
 
-- **BUG**: wai-lang: We now load the language dataset in the query method. This fixes the issue that if the first request went wrong it was never loaded again.
+- **BUGFIX**: wai-lang: We now load the language dataset in the query method. This fixes the issue that if the first request went wrong it was never loaded again.
 
-- **BUG**: sidebar: The sidebar now remembers the current selection and refreshes itself when it is being opened.
+- **BUGFIX**: sidebar: The sidebar now remembers the current selection and refreshes itself when it is being opened.
 
-- **BUG**: wordcontenthandler: Fixed the pasting of tables with empty cells.
+- **BUGFIX**: wordcontenthandler: Fixed the pasting of tables with empty cells.
 
-- **BUG**: wordcontenthandler: Fixed the pasting of lists in chrome and IE9.
+- **BUGFIX**: wordcontenthandler: Fixed the pasting of lists in chrome and IE9.
 
-- **BUG**: In the sidebar the panel entry for the format plugin was always shown; now when the formatOptions is empty the empty (useless) sidebar panel will be hidden
+- **BUGFIX**: In the sidebar the panel entry for the format plugin was always shown; now when the formatOptions is empty the empty (useless) sidebar panel will be hidden
 
 ## 0.21.1 - 2012/08/06
 
@@ -272,15 +507,15 @@ All changes are categorized into one of the following keywords:
 
 - **ENHANCEMENT**: Aloha Editor will now add the browser version to the html dom node (see http://www.aloha-editor.org/guides/core.html#initialization-process)
 
-- **BUG**: A debugger statement was removed.
+- **BUGFIX**: A debugger statement was removed.
 
-- **BUG**: Missing implementations to show and hide items in a multisplit button have been added.
+- **BUGFIX**: Missing implementations to show and hide items in a multisplit button have been added.
 
 - **ENHANCEMENT**: numerated-headers-plugin: Added a &nbsp to the annotation, to seperate it from the heading's text.
 
 - **ENHANCEMENT**: table-plugin: We now show the summary textarea in the sidebar if a click on the wai-image was issued.
 
-- **BUG**: Fixed IE7 mode paragraph margin
+- **BUGFIX**: Fixed IE7 mode paragraph margin
 
     The problem is that with a DOM like the following:
 
@@ -316,16 +551,16 @@ All changes are categorized into one of the following keywords:
     Problem was verified to exist on IE7 and IE8 in compatibility
     mode with IE7 document type. May also exist in other IE7 modes.
 
-- **BUG**: Fixed some random and weird selection problems in IE7, where some
+- **BUGFIX**: Fixed some random and weird selection problems in IE7, where some
 	actions (like Enter behaviour) were not performed on the correct cursor
 	position. Sometimes there also occurred some JS errors.
 	
-- **BUG**: Fixed Transforming an empty contenteditable into a list, which
+- **BUGFIX**: Fixed Transforming an empty contenteditable into a list, which
 	caused the contenteditable container to disappear.
 
-- **BUG**: Loading errors that occured when a second jQuery was loaded below aloha.js were fixed.
+- **BUGFIX**: Loading errors that occured when a second jQuery was loaded below aloha.js were fixed.
 
-- **BUG**: Fixed the qUnit tests for following commands to work in IE 7/8/9, latest Firefox and Chrome.
+- **BUGFIX**: Fixed the qUnit tests for following commands to work in IE 7/8/9, latest Firefox and Chrome.
   * Bold
   * Italic
   * Subscript
@@ -583,33 +818,33 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: image plugin: new method getImgFocus used in place of findImgMarkup which is pointless now
 - **ENHANCEMENT**: core: #448 Aloha Editor possibility to be loaded as requireJS module
 - **ENHANCEMENT**: browser: commenting some methods and coding guidelines
-- **BUG**: abbr-plugin: Fixed a javascript error when Aloha.activeEditable.obj / Aloha.activeEditable was not defined
-- **BUG**: fixing placeholder bug where it appears twice in some cases
-- **BUG**: commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
-- **BUG**: image plugin: building a selection from scratch when an image is clicked isn't safe as conflictual browser behaviours
-- **BUG**: image plugin: containing editable not selectable after image plugin activation.
-- **BUG**: image plugin: when plugin activated on an image, clicking a second image don't disable resize on first one.
-- **BUG**: image plugin: fixing focus and value of srcField when image is clicked (previously handled by selectionChange)
-- **BUG**: fixes alohaeditor/Aloha-Editor##424 -- SmartContentChanged is not triggered when hitting
-- **BUG**: browser: fixes alohaeditor/Aloha-Editor#415 -- Repositorie entries appears twice in explorer
-- **BUG**: browser: fixes alohaeditor/Aloha-Editor#460 -- Error when multiple repositories are configured
-- **BUG**: block sidebar attribute editor: when using backspace/del in an input field the block was removed
-- **BUG**: cite-plugin: Fixed a javascript error when the cite plugin had no explicit sidebar configuration.
+- **BUGFIX**: abbr-plugin: Fixed a javascript error when Aloha.activeEditable.obj / Aloha.activeEditable was not defined
+- **BUGFIX**: fixing placeholder bug where it appears twice in some cases
+- **BUGFIX**: commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
+- **BUGFIX**: image plugin: building a selection from scratch when an image is clicked isn't safe as conflictual browser behaviours
+- **BUGFIX**: image plugin: containing editable not selectable after image plugin activation.
+- **BUGFIX**: image plugin: when plugin activated on an image, clicking a second image don't disable resize on first one.
+- **BUGFIX**: image plugin: fixing focus and value of srcField when image is clicked (previously handled by selectionChange)
+- **BUGFIX**: fixes alohaeditor/Aloha-Editor##424 -- SmartContentChanged is not triggered when hitting
+- **BUGFIX**: browser: fixes alohaeditor/Aloha-Editor#415 -- Repositorie entries appears twice in explorer
+- **BUGFIX**: browser: fixes alohaeditor/Aloha-Editor#460 -- Error when multiple repositories are configured
+- **BUGFIX**: block sidebar attribute editor: when using backspace/del in an input field the block was removed
+- **BUGFIX**: cite-plugin: Fixed a javascript error when the cite plugin had no explicit sidebar configuration.
 
 - **DISCUSS**: It would make sense to support also input (like textarea) elements
     eg. for basic formattings like strong / em -- but prevent insertation of br / p ?
 
-- **BUG**: headerids-plugin: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.
+- **BUGFIX**: headerids-plugin: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.
 
-- **BUG**: numerated-headers-plugin: Fixed a bug in the numerated-headers plugin, that the selection was not properly updated when the annotations were removed.
+- **BUGFIX**: numerated-headers-plugin: Fixed a bug in the numerated-headers plugin, that the selection was not properly updated when the annotations were removed.
 
-- **BUG**: core: Fixed that sanitizing was not executed for IE7 because of an error with modifying style attributes in IE7. We now execute sanitizing, but ignore style attributes.
+- **BUGFIX**: core: Fixed that sanitizing was not executed for IE7 because of an error with modifying style attributes in IE7. We now execute sanitizing, but ignore style attributes.
 
-- **BUG**: core: Added the removal of sizzle attributes to the basic content handler.
+- **BUGFIX**: core: Added the removal of sizzle attributes to the basic content handler.
 
-- **BUG**: core: We now catch an exception that is thrown when the selection is not properly updated. This exception would lead to unexpected behaviour.
+- **BUGFIX**: core: We now catch an exception that is thrown when the selection is not properly updated. This exception would lead to unexpected behaviour.
 
-- **BUG**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
+- **BUGFIX**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
 
 
 # 0.20.x
@@ -620,21 +855,21 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: list-plugin: When transforming a list from ul to ol or back all sub elements that are selected are also transformed.
 - **FEATURE**: core: Added method Aloha.getEditableHost() to get the editable, that contains the given jQuery object.
 - **FEATURE**: repository browser: If one of the repositories runs into a timeout during query, the browser will now call the method handleTimeout().
-- **BUG**: characterpicker-plugin: Fixed a bug that when inserting a special character using the character picker plugin, the focus would be sometimes set to the start of the active editable (e.g. when inserting into a table cell).
-- **BUG**: listenforcer-plugin: Fixed a bug that would only mark the first editable matching a configured selector as an enforced editable. Also when leaving an editable, we now remove the added list properly.
-- **BUG**: floatingmenu: Fixed a bug in the floating menu that the position would not be adjusted if the height of the floating menu changed. This is needed in the topalign mode to not hide parts of the editable.
-- **BUG**: core: Sometimes when putting the cursor at the first position of an editable, the cursor would vanish or be put outside the editable. This has been fixed.
-- **BUG**: abbr-plugin: A possible dereference error was fixed in the plugin.
+- **BUGFIX**: characterpicker-plugin: Fixed a bug that when inserting a special character using the character picker plugin, the focus would be sometimes set to the start of the active editable (e.g. when inserting into a table cell).
+- **BUGFIX**: listenforcer-plugin: Fixed a bug that would only mark the first editable matching a configured selector as an enforced editable. Also when leaving an editable, we now remove the added list properly.
+- **BUGFIX**: floatingmenu: Fixed a bug in the floating menu that the position would not be adjusted if the height of the floating menu changed. This is needed in the topalign mode to not hide parts of the editable.
+- **BUGFIX**: core: Sometimes when putting the cursor at the first position of an editable, the cursor would vanish or be put outside the editable. This has been fixed.
+- **BUGFIX**: abbr-plugin: A possible dereference error was fixed in the plugin.
 
 ## 0.20.23 - 2012/08/24
 
 - **ENHANCEMENT**: changed loading procedure of languages in wai lang plugin from AJAX to require.js
-- **BUG**: resolved issue with opening the sidebar when clicking on table WAI button.
+- **BUGFIX**: resolved issue with opening the sidebar when clicking on table WAI button.
 
 ## 0.20.22 - 2012/08/16
 
 - **ENHANCEMENT**: link-plugin: Removed unwanted margins from the sidebar panel of the link attribute.
-- **BUG**: Fixed block formatting (p, h1, ...)
+- **BUGFIX**: Fixed block formatting (p, h1, ...)
 
     To reproduce the error
 
@@ -651,12 +886,12 @@ All changes are categorized into one of the following keywords:
     The result before this fix would have been that in the last step both
     paragraphs were formatted as h3.
 
-- **BUG**: core: We now also remove jquery* attributes before the content is saved.
-- **BUG**: core: We now log a warning to the console if repositories run into timeouts.
-- **BUG**: wai-lang: We now load the language dataset in the query method. This fixes the issue that if the first request went wrong it was never loaded again.
-- **BUG**: sidebar: The sidebar now remembers the current selection and refreshes itself when it is being opened.
-- **BUG**: wordcontenthandler: Fixed the pasting of tables with empty cells.
-- **BUG**: wordcontenthandler: Fixed the pasting of lists in chrome and IE9.
+- **BUGFIX**: core: We now also remove jquery* attributes before the content is saved.
+- **BUGFIX**: core: We now log a warning to the console if repositories run into timeouts.
+- **BUGFIX**: wai-lang: We now load the language dataset in the query method. This fixes the issue that if the first request went wrong it was never loaded again.
+- **BUGFIX**: sidebar: The sidebar now remembers the current selection and refreshes itself when it is being opened.
+- **BUGFIX**: wordcontenthandler: Fixed the pasting of tables with empty cells.
+- **BUGFIX**: wordcontenthandler: Fixed the pasting of lists in chrome and IE9.
 
 ## 0.20.21 - 2012/08/06
 
@@ -674,7 +909,7 @@ All changes are categorized into one of the following keywords:
 
 - **ENHANCEMENT**: table-plugin: We now show the summary textarea in the sidebar if a click on the wai-image was issued.
 
-- **BUG**: Fixed IE7 mode paragraph margin
+- **BUGFIX**: Fixed IE7 mode paragraph margin
 
     The problem is that with a DOM like the following:
 
@@ -710,33 +945,33 @@ All changes are categorized into one of the following keywords:
     Problem was verified to exist on IE7 and IE8 in compatibility
     mode with IE7 document type. May also exist in other IE7 modes.
 
-- **BUG**: Fixed some random and weird selection problems in IE7, where some
+- **BUGFIX**: Fixed some random and weird selection problems in IE7, where some
 	actions (like Enter behaviour) were not performed on the correct cursor
 	position. Sometimes there also occurred some JS errors.
 	
-- **BUG**: Fixed Transforming an empty contenteditable into a list, which
+- **BUGFIX**: Fixed Transforming an empty contenteditable into a list, which
 	caused the contenteditable container to disappear.
 
-- **BUG**: headerids-plugin: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.
+- **BUGFIX**: headerids-plugin: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.
 
-- **BUG**: numerated-headers-plugin: Fixed a bug in the numerated-headers plugin, that the selection was not properly updated when the annotations were removed.
+- **BUGFIX**: numerated-headers-plugin: Fixed a bug in the numerated-headers plugin, that the selection was not properly updated when the annotations were removed.
 
-- **BUG**: core: Fixed that sanitizing was not executed for IE7 because of an error with modifying style attributes in IE7. We now execute sanitizing, but ignore style attributes.
+- **BUGFIX**: core: Fixed that sanitizing was not executed for IE7 because of an error with modifying style attributes in IE7. We now execute sanitizing, but ignore style attributes.
 
-- **BUG**: core: Added the removal of sizzle attributes to the basic content handler.
+- **BUGFIX**: core: Added the removal of sizzle attributes to the basic content handler.
 
-- **BUG**: core: We now catch an exception that is thrown when the selection is not properly updated. This exception would lead to unexpected behaviour.
+- **BUGFIX**: core: We now catch an exception that is thrown when the selection is not properly updated. This exception would lead to unexpected behaviour.
 
-- **BUG**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
+- **BUGFIX**: core&numerated-headers-plugin: Fixed that sometimes DOM INDEX EXCEPTIONS occured when formating a list of paragraphs.
 
 ## 0.20.20 - 2012/07/25
 
-- **BUG**: core: An Internet Explorer 7 crash fix was fixed. Previously the fix caused the whole content to be selected for a short period of time when appling inline format elements.
-- **BUG**: core: An issue that resize handles were displayed on inline elements that contained a new lines in IE7/8 was fixed. 
+- **BUGFIX**: core: An Internet Explorer 7 crash fix was fixed. Previously the fix caused the whole content to be selected for a short period of time when appling inline format elements.
+- **BUGFIX**: core: An issue that resize handles were displayed on inline elements that contained a new lines in IE7/8 was fixed. 
 
 ## 0.20.19 - 2012/07/25
 
-- **BUG**: cite-plugin: Removal of a cite specific data attribute caused a crash in Native Internet Explorer 7. The removal will now be skipped for Native Internet Explorer 7.
+- **BUGFIX**: cite-plugin: Removal of a cite specific data attribute caused a crash in Native Internet Explorer 7. The removal will now be skipped for Native Internet Explorer 7.
 
 ## 0.20.18 - 2012/07/25
 
@@ -744,48 +979,48 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: contenthandler: Modified contenthandlers to allow language annotations made by the wai-lang plugin. This enables copy & paste of language annotations.
 - **ENHANCEMENT**: list-plugin: Some internet explorer specific attributes (hidefocus, tabindex) will now be removed on makeClean.
 - **ENHANCEMENT**: wai-lang-plugin: The plugin now supports both ISO-639-1 (two letter) and ISO-639-2 (three letter) language codes. The languages can be searched in english or german (depending on the user's locale). Additionally, it is now possible to switch on/off the display of country flags when searching for language codes.
-- **BUG**: format-plugin: removeFormat for quote and others (#577); enabled the useage of the u element (#580)
-- **BUG**: core: Fixed copying of attributes when transforming DOM objects into other DOM objects (e.g. when transforming a list into a paragraph), which caused strange attributes to be written in IE, that caused editing problems (e.g. could not set cursor into paragraph, etc.)
-- **BUG**: core: A basic content handler was added to the core that will cleanup the dom and html that gets processed by the getContents method. Currently this basic contenthandler is used to remove attributes (tabindex, hidefocus, contenteditable) that were added when using the Internet Explorer.
-- **BUG**: repository-browser: Some images for the repository browser were changed because Internet Explorer 7+8 don't know how to handle alpha in PNGs.
-- **BUG**: repository-browser: Columns that are not sortable will now no longer be displayed like they were sortable.
-- **BUG**: formatlesspaste-plugin: Fixed javascript error that ocurred when no custom editable configuration was set
-- **BUG**: dom-to-xhtml-plugin: When used in IE7 (or IE8 in IE7 mode), classes of elements were removed. This lead to unexpected behaviour with the BR-tags with class aloha-end-br, that are automatically added, when using the blockelementcontenthandler.
-- **BUG**: characterpicker-plugin: Fixed inserting a special character with a collapsed selection, when using IE.
-- **BUG**: table-plugin: Enabled proper selection (with mouse or keys) in the editable caption of a table.
-- **BUG**: table-plugin: When the contents of a table cell gains the focus, the whole cell is no longer selected. This also affects applying format to contents of a table cell.
-- **BUG**: table-plugin: New Captions are now added as first child of the table (before the tbody), according to the HTML5 specification.
-- **BUG**: table-plugin: The table plugin will now remove table id's on cleanup.
-- **BUG**: table-plugin: Fixed the removal of the aloha-table-cell_active once a table gets deactivated.
-- **BUG**: numerated-headers-plugin: Fixed error that annotations would not be removed when converting a header to a paragraph. The plugin also added leading spaces to the heading's text. This was removed.
-- **BUG**: linkbrowser-plugin/numerated-headers-plugin: A bug in the numerated headers plugin caused a javascript error when the linkbrowser window should be closed. This bug was fixed and the linkbrowser window closes now propely.
-- **BUG**: wai-lang-plugin: We now remove data attributes generated by the repository on makeClean and we add an xml:lang attribute with the value of the lang attribute.
-- **BUG**: wai-lang-plugin: The key combination ctrl+i caused a javascript error in IE8 when using the wai-lang-plugin together with the link plugin. This javascript error was now fixed.
-- **BUG**: metaview-plugin: Modified CSS for language annotations to always show a generic icon for language annotated spans.
-- **BUG**: metaview-plugin: language annotations would result in background images being repeated over and over again - fixed that problem.
-- **BUG**: cite-plugin: Fixed editing of saved citation links.
-- **BUG**: cite-plugin: The css animations for the cite plugin were removed because they were poluting the dom with style attributes.
-- **BUG**: Fixed trailing comma in array literal.
+- **BUGFIX**: format-plugin: removeFormat for quote and others (#577); enabled the useage of the u element (#580)
+- **BUGFIX**: core: Fixed copying of attributes when transforming DOM objects into other DOM objects (e.g. when transforming a list into a paragraph), which caused strange attributes to be written in IE, that caused editing problems (e.g. could not set cursor into paragraph, etc.)
+- **BUGFIX**: core: A basic content handler was added to the core that will cleanup the dom and html that gets processed by the getContents method. Currently this basic contenthandler is used to remove attributes (tabindex, hidefocus, contenteditable) that were added when using the Internet Explorer.
+- **BUGFIX**: repository-browser: Some images for the repository browser were changed because Internet Explorer 7+8 don't know how to handle alpha in PNGs.
+- **BUGFIX**: repository-browser: Columns that are not sortable will now no longer be displayed like they were sortable.
+- **BUGFIX**: formatlesspaste-plugin: Fixed javascript error that ocurred when no custom editable configuration was set
+- **BUGFIX**: dom-to-xhtml-plugin: When used in IE7 (or IE8 in IE7 mode), classes of elements were removed. This lead to unexpected behaviour with the BR-tags with class aloha-end-br, that are automatically added, when using the blockelementcontenthandler.
+- **BUGFIX**: characterpicker-plugin: Fixed inserting a special character with a collapsed selection, when using IE.
+- **BUGFIX**: table-plugin: Enabled proper selection (with mouse or keys) in the editable caption of a table.
+- **BUGFIX**: table-plugin: When the contents of a table cell gains the focus, the whole cell is no longer selected. This also affects applying format to contents of a table cell.
+- **BUGFIX**: table-plugin: New Captions are now added as first child of the table (before the tbody), according to the HTML5 specification.
+- **BUGFIX**: table-plugin: The table plugin will now remove table id's on cleanup.
+- **BUGFIX**: table-plugin: Fixed the removal of the aloha-table-cell_active once a table gets deactivated.
+- **BUGFIX**: numerated-headers-plugin: Fixed error that annotations would not be removed when converting a header to a paragraph. The plugin also added leading spaces to the heading's text. This was removed.
+- **BUGFIX**: linkbrowser-plugin/numerated-headers-plugin: A bug in the numerated headers plugin caused a javascript error when the linkbrowser window should be closed. This bug was fixed and the linkbrowser window closes now propely.
+- **BUGFIX**: wai-lang-plugin: We now remove data attributes generated by the repository on makeClean and we add an xml:lang attribute with the value of the lang attribute.
+- **BUGFIX**: wai-lang-plugin: The key combination ctrl+i caused a javascript error in IE8 when using the wai-lang-plugin together with the link plugin. This javascript error was now fixed.
+- **BUGFIX**: metaview-plugin: Modified CSS for language annotations to always show a generic icon for language annotated spans.
+- **BUGFIX**: metaview-plugin: language annotations would result in background images being repeated over and over again - fixed that problem.
+- **BUGFIX**: cite-plugin: Fixed editing of saved citation links.
+- **BUGFIX**: cite-plugin: The css animations for the cite plugin were removed because they were poluting the dom with style attributes.
+- **BUGFIX**: Fixed trailing comma in array literal.
 
 ## 0.20.17 - 2012/07/09
 
 - **ENHANCEMENT**: contenthandler plugin: A new Blockelement Content Handler has been added, that handles breaks in blockelements upon initialization and getContents
 - **ENHANCEMENT**: draganddropfiles: A security issue with the upload.php example file was found. The example will no longer be executable by default.
-- **BUG**: core: The implementation for adding br-Tags in Blockelements has been fixed to realize a more consistent behaviour across all browsers and also with the metaview plugin turned on.
+- **BUGFIX**: core: The implementation for adding br-Tags in Blockelements has been fixed to realize a more consistent behaviour across all browsers and also with the metaview plugin turned on.
 
 ## 0.20.16 - 2012/07/04
 
 - **ENHANCEMENT**: numerated-headers plugin: Added configuration option 'trailingdot' to switch format of generated headers.
-- **BUG**: numerated-headers plugin: Fixed misleading interpretation of the 'numeratedactive' for configuration per editable. 'numeratedactive' will now only determine, whether headers shall be numerated by default (if button not unclicked by the editor). To disable the function for an editable, choose an empty 'headingselector'.
-- **BUG**: numerated-headers plugin: Fixed numeration, when the headers are not starting with the highest level (e.g. when using h2 h1 h2 h3, the first h2 will be omitted and numeration will start at the h1)
-- **BUG**: core: fixed missing space when selecting a word between two spaces and deleting (by [DEL] or [BACKSPACE]). The result will now be like expected: having the cursor between two spaces.
-- **BUG**: characterpicker-plugin: Fixed inserting characters with a non-collapsed selection. Instead of adding the character after the selection, the inserted character will now replace the selection (like expected).
-- **BUG**: paste-plugin: Disabled handling paste on IE by executing the command 'paste', because this causes incorrect cursor positions after pasting.
-- **BUG**: paste-plugin: Fixed setting focus and selection into the editable before inserting pasted html. That fixes strange behaviour in FF after pasting.
+- **BUGFIX**: numerated-headers plugin: Fixed misleading interpretation of the 'numeratedactive' for configuration per editable. 'numeratedactive' will now only determine, whether headers shall be numerated by default (if button not unclicked by the editor). To disable the function for an editable, choose an empty 'headingselector'.
+- **BUGFIX**: numerated-headers plugin: Fixed numeration, when the headers are not starting with the highest level (e.g. when using h2 h1 h2 h3, the first h2 will be omitted and numeration will start at the h1)
+- **BUGFIX**: core: fixed missing space when selecting a word between two spaces and deleting (by [DEL] or [BACKSPACE]). The result will now be like expected: having the cursor between two spaces.
+- **BUGFIX**: characterpicker-plugin: Fixed inserting characters with a non-collapsed selection. Instead of adding the character after the selection, the inserted character will now replace the selection (like expected).
+- **BUGFIX**: paste-plugin: Disabled handling paste on IE by executing the command 'paste', because this causes incorrect cursor positions after pasting.
+- **BUGFIX**: paste-plugin: Fixed setting focus and selection into the editable before inserting pasted html. That fixes strange behaviour in FF after pasting.
 
 ## 0.20.15 - 2012/06/27
 
-- **BUG**: core: Fixed browser crashes in IE9 (and above), after splitting DOM nodes using ENTER and placing the cursor afterwards, that occurred due to a browser bug in IE9
+- **BUGFIX**: core: Fixed browser crashes in IE9 (and above), after splitting DOM nodes using ENTER and placing the cursor afterwards, that occurred due to a browser bug in IE9
 
 ## 0.20.14 - 2012/06/27
 
@@ -796,19 +1031,19 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: repository browser: searches in the repository browser will now be done recursively.
 - **ENHANCEMENT**: plugin formatlesspaste: will now be more tolerant with the button and formatlessPasteOption setting and not only accept boolean values
 - **ENHANCEMENT**: plugin cite: will now be more tolerant with the sidebar.open setting and not only accept boolean values. Additionally, the default config will now show both the quote and blockquote button.
-- **BUG**: core: When using the delete button in IE7, so that after deleting the cursor is supposed to be in between two spaces, some unexpected text "undefined" was added to the editable. This has been fixed now.
-- **BUG**: metaview: Fixed bug that caused a javascript error when no configuration was provided for the metaview plugin.
-- **BUG**: core: Fixed a bug within jquery that caused problems in IE9 when invoking getContents for an editable that contains an embedded object (e.g. flash player).
-- **BUG**: FloatingMenu: in IE the FloatingMenu would not be clickable after deleting a table row because of a transparent .ext-shim iframe layered on top of it. Forcefully removed the iframe from the layout.
-- **BUG**: FloatingMenu: in IE the FloatingMenu would not be clickable after deleting a table row because of a transparent .ext-shim iframe layered on top of it. Forcefully removed the iframe from the layout.
-- **BUG**: repositorymanager: Fixed a bug in the repository manager that caused an javascript error when no result items were passed to the processResults method.
-- **BUG**: generic contenthandler: Do not trim text nodes in list elements, because this could remove spaces between words, where one word is formatted.
-- **BUG**: plugin format: The format plugin will now support 'del' instead of 's' for strikethrough ('s' is deprecated), like explained in the documentation.
-- **BUG**: plugin metaview: Metaview plugin would add a grey backdrop to lists on IE7. Added more specific styles.
-- **BUG**: core: Implemented deleting tables with "delete" or "forwarddelete" commands (pressing [DEl] or [BACKSPACE]). 
-- **BUG**: core: Fixed strange cursor behaviour when using [BACKSPACE] to delete the first character in a text node, using IE9. 
-- **BUG**: enumerated-headers plugin: Added default configuration, which fixes some javascript error, if no other configuration is set.
-- **BUG**: wai-lang plugin: Fixed toggle button to be pressed when a language is set, and unpressed if not. Hide language tab, when language is removed.
+- **BUGFIX**: core: When using the delete button in IE7, so that after deleting the cursor is supposed to be in between two spaces, some unexpected text "undefined" was added to the editable. This has been fixed now.
+- **BUGFIX**: metaview: Fixed bug that caused a javascript error when no configuration was provided for the metaview plugin.
+- **BUGFIX**: core: Fixed a bug within jquery that caused problems in IE9 when invoking getContents for an editable that contains an embedded object (e.g. flash player).
+- **BUGFIX**: FloatingMenu: in IE the FloatingMenu would not be clickable after deleting a table row because of a transparent .ext-shim iframe layered on top of it. Forcefully removed the iframe from the layout.
+- **BUGFIX**: FloatingMenu: in IE the FloatingMenu would not be clickable after deleting a table row because of a transparent .ext-shim iframe layered on top of it. Forcefully removed the iframe from the layout.
+- **BUGFIX**: repositorymanager: Fixed a bug in the repository manager that caused an javascript error when no result items were passed to the processResults method.
+- **BUGFIX**: generic contenthandler: Do not trim text nodes in list elements, because this could remove spaces between words, where one word is formatted.
+- **BUGFIX**: plugin format: The format plugin will now support 'del' instead of 's' for strikethrough ('s' is deprecated), like explained in the documentation.
+- **BUGFIX**: plugin metaview: Metaview plugin would add a grey backdrop to lists on IE7. Added more specific styles.
+- **BUGFIX**: core: Implemented deleting tables with "delete" or "forwarddelete" commands (pressing [DEl] or [BACKSPACE]). 
+- **BUGFIX**: core: Fixed strange cursor behaviour when using [BACKSPACE] to delete the first character in a text node, using IE9. 
+- **BUGFIX**: enumerated-headers plugin: Added default configuration, which fixes some javascript error, if no other configuration is set.
+- **BUGFIX**: wai-lang plugin: Fixed toggle button to be pressed when a language is set, and unpressed if not. Hide language tab, when language is removed.
 
 ## 0.20.13 - 2012/06/15
 
@@ -822,68 +1057,68 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: A whole lot of Plugins can now be configured editable-specific configuration: abbr, highlighteditables, list, horizontalruler, link, paste, headerids, listenforcer, metaview, numerated-headers, wai-lang, cite, characterpicker, formatlesspaste, dom-to-xhtml. Have a look at the individual plugin guides for detailed information on how to configure them.
 - **ENHANCEMENT**: Added functional description for plugins
 - **ENHANCEMENT**: core: The getEditableConfig will now also return the selector within the configuration object. This only applies to custom editable configurations that provide objects instead of arrays since arrays can't be extended with custom properties. The returned object will now also contain nested arrays. Previously nested arrays were omitted.
-- **BUG**: core: Fixed the fix for IE7 crashes
-- **BUG**: core: Fixed Javascript errors that occurred in IE7 when pressing Enter at the end of paragraphs (multiple times).
-- **BUG**: core: Fixed possible Javascript error when cleanup operation is done (e.g. after pasting text into an editable).
-- **BUG**: commands: Fixed possible browser hang (due to an infinite loop) that occurred, when using the command 'inserthtml' to insert content into an editable span, that is not allowed inside a span (e.g. a h1). This browser hang could occur when using the paste plugin to paste content, since that uses the command 'inserthtml'.
-- **BUG**: generic contenthandler: Changed to always remove div, span and font tags, regardless of the setting of the contentEditable attribute. This fixes problems, when e.g. having an editable span and then pressing [CTRL-A] [CTRL-C] [CTRL-V].
-- **BUG**: commands: Fixed unwrapping of tags in fixDisallowedAncestors, which possibly removed the editing host when pasting into spans, h1, ...
-- **BUG**: sanitize contenthandler: disabled for IE7, because it does not work well in IE7 (sanitize tries to set attributes via setAttributeNode() to DOM Elements, and this does not work for the "style" attribute in IE7)
-- **BUG**: commands: fixed weird behaviour when using the backspace key to delete text (cursor was jumping).
-- **BUG**: core: Fixed enter behaviour in lists. Before executing command "insertparagraph", whitespace textnodes around list elements are removed, because the algorithm isn't prepared to handle whitespace textnodes.
-- **BUG**: citation plugin: Fixed javascript errors on initialization and possible endless loop when adding inline citations.
+- **BUGFIX**: core: Fixed the fix for IE7 crashes
+- **BUGFIX**: core: Fixed Javascript errors that occurred in IE7 when pressing Enter at the end of paragraphs (multiple times).
+- **BUGFIX**: core: Fixed possible Javascript error when cleanup operation is done (e.g. after pasting text into an editable).
+- **BUGFIX**: commands: Fixed possible browser hang (due to an infinite loop) that occurred, when using the command 'inserthtml' to insert content into an editable span, that is not allowed inside a span (e.g. a h1). This browser hang could occur when using the paste plugin to paste content, since that uses the command 'inserthtml'.
+- **BUGFIX**: generic contenthandler: Changed to always remove div, span and font tags, regardless of the setting of the contentEditable attribute. This fixes problems, when e.g. having an editable span and then pressing [CTRL-A] [CTRL-C] [CTRL-V].
+- **BUGFIX**: commands: Fixed unwrapping of tags in fixDisallowedAncestors, which possibly removed the editing host when pasting into spans, h1, ...
+- **BUGFIX**: sanitize contenthandler: disabled for IE7, because it does not work well in IE7 (sanitize tries to set attributes via setAttributeNode() to DOM Elements, and this does not work for the "style" attribute in IE7)
+- **BUGFIX**: commands: fixed weird behaviour when using the backspace key to delete text (cursor was jumping).
+- **BUGFIX**: core: Fixed enter behaviour in lists. Before executing command "insertparagraph", whitespace textnodes around list elements are removed, because the algorithm isn't prepared to handle whitespace textnodes.
+- **BUGFIX**: citation plugin: Fixed javascript errors on initialization and possible endless loop when adding inline citations.
 
 ## 0.20.12 - 2012/05/24
 
 - **MANUAL CHANGE**: wai-lang: The wai lang plugin will now fail loading when the flag-icons plugin was not loaded. Previously the plugin did not fail loading but showed broken flag icon images. Please note that it is currently mandatory to add third party dependencies for some plugins to the data-aloha-plugins attribute otherwise those dependencies can't be resolved correctly.
-- **BUG**: browser-plugin: The browser will now open at a more centered position.
-- **BUG**: core: A IE7 crash workaround was reverted because it caused all eventhandlers to be lost when getContents() was invoked. The new workaround will remove the jquery expando attributes in IE7 for some elements.
-- **BUG**: core: Fixes bugs in the handeling of delete and forward delete. These bugs were introduced in an attempt to fix issues with deleting behaviour near multiple white spaces.  An alernative should be sought for a better solution for handeling white spaces.
+- **BUGFIX**: browser-plugin: The browser will now open at a more centered position.
+- **BUGFIX**: core: A IE7 crash workaround was reverted because it caused all eventhandlers to be lost when getContents() was invoked. The new workaround will remove the jquery expando attributes in IE7 for some elements.
+- **BUGFIX**: core: Fixes bugs in the handeling of delete and forward delete. These bugs were introduced in an attempt to fix issues with deleting behaviour near multiple white spaces.  An alernative should be sought for a better solution for handeling white spaces.
 
 ## 0.20.11 - 2012/05/10
 
-- **BUG** image plugin: fixes distorted images when in portrait format
-- **BUG** table plugin: fixes bug in IE7 that second click on table cell was not activating the table
+- **BUGFIX** image plugin: fixes distorted images when in portrait format
+- **BUGFIX** table plugin: fixes bug in IE7 that second click on table cell was not activating the table
 - **ENHANCEMENT** link plugin: removed linklist (and slowlinklist) which where loaded by default (we should not force everyone to have them active by default)
-- **BUG**: browser-plugin: In some cases a javascript error would be thrown when using the browser plugin with Internet Explorer. IE does not support 'new Image' calls within popups.
-- **BUG**: browser-plugin: In some cases a javascript error would be thrown when using the browser plugin with Internet Explorer. IE does not support 'new Image' calls within popups.
+- **BUGFIX**: browser-plugin: In some cases a javascript error would be thrown when using the browser plugin with Internet Explorer. IE does not support 'new Image' calls within popups.
+- **BUGFIX**: browser-plugin: In some cases a javascript error would be thrown when using the browser plugin with Internet Explorer. IE does not support 'new Image' calls within popups.
 - **ENHANCEMENT**: browser-plugin: The browser plugin will now calculate the browser width automatically.
-- **BUG**: IE7 - #516 navigate with arrow keys through several paragraphs
-- **BUG**: IE7 - #515 gray text after list
+- **BUGFIX**: IE7 - #516 navigate with arrow keys through several paragraphs
+- **BUGFIX**: IE7 - #515 gray text after list
 - **ENHANCEMENT**: Removed unwanted behaviour from the block plugin's sidebarattributeedtior, which will clear out the whole sidebar when loaded
 - **BUT**: floatingmenu: Fixed regeneration of ext components for floatingmenu, when buttons are added after the floatingmenu was initialized
 - **FEATURE** plugin: Adding the sourceview plugin, which visualizes the current selection in the sidebar to help developers of Aloha Editor with debugging.
 
 ## 0.20.10 - 2012/04/17
 
-- **BUG**: core: Fixed a typo in the previous bugfix: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist
+- **BUGFIX**: core: Fixed a typo in the previous bugfix: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist
 
 ## 0.20.9 - 2012/04/16
 
-- **BUG**: block-plugin: Fixed 'e.srcElement is undefined' error in blockmanager.js which affected firefox 11
-- **BUG** floatingmenu: Fixed problem with creating new buttons after Aloha is ready.
+- **BUGFIX**: block-plugin: Fixed 'e.srcElement is undefined' error in blockmanager.js which affected firefox 11
+- **BUGFIX** floatingmenu: Fixed problem with creating new buttons after Aloha is ready.
 - **ENHANCEMENT**: updated integration of Aloha Blocks to the most recent version
-- **BUG** floatingmenu: Fixed problem with showing floatingmenu shadow too early
-- **BUG** core: Fixed a permission error in Firefox, when Aloha Editor tried to access a document property of an external ressource
-- **BUG** table-plugin: Fixed the cleanup of the table cells on blur not cleaning up correctly (caused by a typo in the element class)
-- **BUG** core: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist (fixed in extjs)
+- **BUGFIX** floatingmenu: Fixed problem with showing floatingmenu shadow too early
+- **BUGFIX** core: Fixed a permission error in Firefox, when Aloha Editor tried to access a document property of an external ressource
+- **BUGFIX** table-plugin: Fixed the cleanup of the table cells on blur not cleaning up correctly (caused by a typo in the element class)
+- **BUGFIX** core: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist (fixed in extjs)
 
 ## 0.20.8 - 2012/04/06
 
-- **BUG** core: UP and DOWN cursor key will now not be processed specially by Aloha, they will be left to native handeling.
-- **BUG** core: Adds a guard in `execCommand()' to prevent `INDEX_SIZE_ERR' exceptions.
-- **BUG** core: The cursor processing around non-contenteditable elements (blocks) was not functioning as described or desired.  It now behaves with more stability especially on Internet Explorer.
+- **BUGFIX** core: UP and DOWN cursor key will now not be processed specially by Aloha, they will be left to native handeling.
+- **BUGFIX** core: Adds a guard in `execCommand()' to prevent `INDEX_SIZE_ERR' exceptions.
+- **BUGFIX** core: The cursor processing around non-contenteditable elements (blocks) was not functioning as described or desired.  It now behaves with more stability especially on Internet Explorer.
 - **ENHANCEMENT** core: Improved efficiency of cursor processing, especially around blocks.
 - **FEATURE** core: It is now possible to place the caret between two adjecent non-contenteditable elements.
 - **ENHANCEMENT** core: The jquery-plugin require plugin will now be able to return loaded plugins. Previously loaded plugins were just accessible through the extended jquery object.
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
-- **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
+- **BUGFIX** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
 - **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly
-- **BUG** align plugin: Fixed alignment behavior and place the buttons in the format tab instead of a new one.
+- **BUGFIX** align plugin: Fixed alignment behavior and place the buttons in the format tab instead of a new one.
 - **FEATURE** hints plugin: Implemented using Tipsy as tooltip library and the latest Aloha-Editor plugin standard.
 - **ENHANCEMENT** block plugin: added data-attribute to prevent triggering scope changes when a block is activated
 - **ENHANCEMENT** block plugin: revamped colors for highlighting blocks
-- **BUG** updated dom.js to reflect HTML5 spec changes; format with u and i tags is now available; updated default button config
+- **BUGFIX** updated dom.js to reflect HTML5 spec changes; format with u and i tags is now available; updated default button config
 - **ENHANCEMENT** config options per editable for plugin common/horizontalruler and extra/toc
 - **ENHANCEMENT** configure the sidebar handle position via Aloha.settings.sidebar.handle.top
 - **ENHANCEMENT** table plugin: disable split / merge cell buttons when not possible to use
@@ -891,79 +1126,79 @@ All changes are categorized into one of the following keywords:
 - **FEATURE** API docs: added first version of new API docs
 - **FEATURE** HotKey feature added for link, format and wai-lang plugin
 - **ENHANCEMENT** load plugins via config option
-- **BUG** added missing endprologue. and regenerated guides; jslint for image plugin
+- **BUGFIX** added missing endprologue. and regenerated guides; jslint for image plugin
 - **ENHANCEMENT** Added very simple example for loading Aloha Editor. Simplyfied "Using Aloha Editor" guides page.
 - **ENHANCEMENT** adding documentation about Aloha Editor events
 
 ## 0.20.7 - 2012/03/07
 
-- **BUG** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.
-- **BUG** formatlesspaste plugin: fixed IE syntax error caused by a comma at the end of a list.
+- **BUGFIX** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.
+- **BUGFIX** formatlesspaste plugin: fixed IE syntax error caused by a comma at the end of a list.
 
 ## 0.20.6 - 2012/03/01
 
-- **BUG** link: fixed a bug in the link list static repository plugin that caused Internet Explorer to fail handling repository links.
-- **BUG** dom-to-xhtml plugin: fixed attribute names are not lowercased
-- **BUG** floatingmenu: fixed floating menu's reading of configuration values
+- **BUGFIX** link: fixed a bug in the link list static repository plugin that caused Internet Explorer to fail handling repository links.
+- **BUGFIX** dom-to-xhtml plugin: fixed attribute names are not lowercased
+- **BUGFIX** floatingmenu: fixed floating menu's reading of configuration values
           so that they are parsed into numbers.
-- **BUG** floatingmenu: fixed floating menu positioning when view port is
+- **BUGFIX** floatingmenu: fixed floating menu positioning when view port is
           scrolled so that it takes into account the aligntopOffset setting.
 
 - **ENHANCEMENT** Added jslint setup to guides and fixed error output in build script.
 - **ENHANCEMENT** The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
-- **BUG** Paste plugin: paste into an editable in an editable is now working
-- **BUG** Selection of content in an contenteditable=false which is not a child of an Aloha Editor instance now works like expected
+- **BUGFIX** Paste plugin: paste into an editable in an editable is now working
+- **BUGFIX** Selection of content in an contenteditable=false which is not a child of an Aloha Editor instance now works like expected
 - **ENHANCEMENT** Repositories: It is now possible to configure the timeout for querying repositories.
 - **ENHANCEMENT** Floating menu: It is now possible to configure the floating menu to be 'append' to an other element. It is needed to set an extra option 'element' with the ID of the HTML DOM element where the fm should be attach to. The floating menu is attached to the same position as the 'element'.
 - **ENHANCEMENT** Floating menu: If the floating menu is set to be not draggable, the drag&drop bar + pin will not be shown
-- **BUG** engine.js: insert paragraph was sometimes broken in IE7 (copy of empty/all p-element attributes)
+- **BUGFIX** engine.js: insert paragraph was sometimes broken in IE7 (copy of empty/all p-element attributes)
 - **ENHANCEMENT** updated plugin: table of contents (toc) to work with the current Aloha Editor version
-- **BUG** characterpicker plugin: fixed cursor position after inserting a character
+- **BUGFIX** characterpicker plugin: fixed cursor position after inserting a character
 - **ENHANCEMENT** Browser plugin: loading of required jQuery plugins is now changed so all can be loaded via CDN
 
 
 ## 0.20.5 - 2012/02/09
 
 - **ENHANCEMENT** word contenthandler: cleanup for pasted word documents with table of contents
-- **BUG** paste plugin: removed trim of pasted contents -- test[ text] + 2x c&p results now in test text text instead of testtexttext
-- **BUG** format/table plugin: added a workaround in the format plugin to enable formating of selected cells
+- **BUGFIX** paste plugin: removed trim of pasted contents -- test[ text] + 2x c&p results now in test text text instead of testtexttext
+- **BUGFIX** format/table plugin: added a workaround in the format plugin to enable formating of selected cells
 - **ENHANCEMENT** cite plugin: config option if sidebar should auto open or not (Aloha.settings.plugins.cite.sidebar.open: true|false)
-- **BUG** The link plugin won't use a scope but will now hide/show it's buttons directly.
-- **BUG** Fixed the way the table plugin unwrapped it's cell contents when deactivating a table - all dom object references where lost before. Now the objects are truly unwrapped, and just moved up one step within the dom structure.
+- **BUGFIX** The link plugin won't use a scope but will now hide/show it's buttons directly.
+- **BUGFIX** Fixed the way the table plugin unwrapped it's cell contents when deactivating a table - all dom object references where lost before. Now the objects are truly unwrapped, and just moved up one step within the dom structure.
 
 ## 0.20.4 - 2012/01/27
 
-- **BUG** core: fixed IE7 browser crash caused by dereferencing element attributes.
-- **BUG** floatingmenu: Fixed positioning of floating menu when it extends
+- **BUGFIX** core: fixed IE7 browser crash caused by dereferencing element attributes.
+- **BUGFIX** floatingmenu: Fixed positioning of floating menu when it extends
           beyond the width of the viewport
 
 
 ## 0.20.3 - 2012/01/24
 
-- **BUG** floatingmenu: Fixed float position of floatingmenu when it moves
+- **BUGFIX** floatingmenu: Fixed float position of floatingmenu when it moves
           between editables.
-- **BUG** core: Removes ExtJS' IE6 style fixes which break layout in IE9.
-- **BUG** image-plugin: The image plugin will now only display the crop buttons
+- **BUGFIX** core: Removes ExtJS' IE6 style fixes which break layout in IE9.
+- **BUGFIX** image-plugin: The image plugin will now only display the crop buttons
           when the cropping area selection was finished. This avoids a bug in
 		  Internet Explorer 7 where the crop area could not be resized once the
 		  user entered those crop buttons.
-- **BUG** core: Fixed floating menu pinning with topalign behaviour
+- **BUGFIX** core: Fixed floating menu pinning with topalign behaviour
           (topalignOffset, horizontalOffset)
 
 
 ## 0.20.2 - 2012/01/19
 
-- **BUG** image-plugin: Replaced unicode characters in the crop buttons with
+- **BUGFIX** image-plugin: Replaced unicode characters in the crop buttons with
           images to fix display issues within Internet Explorer 7.
-- **BUG** core: Fixed problem where Internet Explorer 7 and jquery.store will
+- **BUGFIX** core: Fixed problem where Internet Explorer 7 and jquery.store will
           not work with frames since it will fallback to window.name storage.
 		  We'll now use a void storage for IE7. This means that IE7 will not be
 		  able to store floating menu postion and other settings.
-- **BUG** core: Fixed problem of Internet Explorer 7 crashing when invoking
+- **BUGFIX** core: Fixed problem of Internet Explorer 7 crashing when invoking
           jQuery's `removeAttr`.
-- **BUG** html5shims: Function `getRootParent` in ecma5schims.js no longer
+- **BUGFIX** html5shims: Function `getRootParent` in ecma5schims.js no longer
           throws an error when `null` or `undefined` is passed to it.
-- **BUG** core: fixed incorrect dependency on jquery.json-2.2 where util/json2
+- **BUGFIX** core: fixed incorrect dependency on jquery.json-2.2 where util/json2
           is needed instead and made it globally available
 - **ENHANCEMENT** core: Removed unneeded JSON empty function definition that
                   surpressed errors in IE.
@@ -983,13 +1218,13 @@ All changes are categorized into one of the following keywords:
 
 - **ENHANCEMENT** doc/api: added first version of new API docs. Please note
                   that the API docs are currently work in progress.
-- **BUG** floatingmenu: fixed a bug with topalign behaviour where scrolling
+- **BUGFIX** floatingmenu: fixed a bug with topalign behaviour where scrolling
           would attach the floatingmenu to the left side of the screen.
 
 
 ## 0.20.0-RC9 - 2011/12/07
 
-- **BUG** image-plugin: The saved aspect ratio will now be correcly
+- **BUGFIX** image-plugin: The saved aspect ratio will now be correcly
           recalculated when a cropping action is sucessfully ended. Previously
 		  the aspect ratio was not recalculated and therefore resizing of
 		  images resulted in unexpected image sizes.
@@ -1038,7 +1273,7 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** some changes in the Browser Plugin (browser.js) to allow
                   multiple, distinguishable instances of browsers on the same
 				  page
-- **BUG** customizable numerated-header plugin: when header content is deleted,
+- **BUGFIX** customizable numerated-header plugin: when header content is deleted,
           the numeration tag will be deleted, too
 
 
@@ -1054,23 +1289,23 @@ All changes are categorized into one of the following keywords:
 				  two times into a list to make the floating menu appear since
 				  the selection was lost due to dom replacements. This is now
 				  fixed.
-- **BUG** core: The aloha-editable-activated will now no longer invoked twice.
-- **BUG** image-plugin: Fixed handling of width and height when the user
+- **BUGFIX** core: The aloha-editable-activated will now no longer invoked twice.
+- **BUGFIX** image-plugin: Fixed handling of width and height when the user
           entered the cropping mode. You can resize the crop area by entering
 		  values in the width and height field. 
-- **BUG** list-plugin/link-plugin: The list plugin interfered with the link
+- **BUGFIX** list-plugin/link-plugin: The list plugin interfered with the link
           plugin behaviour. Previously it was not possible to create links
 		  within a list due to a bug within the list plugin. The list plugin
 		  will now no longer use the Aloha.List scope.
-- **BUG** link-plugin: Fixed problem with auto-suggestion mechanism for the
+- **BUGFIX** link-plugin: Fixed problem with auto-suggestion mechanism for the
           link input field causing the the wrong href value to be taken.
 
 
 ## 0.20.0-RC7 - 2011/11
 
-- **BUG** link-plugin: Fixed javascript error that occured when linking items
+- **BUGFIX** link-plugin: Fixed javascript error that occured when linking items
           using the repository browser in Internet Explorer 8.
-- **BUG** boilerplate demo: Fixed javascript error that occured in Internet
+- **BUGFIX** boilerplate demo: Fixed javascript error that occured in Internet
           Explorer 8.
 - **ENHANCEMENT** flag-icons plugin: It is now necessary to add the flag-icons
                   plugin in the aloha plugin load order before any plugins that
@@ -1080,16 +1315,16 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** wai-lang-plugin: Improved wai-lang language selection ui.
                   Organized flags to be in a plugin their own plugin so that
 				  the icons can be shared between other components.
-- **BUG** link-plugin: The autocomplete list is now closed properly when esc
+- **BUGFIX** link-plugin: The autocomplete list is now closed properly when esc
           was pressed.
 
 ## 0.20.0-RC6 - 2011/11
 
-- **BUG** link-plugin/linkbrowser-plugin: Previously the highlight css for a
+- **BUGFIX** link-plugin/linkbrowser-plugin: Previously the highlight css for a
           link was not removed after an item was selected by the linkbrowser.
 		  Now highlight css will be correctly removed and the cursor will be
 		  placed back into the content. Previously the selection was lost.
-- **BUG** table-plugin: Fixed a bug that deactivated tables after 5 seconds.
+- **BUGFIX** table-plugin: Fixed a bug that deactivated tables after 5 seconds.
           This issue was caused by a failure within the table registry. Instead
 		  of loading the cloned object the original table was loaded and
 		  deactivated.
@@ -1097,7 +1332,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.0-RC5 - 2011/11
 
-- **BUG** link-plugin: The link plugin will no longer remove repository data
+- **BUGFIX** link-plugin: The link plugin will no longer remove repository data
           attributes from the link when the user clicks a link and leaves it
 		  imediately. Previously those repository data attributes where removed
 		  when the repository lookup was not finished on time (before the user
@@ -1107,7 +1342,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.0-RC4 - 2011/11
 
-- **BUG** FloatingMenu: The FloatingMenu will now check the
+- **BUGFIX** FloatingMenu: The FloatingMenu will now check the
           Aloha.settings.floatingmenu.topalignOffset parameter to be not
 		  undefined, as checking for 'number' was too strict
 
@@ -1123,16 +1358,16 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.0-RC2 - 2011/11
 
-- **BUG** link-plugin: Fixed bug in link-plugin, which prevented correct
+- **BUGFIX** link-plugin: Fixed bug in link-plugin, which prevented correct
           selection of items from the repository browser when creating a link
 		  on a fresh page
-- **BUG** browser-plugin: Fixed a bug that prevented the browser plugin to load
+- **BUGFIX** browser-plugin: Fixed a bug that prevented the browser plugin to load
           its dependencies correctly.
 
 
 ## 0.20.0-RC1 - 2011/11
 
-- **BUG** link-plugin: Fixed a bug that prevented correct selection of items
+- **BUGFIX** link-plugin: Fixed a bug that prevented correct selection of items
           from the repository browser when a new link was created on a fresh
 		  loaded page.
 

@@ -60,11 +60,10 @@ td.aloha-table-selectrow {
 	cursor: text !important;
 }
 .aloha-table tr.aloha-table-selectcolumn td {
-	cursor: url(../img/down.cur),default;
+	cursor: url(../img/down.cur),s-resize;
 }
-/* :tODO: make custom cursors visible in IE */
 .aloha-table td.aloha-table-selectrow {
-	cursor: url(../img/left.cur),default;
+	cursor: url(../img/left.cur),e-resize;
 }
 
 /* wai indicator */
@@ -119,4 +118,8 @@ td.aloha-table-selectrow {
 
 .aloha-table-label {
 	margin-left:5px;
+}
+
+.aloha .ui-state-default .aloha-icon-table-naturalfit {
+	background-position: -432px 0px;
 }

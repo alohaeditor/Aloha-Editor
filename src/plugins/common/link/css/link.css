@@ -1,9 +1,14 @@
-.aloha-link-pointer {
+.aloha-link-pointer a {
 	cursor: pointer;
 }
 
 .aloha-link-text {
 	cursor: text;
+}
+
+.aloha-editable-active .aloha-block.aloha-link-text,
+.aloha-block.aloha-block-highlighted.aloha-link-text {
+	box-shadow: none;
 }
 
 .aloha-link-radioTarget {
@@ -37,14 +42,8 @@
 	padding-bottom: 5px;
 }
 
-.aloha-link-title-container fieldset  input[type=text]{
-	width:auto !important;
-	min-width:180px;
-}
-
-.aloha-link-target-container fieldset  input[type=text]{
-	width:auto !important;
-	min-width:180px;
+.aloha-link-target-container fieldset input[type=text], .aloha-link-title-container fieldset input[type=text] {
+	width: 90%;
 }
 
 .x-form-field.x-form-text.aloha-link-href-field {
