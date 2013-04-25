@@ -135,10 +135,9 @@ function($, Plugin,DropFilesRepository) {
 		/**
 		 * Prepare upload
 		 */
-		prepareFileUpload: function(file) {
+		prepareFileUpload: function(file, target) {
 			var 
 				reader = new FileReader(),
-				fileObj,
 				that = this;
 			reader.file = file;
             reader.onloadend = function() {
@@ -147,11 +146,13 @@ function($, Plugin,DropFilesRepository) {
                     type: this.file.type,
                     fileSize: this.file.fileSize,
                     fileName: this.file.fileName,
-                    data: reader.result
+                    dataURI: reader.result,
+                    data: this.file,
+                    droptarget: target
                 };
                 that.filesObjs.push(that.uploader.addFileUpload(currentFile));
                 that.processedFiles++;
-                Aloha.trigger('aloha-file-upload-prepared',fileObj);
+                Aloha.trigger('aloha-file-upload-prepared', currentFile);
             };
             reader.readAsDataURL(file);
 		},
@@ -221,13 +222,13 @@ function($, Plugin,DropFilesRepository) {
 							  edConfig.upload.config.image)
 						) {
 						if (files[len].size <= that.settings.max_file_size) {
-							that.prepareFileUpload(files[len]);
+							that.prepareFileUpload(files[len], event.target);
 						} else {
 							this.processedFiles++;
 							Aloha.Log.warn(that,"max_file_size exeeded, upload of " + files[len].name + " aborted");
 						}
 					} else {
-						that.prepareFileUpload(files[len]);
+						that.prepareFileUpload(files[len], event.target);
 					}
 				}
 			} else {
@@ -250,13 +251,13 @@ function($, Plugin,DropFilesRepository) {
 							  dropimg)
 						) {
 						if (files[len].size <= edConfig.max_file_size) {
-							that.prepareFileUpload(files[len]);
+							that.prepareFileUpload(files[len], event.target);
 						} else {
 							this.processedFiles++;
 							Aloha.Log.warn(that,"max_file_size exeeded, upload of " + files[len].name + " aborted");
 						}
 					} else {
-						that.prepareFileUpload(files[len]);
+						that.prepareFileUpload(files[len], event.target);
 					}
 				} //while
 			}
@@ -287,6 +288,22 @@ function($, Plugin,DropFilesRepository) {
 
 				// sets the default handler
 				this.mydoc[this.methodName](this.onstr+"drop", function(event) {that.dropEventHandler(event)} , false);
+
+                // Also bind aloha-upload-file so we can trigger file uploads
+                // from other plugins without directly introducing a
+                // dependency. The passed data contains the drop-target and the
+                // dropped files as members.
+                Aloha.bind('aloha-upload-file', function(event, data) {
+                    var dropevt = $.Event();
+                    dropevt.type = 'drop';
+                    dropevt.target = data.target;
+                    dropevt.dataTransfer = {
+                        files: data.files
+                    };
+
+                    that.dropEventHandler(dropevt);
+                } , false);
+
 			// TODO: improve below to allow default comportment behaviour if drop event is not a files drop event
 			this.mydoc[this.methodName](this.onstr+"dragenter", function(event) {
 				if (event.preventDefault)
@@ -342,8 +359,13 @@ function($, Plugin,DropFilesRepository) {
 			var	range = new Aloha.Selection.SelectionRange(true);
 			range.update();
 			if (target.textNodes().length == 0) {
-				range.startContainer = target[0].childNodes[0];
-				range.endContainer = target[0].childNodes[0];
+			  if (target[0].childNodes[0]) {
+          range.startContainer = target[0].childNodes[0];
+          range.endContainer = target[0].childNodes[0];
+        } else {
+          range.startContainer = target[0];
+          range.endContainer = target[0];
+        }
 			} else {
 				range.startContainer = target.textNodes()[0];
 				range.endContainer = target.textNodes()[0];

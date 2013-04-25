@@ -1,0 +1,28 @@
+.modal-header {
+    background-color: #9ABCDC !important; /* Connexions Blue */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+}
+
+.modal-header .close {
+    margin-top: -5px !important;
+}
+
+.modal-header h3 {
+    line-height: 16px !important;
+    font-size: 16px;
+}
+
+.modal-body {
+    padding: 10px !important;
+}
+
+.modal-footer {
+    padding: 5px 15px 5px !important;
+    background-color: white;
+    border: none;
+}
+
+.btn {
+    line-height: 1.1em;
+}

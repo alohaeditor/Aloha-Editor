@@ -1,0 +1,11 @@
+div.bubble {
+  border: 1px solid #ccc;
+  background-color: #F2F2F2;
+  padding: 0.5em;
+  box-shadow: 0 2px 2px #aaa;
+  color: #999;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+}
+
+div.bubble a { text-decoration: none; }

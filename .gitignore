@@ -7,4 +7,7 @@ doc/guides/staging
 *.orig
 *.swp
 .externalToolBuilders
+node_modules
+src/plugins/extra/math/lib/math-plugin-orig.js
 doc/guides/output
+local.html

@@ -1,0 +1,123 @@
+.aloha-editable table {
+    table-layout: fixed;
+    width: 98%;
+    margin: 0.25em 1em;
+    border-top: 1px solid #666666;
+    border-left: 1px solid #666666;
+    border-collapse: collapse;
+}
+
+.aloha-editable table td, .aloha-editable table th {
+    border-bottom: 1px solid #666666;
+    border-right: 1px solid #666666;
+}
+
+.aloha-editable table caption {
+    padding-top: 0.25em;
+    text-align: left;
+    caption-side: bottom;
+    color: #336699;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.aloha-editable th {
+    background-color: #F3F3F3;
+    text-align: left;
+}
+
+/* create dialog */
+.aloha-table-createdialog {
+	z-index: 99999;
+	position: absolute;
+	background-color: #F0F0F0;
+	border: 1px solid #cccccc;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+    padding: 0.5em;
+}
+.aloha-table-createdialog table {
+	padding: 0px;
+	margin: 0px;
+    border-collapse: collapse;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+}
+.aloha-table-createdialog table td {
+	margin: 0px;
+	padding: 0px;
+	border: 1px solid #AFAFAF;
+	font-size: 8px;
+	width: 25px;
+	height: 25px;
+}
+.aloha-table-createdialog table td.hover {
+	background-color: #1c94c4;
+}
+.aloha-table-createdialog .table-size-info {
+	text-align: center;
+	font-size: 0.8em;
+}
+
+.aloha-table-createdialog table td.header {
+    background-color: #AAAAAA !important;
+	border: 1px solid black;
+}
+.aloha-table-createdialog input[type=checkbox] {
+    vertical-align: middle;
+    margin: 0;
+}
+.aloha-table-createdialog label {
+    display: inline;
+    margin: 0.25em;
+}
+
+.aloha-editable .add-row-before {
+  border-top: 1.5em solid #C5DAE9;
+}
+.aloha-editable .add-row-after {
+  border-bottom: 1.5em solid #C5DAE9;
+}
+.aloha-editable th.add-column-before,
+.aloha-editable td.add-column-before {
+  border-left: 2em solid #C5DAE9 !important;
+}
+.aloha-editable th.add-column-after,
+.aloha-editable td.add-column-after {
+  border-right: 2em solid #C5DAE9 !important;
+}
+.aloha-editable td.aloha-current-cell,
+.aloha-editable th.aloha-current-cell {
+    background-image: url("../img/currentcell.png") !important;
+    background-color: #E5EEF5;
+}
+.aloha-editable tr.delete-row td,
+.aloha-editable tr.delete-row th {
+    background-image: url("../img/remove.png") !important;
+    color: #bbb;
+}
+.aloha-editable td.delete-column,
+.aloha-editable th.delete-column {
+    opacity: .25;
+    color: #bbb;
+    background-image: url("../img/remove.png") !important;
+}
+.aloha-editable table.delete-table td,
+.aloha-editable table.delete-table th {
+    background-image: url("../img/remove.png") !important;
+    color: #bbb;
+}
+
+.table-placeholder {
+    background-color: #1B86D2;
+    border: 1px dotted #1B86D2;
+    border-radius: 10px 10px 10px 10px;
+    display: inline-block;
+    height: 20px;
+    margin-left: -8px;
+    opacity: 0.25;
+    position: absolute;
+    width: 20px;
+}

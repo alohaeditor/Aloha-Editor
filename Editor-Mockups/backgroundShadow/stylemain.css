@@ -1,0 +1,30 @@
+.example-text {
+   -webkit-flow-into: example-text-flow;
+   padding: 0;
+   margin: 0;
+}
+ 
+.regions {
+-webkit-flow-from: example-text-flow;
+border: 1px solid gray;
+box-shadow: 4px 4px 3px #999;
+background-color:white;
+margin-top:10mm;
+margin-left: auto ;
+margin-right: auto;
+align:center;  
+width:210mm;
+height:297mm;
+padding: 30px;
+padding-top:20px;
+padding-bottom: 20px;
+}
+
+#bookcontent {
+	font-family: tahoma, verdana, arial, helvetica, sans-serif;
+	font-size: 13px;
+	margin: 20px;
+	margin-top: 20px;
+
+
+}

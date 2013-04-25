@@ -1,0 +1,83 @@
+/*
+ * CSSS to style the Edit LInk dialog box,
+ * as defined in bubble/link
+ */
+
+/* hide future features */
+
+#link-destination {
+  display: none;
+}
+
+ul.nav.nav-tabs {
+  display: none;
+}
+
+#link-tab-internal {
+  display: none;
+}
+
+/* style the  Edit LInk dialog box */
+
+#linkModal {
+  height: auto;
+  width: 600px;
+}
+
+#link-contents {
+  width: 97%;
+}
+
+#link-external {
+  width: 97%;
+}
+
+#link-text label {
+  font-weight: normal;
+}
+
+#link-tab-external label {
+  font-weight: normal;
+}
+
+/* style the link popover */
+
+.link-popover {
+  width: auto;
+  min-width: 236px; /* bootstrap's default popover width */
+}
+
+.link-popover-details .edit-link,
+.link-popover-details .delete-link,
+.link-popover-details .visit-link {
+  white-space: nowrap;
+}
+
+
+.edit-link,
+.delete-link,
+.visit-link {
+  padding: 0 10px;
+}
+
+/* Add a border (separator) only around the 1st 2 buttons */
+.edit-link,
+.delete-link {
+  border-right: 1px solid black;
+}
+
+i.icon-edit-link {
+  background-image: url(../img/edit-link.png);
+  /* Override bootstraps' glyphicons rule [class^="icon-"], [class*=" icon-"] */
+  background-position: 0 0;
+}
+
+i.icon-delete-link {
+  background-image: url(../img/delete-link.png);
+  background-position: 0 0;
+}
+
+i.icon-external-link {
+  background-image: url(../img/external-link.png);
+  background-position: 0 0;
+}

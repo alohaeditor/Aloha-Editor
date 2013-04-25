@@ -1,0 +1,189 @@
+<!doctype html>
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+<head>
+	<title>The Aloha Editor - Math Plugin</title>
+
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="description" content="The Aloha Editor Math">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+	<!--
+		Load the CSS styles for Aloha Editor
+	-->
+	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
+
+	<style>
+		/* Basic Styling for Sidebar */
+		.aloha-sidebar {
+		  position: fixed;
+		  right: 0;
+		  top: 0;
+		  width: 250px;
+		  height: 100%;
+		  border: 1px solid #000;
+		  border-width: 0 0 0 1px;
+		  background-color: #fff;
+		  padding: 10px;
+		}
+
+        .aloha-toolbar {
+            position: fixed;
+            right: 0;
+            top: 0;
+        }
+
+		.aloha-panel {
+		  border: 1px solid #000;
+		}
+
+		.aloha-panel-title {
+		  background-color: #000;
+		  color: #fff;
+		  padding: 5px 10px;
+		}
+
+		.aloha-panel-content {
+		 padding: 5px 10px;
+		}
+	</style>
+
+	<!--
+		All configuration for Aloha Editor for this demo is stored in js/aloha-config.js
+		It can also be placed inline here before loading Aloha Editor itself.
+	-->
+	<script src="js/aloha-config.js"></script>
+	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
+	<script src="../../lib/require.js"></script>
+	<!-- Load Max.S scripts and stylesheets -->
+	<!--script type=" text/javascript" src="max.js"></script> -->
+	<link rel="stylesheet" href="max.css" type="text/css">
+
+    <script>
+		Aloha.settings.jQuery = $;
+    </script>
+	<!--
+		Load the Aloha Editor library.
+		The plugin list could also be added to the configuration.
+	-->
+	<!-- 
+	                            common/table,
+	                            common/list,
+	                            common/link,
+	                            common/highlighteditables,
+	                            common/undo,
+	                            common/contenthandler,
+	                            common/paste,
+	                            common/characterpicker,
+	                            common/commands,
+	                            common/block,
+	                            common/image,
+	                            common/abbr,
+	                            common/horizontalruler,
+	                            common/align,
+	                            extra/formatlesspaste,
+	                            extra/toc,
+	                            extra/headerids,
+	                            extra/listenforcer,
+	                            extra/metaview,
+	                            extra/numerated-headers,
+	                            extra/ribbon,
+	                            extra/wai-lang,
+	                            extra/flag-icons,
+	                            extra/linkbrowser,
+	                            extra/imagebrowser,
+	                            extra/cite -->
+	<script src="../../lib/aloha.js"
+	        data-aloha-plugins="common/ui,
+	        					common/format,
+	                            extra/math"></script>
+	<!--
+		Application specific code
+	-->
+    <script src="ribbon-example.js"></script>
+	<link rel="stylesheet" href="css/style.css">
+	<script src="js/aloha-boilerplate.js"></script>
+</head>
+<body>
+	<div id="whole-site">
+		<div id="aloha-loading"><span>Loading Aloha Editor</span> <img src="img/loading1.gif" title="Loading Aloha Editor ..."/></div>
+		<div id="container">
+			<div id="header">
+				<a id="editor-logo" href="#">Ctrl+M for math edit toggle - Firefox friendly</a>
+				<p id="top-text"></p>
+			</div>
+			
+			<div id="main" role="main">
+				<div id="content" style="width:90%; margin-left:auto; margin-right:auto;display:block;">
+			
+                <h1>Linear and Time-Invariant Systems</h1>
+                <hr />	
+                <h2>Signals</h2>
+                <hr />
+                <center> 
+                $x+\sqrt(x^{3})$
+                </center>
+                <p>More complicated decompositions could contain derivatives or integrals of simple signals. In short, signal decomposition amounts to thinking of the signal as the output of a linear system having simple signals as its inputs. We would build such a system, but envisioning the signal's components helps understand the signal's structure. Furthermore, you can readily compute a linear system's output to an input decomposed as a superposition of simple signals.
+   
+
+                </p>
+                <p><strong>Example 1</strong></p>
+                <p>As an example of signal complexity, we can express the pulse $p_{\Delta}(t)$ as a sum of delayed unit steps. 
+                </p>
+                <center>
+                $p_{\Delta}(t) = u(t) - u(t-\Delta)$
+                </center>
+                <p>Thus, the pulse is a more complex signal than the step. Be that as it may, the pulse is very useful to us.</p>
+                <p><strong>Exercise 1</strong></p>
+                <p>Express a square wave having period $ T $
+                and amplitude $ A $
+                as a superposition of delayed and amplitude-scaled pulses.</p>
+                <p><strong>Solution</strong></p>
+
+                <center>
+                $sq(t)\sum_{n=-\infty}^{\infty}(-1)^{n}Ap_{T/2}(t-n\frac{T}{2})$
+                </center>
+
+                <p><strong>Theorem 1: Pythagorean Theorem</strong></p>
+                <p>On a right triangle, the sum of the squares of the sides equals the square of the hypotenus</p>
+                <p><strong>Proof</strong></p>
+                <p>Take a right triangle whose sides are of length 3, 4, and 5. In this case the sum of the square of the two shorter sides is 9+16=25. The square of the hypotenus is 25. So the theorem holds.</p>
+                <p><strong>Note:</strong>The Pythagorean Theorem does not apply to <strong>acute</strong> and <strong>obtuse</strong> triangles. It can only be applied to right triangles. However, a corollary of the Pythagorean theorem's converse is a simple means of determining whether a triangle is right, obtuse, or acute.
+                <p><strong>Example 2</strong></p>
+                <p><center>
+                $5^{2}+7^{2}<9^{2}$
+                </center></p>
+
+                <p>Because the sinusoid is a superposition of two complex exponentials, the sinusoid is more complex. We could not prevent ourselves from the pun in this statement. Clearly, the word "complex" is used in two different ways here. The complex exponential can also be written (using Euler's relation) as a sum of a sine and a cosine. We will discover that virtually every signal can be decomposed into a sum of complex exponentials, and that this decomposition is very useful. Thus, the complex exponential is more fundamental, and Euler's relation does not adequately reveal its complexity.</p> 
+
+
+
+                </div>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			Aloha.ready( function(){
+				var $ = Aloha.jQuery;
+				// register all editable areas
+				$('#top-text').aloha();
+				$('#content').aloha();
+				$('.area-content').aloha();
+				// hide loading div
+				$('#aloha-loading').hide();
+				$('#aloha-loading span').html('Loading Plugins');
+			});
+		</script>
+	</div>
+	<!--[if lt IE 7 ]>
+	<script src="js/libs/dd_belatedpng.js"></script>
+	<script> DD_belatedPNG.fix('img, .png_bg');</script>
+	<![endif]-->
+</body>
+</html>

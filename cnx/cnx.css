@@ -1,0 +1,85 @@
+/* Enable styling of .note elements */
+.note {
+  /* Visually distinguish the nested editable area by giving some left/right padding */
+  margin: 0 15px;
+}
+.note > .title:before {
+  content: "Note: ";
+  font-weight: bold;
+}
+
+.aloha-editable *:before {
+  opacity: 0.8;
+}
+
+/* Remove the annoying WAI button in tables */
+.aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
+
+/* Hide the annoying floating toolbar */
+.aloha-toolbar { display: none !important; }
+
+/* Set some styling on the toolbar */
+.toolbar {
+  background-color: whiteSmoke;
+  opacity: 0.95;
+
+  padding-left: 1em;
+  box-shadow: 0 2px 3px 0 #CCC;
+  /* This is the same z-index as popovers so the popover renders above the toolbar
+   * but Math (which is also raised) still shows up below the toolbar
+   */
+  z-index: 1010;
+}
+
+/* Set the width for the Heading/SubHeading dropdown */
+.toolbar .currentHeading {
+  width: 9em;
+}
+
+/* Add some padding on the top so the toolbar has room to float in */
+.document { margin: 4em; }
+
+/* Needs to occur AFTER the bootstrap.css */
+/* Allows the popover to grow in size */
+.popover {
+  width: auto;
+}
+
+/* We don't use the title in popovers so hide it... */
+.popover .popover-title { display: none; }
+
+
+
+figure {
+  counter-increment: figure;
+  /* Set inline-block so the figure popover shows up directly under instead of 1/2-way in the page */
+  display: inline-block;
+}
+figure figcaption::before { content: "Figure " counter(figure) " "; font-weight: bold; }
+
+
+.aloha-image-upload-drop-box {
+  text-align: center;
+  border: 1px dashed #ccc;
+  width: 400px;
+  padding: 100px 0;
+  cursor: pointer;
+}
+
+/* Metadata fields that occur around the image */
+.aloha-image-attrib .aloha-image-attr-alt::before {
+  content: "Please provide a description of this image for the visually impaired";
+  color: #ccc;
+  display: block;
+}
+/* Just some formatting of the input boxes */
+.aloha-image-attrib input { display: block; }
+.aloha-image-attrib .aloha-image-attr-alt {
+  width: 400px;
+  display: block;
+}
+
+
+/* Rough Table Styling */
+table td { min-width: 5em; }
+table td:first-child { min-width: 1em; }

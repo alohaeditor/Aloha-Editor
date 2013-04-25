@@ -1,0 +1,1339 @@
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+   See /stylesheets/README.txt for an explanation of
+   any CSS browser detection hacks used in this file
+   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
+
+/* ===== document top ===== */
+
+#cnx_portal-logo{
+  background: url(internal-banner.gif) no-repeat;
+  border: 0;
+  padding: 0;
+  margin: 0 2em 0 22px;
+}
+
+* html>body #cnx_portal-logo{
+  margin-top: -.85em;
+}
+
+#cnx_portal-logo a{
+  display: block;
+  text-decoration: none;
+  overflow: hidden;
+  padding-top: 80px; 
+  height: 0px !important;
+  height /**/: 80px;
+  width: 235px;
+}
+
+#cnx_portal-top{
+  background: url(portal-top-background.gif) 0 0 repeat-x #369;
+}
+
+/* to avoid the apparent "peekaboo bug" that exhibited itself when
+   floating the portal-globalnav items instead of leaving them inline */
+@media all{
+  * html #cnx_portal-top{
+    height: 1%;
+  } 
+  *+html #cnx_portal-top{
+    height: 1%;
+  }
+}
+
+#cnx_portal-siteactions{
+  white-space: nowrap;
+  list-style: none;
+  float: right;
+  padding: 1em 30px 0 1em;
+  font-weight: bold;
+  font-family: arial, helvetica, sans-serif;
+  margin: 0;
+}
+
+#cnx_portal-siteactions li{
+  display: inline;
+  padding-left: .4em;
+  border-left: 1px solid #bcd;
+  margin-left: .2em;
+}
+
+#cnx_portal-siteactions .first{
+  border-left-width: 0;
+}
+
+#cnx_portal-siteactions li a{
+  color: white;
+  text-decoration: none;
+}
+
+#cnx_portal-searchbox{
+  float: right;
+  clear: right;
+  margin: 1em 30px 0 2em;
+  padding: 0;
+  text-align: right;
+  text-transform: none;
+  white-space: nowrap;
+  z-index: 2;
+  display: inline;
+}
+
+* html>body #cnx_portal-searchbox{
+  padding-right: 4.5em;
+}
+
+#portal-searchbox input{
+  font-size: 1.1em;
+}
+
+input.searchButton, #cnx_lens_inner .context, #cnx_course_buy input{
+  padding: .05em .5em;
+  background-color: #69c;
+  font-weight: bold;
+  color: white;
+  border: 1px solid #1d3955;
+  border-left-color: #c1d1e0;
+  border-top-color: #c1d1e0;
+}
+
+input.searchButton{
+  margin-bottom: 1px !important;
+}
+
+#cnx_portal-globalnav ul{
+  white-space: nowrap;
+  list-style: none;
+  margin: 0 0 0 30px;
+  padding: 0;
+  line-height: normal;
+}
+
+#cnx_portal-globalnav li{
+  display: block;
+  float: left;
+  margin: 0;
+  padding: 4px 0 5px 5px;
+  background: url(tab-left.gif) no-repeat 0 0;
+}
+
+#cnx_portal-globalnav li a{
+  color: #def;
+  padding: 4px .8em 5px .4em;
+  font-weight: bold;
+  background-image: url(tab-right.gif);
+  background: url(tab-right.gif) no-repeat top right;
+  font-size: 1.2em;
+  margin: 0;
+  letter-spacing: normal;
+  text-decoration: none;
+}
+
+#cnx_portal-globalnav li.selected{
+  background-image: url(tab-selected-left.gif);
+  padding-bottom: 6px;
+  margin-bottom: -1px;
+}
+
+#cnx_portal-globalnav li.selected a{
+  border-width: 0;
+  color: white;
+  background-image: url(tab-selected-right.gif);
+  padding-bottom: 6px;
+}
+
+#cnx_portal-globalnav li a:hover{
+  color: white;
+}
+
+#cnx_portal-breadcrumbs{
+  background-color: #9bd;
+  border-top: 1px solid #9cf;
+  border-bottom: 1px solid #369;
+  padding: 5px 30px;
+  clear: both;
+  color: #369;
+  font-size: .9em;
+}
+
+#cnx_portal-breadcrumbs a{
+  color: #369;
+}
+
+* html #cnx_portal-breadcrumbs{padding-top: 2px;}
+*+html #cnx_portal-breadcrumbs{padding-top: 2px;}
+
+/* ===== light-weight branding ==========*/
+
+#cnx_branding_banner{
+  padding: 0.35em 15px 0.45em;
+  font-size: .9em;
+}
+
+#cnx_branding_logo{
+  text-align: center;
+  margin: -15px 0 2em;
+}
+
+/* ===== some basic elements ===== */
+
+#editor {
+  background-color: #CCC;
+}
+
+#canvas p{
+  margin: 0;
+}
+
+img{
+  border: 0;
+}
+
+#canvas a{
+  color: #369;
+}
+#canvas a:visited{
+  color: #647;
+}
+
+.cnx_before{
+  font-weight: bold;
+}
+
+#canvas {
+margin: 1em 25px 2em 250px;
+margin-left: 25px;
+background-color: white;
+border: 1px solid #AAA;
+padding: 2em;
+padding: 30px;
+box-shadow: 0px 0px 10px #9F9F9F;
+cursor: text;
+min-height: 100%;
+position: relative;
+font-family: tahoma, verdana, arial, helvetica, sans-serif;
+}
+
+#canvas input{
+  visibility: visible;
+  vertical-align: middle;
+  font-family: arial, helvetica, sans-serif;
+  border: 1px solid #1d3955;
+  border-right-color: #c1d1e0;
+  border-bottom-color: #c1d1e0;
+  padding: 1px;
+}
+
+#canvas ul{ 
+  line-height: 1.25em;
+  list-style-type: square;
+  margin: 0.5em 0 0 1.5em;
+  padding: 0;
+  /* Whoever wrote this forgot to bring the image. Commenting for now. */
+  /* list-style-image: url(bullet.gif);*/
+}
+
+#canvas li{
+  margin-bottom: .75em;
+}
+
+/* ===== content actions bar at top ===== */
+
+#cnx_course_header, .title{
+  clear: both;
+}
+
+#cnx_actions_top{
+  margin-top: -17px;
+  margin-bottom: 17px;
+}
+
+.ca_button{
+  margin: 0 -13px 4px 13px;
+  float: right;
+  display: inline;
+  position: relative;
+  z-index: 3;
+}
+
+.ca_button_link{
+  border: 1px solid white;
+  padding: 6px 12px;
+  text-decoration: none;
+  display: block;
+  font-size: .9em;
+  white-space: nowrap;
+  padding-left: 33px;
+  background-position: 12px 5px;
+  background-repeat: no-repeat;
+  outline: none;
+}
+
+.ca_button_link:visited{
+  color: #369;
+}
+
+#cnx_actions_print .ca_button_link{ background-image: url(printer.png); }
+#cnx_actions_download .ca_button_link, .ca_pdf{ background-image: url(pdf.png); }
+#cnx_actions_addtolens .ca_button_link, .ca_lens{ background-image: url(lenses.png); }
+#cnx_actions_favorites .ca_button_link, .ca_favorites{ background-image: url(favorites-empty.png); }
+#cnx_actions_favorites .ca_in_favorites, .ca_in_favorites{ background-image: url(favorites.png); }
+.ca_zip{ background-image: url(zip.png); }
+
+.ca_single:hover{
+  border: 1px solid #ccc;
+  border-right-color: #333;
+  border-bottom-color: #333;
+}
+
+.ca_menu a.ca_button_link{
+  z-index: 3;
+  position: relative;
+}
+
+.ca_menu_on a.ca_button_link{
+  background-color: white;
+  border: 1px solid #ccc;
+  border-color: #ccc #333 white #ccc;
+}
+
+.ca_menu img.ca_drop_reverse_arrow{
+  display: none;
+}
+
+.ca_menu_on img.ca_drop_reverse_arrow{
+  display: inline;
+}
+
+.ca_menu_on img.ca_drop_arrow{
+  display: none;
+}
+
+.ca_drop_contents{
+  position: absolute;
+  visibility: hidden;
+  clear: both;
+  margin-top: -1px;
+  padding: .5em 12px .7em;
+  border: 1px solid #333;
+  border-top-color: #ccc;
+  border-left-color: #ccc;
+  background-color: white;
+  z-index: 2;
+  font-size: .9em;
+}
+
+/* these should be removed after better handling of widths is implemented (probably via JS?) */
+.ca_drop_contents{ width: 15em; }
+* html .ca_header{ margin-right: 0; }
+
+.ca_menu_on .ca_drop_contents{
+  visibility: visible;
+}
+
+.ca_drop_close{
+  text-decoration: none;
+  float: right;
+  text-align: right;
+  font-size: 1.2em;
+}
+
+.ca_header{
+  margin-bottom: .5em;
+  color: #333;
+  white-space: nowrap;
+  margin-right: 2em;
+}
+
+.ca_drop_contents a{
+  white-space: nowrap;
+  outline: none;
+}
+
+.ca_list{
+  margin: 0 0 1em;
+  display: block;
+  list-style: none none;
+}
+
+.ca_list_item{
+  display: block;
+  list-style: none none;
+  padding-left: 22px;
+  margin-bottom: .25em;
+  min-height: 16px;
+  background-repeat: no-repeat;
+  white-space: nowrap;
+}
+
+* html .ca_list_item{
+  height: 16px;
+}
+
+.ca_drop_contents .lensinfo{
+  white-space: normal;
+}
+
+#cnx_actions_favoriteswhat, #cnx_actions_lenswhat{
+  margin-bottom: .5em;
+}
+
+#cnx_actions_zipwhat{
+  margin-top: .25em;
+}
+
+/* ===== content actions section at bottom ===== */
+
+#cnx_actions_bottom{
+  margin: 2em 0 1em;
+  border: 0 solid #fc0;
+  border-top-width: 1px;
+  clear: both;
+  font-size: .9em;
+  padding-top: .3em;
+}
+
+.cnx_actions_category{
+  padding: 0 0 .4em 20px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+
+#cnx_actions_category_feedback{ background-image: url(envelope.png) }
+#cnx_actions_category_download{ background-image: url(pdf.png) }
+#cnx_actions_category_addto{ background-image: url(bookmark.png) }
+
+#cnx_actions_bottom h3{
+  font-size: .9em;
+  margin: 1.25em 0 .25em;
+  text-transform: uppercase;
+}
+
+.cnx_actions_group{
+  margin-bottom: .25em;
+}
+
+#cnx_actions_bottom h4{
+  display: inline;
+  font-weight: normal;
+  font-size: .9em;
+  text-transform: uppercase;
+  margin-right: .2em;
+}
+
+/* ===== course header in module page ===== */
+
+#cnx_course_header{
+  margin-bottom: .6em;
+  position: relative;
+}
+
+#cnx_prev_next_top{
+  border-top: 1px solid #ccc;
+  clear: both;
+  font-weight: bold;
+  margin: 1.3em 0 0;
+}
+
+#cnx_prev_next_top ul{
+  list-style: none none;
+  float: right;
+  white-space: nowrap;
+  margin-top: -.8em;
+  background-color: white;
+  padding-left: .5em;
+  z-index: 2;
+  position: relative;
+}
+
+#cnx_prev_next_top li{
+  display: inline;
+  border-left: 1px solid #369;
+  padding-left: .5em;
+  margin-left: .2em;
+}
+
+#cnx_prev_next_top li.cnx_first{
+  padding-left: 0;
+  margin-left: 0;
+  border-width: 0;
+}
+
+#cnx_prev_next_top a{
+  text-decoration: none;
+}
+
+#cnx_course_home .cnx_before{
+  text-transform: uppercase;
+  color: #666;
+  margin-top: -.8em;
+  font-size: .8em;
+  font-weight: normal;
+  display: block;
+}
+
+* html #cnx_course_home .cnx_before{
+  margin-top: -.3em;
+}
+
+#cnx_course_home .name{
+  font-size: 1.3em;
+  margin-bottom: .5em;
+  display: block;
+  font-weight: bold;
+}
+
+#cnx_course_home_link{
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+#cnx_course_authors{
+  margin-bottom: .5em;
+}
+
+#cnx_course_authors, #cnx_collection_subtype, #cnx_module_header .cnx_email_author{
+  font-size: .9em;
+}
+
+#cnx_course_header .cnx_email_author, #cnx_module_header .cnx_email_author{
+  background: url(envelope.png) no-repeat 5px 0;
+  padding-left: 25px;
+  padding-bottom: .2em;
+  display: inline-block;
+}
+
+#cnx_book_icon{
+  float: left;
+  margin: 0 .75em .5em 0;
+}
+
+#cnx_order_link{   
+  display: block;
+  float: right;
+  font-size: .9em;
+  border: 1px solid #369;
+  border-top-color: #b5cee6;
+  border-left-color: #b5cee6;
+  text-decoration: none;
+  padding: .4em .7em .6em 27px;
+  background: #f3f7fb url(shopping-cart.png) no-repeat .5em .35em;
+  margin: 1.2em 0 .5em 2em;
+  color: #369;
+}
+
+#cnx_course #cnx_order_link{
+  margin: -.25em 0 .75em 2em;
+}
+
+/* ====== module header ===== */
+
+.document_title{
+  border-bottom: 1px solid #fc0;
+  margin-bottom: 1em;
+  color: #e70;
+  /*padding: 0 0 .4em;*/
+  font-size: 2.3em;
+  font-weight: normal;
+}
+/*
+.title{
+  border-bottom: 1px solid #fc0;
+  margin-bottom: 1em;
+}
+*/
+
+* html .title{ height: 1%; }
+*+html .title{ height: 1%; }
+/*
+.title{
+  color: #e70;
+  padding: 0 0 .4em;
+  font-size: 2.3em;
+  font-weight: normal;
+}
+*/
+
+#cnx_authorship, #cnx_rate, #cnx_abstract{
+  margin: 1em 0;
+}
+
+.cnx_optional_role{
+  margin-top: .5em;
+  display: block;
+}
+
+#cnx_parent{
+  margin-top: -.5em;
+}
+
+.ratingstars img{
+  vertical-align: -2px;
+}
+
+.ratingstars .lensinfo, #cnx_bottom_stars  .lensinfo{
+  width: auto;
+}
+
+.ratings .cannotrate{
+  cursor: default;
+}
+
+#cnx_rate .lensinfo{
+  font-size: .9em;
+}
+
+.rating_quantity{
+  padding-left: .3em;
+  color: #666;
+}
+
+.cnx_clear{
+  clear: both;
+}
+
+/* ===== page layout ===== */
+
+#cnx_sidebar_column{
+  padding: 30px 15px;
+  border-right: 1px solid #ccc;
+  width: 200px;
+  position: absolute;
+  left: 0;
+  z-index: 1;
+}
+
+* html #cnx_sidebar_column{
+  width: 231px;
+}
+
+#cnx_content_column{
+  padding: 22px 30px 30px;
+  vertical-align: top;
+  border-left: 1px solid #ccc;
+  margin-left: 230px;
+}
+
+* html #cnx_content_column{ height: 1%; }
+*+html #cnx_content_column{ height: 1%; }
+
+#cnx_main{
+  padding-bottom: 1em;
+}
+
+#cnx_about_history #cnx_content_column{margin-left: 0;}
+#cnx_about_history #cnx_sidebar_column{display: none;}
+
+#cnx_sidebar_column h4, #cnx_sidebar_column h5{
+  margin: .5em 0 .75em;
+}
+
+#cnx_sidebar_column .lensinfo h4, #cnx_sidebar_column .lensinfo h5{
+  margin: 0;
+}
+
+/* ===== prev & next links at bottom ===== */
+
+#cnx_prev_next_bottom{
+  padding: 1em 0;
+  text-align: center;
+  clear: both;
+  margin: 0;
+  list-style-type: none;
+  list-style-image: none;
+}
+
+* html #cnx_prev_next_bottom{
+  width: 100%;
+}
+
+#cnx_prev_next_bottom li{
+  vertical-align: top;
+  width: 31%;
+  float: left;
+  display: block;
+  padding: 0;
+  margin: 0 0 1em;
+}
+
+#cnx_prev_next_bottom .cnx_previous{
+  text-align: left;
+  margin-right: 3%;
+}
+
+#cnx_prev_next_bottom .cnx_next{
+  text-align: right;
+  margin-left: 3%;
+}
+
+#cnx_prev_next_bottom .cnx_before{
+  display: block;
+  text-decoration: none;
+  color: black;
+  font-size: .9em;
+}
+
+/* ===== footer ===== */
+
+#cnx_footer{
+  font-size: .9em;
+  margin: 3em 0 0;
+  padding-top: 1em;
+  border: 0 #ccc solid;
+  border-top-width: 1px;
+}
+
+* html #cnx_metadata_links{ margin-top: -1em; }
+*+html #cnx_metadata_links{ margin-top: -1.5em; }
+
+#cnx_more_about{
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+#cnx_attribution li{
+  margin: 0;
+}
+
+#cnx_partner_logos{
+  float: right;
+  margin: 0 0 .5em 2em;
+}
+
+#cnx_license{
+  margin-top: 1em;
+}
+
+#cnx_license a{
+  white-space: normal;
+}
+
+#cnx_updated{
+  font-style: italic;
+  margin: 1.5em 0 0;
+}
+
+/* ===== warnings ===== */
+
+.cnx_warning a, .cnx_warning a:visited, .cnx_warning_text, .cnx_warning th{
+  color: #c00;
+}
+
+.cnx_warning{
+  margin: 1.5em;
+  border: 1px solid #c00;
+  background: #fee;
+  font-family: times new roman, times, serif;
+}
+
+.cnx_warning_text{
+  margin: .75em;
+}
+
+#cnx_no_menclose_support_example{
+  float: right;
+  margin: 0 0 .5em 1.5em;
+}
+
+#cnx_no_menclose_support_example .cnx_before{
+  display: block;
+}
+
+/* ===== table ===== */
+
+td, th{
+  padding: .3em;
+  border-collapse: collapse;
+}
+
+* html table{
+  font-size: 1em;
+}
+
+* html #cnx_about_history td, * html #cnx_about_history th{
+  font-size: 1em;
+}
+
+/* ===== metadata page ===== */
+
+#cnx_about_history #cnx_main p{
+  margin: .5em 0 1.5em;
+}
+
+#cnx_about_history table{
+  margin: 1em 0;
+}
+
+#cnx_about_history td{
+  padding: .2em .5em .2em 0;
+}
+
+#cnx_about_history .cnx_name{
+  font-weight: bold;
+}
+
+#cnx_about_history pre{
+  font-size: 1.1em;
+  margin: 0;
+  white-space: -moz-pre-wrap; /* Gecko */
+  white-space: -pre-wrap;     /* Opera 4-6 */
+  white-space: -o-pre-wrap;   /* Opera 7 */
+  white-space: pre-wrap;      /* CSS3, for when the browsers support it */
+  word-wrap: break-word;      /* IE 5.5+, though it doesn't work in ours because our <pre>s are in <td>s */
+}
+
+* html #cnx_about_history pre{ font-size: .9em; }
+*+html #cnx_about_history pre{ font-size: .9em; }
+
+#cnx_about_history hr{
+  height: 1px;
+  color: #fc0;
+  background-color: #fc0;
+  margin: .6em 0;
+  border: 0;
+}
+
+* html #cnx_about_history hr{margin: 0;}
+*+html #cnx_about_history hr{margin: 0;}
+
+#cnx_cite_section h3{
+  margin-bottom: 0;
+  margin-left: 1.5em;
+  font-size: 1em;
+}
+
+#cnx_cite_section .cnx_cite{
+  margin-left: 3em !important;
+}
+
+/* ===== course pages ===== */
+
+#cnx_course_start, #cnx_course_website{
+  font-size: 1.5em;
+  margin: 0 0 1em;
+}
+
+#cnx_course_website{
+  font-size: 1em;
+}
+
+#cnx_instructor, #cnx_institution, #cnx_course_code, #cnx_course_description{
+  margin: 0 0 0 2em;
+}
+
+#cnx_instructor .cnx_before, #cnx_institution .cnx_before, #cnx_course_code .cnx_before, #cnx_course_description .cnx_before{
+  margin-left: -2em;
+}
+
+#cnx_course_description{
+  margin-bottom: 1em;
+}
+
+#cnx_course_contributors{
+  margin: 0 0 0 4em;
+}
+
+#cnx_course_contributors .cnx_before{
+  margin: 0 0 0 -2em;
+}
+
+#cnx_course_content a, #cnx_course_navigation_contents a{
+  text-decoration: none;
+  color: #369;
+}
+
+#cnx_course_content dd a:hover, #cnx_course_navigation_contents a:hover{
+  text-decoration: underline;
+}
+
+#cnx_course_content dd a:visited, #cnx_course_navigation_contents a:visited{
+  padding-right: 11px;
+  background: url(read.png) no-repeat right .25em;
+  display: inline-block;
+}
+
+#cnx_course_contributors_contains.cnx_before{
+  display: block;
+  margin: 1em 0 .5em -4em;
+}
+
+#cnx_course_content .cnx_chapter_header, #cnx_course_navigation .cnx_chapter_header{
+  font-size: 1em;
+  display: inline;
+  color: #369;
+  cursor: pointer;
+  font-family: tahoma, verdana, arial, helvetica, sans-serif;
+}
+
+#cnx_course_content img, #cnx_course_navigation img{
+  cursor: pointer;
+  padding-right: .5em !important;
+  margin-right: -.5em;
+  position: relative;
+}
+
+#cnx_course_content ul, #cnx_course_navigation ul{
+  margin-left: 13px;
+}
+
+#cnx_course_content li, #cnx_course_navigation li{
+  background-image: none;
+  padding: 0;
+  margin: .4em 0;
+}
+
+/* ===== qml ===== */
+
+.qmlitem textarea, .qmlitem form{
+  display: block;  
+  margin: .7em 0 0;
+}
+
+/* ===== sidebar ===== */
+
+.portletContainer{
+  border: 1px solid #369;
+  margin-bottom: 2.5em;
+  font-size: .9em;
+}
+
+dl.portlet{
+  border: 0 solid #bbd1e6;
+  border-right-width: .45em;
+  border-top-width: .45em;
+}
+
+* html dl.portlet{ height: 1%; }
+*+html dl.portlet{ height: 1%; }
+
+* html #cnx_lens_inner dl.portlet{ height: auto; }
+*+html #cnx_lens_inner dl.portlet{ height: auto; }
+
+dt.portletHeader{
+  text-transform: uppercase;
+  color: #369;
+  font-family: arial, helvetica, sans-serif;
+  font-size: 128%;
+  font-weight: bold;
+  margin: -1.05em 0 0;
+  padding: 0 .5em;
+  position: relative;
+  z-index: 1;
+}
+
+* html dt.portletHeader{ height: 1%; }
+*+html dt.portletHeader{ height: 1%; }
+
+dt.portletHeader h3{
+  padding: .25em .4em;
+  background-color: white;
+  float: left;
+  display: block;
+}
+
+.portletTopLeft, .portletTopRight{
+  display: none !important;
+}
+
+dt.portletHeader a, dt.portletHeader a:visited{
+  text-decoration: none;
+  color: #369;
+  outline: none;
+}
+
+dd.portletItem{
+  clear: left;
+  padding: .5em 1em 1em;
+}
+
+* html dd.portletItem{ height: 1%; }
+
+.portletMore{
+  font-weight: bold;
+  background-image: none !important;
+}
+
+.portlet ul{
+  display: block;
+  margin-left: 0;
+}
+
+.portlet li{
+  display: block;
+  padding: 0 0 0 15px;
+  margin: 0 0 .3em;
+  background: url(bullet.gif) no-repeat 0 -3px;
+  list-style: none none;
+}
+
+.portlet ol li{
+  display: list-item;
+  background-image: none;
+  list-style-image: none;
+  list-style-type: decimal;
+  padding: 0;
+}
+
+#cnx_related_material li, #cnx_recent_viewed li, #cnx_lens_info li{
+  padding: 0 0 .8em 20px;
+  margin: -.2em 0 0;
+}
+
+#cnx_related_material li, #cnx_recent_viewed li{
+  background-position: 0 0;
+}
+
+li.cnx_module{
+  background-image: url(module_icon.gif);
+}
+
+li.cnx_collection{
+  background-image: url(repository_icon.gif);
+}
+
+li.cnx_lens{
+  background-image: url(lenses.gif);
+}
+
+#cnx_recent_viewed ul{
+  margin-bottom: 1em;
+}
+
+#cnx_recent_viewed a{
+  color: #369;
+}
+
+h4 .lenslink{
+  font-size: .9em;
+  font-weight: normal;
+}
+
+.links li{
+  background-image: none;
+  padding-left: 0;
+  margin-left: 14px;
+}
+
+.links li img{
+  margin-left: -14px;
+  padding-right: 4px;
+}
+
+.cnx_toggler{
+  text-align: right;
+}
+
+.cnx_toggler span{
+  color: #369;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.cnx_current{
+  color: #e70 !important;
+  font-weight: bold;
+}
+
+/* ===== author links box ===== */
+
+#cnx_author_links{
+  float: right;
+  width: 15em;
+  background-color: white;
+  padding-left: 1.5em;
+  padding-bottom: .5em;
+  font-size: .9em;
+  position: relative;
+  z-index: 1;
+  border-width: 0;
+}
+
+* html #cnx_author_links{ width: 17em; }
+*+html #cnx_author_links{ width: 17em; }
+
+#cnx_author_links .portlet{
+  border: 1px solid #333;
+  border-top-color: #ccc;
+  border-left-color: #ccc;
+}
+
+#cnx_author_links .portletHeader, #cnx_author_links h6{
+  color: #333;
+}
+
+#cnx_author_links .portletHeader{
+  font-size: 1.1em;
+  text-transform: none;
+  margin-top: .5em;
+}
+
+#cnx_author_links .portletHeader h2{
+  margin: 0 .5em;
+  padding: 0;
+  float: none;
+}
+
+#cnx_author_links .portletItem{
+  padding: 0;
+  margin: 1em 1em 1.5em 2em;
+}
+
+#cnx_author_links_togglers.portletItem{
+  clear: none;
+  margin: -1.25em 1em 1em 2em;
+  z-index: 1;
+  position: relative;
+}
+
+#cnx_author_links ul{
+  margin-bottom: 1em;
+}
+
+/* ===== order printed copy link ===== */
+
+#cnx_course_buy input{
+  float: right;
+}
+
+#cnx_course_buy input:hover{
+  cursor: pointer;
+}
+
+/* ===== "lenses" box ===== */
+
+#cnx_lens_info .portletHeader h3{
+  padding-right: 22px !important;
+  background-image: url(lenses.png);
+  background-repeat: no-repeat;
+  background-position: right .25em;
+}
+
+#cnx_what_is_a_lens{
+  text-align: right;
+  margin-bottom: .5em;
+  margin-top: -.5em;
+}
+
+h4#cnx_this_content_is_ellipsis{
+  color: #678;
+  margin-bottom: 1em;
+}
+
+.tagicon{
+  cursor: pointer;
+  padding-left: 0.15em;
+  vertical-align: -4px;
+  line-height: .2em;
+}
+
+.lenstags{
+  margin: .35em 0 0;
+}
+
+/* ===== popup styling ==========*/
+
+.lensinfo {
+  position: absolute;
+  top: 0px;         /* will be moved by JS; if left alone, may cause re-rendering problems at */
+  left: 0px;        /* bottom of the screen when shown the first time */
+  border: 1px solid #333;
+  border-top-color: #ccc;
+  border-left-color: #ccc;
+  background-color: white;
+  padding: 1em;
+  width: 25em;
+  z-index: 3;
+}
+
+.cnx_login_required{
+  width: auto;
+  white-space: nowrap !important;
+}
+
+.lenslink{
+  color: #369;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.lensinfo h4{
+  display: inline;
+  color: #e70;
+}
+
+.lensinfo p{
+  margin: 0 0 1em;
+}
+
+.lensinfologo{
+  float: right;
+  margin: 0 0 .5em .5em;
+}
+
+.lensinfohelp{
+  color: #666;
+  display: block;
+}
+
+.lensinfotitle{
+  color: #e70;
+  font-weight: bold;
+}
+
+.lensinfocomments p{
+  margin-bottom: .5em;
+}
+
+.lensinfocomments{
+  margin-bottom: 1em;
+}
+
+p.lensinfohelp{
+  margin-bottom: 0;
+}
+
+p.lensinfotags{
+  margin-top: .75em;
+}
+
+/* ===== terms pointing to glossary entries ===== */
+
+.x-tip dd{
+  margin: .5em;
+  font-size: 1.1em;
+  line-height: 1.5em;
+}
+
+.lensinfo .meaning, .lensinfo .example, .lensinfo .seealso{
+  margin-left: 0;
+}
+
+/* ===== add-to-lens popup styling ==========*/
+
+#cnx_lens_inner{
+  padding: 1em;
+  font-size: 1.1em;
+}
+
+.x-window-header-text{
+  color: black; 
+  font-size: 1.1em;
+  font-weight: normal;
+}
+
+.x-window-mc{
+  background-color: #eef3f7;
+}
+
+#cnx_lens_inner legend{
+  display: none;
+}
+
+#cnx_lens_inner h3{
+  margin-bottom: .8em;
+}
+
+#cnx_lens_inner fieldset{
+  border-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+#cnx_lens_inner fieldset{
+  margin: .8em 0 0;
+}
+
+#cnx_lens_inner form.cnx_lens_form_hidden {
+  display: none;
+}
+
+
+label{
+  font-weight: bold;
+}
+
+.formHelp{
+  font-size: .9em;
+  color: #666;
+  margin: .3em 0;
+}
+
+.field{
+  margin: 0 0 .8em;
+}
+
+.cnx_tags_input, .cnx_comments_input{
+  width: 90%;
+}
+
+.nakedPortlet .portlet {
+  margin-top: 1em;
+  border: none;
+}
+
+.nakedPortlet dt {
+  display:none;
+}
+
+.nakedPortlet dd.portletItem {
+  margin-top:0px;
+  margin-bottom:0px;
+  padding-top:0px;
+  padding-bottom:0px;
+}
+
+#cnx_course .nakedPortlet tr>td{
+  font-size: .8em;
+}
+
+/* ===== Tags box ===== */
+
+#cnx_tags .portletHeader h3{
+  padding-right: 24px !important;
+  background-image: url(tags.png);
+  background-repeat: no-repeat;
+  background-position: right .3em;
+}
+
+.cnx_tag_listing li{
+  display: inline;
+  padding: 0 !important;
+  background-image: none;
+  margin: 0 .5em 0 0 !important;
+}
+
+.cnx_tag_listing{
+  line-height: 1.75em;
+  overflow-x: auto;
+  padding-bottom: .5em;
+}
+
+* html .cnx_tag_listing{ padding-bottom: 2em; width: 100%; }
+*+html .cnx_tag_listing{ padding-bottom: 2em; width: 100%; }
+
+#cnx_lens_info .cnx_tag_listing{
+  line-height: 1.45em;
+  margin-top: .35em;
+}
+
+#cnx_tags .cnx_tag_namespaces, .cnx_question_mark{
+  text-align: right;
+  margin: -.75em 0 0 .5em;
+  float: right;
+}
+
+/* ===== hiddenStructure (to be read by screen readers, but not seen by visual users) ===== */
+
+.hiddenStructure{
+  position: absolute !important;
+  left: 0 !important;
+  top: -500px !important;
+  background: transparent !important;
+  background-image: none !important ; /* */
+  border: none !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: -1px 0 0 -1px !important;
+  width: 1px !important;
+}

@@ -1,0 +1,23 @@
+.image-placeholder {
+    background-color: #1B86D2;
+    border: 1px dotted #1B86D2;
+    border-radius: 10px 10px 10px 10px;
+    display: inline-block;
+    height: 20px;
+    margin-left: -8px;
+    opacity: 0.25;
+    position: absolute;
+    width: 20px;
+}
+
+div.image-alt textarea {
+    width: 97%;
+}
+
+div.upload-url-form input.preview {
+  display: none;
+}
+
+div.upload-url-form input.image-url {
+    width: 97%;
+}

@@ -1,0 +1,105 @@
+/* Rely on MathJax HTML+CSS output but keep the MathML in the DOM (hidden) so it gets serialized */
+math,
+.MathJax .math .annotation {
+  display: none;
+}
+
+/*
+ The math editor uses MathJax to render the math but keeps the MathML in the DOM (for saving).
+ The MathJax is discarded by ephemera when saving and the (hidden via display:none) MathML is kept.
+
+ Chromium is slowly adding support for rendering MathML natively but ignores the display:none
+ so the MathML is wrapped in a span and then hidden here
+ */
+.mathml-wrapper {
+  display: none;
+}
+
+
+.math-element,
+.math-element * {
+  cursor: pointer;
+  -webkit-user-modify: read-only;
+     -moz-user-modift: read-only;
+}
+
+.math-element {
+  display: inline-block;
+  position: relative;
+}
+
+.math-element:hover {
+  background-color: #E5EEF5;
+}
+
+.math-popover {
+    min-width: 40em;
+}
+
+.math-popover textarea.formula {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.math-container {
+    position: relative;
+    margin-bottom: 1em;
+}
+
+.math-container textarea,
+.math-container pre {
+  margin: 0;
+  padding: 5px;
+  outline: 0;
+  border: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.math-container textarea {
+  /* Hide any scrollbars */
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  /* Remove WebKit user-resize widget */
+  resize: none;
+}
+
+.math-container pre {
+  display: block;
+  visibility: hidden;
+}
+
+.math-element math annotation {
+    display: none;
+}
+
+.math-element-destroy {
+    display: none;
+    position: absolute;
+    right: -16px;
+    width: 16px;
+    top: -1px;
+    height: 16px;
+    background-image: url(../img/remove-01.png);
+    background-repeat: no-repeat;
+    background-position: right top;
+    cursor: pointer;
+}
+
+.math-element:hover .math-element-destroy {
+    display: inline-block;
+    text-decoration: none;
+}
+
+.math-element .math-element-destroy:hover {
+    background-image: url(../img/remove-02.png);
+}
+
+button.done {
+    float: right;
+}

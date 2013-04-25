@@ -1,0 +1,1569 @@
+#editor{
+  background-color: #bbb;
+  background-color: #c7c7c7;
+  background-color: #ccc;
+}
+#content{
+  padding-left: 0em;
+  padding-right: 0em;
+  padding-bottom: 0em;
+  padding-top: 0;
+}
+#pageheader-wrap{
+  margin-top: -10px;
+  margin-left: 2em;
+  margin-right: 2em;
+display: none;
+}
+
+#workflownav-wrap, #header-wrap{
+  display: none;
+}
+
+#toolbar{
+  height: 42px;
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/toolbar/toolbar-bg-01.png);
+  background-repeat: repeat-x;
+  background-position: 0 0;
+  background-color: #fff;
+  padding: 0 1em;
+  border-bottom: 1px solid #aaa;
+  position: relative;
+  z-index: 1;
+clear: both;
+  white-space: nowrap;
+position: fixed;
+top: 0;
+width: 100%;
+z-index: 550;
+  box-shadow: 0 0 5px #bbb;
+  font-size: .9em;
+  font-family: tahoma,verdana,arial,helvetica,sans-serif;
+
+  /* following two are part of a hack learned from PatrikAkerstrand at http://stackoverflow.com/questions/5078239/how-to-remove-the-space-between-inline-block-elements */
+  letter-spacing: -.31em;
+  word-spacing: -.43em;
+}
+
+#icon-set{
+  padding: 4px 0;
+}
+.toolbar-function{
+  position: relative;
+  letter-spacing: normal;
+  word-spacing: normal;
+  height: 33px;
+  width: 33px;
+  display: inline-block;
+}
+.toolbar-icon{
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/toolbar/toolbar-sprite-05.png);
+  outline: 0;
+  height: 33px;
+  width: 33px;
+  display: inline-block;
+  letter-spacing: normal;
+  word-spacing: normal;
+  background-position: -23px -66px;
+}
+
+.disabled a{
+  cursor: default;
+}
+
+.separator{
+  width: 19px;
+  height: 33px;
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/toolbar/toolbar-sprite-05.png);
+  background-position: -3px 0;
+  display: inline-block;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
+.icon-like{
+  padding: 0 6px 0 0;
+  display: inline-block;
+  letter-spacing: normal;
+  word-spacing: normal;
+vertical-align: middle;
+  height: 48px;
+}
+
+.icon-like select{
+  width: 9em;
+  font-family: tahoma,verdana,arial,helvetica,sans-serif;
+}
+
+.icon-like input{
+  font-family: tahoma,verdana,arial,helvetica,sans-serif;
+}
+
+a.menu-like{
+  padding: .3em .4em;
+  color: black;
+  text-decoration: none;
+  white-space: nowrap;
+display: block;
+}
+
+.menu-like:hover{
+  background-color: #ccc;
+  background-color: #fff;
+}
+
+#hints{
+  float: right;
+  padding: 1.2em .4em 0;
+  padding: .9em 0;
+  margin-right: 22px;
+}
+
+#icon-set{
+  padding-right: 10em;
+}
+
+#toolbar-undo a                   { background-position: -518px 0; }
+#toolbar-undo.disabled a          { background-position: -518px -33px; }
+#toolbar-undo.hovered a           { background-position: -518px -66px; }
+#toolbar-undo.selected a          { background-position: -518px -99px; }
+#toolbar-redo a                   { background-position: -287px 0; }
+#toolbar-redo.disabled a          { background-position: -287px -33px; }
+#toolbar-redo.hovered a           { background-position: -287px -66px; }
+#toolbar-redo.selected a          { background-position: -287px -99px; }
+#toolbar-bold a                   { background-position: -56px 0; }
+#toolbar-bold.disabled a          { background-position: -56px -33px; }
+#toolbar-bold.hovered a           { background-position: -56px -66px; }
+#toolbar-bold.selected a          { background-position: -56px -99px; }
+#toolbar-italics a                { background-position: -155px 0; }
+#toolbar-italics.disabled a       { background-position: -155px -33px; }
+#toolbar-italics.hovered a        { background-position: -155px -66px; }
+#toolbar-italics.selected a       { background-position: -155px -99px; }
+#toolbar-underline a              { background-position: -485px 0; }
+#toolbar-underline.disabled a     { background-position: -485px -33px; }
+#toolbar-underline.hovered a      { background-position: -485px -66px; }
+#toolbar-underline.selected a     { background-position: -485px -99px; }
+#toolbar-superscript a            { background-position: -419px 0; }
+#toolbar-superscript.disabled a   { background-position: -419px -33px; }
+#toolbar-superscript.hovered a    { background-position: -419px -66px; }
+#toolbar-superscript.selected a   { background-position: -419px -99px; }
+#toolbar-subscript a              { background-position: -386px 0; }
+#toolbar-subscript.disabled a     { background-position: -386px -33px; }
+#toolbar-subscript.hovered a      { background-position: -386px -66px; }
+#toolbar-subscript.selected a     { background-position: -386px -99px; }
+#toolbar-link a                   { background-position: -188px 0; }
+#toolbar-link.disabled a          { background-position: -188px -33px; }
+#toolbar-link.hovered a           { background-position: -188px -66px; }
+#toolbar-link.selected a          { background-position: -188px -99px; }
+#toolbar-unlink a                 { background-position: -551px 0; }
+#toolbar-unlink.disabled a        { background-position: -551px -33px; }
+#toolbar-unlink.hovered a         { background-position: -551px -66px; }
+#toolbar-unlink.selected a        { background-position: -551px -99px; }
+#toolbar-unorderedlist a          { background-position: -584px 0; }
+#toolbar-unorderedlist.disabled a { background-position: -584px -33px; }
+#toolbar-unorderedlist.hovered a  { background-position: -584px -66px; }
+#toolbar-unorderedlist.selected a { background-position: -584px -99px; }
+#toolbar-orderedlist a            { background-position: -254px 0; }
+#toolbar-orderedlist.disabled a   { background-position: -254px -33px; }
+#toolbar-orderedlist.hovered a    { background-position: -254px -66px; }
+#toolbar-orderedlist.selected a   { background-position: -254px -99px; }
+#toolbar-table a                  { background-position: -452px 0; }
+#toolbar-table.disabled a         { background-position: -452px -33px; }
+#toolbar-table.hovered a          { background-position: -452px -66px; }
+#toolbar-table.selected a         { background-position: -452px -99px; }
+#toolbar-image a                  { background-position: -122px 0; }
+#toolbar-image.disabled a         { background-position: -122px -33px; }
+#toolbar-image.hovered a          { background-position: -122px -66px; }
+#toolbar-image.selected a         { background-position: -122px -99px; }
+#toolbar-math a                   { background-position: -221px 0; }
+#toolbar-math.disabled a          { background-position: -221px -33px; }
+#toolbar-math.hovered a           { background-position: -221px -66px; }
+#toolbar-math.selected a          { background-position: -221px -99px; }
+
+#toolbar-table.selected a{
+  box-shadow: 2px 2px 2px #aaa;
+}
+
+#editor-mode{
+  font-size: .85em;
+  position: relative;
+  z-index: 2;
+  height: 30px;
+background-color: #666;
+display: none;
+}
+
+#editor-mode ul, #editor-mode li{
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+#editor-mode ul{
+  position: absolute;
+  right: 17px;
+  bottom: 0;
+}
+
+#editor-mode li{
+  float: right;
+  padding: .35em 0 .4em;
+}
+
+#editor-mode a{
+  padding: .5em 1em;
+  padding: .35em 1em .4em;
+  border: 1px solid #aaa;
+  background-color: #eee;
+  background-color: #ccc;
+  text-decoration: none;
+  color: black;
+  outline: 0;
+  margin-left: -1px;
+  color: #666;
+font-weight: bold;
+}
+
+#editor-mode a:hover{
+  color: #000;
+}
+
+#editor-mode .current a{
+  color: black;
+  cursor: default;
+  background-color: #fff;
+  border-bottom: 1px solid #fff;
+  font-weight: bold;
+}
+
+#sidebar{
+  float: left;
+  position: fixed;
+  margin: 1em 25px;
+  margin: 0 25px 1em;
+  width: 200px;
+  font-family: tahoma,verdana,arial,helvetica,sans-serif;
+}
+
+#sidebar dl{
+  background-color: #eee;
+  margin: 0 0 15px;
+  padding: 0;
+  border: 1px solid #aaa;
+  box-shadow: 0px 0px 5px #9f9f9f;
+  box-shadow: 0px 0px 5px #aaa;
+  box-shadow: 0px 0px 5px #bbb;
+background-color: transparent;
+/*
+box-shadow: none;
+*/
+border-width: 0;
+}
+
+#sidebar dt{
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+/*
+  background-image: url(toolbar/toolbar-bg-01.png);
+  background-repeat: repeat-x;
+  background-position: 0 0;
+*/
+  background-color: #999;
+  background-color: #666;
+  background-color: #888;
+  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #666;
+  color: white;
+  padding: .25em .5em;
+  padding: .5em 1em .35em;
+/*
+margin-bottom: .5em;
+border-radius: .5em;
+*/
+/*
+border-top-left-radius: .5em;
+border-top-right-radius: .5em;
+*/
+  font-family: tahoma,verdana,arial,helvetica,sans-serif;
+  font-weight: normal;
+  font-size: 1.2em;
+  padding: .3em .7em;
+}
+
+#sidebar dt a{
+  text-decoration: none;
+  color: black;
+  color: white;
+  display: block;
+  padding: .25em .5em;
+  padding: .25em 1.5em .25em .5em;
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/toolbar/arrow-down-white-02.png);
+  background-repeat: no-repeat;
+  background-position: right .35em;
+}
+
+#sidebar dd{
+  margin: 0;
+  padding: .5em 1em;
+padding: .75em .75em !important;
+  background-color: #ccc;
+  background-color: #eee;
+background-color: transparent;
+background-color: #ddd;
+border: 1px solid #999;
+border-top-width: 0;
+/*
+border-bottom-left-radius: .5em;
+border-bottom-right-radius: .5em;
+*/
+}
+
+#artboard{
+  overflow: auto;
+}
+
+#canvas{
+  margin: 1em 25px 2em 250px;
+  background-color: #fff;
+  border: 1px solid #aaa;
+  padding: 2em;
+padding: 30px;
+  box-shadow: 0px 0px 10px #9f9f9f;
+  cursor: text;
+  min-height: 100%;
+position: relative;
+}
+
+
+
+/* =============== from earlier mock-ups (edited) ================ */
+
+
+.example, .definition .example, .rule .example{
+  margin: 0;
+  padding: 0;
+}
+
+.canvas-wrap{
+  margin: 1em -20px;
+  margin: 1em -10px 1em -10px;
+}
+
+.canvas-wrap .canvas-wrap{
+  padding-left: 0;
+  padding-right: 0;
+  margin: 0 .5em 0 1em;
+margin: 0 .5em 0 0;
+margin: 0 .5em 0 -10px;
+margin: 0 -36px 0 -11px;
+}
+
+.canvas{
+  border: 1px solid transparent;
+}
+.canvas-hovered{
+  border-color: #bbb #ccc;
+  border-color: #c8c8c8;
+  border-style: dotted;
+}
+
+.solution.canvas, .proof.canvas, .statement{
+  margin-left: 1.5em;
+margin-left: 0;
+}
+
+.canvas-inner{
+  position: relative;
+  min-height: 35px;
+  padding: .5em;
+  padding-left: .75em;
+  padding: .5em 1em;
+  padding: .5em 30px .5em .75em;
+  padding: .5em 25px .5em 20px;
+  padding: .5em 25px .5em 10px;
+  padding: .5em 35px .5em 10px;
+}
+
+.active{
+  border: 1px dotted #bbb !important;
+  background-image: url('http://mountainbunker.org/~maxwell/oerpub/editor-ideas/source-files/cursor-01.gif');
+  background-repeat: no-repeat;
+  background-position: .75em 1em;
+}
+
+.equation-number{
+  right: 1em;
+  top: 40%;
+  right: 30px;
+  right: 25px;
+}
+
+.canvas-buddy{
+  position: absolute;
+  left: 47%;
+  top: -4px;
+  height: 13px;
+  width: 50px;
+  cursor: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/openhand.cur), default;
+  display: none;
+  overflow: hidden;
+}
+
+.dragging{
+  cursor: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/closedhand.cur), default !important;
+}
+
+.canvas-buddy a{
+}
+
+.canvas-buddy img{
+  display: block;
+}
+
+/*
+.nodrag{
+  cursor: not-allowed !important;
+}
+
+.nodrag img{
+  opacity: .5;
+}
+*/
+
+.canvas-buddy-2{
+  position: absolute;
+  top: 0;
+  left: auto;
+  right: 0;
+  display: none;
+  height: 100%;
+  background-color: #f7f7f7;
+  border-left: 1px solid #ddd;
+  width: 19px;
+}
+
+.canvas-buddy a, .canvas-buddy-2 a{
+  text-decoration: none;
+}
+
+.section-header{
+  position: relative;
+}
+
+.remove-element{
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  cursor: pointer;
+  right: 15px;
+}
+.drag-element{
+/*
+cursor: move;
+cursor: grab;
+cursor: -moz-grab;
+cursor: -webkit-grab;
+cursor: url(https://mail.google.com/mail/images/2/openhand.cur), grab, -moz-grab, -webkit-grab, move, default;
+*/
+cursor: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/openhand.cur), default;
+}
+/*
+.nodrag .drag-element{
+  cursor: not-allowed;
+}
+*/
+.edit-element{
+  position: absolute;
+  top: 25px;
+  cursor: pointer;
+  padding: 2px;
+left: 1px;
+  height: 13px;
+  width: 13px;
+  height: 14px;
+  width: 14px;
+  overflow: hidden;
+}
+.edit-element img{
+  width: 13px;
+  height: 13px;
+  width: 14px;
+  height: 14px;
+  float: left;
+}
+
+.to-remove *{
+  color: #999 !important;
+  color: #bbb !important;
+  background-color: transparent !important;
+}
+.to-remove .edhint, .to-remove .table table, .to-remove .table td, .to-remove .table th{
+  border-color: #bbb !important;
+}
+.to-remove table{
+  border-color: #bbb !important;
+}
+
+.to-remove img{
+  opacity: .25;
+}
+.to-remove .remove-element img{
+  opacity: 1;
+}
+
+
+.active>div>.canvas-buddy, .active>div>.canvas-buddy-2{
+  display: block;
+/*
+  border-style: solid;
+  border-color: #999;
+  background-color: #ddd;
+  border-style: solid;
+*/
+/*
+  opacity: .5;
+*/
+}
+/*
+.active>div>.canvas-buddy{
+  opacity: .75;
+}
+.active>div>.canvas-buddy:hover, .active>div>.canvas-buddy-2:hover{
+  opacity: 1;
+}
+*/
+
+#canvas .section-header{
+  font-size: 1.65em;
+}
+#canvas .section .section .section-header{
+  font-size: 1.25em;
+}
+
+.cnx_label{
+  cursor: default;
+}
+
+.dragged .cnx_label{
+  font-size: .65em !important;
+}
+
+.exericse{
+  margin: 0;
+  padding: 0;
+}
+
+.add-solution{
+  margin: -.5em 20px 1em 3em;
+  margin: -.5em 20px 1em 3em;
+  margin: -1.5em 20px .5em 3em;
+  margin: 0 0 .5em 2em;
+  border: 1px dashed #ccc;
+  padding: .5em 1em;
+  padding: .2em .5em;
+  cursor: text;
+visibility: hidden;
+}
+
+#canvas .add-solution a{
+  color: #888;
+  text-decoration: none;
+  cursor: text;
+}
+
+.add-solution-2{
+  margin: 0 0 .5em 3em;
+margin: 0 0 .5em;
+  border: 1px dashed #ccc;
+  padding: .2em .5em;
+  cursor: text;
+  display: none;
+}
+
+#canvas .add-solution-2 a, .hint-text, .math-source-hint-text{
+  color: #888;
+  text-decoration: none;
+  cursor: text;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.math-source-hint-text{
+  font-family: tahoma;
+}
+
+.drag{
+  position: absolute;
+  margin-top: 0;
+  margin-left: 680px;
+  width: 150px;
+  border: 1px solid #bbb;
+  border-left-width: 0;
+  z-index: 3;
+  background-color: #f2f2f2;
+  padding: 10px;
+}
+
+.drag ul, .drag li{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  float: left;
+}
+
+.drag ul a{
+  width: 55px;
+  text-decoration: none;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin: .5em .5em 0em 0;
+  display: block;
+  padding: .25em .5em;
+  background-color: #e3e3e3;
+  color: #000;
+cursor: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/openhand.cur), default;
+}
+
+.drag ul a:hover{
+  background-color: #fff;
+}
+
+.drag h2{
+  font-size: 1.15em;
+  margin-bottom: .25em;
+  color: #666;
+}
+
+.drag .help{
+  float: right;
+}
+
+.add-glossary{
+  clear: both;
+  font-size: .9em;
+  padding-top: .5em;
+}
+
+.add-glossary span{
+  clear: both;
+  margin-top: .5em;
+  border-top: 1px solid #bbb;
+  padding-top: .75em;
+  display: block;
+}
+
+/* ============== end earlier mock-ups =============== */
+
+#pedagog ul, #pedagog li, #pedagog dd{
+  padding:  0;
+  margin: 0;
+  list-style-type: none;
+  clear: right;
+}
+
+/*
+#pedagog dd{
+  margin-left: 1em;
+}
+*/
+
+#pedagog .node, #pedagog .pedagog-glossary{
+  padding: .5em;
+  display: block;
+  background-color: #eee;
+  border-bottom: 1px solid #999;
+  text-decoration: none;
+  color: black;
+border-radius: 7px;
+border: 1px solid #999;
+margin-bottom: .25em;
+}
+
+#pedagog .node{
+cursor: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/openhand.cur), default;
+}
+
+.plus{
+  visibility: visible;
+  color: #999;
+}
+
+#pedagog .hovered .node{
+  background-color: #C5DAE9;
+}
+#pedagog .hovered .count{
+  background-color: #DFE7EC;
+}
+
+#pedagog node.pedagog-click{
+  background-color: #Ccc;
+}
+
+#pedagog .count{
+  float: right;
+/*
+  padding: .5em 0;
+*/
+  color: #666;
+  font-size: 1em;
+  background-color: #eee;
+  border-left: 1px dotted #bbb;
+  position: relative;
+border: 1px solid #999;
+  border-left: 1px dotted #bbb;
+border-top-right-radius: 7px;
+border-bottom-right-radius: 7px;
+}
+
+#pedagog .count-total{
+  text-decoration: none;
+  color: #000;
+  padding: .5em;
+  float: right;
+padding: .5em;
+}
+
+#pedagog .count-total-hover{
+  background-color: #555;
+  color: white;
+  border: 1px solid #555;
+  margin-top: -1px;
+  margin-left: -1px;
+}
+
+.zero{
+  display: none;
+}
+
+.count-arrow{
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/helper_files/gray-arrow-01.png);
+  background-repeat: no-repeat;
+  background-position: 100% center;
+  position: absolute;
+  left: 100%;
+  top: -1px;
+  z-index: 451;
+}
+
+.node-list{
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: -1px;
+  background-color: white;
+  white-space: nowrap;
+  padding: .75em 1.5em;
+  border: 1px solid #aaa;
+  box-shadow: 0px 0px 5px #aaa;
+  box-shadow: 2px 2px 5px -2px #aaa;
+  z-index: 450;
+}
+
+.node-list a{
+  color: #369;
+}
+
+.node-list strong{
+  color: black;
+  display: block;
+  margin-bottom: .5em;
+}
+
+.pedagog-glossary{
+  background-color: #e3e3e3 !important;
+  cursor: default;
+background-color: transparent !important;
+border-width: 0 !important;
+padding: .5em 0 0 !important;
+}
+
+.glossary-container{
+  display: none;
+}
+
+em.emphasis.edhint{
+  border-bottom: 1px dashed #999;
+  border-bottom: 2px dotted #333;
+  border-bottom: 2px dotted #6c6;
+  border-bottom: 3px dotted #6c6;
+}
+
+dfn.term.edhint{
+  border-bottom: 2px dotted #6c6;
+  border-bottom: 2px dotted #e70;
+  border-bottom: 2px dotted #f90;
+  border-bottom: 2px dotted #fc0;
+  border-bottom: 3px dotted #d9f;
+}
+
+.section{
+  margin-top: 0;
+}
+
+.note-contents{
+  display: inline;
+}
+
+.equation-contents, .table .canvas-inner{
+  text-align: center;
+  padding-top: .75em;
+}
+
+.table .canvas-inner{
+  padding-top: 1.25em;
+}
+
+.para{ 
+/*
+ margin: .5em 0 !important;
+*/
+}
+
+.droppable-all{
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  border: 1px dashed transparent;
+  border-width: 1px 0;
+  margin-top: -.4em;
+}
+
+.droppable-active{
+  background-repeat: repeat-x;
+  background-position: center center;
+}
+
+.droppable-hover{
+  background-color: #C5DAE9;
+  cursor: copy;
+  border: 1px dashed #1b86d2;
+  position: relative;
+  z-index: 3;
+  margin: .5em 0;
+  left: -1px;
+}
+
+.dragged{
+  position: relative;
+  z-index: 4;
+  border: 1px solid #666;
+  padding: .5em 1em;
+  width: 400px;
+  background-color: white;
+  border-radius: 7px;
+}
+
+.dragged h2, .dragged .para{
+  margin: 0 !important;
+}
+
+.dragged .exercise{
+  margin: 0;
+}
+
+.dragged *{
+  display: inline !important;
+}
+
+.no-drop{
+  cursor: no-drop !important;
+}
+.copy-draggable{
+  cursor: copy !important;
+}
+
+.content-editable, .content-editable-2{
+  outline: 0;
+}
+
+.ui-dialog{
+  font-size: 1em;
+  font-family: tahoma, verdana, arial, helvetica, sans-serif;
+  box-shadow: 0px 0px 5px #aaa;
+padding: 0;
+}
+
+.ui-dialog .ui-widget-header{
+  background-image: none;
+  background-color: #C5DAE9;
+  border-width: 0 0 1px;
+}
+
+.element-being-edited{
+  background-color: #E5EEF5 !important;
+  border-color: #C5DAE9;
+}
+
+.ui-dialog .ui-dialog-buttonpane{
+  border-top-width: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.element-options hr{
+  height: 1px;
+  background-color: #ddd;
+  color: #ddd;
+  border-width: 0;
+  margin: 1em 0;
+}
+
+.element-options-tabs, .element-options-tabs li{
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.element-options-tabs{
+  margin: 1em 0 0;
+  padding: 4px 0 3px;
+}
+
+.element-options-tabs li{
+  font-size: .85em;
+  float: left;
+  border: 1px solid #888;
+  border-bottom-width: 0;
+  margin-right: -1px;
+}
+
+.element-options-tabs a{
+  padding: 5px 1em 5px;
+  position: relative;
+  z-index: 509;
+  text-decoration: none;
+  display: block;
+  color: #444;
+  font-weight: bold;
+  outline: 0;
+  background-color: #f3f3f3;
+}
+
+.element-options-tabs li.selected{
+}
+
+.element-options-tabs li.selected a{
+  z-index: 511;
+  border-bottom: 1px solid #fff;
+  background-color: #fff;
+  color: #000;
+}
+
+.element-options-contents{
+  margin: -1px 0 .5em;
+  border: 1px solid #888;
+  padding: 1em 1em .65em;
+  position: relative;
+  z-index: 510;
+  clear: left;
+  top: -1px;
+}
+
+span.cnx_label{
+  font-size: .9em;
+  color: #369;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-family: arial, helvetica, sans-serif;
+}
+
+.element-options fieldset{
+  margin: 1em 0 0;
+}
+
+.element-options legend{
+  font-weight: bold;
+}
+
+clear-text-from-input{
+  color: #666;
+}
+
+#canvas .problem, #canvas .commentary{
+  margin: 0;
+}
+
+.MathBox{
+  cursor: default;
+  position: relative;
+  padding: .5em .2em;
+  padding: .4em 0;
+  border: 1px solid transparent;
+display: inline-block;
+}
+
+.MathBoxText, .math-style{
+  font-style: italic;
+  font-size: 1.3em;
+  font-family: serif; 
+}
+
+.MathBox.selected{
+  background-color: #E5EEF5;
+  background-color: #c5dae9 !important;
+  background-color: #D4E3EE !important;
+  background-color: #D9E7F1 !important;
+  border: 1px dotted #C5DAE9 !important;
+  border: 1px dotted #1B86D2 !important;
+}
+
+.MathBox.hovered{
+  background-color: #E5FEF5;
+/*
+  background-color: #f3f3f3;
+  background-color: #f9f9f9;
+*/
+  border: 1px dotted #ddd;
+}
+
+.asciimath{
+  font-family: courier new;
+}
+
+.MathBox.errored{
+/*
+  white-space: nowrap;
+display: inline-block;
+*/
+}
+
+.MathBox.errored .asciimath, .MathBox.errored .MathBoxText{
+  color: #c00;
+  font-family: courier new;
+  font-style: normal;
+  font-size: 1em;
+}
+
+.math-icon-message{
+  display: none;
+  border: 1px solid #444;
+  background-color: #f2f2f2;
+  padding: .1em .5em;
+  position: absolute;
+  left: 130%;
+  top: 0;
+  font-size: .85em;
+  white-space: nowrap;
+  border-radius: 3px;
+}
+
+.math-icon-message-close{
+  font-weight: bold;
+  padding-right: .3em;
+  font-size: 1.1em;
+  vertical-align: baseline;
+}
+
+.math-icon.hovered .math-icon-message{
+  display: block;
+}
+
+
+#math-icon-clear .math-icon-message{
+}
+
+#math-icon-edit .math-icon-message{
+  top: auto;
+  bottom: 0;
+  right: 130%;
+  left: auto;
+}
+
+/*
+.MathBox #math-icon-clear{
+  position: absolute;
+right: -20px;
+width: 20px;
+height: 100%;
+top: 0;
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/broom-02.png);
+  background-repeat: no-repeat;
+  background-position: left top;
+  cursor: pointer;
+}
+
+.MathBox #math-icon-edit{
+  position: absolute;
+left: -20px;
+width: 20px;
+height: 100%;
+top: 2px;
+  background-image: url(http://mountainbunker.org/~maxwell/oerpub/editor-ideas/content_files/pencil-02.png);
+  background-repeat: no-repeat;
+  background-position: right bottom;
+cursor: pointer;
+}
+*/
+/*
+.MathBox *{
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+*/
+.math-editor{
+  width: 350px;
+  width: 400px;
+  border: 1px solid #1b86d2;
+  background-color: #c5dae9;
+  position: absolute;
+  z-index: 400;
+  left: -50%;
+  left: -150px;
+  bottom: -30%;
+  bottom: 100%;
+  padding: .75em;
+  box-shadow: 0px 0px 5px #aaa;
+  text-align: left;
+  /*
+  border-style:solid;
+  border-width:5px;
+  border-color:red;*/
+
+/*
+   -moz-user-select: none !important;
+   -moz-user-focus: none !important;
+*/
+ font-weight: normal;
+}
+/*.math-editor{
+  width: 350px;
+  width: 400px;
+  border: 1px solid #1b86d2;
+  background-color: #c5dae9;
+  position: absolute;
+  z-index: 400;
+left: -50%;
+left: -150px;
+top: 50%;
+  bottom: -30%;
+  bottom: 100%;
+  padding: .75em;
+  box-shadow: 0px 0px 5px #aaa;
+  text-align: left;
+}*/
+/*
+.math-editor {
+  position: absolute;
+  left: 500px;
+  top: 500px;
+  z-index: 402;
+}*/
+/* Taken from "sandeep" at http://stackoverflow.com/questions/9450733/css-triangle-custom-border-color */
+#math-editor-arrow { 
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 401;
+  bottom: -14px;
+  right: 200px;
+  width: 25px;
+  height: 25px;
+  background: #C5DAE9;
+  border-right:1px solid #1b86d2;
+  border-bottom:1px solid #1b86d2;
+  -moz-transform:rotate(45deg);
+  -webkit-transform:rotate(45deg);
+  /*border-style:solid
+  border-width:5px;
+  border-color:purple;*/
+}
+/* Taken from "sandeep" at http://stackoverflow.com/questions/9450733/css-triangle-custom-border-color */
+/*.math-editor:after { 
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 401;
+bottom: -14px;
+right: 200px;
+  width: 25px;
+  height: 25px;
+  background: #C5DAE9;
+  border-right:1px solid #1b86d2;
+  border-bottom:1px solid #1b86d2;
+  -moz-transform:rotate(45deg);
+  -webkit-transform:rotate(45deg);
+  border-style:solid;
+  border-width:5px;
+  border-color:blue;
+}*/
+
+.math-editor-close{
+  float: right;
+  margin-right: -3px;
+  position: relative;
+  z-index: 404;
+}
+
+.math-source{
+  border: 1px inset #1b86d2;
+  background-color: #fff;
+  padding: .1em .3em;
+  margin-bottom: .5em !important;
+  cursor: text;
+  margin-right: 18px !important;
+  display: block;
+  font-family: courier new;
+}
+
+.math-source-wrap{
+  position: relative;
+  z-index: 403;
+}
+
+#math-advanced{
+  margin-top: .5em;
+  padding-top: .5em;
+  border-top: 1px solid #A1B2BF;
+  clear: both;
+  display: none;
+}
+
+#math-advanced label{
+  padding-right: .5em;
+}
+
+#math-advanced input{
+  padding: 0;
+  vertical-align: top;
+  margin: 0;
+}
+
+.math-help{
+  padding-left: 0em;
+  cursor: pointer;
+  font-size: .85em;
+}
+
+.math-help-text-wrap{
+  position: absolute;
+  left: 100%;
+  top: 0;
+  margin-top: -1px;
+  margin-left: 1px;
+  width: 279px; /* 250 + padding + border + shadow */
+  overflow: hidden;
+}
+
+.math-help-text{
+  background-color: white;
+  padding: 6px 12px;
+  border: 1px solid #999;
+  width: 250px;
+  box-shadow: 3px 3px 3px #ccc;
+  position: absolute;
+  left: -250px;
+  top: 0;
+  height: auto;
+  display: none;
+}
+
+#math-error{
+  border: 1px solid #c00;
+  background-color: #FFF6D1;
+  border-bottom: 0;
+  background-color: #fee;
+  color: #c00;
+  position: absolute;
+  bottom: 100%;
+  display: none;
+  padding: 6px 12px;
+  width: 100%;
+  left: 0;
+/*
+  box-shadow: -3px -3px 3px #ccc;
+*/
+}
+
+.math-help-text-close{
+  float: right; 
+  margin-left: 1.25em;
+  font-weight: normal;
+  font-size: 1.4em;
+  margin-top: -.1em;
+}
+
+/*
+.math-help-text a{
+  color: #444 !important;
+}
+*/
+
+/*
+.math-done{
+  float: right;
+  text-align: right;
+  position: relative;
+  z-index: 403;
+}
+*/
+
+#cheat-sheet-activate{
+  font-size: .85em;
+  font-weight: normal;
+}
+#cheat-sheet-activator label{
+  font-weight: normal;
+}
+
+.math-options-activate{
+  font-weight: normal;
+  float: left;
+  font-size: .85em;
+}
+
+.math-options-activate label{
+/*
+  padding-right: .25em;
+*/
+}
+
+/*
+.math-editor-help{
+  text-align: right;
+  font-size: .85em;
+}
+*/
+
+#cheat-sheet-wrap{
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  color: #ddd;
+  display: none;
+  z-index: 454;
+}
+
+#cheat-sheet{
+  border-top: 1px solid black;
+/*
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+*/
+  padding: .5em 1em 1em;
+  background-color: #444;
+display: none;
+/*
+  box-shadow: -5px 0 10px #999;
+*/
+  box-shadow: -10px 0 10px #bbb;
+}
+
+#cheat-sheet-close{
+  float: right;
+  cursor: pointer;
+}
+
+#cheat-sheet-open{
+  float: right;
+  background-color: #444;
+  padding: .25em 1em;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  cursor: pointer;
+}
+
+#cheat-sheet-title{
+  margin-bottom: .75em;
+  font-weight: bold;
+}
+
+#cheat-sheet-type{
+  float: left;
+  white-space: nowrap;
+  margin-right: 1em;
+}
+
+#cheat-sheet-type label{
+  font-weight: normal;
+}
+
+.cheat-sheet-values{
+  background-color: #fff;
+  overflow-x: auto;
+  color: #000;
+}
+
+.cheat-sheet-values table{
+  font-family: courier new, courier;
+  border-width: 0;
+  border-collapse: collapse;
+}
+.cheat-sheet-values td{
+  border-width: 0;
+  border-right: 1px solid #444;
+  border-bottom: 1px solid #ccc;
+  text-align: center;
+  white-space: nowrap;
+}
+
+#table-flyout{
+  position: absolute;
+  top: 33px;
+  left: 0;
+  background-color: #e2e2e2;
+  border: 1px solid #b9b9b9;
+  border-bottom-color: #999;
+  border-right-color: #999;
+  box-shadow: 0px 0px 5px #aaa;
+  box-shadow: 3px 3px 5px #aaa;
+  box-shadow: 2px 2px 3px #aaa;
+  padding: .75em .75em;
+}
+
+#table-flyout:before{
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 31px;
+  height: 5px;
+  background-color: #e2e2e2;
+}
+
+/*
+.selected .toolbar-icon{
+  box-shadow: 3px 3px 5px #aaa;
+}
+*/
+
+.flyout-options{
+  margin-bottom: .75em;
+}
+
+#table-flyout label{
+  font-weight: normal;
+}
+
+#table-flyout table{
+  border: 1px solid #555;
+  border-collapse: collapse;
+}
+
+#table-flyout td{
+  border: 1px solid #777;
+/*
+  width: 1.5em;
+  height: 1.5em;
+*/
+width: 1.4em;
+height: 1.4em;
+max-width: 1.4em;
+min-width: 1.4em; 
+max-height: 1.4em; 
+min-height: 1.4em;
+width: 15px;
+height: 17px;
+max-width: 15px;
+min-width: 17px; 
+max-height: 15px; 
+min-height: 17px;
+overflow: hidden;
+  cursor: default;
+}
+
+#table-flyout td.header{
+  border: 1px solid #000;
+  background-color: #cfcfcf;
+}
+
+#table-flyout td.hovered{
+  background-color: #C5DAE9;
+}
+
+#table-flyout td.header.hovered{
+  background-color: #B3C6D4;
+}
+
+#table-dimensions{
+  text-align: center;
+  margin-top: .5em;
+}
+
+.temporarily-hide{
+  display: block !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  left: -10000px;
+  top: -10000px;
+  padding: 0 !important;
+  border-width: 0 !important;
+  margin: 0 !important;
+}
+
+.table-temp-empty{
+  background-color: #D9E7F1;
+  border: 1px dotted #1B86D2;
+  background-color: #1b86d2;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  opacity: .25;
+  margin-left: -8px;
+  border-radius: 10px;
+}
+
+.table-temp-text{
+  background-color: #D9E7F1;
+  border: 1px dotted #1B86D2;
+}
+
+.table-examples{
+  margin-top: .3em;
+}
+
+.table-examples td{
+  vertical-align: top;
+  text-align: center;
+padding: 0 .75em;
+}
+
+.table-examples table{
+  margin: auto;
+}
+
+div.table-example{
+  margin-top: .5em;
+}
+
+.table-examples .table-example table{
+  font-size: .9em;
+  margin-top: 0;
+  border-collapse: collapse;
+  border: 2px solid #000;
+}
+.cell-examples .table-example table{
+  border-width: 1px;
+}
+
+.table-examples .table-example td{
+  margin-top: 0;
+  border-bottom: 1px solid #333;
+  border-right: 1px solid #333;
+padding: 0 .1em;
+}
+.cell-examples .table-example.none td{
+  border-bottom: 1px dotted #ddd;
+  border-right: 1px dotted #ddd;
+}
+
+.table-examples .table-example td.te-right{
+  border-right-width: 0;
+}
+.table-examples .table-example td.te-bottom{
+  border-bottom-width: 0;
+}
+/* Hide aloha default toolbar */
+.aloha-table-wrapper div.aloha-wai-red {
+    background-image: none !important;
+}
+
+.aloha-toolbar {
+    display: none !important;
+}

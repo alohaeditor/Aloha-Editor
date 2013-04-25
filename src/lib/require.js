@@ -226,7 +226,7 @@ var requirejs, require, define;
         var inCheckLoaded, Module, context, handlers,
             checkLoadedTimeoutId,
             config = {
-                waitSeconds: 7,
+                waitSeconds: 42,
                 baseUrl: './',
                 paths: {},
                 pkgs: {},

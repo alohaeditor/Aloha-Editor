@@ -1,0 +1,59 @@
+#artboard {
+    margin-top: 40px;
+    background-color: #CCC;
+}
+
+#canvas {
+    margin-top: 0;
+}
+
+#content {
+    padding: 1em 1em;
+    background-color: #CCC;
+}
+
+#statusmessage {
+    height: 0;
+}
+
+#statusmessage div {
+    text-align: center;
+    margin-bottom: 0.25em;
+
+    border: 1px solid #f0f000;
+    background-color: #ffffe0;
+
+    font-weight: bold;
+    padding: .75em 1em;
+    margin: auto;
+    display: inline;
+    -moz-box-shadow:    3px 3px 2px 2px #ddd;
+    -webkit-box-shadow: 3px 3px 2px 2px #ddd;
+    box-shadow:         3px 3px 2px 2px #ddd;
+    z-index: 4;
+    position: relative;
+}
+
+#statusmessage div.error {
+    background-color: red;
+}
+
+#statusmessage .persistent-error i {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    margin-left: -9999px;
+    background-image: url("../images/remove-01.png");
+    height: 16px;
+    width: 16px;
+}
+
+.aloha-block.title,
+.aloha-block.title:focus,
+.aloha-block.title:hover {
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0;
+}
