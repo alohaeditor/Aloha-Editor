@@ -91,7 +91,6 @@
                 // is one of the section heading tags
                 function getClosestHeadingParent(ele) {
                     while(ele != null) {
-                        console.log(ele);
                         if(ele.tagName && possibleHeadings.indexOf(ele.tagName.toUpperCase()) != -1) {
                             break;
                         }
@@ -101,7 +100,6 @@
                         }
                         ele = ele.parentNode;
                     }
-                    console.log(ele);
                     return ele;
                 }
 
