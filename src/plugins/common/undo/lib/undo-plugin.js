@@ -110,7 +110,7 @@ function( Aloha, jQuery, Plugin) {
 			};
 
 			Aloha.bind('aloha-editable-created', function(e, editable){
-				editable.obj.bind('keydown', 'ctrl+z shift+ctrl+z', function(event){
+				editable.obj.bind('keydown', 'ctrl+z ctrl+shift+z', function(event){
 					event.preventDefault();
 					if (event.shiftKey) {
 						that.redo();
