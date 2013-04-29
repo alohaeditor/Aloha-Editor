@@ -1,6 +1,7 @@
 define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
     jQuery, Aloha, Plugin, Ui, PubSub) ->
 
+  squirreledEditable = null
   $ROOT = jQuery('body') # Could also be configured to some other div
 
   makeItemRelay = (slot) ->
@@ -89,7 +90,6 @@ define [ 'jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub' ], (
     init: ->
 
       toolbar = @
-      squirreledEditable = null
 
       changeHeading = (evt) ->
         $el = jQuery(@)

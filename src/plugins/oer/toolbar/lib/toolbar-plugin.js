@@ -2,7 +2,8 @@
 (function() {
 
   define(['jquery', 'aloha', 'aloha/plugin', 'ui/ui', 'PubSub'], function(jQuery, Aloha, Plugin, Ui, PubSub) {
-    var $ROOT, adoptedActions, makeItemRelay;
+    var $ROOT, adoptedActions, makeItemRelay, squirreledEditable;
+    squirreledEditable = null;
     $ROOT = jQuery('body');
     makeItemRelay = function(slot) {
       var ItemRelay;
@@ -131,9 +132,8 @@
 
     return Plugin.create("toolbar", {
       init: function() {
-        var changeHeading, squirreledEditable, toolbar;
+        var changeHeading, toolbar;
         toolbar = this;
-        squirreledEditable = null;
         changeHeading = function(evt) {
           var $el, $newEl, $oldEl, hTag, rangeObject;
           $el = jQuery(this);
