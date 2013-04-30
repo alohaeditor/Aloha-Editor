@@ -13,3 +13,5 @@ All changes are categorized into one of the following keywords:
 - ** BUGFIX**: (core/pluginmanager) Initialization will complete and
 			   Aloha.ready() will fire even when no plugins have been
 			   configured.
+- ** BUGFIX**: paste-plugin: Browsers no longer scroll to the top of an editable
+               after content was pasted.
