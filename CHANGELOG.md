@@ -13,6 +13,23 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: The change fixes a bug.
 
 
+## 0.23.7 - 2013/05/02
+
+
+- **BUGFIX**: (core/pluginmanager) Initialization no longer stalls when a
+               configured plugin is disabled.
+- **BUGFIX**: (core/pluginmanager) Initialization will complete and
+                           Aloha.ready() will fire even when no plugins have been
+                           configured.
+
+## 0.23.6 - 2013/04/18
+
+- **BUGFIX**: Previously selected blocks are no longer deleted when hitting
+              backspace from inside an Aloha Editor UI.
+- **BUGFIX**: This change fixes the behaviour of linebreaks by preventing
+              paragraphs to be inserted inside editable spans and paragraphs,
+              and improves the editor's robustness against errors when inserting paragraphs.
+
 ## 0.23.5 - 2013/04/11
 
 **ENHANCEMENT**: Added missing german translations for table plugin components
