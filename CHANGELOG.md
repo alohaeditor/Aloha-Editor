@@ -12,6 +12,16 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+
+## 0.23.7 - 2013/05/02
+
+
+- **BUGFIX**: (core/pluginmanager) Initialization no longer stalls when a
+               configured plugin is disabled.
+- **BUGFIX**: (core/pluginmanager) Initialization will complete and
+                           Aloha.ready() will fire even when no plugins have been
+                           configured.
+
 ## 0.23.6 - 2013/04/18
 
 - **BUGFIX**: Previously selected blocks are no longer deleted when hitting
