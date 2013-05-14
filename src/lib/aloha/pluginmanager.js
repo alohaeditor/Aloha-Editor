@@ -80,6 +80,12 @@ define([
 	 *                            successfully initialized.
 	 */
 	function initializePlugins(plugins, callback) {
+		if (0 === plugins.length) {
+			if (callback) {
+				callback();
+			}
+			return;
+		}
 		var numToEnable = plugins.length;
 		var onInit = function () {
 			if (0 === --numToEnable && callback) {
@@ -102,6 +108,8 @@ define([
 				} else {
 					onInit();
 				}
+			} else {
+				onInit();
 			}
 		}
 	}

@@ -62,6 +62,13 @@ function (jQuery, Utils) {
 
 		// attach events to the editable div-object
 		$wrapper.bind('focus', function ($event) {
+			// activate the button for splitting cells if the clicked cell has an active row- or colspan
+			if (Utils.colspan(cell.obj) > 1 || Utils.rowspan(cell.obj) > 1) {
+				cell.tableObj.tablePlugin._splitcellsButton.enable(true);
+			} else {
+				cell.tableObj.tablePlugin._splitcellsButton.enable(false);
+			}
+
 			// ugly workaround for ext-js-adapter problem in
 			// ext-jquery-adapter-debug.js:1020
 			if ($event.currentTarget) {

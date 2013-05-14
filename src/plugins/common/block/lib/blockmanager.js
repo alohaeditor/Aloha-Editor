@@ -238,11 +238,8 @@ define([
 			// - IE7/8 Workaround
 			// - deletion of blocks inside block collection
 			jQuery(window.document).keydown(function (e) {
-
-				// Pressing DEL or BACKSPACE in a sidebar attribute editor form input
-				// causes the destruction of the block;
-				// if the keypress comes from a form element do nothing
-				if (typeof e.srcElement !== 'undefined' && typeof e.srcElement.form !== 'undefined') {
+				// Ignore events originating from the UI
+				if ($(e.target).closest('.aloha-ui').length > 0) {
 					return true;
 				}
 

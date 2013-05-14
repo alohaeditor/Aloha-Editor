@@ -230,6 +230,96 @@ define([
 	}
 
 	/**
+	 * Sets the currently selected elements as headers of the table, or removes header-status
+	 * if the whole selection is already used as a header
+	 *
+	 * @param {Aloha.Table} table the table-object for which the headers are to be set
+	 * @param {string} scope for which the header should be used (i.e. 'row' or 'column')
+	 */
+	function toggleHeaderStatus(table, scope) {
+		var	i,
+			j,
+			allHeaders = table.selection.isHeader(),
+			domCell, // representation of the cell in the dom
+			tableCell, // table-cell object
+			bufferCell; // temporary buffer
+
+		for (i = 0; i < table.selection.selectedCells.length; i++) {
+			domCell = table.selection.selectedCells[i];
+
+			// tries to match the current cell with a cell-object in the table
+			for (j = 0; j < table.cells.length; j++) {
+				if (domCell === table.cells[j].obj[0]) {
+					cell = table.cells[j];
+					break;
+				}
+			}
+
+			// the transformed dom objects are first stored in a buffer, and only applied to
+			// the table-cell-object if a match was found
+			if (allHeaders) {
+				bufferCell = Aloha.Markup.transformDomObject(domCell, 'td').removeAttr('scope').get(0);
+			} else {
+				bufferCell = Aloha.Markup.transformDomObject(domCell, 'th').attr('scope', scope).get(0);
+			}
+
+			if (cell != null) {
+				// assign the changed dom-element to the table-cell
+				cell.obj[0] = bufferCell;
+
+				// reactivate the table cell in order to bind events to the changed dom object
+				// TODO: re-attaching event-handlers should be factored out into a utility function
+				// so we don't have to do the whole activation/deactivation process for the cells
+				cell.deactivate();
+				cell.activate();
+			}
+
+			// uncommented code-segment, presumably added to force IE to target the wrapper
+			// on mouse-down by applying a timeout after event propagation
+			jQuery(table.selection.selectedCells[i]).bind('mousedown', function (jqEvent) {
+				var wrapper = jQuery(this).children('div').eq(0);
+				window.setTimeout(function () {
+					wrapper.trigger( 'focus' );
+				}, 1);
+			});
+		}
+	}
+
+	/**
+	 * If the specified style is not already active in all selected cells, it is applied;
+	 * otherwise, it is removed from the cells
+	 *
+	 * @param {Array} config defined styles as defined in the configuration
+	 * @param {String} cssClass
+	 * @param {Array} sc the selection of target table cells
+	 */
+	function applyStyle(config, cssClass, sc) {
+		var appliedToAll = true;
+
+		for (var i = 0; i < sc.length; i++) {
+			if (jQuery(sc[i]).attr('class').indexOf(cssClass) < 0 ) {
+				appliedToAll = false;
+				break;
+			}
+		}
+
+		if (!appliedToAll) {
+			for (var i = 0; i < sc.length; i++) {
+				jQuery(sc[i]).addClass(cssClass);
+				for (var f = 0; f < config.length; f++) {
+					if (config[f].cssClass != cssClass) {
+						jQuery(sc[i]).removeClass(config[f].cssClass);
+					}
+				}
+			}
+		} else {
+			for (var i = 0; i < sc.length; i++) {
+				jQuery(sc[i]).removeClass(cssClass);
+			}
+		}
+	}
+
+	/**
 	 * Init method of the Table-plugin transforms all tables in the document
 	 *
 	 * @return void
@@ -551,8 +641,20 @@ define([
 			icon: "aloha-icon aloha-icon-splitcells",
 			scope: this.name + '.cell',
 			click: function() {
+				var activeCell;
 				if (TablePlugin.activeTable) {
-					TablePlugin.activeTable.selection.splitCells();
+					if (TablePlugin.activeTable.selection.selectedCells.length > 0) {
+						TablePlugin.activeTable.selection.splitCells();
+					} else {
+						// if there is currently no selection, the active cell is split instead
+						activeCell = TablePlugin.selectedOrActiveCells();
+						if (activeCell.length > 0) {
+							Utils.splitCell(activeCell, function () {
+								return TablePlugin.activeTable.newActiveCell().obj;
+							});
+							Aloha.trigger('aloha-table-selection-changed');
+						}
+					}
 				}
 			}
 		});
@@ -678,44 +780,12 @@ define([
 			scope: this.name + '.row',
 			click: function() {
 				if (that.activeTable) {
-    				var selectedRowIdxs = that.activeTable.selection.selectedRowIdxs,
-    	  			cell,
-    	  			isHeader = that.activeTable.selection.isHeader(),
-    				allHeaders = true; // flag for header check
-
-    				// loop through selected cells, determine if any are not already headers
-    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
-    					cell = that.activeTable.selection.selectedCells[j];
-						if ( !isHeader ) {
-							allHeaders = false;
-							break;
-						}
-    				}
-
-    				// updated selected cells
-    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
-			    		cell = that.activeTable.selection.selectedCells[j];
-						if ( allHeaders ) {
-			        		cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
-						} else {
-							cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'col' ).get(0);
-						}
-
-						jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
-							var wrapper = jQuery(this).children('div').eq(0);
-							// lovely IE ;-)
-							window.setTimeout(function () {
-			            		wrapper.trigger( 'focus' );
-							}, 1);
-							// unselect cells
-						});
-
-					}
-
-					// select the row
 					that.activeTable.refresh();
+
+					toggleHeaderStatus(that.activeTable, 'column');
+
 					that.activeTable.selection.unselectCells();
-					that.activeTable.selection.selectRows( selectedRowIdxs );
+					that.activeTable.selection.selectRows(that.activeTable.selection.selectedRowIdxs);
 				}
 			}
 		});
@@ -730,22 +800,8 @@ define([
 				iconClass: 'aloha-icon aloha-row-layout ' + itemConf.iconClass,
 				click: function () {
 					if (that.activeTable) {
-						var sc = that.activeTable.selection.selectedCells;
-						// if a selection was made, transform the selected cells
-						for (var i = 0; i < sc.length; i++) {
-							if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
-								jQuery(sc[i]).removeClass(itemConf.cssClass);
-							} else {
-								jQuery(sc[i]).addClass(itemConf.cssClass);
-								// remove all row formattings
-								for (var f = 0; f < that.rowConfig.length; f++) {
-									if (that.rowConfig[f].cssClass != itemConf.cssClass) {
-										jQuery(sc[i]).removeClass(that.rowConfig[f].cssClass);
-									}
-								}
+						applyStyle(that.rowConfig, itemConf.cssClass, that.activeTable.selection.selectedCells);
 
-							}
-						}
 						// selection could have changed.
 						that.activeTable.selectRows();
 					}
@@ -772,7 +828,7 @@ define([
 						// selection could have changed.
 						that.activeTable.selectRows();
 					}
- 				}
+				}
 			});
 		}
 
@@ -830,51 +886,18 @@ define([
 			}
 		});
 
-	    this._columnheaderButton = Ui.adopt("columnheader", ToggleButton, {
+		this._columnheaderButton = Ui.adopt("columnheader", ToggleButton, {
 			tooltip: i18n.t("button.columnheader.tooltip"),
 			icon: "aloha-icon aloha-icon-columnheader",
 			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
-    				var
-    	  			selectedColumnIdxs = that.activeTable.selection.selectedColumnIdxs,
-    	  			cell,
-    	  			isHeader = that.activeTable.selection.isHeader(),
-    				allHeaders = true; // flag for header check
-
-    				// loop through selected cells, determine if any are not already headers
-    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
-    					cell = that.activeTable.selection.selectedCells[j];
-						if ( !isHeader ) {
-							allHeaders = false;
-							break;
-						}
-    				}
-
-    				// updated selected cells
-    				for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
-			    		cell = that.activeTable.selection.selectedCells[j];
-						if ( allHeaders ) {
-			        		cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
-						} else {
-			        		cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'row' ).get(0);
-						}
-
-						jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
-							var wrapper = jQuery(this).children('div').eq(0);
-							// lovely IE ;-)
-							window.setTimeout(function () {
-			            		wrapper.trigger( 'focus' );
-							}, 1);
-							// unselect cells
-						});
-
-					}
-
-					// select the column
 					that.activeTable.refresh();
+
+					toggleHeaderStatus(that.activeTable, 'row');
+
 					that.activeTable.selection.unselectCells();
-					that.activeTable.selection.selectColumns( selectedColumnIdxs );
+					that.activeTable.selection.selectColumns(that.activeTable.selection.selectedColumnIdxs);
 				}
 			}
 		});
@@ -889,21 +912,8 @@ define([
 				iconClass : 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
 				click	  : function (x,y,z) {
 					if (that.activeTable) {
-						var sc = that.activeTable.selection.selectedCells;
-						// if a selection was made, transform the selected cells
-						for (var i = 0; i < sc.length; i++) {
-							if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
-								jQuery(sc[i]).removeClass(itemConf.cssClass);
-							} else {
-								jQuery(sc[i]).addClass(itemConf.cssClass);
-								// remove all column formattings
-								for (var f = 0; f < that.columnConfig.length; f++) {
-									if (that.columnConfig[f].cssClass != itemConf.cssClass) {
-										jQuery(sc[i]).removeClass(that.columnConfig[f].cssClass);
-									}
-								}
-							}
-						}
+						applyStyle(that.columnConfig, itemConf.cssClass, that.activeTable.selection.selectedCells);
+
 						// selection could have changed.
 						that.activeTable.selectColumns();
 					}
@@ -960,22 +970,7 @@ define([
 				iconClass : 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
 				click	  : function (x,y,z) {
 					if (that.activeTable) {
-						var sc = that.selectedOrActiveCells();
-
-						// if a selection was made, transform the selected cells
-						for (var i = 0; i < sc.length; i++) {
-							if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
-								jQuery(sc[i]).removeClass(itemConf.cssClass);
-							} else {
-								jQuery(sc[i]).addClass(itemConf.cssClass);
-								// remove all column formattings
-								for (var f = 0; f < that.cellConfig.length; f++) {
-									if (that.cellConfig[f].cssClass != itemConf.cssClass) {
-										jQuery(sc[i]).removeClass(that.cellConfig[f].cssClass);
-									}
-								}
-							}
-						}
+						applyStyle(that.cellConfig, itemConf.cssClass, that.selectedOrActiveCells());
 
 						that.setActiveCellStyle();
 					}
@@ -1066,10 +1061,18 @@ define([
 				click: function(){
 					// set table css class
 					if (that.activeTable) {
-						for (var f = 0; f < tableConfig.length; f++) {
-							that.activeTable.obj.removeClass(tableConfig[f].cssClass);
+						if (!that.activeTable.obj.hasClass(itemConf.cssClass)) {
+							for (var f = 0; f < tableConfig.length; f++) {
+								that.activeTable.obj.removeClass(tableConfig[f].cssClass);
+							}
+							that.activeTable.obj.addClass(itemConf.cssClass);
+							that.tableMSButton.setActiveItem(itemConf.cssClass);
+						} else {
+							for (var f = 0; f < tableConfig.length; f++) {
+								that.activeTable.obj.removeClass(tableConfig[f].cssClass);
+							}
+							that.tableMSButton.setActiveItem();
 						}
-						that.activeTable.obj.addClass(itemConf.cssClass);
 					}
 				}
 			});
@@ -1088,6 +1091,7 @@ define([
 						for (var f = 0; f < tableConfig.length; f++) {
 							that.activeTable.obj.removeClass(that.tableConfig[f].cssClass);
 						}
+						that.tableMSButton.setActiveItem();
 					}
 				}
 			});
@@ -1437,23 +1441,37 @@ define([
 		}
 	};
 
+	/**
+	 * Set the cell-style to match the active item, if all selected cells have the same style
+	 * TODO: Algorithm very similar to setActiveStyle in table.js, should be refactored
+	 */
 	TablePlugin.setActiveCellStyle = function() {
 		var that = this;
+		var allSelected = false;
+		var className;
 
 		// reset any selected cell styles
 		this.cellMSButton.setActiveItem();
 
 		var selectedCells = that.selectedOrActiveCells();
 
-		jQuery( selectedCells ).each( function() {
-			for (var k = 0; k < that.cellConfig.length; k++) {
-				if ( jQuery(this).hasClass(that.cellConfig[k].cssClass) ) {
-					that.cellMSButton.setActiveItem(that.cellConfig[k].name);
-					k = that.cellConfig.length;
-				}
+		for (var i = 0; i < that.cellConfig.length; i++) {
+			if (jQuery(selectedCells[0]).hasClass(that.cellConfig[i].cssClass) ) {
+				className = that.cellConfig[i].name;
+				allSelected = true;
+				break;
+			}
+		}
+
+		// if all selected cells have the same class, set it as active
+		jQuery(selectedCells).each(function(index) {
+			if (!jQuery(this).hasClass(className)) {
+				allSelected = false;
 			}
 		});
-
+		if (allSelected) {
+			this.cellMSButton.setActiveItem(className);
+		}
 	};
 
 	TablePlugin.selectedOrActiveCells = function() {

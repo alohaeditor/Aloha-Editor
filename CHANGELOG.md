@@ -12,6 +12,40 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+
+## 0.23.7 - 2013/05/02
+
+
+- **BUGFIX**: (core/pluginmanager) Initialization no longer stalls when a
+               configured plugin is disabled.
+- **BUGFIX**: (core/pluginmanager) Initialization will complete and
+                           Aloha.ready() will fire even when no plugins have been
+                           configured.
+
+## 0.23.6 - 2013/04/18
+
+- **BUGFIX**: Previously selected blocks are no longer deleted when hitting
+              backspace from inside an Aloha Editor UI.
+- **BUGFIX**: This change fixes the behaviour of linebreaks by preventing
+              paragraphs to be inserted inside editable spans and paragraphs,
+              and improves the editor's robustness against errors when inserting paragraphs.
+
+## 0.23.5 - 2013/04/11
+
+**ENHANCEMENT**: Added missing german translations for table plugin components
+**BUGFIX**: (core/engine) It is made possible to completely delete the contents
+            of an editable while editing using commands like CTL+A, DEL.
+**BUGFIX**: Cursor styles that are added inside tables for resizing are now
+            correctly removed when the table is no longer editable.
+**BUGFIX**: A bug was fixed with additional elements being appended to a table,
+            if a rowspan was set in its last column.
+**BUGFIX**: A problem was fixed that prevented table-cells to be selected after
+            their header-status was changed.
+**BUGFIX**: (table) This fix allows the active cell to be split into its parts
+            if it has a col- or rowspan, even if it is not part of a selection.
+**BUGFIX**: Fixed applying predefined styles to tables and table-elements
+
+
 ## 0.23.4 - 2013/04/04
 
 - **BUGFIX**: Added missing documentation for the Sidebar.
