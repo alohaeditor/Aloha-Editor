@@ -8,7 +8,3 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUGFIX**: (metaview) An error was corrected which had caused the metaview
-                         button not being shown when metaview is configured to
-                         be automatically enabled for all editables.
-
