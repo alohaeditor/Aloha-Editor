@@ -850,8 +850,10 @@ define([
 		var ec = range.endContainer;
 		var eo = range.endOffset;
 		var newNodeBeforeSplit = splitTextNode(splitNode, splitOffset);
-		adjustRangeAfterSplit(sc, so, range, setRangeStart, splitNode, splitOffset, newNodeBeforeSplit);
-		adjustRangeAfterSplit(ec, eo, range, setRangeEnd, splitNode, splitOffset, newNodeBeforeSplit);
+		if (newNodeBeforeSplit) {
+			adjustRangeAfterSplit(sc, so, range, setRangeStart, splitNode, splitOffset, newNodeBeforeSplit);
+			adjustRangeAfterSplit(ec, eo, range, setRangeEnd, splitNode, splitOffset, newNodeBeforeSplit);
+		}
 	}
 
 	function splitTextContainers(range) {
