@@ -305,7 +305,7 @@ Aloha.require([
 			function cacAndAboveUntil(node) {
 				return node.nodeName === 'DIV';
 			}
-			RangeContext.splitBoundary(range, Dom.cloneShallow, Fn.returnFalse, cacAndAboveUntil, true);
+			RangeContext.splitBoundary(range, {cacAndAboveUntil: cacAndAboveUntil});
 		});
 	};
 
@@ -372,7 +372,7 @@ Aloha.require([
 			function belowCacUntil(node) {
 				return node.nodeName === 'CODE';
 			}
-			RangeContext.splitBoundary(range, Dom.cloneShallow, belowCacUntil, Fn.returnTrue, true);
+			RangeContext.splitBoundary(range, {belowCacUntil: belowCacUntil, cacAndAboveUntil: Fn.returnTrue});
 			RangeContext.format(range, 'B');
 		});
 	};
@@ -412,14 +412,17 @@ Aloha.require([
 					&& (!Dom.getStyle(node, 'font-size')
 						|| 'auto' == Dom.getStyle(node, 'font-size')));
 		}
-		var isPrunable = ($.browser.msie && parseInt($.browser.version) == 7
-						  ? isPrunableIe7
-						  : null);
 		function isObstruction(node) {
 			return !Html.hasInlineStyle(node) || 'CODE' === node.nodeName;
 		}
+		var opts = {
+			isObstruction: isObstruction
+		};
+		if ($.browser.msie && parseInt($.browser.version) == 7) {
+			opts.isPrunable = isPrunableIe7;
+		}
 		testMutation('RangeContext.formatStyle - ' + title, before, expected, function (dom, range) {
-			RangeContext.formatStyle(range, 'font-family', 'arial', null, null, null, isPrunable, isObstruction);
+			RangeContext.formatStyle(range, 'font-family', 'arial', opts);
 		});
 	};
 

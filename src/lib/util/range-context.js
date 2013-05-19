@@ -36,17 +36,17 @@
  *      </span>
  * TODO better handling of the last <br/> in a block and generally of
  *      unrendered whitespace. For example formatting
- *      <p>{some text<br/>}</p>
+ *      <p>{some<br/>text<br/>}</p>
  *      will result in
- *      <p><b>some text<br/></b></p>
+ *      <p>{<b>some<br/>text<br/></b>}</p>
  *      while it should probably be
- *      <p><b>some text</b><br/></p>
+ *      <p>{<b>some</br>text</b>}<br/></p>
  */
 define([
 	'jquery',
 	'util/dom2',
 	'util/arrays',
-	'util/trees',
+	'util/maps',
 	'util/strings',
 	'util/functions',
 	'util/html'
@@ -54,7 +54,7 @@ define([
 	$,
 	Dom,
 	Arrays,
-	Trees,
+	Maps,
 	Strings,
 	Fn,
 	Html
@@ -507,36 +507,16 @@ define([
 		return wrapper;
 	}
 
-	function isUpperBoundary_default(node) {
-		// Because the body element is an obvious upper boundary, and
-		// because, when we are inside an editable, we shouldn't make
-		// modifications outside the editable (if we are not inside
-		// an editable, we don't care).
-		return 'BODY' === node.nodeName || Html.isEditingHost(node);
-	}
-
-	function isPrunable_default(node) {
-		return Arrays.every(Arrays.map(Dom.attrs(node), Arrays.second),
-							Strings.empty);
-	}
-
-	function createStyleWrapper_default() {
-		return document.createElement('SPAN');
-	}
-
-	function isStyleEq_default(styleValueA, styleValueB) {
-		return styleValueA === styleValueB;
-	}
-
-	function isStyleWrapperReusable_default(node) {
-		return 'SPAN' === node.nodeName;
-	}
-
-	function isStyleWrapperPrunable_default(node) {
-		return 'SPAN' === node.nodeName && isPrunable_default(node);
-	}
-
-	function makeFormatter(contextValue, getOverride, hasContext, hasInheritableContext, isContextOverride, hasSomeContextValue, hasContextValue, addContextValue, removeContext, createWrapper, isReusable, isObstruction, isPrunable, leftPoint, rightPoint) {
+	function makeFormatter(contextValue, leftPoint, rightPoint, impl) {
+		var hasContext = impl.hasContext;
+		var isContextOverride = impl.isContextOverride;
+		var hasSomeContextValue = impl.hasSomeContextValue;
+		var hasContextValue = impl.hasContextValue;
+		var addContextValue = impl.addContextValue;
+		var removeContext = impl.removeContext;
+		var createWrapper = impl.createWrapper;
+		var isReusable = impl.isReusable;
+		var isPrunable = impl.isPrunable;
 
 		// Because we want to optimize reuse, we remembering any wrappers we created.
 		var wrappersByContextValue = {};
@@ -689,26 +669,56 @@ define([
 
 		return {
 			hasContext: hasContext,
-			hasInheritableContext: hasInheritableContext,
 			isReusable: isReusable,
-			isObstruction: isObstruction,
-			getOverride: getOverride,
 			clearOverride: clearOverride,
 			pushDownOverride: pushDownOverride,
 			setContext: setContext,
-			isUpperBoundary: isUpperBoundary_default,
 			postprocess: postprocess,
-			postprocessTextNodes: postprocessTextNodes
+			postprocessTextNodes: postprocessTextNodes,
+			hasInheritableContext: impl.hasInheritableContext,
+			isObstruction: impl.isObstruction,
+			getOverride: impl.getOverride,
+			isUpperBoundary: impl.isUpperBoundary
 		};
 	}
 
-	function makeStyleFormatter(styleName, styleValue, createWrapper, isStyleEq, isReusable, isObstruction, isPrunable, leftPoint, rightPoint) {
+	function isUpperBoundary_default(node) {
+		// Because the body element is an obvious upper boundary, and
+		// because, when we are inside an editable, we shouldn't make
+		// modifications outside the editable (if we are not inside
+		// an editable, we don't care).
+		return 'BODY' === node.nodeName || Html.isEditingHost(node);
+	}
+
+	function isPrunable_default(node) {
+		return Arrays.every(Arrays.map(Dom.attrs(node), Arrays.second),
+							Strings.empty);
+	}
+
+	function createStyleWrapper_default() {
+		return document.createElement('SPAN');
+	}
+
+	function isStyleEqual_default(styleValueA, styleValueB) {
+		return styleValueA === styleValueB;
+	}
+
+	function isStyleWrapperReusable_default(node) {
+		return 'SPAN' === node.nodeName;
+	}
+
+	function isStyleWrapperPrunable_default(node) {
+		return 'SPAN' === node.nodeName && isPrunable_default(node);
+	}
+
+	function makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts) {
+		var isStyleEqual = isStyleEqual_default || opts.isStyleEqual;
 		function getOverride(node) {
 			var override = Dom.getStyle(node, styleName);
 			return !Strings.empty(override) ? override : null;
 		}
 		function hasContext(node) {
-			return isStyleEq(Dom.getStyle(node, styleName), styleValue);
+			return isStyleEqual(Dom.getStyle(node, styleName), styleValue);
 		}
 		function hasInheritableContext(node) {
 			var value;
@@ -721,16 +731,16 @@ define([
 			} else {
 				value = Dom.getStyle(node, styleName);
 			}
-			return isStyleEq(value, styleValue);
+			return isStyleEqual(value, styleValue);
 		}
 		function isContextOverride(value) {
-			return isStyleEq(value, styleValue);
+			return isStyleEqual(value, styleValue);
 		}
 		function hasSomeContextValue(node) {
 			return !Strings.empty(Dom.getStyle(node, styleName));
 		}
 		function hasContextValue(node, value) {
-			return isStyleEq(Dom.getStyle(node, styleName), value);
+			return isStyleEqual(Dom.getStyle(node, styleName), value);
 		}
 		function addContextValue(node, value) {
 			Dom.setStyle(node, styleName, value);
@@ -738,26 +748,26 @@ define([
 		function removeContext(node) {
 			Dom.removeStyle(node, styleName);
 		}
-		return makeFormatter(
-			styleValue,
-			getOverride,
-			hasContext,
-			hasInheritableContext,
-			isContextOverride,
-			hasSomeContextValue,
-			hasContextValue,
-			addContextValue,
-			removeContext,
-			createWrapper,
-			isReusable,
-			isObstruction,
-			isPrunable,
-			leftPoint,
-			rightPoint
-		);
+		var impl = Maps.merge({
+			getOverride: getOverride,
+			hasContext: hasContext,
+			hasInheritableContext: hasInheritableContext,
+			isContextOverride: isContextOverride,
+			hasSomeContextValue: hasSomeContextValue,
+			hasContextValue: hasContextValue,
+			addContextValue: addContextValue,
+			removeContext: removeContext,
+			isStyleEqual: isStyleEqual,
+			createWrapper: createStyleWrapper_default,
+			isReusable: isStyleWrapperReusable_default,
+			isPrunable: isStyleWrapperPrunable_default,
+			isObstruction: Fn.complement(Html.hasInlineStyle),
+			isUpperBoundary: isUpperBoundary_default
+		}, opts);
+		return makeFormatter(styleValue, leftPoint, rightPoint, impl);
 	}
 
-	function makeNodeFormatter(nodeName, leftPoint, rightPoint, isObstruction, unformat) {
+	function makeNodeFormatter(nodeName, unformat, leftPoint, rightPoint, opts) {
 		function createWrapper() {
 			return document.createElement(nodeName);
 		}
@@ -799,64 +809,72 @@ define([
 		function hasSomeContextValue(node) {
 			return node.nodeName === nodeName;
 		}
-		var hasContextValue = hasSomeContextValue;
-		var addContextValue = Fn.noop;
-		var removeContext = Fn.noop;
-		var isPrunable = isPrunable_default;
-		return makeFormatter(
-			nodeName,
-			getOverride,
-			hasContext,
-			hasInheritableContext,
-			isContextOverride,
-			hasSomeContextValue,
-			hasContextValue,
-			addContextValue,
-			removeContext,
-			createWrapper,
-			isReusable,
-			isObstruction,
-			isPrunable,
-			leftPoint,
-			rightPoint
-		);
+		var impl = Maps.merge({
+			getOverride: getOverride,
+			hasContext: hasContext,
+			hasInheritableContext: hasInheritableContext,
+			isContextOverride: isContextOverride,
+			hasSomeContextValue: hasSomeContextValue,
+			// Because hasContextValue and hasSomeContextValue makes no
+			// difference for a node formatter.
+			hasContextValue: hasSomeContextValue,
+			addContextValue: Fn.noop,
+			removeContext: Fn.noop,
+			createWrapper: createWrapper,
+			isReusable: isReusable,
+			isPrunable: isPrunable_default,
+			isObstruction: Fn.complement(Html.hasInlineStyle),
+			isUpperBoundary: isUpperBoundary_default
+		}, opts);
+		return makeFormatter(nodeName, leftPoint, rightPoint, impl);
 	}
 
-	function format(liveRange, nodeName, remove) {
-		var isObstruction = Fn.complement(Html.hasInlineStyle);
+	function format(liveRange, nodeName, remove, opts) {
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
 			return;
 		}
+		// Because we assume nodeNames are always uppercase, but don't
+		// want the user to remember this detail.
+		nodeName = nodeName.toUpperCase();
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-			var formatter = makeNodeFormatter(nodeName, leftPoint, rightPoint, isObstruction, remove);
+			var formatter = makeNodeFormatter(nodeName, remove, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
 			return formatter;
 		});
 	}
 
-	function formatStyle(liveRange, styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable, isObstruction) {
-		createWrapper = createWrapper || createStyleWrapper_default;
-		isStyleEq = isStyleEq || isStyleEq_default;
-		isReusable = isReusable || isStyleWrapperReusable_default;
-		isPrunable = isPrunable || isStyleWrapperPrunable_default;
-		isObstruction = isObstruction || Fn.complement(Html.hasInlineStyle);
+	/**
+	 * Formats the given range with a CSS style.
+	 *
+	 * @param otps a map of options (all optional):
+	 *
+	 *        createWrapper - a function that returns a new empty
+	 *        wrapper node to use.
+	 *
+	 *        isReusable - a function that returns true if a given node,
+	 *        already in the DOM at the correct place, can be reused
+	 *        instead of creating a new wrapper node, and styles can be
+	 *        set on it.
+	 *
+	 *        isPrunable - a function that returns true if a given node,
+	 *        after some style was removed from it, can be removed
+	 *        entirely. That's usually the case if the given node is
+	 *        equivalent to an empty wrapper.
+	 *
+	 *        isStyleEqual - a function that returns true if two given
+	 *        style values are equal.
+	 *        TODO currently we just use strict equals by default, but
+	 *             we should implement for each supported style it's own
+	 *             equal function.
+	 */
+	function formatStyle(liveRange, styleName, styleValue, opts) {
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
 			return;
 		}
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-			var formatter = makeStyleFormatter(
-				styleName,
-				styleValue,
-				createWrapper,
-				isStyleEq,
-				isReusable,
-				isObstruction,
-				isPrunable,
-				leftPoint,
-				rightPoint
-			);
+			var formatter = makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
 			return formatter;
 		});
@@ -886,10 +904,55 @@ define([
 		ascendWalkSiblings(ascend, atEnd, carryDown, before, at, after);
 	}
 
-	function splitBoundary(liveRange, clone, belowCacUntil, cacAndAboveUntil, boundariesChildrenOfUnsplitNode) {
+	/**
+	 * Splits the ancestors above the given range's start and end points.
+	 *
+	 * @param opts a map of options (all optional):
+	 *
+	 *        clone - a function that clones a given element node and
+	 *        returns the cloned node.
+	 *
+	 *        belowCacUntil - a function that returns true if splitting
+	 *        should stop at a given node (exclusive) on the way down
+	 *        from below the cac (exclusive) to the start or end
+	 *        containers.
+	 *
+	 *        cacAndAboveUntil - a function that returns true if
+	 *        splitting should stop at a given node (exclusive) on the
+	 *        way up from the cac (inclusive) to the document node.
+	 *
+	 *        normalizeRange - a boolean, defaults to true.
+	 *        After splitting the selection may still be inside the split
+	 *        nodes, for example after splitting the DOM may look like
+	 *
+	 *        <b>1</b><b>{2</b><i>3</i><i>}4</i>
+	 *
+	 *	      If normalizeRange is true, the selection is trimmed to
+	 *	      correct <i>}4</i> and expandded to correct <b>{2</b>, such
+	 *        that it will look like
+	 *
+	 *	      <b>1</b>{<b>2</b><i>3</i>}<i>4</i>
+	 *
+	 *	      This should make both start and end points children of the
+	 *        same cac which is going to be the topmost unsplit node. This
+	 *        is usually what one expects the range to look like after a
+	 *        split.
+	 *        NB: if belowCacUntil returns true, start and end points
+	 *        may not be become children of the topmost unsplit
+	 *        node. Also, if belowCacUntil returns true, the selection
+	 *        may be moved out of an unsplit node which may be
+	 *        unexpected.
+	 */
+	function splitBoundary(liveRange, opts) {
+		opts = Maps.merge({
+			clone: Dom.cloneShallow,
+			belowCacUntil: Fn.returnFalse,
+			cacAndAboveUntil: isUpperBoundary_default,
+			normalizeRange: true
+		}, opts);
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-			var normalizeLeft = boundariesChildrenOfUnsplitNode ? leftPoint : leftPoint.clone();
-			var normalizeRight = boundariesChildrenOfUnsplitNode ? rightPoint : rightPoint.clone();
+			var normalizeLeft = opts.normalizeRange ? leftPoint : leftPoint.clone();
+			var normalizeRight = opts.normalizeRange ? rightPoint : rightPoint.clone();
 			Html.normalizeBoundary(normalizeLeft);
 			Html.normalizeBoundary(normalizeRight);
 			Dom.setRangeFromBoundaries(range, normalizeLeft, normalizeRight);
@@ -900,15 +963,15 @@ define([
 			var end = Dom.nodeAtOffset(range.endContainer, range.endOffset);
 			var endEnd = Dom.isAtEnd(range.endContainer, range.endOffset);
 
-			var splitCac = !cacAndAboveUntil(cac);
-			var fromCacToTop = Dom.childAndParentsUntil(cac, cacAndAboveUntil);
+			var splitCac = !opts.cacAndAboveUntil(cac);
+			var fromCacToTop = Dom.childAndParentsUntil(cac, opts.cacAndAboveUntil);
 			var topmostUnsplitNode = fromCacToTop.length ? Arrays.last(fromCacToTop).parentNode : cac;
 
 			var wrapper = null;
 			var removeEmpty = [];
 
 			function carryDown(elem, stop) {
-				return stop || belowCacUntil(elem);
+				return stop || opts.belowCacUntil(elem);
 			}
 
 			function intoWrapper(node, stop) {
@@ -917,7 +980,7 @@ define([
 				}
 				var parent = node.parentNode;
 				if (!wrapper || parent.previousSibling !== wrapper) {
-					wrapper = clone(parent);
+					wrapper = opts.clone(parent);
 					removeEmpty.push(parent);
 					Dom.insert(wrapper, parent, false);
 					if (leftPoint.node === parent && !leftPoint.atEnd) {
@@ -937,28 +1000,13 @@ define([
 				// Because if it doesn't have a parentNode, it was
 				// already removed in an earlier iteration, which is
 				// possible because we ascend from the cac twice, which
-				// may get end up cloning the cac twice.
+				// may end up cloning the cac twice.
 				if (!elem.firstChild && elem.parentNode) {
 					Dom.removeShallowPreservingBoundaries(elem, [leftPoint, rightPoint]);
 				}
 			});
 
-			// Because the selection may still be inside the split
-			// nodes, for example after split the DOM may look like
-			//
-			//     <b>1</b><b>{2</b><i>3</i><i>}4</i>
-			//
-			// we trim the selection to correct <i>}4</i>
-			// and expand the selection to correct <b>{2</b>.
-			// This should make both start and end points children of the
-			// same cac which is going to be the
-			// topmostUnsplitNode. This is usually what one expects the
-			// range to look like after a split. Note: if belowCacUntil
-			// returns true, start and end points may not be become
-			// children of the topmostUnsplitNode. Also, if
-			// belowCacUntil returns true, the selection may be moved
-			// out of an unsplit node which may be unexpected.
-			if (boundariesChildrenOfUnsplitNode) {
+			if (opts.normalizeRange) {
 				trimExpandBoundaries(leftPoint, rightPoint, null, function (node) {
 					return node === topmostUnsplitNode;
 				});
