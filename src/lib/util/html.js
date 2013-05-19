@@ -202,8 +202,8 @@ define([
 	/**
 	 * Returns true if the given node is unrendered whitespace, with the
 	 * caveat that it only examines the given node and not any siblings.
-	 * An additional check is necessary to determine whether the
-	 * whitespace occurrs after/before a linebreaking node.
+	 * An additional check is necessary to determine whether the node
+	 * occurs after/before a linebreaking node.
 	 *
 	 * Taken from
 	 * http://code.google.com/p/rangy/source/browse/trunk/src/js/modules/rangy-cssclassapplier.js
@@ -262,7 +262,9 @@ define([
 	/**
 	 * Tries to move the given point to the end of the line, stopping to
 	 * the left of a br or block node, ignoring any unrendered
-	 * nodes. Returns true if the point was moved, false if not.
+	 * nodes. Returns true if the point was successfully moved to the
+	 * end of the line, false if some rendered content was encountered
+	 * on the way. point will not be mutated unless true is returned.
 	 */
 	function skipUnrenderedToEndOfLine(point) {
 		var cursor = point.clone();
@@ -277,7 +279,9 @@ define([
 	/**
 	 * Tries to move the given point to the start of the line, stopping
 	 * to the right of a br or block node, ignoring any unrendered
-	 * nodes. Returns true if the point was moved, false if not.
+	 * nodes. Returns true if the point was successfully moved to the
+	 * start of the line, false if some rendered content was encountered
+	 * on the way. point will not be mutated unless true is returned.
 	 */
 	function skipUnrenderedToStartOfLine(point) {
 		var cursor = point.clone();

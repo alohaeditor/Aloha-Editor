@@ -35,7 +35,12 @@
  *         <span style="font-family: helvetica">two<span>
  *      </span>
  * TODO better handling of the last <br/> in a block and generally of
- *      unrendered whitespace.
+ *      unrendered whitespace. For example formatting
+ *      <p>{some text<br/>}</p>
+ *      will result in
+ *      <p><b>some text<br/></b></p>
+ *      while it should probably be
+ *      <p><b>some text</b><br/></p>
  */
 define([
 	'jquery',
@@ -61,10 +66,10 @@ define([
 	 * siblings before the given child, after for siblings after the
 	 * given child, and at for the given child.
 	 */
-	function walkSiblings(parent, beforeAfterChild, before, at, after, arg) {
+	function walkSiblings(parent, beforeAtAfterChild, before, at, after, arg) {
 		var fn = before;
 		Dom.walk(parent.firstChild, function (child) {
-			if (child !== beforeAfterChild) {
+			if (child !== beforeAtAfterChild) {
 				fn(child, arg);
 			} else {
 				fn = after;
@@ -174,7 +179,13 @@ define([
 		}
 	}
 
-	function walkBoundary(liveRange, carryDown, stepOutside, stepPartial, stepInside, arg) {
+	/**
+	 * Simplifies walkBoundaryLeftRightInbetween from left/right/inbetween to just inside/outside.
+	 *
+	 * Requires range's boundary points to be between nodes
+	 * (Dom.splitTextContainers).
+	 */
+	function walkBoundaryInsideOutside(liveRange, carryDown, stepOutside, stepPartial, stepInside, arg) {
 		walkBoundaryLeftRightInbetween(liveRange, carryDown, stepOutside, stepInside, stepInside, stepOutside, stepPartial, stepInside, arg);
 	}
 
@@ -183,8 +194,8 @@ define([
 	 * given range by clearing all overrides from pushDownFrom
 	 * (inclusive) to range.commonAncestorContainer, and clearing all
 	 * overrides inside and along the range's boundary (see
-	 * walkBoundary()), invoking pushDownOverride on all siblings of the
-	 * range boundary that are not contained in it.
+	 * walkBoundaryInsideOutside()), invoking pushDownOverride on all
+	 * siblings of the range boundary that are not contained in it.
 	 *
 	 * Requires range's boundary points to be between nodes
 	 * (Dom.splitTextContainers).
@@ -193,7 +204,7 @@ define([
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
-		walkBoundary(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec, cacOverride);
+		walkBoundaryInsideOutside(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec, cacOverride);
 		var fromCacToTop = Dom.childAndParentsUntilInclNode(cac, pushDownFrom);
 		ascendWalkSiblings(fromCacToTop, false, getOverride, pushDownOverride, clearOverride, pushDownOverride, null);
 		clearOverride(pushDownFrom);
@@ -206,7 +217,7 @@ define([
 						   || (!Html.isUnrenderedWhitespace(node)
 							   && !hasContext(node)));
 		}
-		walkBoundary(range, Fn.noop, beforeAfter, Fn.noop, Fn.noop);
+		walkBoundaryInsideOutside(range, Fn.noop, beforeAfter, Fn.noop, Fn.noop);
 		if (obstruction) {
 			return null;
 		}
@@ -357,7 +368,7 @@ define([
 			if (!topmostOverrideNode) {
 				// Because, if there is no override in the way, we only
 				// need to clear the overrides contained in the range.
-				walkBoundary(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec);
+				walkBoundaryInsideOutside(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec);
 			} else {
 				var pushDownFrom = topmostOverrideNode;
 				var cacOverride = getOverride(bottommostOverrideNode || cac);
@@ -371,7 +382,7 @@ define([
 			if (reusableAncestor) {
 				mySetContext(reusableAncestor);
 			} else {
-				walkBoundary(liveRange, getOverride, pushDownOverride, clearOverride, mySetContext);
+				walkBoundaryInsideOutside(liveRange, getOverride, pushDownOverride, clearOverride, mySetContext);
 			}
 		}
 	}
@@ -393,8 +404,9 @@ define([
 		Dom.wrap(node, wrapper);
 	}
 
-	// NB: depends on trimRangeClosingOpening to move the leftPoint out
-	// of an atEnd position to the first node that is to be moved.
+	// NB: depends on fixupRange to use trimRangeClosingOpening to move
+	// the leftPoint out of an cursor.atEnd position to the first node
+	// that is to be moved.
 	function moveBackIntoWrapper(node, ref, atEnd, leftPoint, rightPoint) {
 		// Because the points will just be moved with the node, we don't
 		// need to do any special preservation.

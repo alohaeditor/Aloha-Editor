@@ -512,9 +512,6 @@ define([
 	 * the given endPoint is not in an end position by moving the points
 	 * to the left and right respectively - the opposite of
 	 * trimBoundaries().
-	 *
-	 * If until returns true for either point, they may remain in start
-	 * and end positions respectively.
 	 */
 	function expandBoundaries(startPoint, endPoint, until, ignore) {
 		until = until || Fn.returnFalse;
@@ -537,6 +534,12 @@ define([
 	 * If the boundaries are equal (collapsed), or become equal during
 	 * this operation, or if until returns true for either point, they
 	 * may remain in start and end position respectively.
+	 *
+	 * @param until may be used to stop the trimming process from moving
+	 *        the range from within an element outside of it.
+	 * @param ignore may be used to ignore followning/preceding siblings
+	 *        which otherwise would stop trimming process, like
+	 *        for example underendered whitespace.
 	 */
 	function trimBoundaries(startPoint, endPoint, until, ignore) {
 		until = until || Fn.returnFalse;
@@ -553,11 +556,13 @@ define([
 	}
 
 	/**
-	 * @param offset if node is a text node, the offset will be ignored.
-	 * @param node if a text node, should have a parent node.
+	 * Creates a new cursor from the given container and offset.
+	 *
+	 * @param offset if container is a text node, the offset will be ignored.
+	 * @param container if a text node, should have a parent node.
 	 */
-	function cursorFromBoundaryPoint(node, offset) {
-		return cursor(nodeAtOffset(node, offset), isAtEnd(node, offset));
+	function cursorFromBoundaryPoint(container, offset) {
+		return cursor(nodeAtOffset(container, offset), isAtEnd(container, offset));
 	}
 
 	function parentsUntil(node, pred) {
@@ -623,8 +628,12 @@ define([
 		return node;
 	}
 
-	// http://ejohn.org/blog/comparing-document-position/
-	// http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
+	/**
+	 * Returns true if b is a descendant of a, false otherwise.
+	 *
+	 * http://ejohn.org/blog/comparing-document-position/
+	 * http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
+	 */
 	function contains(a, b) {
 		return (1 === a.nodeType
 				? (a.contains
@@ -637,6 +646,13 @@ define([
 		return 3 === node.nodeType;
 	}
 
+	/**
+	 * Splits the given text node at the given offset, and returns the
+	 * first of the two text nodes that were inserted to replace the
+	 * given node in the DOM.
+	 * TODO: could be optimized with insertData() so only a single text
+	 * node is inserted instead of two.
+	 */
 	function splitTextNode(node, offset) {
 		// Because node.splitText() is buggy on IE, split it manually.
 		// http://www.quirksmode.org/dom/w3c_core.html
@@ -659,6 +675,11 @@ define([
 	 * which reduces the number of different states the range can be in,
 	 * and thereby increases the the robusteness of the code written
 	 * against it slightly.
+	 *
+	 * It should be noted that native ranges controlled by the browser's
+	 * DOM implementation have the habit to change by themselves, so
+	 * even if normalized this way the range could revert to an
+	 * unnormalized state. See stableRange().
 	 */
 	function normalizeSetRange(setRange, range, container, offset) {
 		if (3 === container.nodeType && container.parentNode) {
@@ -746,6 +767,18 @@ define([
 		this.update();
 	};
 
+	/**
+	 * A native range is live, which means that modifying the DOM may
+	 * mutate the range. Also, using setStart/setEnd may not set the
+	 * properties correctly (the browser may perform its own
+	 * normalization of boundary points). The behaviour of a native
+	 * range is very erratic and should be converted to a stable range
+	 * as the first thing in any algorithm.
+	 */
+	function stableRange(range) {
+		return new StableRange(range);
+	}
+
 	function setRangeStartFromCursor(range, cursor) {
 		if (cursor.atEnd) {
 			range.setStart(cursor.node, nodeLength(cursor.node));
@@ -770,18 +803,6 @@ define([
 	function setRangeFromRef(range, ref) {
 		range.setStart(ref.startContainer, ref.startOffset);
 		range.setEnd(ref.endContainer, ref.endOffset);
-	}
-
-	/**
-	 * A native range is live, which means that modifying the DOM may
-	 * mutate the range. Also, using setStart/setEnd may not set the
-	 * properties correctly (the browser may perform its own
-	 * normalization of boundary points). The behaviour of a native
-	 * range is very erratic and should be converted to a stable range
-	 * as the first thing in any algorithm.
-	 */
-	function stableRange(range) {
-		return new StableRange(range);
 	}
 
 	function adjustRangeAfterSplit(container, offset, range, setRange, splitNode, splitOffset, newNodeBeforeSplit) {
@@ -987,8 +1008,9 @@ define([
 	 * text node containers are passed are as follows: If the left
 	 * boundary point is inside a text node, trimming will start before
 	 * it. If the right boundary point is inside a text node, trimming
-	 * will start after it (ignoreRight() is invoked with the cursor
-	 * after the text node that contains the boundary point).
+	 * will start after it. ignoreLeft/ignoreRight() are invoked
+	 * with the cursor before/after the text node that contains the
+	 * boundary point.
 	 */
 	function trimRange(range, ignoreLeft, ignoreRight) {
 		ignoreLeft = ignoreLeft || Fn.returnFalse;
@@ -1008,7 +1030,7 @@ define([
 
 	/**
 	 * Like trimRange() but ignores closing (to the left) and opening
-	 * tags (to the right).
+	 * positions (to the right).
 	 */
 	function trimRangeClosingOpening(range, ignoreLeft, ignoreRight) {
 		ignoreLeft = ignoreLeft || Fn.returnFalse;
@@ -1107,7 +1129,7 @@ define([
 
 	/**
 	 * Gets the computed/inherited style of the given node.
-	 * @param node may be a text node.
+	 * @param node should be an element node.
 	 */
 	function getComputedStyle(node, name) {
 		if (node.currentStyle) {
