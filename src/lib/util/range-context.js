@@ -767,7 +767,7 @@ define([
 		return makeFormatter(styleValue, leftPoint, rightPoint, impl);
 	}
 
-	function makeNodeFormatter(nodeName, unformat, leftPoint, rightPoint, opts) {
+	function makeElemFormatter(nodeName, unformat, leftPoint, rightPoint, opts) {
 		function createWrapper() {
 			return document.createElement(nodeName);
 		}
@@ -816,7 +816,8 @@ define([
 			isContextOverride: isContextOverride,
 			hasSomeContextValue: hasSomeContextValue,
 			// Because hasContextValue and hasSomeContextValue makes no
-			// difference for a node formatter.
+			// difference for a node formatter, since there is only one
+			// context value.
 			hasContextValue: hasSomeContextValue,
 			addContextValue: Fn.noop,
 			removeContext: Fn.noop,
@@ -829,7 +830,20 @@ define([
 		return makeFormatter(nodeName, leftPoint, rightPoint, impl);
 	}
 
-	function format(liveRange, nodeName, remove, opts) {
+	/**
+	 * Ensures the given range is wrapped by elements with a given nodeName.
+	 *
+	 * @param opts a map of options (all optional):
+	 *
+	 *        createWrapper - a function that returns a new empty
+	 *        wrapper node to use.
+	 *
+	 *        isReusable - a function that returns true if a given node,
+	 *        already in the DOM at the correct place, can be reused
+	 *        instead of creating a new wrapper node. May be merged with
+	 *        other reusable or newly created wrapper nodes.
+	 */
+	function wrapElem(liveRange, nodeName, remove, opts) {
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
 			return;
@@ -838,24 +852,17 @@ define([
 		// want the user to remember this detail.
 		nodeName = nodeName.toUpperCase();
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-			var formatter = makeNodeFormatter(nodeName, remove, leftPoint, rightPoint, opts);
+			var formatter = makeElemFormatter(nodeName, remove, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
 			return formatter;
 		});
 	}
 
 	/**
-	 * Formats the given range with a CSS style.
+	 * Ensures the given range is wrapped by elements that have a given
+	 * CSS style set.
 	 *
-	 * @param otps a map of options (all optional):
-	 *
-	 *        createWrapper - a function that returns a new empty
-	 *        wrapper node to use.
-	 *
-	 *        isReusable - a function that returns true if a given node,
-	 *        already in the DOM at the correct place, can be reused
-	 *        instead of creating a new wrapper node, and styles can be
-	 *        set on it.
+	 * @param opts all options supported by wrapElem() as well as the following:
 	 *
 	 *        isPrunable - a function that returns true if a given node,
 	 *        after some style was removed from it, can be removed
@@ -866,9 +873,9 @@ define([
 	 *        style values are equal.
 	 *        TODO currently we just use strict equals by default, but
 	 *             we should implement for each supported style it's own
-	 *             equal function.
+	 *             equals function.
 	 */
-	function formatStyle(liveRange, styleName, styleValue, opts) {
+	function format(liveRange, styleName, styleValue, opts) {
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
 			return;
@@ -943,7 +950,7 @@ define([
 	 *        may be moved out of an unsplit node which may be
 	 *        unexpected.
 	 */
-	function splitBoundary(liveRange, opts) {
+	function split(liveRange, opts) {
 		opts = Maps.merge({
 			clone: Dom.cloneShallow,
 			belowCacUntil: Fn.returnFalse,
@@ -981,6 +988,8 @@ define([
 				var parent = node.parentNode;
 				if (!wrapper || parent.previousSibling !== wrapper) {
 					wrapper = opts.clone(parent);
+					// Because we want to ensure the splitting process
+					// doesn't introduce any empty nodes.
 					removeEmpty.push(parent);
 					Dom.insert(wrapper, parent, false);
 					if (leftPoint.node === parent && !leftPoint.atEnd) {
@@ -1017,8 +1026,8 @@ define([
 	}
 
 	return {
+		wrap: wrapElem,
 		format: format,
-		formatStyle: formatStyle,
-		splitBoundary: splitBoundary
+		split: split
 	};
 });

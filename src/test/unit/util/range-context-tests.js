@@ -79,13 +79,13 @@ Aloha.require([
 
 	function testFormat(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			RangeContext.format(range, 'B');
+			RangeContext.wrap(range, 'B');
 		});
 	}
 
 	function testUnformat(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			RangeContext.format(range, 'B', true);
+			RangeContext.wrap(range, 'B', true);
 		});
 	}
 
@@ -150,7 +150,7 @@ Aloha.require([
 	  '<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>');
 
 	var t = function (title, before, after) {
-		testFormat('RangeContext.format -' + title, before, after);
+		testFormat('RangeContext.wrap -' + title, before, after);
 	};
 
 	t('noop1', '<p><b>[Some text.]</b></p>', '<p><b>{Some text.}</b></p>');
@@ -202,7 +202,7 @@ Aloha.require([
 	  '<p>{<b>one two three</b>}</p>');
 
 	var t = function (title, before, after) {
-		testFormat('RangeContext.format-restack - ' + title, before, after);
+		testFormat('RangeContext.wrap-restack - ' + title, before, after);
 	};
 
 	t('across elements',
@@ -301,11 +301,11 @@ Aloha.require([
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
 
 	t = function (title, before, after) {
-		testMutation('RangeContext.splitBoundary ' + title, before, after, function (dom, range) {
+		testMutation('RangeContext.split ' + title, before, after, function (dom, range) {
 			function cacAndAboveUntil(node) {
 				return node.nodeName === 'DIV';
 			}
-			RangeContext.splitBoundary(range, {cacAndAboveUntil: cacAndAboveUntil});
+			RangeContext.split(range, {cacAndAboveUntil: cacAndAboveUntil});
 		});
 	};
 
@@ -367,13 +367,13 @@ Aloha.require([
 	  '<div>{<i><u><sub></sub></u>a</i>b<i>c<u><sub></sub></u></i>}</div>');
 
 	t = function (title, before, after) {
-		testMutation('RangeContext.splitBoundary+format - ' + title, before, after, function (dom, range) {
+		testMutation('RangeContext.split+format - ' + title, before, after, function (dom, range) {
 			var cac = range.commonAncestorContainer;
 			function belowCacUntil(node) {
 				return node.nodeName === 'CODE';
 			}
-			RangeContext.splitBoundary(range, {belowCacUntil: belowCacUntil, cacAndAboveUntil: Fn.returnTrue});
-			RangeContext.format(range, 'B');
+			RangeContext.split(range, {belowCacUntil: belowCacUntil, cacAndAboveUntil: Fn.returnTrue});
+			RangeContext.wrap(range, 'B');
 		});
 	};
 
@@ -421,8 +421,8 @@ Aloha.require([
 		if ($.browser.msie && parseInt($.browser.version) == 7) {
 			opts.isPrunable = isPrunableIe7;
 		}
-		testMutation('RangeContext.formatStyle - ' + title, before, expected, function (dom, range) {
-			RangeContext.formatStyle(range, 'font-family', 'arial', opts);
+		testMutation('RangeContext.format - ' + title, before, expected, function (dom, range) {
+			RangeContext.format(range, 'font-family', 'arial', opts);
 		});
 	};
 
