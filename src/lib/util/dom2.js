@@ -1158,6 +1158,9 @@ define([
 			//       parser.
 			var $elem = $(elem);
 			var style = $elem.attr('style');
+			if (null == style) {
+				return;
+			}
 			// Because concatenating just any input into the regex might
 			// be dangerous.
 			if ((/[^\w\-]/).test(styleName)) {
@@ -1167,6 +1170,11 @@ define([
 			style = style.replace(stripRegex, '');
 			$elem.attr('style', style);
 		}
+	}
+
+	function hasAttrs(node) {
+		return !Arrays.every(Arrays.map(attrs(node), Arrays.second),
+							 Strings.empty);
 	}
 
 	return {
@@ -1224,6 +1232,7 @@ define([
 		cloneShallow: cloneShallow,
 		setStyle: setStyle,
 		getStyle: getStyle,
-		getComputedStyle: getComputedStyle
+		getComputedStyle: getComputedStyle,
+		hasAttrs: hasAttrs
 	};
 });

@@ -77,7 +77,7 @@ Aloha.require([
 		}, mutate);
 	}
 
-	function testFormat(title, before, after) {
+	function testWrap(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
 			RangeContext.wrap(range, 'B');
 		});
@@ -108,6 +108,29 @@ Aloha.require([
 	function testTrimRange(title, before, after, switched) {
 		testMutationSwitchElemTextSelection(title, before, after, function (dom, range) {
 			Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
+		});
+	}
+
+	function testFormat(title, before, after, styleName, styleValue) {
+		// Because different browsers render style attributes
+		// differently we have to normalize them.
+		function expected(actual) {
+			actual = actual
+				.replace(/;"/g, '"')
+				.replace(/; font-family: "/g, '"')
+				.replace(/font-family: ; /g, '')
+				.replace(/font-size: 18px; font-family: arial/g, 'font-family: arial; font-size: 18px');
+			after = after.replace(/;"/g, '"');
+			equal(actual, after);
+		}
+		function isObstruction(node) {
+			return !Html.hasInlineStyle(node) || 'CODE' === node.nodeName;
+		}
+		var opts = {
+			isObstruction: isObstruction
+		};
+		testMutation('RangeContext.format - ' + title, before, expected, function (dom, range) {
+			RangeContext.format(range, styleName, styleValue, opts);
 		});
 	}
 
@@ -150,7 +173,7 @@ Aloha.require([
 	  '<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>');
 
 	var t = function (title, before, after) {
-		testFormat('RangeContext.wrap -' + title, before, after);
+		testWrap('RangeContext.wrap -' + title, before, after);
 	};
 
 	t('noop1', '<p><b>[Some text.]</b></p>', '<p><b>{Some text.}</b></p>');
@@ -202,7 +225,7 @@ Aloha.require([
 	  '<p>{<b>one two three</b>}</p>');
 
 	var t = function (title, before, after) {
-		testFormat('RangeContext.wrap-restack - ' + title, before, after);
+		testWrap('RangeContext.wrap-restack - ' + title, before, after);
 	};
 
 	t('across elements',
@@ -353,7 +376,7 @@ Aloha.require([
 	  '<div><h1>1{<br/></h1><p><b>2}<br/></b></p></div>',
 	  '<div><h1>1<br/></h1>{<p><b>2<br/></b></p>}</div>');
 
-	// This test doesn't work on IE because IE automatically strips some
+	// TODO This test doesn't work on IE because IE automatically strips some
 	// spaces and not others. Could be made to work by stripping exactly
 	// those whitespace from the expected result.
 	if (!Browser.ie) {
@@ -394,36 +417,7 @@ Aloha.require([
 	  '<p><i><em>-</em></i><i><code>Some<em>-{<b>-</b></em><b>text</b></code></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
 
 	t = function (title, before, after) {
-		// Because different browsers render style attributes
-		// differently we have to normalize them.
-		function expected(actual) {
-			actual = actual
-				.replace(/;"/g, '"')
-				.replace(/; font-family: "/g, '"')
-				.replace(/font-family: ; /g, '')
-				.replace(/font-size: 18px; font-family: arial/g, 'font-family: arial; font-size: 18px');
-			after = after.replace(/;"/g, '"');
-			equal(actual, after);
-		}
-		function isPrunableIe7(node) {
-			return ('SPAN' === node.nodeName
-					&& (!Dom.getStyle(node, 'font-family')
-						|| 'auto' == Dom.getStyle(node, 'font-family'))
-					&& (!Dom.getStyle(node, 'font-size')
-						|| 'auto' == Dom.getStyle(node, 'font-size')));
-		}
-		function isObstruction(node) {
-			return !Html.hasInlineStyle(node) || 'CODE' === node.nodeName;
-		}
-		var opts = {
-			isObstruction: isObstruction
-		};
-		if ($.browser.msie && parseInt($.browser.version) == 7) {
-			opts.isPrunable = isPrunableIe7;
-		}
-		testMutation('RangeContext.format - ' + title, before, expected, function (dom, range) {
-			RangeContext.format(range, 'font-family', 'arial', opts);
-		});
+		testFormat(title, before, after, 'font-family', 'arial');
 	};
 
 	t('format some text',
@@ -530,4 +524,130 @@ Aloha.require([
 	t('don\'t merge back incompatible style',
 	  '<p><span style="color: black;">one</span>[two]</p>',
 	  '<p><span style="color: black;">one</span>{<span style="font-family: arial">two</span>}</p>');
+
+	// Because the following tests depend on some CSS classes to be available:
+	$('body').prepend('<style>'
+					  + '.test-bold { font-weight: bold; }'
+					  + '.test-strong { font-weight: bold; }'
+					  + '.test-italic { font-style: italic; }'
+					  + '.test-emphasis { font-style: italic; }'
+					  + '.test-underline { text-decoration: underline; }'
+					  + '</style>');
+
+	t = function (title, before, after, styleValue) {
+		// Because we want to write tests only against a single wrapper
+		// format (<b>), but run them against all wrapper formats.
+		var formats = [
+			{name: 'bold', nodeName: 'b', styleOn: 'font-weight: bold', styleOff: 'font-weight: normal'},
+			{name: 'strong', nodeName: 'strong', styleOn: 'font-weight: bold', styleOff: 'font-weight: normal'},
+			{name: 'italic', nodeName: 'i', styleOn: 'font-style: italic', styleOff: 'font-style: normal'},
+			{name: 'emphasis', nodeName: 'em', styleOn: 'font-style: italic', styleOff: 'font-style: normal'},
+			{name: 'underline', nodeName: 'u', styleOn: 'text-decoration: underline', styleOff: 'text-decoration: none'}
+		];
+		function replace(format, html) {
+			return (html.replace(/<(\/?)b>/g, '<$1' + format.nodeName + '>')
+					.replace(/font-weight: bold/g, format.styleOn)
+					.replace(/font-weight: normal/g, format.styleOff)
+					.replace(/test-bold/g, 'test-' + format.name));
+		}
+		for (var i = 0; i < formats.length; i++) {
+			var format = formats[i];
+			testFormat(format.name + ' - ' + title, replace(format, before), replace(format, after), format.name, styleValue);
+		}
+	};
+
+	t('use wrapper element instead of style',
+	  '<p>So[me t]ext</p>',
+	  '<p>So{<b>me t</b>}ext</p>',
+	  true);
+
+	t('clear styles when wrapped with an element',
+	  '<p>S{o<span style="font-weight: bold">me te</span>x}t</p>',
+	  '<p>S{<b>ome tex</b>}t</p>',
+	  true);
+
+	t('unformatting with a non-clearable ancestor will set a normal style',
+	  '<p style="font-weight: bold">So[me te]xt</p>',
+	  '<p style="font-weight: bold">So{<span style="font-weight: normal">me te</span>}xt</p>',
+	  false);
+
+	// We could argue here that it should really be
+	// '<p>So<span style="font-weight: bold">m</span>{<b>e te</b>}xt</p>'
+	// But the way the algorithm works is that nodes will be merged into
+	// a wrapper to the left, and if that already exists it will be
+	// reused.
+	t('extending existing style',
+	  '<p>So<span style="font-weight: bold">m{e </span>te}xt</p>',
+	  '<p>So<span style="font-weight: bold">m[e te</span>}xt</p>',
+	  true);
+
+	t('pushing down through wrapper',
+	  '<p>So<b>m{e t}e</b>xt</p>',
+	  '<p>So<b>m</b>{e t}<b>e</b>xt</p>',
+	  false);
+
+	testFormat('italic - pushing down through alternative wrapper',
+			   '<p>So<em>m{e t}e</em>xt</p>',
+			   '<p>So<i>m</i>{e t}<i>e</i>xt</p>',
+			   'italic',
+			   false);
+
+	testFormat('bold - pushing down through alternative wrapper',
+			   '<p>So<strong>m{e t}e</strong>xt</p>',
+			   '<p>So<b>m</b>{e t}<b>e</b>xt</p>',
+			   'bold',
+			   false);
+
+	testFormat('italic - clear alternative wrapper',
+			   '<p>S{o<em>me te</em>x}t</p>',
+			   '<p>S[ome tex]t</p>',
+			   'italic',
+			   false);
+
+	testFormat('italic - clear alternative wrapper',
+			   '<p>S{o<strong>me te</strong>x}t</p>',
+			   '<p>S[ome tex]t</p>',
+			   'bold',
+			   false);
+
+	t('pushing down through styled element',
+	  '<p>So<span style="font-weight: bold">m{e t}e</span>xt</p>',
+	  '<p>So<b>m</b>{e t}<b>e</b>xt</p>',
+	  false);
+
+	// NB when this test is executed for "text-decoration: underline"
+	// the result will look like the result for bold, but the visual
+	// result will be incorrect, since it's not possible to unformat an
+	// underline in an inner element. The only way to unformat an
+	// underline is to split the underline ancestor, but we can't do
+	// that when a class is set on the ancestor.
+	t('unformat inside class context',
+	  '<p><span class="test-bold">Som[e t]ext</span></p>',
+	  '<p><span class="test-bold">Som{<span style="font-weight: normal">e t</span>}ext</span></p>',
+	  false);
+
+	t('unformat inside class context one level up',
+	  '<p>So<span class="test-bold"><ins>m[e t]e</ins></span>xt</p>',
+	  '<p>So<span class="test-bold"><ins>m{<span style="font-weight: normal">e t</span>}e</ins></span>xt</p>',
+	  false);
+
+	t('unformat inside class context one level up with em inbetween',
+	  '<p>So<span class="test-bold"><em>m[e t]e</em></span>xt</p>',
+	  '<p>So<span class="test-bold"><em>m{<span style="font-weight: normal">e t</span>}e</em></span>xt</p>',
+	  false);
+
+	t('reuse class context',
+	  '<p>So<span class="test-bold">{me te}</span>xt</p>',
+	  '<p>So<span class="test-bold">{me te}</span>xt</p>',
+	  true);
+
+	t('format inside class context',
+	  '<p><span class="test-bold">Som{<span style="font-weight: normal">e t</span>}ext</span></p>',
+	  '<p><span class="test-bold">Som[e t]ext</span></p>',
+	  true);
+
+	t('Don\'t set a CSS style if there is already a class on it',
+	  '<p>S{o<span class="test-bold">me te</span>x}t</p>',
+	  '<p>S{<b>o</b><span class="test-bold">me te</span><b>x</b>}t</p>',
+	  true);
 });

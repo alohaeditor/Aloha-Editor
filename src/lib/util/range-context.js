@@ -331,9 +331,9 @@ define([
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
-
 		var isUpperBoundary = formatter.isUpperBoundary;
 		var getOverride = formatter.getOverride;
+		var getInheritableOverride = formatter.getInheritableOverride;
 		var pushDownOverride = formatter.pushDownOverride;
 		var hasContext = formatter.hasContext;
 		var hasInheritableContext = formatter.hasInheritableContext;
@@ -341,28 +341,36 @@ define([
 		var clearOverride = formatter.clearOverride;
 		var isObstruction = formatter.isObstruction;
 		var isReusable = formatter.isReusable;
+		var isContextOverride = formatter.isContextOverride;
+		var isClearable = formatter.isClearable;
 		var clearOverrideRec = formatter.clearOverrideRec  || function (node) {
 			Dom.walkRec(node, clearOverride);
 		};
 
 		var topmostOverrideNode = null;
-		var bottommostOverrideNode = null;
+		var cacOverride = null;
 		var isNonClearableOverride = false;
-		var upperBoundaryAndBeyond = false;
+		var upperBoundaryAndAbove = false;
 		var fromCacToContext = Dom.childAndParentsUntilIncl(cac, function (node) {
 			// Because we shouldn't expect hasContext to handle the
 			// document element (which has nodeType 9).
 			return !node.parentNode || 9 === node.parentNode.nodeType || hasInheritableContext(node);
 		});
 		Arrays.forEach(fromCacToContext, function (node) {
-			upperBoundaryAndBeyond = upperBoundaryAndBeyond || isUpperBoundary(node);
+			upperBoundaryAndAbove = upperBoundaryAndAbove || isUpperBoundary(node);
 			// Because we are only interested in non-context overrides.
-			if (null != getOverride(node) && !hasContext(node)) {
+			var override = getInheritableOverride(node);
+			if (null != override && !isContextOverride(override)) {
 				topmostOverrideNode = node;
-				isNonClearableOverride = upperBoundaryAndBeyond;
-				bottommostOverrideNode = bottommostOverrideNode || node;
+				isNonClearableOverride = isNonClearableOverride || upperBoundaryAndAbove || !isClearable(node);
+				if (null == cacOverride) {
+					cacOverride = override;
+				}
 			}
 		});
+		if (null == cacOverride) {
+			cacOverride = getInheritableOverride(cac);
+		}
 
 		if (hasInheritableContext(Arrays.last(fromCacToContext)) && !isNonClearableOverride) {
 			if (!topmostOverrideNode) {
@@ -371,7 +379,6 @@ define([
 				walkBoundaryInsideOutside(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec);
 			} else {
 				var pushDownFrom = topmostOverrideNode;
-				var cacOverride = getOverride(bottommostOverrideNode || cac);
 				pushDownContext(liveRange, pushDownFrom, cacOverride, getOverride, clearOverride, clearOverrideRec, pushDownOverride);
 			}
 		} else {
@@ -528,25 +535,35 @@ define([
 				return;
 			}
 			removeContext(node);
-			if (isPrunable(node)) {
-				if (node.previousSibling) {
-					removedNodeSiblings.push(node.previousSibling);
-				}
-				if (node.nextSibling) {
-					removedNodeSiblings.push(node.nextSibling);
-				}
-				Dom.removeShallowPreservingBoundaries(node, [leftPoint, rightPoint]);
+			// TODO if the node is not prunable but overrides the
+			// context (for example <b class="..."></b> may not be
+			// prunable), we should descend into the node and set the
+			// unformatting-context inside.
+			if (!isPrunable(node)) {
+				return;
 			}
+			if (node.previousSibling) {
+				removedNodeSiblings.push(node.previousSibling);
+			}
+			if (node.nextSibling) {
+				removedNodeSiblings.push(node.nextSibling);
+			}
+			Dom.removeShallowPreservingBoundaries(node, [leftPoint, rightPoint]);
 		}
 
 		function createContextWrapper(value) {
-			var wrapper = createWrapper();
-			addContextValue(wrapper, value);
+			var wrapper = createWrapper(value);
 			var key = ':' + value;
 			var wrappers = wrappersByContextValue[key] = wrappersByContextValue[key] || [];
 			wrappers.push(wrapper);
 			wrappersWithContextValue.push([wrapper, value]);
 			return wrapper;
+		}
+
+		function isClearable(node) {
+			var clone = node.cloneNode(false);
+			removeContext(clone);
+			return isPrunable(clone);
 		}
 
 		function isMergableWrapper(value, node) {
@@ -565,9 +582,7 @@ define([
 			// provide any context value besides the one we are
 			// applying, and something doesn't provide any context value
 			// at all if it is prunable.
-			var clone = node.cloneNode(false);
-			removeContext(clone);
-			return isPrunable(clone);
+			return isClearable(node);
 		}
 
 		function wrapContextValue(node, value) {
@@ -671,85 +686,177 @@ define([
 			hasContext: hasContext,
 			isReusable: isReusable,
 			clearOverride: clearOverride,
+			isClearable: isClearable,
 			pushDownOverride: pushDownOverride,
 			setContext: setContext,
+			isContextOverride: isContextOverride,
 			postprocess: postprocess,
 			postprocessTextNodes: postprocessTextNodes,
 			hasInheritableContext: impl.hasInheritableContext,
 			isObstruction: impl.isObstruction,
 			getOverride: impl.getOverride,
+			getInheritableOverride: impl.getInheritableOverride,
 			isUpperBoundary: impl.isUpperBoundary
 		};
 	}
 
 	function isUpperBoundary_default(node) {
 		// Because the body element is an obvious upper boundary, and
-		// because, when we are inside an editable, we shouldn't make
-		// modifications outside the editable (if we are not inside
-		// an editable, we don't care).
-		return 'BODY' === node.nodeName || Html.isEditingHost(node);
-	}
-
-	function isPrunable_default(node) {
-		return Arrays.every(Arrays.map(Dom.attrs(node), Arrays.second),
-							Strings.empty);
-	}
-
-	function createStyleWrapper_default() {
-		return document.createElement('SPAN');
+		// because, if we are inside a block element, we shouldn't touch
+		// it as that causes changes in the layout, and because, when we
+		// are inside an editable, we shouldn't make modifications
+		// outside of it (if we are not inside an editable, we don't
+		// care).
+		return 'BODY' === node.nodeName || Html.hasBlockStyle(node) || Html.isEditingHost(node);
 	}
 
 	function isStyleEqual_default(styleValueA, styleValueB) {
 		return styleValueA === styleValueB;
 	}
 
-	function isStyleWrapperReusable_default(node) {
-		return 'SPAN' === node.nodeName;
-	}
-
-	function isStyleWrapperPrunable_default(node) {
-		return 'SPAN' === node.nodeName && isPrunable_default(node);
-	}
+	var wrapperProperties = {
+		underline: {
+			name: 'U',
+			nodes: ['U'],
+			style: 'text-decoration',
+			value: 'underline',
+			normal: 'none',
+			normalize: {}
+		},
+		bold: {
+			name: 'B',
+			nodes: ['B', 'STRONG'],
+			style: 'font-weight',
+			value: 'bold',
+			normal: 'normal',
+			normalize: {
+				/* ie7/ie8 only */
+				700: 'bold',
+				400: 'normal'
+			}
+		},
+		italic: {
+			name: 'I',
+			nodes: ['I', 'EM'],
+			style: 'font-style',
+			value: 'italic',
+			normal: 'normal',
+			normalize: {}
+		}
+	};
+	wrapperProperties.emphasis = Maps.merge(wrapperProperties.italic, {name: 'EM'});
+	wrapperProperties.strong = Maps.merge(wrapperProperties.bold, {name: 'STRONG'});
 
 	function makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts) {
-		var isStyleEqual = isStyleEqual_default || opts.isStyleEqual;
+		var isStyleEqual = opts.isStyleEqual || isStyleEqual_default;
+		var nodeNames = [];
+		var unformat = false;
+		var wrapperProps = wrapperProperties[styleName];
+		if (wrapperProps) {
+			nodeNames = wrapperProps.nodes;
+			styleName = wrapperProps.style;
+			unformat = !styleValue;
+			styleValue = unformat ? wrapperProps.normal : wrapperProps.value;
+		}
+		function normalizeStyleValue(value) {
+			if (wrapperProps && wrapperProps.normalize[value]) {
+				value = wrapperProps.normalize[value];
+			}
+			return value;
+		}
 		function getOverride(node) {
+			if (Arrays.contains(nodeNames, node.nodeName)) {
+				return wrapperProps.value;
+			}
 			var override = Dom.getStyle(node, styleName);
 			return !Strings.empty(override) ? override : null;
 		}
-		function hasContext(node) {
-			return isStyleEqual(Dom.getStyle(node, styleName), styleValue);
-		}
-		function hasInheritableContext(node) {
-			var value;
-			// Check the body even for non inherited styles, so that we
-			// can get for example a default background color (which is
-			// not inherited) even if no background color was ever
-			// explicitly set in the DOM.
-			if (Html.isStyleInherited(styleName) || 'BODY' === node.nodeName) {
-				value = Dom.getComputedStyle(node, styleName);
-			} else {
-				value = Dom.getStyle(node, styleName);
+		function getInheritableOverride(node) {
+			if (Arrays.contains(nodeNames, node.nodeName)) {
+				return wrapperProps.value;
 			}
-			return isStyleEqual(value, styleValue);
+			var override = Dom.getComputedStyle(node, styleName);
+			return !Strings.empty(override) ? override : null;
+		}
+		function isContextStyle(value) {
+			return isStyleEqual(normalizeStyleValue(value), styleValue);
 		}
 		function isContextOverride(value) {
-			return isStyleEqual(value, styleValue);
+			return isContextStyle(value);
 		}
 		function hasSomeContextValue(node) {
+			if (Arrays.contains(nodeNames, node.nodeName)) {
+				return true;
+			}
 			return !Strings.empty(Dom.getStyle(node, styleName));
 		}
 		function hasContextValue(node, value) {
+			value = normalizeStyleValue(value);
+			if (Arrays.contains(nodeNames, node.nodeName) && isStyleEqual(wrapperProps.value, value)) {
+				return true;
+			}
 			return isStyleEqual(Dom.getStyle(node, styleName), value);
 		}
+		function hasContext(node) {
+			if (!unformat && Arrays.contains(nodeNames, node.nodeName)) {
+				return true;
+			}
+			return isContextStyle(Dom.getStyle(node, styleName));
+		}
+		function hasInheritableContext(node) {
+			if (!unformat && Arrays.contains(nodeNames, node.nodeName)) {
+				return true;
+			}
+			if (unformat && 'BODY' === node.nodeName) {
+				return true;
+			}
+			// Because default values of not-inherited styles don't
+			// provide any context.
+			// TODO This causes any classes that set a non-inherited
+			// style to the default value, for example
+			// "text-decoration: none" to be ignored.
+			if (unformat && Html.isStyleInherited(styleName)) {
+				return isContextStyle(Dom.getStyle(node, styleName));
+			}
+			return isContextStyle(Dom.getComputedStyle(node, styleName));
+		}
 		function addContextValue(node, value) {
+			value = normalizeStyleValue(value);
+			if (Arrays.contains(nodeNames, node.nodeName) && isStyleEqual(wrapperProps.value, value)) {
+				return;
+			}
+			// Because we don't want to add an explicit style if for
+			// example the element already has a class set on it. For
+			// example: <span class="bold"></span>.
+			if (isStyleEqual(normalizeStyleValue(Dom.getComputedStyle(node, styleName)), value)) {
+				return;
+			}
 			Dom.setStyle(node, styleName, value);
 		}
 		function removeContext(node) {
 			Dom.removeStyle(node, styleName);
 		}
+		function isReusable(node) {
+			if (Arrays.contains(nodeNames, node.nodeName)) {
+				return true;
+			}
+			return 'SPAN' === node.nodeName;
+		}
+		function isPrunable(node) {
+			return isReusable(node) && !Dom.hasAttrs(node);
+		}
+		function createWrapper(value) {
+			value = normalizeStyleValue(value);
+			if (wrapperProps && isStyleEqual(wrapperProps.value, value)) {
+				return document.createElement(wrapperProps.name);
+			}
+			var wrapper = document.createElement('SPAN');
+			Dom.setStyle(wrapper, styleName, value);
+			return wrapper;
+		}
 		var impl = Maps.merge({
 			getOverride: getOverride,
+			getInheritableOverride: getInheritableOverride,
 			hasContext: hasContext,
 			hasInheritableContext: hasInheritableContext,
 			isContextOverride: isContextOverride,
@@ -757,10 +864,10 @@ define([
 			hasContextValue: hasContextValue,
 			addContextValue: addContextValue,
 			removeContext: removeContext,
+			isPrunable: isPrunable,
 			isStyleEqual: isStyleEqual,
-			createWrapper: createStyleWrapper_default,
-			isReusable: isStyleWrapperReusable_default,
-			isPrunable: isStyleWrapperPrunable_default,
+			createWrapper: createWrapper,
+			isReusable: isReusable,
 			isObstruction: Fn.complement(Html.hasInlineStyle),
 			isUpperBoundary: isUpperBoundary_default
 		}, opts);
@@ -768,6 +875,9 @@ define([
 	}
 
 	function makeElemFormatter(nodeName, unformat, leftPoint, rightPoint, opts) {
+		// Because we assume nodeNames are always uppercase, but don't
+		// want the user to remember this detail.
+		nodeName = nodeName.toUpperCase();
 		function createWrapper() {
 			return document.createElement(nodeName);
 		}
@@ -776,13 +886,7 @@ define([
 		}
 		function hasContext(node) {
 			if (unformat) {
-				// Because the only difference between formatter and
-				// unformatter is that there isn't for example a no-bold
-				// element - the absence of a bold ancestor results in the
-				// node having a no-bold context, but there is no element to
-				// set a no-bold context explicitly (actually there is,
-				// <span style="font-weight: normal">, but that kind of
-				// functionality isn't implemented yet).
+				// Because unformatting has no context value.
 				return false;
 			}
 			return nodeName === node.nodeName;
@@ -790,7 +894,10 @@ define([
 		function hasInheritableContext(node) {
 			// Because there can be no nodes above the body element that
 			// can provide a context.
-			return unformat ? 'BODY' === node.nodeName : hasContext(node);
+			if (unformat && 'BODY' === node.nodeName) {
+				return true;
+			}
+			return hasContext(node);
 		}
 		function isContextOverride(value) {
 			if (unformat) {
@@ -804,26 +911,32 @@ define([
 			// does more than just provide a context (for example a <b>
 			// node may have a class which shouldn't also being wrapped
 			// around the merged-with node).
-			return node.nodeName === nodeName && !Dom.attrs(node).length;
+			return node.nodeName === nodeName && !Dom.hasAttrs(node);
+		}
+		function isPrunable(node) {
+			return isReusable(node);
 		}
 		function hasSomeContextValue(node) {
 			return node.nodeName === nodeName;
 		}
 		var impl = Maps.merge({
 			getOverride: getOverride,
+			// Because inheritable overrides are only useful for
+			// formatters that consider the CSS style.
+			getInheritableOverride: getOverride,
 			hasContext: hasContext,
 			hasInheritableContext: hasInheritableContext,
 			isContextOverride: isContextOverride,
 			hasSomeContextValue: hasSomeContextValue,
 			// Because hasContextValue and hasSomeContextValue makes no
-			// difference for a node formatter, since there is only one
+			// difference for an element formatter, since there is only one
 			// context value.
 			hasContextValue: hasSomeContextValue,
 			addContextValue: Fn.noop,
 			removeContext: Fn.noop,
 			createWrapper: createWrapper,
 			isReusable: isReusable,
-			isPrunable: isPrunable_default,
+			isPrunable: isPrunable,
 			isObstruction: Fn.complement(Html.hasInlineStyle),
 			isUpperBoundary: isUpperBoundary_default
 		}, opts);
@@ -834,7 +947,6 @@ define([
 	 * Ensures the given range is wrapped by elements with a given nodeName.
 	 *
 	 * @param opts a map of options (all optional):
-	 *
 	 *        createWrapper - a function that returns a new empty
 	 *        wrapper node to use.
 	 *
@@ -848,9 +960,7 @@ define([
 		if (liveRange.collapsed) {
 			return;
 		}
-		// Because we assume nodeNames are always uppercase, but don't
-		// want the user to remember this detail.
-		nodeName = nodeName.toUpperCase();
+		opts = opts || {};
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeElemFormatter(nodeName, remove, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
@@ -862,7 +972,19 @@ define([
 	 * Ensures the given range is wrapped by elements that have a given
 	 * CSS style set.
 	 *
+	 * @param styleName a CSS style name.
+	 *        Please note that not-inherited styles currently may (or
+	 *        may not) cause undesirable results.  See also
+	 *        Html.isStyleInherited().
+	 *
+	 *        The underline style can't be unformatted inside a
+	 *        non-clearable ancestor ("text-decoration: none" doesn't do
+	 *        anything as the underline will be drawn by the ancestor).
+	 *
 	 * @param opts all options supported by wrapElem() as well as the following:
+	 *        createWrapper - a function that takes a style value and
+	 *        returns a new empty wrapper node that has the style value
+	 *        applied.
 	 *
 	 *        isPrunable - a function that returns true if a given node,
 	 *        after some style was removed from it, can be removed
@@ -880,6 +1002,7 @@ define([
 		if (liveRange.collapsed) {
 			return;
 		}
+		opts = opts || {};
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
@@ -916,8 +1039,8 @@ define([
 	 *
 	 * @param opts a map of options (all optional):
 	 *
-	 *        clone - a function that clones a given element node and
-	 *        returns the cloned node.
+	 *        clone - a function that clones a given element node
+	 *        shallowly and returns the cloned node.
 	 *
 	 *        belowCacUntil - a function that returns true if splitting
 	 *        should stop at a given node (exclusive) on the way down
@@ -935,7 +1058,7 @@ define([
 	 *        <b>1</b><b>{2</b><i>3</i><i>}4</i>
 	 *
 	 *	      If normalizeRange is true, the selection is trimmed to
-	 *	      correct <i>}4</i> and expandded to correct <b>{2</b>, such
+	 *	      correct <i>}4</i> and expanded to correct <b>{2</b>, such
 	 *        that it will look like
 	 *
 	 *	      <b>1</b>{<b>2</b><i>3</i>}<i>4</i>
@@ -945,10 +1068,9 @@ define([
 	 *        is usually what one expects the range to look like after a
 	 *        split.
 	 *        NB: if belowCacUntil returns true, start and end points
-	 *        may not be become children of the topmost unsplit
-	 *        node. Also, if belowCacUntil returns true, the selection
-	 *        may be moved out of an unsplit node which may be
-	 *        unexpected.
+	 *        may not become children of the topmost unsplit node. Also,
+	 *        if belowCacUntil returns true, the selection may be moved
+	 *        out of an unsplit node which may be unexpected.
 	 */
 	function split(liveRange, opts) {
 		opts = Maps.merge({
