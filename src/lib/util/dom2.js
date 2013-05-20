@@ -1148,9 +1148,9 @@ define([
 	}
 
 	function removeStyle(elem, styleName) {
+		var $elem = $(elem);
 		if (Browser.hasRemoveProperty) {
 			elem.style.removeProperty(styleName);
-			var $elem = $(elem);
 			if (Strings.empty($elem.attr('style'))) {
 				$elem.removeAttr('style');
 			}
@@ -1160,7 +1160,6 @@ define([
 			//       for all valid inputs, but it's the simplest thing I
 			//       can come up with without implementing a full css
 			//       parser.
-			var $elem = $(elem);
 			var style = $elem.attr('style');
 			if (null == style) {
 				return;
