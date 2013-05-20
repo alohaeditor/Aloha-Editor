@@ -25,8 +25,6 @@
  * recipients can access the Corresponding Source.
  */
 /**
- * TODO check contained-in rules when when pushing down or setting a context
- * TODO canonicalize whitespace
  * TODO formatStyle: in the following case the outer "font-family:
  *      arial" span should be removed.  Can be done similar to how
  *      findReusableAncestor() works.
@@ -44,6 +42,7 @@
  */
 define([
 	'jquery',
+	'util/dom',
 	'util/dom2',
 	'util/arrays',
 	'util/maps',
@@ -52,6 +51,7 @@ define([
 	'util/html'
 ], function (
 	$,
+	Dom1,
 	Dom,
 	Arrays,
 	Maps,
@@ -403,12 +403,16 @@ define([
 	}
 
 	function wrap(node, wrapper, leftPoint, rightPoint) {
+		if (!Dom1.allowsNesting(wrapper, node)) {
+			return false;
+		}
 		if (wrapper.parentNode) {
 			Dom.removeShallowPreservingBoundaries(wrapper, [leftPoint, rightPoint]);
 		}
 		adjustPointWrap(leftPoint, node, wrapper);
 		adjustPointWrap(rightPoint, node, wrapper);
 		Dom.wrap(node, wrapper);
+		return true;
 	}
 
 	// NB: depends on fixupRange to use trimRangeClosingOpening to move
@@ -497,21 +501,36 @@ define([
 		if (!context) {
 			return null;
 		}
-		wrap(node, context, leftPoint, rightPoint);
+		if (!wrap(node, context, leftPoint, rightPoint)) {
+			return null;
+		}
 		return context;
 	}
 
-	function ensureWrapper(node, createWrapper, isWrapper, isMergable, leftPoint, rightPoint) {
-		var wrapper = null;
+	function ensureWrapper(node, createWrapper, isWrapper, isMergable, pruneContext, addContextValue, leftPoint, rightPoint) {
 		var sibling = node.previousSibling;
 		if (sibling && isMergable(sibling) && isMergable(node)) {
-			wrapper = sibling;
-			moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
+			moveBackIntoWrapper(node, sibling, true, leftPoint, rightPoint);
+			// Because the node itself may be a wrapper.
+			pruneContext(node);
 		} else if (!isWrapper(node)) {
-			wrapper = createWrapper();
-			wrap(node, wrapper, leftPoint, rightPoint);
+			var wrapper = createWrapper();
+			if (wrap(node, wrapper, leftPoint, rightPoint)) {
+				// Because we are just making sure (probably not
+				// necessary since the node isn't a wrapper).
+				pruneContext(node);
+			} else {
+				// Because if wrapping is not successful, we try again
+				// one level down.
+				Dom.walk(node.firstChild, function (node) {
+					ensureWrapper(node, createWrapper, isWrapper, isMergable, pruneContext, addContextValue, leftPoint, rightPoint);
+				});
+			}
+		} else {
+			// Because the node itself is a wrapper, but possibly not
+			// with the given context value.
+			addContextValue(node);
 		}
-		return wrapper;
 	}
 
 	function makeFormatter(contextValue, leftPoint, rightPoint, impl) {
@@ -586,24 +605,16 @@ define([
 		}
 
 		function wrapContextValue(node, value) {
-			var wrapper = ensureWrapper(
+			ensureWrapper(
 				node,
 				Fn.bind(createContextWrapper, null, value),
 				isReusable,
 				Fn.bind(isMergableWrapper, null, value),
+				pruneContext,
+				Fn.bind(addContextValue, null, value),
 				leftPoint,
 				rightPoint
 			);
-			if (wrapper) {
-				// Because the node itself may have the context value
-				// set, and wrapping it will not unset it.
-				pruneContext(node);
-			} else {
-				// Because the node wasn't wrapped because it itself is
-				// a wrapper, but possibly not with the given context
-				// value.
-				addContextValue(node, value);
-			}
 		}
 
 		function clearOverride(node) {
@@ -659,10 +670,9 @@ define([
 			}
 			var isMergable = Fn.bind(isMergableWrapper, null, contextValue);
 			var createWrapper = Fn.bind(createContextWrapper, null, contextValue);
+			var addValue = Fn.bind(addContextValue, null, contextValue);
 			var mergeNode = mergeNext ? sibling : wrapper;
-			if (ensureWrapper(mergeNode, createWrapper, isReusable, isMergable, leftPoint, rightPoint)) {
-				pruneContext(mergeNode);
-			}
+			ensureWrapper(mergeNode, createWrapper, isReusable, isMergable, pruneContext, addValue, leftPoint, rightPoint);
 		}
 
 		function mergeWrapper(wrapper, contextValue) {
@@ -820,7 +830,7 @@ define([
 			}
 			return isContextStyle(Dom.getComputedStyle(node, styleName));
 		}
-		function addContextValue(node, value) {
+		function addContextValue(value, node) {
 			value = normalizeStyleValue(value);
 			if (Arrays.contains(nodeNames, node.nodeName) && isStyleEqual(wrapperProps.value, value)) {
 				return;
@@ -1050,6 +1060,9 @@ define([
 	 *        cacAndAboveUntil - a function that returns true if
 	 *        splitting should stop at a given node (exclusive) on the
 	 *        way up from the cac (inclusive) to the document node.
+	 *
+	 *        By default splitting stops at an editable host, at a
+	 *        block element, or at the body element.
 	 *
 	 *        normalizeRange - a boolean, defaults to true.
 	 *        After splitting the selection may still be inside the split

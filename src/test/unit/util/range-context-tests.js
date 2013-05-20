@@ -650,4 +650,9 @@ Aloha.require([
 	  '<p>S{o<span class="test-bold">me te</span>x}t</p>',
 	  '<p>S{<b>o</b><span class="test-bold">me te</span><b>x</b>}t</p>',
 	  true);
+
+	t('Don\'t violate contained-in rules',
+	  '<ul>{<li><ins>Some</ins> <del>text</del></li>}</ul>',
+	  '<ul>{<li><b><ins>Some</ins> <del>text</del></b></li>}</ul>',
+	  true);
 });
