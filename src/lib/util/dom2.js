@@ -1150,6 +1150,10 @@ define([
 	function removeStyle(elem, styleName) {
 		if (Browser.hasRemoveProperty) {
 			elem.style.removeProperty(styleName);
+			var $elem = $(elem);
+			if (Strings.empty($elem.attr('style'))) {
+				$elem.removeAttr('style');
+			}
 		} else {
 			// TODO: this is a hack for browsers that don't support
 			//       removeProperty (ie < 9)and will not work correctly
@@ -1168,7 +1172,11 @@ define([
 			}
 			var stripRegex = new RegExp('(:?^|;)\\s*' + styleName + '\\s*:.*?(?=;|$)', 'i');
 			style = style.replace(stripRegex, '');
-			$elem.attr('style', style);
+			if (!Strings.empty(style)) {
+				$elem.attr('style', style);
+			} else {
+				$elem.removeAttr('style');
+			}
 		}
 	}
 
