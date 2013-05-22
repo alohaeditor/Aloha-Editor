@@ -3651,3 +3651,6 @@ rangy.createModule("WrappedSelection", function(api, module) {
 		win = null;
 	});
 });
+
+// TODO we should avoid populating the global namespace
+window.rangy = rangy;
