@@ -354,8 +354,16 @@ rangy = rangy || (function() {
 
 	/*----------------------------------------------------------------------------------------------------------------*/
 
+	/*
+	 * Disabled the event listener below since rangy.init() is called by Aloha when it's loading so this listener isn't
+	 * needed. The listener will also make plugins that depends on custom Rangy modules to fail since Rangy can't
+	 * handle module registration after rangy.init() has been called which will happen since DOMContentLoaded will be
+	 * fired before Aloha has finished loading all plugins.
+	 */
+
 	// Wait for document to load before running tests
 
+	/*
 	var docReady = false;
 
 	var loadHandler = function(e) {
@@ -383,6 +391,7 @@ rangy = rangy || (function() {
 
 	// Add a fallback in case the DOMContentLoaded event isn't supported
 	addListener(window, "load", loadHandler);
+	*/
 
 	return api;
 })();
