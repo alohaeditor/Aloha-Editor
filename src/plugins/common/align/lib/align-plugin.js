@@ -357,6 +357,15 @@ define([
 
 			var rangeParent = range.getCommonAncestorContainer();
 
+			// CSS text-align property only applies to block level elements so find the nearest one
+			if (!GENTICS.Utils.Dom.isBlockLevelElement( rangeParent )) {
+				range.findMarkup(function () {
+					if (GENTICS.Utils.Dom.isBlockLevelElement( this )) {
+						rangeParent = this;
+					}
+				}, Aloha.activeEditable.obj);
+			}
+
 			// check if the selection range is inside a table
 			var selectedCells = this.getSelectedCells( range );
 
