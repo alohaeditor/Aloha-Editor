@@ -325,10 +325,10 @@ Aloha.require([
 
 	t = function (title, before, after) {
 		testMutation('RangeContext.split ' + title, before, after, function (dom, range) {
-			function cacAndAboveUntil(node) {
+			function below(node) {
 				return node.nodeName === 'DIV';
 			}
-			RangeContext.split(range, {cacAndAboveUntil: cacAndAboveUntil});
+			RangeContext.split(range, {below: below});
 		});
 	};
 
@@ -392,10 +392,13 @@ Aloha.require([
 	t = function (title, before, after) {
 		testMutation('RangeContext.split+format - ' + title, before, after, function (dom, range) {
 			var cac = range.commonAncestorContainer;
-			function belowCacUntil(node) {
+			function until(node) {
 				return node.nodeName === 'CODE';
 			}
-			RangeContext.split(range, {belowCacUntil: belowCacUntil, cacAndAboveUntil: Fn.returnTrue});
+			function below(node) {
+				return cac === node;
+			}
+			RangeContext.split(range, {below: below, until: until});
 			RangeContext.wrap(range, 'B');
 		});
 	};
@@ -415,6 +418,13 @@ Aloha.require([
 	t('don\'t split obstruction on the left; with element siblings on the right',
 	  '<p><i><em>-</em><code>Some<em>-{-</em>text</code></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
 	  '<p><i><em>-</em></i><i><code>Some<em>-{<b>-</b></em><b>text</b></code></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
+
+	testMutation('don\'t split if opts.below returns false',
+				 '<div><i>a[b</i>c<b>d]e</b></div>',
+				 '<div><i>a[b</i>c<b>d]e</b></div>',
+				 function (dom, range) {
+					 RangeContext.split(range, {below: Fn.returnFalse});
+				 });
 
 	t = function (title, before, after) {
 		testFormat(title, before, after, 'font-family', 'arial');
