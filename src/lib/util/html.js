@@ -321,7 +321,8 @@ define([
 	 * block.
 	 *
 	 * For some operations it's useful to think of a block as a number
-	 * of lines, each including its respective br and any preceding and
+	 * of lines, each including its respective br and any preceding
+	 * unrendered whitespace and in case of the last line, also any
 	 * following unrendered whitespace.
 	 */
 	function normalizeBoundary(point) {
@@ -428,12 +429,14 @@ define([
 		return true;
 	}
 
-	// TODO currently this function only knows about 'background-color'
-	// not being inherited, while 'color', 'font-size', 'font-family'
-	// are inherited. Any other relevant styles should be added when
-	// needed.
+	// TODO This list is incomplete but should look something like
+	// http://www.w3.org/TR/CSS21/propidx.html
+	var notInheritedStyles = {
+		'background-color': true,
+		'underline': true
+	};
 	function isStyleInherited(styleName) {
-		return 'background-color' !== styleName;
+		return !notInheritedStyles[styleName];
 	}
 
 	/**
