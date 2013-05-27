@@ -25,10 +25,12 @@
  * recipients can access the Corresponding Source.
  */
 define([
-	'util/dom2',
+	'jquery',
+	'util/dom',
 	'util/maps',
 	'util/arrays'
 ], function (
+	jQuery,
 	Dom,
 	Maps,
 	Arrays
@@ -168,11 +170,10 @@ define([
 	 * @return {boolean} False if the editable may not contain paragraphs
 	 */
 	function allowNestedParagraph(editable) {
-		if (editable.obj.prop("tagName") === "SPAN" ||
-				editable.obj.prop("tagName") === "P") {
-			return false;
+		if (editable.obj[0] && Dom.allowsNesting(editable.obj[0], jQuery("<p>")[0])) {
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	return {

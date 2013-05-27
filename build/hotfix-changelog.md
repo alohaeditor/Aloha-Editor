@@ -8,3 +8,6 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**: With this change, paragraphs are no longer inserted when pressing Enter
+              in editables that do not allow paragraphs to be contained inside (according
+              to the HTML 5 standard). In this case, a linebreak is added instead.
