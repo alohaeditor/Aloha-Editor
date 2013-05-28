@@ -422,13 +422,16 @@ define([
 			prev = node.lastChild;
 			if (prev) {
 				this.node = prev;
+				if (1 !== prev.nodeType) {
+					this.atEnd = false;
+				}
 			} else {
 				this.atEnd = false;
 			}
 		} else {
 			prev = node.previousSibling;
 			if (prev) {
-				if (1 === node.nodeType) {
+				if (1 === prev.nodeType) {
 					this.atEnd = true;
 				}
 			} else {
