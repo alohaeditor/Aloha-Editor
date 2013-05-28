@@ -121,6 +121,27 @@ define([
 		// @TODO Use sanitize.js?
 		$content.find('colgroup').remove();
 	}
+	
+	/**
+	 * Return true if the nodeType is allowed in the settings,
+	 * [settings.path]
+	 * 
+	 * @param {String} nodeType	The tag name of the element to evaluate
+	 * 
+	 * @return {Boolean}
+	 */
+	function isAllowedNodeName(nodeType){
+		return !!(
+			Aloha.settings.contentHandler
+			&& Aloha.settings.contentHandler.allows
+			&& Aloha.settings.contentHandler.allows.elements
+			&& ($.inArray(
+		              nodeType.toLowerCase(), 
+				      Aloha.settings.contentHandler.allows.elements
+				         ) !== -1
+			   )
+		);
+	}
 
 	var GenericContentHandler = Manager.createHandler({
 
@@ -194,6 +215,7 @@ define([
 			// find all formattings we will transform
 			// @todo this makes troubles -- don't change semantics! at least in this way...
 			content.find('strong,em,s,u,strike').each(function () {
+			// @todo (dgoberitz) I think might be good ask before if the nodeName is allowed using isAllowedNodeName
 				if (this.nodeName === 'STRONG') {
 					// transform strong to b
 					Aloha.Markup.transformDomObject($(this), 'b');
@@ -205,7 +227,9 @@ define([
 					Aloha.Markup.transformDomObject($(this), 'del');
 				} else if (this.nodeName === 'U') {
 					// transform u?
-					$(this).contents().unwrap();
+					if(!isAllowedNodeName(this.nodeName)){
+						$(this).contents().unwrap();
+					}
 				}
 			});
 		},
