@@ -1187,6 +1187,32 @@ define([
 							 Strings.empty);
 	}
 
+	function ensureCursorInsideElem(cursor, oppositeCursor, elem, back) {
+		if (contains(elem, cursor.node)) {
+			return true;
+		}
+		while (!cursor.equals(oppositeCursor)
+			       && (back ? cursor.prev() : cursor.next())) {
+			if (elem === cursor.parent()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function ensureRangeInsideElem(range, elem) {
+		var startCursor = cursorFromBoundaryPoint(range.startContainer, range.startOffset);
+		var endCursor = cursorFromBoundaryPoint(range.endContainer, range.endOffset);
+		var startInside = ensureCursorInsideElem(startCursor, endCursor, elem, false);
+		var endInside = ensureCursorInsideElem(endCursor, startCursor, elem, true);
+		if (!startInside || !endInside) {
+			return false;
+		}
+		setRangeStartFromCursor(range, startCursor);
+		setRangeEndFromCursor(range, endCursor);
+		return true;
+	}
+
 	return {
 		removeStyle: removeStyle,
 		moveNextAll: moveNextAll,
@@ -1243,6 +1269,7 @@ define([
 		setStyle: setStyle,
 		getStyle: getStyle,
 		getComputedStyle: getComputedStyle,
-		hasAttrs: hasAttrs
+		hasAttrs: hasAttrs,
+		ensureRangeInsideElem: ensureRangeInsideElem
 	};
 });
