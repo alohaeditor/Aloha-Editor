@@ -14,3 +14,6 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: Setting transformFormattings to true in the generic handler, and 
               allowing the U tag, will no longer result in the elimination of 
               the U tags
+
+- **ENHANCEMENT**: Filters the tags used in transformFormattings, extracting the 
+                   tags setted in the elements allowed setting

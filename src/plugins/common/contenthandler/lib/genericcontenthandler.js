@@ -38,6 +38,13 @@ define([
 	'use strict';
 
 	/**
+	 * Tags used for semantic formatting
+	 * @type {Array.<String>}
+	 * @see GenericContentHandler#transformFormattings
+	 */
+	var formattingTags = ['strong', 'em', 's', 'u', 'strike'];
+
+	/**
 	 * Checks whether the markup describes a paragraph that is propped by
 	 * a <br> tag but is otherwise empty.
 	 * 
@@ -124,7 +131,7 @@ define([
 	
 	/**
 	 * Return true if the nodeType is allowed in the settings,
-	 * [settings.path]
+	 * Aloha.settings.contentHandler.allows.elements
 	 * 
 	 * @param {String} nodeType	The tag name of the element to evaluate
 	 * 
@@ -214,8 +221,18 @@ define([
 		transformFormattings: function ( content ) {
 			// find all formattings we will transform
 			// @todo this makes troubles -- don't change semantics! at least in this way...
-			content.find('strong,em,s,u,strike').each(function () {
-			// @todo (dgoberitz) I think might be good ask before if the nodeName is allowed using isAllowedNodeName
+
+			var selectors = [],
+				i
+			;
+
+			for (i = 0; i < formattingTags.length; i++) {
+				if (!isAllowedNodeName(formattingTags[i])) {
+					selectors.push(formattingTags[i]);
+				}
+			}
+
+			content.find(selectors.join(',')).each(function () {
 				if (this.nodeName === 'STRONG') {
 					// transform strong to b
 					Aloha.Markup.transformDomObject($(this), 'b');
@@ -227,9 +244,7 @@ define([
 					Aloha.Markup.transformDomObject($(this), 'del');
 				} else if (this.nodeName === 'U') {
 					// transform u?
-					if(!isAllowedNodeName(this.nodeName)){
-						$(this).contents().unwrap();
-					}
+					$(this).contents().unwrap();
 				}
 			});
 		},
