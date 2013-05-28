@@ -8,3 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**: Merging table cells which contains &nbsp; will no longer result 
+              in the cell that was merged having unnecessary white spaces.
