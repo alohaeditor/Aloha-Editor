@@ -8,3 +8,4 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**: Empty tabs will no longer show on the toolbar
