@@ -12,6 +12,12 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.9 - 2013/05/29
+
+- **BUGFIX**: With this change, paragraphs are no longer inserted when pressing Enter
+              in editables that do not allow paragraphs to be contained inside (according
+              to the HTML 5 standard). In this case, a linebreak is added instead.
+
 ## 0.23.8 - 2013/05/16
 
 - **BUGFIX**: (metaview) An error was corrected which had caused the metaview
