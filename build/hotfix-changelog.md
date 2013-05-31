@@ -8,3 +8,16 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**: The extra plugin headerids not longer result in duplicated id when 
+              have duplicated headers title
+
+- **ENHANCEMENT**: Added trimWhitespaceCharacters method in util/html to remove 
+                   the weirds whitespace characters, this is necessary in 
+                   Internet Explorer 7
+
+- **ENHANCEMENT**: The extra plugin headerids now uses PubSub.sub instead 
+                   Aloha.bind, when is available
+
+
+- **ENHANCEMENT**: The editable Class now publish the message 
+                   aloha.editable.deactivated via PubSub
