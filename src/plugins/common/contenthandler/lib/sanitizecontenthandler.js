@@ -37,6 +37,12 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 	
 	var sanitize;
 	
+	// Because by default the contents of stripped elements is left in
+	// place, but in the case of style and script elements, which don't
+	// represent any "real" content, we want to remove the contents as
+	// well.
+	var remove_contents = ['style', 'script'];
+
 	// predefined set of sanitize options if no dynamic or custom config is used
 	if( !Aloha.defaults.sanitize ) {
 		Aloha.defaults.sanitize = {}
@@ -44,7 +50,8 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 
 	// very restricted sanitize config
 	Aloha.defaults.sanitize.restricted = {
-		elements: [ 'b', 'em', 'i', 'strong', 'u', 'del', 'p', 'span', 'div', 'br' ]
+		elements: [ 'b', 'em', 'i', 'strong', 'u', 'del', 'p', 'span', 'div', 'br' ],
+		remove_contents: remove_contents
 	}
 
 	// sanitize  config allowing a bit more (no tables)
@@ -69,7 +76,9 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			'a' : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']},
 			'blockquote' : {'cite': ['http', 'https', '__relative__']},
 			'q' : {'cite': ['http', 'https', '__relative__']}
-		}
+		},
+
+		remove_contents: remove_contents
 	}
 
 	// relaxed sanitize config allows also tables
@@ -106,7 +115,9 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			'blockquote': {'cite': ['http', 'https', '__relative__']},
 			'img': {'src' : ['http', 'https', '__relative__']},
 			'q': {'cite': ['http', 'https', '__relative__']}
-		}
+		},
+
+		remove_contents: remove_contents
 	}
 
 	function initSanitize (configAllows) {

@@ -37,6 +37,92 @@ define([
 ) {
 	'use strict';
 
+	// White space characters as defined by HTML 4 (http://www.w3.org/TR/html401/struct/text.html)
+	var nonWhitespaceRx = /[^\r\n\t\f \u200B]/;
+
+	var nonBlockDisplayValuesMap = {
+		"inline": true,
+		"inline-block": true,
+		"inline-table": true,
+		"none": true
+	};
+
+	var blockTypeNodes = {
+		'P': true,
+		'H1': true,
+		'H2': true,
+		'H3': true,
+		'H4': true,
+		'H5': true,
+		'H6': true,
+		'OL': true,
+		'UL': true,
+		'PRE': true,
+		'ADDRESS': true,
+		'BLOCKQUOTE': true,
+		'DL': true,
+		'DIV': true,
+		'fieldset': true,
+		'FORM': true,
+		'HR': true,
+		'NOSCRIPT': true,
+		'TABLE': true
+	};
+
+	/**
+	 * From engine.js
+	 * "A block node is either an Element whose "display" property does not have
+	 * resolved value "inline" or "inline-block" or "inline-table" or "none", or a
+	 * Document, or a DocumentFragment."
+	 * Note that this function depends on style inheritance which only
+	 * works if the given node is attached to the document.
+	 */
+	function hasBlockStyle(node) {
+		return node && ((node.nodeType == 1 && !nonBlockDisplayValuesMap[Dom.getComputedStyle(node, 'display')])
+						|| node.nodeType == 9
+						|| node.nodeType == 11);
+	}
+
+	/**
+	 * From engine.js:
+	 * "An inline node is a node that is not a block node."
+	 * Note that this function depends on style inheritance which only
+	 * works if the given node is attached to the document.
+	 */
+	function hasInlineStyle(node) {
+		return !hasBlockStyle(node);
+	}
+
+	/**
+	 * From engine.js:
+	 * "An editing host is a node that is either an Element with a contenteditable
+	 * attribute set to the true state, or the Element child of a Document whose
+	 * designMode is enabled."
+	 * The check for design mode was removed because we only care about
+	 * contenteditable in Aloha.
+	 */
+	function isEditingHost(node) {
+		return 1 === node.nodeType && "true" === node.contentEditable;
+	}
+
+	/**
+	 * Similar to hasBlockStyle() except relies on the nodeName of the
+	 * given node which works for attached as well as and detached
+	 * nodes.
+	 */
+	function isBlockType(node) {
+		return blockTypeNodes[node.nodeName];
+	}
+
+	/**
+	 * isInlineType() is similar to hasInlineStyle()
+	 * in the same sense as
+	 * isBlockType() is similar to hasBlockStyle()
+	 */
+	function isInlineType(node) {
+		return !isBlockType(node);
+	}
+
 	var inlineFormattableMap = {
 		'A': true,
 		'B': true,
@@ -109,8 +195,168 @@ define([
 		return 3 === node.nodeType && !node.length;
 	}
 
-	function isInlineFormattable(node) {
-		return inlineFormattableMap[node.nodeName];
+	function isWhiteSpacePreserveStyle(cssWhiteSpaceValue) {
+		return (cssWhiteSpaceValue === 'pre'
+				|| cssWhiteSpaceValue === 'pre-wrap'
+				|| cssWhiteSpaceValue === '-moz-pre-wrap');
+	}
+
+	/**
+	 * Returns true if the given node is unrendered whitespace, with the
+	 * caveat that it only examines the given node and not any siblings.
+	 * An additional check is necessary to determine whether the node
+	 * occurs after/before a linebreaking node.
+	 *
+	 * Taken from
+	 * http://code.google.com/p/rangy/source/browse/trunk/src/js/modules/rangy-cssclassapplier.js
+	 * under the MIT license.
+	 */
+	function isUnrenderedWhitespaceNoBlockCheck(node) {
+		if (3 !== node.nodeType) {
+			return false;
+		}
+		if (!node.length) {
+			return true;
+		}
+		if (nonWhitespaceRx.test(node.nodeValue)) {
+			return false;
+		}
+        var cssWhiteSpace = Dom.getComputedStyle(node.parentNode, 'white-space');
+		if (isWhiteSpacePreserveStyle(cssWhiteSpace)) {
+			return false;
+		}
+		if ('pre-line' === cssWhiteSpace) {
+            if (/[\r\n]/.test(node.data)) {
+                return false;
+            }
+        }
+		return true;
+	}
+
+	/**
+	 * Empty inline elements are unrendered, with the exception of img
+	 * and br elements. Idea from engine.js.
+	 */
+	function isRenderedEmptyInlineNode(node) {
+		return 'IMG' === node.nodeName || 'BR' === node.nodeName;
+	}
+
+	/**
+	 * Returns true for nodes that introduce linebreaks.
+	 */
+	function isLinebreakingNode(node) {
+		return 'BR' === node.nodeName || hasBlockStyle(node);
+	}
+
+	/**
+	 * Returns true if the node at point is unrendered, with the caveat
+	 * that it only examines the node at point and not any siblings.
+	 * An additional check is necessary to determine whether the
+	 * whitespace occurrs after/before a linebreaking node.
+	 */
+	function isUnrenderedAtPoint(point) {
+		return (isUnrenderedWhitespaceNoBlockCheck(point.node)
+				|| (1 === point.node.nodeType
+					&& hasInlineStyle(point.node)
+					&& !isRenderedEmptyInlineNode(point.node)));
+	}
+
+	/**
+	 * Tries to move the given point to the end of the line, stopping to
+	 * the left of a br or block node, ignoring any unrendered
+	 * nodes. Returns true if the point was successfully moved to the
+	 * end of the line, false if some rendered content was encountered
+	 * on the way. point will not be mutated unless true is returned.
+	 */
+	function skipUnrenderedToEndOfLine(point) {
+		var cursor = point.clone();
+		cursor.nextWhile(isUnrenderedAtPoint);
+		if (!isLinebreakingNode(cursor.node)) {
+			return false;
+		}
+		point.setFrom(cursor);
+		return true;
+	}
+
+	/**
+	 * Tries to move the given point to the start of the line, stopping
+	 * to the right of a br or block node, ignoring any unrendered
+	 * nodes. Returns true if the point was successfully moved to the
+	 * start of the line, false if some rendered content was encountered
+	 * on the way. point will not be mutated unless true is returned.
+	 */
+	function skipUnrenderedToStartOfLine(point) {
+		var cursor = point.clone();
+		cursor.prev();
+		cursor.prevWhile(isUnrenderedAtPoint);
+		if (!isLinebreakingNode(cursor.node)) {
+			return false;
+		}
+		var isBr = ('BR' === cursor.node.nodeName);
+		cursor.next(); // after/out of the linebreaking node
+		// Because point may be to the right of a br at the end of a
+		// block, in which case the line starts before the br.
+		if (isBr) {
+			var endOfBlock = point.clone();
+			if (skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
+				cursor.skipPrev(); // before the br
+				cursor.prevWhile(isUnrenderedAtPoint);
+				if (!isLinebreakingNode(cursor.node)) {
+					return false;
+				}
+				cursor.next(); // after/out of the linebreaking node
+			}
+		}
+		point.setFrom(cursor);
+		return true;
+	}
+
+	/**
+	 * Tries to move the given boundary to the start of line, skipping
+	 * over any unrendered nodes, or if that fails to the end of line
+	 * (after a br element if present), and for the last line in a
+	 * block, to the very end of the block.
+	 *
+	 * If the selection is inside a block with only a single empty line
+	 * (empty except for unrendered nodes), and both boundary points are
+	 * normalized, the selection will be collapsed to the start of the
+	 * block.
+	 *
+	 * For some operations it's useful to think of a block as a number
+	 * of lines, each including its respective br and any preceding
+	 * unrendered whitespace and in case of the last line, also any
+	 * following unrendered whitespace.
+	 */
+	function normalizeBoundary(point) {
+		if (skipUnrenderedToStartOfLine(point)) {
+			return true;
+		}
+		if (!skipUnrenderedToEndOfLine(point)) {
+			return false;
+		}
+		if ('BR' === point.node.nodeName) {
+			point.skipNext();
+			// Because, if this is the last line in a block, any
+			// unrendered whitespace after the last br will not
+			// constitute an independent line, and as such we must
+			// include it in the last line.
+			var endOfBlock = point.clone();
+			if (skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
+				point.setFrom(endOfBlock);
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns true if the given node is unrendered whitespace.
+	 */
+	function isUnrenderedWhitespace(node) {
+		if (!isUnrenderedWhitespaceNoBlockCheck(node)) {
+			return false;
+		}
+		// Algorithm like engine.js isCollapsedWhitespaceNode().
+		return skipUnrenderedToEndOfLine(Dom.cursor(node, false)) || skipUnrenderedToStartOfLine(Dom.cursor(node, false));
 	}
 
 	/**
@@ -141,10 +387,6 @@ define([
 		return found;
 	}
 
-	function isEditingHost(node) {
-		return 1 === node.nodeType && "true" === node.contentEditable;
-	}
-
 	/**
 	 * Starting from the given node, and working backwards through the siblings,
 	 * find the node that satisfies the given condition.
@@ -162,6 +404,18 @@ define([
 		return node;
 	}
 
+	function isEmpty(elem) {
+		var child = elem.firstChild;
+		while (child) {
+			if (!isUnrenderedWhitespace(child)
+				    && (1 === child.nodeType || 3 === child.nodeType)) {
+				return true;
+			}
+			child = child.nextSibling;
+		}
+		return true;
+	}
+
 	/**
 	 * Checks if the given editable is a valid container for paragraphs.
 	 *
@@ -176,11 +430,51 @@ define([
 		return false;
 	}
 
+	// TODO This list is incomplete but should look something like
+	// http://www.w3.org/TR/CSS21/propidx.html
+	var notInheritedStyles = {
+		'background-color': true,
+		'underline': true
+	};
+	function isStyleInherited(styleName) {
+		return !notInheritedStyles[styleName];
+	}
+
+	/**
+	 * Returns true if the given character is a control
+	 * character. Control characters are usually not rendered if they
+	 * are inserted into the DOM. Returns false for whitespace 0x20
+	 * (which may or may not be rendered see isUnrenderedWhitespace())
+	 * and non-breaking whitespace 0xa0 but returns true for tab 0x09
+	 * and linebreak 0x0a and 0x0d.
+	 */
+	function isControlCharacter(chr) {
+		// Regex matches C0 and C1 control codes, which seems to be good enough.
+		// "The C0 set defines codes in the range 00HEX–1FHEX and the C1
+		// set defines codes in the range 80HEX–9FHEX."
+		// In addition, we include \x007f which is "delete", which just
+		// seems like a good idea.
+		// http://en.wikipedia.org/wiki/List_of_Unicode_characters
+		// http://en.wikipedia.org/wiki/C0_and_C1_control_codes
+		return (/[\x00-\x1f\x7f-\x9f]/).test(chr);
+	}
+
 	return {
+		isControlCharacter: isControlCharacter,
+		isStyleInherited: isStyleInherited,
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
+		isBlockType: isBlockType,
+		isInlineType: isInlineType,
+		hasBlockStyle: hasBlockStyle,
+		hasInlineStyle: hasInlineStyle,
 		isBlock: isBlock,
+		isUnrenderedWhitespace: isUnrenderedWhitespace,
+		isWhiteSpacePreserveStyle: isWhiteSpacePreserveStyle,
+		skipUnrenderedToStartOfLine: skipUnrenderedToStartOfLine,
+		skipUnrenderedToEndOfLine: skipUnrenderedToEndOfLine,
+		normalizeBoundary: normalizeBoundary,
 		isIgnorableWhitespace: isIgnorableWhitespace,
-		isInlineFormattable: isInlineFormattable,
+		isEmpty: isEmpty,
 		isProppedBlock: isProppedBlock,
 		isEditingHost: isEditingHost,
 		findNodeRight: findNodeRight,

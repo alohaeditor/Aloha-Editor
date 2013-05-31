@@ -27,46 +27,19 @@
 define([
 	'jquery',
 	'util/class',
+	'util/arrays',
 	'aloha/core',
 	'aloha/console',
 	'aloha/repositoryobjects' // Provides Aloha.RepositoryFolder
 ], function (
 	$,
 	Class,
+	Arrays,
 	Aloha,
 	Console,
 	__unused__
 ) {
 	'use strict';
-
-	/**
-	 * Given an input set, returns a new set which is a range of the input set
-	 * that maps to the given predicate.
-	 *
-	 * Prefers native Array.prototype.filter() where available (after JavaScript
-	 * 1.6).
-	 *
-	 * @param {Array} domain
-	 * @param {function:boolean} predicate
-	 * @return {Array} Sub set of domain
-	 */
-	var filter = (function (native) {
-		return (native
-			? function (domain, predicate) {
-				return domain.filter(predicate);
-			}
-			: function (domain, predicate) {
-				var codomain = [];
-				var i;
-				for (i = 0; i < domain.length; i++) {
-					if (predicate(domain[i])) {
-						codomain.push(domain[i]);
-					}
-				}
-				return codomain;
-			}
-		);
-	}(Array.prototype.hasOwnProperty('filter')));
 
 	/**
 	 * Bundles results, and meta information in preparation for the JSON Reader.
@@ -411,7 +384,7 @@ define([
 			                 ? [manager.getRepository(params.repositoryId)]
 			                 : manager.repositories;
 
-			var queue = filter(repositories, repositoryFilters.query);
+			var queue = Arrays.filter(repositories, repositoryFilters.query);
 
 			// If none of the repositories implemented the query method, then
 			// don't wait for the timeout, simply report to the client.
@@ -510,7 +483,7 @@ define([
 			                 : manager.repositories;
 
 			if (params.repositoryFilter && params.repositoryFilter.length) {
-				repositories = filter(repositories, function (repository) {
+				repositories = Arrays.filter(repositories, function (repository) {
 					return -1 < $.inArray(repository.repositoryId,
 						params.repositoryFilter);
 				});
@@ -537,7 +510,7 @@ define([
 				return;
 			}
 
-			var queue = filter(repositories, repositoryFilters.getChildren);
+			var queue = Arrays.filter(repositories, repositoryFilters.getChildren);
 
 			if (0 === queue.length) {
 				clearTimeout(timer);
@@ -712,7 +685,7 @@ define([
 		 * @return {Folder} Selected folder or null if it cannot be found.
 		 */
 		getSelectedFolder: function () {
-			var repositories = filter(this.repositories,
+			var repositories = Arrays.filter(this.repositories,
 					repositoryFilters.getSelectedFolder);
 			var i;
 			var selected;

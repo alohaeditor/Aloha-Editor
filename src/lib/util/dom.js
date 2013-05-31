@@ -437,6 +437,14 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * @method
 		 */
 		addMarkup: function (rangeObject, markup, nesting) {
+			// Because addMarkup can't handle a selection like
+			// <p>{xx</p> but it can handle <p>[xx</p>.
+			var sc = rangeObject.startContainer;
+			var so = rangeObject.startOffset;
+			if (1 === sc.nodeType && sc.childNodes[so] && 3 === sc.childNodes[so].nodeType) {
+				rangeObject.correctRange();
+			}
+
 			// split partially contained text nodes at the start and end of the range
 			if (rangeObject.startContainer.nodeType === 3
 				    && rangeObject.startOffset > 0
@@ -862,7 +870,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 
 					// if this is the last text node in a sequence, we remove any zero-width spaces in the text node,
 					// unless it is the only character
-					if (prevNode && (!prevNode.nextSibling || prevNode.nextSibling.nodeType !== 3)) {
+					if (prevNode && 3 === prevNode.nodeType && (!prevNode.nextSibling || prevNode.nextSibling.nodeType !== 3)) {
 						var pos;
 						for (pos = prevNode.data.length - 1; pos >= 0 && prevNode.data.length > 1; pos--) {
 							if (prevNode.data.charAt(pos) === '\u200b') {

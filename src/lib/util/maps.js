@@ -120,11 +120,33 @@ define([], function () {
 		}
 	}
 
+	/**
+	 * Merges one or more maps.
+	 * Merging happens from left to right, which is useful for example
+	 * when merging a number of given options with default options:
+	 * var effectiveOptions = Maps.merge(defaults, options);
+	 */
+	function merge() {
+		var dest = {};
+		var i;
+		for (i = 0; i < arguments.length; i++) {
+			var src = arguments[i];
+			var key;
+			for (key in src) {
+				if (src.hasOwnProperty(key)) {
+					dest[key] = src[key];
+				}
+			}
+		}
+		return dest;
+	}
+
 	return {
 		isEmpty: isEmpty,
 		fillTuples: fillTuples,
 		fillKeys: fillKeys,
 		keys: keys,
-		forEach: forEach
+		forEach: forEach,
+		merge: merge
 	};
 });

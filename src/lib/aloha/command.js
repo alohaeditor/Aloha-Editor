@@ -108,7 +108,8 @@ define([
 				//}
 				value = ContentHandlerManager.handleContent(value, {
 					contenthandler: Aloha.settings.contentHandler.insertHtml,
-					command: 'insertHtml'
+					command: 'insertHtml',
+					range: range
 				});
 			}
 
