@@ -83,6 +83,21 @@ define([
 		'video'      // HTML5
 	];
 
+
+	/**
+	 * Unicode zero width space characters:
+	 * http://www.unicode.org/Public/UNIDATA/Scripts.txt
+	 *
+	 * @const
+	 * @type {Array.<string>}
+	 */
+	var ZERO_WIDTH_CHARACTERS = [
+		'\\u200B', // ZWSP
+		'\\u200C',
+		'\\u200D',
+		'\\uFEFF'  // ZERO WIDTH NO-BREAK SPACE
+	];
+
 	/**
 	 * Unicode White_Space characters are those that have the Unicode property
 	 * "White_Space" in the Unicode PropList.txt data file.
@@ -114,7 +129,6 @@ define([
 		'\\u2008',
 		'\\u2009',
 		'\\u200A',
-		'\\u200B',
 		'\\u2028',
 		'\\u2029',
 		'\\u202F',
@@ -133,6 +147,16 @@ define([
 	var WSP_CHARACTERS = new RegExp('[' + wspChars + ']+');
 	var WSP_CHARACTERS_LEFT = new RegExp('^[' + wspChars + ']+');
 	var WSP_CHARACTERS_RIGHT = new RegExp('[' + wspChars + ']+$');
+
+	/**
+	 * Regular expression that matches one or more sequences of zero width
+	 * characters.
+	 *
+	 * @type {RegExp}
+	 */
+	var ZWSP_CHARACTERS = new RegExp('[' + ZERO_WIDTH_CHARACTERS.join('') + ']+');
+	var ZWSP_CHARACTERS_LEFT = new RegExp('^[' + ZERO_WIDTH_CHARACTERS.join('') + ']+');
+	var ZWSP_CHARACTERS_RIGHT = new RegExp('[' + ZERO_WIDTH_CHARACTERS.join('') + ']+$');
 
 	/**
 	 * Map containing lowercase and uppercase tagnames of block element as keys
@@ -237,6 +261,8 @@ define([
 		return str
 			.replace(WSP_CHARACTERS_LEFT, '')
 			.replace(WSP_CHARACTERS_RIGHT, '')
+			.replace(ZWSP_CHARACTERS_LEFT, '')
+			.replace(ZWSP_CHARACTERS_RIGHT, '')
 		;
 	}
 
