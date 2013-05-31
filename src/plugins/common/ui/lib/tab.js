@@ -16,6 +16,38 @@ define([
 
 	var idCounter = 0;
 	var slottedComponents = {};
+	
+	function hasVisibleComponents(tab){
+		var i, slot, component, hasVisible = false;
+		
+		// the problem is, a container component had a button to expand the options
+		if( $(
+				'button:not(.aloha-multisplit-toggle)', 
+				tab.panel
+			).length !== 0
+		){
+			hasVisible = true;
+		}
+		
+		/*
+		// @todo this algorithm must be enhanced, asking each component if is visible
+		// this is the longest aproach, I iterate the components registered in 
+		// this tab
+		for(i = 0; i < tab._slotsList.length; i++){
+			if(undefined !== slottedComponents[slotName]){
+				if($(
+						'button:not(.aloha-multisplit-toggle)', 
+						slottedComponents[slotName].element
+					).length !== 0
+				){
+					hasVisible = true;
+					break;
+				}
+			}
+		}
+		*/
+		return hasVisible;
+	}
 
 	/**
 	 * Defines a Container object that represents a collection of related
@@ -67,6 +99,7 @@ define([
 			this._elemBySlot = {};
 			this._groupBySlot = {};
 			this._groupByComponent = {};
+			this._slotsList = [];
 			this._super(context, settings);
 
 			this.container = settings.container;
@@ -130,6 +163,7 @@ define([
 			component.adoptParent(this);
 			elem.append(component.element);
 			group = this._groupBySlot[slot];
+			this._slotsList.push(slot);
 			if (group) {
 				this._groupByComponent[component.id] = group;
 				if (component.isVisible()) {
@@ -190,9 +224,10 @@ define([
 		 * @override
 		 */
 		show: function() {
-			if (!this.list.children().length) {
+			if (!this.list.children().length || !hasVisibleComponents(this)) {
 				return;
 			}
+			
 			this.handle.show();
 			this.visible = true;
 			
