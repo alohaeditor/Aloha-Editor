@@ -55,3 +55,8 @@ All changes are categorized into one of the following keywords:
 	selected and a non-control key was pressed, the browsers native
 	delete implemention was used. The latter case now also uses
 	Aloha's custom implementation.
+
+- **BUGFIX**: ephemera: broadcasting the aloha.ephemera event
+
+	This event will not be broadcasted when Ephemera.ephemera() is
+	accessed as a getter.
