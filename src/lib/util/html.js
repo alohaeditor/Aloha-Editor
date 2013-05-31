@@ -84,6 +84,57 @@ define([
 	];
 
 	/**
+	 * Unicode White_Space characters are those that have the Unicode property
+	 * "White_Space" in the Unicode PropList.txt data file.
+	 *
+	 * http://www.unicode.org/Public/UNIDATA/PropList.txt
+	 *
+	 * @const
+	 * @type {Array.<string>}
+	 */
+	var WHITE_SPACE_CHARACTERS_UNICODES = [
+		'\\u0009',
+		'\\u000A',
+		'\\u000B',
+		'\\u000C',
+		'\\u000D',
+		'\\u0020',
+		'\\u0085',
+		'\\u00A0', // NON BREAKING SPACE ("&nbsp;")
+		'\\u1680',
+		'\\u180E',
+		'\\u2000',
+		'\\u2001',
+		'\\u2002',
+		'\\u2003',
+		'\\u2004',
+		'\\u2005',
+		'\\u2006',
+		'\\u2007',
+		'\\u2008',
+		'\\u2009',
+		'\\u200A',
+		'\\u200B',
+		'\\u2028',
+		'\\u2029',
+		'\\u202F',
+		'\\u205F',
+		'\\u3000'
+	];
+
+	var wspChars = WHITE_SPACE_CHARACTERS_UNICODES.join('');
+
+	/**
+	 * Regular expression that matches one or more sequences of white space
+	 * characters.
+	 *
+	 * @type {RegExp}
+	 */
+	var WSP_CHARACTERS = new RegExp('[' + wspChars + ']+');
+	var WSP_CHARACTERS_LEFT = new RegExp('^[' + wspChars + ']+');
+	var WSP_CHARACTERS_RIGHT = new RegExp('[' + wspChars + ']+$');
+
+	/**
 	 * Map containing lowercase and uppercase tagnames of block element as keys
 	 * mapped against true.
 	 *
@@ -174,6 +225,20 @@ define([
 		}
 		return true;
 	}
+	
+	/**
+	 * Removes a strange characters from at the beginning and end of the string
+	 * 
+	 * @param {String} str A string to be trimmed
+	 * 
+	 * @return {String}
+	 */
+	function trimWhitespaceCharacters(str){
+		return str
+			.replace(WSP_CHARACTERS_LEFT, '')
+			.replace(WSP_CHARACTERS_RIGHT, '')
+		;
+	}
 
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
@@ -183,6 +248,7 @@ define([
 		isProppedBlock: isProppedBlock,
 		isEditingHost: isEditingHost,
 		findNodeRight: findNodeRight,
-		allowNestedParagraph: allowNestedParagraph
+		allowNestedParagraph: allowNestedParagraph,
+		trimWhitespaceCharacters: trimWhitespaceCharacters
 	};
 });
