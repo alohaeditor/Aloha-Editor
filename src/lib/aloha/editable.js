@@ -183,7 +183,7 @@ define([
 	 * engine.js.
 	 */
 	function keypressDeleteHandler(event) {
-		if (event.altKey || event.ctrlKey || !event.which) {
+		if (event.altKey || event.ctrlKey || event.metaKey || !event.which) {
 			return;
 		}
 		var selection = Aloha.getSelection();
