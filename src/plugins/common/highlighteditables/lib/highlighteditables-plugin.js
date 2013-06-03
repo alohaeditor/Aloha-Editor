@@ -25,8 +25,8 @@
  * recipients can access the Corresponding Source.
  */
 define('highlighteditables/highlighteditables-plugin',
-['aloha', 'jquery', 'aloha/plugin'],
-function(Aloha, jQuery, Plugin) {
+['aloha', 'jquery', 'aloha/plugin', 'PubSub'],
+function(Aloha, jQuery, Plugin, PubSub) {
 	"use strict";
 
 	var
@@ -72,6 +72,12 @@ function(Aloha, jQuery, Plugin) {
 						that.fade();
 					}
 			);
+
+			PubSub.sub('aloha.editable.destroyed', function (e) {
+				if(e.data.obj.hasClass('aloha-editable-highlight')) {
+					e.data.obj.removeClass('aloha-editable-highlight');
+				}
+			});
 
 		},
 		/**
