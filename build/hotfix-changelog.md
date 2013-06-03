@@ -10,12 +10,15 @@ All changes are categorized into one of the following keywords:
 
 - **BUGFIX**: Empty tabs will no longer show on the toolbar
 
-- **BUGFIX**: Merging table cells which contains &nbsp; will no longer result 
+- **BUGFIX**: Merging table cells which contains &nbsp; will no longer result
               in the cell that was merged having unnecessary white spaces.
 
-- **BUGFIX**: Setting transformFormattings to true in the generic handler, and 
-              allowing the U tag, will no longer result in the elimination of 
+- **BUGFIX**: Setting transformFormattings to true in the generic handler, and
+              allowing the U tag, will no longer result in the elimination of
               the U tags
 
-- **ENHANCEMENT**: Filters the tags used in transformFormattings, extracting the 
+- **ENHANCEMENT**: Filters the tags used in transformFormattings, extracting the
                    tags setted in the elements allowed setting
+
+- **BUGFIX**: Textcolor button on toolbar not longer have style superposition
+              when have styles applied to td or you have jquery-ui styles

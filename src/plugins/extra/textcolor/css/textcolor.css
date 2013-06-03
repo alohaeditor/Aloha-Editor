@@ -1,14 +1,14 @@
 .aloha-color-picker-overlay {
-    position: absolute;
-    display: none;
-    float: left;
-    padding: 0;
-    top: 0;
-    left: 0;
-    border: 1px solid #afafaf !important;
-    border-collapse: collapse !important;
-		background: #ffffff;
-    z-index: 999999;
+	position: absolute;
+	display: none;
+	float: left;
+	padding: 0;
+	top: 0;
+	left: 0;
+	border: 1px solid #afafaf !important;
+	border-collapse: collapse !important;
+	background: #ffffff;
+	z-index: 999999;
 }
 
 .aloha-color-picker-overlay {
@@ -16,35 +16,50 @@
 }
 
 .aloha-color-picker-overlay td {
-    font-size: 1em !important;
-    padding: 0.25em !important;
-		background-color: #ffffff;
-		border: 0;
+	font-size: 1em !important;
+	padding: 0.25em !important;
+	background-color: #ffffff;
+	border: 0;
+	width: 1em !important; /* IE FIX */
+	min-width: 1em !important; /* IE FIX */
+	max-width: 1em !important; /* IE FIX */
 }
 
 .aloha-color-picker-overlay td div {
-    width: 1em !important;
-    height: 1em !important;
-    border: 1px solid #afafaf !important;
-    padding: 0.05em !important;
+	width: 1em !important;
+	height: 1em !important;
+	border: 1px solid #afafaf !important;
+	padding: 0.05em !important;
 }
 
 .aloha-color-picker-overlay td.mouseover div {
-    border: 1px solid #000000 !important;
-    cursor: pointer;
+	border: 1px solid #000000 !important;
+	cursor: pointer;
 }
 
 .aloha-color-picker-overlay td.focused div {
-    border: 1px solid #000000 !important;
+	border: 1px solid #000000 !important;
 }
 
-.aloha-color-picker-overlay .removecolor {
-    line-height: 17px;
+.aloha-color-picker-overlay div.removecolor {
+	line-height: 17px;
+	border: none !important;
+	text-align: right;
 }
+
+.aloha-color-picker-overlay td.mouseover div.removecolor,
+.aloha-color-picker-overlay td.focused div.removecolor {
+	border: none !important;
+}
+
 .aloha .ui-icon.aloha-icon-colorpicker {
-    background-color: #ffffff;
+	background-color: #ffffff;
 }
 
 .greenborder {
-    background-color: #99CCFF;
+	background-color: #99CCFF;
+}
+
+.ui-icon.aloha-icon-textcolor{
+	background-image: none;
 }
