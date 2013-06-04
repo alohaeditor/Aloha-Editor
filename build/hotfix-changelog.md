@@ -19,3 +19,7 @@ All changes are categorized into one of the following keywords:
 
 - **ENHANCEMENT**: Filters the tags used in transformFormattings, extracting the 
                    tags setted in the elements allowed setting
+
+- **BUGFIX**: The table not longer will be deleted when the user press delete 
+              key with the cursor just before a table, or press backspace with 
+              the cursor just after the table
