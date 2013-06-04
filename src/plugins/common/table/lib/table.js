@@ -34,6 +34,29 @@ define([
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
 
+	function getNewSelectedElement(type, parent){
+		var toSelectElement;
+		if('first' === type){
+			toSelectElement = $('[contenteditable]', parent).first()[0]
+				.firstChild
+			;
+			if(undefined === toSelectElement){
+				toSelectElement = $('*', parent).first()[0].firstChild;
+			}
+		}else if('last' === type){
+				toSelectElement = $('[contenteditable] *', parent).last()[0]
+					.lastChild
+				;
+			if(undefined === toSelectElement){
+				toSelectElement = $('[contenteditable]', parent).last()[0]
+					.lastChild
+				;
+			}
+		}
+		
+		return toSelectElement;
+	}
+
 	/**
 	 * Constructor of the table object
 	 *
@@ -355,6 +378,58 @@ define([
 				}
 			}
 		} );
+		
+		Aloha.bind('aloha-command-will-execute', function(event, evtObj){
+			var range,
+				nextPreviousElement,
+				newSelectElm,
+				offset = 0
+			;
+			if( 'forwarddelete' === evtObj.commandId ){
+				// delete content in the right of cursor
+				range = Aloha.getSelection().getRangeAt(0);
+
+				if(range.startOffset === range.endOffset && 
+					range.endOffset === range.commonAncestorContainer.length
+				){ // then the cursor is at the end of the text, may be is
+					//  before the table wrapper
+
+					// range.commonAncestorContainer.parentNode.previousSibling
+					nextPreviousElement = $(range.commonAncestorContainer)
+										 .parent()
+											.next()[0]
+					;
+
+					if(nextPreviousElement === that.tableWrapper){
+						newSelectElm = getNewSelectedElement('first', that.obj);
+						offset = 0;
+						evtObj.preventDefault = true;
+						Aloha.getSelection().collapse(newSelectElm, offset);
+					}
+				}
+			}else if( 'delete' === evtObj.commandId ){
+				// delete content in the left of cursor
+				range = Aloha.getSelection().getRangeAt(0);
+
+				if(range.startOffset === range.endOffset && 
+					range.endOffset === 0
+				){ // then the cursor may be is located after the table wrapper
+
+					// range.commonAncestorContainer.parentNode.previousSibling
+					nextPreviousElement = $(range.commonAncestorContainer)
+										 .parent()
+											.prev()[0]
+					;
+
+					if(nextPreviousElement === that.tableWrapper){
+						newSelectElm = getNewSelectedElement('last', that.obj);
+						offset = newSelectElm.length || $(newSelectElm).text().length;
+						evtObj.preventDefault = true;
+						Aloha.getSelection().collapse(newSelectElm, offset);
+					}
+				}
+			}
+		});
 
 		/*
 		We need to make sure that when the user has selected text inside a
