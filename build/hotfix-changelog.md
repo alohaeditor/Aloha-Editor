@@ -19,3 +19,7 @@ All changes are categorized into one of the following keywords:
 
 - **ENHANCEMENT**: Filters the tags used in transformFormattings, extracting the 
                    tags setted in the elements allowed setting
+
+- **BUGFIX**: Prevents write outside the p tags, when you insert a table and
+              select just above of this or just in the right, selecting the 
+              table wrapper element.
