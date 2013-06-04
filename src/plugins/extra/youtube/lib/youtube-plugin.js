@@ -60,7 +60,7 @@ define([
 		init: function($element, postProcessFn) {
 			$element.html('<embed src="http://www.youtube.com/v/' + $element.data('ytcode') + 
 				'" type="application/x-shockwave-flash" ' + 
-				'allowscriptaccess="always" allowfullscreen="true" width="100%" height="350" />');
+				'allowscriptaccess="always" allowfullscreen="true" width="640" height="400" />');
 			postProcessFn();
 		}
 	});
@@ -74,7 +74,7 @@ define([
 		handleContent: function (content) {			
 			var matches = content.match("www.youtube.com/watch\\?v=(\\w+)");
 
-			if (matches !== null && matches[1]) {
+			if (matches !== null) {
 				initializeBlock = true;
 				return '<div data-aloha-block-type="YouTubeBlock" ' + 
 					'data-ytcode="' + matches[1] + '">YouTubeBlock</div>';
