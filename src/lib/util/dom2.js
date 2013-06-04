@@ -902,6 +902,7 @@ define([
 		cloneShallow: cloneShallow,
 		setStyle: setStyle,
 		getStyle: getStyle,
-		getComputedStyle: getComputedStyle
+		getComputedStyle: getComputedStyle,
+		nodeLength: nodeLength
 	};
 });

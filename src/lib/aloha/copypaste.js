@@ -31,10 +31,12 @@
  */
 define('aloha/copypaste', [
 	'jquery',
-	'aloha/core'
+	'aloha/core',
+	'util/dom2'
 ], function (
 	$,
-	Aloha
+	Aloha,
+	Dom
 ) {
 	'use strict';
 
@@ -93,8 +95,7 @@ define('aloha/copypaste', [
 			startContainer: element,
 			endContainer: element,
 			startOffset: 0,
-			endOffset: element.childNodes ? element.childNodes.length
-		                                  : element.length
+			endOffset: Dom.nodeLength(element)
 		});
 		$(element).focus();
 	}
