@@ -389,7 +389,7 @@ define([
 
 				var jqObj = jQuery( this );
 				// offset to be used for activating the resize cursor near a table border
-				var mouseOffset = 3; 
+				var mouseOffset = 3;
 
 				// filter out the control cells
 				if ( jQuery( this ).hasClass( 'aloha-table-selectrow' ) || jQuery( this ).closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ))
@@ -478,7 +478,7 @@ define([
 		// tha data-block-skip-scope attribute will keep the block plugin from setting the
 		// FloatingMenu's scope when the block is clicked
 		tableWrapper = jQuery(
-			'<div class="' + this.get( 'classTableWrapper' ) + '" data-block-skip-scope="true"></div>'
+			'<div class="' + this.get( 'classTableWrapper' ) + '" data-block-skip-scope="true" contenteditable="false"></div>'
 		);
 		//tableWrapper.contentEditable( false );
 
