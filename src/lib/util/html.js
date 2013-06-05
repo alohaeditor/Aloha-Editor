@@ -250,7 +250,7 @@ define([
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Removes a strange characters from at the beginning and end of the string
 	 * 
@@ -258,13 +258,12 @@ define([
 	 * 
 	 * @return {String}
 	 */
-	function trimWhitespaceCharacters(str){
+	function trimWhitespaceCharacters(str) {
 		return str
 			.replace(WSP_CHARACTERS_LEFT, '')
 			.replace(WSP_CHARACTERS_RIGHT, '')
 			.replace(ZWSP_CHARACTERS_LEFT, '')
-			.replace(ZWSP_CHARACTERS_RIGHT, '')
-		;
+			.replace(ZWSP_CHARACTERS_RIGHT, '');
 	}
 
 	return {
