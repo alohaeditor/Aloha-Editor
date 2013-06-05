@@ -37,3 +37,6 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: The editable Class now publish the message 
                    aloha.editable.deactivated via PubSub
 
+- **BUGFIX**: The table not longer will be deleted when the user press delete 
+              key with the cursor just before a table, or press backspace with 
+              the cursor just after the table
