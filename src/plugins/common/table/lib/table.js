@@ -478,9 +478,9 @@ define([
 		// tha data-block-skip-scope attribute will keep the block plugin from setting the
 		// FloatingMenu's scope when the block is clicked
 		tableWrapper = jQuery(
-			'<div class="' + this.get( 'classTableWrapper' ) + '" data-block-skip-scope="true" contenteditable="false"></div>'
+			'<div class="' + this.get( 'classTableWrapper' ) + '" data-block-skip-scope="true"></div>'
 		);
-		//tableWrapper.contentEditable( false );
+		tableWrapper.contentEditable( false );
 
 		// wrap the tableWrapper around the table
 		this.obj.wrap( tableWrapper );
