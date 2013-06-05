@@ -12,6 +12,46 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.10 - 2013/06/05
+
+- **ENHANCEMENT**: Filters the tags used in transformFormattings, extracting the
+                   tags setted in the elements allowed setting
+
+- **ENHANCEMENT**: Added trimWhitespaceCharacters method in util/html to remove
+                   the weirds whitespace characters, this is necessary in
+                   Internet Explorer 7
+
+- **ENHANCEMENT**: The extra plugin headerids now uses PubSub.sub instead
+                   Aloha.bind, when is available
+
+
+- **ENHANCEMENT**: The editable Class now publish the message
+                   aloha.editable.deactivated via PubSub
+
+- **BUGFIX**: Empty tabs will no longer show on the toolbar
+
+- **BUGFIX**: Merging table cells which contains &nbsp; will no longer result
+              in the cell that was merged having unnecessary white spaces.
+
+- **BUGFIX**: Setting transformFormattings to true in the generic handler, and
+              allowing the U tag, will no longer result in the elimination of
+              the U tags
+
+- **BUGFIX**: Textcolor button on toolbar not longer have style superposition
+              when have styles applied to td or you have jquery-ui styles
+
+- **BUGFIX**: The extra plugin headerids not longer result in duplicated id when
+              have duplicated headers title
+
+- **BUGFIX**: The table not longer will be deleted when the user press delete
+              key with the cursor just before a table, or press backspace with
+              the cursor just after the table
+
+- **BUGFIX**: Prevents write outside the p tags, when you insert a table and
+              select just above of this or just in the right, selecting the
+              table wrapper element.
+
+
 ## 0.23.9 - 2013/05/29
 
 - **BUGFIX**: With this change, paragraphs are no longer inserted when pressing Enter
