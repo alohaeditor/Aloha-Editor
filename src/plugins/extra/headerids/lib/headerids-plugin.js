@@ -88,14 +88,23 @@ define([
 		);
 	}
 	
-	function checkDuplicatedID(propusedID){
-		var baseID = propusedID, i = 1;
+	/**
+	 * Check in the entire document if has a element with the same ID, and try 
+	 * to get an unique ID
+	 * 
+	 * @param {String} proposedID ID to check, uses this as base and concatenate
+	 *                 a dangling with a number
+	 * 
+	 * @return {String}
+	 */
+	function checkDuplicatedID(proposedID){
+		var baseID = proposedID, i = 1;
 		
-		while($('#' + propusedID).length > 0){
-			propusedID = baseID + '_' + ( ++i ).toString();
+		while($('#' + proposedID).length > 0){
+			proposedID = baseID + '_' + ( ++i ).toString();
 		}
 		
-		return propusedID;
+		return proposedID;
 	}
 	
 	return Plugin.create('headerids', {
@@ -164,8 +173,7 @@ define([
 		processH: function (heading) {
 			if(!heading.id){
 				var $heading = $(heading),
-					ID = this.sanitize($heading.text())
-				;
+					ID = this.sanitize($heading.text());
 
 				ID = checkDuplicatedID(ID);
 
@@ -188,8 +196,7 @@ define([
 		 */
 		sanitize: function (str) {
 			return html.trimWhitespaceCharacters(str)
-				.replace(/[^a-z0-9]+/gi, '_')
-			;
+				.replace(/[^a-z0-9]+/gi, '_');
 		},
 
 		//ns = headerids
