@@ -40,3 +40,7 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: The table not longer will be deleted when the user press delete 
               key with the cursor just before a table, or press backspace with 
               the cursor just after the table
+
+- **BUGFIX**: Prevents write outside the p tags, when you insert a table and
+              select just above of this or just in the right, selecting the 
+              table wrapper element.

@@ -497,7 +497,7 @@ define([
 
 				var jqObj = jQuery( this );
 				// offset to be used for activating the resize cursor near a table border
-				var mouseOffset = 3; 
+				var mouseOffset = 3;
 
 				// filter out the control cells
 				if ( jQuery( this ).hasClass( 'aloha-table-selectrow' ) || jQuery( this ).closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ))
@@ -588,7 +588,7 @@ define([
 		tableWrapper = jQuery(
 			'<div class="' + this.get( 'classTableWrapper' ) + '" data-block-skip-scope="true"></div>'
 		);
-		//tableWrapper.contentEditable( false );
+		tableWrapper.contentEditable( false );
 
 		// wrap the tableWrapper around the table
 		this.obj.wrap( tableWrapper );
