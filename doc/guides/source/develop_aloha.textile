@@ -12,6 +12,14 @@ cd alohaeditor
 git checkout dev
 </shell>
 
+h3. Developing in the browser
+
+Maybe you want to start testing Aloha Editor in your browser. The easiest way to start are prefereably the demos. 
+
+First you would include the Aloha Editor directory from the previous step into XAMPP. Just setup XAMPP after this "guide on apachefriends":http://www.apachefriends.org/de/xampp.html, then move or symlink the directory into the HTML directory.
+
+Afterwards the demos should be reachable under http://localhost/Aloha-Editor/src/demo/
+
 h3. Pre-commit hook
 
 A precommit hook is provided in .githooks/pre-commit. This file has to
