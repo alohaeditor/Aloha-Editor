@@ -1,6 +1,6 @@
 body {
   font-family: sans-serif;
-  background-image: url("../common/background.png");
+  background-image: url("common/background.png");
 }
 
 p {
@@ -35,4 +35,19 @@ h6 { font-size: 80%;  }
   box-shadow: 5px 5px rgba(0,0,0,0.3);
   -webkit-box-shadow: 5px 5px rgba(0,0,0,0.3);
   -moz-box-shadow: 5px 5px rgba(0,0,0,0.3);
+}
+
+ul.demolist {
+  list-style: none;
+}
+a.more {
+  display: block;
+  text-align: right;
+}
+a.more:before {
+  content: '> ';
+}
+.hint {
+	background: #FCF2B3;
+	padding: 0.42em;
 }
