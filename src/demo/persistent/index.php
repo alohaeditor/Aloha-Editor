@@ -26,6 +26,7 @@
 </head>
 <body>
 	<div id="main">
+		<div id="status"><a href="#">save</a></div>
 		<div id="title"><h1>Saving with Aloha!</h1></div>
 		<div id="content"><p>This demo also stores the content on the server.</p></div>
 	</div>
@@ -34,19 +35,46 @@
                         'use strict';
                         $('#content').aloha();
 			$('#title').aloha();
-
-                        Aloha.bind('aloha-smart-content-changed', function(event,data){
-                                var content = data.editable.getContents();
-                                var id = data.editable.getId();
-                                var request = $.ajax({
+			
+			function save(id, content) {
+				var status = $('#status')
+				status.find('a').text("saving");
+				var request = $.ajax({
                                         url: document.location.url,
                                         type: "post",
                                         data: {
                                                 'content': content,
                                                 'id': id
                                         }
-                                });
+					
+				});
+				request.done(function(msg){
+					status.find('a').text("saved");
+					if (status.hasClass('error')) {
+						status.removeClass('error');	
+					}
+				});
+				request.fail(function(msg){
+					status.find('a').text("not saved");
+					if(!status.hasClass('error')) {
+						status.addClass('error');
+					}
+					console.error('Error saving the content', msg);
+				});
+			}
+
+                        Aloha.bind('aloha-smart-content-changed', function(event,data){
+                                var content = data.editable.getContents();
+                                var id = data.editable.getId();
+				save(id, content);
                         });
+			Aloha.bind('aloha-editable-created', function(event, data) {
+				$('#status a').click(function() {
+					var id = data.obj.attr('id');
+					var content = $('#' + id).html();
+					save(id, content);						
+				});
+			});
                 });
 	</script>
 </body>
