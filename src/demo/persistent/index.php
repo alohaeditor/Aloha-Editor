@@ -26,12 +26,14 @@
 </head>
 <body>
 	<div id="main">
-		<div id="content"><h2>Getting started with Aloha Editor! </h2><p>This demo also stores the content on the server.</p></div>
+		<div id="title"><h1>Saving with Aloha!</h1></div>
+		<div id="content"><p>This demo also stores the content on the server.</p></div>
 	</div>
 	<script type="text/javascript">
                 Aloha.require(['aloha', 'aloha/jquery'], function(Aloha, $){
                         'use strict';
                         $('#content').aloha();
+			$('#title').aloha();
 
                         Aloha.bind('aloha-smart-content-changed', function(event,data){
                                 var content = data.editable.getContents();
