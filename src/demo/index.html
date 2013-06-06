@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Aloha Editor Demo</title>
+	<link rel="stylesheet" href="index.css" type="text/css">
+	<link rel="stylesheet" href="../css/aloha.css" type="text/css">
+	<script src="../lib/require.js"></script>
+	<script src="../lib/vendor/jquery-1.7.2.js"></script>
+	<script src="../lib/aloha.js" data-aloha-plugins="common/ui,common/format,common/highlighteditables,common/link"></script>
+</head>
+<body>
+	<div id="main">
+		<div id="content">
+			<p>This is the list of Demos that are currently shipped with Aloha Editor to get you started in developing your first plugins!</p>
+			<ul>
+				<li><a href="simple/index.html"><h2>Simple</h2> This is the easiest example to start with aloha. Just a div that is editable.</a></li>
+				<li><a href="boilerplate/index.html"><h2>Boilerplate</h2> Fully designed page where mutliple parts are editable</a></li>
+			</ul>	
+		</div>
+	</div>
+	<script type="text/javascript">
+	Aloha.ready( function() {
+		Aloha.jQuery('#content').aloha();
+	});
+	</script>
+</body>
+</html>
