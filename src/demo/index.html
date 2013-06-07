@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Aloha Editor Demo</title>
+	<link rel="stylesheet" href="index.css" type="text/css">
+	<link rel="stylesheet" href="../css/aloha.css" type="text/css">
+	<script src="../lib/require.js"></script>
+	<script src="../lib/vendor/jquery-1.7.2.js"></script>
+	<script src="../lib/aloha.js" data-aloha-plugins="common/ui,common/format,common/highlighteditables,common/link"></script>
+</head>
+<body>
+	<div id="main">
+		<div id="content">
+			<h1>Aloha Editor Demos</h1>
+			<p>This is the list of Demos that are currently shipped with Aloha Editor to get you started in developing your first plugins!</p>
+			<p class="hint">You can click the links by holding [CTRL] or [CMD] if the Aloha Editor is activated.</p>
+			<ul class="demolist">
+				<li><h2>Simple</h2> This is the easiest example to start with aloha. Just a div that is editable. <a href="simple/index.html" class="more">show simple demo</a></li>
+				<li><h2>Boilerplate</h2> Fully designed page where mutliple parts are editable. <a href="boilerplate/index.html" class="more">show boilerplate demo</a></li>
+				<li><h2>Block</h2> Featuring the Aloha Block Plugin that allows you to move arround block elements in content editables. <a href="block/index.html" class="more">show block demo</a></li>
+				<li><h2>Commands</h2> Demo showing pre selected text in an Aloha editable. <a href="commands/index.html" class="more">show commands demo</a></li>
+				<li><h2>Demo App</h2> Demo Application featuring the Demos from the Aloha Editor Homepage. <a href="demo-app/index.html" class="more">show demo app</a></li>
+				<li><h2>Table Demo</h2> Featuring then Aloha Editor table plugin. <a href="dev-table-resize/index.html" class="more">show table demo</a></li>
+				<li><h2>impress.js</h2> Writing your slides with Aloha Editor. <a href="impress.js/index.html" class="more">show impress</a></li>
+				<li><h2>Textarea</h2> Applying the Aloha Editor to a textarea. <a href="textarea/index.php" class="more">show textarea demo</a></li>
+				<li><h2>World</h2> Another basic Aloha Editor demo.. <a href="world/index.html" class="more">show world demo</a></li>
+			</ul>	
+		</div>
+	</div>
+	<script type="text/javascript">
+	Aloha.ready( function() {
+		Aloha.jQuery('#content').aloha();
+	});
+	</script>
+</body>
+</html>
