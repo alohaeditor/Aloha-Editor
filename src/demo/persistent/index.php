@@ -4,7 +4,8 @@
         $id = $_POST["id"];
         $content = $_POST["content"];
 	$file = __FILE__;
-        if ($id != "" && $content != "") {
+	//deactivated by default
+        if (false && $id != "" && $content != "") {
                 // Create DOM from URL or file
                 $html = file_get_html($file, false, null, -1, -1, true, true, DEFAULT_TARGET_CHARSET, false);
 		//replace content of matching dom object
@@ -28,7 +29,15 @@
 	<div id="main">
 		<div id="status"><a href="#">save</a></div>
 		<div id="title"><h1>Saving with Aloha!</h1></div>
-		<div id="content"><p>This demo also stores the content on the server.</p></div>
+		<div id="content">
+			<p>This demo also stores the content on the server.</p>
+			<p><b>Attention:</b> By default the save function is deactivated to not be a security risk for any servers. To activate open index.php in your favourite editor and change:</p>
+			<pre>//deactivated by default
+if (false &amp;&amp; $id != "" &amp;&amp; $content != "") {</pre>
+			<p>to:</p>
+			<pre>if ($id != "" &amp;&amp; $content != "") {</pre>
+			<p>So just remove the false that is preventing the save function to work.</p>
+		</div>
 	</div>
 	<script type="text/javascript">
                 Aloha.require(['aloha', 'aloha/jquery'], function(Aloha, $){
