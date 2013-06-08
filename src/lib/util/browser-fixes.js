@@ -1,4 +1,4 @@
-/* ephemera.js is part of Aloha Editor project http://aloha-editor.org
+/* browser-fixes.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
@@ -24,12 +24,25 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(['jquery'], function ($) {
+define(['util/html', 'util/dom2'], function (Html, Dom) {
 	'use strict';
-	var testElem = document.createElement('div');
+
+	function fixBoundaryPoint(container, offset, range, set) {
+		// Because Chrome doesn't like it if a boundary point is at the
+		// outside of an editable. The effect would be, if such a range
+		// were added to the selection, that the selection would be
+		// collapsed to the end of the range.
+		if (Html.isEditingHost(Dom.nodeAtOffset(container, offset))) {
+			set.call(range, Dom.nodeAtOffset(container, offset), 0);
+		}
+	}
+
+	function fixRange(range) {
+		fixBoundaryPoint(range.startContainer, range.startOffset, range, range.setStart);
+		fixBoundaryPoint(range.endContainer, range.endOffset, range, range.setEnd);
+	}
+
 	return {
-		ie7: $.browser.msie && parseInt($.browser.version, 10) < 8,
-		ie: $.browser.msie,
-		hasRemoveProperty: !!testElem.style.removeProperty
+		fixRange: fixRange
 	};
 });

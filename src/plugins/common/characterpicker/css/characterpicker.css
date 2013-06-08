@@ -22,13 +22,16 @@
 .aloha-character-picker-overlay td{
 	width: 1.2em;
 	height: 1.2em;
-	line-height: 1.2em;
-	font-size: 1em;
 	padding: 0.1em;
-	cursor: pointer;
 	border: 1px solid #afafaf;
 	background-color: #fff;
+
+	color: #000000;
+	line-height: 1.2em;
+	font-size: 1em;
 	text-align: center;
+	
+	cursor: pointer;
 }
 
 .aloha-character-picker-overlay td.focused {

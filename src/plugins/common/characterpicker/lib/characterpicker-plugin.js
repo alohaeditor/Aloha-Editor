@@ -67,7 +67,7 @@ define([
 	var configs = {};
 
 	/**
-	 * Checks whether the character picker overlay.
+	 * Checks whether the character picker overlay is visible.
 	 *
 	 * @param {Overlay} overlay
 	 * @return {boolean} True if the overlay is visible.
@@ -88,12 +88,12 @@ define([
 		});
 
 		$('body').click(function ($event) {
-			// Because we click events on the overlay ui should not cause it to
+			// Because click events on the overlay ui should not cause it to
 			// hide itself.
 			if (!overlay._overlayActive
 					|| ($event.target === overlay.$element[0])
-					|| $(event.target).is('.aloha-icon-characterpicker')
-					|| $(event.target).find('.aloha-icon-characterpicker').length) {
+					|| $($event.target).is('.aloha-icon-characterpicker')
+					|| $($event.target).find('.aloha-icon-characterpicker').length) {
 				return;
 			}
 			overlay.hide();
@@ -119,12 +119,11 @@ define([
 	 *
 	 * @param {HTMLElement} source The element of which the style element is
 	 *                             taken.
-	 * @param {HTMLElement} target Where the style will be applied.
+	 * @param {jQuery.<HTMLElement>} target Where the style will be applied.
 	 * @param {string} styleProp The css property which shall be copied.
-	 * @return {jQuery.<HTMLElement>}
 	 */
-	function copyStyle(source, target, styleProp) {
-		// Move to strings.js
+	function copyStyle(source, $target, styleProp) {
+		// TODO: Move to strings.js
 		var camelize = function (str) {
 			return str.replace(/\-(\w)/g, function (str, letter) {
 				return letter.toUpperCase();
@@ -144,7 +143,9 @@ define([
 			style = source.style[camelize(styleProp)];
 		}
 
-		return style ? target.css(styleProp, style) : null;
+		if (style) {
+			$target.css(styleProp, style);
+		}
 	}
 
 	/**
@@ -252,24 +253,22 @@ define([
 	}
 
 	/**
-	 * @param {Overlay} overlay
+	 * Calculates the offset at which to position the overlay element.
+	 *
 	 * @param {jQuery.<HTMLElement>} $element A DOM element around which to
 	 *                                        calculate the offset.
 	 */
-	function calculateOffset(overlay, $element) {
+	function calculateOffset($element) {
 		var offset = $element.offset();
 		if ('fixed' === Floating.POSITION_STYLE) {
 			offset.top -= $WINDOW.scrollTop();
 			offset.left -= $WINDOW.scrollLeft();
 		}
-		return {
-			top: overlay.offset.top + (offset.top - overlay.offset.top),
-			left: overlay.offset.left + (offset.left - overlay.offset.left)
-		};
+		return offset;
 	}
 
 	/**
-	 * Insert the selected character, at the editor's selection.
+	 * Inserts the selected character, at the editor's selection.
 	 *
 	 * @param {String} character
 	 */
@@ -318,13 +317,9 @@ define([
 	}
 
 	Overlay.prototype = {
-		offset: {
-			top: 0,
-			left: 0
-		},
 
 		/**
-		 * Show the character overlay at the insert button's position.
+		 * Shows the character overlay at the insert button's position.
 		 *
 		 * @param {jQuery.<HTMLElement>} $insert Insert button.
 		 */
@@ -333,7 +328,7 @@ define([
 
 			// Because the overlay needs to be reposition relative its button.
 			overlay.$element
-			       .css(calculateOffset(overlay, $insert))
+			       .css(calculateOffset($insert))
 			       .css('position', Floating.POSITION_STYLE)
 			       .show()
 			       .find('.focused')
@@ -347,6 +342,9 @@ define([
 			overlay._overlayActive = true;
 		},
 
+		/**
+		 * Hides the character overlay.
+		 */
 		hide: function () {
 			this.$element.hide();
 			this._overlayActive = false;
@@ -354,7 +352,7 @@ define([
 	};
 
 	/**
-	 * Generate an character picker overlay for the given editable.
+	 * Generates an character picker overlay for the given editable.
 	 *
 	 * Because each editable may have its own configuration and therefore may
 	 * have its own overlay.
@@ -366,7 +364,7 @@ define([
 	 *                        character picker.
 	 */
 	function generateOverlay(characterpicker, editable) {
-		var config = characterpicker.getEditableConfig(editable);
+		var config = characterpicker.getEditableConfig(editable.obj);
 		if (!config) {
 			return null;
 		}
@@ -411,11 +409,11 @@ define([
 						rangeAtOpen = Aloha.Selection.rangeObject;
 
 						var from = rangeAtOpen.startContainer.parentNode;
-						var to = characterpicker.overlay.$element;
+						var $to = characterpicker.overlay.$element;
 
-						copyStyle(from, to, 'font-family');
-						copyStyle(from, to, 'font-weight');
-						copyStyle(from, to, 'font-style');
+						copyStyle(from, $to, 'font-family');
+						copyStyle(from, $to, 'font-weight');
+						copyStyle(from, $to, 'font-style');
 
 						characterpicker.overlay.show(this.element);
 					}
@@ -423,8 +421,8 @@ define([
 			});
 
 			/**
-			 * Pre-generate overlays to so that they will be ready when the
-			 * editor click on an editable.
+			 * Pre-generates overlays so that they will be ready when the editor
+			 * click on an editable.
 			 *
 			 * @param {number} editableIndex
 			 */
@@ -455,9 +453,8 @@ define([
 
 			PubSub.sub('aloha.floating.changed', function (message) {
 				if (characterpicker.overlay) {
-					characterpicker.overlay.offset = message.position.offset;
 					characterpicker.overlay.$element.css(
-						calculateOffset(characterpicker.overlay, button.element)
+						calculateOffset(button.element)
 					);
 				}
 			});

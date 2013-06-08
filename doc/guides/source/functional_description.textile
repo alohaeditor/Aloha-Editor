@@ -69,19 +69,19 @@ h4. Implemented behaviour
 
 The current implementation of Aloha Editor regarding block level elements is like follows:
 
-When initializing an editable
+When initializing an editable:
 * remove all empty block level elements (since they are invisible anyway)
 * add zero-width spaces to all empty block level elements when using Internet Explorer 7
 * add +<br />+ to all +<li>+ elements, except when in Internet Exporer
+* remove any trailing <br /> element in block level elements if in Internet Explorer
 
-While editing
+While editing:
 * For every operation, that might lead to an empty block level elements (hitting +ENTER+, deleting, ...),
 fix the empty block level element by appending a +<br />+ (except when editing in Internet Explorer).
 For Internet Explorer 7, instead of +<br />+ the zero-width spaces will be used.
 
-When getting the editable's content (e.g. for saving) with the _getContents()_ method
-* Make sure that every block level element contains a single +<br />+ as
-last child.
+When getting the editable's content (e.g. for saving) with the _getContents()_
+method:
 * Remove all end +<br />+ tags contained in +<li>+.
 
 The current implementation handles
@@ -89,6 +89,17 @@ The current implementation handles
 * +<h1>+ - +<h6>+
 * +<pre>+
 * +<blockquote>+
+
+WARNING: The removal of trailing line break elements (<code><br/></code>) in
+Internet Explorer at the point of initializing Editables is a work-around for
+IE's nonconformance to the W3C specification.  The consequence of this
+work-around ought to be noted:<br />In the common case of persisting changes to
+documents edited with Aloha Editor, if a block level element contains numerous
+trailing <code><br/></code>s, each time the document is opened for editing and
+then saved, it will loose one of the trailing line breaks until eventually none
+is left--even if no manual editing is done in the editable.  This would be
+another reason not to use line break elements to space your content; there are
+better means to achieve the same.
 
 Initialization and getContents behaviour is implemented in the "Blockelement Content Handler":plugin_contenthandler.html#blockelement-content-handler.
 

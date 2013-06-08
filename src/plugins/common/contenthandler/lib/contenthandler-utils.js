@@ -1,15 +1,12 @@
-/*global define: true */
-
 /*!
 * Aloha Editor
-* Author & Copyright (c) 2012 Gentics Software GmbH
+* Author & Copyright (c) 2012-2013 Gentics Software GmbH
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 *
 * @overview
 * Utility functions for content handling.
 */
-
 define(['jquery'], function ($) {
 	'use strict';
 

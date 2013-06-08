@@ -1,7 +1,7 @@
 /* floating.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * Aloha Editor is free software; you can redistribute it and/or
@@ -121,7 +121,9 @@ define([
 
 		$element.stop().animate(position, duration, function () {
 			callback(position);
-			PubSub.pub('aloha.floating.changed', {position: POSITION});
+			PubSub.pub('aloha.floating.changed', {
+				position: $.extend({}, POSITION)
+			});
 		});
 	}
 

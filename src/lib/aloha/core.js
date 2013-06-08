@@ -73,8 +73,8 @@ define([
 	 */
 	function originatesFromDialog($event) {
 		var $target = $($event.target);
-		return $target.is('.aloha-dialog') ||
-		       0 < $target.closest('.aloha-dialog').length;
+		return $target.is('.aloha-dialog')
+			|| $target.closest('.aloha').length;
 	}
 
 	/**

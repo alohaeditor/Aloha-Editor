@@ -118,7 +118,7 @@ function(
 	 *        The given string with & and < characters replaced with the corresponding HTML entity references.
 	 */
 	function encodePcdata(str) {
-		return str.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+		return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 	}
 
 	/**

@@ -25,6 +25,7 @@
  * recipients can access the Corresponding Source.
  */
 define([
+	'aloha/core',
 	'jquery',
 	'util/functions',
 	'util/maps',
@@ -34,6 +35,7 @@ define([
 	'util/dom',
 	'util/range'
 ], function (
+	Aloha,
 	$,
 	Fn,
 	Maps,
@@ -306,24 +308,13 @@ define([
 		return ret;
 	}
 
-	/**
-	 * Can't use elem.childNodes.length because
-	 * http://www.quirksmode.org/dom/w3c_core.html
-	 * "IE up to 8 does not count empty text nodes."
-	 */
-	function numChildren(elem) {
-		var count = 0;
-		var child = elem.firstChild;
-		while (child) {
-			count += 1;
-			child = child.nextSibling;
-		}
-		return count;
-	}
-
 	function nodeLength(node) {
 		if (1 === node.nodeType) {
-			return numChildren(node);
+			// Can't use elem.childNodes.length because
+			// http://www.quirksmode.org/dom/w3c_core.html
+			// "IE up to 8 does not count empty text nodes."
+			var lastChild = node.lastChild;
+			return !lastChild ? 0 : nodeIndex(lastChild) + 1;
 		}
 		if (3 === node.nodeType) {
 			return node.length;
@@ -333,7 +324,7 @@ define([
 
 	function isAtEnd(node, offset) {
 		return (1 === node.nodeType
-				&& offset >= numChildren(node))
+				&& offset >= nodeLength(node))
 			|| (3 === node.nodeType
 				&& offset === node.length
 				&& !node.nextSibling);
@@ -343,7 +334,7 @@ define([
 	 * @param node if a text node, should have a parent node.
 	 */
 	function nodeAtOffset(node, offset) {
-		if (1 === node.nodeType && offset < numChildren(node)) {
+		if (1 === node.nodeType && offset < nodeLength(node)) {
 			node = node.childNodes[offset];
 		} else if (3 === node.nodeType && offset === node.length) {
 			node = node.nextSibling || node.parentNode;
@@ -351,7 +342,11 @@ define([
 		return node;
 	}
 
-	function shallowRemove(node) {
+	function remove(node) {
+		node.parentNode.removeChild(node);
+	}
+
+	function removeShallow(node) {
 		var parent = node.parentNode;
 		moveNextAll(parent, node.firstChild, node);
 		parent.removeChild(node);
@@ -368,6 +363,12 @@ define([
 		} else {
 			ref.parentNode.insertBefore(node, ref);
 		}
+	}
+
+	function replaceShallow(node, withNode) {
+		moveNextAll(withNode, node.firstChild, null);
+		insert(withNode, node);
+		remove(node);
 	}
 
 	function Cursor(node, atEnd) {
@@ -421,13 +422,16 @@ define([
 			prev = node.lastChild;
 			if (prev) {
 				this.node = prev;
+				if (1 !== prev.nodeType) {
+					this.atEnd = false;
+				}
 			} else {
 				this.atEnd = false;
 			}
 		} else {
 			prev = node.previousSibling;
 			if (prev) {
-				if (1 === node.nodeType) {
+				if (1 === prev.nodeType) {
 					this.atEnd = true;
 				}
 			} else {
@@ -441,12 +445,65 @@ define([
 		return true;
 	};
 
+	Cursor.prototype.skipPrev = function (cursor) {
+		var prev = this.prevSibling();
+		if (prev) {
+			this.node = prev;
+			this.atEnd = false;
+			return true;
+		}
+		return this.prev();
+	};
+
+	Cursor.prototype.skipNext = function (cursor) {
+		if (this.atEnd) {
+			return this.next();
+		}
+		this.atEnd = true;
+		return this.next();
+	};
+
+	Cursor.prototype.nextWhile = function (cond) {
+		while (cond(this)) {
+			if (!this.next()) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	Cursor.prototype.prevWhile = function (cond) {
+		while (cond(this)) {
+			if (!this.prev()) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	Cursor.prototype.parent = function () {
+		return this.atEnd ? this.node : this.node.parentNode;
+	};
+
+	Cursor.prototype.prevSibling = function () {
+		return this.atEnd ? this.node.lastChild : this.node.previousSibling;
+	};
+
+	Cursor.prototype.nextSibling = function () {
+		return this.atEnd ? null : this.node.nextSibling;
+	};
+
 	Cursor.prototype.equals = function (cursor) {
 		return cursor.node === this.node && cursor.atEnd === this.atEnd;
 	};
 
-	Cursor.prototype.clone = function (cursor) {
-		return cursor(cursor.node, cursor.atEnd);
+	Cursor.prototype.setFrom = function (cursor) {
+		this.node = cursor.node;
+		this.atEnd = cursor.atEnd;
+	};
+
+	Cursor.prototype.clone = function () {
+		return cursor(this.node, this.atEnd);
 	};
 
 	Cursor.prototype.insert = function (node) {
@@ -454,11 +511,61 @@ define([
 	};
 
 	/**
-	 * @param offset if node is a text node, the offset will be ignored.
-	 * @param node if a text node, should have a parent node.
+	 * Ensures that the given startPoint is not in a start position and
+	 * the given endPoint is not in an end position by moving the points
+	 * to the left and right respectively - the opposite of
+	 * trimBoundaries().
 	 */
-	function cursorFromBoundaryPoint(node, offset) {
-		return cursor(nodeAtOffset(node, offset), isAtEnd(node, offset));
+	function expandBoundaries(startPoint, endPoint, until, ignore) {
+		until = until || Fn.returnFalse;
+		ignore = ignore || Fn.returnFalse;
+		startPoint.prevWhile(function (startPoint) {
+			var prevSibling = startPoint.prevSibling();
+			return prevSibling ? ignore(prevSibling) : !until(startPoint.parent());
+		});
+		endPoint.nextWhile(function (endPoint) {
+			return !endPoint.atEnd ? ignore(endPoint.node) : !until(endPoint.parent());
+		});
+	}
+
+	/**
+	 * Ensures that the given startPoint is not in an end position and
+	 * the given endPoint is not in a start position by moving the
+	 * points to the right and left respectively - the opposite of
+	 * expandBoundaries().
+	 *
+	 * If the boundaries are equal (collapsed), or become equal during
+	 * this operation, or if until returns true for either point, they
+	 * may remain in start and end position respectively.
+	 *
+	 * @param until may be used to stop the trimming process from moving
+	 *        the range from within an element outside of it.
+	 * @param ignore may be used to ignore followning/preceding siblings
+	 *        which otherwise would stop trimming process, like
+	 *        for example underendered whitespace.
+	 */
+	function trimBoundaries(startPoint, endPoint, until, ignore) {
+		until = until || Fn.returnFalse;
+		ignore = ignore || Fn.returnFalse;
+		startPoint.nextWhile(function (startPoint) {
+			return (!startPoint.equals(endPoint)
+					&& (!startPoint.atEnd ? ignore(startPoint.node) : !until(startPoint.parent())));
+		});
+		endPoint.prevWhile(function (endPoint) {
+			var prevSibling = endPoint.prevSibling();
+			return (!startPoint.equals(endPoint)
+					&& (prevSibling ? ignore(prevSibling) : !until(endPoint.parent())));
+		});
+	}
+
+	/**
+	 * Creates a new cursor from the given container and offset.
+	 *
+	 * @param offset if container is a text node, the offset will be ignored.
+	 * @param container if a text node, should have a parent node.
+	 */
+	function cursorFromBoundaryPoint(container, offset) {
+		return cursor(nodeAtOffset(container, offset), isAtEnd(container, offset));
 	}
 
 	function parentsUntil(node, pred) {
@@ -510,6 +617,45 @@ define([
 		});
 	}
 
+	function nextWhile(node, cond, arg) {
+		while (node && cond(node, arg)) {
+			node = node.nextSibling;
+		}
+		return node;
+	}
+
+	function prevWhile(node, cond, arg) {
+		while (node && cond(node, arg)) {
+			node = node.prevSibling;
+		}
+		return node;
+	}
+
+	/**
+	 * Returns true if b is a descendant of a, false otherwise.
+	 *
+	 * http://ejohn.org/blog/comparing-document-position/
+	 * http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
+	 */
+	function contains(a, b) {
+		return (1 === a.nodeType
+				? (a.contains
+				   ? a != b && a.contains(b)
+				   : !!(a.compareDocumentPosition(b) & 16))
+				: false);
+	}
+
+	function isTextNode(node) {
+		return 3 === node.nodeType;
+	}
+
+	/**
+	 * Splits the given text node at the given offset, and returns the
+	 * first of the two text nodes that were inserted to replace the
+	 * given node in the DOM.
+	 * TODO: could be optimized with insertData() so only a single text
+	 * node is inserted instead of two.
+	 */
 	function splitTextNode(node, offset) {
 		// Because node.splitText() is buggy on IE, split it manually.
 		// http://www.quirksmode.org/dom/w3c_core.html
@@ -526,89 +672,73 @@ define([
 		return before;
 	}
 
-	function adjustRangeAfterSplit(range, container, offset, setProp, splitNode, newNodeBeforeSplit) {
-		if (container !== splitNode) {
-			return;
-		}
-		var newNodeLength = newNodeBeforeSplit.length;
-		if (offset === 0) {
-			container = newNodeBeforeSplit.parentNode;
-			offset = nodeIndex(newNodeBeforeSplit);
-		} else if (offset < newNodeLength) {
-			container = newNodeBeforeSplit;
-		} else if (offset === newNodeLength) {
-			container = newNodeBeforeSplit.parentNode;
-			offset = nodeIndex(newNodeBeforeSplit) + 1;
-		} else {// offset > newNodeLength
-			var newNodeAfterSplit = newNodeBeforeSplit.nextSibling;
-			container = newNodeAfterSplit;
-			offset -= newNodeLength;
-		}
-		range[setProp].call(range, container, offset);
-	}
-
 	/**
-	 * Splits the given text node at the given offset and, if the given
-	 * range happens to have start or end containers equal to the given
-	 * text node, adjusts it such that start and end position will point
-	 * at the same position in the new text nodes.
+	 * Normalizes the boundary point represented by container and offset
+	 * such that it will not point to the start or end of a text node
+	 * which reduces the number of different states the range can be in,
+	 * and thereby increases the the robusteness of the code written
+	 * against it slightly.
 	 *
-	 * It is guaranteed that an adjusted boundary point will not point
-	 * to the end of a text node. Instead, it will point to the next
-	 * node. This guarantee often happens to be useful.
-	 *
-	 * If splitNode is not a text node, does nothing.
+	 * It should be noted that native ranges controlled by the browser's
+	 * DOM implementation have the habit to change by themselves, so
+	 * even if normalized this way the range could revert to an
+	 * unnormalized state. See stableRange().
 	 */
-	function splitTextNodeAdjustRange(splitNode, splitOffset, range) {
-		if (3 !== splitNode.nodeType) {
-			return;
+	function normalizeSetRange(setRange, range, container, offset) {
+		if (3 === container.nodeType && container.parentNode) {
+			if (!offset) {
+				offset = nodeIndex(container);
+				container = container.parentNode;
+			} else if (offset === container.length) {
+				offset = nodeIndex(container) + 1;
+				container = container.parentNode;
+			}
 		}
-		var sc = range.startContainer;
-		var so = range.startOffset;
-		var ec = range.endContainer;
-		var eo = range.endOffset;
-		var newNodeBeforeSplit = splitTextNode(splitNode, splitOffset);
-		adjustRangeAfterSplit(range, sc, so, 'setStart', splitNode, newNodeBeforeSplit);
-		adjustRangeAfterSplit(range, ec, eo, 'setEnd', splitNode, newNodeBeforeSplit);
+		setRange.call(range, container, offset);
 	}
 
-	function splitTextContainers(range) {
-		var sc = range.startContainer;
-		var so = range.startOffset;
-		splitTextNodeAdjustRange(sc, so, range);
-		// Because the range may have been adjusted.
-		var ec = range.endContainer;
-		var eo = range.endOffset;
-		splitTextNodeAdjustRange(ec, eo, range);
+	function setRangeStart(range, container, offset) {
+		normalizeSetRange(range.setStart, range, container, offset);
+	}
+
+	function setRangeEnd(range, container, offset) {
+		normalizeSetRange(range.setEnd, range, container, offset);
 	}
 
 	function walkUntil(node, fn, until, arg) {
 		while (node && !until(node, arg)) {
-			node = fn(node, arg);
+			var next = node.nextSibling;
+			fn(node, arg);
+			node = next;
 		}
-		return node;
 	}
 
 	function walk(node, fn, arg) {
 		walkUntil(node, fn, Fn.returnFalse, arg);
 	}
 
+	/**
+	 * Depth-first postwalk of the given DOM node.
+	 */
 	function walkRec(node, fn, arg) {
 		if (1 === node.nodeType) {
 			walk(node.firstChild, function (node) {
-				return walkRec(node, fn, arg);
+				walkRec(node, fn, arg);
 			});
 		}
-		return fn(node, arg);
+		fn(node, arg);
 	}
 
 	function walkUntilNode(node, fn, untilNode, arg) {
-		return walkUntil(node, fn, function (nextNode) {
+		walkUntil(node, fn, function (nextNode) {
 			return nextNode === untilNode;
 		}, arg);
 	}
 
 	function StableRange(range) {
+		if (!range) {
+			return;
+		}
 		this.startContainer = range.startContainer;
 		this.startOffset = range.startOffset;
 		this.endContainer = range.endContainer;
@@ -640,27 +770,6 @@ define([
 		this.update();
 	};
 
-	function setRangeStartFromCursor(range, cursor) {
-		if (cursor.atEnd) {
-			range.setStart(cursor.node, numChildren(cursor.node));
-		} else {
-			range.setStart(cursor.node.parentNode, nodeIndex(cursor.node));
-		}
-	}
-
-	function setRangeEndFromCursor(range, cursor) {
-		if (cursor.atEnd) {
-			range.setEnd(cursor.node, numChildren(cursor.node));
-		} else {
-			range.setEnd(cursor.node.parentNode, nodeIndex(cursor.node));
-		}
-	}
-
-	function setRangeFromRef(range, ref) {
-		range.setStart(ref.startContainer, ref.startOffset);
-		range.setEnd(ref.endContainer, ref.endOffset);
-	}
-
 	/**
 	 * A native range is live, which means that modifying the DOM may
 	 * mutate the range. Also, using setStart/setEnd may not set the
@@ -673,56 +782,266 @@ define([
 		return new StableRange(range);
 	}
 
+	function setRangeStartFromCursor(range, cursor) {
+		if (cursor.atEnd) {
+			range.setStart(cursor.node, nodeLength(cursor.node));
+		} else {
+			range.setStart(cursor.node.parentNode, nodeIndex(cursor.node));
+		}
+	}
+
+	function setRangeEndFromCursor(range, cursor) {
+		if (cursor.atEnd) {
+			range.setEnd(cursor.node, nodeLength(cursor.node));
+		} else {
+			range.setEnd(cursor.node.parentNode, nodeIndex(cursor.node));
+		}
+	}
+
+	function setRangeFromBoundaries(range, startPoint, endPoint) {
+		setRangeStartFromCursor(range, startPoint);
+		setRangeEndFromCursor(range, endPoint);
+	}
+
+	function setRangeFromRef(range, ref) {
+		range.setStart(ref.startContainer, ref.startOffset);
+		range.setEnd(ref.endContainer, ref.endOffset);
+	}
+
+	function adjustRangeAfterSplit(container, offset, range, setRange, splitNode, splitOffset, newNodeBeforeSplit) {
+		if (container === splitNode) {
+			if (offset <= splitOffset || !splitOffset) {
+				container = newNodeBeforeSplit;
+			} else {
+				container = newNodeBeforeSplit.nextSibling;
+				offset -= splitOffset;
+			}
+		} else if (container === newNodeBeforeSplit.parentNode) {
+			var nidx = nodeIndex(newNodeBeforeSplit);
+			if (offset > nidx) {
+				offset += 1;
+			}
+		}
+		setRange(range, container, offset);
+	}
+
+	function adjustBoundaryPointAfterJoin(container, offset, range, setRange, node, nodeLen, sibling, siblingLen, parentNode, nidx, prev) {
+		if (container === node) {
+			container = sibling;
+			offset += prev ? siblingLen : 0;
+		} else if (container === sibling) {
+			offset += prev ? 0 : nodeLen;
+		} else if (container === parentNode) {
+			if (offset === nidx) {
+				container = sibling;
+				offset = prev ? siblingLen : 0;
+			} else if (!prev && offset === nidx + 1) {
+				container = sibling;
+				offset = nodeLen;
+			} else if (offset > nidx) {
+				offset -= 1;
+			}
+		}
+		setRange(range, container, offset);
+	}
+
+	function adjustBoundaryPointAfterRemove(container, offset, range, setRange, node, parentNode, nidx) {
+		if (container === node || contains(node, container)) {
+			container = parentNode;
+			offset = nidx;
+		} else if (container === parentNode) {
+			if (offset > nidx) {
+				offset -= 1;
+			}
+		}
+		setRange(range, container, offset);
+	}
+
 	/**
+	 * Splits the given text node at the given offset and, if the given
+	 * range happens to have start or end containers equal to the given
+	 * text node, adjusts it such that start and end position will point
+	 * at the same position in the new text nodes.
+	 */
+	function splitTextNodeAdjustRange(splitNode, splitOffset, range) {
+		if (3 !== splitNode.nodeType) {
+			return;
+		}
+		// Because the range may change due to the DOM modification
+		// (automatically by the browser).
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec = range.endContainer;
+		var eo = range.endOffset;
+		var newNodeBeforeSplit = splitTextNode(splitNode, splitOffset);
+		if (newNodeBeforeSplit) {
+			adjustRangeAfterSplit(sc, so, range, setRangeStart, splitNode, splitOffset, newNodeBeforeSplit);
+			adjustRangeAfterSplit(ec, eo, range, setRangeEnd, splitNode, splitOffset, newNodeBeforeSplit);
+		}
+	}
+
+	function splitTextContainers(range) {
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		splitTextNodeAdjustRange(sc, so, range);
+		// Because the range may have been adjusted.
+		var ec = range.endContainer;
+		var eo = range.endOffset;
+		splitTextNodeAdjustRange(ec, eo, range);
+	}
+
+	function joinTextNodeOneWay(node, sibling, range, prev) {
+		if (!sibling || 3 !== sibling.nodeType) {
+			return node;
+		}
+		// Because the range may change due to the DOM modication
+		// (automatically by the browser).
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec = range.endContainer;
+		var eo = range.endOffset;
+		var parentNode = node.parentNode;
+		var nidx = nodeIndex(node);
+		var nodeLen = node.length;
+		var siblingLen = sibling.length;
+		sibling.insertData(prev ? siblingLen : 0, node.data);
+		parentNode.removeChild(node);
+		adjustBoundaryPointAfterJoin(sc, so, range, setRangeStart, node, nodeLen, sibling, siblingLen, parentNode, nidx, prev);
+		adjustBoundaryPointAfterJoin(ec, eo, range, setRangeEnd, node, nodeLen, sibling, siblingLen, parentNode, nidx, prev);
+		return sibling;
+	}
+
+	function joinTextNodeAdjustRange(node, range) {
+		if (3 !== node.nodeType) {
+			return;
+		}
+		node = joinTextNodeOneWay(node, node.previousSibling, range, true);
+		joinTextNodeOneWay(node, node.nextSibling, range, false);
+	}
+
+	function removePreservingRanges(node, ranges) {
+		var range;
+		// Because the range may change due to the DOM modification
+		// (automatically by the browser).
+		var boundaries = [];
+		var i;
+		for (i = 0; i < ranges.length; i++) {
+			range = ranges[i];
+			boundaries.push(range);
+			boundaries.push(range.startContainer);
+			boundaries.push(range.startOffset);
+			boundaries.push(range.endContainer);
+			boundaries.push(range.endOffset);
+		}
+		var parentNode = node.parentNode;
+		var nidx = nodeIndex(node);
+		parentNode.removeChild(node);
+		for (i = 0; i < boundaries.length; i += 5) {
+			adjustBoundaryPointAfterRemove(boundaries[i + 1], boundaries[i + 2], boundaries[i], setRangeStart, node, parentNode, nidx);
+			adjustBoundaryPointAfterRemove(boundaries[i + 3], boundaries[i + 4], boundaries[i], setRangeEnd, node, parentNode, nidx);
+		}
+	}
+
+	function removePreservingRange(node, range) {
+		removePreservingRanges(node, [range]);
+	}
+
+	function preservePointForShallowRemove(node, point) {
+		if (point.node === node) {
+			if (point.node.firstChild) {
+				point.next();
+			} else {
+				point.skipNext();
+			}
+		}
+	}
+
+	function preserveBoundaries(node, points, preserveFn) {
+		var i;
+		for (i = 0; i < points.length; i++) {
+			preserveFn(node, points[i]);
+		}
+	}
+
+	function removeShallowPreservingBoundaries(node, points) {
+		preserveBoundaries(node, points, preservePointForShallowRemove);
+		removeShallow(node);
+	}
+
+	function seekBoundaryPoint(range, container, offset, oppositeContainer, oppositeOffset, setFn, ignore, backwards) {
+		var cursor = cursorFromBoundaryPoint(container, offset);
+		// Because when seeking backwards, if the boundary point is
+		// inside a text node, trimming starts after it. When seeking
+		// forwards, the cursor starts before the node, which is what
+		// cursorFromBoundaryPoint() does automatically.
+		if (backwards && 3 === container.nodeType && offset > 0 && offset < container.length) {
+			if (backwards ? cursor.next() : cursor.prev()) {
+				if (!ignore(cursor)) {
+					return;
+				}
+				// Bacause the text node can be ignored, we go back
+				// to the initial position.
+				if (backwards) {
+					cursor.prev();
+				} else {
+					cursor.next();
+				}
+			}
+		}
+		var opposite = cursorFromBoundaryPoint(oppositeContainer, oppositeOffset);
+		var changed = false;
+		while (!cursor.equals(opposite)
+			       && ignore(cursor)
+			       && (backwards ? cursor.prev() : cursor.next())) {
+			changed = true;
+		}
+		if (changed) {
+			setFn(range, cursor);
+		}
+	}
+
+	/**
+	 * Starting with the given range's start and end boundary points,
+	 * seek inward using a cursor, passing the cursor to ignoreLeft and
+	 * ignoreRight, stopping when either of these returns true,
+	 * adjusting the given range to the end positions of both cursors.
+	 *
 	 * The dom cursor passed to ignoreLeft and ignoreRight does not
 	 * traverse positions inside text nodes. The exact rules for when
 	 * text node containers are passed are as follows: If the left
 	 * boundary point is inside a text node, trimming will start before
 	 * it. If the right boundary point is inside a text node, trimming
-	 * will start after it.
+	 * will start after it. ignoreLeft/ignoreRight() are invoked
+	 * with the cursor before/after the text node that contains the
+	 * boundary point.
 	 */
 	function trimRange(range, ignoreLeft, ignoreRight) {
+		ignoreLeft = ignoreLeft || Fn.returnFalse;
+		ignoreRight = ignoreRight || Fn.returnFalse;
 		if (range.collapsed) {
 			return;
 		}
-		var start = cursorFromBoundaryPoint(range.startContainer, range.startOffset);
-		var end = cursorFromBoundaryPoint(range.endContainer, range.endOffset);
-		var setStart = false;
-		while (!start.equals(end) && ignoreLeft(start) && start.next()) {
-			setStart = true;
-		}
-		ignoreRight = ignoreRight || ignoreLeft;
-		var setEnd = false;
-		// Because if the right boundary points is inside a text node,
-		// trimming starts after it.
-		if (3 === range.endContainer.nodeType
-			    && range.endOffset > 0
-			    // Because the cursor already normalizes
-			    // endOffset == endContainer.length to the node next after it.
-			    && range.endOffset < range.endContainer.length
-			    && end.next()) {
-			if (ignoreRight(end)) {
-				end.prev();
-			}
-		}
-		while (!end.equals(start) && ignoreRight(end) && end.prev()) {
-			setEnd = true;
-		}
-		if (setStart) {
-			setRangeStartFromCursor(range, start);
-		}
-		if (setEnd) {
-			setRangeEndFromCursor(range, end);
-		}
+		// Because range may be mutated, we must store its properties
+		// before doing anything else.
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec = range.endContainer;
+		var eo = range.endOffset;
+		seekBoundaryPoint(range, sc, so, ec, eo, setRangeStartFromCursor, ignoreLeft, false);
+		seekBoundaryPoint(range, ec, eo, sc, so, setRangeEndFromCursor, ignoreRight, true);
 	}
 
+	/**
+	 * Like trimRange() but ignores closing (to the left) and opening
+	 * positions (to the right).
+	 */
 	function trimRangeClosingOpening(range, ignoreLeft, ignoreRight) {
-		ignoreRight = ignoreRight || ignoreLeft;
+		ignoreLeft = ignoreLeft || Fn.returnFalse;
+		ignoreRight = ignoreRight || Fn.returnFalse;
 		trimRange(range, function (cursor) {
 			return cursor.atEnd || ignoreLeft(cursor.node);
 		}, function (cursor) {
-			var prev = cursor.atEnd ? cursor.node.lastChild : cursor.node.previousSibling;
-			return !prev || ignoreRight(prev);
+			return !cursor.prevSibling() || ignoreRight(cursor.prevSibling());
 		});
 	}
 
@@ -739,15 +1058,15 @@ define([
 		if (!text.length) {
 			return;
 		}
-		splitTextNodeAdjustRange(range.startContainer, range.startOffset, range);
 		var node = nodeAtOffset(range.startContainer, range.startOffset);
 		var atEnd = isAtEnd(range.startContainer, range.startOffset);
 		// Because if the node following the insert position is already
 		// a text node we can just reuse it.
 		if (!atEnd && 3 === node.nodeType) {
-			node.insertData(0, text);
-			range.setStart(node, 0);
-			range.setEnd(node, text.length);
+			var offset = (3 === range.startContainer.nodeType ? range.startOffset : 0);
+			node.insertData(offset, text);
+			range.setStart(node, offset);
+			range.setEnd(node, offset + text.length);
 			return;
 		}
 		// Because if the node preceding the insert position is already
@@ -776,13 +1095,126 @@ define([
 		range.setStart(range.endContainer, range.endOffset);
 	}
 
+	function rangeFromRangeObject(alohaRange) {
+		var range = Aloha.createRange();
+		range.setStart(alohaRange.startContainer, alohaRange.startOffset);
+		range.setEnd(alohaRange.endContainer, alohaRange.endOffset);
+		return range;
+	}
+
 	function extendToWord(range) {
 		var rangeObject = new RangeObject(range);
 		Dom1.extendToWord(rangeObject);
 		setRangeFromRef(range, rangeObject);
 	}
 
+	function cloneShallow(node) {
+		return node.cloneNode(false);
+	}
+
+	/**
+	 * Sets a style on the given element by modifying its style attribute.
+	 */
+	function setStyle(node, name, value) {
+		// Because only the empty string removes a style.
+		$(node).css(name, value);
+	}
+
+	/**
+	 * Gets a style from the given element's style attribute.
+	 * Note that this is different from the computed/inherited style.
+	 */
+	function getStyle(node, name) {
+		// Because IE7 needs dashesToCamelCase().
+		name = Strings.dashesToCamelCase(name);
+		return node.nodeType === 1 ? node.style[name] : null;
+	}
+
+	/**
+	 * Gets the computed/inherited style of the given node.
+	 * @param node should be an element node.
+	 */
+	function getComputedStyle(node, name) {
+		if (node.currentStyle) {
+			// Because IE7 needs dashesToCamelCase().
+			name = Strings.dashesToCamelCase(name);
+			return node.currentStyle[name];
+		}
+		var doc = node.ownerDocument;
+		if (doc.defaultView && doc.defaultView.getComputedStyle) {
+			var styles = doc.defaultView.getComputedStyle(node, null);
+			if (styles) {
+				return styles[name] || styles.getPropertyValue(name);
+			}
+		}
+		return null;
+	}
+
+	function removeStyle(elem, styleName) {
+		var $elem = $(elem);
+		if (Browser.hasRemoveProperty) {
+			elem.style.removeProperty(styleName);
+			if (Strings.empty($elem.attr('style'))) {
+				$elem.removeAttr('style');
+			}
+		} else {
+			// TODO: this is a hack for browsers that don't support
+			//       removeProperty (ie < 9)and will not work correctly
+			//       for all valid inputs, but it's the simplest thing I
+			//       can come up with without implementing a full css
+			//       parser.
+			var style = $elem.attr('style');
+			if (null == style) {
+				return;
+			}
+			// Because concatenating just any input into the regex might
+			// be dangerous.
+			if ((/[^\w\-]/).test(styleName)) {
+				throw "unrecognized style name " + styleName;
+			}
+			var stripRegex = new RegExp('(:?^|;)\\s*' + styleName + '\\s*:.*?(?=;|$)', 'i');
+			style = style.replace(stripRegex, '');
+			if (!Strings.empty(style)) {
+				$elem.attr('style', style);
+			} else {
+				$elem.removeAttr('style');
+			}
+		}
+	}
+
+	function hasAttrs(node) {
+		return !Arrays.every(Arrays.map(attrs(node), Arrays.second),
+							 Strings.empty);
+	}
+
+	function ensureCursorInsideElem(cursor, oppositeCursor, elem, back) {
+		if (contains(elem, cursor.node)) {
+			return true;
+		}
+		while (!cursor.equals(oppositeCursor)
+			       && (back ? cursor.prev() : cursor.next())) {
+			if (elem === cursor.parent()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function ensureRangeInsideElem(range, elem) {
+		var startCursor = cursorFromBoundaryPoint(range.startContainer, range.startOffset);
+		var endCursor = cursorFromBoundaryPoint(range.endContainer, range.endOffset);
+		var startInside = ensureCursorInsideElem(startCursor, endCursor, elem, false);
+		var endInside = ensureCursorInsideElem(endCursor, startCursor, elem, true);
+		if (!startInside || !endInside) {
+			return false;
+		}
+		setRangeStartFromCursor(range, startCursor);
+		setRangeEndFromCursor(range, endCursor);
+		return true;
+	}
+
 	return {
+		removeStyle: removeStyle,
 		moveNextAll: moveNextAll,
 		attrNames: attrNames,
 		attrs: attrs,
@@ -790,11 +1222,17 @@ define([
 		indexByName: indexByName,
 		indexByClassHaveList: indexByClassHaveList,
 		outerHtml: outerHtml,
-		shallowRemove: shallowRemove,
+		removeShallow: removeShallow,
+		removeShallowPreservingBoundaries: removeShallowPreservingBoundaries,
+		removePreservingRange: removePreservingRange,
+		removePreservingRanges: removePreservingRanges,
 		wrap: wrap,
 		insert: insert,
+		replaceShallow: replaceShallow,
 		cursor: cursor,
 		cursorFromBoundaryPoint: cursorFromBoundaryPoint,
+		trimBoundaries: trimBoundaries,
+		expandBoundaries: expandBoundaries,
 		nodeAtOffset: nodeAtOffset,
 		isAtEnd: isAtEnd,
 		parentsUntil: parentsUntil,
@@ -803,9 +1241,13 @@ define([
 		childAndParentsUntilIncl: childAndParentsUntilIncl,
 		childAndParentsUntilNode: childAndParentsUntilNode,
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
+		isTextNode: isTextNode,
 		nodeIndex: nodeIndex,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
+		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
+		nextWhile: nextWhile,
+		contains: contains,
 		walk: walk,
 		walkRec: walkRec,
 		walkUntil: walkUntil,
@@ -816,10 +1258,18 @@ define([
 		setRangeFromRef: setRangeFromRef,
 		setRangeStartFromCursor: setRangeStartFromCursor,
 		setRangeEndFromCursor: setRangeEndFromCursor,
+		setRangeFromBoundaries: setRangeFromBoundaries,
 		splitTextNodeAdjustRange: splitTextNodeAdjustRange,
 		insertSelectText: insertSelectText,
 		areRangesEq: areRangesEq,
 		collapseToEnd: collapseToEnd,
-		extendToWord: extendToWord
+		extendToWord: extendToWord,
+		rangeFromRangeObject: rangeFromRangeObject,
+		cloneShallow: cloneShallow,
+		setStyle: setStyle,
+		getStyle: getStyle,
+		getComputedStyle: getComputedStyle,
+		hasAttrs: hasAttrs,
+		ensureRangeInsideElem: ensureRangeInsideElem
 	};
 });

@@ -12,6 +12,97 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.8 - 2013/05/16
+
+- **BUGFIX**: (metaview) An error was corrected which had caused the metaview
+                         button not being shown when metaview is configured to
+                         be automatically enabled for all editables.
+
+## 0.23.7 - 2013/05/02
+
+- **BUGFIX**: (core/pluginmanager) Initialization no longer stalls when a
+               configured plugin is disabled.
+- **BUGFIX**: (core/pluginmanager) Initialization will complete and
+                           Aloha.ready() will fire even when no plugins have been
+                           configured.
+
+## 0.23.6 - 2013/04/18
+
+- **BUGFIX**: Previously selected blocks are no longer deleted when hitting
+              backspace from inside an Aloha Editor UI.
+- **BUGFIX**: This change fixes the behaviour of linebreaks by preventing
+              paragraphs to be inserted inside editable spans and paragraphs,
+              and improves the editor's robustness against errors when inserting paragraphs.
+
+## 0.23.5 - 2013/04/11
+
+**ENHANCEMENT**: Added missing german translations for table plugin components
+**BUGFIX**: (core/engine) It is made possible to completely delete the contents
+            of an editable while editing using commands like CTL+A, DEL.
+**BUGFIX**: Cursor styles that are added inside tables for resizing are now
+            correctly removed when the table is no longer editable.
+**BUGFIX**: A bug was fixed with additional elements being appended to a table,
+            if a rowspan was set in its last column.
+**BUGFIX**: A problem was fixed that prevented table-cells to be selected after
+            their header-status was changed.
+**BUGFIX**: (table) This fix allows the active cell to be split into its parts
+            if it has a col- or rowspan, even if it is not part of a selection.
+**BUGFIX**: Fixed applying predefined styles to tables and table-elements
+
+
+## 0.23.4 - 2013/04/04
+
+- **BUGFIX**: Added missing documentation for the Sidebar.
+- **BUGFIX**: Characterpicker now opens in IE
+- **BUGFIX**: Headerids plugin no longer changes ids of Aloha Editables, which
+			  was causing implementations to loose track of editables during
+			  saving of example.
+- **BUGFIX**: naturalfit-button (reset) in table resize plugin did not remove
+			  width from table head (th) elements
+
+## 0.23.3 - 2013/03/22
+
+>>>>>>> 9bfaafe32921dd447fb08da973a1b92054f9a927
+- **BUGFIX**: No longer automatically append &lt;br&gt; elements to block-level
+	elements unless they are empty.
+- **BUGFIX**: DOM-to-XHTML plugin: Fixed handling of closing angle brackets,
+	which caused problems when these were included in attributes.
+- **BUGFIX**: Characterpicker plugin: Fixed the overlay not defining a font color
+	for the characters in the overlay and inheriting the color from
+	the content. If the font color was white the text in the overlay
+	 wasn't visible.
+- **BUGFIX**: Characterpicker plugin: Fixed the error
+	"Object [object Object] has no method 'is'" occuring, when clicking
+	into an editable.
+- **BUGFIX**: No longer remove the last arbitrary &lt;br&gt; element inside &lt;li&gt;
+	elements.
+- **BUGFIX**: Sidebar: Fixed the styles in some plugins, which
+	looked a bit broken and moved some css styles to the core.css.
+
+
+## 0.23.2 - 2013/03/15
+
+- **BUGFIX**: Fixed editables losing focus and the toolbar dissapearing
+	when clicking on the toolbar, on a dialog or on an attribute
+	field from a plugin (link, wai-lang)
+- **BUGFIX**: Fixed the text selection background color not being removed
+	when selecting something from the attribute field of a plugin (link,
+	wai-lang)
+- **BUGFIX**: No longer automatically append &lt;br&gt; elements to block-level
+	elements unless they are empty.
+
+
+## 0.23.1 - 2013/03/07
+
+- **BUGFIX**: Ensured that the floating menu will not cover small editables
+	whenever possible.
+- **ENHANCEMENT**: state-override: when pressing a formatting
+	button and the cursor is not within a word, a state override
+	will be set such that any text that is subsequently typed will
+	acquire the appropriate formatting.
+- **BUGFIX**: core: Aloha incorrectly reported that Chrome was not supported.
+
+
 ## 0.23.0 - 2013/02/28
 
 - **ENHANCEMENT**: format-plugin: b/strong and i/em handling

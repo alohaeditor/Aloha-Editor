@@ -24,7 +24,7 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define([], function () {
+define(['util/functions'], function (Fn) {
 	'use strict';
 
 	/**
@@ -219,6 +219,33 @@ define([], function () {
 	}
 
 	/**
+	 * Returns true if the given predicate function returns true for at
+	 * least one item.
+	 *
+	 * Emulates ECMAScript edition 5 Array.some.
+	 */
+	function some(xs, pred) {
+		var i,
+		    len;
+		for (i = 0, len = xs.length; i < len; i++) {
+			if (pred(xs[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns true if the given predicate function returns true for all
+	 * items in xs.
+	 *
+	 * Emulates ECMAScript edition 5 Array.every.
+	 */
+	function every(xs, pred) {
+		return !some(xs, Fn.complement(pred));
+	}
+
+	/**
 	 * Returns all items in xs that are also contained in zs.
 	 */
 	function intersect(xs, zs) {
@@ -227,16 +254,34 @@ define([], function () {
 		});
 	}
 
+	/**
+	 * Returns the last item in xs or null.
+	 */
+	function last(xs) {
+		return xs.length ? xs[xs.length - 1] : null;
+	}
+
+	/**
+	 * Returns the second item in xs.
+	 */
+	function second(xs) {
+		return xs[1];
+	}
+
 	return {
 		filter: filter,
 		indexOf: indexOf,
 		reduce: reduce,
 		forEach: forEach,
+		some: some,
+		every: every,
 		map: Array.prototype.map ? mapNative : map,
 		contains: contains,
 		equal: equal,
 		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
-		intersect: intersect
+		intersect: intersect,
+		second: second,
+		last: last
 	};
 });

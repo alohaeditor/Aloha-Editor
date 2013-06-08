@@ -27,19 +27,21 @@
 define([
 	'aloha/core',
 	'jquery',
-	'aloha/selection',
 	'aloha/command',
 	'util/dom2',
 	'util/maps',
+	'util/html',
+	'util/functions',
 	'util/range',
 	'PubSub'
 ], function (
 	Aloha,
 	jQuery,
-	Selection,
 	Command,
 	Dom,
 	Maps,
+	Html,
+	Fn,
 	RangeObject,
 	PubSub
 ) {
@@ -48,68 +50,148 @@ define([
 	// Because we want to provide an easy way to disable the state-override feature.
 	var enabled = Aloha.settings.stateOverride !== false;
 	var overrides = null;
+	var overridesForLinebreak = null;
 	var overrideRange = null;
-
-	function rangeFromRangeObject(alohaRange) {
-		var range = Aloha.createRange();
-		range.setStart(alohaRange.startContainer, alohaRange.startOffset);
-		range.setEnd(alohaRange.endContainer, alohaRange.endOffset);
-		return range;
-	}
+	var linebreakOverridesActive = false;
 
 	function rangeObjectFromRange(range) {
 		return new RangeObject(range);
 	}
 
-	function clear() {
-		overrideRange = null;
+	function clearOverrides() {
 		overrides = null;
+		linebreakOverridesActive = false;
+		if (!overridesForLinebreak) {
+			overrideRange = null;
+		}
+	}
+
+	function clearOverridesForLinebreak() {
+		overridesForLinebreak = null;
+		if (!overrides) {
+			overrideRange = null;
+		}
+	}
+
+	function clearAll() {
+		clearOverrides();
+		clearOverridesForLinebreak();
+	}
+
+	function isLinebreakEvent(event) {
+		return 13 === event.which;
+	}
+
+	function activateLinebreakOverrides(range) {
+		if (overridesForLinebreak) {
+			overrideRange = range;
+			overrides = overridesForLinebreak;
+			overridesForLinebreak = null;
+			linebreakOverridesActive = true;
+		}
+	}
+
+	function keyDownHandler(event) {
+		if (overridesForLinebreak && isLinebreakEvent(event)) {
+			var selection = Aloha.getSelection();
+			if (!selection.getRangeCount()) {
+				return;
+			}
+			activateLinebreakOverrides(selection.getRangeAt(0));
+		}
 	}
 
 	function keyPressHandler(event) {
 		if (!overrides) {
 			return;
 		}
-		if (event.altKey || event.ctrlKey || !event.which) {
+		if (event.altKey || event.ctrlKey || !event.which || isLinebreakEvent(event)) {
+			return;
+		}
+		var text = String.fromCharCode(event.which);
+		if (Html.isControlCharacter(text)) {
 			return;
 		}
 		var selection = Aloha.getSelection();
 		if (!selection.getRangeCount()) {
 			return;
 		}
-		var text = String.fromCharCode(event.which);
 		var range = selection.getRangeAt(0);
+		if (' ' === text) {
+			var elem = Dom.nodeAtOffset(range.startContainer, range.startOffset);
+			elem = elem.parentNode;
+			var whiteSpace = Dom.getComputedStyle(elem, 'white-space');
+			if (!Html.isWhiteSpacePreserveStyle(whiteSpace)) {
+				text = '\xa0';
+			}
+		}
+
 		Dom.insertSelectText(text, range);
 		Maps.forEach(overrides, function (formatFn, command) {
 			formatFn(command, range);
 		});
+
+		// Because, if formattings were applied to the selected text, we
+		// want to continue writing with those formattings applied.
+		Dom.trimRangeClosingOpening(range, Fn.returnFalse, Html.isUnrenderedWhitespace);
+		Dom.trimRange(range, Fn.returnFalse, function (cursor) {
+			var prevNode = cursor.prevSibling();
+			return prevNode && (3 !== prevNode.nodeType || Html.isUnrenderedWhitespace(prevNode));
+		});
 		Dom.collapseToEnd(range);
+
 		selection.removeAllRanges();
 		selection.addRange(range);
+
 		// Because we handled the character insert ourselves via
 		// insertText we must not let the browser's default action
 		// insert the character a second time.
 		event.preventDefault();
+
+		clearOverrides();
+	}
+
+	function setWithMap(overrideMap, clear, command, range, formatFn) {
+		if (!enabled) {
+			return overrideMap;
+		}
+		if (overrideRange && !Dom.areRangesEq(overrideRange, range)) {
+			clear();
+		}
+		overrideRange = range;
+		overrideMap = overrideMap || {};
+		overrideMap[command] = formatFn;
+		return overrideMap;
 	}
 
 	function set(command, range, formatFn) {
+		overrides = setWithMap(overrides, clearOverrides, command, range, formatFn);
+	}
+
+	function setForLinebreak(command, range, formatFn) {
+		if (linebreakOverridesActive) {
+			overrides[command] = formatFn;
+		} else {
+			overridesForLinebreak = setWithMap(overridesForLinebreak, clearOverridesForLinebreak, command, range, formatFn);
+		}
+	}
+
+	function setWithFnAndRangeObject(setFn, command, rangeObject, formatFn) {
 		if (!enabled) {
 			return;
 		}
-		overrideRange = range;
-		overrides = overrides || {};
-		overrides[command] = formatFn;
+		setFn(command, Dom.rangeFromRangeObject(rangeObject), function (command, range) {
+			var rangeObject = rangeObjectFromRange(range);
+			formatFn(command, rangeObject);
+			Dom.setRangeFromRef(range, rangeObject);
+		});
 	}
 
 	function setWithRangeObject(command, rangeObject, formatFn) {
 		if (!enabled) {
 			return;
 		}
-		set(command, rangeFromRangeObject(rangeObject), function (command, range) {
-			var rangeObject = rangeObjectFromRange(range);
-			formatFn(command, rangeObject);
-			Dom.setRangeFromRef(range, rangeObject);
-		});
+		setWithFnAndRangeObject(set, command, rangeObject, formatFn);
 		// Because without doing rangeObject.select(), the
 		// next insertText command (see editable.js) will
 		// not be reached and instead the browsers default
@@ -120,11 +202,19 @@ define([
 		rangeObject.select();
 	}
 
+	function setForLinebreakWithRangeObject(command, rangeObject, formatFn) {
+		setWithFnAndRangeObject(setForLinebreak, command, rangeObject, formatFn);
+	}
+
 	function enabledAccessor(trueFalse) {
 		if (null != trueFalse) {
 			enabled = trueFalse;
 		}
 		return enabled;
+	}
+
+	function isSet(command) {
+		return overrides && overrides.hasOwnProperty(command);
 	}
 
 	// https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#state-override
@@ -133,12 +223,23 @@ define([
 	// at a given index in the selection changes to something different,
 	// the state override and value override must be unset for every
 	// command."
-	Aloha.bind('aloha-selection-changed', function (event, range) {
-		if (overrideRange && !Dom.areRangesEq(overrideRange, range)) {
-			clear();
-			// Because the UI may reflect the any potentially state
-			// overrides that are now no longer in effect, we must
-			// redraw the UI according to the current selection.
+	Aloha.bind('aloha-selection-changed', function (event, range, causeEvent) {
+		// Because we have to fix an edge case that occurs when pressing
+		// shift+enter which causes the selection changed event to occur
+		// one too many times (but not always, try shift enter twice at
+		// the end of the x in <p><b><i>x</i><b><br/></p>).
+		var isShiftEvent = (causeEvent
+							&& 16/*shift*/ === causeEvent.which
+							&& 'keyup' === causeEvent.type);
+		if (overrideRange && !Dom.areRangesEq(overrideRange, range) && !isShiftEvent) {
+			if (causeEvent && isLinebreakEvent(causeEvent)) {
+				activateLinebreakOverrides(range);
+			} else {
+				clearOverrides();
+			}
+			// Because the UI may reflect state overrides that are now
+			// no longer in effect, we must redraw the UI according to
+			// the current selection.
 			PubSub.pub('aloha.selection.context-change', {
 				range: range,
 				event: event
@@ -146,11 +247,21 @@ define([
 		}
 	});
 
+	PubSub.sub('aloha.selection.context-change', function (message) {
+		if (message.event && overrideRange && !isLinebreakEvent(message.event)) {
+			clearOverridesForLinebreak();
+		}
+	});
+
 	return {
 		enabled: enabledAccessor,
 		keyPressHandler: keyPressHandler,
-		setWithRangeObject: setWithRangeObject,
+		keyDownHandler: keyDownHandler,
+		isSet: isSet,
 		set: set,
-		clear: clear
+		setWithRangeObject: setWithRangeObject,
+		setForLinebreak: setForLinebreak,
+		setForLinebreakWithRangeObject: setForLinebreakWithRangeObject,
+		clear: clearAll
 	};
 });

@@ -133,6 +133,11 @@ define([
 
 		setPlaceholder();
 
+		// Because IE7 doesn't give us the blur event when the editable
+		// is deactivated and the toolbar disappears (other browsers do).
+		// TODO unbind, otherwise mermory leak
+		Aloha.bind('aloha-editable-deactivated', onBlur);
+
 		function onSelect(event, ui) {
 			if (ui.item) {
 				setItem(ui.item.obj);
@@ -213,7 +218,7 @@ define([
 
 		function changeTargetBackground() {
 			var target = $(targetObject);
-			if (target && targetHighlightClass) {
+			if (targetHighlightClass) {
 				target.addClass(targetHighlightClass);
 			}
 
@@ -227,7 +232,7 @@ define([
 			restoreTargetBackground();
 
 			// set background color to give visual feedback which link is modified
-			if (target && target.context && target.context.style &&
+			if (target.context && target.context.style &&
 				target.context.style['background-color']) {
 				target.attr('data-original-background-color',
 							target.context.style['background-color']);
@@ -240,16 +245,12 @@ define([
 			if (targetHighlightClass) {
 				target.removeClass(targetHighlightClass);
 			}
-			if (noTargetHighlight || !target) {
+			if (noTargetHighlight) {
 				return;
 			}
 			// Remove the highlighting and restore original color if was set before
 			var color = target.attr('data-original-background-color');
-			if (color) {
-				target.css('background-color', color);
-			} else {
-				target.css('background-color', '');
-			}
+			target.css('background-color', color || '');
 			if (!target.attr('style')) {
 				target.removeAttr('style');
 			}

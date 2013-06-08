@@ -207,16 +207,27 @@ define('format/format-plugin', [
 		onSelectionChanged(formatPlugin, Aloha.Selection.getRangeObject());
 	}
 
-	function format(formatPlugin, rangeObject, markup) {
-		GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
+	function format(formatPlugin, rangeObject, markup, remove, limit) {
+		if (remove) {
+			GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, limit);
+		} else {
+			GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
+		}
 		updateUiAfterMutation(formatPlugin, rangeObject);
+	}
+
+	function makeFormattingFn(formatPlugin, markup, remove, limit) {
+		return function (command, rangeObject) {
+			format(formatPlugin, rangeObject, markup, remove, limit);
+		};
 	}
 
 	function addMarkup(button) {
 		var formatPlugin = this;
 		var markup = jQuery('<'+button+'>');
 		var rangeObject = Aloha.Selection.rangeObject;
-		
+		var limit = Aloha.activeEditable.obj;
+
 		if ( typeof button === "undefined" || button == "" ) {
 			return;
 		}
@@ -225,37 +236,24 @@ define('format/format-plugin', [
 		var nodeNames = interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
 		var foundMarkup = rangeObject.findMarkup(function() {
 			return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
-		}, Aloha.activeEditable.obj);
-
+		}, limit);
 		if (foundMarkup) {
-			// remove the markup
+			markup = jQuery(foundMarkup);
+		}
+
+		if (rangeObject.isCollapsed()) {
+			GENTICS.Utils.Dom.extendToWord(rangeObject);
 			if (rangeObject.isCollapsed()) {
-				// when the range is collapsed, we remove exactly the one DOM element
-				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, rangeObject, true);
-			} else {
-				// the range is not collapsed, so we remove the markup from the range
-				GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
-			}
-			updateUiAfterMutation(formatPlugin, rangeObject);
-		} else {
-			// when the range is collapsed, extend it to a word
-			if (rangeObject.isCollapsed()) {
-				GENTICS.Utils.Dom.extendToWord(rangeObject);
-				if (rangeObject.isCollapsed()) {
-					if (StateOverride.enabled()) {
-						StateOverride.setWithRangeObject(
-							commandsByElement[button],
-							rangeObject,
-							function (command, rangeObject) {
-								format(formatPlugin, rangeObject, markup);
-							}
-						);
-						return;
-					}
+				if (StateOverride.enabled()) {
+					var formatter = makeFormattingFn(formatPlugin, markup, foundMarkup, limit);
+					StateOverride.setWithRangeObject(commandsByElement[button], rangeObject, formatter);
+					StateOverride.setForLinebreakWithRangeObject(commandsByElement[button], rangeObject, formatter);
+					return;
 				}
 			}
-			format(formatPlugin, rangeObject, markup);
 		}
+
+		format(formatPlugin, rangeObject, markup, foundMarkup, limit);
 	}
 
 	function onSelectionChanged(formatPlugin, rangeObject) {
@@ -268,9 +266,17 @@ define('format/format-plugin', [
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (j = 0; j < nodeNames.length; j++) {
-					if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
+					var markup = jQuery('<' + nodeNames[j] + '>');
+					if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, markup)) {
 						button.handle.setState(true);
 						statusWasSet = true;
+						if (StateOverride.enabled()) {
+							StateOverride.setForLinebreakWithRangeObject(
+								commandsByElement[nodeNames[j].toLowerCase()],
+								rangeObject,
+								makeFormattingFn(formatPlugin, markup, null, Aloha.activeEditable.obj)
+							);
+						}
 					}
 				}
 			}
