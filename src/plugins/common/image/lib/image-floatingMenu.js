@@ -139,7 +139,8 @@ function (
 				labelClass: 'aloha-image-input-label',
 				tooltip: i18n.t('field.img.src.tooltip'),
 				name: 'imageSource',
-				scope: plugin.name
+				scope: plugin.name,
+				valueField : 'url'
 			});
 			this.imgSrcField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
 			this.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
