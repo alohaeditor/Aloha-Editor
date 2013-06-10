@@ -50,6 +50,17 @@ define([
 	'use strict';
 
 	/**
+	 * Saves the scroll position just before paste the data (beforepaste and
+	 * paste events)
+	 *
+	 * @property {Number} x
+	 * @property {Number} y
+	 **/
+	var scrollPositionBeforePaste = {
+		x:0,y:0
+	};
+
+	/**
 	 * Reference to global window object, for quicker lookup.
 	 *
 	 * @type {jQuery.<window>}
@@ -112,6 +123,7 @@ define([
 			editable.obj.focus();
 		}
 		CopyPaste.setSelectionAt(range);
+		window.scrollTo(scrollPositionBeforePaste.x, scrollPositionBeforePaste.y);
 	}
 
 	/**
@@ -135,7 +147,9 @@ define([
 		// where the range is and target.
 		$target.css({
 			top: $WINDOW.scrollTop(),
-			left: $WINDOW.scrollLeft() - 200 // Why 200?
+			left: $WINDOW.scrollLeft() - 200, // Why 200? because width
+			width: 200, // FIX, I see you in IE7
+			overflow: 'hidden' // FIX, I see you in IE7
 		}).contents().remove();
 
 		var from = CopyPaste.getEditableAt(range);
@@ -198,7 +212,7 @@ define([
 
 	/**
 	 * Prepare the nodes around where pasted content is to land.
-	 * 
+	 *
 	 * @param {WrappedRange} range
 	 */
 	function prepRangeForPaste(range) {
@@ -307,12 +321,22 @@ define([
 		// if (IS_IE && !hasClipboardAccess) {
 		if (IS_IE) {
 			$editable.bind('beforepaste', function ($event) {
+				scrollPositionBeforePaste.x = window.scrollX ||
+					document.documentElement.scrollLeft;
+				scrollPositionBeforePaste.y = window.scrollY ||
+					document.documentElement.scrollTop;
+
 				ieRangeBeforePaste = CopyPaste.getRange();
 				redirect(ieRangeBeforePaste, $CLIPBOARD);
 				$event.stopPropagation();
 			});
 		} else {
 			$editable.bind('paste', function ($event) {
+				scrollPositionBeforePaste.x = window.scrollX ||
+					document.documentElement.scrollLeft;
+				scrollPositionBeforePaste.y = window.scrollY ||
+					document.documentElement.scrollTop;
+
 				var range = CopyPaste.getRange();
 				redirect(range, $CLIPBOARD);
 				if (IS_IE) {
