@@ -426,14 +426,19 @@ define([
 				// delete content in the right of cursor
 				range = Aloha.getSelection().getRangeAt(0);
 
-				if(range.startOffset === range.endOffset && 
-					range.endOffset === range.commonAncestorContainer.length
-				){ // then the cursor is at the end of the text, may be is
+				if(range.startOffset === range.endOffset){
+					// then the cursor is at the end of the text, may be is
 					//  before the table wrapper
 
 					// range.commonAncestorContainer.parentNode.previousSibling
-					nextPreviousElement = jQuery(range.commonAncestorContainer)
-						.parent().next()[0];
+					if(range.commonAncestorContainer.nodeType === 3 && 
+						range.endOffset === range.commonAncestorContainer.length){
+						nextPreviousElement = jQuery(range.commonAncestorContainer)
+							.parent().next()[0];
+					}else if(range.commonAncestorContainer.nodeType === 1){
+						nextPreviousElement = jQuery(range.commonAncestorContainer)
+							.next()[0];
+					}
 
 					if(nextPreviousElement === that.tableWrapper){
 						newSelectElm = getNewSelectedElement('first', that.obj);
@@ -451,8 +456,15 @@ define([
 				){ // then the cursor may be is located after the table wrapper
 
 					// range.commonAncestorContainer.parentNode.previousSibling
-					nextPreviousElement = jQuery(range.commonAncestorContainer)
-						.parent().prev()[0];
+					
+					if(range.commonAncestorContainer.nodeType === 3){
+						nextPreviousElement = jQuery(range.commonAncestorContainer)
+							.parent().prev()[0];
+					}else if(range.commonAncestorContainer.nodeType === 1){
+						nextPreviousElement = jQuery(range.commonAncestorContainer)
+							.prev()[0];					
+					}
+					
 
 					if(nextPreviousElement === that.tableWrapper){
 						newSelectElm = getNewSelectedElement('last', that.obj);
