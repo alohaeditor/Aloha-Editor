@@ -276,11 +276,11 @@ define([
 			plugin.settings = jQuery.extend(true, plugin.defaultSettings, plugin.settings);
 
 			// Determine the flag and the value of the aspect ratio depending on settings
-			if ( typeof this.settings.fixedAspectRatio === 'number' ) {
+			if ( !isNaN(this.settings.fixedAspectRatio) ) {
 				this.aspectRatioValue = this.settings.fixedAspectRatio;
 				plugin.keepAspectRatio = true;
 			} else {
-				if ((plugin.settings.fixedAspectRatio) === true) {
+				if ( plugin.settings.fixedAspectRatio === true) {
 					plugin.keepAspectRatio = true;
 				} else {
 					plugin.keepAspectRatio = false;
