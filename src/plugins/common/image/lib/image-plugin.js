@@ -361,8 +361,8 @@ define([
 		 * Subscribe to Aloha events and DragAndDropPlugin Event
 		 */
 		subscribeEvents: function () {
-			var	plugin = this;
-			var config = this.settings;
+			var	plugin = this,
+				config = this.settings;
 
 			jQuery('img').filter(config.globalselector).unbind();
 			jQuery('img').filter(config.globalselector).click(function (event) {
@@ -379,8 +379,8 @@ define([
 						// Prepare
 						img = jQuery('<img/>');
 						img.css({
-							"max-width": that.maxWidth,
-							"max-height": that.maxHeight
+							"max-width": config.maxWidth,
+							"max-height": config.maxHeight
 						});
 						img.attr('id', fileObj.id);
 						if (typeof fileObj.src === 'undefined') {
