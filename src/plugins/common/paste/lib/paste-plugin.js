@@ -1,7 +1,7 @@
 /* paste-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * Aloha Editor is free software; you can redistribute it and/or
@@ -48,17 +48,6 @@ define([
 	CopyPaste
 ) {
 	'use strict';
-
-	/**
-	 * Saves the scroll position just before paste the data (beforepaste and
-	 * paste events)
-	 *
-	 * @property {Number} x
-	 * @property {Number} y
-	 **/
-	var scrollPositionBeforePaste = {
-		x:0,y:0
-	};
 
 	/**
 	 * Reference to global window object, for quicker lookup.
@@ -109,6 +98,19 @@ define([
 	var ieRangeBeforePaste = null;
 
 	/**
+	 * The window's scroll position at the moment just before pasting is done
+	 * (beforepaste and paste events).
+	 *
+	 * @type {object}
+	 * @property {Number} x
+	 * @property {Number} y
+	 **/
+	var scrollPositionBeforePaste = {
+		x: 0,
+		y: 0
+	};
+
+	/**
 	 * Set the selection to the given range and focus on the editable inwhich
 	 * the selection is in (if any).
 	 *
@@ -123,7 +125,10 @@ define([
 			editable.obj.focus();
 		}
 		CopyPaste.setSelectionAt(range);
-		window.scrollTo(scrollPositionBeforePaste.x, scrollPositionBeforePaste.y);
+		window.scrollTo(
+			scrollPositionBeforePaste.x,
+			scrollPositionBeforePaste.y
+		);
 	}
 
 	/**
@@ -142,14 +147,15 @@ define([
 	 *                                       is to be directed to.
 	 */
 	function redirect(range, $target) {
+		var width = 200;
 		// Because moving the target element to the current scroll position
 		// avoids jittering the viewport when the pasted content moves between
 		// where the range is and target.
 		$target.css({
 			top: $WINDOW.scrollTop(),
-			left: $WINDOW.scrollLeft() - 200, // Why 200? because width
-			width: 200, // FIX, I see you in IE7
-			overflow: 'hidden' // FIX, I see you in IE7
+			left: $WINDOW.scrollLeft() - width,
+			width: width,
+			overflow: 'hidden'
 		}).contents().remove();
 
 		var from = CopyPaste.getEditableAt(range);
