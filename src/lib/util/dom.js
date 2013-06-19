@@ -1,9 +1,9 @@
 /* dom.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -70,6 +70,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			'H6': true,
 			'LI': true
 		};
+
 
 	/**
 	 * @namespace GENTICS.Utils
@@ -326,12 +327,19 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 						// text node
 						secondPart = document.createTextNode(element.data.substring(splitPosition, element.data.length));
 						element.data = element.data.substring(0, splitPosition);
+						if(this.isEmpty(secondPart) && jQuery('br', newDom).length === 0){
+							secondPart = jQuery('<br/>').addClass('aloha-end-br');
+						}
 					} else {
 						// other nodes
 						jqelement = jQuery(element);
 						children = jqelement.contents();
 						newElement = jqelement.clone(false).empty();
 						secondPart = newElement.append(children.slice(splitPosition, children.length)).get(0);
+						jQuery(secondPart).addClass('aloha-editing-p');
+						if(secondPart.childNodes.length === 1 && secondPart.childNodes.item(0).nodeName.toLowerCase() === 'br'){
+							jQuery(secondPart.childNodes.item(0)).addClass('aloha-end-br');
+						}
 					}
 
 					// update the range if necessary
@@ -836,7 +844,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 						// now append the contents of the current text node into the previous
 						prevNode.data += this.data;
 
-						// remove empty text nodes	
+						// remove empty text nodes
 					} else if (!(this.nodeValue === '' && cleanup.removeempty)) {
 						prevNode = this;
 						// we are finish here don't delete this node
@@ -1167,7 +1175,39 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				}
 				if (splitParts) {
 					// if the DOM could be split, we insert the new object in between the split parts
-					splitParts.eq(0).after(object);
+
+					if( splitParts[0].nodeType !== Node.TEXT_NODE &&
+						(this.isEmpty(splitParts[0]) || this.isAlohaEditingP(splitParts[0]))
+					){
+						splitParts.eq(0).replaceWith(object);
+					} else {
+						splitParts.eq(0).after(object);
+					}
+
+					var secondElement = splitParts.eq(1);
+					if( secondElement.length > 0
+						&& (this.isAlohaEditingP(secondElement[0])
+						|| this.isEmpty(secondElement[0]) )
+					){
+					// Search for an element after the aditional split part,
+					// and if is founded, remove the second empty part
+						var parentsToEditable = secondElement.parents('.aloha-editor').get(),
+							hasNext = false;
+
+						parentsToEditable.reverse().push(secondElement);
+						jQuery.each(parentsToEditable, function(index, elm){
+							var element = jQuery(this);
+							if(element.next().length > 0){
+								hasNext = true;
+								return false; // break
+							}
+						});
+						if(hasNext){
+							// append the new dom
+							secondElement.remove();
+						}
+					}
+
 					return true;
 				}
 				// could not split, so could not insert
@@ -1175,6 +1215,19 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			}
 			// found no possible new parent, so we shall not insert
 			return false;
+		},
+
+		/**
+		 * Checks if the element given is an aloha-editing-p helper, added by
+		 * split
+		 *
+		 * @param {DOMObject} element Element to be checked
+		 */
+		isAlohaEditingP: function(element){
+			return (element.className === 'aloha-editing-p'
+				&& element.children.length === 1
+				&& element.children[0].nodeName.toLowerCase() === 'br'
+				&& element.children[0].className === 'aloha-end-br');
 		},
 
 		/**
@@ -1475,7 +1528,14 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 
 			// text nodes are not empty, if they contain non-whitespace characters
 			if (domObject.nodeType === 3) {
-				return domObject.data.search(/\S/) == -1;
+				if(domObject.data.search(/\S/) == -1){
+					return true;
+				}else if(domObject.data.length === 1 // Fix FOR IE no width chars
+					&& domObject.data.charCodeAt(0) >= 0x2000){
+					return true;
+				}
+				
+				return false;
 			}
 
 			// all other nodes are not empty if they contain at least one child which is not empty
@@ -1607,7 +1667,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		},
 
 		/**
-		 * 
+		 *
 		 * "Two nodes are in the same editing host if the editing host of the first is
 		 * non-null and the same as the editing host of the second."
 		 * @param node1 DOM object
