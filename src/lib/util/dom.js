@@ -249,21 +249,6 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		listElements: ['li', 'ol', 'ul'],
 
 		/**
-		 * Returns an P element with a br, this element will be searched and
-		 * deleted when the aloha editable lose the focused (deactivated)
-		 * if still empty
-		 *
-		 * @return {jQuery.<DOMElement>}
-		 */
-		getAlohaEditingP: function(){
-			return jQuery('<p>')
-				.addClass('aloha-editing-p')
-				.append(
-					$('<br/>').addClass('aloha-end-br')
-				);
-		},
-
-		/**
 		 * Splits a DOM element at the given position up until the limiting object(s), so that it is valid HTML again afterwards.
 		 * @param {RangeObject} range Range object that indicates the position of the splitting.
 		 *				This range will be updated, so that it represents the same range as before the split.
