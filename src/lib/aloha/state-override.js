@@ -105,7 +105,7 @@ define([
 		if (!overrides) {
 			return;
 		}
-		if (event.altKey || event.ctrlKey || !event.which || isLinebreakEvent(event)) {
+		if (event.altKey || event.ctrlKey || event.metaKey || !event.which || isLinebreakEvent(event)) {
 			return;
 		}
 		var text = String.fromCharCode(event.which);
