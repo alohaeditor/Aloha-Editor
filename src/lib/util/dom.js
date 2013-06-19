@@ -342,7 +342,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 						// text node
 						secondPart = document.createTextNode(element.data.substring(splitPosition, element.data.length));
 						element.data = element.data.substring(0, splitPosition);
-						if(this.isEmpty(secondPart)){
+						if(this.isEmpty(secondPart) && jQuery('br', newDom).length === 0){
 							secondPart = jQuery('<br/>').addClass('aloha-end-br');
 						}
 					} else {
@@ -1201,8 +1201,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 
 					var secondElement = splitParts.eq(1);
 					if( secondElement.length > 0
-						&& this.isAlohaEditingP(secondElement[0])
-						&& this.isEmpty(secondElement[0])
+						&& (this.isAlohaEditingP(secondElement[0])
+						|| this.isEmpty(secondElement[0]) )
 					){
 					// Search for an element after the aditional split part,
 					// and if is founded, remove the second empty part
@@ -1543,7 +1543,14 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 
 			// text nodes are not empty, if they contain non-whitespace characters
 			if (domObject.nodeType === 3) {
-				return domObject.data.search(/\S/) == -1;
+				if(domObject.data.search(/\S/) == -1){
+					return true;
+				}else if(domObject.data.length === 1 // Fix FOR IE no width chars
+					&& domObject.data.charCodeAt(0) >= 0x2000){
+					return true;
+				}
+				
+				return false;
 			}
 
 			// all other nodes are not empty if they contain at least one child which is not empty

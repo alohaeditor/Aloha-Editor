@@ -11,6 +11,5 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: paste-plugin: Browsers no longer scroll to the top of an editable
               after content was pasted.
 
-- **BUGFIX**: Add a block/table at the end of inline element, not longer result
-              in get an empty inline element after the insertion, you can editing
-              inside this inline element. (Don't work with links)
+- **BUGFIX**: Add a block/table not longer result in get an empty paragraph 
+              before the inserted element.
