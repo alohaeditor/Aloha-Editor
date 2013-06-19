@@ -1135,17 +1135,17 @@ define([
 	 * @param node should be an element node.
 	 */
 	function getComputedStyle(node, name) {
-		if (node.currentStyle) {
-			// Because IE7 needs dashesToCamelCase().
-			name = Strings.dashesToCamelCase(name);
-			return node.currentStyle[name];
-		}
 		var doc = node.ownerDocument;
-		if (doc.defaultView && doc.defaultView.getComputedStyle) {
+		if (doc && doc.defaultView && doc.defaultView.getComputedStyle) {
 			var styles = doc.defaultView.getComputedStyle(node, null);
 			if (styles) {
 				return styles[name] || styles.getPropertyValue(name);
 			}
+		}
+		if (node.currentStyle) {
+			// Because IE7 needs dashesToCamelCase().
+			name = Strings.dashesToCamelCase(name);
+			return node.currentStyle[name];
 		}
 		return null;
 	}
