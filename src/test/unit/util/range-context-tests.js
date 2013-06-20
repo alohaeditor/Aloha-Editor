@@ -535,6 +535,10 @@ Aloha.require([
 	  '<p><span style="color: black;">one</span>[two]</p>',
 	  '<p><span style="color: black;">one</span>{<span style="font-family: arial">two</span>}</p>');
 
+	t('range outside and inside element to be formatted',
+	  '<p>Some {<a>more}</a> text</p>',
+	  '<p>Some {<span style="font-family: arial"><a>more}</a></span> text</p>');
+
 	// Because the following tests depend on some CSS classes to be available:
 	$('body').prepend('<style>'
 					  + '.test-bold { font-weight: bold; }'

@@ -170,11 +170,13 @@ define([
 		if (cacChildStart) {
 			var next = cacChildStart.nextSibling;
 			stepAtStart(cacChildStart, arg);
-			Dom.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
-			if (cacChildEnd) {
-				next = cacChildEnd.nextSibling;
-				stepAtEnd(cacChildEnd, arg);
-				Dom.walk(next, stepRightEnd, arg);
+			if (cacChildStart !== cacChildEnd) {
+				Dom.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
+				if (cacChildEnd) {
+					next = cacChildEnd.nextSibling;
+					stepAtEnd(cacChildEnd, arg);
+					Dom.walk(next, stepRightEnd, arg);
+				}
 			}
 		}
 	}
