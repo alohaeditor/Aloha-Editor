@@ -1,9 +1,0 @@
-h2. Commands Plugin
-
-The Commands Plugin adds additional commands to the Aloha Editor core. Currently it only provides the +inserthtml+ command which the "Paste Plugin":plugin_paste.html and many others will make use of. There is no configuration or settings for the Commands Plugin. For more information see our guide on "Aloha Commands":using_commands.html
-
-The common/commands plugin depends on the common/contenthandler plugin.
-
-endprologue.
-
-
