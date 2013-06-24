@@ -89,7 +89,7 @@ define([
 	var $CLIPBOARD_CONTAINER = $('<div class="aloha-paste-handler" style="position:absolute; ' +
 					   'clip:rect(0px,0px,0px,0px); width:1px; height:1px;' +
 //					   'right: 1%; top: 10px; width: 40%; min-height; 120px;' +
-//					   ' background: white; ' + // uncoment theese line in debug
+//					   ' background: white; ' + // uncomment these line in debug
 					   '"><div class="aloha-metaview"></div></div>');
 
 	/**
@@ -146,11 +146,12 @@ define([
 	}
 
 	/**
-	 * Prepares the clipboard object to gets the contents of clipboard.
+	 * Prepares the clipboard object to get the contents of clipboard.
 	 * Basicly empty the object and add a Paragraph element.
 	 *
-	 * @return {jQuery.<DomElement>}
-	 **/
+	 * @param {jQuery.<HTMLElement>} $target Target to be cleaned
+	 * @return {jQuery.<HTMLElement>}
+	 1111*/
 	function prepareClipboardHelper($target) {
 		var $newTarget = $('<p>');
 		$target.contents().remove();
@@ -178,12 +179,6 @@ define([
 		// Because moving the target element to the current scroll position
 		// avoids jittering the viewport when the pasted content moves between
 		// where the range is and target.
-//		$CLIPBOARD_CONTAINER.css({
-//			top: $WINDOW.scrollTop(),
-//			left: $WINDOW.scrollLeft() - width,
-//			width: width,
-//			overflow: 'hidden'
-//		});
 		$target = prepareClipboardHelper($target);
 
 		var from = CopyPaste.getEditableAt(range);
@@ -290,7 +285,7 @@ define([
 							&& this.previousSibling.nodeType === 3
 							&& this.nextSibling
 							&& this.nextSibling.nodeType === 1
-							&& this.nextSibling.nodeName.toLowerCase() === 'br'
+							&& this.nextSibling.nodeName === 'BR'
 					) {
 						var newParent = document.createElement(this.parentNode.nodeName);
 						newParent.appendChild(this.previousSibling);
@@ -342,7 +337,6 @@ define([
 		}
 
 		prepareClipboardHelper($clipboard);
-//		$clipboard.contents().remove();
 
 		if (typeof callback === 'function') {
 			callback();
