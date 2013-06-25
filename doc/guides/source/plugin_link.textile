@@ -18,31 +18,47 @@ h3. Components
 h3. Configuration
 
 <javascript>
-Aloha.plugins.link: {
+Aloha.settings.plugins.link = {
+
 	// all elements with no specific configuration may insert links
-	config : [ 'a' ],
-	editables : {
-	// No links in the title.
-	'#top-text'	: [  ]
+	config: ["a"],
+
+	editables: {
+		// No links in the title.
+		"#top-text": []
 	},
+
+	// Test if the link's href value denotes an external link.
+	// eg: "ftp://www.example.com" or "//www.example.com"
+	titleregex: "^([^:]+:)?\/\/",
+
+	// The value to set the link's title attribute field to if the link's href
+	// value matchs `titleregex`.
+	title: "External link",
+
 	// all links that match the targetregex will get set the target
 	// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
-	targetregex : '^(?!.*aloha-editor.com).*',
+	targetregex: "^(?!.*aloha-editor.com).*",
+
 	// this target is set when either targetregex matches or not set
 	// e.g. _blank opens all links in new window
-	target : '_blank',
+	target: "_blank",
+
 	// the same for css class as for target
-	cssclassregex : '^(?!.*aloha-editor.com).*',
-	cssclass : 'aloha',
+	cssclassregex: "^(?!.*aloha-editor.com).*",
+
+	cssclass: "aloha",
+
 	// use all resources of type website for autosuggest
-	objectTypeFilter: [ 'website' ],
+	objectTypeFilter: ["website"],
+
 	// handle change of href
-	onHrefChange: function( obj, href, item ) {
-		var jQuery = Aloha.require('jquery');
-		if ( item ) {
-			jQuery(obj).attr('data-name', item.name);
+	onHrefChange: function (obj, href, item) {
+		var jQuery = Aloha.require("jquery");
+		if (item) {
+			jQuery(obj).attr("data-name", item.name);
 		} else {
-			jQuery(obj).removeAttr('data-name');
+			jQuery(obj).removeAttr("data-name");
 		}
 	}
 };
