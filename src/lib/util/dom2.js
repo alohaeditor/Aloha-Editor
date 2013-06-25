@@ -640,7 +640,12 @@ define([
 	function contains(a, b) {
 		return (1 === a.nodeType
 				? (a.contains
-				   ? a != b && a.contains(b)
+				   ? (a !== b
+					  // Because IE returns false for elemNode.contains(textNode).
+					  && (1 === b.nodeType
+						  ? a.contains(b)
+						  : (b.parentNode
+							 && (a === b.parentNode || a.contains(b.parentNode)))))
 				   : !!(a.compareDocumentPosition(b) & 16))
 				: false);
 	}
