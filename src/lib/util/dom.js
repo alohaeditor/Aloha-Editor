@@ -24,6 +24,7 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
+/*jslint eqeq: true */
 // Ensure GENTICS Namespace
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
@@ -327,7 +328,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 						// text node
 						secondPart = document.createTextNode(element.data.substring(splitPosition, element.data.length));
 						element.data = element.data.substring(0, splitPosition);
-						if(this.isEmpty(secondPart) && jQuery('br', newDom).length === 0){
+						if (this.isEmpty(secondPart) && jQuery('br', newDom).length === 0) {
 							secondPart = jQuery('<br/>').addClass('aloha-end-br');
 						}
 					} else {
@@ -337,7 +338,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 						newElement = jqelement.clone(false).empty();
 						secondPart = newElement.append(children.slice(splitPosition, children.length)).get(0);
 						jQuery(secondPart).addClass('aloha-editing-p');
-						if(secondPart.childNodes.length === 1 && secondPart.childNodes.item(0).nodeName.toLowerCase() === 'br'){
+						if (secondPart.childNodes.length === 1 && secondPart.childNodes.item(0).nodeName.toLowerCase() === 'br') {
 							jQuery(secondPart.childNodes.item(0)).addClass('aloha-end-br');
 						}
 					}
@@ -1176,33 +1177,32 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				if (splitParts) {
 					// if the DOM could be split, we insert the new object in between the split parts
 
-					if( splitParts[0].nodeType !== Node.TEXT_NODE &&
-						(this.isEmpty(splitParts[0]) || this.isAlohaEditingP(splitParts[0]))
-					){
+					if (splitParts[0].nodeType !== Node.TEXT_NODE && (
+							this.isEmpty(splitParts[0]) || this.isAlohaEditingP(splitParts[0])
+						)) {
 						splitParts.eq(0).replaceWith(object);
 					} else {
 						splitParts.eq(0).after(object);
 					}
 
 					var secondElement = splitParts.eq(1);
-					if( secondElement.length > 0
-						&& (this.isAlohaEditingP(secondElement[0])
-						|| this.isEmpty(secondElement[0]) )
-					){
+					if (secondElement.length > 0
+							&& (this.isAlohaEditingP(secondElement[0])
+							|| this.isEmpty(secondElement[0]))) {
 					// Search for an element after the aditional split part,
 					// and if is founded, remove the second empty part
 						var parentsToEditable = secondElement.parents('.aloha-editor').get(),
 							hasNext = false;
 
 						parentsToEditable.reverse().push(secondElement);
-						jQuery.each(parentsToEditable, function(index, elm){
+						jQuery.each(parentsToEditable, function (index, elm) {
 							var element = jQuery(this);
-							if(element.next().length > 0){
+							if (element.next().length > 0) {
 								hasNext = true;
 								return false; // break
 							}
 						});
-						if(hasNext){
+						if (hasNext) {
 							// append the new dom
 							secondElement.remove();
 						}
@@ -1223,7 +1223,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 *
 		 * @param {DOMObject} element Element to be checked
 		 */
-		isAlohaEditingP: function(element){
+		isAlohaEditingP: function (element) {
 			return (element.className === 'aloha-editing-p'
 				&& element.children.length === 1
 				&& element.children[0].nodeName.toLowerCase() === 'br'
@@ -1528,13 +1528,13 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 
 			// text nodes are not empty, if they contain non-whitespace characters
 			if (domObject.nodeType === 3) {
-				if(domObject.data.search(/\S/) == -1){
+				if (domObject.data.search(/\S/) == -1) {
 					return true;
-				}else if(domObject.data.length === 1 // Fix FOR IE no width chars
-					&& domObject.data.charCodeAt(0) >= 0x2000){
+				} else if (domObject.data.length === 1 // Fix FOR IE no width chars
+						&& domObject.data.charCodeAt(0) >= 0x2000) {
 					return true;
 				}
-				
+
 				return false;
 			}
 
