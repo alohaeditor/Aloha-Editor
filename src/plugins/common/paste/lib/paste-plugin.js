@@ -151,7 +151,7 @@ define([
 	 *
 	 * @param {jQuery.<HTMLElement>} $target Target to be cleaned
 	 * @return {jQuery.<HTMLElement>}
-	 1111*/
+	 */
 	function prepareClipboardHelper($target) {
 		var $newTarget = $('<p>');
 		$target.contents().remove();
@@ -308,7 +308,7 @@ define([
 
 				if (Dom.isEmpty(this) || (
 						contents.length === 1
-						&& contents[0].nodeName.toLowerCase() === 'br'
+						&& contents[0].nodeName === 'BR'
 					)) {
 					p.remove();
 				}
