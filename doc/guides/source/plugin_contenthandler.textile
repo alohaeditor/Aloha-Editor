@@ -39,7 +39,7 @@ h4. Using Configuration
 		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
 		initEditable: [ 'sanitize' ],
 		getContents: [ 'blockelement', 'sanitize', 'basic' ],
-		sanitize: 'relaxed' // relaxed, restricted, basic,
+		sanitize: 'relaxed', // relaxed, restricted, basic,
 		allows: {
 			elements: [
 				'strong', 'em', 'i', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'div', 'dl', 'dt', 'em',
