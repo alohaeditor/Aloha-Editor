@@ -1334,7 +1334,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					insertAfterSplit(head, object);
 					if (isPhantomNode(tail)) {
 						var afterTail = tail.nextSibling
-						             || (tail.parentNode && tail.parentNode.firstChild);
+						             || (tail.parentNode && tail.parentNode.nextSibling);
 						if (findNodeForward(afterTail, isNotVisiblyEmpty)) {
 							// Because the tail element that is generated from
 							// the splitting is superfluous since there is
