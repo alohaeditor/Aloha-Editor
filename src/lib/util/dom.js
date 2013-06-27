@@ -72,6 +72,159 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			'LI': true
 		};
 
+	/**
+	 * Can't use elem.childNodes.length because
+	 * http://www.quirksmode.org/dom/w3c_core.html
+	 * "IE up to 8 does not count empty text nodes."
+	 *
+	 * Taken from Dom2.js
+	 */
+	function numChildren(elem) {
+		var count = 0;
+		var child = elem.firstChild;
+		while (child) {
+			count += 1;
+			child = child.nextSibling;
+		}
+		return count;
+	}
+
+	/**
+	 * Taken from Dom2.js
+	 */
+	function nodeLength(node) {
+		if (1 === node.nodeType) {
+			return numChildren(node);
+		}
+		if (3 === node.nodeType) {
+			return node.length;
+		}
+		return 0;
+	}
+
+	/**
+	 * Checks if the element given is an aloha-editing-p helper, added by split.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if the given element is an
+	 *                   aloha-editing-paragraph.
+	 */
+	function isAlohaEditingP(node) {
+		return (
+			node.className === 'aloha-editing-p'
+				&& nodeLength(node) === 1
+					&& node.children[0].nodeName === 'BR'
+						&& node.children[0].className === 'aloha-end-br'
+		);
+	}
+
+	/**
+	 * Starting from the given node, will walk forward (right-ward) through the
+	 * node until an element is found that matches the predicate `match` or we
+	 * reach the last element in the tree inside the editing host.
+	 *
+	 * @param {HTMLElement} node An element that must be inside an editable.
+	 * @param {function(HTMLElement):Boolean} match A prediate function to
+	 *                                              determine wether or not the
+	 *                                              node matches one we are
+	 *                                              looking for.
+	 * @return {HTMLElement} The matched node that is forward in the DOM tree
+	 *                       from `node`; null if nothing can be found that
+	 *                       matches `match`.
+	 */
+	function findNodeForward(node, match) {
+		if (!node) {
+			return null;
+		}
+		if (match(node)) {
+			return node;
+		}
+		var next = node.firstChild
+		        || node.nextSibling
+		        || (
+		            node.parentNode
+		            && !GENTICS.Utils.Dom.isEditingHost(node.parentNode)
+		            && node.parentNode.nextSibling
+		        );
+		return next ? findNodeForward(next, match) : null;
+	}
+
+	function isVisiblyEmpty(node) {
+		if (!node) {
+			return true;
+		}
+		// TODO: use isChildlessElement()
+		if ('BR' === node.nodeName) {
+			return false;
+		}
+		if (node.nodeType === Node.TEXT_NODE) {
+			// TODO: would prefer to use
+			// (Html.isWhitespaces(node) || Html.isZeroWidthCharacters(node))
+			// but cannot because of circular dependency
+			if (node.data.search(/\S/) === -1) {
+				return true;
+			}
+			// Fix for IE with zero-width characters
+			if (1 === node.data.length && node.data.charCodeAt(0) >= 0x2000) {
+				return true;
+			}
+			return false;
+		}
+		var numChildren = nodeLength(node);
+		if (0 === numChildren) {
+			return true;
+		}
+		var children = node.childNodes;
+		var i;
+		for (i = 0; i < numChildren; i++) {
+			if (!isVisiblyEmpty(children[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Checks for the opposite condition of isVisiblyEmpty().
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if the given node is visible not empty.
+	 */
+	function isNotVisiblyEmpty(node) {
+		return !isVisiblyEmpty(node);
+	}
+
+	/**
+	 * Checks whether the given element is a "phantom" element-- ie: an element
+	 * that is either invisible or an aloha-editing-paragraph element.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if the element is a "phantom" element.
+	 */
+	function isPhantomNode(node) {
+		return isVisiblyEmpty(node) || isAlohaEditingP(node);
+	}
+
+	/**
+	 * Inserts the DOM node `element` appropriately during a split operation.
+	 *
+	 * The element `head` is used to reference where the element should be
+	 * inserted.  Depending on the structure of this `head` node, the `element`
+	 * will either replace/overwrite `head` or be appending immediately after
+	 * `head`.
+	 *
+	 * @param {HTMLElement} head The "head" element of the "head and tail"
+	 *                           nodes resulting from splitting a DOM element.
+	 * @param {HTMLElement} element The element to be inserted between the head
+	 *                              and tail split parts.
+	 */
+	function insertAfterSplit(head, element) {
+		if (head.nodeType !== Node.TEXT_NODE && isPhantomNode(head)) {
+			jQuery(head).replaceWith(element);
+		} else {
+			jQuery(head).after(element);
+		}
+	}
 
 	/**
 	 * @namespace GENTICS.Utils
@@ -1175,39 +1328,21 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					return true;
 				}
 				if (splitParts) {
-					// if the DOM could be split, we insert the new object in between the split parts
-
-					if (splitParts[0].nodeType !== Node.TEXT_NODE && (
-							this.isEmpty(splitParts[0]) || this.isAlohaEditingP(splitParts[0])
-						)) {
-						splitParts.eq(0).replaceWith(object);
-					} else {
-						splitParts.eq(0).after(object);
-					}
-
-					var secondElement = splitParts.eq(1);
-					if (secondElement.length > 0
-							&& (this.isAlohaEditingP(secondElement[0])
-							|| this.isEmpty(secondElement[0]))) {
-					// Search for an element after the aditional split part,
-					// and if is founded, remove the second empty part
-						var parentsToEditable = secondElement.parents('.aloha-editor').get(),
-							hasNext = false;
-
-						parentsToEditable.reverse().push(secondElement);
-						jQuery.each(parentsToEditable, function (index, elm) {
-							var element = jQuery(this);
-							if (element.next().length > 0) {
-								hasNext = true;
-								return false; // break
-							}
-						});
-						if (hasNext) {
-							// append the new dom
-							secondElement.remove();
+					// ASSERT(splitParts.length === 2)
+					var head = splitParts[0];
+					var tail = splitParts[1];
+					insertAfterSplit(head, object);
+					if (isPhantomNode(tail)) {
+						var afterTail = tail.nextSibling
+						             || (tail.parentNode && tail.parentNode.firstChild);
+						if (findNodeForward(afterTail, isNotVisiblyEmpty)) {
+							// Because the tail element that is generated from
+							// the splitting is superfluous since there is
+							// already a visible element in which to place the
+							// selection.
+							jQuery(tail).remove();
 						}
 					}
-
 					return true;
 				}
 				// could not split, so could not insert
@@ -1215,19 +1350,6 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			}
 			// found no possible new parent, so we shall not insert
 			return false;
-		},
-
-		/**
-		 * Checks if the element given is an aloha-editing-p helper, added by
-		 * split
-		 *
-		 * @param {DOMObject} element Element to be checked
-		 */
-		isAlohaEditingP: function (element) {
-			return (element.className === 'aloha-editing-p'
-				&& element.children.length === 1
-				&& element.children[0].nodeName.toLowerCase() === 'br'
-				&& element.children[0].className === 'aloha-end-br');
 		},
 
 		/**

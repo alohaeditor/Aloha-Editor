@@ -11,5 +11,5 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: paste-plugin: Browsers no longer scroll to the top of an editable
               after content was pasted.
 
-- **BUGFIX**: Add a block/table not longer result in get an empty paragraph 
-              before the inserted element.
+- **BUGFIX**: Adding blocks and tables will no longer results in empty paragraphs
+              being littered before the inserted element.
