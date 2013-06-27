@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Aloha Editor</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
+	</head>
+	<body>
+		<div contentEditable="true">
+			<p>Lorem ipsum dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscing
+			<b>elit</b>. Donec a diam lectus. Sed sit amet ipsum mauris.
+			Maecenas congue ligula ac quam viverra nec consectetur ante
+			hendrerit. Donec et mollis dolor.  Praesent et diam eget libero
+			egestas mattis sit amet vitae augue.  Nam tincidunt congue enim, ut
+			porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula
+			ultricies a non tortor. Lorem ipsum dolor sit amet, consectetur
+			adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar
+			a semper sed, adipiscing id dolor.  Pellentesque auctor nisi id
+			magna consequat sagittis. Curabitur dapibus enim sit amet elit
+			pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in
+			urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis
+			quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque
+			penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+			In rutrum accumsan ultricies. Mauris vitae nisi at sem facilisis
+			semper ac in est.
+			</p>
+		</div>
+		<script src="../src/require-proto.js"></script>
+		<script src="../src/require-proto.dev.js"></script>
+		<script>define.amd = {jQuery:true};</script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.js"></script>
+		<script>
+			require(['../src/range'], function (Range) {
+				'use strict';
+				var range = Range.create(
+					document.getElementsByTagName('b')[0], 1,
+					document.getElementsByTagName('b')[0], 2
+				);
+				Range.select(Range.extendToWord(range));
+				window._range = Range;
+			});
+		</script>
+	</body>
+</html>
+
