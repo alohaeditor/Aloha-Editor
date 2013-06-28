@@ -7,12 +7,3 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
-
-- **BUGFIX**: paste-plugin: Browsers no longer scroll to the top of an editable
-              after content was pasted.
-
-- **BUGFIX**: paste-plugin: There are no more discrepancies between browsers
-			  when pasting plain text.
-
-- **BUGFIX**: Adding blocks and tables will no longer results in empty paragraphs
-              being littered before the inserted element.

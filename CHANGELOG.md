@@ -12,6 +12,24 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.11 - 2013/06/28
+
+- **FEATURE**: link-plugin: Two new properties have been added, that will allow
+               the link plugin to be configured to automatically set an anchor
+               element's title attribute to a configured value when an internal
+               link is detected in the href input field.
+
+- **BUGFIX**: paste-plugin: Browsers no longer scroll to the top of an editable
+              after content was pasted.
+
+- **BUGFIX**: paste-plugin: There are no more discrepancies between browsers
+			  when pasting plain text.
+
+- **BUGFIX**: Adding blocks and tables will no longer results in empty paragraphs
+              being littered before the inserted element.
+
+
+
 ## 0.23.10 - 2013/06/05
 
 - **ENHANCEMENT**: Filters the tags used in transformFormattings, extracting the
