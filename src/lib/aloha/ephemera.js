@@ -96,6 +96,7 @@ define([
 			'aloha-ephemera-filler': true,
 			'aloha-ephemera-attr': true,
 			'aloha-ephemera': true,
+			'aloha-anchor-first': true,
 			// aloha-cleanme is the same as aloha-ephemera.
 			// TODO: should be replaced with aloha-ephemera throughout
 			//       the codebase and removed here.
@@ -396,13 +397,15 @@ define([
 			var classes = Strings.words(className);
 
 			// Ephemera.markElement()
-			if (-1 !== Arrays.indexOf(classes, 'aloha-cleanme') || -1 !== Arrays.indexOf(classes, 'aloha-ephemera')) {
+			if (-1 !== Arrays.indexOf(classes, 'aloha-cleanme')
+				    || -1 !== Arrays.indexOf(classes, 'aloha-ephemera')) {
 				$.removeData(elem); // avoids memory leak
 				return false; // removes the element
 			}
 
 			// Ephemera.markWrapper() and Ephemera.markFiller()
-			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-wrapper') || -1 !== Arrays.indexOf(classes, 'aloha-ephemera-filler')) {
+			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-wrapper')
+				    || -1 !== Arrays.indexOf(classes, 'aloha-ephemera-filler')) {
 				Dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
 				$.removeData(elem);
 				return false;

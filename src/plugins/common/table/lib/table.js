@@ -543,7 +543,7 @@ define([
 			rowObj = jQuery(rows[i]);
 			columnToInsert = emptyCell.clone();
 			columnToInsert.addClass(this.get('classSelectionColumn'));
-			columnToInsert.addClass('aloha-ephemera');
+			columnToInsert.addClass('aloha-ephemera aloha-anchor-first');
 			columnToInsert.css('width', this.get('selectionArea') + 'px');
 			//rowObj.find('td:first').before(columnToInsert);
 			rowObj.prepend(columnToInsert);
@@ -726,7 +726,7 @@ define([
 
 		var selectionRow = jQuery('<tr>');
 		selectionRow.addClass(this.get('classSelectionRow'));
-		selectionRow.addClass('aloha-ephemera');
+		selectionRow.addClass('aloha-ephemera aloha-anchor-first');
 		selectionRow.css('height', this.get('selectionArea') + 'px');
 
 		for (var i = 0; i < numColumns; i++) {
@@ -1199,7 +1199,7 @@ define([
 			// create the first column, the "select row" column
 			var selectionColumn = jQuery('<td>');
 			selectionColumn.addClass(this.get('classSelectionColumn'));
-			selectionColumn.addClass('aloha-ephemera');
+			selectionColumn.addClass('aloha-ephemera aloha-anchor-first');
 			this.attachRowSelectionEventsToCell(selectionColumn);
 			insertionRow.append(selectionColumn);
 
