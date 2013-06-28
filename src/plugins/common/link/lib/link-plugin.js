@@ -90,7 +90,7 @@ define( [
 		}
 	};
 	
-	Ephemera.classes('aloha-link-pointer', 'aloha-link-text');
+	Ephemera.classes('aloha-link-pointer', 'aloha-link-text', 'aloha-focus');
 
 	function setupMousePointerFix() {
 		jQuery(document)
