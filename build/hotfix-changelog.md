@@ -16,3 +16,6 @@ All changes are categorized into one of the following keywords:
 
 - **BUGFIX**: Adding blocks and tables will no longer results in empty paragraphs
               being littered before the inserted element.
+
+- **BUGFIX**: Pressing delete or backspace in an empty node that is adjacent to
+              a table element will no longer result in the table being deleted.

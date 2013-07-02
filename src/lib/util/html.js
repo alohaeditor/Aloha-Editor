@@ -160,6 +160,14 @@ define([
 	var ZWSP_CHARACTERS_LEFT = new RegExp('^[' + ZERO_WIDTH_CHARACTERS.join('') + ']+');
 	var ZWSP_CHARACTERS_RIGHT = new RegExp('[' + ZERO_WIDTH_CHARACTERS.join('') + ']+$');
 
+	function isWSPorZWSPText(text) {
+		return WSP_CHARACTERS.test(text) || ZWSP_CHARACTERS.test(text);
+	}
+
+	function isWSPorZWSPNode(node) {
+		return 3 === node.nodeType && isWSPorZWSPText(node.data);
+	}
+
 	/**
 	 * Map containing lowercase and uppercase tagnames of block element as keys
 	 * mapped against true.
@@ -237,6 +245,13 @@ define([
 		return node;
 	}
 
+	function findNodeLeft(node, condition) {
+		while (node && !condition(node)) {
+			node = node.nextSibling;
+		}
+		return node;
+	}
+
 	/**
 	 * Checks if the given editable is a valid container for paragraphs.
 	 *
@@ -266,6 +281,18 @@ define([
 			.replace(ZWSP_CHARACTERS_RIGHT, '');
 	}
 
+	function isUnrenderedNode(node) {
+		if (3 === node.nodeType && 0 === node.data.length) {
+			return true;
+		}
+		if ((node === node.parentNode.lastChild)
+			&& isBlock(node.parentNode)
+				&& 'BR' === node.nodeName) {
+			return true;
+		}
+		return isWSPorZWSPNode(node);
+	}
+
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		isBlock: isBlock,
@@ -273,8 +300,12 @@ define([
 		isInlineFormattable: isInlineFormattable,
 		isProppedBlock: isProppedBlock,
 		isEditingHost: isEditingHost,
+		findNodeLeft: findNodeLeft,
 		findNodeRight: findNodeRight,
 		allowNestedParagraph: allowNestedParagraph,
-		trimWhitespaceCharacters: trimWhitespaceCharacters
+		trimWhitespaceCharacters: trimWhitespaceCharacters,
+		isWSPorZWSPNode: isWSPorZWSPNode,
+		isWSPorZWSPText: isWSPorZWSPText,
+		isUnrenderedNode: isUnrenderedNode
 	};
 });
