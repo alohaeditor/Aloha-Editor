@@ -8,5 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUGFIX**: When press delete or backspace in an empty element before or after
-              a table element not longer result in the elimination of the table.
+- **BUGFIX**: Pressing delete or backspace in an empty node that is adjacent to
+              a table element will no longer result in the table being deleted.

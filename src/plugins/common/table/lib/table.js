@@ -20,7 +20,9 @@ define([
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
-	'table/table-plugin-utils'
+	'table/table-plugin-utils',
+	'util/html',
+	'util/dom2'
 ], function (
 	Aloha,
 	jQuery,
@@ -29,7 +31,9 @@ define([
 	i18n,
 	TableCell,
 	TableSelection,
-	Utils
+	Utils,
+	Html,
+	Dom
 ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
@@ -416,62 +420,104 @@ define([
 				}
 			}
 		} );
-		
-		Aloha.bind('aloha-command-will-execute', function(event, evtObj){
-			var range,
-				nextPreviousElement,
-				newSelectElm,
-				offset = 0;
-			if( 'forwarddelete' === evtObj.commandId ){
-				// delete content in the right of cursor
-				range = Aloha.getSelection().getRangeAt(0);
 
-				if(range.startOffset === range.endOffset){
-					// then the cursor is at the end of the text, may be is
-					//  before the table wrapper
+		function isNotUnrenderedNode(node) {
+			return !Html.isUnrenderedNode(node);
+		}
 
-					// range.commonAncestorContainer.parentNode.previousSibling
-					if(range.commonAncestorContainer.nodeType === 3 && 
-						range.endOffset === range.commonAncestorContainer.length){
-						nextPreviousElement = jQuery(range.commonAncestorContainer)
-							.parent().next()[0];
-					}else if(range.commonAncestorContainer.nodeType === 1){
-						nextPreviousElement = jQuery(range.commonAncestorContainer)
-							.next()[0];
-					}
+		/**
+		 * @param {WrappedRange} range
+		 */
+		function isRangeVisiblyAtLeftBoundary(range) {
+			var offset = range.startOffset;
+			var node = range.startContainer;
+			if (0 === offset) {
+				return true;
+			}
+			if (1 === node.nodeType) {
+				return !Html.findNodeRight(
+					node.childNodes[offset - 1],
+					isNotUnrenderedNode
+				);
+			}
+			if (3 === node.nodeType) {
+				return Html.isWSPorZWSPText(node.data.substr(0, offset));
+			}
+			return false;
+		}
 
-					if(nextPreviousElement === that.tableWrapper){
-						newSelectElm = getNewSelectedElement('first', that.obj);
-						offset = 0;
-						evtObj.preventDefault = true;
-						Aloha.getSelection().collapse(newSelectElm, offset);
-					}
+		/**
+		 * @param {WrappedRange} range
+		 */
+		function isRangeVisiblyAtRightBoundary(range) {
+			var offset = range.startOffset;
+			var node = range.startContainer;
+			if (Dom.nodeLength(node) === offset) {
+				return true;
+			}
+			if (1 === node.nodeType) {
+				return !Html.findNodeLeft(
+					node.childNodes[offset - 1],
+					isNotUnrenderedNode
+				);
+			}
+			if (3 === node.nodeType) {
+				return Html.isWSPorZWSPText(node.data.substr(offset));
+			}
+			return false;
+		}
+
+		Aloha.bind('aloha-command-will-execute', function (_, event){
+			var range = Aloha.getSelection().getRangeAt(0);
+			var adjacent;
+			if ('forwarddelete' === event.commandId) {
+				if (!range.collapsed || !isRangeVisiblyAtRightBoundary(range)) {
+					return;
 				}
-			}else if( 'delete' === evtObj.commandId ){
-				// delete content in the left of cursor
-				range = Aloha.getSelection().getRangeAt(0);
-
-				if(range.startOffset === range.endOffset && 
-					range.endOffset === 0
-				){ // then the cursor may be is located after the table wrapper
-
-					// range.commonAncestorContainer.parentNode.previousSibling
-					
-					if(range.commonAncestorContainer.nodeType === 3){
-						nextPreviousElement = jQuery(range.commonAncestorContainer)
-							.parent().prev()[0];
-					}else if(range.commonAncestorContainer.nodeType === 1){
-						nextPreviousElement = jQuery(range.commonAncestorContainer)
-							.prev()[0];					
-					}
-					
-
-					if(nextPreviousElement === that.tableWrapper){
-						newSelectElm = getNewSelectedElement('last', that.obj);
-						offset = newSelectElm.length || jQuery(newSelectElm).text().length;
-						evtObj.preventDefault = true;
-						Aloha.getSelection().collapse(newSelectElm, offset);
-					}
+				var node = range.commonAncestorContainer;
+				if (3 === node.nodeType) {
+					adjacent = node.parentNode
+					        && Html.findNodeLeft(
+								node.parentNode.nextSibling,
+								isNotUnrenderedNode
+							);
+				} else if (1 === node.nodeType) {
+					adjacent = Html.findNodeLeft(
+						node.nextSibling,
+						isNotUnrenderedNode
+					);
+				}
+				if (adjacent === that.tableWrapper) {
+					event.preventDefault = true;
+					Aloha.getSelection().collapse(
+						getNewSelectedElement('first', that.obj),
+						0
+					);
+				}
+			} else if ('delete' === event.commandId) {
+				if (!range.collapsed || !isRangeVisiblyAtLeftBoundary(range)) {
+					return;
+				}
+				var node = range.commonAncestorContainer;
+				if (3 === node.nodeType) {
+					adjacent = node.parentNode
+					        && Html.findNodeRight(
+								node.parentNode.previousSibling,
+								isNotUnrenderedNode
+							);
+				} else if (1 === node.nodeType) {
+					adjacent = Html.findNodeRight(
+						node.previousSibling,
+						isNotUnrenderedNode
+					);
+				}
+				if (adjacent === that.tableWrapper) {
+					var nodeToSelect = getNewSelectedElement('last', that.obj);
+					event.preventDefault = true;
+					Aloha.getSelection().collapse(
+						nodeToSelect,
+						Dom.nodeLength(nodeToSelect)
+					);
 				}
 			}
 		});
