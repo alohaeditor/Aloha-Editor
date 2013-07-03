@@ -286,8 +286,8 @@ define([
 			return true;
 		}
 		if ((node === node.parentNode.lastChild)
-			&& isBlock(node.parentNode)
-				&& 'BR' === node.nodeName) {
+				&& isBlock(node.parentNode)
+					&& 'BR' === node.nodeName) {
 			return true;
 		}
 		return isWSPorZWSPNode(node);
