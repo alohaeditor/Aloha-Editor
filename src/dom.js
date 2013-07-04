@@ -31,7 +31,7 @@ define([
 	'../src/arrays',
 	'../src/strings',
 	'../src/browser'
-], function Dom(
+], function DomUtilities(
 	$,
 	Fn,
 	Maps,

@@ -30,14 +30,14 @@
 		<script>define.amd = {jQuery:true};</script>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.js"></script>
 		<script>
-			require(['../src/range'], function (Range) {
+			require(['../src/api'], function (Aloha) {
 				'use strict';
-				var range = Range.create(
+				var range = Aloha.Range.create(
 					document.getElementsByTagName('b')[0], 1,
 					document.getElementsByTagName('b')[0], 2
 				);
-				Range.select(Range.extendToWord(range));
-				window._range = Range;
+				Aloha.Range.select(Aloha.Range.extendToWord(range));
+				window.Aloha = Aloha;
 			});
 		</script>
 	</body>

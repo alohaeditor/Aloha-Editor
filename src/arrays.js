@@ -4,7 +4,7 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  */
-define(['../src/functions'], function (Fn) {
+define(['../src/functions'], function ArrayUtilities(Fn) {
 	'use strict';
 
 	/**

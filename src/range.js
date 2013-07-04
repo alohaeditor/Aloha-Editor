@@ -1,14 +1,18 @@
-/**
- * range.js: Library functions for working with DOM ranges.
+/** range.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Assums API support for document.getSelection() and document.createRange().
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php
+ *
+ * range.js: Library functions for working with DOM ranges.
+ * It assums API support for document.getSelection() and document.createRange().
  */
 define([
 	'../src/dom',
 	'../src/functions',
 	'../src/arrays',
 	'../src/cursor'
-], function Range(
+], function RangeUtilities(
 	Dom,
 	Fn,
 	Arrays,

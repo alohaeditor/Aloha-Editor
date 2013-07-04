@@ -1,4 +1,4 @@
-define(['../src/dom'], function (Dom) {
+define(['../src/dom'], function CursorAPI(Dom) {
 	'use strict';
 
 	function Cursor(node, atEnd) {
