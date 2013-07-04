@@ -217,12 +217,6 @@ define('format/format-plugin', [
 		return jQuery.inArray(tagname, config) > -1;
 	}
 
-	function handleHotkey(tagname, plugin, editable) {
-		if (isFormatAllowed(tagname, plugin, editable)) {
-			plugin.addMarkup(tagname);
-		}
-	}
-
 	function addMarkup(button) {
 		var formatPlugin = this;
 		var markup = jQuery('<'+button+'>');
