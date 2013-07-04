@@ -20,6 +20,10 @@ define([
 ) {
 	'use strict';
 
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Aloha.Range');
+	}
+
 	if ('function' !== typeof document.getSelection) {
 		throw 'getSelection() not supported';
 	}
