@@ -138,7 +138,25 @@ define( [
 		 * Default configuration allows links everywhere
 		 */
 		config: [ 'a' ],
-		
+
+		/**
+		 * The value that will automatically be set to an anchor tag's title
+		 * attribute if its href field matches the titleregex, and the editor
+		 * has not manually defined the title attribute.
+		 *
+		 * @type {string}
+		 */
+		title: null,
+
+		/**
+		 * Regular Expression string which the field's href value will be tested
+		 * against in order to determine whether or not to set the configured
+		 * title attribute value.
+		 *
+		 * @type {string}
+		 */
+		titleregex: null,
+
 		/**
 		 * all links that match the targetregex will get set the target
 		 * e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
@@ -201,7 +219,13 @@ define( [
 		 */
 		init: function () {
 			var plugin = this;
-			
+
+			if ('undefined' !== typeof this.settings.title) {
+				this.title = this.settings.title;
+			}
+			if ('undefined' !== typeof this.settings.titleregex) {
+				this.titleregex = this.settings.titleregex;
+			}
 			if ( typeof this.settings.targetregex != 'undefined' ) {
 				this.targetregex = this.settings.targetregex;
 			}
@@ -795,10 +819,37 @@ define( [
 		},
 
 		/**
+		 * Automatically sets (or unsets) the title attribute value of the given
+		 * AttributeField's target anchor element based on the link's href
+		 * value.
+		 *
+		 * @param {AttributeField} field The AttributeField that is to be used.
+		 * @param {string} value The value to which the title attribute is to be
+		 *                       set to.
+		 * @param {string} regex A string representing a regular expression
+		 *                       against which to test the href value of the
+		 *                       AttributeField `field`, to predicate whether
+		 *                       the title field should be update or not.
+		 */
+		automaticallySetTitle: function (field, value, regex) {
+			var currentValue = jQuery(field.getTargetObject()).attr('title');
+			var canOverwriteTitle = !currentValue || value === currentValue;
+			if (value && canOverwriteTitle) {
+				field.setAttribute('title', value, regex, field.getValue());
+			}
+		},
+
+		/**
 		 * Updates the link object depending on the src field
 		 */
 		hrefChange: function () {
 			var that = this;
+
+			this.automaticallySetTitle(
+				this.hrefField,
+				this.title,
+				this.titleregex
+			);
 
 			// For now hard coded attribute handling with regex.
 			// Avoid creating the target attribute, if it's unnecessary, so

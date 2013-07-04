@@ -1290,6 +1290,7 @@ define([
 		getComputedStyle: getComputedStyle,
 		hasAttrs: hasAttrs,
 		ensureRangeContainedByElem: ensureRangeContainedByElem,
-		isBoundaryPointContainedByElem: isBoundaryPointContainedByElem
+		isBoundaryPointContainedByElem: isBoundaryPointContainedByElem,
+		nodeLength: nodeLength
 	};
 });

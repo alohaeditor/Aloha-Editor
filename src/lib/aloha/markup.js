@@ -386,12 +386,15 @@ define([
 
 			// ENTER
 			if (event.keyCode === 13) {
-				if (event.shiftKey || !Html.allowNestedParagraph(Aloha.activeEditable)) {
+				if (!event.shiftKey && Html.allowNestedParagraph(Aloha.activeEditable)) {
+					Aloha.execCommand('insertparagraph', false);
+					return false;
+				// if the shift key is pressed, or if the active editable is not allowed
+				// to contain paragraphs, a linebreak is inserted instead
+				} else {
 					Aloha.execCommand('insertlinebreak', false);
 					return false;
 				}
-				Aloha.execCommand('insertparagraph', false);
-				return false;
 			}
 			return true;
 		},

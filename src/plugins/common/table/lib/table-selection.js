@@ -11,6 +11,30 @@ function (Aloha, $, Utils, TableCell, Dialog, i18n) {
 	 */
 	var TableSelection = function (table) {
 		this.table = table;
+	},
+	/**
+	 * Returns if a content parameter is a content that be added in a 
+	 * merge cell from the cells selecteds.
+	 * 
+	 * @param {String|TextNodeElement|HTMLElement} content - A content 
+	 * from the cell, might be a TextNode, HTMLElement or a String
+	 * 
+	 * @return {Boolean}
+	 */
+	isMergeableContent = function( content ){
+		return (
+			('string' === typeof(content) && "" !== $.trim(content)) ||
+			(
+				content.nodeType && 
+				( 
+					(
+						content.nodeType === document.TEXT_NODE &&
+						"" !== $.trim(content.data)
+					) || 
+					content.nodeType === document.ELEMENT_NODE 
+				)
+			)
+		);
 	};
 
 	/**
@@ -325,12 +349,18 @@ function (Aloha, $, Utils, TableCell, Dialog, i18n) {
 			var contents = $( TableCell.getContainer( cell ) ).contents();
 			// only append the delimiting space if there is some non-whitespace
 			for ( var i = 0; i < contents.length; i++ ) {
-				if (   "string" !== typeof contents[i]
-				    || "" !== $.trim( contents[i] ) ) {
+				if(isMergeableContent(contents[i])){
 					$firstContainer.append( " " );
 					$firstContainer.append( contents );
 					break;
 				}
+//
+//				if (   "string" !== typeof contents[i]
+//					|| "" !== $.trim( contents[i].data ) ) {
+//					$firstContainer.append( " " );
+//					$firstContainer.append( contents );
+//					break;
+//				}
 			}
 			$( cell ).remove();
 		});

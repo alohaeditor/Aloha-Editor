@@ -27,12 +27,16 @@
 define([
 	'aloha',
 	'jquery',
+	'PubSub',
 	'aloha/plugin',
+	'util/html',
 	'i18n!headerids/nls/i18n'
 ], function (
 	Aloha,
 	jQuery,
+	PubSub,
 	Plugin,
+	html,
 	i18n
 ) {
 	'use strict';
@@ -52,14 +56,14 @@ define([
         var strBldr = [], prx = ns;
         $.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
         return jQuery.trim(strBldr.join(' '));
-    };
+    }
     
     // Creates string with this component's namepsace prefixed the each classname
     function nsClass () {
         var strBldr = [], prx = ns;
         $.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
         return jQuery.trim(strBldr.join(' '));
-    };
+    }
 
 	/**
 	 * Returns a jQuery collection of all heading elements in the given editable
@@ -77,13 +81,32 @@ define([
 	 *                                       collection of zero or more heading
 	 *                                       elements.
 	 */
-	function getHeadingElements($element) {
+	function getHeadingElements($editable) {
 		return (
-			$element.find('h1,h2,h3,h4,h5,h6')
+			$editable.find('h1,h2,h3,h4,h5,h6')
 			        .not('.aloha-customized,.aloha-editable,.aloha-block')
 		);
 	}
-
+	
+	/**
+	 * Check in the entire document if has a element with the same ID, and try 
+	 * to get an unique ID
+	 * 
+	 * @param {String} proposedID ID to check, uses this as base and concatenate
+	 *                 a dangling with a number
+	 * 
+	 * @return {String}
+	 */
+	function checkDuplicatedID(proposedID){
+		var baseID = proposedID, i = 1;
+		
+		while($('#' + proposedID).length > 0){
+			proposedID = baseID + '_' + ( ++i ).toString();
+		}
+		
+		return proposedID;
+	}
+	
 	return Plugin.create('headerids', {
 		_constructor: function(){
 			this._super('headerids');
@@ -95,17 +118,23 @@ define([
 		 * Initialize the plugin
 		 */
 		init: function () {
-			var that = this;
+			var plugin = this,
+				invokeCheck = function(msg){
+					var $editable = msg.data.obj || msg.data.editable.obj;
+					plugin.check($editable);
+				}
+			;
+			
+			
+			
+			PubSub.sub('aloha.editable.created', invokeCheck);
 
 			// mark active Editable with a css class
-			Aloha.bind("aloha-editable-activated", function(jEvent, params) {
-				that.check(params.editable.obj);
-			});
-			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) {
-				that.check(params.editable.obj);
-			});
+			PubSub.sub('aloha.editable.activated', invokeCheck);
+			PubSub.sub('aloha.editable.deactivated', invokeCheck);
+
 			Aloha.bind('aloha-plugins-loaded', function (ev) {
-				that.initSidebar(Aloha.Sidebar.right);
+				plugin.initSidebar(Aloha.Sidebar.right);
 			});
 		},
 
@@ -142,8 +171,14 @@ define([
 		 *                                     elements.
 		 */
 		processH: function (heading) {
-			var $heading = $(heading);
-			$heading.attr('id', this.sanitize($heading.text()));
+			if(!heading.id){
+				var $heading = $(heading),
+					ID = this.sanitize($heading.text());
+
+				ID = checkDuplicatedID(ID);
+
+				$heading.attr('id', ID);
+			}
 		},
 
 		/**
@@ -160,7 +195,8 @@ define([
 		 * @return {String} Santized copy of `str`.
 		 */
 		sanitize: function (str) {
-			return str.replace(/[^a-z0-9]+/gi, '_');
+			return html.trimWhitespaceCharacters(str)
+				.replace(/[^a-z0-9]+/gi, '_');
 		},
 
 		//ns = headerids

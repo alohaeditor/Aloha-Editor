@@ -5,8 +5,6 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **ENHANCEMENT**: The change improves the software, but otherwise makes no
                    functional change to any feature.
-----
-
 
 - **BUGFIX**: core: Aloha incorrectly reported that Chrome was not supported.
 - **ENHANCEMENT**: state-override: when pressing a formatting
@@ -60,3 +58,4 @@ All changes are categorized into one of the following keywords:
 
 	This event will not be broadcasted when Ephemera.ephemera() is
 	accessed as a getter.
+
