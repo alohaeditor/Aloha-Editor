@@ -18,6 +18,12 @@ define([
 ) {
 	'use strict';
 
+	function isFloatingEnabled() {
+		return !Aloha.settings
+			|| !Aloha.settings.toolbar
+			|| Aloha.settings.toolbar.floating !== false;
+	}
+
 	/**
 	 * The toolbar is configured via `settings.toolbar` and is defined as an
 	 * array of tabs with component groups, where the groups are arrays of
@@ -77,7 +83,9 @@ define([
 
 			// Pinning behaviour is global in that if one toolbar is pinned,
 			// then all other toolbars will be pinned to that position.
-			floating.makeFloating(this, Toolbar);
+			if (isFloatingEnabled()) {
+				floating.makeFloating(this, Toolbar);
+			}
 		},
 
 		adoptInto: function (slot, component) {
@@ -171,7 +179,9 @@ define([
 				top: position.top,
 				left: position.left
 			});
-			this._move();
+			if (isFloatingEnabled()) {
+				this._move();
+			}
 		},
 
 		/**
