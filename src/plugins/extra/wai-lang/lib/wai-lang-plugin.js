@@ -39,15 +39,13 @@ define([
 	/**
 	 * Ui Attribute Field singleton.
 	 *
+	 * Needs to be defined in prepareUi(), because of a problem with the
+	 * stateful initialization of jQuery UI autocomplete implementation for
+	 * Aloha Editor.
+	 *
 	 * @type {AttributeField}
 	 */
-	var FIELD = attributeField({
-		name: 'wailangfield',
-		width: 320,
-		valueField: 'id',
-		minChars: 1,
-		scope: 'wai-lang'
-	});
+	var FIELD = null;
 
 	/**
 	 * Sets focus on the given field.
@@ -55,8 +53,10 @@ define([
 	 * @param {AttributeField} field
 	 */
 	function focusOn(field) {
-		field.foreground();
-		field.focus();
+		if (field) {
+			field.foreground();
+			field.focus();
+		}
 		Scopes.setScope('wai-lang');
 	}
 
@@ -180,9 +180,19 @@ define([
 	 * Initialize the buttons:
 	 * Places the Wai-Lang UI buttons into the floating menu.
 	 *
+	 * Initializes `FIELD`.
+	 *
 	 * @param {Plugin} plugin Wai-lang plugin instance
 	 */
 	function prepareUi(plugin) {
+		FIELD = attributeField({
+			name: 'wailangfield',
+			width: 320,
+			valueField: 'id',
+			minChars: 1,
+			scope: 'wai-lang'
+		});
+
 		plugin._wailangButton = Ui.adopt('wailang', ToggleButton, {
 			tooltip: i18n.t('button.add-wai-lang.tooltip'),
 			icon: 'aloha-icon aloha-icon-wai-lang',
@@ -267,6 +277,8 @@ define([
 
 	/**
 	 * Registers event handlers for the given plugin instance.
+	 *
+	 * Assumes `FIELD` is initialized.
 	 *
 	 * @param {Plugin} plugin Instance of wai-lang plugin.
 	 */
