@@ -1,7 +1,7 @@
 /* paste-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * Aloha Editor is free software; you can redistribute it and/or
@@ -37,7 +37,8 @@ define([
 	'aloha/command',
 	'contenthandler/contenthandler-utils',
 	'aloha/console',
-	'aloha/copypaste'
+	'aloha/copypaste',
+	'util/dom'
 ], function (
 	$,
 	Aloha,
@@ -45,7 +46,8 @@ define([
 	Commands,
 	ContentHandlerUtils,
 	Console,
-	CopyPaste
+	CopyPaste,
+	Dom
 ) {
 	'use strict';
 
@@ -77,6 +79,20 @@ define([
 	var PROPPING_SPACE = /^(\s|%A0)$/;
 
 	/**
+	 * An container for the $CLIPBOARD element. The $CLIPBOARD it's need to be
+	 * wrapped in this container if not, in some browser the generated elements
+	 * inherits the styles used to hide the element
+	 *
+	 * @type {jQuery.<HTMLElement>}
+	 * @const
+	 */
+	var $CLIPBOARD_CONTAINER = $('<div class="aloha-paste-handler" style="position:absolute; ' +
+					   'clip:rect(0px,0px,0px,0px); width:1px; height:1px;' +
+//					   'right: 1%; top: 10px; width: 40%; min-height; 120px;' +
+//					   ' background: white; ' + // uncomment these line in debug
+					   '"><div class="aloha-metaview"></div></div>');
+
+	/**
 	 * An invisible editable element used to intercept incoming pasted content
 	 * so that it can be processed before being placed into real editables.
 	 *
@@ -86,9 +102,7 @@ define([
 	 * @type {jQuery.<HTMLElement>}
 	 * @const
 	 */
-	var $CLIPBOARD = $('<div style="position:absolute; ' +
-	                   'clip:rect(0px,0px,0px,0px); ' +
-	                   'width:1px; height:1px;"></div>').contentEditable(true);
+	var $CLIPBOARD = $('div', $CLIPBOARD_CONTAINER).contentEditable(true);
 
 	/**
 	 * Stored range, use to accomplish IE hack.
@@ -96,6 +110,19 @@ define([
 	 * @type {WrappedRange}
 	 */
 	var ieRangeBeforePaste = null;
+
+	/**
+	 * The window's scroll position at the moment just before pasting is done
+	 * (beforepaste and paste events).
+	 *
+	 * @type {object}
+	 * @property {Number} x
+	 * @property {Number} y
+	 **/
+	var scrollPositionBeforePaste = {
+		x: 0,
+		y: 0
+	};
 
 	/**
 	 * Set the selection to the given range and focus on the editable inwhich
@@ -112,6 +139,24 @@ define([
 			editable.obj.focus();
 		}
 		CopyPaste.setSelectionAt(range);
+		window.scrollTo(
+			scrollPositionBeforePaste.x,
+			scrollPositionBeforePaste.y
+		);
+	}
+
+	/**
+	 * Prepares the clipboard object to get the contents of clipboard.
+	 * Basicly empty the object and add a Paragraph element.
+	 *
+	 * @param {jQuery.<HTMLElement>} $target Target to be cleaned
+	 * @return {jQuery.<HTMLElement>}
+	 */
+	function prepareClipboardHelper($target) {
+		var $newTarget = $('<p>');
+		$target.contents().remove();
+		$target.append($newTarget);
+		return $newTarget;
 	}
 
 	/**
@@ -130,13 +175,11 @@ define([
 	 *                                       is to be directed to.
 	 */
 	function redirect(range, $target) {
+		var width = 200;
 		// Because moving the target element to the current scroll position
 		// avoids jittering the viewport when the pasted content moves between
 		// where the range is and target.
-		$target.css({
-			top: $WINDOW.scrollTop(),
-			left: $WINDOW.scrollLeft() - 200 // Why 200?
-		}).contents().remove();
+		$target = prepareClipboardHelper($target);
 
 		var from = CopyPaste.getEditableAt(range);
 		if (from) {
@@ -198,7 +241,7 @@ define([
 
 	/**
 	 * Prepare the nodes around where pasted content is to land.
-	 * 
+	 *
 	 * @param {WrappedRange} range
 	 */
 	function prepRangeForPaste(range) {
@@ -233,13 +276,51 @@ define([
 	 */
 	function paste($clipboard, range, callback) {
 		if (range) {
+			if ($.browser.mozilla) {
+
+				$('br', $clipboard).each(function () {
+					if (
+						this.parentNode
+							&& this.previousSibling
+							&& this.previousSibling.nodeType === 3
+							&& this.nextSibling
+							&& this.nextSibling.nodeType === 1
+							&& this.nextSibling.nodeName === 'BR'
+					) {
+						var newParent = document.createElement(this.parentNode.nodeName);
+						newParent.appendChild(this.previousSibling);
+						$(this.parentNode).before(newParent);
+						$([this, this.nextSibling]).remove();
+					}
+				});
+
+				$('>span', $clipboard).each(function () {
+					var span = $(this),
+						p = $('<p>').append(span.contents());
+					span.replaceWith(p);
+				});
+
+			}
+			// cleans empty paragraphs needed in webkit mostly
+			$('p', $clipboard).each(function () {
+				var p = $(this),
+					contents = p.contents();
+
+				if (Dom.isEmpty(this) || (
+						contents.length === 1
+						&& contents[0].nodeName === 'BR'
+					)) {
+					p.remove();
+				}
+			});
+
 			var content = $clipboard.html();
 
 			// Because IE inserts an insidious nbsp into the content during
 			// pasting that needs to be removed.  Leaving it would otherwise
 			// result in an empty paragraph being created right before the
 			// pasted content when the pasted content is a paragraph.
-			if (IS_IE && /^&nbsp;/.test(content)) {
+			if (IS_IE && (/^&nbsp;/).test(content)) {
 				content = content.substring(6);
 			}
 
@@ -255,7 +336,7 @@ define([
 			}
 		}
 
-		$clipboard.contents().remove();
+		prepareClipboardHelper($clipboard);
 
 		if (typeof callback === 'function') {
 			callback();
@@ -268,7 +349,7 @@ define([
 	 * @param {jQuery.Event} $event Event at paste.
 	 * @param {WrappedRange} range The range to where to direct the contents
 	 *                             of the $CLIPBOARD element.
-	 * @param {function=} onInset Optional callback to be invoked after pasting
+	 * @param {function=} onInsert Optional callback to be invoked after pasting
 	 *                            is completed.
 	 */
 	function onPaste($event, range, onInsert) {
@@ -307,12 +388,22 @@ define([
 		// if (IS_IE && !hasClipboardAccess) {
 		if (IS_IE) {
 			$editable.bind('beforepaste', function ($event) {
+				scrollPositionBeforePaste.x = window.scrollX ||
+					document.documentElement.scrollLeft;
+				scrollPositionBeforePaste.y = window.scrollY ||
+					document.documentElement.scrollTop;
+
 				ieRangeBeforePaste = CopyPaste.getRange();
 				redirect(ieRangeBeforePaste, $CLIPBOARD);
 				$event.stopPropagation();
 			});
 		} else {
 			$editable.bind('paste', function ($event) {
+				scrollPositionBeforePaste.x = window.scrollX ||
+					document.documentElement.scrollLeft;
+				scrollPositionBeforePaste.y = window.scrollY ||
+					document.documentElement.scrollTop;
+
 				var range = CopyPaste.getRange();
 				redirect(range, $CLIPBOARD);
 				if (IS_IE) {
@@ -329,7 +420,7 @@ define([
 		settings: {},
 
 		init: function () {
-			$('body').append($CLIPBOARD);
+			$('body').append($CLIPBOARD_CONTAINER);
 
 			var hasClipboardAccess = !this.settings.noclipboardaccess;
 

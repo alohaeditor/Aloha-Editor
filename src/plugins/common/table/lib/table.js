@@ -20,7 +20,9 @@ define([
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
-	'table/table-plugin-utils'
+	'table/table-plugin-utils',
+	'util/html',
+	'util/dom2'
 ], function (
 	Aloha,
 	jQuery,
@@ -29,10 +31,73 @@ define([
 	i18n,
 	TableCell,
 	TableSelection,
-	Utils
+	Utils,
+	Html,
+	Dom
 ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
+
+	/**
+	 * Returns an Array with all elements and textnodes included in the 
+	 * hierarchy of the element received. Is Similar to do 
+	 * jQuery('*', element).contents(), the diference it's this function returns the 
+	 * array in the correct order of apparition
+	 * @example
+	 * <pre>
+	 *		&gt;p&lt;
+	 *			textnode
+	 *			<b>b textnode</b>
+	 *			another text node
+	 *		&gt;/p&lt;
+	 *		
+	 *		jQuery('*', lt).contents();
+	 *			// returns ["textnode", "<b>", "another textnode", "b textnode"]
+	 *		getPlainHierarchy(lt)
+	 *			// returns ["textnode", "<b>", "b textnode", "another textnode"]
+	 * </pre>
+	 * 
+	 * @return {Array.<HTMLElement|TextNode>}
+	 */
+	function getPlainHierarchy(element) {
+		if (element.jquery) {
+			element = element[0];
+		}
+		var i, result = [], child;
+		for (i = 0; i < element.childNodes.length; i++) {
+			child = element.childNodes[i];
+			result.push(child);
+			if (child.nodeType === 1) {
+				result = result.concat(getPlainHierarchy(child));
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Find the first or the last element inside a table, even if in a td
+	 * 
+	 * @param {String} type Accepts two values: 'first' or 'last'
+	 * @param {HTMLElement|jQuery} parent the parent element to search
+	 * 
+	 * @return {jQuery}
+	 */
+	function getNewSelectedElement(type, parent) {
+		var toSelectElement;
+		if ('first' === type) {
+			toSelectElement = jQuery('[contenteditable]', parent).first()[0]
+				.firstChild;
+			if (undefined === toSelectElement) {
+				toSelectElement = jQuery('*', parent).first()[0].firstChild;
+			}
+		} else if ('last' === type) {
+			toSelectElement = getPlainHierarchy(jQuery('td:last', parent))
+				.reverse()[0];
+		}
+
+		return toSelectElement;
+	}
 
 	/**
 	 * Constructor of the table object
@@ -356,6 +421,107 @@ define([
 			}
 		} );
 
+		function isNotUnrenderedNode(node) {
+			return !Html.isUnrenderedNode(node);
+		}
+
+		/**
+		 * @param {WrappedRange} range
+		 */
+		function isRangeVisiblyAtLeftBoundary(range) {
+			var offset = range.startOffset;
+			var node = range.startContainer;
+			if (0 === offset) {
+				return true;
+			}
+			if (1 === node.nodeType) {
+				return !Html.findNodeRight(
+					node.childNodes[offset - 1],
+					isNotUnrenderedNode
+				);
+			}
+			if (3 === node.nodeType) {
+				return Html.isWSPorZWSPText(node.data.substr(0, offset));
+			}
+			return false;
+		}
+
+		/**
+		 * @param {WrappedRange} range
+		 */
+		function isRangeVisiblyAtRightBoundary(range) {
+			var offset = range.startOffset;
+			var node = range.startContainer;
+			if (Dom.nodeLength(node) === offset) {
+				return true;
+			}
+			if (1 === node.nodeType) {
+				return !Html.findNodeLeft(
+					node.childNodes[offset - 1],
+					isNotUnrenderedNode
+				);
+			}
+			if (3 === node.nodeType) {
+				return Html.isWSPorZWSPText(node.data.substr(offset));
+			}
+			return false;
+		}
+
+		Aloha.bind('aloha-command-will-execute', function (_, event){
+			var range = Aloha.getSelection().getRangeAt(0);
+			var adjacent;
+			if ('forwarddelete' === event.commandId) {
+				if (!range.collapsed || !isRangeVisiblyAtRightBoundary(range)) {
+					return;
+				}
+				var node = range.commonAncestorContainer;
+				if (3 === node.nodeType) {
+					adjacent = node.parentNode
+					        && Html.findNodeLeft(
+								node.parentNode.nextSibling,
+								isNotUnrenderedNode
+							);
+				} else if (1 === node.nodeType) {
+					adjacent = Html.findNodeLeft(
+						node.nextSibling,
+						isNotUnrenderedNode
+					);
+				}
+				if (adjacent === that.tableWrapper) {
+					event.preventDefault = true;
+					Aloha.getSelection().collapse(
+						getNewSelectedElement('first', that.obj),
+						0
+					);
+				}
+			} else if ('delete' === event.commandId) {
+				if (!range.collapsed || !isRangeVisiblyAtLeftBoundary(range)) {
+					return;
+				}
+				var node = range.commonAncestorContainer;
+				if (3 === node.nodeType) {
+					adjacent = node.parentNode
+					        && Html.findNodeRight(
+								node.parentNode.previousSibling,
+								isNotUnrenderedNode
+							);
+				} else if (1 === node.nodeType) {
+					adjacent = Html.findNodeRight(
+						node.previousSibling,
+						isNotUnrenderedNode
+					);
+				}
+				if (adjacent === that.tableWrapper) {
+					var nodeToSelect = getNewSelectedElement('last', that.obj);
+					event.preventDefault = true;
+					Aloha.getSelection().collapse(
+						nodeToSelect,
+						Dom.nodeLength(nodeToSelect)
+					);
+				}
+			}
+		});
+
 		/*
 		We need to make sure that when the user has selected text inside a
 		table cell we do not delete the entire row, before we activate this
@@ -389,7 +555,7 @@ define([
 
 				var jqObj = jQuery( this );
 				// offset to be used for activating the resize cursor near a table border
-				var mouseOffset = 3; 
+				var mouseOffset = 3;
 
 				// filter out the control cells
 				if ( jQuery( this ).hasClass( 'aloha-table-selectrow' ) || jQuery( this ).closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ))
@@ -480,7 +646,7 @@ define([
 		tableWrapper = jQuery(
 			'<div class="' + this.get( 'classTableWrapper' ) + '" data-block-skip-scope="true"></div>'
 		);
-		//tableWrapper.contentEditable( false );
+		tableWrapper.contentEditable( false );
 
 		// wrap the tableWrapper around the table
 		this.obj.wrap( tableWrapper );

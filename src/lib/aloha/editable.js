@@ -776,6 +776,11 @@ define([
 			Aloha.trigger('aloha-editable-deactivated', {
 				editable: this
 			});
+			PubSub.pub('aloha.editable.deactivated', {
+				data: {
+					editable: this
+				}
+			});
 
 			/**
 			 * @event smartContentChanged

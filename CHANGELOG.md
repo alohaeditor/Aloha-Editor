@@ -12,9 +12,95 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.12 - 2013/07/04
+
+- **BUGFIX**: paste-plugin: Browsers no longer scroll to the top of an editable
+              after content was pasted.
+
+- **BUGFIX**: paste-plugin: There are no more discrepancies between browsers
+			  when pasting plain text.
+
+- **BUGFIX**: core: Adding blocks and tables will no longer results in empty
+              paragraphs being littered before the inserted element.
+
+- **BUGFIX**: table-plugin: Pressing delete or backspace in an empty node that
+              is adjacent to a table element will no longer result in the table
+              being deleted.
+
+- **BUGFIX**: wai-lang-plugin: Incluing the WAI Language plugin will no longer
+              result in a JavaScript error during initialization.
+
+## 0.23.11 - 2013/06/28
+
+- **FEATURE**: link-plugin: Two new properties have been added, that will allow
+               the link plugin to be configured to automatically set an anchor
+               element's title attribute to a configured value when an internal
+               link is detected in the href input field.
+
+- **BUGFIX**: paste-plugin: Browsers no longer scroll to the top of an editable
+              after content was pasted.
+
+- **BUGFIX**: paste-plugin: There are no more discrepancies between browsers
+			  when pasting plain text.
+
+- **BUGFIX**: Adding blocks and tables will no longer results in empty paragraphs
+              being littered before the inserted element.
+
+
+
+## 0.23.10 - 2013/06/05
+
+- **ENHANCEMENT**: Filters the tags used in transformFormattings, extracting the
+                   tags setted in the elements allowed setting
+
+- **ENHANCEMENT**: Added trimWhitespaceCharacters method in util/html to remove
+                   the weirds whitespace characters, this is necessary in
+                   Internet Explorer 7
+
+- **ENHANCEMENT**: The extra plugin headerids now uses PubSub.sub instead
+                   Aloha.bind, when is available
+
+
+- **ENHANCEMENT**: The editable Class now publish the message
+                   aloha.editable.deactivated via PubSub
+
+- **BUGFIX**: Empty tabs will no longer show on the toolbar
+
+- **BUGFIX**: Merging table cells which contains &nbsp; will no longer result
+              in the cell that was merged having unnecessary white spaces.
+
+- **BUGFIX**: Setting transformFormattings to true in the generic handler, and
+              allowing the U tag, will no longer result in the elimination of
+              the U tags
+
+- **BUGFIX**: Textcolor button on toolbar not longer have style superposition
+              when have styles applied to td or you have jquery-ui styles
+
+- **BUGFIX**: The extra plugin headerids not longer result in duplicated id when
+              have duplicated headers title
+
+- **BUGFIX**: The table not longer will be deleted when the user press delete
+              key with the cursor just before a table, or press backspace with
+              the cursor just after the table
+
+- **BUGFIX**: Prevents write outside the p tags, when you insert a table and
+              select just above of this or just in the right, selecting the
+              table wrapper element.
+
+
+## 0.23.9 - 2013/05/29
+
+- **BUGFIX**: With this change, paragraphs are no longer inserted when pressing Enter
+              in editables that do not allow paragraphs to be contained inside (according
+              to the HTML 5 standard). In this case, a linebreak is added instead.
+
+## 0.23.8 - 2013/05/16
+
+- **BUGFIX**: (metaview) An error was corrected which had caused the metaview
+                         button not being shown when metaview is configured to
+                         be automatically enabled for all editables.
 
 ## 0.23.7 - 2013/05/02
-
 
 - **BUGFIX**: (core/pluginmanager) Initialization no longer stalls when a
                configured plugin is disabled.

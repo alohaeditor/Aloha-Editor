@@ -157,10 +157,9 @@ define([
 				var config = getConfiguration(plugin, Aloha.activeEditable.obj);
 
 				if (isAutomaticallyEnabled(config)) {
+					METAVIEW_TOGGLE_BUTTON.show(true);
 					enable(Aloha.activeEditable.obj, METAVIEW_TOGGLE_BUTTON);
-				}
-
-				if (isPluginActivated(config)) {
+				} else if (isPluginActivated(config)) {
 					METAVIEW_TOGGLE_BUTTON.show(true);
 					if (enabled(Aloha.activeEditable.obj)) {
 						enable(
