@@ -12,6 +12,24 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.12 - 2013/07/04
+
+- **BUGFIX**: paste-plugin: Browsers no longer scroll to the top of an editable
+              after content was pasted.
+
+- **BUGFIX**: paste-plugin: There are no more discrepancies between browsers
+			  when pasting plain text.
+
+- **BUGFIX**: core: Adding blocks and tables will no longer results in empty
+              paragraphs being littered before the inserted element.
+
+- **BUGFIX**: table-plugin: Pressing delete or backspace in an empty node that
+              is adjacent to a table element will no longer result in the table
+              being deleted.
+
+- **BUGFIX**: wai-lang-plugin: Incluing the WAI Language plugin will no longer
+              result in a JavaScript error during initialization.
+
 ## 0.23.11 - 2013/06/28
 
 - **FEATURE**: link-plugin: Two new properties have been added, that will allow
