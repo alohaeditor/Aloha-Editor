@@ -8,7 +8,8 @@ define([
 	'range',
 	'range-context',
 	'browser',
-	'content'
+	'content',
+	'ephemera'
 ], function API(
 	Strings,
 	Arrays,
@@ -32,6 +33,7 @@ define([
 		Range        : Range,
 		RangeContext : RangeContext,
 		Browser      : Browser,
-		Content      : Content
+		Content      : Content,
+		Ephemera     : Ephemera
 	};
 });

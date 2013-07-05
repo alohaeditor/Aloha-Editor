@@ -62,8 +62,12 @@ define([
 
 	function create(startContainer, startOffset, endContainer, endOffset) {
 		var range = document.createRange();
-		range.setStart(startContainer, startOffset);
-		range.setEnd(endContainer, endOffset);
+		if (startContainer) {
+			range.setStart(startContainer, startOffset || 0);
+		}
+		if (endContainer) {
+			range.setEnd(endContainer, endOffset || 0);
+		}
 		return range;
 	}
 

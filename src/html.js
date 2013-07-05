@@ -7,11 +7,13 @@
 define([
 	'dom',
 	'maps',
-	'arrays'
+	'arrays',
+	'cursor'
 ], function HtmlUtilities(
 	Dom,
 	Maps,
-	Arrays
+	Arrays,
+	Cursor
 ) {
 	'use strict';
 
@@ -333,7 +335,11 @@ define([
 			return false;
 		}
 		// Algorithm like engine.js isCollapsedWhitespaceNode().
-		return skipUnrenderedToEndOfLine(Dom.cursor(node, false)) || skipUnrenderedToStartOfLine(Dom.cursor(node, false));
+		return (
+			skipUnrenderedToEndOfLine(Cursor.cursor(node, false))
+			||
+			skipUnrenderedToStartOfLine(Cursor.cursor(node, false))
+		);
 	}
 
 	/**
