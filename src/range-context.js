@@ -1094,7 +1094,7 @@ define([
 			var normalizeRight = opts.normalizeRange ? rightPoint : rightPoint.clone();
 			Html.normalizeBoundary(normalizeLeft);
 			Html.normalizeBoundary(normalizeRight);
-			Dom.setRangeFromBoundaries(range, normalizeLeft, normalizeRight);
+			Range.setFromBoundaries(range, normalizeLeft, normalizeRight);
 
 			var cac = range.commonAncestorContainer;
 			var start = Dom.nodeAtOffset(range.startContainer, range.startOffset);
