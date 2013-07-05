@@ -5,9 +5,9 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'../src/dom',
-	'../src/maps',
-	'../src/arrays'
+	'dom',
+	'maps',
+	'arrays'
 ], function HtmlUtilities(
 	Dom,
 	Maps,

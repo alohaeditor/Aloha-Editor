@@ -41,15 +41,15 @@
  *      <p>{<b>some</br>text</b>}<br/></p>
  */
 define([
-	'../src/dom',
-	'../src/arrays',
-	'../src/maps',
-	'../src/strings',
-	'../src/functions',
-	'../src/html',
-	'../src/range',
-	'../src/cursor',
-	'../src/content'
+	'dom',
+	'arrays',
+	'maps',
+	'strings',
+	'functions',
+	'html',
+	'range',
+	'cursor',
+	'content'
 ], function RangeContextAPI(
 	Dom,
 	Arrays,

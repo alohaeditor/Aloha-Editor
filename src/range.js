@@ -8,10 +8,10 @@
  * It assums API support for document.getSelection() and document.createRange().
  */
 define([
-	'../src/dom',
-	'../src/functions',
-	'../src/arrays',
-	'../src/cursor'
+	'dom',
+	'functions',
+	'arrays',
+	'cursor'
 ], function RangeUtilities(
 	Dom,
 	Fn,

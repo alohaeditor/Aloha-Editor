@@ -1,14 +1,14 @@
 define([
-	'../src/strings',
-	'../src/arrays',
-	'../src/maps',
-	'../src/functions',
-	'../src/dom',
-	'../src/cursor',
-	'../src/range',
-	'../src/range-context',
-	'../src/browser',
-	'../src/content'
+	'strings',
+	'arrays',
+	'maps',
+	'functions',
+	'dom',
+	'cursor',
+	'range',
+	'range-context',
+	'browser',
+	'content'
 ], function API(
 	Strings,
 	Arrays,

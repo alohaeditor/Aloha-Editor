@@ -31,7 +31,8 @@
 		<script>define.amd = {jQuery:true};</script>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.js"></script>
 		<script>
-			require(['../src/api'], function (Aloha) {
+			require.urlPrefix = '../src/';
+			require(['api'], function (Aloha) {
 				'use strict';
 				var range = Aloha.Range.create(
 					document.getElementsByTagName('b')[0], 1,
