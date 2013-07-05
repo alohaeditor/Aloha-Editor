@@ -1,7 +1,27 @@
 body {
+	margin: 0;
+	padding: 0;
 	color: #363332;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 20px;
+	line-height: 1.6em;
+	background: whiteSmoke;
 }
 ::selection {
 	background: #40aebe;
 	color: #fff;
 }
+.aloha-editable {
+	margin: 5% 20%;
+	padding: 20px;
+	outline: 0;
+}
+p { margin: 0 0 1em; }
+p:last-child { margin-bottom: 0; }
+
+/*
+.aloha-editable * {
+	border: 1px solid #fa9;
+	padding: 2px;
+}
+*/
