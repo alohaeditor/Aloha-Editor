@@ -22,7 +22,7 @@
 				instances.push(wrappedRequire(modules[i]));
 			}
 			fn.apply(null, instances);
-		});
+		}, []);
 	}
 	require.waiting = {};
 
@@ -36,7 +36,7 @@
 	 * and used as the module name. Returns null if the attribute
 	 * doesn't exist on the script element.
 	 */
-	function currentModuleName(module) {
+	function currentModuleInfo() {
 		var scripts = document.getElementsByTagName('script');
 		var script;
 		// On IE, it's the first script element that is in interactive readyState.
@@ -48,19 +48,27 @@
 			}
 		}
 		var name = null;
+		var src = null;
 		if (   script
-			&& script.getAttribute
-			&& script.getAttribute('data-pronto-name')) {
-			name = script.getAttribute('data-pronto-name');
+			&& script.getAttribute) {
+			if (script.getAttribute('data-pronto-name')) {
+				name = script.getAttribute('data-pronto-name');
+			}
+			if (script.getAttribute('src')) {
+				src = script.getAttribute('src');
+			}
 		}
-		return name;
+		return [name, (src ? src.replace(/\/[^\/]+$/, '') : '')];
 	}
 
 	function define(module, deps, fn) {
+		var path;
 		if (null != module && 'string' !== typeof module) {
 			fn = deps;
 			deps = module;
-			module = currentModuleName();
+			var moduleInfo = currentModuleInfo();
+			module = moduleInfo[0];
+			path = moduleInfo[1];
 		}
 		if (null == module) {
 			throw "The form define([], ...) without module name must be"
@@ -72,28 +80,35 @@
 		}
 		define.deps[module] = deps;
 		define.defs[module] = fn;
+		define.path[module] = path;
 		require.done(module);
 	}
 	define.deps = wrappedDefine.deps;
 	define.defs = wrappedDefine.defs;
+	define.path = [];
 
-	require.loadRec = function (modules, fn) {
+	require.loadRec = function (modules, fn, paths) {
 		require.loadMany(modules, function () {
 			var nestedDeps = [],
-			    i, j;
+			    nestedPath = [],
+			    i, j, k;
 			for (i = 0; i < modules.length; i++) {
 				// define.deps for each module will be filled during loading
 				nestedDeps = nestedDeps.concat(define.deps[modules[i]]);
+				var len = define.deps[modules[i]].length;
+				for (k = 0; k < len; k++) {
+					nestedPath.push(define.path[modules[i]]);
+				}
 			}
 			if (nestedDeps.length) {
-				require.loadRec(nestedDeps, fn);
+				require.loadRec(nestedDeps, fn, nestedPath);
 			} else {
 				fn();
 			}
-		});
+		}, paths);
 	};
 
-	require.load = function (module, fn) {
+	require.load = function (module, fn, path) {
 		var waiting = require.waiting,
 		    url;
 		if (define.defs[module]) {
@@ -103,7 +118,11 @@
 		}
 		if (!waiting[module]) {
 			waiting[module] =  [];
-			url = module + '.js';
+			if (null != path) {
+				url = path + '/' + module + '.js';
+			} else {
+				url = module + '.js';
+			}
 			if (require.urlPrefix) {
 				url = require.urlPrefix + url;
 			}
@@ -128,7 +147,7 @@
 		}
 	};
 
-	require.loadMany = function (modules, fn) {
+	require.loadMany = function (modules, fn, paths) {
 		var waitCount = modules.length,
 		    i;
 		function makeCb() {
@@ -139,7 +158,7 @@
 			};
 		}
 		for (i = 0; i < modules.length; i++) {
-			require.load(modules[i], makeCb());
+			require.load(modules[i], makeCb(), paths[i]);
 		}
 		if (!modules.length) {
 			fn();

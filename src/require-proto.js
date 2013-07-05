@@ -6,7 +6,7 @@
 	}
 	define.deps = {};
 	define.defs = {};
-	
+
 	/**
 	 * Synchronous require only for dependencies in define.defs.
 	 *
