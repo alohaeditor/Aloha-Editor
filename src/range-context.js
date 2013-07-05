@@ -953,7 +953,13 @@ define([
 	/**
 	 * Ensures the given range is wrapped by elements with a given nodeName.
 	 *
-	 * @param opts a map of options (all optional):
+	 * @param {Range} liveRange The range of the current selection.
+	 * @param {String} nodeName The name of the tag that should serve as the
+	 *                          wrapping node.
+	 * @param {Boolean} remove Optional flag, which when set to false will cause
+	 *                         the given markup to be removed (unwrapped) rather
+	 *                         then set.
+	 * @param {Object} opts A map of options (all optional):
 	 *        createWrapper - a function that returns a new empty
 	 *        wrapper node to use.
 	 *

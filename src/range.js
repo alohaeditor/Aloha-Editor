@@ -240,13 +240,13 @@ define([
 	StableRange.prototype.setStart = function (sc, so) {
 		this.startContainer = sc;
 		this.startOffset = so;
-		this.update(); // rangeobject ?
+		this.update();
 	};
 
 	StableRange.prototype.setEnd = function (ec, eo) {
 		this.endContainer = ec;
 		this.endOffset = eo;
-		this.update(); // ?
+		this.update();
 	};
 
 	/**
