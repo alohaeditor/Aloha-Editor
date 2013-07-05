@@ -7,7 +7,8 @@ define([
 	'../src/cursor',
 	'../src/range',
 	'../src/range-context',
-	'../src/browser'
+	'../src/browser',
+	'../src/content'
 ], function API(
 	Strings,
 	Arrays,
@@ -17,7 +18,8 @@ define([
 	Cursor,
 	Range,
 	RangeContext,
-	Browser
+	Browser,
+	Content
 ) {
 	'use strict';
 	return {
@@ -29,6 +31,7 @@ define([
 		Cursor       : Cursor,
 		Range        : Range,
 		RangeContext : RangeContext,
-		Browser      : Browser
+		Browser      : Browser,
+		Content      : Content
 	};
 });

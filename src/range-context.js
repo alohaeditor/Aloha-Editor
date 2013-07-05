@@ -46,16 +46,26 @@ define([
 	'../src/maps',
 	'../src/strings',
 	'../src/functions',
-	'../src/html'
+	'../src/html',
+	'../src/range',
+	'../src/cursor',
+	'../src/content'
 ], function RangeContextAPI(
 	Dom,
 	Arrays,
 	Maps,
 	Strings,
 	Fn,
-	Html
+	Html,
+	Range,
+	Cursor,
+	Content
 ) {
 	'use strict';
+
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Aloha.RangeContext');
+	}
 
 	/**
 	 * Walks the siblings of the given child, calling before for
@@ -399,7 +409,7 @@ define([
 	}
 
 	function wrap(node, wrapper, leftPoint, rightPoint) {
-		if (!allowsNesting(wrapper, node)) {
+		if (!Content.allowsNesting(wrapper, node)) {
 			return false;
 		}
 		if (wrapper.parentNode) {
@@ -411,28 +421,34 @@ define([
 		return true;
 	}
 
-	// NB: depends on fixupRange to use trimRangeClosingOpening to move
-	// the leftPoint out of an cursor.atEnd position to the first node
-	// that is to be moved.
+	// NB: depends on fixupRange to use Range.trimClosingOpening() to move the
+	// leftPoint out of an cursor.atEnd position to the first node that is to be
+	// moved.
 	function moveBackIntoWrapper(node, ref, atEnd, leftPoint, rightPoint) {
-		// Because the points will just be moved with the node, we don't
-		// need to do any special preservation.
+		// Because the points will just be moved with the node, we don't need to
+		// do any special preservation.
 		Dom.insert(node, ref, atEnd);
 	}
 
 	function fixupRange(liveRange, mutate) {
-		// Because we are mutating the range several times and don't
-		// want the caller to see the in-between updates, and because we
-		// are using trimRange() below to adjust the range's boundary
-		// points, which we don't want the browser to re-adjust (which
-		// some browsers do).
-		var range = Dom.stableRange(liveRange);
+		// Because we are mutating the range several times and don't want the
+		// caller to see the in-between updates, and because we are using
+		// Range.trim() below to adjust the range's boundary points, which we
+		// don't want the browser to re-adjust (which some browsers do).
+		var range = Range.stableRange(liveRange);
 
 		// Because making the assumption that boundary points are
 		// between nodes makes the algorithms generally a bit simpler.
 		Dom.splitTextContainers(range);
-		var splitStart = Dom.cursorFromBoundaryPoint(range.startContainer, range.startOffset);
-		var splitEnd = Dom.cursorFromBoundaryPoint(range.endContainer, range.endOffset);
+
+		var splitStart = Cursor.cursorFromBoundaryPoint(
+			range.startContainer,
+			range.startOffset
+		);
+		var splitEnd = Cursor.cursorFromBoundaryPoint(
+			range.endContainer,
+			range.endOffset
+		);
 
 		// Because we want unbolding
 		// <b>one<i>two{</i>three}</b>
@@ -444,18 +460,24 @@ define([
 		// afterwards.
 		// Also, because moveBackIntoWrapper() requires the
 		// left boundary point to be next to a non-ignorable node.
-		Dom.trimRangeClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
+		Range.trimClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
 
 		// Because mutation needs to keep track and adjust boundary
 		// points so we can preserve the range.
-		var leftPoint = Dom.cursorFromBoundaryPoint(range.startContainer, range.startOffset);
-		var rightPoint = Dom.cursorFromBoundaryPoint(range.endContainer, range.endOffset);
+		var leftPoint = Cursor.cursorFromBoundaryPoint(
+			range.startContainer,
+			range.startOffset
+		);
+		var rightPoint = Cursor.cursorFromBoundaryPoint(
+			range.endContainer,
+			range.endOffset
+		);
 		var formatter = mutate(range, leftPoint, rightPoint);
 		if (formatter) {
 			formatter.postprocess();
 		}
 
-		Dom.setRangeFromBoundaries(range, leftPoint, rightPoint);
+		Range.setFromBoundaries(range, leftPoint, rightPoint);
 
 		// Because we want to ensure that this algorithm doesn't
 		// introduce any additional splits between text nodes.
@@ -465,7 +487,7 @@ define([
 			formatter.postprocessTextNodes(range);
 		}
 
-		Dom.setRangeFromRef(liveRange, range);
+		Range.setFromReference(liveRange, range);
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
@@ -1027,8 +1049,8 @@ define([
 	 */
 	function trimExpandBoundaries(startPoint, endPoint, trimUntil, expandUntil, ignore) {
 		var collapsed = startPoint.equals(endPoint);
-		Dom.trimBoundaries(startPoint, endPoint, trimUntil, ignore);
-		Dom.expandBoundaries(startPoint, endPoint, expandUntil, ignore);
+		Range.trimBoundaries(startPoint, endPoint, trimUntil, ignore);
+		Range.expandBoundaries(startPoint, endPoint, expandUntil, ignore);
 		if (collapsed) {
 			endPoint.setFrom(startPoint);
 		}

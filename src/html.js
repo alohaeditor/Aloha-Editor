@@ -435,6 +435,37 @@ define([
 		return (/[\x00-\x1f\x7f-\x9f]/).test(chr);
 	}
 
+	function allowsNesting(outerDOMObject, innerDOMObject) {
+		if (!outerDOMObject || !outerDOMObject.nodeName || !innerDOMObject || !innerDOMObject.nodeName) {
+			return false;
+		}
+
+		var outerNodeName = outerDOMObject.nodeName.toLowerCase(),
+			innerNodeName = innerDOMObject.nodeName.toLowerCase();
+
+		if (!this.children[outerNodeName]) {
+			return false;
+		}
+
+		// check whether the nesting is configured by node names (like for table)
+		if (this.children[outerNodeName] == innerNodeName) {
+			return true;
+		}
+		if (jQuery.isArray(this.children[outerNodeName]) && jQuery.inArray(innerNodeName, this.children[outerNodeName]) >= 0) {
+			return true;
+		}
+
+		if (jQuery.isArray(this.tags[this.children[outerNodeName]])
+				&& jQuery.inArray(innerNodeName, this.tags[this.children[outerNodeName]]) >= 0) {
+			return true;
+		}
+
+		return false;
+	}
+
+
+
+
 	return {
 		isControlCharacter: isControlCharacter,
 		isStyleInherited: isStyleInherited,

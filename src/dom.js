@@ -41,6 +41,10 @@ define([
 ) {
 	'use strict';
 
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Aloha.Dom');
+	}
+
 	var spacesRx = /\s+/;
 	var attrRegex = /\s([^\/<>\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^>\/\s]+))?/g;
 
@@ -79,7 +83,7 @@ define([
 	 * Polyfill for older versions of Gecko, Safari, and Opera browsers.
 	 * @see https://bugzilla.mozilla.org/show_bug.cgi?id=92264 for background.
 	 *
-	 * @param {HTMLElement} node DOM Element.
+	 * @param {DOMObject} node
 	 * @return {String}
 	 */
 	function outerHtml(node) {
@@ -310,7 +314,7 @@ define([
 	 * elem.childNodes.length is unreliable because "IE up to 8 does not count
 	 * empty text nodes." (http://www.quirksmode.org/dom/w3c_core.html)
 	 *
-	 * @param {HTMLElement} elem
+	 * @param {DOMObject} elem
 	 * @return {Number} Number of children contained in the given node.
 	 */
 	function numChildren(elem) {
@@ -326,7 +330,7 @@ define([
 	/**
 	 * Determines the length of the given DOM node.
 	 *
-	 * @param {HTMLNode} node
+	 * @param {DOMObject} node
 	 * @return {Number} Length of the given node.
 	 */
 	function nodeLength(node) {
@@ -343,7 +347,7 @@ define([
 	 * Calculates the positional index of the given node inside of its parent
 	 * element.
 	 *
-	 * @param {HTMLNode} node
+	 * @param {DOMObject} node
 	 * @return {Number} The zero-based index of the given node's position.
 	 */
 	function nodeIndex(node) {
@@ -850,24 +854,35 @@ define([
 	}
 
 	/**
-	 * Map of tag names which represent tags that do not imply a word boundary.
+	 * Map of tag names which represent element that do not imply a word
+	 * boundary.
+	 *
 	 * eg: <b>bar</b>camp where there is no word boundary in "barcamp".
 	 *
-	 * @type {object}
+	 * In HTML5 parlance, these would be many of those elements that fall in the
+	 * category of "Text Level Semantics":
+	 * http://www.w3.org/TR/html5/text-level-semantics.html
+	 *
+	 * @type {object<String>, Boolean}
 	 */
-	var WORD_TAGS = {
-		'A'      : true,
-		'B'      : true,
-		'CODE'   : true,
-		'DEL'    : true,
-		'EM'     : true,
-		'I'      : true,
-		'INS'    : true,
-		'SPAN'   : true,
-		'STRONG' : true,
-		'SUB'    : true,
-		'SUP'    : true,
-		'#text'  : true
+	var IN_WORD_TAGS = {
+		A       : true,
+		ABBR    : true,
+		B       : true,
+		CITE    : true,
+		CODE    : true,
+		DEL     : true,
+		EM      : true,
+		I       : true,
+		INS     : true,
+		S       : true,
+		SMALL   : true,
+		SPAN    : true,
+		STRONG  : true,
+		SUB     : true,
+		SUP     : true,
+		U       : true,
+		'#text' : true
 	};
 
 	var WORD_CHARACTERS = [
@@ -1000,7 +1015,7 @@ define([
 	/**
 	 * Looks backwards in the node tree for the nearest word boundary position.
 	 *
-	 * @param {HTMLNode} node
+	 * @param {DOMObject} node
 	 * @param {Number} offset
 	 * @return position Information about the nearst found word boundary.
 	 * @return position.node
@@ -1023,7 +1038,7 @@ define([
 			if (offset > 0) {
 				var child = node.childNodes[offset - 1];
 				return (
-					WORD_TAGS[child.nodeName]
+					IN_WORD_TAGS[child.nodeName]
 						? findWordBoundaryBehind(child, nodeLength(child))
 						: {
 							node: node,
@@ -1057,7 +1072,7 @@ define([
 		if (Nodes.ELEMENT_NODE === node.nodeType) {
 			if (offset < nodeLength(node)) {
 				return (
-					WORD_TAGS[node.childNodes[offset].nodeName]
+					IN_WORD_TAGS[node.childNodes[offset].nodeName]
 						? findWordBoundaryAhead(node.childNodes[offset], 0)
 						: {
 							node: node,
@@ -1135,7 +1150,7 @@ define([
 		getStyle: getStyle,
 		getComputedStyle: getComputedStyle,
 		hasAttrs: hasAttrs,
-
+		nodeLength: nodeLength,
 		Nodes: Nodes,
 		findNodeBackwards: findNodeBackwards,
 		findWordBoundaryAhead: findWordBoundaryAhead,

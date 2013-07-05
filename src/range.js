@@ -342,6 +342,8 @@ define([
 		stableRange: stableRange,
 		trim: trim,
 		trimClosingOpening: trimClosingOpening,
+		trimBoundaries: trimBoundaries,
+		expandBoundaries: expandBoundaries,
 		equal: equal,
 		collapseToEnd: collapseToEnd
 	};
