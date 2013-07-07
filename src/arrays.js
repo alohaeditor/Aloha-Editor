@@ -1,19 +1,23 @@
 /* arrays.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
+ * Contributors http://aloha-editor.org/contribution.php
  */
 define(['functions'], function ArrayUtilities(Fn) {
 	'use strict';
 
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Aloha.Range');
+	}
+
 	/**
 	 * Implements unique() using the browser's sort().
 	 *
-	 * @param a
+	 * @param {Array} a
 	 *        The array to sort and strip of duplicate values.
 	 *        Warning: this array will be modified in-place.
-	 * @param compFn
+	 * @param {Function(*, *):Number} compFn
 	 *        A custom comparison function that accepts two values a and
 	 *        b from the given array and returns -1, 0, 1 depending on
 	 *        whether a < b, a == b, a > b respectively.
@@ -21,8 +25,8 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 *        If no compFn is provided, the algorithm will use the
 	 *        browsers default sort behaviour and loose comparison to
 	 *        detect duplicates.
-	 * @return
-	 *        The given array.
+	 * @return {Array}
+	 *        The given array, sorted.
 	 */
 	function sortUnique(a, compFn) {
 		var i;
@@ -49,16 +53,18 @@ define(['functions'], function ArrayUtilities(Fn) {
 	/**
 	 * Shallow comparison of two arrays.
 	 *
-	 * @param a, b
-	 *        The arrays to compare.
-	 * @param equalFn
+	 * @param {Array} a
+	 *        An array to compare.
+	 * @param {Array} b
+	 *        A second array to compare with `a`.
+	 * @param {Function(*, *):Number} equalFn
 	 *        A custom comparison function that accepts two values a and
 	 *        b from the given arrays and returns true or false for
 	 *        equal and not equal respectively.
 	 *
 	 *        If no equalFn is provided, the algorithm will use the strict
 	 *        equals operator.
-	 * @return
+	 * @return {Boolean}
 	 *        True if all items in a and b are equal, false if not.
 	 */
 	function equal(a, b, equalFn) {
@@ -84,10 +90,17 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Emulates ECMAScript edition 5 Arrays.map
+	 * Emulates ECMAScript edition 5 Arrays.map()
 	 * See https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map
 	 * And http://es5.github.com/#x15.4.4.19
 	 * It's not exactly according to standard, but it does what one expects.
+	 *
+	 * @param {Array} a
+	 *		An array.
+	 *
+	 * @param {Function} fn
+	 * @return {Array}
+	 *		A copy of the given array where each item mapped in relation to fn.
 	 */
 	function map(a, fn) {
 		var i, len, result = [];
@@ -109,7 +122,14 @@ define(['functions'], function ArrayUtilities(Fn) {
 
 	/**
 	 * Returns a new array that contains all values in the given a for
-	 * which pred returns true.
+	 * which `pred` returns true.
+	 *
+	 * @param {Array} a
+	 * 		An array.
+	 * @param {Function:Boolean} pred
+	 * 		Predicate function with which to filter the given array.
+	 * @return {Array}
+	 * 		A subset of the given array.
 	 */
 	function filter(a, pred) {
 		var i,
@@ -130,6 +150,14 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 * Strict comparison is used to find the value.
 	 * Returns the index of the first occurrence of the given value in
 	 * the given a, or -1 if a contains no such value.
+	 *
+	 * @param {Array} a
+	 * 		An array.
+	 * @param {*} value
+	 * 		The value to search for in the give array.
+	 * @return {Number}
+	 * 		The first index in the given array which contains the given value.
+	 * 		If the value is not found inside the array, -1 is returned.
 	 */
 	function indexOf(a, value) {
 		var i,
@@ -151,13 +179,13 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 *
 	 * Emulates ECMAScript edition 5 Array.reduce.
 	 *
-	 * @param a
+	 * @param {Array} a
 	 *        An array of values.
-	 * @param init
+	 * @param {*} init
 	 *        An initial value.
-	 * @param fn
-	 *        A function that takes two values and returns the reduction
-	 *        of both.
+	 * @param {Function} fn
+	 *        A function that takes two values and returns the reduction of
+	 *        both.
 	 */
 	function reduce(a, init, fn) {
 		var i,
@@ -170,6 +198,13 @@ define(['functions'], function ArrayUtilities(Fn) {
 
 	/**
 	 * Returns true if the given xs contains the given x.
+	 *
+	 * @param {Array} xs
+	 * 		An array.
+	 * @param {*} x
+	 * 		A value to search for in the given array.
+	 * @return {Boolean}
+	 * 		True of argument `x` is contained in the given array.
 	 */
 	function contains(xs, x) {
 		return -1 !== indexOf(xs, x);
