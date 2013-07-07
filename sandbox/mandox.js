@@ -4317,7 +4317,7 @@ printStackTrace.implementation.prototype = {
 (function __mandox__(global) {
 	'use strict';
 
-	var TERMINAL_WHITESPACE = /^\s+|\s+$/;
+	var TERMINAL_WHITESPACES = /^\s+|\s+$/g;
 	var THIS_EXPRESSION = /^this\./;
 	var LINE_BREAK = /[\r\n]/;
 	var PREFIX_ASTERIX = /^\*\s?/g;
@@ -4349,7 +4349,7 @@ printStackTrace.implementation.prototype = {
 	 * Trims terminal whitespaces from the given string.
 	 */
 	function trim(str) {
-		return str.replace(TERMINAL_WHITESPACE, '');
+		return str.replace(TERMINAL_WHITESPACES, '');
 	}
 
 	/**
@@ -4751,6 +4751,8 @@ printStackTrace.implementation.prototype = {
 		return name;
 	}
 
+	var BLOCK_COMMENT_TRIMMINGS = /^\s*\*( |$)/gm;
+
 	/**
 	 * Collects all lines of a comment block (including a comment block made up
 	 * of consecutive single line comments).
@@ -4763,7 +4765,7 @@ printStackTrace.implementation.prototype = {
 	function collectComment(comments, line) {
 		var comment = comments[line];
 		if ('Line' !== comment.type || 0 === line) {
-			return comment.value;
+			return trim(comment.value.replace(BLOCK_COMMENT_TRIMMINGS, ''));
 		}
 		var lines = '';
 		var prev;
@@ -4772,7 +4774,7 @@ printStackTrace.implementation.prototype = {
 			prev = comment.loc.end.line;
 			comment = comments[--line];
 		} while ('Line' === comment.type && comment.loc.end.line === prev - 1);
-		return lines;
+		return trim(lines);
 	}
 
 	/**
