@@ -20,7 +20,8 @@ define([
 	Range,
 	RangeContext,
 	Browser,
-	Content
+	Content,
+	Ephemera
 ) {
 	'use strict';
 	return {
