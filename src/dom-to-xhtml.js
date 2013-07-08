@@ -7,13 +7,11 @@
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
 define([
-	'jquery',
 	'dom',
 	'browser',
 	'ephemera'
 ],
 function(
-	$,
 	Dom,
 	Browser,
 	Ephemera
