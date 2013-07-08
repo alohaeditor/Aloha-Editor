@@ -1,6 +1,11 @@
 define(['dom'], function CursorAPI(Dom) {
 	'use strict';
 
+	/**
+	 * A Cursor.
+	 *
+	 * @type {Cursor}
+	 */
 	function Cursor(node, atEnd) {
 		this.node = node;
 		this.atEnd = atEnd;
@@ -13,6 +18,12 @@ define(['dom'], function CursorAPI(Dom) {
 	 * child respectively. All node positions except end positions can be
 	 * identified just by a node. To distinguish between element start and end
 	 * positions, the additional atEnd boolean is necessary.
+	 *
+	 * @param {DomElement} node
+	 *		The container in which the cursor is in.
+	 * @param {Boolean} atEnd
+	 *		Whether or not the cursor is at the end of the container.
+	 * @return {Cursor}
 	 */
 	function cursor(node, atEnd) {
 		return new Cursor(node, atEnd);
@@ -21,8 +32,11 @@ define(['dom'], function CursorAPI(Dom) {
 	/**
 	 * Creates a new cursor from the given container and offset.
 	 *
-	 * @param offset if container is a text node, the offset will be ignored.
-	 * @param container if a text node, should have a parent node.
+	 * @param {DomElement} container
+	 *		If a text node, should have a parent node.
+	 * @param {Number} offset
+	 *		If container is a text node, the offset will be ignored.
+	 * @return {Cursor}
 	 */
 	function cursorFromBoundaryPoint(container, offset) {
 		return cursor(
@@ -153,5 +167,4 @@ define(['dom'], function CursorAPI(Dom) {
 		cursor: cursor,
 		cursorFromBoundaryPoint: cursorFromBoundaryPoint
 	};
-
 });

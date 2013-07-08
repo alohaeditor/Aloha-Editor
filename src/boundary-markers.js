@@ -11,6 +11,11 @@ define([
 ) {
 	'use strict';
 
+	/**
+	 * Insert selection markers at the given range.
+	 *
+	 * @param {Range} range
+	 */
 	function insert(range) {
 		var leftMarkerChar  = (3 === range.startContainer.nodeType ? '[' : '{');
 		var rightMarkerChar = (3 === range.endContainer.nodeType   ? ']' : '}');
@@ -29,6 +34,13 @@ define([
 		end.insert(rightMarker);
 	}
 
+	/**
+	 * Set the selection based on selection markers found in the content inside
+	 * of `rootElem`.
+	 *
+	 * @param {DomElement} rootElem
+	 * @param {Range} range
+	 */
 	function extract(rootElem, range) {
 		var markers = ['[', '{', '}', ']'];
 		var markersFound = 0;
