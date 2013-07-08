@@ -1,3 +1,8 @@
+html {
+	height: 100%;
+	background: whiteSmoke;
+}
+
 body {
 	margin: 0;
 	padding: 0;
@@ -5,15 +10,15 @@ body {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 20px;
 	line-height: 1.6em;
-	background: whiteSmoke;
+	min-height: 100%;
+	box-shadow: 0 0 100px rgba(0,0,0,0.3) inset;
 }
 ::selection {
 	background: #40aebe;
 	color: #fff;
 }
 .aloha-editable {
-	margin: 5% 20%;
-	padding: 20px;
+	padding: 10% 20%;
 	outline: 0;
 }
 p { margin: 0 0 1em; }
