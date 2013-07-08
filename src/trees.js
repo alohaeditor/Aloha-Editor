@@ -131,18 +131,17 @@
  *       than 1000, so the maximum input nesting level should not exceed
  *       about 300 (3 stack frames are needed per nesting level).
  */
-define(['jquery'], function ($) {
+define(['array'], function (Arrays) {
 	'use strict';
 
 	function walk(form, step, inplace) {
-		var type = $.type(form),
-			subResult,
+		var subResult,
 			result,
 			resultOff,
 			len,
 			i,
 			key;
-		if ('array' === type) {
+		if (Arrays.isArray(form)) {
 			result = (inplace ? form : []);
 			resultOff = 0;
 			for (i = 0, len = form.length; i < len; i++) {
@@ -155,7 +154,7 @@ define(['jquery'], function ($) {
 				// TODO is result.length = resultOff better?
 				result = result.slice(0, resultOff);
 			}
-		} else if ('object' === type) {
+		} else if ('object' === typeof form) {
 			result = (inplace ? form : {});
 			for (key in form) {
 				if (form.hasOwnProperty(key)) {
@@ -258,8 +257,7 @@ define(['jquery'], function ($) {
 	}
 
 	function isLeaf(form) {
-		var type = $.type(form);
-		return type !== 'object' && type !== 'array';
+		return 'object' !== typeof form && !Arrays.isArray(form);
 	}
 
 	function identityStep(step, walk, form) {
