@@ -328,7 +328,7 @@ define([], function ContentUtilities() {
 			_PHRASING_        : true,
 			_REASSOCIATABLE_  : true,
 			_RESETTABLE_      : true,
-			_SUBMITTABLE_     : true,
+			_SUBMITTABLE_     : true
 		},
 		INS        : FLOW_PHRASING_CATEGORY,
 		KBD        : FLOW_PHRASING_CATEGORY,
