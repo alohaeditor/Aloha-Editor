@@ -1,9 +1,9 @@
 require(['../src/arrays'], function (Arrays) {
 	'use strict';
 
-    module('sortUnique');
+    module('Arrays');
 
-    test('loose compare', function () {
+    test('sortUnique(): loose compare', function () {
         var unique = Arrays.sortUnique([6, 3, 6, 3, '6', 3, '9', 9, 3, 2, 1]);
         // Either numeric or string values for '6' and '9' may be chosen
 		var i;
@@ -13,7 +13,7 @@ require(['../src/arrays'], function (Arrays) {
         deepEqual(unique, [1, 2, 3, 6, 9]);
     });
 
-    test('strict comparison', function () {
+    test('sortUnique(): strict comparison', function () {
         var unique = Arrays.sortUnique([6, 3, '6', 3, 6, 3, '9', 9, 3, 2, 1], function (a,b) {
             return typeof a < typeof b ? -1
                 : (typeof a > typeof b ? 1
@@ -22,7 +22,7 @@ require(['../src/arrays'], function (Arrays) {
         deepEqual(unique, [1, 2, 3, 6, 9, '6', '9']);
     });
 
-    test('comparator', function () {
+    test('sortUnique(): comparator', function () {
         var unique = Arrays.sortUnique([7, 6, 9, 6, 9, 8], function (a, b) {
             // Pretend 6 and 9 is equal
             if (a === 9) {
@@ -35,4 +35,23 @@ require(['../src/arrays'], function (Arrays) {
         });
         deepEqual(unique, [6, 7, 8]);
     });
+
+	// Refernce:
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Examples
+	test('isArray()', function () {
+		equal(Arrays.isArray([]), true);
+		equal(Arrays.isArray([1]), true);
+		equal(Arrays.isArray(new Array()), true);
+		equal(Arrays.isArray(Array.prototype), true);
+
+		equal(Arrays.isArray(), false);
+		equal(Arrays.isArray({}), false);
+		equal(Arrays.isArray(null), false);
+		equal(Arrays.isArray(undefined), false);
+		equal(Arrays.isArray(17), false);
+		equal(Arrays.isArray('Array'), false);
+		equal(Arrays.isArray(true), false);
+		equal(Arrays.isArray(false), false);
+		equal(Arrays.isArray({__proto__: Array.prototype}), false);
+	});
 });
