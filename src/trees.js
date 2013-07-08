@@ -131,7 +131,7 @@
  *       than 1000, so the maximum input nesting level should not exceed
  *       about 300 (3 stack frames are needed per nesting level).
  */
-define(['array'], function (Arrays) {
+define(['arrays'], function (Arrays) {
 	'use strict';
 
 	function walk(form, step, inplace) {
