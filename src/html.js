@@ -3,6 +3,9 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ *
+ * @TODO:
+ * 	Normalize between blockTypeNodes and BLOCK_ELEMENTS
  */
 define([
 	'dom',
@@ -17,36 +20,40 @@ define([
 ) {
 	'use strict';
 
-	// White space characters as defined by HTML 4 (http://www.w3.org/TR/html401/struct/text.html)
+	/**
+	 * White space characters as defined by HTML 4 (http://www.w3.org/TR/html401/struct/text.html)
+	 *
+	 * @type {RegExp}
+	 */
 	var nonWhitespaceRx = /[^\r\n\t\f \u200B]/;
 
 	var nonBlockDisplayValuesMap = {
-		"inline": true,
-		"inline-block": true,
-		"inline-table": true,
-		"none": true
+		'inline'		: true,
+		'inline-block'	: true,
+		'inline-table'	: true,
+		'none'			: true
 	};
 
 	var blockTypeNodes = {
-		'P': true,
-		'H1': true,
-		'H2': true,
-		'H3': true,
-		'H4': true,
-		'H5': true,
-		'H6': true,
-		'OL': true,
-		'UL': true,
-		'PRE': true,
-		'ADDRESS': true,
-		'BLOCKQUOTE': true,
-		'DL': true,
-		'DIV': true,
-		'fieldset': true,
-		'FORM': true,
-		'HR': true,
-		'NOSCRIPT': true,
-		'TABLE': true
+		P			: true,
+		H1			: true,
+		H2			: true,
+		H3			: true,
+		H4			: true,
+		H5			: true,
+		H6			: true,
+		OL			: true,
+		UL			: true,
+		PRE			: true,
+		ADDRESS		: true,
+		BLOCKQUOTE	: true,
+		DL			: true,
+		DIV			: true,
+		FIELDSET	: true,
+		FORM		: true,
+		HR			: true,
+		NOSCRIPT	: true,
+		TABLE		: true
 	};
 
 	/**
@@ -82,7 +89,7 @@ define([
 	 * contenteditable in Aloha.
 	 */
 	function isEditingHost(node) {
-		return 1 === node.nodeType && "true" === node.contentEditable;
+		return 1 === node.nodeType && 'true' === node.contentEditable;
 	}
 
 	/**
@@ -102,21 +109,6 @@ define([
 	function isInlineType(node) {
 		return !isBlockType(node);
 	}
-
-	var inlineFormattableMap = {
-		'A': true,
-		'B': true,
-		'EM': true,
-		'FONT': true,
-		'I': true,
-		'S': true,
-		'SPAN': true,
-		'STRIKE': true,
-		'STRONG': true,
-		'SUB': true,
-		'SUP': true,
-		'U': true
-	};
 
 	// NB: "block-level" is not technically defined for elements that are new in
 	// HTML5.
@@ -407,8 +399,8 @@ define([
 	 * @return {boolean} False if the editable may not contain paragraphs
 	 */
 	function allowNestedParagraph(editable) {
-		if (editable.obj.prop("tagName") === "SPAN" ||
-				editable.obj.prop("tagName") === "P") {
+		if (editable.obj.prop('tagName') === 'SPAN' ||
+				editable.obj.prop('tagName') === 'P') {
 			return false;
 		}
 		return true;
@@ -457,20 +449,18 @@ define([
 		if (this.children[outerNodeName] == innerNodeName) {
 			return true;
 		}
-		if (jQuery.isArray(this.children[outerNodeName]) && jQuery.inArray(innerNodeName, this.children[outerNodeName]) >= 0) {
+		if (Arrays.isArray(this.children[outerNodeName])
+				&& Arrays.indexOf(this.children[outerNodeName], innerNodeName) >= 0) {
 			return true;
 		}
 
-		if (jQuery.isArray(this.tags[this.children[outerNodeName]])
-				&& jQuery.inArray(innerNodeName, this.tags[this.children[outerNodeName]]) >= 0) {
+		if (Arrays.isArray(this.tags[this.children[outerNodeName]])
+				&& Arrays.indexof(this.tags[this.children[outerNodeName]], innerNodeName) >= 0) {
 			return true;
 		}
 
 		return false;
 	}
-
-
-
 
 	return {
 		isControlCharacter: isControlCharacter,
