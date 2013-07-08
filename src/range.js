@@ -81,6 +81,7 @@ define([
 	function setFromReference(range, reference) {
 		range.setStart(reference.startContainer, reference.startOffset);
 		range.setEnd(reference.endContainer, reference.endOffset);
+		return range;
 	}
 
 	function setStartFromCursor(range, cursor) {
@@ -89,6 +90,7 @@ define([
 		} else {
 			range.setStart(cursor.node.parentNode, Dom.nodeIndex(cursor.node));
 		}
+		return range;
 	}
 
 	function setEndFromCursor(range, cursor) {
@@ -97,11 +99,13 @@ define([
 		} else {
 			range.setEnd(cursor.node.parentNode, Dom.nodeIndex(cursor.node));
 		}
+		return range;
 	}
 
 	function setFromBoundaries(range, startPoint, endPoint) {
 		setStartFromCursor(range, startPoint);
 		setEndFromCursor(range, endPoint);
+		return range;
 	}
 
 	/**
@@ -145,6 +149,7 @@ define([
 		if (changed) {
 			setFn(range, cursor);
 		}
+		return range;
 	}
 
 	/**
@@ -194,6 +199,7 @@ define([
 			ignoreRight,
 			true
 		);
+		return range;
 	}
 
 	/**
@@ -208,6 +214,7 @@ define([
 		}, function (cursor) {
 			return !cursor.prevSibling() || ignoreRight(cursor.prevSibling());
 		});
+		return range;
 	}
 
 	// ~~~ `stable range ~~~
@@ -332,6 +339,7 @@ define([
 
 	function collapseToEnd(range) {
 		range.setStart(range.endContainer, range.endOffset);
+		return range;
 	}
 
 	return {
