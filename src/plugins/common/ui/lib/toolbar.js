@@ -174,12 +174,12 @@ define([
 			Toolbar.$surfaceContainer.children().detach();
 			Toolbar.$surfaceContainer.append(this.$element);
 			Toolbar.$surfaceContainer.stop().fadeTo(200, 1);
-			var position = Toolbar.getFloatingPosition();
-			this.$element.stop().css({
-				top: position.top,
-				left: position.left
-			});
 			if (isFloatingEnabled()) {
+				var position = Toolbar.getFloatingPosition();
+				this.$element.stop().css({
+					top: position.top,
+					left: position.left
+				});
 				this._move();
 			}
 		},
