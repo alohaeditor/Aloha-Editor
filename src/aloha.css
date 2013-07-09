@@ -5,7 +5,7 @@ html {
 
 body {
 	margin: 0;
-	padding: 0;
+	padding: 10% 20%;
 	color: #363332;
 	font-family: 'Open Sans', sans-serif;
 	font-size: 20px;
@@ -18,15 +18,7 @@ body {
 	color: #fff;
 }
 .aloha-editable {
-	padding: 10% 20%;
 	outline: 0;
 }
 p { margin: 0 0 1em; }
 p:last-child { margin-bottom: 0; }
-
-/*
-.aloha-editable * {
-	border: 1px solid #fa9;
-	padding: 2px;
-}
-*/

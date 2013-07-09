@@ -1,0 +1,4 @@
+								  KNOWN ISSUES
+								  ~~~~~~~~~~~~
+
+* RangeContext.wrap() in IE7
