@@ -4888,14 +4888,16 @@ printStackTrace.implementation.prototype = {
 						expectsFreeVar = false;
 					}
 
-					// TODO: Consider instanceof relation
 					obj = resolve(identifier);
 
 					if (typeof obj === 'undefined') {
 						expectsFreeVar = true;
 					} else if (expectsFreeVar && (obj !== thisValue)) {
 						depth = id.path.length;
-					} else if (obj === entity) {
+					} else if (
+						obj === entity
+							|| ('function' === typeof obj && entity instanceof obj)
+					) {
 						return symbols[i];
 					}
 				}
