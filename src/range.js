@@ -21,9 +21,9 @@ define([
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Aloha.Range');
+		eval(uate)('Range');
 	}
-	
+
 	if ('function' !== typeof document.getSelection
 			|| 'function' !== typeof document.createRange) {
 		var msg = 'document.getSelection() or document.createRange() is '
@@ -115,9 +115,18 @@ define([
 		return range;
 	}
 
-	function setFromBoundaries(range, startPoint, endPoint) {
-		setStartFromCursor(range, startPoint);
-		setEndFromCursor(range, endPoint);
+	/**
+	 * Sets the startContainer/startOffset and endContainer/endOffset boundary
+	 * points of the given range, based on the given start and end Cursors.
+	 *
+	 * @param {Range} range
+	 * @param {Cursor} start
+	 * @param {Cursor} end
+	 * @return {Range} The given range, having had its boundary points modified.
+	 */
+	function setFromBoundaries(range, start, end) {
+		setStartFromCursor(range, start);
+		setEndFromCursor(range, end);
 		return range;
 	}
 
@@ -293,58 +302,74 @@ define([
 	}
 
 	/**
-	 * Ensures that the given startPoint is not in a start position and the
-	 * given endPoint is not in an end position by moving the points to the left
-	 * and right respectively - the opposite of trimBoundaries().
+	 * Ensures that the given start point Cursor is not at a "start position"
+	 * and the given end point Cursor is not at an "end position" by moving the
+	 * points to the left and right respectively.  This is effectively the
+	 * opposite of trimBoundaries().
+	 *
+	 * @param {Cusor} start
+	 * @param {Cusor} end
+	 * @param {Function:Boolean} until
+	 *        Optional predicate.  May be used to stop the trimming process from
+	 *        moving the Cursor from within an element outside of it.
+	 * @param {Function:Boolean} ignore
+	 *        Optional predicate.  May be used to ignore (skip)
+	 *        following/preceding siblings which otherwise would stop the
+	 *        trimming process, like for example underendered whitespace.
 	 */
-	function expandBoundaries(startPoint, endPoint, until, ignore) {
+	function expandBoundaries(start, end, until, ignore) {
 		until = until || Fn.returnFalse;
 		ignore = ignore || Fn.returnFalse;
-		startPoint.prevWhile(function (startPoint) {
-			var prevSibling = startPoint.prevSibling();
-			return prevSibling ? ignore(prevSibling) : !until(startPoint.parent());
+		start.prevWhile(function (start) {
+			var prevSibling = start.prevSibling();
+			return prevSibling ? ignore(prevSibling) : !until(start.parent());
 		});
-		endPoint.nextWhile(function (endPoint) {
-			return !endPoint.atEnd ? ignore(endPoint.node) : !until(endPoint.parent());
+		end.nextWhile(function (end) {
+			return !end.atEnd ? ignore(end.node) : !until(end.parent());
 		});
 	}
 
 	/**
-	 * Ensures that the given startPoint is not in an end position and the given
-	 * endPoint is not in a start position by moving the points to the right and
-	 * left respectively - the opposite of expandBoundaries().
+	 * Ensures that the given start point Cursor is not at an "start position"
+	 * and the given end point Cursor is not at an "end position" by moving the
+	 * points to the left and right respectively.  This is effectively the
+	 * opposite of expandBoundaries().
 	 *
 	 * If the boundaries are equal (collapsed), or become equal during this
-	 * operation, or if until returns true for either point, they may remain in
-	 * start and end position respectively.
+	 * operation, or if until() returns true for either point, they may remain
+	 * in start and end position respectively.
 	 *
-	 * @param until may be used to stop the trimming process from moving
-	 *        the range from within an element outside of it.
-	 * @param ignore may be used to ignore followning/preceding siblings
-	 *        which otherwise would stop trimming process, like
-	 *        for example underendered whitespace.
+	 * @param {Cusor} start
+	 * @param {Cusor} end
+	 * @param {Function:Boolean} until
+	 *        Optional predicate.  May be used to stop the trimming process from
+	 *        moving the Cursor from within an element outside of it.
+	 * @param {Function:Boolean} ignore
+	 *        Optional predicate.  May be used to ignore (skip)
+	 *        following/preceding siblings which otherwise would stop the
+	 *        trimming process, like for example underendered whitespace.
 	 */
-	function trimBoundaries(startPoint, endPoint, until, ignore) {
+	function trimBoundaries(start, end, until, ignore) {
 		until = until || Fn.returnFalse;
 		ignore = ignore || Fn.returnFalse;
-		startPoint.nextWhile(function (startPoint) {
+		start.nextWhile(function (start) {
 			return (
-				!startPoint.equals(endPoint)
+				!start.equals(end)
 					&& (
-						!startPoint.atEnd
-							? ignore(startPoint.node)
-							: !until(startPoint.parent())
+						!start.atEnd
+							? ignore(start.node)
+							: !until(start.parent())
 					)
 			);
 		});
-		endPoint.prevWhile(function (endPoint) {
-			var prevSibling = endPoint.prevSibling();
+		end.prevWhile(function (end) {
+			var prevSibling = end.prevSibling();
 			return (
-				!startPoint.equals(endPoint)
+				!start.equals(end)
 					&& (
 						prevSibling
 							? ignore(prevSibling)
-							: !until(endPoint.parent())
+							: !until(end.parent())
 					)
 			);
 		});

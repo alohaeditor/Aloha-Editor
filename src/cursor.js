@@ -1,8 +1,13 @@
 define(['dom'], function CursorAPI(Dom) {
 	'use strict';
 
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Cursor');
+	}
+
 	/**
-	 * A Cursor.
+	 * Cursor abstraction of the startContainer/startOffset and
+	 * endContainer/endOffset range boundary points.
 	 *
 	 * @type {Cursor}
 	 */
@@ -20,9 +25,9 @@ define(['dom'], function CursorAPI(Dom) {
 	 * positions, the additional atEnd boolean is necessary.
 	 *
 	 * @param {DomElement} node
-	 *		The container in which the cursor is in.
+	 *        The container in which the cursor is in.
 	 * @param {Boolean} atEnd
-	 *		Whether or not the cursor is at the end of the container.
+	 *        Whether or not the cursor is at the end of the container.
 	 * @return {Cursor}
 	 */
 	function cursor(node, atEnd) {
@@ -33,9 +38,9 @@ define(['dom'], function CursorAPI(Dom) {
 	 * Creates a new cursor from the given container and offset.
 	 *
 	 * @param {DomElement} container
-	 *		If a text node, should have a parent node.
+	 *        If a text node, should have a parent node.
 	 * @param {Number} offset
-	 *		If container is a text node, the offset will be ignored.
+	 *        If container is a text node, the offset will be ignored.
 	 * @return {Cursor}
 	 */
 	function cursorFromBoundaryPoint(container, offset) {
