@@ -196,31 +196,12 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Emulates ECMAScript edition 5 Arrays.isArray() to check whether the given
-	 * element is an array.
-	 *
-	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray
-	 * http://kangax.github.io/es5-compat-table/#Array.isArray
-	 *
-	 * @param {*} obj
-	 * @return {Boolean}
-	 *         True if the given object is array-like.
-	 */
-	var isArray = Array.isArray || function isArray(obj) {
-		return (obj && '[object Array]' === Object.prototype.toString.call(obj)
-			? true
-			: false
-		);
-	};
-
-	/**
 	 * Functions for operating on arrays.
 	 *
 	 * API:
 	 *
 	 * Arrays.some()
 	 * Arrays.every()
-	 * Arrays.map()
 	 * Arrays.contains()
 	 * Arrays.equal()
 	 * Arrays.applyNotNull()
