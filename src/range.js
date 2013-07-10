@@ -24,27 +24,6 @@ define([
 		eval(uate)('Range');
 	}
 
-	if ('function' !== typeof document.getSelection
-			|| 'function' !== typeof document.createRange) {
-		var msg = 'document.getSelection() or document.createRange() is '
-		        + 'undefined:\n\n'
-		        + 'The JavaScript environment in which you have included this\n'
-		        + 'module does not seem to provide native support for the DOM\n'
-		        + 'API functions document.getSelection() or '
-		        + 'document.createRange().\n\n'
-		        + 'Both are needed for you to be able to use this module.\n\n'
-		        + 'It is likely the case that you are using an obsolete\n'
-		        + 'browser like Internet Explorer 7 or 8.\n\n'
-		        + 'It is recommended that you upgrade to an up to date\n'
-		        + 'browser (http://google.com/chrome).  If this is not \n'
-		        + 'possible, you may consider including the Rangy library\n'
-		        + '(http://code.google.com/p/rangy/) as a polyfill.';
-		if ('undefined' !== typeof console.error) {
-			console.error(msg);
-		}
-		throw 'document.getSelection() or document.createRange() is undefined';
-	}
-
 	/**
 	 * Extends the ranges start and end positions to the nearest word
 	 * boundaries.

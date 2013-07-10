@@ -544,6 +544,10 @@ define([], function ContentUtilities() {
 
 	/**
 	 * Functions for operation on contents of HTML DOM nodes.
+	 *
+	 * API:
+	 *
+	 * allowsNesting()
 	 */
 	var exports = {
 		allowsNesting: allowsNesting
