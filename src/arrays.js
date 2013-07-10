@@ -8,25 +8,24 @@ define(['functions'], function ArrayUtilities(Fn) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Aloha.Range');
+		eval(uate)('Arrays');
 	}
 
 	/**
 	 * Implements unique() using the browser's sort().
 	 *
 	 * @param {Array} a
-	 *		The array to sort and strip of duplicate values.
-	 *		Warning: this array will be modified in-place.
+	 *        The array to sort and strip of duplicate values.
+	 *        Warning: this array will be modified in-place.
 	 * @param {Function(*, *):Number} compFn
-	 *		A custom comparison function that accepts two values a and
-	 *		b from the given array and returns -1, 0, 1 depending on
-	 *		whether a < b, a == b, a > b respectively.
+	 *        A custom comparison function that accepts two values a and
+	 *        b from the given array and returns -1, 0, 1 depending on
+	 *        whether a < b, a == b, a > b respectively.
 	 *
-	 *		If no compFn is provided, the algorithm will use the
-	 *		browsers default sort behaviour and loose comparison to
-	 *		detect duplicates.
+	 *        If no compFn is provided, the algorithm will use the browsers
+	 *        default sort behaviour and loose comparison to detect duplicates.
 	 * @return {Array}
-	 *		The given array, sorted.
+	 *         The given array, having been sorted.
 	 */
 	function sortUnique(a, compFn) {
 		var i;
@@ -54,18 +53,18 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 * Shallowly compares two arrays.
 	 *
 	 * @param {Array} a
-	 *		An array to compare.
+	 *        An array to compare.
 	 * @param {Array} b
-	 *		A second array to compare with `a`.
+	 *        A second array to compare with `a`.
 	 * @param {Function(*, *):Number} equalFn
-	 *		A custom comparison function that accepts two values a and
-	 *		b from the given arrays and returns true or false for
-	 *		equal and not equal respectively.
+	 *        A custom comparison function that accepts two values a and b from
+	 *        the given arrays and returns true or false for equal and not equal
+	 *        respectively.
 	 *
-	 *		If no equalFn is provided, the algorithm will use the strict
-	 *		equals operator.
+	 *        If no equalFn is provided, the algorithm will use the strict
+	 *        equals operator.
 	 * @return {Boolean}
-	 *		True if all items in a and b are equal, false if not.
+	 *         True if all items in a and b are equal, false if not.
 	 */
 	function equal(a, b, equalFn) {
 		var i,
@@ -96,11 +95,11 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 * It's not exactly according to standard, but it does what one expects.
 	 *
 	 * @param {Array} a
-	 *		An array.
-	 *
+	 *        An array.
 	 * @param {Function} fn
 	 * @return {Array}
-	 *		A copy of the given array where each item mapped in relation to fn.
+	 *         A copy of the given array where each item mapped in relation to
+	 *         fn.
 	 */
 	function map(a, fn) {
 		var i, len, result = [];
@@ -112,24 +111,24 @@ define(['functions'], function ArrayUtilities(Fn) {
 
 	function mapNative(a, fn) {
 		// Call map directly on the object instead of going through
-		// Array.prototype.map. This avoids the problem that we may get
-		// passed an array-like object (NodeList) which may cause an
-		// error if the implementation of Array.prototype.map can only
-		// deal with arrays (Array.prototype.map may be native or
-		// provided by a javscript framework).
+		// Array.prototype.map. This avoids the problem that we may get passed
+		// an array-like object (NodeList) which may cause an error if the
+		// implementation of Array.prototype.map can only deal with arrays
+		// (Array.prototype.map may be native or provided by a javscript
+		// framework).
 		return a.map(fn);
 	}
 
 	/**
-	 * Returns a new array that contains all values in the given a for
-	 * which `pred` returns true.
+	 * Returns a new array that contains all values in the given a for which
+	 * `pred` returns true.
 	 *
 	 * @param {Array} a
-	 *		An array.
+	 *        An array.
 	 * @param {Function:Boolean} pred
-	 *		Predicate function with which to filter the given array.
+	 *        Predicate function with which to filter the given array.
 	 * @return {Array}
-	 *		A subset of the given array.
+	 *         A subset of the given array.
 	 */
 	function filter(a, pred) {
 		var i,
@@ -148,16 +147,17 @@ define(['functions'], function ArrayUtilities(Fn) {
 	/**
 	 * Finds a value in the given array.
 	 * Strict comparison is used to find the value.
-	 * Returns the index of the first occurrence of the given value in
-	 * the given a, or -1 if a contains no such value.
+	 * Returns the index of the first occurrence of the given value in the given
+	 * a, or -1 if a contains no such value.
 	 *
 	 * @param {Array} a
-	 *		An array.
+	 *        An array.
 	 * @param {*} value
-	 *		The value to search for in the give array.
+	 *        The value to search for in the give array.
 	 * @return {Number}
-	 *		The first index in the given array which contains the given value.
-	 *		If the value is not found inside the array, -1 is returned.
+	 *         The first index in the given array which contains the given
+	 *         value.  If the value is not found inside the array, -1 is
+	 *         returned.
 	 */
 	function indexOf(a, value) {
 		var i,
@@ -180,11 +180,14 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 * Emulates ECMAScript edition 5 Array.reduce.
 	 *
 	 * @param {Array} a
-	 *		An array of values.
+	 *        An array of values.
 	 * @param {*} init
-	 *		An initial value.
+	 *        An initial value.
 	 * @param {Function} fn
-	 *		A function that takes two values and returns the reduction of both.
+	 *        An accumulator function that takes two values and returns the
+	 *        reduction of both in the form of a single value.
+	 * @return {*} The accumulation of the elements of the given array reduced
+	 *             to a single value by `fn`.
 	 */
 	function reduce(a, init, fn) {
 		var i,
@@ -199,11 +202,11 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 * Returns true if the given xs contains the given x.
 	 *
 	 * @param {Array} xs
-	 *		An array.
+	 *        An array.
 	 * @param {*} x
-	 *		A value to search for in the given array.
+	 *        A value to search for in the given array.
 	 * @return {Boolean}
-	 *		True of argument `x` is contained in the given array.
+	 *         True of argument `x` is contained in the given array.
 	 */
 	function contains(xs, x) {
 		return -1 !== indexOf(xs, x);
@@ -216,11 +219,11 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 * This is a utility function to be used with reduce().
 	 *
 	 * @param {*} value
-	 *		The value with which to call `fn` with.
+	 *        The value with which to call `fn` with.
 	 * @param {Function} fn
-	 *		The function to be called with `value` as its only argument.
-	 * @return
-	 *		The return value of `fn`.
+	 *        The function to be called with `value` as its only argument.
+	 * @return {*}
+	 *         The return value of `fn`.
 	 */
 	function applyNotNull(value, fn) {
 		return value == null ? null : fn(value);
@@ -232,9 +235,9 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 * Emulates ECMAScript edition 5 Array.forEach.
 	 *
 	 * @param {Array} xs
-	 *		An array to iterate over.
+	 *        An array to iterate over.
 	 * @param {Function} cb
-	 *		Callback function to execute for each element in `xs`.
+	 *        Callback function to execute for each element in `xs`.
 	 */
 	function forEach(xs, cb) {
 		var i,
@@ -245,16 +248,18 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Returns true if the given predicate function returns true for at
-	 * least one item.
+	 * Returns true if the given predicate function returns true for at least
+	 * one item in the given array.
 	 *
 	 * Emulates ECMAScript edition 5 Array.some.
 	 *
 	 * @param {Array} xs
-	 *		An array to iterate over.
+	 *        An array to iterate over.
 	 * @param {Function} pred
-	 *		Predicate function to test for each element.
+	 *        Predicate function to test for each element.
 	 * @return {Boolean}
+	 *         True if `pred` returns true when applied to at least one item in
+	 *         `xs`.
 	 */
 	function some(xs, pred) {
 		var i,
@@ -268,15 +273,15 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Returns true if the given predicate function returns true for all
-	 * items in xs.
+	 * Returns true if the given predicate function returns true for all items
+	 * in xs.
 	 *
 	 * Emulates ECMAScript edition 5 Array.every.
 	 *
 	 * @param {Array} xs
-	 *		An array to iterate over.
+	 *        An array to iterate over.
 	 * @param {Function} pred
-	 *		Predicate function to test for each element.
+	 *        Predicate function to test for each element.
 	 * @return {Boolean}
 	 */
 	function every(xs, pred) {
@@ -284,12 +289,12 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Returns all items in xs that are also contained in zs.
+	 * Returns all items in `xs` that are also contained in `zs`.
 	 *
 	 * @param {Array} xs
 	 * @param {Array} zs
 	 * @return {Boolean}
-	 *		The set of elements in `xs` that are also contained in `zs`.
+	 *          The set of elements in `xs` that are also contained in `zs`.
 	 */
 	function intersect(xs, zs) {
 		return filter(xs, function (x) {
@@ -302,6 +307,7 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 *
 	 * @param {Array} xs
 	 * @return {*}
+	 *         Last item in xs or null if the given array is empty.
 	 */
 	function last(xs) {
 		return xs.length ? xs[xs.length - 1] : null;
@@ -325,7 +331,8 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 * http://kangax.github.io/es5-compat-table/#Array.isArray
 	 *
 	 * @param {*} obj
-	 * @return {Boolean} True if the given object is array-like.
+	 * @return {Boolean}
+	 *         True if the given object is array-like.
 	 */
 	var isArray = Array.isArray || function isArray(obj) {
 		return (obj && '[object Array]' === Object.prototype.toString.call(obj)
@@ -334,7 +341,28 @@ define(['functions'], function ArrayUtilities(Fn) {
 		);
 	};
 
-	return {
+	/**
+	 * Functions for operating on arrays.
+	 *
+	 * API:
+	 *
+	 * Arrays.filter()
+	 * Arrays.indexOf()
+	 * Arrays.reduce()
+	 * Arrays.forEach()
+	 * Arrays.some()
+	 * Arrays.every()
+	 * Arrays.map()
+	 * Arrays.contains()
+	 * Arrays.equal()
+	 * Arrays.applyNotNull()
+	 * Arrays.sortUnique()
+	 * Arrays.intersect()
+	 * Arrays.second()
+	 * Arrays.last()
+	 * Arrays.isArray()
+	 */
+	var exports = {
 		filter: filter,
 		indexOf: indexOf,
 		reduce: reduce,
@@ -351,4 +379,6 @@ define(['functions'], function ArrayUtilities(Fn) {
 		last: last,
 		isArray: isArray
 	};
+
+	return exports;
 });

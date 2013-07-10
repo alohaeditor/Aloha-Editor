@@ -24,7 +24,18 @@ define([
 	Ephemera
 ) {
 	'use strict';
-	return {
+
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Aloha');
+	}
+
+	/**
+	 * Aloha Editor API
+	 *
+	 * The Aloha Editor API provides facilities to build advanced content
+	 * editing solutions in HTML.
+	 */
+	var Aloha = {
 		Strings      : Strings,
 		Arrays       : Arrays,
 		Maps         : Maps,
@@ -37,4 +48,6 @@ define([
 		Content      : Content,
 		Ephemera     : Ephemera
 	};
+
+	return Aloha;
 });

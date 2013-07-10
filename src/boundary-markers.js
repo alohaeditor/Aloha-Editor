@@ -107,8 +107,14 @@ define([
 		}
 	}
 
-	return {
+	/**
+	 * Functions for inserting and extracting range boundary markers into the
+	 * DOM.
+	 */
+	var exports = {
 		insert: insert,
 		extract: extract
 	};
+
+	return exports;
 });

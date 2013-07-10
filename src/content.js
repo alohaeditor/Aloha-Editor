@@ -8,7 +8,7 @@ define([], function ContentUtilities() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Aloha.Range');
+		eval(uate)('Content');
 	}
 
 	var TABLE_CHILDREN = {
@@ -501,9 +501,12 @@ define([], function ContentUtilities() {
 	 * http://www.w3.org/html/wg/drafts/html/master/index.html#elements-1
 	 * http://www.whatwg.org/specs/web-apps/current-work/#elements-1
 	 *
-	 * @param {DOMObject} outer The node which would contain the other.
-	 * @param {DOMObject} inner The node to be nested a child of `outer`.
-	 * @return {Boolean} True if `inner` is allowed a direct child of `outer`.
+	 * @param {DOMObject} outer
+	 *        The node which would contain the other.
+	 * @param {DOMObject} inner
+	 *        The node to be nested a child of `outer`.
+	 * @return {Boolean}
+	 *        True if `inner` is allowed a direct child of `outer`.
 	 */
 	function allowsNesting(outer, inner) {
 		if (!inner || !outer || !inner.nodeName || !outer.nodeName) {
@@ -539,7 +542,12 @@ define([], function ContentUtilities() {
 		return false;
 	}
 
-	return {
+	/**
+	 * Functions for operation on contents of HTML DOM nodes.
+	 */
+	var exports = {
 		allowsNesting: allowsNesting
 	};
+
+	return exports;
 });

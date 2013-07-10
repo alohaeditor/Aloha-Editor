@@ -2,7 +2,7 @@ define(['dom'], function CursorAPI(Dom) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Cursor');
+		eval(uate)('Cursors');
 	}
 
 	/**
@@ -168,8 +168,20 @@ define(['dom'], function CursorAPI(Dom) {
 		return Dom.insert(node, this.node, this.atEnd);
 	};
 
-	return {
+	/**
+	 * Functions for creating Cursors.  A Cursor is an abstraction of the
+	 * startContainer/startOffset and endContainer/endOffset range boundary
+	 * points.
+	 *
+	 * API:
+	 *
+	 * Cursors.cursor()
+	 * Cursors.cursorFromBoundaryPoint()
+	 */
+	var exports = {
 		cursor: cursor,
 		cursorFromBoundaryPoint: cursorFromBoundaryPoint
 	};
+
+	return exports;
 });
