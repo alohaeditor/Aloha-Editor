@@ -4,12 +4,66 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  */
-define(['jquery'], function BrowserUtilities($) {
+define([], function BrowserUtilities() {
 	'use strict';
+
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Browser');
+	}
+
+	/**
+	 * Adapted from http://code.jquery.com/jquery-migrate-git.js
+	 */
+	var matched = (function () {
+		var ua = navigator.userAgent.toLowerCase();
+		var match = /(chrome)[ \/]([\w.]+)/.exec(ua)
+				 || /(webkit)[ \/]([\w.]+)/.exec(ua)
+				 || /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua)
+				 || /(msie) ([\w.]+)/.exec(ua)
+				 || (ua.indexOf('compatible') < 0
+		             && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua))
+				 || [];
+		return {
+			browser: match[1] || '',
+			version: match[2] || '0'
+		};
+	}());
+
+	/**
+	 * Browser information.
+	 *
+	 * @type {Object}
+	 */
+	var browser = {};
+
+	if (matched.browser) {
+		browser[matched.browser] = true;
+		browser.version = matched.version;
+	}
+
+	// Chrome is Webkit, but Webkit is also Safari.
+	if (browser.chrome) {
+		browser.webkit = true;
+	} else {
+		browser.safari = true;
+	}
+
 	var testElem = document.createElement('div');
-	return {
-		ie7: $.browser.msie && parseInt($.browser.version, 10) < 8,
-		ie: $.browser.msie,
+
+	/**
+	 * Browser and feature detection functions.
+	 *
+	 * API:
+	 *
+	 * Browser.browser
+	 * Browser.ie
+	 * Browser.hasRemoveProperty
+	 */
+	var exports = {
+		ie7: browser.msie && parseInt(browser.version, 10) < 8,
+		browser: browser,
 		hasRemoveProperty: !!testElem.style.removeProperty
 	};
+
+	return exports;
 });
