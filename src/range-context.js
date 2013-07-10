@@ -27,7 +27,7 @@ define([
 	'functions',
 	'html',
 	'range',
-	'cursor',
+	'cursors',
 	'content'
 ], function RangeContextAPI(
 	Dom,
@@ -37,7 +37,7 @@ define([
 	Fn,
 	Html,
 	Range,
-	Cursor,
+	Cursors,
 	Content
 ) {
 	'use strict';
@@ -420,11 +420,11 @@ define([
 		// between nodes makes the algorithms generally a bit simpler.
 		Dom.splitTextContainers(range);
 
-		var splitStart = Cursor.cursorFromBoundaryPoint(
+		var splitStart = Cursors.cursorFromBoundaryPoint(
 			range.startContainer,
 			range.startOffset
 		);
-		var splitEnd = Cursor.cursorFromBoundaryPoint(
+		var splitEnd = Cursors.cursorFromBoundaryPoint(
 			range.endContainer,
 			range.endOffset
 		);
@@ -443,11 +443,11 @@ define([
 
 		// Because mutation needs to keep track and adjust boundary
 		// points so we can preserve the range.
-		var leftPoint = Cursor.cursorFromBoundaryPoint(
+		var leftPoint = Cursors.cursorFromBoundaryPoint(
 			range.startContainer,
 			range.startOffset
 		);
-		var rightPoint = Cursor.cursorFromBoundaryPoint(
+		var rightPoint = Cursors.cursorFromBoundaryPoint(
 			range.endContainer,
 			range.endOffset
 		);

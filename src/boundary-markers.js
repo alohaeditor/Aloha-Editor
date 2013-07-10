@@ -1,11 +1,11 @@
 define([
 	'dom',
-	'cursor',
+	'cursors',
 	'arrays',
 	'strings'
 ], function (
 	Dom,
-	Cursor,
+	Cursors,
 	Arrays,
 	Strings
 ) {
@@ -22,11 +22,11 @@ define([
 		Dom.splitTextContainers(range);
 		var leftMarker = document.createTextNode(leftMarkerChar);
 		var rightMarker = document.createTextNode(rightMarkerChar);
-		var start = Cursor.cursorFromBoundaryPoint(
+		var start = Cursors.cursorFromBoundaryPoint(
 			range.startContainer,
 			range.startOffset
 		);
-		var end = Cursor.cursorFromBoundaryPoint(
+		var end = Cursors.cursorFromBoundaryPoint(
 			range.endContainer,
 			range.endOffset
 		);

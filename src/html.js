@@ -11,12 +11,12 @@ define([
 	'dom',
 	'maps',
 	'arrays',
-	'cursor'
+	'cursors'
 ], function HtmlUtilities(
 	Dom,
 	Maps,
 	Arrays,
-	Cursor
+	Cursors
 ) {
 	'use strict';
 
@@ -328,9 +328,9 @@ define([
 		}
 		// Algorithm like engine.js isCollapsedWhitespaceNode().
 		return (
-			skipUnrenderedToEndOfLine(Cursor.cursor(node, false))
+			skipUnrenderedToEndOfLine(Cursors.cursor(node, false))
 			||
-			skipUnrenderedToStartOfLine(Cursor.cursor(node, false))
+			skipUnrenderedToStartOfLine(Cursors.cursor(node, false))
 		);
 	}
 

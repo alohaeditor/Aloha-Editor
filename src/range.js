@@ -11,12 +11,12 @@ define([
 	'dom',
 	'functions',
 	'arrays',
-	'cursor'
+	'cursors'
 ], function RangeUtilities(
 	Dom,
 	Fn,
 	Arrays,
-	Cursor
+	Cursors
 ) {
 	'use strict';
 
@@ -135,7 +135,7 @@ define([
 	 */
 	function seekBoundaryPoint(range, container, offset, oppositeContainer,
 	                           oppositeOffset, setFn, ignore, backwards) {
-		var cursor = Cursor.cursorFromBoundaryPoint(container, offset);
+		var cursor = Cursors.cursorFromBoundaryPoint(container, offset);
 
 		// Because when seeking backwards, if the boundary point is inside a
 		// text node, trimming starts after it. When seeking forwards, the
@@ -158,7 +158,7 @@ define([
 				}
 			}
 		}
-		var opposite = Cursor.cursorFromBoundaryPoint(
+		var opposite = Cursors.cursorFromBoundaryPoint(
 			oppositeContainer,
 			oppositeOffset
 		);
