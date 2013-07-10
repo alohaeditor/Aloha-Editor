@@ -829,8 +829,7 @@ define([
 	}
 
 	function hasAttrs(node) {
-		return !Arrays.every(Arrays.map(attrs(node), Arrays.second),
-							 Strings.empty);
+		return !Arrays.every(attrs(node).map(Arrays.second), Strings.empty);
 	}
 
 	/**

@@ -341,7 +341,7 @@ define([
 			// document element (which has nodeType 9).
 			return !node.parentNode || Dom.Nodes.DOCUMENT_ELEMENT === node.parentNode.nodeType || hasInheritableContext(node);
 		});
-		Arrays.forEach(fromCacToContext, function (node) {
+		fromCacToContext.forEach(function (node) {
 			upperBoundaryAndAbove = upperBoundaryAndAbove || isUpperBoundary(node);
 			// Because we are only interested in non-context overrides.
 			var override = getInheritableOverride(node);
@@ -678,13 +678,13 @@ define([
 		}
 
 		function postprocess() {
-			Arrays.forEach(wrappersWithContextValue, function (wrapperAndContextValue) {
+			wrappersWithContextValue.forEach(function (wrapperAndContextValue) {
 				mergeWrapper(wrapperAndContextValue[0], wrapperAndContextValue[1]);
 			});
 		}
 
 		function postprocessTextNodes(range) {
-			Arrays.forEach(removedNodeSiblings, function (node) {
+			removedNodeSiblings.forEach(function (node) {
 				Dom.joinTextNodeAdjustRange(node, range);
 			});
 		}
@@ -1143,7 +1143,7 @@ define([
 			ascendOffsetUntilInclNode(end, endEnd, carryDown, intoWrapper, Fn.noop, Fn.noop, cac);
 			ascendWalkSiblings(fromCacToTop, false, Fn.returnFalse, intoWrapper, Fn.noop, Fn.noop);
 
-			Arrays.forEach(removeEmpty, function (elem) {
+			removeEmpty.forEach(function (elem) {
 				// Because if it doesn't have a parentNode, it was
 				// already removed in an earlier iteration, which is
 				// possible because we ascend from the cac twice, which

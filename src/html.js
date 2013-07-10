@@ -153,7 +153,7 @@ define([
 	Maps.fillKeys(blocksTagnameMap, BLOCKLEVEL_ELEMENTS, true);
 	Maps.fillKeys(
 		blocksTagnameMap,
-		Arrays.map(BLOCKLEVEL_ELEMENTS, function (str) {
+		BLOCKLEVEL_ELEMENTS.map(function (str) {
 			return str.toUpperCase();
 		}),
 		true
@@ -449,13 +449,13 @@ define([
 		if (this.children[outerNodeName] == innerNodeName) {
 			return true;
 		}
-		if (Arrays.isArray(this.children[outerNodeName])
-				&& Arrays.indexOf(this.children[outerNodeName], innerNodeName) >= 0) {
+		if (Array.isArray(this.children[outerNodeName])
+				&& this.children[outerNodeName].indexOf(innerNodeName) >= 0) {
 			return true;
 		}
 
-		if (Arrays.isArray(this.tags[this.children[outerNodeName]])
-				&& Arrays.indexof(this.tags[this.children[outerNodeName]], innerNodeName) >= 0) {
+		if (Array.isArray(this.tags[this.children[outerNodeName]])
+				&& this.tags[this.children[outerNodeName]].indexof(innerNodeName) >= 0) {
 			return true;
 		}
 

@@ -88,7 +88,7 @@ define([
 			}
 			// Because non-text boundary positions must not be joined again.
 			var forceNextSplit = false;
-			Arrays.forEach(parts, function (part, i) {
+			parts.forEach(function (part, i) {
 				// Because we don't want to join text nodes we haven't split.
 				forceNextSplit = forceNextSplit || (i === 0);
 				if (Arrays.contains(markers, part)) {

@@ -257,7 +257,7 @@ define(['arrays'], function (Arrays) {
 	}
 
 	function isLeaf(form) {
-		return 'object' !== typeof form && !Arrays.isArray(form);
+		return 'object' !== typeof form && !Array.isArray(form);
 	}
 
 	function identityStep(step, walk, form) {

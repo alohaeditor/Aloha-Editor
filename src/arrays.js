@@ -89,116 +89,6 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Emulates ECMAScript edition 5 Arrays.map()
-	 * See https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/map
-	 * And http://es5.github.com/#x15.4.4.19
-	 * It's not exactly according to standard, but it does what one expects.
-	 *
-	 * @param {Array} a
-	 *        An array.
-	 * @param {Function} fn
-	 * @return {Array}
-	 *         A copy of the given array where each item mapped in relation to
-	 *         fn.
-	 */
-	function map(a, fn) {
-		var i, len, result = [];
-		for (i = 0, len = a.length; i < len; i++) {
-			result.push(fn(a[i]));
-		}
-		return result;
-	}
-
-	function mapNative(a, fn) {
-		// Call map directly on the object instead of going through
-		// Array.prototype.map. This avoids the problem that we may get passed
-		// an array-like object (NodeList) which may cause an error if the
-		// implementation of Array.prototype.map can only deal with arrays
-		// (Array.prototype.map may be native or provided by a javscript
-		// framework).
-		return a.map(fn);
-	}
-
-	/**
-	 * Returns a new array that contains all values in the given a for which
-	 * `pred` returns true.
-	 *
-	 * @param {Array} a
-	 *        An array.
-	 * @param {Function:Boolean} pred
-	 *        Predicate function with which to filter the given array.
-	 * @return {Array}
-	 *         A subset of the given array.
-	 */
-	function filter(a, pred) {
-		var i,
-		    len,
-		    value,
-		    result = [];
-		for (i = 0, len = a.length; i < len; i++) {
-			value = a[i];
-			if (pred(value)) {
-				result.push(value);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Finds a value in the given array.
-	 * Strict comparison is used to find the value.
-	 * Returns the index of the first occurrence of the given value in the given
-	 * a, or -1 if a contains no such value.
-	 *
-	 * @param {Array} a
-	 *        An array.
-	 * @param {*} value
-	 *        The value to search for in the give array.
-	 * @return {Number}
-	 *         The first index in the given array which contains the given
-	 *         value.  If the value is not found inside the array, -1 is
-	 *         returned.
-	 */
-	function indexOf(a, value) {
-		var i,
-		    len;
-		for (i = 0, len = a.length; i < len; i++) {
-			if (value === a[i]) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	/**
-	 * Reduces an array of values to a single value.
-	 *
-	 * For example:
-	 * Arrays.reduce([2, 3, 4], 1, function (a, b) { return a + b; });
-	 * returns the result of (((1 + 2) + 3) + 4)
-	 *
-	 * Emulates ECMAScript edition 5 Array.reduce.
-	 *
-	 * @param {Array} a
-	 *        An array of values.
-	 * @param {*} init
-	 *        An initial value.
-	 * @param {Function} fn
-	 *        An accumulator function that takes two values and returns the
-	 *        reduction of both in the form of a single value.
-	 * @return {*} The accumulation of the elements of the given array reduced
-	 *             to a single value by `fn`.
-	 */
-	function reduce(a, init, fn) {
-		var i,
-		    len;
-		for (i = 0, len = a.length; i < len; i++) {
-			init = fn(init, a[i]);
-		}
-		return init;
-	}
-
-	/**
 	 * Returns true if the given xs contains the given x.
 	 *
 	 * @param {Array} xs
@@ -209,7 +99,7 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 *         True of argument `x` is contained in the given array.
 	 */
 	function contains(xs, x) {
-		return -1 !== indexOf(xs, x);
+		return -1 !== xs.indexOf(x);
 	}
 
 	/**
@@ -227,24 +117,6 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 */
 	function applyNotNull(value, fn) {
 		return value == null ? null : fn(value);
-	}
-
-	/**
-	 * For each item in xs, call cb(item, index, xs).
-	 *
-	 * Emulates ECMAScript edition 5 Array.forEach.
-	 *
-	 * @param {Array} xs
-	 *        An array to iterate over.
-	 * @param {Function} cb
-	 *        Callback function to execute for each element in `xs`.
-	 */
-	function forEach(xs, cb) {
-		var i,
-		    len;
-		for (i = 0, len = xs.length; i < len; i++) {
-			cb(xs[i], i, xs);
-		}
 	}
 
 	/**
@@ -297,7 +169,7 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 *          The set of elements in `xs` that are also contained in `zs`.
 	 */
 	function intersect(xs, zs) {
-		return filter(xs, function (x) {
+		return xs.filter(function (x) {
 			return contains(zs, x);
 		});
 	}
@@ -346,10 +218,6 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 *
 	 * API:
 	 *
-	 * Arrays.filter()
-	 * Arrays.indexOf()
-	 * Arrays.reduce()
-	 * Arrays.forEach()
 	 * Arrays.some()
 	 * Arrays.every()
 	 * Arrays.map()
@@ -360,24 +228,17 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 * Arrays.intersect()
 	 * Arrays.second()
 	 * Arrays.last()
-	 * Arrays.isArray()
 	 */
 	var exports = {
-		filter: filter,
-		indexOf: indexOf,
-		reduce: reduce,
-		forEach: forEach,
 		some: some,
 		every: every,
-		map: Array.prototype.map ? mapNative : map,
 		contains: contains,
 		equal: equal,
 		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
 		intersect: intersect,
 		second: second,
-		last: last,
-		isArray: isArray
+		last: last
 	};
 
 	return exports;

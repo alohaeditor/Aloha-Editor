@@ -250,7 +250,7 @@ define([
 		var data = elem.attr('data-aloha-ephemera-attr');
 		if (null == data || '' === data) {
 			data = attr;
-		} else if (-1 === Arrays.indexOf(Strings.words(data), attr)) {
+		} else if (-1 === Strings.words(data).indexOf(attr)) {
 			data += ' ' + attr;
 		}
 		elem.attr('data-aloha-ephemera-attr', data);
@@ -334,7 +334,7 @@ define([
 			if (true === mapped) {
 				return true;
 			}
-			if (-1 !== Arrays.indexOf(mapped, elem.nodeName)) {
+			if (-1 !== mapped.indexOf(elem.nodeName)) {
 				return true;
 			}
 		}
@@ -377,25 +377,25 @@ define([
 			var classes = Strings.words(className);
 
 			// Ephemera.markElement()
-			if (-1 !== Arrays.indexOf(classes, 'aloha-cleanme') || -1 !== Arrays.indexOf(classes, 'aloha-ephemera')) {
+			if (-1 !== classes.indexOf('aloha-cleanme') || -1 !== classes.indexOf('aloha-ephemera')) {
 				$.removeData(elem); // avoids memory leak
 				return false; // removes the element
 			}
 
 			// Ephemera.markWrapper() and Ephemera.markFiller()
-			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-wrapper') || -1 !== Arrays.indexOf(classes, 'aloha-ephemera-filler')) {
+			if (-1 !== classes.indexOf('aloha-ephemera-wrapper') || -1 !== classes.indexOf('aloha-ephemera-filler')) {
 				Dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
 				$.removeData(elem);
 				return false;
 			}
 
 			// Ephemera.markAttr()
-			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-attr')) {
+			if (-1 !== classes.indexOf('aloha-ephemera-attr')) {
 				pruneMarkedAttrs(elem);
 			}
 
 			// Ephemera.classes() and Ehpemera.ephemera({ classMap: {} })
-			var persistentClasses = Arrays.filter(classes, function (cls) {
+			var persistentClasses = classes.filter(function (cls) {
 				return !emap.classMap[cls];
 			});
 			if (persistentClasses.length !== classes.length) {
