@@ -1,0 +1,23 @@
+{
+  "name": "aloha-editor",
+  "version": "1.1.0",
+  "description": "Aloha Editor a HTML editing library and tools.",
+  "homepage": "http://www.aloha-editor.org",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/alohaeditor/Aloha-Editor"
+  },
+  "engines": {
+    "node": "~0.8.x",
+    "npm": "1.1.x"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.9",
+    "grunt-install-dependencies": "~0.1.0",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-compress": "~0.5.2",
+    "grunt-closure-compiler": "0.0.18"
+  }
+}
