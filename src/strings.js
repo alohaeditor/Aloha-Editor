@@ -7,39 +7,52 @@
 define([], function StringUtilities() {
 	'use strict';
 
-	var spacesRx = /\s+/;
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Strings');
+	}
 
 	/**
 	 * Splits a string into individual words.
 	 *
 	 * Words are non-empty sequences of non-space characaters.
+	 *
+	 * @param {String} str
+	 * @return {Array[String]}
+	 *         List of words found in the given string.
 	 */
-	function words(str) {
-		var list = str.split(spacesRx);
-		// "  x  ".split(/\s+/) => ["", "x", ""] (Chrome)
-		// "".split(/\s+/) => [""] (Chrome)
-		if (list.length && list[0] === "") {
-			list.shift();
-		}
-		if (list.length && list[list.length - 1] === "") {
-			list.pop();
-		}
-		return list;
-	}
+	var words = (function () {
+		var spaces = /\s+/;
+		return function words(str) {
+			var list = str.split(spaces);
+			// "  x  ".split(/\s+/) => ["", "x", ""] (Chrome)
+			// "".split(/\s+/) => [""] (Chrome)
+			if (list.length && list[0] === '') {
+				list.shift();
+			}
+			if (list.length && list[list.length - 1] === '') {
+				list.pop();
+			}
+			return list;
+		};
+	}());
 
 	/**
-	 * Converst a dashes form into camel cased form.
+	 * Converts a dashes form into camel cased form.
 	 *
 	 * For example 'data-my-attr' becomes 'dataMyAttr'.
 	 *
-	 * @param {string} s
+	 * @param {string} str
 	 *        Should be all lowercase and should not begin with a dash
 	 */
-	function dashesToCamelCase(s) {
-		return s.replace(/[\-]([a-z])/gi, function (all, upper) {
+	var dashesToCamelCase = (function () {
+		var dashPrefixedCharacter = /[\-]([a-z])/gi;
+		var raiseCase = function (all, upper) {
 			return upper.toUpperCase();
-		});
-	}
+		};
+		return function dashesToCamelCase(str) {
+			return str.replace(dashPrefixedCharacter, raiseCase);
+		};
+	}());
 
 	/**
 	 * Converts a camel cased form into dashes form.
@@ -48,24 +61,33 @@ define([], function StringUtilities() {
 	 * 'dataMyAttr' becomes 'data-my-attr',
 	 * 'dataAB'     becomes 'data-a-b'.
 	 *
-	 * @param {string} s
+	 * @param {string} str
 	 *        Should begin with a lowercase letter and should not contain dashes.
 	 */
-	function camelCaseToDashes(s) {
-		return s.replace(/[A-Z]/g, function (match) {
+	var camelCaseToDashes = (function () {
+		var uppercaseCharacter = /[A-Z]/g;
+		var addDashes = function (match) {
 			return '-' + match.toLowerCase();
-		});
-	}
+		};
+		return function camelCaseToDashes(str) {
+			return str.replace(uppercaseCharacter, addDashes);
+		};
+	}());
 
 	/**
-	 * Split str along pattern, including matches in the result.
+	 * Split `str` along `pattern`, including matches in the result.
 	 *
-	 * Necssary because, although "xzx".split(/(z)/) results in
-	 * ["x", "z", "x"] on most modern browsers, it results in
-	 * ["x", "x"] on IE.
+	 * splitIncl("foo-bar", /\-/g) results in ["foo", "-", "bar"]
 	 *
-	 * @param pattern must include the g flag, otherwise will result in
-	 * an endless loop.
+	 * whereas
+	 *
+	 * "foo-bar".split(/\-/g) results in ["foo", "bar"]
+	 *
+	 * @param {RegExp} pattern
+	 *        Must include the g flag, otherwise will result in an endless loop.
+	 * @return {Array[String]}
+	 *         A list of substrings of `str` in the order they appeared in the
+	 *         given string.
 	 */
 	function splitIncl(str, pattern) {
 		var result = [];
@@ -87,6 +109,9 @@ define([], function StringUtilities() {
 
 	/**
 	 * Returns true for the empty string, null and undefined.
+	 *
+	 * @param {String=} str
+	 * @return {Boolean}
 	 */
 	function empty(str) {
 		return '' === str || null == str;
