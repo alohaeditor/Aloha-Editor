@@ -2,7 +2,7 @@ require([
 	'jquery',
 	'../src/dom',
 	'../src/html',
-	'../src/range',
+	'../src/ranges',
 	'../src/range-context',
 	'../src/functions',
 	'../src/browser',
@@ -12,7 +12,7 @@ require([
 	$,
 	Dom,
 	Html,
-	Range,
+	Ranges,
 	RangeContext,
 	Fn,
 	Browser,
@@ -37,7 +37,7 @@ require([
 			var titleForDebugginDontRemove = title;
 			$('#test-editable').empty().html(before);
 			var dom = $('#test-editable')[0].firstChild;
-			var range = Range.create();
+			var range = Ranges.create();
 			BoundaryMarkers.extract(dom, range);
 			dom = mutate(dom, range) || dom;
 			BoundaryMarkers.insert(range);
@@ -90,7 +90,7 @@ require([
 	function testInsertExtractBoundaryMarkers(title, htmlWithBoundaryMarkers) {
 		test(title, function () {
 			var dom = $(htmlWithBoundaryMarkers)[0];
-			var range = Range.create();
+			var range = Ranges.create();
 			BoundaryMarkers.extract(dom, range);
 			equal(DomToXhtml.nodeToXhtml(dom), htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, ''));
 			BoundaryMarkers.insert(range);
@@ -105,7 +105,7 @@ require([
 
 	function testTrimRange(title, before, after, switched) {
 		testMutationSwitchElemTextSelection(title, before, after, function (dom, range) {
-			Range.trimClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
+			Ranges.trimClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
 		});
 	}
 
@@ -146,7 +146,7 @@ require([
 	t('<p>1234{<b>Some text.</b>}5678</p>');
 
 	var t = function (before, after) {
-		testTrimRange('Range.trim()', before, after);
+		testTrimRange('Ranges.trim()', before, after);
 	};
 	t('<p>So[me te]xt.</p>', '<p>So[me te]xt.</p>');
 	t('<p>So[]xt.</p>', '<p>So[]xt.</p>');
