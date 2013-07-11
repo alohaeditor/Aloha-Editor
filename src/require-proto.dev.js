@@ -76,7 +76,7 @@
 				+ " including it via a script tag in the page."
 				+ " Use require('name') to include the module or"
 				+ " use the form define('name', [], ...) to define"
-				+ " the module."
+				+ " the module.";
 		}
 		define.deps[module] = deps;
 		define.defs[module] = fn;
