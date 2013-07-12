@@ -1,17 +1,23 @@
 /* maps.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
+ * Contributors http://aloha-editor.org/contribution.php
  */
 define([], function MapsUtilities() {
 	'use strict';
 
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Maps');
+	}
+
 	/**
 	 * Checks whether the given object has no own or inherited properties.
 	 *
-	 * @param {!Object} obj The object to check.
-	 * @return {boolean} True if the object is empty. eg: isEmpty({}) == true
+	 * @param {!Object} obj
+	 *        Object to check.
+	 * @return {boolean}
+	 *         True if the object is empty. eg: isEmpty({}) == true
 	 */
 	function isEmpty(obj) {
 		var name;
@@ -24,18 +30,17 @@ define([], function MapsUtilities() {
 	}
 
 	/**
-	 * Fill the given map with the given keys mapped to the given value.
+	 * Fills the given map with the given keys mapped to the given value.
 	 *
-	 * @param map
+	 * @param {Object} map
 	 *        The given map will have one entry added for each given key.
-	 * @param keys
-	 *        An array of string keys. Javascript maps can only
-	 *        contain string keys, so these must be strings or
-	 *        or they will be cast to string.
-	 * @param value
+	 * @param {Array[String]} keys
+	 *        An array of string keys. JavaScript maps can only contain string
+	 *        keys, so these must be strings or or they will be cast to string.
+	 * @param {String} value
 	 *        A single value that each given key will map to.
-	 * @return
-	 *        The given map.
+	 * @return {Object}
+	 *         The given map.
 	 */
 	function fillKeys(map, keys, value) {
 		var i = keys.length;
@@ -46,17 +51,17 @@ define([], function MapsUtilities() {
 	}
 
 	/**
-	 * Fill the given map with entries from the given tuples.
+	 * Fills the given map with entries from the given tuples.
 	 *
-	 * @param map
-	 *        The given map will have one entry added for each item in
-	 *        the given array.
-	 * @param tuples
-	 *        An array of [key, value] tuples. Javascript maps can only
-	 *        contain string keys, so the keys must be strings or
-	 *        or they will be cast to string.
-	 * @return
-	 *        The given map.
+	 * @param {Object} map
+	 *        The given map will have one entry added for each item in the given
+	 *        array.
+	 * @param {Array[Array[String, *]]}tuples
+	 *        An array of [key, value] tuples. Javascript maps can only contain
+	 *        string keys, so the keys must be strings or or they will be cast
+	 *        to string.
+	 * @return {Object}
+	 *         The given map.
 	 */
 	function fillTuples(map, tuples) {
 		var i = tuples.length,
@@ -70,6 +75,10 @@ define([], function MapsUtilities() {
 
 	/**
 	 * Returns an array of the map's keys.
+	 *
+	 * @param {Object} map
+	 * @return {Array}
+	 *         The set of keys in `map`.
 	 */
 	function keys(map) {
 		var ks = [],
@@ -83,13 +92,12 @@ define([], function MapsUtilities() {
 	}
 
 	/**
-	 * For each mapping, call cb(value, key, map).
+	 * For each mapping, calls `cb(value, key, map)`.
 	 *
 	 * Emulates ECMAScript edition 5 Array.forEach.
 	 *
-	 * Contrary to "for (key in map)" iterates only over the
-	 * "hasOwnProperty" properties of the map, which is usually what you
-	 * want.
+	 * Contrary to "for (key in map)" iterates only over the "hasOwnProperty"
+	 * properties of the map, which is usually what you want.
 	 */
 	function forEach(map, cb) {
 		var key;
@@ -105,6 +113,11 @@ define([], function MapsUtilities() {
 	 * Merging happens from left to right, which is useful for example
 	 * when merging a number of given options with default options:
 	 * var effectiveOptions = Maps.merge(defaults, options);
+	 *
+	 * @param {...Object}
+	 *        A variable number of map objects.
+	 * @return {Object}
+	 *         A merge of all given maps in a single object.
 	 */
 	function merge() {
 		var dest = {};
@@ -121,7 +134,19 @@ define([], function MapsUtilities() {
 		return dest;
 	}
 
-	return {
+	/**
+	 * Functions to work with maps (plain old objects).
+	 *
+	 * API:
+	 *
+	 * Maps.isEmpty()
+	 * Maps.fillTuples()
+	 * Maps.fillKeys()
+	 * Maps.keys()
+	 * Maps.forEach()
+	 * Maps.merge()
+	 */
+	var exports = {
 		isEmpty: isEmpty,
 		fillTuples: fillTuples,
 		fillKeys: fillKeys,
@@ -129,4 +154,6 @@ define([], function MapsUtilities() {
 		forEach: forEach,
 		merge: merge
 	};
+
+	return exports;
 });
