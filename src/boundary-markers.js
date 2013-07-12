@@ -1,10 +1,12 @@
 define([
 	'dom',
+	'traversing',
 	'cursors',
 	'arrays',
 	'strings'
 ], function (
 	Dom,
+	Traversing,
 	Cursors,
 	Arrays,
 	Strings
@@ -101,7 +103,7 @@ define([
 			});
 			node.parentNode.removeChild(node);
 		}
-		Dom.walkRec(rootElem, extractMarkers);
+		Traversing.walkRec(rootElem, extractMarkers);
 		if (2 !== markersFound) {
 			throw 'Missing one or both markers';
 		}

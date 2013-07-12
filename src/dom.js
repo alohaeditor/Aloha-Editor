@@ -22,7 +22,7 @@ define([
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Aloha.Dom');
+		eval(uate)('Dom');
 	}
 
 	var spacesRx = /\s+/;
@@ -359,6 +359,9 @@ define([
 		return node;
 	}
 
+	/**
+	 * @private
+	 */
 	function remove(node) {
 		node.parentNode.removeChild(node);
 	}
@@ -369,11 +372,25 @@ define([
 		parent.removeChild(node);
 	}
 
+	/**
+	 * Wraps node `node` in given node `wrapper`.
+	 *
+	 * @param {DomElement} node
+	 * @param {DomElement} wrapper
+	 */
 	function wrap(node, wrapper) {
 		node.parentNode.replaceChild(wrapper, node);
 		wrapper.appendChild(node);
 	}
 
+	/**
+	 * Inserts node `node` before `ref`, unless `atEnd` is truthy, in which case
+	 * `node` is inserted at the end of `ref` children nodes.
+	 *
+	 * @param {DomElement} node
+	 * @param {DomElement} ref
+	 * @param {Boolean} atEnd
+	 */
 	function insert(node, ref, atEnd) {
 		if (atEnd) {
 			ref.appendChild(node);
@@ -437,25 +454,17 @@ define([
 		});
 	}
 
-	function nextWhile(node, cond, arg) {
-		while (node && cond(node, arg)) {
-			node = node.nextSibling;
-		}
-		return node;
-	}
-
-	function prevWhile(node, cond, arg) {
-		while (node && cond(node, arg)) {
-			node = node.prevSibling;
-		}
-		return node;
-	}
-
 	/**
-	 * Returns true if b is a descendant of a, false otherwise.
+	 * Returns `true` if node `b` is a descendant of node `a`, `false`
+	 * otherwise.
 	 *
+	 * @see
 	 * http://ejohn.org/blog/comparing-document-position/
 	 * http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
+	 *
+	 * @param {DomElement} a
+	 * @param {DomElement} b
+	 * @return {Boolean}
 	 */
 	function contains(a, b) {
 		return (Nodes.ELEMENT_NODE === a.nodeType
@@ -465,16 +474,29 @@ define([
 				: false);
 	}
 
+	/**
+	 * Returns `true` if `node` is a text node.
+	 *
+	 * @param {DomElement} node
+	 * @return {Boolean}
+	 */
 	function isTextNode(node) {
 		return Nodes.TEXT_NODE === node.nodeType;
 	}
 
 	/**
-	 * Splits the given text node at the given offset, and returns the
-	 * first of the two text nodes that were inserted to replace the
-	 * given node in the DOM.
-	 * TODO: could be optimized with insertData() so only a single text
-	 * node is inserted instead of two.
+	 * Splits the given text node at the given offset, and returns the first of
+	 * the two text nodes that were inserted to replace the given node in the
+	 * DOM.
+	 *
+	 * @TODO: could be optimized with insertData() so only a single text node is
+	 *        inserted instead of two.
+	 *
+	 * @param {DomElement} node
+	 *        DOM text node.
+	 * @param {Number} offset
+	 *        Number between 0 and the length of text of `node`.
+	 * @return {DomElement}
 	 */
 	function splitTextNode(node, offset) {
 		// Because node.splitText() is buggy on IE, split it manually.
@@ -493,16 +515,17 @@ define([
 	}
 
 	/**
-	 * Normalizes the boundary point represented by container and offset
-	 * such that it will not point to the start or end of a text node
-	 * which reduces the number of different states the range can be in,
-	 * and thereby increases the the robusteness of the code written
-	 * against it slightly.
+	 * Normalizes the boundary point represented by container and offset such
+	 * that it will not point to the start or end of a text node which reduces
+	 * the number of different states the range can be in, and thereby increases
+	 * the the robusteness of the code written against it slightly.
 	 *
-	 * It should be noted that native ranges controlled by the browser's
-	 * DOM implementation have the habit to change by themselves, so
-	 * even if normalized this way the range could revert to an
-	 * unnormalized state. See stableRange().
+	 * It should be noted that native ranges controlled by the browser's DOM
+	 * implementation have the habit to change by themselves, so even if
+	 * normalized this way the range could revert to an unnormalized state. See
+	 * stableRange().
+	 *
+	 * @private
 	 */
 	function normalizeSetRange(setRange, range, container, offset) {
 		if (Nodes.TEXT_NODE === container.nodeType && container.parentNode) {
@@ -517,42 +540,36 @@ define([
 		setRange.call(range, container, offset);
 	}
 
+	/**
+	 * Modifies the given range's start boundary and sets the range to the
+	 * browser selection.
+	 *
+	 * @private
+	 * @param {Range} range
+	 *        Range objec to modify.
+	 * @param {DomElement} container
+	 *        DOM element to set as the start container.
+	 * @param {Number} offset
+	 *        The offset into `container`.
+	 */
 	function setRangeStart(range, container, offset) {
 		normalizeSetRange(range.setStart, range, container, offset);
 	}
 
+	/**
+	 * Modifies the given range's end boundary and sets the range to the browser
+	 * selection.
+	 *
+	 * @private
+	 * @param {Range} range
+	 *        Range objec to modify.
+	 * @param {DomElement} container
+	 *        DOM element to set as the end container.
+	 * @param {Number} offset
+	 *        The offset into `container`.
+	 */
 	function setRangeEnd(range, container, offset) {
 		normalizeSetRange(range.setEnd, range, container, offset);
-	}
-
-	function walkUntil(node, fn, until, arg) {
-		while (node && !until(node, arg)) {
-			var next = node.nextSibling;
-			fn(node, arg);
-			node = next;
-		}
-	}
-
-	function walk(node, fn, arg) {
-		walkUntil(node, fn, Fn.returnFalse, arg);
-	}
-
-	/**
-	 * Depth-first postwalk of the given DOM node.
-	 */
-	function walkRec(node, fn, arg) {
-		if (Nodes.ELEMENT_NODE === node.nodeType) {
-			walk(node.firstChild, function (node) {
-				walkRec(node, fn, arg);
-			});
-		}
-		fn(node, arg);
-	}
-
-	function walkUntilNode(node, fn, untilNode, arg) {
-		walkUntil(node, fn, function (nextNode) {
-			return nextNode === untilNode;
-		}, arg);
 	}
 
 	function adjustRangeAfterSplit(container, offset, range, setRange, splitNode, splitOffset, newNodeBeforeSplit) {
@@ -796,6 +813,12 @@ define([
 		return null;
 	}
 
+	/**
+	 * Removes the given style property from the given DOM element.
+	 *
+	 * @param {DomElement} elem
+	 * @param {String} styleName
+	 */
 	function removeStyle(elem, styleName) {
 		var $elem = $(elem);
 		if (Browser.hasRemoveProperty) {
@@ -1116,12 +1139,7 @@ define([
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
 		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
-		nextWhile: nextWhile,
 		contains: contains,
-		walk: walk,
-		walkRec: walkRec,
-		walkUntil: walkUntil,
-		walkUntilNode: walkUntilNode,
 		splitTextNodeAdjustRange: splitTextNodeAdjustRange,
 		insertSelectText: insertSelectText,
 		cloneShallow: cloneShallow,
