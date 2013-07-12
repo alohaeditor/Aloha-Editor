@@ -21,6 +21,7 @@
  */
 define([
 	'dom',
+	'traversing',
 	'arrays',
 	'maps',
 	'strings',
@@ -31,6 +32,7 @@ define([
 	'content'
 ], function RangeContextAPI(
 	Dom,
+	Traversing,
 	Arrays,
 	Maps,
 	Strings,
@@ -53,7 +55,7 @@ define([
 	 */
 	function walkSiblings(parent, beforeAtAfterChild, before, at, after, arg) {
 		var fn = before;
-		Dom.walk(parent.firstChild, function (child) {
+		Traversing.walk(parent.firstChild, function (child) {
 			if (child !== beforeAtAfterChild) {
 				fn(child, arg);
 			} else {
@@ -94,7 +96,7 @@ define([
 		// <elem>text{</elem> or <elem>text}</elem>
 		// ascendecending would start at <elem> ignoring "text".
 		if (ascendNodes.length && atEnd) {
-			Dom.walk(ascendNodes[0].firstChild, before, args[0]);
+			Traversing.walk(ascendNodes[0].firstChild, before, args[0]);
 		}
 		for (i = 0; i < ascendNodes.length - 1; i++) {
 			var child = ascendNodes[i];
@@ -151,15 +153,15 @@ define([
 		var cacChildStart = Arrays.last(ascStart);
 		var cacChildEnd   = Arrays.last(ascEnd);
 		stepAtStart = makePointNodeStep(start, startEnd, stepInbetween, stepPartial);
-		Dom.walkUntilNode(cac.firstChild, stepLeftStart, cacChildStart, arg);
+		Traversing.walkUntilNode(cac.firstChild, stepLeftStart, cacChildStart, arg);
 		if (cacChildStart) {
 			var next = cacChildStart.nextSibling;
 			stepAtStart(cacChildStart, arg);
-			Dom.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
+			Traversing.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
 			if (cacChildEnd) {
 				next = cacChildEnd.nextSibling;
 				stepAtEnd(cacChildEnd, arg);
-				Dom.walk(next, stepRightEnd, arg);
+				Traversing.walk(next, stepRightEnd, arg);
 			}
 		}
 	}
@@ -329,7 +331,7 @@ define([
 		var isContextOverride = formatter.isContextOverride;
 		var isClearable = formatter.isClearable;
 		var clearOverrideRec = formatter.clearOverrideRec  || function (node) {
-			Dom.walkRec(node, clearOverride);
+			Traversing.walkRec(node, clearOverride);
 		};
 
 		var topmostOverrideNode = null;
@@ -477,11 +479,11 @@ define([
 		if (Dom.Nodes.ELEMENT_NODE !== node.nodeType || !ignoreVertical(node)) {
 			return null;
 		}
-		var maybeContext = Dom.nextWhile(node.firstChild, ignoreHorizontal);
+		var maybeContext = Traversing.nextWhile(node.firstChild, ignoreHorizontal);
 		if (!maybeContext) {
 			return null;
 		}
-		var notIgnorable = Dom.nextWhile(maybeContext.nextSibling, ignoreHorizontal);
+		var notIgnorable = Traversing.nextWhile(maybeContext.nextSibling, ignoreHorizontal);
 		if (notIgnorable) {
 			return null;
 		}
@@ -523,7 +525,7 @@ define([
 			} else {
 				// Because if wrapping is not successful, we try again
 				// one level down.
-				Dom.walk(node.firstChild, function (node) {
+				Traversing.walk(node.firstChild, function (node) {
 					ensureWrapper(node, createWrapper, isWrapper, isMergable, pruneContext, addContextValue, leftPoint, rightPoint);
 				});
 			}
@@ -635,7 +637,7 @@ define([
 		}
 
 		function clearOverrideRec(node) {
-			Dom.walkRec(node, clearOverrideRecStep);
+			Traversing.walkRec(node, clearOverrideRecStep);
 		}
 
 		function pushDownOverride(node, override) {
@@ -653,7 +655,7 @@ define([
 			if (isContextOverride(override)) {
 				return;
 			}
-			Dom.walk(node.firstChild, clearOverrideRec);
+			Traversing.walk(node.firstChild, clearOverrideRec);
 			wrapContextValue(node, contextValue);
 		}
 
