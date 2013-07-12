@@ -9,11 +9,13 @@
  */
 define([
 	'dom',
+	'traversing',
 	'functions',
 	'arrays',
 	'cursors'
 ], function RangeUtilities(
 	Dom,
+	Traversing,
 	Fn,
 	Arrays,
 	Cursors
@@ -34,11 +36,11 @@ define([
 	 * @return {Range}
 	 */
 	function extendToWord(range) {
-		var behind = Dom.findWordBoundaryBehind(
+		var behind = Traversing.findWordBoundaryBehind(
 			range.startContainer,
 			range.startOffset
 		);
-		var ahead = Dom.findWordBoundaryAhead(
+		var ahead = Traversing.findWordBoundaryAhead(
 			range.endContainer,
 			range.endOffset
 		);
