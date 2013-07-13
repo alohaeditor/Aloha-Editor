@@ -6,9 +6,11 @@
  */
 define([
 	'dom',
+	'html',
 	'functions'
 ], function TraversingUtilities(
 	Dom,
+	Html,
 	Fn
 ) {
 	'use strict';
@@ -193,6 +195,12 @@ define([
 	 * @return position.offset
 	 */
 	function findWordBoundaryBehind(node, offset) {
+		if (Html.isEditingHost(node)) {
+			return {
+				node: node,
+				offset: offset
+			};
+		}
 		if (Dom.Nodes.TEXT_NODE === node.nodeType) {
 			var boundary = node.data.substr(0, offset)
 			                   .search(WORD_BOUNDARY_FROM_END);
@@ -238,6 +246,12 @@ define([
 	 * @return position.offset
 	 */
 	function findWordBoundaryAhead(node, offset) {
+		if (Html.isEditingHost(node)) {
+			return {
+				node: node,
+				offset: offset
+			};
+		}
 		if (Dom.Nodes.TEXT_NODE === node.nodeType) {
 			var boundary = node.data.substr(offset).search(WORD_BOUNDARY);
 			return (

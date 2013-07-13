@@ -81,12 +81,16 @@ define([
 	}
 
 	/**
-	 * From engine.js:
-	 * "An editing host is a node that is either an Element with a contenteditable
-	 * attribute set to the true state, or the Element child of a Document whose
-	 * designMode is enabled."
+	 * Checks whether the given node is content editable.  An editing host is a
+	 * node that is either an Element with a contenteditable attribute set to
+	 * the true state, or the Element child of a Document whose designMode is
+	 * enabled.
+	 *
 	 * The check for design mode was removed because we only care about
 	 * contenteditable in Aloha.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean} `true` of `node` is content editable.
 	 */
 	function isEditingHost(node) {
 		return 1 === node.nodeType && 'true' === node.contentEditable;
