@@ -53,7 +53,7 @@ define(['dom'], function CursorAPI(Dom) {
 	Cursor.prototype.next = function () {
 		var node = this.node;
 		var next;
-		if (this.atEnd || Dom.Nodes.ELEMENT_NODE !== node.nodeType) {
+		if (this.atEnd || Dom.Nodes.ELEMENT !== node.nodeType) {
 			next = node.nextSibling;
 			if (next) {
 				this.atEnd = false;
@@ -89,7 +89,7 @@ define(['dom'], function CursorAPI(Dom) {
 		} else {
 			prev = node.previousSibling;
 			if (prev) {
-				if (Dom.Nodes.ELEMENT_NODE === node.nodeType) {
+				if (Dom.Nodes.ELEMENT === node.nodeType) {
 					this.atEnd = true;
 				}
 			} else {

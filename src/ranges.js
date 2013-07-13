@@ -172,7 +172,7 @@ define([
 		// cursor starts before the node, which is what
 		// cursorFromBoundaryPoint() does automatically.
 		if (backwards
-				&& Dom.Nodes.TEXT_NODE === container.nodeType
+				&& Dom.Nodes.TEXT=== container.nodeType
 					&& offset > 0
 						&& offset < container.length) {
 			if (backwards ? cursor.next() : cursor.prev()) {
