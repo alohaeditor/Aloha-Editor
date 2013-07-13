@@ -86,14 +86,12 @@ define([], function FunctionUtilities() {
 	/**
 	 * Functions for working with functions.
 	 *
-	 * API:
-	 *
-	 * identity()
-	 * noop()
-	 * returnTrue()
-	 * returnFalse()
-	 * complement()
-	 * bind()
+	 * Functions.identity()
+	 * Functions.noop()
+	 * Functions.returnTrue()
+	 * Functions.returnFalse()
+	 * Functions.complement()
+	 * Functions.bind()
 	 */
 	var exports =  {
 		identity: identity,

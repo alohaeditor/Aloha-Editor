@@ -4,7 +4,7 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  */
-define([], function StringUtilities() {
+define([], function StringsAPI() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
@@ -117,11 +117,24 @@ define([], function StringUtilities() {
 		return '' === str || null == str;
 	}
 
-	return {
+	/**
+	 * High level string utility functions.
+	 *
+	 * API:
+	 *
+	 * Strings.words()
+	 * Strings.dashesToCamelCase()
+	 * Strings.camelCaseToDashes()
+	 * Strings.splitIncl()
+	 * Strings.empty()
+	 */
+	var api = {
 		words: words,
 		dashesToCamelCase: dashesToCamelCase,
 		camelCaseToDashes: camelCaseToDashes,
 		splitIncl: splitIncl,
 		empty: empty
 	};
+
+	return api;
 });

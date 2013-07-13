@@ -408,7 +408,10 @@ define([
 		return (/[\x00-\x1f\x7f-\x9f]/).test(chr);
 	}
 
-	return {
+	/**
+	 * Function to work with HTML content.
+	 */
+	var exports = {
 		isControlCharacter: isControlCharacter,
 		isStyleInherited: isStyleInherited,
 		isBlockType: isBlockType,
@@ -423,4 +426,6 @@ define([
 		isEmpty: isEmpty,
 		isEditingHost: isEditingHost
 	};
+
+	return exports;
 });

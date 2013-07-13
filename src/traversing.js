@@ -432,8 +432,6 @@ define([
 	/**
 	 * DOM traversal functions.
 	 *
-	 * API:
-	 *
 	 * Traversing.nextWhile()
 	 * Traversing.prevWhile()
 	 * Traversing.walk()

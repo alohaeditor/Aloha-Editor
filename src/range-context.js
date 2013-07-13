@@ -1169,9 +1169,18 @@ define([
 		});
 	}
 
-	return {
+	/**
+	 * High level editing functions.
+	 *
+	 * Editing.wrap()
+	 * Editing.format()
+	 * Editing.split()
+	 */
+	var exports = {
 		wrap: wrapElem,
 		format: format,
 		split: split
 	};
+
+	return exports;
 });

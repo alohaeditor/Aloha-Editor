@@ -4,7 +4,7 @@ define([
 	'cursors',
 	'arrays',
 	'strings'
-], function (
+], function BoundaryMarkersUtilities(
 	Dom,
 	Traversing,
 	Cursors,
@@ -12,6 +12,10 @@ define([
 	Strings
 ) {
 	'use strict';
+
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('BoundaryMarkers');
+	}
 
 	/**
 	 * Insert selection markers at the given range.
