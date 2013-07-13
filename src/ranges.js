@@ -172,7 +172,7 @@ define([
 		// cursor starts before the node, which is what
 		// cursorFromBoundaryPoint() does automatically.
 		if (backwards
-				&& Dom.Nodes.TEXT=== container.nodeType
+				&& Dom.Nodes.TEXT === container.nodeType
 					&& offset > 0
 						&& offset < container.length) {
 			if (backwards ? cursor.next() : cursor.prev()) {
@@ -441,42 +441,90 @@ define([
 	}
 
 	/**
+	 * Insert the given text at the given range.
+	 *
+	 * @param {Range} range
+	 * @param {String} text
+	 *        The text to insert.
+	 * @return {Range}
+	 *         The given range at which the text was inserted.  If text is
+	 *         inserted, this range will have been modified.
+	 */
+	function insertText(range, text) {
+		// Because empty text nodes are generally not nice and even cause
+		// problems with IE8 (elem.childNodes).
+		if (!text.length) {
+			return range;
+		}
+		var node = Dom.nodeAtOffset(range.startContainer, range.startOffset);
+		var atEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
+		// Because if the node following the insert position is already a text
+		// node we can just reuse it.
+		if (!atEnd && Dom.Nodes.TEXT === node.nodeType) {
+			var offset = Dom.Nodes.TEXT === range.startContainer.nodeType
+			           ? range.startOffset
+			           : 0;
+			node.insertData(offset, text);
+			range.setStart(node, offset);
+			range.setEnd(node, offset + text.length);
+			return range;
+		}
+		// Because if the node preceding the insert position is already a text
+		// node we can just reuse it.
+		var prev = atEnd ? node.lastChild : node.previousSibling;
+		if (prev && Dom.Nodes.TEXT === prev.nodeType) {
+			prev.insertData(prev.length, text);
+			range.setStart(prev, prev.length - text.length);
+			range.setEnd(prev, prev.length);
+			return range;
+		}
+		// Because if we can't reuse any text nodes, we have to insert a new
+		// one.
+		var textNode = document.createTextNode(text);
+		Dom.insert(textNode, node, atEnd);
+		range.setStart(textNode, 0);
+		range.setEnd(textNode, textNode.length);
+	}
+
+	/**
 	 * Functions to work with browser ranges.
 	 *
 	 * API:
 	 *
-	 * Ranges.get()
+	 * Ranges.collapseToEnd()
 	 * Ranges.create()
-	 * Ranges.select()
+	 * Ranges.equal()
+	 * Ranges.expandBoundaries()
 	 * Ranges.extendToWord()
-	 * Ranges.setFromReference()
-	 * Ranges.setStartFromCursor()
+	 * Ranges.get()
+	 * Ranges.insertText()
+	 * Ranges.select()
 	 * Ranges.setEndFromCursor()
 	 * Ranges.setFromBoundaries()
+	 * Ranges.setFromReference()
+	 * Ranges.setStartFromCursor()
 	 * Ranges.stableRange()
 	 * Ranges.trim()
-	 * Ranges.trimClosingOpening()
 	 * Ranges.trimBoundaries()
-	 * Ranges.expandBoundaries()
-	 * Ranges.equal()
-	 * Ranges.collapseToEnd()
+	 * Ranges.trimClosingOpening()
 	 */
 	var exports = {
-		get: get,
+		collapseToEnd: collapseToEnd,
 		create: create,
-		select: select,
+		equal: equal,
+		expandBoundaries: expandBoundaries,
 		extendToWord: extendToWord,
-		setFromReference: setFromReference,
-		setStartFromCursor: setStartFromCursor,
+		get: get,
+		insertText: insertText,
+		select: select,
 		setEndFromCursor: setEndFromCursor,
 		setFromBoundaries: setFromBoundaries,
+		setFromReference: setFromReference,
+		setStartFromCursor: setStartFromCursor,
 		stableRange: stableRange,
 		trim: trim,
-		trimClosingOpening: trimClosingOpening,
 		trimBoundaries: trimBoundaries,
-		expandBoundaries: expandBoundaries,
-		equal: equal,
-		collapseToEnd: collapseToEnd
+		trimClosingOpening: trimClosingOpening
 	};
 
 	return exports;

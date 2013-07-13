@@ -347,6 +347,14 @@ define([
 		return index;
 	}
 
+	/**
+	 * Whether or not the given node and offset describes a position after the
+	 * last child node or character in its container.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Number} offset
+	 * @return {Boolean}
+	 */
 	function isAtEnd(node, offset) {
 		return (Nodes.ELEMENT === node.nodeType
 				&& offset >= nodeLength(node))
@@ -383,8 +391,8 @@ define([
 	/**
 	 * Wraps node `node` in given node `wrapper`.
 	 *
-	 * @param {DomElement} node
-	 * @param {DomElement} wrapper
+	 * @param {DOMObject} node
+	 * @param {DOMObject} wrapper
 	 */
 	function wrap(node, wrapper) {
 		node.parentNode.replaceChild(wrapper, node);
@@ -395,8 +403,8 @@ define([
 	 * Inserts node `node` before `ref`, unless `atEnd` is truthy, in which case
 	 * `node` is inserted at the end of `ref` children nodes.
 	 *
-	 * @param {DomElement} node
-	 * @param {DomElement} ref
+	 * @param {DOMObject} node
+	 * @param {DOMObject} ref
 	 * @param {Boolean} atEnd
 	 */
 	function insert(node, ref, atEnd) {
@@ -470,8 +478,8 @@ define([
 	 * http://ejohn.org/blog/comparing-document-position/
 	 * http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
 	 *
-	 * @param {DomElement} a
-	 * @param {DomElement} b
+	 * @param {DOMObject} a
+	 * @param {DOMObject} b
 	 * @return {Boolean}
 	 */
 	function contains(a, b) {
@@ -485,7 +493,7 @@ define([
 	/**
 	 * Returns `true` if `node` is a text node.
 	 *
-	 * @param {DomElement} node
+	 * @param {DOMObject} node
 	 * @return {Boolean}
 	 */
 	function isTextNode(node) {
@@ -500,11 +508,11 @@ define([
 	 * @TODO: could be optimized with insertData() so only a single text node is
 	 *        inserted instead of two.
 	 *
-	 * @param {DomElement} node
+	 * @param {DOMObject} node
 	 *        DOM text node.
 	 * @param {Number} offset
 	 *        Number between 0 and the length of text of `node`.
-	 * @return {DomElement}
+	 * @return {DOMObject}
 	 */
 	function splitTextNode(node, offset) {
 		// Because node.splitText() is buggy on IE, split it manually.
@@ -555,7 +563,7 @@ define([
 	 * @private
 	 * @param {Range} range
 	 *        Range objec to modify.
-	 * @param {DomElement} container
+	 * @param {DOMObject} container
 	 *        DOM element to set as the start container.
 	 * @param {Number} offset
 	 *        The offset into `container`.
@@ -571,7 +579,7 @@ define([
 	 * @private
 	 * @param {Range} range
 	 *        Range objec to modify.
-	 * @param {DomElement} container
+	 * @param {DOMObject} container
 	 *        DOM element to set as the end container.
 	 * @param {Number} offset
 	 *        The offset into `container`.
@@ -652,6 +660,13 @@ define([
 		}
 	}
 
+	/**
+	 * Splits text containers in the given range.
+	 *
+	 * @param {Range} range
+	 * @return {Range}
+	 *         The given range, potentially adjusted.
+	 */
 	function splitTextContainers(range) {
 		var sc = range.startContainer;
 		var so = range.startOffset;
@@ -660,6 +675,7 @@ define([
 		var ec = range.endContainer;
 		var eo = range.endOffset;
 		splitTextNodeAdjustRange(ec, eo, range);
+		return range;
 	}
 
 	function joinTextNodeOneWay(node, sibling, range, prev) {
@@ -683,12 +699,21 @@ define([
 		return sibling;
 	}
 
+	/**
+	 * Joins the given node with its adjacent sibling.
+	 *
+	 * @param {DOMElement} A text node
+	 * @param {Range} range
+	 * @return {Range}
+	 *         The given range, modified if necessary.
+	 */
 	function joinTextNodeAdjustRange(node, range) {
 		if (Nodes.TEXT !== node.nodeType) {
-			return;
+			return range;
 		}
 		node = joinTextNodeOneWay(node, node.previousSibling, range, true);
 		joinTextNodeOneWay(node, node.nextSibling, range, false);
+		return range;
 	}
 
 	function removePreservingRanges(node, ranges) {
@@ -740,45 +765,6 @@ define([
 		removeShallow(node);
 	}
 
-	function insertSelectText(text, range) {
-		// Because empty text nodes are generally not nice and even
-		// cause problems with IE8 (elem.childNodes).
-		if (!text.length) {
-			return;
-		}
-		var node = nodeAtOffset(range.startContainer, range.startOffset);
-		var atEnd = isAtEnd(range.startContainer, range.startOffset);
-		// Because if the node following the insert position is already
-		// a text node we can just reuse it.
-		if (!atEnd && Nodes.TEXT === node.nodeType) {
-			var offset = (Nodes.TEXT === range.startContainer.nodeType ? range.startOffset : 0);
-			node.insertData(offset, text);
-			range.setStart(node, offset);
-			range.setEnd(node, offset + text.length);
-			return;
-		}
-		// Because if the node preceding the insert position is already
-		// a text node we can just reuse it.
-		var prev;
-		if (!atEnd) {
-			prev = node.previousSibling;
-		} else {
-			prev = node.lastChild;
-		}
-		if (prev && Nodes.TEXT === prev.nodeType) {
-			prev.insertData(prev.length, text);
-			range.setStart(prev, prev.length - text.length);
-			range.setEnd(prev, prev.length);
-			return;
-		}
-		// Because if we can't reuse any text nodes, we have to insert a
-		// new one.
-		var textNode = document.createTextNode(text);
-		insert(textNode, node, atEnd);
-		range.setStart(textNode, 0);
-		range.setEnd(textNode, textNode.length);
-	}
-
 	function cloneShallow(node) {
 		return node.cloneNode(false);
 	}
@@ -824,7 +810,7 @@ define([
 	/**
 	 * Removes the given style property from the given DOM element.
 	 *
-	 * @param {DomElement} elem
+	 * @param {DOMObject} elem
 	 * @param {String} styleName
 	 */
 	function removeStyle(elem, styleName) {
@@ -859,6 +845,12 @@ define([
 		}
 	}
 
+	/**
+	 * Checks whether or not the given node contains one or more attributes.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Boolean}
+	 */
 	function hasAttrs(node) {
 		return !Arrays.every(attrs(node).map(Arrays.second), Strings.empty);
 	}
@@ -916,7 +908,10 @@ define([
 		return changeClassNames(node, value, removeFromList);
 	}
 
-	return {
+	/**
+	 * Function for working with the DOM.
+	 */
+	var exports = {
 		addClass: addClass,
 		removeClass: removeClass,
 		removeStyle: removeStyle,
@@ -949,7 +944,6 @@ define([
 		splitTextNodeAdjustRange: splitTextNodeAdjustRange,
 		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
 		contains: contains,
-		insertSelectText: insertSelectText,
 		cloneShallow: cloneShallow,
 		setStyle: setStyle,
 		getStyle: getStyle,
@@ -958,4 +952,6 @@ define([
 		nodeLength: nodeLength,
 		Nodes: Nodes
 	};
+
+	return exports;
 });
