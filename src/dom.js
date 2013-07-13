@@ -376,19 +376,6 @@ define([
 	}
 
 	/**
-	 * @private
-	 */
-	function remove(node) {
-		node.parentNode.removeChild(node);
-	}
-
-	function removeShallow(node) {
-		var parent = node.parentNode;
-		moveNextAll(parent, node.firstChild, node);
-		parent.removeChild(node);
-	}
-
-	/**
 	 * Wraps node `node` in given node `wrapper`.
 	 *
 	 * @param {DOMObject} node
@@ -415,12 +402,36 @@ define([
 		}
 	}
 
+	/**
+	 * Replaces the given node with a new node while preserving the contents of
+	 * the given node.
+	 *
+	 * This function facilitates re-wrapping of contents from one node to
+	 * another.
+	 *
+	 * @param {DOMObject} node
+	 *        The node to be removed.
+	 * @param {DOMObject} withNode
+	 *        The tag that will replace `node` and contain all of the original
+	 *        node's content.
+	 */
 	function replaceShallow(node, withNode) {
 		moveNextAll(withNode, node.firstChild, null);
 		insert(withNode, node);
 		remove(node);
 	}
 
+	/**
+	 * Traverses up the given node's ancestors, searching for the first ancestor
+	 * that matches the given predicate.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} pred
+	 *        Predicate function which will receive nodes as they are traversed.
+	 *        This function returns `true`, it will terminate the traversal.
+	 * @return {DOMObject}
+	 *         A parent element of the given node.
+	 */
 	function parentsUntil(node, pred) {
 		var parents = [];
 		var parent = node.parentNode;
@@ -431,6 +442,17 @@ define([
 		return parents;
 	}
 
+	/**
+	 * Starting with the given node, traverses up the given node's ancestors,
+	 * searching for the first ancestor that matches the given predicate.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} pred
+	 *        Predicate function which will receive nodes as they are traversed.
+	 *        This function returns `true`, it will terminate the traversal.
+	 * @return {DOMObject}
+	 *         A parent element of the given node.
+	 */
 	function parentsUntilIncl(node, pred) {
 		var parents = parentsUntil(node, pred);
 		var topmost = parents.length ? parents[parents.length - 1] : node;
@@ -716,6 +738,30 @@ define([
 		return range;
 	}
 
+	/**
+	 * @private
+	 */
+	function remove(node) {
+		node.parentNode.removeChild(node);
+	}
+
+	/**
+	 * Removes the given node while keeping it's content intact.
+	 *
+	 * @param {DOMObject} node
+	 */
+	function removeShallow(node) {
+		var parent = node.parentNode;
+		moveNextAll(parent, node.firstChild, node);
+		parent.removeChild(node);
+	}
+
+	/**
+	 * Removes the given node while maintaing the given ranges.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Array[Range]} ranges
+	 */
 	function removePreservingRanges(node, ranges) {
 		var range;
 		// Because the range may change due to the DOM modification
@@ -734,11 +780,33 @@ define([
 		var nidx = nodeIndex(node);
 		parentNode.removeChild(node);
 		for (i = 0; i < boundaries.length; i += 5) {
-			adjustBoundaryPointAfterRemove(boundaries[i + 1], boundaries[i + 2], boundaries[i], setRangeStart, node, parentNode, nidx);
-			adjustBoundaryPointAfterRemove(boundaries[i + 3], boundaries[i + 4], boundaries[i], setRangeEnd, node, parentNode, nidx);
+			adjustBoundaryPointAfterRemove(
+				boundaries[i + 1],
+				boundaries[i + 2],
+				boundaries[i],
+				setRangeStart,
+				node,
+				parentNode,
+				nidx
+			);
+			adjustBoundaryPointAfterRemove(
+				boundaries[i + 3],
+				boundaries[i + 4],
+				boundaries[i],
+				setRangeEnd,
+				node,
+				parentNode,
+				nidx
+			);
 		}
 	}
 
+	/**
+	 * Removes the given node while maintaing the given range.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Range} range
+	 */
 	function removePreservingRange(node, range) {
 		removePreservingRanges(node, [range]);
 	}
@@ -760,11 +828,25 @@ define([
 		}
 	}
 
+	/**
+	 * Does a shallow removal of the given node (see removeShallow()), while
+	 * preserving the range boundary points.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Array[Cursor]} points
+	 */
 	function removeShallowPreservingBoundaries(node, points) {
 		preserveBoundaries(node, points, preservePointForShallowRemove);
 		removeShallow(node);
 	}
 
+	/**
+	 * Returns a shallow clone of the given node.
+	 *
+	 * @param {DOMObject} node
+	 * @return {DOMObject}
+	 *         Clone of `node`.
+	 */
 	function cloneShallow(node) {
 		return node.cloneNode(false);
 	}
