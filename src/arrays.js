@@ -198,8 +198,6 @@ define(['functions'], function ArrayUtilities(Fn) {
 	/**
 	 * Functions for operating on arrays.
 	 *
-	 * API:
-	 *
 	 * Arrays.some()
 	 * Arrays.every()
 	 * Arrays.contains()

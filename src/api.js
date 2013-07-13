@@ -12,7 +12,7 @@ define([
 	'ranges',
 	'strings',
 	'traversing'
-], function API(
+], function AlohaAPI(
 	Arrays,
 	Browser,
 	Content,

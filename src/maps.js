@@ -137,8 +137,6 @@ define([], function MapsUtilities() {
 	/**
 	 * Functions to work with maps (plain old objects).
 	 *
-	 * API:
-	 *
 	 * Maps.isEmpty()
 	 * Maps.fillTuples()
 	 * Maps.fillKeys()
