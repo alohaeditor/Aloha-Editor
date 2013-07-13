@@ -226,7 +226,7 @@ define([
 	 * recurse to this function, if that is more convenient.
 	 */
 	function markElement(elem) {
-		$(elem).addClass('aloha-ephemera');
+		Dom.addClass(elem, 'aloha-ephemera');
 	}
 
 	/**
@@ -246,15 +246,14 @@ define([
 	 * function, if that is more convenient.
 	 */
 	function markAttr(elem, attr) {
-		elem = $(elem);
-		var data = elem.attr('data-aloha-ephemera-attr');
+		var data = $(elem).attr('data-aloha-ephemera-attr');
 		if (null == data || '' === data) {
 			data = attr;
 		} else if (-1 === Strings.words(data).indexOf(attr)) {
 			data += ' ' + attr;
 		}
-		elem.attr('data-aloha-ephemera-attr', data);
-		elem.addClass('aloha-ephemera-attr');
+		$(elem).attr('data-aloha-ephemera-attr', data);
+		Dom.addClass(elem, 'aloha-ephemera-attr');
 	}
 
 	/**
@@ -282,7 +281,7 @@ define([
 	 *     a single _non-ephemeral_ element.
 	 */
 	function markWrapper(elem) {
-		$(elem).addClass('aloha-ephemera-wrapper');
+		Dom.addClass(elem, 'aloha-ephemera-wrapper');
 	}
 
 	/**
@@ -296,7 +295,7 @@ define([
 	 * See wrapper()
 	 */
 	function markFiller(elem) {
-		$(elem).addClass('aloha-ephemera-filler');
+		Dom.addClass(elem, 'aloha-ephemera-filler');
 	}
 
 	/**
