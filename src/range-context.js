@@ -209,7 +209,7 @@ define([
 			return null;
 		}
 		var cac = range.commonAncestorContainer;
-		if (Dom.Nodes.TEXT_NODE === cac.nodeType) {
+		if (Dom.Nodes.TEXT === cac.nodeType) {
 			cac = cac.parentNode;
 		}
 		function untilIncl(node) {
@@ -341,7 +341,7 @@ define([
 		var fromCacToContext = Dom.childAndParentsUntilIncl(cac, function (node) {
 			// Because we shouldn't expect hasContext to handle the
 			// document element (which has nodeType 9).
-			return !node.parentNode || Dom.Nodes.DOCUMENT_ELEMENT === node.parentNode.nodeType || hasInheritableContext(node);
+			return !node.parentNode || Dom.Nodes.DOCUMENT === node.parentNode.nodeType || hasInheritableContext(node);
 		});
 		fromCacToContext.forEach(function (node) {
 			upperBoundaryAndAbove = upperBoundaryAndAbove || isUpperBoundary(node);
@@ -476,7 +476,7 @@ define([
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
-		if (Dom.Nodes.ELEMENT_NODE !== node.nodeType || !ignoreVertical(node)) {
+		if (Dom.Nodes.ELEMENT !== node.nodeType || !ignoreVertical(node)) {
 			return null;
 		}
 		var maybeContext = Traversing.nextWhile(node.firstChild, ignoreHorizontal);

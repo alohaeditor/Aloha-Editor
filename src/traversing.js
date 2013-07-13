@@ -201,7 +201,7 @@ define([
 				offset: offset
 			};
 		}
-		if (Dom.Nodes.TEXT_NODE === node.nodeType) {
+		if (Dom.Nodes.TEXT === node.nodeType) {
 			var boundary = node.data.substr(0, offset)
 			                   .search(WORD_BOUNDARY_FROM_END);
 			return (
@@ -216,7 +216,7 @@ define([
 					}
 			);
 		}
-		if (Dom.Nodes.ELEMENT_NODE === node.nodeType) {
+		if (Dom.Nodes.ELEMENT === node.nodeType) {
 			if (offset > 0) {
 				var child = node.childNodes[offset - 1];
 				return (
@@ -252,7 +252,7 @@ define([
 				offset: offset
 			};
 		}
-		if (Dom.Nodes.TEXT_NODE === node.nodeType) {
+		if (Dom.Nodes.TEXT === node.nodeType) {
 			var boundary = node.data.substr(offset).search(WORD_BOUNDARY);
 			return (
 				-1 === boundary
@@ -266,7 +266,7 @@ define([
 					}
 			);
 		}
-		if (Dom.Nodes.ELEMENT_NODE === node.nodeType) {
+		if (Dom.Nodes.ELEMENT === node.nodeType) {
 			if (offset < Dom.nodeLength(node)) {
 				return (
 					IN_WORD_TAGS[node.childNodes[offset].nodeName]
@@ -400,7 +400,7 @@ define([
 	 * Depth-first postwalk of the given DOM node.
 	 */
 	function walkRec(node, fn, arg) {
-		if (Dom.Nodes.ELEMENT_NODE === node.nodeType) {
+		if (Dom.Nodes.ELEMENT === node.nodeType) {
 			walk(node.firstChild, function (node) {
 				walkRec(node, fn, arg);
 			});

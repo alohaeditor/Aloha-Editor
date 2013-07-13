@@ -278,14 +278,23 @@ define([
 	}
 
 	/**
-	 * Node types.
+	 * Numeric codes that represent the type of DOM interface node types.
 	 *
 	 * @type {object}
 	 */
 	var Nodes = {
-		ELEMENT_NODE: 1,
-		TEXT_NODE: 3,
-		DOCUMENT_ELEMENT: 9
+		ELEMENT: 1,
+		ATTR: 2,
+		TEXT: 3,
+		CDATA_SECTION: 4,
+		ENTITY_REFERENCE: 5,
+		ENTITY: 6,
+		PROCESSING_INSTRUCTION: 7,
+		COMMENT: 8,
+		DOCUMENT: 9,
+		DOCUMENTTYPE: 10,
+		DOCUMENT_FRAGMENT: 11,
+		NOTATION: 12
 	};
 
 	/**
@@ -314,10 +323,10 @@ define([
 	 * @return {Number} Length of the given node.
 	 */
 	function nodeLength(node) {
-		if (Nodes.ELEMENT_NODE === node.nodeType) {
+		if (Nodes.ELEMENT === node.nodeType) {
 			return numChildren(node);
 		}
-		if (Nodes.TEXT_NODE === node.nodeType) {
+		if (Nodes.TEXT === node.nodeType) {
 			return node.length;
 		}
 		return 0;
@@ -340,9 +349,9 @@ define([
 	}
 
 	function isAtEnd(node, offset) {
-		return (Nodes.ELEMENT_NODE === node.nodeType
+		return (Nodes.ELEMENT === node.nodeType
 				&& offset >= nodeLength(node))
-			|| (Nodes.TEXT_NODE === node.nodeType
+			|| (Nodes.TEXT === node.nodeType
 				&& offset === node.length
 				&& !node.nextSibling);
 	}
@@ -351,9 +360,9 @@ define([
 	 * @param node if a text node, should have a parent node.
 	 */
 	function nodeAtOffset(node, offset) {
-		if (Nodes.ELEMENT_NODE === node.nodeType && offset < nodeLength(node)) {
+		if (Nodes.ELEMENT === node.nodeType && offset < nodeLength(node)) {
 			node = node.childNodes[offset];
-		} else if (Nodes.TEXT_NODE === node.nodeType && offset === node.length) {
+		} else if (Nodes.TEXT === node.nodeType && offset === node.length) {
 			node = node.nextSibling || node.parentNode;
 		}
 		return node;
@@ -467,7 +476,7 @@ define([
 	 * @return {Boolean}
 	 */
 	function contains(a, b) {
-		return (Nodes.ELEMENT_NODE === a.nodeType
+		return (Nodes.ELEMENT === a.nodeType
 				? (a.contains
 				   ? a != b && a.contains(b)
 				   : !!(a.compareDocumentPosition(b) & 16))
@@ -481,7 +490,7 @@ define([
 	 * @return {Boolean}
 	 */
 	function isTextNode(node) {
-		return Nodes.TEXT_NODE === node.nodeType;
+		return Nodes.TEXT === node.nodeType;
 	}
 
 	/**
@@ -528,7 +537,7 @@ define([
 	 * @private
 	 */
 	function normalizeSetRange(setRange, range, container, offset) {
-		if (Nodes.TEXT_NODE === container.nodeType && container.parentNode) {
+		if (Nodes.TEXT === container.nodeType && container.parentNode) {
 			if (!offset) {
 				offset = nodeIndex(container);
 				container = container.parentNode;
@@ -628,7 +637,7 @@ define([
 	 * at the same position in the new text nodes.
 	 */
 	function splitTextNodeAdjustRange(splitNode, splitOffset, range) {
-		if (Nodes.TEXT_NODE !== splitNode.nodeType) {
+		if (Nodes.TEXT !== splitNode.nodeType) {
 			return;
 		}
 		// Because the range may change due to the DOM modification
@@ -655,7 +664,7 @@ define([
 	}
 
 	function joinTextNodeOneWay(node, sibling, range, prev) {
-		if (!sibling || Nodes.TEXT_NODE !== sibling.nodeType) {
+		if (!sibling || Nodes.TEXT !== sibling.nodeType) {
 			return node;
 		}
 		// Because the range may change due to the DOM modication
@@ -676,7 +685,7 @@ define([
 	}
 
 	function joinTextNodeAdjustRange(node, range) {
-		if (Nodes.TEXT_NODE !== node.nodeType) {
+		if (Nodes.TEXT !== node.nodeType) {
 			return;
 		}
 		node = joinTextNodeOneWay(node, node.previousSibling, range, true);
@@ -742,8 +751,8 @@ define([
 		var atEnd = isAtEnd(range.startContainer, range.startOffset);
 		// Because if the node following the insert position is already
 		// a text node we can just reuse it.
-		if (!atEnd && Nodes.TEXT_NODE === node.nodeType) {
-			var offset = (Nodes.TEXT_NODE === range.startContainer.nodeType ? range.startOffset : 0);
+		if (!atEnd && Nodes.TEXT === node.nodeType) {
+			var offset = (Nodes.TEXT === range.startContainer.nodeType ? range.startOffset : 0);
 			node.insertData(offset, text);
 			range.setStart(node, offset);
 			range.setEnd(node, offset + text.length);
@@ -757,7 +766,7 @@ define([
 		} else {
 			prev = node.lastChild;
 		}
-		if (prev && Nodes.TEXT_NODE === prev.nodeType) {
+		if (prev && Nodes.TEXT === prev.nodeType) {
 			prev.insertData(prev.length, text);
 			range.setStart(prev, prev.length - text.length);
 			range.setEnd(prev, prev.length);
@@ -790,7 +799,7 @@ define([
 	function getStyle(node, name) {
 		// Because IE7 needs dashesToCamelCase().
 		name = Strings.dashesToCamelCase(name);
-		return node.nodeType === Nodes.ELEMENT_NODE ? node.style[name] : null;
+		return node.nodeType === Nodes.ELEMENT ? node.style[name] : null;
 	}
 
 	/**

@@ -3,9 +3,6 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
- *
- * @TODO:
- * 	Normalize between blockTypeNodes and BLOCK_ELEMENTS
  */
 define([
 	'dom',
@@ -20,8 +17,13 @@ define([
 ) {
 	'use strict';
 
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Html');
+	}
+
 	/**
-	 * White space characters as defined by HTML 4 (http://www.w3.org/TR/html401/struct/text.html)
+	 * White space characters as defined by HTML 4
+	 * (http://www.w3.org/TR/html401/struct/text.html)
 	 *
 	 * @type {RegExp}
 	 */
@@ -34,50 +36,119 @@ define([
 		'none'			: true
 	};
 
-	var blockTypeNodes = {
-		P			: true,
-		H1			: true,
-		H2			: true,
-		H3			: true,
-		H4			: true,
-		H5			: true,
-		H6			: true,
-		OL			: true,
-		UL			: true,
-		PRE			: true,
-		ADDRESS		: true,
-		BLOCKQUOTE	: true,
-		DL			: true,
-		DIV			: true,
-		FIELDSET	: true,
-		FORM		: true,
-		HR			: true,
-		NOSCRIPT	: true,
-		TABLE		: true
+	/**
+	 * A map of node tag names which are classified as block-level element.
+	 *
+	 * NB: "block-level" is not technically defined for elements that are new in
+	 * HTML5.
+	 *
+	 * @type {Object}
+	 */
+	var BLOCK_LEVEL_ELEMENTS = {
+		ADDRESS    : true,
+		ARTICLE    : true, // HTML5
+		ASIDE      : true, // HTML5
+		AUDIO      : true, // HTML5
+		BLOCKQUOTE : true,
+		CANVAS     : true, // HTML5
+		DD         : true,
+		DIV        : true,
+		DL         : true,
+		FIELDSET   : true,
+		FIGCAPTION : true,
+		FIGURE     : true,
+		FOOTER     : true,
+		FORM       : true,
+		H1         : true,
+		H2         : true,
+		H3         : true,
+		H4         : true,
+		H5         : true,
+		H6         : true,
+		HEADER     : true,
+		HGROUP     : true,
+		HR         : true,
+		NOSCRIPT   : true,
+		OL         : true,
+		OUTPUT     : true,
+		P          : true,
+		PRE        : true,
+		SECTION    : true, // HTML5
+		TABLE      : true,
+		TFOOT      : true,
+		UL         : true,
+		VIDEO      : true  // HTML5
 	};
 
 	/**
-	 * From engine.js
-	 * "A block node is either an Element whose "display" property does not have
-	 * resolved value "inline" or "inline-block" or "inline-table" or "none", or a
-	 * Document, or a DocumentFragment."
-	 * Note that this function depends on style inheritance which only
-	 * works if the given node is attached to the document.
+	 * Checks whether the given node is rendered with block style.
+	 *
+	 * A block node is either an Element whose "display" property does not have
+	 * resolved value "inline" or "inline-block" or "inline-table" or "none", or
+	 * a Document, or a DocumentFragment.
+	 *
+	 * Note that this function depends on style inheritance which only works if
+	 * the given node is attached to the document.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 *         True if the given node is rendered with block style.
 	 */
 	function hasBlockStyle(node) {
-		return node && ((node.nodeType == 1 && !nonBlockDisplayValuesMap[Dom.getComputedStyle(node, 'display')])
-						|| node.nodeType == 9
-						|| node.nodeType == 11);
+		if (!node) {
+			return false;
+		}
+		switch (node.nodeType) {
+		case Dom.Nodes.DOCUMENT:
+		case Dom.Nodes.DOCUMENT_FRAGMENT:
+			return true;
+		case Dom.Nodes.ELEMENT:
+			return !nonBlockDisplayValuesMap[Dom.getComputedStyle(node, 'display')];
+		default:
+			return false;
+		}
 	}
 
 	/**
-	 * From engine.js:
-	 * "An inline node is a node that is not a block node."
-	 * Note that this function depends on style inheritance which only
-	 * works if the given node is attached to the document.
+	 * Checks whether the given node is rendered with inline style.
+	 *
+	 * An inline node is a node that is not a block node.
+	 *
+	 * Note that this function depends on style inheritance which only works if
+	 * the given node is attached to the document.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 *         True if the given node is rendered with inline style.
 	 */
 	function hasInlineStyle(node) {
 		return !hasBlockStyle(node);
+	}
+
+	/**
+	 * Similar to hasBlockStyle() except relies on the nodeName of the given
+	 * node which works for attached as well as and detached nodes.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 *         True if the given node is a block node type--regardless of how it
+	 *         is rendered.
+	 */
+	function isBlockType(node) {
+		return BLOCK_LEVEL_ELEMENTS[node.nodeName];
+	}
+
+	/**
+	 * Similar to hasInlineStyle() in the same sense as isBlockType() is similar
+	 * to hasBlockStyle()
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 *         True if the given node is an inline node type--regardless of how
+	 *         it is rendered.
+	 */
+	function isInlineType(node) {
+		return !isBlockType(node);
 	}
 
 	/**
@@ -90,87 +161,20 @@ define([
 	 * contenteditable in Aloha.
 	 *
 	 * @param {DOMObject} node
-	 * @return {Boolean} `true` of `node` is content editable.
+	 * @return {Boolean}
+	 *         True if `node` is content editable.
 	 */
 	function isEditingHost(node) {
 		return 1 === node.nodeType && 'true' === node.contentEditable;
 	}
 
 	/**
-	 * Similar to hasBlockStyle() except relies on the nodeName of the
-	 * given node which works for attached as well as and detached
-	 * nodes.
-	 */
-	function isBlockType(node) {
-		return blockTypeNodes[node.nodeName];
-	}
-
-	/**
-	 * isInlineType() is similar to hasInlineStyle()
-	 * in the same sense as
-	 * isBlockType() is similar to hasBlockStyle()
-	 */
-	function isInlineType(node) {
-		return !isBlockType(node);
-	}
-
-	// NB: "block-level" is not technically defined for elements that are new in
-	// HTML5.
-	var BLOCKLEVEL_ELEMENTS = [
-		'address',
-		'article',    // HTML5
-		'aside',      // HTML5
-		'audio',      // HTML5
-		'blockquote',
-		'canvas',     // HTML5
-		'dd',
-		'div',
-		'dl',
-		'fieldset',
-		'figcaption',
-		'figure',
-		'footer',
-		'form',
-		'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-		'header',
-		'hgroup',
-		'hr',
-		'noscript',
-		'ol',
-		'output',
-		'p',
-		'pre',
-		'section',   // HTML5
-		'table',
-		'tfoot',
-		'ul',
-		'video'      // HTML5
-	];
-
-	/**
-	 * Map containing lowercase and uppercase tagnames of block element as keys
-	 * mapped against true.
+	 * Checks whether the given string represents a whitespace preservation
+	 * style property.
 	 *
-	 * @type {object<string, boolean>}
+	 * @param {String} string
+	 * @return {Boolean}
 	 */
-	var blocksTagnameMap = {};
-	Maps.fillKeys(blocksTagnameMap, BLOCKLEVEL_ELEMENTS, true);
-	Maps.fillKeys(
-		blocksTagnameMap,
-		BLOCKLEVEL_ELEMENTS.map(function (str) {
-			return str.toUpperCase();
-		}),
-		true
-	);
-
-	function isBlock(node) {
-		return blocksTagnameMap[node.nodeName];
-	}
-
-	function isIgnorableWhitespace(node) {
-		return 3 === node.nodeType && !node.length;
-	}
-
 	function isWhiteSpacePreserveStyle(cssWhiteSpaceValue) {
 		return (cssWhiteSpaceValue === 'pre'
 				|| cssWhiteSpaceValue === 'pre-wrap'
@@ -178,14 +182,17 @@ define([
 	}
 
 	/**
-	 * Returns true if the given node is unrendered whitespace, with the
-	 * caveat that it only examines the given node and not any siblings.
-	 * An additional check is necessary to determine whether the node
-	 * occurs after/before a linebreaking node.
+	 * Returns true if the given node is unrendered whitespace, with the caveat
+	 * that it only examines the given node and not any siblings.  An additional
+	 * check is necessary to determine whether the node occurs after/before a
+	 * linebreaking node.
 	 *
 	 * Taken from
 	 * http://code.google.com/p/rangy/source/browse/trunk/src/js/modules/rangy-cssclassapplier.js
 	 * under the MIT license.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
 	 */
 	function isUnrenderedWhitespaceNoBlockCheck(node) {
 		if (3 !== node.nodeType) {
@@ -225,10 +232,10 @@ define([
 	}
 
 	/**
-	 * Returns true if the node at point is unrendered, with the caveat
-	 * that it only examines the node at point and not any siblings.
-	 * An additional check is necessary to determine whether the
-	 * whitespace occurrs after/before a linebreaking node.
+	 * Returns true if the node at point is unrendered, with the caveat that it
+	 * only examines the node at point and not any siblings.  An additional
+	 * check is necessary to determine whether the whitespace occurrs
+	 * after/before a linebreaking node.
 	 */
 	function isUnrenderedAtPoint(point) {
 		return (isUnrenderedWhitespaceNoBlockCheck(point.node)
@@ -238,11 +245,15 @@ define([
 	}
 
 	/**
-	 * Tries to move the given point to the end of the line, stopping to
-	 * the left of a br or block node, ignoring any unrendered
-	 * nodes. Returns true if the point was successfully moved to the
-	 * end of the line, false if some rendered content was encountered
-	 * on the way. point will not be mutated unless true is returned.
+	 * Tries to move the given point to the end of the line, stopping to the
+	 * left of a br or block node, ignoring any unrendered nodes. Returns true
+	 * if the point was successfully moved to the end of the line, false if some
+	 * rendered content was encountered on the way. point will not be mutated
+	 * unless true is returned.
+	 *
+	 * @param {Cursor} point
+	 * @return {Boolean}
+	 *         True if the cursor is moved.
 	 */
 	function skipUnrenderedToEndOfLine(point) {
 		var cursor = point.clone();
@@ -255,11 +266,15 @@ define([
 	}
 
 	/**
-	 * Tries to move the given point to the start of the line, stopping
-	 * to the right of a br or block node, ignoring any unrendered
-	 * nodes. Returns true if the point was successfully moved to the
-	 * start of the line, false if some rendered content was encountered
-	 * on the way. point will not be mutated unless true is returned.
+	 * Tries to move the given point to the start of the line, stopping to the
+	 * right of a br or block node, ignoring any unrendered nodes. Returns true
+	 * if the point was successfully moved to the start of the line, false if
+	 * some rendered content was encountered on the way. point will not be
+	 * mutated unless true is returned.
+	 *
+	 * @param {Cursor} point
+	 * @return {Boolean}
+	 *         True if the cursor is moved.
 	 */
 	function skipUnrenderedToStartOfLine(point) {
 		var cursor = point.clone();
@@ -288,19 +303,22 @@ define([
 	}
 
 	/**
-	 * Tries to move the given boundary to the start of line, skipping
-	 * over any unrendered nodes, or if that fails to the end of line
-	 * (after a br element if present), and for the last line in a
-	 * block, to the very end of the block.
-	 *
-	 * If the selection is inside a block with only a single empty line
-	 * (empty except for unrendered nodes), and both boundary points are
-	 * normalized, the selection will be collapsed to the start of the
+	 * Tries to move the given boundary to the start of line, skipping over any
+	 * unrendered nodes, or if that fails to the end of line (after a br element
+	 * if present), and for the last line in a block, to the very end of the
 	 * block.
 	 *
-	 * For some operations it's useful to think of a block as a number
-	 * of lines, each including its respective br and any preceding and
-	 * following unrendered whitespace.
+	 * If the selection is inside a block with only a single empty line (empty
+	 * except for unrendered nodes), and both boundary points are normalized,
+	 * the selection will be collapsed to the start of the block.
+	 *
+	 * For some operations it's useful to think of a block as a number of lines,
+	 * each including its respective br and any preceding and following
+	 * unrendered whitespace.
+	 *
+	 * @param {Cursor} point
+	 * @return {Boolean}
+	 *         True if the cursor is moved.
 	 */
 	function normalizeBoundary(point) {
 		if (skipUnrenderedToStartOfLine(point)) {
@@ -311,10 +329,9 @@ define([
 		}
 		if ('BR' === point.node.nodeName) {
 			point.skipNext();
-			// Because, if this is the last line in a block, any
-			// unrendered whitespace after the last br will not
-			// constitute an independent line, and as such we must
-			// include it in the last line.
+			// Because, if this is the last line in a block, any unrendered
+			// whitespace after the last br will not constitute an independent
+			// line, and as such we must include it in the last line.
 			var endOfBlock = point.clone();
 			if (skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
 				point.setFrom(endOfBlock);
@@ -325,12 +342,14 @@ define([
 
 	/**
 	 * Returns true if the given node is unrendered whitespace.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
 	 */
 	function isUnrenderedWhitespace(node) {
 		if (!isUnrenderedWhitespaceNoBlockCheck(node)) {
 			return false;
 		}
-		// Algorithm like engine.js isCollapsedWhitespaceNode().
 		return (
 			skipUnrenderedToEndOfLine(Cursors.cursor(node, false))
 			||
@@ -339,50 +358,11 @@ define([
 	}
 
 	/**
-	 * Checks whether the given element is a block that contains a "propping"
-	 * <br> element.
+	 * Checks whether the given DOM element is rendered empty or not.
 	 *
-	 * A propping <br> is one which is inserted into block element to ensure
-	 * that the otherwise empty element will be rendered visibly.
-	 *
-	 * @param {HTMLElement} node
-	 * @return {boolean} True if node contains a propping <br>
+	 * @param {DOMObject} elem
+	 * @return {Boolean}
 	 */
-	function isProppedBlock(node) {
-		if (!blocksTagnameMap[node.nodeName]) {
-			return false;
-		}
-		var found = false;
-		var kids = node.children;
-		var len = kids.length;
-		var i;
-		for (i = 0; i < len; i++) {
-			if (!found && 'br' === kids[i].nodeName.toLowerCase()) {
-				found = true;
-			} else if (!isIgnorableWhitespace(kids[i])) {
-				return false;
-			}
-		}
-		return found;
-	}
-
-	/**
-	 * Starting from the given node, and working backwards through the siblings,
-	 * find the node that satisfies the given condition.
-	 *
-	 * @param {HTMLElement} node The node at which to start the search.
-	 * @param {function(HTMLElement):boolean} condition A predicate the receives
-	 *                                        one of children of `node`.
-	 *
-	 * @return {HTMLElement} The first node that meets the given condition.
-	 */
-	function findNodeRight(node, condition) {
-		while (node && !condition(node)) {
-			node = node.previousSibling;
-		}
-		return node;
-	}
-
 	function isEmpty(elem) {
 		var child = elem.firstChild;
 		while (child) {
@@ -396,35 +376,26 @@ define([
 	}
 
 	/**
-	 * Checks if the given editable is a valid container for paragraphs.
+	 * TODO currently this function only knows about 'background-color' not
+	 * being inherited, while 'color', 'font-size', 'font-family' are inherited.
+	 * Any other relevant styles should be added when needed.
 	 *
-	 * @param {Aloha.Editable} editable The editable to be checked
-	 *
-	 * @return {boolean} False if the editable may not contain paragraphs
+	 * @param {String} styleName
+	 * @return {Boolean}
 	 */
-	function allowNestedParagraph(editable) {
-		if (editable.obj.prop('tagName') === 'SPAN' ||
-				editable.obj.prop('tagName') === 'P') {
-			return false;
-		}
-		return true;
-	}
-
-	// TODO currently this function only knows about 'background-color'
-	// not being inherited, while 'color', 'font-size', 'font-family'
-	// are inherited. Any other relevant styles should be added when
-	// needed.
 	function isStyleInherited(styleName) {
 		return 'background-color' !== styleName;
 	}
 
 	/**
-	 * Returns true if the given character is a control
-	 * character. Control characters are usually not rendered if they
-	 * are inserted into the DOM. Returns false for whitespace 0x20
-	 * (which may or may not be rendered see isUnrenderedWhitespace())
-	 * and non-breaking whitespace 0xa0 but returns true for tab 0x09
-	 * and linebreak 0x0a and 0x0d.
+	 * Returns true if the given character is a control character. Control
+	 * characters are usually not rendered if they are inserted into the DOM.
+	 * Returns false for whitespace 0x20 (which may or may not be rendered see
+	 * isUnrenderedWhitespace()) and non-breaking whitespace 0xa0 but returns
+	 * true for tab 0x09 and linebreak 0x0a and 0x0d.
+	 *
+	 * @param {String} chr
+	 * @return {Boolean}
 	 */
 	function isControlCharacter(chr) {
 		// Regex matches C0 and C1 control codes, which seems to be good enough.
@@ -440,22 +411,16 @@ define([
 	return {
 		isControlCharacter: isControlCharacter,
 		isStyleInherited: isStyleInherited,
-		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		isBlockType: isBlockType,
 		isInlineType: isInlineType,
 		hasBlockStyle: hasBlockStyle,
 		hasInlineStyle: hasInlineStyle,
-		isBlock: isBlock,
 		isUnrenderedWhitespace: isUnrenderedWhitespace,
 		isWhiteSpacePreserveStyle: isWhiteSpacePreserveStyle,
 		skipUnrenderedToStartOfLine: skipUnrenderedToStartOfLine,
 		skipUnrenderedToEndOfLine: skipUnrenderedToEndOfLine,
 		normalizeBoundary: normalizeBoundary,
-		isIgnorableWhitespace: isIgnorableWhitespace,
 		isEmpty: isEmpty,
-		isProppedBlock: isProppedBlock,
-		isEditingHost: isEditingHost,
-		findNodeRight: findNodeRight,
-		allowNestedParagraph: allowNestedParagraph
+		isEditingHost: isEditingHost
 	};
 });
