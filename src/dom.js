@@ -25,8 +25,7 @@ define([
 		eval(uate)('Dom');
 	}
 
-	var spacesRx = /\s+/;
-	var attrRegex = /\s([^\/<>\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^>\/\s]+))?/g;
+	var ATTRIBUTE = /\s([^\/<>\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^>\/\s]+))?/g;
 
 	/**
 	 * Like insertBefore, inserts firstChild into parent before
@@ -100,7 +99,7 @@ define([
 		var names = [];
 		var html = outerHtml(elem.cloneNode(false));
 		var match;
-		while (null != (match = attrRegex.exec(html))) {
+		while (null != (match = ATTRIBUTE.exec(html))) {
 			names.push(match[1]);
 		}
 		return names;
@@ -864,7 +863,62 @@ define([
 		return !Arrays.every(attrs(node).map(Arrays.second), Strings.empty);
 	}
 
+	var WORD_BOUNDARY = /\S+/g;
+	var WHITESPACES = /\s/;
+
+	function addToList(list, element, index) {
+		if (-1 === index) {
+			list.push(element);
+		}
+		return list;
+	}
+
+	function removeFromList(list, element, index) {
+		if (-1 < index) {
+			list.splice(index, 1);
+		}
+		return list;
+	}
+
+	function changeClassNames(elem, value, change) {
+		var names = (value || '').match(WORD_BOUNDARY) || [];
+		var classes = (elem.nodeType === Nodes.ELEMENT)
+		            ? elem.className.trim().split(WHITESPACES)
+		            : [];
+		var i;
+		var len = names.length;
+		for (i = 0; i < len; i++) {
+			classes = change(classes, names[i], classes.indexOf(names[i]));
+		}
+		elem.className = classes.join(' ');
+		return elem;
+	}
+
+	/**
+	 * Adds one or more class names from the give node.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Strings} value
+	 * @return {DOMObject}
+	 */
+	function addClass(node, value) {
+		return changeClassNames(node, value, addToList);
+	}
+
+	/**
+	 * Remove one or more class names from the given node.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Strings} value
+	 * @return {DOMObject}
+	 */
+	function removeClass(node, value) {
+		return changeClassNames(node, value, removeFromList);
+	}
+
 	return {
+		addClass: addClass,
+		removeClass: removeClass,
 		removeStyle: removeStyle,
 		moveNextAll: moveNextAll,
 		attrNames: attrNames,
