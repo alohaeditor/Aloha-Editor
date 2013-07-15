@@ -15,7 +15,6 @@
  *       overhead.
  */
 define([
-	'jquery',
 	'strings',
 	'trees',
 	'arrays',
@@ -25,7 +24,6 @@ define([
 	'browser'
 	//'PubSub'
 ], function EphemeraAPI(
-	$,
 	Strings,
 	Trees,
 	Arrays,
@@ -219,13 +217,13 @@ define([
 	 * function, if that is more convenient.
 	 */
 	function markAttr(elem, attr) {
-		var data = $(elem).attr('data-aloha-ephemera-attr');
+		var data = Dom.getAttr(elem, 'data-aloha-ephemera-attr');
 		if (null == data || '' === data) {
 			data = attr;
 		} else if (-1 === Strings.words(data).indexOf(attr)) {
 			data += ' ' + attr;
 		}
-		$(elem).attr('data-aloha-ephemera-attr', data);
+		Dom.setAttr(elem, 'data-aloha-ephemera-attr', data);
 		Dom.addClass(elem, 'aloha-ephemera-attr');
 	}
 
@@ -275,20 +273,19 @@ define([
 	 * given element.
 	 */
 	function pruneMarkedAttrs(elem) {
-		var $elem = $(elem);
-		var data = $elem.attr('data-aloha-ephemera-attr');
+		var data = Dom.getAttr(elem, 'data-aloha-ephemera-attr');
 		var i;
 		var attrs;
 		// Because IE7 crashes if we remove this attribute. If the dom-to-xhtml
 		// plugin is turned on, it will handle the removal of this attribute
 		// during serialization.
 		if (!Browser.ie7) {
-			$elem.removeAttr('data-aloha-ephemera-attr');
+			Dom.removeAttr(elem, 'data-aloha-ephemera-attr');
 		}
 		if (typeof data === 'string') {
 			attrs = Strings.words(data);
 			for (i = 0; i < attrs.length; i++) {
-				$elem.removeAttr(attrs[i]);
+				Dom.removeAttr(elem, attrs[i]);
 			}
 		}
 	}
@@ -318,16 +315,14 @@ define([
 	 * See ephemera().
 	 */
 	function pruneEmapAttrs(elem, emap) {
-		var $elem = null,
-			attrs = Dom.attrNames(elem),
+		var attrs = Dom.attrNames(elem),
 		    name,
 		    i,
 		    len;
 		for (i = 0, len = attrs.length; i < len; i++) {
 			name = attrs[i];
 			if (isAttrEphemeral(elem, name, emap.attrMap, emap.attrRxs)) {
-				$elem = $elem || $(elem);
-				$elem.removeAttr(name);
+				Dom.removeAttr(elem, name);
 			}
 		}
 	}
@@ -349,14 +344,12 @@ define([
 
 			// Ephemera.markElement()
 			if (-1 !== classes.indexOf('aloha-cleanme') || -1 !== classes.indexOf('aloha-ephemera')) {
-				$.removeData(elem); // avoids memory leak
 				return false; // removes the element
 			}
 
 			// Ephemera.markWrapper() and Ephemera.markFiller()
 			if (-1 !== classes.indexOf('aloha-ephemera-wrapper') || -1 !== classes.indexOf('aloha-ephemera-filler')) {
 				Dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
-				$.removeData(elem);
 				return false;
 			}
 
@@ -371,9 +364,7 @@ define([
 			});
 			if (persistentClasses.length !== classes.length) {
 				if (0 === persistentClasses.length) {
-					// Removing the attributes is dangerous. Aloha has a
-					// jquery patch in place to fix some issue.
-					$(elem).removeAttr('class');
+					Dom.removeAttr(elem, 'class');
 				} else {
 					elem.className = persistentClasses.join(' ');
 				}
