@@ -1,0 +1,7 @@
+{
+  "name": "grunt-install-dependencies-test",
+  "description": "",
+  "devDependencies": {
+    "underscore": "*"
+  }
+}

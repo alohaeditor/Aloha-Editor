@@ -5,5 +5,4 @@
 *.orig
 *.swp
 target
-node_modules
 dist
