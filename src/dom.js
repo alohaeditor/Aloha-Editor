@@ -28,9 +28,12 @@ define([
 	var ATTRIBUTE = /\s([^\/<>\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^>\/\s]+))?/g;
 
 	/**
-	 * Like insertBefore, inserts firstChild into parent before
-	 * refChild, except also inserts all the following siblings of
-	 * firstChild.
+	 * Like insertBefore, inserts firstChild into parent before refChild, except
+	 * also inserts all the following siblings of firstChild.
+	 *
+	 * @param {DOMObject} parent
+	 * @param {DOMObject} firstChild
+	 * @param {DOMObject} refChild
 	 */
 	function moveNextAll(parent, firstChild, refChild) {
 		while (firstChild) {
@@ -94,6 +97,10 @@ define([
 	 * not be set on the cloned node. We choose the speed optimization
 	 * over correctness in this case. The dom-to-xhtml plugin has a
 	 * workaround for this case.
+	 *
+	 * @param {DOMObject} elem
+	 * @return {Array[String]}
+	 *         List of attribute names.
 	 */
 	function attrNames(elem) {
 		var names = [];
@@ -110,11 +117,12 @@ define([
 	 *
 	 * See attrNames() for an edge case on IE7.
 	 *
-	 * @param elem
+	 * @param {DOMObject} elem
 	 *        An element to get the attributes for.
-	 * @return
+	 * @return {Array[String]}
 	 *        An array containing [name, value] tuples for each attribute.
-	 *        Attribute values will always be strings, but possibly empty strings.
+	 *        Attribute values will always be strings, but possibly empty
+	 *        strings.
 	 */
 	function attrs(elem) {
 		var as = [];
@@ -135,8 +143,12 @@ define([
 	}
 
 	/**
-	 * Like indexByClass() but operates on a list of elements instead.
-	 * The given list may be a NodeList, HTMLCollection, or an array.
+	 * Like indexByClass() but operates on a list of elements instead.  The
+	 * given list may be a NodeList, HTMLCollection, or an array.
+	 *
+	 * @param {Array[DOMObject]} elems
+	 * @param {Object} classMap
+	 * @return {Object}
 	 */
 	function indexByClassHaveList(elems, classMap) {
 		var index = {},
@@ -198,12 +210,12 @@ define([
 	 * classMap. For a single class lookup, $('.class') or
 	 * $('name.class') is fine (even better in the latter case).
 	 *
-	 * @param root
-	 *        The root element to search for elements to index
-	 *        (will not be included in search).
-	 * @param classMap
+	 * @param {DOMObject} root
+	 *        The root element to search for elements to index (will not be
+	 *        included in search).
+	 * @param {Object} classMap
 	 *        A map from class name to boolean true.
-	 * @return
+	 * @return {Object}
 	 *        A map from class name to an array of elements with that class.
 	 *        Every entry in classMap for which elements have been found
 	 *        will have a corresponding entry in the returned
@@ -250,20 +262,20 @@ define([
 	 * The signature of this function differs from indexByClass by not
 	 * taking a map but instead an array of names.
 	 *
-	 * @param root
-	 *        The root element to search for elements to index
-	 *        (will not be included in search).
-	 * @param names
+	 * @param {DOMObject} root
+	 *        The root element to search for elements to index (will not be
+	 *        included in search).
+	 * @param {Array[String]} names
 	 *        An array of element names to look for.
 	 *        Names must be in all-uppercase (the same as elem.nodeName).
-	 * @return
+	 * @return {Object}
 	 *        A map from element name to an array of elements with that name.
 	 *        Names will be all-uppercase.
 	 *        Arrays will be proper arrays, not NodeLists.
-	 *        Every entry in classMap for which elements have been found
-	 *        will have a corresponding entry in the returned
-	 *        map. Entries for which no elements have been found, may or
-	 *        may not have an entry in the returned map.
+	 *        Every entry in classMap for which elements have been found will
+	 *        have a corresponding entry in the returned map. Entries for which
+	 *        no elements have been found, may or may not have an entry in the
+	 *        returned map.
 	 */
 	function indexByName(root, names) {
 		var i,
@@ -474,7 +486,9 @@ define([
 			return node;
 		}
 		var before = document.createTextNode(text.substring(0, offset));
-		var after = document.createTextNode(text.substring(offset, text.length));
+		var after = document.createTextNode(
+			text.substring(offset, text.length)
+		);
 		parent.insertBefore(before, node);
 		parent.insertBefore(after, node);
 		parent.removeChild(node);
@@ -539,7 +553,9 @@ define([
 		normalizeSetRange(range.setEnd, range, container, offset);
 	}
 
-	function adjustRangeAfterSplit(container, offset, range, setRange, splitNode, splitOffset, newNodeBeforeSplit) {
+	function adjustRangeAfterSplit(container, offset, range, setRange,
+	                               splitNode, splitOffset,
+								   newNodeBeforeSplit) {
 		if (container === splitNode) {
 			if (offset <= splitOffset || !splitOffset) {
 				container = newNodeBeforeSplit;
@@ -556,7 +572,9 @@ define([
 		setRange(range, container, offset);
 	}
 
-	function adjustBoundaryPointAfterJoin(container, offset, range, setRange, node, nodeLen, sibling, siblingLen, parentNode, nidx, prev) {
+	function adjustBoundaryPointAfterJoin(container, offset, range, setRange,
+	                                      node, nodeLen, sibling, siblingLen,
+	                                      parentNode, nidx, prev) {
 		if (container === node) {
 			container = sibling;
 			offset += prev ? siblingLen : 0;
@@ -576,7 +594,8 @@ define([
 		setRange(range, container, offset);
 	}
 
-	function adjustBoundaryPointAfterRemove(container, offset, range, setRange, node, parentNode, nidx) {
+	function adjustBoundaryPointAfterRemove(container, offset, range, setRange,
+	                                        node, parentNode, nidx) {
 		if (container === node || contains(node, container)) {
 			container = parentNode;
 			offset = nidx;
@@ -606,8 +625,24 @@ define([
 		var eo = range.endOffset;
 		var newNodeBeforeSplit = splitTextNode(splitNode, splitOffset);
 		if (newNodeBeforeSplit) {
-			adjustRangeAfterSplit(sc, so, range, setRangeStart, splitNode, splitOffset, newNodeBeforeSplit);
-			adjustRangeAfterSplit(ec, eo, range, setRangeEnd, splitNode, splitOffset, newNodeBeforeSplit);
+			adjustRangeAfterSplit(
+				sc,
+				so,
+				range,
+				setRangeStart,
+				splitNode,
+				splitOffset,
+				newNodeBeforeSplit
+			);
+			adjustRangeAfterSplit(
+				ec,
+				eo,
+				range,
+				setRangeEnd,
+				splitNode,
+				splitOffset,
+				newNodeBeforeSplit
+			);
 		}
 	}
 
@@ -633,8 +668,8 @@ define([
 		if (!sibling || Nodes.TEXT !== sibling.nodeType) {
 			return node;
 		}
-		// Because the range may change due to the DOM modication
-		// (automatically by the browser).
+		// Because the range may change due to the DOM modication (automatically
+		// by the browser).
 		var sc = range.startContainer;
 		var so = range.startOffset;
 		var ec = range.endContainer;
@@ -645,8 +680,32 @@ define([
 		var siblingLen = sibling.length;
 		sibling.insertData(prev ? siblingLen : 0, node.data);
 		parentNode.removeChild(node);
-		adjustBoundaryPointAfterJoin(sc, so, range, setRangeStart, node, nodeLen, sibling, siblingLen, parentNode, nidx, prev);
-		adjustBoundaryPointAfterJoin(ec, eo, range, setRangeEnd, node, nodeLen, sibling, siblingLen, parentNode, nidx, prev);
+		adjustBoundaryPointAfterJoin(
+			sc,
+			so,
+			range,
+			setRangeStart,
+			node,
+			nodeLen,
+			sibling,
+			siblingLen,
+			parentNode,
+			nidx,
+			prev
+		);
+		adjustBoundaryPointAfterJoin(
+			ec,
+			eo,
+			range,
+			setRangeEnd,
+			node,
+			nodeLen,
+			sibling,
+			siblingLen,
+			parentNode,
+			nidx,
+			prev
+		);
 		return sibling;
 	}
 
@@ -833,10 +892,9 @@ define([
 			}
 		} else {
 			// TODO: this is a hack for browsers that don't support
-			//       removeProperty (ie < 9)and will not work correctly
-			//       for all valid inputs, but it's the simplest thing I
-			//       can come up with without implementing a full css
-			//       parser.
+			//       removeProperty (ie < 9)and will not work correctly for all
+			//       valid inputs, but it's the simplest thing I can come up
+			//       with without implementing a full css parser.
 			var style = $elem.attr('style');
 			if (null == style) {
 				return;
@@ -844,9 +902,12 @@ define([
 			// Because concatenating just any input into the regex might
 			// be dangerous.
 			if ((/[^\w\-]/).test(styleName)) {
-				throw "unrecognized style name " + styleName;
+				throw 'unrecognized style name ' + styleName;
 			}
-			var stripRegex = new RegExp('(:?^|;)\\s*' + styleName + '\\s*:.*?(?=;|$)', 'i');
+			var stripRegex = new RegExp(
+				'(:?^|;)\\s*' + styleName + '\\s*:.*?(?=;|$)',
+				'i'
+			);
 			style = style.replace(stripRegex, '');
 			if (!Strings.empty(style)) {
 				$elem.attr('style', style);
