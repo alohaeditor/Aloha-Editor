@@ -5,3 +5,4 @@
 *.orig
 *.swp
 target
+dist
