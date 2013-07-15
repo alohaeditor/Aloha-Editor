@@ -25,7 +25,7 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 *        If no compFn is provided, the algorithm will use the browsers
 	 *        default sort behaviour and loose comparison to detect duplicates.
 	 * @return {Array}
-	 *         The given array, having been sorted.
+	 *         The given array, sorted and with duplicates removed.
 	 */
 	function sortUnique(a, compFn) {
 		var i;
