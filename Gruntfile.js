@@ -11,17 +11,16 @@ module.exports = function(grunt) {
 
 		'closure-compiler': {
 			frontend: {
-				js: './src/api.js',
+				cwd: './src',
+				js: './*.js',
 				jsOutputFile: '<%= dest %>',
 				options: {
-					common_js_entry_module: 'exports',
-					common_js_module_path_prefix: './src/',
+					common_js_entry_module: 'api.js',
+					//common_js_module_path_prefix: './src/',
 					transform_amd_modules: undefined,
 					process_common_js_modules: undefined,
-//					compilation_level: 'ADVANCED_OPTIMIZATIONS',
-					language_in: 'ECMASCRIPT5_STRICT',
-					debug: true,
-					formatting: 'PRETTY_PRINT'
+					// compilation_level: 'ADVANCED_OPTIMIZATIONS',
+					language_in: 'ECMASCRIPT5_STRICT'
 				}
 			}
 		},
