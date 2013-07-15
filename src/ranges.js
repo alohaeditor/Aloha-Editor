@@ -300,11 +300,11 @@ define([
 		}
 		this.collapsed = (this.startContainer === this.endContainer
 						  && this.startOffset === this.endOffset);
-		var start = Dom.childAndParentsUntil(
+		var start = Traversing.childAndParentsUntil(
 			this.startContainer,
 			Fn.returnFalse
 		);
-		var end = Dom.childAndParentsUntil(
+		var end = Traversing.childAndParentsUntil(
 			this.endContainer,
 			Fn.returnFalse
 		);

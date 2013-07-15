@@ -430,6 +430,77 @@ define([
 	}
 
 	/**
+	 * Traverses up the given node's ancestors, searching for the first ancestor
+	 * that matches the given predicate.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} pred
+	 *        Predicate function which will receive nodes as they are traversed.
+	 *        This function returns `true`, it will terminate the traversal.
+	 * @return {DOMObject}
+	 *         A parent element of the given node.
+	 */
+	function parentsUntil(node, pred) {
+		var parents = [];
+		var parent = node.parentNode;
+		while (parent && !pred(parent)) {
+			parents.push(parent);
+			parent = parent.parentNode;
+		}
+		return parents;
+	}
+
+	/**
+	 * Starting with the given node, traverses up the given node's ancestors,
+	 * searching for the first ancestor that matches the given predicate.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} pred
+	 *        Predicate function which will receive nodes as they are traversed.
+	 *        This function returns `true`, it will terminate the traversal.
+	 * @return {DOMObject}
+	 *         A parent element of the given node.
+	 */
+	function parentsUntilIncl(node, pred) {
+		var parents = parentsUntil(node, pred);
+		var topmost = parents.length ? parents[parents.length - 1] : node;
+		if (topmost.parentNode) {
+			parents.push(topmost.parentNode);
+		}
+		return parents;
+	}
+
+	function childAndParentsUntil(node, pred) {
+		if (pred(node)) {
+			return [];
+		}
+		var parents = parentsUntil(node, pred);
+		parents.unshift(node);
+		return parents;
+	}
+
+	function childAndParentsUntilIncl(node, pred) {
+		if (pred(node)) {
+			return [node];
+		}
+		var parents = parentsUntilIncl(node, pred);
+		parents.unshift(node);
+		return parents;
+	}
+
+	function childAndParentsUntilNode(node, untilNode) {
+		return childAndParentsUntil(node, function (nextNode) {
+			return nextNode === untilNode;
+		});
+	}
+
+	function childAndParentsUntilInclNode(node, untilInclNode) {
+		return childAndParentsUntilIncl(node, function (nextNode) {
+			return nextNode === untilInclNode;
+		});
+	}
+
+	/**
 	 * DOM traversal functions.
 	 *
 	 * Traversing.nextWhile()
@@ -451,7 +522,13 @@ define([
 		walkUntilNode: walkUntilNode,
 		findNodeBackwards: findNodeBackwards,
 		findWordBoundaryAhead: findWordBoundaryAhead,
-		findWordBoundaryBehind: findWordBoundaryBehind
+		findWordBoundaryBehind: findWordBoundaryBehind,
+		parentsUntil: parentsUntil,
+		parentsUntilIncl: parentsUntilIncl,
+		childAndParentsUntil: childAndParentsUntil,
+		childAndParentsUntilIncl: childAndParentsUntilIncl,
+		childAndParentsUntilNode: childAndParentsUntilNode,
+		childAndParentsUntilInclNode: childAndParentsUntilInclNode
 	};
 
 	return exports;
