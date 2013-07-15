@@ -23,6 +23,8 @@ define(['dom'], function CursorAPI(Dom) {
 	}
 
 	/**
+	 * Creates a cursor instance.
+	 *
 	 * A cursor has the added utility over other iteration methods of iterating
 	 * over the end position of an element. The start and end positions of an
 	 * element are immediately before the element and immediately after the last

@@ -920,41 +920,51 @@ define([
 	}
 
 	/**
-	 * Function for working with the DOM.
+	 * Functions for working with the DOM.
 	 */
 	var exports = {
 		addClass: addClass,
 		removeClass: removeClass,
-		removeStyle: removeStyle,
-		moveNextAll: moveNextAll,
+
+		hasAttrs: hasAttrs,
 		attrNames: attrNames,
 		attrs: attrs,
+
 		indexByClass: indexByClass,
 		indexByName: indexByName,
 		indexByClassHaveList: indexByClassHaveList,
+
 		outerHtml: outerHtml,
+
+		moveNextAll: moveNextAll,
 		removeShallow: removeShallow,
 		removeShallowPreservingBoundaries: removeShallowPreservingBoundaries,
 		removePreservingRange: removePreservingRange,
 		removePreservingRanges: removePreservingRanges,
+		cloneShallow: cloneShallow,
+
 		wrap: wrap,
 		insert: insert,
 		replaceShallow: replaceShallow,
-		nodeAtOffset: nodeAtOffset,
+
 		isAtEnd: isAtEnd,
-		isTextNode: isTextNode,
 		nodeIndex: nodeIndex,
+		nodeLength: nodeLength,
+		nodeAtOffset: nodeAtOffset,
+
+		isTextNode: isTextNode,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
 		splitTextNodeAdjustRange: splitTextNodeAdjustRange,
 		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
+
 		contains: contains,
-		cloneShallow: cloneShallow,
+
 		setStyle: setStyle,
 		getStyle: getStyle,
 		getComputedStyle: getComputedStyle,
-		hasAttrs: hasAttrs,
-		nodeLength: nodeLength,
+		removeStyle: removeStyle,
+
 		Nodes: Nodes
 	};
 
