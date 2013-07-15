@@ -120,47 +120,6 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Returns true if the given predicate function returns true for at least
-	 * one item in the given array.
-	 *
-	 * Emulates ECMAScript edition 5 Array.some.
-	 *
-	 * @param {Array} xs
-	 *        An array to iterate over.
-	 * @param {Function} pred
-	 *        Predicate function to test for each element.
-	 * @return {Boolean}
-	 *         True if `pred` returns true when applied to at least one item in
-	 *         `xs`.
-	 */
-	function some(xs, pred) {
-		var i,
-		    len;
-		for (i = 0, len = xs.length; i < len; i++) {
-			if (pred(xs[i])) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Returns true if the given predicate function returns true for all items
-	 * in xs.
-	 *
-	 * Emulates ECMAScript edition 5 Array.every.
-	 *
-	 * @param {Array} xs
-	 *        An array to iterate over.
-	 * @param {Function} pred
-	 *        Predicate function to test for each element.
-	 * @return {Boolean}
-	 */
-	function every(xs, pred) {
-		return !some(xs, Fn.complement(pred));
-	}
-
-	/**
 	 * Returns all items in `xs` that are also contained in `zs`.
 	 *
 	 * @param {Array} xs
@@ -198,8 +157,6 @@ define(['functions'], function ArrayUtilities(Fn) {
 	/**
 	 * Functions for operating on arrays.
 	 *
-	 * Arrays.some()
-	 * Arrays.every()
 	 * Arrays.contains()
 	 * Arrays.equal()
 	 * Arrays.applyNotNull()
@@ -209,8 +166,6 @@ define(['functions'], function ArrayUtilities(Fn) {
 	 * Arrays.last()
 	 */
 	var exports = {
-		some: some,
-		every: every,
 		contains: contains,
 		equal: equal,
 		applyNotNull: applyNotNull,

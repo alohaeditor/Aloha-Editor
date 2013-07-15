@@ -863,7 +863,7 @@ define([
 	 * @param {Boolean}
 	 */
 	function hasAttrs(node) {
-		return !Arrays.every(attrs(node).map(Arrays.second), Strings.empty);
+		return !attrs(node).map(Arrays.second).every(Strings.empty);
 	}
 
 	var WORD_BOUNDARY = /\S+/g;
