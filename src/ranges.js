@@ -489,8 +489,6 @@ define([
 	/**
 	 * Functions to work with browser ranges.
 	 *
-	 * API:
-	 *
 	 * Ranges.collapseToEnd()
 	 * Ranges.create()
 	 * Ranges.equal()

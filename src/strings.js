@@ -42,7 +42,7 @@ define([], function StringsAPI() {
 	 * For example 'data-my-attr' becomes 'dataMyAttr'.
 	 *
 	 * @param {string} str
-	 *        Should be all lowercase and should not begin with a dash
+	 *        Should be all lowercase and should not begin with a dash.
 	 */
 	var dashesToCamelCase = (function () {
 		var dashPrefixedCharacter = /[\-]([a-z])/gi;
@@ -120,15 +120,13 @@ define([], function StringsAPI() {
 	/**
 	 * High level string utility functions.
 	 *
-	 * API:
-	 *
 	 * Strings.words()
 	 * Strings.dashesToCamelCase()
 	 * Strings.camelCaseToDashes()
 	 * Strings.splitIncl()
 	 * Strings.empty()
 	 */
-	var api = {
+	var exports = {
 		words: words,
 		dashesToCamelCase: dashesToCamelCase,
 		camelCaseToDashes: camelCaseToDashes,
@@ -136,5 +134,5 @@ define([], function StringsAPI() {
 		empty: empty
 	};
 
-	return api;
+	return exports;
 });

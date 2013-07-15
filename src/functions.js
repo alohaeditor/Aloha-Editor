@@ -17,7 +17,7 @@ define([], function FunctionUtilities() {
 	 *
 	 * @param {*} arg
 	 * @return {*}
-	 *         The single given argument `arg`.
+	 *         The given argument `arg`.
 	 */
 	function identity(arg) {
 		return arg;

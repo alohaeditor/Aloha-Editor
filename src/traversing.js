@@ -430,15 +430,15 @@ define([
 	}
 
 	/**
-	 * Traverses up the given node's ancestors, searching for the first ancestor
-	 * that matches the given predicate.
+	 * Traverses up the given node's ancestors, collecting all parent nodes,
+	 * until the given predicate returns true.
 	 *
 	 * @param {DOMObject} node
 	 * @param {Function(DOMObject):Boolean} pred
 	 *        Predicate function which will receive nodes as they are traversed.
 	 *        This function returns `true`, it will terminate the traversal.
-	 * @return {DOMObject}
-	 *         A parent element of the given node.
+	 * @return {Array[DOMObject]}
+	 *         A set of parent elements of the given node.
 	 */
 	function parentsUntil(node, pred) {
 		var parents = [];
@@ -452,14 +452,15 @@ define([
 
 	/**
 	 * Starting with the given node, traverses up the given node's ancestors,
-	 * searching for the first ancestor that matches the given predicate.
+	 * collecting each parent node, until the first ancestor that causes the
+	 * given predicate function to return true.
 	 *
 	 * @param {DOMObject} node
 	 * @param {Function(DOMObject):Boolean} pred
 	 *        Predicate function which will receive nodes as they are traversed.
 	 *        This function returns `true`, it will terminate the traversal.
-	 * @return {DOMObject}
-	 *         A parent element of the given node.
+	 * @return {Array[DOMObject]}
+	 *         A set of parent element of the given node.
 	 */
 	function parentsUntilIncl(node, pred) {
 		var parents = parentsUntil(node, pred);
@@ -470,6 +471,17 @@ define([
 		return parents;
 	}
 
+	/**
+	 * Collects all ancestors of the given node until the first ancestor that
+	 * causes the given predicate function to return true.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} pred
+	 *        Predicate function which will receive nodes as they are traversed.
+	 *        This function returns `true`, it will terminate the traversal.
+	 * @return {Array[DOMObject]}
+	 *         A set of parent element of the given node.
+	 */
 	function childAndParentsUntil(node, pred) {
 		if (pred(node)) {
 			return [];
@@ -479,6 +491,17 @@ define([
 		return parents;
 	}
 
+	/**
+	 * Collects the given node, and all its ancestors until the first ancestor
+	 * that causes the given predicate function to return true.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} pred
+	 *        Predicate function which will receive nodes as they are traversed.
+	 *        This function returns `true`, it will terminate the traversal.
+	 * @return {Array[DOMObject]}
+	 *         A set of parent element of the given node.
+	 */
 	function childAndParentsUntilIncl(node, pred) {
 		if (pred(node)) {
 			return [node];
@@ -488,12 +511,31 @@ define([
 		return parents;
 	}
 
+	/**
+	 * Collects all ancestors of the given node until `untilNode` is reached.
+	 *
+	 * @param {DOMObject} node
+	 * @param {DOMObject} untilNode
+	 *        Terminal ancestor.
+	 * @return {Array[DOMObject]}
+	 *         A set of parent element of the given node.
+	 */
 	function childAndParentsUntilNode(node, untilNode) {
 		return childAndParentsUntil(node, function (nextNode) {
 			return nextNode === untilNode;
 		});
 	}
 
+	/**
+	 * Collects the given node, and all its ancestors until `untilInclNode` is
+	 * reached.
+	 *
+	 * @param {DOMObject} node
+	 * @param {DOMObject} untilInclNode
+	 *        Terminal ancestor.  Will be included in results.
+	 * @return {Array[DOMObject]}
+	 *         A set of parent element of the given node.
+	 */
 	function childAndParentsUntilInclNode(node, untilInclNode) {
 		return childAndParentsUntilIncl(node, function (nextNode) {
 			return nextNode === untilInclNode;
@@ -512,6 +554,12 @@ define([
 	 * Traversing.findNodeBackwards()
 	 * Traversing.findWordBoundaryAhead()
 	 * Traversing.findWordBoundaryBehind()
+	 * Traversing.parentsUntil()
+	 * Traversing.parentsUntilIncl()
+	 * Traversing.childAndParentsUntil()
+	 * Traversing.childAndParentsUntilIncl()
+	 * Traversing.childAndParentsUntilNode()
+	 * Traversing.childAndParentsUntilInclNode()
 	 */
 	var exports = {
 		nextWhile: nextWhile,

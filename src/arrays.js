@@ -12,7 +12,7 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Implements unique() using the browser's sort().
+	 * Implements unique() using native sort().
 	 *
 	 * @param {Array} a
 	 *        The array to sort and strip of duplicate values.
@@ -50,7 +50,7 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Shallowly compares two arrays.
+	 * Does a shallow compare of two arrays.
 	 *
 	 * @param {Array} a
 	 *        An array to compare.
@@ -89,14 +89,13 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Returns true if the given xs contains the given x.
+	 * Returns true if the given Array `xs` contains the value `x`.
 	 *
 	 * @param {Array} xs
-	 *        An array.
 	 * @param {*} x
 	 *        A value to search for in the given array.
 	 * @return {Boolean}
-	 *         True of argument `x` is contained in the given array.
+	 *         True of argument `x` is an element of the set `xs`.
 	 */
 	function contains(xs, x) {
 		return -1 !== xs.indexOf(x);
@@ -120,12 +119,13 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Returns all items in `xs` that are also contained in `zs`.
+	 * Returns all items in the array `xs` that are also contained in array
+	 * `zs`.
 	 *
 	 * @param {Array} xs
 	 * @param {Array} zs
-	 * @return {Boolean}
-	 *          The set of elements in `xs` that are also contained in `zs`.
+	 * @return {Array}
+	 *         The intersection of the sets `xs` and `zs`.
 	 */
 	function intersect(xs, zs) {
 		return xs.filter(function (x) {
@@ -134,18 +134,18 @@ define(['functions'], function ArrayUtilities(Fn) {
 	}
 
 	/**
-	 * Returns the last item in xs or null.
+	 * Returns the last item in the given Array.
 	 *
 	 * @param {Array} xs
 	 * @return {*}
-	 *         Last item in xs or null if the given array is empty.
+	 *         Last item in xs, or null if the given array is empty.
 	 */
 	function last(xs) {
 		return xs.length ? xs[xs.length - 1] : null;
 	}
 
 	/**
-	 * Returns the second item in xs.
+	 * Returns the second item in the given array.
 	 *
 	 * @param {Array} xs
 	 * @return {*}
