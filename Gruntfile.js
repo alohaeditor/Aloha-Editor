@@ -25,7 +25,7 @@ module.exports = function(grunt) {
 			}
 		},
 		jshint: {
-			files: ['<%= concat.dist.src %>'],
+			files: ['<%= src %>'],
 			options: {
 				eqnull: true,
 				smarttabs: true,
@@ -66,7 +66,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-closure-compiler');
-	grunt.loadNpmTasks('grunt-contrib-compress');
-
-	grunt.registerTask('default', ['install-dependencies', 'jshint', 'concat', 'uglify', 'compress']);
+	
+	grunt.registerTask('default', ['install-dependencies', 'jshint', 'closure-compiler']);
 };
