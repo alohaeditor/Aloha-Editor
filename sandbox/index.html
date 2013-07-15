@@ -47,14 +47,14 @@
 			require(['api'], function (Aloha) {
 				'use strict';
 				window.Aloha = Aloha;
-				var range = Aloha.Range.create(
+				var range = Aloha.Ranges.create(
 					document.getElementsByTagName('b')[0], 1,
 					document.getElementsByTagName('b')[0], 2
 				);
-				Aloha.Range.select(Aloha.Range.extendToWord(range));
-				range = Aloha.Range.get();
+				Aloha.Ranges.select(Aloha.Ranges.extendToWord(range));
+				range = Aloha.Ranges.get();
 				Aloha.RangeContext.wrap(range, 'u');
-				Aloha.Range.select(range);
+				Aloha.Ranges.select(range);
 			});
 		</script>
 	</body>

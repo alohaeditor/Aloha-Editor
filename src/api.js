@@ -1,27 +1,31 @@
 define([
-	'strings',
 	'arrays',
-	'maps',
-	'functions',
-	'dom',
-	'cursors',
-	'range',
-	'range-context',
 	'browser',
 	'content',
-	'ephemera'
-], function API(
-	Strings,
+	'cursors',
+	'dom',
+	'ephemera',
+	'functions',
+	'html',
+	'maps',
+	'range-context',
+	'ranges',
+	'strings',
+	'traversing'
+], function AlohaAPI(
 	Arrays,
-	Maps,
-	Functions,
-	Dom,
-	Cursors,
-	Range,
-	RangeContext,
 	Browser,
 	Content,
-	Ephemera
+	Cursors,
+	Dom,
+	Ephemera,
+	Functions,
+	Html,
+	Maps,
+	RangeContext,
+	Ranges,
+	Strings,
+	Traversing
 ) {
 	'use strict';
 
@@ -36,17 +40,19 @@ define([
 	 * editing solutions in HTML.
 	 */
 	var Aloha = {
-		Strings      : Strings,
 		Arrays       : Arrays,
-		Maps         : Maps,
-		Functions    : Functions,
-		Dom          : Dom,
-		Cursors      : Cursors,
-		Range        : Range,
-		RangeContext : RangeContext,
 		Browser      : Browser,
 		Content      : Content,
-		Ephemera     : Ephemera
+		Cursors      : Cursors,
+		Dom          : Dom,
+		Ephemera     : Ephemera,
+		Functions    : Functions,
+		Html         : Html,
+		Maps         : Maps,
+		RangeContext : RangeContext,
+		Ranges       : Ranges,
+		Strings      : Strings,
+		Traversing   : Traversing
 	};
 
 	return Aloha;

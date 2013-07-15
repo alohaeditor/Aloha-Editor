@@ -1,3 +1,9 @@
+/* cursors.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php
+ */
 define(['dom'], function CursorAPI(Dom) {
 	'use strict';
 
@@ -17,6 +23,8 @@ define(['dom'], function CursorAPI(Dom) {
 	}
 
 	/**
+	 * Creates a cursor instance.
+	 *
 	 * A cursor has the added utility over other iteration methods of iterating
 	 * over the end position of an element. The start and end positions of an
 	 * element are immediately before the element and immediately after the last
@@ -53,7 +61,7 @@ define(['dom'], function CursorAPI(Dom) {
 	Cursor.prototype.next = function () {
 		var node = this.node;
 		var next;
-		if (this.atEnd || Dom.Nodes.ELEMENT_NODE !== node.nodeType) {
+		if (this.atEnd || Dom.Nodes.ELEMENT !== node.nodeType) {
 			next = node.nextSibling;
 			if (next) {
 				this.atEnd = false;
@@ -89,7 +97,7 @@ define(['dom'], function CursorAPI(Dom) {
 		} else {
 			prev = node.previousSibling;
 			if (prev) {
-				if (Dom.Nodes.ELEMENT_NODE === node.nodeType) {
+				if (Dom.Nodes.ELEMENT === node.nodeType) {
 					this.atEnd = true;
 				}
 			} else {
@@ -172,8 +180,6 @@ define(['dom'], function CursorAPI(Dom) {
 	 * Functions for creating Cursors.  A Cursor is an abstraction of the
 	 * startContainer/startOffset and endContainer/endOffset range boundary
 	 * points.
-	 *
-	 * API:
 	 *
 	 * Cursors.cursor()
 	 * Cursors.cursorFromBoundaryPoint()

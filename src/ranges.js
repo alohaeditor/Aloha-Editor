@@ -1,4 +1,4 @@
-/** range.js is part of Aloha Editor project http://aloha-editor.org
+/** ranges.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
@@ -9,11 +9,13 @@
  */
 define([
 	'dom',
+	'traversing',
 	'functions',
 	'arrays',
 	'cursors'
 ], function RangeUtilities(
 	Dom,
+	Traversing,
 	Fn,
 	Arrays,
 	Cursors
@@ -21,7 +23,7 @@ define([
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Range');
+		eval(uate)('Ranges');
 	}
 
 	/**
@@ -31,14 +33,14 @@ define([
 	 * This function will modify the range given to it.
 	 *
 	 * @param {Range} range
-	 * @range {Range}
+	 * @return {Range}
 	 */
 	function extendToWord(range) {
-		var behind = Dom.findWordBoundaryBehind(
+		var behind = Traversing.findWordBoundaryBehind(
 			range.startContainer,
 			range.startOffset
 		);
-		var ahead = Dom.findWordBoundaryAhead(
+		var ahead = Traversing.findWordBoundaryAhead(
 			range.endContainer,
 			range.endOffset
 		);
@@ -47,11 +49,27 @@ define([
 		return range;
 	}
 
+	/**
+	 * Gets the currently selected range.
+	 *
+	 * @return {?Range}
+	 *         Browser's selected range object or null if not selection exists.
+	 */
 	function get() {
 		var selection = document.getSelection();
 		return selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 	}
 
+	/**
+	 * Creates a range object with boundaries defined by containers and offsets
+	 * in those containers.
+	 *
+	 * @param {DomElement} startContainer
+	 * @param {Number} startOffset
+	 * @param {DomElement} endContainer
+	 * @param {Number} endOffset
+	 * @return {Range}
+	 */
 	function create(startContainer, startOffset, endContainer, endOffset) {
 		var range = document.createRange();
 		if (startContainer) {
@@ -63,6 +81,14 @@ define([
 		return range;
 	}
 
+	/**
+	 * Sets the given range to the browser selection.  This will cause the
+	 * selection to be visually highlit by the browser.
+	 *
+	 * @param {Range} range
+	 * @return {Selection}
+	 *         The browser selection to which the range was set.
+	 */
 	function select(range) {
 		var selection = document.getSelection();
 		selection.removeAllRanges();
@@ -70,12 +96,28 @@ define([
 		return selection;
 	}
 
+	/**
+	 * Sets the start and end boundaries of `range` from `reference`.
+	 *
+	 * @param {Range} range
+	 * @param {Range} reference
+	 * @return {Range}
+	 *         `range`, having been modified.
+	 */
 	function setFromReference(range, reference) {
 		range.setStart(reference.startContainer, reference.startOffset);
 		range.setEnd(reference.endContainer, reference.endOffset);
 		return range;
 	}
 
+	/**
+	 * Sets the start boundary of a given range from `cursor`.
+	 *
+	 * @param {Range} range
+	 * @param {Cursor} cursor
+	 * @return {Range}
+	 *         `range`, having been modified.
+	 */
 	function setStartFromCursor(range, cursor) {
 		if (cursor.atEnd) {
 			range.setStart(cursor.node, Dom.nodeLength(cursor.node));
@@ -85,6 +127,14 @@ define([
 		return range;
 	}
 
+	/**
+	 * Sets the end boundary of a given range from `cursor`.
+	 *
+	 * @param {Range} range
+	 * @param {Cursor} cursor
+	 * @return {Range}
+	 *         The given range, having been modified.
+	 */
 	function setEndFromCursor(range, cursor) {
 		if (cursor.atEnd) {
 			range.setEnd(cursor.node, Dom.nodeLength(cursor.node));
@@ -101,7 +151,8 @@ define([
 	 * @param {Range} range
 	 * @param {Cursor} start
 	 * @param {Cursor} end
-	 * @return {Range} The given range, having had its boundary points modified.
+	 * @return {Range}
+	 *         The given range, having had its boundary points modified.
 	 */
 	function setFromBoundaries(range, start, end) {
 		setStartFromCursor(range, start);
@@ -121,7 +172,7 @@ define([
 		// cursor starts before the node, which is what
 		// cursorFromBoundaryPoint() does automatically.
 		if (backwards
-				&& Dom.Nodes.TEXT_NODE === container.nodeType
+				&& Dom.Nodes.TEXT === container.nodeType
 					&& offset > 0
 						&& offset < container.length) {
 			if (backwards ? cursor.next() : cursor.prev()) {
@@ -154,19 +205,24 @@ define([
 	}
 
 	/**
-	 * Starting with the given range's start and end boundary points,
-	 * seek inward using a cursor, passing the cursor to ignoreLeft and
-	 * ignoreRight, stopping when either of these returns true,
-	 * adjusting the given range to the end positions of both cursors.
+	 * Starting with the given range's start and end boundary points, seek
+	 * inward using a cursor, passing the cursor to ignoreLeft and ignoreRight,
+	 * stopping when either of these returns true, adjusting the given range to
+	 * the end positions of both cursors.
 	 *
-	 * The dom cursor passed to ignoreLeft and ignoreRight does not
-	 * traverse positions inside text nodes. The exact rules for when
-	 * text node containers are passed are as follows: If the left
-	 * boundary point is inside a text node, trimming will start before
-	 * it. If the right boundary point is inside a text node, trimming
-	 * will start after it. ignoreLeft/ignoreRight() are invoked
-	 * with the cursor before/after the text node that contains the
-	 * boundary point.
+	 * The dom cursor passed to ignoreLeft and ignoreRight does not traverse
+	 * positions inside text nodes. The exact rules for when text node
+	 * containers are passed are as follows: If the left boundary point is
+	 * inside a text node, trimming will start before it. If the right boundary
+	 * point is inside a text node, trimming will start after it.
+	 * ignoreLeft/ignoreRight() are invoked with the cursor before/after the
+	 * text node that contains the boundary point.
+	 *
+	 * @param {Range} range
+	 * @param {Function=} ignoreLeft
+	 * @param {Function=} ignoreRight
+	 * @return {Range}
+	 *         The given range, modified.
 	 */
 	function trim(range, ignoreLeft, ignoreRight) {
 		ignoreLeft = ignoreLeft || Fn.returnFalse;
@@ -206,6 +262,12 @@ define([
 	/**
 	 * Like trimRange() but ignores closing (to the left) and opening positions
 	 * (to the right).
+	 *
+	 * @param {Range} range
+	 * @param {Function=} ignoreLeft
+	 * @param {Function=} ignoreRight
+	 * @return {Range}
+	 *         The given range, modified.
 	 */
 	function trimClosingOpening(range, ignoreLeft, ignoreRight) {
 		ignoreLeft = ignoreLeft || Fn.returnFalse;
@@ -238,11 +300,11 @@ define([
 		}
 		this.collapsed = (this.startContainer === this.endContainer
 						  && this.startOffset === this.endOffset);
-		var start = Dom.childAndParentsUntil(
+		var start = Traversing.childAndParentsUntil(
 			this.startContainer,
 			Fn.returnFalse
 		);
-		var end = Dom.childAndParentsUntil(
+		var end = Traversing.childAndParentsUntil(
 			this.endContainer,
 			Fn.returnFalse
 		);
@@ -262,17 +324,29 @@ define([
 	};
 
 	/**
-	 * A native range is live, which means that modifying the DOM may
-	 * mutate the range. Also, using setStart/setEnd may not set the
-	 * properties correctly (the browser may perform its own
-	 * normalization of boundary points). The behaviour of a native
-	 * range is very erratic and should be converted to a stable range
-	 * as the first thing in any algorithm.
+	 * Creates a "stable" copy of the given range.
+	 *
+	 * A native range is live, which means that modifying the DOM may mutate the
+	 * range. Also, using setStart/setEnd may not set the properties correctly
+	 * (the browser may perform its own normalization of boundary points). The
+	 * behaviour of a native range is very erratic and should be converted to a
+	 * stable range as the first thing in any algorithm.
+	 *
+	 * @param {Range} range
+	 * @return {StableRange}
 	 */
 	function stableRange(range) {
 		return new StableRange(range);
 	}
 
+	/**
+	 * Checks whether the two given range object are equal.
+	 *
+	 * @param {Range} a
+	 * @param {Range} b
+	 * @return {Boolean}
+	 *         True if ranges `a` and `b` have the same boundary points.
+	 */
 	function equal(a, b) {
 		return a.startContainer === b.startContainer
 			&& a.startOffset    === b.startOffset
@@ -354,26 +428,102 @@ define([
 		});
 	}
 
+	/**
+	 * Collapses the given range start boundary towards the end boundary.
+	 *
+	 * @param {Range} range
+	 * @return {Range}
+	 *         The given range, modified.
+	 */
 	function collapseToEnd(range) {
 		range.setStart(range.endContainer, range.endOffset);
 		return range;
 	}
 
-	return {
-		get: get,
+	/**
+	 * Insert the given text at the given range.
+	 *
+	 * @param {Range} range
+	 * @param {String} text
+	 *        The text to insert.
+	 * @return {Range}
+	 *         The given range at which the text was inserted.  If text is
+	 *         inserted, this range will have been modified.
+	 */
+	function insertText(range, text) {
+		// Because empty text nodes are generally not nice and even cause
+		// problems with IE8 (elem.childNodes).
+		if (!text.length) {
+			return range;
+		}
+		var node = Dom.nodeAtOffset(range.startContainer, range.startOffset);
+		var atEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
+		// Because if the node following the insert position is already a text
+		// node we can just reuse it.
+		if (!atEnd && Dom.Nodes.TEXT === node.nodeType) {
+			var offset = Dom.Nodes.TEXT === range.startContainer.nodeType
+			           ? range.startOffset
+			           : 0;
+			node.insertData(offset, text);
+			range.setStart(node, offset);
+			range.setEnd(node, offset + text.length);
+			return range;
+		}
+		// Because if the node preceding the insert position is already a text
+		// node we can just reuse it.
+		var prev = atEnd ? node.lastChild : node.previousSibling;
+		if (prev && Dom.Nodes.TEXT === prev.nodeType) {
+			prev.insertData(prev.length, text);
+			range.setStart(prev, prev.length - text.length);
+			range.setEnd(prev, prev.length);
+			return range;
+		}
+		// Because if we can't reuse any text nodes, we have to insert a new
+		// one.
+		var textNode = document.createTextNode(text);
+		Dom.insert(textNode, node, atEnd);
+		range.setStart(textNode, 0);
+		range.setEnd(textNode, textNode.length);
+	}
+
+	/**
+	 * Functions to work with browser ranges.
+	 *
+	 * Ranges.collapseToEnd()
+	 * Ranges.create()
+	 * Ranges.equal()
+	 * Ranges.expandBoundaries()
+	 * Ranges.extendToWord()
+	 * Ranges.get()
+	 * Ranges.insertText()
+	 * Ranges.select()
+	 * Ranges.setEndFromCursor()
+	 * Ranges.setFromBoundaries()
+	 * Ranges.setFromReference()
+	 * Ranges.setStartFromCursor()
+	 * Ranges.stableRange()
+	 * Ranges.trim()
+	 * Ranges.trimBoundaries()
+	 * Ranges.trimClosingOpening()
+	 */
+	var exports = {
+		collapseToEnd: collapseToEnd,
 		create: create,
-		select: select,
+		equal: equal,
+		expandBoundaries: expandBoundaries,
 		extendToWord: extendToWord,
-		setFromReference: setFromReference,
-		setStartFromCursor: setStartFromCursor,
+		get: get,
+		insertText: insertText,
+		select: select,
 		setEndFromCursor: setEndFromCursor,
 		setFromBoundaries: setFromBoundaries,
+		setFromReference: setFromReference,
+		setStartFromCursor: setStartFromCursor,
 		stableRange: stableRange,
 		trim: trim,
-		trimClosingOpening: trimClosingOpening,
 		trimBoundaries: trimBoundaries,
-		expandBoundaries: expandBoundaries,
-		equal: equal,
-		collapseToEnd: collapseToEnd
+		trimClosingOpening: trimClosingOpening
 	};
+
+	return exports;
 });

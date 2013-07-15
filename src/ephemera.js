@@ -4,32 +4,6 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * Provides functions to mark the contents of editables as ephemeral. An
- * editable's ephemeral content will be pruned before it is being
- * returned by editable.getContents().
- *
- * It is planned to replace most instances of makeClean() with this
- * implementation for improved performance and more importantly, in
- * order to have a centralized place that has the control over all
- * ephemeral content, which can be leveraged by plugins to provide more
- * advanced functionality.
- *
- * Some examples that would be possible:
- * * a HTML source code text box, an interactive tree structure, or
- *   other kind of DOM visualization, next to the editable, that
- *   contains just the content of the editable (without ephemeral data)
- *   and which is updated efficiently in real time after each keystroke.
- *
- * * change detection algorithms that are able to intelligently ignore
- *   ephemeral data and which would not trigger unless non-ephemeral
- *   data is added to the editable.
- *
- * * When a plugin provides very general functionality over all nodes of
- *   the DOM, somtimes the plugin may not know what is and what isn't
- *   supposed to be real content. The functionality provided here makes
- *   it possible for the plugin to exaclty distinguish real content from
- *   ephemeral content.
- *
  * TODO: currently only simple transformations are suppored, like
  *       marking classes, attributes and elements as ephemeral and removing
  *       them during the pruning process.
@@ -47,23 +21,25 @@ define([
 	'arrays',
 	'maps',
 	'dom',
-	'functions',
 	'misc',
 	'browser'
 	//'PubSub'
-], function (
+], function EphemeraAPI(
 	$,
 	Strings,
 	Trees,
 	Arrays,
 	Maps,
 	Dom,
-	Functions,
 	Misc,
 	Browser,
 	PubSub
 ) {
 	'use strict';
+
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('Ephemera');
+	}
 
 	var ephemeraMap = {
 		classMap: {
@@ -72,8 +48,8 @@ define([
 			'aloha-ephemera-attr': true,
 			'aloha-ephemera': true,
 			// aloha-cleanme is the same as aloha-ephemera.
-			// TODO: should be replaced with aloha-ephemera throughout
-			//       the codebase and removed here.
+			// TODO: should be replaced with aloha-ephemera throughout the
+			//       codebase and removed here.
 			'aloha-cleanme': true
 		},
 		attrMap: {
@@ -91,11 +67,10 @@ define([
 	var commonClsSubstr = 'aloha-';
 
 	/**
-	 * Checks whether the given classes contain the substring common to
-	 * all ephemeral classes. If the check fails, an warning will be
-	 * logged and the substring will be set to the empty string which
-	 * voids the performance improvement the common substring would
-	 * otherwise have gained.
+	 * Checks whether the given classes contain the substring common to all
+	 * ephemeral classes. If the check fails, an warning will be logged and the
+	 * substring will be set to the empty string which voids the performance
+	 * improvement the common substring would otherwise have gained.
 	 */
 	function checkCommonSubstr(clss) {
 		var i, len;
@@ -110,17 +85,17 @@ define([
 	/**
 	 * Registers ephemeral classes.
 	 *
-	 * An ephemeral class is a non-content class that will be pruned
-	 * from the from the result of editable.getContents().
+	 * An ephemeral class is a non-content class that will be pruned from the
+	 * from the result of editable.getContents().
 	 *
-	 * The given classes should contain the string 'aloha-' to get the
-	 * benefit of a performance optimization.
+	 * The given classes should contain the string 'aloha-' to get the benefit
+	 * of a performance optimization.
 	 *
-	 * Returns a map that contains all classes that were ever registered
-	 * with this function.
+	 * Returns a map that contains all classes that were ever registered with
+	 * this function.
 	 *
-	 * Multiple classes may be specified. If none are specified, just
-	 * returns the current ephemeral classes map without modifying it.
+	 * Multiple classes may be specified. If none are specified, just returns
+	 * the current ephemeral classes map without modifying it.
 	 *
 	 * Also see ephemera().
 	 */
@@ -139,8 +114,8 @@ define([
 	/**
 	 * Registers ephemeral attributes by attribute name.
 	 *
-	 * Similar to classes() except applies to entire attributes instead
-	 * of individual classes in the class attribute.
+	 * Similar to classes() except applies to entire attributes instead of
+	 * individual classes in the class attribute.
 	 */
 	function attributes() {
 		var attrs = Array.prototype.slice.call(arguments);
@@ -156,9 +131,9 @@ define([
 	/**
 	 * Provides access to the global ephemera registry.
 	 *
-	 * If the given argument is not null, sets the global ephemera
-	 * registry to the given value and returns it. Otherwise, just
-	 * returns the global registry.
+	 * If the given argument is not null, sets the global ephemera registry to
+	 * the given value and returns it. Otherwise, just returns the global
+	 * registry.
 	 *
 	 * The given/returned value has the following properties:
 	 *
@@ -168,39 +143,37 @@ define([
 	 *            all classes must have a "aloha-" prefix.
 	 *            Use Ehpemera.attributes() to set classes without "aloha-" prefix.
 	 *
-	 * attrMap  - a map from attribute name to the value true or to an array
-	 *            of element names. If an array of elements is specified, the
-	 *            attribute will only be considered ephemeral if it is
-	 *            found on an element in the array.
+	 * attrMap  - a map from attribute name to the value true or to an array of
+	 *            element names. If an array of elements is specified, the
+	 *            attribute will only be considered ephemeral if it is found on
+	 *            an element in the array.
 	 *
 	 * attrRxs  - an array of regexes (in object - not string - form: /[a-z].../)
 	 *
 	 * pruneFns - an array of functions that will be called at each pruning step.
 	 *
-	 * When a DOM tree is pruned with prune(elem) without an emap
-	 * argument, the global registry maintained with classes()
-	 * attributes() and ephemera() is used as a default map. If an emap
-	 * argument is specified, the global registry will be ignored and
-	 * the emap argument will be used instead.
+	 * When a DOM tree is pruned with prune(elem) without an emap argument, the
+	 * global registry maintained with classes() attributes() and ephemera() is
+	 * used as a default map. If an emap argument is specified, the global
+	 * registry will be ignored and the emap argument will be used instead.
 	 *
 	 * When a DOM tree is pruned with prune()
 	 * - classes specified by classMap will be removed
 	 * - attributes specified by attrMap or attrRxs will be removed
-	 * - functions specified by pruneFns will be called as the DOM tree
-	 *   is descended into (pre-order), with each node (element, text,
-	 *   etc.) as a single argument. The function is free to modify the
-	 *   element and return it, or return a new element which will
-	 *   replace the given element in the pruned tree. If null or
-	 *   undefined is returned, the element will be removed from the
-	 *   tree. As per contract of Maps.walkDomInplace, it is allowed to
-	 *   insert/remove children in the parent node as long as the given
-	 *   node is not removed.
+	 * - functions specified by pruneFns will be called as the DOM tree is
+	 *   descended into (pre-order), with each node (element, text, etc.) as a
+	 *   single argument. The function is free to modify the element and return
+	 *   it, or return a new element which will replace the given element in the
+	 *   pruned tree. If null or undefined is returned, the element will be
+	 *   removed from the tree. As per contract of Maps.walkDomInplace, it is
+	 *   allowed to insert/remove children in the parent node as long as the
+	 *   given node is not removed.
 	 *
 	 * Also see classes() and attributes().
 	 *
-	 * Note that removal of attributes doesn't always work on IE7 (in
-	 * rare special cases). The dom-to-xhtml plugin can reliably remove
-	 * ephemeral attributes during the serialization step.
+	 * Note that removal of attributes doesn't always work on IE7 (in rare
+	 * special cases). The dom-to-xhtml plugin can reliably remove ephemeral
+	 * attributes during the serialization step.
 	 */
 	function ephemera(emap) {
 		if (emap) {
@@ -217,72 +190,70 @@ define([
 	/**
 	 * Marks an element as ephemeral.
 	 *
-	 * The element will be completely removed when the prune function is
-	 * called on it.
+	 * The element will be completely removed when the prune function is called
+	 * on it.
 	 *
 	 * Adds the class 'aloha-ephemera' to the given element.
 	 *
-	 * The class 'aloha-ephemera' can also be added directly without
-	 * recurse to this function, if that is more convenient.
+	 * The class 'aloha-ephemera' can also be added directly without recurse to
+	 * this function, if that is more convenient.
 	 */
 	function markElement(elem) {
-		$(elem).addClass('aloha-ephemera');
+		Dom.addClass(elem, 'aloha-ephemera');
 	}
 
 	/**
 	 * Marks the attribute of an element as ephemeral.
 	 *
-	 * The attribute will be removed from the element when the prune
-	 * function is called on it.
+	 * The attribute will be removed from the element when the prune function is
+	 * called on it.
 	 *
-	 * Multiple attributes can be passed at the same time be separating
-	 * them with a space.
+	 * Multiple attributes can be passed at the same time be separating them
+	 * with a space.
 	 *
-	 * Adds the class 'aloha-ephemera-attr' to the given element. Also
-	 * adds or modifies the 'data-aloha-ephemera-attr' attribute,
-	 * and adds to it the name of the given attribute.
+	 * Adds the class 'aloha-ephemera-attr' to the given element. Also adds or
+	 * modifies the 'data-aloha-ephemera-attr' attribute, and adds to it the
+	 * name of the given attribute.
 	 *
 	 * These modifications can be made directly without recurse to this
 	 * function, if that is more convenient.
 	 */
 	function markAttr(elem, attr) {
-		elem = $(elem);
-		var data = elem.attr('data-aloha-ephemera-attr');
+		var data = $(elem).attr('data-aloha-ephemera-attr');
 		if (null == data || '' === data) {
 			data = attr;
 		} else if (-1 === Strings.words(data).indexOf(attr)) {
 			data += ' ' + attr;
 		}
-		elem.attr('data-aloha-ephemera-attr', data);
-		elem.addClass('aloha-ephemera-attr');
+		$(elem).attr('data-aloha-ephemera-attr', data);
+		Dom.addClass(elem, 'aloha-ephemera-attr');
 	}
 
 	/**
 	 * Marks an element as a ephemeral, excluding subnodes.
 	 *
-	 * The element will be removed when the prune function is called on
-	 * it, but any children of the wrapper element will remain in its
-	 * place.
+	 * The element will be removed when the prune function is called on it, but
+	 * any children of the wrapper element will remain in its place.
 	 *
-	 * A wrapper is an element that wraps a single non-ephemeral
-	 * element. A filler is an element that is wrapped by a single
-	 * non-ephemeral element. This distinction is not important for the
-	 * prune function, which behave the same for both wrappers and
-	 * fillers, but it makes it easier to build more advanced content
-	 * inspection algorithms (also see note at the header of ephemeral.js).
+	 * A wrapper is an element that wraps a single non-ephemeral element. A
+	 * filler is an element that is wrapped by a single non-ephemeral element.
+	 * This distinction is not important for the prune function, which behave
+	 * the same for both wrappers and fillers, but it makes it easier to build
+	 * more advanced content inspection algorithms (also see note at the header
+	 * of ephemeral.js).
 	 *
 	 * Adds the class 'aloha-ephemera-wrapper' to the given element.
 	 *
-	 * The class 'aloha-ephemera-wrapper' may also be added directly,
-	 * without recurse to this function, if that is more convenient.
+	 * The class 'aloha-ephemera-wrapper' may also be added directly, without
+	 * recurse to this function, if that is more convenient.
 	 *
-	 * NB: a wrapper element must not wrap a filler element. Wrappers
-	 *     and fillers are ephermeral. A wrapper must always wrap a
-	 *     single _non-ephemeral_ element, and a filler must always fill
-	 *     a single _non-ephemeral_ element.
+	 * NB: a wrapper element must not wrap a filler element. Wrappers and
+	 *     fillers are ephermeral. A wrapper must always wrap a single
+	 *     _non-ephemeral_ element, and a filler must always fill a single
+	 *     _non-ephemeral_ element.
 	 */
 	function markWrapper(elem) {
-		$(elem).addClass('aloha-ephemera-wrapper');
+		Dom.addClass(elem, 'aloha-ephemera-wrapper');
 	}
 
 	/**
@@ -296,21 +267,21 @@ define([
 	 * See wrapper()
 	 */
 	function markFiller(elem) {
-		$(elem).addClass('aloha-ephemera-filler');
+		Dom.addClass(elem, 'aloha-ephemera-filler');
 	}
 
 	/**
-	 * Prunes attributes marked as ephemeral with Ephemera.attributes()
-	 * from the given element.
+	 * Prunes attributes marked as ephemeral with Ephemera.attributes() from the
+	 * given element.
 	 */
 	function pruneMarkedAttrs(elem) {
 		var $elem = $(elem);
 		var data = $elem.attr('data-aloha-ephemera-attr');
 		var i;
 		var attrs;
-		// Because IE7 crashes if we remove this attribute. If the
-		// dom-to-xhtml plugin is turned on, it will handle the removal
-		// of this attribute during serialization.
+		// Because IE7 crashes if we remove this attribute. If the dom-to-xhtml
+		// plugin is turned on, it will handle the removal of this attribute
+		// during serialization.
 		if (!Browser.ie7) {
 			$elem.removeAttr('data-aloha-ephemera-attr');
 		}
@@ -323,8 +294,9 @@ define([
 	}
 
 	/**
-	 * Determines whether the given attribute of the given element is
-	 * ephemeral according to the given emap.
+	 * Determines whether the given attribute of the given element is ephemeral
+	 * according to the given emap.
+	 *
 	 * See Ephemera.ephemera() for an explanation of attrMap and attrRxs.
 	 */
 	function isAttrEphemeral(elem, attrName, attrMap, attrRxs) {
@@ -361,13 +333,12 @@ define([
 	}
 
 	/**
-	 * Prunes an element of attributes and classes or removes the
-	 * element by returning false.
+	 * Prunes an element of attributes and classes or removes the element by
+	 * returning false.
 	 *
-	 * Elements attributes and classes can either be marked as
-	 * ephemeral, in which case the element itself will contain the
-	 * prune-info, or they can be specified as ephemeral with the given
-	 * emap.
+	 * Elements attributes and classes can either be marked as ephemeral, in
+	 * which case the element itself will contain the prune-info, or they can be
+	 * specified as ephemeral with the given emap.
 	 *
 	 * See ephemera() for an explanation of the emap argument.
 	 */
@@ -440,13 +411,12 @@ define([
 	 *
 	 * Elements marked with Ephemera.markElement() will be removed.
 	 * Attributes marked with Ephemera.markAttr() will be removed.
-	 * Elements marked with Ephemera.markWrapper() or
-	 * Ephemera.markFiller() will be replaced with their children.
+	 * Elements marked with Ephemera.markWrapper() or Ephemera.markFiller() will
+	 * be replaced with their children.
 	 *
 	 * See ephemera() for an explanation of the emap argument.
 	 *
-	 * All properties of emap, if specified, are required, but may be
-	 * empty.
+	 * All properties of emap, if specified, are required, but may be empty.
 	 *
 	 * The element is modified in-place and returned.
 	 */
@@ -459,7 +429,20 @@ define([
 		return pruneStepClosure(elem)[0];
 	}
 
-	return {
+	/**
+	 * Ephemera functions.
+	 *
+	 * Ephemera.ephemera()
+	 * Ephemera.classes()
+	 * Ephemera.attributes()
+	 * Ephemera.markElement()
+	 * Ephemera.markAttr()
+	 * Ephemera.markWrapper()
+	 * Ephemera.markFiller()
+	 * Ephemera.prune()
+	 * Ephemera.isAttrEphemeral()
+	 */
+	var exports = {
 		ephemera: ephemera,
 		classes: classes,
 		attributes: attributes,
@@ -470,4 +453,6 @@ define([
 		prune: prune,
 		isAttrEphemeral: isAttrEphemeral
 	};
+
+	return exports;
 });

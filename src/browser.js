@@ -30,7 +30,7 @@ define([], function BrowserUtilities() {
 	}());
 
 	/**
-	 * Browser information.
+	 * Browser vendor and version properties.
 	 *
 	 * @type {Object}
 	 */
@@ -52,8 +52,6 @@ define([], function BrowserUtilities() {
 
 	/**
 	 * Browser and feature detection functions.
-	 *
-	 * API:
 	 *
 	 * Browser.browser
 	 * Browser.ie

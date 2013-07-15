@@ -1,15 +1,21 @@
 define([
 	'dom',
+	'traversing',
 	'cursors',
 	'arrays',
 	'strings'
-], function (
+], function BoundaryMarkersUtilities(
 	Dom,
+	Traversing,
 	Cursors,
 	Arrays,
 	Strings
 ) {
 	'use strict';
+
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('BoundaryMarkers');
+	}
 
 	/**
 	 * Insert selection markers at the given range.
@@ -38,7 +44,7 @@ define([
 	 * Set the selection based on selection markers found in the content inside
 	 * of `rootElem`.
 	 *
-	 * @param {DomElement} rootElem
+	 * @param {DOMObject} rootElem
 	 * @param {Range} range
 	 */
 	function extract(rootElem, range) {
@@ -81,8 +87,8 @@ define([
 			}
 			var text = node.nodeValue;
 			var parts = Strings.splitIncl(text, /[\[\{\}\]]/g);
-			// Because modifying every text node when there can be
-			// only two markers seems like too much overhead.
+			// Because modifying every text node when there can be only two
+			// markers seems like too much overhead.
 			if (!Arrays.contains(markers, parts[0]) && parts.length < 2) {
 				return;
 			}
@@ -93,15 +99,23 @@ define([
 				forceNextSplit = forceNextSplit || (i === 0);
 				if (Arrays.contains(markers, part)) {
 					forceNextSplit = setBoundaryPoint(part, node);
-				} else if (!forceNextSplit && node.previousSibling && 3 === node.previousSibling.nodeType) {
-					node.previousSibling.insertData(node.previousSibling.length, part);
+				} else if (!forceNextSplit
+						&& node.previousSibling
+							&& 3 === node.previousSibling.nodeType) {
+					node.previousSibling.insertData(
+						node.previousSibling.length,
+						part
+					);
 				} else {
-					node.parentNode.insertBefore(document.createTextNode(part), node);
+					node.parentNode.insertBefore(
+						document.createTextNode(part),
+						node
+					);
 				}
 			});
 			node.parentNode.removeChild(node);
 		}
-		Dom.walkRec(rootElem, extractMarkers);
+		Traversing.walkRec(rootElem, extractMarkers);
 		if (2 !== markersFound) {
 			throw 'Missing one or both markers';
 		}
@@ -110,6 +124,9 @@ define([
 	/**
 	 * Functions for inserting and extracting range boundary markers into the
 	 * DOM.
+	 *
+	 * BoundaryMarkers.insert()
+	 * BoundaryMarkers.extract()
 	 */
 	var exports = {
 		insert: insert,
