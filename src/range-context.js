@@ -144,8 +144,8 @@ define([
 		var end      = Dom.nodeAtOffset(ec, eo);
 		var startEnd = Dom.isAtEnd(sc, so);
 		var endEnd   = Dom.isAtEnd(ec, eo);
-		var ascStart = Dom.childAndParentsUntilNode(start, cac);
-		var ascEnd   = Dom.childAndParentsUntilNode(end,   cac);
+		var ascStart = Traversing.childAndParentsUntilNode(start, cac);
+		var ascEnd   = Traversing.childAndParentsUntilNode(end,   cac);
 		var stepAtStart = makePointNodeStep(start, startEnd, stepRightStart, stepPartial);
 		var stepAtEnd   = makePointNodeStep(end, endEnd, stepRightEnd, stepPartial);
 		ascendWalkSiblings(ascStart, startEnd, carryDown, stepLeftStart, stepAtStart, stepRightStart, arg);
@@ -192,7 +192,10 @@ define([
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
 		walkBoundaryInsideOutside(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec, cacOverride);
-		var fromCacToTop = Dom.childAndParentsUntilInclNode(cac, pushDownFrom);
+		var fromCacToTop = Traversing.childAndParentsUntilInclNode(
+			cac,
+			pushDownFrom
+		);
 		ascendWalkSiblings(fromCacToTop, false, getOverride, pushDownOverride, clearOverride, pushDownOverride, null);
 		clearOverride(pushDownFrom);
 	}
@@ -216,7 +219,7 @@ define([
 			// Because we prefer a node above the cac if possible.
 			return (cac !== node && isReusable(node)) || isUpperBoundary(node) || isObstruction(node);
 		}
-		var cacToReusable = Dom.childAndParentsUntilIncl(cac, untilIncl);
+		var cacToReusable = Traversing.childAndParentsUntilIncl(cac, untilIncl);
 		var reusable = Arrays.last(cacToReusable);
 		if (!isReusable(reusable)) {
 			// Because, although we preferred a node above the cac, we
@@ -338,11 +341,17 @@ define([
 		var cacOverride = null;
 		var isNonClearableOverride = false;
 		var upperBoundaryAndAbove = false;
-		var fromCacToContext = Dom.childAndParentsUntilIncl(cac, function (node) {
-			// Because we shouldn't expect hasContext to handle the
-			// document element (which has nodeType 9).
-			return !node.parentNode || Dom.Nodes.DOCUMENT === node.parentNode.nodeType || hasInheritableContext(node);
-		});
+		var fromCacToContext = Traversing.childAndParentsUntilIncl(
+			cac,
+			function (node) {
+				// Because we shouldn't expect hasContext to handle the document
+				// element (which has nodeType 9).
+				return (
+					!node.parentNode
+						|| Dom.Nodes.DOCUMENT === node.parentNode.nodeType
+							|| hasInheritableContext(node)
+				);
+			});
 		fromCacToContext.forEach(function (node) {
 			upperBoundaryAndAbove = upperBoundaryAndAbove || isUpperBoundary(node);
 			// Because we are only interested in non-context overrides.
@@ -1048,7 +1057,10 @@ define([
 	}
 
 	function ascendOffsetUntilInclNode(node, atEnd, carryDown, before, at, after, untilInclNode) {
-		var ascend = Dom.childAndParentsUntilInclNode(node, untilInclNode);
+		var ascend = Traversing.childAndParentsUntilInclNode(
+			node,
+			untilInclNode
+		);
 		var stepAtStart = makePointNodeStep(node, atEnd, after, at);
 		ascendWalkSiblings(ascend, atEnd, carryDown, before, at, after);
 	}
@@ -1115,8 +1127,13 @@ define([
 			var endEnd = Dom.isAtEnd(range.endContainer, range.endOffset);
 
 			var splitCac = !opts.cacAndAboveUntil(cac);
-			var fromCacToTop = Dom.childAndParentsUntil(cac, opts.cacAndAboveUntil);
-			var topmostUnsplitNode = fromCacToTop.length ? Arrays.last(fromCacToTop).parentNode : cac;
+			var fromCacToTop = Traversing.childAndParentsUntil(
+				cac,
+				opts.cacAndAboveUntil
+			);
+			var topmostUnsplitNode = fromCacToTop.length
+			                       ? Arrays.last(fromCacToTop).parentNode
+			                       : cac;
 
 			var wrapper = null;
 			var removeEmpty = [];
