@@ -3,7 +3,7 @@ require([
 	'../src/dom',
 	'../src/html',
 	'../src/ranges',
-	'../src/range-context',
+	'../src/editing',
 	'../src/functions',
 	'../src/browser',
 	'../src/boundary-markers',
@@ -13,7 +13,7 @@ require([
 	Dom,
 	Html,
 	Ranges,
-	RangeContext,
+	Editing,
 	Fn,
 	Browser,
 	BoundaryMarkers,
@@ -21,7 +21,7 @@ require([
 ) {
 	'use strict';
 
-	module('RangeContext');
+	module('Editing');
 
 	function switchElemTextSelection(html) {
 		return html.replace(/[\{\}\[\]]/g, function (match) {
@@ -77,13 +77,13 @@ require([
 
 	function testWrap(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			RangeContext.wrap(range, 'B');
+			Editing.wrap(range, 'B');
 		});
 	}
 
 	function testUnformat(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			RangeContext.wrap(range, 'B', true);
+			Editing.wrap(range, 'B', true);
 		});
 	}
 
@@ -127,8 +127,8 @@ require([
 		var opts = {
 			isObstruction: isObstruction
 		};
-		testMutation('RangeContext.format - ' + title, before, expected, function (dom, range) {
-			RangeContext.format(range, styleName, styleValue, opts);
+		testMutation('Editing.format - ' + title, before, expected, function (dom, range) {
+			Editing.format(range, styleName, styleValue, opts);
 		});
 	}
 
@@ -171,7 +171,7 @@ require([
 	  '<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>');
 
 	var t = function (title, before, after) {
-		testWrap('RangeContext.wrap -' + title, before, after);
+		testWrap('Editing.wrap -' + title, before, after);
 	};
 
 	t('noop1', '<p><b>[Some text.]</b></p>', '<p><b>{Some text.}</b></p>');
@@ -223,7 +223,7 @@ require([
 	  '<p>{<b>one two three</b>}</p>');
 
 	var t = function (title, before, after) {
-		testWrap('RangeContext.wrap-restack - ' + title, before, after);
+		testWrap('Editing.wrap-restack - ' + title, before, after);
 	};
 
 	t('across elements',
@@ -255,7 +255,7 @@ require([
 	  '<p><i><u><s><b>Some</b></s></u>!{<b> text</b>}</i></p>');
 
 	var t = function (title, before, after) {
-		testUnformat('RangeContext.unformat - ' + title, before, after);
+		testUnformat('Editing.unformat - ' + title, before, after);
 	};
 
 	t('noop', '<p>{Some text.}</p>', '<p>{Some text.}</p>');
@@ -322,11 +322,11 @@ require([
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
 
 	t = function (title, before, after) {
-		testMutation('RangeContext.split ' + title, before, after, function (dom, range) {
+		testMutation('Editing.split ' + title, before, after, function (dom, range) {
 			function below(node) {
 				return node.nodeName === 'DIV';
 			}
-			RangeContext.split(range, {below: below});
+			Editing.split(range, {below: below});
 		});
 	};
 
@@ -388,7 +388,7 @@ require([
 	  '<div>{<i><u><sub></sub></u>a</i>b<i>c<u><sub></sub></u></i>}</div>');
 
 	t = function (title, before, after) {
-		testMutation('RangeContext.split+format - ' + title, before, after, function (dom, range) {
+		testMutation('Editing.split+format - ' + title, before, after, function (dom, range) {
 			var cac = range.commonAncestorContainer;
 			function until(node) {
 				return node.nodeName === 'CODE';
@@ -396,8 +396,8 @@ require([
 			function below(node) {
 				return cac === node;
 			}
-			RangeContext.split(range, {below: below, until: until});
-			RangeContext.wrap(range, 'B');
+			Editing.split(range, {below: below, until: until});
+			Editing.wrap(range, 'B');
 		});
 	};
 
@@ -421,7 +421,7 @@ require([
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 function (dom, range) {
-					 RangeContext.split(range, {below: Fn.returnFalse});
+					 Editing.split(range, {below: Fn.returnFalse});
 				 });
 
 	t = function (title, before, after) {

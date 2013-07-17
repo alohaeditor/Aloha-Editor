@@ -1,4 +1,4 @@
 								  KNOWN ISSUES
 								  ~~~~~~~~~~~~
 
-* RangeContext.wrap() in IE7
+* Editing.wrap() in IE7

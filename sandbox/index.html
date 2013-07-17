@@ -42,7 +42,7 @@
 		<script src="mandox.js"></script>
 		<script>
 			require.urlPrefix = '../src/';
-			require(['api'], function (Aloha) {
+			require(['aloha'], function (Aloha) {
 				'use strict';
 				window.Aloha = Aloha;
 				var range = Aloha.Ranges.create(
@@ -51,7 +51,7 @@
 				);
 				Aloha.Ranges.select(Aloha.Ranges.extendToWord(range));
 				range = Aloha.Ranges.get();
-				Aloha.RangeContext.wrap(range, 'u');
+				Aloha.Editing.wrap(range, 'u');
 				Aloha.Ranges.select(range);
 			});
 		</script>
