@@ -409,7 +409,7 @@ define([
 	}
 
 	/**
-	 * Function to work with HTML content.
+	 * Functions for working with HTML content.
 	 */
 	var exports = {
 		isControlCharacter: isControlCharacter,
