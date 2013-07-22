@@ -18,7 +18,7 @@
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-watch": "~0.4.4",
     "grunt-contrib-compress": "~0.5.2",
-    "grunt-closure-compiler": "0.0.18",
+    "grunt-closure-compiler": "0.0.19",
     "grunt-contrib-qunit": "~0.2.2"
   }
 }
