@@ -40,24 +40,14 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-		compress: {
-			dist: {
-				options: {
-					mode: 'gzip'
-				},
-				files: [
-					{
-						expand: true,
-						src: ['<%= distDir %>/<%= distFileName %>.min.js']
-					}
-				]
-			}
-		},
 		watch: {
 			jshint: {
 				files: ['src/**'],
 				tasks: ['jshint']
 			}
+		},
+		qunit: {
+			all: ['tests/index.html']
 		}
 	};
 
@@ -66,6 +56,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-closure-compiler');
+	grunt.loadNpmTasks('grunt-contrib-qunit');
 	
-	grunt.registerTask('default', ['install-dependencies', 'jshint', 'closure-compiler']);
+	grunt.registerTask('default', ['install-dependencies', 'jshint', 'qunit', 'closure-compiler']);
 };
