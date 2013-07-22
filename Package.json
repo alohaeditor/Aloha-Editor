@@ -1,6 +1,6 @@
 {
   "name": "aloha-editor",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Aloha Editor a HTML editing library and tools.",
   "homepage": "http://www.aloha-editor.org",
   "repository": {
@@ -18,6 +18,7 @@
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-watch": "~0.4.4",
     "grunt-contrib-compress": "~0.5.2",
-    "grunt-closure-compiler": "0.0.18"
+    "grunt-closure-compiler": "0.0.18",
+    "grunt-contrib-qunit": "~0.2.2"
   }
 }
