@@ -4,7 +4,7 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([
+ define([
 	'dom',
 	'maps',
 	'arrays',
@@ -367,7 +367,7 @@ define([
 		var child = elem.firstChild;
 		while (child) {
 			if (!isUnrenderedWhitespace(child)
-				    && (1 === child.nodeType || 3 === child.nodeType)) {
+				&& (1 === child.nodeType || 3 === child.nodeType)) {
 				return true;
 			}
 			child = child.nextSibling;
