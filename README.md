@@ -56,7 +56,7 @@ Meet the "A" Team
 
 [![Petro Salema](http://www.gravatar.com/avatar/2087327e79d09b56ce8572e6f363abff.jpg?s=70)](http://aloha-editor.org) | [![Deliminator](http://www.gravatar.com/avatar/dbc8cd8da5024eba7ffc2f5713e833f7.jpg?s=70)](http://aloha-editor.org) | [![Haymo Meran](http://www.gravatar.com/avatar/7f3f1e000b09a2314b5261de53de0733.jpg?s=70)](https://aloha-editor.org/foo-bar) | [![Clemens Prerovsky](http://www.gravatar.com/avatar/c84901471a3d6c401c37239dda64c6ff.jpg?s=70)](http://aloha-editor.org)
 :---:|:---:|:---:|:---:
-[One](http://aloha-editor.org) | [Two](http://aloha-editor.org) | [Three](http://aloha-editor.org) | [Four](http://aloha-editor.org)
+[Petro Salema](http://aloha-editor.org) | [Deliminator](http://aloha-editor.org) | [Haymo Meran](http://aloha-editor.org) | [Clemens Prerovsky](http://aloha-editor.org)
 
 ## Contact
 
