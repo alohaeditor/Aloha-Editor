@@ -18,6 +18,13 @@ TODO
 ## Become a contributor
 TODO
 
+## Build and test
+
+We use Google closure compiler to build. Check out [Grunt Closure Compiler](https://github.com/gmarty/grunt-closure-compiler#closure-compiler-installation-from-source) how to setup Google closure compiler for grunt.
+
+	npm install
+	grunt qunit
+
 ## Contributors
 Meet the "A" Team
 
