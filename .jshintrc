@@ -1,0 +1,12 @@
+{
+	"eqnull": true,
+	"smarttabs": true,
+	"laxbreak": true,
+	"evil": true,
+	"globals": {
+		"jQuery": true,
+		"console": true,
+		"module": true,
+		"document": true
+	}
+}
