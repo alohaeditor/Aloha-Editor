@@ -40,11 +40,9 @@
 		<script src="../src/require-proto.js"></script>
 		<script src="../src/require-proto.dev.js"></script>
 		<script src="mandox.js"></script>
-		<script>define.amd = {jQuery:true};</script>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.js"></script>
 		<script>
 			require.urlPrefix = '../src/';
-			require(['api'], function (Aloha) {
+			require(['aloha'], function (Aloha) {
 				'use strict';
 				window.Aloha = Aloha;
 				var range = Aloha.Ranges.create(
@@ -53,7 +51,7 @@
 				);
 				Aloha.Ranges.select(Aloha.Ranges.extendToWord(range));
 				range = Aloha.Ranges.get();
-				Aloha.RangeContext.wrap(range, 'u');
+				Aloha.Editing.wrap(range, 'u');
 				Aloha.Ranges.select(range);
 			});
 		</script>

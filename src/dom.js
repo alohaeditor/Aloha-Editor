@@ -5,14 +5,12 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'jquery',
 	'functions',
 	'maps',
 	'arrays',
 	'strings',
 	'browser'
 ], function DomUtilities(
-	$,
 	Fn,
 	Maps,
 	Arrays,
@@ -26,6 +24,26 @@ define([
 	}
 
 	var ATTRIBUTE = /\s([^\/<>\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^>\/\s]+))?/g;
+
+	/**
+	 * Numeric codes that represent the type of DOM interface node types.
+	 *
+	 * @type {object}
+	 */
+	var Nodes = {
+		ELEMENT: 1,
+		ATTR: 2,
+		TEXT: 3,
+		CDATA_SECTION: 4,
+		ENTITY_REFERENCE: 5,
+		ENTITY: 6,
+		PROCESSING_INSTRUCTION: 7,
+		COMMENT: 8,
+		DOCUMENT: 9,
+		DOCUMENTTYPE: 10,
+		DOCUMENT_FRAGMENT: 11,
+		NOTATION: 12
+	};
 
 	/**
 	 * Like insertBefore, inserts firstChild into parent before refChild, except
@@ -112,6 +130,60 @@ define([
 		return names;
 	}
 
+	function supportsAttributes(node) {
+		var type = node.nodeType;
+		return !(
+			!node
+				|| type === Nodes.TEXT
+					|| type === Nodes.COMMENT
+						|| type === Nodes.ATTR
+		);
+	}
+
+	/**
+	 * Get's the value of the given element's specified attribute.
+	 *
+	 * @param {DOMObject} elem
+	 * @param {String} attr
+	 *        Case insensitive attribute name to retrieve.
+	 * @return {String?}
+	 *         The value of the attribute or null if no value for it can be
+	 *         determined.
+	 */
+	function getAttr(elem, attr) {
+		return supportsAttributes(elem) ? elem.getAttribute(attr) : null;
+	}
+
+	/**
+	 * Set's the value of the given element's specified attribute.
+	 *
+	 * @param {DOMObject} elem
+	 * @param {String} attr
+	 *        Case insensitive attribute name to retrieve.
+	 * @param {String}
+	 *        The value to set into attribute `attr`.
+	 */
+	function setAttr(elem, attr, value) {
+		if (value !== null
+				&& 'undefined' !== typeof value
+					&& supportsAttributes(elem)) {
+			elem.setAttribute(attr, value);
+		}
+	}
+
+	/**
+	 * Removes the specified attribute from the given element.
+	 *
+	 * @param {DOMObject} elem
+	 * @param {String} attr
+	 *        Case insensitive attribute name to retrieve.
+	 */
+	function removeAttr(elem, attr) {
+		if (supportsAttributes(elem)) {
+			elem.removeAttribute(attr);
+		}
+	}
+
 	/**
 	 * Gets the attributes of the given element.
 	 *
@@ -131,9 +203,9 @@ define([
 		var len;
 		for (i = 0, len = names.length; i < len; i++) {
 			var name = names[i];
-			var value = $.attr(elem, name);
+			var value = getAttr(elem, name);
 			if (null == value) {
-				value = "";
+				value = '';
 			} else {
 				value = value.toString();
 			}
@@ -180,6 +252,34 @@ define([
 	}
 
 	/**
+	 * Returns a set of elements which have the given class names.
+	 *
+	 * @param {Array[String]} classes
+	 * @param {DOMObject=} context
+	 *        The root element in which to do the search.
+	 * @return {Array[DOMObject]}
+	 *         A set of DOM elements.
+	 */
+	function getElementsByClassNames(classes, context) {
+		context = context || document;
+		var i;
+		var j;
+		var len;
+		var found;
+		var results = [];
+		for (i = 0; i < classes.length; i++) {
+			found = context.getElementsByClassName(classes[i]);
+			len = found.length;
+			for (j = 0; j < len; j++) {
+				if (!Arrays.contains(results, found[j])) {
+					results.push(found[j]);
+				}
+			}
+		}
+		return results;
+	}
+
+	/**
 	 * Indexes descendant elements based on the individual classes in
 	 * the class attribute.
 	 *
@@ -223,16 +323,11 @@ define([
 	 *        may not have an entry in the returned map.
 	 */
 	function indexByClass(root, classMap) {
-		var elems;
-		if (Browser.ie7) {
-			elems = root.getElementsByTagName('*');
-		} else {
-			// Optimize for browsers that support querySelectorAll/getElementsByClassName.
-			// On IE8 for example, if there is a relatively high
-			// elems/resultSet ratio, performance can improve by a factor of 2.
-			elems = $(root).find('.' + Maps.keys(classMap).join(',.'));
-		}
-		return indexByClassHaveList(elems, classMap);
+		return indexByClassHaveList(
+			Browser.ie7 ? root.getElementsByTagName('*')
+			            : getElementsByClassNames(Maps.keys(classMap), root),
+			classMap
+		);
 	}
 
 	/**
@@ -283,30 +378,12 @@ define([
 		    len;
 		for (i = 0, len = names.length; i < len; i++) {
 			var name = names[i];
-			index[name] = $.makeArray(root.getElementsByTagName(name));
+			index[name] = Array.prototype.slice.apply(
+				root.getElementsByTagName(name)
+			);
 		}
 		return index;
 	}
-
-	/**
-	 * Numeric codes that represent the type of DOM interface node types.
-	 *
-	 * @type {object}
-	 */
-	var Nodes = {
-		ELEMENT: 1,
-		ATTR: 2,
-		TEXT: 3,
-		CDATA_SECTION: 4,
-		ENTITY_REFERENCE: 5,
-		ENTITY: 6,
-		PROCESSING_INSTRUCTION: 7,
-		COMMENT: 8,
-		DOCUMENT: 9,
-		DOCUMENTTYPE: 10,
-		DOCUMENT_FRAGMENT: 11,
-		NOTATION: 12
-	};
 
 	/**
 	 * Calculates the number of child nodes contained in the given DOM element.
@@ -412,6 +489,13 @@ define([
 		} else {
 			ref.parentNode.insertBefore(node, ref);
 		}
+	}
+
+	/**
+	 * @private
+	 */
+	function remove(node) {
+		node.parentNode.removeChild(node);
 	}
 
 	/**
@@ -727,13 +811,6 @@ define([
 	}
 
 	/**
-	 * @private
-	 */
-	function remove(node) {
-		node.parentNode.removeChild(node);
-	}
-
-	/**
 	 * Removes the given node while keeping it's content intact.
 	 *
 	 * @param {DOMObject} node
@@ -843,8 +920,11 @@ define([
 	 * Sets a style on the given element by modifying its style attribute.
 	 */
 	function setStyle(node, name, value) {
-		// Because only the empty string removes a style.
-		$(node).css(name, value);
+		name = Strings.dashesToCamelCase(name);
+		var styles = node.style;
+		if (name in styles) {
+			styles[name] = value;
+		}
 	}
 
 	/**
@@ -884,18 +964,17 @@ define([
 	 * @param {String} styleName
 	 */
 	function removeStyle(elem, styleName) {
-		var $elem = $(elem);
 		if (Browser.hasRemoveProperty) {
 			elem.style.removeProperty(styleName);
-			if (Strings.empty($elem.attr('style'))) {
-				$elem.removeAttr('style');
+			if (Strings.empty(getAttr(elem, 'style'))) {
+				removeAttr(elem, 'style');
 			}
 		} else {
 			// TODO: this is a hack for browsers that don't support
 			//       removeProperty (ie < 9)and will not work correctly for all
 			//       valid inputs, but it's the simplest thing I can come up
 			//       with without implementing a full css parser.
-			var style = $elem.attr('style');
+			var style = getAttr(elem, 'style');
 			if (null == style) {
 				return;
 			}
@@ -910,9 +989,9 @@ define([
 			);
 			style = style.replace(stripRegex, '');
 			if (!Strings.empty(style)) {
-				$elem.attr('style', style);
+				setAttr(elem, 'style', style);
 			} else {
-				$elem.removeAttr('style');
+				removeAttr(elem, 'style');
 			}
 		}
 	}
@@ -987,8 +1066,13 @@ define([
 		addClass: addClass,
 		removeClass: removeClass,
 
-		hasAttrs: hasAttrs,
+		getElementsByClassNames: getElementsByClassNames,
+
+		getAttr: getAttr,
+		setAttr: setAttr,
+		removeAttr: removeAttr,
 		attrNames: attrNames,
+		hasAttrs: hasAttrs,
 		attrs: attrs,
 
 		indexByClass: indexByClass,

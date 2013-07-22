@@ -7,8 +7,9 @@ define([
 	'ephemera',
 	'functions',
 	'html',
+	'dom-to-xhtml',
 	'maps',
-	'range-context',
+	'editing',
 	'ranges',
 	'strings',
 	'traversing'
@@ -21,8 +22,9 @@ define([
 	Ephemera,
 	Functions,
 	Html,
+	Xhtml,
 	Maps,
-	RangeContext,
+	Editing,
 	Ranges,
 	Strings,
 	Traversing
@@ -40,19 +42,20 @@ define([
 	 * editing solutions in HTML.
 	 */
 	var Aloha = {
-		Arrays       : Arrays,
-		Browser      : Browser,
-		Content      : Content,
-		Cursors      : Cursors,
-		Dom          : Dom,
-		Ephemera     : Ephemera,
-		Functions    : Functions,
-		Html         : Html,
-		Maps         : Maps,
-		RangeContext : RangeContext,
-		Ranges       : Ranges,
-		Strings      : Strings,
-		Traversing   : Traversing
+		Arrays     : Arrays,
+		Browser    : Browser,
+		Content    : Content,
+		Cursors    : Cursors,
+		Dom        : Dom,
+		Editing    : Editing,
+		Ephemera   : Ephemera,
+		Functions  : Functions,
+		Html       : Html,
+		Maps       : Maps,
+		Ranges     : Ranges,
+		Strings    : Strings,
+		Traversing : Traversing,
+		Xhtml      : Xhtml
 	};
 
 	return Aloha;
