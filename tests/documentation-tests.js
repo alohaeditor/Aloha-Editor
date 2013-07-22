@@ -1,4 +1,4 @@
-require(['../src/api'], function (Aloha) {
+require(['../src/aloha'], function (Aloha) {
 	'use strict';
 
 	module('Documentation');
