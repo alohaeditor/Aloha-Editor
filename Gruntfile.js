@@ -2,7 +2,7 @@ module.exports = function(grunt) {
 	'use strict';
 	var gruntConfig = {
 
-		pkg: grunt.file.readJSON('Package.json'),
+		pkg: grunt.file.readJSON('package.json'),
 
 		distFileName: '<%= pkg.name %>-<%= pkg.version %>',
 		distDir: './dist/<%= distFileName %>',
