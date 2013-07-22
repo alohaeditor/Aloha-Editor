@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 				js: './*.js',
 				jsOutputFile: '<%= dest %>',
 				options: {
-					common_js_entry_module: 'api.js',
+					common_js_entry_module: 'aloha.js',
 					//common_js_module_path_prefix: './src/',
 					transform_amd_modules: undefined,
 					process_common_js_modules: undefined,
