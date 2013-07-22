@@ -27,17 +27,7 @@ module.exports = function(grunt) {
 		jshint: {
 			files: ['<%= src %>'],
 			options: {
-				eqnull: true,
-				smarttabs: true,
-				laxbreak: true,
-				// very bad, but needed for mandox
-				evil: true,
-				globals: {
-					jQuery: true,
-					console: true,
-					module: true,
-					document: true
-				}
+				jshintrc: './.jshintrc'
 			}
 		},
 		watch: {
