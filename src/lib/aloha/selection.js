@@ -276,12 +276,37 @@ define([
 					'u': true,
 					'a': true
 				},
+				'td': {
+					'textNode': true,
+					'b': true,
+					'i': true,
+					'em': true,
+					'sup': true,
+					'sub': true,
+					'br': true,
+					'span': true,
+					'img': true,
+					'ul': true,
+					'ol': true,
+					'h1': true,
+					'h2': true,
+					'h3': true,
+					'h4': true,
+					'h5': true,
+					'h6': true,
+					'del': true,
+					'ins': true,
+					'u': true,
+					'a': true,
+					'table': true
+				},
 				'tr': {
 					'td': true,
 					'th': true
 				},
 				'table': {
-					'tr': true
+					'tr': true,
+					'table': true
 				},
 				'div': {
 					'textNode': true,
@@ -355,7 +380,7 @@ define([
 				'ul': this.tagHierarchy.ul,
 				'ol': this.tagHierarchy.ol,
 				'li': this.tagHierarchy.li,
-				'td': this.tagHierarchy.li,
+				'td': this.tagHierarchy.td,
 				'div': this.tagHierarchy.div,
 				'h1': this.tagHierarchy.h1,
 				'h2': this.tagHierarchy.h1,
