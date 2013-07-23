@@ -171,9 +171,12 @@ define([
 		 *                                     elements.
 		 */
 		processH: function (heading) {
-			if(!heading.id){
+			if (!heading.id) {
+				// We prefix the ID with "heading_" to not run accross
+				// problems with the ID starting with a number which
+				// would be disallowedÜ in HTML.
 				var $heading = $(heading),
-					ID = this.sanitize($heading.text());
+					ID = "heading_" + this.sanitize($heading.text());
 
 				ID = checkDuplicatedID(ID);
 

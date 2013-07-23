@@ -21,3 +21,6 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: (contenthandler) The content sanitizer has been corrected to use
               the editable that is passed to it's handler() function rather than
               the currently active aditable.
+
+- **BUGFIX**: (headerids) Fixed generation of invalid HTML ID's for headings when
+              the headings start with a number.
