@@ -11,3 +11,13 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: (blocks) The floating toolbar will now be shown when clicking
               inside of editables that are nested inside of standalone Empty
               blocks.
+
+- **BUGFIX**: (ui) It is now possible to configure the toolbar to not float at
+              all.
+
+- **BUGFIX**: (format) It is no longer possible to use formatting hotkeys to
+              apply disallowed formatting in an editable.
+
+- **BUGFIX**: (contenthandler) The content sanitizer has been corrected to use
+              the editable that is passed to it's handler() function rather than
+              the currently active aditable.
