@@ -1245,7 +1245,8 @@ define([
 		init: function() {},
 		activate: function () {},
 		deactivate: function () {},
-		renderBlockHandlesIfNeeded: function () {}
+		renderBlockHandlesIfNeeded: function () {},
+		_preventSelectionChangedEventHandler: function () {}
 	});
 
 	/**

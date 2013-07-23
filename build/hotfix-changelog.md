@@ -7,3 +7,7 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
+
+- **BUGFIX**: (blocks) The floating toolbar will now be shown when clicking
+              inside of editables that are nested inside of standalone Empty
+              blocks.
