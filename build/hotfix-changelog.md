@@ -19,8 +19,13 @@ All changes are categorized into one of the following keywords:
               apply disallowed formatting in an editable.
 
 - **BUGFIX**: (contenthandler) The content sanitizer has been corrected to use
-              the editable that is passed to it's handler() function rather than
+              the editable that is passed to it’s handler() function rather than
               the currently active aditable.
 
-- **BUGFIX**: (headerids) Fixed generation of invalid HTML ID's for headings when
+- **BUGFIX**: (headerids) Fixed generation of invalid HTML ID’s for headings when
               the headings start with a number.
+
+- **BUGFIX**: (editable) Aloha.Editable.registerEvents(), which attaches
+              necessary events to the given editable, has been introduced.  This
+              is part of a bug fix for applications that intergrate Aloha Editor
+              and need to re-attach events to editables.
