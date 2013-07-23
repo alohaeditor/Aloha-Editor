@@ -59,3 +59,4 @@ All changes are categorized into one of the following keywords:
 	This event will not be broadcasted when Ephemera.ephemera() is
 	accessed as a getter.
 
+- **BUGFIX**: selection: modified to allow nested tables
