@@ -509,9 +509,6 @@ define([], function ContentUtilities() {
 	 *        True if `inner` is allowed a direct child of `outer`.
 	 */
 	function allowsNesting(outer, inner) {
-		if (!inner || !outer || !inner.nodeName || !outer.nodeName) {
-			return false;
-		}
 		var categories;
 		var allowed = ALLOWED_CHILDREN[outer.nodeName];
 		if (!allowed) {
