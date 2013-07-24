@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 	'use strict';
 	var gruntConfig = {
 
@@ -8,6 +8,11 @@ module.exports = function(grunt) {
 		distDir: './dist/<%= distFileName %>',
 		dest: '<%= distDir %>/<%= distFileName %>.js',
 		src: ['./src/*.js'],
+
+		banner: '/* Aloha Editor <%= pkg.version %>'
+		      + ' | Copyright 2011-<%= grunt.template.today("yyyy") %> Gentics Software GmbH'
+		      + ' | http://aloha-editor.org/license'
+		      + ' */\n',
 
 		'closure-compiler': {
 			frontend: {
@@ -47,6 +52,24 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-closure-compiler');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
-	
-	grunt.registerTask('default', ['install-dependencies', 'jshint', 'qunit', 'closure-compiler']);
+
+	grunt.registerTask(
+		'banner',
+		'Prepends a license banner to the built file',
+		function () {
+			var filename = grunt.config('dest');
+			grunt.file.write(
+				filename,
+				grunt.config('banner') + grunt.file.read(filename)
+			);
+		}
+	);
+
+	grunt.registerTask('default', [
+		'install-dependencies',
+		'jshint',
+		'qunit',
+		'closure-compiler',
+		'banner'
+	]);
 };
