@@ -29,3 +29,8 @@ All changes are categorized into one of the following keywords:
               necessary events to the given editable, has been introduced.  This
               is part of a bug fix for applications that intergrate Aloha Editor
               and need to re-attach events to editables.
+
+- **BUGFIX**: (abbr) The abbreviation plugin will now use non-exclusive scopes
+              to toggle the visibility of its controls. This makes it compatible
+              with other plugins in terms of control visibility (e.g. when nesting
+              abbreviations with links).
