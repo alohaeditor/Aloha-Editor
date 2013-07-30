@@ -48,6 +48,11 @@ define([
 	var FIELD = null;
 
 	/**
+	 * UI Button to remove wai-lang
+	 */
+	var removeButton = null;
+
+	/**
 	 * Sets focus on the given field.
 	 *
 	 * @param {AttributeField} field
@@ -57,7 +62,9 @@ define([
 			field.foreground();
 			field.focus();
 		}
-		Scopes.setScope('wai-lang');
+		// show the field and remove button
+		FIELD.show();
+		removeButton.show();
 	}
 
 	/**
@@ -190,7 +197,7 @@ define([
 			width: 320,
 			valueField: 'id',
 			minChars: 1,
-			scope: 'wai-lang'
+			scope: 'Aloha.continuoustext'
 		});
 
 		plugin._wailangButton = Ui.adopt('wailang', ToggleButton, {
@@ -200,16 +207,14 @@ define([
 			click: toggleAnnotation
 		});
 
-		Ui.adopt('removewailang', Button, {
+		removeButton = Ui.adopt('removewailang', Button, {
 			tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
 			icon: 'aloha-icon aloha-icon-wai-lang-remove',
-			scope: 'wai-lang',
+			scope: 'Aloha.continuoustext',
 			click: function onButtonClick() {
 				removeMarkup(Selection.getRangeObject());
 			}
 		});
-
-		Scopes.createScope('wai-lang', 'Aloha.continuoustext');
 
 		FIELD.setTemplate(plugin.flags
 				? '<div class="aloha-wai-lang-img-item">' +
@@ -299,10 +304,21 @@ define([
 				if (markup) {
 					plugin._wailangButton.setState(true);
 					FIELD.setTargetObject(markup, 'lang');
-					Scopes.setScope('wai-lang');
+
+					// show the field and remove button
+					FIELD.show();
+					removeButton.show();
+
+					Scopes.enterScope(plugin.name, 'wai-lang');
 				} else {
 					plugin._wailangButton.setState(false);
 					FIELD.setTargetObject(null);
+
+					// hide the field and remove button
+					FIELD.hide();
+					removeButton.hide();
+
+					Scopes.leaveScope(plugin.name, 'wai-lang', true);
 				}
 			});
 
