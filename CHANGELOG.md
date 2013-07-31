@@ -12,7 +12,7 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
-## 0.24.14 - 2013/07/31
+## 0.23.14 - 2013/07/31
 
 - **BUGFIX**: abbr: The abbreviation plugin will now use non-exclusive scopes
               to toggle the visibility of its controls. This makes it compatible
