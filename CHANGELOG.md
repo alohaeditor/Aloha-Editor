@@ -12,6 +12,18 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.24.14 - 2013/07/31
+
+- **BUGFIX**: abbr: The abbreviation plugin will now use non-exclusive scopes
+              to toggle the visibility of its controls. This makes it compatible
+              with other plugins in terms of control visibility (e.g. when nesting
+              abbreviations with links).
+
+- **BUGFIX**: wai-lang: The wai-lang plugin will now use non-exclusive scopes
+              to toggle the visibility of its controls. This makes it compatible
+              with other plugins in terms of control visibility (e.g. when nesting
+              wai-lang with links).
+
 ## 0.23.13 - 2013/07/24
 
 
