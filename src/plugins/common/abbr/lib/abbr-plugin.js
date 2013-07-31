@@ -92,18 +92,16 @@ define([
 				}
 			});
 
-		    Scopes.createScope('abbr', 'Aloha.continuoustext');
-
 		    this.abbrField = AttributeField({
 		    	width: 320,
 		    	name: 'abbrText',
-		        scope: 'abbr'
+		        scope: 'Aloha.continuoustext'
 		    });
 		    
 		    this.remAbbrButton = Ui.adopt("removeAbbr", Button, {
 				tooltip: i18n.t('button.remabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr-rem',
-				scope: 'abbr',
+				scope: 'Aloha.continuoustext',
 				click: function () {
 					me.removeAbbr();
 				}
@@ -184,9 +182,20 @@ define([
 				if (foundMarkup) {
 					me._insertAbbrButton.hide();
 					me._formatAbbrButton.setState(true);
-					Scopes.setScope('abbr');
+					// show the field and button for abbreviation
+					me.abbrField.show();
+					me.remAbbrButton.show();
+
+					Scopes.enterScope(me.name, 'abbr');
+
 					me.abbrField.setTargetObject(foundMarkup, 'title');
 				} else {
+					// hide the field and button for abbreviation
+					me.abbrField.hide();
+					me.remAbbrButton.hide();
+
+					Scopes.leaveScope(me.name, 'abbr', true);
+
 					me._formatAbbrButton.setState(false);
 					me.abbrField.setTargetObject(null);
 				}
