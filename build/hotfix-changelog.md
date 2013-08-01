@@ -8,5 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-
-
+- **BUGFIX**:      core: Fixed selection bug in FF where it was possible to move the selection
+                   into a HR (by clicking on it)
