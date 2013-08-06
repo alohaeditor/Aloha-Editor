@@ -12,3 +12,5 @@ All changes are categorized into one of the following keywords:
                    into a HR (by clicking on it)
 - **BUGFIX**: (textcolor) The button for changing the textcolor can no longer be accidentally
 overwritten by custom background images.
+- **FEATURE**:     autoparagraph-plugin: The Autoparagraph Plugin checks the contents of editables
+                   and wraps content that is not contained in block level elements into paragraphs.
