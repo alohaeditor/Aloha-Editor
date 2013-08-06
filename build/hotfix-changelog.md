@@ -10,3 +10,5 @@ All changes are categorized into one of the following keywords:
 
 - **BUGFIX**: (textcolor) The button for changing the textcolor can no longer be accidentally
 overwritten by custom background images.
+- **BUGFIX**: (table) The table plugin will now handle pressing down in the last cell as well
+as pressing up in the first cell by positioning the cursor directly before or after the table.
