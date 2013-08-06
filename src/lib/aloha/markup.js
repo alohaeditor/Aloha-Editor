@@ -596,6 +596,7 @@ define([
 				} else {
 					cursorNode = tableWrapper.nextSibling;
 				}
+
 				while (cursorNode.nodeType !== 3) {
 					cursorNode = cursorNode.firstChild;
 					if (cursorNode === null) {
