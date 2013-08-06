@@ -335,7 +335,7 @@ define([
 		function getLast (node) {
 			var last;
 
-			for (var i=node.childNodes.length-1;i !== 0; i--) {
+			for (var i=node.childNodes.length-1; i > -1; i--) {
 				last = node.childNodes[i];
 				if (last.nodeName !== 'CAPTION' && !(last.nodeType === 3 && /^[\t\n\r ]+$/.test(last.data))) {
 					return last;
@@ -350,8 +350,6 @@ define([
 				return true;
 			}
 
-
-			// firstChild will also find textNodes while children[0] will only return non-text nodes
 			if (getLast(node.parentNode) === node) {
 				if (node.parentNode.nodeName === stopNodeName) {
 					return true;
