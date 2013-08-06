@@ -1,0 +1,61 @@
+h2. Autoparagraph Plugin
+
+The Autoparagraph Plugin checks the contents of editables and wraps content that is not contained in block level elements into paragraphs. 
+
+endprologue.
+
+h3. Functional Description
+
+The Plugin relies on the events @aloha-editable-created@ (which is fired when an editable is created) and @aloha-smart-content-changed@ (fired when the content of an editable changes).
+This will make sure that missing paragraphs are created when starting to edit and whenever content was changed.
+
+NOTE: The @aloha-smart-content-changed@ is not triggered immediately after content changes, but may take some time.
+
+The plugin will then first check whether the root DOM element of the editable allows insertion of paragraphs. If the root DOM element e.g. itself is a paragraph or a header, inserting paragraphs is not allowed and the plugin will simply do nothing.
+If inserting paragraphs is allowed and the plugin activated for the editable (see below for configuration settings), the plugin will find all immediate child DOM elements of the editable, that are allowed to be nested in paragraphs and wrap paragraphs around them.
+Siblings are nested into a single paragraph.
+
+Examples:
+
+|_. Before transformation |_. After transformation |
+| +Before<table>...</table>After+ | +<p>Before</p><table>...</table><p>After</p>+ |
+| +Before<hr/>After+ | +<p>Before</p><hr/><p>After</p>+ |
+| +Something <b>bold</b> or <i>italic</i>+ | +<p>Something <b>bold</b> or <i>italic</i></p>+ |
+
+h3. Configuration settings
+
+The Autoparagraph plugin can be switched on or off generally (default is on). Additionally, this global setting can be overwritten per editable.
+
+The following example switches the plugin off generally and on only for specific editables:
+
+<javascript>
+	Aloha.settings.plugins = {
+		autoparagraph: {
+			// generally switch autoparagraph off
+			config: [ ],
+
+			// per editable configuration
+			editables: {
+				// switch on autoparagraph for the class with_autoparagraph
+				'.with_autoparagraph': [ 'autoparagraph' ]
+			}
+		}
+	};
+</javascript>
+
+The example below is the reverse, the plugin is generally switched on, but disabled for specific editables:
+
+<javascript>
+	Aloha.settings.plugins = {
+		autoparagraph: {
+			// generally switch autoparagraph on
+			config: [ 'autoparagraph' ],
+
+			// per editable configuration
+			editables: {
+				// switch off autoparagraph for the class without_autoparagraph
+				'.without_autoparagraph': [ ]
+			}
+		}
+	};
+</javascript>

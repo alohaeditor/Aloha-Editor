@@ -532,6 +532,15 @@ define([
 			this.rangeObject = range =
 					range || new Aloha.Selection.SelectionRange(true);
 
+			// workaround for FF selection bug, where it is possible to move the selection INTO a hr
+			if (range && range.startContainer
+					&& 'HR' === range.startContainer.nodeName
+					&& range.endContainer
+					&& 'HR' === range.endContainer.nodeName) {
+				Aloha.getSelection().removeAllRanges();
+				return true;
+			}
+
 			// Determine the common ancestor container and update the selection
 			// tree.
 			range.update();
