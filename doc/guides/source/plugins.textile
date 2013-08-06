@@ -61,6 +61,7 @@ Plugins in the @common@ directory:
 
 * "common/abbr":plugin_abbr.html - the Abbr plugin provides an interface to wrap content with a @<abbr>@ element.
 * "common/align":plugin_align.html - the Align plugin provides an interface to align contents left, right, center, or justify the flow of text.
+* "common/autoparagraph":plugin_autoparagraph.html - the Autoparagraph plugin will make sure that all text content in editables is at least wrapped by paragraphs.
 * "common/block":plugin_block.html - Blocks are non-editable areas of a website, which often have some properties being editable through the Aloha user interface.
 * "common/characterpicker":plugin_characterpicker.html - the Character Picker plugin provides an interface to insert special characters.
 * "common/commands":plugin_commands.html - the Commands plugin provides the inserthtml command for use with the paste plugin.
