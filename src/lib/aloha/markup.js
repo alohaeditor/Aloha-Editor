@@ -297,7 +297,7 @@ define([
 	 * @param {String} UPPERCASE node name to stop search at
 	 * @return true if node is the first node, false otherwise
 	 */
-	function isFirstNode (node, stopNodeName) {
+	function isFirstNode(node, stopNodeName) {
 		if (!node.parentNode) {
 			return true;
 		}
@@ -330,12 +330,12 @@ define([
 	 * @return true if node is the last node, false otherwise
 	 */
 	// implemented as an IIFE because the local helper getLast() should only be defined once
-	var isLastNode = (function() {
+	var isLastNode = (function () {
 		// get the last node that is not empty text or a table caption
-		function getLast (node) {
+		function getLast(node) {
 			var last;
 
-			for (var i=node.childNodes.length-1; i > -1; i--) {
+			for (var i = node.childNodes.length - 1; i > -1; i--) {
 				last = node.childNodes[i];
 				if (last.nodeName !== 'CAPTION' && !(last.nodeType === 3 && /^[\t\n\r ]+$/.test(last.data))) {
 					return last;
@@ -359,7 +359,7 @@ define([
 			} else {
 				return false;
 			}
-		}
+		};
 	}());
 
 	/**
@@ -469,7 +469,7 @@ define([
 			
 			
 			// UP (38), DOWN (40) keys for table navigation
-			if (event.keyCode === 38 || event.keyCode == 40) {
+			if (event.keyCode === 38 || event.keyCode === 40) {
 				if (Aloha.getSelection().getRangeCount()) {
 					rangeObject = Aloha.getSelection().getRangeAt(0);
 					if (this.processCursorUpDown(rangeObject, event.keyCode)) {
@@ -523,7 +523,9 @@ define([
 				return;
 			}
 
-			var node = range.startContainer;
+			var node = range.startContainer,
+				tableWrapper,
+				cursorNode;
 
 			// UP
 			if (keyCode === 38 && 
@@ -534,7 +536,7 @@ define([
 				// we want to position the cursor now in the first 
 				// element before the table, so we need to find the
 				// table wrapper first ...
-				var tableWrapper = jQuery(node).parents('div.aloha-table-wrapper').get(0);
+				tableWrapper = jQuery(node).parents('div.aloha-table-wrapper').get(0);
 				if (!tableWrapper) {
 					return false;
 				}
@@ -543,7 +545,6 @@ define([
 				// which we will descend down to its deepest
 				// nested child node, where we will put the
 				// cursor
-				var cursorNode;
 				// prefer previousElemntSibling because Firefox will land you in a
 				// whitespace text node between a preceding <p> and the table otherwise
 				if (tableWrapper.previousElementSibling) {
@@ -577,20 +578,19 @@ define([
 
 				// we want to put the cursor in the first element right 
 				// after the table so we need to find the table wrapper first
-				var tableWrapper = jQuery(node).parents('div.aloha-table-wrapper').get(0);
+				tableWrapper = jQuery(node).parents('div.aloha-table-wrapper').get(0);
 				if (!tableWrapper) {
 					return false;
 				}
 
 				// and now find its following sibling where we will put
 				// the cursor in the first position
-				var cursorNode;
 				// the next elementSibling is preffered over the nextSibling
 				// because Mozilla will sometimes have an empty text node
 				// right next to the table - but we most likely want to put 
 				// the cursor into the next paragraph
 				if (tableWrapper.nextElementSibling) {
-				 	cursorNode = tableWrapper.nextElementSibling;
+					cursorNode = tableWrapper.nextElementSibling;
 				} else {
 					cursorNode = tableWrapper.nextSibling;
 				}
