@@ -8,5 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-
-
+- **BUGFIX**: (textcolor) The button for changing the textcolor can no longer be accidentally
+overwritten by custom background images.
