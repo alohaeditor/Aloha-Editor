@@ -1,7 +1,12 @@
-define(
-['jquery', 'table/table-plugin-utils'],
-
-function (jQuery, Utils) {
+define([
+	'jquery',
+	'aloha/ephemera',
+	'table/table-plugin-utils'
+], function (
+	jQuery,
+	Ephemera,
+	Utils
+) {
 	/**
 	 * Constructs a TableCell.
 	 *
@@ -59,6 +64,9 @@ function (jQuery, Utils) {
 		var $wrapper = $elem.children('div').eq(0);
 		$wrapper.contentEditable(true);
 		$wrapper.addClass('aloha-table-cell-editable');
+
+		// mark the editable wrapper as ephemeral
+		Ephemera.markWrapper($wrapper);
 
 		// attach events to the editable div-object
 		$wrapper.bind('focus', function ($event) {
