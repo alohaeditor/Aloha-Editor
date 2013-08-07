@@ -473,10 +473,10 @@ define([
 				if (Aloha.getSelection().getRangeCount()) {
 					rangeObject = Aloha.getSelection().getRangeAt(0);
 					if (this.processCursorUpDown(rangeObject, event.keyCode)) {
-						event.preventDefault();
+						return false;
 					}
 				}
-				return false;
+				return true;
 			}
 
 			// BACKSPACE
@@ -517,10 +517,12 @@ define([
 		 * 
 		 * @param {RangyRange} range A range object for the current selection.
 		 * @param {number} keyCode Code of the currently pressed key.
+		 * @return {boolean} true if something was done, false if browser should 
+		 * continue handling the event
 		 */
 		processCursorUpDown: function (range, keyCode) {
 			if (!range.collapsed) {
-				return;
+				return false;
 			}
 
 			var node = range.startContainer,
@@ -570,6 +572,9 @@ define([
 				if (Aloha.activeEditable && jQuery.browser.mozilla) {
 					Aloha.activeEditable.obj.focus();
 				}
+
+				return true;
+
 			// DOWN
 			} else if (keyCode === 40 &&
 				isEndPosition(node, range.startOffset) &&
@@ -612,6 +617,11 @@ define([
 				if (Aloha.activeEditable && jQuery.browser.mozilla) {
 					Aloha.activeEditable.obj.focus();
 				}
+
+				return true;
+
+			} else {
+				return false;
 			}
 		},
 		
