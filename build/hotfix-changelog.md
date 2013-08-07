@@ -18,3 +18,9 @@ overwritten by custom background images.
                    and wraps content that is not contained in block level elements into paragraphs.
 - **BUGFIX**:      table-plugin: The table plugin will now not lose the drag handles any more, when getContents()
                    is called for the editable (which is done on smart content change)
+- **BUGFIX**:      cite-plugin: Several issues with the citation plugin have been fixed: Pressing backspace in a 
+                   blockquote will no longer wrap the blockquote into div's (which would break the behaviour).
+                   The behaviour of pressing enter at the end of a blockquote multiple times has been changed to land
+                   in a new empty paragraph after the blockquote (similar to lists).
+                   When blockquote and quotes are nested, the controls of blockquote and quote will both show the
+                   correct status now.
