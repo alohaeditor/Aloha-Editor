@@ -16,3 +16,5 @@ overwritten by custom background images.
 				   as pressing up in the first cell by positioning the cursor directly before or after the table.
 - **FEATURE**:     autoparagraph-plugin: The Autoparagraph Plugin checks the contents of editables
                    and wraps content that is not contained in block level elements into paragraphs.
+- **BUGFIX**:      table-plugin: The table plugin will now not lose the drag handles any more, when getContents()
+                   is called for the editable (which is done on smart content change)
