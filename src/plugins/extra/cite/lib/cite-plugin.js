@@ -1,4 +1,4 @@
-/*global window: true define: true*/
+/*global window: true define: true */
 /*!
 * Aloha Editor
 * Author & Copyright (c) 2010 Gentics Software GmbH
@@ -28,7 +28,7 @@ define([
 	PubSub,
     i18n,
 	i18nCore
-){
+) {
 	'use strict';
 
 	var $ = jQuery,
@@ -187,7 +187,7 @@ define([
 				tooltip: i18n.t('cite.button.add.quote'),
 				icon: nsClass('button', 'inline-button'),
 				scope: 'Aloha.continuoustext',
-				click: function() {
+				click: function () {
 					that.addInlineQuote();
 				}
 			});
@@ -199,7 +199,7 @@ define([
 				name: 'blockquote',
 				tooltip: i18n.t('cite.button.add.blockquote'),
 				icon: nsClass('button', 'block-button'),
-				click: function(){
+				click: function () {
 					that.addBlockQuote();
 				}
 			});
@@ -308,41 +308,31 @@ define([
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
 				var rangeObject = message.range;
-				var buttons = jQuery('button.aloha-cite-button');
 
 				// Set to false to prevent multiple buttons being active
 				// when they should not.
-				var statusWasSet = false;
+				var quoteFound = false, blockquoteFound = false;
 				var nodeName;
 				var effective = rangeObject.markupEffectiveAtStart;
 				var i = effective.length;
 
 				// Check whether any of the effective items are citation
 				// tags.
-				while ( i ) {
+				while (i) {
 					nodeName = effective[--i].nodeName;
-					if (nodeName === 'Q' || nodeName === 'BLOCKQUOTE') {
-						statusWasSet = true;
-						break;
+					if (nodeName === 'Q') {
+						quoteFound = true;
+					} else if (nodeName === 'BLOCKQUOTE') {
+						blockquoteFound = true;
 					}
 				}
 
-				buttons.filter('.aloha-cite-block-button')
-					.removeClass('aloha-cite-pressed');
+				// set the toggle status for the quote button
+				that._quoteButton.setState(quoteFound);
 
-				that._quoteButton.setState(false);
-
-				if ( statusWasSet ) {
-					if('Q' === nodeName) {
-						that._quoteButton.setState(true);
-					} else {
-						buttons.filter('.aloha-cite-block-button')
-							.addClass('aloha-cite-pressed');
-					}
-
-					// We've got what we came for, so return false to break
-					// the each loop.
-					return false;
+				// activate the blockquote multisplit item
+				if (blockquoteFound) {
+					Format.multiSplitButton.setActiveItem('blockquote');
 				}
 				
 				// switch item visibility according to config
@@ -352,18 +342,18 @@ define([
 				}
 
 				// quote
-				if ( jQuery.inArray( 'quote', config ) != -1 ) {
+				if (jQuery.inArray('quote', config) !== -1) {
 					that._quoteButton.show(true);
-	        	} else {
+				} else {
 					that._quoteButton.show(false);
-	        	}
-				
+				}
+
 				// blockquote
-				if ( jQuery.inArray( 'blockquote', config ) != -1 ) {
-					Format.multiSplitButton.showItem( 'blockquote' );
-	        	} else {
-	        		Format.multiSplitButton.hideItem( 'blockquote' );
-	        	}
+				if (jQuery.inArray('blockquote', config) !== -1) {
+					Format.multiSplitButton.showItem('blockquote');
+				} else {
+					Format.multiSplitButton.hideItem('blockquote');
+				}
 			});
 		},
 
