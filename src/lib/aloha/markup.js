@@ -274,9 +274,10 @@ define([
 	 * @param {Array[String]} Array of UPPERCASE (!) node names to search for, eg. ["TD"] or ["TD", "TH"].
 	 * @return true if node is child of a node of nodeName, false otherwise
 	 */ 
-	function isChildOf (node, nodeNames) {
+	function isChildOf(node, nodeNames) {
+		var i;
 		if (node.parentNode) {
-			for (var i=0; i<nodeNames.length; i++) {
+			for (i = 0; i < nodeNames.length; i++) {
 				if (nodeNames[i] === node.parentNode.nodeName) {
 					return true;
 				}
