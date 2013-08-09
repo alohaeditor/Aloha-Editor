@@ -361,7 +361,7 @@
 		
 		var DependencyManagement = global.__DEPS__ || (global.__DEPS__ = {});
 		
-		DependencyManagement.lang = defaultConfig.locale;
+		DependencyManagement.lang = defaultConfig.config.i18n.locale;
 
 		var defaultPaths = {
 			jquery: 'vendor/jquery-1.7.2',
