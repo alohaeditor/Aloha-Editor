@@ -273,7 +273,7 @@ define([
 	 * @param {DOMNode} starting node
 	 * @param {Array[String]} Array of UPPERCASE (!) node names to search for, eg. ["TD"] or ["TD", "TH"].
 	 * @return true if node is child of a node of nodeName, false otherwise
-	 */ 
+	 */
 	function isChildOf(node, nodeNames) {
 		var i;
 		if (node.parentNode) {
@@ -289,7 +289,7 @@ define([
 	}
 
 	/**
-	 * Will recurseively check if the current node is the first node in
+	 * Will recursively check if the current node is the first node in
 	 * it's hierarchy up it's ancestor tree until the stopNode is reached.
 	 * Useful to find eg. if you're in the first td within a table.
 	 * Will stop if stopNodeName is encountered or the root node is reached.
@@ -304,11 +304,14 @@ define([
 		}
 
 		// firstChild will also find textNodes while children[0] will only return non-text nodes
-		if ((node.nodeType === 3 && node.parentNode.firstChild === node || node.parentNode.children[0] === node) ||
-			// unfortunately we need to take care of the aloha-table-selectrow and aloha-table-selectcolumn
-			((node.nodeName === 'TD' && node.parentNode.children[0].className.indexOf('aloha-table-selectrow') !== -1 ||
-			  node.nodeName === 'TR' && node.parentNode.children[0].className.indexOf('aloha-table-selectcolumn') !== -1)	&& 
-			  node.parentNode.children[1] === node)) {
+		var isTextNode = ((node.nodeType === 3 && node.parentNode.firstChild === node) || (node.parentNode.children[0] === node));
+
+		// unfortunately we need to take care of the aloha-table-selectrow and aloha-table-selectcolumn
+		var isTableSelectRow = node.nodeName === 'TR' && node.parentNode.children[0].className.indexOf('aloha-table-selectcolumn') !== -1;
+		var isTableSelectColumn = node.nodeName === 'TD' && node.parentNode.children[0].className.indexOf('aloha-table-selectrow') !== -1;
+		var isFirstNodeOfTable = ((isTableSelectColumn || isTableSelectRow) && node.parentNode.children[1] === node);
+
+		if (isTextNode || isFirstNodeOfTable) {
 			if (node.parentNode.nodeName === stopNodeName) {
 				return true;
 			} else {
@@ -334,9 +337,9 @@ define([
 	var isLastNode = (function () {
 		// get the last node that is not empty text or a table caption
 		function getLast(node) {
-			var last;
+			var last, i;
 
-			for (var i = node.childNodes.length - 1; i > -1; i--) {
+			for (i = node.childNodes.length - 1; i > -1; i--) {
 				last = node.childNodes[i];
 				if (last.nodeName !== 'CAPTION' && !(last.nodeType === 3 && /^[\t\n\r ]+$/.test(last.data))) {
 					return last;
@@ -467,8 +470,7 @@ define([
 
 				return false;
 			}
-			
-			
+
 			// UP (38), DOWN (40) keys for table navigation
 			if (event.keyCode === 38 || event.keyCode === 40) {
 				if (Aloha.getSelection().getRangeCount()) {
@@ -531,10 +533,10 @@ define([
 				cursorNode;
 
 			// UP
-			if (keyCode === 38 && 
-				isFrontPosition(node, range.startOffset) && 
-				isChildOf(node, ['TD', 'TH']) &&
-				isFirstNode(node, 'TABLE')) {
+			if (keyCode === 38 &&
+					isFrontPosition(node, range.startOffset) &&
+					isChildOf(node, ['TD', 'TH']) &&
+					isFirstNode(node, 'TABLE')) {
 
 				// we want to position the cursor now in the first 
 				// element before the table, so we need to find the
@@ -578,9 +580,9 @@ define([
 
 			// DOWN
 			} else if (keyCode === 40 &&
-				isEndPosition(node, range.startOffset) &&
-				isChildOf(node, ['TD', 'TH']) &&
-				isLastNode(node, 'TABLE')) {
+					isEndPosition(node, range.startOffset) &&
+					isChildOf(node, ['TD', 'TH']) &&
+					isLastNode(node, 'TABLE')) {
 
 				// we want to put the cursor in the first element right 
 				// after the table so we need to find the table wrapper first
@@ -625,7 +627,7 @@ define([
 				return false;
 			}
 		},
-		
+
 		/**
 		 * Processing of cursor keys.
 		 * Detect blocks (elements with contenteditable=false) and will select them
