@@ -12,7 +12,7 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
-## 0.23.15 - 2013/08/07
+## 0.23.15 - 2013/08/09
 
 - **BUGFIX**:      core: Fixed selection bug in FF where it was possible to move the selection
                    into a HR (by clicking on it)
@@ -22,6 +22,7 @@ All changes are categorized into one of the following keywords:
                    as pressing up in the first cell by positioning the cursor directly before or 
                    after the table.
 - **FEATURE**:     autoparagraph-plugin: The Autoparagraph Plugin checks the contents of editables
+
                    and wraps content that is not contained in block level elements into paragraphs.
 
 ## 0.23.14 - 2013/07/31
