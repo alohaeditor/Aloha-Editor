@@ -24,3 +24,4 @@ overwritten by custom background images.
                    in a new empty paragraph after the blockquote (similar to lists).
                    When blockquote and quotes are nested, the controls of blockquote and quote will both show the
                    correct status now.
+- **BUGFIX**:      repositorybrowser: Fix i18n of repository browser to use the language configured in Aloha.settings.locale
