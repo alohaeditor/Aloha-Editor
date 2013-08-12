@@ -45,6 +45,13 @@ define([
 	var COLOR_PREFIX = /^(#|rgba?|hsl)\(?([^\(\)]+)/i;
 	var COMMA = /\s*,\s*/;
 
+	/**
+	 * Normalizes hexidecimal colors from
+	 * #f34 to #ff3344
+	 *
+	 * @param {String} color
+	 * @return {String} Long version of hexidecimal color value
+	 */
 	function normalizeHex(color) {
 		if (7 === color.length) {
 			return color;
@@ -55,6 +62,12 @@ define([
 		return '#' + r + r + g + g + b + b;
 	}
 
+	/**
+	 * Converts rgb color array to a hex color string.
+	 *
+	 * @param {Array<String>} rgb
+	 * @return {String}
+	 */
 	function rgb2hex(rgb) {
 		var r = parseInt(rgb[0], 10).toString(16);
 		var g = parseInt(rgb[1], 10).toString(16);
@@ -71,6 +84,12 @@ define([
 		return '#' + r + g + b;
 	}
 
+	/**
+	 * Given a color string will normalize it to a hex color string.
+	 *
+	 * @param {String} value
+	 * @return {String}
+	 */
 	function hex(value) {
 		var color = value.match(COLOR_PREFIX);
 		switch (color && color[1]) {
@@ -84,6 +103,12 @@ define([
 		}
 	}
 
+	/**
+	 * Gets the text color at the given range.
+	 *
+	 * @param {Range} range
+	 * @return {String} Style color string
+	 */
 	function getColor(range) {
 		var node = Dom.nodeAtOffset(range.startContainer, range.startOffset);
 		return Dom.getComputedStyle(
@@ -92,6 +117,16 @@ define([
 		);
 	}
 
+	/**
+	 * Checks whether the two given colors are equal in value (if not in
+	 * representation).
+	 *
+	 * isColorEqual('#f00', 'rgb(255,0,0)') === true
+	 *
+	 * @param {String} colorA
+	 * @param {String} colorB
+	 * @return {Boolean}
+	 */
 	function isColorEqual(colorA, colorB) {
 		return (
 			(null == colorA || null == colorB)
@@ -100,13 +135,24 @@ define([
 		);
 	}
 
+	/**
+	 * Sets the text color at the given range.
+	 *
+	 * @param {Range} range
+	 * @param {String} color
+	 */
 	function setColor(range, color) {
 		RangeContext.formatStyle(range, 'color', color, null, isColorEqual);
 	}
 
 	/**
+	 * Gets the nearest editing host to the given range.
+	 *
 	 * Because Firefox, the range may not be inside the editable even though the
 	 * selection may be inside the editable.
+	 *
+	 * @param {Range} range
+	 * @param {DOMObject} Editing host, or null if none is found.
 	 */
 	function getNearestEditingHost(range) {
 		var editable = DomUtils.getEditingHostOf(range.startContainer);
@@ -121,6 +167,11 @@ define([
 		);
 	}
 
+	/**
+	 * Removes color at the given range.
+	 *
+	 * @param {Range} range
+	 */
 	function unsetColor(range) {
 		setColor(
 			range,

@@ -55,10 +55,23 @@ define([
 ) {
 	'use strict';
 
-	function isColor(color) {
-		return color.substr(0, 1) === '#' || color.substr(0, 3) === 'rgb';
+	/**
+	 * Whether or not the given string represents a color value.
+	 *
+	 * @param {String} value
+	 * @return {Boolean}
+	 */
+	function isColor(value) {
+		return value.substr(0, 1) === '#' || value.substr(0, 3) === 'rgb';
 	}
 
+	/**
+	 * Generates swatches.
+	 *
+	 * @param {Object} colors
+	 * @param {Function(String)} getSwatchClass
+	 * @return {Array<String>}
+	 */
 	function generateSwatches(colors, getSwatchClass) {
 		var list = Arrays.map(colors, function (color) {
 			return (
@@ -78,6 +91,12 @@ define([
 		return list;
 	}
 
+	/**
+	 * Mark the given swatch element as selected in the overlay.
+	 *
+	 * @param {Overlay} overlay
+	 * @param {jQuery<DOMObject>} $swatch
+	 */
 	function selectSwatch(overlay, $swatch) {
 		overlay.select(
 			$swatch.hasClass('removecolor')
@@ -86,11 +105,17 @@ define([
 		);
 	}
 
-	function onSelect(plugin, item, range) {
+	/**
+	 * Update the given range's text color based on the selected swatch element.
+	 *
+	 * @param {DOMObject} selected
+	 * @param {Range} range
+	 */
+	function onSelect(selected, range) {
 		if (range.collapsed) {
 			Dom.extendToWord(range);
 		}
-		var $swatch = $('>div', item);
+		var $swatch = $('>div', selected);
 		if ($swatch.hasClass('removecolor')) {
 			TextColor.unsetColor(range);
 		} else {
@@ -108,6 +133,15 @@ define([
 
 	var rangeAtOpen;
 
+	/**
+	 * Gets/generates an overlay object for the given editable.
+	 *
+	 * @param {Editable} editable
+	 * @param {Plugin} plugin
+	 * @param {Button} button
+	 * @param {Function(String)} getSwatchClass
+	 * @return {Overlay}
+	 */
 	function getOverlay(editable, plugin, button, getSwatchClass) {
 		// Because each editable may have its own configuration and therefore
 		// each may have its own overlay.
@@ -120,7 +154,7 @@ define([
 		if (!overlay) {
 			overlay = new Overlay(
 				generateSwatches(config, getSwatchClass),
-				function (swatch) { onSelect(plugin, swatch, rangeAtOpen); },
+				function (swatch) { onSelect(swatch, rangeAtOpen); },
 				button.element[0]
 			);
 			overlay.$element
@@ -131,6 +165,13 @@ define([
 		return overlay;
 	}
 
+	/**
+	 * Sets up the ui.
+	 *
+	 * @param {Plugin} plugin
+	 * @param {Button} button
+	 * @param {Function(String)} getSwatchClass
+	 */
 	function ui(plugin, button, getSwatchClass) {
 		PubSub.sub('aloha.editable.activated', function (message) {
 			plugin.overlay = getOverlay(
@@ -190,7 +231,7 @@ define([
 			var getSwatchClass = (function (colors) {
 				var index = {};
 				Arrays.forEach(colors, function (color, i) {
-					index[color.toLowerCase()] = 'swatch' + i;
+					index[TextColor.hex(color.toLowerCase())] = 'swatch' + i;
 				});
 				return function getSwatchClass(color) {
 					return (
@@ -199,7 +240,7 @@ define([
 								|| index[TextColor.hex(color)]
 					);
 				};
-			}(Palette));
+			}(plugin.config));
 
 			var button = Ui.adopt('colorPicker', Button, {
 				tooltip: i18n.t('change-text-color'),
@@ -212,7 +253,6 @@ define([
 						var swatchClass = getSwatchClass(
 							$button.find('.ui-icon').css('background-color')
 						);
-
 
 						plugin.overlay.$element.find('.selected')
 						              .removeClass('selected');

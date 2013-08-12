@@ -53,7 +53,7 @@ define(['aloha/jquery'], function ($) {
 	 * select one with the enter key.
 	 *
 	 * @param {Overlay} overlay
-	 * @param {function} onSelect Function to invoke when Enter is pressed.
+	 * @param {Function(DOMObject)} onSelect Function to invoke when Enter is pressed.
 	 */
 	function movements(overlay, onSelect) {
 		var blur = function blur($elem) {
@@ -132,6 +132,13 @@ define(['aloha/jquery'], function ($) {
 		return offset;
 	}
 
+	/**
+	 * Populates the overlay with a table containing the given array of items.
+	 *
+	 * @param {Overlay} overlay
+	 * @param {Array<String>} items
+	 * @param {Function(DOMObject)} onSelect
+	 */
 	function populate(overlay, items, onSelect) {
 		var table = ['<tr>'];
 		var i = 0;
@@ -163,7 +170,9 @@ define(['aloha/jquery'], function ($) {
 	/**
 	 * Overlay object.
 	 *
-	 * @param {function} onSelect
+	 * @param {Array<String>} items
+	 * @param {Function(DOMObject)} onSelect
+	 * @param {Button} button
 	 * @type {Overlay}
 	 */
 	function Overlay(items, onSelect, button) {
