@@ -72,8 +72,8 @@ define([
 		});
 		list.push(
 			'<div class="removecolor" title="'
-			+ i18n.t('remove-text-color')
-			+ '">&#10006</div></td>'
+				+ i18n.t('remove-text-color')
+				+ '">&#10006</div></td>'
 		);
 		return list;
 	}
@@ -151,7 +151,7 @@ define([
 				plugin.overlay.offset = message.position.offset;
 
 				var offset = Overlay.calculateOffset(
-					button.element, 
+					button.element,
 					Floating.POSITION_STYLE
 				);
 				offset.top += button.element.height();

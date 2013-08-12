@@ -58,10 +58,10 @@ define(['aloha/jquery'], function ($) {
 	function movements(overlay, onSelect) {
 		var blur = function blur($elem) {
 			$elem.removeClass('focused');
-		}
+		};
 		var focus = function focus($elem) {
 			$elem.addClass('focused');
-		}
+		};
 		var keys = {
 			// ←┘
 			13: function enter($current) {
