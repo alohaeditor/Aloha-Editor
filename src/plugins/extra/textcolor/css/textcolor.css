@@ -7,17 +7,25 @@
 	box-shadow: 1px 1px 10px 0px rgba(0,0,0,0.2);
 }
 .aloha-ui-textcolor-picker-overlay td {
-	font-size: 1em;
 	padding: 0;
+	font-size: 1em;
 }
 .aloha-ui-textcolor-picker-overlay td>div {
 	width: 1em;
 	height: 1em;
-	line-height: 1.25em;
 	border: 2px solid transparent;
 	cursor: pointer;
 	text-align: center;
 }
+/** --- Because ie7 does not support rgba --- */
+.aloha-ui-textcolor-picker-overlay td.focused>div {
+	border-color: #000;
+}
+.aloha-ui-textcolor-picker-overlay td.selected>div,
+.aloha-ui-textcolor-picker-overlay td.selected.focused>div {
+	border-color: #fff;
+}
+/** --- ie7 --- */
 .aloha-ui-textcolor-picker-overlay td.focused>div {
 	border-color: rgba(0,0,0,0.5);
 }
