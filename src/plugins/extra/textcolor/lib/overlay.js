@@ -111,7 +111,11 @@ define(['aloha/jquery'], function ($) {
 		$DOCUMENT.keydown(function (event) {
 			event.stopPropagation();
 			if (keys[event.keyCode] && isOverlayVisible(overlay)) {
-				keys[event.keyCode](overlay.$element.find('.focused'));
+				var $current = overlay.$element.find('.focused');
+				if (0 === $current.length) {
+					$current = overlay.$element.find('.selected');
+				}
+				keys[event.keyCode]($current);
 				return false;
 			}
 		});
