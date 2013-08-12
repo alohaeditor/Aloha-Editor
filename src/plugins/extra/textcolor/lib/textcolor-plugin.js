@@ -183,8 +183,8 @@ define([
 		init: function () {
 			var plugin = this;
 
-			if (Aloha.settings.plugin && Aloha.settings.plugins.textcolor) {
-				plugin.settings = Aloha.settings.plugins.textcolor;
+			if (Aloha.settings.plugins && Aloha.settings.plugins.textcolor) {
+				plugin.config = Aloha.settings.plugins.textcolor;
 			}
 
 			var getSwatchClass = (function (colors) {
