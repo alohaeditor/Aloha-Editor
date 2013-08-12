@@ -13,8 +13,10 @@
 .aloha-ui-textcolor-picker-overlay td>div {
 	width: 1em;
 	height: 1em;
+	line-height: 1.25em;
 	border: 2px solid transparent;
 	cursor: pointer;
+	text-align: center;
 }
 .aloha-ui-textcolor-picker-overlay td.focused>div {
 	border-color: rgba(0,0,0,0.5);
