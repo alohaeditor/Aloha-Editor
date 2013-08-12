@@ -1,7 +1,12 @@
-define(
-['jquery', 'table/table-plugin-utils'],
-
-function (jQuery, Utils) {
+define([
+	'aloha/jquery',
+	'table/table-plugin-utils',
+	'table/table-selection'
+], function (
+	jQuery,
+	Utils,
+	TableSelection
+) {
 	/**
 	 * Constructs a TableCell.
 	 *
@@ -324,7 +329,11 @@ function (jQuery, Utils) {
 	 * Ends the cell selection mode
 	 */
 	TableCell.prototype._endCellSelection = function() {
-		if(this.tableObj.selection.cellSelectionMode) {
+		if (this.tableObj.selection.cellSelectionMode) {
+			TableSelection.selectAnchorContents(
+				this.tableObj.selection.selectedCells
+			);
+
 			this.tableObj.selection.cellSelectionMode = false;
 			this.tableObj.selection.baseCellPosition = null;
 			this.tableObj.selection.lastSelectionRange = null;

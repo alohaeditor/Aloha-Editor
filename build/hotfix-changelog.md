@@ -7,3 +7,8 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ----
+
+- **BUGFIX**: table plugin: The selection of table cells has been made more
+              coherent.  A browser selection will be set on the entire content
+              of the anchor cell of the virtual cell selection.
+

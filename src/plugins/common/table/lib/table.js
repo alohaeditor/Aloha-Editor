@@ -843,8 +843,6 @@ define([
 		// stop bubble, otherwise the mousedown of the table is called ...
 		jqEvent.stopPropagation();
 
-		this.tablePlugin.summary.focus();
-
 		// prevent ff/chrome/safare from selecting the contents of the table
 		return false;
 	};
@@ -1659,6 +1657,8 @@ define([
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
 
+		TableSelection.selectAnchorContents(this.selection.selectedCells);
+
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
 	};
@@ -1683,6 +1683,8 @@ define([
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
+
+		TableSelection.selectAnchorContents(this.selection.selectedCells);
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
