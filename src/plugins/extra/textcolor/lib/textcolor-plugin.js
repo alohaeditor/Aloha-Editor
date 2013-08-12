@@ -72,7 +72,7 @@ define([
 		});
 		list.push(
 			'<div class="removecolor" title="'
-			+ i18n.t('removecolor')
+			+ i18n.t('remove-text-color')
 			+ '">&#10006</div></td>'
 		);
 		return list;
@@ -202,7 +202,7 @@ define([
 			}(Palette));
 
 			var button = Ui.adopt('colorPicker', Button, {
-				tooltip: i18n.t('button.textcolor.tooltip'),
+				tooltip: i18n.t('change-text-color'),
 				icon: 'aloha-icon-textcolor',
 				scope: 'Aloha.continuoustext',
 				click: function () {

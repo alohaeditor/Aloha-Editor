@@ -1,6 +1,7 @@
 define({
-	"root":  {
-		"button.textcolor.tooltip": "Change text color"
+	root: {
+		'change-text-color': 'Change text color',
+		'remove-text-color': 'Remove text color'
 	},
-	"de": true
+	de: true
 });
