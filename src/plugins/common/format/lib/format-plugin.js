@@ -212,6 +212,11 @@ define('format/format-plugin', [
 		updateUiAfterMutation(formatPlugin, rangeObject);
 	}
 
+	function isFormatAllowed(tagname, plugin, editable) {
+		var config = plugin.getEditableConfig(editable.obj);
+		return jQuery.inArray(tagname, config) > -1;
+	}
+
 	function addMarkup(button) {
 		var formatPlugin = this;
 		var markup = jQuery('<'+button+'>');
@@ -364,20 +369,37 @@ define('format/format-plugin', [
 			Aloha.bind('aloha-editable-activated',function (e, params) {
 				me.applyButtonConfig(params.editable.obj);
 
-				// handle hotKeys
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatBold, function() { me.addMarkup( 'b' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatItalic, function() { me.addMarkup( 'i' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatParagraph, function() { me.changeMarkup( 'p' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH1, function() { me.changeMarkup( 'h1' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH2, function() { me.changeMarkup( 'h2' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH3, function() { me.changeMarkup( 'h3' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH4, function() { me.changeMarkup( 'h4' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH5, function() { me.changeMarkup( 'h5' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatH6, function() { me.changeMarkup( 'h6' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatPre, function() { me.changeMarkup( 'pre' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatDel, function() { me.addMarkup( 'del' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatSub, function() { me.addMarkup( 'sub' ); return false; });
-				params.editable.obj.bind( 'keydown.aloha.format', me.hotKey.formatSup, function() { me.addMarkup( 'sup' ); return false; });
+				var createAdder = function (tagname) {
+					return function () {
+						if (isFormatAllowed(tagname, me, params.editable)) {
+							me.addMarkup(tagname);
+						}
+						return false;
+					};
+				};
+
+				var createChanger = function (tagname) {
+					return function () {
+						if (isFormatAllowed(tagname, me, params.editable)) {
+							me.changeMarkup(tagname);
+						}
+						return false;
+					};
+				};
+
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatBold,     createAdder('b'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatItalic,   createAdder('i'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatDel,       createAdder('del'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatSub,       createAdder('sub'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatSup,       createAdder('sup'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatParagraph, createChanger('p'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH1,        createChanger('h1'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH2,        createChanger('h2'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH3,        createChanger('h3'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH4,        createChanger('h4'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH5,        createChanger('h5'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH6,        createChanger('h6'));
+				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatPre,       createChanger('pre'));
 			});
 
 			Aloha.bind('aloha-editable-deactivated',function (e, params) {

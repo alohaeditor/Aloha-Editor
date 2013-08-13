@@ -365,6 +365,7 @@
     "paste/css": "../plugins/common/paste/css",
     "paste/nls": "../plugins/common/paste/nls",
     "paste/res": "../plugins/common/paste/res",
+	"autoparagraph": "../plugins/common/autoparagraph/lib",
 
     // Shortcuts for some often used extra plugins (not all)
     "cite": "../plugins/extra/cite/lib",

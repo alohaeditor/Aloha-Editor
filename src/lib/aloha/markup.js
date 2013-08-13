@@ -267,6 +267,106 @@ define([
 	}
 
 	/**
+	 * recursively search through parent nodes to find if
+	 * node is child of a specific node.
+	 *
+	 * @param {DOMNode} starting node
+	 * @param {Array[String]} Array of UPPERCASE (!) node names to search for, eg. ["TD"] or ["TD", "TH"].
+	 * @return true if node is child of a node of nodeName, false otherwise
+	 */
+	function isChildOf(node, nodeNames) {
+		var i;
+		if (node.parentNode) {
+			for (i = 0; i < nodeNames.length; i++) {
+				if (nodeNames[i] === node.parentNode.nodeName) {
+					return true;
+				}
+			}
+			return isChildOf(node.parentNode, nodeNames);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Will recursively check if the current node is the first node in
+	 * it's hierarchy up it's ancestor tree until the stopNode is reached.
+	 * Useful to find eg. if you're in the first td within a table.
+	 * Will stop if stopNodeName is encountered or the root node is reached.
+	 *
+	 * @param {DOMnode} node to start from
+	 * @param {String} UPPERCASE node name to stop search at
+	 * @return true if node is the first node, false otherwise
+	 */
+	function isFirstNode(node, stopNodeName) {
+		if (!node.parentNode) {
+			return true;
+		}
+
+		// firstChild will also find textNodes while children[0] will only return non-text nodes
+		var isTextNode = ((node.nodeType === 3 && node.parentNode.firstChild === node) || (node.parentNode.children[0] === node));
+
+		// unfortunately we need to take care of the aloha-table-selectrow and aloha-table-selectcolumn
+		var isTableSelectRow = node.nodeName === 'TR' && node.parentNode.children[0].className.indexOf('aloha-table-selectcolumn') !== -1;
+		var isTableSelectColumn = node.nodeName === 'TD' && node.parentNode.children[0].className.indexOf('aloha-table-selectrow') !== -1;
+		var isFirstNodeOfTable = ((isTableSelectColumn || isTableSelectRow) && node.parentNode.children[1] === node);
+
+		if (isTextNode || isFirstNodeOfTable) {
+			if (node.parentNode.nodeName === stopNodeName) {
+				return true;
+			} else {
+				return isFirstNode(node.parentNode, stopNodeName);
+			}
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Will recurseively check if the current node is the last node in
+	 * it's hierarchy up it's ancestor tree until the stopNode is reached.
+	 * Useful to find eg. if you're in the last td within a table.
+	 * Will stop if stopNodeName is encountered or the root node is reached.
+	 * Will ignore whitespace text nodes and caption nodes
+	 *
+	 * @param {DOMnode} node to start from
+	 * @param {String} UPPERCASE node name to stop search at
+	 * @return true if node is the last node, false otherwise
+	 */
+	// implemented as an IIFE because the local helper getLast() should only be defined once
+	var isLastNode = (function () {
+		// get the last node that is not empty text or a table caption
+		function getLast(node) {
+			var last, i;
+
+			for (i = node.childNodes.length - 1; i > -1; i--) {
+				last = node.childNodes[i];
+				if (last.nodeName !== 'CAPTION' && !(last.nodeType === 3 && /^[\t\n\r ]+$/.test(last.data))) {
+					return last;
+				}
+			}
+
+			return node.lastChild;
+		}
+
+		return function (node, stopNodeName) {
+			if (!node.parentNode) {
+				return true;
+			}
+
+			if (getLast(node.parentNode) === node) {
+				if (node.parentNode.nodeName === stopNodeName) {
+					return true;
+				} else {
+					return isLastNode(node.parentNode, stopNodeName);
+				}
+			} else {
+				return false;
+			}
+		};
+	}());
+
+	/**
 	 * Markup object
 	 */
 	Aloha.Markup = Class.extend({
@@ -371,6 +471,17 @@ define([
 				return false;
 			}
 
+			// UP (38), DOWN (40) keys for table navigation
+			if (event.keyCode === 38 || event.keyCode === 40) {
+				if (Aloha.getSelection().getRangeCount()) {
+					rangeObject = Aloha.getSelection().getRangeAt(0);
+					if (this.processCursorUpDown(rangeObject, event.keyCode)) {
+						return false;
+					}
+				}
+				return true;
+			}
+
 			// BACKSPACE
 			if (event.keyCode === 8) {
 				event.preventDefault(); // prevent history.back() even on exception
@@ -397,6 +508,124 @@ define([
 				}
 			}
 			return true;
+		},
+
+		/**
+		 * processing up and down cursor keys inside tables
+		 * will only try to figure out if cursor is at first
+		 * or last position in table and exit to the next
+		 * editable node from there
+		 *
+		 * won't do anything if range is not collapsed
+		 * 
+		 * @param {RangyRange} range A range object for the current selection.
+		 * @param {number} keyCode Code of the currently pressed key.
+		 * @return {boolean} true if something was done, false if browser should 
+		 * continue handling the event
+		 */
+		processCursorUpDown: function (range, keyCode) {
+			if (!range.collapsed) {
+				return false;
+			}
+
+			var node = range.startContainer,
+				tableWrapper,
+				cursorNode;
+
+			// UP
+			if (keyCode === 38 &&
+					isFrontPosition(node, range.startOffset) &&
+					isChildOf(node, ['TD', 'TH']) &&
+					isFirstNode(node, 'TABLE')) {
+
+				// we want to position the cursor now in the first 
+				// element before the table, so we need to find the
+				// table wrapper first ...
+				tableWrapper = jQuery(node).parents('div.aloha-table-wrapper').get(0);
+				if (!tableWrapper) {
+					return false;
+				}
+
+				// ... and then find it's previousSibling
+				// which we will descend down to its deepest
+				// nested child node, where we will put the
+				// cursor
+				// prefer previousElemntSibling because Firefox will land you in a
+				// whitespace text node between a preceding <p> and the table otherwise
+				if (tableWrapper.previousElementSibling) {
+					cursorNode = tableWrapper.previousElementSibling;
+				} else {
+					cursorNode = tableWrapper.previousSibling;
+				}
+				while (cursorNode.nodeType !== 3) {
+					cursorNode = cursorNode.lastChild;
+					if (cursorNode === null) {
+						// stop if there is no element to be entered before the table
+						return false;
+					}
+				}
+
+				Aloha.Selection.rangeObject.startContainer = cursorNode;
+				Aloha.Selection.rangeObject.endContainer = cursorNode;
+				Aloha.Selection.rangeObject.startOffset = cursorNode.length;
+				Aloha.Selection.rangeObject.endOffset = cursorNode.length;
+				Aloha.Selection.rangeObject.select();
+
+				// Mozilla needs this fix or else the selection will not work
+				if (Aloha.activeEditable && jQuery.browser.mozilla) {
+					Aloha.activeEditable.obj.focus();
+				}
+
+				return true;
+
+			// DOWN
+			} else if (keyCode === 40 &&
+					isEndPosition(node, range.startOffset) &&
+					isChildOf(node, ['TD', 'TH']) &&
+					isLastNode(node, 'TABLE')) {
+
+				// we want to put the cursor in the first element right 
+				// after the table so we need to find the table wrapper first
+				tableWrapper = jQuery(node).parents('div.aloha-table-wrapper').get(0);
+				if (!tableWrapper) {
+					return false;
+				}
+
+				// and now find its following sibling where we will put
+				// the cursor in the first position
+				// the next elementSibling is preffered over the nextSibling
+				// because Mozilla will sometimes have an empty text node
+				// right next to the table - but we most likely want to put 
+				// the cursor into the next paragraph
+				if (tableWrapper.nextElementSibling) {
+					cursorNode = tableWrapper.nextElementSibling;
+				} else {
+					cursorNode = tableWrapper.nextSibling;
+				}
+
+				while (cursorNode.nodeType !== 3) {
+					cursorNode = cursorNode.firstChild;
+					if (cursorNode === null) {
+						return false;
+					}
+				}
+
+				Aloha.Selection.rangeObject.startContainer = cursorNode;
+				Aloha.Selection.rangeObject.endContainer = cursorNode;
+				Aloha.Selection.rangeObject.startOffset = 0;
+				Aloha.Selection.rangeObject.endOffset = 0;
+				Aloha.Selection.rangeObject.select();
+
+				// Mozilla needs this fix or else the selection will not work
+				if (Aloha.activeEditable && jQuery.browser.mozilla) {
+					Aloha.activeEditable.obj.focus();
+				}
+
+				return true;
+
+			} else {
+				return false;
+			}
 		},
 
 		/**
