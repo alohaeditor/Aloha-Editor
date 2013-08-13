@@ -107,9 +107,9 @@ define([
 		});
 		return function getSwatchClass(color) {
 			return (
-				index[color]
-					|| index[color.toLowerCase()]
-						|| index[textcolor.hex(color)]
+				index[color.toLowerCase()]
+					||
+				index[textcolor.hex(color.toLowerCase())]
 			);
 		};
 	}(palette));
