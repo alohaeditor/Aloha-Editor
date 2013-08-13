@@ -71,6 +71,8 @@ require([
 				} else if (actual !== after) {
 					equal(actual, after);
 				}
+			} else {
+				expect(0);
 			}
 		}, mutate);
 	}
