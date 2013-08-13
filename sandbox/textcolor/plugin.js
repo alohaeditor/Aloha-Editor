@@ -116,7 +116,7 @@ define([
 
 	var overlay;
 
-	function click () {
+	function click() {
 		var selected = overlay.$element.find('.selected')[0];
 		if (selected) {
 			dom.removeClass(selected, 'selected');
@@ -140,8 +140,8 @@ define([
 			}
 		}
 
-		var offset = Overlay.calculateOffset(button, 'fixed');
-		offset.top += parseInt(dom.getComputedStyle(button, 'height'), 10);
+		var offset = Overlay.calculateOffset(this, 'fixed');
+		offset.top += parseInt(dom.getComputedStyle(this, 'height'), 10);
 
 		overlay.show(offset);
 	}
@@ -149,7 +149,7 @@ define([
 
 	var button = document.createElement('button');
 	button.appendChild(document.createTextNode('Change TextColor'));
-	events.add(button, 'click', click),
+	events.add(button, 'click', click);
 	document.getElementsByTagName('body')[0].appendChild(button);
 
 	overlay = getOverlay(palette, button, getSwatchClass);
