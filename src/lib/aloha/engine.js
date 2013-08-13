@@ -7898,7 +7898,12 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 			}
 
 			// special behaviour when pressing enter in the last empty paragraph, that is nested in a blockquote
-			if (isNamedHtmlElement(container, "p") && isNamedHtmlElement(container.parentNode, "blockquote") && !container.nextSibling && (!container.hasChildNodes() || container.childNodes.length == 1 && isNamedHtmlElement(container.firstChild, "br"))) {
+			if (isNamedHtmlElement(container, "p")
+					&& isNamedHtmlElement(container.parentNode, "blockquote")
+						&& !container.nextSibling
+							&& (!container.hasChildNodes()
+									|| (container.childNodes.length === 1
+											&& isNamedHtmlElement(container.firstChild, "br")))) {
 				jQuery(container.parentNode).after(container);
 				return;
 			}
