@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Aloha Editor &middot; TextColor Sandbox</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
+		<link rel="stylesheet" type="text/css" href="textcolor/textcolor.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,700italic,300,700'
+		      rel='stylesheet' type='text/css'>
+		<style>
+			button {
+				padding: 1em;
+				font-weight: bold;
+				width: 200px;
+				margin: 2em 0;
+				box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="aloha-editable" contentEditable="true">
+			<h1>Aloha Editor</h1>
+			<p>
+				Lorem ipsum dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscing
+				elit. Donec a diam lectus. Sed sit amet ipsum mauris.  Maecenas
+				congue ligula ac quam viverra nec consectetur ante hendrerit.
+			</p>
+			<p>
+				Donec et mollis dolor.  Praesent et diam eget libero egestas
+				mattis sit amet vitae augue.  Nam tincidunt congue enim, ut
+				porta lorem lacinia consectetur. Donec ut libero sed arcu
+				vehicula ultricies a non tortor.
+			</p>
+		</div>
+		<script src="../sandbox/mandox.js"></script>
+		<script src="../src/require-proto.js"></script>
+		<script src="../src/require-proto.dev.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script>
+			require(['../src/aloha', 'textcolor/plugin'], function (aloha, textcolor) {
+				'use strict';
+				window.aloha = aloha;
+			});
+		</script>
+	</body>
+</html>
+
