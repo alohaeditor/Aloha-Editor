@@ -4320,39 +4320,6 @@ define(['aloha/core', 'aloha/ecma5shims', 'util/maps', 'util/html', 'jquery'], f
 		// in blockquotes wraps the blockquote into a div, ...)
 		// therefore for now, we pretend that indentation elements do not exist at all.
 		return false;
-
-		if (!isAnyHtmlElement(node)) {
-			return false;
-		}
-
-		if (node.tagName == "BLOCKQUOTE") {
-			return true;
-		}
-
-		if (node.tagName != "DIV") {
-			return false;
-		}
-
-		if (typeof node.style.length !== 'undefined') {
-			var i;
-			for (i = 0; i < node.style.length; i++) {
-				// Approximate check
-				if (/^(-[a-z]+-)?margin/.test(node.style[i])) {
-					return true;
-				}
-			}
-		} else {
-			var s;
-			/*jslint forin: true*/ //not sure whether node.style.hasOwnProperty is valid
-			for (s in node.style) {
-				if (/^(-[a-z]+-)?margin/.test(s) && node.style[s] && node.style[s] !== 0) {
-					return true;
-				}
-			}
-			/*jslint forin: false*/
-		}
-
-		return false;
 	}
 
 	// "A simple indentation element is an indentation element that has no
