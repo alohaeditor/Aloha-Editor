@@ -96,7 +96,7 @@ define([
 		);
 		var elem = overlay.$element[0];
 		dom.addClass(elem, 'ui-picker-overlay');
-		elem.style.position = 'fixed';
+		elem.style.position = 'absolute';
 		return overlay;
 	}
 
@@ -140,7 +140,7 @@ define([
 			}
 		}
 
-		var offset = Overlay.calculateOffset(this, 'fixed');
+		var offset = Overlay.calculateOffset(this, 'absolute');
 		offset.top += parseInt(dom.getComputedStyle(this, 'height'), 10);
 
 		overlay.show(offset);
