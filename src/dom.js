@@ -1058,6 +1058,20 @@ define([
 	}
 
 	/**
+	 * Checks whether the given node has the specified class.
+	 *
+	 * @param {DOMObject} node
+	 * @param {String} value
+	 * @return {Boolean}
+	 */
+	function hasClass(node, value) {
+		return (
+			node.nodeType === Nodes.ELEMENT
+				&& node.className.trim().split(WHITESPACES).indexOf(value) >= 0
+		);
+	}
+
+	/**
 	 * Checks if the given element is an editing host.
 	 * @param {DOMObject} Node
 	 * @return {Boolean}
@@ -1102,6 +1116,7 @@ define([
 	var exports = {
 		addClass: addClass,
 		removeClass: removeClass,
+		hasClass: hasClass,
 
 		getElementsByClassNames: getElementsByClassNames,
 
