@@ -21,6 +21,7 @@ define([
 	'table/table-cell',
 	'table/table-selection',
 	'table/table-plugin-utils',
+	'aloha/ephemera',
 	'util/html',
 	'util/dom2'
 ], function (
@@ -32,6 +33,7 @@ define([
 	TableCell,
 	TableSelection,
 	Utils,
+	Ephemera,
 	Html,
 	Dom
 ) {
@@ -115,6 +117,9 @@ define([
 		if ( !this.obj.attr( 'id' ) ) {
 			this.obj.attr( 'id', GENTICS.Utils.guid() );
 		}
+
+		// mark table id as ephemeral
+		Ephemera.markAttr(this.obj, 'id');
 
 		this.tablePlugin = tablePlugin;
 		this.selection = new TableSelection( this );
@@ -648,6 +653,9 @@ define([
 		);
 		tableWrapper.contentEditable( false );
 
+		// mark the wrapper as ephemeral
+		Ephemera.markWrapper(tableWrapper);
+
 		// wrap the tableWrapper around the table
 		this.obj.wrap( tableWrapper );
 
@@ -765,6 +773,9 @@ define([
 	Table.prototype.attachRowSelectionEventsToCell = function(cell){
 		var that = this;
 
+		// mark cell as ephemeral
+		Ephemera.markElement(cell);
+
 		// unbind eventually existing events of this cell
 		cell.unbind('mousedown');
 		cell.unbind('mouseover');
@@ -842,8 +853,6 @@ define([
 
 		// stop bubble, otherwise the mousedown of the table is called ...
 		jqEvent.stopPropagation();
-
-		this.tablePlugin.summary.focus();
 
 		// prevent ff/chrome/safare from selecting the contents of the table
 		return false;
@@ -927,6 +936,9 @@ define([
 		var selectionRow = jQuery('<tr>');
 		selectionRow.addClass(this.get('classSelectionRow'));
 		selectionRow.css('height', this.get('selectionArea') + 'px');
+
+		// mark selection row as ephemeral
+		Ephemera.markElement(selectionRow);
 
 		for (var i = 0; i < numColumns; i++) {
 
@@ -1659,6 +1671,8 @@ define([
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
 
+		TableSelection.selectAnchorContents(this.selection.selectedCells);
+
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
 	};
@@ -1683,6 +1697,8 @@ define([
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
+
+		TableSelection.selectAnchorContents(this.selection.selectedCells);
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();

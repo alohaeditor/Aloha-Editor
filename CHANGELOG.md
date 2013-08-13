@@ -194,6 +194,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.23.3 - 2013/03/22
 
+>>>>>>> 9bfaafe32921dd447fb08da973a1b92054f9a927
 - **BUGFIX**: No longer automatically append &lt;br&gt; elements to block-level
 	elements unless they are empty.
 - **BUGFIX**: DOM-to-XHTML plugin: Fixed handling of closing angle brackets,

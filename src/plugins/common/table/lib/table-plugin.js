@@ -42,6 +42,7 @@ define([
 	'table/table',
 	'table/table-plugin-utils',
 	'util/dom',
+	'aloha/ephemera',
 	'aloha/console'
 ], function(
 	Aloha,
@@ -61,6 +62,7 @@ define([
 	Table,
 	Utils,
 	Dom,
+	Ephemera,
 	Console
 ) {
 	var $ = jQuery;
@@ -327,6 +329,9 @@ define([
 	TablePlugin.init = function() {
 		var that = this,
 		    isEnabled = {};
+
+		// register ephemeral classes
+		Ephemera.classes(this.get('className'), this.get('classCellSelected'));
 
 		// apply settings
 		this.tableConfig = this.checkConfig(this.tableConfig||this.settings.tableConfig);
@@ -1167,6 +1172,10 @@ define([
 			cSpan = jQuery('<div></div>');
 			jQuery(cSpan).addClass('aloha-ui');
 			jQuery(cSpan).addClass('aloha-editable-caption');
+
+			// mark the editable wrapper as ephemeral
+			Ephemera.markWrapper(cSpan);
+
 			if (caption.contents().length > 0) {
 				// when the caption has content, we wrap it with the new div
 				cSpan.append(caption.contents());
@@ -1414,16 +1423,10 @@ define([
 	 * @return void
 	 */
 	TablePlugin.makeClean = function ( obj ) {
-		var that = this;
-		obj.find( 'table' ).each( function () {
-			// Make sure that we only deactivate tables in obj which have the
-			// same id as tables which have been activated and registered
-			if ( that.getTableFromRegistry( this ) ) {
-				( new Table( this, that ) ).deactivate();
-				// remove the id attribute
-				jQuery(this).attr('id', null);
-			}
-		} );
+		// it is generally not necessary to do anything here, because everything is handled by Ephemera.
+		// the only exception is removing the cursor styles, because as of this moment, Ephemera is not capable
+		// of removing css
+		obj.find('td, th').css('cursor', '');
 	};
 
 	/**

@@ -1,11 +1,20 @@
-define(
-['aloha',
- 'jquery',
- 'table/table-plugin-utils',
- 'table/table-cell',
- 'ui/dialog',
- 'i18n!table/nls/i18n'],
-function (Aloha, $, Utils, TableCell, Dialog, i18n) {
+define([
+	'aloha',
+	'aloha/jquery',
+	'aloha/copypaste',
+	'table/table-plugin-utils',
+	'table/table-cell',
+	'ui/dialog',
+	'i18n!table/nls/i18n'
+], function (
+	Aloha,
+	$,
+	CopyPaste,
+	Utils,
+	TableCell,
+	Dialog,
+	i18n
+) {
 	/**
 	 * The TableSelection object is a helper-object
 	 */
@@ -461,6 +470,41 @@ function (Aloha, $, Utils, TableCell, Dialog, i18n) {
 			}
 		} else {
 			return false;
+		}
+	};
+
+	TableSelection.getAnchorCell = function (cells) {
+		if (0 === cells.length) {
+			return null;
+		}
+
+		var i;
+		var editable;
+		var range = CopyPaste.getRange();
+
+		if (range) {
+			editable = jQuery(
+				range.commonAncestorContainer
+			).closest('.aloha-table-cell-editable')[0];
+		}
+
+		if (editable) {
+			for (i = 0; i < cells.length; i++) {
+				if (jQuery(cells[i]).find(editable).length) {
+					return cells[i];
+				}
+			}
+		}
+
+		return cells[0];
+	};
+
+	TableSelection.selectAnchorContents = function (selection) {
+		var anchor = TableSelection.getAnchorCell(selection);
+		if (anchor) {
+			CopyPaste.selectAllOf(
+				jQuery('>.aloha-table-cell-editable', anchor)[0]
+			);
 		}
 	};
 
