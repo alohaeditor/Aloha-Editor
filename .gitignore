@@ -8,3 +8,5 @@ doc/guides/staging
 *.swp
 .externalToolBuilders
 doc/guides/output
+dist
+node_modules
