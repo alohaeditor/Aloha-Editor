@@ -1060,6 +1060,45 @@ define([
 	}
 
 	/**
+	 * Checks if the given element is an editing host.
+	 * @param {DOMObject} Node
+	 * @return {Boolean}
+	 */
+	function isEditingHost(node) {
+		return (node
+			&& node.nodeType === Nodes.ELEMENT
+				&& ('true' === node.contentEditable
+					|| (node.parentNode
+						&& Nodes.DOCUMENT === node.parentNode.nodeType
+							&& 'true' === node.parentNode.designMode
+					)
+				)
+		);
+	}
+
+	function isEditable(node) {
+		return (node
+			&& (node.nodeType !== Nodes.ELEMENT || 'false' !== node.contentEditable)
+				&& !isEditingHost(node)
+					&& (isEditingHost(node.parentNode) || isEditable(node.parentNode))
+		);
+	}
+
+	function getEditingHost(node) {
+		if (isEditingHost(node)) {
+			return node;
+		}
+		if (!isEditable(node)) {
+			return null;
+		}
+		var ancestor = node.parentNode;
+		while (ancestor && !isEditingHost(ancestor)) {
+			ancestor = ancestor.parentNode;
+		}
+		return ancestor;
+	}
+
+	/**
 	 * Functions for working with the DOM.
 	 */
 	var exports = {
@@ -1109,6 +1148,10 @@ define([
 		getStyle: getStyle,
 		getComputedStyle: getComputedStyle,
 		removeStyle: removeStyle,
+
+		isEditable: isEditable,
+		isEditingHost: isEditingHost,
+		getEditingHost: getEditingHost,
 
 		Nodes: Nodes
 	};
