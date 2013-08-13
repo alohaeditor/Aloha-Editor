@@ -2,6 +2,7 @@ define([
 	'../../src/arrays',
 	'../../src/dom',
 	'../../src/ranges',
+	'../../src/events',
 	'./textcolor',
 	'./overlay',
 	'./palette'
@@ -9,6 +10,7 @@ define([
 	arrays,
 	dom,
 	ranges,
+	events,
 	textcolor,
 	Overlay,
 	palette
@@ -138,16 +140,17 @@ define([
 			}
 		}
 
-		var $button = $(this);
-		var offset = Overlay.calculateOffset($button, 'fixed');
-		offset.top += $button.height();
+		var offset = Overlay.calculateOffset(button, 'fixed');
+		offset.top += parseInt(dom.getComputedStyle(button, 'height'), 10);
 
 		overlay.show(offset);
 	}
 
-	overlay = getOverlay(
-		palette,
-		$('<button>Change TextColor</button>').appendTo('body').on('click', click),
-		getSwatchClass
-	);
+
+	var button = document.createElement('button');
+	button.appendChild(document.createTextNode('Change TextColor'));
+	events.add(button, 'click', click),
+	document.getElementsByTagName('body')[0].appendChild(button);
+
+	overlay = getOverlay(palette, button, getSwatchClass);
 });

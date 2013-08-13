@@ -124,11 +124,11 @@ define([], function () {
 	/**
 	 * Calculates the offset at which to position the overlay element.
 	 *
-	 * @param {jQuery.<DOMObject>} $element
+	 * @param {DOMObject} elem
 	 *        A DOM element around which to calculate the offset.
 	 */
-	function calculateOffset($element, positionStyle) {
-		var offset = $element.offset();
+	function calculateOffset(elem, positionStyle) {
+		var offset = $(elem).offset();
 		if ('fixed' === positionStyle) {
 			offset.top -= $WINDOW.scrollTop();
 			offset.left -= $WINDOW.scrollLeft();
