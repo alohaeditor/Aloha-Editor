@@ -195,7 +195,12 @@ define( [
 		 * Default input value for a new link
 		*/
 		hrefValue: 'http://',
-		
+
+		/**
+		 * If links should be opened on CTRL/CMD + click
+		 */
+		metaClickOpenLink: true,
+
 		/**
 		 * Initialize the plugin
 		 */
@@ -226,7 +231,10 @@ define( [
 			if ( typeof this.settings.hrefValue != 'undefined' ) {
 				this.hrefValue = this.settings.hrefValue;
 			}
-			
+			if ( typeof this.settings.metaClickOpenLink != 'undefined' ) {
+				this.metaClickOpenLink = this.settings.metaClickOpenLink;
+			}
+
 			this.createButtons();
 			this.subscribeEvents();
 			this.bindInteractions();
@@ -387,7 +395,10 @@ define( [
 					that._formatLinkButton.hide();
 					that._insertLinkButton.hide();
 				}
-				setupMetaClickLink(props.editable);
+
+				if ( that.metaClickOpenLink ) {
+					setupMetaClickLink(props.editable);
+				}
 			});
 
 			var insideLinkScope = false;
@@ -490,19 +501,21 @@ define( [
 			} );
 
 			// follow link on ctrl or meta + click
-			jQuery( link ).click( function ( e ) {
-				if ( e.metaKey ) {
-					// blur current editable. user is waiting for the link to load
-					Aloha.activeEditable.blur();
-					// hack to guarantee a browser history entry
-					window.setTimeout( function () {
-						location.href = e.target;
-					}, 0 );
-					e.stopPropagation();
+			if ( this.metaClickOpenLink ) {
+				jQuery( link ).click( function ( e ) {
+					if ( e.metaKey ) {
+						// blur current editable. user is waiting for the link to load
+						Aloha.activeEditable.blur();
+						// hack to guarantee a browser history entry
+						window.setTimeout( function () {
+							location.href = e.target;
+						}, 0 );
+						e.stopPropagation();
 
-					return false;
-				}
-			} );
+						return false;
+					}
+				} );
+			}
 		},
 
 		/**
