@@ -4,11 +4,11 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([], function EventUtilities() {
+define([], function Events() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Events');
+		eval(uate)('events');
 	}
 
 	/**

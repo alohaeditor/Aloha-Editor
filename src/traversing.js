@@ -8,15 +8,15 @@ define([
 	'dom',
 	'html',
 	'functions'
-], function TraversingUtilities(
-	Dom,
-	Html,
-	Fn
+], function Traversing(
+	dom,
+	html,
+	fn
 ) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Traversing');
+		eval(uate)('traversing');
 	}
 
 	/**
@@ -195,20 +195,20 @@ define([
 	 * @return position.offset
 	 */
 	function findWordBoundaryBehind(node, offset) {
-		if (Html.isEditingHost(node)) {
+		if (html.isEditingHost(node)) {
 			return {
 				node: node,
 				offset: offset
 			};
 		}
-		if (Dom.Nodes.TEXT === node.nodeType) {
+		if (dom.Nodes.TEXT === node.nodeType) {
 			var boundary = node.data.substr(0, offset)
 			                   .search(WORD_BOUNDARY_FROM_END);
 			return (
 				-1 === boundary
 					? findWordBoundaryBehind(
 						node.parentNode,
-						Dom.nodeIndex(node)
+						dom.nodeIndex(node)
 					)
 					: {
 						node: node,
@@ -216,19 +216,19 @@ define([
 					}
 			);
 		}
-		if (Dom.Nodes.ELEMENT === node.nodeType) {
+		if (dom.Nodes.ELEMENT === node.nodeType) {
 			if (offset > 0) {
 				var child = node.childNodes[offset - 1];
 				return (
 					IN_WORD_TAGS[child.nodeName]
-						? findWordBoundaryBehind(child, Dom.nodeLength(child))
+						? findWordBoundaryBehind(child, dom.nodeLength(child))
 						: {
 							node: node,
 							offset: offset
 						}
 				);
 			}
-			return findWordBoundaryBehind(node.parentNode, Dom.nodeIndex(node));
+			return findWordBoundaryBehind(node.parentNode, dom.nodeIndex(node));
 		}
 		return {
 			node: node,
@@ -246,19 +246,19 @@ define([
 	 * @return position.offset
 	 */
 	function findWordBoundaryAhead(node, offset) {
-		if (Html.isEditingHost(node)) {
+		if (html.isEditingHost(node)) {
 			return {
 				node: node,
 				offset: offset
 			};
 		}
-		if (Dom.Nodes.TEXT === node.nodeType) {
+		if (dom.Nodes.TEXT === node.nodeType) {
 			var boundary = node.data.substr(offset).search(WORD_BOUNDARY);
 			return (
 				-1 === boundary
 					? findWordBoundaryAhead(
 						node.parentNode,
-						Dom.nodeIndex(node) + 1
+						dom.nodeIndex(node) + 1
 					)
 					: {
 						node: node,
@@ -266,8 +266,8 @@ define([
 					}
 			);
 		}
-		if (Dom.Nodes.ELEMENT === node.nodeType) {
-			if (offset < Dom.nodeLength(node)) {
+		if (dom.Nodes.ELEMENT === node.nodeType) {
+			if (offset < dom.nodeLength(node)) {
 				return (
 					IN_WORD_TAGS[node.childNodes[offset].nodeName]
 						? findWordBoundaryAhead(node.childNodes[offset], 0)
@@ -279,7 +279,7 @@ define([
 			}
 			return findWordBoundaryAhead(
 				node.parentNode,
-				Dom.nodeIndex(node) + 1
+				dom.nodeIndex(node) + 1
 			);
 		}
 		return {
@@ -293,9 +293,9 @@ define([
 	 * searches for a node which returns `true` when applied to the predicate
 	 * `match()`.
 	 *
-	 * @param {DomObject} node
-	 * @param {Function(DomObject):Boolean} match
-	 * @return {DomObject}
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} match
+	 * @return {DOMObject}
 	 */
 	function findNodeBackwards(node, match) {
 		if (!node) {
@@ -355,76 +355,76 @@ define([
 	}
 
 	/**
-	 * Applies the given function `fn()`, to the the given node `node` and it's
-	 * next siblings, until the given `until()` function retuns `true` or all
-	 * next siblings have been walked.
+	 * Applies the given function `func()`, to the the given node `node` and
+	 * it's next siblings, until the given `until()` function retuns `true` or
+	 * all next siblings have been walked.
 	 *
-	 * @param {DomObject} node
-	 * @param {Function(DomObject, *)} fn
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject, *)} func
 	 *        Callback function to apply to the traversed nodes.  Will receive
 	 *        the each node as the first argument, and the value of `arg` as the
 	 *        second argument.
-	 * @param {Function(DomObject, *):Boolean} until
+	 * @param {Function(DOMObject, *):Boolean} until
 	 *        Predicate function to test each traversed nodes.  Walking will be
 	 *        terminated when this function returns `true`.  Will receive the
 	 *        each node as the first argument, and the value of `arg` as the
 	 *        second argument.
 	 * @param {*} arg
-	 *        A value that will be passed to `fn()` as the second argument.
+	 *        A value that will be passed to `func()` as the second argument.
 	 */
-	function walkUntil(node, fn, until, arg) {
+	function walkUntil(node, func, until, arg) {
 		while (node && !until(node, arg)) {
 			var next = node.nextSibling;
-			fn(node, arg);
+			func(node, arg);
 			node = next;
 		}
 	}
 
 	/**
-	 * Applies the given function `fn()`, to the the given node `node` and all
+	 * Applies the given function `func()`, to the the given node `node` and all
 	 * it's next siblings.
 	 *
-	 * @param {DomObject} node
-	 * @param {Function(DomObject, *)} fn
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject, *)} fn
 	 *        Callback function to apply to the traversed nodes.  Will receive
 	 *        the each node as the first argument, and the value of `arg` as the
 	 *        second argument.
 	 * @param {*} arg
-	 *        A value that will be passed to `fn()` as the second argument.
+	 *        A value that will be passed to `func()` as the second argument.
 	 */
-	function walk(node, fn, arg) {
-		walkUntil(node, fn, Fn.returnFalse, arg);
+	function walk(node, func, arg) {
+		walkUntil(node, func, fn.returnFalse, arg);
 	}
 
 	/**
 	 * Depth-first postwalk of the given DOM node.
 	 */
-	function walkRec(node, fn, arg) {
-		if (Dom.Nodes.ELEMENT === node.nodeType) {
+	function walkRec(node, func, arg) {
+		if (dom.Nodes.ELEMENT === node.nodeType) {
 			walk(node.firstChild, function (node) {
-				walkRec(node, fn, arg);
+				walkRec(node, func, arg);
 			});
 		}
-		fn(node, arg);
+		func(node, arg);
 	}
 
 	/**
-	 * Applies the given function `fn()`, to the the given node `node` and it's
-	 * next siblings, until `untilNode` is encountered or the last sibling is
-	 * reached.
+	 * Applies the given function `func()`, to the the given node `node` and
+	 * it's next siblings, until `untilNode` is encountered or the last sibling
+	 * is reached.
 	 *
-	 * @param {DomObject} node
-	 * @param {Function(DomObject, *)} fn
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject, *)} fn
 	 *        Callback function to apply to the traversed nodes.  Will receive
 	 *        the each node as the first argument, and the value of `arg` as the
 	 *        second argument.
-	 * @param {DomObject} untilNode
+	 * @param {DOMObject} untilNode
 	 *        Terminal node.
 	 * @param {*} arg
-	 *        A value that will be passed to `fn()` as the second argument.
+	 *        A value that will be passed to `func()` as the second argument.
 	 */
-	function walkUntilNode(node, fn, untilNode, arg) {
-		walkUntil(node, fn, function (nextNode) {
+	function walkUntilNode(node, func, untilNode, arg) {
+		walkUntil(node, func, function (nextNode) {
 			return nextNode === untilNode;
 		}, arg);
 	}
@@ -545,21 +545,21 @@ define([
 	/**
 	 * DOM traversal functions.
 	 *
-	 * Traversing.nextWhile()
-	 * Traversing.prevWhile()
-	 * Traversing.walk()
-	 * Traversing.walkRec()
-	 * Traversing.walkUntil()
-	 * Traversing.walkUntilNode()
-	 * Traversing.findNodeBackwards()
-	 * Traversing.findWordBoundaryAhead()
-	 * Traversing.findWordBoundaryBehind()
-	 * Traversing.parentsUntil()
-	 * Traversing.parentsUntilIncl()
-	 * Traversing.childAndParentsUntil()
-	 * Traversing.childAndParentsUntilIncl()
-	 * Traversing.childAndParentsUntilNode()
-	 * Traversing.childAndParentsUntilInclNode()
+	 * traversing.nextWhile()
+	 * traversing.prevWhile()
+	 * traversing.walk()
+	 * traversing.walkRec()
+	 * traversing.walkUntil()
+	 * traversing.walkUntilNode()
+	 * traversing.findNodeBackwards()
+	 * traversing.findWordBoundaryAhead()
+	 * traversing.findWordBoundaryBehind()
+	 * traversing.parentsUntil()
+	 * traversing.parentsUntilIncl()
+	 * traversing.childAndParentsUntil()
+	 * traversing.childAndParentsUntilIncl()
+	 * traversing.childAndParentsUntilNode()
+	 * traversing.childAndParentsUntilInclNode()
 	 */
 	var exports = {
 		nextWhile: nextWhile,

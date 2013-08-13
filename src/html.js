@@ -4,21 +4,17 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
- define([
+define([
 	'dom',
-	'maps',
-	'arrays',
 	'cursors'
-], function HtmlUtilities(
-	Dom,
-	Maps,
-	Arrays,
-	Cursors
+], function Html(
+	dom,
+	cursors
 ) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Html');
+		eval(uate)('html');
 	}
 
 	/**
@@ -99,11 +95,11 @@
 			return false;
 		}
 		switch (node.nodeType) {
-		case Dom.Nodes.DOCUMENT:
-		case Dom.Nodes.DOCUMENT_FRAGMENT:
+		case dom.Nodes.DOCUMENT:
+		case dom.Nodes.DOCUMENT_FRAGMENT:
 			return true;
-		case Dom.Nodes.ELEMENT:
-			return !nonBlockDisplayValuesMap[Dom.getComputedStyle(node, 'display')];
+		case dom.Nodes.ELEMENT:
+			return !nonBlockDisplayValuesMap[dom.getComputedStyle(node, 'display')];
 		default:
 			return false;
 		}
@@ -204,7 +200,7 @@
 		if (nonWhitespaceRx.test(node.nodeValue)) {
 			return false;
 		}
-        var cssWhiteSpace = Dom.getComputedStyle(node.parentNode, 'white-space');
+        var cssWhiteSpace = dom.getComputedStyle(node.parentNode, 'white-space');
 		if (isWhiteSpacePreserveStyle(cssWhiteSpace)) {
 			return false;
 		}
@@ -351,9 +347,9 @@
 			return false;
 		}
 		return (
-			skipUnrenderedToEndOfLine(Cursors.cursor(node, false))
+			skipUnrenderedToEndOfLine(cursors.cursor(node, false))
 			||
-			skipUnrenderedToStartOfLine(Cursors.cursor(node, false))
+			skipUnrenderedToStartOfLine(cursors.cursor(node, false))
 		);
 	}
 
@@ -367,7 +363,7 @@
 		var child = elem.firstChild;
 		while (child) {
 			if (!isUnrenderedWhitespace(child)
-				&& (1 === child.nodeType || 3 === child.nodeType)) {
+					&& (1 === child.nodeType || 3 === child.nodeType)) {
 				return true;
 			}
 			child = child.nextSibling;

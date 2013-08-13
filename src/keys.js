@@ -4,22 +4,18 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([
-	'events'
-], function KeysUtilities(
-	Events
-) {
+define(['events'], function Keys(events) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Keys');
+		eval(uate)('keys');
 	}
 
 	function onKeyDownOnDocument(event) {
 		console.warn(event);
 	}
 
-	Events.add(document, 'keydown', onKeyDownOnDocument);
+	events.add(document, 'keydown', onKeyDownOnDocument);
 
 	/**
 	 * Functions for working with key events.

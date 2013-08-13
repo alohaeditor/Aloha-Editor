@@ -30,22 +30,22 @@ define([
 	'ranges',
 	'cursors',
 	'content'
-], function EditingAPI(
-	Dom,
-	Traversing,
-	Arrays,
-	Maps,
-	Strings,
-	Fn,
-	Html,
-	Ranges,
-	Cursors,
-	Content
+], function Editing(
+	dom,
+	traversing,
+	arrays,
+	maps,
+	strings,
+	fn,
+	html,
+	ranges,
+	cursors,
+	content
 ) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('RangeContext');
+		eval(uate)('editing');
 	}
 
 	/**
@@ -54,12 +54,12 @@ define([
 	 * given child, and at for the given child.
 	 */
 	function walkSiblings(parent, beforeAtAfterChild, before, at, after, arg) {
-		var fn = before;
-		Traversing.walk(parent.firstChild, function (child) {
+		var func = before;
+		traversing.walk(parent.firstChild, function (child) {
 			if (child !== beforeAtAfterChild) {
-				fn(child, arg);
+				func(child, arg);
 			} else {
-				fn = after;
+				func = after;
 				at(child, arg);
 			}
 		});
@@ -96,7 +96,7 @@ define([
 		// <elem>text{</elem> or <elem>text}</elem>
 		// ascendecending would start at <elem> ignoring "text".
 		if (ascendNodes.length && atEnd) {
-			Traversing.walk(ascendNodes[0].firstChild, before, args[0]);
+			traversing.walk(ascendNodes[0].firstChild, before, args[0]);
 		}
 		for (i = 0; i < ascendNodes.length - 1; i++) {
 			var child = ascendNodes[i];
@@ -130,7 +130,7 @@ define([
 	 * endContainer/endOffset.
 	 *
 	 * Requires range's boundary points to be between nodes
-	 * (Dom.splitTextContainers).
+	 * (dom.splitTextContainers).
 	 */
 	function walkBoundaryLeftRightInbetween(liveRange, carryDown, stepLeftStart, stepRightStart, stepLeftEnd, stepRightEnd, stepPartial, stepInbetween, arg) {
 		// Because range may be mutated during traversal, we must only
@@ -140,28 +140,28 @@ define([
 		var ec  = liveRange.endContainer;
 		var so  = liveRange.startOffset;
 		var eo  = liveRange.endOffset;
-		var start    = Dom.nodeAtOffset(sc, so);
-		var end      = Dom.nodeAtOffset(ec, eo);
-		var startEnd = Dom.isAtEnd(sc, so);
-		var endEnd   = Dom.isAtEnd(ec, eo);
-		var ascStart = Traversing.childAndParentsUntilNode(start, cac);
-		var ascEnd   = Traversing.childAndParentsUntilNode(end,   cac);
+		var start    = dom.nodeAtOffset(sc, so);
+		var end      = dom.nodeAtOffset(ec, eo);
+		var startEnd = dom.isAtEnd(sc, so);
+		var endEnd   = dom.isAtEnd(ec, eo);
+		var ascStart = traversing.childAndParentsUntilNode(start, cac);
+		var ascEnd   = traversing.childAndParentsUntilNode(end,   cac);
 		var stepAtStart = makePointNodeStep(start, startEnd, stepRightStart, stepPartial);
 		var stepAtEnd   = makePointNodeStep(end, endEnd, stepRightEnd, stepPartial);
 		ascendWalkSiblings(ascStart, startEnd, carryDown, stepLeftStart, stepAtStart, stepRightStart, arg);
 		ascendWalkSiblings(ascEnd, endEnd, carryDown, stepLeftEnd, stepAtEnd, stepRightEnd, arg);
-		var cacChildStart = Arrays.last(ascStart);
-		var cacChildEnd   = Arrays.last(ascEnd);
+		var cacChildStart = arrays.last(ascStart);
+		var cacChildEnd   = arrays.last(ascEnd);
 		stepAtStart = makePointNodeStep(start, startEnd, stepInbetween, stepPartial);
-		Traversing.walkUntilNode(cac.firstChild, stepLeftStart, cacChildStart, arg);
+		traversing.walkUntilNode(cac.firstChild, stepLeftStart, cacChildStart, arg);
 		if (cacChildStart) {
 			var next = cacChildStart.nextSibling;
 			stepAtStart(cacChildStart, arg);
-			Traversing.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
+			traversing.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
 			if (cacChildEnd) {
 				next = cacChildEnd.nextSibling;
 				stepAtEnd(cacChildEnd, arg);
-				Traversing.walk(next, stepRightEnd, arg);
+				traversing.walk(next, stepRightEnd, arg);
 			}
 		}
 	}
@@ -170,7 +170,7 @@ define([
 	 * Simplifies walkBoundaryLeftRightInbetween from left/right/inbetween to just inside/outside.
 	 *
 	 * Requires range's boundary points to be between nodes
-	 * (Dom.splitTextContainers).
+	 * (dom.splitTextContainers).
 	 */
 	function walkBoundaryInsideOutside(liveRange, carryDown, stepOutside, stepPartial, stepInside, arg) {
 		walkBoundaryLeftRightInbetween(liveRange, carryDown, stepOutside, stepInside, stepInside, stepOutside, stepPartial, stepInside, arg);
@@ -185,14 +185,14 @@ define([
 	 * siblings of the range boundary that are not contained in it.
 	 *
 	 * Requires range's boundary points to be between nodes
-	 * (Dom.splitTextContainers).
+	 * (dom.splitTextContainers).
 	 */
 	function pushDownContext(liveRange, pushDownFrom, cacOverride, getOverride, clearOverride, clearOverrideRec, pushDownOverride) {
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
 		walkBoundaryInsideOutside(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec, cacOverride);
-		var fromCacToTop = Traversing.childAndParentsUntilInclNode(
+		var fromCacToTop = traversing.childAndParentsUntilInclNode(
 			cac,
 			pushDownFrom
 		);
@@ -204,29 +204,29 @@ define([
 		var obstruction = null;
 		function beforeAfter(node) {
 			obstruction = (obstruction
-						   || (!Html.isUnrenderedWhitespace(node)
+						   || (!html.isUnrenderedWhitespace(node)
 							   && !hasContext(node)));
 		}
-		walkBoundaryInsideOutside(range, Fn.noop, beforeAfter, Fn.noop, Fn.noop);
+		walkBoundaryInsideOutside(range, fn.noop, beforeAfter, fn.noop, fn.noop);
 		if (obstruction) {
 			return null;
 		}
 		var cac = range.commonAncestorContainer;
-		if (Dom.Nodes.TEXT === cac.nodeType) {
+		if (dom.Nodes.TEXT === cac.nodeType) {
 			cac = cac.parentNode;
 		}
 		function untilIncl(node) {
 			// Because we prefer a node above the cac if possible.
 			return (cac !== node && isReusable(node)) || isUpperBoundary(node) || isObstruction(node);
 		}
-		var cacToReusable = Traversing.childAndParentsUntilIncl(cac, untilIncl);
-		var reusable = Arrays.last(cacToReusable);
+		var cacToReusable = traversing.childAndParentsUntilIncl(cac, untilIncl);
+		var reusable = arrays.last(cacToReusable);
 		if (!isReusable(reusable)) {
 			// Because, although we preferred a node above the cac, we
 			// fall back to the cac.
 			return isReusable(cac) ? cac : null;
 		}
-		ascendWalkSiblings(cacToReusable, false, Fn.noop, beforeAfter, Fn.noop, beforeAfter);
+		ascendWalkSiblings(cacToReusable, false, fn.noop, beforeAfter, fn.noop, beforeAfter);
 		if (obstruction) {
 			return isReusable(cac) ? cac : null;
 		}
@@ -277,7 +277,7 @@ define([
 	 * style="font-weight: normal">. See hasOverrideAncestor below.
 	 *
 	 * @param liveRange range's boundary points should be between nodes
-	 * (Dom.splitTextContainers).
+	 * (dom.splitTextContainers).
 	 *
 	 * @param formatter a map with the following properties
 	 *   isUpperBoundary(node) - identifies exclusive upper
@@ -334,24 +334,25 @@ define([
 		var isContextOverride = formatter.isContextOverride;
 		var isClearable = formatter.isClearable;
 		var clearOverrideRec = formatter.clearOverrideRec  || function (node) {
-			Traversing.walkRec(node, clearOverride);
+			traversing.walkRec(node, clearOverride);
 		};
 
 		var topmostOverrideNode = null;
 		var cacOverride = null;
 		var isNonClearableOverride = false;
 		var upperBoundaryAndAbove = false;
-		var fromCacToContext = Traversing.childAndParentsUntilIncl(
+		var fromCacToContext = traversing.childAndParentsUntilIncl(
 			cac,
 			function (node) {
 				// Because we shouldn't expect hasContext to handle the document
 				// element (which has nodeType 9).
 				return (
 					!node.parentNode
-						|| Dom.Nodes.DOCUMENT === node.parentNode.nodeType
+						|| dom.Nodes.DOCUMENT === node.parentNode.nodeType
 							|| hasInheritableContext(node)
 				);
-			});
+			}
+		);
 		fromCacToContext.forEach(function (node) {
 			upperBoundaryAndAbove = upperBoundaryAndAbove || isUpperBoundary(node);
 			// Because we are only interested in non-context overrides.
@@ -368,7 +369,7 @@ define([
 			cacOverride = getInheritableOverride(cac);
 		}
 
-		if (hasInheritableContext(Arrays.last(fromCacToContext)) && !isNonClearableOverride) {
+		if (hasInheritableContext(arrays.last(fromCacToContext)) && !isNonClearableOverride) {
 			if (!topmostOverrideNode) {
 				// Because, if there is no override in the way, we only
 				// need to clear the overrides contained in the range.
@@ -399,43 +400,43 @@ define([
 	}
 
 	function wrap(node, wrapper, leftPoint, rightPoint) {
-		if (!Content.allowsNesting(wrapper, node)) {
+		if (!content.allowsNesting(wrapper, node)) {
 			return false;
 		}
 		if (wrapper.parentNode) {
-			Dom.removeShallowPreservingBoundaries(wrapper, [leftPoint, rightPoint]);
+			dom.removeShallowPreservingBoundaries(wrapper, [leftPoint, rightPoint]);
 		}
 		adjustPointWrap(leftPoint, node, wrapper);
 		adjustPointWrap(rightPoint, node, wrapper);
-		Dom.wrap(node, wrapper);
+		dom.wrap(node, wrapper);
 		return true;
 	}
 
-	// NB: depends on fixupRange to use Ranges.trimClosingOpening() to move the
+	// NB: depends on fixupRange to use ranges.trimClosingOpening() to move the
 	// leftPoint out of an cursor.atEnd position to the first node that is to be
 	// moved.
 	function moveBackIntoWrapper(node, ref, atEnd, leftPoint, rightPoint) {
 		// Because the points will just be moved with the node, we don't need to
 		// do any special preservation.
-		Dom.insert(node, ref, atEnd);
+		dom.insert(node, ref, atEnd);
 	}
 
 	function fixupRange(liveRange, mutate) {
 		// Because we are mutating the range several times and don't want the
 		// caller to see the in-between updates, and because we are using
-		// Ranges.trim() below to adjust the range's boundary points, which we
+		// ranges.trim() below to adjust the range's boundary points, which we
 		// don't want the browser to re-adjust (which some browsers do).
-		var range = Ranges.stableRange(liveRange);
+		var range = ranges.stableRange(liveRange);
 
 		// Because making the assumption that boundary points are between nodes
 		// makes the algorithms generally a bit simpler.
-		Dom.splitTextContainers(range);
+		dom.splitTextContainers(range);
 
-		var splitStart = Cursors.cursorFromBoundaryPoint(
+		var splitStart = cursors.cursorFromBoundaryPoint(
 			range.startContainer,
 			range.startOffset
 		);
-		var splitEnd = Cursors.cursorFromBoundaryPoint(
+		var splitEnd = cursors.cursorFromBoundaryPoint(
 			range.endContainer,
 			range.endOffset
 		);
@@ -450,19 +451,19 @@ define([
 		// afterwards.
 		// Also, because moveBackIntoWrapper() requires the
 		// left boundary point to be next to a non-ignorable node.
-		Ranges.trimClosingOpening(
+		ranges.trimClosingOpening(
 			range,
-			Html.isUnrenderedWhitespace,
-			Html.isUnrenderedWhitespace
+			html.isUnrenderedWhitespace,
+			html.isUnrenderedWhitespace
 		);
 
 		// Because mutation needs to keep track and adjust boundary points so we
 		// can preserve the range.
-		var leftPoint = Cursors.cursorFromBoundaryPoint(
+		var leftPoint = cursors.cursorFromBoundaryPoint(
 			range.startContainer,
 			range.startOffset
 		);
-		var rightPoint = Cursors.cursorFromBoundaryPoint(
+		var rightPoint = cursors.cursorFromBoundaryPoint(
 			range.endContainer,
 			range.endOffset
 		);
@@ -471,28 +472,28 @@ define([
 			formatter.postprocess();
 		}
 
-		Ranges.setFromBoundaries(range, leftPoint, rightPoint);
+		ranges.setFromBoundaries(range, leftPoint, rightPoint);
 
 		// Because we want to ensure that this algorithm doesn't
 		// introduce any additional splits between text nodes.
-		Dom.joinTextNodeAdjustRange(splitStart.node, range);
-		Dom.joinTextNodeAdjustRange(splitEnd.node, range);
+		dom.joinTextNodeAdjustRange(splitStart.node, range);
+		dom.joinTextNodeAdjustRange(splitEnd.node, range);
 		if (formatter) {
 			formatter.postprocessTextNodes(range);
 		}
 
-		Ranges.setFromReference(liveRange, range);
+		ranges.setFromReference(liveRange, range);
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
-		if (Dom.Nodes.ELEMENT !== node.nodeType || !ignoreVertical(node)) {
+		if (dom.Nodes.ELEMENT !== node.nodeType || !ignoreVertical(node)) {
 			return null;
 		}
-		var maybeContext = Traversing.nextWhile(node.firstChild, ignoreHorizontal);
+		var maybeContext = traversing.nextWhile(node.firstChild, ignoreHorizontal);
 		if (!maybeContext) {
 			return null;
 		}
-		var notIgnorable = Traversing.nextWhile(maybeContext.nextSibling, ignoreHorizontal);
+		var notIgnorable = traversing.nextWhile(maybeContext.nextSibling, ignoreHorizontal);
 		if (notIgnorable) {
 			return null;
 		}
@@ -534,7 +535,7 @@ define([
 			} else {
 				// Because if wrapping is not successful, we try again
 				// one level down.
-				Traversing.walk(node.firstChild, function (node) {
+				traversing.walk(node.firstChild, function (node) {
 					ensureWrapper(node, createWrapper, isWrapper, isMergable, pruneContext, addContextValue, leftPoint, rightPoint);
 				});
 			}
@@ -579,7 +580,7 @@ define([
 			if (node.nextSibling) {
 				removedNodeSiblings.push(node.nextSibling);
 			}
-			Dom.removeShallowPreservingBoundaries(node, [leftPoint, rightPoint]);
+			dom.removeShallowPreservingBoundaries(node, [leftPoint, rightPoint]);
 		}
 
 		function createContextWrapper(value) {
@@ -603,7 +604,7 @@ define([
 			}
 			var key =  ':' + value;
 			var wrappers = wrappersByContextValue[key] || [];
-			if (Arrays.contains(wrappers, node)) {
+			if (arrays.contains(wrappers, node)) {
 				return true;
 			}
 			if (hasSomeContextValue(node) && !hasContextValue(node, value)) {
@@ -619,11 +620,11 @@ define([
 		function wrapContextValue(node, value) {
 			ensureWrapper(
 				node,
-				Fn.bind(createContextWrapper, null, value),
+				fn.bind(createContextWrapper, null, value),
 				isReusable,
-				Fn.bind(isMergableWrapper, null, value),
+				fn.bind(isMergableWrapper, null, value),
 				pruneContext,
-				Fn.bind(addContextValue, null, value),
+				fn.bind(addContextValue, null, value),
 				leftPoint,
 				rightPoint
 			);
@@ -646,7 +647,7 @@ define([
 		}
 
 		function clearOverrideRec(node) {
-			Traversing.walkRec(node, clearOverrideRecStep);
+			traversing.walkRec(node, clearOverrideRecStep);
 		}
 
 		function pushDownOverride(node, override) {
@@ -664,7 +665,7 @@ define([
 			if (isContextOverride(override)) {
 				return;
 			}
-			Traversing.walk(node.firstChild, clearOverrideRec);
+			traversing.walk(node.firstChild, clearOverrideRec);
 			wrapContextValue(node, contextValue);
 		}
 
@@ -676,13 +677,13 @@ define([
 			function isGivenContextValue(node) {
 				return hasContextValue(node, contextValue);
 			}
-			sibling = restack(sibling, isGivenContextValue, Html.isUnrenderedWhitespace, Html.hasInlineStyle, leftPoint, rightPoint);
+			sibling = restack(sibling, isGivenContextValue, html.isUnrenderedWhitespace, html.hasInlineStyle, leftPoint, rightPoint);
 			if (!sibling) {
 				return;
 			}
-			var isMergable = Fn.bind(isMergableWrapper, null, contextValue);
-			var createWrapper = Fn.bind(createContextWrapper, null, contextValue);
-			var addValue = Fn.bind(addContextValue, null, contextValue);
+			var isMergable = fn.bind(isMergableWrapper, null, contextValue);
+			var createWrapper = fn.bind(createContextWrapper, null, contextValue);
+			var addValue = fn.bind(addContextValue, null, contextValue);
 			var mergeNode = mergeNext ? sibling : wrapper;
 			ensureWrapper(mergeNode, createWrapper, isReusable, isMergable, pruneContext, addValue, leftPoint, rightPoint);
 		}
@@ -700,7 +701,7 @@ define([
 
 		function postprocessTextNodes(range) {
 			removedNodeSiblings.forEach(function (node) {
-				Dom.joinTextNodeAdjustRange(node, range);
+				dom.joinTextNodeAdjustRange(node, range);
 			});
 		}
 
@@ -729,7 +730,7 @@ define([
 		// are inside an editable, we shouldn't make modifications
 		// outside of it (if we are not inside an editable, we don't
 		// care).
-		return 'BODY' === node.nodeName || Html.hasBlockStyle(node) || Html.isEditingHost(node);
+		return 'BODY' === node.nodeName || html.hasBlockStyle(node) || html.isEditingHost(node);
 	}
 
 	function isStyleEqual_default(styleValueA, styleValueB) {
@@ -766,8 +767,8 @@ define([
 			normalize: {}
 		}
 	};
-	wrapperProperties.emphasis = Maps.merge(wrapperProperties.italic, {name: 'EM'});
-	wrapperProperties.strong = Maps.merge(wrapperProperties.bold, {name: 'STRONG'});
+	wrapperProperties.emphasis = maps.merge(wrapperProperties.italic, {name: 'EM'});
+	wrapperProperties.strong = maps.merge(wrapperProperties.bold, {name: 'STRONG'});
 
 	function makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts) {
 		var isStyleEqual = opts.isStyleEqual || isStyleEqual_default;
@@ -787,18 +788,18 @@ define([
 			return value;
 		}
 		function getOverride(node) {
-			if (Arrays.contains(nodeNames, node.nodeName)) {
+			if (arrays.contains(nodeNames, node.nodeName)) {
 				return wrapperProps.value;
 			}
-			var override = Dom.getStyle(node, styleName);
-			return !Strings.empty(override) ? override : null;
+			var override = dom.getStyle(node, styleName);
+			return !strings.empty(override) ? override : null;
 		}
 		function getInheritableOverride(node) {
-			if (Arrays.contains(nodeNames, node.nodeName)) {
+			if (arrays.contains(nodeNames, node.nodeName)) {
 				return wrapperProps.value;
 			}
-			var override = Dom.getComputedStyle(node, styleName);
-			return !Strings.empty(override) ? override : null;
+			var override = dom.getComputedStyle(node, styleName);
+			return !strings.empty(override) ? override : null;
 		}
 		function isContextStyle(value) {
 			return isStyleEqual(normalizeStyleValue(value), styleValue);
@@ -807,26 +808,26 @@ define([
 			return isContextStyle(value);
 		}
 		function hasSomeContextValue(node) {
-			if (Arrays.contains(nodeNames, node.nodeName)) {
+			if (arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
-			return !Strings.empty(Dom.getStyle(node, styleName));
+			return !strings.empty(dom.getStyle(node, styleName));
 		}
 		function hasContextValue(node, value) {
 			value = normalizeStyleValue(value);
-			if (Arrays.contains(nodeNames, node.nodeName) && isStyleEqual(wrapperProps.value, value)) {
+			if (arrays.contains(nodeNames, node.nodeName) && isStyleEqual(wrapperProps.value, value)) {
 				return true;
 			}
-			return isStyleEqual(Dom.getStyle(node, styleName), value);
+			return isStyleEqual(dom.getStyle(node, styleName), value);
 		}
 		function hasContext(node) {
-			if (!unformat && Arrays.contains(nodeNames, node.nodeName)) {
+			if (!unformat && arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
-			return isContextStyle(Dom.getStyle(node, styleName));
+			return isContextStyle(dom.getStyle(node, styleName));
 		}
 		function hasInheritableContext(node) {
-			if (!unformat && Arrays.contains(nodeNames, node.nodeName)) {
+			if (!unformat && arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
 			if (unformat && 'BODY' === node.nodeName) {
@@ -837,35 +838,35 @@ define([
 			// TODO This causes any classes that set a non-inherited
 			// style to the default value, for example
 			// "text-decoration: none" to be ignored.
-			if (unformat && Html.isStyleInherited(styleName)) {
-				return isContextStyle(Dom.getStyle(node, styleName));
+			if (unformat && html.isStyleInherited(styleName)) {
+				return isContextStyle(dom.getStyle(node, styleName));
 			}
-			return isContextStyle(Dom.getComputedStyle(node, styleName));
+			return isContextStyle(dom.getComputedStyle(node, styleName));
 		}
 		function addContextValue(value, node) {
 			value = normalizeStyleValue(value);
-			if (Arrays.contains(nodeNames, node.nodeName) && isStyleEqual(wrapperProps.value, value)) {
+			if (arrays.contains(nodeNames, node.nodeName) && isStyleEqual(wrapperProps.value, value)) {
 				return;
 			}
 			// Because we don't want to add an explicit style if for
 			// example the element already has a class set on it. For
 			// example: <span class="bold"></span>.
-			if (isStyleEqual(normalizeStyleValue(Dom.getComputedStyle(node, styleName)), value)) {
+			if (isStyleEqual(normalizeStyleValue(dom.getComputedStyle(node, styleName)), value)) {
 				return;
 			}
-			Dom.setStyle(node, styleName, value);
+			dom.setStyle(node, styleName, value);
 		}
 		function removeContext(node) {
-			Dom.removeStyle(node, styleName);
+			dom.removeStyle(node, styleName);
 		}
 		function isReusable(node) {
-			if (Arrays.contains(nodeNames, node.nodeName)) {
+			if (arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
 			return 'SPAN' === node.nodeName;
 		}
 		function isPrunable(node) {
-			return isReusable(node) && !Dom.hasAttrs(node);
+			return isReusable(node) && !dom.hasAttrs(node);
 		}
 		function createWrapper(value) {
 			value = normalizeStyleValue(value);
@@ -873,10 +874,10 @@ define([
 				return document.createElement(wrapperProps.name);
 			}
 			var wrapper = document.createElement('SPAN');
-			Dom.setStyle(wrapper, styleName, value);
+			dom.setStyle(wrapper, styleName, value);
 			return wrapper;
 		}
-		var impl = Maps.merge({
+		var impl = maps.merge({
 			getOverride: getOverride,
 			getInheritableOverride: getInheritableOverride,
 			hasContext: hasContext,
@@ -890,7 +891,7 @@ define([
 			isStyleEqual: isStyleEqual,
 			createWrapper: createWrapper,
 			isReusable: isReusable,
-			isObstruction: Fn.complement(Html.hasInlineStyle),
+			isObstruction: fn.complement(html.hasInlineStyle),
 			isUpperBoundary: isUpperBoundary_default
 		}, opts);
 		return makeFormatter(styleValue, leftPoint, rightPoint, impl);
@@ -933,7 +934,7 @@ define([
 			// does more than just provide a context (for example a <b>
 			// node may have a class which shouldn't also being wrapped
 			// around the merged-with node).
-			return node.nodeName === nodeName && !Dom.hasAttrs(node);
+			return node.nodeName === nodeName && !dom.hasAttrs(node);
 		}
 		function isPrunable(node) {
 			return isReusable(node);
@@ -941,7 +942,7 @@ define([
 		function hasSomeContextValue(node) {
 			return node.nodeName === nodeName;
 		}
-		var impl = Maps.merge({
+		var impl = maps.merge({
 			getOverride: getOverride,
 			// Because inheritable overrides are only useful for
 			// formatters that consider the CSS style.
@@ -954,12 +955,12 @@ define([
 			// difference for an element formatter, since there is only one
 			// context value.
 			hasContextValue: hasSomeContextValue,
-			addContextValue: Fn.noop,
-			removeContext: Fn.noop,
+			addContextValue: fn.noop,
+			removeContext: fn.noop,
 			createWrapper: createWrapper,
 			isReusable: isReusable,
 			isPrunable: isPrunable,
-			isObstruction: Fn.complement(Html.hasInlineStyle),
+			isObstruction: fn.complement(html.hasInlineStyle),
 			isUpperBoundary: isUpperBoundary_default
 		}, opts);
 		return makeFormatter(nodeName, leftPoint, rightPoint, impl);
@@ -1003,7 +1004,7 @@ define([
 	 * @param styleName a CSS style name.
 	 *        Please note that not-inherited styles currently may (or
 	 *        may not) cause undesirable results.  See also
-	 *        Html.isStyleInherited().
+	 *        html.isStyleInherited().
 	 *
 	 *        The underline style can't be unformatted inside a
 	 *        non-clearable ancestor ("text-decoration: none" doesn't do
@@ -1049,15 +1050,15 @@ define([
 	 */
 	function trimExpandBoundaries(startPoint, endPoint, trimUntil, expandUntil, ignore) {
 		var collapsed = startPoint.equals(endPoint);
-		Ranges.trimBoundaries(startPoint, endPoint, trimUntil, ignore);
-		Ranges.expandBoundaries(startPoint, endPoint, expandUntil, ignore);
+		ranges.trimBoundaries(startPoint, endPoint, trimUntil, ignore);
+		ranges.expandBoundaries(startPoint, endPoint, expandUntil, ignore);
 		if (collapsed) {
 			endPoint.setFrom(startPoint);
 		}
 	}
 
 	function ascendOffsetUntilInclNode(node, atEnd, carryDown, before, at, after, untilInclNode) {
-		var ascend = Traversing.childAndParentsUntilInclNode(
+		var ascend = traversing.childAndParentsUntilInclNode(
 			node,
 			untilInclNode
 		);
@@ -1107,32 +1108,32 @@ define([
 	 *        out of an unsplit node which may be unexpected.
 	 */
 	function split(liveRange, opts) {
-		opts = Maps.merge({
-			clone: Dom.cloneShallow,
-			belowCacUntil: Fn.returnFalse,
+		opts = maps.merge({
+			clone: dom.cloneShallow,
+			belowCacUntil: fn.returnFalse,
 			cacAndAboveUntil: isUpperBoundary_default,
 			normalizeRange: true
 		}, opts);
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var normalizeLeft = opts.normalizeRange ? leftPoint : leftPoint.clone();
 			var normalizeRight = opts.normalizeRange ? rightPoint : rightPoint.clone();
-			Html.normalizeBoundary(normalizeLeft);
-			Html.normalizeBoundary(normalizeRight);
-			Ranges.setFromBoundaries(range, normalizeLeft, normalizeRight);
+			html.normalizeBoundary(normalizeLeft);
+			html.normalizeBoundary(normalizeRight);
+			ranges.setFromBoundaries(range, normalizeLeft, normalizeRight);
 
 			var cac = range.commonAncestorContainer;
-			var start = Dom.nodeAtOffset(range.startContainer, range.startOffset);
-			var startEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
-			var end = Dom.nodeAtOffset(range.endContainer, range.endOffset);
-			var endEnd = Dom.isAtEnd(range.endContainer, range.endOffset);
+			var start = dom.nodeAtOffset(range.startContainer, range.startOffset);
+			var startEnd = dom.isAtEnd(range.startContainer, range.startOffset);
+			var end = dom.nodeAtOffset(range.endContainer, range.endOffset);
+			var endEnd = dom.isAtEnd(range.endContainer, range.endOffset);
 
 			var splitCac = !opts.cacAndAboveUntil(cac);
-			var fromCacToTop = Traversing.childAndParentsUntil(
+			var fromCacToTop = traversing.childAndParentsUntil(
 				cac,
 				opts.cacAndAboveUntil
 			);
 			var topmostUnsplitNode = fromCacToTop.length
-			                       ? Arrays.last(fromCacToTop).parentNode
+			                       ? arrays.last(fromCacToTop).parentNode
 			                       : cac;
 
 			var wrapper = null;
@@ -1152,7 +1153,7 @@ define([
 					// Because we want to ensure the splitting process
 					// doesn't introduce any empty nodes.
 					removeEmpty.push(parent);
-					Dom.insert(wrapper, parent, false);
+					dom.insert(wrapper, parent, false);
 					if (leftPoint.node === parent && !leftPoint.atEnd) {
 						leftPoint.node = wrapper;
 					}
@@ -1160,11 +1161,11 @@ define([
 				moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
 			}
 
-			ascendOffsetUntilInclNode(start, startEnd, carryDown, intoWrapper, Fn.noop, Fn.noop, cac);
-			ascendWalkSiblings(fromCacToTop, false, Fn.returnFalse, intoWrapper, Fn.noop, Fn.noop);
+			ascendOffsetUntilInclNode(start, startEnd, carryDown, intoWrapper, fn.noop, fn.noop, cac);
+			ascendWalkSiblings(fromCacToTop, false, fn.returnFalse, intoWrapper, fn.noop, fn.noop);
 			wrapper = null;
-			ascendOffsetUntilInclNode(end, endEnd, carryDown, intoWrapper, Fn.noop, Fn.noop, cac);
-			ascendWalkSiblings(fromCacToTop, false, Fn.returnFalse, intoWrapper, Fn.noop, Fn.noop);
+			ascendOffsetUntilInclNode(end, endEnd, carryDown, intoWrapper, fn.noop, fn.noop, cac);
+			ascendWalkSiblings(fromCacToTop, false, fn.returnFalse, intoWrapper, fn.noop, fn.noop);
 
 			removeEmpty.forEach(function (elem) {
 				// Because if it doesn't have a parentNode, it was
@@ -1172,7 +1173,7 @@ define([
 				// possible because we ascend from the cac twice, which
 				// may end up cloning the cac twice.
 				if (!elem.firstChild && elem.parentNode) {
-					Dom.removeShallowPreservingBoundaries(elem, [leftPoint, rightPoint]);
+					dom.removeShallowPreservingBoundaries(elem, [leftPoint, rightPoint]);
 				}
 			});
 
@@ -1189,9 +1190,9 @@ define([
 	/**
 	 * High level editing functions.
 	 *
-	 * Editing.wrap()
-	 * Editing.format()
-	 * Editing.split()
+	 * editing.wrap()
+	 * editing.format()
+	 * editing.split()
 	 */
 	var exports = {
 		wrap: wrapElem,

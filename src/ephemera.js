@@ -22,21 +22,21 @@ define([
 	'dom',
 	'misc',
 	'browser'
-	//'PubSub'
-], function EphemeraAPI(
-	Strings,
-	Trees,
-	Arrays,
-	Maps,
-	Dom,
-	Misc,
-	Browser,
-	PubSub
+	//'pubsub'
+], function Ephemera(
+	strings,
+	trees,
+	arrays,
+	maps,
+	dom,
+	misc,
+	browser,
+	pubsub
 ) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Ephemera');
+		eval(uate)('ephemera');
 	}
 
 	var ephemeraMap = {
@@ -99,10 +99,10 @@ define([
 	 */
 	function classes() {
 		var clss = Array.prototype.slice.call(arguments);
-		Maps.fillKeys(ephemeraMap.classMap, clss, true);
+		maps.fillKeys(ephemeraMap.classMap, clss, true);
 		checkCommonSubstr(clss);
 		/*
-		PubSub.pub('aloha.ephemera.classes', {
+		pubSub.pub('aloha.ephemera.classes', {
 			ephemera: ephemeraMap,
 			newClasses: clss
 		});
@@ -117,9 +117,9 @@ define([
 	 */
 	function attributes() {
 		var attrs = Array.prototype.slice.call(arguments);
-		Maps.fillKeys(ephemeraMap.attrMap, attrs, true);
+		maps.fillKeys(ephemeraMap.attrMap, attrs, true);
 		/*
-		PubSub.pub('aloha.ephemera.attributes', {
+		pubSub.pub('aloha.ephemera.attributes', {
 			ephemera: ephemeraMap,
 			newAttributes: attrs
 		});
@@ -163,7 +163,7 @@ define([
 	 *   single argument. The function is free to modify the element and return
 	 *   it, or return a new element which will replace the given element in the
 	 *   pruned tree. If null or undefined is returned, the element will be
-	 *   removed from the tree. As per contract of Maps.walkDomInplace, it is
+	 *   removed from the tree. As per contract of maps.walkDomInplace, it is
 	 *   allowed to insert/remove children in the parent node as long as the
 	 *   given node is not removed.
 	 *
@@ -177,7 +177,7 @@ define([
 		if (emap) {
 			ephemeraMap = emap;
 			/*
-			PubSub.pub('aloha.ephemera', {
+			pubSub.pub('aloha.ephemera', {
 				ephemera: ephemeraMap
 			});
 			*/
@@ -197,7 +197,7 @@ define([
 	 * this function, if that is more convenient.
 	 */
 	function markElement(elem) {
-		Dom.addClass(elem, 'aloha-ephemera');
+		dom.addClass(elem, 'aloha-ephemera');
 	}
 
 	/**
@@ -217,14 +217,14 @@ define([
 	 * function, if that is more convenient.
 	 */
 	function markAttr(elem, attr) {
-		var data = Dom.getAttr(elem, 'data-aloha-ephemera-attr');
+		var data = dom.getAttr(elem, 'data-aloha-ephemera-attr');
 		if (null == data || '' === data) {
 			data = attr;
-		} else if (-1 === Strings.words(data).indexOf(attr)) {
+		} else if (-1 === strings.words(data).indexOf(attr)) {
 			data += ' ' + attr;
 		}
-		Dom.setAttr(elem, 'data-aloha-ephemera-attr', data);
-		Dom.addClass(elem, 'aloha-ephemera-attr');
+		dom.setAttr(elem, 'data-aloha-ephemera-attr', data);
+		dom.addClass(elem, 'aloha-ephemera-attr');
 	}
 
 	/**
@@ -251,7 +251,7 @@ define([
 	 *     _non-ephemeral_ element.
 	 */
 	function markWrapper(elem) {
-		Dom.addClass(elem, 'aloha-ephemera-wrapper');
+		dom.addClass(elem, 'aloha-ephemera-wrapper');
 	}
 
 	/**
@@ -265,7 +265,7 @@ define([
 	 * See wrapper()
 	 */
 	function markFiller(elem) {
-		Dom.addClass(elem, 'aloha-ephemera-filler');
+		dom.addClass(elem, 'aloha-ephemera-filler');
 	}
 
 	/**
@@ -273,19 +273,19 @@ define([
 	 * given element.
 	 */
 	function pruneMarkedAttrs(elem) {
-		var data = Dom.getAttr(elem, 'data-aloha-ephemera-attr');
+		var data = dom.getAttr(elem, 'data-aloha-ephemera-attr');
 		var i;
 		var attrs;
 		// Because IE7 crashes if we remove this attribute. If the dom-to-xhtml
 		// plugin is turned on, it will handle the removal of this attribute
 		// during serialization.
-		if (!Browser.ie7) {
-			Dom.removeAttr(elem, 'data-aloha-ephemera-attr');
+		if (!browser.ie7) {
+			dom.removeAttr(elem, 'data-aloha-ephemera-attr');
 		}
 		if (typeof data === 'string') {
-			attrs = Strings.words(data);
+			attrs = strings.words(data);
 			for (i = 0; i < attrs.length; i++) {
-				Dom.removeAttr(elem, attrs[i]);
+				dom.removeAttr(elem, attrs[i]);
 			}
 		}
 	}
@@ -307,7 +307,7 @@ define([
 				return true;
 			}
 		}
-		return Misc.anyRx(attrRxs, attrName);
+		return misc.anyRx(attrRxs, attrName);
 	}
 
 	/**
@@ -315,14 +315,14 @@ define([
 	 * See ephemera().
 	 */
 	function pruneEmapAttrs(elem, emap) {
-		var attrs = Dom.attrNames(elem),
+		var attrs = dom.attrNames(elem),
 		    name,
 		    i,
 		    len;
 		for (i = 0, len = attrs.length; i < len; i++) {
 			name = attrs[i];
 			if (isAttrEphemeral(elem, name, emap.attrMap, emap.attrRxs)) {
-				Dom.removeAttr(elem, name);
+				dom.removeAttr(elem, name);
 			}
 		}
 	}
@@ -340,7 +340,7 @@ define([
 	function pruneElem(elem, emap) {
 		var className = elem.className;
 		if (className && -1 !== className.indexOf(commonClsSubstr)) {
-			var classes = Strings.words(className);
+			var classes = strings.words(className);
 
 			// Ephemera.markElement()
 			if (-1 !== classes.indexOf('aloha-cleanme') || -1 !== classes.indexOf('aloha-ephemera')) {
@@ -349,7 +349,7 @@ define([
 
 			// Ephemera.markWrapper() and Ephemera.markFiller()
 			if (-1 !== classes.indexOf('aloha-ephemera-wrapper') || -1 !== classes.indexOf('aloha-ephemera-filler')) {
-				Dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
+				dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
 				return false;
 			}
 
@@ -364,7 +364,7 @@ define([
 			});
 			if (persistentClasses.length !== classes.length) {
 				if (0 === persistentClasses.length) {
-					Dom.removeAttr(elem, 'class');
+					dom.removeAttr(elem, 'class');
 				} else {
 					elem.className = persistentClasses.join(' ');
 				}
@@ -385,11 +385,11 @@ define([
 			if (!pruneElem(node, emap)) {
 				return [];
 			}
-			node = Trees.walkDomInplace(node, step);
+			node = trees.walkDomInplace(node, step);
 		}
 
 		// Ephemera.ephemera({ pruneFns: [] })
-		node = Arrays.reduce(emap.pruneFns, node, Arrays.applyNotNull);
+		node = arrays.reduce(emap.pruneFns, node, arrays.applyNotNull);
 		if (!node) {
 			return [];
 		}
@@ -423,15 +423,15 @@ define([
 	/**
 	 * Ephemera functions.
 	 *
-	 * Ephemera.ephemera()
-	 * Ephemera.classes()
-	 * Ephemera.attributes()
-	 * Ephemera.markElement()
-	 * Ephemera.markAttr()
-	 * Ephemera.markWrapper()
-	 * Ephemera.markFiller()
-	 * Ephemera.prune()
-	 * Ephemera.isAttrEphemeral()
+	 * ephemera.ephemera()
+	 * ephemera.classes()
+	 * ephemera.attributes()
+	 * ephemera.markElement()
+	 * ephemera.markAttr()
+	 * ephemera.markWrapper()
+	 * ephemera.markFiller()
+	 * ephemera.prune()
+	 * ephemera.isAttrEphemeral()
 	 */
 	var exports = {
 		ephemera: ephemera,

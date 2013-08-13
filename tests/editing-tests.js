@@ -1,6 +1,5 @@
 require([
 	'jquery',
-	'../src/dom',
 	'../src/html',
 	'../src/ranges',
 	'../src/editing',
@@ -10,14 +9,13 @@ require([
 	'../src/dom-to-xhtml'
 ], function (
 	$,
-	Dom,
-	Html,
-	Ranges,
-	Editing,
-	Fn,
-	Browser,
-	BoundaryMarkers,
-	DomToXhtml
+	html,
+	ranges,
+	editing,
+	fn,
+	browser,
+	boundarymarkers,
+	xhtml
 ) {
 	'use strict';
 
@@ -37,11 +35,11 @@ require([
 			var titleForDebugginDontRemove = title;
 			$('#test-editable').empty().html(before);
 			var dom = $('#test-editable')[0].firstChild;
-			var range = Ranges.create();
-			BoundaryMarkers.extract(dom, range);
+			var range = ranges.create();
+			boundarymarkers.extract(dom, range);
 			dom = mutate(dom, range) || dom;
-			BoundaryMarkers.insert(range);
-			var actual = DomToXhtml.nodeToXhtml(dom);
+			boundarymarkers.insert(range);
+			var actual = xhtml.nodeToXhtml(dom);
 			if ($.type(expected) === 'function') {
 				expected(actual);
 			} else {
@@ -60,8 +58,8 @@ require([
 				    // selection type (text or element boundaries).
 				    && actual !== after
 				    // Because we must account for end of text node
-				    // normalization performed by Dom.nodeAtOffset() and
-				    // Dom.isAtEnd().
+				    // normalization performed by dom.nodeAtOffset() and
+				    // dom.isAtEnd().
 				    && actual !== afterSwitched.replace(/\]/g, '}')
 				    ) {
 				if (actual !== afterSwitched) {
@@ -79,24 +77,24 @@ require([
 
 	function testWrap(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			Editing.wrap(range, 'B');
+			editing.wrap(range, 'B');
 		});
 	}
 
 	function testUnformat(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			Editing.wrap(range, 'B', true);
+			editing.wrap(range, 'B', true);
 		});
 	}
 
 	function testInsertExtractBoundaryMarkers(title, htmlWithBoundaryMarkers) {
 		test(title, function () {
 			var dom = $(htmlWithBoundaryMarkers)[0];
-			var range = Ranges.create();
-			BoundaryMarkers.extract(dom, range);
-			equal(DomToXhtml.nodeToXhtml(dom), htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, ''));
-			BoundaryMarkers.insert(range);
-			equal(DomToXhtml.nodeToXhtml(dom), htmlWithBoundaryMarkers);
+			var range = ranges.create();
+			boundarymarkers.extract(dom, range);
+			equal(xhtml.nodeToXhtml(dom), htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, ''));
+			boundarymarkers.insert(range);
+			equal(xhtml.nodeToXhtml(dom), htmlWithBoundaryMarkers);
 		});
 	};
 
@@ -107,7 +105,7 @@ require([
 
 	function testTrimRange(title, before, after, switched) {
 		testMutationSwitchElemTextSelection(title, before, after, function (dom, range) {
-			Ranges.trimClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
+			ranges.trimClosingOpening(range, html.isUnrenderedWhitespace, html.isUnrenderedWhitespace);
 		});
 	}
 
@@ -124,13 +122,13 @@ require([
 			equal(actual, after);
 		}
 		function isObstruction(node) {
-			return !Html.hasInlineStyle(node) || 'CODE' === node.nodeName;
+			return !html.hasInlineStyle(node) || 'CODE' === node.nodeName;
 		}
 		var opts = {
 			isObstruction: isObstruction
 		};
-		testMutation('Editing.format - ' + title, before, expected, function (dom, range) {
-			Editing.format(range, styleName, styleValue, opts);
+		testMutation('editing.format - ' + title, before, expected, function (dom, range) {
+			editing.format(range, styleName, styleValue, opts);
 		});
 	}
 
@@ -148,7 +146,7 @@ require([
 	t('<p>1234{<b>Some text.</b>}5678</p>');
 
 	var t = function (before, after) {
-		testTrimRange('Ranges.trim()', before, after);
+		testTrimRange('ranges.trim()', before, after);
 	};
 	t('<p>So[me te]xt.</p>', '<p>So[me te]xt.</p>');
 	t('<p>So[]xt.</p>', '<p>So[]xt.</p>');
@@ -173,7 +171,7 @@ require([
 	  '<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>');
 
 	var t = function (title, before, after) {
-		testWrap('Editing.wrap -' + title, before, after);
+		testWrap('editing.wrap -' + title, before, after);
 	};
 
 	t('noop1', '<p><b>[Some text.]</b></p>', '<p><b>{Some text.}</b></p>');
@@ -225,7 +223,7 @@ require([
 	  '<p>{<b>one two three</b>}</p>');
 
 	var t = function (title, before, after) {
-		testWrap('Editing.wrap-restack - ' + title, before, after);
+		testWrap('editing.wrap-restack - ' + title, before, after);
 	};
 
 	t('across elements',
@@ -257,7 +255,7 @@ require([
 	  '<p><i><u><s><b>Some</b></s></u>!{<b> text</b>}</i></p>');
 
 	var t = function (title, before, after) {
-		testUnformat('Editing.unformat - ' + title, before, after);
+		testUnformat('editing.unformat - ' + title, before, after);
 	};
 
 	t('noop', '<p>{Some text.}</p>', '<p>{Some text.}</p>');
@@ -324,11 +322,11 @@ require([
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
 
 	t = function (title, before, after) {
-		testMutation('Editing.split ' + title, before, after, function (dom, range) {
+		testMutation('editing.split ' + title, before, after, function (dom, range) {
 			function below(node) {
 				return node.nodeName === 'DIV';
 			}
-			Editing.split(range, {below: below});
+			editing.split(range, {below: below});
 		});
 	};
 
@@ -379,7 +377,7 @@ require([
 	// TODO This test doesn't work on IE because IE automatically strips some
 	// spaces and not others. Could be made to work by stripping exactly
 	// those whitespace from the expected result.
-	if (!Browser.ie) {
+	if (!browser.ie) {
 		t('split ignores unrendered nodes 1',
 		  '<div>  <span> {  </span> <span>text} </span><b> </b> </div>',
 		  '<div>{  <span>   </span> <span>text </span><b> </b> }</div>');
@@ -390,7 +388,7 @@ require([
 	  '<div>{<i><u><sub></sub></u>a</i>b<i>c<u><sub></sub></u></i>}</div>');
 
 	t = function (title, before, after) {
-		testMutation('Editing.split+format - ' + title, before, after, function (dom, range) {
+		testMutation('editing.split+format - ' + title, before, after, function (dom, range) {
 			var cac = range.commonAncestorContainer;
 			function until(node) {
 				return node.nodeName === 'CODE';
@@ -398,8 +396,8 @@ require([
 			function below(node) {
 				return cac === node;
 			}
-			Editing.split(range, {below: below, until: until});
-			Editing.wrap(range, 'B');
+			editing.split(range, {below: below, until: until});
+			editing.wrap(range, 'B');
 		});
 	};
 
@@ -423,7 +421,7 @@ require([
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 function (dom, range) {
-					 Editing.split(range, {below: Fn.returnFalse});
+					 editing.split(range, {below: fn.returnFalse});
 				 });
 
 	t = function (title, before, after) {

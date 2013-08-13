@@ -4,17 +4,17 @@ define([
 	'cursors',
 	'arrays',
 	'strings'
-], function BoundaryMarkersUtilities(
-	Dom,
-	Traversing,
-	Cursors,
-	Arrays,
-	Strings
+], function BoundaryMarkers(
+	dom,
+	traversing,
+	cursors,
+	arrays,
+	strings
 ) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('BoundaryMarkers');
+		eval(uate)('boundarymarkers');
 	}
 
 	/**
@@ -25,14 +25,14 @@ define([
 	function insert(range) {
 		var leftMarkerChar  = (3 === range.startContainer.nodeType ? '[' : '{');
 		var rightMarkerChar = (3 === range.endContainer.nodeType   ? ']' : '}');
-		Dom.splitTextContainers(range);
+		dom.splitTextContainers(range);
 		var leftMarker = document.createTextNode(leftMarkerChar);
 		var rightMarker = document.createTextNode(rightMarkerChar);
-		var start = Cursors.cursorFromBoundaryPoint(
+		var start = cursors.cursorFromBoundaryPoint(
 			range.startContainer,
 			range.startOffset
 		);
-		var end = Cursors.cursorFromBoundaryPoint(
+		var end = cursors.cursorFromBoundaryPoint(
 			range.endContainer,
 			range.endOffset
 		);
@@ -76,7 +76,7 @@ define([
 				// Because we have set a text offset.
 				return false;
 			} else { // marker === '{' || marker === '}'
-				range[setFn].call(range, node.parentNode, Dom.nodeIndex(node));
+				range[setFn].call(range, node.parentNode, dom.nodeIndex(node));
 				// Because we have set a non-text offset.
 				return true;
 			}
@@ -86,10 +86,10 @@ define([
 				return;
 			}
 			var text = node.nodeValue;
-			var parts = Strings.splitIncl(text, /[\[\{\}\]]/g);
+			var parts = strings.splitIncl(text, /[\[\{\}\]]/g);
 			// Because modifying every text node when there can be only two
 			// markers seems like too much overhead.
-			if (!Arrays.contains(markers, parts[0]) && parts.length < 2) {
+			if (!arrays.contains(markers, parts[0]) && parts.length < 2) {
 				return;
 			}
 			// Because non-text boundary positions must not be joined again.
@@ -97,7 +97,7 @@ define([
 			parts.forEach(function (part, i) {
 				// Because we don't want to join text nodes we haven't split.
 				forceNextSplit = forceNextSplit || (i === 0);
-				if (Arrays.contains(markers, part)) {
+				if (arrays.contains(markers, part)) {
 					forceNextSplit = setBoundaryPoint(part, node);
 				} else if (!forceNextSplit
 						&& node.previousSibling
@@ -115,7 +115,7 @@ define([
 			});
 			node.parentNode.removeChild(node);
 		}
-		Traversing.walkRec(rootElem, extractMarkers);
+		traversing.walkRec(rootElem, extractMarkers);
 		if (2 !== markersFound) {
 			throw 'Missing one or both markers';
 		}
@@ -125,8 +125,8 @@ define([
 	 * Functions for inserting and extracting range boundary markers into the
 	 * DOM.
 	 *
-	 * BoundaryMarkers.insert()
-	 * BoundaryMarkers.extract()
+	 * boundarymarkers.insert()
+	 * boundarymarkers.extract()
 	 */
 	var exports = {
 		insert: insert,

@@ -9,14 +9,14 @@
 define([
 	'dom',
 	'ephemera'
-], function XhtmlUtilities(
-	Dom,
-	Ephemera
+], function Xhtml(
+	dom,
+	ephemera
 ) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Xhtml');
+		eval(uate)('xhtml');
 	}
 
 	/**
@@ -132,7 +132,7 @@ define([
 	 *        element, separated by space. The string will have a leading space.
 	 */
 	function makeAttrString(element, ephemera) {
-		var attrs = Dom.attrs(element);
+		var attrs = dom.attrs(element);
 		var str = '';
 		var i, len;
 		for (i = 0, len = attrs.length; i < len; i++) {
@@ -141,7 +141,7 @@ define([
 			var name  = attr[0].toLowerCase();
 			var value = attr[1];
 
-			if (ephemera && Ephemera.isAttrEphemeral(
+			if (ephemera && ephemera.isAttrEphemeral(
 				element,
 				name,
 				ephemera.attrMap || {},
@@ -249,7 +249,7 @@ define([
 	 * @param {Object} ephemera
 	 *        Describes content that should not be serialized.
 	 *        Only attrMap and attrRxs are supported at the moment.
-	 *        See Ephemera.ephemera().
+	 *        See ephemera.ephemera().
 	 * @param {Array} xhtml
 	 *        An array which receives the serialized element and whic, if
 	 *        joined, will yield the XHTML string.
@@ -297,7 +297,7 @@ define([
 	 * @param {Object} ephemera
 	 *        Describes content that should not be serialized.
 	 *        Only attrMap and attrRxs are supported at the moment.
-	 *        See Ephemera.ephemera().
+	 *        See ephemera.ephemera().
 	 * @param {Array} xhtml
 	 *        An array that will receive snippets of XHTML,
 	 *        which if joined will yield the XHTML string.
@@ -339,7 +339,7 @@ define([
 	 * @param {Object} ephemera
 	 *        Describes content that should not be serialized.
 	 *        Only attrMap and attrRxs are supported at the moment.
-	 *        See Ephemera.ephemera().
+	 *        See ephemera.ephemera().
 	 * @return {String}
 	 *         The serialized XHTML String representing the given DOM nodes in
 	 *         the given array-like object.  The result may look like an XML
@@ -413,7 +413,7 @@ define([
 	 * @param {Object} ephemera
 	 *        Describes content that should not be serialized.
 	 *        Only attrMap and attrRxs are supported at the moment.
-	 *        See Ephemera.ephemera().
+	 *        See ephemera.ephemera().
 	 * @return {String}
 	 *         The serialized XHTML string represnting the given DOM node.
 	 */
@@ -426,8 +426,8 @@ define([
 	/**
 	 * Dom to XHtml functions.
 	 *
-	 * Xhtml.contentsToXhtml()
-	 * Xhtml.nodeToXhtml()
+	 * xhtml.contentsToXhtml()
+	 * xhtml.nodeToXhtml()
 	 */
 	var exports = {
 		contentsToXhtml: contentsToXhtml,

@@ -4,11 +4,11 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([], function MapsUtilities() {
+define([], function Maps() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Maps');
+		eval(uate)('maps');
 	}
 
 	/**
@@ -137,12 +137,12 @@ define([], function MapsUtilities() {
 	/**
 	 * Functions to work with maps (plain old objects).
 	 *
-	 * Maps.isEmpty()
-	 * Maps.fillTuples()
-	 * Maps.fillKeys()
-	 * Maps.keys()
-	 * Maps.forEach()
-	 * Maps.merge()
+	 * maps.isEmpty()
+	 * maps.fillTuples()
+	 * maps.fillKeys()
+	 * maps.keys()
+	 * maps.forEach()
+	 * maps.merge()
 	 */
 	var exports = {
 		isEmpty: isEmpty,

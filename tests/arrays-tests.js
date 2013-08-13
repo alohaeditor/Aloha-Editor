@@ -1,10 +1,10 @@
-require(['../src/arrays'], function (Arrays) {
+require(['../src/arrays'], function (arrays) {
 	'use strict';
 
-    module('Arrays');
+    module('arrays');
 
     test('sortUnique(): loose compare', function () {
-        var unique = Arrays.sortUnique([6, 3, 6, 3, '6', 3, '9', 9, 3, 2, 1]);
+        var unique = arrays.sortUnique([6, 3, 6, 3, '6', 3, '9', 9, 3, 2, 1]);
         // Either numeric or string values for '6' and '9' may be chosen
 		var i;
         for (i = 0; i < unique.length; i++) {
@@ -14,7 +14,7 @@ require(['../src/arrays'], function (Arrays) {
     });
 
     test('sortUnique(): strict comparison', function () {
-        var unique = Arrays.sortUnique([6, 3, '6', 3, 6, 3, '9', 9, 3, 2, 1], function (a, b) {
+        var unique = arrays.sortUnique([6, 3, '6', 3, 6, 3, '9', 9, 3, 2, 1], function (a, b) {
             return typeof a < typeof b ? -1
                 : (typeof a > typeof b ? 1
                     : (a < b ? -1 : (a > b ? 1 : 0)));
@@ -23,7 +23,7 @@ require(['../src/arrays'], function (Arrays) {
     });
 
     test('sortUnique(): comparator', function () {
-        var unique = Arrays.sortUnique([7, 6, 9, 6, 9, 8], function (a, b) {
+        var unique = arrays.sortUnique([7, 6, 9, 6, 9, 8], function (a, b) {
             // Pretend 6 and 9 is equal
             if (a === 9) {
                 a = 6;

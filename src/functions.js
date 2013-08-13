@@ -4,11 +4,11 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  */
-define([], function FunctionUtilities() {
+define([], function Functions() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Ranges');
+		eval(uate)('functions');
 	}
 
 	/**
@@ -86,12 +86,12 @@ define([], function FunctionUtilities() {
 	/**
 	 * Functions for working with functions.
 	 *
-	 * Functions.identity()
-	 * Functions.noop()
-	 * Functions.returnTrue()
-	 * Functions.returnFalse()
-	 * Functions.complement()
-	 * Functions.bind()
+	 * functions.identity()
+	 * functions.noop()
+	 * functions.returnTrue()
+	 * functions.returnFalse()
+	 * functions.complement()
+	 * functions.bind()
 	 */
 	var exports =  {
 		identity: identity,

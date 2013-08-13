@@ -4,11 +4,11 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['functions'], function ArrayUtilities(Fn) {
+define([], function Arrays() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Arrays');
+		eval(uate)('arrays');
 	}
 
 	/**
@@ -157,13 +157,13 @@ define(['functions'], function ArrayUtilities(Fn) {
 	/**
 	 * Functions for operating on arrays.
 	 *
-	 * Arrays.contains()
-	 * Arrays.equal()
-	 * Arrays.applyNotNull()
-	 * Arrays.sortUnique()
-	 * Arrays.intersect()
-	 * Arrays.second()
-	 * Arrays.last()
+	 * arrays.contains()
+	 * arrays.equal()
+	 * arrays.applyNotNull()
+	 * arrays.sortUnique()
+	 * arrays.intersect()
+	 * arrays.second()
+	 * arrays.last()
 	 */
 	var exports = {
 		contains: contains,

@@ -4,11 +4,11 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([], function ContentUtilities() {
+define([], function Content() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Content');
+		eval(uate)('content');
 	}
 
 	var TABLE_CHILDREN = {
@@ -542,7 +542,7 @@ define([], function ContentUtilities() {
 	/**
 	 * Functions for operation on contents of HTML DOM nodes.
 	 *
-	 * Content.allowsNesting()
+	 * content.allowsNesting()
 	 */
 	var exports = {
 		allowsNesting: allowsNesting

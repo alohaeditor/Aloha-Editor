@@ -1,4 +1,4 @@
-require(['../src/aloha'], function (Aloha) {
+require(['../src/aloha'], function (aloha) {
 	'use strict';
 
 	module('Documentation');
@@ -11,18 +11,18 @@ require(['../src/aloha'], function (Aloha) {
 				runner(api, namespaces, runner, proceed || next);
 			}, 500);
 		}
-	}(Aloha, Aloha.Maps.keys(Aloha), function (api, namespaces, runner, next) {
+	}(aloha, aloha.maps.keys(aloha), function (api, namespaces, runner, next) {
 		var namespace = namespaces.slice(0, 1);
 
 		test(namespace, function () {
 			var module = api[namespace];
-			var counter = Aloha.Maps.keys(module).length;
+			var counter = aloha.Maps.keys(module).length;
 
 			function proceed() {
 				next(api, namespaces.slice(1, namespaces.length), runner, next);
 			}
 
-			Aloha.Maps.forEach(module, function (obj, name) {
+			aloha.maps.forEach(module, function (obj, name) {
 				var type = typeof obj;
 
 				if ('function' !== type && 'object' !== type) {

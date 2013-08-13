@@ -5,22 +5,20 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'functions',
 	'maps',
 	'arrays',
 	'strings',
 	'browser'
-], function DomUtilities(
-	Fn,
-	Maps,
-	Arrays,
-	Strings,
-	Browser
+], function Dom(
+	maps,
+	arrays,
+	strings,
+	browser
 ) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Dom');
+		eval(uate)('dom');
 	}
 
 	var ATTRIBUTE = /\s([^\/<>\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^>\/\s]+))?/g;
@@ -234,7 +232,7 @@ define([
 		for (i = 0, len = elems.length; i < len; i++) {
 			elem = elems[i];
 			if (elem.className) {
-				classes = Strings.words(elem.className);
+				classes = strings.words(elem.className);
 				for (j = 0; j < classes.length; j++) {
 					cls = classes[j];
 					if (classMap[cls]) {
@@ -271,7 +269,7 @@ define([
 			found = context.getElementsByClassName(classes[i]);
 			len = found.length;
 			for (j = 0; j < len; j++) {
-				if (!Arrays.contains(results, found[j])) {
+				if (!arrays.contains(results, found[j])) {
 					results.push(found[j]);
 				}
 			}
@@ -324,8 +322,8 @@ define([
 	 */
 	function indexByClass(root, classMap) {
 		return indexByClassHaveList(
-			Browser.ie7 ? root.getElementsByTagName('*')
-			            : getElementsByClassNames(Maps.keys(classMap), root),
+			browser.ie7 ? root.getElementsByTagName('*')
+			            : getElementsByClassNames(maps.keys(classMap), root),
 			classMap
 		);
 	}
@@ -920,7 +918,7 @@ define([
 	 * Sets a style on the given element by modifying its style attribute.
 	 */
 	function setStyle(node, name, value) {
-		name = Strings.dashesToCamelCase(name);
+		name = strings.dashesToCamelCase(name);
 		var styles = node.style;
 		if (name in styles) {
 			styles[name] = value;
@@ -933,7 +931,7 @@ define([
 	 */
 	function getStyle(node, name) {
 		// Because IE7 needs dashesToCamelCase().
-		name = Strings.dashesToCamelCase(name);
+		name = strings.dashesToCamelCase(name);
 		return node.nodeType === Nodes.ELEMENT ? node.style[name] : null;
 	}
 
@@ -944,7 +942,7 @@ define([
 	function getComputedStyle(node, name) {
 		if (node.currentStyle) {
 			// Because IE7 needs dashesToCamelCase().
-			name = Strings.dashesToCamelCase(name);
+			name = strings.dashesToCamelCase(name);
 			return node.currentStyle[name];
 		}
 		var doc = node.ownerDocument;
@@ -964,9 +962,9 @@ define([
 	 * @param {String} styleName
 	 */
 	function removeStyle(elem, styleName) {
-		if (Browser.hasRemoveProperty) {
+		if (browser.hasRemoveProperty) {
 			elem.style.removeProperty(styleName);
-			if (Strings.empty(getAttr(elem, 'style'))) {
+			if (strings.empty(getAttr(elem, 'style'))) {
 				removeAttr(elem, 'style');
 			}
 		} else {
@@ -988,7 +986,7 @@ define([
 				'i'
 			);
 			style = style.replace(stripRegex, '');
-			if (!Strings.empty(style)) {
+			if (!strings.empty(style)) {
 				setAttr(elem, 'style', style);
 			} else {
 				removeAttr(elem, 'style');
@@ -1003,7 +1001,7 @@ define([
 	 * @param {Boolean}
 	 */
 	function hasAttrs(node) {
-		return !attrs(node).map(Arrays.second).every(Strings.empty);
+		return !attrs(node).map(arrays.second).every(strings.empty);
 	}
 
 	var WORD_BOUNDARY = /\S+/g;

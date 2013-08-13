@@ -13,17 +13,17 @@ define([
 	'functions',
 	'arrays',
 	'cursors'
-], function RangeUtilities(
-	Dom,
-	Traversing,
-	Fn,
-	Arrays,
-	Cursors
+], function Ranges(
+	dom,
+	traversing,
+	fn,
+	arrays,
+	cursors
 ) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Ranges');
+		eval(uate)('ranges');
 	}
 
 	/**
@@ -36,11 +36,11 @@ define([
 	 * @return {Range}
 	 */
 	function extendToWord(range) {
-		var behind = Traversing.findWordBoundaryBehind(
+		var behind = traversing.findWordBoundaryBehind(
 			range.startContainer,
 			range.startOffset
 		);
-		var ahead = Traversing.findWordBoundaryAhead(
+		var ahead = traversing.findWordBoundaryAhead(
 			range.endContainer,
 			range.endOffset
 		);
@@ -64,9 +64,9 @@ define([
 	 * Creates a range object with boundaries defined by containers and offsets
 	 * in those containers.
 	 *
-	 * @param {DomElement} startContainer
+	 * @param {DOMElement} startContainer
 	 * @param {Number} startOffset
-	 * @param {DomElement} endContainer
+	 * @param {DOMElement} endContainer
 	 * @param {Number} endOffset
 	 * @return {Range}
 	 */
@@ -120,9 +120,9 @@ define([
 	 */
 	function setStartFromCursor(range, cursor) {
 		if (cursor.atEnd) {
-			range.setStart(cursor.node, Dom.nodeLength(cursor.node));
+			range.setStart(cursor.node, dom.nodeLength(cursor.node));
 		} else {
-			range.setStart(cursor.node.parentNode, Dom.nodeIndex(cursor.node));
+			range.setStart(cursor.node.parentNode, dom.nodeIndex(cursor.node));
 		}
 		return range;
 	}
@@ -137,9 +137,9 @@ define([
 	 */
 	function setEndFromCursor(range, cursor) {
 		if (cursor.atEnd) {
-			range.setEnd(cursor.node, Dom.nodeLength(cursor.node));
+			range.setEnd(cursor.node, dom.nodeLength(cursor.node));
 		} else {
-			range.setEnd(cursor.node.parentNode, Dom.nodeIndex(cursor.node));
+			range.setEnd(cursor.node.parentNode, dom.nodeIndex(cursor.node));
 		}
 		return range;
 	}
@@ -165,14 +165,14 @@ define([
 	 */
 	function seekBoundaryPoint(range, container, offset, oppositeContainer,
 	                           oppositeOffset, setFn, ignore, backwards) {
-		var cursor = Cursors.cursorFromBoundaryPoint(container, offset);
+		var cursor = cursors.cursorFromBoundaryPoint(container, offset);
 
 		// Because when seeking backwards, if the boundary point is inside a
 		// text node, trimming starts after it. When seeking forwards, the
 		// cursor starts before the node, which is what
 		// cursorFromBoundaryPoint() does automatically.
 		if (backwards
-				&& Dom.Nodes.TEXT === container.nodeType
+				&& dom.Nodes.TEXT === container.nodeType
 					&& offset > 0
 						&& offset < container.length) {
 			if (backwards ? cursor.next() : cursor.prev()) {
@@ -188,7 +188,7 @@ define([
 				}
 			}
 		}
-		var opposite = Cursors.cursorFromBoundaryPoint(
+		var opposite = cursors.cursorFromBoundaryPoint(
 			oppositeContainer,
 			oppositeOffset
 		);
@@ -225,8 +225,8 @@ define([
 	 *         The given range, modified.
 	 */
 	function trim(range, ignoreLeft, ignoreRight) {
-		ignoreLeft = ignoreLeft || Fn.returnFalse;
-		ignoreRight = ignoreRight || Fn.returnFalse;
+		ignoreLeft = ignoreLeft || fn.returnFalse;
+		ignoreRight = ignoreRight || fn.returnFalse;
 		if (range.collapsed) {
 			return;
 		}
@@ -270,8 +270,8 @@ define([
 	 *         The given range, modified.
 	 */
 	function trimClosingOpening(range, ignoreLeft, ignoreRight) {
-		ignoreLeft = ignoreLeft || Fn.returnFalse;
-		ignoreRight = ignoreRight || Fn.returnFalse;
+		ignoreLeft = ignoreLeft || fn.returnFalse;
+		ignoreRight = ignoreRight || fn.returnFalse;
 		trim(range, function (cursor) {
 			return cursor.atEnd || ignoreLeft(cursor.node);
 		}, function (cursor) {
@@ -300,15 +300,15 @@ define([
 		}
 		this.collapsed = (this.startContainer === this.endContainer
 						  && this.startOffset === this.endOffset);
-		var start = Traversing.childAndParentsUntil(
+		var start = traversing.childAndParentsUntil(
 			this.startContainer,
-			Fn.returnFalse
+			fn.returnFalse
 		);
-		var end = Traversing.childAndParentsUntil(
+		var end = traversing.childAndParentsUntil(
 			this.endContainer,
-			Fn.returnFalse
+			fn.returnFalse
 		);
-		this.commonAncestorContainer = Arrays.intersect(start, end)[0];
+		this.commonAncestorContainer = arrays.intersect(start, end)[0];
 	};
 
 	StableRange.prototype.setStart = function (sc, so) {
@@ -371,8 +371,8 @@ define([
 	 *        trimming process, like for example underendered whitespace.
 	 */
 	function expandBoundaries(start, end, until, ignore) {
-		until = until || Fn.returnFalse;
-		ignore = ignore || Fn.returnFalse;
+		until = until || fn.returnFalse;
+		ignore = ignore || fn.returnFalse;
 		start.prevWhile(function (start) {
 			var prevSibling = start.prevSibling();
 			return prevSibling ? ignore(prevSibling) : !until(start.parent());
@@ -403,8 +403,8 @@ define([
 	 *        trimming process, like for example underendered whitespace.
 	 */
 	function trimBoundaries(start, end, until, ignore) {
-		until = until || Fn.returnFalse;
-		ignore = ignore || Fn.returnFalse;
+		until = until || fn.returnFalse;
+		ignore = ignore || fn.returnFalse;
 		start.nextWhile(function (start) {
 			return (
 				!start.equals(end)
@@ -456,12 +456,12 @@ define([
 		if (!text.length) {
 			return range;
 		}
-		var node = Dom.nodeAtOffset(range.startContainer, range.startOffset);
-		var atEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
+		var node = dom.nodeAtOffset(range.startContainer, range.startOffset);
+		var atEnd = dom.isAtEnd(range.startContainer, range.startOffset);
 		// Because if the node following the insert position is already a text
 		// node we can just reuse it.
-		if (!atEnd && Dom.Nodes.TEXT === node.nodeType) {
-			var offset = Dom.Nodes.TEXT === range.startContainer.nodeType
+		if (!atEnd && dom.Nodes.TEXT === node.nodeType) {
+			var offset = dom.Nodes.TEXT === range.startContainer.nodeType
 			           ? range.startOffset
 			           : 0;
 			node.insertData(offset, text);
@@ -472,7 +472,7 @@ define([
 		// Because if the node preceding the insert position is already a text
 		// node we can just reuse it.
 		var prev = atEnd ? node.lastChild : node.previousSibling;
-		if (prev && Dom.Nodes.TEXT === prev.nodeType) {
+		if (prev && dom.Nodes.TEXT === prev.nodeType) {
 			prev.insertData(prev.length, text);
 			range.setStart(prev, prev.length - text.length);
 			range.setEnd(prev, prev.length);
@@ -481,7 +481,7 @@ define([
 		// Because if we can't reuse any text nodes, we have to insert a new
 		// one.
 		var textNode = document.createTextNode(text);
-		Dom.insert(textNode, node, atEnd);
+		dom.insert(textNode, node, atEnd);
 		range.setStart(textNode, 0);
 		range.setEnd(textNode, textNode.length);
 	}
@@ -489,22 +489,22 @@ define([
 	/**
 	 * Functions to work with browser ranges.
 	 *
-	 * Ranges.collapseToEnd()
-	 * Ranges.create()
-	 * Ranges.equal()
-	 * Ranges.expandBoundaries()
-	 * Ranges.extendToWord()
-	 * Ranges.get()
-	 * Ranges.insertText()
-	 * Ranges.select()
-	 * Ranges.setEndFromCursor()
-	 * Ranges.setFromBoundaries()
-	 * Ranges.setFromReference()
-	 * Ranges.setStartFromCursor()
-	 * Ranges.stableRange()
-	 * Ranges.trim()
-	 * Ranges.trimBoundaries()
-	 * Ranges.trimClosingOpening()
+	 * ranges.collapseToEnd()
+	 * ranges.create()
+	 * ranges.equal()
+	 * ranges.expandBoundaries()
+	 * ranges.extendToWord()
+	 * ranges.get()
+	 * ranges.insertText()
+	 * ranges.select()
+	 * ranges.setEndFromCursor()
+	 * ranges.setFromBoundaries()
+	 * ranges.setFromReference()
+	 * ranges.setStartFromCursor()
+	 * ranges.stableRange()
+	 * ranges.trim()
+	 * ranges.trimBoundaries()
+	 * ranges.trimClosingOpening()
 	 */
 	var exports = {
 		collapseToEnd: collapseToEnd,

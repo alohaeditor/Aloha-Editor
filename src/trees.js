@@ -131,8 +131,12 @@
  *       than 1000, so the maximum input nesting level should not exceed
  *       about 300 (3 stack frames are needed per nesting level).
  */
-define(['arrays'], function (Arrays) {
+define(['arrays'], function Trees(arrays) {
 	'use strict';
+
+	if ('undefined' !== typeof mandox) {
+		eval(uate)('trees');
+	}
 
 	function walk(form, step, inplace) {
 		var subResult,
@@ -141,7 +145,7 @@ define(['arrays'], function (Arrays) {
 			len,
 			i,
 			key;
-		if (Arrays.isArray(form)) {
+		if (arrays.isArray(form)) {
 			result = (inplace ? form : []);
 			resultOff = 0;
 			for (i = 0, len = form.length; i < len; i++) {

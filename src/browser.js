@@ -4,11 +4,11 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  */
-define([], function BrowserUtilities() {
+define([], function Browser() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Browser');
+		eval(uate)('browser');
 	}
 
 	/**
@@ -53,9 +53,9 @@ define([], function BrowserUtilities() {
 	/**
 	 * Browser and feature detection functions.
 	 *
-	 * Browser.browser
-	 * Browser.ie
-	 * Browser.hasRemoveProperty
+	 * browser.browser
+	 * browser.ie
+	 * browser.hasRemoveProperty
 	 */
 	var exports = {
 		ie7: browser.msie && parseInt(browser.version, 10) < 8,

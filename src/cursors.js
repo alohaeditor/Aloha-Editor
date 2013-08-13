@@ -4,11 +4,11 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['dom'], function CursorAPI(Dom) {
+define(['dom'], function Cursors(dom) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Cursors');
+		eval(uate)('cursors');
 	}
 
 	/**
@@ -32,7 +32,7 @@ define(['dom'], function CursorAPI(Dom) {
 	 * identified just by a node. To distinguish between element start and end
 	 * positions, the additional atEnd boolean is necessary.
 	 *
-	 * @param {DomElement} node
+	 * @param {DOMElement} node
 	 *        The container in which the cursor is in.
 	 * @param {Boolean} atEnd
 	 *        Whether or not the cursor is at the end of the container.
@@ -45,7 +45,7 @@ define(['dom'], function CursorAPI(Dom) {
 	/**
 	 * Creates a new cursor from the given container and offset.
 	 *
-	 * @param {DomElement} container
+	 * @param {DOMElement} container
 	 *        If a text node, should have a parent node.
 	 * @param {Number} offset
 	 *        If container is a text node, the offset will be ignored.
@@ -53,15 +53,15 @@ define(['dom'], function CursorAPI(Dom) {
 	 */
 	function cursorFromBoundaryPoint(container, offset) {
 		return cursor(
-			Dom.nodeAtOffset(container, offset),
-			Dom.isAtEnd(container, offset)
+			dom.nodeAtOffset(container, offset),
+			dom.isAtEnd(container, offset)
 		);
 	}
 
 	Cursor.prototype.next = function () {
 		var node = this.node;
 		var next;
-		if (this.atEnd || Dom.Nodes.ELEMENT !== node.nodeType) {
+		if (this.atEnd || dom.Nodes.ELEMENT !== node.nodeType) {
 			next = node.nextSibling;
 			if (next) {
 				this.atEnd = false;
@@ -97,7 +97,7 @@ define(['dom'], function CursorAPI(Dom) {
 		} else {
 			prev = node.previousSibling;
 			if (prev) {
-				if (Dom.Nodes.ELEMENT === node.nodeType) {
+				if (dom.Nodes.ELEMENT === node.nodeType) {
 					this.atEnd = true;
 				}
 			} else {
@@ -173,7 +173,7 @@ define(['dom'], function CursorAPI(Dom) {
 	};
 
 	Cursor.prototype.insert = function (node) {
-		return Dom.insert(node, this.node, this.atEnd);
+		return dom.insert(node, this.node, this.atEnd);
 	};
 
 	/**
@@ -181,8 +181,8 @@ define(['dom'], function CursorAPI(Dom) {
 	 * startContainer/startOffset and endContainer/endOffset range boundary
 	 * points.
 	 *
-	 * Cursors.cursor()
-	 * Cursors.cursorFromBoundaryPoint()
+	 * cursors.cursor()
+	 * cursors.cursorFromBoundaryPoint()
 	 */
 	var exports = {
 		cursor: cursor,

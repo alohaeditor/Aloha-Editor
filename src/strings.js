@@ -4,11 +4,11 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  */
-define([], function StringsUtilities() {
+define([], function Strings() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
-		eval(uate)('Strings');
+		eval(uate)('strings');
 	}
 
 	/**
@@ -120,11 +120,11 @@ define([], function StringsUtilities() {
 	/**
 	 * High level string utility functions.
 	 *
-	 * Strings.words()
-	 * Strings.dashesToCamelCase()
-	 * Strings.camelCaseToDashes()
-	 * Strings.splitIncl()
-	 * Strings.empty()
+	 * strings.words()
+	 * strings.dashesToCamelCase()
+	 * strings.camelCaseToDashes()
+	 * strings.splitIncl()
+	 * strings.empty()
 	 */
 	var exports = {
 		words: words,
