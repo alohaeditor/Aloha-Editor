@@ -4,8 +4,20 @@
 		<title>Aloha Editor</title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
-		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,700italic,300,700'
-		      rel='stylesheet' type='text/css'>
+		<style>
+			@font-face {
+			  font-family: 'Open Sans';
+			  font-style: normal;
+			  font-weight: 300;
+			  src: local('Open Sans Light'), local('OpenSans-Light'), url(open-sans.woff) format('woff');
+			}
+			@font-face {
+			  font-family: 'Open Sans';
+			  font-style: normal;
+			  font-weight: 700;
+			  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(open-sans-bold.woff) format('woff');
+			}
+		</style>
 	</head>
 	<body>
 		<div class="aloha-editable" contentEditable="true">
