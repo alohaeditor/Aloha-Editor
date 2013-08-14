@@ -3,7 +3,7 @@ define([
 	'../../src/dom',
 	'../../src/ranges',
 	'../../src/events',
-	'./textcolor',
+	'../../src/colors',
 	'./overlay',
 	'./palette'
 ], function (
@@ -11,7 +11,7 @@ define([
 	dom,
 	ranges,
 	events,
-	textcolor,
+	colors,
 	Overlay,
 	palette
 ) {
@@ -30,12 +30,12 @@ define([
 	/**
 	 * Generates swatches.
 	 *
-	 * @param {Object} colors
+	 * @param {Object} swatches
 	 * @param {Function(String)} getSwatchClass
 	 * @return {Array<String>}
 	 */
-	function generateSwatches(colors, getSwatchClass) {
-		var list = colors.map(function (color) {
+	function generateSwatches(swatches, getSwatchClass) {
+		var list = swatches.map(function (color) {
 			return (
 				isColor(color)
 					? '<div class="' + getSwatchClass(color) + '" '
@@ -63,9 +63,11 @@ define([
 		}
 		var swatch = selected.firstChild;
 		if (dom.hasClass(swatch, 'removecolor')) {
-			textcolor.unsetTextColor(range);
+			colors.unsetTextColor(range);
+			colors.unsetBackgroundColor(range);
 		} else {
-			textcolor.setTextColor(
+			// colors.setTextColor(
+			colors.setBackgroundColor(
 				range,
 				dom.getComputedStyle(swatch, 'background-color')
 			);
@@ -78,15 +80,13 @@ define([
 	/**
 	 * Gets/generates an overlay object for the given editable.
 	 *
-	 * @param {Editable} editable
-	 * @param {Plugin} plugin
-	 * @param {Button} button
+	 * @param {Array<String>} swatches
 	 * @param {Function(String)} getSwatchClass
 	 * @return {Overlay}
 	 */
-	function getOverlay(colors, button, getSwatchClass) {
+	function getOverlay(swatches, button, getSwatchClass) {
 		var overlay = new Overlay(
-			generateSwatches(colors, getSwatchClass),
+			generateSwatches(swatches, getSwatchClass),
 			function (selected) {
 				if (rangeAtOpen) {
 					onSelect(selected, rangeAtOpen);
@@ -100,16 +100,16 @@ define([
 		return overlay;
 	}
 
-	var getSwatchClass = (function (colors) {
+	var getSwatchClass = (function (swatches) {
 		var index = {};
-		colors.forEach(function (color, i) {
-			index[textcolor.hex(color.toLowerCase())] = 'swatch' + i;
+		swatches.forEach(function (color, i) {
+			index[colors.hex(color.toLowerCase())] = 'swatch' + i;
 		});
 		return function getSwatchClass(color) {
 			return (
 				index[color.toLowerCase()]
 					||
-				index[textcolor.hex(color.toLowerCase())]
+				index[colors.hex(color.toLowerCase())]
 			);
 		};
 	}(palette));
@@ -131,7 +131,8 @@ define([
 
 		if (rangeAtOpen) {
 			var swatchClass = getSwatchClass(
-				textcolor.getTextColor(rangeAtOpen)
+				// colors.getTextColor(rangeAtOpen)
+				colors.getBackgroundColor(rangeAtOpen)
 			);
 			if (swatchClass) {
 				var td = overlay.$element.find('.' + swatchClass).closest('td')[0];

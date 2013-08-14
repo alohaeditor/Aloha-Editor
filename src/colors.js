@@ -1,7 +1,6 @@
 define([
-	'../../src/dom',
-	'../../src/editing',
-	'../../src/functions'
+	'dom',
+	'editing'
 ], function Colors(
 	dom,
 	editing
@@ -74,20 +73,6 @@ define([
 	}
 
 	/**
-	 * Gets the text color at the given range.
-	 *
-	 * @param {Range} range
-	 * @return {String} Style color string
-	 */
-	function getTextColor(range) {
-		var node = dom.nodeAtOffset(range.startContainer, range.startOffset);
-		return dom.getComputedStyle(
-			3 === node.nodeType ? node.parentNode : node,
-			'color'
-		);
-	}
-
-	/**
 	 * Checks whether the two given colors are equal in value (if not in
 	 * representation).
 	 *
@@ -105,6 +90,24 @@ define([
 		);
 	}
 
+	function getStyle(range, property) {
+		var node = dom.nodeAtOffset(range.startContainer, range.startOffset);
+		return dom.getComputedStyle(
+			dom.Nodes.TEXT === node.nodeType ? node.parentNode : node,
+			property
+		);
+	}
+
+	/**
+	 * Gets the text color at the given range.
+	 *
+	 * @param {Range} range
+	 * @return {String} Style color string
+	 */
+	function getTextColor(range) {
+		return getStyle(range, 'color');
+	}
+
 	/**
 	 * Sets the text color at the given range.
 	 *
@@ -112,11 +115,11 @@ define([
 	 * @param {String} color
 	 */
 	function setTextColor(range, color) {
-		editing.format(range, 'color', color, null, isColorEqual);
+		editing.format(range, 'color', color, isColorEqual);
 	}
 
 	/**
-	 * Removes color at the given range.
+	 * Removes the text color at the given range.
 	 *
 	 * @param {Range} range
 	 */
@@ -128,18 +131,57 @@ define([
 	}
 
 	/**
+	 * Gets the background color at the given range.
+	 *
+	 * @param {Range} range
+	 * @return {String} Style color string
+	 */
+	function getBackgroundColor(range) {
+		return getStyle(range, 'background-color');
+	}
+
+	/**
+	 * Sets the background color at the given range.
+	 *
+	 * @param {Range} range
+	 * @param {String} color
+	 */
+	function setBackgroundColor(range, color) {
+		editing.format(range, 'background-color', color, isColorEqual);
+	}
+
+	/**
+	 * Removes the background color at the given range.
+	 *
+	 * @param {Range} range
+	 */
+	function unsetBackgroundColor(range) {
+		var editable = dom.getNearestEditingHost(range);
+		if (editable) {
+			setBackgroundColor(range, dom.getComputedStyle(editable, 'background-color'));
+		}
+	}
+
+	/**
 	 * Function for working with colors.
 	 *
 	 * colors.hex()
+	 * colors.getStyle()
 	 * colors.getTextColor()
 	 * colors.setTextColor()
 	 * colors.unsetTextColor()
+	 * colors.getBackgroundColor()
+	 * colors.setBackgroundColor()
+	 * colors.unsetBackgroundColor()
 	 */
 	var exports = {
 		hex: hex,
 		getTextColor: getTextColor,
 		setTextColor: setTextColor,
-		unsetTextColor: unsetTextColor
+		unsetTextColor: unsetTextColor,
+		getBackgroundColor: getBackgroundColor,
+		setBackgroundColor: setBackgroundColor,
+		unsetBackgroundColor: unsetBackgroundColor
 	};
 
 	return exports;
