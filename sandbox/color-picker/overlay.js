@@ -212,6 +212,9 @@ define([
 			this._active = false;
 		},
 
+		/**
+		 * Clear the selection and focus on the overlay.
+		 */
 		clear: function () {
 			var selected = this.$element.find('.selected')[0];
 			if (selected) {
@@ -223,11 +226,16 @@ define([
 			}
 		},
 
-		focus: function (td) {
+		/**
+		 * Set the focus and selection at the given overlay table element.
+		 *
+		 * @param {DOMObject} elem
+		 */
+		focus: function (elem) {
 			this.clear();
-			if (td) {
-				dom.addClass(td, 'focused');
-				dom.addClass(td, 'selected');
+			if (elem) {
+				dom.addClass(elem, 'focused');
+				dom.addClass(elem, 'selected');
 			}
 		}
 
