@@ -1,5 +1,37 @@
-define(['jquery'], function ($) {
+define([
+	'jquery',
+	'aloha/copypaste'
+], function (
+	$,
+	CopyPaste
+) {
 	'use strict';
+
+	function getAnchorCell(cells) {
+		if (0 === cells.length) {
+			return null;
+		}
+
+		var i;
+		var editable;
+		var range = CopyPaste.getRange();
+
+		if (range) {
+			editable = jQuery(
+				range.commonAncestorContainer
+			).closest('.aloha-table-cell-editable')[0];
+		}
+
+		if (editable) {
+			for (i = 0; i < cells.length; i++) {
+				if (jQuery(cells[i]).find(editable).length) {
+					return cells[i];
+				}
+			}
+		}
+
+		return cells[0];
+	}
 
 	var Utils = {
 		/**
@@ -486,6 +518,15 @@ define(['jquery'], function ($) {
 		 */
 		'getCellPadding': function(cell) {
 			return ( cell.innerWidth() - cell.width() );
+		},
+
+		selectAnchorContents: function (selection) {
+			var anchor = getAnchorCell(selection);
+			if (anchor) {
+				CopyPaste.selectAllOf(
+					$('>.aloha-table-cell-editable', anchor)[0]
+				);
+			}
 		}
 
 	};

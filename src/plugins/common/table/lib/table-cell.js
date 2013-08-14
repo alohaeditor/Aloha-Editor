@@ -1,13 +1,11 @@
 define([
 	'aloha/jquery',
 	'aloha/ephemera',
-	'table/table-plugin-utils',
-	'table/table-selection'
+	'table/table-plugin-utils'
 ], function (
 	jQuery,
 	Ephemera,
-	Utils,
-	TableSelection
+	Utils
 ) {
 	/**
 	 * Constructs a TableCell.
@@ -335,9 +333,7 @@ define([
 	 */
 	TableCell.prototype._endCellSelection = function() {
 		if (this.tableObj.selection.cellSelectionMode) {
-			TableSelection.selectAnchorContents(
-				this.tableObj.selection.selectedCells
-			);
+			Utils.selectAnchorContents(this.tableObj.selection.selectedCells);
 
 			this.tableObj.selection.cellSelectionMode = false;
 			this.tableObj.selection.baseCellPosition = null;

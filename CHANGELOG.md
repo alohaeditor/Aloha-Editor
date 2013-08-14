@@ -12,6 +12,10 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.17 - 2013/08/14
+
+- **BUGFIX**:	   table plugin: Merging cell is now fixed to work correctly, after a
+	           previous fix introduced a bug through circular dependency.
 
 ## 0.23.16 - 2013/08/14
 
