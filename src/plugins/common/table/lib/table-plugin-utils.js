@@ -17,14 +17,14 @@ define([
 		var range = CopyPaste.getRange();
 
 		if (range) {
-			editable = jQuery(
+			editable = $(
 				range.commonAncestorContainer
 			).closest('.aloha-table-cell-editable')[0];
 		}
 
 		if (editable) {
 			for (i = 0; i < cells.length; i++) {
-				if (jQuery(cells[i]).find(editable).length) {
+				if ($(cells[i]).find(editable).length) {
 					return cells[i];
 				}
 			}
