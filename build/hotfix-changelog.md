@@ -28,3 +28,5 @@ overwritten by custom background images.
 - **BUGFIX**: table plugin: The selection of table cells has been made more
               coherent.  A browser selection will be set on the entire content
               of the anchor cell of the virtual cell selection.
+- **BUGFIX**: table plugin: Merging cell is now fixed to work correctly, after a
+              previous fix introduced a bug through circular dependency.

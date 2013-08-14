@@ -1671,7 +1671,7 @@ define([
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
 
-		TableSelection.selectAnchorContents(this.selection.selectedCells);
+		Utils.selectAnchorContents(this.selection.selectedCells);
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
@@ -1698,7 +1698,7 @@ define([
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
 
-		TableSelection.selectAnchorContents(this.selection.selectedCells);
+		Utils.selectAnchorContents(this.selection.selectedCells);
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
