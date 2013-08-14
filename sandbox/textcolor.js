@@ -17,10 +17,12 @@ define([
 		palette,
 		colors.getTextColor,
 		function (range, node) {
-			colors.setTextColor(
-				range,
-				dom.getComputedStyle(node, 'background-color')
-			);
+			if (dom.isEditable(range.startContainer)) {
+				colors.setTextColor(
+					range,
+					dom.getComputedStyle(node, 'background-color')
+				);
+			}
 		},
 		colors.unsetTextColor
 	);
