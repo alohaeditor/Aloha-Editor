@@ -37,14 +37,12 @@
 		<script src="../src/require-proto.dev.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script>
+			require.urlPrefix = '../src/';
 			require([
-				'textcolor',
-				'backgroundcolor'
-			], function (
-				aloha,
-				textcolor,
-				backgroundcolor
-			) {
+				'aloha',
+				'../sandbox/color-plugin/text-color',
+				'../sandbox/color-plugin/background-color'
+			], function (aloha) {
 				'use strict';
 				window.aloha = aloha;
 			});

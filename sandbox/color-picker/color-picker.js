@@ -1,7 +1,7 @@
 define([
-	'../../src/dom',
-	'../../src/ranges',
-	'../../src/colors',
+	'dom',
+	'ranges',
+	'colors',
 	'overlay'
 ], function ColorPicker(
 	dom,

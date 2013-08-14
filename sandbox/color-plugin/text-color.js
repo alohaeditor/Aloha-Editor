@@ -1,7 +1,7 @@
 define([
-	'../../src/dom',
-	'../../src/colors',
-	'../../src/events',
+	'dom',
+	'colors',
+	'events',
 	'../color-picker/color-picker',
 	'../color-picker/palette'
 ], function Plugin(
@@ -15,20 +15,20 @@ define([
 
 	var show = picker.overlay(
 		palette,
-		colors.getBackgroundColor,
+		colors.getTextColor,
 		function (range, node) {
 			if (dom.isEditable(range.startContainer)) {
-				colors.setBackgroundColor(
+				colors.setTextColor(
 					range,
 					dom.getComputedStyle(node, 'background-color')
 				);
 			}
 		},
-		colors.unsetBackgroundColor
+		colors.unsetTextColor
 	);
 
 	var button = document.createElement('button');
-	button.appendChild(document.createTextNode('Change Background Color'));
+	button.appendChild(document.createTextNode('Change Text Color'));
 	document.getElementsByTagName('body')[0].appendChild(button);
 
 	events.add(button, 'click', show);

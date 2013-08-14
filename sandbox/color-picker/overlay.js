@@ -1,6 +1,6 @@
 define([
-	'../../src/dom',
-	'../../src/events'
+	'dom',
+	'events'
 ], function (
 	dom,
 	events
