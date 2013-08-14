@@ -37,6 +37,8 @@ define([
 				overlay.focus(
 					overlay.$element.find('.' + swatchClass).closest('td')[0]
 				);
+			} else {
+				overlay.clear();
 			}
 		}
 		var offset = Overlay.calculateOffset(anchor);

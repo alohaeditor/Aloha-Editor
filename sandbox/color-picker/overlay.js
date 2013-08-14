@@ -192,17 +192,6 @@ define([
 		populate(overlay, items, onSelect);
 	}
 
-	function clear(overlay) {
-		var selected = overlay.$element.find('.selected')[0];
-		if (selected) {
-			dom.removeClass(selected, 'selected');
-		}
-		var focused = overlay.$element.find('.focused')[0];
-		if (focused) {
-			dom.removeClass(focused, 'focused');
-		}
-	}
-
 	Overlay.prototype = {
 
 		/**
@@ -223,8 +212,19 @@ define([
 			this._active = false;
 		},
 
+		clear: function () {
+			var selected = this.$element.find('.selected')[0];
+			if (selected) {
+				dom.removeClass(selected, 'selected');
+			}
+			var focused = this.$element.find('.focused')[0];
+			if (focused) {
+				dom.removeClass(focused, 'focused');
+			}
+		},
+
 		focus: function (td) {
-			clear(this);
+			this.clear();
 			if (td) {
 				dom.addClass(td, 'focused');
 				dom.addClass(td, 'selected');
