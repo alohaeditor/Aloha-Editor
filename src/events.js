@@ -42,8 +42,22 @@ define([], function Events() {
 		};
 	}());
 
+	/**
+	 * Detaches the specified event callback from the given event.
+	 *
+	 * @todo: Implement
+	 *
+	 * @param {DOMObject|Document|Window} obj
+	 *        Object which supports events.  This includes DOM
+	 *        elements, the Document itself, and the Window object for
+	 *        example.
+	 * @param {String} event
+	 *        Name of the event to detach.
+	 * @param {Function} callback
+	 *        Function to be de-registered.
+	 */
 	var remove = (function remove() {
-		return function removeEvent(elem, event, callback) {
+		return function remove(elem, event, callback) {
 			throw 'Not implemented';
 		};
 	}());

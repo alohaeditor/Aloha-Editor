@@ -1090,6 +1090,12 @@ define([
 		);
 	}
 
+	/**
+	 * Checks whether the given element is editable.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
 	function isEditable(node) {
 		return (node
 			&& (node.nodeType !== Nodes.ELEMENT || 'false' !== node.contentEditable)
@@ -1098,6 +1104,12 @@ define([
 		);
 	}
 
+	/**
+	 * Checks whether the given element is an editing host.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
 	function getEditingHost(node) {
 		if (isEditingHost(node)) {
 			return node;
@@ -1110,28 +1122,6 @@ define([
 			ancestor = ancestor.parentNode;
 		}
 		return ancestor;
-	}
-
-	/**
-	 * Gets the nearest editing host to the given range.
-	 *
-	 * Because Firefox, the range may not be inside the editable even though the
-	 * selection may be inside the editable.
-	 *
-	 * @param {Range} range
-	 * @param {DOMObject} Editing host, or null if none is found.
-	 */
-	function getNearestEditingHost(range) {
-		var editable = getEditingHost(range.startContainer);
-		if (editable) {
-			return editable;
-		}
-		var copy = ranges.stableRange(range);
-		var isNotEditingHost = fn.complement(isEditingHost);
-		ranges.trim(copy, isNotEditingHost, isNotEditingHost);
-		return getEditingHost(
-			nodeAtOffset(copy.startContainer, copy.startOffset)
-		);
 	}
 
 	/**
@@ -1189,7 +1179,6 @@ define([
 		isEditable: isEditable,
 		isEditingHost: isEditingHost,
 		getEditingHost: getEditingHost,
-		getNearestEditingHost: getNearestEditingHost,
 
 		Nodes: Nodes
 	};

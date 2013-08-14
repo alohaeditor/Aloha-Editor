@@ -487,6 +487,28 @@ define([
 	}
 
 	/**
+	 * Gets the nearest editing host to the given range.
+	 *
+	 * Because Firefox, the range may not be inside the editable even though the
+	 * selection may be inside the editable.
+	 *
+	 * @param {Range} range
+	 * @param {DOMObject} Editing host, or null if none is found.
+	 */
+	function getNearestEditingHost(range) {
+		var editable = dom.getEditingHost(range.startContainer);
+		if (editable) {
+			return editable;
+		}
+		var copy = stableRange(range);
+		var isNotEditingHost = fn.complement(dom.isEditingHost);
+		ranges.trim(copy, isNotEditingHost, isNotEditingHost);
+		return dom.getEditingHost(
+			dom.nodeAtOffset(copy.startContainer, copy.startOffset)
+		);
+	}
+
+	/**
 	 * Functions to work with browser ranges.
 	 *
 	 * ranges.collapseToEnd()
@@ -505,6 +527,7 @@ define([
 	 * ranges.trim()
 	 * ranges.trimBoundaries()
 	 * ranges.trimClosingOpening()
+	 * ranges.getNearestEditingHost()
 	 */
 	var exports = {
 		collapseToEnd: collapseToEnd,
@@ -522,7 +545,8 @@ define([
 		stableRange: stableRange,
 		trim: trim,
 		trimBoundaries: trimBoundaries,
-		trimClosingOpening: trimClosingOpening
+		trimClosingOpening: trimClosingOpening,
+		getNearestEditingHost: getNearestEditingHost
 	};
 
 	return exports;

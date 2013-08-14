@@ -14,9 +14,11 @@ require(['../src/aloha'], function (aloha) {
 	}(aloha, aloha.maps.keys(aloha), function (api, namespaces, runner, next) {
 		var namespace = namespaces.slice(0, 1);
 
+		module(namespace);
+
 		test(namespace, function () {
 			var module = api[namespace];
-			var counter = aloha.Maps.keys(module).length;
+			var counter = aloha.maps.keys(module).length;
 
 			function proceed() {
 				next(api, namespaces.slice(1, namespaces.length), runner, next);
