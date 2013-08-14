@@ -63,9 +63,9 @@ define([
 		}
 		var swatch = selected.firstChild;
 		if (dom.hasClass(swatch, 'removecolor')) {
-			textcolor.unsetColor(range);
+			textcolor.unsetTextColor(range);
 		} else {
-			textcolor.setColor(
+			textcolor.setTextColor(
 				range,
 				dom.getComputedStyle(swatch, 'background-color')
 			);
@@ -130,7 +130,9 @@ define([
 		rangeAtOpen = ranges.get();
 
 		if (rangeAtOpen) {
-			var swatchClass = getSwatchClass(textcolor.getColor(rangeAtOpen));
+			var swatchClass = getSwatchClass(
+				textcolor.getTextColor(rangeAtOpen)
+			);
 			if (swatchClass) {
 				var td = overlay.$element.find('.' + swatchClass).closest('td')[0];
 				if (td) {

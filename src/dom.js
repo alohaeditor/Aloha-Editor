@@ -8,12 +8,14 @@ define([
 	'maps',
 	'arrays',
 	'strings',
-	'browser'
+	'browser',
+	'functions'
 ], function Dom(
 	maps,
 	arrays,
 	strings,
-	browser
+	browser,
+	fn
 ) {
 	'use strict';
 
@@ -1111,6 +1113,28 @@ define([
 	}
 
 	/**
+	 * Gets the nearest editing host to the given range.
+	 *
+	 * Because Firefox, the range may not be inside the editable even though the
+	 * selection may be inside the editable.
+	 *
+	 * @param {Range} range
+	 * @param {DOMObject} Editing host, or null if none is found.
+	 */
+	function getNearestEditingHost(range) {
+		var editable = getEditingHost(range.startContainer);
+		if (editable) {
+			return editable;
+		}
+		var copy = ranges.stableRange(range);
+		var isNotEditingHost = fn.complement(isEditingHost);
+		ranges.trim(copy, isNotEditingHost, isNotEditingHost);
+		return getEditingHost(
+			nodeAtOffset(copy.startContainer, copy.startOffset)
+		);
+	}
+
+	/**
 	 * Functions for working with the DOM.
 	 */
 	var exports = {
@@ -1165,6 +1189,7 @@ define([
 		isEditable: isEditable,
 		isEditingHost: isEditingHost,
 		getEditingHost: getEditingHost,
+		getNearestEditingHost: getNearestEditingHost,
 
 		Nodes: Nodes
 	};
