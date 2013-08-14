@@ -502,7 +502,7 @@ define([
 		}
 		var copy = stableRange(range);
 		var isNotEditingHost = fn.complement(dom.isEditingHost);
-		ranges.trim(copy, isNotEditingHost, isNotEditingHost);
+		trim(copy, isNotEditingHost, isNotEditingHost);
 		return dom.getEditingHost(
 			dom.nodeAtOffset(copy.startContainer, copy.startOffset)
 		);

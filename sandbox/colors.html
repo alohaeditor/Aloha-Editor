@@ -1,10 +1,10 @@
 <!doctype html>
 <html>
 	<head>
-		<title>Aloha Editor &middot; TextColor Sandbox</title>
+		<title>Aloha Editor &middot; Colors Sandbox</title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
-		<link rel="stylesheet" type="text/css" href="textcolor/textcolor.css">
+		<link rel="stylesheet" type="text/css" href="color-picker/color-picker.css">
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,700italic,300,700'
 		      rel='stylesheet' type='text/css'>
 		<style>
@@ -12,7 +12,7 @@
 				padding: 1em;
 				font-weight: bold;
 				width: 200px;
-				margin: 2em 0;
+				margin: 2em;
 				box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
 			}
 		</style>
@@ -37,7 +37,15 @@
 		<script src="../src/require-proto.dev.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script>
-			require(['../src/aloha', 'textcolor/plugin'], function (aloha, textcolor) {
+			require([
+				'../src/aloha',
+				'textcolor',
+				'backgroundcolor'
+			], function (
+				aloha,
+				textcolor,
+				backgroundcolor
+			) {
 				'use strict';
 				window.aloha = aloha;
 			});

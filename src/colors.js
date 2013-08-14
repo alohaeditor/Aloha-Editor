@@ -1,8 +1,10 @@
 define([
 	'dom',
+	'ranges',
 	'editing'
 ], function Colors(
 	dom,
+	ranges,
 	editing
 ) {
 	'use strict';

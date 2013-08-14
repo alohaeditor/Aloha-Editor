@@ -1,4 +1,10 @@
-define([], function () {
+define([
+	'../../src/dom',
+	'../../src/events'
+], function (
+	dom,
+	events
+) {
 	'use strict';
 
 	var $DOCUMENT = $(document);
@@ -21,17 +27,14 @@ define([], function () {
 	 *
 	 * @param {Overlay} overlay
 	 */
-	function hideOnDocumentClick(overlay, button) {
-		$(document).on('click', function (event) {
+	function hideOnDocumentClick(overlay) {
+		events.add(document, 'mousedown', function (event) {
 			// Because click events on the overlay ui should not cause it to
 			// hide itself.
-			if (!overlay._active
-					|| (event.target === overlay.$element[0])
-					|| $(button).is(event.target)
-					|| $(button).find(event.target).length) {
-				return;
+			if (overlay._active
+					&& !dom.contains(overlay.$element[0], event.target)) {
+				overlay.hide();
 			}
-			overlay.hide();
 		});
 	}
 
@@ -176,18 +179,28 @@ define([], function () {
 	 *
 	 * @param {Array<String>} items
 	 * @param {Function(DOMObject)} onSelect
-	 * @param {Button} button
 	 * @type {Overlay}
 	 */
-	function Overlay(items, onSelect, button) {
+	function Overlay(items, onSelect) {
 		var overlay = this;
 		overlay.$element = $(
 			'<table unselectable="on" role="dialog"><tbody></tbody></table>'
 		).appendTo('body');
-		hideOnDocumentClick(overlay, button);
+		hideOnDocumentClick(overlay);
 		hideOnEsc(overlay);
 		movements(overlay, onSelect);
 		populate(overlay, items, onSelect);
+	}
+
+	function clear(overlay) {
+		var selected = overlay.$element.find('.selected')[0];
+		if (selected) {
+			dom.removeClass(selected, 'selected');
+		}
+		var focused = overlay.$element.find('.focused')[0];
+		if (focused) {
+			dom.removeClass(focused, 'focused');
+		}
 	}
 
 	Overlay.prototype = {
@@ -208,7 +221,16 @@ define([], function () {
 		hide: function () {
 			this.$element.hide();
 			this._active = false;
+		},
+
+		focus: function (td) {
+			clear(this);
+			if (td) {
+				dom.addClass(td, 'focused');
+				dom.addClass(td, 'selected');
+			}
 		}
+
 	};
 
 	Overlay.calculateOffset = calculateOffset;
