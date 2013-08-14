@@ -8,14 +8,15 @@
 }
 .aloha-ui-colorpicker-overlay td {
 	padding: 0;
-	font-size: 1em;
 }
 .aloha-ui-colorpicker-overlay td>div {
-	width: 1em;
-	height: 1em;
+	width: 20px;
+	height: 20px;
 	border: 2px solid transparent;
 	cursor: pointer;
 	text-align: center;
+	font-size: 15px;
+	line-height: 20px;
 }
 /** --- Because ie7 does not support rgba --- */
 .aloha-ui-colorpicker-overlay td.focused>div {
