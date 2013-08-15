@@ -156,12 +156,14 @@ define([
 		traversing.walkUntilNode(cac.firstChild, stepLeftStart, cacChildStart, arg);
 		if (cacChildStart) {
 			var next = cacChildStart.nextSibling;
-			stepAtStart(cacChildStart, arg);
-			traversing.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
-			if (cacChildEnd) {
-				next = cacChildEnd.nextSibling;
-				stepAtEnd(cacChildEnd, arg);
-				traversing.walk(next, stepRightEnd, arg);
+			stepAtStart(cacChildStart, arg);	
+			if (cacChildStart !== cacChildEnd) {
+				traversing.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
+				if (cacChildEnd) {
+					next = cacChildEnd.nextSibling;
+					stepAtEnd(cacChildEnd, arg);
+					traversing.walk(next, stepRightEnd, arg);
+				}
 			}
 		}
 	}
@@ -336,7 +338,6 @@ define([
 		var clearOverrideRec = formatter.clearOverrideRec  || function (node) {
 			traversing.walkRec(node, clearOverride);
 		};
-
 		var topmostOverrideNode = null;
 		var cacOverride = null;
 		var isNonClearableOverride = false;
@@ -1057,13 +1058,36 @@ define([
 		}
 	}
 
-	function ascendOffsetUntilInclNode(node, atEnd, carryDown, before, at, after, untilInclNode) {
-		var ascend = traversing.childAndParentsUntilInclNode(
-			node,
-			untilInclNode
-		);
-		var stepAtStart = makePointNodeStep(node, atEnd, after, at);
-		ascendWalkSiblings(ascend, atEnd, carryDown, before, at, after);
+	function splitBoundaryPoint(node, atEnd, leftPoint, rightPoint, removeEmpty, opts) {
+		var wrapper = null;
+
+		function carryDown(elem, stop) {
+			return stop || opts.until(elem);
+		}
+
+		function intoWrapper(node, stop) {
+			if (stop) {
+				return;
+			}
+			var parent = node.parentNode;
+			if (!wrapper || parent.previousSibling !== wrapper) {
+				wrapper = opts.clone(parent);
+				removeEmpty.push(parent);
+				dom.insert(wrapper, parent, false);
+				if (leftPoint.node === parent && !leftPoint.atEnd) {
+					leftPoint.node = wrapper;
+				}
+			}
+			moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
+		}
+
+		var ascend = traversing.childAndParentsUntilIncl(node, opts.below);
+		var unsplitParent = ascend.pop();
+		if (unsplitParent && opts.below(unsplitParent)) {
+			ascendWalkSiblings(ascend, atEnd, carryDown, intoWrapper, fn.noop, fn.noop);
+		}
+
+		return unsplitParent;
 	}
 
 	/**
@@ -1074,17 +1098,17 @@ define([
 	 *        clone - a function that clones a given element node
 	 *        shallowly and returns the cloned node.
 	 *
-	 *        belowCacUntil - a function that returns true if splitting
-	 *        should stop at a given node (exclusive) on the way down
-	 *        from below the cac (exclusive) to the start or end
-	 *        containers.
+	 *        splitUntil - a function that returns true if splitting
+	 *        should stop at a given node (exclusive) below the topmost
+	 *        node for which splitBelow() returns true. By default all
+	 *        nodes are split.
 	 *
-	 *        cacAndAboveUntil - a function that returns true if
-	 *        splitting should stop at a given node (exclusive) on the
-	 *        way up from the cac (inclusive) to the document node.
-	 *
-	 *        By default splitting stops at an editable host, at a
-	 *        block element, or at the body element.
+	 *        splitBelow - a function that returns true if descendants
+	 *        of a given node can be split. Used to determine the
+	 *        topmost node at which to end the splitting process. If
+	 *        false is returned for all ancestors of the start and end
+	 *        points of the range, nothing will be split. By default,
+	 *        returns true for an editing host.
 	 *
 	 *        normalizeRange - a boolean, defaults to true.
 	 *        After splitting the selection may still be inside the split
@@ -1102,16 +1126,16 @@ define([
 	 *        same cac which is going to be the topmost unsplit node. This
 	 *        is usually what one expects the range to look like after a
 	 *        split.
-	 *        NB: if belowCacUntil returns true, start and end points
+	 *        NB: if splitUntil() returns true, start and end points
 	 *        may not become children of the topmost unsplit node. Also,
-	 *        if belowCacUntil returns true, the selection may be moved
+	 *        if splitUntil() returns true, the selection may be moved
 	 *        out of an unsplit node which may be unexpected.
 	 */
 	function split(liveRange, opts) {
 		opts = maps.merge({
 			clone: dom.cloneShallow,
-			belowCacUntil: fn.returnFalse,
-			cacAndAboveUntil: isUpperBoundary_default,
+			until: fn.returnFalse,
+			below: html.isEditingHost,
 			normalizeRange: true
 		}, opts);
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
@@ -1121,57 +1145,18 @@ define([
 			html.normalizeBoundary(normalizeRight);
 			ranges.setFromBoundaries(range, normalizeLeft, normalizeRight);
 
-			var cac = range.commonAncestorContainer;
+			var removeEmpty = [];
+
 			var start = dom.nodeAtOffset(range.startContainer, range.startOffset);
 			var startEnd = dom.isAtEnd(range.startContainer, range.startOffset);
 			var end = dom.nodeAtOffset(range.endContainer, range.endOffset);
 			var endEnd = dom.isAtEnd(range.endContainer, range.endOffset);
-
-			var splitCac = !opts.cacAndAboveUntil(cac);
-			var fromCacToTop = traversing.childAndParentsUntil(
-				cac,
-				opts.cacAndAboveUntil
-			);
-			var topmostUnsplitNode = fromCacToTop.length
-			                       ? arrays.last(fromCacToTop).parentNode
-			                       : cac;
-
-			var wrapper = null;
-			var removeEmpty = [];
-
-			function carryDown(elem, stop) {
-				return stop || opts.belowCacUntil(elem);
-			}
-
-			function intoWrapper(node, stop) {
-				if (stop || (!splitCac && node.parentNode === cac)) {
-					return;
-				}
-				var parent = node.parentNode;
-				if (!wrapper || parent.previousSibling !== wrapper) {
-					wrapper = opts.clone(parent);
-					// Because we want to ensure the splitting process
-					// doesn't introduce any empty nodes.
-					removeEmpty.push(parent);
-					dom.insert(wrapper, parent, false);
-					if (leftPoint.node === parent && !leftPoint.atEnd) {
-						leftPoint.node = wrapper;
-					}
-				}
-				moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
-			}
-
-			ascendOffsetUntilInclNode(start, startEnd, carryDown, intoWrapper, fn.noop, fn.noop, cac);
-			ascendWalkSiblings(fromCacToTop, false, fn.returnFalse, intoWrapper, fn.noop, fn.noop);
-			wrapper = null;
-			ascendOffsetUntilInclNode(end, endEnd, carryDown, intoWrapper, fn.noop, fn.noop, cac);
-			ascendWalkSiblings(fromCacToTop, false, fn.returnFalse, intoWrapper, fn.noop, fn.noop);
+			var unsplitParentStart = splitBoundaryPoint(start, startEnd, leftPoint, rightPoint, removeEmpty, opts);
+			var unsplitParentEnd = splitBoundaryPoint(end, endEnd, leftPoint, rightPoint, removeEmpty, opts);
 
 			removeEmpty.forEach(function (elem) {
-				// Because if it doesn't have a parentNode, it was
-				// already removed in an earlier iteration, which is
-				// possible because we ascend from the cac twice, which
-				// may end up cloning the cac twice.
+				// Because we may end up cloning the same node twice (by
+				// splitting both start and end points).
 				if (!elem.firstChild && elem.parentNode) {
 					dom.removeShallowPreservingBoundaries(elem, [leftPoint, rightPoint]);
 				}
@@ -1179,10 +1164,9 @@ define([
 
 			if (opts.normalizeRange) {
 				trimExpandBoundaries(leftPoint, rightPoint, null, function (node) {
-					return node === topmostUnsplitNode;
+					return node === unsplitParentStart || node === unsplitParentEnd;
 				});
 			}
-
 			return null;
 		});
 	}

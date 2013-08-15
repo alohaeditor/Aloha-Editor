@@ -91,13 +91,16 @@ define(['dom'], function Cursors(dom) {
 			prev = node.lastChild;
 			if (prev) {
 				this.node = prev;
+				if (dom.Nodes.Element !== prev.nodeType) {
+					this.atEnd = false;
+				}
 			} else {
 				this.atEnd = false;
 			}
 		} else {
 			prev = node.previousSibling;
 			if (prev) {
-				if (dom.Nodes.ELEMENT === node.nodeType) {
+				if (dom.Nodes.ELEMENT === prev.nodeType) {
 					this.atEnd = true;
 				}
 			} else {

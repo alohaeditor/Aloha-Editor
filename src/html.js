@@ -308,9 +308,10 @@ define([
 	 * except for unrendered nodes), and both boundary points are normalized,
 	 * the selection will be collapsed to the start of the block.
 	 *
-	 * For some operations it's useful to think of a block as a number of lines,
-	 * each including its respective br and any preceding and following
-	 * unrendered whitespace.
+	 * For some operations it's useful to think of a block as a number
+	 * of lines, each including its respective br and any preceding
+	 * unrendered whitespace and in case of the last line, also any
+	 * following unrendered whitespace.
 	 *
 	 * @param {Cursor} point
 	 * @return {Boolean}
@@ -371,16 +372,21 @@ define([
 		return true;
 	}
 
+	// TODO This list is incomplete but should look something like
+	// http://www.w3.org/TR/CSS21/propidx.html
+	var notInheritedStyles = {
+		'background-color': true,
+		'underline': true
+	};
+
 	/**
-	 * TODO currently this function only knows about 'background-color' not
-	 * being inherited, while 'color', 'font-size', 'font-family' are inherited.
-	 * Any other relevant styles should be added when needed.
+	 * TODO complete the list of inherited/notInheritedStyles
 	 *
 	 * @param {String} styleName
 	 * @return {Boolean}
 	 */
 	function isStyleInherited(styleName) {
-		return 'background-color' !== styleName;
+		return !notInheritedStyles[styleName];
 	}
 
 	/**

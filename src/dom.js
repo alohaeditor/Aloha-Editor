@@ -532,7 +532,12 @@ define([
 	function contains(a, b) {
 		return (Nodes.ELEMENT === a.nodeType
 				? (a.contains
-				   ? a != b && a.contains(b)
+				   ? (a !== b
+				      // Because IE returns false for elemNode.contains(textNode).
+				      && (1 === b.nodeType
+				          ? a.contains(b)
+				          : (b.parentNode
+				             && (a === b.parentNode || a.contains(b.parentNode)))))
 				   : !!(a.compareDocumentPosition(b) & 16))
 				: false);
 	}
@@ -942,17 +947,17 @@ define([
 	 * @param node should be an element node.
 	 */
 	function getComputedStyle(node, name) {
-		if (node.currentStyle) {
-			// Because IE7 needs dashesToCamelCase().
-			name = strings.dashesToCamelCase(name);
-			return node.currentStyle[name];
-		}
 		var doc = node.ownerDocument;
-		if (doc.defaultView && doc.defaultView.getComputedStyle) {
+		if (doc && doc.defaultView && doc.defaultView.getComputedStyle) {
 			var styles = doc.defaultView.getComputedStyle(node, null);
 			if (styles) {
 				return styles[name] || styles.getPropertyValue(name);
 			}
+		}
+		if (node.currentStyle) {
+			// Because IE7 needs dashesToCamelCase().
+			name = strings.dashesToCamelCase(name);
+			return node.currentStyle[name];
 		}
 		return null;
 	}
