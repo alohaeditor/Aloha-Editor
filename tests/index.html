@@ -5,10 +5,11 @@
 	<title>Aloha Editor Test Suite</title>
 	<link rel="stylesheet" href="qunit/qunit-1.12.0.css" type="text/css"/>
 	<script type="text/javascript" src="qunit/qunit-1.12.0.js"></script>
-	<script src="../src/require-proto.js"></script>
-	<script src="../src/require-proto.dev.js"></script>
+	<script src="../src/require-pronto.js"></script>
+	<script src="../src/require-pronto.dev.js"></script>
 	<script>define.amd = {jQuery:true};</script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.js"></script>
+	<script src="../build/aloha.js"></script>
 </head>
 <body>
 	<h1 id="qunit-header">Aloha Editor Test Suite</h1>
@@ -20,12 +21,23 @@
 		<div id="test-editable"></div>
 	</div>
 	<script>
-		require([
-			'strings-tests',
-			'arrays-tests',
-			'dom-tests',
-			'editing-tests'
-		], function () {});
+		function runTests() {
+			require([
+				'arrays-tests',
+				'strings-tests'
+				/*
+				'dom-tests',
+				'editing-tests'
+				*/
+			], function () {});
+		}
+
+		if (aloha) {
+			alert('Testing build version');
+			runTests();
+		} else {
+			require('aloha', runTest);
+		}
 	</script>
 </body>
 </html>

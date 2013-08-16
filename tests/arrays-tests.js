@@ -1,5 +1,7 @@
-require(['../src/arrays'], function (arrays) {
+(function (aloha) {
 	'use strict';
+
+	var arrays = aloha.arrays;
 
     module('arrays');
 
@@ -35,4 +37,4 @@ require(['../src/arrays'], function (arrays) {
         });
         deepEqual(unique, [6, 7, 8]);
     });
-});
+}(window.aloha));

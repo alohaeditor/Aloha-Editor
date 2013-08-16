@@ -1,5 +1,7 @@
 define([
 	'arrays',
+	/*
+	'boundary-markers'
 	'browser',
 	'content',
 	'colors',
@@ -14,10 +16,14 @@ define([
 	'keys',
 	'maps',
 	'ranges',
-	'strings',
+	*/
+	'strings'
+	/*
 	'traversing'
+	*/
 ], function Aloha(
 	arrays,
+	boundarymarkers,
 	browser,
 	content,
 	colors,
@@ -27,7 +33,7 @@ define([
 	editing,
 	ephemera,
 	events,
-	functions,
+	fn,
 	html,
 	keys,
 	maps,
@@ -37,10 +43,6 @@ define([
 ) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('aloha');
-	}
-
 	/**
 	 * Aloha Editor API
 	 *
@@ -48,24 +50,27 @@ define([
 	 * editing solutions in HTML.
 	 */
 	var aloha = {
-		arrays     : arrays,
-		browser    : browser,
-		content    : content,
-		colors     : colors,
-		cursors    : cursors,
-		dom        : dom,
-		editing    : editing,
-		ephemera   : ephemera,
-		events     : events,
-		functions  : functions,
-		html       : html,
-		keys       : keys,
-		maps       : maps,
-		ranges     : ranges,
-		strings    : strings,
-		traversing : traversing,
-		xhtml      : xhtml
+		'arrays'          : arrays,
+		'boundarymarkers' : boundarymarkers,
+		'browser'         : browser,
+		'content'         : content,
+		'colors'          : colors,
+		'cursors'         : cursors,
+		'dom'             : dom,
+		'editing'         : editing,
+		'ephemera'        : ephemera,
+		'events'          : events,
+		'fn'              : fn,
+		'html'            : html,
+		'keys'            : keys,
+		'maps'            : maps,
+		'ranges'          : ranges,
+		'strings'         : strings,
+		'traversing'      : traversing,
+		'xhtml'           : xhtml
 	};
+
+	window['aloha'] = aloha;
 
 	return aloha;
 });

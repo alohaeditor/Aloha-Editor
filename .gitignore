@@ -1,6 +1,7 @@
 .project
 .settings
 .DS_Store
+.env
 *.js~
 *.orig
 *.swp

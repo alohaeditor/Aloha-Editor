@@ -7,10 +7,6 @@
 define([], function Arrays() {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('arrays');
-	}
-
 	/**
 	 * Implements unique() using native sort().
 	 *
@@ -174,6 +170,14 @@ define([], function Arrays() {
 		second: second,
 		last: last
 	};
+
+	exports['contains'] = exports.contains;
+	exports['equal'] = exports.equal;
+	exports['applyNotNull'] = exports.applyNotNull;
+	exports['sortUnique'] = exports.sortUnique;
+	exports['intersect'] = exports.intersect;
+	exports['second'] = exports.second;
+	exports['last'] = exports.last;
 
 	return exports;
 });

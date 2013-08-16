@@ -1,23 +1,13 @@
-require([
-	'jquery',
-	'../src/html',
-	'../src/ranges',
-	'../src/editing',
-	'../src/functions',
-	'../src/browser',
-	'../src/boundary-markers',
-	'../src/dom-to-xhtml'
-], function (
-	$,
-	html,
-	ranges,
-	editing,
-	fn,
-	browser,
-	boundarymarkers,
-	xhtml
-) {
+(function (aloha) {
 	'use strict';
+
+	var html = aloha.html;
+	var ranges = aloha.ranges;
+	var editing = aloha.editing;
+	var fn = aloha.fn;
+	var browser = aloha.browser;
+	var boundarymarkers = aloha.boundarymarkers;
+	var xhtml = aloha.xhtml;
 
 	module('Editing');
 
@@ -667,4 +657,4 @@ require([
 	  '<ul>{<li><ins>Some</ins> <del>text</del></li>}</ul>',
 	  '<ul>{<li><b><ins>Some</ins> <del>text</del></b></li>}</ul>',
 	  true);
-});
+}(window.aloha));

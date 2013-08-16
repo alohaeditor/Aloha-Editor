@@ -134,5 +134,11 @@ define([], function Strings() {
 		empty: empty
 	};
 
+	exports['words'] = words;
+	exports['dashesToCamelCase'] = dashesToCamelCase;
+	exports['camelCaseToDashes'] = camelCaseToDashes;
+	exports['splitIncl'] = splitIncl;
+	exports['empty'] = empty;
+
 	return exports;
 });

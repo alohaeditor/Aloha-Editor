@@ -2,8 +2,8 @@ define([
 	'dom',
 	'colors',
 	'events',
-	'../color-picker/color-picker',
-	'../color-picker/palette'
+	'sandbox/color-picker/color-picker',
+	'sandbox/color-picker/palette'
 ], function Plugin(
 	dom,
 	colors,

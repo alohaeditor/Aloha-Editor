@@ -2,7 +2,7 @@ define([
 	'dom',
 	'ranges',
 	'colors',
-	'overlay'
+	'sandbox/color-picker/overlay'
 ], function ColorPicker(
 	dom,
 	ranges,
