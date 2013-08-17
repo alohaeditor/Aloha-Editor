@@ -37,4 +37,40 @@
         });
         deepEqual(unique, [6, 7, 8]);
     });
+
+	test('contains()', function () {
+		var array = [1, 2, null, void 0];
+		equal(true, arrays.contains(array, 1));
+		equal(false, arrays.contains(array, 3));
+		equal(true, arrays.contains(array, void 0));
+		equal(false, arrays.contains(array, ''));
+		equal(false, arrays.contains(array, false));
+		equal(true, arrays.contains(array, null));
+	});
+
+	test('equal()', function () {
+		equal(true, arrays.equal([1, 2], [1, 2]));
+		equal(false, arrays.equal(['1', 2], [1, 2]));
+		equal(false, arrays.equal([1, 2], [2, 1]));
+		equal(true, arrays.equal([], []));
+	});
+
+	test('intersect()', function () {
+		var intersection = arrays.intersect([0, 1, 2, 3], [1, 3, 5])
+		equal(1, intersection[0]);
+		equal(3, intersection[1]);
+		intersection = arrays.intersect([0, 1], [2, 3]);
+		equal(0, intersection.length);
+	});
+
+	test('second()', function () {
+		equal(2, arrays.second([1,2]));
+		equal(null, arrays.second([1]));
+	});
+
+	test('last()', function () {
+		equal(2, arrays.last([1,2]));
+		equal(null, arrays.last([]));
+	});
+
 }(window.aloha));

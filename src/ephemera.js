@@ -389,7 +389,7 @@ define([
 		}
 
 		// Ephemera.ephemera({ pruneFns: [] })
-		node = arrays.reduce(emap.pruneFns, node, arrays.applyNotNull);
+		node = emap.pruneFns.reduce(node, arrays.applyNotNull);
 		if (!node) {
 			return [];
 		}

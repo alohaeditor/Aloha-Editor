@@ -98,23 +98,6 @@ define([], function Arrays() {
 	}
 
 	/**
-	 * Applies the given value to the given function unless the value is null,
-	 * in which case just returns null.
-	 *
-	 * This is a utility function to be used with reduce().
-	 *
-	 * @param {*} value
-	 *        The value with which to call `fn` with.
-	 * @param {Function} fn
-	 *        The function to be called with `value` as its only argument.
-	 * @return {*}
-	 *         The return value of `fn`.
-	 */
-	function applyNotNull(value, fn) {
-		return value == null ? null : fn(value);
-	}
-
-	/**
 	 * Returns all items in the array `xs` that are also contained in array
 	 * `zs`.
 	 *
@@ -155,7 +138,6 @@ define([], function Arrays() {
 	 *
 	 * arrays.contains()
 	 * arrays.equal()
-	 * arrays.applyNotNull()
 	 * arrays.sortUnique()
 	 * arrays.intersect()
 	 * arrays.second()
@@ -164,7 +146,6 @@ define([], function Arrays() {
 	var exports = {
 		contains: contains,
 		equal: equal,
-		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
 		intersect: intersect,
 		second: second,
@@ -173,7 +154,6 @@ define([], function Arrays() {
 
 	exports['contains'] = exports.contains;
 	exports['equal'] = exports.equal;
-	exports['applyNotNull'] = exports.applyNotNull;
 	exports['sortUnique'] = exports.sortUnique;
 	exports['intersect'] = exports.intersect;
 	exports['second'] = exports.second;
