@@ -186,5 +186,13 @@ define([
 		unsetBackgroundColor: unsetBackgroundColor
 	};
 
+	exports['hex'] = exports.hex;
+	exports['getTextColor'] = exports.getTextColor;
+	exports['setTextColor'] = exports.setTextColor;
+	exports['unsetTextColor'] = exports.unsetTextColor;
+	exports['getBackgroundColor'] = exports.getBackgroundColor;
+	exports['setBackgroundColor'] = exports.setBackgroundColor;
+	exports['unsetBackgroundColor'] = exports.unsetBackgroundColor;
+
 	return exports;
 });

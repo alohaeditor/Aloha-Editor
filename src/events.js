@@ -70,5 +70,8 @@ define([], function Events() {
 		remove: remove
 	};
 
+	exports['add'] = exports.add;
+	exports['remove'] = exports.remove;
+
 	return exports;
 });

@@ -579,5 +579,21 @@ define([
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode
 	};
 
+	exports['nextWhile'] = exports.nextWhile;
+	exports['prevWhile'] = exports.prevWhile;
+	exports['walk'] = exports.walk;
+	exports['walkRec'] = exports.walkRec;
+	exports['walkUntil'] = exports.walkUntil;
+	exports['walkUntilNode'] = exports.walkUntilNode;
+	exports['findNodeBackwards'] = exports.findNodeBackwards;
+	exports['findWordBoundaryAhead'] = exports.findWordBoundaryAhead;
+	exports['findWordBoundaryBehind'] = exports.findWordBoundaryBehind;
+	exports['parentsUntil'] = exports.parentsUntil;
+	exports['parentsUntilIncl'] = exports.parentsUntilIncl;
+	exports['childAndParentsUntil'] = exports.childAndParentsUntil;
+	exports['childAndParentsUntilIncl'] = exports.childAndParentsUntilIncl;
+	exports['childAndParentsUntilNode'] = exports.childAndParentsUntilNode;
+	exports['childAndParentsUntilInclNode'] = exports.childAndParentsUntilInclNode;
+
 	return exports;
 });

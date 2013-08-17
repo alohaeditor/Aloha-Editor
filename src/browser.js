@@ -63,5 +63,9 @@ define([], function Browser() {
 		hasRemoveProperty: !!testElem.style.removeProperty
 	};
 
+	exports['ie7'] = exports.ie7;
+	exports['browser'] = exports.browser;
+	exports['hasRemoveProperty'] = exports.hasRemoveProperty;
+
 	return exports;
 });

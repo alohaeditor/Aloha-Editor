@@ -429,5 +429,19 @@ define([
 		isEditingHost: isEditingHost
 	};
 
+	exports['isControlCharacter'] = exports.isControlCharacter;
+	exports['isStyleInherited'] = exports.isStyleInherited;
+	exports['isBlockType'] = exports.isBlockType;
+	exports['isInlineType'] = exports.isInlineType;
+	exports['hasBlockStyle'] = exports.hasBlockStyle;
+	exports['hasInlineStyle'] = exports.hasInlineStyle;
+	exports['isUnrenderedWhitespace'] = exports.isUnrenderedWhitespace;
+	exports['isWhiteSpacePreserveStyle'] = exports.isWhiteSpacePreserveStyle;
+	exports['skipUnrenderedToStartOfLine'] = exports.skipUnrenderedToStartOfLine;
+	exports['skipUnrenderedToEndOfLine'] = exports.skipUnrenderedToEndOfLine;
+	exports['normalizeBoundary'] = exports.normalizeBoundary;
+	exports['isEmpty'] = exports.isEmpty;
+	exports['isEditingHost'] = exports.isEditingHost;
+
 	return exports;
 });

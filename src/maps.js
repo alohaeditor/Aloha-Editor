@@ -153,5 +153,12 @@ define([], function Maps() {
 		merge: merge
 	};
 
+	exports['isEmpty'] = exports.isEmpty;
+	exports['fillTuples'] = exports.fillTuples;
+	exports['fillKeys'] = exports.fillKeys;
+	exports['keys'] = exports.keys;
+	exports['forEach'] = exports.forEach;
+	exports['merge'] = exports.merge;
+
 	return exports;
 });

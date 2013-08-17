@@ -24,7 +24,11 @@ define([], function Misc() {
 		return false;
 	}
 
-	return {
+	var exports = {
 		anyRx: anyRx
 	};
+
+	exports['anyRx'] = exports.anyRx;
+
+	return exports;
 });

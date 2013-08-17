@@ -549,5 +549,23 @@ define([
 		getNearestEditingHost: getNearestEditingHost
 	};
 
+	exports['collapseToEnd'] = exports.collapseToEnd;
+	exports['create'] = exports.create;
+	exports['equal'] = exports.equal;
+	exports['expandBoundaries'] = exports.expandBoundaries;
+	exports['extendToWord'] = exports.extendToWord;
+	exports['get'] = exports.get;
+	exports['insertText'] = exports.insertText;
+	exports['select'] = exports.select;
+	exports['setEndFromCursor'] = exports.setEndFromCursor;
+	exports['setFromBoundaries'] = exports.setFromBoundaries;
+	exports['setFromReference'] = exports.setFromReference;
+	exports['setStartFromCursor'] = exports.setStartFromCursor;
+	exports['stableRange'] = exports.stableRange;
+	exports['trim'] = exports.trim;
+	exports['trimBoundaries'] = exports.trimBoundaries;
+	exports['trimClosingOpening'] = exports.trimClosingOpening;
+	exports['getNearestEditingHost'] = exports.getNearestEditingHost;
+
 	return exports;
 });

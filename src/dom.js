@@ -1188,5 +1188,47 @@ define([
 		Nodes: Nodes
 	};
 
+	exports['addClass'] = exports.addClass;
+	exports['removeClass'] = exports.removeClass;
+	exports['hasClass'] = exports.hasClass;
+	exports['getElementsByClassNames'] = exports.getElementsByClassNames;
+	exports['getAttr'] = exports.getAttr;
+	exports['setAttr'] = exports.setAttr;
+	exports['removeAttr'] = exports.removeAttr;
+	exports['attrNames'] = exports.attrNames;
+	exports['hasAttrs'] = exports.hasAttrs;
+	exports['attrs'] = exports.attrs;
+	exports['indexByClass'] = exports.indexByClass;
+	exports['indexByName'] = exports.indexByName;
+	exports['indexByClassHaveList'] = exports.indexByClassHaveList;
+	exports['outerHtml'] = exports.outerHtml;
+	exports['moveNextAll'] = exports.moveNextAll;
+	exports['removeShallow'] = exports.removeShallow;
+	exports['removeShallowPreservingBoundaries'] = exports.removeShallowPreservingBoundaries;
+	exports['removePreservingRange'] = exports.removePreservingRange;
+	exports['removePreservingRanges'] = exports.removePreservingRanges;
+	exports['cloneShallow'] = exports.cloneShallow;
+	exports['wrap'] = exports.wrap;
+	exports['insert'] = exports.insert;
+	exports['replaceShallow'] = exports.replaceShallow;
+	exports['isAtEnd'] = exports.isAtEnd;
+	exports['nodeIndex'] = exports.nodeIndex;
+	exports['nodeLength'] = exports.nodeLength;
+	exports['nodeAtOffset'] = exports.nodeAtOffset;
+	exports['isTextNode'] = exports.isTextNode;
+	exports['splitTextNode'] = exports.splitTextNode;
+	exports['splitTextContainers'] = exports.splitTextContainers;
+	exports['splitTextNodeAdjustRange'] = exports.splitTextNodeAdjustRange;
+	exports['joinTextNodeAdjustRange'] = exports.joinTextNodeAdjustRange;
+	exports['contains'] = exports.contains;
+	exports['setStyle'] = exports.setStyle;
+	exports['getStyle'] = exports.getStyle;
+	exports['getComputedStyle'] = exports.getComputedStyle;
+	exports['removeStyle'] = exports.removeStyle;
+	exports['isEditable'] = exports.isEditable;
+	exports['isEditingHost'] = exports.isEditingHost;
+	exports['getEditingHost'] = exports.getEditingHost;
+	exports['Nodes'] = exports.Nodes;
+
 	return exports;
 });

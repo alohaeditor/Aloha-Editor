@@ -445,5 +445,15 @@ define([
 		isAttrEphemeral: isAttrEphemeral
 	};
 
+	exports['ephemera'] = exports.ephemera;
+	exports['classes'] = exports.classes;
+	exports['attributes'] = exports.attributes;
+	exports['markElement'] = exports.markElement;
+	exports['markAttr'] = exports.markAttr;
+	exports['markWrapper'] = exports.markWrapper;
+	exports['markFiller'] = exports.markFiller;
+	exports['prune'] = exports.prune;
+	exports['isAttrEphemeral'] = exports.isAttrEphemeral;
+
 	return exports;
 });

@@ -1184,5 +1184,9 @@ define([
 		split: split
 	};
 
+	exports['wrap'] = exports.wrapElem;
+	exports['format'] = exports.format;
+	exports['split'] = exports.split;
+
 	return exports;
 });

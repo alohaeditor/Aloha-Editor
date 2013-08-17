@@ -102,5 +102,12 @@ define([], function Functions() {
 		bind: bind
 	};
 
+	exports['identity'] = exports.identity;
+	exports['noop'] = exports.noop;
+	exports['returnTrue'] = exports.returnTrue;
+	exports['returnFalse'] = exports.returnFalse;
+	exports['complement'] = exports.complement;
+	exports['bind'] = exports.bind
+
 	return exports;
 });

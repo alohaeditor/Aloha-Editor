@@ -192,5 +192,8 @@ define(['dom'], function Cursors(dom) {
 		cursorFromBoundaryPoint: cursorFromBoundaryPoint
 	};
 
+	exports['cursor'] = exports.cursor;
+	exports['cursorFromBoundaryPoint'] = exports.cursorFromBoundaryPoint;
+
 	return exports;
 });

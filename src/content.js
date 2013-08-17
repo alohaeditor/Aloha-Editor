@@ -548,5 +548,7 @@ define([], function Content() {
 		allowsNesting: allowsNesting
 	};
 
+	exports['allowsNesting'] = exports.allowsNesting;
+
 	return exports;
 });

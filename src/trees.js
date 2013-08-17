@@ -297,7 +297,7 @@ define(['arrays'], function Trees(arrays) {
 		return result;
 	}
 
-	return {
+	var exports = {
 		prewalk: prewalk,
 		postwalk: postwalk,
 		preprune: preprune,
@@ -314,4 +314,22 @@ define(['arrays'], function Trees(arrays) {
 		walkInplace: walkInplace,
 		walkDomInplace: walkDomInplace
 	};
+
+	exports['prewalk'] = exports.prewalk;
+	exports['postwalk'] = exports.postwalk;
+	exports['preprune'] = exports.preprune;
+	exports['postprune'] = exports.postprune;
+	exports['prewalkDom'] = exports.prewalkDom;
+	exports['postwalkDom'] = exports.postwalkDom;
+	exports['prepruneDom'] = exports.prepruneDom;
+	exports['postpruneDom'] = exports.postpruneDom;
+	exports['isLeaf'] = exports.isLeaf;
+	exports['leaves'] = exports.leaves;
+	exports['clone'] = exports.clone;
+	exports['flatten'] = exports.flatten;
+	exports['walk'] = exports.walk;
+	exports['walkInplace'] = exports.walkInplace;
+	exports['walkDomInplace'] = exports.walkDomInplace;
+
+	return exports;
 });

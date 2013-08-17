@@ -133,5 +133,8 @@ define([
 		extract: extract
 	};
 
+	exports['insert'] = exports.insert;
+	exports['extract'] = exports.extract;
+
 	return exports;
 });

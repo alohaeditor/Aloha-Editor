@@ -434,5 +434,8 @@ define([
 		nodeToXhtml: nodeToXhtml
 	};
 
+	exports['contentsToXhtml'] = exports.contentsToXhtml,
+	exports['nodeToXhtml'] = exports.nodeToXhtml;
+
 	return exports;
 });
