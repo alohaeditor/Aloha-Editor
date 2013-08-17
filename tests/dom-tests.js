@@ -25,6 +25,26 @@ require(['jquery', '../src/dom'], function ($, dom) {
 		);
 	});
 
+	module('Attributes');
+
+	/*
+	test('removeAttr', function () {
+		
+	});
+
+	test('attrNames', function () {
+
+	});
+
+	test('hasAttrs', function () {
+
+	});
+
+	test('attrs', function () {
+
+	});
+	*/
+
 	test('getAttr', function () {
 		equal(dom.getAttr($('<a>')[0], 'href'), null);
 		equal(dom.getAttr($('<a href>')[0], 'href'), '');
@@ -64,4 +84,57 @@ require(['jquery', '../src/dom'], function ($, dom) {
 		deepEqual(result, {'P': $(input).find('p').get(),
 						   'B': $(input).find('b').get()});
 	});
+
+	/*
+	module('Classes');
+
+	test('addClass', function () {
+
+	});
+
+	test('removeClass', function () {
+
+	});
+
+	test('hasClass', function () {
+
+	});
+	*/
+
+	/*
+	'indexByClassHaveList'
+
+	'outerHtml'
+
+	'moveNextAll'
+
+	'removeShallow'
+	'removeShallowPreservingBoundaries'
+	'removePreservingRange'
+	'removePreservingRanges'
+	'cloneShallow'
+	'wrap'
+	'insert'
+	'replaceShallow'
+	'isAtEnd'
+	'nodeIndex'
+	'nodeLength'
+	'nodeAtOffset'
+	'isTextNode'
+	'splitTextNode'
+	'splitTextContainers'
+	'splitTextNodeAdjustRange'
+	'joinTextNodeAdjustRange'
+	'contains'
+	'setStyle'
+	'getStyle'
+	'getComputedStyle'
+	'removeStyle'
+	'isEditable'
+	'isEditingHost'
+	'getEditingHost'
+	'Nodes'
+	*/
+
+
 });

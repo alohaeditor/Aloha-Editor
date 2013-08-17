@@ -24,19 +24,16 @@
 		function runTests() {
 			require([
 				'arrays-tests',
-				'strings-tests'
-				/*
 				'dom-tests',
-				'editing-tests'
-				*/
+				'editing-tests',
+				'strings-tests'
 			], function () {});
 		}
 
-		if (aloha) {
-			alert('Testing build version');
+		if (typeof aloha !== 'undefined') {
 			runTests();
 		} else {
-			require('aloha', runTest);
+			require(['../src/aloha'], runTests);
 		}
 	</script>
 </body>

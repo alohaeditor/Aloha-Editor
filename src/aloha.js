@@ -1,7 +1,6 @@
 define([
 	'arrays',
-	/*
-	'boundary-markers'
+	'boundary-markers',
 	'browser',
 	'content',
 	'colors',
@@ -16,11 +15,8 @@ define([
 	'keys',
 	'maps',
 	'ranges',
-	*/
-	'strings'
-	/*
+	'strings',
 	'traversing'
-	*/
 ], function Aloha(
 	arrays,
 	boundarymarkers,
