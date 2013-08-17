@@ -95,10 +95,10 @@ define([
 			return false;
 		}
 		switch (node.nodeType) {
-		case dom.Nodes.DOCUMENT:
-		case dom.Nodes.DOCUMENT_FRAGMENT:
+		case dom.Nodes['DOCUMENT']:
+		case dom.Nodes['DOCUMENT_FRAGMENT']:
 			return true;
-		case dom.Nodes.ELEMENT:
+		case dom.Nodes['ELEMENT']:
 			return !nonBlockDisplayValuesMap[dom.getComputedStyle(node, 'display')];
 		default:
 			return false;

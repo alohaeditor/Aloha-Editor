@@ -61,7 +61,7 @@ define(['dom'], function Cursors(dom) {
 	Cursor.prototype.next = function () {
 		var node = this.node;
 		var next;
-		if (this.atEnd || dom.Nodes.ELEMENT !== node.nodeType) {
+		if (this.atEnd || dom.Nodes['ELEMENT'] !== node.nodeType) {
 			next = node.nextSibling;
 			if (next) {
 				this.atEnd = false;
@@ -91,7 +91,7 @@ define(['dom'], function Cursors(dom) {
 			prev = node.lastChild;
 			if (prev) {
 				this.node = prev;
-				if (dom.Nodes.Element !== prev.nodeType) {
+				if (dom.Nodes['ELEMENT'] !== prev.nodeType) {
 					this.atEnd = false;
 				}
 			} else {
@@ -100,7 +100,7 @@ define(['dom'], function Cursors(dom) {
 		} else {
 			prev = node.previousSibling;
 			if (prev) {
-				if (dom.Nodes.ELEMENT === prev.nodeType) {
+				if (dom.Nodes['ELEMENT'] === prev.nodeType) {
 					this.atEnd = true;
 				}
 			} else {

@@ -172,7 +172,7 @@ define([
 		// cursor starts before the node, which is what
 		// cursorFromBoundaryPoint() does automatically.
 		if (backwards
-				&& dom.Nodes.TEXT === container.nodeType
+				&& dom.Nodes['TEXT'] === container.nodeType
 					&& offset > 0
 						&& offset < container.length) {
 			if (backwards ? cursor.next() : cursor.prev()) {
@@ -460,8 +460,8 @@ define([
 		var atEnd = dom.isAtEnd(range.startContainer, range.startOffset);
 		// Because if the node following the insert position is already a text
 		// node we can just reuse it.
-		if (!atEnd && dom.Nodes.TEXT === node.nodeType) {
-			var offset = dom.Nodes.TEXT === range.startContainer.nodeType
+		if (!atEnd && dom.Nodes['TEXT'] === node.nodeType) {
+			var offset = dom.Nodes['TEXT'] === range.startContainer.nodeType
 			           ? range.startOffset
 			           : 0;
 			node.insertData(offset, text);
@@ -472,7 +472,7 @@ define([
 		// Because if the node preceding the insert position is already a text
 		// node we can just reuse it.
 		var prev = atEnd ? node.lastChild : node.previousSibling;
-		if (prev && dom.Nodes.TEXT === prev.nodeType) {
+		if (prev && dom.Nodes['TEXT'] === prev.nodeType) {
 			prev.insertData(prev.length, text);
 			range.setStart(prev, prev.length - text.length);
 			range.setEnd(prev, prev.length);

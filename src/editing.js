@@ -214,7 +214,7 @@ define([
 			return null;
 		}
 		var cac = range.commonAncestorContainer;
-		if (dom.Nodes.TEXT === cac.nodeType) {
+		if (dom.Nodes['TEXT'] === cac.nodeType) {
 			cac = cac.parentNode;
 		}
 		function untilIncl(node) {
@@ -349,7 +349,7 @@ define([
 				// element (which has nodeType 9).
 				return (
 					!node.parentNode
-						|| dom.Nodes.DOCUMENT === node.parentNode.nodeType
+						|| dom.Nodes['DOCUMENT'] === node.parentNode.nodeType
 							|| hasInheritableContext(node)
 				);
 			}
@@ -487,7 +487,7 @@ define([
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
-		if (dom.Nodes.ELEMENT !== node.nodeType || !ignoreVertical(node)) {
+		if (dom.Nodes['ELEMENT'] !== node.nodeType || !ignoreVertical(node)) {
 			return null;
 		}
 		var maybeContext = traversing.nextWhile(node.firstChild, ignoreHorizontal);

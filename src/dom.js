@@ -134,9 +134,9 @@ define([
 		var type = node.nodeType;
 		return !(
 			!node
-				|| type === Nodes.TEXT
-					|| type === Nodes.COMMENT
-						|| type === Nodes.ATTR
+				|| type === Nodes['TEXT']
+					|| type === Nodes['COMMENT']
+						|| type === Nodes['ATTR']
 		);
 	}
 
@@ -411,10 +411,10 @@ define([
 	 * @return {Number} Length of the given node.
 	 */
 	function nodeLength(node) {
-		if (Nodes.ELEMENT === node.nodeType) {
+		if (Nodes['ELEMENT'] === node.nodeType) {
 			return numChildren(node);
 		}
-		if (Nodes.TEXT === node.nodeType) {
+		if (Nodes['TEXT'] === node.nodeType) {
 			return node.length;
 		}
 		return 0;
@@ -445,9 +445,9 @@ define([
 	 * @return {Boolean}
 	 */
 	function isAtEnd(node, offset) {
-		return (Nodes.ELEMENT === node.nodeType
+		return (Nodes['ELEMENT'] === node.nodeType
 				&& offset >= nodeLength(node))
-			|| (Nodes.TEXT === node.nodeType
+			|| (Nodes['TEXT'] === node.nodeType
 				&& offset === node.length
 				&& !node.nextSibling);
 	}
@@ -456,9 +456,9 @@ define([
 	 * @param node if a text node, should have a parent node.
 	 */
 	function nodeAtOffset(node, offset) {
-		if (Nodes.ELEMENT === node.nodeType && offset < nodeLength(node)) {
+		if (Nodes['ELEMENT'] === node.nodeType && offset < nodeLength(node)) {
 			node = node.childNodes[offset];
-		} else if (Nodes.TEXT === node.nodeType && offset === node.length) {
+		} else if (Nodes['TEXT'] === node.nodeType && offset === node.length) {
 			node = node.nextSibling || node.parentNode;
 		}
 		return node;
@@ -530,7 +530,7 @@ define([
 	 * @return {Boolean}
 	 */
 	function contains(a, b) {
-		return (Nodes.ELEMENT === a.nodeType
+		return (Nodes['ELEMENT'] === a.nodeType
 				? (a.contains
 				   ? (a !== b
 				      // Because IE returns false for elemNode.contains(textNode).
@@ -549,7 +549,7 @@ define([
 	 * @return {Boolean}
 	 */
 	function isTextNode(node) {
-		return Nodes.TEXT === node.nodeType;
+		return Nodes['TEXT'] === node.nodeType;
 	}
 
 	/**
@@ -598,7 +598,7 @@ define([
 	 * @private
 	 */
 	function normalizeSetRange(setRange, range, container, offset) {
-		if (Nodes.TEXT === container.nodeType && container.parentNode) {
+		if (Nodes['TEXT'] === container.nodeType && container.parentNode) {
 			if (!offset) {
 				offset = nodeIndex(container);
 				container = container.parentNode;
@@ -703,7 +703,7 @@ define([
 	 * at the same position in the new text nodes.
 	 */
 	function splitTextNodeAdjustRange(splitNode, splitOffset, range) {
-		if (Nodes.TEXT !== splitNode.nodeType) {
+		if (Nodes['TEXT'] !== splitNode.nodeType) {
 			return;
 		}
 		// Because the range may change due to the DOM modification
@@ -754,7 +754,7 @@ define([
 	}
 
 	function joinTextNodeOneWay(node, sibling, range, prev) {
-		if (!sibling || Nodes.TEXT !== sibling.nodeType) {
+		if (!sibling || Nodes['TEXT'] !== sibling.nodeType) {
 			return node;
 		}
 		// Because the range may change due to the DOM modication (automatically
@@ -807,7 +807,7 @@ define([
 	 *         The given range, modified if necessary.
 	 */
 	function joinTextNodeAdjustRange(node, range) {
-		if (Nodes.TEXT !== node.nodeType) {
+		if (Nodes['TEXT'] !== node.nodeType) {
 			return range;
 		}
 		node = joinTextNodeOneWay(node, node.previousSibling, range, true);
@@ -939,7 +939,7 @@ define([
 	function getStyle(node, name) {
 		// Because IE7 needs dashesToCamelCase().
 		name = strings.dashesToCamelCase(name);
-		return node.nodeType === Nodes.ELEMENT ? node.style[name] : null;
+		return node.nodeType === Nodes['ELEMENT'] ? node.style[name] : null;
 	}
 
 	/**
@@ -1030,7 +1030,7 @@ define([
 
 	function changeClassNames(elem, value, change) {
 		var names = (value || '').match(WORD_BOUNDARY) || [];
-		var classes = (elem.nodeType === Nodes.ELEMENT)
+		var classes = (elem.nodeType === Nodes['ELEMENT'])
 		            ? elem.className.trim().split(WHITESPACES)
 		            : [];
 		var i;
@@ -1073,7 +1073,7 @@ define([
 	 */
 	function hasClass(node, value) {
 		return (
-			node.nodeType === Nodes.ELEMENT
+			node.nodeType === Nodes['ELEMENT']
 				&& node.className.trim().split(WHITESPACES).indexOf(value) >= 0
 		);
 	}
@@ -1085,10 +1085,10 @@ define([
 	 */
 	function isEditingHost(node) {
 		return (node
-			&& node.nodeType === Nodes.ELEMENT
+			&& node.nodeType === Nodes['ELEMENT']
 				&& ('true' === node.contentEditable
 					|| (node.parentNode
-						&& Nodes.DOCUMENT === node.parentNode.nodeType
+						&& Nodes['DOCUMENT'] === node.parentNode.nodeType
 							&& 'true' === node.parentNode.designMode
 					)
 				)
@@ -1103,7 +1103,7 @@ define([
 	 */
 	function isEditable(node) {
 		return (node
-			&& (node.nodeType !== Nodes.ELEMENT || 'false' !== node.contentEditable)
+			&& (node.nodeType !== Nodes['ELEMENT'] || 'false' !== node.contentEditable)
 				&& !isEditingHost(node)
 					&& (isEditingHost(node.parentNode) || isEditable(node.parentNode))
 		);
