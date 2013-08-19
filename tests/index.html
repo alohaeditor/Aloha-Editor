@@ -21,7 +21,29 @@
 		<div id="test-editable"></div>
 	</div>
 	<script>
-		function runTests() {
+		var isBuild = false;
+
+		function getFunctionsInNamespace(module) {
+			var functions = [];
+			aloha.maps.forEach(module, function (value, key) {
+				if ('function' === typeof value) {
+					functions.push(key);
+				}
+			});
+			return functions;
+		}
+
+		function testCoverage(equal, tested, module) {
+			if (!isBuild) {
+				var functions = getFunctionsInNamespace(module);
+				equal(
+					functions.length,
+					aloha.arrays.intersect(functions, tested).length
+				);
+			}
+		}
+
+		function run() {
 			require([
 				'arrays-tests',
 				'dom-tests',
@@ -31,10 +53,18 @@
 		}
 
 		if (typeof aloha !== 'undefined') {
-			runTests();
+			isBuild = true;
+			run();
 		} else {
-			require(['../src/aloha'], runTests);
+			isBuild = false;
+			require(['../src/aloha'], run);
 		}
+
+		$('h1').append(
+			': <b style="color: #C6E746">'
+				+ (isBuild ? 'build' : 'dev')
+				+ '</b>'
+		);
 	</script>
 </body>
 </html>

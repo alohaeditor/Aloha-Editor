@@ -445,11 +445,14 @@ define([
 	 * @return {Boolean}
 	 */
 	function isAtEnd(node, offset) {
-		return (Nodes['ELEMENT'] === node.nodeType
-				&& offset >= nodeLength(node))
-			|| (Nodes['TEXT'] === node.nodeType
+		return (
+			Nodes['ELEMENT'] === node.nodeType
+				&& offset >= nodeLength(node)
+		) || (
+			Nodes['TEXT'] === node.nodeType
 				&& offset === node.length
-				&& !node.nextSibling);
+					&& !node.nextSibling
+		);
 	}
 
 	/**
@@ -935,6 +938,13 @@ define([
 	/**
 	 * Gets a style from the given element's style attribute.
 	 * Note that this is different from the computed/inherited style.
+	 *
+	 * @param {DOMObject} elem
+	 *        Should be an element node.
+	 * @param {String} name
+	 *        Style property name.
+	 * @return {String|null}
+	 *         Style value or null if none is found.
 	 */
 	function getStyle(node, name) {
 		// Because IE7 needs dashesToCamelCase().
@@ -944,20 +954,26 @@ define([
 
 	/**
 	 * Gets the computed/inherited style of the given node.
-	 * @param node should be an element node.
+	 *
+	 * @param {DOMObject} elem
+	 *        Should be an element node.
+	 * @param {String} name
+	 *        Style property name.
+	 * @return {String|null}
+	 *         Computed style, or `null` if no such style is set.
 	 */
-	function getComputedStyle(node, name) {
-		var doc = node.ownerDocument;
+	function getComputedStyle(elem, name) {
+		var doc = elem.ownerDocument;
 		if (doc && doc.defaultView && doc.defaultView.getComputedStyle) {
-			var styles = doc.defaultView.getComputedStyle(node, null);
+			var styles = doc.defaultView.getComputedStyle(elem, null);
 			if (styles) {
 				return styles[name] || styles.getPropertyValue(name);
 			}
 		}
-		if (node.currentStyle) {
+		if (elem.currentStyle) {
 			// Because IE7 needs dashesToCamelCase().
 			name = strings.dashesToCamelCase(name);
-			return node.currentStyle[name];
+			return elem.currentStyle[name];
 		}
 		return null;
 	}
@@ -1030,9 +1046,13 @@ define([
 
 	function changeClassNames(elem, value, change) {
 		var names = (value || '').match(WORD_BOUNDARY) || [];
-		var classes = (elem.nodeType === Nodes['ELEMENT'])
-		            ? elem.className.trim().split(WHITESPACES)
-		            : [];
+		var classes;
+		if (elem.nodeType === Nodes['ELEMENT']) {
+			var className = elem.className.trim();
+			classes = ('' === className) ? [] : className.split(WHITESPACES);
+		} else {
+			classes = [];
+		}
 		var i;
 		var len = names.length;
 		for (i = 0; i < len; i++) {
@@ -1084,7 +1104,7 @@ define([
 	 * @return {Boolean}
 	 */
 	function isEditingHost(node) {
-		return (node
+		return !!(node
 			&& node.nodeType === Nodes['ELEMENT']
 				&& ('true' === node.contentEditable
 					|| (node.parentNode
@@ -1102,10 +1122,12 @@ define([
 	 * @return {Boolean}
 	 */
 	function isEditable(node) {
-		return (node
-			&& (node.nodeType !== Nodes['ELEMENT'] || 'false' !== node.contentEditable)
-				&& !isEditingHost(node)
-					&& (isEditingHost(node.parentNode) || isEditable(node.parentNode))
+		return !!(node
+			&& (node.nodeType !== Nodes['ELEMENT']
+				|| 'false' !== node.contentEditable)
+					&& !isEditingHost(node)
+						&& (isEditingHost(node.parentNode)
+							|| isEditable(node.parentNode))
 		);
 	}
 
