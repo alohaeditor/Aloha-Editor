@@ -61,7 +61,7 @@ define(['dom'], function Cursors(dom) {
 	Cursor.prototype.next = function () {
 		var node = this.node;
 		var next;
-		if (this.atEnd || dom.Nodes['ELEMENT'] !== node.nodeType) {
+		if (this.atEnd || dom.Nodes.ELEMENT !== node.nodeType) {
 			next = node.nextSibling;
 			if (next) {
 				this.atEnd = false;
@@ -91,7 +91,7 @@ define(['dom'], function Cursors(dom) {
 			prev = node.lastChild;
 			if (prev) {
 				this.node = prev;
-				if (dom.Nodes['ELEMENT'] !== prev.nodeType) {
+				if (dom.Nodes.ELEMENT !== prev.nodeType) {
 					this.atEnd = false;
 				}
 			} else {
@@ -100,7 +100,7 @@ define(['dom'], function Cursors(dom) {
 		} else {
 			prev = node.previousSibling;
 			if (prev) {
-				if (dom.Nodes['ELEMENT'] === prev.nodeType) {
+				if (dom.Nodes.ELEMENT === prev.nodeType) {
 					this.atEnd = true;
 				}
 			} else {
@@ -178,6 +178,20 @@ define(['dom'], function Cursors(dom) {
 	Cursor.prototype.insert = function (node) {
 		return dom.insert(node, this.node, this.atEnd);
 	};
+
+	Cursor.prototype['next'] = Cursor.prototype.next;
+	Cursor.prototype['prev'] = Cursor.prototype.prev;
+	Cursor.prototype['skipPrev'] = Cursor.prototype.skipPrev;
+	Cursor.prototype['skipNext'] = Cursor.prototype.skipNext;
+	Cursor.prototype['nextWhile'] = Cursor.prototype.nextWhile;
+	Cursor.prototype['prevWhile'] = Cursor.prototype.prevWhile;
+	Cursor.prototype['parent'] = Cursor.prototype.parent;
+	Cursor.prototype['prevSibling'] = Cursor.prototype.prevSibling;
+	Cursor.prototype['nextSibling'] = Cursor.prototype.nextSibling;
+	Cursor.prototype['equals'] = Cursor.prototype.equals;
+	Cursor.prototype['setFrom'] = Cursor.prototype.setFrom;
+	Cursor.prototype['clone'] = Cursor.prototype.clone;
+	Cursor.prototype['insert'] = Cursor.prototype.insert;
 
 	/**
 	 * Functions for creating Cursors.  A Cursor is an abstraction of the

@@ -41,39 +41,39 @@ define([
 	 * @type {Object}
 	 */
 	var BLOCK_LEVEL_ELEMENTS = {
-		ADDRESS    : true,
-		ARTICLE    : true, // HTML5
-		ASIDE      : true, // HTML5
-		AUDIO      : true, // HTML5
-		BLOCKQUOTE : true,
-		CANVAS     : true, // HTML5
-		DD         : true,
-		DIV        : true,
-		DL         : true,
-		FIELDSET   : true,
-		FIGCAPTION : true,
-		FIGURE     : true,
-		FOOTER     : true,
-		FORM       : true,
-		H1         : true,
-		H2         : true,
-		H3         : true,
-		H4         : true,
-		H5         : true,
-		H6         : true,
-		HEADER     : true,
-		HGROUP     : true,
-		HR         : true,
-		NOSCRIPT   : true,
-		OL         : true,
-		OUTPUT     : true,
-		P          : true,
-		PRE        : true,
-		SECTION    : true, // HTML5
-		TABLE      : true,
-		TFOOT      : true,
-		UL         : true,
-		VIDEO      : true  // HTML5
+		'ADDRESS'    : true,
+		'ARTICLE'    : true, // HTML5
+		'ASIDE'      : true, // HTML5
+		'AUDIO'      : true, // HTML5
+		'BLOCKQUOTE' : true,
+		'CANVAS'     : true, // HTML5
+		'DD'         : true,
+		'DIV'        : true,
+		'DL'         : true,
+		'FIELDSET'   : true,
+		'FIGCAPTION' : true,
+		'FIGURE'     : true,
+		'FOOTER'     : true,
+		'FORM'       : true,
+		'H1'         : true,
+		'H2'         : true,
+		'H3'         : true,
+		'H4'         : true,
+		'H5'         : true,
+		'H6'         : true,
+		'HEADER'     : true,
+		'HGROUP'     : true,
+		'HR'         : true,
+		'NOSCRIPT'   : true,
+		'OL'         : true,
+		'OUTPUT'     : true,
+		'P'          : true,
+		'PRE'        : true,
+		'SECTION'    : true, // HTML5
+		'TABLE'      : true,
+		'TFOOT'      : true,
+		'UL'         : true,
+		'VIDEO'      : true  // HTML5
 	};
 
 	/**
@@ -95,10 +95,10 @@ define([
 			return false;
 		}
 		switch (node.nodeType) {
-		case dom.Nodes['DOCUMENT']:
-		case dom.Nodes['DOCUMENT_FRAGMENT']:
+		case dom.Nodes.DOCUMENT:
+		case dom.Nodes.DOCUMENT_FRAGMENT:
 			return true;
-		case dom.Nodes['ELEMENT']:
+		case dom.Nodes.ELEMENT:
 			return !nonBlockDisplayValuesMap[dom.getComputedStyle(node, 'display')];
 		default:
 			return false;

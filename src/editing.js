@@ -156,7 +156,7 @@ define([
 		traversing.walkUntilNode(cac.firstChild, stepLeftStart, cacChildStart, arg);
 		if (cacChildStart) {
 			var next = cacChildStart.nextSibling;
-			stepAtStart(cacChildStart, arg);	
+			stepAtStart(cacChildStart, arg);
 			if (cacChildStart !== cacChildEnd) {
 				traversing.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
 				if (cacChildEnd) {
@@ -214,7 +214,7 @@ define([
 			return null;
 		}
 		var cac = range.commonAncestorContainer;
-		if (dom.Nodes['TEXT'] === cac.nodeType) {
+		if (dom.Nodes.TEXT === cac.nodeType) {
 			cac = cac.parentNode;
 		}
 		function untilIncl(node) {
@@ -349,7 +349,7 @@ define([
 				// element (which has nodeType 9).
 				return (
 					!node.parentNode
-						|| dom.Nodes['DOCUMENT'] === node.parentNode.nodeType
+						|| dom.Nodes.DOCUMENT === node.parentNode.nodeType
 							|| hasInheritableContext(node)
 				);
 			}
@@ -487,7 +487,7 @@ define([
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
-		if (dom.Nodes['ELEMENT'] !== node.nodeType || !ignoreVertical(node)) {
+		if (dom.Nodes.ELEMENT !== node.nodeType || !ignoreVertical(node)) {
 			return null;
 		}
 		var maybeContext = traversing.nextWhile(node.firstChild, ignoreHorizontal);
@@ -755,8 +755,8 @@ define([
 			normal: 'normal',
 			normalize: {
 				/* ie7/ie8 only */
-				700: 'bold',
-				400: 'normal'
+				'700': 'bold',
+				'400': 'normal'
 			}
 		},
 		italic: {
@@ -768,8 +768,12 @@ define([
 			normalize: {}
 		}
 	};
-	wrapperProperties.emphasis = maps.merge(wrapperProperties.italic, {name: 'EM'});
-	wrapperProperties.strong = maps.merge(wrapperProperties.bold, {name: 'STRONG'});
+	wrapperProperties['emphasis'] = maps.merge(wrapperProperties.italic, {name: 'EM'});
+	wrapperProperties['strong'] = maps.merge(wrapperProperties.bold, {name: 'STRONG'});
+
+	wrapperProperties['underline'] = wrapperProperties.underline;
+	wrapperProperties['bold'] = wrapperProperties.bold;
+	wrapperProperties['italic'] = wrapperProperties.italic;
 
 	function makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts) {
 		var isStyleEqual = opts.isStyleEqual || isStyleEqual_default;
@@ -986,11 +990,21 @@ define([
 	 *        other reusable or newly created wrapper nodes.
 	 */
 	function wrapElem(liveRange, nodeName, remove, opts) {
+		opts = opts || {};
+
+		// Because of advanced compilation
+		if (null != opts['createWrapper']) {
+			opts.createWrapper = opts['createWrapper'];
+		}
+		if (null != opts['isReusable']) {
+			opts.isReusable = opts['isReusable'];
+		}
+
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
 			return;
 		}
-		opts = opts || {};
+
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeElemFormatter(nodeName, remove, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
@@ -1028,11 +1042,27 @@ define([
 	 *             equals function.
 	 */
 	function format(liveRange, styleName, styleValue, opts) {
+		opts = opts || {};
+
+		// Because of advanced compilation
+		if (null != opts['createWrapper']) {
+			opts.createWrapper = opts['createWrapper'];
+		}
+		if (null != opts['isPrunable']) {
+			opts.isPrunable = opts['isPrunable'];
+		}
+		if (null != opts['isStyleEqual']) {
+			opts.isStyleEqual = opts['isStyleEqual'];
+		}
+		if (null != opts['isObstruction']) {
+			opts.isObstruction = opts['isObstruction'];
+		}
+
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
 			return;
 		}
-		opts = opts || {};
+
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
@@ -1098,12 +1128,12 @@ define([
 	 *        clone - a function that clones a given element node
 	 *        shallowly and returns the cloned node.
 	 *
-	 *        splitUntil - a function that returns true if splitting
+	 *        until - a function that returns true if splitting
 	 *        should stop at a given node (exclusive) below the topmost
-	 *        node for which splitBelow() returns true. By default all
+	 *        node for which below() returns true. By default all
 	 *        nodes are split.
 	 *
-	 *        splitBelow - a function that returns true if descendants
+	 *        below - a function that returns true if descendants
 	 *        of a given node can be split. Used to determine the
 	 *        topmost node at which to end the splitting process. If
 	 *        false is returned for all ancestors of the start and end
@@ -1132,12 +1162,27 @@ define([
 	 *        out of an unsplit node which may be unexpected.
 	 */
 	function split(liveRange, opts) {
+		// Because of advanced compilation
+		if (null != opts['clone']) {
+			opts.clone = opts['clone'];
+		}
+		if (null != opts['until']) {
+			opts.until = opts['until'];
+		}
+		if (null != opts['below']) {
+			opts.below = opts['below'];
+		}
+		if (null != opts['normalizRange']) {
+			opts.normalizeRange = opts['normalizeRange'];
+		}
+
 		opts = maps.merge({
 			clone: dom.cloneShallow,
 			until: fn.returnFalse,
 			below: html.isEditingHost,
 			normalizeRange: true
 		}, opts);
+
 		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var normalizeLeft = opts.normalizeRange ? leftPoint : leftPoint.clone();
 			var normalizeRight = opts.normalizeRange ? rightPoint : rightPoint.clone();

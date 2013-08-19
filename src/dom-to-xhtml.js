@@ -23,20 +23,20 @@ define([
 	 * Elements that are to be serialized like <img /> and not like <img></img>
 	 */
 	var emptyElements = {
-		area     : true,
-		base     : true,
-		basefont : true,
-		br       : true,
-		col      : true,
-		frame    : true,
-		hr       : true,
-		img      : true,
-		input    : true,
-		isindex  : true,
-		link     : true,
-		meta     : true,
-		param    : true,
-		embed    : true
+		'area'     : true,
+		'base'     : true,
+		'basefont' : true,
+		'br'       : true,
+		'col'      : true,
+		'frame'    : true,
+		'hr'       : true,
+		'img'      : true,
+		'input'    : true,
+		'isindex'  : true,
+		'link'     : true,
+		'meta'     : true,
+		'param'    : true,
+		'embed'    : true
 	};
 
 	/**
@@ -44,19 +44,19 @@ define([
 	 * attribute value.
 	 */
 	var booleanAttrs = {
-		checked  : true,
-		compact  : true,
-		declare  : true,
-		defer    : true,
-		disabled : true,
-		ismap    : true,
-		multiple : true,
-		nohref   : true,
-		noresize : true,
-		noshade  : true,
-		nowrap   : true,
-		readonly : true,
-		selected : true
+		'checked'  : true,
+		'compact'  : true,
+		'declare'  : true,
+		'defer'    : true,
+		'disabled' : true,
+		'ismap'    : true,
+		'multiple' : true,
+		'nohref'   : true,
+		'noresize' : true,
+		'noshade'  : true,
+		'nowrap'   : true,
+		'readonly' : true,
+		'selected' : true
 	};
 
 	/**
@@ -70,21 +70,21 @@ define([
 	 * See isUnrecognized().
 	 */
 	var isUnrecognizedMap = {
-		DIV    : false,
-		SPAN   : false,
-		UL     : false,
-		OL     : false,
-		LI     : false,
-		TABLE  : false,
-		TR     : false,
-		TD     : false,
-		TH     : false,
-		I      : false,
-		B      : false,
-		EM     : false,
-		STRONG : false,
-		A      : false,
-		P      : false
+		'DIV'    : false,
+		'SPAN'   : false,
+		'UL'     : false,
+		'OL'     : false,
+		'LI'     : false,
+		'TABLE'  : false,
+		'TR'     : false,
+		'TD'     : false,
+		'TH'     : false,
+		'I'      : false,
+		'B'      : false,
+		'EM'     : false,
+		'STRONG' : false,
+		'A'      : false,
+		'P'      : false
 	};
 
 	/**

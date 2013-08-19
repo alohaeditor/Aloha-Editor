@@ -34,7 +34,9 @@
 		}
 
 		function testCoverage(equal, tested, module) {
-			if (!isBuild) {
+			if (isBuild) {
+				ok(1);
+			} else {
 				var functions = getFunctionsInNamespace(module);
 				equal(
 					functions.length,
@@ -48,7 +50,8 @@
 				'arrays-tests',
 				'dom-tests',
 				'editing-tests',
-				'strings-tests'
+				'strings-tests',
+				'traversing-tests'
 			], function () {});
 		}
 

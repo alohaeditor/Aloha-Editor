@@ -23,6 +23,7 @@ function build {
 			--transform_amd_modules \
 			--output_wrapper="(function () {%output%}())" \
 			--only_closure_dependencies \
+			--externs ../externs.js \
 		> $wd/$target
 }
 

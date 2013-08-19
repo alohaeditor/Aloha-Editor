@@ -158,7 +158,7 @@
 	test('nodeAtOffset', function () {
 		tested.push('nodeAtOffset');
 		var node = $('<div>foo<b>bar</b></div>')[0];
-		equal(dom.outerHtml(dom.nodeAtOffset(node, 0)), 'foo');
+		equal(dom.nodeAtOffset(node, 0).data, 'foo');
 		equal(dom.nodeAtOffset(node, 1), node.lastChild);
 	});
 

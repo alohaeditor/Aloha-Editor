@@ -95,7 +95,7 @@ define([
 	function getStyle(range, property) {
 		var node = dom.nodeAtOffset(range.startContainer, range.startOffset);
 		return dom.getComputedStyle(
-			dom.Nodes['TEXT'] === node.nodeType ? node.parentNode : node,
+			dom.Nodes.TEXT === node.nodeType ? node.parentNode : node,
 			property
 		);
 	}

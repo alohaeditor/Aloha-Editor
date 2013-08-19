@@ -8,8 +8,9 @@
 	var browser = aloha.browser;
 	var boundarymarkers = aloha.boundarymarkers;
 	var xhtml = aloha.xhtml;
+	var tested = [];
 
-	module('Editing');
+	module('editing');
 
 	function switchElemTextSelection(html) {
 		return html.replace(/[\{\}\[\]]/g, function (match) {
@@ -125,6 +126,7 @@
 	var t = function (htmlWithBoundaryMarkers) {
 		testInsertExtractBoundaryMarkers('extractBoundaryMarkers,insertBoundaryMarkers', htmlWithBoundaryMarkers);
 	};
+
 	t('<p>{Some text.}</p>');
 	t('<p>Some{ }text.</p>');
 	t('<p>{}Some text.</p>');
@@ -138,6 +140,7 @@
 	var t = function (before, after) {
 		testTrimRange('ranges.trim()', before, after);
 	};
+
 	t('<p>So[me te]xt.</p>', '<p>So[me te]xt.</p>');
 	t('<p>So[]xt.</p>', '<p>So[]xt.</p>');
 	t('<p>{Some text.}</p>', '<p>{Some text.}</p>');
@@ -163,6 +166,8 @@
 	var t = function (title, before, after) {
 		testWrap('editing.wrap -' + title, before, after);
 	};
+
+	tested.push('wrap');
 
 	t('noop1', '<p><b>[Some text.]</b></p>', '<p><b>{Some text.}</b></p>');
 	t('noop2', '<p>{<b>Some text.</b>}</p>', '<p>{<b>Some text.</b>}</p>');
@@ -320,6 +325,8 @@
 		});
 	};
 
+	tested.push('split');
+
 	t('split cac',
 	  '<div><p><b>one</b>{<i>two</i><i>three</i>}<b>four</b></p></div>',
 	  '<div><p><b>one</b></p>{<p><i>two</i><i>three</i></p>}<p><b>four</b></p></div>');
@@ -417,6 +424,8 @@
 	t = function (title, before, after) {
 		testFormat(title, before, after, 'font-family', 'arial');
 	};
+
+	tested.push('format');
 
 	t('format some text',
 	  '<p>Some [text]</p>',
@@ -657,4 +666,8 @@
 	  '<ul>{<li><ins>Some</ins> <del>text</del></li>}</ul>',
 	  '<ul>{<li><b><ins>Some</ins> <del>text</del></b></li>}</ul>',
 	  true);
+
+	test('COVERAGE', function () {
+		testCoverage(equal, tested, editing);
+	});
 }(window.aloha));

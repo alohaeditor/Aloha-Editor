@@ -32,22 +32,22 @@ define([
 	 * @type {Object}
 	 */
 	var IN_WORD_TAGS = {
-		A       : true,
-		ABBR    : true,
-		B       : true,
-		CITE    : true,
-		CODE    : true,
-		DEL     : true,
-		EM      : true,
-		I       : true,
-		INS     : true,
-		S       : true,
-		SMALL   : true,
-		SPAN    : true,
-		STRONG  : true,
-		SUB     : true,
-		SUP     : true,
-		U       : true,
+		'A'       : true,
+		'ABBR'    : true,
+		'B'       : true,
+		'CITE'    : true,
+		'CODE'    : true,
+		'DEL'     : true,
+		'EM'      : true,
+		'I'       : true,
+		'INS'     : true,
+		'S'       : true,
+		'SMALL'   : true,
+		'SPAN'    : true,
+		'STRONG'  : true,
+		'SUB'     : true,
+		'SUP'     : true,
+		'U'       : true,
 		'#text' : true
 	};
 
@@ -201,7 +201,7 @@ define([
 				offset: offset
 			};
 		}
-		if (dom.Nodes['TEXT'] === node.nodeType) {
+		if (dom.Nodes.TEXT === node.nodeType) {
 			var boundary = node.data.substr(0, offset)
 			                   .search(WORD_BOUNDARY_FROM_END);
 			return (
@@ -216,7 +216,7 @@ define([
 					}
 			);
 		}
-		if (dom.Nodes['ELEMENT'] === node.nodeType) {
+		if (dom.Nodes.ELEMENT === node.nodeType) {
 			if (offset > 0) {
 				var child = node.childNodes[offset - 1];
 				return (
@@ -252,7 +252,7 @@ define([
 				offset: offset
 			};
 		}
-		if (dom.Nodes['TEXT'] === node.nodeType) {
+		if (dom.Nodes.TEXT === node.nodeType) {
 			var boundary = node.data.substr(offset).search(WORD_BOUNDARY);
 			return (
 				-1 === boundary
@@ -266,7 +266,7 @@ define([
 					}
 			);
 		}
-		if (dom.Nodes['ELEMENT'] === node.nodeType) {
+		if (dom.Nodes.ELEMENT === node.nodeType) {
 			if (offset < dom.nodeLength(node)) {
 				return (
 					IN_WORD_TAGS[node.childNodes[offset].nodeName]
@@ -349,7 +349,7 @@ define([
 	 */
 	function prevWhile(node, cond, arg) {
 		while (node && cond(node, arg)) {
-			node = node.prevSibling;
+			node = node.previousSibling;
 		}
 		return node;
 	}
@@ -400,7 +400,7 @@ define([
 	 * Depth-first postwalk of the given DOM node.
 	 */
 	function walkRec(node, func, arg) {
-		if (dom.Nodes['ELEMENT'] === node.nodeType) {
+		if (dom.Nodes.ELEMENT === node.nodeType) {
 			walk(node.firstChild, function (node) {
 				walkRec(node, func, arg);
 			});
