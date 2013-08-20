@@ -39,8 +39,8 @@
 			} else {
 				var functions = getFunctionsInNamespace(module);
 				equal(
-					functions.length,
-					aloha.arrays.intersect(functions, tested).length
+					aloha.arrays.intersect(functions, tested).length,
+					functions.length
 				);
 			}
 		}
@@ -52,6 +52,7 @@
 				'dom-tests',
 				'editing-tests',
 				'functions-tests',
+				'html-tests',
 				'maps-tests',
 				'strings-tests',
 				'traversing-tests'

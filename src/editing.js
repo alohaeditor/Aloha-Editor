@@ -731,7 +731,7 @@ define([
 		// are inside an editable, we shouldn't make modifications
 		// outside of it (if we are not inside an editable, we don't
 		// care).
-		return 'BODY' === node.nodeName || html.hasBlockStyle(node) || html.isEditingHost(node);
+		return 'BODY' === node.nodeName || html.hasBlockStyle(node) || dom.isEditingHost(node);
 	}
 
 	function isStyleEqual_default(styleValueA, styleValueB) {
@@ -1179,7 +1179,7 @@ define([
 		opts = maps.merge({
 			clone: dom.cloneShallow,
 			until: fn.returnFalse,
-			below: html.isEditingHost,
+			below: dom.isEditingHost,
 			normalizeRange: true
 		}, opts);
 

@@ -6,11 +6,9 @@
  */
 define([
 	'dom',
-	'html',
 	'functions'
 ], function Traversing(
 	dom,
-	html,
 	fn
 ) {
 	'use strict';
@@ -195,7 +193,7 @@ define([
 	 * @return position.offset
 	 */
 	function findWordBoundaryBehind(node, offset) {
-		if (html.isEditingHost(node)) {
+		if (dom.isEditingHost(node)) {
 			return {
 				node: node,
 				offset: offset
@@ -246,7 +244,7 @@ define([
 	 * @return position.offset
 	 */
 	function findWordBoundaryAhead(node, offset) {
-		if (html.isEditingHost(node)) {
+		if (dom.isEditingHost(node)) {
 			return {
 				node: node,
 				offset: offset

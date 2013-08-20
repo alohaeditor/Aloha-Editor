@@ -1099,9 +1099,15 @@ define([
 	}
 
 	/**
-	 * Checks if the given element is an editing host.
-	 * @param {DOMObject} Node
+	 * Checks whether the given node is content editable.  An editing host is a
+	 * node that is either an Element with a contenteditable attribute set to
+	 * the true state, or the Element child of a Document whose designMode is
+	 * enabled.
+	 *
+	 *
+	 * @param {DOMObject} node
 	 * @return {Boolean}
+	 *         True if `node` is content editable.
 	 */
 	function isEditingHost(node) {
 		return !!(node

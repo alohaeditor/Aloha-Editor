@@ -131,7 +131,7 @@ define([
 	 *         is rendered.
 	 */
 	function isBlockType(node) {
-		return BLOCK_LEVEL_ELEMENTS[node.nodeName];
+		return !!BLOCK_LEVEL_ELEMENTS[node.nodeName];
 	}
 
 	/**
@@ -145,23 +145,6 @@ define([
 	 */
 	function isInlineType(node) {
 		return !isBlockType(node);
-	}
-
-	/**
-	 * Checks whether the given node is content editable.  An editing host is a
-	 * node that is either an Element with a contenteditable attribute set to
-	 * the true state, or the Element child of a Document whose designMode is
-	 * enabled.
-	 *
-	 * The check for design mode was removed because we only care about
-	 * contenteditable in Aloha.
-	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 *         True if `node` is content editable.
-	 */
-	function isEditingHost(node) {
-		return 1 === node.nodeType && 'true' === node.contentEditable;
 	}
 
 	/**
@@ -200,9 +183,12 @@ define([
 		if (nonWhitespaceRx.test(node.nodeValue)) {
 			return false;
 		}
-        var cssWhiteSpace = dom.getComputedStyle(node.parentNode, 'white-space');
-		if (isWhiteSpacePreserveStyle(cssWhiteSpace)) {
-			return false;
+		var cssWhiteSpace;
+		if (node.parentNode) {
+			cssWhiteSpace = dom.getComputedStyle(node.parentNode, 'white-space');
+			if (isWhiteSpacePreserveStyle(cssWhiteSpace)) {
+				return false;
+			}
 		}
 		if ('pre-line' === cssWhiteSpace) {
             if (/[\r\n]/.test(node.data)) {
@@ -421,12 +407,10 @@ define([
 		hasBlockStyle: hasBlockStyle,
 		hasInlineStyle: hasInlineStyle,
 		isUnrenderedWhitespace: isUnrenderedWhitespace,
-		isWhiteSpacePreserveStyle: isWhiteSpacePreserveStyle,
 		skipUnrenderedToStartOfLine: skipUnrenderedToStartOfLine,
 		skipUnrenderedToEndOfLine: skipUnrenderedToEndOfLine,
 		normalizeBoundary: normalizeBoundary,
-		isEmpty: isEmpty,
-		isEditingHost: isEditingHost
+		isEmpty: isEmpty
 	};
 
 	exports['isControlCharacter'] = exports.isControlCharacter;
@@ -436,12 +420,10 @@ define([
 	exports['hasBlockStyle'] = exports.hasBlockStyle;
 	exports['hasInlineStyle'] = exports.hasInlineStyle;
 	exports['isUnrenderedWhitespace'] = exports.isUnrenderedWhitespace;
-	exports['isWhiteSpacePreserveStyle'] = exports.isWhiteSpacePreserveStyle;
 	exports['skipUnrenderedToStartOfLine'] = exports.skipUnrenderedToStartOfLine;
 	exports['skipUnrenderedToEndOfLine'] = exports.skipUnrenderedToEndOfLine;
 	exports['normalizeBoundary'] = exports.normalizeBoundary;
 	exports['isEmpty'] = exports.isEmpty;
-	exports['isEditingHost'] = exports.isEditingHost;
 
 	return exports;
 });
