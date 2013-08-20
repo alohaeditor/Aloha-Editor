@@ -36,7 +36,7 @@ define([], function Maps() {
 	 *        The given map will have one entry added for each given key.
 	 * @param {Array[String]} keys
 	 *        An array of string keys. JavaScript maps can only contain string
-	 *        keys, so these must be strings or or they will be cast to string.
+	 *        keys, so these must be strings or they will be cast to string.
 	 * @param {String} value
 	 *        A single value that each given key will map to.
 	 * @return {Object}
