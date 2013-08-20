@@ -401,7 +401,7 @@ define([
 	}
 
 	function wrap(node, wrapper, leftPoint, rightPoint) {
-		if (!content.allowsNesting(wrapper, node)) {
+		if (!content.allowsNesting(wrapper.nodeName, node.nodeName)) {
 			return false;
 		}
 		if (wrapper.parentNode) {

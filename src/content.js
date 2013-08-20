@@ -130,7 +130,7 @@ define([], function Content() {
 		'HGROUP'     : HGROUP_CHILDREN,
 		'HR'         : '_EMPTY_',
 		'I'          : '_PHRASING_',
-		'IFRAME'     : '#text',
+		'IFRAME'     : '#TEXT',
 		'IMG'        : '_EMPTY_',
 		'INPUT'      : '_EMPTY_',
 		'INS'        : '_PHRASING_', // transparent
@@ -150,7 +150,7 @@ define([], function Content() {
 		'OBJECT'     : 'PARAM', // transparent
 		'OL'         : 'LI',
 		'OPTGROUP'   : 'OPTION',
-		'OPTION'     : '#text',
+		'OPTION'     : '#TEXT',
 		'OUTPUT'     : '_PHRASING_',
 		'P'          : '_PHRASING_',
 		'PARAM'      : '_EMPTY_',
@@ -176,12 +176,12 @@ define([], function Content() {
 		'TABLE'      : TABLE_CHILDREN,
 		'TBODY'      : 'TR',
 		'TD'         : '_FLOW_',
-		'TEXTAREA'   : '#text',
+		'TEXTAREA'   : '#TEXT',
 		'TFOOT'      : 'TR',
 		'TH'         : '_PHRASING_',
 		'THEAD'      : 'TR',
 		'TIME'       : '_PHRASING_',
-		'TITLE'      : '#text',
+		'TITLE'      : '#TEXT',
 		'TR'         : TR_CHILDREN,
 		'TRACK'      : '_EMPTY_',
 		'U'          : '_PHRASING_',
@@ -490,43 +490,46 @@ define([], function Content() {
 			'_INTERACTIVE_'     : true
 		},
 		'WBR'        : FLOW_PHRASING_CATEGORY,
-		'#text'    : FLOW_PHRASING_CATEGORY
+		'#TEXT'      : FLOW_PHRASING_CATEGORY
 	};
 
 	/**
-	 * Checks wether the DOM node `outer` is allowed to contain `inner` as a
-	 * direct descendant based on the HTML5 specification.
+	 * Checks whether the node name `outer` is allowed to contain in a node with
+	 * the node name `inner` as a direct descendant based on the HTML5
+	 * specification.
 	 *
 	 * Reference:
 	 * http://www.w3.org/html/wg/drafts/html/master/index.html#elements-1
 	 * http://www.whatwg.org/specs/web-apps/current-work/#elements-1
 	 *
-	 * @param {DOMObject} outer
+	 * @param {String} outer
 	 *        The node which would contain the other.
-	 * @param {DOMObject} inner
+	 * @param {String} inner
 	 *        The node to be nested a child of `outer`.
 	 * @return {Boolean}
 	 *        True if `inner` is allowed a direct child of `outer`.
 	 */
 	function allowsNesting(outer, inner) {
 		var categories;
-		var allowed = ALLOWED_CHILDREN[outer.nodeName];
+		outer = outer.toUpperCase();
+		inner = inner.toUpperCase();
+		var allowed = ALLOWED_CHILDREN[outer];
 		if (!allowed) {
 			return false;
 		}
 		if ('string' === typeof allowed) {
-			if (allowed === inner.nodeName) {
+			if (allowed === inner) {
 				return true;
 			}
-			categories = CONTENT_CATEGORIES[inner.nodeName];
+			categories = CONTENT_CATEGORIES[inner];
 			if (categories && categories[allowed]) {
 				return true;
 			}
 		} else {
-			if (allowed[inner.nodeName]) {
+			if (allowed[inner]) {
 				return true;
 			}
-			categories = CONTENT_CATEGORIES[inner.nodeName];
+			categories = CONTENT_CATEGORIES[inner];
 			var category;
 			for (category in categories) {
 				if (categories.hasOwnProperty(category)) {
