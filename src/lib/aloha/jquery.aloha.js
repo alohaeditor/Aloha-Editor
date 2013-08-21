@@ -198,6 +198,13 @@ define([
 			callback(event);
 		});
 
+		// Because mobile devices don't report the click event in an
+		// editable the same way as desktop browsers do. NB the touched
+		// event will not be triggered when a user uses the "Select" or
+		// "Select All" buttons above the cursor, to handle those, we
+		// also update the selection in an interval.
+		this.bind('touchend.contentEditableSelectionChange', callback);
+
 		// update selection when text is selected
 		this.mousedown(function (event) {
 			// remember that a selection was started
