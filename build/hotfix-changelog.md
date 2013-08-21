@@ -30,3 +30,5 @@ overwritten by custom background images.
               of the anchor cell of the virtual cell selection.
 - **BUGFIX**: table plugin: Merging cell is now fixed to work correctly, after a
               previous fix introduced a bug through circular dependency.
+- **BUGFIX**:      repositorybrowser: Fix i18n of repository browser again to use the language configured in Aloha.settings.locale
+                   This fix should now also work in the built version of alohaeditor
