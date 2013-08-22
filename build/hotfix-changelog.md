@@ -30,3 +30,6 @@ overwritten by custom background images.
               of the anchor cell of the virtual cell selection.
 - **BUGFIX**: table plugin: Merging cell is now fixed to work correctly, after a
               previous fix introduced a bug through circular dependency.
+- **BUGFIX**: utilities: Pressing backspace in a text node in a paragraph
+			  adjacent to a table will now correctly delete the character to the
+			  left of the cursor rather than jumping into the table.
