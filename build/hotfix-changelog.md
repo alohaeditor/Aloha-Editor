@@ -33,3 +33,5 @@ overwritten by custom background images.
 - **BUGFIX**: utilities: Pressing backspace in a text node in a paragraph
 			  adjacent to a table will now correctly delete the character to the
 			  left of the cursor rather than jumping into the table.
+- **BUGFIX**: table plugin: Merging table cells in IE8 will no longer result in
+              the contents of merged cells from being lost.
