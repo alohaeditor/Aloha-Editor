@@ -141,12 +141,12 @@ define([
 	var wspChars = WHITE_SPACE_CHARACTERS_UNICODES.join('');
 
 	/**
-	 * Regular expression that matches one or more sequences of white space
-	 * characters.
+	 * Regular expression that checks whether a string consists only of one or
+	 * more white space characters.
 	 *
 	 * @type {RegExp}
 	 */
-	var WSP_CHARACTERS = new RegExp('[' + wspChars + ']+');
+	var WSP_CHARACTERS = new RegExp('^[' + wspChars + ']+$');
 	var WSP_CHARACTERS_LEFT = new RegExp('^[' + wspChars + ']+');
 	var WSP_CHARACTERS_RIGHT = new RegExp('[' + wspChars + ']+$');
 

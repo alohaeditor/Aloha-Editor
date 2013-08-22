@@ -35,4 +35,3 @@ overwritten by custom background images.
 			  left of the cursor rather than jumping into the table.
 - **BUGFIX**: table plugin: Merging table cells in IE8 will no longer result in
               the contents of merged cells from being lost.
-
