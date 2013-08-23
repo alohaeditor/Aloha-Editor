@@ -226,6 +226,9 @@ define([
 		// it really changed.
 		var prevRange = null;
 		function checkSelectionChange() {
+			if (!Aloha.activeEditable) {
+				return;
+			}
 			var selection = Aloha.getSelection();
 			if (!selection.getRangeCount()) {
 				if (null != prevRange) {
@@ -236,7 +239,11 @@ define([
 				var range = selection.getRangeAt(0);
 				if (null == prevRange || !Dom.areRangesEq(range, prevRange)) {
 					prevRange = range;
-					Selection.onChange();
+					var editableElem = Aloha.activeEditable.obj[0];
+					if (Dom.contains(editableElem, range.startContainer)
+					        || editableElem === range.startContainer) {
+						Selection.onChange();
+					}
 				}
 			}
 		}
