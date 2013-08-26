@@ -393,7 +393,8 @@ define([
 	 */
 	function pruneElem(elem, emap) {
 		var className = elem.className;
-		if (className && -1 !== className.indexOf(commonClsSubstr)) {
+		// Because for SVG elements, elem.className may be an object.
+		if ('string' === typeof className && -1 !== className.indexOf(commonClsSubstr)) {
 			var classes = Strings.words(className);
 
 			// Ephemera.markElement()

@@ -60,3 +60,5 @@ All changes are categorized into one of the following keywords:
 	accessed as a getter.
 
 - **BUGFIX**: selection: modified to allow nested tables
+
+- **BUGFIX**: ephemera: javascript error when an editable contains SVG elements
