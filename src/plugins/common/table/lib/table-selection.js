@@ -18,7 +18,8 @@ define([
 	 */
 	var TableSelection = function (table) {
 		this.table = table;
-	},
+	};
+
 	/**
 	 * Returns if a content parameter is a content that be added in a 
 	 * merge cell from the cells selecteds.
@@ -28,21 +29,20 @@ define([
 	 * 
 	 * @return {Boolean}
 	 */
-	isMergeableContent = function( content ){
-		return (
-			('string' === typeof(content) && "" !== $.trim(content)) ||
-			(
-				content.nodeType && 
-				( 
-					(
-						content.nodeType === document.TEXT_NODE &&
-						"" !== $.trim(content.data)
-					) || 
-					content.nodeType === document.ELEMENT_NODE 
+	function isMergeableContent(content) {
+		return ((
+				'string' === typeof(content) && '' !== $.trim(content)
+			) || (
+				content.nodeType
+				&& (
+					3 === content.nodeType
+					&&
+					'' !== $.trim(content.data)
+				) || (
+					1 === content.nodeType
 				)
-			)
-		);
-	};
+			));
+	}
 
 	/**
 	 * Gives the type of the cell-selection
