@@ -3,7 +3,7 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.23.18-commercial-SNAPSHOT</version>
+	<version>0.23.18-commercial</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
