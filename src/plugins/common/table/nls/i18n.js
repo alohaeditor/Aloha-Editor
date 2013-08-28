@@ -14,7 +14,6 @@ define({
 		"button.addrowafter.tooltip": "Add Row after",
 		"button.delrows.tooltip": "Delete Rows",
 		"button.caption.tooltip": "Table caption",
-		"button.naturalfit.tooltip": "Reset table sizing",
 		"empty.caption": "Table caption",
 		"button.removeFormat.tooltip": "Remove formatting",
 		"button.removeFormat.text": "Remove formatting",
@@ -29,10 +28,15 @@ define({
 		"table.createTable.nestedTablesNoSupported": "Sorry, nested tables are not supported"
 	},
 		"ca": true,
+		"cs": true,
+		"da": true,
 		"de": true,
+		"it": true,
 		"mk": true,
+		"nl": true,
 		"pt-br": true,
 		"ru": true,
+		"sk": true,
 		"uk": true,
 		"zh-hans": true
 });

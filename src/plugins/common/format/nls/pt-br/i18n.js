@@ -48,5 +48,5 @@ define({
 	"formatSup": "Ctrl+.",
 	"floatingmenu.tab.format": "Formatação",
 	"format.class.legend": "Classe CSS",
-	"format.class.none": "none"
+	"format.class.none": "Nada"
 });

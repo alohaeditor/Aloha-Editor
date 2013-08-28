@@ -1,3 +1,3 @@
 define({
-	"button.toggledragdrop.tooltip": "Alternar Drag & Drop"
+	"button.toggledragdrop.tooltip": "Alternar \"Arrastar & Soltar\""
 });

@@ -1,5 +1,3 @@
 define({
-	"headerids.label.target": "Objectiu",
-	"headerids.button.reset": "Restableix",
-	"headerids.button.set": "Estableix"
+	"button.numeratedHeaders.tooltip": "Activa/desactiva la numeració dels encapçalaments"
 });

@@ -56,10 +56,10 @@ if (!empty($argv[1]) && !array_key_exists(trim($argv[1]), $all_translations)) {
 if (count($export_translation) == 1) {
 	//$exportUrl = 'http://mygengo.com/string/p/aloha-editor-1/export/language/' . $export_translation[0] . '/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067';
 	// @todo needs fix (we need en to write the master file...)
-	$exportUrl = 'http://mygengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067';
+	$exportUrl = 'http://gengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067';
 	//$export_translation[] = 'en';
 } else {
-	$exportUrl = 'http://mygengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067';
+	$exportUrl = 'http://gengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6103bd494c279d3e3711a0ec1bee5ea3a4100ff78655bb5b02067';
 }
 
 

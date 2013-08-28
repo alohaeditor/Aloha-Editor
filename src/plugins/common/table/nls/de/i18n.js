@@ -13,7 +13,6 @@ define({
 	"button.addrowafter.tooltip": "Zeile darunter einfügen",
 	"button.delrows.tooltip": "Zeilen löschen",
 	"button.caption.tooltip": "Tabellen Bezeichnung",
-	"button.naturalfit.tooltip": "Spaltengrößen zurücksetzen",
 	"empty.caption": "Tabellen Bezeichnung",
 	"button.removeFormat.tooltip": "Formatierung entfernen",
 	"button.removeFormat.text": "Formatierung entfernen",
