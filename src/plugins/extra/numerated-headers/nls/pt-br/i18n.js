@@ -1,5 +1,3 @@
 define({
-	"headerids.label.target": "Alvo",
-	"headerids.button.reset": "Resetar",
-	"headerids.button.set": "Colocar"
+	"button.numeratedHeaders.tooltip": "Alternar numeração do cabeçalho"
 });

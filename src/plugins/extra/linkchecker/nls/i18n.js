@@ -28,10 +28,15 @@ define({
 		"error.505": "HTTP Version Not Supported. The server does not support the HTTP protocol version used in the request."
 	},
 		"ca": true,
+		"cs": true,
+		"da": true,
 		"de": true,
+		"it": true,
 		"mk": true,
+		"nl": true,
 		"pt-br": true,
 		"ru": true,
+		"sk": true,
 		"uk": true,
 		"zh-hans": true
 });

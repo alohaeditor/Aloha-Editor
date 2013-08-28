@@ -5,8 +5,6 @@ define({
 	"button.subscript.label": "Subscrito",
 	"button.superscript.label": "Sobrescrito",
 	"button.underline.label": "Sublinhado",
-	"button.yes.label": "Sim",
-	"button.no.label": "Não",
 	"button.p.label": "Parágrafo",
 	"button.h1.label": "Cabeçalho 1",
 	"button.h2.label": "Cabeçalho 2",
