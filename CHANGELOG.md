@@ -12,15 +12,21 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.18 - 2013/08/28
+
+- **BUGFIX**: table plugin: Merging table cells in IE8 will no longer result in
+                            the contents of merged cells from being lost.
+- **BUGFIX**: utilities: Pressing backspace in a text node in a paragraph
+                         adjacent to a table will now correctly delete the character to the
+                         left of the cursor rather than jumping into the table.
+
 ## 0.23.17 - 2013/08/14
 
 - **BUGFIX**:	   table plugin: Merging cell is now fixed to work correctly, after a
-	           previous fix introduced a bug through circular dependency.
+                 previous fix introduced a bug through circular dependency.
 
 ## 0.23.16 - 2013/08/14
 
-- **FEATURE**:     autoparagraph-plugin: The Autoparagraph Plugin checks the contents of editables
-                   and wraps content that is not contained in block level elements into paragraphs.
 - **BUGFIX**:      table-plugin: The table plugin will now not lose the drag handles any more, when getContents()
                    is called for the editable (which is done on smart content change)
 - **BUGFIX**:      cite-plugin: Several issues with the citation plugin have been fixed: Pressing backspace in a 
@@ -111,7 +117,7 @@ All changes are categorized into one of the following keywords:
               after content was pasted.
 
 - **BUGFIX**: paste-plugin: There are no more discrepancies between browsers
-			  when pasting plain text.
+              when pasting plain text.
 
 - **BUGFIX**: Adding blocks and tables will no longer results in empty paragraphs
               being littered before the inserted element.
@@ -214,7 +220,6 @@ All changes are categorized into one of the following keywords:
 
 ## 0.23.3 - 2013/03/22
 
->>>>>>> 9bfaafe32921dd447fb08da973a1b92054f9a927
 - **BUGFIX**: No longer automatically append &lt;br&gt; elements to block-level
 	elements unless they are empty.
 - **BUGFIX**: DOM-to-XHTML plugin: Fixed handling of closing angle brackets,
