@@ -35,3 +35,6 @@ overwritten by custom background images.
 			  left of the cursor rather than jumping into the table.
 - **BUGFIX**: table plugin: Merging table cells in IE8 will no longer result in
               the contents of merged cells from being lost.
+- **BUGFIX**: table plugin: Pressing the tab key when the selection is in the
+			  last cell of a table will correctly place the cursor in the first
+			  cell of the newly created row.

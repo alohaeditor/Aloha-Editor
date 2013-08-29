@@ -485,23 +485,12 @@ define([
 	 */
 	TableCell.prototype._editableKeyDown = function (jqEvent) {
 		var KEYCODE_TAB = 9;
-
 		this._checkForEmptyEvent(jqEvent);
-
-		if ( this.obj[0] === this.tableObj.obj.find('tr:last td:last')[0] ) {
-			// only add a row on a single key-press of tab (so check
-			// that alt-, shift- or ctrl-key are NOT pressed)
+		if (this.obj[0] === this.tableObj.obj.find('tr:last td:last')[0]) {
+			// only add a row on a single key-press of tab (so check that alt-,
+			// shift- or ctrl-key are NOT pressed)
 			if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey) {
-				// add a row after the current row
 				this.tableObj.addRow(this.obj.parent().index() + 1);
-
-				// firefox needs this for the first cell of the new row
-				// to be selected (.focus() doesn't work reliably in
-				// IE7)
-				this.tableObj.cells[this.tableObj.cells.length - 1]._selectAll(this.wrapper.get(0));
-
-				jqEvent.stopPropagation();
-				return;
 			}
 		}
 	};
