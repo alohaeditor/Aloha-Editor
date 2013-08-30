@@ -441,7 +441,7 @@ define([
 	}
 
 	/**
-	 * Insert the given text at the given range.
+	 * Insert the given text to the left of the given range.
 	 *
 	 * @param {Range} range
 	 * @param {String} text
@@ -508,6 +508,16 @@ define([
 		);
 	}
 
+	function collapseAtStart(range) {
+		range.setEnd(range.startContainer, range.startOffset);
+		return range;
+	}
+
+	function collapseAtEnd(range) {
+		range.setStart(range.endContainer, range.endOffset);
+		return range;
+	}
+
 	/**
 	 * Functions to work with browser ranges.
 	 *
@@ -528,6 +538,7 @@ define([
 	 * ranges.trimBoundaries()
 	 * ranges.trimClosingOpening()
 	 * ranges.getNearestEditingHost()
+	 * ranges.collapseRight()
 	 */
 	var exports = {
 		collapseToEnd: collapseToEnd,
@@ -546,7 +557,9 @@ define([
 		trim: trim,
 		trimBoundaries: trimBoundaries,
 		trimClosingOpening: trimClosingOpening,
-		getNearestEditingHost: getNearestEditingHost
+		getNearestEditingHost: getNearestEditingHost,
+		collapseAtStart: collapseAtStart,
+		collapseAtEnd: collapseAtEnd
 	};
 
 	exports['collapseToEnd'] = exports.collapseToEnd;
@@ -566,6 +579,8 @@ define([
 	exports['trimBoundaries'] = exports.trimBoundaries;
 	exports['trimClosingOpening'] = exports.trimClosingOpening;
 	exports['getNearestEditingHost'] = exports.getNearestEditingHost;
+	exports['collapseAtStart'] = exports.collapseAtStart;
+	exports['collapseAtEnd'] = exports.collapseAtEnd;
 
 	return exports;
 });

@@ -60,21 +60,28 @@
 					var h1 = document.getElementsByTagName('h1')[0];
 					h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
 				}
-				function main(aloha) {
-					var range = aloha.ranges.create(
+				function main(ranges, editing) {
+					var range = ranges.create(
 						document.getElementsByTagName('b')[0], 1,
 						document.getElementsByTagName('b')[0], 2
 					);
-					aloha.ranges.select(aloha.ranges.extendToWord(range));
-					range = aloha.ranges.get();
-					aloha.editing.wrap(range, 'u');
-					aloha.ranges.select(range);
+					ranges.select(ranges.extendToWord(range));
+					range = ranges.get();
+					editing.wrap(range, 'u');
+					ranges.insertText(ranges.stableRange(range), '{');
+					ranges.collapseAtEnd(range)
+					ranges.insertText(range, '}');
+					ranges.collapseAtEnd(range);
+					ranges.select(range);
+				}
+				function load(aloha) {
+					main(aloha.ranges, aloha.editing);
 				}
 				if ('undefined' === typeof aloha) {
-					require(['../src/aloha'], main);
+					require(['../src/aloha'], load);
 					setVersion('src');
 				} else {
-					main(aloha);
+					main(load)
 					setVersion('build');
 				}
 			}());
