@@ -73,13 +73,6 @@
 					ranges.insertText(range, '}');
 					ranges.collapseAtEnd(range);
 					ranges.select(range);
-
-					aloha.keys.on('enter', function (data) {
-						var range = data.range;
-						ranges.insertText(range, '¶');
-						ranges.collapseAtEnd(range);
-						ranges.select(range);
-					});
 				}
 				function load(aloha) {
 					main(aloha.ranges, aloha.editing, aloha.pubsub);

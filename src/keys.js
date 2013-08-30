@@ -19,14 +19,24 @@ define([
 		eval(uate)('keys');
 	}
 
+	/**
+	 * A map of key names to their keycode.
+	 *
+	 * @type {object<string, number>}
+	 */
 	var IDENTIFIERS = {
-		'tab'   : 9,
-		'enter' : 13,
-		'shift' : 16,
-		'contr' : 17,
-		'space' : 32
+		'tab'     : 9,
+		'enter'   : 13,
+		'shift'   : 16,
+		'control' : 17,
+		'space'   : 32
 	};
 
+	/**
+	 * Publishes messages on the keydown event. 
+	 *
+	 * @param {Event} event
+	 */
 	function onKeyDownOnDocument(event) {
 		var message = {
 			event: event,
@@ -34,44 +44,55 @@ define([
 			range: ranges.get()
 		};
 		pubsub.publish('aloha.key.down', message);
-		pubsub.publish('aloha.key.' + event.keyCode, message);
+		pubsub.publish('aloha.key.down.' + event.keyCode, message);
 	}
 
+	/**
+	 * Publishes messages on the keyup event. 
+	 *
+	 * @param {Event} event
+	 */
 	function onKeyUpOnDocument(event) {
-		pubsub.publish('aloha.key.up', {
+		var message = {
 			event: event,
 			code: event.keyCode,
 			range: ranges.get()
-		});
+		};
+		pubsub.publish('aloha.key.up', message);
+		pubsub.publish('aloha.key.up.' + event.keyCode, message);
 	}
 
 	events.add(document, 'keydown', onKeyDownOnDocument);
 	events.add(document, 'keyup', onKeyUpOnDocument);
 
-	function keydown(callback) {
-		pubsub.subscribe('aloha.key.down', callback);
+	/**
+	 * Publishes messages on the keyup event. 
+	 *
+	 * @param {Function(object)} callback
+	 */
+	function down(code, callback) {
+		pubsub.subscribe('aloha.key.down.' + (IDENTIFIERS[code] || code), callback);
 	}
 
-	function keyup(callback) {
-		pubsub.subscribe('aloha.key.up', callback);
-	}
-
-	function on(code, callback) {
-		pubsub.subscribe('aloha.key.' + (IDENTIFIERS[code] || code), callback);
+	/**
+	 * Publishes messages on the keydown event. 
+	 *
+	 * @param {Function(object)} callback
+	 */
+	function up(code, callback) {
+		pubsub.subscribe('aloha.key.up.' + (IDENTIFIERS[code] || code), callback);
 	}
 
 	/**
 	 * Functions for working with key events.
 	 */
 	var exports = {
-		on      : on,
-		keyup   : keyup,
-		keydown : keydown,
+		up   : up,
+		down : down,
 	};
 
-	exports['on']      = exports.on;
-	exports['keyup']   = exports.keyup;
-	exports['keydown'] = exports.keydown;
+	exports['up']   = exports.up;
+	exports['down'] = exports.down;
 
 	return exports;
 });
