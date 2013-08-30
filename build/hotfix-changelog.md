@@ -8,6 +8,3 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUGFIX**: table plugin: Pressing the tab key when the selection is in the
-			  last cell of a table will correctly place the cursor in the first
-			  cell of the newly created row.

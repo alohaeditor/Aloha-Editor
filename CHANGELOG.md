@@ -12,6 +12,12 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.19 - 2013/08/30
+
+- **BUGFIX**: table plugin: Pressing the tab key when the selection is in the
+                          last cell of a table will correctly place the cursor in the first
+                          cell of the newly created row.
+
 ## 0.23.18 - 2013/08/28
 
 - **BUGFIX**: table plugin: Merging table cells in IE8 will no longer result in
