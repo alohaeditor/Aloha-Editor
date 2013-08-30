@@ -74,8 +74,9 @@
 					ranges.collapseAtEnd(range);
 					ranges.select(range);
 
-					pubsub.subscribe('aloha.key.down', function (data) {
-						console.warn(data);
+					aloha.keys.on('enter', function (data) {
+						var range = data.range;
+						console.warn(range);
 					});
 				}
 				function load(aloha) {
