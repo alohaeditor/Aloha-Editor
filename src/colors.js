@@ -92,6 +92,13 @@ define([
 		);
 	}
 
+	/**
+	 * Gets the style of the start container of the given range.
+	 *
+	 * @param {Range} range
+	 * @param {String} property
+	 * @return {String} Style value
+	 */
 	function getStyle(range, property) {
 		var node = dom.nodeAtOffset(range.startContainer, range.startOffset);
 		return dom.getComputedStyle(

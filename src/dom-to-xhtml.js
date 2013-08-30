@@ -20,7 +20,7 @@ define([
 	}
 
 	/**
-	 * Elements that are to be serialized like <img /> and not like <img></img>
+	 * Elements that are to be serialized like <img /> and not like <img></img>.
 	 */
 	var emptyElements = {
 		'area'     : true,

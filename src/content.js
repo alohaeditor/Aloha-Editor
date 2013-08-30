@@ -192,22 +192,22 @@ define([], function Content() {
 	};
 
 	var FLOW_PHRASING_CATEGORY = {
-		'_FLOW_'        : true,
-		'_PHRASING_'    : true
+		'_FLOW_'     : true,
+		'_PHRASING_' : true
 	};
 
 	var FLOW_SECTIONING_CATEGORY = {
-		'_FLOW_'        : true,
-		'_PHRASING_'    : true
+		'_FLOW_'     : true,
+		'_PHRASING_' : true
 	};
 
 	var FLOW_HEADING_CATEGORY = {
-		'_FLOW_'            : true,
-		'_HEADER_'          : true
+		'_FLOW_'     : true,
+		'_HEADER_'   : true
 	};
 
 	var FLOW_CATEGORY = {
-		'_FLOW_'            : true
+		'_FLOW_'     : true
 	};
 
 	var CONTENT_CATEGORIES = {
@@ -262,7 +262,7 @@ define([], function Content() {
 		'CODE'       : FLOW_PHRASING_CATEGORY,
 		'COL'        : {},
 		'COLGROUP'   : {},
-		'COMMAND'    : {},      // ?
+		'COMMAND'    : {}, // ?
 		'DATALIST'   : FLOW_PHRASING_CATEGORY,
 		'DD'         : {},
 		'DEL'        : FLOW_PHRASING_CATEGORY,

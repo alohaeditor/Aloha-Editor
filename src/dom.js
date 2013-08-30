@@ -192,9 +192,9 @@ define([
 	 * @param {DOMObject} elem
 	 *        An element to get the attributes for.
 	 * @return {Array[String]}
-	 *        An array containing [name, value] tuples for each attribute.
-	 *        Attribute values will always be strings, but possibly empty
-	 *        strings.
+	 *         An array containing [name, value] tuples for each attribute.
+	 *         Attribute values will always be strings, but possibly empty
+	 *         strings.
 	 */
 	function attrs(elem) {
 		var as = [];
@@ -316,11 +316,11 @@ define([
 	 * @param {Object} classMap
 	 *        A map from class name to boolean true.
 	 * @return {Object}
-	 *        A map from class name to an array of elements with that class.
-	 *        Every entry in classMap for which elements have been found
-	 *        will have a corresponding entry in the returned
-	 *        map. Entries for which no elements have been found, may or
-	 *        may not have an entry in the returned map.
+	 *         A map from class name to an array of elements with that class.
+	 *         Every entry in classMap for which elements have been found will
+	 *         have a corresponding entry in the returned map.  Entries for
+	 *         which no elements have been found, may or may not have an entry
+	 *         in the returned map.
 	 */
 	function indexByClass(root, classMap) {
 		return indexByClassHaveList(
@@ -364,13 +364,13 @@ define([
 	 *        An array of element names to look for.
 	 *        Names must be in all-uppercase (the same as elem.nodeName).
 	 * @return {Object}
-	 *        A map from element name to an array of elements with that name.
-	 *        Names will be all-uppercase.
-	 *        Arrays will be proper arrays, not NodeLists.
-	 *        Every entry in classMap for which elements have been found will
-	 *        have a corresponding entry in the returned map. Entries for which
-	 *        no elements have been found, may or may not have an entry in the
-	 *        returned map.
+	 *         A map from element name to an array of elements with that name.
+	 *         Names will be all-uppercase.
+	 *         Arrays will be proper arrays, not NodeLists.  Every entry in
+	 *         classMap for which elements have been found will have a
+	 *         corresponding entry in the returned map. Entries for which no
+	 *         elements have been found, may or may not have an entry in the
+	 *         returned map.
 	 */
 	function indexByName(root, names) {
 		var i,
