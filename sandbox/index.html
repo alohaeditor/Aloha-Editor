@@ -54,21 +54,30 @@
 		<script src="../src/require-pronto.dev.js"></script>
 		<script src="../build/aloha.js"></script>
 		<script>
-			// require.urlPrefix = '../src/';
-			/*
-			require(['aloha'], function (aloha) {
+			(function () {
 				'use strict';
-				window.aloha = aloha;
-				var range = aloha.ranges.create(
-					document.getElementsByTagName('b')[0], 1,
-					document.getElementsByTagName('b')[0], 2
-				);
-				aloha.ranges.select(aloha.ranges.extendToWord(range));
-				range = aloha.ranges.get();
-				aloha.editing.wrap(range, 'u');
-				aloha.ranges.select(range);
-			});
-			*/
+				function setVersion (version) {
+					var h1 = document.getElementsByTagName('h1')[0];
+					h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
+				}
+				function main(aloha) {
+					var range = aloha.ranges.create(
+						document.getElementsByTagName('b')[0], 1,
+						document.getElementsByTagName('b')[0], 2
+					);
+					aloha.ranges.select(aloha.ranges.extendToWord(range));
+					range = aloha.ranges.get();
+					aloha.editing.wrap(range, 'u');
+					aloha.ranges.select(range);
+				}
+				if ('undefined' === typeof aloha) {
+					require(['../src/aloha'], main);
+					setVersion('src');
+				} else {
+					main(aloha);
+					setVersion('build');
+				}
+			}());
 		</script>
 	</body>
 </html>
