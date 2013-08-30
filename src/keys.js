@@ -88,7 +88,7 @@ define([
 	 */
 	var exports = {
 		up   : up,
-		down : down,
+		down : down
 	};
 
 	exports['up']   = exports.up;
