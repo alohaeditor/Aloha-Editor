@@ -60,7 +60,7 @@
 					var h1 = document.getElementsByTagName('h1')[0];
 					h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
 				}
-				function main(ranges, editing) {
+				function main(ranges, editing, pubsub) {
 					var range = ranges.create(
 						document.getElementsByTagName('b')[0], 1,
 						document.getElementsByTagName('b')[0], 2
@@ -73,9 +73,13 @@
 					ranges.insertText(range, '}');
 					ranges.collapseAtEnd(range);
 					ranges.select(range);
+
+					pubsub.subscribe('aloha.key.down', function (data) {
+						console.warn(data);
+					});
 				}
 				function load(aloha) {
-					main(aloha.ranges, aloha.editing);
+					main(aloha.ranges, aloha.editing, aloha.pubsub);
 				}
 				if ('undefined' === typeof aloha) {
 					require(['../src/aloha'], load);

@@ -4,15 +4,25 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['events'], function Keys(events) {
+define(['events', 'pubsub'], function Keys(events, pubsub) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
 		eval(uate)('keys');
 	}
 
+	var IDENTIFIERS = {
+		9  : 'tab',
+		13 : 'enter',
+		16 : 'shift',
+		17 : 'control',
+		32 : 'space'
+	};
+
 	function onKeyDownOnDocument(event) {
-		console.warn(event);
+		pubsub.publish('aloha.key.down', {
+			event: event
+		});
 	}
 
 	events.add(document, 'keydown', onKeyDownOnDocument);
