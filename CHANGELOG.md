@@ -12,6 +12,45 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.18 - 2013/08/28
+
+- **BUGFIX**: table plugin: Merging table cells in IE8 will no longer result in
+                            the contents of merged cells from being lost.
+- **BUGFIX**: utilities: Pressing backspace in a text node in a paragraph
+                         adjacent to a table will now correctly delete the character to the
+                         left of the cursor rather than jumping into the table.
+
+## 0.23.17 - 2013/08/14
+
+- **BUGFIX**:	   table plugin: Merging cell is now fixed to work correctly, after a
+                 previous fix introduced a bug through circular dependency.
+
+## 0.23.16 - 2013/08/14
+
+- **BUGFIX**:      table-plugin: The table plugin will now not lose the drag handles any more, when getContents()
+                   is called for the editable (which is done on smart content change)
+- **BUGFIX**:      cite-plugin: Several issues with the citation plugin have been fixed: Pressing backspace in a 
+                   blockquote will no longer wrap the blockquote into div's (which would break the behaviour).
+                   The behaviour of pressing enter at the end of a blockquote multiple times has been changed to land
+                   in a new empty paragraph after the blockquote (similar to lists).
+                   When blockquote and quotes are nested, the controls of blockquote and quote will both show the
+                   correct status now.
+- **BUGFIX**:      repositorybrowser: Fix i18n of repository browser to use the language configured in Aloha.settings.locale
+- **BUGFIX**:      table plugin: The selection of table cells has been made more coherent.  
+                   A browser selection will be set on the entire content of the anchor cell of the virtual cell selection.
+
+## 0.23.15 - 2013/08/09
+
+- **BUGFIX**:      core: Fixed selection bug in FF where it was possible to move the selection
+                   into a HR (by clicking on it)
+- **BUGFIX**:      textcolor: The button for changing the textcolor can no longer be accidentally
+                   overwritten by custom background images.
+- **BUGFIX**:      table: The table plugin will now handle pressing down in the last cell as well
+                   as pressing up in the first cell by positioning the cursor directly before or 
+                   after the table.
+- **FEATURE**:     autoparagraph-plugin: The Autoparagraph Plugin checks the contents of editables
+                   and wraps content that is not contained in block level elements into paragraphs.
+
 ## 0.23.14 - 2013/07/31
 
 - **BUGFIX**: abbr: The abbreviation plugin will now use non-exclusive scopes
@@ -78,7 +117,7 @@ All changes are categorized into one of the following keywords:
               after content was pasted.
 
 - **BUGFIX**: paste-plugin: There are no more discrepancies between browsers
-			  when pasting plain text.
+              when pasting plain text.
 
 - **BUGFIX**: Adding blocks and tables will no longer results in empty paragraphs
               being littered before the inserted element.
@@ -181,7 +220,6 @@ All changes are categorized into one of the following keywords:
 
 ## 0.23.3 - 2013/03/22
 
->>>>>>> 9bfaafe32921dd447fb08da973a1b92054f9a927
 - **BUGFIX**: No longer automatically append &lt;br&gt; elements to block-level
 	elements unless they are empty.
 - **BUGFIX**: DOM-to-XHTML plugin: Fixed handling of closing angle brackets,
