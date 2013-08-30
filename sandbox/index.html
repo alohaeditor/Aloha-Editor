@@ -76,7 +76,9 @@
 
 					aloha.keys.on('enter', function (data) {
 						var range = data.range;
-						console.warn(range);
+						ranges.insertText(range, '¶');
+						ranges.collapseAtEnd(range);
+						ranges.select(range);
 					});
 				}
 				function load(aloha) {
