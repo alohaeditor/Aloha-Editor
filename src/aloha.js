@@ -42,6 +42,9 @@ define([
 	traversing
 ) {
 	'use strict';
+ 
+	keys.down('enter', input.enter);
+	keys.down('space', input.space);
 
 	/**
 	 * Aloha Editor API
