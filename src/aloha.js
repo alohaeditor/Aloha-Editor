@@ -12,13 +12,13 @@ define([
 	'events',
 	'functions',
 	'html',
-	'input',
 	'pubsub',
 	'keys',
 	'maps',
 	'ranges',
 	'strings',
-	'traversing'
+	'traversing',
+	'typing'
 ], function Aloha(
 	arrays,
 	boundarymarkers,
@@ -33,18 +33,18 @@ define([
 	events,
 	fn,
 	html,
-	input,
 	pubsub,
 	keys,
 	maps,
 	ranges,
 	strings,
-	traversing
+	traversing,
+	typing
 ) {
 	'use strict';
  
-	keys.down('enter', input.enter);
-	keys.down('space', input.space);
+	keys.down('enter', typing.enter);
+	keys.down('space', typing.space);
 
 	/**
 	 * Aloha Editor API
@@ -65,7 +65,7 @@ define([
 		'events'          : events,
 		'fn'              : fn,
 		'html'            : html,
-		'input'           : input,
+		'typing'          : typing,
 		'keys'            : keys,
 		'maps'            : maps,
 		'pubsub'          : pubsub,

@@ -4,21 +4,15 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['ranges'], function Input(ranges) {
+define(['ranges'], function Typing(ranges) {
 	'use strict';
 
-	function insertBehind(range, text) {
-		ranges.insertText(range, text);
-		ranges.collapseAtEnd(range);
-		ranges.select(range);
-	}
-
 	function enter(message) {
-		insertBehind(message.range, '¶');
+		ranges.insertTextBehind(message.range, '¶');
 	}
 
-	function spaces(message) {
-		insertBehind(range, '·');
+	function space(message) {
+		ranges.insertTextBehind(message.range, '·');
 		message.event.preventDefault();
 	}
 
@@ -29,4 +23,6 @@ define(['ranges'], function Input(ranges) {
 
 	exports['enter'] = enter;
 	exports['space'] = space;
+
+	return exports;
 });

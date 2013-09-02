@@ -441,6 +441,38 @@ define([
 	}
 
 	/**
+	 * Gets the nearest editing host to the given range.
+	 *
+	 * Because Firefox, the range may not be inside the editable even though the
+	 * selection may be inside the editable.
+	 *
+	 * @param {Range} range
+	 * @param {DOMObject} Editing host, or null if none is found.
+	 */
+	function getNearestEditingHost(range) {
+		var editable = dom.getEditingHost(range.startContainer);
+		if (editable) {
+			return editable;
+		}
+		var copy = stableRange(range);
+		var isNotEditingHost = fn.complement(dom.isEditingHost);
+		trim(copy, isNotEditingHost, isNotEditingHost);
+		return dom.getEditingHost(
+			dom.nodeAtOffset(copy.startContainer, copy.startOffset)
+		);
+	}
+
+	function collapseAtStart(range) {
+		range.setEnd(range.startContainer, range.startOffset);
+		return range;
+	}
+
+	function collapseAtEnd(range) {
+		range.setStart(range.endContainer, range.endOffset);
+		return range;
+	}
+
+	/**
 	 * Insert the given text to the left of the given range.
 	 *
 	 * @param {Range} range
@@ -486,36 +518,10 @@ define([
 		range.setEnd(textNode, textNode.length);
 	}
 
-	/**
-	 * Gets the nearest editing host to the given range.
-	 *
-	 * Because Firefox, the range may not be inside the editable even though the
-	 * selection may be inside the editable.
-	 *
-	 * @param {Range} range
-	 * @param {DOMObject} Editing host, or null if none is found.
-	 */
-	function getNearestEditingHost(range) {
-		var editable = dom.getEditingHost(range.startContainer);
-		if (editable) {
-			return editable;
-		}
-		var copy = stableRange(range);
-		var isNotEditingHost = fn.complement(dom.isEditingHost);
-		trim(copy, isNotEditingHost, isNotEditingHost);
-		return dom.getEditingHost(
-			dom.nodeAtOffset(copy.startContainer, copy.startOffset)
-		);
-	}
-
-	function collapseAtStart(range) {
-		range.setEnd(range.startContainer, range.startOffset);
-		return range;
-	}
-
-	function collapseAtEnd(range) {
-		range.setStart(range.endContainer, range.endOffset);
-		return range;
+	function insertTextBehind(range, text) {
+		insertText(range, text);
+		collapseAtEnd(range);
+		select(range);
 	}
 
 	/**
@@ -528,6 +534,7 @@ define([
 	 * ranges.extendToWord()
 	 * ranges.get()
 	 * ranges.insertText()
+	 * ranges.insertTextBehind()
 	 * ranges.select()
 	 * ranges.setEndFromCursor()
 	 * ranges.setFromBoundaries()
@@ -548,6 +555,7 @@ define([
 		extendToWord: extendToWord,
 		get: get,
 		insertText: insertText,
+		insertTextBehind: insertTextBehind,
 		select: select,
 		setEndFromCursor: setEndFromCursor,
 		setFromBoundaries: setFromBoundaries,
@@ -569,6 +577,7 @@ define([
 	exports['extendToWord'] = exports.extendToWord;
 	exports['get'] = exports.get;
 	exports['insertText'] = exports.insertText;
+	exports['insertTextBehind'] = exports.insertTextBehind;
 	exports['select'] = exports.select;
 	exports['setEndFromCursor'] = exports.setEndFromCursor;
 	exports['setFromBoundaries'] = exports.setFromBoundaries;

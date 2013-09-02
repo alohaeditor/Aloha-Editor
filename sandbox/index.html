@@ -33,21 +33,6 @@
 				porta lorem lacinia consectetur. Donec ut libero sed arcu
 				vehicula ultricies a non tortor.
 			</p>
-			<p>
-				<b>Lorem ipsum</b> dolor sit amet, consectetur adipiscing elit.
-				Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed,
-				adipiscing id dolor.  Pellentesque auctor nisi id magna
-				consequat sagittis.
-			</p>
-			<p>
-				Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat
-				nisl imperdiet. Ut convallis libero in urna ultrices accumsan.
-				Donec sed odio eros. Donec viverra mi quis quam pulvinar at
-				malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis
-				dis parturient montes, nascetur ridiculus mus.  In rutrum
-				accumsan ultricies. Mauris vitae nisi at sem facilisis semper ac
-				in est.
-			</p>
 		</div>
 		<script src="mandox.js"></script>
 		<script src="../src/require-pronto.js"></script>
@@ -68,9 +53,9 @@
 					ranges.select(ranges.extendToWord(range));
 					range = ranges.get();
 					editing.wrap(range, 'u');
-					ranges.insertText(ranges.stableRange(range), '{');
+					ranges.insertText(ranges.stableRange(range), '"');
 					ranges.collapseAtEnd(range)
-					ranges.insertText(range, '}');
+					ranges.insertText(range, '"');
 					ranges.collapseAtEnd(range);
 					ranges.select(range);
 				}
@@ -78,11 +63,11 @@
 					main(aloha.ranges, aloha.editing, aloha.pubsub);
 				}
 				if ('undefined' === typeof aloha) {
-					require(['../src/aloha'], load);
 					setVersion('src');
+					require(['../src/aloha'], load);
 				} else {
-					load(aloha)
 					setVersion('build');
+					load(aloha)
 				}
 			}());
 		</script>
