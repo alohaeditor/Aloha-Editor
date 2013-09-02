@@ -287,6 +287,79 @@ define([
 	}
 
 	/**
+	 * Given a node, will return node that preceeds it in the document order.
+	 *
+	 * For example, if this function is called recursively, starting from the
+	 * text node "five" in the below DOM tree:
+	 *
+	 *	"one"
+	 *	<b>
+	 *		"two"
+	 *		<u>
+	 * 			<i>
+	 * 				"three"
+	 * 			</i>
+	 * 		</u>
+	 * 		"four"
+	 * 	</b>
+	 * 	"five"
+	 *
+	 * backward() will return nodes in the following order:
+	 *
+	 * "four", "three", <i>...</i>, <u>...</u>, "two", <b>...</b>, "one"
+	 *
+	 * @param {DOMObject} node
+	 * @return {DOMObject}
+	 *         The preceeding node or null if the given node has no previous
+	 *         siblings and no parent.
+	 */
+	function backward(node) {
+		var prev = node.previousSibling;
+		while (prev && prev.lastChild) {
+			prev = prev.lastChild;
+		}
+		return prev || node.parentNode;
+	}
+
+	/**
+	 * Given a node, will return node that succeeds it in the document order.
+	 *
+	 * For example, if this function is called recursively, starting from the
+	 * text node "one" in the below DOM tree:
+	 *
+	 *	"one"
+	 *	<b>
+	 *		"two"
+	 *		<u>
+	 * 			<i>
+	 * 				"three"
+	 * 			</i>
+	 * 		</u>
+	 * 		"four"
+	 * 	</b>
+	 * 	"five"
+	 *
+	 * backward() will return nodes in the following order:
+	 *
+	 * <b>...</b>, "two", <u>...</u>, <i>...</i>,"three", "four", "five"
+	 *
+	 * @param {DOMObject} node
+	 * @return {DOMObject}
+	 *         The succeeding node or null if the given node has no previous
+	 *         siblings and no parent.
+	 */
+	function forward(node) {
+		if (node.firstChild) {
+			return node.firstChild;
+		}
+		var next = node;
+		while (next && !next.nextSibling) {
+			next = next.parentNode;
+		}
+		return next && next.nextSibling;
+	}
+
+	/**
 	 * Starting from the given node, and moving backwards through the DOM tree,
 	 * searches for a node which returns `true` when applied to the predicate
 	 * `match()`.
@@ -295,21 +368,27 @@ define([
 	 * @param {Function(DOMObject):Boolean} match
 	 * @return {DOMObject}
 	 */
-	function findNodeBackwards(node, match) {
-		if (!node) {
-			return null;
+	function findBackward(node, match) {
+		while (node && !match(node)) {
+			node = backward(node);
 		}
-		if (match(node)) {
-			return node;
+		return node;
+	}
+
+	/**
+	 * Starting from the given node, and moving forwards through the DOM tree,
+	 * searches for a node which returns `true` when applied to the predicate
+	 * `match()`.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} match
+	 * @return {DOMObject}
+	 */
+	function findForward(node, match) {
+		while (node && !match(node)) {
+			node = forward(node);
 		}
-		var next = node.lastChild
-		        || node.previousSibling
-		        || (
-		            node.parentNode
-		         // && !isEditingHost(node.parentNode)
-		            && node.parentNode.previousSibling
-		        );
-		return next ? findNodeBackwards(next, match) : null;
+		return node;
 	}
 
 	/**
@@ -543,13 +622,16 @@ define([
 	/**
 	 * DOM traversal functions.
 	 *
+	 * traversing.backward()
+	 * traversing.forward()
 	 * traversing.nextWhile()
 	 * traversing.prevWhile()
 	 * traversing.walk()
 	 * traversing.walkRec()
 	 * traversing.walkUntil()
 	 * traversing.walkUntilNode()
-	 * traversing.findNodeBackwards()
+	 * traversing.findBackward()
+	 * traversing.findForward()
 	 * traversing.findWordBoundaryAhead()
 	 * traversing.findWordBoundaryBehind()
 	 * traversing.parentsUntil()
@@ -560,13 +642,16 @@ define([
 	 * traversing.childAndParentsUntilInclNode()
 	 */
 	var exports = {
+		backward: backward,
+		forward: forward,
 		nextWhile: nextWhile,
 		prevWhile: prevWhile,
 		walk: walk,
 		walkRec: walkRec,
 		walkUntil: walkUntil,
 		walkUntilNode: walkUntilNode,
-		findNodeBackwards: findNodeBackwards,
+		findBackward: findBackward,
+		findForward: findForward,
 		findWordBoundaryAhead: findWordBoundaryAhead,
 		findWordBoundaryBehind: findWordBoundaryBehind,
 		parentsUntil: parentsUntil,
@@ -577,13 +662,16 @@ define([
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode
 	};
 
+	exports['backward'] = exports.backward;
+	exports['forward'] = exports.forward;
 	exports['nextWhile'] = exports.nextWhile;
 	exports['prevWhile'] = exports.prevWhile;
 	exports['walk'] = exports.walk;
 	exports['walkRec'] = exports.walkRec;
 	exports['walkUntil'] = exports.walkUntil;
 	exports['walkUntilNode'] = exports.walkUntilNode;
-	exports['findNodeBackwards'] = exports.findNodeBackwards;
+	exports['findBackward'] = exports.findBackward;
+	exports['findForward'] = exports.findForward;
 	exports['findWordBoundaryAhead'] = exports.findWordBoundaryAhead;
 	exports['findWordBoundaryBehind'] = exports.findWordBoundaryBehind;
 	exports['parentsUntil'] = exports.parentsUntil;

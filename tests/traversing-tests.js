@@ -86,12 +86,54 @@
 		equal(nodes.join(' '), '#text B');
 	});
 
-	test('findNodeBackwards', function () {
-		tested.push('findNodeBackwards');
+	test('backward', function () {
+		tested.push('backward');
+		var node = $('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].lastChild;
+		var nodes = [node];
+		while (('DIV' !== node.nodeName) && (node = traversing.backward(node))) {
+			nodes.push(node);
+		}
+		equal(nodes[0].data, 'five');
+		equal(nodes[1].data, 'four');
+		equal(nodes[2].data, 'three');
+		equal(nodes[3].nodeName, 'I');
+		equal(nodes[4].nodeName, 'U');
+		equal(nodes[5].data, 'two');
+		equal(nodes[6].nodeName, 'B');
+		equal(nodes[7].data, 'one');
+	});
+
+	test('forward', function () {
+		tested.push('forward');
+		var node = $('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].firstChild;
+		var nodes = [node];
+		while (('DIV' !== node.nodeName) && (node = traversing.forward(node))) {
+			nodes.push(node);
+		}
+		equal(nodes[0].data, 'one');
+		equal(nodes[1].nodeName, 'B');
+		equal(nodes[2].data, 'two');
+		equal(nodes[3].nodeName, 'U');
+		equal(nodes[4].nodeName, 'I');
+		equal(nodes[5].data, 'three');
+		equal(nodes[6].data, 'four');
+		equal(nodes[7].data, 'five');
+	});
+
+	test('findBackward', function () {
+		tested.push('findBackward');
 		var node = $('<div>foo<b><i><br></i></b><br/><u>bar</u></div>')[0];
-		equal(traversing.findNodeBackwards(node.lastChild, function (elem) {
+		equal(traversing.findBackward(node.lastChild, function (elem) {
 			return 'B' === elem.nodeName;
 		}), node.firstChild.nextSibling);
+	});
+
+	test('findForward', function () {
+		tested.push('findForward');
+		var node = $('<div>foo<b><i><br></i></b><br/><u>bar</u></div>')[0];
+		equal(traversing.findForward(node.lastChild, function (elem) {
+			return 'U' === elem.nodeName;
+		}), node.lastChild);
 	});
 
 	test('findWordBoundaryAhead', function () {
