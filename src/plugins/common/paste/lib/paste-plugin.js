@@ -83,6 +83,10 @@ define([
 	 * wrapped in this container if not, in some browser the generated elements
 	 * inherits the styles used to hide the element
 	 *
+	 * We put a tabindex="-1" on the div that will become
+	 * contenteditable so we don't mess with the
+	 * browser's/mobile-webview's tab/next functionality.
+	 *
 	 * @type {jQuery.<HTMLElement>}
 	 * @const
 	 */
@@ -90,7 +94,7 @@ define([
 					   'clip:rect(0px,0px,0px,0px); width:1px; height:1px;' +
 //					   'right: 1%; top: 10px; width: 40%; min-height; 120px;' +
 //					   ' background: white; ' + // uncomment these line in debug
-					   '"><div class="aloha-metaview"></div></div>');
+					   '"><div tabindex="-1" class="aloha-metaview"></div></div>');
 
 	/**
 	 * An invisible editable element used to intercept incoming pasted content

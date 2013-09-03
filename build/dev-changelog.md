@@ -62,3 +62,5 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: selection: modified to allow nested tables
 
 - **BUGFIX**: ephemera: javascript error when an editable contains SVG elements
+
+- **BUGFIX**: tab/next focuses invisible paste handler div
