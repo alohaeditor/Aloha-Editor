@@ -30,8 +30,6 @@ define([
 	 * Extends the ranges start and end positions to the nearest word
 	 * boundaries.
 	 *
-	 * This function will modify the range given to it.
-	 *
 	 * @param {Range} range
 	 * @return {Range}
 	 */
@@ -77,6 +75,8 @@ define([
 		}
 		if (endContainer) {
 			range.setEnd(endContainer, endOffset || 0);
+		} else if (startContainer) {
+			range.setEnd(startContainer, startOffset || 0);
 		}
 		return range;
 	}
@@ -102,61 +102,11 @@ define([
 	 * @param {Range} range
 	 * @param {Range} reference
 	 * @return {Range}
-	 *         `range`, having been modified.
+	 *         The modified range.
 	 */
 	function setFromReference(range, reference) {
 		range.setStart(reference.startContainer, reference.startOffset);
 		range.setEnd(reference.endContainer, reference.endOffset);
-		return range;
-	}
-
-	/**
-	 * Sets the start boundary of a given range from `cursor`.
-	 *
-	 * @param {Range} range
-	 * @param {Cursor} cursor
-	 * @return {Range}
-	 *         `range`, having been modified.
-	 */
-	function setStartFromCursor(range, cursor) {
-		if (cursor.atEnd) {
-			range.setStart(cursor.node, dom.nodeLength(cursor.node));
-		} else {
-			range.setStart(cursor.node.parentNode, dom.nodeIndex(cursor.node));
-		}
-		return range;
-	}
-
-	/**
-	 * Sets the end boundary of a given range from `cursor`.
-	 *
-	 * @param {Range} range
-	 * @param {Cursor} cursor
-	 * @return {Range}
-	 *         The given range, having been modified.
-	 */
-	function setEndFromCursor(range, cursor) {
-		if (cursor.atEnd) {
-			range.setEnd(cursor.node, dom.nodeLength(cursor.node));
-		} else {
-			range.setEnd(cursor.node.parentNode, dom.nodeIndex(cursor.node));
-		}
-		return range;
-	}
-
-	/**
-	 * Sets the startContainer/startOffset and endContainer/endOffset boundary
-	 * points of the given range, based on the given start and end Cursors.
-	 *
-	 * @param {Range} range
-	 * @param {Cursor} start
-	 * @param {Cursor} end
-	 * @return {Range}
-	 *         The given range, having had its boundary points modified.
-	 */
-	function setFromBoundaries(range, start, end) {
-		setStartFromCursor(range, start);
-		setEndFromCursor(range, end);
 		return range;
 	}
 
@@ -175,17 +125,13 @@ define([
 				&& dom.Nodes.TEXT === container.nodeType
 					&& offset > 0
 						&& offset < container.length) {
-			if (backwards ? cursor.next() : cursor.prev()) {
+			if (cursor.next()) {
 				if (!ignore(cursor)) {
-					return;
+					return range;
 				}
 				// Bacause the text node can be ignored, we go back to the
 				// initial position.
-				if (backwards) {
-					cursor.prev();
-				} else {
-					cursor.next();
-				}
+				cursor.prev();
 			}
 		}
 		var opposite = cursors.cursorFromBoundaryPoint(
@@ -193,14 +139,66 @@ define([
 			oppositeOffset
 		);
 		var changed = false;
-		while (!cursor.equals(opposite)
-				&& ignore(cursor)
-					&& (backwards ? cursor.prev() : cursor.next())) {
+		while (ignore(cursor, opposite)
+				&& (backwards ? cursor.prev() : cursor.next())) {
 			changed = true;
 		}
 		if (changed) {
 			setFn(range, cursor);
 		}
+		return range;
+	}
+
+	/**
+	 * Ensure that the given pos node is nested in at least 2 levels of
+	 * ancestors.
+	 *
+	 * This function is used a predicate when performing nextWhile() in
+	 * order to ensure that the resultant range position will be.
+	 *
+	 * @private
+	 * @param {Cursor} pos
+	 * @param {Boolean}
+	 */
+	function shouldStepBackward(container, offset) {
+		return container
+		    && container.parentNode
+		    && container.parentNode.parentNode
+		    && dom.isAtStart(container, offset);
+	}
+
+	function shouldStepForward(container, offset) {
+		return container
+		    && container.parentNode
+		    && container.parentNode.parentNode
+		    && dom.isAtEnd(container, offset);
+	}
+
+	/**
+	 * Expands the given range's boundaries so that none of the boundaries are
+	 * just after a start tag or just before and end tag.
+	 *
+	 * For example:
+	 *
+	 * <p>[foo]</p> will become {<p>foo</p>}
+	 * <p>{fo]o]</p> will become {<p>fo]o</p>
+	 *
+	 * @param {Range}
+	 * @return {Range}
+	 */
+	function expand(range) {
+		var start = traversing.prevNodeBoundaryWhile(
+			range.startContainer,
+			range.startOffset,
+			shouldStepBackward
+		);
+		var end = traversing.nextNodeBoundaryWhile(
+			range.endContainer,
+			range.endOffset,
+			shouldStepForward
+		);
+		range.setStart(start.container, start.offset);
+		range.setEnd(end.container, end.offset);
 		return range;
 	}
 
@@ -228,7 +226,7 @@ define([
 		ignoreLeft = ignoreLeft || fn.returnFalse;
 		ignoreRight = ignoreRight || fn.returnFalse;
 		if (range.collapsed) {
-			return;
+			return range;
 		}
 		// Because range may be mutated, we must store its properties
 		// before doing anything else.
@@ -242,7 +240,7 @@ define([
 			so,
 			ec,
 			eo,
-			setStartFromCursor,
+			cursors.setRangeStart,
 			ignoreLeft,
 			false
 		);
@@ -252,7 +250,7 @@ define([
 			eo,
 			sc,
 			so,
-			setEndFromCursor,
+			cursors.setRangeEnd,
 			ignoreRight,
 			true
 		);
@@ -260,7 +258,7 @@ define([
 	}
 
 	/**
-	 * Like trimRange() but ignores closing (to the left) and opening positions
+	 * Like trim() but ignores closing (to the left) and opening positions
 	 * (to the right).
 	 *
 	 * @param {Range} range
@@ -435,6 +433,18 @@ define([
 	 * @return {Range}
 	 *         The given range, modified.
 	 */
+	function collapseToStart(range) {
+		range.setEnd(range.startContainer, range.startOffset);
+		return range;
+	}
+
+	/**
+	 * Collapses the given range start boundary towards the end boundary.
+	 *
+	 * @param {Range} range
+	 * @return {Range}
+	 *         The given range, modified.
+	 */
 	function collapseToEnd(range) {
 		range.setStart(range.endContainer, range.endOffset);
 		return range;
@@ -460,16 +470,6 @@ define([
 		return dom.getEditingHost(
 			dom.nodeAtOffset(copy.startContainer, copy.startOffset)
 		);
-	}
-
-	function collapseAtStart(range) {
-		range.setEnd(range.startContainer, range.startOffset);
-		return range;
-	}
-
-	function collapseAtEnd(range) {
-		range.setStart(range.endContainer, range.endOffset);
-		return range;
 	}
 
 	/**
@@ -520,7 +520,7 @@ define([
 
 	function insertTextBehind(range, text) {
 		insertText(range, text);
-		collapseAtEnd(range);
+		collapseToEnd(range);
 		select(range);
 	}
 
@@ -528,6 +528,7 @@ define([
 	 * Functions to work with browser ranges.
 	 *
 	 * ranges.collapseToEnd()
+	 * ranges.collapseToStart()
 	 * ranges.create()
 	 * ranges.equal()
 	 * ranges.expandBoundaries()
@@ -536,10 +537,7 @@ define([
 	 * ranges.insertText()
 	 * ranges.insertTextBehind()
 	 * ranges.select()
-	 * ranges.setEndFromCursor()
-	 * ranges.setFromBoundaries()
 	 * ranges.setFromReference()
-	 * ranges.setStartFromCursor()
 	 * ranges.stableRange()
 	 * ranges.trim()
 	 * ranges.trimBoundaries()
@@ -549,47 +547,42 @@ define([
 	 */
 	var exports = {
 		collapseToEnd: collapseToEnd,
+		collapseToStart: collapseToStart,
 		create: create,
 		equal: equal,
+		expand: expand,
 		expandBoundaries: expandBoundaries,
 		extendToWord: extendToWord,
 		get: get,
 		insertText: insertText,
 		insertTextBehind: insertTextBehind,
 		select: select,
-		setEndFromCursor: setEndFromCursor,
-		setFromBoundaries: setFromBoundaries,
 		setFromReference: setFromReference,
-		setStartFromCursor: setStartFromCursor,
 		stableRange: stableRange,
 		trim: trim,
 		trimBoundaries: trimBoundaries,
 		trimClosingOpening: trimClosingOpening,
-		getNearestEditingHost: getNearestEditingHost,
-		collapseAtStart: collapseAtStart,
-		collapseAtEnd: collapseAtEnd
+		getNearestEditingHost: getNearestEditingHost
 	};
 
 	exports['collapseToEnd'] = exports.collapseToEnd;
+	exports['collapseToStart'] = exports.collapseToStart;
 	exports['create'] = exports.create;
 	exports['equal'] = exports.equal;
+	exports['expand'] = exports.expand;
 	exports['expandBoundaries'] = exports.expandBoundaries;
 	exports['extendToWord'] = exports.extendToWord;
 	exports['get'] = exports.get;
 	exports['insertText'] = exports.insertText;
 	exports['insertTextBehind'] = exports.insertTextBehind;
 	exports['select'] = exports.select;
-	exports['setEndFromCursor'] = exports.setEndFromCursor;
-	exports['setFromBoundaries'] = exports.setFromBoundaries;
 	exports['setFromReference'] = exports.setFromReference;
-	exports['setStartFromCursor'] = exports.setStartFromCursor;
 	exports['stableRange'] = exports.stableRange;
 	exports['trim'] = exports.trim;
+	// remove
 	exports['trimBoundaries'] = exports.trimBoundaries;
 	exports['trimClosingOpening'] = exports.trimClosingOpening;
 	exports['getNearestEditingHost'] = exports.getNearestEditingHost;
-	exports['collapseAtStart'] = exports.collapseAtStart;
-	exports['collapseAtEnd'] = exports.collapseAtEnd;
 
 	return exports;
 });

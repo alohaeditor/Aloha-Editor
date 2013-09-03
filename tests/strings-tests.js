@@ -48,8 +48,5 @@
 		equal(true, strings.empty(void 0));
 	});
 
-	test('COVERAGE', function () {
-		testCoverage(equal, tested, strings);
-	});
-
+	testCoverage(test, tested, strings);
 }(window.aloha));

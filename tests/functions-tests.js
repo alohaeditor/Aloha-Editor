@@ -42,7 +42,5 @@
 		}, {foo: 'foo'})(), 'foo');
 	});
 
-	test('COVERAGE', function () {
-		testCoverage(equal, tested, fn);
-	});
+	testCoverage(test, tested, fn);
 }(window.aloha));

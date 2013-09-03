@@ -83,7 +83,5 @@
 		equal(null, arrays.last([]));
 	});
 
-	test('COVERAGE', function () {
-		testCoverage(equal, tested, arrays);
-	});
+	testCoverage(test, tested, arrays);
 }(window.aloha));

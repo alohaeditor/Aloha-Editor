@@ -667,7 +667,5 @@
 	  '<ul>{<li><b><ins>Some</ins> <del>text</del></b></li>}</ul>',
 	  true);
 
-	test('COVERAGE', function () {
-		testCoverage(equal, tested, editing);
-	});
+	testCoverage(test, tested, editing);
 }(window.aloha));

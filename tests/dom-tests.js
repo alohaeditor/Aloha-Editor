@@ -401,8 +401,5 @@
 
 	module('dom');
 
-	test('COVERAGE', function () {
-		testCoverage(equal, tested, dom);
-	});
-
+	testCoverage(test, tested, dom);
 }(window.aloha));

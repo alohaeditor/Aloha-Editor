@@ -77,7 +77,5 @@
 		equal(map.three, 3);
 	});
 
-	test('COVERAGE', function () {
-		testCoverage(equal, tested, maps);
-	});
+	testCoverage(test, tested, maps);
 }(window.aloha));

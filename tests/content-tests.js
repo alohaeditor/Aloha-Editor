@@ -22,7 +22,5 @@
 		equal(content.allowsNesting('ol', 'div'), false);
 	});
 
-	test('COVERAGE', function () {
-		testCoverage(equal, tested, content);
-	});
+	testCoverage(test, tested, content);
 }(window.aloha));

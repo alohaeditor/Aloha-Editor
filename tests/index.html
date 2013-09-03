@@ -33,15 +33,17 @@
 			return functions;
 		}
 
-		function testCoverage(equal, tested, module) {
+		function testCoverage(test, tested, module) {
 			if (isBuild) {
 				ok(1);
 			} else {
-				var functions = getFunctionsInNamespace(module);
-				equal(
-					aloha.arrays.intersect(functions, tested).length,
-					functions.length
-				);
+				test('COVERAGE', function () {
+					var functions = getFunctionsInNamespace(module);
+					equal(
+						aloha.arrays.intersect(functions, tested).length,
+						functions.length
+					);
+				});
 			}
 		}
 
@@ -55,7 +57,8 @@
 				'html-tests',
 				'maps-tests',
 				'strings-tests',
-				'traversing-tests'
+				'traversing-tests',
+				'ranges-tests'
 			], function () {});
 		}
 

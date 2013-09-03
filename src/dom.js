@@ -436,6 +436,27 @@ define([
 		return index;
 	}
 
+
+	/**
+	 * Whether or not the given node and offset describes a position before the
+	 * first child node or character in its container.
+	 *
+	 * Will return true if the selection looks like this:
+	 * <b>{foo</b>...
+	 * of
+	 * <b>[foo</b>...
+	 *
+	 * @param {DOMObject} node
+	 * @param {Number} offset
+	 * @return {Boolean}
+	 */
+	function isAtStart(node, offset) {
+		return (
+			0 === offset
+				&& (Nodes.TEXT !== node.nodeType || !node.previousSibling)
+		);
+	}
+
 	/**
 	 * Whether or not the given node and offset describes a position after the
 	 * last child node or character in its container.
@@ -596,7 +617,7 @@ define([
 	 * It should be noted that native ranges controlled by the browser's DOM
 	 * implementation have the habit to change by themselves, so even if
 	 * normalized this way the range could revert to an unnormalized state. See
-	 * stableRange().
+	 * ranges.stableRange().
 	 *
 	 * @private
 	 */
@@ -1192,6 +1213,7 @@ define([
 		replaceShallow: replaceShallow,
 
 		isAtEnd: isAtEnd,
+		isAtStart: isAtStart,
 		nodeIndex: nodeIndex,
 		nodeLength: nodeLength,
 		nodeAtOffset: nodeAtOffset,
@@ -1240,6 +1262,7 @@ define([
 	exports['insert'] = exports.insert;
 	exports['replaceShallow'] = exports.replaceShallow;
 	exports['isAtEnd'] = exports.isAtEnd;
+	exports['isAtStart'] = exports.isAtStart;
 	exports['nodeIndex'] = exports.nodeIndex;
 	exports['nodeLength'] = exports.nodeLength;
 	exports['nodeAtOffset'] = exports.nodeAtOffset;

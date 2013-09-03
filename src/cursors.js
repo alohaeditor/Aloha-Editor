@@ -4,7 +4,7 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['dom'], function Cursors(dom) {
+define(['dom'], function Position(dom) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
@@ -38,7 +38,7 @@ define(['dom'], function Cursors(dom) {
 	 *        Whether or not the cursor is at the end of the container.
 	 * @return {Cursor}
 	 */
-	function cursor(node, atEnd) {
+	function create(node, atEnd) {
 		return new Cursor(node, atEnd);
 	}
 
@@ -51,8 +51,8 @@ define(['dom'], function Cursors(dom) {
 	 *        If container is a text node, the offset will be ignored.
 	 * @return {Cursor}
 	 */
-	function cursorFromBoundaryPoint(container, offset) {
-		return cursor(
+	function createFromBoundary(container, offset) {
+		return create(
 			dom.nodeAtOffset(container, offset),
 			dom.isAtEnd(container, offset)
 		);
@@ -172,7 +172,7 @@ define(['dom'], function Cursors(dom) {
 	};
 
 	Cursor.prototype.clone = function () {
-		return cursor(this.node, this.atEnd);
+		return create(this.node, this.atEnd);
 	};
 
 	Cursor.prototype.insert = function (node) {
@@ -194,20 +194,85 @@ define(['dom'], function Cursors(dom) {
 	Cursor.prototype['insert'] = Cursor.prototype.insert;
 
 	/**
+	 * Sets the start boundary of a given range from the given range position.
+	 *
+	 * @param {Cursor} pos
+	 * @param {Range} range
+	 * @return {Range}
+	 *         The modified range.
+	 */
+	function setRangeStart(range, pos) {
+		if (pos.atEnd) {
+			range.setStart(pos.node, dom.nodeLength(pos.node));
+		} else {
+			range.setStart(pos.node.parentNode, dom.nodeIndex(pos.node));
+		}
+		return range;
+	}
+
+	/**
+	 * Sets the end boundary of a given range from the given range position.
+	 *
+	 * @param {Range} range
+	 * @param {Cursor} pos
+	 * @return {Range}
+	 *         The given range, having been modified.
+	 */
+	function setRangeEnd(range, pos) {
+		if (pos.atEnd) {
+			range.setEnd(pos.node, dom.nodeLength(pos.node));
+		} else {
+			range.setEnd(pos.node.parentNode, dom.nodeIndex(pos.node));
+		}
+		return range;
+	}
+
+	/**
+	 * Sets the startContainer/startOffset and endContainer/endOffset boundary
+	 * points of the given range, based on the given start and end Cursors.
+	 *
+	 * @param {Range} range
+	 * @param {Cursor} start
+	 * @param {Cursor} end
+	 * @return {Range}
+	 *         The given range, having had its boundary points modified.
+	 */
+	function setToRange(range, start, end) {
+		if (start) {
+			setRangeStart(range, start);
+		}
+		if (end) {
+			setRangeEnd(range, end);
+		}
+		return range;
+	}
+
+	/**
 	 * Functions for creating Cursors.  A Cursor is an abstraction of the
 	 * startContainer/startOffset and endContainer/endOffset range boundary
 	 * points.
 	 *
-	 * cursors.cursor()
-	 * cursors.cursorFromBoundaryPoint()
+	 * position.create()
+	 * position.createFromBoundary()
+	 * position.setToRange()
 	 */
 	var exports = {
-		cursor: cursor,
-		cursorFromBoundaryPoint: cursorFromBoundaryPoint
+		cursor: create,
+		cursorFromBoundaryPoint: createFromBoundary,
+
+		create             : create,
+		createFromBoundary : createFromBoundary,
+		setToRange         : setToRange,
+		setRangeStart      : setRangeStart,
+		setRangeEnd        : setRangeEnd
 	};
 
 	exports['cursor'] = exports.cursor;
 	exports['cursorFromBoundaryPoint'] = exports.cursorFromBoundaryPoint;
+
+	exports['create'] = exports.create;
+	exports['createFromBoundary'] = exports.createFromBoundary;
+	exports['setToRange'] = exports.setToRange;
 
 	return exports;
 });

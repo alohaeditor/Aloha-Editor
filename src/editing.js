@@ -473,7 +473,7 @@ define([
 			formatter.postprocess();
 		}
 
-		ranges.setFromBoundaries(range, leftPoint, rightPoint);
+		cursors.setToRange(range, leftPoint, rightPoint);
 
 		// Because we want to ensure that this algorithm doesn't
 		// introduce any additional splits between text nodes.
@@ -1188,7 +1188,7 @@ define([
 			var normalizeRight = opts.normalizeRange ? rightPoint : rightPoint.clone();
 			html.normalizeBoundary(normalizeLeft);
 			html.normalizeBoundary(normalizeRight);
-			ranges.setFromBoundaries(range, normalizeLeft, normalizeRight);
+			cursors.setToRange(range, normalizeLeft, normalizeRight);
 
 			var removeEmpty = [];
 

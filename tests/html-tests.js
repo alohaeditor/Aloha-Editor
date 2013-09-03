@@ -123,7 +123,5 @@
 		tested.push('isEmpty');
 	});
 
-	test('COVERAGE', function () {
-		testCoverage(equal, tested, html);
-	});
+	testCoverage(test, tested, html);
 }(window.aloha));

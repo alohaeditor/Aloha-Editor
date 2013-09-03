@@ -2,9 +2,128 @@
 	'use strict';
 
 	var traversing = aloha.traversing;
+	var ranges = aloha.ranges;
+	var boundarymarkers = aloha.boundarymarkers;
 	var tested = [];
 
     module('traversing');
+
+	function runTest(before, after, op) {
+		var dom = $(before)[0];
+		var range = ranges.create();
+		boundarymarkers.extract(dom, range);
+		var pos = op(
+			range.startContainer,
+			range.startOffset
+		);
+		range.setStart(pos.container, pos.offset);
+		boundarymarkers.insert(range);
+		equal(dom.outerHTML, after);
+	}
+
+	test('prevNodeBoundary', function () {
+		tested.push('prevNodeBoundary');
+
+		var t = function (before, after) {
+			runTest(before, after, traversing.prevNodeBoundary);
+		};
+
+		t('<p><b>[foo]</b></p>', '<p><b>{foo]</b></p>');
+		t('<p><b>f[oo]</b></p>', '<p><b>{foo]</b></p>');
+		t('<p><b>foo[]</b></p>', '<p><b>{foo]</b></p>');
+
+		t('<p><b>[]</b></p>', '<p><b>{]</b></p>');
+		t('<p><b>{]</b></p>', '<p>{<b>]</b></p>');
+
+		t('<p><b></b>{]</p>', '<p><b>{</b>]</p>');
+		t('<p><b></b>{foo]</p>', '<p><b>{</b>foo]</p>');
+		t('<p>foo{<b>]</b></p>', '<p>{foo<b>]</b></p>');
+
+		// <p><b>foo{]</b></p> ==> <p><b>{foo]</b></p>'
+		var pos = traversing.prevNodeBoundary(
+			$('<p><b>foo{]</b></p>')[0].firstChild,
+			1
+		);
+		equal(pos.container.nodeName, 'B');
+		equal(pos.offset, 0);
+	});
+
+	test('prevNodeBoundaryWhile', function () {
+		tested.push('prevNodeBoundaryWhile');
+		var dom = $('<div>foo<p>bar<b><u><i>baz</i></u>buzz</b></p></div>')[0];
+		var range = ranges.create();
+		traversing.prevNodeBoundaryWhile(
+			dom,
+			aloha.dom.nodeIndex(dom.lastChild) + 1,
+			function (container, offset) {
+				if (container && container.parentNode) {
+					range.setStart(container, offset);
+					range.setEnd(container, offset);
+					ranges.insertText(range, '|');
+					return true;
+				}
+				return false;
+			}
+		);
+		equal(
+			dom.outerHTML,
+			'<div>|foo|<p>|bar|<b>|<u>|<i>|baz|</i>|</u>|buzz|</b>|</p>|</div>'
+		);
+	});
+
+	test('nextNodeBoundary', function () {
+		tested.push('nextNodeBoundary');
+
+		var t = function (before, after) {
+			runTest(before, after, traversing.nextNodeBoundary);
+		};
+
+		t('<p><b>[foo</b>}</p>', '<p><b>foo{</b>}</p>');
+		t('<p><b>f[oo</b>}</p>', '<p><b>foo{</b>}</p>');
+		t('<p><b>foo[</b>}</p>', '<p><b>foo{</b>}</p>');
+		t('<p><b>[</b>}</p>', '<p><b>{</b>}</p>');
+
+		t('<p><b>{</b>}</p>', '<p><b></b>{}</p>');
+		t('<p><b>{foo</b>}</p>', '<p><b>foo{</b>}</p>');
+
+		t('<p><b>foo{</b>}</p>', '<p><b>foo</b>{}</p>');
+		t('<p><b>{</b>}</p>', '<p><b></b>{}</p>');
+
+		t('<p>{foo}</p>', '<p>foo{}</p>');
+		t('<p>{<b>foo</b>}</p>', '<p><b>{foo</b>}</p>');
+
+		t('<p><b>{</b>foo]</p>', '<p><b></b>{foo]</p>');
+		t('<p>{foo<b>]</b></p>', '<p>foo{<b>]</b></p>');
+
+		t('<p>{foo<b>]</b></p>', '<p>foo{<b>]</b></p>');
+
+		// <p><b>{foo]</b></p> ==> <p><b>foo[]</b></p>'
+		var pos = traversing.nextNodeBoundary(
+			$('<p><b>{foo]</b></p>')[0].firstChild,
+			0
+		);
+		equal(pos.container.nodeName, 'B');
+		equal(pos.offset, 1);
+	});
+
+	test('nextNodeBoundaryWhile', function () {
+		tested.push('nextNodeBoundaryWhile');
+		var dom = $('<div>foo<p>bar<b><u><i>baz</i></u>buzz</b></p></div>')[0];
+		var range = ranges.create();
+		traversing.nextNodeBoundaryWhile(dom, 0, function (container, offset) {
+			if (container && container.parentNode) {
+				range.setStart(container, offset);
+				range.setEnd(container, offset);
+				ranges.insertText(range, '|');
+				return true;
+			}
+			return false;
+		});
+		equal(
+			dom.outerHTML,
+			'<div>|foo|<p>|bar|<b>||<u>||<i>|baz|</i>||</u>|buzz|</b>||</p>||</div>'
+		);
+	});
 
 	test('nextWhile', function () {
 		tested.push('nextWhile');
@@ -279,7 +398,5 @@
 		}
 	});
 
-	test('COVERAGE', function () {
-		testCoverage(equal, tested, traversing);
-	});
+	testCoverage(test, tested, traversing);
 }(window.aloha));
