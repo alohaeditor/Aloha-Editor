@@ -18,7 +18,7 @@
 		);
 		range.setStart(pos.container, pos.offset);
 		boundarymarkers.insert(range);
-		equal(dom.outerHTML, after);
+		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 
 	test('prevNodeBoundary', function () {

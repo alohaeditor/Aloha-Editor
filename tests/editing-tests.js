@@ -34,7 +34,7 @@
 			if ($.type(expected) === 'function') {
 				expected(actual);
 			} else {
-				equal(actual, expected);
+				equal(actual, expected, before + ' ⇒ ' + expected);
 			}
 		});
 	}
@@ -54,11 +54,15 @@
 				    && actual !== afterSwitched.replace(/\]/g, '}')
 				    ) {
 				if (actual !== afterSwitched) {
-					equal(actual, afterSwitched);
+					equal(actual, afterSwitched, before + ' ⇒ ' + afterSwitched);
 				} else if (actual !== afterSwitched.replace(/\]/g, '}')) {
-					equal(actual, afterSwitched.replace(/\]/g, '}'));
+					equal(
+						actual,
+						afterSwitched.replace(/\]/g, '}'),
+						before + ' ⇒ ' + afterSwitched.replace(/\]/g, '}')
+					);
 				} else if (actual !== after) {
-					equal(actual, after);
+					equal(actual, after, before + ' ⇒ ' + after);
 				}
 			} else {
 				expect(0);
@@ -83,9 +87,22 @@
 			var dom = $(htmlWithBoundaryMarkers)[0];
 			var range = ranges.create();
 			boundarymarkers.extract(dom, range);
-			equal(xhtml.nodeToXhtml(dom), htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, ''));
+			equal(
+				xhtml.nodeToXhtml(dom),
+				htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, ''),
+
+				htmlWithBoundaryMarkers
+				+ ' ⇒  ' +
+				htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, '')
+			);
 			boundarymarkers.insert(range);
-			equal(xhtml.nodeToXhtml(dom), htmlWithBoundaryMarkers);
+			equal(
+				xhtml.nodeToXhtml(dom),
+				htmlWithBoundaryMarkers,
+				htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, '')
+				+ ' ⇒  ' +
+				htmlWithBoundaryMarkers
+			);
 		});
 	};
 
@@ -110,7 +127,7 @@
 				.replace(/font-family: ; /g, '')
 				.replace(/font-size: 18px; font-family: arial/g, 'font-family: arial; font-size: 18px');
 			after = after.replace(/;"/g, '"');
-			equal(actual, after);
+			equal(actual, after, before + ' ⇒  ' + after);
 		}
 		function isObstruction(node) {
 			return !html.hasInlineStyle(node) || 'CODE' === node.nodeName;

@@ -13,7 +13,7 @@
 		boundarymarkers.extract(dom, range);
 		ranges.expand(range);
 		boundarymarkers.insert(range);
-		equal(dom.outerHTML, after);
+		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 
 	test('expand()', function () {
