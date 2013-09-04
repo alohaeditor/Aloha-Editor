@@ -132,6 +132,13 @@
 
 	module('dom: nodes');
 
+	test('isAtStart', function () {
+		tested.push('isAtStart');
+		var node = $('<div>one</div>')[0];
+		equal(dom.isAtStart(node.firstChild, 0), true);
+		equal(dom.isAtStart(node, 1), false);
+	});
+
 	test('isAtEnd', function () {
 		tested.push('isAtEnd');
 		var node = $('<div>one</div>')[0];
