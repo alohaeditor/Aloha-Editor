@@ -15,7 +15,10 @@
 	test('noop', function () {
 		tested.push('noop');
 		equal(
-			fn.noop.toString().replace(/[\r\n]/g, '').replace(/\{\s*\}/g, '{}').replace(/\s+noop\s*\(\)\s*/, '()'),
+			fn.noop.toString().replace(/[\r\n]/g, '')
+			                  .replace(/\{\s*\}/g, '{}')
+			                  .replace(/\s+noop\s*\(\)\s*/, '()')
+			                  .replace(/function\s+\(/, 'function('),
 			'function(){}'
 		);
 	});
