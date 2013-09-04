@@ -1,5 +1,8 @@
-// Because of cursor.js
 var pos = {
-	node: null,
+	// Because of traversing.prevNodeBoundary()
+	container: null, 
+
+	// Because of cursor.js
+	node: null, 
 	atEnd: false
 };
