@@ -294,10 +294,9 @@ define([
 	 * except for unrendered nodes), and both boundary points are normalized,
 	 * the selection will be collapsed to the start of the block.
 	 *
-	 * For some operations it's useful to think of a block as a number
-	 * of lines, each including its respective br and any preceding
-	 * unrendered whitespace and in case of the last line, also any
-	 * following unrendered whitespace.
+	 * For some operations it's useful to think of a block as a number of lines,
+	 * each including its respective br and any preceding unrendered whitespace
+	 * and in case of the last line, also any following unrendered whitespace.
 	 *
 	 * @param {Cursor} point
 	 * @return {Boolean}
@@ -351,7 +350,7 @@ define([
 		while (child) {
 			if (!isUnrenderedWhitespace(child)
 					&& (1 === child.nodeType || 3 === child.nodeType)) {
-				return true;
+				return false;
 			}
 			child = child.nextSibling;
 		}
