@@ -3,8 +3,6 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
- *
- * @overview Provides methods to broker publish/subscribe facilities.
  */
 define([], function () {
 	'use strict';
@@ -185,6 +183,9 @@ define([], function () {
 		return tally;
 	}
 
+	/**
+	 * Functions to broker publish/subscribe facilities.
+	 */
 	var exports = {
 		publish: publish,
 		subscribe: subscribe,
