@@ -54,9 +54,9 @@
 					range = ranges.get();
 					editing.wrap(range, 'u');
 					ranges.insertText(ranges.stableRange(range), '"');
-					ranges.collapseAtEnd(range)
+					ranges.collapseToEnd(range)
 					ranges.insertText(range, '"');
-					ranges.collapseAtEnd(range);
+					ranges.collapseToEnd(range);
 					ranges.select(range);
 				}
 				function load(aloha) {
