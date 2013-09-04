@@ -34,9 +34,7 @@
 		}
 
 		function testCoverage(test, tested, module) {
-			if (isBuild) {
-				ok(1);
-			} else {
+			if (!isBuild) {
 				test('COVERAGE', function () {
 					var functions = getFunctionsInNamespace(module);
 					equal(
