@@ -1266,10 +1266,22 @@ define([
 		}, opts);
 
 		fixupRange(liveRange, function (range, left, right) {
+			var removeLeft = !left.atEnd;
 			var removeRight = right.atEnd;
-			var removeLeft = left.atEnd;
 			splitRangeAtBoundaries(range, left, right, opts);
-			
+			var node;
+			var offset;
+			if (removeLeft) {
+				node = left.node.parentNode;
+				offset = dom.nodeIndex(left.node);
+				dom.remove(left.node);
+				left.setFrom(cursors.createFromBoundary(node, offset));
+			}
+			if (removeRight) {
+				node = right.node
+				right.next();
+				dom.remove(node);
+			}
 			return null;
 		});
 

@@ -12,6 +12,33 @@
 
 	module('editing');
 
+
+	function runTest(before, after, op) {
+		var dom = $(before)[0];
+		var range = ranges.create();
+		boundarymarkers.extract(dom, range);
+		op(range);
+		boundarymarkers.insert(range);
+		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
+	}
+
+	test('remove()', function () {
+		tested.push('remove');
+		var t = function (before, after) {
+			return runTest(before, after, editing.remove);
+		};
+		t('<p>x[y]z</p>', '<p>x[]z</p>');
+		return;
+		t('<p>x[yz]</p>', '<p>x[]</p>');
+		t('<p>[xyz]</p>', '<p>[]</p>');
+		t('<p>x{<b>y</b>}z</p>', '<p>x{}z</p>');
+		t('<p>x<b>{y</b>}z</p>', '<p>x{}z</p>');
+		t('<p>x<b>{y}</b>}z</p>', '<p>x{}z</p>');
+		t('<p>x{<b>y}</b>}z</p>', '<p>x{}z</p>');
+	});
+
+	return;
+
 	function switchElemTextSelection(html) {
 		return html.replace(/[\{\}\[\]]/g, function (match) {
 			return {'{': '[',
