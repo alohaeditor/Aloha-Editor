@@ -39,10 +39,9 @@
 		};
 
 		// problem with boundarymarker.insert()
-		//t('<p><b>[foo}</b></p>', '<p><b>[foo}</b></p>');
-
 		t('<p>{<b>}</b></p>',                  '<p>{}<b></b></p>');
 		t('<p><b>{</b>}</p>',                  '<p><b>{}</b></p>');
+		t('<p><b>[foo}</b></p>',               '<p><b>[foo}</b></p>');
 		t('<p>foo{<b></b>}</p>',               '<p>foo{}<b></b></p>');
 		t('<p><b>{</b><u></u>}</p>',           '<p><b>{}</b><u></u></p>');
 		t('<p><b>{foo}</b></p>',               '<p><b>{foo}</b></p>');

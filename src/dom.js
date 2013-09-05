@@ -577,9 +577,20 @@ define([
 	}
 
 	/**
-	 * Splits the given text node at the given offset, and returns the first of
-	 * the two text nodes that were inserted to replace the given node in the
-	 * DOM.
+	 * Checks whether a node can be split at the given offset to yeild two
+	 * nodes.
+	 *
+	 * @private
+	 * @param {DOMObject} node
+	 * @param {Number} offset
+	 * @return {Boolean}
+	 */
+	function wouldSplitTextNode(node, offset) {
+		return 0 < offset && offset < node.nodeValue.length;
+	}
+
+	/**
+	 * Splits the given text node at the given offset.
 	 *
 	 * @TODO: could be optimized with insertData() so only a single text node is
 	 *        inserted instead of two.
@@ -593,11 +604,11 @@ define([
 	function splitTextNode(node, offset) {
 		// Because node.splitText() is buggy on IE, split it manually.
 		// http://www.quirksmode.org/dom/w3c_core.html
-		var parent = node.parentNode;
-		var text = node.nodeValue;
-		if (0 === offset || offset >= text.length) {
+		if (!wouldSplitTextNode(node, offset)) {
 			return node;
 		}
+		var parent = node.parentNode;
+		var text = node.nodeValue;
 		var before = document.createTextNode(text.substring(0, offset));
 		var after = document.createTextNode(
 			text.substring(offset, text.length)
@@ -736,8 +747,8 @@ define([
 		var so = range.startOffset;
 		var ec = range.endContainer;
 		var eo = range.endOffset;
-		var newNodeBeforeSplit = splitTextNode(splitNode, splitOffset);
-		if (newNodeBeforeSplit) {
+		if (wouldSplitTextNode(splitNode, splitOffset)) {
+			var nodeBeforeSplit = splitTextNode(splitNode, splitOffset);
 			adjustRangeAfterSplit(
 				sc,
 				so,
@@ -745,7 +756,7 @@ define([
 				setRangeStart,
 				splitNode,
 				splitOffset,
-				newNodeBeforeSplit
+				nodeBeforeSplit
 			);
 			adjustRangeAfterSplit(
 				ec,
@@ -754,7 +765,7 @@ define([
 				setRangeEnd,
 				splitNode,
 				splitOffset,
-				newNodeBeforeSplit
+				nodeBeforeSplit
 			);
 		}
 	}
