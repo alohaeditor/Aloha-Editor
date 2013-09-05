@@ -26,7 +26,7 @@
  */
 define([
 	'jquery',
-	'util/dom',
+	'util/dom2',
 	'util/maps',
 	'util/arrays'
 ], function (
