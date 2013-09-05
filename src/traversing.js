@@ -353,13 +353,7 @@ define([
 
 		// <p>foo{</p> ==> <p>{foo</p>
 		// <p><b>foo</b>bar{</p> ==> <p><b>foo</b>{foo</p>
-		if (dom.nodeLength(container) === offset) {
-			return {
-				container: container,
-				offset: offset - 1
-			};
-		}
-
+		// <p><b><b>{</p> ==> <p><b>{</b></p>
 		// <p><b></b>{foo</p> ==> <p><b>{</b>foo</p>
 		// <p><b>foo</b>{bar</p> ==> <p><b>foo{</b>bar</p>
 		// <p>foo{<b></b></p> ==> <p>{foo<b></b></p>

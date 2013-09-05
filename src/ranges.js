@@ -150,24 +150,29 @@ define([
 	}
 
 	/**
-	 * Ensure that the given pos node is nested in at least 2 levels of
-	 * ancestors.
-	 *
-	 * This function is used a predicate when performing nextWhile() in
-	 * order to ensure that the resultant range position will be.
+	 * Ensures that the given position is nested in at least 2 levels of
+	 * ancestors, and at the start.
 	 *
 	 * @private
 	 * @param {Cursor} pos
 	 * @param {Boolean}
 	 */
-	function shouldStepBackward(container, offset) {
+	function canExpandBackward(container, offset) {
 		return container
 		    && container.parentNode
 		    && container.parentNode.parentNode
 		    && dom.isAtStart(container, offset);
 	}
 
-	function shouldStepForward(container, offset) {
+	/**
+	 * Ensures that the given position is nested in at least 2 levels of
+	 * ancestors, and at the end.
+	 *
+	 * @private
+	 * @param {Cursor} pos
+	 * @param {Boolean}
+	 */
+	function canExpandForward(container, offset) {
 		return container
 		    && container.parentNode
 		    && container.parentNode.parentNode
@@ -190,12 +195,108 @@ define([
 		var start = traversing.prevNodeBoundaryWhile(
 			range.startContainer,
 			range.startOffset,
-			shouldStepBackward
+			canExpandBackward
 		);
 		var end = traversing.nextNodeBoundaryWhile(
 			range.endContainer,
 			range.endOffset,
-			shouldStepForward
+			canExpandForward
+		);
+		range.setStart(start.container, start.offset);
+		range.setEnd(end.container, end.offset);
+		return range;
+	}
+
+	/**
+	 * Checks whether or not the position is at a text node.
+	 *
+	 * @private
+	 * @param {DOMObject} container
+	 * @param {Number} offset
+	 * @return {Boolean}
+	 */
+	function isAtTextNode(container, offset) {
+		return !dom.isTextNode(container) && !(
+			container.childNodes[offset]
+			&&
+			dom.isTextNode(container.childNodes[offset])
+		);
+	}
+
+	/**
+	 * Checks whether or not a given position can be moved forward without
+	 * colliding with the other boundary position.
+	 *
+	 * @private
+	 * @param {DOMObject} container
+	 * @param {DOMObject} container
+	 * @param {Number} offset
+	 * @param {DOMObject} oppositeContainer
+	 * @param {Number} oppositeOffset
+	 * @return {Boolean}
+	 */
+	function canContractForward(container, offset,
+	                            oppositeContainer, oppositeOffset) {
+		return isAtTextNode(container, offset) && !(
+			container === oppositeContainer && offset === oppositeOffset
+		);
+	}
+
+	/**
+	 * Checks whether or not a given position can be moved backward without
+	 * colliding with the other boundary position.
+	 *
+	 * @private
+	 * @param {DOMObject} container
+	 * @param {DOMObject} container
+	 * @param {Number} offset
+	 * @param {DOMObject} oppositeContainer
+	 * @param {Number} oppositeOffset
+	 * @return {Boolean}
+	 */
+	function canContractBackward(container, offset,
+	                             oppositeContainer, oppositeOffset) {
+		return isAtTextNode(container, offset - 1) && !(
+			container === oppositeContainer && offset === oppositeOffset
+		);
+	}
+
+	/**
+	 * Contracts the given range's boundaries so that none of the boundaries are
+	 * just after a start tag or just before and end tag.
+	 *
+	 * For example:
+	 *
+	 * {<p>foo</p>} will become <p>{foo}</p>
+	 * <p><i>foo{</i><b>bar<b>}</p> will become <p><i>foo</i><b>{bar}</b></p>
+	 *
+	 * @param {Range}
+	 * @return {Range}
+	 */
+	function contract(range) {
+		var end = traversing.prevNodeBoundaryWhile(
+			range.endContainer,
+			range.endOffset,
+			function (container, offset) {
+				return canContractBackward(
+					container,
+					offset,
+					range.startContainer,
+					range.startOffset
+				);
+			}
+		);
+		var start = traversing.nextNodeBoundaryWhile(
+			range.startContainer,
+			range.startOffset,
+			function (container, offset) {
+				return canContractForward(
+					container,
+					offset,
+					range.endContainer,
+					range.endOffset
+				);
+			}
 		);
 		range.setStart(start.container, start.offset);
 		range.setEnd(end.container, end.offset);
@@ -551,6 +652,7 @@ define([
 		create: create,
 		equal: equal,
 		expand: expand,
+		contract: contract,
 		expandBoundaries: expandBoundaries,
 		extendToWord: extendToWord,
 		get: get,
@@ -570,6 +672,7 @@ define([
 	exports['create'] = exports.create;
 	exports['equal'] = exports.equal;
 	exports['expand'] = exports.expand;
+	exports['contract'] = exports.contract;
 	exports['expandBoundaries'] = exports.expandBoundaries;
 	exports['extendToWord'] = exports.extendToWord;
 	exports['get'] = exports.get;

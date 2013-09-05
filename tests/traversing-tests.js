@@ -28,24 +28,28 @@
 			runTest(before, after, traversing.prevNodeBoundary);
 		};
 
-		t('<p><b>[foo]</b></p>', '<p><b>{foo]</b></p>');
+		// ie will automatically convert <b>[foo]</b> to <b>{foo]</b>
+		if (!aloha.browser.browser.msie) {
+			t('<p><b>[foo]</b></p>', '<p><b>{foo]</b></p>');
+		}
+
 		t('<p><b>f[oo]</b></p>', '<p><b>{foo]</b></p>');
 		t('<p><b>foo[]</b></p>', '<p><b>{foo]</b></p>');
-
 		t('<p><b>[]</b></p>', '<p><b>{]</b></p>');
-		t('<p><b>{]</b></p>', '<p>{<b>]</b></p>');
 
-		t('<p><b></b>{]</p>', '<p><b>{</b>]</p>');
+		// ie will automatically convery <b>{]</b> to <b>[]</b>
+		if (!aloha.browser.browser.msie) {
+			t('<p><b>{]</b></p>', '<p>{<b>]</b></p>');
+		}
+
+		// ie will automatically convery <b></b>{] to <b></b>[]
+		if (!aloha.browser.browser.msie) {
+			t('<p><b></b>{}</p>', '<p><b>{</b>}</p>');
+		}
+
 		t('<p><b></b>{foo]</p>', '<p><b>{</b>foo]</p>');
 		t('<p>foo{<b>]</b></p>', '<p>{foo<b>]</b></p>');
-
-		// <p><b>foo{]</b></p> ==> <p><b>{foo]</b></p>'
-		var pos = traversing.prevNodeBoundary(
-			$('<p><b>foo{]</b></p>')[0].firstChild,
-			1
-		);
-		equal(pos.container.nodeName, 'B');
-		equal(pos.offset, 0);
+		t('<p><b>foo{]</b></p>', '<p><b>{foo]</b></p>');
 	});
 
 	test('prevNodeBoundaryWhile', function () {
@@ -97,13 +101,7 @@
 
 		t('<p>{foo<b>]</b></p>', '<p>foo{<b>]</b></p>');
 
-		// <p><b>{foo]</b></p> ==> <p><b>foo[]</b></p>'
-		var pos = traversing.nextNodeBoundary(
-			$('<p><b>{foo]</b></p>')[0].firstChild,
-			0
-		);
-		equal(pos.container.nodeName, 'B');
-		equal(pos.offset, 1);
+		t('<p><b>{foo]</b></p>', '<p><b>foo{}</b></p>');
 	});
 
 	test('nextNodeBoundaryWhile', function () {

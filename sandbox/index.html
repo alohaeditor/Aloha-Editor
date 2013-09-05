@@ -53,7 +53,7 @@
 					ranges.select(ranges.extendToWord(range));
 					range = ranges.get();
 					editing.wrap(range, 'u');
-					ranges.expand(range);
+					ranges.contract(range);
 					ranges.insertText(ranges.stableRange(range), '"');
 					ranges.collapseToEnd(range)
 					ranges.insertText(range, '"');
