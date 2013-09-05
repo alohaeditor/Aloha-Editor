@@ -516,7 +516,9 @@ define([
 	}
 
 	/**
-	 * @private
+	 * Detaches the given node.
+	 *
+	 * @param {DOMObjec} node
 	 */
 	function remove(node) {
 		node.parentNode.removeChild(node);
@@ -1193,6 +1195,8 @@ define([
 	 * Functions for working with the DOM.
 	 */
 	var exports = {
+		remove: remove,
+
 		addClass: addClass,
 		removeClass: removeClass,
 		hasClass: hasClass,
@@ -1248,6 +1252,8 @@ define([
 
 		Nodes: Nodes
 	};
+
+	exports['remove'] = exports.remove;
 
 	exports['addClass'] = exports.addClass;
 	exports['removeClass'] = exports.removeClass;

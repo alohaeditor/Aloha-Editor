@@ -43,8 +43,10 @@ define([
 ) {
 	'use strict';
  
+	/*
 	keys.down('enter', typing.enter);
 	keys.down('space', typing.space);
+	*/
 
 	/**
 	 * Aloha Editor API

@@ -644,7 +644,6 @@ define([
 	 * ranges.trimBoundaries()
 	 * ranges.trimClosingOpening()
 	 * ranges.getNearestEditingHost()
-	 * ranges.collapseRight()
 	 */
 	var exports = {
 		collapseToEnd: collapseToEnd,
