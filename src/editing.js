@@ -108,7 +108,7 @@ define([
 	function makePointNodeStep(pointNode, atEnd, stepOutsideInside, stepPartial) {
 		// Because the start node is inside the range, the end node is
 		// outside, and all ancestors of start and end are partially
-		// inside/outside (for startEnd/endEnd positions the nodes are
+		// inside/outside (for startAtEnd/endAtEnd positions the nodes are
 		// also ancestors of the position).
 		return function (node, arg) {
 			if (node === pointNode && !atEnd) {
@@ -140,19 +140,19 @@ define([
 		var ec  = liveRange.endContainer;
 		var so  = liveRange.startOffset;
 		var eo  = liveRange.endOffset;
-		var start    = dom.nodeAtOffset(sc, so);
-		var end      = dom.nodeAtOffset(ec, eo);
-		var startEnd = dom.isAtEnd(sc, so);
-		var endEnd   = dom.isAtEnd(ec, eo);
-		var ascStart = traversing.childAndParentsUntilNode(start, cac);
-		var ascEnd   = traversing.childAndParentsUntilNode(end,   cac);
-		var stepAtStart = makePointNodeStep(start, startEnd, stepRightStart, stepPartial);
-		var stepAtEnd   = makePointNodeStep(end, endEnd, stepRightEnd, stepPartial);
-		ascendWalkSiblings(ascStart, startEnd, carryDown, stepLeftStart, stepAtStart, stepRightStart, arg);
-		ascendWalkSiblings(ascEnd, endEnd, carryDown, stepLeftEnd, stepAtEnd, stepRightEnd, arg);
+		var start       = dom.nodeAtOffset(sc, so);
+		var end         = dom.nodeAtOffset(ec, eo);
+		var startAtEnd  = dom.isAtEnd(sc, so);
+		var endAtEnd    = dom.isAtEnd(ec, eo);
+		var ascStart    = traversing.childAndParentsUntilNode(start, cac);
+		var ascEnd      = traversing.childAndParentsUntilNode(end,   cac);
+		var stepAtStart = makePointNodeStep(start, startAtEnd, stepRightStart, stepPartial);
+		var stepAtEnd   = makePointNodeStep(end, endAtEnd, stepRightEnd, stepPartial);
+		ascendWalkSiblings(ascStart, startAtEnd, carryDown, stepLeftStart, stepAtStart, stepRightStart, arg);
+		ascendWalkSiblings(ascEnd, endAtEnd, carryDown, stepLeftEnd, stepAtEnd, stepRightEnd, arg);
 		var cacChildStart = arrays.last(ascStart);
 		var cacChildEnd   = arrays.last(ascEnd);
-		stepAtStart = makePointNodeStep(start, startEnd, stepInbetween, stepPartial);
+		stepAtStart = makePointNodeStep(start, startAtEnd, stepInbetween, stepPartial);
 		traversing.walkUntilNode(cac.firstChild, stepLeftStart, cacChildStart, arg);
 		if (cacChildStart) {
 			var next = cacChildStart.nextSibling;
@@ -1193,11 +1193,11 @@ define([
 			var removeEmpty = [];
 
 			var start = dom.nodeAtOffset(range.startContainer, range.startOffset);
-			var startEnd = dom.isAtEnd(range.startContainer, range.startOffset);
+			var startAtEnd = dom.isAtEnd(range.startContainer, range.startOffset);
 			var end = dom.nodeAtOffset(range.endContainer, range.endOffset);
-			var endEnd = dom.isAtEnd(range.endContainer, range.endOffset);
-			var unsplitParentStart = splitBoundaryPoint(start, startEnd, leftPoint, rightPoint, removeEmpty, opts);
-			var unsplitParentEnd = splitBoundaryPoint(end, endEnd, leftPoint, rightPoint, removeEmpty, opts);
+			var endAtEnd = dom.isAtEnd(range.endContainer, range.endOffset);
+			var unsplitParentStart = splitBoundaryPoint(start, startAtEnd, leftPoint, rightPoint, removeEmpty, opts);
+			var unsplitParentEnd = splitBoundaryPoint(end, endAtEnd, leftPoint, rightPoint, removeEmpty, opts);
 
 			removeEmpty.forEach(function (elem) {
 				// Because we may end up cloning the same node twice (by
@@ -1212,6 +1212,7 @@ define([
 					return node === unsplitParentStart || node === unsplitParentEnd;
 				});
 			}
+
 			return null;
 		});
 	}
