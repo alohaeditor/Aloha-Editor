@@ -468,6 +468,7 @@ define([
 			range.endContainer,
 			range.endOffset
 		);
+
 		var formatter = mutate(range, leftPoint, rightPoint);
 		if (formatter) {
 			formatter.postprocess();
@@ -1120,6 +1121,37 @@ define([
 		return unsplitParent;
 	}
 
+	function splitRangeAtBoundaries(range, left, right, opts) {
+		var normalizeLeft = opts.normalizeRange ? left : left.clone();
+		var normalizeRight = opts.normalizeRange ? right : right.clone();
+		html.normalizeBoundary(normalizeLeft);
+		html.normalizeBoundary(normalizeRight);
+		cursors.setToRange(range, normalizeLeft, normalizeRight);
+
+		var removeEmpty = [];
+
+		var start = dom.nodeAtOffset(range.startContainer, range.startOffset);
+		var startAtEnd = dom.isAtEnd(range.startContainer, range.startOffset);
+		var end = dom.nodeAtOffset(range.endContainer, range.endOffset);
+		var endAtEnd = dom.isAtEnd(range.endContainer, range.endOffset);
+		var unsplitParentStart = splitBoundaryPoint(start, startAtEnd, left, right, removeEmpty, opts);
+		var unsplitParentEnd = splitBoundaryPoint(end, endAtEnd, left, right, removeEmpty, opts);
+
+		removeEmpty.forEach(function (elem) {
+			// Because we may end up cloning the same node twice (by
+			// splitting both start and end points).
+			if (!elem.firstChild && elem.parentNode) {
+				dom.removeShallowPreservingBoundaries(elem, [left, right]);
+			}
+		});
+
+		if (opts.normalizeRange) {
+			trimExpandBoundaries(left, right, null, function (node) {
+				return node === unsplitParentStart || node === unsplitParentEnd;
+			});
+		}
+	}
+
 	/**
 	 * Splits the ancestors above the given range's start and end points.
 	 *
@@ -1162,6 +1194,8 @@ define([
 	 *        out of an unsplit node which may be unexpected.
 	 */
 	function split(liveRange, opts) {
+		opts = opts || {};
+
 		// Because of advanced compilation
 		if (null != opts['clone']) {
 			opts.clone = opts['clone'];
@@ -1183,38 +1217,63 @@ define([
 			normalizeRange: true
 		}, opts);
 
-		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-			var normalizeLeft = opts.normalizeRange ? leftPoint : leftPoint.clone();
-			var normalizeRight = opts.normalizeRange ? rightPoint : rightPoint.clone();
-			html.normalizeBoundary(normalizeLeft);
-			html.normalizeBoundary(normalizeRight);
-			cursors.setToRange(range, normalizeLeft, normalizeRight);
-
-			var removeEmpty = [];
-
-			var start = dom.nodeAtOffset(range.startContainer, range.startOffset);
-			var startAtEnd = dom.isAtEnd(range.startContainer, range.startOffset);
-			var end = dom.nodeAtOffset(range.endContainer, range.endOffset);
-			var endAtEnd = dom.isAtEnd(range.endContainer, range.endOffset);
-			var unsplitParentStart = splitBoundaryPoint(start, startAtEnd, leftPoint, rightPoint, removeEmpty, opts);
-			var unsplitParentEnd = splitBoundaryPoint(end, endAtEnd, leftPoint, rightPoint, removeEmpty, opts);
-
-			removeEmpty.forEach(function (elem) {
-				// Because we may end up cloning the same node twice (by
-				// splitting both start and end points).
-				if (!elem.firstChild && elem.parentNode) {
-					dom.removeShallowPreservingBoundaries(elem, [leftPoint, rightPoint]);
-				}
-			});
-
-			if (opts.normalizeRange) {
-				trimExpandBoundaries(leftPoint, rightPoint, null, function (node) {
-					return node === unsplitParentStart || node === unsplitParentEnd;
-				});
-			}
-
+		fixupRange(liveRange, function (range, left, right) {
+			splitRangeAtBoundaries(range, left, right, opts);
 			return null;
 		});
+	}
+
+	function joinBoundaries(range) {
+		console.log(range);
+		//debugger;
+	}
+
+	function removeNodesBetweenBoundaries(left, right) {
+		var node = left.node;
+		var next;
+		left.prev();
+		while (node !== right.node) {
+			next = node.nextSibling;
+			dom.remove(node);
+			node = next;
+		}
+	}
+
+	// We could not just use split() becuase it would not be able to split
+	// "one[two]three"
+	function remove(liveRange, opts) {
+		opts = opts || {};
+
+		// Because of advanced compilation
+		if (null != opts['clone']) {
+			opts.clone = opts['clone'];
+		}
+		if (null != opts['until']) {
+			opts.until = opts['until'];
+		}
+		if (null != opts['below']) {
+			opts.below = opts['below'];
+		}
+		if (null != opts['normalizRange']) {
+			opts.normalizeRange = opts['normalizeRange'];
+		}
+
+		opts = maps.merge({
+			clone: dom.cloneShallow,
+			until: fn.returnFalse,
+			below: dom.isEditingHost,
+			normalizeRange: true
+		}, opts);
+
+		fixupRange(liveRange, function (range, left, right) {
+			var removeRight = right.atEnd;
+			var removeLeft = left.atEnd;
+			splitRangeAtBoundaries(range, left, right, opts);
+			
+			return null;
+		});
+
+		return liveRange;
 	}
 
 	/**
@@ -1223,16 +1282,19 @@ define([
 	 * editing.wrap()
 	 * editing.format()
 	 * editing.split()
+	 * editing.remove()
 	 */
 	var exports = {
-		wrap: wrapElem,
-		format: format,
-		split: split
+		wrap   : wrapElem,
+		format : format,
+		split  : split,
+		remove : remove
 	};
 
 	exports['wrap'] = exports.wrap;
 	exports['format'] = exports.format;
 	exports['split'] = exports.split;
+	exports['remove'] = exports.remove;
 
 	return exports;
 });
