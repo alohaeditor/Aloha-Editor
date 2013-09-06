@@ -3,13 +3,15 @@ define([
 	'traversing',
 	'cursors',
 	'arrays',
-	'strings'
+	'strings',
+	'ranges'
 ], function BoundaryMarkers(
 	dom,
 	traversing,
 	cursors,
 	arrays,
-	strings
+	strings,
+	ranges
 ) {
 	'use strict';
 
@@ -121,18 +123,100 @@ define([
 		}
 	}
 
+	function getPathToPosition(container, offset, limit) {
+		var path = [offset];
+		if (container === limit) {
+			return path;
+		}
+		traversing.childAndParentsUntilIncl(container, function (node) {
+			if (node === limit) {
+				return true;
+			}
+			path.push(dom.nodeIndex(node));
+			return false;
+		});
+		return path;
+	}
+
+	function getPositionFromPath(container, path) {
+		var node = container;
+		while (path.length > 1) {
+			node = node.childNodes[path.pop()];
+		}
+		return {
+			container: node,
+			offset: path.pop()
+		};
+	}
+
+	/**
+	 * Returns a string with boundary markers inserted into the representation
+	 * of the DOM to indicate the span of the given range.
+	 *
+	 * @param {Range} range
+	 */
+	function hint(range) {
+		var container = range.commonAncestorContainer;
+
+		var startPath = getPathToPosition(
+			range.startContainer,
+			range.startOffset,
+			container
+		);
+
+		var endPath = getPathToPosition(
+			range.endContainer,
+			range.endOffset,
+			container
+		);
+
+		var node = (container.parentNode)
+			? getPositionFromPath(
+				container.parentNode.cloneNode(true),
+				getPathToPosition(
+					container,
+					dom.nodeIndex(container),
+					container.parentNode
+				)
+			).container
+			: node = document.createElement('div').appendChild(
+				container.cloneNode(true)
+			);
+
+		var start = getPositionFromPath(node, startPath);
+		var end = getPositionFromPath(node, endPath);
+
+		range = ranges.create(
+			start.container,
+			start.offset,
+			end.container,
+			end.offset
+		);
+
+		insert(range);
+
+		return dom.outerHtml(
+			range.commonAncestorContainer.parentNode
+			||
+			range.commonAncestorContainer
+		);
+	}
+
 	/**
 	 * Functions for inserting and extracting range boundary markers into the
 	 * DOM.
 	 *
+	 * boundarymarkers.hint()
 	 * boundarymarkers.insert()
 	 * boundarymarkers.extract()
 	 */
 	var exports = {
+		hint: hint,
 		insert: insert,
 		extract: extract
 	};
 
+	exports['hint'] = exports.hint;
 	exports['insert'] = exports.insert;
 	exports['extract'] = exports.extract;
 
