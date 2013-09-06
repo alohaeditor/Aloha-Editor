@@ -1265,27 +1265,39 @@ define([
 			normalizeRange: true
 		}, opts);
 
-		fixupRange(liveRange, function (range, left, right) {
-			var removeLeft = !left.atEnd;
-			var removeRight = right.atEnd;
+		var range = ranges.stableRange(liveRange);
+
+		ranges.expand(range);
+
+		fixupRange(range, function (range, left, right) {
+			var removeLeft;
+			var removeRight;
+			if (!left.atEnd) {
+				removeLeft = left.node;
+			}
+			if (right.atEnd && removeLeft !== right.node.lastChild) {
+				removeRight = right.node.lastChild;
+			}
 			splitRangeAtBoundaries(range, left, right, opts);
-			var node;
-			var offset;
 			if (removeLeft) {
-				node = left.node.parentNode;
-				offset = dom.nodeIndex(left.node);
-				dom.remove(left.node);
-				left.setFrom(cursors.createFromBoundary(node, offset));
+				dom.removePreservingRange(removeLeft, range);
 			}
 			if (removeRight) {
-				node = right.node
-				right.next();
-				dom.remove(node);
+				dom.removePreservingRange(removeRight, range);
 			}
+			ranges.contract(range);
+			left.setFrom(cursors.createFromBoundary(
+				range.startContainer,
+				range.startOffset
+			));
+			right.setFrom(cursors.createFromBoundary(
+				range.endContainer,
+				range.endOffset
+			));
 			return null;
 		});
 
-		return liveRange;
+		return ranges.setFromReference(liveRange, range);
 	}
 
 	/**
