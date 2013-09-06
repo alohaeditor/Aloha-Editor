@@ -1270,20 +1270,22 @@ define([
 		ranges.expand(range);
 
 		fixupRange(range, function (range, left, right) {
-			var removeLeft;
-			var removeRight;
-			if (!left.atEnd) {
-				removeLeft = left.node;
-			}
-			if (right.atEnd && removeLeft !== right.node.lastChild) {
-				removeRight = right.node.lastChild;
-			}
+			var removeLeft = !left.atEnd;
+			var removeRight = right.atEnd && right.node.lastChild !== left.node;
 			splitRangeAtBoundaries(range, left, right, opts);
+			var node = left.node;
 			if (removeLeft) {
-				dom.removePreservingRange(removeLeft, range);
+				node = left.node.nextSibling;
+				dom.removePreservingRange(left.node, range);
+			}
+			var next;
+			while (node && node !== right.node) {
+				next = node.nextSibling;
+				dom.removePreservingRange(node, range);
+				node = next;
 			}
 			if (removeRight) {
-				dom.removePreservingRange(removeRight, range);
+				dom.removePreservingRange(right.node, range);
 			}
 			ranges.contract(range);
 			left.setFrom(cursors.createFromBoundary(

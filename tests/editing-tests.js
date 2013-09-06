@@ -27,13 +27,18 @@
 		var t = function (before, after) {
 			return runTest(before, after, editing.remove);
 		};
-		t('<p>x[y]z</p>',        '<p>x[]z</p>');
-		t('<p>x[yz]</p>',        '<p>x{}</p>');
-		t('<p>[xyz]</p>',        '<p>{}</p>');
+
+		//t('<p>x[y]z</p>',        '<p>x[]z</p>');
+		//t('<p>x[yz]</p>',        '<p>x{}</p>');
+		t('<div><p>[xyz]</p></div>',        '<p>{}</p>');
+		t('<div><p>{xyz}</p></div>',        '<p>{}</p>');
+		return;
 		t('<p>x{<b>y</b>}z</p>', '<p>x[]z</p>');
 		t('<p>x{<b>y}</b>z</p>', '<p>x[]z</p>');
 		t('<p>x<b>{y</b>}z</p>', '<p>x[]z</p>');
 		t('<p>x<b>{y}</b>z</p>', '<p>x[]z</p>');
+		t('<p>x<b>y{</b>z}</p>', '<p>x<b>y</b>{}</p>');
+		t('<p>1<b>{2</b>3<u>4</u>]5<i>6</i>', '<p>1<b>{2</b>3<u>4</u>]5<i>6</i>');
 	});
 
 	return;
