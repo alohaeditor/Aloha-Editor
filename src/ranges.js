@@ -224,11 +224,25 @@ define([
 	}
 
 	/**
+	 * Checks whether the corresponding container node and offset boundaries are
+	 * equal.
+	 *
+	 * @private
+	 * @param {DOMObject} container
+	 * @param {Number} offset
+	 * @param {DOMObject} oppositeContainer
+	 * @param {Number} oppositeOffset
+	 * @return {Boolean}
+	 */
+	function boundariesEqual(container1, offset1, container2, offset2) {
+		return container1 === container2 && offset1 === offset2;
+	}
+
+	/**
 	 * Checks whether or not a given position can be moved forward without
 	 * colliding with the other boundary position.
 	 *
 	 * @private
-	 * @param {DOMObject} container
 	 * @param {DOMObject} container
 	 * @param {Number} offset
 	 * @param {DOMObject} oppositeContainer
@@ -237,8 +251,8 @@ define([
 	 */
 	function canContractForward(container, offset,
 	                            oppositeContainer, oppositeOffset) {
-		return isAtTextNode(container, offset) && !(
-			container === oppositeContainer && offset === oppositeOffset
+		return isAtTextNode(container, offset) && !boundariesEqual(
+			container, offset, oppositeContainer, oppositeOffset
 		);
 	}
 
@@ -248,7 +262,6 @@ define([
 	 *
 	 * @private
 	 * @param {DOMObject} container
-	 * @param {DOMObject} container
 	 * @param {Number} offset
 	 * @param {DOMObject} oppositeContainer
 	 * @param {Number} oppositeOffset
@@ -256,8 +269,8 @@ define([
 	 */
 	function canContractBackward(container, offset,
 	                             oppositeContainer, oppositeOffset) {
-		return isAtTextNode(container, offset - 1) && !(
-			container === oppositeContainer && offset === oppositeOffset
+		return isAtTextNode(container, offset - 1) && !boundariesEqual(
+			container, offset, oppositeContainer, oppositeOffset
 		);
 	}
 
