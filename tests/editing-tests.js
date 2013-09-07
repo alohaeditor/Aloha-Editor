@@ -30,8 +30,14 @@
 
 		//t('<p>x[y]z</p>',        '<p>x[]z</p>');
 		//t('<p>x[yz]</p>',        '<p>x{}</p>');
-		t('<div><p>[xyz]</p></div>',        '<p>{}</p>');
-		t('<div><p>{xyz}</p></div>',        '<p>{}</p>');
+		//
+		//t('<div>x<b>[y]</b>z</div>', '<div>x[]y</div>');
+		//t('<div>x<p>[y]</p>z</div>', '<div>x<p>{}</p>y</div>');
+
+		//t('<div><p>[xyz]</p></div>',        '<div><p>x{}x</p></div>');
+		//t('<div><p>{xyz}</p></div>',        '<div><p>{}</p></div>');
+		//
+		//t('<div>x<b>fo[o</b>bar<u>b]az</u>y</div>' '<div>x<b>fo</b><u>az</u>y</div>');
 		return;
 		t('<p>x{<b>y</b>}z</p>', '<p>x[]z</p>');
 		t('<p>x{<b>y}</b>z</p>', '<p>x[]z</p>');

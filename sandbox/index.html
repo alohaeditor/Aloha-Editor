@@ -23,7 +23,11 @@
 		</style>
 	</head>
 	<body>
+			<!--div>x<b>fo[o</b>bar<u>b]az</u>y</div-->
 		<div class="aloha-editable" contentEditable="true">
+			<p>x<br><b>y</b>z</p>
+		</div>
+		<div style="display:none">
 			one two
 			<ul>
 				<li>three</li>
@@ -68,6 +72,7 @@
 					h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
 				}
 				function main(ranges, editing, pubsub) {
+					return;
 					var range = ranges.create(
 						document.getElementsByTagName('b')[0], 1,
 						document.getElementsByTagName('b')[0], 2
