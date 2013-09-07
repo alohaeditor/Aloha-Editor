@@ -21,7 +21,7 @@
 		var t = function (before, after) {
 			return runTest(before, after, ranges.expand);
 		};
-		t('<p>x{<b>y</b>}</p>',               '<p>x{<b>y</b>}</p>');
+		t('<p>x{<b>y</b>}z</p>',              '<p>x{<b>y</b>}z</p>');
 		t('<p>x<b>y[]</b>z</p>',              '<p>x<b>y[</b>}z</p>');
 		t('<p>x<b>[]</b>y</p>',               '<p>x{<b></b>}y</p>');
 		t('<p><b>[x]</b></p>',                '<p>{<b>x</b>}</p>');
@@ -30,6 +30,10 @@
 		t('<p><b>[x]</b>y</p>',               '<p>{<b>x</b>}y</p>');
 		t('<p>x<b>[y]</b>z</p>',              '<p>x{<b>y</b>}z</p>');
 		t('<p><b>x[y]z</b></p>',              '<p><b>x[y]z</b></p>');
+
+		t('<div>x<p>y[]</p>z</div>',          '<div>x<p>y[}</p>z</div>');
+		t('<div>x<p>y{}</p>z</div>',          '<div>x<p>y{}</p>z</div>');
+		t('<div>x<p>{<b>y</b>}</p></div>',    '<div>x<p>{<b>y</b>}</p></div>');
 	});
 
 	test('contract()', function () {
@@ -37,8 +41,6 @@
 		var t = function (before, after) {
 			return runTest(before, after, ranges.contract);
 		};
-
-		// problem with boundarymarker.insert()
 		t('<p>{<b>}</b></p>',                  '<p>{}<b></b></p>');
 		t('<p><b>{</b>}</p>',                  '<p><b>{}</b></p>');
 		t('<p><b>[foo}</b></p>',               '<p><b>[foo}</b></p>');
@@ -48,7 +50,10 @@
 		t('<p>{<b><i><u>}</u></i></b></p>',    '<p>{}<b><i><u></u></i></b></p>');
 		t('<p>{<b><i><u>foo}</u></i></b></p>', '<p><b><i><u>{foo}</u></i></b></p>');
 		t('<p>{<b><i></i>foo}</b></p>',        '<p><b><i></i>{foo}</b></p>');
-		t('<p>{<b><i></i><br>foo}</b></p>',    '<p><b><i></i><br>{foo}</b></p>');
+
+		t('<p>{<b><i></i><br>foo}</b></p>',    '<p><b><i></i>{<br>foo}</b></p>');
+		t('<p><b>{x<br>}</b></p>',             '<p><b>{x<br>}</b></p>');
+		t('<div>{<p>x</p>}</div>',             '<div>{<p>x</p>}</div>');
 	});
 
 	testCoverage(test, tested, ranges);

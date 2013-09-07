@@ -9,12 +9,14 @@
  */
 define([
 	'dom',
+	'html',
 	'traversing',
 	'functions',
 	'arrays',
 	'cursors'
 ], function Ranges(
 	dom,
+	html,
 	traversing,
 	fn,
 	arrays,
@@ -150,6 +152,26 @@ define([
 	}
 
 	/**
+	 * Checks whether or not the position is at a text node.
+	 *
+	 * @private
+	 * @param {DOMObject} container
+	 * @param {Number} offset
+	 * @return {Boolean}
+	 */
+	function isAtTextNode(container, offset) {
+		return dom.isTextNode(container) || (
+			container.childNodes[offset]
+			&& dom.isTextNode(container.childNodes[offset])
+		);
+	}
+
+	function isLinebreakingNode(node) {
+		return html.isRenderedEmptyInlineNode(node)
+		    || html.isLinebreakingNode(node);
+	}
+
+	/**
 	 * Ensures that the given position is nested in at least 2 levels of
 	 * ancestors, and at the start.
 	 *
@@ -161,7 +183,8 @@ define([
 		return container
 		    && container.parentNode
 		    && container.parentNode.parentNode
-		    && dom.isAtStart(container, offset);
+		    && dom.isAtStart(container, offset)
+		    && !isLinebreakingNode(container);
 	}
 
 	/**
@@ -176,7 +199,52 @@ define([
 		return container
 		    && container.parentNode
 		    && container.parentNode.parentNode
-		    && dom.isAtEnd(container, offset);
+		    && dom.isAtEnd(container, offset)
+		    && !isLinebreakingNode(container);
+	}
+
+	/**
+	 * Checks whether or not a given position can be moved forward without
+	 * colliding with the other boundary position.
+	 *
+	 * @private
+	 * @param {DOMObject} container
+	 * @param {Number} offset
+	 * @param {DOMObject} oppositeContainer
+	 * @param {Number} oppositeOffset
+	 * @return {Boolean}
+	 */
+	function canContractForward(container, offset,
+	                            oppositeContainer, oppositeOffset) {
+		return !boundariesEqual(container, offset, oppositeContainer, oppositeOffset)
+		    && !isAtTextNode(container, offset)
+		    && !(
+				container.childNodes[offset]
+				&&
+				isLinebreakingNode(container.childNodes[offset])
+		    );
+	}
+
+	/**
+	 * Checks whether or not a given position can be moved backward without
+	 * colliding with the other boundary position.
+	 *
+	 * @private
+	 * @param {DOMObject} container
+	 * @param {Number} offset
+	 * @param {DOMObject} oppositeContainer
+	 * @param {Number} oppositeOffset
+	 * @return {Boolean}
+	 */
+	function canContractBackward(container, offset,
+	                             oppositeContainer, oppositeOffset) {
+		return !boundariesEqual(container, offset, oppositeContainer, oppositeOffset)
+		    && !isAtTextNode(container, offset - 1)
+		    && (
+				dom.isAtStart(container, offset)
+					? !isLinebreakingNode(container)
+					: !isLinebreakingNode(container.childNodes[offset - 1])
+		    );
 	}
 
 	/**
@@ -208,22 +276,6 @@ define([
 	}
 
 	/**
-	 * Checks whether or not the position is at a text node.
-	 *
-	 * @private
-	 * @param {DOMObject} container
-	 * @param {Number} offset
-	 * @return {Boolean}
-	 */
-	function isAtTextNode(container, offset) {
-		return !dom.isTextNode(container) && !(
-			container.childNodes[offset]
-			&&
-			dom.isTextNode(container.childNodes[offset])
-		);
-	}
-
-	/**
 	 * Checks whether the corresponding container node and offset boundaries are
 	 * equal.
 	 *
@@ -236,42 +288,6 @@ define([
 	 */
 	function boundariesEqual(container1, offset1, container2, offset2) {
 		return container1 === container2 && offset1 === offset2;
-	}
-
-	/**
-	 * Checks whether or not a given position can be moved forward without
-	 * colliding with the other boundary position.
-	 *
-	 * @private
-	 * @param {DOMObject} container
-	 * @param {Number} offset
-	 * @param {DOMObject} oppositeContainer
-	 * @param {Number} oppositeOffset
-	 * @return {Boolean}
-	 */
-	function canContractForward(container, offset,
-	                            oppositeContainer, oppositeOffset) {
-		return isAtTextNode(container, offset) && !boundariesEqual(
-			container, offset, oppositeContainer, oppositeOffset
-		);
-	}
-
-	/**
-	 * Checks whether or not a given position can be moved backward without
-	 * colliding with the other boundary position.
-	 *
-	 * @private
-	 * @param {DOMObject} container
-	 * @param {Number} offset
-	 * @param {DOMObject} oppositeContainer
-	 * @param {Number} oppositeOffset
-	 * @return {Boolean}
-	 */
-	function canContractBackward(container, offset,
-	                             oppositeContainer, oppositeOffset) {
-		return isAtTextNode(container, offset - 1) && !boundariesEqual(
-			container, offset, oppositeContainer, oppositeOffset
-		);
 	}
 
 	/**
