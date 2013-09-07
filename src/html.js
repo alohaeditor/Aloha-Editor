@@ -26,10 +26,10 @@ define([
 	var nonWhitespaceRx = /[^\r\n\t\f \u200B]/;
 
 	var nonBlockDisplayValuesMap = {
-		'inline'		: true,
-		'inline-block'	: true,
-		'inline-table'	: true,
-		'none'			: true
+		'inline'       : true,
+		'inline-block' : true,
+		'inline-table' : true,
+		'none'         : true
 	};
 
 	/**
@@ -99,7 +99,8 @@ define([
 		case dom.Nodes.DOCUMENT_FRAGMENT:
 			return true;
 		case dom.Nodes.ELEMENT:
-			return !nonBlockDisplayValuesMap[dom.getComputedStyle(node, 'display')];
+			var style = dom.getComputedStyle(node, 'display');
+			return style ? !nonBlockDisplayValuesMap[style] : isBlockType(node);
 		default:
 			return false;
 		}
@@ -199,8 +200,8 @@ define([
 	}
 
 	/**
-	 * Empty inline elements are unrendered, with the exception of img
-	 * and br elements. Idea from engine.js.
+	 * Empty inline elements are unrendered, with the exception of img and br
+	 * elements.
 	 */
 	function isRenderedEmptyInlineNode(node) {
 		return 'IMG' === node.nodeName || 'BR' === node.nodeName;
@@ -409,7 +410,9 @@ define([
 		skipUnrenderedToStartOfLine: skipUnrenderedToStartOfLine,
 		skipUnrenderedToEndOfLine: skipUnrenderedToEndOfLine,
 		normalizeBoundary: normalizeBoundary,
-		isEmpty: isEmpty
+		isEmpty: isEmpty,
+		isLinebreakingNode: isLinebreakingNode,
+		isRenderedEmptyInlineNode: isRenderedEmptyInlineNode
 	};
 
 	exports['isControlCharacter'] = exports.isControlCharacter;
@@ -423,6 +426,8 @@ define([
 	exports['skipUnrenderedToEndOfLine'] = exports.skipUnrenderedToEndOfLine;
 	exports['normalizeBoundary'] = exports.normalizeBoundary;
 	exports['isEmpty'] = exports.isEmpty;
+	exports['isLinebreakingNode'] = exports.isLinebreakingNode;
+	exports['isRenderedEmptyInlineNode'] = exports.isRenderedEmptyInlineNode;
 
 	return exports;
 });
