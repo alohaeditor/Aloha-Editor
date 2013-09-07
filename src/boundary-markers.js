@@ -170,7 +170,7 @@ define([
 			container
 		);
 
-		var node = (container.parentNode)
+		var node = container.parentNode
 			? getPositionFromPath(
 				container.parentNode.cloneNode(true),
 				getPathToPosition(
