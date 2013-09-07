@@ -204,6 +204,21 @@ define([
 	}
 
 	/**
+	 * Checks whether the corresponding container node and offset boundaries are
+	 * equal.
+	 *
+	 * @private
+	 * @param {DOMObject} container
+	 * @param {Number} offset
+	 * @param {DOMObject} oppositeContainer
+	 * @param {Number} oppositeOffset
+	 * @return {Boolean}
+	 */
+	function boundariesEqual(container1, offset1, container2, offset2) {
+		return container1 === container2 && offset1 === offset2;
+	}
+
+	/**
 	 * Checks whether or not a given position can be moved forward without
 	 * colliding with the other boundary position.
 	 *
@@ -248,16 +263,23 @@ define([
 	}
 
 	/**
-	 * Expands the given range's boundaries so that none of the boundaries are
-	 * just after a start tag or just before and end tag.
+	 * Expands the given range.
 	 *
-	 * For example:
+	 * expand() will move the range's start and end boundary positions as far
+	 * apart as possible in the document order whithout altering how the range
+	 * would be visually represented when selected.
 	 *
-	 * <p>[foo]</p> will become {<p>foo</p>}
-	 * <p>{fo]o]</p> will become {<p>fo]o</p>
+	 * The start and end boundary positions will not be expanded across elements
+	 * which affect visual line breaks.  These include all elements with
+	 * block-level display styling, img tags, and br tags ofcourse.
 	 *
-	 * @param {Range}
+	 * Note that an element's styling can only be determined if that element is
+	 * attached to the document.  If working with a range in a detached DOM,
+	 * then line-breaking nodes are determined simply by their tag name.
+	 *
+	 * @param {Range} range
 	 * @return {Range}
+	 *         The modified range.
 	 */
 	function expand(range) {
 		var start = traversing.prevNodeBoundaryWhile(
@@ -276,31 +298,23 @@ define([
 	}
 
 	/**
-	 * Checks whether the corresponding container node and offset boundaries are
-	 * equal.
+	 * Contracts the given range.
 	 *
-	 * @private
-	 * @param {DOMObject} container
-	 * @param {Number} offset
-	 * @param {DOMObject} oppositeContainer
-	 * @param {Number} oppositeOffset
-	 * @return {Boolean}
-	 */
-	function boundariesEqual(container1, offset1, container2, offset2) {
-		return container1 === container2 && offset1 === offset2;
-	}
-
-	/**
-	 * Contracts the given range's boundaries so that none of the boundaries are
-	 * just after a start tag or just before and end tag.
+	 * contract() will move the range's start and end boundary positions as
+	 * close together as possible in the document order whithout altering how
+	 * the range would be visually represented when selected.
 	 *
-	 * For example:
+	 * The start and end boundary positions will not contract across elements
+	 * which affect visual line breaks.  These include all elements with
+	 * block-level display styling, img tags, and br tags ofcourse.
 	 *
-	 * {<p>foo</p>} will become <p>{foo}</p>
-	 * <p><i>foo{</i><b>bar<b>}</p> will become <p><i>foo</i><b>{bar}</b></p>
+	 * Note that an element's styling can only be determined if that element is
+	 * attached to the document.  If working with a range in a detached DOM,
+	 * then line-breaking nodes are determined simply by their tag name.
 	 *
-	 * @param {Range}
+	 * @param {Range} range
 	 * @return {Range}
+	 *         The modified range.
 	 */
 	function contract(range) {
 		var end = traversing.prevNodeBoundaryWhile(
