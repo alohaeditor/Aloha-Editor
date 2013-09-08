@@ -1228,20 +1228,47 @@ define([
 		//debugger;
 	}
 
-	function removeNodesBetweenBoundaries(left, right) {
-		var node = left.node;
+	function removeNodesUntil(range, node, until, step) {
 		var next;
-		left.prev();
-		while (node !== right.node) {
-			next = node.nextSibling;
-			dom.remove(node);
+		while (node && !until(node)) {
+			next = step(node, until);
+			dom.removePreservingRange(node, range);
 			node = next;
 		}
+	}
+
+	function getNonAncestor(node, limit, previous) {
+		var next = previous ? node.previousSibling : node.nextSibling;
+		if (next) {
+			return limit(next) ? null : next;
+		}
+		return (node.parentNode && !limit(node.parentNode))
+			? getNonAncestor(node.parentNode, limit, previous)
+			: null;
+	}
+
+	function getPreviousNonAncestor(node, limit) {
+		return getNonAncestor(node, limit, true);
+	}
+
+	function getNextNonAncestor(node, limit) {
+		return getNonAncestor(node, limit, false);
+	}
+
+	function createHierarchyChecker(child, limit) {
+		var family = traversing.childAndParentsUntilInclNode(child, limit);
+		return function (node) {
+			return arrays.contains(family, node);
+		};
 	}
 
 	// We could not just use split() becuase it would not be able to split
 	// "one[two]three"
 	function remove(liveRange, opts) {
+		if (liveRange.collapsed) {
+			return liveRange;
+		}
+
 		opts = opts || {};
 
 		// Because of advanced compilation
@@ -1270,32 +1297,57 @@ define([
 		ranges.expand(range);
 
 		fixupRange(range, function (range, left, right) {
-			var removeLeft = !left.atEnd;
-			var removeRight = right.atEnd && right.node.lastChild !== left.node;
+			// Because after splitRangeAtBoundaries():
+			// x<p>{y}</p>z becomes x{<p>y</p>}z
+			// we therefore have to determine the left and right deletion
+			// terminal nodes before hand.
+
+			var cac = range.commonAncestorContainer;
+
+			var inLeftHierarchy = createHierarchyChecker(
+				traversing.backward(left.node),
+				cac
+			);
+
+			var inRightHierarchy = createHierarchyChecker(
+				right.atEnd
+					? traversing.forward(right.node.lastChild || right.node.parentNode) || right.node
+					: right.node,
+				cac
+			);
+
+			var leftNode = left.atEnd
+			             // <p>...{</p>
+			             ? getNextNonAncestor(left.node, inRightHierarchy)
+			             // {<p>...</p>
+			             : left.node;
+
+			var rightNode = (right.atEnd && right.node.lastChild)
+			              // <p>...}</p>
+			              ? right.node.lastChild
+			              // ...<p>}</p> or <p>...}...</p>
+			              : getPreviousNonAncestor(right.node, inLeftHierarchy);
+
 			splitRangeAtBoundaries(range, left, right, opts);
-			var node = left.node;
-			if (removeLeft) {
-				node = left.node.nextSibling;
-				dom.removePreservingRange(left.node, range);
+
+			removeNodesUntil(range, leftNode, inRightHierarchy, getNextNonAncestor);
+
+			if (rightNode !== leftNode) {
+				removeNodesUntil(range, rightNode, inLeftHierarchy, getPreviousNonAncestor);
 			}
-			var next;
-			while (node && node !== right.node) {
-				next = node.nextSibling;
-				dom.removePreservingRange(node, range);
-				node = next;
-			}
-			if (removeRight) {
-				dom.removePreservingRange(right.node, range);
-			}
+
 			ranges.contract(range);
+
 			left.setFrom(cursors.createFromBoundary(
 				range.startContainer,
 				range.startOffset
 			));
+
 			right.setFrom(cursors.createFromBoundary(
 				range.endContainer,
 				range.endOffset
 			));
+
 			return null;
 		});
 

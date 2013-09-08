@@ -28,23 +28,76 @@
 			return runTest(before, after, editing.remove);
 		};
 
-		//t('<p>x[y]z</p>',        '<p>x[]z</p>');
-		//t('<p>x[yz]</p>',        '<p>x{}</p>');
-		//
-		//t('<div>x<b>[y]</b>z</div>', '<div>x[]y</div>');
-		//t('<div>x<p>[y]</p>z</div>', '<div>x<p>{}</p>y</div>');
+		t('<p>x[]y</p>', '<p>x[]y</p>');
+		t('<p><b>x</b>{}<i>y</i></p>', '<p><b>x</b>{}<i>y</i></p>');
 
-		//t('<div><p>[xyz]</p></div>',        '<div><p>x{}x</p></div>');
-		//t('<div><p>{xyz}</p></div>',        '<div><p>{}</p></div>');
-		//
-		//t('<div>x<b>fo[o</b>bar<u>b]az</u>y</div>' '<div>x<b>fo</b><u>az</u>y</div>');
-		return;
-		t('<p>x{<b>y</b>}z</p>', '<p>x[]z</p>');
-		t('<p>x{<b>y}</b>z</p>', '<p>x[]z</p>');
-		t('<p>x<b>{y</b>}z</p>', '<p>x[]z</p>');
+		t('<p>x[y]z</p>', '<p>x[]z</p>');
+
+		t('<p>[y]</p>', '<p>{}</p>');
+
+		t('<p>x[y}</p>', '<p>x{}</p>');
+		t('<p>[x]y</p>', '<p>{}y</p>');
+		t('<p>{x]y</p>', '<p>{}y</p>');
+
+		t('<div>x<p>{y}</p>z</div>', '<div>x<p>{}</p>z</div>');
+		t('<div>x<p>[y]</p>z</div>', '<div>x<p>{}</p>z</div>');
+		t('<div>x<p>[y}</p>z</div>', '<div>x<p>{}</p>z</div>');
+		t('<div>x<p>{y]</p>z</div>', '<div>x<p>{}</p>z</div>');
+
 		t('<p>x<b>{y}</b>z</p>', '<p>x[]z</p>');
+		t('<p>x<b>[y]</b>z</p>', '<p>x[]z</p>');
+		t('<p>x<b>{y]</b>z</p>', '<p>x[]z</p>');
+		t('<p>x<b>[y}</b>z</p>', '<p>x[]z</p>');
+
+		t('<p>x{<b>y</b>}z</p>', '<p>x[]z</p>');
+		t('<p>x[<b>y</b>]z</p>', '<p>x[]z</p>');
+		t('<p>x{<b>y</b>]z</p>', '<p>x[]z</p>');
+		t('<p>x[<b>y</b>}z</p>', '<p>x[]z</p>');
+
+		t('<p>x{<b>y}</b>z</p>', '<p>x[]z</p>');
+		t('<p>x[<b>y]</b>z</p>', '<p>x[]z</p>');
+		t('<p>x{<b>y]</b>z</p>', '<p>x[]z</p>');
+		t('<p>x[<b>y}</b>z</p>', '<p>x[]z</p>');
+
+		t('<p>x<b>{y</b>}z</p>', '<p>x[]z</p>');
+		t('<p>x<b>[y</b>]z</p>', '<p>x[]z</p>');
+		t('<p>x<b>{y</b>]z</p>', '<p>x[]z</p>');
+		t('<p>x<b>[y</b>}z</p>', '<p>x[]z</p>');
+
 		t('<p>x<b>y{</b>z}</p>', '<p>x<b>y</b>{}</p>');
-		t('<p>1<b>{2</b>3<u>4</u>]5<i>6</i>', '<p>1<b>{2</b>3<u>4</u>]5<i>6</i>');
+		t('<p>x<b>y[</b>z]</p>', '<p>x<b>y</b>{}</p>');
+		t('<p>x<b>y{</b>z]</p>', '<p>x<b>y</b>{}</p>');
+		t('<p>x<b>y[</b>z}</p>', '<p>x<b>y</b>{}</p>');
+
+		t('<p>{x<b>}y</b>z</p>', '<p>{}<b>y</b>z</p>');
+		t('<p>[x<b>]y</b>z</p>', '<p>{}<b>y</b>z</p>');
+		t('<p>{x<b>]y</b>z</p>', '<p>{}<b>y</b>z</p>');
+		t('<p>[x<b>}y</b>z</p>', '<p>{}<b>y</b>z</p>');
+
+		t('<div>w<p>{x<b>yz}</b></p></div>', '<div>w<p>{}</p></div>');
+		t('<div>w<p>[x<b>yz]</b></p></div>', '<div>w<p>{}</p></div>');
+		t('<div>w<p>{x<b>yz]</b></p></div>', '<div>w<p>{}</p></div>');
+		t('<div>w<p>[x<b>yz}</b></p></div>', '<div>w<p>{}</p></div>');
+
+		t('<div>w<p>{x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>');
+		t('<div>w<p>[x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>');
+
+		return;
+
+		/*
+		// inside nested empty node
+		t('<p>x<u><b>{</b></u>x<i>}</i>y</p>', '<p>x[]y</p>');
+		t('<p><span>x{<b>1</b><i>2</i></span>y<span><u>3</u>y</span></p>',
+		  '<p><span>x{'); 
+		*/
+
+		t('<p>1<b>{2</b>3<u>4</u>]5<i>6</i></p>', '<p>1[]5<i>6</i></p>');
+		t('<p>1<b>{2</b>3<u>4</u>5<i>]6</i></p>', '<p>1{}<i>6</i></p>');
+		t('<p><b>1[2</b><u>3]4</u></p>', '<p><b>1{}</b><u>4</u></p>');
+		t('<p><b>1[2</b><u>3}<b>4</b></u></p>', '<p><b>1{}</b><u><b>4</b></u></p>');
+		t('<p><i><b>1[2</b></i><u>3]4</u></p>', '<p><i><b>1{}</b></i><u>4</u></p>');
+
+		//t('<div>x<b>fo[o</b>bar<u>b]az</u>y</div>', '<div>x<b>fo</b><u>az</u>y</div>');
 	});
 
 	return;
