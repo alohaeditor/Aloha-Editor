@@ -3,9 +3,6 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
- *
- * range.js: Library functions for working with DOM ranges.
- * It assums API support for document.getSelection() and document.createRange().
  */
 define([
 	'dom',
@@ -26,27 +23,6 @@ define([
 
 	if ('undefined' !== typeof mandox) {
 		eval(uate)('ranges');
-	}
-
-	/**
-	 * Extends the ranges start and end positions to the nearest word
-	 * boundaries.
-	 *
-	 * @param {Range} range
-	 * @return {Range}
-	 */
-	function extendToWord(range) {
-		var behind = traversing.findWordBoundaryBehind(
-			range.startContainer,
-			range.startOffset
-		);
-		var ahead = traversing.findWordBoundaryAhead(
-			range.endContainer,
-			range.endOffset
-		);
-		range.setStart(behind.node, behind.offset);
-		range.setEnd(ahead.node, ahead.offset);
-		return range;
 	}
 
 	/**
@@ -277,6 +253,9 @@ define([
 	 * attached to the document.  If working with a range in a detached DOM,
 	 * then line-breaking nodes are determined simply by their tag name.
 	 *
+	 * Also note that expand() will never move the start or end boundary
+	 * position inside of a text node.
+	 *
 	 * @param {Range} range
 	 * @return {Range}
 	 *         The modified range.
@@ -312,6 +291,9 @@ define([
 	 * attached to the document.  If working with a range in a detached DOM,
 	 * then line-breaking nodes are determined simply by their tag name.
 	 *
+	 * Also note that contract() will never move the start or end boundary
+	 * position inside of a text node.
+	 *
 	 * @param {Range} range
 	 * @return {Range}
 	 *         The modified range.
@@ -343,6 +325,27 @@ define([
 		);
 		range.setStart(start.container, start.offset);
 		range.setEnd(end.container, end.offset);
+		return range;
+	}
+
+	/**
+	 * Expands the ranges start and end positions to the nearest word
+	 * boundaries.
+	 *
+	 * @param {Range} range
+	 * @return {Range}
+	 */
+	function expandToWord(range) {
+		var behind = traversing.findWordBoundaryBehind(
+			range.startContainer,
+			range.startOffset
+		);
+		var ahead = traversing.findWordBoundaryAhead(
+			range.endContainer,
+			range.endOffset
+		);
+		range.setStart(behind.node, behind.offset);
+		range.setEnd(ahead.node, ahead.offset);
 		return range;
 	}
 
@@ -600,19 +603,19 @@ define([
 	 * Because Firefox, the range may not be inside the editable even though the
 	 * selection may be inside the editable.
 	 *
-	 * @param {Range} range
+	 * @param {Range} liveRange
 	 * @param {DOMObject} Editing host, or null if none is found.
 	 */
-	function getNearestEditingHost(range) {
+	function getNearestEditingHost(liveRange) {
 		var editable = dom.getEditingHost(range.startContainer);
 		if (editable) {
 			return editable;
 		}
-		var copy = stableRange(range);
+		var range = stableRange(liveRange);
 		var isNotEditingHost = fn.complement(dom.isEditingHost);
-		trim(copy, isNotEditingHost, isNotEditingHost);
+		trim(range, isNotEditingHost, isNotEditingHost);
 		return dom.getEditingHost(
-			dom.nodeAtOffset(copy.startContainer, copy.startOffset)
+			dom.nodeAtOffset(range.startContainer, range.startOffset)
 		);
 	}
 
@@ -669,14 +672,16 @@ define([
 	}
 
 	/**
-	 * Functions to work with browser ranges.
+	 * Library functions for working with DOM ranges.
+	 * It assums native support for document.getSelection() and
+	 * document.createRange().
 	 *
 	 * ranges.collapseToEnd()
 	 * ranges.collapseToStart()
 	 * ranges.create()
 	 * ranges.equal()
 	 * ranges.expandBoundaries()
-	 * ranges.extendToWord()
+	 * ranges.expandToWord()
 	 * ranges.get()
 	 * ranges.insertText()
 	 * ranges.insertTextBehind()
@@ -696,7 +701,7 @@ define([
 		expand: expand,
 		contract: contract,
 		expandBoundaries: expandBoundaries,
-		extendToWord: extendToWord,
+		expandToWord: expandToWord,
 		get: get,
 		insertText: insertText,
 		insertTextBehind: insertTextBehind,
@@ -716,7 +721,7 @@ define([
 	exports['expand'] = exports.expand;
 	exports['contract'] = exports.contract;
 	exports['expandBoundaries'] = exports.expandBoundaries;
-	exports['extendToWord'] = exports.extendToWord;
+	exports['expandToWord'] = exports.expandToWord;
 	exports['get'] = exports.get;
 	exports['insertText'] = exports.insertText;
 	exports['insertTextBehind'] = exports.insertTextBehind;
