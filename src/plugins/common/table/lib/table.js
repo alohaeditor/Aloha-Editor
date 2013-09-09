@@ -474,7 +474,11 @@ define([
 		}
 
 		Aloha.bind('aloha-command-will-execute', function (_, event){
-			var range = Aloha.getSelection().getRangeAt(0);
+			var selection = Aloha.getSelection();
+			if (!selection.getRangeCount()) {
+				return;
+			}
+			var range = selection.getRangeAt(0);
 			var adjacent;
 			if ('forwarddelete' === event.commandId) {
 				if (!range.collapsed || !isRangeVisiblyAtRightBoundary(range)) {
