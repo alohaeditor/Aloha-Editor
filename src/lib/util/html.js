@@ -27,10 +27,12 @@
 define([
 	'jquery',
 	'util/dom2',
+	'util/dom',
 	'util/maps',
 	'util/arrays'
 ], function (
 	jQuery,
+	Dom2,
 	Dom,
 	Maps,
 	Arrays
@@ -78,7 +80,7 @@ define([
 	 * works if the given node is attached to the document.
 	 */
 	function hasBlockStyle(node) {
-		return node && ((node.nodeType == 1 && !nonBlockDisplayValuesMap[Dom.getComputedStyle(node, 'display')])
+		return node && ((node.nodeType == 1 && !nonBlockDisplayValuesMap[Dom2.getComputedStyle(node, 'display')])
 						|| node.nodeType == 9
 						|| node.nodeType == 11);
 	}
@@ -304,7 +306,7 @@ define([
 		if (nonWhitespaceRx.test(node.nodeValue)) {
 			return false;
 		}
-        var cssWhiteSpace = Dom.getComputedStyle(node.parentNode, 'white-space');
+        var cssWhiteSpace = Dom2.getComputedStyle(node.parentNode, 'white-space');
 		if (isWhiteSpacePreserveStyle(cssWhiteSpace)) {
 			return false;
 		}
@@ -439,7 +441,7 @@ define([
 			return false;
 		}
 		// Algorithm like engine.js isCollapsedWhitespaceNode().
-		return skipUnrenderedToEndOfLine(Dom.cursor(node, false)) || skipUnrenderedToStartOfLine(Dom.cursor(node, false));
+		return skipUnrenderedToEndOfLine(Dom2.cursor(node, false)) || skipUnrenderedToStartOfLine(Dom2.cursor(node, false));
 	}
 
 	/**
