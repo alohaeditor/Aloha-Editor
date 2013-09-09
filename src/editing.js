@@ -1232,7 +1232,9 @@ define([
 		var next;
 		while (node && !until(node)) {
 			next = step(node, until);
-			dom.removePreservingRange(node, range);
+			if (node && node.parentNode) {
+				dom.removePreservingRange(node, range);
+			}
 			node = next;
 		}
 	}
@@ -1331,10 +1333,7 @@ define([
 			splitRangeAtBoundaries(range, left, right, opts);
 
 			removeNodesUntil(range, leftNode, inRightHierarchy, getNextNonAncestor);
-
-			if (rightNode !== leftNode) {
-				removeNodesUntil(range, rightNode, inLeftHierarchy, getPreviousNonAncestor);
-			}
+			removeNodesUntil(range, rightNode, inLeftHierarchy, getPreviousNonAncestor);
 
 			ranges.contract(range);
 
