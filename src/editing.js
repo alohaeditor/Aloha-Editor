@@ -1111,9 +1111,11 @@ define([
 				if (leftPoint.node === parent && !leftPoint.atEnd) {
 					leftPoint.node = wrapper;
 				}
+				/*
 				if (rightPoint.node === parent) {
 					rightPoint.node = wrapper;
 				}
+				*/
 			}
 			moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
 		}
@@ -1263,8 +1265,23 @@ define([
 		return getNonAncestor(node, limit, false);
 	}
 
-	function createHierarchyChecker(child, limit) {
+	function createHierarchyChecker(point, limit, isLeftPoint) {
+		var child;
+		if (isLeftPoint) {
+			child = traversing.backward(point.node);
+		} else {
+			child = point.atEnd
+			      ?
+				  (
+			       traversing.forward(point.node.lastChild || point.node.parentNode)
+			       ||
+			       point.node
+			      )
+			      :
+				  point.node;
+		}
 		var family = traversing.childAndParentsUntilInclNode(child, limit);
+		(window._ || (window._ = [])).push(family);
 		return function (node) {
 			return arrays.contains(family, node);
 		};
@@ -1310,18 +1327,16 @@ define([
 			// we therefore have to determine the left and right deletion
 			// terminal nodes before hand.
 
-			var cac = range.commonAncestorContainer;
-
 			var inLeftHierarchy = createHierarchyChecker(
-				traversing.backward(left.node),
-				cac
+				left,
+				range.commonAncestorContainer,
+				true
 			);
 
 			var inRightHierarchy = createHierarchyChecker(
-				right.atEnd
-					? traversing.forward(right.node.lastChild || right.node.parentNode) || right.node
-					: right.node,
-				cac
+				right,
+				range.commonAncestorContainer,
+				false
 			);
 
 			var leftNode = left.atEnd
@@ -1339,6 +1354,21 @@ define([
 			splitRangeAtBoundaries(range, left, right, opts);
 
 			cursors.setToRange(range, left, right);
+
+			// Because splitRangeAtBoundaries() may have obsoleted the previous
+			// hierarchies
+
+			inLeftHierarchy = createHierarchyChecker(
+				left,
+				range.commonAncestorContainer,
+				true
+			);
+
+			inRightHierarchy = createHierarchyChecker(
+				right,
+				range.commonAncestorContainer,
+				false
+			);
 
 			removeNodesUntil(range, leftNode, inRightHierarchy, getNextNonAncestor);
 			removeNodesUntil(range, rightNode, inLeftHierarchy, getPreviousNonAncestor);
