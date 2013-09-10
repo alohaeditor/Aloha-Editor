@@ -437,6 +437,7 @@ define([
 			range.startContainer,
 			range.startOffset
 		);
+
 		var splitEnd = cursors.cursorFromBoundaryPoint(
 			range.endContainer,
 			range.endOffset
@@ -464,6 +465,7 @@ define([
 			range.startContainer,
 			range.startOffset
 		);
+
 		var rightPoint = cursors.cursorFromBoundaryPoint(
 			range.endContainer,
 			range.endOffset
@@ -480,6 +482,7 @@ define([
 		// introduce any additional splits between text nodes.
 		dom.joinTextNodeAdjustRange(splitStart.node, range);
 		dom.joinTextNodeAdjustRange(splitEnd.node, range);
+
 		if (formatter) {
 			formatter.postprocessTextNodes(range);
 		}
@@ -1108,6 +1111,9 @@ define([
 				if (leftPoint.node === parent && !leftPoint.atEnd) {
 					leftPoint.node = wrapper;
 				}
+				if (rightPoint.node === parent) {
+					rightPoint.node = wrapper;
+				}
 			}
 			moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
 		}
@@ -1291,7 +1297,7 @@ define([
 			clone: dom.cloneShallow,
 			until: fn.returnFalse,
 			below: dom.isEditingHost,
-			normalizeRange: true
+			normalizeRange: false
 		}, opts);
 
 		var range = ranges.stableRange(liveRange);
@@ -1331,6 +1337,8 @@ define([
 			              : getPreviousNonAncestor(right.node, inLeftHierarchy);
 
 			splitRangeAtBoundaries(range, left, right, opts);
+
+			cursors.setToRange(range, left, right);
 
 			removeNodesUntil(range, leftNode, inRightHierarchy, getNextNonAncestor);
 			removeNodesUntil(range, rightNode, inLeftHierarchy, getPreviousNonAncestor);

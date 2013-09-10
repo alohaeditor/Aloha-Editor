@@ -12,7 +12,6 @@
 
 	module('editing');
 
-
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
 		var range = ranges.create();
@@ -33,16 +32,16 @@
 
 		t('<p>x[y]z</p>', '<p>x[]z</p>');
 
-		t('<p>[y]</p>', '<p>{}</p>');
+		t('<p>[x]</p>', '<p>{}</p>');
 
 		t('<p>x[y}</p>', '<p>x{}</p>');
 		t('<p>[x]y</p>', '<p>{}y</p>');
 		t('<p>{x]y</p>', '<p>{}y</p>');
 
-		t('<div>x<p>{y}</p>z</div>', '<div>x<p>{}</p>z</div>');
-		t('<div>x<p>[y]</p>z</div>', '<div>x<p>{}</p>z</div>');
-		t('<div>x<p>[y}</p>z</div>', '<div>x<p>{}</p>z</div>');
-		t('<div>x<p>{y]</p>z</div>', '<div>x<p>{}</p>z</div>');
+		t('<p>{y}</p>', '<p>{}</p>');
+		t('<p>[y]</p>', '<p>{}</p>');
+		t('<p>[y}</p>', '<p>{}</p>');
+		t('<p>{y]</p>', '<p>{}</p>');
 
 		t('<p>x<b>{y}</b>z</p>', '<p>x[]z</p>');
 		t('<p>x<b>[y]</b>z</p>', '<p>x[]z</p>');
@@ -97,8 +96,6 @@
 
 		//t('<div>x<b>fo[o</b>bar<u>b]az</u>y</div>', '<div>x<b>fo</b><u>az</u>y</div>');
 	});
-
-	return;
 
 	function switchElemTextSelection(html) {
 		return html.replace(/[\{\}\[\]]/g, function (match) {
