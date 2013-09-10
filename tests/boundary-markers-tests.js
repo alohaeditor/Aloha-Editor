@@ -13,7 +13,7 @@
 			var range = ranges.create();
 			boundarymarkers.extract($(before)[0], range);
 			equal(
-				aloha.boundarymarkers.hint(range),
+				aloha.boundarymarkers.hint(range).replace(/ xmlns=['"][^'"]*['"]/, ''),
 				after,
 				before + ' ⇒ ' + after
 			);
