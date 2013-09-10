@@ -7,6 +7,31 @@
 
 	module('boundarymarkers');
 
+	test('insert()', function () {
+		tested.push('insert');
+		var $dom = $('<p><b>abc</b><i>xyz</i></p>');
+		var range = ranges.create(
+			$dom.find('b')[0].firstChild,
+			1,
+			$dom.find('i')[0],
+			0
+		);
+		boundarymarkers.insert(range);
+		equal(
+			range.commonAncestorContainer.outerHTML,
+			'<p><b>a[bc</b><i>}xyz</i></p>'
+		);
+	});
+
+	test('extract()', function () {
+		tested.push('extract')
+		var range = ranges.create();
+		boundarymarkers.extract($('<p><b>a[bc</b><i>}xyz</i></p>')[0], range);
+		equal(range.commonAncestorContainer.nodeName, 'P');
+		equal(range.startContainer.nodeType, aloha.dom.Nodes.TEXT);
+		equal(range.endContainer.nodeName, 'I');
+	});
+
 	test('hint()', function () {
 		tested.push('hint');
 		var t = function (before, after) {
