@@ -56,9 +56,24 @@ define([
 	 * Parents of element that can´t wrap BlockElements
 	 * @type {Array.<String>}
 	 */
-		notAllowedDropParentsSelector = ['.aloha-table-selectcolumn'];
+		notAllowedDropParentsSelector = [
+			'.aloha-table-selectcolumn',
+			'.aloha-ui',
+			'.ui-draggable-dragging'
+		];
 
-
+	/**
+	 * Checks whether or not the element over which we are hovering should allow
+	 * drop a region, in or around it?
+	 *
+	 * @param {jQuery.<HTMLElement> $hovering
+	 * @param {jQuery.<HTMLElement> $dragging
+	 * @return {boolean}
+	 */
+	function allowDropRegions($hovering, $dragging) {
+		return !$hovering.is('.ui-draggable-dragging')
+		    && $hovering.closest($dragging).length === 0;
+	}
 
 	/**
 	 * @private
@@ -266,6 +281,9 @@ define([
 			elmTop = $elm.offset().top,
 			halfHeight = $elm.outerHeight() / 2;
 
+		if (!allowDropRegions($elm, this.$element)) {
+			return;
+		}
 
 		$elm.bind('mousemove.brIBOA', function (event) {
 			var top = event.pageY - elmTop;
@@ -353,18 +371,20 @@ define([
 	 */
 	DragBehavior.prototype.onDragStop = function () {
 		// @todo check if the $overElement is a Valid element to drop the block
-		if (!this._isAllowedOverElement(this.$overElement[0])) {
-			this.enableInsertBeforeOrAfter(this.$overElement[0]);
-		}
-
-		if (this.insertBeforeOrAfterMode !== false) {
-			if (this.insertBeforeOrAfterMode === 'BEFORE') {
-				this.$overElement.before(this.$element);
-			} else {
-				this.$overElement.after(this.$element);
+		if (allowDropRegions(this.$overElement, this.$element)) {
+			if (!this._isAllowedOverElement(this.$overElement[0])) {
+				this.enableInsertBeforeOrAfter(this.$overElement[0]);
 			}
-		} else {
-			this.$element.appendTo(this.$overElement);
+
+			if (this.insertBeforeOrAfterMode !== false) {
+				if (this.insertBeforeOrAfterMode === 'BEFORE') {
+					this.$overElement.before(this.$element);
+				} else {
+					this.$overElement.after(this.$element);
+				}
+			} else {
+				this.$element.appendTo(this.$overElement);
+			}
 		}
 
 		this.disableInsertBeforeOrAfter(this.$overElement);
