@@ -28,11 +28,13 @@
 define([
 	'aloha/jquery',
 	'aloha',
-	'PubSub'
+	'PubSub',
+	'aloha/copypaste'
 ], function (
 	$,
 	Aloha,
-	PubSub
+	PubSub,
+	CopyPaste
 ) {
 	'use strict';
 
@@ -71,8 +73,11 @@ define([
 	 * @return {boolean}
 	 */
 	function allowDropRegions($hovering, $dragging) {
-		return !$hovering.is('.ui-draggable-dragging')
-		    && $hovering.closest($dragging).length === 0;
+		return !$hovering || !(
+			$hovering.is('.ui-draggable-dragging')
+			||
+			$hovering.closest($dragging).length > 0
+		);
 	}
 
 	/**
@@ -128,26 +133,75 @@ define([
 	};
 
 	/**
+	 * Internet Explorer loses the selection and scroll position between
+	 * dragging and dropping.
+	 *
+	 * So we need to save the selection and scroll position before, and restore
+	 * it after each drag and drop cycle.
+	 */
+	var IESelectionState = (function () {
+		var range = null;
+		var x = 0;
+		var y = 0;
+		return $.browser.msie
+			? {
+
+				/**
+				 * Remember the selection state.
+				 */
+				save: function saveSelection() {
+					x = window.scrollX || document.documentElement.scrollLeft;
+					y = window.scrollY || document.documentElement.scrollTop;
+					range = CopyPaste.getRange();
+				},
+
+				/**
+				 * Set the selection to the given range and focus on the editable
+				 * inwhich the selection is in (if any).
+				 *
+				 * This function is used to restore the selection to what it was
+				 * before dragging is started.
+				 */
+				restore: function restoreSelection() {
+					var editable = CopyPaste.getEditableAt(range);
+					if (editable) {
+						editable.obj.focus();
+					}
+					CopyPaste.setSelectionAt(range);
+					window.scrollTo(x, y);
+				}
+			}
+			: {
+				save: function () {},
+				restore: function () {}
+			};
+	}());
+
+	/**
 	 * Setup the draggable behavior to the BlockElement
 	 */
 	DragBehavior.prototype.setDraggable = function () {
 		var dragBehavior = this;
 		var $handle = $('>.aloha-block-draghandle', this.$element);
-
 		var element = this.$element.get(0);
 
 		element.onselectstart = function () {
 			window.event.cancelBubble = true;
 		};
+
 		// Prevent the prevention of drag inside a cell
 		element.ondragstart = function (e) {
 			e.stopPropagation();
 		};
 
-		$handle.mouseup(function () {
-			dragBehavior._getHiglightElement().hide();
-			dragBehavior.stopListenMouseOver();
-		});
+		$handle
+			.on('mousedown', function () {
+				IESelectionState.save();
+			})
+			.on('mouseup', function () {
+				dragBehavior._getHiglightElement().hide();
+				dragBehavior.stopListenMouseOver();
+			});
 
 		this.$element.draggable({
 			handle: '>.aloha-block-draghandle',
@@ -169,6 +223,7 @@ define([
 				dragBehavior.stopListenMouseOver();
 				dragBehavior.onDragStop();
 				ui.helper.remove();
+				IESelectionState.restore();
 				return true;
 			}
 		});
@@ -372,7 +427,8 @@ define([
 	DragBehavior.prototype.onDragStop = function () {
 		// @todo check if the $overElement is a Valid element to drop the block
 		if (allowDropRegions(this.$overElement, this.$element)) {
-			if (!this._isAllowedOverElement(this.$overElement[0])) {
+			if (this.$overElement
+					&& !this._isAllowedOverElement(this.$overElement[0])) {
 				this.enableInsertBeforeOrAfter(this.$overElement[0]);
 			}
 
