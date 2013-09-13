@@ -209,11 +209,7 @@ define([
 	                            oppositeContainer, oppositeOffset) {
 		return !boundariesEqual(container, offset, oppositeContainer, oppositeOffset)
 		    && !isAtTextNode(container, offset)
-		    && !(
-				container.childNodes[offset]
-				&&
-				isLinebreakingNode(container.childNodes[offset])
-		    );
+		    && !isLinebreakingNode(container.childNodes[offset] || container)
 	}
 
 	/**

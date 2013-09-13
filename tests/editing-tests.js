@@ -12,14 +12,36 @@
 
 	module('editing');
 
+	var $editable = $('<div id="editable" contentEditable="true"></div>');
+
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
+		$editable.html('').append(dom);
 		var range = ranges.create();
 		boundarymarkers.extract(dom, range);
 		op(range);
 		boundarymarkers.insert(range);
-		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
+		equal($editable.html(), after, before + ' ⇒ ' + after);
 	}
+
+	test('joinRangeContainers()', function () {
+		var t = function(before, after) {
+			return runTest(before, after, editing.joinRangeContainers);
+		};
+		/*
+		t('<div><p>foo{</p><p>}bar</p></div>', '<div><p>foo{}bar</p></div>');
+		t('<div><p>foo[</p><p>]bar</p></div>', '<div><p>foo[]bar</p></div>');
+		t('<div><b>foo[</b><b>]bar</b></div>', '<div><b>foo[]bar</b></div>');
+		t('<div><b>foo{</b><i>}bar</i></div>', '<div><b>foo{}</b><i>bar</i></div>');
+		t('<div><b>foo[</b><i>]bar</i></div>', '<div><b>foo[]</b><i>bar</i></div>');
+		*/
+		t('<div><b>foo{</b><p>}bar</p></div>', '<div><b>foo{}</b>bar</div>');
+		t('<div><b>foo[</b><p>]bar</p></div>', '<div><b>foo[]</b>bar</div>');
+		t('<div><b>foo[</b><p><b>]bar</b></p></div>',
+		                                       '<div><b>foo[]bar</b></div>');
+		t('<div><p><b>foo{</b></p>\n<i>\t\r\n<b>}bar</b></i></div>',
+		                                       '<div><p><b>foo{}</b><i>\t\r\n<b>bar</b></i></p>\n</div>');
+	});
 
 	test('remove()', function () {
 		tested.push('remove');
@@ -27,10 +49,14 @@
 			return runTest(before, after, editing.remove);
 		};
 
+		t('<p>x[y]z</p>', '<p>x[]z</p>');
+
+		return;
+
+		t('<div><p>x</p><p>{y</p><p>}z</p></div>', '<div><p>x</p><p>{}z</p></div>');
 		t('<p>x[]y</p>', '<p>x[]y</p>');
 		t('<p><b>x</b>{}<i>y</i></p>', '<p><b>x</b>{}<i>y</i></p>');
 
-		t('<p>x[y]z</p>', '<p>x[]z</p>');
 
 		t('<p>[x]</p>', '<p>{}</p>');
 
@@ -81,20 +107,15 @@
 		t('<div>w<p>{x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>');
 		t('<div>w<p>[x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>');
 
-		/*
-		// inside nested empty node
 		t('<p>x<u><b>{</b></u>x<i>}</i>y</p>', '<p>x[]y</p>');
-		t('<p><span>x{<b>1</b><i>2</i></span>y<span><u>3</u>y</span></p>',
-		  '<p><span>x{'); 
-		*/
 
 		t('<p>1<b>{2</b>3<u>4</u>]5<i>6</i></p>', '<p>1[]5<i>6</i></p>');
-		t('<div><p>1<b>{2</b>3<u>4</u>5<i>]6</i></p></div>', '<div><p>1{}<i>6</i></p></div>');
-		t('<div><p><b>1[2</b><u>3]4</u></p></div>',          '<div><p><b>1{}</b><u>4</u></p></div>');
-		t('<div><p><b>1[2</b><u>3}<b>4</b></u></p></div>',   '<div><p><b>1{}</b><u><b>4</b></u></p></div>');
-		t('<div><p><i><b>1[2</b></i><u>3]4</u></p></div>',   '<div><p><i><b>1{}</b></i><u>4</u></p></div>');
+		t('<p>1<b>{2</b>3<u>4</u>5<i>]6</i></p>', '<p>1{}<i>6</i></p>');
+		t('<p><b>1[2</b><u>3]4</u></p>',          '<p><b>1{}</b><u>4</u></p>');
+		t('<p><b>1[2</b><u>3}<b>4</b></u></p>',   '<p><b>1{}</b><u><b>4</b></u></p>');
+		t('<p><i><b>1[2</b></i><u>3]4</u></p>',   '<p><i><b>1{}</b></i><u>4</u></p>');
 
-		//t('<div>x<b>fo[o</b>bar<u>b]az</u>y</div>', '<div>x<b>fo</b><u>az</u>y</div>');
+		t('<p>x<b>fo[o</b>bar<u>b]az</u>y</p>', '<p>x<b>fo{}</b><u>az</u>y</p>');
 	});
 
 	function switchElemTextSelection(html) {
@@ -250,11 +271,11 @@
 	t('<p>Some text.{}</p>', '<p>Some text.{}</p>');
 	t('<p>{}</p>', '<p>{}</p>');
 	t('<p><b>So[me</b><i> </i><b>te]xt.</b></p>',
-	  '<p><b>So[me</b><i> </i><b>te]xt.</b></p>');		
+	  '<p><b>So[me</b><i> </i><b>te]xt.</b></p>');
 	t('<p><b>Some</b>{<i> </i>}<b>text.</b></p>',
-	  '<p><b>Some</b>{<i> </i>}<b>text.</b></p>');		
+	  '<p><b>Some</b>{<i> </i>}<b>text.</b></p>');
 	t('<p><b>[Some</b><i> </i><b>text.]</b></p>',
-	  '<p><b>[Some</b><i> </i><b>text.]</b></p>');		
+	  '<p><b>[Some</b><i> </i><b>text.]</b></p>');
 	t('<p><b>{</b><i>}</i></p>', '<p><b></b>{}<i></i></p>');
 	t('<p><b><i>{</i></b><i><b>}</b></i></p>',
 	  '<p><b><i></i></b>{}<i><b></b></i></p>');
@@ -361,7 +382,7 @@
 	  '<p><b>[Some text.]</b></p>',
 	  '<p>{Some text.}</p>');
 
-	t('unbolding parent with element boundaries', 
+	t('unbolding parent with element boundaries',
 	  '<p><b>{<i>Some text.</i>}</b></p>',
 	  '<p>{<i>Some text.</i>}</p>');
 

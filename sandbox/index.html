@@ -17,27 +17,125 @@
 			  font-weight: 700;
 			  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(open-sans-bold.woff) format('woff');
 			}
-			.aloha-editable {
-				background: #a93;
+			/*
+			p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
+				padding: 2px 4px;
+				margin: 2px;
+				border: 1px solid black;
 			}
+			p { border-color: blue; }
+			b,i,u {
+				display: inline-block;
+			}
+			span { border-color: pink; }
+			b { border-color: orange; }
+			u { border-color: green; }
+			i { border-color: red; }
+			h1,h2,h3,h4,h5,h6 { border-color: gray }
+			*/
 		</style>
 	</head>
 	<body>
 		<!--
 			<div>x<b>fo[o</b>bar<u>b]az</u>y</div>
 			<p>x<br><b>y</b>z</p>
-		-->
-		<div class="aloha-editable" contentEditable="true">
 			<p>1<b>23</b><u>45</u></p>
 		</div>
-		<div style="display:none">
-			one two
-			<ul>
-				<li>three</li>
-				<li>four</li>
-				<li>five</li>
-			</ul>
-			<br/>
+		-->
+		<div class="aloha-editable" contentEditable="true">
+
+			zero
+			<div>
+				<div>
+					<h1>one</h1>
+					two
+					<p>three</p>
+				</div>
+			</div>
+
+			<p>foo</p><p>bar</p>
+
+			<br/><br/><br/><hr/><br/><br/><br/>
+
+			<b>foo</b><b>bar</b>
+
+			<br/><br/><br/><hr/><br/><br/><br/>
+
+			<b>foo</b><i>bar</i>
+
+			<br/><br/><br/><hr/><br/><br/><br/>
+
+			<b>foo</b><p>bar</p>
+
+			<br/><br/><br/><hr/><br/><br/><br/>
+
+			<b>foo</b><p><b>bar</b></p>
+
+			<br/><br/><br/><hr/><br/><br/><br/>
+
+			<b>foo</b><div><p>bar</p></div>
+
+			<br/><br/><br/><hr/><br/><br/><br/>
+
+			<b>foo</b><div><p>bar</p>baz</div>
+
+			<br/><br/><br/><hr/><br/><br/><br/>
+
+			<b>foo</b><div><h2><p>bar</p>baz</h2>buz</div>
+
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+
+
+
+			<h1>Aloha Editor</h1>
+
+
+			<p>foo</p>
+			<p>bar</
+				<b>bar</b>
+				<p>buz</p>
+			</div>
+
+			<div>foo</div>
+			<div>
+				<p><b>bar</b></p>
+				<p>buz</p>
+			</div>
+
+			<br/><br/><br/><br/><br/><br/>
+
+			<div><p>foo</p></div>
+			<div><i>bar</i></div>
+
+			<br/><br/><br/><br/><br/><br/>
+
+			<h2>Foo</h2>bar
+			<h2>Foo</h2><b>bar</b>
+			<h2>Foo</h2><b><i>bar</i></b>
+			<h2><i>Foo</i></h2><i>bar</i>
+			<h2><i>Foo</i></h2><i><u>bar</u></i>
+			<h2><i>Foo</i></h2><b><i>bar</i></b>
+			<h2><b><i>Foo</i></b></h2><b><i>bar</i></b>
+			<h2>Foo</h2><p>bar</p>
+
+			<br/><br/><br/><br/><br/><br/>
+
 			<h1>Aloha Editor</h1>
 			<p>
 				Lorem ipsum dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscing

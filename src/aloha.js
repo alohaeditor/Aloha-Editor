@@ -47,6 +47,7 @@ define([
 	keys.down('enter', typing.enter);
 	keys.down('space', typing.space);
 	*/
+	keys.down('delete', typing.delete);
 
 	/**
 	 * Aloha Editor API

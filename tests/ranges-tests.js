@@ -54,6 +54,7 @@
 		t('<p>{<b><i></i><br>foo}</b></p>',    '<p><b><i></i>{<br>foo}</b></p>');
 		t('<p><b>{x<br>}</b></p>',             '<p><b>{x<br>}</b></p>');
 		t('<div>{<p>x</p>}</div>',             '<div>{<p>x</p>}</div>');
+		t('<div><p>{</p>x}</div>',             '<div><p>{</p>x}</div>');
 	});
 
 	testCoverage(test, tested, ranges);

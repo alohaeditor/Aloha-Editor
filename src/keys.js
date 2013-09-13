@@ -29,7 +29,8 @@ define([
 		'enter'   : 13,
 		'shift'   : 16,
 		'control' : 17,
-		'space'   : 32
+		'space'   : 32,
+		'delete'  : 46
 	};
 
 	/**

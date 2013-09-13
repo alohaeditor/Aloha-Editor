@@ -725,6 +725,10 @@ define([
 	/**
 	 * DOM traversal functions.
 	 *
+	 * traversing.prevNodeBoundary()
+	 * traversing.nextNodeBoundary()
+	 * traversing.prevNodeBoundaryWhile()
+	 * traversing.nextNodeBoundaryWhile()
 	 * traversing.backward()
 	 * traversing.forward()
 	 * traversing.nextWhile()

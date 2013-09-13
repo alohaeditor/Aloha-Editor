@@ -397,9 +397,255 @@ define([
 	}
 
 	/**
+	 * Determine whether node `left` is visually adjacent to `right`.
+	 *
+	 * In the following example, <p>, <i>, and "left" are all visually adjacent
+	 * to <u> and "right":
+	 * <p>...<i>left</i></p><u>right</u>
+	 *
+	 * @param {DOMObject} left
+	 * @param {DOMObject} right
+	 * @return {Boolean}
+	 */
+	function isVisuallyAdjacent(left, right) {
+		var node = right;
+		while (node) {
+			if (node.previousSibling) {
+				node = node.previousSibling;
+				while (node) {
+					if (node === left) {
+						return true;
+					}
+					if (isUnrenderedNode(node)) {
+						return isVisuallyAdjacent(left, node);
+					}
+					node = node.lastChild;
+				}
+				return false;
+			}
+			node = node.parentNode;
+		}
+		return false;
+	}
+
+	/**
+	 * Unicode space characters as defined in the W3 HTML5 specification:
+	 * http://www.w3.org/TR/html5/infrastructure.html#common-parser-idioms
+	 *
+	 * @const
+	 * @type {Array.<string>}
+	 */
+	var SPACE_CHARACTERS = [
+		'\\u0009', // TAB
+		'\\u000A', // LF
+		'\\u000C', // FF
+		'\\u000D', // CR
+		'\\u0020'  // SPACE
+	];
+
+	/**
+	 * Unicode zero width space characters:
+	 * http://www.unicode.org/Public/UNIDATA/Scripts.txt
+	 *
+	 * @const
+	 * @type {Array.<string>}
+	 */
+	var ZERO_WIDTH_CHARACTERS_UNICODES = [
+		'\\u200B', // ZWSP
+		'\\u200C',
+		'\\u200D',
+		'\\uFEFF'  // ZERO WIDTH NO-BREAK SPACE
+	];
+
+	/**
+	 * Unicode White_Space characters are those that have the Unicode property
+	 * "White_Space" in the Unicode PropList.txt data file.
+	 *
+	 * http://www.unicode.org/Public/UNIDATA/PropList.txt
+	 *
+	 * @const
+	 * @type {Array.<string>}
+	 */
+	var WHITE_SPACE_CHARACTERS_UNICODES = [
+		'\\u0009',
+		'\\u000A',
+		'\\u000B',
+		'\\u000C',
+		'\\u000D',
+		'\\u0020',
+		'\\u0085',
+		'\\u00A0', // NON BREAKING SPACE ("&nbsp;")
+		'\\u1680',
+		'\\u180E',
+		'\\u2000',
+		'\\u2001',
+		'\\u2002',
+		'\\u2003',
+		'\\u2004',
+		'\\u2005',
+		'\\u2006',
+		'\\u2007',
+		'\\u2008',
+		'\\u2009',
+		'\\u200A',
+		'\\u2028',
+		'\\u2029',
+		'\\u202F',
+		'\\u205F',
+		'\\u3000'
+	];
+
+	var wspChars = WHITE_SPACE_CHARACTERS_UNICODES.join('');
+	var zwspChars = ZERO_WIDTH_CHARACTERS_UNICODES.join('');
+
+	/**
+	 * Regular expression that matches one or more sequences of white space
+	 * characters.
+	 *
+	 * @type {RegExp}
+	 */
+	var WSP_CHARACTERS = new RegExp('[' + wspChars + ']+');
+
+	/**
+	 * Regular expression that matches one or more sequences of zero width
+	 * characters.
+	 *
+	 * @type {RegExp}
+	 */
+	var ZWSP_CHARACTERS = new RegExp('[' + zwspChars + ']+');
+
+	/**
+	 * Regular expression that matches one or more sequences of zero width
+	 * characters or white space characters.
+	 *
+	 * @type {RegExp}
+	 */
+	var WSP_OR_ZWSP_CHARACTERS = new RegExp('[' + wspChars + zwspChars + ']');
+
+	/**
+	 * Regular expression that matches one or more sequences of white space
+	 * characters at the start of a string.
+	 *
+	 * @type {RegExp}
+	 */
+	var WSP_CHARACTERS_FROM_START = new RegExp('^[' + wspChars + ']+');
+
+	/**
+	 * Regular expression that matches zero or more sequences of white space
+	 * characters at the end of a string.
+	 *
+	 * @type {RegExp}
+	 */
+	var WSP_CHARACTERS_FROM_END   = new RegExp('[' + wspChars + ']+$');
+
+	/**
+	 * Checks whether or not a given text node consists of only sequence of
+	 * white space characters as defined by W3 specification:
+	 *
+	 * http://www.w3.org/TR/html401/struct/text.html#h-9.1
+	 *
+	 * @param {DOMElement} textnode
+	 * @return {boolean} True is node is a textnode of white characters.
+	 */
+	function isWhitespaces(textnode) {
+		return WSP_CHARACTERS.test(textnode.data);
+	}
+
+	/**
+	 * Checks whether or not a given text node consists of only sequence of
+	 * zero-width characters.
+	 *
+	 * @param {DOMObject} textnode
+	 * @return {boolean} True is node is a textnode of zero-width characters
+	 */
+	function isZeroWidthCharacters(textnode) {
+		return ZWSP_CHARACTERS.test(textnode.data);
+	}
+
+	/**
+	 * Checks whether or not a given text node consists of only sequence of
+	 * zero-width characters or whitespace characters.
+	 *
+	 * @param {DOMObject} textnode
+	 * @return {boolean} True is node is a textnode of zero-width characters
+	 */
+	function isWhitespaceOrZeroWidthCharacters(textnode) {
+		return WSP_OR_ZWSP_CHARACTERS.test(textnode.data);
+	}
+
+	/**
+	 * Checks whether the given node positioned at either extremity of it's
+	 * sibling linked list.
+	 *
+	 * @param {DOMObject} node
+	 * @return {boolean} True if node is wither the first or last child of its
+	 *                   parent.
+	 */
+	function isTerminalSibling(node) {
+		var parent = node.parentNode;
+		return parent && (
+			node === parent.firstChild || node === parent.lastChild
+		);
+	}
+
+	/**
+	 * Checks whether the given node is next to a block level elemnt.
+	 *
+	 * @param {DOMObject} node
+	 * @return {boolean}
+	 */
+	function isAdjacentToBlock(node) {
+		return isBlockType(node.previousSibling) || isBlockType(node.nextSibling);
+	}
+
+	/**
+	 * Checks whether the given node is visually rendered according to HTML5
+	 * specification.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
+	function isUnrenderedNode(node) {
+		if (!node) {
+			return true;
+		}
+
+		// Because isUnrenderedWhiteSpaceNoBlockCheck() will give us false
+		// positives but never false negatives, the algorithm that will follow
+		// will make certain, and will also consider unrendered <br>s.
+		var maybeUnrenderedNode = isUnrenderedWhitespaceNoBlockCheck(node);
+
+		// Because a <br> element that is a child node adjacent to its parent's
+		// end tag (terminal sibling) must not be rendered.
+		if (
+			!maybeUnrenderedNode
+				&& (node === node.parentNode.lastChild)
+					&& isBlockType(node.parentNode)
+						&& 'BR' === node.nodeName
+		) {
+			return true;
+		}
+
+		if (
+			maybeUnrenderedNode
+				&& (
+					isTerminalSibling(node)
+						|| isAdjacentToBlock(node)
+							|| skipUnrenderedToEndOfLine(cursors.create(node, false))
+								|| skipUnrenderedToStartOfLine(cursors.create(node, false))
+				)
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Functions for working with HTML content.
 	 */
 	var exports = {
+		isUnrenderedNode: isUnrenderedNode,
 		isControlCharacter: isControlCharacter,
 		isStyleInherited: isStyleInherited,
 		isBlockType: isBlockType,
@@ -412,9 +658,11 @@ define([
 		normalizeBoundary: normalizeBoundary,
 		isEmpty: isEmpty,
 		isLinebreakingNode: isLinebreakingNode,
-		isRenderedEmptyInlineNode: isRenderedEmptyInlineNode
+		isRenderedEmptyInlineNode: isRenderedEmptyInlineNode,
+		isVisuallyAdjacent: isVisuallyAdjacent
 	};
 
+	exports['isUnrenderedNode'] = exports.isUnrenderedNode;
 	exports['isControlCharacter'] = exports.isControlCharacter;
 	exports['isStyleInherited'] = exports.isStyleInherited;
 	exports['isBlockType'] = exports.isBlockType;
@@ -428,6 +676,7 @@ define([
 	exports['isEmpty'] = exports.isEmpty;
 	exports['isLinebreakingNode'] = exports.isLinebreakingNode;
 	exports['isRenderedEmptyInlineNode'] = exports.isRenderedEmptyInlineNode;
+	exports['isVisuallyAdjacent'] = exports.isVisuallyAdjacent;
 
 	return exports;
 });
