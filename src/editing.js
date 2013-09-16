@@ -1261,11 +1261,11 @@ define([
 			: null;
 	}
 
-	function getPreviousNonAncestor(node, limit) {
+	function previousNonAncestor(node, limit) {
 		return getNonAncestor(node, limit, true);
 	}
 
-	function getNextNonAncestor(node, limit) {
+	function nextNonAncestor(node, limit) {
 		return getNonAncestor(node, limit, false);
 	}
 
@@ -1275,14 +1275,12 @@ define([
 			child = traversing.backward(point.node);
 		} else {
 			child = point.atEnd
-			      ?
-				  (
-			       traversing.forward(point.node.lastChild || point.node.parentNode)
-			       ||
-			       point.node
-			      )
-			      :
-				  point.node;
+				? (
+					traversing.forward(point.node.lastChild || point.node.parentNode)
+					||
+					point.node
+				)
+				: point.node;
 		}
 		var family = traversing.childAndParentsUntilInclNode(child, limit);
 		return function (node) {
@@ -1323,46 +1321,41 @@ define([
 		}
 	}
 
-	function createInsertionPoint(node, common, out) {
+	function createTransfer(node, common) {
 		var prev;
 		var limit = function (node) {
 			return node === common;
 		};
 		while (!limit(node)) {
 			if (html.isBlockType(node)) {
-				out.param = traversing.findForward(
-					getNextNonAncestor(node, limit),
-					isRenderedNode
-				);
-				return function (elem) {
-					dom.insert(elem, node, true);
-					return true;
+				return {
+					start: traversing.findForward(
+						nextNonAncestor(node, limit),
+						isRenderedNode
+					),
+					move: function (elem) {
+						dom.insert(elem, node, true);
+						return true;
+					}
 				};
 			}
 			prev = node;
 			node = node.parentNode;
 		}
-		node = getNextNonAncestor(prev, limit);
-		out.param = traversing.findForward(node, isRenderedNode);
-		return function (elem) {
-			if (elem === node) {
-				return false;
+		node = nextNonAncestor(prev, limit);
+		return {
+			start: traversing.findForward(node, isRenderedNode),
+			move: function (elem) {
+				if (elem === node) {
+					return false;
+				}
+				dom.insert(elem, node);
+				return true;
 			}
-			dom.insert(elem, node);
-			return true;
 		};
 	}
 
 	function joinAdjacentDuplicateNodes(range) {
-		return range;
-		var common = range.commonAncestorContainer;
-		var start = range.startContainer;
-		var end = range.endContainer;
-		var left = getPreviousNonAncestor(end, function (node) {
-			return node === common;
-		});
-		var right = left.nextSibling;
-		console.log(left, right);
 		return range;
 	}
 
@@ -1375,14 +1368,14 @@ define([
 		var start = range.startContainer;
 		var end = range.endContainer;
 
+		// Because non-adjacent containers shoud/cannot be joined
 		if (!html.isVisuallyAdjacent(start, end)) {
 			console.error('Cannot merge non-adjacent containers');
 			return range;
 		}
 
-		var out = {param: null};
-		var insert = createInsertionPoint(start, common, out);
-		transferNodesLeft(out.param, insert);
+		var transfer = createTransfer(start, common);
+		transferNodesLeft(transfer.start, transfer.move);
 
 		return ranges.collapseToStart(joinAdjacentDuplicateNodes(range));
 	}
@@ -1422,6 +1415,7 @@ define([
 		ranges.expand(range);
 
 		fixupRange(range, function (range, left, right) {
+
 			// Because after splitRangeAtBoundaries():
 			// x<p>{y}</p>z becomes x{<p>y</p>}z
 			// we have to determine the left and right deletion terminal nodes
@@ -1445,7 +1439,7 @@ define([
 			             //             |
 			             //             v
 			             // <p>...{</p><b>...
-			             ? getNextNonAncestor(left.node, inRightHierarchy)
+			             ? nextNonAncestor(left.node, inRightHierarchy)
 
 			             // leftNode
 			             //   |
@@ -1465,10 +1459,10 @@ define([
 			              //     |           |
 			              //     v           v
 			              // ...<p>}</p> or <p>...}...</p>
-			              : getPreviousNonAncestor(right.node, inLeftHierarchy);
+			              : previousNonAncestor(right.node, inLeftHierarchy);
 
-			var joinLeft = traversing.backward(leftNode);
-			var joinRight = traversing.forward(rightNode);
+			var joinLeft = previousNonAncestor(leftNode);
+			var joinRight = nextNonAncestor(rightNode);
 
 			splitRangeAtBoundaries(range, left, right, opts);
 
@@ -1489,8 +1483,8 @@ define([
 				false
 			);
 
-			removeNodesUntil(leftNode, inRightHierarchy, getNextNonAncestor);
-			removeNodesUntil(rightNode, inLeftHierarchy, getPreviousNonAncestor);
+			removeNodesUntil(leftNode, inRightHierarchy, nextNonAncestor);
+			removeNodesUntil(rightNode, inLeftHierarchy, previousNonAncestor);
 
 			range.startContainer = joinLeft;
 			range.startOffset = dom.nodeLength(joinLeft);
