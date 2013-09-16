@@ -196,8 +196,7 @@ define([
 		insert(range);
 
 		return dom.outerHtml(
-			range.commonAncestorContainer.parentNode
-			||
+			//range.commonAncestorContainer.parentNode ||
 			range.commonAncestorContainer
 		);
 	}
