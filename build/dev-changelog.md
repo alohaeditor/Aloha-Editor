@@ -64,3 +64,9 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: ephemera: javascript error when an editable contains SVG elements
 
 - **BUGFIX**: tab/next focuses invisible paste handler div
+
+- **BUGFIX**: paste: not working, or inserting paragraphs
+
+	When the css for the metaview plugin was not included, pasting
+	didn't work, and when the css was included, the paste plugin
+	wrapped additional paragraphs around the content.
