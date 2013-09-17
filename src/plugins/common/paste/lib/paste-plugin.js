@@ -83,10 +83,14 @@ define([
 	 * In order to hide the editable div we use clip:rect for WebKit (Chrome,
 	 * Safari) and Trident (IE), and width/height for Gecko (FF).
 	 *
+	 * We put a tabindex="-1" on the div that will become
+	 * contenteditable so we don't mess with the
+	 * browser's/mobile-webview's tab/next functionality.
+	 *
 	 * @type {jQuery.<HTMLElement>}
 	 * @const
 	 */
-	var $CLIPBOARD = $('<div style="position:absolute; ' +
+	var $CLIPBOARD = $('<div tabindex="-1" style="position:absolute; ' +
 	                   'clip:rect(0px,0px,0px,0px); ' +
 	                   'width:1px; height:1px;"></div>').contentEditable(true);
 
