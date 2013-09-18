@@ -12,6 +12,16 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.24.0
+
+- **FEATURE**: New drag behavior for block elements that permits drop the 
+               BlockElement virtually in any element and any level of the 
+               structure, providing a highlight element to know which element 
+               is selected to be the new container, or if the element is not 
+               suitable to be a container the highlighter element show the edges 
+               of the selected element to show that the block will be added 
+               before or after this one.
+
 ## 0.23.19 - 2013/08/30
 
 - **BUGFIX**: table plugin: Pressing the tab key when the selection is in the
