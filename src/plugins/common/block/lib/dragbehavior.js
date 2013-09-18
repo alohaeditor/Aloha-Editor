@@ -28,11 +28,13 @@
 define([
 	'aloha/jquery',
 	'aloha',
-	'PubSub'
+	'PubSub',
+	'aloha/copypaste'
 ], function (
 	$,
 	Aloha,
-	PubSub
+	PubSub,
+	CopyPaste
 ) {
 	'use strict';
 
@@ -56,9 +58,27 @@ define([
 	 * Parents of element that can´t wrap BlockElements
 	 * @type {Array.<String>}
 	 */
-		notAllowedDropParentsSelector = ['.aloha-table-selectcolumn'];
+		notAllowedDropParentsSelector = [
+			'.aloha-table-selectcolumn',
+			'.aloha-ui',
+			'.ui-draggable-dragging'
+		];
 
-
+	/**
+	 * Checks whether or not the element over which we are hovering should allow
+	 * drop a region, in or around it?
+	 *
+	 * @param {jQuery.<HTMLElement> $hovering
+	 * @param {jQuery.<HTMLElement> $dragging
+	 * @return {boolean}
+	 */
+	function allowDropRegions($hovering, $dragging) {
+		return !$hovering || !(
+			$hovering.is('.ui-draggable-dragging')
+			||
+			$hovering.closest($dragging).length > 0
+		);
+	}
 
 	/**
 	 * @private
@@ -113,26 +133,75 @@ define([
 	};
 
 	/**
+	 * Internet Explorer loses the selection and scroll position between
+	 * dragging and dropping.
+	 *
+	 * So we need to save the selection and scroll position before, and restore
+	 * it after each drag and drop cycle.
+	 */
+	var IESelectionState = (function () {
+		var range = null;
+		var x = 0;
+		var y = 0;
+		return $.browser.msie
+			? {
+
+				/**
+				 * Remember the selection state.
+				 */
+				save: function saveSelection() {
+					x = window.scrollX || document.documentElement.scrollLeft;
+					y = window.scrollY || document.documentElement.scrollTop;
+					range = CopyPaste.getRange();
+				},
+
+				/**
+				 * Set the selection to the given range and focus on the editable
+				 * inwhich the selection is in (if any).
+				 *
+				 * This function is used to restore the selection to what it was
+				 * before dragging is started.
+				 */
+				restore: function restoreSelection() {
+					var editable = CopyPaste.getEditableAt(range);
+					if (editable) {
+						editable.obj.focus();
+					}
+					CopyPaste.setSelectionAt(range);
+					window.scrollTo(x, y);
+				}
+			}
+			: {
+				save: function () {},
+				restore: function () {}
+			};
+	}());
+
+	/**
 	 * Setup the draggable behavior to the BlockElement
 	 */
 	DragBehavior.prototype.setDraggable = function () {
 		var dragBehavior = this;
 		var $handle = $('>.aloha-block-draghandle', this.$element);
-
 		var element = this.$element.get(0);
 
 		element.onselectstart = function () {
 			window.event.cancelBubble = true;
 		};
+
 		// Prevent the prevention of drag inside a cell
 		element.ondragstart = function (e) {
 			e.stopPropagation();
 		};
 
-		$handle.mouseup(function () {
-			dragBehavior._getHiglightElement().hide();
-			dragBehavior.stopListenMouseOver();
-		});
+		$handle
+			.on('mousedown', function () {
+				IESelectionState.save();
+			})
+			.on('mouseup', function () {
+				dragBehavior._getHiglightElement().hide();
+				dragBehavior.stopListenMouseOver();
+			});
 
 		this.$element.draggable({
 			handle: '>.aloha-block-draghandle',
@@ -154,6 +223,7 @@ define([
 				dragBehavior.stopListenMouseOver();
 				dragBehavior.onDragStop();
 				ui.helper.remove();
+				IESelectionState.restore();
 				return true;
 			}
 		});
@@ -266,6 +336,9 @@ define([
 			elmTop = $elm.offset().top,
 			halfHeight = $elm.outerHeight() / 2;
 
+		if (!allowDropRegions($elm, this.$element)) {
+			return;
+		}
 
 		$elm.bind('mousemove.brIBOA', function (event) {
 			var top = event.pageY - elmTop;
@@ -353,18 +426,21 @@ define([
 	 */
 	DragBehavior.prototype.onDragStop = function () {
 		// @todo check if the $overElement is a Valid element to drop the block
-		if (!this._isAllowedOverElement(this.$overElement[0])) {
-			this.enableInsertBeforeOrAfter(this.$overElement[0]);
-		}
-
-		if (this.insertBeforeOrAfterMode !== false) {
-			if (this.insertBeforeOrAfterMode === 'BEFORE') {
-				this.$overElement.before(this.$element);
-			} else {
-				this.$overElement.after(this.$element);
+		if (allowDropRegions(this.$overElement, this.$element)) {
+			if (this.$overElement
+					&& !this._isAllowedOverElement(this.$overElement[0])) {
+				this.enableInsertBeforeOrAfter(this.$overElement[0]);
 			}
-		} else {
-			this.$element.appendTo(this.$overElement);
+
+			if (this.insertBeforeOrAfterMode !== false) {
+				if (this.insertBeforeOrAfterMode === 'BEFORE') {
+					this.$overElement.before(this.$element);
+				} else {
+					this.$overElement.after(this.$element);
+				}
+			} else {
+				this.$element.appendTo(this.$overElement);
+			}
 		}
 
 		this.disableInsertBeforeOrAfter(this.$overElement);

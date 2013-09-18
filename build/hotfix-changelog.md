@@ -35,3 +35,10 @@ overwritten by custom background images.
 			  left of the cursor rather than jumping into the table.
 - **BUGFIX**: table plugin: Merging table cells in IE8 will no longer result in
               the contents of merged cells from being lost.
+- **BUGFIX**: blocks: Improving features of new drag and drop implementation.
+              1) Dropping a dragged block into itself will no longer result in
+                 the block disappearing.
+              2) It is no longer possible to accidentally drop the block into
+                 the floating toolbar.
+              3) Restore selection and scroll position after drop in Internet
+                 Explorer.
