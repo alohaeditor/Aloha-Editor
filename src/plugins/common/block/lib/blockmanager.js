@@ -501,26 +501,41 @@ define([
 		/**
 		 * Merges the config from different places, and return the merged config.
 		 *
+		 * @param {Object} jQuery Object
+		 * @param {Object} default configuration
+		 *
 		 * @private
 		 */
 		getConfig: function (blockElement, instanceDefaults) {
-			// Clone the element before getting the data to fix an IE7 crash.
-			// We use jQuery.clone(true) because the sortableItem attribute isn't returned
-			// if we do a normal cloneNode(...).
-			var clone = blockElement.clone(true);
-			var dataCamelCase = clone.data();
-			var data = {};
-			clone.removeData();
-			// jQuery.data() returns data attributes with names like
-			// data-some-attr as dataSomeAttr which has to be reversed
-			// so that they can be merged with this.defaults and
-			// instanceDefaults which are expected to be in
-			// data-some-attr form.
-			for (var key in dataCamelCase) {
-				if (dataCamelCase.hasOwnProperty(key)) {
-					data[Strings.camelCaseToDashes(key)] = dataCamelCase[key];
+			var
+				data          = {},
+				dataCamelCase = null,
+				$clone        = null;
+
+			if (blockElement.length > 0) {
+				// Clone the element before getting the data to fix an IE7 crash.
+				// We use the native cloneNode function, because jQuerys clone()
+				// executes scripts also, what we don't want.
+				// But since that one doesn't copy the the abritary jQuery data, we
+				// manually merge both datas together into a new object.
+				$clone = $(blockElement[0].cloneNode(false));
+				// Merge the "data-" attributes from the clone and take the
+				// arbitrary data from the original jQuery object
+				dataCamelCase = $.extend({}, $.data(blockElement[0]), $clone.data());
+				$clone.removeData();
+
+				// jQuery.data() returns data attributes with names like
+				// data-some-attr as dataSomeAttr which has to be reversed
+				// so that they can be merged with this.defaults and
+				// instanceDefaults which are expected to be in
+				// data-some-attr form.
+				for (var key in dataCamelCase) {
+					if (dataCamelCase.hasOwnProperty(key)) {
+						data[Strings.camelCaseToDashes(key)] = dataCamelCase[key];
+					}
 				}
 			}
+
 			return jQuery.extend(
 				{},
 				this.defaults,
