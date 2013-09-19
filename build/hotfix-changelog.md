@@ -8,4 +8,8 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUGFIX**:      Blockmanager: Fixed scripts in a block being executed, when getting its configuration.
+- **BUGFIX**: blockmanager: Fixed scripts in a block being executed, when
+              getting its configuration.
+- **BUGFIX**: editables: Initializing empty editables in Firefox will no longer
+              result in them aquiring an extra <br/>. This was previously done
+			  to work around a Firefox bug that seems not no longer be an issue.
