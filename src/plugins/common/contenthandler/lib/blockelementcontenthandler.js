@@ -27,8 +27,8 @@ define([
 	'use strict';
 
 	var blocksSelector = Html.BLOCKLEVEL_ELEMENTS.join();
-	var emptyBlocksSelector = Html.BLOCKLEVEL_ELEMENTS.join(':empty,')
-	                        + ':empty';
+	var emptyBlocksSelector = Aloha.jQuery.grep(Html.BLOCKLEVEL_ELEMENTS, function(x){return x === "hr"; }, true).join(':empty,')
+					+ ':empty';
 	var NOT_ALOHA_BLOCK_FILTER = ':not(.aloha-block)';
 
 	var isNotIgnorableWhitespace =
