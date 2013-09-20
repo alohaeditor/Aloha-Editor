@@ -247,7 +247,15 @@ define([
 				}
 			}
 		}
-		$(document).bind('selectionchange', checkSelectionChange);
+		$(document).bind('selectionchange', function () {
+			// Because handling the selectionchange event has recently
+			// been added only to handle select events on mobile
+			// devices, and some selection change handlers may need the
+			// events from mouse clicks or key presses to be passed to
+			// Selection.onChange() we first wait a little for the other
+			// events to happen.
+			setTimeout(checkSelectionChange, 0);
+		});
 	}
 
 	setupGlobalSelectionChangeHandler();
