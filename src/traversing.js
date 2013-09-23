@@ -723,6 +723,35 @@ define([
 	}
 
 	/**
+	 * Climbs up the given node's ancestor until the predicate until() return
+	 * true.  Starting with the given node, applies func() to each not in the
+	 * climb.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function:Boolean} until
+	 * @param {Function(DOMOBject)} func
+	 */
+	function climbUntil(node, until, func) {
+		var parent;
+		while (!until(node)) {
+			parent = node.parentNode;
+			func(node);
+			node = parent;
+		}
+	}
+
+	function getNonAncestor(node, limit, previous) {
+		limit = limit || fn.returnFalse;
+		var next = previous ? node.previousSibling : node.nextSibling;
+		if (next) {
+			return limit(next) ? null : next;
+		}
+		return (node.parentNode && !limit(node.parentNode))
+			? getNonAncestor(node.parentNode, limit, previous)
+			: null;
+	}
+
+	/**
 	 * DOM traversal functions.
 	 *
 	 * traversing.prevNodeBoundary()
@@ -747,6 +776,8 @@ define([
 	 * traversing.childAndParentsUntilIncl()
 	 * traversing.childAndParentsUntilNode()
 	 * traversing.childAndParentsUntilInclNode()
+	 * traversing.climbUntil()
+	 * traversing.getNonAncestor()
 	 */
 	var exports = {
 		prevNodeBoundary: prevNodeBoundary,
@@ -770,7 +801,9 @@ define([
 		childAndParentsUntil: childAndParentsUntil,
 		childAndParentsUntilIncl: childAndParentsUntilIncl,
 		childAndParentsUntilNode: childAndParentsUntilNode,
-		childAndParentsUntilInclNode: childAndParentsUntilInclNode
+		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
+		climbUntil: climbUntil,
+		getNonAncestor: getNonAncestor
 	};
 
 	exports['backward'] = exports.backward;
@@ -795,6 +828,8 @@ define([
 	exports['childAndParentsUntilIncl'] = exports.childAndParentsUntilIncl;
 	exports['childAndParentsUntilNode'] = exports.childAndParentsUntilNode;
 	exports['childAndParentsUntilInclNode'] = exports.childAndParentsUntilInclNode;
+	exports['climbUntil'] = exports.climbUntil;
+	exports['getNonAncestor'] = exports.getNonAncestor;
 
 	return exports;
 });

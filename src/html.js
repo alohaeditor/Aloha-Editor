@@ -718,6 +718,11 @@ define([
 		return false;
 	}
 
+	function isListContainer(node) {
+		return 'OL' === node.nodeName || 'UL' === node.nodeName;
+	}
+
+
 	/**
 	 * Functions for working with HTML content.
 	 */
@@ -738,7 +743,8 @@ define([
 		isEmpty: isEmpty,
 		isLinebreakingNode: isLinebreakingNode,
 		isRenderedEmptyInlineNode: isRenderedEmptyInlineNode,
-		isVisuallyAdjacent: isVisuallyAdjacent
+		isVisuallyAdjacent: isVisuallyAdjacent,
+		isListContainer: isListContainer
 	};
 
 	exports['isUnrenderedNode'] = exports.isUnrenderedNode;
@@ -758,6 +764,7 @@ define([
 	exports['isLinebreakingNode'] = exports.isLinebreakingNode;
 	exports['isRenderedEmptyInlineNode'] = exports.isRenderedEmptyInlineNode;
 	exports['isVisuallyAdjacent'] = exports.isVisuallyAdjacent;
+	exports['isListContainer'] = exports.isListContainer;
 
 	return exports;
 });

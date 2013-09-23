@@ -1237,19 +1237,8 @@ define([
 		return liveRange;
 	}
 
-	function getNonAncestor(node, limit, previous) {
-		limit = limit || fn.returnFalse;
-		var next = previous ? node.previousSibling : node.nextSibling;
-		if (next) {
-			return limit(next) ? null : next;
-		}
-		return (node.parentNode && !limit(node.parentNode))
-			? getNonAncestor(node.parentNode, limit, previous)
-			: null;
-	}
-
 	function nextNonAncestor(node, limit) {
-		return getNonAncestor(node, limit, false);
+		return traversing.getNonAncestor(node, limit, false);
 	}
 
 	var isRenderedNode = fn.complement(html.isUnrenderedNode);
@@ -1260,36 +1249,54 @@ define([
 		);
 	}
 
-	function transferNodesLeft(node, insert) {
+	function isTransferableNode(node) {
+		return node && (
+			dom.isTextNode(node)
+			||
+			html.isInlineType(node)
+			||
+			html.isListContainer(node)
+		);
+	}
+
+	function findTransferable(node) {
 		var next;
-		var parent;
 		while (node) {
 			if (html.isVoidType(node)) {
-				return;
+				return null;
 			}
-			if (!dom.isTextNode(node) && !html.isTextLevelSemanticType(node)) {
-				next = traversing.findForward(node.firstChild, isRenderedNode);
-				if (!next) {
-					dom.remove(node);
-				}
-				node = next;
-				continue;
+			if (isTransferableNode(node)) {
+				return node;
 			}
-			parent = node.parentNode;
-			while (node && html.isInlineType(node)) {
-				next = node.nextSibling;
-				if (!insert(node)) {
-					break;
-				}
-				node = next;
-			}
-			while (!hasRenderedChildNode(parent)) {
-				node = parent;
-				parent = node.parentNode;
+			next = traversing.findForward(node.firstChild, isRenderedNode);
+			// FIXME: we shouldn't remove nodes in a find function
+			if (!next) {
 				dom.remove(node);
 			}
-			break;
+			node = next;
 		}
+		return node;
+	}
+
+	function removeEmptyNodeAndAncestors(node) {
+		traversing.climbUntil(node, hasRenderedChildNode, dom.remove);
+	}
+
+	function transferNodesLeft(start, move) {
+		var node = findTransferable(start);
+		if (!node) {
+			return;
+		}
+		var next;
+		var parent = node.parentNode;
+		while (isTransferableNode(node)) {
+			next = node.nextSibling;
+			if (!move(node)) {
+				break;
+			}
+			node = next;
+		}
+		removeEmptyNodeAndAncestors(parent);
 	}
 
 	/**
@@ -1304,7 +1311,7 @@ define([
 	 * @param {DOMObject} node
 	 * @return {Boolean}
 	 */
-	function suitableForLanding(node) {
+	function suitableTransferTarget(node) {
 		return !(html.isVoidType(node) || html.isTextLevelSemanticType(node));
 	}
 
@@ -1324,7 +1331,7 @@ define([
 	function createTransfer(node, common) {
 		var prev;
 		while (!dom.isEditingHost(node)) {
-			if (suitableForLanding(node)) {
+			if (suitableTransferTarget(node)) {
 				return {
 					start: traversing.findForward(
 						nextNonAncestor(node, dom.isEditingHost),
@@ -1380,12 +1387,24 @@ define([
 				fn.noop,
 				// stepLeftStart
 				fn.noop,
+				// remove
+				//   |
+				//   v
+				// {<b>...
 				stepRightStart,
+				//   remove
+				//     |
+				//     v
+				// ...<b>}
 				stepLeftEnd,
 				// stepRightEnd
 				fn.noop,
 				// stepPartial
 				fn.noop,
+				//      remove
+				//        |
+				//        v
+				// {...<b></b>...}
 				stepInbetween,
 				null
 			);
