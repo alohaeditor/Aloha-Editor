@@ -7,11 +7,13 @@
 define([
 	'events',
 	'pubsub',
-	'ranges'
+	'ranges',
+	'misc'
 ], function Keys(
 	events,
 	pubsub,
-	ranges
+	ranges,
+	misc
 ) {
 	'use strict';
 
@@ -72,7 +74,11 @@ define([
 	 * @param {Function(object)} callback
 	 */
 	function down(code, callback) {
-		pubsub.subscribe('aloha.key.down.' + (IDENTIFIERS[code] || code), callback);
+		if (typeof code === 'function') {
+			pubsub.subscribe('aloha.key.down', code);
+		} else {
+			pubsub.subscribe('aloha.key.down.' + (IDENTIFIERS[code] || code), callback);
+		}
 	}
 
 	/**
@@ -81,19 +87,35 @@ define([
 	 * @param {Function(object)} callback
 	 */
 	function up(code, callback) {
-		pubsub.subscribe('aloha.key.up.' + (IDENTIFIERS[code] || code), callback);
+		if (typeof code === 'function') {
+			pubsub.subscribe('aloha.key.up', code);
+		} else {
+			pubsub.subscribe('aloha.key.up.' + (IDENTIFIERS[code] || code), callback);
+		}
+	}
+
+	function keycode(event) {
+		return (
+			misc.defined(event.key)
+				? event.key
+				: misc.defined(event.keyCode)
+					? event.keyCode
+					: event.which
+		);
 	}
 
 	/**
 	 * Functions for working with key events.
 	 */
 	var exports = {
-		up   : up,
-		down : down
+		up      : up,
+		down    : down,
+		keycode : keycode
 	};
 
-	exports['up']   = exports.up;
-	exports['down'] = exports.down;
+	exports['up']      = exports.up;
+	exports['down']    = exports.down;
+	exports['keycode'] = exports.keycode;
 
 	return exports;
 });

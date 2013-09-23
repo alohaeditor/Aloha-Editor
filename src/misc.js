@@ -24,11 +24,17 @@ define([], function Misc() {
 		return false;
 	}
 
+	function defined(obj) {
+		return 'undefined' !== typeof obj;
+	}
+
 	var exports = {
-		anyRx: anyRx
+		anyRx: anyRx,
+		defined: defined
 	};
 
 	exports['anyRx'] = exports.anyRx;
+	exports['defined'] = exports.defined;
 
 	return exports;
 });

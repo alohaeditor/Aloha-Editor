@@ -1,3 +1,13 @@
+/** Aloha Editor | Version 1.0 | github.com/alohaeditor */
+
+// ==ClosureCompiler==
+// @compilation_level ADVANCED_OPTIMIZATIONS
+// @warning_level VERBOSE
+// @jscomp_warning missingProperties
+// @output_file_name aloha.min.js
+// @check_types
+// ==/ClosureCompiler==
+
 define([
 	'arrays',
 	'boundary-markers',
@@ -46,8 +56,9 @@ define([
 	/*
 	keys.down('enter', typing.enter);
 	keys.down('space', typing.space);
-	*/
 	keys.down('delete', typing.delete);
+	keys.down(typing.down);
+	*/
 
 	/**
 	 * Aloha Editor API
