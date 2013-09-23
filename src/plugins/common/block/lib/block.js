@@ -52,6 +52,92 @@ define([
 	var GENTICS = window.GENTICS;
 
 	/**
+	 * Add WHITE SPACE at the beginning and at the end of the Block, so the
+	 * user can insert text after the block.
+	 * For inline components like <span>, the focus of the caret when click outside the
+	 * inline component, make the caret be positioned at the end of the content of the
+	 * inline component instead of at the end of the inline component.
+	 *
+	 * We have the next span element
+	 * <span>aloha-editor</span>
+	 *
+	 * When clicked outside caret at then end of the span's content
+	 * <span>aloha-editor{|}</span>
+	 *
+	 * but we want the caret at the end of the span
+	 * <span>aloha-editor</span>{|}
+	 *
+	 * @private
+	 * @param {jQuery<DOMElement>} $block
+	 */
+	function addWhiteSpacesAfterAndBefore($block) {
+		var whiteSpaces = '\u00A0';
+		var emptySpaces = '\u200B';
+
+		var prevSibling = $block[0].previousSibling;
+		var nextSibling = $block[0].nextSibling;
+
+		var whiteSpaceNodeCompare = document.createTextNode(whiteSpaces);
+
+		if (prevSibling === null || prevSibling.nodeValue.trim().length === 0 && !prevSibling.isEqualNode(whiteSpaceNodeCompare) ) {
+			if (prevSibling !== null) {
+				//prevSibling contains blank space, we delete it
+				prevSibling.parentNode.removeChild(prevSibling);
+			}
+			// Separate the node to compare from other node.
+			$block.before(document.createTextNode(emptySpaces));
+			$block.before(document.createTextNode(whiteSpaces));
+		}
+
+		if (nextSibling === null || nextSibling.nodeValue.trim().length === 0 && !nextSibling.isEqualNode(whiteSpaceNodeCompare) ) {
+			if (nextSibling !== null) {
+				//nextSibling contains blank space, we delete it
+				nextSibling.parentNode.removeChild(nextSibling);
+			}
+			// Separate the node to compare from other node.
+			$block.after(document.createTextNode(emptySpaces));
+			$block.after(document.createTextNode(whiteSpaces));
+		}
+	}
+
+	/**
+	 * Check if the node is null or contains empty string
+	 *
+	 * @param {DOMElement} node
+	 * @returns {boolean} true is node is empty or is null
+	 */
+	function isNodeEmptyOrNull (node) {
+		if (node === null || node.nodeValue.trim().length === 0)
+			return true;
+		return false;
+	}
+
+	/**
+	 * Removes the white space inserted by the function _addWhiteSpacesAfterAndBeforeBlock.
+	 * It removes the white space only if there is nothing after of before the white space
+	 *
+	 * @private
+	 * @param {jQuery<DOMElement>} $block
+	 */
+	function removeWhiteSpacesAfterAndBefore($block) {
+		var whiteSpaces = '\u00A0';
+		var whiteSpaceNodeCompare = document.createTextNode(whiteSpaces);
+
+		var prevSibling = $block[0].previousSibling;
+		var nextSibling = $block[0].nextSibling;
+
+		var parent = prevSibling.parentNode;
+		if (prevSibling.isEqualNode(whiteSpaceNodeCompare) &&
+			isNodeEmptyOrNull(prevSibling.previousSibling)) {
+			parent.removeChild(prevSibling);
+		}
+		if (nextSibling.isEqualNode(whiteSpaceNodeCompare) &&
+			isNodeEmptyOrNull(nextSibling.nextSibling)) {
+			parent.removeChild(nextSibling);
+		}
+	}
+
+	/**
 	 * An aloha block has the following special properties, being readable through the
 	 * "attr" function:
 	 * - aloha-block-type -- TYPE of the AlohaBlock as registered by the BlockManager
@@ -183,12 +269,12 @@ define([
 			// Only for the span element.
 			// It is not possible to insert text after or before a Block span
 			// when after or before the Block there is not elements
-			if (this.$element[0].tagName.toLowerCase() === 'span') {
+			if (this.$element[0].tagName === 'SPAN') {
 				Aloha.bind('aloha-editable-activated', function (event, arg) {
 					if (arg.editable) {
 						var $block = arg.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
-							that._addWhiteSpacesAfterAndBeforeBlock();
+							addWhiteSpacesAfterAndBefore(that.$element);
 						}
 					}
 				});
@@ -197,7 +283,7 @@ define([
 					if (arg.editable) {
 						var $block = arg.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
-							that._removeWhiteSpacesAfterAndBeforeBlock();
+							removeWhiteSpacesAfterAndBefore(that.$element);
 						}
 					}
 				});
@@ -458,83 +544,6 @@ define([
 		/**************************
 		 * SECTION: Activation / Deactivation
 		 **************************/
-
-		/**
-		 * Add WHITE SPACE at the beginning and at the end of the Block, so the
-		 * user can insert text after the block.
-		 * For inline components like <span>, the focus of the caret when click outside the
-		 * inline component, make the caret be positioned at the end of the content of the
-		 * inline component instead of at the end of the inline component.
-		 *
-		 * We have the next span element
-		 * <span>aloha-editor</span>
-		 *
-		 * When clicked outside caret at then end of the span's content
-		 * <span>aloha-editor{|}</span>
-		 *
-		 * but we want the caret at the end of the span
-		 * <span>aloha-editor</span>{|}
-		 *
-		 * @private
-		 */
-		_addWhiteSpacesAfterAndBeforeBlock: function () {
-			var whiteSpaces = '\u00A0';
-			var emptySpaces = '\u200B';
-
-			var this$element = this.$element;
-			var prevSibling = this$element[0].previousSibling;
-			var nextSibling = this$element[0].nextSibling;
-
-			var whiteSpaceNodeCompare = document.createTextNode(whiteSpaces);
-
-			if (prevSibling === null || prevSibling.nodeValue.trim().length === 0 && !prevSibling.isEqualNode(whiteSpaceNodeCompare) ) {
-				if (prevSibling !== null) {
-					//prevSibling contains blank space, we delete it
-					prevSibling.parentNode.removeChild(prevSibling);
-				}
-				// Separate the node to compare from other node.
-				this$element.before(document.createTextNode(emptySpaces));
-				this$element.before(document.createTextNode(whiteSpaces));
-			}
-
-			if (nextSibling === null || nextSibling.nodeValue.trim().length === 0 && !nextSibling.isEqualNode(whiteSpaceNodeCompare) ) {
-				if (nextSibling !== null) {
-					//nextSibling contains blank space, we delete it
-					nextSibling.parentNode.removeChild(nextSibling);
-				}
-				// Separate the node to compare from other node.
-				this$element.after(document.createTextNode(emptySpaces));
-				this$element.after(document.createTextNode(whiteSpaces));
-			}
-		},
-
-		/**
-		 * Removes the white space inserted by the function _addWhiteSpacesAfterAndBeforeBlock.
-		 * It removes the white space only if there is nothing after of before the white space
-		 *
-		 * @private
-		 */
-		_removeWhiteSpacesAfterAndBeforeBlock: function () {
-			function isNodeEmpty (node) {
-				if (node === null || node.nodeValue.trim().length === 0)
-					return true;
-				return false;
-			}
-			var whiteSpaces = '\u00A0';
-			var whiteSpaceNodeCompare = document.createTextNode(whiteSpaces);
-			var thisElement = this.$element[0];
-			var prevSibling = thisElement.previousSibling;
-			var nextSibling = thisElement.nextSibling;
-
-			var parent = prevSibling.parentNode;
-			if (prevSibling.isEqualNode(whiteSpaceNodeCompare) && isNodeEmpty(prevSibling.previousSibling)) {
-				parent.removeChild(prevSibling);
-			}
-			if (nextSibling.isEqualNode(whiteSpaceNodeCompare) && isNodeEmpty(nextSibling.nextSibling)) {
-				parent.removeChild(nextSibling);
-			}
-		},
-
 
 		/**
 		 * activates the block
