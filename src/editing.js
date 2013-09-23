@@ -136,6 +136,9 @@ define([
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
+		if (dom.isTextNode(cac)) {
+			cac = cac.parentNode;
+		}
 		var sc  = liveRange.startContainer;
 		var ec  = liveRange.endContainer;
 		var so  = liveRange.startOffset;
