@@ -85,6 +85,8 @@ define([
 		'video'      // HTML5
 	];
 
+	// These elements are usually empty and self closing
+	var SINGLE_TAG_ELEMENTS = ['hr', 'br', 'img'];
 
 	/**
 	 * Unicode zero width space characters:
@@ -295,6 +297,7 @@ define([
 
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
+		SINGLE_TAG_ELEMENTS: SINGLE_TAG_ELEMENTS,
 		isBlock: isBlock,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isInlineFormattable: isInlineFormattable,
