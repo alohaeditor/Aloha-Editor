@@ -31,12 +31,73 @@
 			u { border-color: green; }
 			i { border-color: red; }
 			h1,h2,h3,h4,h5,h6 { border-color: gray }
+			/* ol>li:first-letter {background: red;} */
 		</style>
 	</head>
 	<body>
-		<div class="aloha-editable" contentEditable="true">
+
 			<!--
-			zero
+			<br/><br/><br/><br/><br/><br/>
+
+			<h2>Foo</h2>bar
+			<h2>Foo</h2><b>bar</b>
+			<h2>Foo</h2><b><i>bar</i></b>
+			<h2><i>Foo</i></h2><i>bar</i>
+			<h2><i>Foo</i></h2><i><u>bar</u></i>
+			<h2><i>Foo</i></h2><b><i>bar</i></b>
+			<h2><b><i>Foo</i></b></h2><b><i>bar</i></b>
+			<h2>Foo</h2><p>bar</p>
+
+			<br/><br/><br/><br/><br/><br/>
+
+			<h1>Aloha Editor</h1>
+			<p>
+				Lorem ipsum dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscing
+				elit. Donec a diam lectus. Sed sit amet ipsum mauris.  Maecenas
+				congue ligula ac quam viverra nec consectetur ante hendrerit.
+			</p>
+			<ul>
+				<li>one</li>
+				<li>two</li>
+				<li>three</li>
+			</ul>
+			<p>
+				Donec et mollis dolor.  Praesent et diam eget libero egestas
+				mattis sit amet vitae augue.  Nam tincidunt congue enim, ut
+				porta lorem lacinia consectetur. Donec ut libero sed arcu
+				vehicula ultricies a non tortor.
+			</p>
+			<div>
+				<ul>
+					<li>one</li>
+					<li>two</li>
+					<li>three</li>
+				</ul>
+			</div>
+
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+			<br/><br/><br/><hr/><br/><br/><br/>
+
+			<p>foo</p>
+			<p>bar</p>
+			<b>bar</b>
+			<p>buz</p>
+
+			<div>foo</div>
+			<div>
+				<p><b>bar</b></p>
+				<p>buz</p>
+			</div>
+
+			<br/><br/><br/><br/><br/><br/>
+
+			<div><p>foo</p></div>
+			<div><i>bar</i></div>
+
+
 			<div>
 				<div>
 					<h1>one</h1>
@@ -73,70 +134,46 @@
 
 			<br/><br/><br/><hr/><br/><br/><br/>
 
-			<b>foo</b><div><h2><p>bar</p>baz</h2>buz</div>
-
-			<br/><br/><br/><hr/><br/><br/><br/>
-			<br/><br/><br/><hr/><br/><br/><br/>
-			<br/><br/><br/><hr/><br/><br/><br/>
-			<br/><br/><br/><hr/><br/><br/><br/>
-			<br/><br/><br/><hr/><br/><br/><br/>
-
-			<p>foo</p>
-			<p>bar</
-				<b>bar</b>
-				<p>buz</p>
-			</div>
-
-			<div>foo</div>
 			<div>
-				<p><b>bar</b></p>
-				<p>buz</p>
+				<b>foo</b><div><h2><p>bar</p>baz</h2>buz</div>
 			</div>
 
-			<br/><br/><br/><br/><br/><br/>
-
-			<div><p>foo</p></div>
-			<div><i>bar</i></div>
-
-			<br/><br/><br/><br/><br/><br/>
-
-			<h2>Foo</h2>bar
-			<h2>Foo</h2><b>bar</b>
-			<h2>Foo</h2><b><i>bar</i></b>
-			<h2><i>Foo</i></h2><i>bar</i>
-			<h2><i>Foo</i></h2><i><u>bar</u></i>
-			<h2><i>Foo</i></h2><b><i>bar</i></b>
-			<h2><b><i>Foo</i></b></h2><b><i>bar</i></b>
-			<h2>Foo</h2><p>bar</p>
-
-			<br/><br/><br/><br/><br/><br/>
 
 			-->
 
-			<h1>Aloha Editor</h1>
-			<p>
-				Lorem ipsum dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscing
-				elit. Donec a diam lectus. Sed sit amet ipsum mauris.  Maecenas
-				congue ligula ac quam viverra nec consectetur ante hendrerit.
-			</p>
+		<div class="aloha-editable" contentEditable="true">
+			zero
 			<ul>
 				<li>one</li>
 				<li>two</li>
-				<li>three</li>
+				<li>
+					three
+					<ol>
+						<li>four</li>
+						<li>five</li>
+					</ol>
+				</li>
+				<li>
+					six
+					<ol>
+						<li>seven</li>
+						<li>
+							eight
+							<ol>
+								<li>nine</li>
+								<li>ten</li>
+							</ol>
+							eleven
+						</li>
+					</ol>
+				</li>
+				<li>
+					<ol>
+						<li>twelve</li>
+						<li>thirteen</li>
+					</ol>
+				</li>
 			</ul>
-			<p>
-				Donec et mollis dolor.  Praesent et diam eget libero egestas
-				mattis sit amet vitae augue.  Nam tincidunt congue enim, ut
-				porta lorem lacinia consectetur. Donec ut libero sed arcu
-				vehicula ultricies a non tortor.
-			</p>
-			<div>
-				<ul>
-					<li>one</li>
-					<li>two</li>
-					<li>three</li>
-				</ul>
-			</div>
 		</div>
 		<script src="mandox.js"></script>
 		<script src="../src/require-pronto.js"></script>
@@ -147,7 +184,9 @@
 				'use strict';
 				function setVersion (version) {
 					var h1 = document.getElementsByTagName('h1')[0];
-					h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
+					if (h1) {
+						h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
+					}
 				}
 				function main(ranges, editing, pubsub) {
 					return;

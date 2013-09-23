@@ -1264,31 +1264,67 @@ define([
 		var next;
 		var parent;
 		while (node) {
-			if (html.isBlockType(node)) {
-				node = traversing.findForward(node.firstChild, isRenderedNode);
-			} else {
-				parent = node.parentNode;
-				while (node && html.isInlineType(node)) {
-					next = node.nextSibling;
-					if (!insert(node)) {
-						break;
-					}
-					node = next;
-				}
-				while (!hasRenderedChildNode(parent)) {
-					node = parent;
-					parent = node.parentNode;
+			if (html.isVoidType(node)) {
+				return;
+			}
+			if (!dom.isTextNode(node) && !html.isTextLevelSemanticType(node)) {
+				next = traversing.findForward(node.firstChild, isRenderedNode);
+				if (!next) {
 					dom.remove(node);
 				}
-				break;
+				node = next;
+				continue;
 			}
+			parent = node.parentNode;
+			while (node && html.isInlineType(node)) {
+				next = node.nextSibling;
+				if (!insert(node)) {
+					break;
+				}
+				node = next;
+			}
+			while (!hasRenderedChildNode(parent)) {
+				node = parent;
+				parent = node.parentNode;
+				dom.remove(node);
+			}
+			break;
 		}
 	}
 
+	/**
+	 * Checks whether or not the given node may be used to receive moved nodes
+	 * in the process of removing a *visual* line break.
+	 *
+	 * The rule is simple: void elements are unsuitable because they are not
+	 * permitted to contain any content, and text-level semantic elements are
+	 * also unsuitable because any text-level content that would be moved into
+	 * them will likely have it's semantic styling changed.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
+	function suitableForLanding(node) {
+		return !(html.isVoidType(node) || html.isTextLevelSemanticType(node));
+	}
+
+	/**
+	 * Returns an object containing the properties `start` and `move`.
+	 *
+	 * `start` a node that is *visually* (ignoring any unrendered nodes
+	 * inbetween) to the right `node`.
+	 *
+	 * `move` is function that will correctly move nodes to the right of `node`
+	 * starting from `start`, all the way to the visual end of the line.
+	 *
+	 * @param {DOMObject} node
+	 * @param {DOMObject} common
+	 * @return {Object}
+	 */
 	function createTransfer(node, common) {
 		var prev;
 		while (!dom.isEditingHost(node)) {
-			if (html.isBlockType(node)) {
+			if (suitableForLanding(node)) {
 				return {
 					start: traversing.findForward(
 						nextNonAncestor(node, dom.isEditingHost),
@@ -1316,7 +1352,7 @@ define([
 		};
 	}
 
-	function joinNodes(left, right) {
+	function joinLines(left, right) {
 
 		// Because non-adjacent containers shoud/cannot be joined, nor can a
 		// container be joined to itself.
@@ -1328,50 +1364,57 @@ define([
 
 	function remove(liveRange) {
 		fixupRange(liveRange, function (range, left, right) {
-			var remove = function (node) {
+			var stepRightStart = function (node) {
 				dom.removePreservingRange(node, range);
 			};
+			var stepLeftEnd = function (node) {
+				dom.removePreservingRange(node, range);
+			};
+			var stepInbetween = function (node) {
+				dom.removePreservingRange(node, range);
+			};
+
 			walkBoundaryLeftRightInbetween(
 				range,
 				//carryDown
 				fn.noop,
 				// stepLeftStart
 				fn.noop,
-				// stepRightStart
-				remove,
-				// stepLeftEnd
-				remove,
+				stepRightStart,
+				stepLeftEnd,
 				// stepRightEnd
 				fn.noop,
 				// stepPartial
 				fn.noop,
-				// stepInbetween
-				remove,
+				stepInbetween,
 				null
 			);
-			left.setFrom(cursors.createFromBoundary(
-				range.startContainer,
-				range.startOffset
-			));
-			right.setFrom(cursors.createFromBoundary(
-				range.endContainer,
-				range.endOffset
-			));
+
 			return {
 				postprocess: function () {
-					//console.warn(aloha.boundarymarkers.hint(range));
-					joinNodes(
+					joinLines(
 						dom.nodeAtOffset(range.startContainer, range.startOffset),
 						dom.nodeAtOffset(range.endContainer, range.endOffset)
 					);
+
 					ranges.collapseToStart(range);
-					//console.log(aloha.boundarymarkers.hint(range));
+
+					left.setFrom(cursors.createFromBoundary(
+						range.startContainer,
+						range.startOffset
+					));
+
+					right.setFrom(cursors.createFromBoundary(
+						range.endContainer,
+						range.endOffset
+					));
 				},
 				postprocessTextNodes: function(range) {
 					return range;
 				}
 			};
 		});
+
 		return liveRange;
 	}
 
@@ -1388,14 +1431,14 @@ define([
 		format : format,
 		split  : split,
 		remove : remove,
-		joinNodes: joinNodes
+		joinLines: joinLines
 	};
 
 	exports['wrap'] = exports.wrap;
 	exports['format'] = exports.format;
 	exports['split'] = exports.split;
 	exports['remove'] = exports.remove;
-	exports['joinNodes'] = exports.joinNodes;
+	exports['joinLines'] = exports.joinLines;
 
 	return exports;
 });

@@ -77,6 +77,63 @@ define([
 	};
 
 	/**
+	 * Void elements are elements which are not permitted to contain content.
+	 * https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+	 *
+	 * @type {Object}
+	 */
+	var VOID_ELEMENTS = {
+		'AREA'    : true,
+		'BASE'    : true,
+		'BR'      : true,
+		'COL'     : true,
+		'COMMAND' : true,
+		'EMBED'   : true,
+		'HR'      : true,
+		'IMG'     : true,
+		'INPUT'   : true,
+		'KEYGEN'  : true, // HTML5
+		'LINK'    : true,
+		'META'    : true,
+		'PARAM'   : true,
+		'SOURCE'  : true,
+		'TRACK'   : true,
+		'WBR'     : true
+	};
+
+	var TEXT_LEVEL_SEMANTIC_ELEMENTS = {
+		'A'      : true,
+		'ABBR'   : true,
+		'B'      : true,
+		'BDI'    : true, // HTML5
+		'BDO'    : true,
+		'BR'     : true,
+		'CITE'   : true,
+		'CODE'   : true,
+		'DATA'   : true, // HTML5
+		'DFN'    : true,
+		'EM'     : true,
+		'I'      : true,
+		'KBD'    : true,
+		'MARK'   : true, // HTML5
+		'Q'      : true,
+		'RP'     : true, // HTML5
+		'RT'     : true, // HTML5
+		'RUBY'   : true, // HTML5
+		'S'      : true,
+		'SAMP'   : true,
+		'SMALL'  : true,
+		'SPAN'   : true,
+		'STRONG' : true,
+		'SUB'    : true,
+		'SUP'    : true,
+		'TIME'   : true, // HTML5
+		'U'      : true,
+		'VAR'    : true,
+		'WBR'    : true  // HTML5
+	};
+
+	/**
 	 * Checks whether the given node is rendered with block style.
 	 *
 	 * A block node is either an Element whose "display" property does not have
@@ -132,7 +189,7 @@ define([
 	 *         is rendered.
 	 */
 	function isBlockType(node) {
-		return !!BLOCK_LEVEL_ELEMENTS[node.nodeName];
+		return BLOCK_LEVEL_ELEMENTS[node.nodeName] || false;
 	}
 
 	/**
@@ -146,6 +203,26 @@ define([
 	 */
 	function isInlineType(node) {
 		return !isBlockType(node);
+	}
+
+	/**
+	 * Check whether the given node is a void element type.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
+	function isVoidType(node) {
+		return VOID_ELEMENTS[node.nodeName] || false;
+	}
+
+	/**
+	 * Check whether the given node is a text-level semantic element type.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
+	function isTextLevelSemanticType(node) {
+		return TEXT_LEVEL_SEMANTIC_ELEMENTS[node.nodeName] || false;
 	}
 
 	/**
@@ -650,6 +727,8 @@ define([
 		isStyleInherited: isStyleInherited,
 		isBlockType: isBlockType,
 		isInlineType: isInlineType,
+		isVoidType: isVoidType,
+		isTextLevelSemanticType: isTextLevelSemanticType,
 		hasBlockStyle: hasBlockStyle,
 		hasInlineStyle: hasInlineStyle,
 		isUnrenderedWhitespace: isUnrenderedWhitespace,
@@ -667,6 +746,8 @@ define([
 	exports['isStyleInherited'] = exports.isStyleInherited;
 	exports['isBlockType'] = exports.isBlockType;
 	exports['isInlineType'] = exports.isInlineType;
+	exports['isVoidType'] = exports.isVoidType;
+	exports['isTextLevelSemanticType'] = exports.isTextLevelSemanticType;
 	exports['hasBlockStyle'] = exports.hasBlockStyle;
 	exports['hasInlineStyle'] = exports.hasInlineStyle;
 	exports['isUnrenderedWhitespace'] = exports.isUnrenderedWhitespace;
