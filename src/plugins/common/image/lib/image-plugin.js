@@ -260,7 +260,6 @@ define([
 		 * Plugin initialization method
 		 */
 		init: function () {
-
 			var plugin = this;
 
 			var imagePluginUrl = Aloha.getPluginUrl('image');
@@ -328,7 +327,7 @@ define([
 					// image without defining a valid image src
 					var img = jQuery(plugin.ui.imgSrcField.getTargetObject());
 					if (img.attr('src') === '') {
-						img.remove();
+						$(img).fadeOut(500,function() { $(this).resizable('destroy').remove(); });
 					} // image removal when src field is blank
 				});
 			}
@@ -692,7 +691,7 @@ define([
 		 * It will if enabled activate the resizing action.
 		 */
 		clickImage: function (e) {
-
+			
 			var plugin = this;
 			plugin.endResize(); // removes previous resize handler
 			plugin.imageObj = jQuery(e.target);
@@ -713,7 +712,7 @@ define([
 			// already done in resize on a smaller scope, this block next aloha-selection-change event
 			// to be thrown
 			// editable.contentEditable(false);
-
+			
 			//Store the current props of the image
 			this.restoreProps.push({
 				obj : e.srcElement,
@@ -731,19 +730,28 @@ define([
 			widthField.val(plugin.imageObj.width());
 			widthField.css('background-color', '');
 
-			if (plugin.settings.ui.meta) {
+
+				// Added setTimeout for fixing src empty issue when double click.
+				setTimeout(function(){
+					
+				if (plugin.settings.ui.meta) {
 				plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
 				plugin.ui.imgTitleField.setTargetObject(plugin.imageObj, 'title');
-			}
-			Aloha.Selection.preventSelectionChanged();
-			try {
-				plugin.ui.imgSrcField.focus();
-			} catch(e) {
-				// FIXME for some reason execution breaks at this point
-			}
+				}
+				
+				Aloha.Selection.preventSelectionChanged();
+				try {
+					$(plugin.ui.imgSrcField).focus();
+				} catch(e) {
+					// FIXME for some reason execution breaks at this point
+				}
+				
+				},200,plugin,Aloha); //setTimeout(function(){
+			
 
 			//to handle switching between images, aspect ratio is recalculated on click
 			plugin.aspectRatioValue = plugin.imageObj.width() / plugin.imageObj.height();
+
 
 			if (plugin.settings.ui.resizable) {
 				plugin.startResize();
@@ -1278,7 +1286,9 @@ define([
 				var editable = this.imageObj.closest('.aloha-editable');
 				//this.imageObj.contentEditable(true);
 			}
-
+			/* Fix Auto Height & Width Incress because of Padding - Ayush / contact@webgarb.com */
+			var w = $(this.imageObj).width();
+			var h = $(this.imageObj).height();
 			if (this.imageObj && this.imageObj.is(":ui-resizable")) {
 				this.imageObj
 					.resizable('destroy')
@@ -1286,6 +1296,9 @@ define([
 						top	 : 0,
 						left : 0
 					});
+			/* Fix Auto Height & Width Incress because of Padding - Ayush / contact@webgarb.com */
+			if(w) { $(this.imageObj).css("width",w); }	
+			if(h) { $(this.imageObj).css("height",h); }	
 			}
 		},
 
