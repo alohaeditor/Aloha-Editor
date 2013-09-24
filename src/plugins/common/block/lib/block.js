@@ -38,7 +38,7 @@ define([
 	'ui/scopes',
 	'util/class',
 	'PubSub',
-	'./block-utils'
+	'block/block-utils'
 ], function(
 	Aloha,
 	jQuery,
@@ -47,7 +47,7 @@ define([
 	Scopes,
 	Class,
 	PubSub,
-    BlockUtils
+	BlockUtils
 ){
 	'use strict';
 
@@ -185,19 +185,19 @@ define([
 			// Only for the span element.
 			// It is not possible to insert text after or before a Block span
 			// when after or before the Block there is not elements
-			if (this.$element[0].tagName === 'SPAN') {
-				Aloha.bind('aloha-editable-activated', function (event, arg) {
-					if (arg.editable) {
-						var $block = arg.editable.obj.find('#' + that.id);
+			if (this.$element[0].nodeName === 'SPAN') {
+				Aloha.bind('aloha-editable-activated', function ($event, data) {
+					if (data.editable) {
+						var $block = data.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
 							BlockUtils.addWhiteSpacesAfterAndBefore(that.$element);
 						}
 					}
 				});
 
-				Aloha.bind('aloha-editable-deactivated', function (event, arg) {
-					if (arg.editable) {
-						var $block = arg.editable.obj.find('#' + that.id);
+				Aloha.bind('aloha-editable-deactivated', function ($event, data) {
+					if (data.editable) {
+						var $block = data.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
 							BlockUtils.removeWhiteSpacesAfterAndBefore(that.$element);
 						}
