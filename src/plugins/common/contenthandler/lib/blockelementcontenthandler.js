@@ -30,11 +30,11 @@ define([
 	'use strict';
 
 	var blocksSelector = Html.BLOCKLEVEL_ELEMENTS.join();
-	var emptyBlocksSelector = Arrays.map(
-			Arrays.subtract(Html.BLOCKLEVEL_ELEMENTS, Html.SINGLE_TAG_ELEMENTS),
-			function(a){return a + ':empty'; }
-		).join(',');
-	
+	var emptyBlocksSelector = Arrays.subtract(
+			Html.BLOCKLEVEL_ELEMENTS,
+			Html.VOID_ELEMENTS
+		).join(':empty,') + ':empty';
+
 	var NOT_ALOHA_BLOCK_FILTER = ':not(.aloha-block)';
 
 	var isNotIgnorableWhitespace =

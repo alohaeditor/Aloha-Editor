@@ -85,8 +85,30 @@ define([
 		'video'      // HTML5
 	];
 
-	// These elements are usually empty and self closing
-	var SINGLE_TAG_ELEMENTS = ['hr', 'br', 'img'];
+	/**
+	 * Void elements are elements which are not permitted to contain content.
+	 * https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+	 *
+	 * @type {Object}
+	 */
+	var VOID_ELEMENTS = [
+		'area',
+		'base',
+		'br',
+		'col',
+		'command',
+		'embed',
+		'hr',
+		'img',
+		'input',
+		'keygen',
+		'link',
+		'meta',
+		'param',
+		'source',
+		'track',
+		'wbr'
+	];
 
 	/**
 	 * Unicode zero width space characters:
@@ -297,7 +319,7 @@ define([
 
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
-		SINGLE_TAG_ELEMENTS: SINGLE_TAG_ELEMENTS,
+		VOID_ELEMENTS: VOID_ELEMENTS,
 		isBlock: isBlock,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isInlineFormattable: isInlineFormattable,
