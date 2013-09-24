@@ -1241,7 +1241,7 @@ define([
 	}
 
 	function nextNonAncestor(node, limit) {
-		return traversing.getNonAncestor(node, limit, false);
+		return traversing.findNearestNonAncestor(node, limit, false);
 	}
 
 	var isRenderedNode = fn.complement(html.isUnrenderedNode);

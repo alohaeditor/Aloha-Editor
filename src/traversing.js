@@ -409,7 +409,7 @@ define([
 	 *
 	 * forward() will return nodes in the following order:
 	 *
-	 * <b>...</b>, "two", <u>...</u>, <i>...</i>,"three", "four", "five"
+	 * <b>...</b>, "two", <u>...</u>, <i>...</i>, "three", "four", "five"
 	 *
 	 * @param {DOMObject} node
 	 * @return {DOMObject}
@@ -740,14 +740,28 @@ define([
 		}
 	}
 
-	function getNonAncestor(node, limit, previous) {
+	/**
+	 * Returns the nearest (in the document order) to the given node that is not
+	 * an ancestor of that node.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} limit
+	 *        Predicate, which will be applied to each node in the traversal
+	 *        step.  If this function returns true, traversal will terminal and
+	 *        findNearestNonAncestor will return null.
+	 * @param {Boolean} previous
+	 *        If true, will look for the nearest preceeding node, otherwise the
+	 *        nearest subsequent node.
+	 * @return {DOMObject}
+	 */
+	function findNearestNonAncestor(node, limit, previous) {
 		limit = limit || fn.returnFalse;
 		var next = previous ? node.previousSibling : node.nextSibling;
 		if (next) {
 			return limit(next) ? null : next;
 		}
 		return (node.parentNode && !limit(node.parentNode))
-			? getNonAncestor(node.parentNode, limit, previous)
+			? findNearestNonAncestor(node.parentNode, limit, previous)
 			: null;
 	}
 
@@ -777,7 +791,7 @@ define([
 	 * traversing.childAndParentsUntilNode()
 	 * traversing.childAndParentsUntilInclNode()
 	 * traversing.climbUntil()
-	 * traversing.getNonAncestor()
+	 * traversing.findNearestNonAncestor()
 	 */
 	var exports = {
 		prevNodeBoundary: prevNodeBoundary,
@@ -803,7 +817,7 @@ define([
 		childAndParentsUntilNode: childAndParentsUntilNode,
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
 		climbUntil: climbUntil,
-		getNonAncestor: getNonAncestor
+		findNearestNonAncestor: findNearestNonAncestor
 	};
 
 	exports['backward'] = exports.backward;
