@@ -190,7 +190,7 @@ define([
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
-							BlockUtils.addWhiteSpacesAfterAndBefore(that.$element);
+							BlockUtils.pad(that.$element);
 						}
 					}
 				});
@@ -199,7 +199,7 @@ define([
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
-							BlockUtils.removeWhiteSpacesAfterAndBefore(that.$element);
+							BlockUtils.unpad(that.$element);
 						}
 					}
 				});
