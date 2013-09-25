@@ -142,11 +142,6 @@ define([
 		);
 	}
 
-	function isLinebreakingNode(node) {
-		return html.isRenderedEmptyInlineNode(node)
-		    || html.isLinebreakingNode(node);
-	}
-
 	/**
 	 * Ensures that the given position is nested in at least 2 levels of
 	 * ancestors, and at the start.
@@ -160,7 +155,7 @@ define([
 		    && container.parentNode
 		    && container.parentNode.parentNode
 		    && dom.isAtStart(container, offset)
-		    && !isLinebreakingNode(container);
+		    && !html.isLinebreakingNode(container);
 	}
 
 	/**
@@ -176,7 +171,7 @@ define([
 		    && container.parentNode
 		    && container.parentNode.parentNode
 		    && dom.isAtEnd(container, offset)
-		    && !isLinebreakingNode(container);
+		    && !html.isLinebreakingNode(container);
 	}
 
 	/**
@@ -209,7 +204,7 @@ define([
 	                            oppositeContainer, oppositeOffset) {
 		return !boundariesEqual(container, offset, oppositeContainer, oppositeOffset)
 		    && !isAtTextNode(container, offset)
-		    && !isLinebreakingNode(container.childNodes[offset] || container)
+		    && !html.isLinebreakingNode(container.childNodes[offset] || container)
 	}
 
 	/**
@@ -229,8 +224,8 @@ define([
 		    && !isAtTextNode(container, offset - 1)
 		    && (
 				dom.isAtStart(container, offset)
-					? !isLinebreakingNode(container)
-					: !isLinebreakingNode(container.childNodes[offset - 1])
+					? !html.isLinebreakingNode(container)
+					: !html.isLinebreakingNode(container.childNodes[offset - 1])
 		    );
 	}
 

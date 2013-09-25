@@ -138,6 +138,17 @@ define([
 	};
 
 	/**
+	 * Non-block-level elements which are nevertheless line breaking.
+	 *
+	 * @type {Object}
+	 */
+	var LINE_BREAKING_VOID_ELEMENTS = {
+		'BR'  : true,
+		'HR'  : true,
+		'IMG' : true
+	};
+
+	/**
 	 * Similar to hasBlockStyle() except relies on the nodeName of the given
 	 * node which works for attached as well as and detached nodes.
 	 *
@@ -230,6 +241,14 @@ define([
 	}
 
 	/**
+	 * Returns true for nodes that introduce linebreaks.
+	 */
+	function isLinebreakingNode(node) {
+		return LINE_BREAKING_VOID_ELEMENTS[node.nodeName]
+		    || hasBlockStyle(node);
+	}
+
+	/**
 	 * Checks whether the given string represents a whitespace preservation
 	 * style property.
 	 *
@@ -281,21 +300,6 @@ define([
 	}
 
 	/**
-	 * Empty inline elements are unrendered, with the exception of img and br
-	 * elements.
-	 */
-	function isRenderedEmptyInlineNode(node) {
-		return 'IMG' === node.nodeName || 'BR' === node.nodeName;
-	}
-
-	/**
-	 * Returns true for nodes that introduce linebreaks.
-	 */
-	function isLinebreakingNode(node) {
-		return 'BR' === node.nodeName || hasBlockStyle(node);
-	}
-
-	/**
 	 * Returns true if the node at point is unrendered, with the caveat that it
 	 * only examines the node at point and not any siblings.  An additional
 	 * check is necessary to determine whether the whitespace occurrs
@@ -305,7 +309,7 @@ define([
 		return (isUnrenderedWhitespaceNoBlockCheck(point.node)
 				|| (1 === point.node.nodeType
 					&& hasInlineStyle(point.node)
-					&& !isRenderedEmptyInlineNode(point.node)));
+					&& !LINE_BREAKING_VOID_ELEMENTS[point.node]));
 	}
 
 	/**
@@ -877,7 +881,6 @@ define([
 		normalizeBoundary: normalizeBoundary,
 		isEmpty: isEmpty,
 		isLinebreakingNode: isLinebreakingNode,
-		isRenderedEmptyInlineNode: isRenderedEmptyInlineNode,
 		isVisuallyAdjacent: isVisuallyAdjacent,
 		isListContainer: isListContainer,
 		removeVisualBreak: removeVisualBreak
@@ -898,7 +901,6 @@ define([
 	exports['normalizeBoundary'] = exports.normalizeBoundary;
 	exports['isEmpty'] = exports.isEmpty;
 	exports['isLinebreakingNode'] = exports.isLinebreakingNode;
-	exports['isRenderedEmptyInlineNode'] = exports.isRenderedEmptyInlineNode;
 	exports['isVisuallyAdjacent'] = exports.isVisuallyAdjacent;
 	exports['isListContainer'] = exports.isListContainer;
 	exports['removeVisualBreak'] = exports.removeVisualBreak;
