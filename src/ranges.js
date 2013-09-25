@@ -204,7 +204,7 @@ define([
 	                            oppositeContainer, oppositeOffset) {
 		return !boundariesEqual(container, offset, oppositeContainer, oppositeOffset)
 		    && !isAtTextNode(container, offset)
-		    && !html.isLinebreakingNode(container.childNodes[offset] || container)
+		    && !html.isLinebreakingNode(container.childNodes[offset] || container);
 	}
 
 	/**
@@ -598,11 +598,11 @@ define([
 	 * @param {DOMObject} Editing host, or null if none is found.
 	 */
 	function getNearestEditingHost(liveRange) {
+		var range = stableRange(liveRange);
 		var editable = dom.getEditingHost(range.startContainer);
 		if (editable) {
 			return editable;
 		}
-		var range = stableRange(liveRange);
 		var isNotEditingHost = fn.complement(dom.isEditingHost);
 		trim(range, isNotEditingHost, isNotEditingHost);
 		return dom.getEditingHost(
