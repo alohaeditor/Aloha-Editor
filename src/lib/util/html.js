@@ -188,6 +188,10 @@ define([
 		return blocksTagnameMap[node.nodeName];
 	}
 
+	function isSpan(node) {
+		return node.nodeName === "SPAN";
+	}
+
 	function isIgnorableWhitespace(node) {
 		return 3 === node.nodeType && !node.length;
 	}
@@ -296,6 +300,7 @@ define([
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		isBlock: isBlock,
+		isSpan: isSpan,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isInlineFormattable: isInlineFormattable,
 		isProppedBlock: isProppedBlock,

@@ -43,6 +43,8 @@ define([
 	'ui/toggleButton',
 	'i18n!block/nls/i18n',
 	'i18n!aloha/nls/i18n',
+	'block/block-utils',
+	'util/html',
 	'jqueryui'
 ], function(
 	Aloha,
@@ -58,7 +60,9 @@ define([
  	Ui,
  	ToggleButton, 
 	i18n,
-	i18nCore
+	i18nCore,
+    BlockUtils,
+    HtmlUtils
 ) {
 	"use strict";
 
@@ -122,6 +126,25 @@ define([
 			// apply specific configuration if an editable has been activated
 			Aloha.bind('aloha-editable-activated', function (e, params) {
 				that.applyButtonConfig(params.editable);
+			});
+
+
+			Aloha.bind('aloha-editable-activated', function ($event, data) {
+				if (data.editable) {
+					data.editable.obj.find('.aloha-block').each(function () {
+						if (HtmlUtils.isSpan(this))
+							BlockUtils.addWhiteSpacesAfterAndBefore(jQuery(this));
+					});
+				}
+			});
+
+			Aloha.bind('aloha-editable-deactivated', function ($event, data) {
+				if (data.editable) {
+					data.editable.obj.find('.aloha-block').each(function () {
+						if (HtmlUtils.isSpan(this))
+							BlockUtils.removeWhiteSpacesAfterAndBefore(jQuery(this));
+					});
+				}
 			});
 
 		},

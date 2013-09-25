@@ -7,8 +7,8 @@ define([
 	 * Check if a node type TEXT_NODE is empty.
 	 * @param {DOM Element} node
 	 */
-	function isEmptyOrNullTextNode(node) {
-		return (node !== null && node.nodeType === 3 &&
+	function isEmptyTextNode(node) {
+		return (node.nodeType === 3 &&
 			    node.nodeValue.match(/^\s*$/) !== null);
 	}
 
@@ -16,23 +16,21 @@ define([
 	 * Check if a white space span should be inserted
 	 *
 	 * @param {DOM Element} node where the white space span should be inserted
-	 * @param {text} spanId to compare with
 	 * @returns {boolean}
 	 */
-	function isInsertableSpanWhiteSpace(node, spanId) {
+	function isInsertableSpanWhiteSpace(node) {
 		return node === null ||
 			(node.nodeName !== 'SPAN' &&
-			(node.nodeType !== 3 || isEmptyOrNullTextNode(node)));
+			(node.nodeType !== 3 || isEmptyTextNode(node)));
 	}
 
 	/**
 	 * Check if a white space span should be removed
 	 *
 	 * @param {DOM Element} node where the white space span has been inserted
-	 * @param {text} spanId to compare with
 	 * @returns {boolean}
 	 */
-	function isRemovableSpanWhiteSpace(node, spanId) {
+	function isRemovableSpanWhiteSpace(node) {
 		if (node !== null && node.nodeName === 'SPAN') {
 			if (node.innerHTML.length === 0 || node.innerHTML === '&nbsp;') {
 				return true;
@@ -63,17 +61,16 @@ define([
 	function addWhiteSpacesAfterAndBefore($block) {
 		var span = document.createElement('span');
 		span.appendChild(document.createTextNode('\u00A0'));
-		var spanId = "span-" + $block.attr('id');
-		span.id = spanId;
+		span.className = "aloha-ephemera-wrapper";
 
 		var prevSibling = $block[0].previousSibling;
 		var nextSibling = $block[0].nextSibling;
 
-		if (isInsertableSpanWhiteSpace(prevSibling, spanId)) {
+		if (isInsertableSpanWhiteSpace(prevSibling)) {
 			$block.before(span.cloneNode(true));
 		}
 
-		if (isInsertableSpanWhiteSpace(nextSibling, spanId)) {
+		if (isInsertableSpanWhiteSpace(nextSibling)) {
 			$block.after(span.cloneNode(true));
 		}
 	}
@@ -89,15 +86,12 @@ define([
 		var prevSibling = $block[0].previousSibling;
 		var nextSibling = $block[0].nextSibling;
 
-		var spanId = "span-" + $block.attr('id');
-		var parent = prevSibling.parentNode;
-
-		if (isRemovableSpanWhiteSpace(prevSibling, spanId)) {
-			parent.removeChild(prevSibling);
+		if (isRemovableSpanWhiteSpace(prevSibling)) {
+			prevSibling.parentNode.removeChild(prevSibling);
 		}
 
-		if (isRemovableSpanWhiteSpace(nextSibling, spanId)) {
-			parent.removeChild(nextSibling);
+		if (isRemovableSpanWhiteSpace(nextSibling)) {
+			nextSibling.parentNode.removeChild(nextSibling);
 		}
 	}
 
