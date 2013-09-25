@@ -970,6 +970,8 @@ define([
 	}
 
 	return {
+		backward: backward,
+		forward: forward,
 		findForward: findForward,
 		findBackward: findBackward,
 		moveNextAll: moveNextAll,

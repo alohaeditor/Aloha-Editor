@@ -31,6 +31,10 @@ define([
 		    && !Html.isUnrenderedNode(node);
 	}
 
+	function skipNodeForward(node) {
+		return Dom.forward(node.lastChild || node);
+	}
+
 	/**
 	 * Pads the given block element with landing areas at the beginning and end
 	 * of the block. This allows the editor to place the caret next to an inline
@@ -39,14 +43,29 @@ define([
 	 * @param {jQuery<DOMElement>} $block
 	 */
 	function pad($block) {
-		if (!Dom.findBackward($block[0], isVisibleNode, DomLegacy.isEditingHost)) {
+		var previous = Dom.findBackward(
+			Dom.backward($block[0]),
+			isVisibleNode,
+			DomLegacy.isEditingHost
+		);
+		if (!previous) {
 			$block.before(createLandingElement());
 		}
-		if (!Dom.findForward($block[0], isVisibleNode, DomLegacy.isEditingHost)) {
+		var next = Dom.findForward(
+			skipNodeForward($block[0]),
+			isVisibleNode,
+			function (node) {
+				return DomLegacy.isEditingHost(node) || (
+					node.previousSibling
+					&&
+					DomLegacy.isEditingHost(node.previousSibling)
+				);
+			}
+		);
+		if (!next) {
 			$block.after(createLandingElement());
 		}
 	}
-
 
 	/**
 	 * Removes the landing nodes inserted by the pad() function.
