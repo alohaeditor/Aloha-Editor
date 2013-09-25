@@ -6,10 +6,14 @@
  */
 define([
 	'dom',
-	'cursors'
+	'cursors',
+	'traversing',
+	'functions'
 ], function Html(
 	dom,
-	cursors
+	cursors,
+	traversing,
+	fn
 ) {
 	'use strict';
 
@@ -134,52 +138,6 @@ define([
 	};
 
 	/**
-	 * Checks whether the given node is rendered with block style.
-	 *
-	 * A block node is either an Element whose "display" property does not have
-	 * resolved value "inline" or "inline-block" or "inline-table" or "none", or
-	 * a Document, or a DocumentFragment.
-	 *
-	 * Note that this function depends on style inheritance which only works if
-	 * the given node is attached to the document.
-	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 *         True if the given node is rendered with block style.
-	 */
-	function hasBlockStyle(node) {
-		if (!node) {
-			return false;
-		}
-		switch (node.nodeType) {
-		case dom.Nodes.DOCUMENT:
-		case dom.Nodes.DOCUMENT_FRAGMENT:
-			return true;
-		case dom.Nodes.ELEMENT:
-			var style = dom.getComputedStyle(node, 'display');
-			return style ? !nonBlockDisplayValuesMap[style] : isBlockType(node);
-		default:
-			return false;
-		}
-	}
-
-	/**
-	 * Checks whether the given node is rendered with inline style.
-	 *
-	 * An inline node is a node that is not a block node.
-	 *
-	 * Note that this function depends on style inheritance which only works if
-	 * the given node is attached to the document.
-	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 *         True if the given node is rendered with inline style.
-	 */
-	function hasInlineStyle(node) {
-		return !hasBlockStyle(node);
-	}
-
-	/**
 	 * Similar to hasBlockStyle() except relies on the nodeName of the given
 	 * node which works for attached as well as and detached nodes.
 	 *
@@ -223,6 +181,52 @@ define([
 	 */
 	function isTextLevelSemanticType(node) {
 		return TEXT_LEVEL_SEMANTIC_ELEMENTS[node.nodeName] || false;
+	}
+
+	/**
+	 * Checks whether the given node is rendered with block style.
+	 *
+	 * A block node is either an Element whose "display" property does not have
+	 * resolved value "inline" or "inline-block" or "inline-table" or "none", or
+	 * a Document, or a DocumentFragment.
+	 *
+	 * Note that this function depends on style inheritance which only works if
+	 * the given node is attached to the document.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 *         True if the given node is rendered with block style.
+	 */
+	function hasBlockStyle(node) {
+		if (!node) {
+			return false;
+		}
+		switch (node.nodeType) {
+		case dom.Nodes.DOCUMENT:
+		case dom.Nodes.DOCUMENT_FRAGMENT:
+			return true;
+		case dom.Nodes.ELEMENT:
+			var style = dom.getComputedStyle(node, 'display');
+			return style ? !nonBlockDisplayValuesMap[style] : isBlockType(node);
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * Checks whether the given node is rendered with inline style.
+	 *
+	 * An inline node is a node that is not a block node.
+	 *
+	 * Note that this function depends on style inheritance which only works if
+	 * the given node is attached to the document.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 *         True if the given node is rendered with inline style.
+	 */
+	function hasInlineStyle(node) {
+		return !hasBlockStyle(node);
 	}
 
 	/**
@@ -474,38 +478,6 @@ define([
 	}
 
 	/**
-	 * Determine whether node `left` is visually adjacent to `right`.
-	 *
-	 * In the following example, <p>, <i>, and "left" are all visually adjacent
-	 * to <u> and "right":
-	 * <p>...<i>left</i></p><u>right</u>
-	 *
-	 * @param {DOMObject} left
-	 * @param {DOMObject} right
-	 * @return {Boolean}
-	 */
-	function isVisuallyAdjacent(left, right) {
-		var node = right;
-		while (node) {
-			if (node.previousSibling) {
-				node = node.previousSibling;
-				while (node) {
-					if (node === left) {
-						return true;
-					}
-					if (isUnrenderedNode(node)) {
-						return isVisuallyAdjacent(left, node);
-					}
-					node = node.lastChild;
-				}
-				return false;
-			}
-			node = node.parentNode;
-		}
-		return false;
-	}
-
-	/**
 	 * Unicode space characters as defined in the W3 HTML5 specification:
 	 * http://www.w3.org/TR/html5/infrastructure.html#common-parser-idioms
 	 *
@@ -718,8 +690,171 @@ define([
 		return false;
 	}
 
+	/**
+	 * Determine whether node `left` is visually adjacent to `right`.
+	 *
+	 * In the following example, <p>, <i>, and "left" are all visually adjacent
+	 * to <u> and "right":
+	 * <p>...<i>left</i></p><u>right</u>
+	 *
+	 * @param {DOMObject} left
+	 * @param {DOMObject} right
+	 * @return {Boolean}
+	 */
+	function isVisuallyAdjacent(left, right) {
+		var node = right;
+		while (node) {
+			if (node.previousSibling) {
+				node = node.previousSibling;
+				while (node) {
+					if (node === left) {
+						return true;
+					}
+					if (isUnrenderedNode(node)) {
+						return isVisuallyAdjacent(left, node);
+					}
+					node = node.lastChild;
+				}
+				return false;
+			}
+			node = node.parentNode;
+		}
+		return false;
+	}
+
 	function isListContainer(node) {
 		return 'OL' === node.nodeName || 'UL' === node.nodeName;
+	}
+
+	var isRendered = fn.complement(isUnrenderedNode);
+
+	function hasRenderedChildren(node) {
+		return isRendered(
+			traversing.nextWhile(node.firstChild, isUnrenderedNode)
+		);
+	}
+
+	/**
+	 * No blocks are allowed to be moved when merginge visual line breaks, with
+	 * the notable exception of list containers (ol, and ul).
+	 *
+	 * @private
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
+	function isTransferable(node) {
+		return isInlineType(node) || isListContainer(node);
+	}
+
+	function nextVisible(node) {
+		return traversing.findForward(node, isRendered);
+	}
+
+	function nextNonAncestor(node) {
+		return traversing.findNearestNonAncestor(
+			node,
+			dom.isEditingHost,
+			false
+		);
+	}
+
+	/**
+	 * Checks whether or not the given node may be used to receive moved nodes
+	 * in the process of removing a *visual* line break.
+	 *
+	 * The rule is simple: void elements are unsuitable because they are not
+	 * permitted to contain any content, and text-level semantic elements are
+	 * also unsuitable because any text-level content that would be moved into
+	 * them will likely have it's semantic styling changed.
+	 *
+	 * @private
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
+	function suitableTransferTarget(node) {
+		return !isVoidType(node) && !isTextLevelSemanticType(node);
+	}
+
+	/**
+	 * Returns an object containing the properties `start` and `move`.
+	 *
+	 * `start` a node that is *visually* (ignoring any unrendered nodes
+	 * inbetween) to the right `node`.
+	 *
+	 * `move` is function that will correctly move nodes from right to left
+	 * (right of `node`) starting from `start`, all the way to the visual end of
+	 * the line.
+	 *
+	 * @param {DOMObject} node
+	 *        The node that is on the left side of the join.
+	 * @return {Object}
+	 */
+	function createTransferPivot(node) {
+		var prev;
+		while (node && !dom.isEditingHost(node)) {
+			if (suitableTransferTarget(node)) {
+				return {
+					start: nextVisible(nextNonAncestor(node)),
+					move: function (elem) {
+						dom.insert(elem, node, true);
+						return true;
+					}
+				};
+			}
+			prev = node;
+			node = node.parentNode;
+		}
+		node = nextNonAncestor(prev);
+		return {
+			start: nextVisible(node),
+			move: function (elem) {
+				if (elem === node) {
+					return false;
+				}
+				dom.insert(elem, node);
+				return true;
+			}
+		};
+	}
+
+	/**
+	 * @private
+	 * @param {DOMObject} node
+	 * @return {DOMObject}
+	 */
+	function nextTransferable(node) {
+		return traversing.findForward(
+			node,
+			function (node) {
+				return isRendered(node) && isTransferable(node);
+			},
+			function (node) {
+				return isVoidType(node) || dom.isEditingHost(node);
+			}
+		);
+	}
+
+	function removeVisualBreak(left, right) {
+		// Because non-adjacent containers shoud/cannot be joined, nor can a
+		// container be joined to itself.
+		if (!isVisuallyAdjacent(left, right)) {
+			return;
+		}
+		var pivot = createTransferPivot(left);
+		var node = nextTransferable(pivot.start);
+		if (!node) {
+			return;
+		}
+		var next;
+		var parent = node.parentNode;
+		while (node && isTransferable(node)) {
+			next = node.nextSibling;
+			if (!pivot.move(node)) {
+				break;
+			}
+			node = next;
+		}
+		traversing.climbUntil(parent, hasRenderedChildren, dom.remove);
 	}
 
 
@@ -744,7 +879,8 @@ define([
 		isLinebreakingNode: isLinebreakingNode,
 		isRenderedEmptyInlineNode: isRenderedEmptyInlineNode,
 		isVisuallyAdjacent: isVisuallyAdjacent,
-		isListContainer: isListContainer
+		isListContainer: isListContainer,
+		removeVisualBreak: removeVisualBreak
 	};
 
 	exports['isUnrenderedNode'] = exports.isUnrenderedNode;
@@ -765,6 +901,7 @@ define([
 	exports['isRenderedEmptyInlineNode'] = exports.isRenderedEmptyInlineNode;
 	exports['isVisuallyAdjacent'] = exports.isVisuallyAdjacent;
 	exports['isListContainer'] = exports.isListContainer;
+	exports['removeVisualBreak'] = exports.removeVisualBreak;
 
 	return exports;
 });

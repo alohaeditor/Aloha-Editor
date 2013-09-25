@@ -1240,150 +1240,11 @@ define([
 		return liveRange;
 	}
 
-	function nextNonAncestor(node, limit) {
-		return traversing.findNearestNonAncestor(node, limit, false);
-	}
-
-	var isRenderedNode = fn.complement(html.isUnrenderedNode);
-
-	function hasRenderedChildNode(node) {
-		return isRenderedNode(
-			traversing.nextWhile(node.firstChild, html.isUnrenderedNode)
-		);
-	}
-
-	function isTransferableNode(node) {
-		return node && (
-			dom.isTextNode(node)
-			||
-			html.isInlineType(node)
-			||
-			html.isListContainer(node)
-		);
-	}
-
-	function findTransferable(node) {
-		var next;
-		while (node) {
-			if (html.isVoidType(node)) {
-				return null;
-			}
-			if (isTransferableNode(node)) {
-				return node;
-			}
-			next = traversing.findForward(node.firstChild, isRenderedNode);
-			// FIXME: we shouldn't remove nodes in a find function
-			if (!next) {
-				dom.remove(node);
-			}
-			node = next;
-		}
-		return node;
-	}
-
-	function removeEmptyNodeAndAncestors(node) {
-		traversing.climbUntil(node, hasRenderedChildNode, dom.remove);
-	}
-
-	function transferNodesLeft(start, move) {
-		var node = findTransferable(start);
-		if (!node) {
-			return;
-		}
-		var next;
-		var parent = node.parentNode;
-		while (isTransferableNode(node)) {
-			next = node.nextSibling;
-			if (!move(node)) {
-				break;
-			}
-			node = next;
-		}
-		removeEmptyNodeAndAncestors(parent);
-	}
-
-	/**
-	 * Checks whether or not the given node may be used to receive moved nodes
-	 * in the process of removing a *visual* line break.
-	 *
-	 * The rule is simple: void elements are unsuitable because they are not
-	 * permitted to contain any content, and text-level semantic elements are
-	 * also unsuitable because any text-level content that would be moved into
-	 * them will likely have it's semantic styling changed.
-	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 */
-	function suitableTransferTarget(node) {
-		return !(html.isVoidType(node) || html.isTextLevelSemanticType(node));
-	}
-
-	/**
-	 * Returns an object containing the properties `start` and `move`.
-	 *
-	 * `start` a node that is *visually* (ignoring any unrendered nodes
-	 * inbetween) to the right `node`.
-	 *
-	 * `move` is function that will correctly move nodes to the right of `node`
-	 * starting from `start`, all the way to the visual end of the line.
-	 *
-	 * @param {DOMObject} node
-	 * @param {DOMObject} common
-	 * @return {Object}
-	 */
-	function createTransfer(node, common) {
-		var prev;
-		while (!dom.isEditingHost(node)) {
-			if (suitableTransferTarget(node)) {
-				return {
-					start: traversing.findForward(
-						nextNonAncestor(node, dom.isEditingHost),
-						isRenderedNode
-					),
-					move: function (elem) {
-						dom.insert(elem, node, true);
-						return true;
-					}
-				};
-			}
-			prev = node;
-			node = node.parentNode;
-		}
-		node = nextNonAncestor(prev, dom.isEditingHost);
-		return {
-			start: traversing.findForward(node, isRenderedNode),
-			move: function (elem) {
-				if (elem === node) {
-					return false;
-				}
-				dom.insert(elem, node);
-				return true;
-			}
-		};
-	}
-
-	function joinLines(left, right) {
-
-		// Because non-adjacent containers shoud/cannot be joined, nor can a
-		// container be joined to itself.
-		if (html.isVisuallyAdjacent(left, right)) {
-			var transfer = createTransfer(left);
-			transferNodesLeft(transfer.start, transfer.move);
-		}
-	}
-
 	function remove(liveRange) {
 		fixupRange(liveRange, function (range, left, right) {
-			var stepRightStart = function (node) {
+			var remove = function (node) {
 				dom.removePreservingRange(node, range);
 			};
-			var stepLeftEnd = function (node) {
-				dom.removePreservingRange(node, range);
-			};
-			var stepInbetween = function (node) {
-				dom.removePreservingRange(node, range);
-			};
-
 			walkBoundaryLeftRightInbetween(
 				range,
 				//carryDown
@@ -1394,12 +1255,12 @@ define([
 				//   |
 				//   v
 				// {<b>...
-				stepRightStart,
+				remove,
 				//   remove
 				//     |
 				//     v
 				// ...<b>}
-				stepLeftEnd,
+				remove,
 				// stepRightEnd
 				fn.noop,
 				// stepPartial
@@ -1408,13 +1269,12 @@ define([
 				//        |
 				//        v
 				// {...<b></b>...}
-				stepInbetween,
+				remove,
 				null
 			);
-
 			return {
 				postprocess: function () {
-					joinLines(
+					html.removeVisualBreak(
 						dom.nodeAtOffset(range.startContainer, range.startOffset),
 						dom.nodeAtOffset(range.endContainer, range.endOffset)
 					);
@@ -1431,12 +1291,11 @@ define([
 						range.endOffset
 					));
 				},
-				postprocessTextNodes: function(range) {
+				postprocessTextNodes: function (range) {
 					return range;
 				}
 			};
 		});
-
 		return liveRange;
 	}
 
@@ -1452,15 +1311,13 @@ define([
 		wrap   : wrapElem,
 		format : format,
 		split  : split,
-		remove : remove,
-		joinLines: joinLines
+		remove : remove
 	};
 
 	exports['wrap'] = exports.wrap;
 	exports['format'] = exports.format;
 	exports['split'] = exports.split;
 	exports['remove'] = exports.remove;
-	exports['joinLines'] = exports.joinLines;
 
 	return exports;
 });
