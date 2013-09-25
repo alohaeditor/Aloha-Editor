@@ -46,8 +46,8 @@ define([
 
 	/**
 	 * Gives the type of the cell-selection
-	 * possible values are "row" or "col" 
-	 * also possible value is 'cell', which defines custom cell selections
+	 * possible values are "cell", "row", "column" or "all".
+	 * If the value is 'cell' means custom cell selections
 	 */
 	TableSelection.prototype.selectionType = undefined;
 
@@ -154,6 +154,8 @@ define([
 		rowIndices.shift();
 
 		this.selectRows( rowIndices );
+
+		this.selectionType = 'all';
 	};
 	
 	/**
