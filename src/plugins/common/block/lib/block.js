@@ -38,7 +38,8 @@ define([
 	'ui/scopes',
 	'util/class',
 	'PubSub',
-	'block/block-utils'
+	'block/block-utils',
+	'util/html'
 ], function(
 	Aloha,
 	jQuery,
@@ -47,7 +48,8 @@ define([
 	Scopes,
 	Class,
 	PubSub,
-	BlockUtils
+	BlockUtils,
+    Html
 ){
 	'use strict';
 
@@ -182,30 +184,66 @@ define([
 			//	}
 			//});
 
-			// Only for the span element.
+			// Creates functions
+
+			// Only for the inline blocks.
 			// It is not possible to insert text after or before a Block span
 			// when after or before the Block there is not elements
-			if (this.$element[0].nodeName === 'SPAN') {
-				Aloha.bind('aloha-editable-activated', function ($event, data) {
-					if (data.editable) {
-						var $block = data.editable.obj.find('#' + that.id);
-						if ($block.length !== 0) {
-							BlockUtils.pad(that.$element);
-						}
-					}
-				});
-
-				Aloha.bind('aloha-editable-deactivated', function ($event, data) {
-					if (data.editable) {
-						var $block = data.editable.obj.find('#' + that.id);
-						if ($block.length !== 0) {
-							BlockUtils.unpad(that.$element);
-						}
-					}
-				});
+			if (Html.isInlineFormattable(this.$element[0])) {
+				this._initPadUnpad(this);
 			}
 
 			this._initialized = true;
+		},
+
+		/**
+		 * This function is initialized in _initPadUnpd.
+		 * Pad inline Block.
+		 *
+		 * @private
+		 */
+		_padInLineBlock: undefined,
+
+		/**
+		 * This function is initialized in _initPadUnpd.
+		 * Unpad inline Block.
+		 *
+		 * @private
+		 */
+		_unpadInLineBlock: undefined,
+
+		/**
+		 * Create pad and unpad functions within this block scope
+		 *
+		 * @private
+		 */
+		_initPadUnpad: function() {
+			var thisBlock = this;
+
+			this._padInLineBlock = (function () {
+				return function ($event, data) {
+					if (data.editable) {
+						var $block = data.editable.obj.find('#' + thisBlock.id);
+						if ($block.length !== 0) {
+							BlockUtils.pad(thisBlock.$element);
+						}
+					}
+				}
+			})();
+
+			this._unpadInLineBlock = (function() {
+				return function ($event, data) {
+					if (data.editable) {
+						var $block = data.editable.obj.find('#' + thisBlock.id);
+						if ($block.length !== 0) {
+							BlockUtils.unpad(thisBlock.$element);
+						}
+					}
+				}
+			})();
+
+			Aloha.bind('aloha-editable-activated', this._padInLineBlock);
+			Aloha.bind('aloha-editable-deactivated', this._unpadInLineBlock);
 		},
 
 		/**
@@ -285,6 +323,9 @@ define([
 				this.$element.unbind('mousedown', this._preventSelectionChangedEventHandler);
 				this.$element.unbind('focus', this._preventSelectionChangedEventHandler);
 				this.$element.unbind('dblclick', this._preventSelectionChangedEventHandler);
+
+				Aloha.unbind('aloha-editable-activated', this._padInLineBlock);
+				Aloha.unbind('aloha-editable-deactivated', this._unpadInLineBlock);
 			}
 		},
 
