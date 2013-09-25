@@ -866,13 +866,13 @@ define([
 	 *	<b>
 	 *		"two"
 	 *		<u>
-	 * 			<i>
-	 * 				"three"
-	 * 			</i>
-	 * 		</u>
-	 * 		"four"
-	 * 	</b>
-	 * 	"five"
+	 *			<i>
+	 *				"three"
+	 *			</i>
+	 *		</u>
+	 *		"four"
+	 *	</b>
+	 *	"five"
 	 *
 	 * forward() will return nodes in the following order:
 	 *
@@ -904,13 +904,13 @@ define([
 	 *	<b>
 	 *		"two"
 	 *		<u>
-	 * 			<i>
-	 * 				"three"
-	 * 			</i>
-	 * 		</u>
-	 * 		"four"
-	 * 	</b>
-	 * 	"five"
+	 *			<i>
+	 *				"three"
+	 *			</i>
+	 *		</u>
+	 *		"four"
+	 *	</b>
+	 *	"five"
 	 *
 	 * backward() will return nodes in the following order:
 	 *
