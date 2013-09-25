@@ -15,20 +15,26 @@ define([
 	'aloha/contenthandlermanager',
 	'contenthandler/contenthandler-utils',
 	'util/functions',
-	'util/html'
+	'util/html',
+	'util/arrays'
+
 ], function (
 	$,
 	Aloha,
 	ContentHandlerManager,
 	Utils,
 	Functions,
-	Html
+	Html,
+	Arrays
 ) {
 	'use strict';
 
 	var blocksSelector = Html.BLOCKLEVEL_ELEMENTS.join();
-	var emptyBlocksSelector = Html.BLOCKLEVEL_ELEMENTS.join(':empty,')
-	                        + ':empty';
+	var emptyBlocksSelector = Arrays.subtract(
+			Html.BLOCKLEVEL_ELEMENTS,
+			Html.VOID_ELEMENTS
+		).join(':empty,') + ':empty';
+
 	var NOT_ALOHA_BLOCK_FILTER = ':not(.aloha-block)';
 
 	var isNotIgnorableWhitespace =

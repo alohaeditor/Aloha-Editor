@@ -12,7 +12,15 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
-## 0.24.0
+## 0.24.1 - 2013/09/25
+
+- **BUGFIX**: blockmanager: Fixed scripts in a block being executed, when
+              getting its configuration.
+- **BUGFIX**: editables: Initializing empty editables in Firefox will no longer
+              result in them aquiring an extra <br/>. This was previously done
+                          to work around a Firefox bug that seems not no longer be an issue.
+
+## 0.24.0 - 2013/09/18
 
 - **FEATURE**: New drag behavior for block elements that permits drop the 
                BlockElement virtually in any element and any level of the 
@@ -21,6 +29,15 @@ All changes are categorized into one of the following keywords:
                suitable to be a container the highlighter element show the edges 
                of the selected element to show that the block will be added 
                before or after this one.
+
+
+## 0.23.20 - 2013/09/25
+
+- **BUGFIX**: blockmanager: Fixed scripts in a block being executed, when
+              getting its configuration.
+- **BUGFIX**: editables: Initializing empty editables in Firefox will no longer
+              result in them aquiring an extra <br/>. This was previously done
+                          to work around a Firefox bug that seems not no longer be an issue.
 
 ## 0.23.19 - 2013/08/30
 

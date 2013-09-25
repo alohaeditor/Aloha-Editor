@@ -856,7 +856,124 @@ define([
 		return null;
 	}
 
+	/**
+	 * Given a node, will return node that succeeds it in the document order.
+	 *
+	 * For example, if this function is called recursively, starting from the
+	 * text node "one" in the below DOM tree:
+	 *
+	 *	"one"
+	 *	<b>
+	 *		"two"
+	 *		<u>
+	 *			<i>
+	 *				"three"
+	 *			</i>
+	 *		</u>
+	 *		"four"
+	 *	</b>
+	 *	"five"
+	 *
+	 * forward() will return nodes in the following order:
+	 *
+	 * <b>...</b>, "two", <u>...</u>, <i>...</i>, "three", "four", "five"
+	 *
+	 * @param {DOMObject} node
+	 * @return {DOMObject}
+	 *         The succeeding node or null if the given node has no previous
+	 *         siblings and no parent.
+	 */
+	function forward(node) {
+		if (node.firstChild) {
+			return node.firstChild;
+		}
+		var next = node;
+		while (next && !next.nextSibling) {
+			next = next.parentNode;
+		}
+		return next && next.nextSibling;
+	}
+
+	/**
+	 * Given a node, will return node that preceeds it in the document order.
+	 *
+	 * For example, if this function is called recursively, starting from the
+	 * text node "five" in the below DOM tree:
+	 *
+	 *	"one"
+	 *	<b>
+	 *		"two"
+	 *		<u>
+	 *			<i>
+	 *				"three"
+	 *			</i>
+	 *		</u>
+	 *		"four"
+	 *	</b>
+	 *	"five"
+	 *
+	 * backward() will return nodes in the following order:
+	 *
+	 * "four", "three", <i>...</i>, <u>...</u>, "two", <b>...</b>, "one"
+	 *
+	 * @param {DOMObject} node
+	 * @return {DOMObject}
+	 *         The preceeding node or null if the given node has no previous
+	 *         siblings and no parent.
+	 */
+	function backward(node) {
+		var prev = node.previousSibling;
+		while (prev && prev.lastChild) {
+			prev = prev.lastChild;
+		}
+		return prev || node.parentNode;
+	}
+
+	/**
+	 * Starting from the given node, and moving forwards through the DOM tree,
+	 * searches for a node which returns `true` when applied to the predicate
+	 * `match()`.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} match
+	 * @param {Function(DOMObject):Boolean} until
+	 * @return {DOMObject}
+	 */
+	function findForward(node, match, until) {
+		while (node && !until(node)) {
+			if (match(node)) {
+				return node;
+			}
+			node = forward(node);
+		}
+		return null;
+	}
+
+	/**
+	 * Starting from the given node, and moving backwards through the DOM tree,
+	 * searches for a node which returns `true` when applied to the predicate
+	 * `match()`.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} match
+	 * @param {Function(DOMObject):Boolean} until
+	 * @return {DOMObject}
+	 */
+	function findBackward(node, match, until) {
+		while (node && !until(node)) {
+			if (match(node)) {
+				return node;
+			}
+			node = backward(node);
+		}
+		return null;
+	}
+
 	return {
+		backward: backward,
+		forward: forward,
+		findForward: findForward,
+		findBackward: findBackward,
 		moveNextAll: moveNextAll,
 		attrNames: attrNames,
 		attrs: attrs,

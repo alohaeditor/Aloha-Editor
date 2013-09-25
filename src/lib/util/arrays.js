@@ -255,6 +255,15 @@ define(['util/functions'], function (Fn) {
 	}
 
 	/**
+	 * Returns all items in xs that are not contained in zs.
+	 */
+	function subtract(xs, zs) {
+		return filter(xs, function (x) {
+			return !contains(zs, x);
+		});
+	}
+
+	/**
 	 * Returns the last item in xs or null.
 	 */
 	function last(xs) {
@@ -281,6 +290,7 @@ define(['util/functions'], function (Fn) {
 		applyNotNull: applyNotNull,
 		sortUnique: sortUnique,
 		intersect: intersect,
+		subtract: subtract,
 		second: second,
 		last: last
 	};
