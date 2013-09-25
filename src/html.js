@@ -827,15 +827,9 @@ define([
 	 * @return {DOMObject}
 	 */
 	function nextTransferable(node) {
-		return traversing.findForward(
-			node,
-			function (node) {
-				return isRendered(node) && isTransferable(node);
-			},
-			function (node) {
-				return isVoidType(node) || dom.isEditingHost(node);
-			}
-		);
+		return traversing.findForward(node, isTransferable, function (node) {
+			return isLinebreakingNode(node) || dom.isEditingHost(node);
+		});
 	}
 
 	function removeVisualBreak(left, right) {
