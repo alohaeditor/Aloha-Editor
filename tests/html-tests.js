@@ -21,6 +21,31 @@
 		equal(html.isControlCharacter('a'), false);
 	});
 
+	/*
+	test('isVisuallyAdjacent()', function () {
+		//t('<div><p>ba{</p>}az</div>', true);
+	});
+
+	test('removeVisualBreak()', function () {
+		var t = function(before, after) {
+			return runTest(before, after, editing.joinRangeContainers);
+		};
+		t('<div><p>foo{</p><p>}bar</p></div>', '<div><p>foo{}bar</p></div>');
+		t('<div><p>foo[</p><p>]bar</p></div>', '<div><p>foo[]bar</p></div>');
+		t('<div><b>foo[</b><b>]bar</b></div>', '<div><b>foo[]bar</b></div>');
+		t('<div><b>foo{</b><i>}bar</i></div>', '<div><b>foo{}</b><i>bar</i></div>');
+		t('<div><b>foo[</b><i>]bar</i></div>', '<div><b>foo[]</b><i>bar</i></div>');
+		t('<div><b>foo{</b><p>}bar</p></div>', '<div><b>foo{}</b>bar</div>');
+		t('<div><b>foo[</b><p>]bar</p></div>', '<div><b>foo[]</b>bar</div>');
+		t('<div><b>foo[</b><p><b>]bar</b></p></div>',
+		                                       '<div><b>foo[]bar</b></div>');
+		t('<div><p><b>foo{</b></p>\n<i>\t\r\n<b>}bar</b></i></div>',
+		                                       '<div><p><b>foo{}</b><i>\t\r\n<b>bar</b></i></p>\n</div>');
+
+		// TODO: Lists
+	});
+	*/
+
 	test('isStyleInherited', function () {
 		tested.push('isStyleInherited');
 		equal(html.isStyleInherited('color'), true);
