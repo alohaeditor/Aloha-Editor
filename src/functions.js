@@ -84,6 +84,31 @@ define([], function Functions() {
 	}
 
 	/**
+	 * Creates a bound variable and returns the closure which can be use to get
+	 * and set the value of it as a free variable.
+	 *
+	 * This construct can be used to as a convenient way to simulate generic out
+	 * parameters in JavaScript.
+	 *
+	 * Calling the closure with an argument changes the value of the enclosed
+	 * variable.  Calling the closure without any arguments will return the
+	 * value of the enclosed variable.
+	 *
+	 * @param {*} value
+	 *        The initial value that the enclosed variable should hold.
+	 * @return {Function(*):*}
+	 */
+	function outparameter(value) {
+		var variable = value;
+		return function OutParameter() {
+			if (arguments.length) {
+				variable = arguments[0];
+			}
+			return variable;
+		};
+	}
+
+	/**
 	 * Functions for working with functions.
 	 *
 	 * functions.identity()
@@ -92,6 +117,7 @@ define([], function Functions() {
 	 * functions.returnFalse()
 	 * functions.complement()
 	 * functions.bind()
+	 * functions.outparameter()
 	 */
 	var exports =  {
 		identity: identity,
@@ -99,7 +125,8 @@ define([], function Functions() {
 		returnTrue: returnTrue,
 		returnFalse: returnFalse,
 		complement: complement,
-		bind: bind
+		bind: bind,
+		outparameter: outparameter
 	};
 
 	exports['identity'] = exports.identity;
@@ -107,7 +134,8 @@ define([], function Functions() {
 	exports['returnTrue'] = exports.returnTrue;
 	exports['returnFalse'] = exports.returnFalse;
 	exports['complement'] = exports.complement;
-	exports['bind'] = exports.bind
+	exports['bind'] = exports.bind;
+	exports['outparameter'] = exports.outparameter;
 
 	return exports;
 });

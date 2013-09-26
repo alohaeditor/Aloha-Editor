@@ -7,11 +7,13 @@
 define([
 	'dom',
 	'cursors',
+	'content',
 	'traversing',
 	'functions'
 ], function Html(
 	dom,
 	cursors,
+	content,
 	traversing,
 	fn
 ) {
@@ -738,18 +740,6 @@ define([
 		);
 	}
 
-	/**
-	 * No blocks are allowed to be moved when merginge visual line breaks, with
-	 * the notable exception of list containers (ol, and ul).
-	 *
-	 * @private
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 */
-	function isTransferable(node) {
-		return isInlineType(node) || isListContainer(node);
-	}
-
 	function nextVisible(node) {
 		return traversing.findForward(node, isRendered);
 	}
@@ -780,6 +770,33 @@ define([
 	}
 
 	/**
+	 * Creates a function that will insert the DOM Object that is passed to it
+	 * into the given node, only if it is valid to do so. If insertion is not
+	 * done because it is deemed invalid, then false is returned, other wise the
+	 * function returns true.
+	 *
+	 * @private
+	 * @param {DOMObject} ref
+	 *        The node to use a reference point by which to insert DOM Objects
+	 *        that will be passed into the insert function.
+	 * @param {Boolean} atEnd
+	 *        True if the received DOM objects should be inserted as the last
+	 *        child of `ref`.  Otherwise they will be inserted before `ref` as
+	 *        it's previousSibling.
+	 * @return {Function(DOMObject, OutParameter):Boolean}
+	 */
+	function createSafeInsertFunction(ref, atEnd) {
+		return function insertSaftely(node, out_inserted) {
+			if (node === ref
+					|| !content.allowsNesting(ref.nodeName, node.nodeName)) {
+				return out_inserted(false);
+			}
+			dom.insert(node, ref, atEnd);
+			return out_inserted(true);
+		};
+	}
+
+	/**
 	 * Returns an object containing the properties `start` and `move`.
 	 *
 	 * `start` a node that is *visually* (ignoring any unrendered nodes
@@ -799,10 +816,7 @@ define([
 			if (suitableTransferTarget(node)) {
 				return {
 					start: nextVisible(nextNonAncestor(node)),
-					move: function (elem) {
-						dom.insert(elem, node, true);
-						return true;
-					}
+					move: createSafeInsertFunction(node, true)
 				};
 			}
 			prev = node;
@@ -811,14 +825,20 @@ define([
 		node = nextNonAncestor(prev);
 		return {
 			start: nextVisible(node),
-			move: function (elem) {
-				if (elem === node) {
-					return false;
-				}
-				dom.insert(elem, node);
-				return true;
-			}
+			move: createSafeInsertFunction(node, false)
 		};
+	}
+
+	/**
+	 * No blocks are allowed to be moved when merginge visual line breaks, with
+	 * the notable exception of list containers (ol, and ul).
+	 *
+	 * @private
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
+	function isTransferable(node) {
+		return isInlineType(node) || isListContainer(node);
 	}
 
 	/**
@@ -832,29 +852,42 @@ define([
 		});
 	}
 
+	/**
+	 * Whether the given node can be removed.
+	 *
+	 * @private
+	 * @param {DOMObject} node
+	 * @param {OutParameter(Boolean):Boolean} out_continueMoving
+	 * @return {Boolean}
+	 */
+	function cannotMove(node, out_continueMoving) {
+		return !out_continueMoving() || !isTransferable(node);
+	}
+
+	/**
+	 * Removes the visual line break between the adjacent nodes `left` and
+	 * `right` by moving the nodes from right to left.
+	 *
+	 * @param {DOMObject} left
+	 * @param {DOMObject} right
+	 */
 	function removeVisualBreak(left, right) {
-		// Because non-adjacent containers shoud/cannot be joined, nor can a
-		// container be joined to itself.
 		if (!isVisuallyAdjacent(left, right)) {
 			return;
 		}
 		var pivot = createTransferPivot(left);
 		var node = nextTransferable(pivot.start);
-		if (!node) {
-			return;
+		if (node) {
+			var parent = node.parentNode;
+			traversing.walkUntil(
+				node,
+				pivot.move,
+				cannotMove,
+				fn.outparameter(true)
+			);
+			traversing.climbUntil(parent, dom.remove, hasRenderedChildren);
 		}
-		var next;
-		var parent = node.parentNode;
-		while (node && isTransferable(node)) {
-			next = node.nextSibling;
-			if (!pivot.move(node)) {
-				break;
-			}
-			node = next;
-		}
-		traversing.climbUntil(parent, hasRenderedChildren, dom.remove);
 	}
-
 
 	/**
 	 * Functions for working with HTML content.

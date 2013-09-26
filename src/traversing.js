@@ -728,10 +728,10 @@ define([
 	 * climb.
 	 *
 	 * @param {DOMObject} node
-	 * @param {Function:Boolean} until
-	 * @param {Function(DOMOBject)} func
+	 * @param {Function(DOMObject)} func
+	 * @param {Function(DOMObject):Boolean} until
 	 */
-	function climbUntil(node, until, func) {
+	function climbUntil(node, func, until) {
 		var parent;
 		while (!until(node)) {
 			parent = node.parentNode;
