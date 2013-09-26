@@ -17,3 +17,7 @@ All changes are categorized into one of the following keywords:
               size-check of image-resizing
 - **BUGFIX**: image plugin: Various fixes and improvements for resizing, cropping and resetting images have been added, 
               to improve the cohesion between displayed values and actual sizes.
+- **BUGFIX**: Outline on Icons is too big. No differences between an icon enabled or disabled.
+              The outline when the icon is focused is too big and the user can't distinguish when a button
+              icon is enabled or disabled. Adding box-shadow (same behavior for different browsers)
+              the problem was solved.
