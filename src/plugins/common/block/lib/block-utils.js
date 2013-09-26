@@ -46,7 +46,9 @@ define([
 		var previous = Dom.findBackward(
 			Dom.backward($block[0]),
 			isVisibleNode,
-			DomLegacy.isEditingHost
+			function(node) {
+				return Html.isBlock(node) || DomLegacy.isEditingHost(node);
+			}
 		);
 		if (!previous) {
 			$block.before(createLandingElement());
@@ -55,7 +57,7 @@ define([
 			skipNodeForward($block[0]),
 			isVisibleNode,
 			function (node) {
-				return DomLegacy.isEditingHost(node) || (
+				return Html.isBlock(node) || DomLegacy.isEditingHost(node) || (
 					node.previousSibling
 					&&
 					DomLegacy.isEditingHost(node.previousSibling)

@@ -38,7 +38,8 @@ define([
 	'ui/scopes',
 	'util/class',
 	'PubSub',
-	'block/block-utils'
+	'block/block-utils',
+	'util/html'
 ], function(
 	Aloha,
 	jQuery,
@@ -47,7 +48,8 @@ define([
 	Scopes,
 	Class,
 	PubSub,
-	BlockUtils
+	BlockUtils,
+    Html
 ){
 	'use strict';
 
@@ -182,10 +184,14 @@ define([
 			//	}
 			//});
 
-			// Only for the span element.
+			// Only for inline element.
 			// It is not possible to insert text after or before a Block span
 			// when after or before the Block there is not elements
-			if (this.$element[0].nodeName === 'SPAN') {
+			if (Html.isInlineFormattable($element[0])) {
+				if ($element.parents('.aloha-editable-active').length > 0) {
+					BlockUtils.pad(that.$element);
+				}
+
 				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);
