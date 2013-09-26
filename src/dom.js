@@ -46,6 +46,16 @@ define([
 	};
 
 	/**
+	 * Returns `true` if `node` is a text node.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
+	function isTextNode(node) {
+		return Nodes.TEXT === node.nodeType;
+	}
+
+	/**
 	 * Like insertBefore, inserts firstChild into parent before refChild, except
 	 * also inserts all the following siblings of firstChild.
 	 *
@@ -525,6 +535,32 @@ define([
 	}
 
 	/**
+	 * Merges all contents of `right` into `left` by appending them to the end
+	 * of `left`, and then removing `right`.
+	 *
+	 * Will not merge since this could require ranges to be synchronized.
+	 *
+	 * @param {DOMObject} left
+	 * @param {DOMObject} right
+	 */
+	function merge(left, right) {
+		var next;
+		while (left && right && (left.nodeName === right.nodeName)) {
+			if (isTextNode(left)) {
+				return;
+			}
+			next = right.firstChild;
+			moveNextAll(left, next, null);
+			remove(right);
+			if (!next) {
+				return;
+			}
+			right = next;
+			left = right.previousSibling;
+		}
+	}
+
+	/**
 	 * Replaces the given node with a new node while preserving the contents of
 	 * the given node.
 	 *
@@ -566,16 +602,6 @@ define([
 				             && (a === b.parentNode || a.contains(b.parentNode)))))
 				   : !!(a.compareDocumentPosition(b) & 16))
 				: false);
-	}
-
-	/**
-	 * Returns `true` if `node` is a text node.
-	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 */
-	function isTextNode(node) {
-		return Nodes.TEXT === node.nodeType;
 	}
 
 	/**
@@ -1196,6 +1222,7 @@ define([
 	 */
 	var exports = {
 		remove: remove,
+		merge: merge,
 
 		addClass: addClass,
 		removeClass: removeClass,
@@ -1254,7 +1281,7 @@ define([
 	};
 
 	exports['remove'] = exports.remove;
-
+	exports['merge'] = exports.merge;
 	exports['addClass'] = exports.addClass;
 	exports['removeClass'] = exports.removeClass;
 	exports['hasClass'] = exports.hasClass;

@@ -785,10 +785,16 @@ define([
 	 *        it's previousSibling.
 	 * @return {Function(DOMObject, OutParameter):Boolean}
 	 */
-	function createSafeInsertFunction(ref, atEnd) {
-		return function insertSaftely(node, out_inserted) {
-			if (node === ref
-					|| !content.allowsNesting(ref.nodeName, node.nodeName)) {
+	function createInsertFunction(ref, atEnd) {
+		return function insert(node, out_inserted) {
+			if (node === ref) {
+				return out_inserted(false);
+			}
+			if (ref.nodeName === node.nodeName) {
+				dom.merge(ref, node);
+				return out_inserted(true);
+			}
+			if (!content.allowsNesting(ref.nodeName, node.nodeName)) {
 				return out_inserted(false);
 			}
 			dom.insert(node, ref, atEnd);
@@ -816,7 +822,7 @@ define([
 			if (suitableTransferTarget(node)) {
 				return {
 					start: nextVisible(nextNonAncestor(node)),
-					move: createSafeInsertFunction(node, true)
+					move: createInsertFunction(node, true)
 				};
 			}
 			prev = node;
@@ -825,7 +831,7 @@ define([
 		node = nextNonAncestor(prev);
 		return {
 			start: nextVisible(node),
-			move: createSafeInsertFunction(node, false)
+			move: createInsertFunction(node, false)
 		};
 	}
 
