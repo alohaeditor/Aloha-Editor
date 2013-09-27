@@ -1274,10 +1274,31 @@ define([
 			);
 			return {
 				postprocess: function () {
-					html.removeVisualBreak(
-						dom.nodeAtOffset(range.startContainer, range.startOffset),
-						dom.nodeAtOffset(range.endContainer, range.endOffset)
+					var above;
+
+					// Given <div><b>fo{</b><h2>}ar</h2></div>, let <b>fo</b> be
+					// the node above
+					if (dom.isAtEnd(range.startContainer, range.startOffset)) {
+						above = dom.nodeAtOffset(
+							range.startContainer,
+							range.startOffset
+						);
+
+					// Given <div>fo{<h2>}ar</h2></div>, let "fo" be the node
+					// above
+					} else {
+						above = dom.nodeAtOffset(
+							range.startContainer,
+							range.startOffset - 1
+						);
+					}
+
+					var below = dom.nodeAtOffset(
+						range.endContainer,
+						range.endOffset
 					);
+
+					html.removeVisualBreak(above, below);
 
 					ranges.collapseToStart(range);
 

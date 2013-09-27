@@ -771,6 +771,9 @@ define([
 	 * @return {Function(DOMObject, OutParameter):Boolean}
 	 */
 	function createInsertFunction(ref, atEnd) {
+		if (dom.isTextNode(ref)) {
+			ref = ref.parentNode;
+		}
 		return function insert(node, out_inserted) {
 			if (node === ref) {
 				return out_inserted(false);
@@ -857,19 +860,17 @@ define([
 	}
 
 	/**
-	 * Removes the visual line break between the adjacent nodes `left` and
-	 * `right` by moving the nodes from right to left.
+	 * Removes the visual line break between the adjacent nodes `above` and
+	 * `below` by moving the nodes from `below` to above.
 	 *
-	 * FIXME: fo{<h2>}ar</h2>
-	 *
-	 * @param {DOMObject} left
-	 * @param {DOMObject} right
+	 * @param {DOMObject} above
+	 * @param {DOMObject} below
 	 */
-	function removeVisualBreak(left, right) {
-		if (!isVisuallyAdjacent(left, right)) {
+	function removeVisualBreak(above, below) {
+		if (!isVisuallyAdjacent(above, below)) {
 			return;
 		}
-		var pivot = createTransferPivot(left);
+		var pivot = createTransferPivot(above);
 		var node = nextTransferable(pivot.start);
 		if (node) {
 			var parent = node.parentNode;
