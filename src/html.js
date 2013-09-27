@@ -708,22 +708,15 @@ define([
 	 * @return {Boolean}
 	 */
 	function isVisuallyAdjacent(left, right) {
-		var node = right;
+		var node = traversing.previousNonAncestor(right);
 		while (node) {
-			if (node.previousSibling) {
-				node = node.previousSibling;
-				while (node) {
-					if (node === left) {
-						return true;
-					}
-					if (isUnrenderedNode(node)) {
-						return isVisuallyAdjacent(left, node);
-					}
-					node = node.lastChild;
-				}
-				return false;
+			if (left === node) {
+				return true;
 			}
-			node = node.parentNode;
+			if (isUnrenderedNode(node)) {
+				return isVisuallyAdjacent(left, node);
+			}
+			node = node.lastChild;
 		}
 		return false;
 	}
@@ -742,14 +735,6 @@ define([
 
 	function nextVisible(node) {
 		return traversing.findForward(node, isRendered);
-	}
-
-	function nextNonAncestor(node) {
-		return traversing.findNearestNonAncestor(
-			node,
-			dom.isEditingHost,
-			false
-		);
 	}
 
 	/**
@@ -798,6 +783,7 @@ define([
 				return out_inserted(false);
 			}
 			dom.insert(node, ref, atEnd);
+			dom.merge(node.previousSibling, node);
 			return out_inserted(true);
 		};
 	}
@@ -821,14 +807,14 @@ define([
 		while (node && !dom.isEditingHost(node)) {
 			if (suitableTransferTarget(node)) {
 				return {
-					start: nextVisible(nextNonAncestor(node)),
+					start: nextVisible(traversing.nextNonAncestor(node)),
 					move: createInsertFunction(node, true)
 				};
 			}
 			prev = node;
 			node = node.parentNode;
 		}
-		node = nextNonAncestor(prev);
+		node = traversing.nextNonAncestor(prev);
 		return {
 			start: nextVisible(node),
 			move: createInsertFunction(node, false)
@@ -873,6 +859,8 @@ define([
 	/**
 	 * Removes the visual line break between the adjacent nodes `left` and
 	 * `right` by moving the nodes from right to left.
+	 *
+	 * FIXME: fo{<h2>}ar</h2>
 	 *
 	 * @param {DOMObject} left
 	 * @param {DOMObject} right
