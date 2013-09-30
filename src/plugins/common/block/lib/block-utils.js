@@ -120,7 +120,7 @@ define([
      * is not for a Table
      */
     function getTableByBlock($block) {
-        return isTable($block)? $block.find('table:first') : null;
+        return isTable($block)? $block.find('table').filter(':first') : null;
     }
 
     /**
