@@ -61,33 +61,44 @@ define([
 	keys.down('delete', typing.delete);
 
 	/**
-	 * Aloha Editor API
+	 * The Aloha Editor namespace root.
 	 *
-	 * The Aloha Editor API provides facilities to build advanced content
-	 * editing solutions in HTML.
+	 * Also serves as short aloha.aloha.
 	 */
-	var aloha = {
-		'arrays'          : arrays,
-		'boundarymarkers' : boundarymarkers,
-		'browser'         : browser,
-		'content'         : content,
-		'colors'          : colors,
-		'cursors'         : cursors,
-		'dom'             : dom,
-		'editing'         : editing,
-		'ephemera'        : ephemera,
-		'events'          : events,
-		'fn'              : fn,
-		'html'            : html,
-		'typing'          : typing,
-		'keys'            : keys,
-		'maps'            : maps,
-		'pubsub'          : pubsub,
-		'ranges'          : ranges,
-		'strings'         : strings,
-		'traversing'      : traversing,
-		'xhtml'           : xhtml
-	};
+	function aloha(element) {
+		if (!dom.isTextNode(element)) {
+			dom.setAttr(element, 'contentEditable', 'true');
+		}
+	}
+
+	function mahalo(element) {
+		if (!dom.isTextNode(element)) {
+			dom.removeAttr(element, 'contentEditable');
+		}
+	}
+
+	aloha['aloha'] = aloha;
+	aloha['mahalo'] = mahalo;
+	aloha['arrays'] = arrays;
+	aloha['boundarymarkers'] = boundarymarkers;
+	aloha['browser'] = browser;
+	aloha['content'] = content;
+	aloha['colors'] = colors;
+	aloha['cursors'] = cursors;
+	aloha['dom'] = dom;
+	aloha['editing'] = editing;
+	aloha['ephemera'] = ephemera;
+	aloha['events'] = events;
+	aloha['fn'] = fn;
+	aloha['html'] = html;
+	aloha['typing'] = typing;
+	aloha['keys'] = keys;
+	aloha['maps'] = maps;
+	aloha['pubsub'] = pubsub;
+	aloha['ranges'] = ranges;
+	aloha['strings'] = strings;
+	aloha['traversing'] = traversing;
+	aloha['xhtml'] = xhtml;
 
 	window['aloha'] = aloha;
 
