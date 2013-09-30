@@ -109,7 +109,7 @@ define([
      * @returns {jQuery Element}
      */
     function getEditableByBlock($block) {
-        return $block.parents('.aloha-editable:first');
+        return $block.parents('.aloha-editable').filter(':first');
     }
 
     /**
