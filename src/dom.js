@@ -9,13 +9,15 @@ define([
 	'arrays',
 	'strings',
 	'browser',
-	'functions'
+	'functions',
+	'misc'
 ], function Dom(
 	maps,
 	arrays,
 	strings,
 	browser,
-	fn
+	fn,
+	misc
 ) {
 	'use strict';
 
@@ -98,7 +100,7 @@ define([
 	 */
 	function outerHtml(node) {
 		var html = node.outerHTML;
-		if (typeof html !== 'undefined') {
+		if (misc.defined(html)) {
 			return html;
 		}
 		try {
@@ -174,9 +176,7 @@ define([
 	 *        The value to set into attribute `attr`.
 	 */
 	function setAttr(elem, attr, value) {
-		if (value !== null
-				&& 'undefined' !== typeof value
-					&& supportsAttributes(elem)) {
+		if (value !== null && misc.defined(value) && supportsAttributes(elem)) {
 			elem.setAttribute(attr, value);
 		}
 	}
