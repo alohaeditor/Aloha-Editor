@@ -26,17 +26,32 @@ define([
 	 *
 	 * @type {object<string, number>}
 	 */
-	var IDENTIFIERS = {
-		'tab'     : 9,
-		'enter'   : 13,
-		'shift'   : 16,
+	var CODES = {
 		'control' : 17,
+		'delete'  : 46,
+		'enter'   : 13,
+		'escape'  : 27,
+		'f1'      : 112,
+		'f12'     : 123,
+		'shift'   : 16,
 		'space'   : 32,
-		'delete'  : 46
+		'tab'     : 9
 	};
 
 	/**
-	 * Publishes messages on the keydown event. 
+	 * Arrow keys
+	 *
+	 * @type {Object}
+	 */
+	var ARROWS = {
+		37 : 'left',
+		38 : 'up',
+		39 : 'right',
+		40 : 'down'
+	};
+
+	/**
+	 * Publishes messages on the keydown event.
 	 *
 	 * @param {Event} event
 	 */
@@ -46,12 +61,13 @@ define([
 			code: event.keyCode,
 			range: ranges.get()
 		};
-		pubsub.publish('aloha.key.down', message);
-		pubsub.publish('aloha.key.down.' + event.keyCode, message);
+		var called = {};
+		pubsub.publish('aloha.key.down', message, called);
+		pubsub.publish('aloha.key.down.' + event.keyCode, message, called);
 	}
 
 	/**
-	 * Publishes messages on the keyup event. 
+	 * Publishes messages on the keyup event.
 	 *
 	 * @param {Event} event
 	 */
@@ -65,11 +81,27 @@ define([
 		pubsub.publish('aloha.key.up.' + event.keyCode, message);
 	}
 
+	/**
+	 * Publishes messages on the keypress event.
+	 *
+	 * @param {Event} event
+	 */
+	function onKeyPressOnDocument(event) {
+		var message = {
+			event: event,
+			code: event.keyCode,
+			range: ranges.get()
+		};
+		pubsub.publish('aloha.key.press', message);
+		pubsub.publish('aloha.key.up.' + event.keyCode, message);
+	}
+
+	events.add(document, 'keypress', onKeyPressOnDocument);
 	events.add(document, 'keydown', onKeyDownOnDocument);
 	events.add(document, 'keyup', onKeyUpOnDocument);
 
 	/**
-	 * Publishes messages on the keyup event. 
+	 * Publishes messages on the keyup event.
 	 *
 	 * @param {Function(object)} callback
 	 */
@@ -77,12 +109,12 @@ define([
 		if (typeof code === 'function') {
 			pubsub.subscribe('aloha.key.down', code);
 		} else {
-			pubsub.subscribe('aloha.key.down.' + (IDENTIFIERS[code] || code), callback);
+			pubsub.subscribe('aloha.key.down.' + (CODES[code] || code), callback);
 		}
 	}
 
 	/**
-	 * Publishes messages on the keydown event. 
+	 * Publishes messages on the keydown event.
 	 *
 	 * @param {Function(object)} callback
 	 */
@@ -90,32 +122,43 @@ define([
 		if (typeof code === 'function') {
 			pubsub.subscribe('aloha.key.up', code);
 		} else {
-			pubsub.subscribe('aloha.key.up.' + (IDENTIFIERS[code] || code), callback);
+			pubsub.subscribe('aloha.key.up.' + (CODES[code] || code), callback);
 		}
 	}
 
-	function keycode(event) {
-		return (
-			misc.defined(event.key)
-				? event.key
-				: misc.defined(event.keyCode)
-					? event.keyCode
-					: event.which
-		);
+	/**
+	 * Publishes messages on the keypress event.
+	 *
+	 * @param {Function(object)} callback
+	 */
+	function press(code, callback) {
+		if (typeof code === 'function') {
+			pubsub.subscribe('aloha.key.press', code);
+		} else {
+			pubsub.subscribe('aloha.key.press.' + (CODES[code] || code), callback);
+		}
+	}
+
+	function code(event) {
+		return event.keyCode || event.which;
 	}
 
 	/**
 	 * Functions for working with key events.
 	 */
 	var exports = {
-		up      : up,
-		down    : down,
-		keycode : keycode
+		up     : up,
+		down   : down,
+		press  : press,
+		code   : code,
+		ARROWS : ARROWS
 	};
 
-	exports['up']      = exports.up;
-	exports['down']    = exports.down;
-	exports['keycode'] = exports.keycode;
+	exports['up']     = exports.up;
+	exports['down']   = exports.down;
+	exports['press']  = exports.press;
+	exports['code']   = exports.code;
+	exports['ARROWS'] = exports.ARROWS;
 
 	return exports;
 });

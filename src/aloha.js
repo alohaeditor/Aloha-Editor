@@ -59,6 +59,8 @@ define([
 	keys.down(typing.down);
 	*/
 	keys.down('delete', typing.delete);
+	keys.press(typing.positionCaretOnPress);
+	keys.down(typing.positionCaretOnDown);
 
 	/**
 	 * The Aloha Editor namespace root.

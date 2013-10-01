@@ -17,6 +17,7 @@
 			  font-weight: 700;
 			  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(open-sans-bold.woff) format('woff');
 			}
+			/*
 			td,p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
 				padding: 2px 4px;
 				margin: 2px;
@@ -35,10 +36,26 @@
 				border-collapse: collapse;
 				border-spacing: 0px;
 			}
+			*/
 			/* ol>li:first-letter {background: red;} */
+			.aloha-caret {
+				position: fixed;
+				min-width: 3px;
+				overflow: hidden;
+				background: red;
+				z-index: 999999
+				margin: 0;
+				padding: 0;
+				border-width: 0;
+				opacity: 0.9;
+				color: #fff;
+			}
 		</style>
 	</head>
 	<body>
+		bug when deleting:
+		<p>foo{</p>
+		<b>}bar</b>
 
 		<div class="aloha-editable" contentEditable="true">
 			<br/><br/><br/><br/><br/><br/>

@@ -52,6 +52,7 @@ define([
 		}
 	
 		event.keyIdentifier = 'U+004A';
+		event.keyCode = code;
 
 		if (elem.dispatchEvent) {
 			elem.dispatchEvent(event);
@@ -62,29 +63,119 @@ define([
 
 	function down(msg) {
 		var key = movement[keys.keycode(msg.event)];
-		console.log(key, msg.event.keyCode);
 		if (!key) {
 			return;
 		}
 		msg.event.preventDefault();
+		/*
 		triggerKeyboardEvent(
 			dom.getEditingHost(msg.range.startContainer),
 			'keydown',
 			key
 		);
+		*/
+	}
+
+	function skippedCharacter(dir, range) {
+		if ('left' === dir && dom.isTextNode(range.startContainer)) {
+			return range.startContainer.data.substr(range.startOffset - 1, 1);
+		}
+		if ('right' === dir && dom.isTextNode(range.startContainer)) {
+			return range.startContainer.data.substr(range.startOffset, 1);
+		}
+		return '';
+	}
+
+	var caret;
+	function getCaret() {
+		if (!caret) {
+			caret = document.createElement('div');
+			dom.addClass(caret, 'aloha-caret');
+			dom.insert(caret, document.body, true);
+		}
+		return caret;
+	}
+
+	function characterWidthAt(chr, caret, node) {
+		caret.style.fontSize = parseInt(
+			dom.getComputedStyle(node, 'font-size'),
+			10
+		) + 'px';
+		caret.style.fontWeight = dom.getComputedStyle(node, 'font-weight');
+		caret.innerHTML = (' ' === chr) ? '&nbsp;' : chr;
+		var width = parseInt(dom.getComputedStyle(caret, 'width'), 10);
+		caret.innerHTML = ' ';
+		return width;
+	}
+
+	function updateCaret(chr, range, xdir, ydir) {
+		var offset = ranges.offset(range);
+		var caret = getCaret();
+		var xCorrection = characterWidthAt(
+			chr,
+			caret,
+			dom.isTextNode(range.startContainer)
+				? range.startContainer.parentNode
+				: range.startContainer
+		);
+
+		caret.style.height = offset.box.height + 'px';
+
+		caret.style.left = Math.round(offset.left + (xdir * xCorrection)) + 'px';
+
+		if (ydir > 0) {
+			caret.style.top = Math.round(offset.box.bottom) + 'px';
+		} else if (ydir < 0) {
+			caret.style.top = Math.round(offset.top - offset.box.height) + 'px';
+		} else {
+			caret.style.top = Math.round(offset.top) + 'px';
+		}
+	}
+
+	function positionCaretOnDown(msg) {
+		var arrow = keys.ARROWS[keys.code(msg.event)];
+		if (!arrow) {
+			return;
+		}
+		var chr = skippedCharacter(arrow, msg.range);
+		var xdir = 0;
+		var ydir = 0;
+		switch (arrow) {
+		case 'left'  : xdir = -1; break;
+		case 'right' : xdir =  1; break;
+		case 'up'    : ydir = -1; break;
+		case 'down'  : ydir =  1; break;
+		}
+		updateCaret(chr, msg.range, xdir, ydir);
+	}
+
+	function positionCaretOnPress(msg) {
+		if (keys.ARROWS[keys.code(msg.event)]) {
+			return;
+		}
+		updateCaret(
+			String.fromCharCode(keys.code(msg.event)),
+			msg.range,
+			1,
+			0
+		);
 	}
   
 	var exports = {
-		enter: enter,
-		space: space,
-		down: down,
-		'delete': delete_
+		down     : down,
+		enter    : enter,
+		space    : space,
+		'delete' : delete_,
+		positionCaretOnDown  : positionCaretOnDown,
+		positionCaretOnPress : positionCaretOnPress
 	};
 
+	exports['down'] = down;
 	exports['enter'] = enter;
 	exports['space'] = space;
-	exports['down'] = down;
 	exports['delete'] = exports.delete;
+	exports['positionCaretOnDown'] = exports.positionCaretOnDown;
+	exports['positionCaretOnPress'] = exports.positionCaretOnPress;
 
 	return exports;
 });

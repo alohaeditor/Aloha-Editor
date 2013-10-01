@@ -56,10 +56,12 @@ define([], function () {
 	 *        Name of channel to publish the message on.
 	 * @param {*} message
 	 *        Variable to pass to all callbacks listening on the given channel.
+	 * @return {Object} suppress
+	 *         Map of subscriptions that should not be called.
 	 * @return {Number}
 	 *         The number of subscribed callbacks that were invoked.
 	 */
-	function send(channel, message) {
+	function send(channel, message, suppress) {
 		if (!channels[channel]) {
 			return 0;
 		}
@@ -83,7 +85,10 @@ define([], function () {
 		// iterations.
 		var i;
 		for (i = 0; i < sids.length; ++i) {
-			subscriptions[sids[i]].callback(message);
+			if (!suppress[sids[i]]) {
+				suppress[sids[i]] = true;
+				subscriptions[sids[i]].callback(message);
+			}
 		}
 
 		return i;
@@ -165,22 +170,23 @@ define([], function () {
 	 *        Name of channel to publish the message on.
 	 * @param {*} message
 	 *        Variable to pass to all callbacks listening on the given channel.
-	 * @return {Number}
-	 *         The number of subscribed callbacks that were invoked.
+	 * @return {Object} suppress
+	 *         Map of subscriptions that should not be called.
+	 * @return {Object}
+	 *         Map of all called subscriptions
 	 */
-	function publish(channel, message) {
+	function publish(channel, message, suppress) {
 		var segments = channel.split('.');
 		var i;
 		var len = segments.length;
 		var channelName = '';
-		var tally = 0;
 
 		for (i = 0; i < len; ++i) {
 			channelName += (0 === i ? '' : '.') + segments[i];
-			tally += send(channelName, message);
+			send(channelName, message, suppress || {});
 		}
 
-		return tally;
+		return suppress;
 	}
 
 	/**
