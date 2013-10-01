@@ -1087,6 +1087,26 @@ define([
 		return !attrs(node).map(arrays.second).every(strings.empty);
 	}
 
+	/**
+	 * Calculare the offset of the given node inside the document.
+	 *
+	 * @param {DOMObjec} node
+	 * @return {Object}
+	 */
+	function offset(node) {
+		if (!misc.defined(node.getBoundingClientRect)) {
+			return {
+				top: 0,
+				left: 0
+			};
+		}
+		var box = node.getBoundingClientRect();
+		return {
+			top  : box.top  + window.pageYOffset - document.body.clientTop,
+			left : box.left + window.pageXOffset - document.body.clientLeft
+		};
+	}
+
 	var WORD_BOUNDARY = /\S+/g;
 	var WHITESPACES = /\s/;
 
@@ -1221,6 +1241,7 @@ define([
 	 * Functions for working with the DOM.
 	 */
 	var exports = {
+		offset: offset,
 		remove: remove,
 		merge: merge,
 
@@ -1280,6 +1301,7 @@ define([
 		Nodes: Nodes
 	};
 
+	exports['offset'] = exports.offset;
 	exports['remove'] = exports.remove;
 	exports['merge'] = exports.merge;
 	exports['addClass'] = exports.addClass;
