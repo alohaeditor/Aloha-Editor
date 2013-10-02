@@ -2,7 +2,7 @@
 
 Aloha Editor is a JavaScript library to simplify editing in HTML.
 
-### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Website](http://aloha-editor.org)&nbsp;&nbsp;&nbsp;[Getting Started](http://aloha-editor.org/getting-started)&nbsp;&nbsp;&nbsp;[Documentation](http://aloha0editor.org/documentation)
+### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Website](http://aloha-editor.org)&nbsp;&nbsp;&nbsp;[Getting Started](http://aloha-editor.org/getting-started)&nbsp;&nbsp;&nbsp;[Documentation](http://aloha-editor.org/documentation)
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -48,7 +48,9 @@ We use Google closure compiler to build. Check out [Grunt Closure Compiler](http
 	grunt qunit
 
 You can use 
+
 	grunt watch
+
 to continously proof your code during developement.
 
 ## Contributors
