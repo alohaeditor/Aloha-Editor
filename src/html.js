@@ -660,7 +660,7 @@ define([
 	 * @param {DOMObject} node
 	 * @return {Boolean}
 	 */
-	function isUnrenderedNode(node) {
+	function isUnrendered(node) {
 		if (!node) {
 			return true;
 		}
@@ -697,6 +697,14 @@ define([
 	}
 
 	/**
+	 * Returns true of the fiven node is rendered.
+	 *
+	 * @param {DOMOjbect} node
+	 * @return {Boolean}
+	 */
+	var isRendered = fn.complement(isUnrendered);
+
+	/**
 	 * Determine whether node `left` is visually adjacent to `right`.
 	 *
 	 * In the following example, <p>, <i>, and "left" are all visually adjacent
@@ -713,7 +721,7 @@ define([
 			if (left === node) {
 				return true;
 			}
-			if (isUnrenderedNode(node)) {
+			if (isUnrendered(node)) {
 				return isVisuallyAdjacent(left, node);
 			}
 			node = node.lastChild;
@@ -725,12 +733,8 @@ define([
 		return 'OL' === node.nodeName || 'UL' === node.nodeName;
 	}
 
-	var isRendered = fn.complement(isUnrenderedNode);
-
 	function hasRenderedChildren(node) {
-		return isRendered(
-			traversing.nextWhile(node.firstChild, isUnrenderedNode)
-		);
+		return isRendered(traversing.nextWhile(node.firstChild, isUnrendered));
 	}
 
 	function nextVisible(node) {
@@ -888,7 +892,8 @@ define([
 	 * Functions for working with HTML content.
 	 */
 	var exports = {
-		isUnrenderedNode: isUnrenderedNode,
+		isUnrendered: isUnrendered,
+		isRendered: isRendered,
 		isControlCharacter: isControlCharacter,
 		isStyleInherited: isStyleInherited,
 		isBlockType: isBlockType,
@@ -908,7 +913,8 @@ define([
 		removeVisualBreak: removeVisualBreak
 	};
 
-	exports['isUnrenderedNode'] = exports.isUnrenderedNode;
+	exports['isUnrendered'] = exports.isUnrendered;
+	exports['isRendered'] = exports.isRendered;
 	exports['isControlCharacter'] = exports.isControlCharacter;
 	exports['isStyleInherited'] = exports.isStyleInherited;
 	exports['isBlockType'] = exports.isBlockType;

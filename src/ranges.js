@@ -10,16 +10,14 @@ define([
 	'traversing',
 	'functions',
 	'arrays',
-	'cursors',
-	'misc'
+	'cursors'
 ], function Ranges(
 	dom,
 	html,
 	traversing,
 	fn,
 	arrays,
-	cursors,
-	misc
+	cursors
 ) {
 	'use strict';
 
@@ -665,40 +663,6 @@ define([
 	}
 
 	/**
-	 * Calculates the pixel position of the given range.
-	 *
-	 * @param {Range}
-	 * @return {Object}
-	 */
-	function offset(live) {
-		var range = live.cloneRange();
-		range.setStart(
-			range.startContainer,
-			0 === range.startOffset ? 0 : range.startOffset - 1
-		);
-		if (misc.defined(range.offsetLeft)) {
-			return {
-				left : range.offsetLeft,
-				top  : range.offsetTop,
-				box  : {}
-			};
-		}
-		if (0 === range.endOffset) {
-			return {
-				left : 0,
-				top  : 0,
-				box  : {}
-			};
-		}
-		var box = range.getBoundingClientRect();
-		return {
-			left : box.left + box.width,
-			top  : box.top,
-			box  : box
-		};
-	}
-
-	/**
 	 * Library functions for working with DOM ranges.
 	 * It assums native support for document.getSelection() and
 	 * document.createRange().
@@ -719,7 +683,6 @@ define([
 	 * ranges.trimBoundaries()
 	 * ranges.trimClosingOpening()
 	 * ranges.getNearestEditingHost()
-	 * ranges.offset()
 	 */
 	var exports = {
 		collapseToEnd: collapseToEnd,
@@ -739,8 +702,7 @@ define([
 		trim: trim,
 		trimBoundaries: trimBoundaries,
 		trimClosingOpening: trimClosingOpening,
-		getNearestEditingHost: getNearestEditingHost,
-		offset: offset
+		getNearestEditingHost: getNearestEditingHost
 	};
 
 	exports['collapseToEnd'] = exports.collapseToEnd;
@@ -761,7 +723,6 @@ define([
 	exports['trimBoundaries'] = exports.trimBoundaries;
 	exports['trimClosingOpening'] = exports.trimClosingOpening;
 	exports['getNearestEditingHost'] = exports.getNearestEditingHost;
-	exports['offset'] = exports.offset;
 
 	return exports;
 });

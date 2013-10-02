@@ -463,35 +463,57 @@ define([
 	}
 
 	/**
-	 * Starting from the given node, and moving forwards through the DOM tree,
-	 * searches for a node which returns `true` when applied to the predicate
-	 * `match()`.
+	 * Finds the first DOM object, ahead the given node which matches the
+	 * predicate `match`.  If `until` returns true the given node, for any other
+	 * node during traversal, null is returned.
 	 *
 	 * @param {DOMObject} node
 	 * @param {Function(DOMObject):Boolean} match
+	 * @param {Function(DOMObject):Boolean} until
 	 * @return {DOMObject}
 	 */
-	function findForward(node, match) {
-		while (node && !match(node)) {
-			node = forward(node);
+	function findForward(node, match, until) {
+		until = until || fn.returnFalse;
+		if (until(node)) {
+			return null;
 		}
-		return node;
+		do {
+			node = forward(node);
+			if (!node || until(node)) {
+				return null;
+			}
+			if (match(node)) {
+				return node;
+			}
+		} while (node);
+		return null;
 	}
 
 	/**
-	 * Starting from the given node, and moving backwards through the DOM tree,
-	 * searches for a node which returns `true` when applied to the predicate
-	 * `match()`.
+	 * Finds the first DOM object, behind the given node which matches the
+	 * predicate `match`.  If `until` returns true the given node, for any other
+	 * node during traversal, null is returned.
 	 *
 	 * @param {DOMObject} node
 	 * @param {Function(DOMObject):Boolean} match
+	 * @param {Function(DOMObject):Boolean} until
 	 * @return {DOMObject}
 	 */
-	function findBackward(node, match) {
-		while (node && !match(node)) {
-			node = backward(node);
+	function findBackward(node, match, until) {
+		until = until || fn.returnFalse;
+		if (until(node)) {
+			return null;
 		}
-		return node;
+		do {
+			node = backward(node);
+			if (!node || until(node)) {
+				return null;
+			}
+			if (match(node)) {
+				return node;
+			}
+		} while (node);
+		return null;
 	}
 
 	/**

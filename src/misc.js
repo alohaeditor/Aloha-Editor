@@ -35,13 +35,26 @@ define([], function Misc() {
 		return 'undefined' !== typeof value;
 	}
 
+	/**
+	 * Computes the avarage of two numbers.
+	 *
+	 * @param {Number} a
+	 * @param {Number} b
+	 * @return {Number}
+	 */
+	function mean(a, b) {
+		return a + ((b - a) / 2);
+	}
+
 	var exports = {
 		anyRx: anyRx,
-		defined: defined
+		defined: defined,
+		mean: mean
 	};
 
 	exports['anyRx'] = exports.anyRx;
 	exports['defined'] = exports.defined;
+	exports['mean'] = exports.mean;
 
 	return exports;
 });

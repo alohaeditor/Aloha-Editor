@@ -12,6 +12,7 @@ define([
 	'arrays',
 	'boundary-markers',
 	'browser',
+	'caret',
 	'content',
 	'colors',
 	'cursors',
@@ -33,6 +34,7 @@ define([
 	arrays,
 	boundarymarkers,
 	browser,
+	caret,
 	content,
 	colors,
 	cursors,
@@ -59,8 +61,9 @@ define([
 	keys.down(typing.down);
 	*/
 	keys.down('delete', typing.delete);
-	keys.press(typing.positionCaretOnPress);
-	keys.down(typing.positionCaretOnDown);
+	keys.press(caret.showOnEvent);
+	keys.down(caret.showOnEvent);
+	//keys.up(caret.showOnEvent);
 
 	/**
 	 * The Aloha Editor namespace root.
@@ -84,6 +87,7 @@ define([
 	aloha['arrays'] = arrays;
 	aloha['boundarymarkers'] = boundarymarkers;
 	aloha['browser'] = browser;
+	aloha['caret'] = caret;
 	aloha['content'] = content;
 	aloha['colors'] = colors;
 	aloha['cursors'] = cursors;

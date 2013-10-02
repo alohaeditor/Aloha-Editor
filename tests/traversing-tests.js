@@ -250,7 +250,7 @@
 		var node = $('<div>foo<b><i><br></i></b><br/><u>bar</u></div>')[0];
 		equal(traversing.findForward(node.lastChild, function (elem) {
 			return 'U' === elem.nodeName;
-		}), node.lastChild);
+		}), null);
 	});
 
 	test('findWordBoundaryAhead', function () {
