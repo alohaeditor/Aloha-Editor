@@ -24,8 +24,15 @@ define([], function Misc() {
 		return false;
 	}
 
-	function defined(obj) {
-		return 'undefined' !== typeof obj;
+	/**
+	 * Checks whether the given value is defined.
+	 * @param {*} value
+	 *        An object of any type
+	 * @return {Boolean}
+	 *         True of the value of the given object is not undefined.
+	 */
+	function defined(value) {
+		return 'undefined' !== typeof value;
 	}
 
 	var exports = {
