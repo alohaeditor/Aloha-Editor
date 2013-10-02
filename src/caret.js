@@ -27,6 +27,7 @@ define([
 		if (!caret) {
 			caret = document.createElement('div');
 			dom.addClass(caret, 'aloha-caret');
+			dom.setAttr(caret, 'contentEditable', false);
 			dom.insert(caret, document.body, true);
 		}
 		return caret;
@@ -95,7 +96,9 @@ define([
 	 * @return {Object}
 	 */
 	function caretOffset(live) {
-		var range = hacks.cloneRange(live);
+		var range = live.cloneRange();
+		range.setEnd(range.startContainer, range.startOffset);
+		range = hacks.cloneRange(range);
 		if (misc.defined(range.offsetLeft)) {
 			return {
 				left : range.offsetLeft,
@@ -146,7 +149,7 @@ define([
 					range.startContainer,
 					traversing.findBackward
 				);
-				return node ? node.data.substr(0, 1) : '';
+				return node ? node.data.substr(-1) : '';
 			}
 			return range.startContainer.data.substr(range.startOffset - 1, 1);
 		}
@@ -236,6 +239,11 @@ define([
 		caret.style.top = offset.top + 'px';
 	}
 
+	function hide(caret) {
+		caret.style.height = 0;
+		caret.style.top = '-9999px';
+	}
+
 	/**
 	 * Allows you to pin point the pixel position of the caret while typing
 	 * text.
@@ -252,15 +260,20 @@ define([
 		case 'keyup':
 			return offsetAtKeyUp(keycode, range);
 		default:
-			return offsetAtKeyUp(keycode, range);
+			return calculate(caretOffset(range), 0, 0);
 		}
 	}
 
 	function showOnEvent(msg) {
-		if (msg.range) {
-			var offset = calculateOffset(msg.event, msg.range);
-			if (offset) {
-				show(getCaret(), offset);
+		var range = msg.range || ranges.get();
+		if (range) {
+			if (range.collapsed) {
+				var offset = calculateOffset(msg.event, range);
+				if (offset) {
+					show(getCaret(), offset);
+				}
+			} else {
+				hide(getCaret());
 			}
 		}
 	}
