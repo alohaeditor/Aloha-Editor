@@ -1,6 +1,6 @@
 html {
 	height: 100%;
-	background: whiteSmoke;
+	background: #FDFDFD;
 }
 
 body {
@@ -11,7 +11,7 @@ body {
 	font-size: 20px;
 	line-height: 1.6em;
 	min-height: 100%;
-	box-shadow: 0 0 100px rgba(0,0,0,0.3) inset;
+	box-shadow: 0 0 100px rgba(0,0,0,0.2) inset;
 }
 ::selection {
 	background: #40aebe;
