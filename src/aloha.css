@@ -1,13 +1,12 @@
 html {
 	height: 100%;
-	background: #FDFDFD;
+	background: #f1f0f0;
 }
 
 body {
 	margin: 0;
 	padding: 10% 20%;
 	color: #363332;
-	font-family: Georgia, 'Open Sans', sans-serif;
 	font-size: 20px;
 	line-height: 1.6em;
 	min-height: 100%;
@@ -22,3 +21,39 @@ body {
 }
 p { margin: 0 0 1em; }
 p:last-child { margin-bottom: 0; }
+
+
+.aloha-caret {
+	z-index: 999999;
+	overflow: hidden;
+	position: absolute;
+	min-width: 3px;
+	margin: 0;
+	padding: 0;
+	background: #f1f0f0;
+}
+.aloha-blinker {
+	z-index: 9999999;
+	background: #0c59ef;
+	min-width: 2px;
+	-webkit-animation: blink .5s ease-out infinite alternate;
+	   -moz-animation: blink .5s ease-out infinite alternate;
+	    -ms-animation: blink .5s ease-out infinite alternate;
+	     -o-animation: blink .5s ease-out infinite alternate;
+	        animation: blink .5s ease-out infinite alternate;
+	/*
+	-webkit-transition: left 80ms ease-in-out;
+	   -moz-transition: left 80ms ease-in-out;
+	    -ms-transition: left 80ms ease-in-out;
+	     -o-transition: left 80ms ease-in-out;
+	        transition: left 80ms ease-in-out;
+	*/
+}
+@-moz-keyframes blink {
+	  0% {opacity: 0.0}
+	100% {opacity: 0.9}
+}
+@-webkit-keyframes blink {
+	  0% {opacity: 0.0}
+	100% {opacity: 0.9}
+}

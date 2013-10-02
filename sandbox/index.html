@@ -17,6 +17,9 @@
 			  font-weight: 700;
 			  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(open-sans-bold.woff) format('woff');
 			}
+			body {
+				font-family: 'Open Sans', sans-serif;
+			}
 			/*
 			td,p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
 				padding: 2px 4px;
@@ -38,26 +41,17 @@
 			}
 			*/
 			/* ol>li:first-letter {background: red;} */
-			.aloha-caret {
-				position: absolute;
-				min-width: 3px;
-				overflow: hidden;
-				background: #0c59ef;
-				z-index: 999999
-				margin: 0;
-				padding: 5px 0 0;
-				border-width: 0;
-				opacity: 0.9;
-				color: #fff;
-			}
 		</style>
 	</head>
 	<body>
+		<!--
 		bug when deleting:
 		<p>foo{</p>
 		<b>}bar</b>
+		-->
 
 		<div class="aloha-editable" contentEditable="true">
+			<!--
 			<br/><br/><br/><br/><br/><br/>
 
 			<table summary="demo content for aloha tables">
@@ -80,6 +74,7 @@
 			<h2>Foo</h2><p>bar</p>
 
 			<br/><br/><br/><br/><br/><br/>
+			-->
 
 			<h1>Aloha Editor</h1>
 			<p>

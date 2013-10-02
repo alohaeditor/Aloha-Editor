@@ -27,15 +27,16 @@ define([
 	 * @type {object<string, number>}
 	 */
 	var CODES = {
-		'control' : 17,
-		'delete'  : 46,
-		'enter'   : 13,
-		'escape'  : 27,
-		'f1'      : 112,
-		'f12'     : 123,
-		'shift'   : 16,
-		'space'   : 32,
-		'tab'     : 9
+		'backspace' : 8,
+		'control'   : 17,
+		'delete'    : 46,
+		'enter'     : 13,
+		'escape'    : 27,
+		'f1'        : 112,
+		'f12'       : 123,
+		'shift'     : 16,
+		'space'     : 32,
+		'tab'       : 9
 	};
 
 	/**
@@ -161,7 +162,8 @@ define([
 		down   : down,
 		press  : press,
 		code   : code,
-		ARROWS : ARROWS
+		ARROWS : ARROWS,
+		CODES  : CODES
 	};
 
 	exports['on']     = exports.on;
@@ -170,6 +172,7 @@ define([
 	exports['press']  = exports.press;
 	exports['code']   = exports.code;
 	exports['ARROWS'] = exports.ARROWS;
+	exports['CODES'] = exports.CODES;
 
 	return exports;
 });

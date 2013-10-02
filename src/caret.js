@@ -27,7 +27,6 @@ define([
 		if (!caret) {
 			caret = document.createElement('div');
 			dom.addClass(caret, 'aloha-caret');
-			dom.setAttr(caret, 'contentEditable', false);
 			dom.insert(caret, document.body, true);
 		}
 		return caret;
@@ -36,51 +35,45 @@ define([
 	var hacks = {
 
 		/**
-		 * Because causing the ranges startOffset to be decreased causes Chrome
-		 * to return the correct pixel position for the range, in most cases.
+		 * Returns a expanded version of a clone of the given range.
+		 * This hack is necessary because getBoundingClientRect() only works
+		 * with non collapsed ranges.
 		 *
 		 * @param {Range} live
 		 * @return {Range}
 		 *         Clone and hacked version of the given range.
 		 */
-		cloneRange: function cloneRangeHack(live) {
+		getExpandedClone: function(live) {
 			var range = live.cloneRange();
-			var node = range.startContainer;
-			var offset = range.startOffset;
-			if (0 === offset) {
-				return range;
-			}
-			if (0 === dom.nodeLength(node)) {
-				range.setStart(node.parentNode, 0);
-				range.setStart(node, offset);
-			} else {
-				range.setStart(node, offset - 1);
+			range.setEnd(range.startContainer, range.startOffset);
+			if (0 === range.startOffset) {
+				if (dom.nodeLength(range.endContainer) > range.endOffset) {
+					range.setEnd(range.endContainer, range.endOffset + 1);
+				}
+			} else if (dom.nodeLength(range.startContainer) > 0) {
+				range.setStart(range.startContainer, range.startOffset - 1);
 			}
 			return range;
 		},
 
 		/**
 		 * Because Chrome has problems returning the correct ranges pixel
-		 * positions at terminal regions of a range containers.
+		 * positions around visual line-breaks.
 		 *
 		 * @param {Object} offset
 		 * @param {Range} range
 		 * @retur {Object}
 		 */
-		correctCaretOffset: function correctCaretOffsetHack(offset, range) {
-			if (!offset.box.height) {
-				var start = dom.isTextNode(range.startContainer)
-						  ? range.startContainer.parentNode
-						  : range.startContainer;
+		correctOffset: function(offset, range) {
+			if (!offset.height) {
+			var start = dom.isTextNode(range.startContainer)
+					  ? range.startContainer.parentNode
+					  : range.startContainer;
+			var size = parseInt(dom.getComputedStyle(start, 'font-size'), 10);
+			var line = parseInt(dom.getComputedStyle(start, 'line-height'), 10);
 				offset = dom.offset(start);
-
-				var height = parseInt(dom.getComputedStyle(start, 'line-height'), 10);
-				var size = parseInt(dom.getComputedStyle(start, 'font-size'), 10);
-				var boxHeight = misc.mean(height, size);
-				offset.box = {
-					height: boxHeight
-				};
-				offset.top += Math.abs(height - boxHeight) / 2;
+				offset.height = misc.mean(line, size);
+				offset.top += Math.abs(line - offset.height) / 2;
 			} else {
 				offset.top  += window.pageYOffset - document.body.clientTop;
 				offset.left += window.pageXOffset - document.body.clientLeft;
@@ -96,21 +89,13 @@ define([
 	 * @return {Object}
 	 */
 	function caretOffset(live) {
-		var range = live.cloneRange();
-		range.setEnd(range.startContainer, range.startOffset);
-		range = hacks.cloneRange(range);
-		if (misc.defined(range.offsetLeft)) {
-			return {
-				left : range.offsetLeft,
-				top  : range.offsetTop,
-				box  : {}
-			};
-		}
+		var range = hacks.getExpandedClone(live);
 		var box = range.getBoundingClientRect();
-		return hacks.correctCaretOffset({
-			left : box.left + box.width,
-			top  : box.top,
-			box  : box
+		return hacks.correctOffset({
+			left   : box.left + (live.endOffset === range.endOffset ? box.width : 0),
+			top    : box.top,
+			height : box.height,
+			bottom : box.bottom
 		}, range);
 	}
 
@@ -168,13 +153,13 @@ define([
 
 	function calculate(offset, correction, ydir) {
 		var o = {
-			height: offset.box.height,
+			height: offset.height,
 			left: Math.round(offset.left + correction)
 		};
 		if (ydir > 0) {
-			o.top = Math.round(offset.box.bottom);
+			o.top = Math.round(offset.bottom);
 		} else if (ydir < 0) {
-			o.top = Math.round(offset.top - offset.box.height);
+			o.top = Math.round(offset.top - offset.height);
 		} else {
 			o.top = Math.round(offset.top);
 		}
@@ -198,6 +183,9 @@ define([
 
 	function offsetAtKeyDown(keycode, range) {
 		var arrow = keys.ARROWS[keycode];
+		if (keys.CODES.backspace === keycode) {
+			arrow = 'left';
+		}
 		if (!arrow) {
 			return;
 		}
@@ -228,7 +216,7 @@ define([
 	}
 
 	function offsetAtKeyUp(keycode, range) {
-		if (keys.ARROWS[keycode]) {
+		if (keys.ARROWS[keycode] || keys.CODES.backspace === keycode) {
 			return calculate(caretOffset(range), 0, 0);
 		}
 	}
@@ -264,6 +252,11 @@ define([
 		}
 	}
 
+	var blinker = document.createElement('div');
+	dom.addClass(blinker, 'aloha-caret');
+	dom.addClass(blinker, 'aloha-blinker');
+	dom.insert(blinker, document.body, true);
+
 	function showOnEvent(msg) {
 		var range = msg.range || ranges.get();
 		if (range) {
@@ -271,9 +264,11 @@ define([
 				var offset = calculateOffset(msg.event, range);
 				if (offset) {
 					show(getCaret(), offset);
+					show(blinker, offset);
 				}
 			} else {
 				hide(getCaret());
+				hide(blinker);
 			}
 		}
 	}
