@@ -100,17 +100,24 @@ define([
 	events.add(document, 'keydown', onKeyDownOnDocument);
 	events.add(document, 'keyup', onKeyUpOnDocument);
 
+	function subscribe(channel, code, callback) {
+		if ('function' === typeof code) {
+			pubsub.subscribe('aloha.key.' + channel, code);
+		} else {
+			pubsub.subscribe(
+				'aloha.key.' + channel + '.' + (CODES[code] || code),
+				callback
+			);
+		}
+	}
+
 	/**
 	 * Publishes messages on the keyup event.
 	 *
 	 * @param {Function(object)} callback
 	 */
 	function down(code, callback) {
-		if (typeof code === 'function') {
-			pubsub.subscribe('aloha.key.down', code);
-		} else {
-			pubsub.subscribe('aloha.key.down.' + (CODES[code] || code), callback);
-		}
+		subscribe('down', code, callback);
 	}
 
 	/**
@@ -119,11 +126,7 @@ define([
 	 * @param {Function(object)} callback
 	 */
 	function up(code, callback) {
-		if (typeof code === 'function') {
-			pubsub.subscribe('aloha.key.up', code);
-		} else {
-			pubsub.subscribe('aloha.key.up.' + (CODES[code] || code), callback);
-		}
+		subscribe('up', code, callback);
 	}
 
 	/**
@@ -132,10 +135,16 @@ define([
 	 * @param {Function(object)} callback
 	 */
 	function press(code, callback) {
-		if (typeof code === 'function') {
-			pubsub.subscribe('aloha.key.press', code);
-		} else {
-			pubsub.subscribe('aloha.key.press.' + (CODES[code] || code), callback);
+		subscribe('press', code, callback);
+	}
+
+	function on(channels, callback) {
+		if ('string' === typeof channels) {
+			channels = channels.split(' ');
+		}
+		var i;
+		for (i = 0; i < channels.length; i++) {
+			subscribe(channels[i], callback);
 		}
 	}
 
@@ -147,6 +156,7 @@ define([
 	 * Functions for working with key events.
 	 */
 	var exports = {
+		on     : on,
 		up     : up,
 		down   : down,
 		press  : press,
@@ -154,6 +164,7 @@ define([
 		ARROWS : ARROWS
 	};
 
+	exports['on']     = exports.on;
 	exports['up']     = exports.up;
 	exports['down']   = exports.down;
 	exports['press']  = exports.press;
