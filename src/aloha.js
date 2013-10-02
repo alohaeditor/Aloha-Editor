@@ -23,6 +23,7 @@ define([
 	'events',
 	'functions',
 	'html',
+	'mouse',
 	'pubsub',
 	'keys',
 	'maps',
@@ -45,6 +46,7 @@ define([
 	events,
 	fn,
 	html,
+	mouse,
 	pubsub,
 	keys,
 	maps,
@@ -56,12 +58,13 @@ define([
 	'use strict';
  
 	/*
+	keys.down(typing.down);
 	keys.down('enter', typing.enter);
 	keys.down('space', typing.space);
-	keys.down(typing.down);
 	*/
 	keys.down('delete', typing.delete);
 	keys.on('press up down', caret.showOnEvent);
+	mouse.on('up down', caret.showOnEvent);
 
 	/**
 	 * The Aloha Editor namespace root.
@@ -97,6 +100,7 @@ define([
 	aloha['html'] = html;
 	aloha['typing'] = typing;
 	aloha['keys'] = keys;
+	aloha['mouse'] = mouse;
 	aloha['maps'] = maps;
 	aloha['pubsub'] = pubsub;
 	aloha['ranges'] = ranges;
