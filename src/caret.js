@@ -146,7 +146,7 @@ define([
 					range.startContainer,
 					traversing.findBackward
 				);
-				return node ? node.data.trim().substr(0, 1) : '';
+				return node ? node.data.substr(0, 1) : '';
 			}
 			return range.startContainer.data.substr(range.startOffset - 1, 1);
 		}
@@ -156,7 +156,7 @@ define([
 					range.startContainer,
 					traversing.findForward
 				);
-				return node ? node.data.trim().substr(0, 1) : '';
+				return node ? node.data.substr(0, 1) : '';
 			}
 			return range.startContainer.data.substr(range.startOffset, 1);
 		}
