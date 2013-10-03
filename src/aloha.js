@@ -61,10 +61,10 @@ define([
 	keys.down(typing.down);
 	keys.down('enter', typing.enter);
 	keys.down('space', typing.space);
-	*/
-	keys.down('delete', typing.delete);
 	keys.on('press up down', caret.showOnEvent);
 	mouse.on('up down', caret.showOnEvent);
+	*/
+	keys.down('delete', typing.delete);
 
 	/**
 	 * The Aloha Editor namespace root.

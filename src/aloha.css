@@ -24,7 +24,7 @@ p:last-child { margin-bottom: 0; }
 
 
 .aloha-caret {
-	z-index: 999999;
+	z-index: 1;
 	overflow: hidden;
 	position: absolute;
 	min-width: 3px;
@@ -33,7 +33,7 @@ p:last-child { margin-bottom: 0; }
 	background: #f1f0f0;
 }
 .aloha-blinker {
-	z-index: 9999999;
+	z-index: 2;
 	background: #0c59ef;
 	min-width: 2px;
 	-webkit-animation: blink .5s ease-out infinite alternate;

@@ -3,6 +3,9 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ *
+ * @reference
+ * https://en.wikipedia.org/wiki/HTML_element#Content_vs._presentation
  */
 define([
 	'dom',
@@ -148,6 +151,18 @@ define([
 		'BR'  : true,
 		'HR'  : true,
 		'IMG' : true
+	};
+
+	var LIST_CONTAINERS = {
+		'OL' : true,
+		'UL' : true,
+		'DL' : true
+	};
+
+	var LIST_ITEMS = {
+		'LI' : true,
+		'DT' : true,
+		'DD' : true
 	};
 
 	/**
@@ -729,10 +744,6 @@ define([
 		return false;
 	}
 
-	function isListContainer(node) {
-		return 'OL' === node.nodeName || 'UL' === node.nodeName;
-	}
-
 	function hasRenderedChildren(node) {
 		return isRendered(traversing.nextWhile(node.firstChild, isUnrendered));
 	}
@@ -829,15 +840,19 @@ define([
 	}
 
 	/**
-	 * No blocks are allowed to be moved when merginge visual line breaks, with
-	 * the notable exception of list containers (ol, and ul).
+	 * Checks whether or not the given node can be moved across a line break in
+	 * the process of removing a visual line break.
+	 * List items are also non transferable since the must remain inside of
+	 * their list containers.
+	 *
+	 * @reference http://www.htmlhelp.com/reference/html40/block.html
 	 *
 	 * @private
 	 * @param {DOMObject} node
 	 * @return {Boolean}
 	 */
 	function isTransferable(node) {
-		return isInlineType(node) || isListContainer(node);
+		return !isLinebreakingNode(node);
 	}
 
 	/**
@@ -846,9 +861,15 @@ define([
 	 * @return {DOMObject}
 	 */
 	function nextTransferable(node) {
-		return traversing.findForward(node, isTransferable, function (node) {
-			return isLinebreakingNode(node) || dom.isEditingHost(node);
-		});
+		return (
+			isTransferable(node)
+				? node
+				: traversing.findForward(node, isTransferable, function (node) {
+					return !LIST_ITEMS[node.nodeName]
+					    && !LIST_CONTAINERS[node.nodeName]
+					    && (isLinebreakingNode(node) || dom.isEditingHost(node));
+				})
+		);
 	}
 
 	/**
@@ -872,6 +893,16 @@ define([
 	 */
 	function removeVisualBreak(above, below) {
 		if (!isVisuallyAdjacent(above, below)) {
+			return;
+		}
+		var lineBreakingNode = traversing.findForward(
+			above,
+			isLinebreakingNode,
+			function (node) {
+				return node === below;
+			}
+		);
+		if (!lineBreakingNode) {
 			return;
 		}
 		var pivot = createTransferPivot(above);
@@ -909,7 +940,6 @@ define([
 		isEmpty: isEmpty,
 		isLinebreakingNode: isLinebreakingNode,
 		isVisuallyAdjacent: isVisuallyAdjacent,
-		isListContainer: isListContainer,
 		removeVisualBreak: removeVisualBreak
 	};
 
@@ -930,7 +960,6 @@ define([
 	exports['isEmpty'] = exports.isEmpty;
 	exports['isLinebreakingNode'] = exports.isLinebreakingNode;
 	exports['isVisuallyAdjacent'] = exports.isVisuallyAdjacent;
-	exports['isListContainer'] = exports.isListContainer;
 	exports['removeVisualBreak'] = exports.removeVisualBreak;
 
 	return exports;
