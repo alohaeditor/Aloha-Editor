@@ -33,7 +33,9 @@ define([
 	'aloha/registry',
 	'util/class',
 	'util/strings',
-	'util/maps'
+	'util/maps',
+    'block/block-utils',
+    'table/table-plugin'
 ], function (
 	Aloha,
 	$,
@@ -42,7 +44,9 @@ define([
 	Registry,
 	Class,
 	Strings,
-	Maps
+	Maps,
+    BlockUitls,
+    Table
 ) {
 	'use strict';
 
@@ -385,11 +389,21 @@ define([
 					change: function (event, ui) {
 						ui.item.data("block-sort-allowed", (ui.placeholder.parents(".aloha-block-dropzone").length > 0));
 					},
-					stop: function (event, ui) { 
-						if (!ui.item.data("block-sort-allowed")) {
+					stop: function (event, ui) {
+						var $blockItem = ui.item;
+						if (!$blockItem.data("block-sort-allowed")) {
 							jQuery(this).sortable("cancel");
-						} 
-						ui.item.removeData("block-sort-allowed");
+						}
+						$blockItem.removeData("block-sort-allowed");
+
+						var $table = BlockUitls.getTableByBlock($blockItem);
+						if ($table !== null) {
+							var actualParentEditable = Aloha.getEditableById(
+								BlockUitls.getEditableByBlock($blockItem)
+								          .attr('id'));
+							Table.getTableFromRegistry($table.get(0))
+							     .parentEditable = actualParentEditable;
+						}
 					}
 				});
 
