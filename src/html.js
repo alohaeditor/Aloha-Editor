@@ -842,8 +842,6 @@ define([
 	/**
 	 * Checks whether or not the given node can be moved across a line break in
 	 * the process of removing a visual line break.
-	 * List items are also non transferable since the must remain inside of
-	 * their list containers.
 	 *
 	 * @reference http://www.htmlhelp.com/reference/html40/block.html
 	 *
