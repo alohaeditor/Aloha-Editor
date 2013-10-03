@@ -139,10 +139,11 @@ define([
 		if (dom.isTextNode(cac)) {
 			cac = cac.parentNode;
 		}
-		var sc  = liveRange.startContainer;
-		var ec  = liveRange.endContainer;
-		var so  = liveRange.startOffset;
-		var eo  = liveRange.endOffset;
+		var sc        = liveRange.startContainer;
+		var ec        = liveRange.endContainer;
+		var so        = liveRange.startOffset;
+		var eo        = liveRange.endOffset;
+		var collapsed = liveRange.collapsed;
 		var start       = dom.nodeAtOffset(sc, so);
 		var end         = dom.nodeAtOffset(ec, eo);
 		var startAtEnd  = dom.isAtEnd(sc, so);
@@ -159,14 +160,20 @@ define([
 		traversing.walkUntilNode(cac.firstChild, stepLeftStart, cacChildStart, arg);
 		if (cacChildStart) {
 			var next = cacChildStart.nextSibling;
-			stepAtStart(cacChildStart, arg);
-			if (cacChildStart !== cacChildEnd) {
+			if (cacChildStart === cacChildEnd) {
+				if (!collapsed) {
+					stepPartial(cacChildStart, arg);
+				}
+			} else {
+				stepAtStart(cacChildStart, arg);
 				traversing.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
 				if (cacChildEnd) {
 					next = cacChildEnd.nextSibling;
 					stepAtEnd(cacChildEnd, arg);
-					traversing.walk(next, stepRightEnd, arg);
 				}
+			}
+			if (cacChildEnd) {
+				traversing.walk(next, stepRightEnd, arg);
 			}
 		}
 	}

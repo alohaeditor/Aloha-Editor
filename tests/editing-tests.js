@@ -638,7 +638,11 @@
 
 	t('range outside and inside element to be formatted',
 	  '<p>Some {<a>more}</a> text</p>',
-	  '<p>Some {<span style="font-family: arial"><a>more}</a></span> text</p>');
+	  '<p>Some {<a><span style="font-family: arial">more</span>}</a> text</p>');
+
+	t('first cac child of start and end positions are equal',
+	  '<p>Some {<a>t}ext</a></p>',
+	  '<p>Some {<a><span style="font-family: arial">t</span>}ext</a></p>');
 
 	// Because the following tests depend on some CSS classes to be available:
 	$('body').prepend('<style>'
