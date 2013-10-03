@@ -117,7 +117,7 @@ define([
 	 *
 	 * @return void
 	 */
-	TableSelection.prototype.selectRows = function ( rowsToSelect ) {
+	TableSelection.prototype.selectRows = function( rowsToSelect ) {
 		this.unselectCells();
 
 		var rows = this.table.getRows();
@@ -141,7 +141,7 @@ define([
 			    }
 			}
 		}
-		
+
 	    this.selectionType = 'row';
 	};
 
