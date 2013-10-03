@@ -102,9 +102,43 @@ define([
 		return true;
 	}
 
+    /**
+     * Get the parent editable of the block $block
+     *
+     * @param {jQuery Element} $block
+     * @returns {jQuery Element}
+     */
+    function getEditableByBlock($block) {
+        return $block.parents('.aloha-editable').filter(':first');
+    }
+
+    /**
+     * Get table inside the block or null if this block is not for a table
+     *
+     * @param $block
+     * @returns {jQuery Element} jQuery table or null if this block
+     * is not for a Table
+     */
+    function getTableByBlock($block) {
+        return isTable($block)? $block.find('table').filter(':first') : null;
+    }
+
+    /**
+     * Check if a block element is a table.
+     *
+     * @param {jQuery Element} $blockElement
+     * @returns {Boolean} true if it is a table, false otherwise
+     */
+    function isTable($blockElement) {
+        return $blockElement.hasClass('aloha-table-wrapper');
+    }
+
 	return {
 		pad: pad,
 		unpad: unpad,
-		isDragdropEnabledForElement: isDragdropEnabledForElement
+		isDragdropEnabledForElement: isDragdropEnabledForElement,
+        isTable: isTable,
+        getEditableByBlock: getEditableByBlock,
+        getTableByBlock: getTableByBlock
 	};
 });
