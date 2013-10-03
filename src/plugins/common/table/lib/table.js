@@ -556,7 +556,7 @@ define([
 	//
 
 	 // handle column/row resize
-			eventContainer.delegate( 'td', 'mousemove', function( e ) {
+			eventContainer.delegate( 'th, td', 'mousemove', function( e ) {
 
 				var jqObj = jQuery( this );
 				// offset to be used for activating the resize cursor near a table border
@@ -1981,8 +1981,10 @@ define([
 	Table.prototype.attachTableResizeWidth = function(table) {
 
 		var that = this;
-		var tableContainer = table.closest('.aloha-table-wrapper')
-		var lastColumn = table.find("tr:not(.aloha-table-selectcolumn) td:last-child")
+		var tableContainer = table.closest('.aloha-table-wrapper');
+		var trSelector = "tr:not(.aloha-table-selectcolumn)";
+		var lastColumn = table.find(trSelector + " th:last-child, " +
+			                        trSelector + " td:last-child");
 		var lastCell;
 
 		jQuery.each( lastColumn, function() {
@@ -1999,10 +2001,11 @@ define([
 		var resizeColumns = function(pixelsMoved) {
 			var rows = table.find( 'tr' );
 			var lastCellRow = lastCell.closest( 'tr' );
-			var gridId = Utils.cellIndexToGridColumn( rows,
-																								rows.index( lastCellRow ),
-																								lastCellRow.children().index( lastCell )
-																							);
+			var gridId = Utils.cellIndexToGridColumn(
+				                   rows,
+			                      rows.index( lastCellRow ),
+			                      lastCellRow.children().index( lastCell )
+			                   );
 			var expandToWidth = pixelsMoved - Utils.getCellBorder(lastCell) - Utils.getCellPadding(lastCell);
 
 			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
