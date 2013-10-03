@@ -889,7 +889,6 @@ define([
 	exports['childAndParentsUntilNode'] = exports.childAndParentsUntilNode;
 	exports['childAndParentsUntilInclNode'] = exports.childAndParentsUntilInclNode;
 	exports['climbUntil'] = exports.climbUntil;
-	exports['getNonAncestor'] = exports.getNonAncestor;
 	exports['findNearestNonAncestor'] = exports.findNearestNonAncestor;
 	exports['previousNonAncestor'] = exports.previousNonAncestor;
 	exports['nextNonAncestor'] = exports.nextNonAncestor;

@@ -64,8 +64,8 @@ define([
 	keys.on('press up down', caret.showOnEvent);
 	mouse.on('up down', caret.showOnEvent);
 	*/
-	keys.down('delete', typing.delete);
-	keys.down('backspace', typing.delete);
+	keys.down('backspace', typing.deleteBackward);
+	keys.down('delete', typing.deleteForward);
 
 	/**
 	 * The Aloha Editor namespace root.

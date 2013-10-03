@@ -1258,7 +1258,7 @@ define([
 	 * @return {Range}
 	 *         The modified range, after deletion.
 	 */
-	function remove(liveRange) {
+	function delete_(liveRange) {
 		fixupRange(liveRange, function (range, left, right) {
 			var remove = function (node) {
 				dom.removePreservingRange(node, range);
@@ -1344,19 +1344,19 @@ define([
 	 * editing.wrap()
 	 * editing.format()
 	 * editing.split()
-	 * editing.remove()
+	 * editing.delete_()
 	 */
 	var exports = {
 		wrap   : wrapElem,
 		format : format,
 		split  : split,
-		remove : remove
+		delete : delete_
 	};
 
 	exports['wrap'] = exports.wrap;
 	exports['format'] = exports.format;
 	exports['split'] = exports.split;
-	exports['remove'] = exports.remove;
+	exports['delete'] = exports.delete;
 
 	return exports;
 });

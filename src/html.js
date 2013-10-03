@@ -825,7 +825,7 @@ define([
 		while (node && !dom.isEditingHost(node)) {
 			if (suitableTransferTarget(node)) {
 				return {
-					start: nextVisible(traversing.nextNonAncestor(node)),
+					start: traversing.nextNonAncestor(node),
 					move: createInsertFunction(node, true)
 				};
 			}
@@ -834,7 +834,7 @@ define([
 		}
 		node = traversing.nextNonAncestor(prev);
 		return {
-			start: nextVisible(node),
+			start: node,
 			move: createInsertFunction(node, false)
 		};
 	}
@@ -859,6 +859,7 @@ define([
 	 * @return {DOMObject}
 	 */
 	function nextTransferable(node) {
+		node = traversing.findForward(node, isRendered);
 		return (
 			isTransferable(node)
 				? node
@@ -884,7 +885,7 @@ define([
 
 	/**
 	 * Removes the visual line break between the adjacent nodes `above` and
-	 * `below` by moving the nodes from `below` to above.
+	 * `below` by moving the nodes from `below` to `above`.
 	 *
 	 * @param {DOMObject} above
 	 * @param {DOMObject} below
@@ -917,6 +918,28 @@ define([
 		}
 	}
 
+	var VISIBLE_CHARACTER_FROM_END = new RegExp(
+		'[^' + ZERO_WIDTH_CHARACTERS_UNICODES + '][' + ZERO_WIDTH_CHARACTERS_UNICODES + ']*$'
+	);
+
+	function visibleCharacterBehind(node, offset) {
+		if (dom.isTextNode(node)) {
+			var boundary = node.data.substr(0, offset)
+			                   .search(VISIBLE_CHARACTER_FROM_END);
+			if (boundary > -1) {
+				return {
+					node: node,
+					offset: boundary
+				};
+			}
+		}
+		var prev = traversing.findBackward(
+			traversing.previousNonAncestor(node),
+			isRendered
+		);
+		return visibleCharacterBehind(prev, dom.nodeLength(prev));
+	}
+
 	/**
 	 * Functions for working with HTML content.
 	 */
@@ -938,7 +961,8 @@ define([
 		isEmpty: isEmpty,
 		isLinebreakingNode: isLinebreakingNode,
 		isVisuallyAdjacent: isVisuallyAdjacent,
-		removeVisualBreak: removeVisualBreak
+		removeVisualBreak: removeVisualBreak,
+		visibleCharacterBehind: visibleCharacterBehind
 	};
 
 	exports['isUnrendered'] = exports.isUnrendered;
@@ -959,6 +983,7 @@ define([
 	exports['isLinebreakingNode'] = exports.isLinebreakingNode;
 	exports['isVisuallyAdjacent'] = exports.isVisuallyAdjacent;
 	exports['removeVisualBreak'] = exports.removeVisualBreak;
+	exports['visibleCharacterBehind'] = exports.visibleCharacterBehind;
 
 	return exports;
 });

@@ -237,12 +237,11 @@ define([
 	 * would be visually represented when selected.
 	 *
 	 * The start and end boundary positions will not be expanded across elements
-	 * which affect visual line breaks.  These include all elements with
-	 * block-level display styling, img tags, and br tags ofcourse.
+	 * which affect visual line breaks.  These include all line breaking nodes.
 	 *
 	 * Note that an element's styling can only be determined if that element is
 	 * attached to the document.  If working with a range in a detached DOM,
-	 * then line-breaking nodes are determined simply by their tag name.
+	 * then line-breaking nodes are guessed simply by their tag name.
 	 *
 	 * Also note that expand() will never move the start or end boundary
 	 * position inside of a text node.
@@ -337,6 +336,18 @@ define([
 		);
 		range.setStart(behind.node, behind.offset);
 		range.setEnd(ahead.node, ahead.offset);
+		return range;
+	}
+
+	function expandBackward(range) {
+		var behind = html.visibleCharacterBehind(
+			range.startContainer,
+			range.startOffset
+		);
+		if (behind) {
+			range.setStart(behind.node, behind.offset);
+			select(range);
+		}
 		return range;
 	}
 
@@ -693,6 +704,7 @@ define([
 		contract: contract,
 		expandBoundaries: expandBoundaries,
 		expandToWord: expandToWord,
+		expandBackward: expandBackward,
 		get: get,
 		insertText: insertText,
 		insertTextBehind: insertTextBehind,
@@ -713,6 +725,7 @@ define([
 	exports['contract'] = exports.contract;
 	exports['expandBoundaries'] = exports.expandBoundaries;
 	exports['expandToWord'] = exports.expandToWord;
+	exports['expandBackward'] = exports.expandBackward;
 	exports['get'] = exports.get;
 	exports['insertText'] = exports.insertText;
 	exports['insertTextBehind'] = exports.insertTextBehind;
