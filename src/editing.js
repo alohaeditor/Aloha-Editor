@@ -1240,6 +1240,24 @@ define([
 		return liveRange;
 	}
 
+	/**
+	 * Removes the content inside the given range.
+	 *
+	 * “If you delete a paragraph-boundary, the result seems to be consistent:
+	 * The leftmost block 'wins', and the content of the rightmost block is
+	 * included in the leftmost:
+	 *
+	 * <h1>Overskrift</h1><p>[]Text</p>
+	 *
+	 * “If delete is pressed, this is the result:
+	 *
+	 * <h1>Overskrift[]Text</h1>”
+	 * -- http://dev.opera.com/articles/view/rich-html-editing-in-the-browser-part-1
+	 *
+	 * @param {Range} range
+	 * @return {Range}
+	 *         The modified range, after deletion.
+	 */
 	function remove(liveRange) {
 		fixupRange(liveRange, function (range, left, right) {
 			var remove = function (node) {
