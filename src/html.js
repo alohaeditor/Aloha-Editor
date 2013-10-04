@@ -731,6 +731,9 @@ define([
 	 * @return {Boolean}
 	 */
 	function isVisuallyAdjacent(left, right) {
+		if (left === traversing.findBackward(right, isRendered)) {
+			return true;
+		}
 		var node = traversing.previousNonAncestor(right);
 		while (node) {
 			if (left === node) {
@@ -796,7 +799,8 @@ define([
 		}
 		return function insert(node, out_inserted) {
 			if (ref === node) {
-				return out_inserted(false);
+				dom.merge(node.previousSibling, node);
+				return out_inserted(true);
 			}
 			if (ref.nodeName === node.nodeName) {
 				dom.merge(ref, node);
@@ -916,7 +920,11 @@ define([
 			offset = dom.nodeIndex(breaker);
 		}
 		var parent = below.parentNode;
-		traversing.walkUntil(below, move, cannotMove, fn.outparameter(true));
+		if (0 === dom.nodeLength(below)) {
+			dom.remove(below);
+		} else {
+			traversing.walkUntil(below, move, cannotMove, fn.outparameter(true));
+		}
 		traversing.climbUntil(parent, dom.remove, hasRenderedChildren);
 		return {
 			container: container,

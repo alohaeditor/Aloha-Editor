@@ -1297,21 +1297,28 @@ define([
 				remove,
 				null
 			);
-			var pos;
 			return {
 				postprocessTextNodes: fn.noop,
 				postprocess: function () {
-					var position = html.removeVisualBreak(
-						// Given <div><b>fo{</b><h2>}ar</h2></div> or
-						// <div>fo{<h2>}ar</h2></div>, let "fo" be the node
-						// above
-						dom.nodeAtOffset(
-							range.startContainer,
-							0 === range.startOffset ? 0 : range.startOffset - 1
-						),
-						dom.nodeAtOffset(range.endContainer, range.endOffset)
-					);
-					pos = cursors.createFromBoundary(
+					var position;
+					if (range.collapsed) {
+						position = {
+							container: range.startContainer,
+							offset: range.startOffset
+						};
+					} else {
+						position = html.removeVisualBreak(
+							// Given <div><b>fo{</b><h2>}ar</h2></div> or
+							// <div>fo{<h2>}ar</h2></div>, let "fo" be the node
+							// above
+							dom.nodeAtOffset(
+								range.startContainer,
+								0 === range.startOffset ? 0 : range.startOffset - 1
+							),
+							dom.nodeAtOffset(range.endContainer, range.endOffset)
+						);
+					}
+					var pos = cursors.createFromBoundary(
 						position.container,
 						position.offset
 					);
