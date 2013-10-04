@@ -12,6 +12,13 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.21 - 2013/10/04
+
+- **BUGFIX**: Fix display of values after image-reset and improve the
+              size-check of image-resizing
+- **BUGFIX**: image plugin: Various fixes and improvements for resizing, cropping and resetting images have been added, 
+              to improve the cohesion between displayed values and actual sizes.
+
 ## 0.23.20 - 2013/09/25
 
 - **BUGFIX**: blockmanager: Fixed scripts in a block being executed, when

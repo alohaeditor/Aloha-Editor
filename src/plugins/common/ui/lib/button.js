@@ -51,6 +51,7 @@ function (jQuery, Component, Utils) {
 						at: 'right bottom'
 					}
 				})
+				.zIndex(0)    // fix for IE7,8 so the icon shown disabled
 				.click(jQuery.proxy(function () {
 
 					// Ensure tooltips are always hidden after a button
