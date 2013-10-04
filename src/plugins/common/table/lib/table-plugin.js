@@ -1297,7 +1297,7 @@ define([
 		var that = this;
 
 		// clicking outside the table unselects the cells of the table
-		if ( null == focusTable && null != this.activeTable ) {
+		if (null != this.activeTable ) {
 			this.activeTable.selection.unselectCells();
 		}
 
