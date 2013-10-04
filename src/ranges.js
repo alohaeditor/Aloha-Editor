@@ -117,8 +117,9 @@ define([
 			oppositeOffset
 		);
 		var changed = false;
-		while (ignore(cursor, opposite)
-				&& (backwards ? cursor.prev() : cursor.next())) {
+		while (!cursor.equals(opposite)
+		           && ignore(cursor)
+		           && (backwards ? cursor.prev() : cursor.next())) {
 			changed = true;
 		}
 		if (changed) {
@@ -393,6 +394,8 @@ define([
 			ignoreLeft,
 			false
 		);
+		sc = range.startContainer;
+		so = range.startOffset;
 		seekBoundaryPoint(
 			range,
 			ec,
