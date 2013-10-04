@@ -744,6 +744,12 @@ define([
 		return false;
 	}
 
+	/**
+	 * Checks whether the given node has any rendered children inside of it.
+	 *
+	 * @param {DOMObject} node
+	 * @retur {DOMObject}
+	 */
 	function hasRenderedChildren(node) {
 		return isRendered(traversing.nextWhile(node.firstChild, isUnrendered));
 	}
@@ -820,18 +826,28 @@ define([
 		return !isLinebreakingNode(node);
 	}
 
-	function findTransferTarget(node) {
+	/**
+	 * Finds a suitable container inwhich to move node that are to the right of
+	 * `breaker` when removing a visual line break.
+	 *
+	 * @param {DOMObject} above
+	 * @param {DOMObject} breaker
+	 * @return {DOMObject}
+	 */
+	function findTransferTarget(above, breaker) {
+		var node = above;
 		if (!isRendered(node)) {
 			node = traversing.findBackward(node, isRendered, dom.isEditingHost);
 		}
-		return (
-			!node || suitableTransferTarget(node)
-				? node
-				: traversing.findAncestor(
-					node,
-					suitableTransferTarget,
-					dom.isEditingHost
-				)
+		if (!node || suitableTransferTarget(node)) {
+			return node;
+		}
+		return traversing.findAncestor(
+			node,
+			suitableTransferTarget,
+			function (node) {
+				return node === breaker.parentNode || dom.isEditingHost(node);
+			}
 		);
 	}
 
@@ -886,7 +902,7 @@ define([
 				offset: dom.nodeLength(above)
 			};
 		}
-		var target = findTransferTarget(above);
+		var target = findTransferTarget(above, breaker);
 		var move;
 		var container;
 		var offset;
