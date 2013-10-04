@@ -42,8 +42,21 @@ All changes are categorized into one of the following keywords:
 
 - **BUGFIX**: Fix display of values after image-reset and improve the
               size-check of image-resizing
-- **BUGFIX**: image plugin: Various fixes and improvements for resizing, cropping and resetting images have been added, 
-              to improve the cohesion between displayed values and actual sizes.
+- **BUGFIX**: image plugin: Various fixes and improvements for resizing, cropping 
+              and resetting images have been added, to improve the cohesion between displayed values and actual sizes.
+- **BUGFIX**: blockmanager: Fixed scripts in a block being executed, when
+              getting its configuration.
+- **BUGFIX**: editables: Initializing empty editables in Firefox will no longer
+              result in them aquiring an extra <br/>. This was previously done
+        to work around a Firefox bug that seems not no longer be an issue.
+- **BUGFIX**: tables: Tables with col- and rowspans will now be correctly
+              initialialized in IE9.
+- **BUGFIX**: tables: The cell merge and cell split buttons are now correctly
+              disable when not applicable in IE7 and IE8.
+- **BUGFIX**: tables: Table functionality will no longer stop working when a
+              table is moved from one editable into another.
+- **BUGFIX**: tables: It is now possible to resize table headers (TH cells).
+
 
 
 ## 0.23.20 - 2013/09/25
