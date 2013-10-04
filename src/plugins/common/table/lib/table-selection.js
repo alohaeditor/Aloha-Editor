@@ -207,22 +207,18 @@ define([
 	 * @return void
 	 */
 	TableSelection.prototype.unselectCells = function(){
-		var rows;
-
 		//don't unselect cells if cellSelectionMode is active
 		if ( this.cellSelectionMode ) {
     		return;
 		}
 
 		if (this.selectedCells.length > 0) {
-			
-			rows = this.table.getRows();
-			
-			for (var i = 0; i < rows.length; i++) {
-			    for ( var j = 1; j < rows[i].cells.length; j++ ) {  
-					// TODO make proper cell selection method
-					$( rows[i].cells[j] ).removeClass( this.table.get('classCellSelected') );
-			    }
+			var
+				cells = this.selectedCells,
+				classCellSelected = this.table.get('classCellSelected');
+
+			for (var i = 0, len = cells.length; i < len; i++) {
+				$(cells[i]).removeClass(classCellSelected);
 			}
 
 			this.selectedCells = new Array();
