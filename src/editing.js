@@ -1297,48 +1297,26 @@ define([
 				remove,
 				null
 			);
+			var pos;
 			return {
+				postprocessTextNodes: fn.noop,
 				postprocess: function () {
-					var above;
-
-					// Given <div><b>fo{</b><h2>}ar</h2></div>, let <b>fo</b> be
-					// the node above
-					if (dom.isAtEnd(range.startContainer, range.startOffset)) {
-						above = dom.nodeAtOffset(
+					var position = html.removeVisualBreak(
+						// Given <div><b>fo{</b><h2>}ar</h2></div> or
+						// <div>fo{<h2>}ar</h2></div>, let "fo" be the node
+						// above
+						dom.nodeAtOffset(
 							range.startContainer,
-							range.startOffset
-						);
-
-					// Given <div>fo{<h2>}ar</h2></div>, let "fo" be the node
-					// above
-					} else {
-						above = dom.nodeAtOffset(
-							range.startContainer,
-							range.startOffset - 1
-						);
-					}
-
-					var below = dom.nodeAtOffset(
-						range.endContainer,
-						range.endOffset
+							0 === range.startOffset ? 0 : range.startOffset - 1
+						),
+						dom.nodeAtOffset(range.endContainer, range.endOffset)
 					);
-
-					html.removeVisualBreak(above, below);
-
-					ranges.collapseToStart(range);
-
-					left.setFrom(cursors.createFromBoundary(
-						range.startContainer,
-						range.startOffset
-					));
-
-					right.setFrom(cursors.createFromBoundary(
-						range.endContainer,
-						range.endOffset
-					));
-				},
-				postprocessTextNodes: function (range) {
-					return range;
+					pos = cursors.createFromBoundary(
+						position.container,
+						position.offset
+					);
+					left.setFrom(pos);
+					right.setFrom(pos);
 				}
 			};
 		});

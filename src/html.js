@@ -748,10 +748,6 @@ define([
 		return isRendered(traversing.nextWhile(node.firstChild, isUnrendered));
 	}
 
-	function nextVisible(node) {
-		return traversing.findForward(node, isRendered);
-	}
-
 	/**
 	 * Checks whether or not the given node may be used to receive moved nodes
 	 * in the process of removing a *visual* line break.
@@ -766,7 +762,10 @@ define([
 	 * @return {Boolean}
 	 */
 	function suitableTransferTarget(node) {
-		return !isVoidType(node) && !isTextLevelSemanticType(node);
+		return !isVoidType(node)
+		    && !dom.isTextNode(node)
+		    && !isTextLevelSemanticType(node)
+			&& !LIST_CONTAINERS[node.nodeName];
 	}
 
 	/**
@@ -785,57 +784,25 @@ define([
 	 *        it's previousSibling.
 	 * @return {Function(DOMObject, OutParameter):Boolean}
 	 */
-	function createInsertFunction(ref, atEnd) {
+	function createTransferFunction(ref, atEnd) {
 		if (dom.isTextNode(ref)) {
 			ref = ref.parentNode;
 		}
 		return function insert(node, out_inserted) {
-			if (node === ref) {
+			if (ref === node) {
 				return out_inserted(false);
 			}
 			if (ref.nodeName === node.nodeName) {
 				dom.merge(ref, node);
 				return out_inserted(true);
 			}
-			if (!content.allowsNesting(ref.nodeName, node.nodeName)) {
-				return out_inserted(false);
+			var parent = atEnd ? ref : ref.parentNode;
+			if (content.allowsNesting(parent.nodeName, node.nodeName)) {
+				dom.insert(node, ref, atEnd);
+				dom.merge(node.previousSibling, node);
+				return out_inserted(true);
 			}
-			dom.insert(node, ref, atEnd);
-			dom.merge(node.previousSibling, node);
-			return out_inserted(true);
-		};
-	}
-
-	/**
-	 * Returns an object containing the properties `start` and `move`.
-	 *
-	 * `start` a node that is *visually* (ignoring any unrendered nodes
-	 * inbetween) to the right `node`.
-	 *
-	 * `move` is function that will correctly move nodes from right to left
-	 * (right of `node`) starting from `start`, all the way to the visual end of
-	 * the line.
-	 *
-	 * @param {DOMObject} node
-	 *        The node that is on the left side of the join.
-	 * @return {Object}
-	 */
-	function createTransferPivot(node) {
-		var prev;
-		while (node && !dom.isEditingHost(node)) {
-			if (suitableTransferTarget(node)) {
-				return {
-					start: traversing.nextNonAncestor(node),
-					move: createInsertFunction(node, true)
-				};
-			}
-			prev = node;
-			node = node.parentNode;
-		}
-		node = traversing.nextNonAncestor(prev);
-		return {
-			start: node,
-			move: createInsertFunction(node, false)
+			return out_inserted(false);
 		};
 	}
 
@@ -853,21 +820,18 @@ define([
 		return !isLinebreakingNode(node);
 	}
 
-	/**
-	 * @private
-	 * @param {DOMObject} node
-	 * @return {DOMObject}
-	 */
-	function nextTransferable(node) {
-		node = traversing.findForward(node, isRendered);
+	function findTransferTarget(node) {
+		if (!isRendered(node)) {
+			node = traversing.findBackward(node, isRendered, dom.isEditingHost);
+		}
 		return (
-			isTransferable(node)
+			!node || suitableTransferTarget(node)
 				? node
-				: traversing.findForward(node, isTransferable, function (node) {
-					return !LIST_ITEMS[node.nodeName]
-					    && !LIST_CONTAINERS[node.nodeName]
-					    && (isLinebreakingNode(node) || dom.isEditingHost(node));
-				})
+				: traversing.findAncestor(
+					node,
+					suitableTransferTarget,
+					dom.isEditingHost
+				)
 		);
 	}
 
@@ -884,6 +848,24 @@ define([
 	}
 
 	/**
+	 * Finds the closest linebreaking node from above.
+	 */
+	function findLineBreakingNodeBetween(above, below) {
+		if (isLinebreakingNode(above)) {
+			return above;
+		}
+		var node = traversing.findForward(
+			above,
+			isLinebreakingNode,
+			function (node) { return node === below; }
+		);
+		if (node) {
+			return node;
+		}
+		return isLinebreakingNode(below) ? below : null;
+	}
+
+	/**
 	 * Removes the visual line break between the adjacent nodes `above` and
 	 * `below` by moving the nodes from `below` to `above`.
 	 *
@@ -892,34 +874,43 @@ define([
 	 */
 	function removeVisualBreak(above, below) {
 		if (!isVisuallyAdjacent(above, below)) {
-			return;
+			return {
+				container: above,
+				offset: dom.nodeLength(above)
+			};
 		}
-		var lineBreakingNode = traversing.findForward(
-			above,
-			isLinebreakingNode,
-			function (node) {
-				return node === below;
-			}
-		);
-		if (!lineBreakingNode) {
-			return;
+		var breaker = findLineBreakingNodeBetween(above, below);
+		if (!breaker) {
+			return {
+				container: above,
+				offset: dom.nodeLength(above)
+			};
 		}
-		var pivot = createTransferPivot(above);
-		var node = nextTransferable(pivot.start);
-		if (node) {
-			var parent = node.parentNode;
-			traversing.walkUntil(
-				node,
-				pivot.move,
-				cannotMove,
-				fn.outparameter(true)
-			);
-			traversing.climbUntil(parent, dom.remove, hasRenderedChildren);
+		var target = findTransferTarget(above);
+		var move;
+		var container;
+		var offset;
+		if (target) {
+			move = createTransferFunction(target, true);
+			container = target;
+			offset = dom.nodeLength(container);
+		} else {
+			move = createTransferFunction(breaker, false);
+			container = breaker.parentNode;
+			offset = dom.nodeIndex(breaker);
 		}
+		var parent = below.parentNode;
+		traversing.walkUntil(below, move, cannotMove, fn.outparameter(true));
+		traversing.climbUntil(parent, dom.remove, hasRenderedChildren);
+		return {
+			container: container,
+			offset: offset
+		};
 	}
 
 	var VISIBLE_CHARACTER_FROM_END = new RegExp(
-		'[^' + ZERO_WIDTH_CHARACTERS_UNICODES + '][' + ZERO_WIDTH_CHARACTERS_UNICODES + ']*$'
+		  '[^' + ZERO_WIDTH_CHARACTERS_UNICODES + ']'
+		+ '['  + ZERO_WIDTH_CHARACTERS_UNICODES + ']*$'
 	);
 
 	function visibleCharacterBehind(node, offset) {

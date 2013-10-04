@@ -583,6 +583,26 @@ define([
 	}
 
 	/**
+	 * Climbs up the given node's ancestor until the predicate until() return
+	 * true.  Starting with the given node, applies func() to each not in the
+	 * climb.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject)} func
+	 * @param {Function(DOMObject):Boolean} until
+	 * @param {*} arg
+	 *        A value that will be passed to `func()` as the second argument.
+	 */
+	function climbUntil(node, func, until, arg) {
+		var parent;
+		while (node && !until(node, arg)) {
+			parent = node.parentNode;
+			func(node, arg);
+			node = parent;
+		}
+	}
+
+	/**
 	 * Applies the given function `func()`, to the the given node `node` and all
 	 * it's next siblings.
 	 *
@@ -744,22 +764,21 @@ define([
 		});
 	}
 
-	/**
-	 * Climbs up the given node's ancestor until the predicate until() return
-	 * true.  Starting with the given node, applies func() to each not in the
-	 * climb.
-	 *
-	 * @param {DOMObject} node
-	 * @param {Function(DOMObject)} func
-	 * @param {Function(DOMObject):Boolean} until
-	 */
-	function climbUntil(node, func, until) {
-		var parent;
-		while (!until(node)) {
-			parent = node.parentNode;
-			func(node);
-			node = parent;
+	function findAncestor(node, match, until) {
+		until = until || fn.returnFalse;
+		if (until(node)) {
+			return null;
 		}
+		do {
+			node = node.parentNode;
+			if (!node || until(node)) {
+				return null;
+			}
+			if (match(node)) {
+				return node;
+			}
+		} while (node);
+		return null;
 	}
 
 	/**
@@ -863,7 +882,8 @@ define([
 		climbUntil: climbUntil,
 		findNearestNonAncestor: findNearestNonAncestor,
 		previousNonAncestor: previousNonAncestor,
-		nextNonAncestor: nextNonAncestor
+		nextNonAncestor: nextNonAncestor,
+		findAncestor: findAncestor
 	};
 
 	exports['backward'] = exports.backward;
@@ -892,6 +912,7 @@ define([
 	exports['findNearestNonAncestor'] = exports.findNearestNonAncestor;
 	exports['previousNonAncestor'] = exports.previousNonAncestor;
 	exports['nextNonAncestor'] = exports.nextNonAncestor;
+	exports['findAncestor'] = exports.findAncestor;
 
 	return exports;
 });
