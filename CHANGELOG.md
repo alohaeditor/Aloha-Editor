@@ -12,6 +12,14 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.24.2 - 2013/10/04
+
+- **BUGFIX**: Fix display of values after image-reset and improve the
+              size-check of image-resizing
+- **BUGFIX**: image plugin: Various fixes and improvements for resizing, cropping and resetting images have been added, 
+              to improve the cohesion between displayed values and actual sizes.
+
+
 ## 0.24.1 - 2013/09/25
 
 - **BUGFIX**: blockmanager: Fixed scripts in a block being executed, when
@@ -29,6 +37,13 @@ All changes are categorized into one of the following keywords:
                suitable to be a container the highlighter element show the edges 
                of the selected element to show that the block will be added 
                before or after this one.
+
+## 0.23.21 - 2013/10/04
+
+- **BUGFIX**: Fix display of values after image-reset and improve the
+              size-check of image-resizing
+- **BUGFIX**: image plugin: Various fixes and improvements for resizing, cropping and resetting images have been added, 
+              to improve the cohesion between displayed values and actual sizes.
 
 
 ## 0.23.20 - 2013/09/25
