@@ -32,6 +32,9 @@ define([
 
 	function deleteBackward(msg) {
 		var range = msg.range;
+		if (!range) {
+			return;
+		}
 		if (range.collapsed) {
 			ranges.expandBackward(range);
 		}
@@ -41,6 +44,12 @@ define([
 
 	function deleteForward(msg) {
 		var range = msg.range;
+		if (!range) {
+			return;
+		}
+		if (range.collapsed) {
+			ranges.expandForward(range);
+		}
 		ranges.select(editing.delete(range));
 		msg.event.preventDefault();
 	}
