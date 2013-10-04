@@ -273,9 +273,9 @@ define([
 	 * @return {Boolean}
 	 */
 	function isWhiteSpacePreserveStyle(cssWhiteSpaceValue) {
-		return (cssWhiteSpaceValue === 'pre'
-				|| cssWhiteSpaceValue === 'pre-wrap'
-				|| cssWhiteSpaceValue === '-moz-pre-wrap');
+		return cssWhiteSpaceValue === 'pre'
+		    || cssWhiteSpaceValue === 'pre-wrap'
+		    || cssWhiteSpaceValue === '-moz-pre-wrap';
 	}
 
 	/**
@@ -606,7 +606,7 @@ define([
 	 *
 	 * @type {RegExp}
 	 */
-	var WSP_CHARACTERS_FROM_END   = new RegExp('[' + wspChars + ']+$');
+	var WSP_CHARACTERS_FROM_END = new RegExp('[' + wspChars + ']+$');
 
 	/**
 	 * Checks whether or not a given text node consists of only sequence of
@@ -665,7 +665,8 @@ define([
 	 * @return {boolean}
 	 */
 	function isAdjacentToBlock(node) {
-		return isBlockType(node.previousSibling) || isBlockType(node.nextSibling);
+		return isBlockType(node.previousSibling)
+		    || isBlockType(node.nextSibling);
 	}
 
 	/**
@@ -799,7 +800,6 @@ define([
 		}
 		return function insert(node, out_inserted) {
 			if (ref === node) {
-				dom.merge(node.previousSibling, node);
 				return out_inserted(true);
 			}
 			if (ref.nodeName === node.nodeName) {
