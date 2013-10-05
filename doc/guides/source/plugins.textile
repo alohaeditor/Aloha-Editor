@@ -79,26 +79,26 @@ Plugins in the @common@ directory:
 
 Plugins in the @extra@ directory:
 
-* "extra/attributes":plugin_attributes.html - 
+* extra/attributes - ("source code":https://github.com/alohaeditor/Aloha-Editor/tree/dev/src/plugins/extra/attributes)
 * "extra/browser":plugin_browser.html - provides a browser for the Repository API to insert links or images
 * "extra/captioned-image":plugin_captioned-image.html - provides images with captions as AE Block
 * "extra/cite":plugin_cite.html - provides the possibility to add references to content quoted from another source
-* "extra/comments":plugin_comments.html - add inline comments which are stored in the DOM
-* "extra/draganddropfiles":plugin_draganddropfiles.html - use Drag and Drop to upload files
+* extra/comments - add inline comments which are stored in the DOM ("source code":https://github.com/alohaeditor/Aloha-Editor/tree/dev/src/plugins/extra/comments)
+* extra/draganddropfiles - use Drag and Drop to upload files ("source code":https://github.com/alohaeditor/Aloha-Editor/tree/dev/src/plugins/extra/draganddropfiles)
 * "extra/flag-icons":plugin_flag-icons.html - this plugin is used by other plugins (wai-lang / metaview) and provides country and language icons
 * "extra/formatlesspaste":plugin_formatlesspaste.html - the formatless paste plugin can be used to strip HTML tags from pasted content
-* "extra/googletranslate":plugin_googletranslate.html - translate content with Google Translate
+* extra/googletranslate - translate content with Google Translate
 * "extra/headerids":plugin_headerids.html - insert jump labels for internal hyperlinks
-* "extra/hints":plugin_hints.html - (old plugin)
+* extra/hints - (old plugin) ("source code":https://github.com/alohaeditor/Aloha-Editor/tree/dev/src/plugins/extra/hints)
 * "extra/linkbrowser":plugin_linkbrowser.html - a browser for the link plugin
-* "extra/linkchecker":plugin_linkchecker.html - (old plugin)
+* extra/linkchecker - (old plugin) ("source code":https://github.com/alohaeditor/Aloha-Editor/tree/dev/src/plugins/extra/linkchecker)
 * "extra/listenforcer":plugin_listenforcer.html - allow just one top-level list in an editable
 * "extra/metaview":plugin_metaview.html - the Meta View Plugin is used to visualize HTML elements for the editor
 * "extra/numerated-headers":plugin_numerated-headers.html - with this plugin the editor has the possibility to auto generate numeration in the heading tags
-* "extra/profiler":plugin_profiler.html - 
-* "extra/ribbon":plugin_ribbon.html - this plugin is intended to provide a Ribbon which is displayed on top of the page and some controls can be added to it dynamically
-* "extra/sourceview":plugin_sourceview.html - view the source of an editable including selection marks in the sidebar
-* "extra/speak":plugin_speak.html - integrates speak.js into Aloha Editor
+* extra/profiler - ("source code":https://github.com/alohaeditor/Aloha-Editor/tree/dev/src/plugins/extra/profiler)
+* extra/ribbon - this plugin is intended to provide a Ribbon which is displayed on top of the page and some controls can be added to it dynamically ("source code":https://github.com/alohaeditor/Aloha-Editor/tree/dev/src/plugins/extra/ribbon)
+* extra/sourceview - view the source of an editable including selection marks in the sidebar ("source code":https://github.com/alohaeditor/Aloha-Editor/tree/dev/src/plugins/extra/sourceview)
+* extra/speak - integrates speak.js into Aloha Editor("source code":https://github.com/alohaeditor/Aloha-Editor/tree/dev/src/plugins/extra/speak)
 * "extra/toc":plugin_toc.html - add a table of contents into your editable
 * "extra/validation":plugin_validation.html - validates editables
 * "extra/vie":plugin_vie.html - integrates VIE.js into Aloha Editor
