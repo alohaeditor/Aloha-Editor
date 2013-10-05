@@ -56,7 +56,7 @@ define([
 	 *
 	 * @type {Array[String]}
 	 */
-	var WORD_CHARACTERS = [
+	var wordChars = [
 		'\u0041-', '\u005A', '\u0061-', '\u007A', '\u00AA', '\u00B5', '\u00BA',
 		'\u00C0-', '\u00D6', '\u00D8-', '\u00F6', '\u00F8-',
 
@@ -177,10 +177,10 @@ define([
 		'\uFFD2-', '\uFFD7', '\uFFDA-', '\uFFDC'
 	].join('');
 
-	var WORD_BOUNDARY = new RegExp('[^' + WORD_CHARACTERS + ']');
+	var WORD_BOUNDARY = new RegExp('[^' + wordChars + ']');
 
 	var WORD_BOUNDARY_FROM_END = new RegExp(
-		'[^' + WORD_CHARACTERS + '][' + WORD_CHARACTERS + ']*$'
+		'[^' + wordChars + '][' + wordChars + ']*$'
 	);
 
 	/**
@@ -785,47 +785,60 @@ define([
 	 * Returns the nearest (in the document order) to the given node that is not
 	 * an ancestor of that node.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} start
 	 * @param {Boolean} previous
 	 *        If true, will look for the nearest preceeding node, otherwise the
 	 *        nearest subsequent node.
-	 * @param {Function(DOMObject):Boolean} limit
+	 * @param {Function(DOMObject):Boolean} match
+	 * @param {Function(DOMObject):Boolean} until
 	 *        (Optional) Predicate, which will be applied to each node in the
 	 *        traversal step.  If this function returns true, traversal will
-	 *        terminal and findNearestNonAncestor will return null.
+	 *        terminal and nearestNonAncestor will return null.
 	 * @return {DOMObject}
 	 */
-	function findNearestNonAncestor(node, previous, limit) {
-		limit = limit || fn.returnFalse;
-		var next = previous ? node.previousSibling : node.nextSibling;
-		if (next) {
-			return limit(next) ? null : next;
+	function getNonAncestor(start, previous, match, until) {
+		match = match || fn.returnTrue;
+		until = until || fn.returnFalse;
+		var next;
+		var node = start;
+		while (node) {
+			next = previous ? node.previousSibling : node.nextSibling;
+			if (next) {
+				if (until(next)) {
+					return null;
+				}
+				if (match(next)) {
+					return next;
+				}
+				node = next;
+			} else {
+				if (!node.parentNode || until(node.parentNode)) {
+					return null;
+				}
+				node = node.parentNode;
+			}
 		}
-		return (node.parentNode && !limit(node.parentNode))
-			? findNearestNonAncestor(node.parentNode, previous, limit)
-			: null;
 	}
 
 	/**
-	 * Returns the nearest previous node to the given node that is not one of
-	 * it's ancestor.
-	 *
-	 * @param {DOMObject} node
-	 * @param {DOMObject}
-	 */
-	function previousNonAncestor(node) {
-		return findNearestNonAncestor(node, true, dom.isEditingHost);
-	}
-
-	/**
-	 * Returns the nearest next node to the given node that is not one of it's
+	 * Returns the previous node to the given node that is not one of it's
 	 * ancestor.
 	 *
 	 * @param {DOMObject} node
 	 * @param {DOMObject}
 	 */
+	function previousNonAncestor(node, match, until) {
+		return getNonAncestor(node, true, match, until || dom.isEditingHost);
+	}
+
+	/**
+	 * Returns the next node to the given node that is not one of it's ancestor.
+	 *
+	 * @param {DOMObject} node
+	 * @param {DOMObject}
+	 */
 	function nextNonAncestor(node) {
-		return findNearestNonAncestor(node, false, dom.isEditingHost);
+		return getNonAncestor(node, false, match, until || dom.isEditingHost);
 	}
 
 	/**
@@ -854,7 +867,7 @@ define([
 	 * traversing.childAndParentsUntilNode()
 	 * traversing.childAndParentsUntilInclNode()
 	 * traversing.climbUntil()
-	 * traversing.findNearestNonAncestor()
+	 * traversing.getNonAncestor()
 	 */
 	var exports = {
 		prevNodeBoundary: prevNodeBoundary,
@@ -880,7 +893,7 @@ define([
 		childAndParentsUntilNode: childAndParentsUntilNode,
 		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
 		climbUntil: climbUntil,
-		findNearestNonAncestor: findNearestNonAncestor,
+		getNonAncestor: getNonAncestor,
 		previousNonAncestor: previousNonAncestor,
 		nextNonAncestor: nextNonAncestor,
 		findAncestor: findAncestor
@@ -909,7 +922,7 @@ define([
 	exports['childAndParentsUntilNode'] = exports.childAndParentsUntilNode;
 	exports['childAndParentsUntilInclNode'] = exports.childAndParentsUntilInclNode;
 	exports['climbUntil'] = exports.climbUntil;
-	exports['findNearestNonAncestor'] = exports.findNearestNonAncestor;
+	exports['getNonAncestor'] = exports.getNonAncestor;
 	exports['previousNonAncestor'] = exports.previousNonAncestor;
 	exports['nextNonAncestor'] = exports.nextNonAncestor;
 	exports['findAncestor'] = exports.findAncestor;

@@ -1,6 +1,12 @@
 								  KNOWN ISSUES
 								  ~~~~~~~~~~~~
 
+
+expandToVisible:
+foo  []  bar ==> foo [   ]bar
+   --  --           - ---
+
+
 to tests:
 editing.delete()
 fo[o

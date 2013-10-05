@@ -9,12 +9,14 @@
  */
 define([
 	'dom',
+	'arrays',
 	'cursors',
 	'content',
 	'traversing',
 	'functions'
 ], function Html(
 	dom,
+	arrays,
 	cursors,
 	content,
 	traversing,
@@ -498,20 +500,6 @@ define([
 		return (/[\x00-\x1f\x7f-\x9f]/).test(chr);
 	}
 
-	/**
-	 * Unicode space characters as defined in the W3 HTML5 specification:
-	 * http://www.w3.org/TR/html5/infrastructure.html#common-parser-idioms
-	 *
-	 * @const
-	 * @type {Array.<string>}
-	 */
-	var SPACE_CHARACTERS = [
-		'\\u0009', // TAB
-		'\\u000A', // LF
-		'\\u000C', // FF
-		'\\u000D', // CR
-		'\\u0020'  // SPACE
-	];
 
 	/**
 	 * Unicode zero width space characters:
@@ -520,11 +508,23 @@ define([
 	 * @const
 	 * @type {Array.<string>}
 	 */
-	var ZERO_WIDTH_CHARACTERS_UNICODES = [
+	var ZERO_WIDTH_CHARACTERS = [
 		'\\u200B', // ZWSP
 		'\\u200C',
 		'\\u200D',
 		'\\uFEFF'  // ZERO WIDTH NO-BREAK SPACE
+	];
+
+	/**
+	 * Unicode space characters as defined in the W3 HTML5 specification:
+	 * http://www.w3.org/TR/html5/infrastructure.html#common-parser-idioms
+	 *
+	 * @const
+	 * @type {Array.<string>}
+	 */
+	var NON_BREAKING_SPACE_CHARACTERS = [
+		'\\u00A0', // NON BREAKING SPACE ("&nbsp;")
+		'\\u202F'  // NARROW NON BREAKING SPACE
 	];
 
 	/**
@@ -536,7 +536,7 @@ define([
 	 * @const
 	 * @type {Array.<string>}
 	 */
-	var WHITE_SPACE_CHARACTERS_UNICODES = [
+	var WHITE_SPACE_CHARACTERS = [
 		'\\u0009',
 		'\\u000A',
 		'\\u000B',
@@ -544,7 +544,7 @@ define([
 		'\\u000D',
 		'\\u0020',
 		'\\u0085',
-		'\\u00A0', // NON BREAKING SPACE ("&nbsp;")
+		'\\u00A0',
 		'\\u1680',
 		'\\u180E',
 		'\\u2000',
@@ -565,83 +565,28 @@ define([
 		'\\u3000'
 	];
 
-	var wspChars = WHITE_SPACE_CHARACTERS_UNICODES.join('');
-	var zwspChars = ZERO_WIDTH_CHARACTERS_UNICODES.join('');
-
 	/**
-	 * Regular expression that matches one or more sequences of white space
-	 * characters.
+	 * Regular expression that matches a white space character.
 	 *
 	 * @type {RegExp}
 	 */
-	var WSP_CHARACTERS = new RegExp('[' + wspChars + ']+');
+	var WSP_CHARACTER = new RegExp('[' + WHITE_SPACE_CHARACTERS.join('') + ']');
 
 	/**
-	 * Regular expression that matches one or more sequences of zero width
-	 * characters.
+	 * Regular expression that matches a zero width character.
 	 *
 	 * @type {RegExp}
 	 */
-	var ZWSP_CHARACTERS = new RegExp('[' + zwspChars + ']+');
+	var ZWSP_CHARACTER = new RegExp('[' + ZERO_WIDTH_CHARACTERS.join('') + ']');
 
 	/**
-	 * Regular expression that matches one or more sequences of zero width
-	 * characters or white space characters.
+	 * Regular expression that matches a non breaking space character.
 	 *
 	 * @type {RegExp}
 	 */
-	var WSP_OR_ZWSP_CHARACTERS = new RegExp('[' + wspChars + zwspChars + ']');
-
-	/**
-	 * Regular expression that matches one or more sequences of white space
-	 * characters at the start of a string.
-	 *
-	 * @type {RegExp}
-	 */
-	var WSP_CHARACTERS_FROM_START = new RegExp('^[' + wspChars + ']+');
-
-	/**
-	 * Regular expression that matches zero or more sequences of white space
-	 * characters at the end of a string.
-	 *
-	 * @type {RegExp}
-	 */
-	var WSP_CHARACTERS_FROM_END = new RegExp('[' + wspChars + ']+$');
-
-	/**
-	 * Checks whether or not a given text node consists of only sequence of
-	 * white space characters as defined by W3 specification:
-	 *
-	 * http://www.w3.org/TR/html401/struct/text.html#h-9.1
-	 *
-	 * @param {DOMElement} textnode
-	 * @return {boolean} True is node is a textnode of white characters.
-	 */
-	function isWhitespaces(textnode) {
-		return WSP_CHARACTERS.test(textnode.data);
-	}
-
-	/**
-	 * Checks whether or not a given text node consists of only sequence of
-	 * zero-width characters.
-	 *
-	 * @param {DOMObject} textnode
-	 * @return {boolean} True is node is a textnode of zero-width characters
-	 */
-	function isZeroWidthCharacters(textnode) {
-		return ZWSP_CHARACTERS.test(textnode.data);
-	}
-
-	/**
-	 * Checks whether or not a given text node consists of only sequence of
-	 * zero-width characters or whitespace characters.
-	 *
-	 * @param {DOMObject} textnode
-	 * @return {boolean} True is node is a textnode of zero-width characters
-	 */
-	function isWhitespaceOrZeroWidthCharacters(textnode) {
-		return WSP_OR_ZWSP_CHARACTERS.test(textnode.data);
-	}
+	var NBSP_CHARACTER = new RegExp(
+		'[' + NON_BREAKING_SPACE_CHARACTERS.join('') + ']'
+	);
 
 	/**
 	 * Checks whether the given node positioned at either extremity of it's
@@ -932,27 +877,107 @@ define([
 		};
 	}
 
+	var zwChars = ZERO_WIDTH_CHARACTERS.join('');
+
+	var breakingSpaces = arrays.complement(
+		WHITE_SPACE_CHARACTERS,
+		NON_BREAKING_SPACE_CHARACTERS
+	).join('');
+
 	var VISIBLE_CHARACTER_FROM_END = new RegExp(
-		  '[^' + ZERO_WIDTH_CHARACTERS_UNICODES + ']'
-		+ '['  + ZERO_WIDTH_CHARACTERS_UNICODES + ']*$'
+		'(^[' + breakingSpaces + '])|'
+		+ '([^' + breakingSpaces + '][' + breakingSpaces + ',' + zwChars + ']*$)'
 	);
 
-	function visibleCharacterBehind(node, offset) {
-		if (dom.isTextNode(node)) {
-			var boundary = node.data.substr(0, offset)
-			                   .search(VISIBLE_CHARACTER_FROM_END);
-			if (boundary > -1) {
+	var BREAKING_SPACE_FROM_END = new RegExp('[' + breakingSpaces + '][' + zwChars + ']*$');
+	var ALWAYS_RENDERED_CHAR = new RegExp('[^' + breakingSpaces + ',' + zwChars + ']');
+	var NON_IGNORABLE_CHAR = new RegExp('[^' + zwChars + ']');
+
+	function nextVisibleCharacter(node, offset) {
+		if (!dom.isTextNode(node) || offset === dom.nodeLength(node)) {
+			return {
+				node: null,
+				offset: -1
+			};
+		}
+		var before = 0 === offset ? '' : node.data.substr(0, offset);
+		var after = node.data.substr(offset);
+		// Because if the previous character (ignoring zero-width characters) is
+		// a breaking white space character, any consecutive ones are not
+		// rendered.
+		var boundary = BREAKING_SPACE_FROM_END.test(before)
+		             ? after.search(ALWAYS_RENDERED_CHAR)
+		             : after.search(NON_IGNORABLE_CHAR);
+		return {
+			node: node,
+			offset: -1 === boundary ? dom.nodelength(node) : offset + boundary
+		};
+	}
+
+	function previousVisibleCharacter(node, offset) {
+		if (!dom.isTextNode(node) || 0 === offset) {
+			return {
+				node: null,
+				offset: -1
+			};
+		}
+		var match = node.data.substr(0, offset).match(
+			VISIBLE_CHARACTER_FROM_END
+		);
+		var boundary;
+		if (!match) {
+			boundary = 0;
+		} else {
+			boundary = (1 === match[0].length)
+					 ? offset - 1
+					 : offset - match[0].length + 1;
+		}
+		return {
+			node: node,
+			offset: boundary
+		};
+	}
+
+	function previousVisiblePosition(node, offset) {
+		if (offset > 0 && dom.isTextNode(node)) {
+			var pos = previousVisibleCharacter(node, offset);
+			return pos.offset !== -1 ? pos : {
+				node: node,
+				offset: 0
+			};
+		}
+		if (dom.isAtEnd(node, offset) && node.lastChild) {
+			if (isRendered(node.lastChild)) {
 				return {
-					node: node,
-					offset: boundary
+					node: node.lastChild,
+					offset: offset - 1
 				};
 			}
 		}
-		var prev = traversing.findBackward(
-			traversing.previousNonAncestor(node),
-			isRendered
+		var crossedVisualBreak = false;
+		var next = traversing.previousNonAncestor(
+			dom.nodeAtOffset(node, offset),
+			isRendered,
+			function (node) {
+				if (!crossedVisualBreak) {
+					crossedVisualBreak = isLinebreakingNode(node);
+				}
+				return dom.isEditingHost(node);
+			}
 		);
-		return visibleCharacterBehind(prev, dom.nodeLength(prev));
+		if (!next) {
+			return {
+				node: null,
+				offset: -1
+			};
+		}
+		if (crossedVisualBreak) {
+			return {
+				node: next,
+				offset: dom.nodeLength(next)
+			};
+		}
+		return previousVisiblePosition(next, dom.nodeLength(next));
 	}
 
 	/**
@@ -977,7 +1002,9 @@ define([
 		isLinebreakingNode: isLinebreakingNode,
 		isVisuallyAdjacent: isVisuallyAdjacent,
 		removeVisualBreak: removeVisualBreak,
-		visibleCharacterBehind: visibleCharacterBehind
+		nextVisibleCharacter: nextVisibleCharacter,
+		previousVisibleCharacter: previousVisibleCharacter,
+		previousVisiblePosition: previousVisiblePosition
 	};
 
 	exports['isUnrendered'] = exports.isUnrendered;
@@ -998,7 +1025,7 @@ define([
 	exports['isLinebreakingNode'] = exports.isLinebreakingNode;
 	exports['isVisuallyAdjacent'] = exports.isVisuallyAdjacent;
 	exports['removeVisualBreak'] = exports.removeVisualBreak;
-	exports['visibleCharacterBehind'] = exports.visibleCharacterBehind;
+	exports['nextVisibleCharacter'] = exports.nextVisibleCharacter;
 
 	return exports;
 });

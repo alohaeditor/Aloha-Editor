@@ -238,7 +238,7 @@ define([
 	 * would be visually represented when selected.
 	 *
 	 * The start and end boundary positions will not be expanded across elements
-	 * which affect visual line breaks.  These include all line breaking nodes.
+	 * which affect visual line breaks.
 	 *
 	 * Note that an element's styling can only be determined if that element is
 	 * attached to the document.  If working with a range in a detached DOM,
@@ -340,14 +340,24 @@ define([
 		return range;
 	}
 
-	function expandBackward(range) {
-		var behind = html.visibleCharacterBehind(
+	function expandToVisibleText(range) {
+		var pos = html.nextVisibleCharacter(
+			range.endContainer,
+			range.endOffset
+		);
+		if (-1 !== pos.offset) {
+			range.setEnd(pos.node, pos.offset);
+		}
+		return range;
+	}
+
+	function expandBackwardToVisiblePosition(range) {
+		var pos = html.previousVisiblePosition(
 			range.startContainer,
 			range.startOffset
 		);
-		if (behind) {
-			range.setStart(behind.node, behind.offset);
-			select(range);
+		if (-1 !== pos.offset) {
+			range.setStart(pos.node, pos.offset);
 		}
 		return range;
 	}
@@ -707,7 +717,7 @@ define([
 		contract: contract,
 		expandBoundaries: expandBoundaries,
 		expandToWord: expandToWord,
-		expandBackward: expandBackward,
+		expandToVisibleText: expandToVisibleText,
 		get: get,
 		insertText: insertText,
 		insertTextBehind: insertTextBehind,
@@ -717,7 +727,8 @@ define([
 		trim: trim,
 		trimBoundaries: trimBoundaries,
 		trimClosingOpening: trimClosingOpening,
-		getNearestEditingHost: getNearestEditingHost
+		getNearestEditingHost: getNearestEditingHost,
+		expandBackwardToVisiblePosition: expandBackwardToVisiblePosition
 	};
 
 	exports['collapseToEnd'] = exports.collapseToEnd;
@@ -728,7 +739,7 @@ define([
 	exports['contract'] = exports.contract;
 	exports['expandBoundaries'] = exports.expandBoundaries;
 	exports['expandToWord'] = exports.expandToWord;
-	exports['expandBackward'] = exports.expandBackward;
+	exports['expandToVisibleText'] = exports.expandToVisibleText;
 	exports['get'] = exports.get;
 	exports['insertText'] = exports.insertText;
 	exports['insertTextBehind'] = exports.insertTextBehind;
@@ -739,6 +750,7 @@ define([
 	exports['trimBoundaries'] = exports.trimBoundaries;
 	exports['trimClosingOpening'] = exports.trimClosingOpening;
 	exports['getNearestEditingHost'] = exports.getNearestEditingHost;
+	exports['expandBackwardToVisiblePosition'] = exports.expandBackwardToVisiblePosition;
 
 	return exports;
 });

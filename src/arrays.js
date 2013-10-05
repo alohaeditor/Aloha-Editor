@@ -111,6 +111,20 @@ define([], function Arrays() {
 			return contains(zs, x);
 		});
 	}
+	/**
+	 * Returns the relative complement of array `zs` in `xs`:
+	 * All items in the array `xs` that are not contained in array `zs`.
+	 *
+	 * @param {Array} xs
+	 * @param {Array} zs
+	 * @return {Array}
+	 *         The intersection of the sets `xs` and `zs`.
+	 */
+	function complement(xs, zs) {
+		return xs.filter(function (x) {
+			return !contains(zs, x);
+		});
+	}
 
 	/**
 	 * Returns the last item in the given Array.
@@ -145,6 +159,7 @@ define([], function Arrays() {
 	 */
 	var exports = {
 		contains: contains,
+		complement: complement,
 		equal: equal,
 		sortUnique: sortUnique,
 		intersect: intersect,
@@ -153,6 +168,7 @@ define([], function Arrays() {
 	};
 
 	exports['contains'] = exports.contains;
+	exports['complement'] = exports.complement;
 	exports['equal'] = exports.equal;
 	exports['sortUnique'] = exports.sortUnique;
 	exports['intersect'] = exports.intersect;

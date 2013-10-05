@@ -30,13 +30,19 @@ define([
 		msg.event.preventDefault();
 	}
 
+	function delete_(range, direction) {
+
+	}
+
 	function deleteBackward(msg) {
 		var range = msg.range;
 		if (!range) {
 			return;
 		}
-		if (range.collapsed) {
-			ranges.expandBackward(range);
+		var collapsed = range.collapsed;
+		range = ranges.expandToVisibleText(range)
+		if (collapsed) {
+			ranges.expandBackwardToVisiblePosition(range);
 		}
 		ranges.select(editing.delete(range));
 		msg.event.preventDefault();
@@ -47,8 +53,10 @@ define([
 		if (!range) {
 			return;
 		}
-		if (range.collapsed) {
-			ranges.expandForward(range);
+		var collapsed = range.collapsed;
+		range = ranges.expandToVisibleText(range)
+		if (collapsed) {
+
 		}
 		ranges.select(editing.delete(range));
 		msg.event.preventDefault();
