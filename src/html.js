@@ -938,21 +938,44 @@ define([
 		};
 	}
 
+	function atVisualStartOfBlock(node, offset) {
+		return (
+			 0 == offset || (
+				 1 === offset
+				 &&
+				 BREAKING_SPACE_FROM_END.test(node.data.charAt(offset - 1))
+			)
+		) && isLinebreakingNode(node.parentNode);
+	}
+
 	function previousVisiblePosition(node, offset) {
 		if (offset > 0 && dom.isTextNode(node)) {
 			var pos = previousVisibleCharacter(node, offset);
-			return pos.offset !== -1 ? pos : {
+			offset = -1 === pos.offset ? 0 : pos.offset;
+
+			if (atVisualStartOfBlock(node, offset)) {
+				node = traversing.previousNonAncestor(
+					node,
+					isRendered,
+					dom.isEditingHost
+				);
+				if (node) {
+					offset = dom.nodeLength(node);
+				} else {
+					node = pos.node;
+					offset = 0;
+				}
+			}
+			return {
 				node: node,
-				offset: 0
+				offset: offset
 			};
 		}
-		if (dom.isAtEnd(node, offset) && node.lastChild) {
-			if (isRendered(node.lastChild)) {
-				return {
-					node: node.lastChild,
-					offset: offset - 1
-				};
-			}
+		if (dom.isAtEnd(node, offset) && node.lastChild && isRendered(node.lastChild)) {
+			return {
+				node: node.lastChild,
+				offset: dom.nodeLength(node.lastChild)
+			};
 		}
 		var crossedVisualBreak = false;
 		var next = traversing.previousNonAncestor(
