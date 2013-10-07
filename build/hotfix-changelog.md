@@ -17,3 +17,7 @@ All changes are categorized into one of the following keywords:
               size-check of image-resizing
 - **BUGFIX**: image plugin: Various fixes and improvements for resizing, cropping and resetting images have been added, 
               to improve the cohesion between displayed values and actual sizes.
+- **BUGFIX**: Inputs Image Height/Width don't display when image is load (ie9)
+              When selecting a image in content.Node the width and height inputs were not displayed.
+              The problem was that when assigning the value to the input, the jQuery.val function was not
+              working, maybe because the element wasn't associated to the DOM yet.
