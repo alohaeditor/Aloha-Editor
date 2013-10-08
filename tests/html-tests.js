@@ -17,7 +17,6 @@
 		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 
-	/*
 	test('nextVisiblePosition', function () {
 		tested.push('nextVisiblePosition');
 		var t = function (before, after) {
@@ -92,7 +91,6 @@
 
 		t('<b>foo[ ] &nbsp; </b>', '<b>foo[  &nbsp;] </b>');
 	});
-	*/
 
 	test('previousVisiblePosition()', function () {
 		tested.push('previousVisiblePosition');
@@ -107,6 +105,7 @@
 				}
 			});
 		};
+
 		t('<b>[]</b>',        '<b>[]</b>');
 		t('<b>[foo]</b>',     '<b>[foo]</b>');
 		t('<b>f[oo]</b>',     '<b>[foo]</b>');
@@ -117,27 +116,44 @@
 		t('<b>  [ foo]</b>',  '<b>[   foo]</b>');
 		t('<b>  [  foo]</b>', '<b>[    foo]</b>');
 
+		t('<p>foo<b> [bar]</b></p>',    '<p>foo<b>[ bar]</b></p>');
+		t('<p>foo<b> [ bar]</b></p>',   '<p>foo<b>[  bar]</b></p>');
+		t('<p>foo<b> [  bar]</b></p>',   '<p>foo<b>[   bar]</b></p>');
+		t('<p>foo<b>  [ bar]</b></p>',  '<p>foo<b> [  bar]</b></p>');
 
-		t('<p>foo<b> [bar]</b></p>',    '<p>foo<b>[ foo]</b></p>');
-		t('<p>foo<b> [ foo]</b></p>',   '<p>foo<b>[  foo]</b></p>');
-		t('<p>foo<b>  [ foo]</b></p>',  '<p>foo<b> [  foo]</b></p>');
-		t('<p>foo<b>  [foo]</b></p>',   '<p>foo<b> [ foo]</b></p>');
-		t('<p>foo<b>  [ foo]</b></p>',  '<p>foo<b> [  foo]</b></p>');
-		t('<p>foo<b>  [  foo]</b></p>', '<p>foo<b> [   foo]</b></p>');
+		t('<p>foo<b>  [bar]</b></p>',   '<p>foo<b> [ bar]</b></p>');
+	 	t('<p>foo<b>  [ bar]</b></p>',  '<p>foo<b> [  bar]</b></p>');
+		t('<p>foo<b>  [  bar]</b></p>', '<p>foo<b> [   bar]</b></p>');
 
 		t('<b>foo[bar]</b>', '<b>fo[obar]</b>');
 		t('<b>foo [bar]</b>', '<b>foo[ bar]</b>');
-		t('<b>foo  [bar]</b>', '<b>foo[  bar]</b>');
+		t('<b>foo  [bar]</b>', '<b>foo [ bar]</b>');
+		t('<b> foo  [bar]</b>', '<b> foo [ bar]</b>');
 
-		t('<div><p>foo</p>[bar]</div>', '<div><p>foo[</p>bar]</div>');
-		t('<div><p>foo</p>{bar]</div>', '<div><p>foo[</p>bar]</div>');
-		t('<div><p>foo</p><b>[bar]</b></div>', '<div><p>foo[</p><b>bar]</b></div>');
-		t('<div><p>foo</p> <b>[bar]</b></div>', '<div><p>foo[</p> <b>bar]</b></div>');
-		t('<div><p>foo </p> <b>[bar]</b></div>', '<div><p>foo[ </p> <b>bar]</b></div>');
 
-		t('<div><p>foo</p> [bar]</div>', '<div><p>foo[</p> bar]</div>');
-		t('<div><p>foo </p> [bar]</div>', '<div><p>foo[ </p> bar]</div>');
-		t('<div><p>foo </p> <p> [bar]</p></div>', '<div><p>foo[ </p> <p>bar]</p></div>');
+		t('<div><p>foo</p>[bar]</div>',
+		  '<div><p>foo[</p>bar]</div>');
+
+		t('<div><p>foo</p>{bar]</div>',
+		  '<div><p>foo[</p>bar]</div>');
+
+		t('<div><p>foo</p><b>[bar]</b></div>',
+		  '<div><p>foo[</p><b>bar]</b></div>');
+
+		t('<div><p>foo</p> <b>[bar]</b></div>',
+		  '<div><p>foo[</p> <b>bar]</b></div>');
+
+		t('<div><p>foo </p> <b>[bar]</b></div>',
+		  '<div><p>foo[ </p> <b>bar]</b></div>');
+
+		t('<div><p>foo</p> [bar]</div>',
+		  '<div><p>foo[</p> bar]</div>');
+
+		t('<div><p>foo </p> [bar]</div>',
+		  '<div><p>foo[ </p> bar]</div>');
+
+		t('<div><p>foo </p> <p> [bar]</p></div>',
+		  '<div><p>foo[ </p> <p> bar]</p></div>');
 	});
 
 	return;

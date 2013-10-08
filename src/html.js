@@ -884,22 +884,16 @@ define([
 		NON_BREAKING_SPACE_CHARACTERS
 	).join('');
 
-	var VISIBLE_CHAR_FROM_END = new RegExp(
-		'(^[' + breakingWhiteSpaces + '])'
-		+ '|('
-			+ '[^' + breakingWhiteSpaces + ']'
-			+ '[' + breakingWhiteSpaces + ',' + zwChars + ']'
-		+ '*$)'
-	);
-
 	var WSP_FROM_END = new RegExp(
 		'[' + breakingWhiteSpaces + ']+[' + zwChars + ']*$'
 	);
 
-	var NOT_WSP = new RegExp(
-		'[^' + breakingWhiteSpaces + ',' + zwChars + ']'
+	var NOT_WSP_FROM_END = new RegExp(
+		  '[^' + breakingWhiteSpaces + ']'
+		+ '[' + breakingWhiteSpaces + zwChars + ']*$'
 	);
 
+	var NOT_WSP = new RegExp('[^' + breakingWhiteSpaces + zwChars + ']');
 	var NOT_ZWSP = new RegExp('[^' + zwChars + ']');
 
 	/**
@@ -978,7 +972,7 @@ define([
 	 * 5. The last sequence of white space immediately before the opening tag
 	 *    of line-breaking elements or the first sequence of white space
 	 *    immediately after the closing tag of line-breaking elements is
-	 *    insignificant and is ignored.
+	 *    insignificant and is ignored:
 	 *
 	 *          ignore      ignore
 	 *            |          |||
@@ -987,13 +981,16 @@ define([
 	 *            .          ...
 	 *
 	 * 6. The first sequence of white space immediately after a white space
-	 *    character is insignificant and is ignored.
+	 *    character is insignificant and is ignored:
 	 *
-	 *      ignore
-	 *        ||
-	 *        vv
-	 *    <b>   foo</b>
-	 *       ...
+	 *         ignore
+	 *           ||
+	 *           vv
+	 *    foo<b>   bar</b>
+	 *          ...
+	 *          ^
+	 *          |
+	 *          `-- rendered
 	 *
 	 * @see For more information on white space handling:
 	 *      http://www.w3.org/TR/REC-xml/#sec-white-space
@@ -1085,6 +1082,19 @@ define([
 		};
 	}
 
+	/**
+	 * Returns the node/offset namedtuple, of the previous visible character
+	 * from the given position in the document.
+	 *
+	 * All "zero-width character" are ignored.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Number} offset
+	 * @return {Object}
+	 *         An object with the properities "node" and "offset", representing
+	 *         the position of the previous visible character.  "node" will be
+	 *         null and offset -1 if no previous visible character can be found.
+	 */
 	function previousVisibleCharacter(node, offset) {
 		if (!dom.isTextNode(node) || 0 === offset) {
 			return {
@@ -1092,63 +1102,70 @@ define([
 				offset: -1
 			};
 		}
-		var match = node.data.substr(0, offset).match(VISIBLE_CHAR_FROM_END);
-		var boundary;
-		if (!match) {
-			boundary = 0;
-		} else {
-			boundary = (1 === match[0].length)
-					 ? offset - 1
-					 : offset - match[0].length + 1;
+
+		var before = node.data.substr(0, offset);
+
+		if ('' === before) {
+			return {
+				node: null,
+				offset: -1
+			};
 		}
+
+		// Because `before` may be a sequence of white spaces
+		if (-1 === before.search(NOT_WSP_FROM_END) && !NOT_WSP.test(before)) {
+			return areNextWhiteSpacesSignificant(node, 0)
+				? {
+					node: node,
+					offset: 1 === before.length ? 0 : 1
+				}
+				: {
+					node: null,
+					offset: -1
+				};
+		}
+
+		var boundary = before.match(NOT_WSP_FROM_END)[0].length - 1;
+		var moreThanOneWhiteSpace = boundary > 1;
+
 		return {
 			node: node,
-			offset: boundary
+			offset: moreThanOneWhiteSpace ? offset - boundary + 1 : offset - 1
 		};
 	}
 
-	function atVisualStartOfBlock(node, offset) {
-		return (
-			 0 == offset || (
-				 1 === offset
-				 &&
-				 WSP_FROM_END.test(node.data.charAt(offset - 1))
-			)
-		) && isLinebreakingNode(node.parentNode);
-	}
-
+	/**
+	 * Returns the an node/offset namedtuple of the previous visible position
+	 * from the given position in the document.
+	 *
+	 * All "zero-width character" are ignored.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Number} offset
+	 * @return {Object}
+	 */
 	function previousVisiblePosition(node, offset) {
-		if (offset > 0 && dom.isTextNode(node)) {
-			var pos = previousVisibleCharacter(node, offset);
-			offset = -1 === pos.offset ? 0 : pos.offset;
-
-			if (atVisualStartOfBlock(node, offset)) {
-				node = traversing.previousNonAncestor(
-					node,
-					isRendered,
-					dom.isEditingHost
-				);
-				if (node) {
-					offset = dom.nodeLength(node);
-				} else {
-					node = pos.node;
-					offset = 0;
-				}
-			}
+		var pos = previousVisibleCharacter(node, offset);
+		if (pos.node) {
+			return pos;
+		}
+		var next;
+		if (dom.isAtEnd(node, offset)) {
+			next = traversing.forward(node.lastChild || node);
+		} else if (dom.isTextNode(node)) {
+			next = node;
+		} else {
+			next = dom.nodeAtOffset(node, offset);
+		}
+		if (!next) {
 			return {
 				node: node,
-				offset: offset
-			};
-		}
-		if (dom.isAtEnd(node, offset) && node.lastChild && isRendered(node.lastChild)) {
-			return {
-				node: node.lastChild,
-				offset: dom.nodeLength(node.lastChild)
+				offset: 0
 			};
 		}
 		var crossedVisualBreak = false;
-		var next = traversing.previousNonAncestor(
-			dom.nodeAtOffset(node, offset),
+		var prev = traversing.previousNonAncestor(
+			next,
 			isRendered,
 			function (node) {
 				if (!crossedVisualBreak) {
@@ -1157,16 +1174,24 @@ define([
 				return dom.isEditingHost(node);
 			}
 		);
-		if (!next) {
+		if (!prev) {
 			return {
-				node: null,
-				offset: -1
+				node: node,
+				offset: 0
 			};
 		}
 		if (crossedVisualBreak) {
+			next = traversing.backward(traversing.forward(prev.lastChild || prev));
+			if (dom.isTextNode(next)) {
+				var boundary = next.data.search(WSP_FROM_END);
+				return {
+					node: next,
+					offset: -1 === boundary ? dom.nodeLength(next) : boundary
+				};
+			}
 			return {
-				node: next,
-				offset: dom.nodeLength(next)
+				node: prev,
+				offset: dom.nodeLength(prev)
 			};
 		}
 		return previousVisiblePosition(next, dom.nodeLength(next));
