@@ -340,6 +340,20 @@ define([
 		return range;
 	}
 
+	/**
+	 * Expands the given range to encapsulate all adjacent unrendered
+	 * characters.
+	 *
+	 * This operation should therefore never cause the visual representation of
+	 * the range to change.
+	 *
+	 * Since it is impossible to place a range immediately behind an invisible
+	 * character, this function will only ever need to expand the range's end
+	 * position.
+	 *
+	 * @param {Range}
+	 * @return {Range}
+	 */
 	function expandToVisibleCharacter(range) {
 		var pos = html.nextVisibleCharacter(
 			range.endContainer,
