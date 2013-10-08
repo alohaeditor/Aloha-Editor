@@ -44,7 +44,7 @@ define([
 		if (collapsed) {
 			ranges.expandBackwardToVisiblePosition(range);
 		}
-		//ranges.select(editing.delete(range));
+		ranges.select(editing.delete(range));
 		msg.event.preventDefault();
 	}
 
