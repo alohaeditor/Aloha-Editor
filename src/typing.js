@@ -56,7 +56,7 @@ define([
 		var collapsed = range.collapsed;
 		range = ranges.expandToVisibleCharacter(range)
 		if (collapsed) {
-
+			ranges.expandForwardToVisiblePosition(range);
 		}
 		ranges.select(editing.delete(range));
 		msg.event.preventDefault();

@@ -376,6 +376,17 @@ define([
 		return range;
 	}
 
+	function expandForwardToVisiblePosition(range) {
+		var pos = html.nextVisiblePosition(
+			range.endContainer,
+			range.endOffset
+		);
+		if (-1 !== pos.offset) {
+			range.setEnd(pos.node, pos.offset);
+		}
+		return range;
+	}
+
 	/**
 	 * Starting with the given range's start and end boundary points, seek
 	 * inward using a cursor, passing the cursor to ignoreLeft and ignoreRight,
@@ -742,7 +753,8 @@ define([
 		trimBoundaries: trimBoundaries,
 		trimClosingOpening: trimClosingOpening,
 		getNearestEditingHost: getNearestEditingHost,
-		expandBackwardToVisiblePosition: expandBackwardToVisiblePosition
+		expandBackwardToVisiblePosition: expandBackwardToVisiblePosition,
+		expandForwardToVisiblePosition: expandForwardToVisiblePosition
 	};
 
 	exports['collapseToEnd'] = exports.collapseToEnd;
