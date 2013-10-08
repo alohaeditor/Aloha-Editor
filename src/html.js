@@ -1180,7 +1180,11 @@ define([
 			};
 		}
 		if (crossedVisualBreak) {
-			next = traversing.backward(traversing.forward(prev.lastChild || prev));
+			next = traversing.findBackward(
+				traversing.forward(prev.lastChild || prev),
+				isRendered,
+				dom.isEditingHost
+			);
 			if (dom.isTextNode(next)) {
 				var boundary = next.data.search(WSP_FROM_END);
 				return {
