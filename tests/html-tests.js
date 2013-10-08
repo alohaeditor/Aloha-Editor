@@ -156,8 +156,6 @@
 		  '<div><p>foo[ </p> <p> bar]</p></div>');
 	});
 
-	return;
-
 	test('isControlCharacter', function () {
 		tested.push('isControlCharacter');
 		equal(html.isControlCharacter('\0'), true);

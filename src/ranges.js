@@ -359,29 +359,47 @@ define([
 			range.endContainer,
 			range.endOffset
 		);
-		if (-1 !== pos.offset) {
+		if (pos.offset > 0) {
 			range.setEnd(pos.node, pos.offset - 1);
 		}
 		return range;
 	}
 
+	/**
+	 * Expands the range's start position backward to the previous visible
+	 * position.
+	 *
+	 * @param {Range}
+	 * @return {Range}
+	 */
 	function expandBackwardToVisiblePosition(range) {
 		var pos = html.previousVisiblePosition(
 			range.startContainer,
 			range.startOffset
 		);
-		if (-1 !== pos.offset) {
+		if (pos.node) {
 			range.setStart(pos.node, pos.offset);
 		}
 		return range;
 	}
 
+	/**
+	 * Expands the range's end position forward to the next furthest visible
+	 * position.
+	 *
+	 * @param {Range}
+	 * @return {Range}
+	 */
 	function expandForwardToVisiblePosition(range) {
-		var pos = html.nextVisiblePosition(
-			range.endContainer,
-			range.endOffset
-		);
-		if (-1 !== pos.offset) {
+		var pos = html.nextVisiblePosition(range.endContainer, range.endOffset);
+		if (pos.node
+			&& !html.areNextWhiteSpacesSignificant(pos.node, pos.offset)) {
+			pos = html.nextVisiblePosition(pos.node, pos.offset);
+			if (pos.node) {
+				pos = html.previousVisiblePosition(pos.node, pos.offset);
+			}
+		}
+		if (pos.node) {
 			range.setEnd(pos.node, pos.offset);
 		}
 		return range;

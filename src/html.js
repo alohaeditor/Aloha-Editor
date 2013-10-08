@@ -1225,7 +1225,8 @@ define([
 		nextVisibleCharacter: nextVisibleCharacter,
 		nextVisiblePosition: nextVisiblePosition,
 		previousVisibleCharacter: previousVisibleCharacter,
-		previousVisiblePosition: previousVisiblePosition
+		previousVisiblePosition: previousVisiblePosition,
+		areNextWhiteSpacesSignificant: areNextWhiteSpacesSignificant
 	};
 
 	exports['isUnrendered'] = exports.isUnrendered;

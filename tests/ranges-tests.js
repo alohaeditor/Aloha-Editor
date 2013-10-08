@@ -16,17 +16,6 @@
 		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 
-	return;
-
-	/*
-	test('expandBackwardToVisiblePosition()', function () {
-		tested.push('expandBackwardToVisiblePosition');
-		var t = function (before, after) {
-			return runTest(before, after, ranges.expandBackwardToVisiblePosition);
-		};
-	});
-	*/
-
 	test('expand()', function () {
 		tested.push('expand');
 		var t = function (before, after) {
