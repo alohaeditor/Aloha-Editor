@@ -879,20 +879,165 @@ define([
 
 	var zwChars = ZERO_WIDTH_CHARACTERS.join('');
 
-	var breakingSpaces = arrays.complement(
+	var breakingWhiteSpaces = arrays.complement(
 		WHITE_SPACE_CHARACTERS,
 		NON_BREAKING_SPACE_CHARACTERS
 	).join('');
 
-	var VISIBLE_CHARACTER_FROM_END = new RegExp(
-		'(^[' + breakingSpaces + '])|'
-		+ '([^' + breakingSpaces + '][' + breakingSpaces + ',' + zwChars + ']*$)'
+	var VISIBLE_CHAR_FROM_END = new RegExp(
+		'(^[' + breakingWhiteSpaces + '])'
+		+ '|('
+			+ '[^' + breakingWhiteSpaces + ']'
+			+ '[' + breakingWhiteSpaces + ',' + zwChars + ']'
+		+ '*$)'
 	);
 
-	var BREAKING_SPACE_FROM_END = new RegExp('[' + breakingSpaces + '][' + zwChars + ']*$');
-	var ALWAYS_RENDERED_CHAR = new RegExp('[^' + breakingSpaces + ',' + zwChars + ']');
-	var NON_IGNORABLE_CHAR = new RegExp('[^' + zwChars + ']');
+	var WSP_FROM_END = new RegExp(
+		'[' + breakingWhiteSpaces + ']+[' + zwChars + ']*$'
+	);
 
+	var NOT_WSP = new RegExp(
+		'[^' + breakingWhiteSpaces + ',' + zwChars + ']'
+	);
+
+	var NOT_ZWSP = new RegExp('[^' + zwChars + ']');
+
+	/**
+	 * Whether or not any white space sequence immediately after the specified
+	 * offset in the given node are "significant".
+	 *
+	 * White Space Handling
+	 * --------------------
+	 *
+	 * The HTML specification stipulates that not all "white spaces" in markup
+	 * are visible.  Only those deemed "significant" are to be rendered visibly
+	 * by the user agent.
+	 *
+	 * Therefore, if the position from which we are to determine the next
+	 * visible character is adjacent to a "white space" (space, tabs,
+	 * line-feed), determining the next visible character becomes a little more
+	 * tricky to do.
+	 *
+	 * The following rules apply:
+	 *
+	 * Note that for the pursposes of these rules, the set of "white space" does
+	 * not include non-breaking spaces(&nbsp;).
+	 *
+	 * 1. The first sequence of white space immediately after the opening tag
+	 *    of a line-breaking element is insignificant and is ignored:
+	 *
+	 *     ignore
+	 *       ||
+	 *       vv
+	 *    <p>  foo</p>
+	 *       ..
+	 *
+	 *    will be rendered like <p>foo</p>
+	 *
+	 * 2. The first sequence of white space immediately after the opening tag
+	 *    of a non-line-breaking element which is the first visible child of a
+	 *    line-breaking element (or whose non-line-breaking ancestors are all
+	 *    first visible children) is insignificant and is ignored:
+	 *
+	 *          ignore
+	 *          |   |
+	 *          v   v
+	 *    <p><i> <b> foo</b></i></p>
+	 *          .   .
+	 *          ^
+	 *          |
+	 *          `-- unrendered text node
+	 *
+	 *    will be rendered like <p><i><b>foo</b></i></p>
+	 *
+	 * 3. The last sequence of white space immediately before the closing tag
+	 *    of a line-breaking element is insignificant and is ignored:
+	 *
+	 *        ignore
+	 *          |
+	 *          v
+	 *    <p>foo </p>
+	 *          .
+	 *
+	 *    will be rendered like <p>foo</p>
+	 *
+	 *
+	 * 4. The last sequence of white space immediately before the closing tag
+	 *    of a non-line-breaking element which is the last visible child of a
+	 *    line-breaking element (or whose non-line-breaking ancestors are all
+	 *    last visible children) is insignificant and is ignored:
+	 *
+	 *           ignore               ignore  ignore
+	 *             |                    ||    |    |
+	 *             v                    vv    v    v
+	 *    <p><b>foo </b></p><p><i><b>bar  </b> </i> </p>
+	 *             .                    ..   .    .
+	 *
+	 *    will be rendered like <p><b>bar</b></p><p><i><b>bar</b></i></p>
+	 *
+	 * 5. The last sequence of white space immediately before the opening tag
+	 *    of line-breaking elements or the first sequence of white space
+	 *    immediately after the closing tag of line-breaking elements is
+	 *    insignificant and is ignored.
+	 *
+	 *          ignore      ignore
+	 *            |          |||
+	 *            v          vvv
+	 *    <div>foo <p>bar</p>    baz</div>
+	 *            .          ...
+	 *
+	 * 6. The first sequence of white space immediately after a white space
+	 *    character is insignificant and is ignored.
+	 *
+	 *      ignore
+	 *        ||
+	 *        vv
+	 *    <b>   foo</b>
+	 *       ...
+	 *
+	 * @see For more information on white space handling:
+	 *      http://www.w3.org/TR/REC-xml/#sec-white-space
+	 *      http://www.w3.org/TR/xhtml1/Overview.html#C_15
+	 *      http://lists.w3.org/Archives/Public/www-dom/1999AprJun/0007.html
+	 *
+	 * @param {DOMObject} node
+	 * @param {Number} offset
+	 * @return {Boolean}
+	 */
+	function areNextWhiteSpacesSignificant(textnode, offset) {
+		if (textnode.data.substr(0, offset).search(WSP_FROM_END) > -1) {
+			return false;
+		}
+		if (0 === offset) {
+			return !!traversing.previousNonAncestor(textnode, function (node) {
+				return isInlineType(node) && isRendered(node);
+			}, function (node) {
+				return isLinebreakingNode(node) || dom.isEditingHost(node);
+			});
+		}
+		if (0 !== textnode.data.substr(offset).search(WSP_FROM_END)) {
+			return true;
+		}
+		return !!traversing.nextNonAncestor(textnode, function (node) {
+			return isInlineType(node) && isRendered(node);
+		}, function (node) {
+			return isLinebreakingNode(node) || dom.isEditingHost(node);
+		});
+	}
+
+	/**
+	 * Returns the node/offset namedtuple, of the next visible character from
+	 * the given position in the document.
+	 *
+	 * All "zero-width character" are ignored.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Number} offset
+	 * @return {Object}
+	 *         An object with the properities "node" and "offset", representing
+	 *         the position of the next visible character.  "node" will be null
+	 *         and offset -1 if no next visible character can be found.
+	 */
 	function nextVisibleCharacter(node, offset) {
 		if (!dom.isTextNode(node) || offset === dom.nodeLength(node)) {
 			return {
@@ -900,17 +1045,43 @@ define([
 				offset: -1
 			};
 		}
-		var before = 0 === offset ? '' : node.data.substr(0, offset);
-		var after = node.data.substr(offset);
-		// Because if the previous character (ignoring zero-width characters) is
-		// a breaking white space character, any consecutive ones are not
-		// rendered.
-		var boundary = BREAKING_SPACE_FROM_END.test(before)
-		             ? after.search(ALWAYS_RENDERED_CHAR)
-		             : after.search(NON_IGNORABLE_CHAR);
-		return {
+		var boundary = node.data.substr(offset).search(
+			areNextWhiteSpacesSignificant(node, offset) ? NOT_ZWSP : NOT_WSP
+		);
+		return -1 === boundary ? {
+			node: null,
+			offset: -1
+		} : {
 			node: node,
-			offset: -1 === boundary ? dom.nodelength(node) : offset + boundary
+			offset: offset + boundary + 1
+		};
+	}
+
+	/**
+	 * Returns the an node/offset namedtuple of the next visible position from
+	 * the given position in the document.
+	 *
+	 * All "zero-width character" are ignored.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Number} offset
+	 * @return {Object}
+	 */
+	function nextVisiblePosition(node, offset) {
+		var pos = nextVisibleCharacter(node, offset);
+		if (pos.node) {
+			return pos;
+		}
+		var next = traversing.findForward(
+			node.lastChild || node,
+			function (node) {
+				return dom.isTextNode(node) && isRendered(node);
+			},
+			dom.isEditingHost
+		);
+		return next ? nextVisiblePosition(next, 0) : {
+			node: node,
+			offset: dom.nodeLength(node)
 		};
 	}
 
@@ -921,9 +1092,7 @@ define([
 				offset: -1
 			};
 		}
-		var match = node.data.substr(0, offset).match(
-			VISIBLE_CHARACTER_FROM_END
-		);
+		var match = node.data.substr(0, offset).match(VISIBLE_CHAR_FROM_END);
 		var boundary;
 		if (!match) {
 			boundary = 0;
@@ -943,7 +1112,7 @@ define([
 			 0 == offset || (
 				 1 === offset
 				 &&
-				 BREAKING_SPACE_FROM_END.test(node.data.charAt(offset - 1))
+				 WSP_FROM_END.test(node.data.charAt(offset - 1))
 			)
 		) && isLinebreakingNode(node.parentNode);
 	}
@@ -1026,6 +1195,7 @@ define([
 		isVisuallyAdjacent: isVisuallyAdjacent,
 		removeVisualBreak: removeVisualBreak,
 		nextVisibleCharacter: nextVisibleCharacter,
+		nextVisiblePosition: nextVisiblePosition,
 		previousVisibleCharacter: previousVisibleCharacter,
 		previousVisiblePosition: previousVisiblePosition
 	};

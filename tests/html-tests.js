@@ -2,9 +2,92 @@
 	'use strict';
 
 	var html = aloha.html;
+	var ranges = aloha.ranges;
+	var boundarymarkers = aloha.boundarymarkers;
 	var tested = [];
 
     module('html');
+
+	function runTest(before, after, op) {
+		var dom = $(before)[0];
+		var range = ranges.create();
+		boundarymarkers.extract(dom, range);
+		op(range);
+		boundarymarkers.insert(range);
+		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
+	}
+
+	test('nextVisiblePosition', function () {
+		tested.push('nextVisiblePosition');
+		var t = function (before, after) {
+			return runTest(before, after, function (range) {
+				var pos = html.nextVisiblePosition(range.endContainer, range.endOffset);
+				if (pos.node) {
+					range.setEnd(pos.node, pos.offset);
+				}
+			});
+		};
+		t('<p>[] foo</p>', '<p>[ f]oo</p>');
+		t('<p>foo[] </p>', '<p>foo[ ]</p>');
+		t('<p><i>[] <b> foo</b></i></p>', '<p><i>[ <b> f]oo</b></i></p>');
+		t('<div><p><b>foo </b></p><p><i><b>[bar]  </b> </i> </p>baz</div>',
+		  '<div><p><b>foo </b></p><p><i><b>[bar  </b> </i> </p>b]az</div>');
+		t('<div>foo<b>[]  bar</b></div>', '<div>foo<b>[ ] bar</b></div>');
+		t('<div>foo<p><b>[]  bar</b></p></div>', '<div>foo<p><b>[  b]ar</b></p></div>');
+		t('<div>foo<p>[]  bar</p></div>', '<div>foo<p>[  b]ar</p></div>');
+		t('<div><p>foo</p>[]  bar</div>', '<div><p>foo</p>[  b]ar</div>');
+
+		t('<b>[]</b>', '<b>[]</b>');
+		t('<b>[] </b>', '<b>[ ]</b>');
+		t('<b>[]  </b>', '<b>[  ]</b>');
+
+		t('<b> []</b>', '<b> []</b>');
+		t('<b> [] </b>', '<b> [ ]</b>');
+		t('<b> [ ] </b>', '<b> [  ]</b>');
+
+		t('<b>  []</b>', '<b>  []</b>');
+		t('<b>  [] </b>', '<b>  [ ]</b>');
+		t('<b>  [  ]</b>', '<b>  [  ]</b>');
+
+		t('<b>[]foo</b>', '<b>[f]oo</b>');
+		t('<b> []foo</b>', '<b> [f]oo</b>');
+		t('<b>  []foo</b>', '<b>  [f]oo</b>');
+
+		t('<b>[f]oo</b>', '<b>[fo]o</b>');
+
+		t('<b>[fo]o</b>', '<b>[foo]</b>');
+		t('<b>[fo]o </b>', '<b>[foo] </b>');
+		t('<b>[fo]o  </b>', '<b>[foo]  </b>');
+
+		t('<b>[foo]</b>', '<b>[foo]</b>');
+		t('<b>[foo] </b>', '<b>[foo ]</b>');
+
+		t('<b>[foo]  </b>', '<b>[foo  ]</b>');
+		t('<p><b>[foo]  </b>bar</p>', '<p><b>[foo ] </b>bar</p>');
+
+		t('<b>[foo]bar</b>', '<b>[foob]ar</b>');
+		t('<b>[foo] bar</b>', '<b>[foo ]bar</b>');
+		t('<b>[foo ] bar</b>', '<b>[foo  b]ar</b>');
+
+		t('<b>[foo ]</b>', '<b>[foo ]</b>');
+		t('<b>[foo ] </b>', '<b>[foo  ]</b>');
+		t('<b>[foo ]  </b>', '<b>[foo   ]</b>');
+
+		t('<b>[foo ]bar</b>', '<b>[foo b]ar</b>');
+		t('<b>[foo ] bar</b>', '<b>[foo  b]ar</b>');
+		t('<b>[foo ]  bar</b>', '<b>[foo   b]ar</b>');
+
+		t('<b>[foo  ]</b>', '<b>[foo  ]</b>');
+		t('<b>[foo  ] </b>', '<b>[foo   ]</b>');
+		t('<b>[foo  ]  </b>', '<b>[foo    ]</b>');
+
+		t('<b>[foo  ]bar</b>', '<b>[foo  b]ar</b>');
+
+		t('<b>[foo  ] bar</b>', '<b>[foo   b]ar</b>');
+		t('<b>[foo  ]  bar</b>', '<b>[foo    b]ar</b>');
+
+		t('<b>foo[ ] &nbsp; </b>', '<b>foo[  &nbsp;] </b>');
+	});
 
 	test('isControlCharacter', function () {
 		tested.push('isControlCharacter');

@@ -340,13 +340,13 @@ define([
 		return range;
 	}
 
-	function expandToVisibleText(range) {
+	function expandToVisibleCharacter(range) {
 		var pos = html.nextVisibleCharacter(
 			range.endContainer,
 			range.endOffset
 		);
 		if (-1 !== pos.offset) {
-			range.setEnd(pos.node, pos.offset);
+			range.setEnd(pos.node, pos.offset - 1);
 		}
 		return range;
 	}
@@ -717,7 +717,7 @@ define([
 		contract: contract,
 		expandBoundaries: expandBoundaries,
 		expandToWord: expandToWord,
-		expandToVisibleText: expandToVisibleText,
+		expandToVisibleCharacter: expandToVisibleCharacter,
 		get: get,
 		insertText: insertText,
 		insertTextBehind: insertTextBehind,

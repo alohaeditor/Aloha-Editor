@@ -40,11 +40,11 @@ define([
 			return;
 		}
 		var collapsed = range.collapsed;
-		range = ranges.expandToVisibleText(range)
+		range = ranges.expandToVisibleCharacter(range)
 		if (collapsed) {
 			ranges.expandBackwardToVisiblePosition(range);
 		}
-		ranges.select(editing.delete(range));
+		//ranges.select(editing.delete(range));
 		msg.event.preventDefault();
 	}
 
@@ -54,7 +54,7 @@ define([
 			return;
 		}
 		var collapsed = range.collapsed;
-		range = ranges.expandToVisibleText(range)
+		range = ranges.expandToVisibleCharacter(range)
 		if (collapsed) {
 
 		}

@@ -837,7 +837,7 @@ define([
 	 * @param {DOMObject} node
 	 * @param {DOMObject}
 	 */
-	function nextNonAncestor(node) {
+	function nextNonAncestor(node, match, until) {
 		return getNonAncestor(node, false, match, until || dom.isEditingHost);
 	}
 
