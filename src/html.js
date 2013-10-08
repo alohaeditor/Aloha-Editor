@@ -897,8 +897,8 @@ define([
 	var NOT_ZWSP = new RegExp('[^' + zwChars + ']');
 
 	/**
-	 * Whether or not any white space sequence immediately after the specified
-	 * offset in the given node are "significant".
+	 * Checks whether any white space sequence immediately after the specified
+	 * offset in the given node is "significant".
 	 *
 	 * White Space Handling
 	 * --------------------
@@ -909,13 +909,12 @@ define([
 	 *
 	 * Therefore, if the position from which we are to determine the next
 	 * visible character is adjacent to a "white space" (space, tabs,
-	 * line-feed), determining the next visible character becomes a little more
-	 * tricky to do.
+	 * line-feed), determining the next visible character becomes non-trivial.
 	 *
 	 * The following rules apply:
 	 *
 	 * Note that for the pursposes of these rules, the set of "white space" does
-	 * not include non-breaking spaces(&nbsp;).
+	 * not include non-breaking spaces (&nbsp;).
 	 *
 	 * 1. The first sequence of white space immediately after the opening tag
 	 *    of a line-breaking element is insignificant and is ignored:
@@ -990,7 +989,7 @@ define([
 	 *          ...
 	 *          ^
 	 *          |
-	 *          `-- rendered
+	 *          `-- significant
 	 *
 	 * @see For more information on white space handling:
 	 *      http://www.w3.org/TR/REC-xml/#sec-white-space
