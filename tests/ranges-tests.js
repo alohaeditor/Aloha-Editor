@@ -18,31 +18,6 @@
 
 	return;
 
-	test('expandBackwardToVisiblePosition()', function () {
-		tested.push('expandBackwardToVisiblePosition');
-		var t = function (before, after) {
-			return runTest(before, after, ranges.expandBackwardToVisiblePosition);
-		};
-		t('<b>[]</b>', '<b>[]</b>');
-		t('<b>[foo]</b>', '<b>[foo]</b>');
-		t('<b>f[oo]</b>', '<b>[foo]</b>');
-		t('<b> [foo]</b>', '<b>[ foo]</b>');
-		t('<b> [ foo]</b>', '<b>[  foo]</b>');
-		t('<b> [  foo]</b>', '<b>[   foo]</b>');
-		t('<b>  [foo]</b>', '<b> [ foo]</b>');
-		t('<b>  [ foo]</b>', '<b> [  foo]</b>');
-		t('<b>  [  foo]</b>', '<b> [   foo]</b>');
-
-		t('<b>foo[bar]</b>', '<b>fo[obar]</b>');
-		t('<b>foo [bar]</b>', '<b>foo[ bar]</b>');
-		t('<b>foo  [bar]</b>', '<b>foo[  bar]</b>');
-
-		t('<div><p>foo</p>[bar]</div>', '<div><p>foo{</p>bar]</div>');
-		t('<div><p>foo</p>{bar]</div>', '<div><p>foo{</p>bar]</div>');
-		t('<div><p>foo</p><b>{bar]</b></div>', '<div><p>foo{</p><b>bar]</b></div>');
-		t('<div><p>foo</p> <b>{bar]</b></div>', '<div><p>foo{</p> <b>bar]</b></div>');
-	});
-
 	/*
 	test('expandBackwardToVisiblePosition()', function () {
 		tested.push('expandBackwardToVisiblePosition');
