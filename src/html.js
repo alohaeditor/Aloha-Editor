@@ -1073,7 +1073,11 @@ define([
 			function (node) {
 				return dom.isTextNode(node) && isRendered(node);
 			},
-			dom.isEditingHost
+			function (node) {
+				return dom.isEditingHost(node)
+				    || (node.previousSibling
+						&& dom.isEditingHost(node.previousSibling));
+			}
 		);
 		return next ? nextVisiblePosition(next, 0) : {
 			node: node,
