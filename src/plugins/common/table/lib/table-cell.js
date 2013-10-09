@@ -320,7 +320,6 @@ define([
 			var that = this;
 			jQuery('body').bind('mouseup.cellselection', function () {
 				that._endCellSelection();
-
 			});
 
 			this.tableObj.selection.baseCellPosition = [this._virtualY(), this._virtualX()];
