@@ -25,3 +25,8 @@ All changes are categorized into one of the following keywords:
 
 - **BUGFIX**: tables: It is now possible to delete entire rows or columns using
               the delete key.
+
+- **BUGFIX**: Formatless Copy/Paste not working.
+              When paste action was made the formatlesshandler was never called.
+              We manually call this handler before pasting the content into the DOM element.
+              RT#56692
