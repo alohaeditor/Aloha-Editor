@@ -527,6 +527,27 @@ define([
 			}
 		});
 
+
+		this.obj.on('keydown', function (jqEvent) {
+			// Delete button
+			if (jqEvent.keyCode === 46) {
+				if (that.selection.selectionType === 'row') {
+					that.deleteRows();
+				} else if (that.selection.selectionType === 'column') {
+					that.deleteColumns();
+				}
+
+				// jqEvent.stopPropagation doesn't support cancelBubble
+				// in the last jQuery versions. (query/jquery@97fa97f#diff-031bb62d959e7e4949d1847c82507f33L676)
+				if (typeof jqEvent.stopPropagation === 'function') {
+					jqEvent.stopPropagation();
+				} else {
+					// Workaround for IE
+					jqEvent.cancelBubble = true;
+				}
+			}
+		});
+
 		/*
 		We need to make sure that when the user has selected text inside a
 		table cell we do not delete the entire row, before we activate this
