@@ -620,22 +620,21 @@ define([
 
 			});
 
-			eventContainer.bind( 'mousedown', function ( jqEvent ) {
+		eventContainer.bind( 'mousedown', function ( jqEvent ) {
 			// focus the table if not already done
 			if ( !that.hasFocus ) {
 				that.focus();
 			}
 
-
-	// DEACTIVATED by Haymo prevents selecting rows
-	//		// if a mousedown is done on the table, just focus the first cell of the table
-	//		setTimeout(function() {
-	//			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-	//			TableSelection.unselectCells();
-	//			jQuery(firstCell).get(0).focus();
-	//			// move focus in first cell
-	//			that.obj.cells[0].wrapper.get(0).focus();
-	//		}, 0);
+			// DEACTIVATED by Haymo prevents selecting rows
+			//		// if a mousedown is done on the table, just focus the first cell of the table
+			//		setTimeout(function() {
+			//			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
+			//			TableSelection.unselectCells();
+			//			jQuery(firstCell).get(0).focus();
+			//			// move focus in first cell
+			//			that.obj.cells[0].wrapper.get(0).focus();
+			//		}, 0);
 
 			// stop bubbling and default-behaviour
 			jqEvent.stopPropagation();
