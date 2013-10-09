@@ -813,7 +813,12 @@ define([
 	}
 
 	/**
-	 * Finds the closest linebreaking node from above.
+	 * Finds the closest line-breaking node between `above` and `below` in
+	 * document order.
+	 *
+	 * @param {DOMObject} above
+	 * @param {DOMObject} below
+	 * @return {DOMObject}
 	 */
 	function findLineBreakingNodeBetween(above, below) {
 		if (isLinebreakingNode(above)) {
@@ -846,6 +851,7 @@ define([
 		}
 		var breaker = findLineBreakingNodeBetween(above, below);
 		if (!breaker) {
+			traversing.climbUntil(below, dom.remove, hasRenderedChildren);
 			return {
 				container: above,
 				offset: dom.nodeLength(above)

@@ -30,13 +30,12 @@
 			return runTest(before, after, editing.delete);
 		};
 
-		t('<div>foo{<ul><li>}bar</li></ul></div>', '');
+		t('<div>foo{<ul><li>}bar</li></ul></div>', '<div>foo[]bar</div>');
 
 		t('<p>x[y]z</p>', '<p>x[]z</p>');
 
 		t('<p>x[]y</p>', '<p>x[]y</p>');
 		t('<p><b>x</b>{}<i>y</i></p>', '<p><b>x</b>{}<i>y</i></p>');
-
 
 		t('<p>[x]</p>', '<p>{}</p>');
 
@@ -60,6 +59,7 @@
 		t('<p>x[<b>y</b>}z</p>', '<p>x[]z</p>');
 
 		t('<p>x{<b>y}</b>z</p>', '<p>x[]z</p>');
+
 		t('<p>x[<b>y]</b>z</p>', '<p>x[]z</p>');
 		t('<p>x{<b>y]</b>z</p>', '<p>x[]z</p>');
 		t('<p>x[<b>y}</b>z</p>', '<p>x[]z</p>');
