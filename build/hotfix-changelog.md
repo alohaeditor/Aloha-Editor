@@ -25,3 +25,8 @@ All changes are categorized into one of the following keywords:
 
 - **BUGFIX**: tables: It is now possible to delete entire rows or columns using
               the delete key.
+
+- **BUGFIX**:'scope' attribute set to 'column'.
+
+             The vale 'column' for the 'scope' attribute in 'th' Tag element is not valid.
+             This attribute only accept 'col' or 'row' values. RT#56088
