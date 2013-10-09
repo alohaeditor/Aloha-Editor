@@ -30,6 +30,9 @@
 				}
 			});
 		};
+
+		t('<p>foo{}<b>bar</b>baz</p>', '<p>foo{<b>b]ar</b>baz</p>');
+
 		t('<p>[] foo</p>', '<p>[ f]oo</p>');
 		t('<p>foo[] </p>', '<p>foo[ ]</p>');
 		t('<p><i>[] <b> foo</b></i></p>', '<p><i>[ <b> f]oo</b></i></p>');

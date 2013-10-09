@@ -1068,21 +1068,34 @@ define([
 		if (pos.node) {
 			return pos;
 		}
-		var next = traversing.findForward(
-			node.lastChild || node,
-			function (node) {
-				return dom.isTextNode(node) && isRendered(node);
-			},
-			function (node) {
-				return dom.isEditingHost(node)
-				    || (node.previousSibling
-						&& dom.isEditingHost(node.previousSibling));
+		var start;
+		if (dom.isAtEnd(node, offset) || dom.isTextNode(node)) {
+			start = node;
+		} else {
+			start = traversing.backward(dom.nodeAtOffset(node, offset));
+		}
+		var crossedVisualBreak = false;
+		var next = traversing.findForward(start, isRendered, function (node) {
+			if (!crossedVisualBreak) {
+				crossedVisualBreak = isLinebreakingNode(node);
 			}
-		);
-		return next ? nextVisiblePosition(next, 0) : {
-			node: node,
-			offset: dom.nodeLength(node)
-		};
+			return dom.isEditingHost(node)
+				|| (node.previousSibling
+					&& dom.isEditingHost(node.previousSibling));
+		});
+		if (!next) {
+			return {
+				node: node,
+				offset: dom.nodeLength(node)
+			};
+		}
+		if (crossedVisualBreak) {
+			return {
+				node: next,
+				offset: 0
+			};
+		}
+		return nextVisiblePosition(next, 0);
 	}
 
 	/**

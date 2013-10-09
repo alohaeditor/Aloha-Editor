@@ -30,36 +30,30 @@ define([
 		msg.event.preventDefault();
 	}
 
-	function delete_(range, direction) {
-
+	function delete_(range, event, direction) {
+		var collapsed = range.collapsed;
+		range = ranges.expandToVisibleCharacter(range);
+		if (collapsed) {
+			range = (
+				direction
+					? ranges.expandForwardToVisiblePosition
+					: ranges.expandBackwardToVisiblePosition
+			)(range);
+		}
+		ranges.select(editing.delete(range));
+		event.preventDefault();
 	}
 
 	function deleteBackward(msg) {
-		var range = msg.range;
-		if (!range) {
-			return;
+		if (msg.range) {
+			delete_(msg.range, msg.event, false);
 		}
-		var collapsed = range.collapsed;
-		range = ranges.expandToVisibleCharacter(range)
-		if (collapsed) {
-			ranges.expandBackwardToVisiblePosition(range);
-		}
-		ranges.select(editing.delete(range));
-		msg.event.preventDefault();
 	}
 
 	function deleteForward(msg) {
-		var range = msg.range;
-		if (!range) {
-			return;
+		if (msg.range) {
+			delete_(msg.range, msg.event, true);
 		}
-		var collapsed = range.collapsed;
-		range = ranges.expandToVisibleCharacter(range)
-		if (collapsed) {
-			ranges.expandForwardToVisiblePosition(range);
-		}
-		ranges.select(editing.delete(range));
-		msg.event.preventDefault();
 	}
 
 	var exports = {
