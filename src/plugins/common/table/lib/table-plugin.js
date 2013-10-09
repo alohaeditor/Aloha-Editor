@@ -1170,8 +1170,7 @@ define([
 		if (cSpan.length === 0) {
 			// generate a new div
 			cSpan = jQuery('<div></div>');
-			jQuery(cSpan).addClass('aloha-ui');
-			jQuery(cSpan).addClass('aloha-editable-caption');
+			cSpan.addClass('aloha-ui aloha-editable-caption aloha-block');
 
 			// mark the editable wrapper as ephemeral
 			Ephemera.markWrapper(cSpan);
@@ -1297,7 +1296,7 @@ define([
 		var that = this;
 
 		// clicking outside the table unselects the cells of the table
-		if ( null == focusTable && null != this.activeTable ) {
+		if (null != this.activeTable ) {
 			this.activeTable.selection.unselectCells();
 		}
 

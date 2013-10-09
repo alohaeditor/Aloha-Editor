@@ -527,6 +527,27 @@ define([
 			}
 		});
 
+
+		this.obj.on('keydown', function (jqEvent) {
+			// Delete button
+			if (jqEvent.keyCode === 46) {
+				if (that.selection.selectionType === 'row') {
+					that.deleteRows();
+				} else if (that.selection.selectionType === 'column') {
+					that.deleteColumns();
+				}
+
+				// jqEvent.stopPropagation doesn't support cancelBubble
+				// in the last jQuery versions. (query/jquery@97fa97f#diff-031bb62d959e7e4949d1847c82507f33L676)
+				if (typeof jqEvent.stopPropagation === 'function') {
+					jqEvent.stopPropagation();
+				} else {
+					// Workaround for IE
+					jqEvent.cancelBubble = true;
+				}
+			}
+		});
+
 		/*
 		We need to make sure that when the user has selected text inside a
 		table cell we do not delete the entire row, before we activate this
@@ -620,22 +641,21 @@ define([
 
 			});
 
-			eventContainer.bind( 'mousedown', function ( jqEvent ) {
+		eventContainer.bind( 'mousedown', function ( jqEvent ) {
 			// focus the table if not already done
 			if ( !that.hasFocus ) {
 				that.focus();
 			}
 
-
-	// DEACTIVATED by Haymo prevents selecting rows
-	//		// if a mousedown is done on the table, just focus the first cell of the table
-	//		setTimeout(function() {
-	//			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-	//			TableSelection.unselectCells();
-	//			jQuery(firstCell).get(0).focus();
-	//			// move focus in first cell
-	//			that.obj.cells[0].wrapper.get(0).focus();
-	//		}, 0);
+			// DEACTIVATED by Haymo prevents selecting rows
+			//		// if a mousedown is done on the table, just focus the first cell of the table
+			//		setTimeout(function() {
+			//			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
+			//			TableSelection.unselectCells();
+			//			jQuery(firstCell).get(0).focus();
+			//			// move focus in first cell
+			//			that.obj.cells[0].wrapper.get(0).focus();
+			//		}, 0);
 
 			// stop bubbling and default-behaviour
 			jqEvent.stopPropagation();
@@ -1657,7 +1677,6 @@ define([
 			columnsToSelect = this.columnsToSelect;
 		}
 
-		Scopes.setScope(this.tablePlugin.name + '.column');
 		this.selection.selectColumns(columnsToSelect);
 		this.tablePlugin._columnheaderButton.setState(this.selection.isHeader());
 
@@ -1675,6 +1694,8 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
+
+		Scopes.setScope(this.tablePlugin.name + '.column');
 	};
 
 	/**
@@ -1684,7 +1705,6 @@ define([
 	 */
 	Table.prototype.selectRows = function () {
 
-		Scopes.setScope(this.tablePlugin.name + '.row');
 		this.selection.selectRows(this.rowsToSelect);
 		this.tablePlugin._rowheaderButton.setState(this.selection.isHeader());
 
@@ -1702,6 +1722,8 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
+
+		Scopes.setScope(this.tablePlugin.name + '.row');
 	};
 
 	/**

@@ -1,11 +1,13 @@
 define([
 	'aloha/jquery',
 	'aloha/ephemera',
-	'table/table-plugin-utils'
+	'table/table-plugin-utils',
+	'util/browser'
 ], function (
 	jQuery,
 	Ephemera,
-	Utils
+	Utils,
+	Browser
 ) {
 	/**
 	 * Constructs a TableCell.
@@ -318,13 +320,12 @@ define([
 
 			//bind a global mouseup event handler to stop cell selection
 			var that = this;
-			jQuery('body').bind('mouseup.cellselection', function () {
+			jQuery('body').bind('mouseup.cellselection', function(event) {
 				that._endCellSelection();
-
+				event.stopPropagation();
 			});
 
 			this.tableObj.selection.baseCellPosition = [this._virtualY(), this._virtualX()];
-
 		}
 	};
 
@@ -457,7 +458,8 @@ define([
 		this.tableObj.selection.unselectCells();
 
 		if (this.tableObj.hasFocus) {
-			jqEvent.stopPropagation();
+			if (!Browser.ie)
+				jqEvent.stopPropagation();
 		}
 	};
 
