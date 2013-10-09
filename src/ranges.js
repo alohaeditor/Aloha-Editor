@@ -393,6 +393,7 @@ define([
 	function expandForwardToVisiblePosition(range) {
 		var pos = html.nextVisiblePosition(range.endContainer, range.endOffset);
 		if (pos.node
+			&& dom.isTextNode(pos.node)
 			&& !html.areNextWhiteSpacesSignificant(pos.node, pos.offset)) {
 			pos = html.nextVisiblePosition(pos.node, pos.offset);
 			if (pos.node) {
