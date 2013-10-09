@@ -16,18 +16,16 @@ Aloha Editor is a JavaScript library to simplify editing in HTML.
 	<div class="aloha-editable" contentEditable="true">
 		<p>Lorem ipsum dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscing..</p>
 	</div>
-	<script src="aloha-editor-1.0.1.min.js"></script>
+	<script src="aloha-editor.js"></script>
 	<script>
-		require(['aloha'], function (Aloha) {
+		require(['aloha'], function (aloha) {
 			'use strict';
-			var range = Aloha.Ranges.create(
+			var range = aloha.ranges.create(
 				document.getElementsByTagName('b')[0], 1,
 				document.getElementsByTagName('b')[0], 2
 			);
-			Aloha.Ranges.select(Aloha.Ranges.extendToWord(range));
-			range = Aloha.Ranges.get();
-			Aloha.Editing.wrap(range, 'u');
-			Aloha.Ranges.select(range);
+			aloha.ranges.select(aloha.ranges.extendToWord(range));
+			aloha.ranges.select(aloha.editing.wrap(aloha.ranges.get(), 'u'));
 		});
 	</script>
 
