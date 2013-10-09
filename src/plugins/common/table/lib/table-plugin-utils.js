@@ -1,9 +1,11 @@
 define([
 	'jquery',
-	'aloha/copypaste'
+	'aloha/copypaste',
+	'util/browser'
 ], function (
 	$,
-	CopyPaste
+	CopyPaste,
+	Browser
 ) {
 	'use strict';
 
@@ -522,12 +524,19 @@ define([
 			return ( cell.innerWidth() - cell.width() );
 		},
 
-		selectAnchorContents: function (selection) {
+		selectAnchorContents: function(selection) {
 			var anchor = getAnchorCell(selection);
 			if (anchor) {
-				CopyPaste.selectAllOf(
-					$('>.aloha-table-cell-editable', anchor)[0]
-				);
+				var element = $('>.aloha-table-cell-editable', anchor)[0];
+				if (Browser.ie7) {
+					try {
+						CopyPaste.selectAllOf(element)
+					} catch (e) {
+						console.error (e.message);
+					}
+				} else {
+					CopyPaste.selectAllOf(element);
+				}
 			}
 		}
 
