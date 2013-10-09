@@ -31,6 +31,12 @@
 			});
 		};
 
+		t('<div><p>foo{}</p><ul><li>bar</li></ul></div>',
+		  '<div><p>foo{</p><ul><li>}bar</li></ul></div>');
+
+		t('<div>foo{}<ul><li>bar</li></ul></div>',
+		  '<div>foo{<ul><li>}bar</li></ul></div>');
+
 		t('<p>foo{}<b>bar</b>baz</p>', '<p>foo{<b>b]ar</b>baz</p>');
 
 		t('<p>[] foo</p>', '<p>[ f]oo</p>');
