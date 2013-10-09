@@ -254,10 +254,12 @@ define([
 		 *        If the callback returns a value identical to false,
 		 *        the walk will be aborted early.
 		 */
-		'walkGrid': function (grid, callback) {
-			for ( var i = 0; i < grid.length; i++ ) {
-				for ( var j = 0; j < grid[i].length; j++ ) {
-					if ( false === callback( grid[ i ][ j ], j, i ) ) {
+		'walkGrid': function(grid, callback) {
+			var	row;
+			for (var i = 0, gridLength = grid.length; i < gridLength; i++ ) {
+				row = grid[i];
+				for (var j = 0, rowLength = row.length; j < rowLength; j++ ) {
+					if ( false === callback( row[ j ], j, i ) ) {
 						return;
 					}
 				}
@@ -387,14 +389,14 @@ define([
 		/**
 		 * resizes the width of the given cell
 		 *
-		 * @param cell
+		 * @param {DOM element} cell
 		 *        the DOM node for a table cell (td/th)
-		 * @param
+		 * @param {number | string} width
 		 *        an integer value indicating the desired width
 		 */
 
 		'resizeCellWidth': function(cell, width) {
-			$( cell ).css( 'width', width );
+			$( cell ).css('width', width);
 			$( cell ).find('.aloha-table-cell-editable').eq(0).css({
 				'width': width,
 				'word-wrap': 'break-word'
