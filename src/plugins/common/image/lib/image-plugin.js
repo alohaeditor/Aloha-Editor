@@ -99,6 +99,8 @@ define([
 			'minWidth': 3,
 			'maxHeight': 1200,
 			'minHeight': 3,
+			// This setting allows the user to specify a custom default image
+			'defaultImageSrc': null,
 			// This setting will manually correct values that are out of bounds
 			'autoCorrectManualInput': true,
 			// This setting will define a fixed aspect ratio for all resize actions
@@ -274,11 +276,11 @@ define([
 			plugin.settings = jQuery.extend(true, plugin.defaultSettings, plugin.settings);
 
 			// Determine the flag and the value of the aspect ratio depending on settings
-			if ( typeof this.settings.fixedAspectRatio === 'number' ) {
+			if ( !isNaN(this.settings.fixedAspectRatio) ) {
 				this.aspectRatioValue = this.settings.fixedAspectRatio;
 				plugin.keepAspectRatio = true;
 			} else {
-				if ((plugin.settings.fixedAspectRatio) === true) {
+				if ( plugin.settings.fixedAspectRatio === true) {
 					plugin.keepAspectRatio = true;
 				} else {
 					plugin.keepAspectRatio = false;
@@ -359,8 +361,8 @@ define([
 		 * Subscribe to Aloha events and DragAndDropPlugin Event
 		 */
 		subscribeEvents: function () {
-			var	plugin = this;
-			var config = this.settings;
+			var	plugin = this,
+				config = this.settings;
 
 			jQuery('img').filter(config.globalselector).unbind();
 			jQuery('img').filter(config.globalselector).click(function (event) {
@@ -377,8 +379,8 @@ define([
 						// Prepare
 						img = jQuery('<img/>');
 						img.css({
-							"max-width": that.maxWidth,
-							"max-height": that.maxHeight
+							"max-width": config.maxWidth,
+							"max-height": config.maxHeight
 						});
 						img.attr('id', fileObj.id);
 						if (typeof fileObj.src === 'undefined') {
@@ -987,13 +989,18 @@ define([
 				var range = Aloha.Selection.getRangeObject(),
 				config = this.getEditableConfig(Aloha.activeEditable.obj),
 				imagePluginUrl = Aloha.getPluginUrl('image'),
+				imageDefault = config.defaultImageSrc || (imagePluginUrl || '')  + '/img/blank.jpg', // added new config "defaultImageSrc"
 				imagestyle, imagetag, newImg;
 
 				if (range.isCollapsed()) {
 					// TODO I would suggest to call the srcChange method. So all image src
 					// changes are on one single point.
-					imagestyle = "max-width: " + config.maxWidth + "; max-height: " + config.maxHeight;
-					imagetag = '<img style="' + imagestyle + '" src="' + imagePluginUrl + '/img/blank.jpg" title="" />';
+					imagestyle =
+						(parseInt(config.maxWidth, 10) 		? 'max-width: ' 	+ parseInt(config.maxWidth, 10) 	+ 'px; ' : '') +
+						(parseInt(config.maxHeight, 10) 	? 'max-height: ' 	+ parseInt(config.maxHeight, 10) 	+ 'px; ' : '') +
+						(parseInt(config.minWidth, 10) 		? 'min-width: ' 	+ parseInt(config.minWidth, 10) 	+ 'px; ' : '') +
+						(parseInt(config.minHeight, 10) 	? 'min-height: ' 	+ parseInt(config.minHeight, 10) 	+ 'px; ' : '');
+					imagetag = '<img style="' + imagestyle + '" src="' + imageDefault + '" title="" />';
 					newImg = jQuery(imagetag);
 					// add the click selection handler
 					//newImg.click( Aloha.Image.clickImage ); - Using delegate now

@@ -1,0 +1,17 @@
+@charset "UTF-8";
+
+/* ==================================================
+	classes for draganddropimages-plugin
+   ================================================== */
+
+.aloha-temporary-image-placeholder {
+	display: inline-block;
+	width: 135px;
+	height: 133px;
+	background: url(../img/icon_picture.png) no-repeat center center;
+	background-size: 135px 133px;
+}
+
+.aloha-dragenter {
+	background-color: rgba(128,181,242,0.3) !important;
+}
