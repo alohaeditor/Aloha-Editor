@@ -188,7 +188,7 @@ define([
 			// It is not possible to insert text after or before a Block span
 			// when after or before the Block there is not elements
 			if (Html.isInlineFormattable($element[0])) {
-				if ($element.parents('.aloha-editable-active').length > 0) {
+				if ($element.closest('.aloha-editable-active').length > 0) {
 					BlockUtils.pad(that.$element);
 				}
 
