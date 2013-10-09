@@ -1656,7 +1656,6 @@ define([
 			columnsToSelect = this.columnsToSelect;
 		}
 
-		Scopes.setScope(this.tablePlugin.name + '.column');
 		this.selection.selectColumns(columnsToSelect);
 		this.tablePlugin._columnheaderButton.setState(this.selection.isHeader());
 
@@ -1674,6 +1673,8 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
+
+		Scopes.setScope(this.tablePlugin.name + '.column');
 	};
 
 	/**
@@ -1683,7 +1684,6 @@ define([
 	 */
 	Table.prototype.selectRows = function () {
 
-		Scopes.setScope(this.tablePlugin.name + '.row');
 		this.selection.selectRows(this.rowsToSelect);
 		this.tablePlugin._rowheaderButton.setState(this.selection.isHeader());
 
@@ -1701,6 +1701,8 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
+
+		Scopes.setScope(this.tablePlugin.name + '.row');
 	};
 
 	/**
