@@ -432,7 +432,7 @@ define([
 		dom.insert(node, ref, atEnd);
 	}
 
-	function fixupRange(liveRange, mutate) {
+	function fixupRange(liveRange, mutate, trim) {
 		// Because we are mutating the range several times and don't want the
 		// caller to see the in-between updates, and because we are using
 		// ranges.trim() below to adjust the range's boundary points, which we
@@ -463,11 +463,13 @@ define([
 		// afterwards.
 		// Also, because moveBackIntoWrapper() requires the
 		// left boundary point to be next to a non-ignorable node.
-		ranges.trimClosingOpening(
-			range,
-			html.isUnrenderedWhitespace,
-			html.isUnrenderedWhitespace
-		);
+		if (false !== trim) {
+			ranges.trimClosingOpening(
+				range,
+				html.isUnrenderedWhitespace,
+				html.isUnrenderedWhitespace
+			);
+		}
 
 		// Because mutation needs to keep track and adjust boundary points so we
 		// can preserve the range.
@@ -1326,7 +1328,7 @@ define([
 					right.setFrom(pos);
 				}
 			};
-		});
+		}, false);
 		return liveRange;
 	}
 

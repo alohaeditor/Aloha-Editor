@@ -24,15 +24,16 @@
 		equal($editable.html(), after, before + ' ⇒ ' + after);
 	}
 
-	test('remove()', function () {
-		tested.push('remove');
+	test('delete()', function () {
+		tested.push('delete');
 		var t = function (before, after) {
-			return runTest(before, after, editing.remove);
+			return runTest(before, after, editing.delete);
 		};
+
+		t('<div>foo{<ul><li>}bar</li></ul></div>', '');
 
 		t('<p>x[y]z</p>', '<p>x[]z</p>');
 
-		t('<div><p>x</p><p>{y</p><p>}z</p></div>', '<div><p>x</p><p>{}z</p></div>');
 		t('<p>x[]y</p>', '<p>x[]y</p>');
 		t('<p><b>x</b>{}<i>y</i></p>', '<p><b>x</b>{}<i>y</i></p>');
 
@@ -68,10 +69,10 @@
 		t('<p>x<b>{y</b>]z</p>', '<p>x<b>{}z</b></p>');
 		t('<p>x<b>[y</b>}z</p>', '<p>x<b>{}z</b></p>');
 
-		t('<p>x<b>y{</b>z}</p>', '<p>x<b>y</b>{}</p>');
-		t('<p>x<b>y[</b>z]</p>', '<p>x<b>y</b>{}</p>');
-		t('<p>x<b>y{</b>z]</p>', '<p>x<b>y</b>{}</p>');
-		t('<p>x<b>y[</b>z}</p>', '<p>x<b>y</b>{}</p>');
+		t('<p>x<b>y{</b>z}</p>', '<p>x<b>y{}</b></p>');
+		t('<p>x<b>y[</b>z]</p>', '<p>x<b>y{}</b></p>');
+		t('<p>x<b>y{</b>z]</p>', '<p>x<b>y{}</b></p>');
+		t('<p>x<b>y[</b>z}</p>', '<p>x<b>y{}</b></p>');
 
 		t('<p>{x<b>}y</b>z</p>', '<p>{}<b>y</b>z</p>');
 		t('<p>[x<b>]y</b>z</p>', '<p>{}<b>y</b>z</p>');
@@ -97,6 +98,8 @@
 		t('<p>x<b>fo[o</b>bar<u>b]az</u>y</p>', '<p>x<b>fo{}</b><u>az</u>y</p>');
 
 		t('<li>fo[o<ol><li>}</li></ol></li>', '<li>fo{<ol><li>}</li></ol></li>');
+
+		t('<div><p>x</p><p>{y</p><p>}z</p></div>', '<div><p>x</p><p>{}z</p></div>');
 	});
 
 	function switchElemTextSelection(html) {
