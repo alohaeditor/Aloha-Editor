@@ -43,6 +43,8 @@ define([
 	'ui/toggleButton',
 	'i18n!block/nls/i18n',
 	'i18n!aloha/nls/i18n',
+	'block/block-utils',
+	'util/html',
 	'jqueryui'
 ], function(
 	Aloha,
@@ -58,7 +60,9 @@ define([
  	Ui,
  	ToggleButton, 
 	i18n,
-	i18nCore
+	i18nCore,
+    BlockUtils,
+    HtmlUtils
 ) {
 	"use strict";
 
@@ -123,7 +127,6 @@ define([
 			Aloha.bind('aloha-editable-activated', function (e, params) {
 				that.applyButtonConfig(params.editable);
 			});
-
 		},
 
 		/**

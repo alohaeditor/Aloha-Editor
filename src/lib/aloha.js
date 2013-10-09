@@ -469,12 +469,16 @@
 			return this;
 		};
 
-		Aloha.unbind = function (typeOrEvent) {
+		Aloha.unbind = function (typeOrEvent, handler) {
 			Aloha.require(['aloha/jquery'], function ($) {
-				Aloha.unbind = function (typeOrEvent) {
-					$(Aloha, 'body').unbind(typeOrEvent);
+				Aloha.unbind = function (typeOrEvent, handler) {
+					if (typeof handler === 'function') {
+						$(Aloha, 'body').unbind(typeOrEvent, handler);
+					} else {
+						$(Aloha, 'body').unbind(typeOrEvent);
+					}
 				};
-				Aloha.unbind(typeOrEvent);
+				Aloha.unbind(typeOrEvent, handler);
 			});
 		};
 
