@@ -19,3 +19,9 @@ All changes are categorized into one of the following keywords:
 
 - **BUGFIX**: blocks: Blocks will immediately be given padding landing areas (if
               needed) as soon as they are inserted into active editables.
+
+- **BUGFIX**: tables: It is now possible to click once and start editing table
+              summaries.
+
+- **BUGFIX**: tables: It is now possible to delete entire rows or columns using
+              the delete key.
