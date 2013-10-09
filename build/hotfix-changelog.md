@@ -16,3 +16,6 @@ All changes are categorized into one of the following keywords:
 
 - **BUGFIX**: tables: Selecting inside of tables will no longer results in
               sometimes having the selection deselected on mouseup in IE.
+
+- **BUGFIX**: blocks: Blocks will immediately be given padding landing areas (if
+              needed) as soon as they are inserted into active editables.
