@@ -1054,6 +1054,23 @@ define([
 	}
 
 	/**
+	 * Whether or not it is possible to insert a text or a text node in the
+	 * given node.
+	 *
+	 * This test is useful for determining whether a node is suitable to serve
+	 * as a container for range boundary position for the pursposes of editing
+	 * content.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
+	function canInsertText(node) {
+		return (dom.isTextNode(node)
+		    || content.allowsNesting(node.nodeName, '#text'))
+		    && isRendered(node);
+	}
+
+	/**
 	 * Returns the an node/offset namedtuple of the next visible position from
 	 * the given position in the document.
 	 *
@@ -1070,19 +1087,23 @@ define([
 		}
 		var start;
 		if (dom.isAtEnd(node, offset) || dom.isTextNode(node)) {
-			start = node;
+			start = node.lastChild || node;
 		} else {
 			start = traversing.backward(dom.nodeAtOffset(node, offset));
 		}
 		var crossedVisualBreak = false;
-		var next = traversing.findForward(start, isRendered, function (node) {
-			if (!crossedVisualBreak) {
-				crossedVisualBreak = isLinebreakingNode(node);
+		var next = traversing.findForward(
+			start,
+			canInsertText,
+			function (node) {
+				if (!crossedVisualBreak) {
+					crossedVisualBreak = isLinebreakingNode(node);
+				}
+				return dom.isEditingHost(node)
+					|| (node.previousSibling
+						&& dom.isEditingHost(node.previousSibling));
 			}
-			return dom.isEditingHost(node)
-				|| (node.previousSibling
-					&& dom.isEditingHost(node.previousSibling));
-		});
+		);
 		if (!next) {
 			return {
 				node: node,
@@ -1182,7 +1203,7 @@ define([
 		var crossedVisualBreak = false;
 		var prev = traversing.previousNonAncestor(
 			next,
-			isRendered,
+			canInsertText,
 			function (node) {
 				if (!crossedVisualBreak) {
 					crossedVisualBreak = isLinebreakingNode(node);
