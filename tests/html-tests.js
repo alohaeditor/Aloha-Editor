@@ -35,7 +35,7 @@
 		  '<div>foo<p contenteditable="true">{b]ar</p></div>');
 
 		t('<div><p>foo{}<br></p>bar</div>', '<div><p>foo{<br></p>]bar</div>');
-		t('<div><i>foo{}<br></i>bar</div>', '<div><i>foo{<br></i>]bar</div>');
+		t('<div><i>foo{}<br></i>bar</div>', '<div><i>foo{<br>}</i>bar</div>');
 
 		t('<div><p>foo{}</p><ul><li>bar</li></ul></div>',
 		  '<div><p>foo{</p><ul><li>}bar</li></ul></div>');
@@ -48,7 +48,7 @@
 		t('<p>{}foo</p>', '<p>{f]oo</p>');
 
 		t('<p>[] foo</p>', '<p>[ f]oo</p>');
-		t('<p>foo[] </p>', '<p>foo[ ]</p>');
+		t('<p>foo[] </p>', '<p>foo[ }</p>');
 		t('<p><i>[] <b> foo</b></i></p>', '<p><i>[ <b> f]oo</b></i></p>');
 		t('<div><p><b>foo </b></p><p><i><b>[bar]  </b> </i> </p>baz</div>',
 		  '<div><p><b>foo </b></p><p><i><b>[bar  </b> </i> </p>b]az</div>');
@@ -57,17 +57,17 @@
 		t('<div>foo<p>[]  bar</p></div>', '<div>foo<p>[  b]ar</p></div>');
 		t('<div><p>foo</p>[]  bar</div>', '<div><p>foo</p>[  b]ar</div>');
 
-		t('<b>[]</b>', '<b>[]</b>');
-		t('<b>[] </b>', '<b>[ ]</b>');
-		t('<b>[]  </b>', '<b>[  ]</b>');
+		t('<b>[]</b>', '<b>[}</b>');
+		t('<b>[] </b>', '<b>[ }</b>');
+		t('<b>[]  </b>', '<b>[  }</b>');
 
-		t('<b> []</b>', '<b> []</b>');
-		t('<b> [] </b>', '<b> [ ]</b>');
-		t('<b> [ ] </b>', '<b> [  ]</b>');
+		t('<b> []</b>', '<b> [}</b>');
+		t('<b> [] </b>', '<b> [ }</b>');
+		t('<b> [ ] </b>', '<b> [  }</b>');
 
-		t('<b>  []</b>', '<b>  []</b>');
-		t('<b>  [] </b>', '<b>  [ ]</b>');
-		t('<b>  [  ]</b>', '<b>  [  ]</b>');
+		t('<b>  []</b>', '<b>  [}</b>');
+		t('<b>  [] </b>', '<b>  [ }</b>');
+		t('<b>  [  ]</b>', '<b>  [  }</b>');
 
 		t('<b>[]foo</b>', '<b>[f]oo</b>');
 		t('<b> []foo</b>', '<b> [f]oo</b>');
@@ -79,27 +79,27 @@
 		t('<b>[fo]o </b>', '<b>[foo] </b>');
 		t('<b>[fo]o  </b>', '<b>[foo]  </b>');
 
-		t('<b>[foo]</b>', '<b>[foo]</b>');
-		t('<b>[foo] </b>', '<b>[foo ]</b>');
+		t('<b>[foo]</b>', '<b>[foo}</b>');
+		t('<b>[foo] </b>', '<b>[foo }</b>');
 
-		t('<b>[foo]  </b>', '<b>[foo  ]</b>');
+		t('<b>[foo]  </b>', '<b>[foo  }</b>');
 		t('<p><b>[foo]  </b>bar</p>', '<p><b>[foo ] </b>bar</p>');
 
 		t('<b>[foo]bar</b>', '<b>[foob]ar</b>');
 		t('<b>[foo] bar</b>', '<b>[foo ]bar</b>');
 		t('<b>[foo ] bar</b>', '<b>[foo  b]ar</b>');
 
-		t('<b>[foo ]</b>', '<b>[foo ]</b>');
-		t('<b>[foo ] </b>', '<b>[foo  ]</b>');
-		t('<b>[foo ]  </b>', '<b>[foo   ]</b>');
+		t('<b>[foo ]</b>', '<b>[foo }</b>');
+		t('<b>[foo ] </b>', '<b>[foo  }</b>');
+		t('<b>[foo ]  </b>', '<b>[foo   }</b>');
 
 		t('<b>[foo ]bar</b>', '<b>[foo b]ar</b>');
 		t('<b>[foo ] bar</b>', '<b>[foo  b]ar</b>');
 		t('<b>[foo ]  bar</b>', '<b>[foo   b]ar</b>');
 
-		t('<b>[foo  ]</b>', '<b>[foo  ]</b>');
-		t('<b>[foo  ] </b>', '<b>[foo   ]</b>');
-		t('<b>[foo  ]  </b>', '<b>[foo    ]</b>');
+		t('<b>[foo  ]</b>', '<b>[foo  }</b>');
+		t('<b>[foo  ] </b>', '<b>[foo   }</b>');
+		t('<b>[foo  ]  </b>', '<b>[foo    }</b>');
 
 		t('<b>[foo  ]bar</b>', '<b>[foo  b]ar</b>');
 
@@ -107,6 +107,13 @@
 		t('<b>[foo  ]  bar</b>', '<b>[foo    b]ar</b>');
 
 		t('<b>foo[ ] &nbsp; </b>', '<b>foo[  &nbsp;] </b>');
+
+		t('<p>[]<br></p>', '<p>[<br>}</p>');
+		t('<p>[]<br>foo</p>', '<p>[<br>]foo</p>');
+		t('<p>foo[]<br>bar</p>', '<p>foo[<br>]bar</p>');
+		t('<p>foo{}<br><br>bar</p>', '<p>foo{<br>}<br>bar</p>');
+		t('<p>foo[]<br><br>bar</p>', '<p>foo[<br>}<br>bar</p>');
+		t('<div><p>foo[]<br></p>one</div>', '<div><p>foo[<br></p>]one</div>');
 	});
 
 	test('previousVisiblePosition()', function () {
@@ -173,6 +180,11 @@
 
 		t('<div><p>foo </p> <p> [bar]</p></div>',
 		  '<div><p>foo[ </p> <p> bar]</p></div>');
+
+		t('<p><br>[]foo</p>', '<p>{<br>]foo</p>');
+		t('<p>foo<br>[]bar</p>', '<p>foo[<br>]bar</p>');
+		t('<p>foo<br><br>[]bar</p>', '<p>foo<br>{<br>]bar</p>');
+		t('<div><p>foo<br></p>[]one</div>', '<div><p>foo[<br></p>]one</div>');
 	});
 
 	test('isControlCharacter', function () {

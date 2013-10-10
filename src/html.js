@@ -1091,16 +1091,17 @@ define([
 		if (pos.node) {
 			return pos;
 		}
-		var start;
-		if (dom.isAtEnd(node, offset) || dom.isTextNode(node)) {
-			start = node.lastChild || node;
-		} else {
-			start = traversing.backward(dom.nodeAtOffset(node, offset));
-		}
+		var start = (dom.isAtEnd(node, offset) || dom.isTextNode(node))
+		          ? (node.lastChild || node)
+		          : traversing.backward(dom.nodeAtOffset(node, offset));
 		var crossedVisualBreak = false;
 		var next = traversing.findForward(
 			start,
-			canInsertText,
+			function (node) {
+				return canInsertText(node) || (
+					isVoidType(node) && traversing.nextWhile(node, isUnrendered)
+				);
+			},
 			function (node) {
 				if (node === start) {
 					return false;
@@ -1115,8 +1116,14 @@ define([
 		);
 		if (!next) {
 			return {
-				node: node,
-				offset: dom.nodeLength(node)
+				node: node.parentNode,
+				offset: dom.nodeLength(node.parentNode)
+			};
+		}
+		if (isVoidType(next)) {
+			return {
+				node: next.parentNode,
+				offset: dom.nodeIndex(next) + 1
 			};
 		}
 		if (crossedVisualBreak) {
@@ -1219,12 +1226,14 @@ define([
 
 		if (!landing) {
 			next = next || (
-				// fo[]o                    or foo{}<i>bar</i>
+				// fo[]o or foo{}<i>bar</i>
 				dom.isTextNode(node) ? node : dom.nodeAtOffset(node, offset)
 			);
 			landing = traversing.previousNonAncestor(
 				next,
-				canInsertText,
+				function (node) {
+					return canInsertText(node) || isVoidType(node);
+				},
 				function (node) {
 					if (!crossedVisualBreak) {
 						crossedVisualBreak = isLinebreakingNode(node);
@@ -1245,9 +1254,22 @@ define([
 			if (landing.lastChild) {
 				landing = traversing.findBackward(
 					traversing.forward(landing.lastChild),
-					canInsertText
+					function (node) {
+						return canInsertText(node) || isVoidType(node);
+					}
 				);
 			}
+
+			if (isVoidType(landing)) {
+				if (!landing.previousSibling || isVoidType(landing.previousSibling)) {
+					return {
+						node: landing.parentNode,
+						offset: dom.nodeIndex(landing)
+					};
+				}
+				landing = landing.previousSibling;
+			}
+
 			if (dom.isTextNode(landing)) {
 				var boundary = landing.data.search(WSP_FROM_END);
 				return {
@@ -1255,6 +1277,7 @@ define([
 					offset: -1 === boundary ? dom.nodeLength(landing) : boundary
 				};
 			}
+
 			return {
 				node: landing,
 				offset: dom.nodeLength(landing)
