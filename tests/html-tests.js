@@ -31,6 +31,12 @@
 			});
 		};
 
+		t('<div>foo<p contenteditable="true">{}bar</p></div>',
+		  '<div>foo<p contenteditable="true">{b]ar</p></div>');
+
+		t('<div><p>foo{}<br></p>bar</div>', '<div><p>foo{<br></p>]bar</div>');
+		t('<div><i>foo{}<br></i>bar</div>', '<div><i>foo{<br></i>]bar</div>');
+
 		t('<div><p>foo{}</p><ul><li>bar</li></ul></div>',
 		  '<div><p>foo{</p><ul><li>}bar</li></ul></div>');
 
@@ -38,6 +44,8 @@
 		  '<div>foo{<ul><li>}bar</li></ul></div>');
 
 		t('<p>foo{}<b>bar</b>baz</p>', '<p>foo{<b>b]ar</b>baz</p>');
+
+		t('<p>{}foo</p>', '<p>{f]oo</p>');
 
 		t('<p>[] foo</p>', '<p>[ f]oo</p>');
 		t('<p>foo[] </p>', '<p>foo[ ]</p>');
@@ -139,6 +147,8 @@
 		t('<b>foo  [bar]</b>', '<b>foo [ bar]</b>');
 		t('<b> foo  [bar]</b>', '<b> foo [ bar]</b>');
 
+		t('<p>foo{}<br></p>', '<p>fo[o}<br></p>');
+		t('<p>foo<br>{}</p>', '<p>foo[<br>}</p>');
 
 		t('<div><p>foo</p>[bar]</div>',
 		  '<div><p>foo[</p>bar]</div>');

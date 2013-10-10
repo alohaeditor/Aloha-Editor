@@ -463,9 +463,9 @@ define([
 	}
 
 	/**
-	 * Finds the first DOM object, ahead the given node which matches the
-	 * predicate `match`.  If `until` returns true the given node, for any other
-	 * node during traversal, null is returned.
+	 * Finds the first DOM object, ahead of the given node which matches the
+	 * predicate `match` but before `until` returns true for any node that is
+	 * traversed during the search, in which case null is returned.
 	 *
 	 * @param {DOMObject} node
 	 * @param {Function(DOMObject):Boolean} match

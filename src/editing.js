@@ -1263,6 +1263,10 @@ define([
 	 * <h1>Overskrift[]Text</h1>”
 	 * -- http://dev.opera.com/articles/view/rich-html-editing-in-the-browser-part-1
 	 *
+	 * TODO:
+	 * put &nbsp; at beginning and end position in order to preserve spaces at
+	 * these locations when deleting. also consider propping <p></p>'s
+	 *
 	 * @param {Range} range
 	 * @return {Range}
 	 *         The modified range, after deletion.
