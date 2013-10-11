@@ -142,58 +142,6 @@ define([
 		return names;
 	}
 
-	function supportsAttributes(node) {
-		var type = node.nodeType;
-		return !(
-			!node
-				|| type === Nodes.TEXT
-					|| type === Nodes.COMMENT
-						|| type === Nodes.ATTR
-		);
-	}
-
-	/**
-	 * Get's the value of the given element's specified attribute.
-	 *
-	 * @param {DOMObject} elem
-	 * @param {String} attr
-	 *        Case insensitive attribute name to retrieve.
-	 * @return {String?}
-	 *         The value of the attribute or null if no value for it can be
-	 *         determined.
-	 */
-	function getAttr(elem, attr) {
-		return supportsAttributes(elem) ? elem.getAttribute(attr) : null;
-	}
-
-	/**
-	 * Set's the value of the given element's specified attribute.
-	 *
-	 * @param {DOMObject} elem
-	 * @param {String} attr
-	 *        Case insensitive attribute name to retrieve.
-	 * @param {String}
-	 *        The value to set into attribute `attr`.
-	 */
-	function setAttr(elem, attr, value) {
-		if (value !== null && misc.defined(value) && supportsAttributes(elem)) {
-			elem.setAttribute(attr, value);
-		}
-	}
-
-	/**
-	 * Removes the specified attribute from the given element.
-	 *
-	 * @param {DOMObject} elem
-	 * @param {String} attr
-	 *        Case insensitive attribute name to retrieve.
-	 */
-	function removeAttr(elem, attr) {
-		if (supportsAttributes(elem)) {
-			elem.removeAttribute(attr);
-		}
-	}
-
 	/**
 	 * Gets the attributes of the given element.
 	 *
@@ -213,7 +161,7 @@ define([
 		var len;
 		for (i = 0, len = names.length; i < len; i++) {
 			var name = names[i];
-			var value = getAttr(elem, name);
+			var value = elem.getAttribute(name);
 			if (null == value) {
 				value = '';
 			} else {
@@ -1047,15 +995,15 @@ define([
 	function removeStyle(elem, styleName) {
 		if (browser.hasRemoveProperty) {
 			elem.style.removeProperty(styleName);
-			if (strings.empty(getAttr(elem, 'style'))) {
-				removeAttr(elem, 'style');
+			if (strings.empty(elem.getAttribute('style'))) {
+				elem.removeAttribute('style');
 			}
 		} else {
 			// TODO: this is a hack for browsers that don't support
 			//       removeProperty (ie < 9)and will not work correctly for all
 			//       valid inputs, but it's the simplest thing I can come up
 			//       with without implementing a full css parser.
-			var style = getAttr(elem, 'style');
+			var style = elem.getAttribute('style');
 			if (null == style) {
 				return;
 			}
@@ -1070,9 +1018,9 @@ define([
 			);
 			style = style.replace(stripRegex, '');
 			if (!strings.empty(style)) {
-				setAttr(elem, 'style', style);
+				elem.setAttribute('style', style);
 			} else {
-				removeAttr(elem, 'style');
+				elem.removeAttribute('style');
 			}
 		}
 	}
@@ -1251,9 +1199,6 @@ define([
 
 		getElementsByClassNames: getElementsByClassNames,
 
-		getAttr: getAttr,
-		setAttr: setAttr,
-		removeAttr: removeAttr,
 		attrNames: attrNames,
 		hasAttrs: hasAttrs,
 		attrs: attrs,
@@ -1308,9 +1253,6 @@ define([
 	exports['removeClass'] = exports.removeClass;
 	exports['hasClass'] = exports.hasClass;
 	exports['getElementsByClassNames'] = exports.getElementsByClassNames;
-	exports['getAttr'] = exports.getAttr;
-	exports['setAttr'] = exports.setAttr;
-	exports['removeAttr'] = exports.removeAttr;
 	exports['attrNames'] = exports.attrNames;
 	exports['hasAttrs'] = exports.hasAttrs;
 	exports['attrs'] = exports.attrs;

@@ -72,15 +72,11 @@ define([
 	 * Also serves as short aloha.aloha.
 	 */
 	function aloha(element) {
-		if (!dom.isTextNode(element)) {
-			dom.setAttr(element, 'contentEditable', 'true');
-		}
+		element.setAttribute('contentEditable', 'true');
 	}
 
 	function mahalo(element) {
-		if (!dom.isTextNode(element)) {
-			dom.removeAttr(element, 'contentEditable');
-		}
+		element.removeAttribute('contentEditable');
 	}
 
 	aloha['aloha'] = aloha;

@@ -217,13 +217,13 @@ define([
 	 * function, if that is more convenient.
 	 */
 	function markAttr(elem, attr) {
-		var data = dom.getAttr(elem, 'data-aloha-ephemera-attr');
+		var data = elem.getAttribute('data-aloha-ephemera-attr');
 		if (null == data || '' === data) {
 			data = attr;
 		} else if (-1 === strings.words(data).indexOf(attr)) {
 			data += ' ' + attr;
 		}
-		dom.setAttr(elem, 'data-aloha-ephemera-attr', data);
+		elem.setAttribute('data-aloha-ephemera-attr', data);
 		dom.addClass(elem, 'aloha-ephemera-attr');
 	}
 
@@ -273,19 +273,19 @@ define([
 	 * given element.
 	 */
 	function pruneMarkedAttrs(elem) {
-		var data = dom.getAttr(elem, 'data-aloha-ephemera-attr');
+		var data = elem.getAttribute('data-aloha-ephemera-attr');
 		var i;
 		var attrs;
 		// Because IE7 crashes if we remove this attribute. If the dom-to-xhtml
 		// plugin is turned on, it will handle the removal of this attribute
 		// during serialization.
 		if (!browser.ie7) {
-			dom.removeAttr(elem, 'data-aloha-ephemera-attr');
+			elem.removeAttribute('data-aloha-ephemera-attr');
 		}
 		if (typeof data === 'string') {
 			attrs = strings.words(data);
 			for (i = 0; i < attrs.length; i++) {
-				dom.removeAttr(elem, attrs[i]);
+				elem.removeAttribute(attrs[i]);
 			}
 		}
 	}
@@ -322,7 +322,7 @@ define([
 		for (i = 0, len = attrs.length; i < len; i++) {
 			name = attrs[i];
 			if (isAttrEphemeral(elem, name, emap.attrMap, emap.attrRxs)) {
-				dom.removeAttr(elem, name);
+				elem.removeAttribute(name);
 			}
 		}
 	}
@@ -364,7 +364,7 @@ define([
 			});
 			if (persistentClasses.length !== classes.length) {
 				if (0 === persistentClasses.length) {
-					dom.removeAttr(elem, 'class');
+					elem.removeAttribute('class');
 				} else {
 					elem.className = persistentClasses.join(' ');
 				}
