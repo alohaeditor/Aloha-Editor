@@ -56,16 +56,15 @@ define([
 	typing
 ) {
 	'use strict';
- 
+
 	/*
-	keys.down(typing.down);
 	keys.down('enter', typing.enter);
 	keys.down('space', typing.space);
 	keys.on('press up down', caret.showOnEvent);
 	mouse.on('up down', caret.showOnEvent);
 	*/
-	keys.down('backspace', typing.deleteBackward);
-	keys.down('delete', typing.deleteForward);
+
+	keys.down(typing.down);
 
 	/**
 	 * The Aloha Editor namespace root.

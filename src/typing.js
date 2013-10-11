@@ -22,15 +22,19 @@ define([
 	'use strict';
 
 	function enter(msg) {
-		ranges.insertTextBehind(msg.range, '¶');
+		if (msg.range) {
+			ranges.insertTextBehind(msg.range, '¶');
+		}
 	}
 
 	function space(msg) {
-		ranges.insertTextBehind(msg.range, '·');
-		msg.event.preventDefault();
+		if (msg.range) {
+			ranges.insertTextBehind(msg.range, '·');
+			msg.event.preventDefault();
+		}
 	}
 
-	function delete_(range, event, direction) {
+	function delete_(range, direction) {
 		var collapsed = range.collapsed;
 		range = ranges.expandToVisibleCharacter(range);
 		if (collapsed) {
@@ -40,33 +44,35 @@ define([
 					: ranges.expandBackwardToVisiblePosition
 			)(range);
 		}
-		ranges.select(editing.delete(range));
-		event.preventDefault();
+		range = editing.delete(range);
+		return range;
 	}
 
-	function deleteBackward(msg) {
-		if (msg.range) {
-			delete_(msg.range, msg.event, false);
+	function down(msg) {
+		if (!msg.range) {
+			return;
 		}
-	}
-
-	function deleteForward(msg) {
-		if (msg.range) {
-			delete_(msg.range, msg.event, true);
+		var range;
+		if (keys.CODES.backspace === msg.code) {
+			range = delete_(msg.range, false);
+		} else if (keys.CODES.delete === msg.code || !msg.range.collapsed) {
+			range = delete_(msg.range, true);
+		}
+		if (range) {
+			ranges.select(range);
+			msg.event.preventDefault();
 		}
 	}
 
 	var exports = {
 		enter: enter,
 		space: space,
-		deleteForward: deleteForward,
-		deleteBackward: deleteBackward
+		down: down
 	};
 
 	exports['enter'] = enter;
 	exports['space'] = space;
-	exports['deleteForward'] = exports.deleteForward;
-	exports['deleteBackward'] = exports.deleteBackward;
+	exports['down'] = down;
 
 	return exports;
 });
