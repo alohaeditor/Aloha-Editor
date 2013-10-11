@@ -1,20 +1,21 @@
 								  KNOWN ISSUES
 								  ~~~~~~~~~~~~
 
+delete the given selection should not be a noop.
 
-expandToVisible:
-foo  []  bar ==> foo [   ]bar
-   --  --           - ---
-
-
-to tests:
-editing.delete()
-fo[o
-<ul>
-<li>ba]r</li>
-</ul>
-
-"ba" should get transfered to be before the ul
+<ul><li>{</li></ul>
+<div>}
+	<ul>
+		<li>one</li>
+		<li>two</li>
+		<li>three<ul>
+					<li>one</li>
+					<li>two</li>
+					<li>three</li>
+				</ul>
+		</li>
+	</ul>
+</div>
 
 
 double clicking on a first paragraphs leads to this wierd selection:
