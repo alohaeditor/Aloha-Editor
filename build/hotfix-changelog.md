@@ -7,3 +7,6 @@ All changes are categorized into one of the following keywords:
                    usage, or intent of an existing one.
 
 ----
+
+- **BUGFIX**: block plugin: Fix the error "Member not found" occuring when initializing a block
+              with links in it. This error occurs on IE 10 compatbility mode with document mode 7.
