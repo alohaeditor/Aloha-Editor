@@ -152,7 +152,20 @@ define([
 			if (this.isDraggable()) {
 				// Remove default drag/drop behavior of the browser
 				$element.find('img').attr('draggable', 'false');
-				$element.find('a').attr('draggable', 'false');
+
+				try {
+					$element.find('a').attr('draggable', 'false');
+				} catch(e) {
+					// If we get in here, it is most likely an issue with IE 10 in documentmode 7
+					// and IE10 compatibility mode. It maybe happens in older versions too.
+					// Error: Member not found
+					// https://connect.microsoft.com/IE/feedback/details/774078
+					// http://bugs.jquery.com/ticket/12577
+					// Our fallback solution:
+					$element.find('a').each(function() {
+						this.setAttribute('draggable', 'false');
+					});
+				}
 			}
 
 			// set the attributes
