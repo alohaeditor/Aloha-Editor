@@ -8,3 +8,7 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**: Formatless Copy/Paste not working.
+              When paste action was made the formatlesshandler was never called.
+              We manually call this handler before pasting the content into the DOM element.
+              RT#56692

@@ -38,7 +38,8 @@ define([
 	'contenthandler/contenthandler-utils',
 	'aloha/console',
 	'aloha/copypaste',
-	'util/dom'
+	'util/dom',
+	'aloha/contenthandlermanager'
 ], function (
 	$,
 	Aloha,
@@ -47,7 +48,8 @@ define([
 	ContentHandlerUtils,
 	Console,
 	CopyPaste,
-	Dom
+	Dom,
+	ContentHandlerManager
 ) {
 	'use strict';
 
@@ -315,6 +317,11 @@ define([
 			});
 
 			var content = $clipboard.html();
+
+			var formatlessHandler = ContentHandlerManager.get('formatless');
+			if (typeof formatlessHandler !== 'undefined') {
+				content = formatlessHandler.handleContent(content);
+			}
 
 			// Because IE inserts an insidious nbsp into the content during
 			// pasting that needs to be removed.  Leaving it would otherwise
