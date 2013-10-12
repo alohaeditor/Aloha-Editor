@@ -361,6 +361,11 @@ define([
 		);
 		if (pos.offset > 0) {
 			range.setEnd(pos.node, pos.offset - 1);
+		} else if (dom.isTextNode(range.endContainer)) {
+			range.setEnd(
+				range.endContainer,
+				dom.nodeLength(range.endContainer)
+			);
 		}
 		return range;
 	}
