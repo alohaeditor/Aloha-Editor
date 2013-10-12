@@ -36,7 +36,6 @@ define([
 
 	function delete_(range, direction) {
 		var collapsed = range.collapsed;
-		range = ranges.expandToVisibleCharacter(range);
 		if (collapsed) {
 			range = (
 				direction
@@ -44,7 +43,7 @@ define([
 					: ranges.expandBackwardToVisiblePosition
 			)(range);
 		}
-		range = editing.delete(range);
+		range = editing.delete(ranges.expandToVisibleCharacter(range));
 		return range;
 	}
 

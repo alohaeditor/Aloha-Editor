@@ -1064,7 +1064,7 @@ define([
 	 * given node.
 	 *
 	 * This test is useful for determining whether a node is suitable to serve
-	 * as a container for range boundary position for the pursposes of editing
+	 * as a container for range boundary position for the purposes of editing
 	 * content.
 	 *
 	 * @param {DOMObject} node
@@ -1076,11 +1076,44 @@ define([
 		    && isRendered(node);
 	}
 
+	function prevNodeFromPosition(node, offset) {
+		return (dom.isAtEnd(node, offset) || dom.isTextNode(node))
+			? (node.lastChild || node)
+			: traversing.backward(dom.nodeAtOffset(node, offset));
+	}
+
+	function nextNodeToFindPosition(start, out_crossedVisualBreak) {
+		return traversing.findForward(
+			start,
+			/**
+			 * True if the given node can contain text or if it is the last
+			 * visible void node.
+			 */
+			function (node) {
+				return canInsertText(node)
+					|| (isVoidType(node)
+						&& traversing.nextWhile(node, isUnrendered));
+			},
+			function (node) {
+				if (node === start) {
+					return false;
+				}
+				if (!out_crossedVisualBreak()) {
+					out_crossedVisualBreak(isLinebreakingNode(node));
+				}
+				return dom.isEditingHost(node)
+					|| (node.previousSibling
+						&& dom.isEditingHost(node.previousSibling));
+			}
+		);
+	}
+
 	/**
-	 * Returns the an node/offset namedtuple of the next visible position from
-	 * the given position in the document.
+	 * Returns the an node/offset namedtuple of the next visible position in
+	 * the document.
 	 *
-	 * All "zero-width character" are ignored.
+	 * The next visible position is always the next visible character, or the
+	 * next visible line break or space.
 	 *
 	 * @param {DOMObject} node
 	 * @param {Number} offset
@@ -1091,28 +1124,10 @@ define([
 		if (pos.node) {
 			return pos;
 		}
-		var start = (dom.isAtEnd(node, offset) || dom.isTextNode(node))
-		          ? (node.lastChild || node)
-		          : traversing.backward(dom.nodeAtOffset(node, offset));
-		var crossedVisualBreak = false;
-		var next = traversing.findForward(
-			start,
-			function (node) {
-				return canInsertText(node) || (
-					isVoidType(node) && traversing.nextWhile(node, isUnrendered)
-				);
-			},
-			function (node) {
-				if (node === start) {
-					return false;
-				}
-				if (!crossedVisualBreak) {
-					crossedVisualBreak = isLinebreakingNode(node);
-				}
-				return dom.isEditingHost(node)
-					|| (node.previousSibling
-						&& dom.isEditingHost(node.previousSibling));
-			}
+		var crossedVisualBreak = fn.outparameter(false);
+		var next = nextNodeToFindPosition(
+			prevNodeFromPosition(node, offset),
+			crossedVisualBreak
 		);
 		if (!next) {
 			return {
@@ -1189,9 +1204,10 @@ define([
 
 	/**
 	 * Returns the an node/offset namedtuple of the previous visible position
-	 * from the given position in the document.
+	 * in the document.
 	 *
-	 * All "zero-width character" are ignored.
+	 * The previous visible position is always the previoys visible character,
+	 * or the previous visible line break or space.
 	 *
 	 * @param {DOMObject} node
 	 * @param {Number} offset
@@ -1203,8 +1219,8 @@ define([
 			return pos;
 		}
 
-		var landing;
 		var next;
+		var landing;
 		var crossedVisualBreak = false;
 
 		if (dom.isAtEnd(node, offset)) {
@@ -1261,7 +1277,8 @@ define([
 			}
 
 			if (isVoidType(landing)) {
-				if (!landing.previousSibling || isVoidType(landing.previousSibling)) {
+				if (!landing.previousSibling
+					|| isVoidType(landing.previousSibling)) {
 					return {
 						node: landing.parentNode,
 						offset: dom.nodeIndex(landing)
