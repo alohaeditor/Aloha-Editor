@@ -1143,12 +1143,17 @@ define([
 			};
 		}
 		if (isVoidType(next)) {
-			return {
-				node: next.parentNode,
-				offset: dom.nodeIndex(next) + 1
-			};
+			var after = traversing.forward(next);
+			if (isVoidType(after) || isInlineType(after)) {
+				return {
+					node: next.parentNode,
+					offset: dom.nodeIndex(next) + 1
+				};
+			}
+			next = after;
+			crossedVisualBreak(true);
 		}
-		if (crossedVisualBreak) {
+		if (crossedVisualBreak()) {
 			return {
 				node: next,
 				offset: 0

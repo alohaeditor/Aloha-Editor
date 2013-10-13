@@ -115,8 +115,8 @@
 		t('<p>foo[]<br><br>bar</p>', '<p>foo[<br>}<br>bar</p>');
 		t('<div><p>foo[]<br></p>bar</div>', '<div><p>foo[<br></p>]bar</div>');
 
-		t('<div>foo[]<br><p>bar</p></div>', '<div>foo[<br><p>]bar</p></div>');
-		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>]bar</p></div>');
+		t('<div>foo[]<br><p>bar</p></div>', '<div>foo[<br><p>}bar</p></div>');
+		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>}bar</p></div>');
 	});
 
 	test('previousVisiblePosition()', function () {
@@ -132,6 +132,8 @@
 				}
 			});
 		};
+
+		t('<div>foo<ul><li>bar</li></ul>{}baz</div>', '');
 
 		t('<b>[]</b>',        '<b>[]</b>');
 		t('<b>[foo]</b>',     '<b>[foo]</b>');
