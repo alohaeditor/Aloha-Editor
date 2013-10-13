@@ -30,7 +30,9 @@ define([
 	 * @type {object<string, number>}
 	 */
 	var CODES = {
+		'alt'       : 18,
 		'backspace' : 8,
+		'capslock'  : 20,
 		'control'   : 17,
 		'delete'    : 46,
 		'enter'     : 13,

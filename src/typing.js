@@ -10,14 +10,16 @@ define([
 	'html',
 	'ranges',
 	'editing',
-	'traversing'
+	'traversing',
+	'functions'
 ], function Typing(
 	dom,
 	keys,
 	html,
 	ranges,
 	editing,
-	traversing
+	traversing,
+	fn
 ) {
 	'use strict';
 
@@ -87,6 +89,15 @@ define([
 			return range.collapsed ? range : delete_(range, true, overrides);
 		};
 
+	actions[keys.CODES.f1] =
+	actions[keys.CODES.f11] =
+	actions[keys.CODES.tab] =
+	actions[keys.CODES.alt] =
+	actions[keys.CODES.shift] =
+	actions[keys.CODES.escape] =
+	actions[keys.CODES.capslock] =
+	actions[keys.CODES.control] = fn.identity;
+
 	function down(msg, opts, overrides) {
 		if (!msg.range) {
 			return;
@@ -98,7 +109,7 @@ define([
 			html.prop(range.commonAncestorContainer);
 			ranges.select(range);
 			msg.event.preventDefault();
-		} else {
+		} else if (!keys.ARROWS[msg.code]) {
 			ranges.select(actions.insertText(msg.range, opts, overrides));
 		}
 	}
