@@ -64,7 +64,11 @@ define([
 	mouse.on('up down', caret.showOnEvent);
 	*/
 
-	keys.down(typing.down);
+	keys.down(function (msg) {
+		typing.down(msg, {
+			defaultLineBreakingElement: 'p'
+		});
+	});
 
 	/**
 	 * The Aloha Editor namespace root.

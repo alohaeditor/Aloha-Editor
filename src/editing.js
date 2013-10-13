@@ -1267,11 +1267,14 @@ define([
 	 * put &nbsp; at beginning and end position in order to preserve spaces at
 	 * these locations when deleting. also consider propping <p></p>'s
 	 *
+	 * @see https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
+	 *
 	 * @param {Range} range
+	 * @param {Object} overrides
 	 * @return {Range}
 	 *         The modified range, after deletion.
 	 */
-	function delete_(liveRange) {
+	function delete_(liveRange, overrides) {
 		fixupRange(liveRange, function (range, left, right) {
 			var remove = function (node) {
 				dom.removePreservingRange(node, range);
