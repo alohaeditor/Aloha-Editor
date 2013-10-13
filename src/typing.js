@@ -54,10 +54,13 @@ define([
 		var range;
 		if (keys.CODES.backspace === msg.code) {
 			range = delete_(msg.range, false);
-		} else if (keys.CODES.delete === msg.code || !msg.range.collapsed) {
+		} else if (keys.CODES.delete === msg.code) {
 			range = delete_(msg.range, true);
+		} else if (!msg.range.collapsed) {
+			ranges.select(delete_(msg.range, true));
 		}
 		if (range) {
+			html.prop(range.commonAncestorContainer);
 			ranges.select(range);
 			msg.event.preventDefault();
 		}

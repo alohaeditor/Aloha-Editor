@@ -6,12 +6,18 @@
  *
  * @reference
  * https://en.wikipedia.org/wiki/HTML_element#Content_vs._presentation
+ * https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories
+ * http://www.whatwg.org/specs/web-apps/2007-10-26/multipage/section-contenteditable.html
+ * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
+ * https://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp
+ * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
  */
 define([
 	'dom',
 	'arrays',
 	'cursors',
 	'content',
+	'browser',
 	'traversing',
 	'functions'
 ], function Html(
@@ -19,6 +25,7 @@ define([
 	arrays,
 	cursors,
 	content,
+	browser,
 	traversing,
 	fn
 ) {
@@ -1305,6 +1312,33 @@ define([
 	}
 
 	/**
+	 * "Props up" the given element if needed.
+	 *
+	 * The HTML specification stipulates that empty block-level elements be not
+	 * rendered.  This becomes a problem, if, in an editing operation results
+	 * in one of these elements being emptied of all its child nodes.  If this
+	 * were to happen, standard conformant browsers will no longer render that
+	 * empty block element even though it will remain in the docuement.
+	 * Because the element is invisible, it will no longer be possible for the
+	 * caret to be placed into it.
+	 *
+	 * In order to prevent littering the editable with invisible block-level
+	 * elements, we prop them up by ensuring the empty block-level elements are
+	 * given a <br> child node to force them to be rendered with one line height.
+	 *
+	 * The notable exception to this rule are the Microsoft's non-standard
+	 * conformant Trident engines which render empty editable block level
+	 * elements with one line height.
+	 *
+	 * @param {DOMObject} elem
+	 */
+	function prop(elem) {
+		if (!browser.browser.msie && !elem.firstChild && isBlockType(elem)) {
+			dom.insert(document.createElement('br'), elem, true);
+		}
+	}
+
+	/**
 	 * Functions for working with HTML content.
 	 */
 	var exports = {
@@ -1330,6 +1364,7 @@ define([
 		nextVisiblePosition: nextVisiblePosition,
 		previousVisibleCharacter: previousVisibleCharacter,
 		previousVisiblePosition: previousVisiblePosition,
+		prop: prop,
 		areNextWhiteSpacesSignificant: areNextWhiteSpacesSignificant
 	};
 
