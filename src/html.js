@@ -827,7 +827,7 @@ define([
 	 * @param {DOMObject} below
 	 * @return {DOMObject}
 	 */
-	function findLineBreakingNodeBetween(above, below) {
+	function findLinebreakingNode(above, below) {
 		if (isLinebreakingNode(above)) {
 			return above;
 		}
@@ -856,7 +856,7 @@ define([
 				offset: dom.nodeLength(above)
 			};
 		}
-		var breaker = findLineBreakingNodeBetween(above, below);
+		var breaker = findLinebreakingNode(above, below);
 		if (!breaker) {
 			traversing.climbUntil(below, dom.remove, hasRenderedChildren);
 			return {
@@ -1111,7 +1111,7 @@ define([
 				}
 				return dom.isEditingHost(node)
 					|| (node.previousSibling
-						&& dom.isEditingHost(node.previousSibling));
+					    && dom.isEditingHost(node.previousSibling));
 			}
 		);
 	}
@@ -1232,45 +1232,29 @@ define([
 			return pos;
 		}
 
-		var next;
-		var landing;
 		var crossedVisualBreak = false;
 
-		if (dom.isAtEnd(node, offset)) {
-			next = node.lastChild;
+		var next = (dom.isTextNode(node) || dom.isAtEnd(node, offset))
+		         ? node
+		         : dom.nodeAtOffset(node, offset);
 
-			// <p>foo{}</p>
-			if (next) {
-				// <p><br>{}</p>
-				crossedVisualBreak = isLinebreakingNode(next)
-				if (canInsertText(next)) {
-					landing = next;
+		var landing = traversing.findReverse(
+			next,
+			function (node) {
+				return canInsertText(node) || isVoidType(node);
+			},
+			function (node) {
+				if (next === node) {
+					return false;
 				}
-
-			// <p>{}</p>
-			} else {
-				next = node;
+				if (!crossedVisualBreak) {
+					crossedVisualBreak = isLinebreakingNode(node);
+				}
+				return dom.isEditingHost(node)
+					|| (node.nextSibling
+					    && dom.isEditingHost(node.nextSibling));
 			}
-		}
-
-		if (!landing) {
-			next = next || (
-				// fo[]o or foo{}<i>bar</i>
-				dom.isTextNode(node) ? node : dom.nodeAtOffset(node, offset)
-			);
-			landing = traversing.previousNonAncestor(
-				next,
-				function (node) {
-					return canInsertText(node) || isVoidType(node);
-				},
-				function (node) {
-					if (!crossedVisualBreak) {
-						crossedVisualBreak = isLinebreakingNode(node);
-					}
-					return dom.isEditingHost(node);
-				}
-			);
-		}
+		);
 
 		if (!landing) {
 			return {
@@ -1279,42 +1263,42 @@ define([
 			};
 		}
 
-		if (crossedVisualBreak) {
-			if (landing.lastChild) {
-				landing = traversing.findBackward(
-					traversing.forward(landing.lastChild),
-					function (node) {
-						return canInsertText(node) || isVoidType(node);
-					}
-				);
-			}
+		if (!crossedVisualBreak) {
+			return previousVisiblePosition(landing, dom.nodeLength(landing));
+		}
 
-			if (isVoidType(landing)) {
-				if (!landing.previousSibling
-					|| isVoidType(landing.previousSibling)) {
-					return {
-						node: landing.parentNode,
-						offset: dom.nodeIndex(landing)
-					};
+		if (landing.lastChild) {
+			landing = traversing.findBackward(
+				traversing.forward(landing.lastChild),
+				function (node) {
+					return canInsertText(node) || isVoidType(node);
 				}
-				landing = landing.previousSibling;
-			}
+			);
+		}
 
-			if (dom.isTextNode(landing)) {
-				var boundary = landing.data.search(WSP_FROM_END);
+		if (isVoidType(landing)) {
+			if (!landing.previousSibling
+				|| isVoidType(landing.previousSibling)) {
 				return {
-					node: landing,
-					offset: -1 === boundary ? dom.nodeLength(landing) : boundary
+					node: landing.parentNode,
+					offset: dom.nodeIndex(landing)
 				};
 			}
+			landing = landing.previousSibling;
+		}
 
+		if (dom.isTextNode(landing)) {
+			var boundary = landing.data.search(WSP_FROM_END);
 			return {
 				node: landing,
-				offset: dom.nodeLength(landing)
+				offset: -1 === boundary ? dom.nodeLength(landing) : boundary
 			};
 		}
 
-		return previousVisiblePosition(landing, dom.nodeLength(landing));
+		return {
+			node: landing,
+			offset: dom.nodeLength(landing)
+		};
 	}
 
 	/**
