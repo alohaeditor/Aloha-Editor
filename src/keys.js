@@ -57,11 +57,26 @@ define([
 	};
 
 	/**
+	 * Publishes messages on the keyup event.
+	 *
+	 * @param {Event} event
+	 */
+	function onUp(event) {
+		var message = {
+			event: event,
+			code: event.keyCode,
+			range: ranges.get()
+		};
+		pubsub.publish('aloha.key.up', message);
+		pubsub.publish('aloha.key.up.' + event.keyCode, message);
+	}
+
+	/**
 	 * Publishes messages on the keydown event.
 	 *
 	 * @param {Event} event
 	 */
-	function onKeyDownOnDocument(event) {
+	function onDown(event) {
 		var message = {
 			event: event,
 			code: event.keyCode,
@@ -73,38 +88,19 @@ define([
 	}
 
 	/**
-	 * Publishes messages on the keyup event.
-	 *
-	 * @param {Event} event
-	 */
-	function onKeyUpOnDocument(event) {
-		var message = {
-			event: event,
-			code: event.keyCode,
-			range: ranges.get()
-		};
-		pubsub.publish('aloha.key.up', message);
-		pubsub.publish('aloha.key.up.' + event.keyCode, message);
-	}
-
-	/**
 	 * Publishes messages on the keypress event.
 	 *
 	 * @param {Event} event
 	 */
-	function onKeyPressOnDocument(event) {
+	function onPress(event) {
 		var message = {
 			event: event,
 			code: event.keyCode,
 			range: ranges.get()
 		};
 		pubsub.publish('aloha.key.press', message);
-		pubsub.publish('aloha.key.up.' + event.keyCode, message);
+		pubsub.publish('aloha.key.press.' + event.keyCode, message);
 	}
-
-	events.add(document, 'keypress', onKeyPressOnDocument);
-	events.add(document, 'keydown', onKeyDownOnDocument);
-	events.add(document, 'keyup', onKeyUpOnDocument);
 
 	function subscribe(channel, code, callback) {
 		if ('function' === typeof code) {
@@ -118,27 +114,27 @@ define([
 	}
 
 	/**
-	 * Publishes messages on the keyup event.
-	 *
-	 * @param {Function(object)} callback
-	 */
-	function down(code, callback) {
-		subscribe('down', code, callback);
-	}
-
-	/**
 	 * Publishes messages on the keydown event.
 	 *
-	 * @param {Function(object)} callback
+	 * @param {Function(Object)} callback
 	 */
 	function up(code, callback) {
 		subscribe('up', code, callback);
 	}
 
 	/**
+	 * Publishes messages on the keyup event.
+	 *
+	 * @param {Function(Object)} callback
+	 */
+	function down(code, callback) {
+		subscribe('down', code, callback);
+	}
+
+	/**
 	 * Publishes messages on the keypress event.
 	 *
-	 * @param {Function(object)} callback
+	 * @param {Function(Object)} callback
 	 */
 	function press(code, callback) {
 		subscribe('press', code, callback);
@@ -162,22 +158,28 @@ define([
 	 * Functions for working with key events.
 	 */
 	var exports = {
-		on     : on,
-		up     : up,
-		down   : down,
-		press  : press,
-		code   : code,
-		ARROWS : ARROWS,
-		CODES  : CODES
+		on      : on,
+		up      : up,
+		down    : down,
+		press   : press,
+		onUp    : onUp,
+		onDown  : onDown,
+		onPress : onPress,
+		code    : code,
+		ARROWS  : ARROWS,
+		CODES   : CODES
 	};
 
-	exports['on']     = exports.on;
-	exports['up']     = exports.up;
-	exports['down']   = exports.down;
-	exports['press']  = exports.press;
-	exports['code']   = exports.code;
-	exports['ARROWS'] = exports.ARROWS;
-	exports['CODES'] = exports.CODES;
+	exports['on']      = exports.on;
+	exports['up']      = exports.up;
+	exports['down']    = exports.down;
+	exports['press']   = exports.press;
+	exports['onUp']    = exports.onUp;
+	exports['onDown']  = exports.onDown;
+	exports['onPress'] = exports.onPress;
+	exports['code']    = exports.code;
+	exports['ARROWS']  = exports.ARROWS;
+	exports['CODES']   = exports.CODES;
 
 	return exports;
 });

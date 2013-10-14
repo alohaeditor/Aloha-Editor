@@ -23,7 +23,7 @@ define([
 ) {
 	'use strict';
 
-	function delete_(range, direction, overrides) {
+	function delete_(range, direction, context) {
 		var collapsed = range.collapsed;
 		if (collapsed) {
 			range = (
@@ -34,60 +34,55 @@ define([
 		}
 		range = editing.delete(
 			ranges.expandToVisibleCharacter(range),
-			overrides
+			context
 		);
 		return range;
 	}
 
-	function enter(range, opts, overrides) {
+	function enter(range, context) {
 		ranges.insertTextBehind(range, '¶');
 		return range;
 	}
 
-	function breakBlock(range, opts, overrides) {
+	function breakBlock(range, context) {
 		return range;
 	}
 
-	function breakLine(range, opts, overrides) {
+	function breakLine(range, context) {
 		return range;
 	}
 
 	var actions = {};
 
-	actions[keys.CODES.backspace] =
-		function deleteBackwards(range, opts, overrides) {
-			return delete_(range, false, overrides);
-		};
+	actions[keys.CODES.backspace] = function deleteBackwards(range, context) {
+		return delete_(range, false, context);
+	};
 
-	actions[keys.CODES.delete] =
-		function deleteForward(range, opts, overrides) {
-			return delete_(range, true, overrides);
-		};
+	actions[keys.CODES.delete] = function deleteForward(range, context) {
+		return delete_(range, true, context);
+	};
 
 	/*
-	actions[keys.CODES.enter] =
-		function breakBlock(range, opts, overrides) {
-			return enter(
-				range.collapsed ? range : delete_(range, true, overrides),
-				opts,
-				overrides
-			);
-		};
+	actions[keys.CODES.enter] = function breakBlock(range, context) {
+		return enter(
+			range.collapsed ? range : delete_(range, true, context),
+			opts,
+			context
+		);
+	};
 	*/
 
-	actions['shift+' + keys.CODES.enter] =
-		function breakLine(range, opts, overrides) {
-			return breakLine(
-				range.collapsed ? range : delete_(range, true, overrides),
-				opts,
-				overrides
-			);
-		};
+	actions['shift+' + keys.CODES.enter] = function breakLine(range, context) {
+		return breakLine(
+			range.collapsed ? range : delete_(range, true, context),
+			opts,
+			context
+		);
+	};
 
-	actions.insertText =
-		function insertText(range, opt, overrides) {
-			return range.collapsed ? range : delete_(range, true, overrides);
-		};
+	actions.insertText = function insertText(range, context) {
+		return range.collapsed ? range : delete_(range, true, context);
+	};
 
 	actions[keys.CODES.f1] =
 	actions[keys.CODES.f11] =
@@ -98,19 +93,19 @@ define([
 	actions[keys.CODES.capslock] =
 	actions[keys.CODES.control] = fn.identity;
 
-	function down(msg, opts, overrides) {
+	function down(msg, context) {
 		if (!msg.range) {
 			return;
 		}
 		var action = actions[msg.code];
 		var range;
 		if (action) {
-			range = action(msg.range, opts, overrides);
+			range = action(msg.range, context);
 			html.prop(range.commonAncestorContainer);
 			ranges.select(range);
 			msg.event.preventDefault();
 		} else if (!keys.ARROWS[msg.code]) {
-			ranges.select(actions.insertText(msg.range, opts, overrides));
+			ranges.select(actions.insertText(msg.range, context));
 		}
 	}
 

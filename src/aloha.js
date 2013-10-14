@@ -57,17 +57,22 @@ define([
 ) {
 	'use strict';
 
-	/*
-	keys.down('enter', typing.enter);
-	keys.down('space', typing.space);
-	keys.on('press up down', caret.showOnEvent);
-	mouse.on('up down', caret.showOnEvent);
-	*/
+	events.add(document, 'keyup',     keys.onUp);
+	events.add(document, 'keydown',   keys.onDown);
+	events.add(document, 'keypress',  keys.onPress);
+	events.add(document, 'mouseup',   mouse.onUp);
+	events.add(document, 'mousedown', mouse.onDown);
+	events.add(document, 'mousemove', mouse.onMove);
+
+	var context = {
+		settings: {
+			defaultLineBreakingElement: 'p'
+		},
+		overrides: []
+	};
 
 	keys.down(function (msg) {
-		typing.down(msg, {
-			defaultLineBreakingElement: 'p'
-		});
+		typing.down(msg, context);
 	});
 
 	/**

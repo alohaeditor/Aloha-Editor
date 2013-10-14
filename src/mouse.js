@@ -18,57 +18,64 @@ define([
 	}
 
 	/**
+	 * Publishes messages when a mouse button is up.
+	 *
+	 * @param {Event} event
+	 */
+	function onUp(event) {
+		pubsub.publish('aloha.mouse.up', {event: event});
+	}
+
+	/**
+	 * Publishes messages when a mouse button is down.
+	 *
+	 * @param {Event} event
+	 */
+	function onDown(event) {
+		pubsub.publish('aloha.mouse.down', {event: event});
+	}
+
+	/**
 	 * Publishes messages when the mouse is moved.
 	 *
 	 * @param {Event} event
 	 */
-	function onMouseMove(event) {
+	function onMove(event) {
 		pubsub.publish('aloha.mouse.move', {event: event});
 	}
 
 	/**
-	 * Publishes messages when a mouse key is down.
+	 * Subscript to mouse interaction messages.
 	 *
-	 * @param {Event} event
+	 * @param {String} channel
+	 * @param {Function(Object)}
 	 */
-	function onMouseDown(event) {
-		pubsub.publish('aloha.mouse.down', {event: event});
-	}
-
-	function onMouseUp(event) {
-		pubsub.publish('aloha.mouse.up', {event: event});
-	}
-
-	events.add(document, 'mousemove', onMouseMove);
-	events.add(document, 'mousedown', onMouseDown);
-	events.add(document, 'mouseup', onMouseUp);
-
 	function subscribe(channel, callback) {
 		pubsub.subscribe('aloha.mouse.' + channel, callback);
 	}
 
 	/**
-	 * Subscribe to mouse down messages.
-	 *
-	 * @param {Function(object)} callback
-	 */
-	function down(callback) {
-		subscribe('down', callback);
-	}
-
-	/**
 	 * Subscribe to mouse up messages.
 	 *
-	 * @param {Function(object)} callback
+	 * @param {Function(Object)} callback
 	 */
 	function up(callback) {
 		subscribe('up', callback);
 	}
 
 	/**
+	 * Subscribe to mouse down messages.
+	 *
+	 * @param {Function(Object)} callback
+	 */
+	function down(callback) {
+		subscribe('down', callback);
+	}
+
+	/**
 	 * Subscribe to mouse move messages.
 	 *
-	 * @param {Function(object)} callback
+	 * @param {Function(Object)} callback
 	 */
 	function move(callback) {
 		subscribe('move', callback);
@@ -91,13 +98,19 @@ define([
 		on   : on,
 		up   : up,
 		down : down,
-		move : move
+		move : move,
+		onUp   : onUp,
+		onDown : onDown,
+		onMove : onMove
 	};
 
-	exports['on']   = exports.on;
-	exports['up']   = exports.up;
-	exports['down'] = exports.down;
-	exports['move'] = exports.move;
+	exports['on']     = exports.on;
+	exports['up']     = exports.up;
+	exports['down']   = exports.down;
+	exports['move']   = exports.move;
+	exports['onUp']   = exports.onUp;
+	exports['onDown'] = exports.onDown;
+	exports['onMove'] = exports.onMove;
 
 	return exports;
 });
