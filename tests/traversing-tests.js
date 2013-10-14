@@ -203,6 +203,24 @@
 		equal(nodes.join(' '), '#text B');
 	});
 
+	test('findThrough', function () {
+		tested.push('findThrough');
+		var nodes = [];
+		traversing.findThrough(
+			$('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].lastChild,
+			function (node) {
+				nodes.push(node);
+			}
+		);
+		var expected = [
+			'B', 'four', 'U', 'I', 'three', 'I', 'U', 'two', 'B', 'one'
+		];
+		var i;
+		for (i = 0; i < expected.length; i++) {
+			equal(nodes[i] && (nodes[i].data || nodes[i].nodeName), expected[i]);
+		}
+	});
+
 	function testTraversing(node, op, expected) {
 		var nodes = [node];
 		while (node && (node = op(node))) {
@@ -213,15 +231,6 @@
 			equal(nodes[i] && (nodes[i].data || nodes[i].nodeName), expected[i]);
 		}
 	}
-
-	test('reverse', function () {
-		tested.push('reverse');
-		testTraversing(
-			$('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].lastChild,
-			traversing.reverse,
-			['five', 'B', 'four', 'U', 'I', 'three', 'two', 'one']
-		);
-	});
 
 	test('backward', function () {
 		tested.push('backward');

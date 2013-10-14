@@ -464,21 +464,40 @@ define([
 	}
 
 	/**
-	 * Like backward() but in reverse document order.
+	 * Finds the first node that returns true for `match` before reaching a node
+	 * that returns true for `until`.
+	 *
+	 * The traversing algorithm step twice in and out of elements and once
+	 * inside of text nodes and void elements.
 	 *
 	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean}
+	 * @param {Function(DOMObject):Boolean}
 	 * @return {DOMObject}
 	 */
-	function reverse(node) {
-		var prev = node.lastChild || node.previousSibling;
-		if (prev) {
-			return prev;
+	function findThrough(start, match, until) {
+		match = match || fn.returnTrue;
+		until = until || fn.returnFalse;
+		var next;
+		var node = start;
+		var stepIn = true;
+		while (node) {
+			next = (stepIn && node.lastChild) || node.previousSibling;
+			if (next) {
+				stepIn = true;
+			} else {
+				stepIn = false;
+				next = node.parentNode;
+			}
+			if (until(next)) {
+				return null;
+			}
+			if (match(next)) {
+				return next;
+			}
+			node = next;
 		}
-		prev = node.parentNode;
-		while (prev && !prev.previousSibling) {
-			prev = prev.parentNode;
-		}
-		return prev && prev.previousSibling;
+		return null;
 	}
 
 	/**
@@ -908,7 +927,7 @@ define([
 		nextNodeBoundaryWhile: nextNodeBoundaryWhile,
 		backward: backward,
 		forward: forward,
-		reverse: reverse,
+		findThrough: findThrough,
 		nextWhile: nextWhile,
 		prevWhile: prevWhile,
 		walk: walk,
@@ -936,7 +955,6 @@ define([
 
 	exports['backward'] = exports.backward;
 	exports['forward'] = exports.forward;
-	exports['reverse'] = exports.reverse;
 	exports['prevNodeBoundary'] = exports.prevNodeBoundary;
 	exports['nextNodeBoundary'] = exports.nextNodeBoundary;
 	exports['prevNodeBoundaryWhile'] = exports.prevNodeBoundaryWhile;
@@ -950,7 +968,6 @@ define([
 	exports['find'] = exports.find;
 	exports['findBackward'] = exports.findBackward;
 	exports['findForward'] = exports.findForward;
-	exports['findReverse'] = exports.findReverse;
 	exports['findWordBoundaryAhead'] = exports.findWordBoundaryAhead;
 	exports['findWordBoundaryBehind'] = exports.findWordBoundaryBehind;
 	exports['parentsUntil'] = exports.parentsUntil;

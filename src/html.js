@@ -650,13 +650,12 @@ define([
 		}
 
 		if (
-			maybeUnrenderedNode
-				&& (
-					isTerminalSibling(node)
-						|| isAdjacentToBlock(node)
-							|| skipUnrenderedToEndOfLine(cursors.create(node, false))
-								|| skipUnrenderedToStartOfLine(cursors.create(node, false))
-				)
+			maybeUnrenderedNode && (
+				isTerminalSibling(node)
+				|| isAdjacentToBlock(node)
+				|| skipUnrenderedToEndOfLine(cursors.create(node, false))
+				|| skipUnrenderedToStartOfLine(cursors.create(node, false))
+			)
 		) {
 			return true;
 		}
@@ -706,8 +705,10 @@ define([
 	 * @param {DOMObject} node
 	 * @retur {DOMObject}
 	 */
-	function hasRenderedChildren(node) {
-		return isRendered(traversing.nextWhile(node.firstChild, isUnrendered));
+	function hasRenderedContent(node) {
+		return dom.isTextNode(node)
+		     ? !isUnrenderedWhitespaceNoBlockCheck(node)
+		     : isRendered(traversing.nextWhile(node.firstChild, isUnrendered));
 	}
 
 	/**
@@ -783,7 +784,7 @@ define([
 	}
 
 	/**
-	 * Finds a suitable container inwhich to move node that are to the right of
+	 * Finds a suitable container inwhich to move nodes that are to the right of
 	 * `breaker` when removing a visual line break.
 	 *
 	 * @param {DOMObject} above
@@ -828,18 +829,25 @@ define([
 	 * @return {DOMObject}
 	 */
 	function findLinebreakingNode(above, below) {
-		if (isLinebreakingNode(above)) {
-			return above;
+		if (isLinebreakingNode(below)) {
+			return below;
 		}
-		var node = traversing.findForward(
-			above,
-			isLinebreakingNode,
-			function (node) { return node === below; }
-		);
-		if (node) {
-			return node;
+		var node = below;
+		var breaker;
+		while (node && node !== above) {
+			node = traversing.findThrough(
+				node,
+				function (node) {
+					return node === above;
+				},
+				function (node) {
+					if (isLinebreakingNode(node)) {
+						breaker = node;
+					}
+				}
+			);
 		}
-		return isLinebreakingNode(below) ? below : null;
+		return breaker || (isLinebreakingNode(above) ? above : null);
 	}
 
 	/**
@@ -858,7 +866,7 @@ define([
 		}
 		var breaker = findLinebreakingNode(above, below);
 		if (!breaker) {
-			traversing.climbUntil(below, dom.remove, hasRenderedChildren);
+			traversing.climbUntil(below, dom.remove, hasRenderedContent);
 			return {
 				container: above,
 				offset: dom.nodeLength(above)
@@ -881,9 +889,14 @@ define([
 		if (0 === dom.nodeLength(below)) {
 			dom.remove(below);
 		} else {
-			traversing.walkUntil(below, move, cannotMove, fn.outparameter(true));
+			traversing.walkUntil(
+				below,
+				move,
+				cannotMove,
+				fn.outparameter(true)
+			);
 		}
-		traversing.climbUntil(parent, dom.remove, hasRenderedChildren);
+		traversing.climbUntil(parent, dom.remove, hasRenderedContent);
 		return {
 			container: container,
 			offset: offset
@@ -1238,7 +1251,7 @@ define([
 		         ? node
 		         : dom.nodeAtOffset(node, offset);
 
-		var landing = traversing.findReverse(
+		var landing = traversing.findThrough(
 			next,
 			function (node) {
 				return canInsertText(node) || isVoidType(node);
