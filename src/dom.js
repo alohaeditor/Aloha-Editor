@@ -394,6 +394,19 @@ define([
 		return index;
 	}
 
+	function normalizedNodeIndex(node) {
+		var index = -1;
+		while (node) {
+			node = node.previousSibling;
+			var skip = node;
+			while (skip && isTextNode(skip)) {
+				node = skip;
+				skip = skip.previousSibling;
+			}
+			index++;
+		}
+		return index;
+	}
 
 	/**
 	 * Whether or not the given node and offset describes a position before the
@@ -401,7 +414,7 @@ define([
 	 *
 	 * Will return true if the selection looks like this:
 	 * <b>{foo</b>...
-	 * of
+	 * or
 	 * <b>[foo</b>...
 	 *
 	 * @param {DOMObject} node
@@ -604,7 +617,7 @@ define([
 	 * It should be noted that native ranges controlled by the browser's DOM
 	 * implementation have the habit to change by themselves, so even if
 	 * normalized this way the range could revert to an unnormalized state. See
-	 * ranges.stableRange().
+	 * StableRange().
 	 *
 	 * @private
 	 */
@@ -653,9 +666,10 @@ define([
 		normalizeSetRange(range.setEnd, range, container, offset);
 	}
 
-	function adjustRangeAfterSplit(container, offset, range, setRange,
-	                               splitNode, splitOffset,
-								   newNodeBeforeSplit) {
+	function adjustBoundaryAfterSplit(boundary, splitNode, splitOffset,
+	                                  newNodeBeforeSplit) {
+		var container = boundary[0];
+		var offset = boundary[1];
 		if (container === splitNode) {
 			if (offset <= splitOffset || !splitOffset) {
 				container = newNodeBeforeSplit;
@@ -669,7 +683,7 @@ define([
 				offset += 1;
 			}
 		}
-		setRange(range, container, offset);
+		return [container, offset];
 	}
 
 	function adjustBoundaryPointAfterJoin(container, offset, range, setRange,
@@ -694,8 +708,9 @@ define([
 		setRange(range, container, offset);
 	}
 
-	function adjustBoundaryPointAfterRemove(container, offset, range, setRange,
-	                                        node, parentNode, nidx) {
+	function adjustBoundaryAfterRemove(boundary, node, parentNode, nidx) {
+		var container = boundary[0];
+		var offset = boundary[1];
 		if (container === node || contains(node, container)) {
 			container = parentNode;
 			offset = nidx;
@@ -704,7 +719,48 @@ define([
 				offset -= 1;
 			}
 		}
-		setRange(range, container, offset);
+		return [container, offset];
+	}
+
+	function startBoundary(range) {
+		return [range.startContainer, range.startOffset];
+	}
+
+	function endBoundary(range) {
+		return [range.endContainer, range.endOffset];
+	}
+
+	function setRangeStartFromBoundary(range, boundary) {
+		setRangeStart(range, boundary[0], boundary[1]);
+	}
+
+	function setRangeEndFromBoundary(range, boundary) {
+		setRangeEnd(range, boundary[0], boundary[1]);
+	}
+
+	function setRangeFromBoundaries(range, startBoundary, endBoundary) {
+		setRangeStartFromBoundary(range, startBoundary);
+		setRangeEndFromBoundary(range, endBoundary);
+	}
+
+	function boundariesFromRanges(ranges) {
+		return arrays.mapcat(ranges, boundariesFromRange);
+	}
+
+	function adjustBoundaries(fn, boundaries, arg1, arg2, arg3) {
+		return boundaries.map(function (boundary) {
+			return fn(boundary, arg1, arg2, arg3);
+		});
+	}
+
+	function setRangesFromBoundaries(ranges, boundaries) {
+		arrays.partition(boundaries, 2).forEach(function (boundaries, i) {
+			setRangeFromBoundaries(ranges[i], boundaries[0], boundaries[1]);
+		});
+	}
+
+	function boundariesFromRange(range) {
+		return [startBoundary(range), endBoundary(range)];
 	}
 
 	/**
@@ -713,37 +769,27 @@ define([
 	 * text node, adjusts it such that start and end position will point
 	 * at the same position in the new text nodes.
 	 */
-	function splitTextNodeAdjustRange(splitNode, splitOffset, range) {
+	function splitBoundary(boundary, ranges) {
+		var splitNode = boundary[0];
+		var splitOffset = boundary[1];
 		if (Nodes.TEXT !== splitNode.nodeType) {
 			return;
 		}
-		// Because the range may change due to the DOM modification
-		// (automatically by the browser).
-		var sc = range.startContainer;
-		var so = range.startOffset;
-		var ec = range.endContainer;
-		var eo = range.endOffset;
 		if (wouldSplitTextNode(splitNode, splitOffset)) {
+			var boundaries = boundariesFromRanges(ranges);
+			boundaries.push(boundary);
 			var nodeBeforeSplit = splitTextNode(splitNode, splitOffset);
-			adjustRangeAfterSplit(
-				sc,
-				so,
-				range,
-				setRangeStart,
+			var adjusted = adjustBoundaries(
+				adjustBoundaryAfterSplit,
+				boundaries,
 				splitNode,
 				splitOffset,
 				nodeBeforeSplit
 			);
-			adjustRangeAfterSplit(
-				ec,
-				eo,
-				range,
-				setRangeEnd,
-				splitNode,
-				splitOffset,
-				nodeBeforeSplit
-			);
+			boundary = adjusted.pop();
+			setRangesFromBoundaries(ranges, adjusted);
 		}
+		return boundary;
 	}
 
 	/**
@@ -754,14 +800,8 @@ define([
 	 *         The given range, potentially adjusted.
 	 */
 	function splitTextContainers(range) {
-		var sc = range.startContainer;
-		var so = range.startOffset;
-		splitTextNodeAdjustRange(sc, so, range);
-		// Because the range may have been adjusted.
-		var ec = range.endContainer;
-		var eo = range.endOffset;
-		splitTextNodeAdjustRange(ec, eo, range);
-		return range;
+		splitBoundary(startBoundary(range), [range]);
+		splitBoundary(endBoundary(range), [range]);
 	}
 
 	function joinTextNodeOneWay(node, sibling, range, prev) {
@@ -847,39 +887,18 @@ define([
 		var range;
 		// Because the range may change due to the DOM modification
 		// (automatically by the browser).
-		var boundaries = [];
-		var i;
-		for (i = 0; i < ranges.length; i++) {
-			range = ranges[i];
-			boundaries.push(range);
-			boundaries.push(range.startContainer);
-			boundaries.push(range.startOffset);
-			boundaries.push(range.endContainer);
-			boundaries.push(range.endOffset);
-		}
+		var boundaries = boundariesFromRanges(ranges);
 		var parentNode = node.parentNode;
 		var nidx = nodeIndex(node);
 		parentNode.removeChild(node);
-		for (i = 0; i < boundaries.length; i += 5) {
-			adjustBoundaryPointAfterRemove(
-				boundaries[i + 1],
-				boundaries[i + 2],
-				boundaries[i],
-				setRangeStart,
-				node,
-				parentNode,
-				nidx
-			);
-			adjustBoundaryPointAfterRemove(
-				boundaries[i + 3],
-				boundaries[i + 4],
-				boundaries[i],
-				setRangeEnd,
-				node,
-				parentNode,
-				nidx
-			);
-		}
+		var adjusted = adjustBoundaries(
+			adjustBoundaryAfterRemove,
+			boundaries,
+			node,
+			parentNode,
+			nidx
+		);
+		setRangesFromBoundaries(ranges, adjusted);
 	}
 
 	/**
@@ -925,11 +944,20 @@ define([
 	 * Returns a shallow clone of the given node.
 	 *
 	 * @param {DOMObject} node
-	 * @return {DOMObject}
-	 *         Clone of `node`.
+	 * @return {DOMObject} a clone of the given node.
 	 */
 	function cloneShallow(node) {
 		return node.cloneNode(false);
+	}
+
+	/**
+	 * Returns a deep clone of the given node.
+	 *
+	 * @param {DOMObject} node
+	 * @return {DOMObject} a clone of the given node.
+	 */
+	function clone(node) {
+		return node.cloneNode(true);
 	}
 
 	/**
@@ -1223,14 +1251,15 @@ define([
 		isAtEnd: isAtEnd,
 		isAtStart: isAtStart,
 		nodeIndex: nodeIndex,
+		normalizedNodeIndex: normalizedNodeIndex,
 		nodeLength: nodeLength,
 		nodeAtOffset: nodeAtOffset,
 
 		isTextNode: isTextNode,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
-		splitTextNodeAdjustRange: splitTextNodeAdjustRange,
 		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
+		splitBoundary: splitBoundary,
 
 		contains: contains,
 
@@ -1272,13 +1301,14 @@ define([
 	exports['isAtEnd'] = exports.isAtEnd;
 	exports['isAtStart'] = exports.isAtStart;
 	exports['nodeIndex'] = exports.nodeIndex;
+	exports['normalizedNodeIndex'] = exports.normalizedNodeIndex;
 	exports['nodeLength'] = exports.nodeLength;
 	exports['nodeAtOffset'] = exports.nodeAtOffset;
 	exports['isTextNode'] = exports.isTextNode;
 	exports['splitTextNode'] = exports.splitTextNode;
 	exports['splitTextContainers'] = exports.splitTextContainers;
-	exports['splitTextNodeAdjustRange'] = exports.splitTextNodeAdjustRange;
 	exports['joinTextNodeAdjustRange'] = exports.joinTextNodeAdjustRange;
+	exports['splitBoundary'] = exports.splitBoundary;
 	exports['contains'] = exports.contains;
 	exports['setStyle'] = exports.setStyle;
 	exports['getStyle'] = exports.getStyle;

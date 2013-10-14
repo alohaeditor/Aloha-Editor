@@ -199,8 +199,8 @@
 		equal(node.lastChild.childNodes[1].data, 'r');
 	});
 
-	test('splitTextNodeAdjustRange', function () {
-		tested.push('splitTextNodeAdjustRange');
+	test('splitBoundary', function () {
+		tested.push('splitBoundary');
 		var node = $('<div>foo<b>bar</b></div>')[0];
 		var range = aloha.ranges.create(
 			node.firstChild,
@@ -208,7 +208,7 @@
 			node.lastChild.lastChild,
 			2
 		);
-		dom.splitTextNodeAdjustRange(node.firstChild, 1, range);
+		dom.splitBoundary([node.firstChild, 1], [range]);
 		equal(
 			dom.nodeAtOffset(range.startContainer, range.startOffset).data,
 			'oo'

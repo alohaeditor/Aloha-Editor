@@ -28,6 +28,7 @@ define([
 	'functions',
 	'html',
 	'ranges',
+	'stable-range',
 	'cursors',
 	'content'
 ], function Editing(
@@ -39,6 +40,7 @@ define([
 	fn,
 	html,
 	ranges,
+	StableRange,
 	cursors,
 	content
 ) {
@@ -437,7 +439,7 @@ define([
 		// caller to see the in-between updates, and because we are using
 		// ranges.trim() below to adjust the range's boundary points, which we
 		// don't want the browser to re-adjust (which some browsers do).
-		var range = ranges.stableRange(liveRange);
+		var range = StableRange(liveRange);
 
 		// Because making the assumption that boundary points are between nodes
 		// makes the algorithms generally a bit simpler.

@@ -148,6 +148,33 @@ define([], function Arrays() {
 	}
 
 	/**
+	 * Coerces the given object (NodeList, arguments) to an array.
+	 *
+	 * This implementation works on modern browsers and IE >= 9. For IE
+	 * < 9 a shim can be used, available here:
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice
+	 */
+	function coerce(arrayLikeObject) {
+		return Array.prototype.slice.call(arrayLikeObject, 0);
+	}
+
+	function mapcat(xs, fn) {
+		return Array.prototype.concat.apply([], xs.map(fn));
+	}
+
+	function partition(xs, n) {
+		return xs.reduce(function (result, x) {
+			var l = last(result);
+			if (l && l.length < n) {
+				l.push(x);
+			} else {
+				result.push([x]);
+			}
+			return result;
+		}, []);
+	}
+
+	/**
 	 * Functions for operating on arrays.
 	 *
 	 * arrays.contains()
@@ -164,7 +191,10 @@ define([], function Arrays() {
 		sortUnique: sortUnique,
 		intersect: intersect,
 		second: second,
-		last: last
+		last: last,
+		coerce: coerce,
+		mapcat: mapcat,
+		partition: partition
 	};
 
 	exports['contains'] = exports.contains;
@@ -174,6 +204,9 @@ define([], function Arrays() {
 	exports['intersect'] = exports.intersect;
 	exports['second'] = exports.second;
 	exports['last'] = exports.last;
+	exports['coerce'] = exports.coerce;
+	exports['mapcat'] = exports.mapcat;
+	exports['partition'] = exports.partition;
 
 	return exports;
 });
