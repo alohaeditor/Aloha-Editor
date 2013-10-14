@@ -203,38 +203,42 @@
 		equal(nodes.join(' '), '#text B');
 	});
 
-	test('backward', function () {
-		tested.push('backward');
-		var node = $('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].lastChild;
+	function testTraversing(node, op, expected) {
 		var nodes = [node];
-		while (('DIV' !== node.nodeName) && (node = traversing.backward(node))) {
+		while (node && (node = op(node))) {
 			nodes.push(node);
 		}
-		equal(nodes[0].data, 'five');
-		equal(nodes[1].data, 'four');
-		equal(nodes[2].data, 'three');
-		equal(nodes[3].nodeName, 'I');
-		equal(nodes[4].nodeName, 'U');
-		equal(nodes[5].data, 'two');
-		equal(nodes[6].nodeName, 'B');
-		equal(nodes[7].data, 'one');
+		var i;
+		for (i = 0; i < expected.length; i++) {
+			equal(nodes[i] && (nodes[i].data || nodes[i].nodeName), expected[i]);
+		}
+	}
+
+	test('reverse', function () {
+		tested.push('reverse');
+		testTraversing(
+			$('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].lastChild,
+			traversing.reverse,
+			['five', 'B', 'four', 'U', 'I', 'three', 'two', 'one']
+		);
+	});
+
+	test('backward', function () {
+		tested.push('backward');
+		testTraversing(
+			$('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].lastChild,
+			traversing.backward,
+			['five', 'four', 'three', 'I', 'U', 'two', 'B', 'one']
+		);
 	});
 
 	test('forward', function () {
 		tested.push('forward');
-		var node = $('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].firstChild;
-		var nodes = [node];
-		while (('DIV' !== node.nodeName) && (node = traversing.forward(node))) {
-			nodes.push(node);
-		}
-		equal(nodes[0].data, 'one');
-		equal(nodes[1].nodeName, 'B');
-		equal(nodes[2].data, 'two');
-		equal(nodes[3].nodeName, 'U');
-		equal(nodes[4].nodeName, 'I');
-		equal(nodes[5].data, 'three');
-		equal(nodes[6].data, 'four');
-		equal(nodes[7].data, 'five');
+		testTraversing(
+			$('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].firstChild,
+			traversing.forward,
+			['one', 'B', 'two', 'U', 'I', 'three', 'four', 'five']
+		);
 	});
 
 	test('findBackward', function () {

@@ -464,6 +464,51 @@ define([
 	}
 
 	/**
+	 * Like backward() but in reverse document order.
+	 *
+	 * @param {DOMObject} node
+	 * @return {DOMObject}
+	 */
+	function reverse(node) {
+		var prev = node.lastChild || node.previousSibling;
+		if (prev) {
+			return prev;
+		}
+		prev = node.parentNode;
+		while (prev && !prev.previousSibling) {
+			prev = prev.parentNode;
+		}
+		return prev && prev.previousSibling;
+	}
+
+	/**
+	 * Finds the first not that returns true for `match` by traversing through
+	 * `step`.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} match
+	 * @param {Function(DOMObject):Boolean} until
+	 * @param {Function(DOMObject):DOMObject} step
+	 * @return {DOMObject}
+	 */
+	function find(node, match, until, step) {
+		until = until || fn.returnFalse;
+		if (until(node)) {
+			return null;
+		}
+		do {
+			node = step(node);
+			if (!node || until(node)) {
+				return null;
+			}
+			if (match(node)) {
+				return node;
+			}
+		} while (node);
+		return null;
+	}
+
+	/**
 	 * Finds the first DOM object, ahead of the given node which matches the
 	 * predicate `match` but before `until` returns true for any node that is
 	 * traversed during the search, in which case null is returned.
@@ -474,20 +519,7 @@ define([
 	 * @return {DOMObject}
 	 */
 	function findForward(node, match, until) {
-		until = until || fn.returnFalse;
-		if (until(node)) {
-			return null;
-		}
-		do {
-			node = forward(node);
-			if (!node || until(node)) {
-				return null;
-			}
-			if (match(node)) {
-				return node;
-			}
-		} while (node);
-		return null;
+		return find(node, match, until, forward);
 	}
 
 	/**
@@ -501,20 +533,19 @@ define([
 	 * @return {DOMObject}
 	 */
 	function findBackward(node, match, until) {
-		until = until || fn.returnFalse;
-		if (until(node)) {
-			return null;
-		}
-		do {
-			node = backward(node);
-			if (!node || until(node)) {
-				return null;
-			}
-			if (match(node)) {
-				return node;
-			}
-		} while (node);
-		return null;
+		return find(node, match, until, backward);
+	}
+
+	/**
+	 * Like findBackward(), except in reverse document order.
+	 *
+	 * @param {DOMObject} node
+	 * @param {Function(DOMObject):Boolean} match
+	 * @param {Function(DOMObject):Boolean} until
+	 * @return {DOMObject}
+	 */
+	function findReverse(node, match, until) {
+		return find(node, match, until, reverse);
 	}
 
 	/**
@@ -877,14 +908,17 @@ define([
 		nextNodeBoundaryWhile: nextNodeBoundaryWhile,
 		backward: backward,
 		forward: forward,
+		reverse: reverse,
 		nextWhile: nextWhile,
 		prevWhile: prevWhile,
 		walk: walk,
 		walkRec: walkRec,
 		walkUntil: walkUntil,
 		walkUntilNode: walkUntilNode,
+		find: find,
 		findBackward: findBackward,
 		findForward: findForward,
+		findReverse: findReverse,
 		findWordBoundaryAhead: findWordBoundaryAhead,
 		findWordBoundaryBehind: findWordBoundaryBehind,
 		parentsUntil: parentsUntil,
@@ -902,6 +936,7 @@ define([
 
 	exports['backward'] = exports.backward;
 	exports['forward'] = exports.forward;
+	exports['reverse'] = exports.reverse;
 	exports['prevNodeBoundary'] = exports.prevNodeBoundary;
 	exports['nextNodeBoundary'] = exports.nextNodeBoundary;
 	exports['prevNodeBoundaryWhile'] = exports.prevNodeBoundaryWhile;
@@ -912,8 +947,10 @@ define([
 	exports['walkRec'] = exports.walkRec;
 	exports['walkUntil'] = exports.walkUntil;
 	exports['walkUntilNode'] = exports.walkUntilNode;
+	exports['find'] = exports.find;
 	exports['findBackward'] = exports.findBackward;
 	exports['findForward'] = exports.findForward;
+	exports['findReverse'] = exports.findReverse;
 	exports['findWordBoundaryAhead'] = exports.findWordBoundaryAhead;
 	exports['findWordBoundaryBehind'] = exports.findWordBoundaryBehind;
 	exports['parentsUntil'] = exports.parentsUntil;
