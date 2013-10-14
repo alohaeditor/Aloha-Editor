@@ -671,6 +671,32 @@ define([
 	 */
 	var isRendered = fn.complement(isUnrendered);
 
+	// <p>{}<i></i></p>  => <p> <i>
+	// <p>{<i>}</i></p>  => <p> <i>
+	// <p><i>{}</i></p>  => <i> <i>
+	// <p><i>{</i>}</p>  => <i> <p>
+	// <p><i></i>{}</p>  => <i> <p>
+	//
+	// <p>a{}<i></i></p>  =>  a  <i>
+	// <p>a{<i>}</i></p>  =>  a  <i>
+	// <p><i>a{</i>}</p>  =>  a  <p>
+	//
+	// <p>{<i>}a</i></p>  => <p>  a
+	// <p><i>{</i>}a</p>  => <i>  a
+	// <p><i></i>{}a</p>  => <i>  a
+	//
+	function visuallyAdjacent(range) {
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec = range.endContainer;
+		var eo = range.endOffset;
+
+		var above = (0 === so) ? sc : dom.nodeAtOffset(sc, so - 1);
+		var below = (dom.nodeLength(ec) === eo) ? ec : dom.nodeAtOffset(ec, eo);
+
+		return [above, below];
+	}
+
 	/**
 	 * Determine whether node `left` is visually adjacent to `right`.
 	 *
@@ -683,6 +709,9 @@ define([
 	 * @return {Boolean}
 	 */
 	function isVisuallyAdjacent(left, right) {
+		if (right === left.parentNode || left === right.parentNode) {
+			return true;
+		}
 		if (left === traversing.findBackward(right, isRendered)) {
 			return true;
 		}
@@ -860,8 +889,8 @@ define([
 	function removeVisualBreak(above, below) {
 		if (!isVisuallyAdjacent(above, below)) {
 			return {
-				container: above,
-				offset: dom.nodeLength(above)
+				container: below.parentNode,
+				offset: dom.nodeIndex(above)
 			};
 		}
 		var breaker = findLinebreakingNode(above, below);
@@ -896,7 +925,9 @@ define([
 				fn.outparameter(true)
 			);
 		}
-		traversing.climbUntil(parent, dom.remove, hasRenderedContent);
+		if (parent !== above) {
+			traversing.climbUntil(parent, dom.remove, hasRenderedContent);
+		}
 		return {
 			container: container,
 			offset: offset
@@ -1251,10 +1282,13 @@ define([
 		         ? node
 		         : dom.nodeAtOffset(node, offset);
 
+		var parents = traversing.childAndParentsUntil(next, dom.isEditingHost);
+
 		var landing = traversing.findThrough(
 			next,
 			function (node) {
-				return canInsertText(node) || isVoidType(node);
+				return !arrays.contains(parents, node)
+				    && (canInsertText(node) || isVoidType(node));
 			},
 			function (node) {
 				if (next === node) {
@@ -1369,7 +1403,8 @@ define([
 		previousVisibleCharacter: previousVisibleCharacter,
 		previousVisiblePosition: previousVisiblePosition,
 		prop: prop,
-		areNextWhiteSpacesSignificant: areNextWhiteSpacesSignificant
+		areNextWhiteSpacesSignificant: areNextWhiteSpacesSignificant,
+		visuallyAdjacent: visuallyAdjacent
 	};
 
 	exports['isUnrendered'] = exports.isUnrendered;
