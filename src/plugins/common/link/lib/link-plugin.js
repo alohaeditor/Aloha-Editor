@@ -559,7 +559,7 @@ define( [
 				valueField: 'url',
 				cls: 'aloha-link-href-field',
 				scope: 'Aloha.continuoustext',
-				noTargetHighlight: true,
+				noTargetHighlight: false,
 				targetHighlightClass: 'aloha-focus'
 			});
 			this.hrefField.setTemplate('<span><b>{name}</b><br/>{url}</span>');
@@ -898,6 +898,28 @@ define( [
 		}
 	});
 
+	/**
+	 * Add additional target objects, in case the selection includes
+	 * several links tag
+	 *
+	 * @param {RangeObject} rangeObject Selection Range
+	 * @param {LinkPlugin} that Link Plugin object
+	 */
+	function addAdditionalTargetObject(rangeObject, field) {
+		var links = rangeObject.findAllMarkupByTagName('A', rangeObject);
+		for (var i = 0, len = links.length; i < len; i++) {
+			field.addAdditionalTargetObject(links[i]);
+		}
+	}
+
+	/**
+	 * Selection change handler.
+	 *
+	 * @param {LinkPlugin} that This Link Plugin object
+	 * @param {RangeObject} rangeObject Selection Range
+	 * @returns {boolean} True if the link Scope was activated,
+	 *                    False otherwise
+	 */
 	function selectionChangeHandler(that, rangeObject) {
 		var foundMarkup,
 		    enteredLinkScope = false;
@@ -905,18 +927,18 @@ define( [
 		// Check if we need to ignore this selection changed event for
 		// now and check whether the selection was placed within a
 		// editable area.
-		if (   !that.ignoreNextSelectionChangedEvent
-			&& Aloha.Selection.isSelectionEditable()
-			&& Aloha.activeEditable != null ) {
+		if (!that.ignoreNextSelectionChangedEvent &&
+			Aloha.Selection.isSelectionEditable() &&
+			Aloha.activeEditable != null ) {
 			
 			foundMarkup = that.findLinkMarkup(rangeObject);
-			
+
 			if (foundMarkup) {
 				that.toggleLinkScope(true);
 
 				// now we are ready to set the target object
 				that.hrefField.setTargetObject(foundMarkup, 'href');
-
+				addAdditionalTargetObject(rangeObject, that.hrefField);
 				// if the selection-changed event was raised by the first click interaction on this page
 				// the hrefField component might not be initialized. When the user switches to the link
 				// tab to edit the link the field would be empty. We check for that situation and add a
