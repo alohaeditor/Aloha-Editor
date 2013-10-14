@@ -428,7 +428,8 @@ define([
 	}
 
 	/**
-	 * Given a node, will return node that preceeds it in the document order.
+	 * Given a node, will return the node that preceeds it in the document
+	 * order.
 	 *
 	 * For example, if this function is called recursively, starting from the
 	 * text node "five" in the below DOM tree:
@@ -447,7 +448,7 @@ define([
 	 *
 	 * backward() will return nodes in the following order:
 	 *
-	 * "four", "three", <i>...</i>, <u>...</u>, "two", <b>...</b>, "one"
+	 * "four", "three", <i>, <u>, "two", <b>, "one"
 	 *
 	 * @param {DOMObject} node
 	 * @return {DOMObject}
@@ -583,9 +584,9 @@ define([
 	}
 
 	/**
-	 * Climbs up the given node's ancestor until the predicate until() return
-	 * true.  Starting with the given node, applies func() to each not in the
-	 * climb.
+	 * Climbs up the given node's ancestor until the predicate until() returns
+	 * true.  Starting with the given node, applies func() to each node in the
+	 * traversal.
 	 *
 	 * @param {DOMObject} node
 	 * @param {Function(DOMObject)} func

@@ -911,7 +911,7 @@ define([
 
 	/**
 	 * Checks whether any white space sequence immediately after the specified
-	 * offset in the given node is "significant".
+	 * offset in the given node is "significant."
 	 *
 	 * White Space Handling
 	 * --------------------
@@ -922,11 +922,12 @@ define([
 	 *
 	 * Therefore, if the position from which we are to determine the next
 	 * visible character is adjacent to a "white space" (space, tabs,
-	 * line-feed), determining the next visible character becomes non-trivial.
+	 * line-feed), or adjacent to line-breaking elements, determining the next
+	 * visible character becomes non-trivial.
 	 *
 	 * The following rules apply:
 	 *
-	 * Note that for the pursposes of these rules, the set of "white space" does
+	 * Note that for the purposes of these rules, the set of "white space" does
 	 * not include non-breaking spaces (&nbsp;).
 	 *
 	 * 1. The first sequence of white space immediately after the opening tag
@@ -1093,8 +1094,8 @@ define([
 		return traversing.findForward(
 			start,
 			/**
-			 * True if the given node can contain text or if it is the last
-			 * visible void node.
+			 * True if the given node can contain text or if it is a void node
+			 * with subequent visible siblings.
 			 */
 			function (node) {
 				return canInsertText(node)
@@ -1116,8 +1117,8 @@ define([
 	}
 
 	/**
-	 * Returns the an node/offset namedtuple of the next visible position in
-	 * the document.
+	 * Returns the an node/offset namedtuple of the next visible position in the
+	 * document.
 	 *
 	 * The next visible position is always the next visible character, or the
 	 * next visible line break or space.
@@ -1319,17 +1320,18 @@ define([
 	/**
 	 * "Props up" the given element if needed.
 	 *
-	 * The HTML specification stipulates that empty block-level elements be not
-	 * rendered.  This becomes a problem, if, in an editing operation results
-	 * in one of these elements being emptied of all its child nodes.  If this
-	 * were to happen, standard conformant browsers will no longer render that
-	 * empty block element even though it will remain in the docuement.
-	 * Because the element is invisible, it will no longer be possible for the
-	 * caret to be placed into it.
+	 * The HTML specification specifies that empty block-level elements be not
+	 * rendered.  This becomes a problem if an editing operation results in one
+	 * of these elements being emptied of all its child nodes.  If this were to
+	 * happen, standard conformant browsers will no longer render that empty
+	 * block element even though it will remain in the docuement.  Because the
+	 * element is invisible, it will no longer be possible for the caret to be
+	 * placed into it.
 	 *
 	 * In order to prevent littering the editable with invisible block-level
 	 * elements, we prop them up by ensuring the empty block-level elements are
-	 * given a <br> child node to force them to be rendered with one line height.
+	 * given a <br> child node to force them to be rendered with one line
+	 * height.
 	 *
 	 * The notable exception to this rule are the Microsoft's non-standard
 	 * conformant Trident engines which render empty editable block level
