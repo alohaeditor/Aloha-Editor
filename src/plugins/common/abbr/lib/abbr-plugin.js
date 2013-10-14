@@ -51,6 +51,19 @@ define([
 	var GENTICS = window.GENTICS;
 
 	/**
+	 * Add additional target objects, in case the selection includes
+	 * several abbrs tag
+	 *
+	 * @param {RangeObject} rangeObject Selection Range
+	 * @param {LinkPlugin} that Link Plugin object
+	 */
+	function addAdditionalTargetObject(rangeObject, field) {
+		var abbrs = rangeObject.findAllMarkupByTagName('ABBR', rangeObject);
+		for (var i = 0, len = abbrs.length; i < len; i++) {
+			field.addAdditionalTargetObject(abbrs[i]);
+		}
+	}
+	/**
 	 * register the plugin with unique name
 	 */
 	return Plugin.create( 'abbr', {
@@ -189,6 +202,7 @@ define([
 					Scopes.enterScope(me.name, 'abbr');
 
 					me.abbrField.setTargetObject(foundMarkup, 'title');
+					addAdditionalTargetObject(range, me.abbrField);
 				} else {
 					// hide the field and button for abbreviation
 					me.abbrField.hide();
