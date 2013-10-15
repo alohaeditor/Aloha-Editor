@@ -103,6 +103,9 @@
 		t('<div>foo{<ul><li>}bar</li></ul></div>', '<div>foo[]bar</div>');
 
 		t('<div><p>x</p><p>{y</p><p>}z</p></div>', '<div><p>x</p><p>{}z</p></div>');
+
+		t('<div><h1><i>foo{</i></h1><p>}bar</p></div>',
+		  '<div><h1><i>foo{}</i>bar</h1></div>');
 	});
 
 	function switchElemTextSelection(html) {

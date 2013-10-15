@@ -644,19 +644,18 @@ define([
 	 * @param {DOMObject} linebreak
 	 * @return {DOMObject}
 	 */
-	function findTransferTarget(linebreak) {
-		var node = linebreak;
+	function findTransferTarget(node, limit) {
 		if (!isRendered(node)) {
 			node = traversing.findBackward(node, isRendered, dom.isEditingHost);
 		}
 		if (!node || suitableTransferTarget(node)) {
 			return node;
 		}
-		return traversing.findAncestor(
+		node = traversing.findAncestor(
 			node,
 			suitableTransferTarget,
 			function (node) {
-				return node === linebreak.parentNode || dom.isEditingHost(node);
+				return node === limit || dom.isEditingHost(node);
 			}
 		);
 	}
@@ -687,15 +686,9 @@ define([
 				return false;
 			}
 			var end = boundaries.atEnd(pos);
-			if (end) {
-				if (hasLinebreakingStyle(node)) {
-					return false;
-				}
-			} else {
-				var next = dom.nodeAtOffset(node, offset);
-				if (hasLinebreakingStyle(next)) {
-					return false;
-				}
+			var next = end ? node : dom.nodeAtOffset(node, offset);
+			if (hasLinebreakingStyle(next)) {
+				return false;
 			}
 			return !(end && dom.isEditingHost(pos[0]));
 		});
@@ -719,25 +712,11 @@ define([
 			return above;
 		}
 
-		var left = boundaries.leftNode(linebreak);
+		var move = boundaries.atEnd(linebreak)
+			     ? createTransferFunction(linebreak[0], true)
+			     : createTransferFunction(dom.nodeAtOffset(linebreak[0], linebreak[1]), false);
+
 		var right = boundaries.rightNode(below);
-		var target = findTransferTarget(left);
-
-		var move;
-		var offset;
-		var container;
-
-		if (target) {
-			move = createTransferFunction(target, true);
-			container = target;
-			offset = dom.nodeLength(target);
-		} else {
-			target = dom.nodeAtOffset(linebreak[0], linebreak[1]);
-			move = createTransferFunction(target, false);
-			container = linebreak[0];
-			offset = linebreak[1];
-		}
-
 		var parent = right.parentNode;
 
 		if (0 === dom.nodeLength(right)) {
@@ -751,11 +730,11 @@ define([
 			);
 		}
 
-		if (parent !== left) {
+		if (parent !== boundaries.leftNode(linebreak)) {
 			traversing.climbUntil(parent, dom.remove, hasRenderedContent);
 		}
 
-		return [container, offset];
+		return above;
 	}
 
 	var zwChars = ZERO_WIDTH_CHARACTERS.join('');
