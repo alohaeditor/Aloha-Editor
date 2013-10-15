@@ -160,7 +160,8 @@ define([
 
 		/**
 		 * Automatically sets the id of the given heading element to a sanitized
-		 * version of the element's content text string.
+		 * version of the element's content text string, only if the heading has
+		 * not a ID already set.
 		 *
 		 * @TODO: Rename to setHeadingId()
 		 *
@@ -169,19 +170,22 @@ define([
 		 *
 		 * @param {HTMLHeadingElement} heading One of the six HTML heading
 		 *                                     elements.
+		 * @returns {String} ID attribute of the Heading element
 		 */
 		processH: function (heading) {
-			if (!heading.id) {
-				// We prefix the ID with "heading_" to not run accross
-				// problems with the ID starting with a number which
+			var headingId = heading.id;
+			if (!headingId) {
+				// We prefix the Id with "heading_" to not run accross
+				// problems with the Id starting with a number which
 				// would be disallowedÜ in HTML.
-				var $heading = $(heading),
-					ID = "heading_" + this.sanitize($heading.text());
+				var $heading = $(heading);
+				headingId = "heading_" + this.sanitize($heading.text());
 
-				ID = checkDuplicatedID(ID);
+				headingId = checkDuplicatedID(headingId);
 
-				$heading.attr('id', ID);
+				$heading.attr('id', headingId);
 			}
+			return headingId;
 		},
 
 		/**
@@ -197,48 +201,48 @@ define([
 		 * @param {String} str
 		 * @return {String} Santized copy of `str`.
 		 */
-		sanitize: function (str) {
+		sanitize: function(str) {
 			return html.trimWhitespaceCharacters(str)
 				.replace(/[^a-z0-9]+/gi, '_');
 		},
 
 		//ns = headerids
 		initSidebar: function(sidebar) {
-			var pl = this;
-			pl.sidebar = sidebar;
+			var thisPlugin = this;
+			thisPlugin.sidebar = sidebar;
 			sidebar.addPanel({
-                    
-                    id         : nsClass('sidebar-panel'),
-                    title     : i18n.t('internal_hyperlink'),
-                    content     : '',
-                    expanded : true,
-                    activeOn : 'h1, h2, h3, h4, h5, h6',
-                    
-                    onInit     : function () {
-                        var that = this,
-                            content = this.setContent('<label class="'+nsClass('label')+'" for="'+nsClass('input')+'">'+i18n.t('headerids.label.target')+'</label><input id="'+nsClass('input')+'" class="'+nsClass('input')+'" type="text" name="value"/> <button class="'+nsClass('reset-button')+'">'+i18n.t('headerids.button.reset')+'</button><button class="'+nsClass('set-button')+'">'+i18n.t('headerids.button.set')+'</button>').content;
-                        
-                        content.find(nsSel('set-button')).click(function () {
-                            var content = that.content;
-							jQuery(that.effective).attr('id',jQuery(nsSel('input')).val());
-							jQuery(that.effective).addClass('aloha-customized');
-                        });
-						
-						content.find(nsSel('reset-button')).click(function () {
-                            var content = that.content;
-                            pl.processH(that.effective);
-							jQuery(that.effective).removeClass('aloha-customized');
-							that.content.find(nsSel('input')).val(that.effective.attr('id'));
-                        });
-                    },
-                    
-                    onActivate: function (effective) {
-						var that = this;
-						that.effective = effective;
-						that.content.find(nsSel('input')).val(effective.attr('id'));
-                    }
-                    
-                });
+				id: nsClass('sidebar-panel'),
+				title: i18n.t('internal_hyperlink'),
+				content: '',
+				expanded: true,
+				activeOn: 'h1, h2, h3, h4, h5, h6',
+
+				onInit: function () {
+					var thisSidebarPanel = this,
+					    content = this.setContent('<label class="' + nsClass('label') + '" for="' + nsClass('input') + '">' + i18n.t('headerids.label.target') + '</label><input id="' + nsClass('input') + '" class="' + nsClass('input') + '" type="text" name="value"/> <button class="' + nsClass('reset-button') + '">' + i18n.t('headerids.button.reset') + '</button><button class="' + nsClass('set-button') + '">' + i18n.t('headerids.button.set') + '</button>').content;
+
+					content.find(nsSel('set-button')).click(function () {
+						var content = thisSidebarPanel.content;
+						jQuery(thisSidebarPanel.effective)
+							.attr('id', jQuery(nsSel('input')).val())
+							.addClass('aloha-customized');
+					});
+
+					content.find(nsSel('reset-button')).click(function () {
+						var content = thisSidebarPanel.content;
+						thisPlugin.processH(thisSidebarPanel.effective);
+						jQuery(thisSidebarPanel.effective)
+							.removeClass('aloha-customized');
+						thisSidebarPanel.content.find(nsSel('input')).val(thisSidebarPanel.effective.attr('id'));
+					});
+				},
+
+				onActivate: function (effective) {
+					this.effective = effective;
+					this.content.find(nsSel('input')).val(thisPlugin.processH(effective[0]));
+				}
+			});
+
 			sidebar.show();
 		},
 		

@@ -14,3 +14,7 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: paste plugin: Pasting will no longer always break the line.
               A wrapping element will no longer be created to contain the copy
               content. RT#56692
+
+- **BUGFIX**: header ids plugin: A header ID will now automatically be added as
+              soon as the heading is created if the header id plugins is
+              activated. RT#56670
