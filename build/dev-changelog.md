@@ -8,3 +8,6 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**: Table caption is removed every time is deactivated.
+              Table caption is now hidden or shown but not removed,
+              so the original text remains. RT#56649
