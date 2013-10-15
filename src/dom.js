@@ -116,6 +116,37 @@ define([
 		'VIDEO'      : true  // HTML5
 	};
 
+	var TEXT_LEVEL_SEMANTIC_ELEMENTS = {
+		'A'      : true,
+		'ABBR'   : true,
+		'B'      : true,
+		'BDI'    : true, // HTML5
+		'BDO'    : true,
+		'BR'     : true,
+		'CITE'   : true,
+		'CODE'   : true,
+		'DATA'   : true, // HTML5
+		'DFN'    : true,
+		'EM'     : true,
+		'I'      : true,
+		'KBD'    : true,
+		'MARK'   : true, // HTML5
+		'Q'      : true,
+		'RP'     : true, // HTML5
+		'RT'     : true, // HTML5
+		'RUBY'   : true, // HTML5
+		'S'      : true,
+		'SAMP'   : true,
+		'SMALL'  : true,
+		'SPAN'   : true,
+		'STRONG' : true,
+		'SUB'    : true,
+		'SUP'    : true,
+		'TIME'   : true, // HTML5
+		'U'      : true,
+		'VAR'    : true,
+		'WBR'    : true  // HTML5
+	};
 
 	/**
 	 * Returns `true` if `node` is a text node.
@@ -161,6 +192,16 @@ define([
 	 */
 	function isInlineNode(node) {
 		return !isBlockNode(node);
+	}
+
+	/**
+	 * Check whether the given node is a text-level semantic element type.
+	 *
+	 * @param {DOMObject} node
+	 * @return {Boolean}
+	 */
+	function isTextLevelSemanticNode(node) {
+		return TEXT_LEVEL_SEMANTIC_ELEMENTS[node.nodeName] || false;
 	}
 
 	/**
@@ -1484,6 +1525,7 @@ define([
 		isVoidNode: isVoidNode,
 		isBlockNode: isBlockNode,
 		isInlineNode: isInlineNode,
+		isTextLevelSemanticNode: isTextLevelSemanticNode,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
 		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
@@ -1540,6 +1582,7 @@ define([
 	exports['isVoidNode'] = exports.isVoidNode;
 	exports['isBlockNode'] = exports.isBlockNode;
 	exports['isInlineNode'] = exports.isInlineNode;
+	exports['isTextLevelSemanticNode'] = exports.isTextLevelSemanticNode;
 	exports['splitTextNode'] = exports.splitTextNode;
 	exports['splitTextContainers'] = exports.splitTextContainers;
 	exports['joinTextNodeAdjustRange'] = exports.joinTextNodeAdjustRange;

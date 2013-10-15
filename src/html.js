@@ -53,107 +53,6 @@ define([
 	};
 
 	/**
-	 * A map of node tag names which are classified as block-level element.
-	 *
-	 * NB: "block-level" is not technically defined for elements that are new in
-	 * HTML5.
-	 *
-	 * @type {Object}
-	 */
-	var BLOCK_LEVEL_ELEMENTS = {
-		'ADDRESS'    : true,
-		'ARTICLE'    : true, // HTML5
-		'ASIDE'      : true, // HTML5
-		'AUDIO'      : true, // HTML5
-		'BLOCKQUOTE' : true,
-		'CANVAS'     : true, // HTML5
-		'DD'         : true,
-		'DIV'        : true,
-		'DL'         : true,
-		'FIELDSET'   : true,
-		'FIGCAPTION' : true,
-		'FIGURE'     : true,
-		'FOOTER'     : true,
-		'FORM'       : true,
-		'H1'         : true,
-		'H2'         : true,
-		'H3'         : true,
-		'H4'         : true,
-		'H5'         : true,
-		'H6'         : true,
-		'HEADER'     : true,
-		'HGROUP'     : true,
-		'HR'         : true,
-		'NOSCRIPT'   : true,
-		'OL'         : true,
-		'OUTPUT'     : true,
-		'P'          : true,
-		'PRE'        : true,
-		'SECTION'    : true, // HTML5
-		'TABLE'      : true,
-		'TFOOT'      : true,
-		'UL'         : true,
-		'VIDEO'      : true  // HTML5
-	};
-
-	/**
-	 * Void elements are elements which are not permitted to contain content.
-	 * https://developer.mozilla.org/en-US/docs/Web/HTML/Element
-	 *
-	 * @type {Object}
-	 */
-	var VOID_ELEMENTS = {
-		'AREA'    : true,
-		'BASE'    : true,
-		'BR'      : true,
-		'COL'     : true,
-		'COMMAND' : true,
-		'EMBED'   : true,
-		'HR'      : true,
-		'IMG'     : true,
-		'INPUT'   : true,
-		'KEYGEN'  : true, // HTML5
-		'LINK'    : true,
-		'META'    : true,
-		'PARAM'   : true,
-		'SOURCE'  : true,
-		'TRACK'   : true,
-		'WBR'     : true
-	};
-
-	var TEXT_LEVEL_SEMANTIC_ELEMENTS = {
-		'A'      : true,
-		'ABBR'   : true,
-		'B'      : true,
-		'BDI'    : true, // HTML5
-		'BDO'    : true,
-		'BR'     : true,
-		'CITE'   : true,
-		'CODE'   : true,
-		'DATA'   : true, // HTML5
-		'DFN'    : true,
-		'EM'     : true,
-		'I'      : true,
-		'KBD'    : true,
-		'MARK'   : true, // HTML5
-		'Q'      : true,
-		'RP'     : true, // HTML5
-		'RT'     : true, // HTML5
-		'RUBY'   : true, // HTML5
-		'S'      : true,
-		'SAMP'   : true,
-		'SMALL'  : true,
-		'SPAN'   : true,
-		'STRONG' : true,
-		'SUB'    : true,
-		'SUP'    : true,
-		'TIME'   : true, // HTML5
-		'U'      : true,
-		'VAR'    : true,
-		'WBR'    : true  // HTML5
-	};
-
-	/**
 	 * Non-block-level elements which are nevertheless line breaking.
 	 *
 	 * @type {Object}
@@ -175,52 +74,6 @@ define([
 		'DT' : true,
 		'DD' : true
 	};
-
-	/**
-	 * Similar to hasBlockStyle() except relies on the nodeName of the given
-	 * node which works for attached as well as and detached nodes.
-	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 *         True if the given node is a block node type--regardless of how it
-	 *         is rendered.
-	 */
-	function isBlockType(node) {
-		return BLOCK_LEVEL_ELEMENTS[node.nodeName] || false;
-	}
-
-	/**
-	 * Similar to hasInlineStyle() in the same sense as isBlockType() is similar
-	 * to hasBlockStyle()
-	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 *         True if the given node is an inline node type--regardless of how
-	 *         it is rendered.
-	 */
-	function isInlineType(node) {
-		return !isBlockType(node);
-	}
-
-	/**
-	 * Check whether the given node is a void element type.
-	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 */
-	function isVoidType(node) {
-		return VOID_ELEMENTS[node.nodeName] || false;
-	}
-
-	/**
-	 * Check whether the given node is a text-level semantic element type.
-	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 */
-	function isTextLevelSemanticType(node) {
-		return TEXT_LEVEL_SEMANTIC_ELEMENTS[node.nodeName] || false;
-	}
 
 	/**
 	 * Checks whether the given node is rendered with block style.
@@ -246,7 +99,7 @@ define([
 			return true;
 		case dom.Nodes.ELEMENT:
 			var style = dom.getComputedStyle(node, 'display');
-			return style ? !nonBlockDisplayValuesMap[style] : isBlockType(node);
+			return style ? !nonBlockDisplayValuesMap[style] : dom.isBlockNode(node);
 		default:
 			return false;
 		}
@@ -271,7 +124,7 @@ define([
 	/**
 	 * Returns true for nodes that introduce linebreaks.
 	 */
-	function isLinebreakingNode(node) {
+	function hasLinebreakingStyle(node) {
 		return LINE_BREAKING_VOID_ELEMENTS[node.nodeName]
 		    || hasBlockStyle(node);
 	}
@@ -354,7 +207,7 @@ define([
 	function skipUnrenderedToEndOfLine(point) {
 		var cursor = point.clone();
 		cursor.nextWhile(isUnrenderedAtPoint);
-		if (!isLinebreakingNode(cursor.node)) {
+		if (!hasLinebreakingStyle(cursor.node)) {
 			return false;
 		}
 		point.setFrom(cursor);
@@ -376,7 +229,7 @@ define([
 		var cursor = point.clone();
 		cursor.prev();
 		cursor.prevWhile(isUnrenderedAtPoint);
-		if (!isLinebreakingNode(cursor.node)) {
+		if (!hasLinebreakingStyle(cursor.node)) {
 			return false;
 		}
 		var isBr = ('BR' === cursor.node.nodeName);
@@ -388,7 +241,7 @@ define([
 			if (skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
 				cursor.skipPrev(); // before the br
 				cursor.prevWhile(isUnrenderedAtPoint);
-				if (!isLinebreakingNode(cursor.node)) {
+				if (!hasLinebreakingStyle(cursor.node)) {
 					return false;
 				}
 				cursor.next(); // after/out of the linebreaking node
@@ -619,8 +472,8 @@ define([
 	 * @return {boolean}
 	 */
 	function isAdjacentToBlock(node) {
-		return isBlockType(node.previousSibling)
-		    || isBlockType(node.nextSibling);
+		return dom.isBlockNode(node.previousSibling)
+		    || dom.isBlockNode(node.nextSibling);
 	}
 
 	/**
@@ -645,7 +498,7 @@ define([
 		if (
 			!maybeUnrenderedNode
 				&& (node === node.parentNode.lastChild)
-					&& isBlockType(node.parentNode)
+					&& dom.isBlockNode(node.parentNode)
 						&& 'BR' === node.nodeName
 		) {
 			return true;
@@ -689,7 +542,7 @@ define([
 			}
 			if (pos[1] > 0) {
 				var node = dom.nodeAtOffset(pos[0], pos[1] - 1);
-				if ((dom.isTextNode(node) || isVoidType(node))
+				if ((dom.isTextNode(node) || dom.isVoidNode(node))
 					&& isRendered(node)) {
 					adjacent = false;
 					return false;
@@ -726,9 +579,9 @@ define([
 	 * @return {Boolean}
 	 */
 	function suitableTransferTarget(node) {
-		return !isVoidType(node)
+		return !dom.isVoidNode(node)
 		    && !dom.isTextNode(node)
-		    && !isTextLevelSemanticType(node)
+		    && !dom.isTextLevelSemanticNode(node)
 			&& !LIST_CONTAINERS[node.nodeName];
 	}
 
@@ -781,19 +634,18 @@ define([
 	 * @return {Boolean}
 	 */
 	function isTransferable(node) {
-		return !isLinebreakingNode(node);
+		return !hasLinebreakingStyle(node);
 	}
 
 	/**
 	 * Finds a suitable container inwhich to move nodes that are to the right of
 	 * `breaker` when removing a visual line break.
 	 *
-	 * @param {DOMObject} above
-	 * @param {DOMObject} breaker
+	 * @param {DOMObject} linebreak
 	 * @return {DOMObject}
 	 */
-	function findTransferTarget(above, breaker) {
-		var node = above;
+	function findTransferTarget(linebreak) {
+		var node = linebreak;
 		if (!isRendered(node)) {
 			node = traversing.findBackward(node, isRendered, dom.isEditingHost);
 		}
@@ -804,7 +656,7 @@ define([
 			node,
 			suitableTransferTarget,
 			function (node) {
-				return node === breaker.parentNode || dom.isEditingHost(node);
+				return node === linebreak.parentNode || dom.isEditingHost(node);
 			}
 		);
 	}
@@ -825,30 +677,28 @@ define([
 	 * Finds the closest line-breaking node between `above` and `below` in
 	 * document order.
 	 *
-	 * @param {DOMObject} above
-	 * @param {DOMObject} below
-	 * @return {DOMObject}
+	 * @param {Array.<Element, number>} above
+	 * @param {Array.<Element, number>} below
+	 * @return {Array.<Element, number>}
 	 */
-	function findLinebreakingNode(above, below) {
-		if (isLinebreakingNode(below)) {
-			return below;
-		}
-		var node = below;
-		var breaker;
-		while (node && node !== above) {
-			node = traversing.findThrough(
-				node,
-				function (node) {
-					return node === above;
-				},
-				function (node) {
-					if (isLinebreakingNode(node)) {
-						breaker = node;
-					}
+	function nextLineBreak(above, below) {
+		return boundaries.nextWhile(above, function (pos, node, offset) {
+			if (boundaries.equal(pos, below)) {
+				return false;
+			}
+			var end = boundaries.atEnd(pos);
+			if (end) {
+				if (hasLinebreakingStyle(node)) {
+					return false;
 				}
-			);
-		}
-		return breaker || (isLinebreakingNode(above) ? above : null);
+			} else {
+				var next = dom.nodeAtOffset(node, offset);
+				if (hasLinebreakingStyle(next)) {
+					return false;
+				}
+			}
+			return !(end && dom.isEditingHost(pos[0]));
+		});
 	}
 
 	/**
@@ -863,16 +713,16 @@ define([
 			return [above[0].parentNode, dom.nodeIndex(above[0])];
 		}
 
-		var left = boundaries.leftNode(above);
-		var right = boundaries.rightNode(below);
+		var linebreak = nextLineBreak(above, below);
 
-		var breaker = findLinebreakingNode(left, right);
-		if (!breaker) {
-			traversing.climbUntil(right, dom.remove, hasRenderedContent);
-			return [left, dom.nodeLength(left)];
+		if (boundaries.equal(linebreak, below)) {
+			return above;
 		}
 
-		var target = findTransferTarget(left, breaker);
+		var left = boundaries.leftNode(linebreak);
+		var right = boundaries.rightNode(below);
+		var target = findTransferTarget(left);
+
 		var move;
 		var offset;
 		var container;
@@ -880,11 +730,12 @@ define([
 		if (target) {
 			move = createTransferFunction(target, true);
 			container = target;
-			offset = dom.nodeLength(container);
+			offset = dom.nodeLength(target);
 		} else {
-			move = createTransferFunction(breaker, false);
-			container = breaker.parentNode;
-			offset = dom.nodeIndex(breaker);
+			target = dom.nodeAtOffset(linebreak[0], linebreak[1]);
+			move = createTransferFunction(target, false);
+			container = linebreak[0];
+			offset = linebreak[1];
 		}
 
 		var parent = right.parentNode;
@@ -1037,18 +888,18 @@ define([
 		}
 		if (0 === offset) {
 			return !!traversing.previousNonAncestor(textnode, function (node) {
-				return isInlineType(node) && isRendered(node);
+				return dom.isInlineNode(node) && isRendered(node);
 			}, function (node) {
-				return isLinebreakingNode(node) || dom.isEditingHost(node);
+				return hasLinebreakingStyle(node) || dom.isEditingHost(node);
 			});
 		}
 		if (0 !== textnode.data.substr(offset).search(WSP_FROM_END)) {
 			return true;
 		}
 		return !!traversing.nextNonAncestor(textnode, function (node) {
-			return isInlineType(node) && isRendered(node);
+			return dom.isInlineNode(node) && isRendered(node);
 		}, function (node) {
-			return isLinebreakingNode(node) || dom.isEditingHost(node);
+			return hasLinebreakingStyle(node) || dom.isEditingHost(node);
 		});
 	}
 
@@ -1116,7 +967,7 @@ define([
 			 */
 			function (node) {
 				return canInsertText(node)
-					|| (isVoidType(node)
+					|| (dom.isVoidNode(node)
 						&& traversing.nextWhile(node, isUnrendered));
 			},
 			function (node) {
@@ -1124,7 +975,7 @@ define([
 					return false;
 				}
 				if (!out_crossedVisualBreak()) {
-					out_crossedVisualBreak(isLinebreakingNode(node));
+					out_crossedVisualBreak(hasLinebreakingStyle(node));
 				}
 				return dom.isEditingHost(node)
 					|| (node.previousSibling
@@ -1160,9 +1011,9 @@ define([
 				offset: dom.nodeLength(node.parentNode)
 			};
 		}
-		if (isVoidType(next)) {
+		if (dom.isVoidNode(next)) {
 			var after = traversing.forward(next);
-			if (isVoidType(after) || isInlineType(after)) {
+			if (dom.isVoidNode(after) || dom.isInlineNode(after)) {
 				return {
 					node: next.parentNode,
 					offset: dom.nodeIndex(next) + 1
@@ -1261,14 +1112,14 @@ define([
 			next,
 			function (node) {
 				return !arrays.contains(parents, node)
-				    && (canInsertText(node) || isVoidType(node));
+				    && (canInsertText(node) || dom.isVoidNode(node));
 			},
 			function (node) {
 				if (next === node) {
 					return false;
 				}
 				if (!crossedVisualBreak) {
-					crossedVisualBreak = isLinebreakingNode(node);
+					crossedVisualBreak = hasLinebreakingStyle(node);
 				}
 				return dom.isEditingHost(node)
 					|| (node.nextSibling
@@ -1291,14 +1142,14 @@ define([
 			landing = traversing.findBackward(
 				traversing.forward(landing.lastChild),
 				function (node) {
-					return canInsertText(node) || isVoidType(node);
+					return canInsertText(node) || dom.isVoidNode(node);
 				}
 			);
 		}
 
-		if (isVoidType(landing)) {
+		if (dom.isVoidNode(landing)) {
 			if (!landing.previousSibling
-				|| isVoidType(landing.previousSibling)) {
+				|| dom.isVoidNode(landing.previousSibling)) {
 				return {
 					node: landing.parentNode,
 					offset: dom.nodeIndex(landing)
@@ -1344,7 +1195,7 @@ define([
 	 * @param {DOMObject} elem
 	 */
 	function prop(elem) {
-		if (!browser.browser.msie && !elem.firstChild && isBlockType(elem)) {
+		if (!browser.browser.msie && !elem.firstChild && dom.isBlockNode(elem)) {
 			dom.insert(document.createElement('br'), elem, true);
 		}
 	}
@@ -1357,10 +1208,6 @@ define([
 		isRendered: isRendered,
 		isControlCharacter: isControlCharacter,
 		isStyleInherited: isStyleInherited,
-		isBlockType: isBlockType,
-		isInlineType: isInlineType,
-		isVoidType: isVoidType,
-		isTextLevelSemanticType: isTextLevelSemanticType,
 		hasBlockStyle: hasBlockStyle,
 		hasInlineStyle: hasInlineStyle,
 		isUnrenderedWhitespace: isUnrenderedWhitespace,
@@ -1368,11 +1215,12 @@ define([
 		skipUnrenderedToEndOfLine: skipUnrenderedToEndOfLine,
 		normalizeBoundary: normalizeBoundary,
 		isEmpty: isEmpty,
-		isLinebreakingNode: isLinebreakingNode,
+		hasLinebreakingStyle: hasLinebreakingStyle,
 		isVisuallyAdjacent: isVisuallyAdjacent,
 		removeVisualBreak: removeVisualBreak,
 		nextVisibleCharacter: nextVisibleCharacter,
 		nextVisiblePosition: nextVisiblePosition,
+		nextLineBreak: nextLineBreak,
 		previousVisibleCharacter: previousVisibleCharacter,
 		previousVisiblePosition: previousVisiblePosition,
 		prop: prop,
@@ -1383,10 +1231,6 @@ define([
 	exports['isRendered'] = exports.isRendered;
 	exports['isControlCharacter'] = exports.isControlCharacter;
 	exports['isStyleInherited'] = exports.isStyleInherited;
-	exports['isBlockType'] = exports.isBlockType;
-	exports['isInlineType'] = exports.isInlineType;
-	exports['isVoidType'] = exports.isVoidType;
-	exports['isTextLevelSemanticType'] = exports.isTextLevelSemanticType;
 	exports['hasBlockStyle'] = exports.hasBlockStyle;
 	exports['hasInlineStyle'] = exports.hasInlineStyle;
 	exports['isUnrenderedWhitespace'] = exports.isUnrenderedWhitespace;
@@ -1394,7 +1238,7 @@ define([
 	exports['skipUnrenderedToEndOfLine'] = exports.skipUnrenderedToEndOfLine;
 	exports['normalizeBoundary'] = exports.normalizeBoundary;
 	exports['isEmpty'] = exports.isEmpty;
-	exports['isLinebreakingNode'] = exports.isLinebreakingNode;
+	exports['hasLinebreakingStyle'] = exports.hasLinebreakingStyle;
 	exports['isVisuallyAdjacent'] = exports.isVisuallyAdjacent;
 	exports['removeVisualBreak'] = exports.removeVisualBreak;
 	exports['nextVisibleCharacter'] = exports.nextVisibleCharacter;

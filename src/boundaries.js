@@ -136,6 +136,14 @@ define([
 		     : dom.nodeAtOffset(node, offset);
 	}
 
+	function atEnd(boundary) {
+		 return boundary[1] === dom.nodeLength(boundary[0]);
+	}
+
+	function atStart(boundary) {
+		return 0 === boundary[1];
+	}
+
 	var exports = {
 		equal     : equal,
 		start     : start,
@@ -145,7 +153,9 @@ define([
 		nextWhile : nextWhile,
 		prevWhile : prevWhile,
 		leftNode  : leftNode,
-		rightNode : rightNode
+		rightNode : rightNode,
+		atStart   : atStart,
+		atEnd     : atEnd
 	};
 
 	exports['equal']     = exports.equal;

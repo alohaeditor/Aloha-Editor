@@ -3,6 +3,7 @@
 
 	var html = aloha.html;
 	var ranges = aloha.ranges;
+	var boundaries = aloha.boundaries;
 	var boundarymarkers = aloha.boundarymarkers;
 	var tested = [];
 
@@ -215,8 +216,8 @@
 			boundarymarkers.extract($(markup)[0], range);
 			equal(
 				html.isVisuallyAdjacent(
-					aloha.boundaries.start(range),
-					aloha.boundaries.end(range)
+					boundaries.start(range),
+					boundaries.end(range)
 				),
 				expected,
 				markup
@@ -243,9 +244,8 @@
 	});
 
 	test('removeVisualBreak()', function () {
-		var t = function (before, after) {
-			return runTest(before, after, editing.joinRangeContainers);
-		};
+		return;
+		var t = function (before, after) {};
 		t('<div><p>foo{</p><p>}bar</p></div>', '<div><p>foo{}bar</p></div>');
 		t('<div><p>foo[</p><p>]bar</p></div>', '<div><p>foo[]bar</p></div>');
 		t('<div><b>foo[</b><b>]bar</b></div>', '<div><b>foo[]bar</b></div>');
@@ -331,6 +331,31 @@
 
 	test('isEmpty', function () {
 		tested.push('isEmpty');
+	});
+
+	test('nextLineBreak', function () {
+		tested.push('nextLineBreak');
+		var t = function (before, after) {
+			var dom = $(before)[0];
+			var range = ranges.create();
+			boundarymarkers.extract(dom, range);
+			var linebreak = html.nextLineBreak(
+				boundaries.start(range),
+				boundaries.end(range)
+			);
+			if (linebreak) {
+				range.setStart(linebreak[0], linebreak[1]);
+				boundarymarkers.insert(range);
+			}
+			equal(dom.outerHTML, after, before + ' ⇒ ' + after);
+		};
+		t('<p>{foo<br>bar}</p>', '<p>foo{<br>bar}</p>');
+		t('<p>foo{<br>bar}</p>', '<p>foo{<br>bar}</p>');
+		t('<p>foo<br>{bar}</p>', '<p>foo<br>bar{}</p>');
+		t('<div><p>foo[<i>bar<b>baz<br>foo</b></i></p>bar}</div>',
+		  '<div><p>foo<i>bar<b>baz{<br>foo</b></i></p>bar}</div>');
+		t('<div><p>{foo<i>bar<b>baz</b></i></p>foo}</div>',
+		  '<div><p>foo<i>bar<b>baz</b></i>{</p>foo}</div>');
 	});
 
 	testCoverage(test, tested, html);
