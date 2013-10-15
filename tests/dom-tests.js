@@ -199,8 +199,8 @@
 		equal(node.lastChild.childNodes[1].data, 'r');
 	});
 
-	test('splitTextNodeAdjustRange', function () {
-		tested.push('splitTextNodeAdjustRange');
+	test('splitBoundary', function () {
+		tested.push('splitBoundary');
 		var node = $('<div>foo<b>bar</b></div>')[0];
 		var range = aloha.ranges.create(
 			node.firstChild,
@@ -208,7 +208,7 @@
 			node.lastChild.lastChild,
 			2
 		);
-		dom.splitTextNodeAdjustRange(node.firstChild, 1, range);
+		dom.splitBoundary([node.firstChild, 1], [range]);
 		equal(
 			dom.nodeAtOffset(range.startContainer, range.startOffset).data,
 			'oo'
@@ -303,15 +303,6 @@
 		equal(attrs[1][1], '');
 	});
 
-	test('removeAttr', function () {
-		tested.push('removeAttr');
-		var elem = $('<div data-one="1" data-two></div>')[0];
-		dom.removeAttr(elem, 'data-two');
-		equal(dom.outerHtml(elem), '<div data-one="1"></div>');
-		dom.removeAttr(elem, 'data-one');
-		equal(dom.outerHtml(elem), '<div></div>');
-	});
-
 	test('attrNames', function () {
 		tested.push('attrNames');
 		var elem = $('<div data-one="1" data-two></div>')[0];
@@ -324,29 +315,6 @@
 		tested.push('hasAttrs');
 		equal(dom.hasAttrs($('<div data-one="1" data-two></div>')[0]), true);
 		equal(dom.hasAttrs($('<input/>')[0]), false);
-	});
-
-	test('getAttr', function () {
-		tested.push('getAttr');
-		equal(dom.getAttr($('<a>')[0], 'href'), null);
-		equal(dom.getAttr($('<a href>')[0], 'href'), '');
-		equal(dom.getAttr($('<a href="">')[0], 'href'), '');
-		equal(dom.getAttr($('<a href=" ">')[0], 'href'), ' ');
-		equal(dom.getAttr($('<a HREF="foo">')[0], 'href'), 'foo');
-		equal(dom.getAttr($('<a href="foo">')[0], 'HREF'), 'foo');
-	});
-
-	test('setAttr', function () {
-		tested.push('setAttr');
-		var element = $('a')[0];
-		dom.setAttr(element, 'href', '');
-		equal(dom.getAttr(element, 'href'), '');
-		dom.setAttr(element, 'href', 'foo');
-		equal(dom.getAttr(element, 'href'), 'foo');
-		dom.setAttr(element, 'href', 'bar');
-		equal(dom.getAttr(element, 'href'), 'bar');
-		dom.setAttr(element, 'href', null);
-		equal(dom.getAttr(element, 'href'), 'bar');
 	});
 
 	test('attrNames', function () {

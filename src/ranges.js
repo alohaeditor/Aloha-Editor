@@ -6,6 +6,7 @@
  */
 define([
 	'dom',
+	'stable-range',
 	'html',
 	'traversing',
 	'functions',
@@ -13,6 +14,7 @@ define([
 	'cursors'
 ], function Ranges(
 	dom,
+	StableRange,
 	html,
 	traversing,
 	fn,
@@ -489,65 +491,6 @@ define([
 		return range;
 	}
 
-	// ~~~ `stable range ~~~
-
-	function StableRange(range) {
-		if (!range) {
-			return;
-		}
-		this.startContainer = range.startContainer;
-		this.startOffset = range.startOffset;
-		this.endContainer = range.endContainer;
-		this.endOffset = range.endOffset;
-		this.commonAncestorContainer = range.commonAncestorContainer;
-		this.collapsed = range.collapsed;
-	}
-
-	StableRange.prototype.update = function () {
-		if (!this.startContainer || !this.endContainer) {
-			return;
-		}
-		this.collapsed = (this.startContainer === this.endContainer
-						  && this.startOffset === this.endOffset);
-		var start = traversing.childAndParentsUntil(
-			this.startContainer,
-			fn.returnFalse
-		);
-		var end = traversing.childAndParentsUntil(
-			this.endContainer,
-			fn.returnFalse
-		);
-		this.commonAncestorContainer = arrays.intersect(start, end)[0];
-	};
-
-	StableRange.prototype.setStart = function (sc, so) {
-		this.startContainer = sc;
-		this.startOffset = so;
-		this.update();
-	};
-
-	StableRange.prototype.setEnd = function (ec, eo) {
-		this.endContainer = ec;
-		this.endOffset = eo;
-		this.update();
-	};
-
-	/**
-	 * Creates a "stable" copy of the given range.
-	 *
-	 * A native range is live, which means that modifying the DOM may mutate the
-	 * range. Also, using setStart/setEnd may not set the properties correctly
-	 * (the browser may perform its own normalization of boundary points). The
-	 * behaviour of a native range is very erratic and should be converted to a
-	 * stable range as the first thing in any algorithm.
-	 *
-	 * @param {Range} range
-	 * @return {StableRange}
-	 */
-	function stableRange(range) {
-		return new StableRange(range);
-	}
-
 	/**
 	 * Checks whether the two given range object are equal.
 	 *
@@ -671,7 +614,7 @@ define([
 	 * @param {DOMObject} Editing host, or null if none is found.
 	 */
 	function getNearestEditingHost(liveRange) {
-		var range = stableRange(liveRange);
+		var range = StableRange(liveRange);
 		var editable = dom.getEditingHost(range.startContainer);
 		if (editable) {
 			return editable;
@@ -684,42 +627,40 @@ define([
 	}
 
 	/**
-	 * Insert the given text to the left of the given range.
+	 * Insert the given text at the start of the given range.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range will have the start and end boundaries set
+	 *        to the start and end of the inserted text.
 	 * @param {String} text
 	 *        The text to insert.
-	 * @return {Range}
-	 *         The given range at which the text was inserted.  If text is
-	 *         inserted, this range will have been modified.
 	 */
 	function insertText(range, text) {
 		// Because empty text nodes are generally not nice and even cause
 		// problems with IE8 (elem.childNodes).
 		if (!text.length) {
-			return range;
+			return;
 		}
 		var node = dom.nodeAtOffset(range.startContainer, range.startOffset);
 		var atEnd = dom.isAtEnd(range.startContainer, range.startOffset);
 		// Because if the node following the insert position is already a text
 		// node we can just reuse it.
-		if (!atEnd && dom.Nodes.TEXT === node.nodeType) {
-			var offset = dom.Nodes.TEXT === range.startContainer.nodeType
+		if (!atEnd && dom.isTextNode(node)) {
+			var offset = dom.isTextNode(range.startContainer)
 			           ? range.startOffset
 			           : 0;
 			node.insertData(offset, text);
 			range.setStart(node, offset);
 			range.setEnd(node, offset + text.length);
-			return range;
+			return;
 		}
 		// Because if the node preceding the insert position is already a text
 		// node we can just reuse it.
 		var prev = atEnd ? node.lastChild : node.previousSibling;
-		if (prev && dom.Nodes.TEXT === prev.nodeType) {
+		if (prev && dom.isTextNode(prev)) {
 			prev.insertData(prev.length, text);
 			range.setStart(prev, prev.length - text.length);
 			range.setEnd(prev, prev.length);
-			return range;
+			return;
 		}
 		// Because if we can't reuse any text nodes, we have to insert a new
 		// one.
@@ -751,7 +692,6 @@ define([
 	 * ranges.insertTextBehind()
 	 * ranges.select()
 	 * ranges.setFromReference()
-	 * ranges.stableRange()
 	 * ranges.trim()
 	 * ranges.trimBoundaries()
 	 * ranges.trimClosingOpening()
@@ -772,7 +712,6 @@ define([
 		insertTextBehind: insertTextBehind,
 		select: select,
 		setFromReference: setFromReference,
-		stableRange: stableRange,
 		trim: trim,
 		trimBoundaries: trimBoundaries,
 		trimClosingOpening: trimClosingOpening,
@@ -795,7 +734,6 @@ define([
 	exports['insertTextBehind'] = exports.insertTextBehind;
 	exports['select'] = exports.select;
 	exports['setFromReference'] = exports.setFromReference;
-	exports['stableRange'] = exports.stableRange;
 	exports['trim'] = exports.trim;
 	exports['trimBoundaries'] = exports.trimBoundaries;
 	exports['trimClosingOpening'] = exports.trimClosingOpening;
