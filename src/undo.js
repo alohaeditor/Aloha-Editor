@@ -16,15 +16,25 @@ define(['arrays', 'dom'], function Undo(Arrays, Dom) {
 		'characterDataOldValue': true
 	};
 
+	function assertEqual(a, b) {
+		if (a !== b) {
+			throw Error('assertion error ' + a + ' !== ' + b);
+		}
+	}
+
+	function assertNotEqual(a, b) {
+		if (a === b) {
+			throw Error('assertion error ' + a + ' === ' + b);
+		}
+	}
+
 	function createContext(opts) {
 		var elem = opts.elem;
 		var context = {
 			elem: elem,
 			observer: null,
 			stack: [],
-			frame: null,
-			// API
-			'changes': []
+			frame: null
 		};
 		context.observer = new MutationObserver(elem, function (mutations) {});
 		return context;
@@ -38,8 +48,9 @@ define(['arrays', 'dom'], function Undo(Arrays, Dom) {
 		};
 	}
 
-	function nextNodePosition(pos) {
-		pos[pos.length - 1][1] += 1;
+	function addNodePosition(pos, nodeAtAddedPosition, len) {
+		var lastStep = Arrays.last(pos);
+		pos[pos.length - 1] = [nodeAtAddedPosition.nodeName, lastStep[1] + len];
 	}
 
 	function descNodePosition(pos, nodeAtOff, off) {
@@ -50,7 +61,7 @@ define(['arrays', 'dom'], function Undo(Arrays, Dom) {
 		var pos = [];
 		var parent = node;
 		while (parent && container !== parent) {
-			pos.push([node.nodeName, Dom.normalizedNodeIndex(parent)]);
+			pos.push([parent.nodeName, Dom.normalizedNodeIndex(parent)]);
 			parent = parent.parentNode;
 		}
 		return pos;
@@ -65,10 +76,37 @@ define(['arrays', 'dom'], function Undo(Arrays, Dom) {
 			skip = skip.previousSibling;
 		}
 		var pos = nodePosition(container, node);
+		// NB positions with textOff = 0 are invalid because empty text
+		// nodes should be treated as if they are not present and if a
+		// position in an empty text node is taken, the same position would
+		// become invalid when the empty text node is removed.
 		if (textOff) {
 			pos.push(['#text', textOff]);
 		}
 		return pos;
+	}
+
+	function boundaryFromPosition(container, pos) {
+		for (var i = 0; i < pos.length - 1; i++) {
+			var step = pos[i];
+			container = Dom.nthChild(container, step[1]);
+			assertEqual(step[0], container.nodeName);
+		}
+		var lastStep = Arrays.last(pos);
+		var boundary;
+		if (Dom.isTextNode(container)) {
+			var textOff = lastStep[1];
+			assertNotEqual(textOff, 0);
+			assertEqual(lastStep[0], container.nodeName);
+			boundary = [container, textOff];
+		} else {
+			// Because the last step may have become invalid due to a
+			// change being reversed and because recordsToChanges()
+			// creates positions with inserted nodes, we don't do an
+			// assertion here.
+			boundary = [container, lastStep[1]];
+		}
+		return boundary;
 	}
 
 	function recordsToChanges(container, records) {
@@ -78,7 +116,7 @@ define(['arrays', 'dom'], function Undo(Arrays, Dom) {
 			var oldValue = record['oldValue'];
 			var change;
 			switch(record['type']) {
-			case 'attributes';
+			case 'attributes':
 				var name = record['attributeName'];
 				var ns = record['attributeNamespace'];
 				var newValue = target.getAttribute(name);
@@ -123,7 +161,7 @@ define(['arrays', 'dom'], function Undo(Arrays, Dom) {
 						pos = position(container, prevSibling, textOff);
 					} else if (prevSibling) {
 						pos = nodePosition(container, prevSibling);
-						nextNodePosition(pos);
+						addNodePosition(pos, deleted[0], 1);
 					} else {
 						pos = nodePosition(container, target);
 						descNodePosition(pos, deleted[0], 0);
@@ -178,10 +216,10 @@ define(['arrays', 'dom'], function Undo(Arrays, Dom) {
 		if (upperFrame) {
 			upperFrame.changes.push(change);
 		} else {
-			context.changes.push(change);
 			context.observer.disconnect();
 		}
 		context.frame = upperFrame;
+		return change;
 	}
 
 	function capture(context, meta, fn) {
@@ -189,7 +227,7 @@ define(['arrays', 'dom'], function Undo(Arrays, Dom) {
 		try {
 			fn();
 		} finally {
-			leave(context);
+			return leave(context);
 		}
 	}
 
@@ -211,46 +249,49 @@ define(['arrays', 'dom'], function Undo(Arrays, Dom) {
 		return inverse;
 	}
 
-	function boundaryFromPosition(pos) {
-	}
-
-	function insertAtBoundary(boundary, node) {
-	}
-
-	function fragmentFromNodes(nodes) {
-		var fragment = document.createDocumentFragment();
-		nodes.forEach(function (node) {
-			fragment.appendChild(Dom.clone(node));
-		});
-		return fragment;
-	}
-
 	function applyChange(container, change, ranges) {
 		var pos = change['pos'];
 		var type = change['type'];
-		var boundary = boundaryFromPosition(pos);
+		var boundary = boundaryFromPosition(container, pos);
 		switch (type) {
 		case 'update-attr':
-			var node = Dom.nodeAtOffset(boundary[0], boundary[1]);
-			node.setAttribute(change['name'], change['newValue']);
+			var node = Dom.nodeAtBoundary(boundary);
+			var ns = change['ns'];
+			var name = change['name'];
+			var value = change['newValue'];
+			Dom.setAttributeNS(ns, name, value);
 			break;
 		case 'insert':
-			insertAtBoundary(boundary, fragmentFromNodes(change.content), ranges);
+			Dom.insertNodesAtBoundary(change.content, boundary, ranges);
 			break;
 		case 'delete':
 			boundary = splitBoundary(boundary, ranges);
+			var node = Dom.nodeAtBoundary(boundary);
 			var parent = node.parentNode;
 			change.content.forEach(function (deletedNode) {
+				var next;
 				if (Dom.isTextNode(deletedNode)) {
 					var deletedLen = Dom.nodeLength(deletedNode);
-					var len = Dom.nodeLength(node);
-					if (deletedLen !== len) {
-						
+					while (deletedLen) {
+						next = node.nextSibling;
+						assertEqual(node.nodeName, deletedNode.nodeName);
+						var len = Dom.nodeLength(node);
+						if (deletedLen >= len) {
+							Dom.removePreservingRanges(node, ranges);
+							deletedLen -= len;
+						} else {
+							var beforeSplit = Dom.splitBoundary([node, deletedLen], ranges);
+							Dom.removePreservingRanges(beforeSplit, ranges);
+							deletedLen = 0;
+						}
+						node = next;
 					}
+				} else {
+					next = node.nextSibling;
+					assertEqual(node.nodeName, deletedNode.nodeName);
+					Dom.removePreservingRanges(node, ranges);
+					node = next;
 				}
-				var next = node.nextSibling;
-				Dom.removePreservingRanges(node, ranges);
-				node = next;
 			});
 			break;
 		default:

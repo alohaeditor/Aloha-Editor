@@ -6,6 +6,8 @@
 	var boundarymarkers = aloha.boundarymarkers;
 	var tested = [];
 
+	module('traversing');
+
 	test('nextWhile', function () {
 		tested.push('nextWhile');
 		var node = $('<div><u></u><a>foo</a>bar<b></b><br/></div>')[0];

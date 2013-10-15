@@ -59,7 +59,7 @@
 				if (container && container.parentNode) {
 					range.setStart(container, offset);
 					range.setEnd(container, offset);
-					ranges.insertText(range, '|');
+					ranges.insertTextBehind(range, '|');
 					return true;
 				}
 				return false;
@@ -108,7 +108,7 @@
 			if (container && container.parentNode) {
 				range.setStart(container, offset);
 				range.setEnd(container, offset);
-				ranges.insertText(range, '|');
+				ranges.insertTextBehind(range, '|');
 				return true;
 			}
 			return false;

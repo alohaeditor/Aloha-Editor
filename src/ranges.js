@@ -626,53 +626,10 @@ define([
 		);
 	}
 
-	/**
-	 * Insert the given text at the start of the given range.
-	 *
-	 * @param {Range} range will have the start and end boundaries set
-	 *        to the start and end of the inserted text.
-	 * @param {String} text
-	 *        The text to insert.
-	 */
-	function insertText(range, text) {
-		// Because empty text nodes are generally not nice and even cause
-		// problems with IE8 (elem.childNodes).
-		if (!text.length) {
-			return;
-		}
-		var node = dom.nodeAtOffset(range.startContainer, range.startOffset);
-		var atEnd = dom.isAtEnd(range.startContainer, range.startOffset);
-		// Because if the node following the insert position is already a text
-		// node we can just reuse it.
-		if (!atEnd && dom.isTextNode(node)) {
-			var offset = dom.isTextNode(range.startContainer)
-			           ? range.startOffset
-			           : 0;
-			node.insertData(offset, text);
-			range.setStart(node, offset);
-			range.setEnd(node, offset + text.length);
-			return;
-		}
-		// Because if the node preceding the insert position is already a text
-		// node we can just reuse it.
-		var prev = atEnd ? node.lastChild : node.previousSibling;
-		if (prev && dom.isTextNode(prev)) {
-			prev.insertData(prev.length, text);
-			range.setStart(prev, prev.length - text.length);
-			range.setEnd(prev, prev.length);
-			return;
-		}
-		// Because if we can't reuse any text nodes, we have to insert a new
-		// one.
-		var textNode = document.createTextNode(text);
-		dom.insert(textNode, node, atEnd);
-		range.setStart(textNode, 0);
-		range.setEnd(textNode, textNode.length);
-	}
-
 	function insertTextBehind(range, text) {
-		insertText(range, text);
-		collapseToEnd(range);
+		var boundary = [range.startContainer, range.startOffset];
+		boundary = dom.insertTextAtBoundary(text, boundary, true, [range]);
+		collapseToStart(range);
 		select(range);
 	}
 
@@ -708,7 +665,6 @@ define([
 		expandToWord: expandToWord,
 		expandToVisibleCharacter: expandToVisibleCharacter,
 		get: get,
-		insertText: insertText,
 		insertTextBehind: insertTextBehind,
 		select: select,
 		setFromReference: setFromReference,
@@ -730,7 +686,6 @@ define([
 	exports['expandToWord'] = exports.expandToWord;
 	exports['expandToVisibleText'] = exports.expandToVisibleText;
 	exports['get'] = exports.get;
-	exports['insertText'] = exports.insertText;
 	exports['insertTextBehind'] = exports.insertTextBehind;
 	exports['select'] = exports.select;
 	exports['setFromReference'] = exports.setFromReference;
