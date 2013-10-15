@@ -386,7 +386,7 @@ define([
 				isSteppingIn = false;
 				next = node.parentNode;
 			}
-			if (until(next, isSteppingIn)) {
+			if (!next || until(next, isSteppingIn)) {
 				return null;
 			}
 			if (match(next, isSteppingIn)) {
