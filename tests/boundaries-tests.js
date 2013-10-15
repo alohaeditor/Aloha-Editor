@@ -55,7 +55,7 @@
 		var range = ranges.create();
 		boundaries.prevWhile(
 			[dom, aloha.dom.nodeIndex(dom.lastChild) + 1],
-			function (container, offset) {
+			function (pos, container, offset) {
 				if (container && container.parentNode) {
 					range.setStart(container, offset);
 					range.setEnd(container, offset);
@@ -104,7 +104,7 @@
 		tested.push('nextWhile');
 		var dom = $('<div>foo<p>bar<b><u><i>baz</i></u>buzz</b></p></div>')[0];
 		var range = ranges.create();
-		boundaries.nextWhile([dom, 0], function (container, offset) {
+		boundaries.nextWhile([dom, 0], function (pos, container, offset) {
 			if (container && container.parentNode) {
 				range.setStart(container, offset);
 				range.setEnd(container, offset);
@@ -117,6 +117,32 @@
 			dom.outerHTML,
 			'<div>|foo|<p>|bar|<b>||<u>||<i>|baz|</i>||</u>|buzz|</b>||</p>||</div>'
 		);
+	});
+
+	test('leftNode() & rightNode()', function () {
+		tested.push('leftNode');
+		tested.push('rightNode');
+		var t = function (markup, expected) {
+			var range = ranges.create();
+			boundarymarkers.extract($(markup)[0], range);
+			var left = boundaries.leftNode(boundaries.start(range));
+			var right = boundaries.rightNode(boundaries.end(range));
+			equal(left.data || left.nodeName, expected[0], markup + ' => ' + expected.join());
+			equal(right.data || right.nodeName, expected[1], markup + ' => ' + expected.join());
+		};
+		t('<p>{}<i></i></p>',   ['P', 'I']);
+		t('<p>{<i>}</i></p>',   ['P', 'I']);
+		t('<p><i>{}</i></p>',   ['I', 'I']);
+		t('<p><i>{</i>}</p>',   ['I', 'P']);
+		t('<p><i></i>{}</p>',   ['I', 'P']);
+		t('<p>a{}<i></i></p>',  ['a', 'I']);
+		t('<p>a{<i>}</i></p>',  ['a', 'I']);
+		t('<p><i>a{</i>}</p>',  ['a', 'P']);
+		t('<p>{<i>}a</i></p>',  ['P', 'a']);
+		t('<p><i>{</i>}a</p>',  ['I', 'a']);
+		t('<p><i></i>{}a</p>',  ['I', 'a']);
+		t('<p><i>a{</i>}b</p>', ['a', 'b']);
+		t('<p><i>{foo</i>b<u>a}<u>r</p>', ['I', 'U']);
 	});
 
 	testCoverage(test, tested, boundaries);

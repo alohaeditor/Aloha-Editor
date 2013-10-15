@@ -18,6 +18,7 @@ define([
 	'cursors',
 	'content',
 	'browser',
+	'boundaries',
 	'traversing',
 	'functions'
 ], function Html(
@@ -26,6 +27,7 @@ define([
 	cursors,
 	content,
 	browser,
+	boundaries,
 	traversing,
 	fn
 ) {
@@ -671,61 +673,31 @@ define([
 	 */
 	var isRendered = fn.complement(isUnrendered);
 
-	// <p>{}<i></i></p>  => <p> <i>
-	// <p>{<i>}</i></p>  => <p> <i>
-	// <p><i>{}</i></p>  => <i> <i>
-	// <p><i>{</i>}</p>  => <i> <p>
-	// <p><i></i>{}</p>  => <i> <p>
-	//
-	// <p>a{}<i></i></p>  =>  a  <i>
-	// <p>a{<i>}</i></p>  =>  a  <i>
-	// <p><i>a{</i>}</p>  =>  a  <p>
-	//
-	// <p>{<i>}a</i></p>  => <p>  a
-	// <p><i>{</i>}a</p>  => <i>  a
-	// <p><i></i>{}a</p>  => <i>  a
-	//
-	function visuallyAdjacent(range) {
-		var sc = range.startContainer;
-		var so = range.startOffset;
-		var ec = range.endContainer;
-		var eo = range.endOffset;
-
-		var above = (0 === so) ? sc : dom.nodeAtOffset(sc, so - 1);
-		var below = (dom.nodeLength(ec) === eo) ? ec : dom.nodeAtOffset(ec, eo);
-
-		return [above, below];
-	}
-
 	/**
-	 * Determine whether node `left` is visually adjacent to `right`.
+	 * Determine whether the boundary `left` is visually adjacent to `right`.
 	 *
-	 * In the following example, <p>, <i>, and "left" are all visually adjacent
-	 * to <u> and "right":
-	 * <p>...<i>left</i></p><u>right</u>
-	 *
-	 * @param {DOMObject} left
-	 * @param {DOMObject} right
+	 * @param {Array.<Element, Number>} left
+	 * @param {Array.<Element, Number>} right
 	 * @return {Boolean}
 	 */
 	function isVisuallyAdjacent(left, right) {
-		if (right === left.parentNode || left === right.parentNode) {
-			return true;
-		}
-		if (left === traversing.findBackward(right, isRendered)) {
-			return true;
-		}
-		var node = traversing.previousNonAncestor(right);
-		while (node) {
-			if (left === node) {
-				return true;
+		var adjacent = false;
+		boundaries.prevWhile(right, function (pos) {
+			if (boundaries.equal(left, pos)) {
+				adjacent = true;
+				return false;
 			}
-			if (isUnrendered(node)) {
-				return isVisuallyAdjacent(left, node);
+			if (pos[1] > 0) {
+				var node = dom.nodeAtOffset(pos[0], pos[1] - 1);
+				if ((dom.isTextNode(node) || isVoidType(node))
+					&& isRendered(node)) {
+					adjacent = false;
+					return false;
+				}
 			}
-			node = node.lastChild;
-		}
-		return false;
+			return true;
+		});
+		return adjacent;
 	}
 
 	/**
@@ -888,23 +860,23 @@ define([
 	 */
 	function removeVisualBreak(above, below) {
 		if (!isVisuallyAdjacent(above, below)) {
-			return {
-				container: below.parentNode,
-				offset: dom.nodeIndex(above)
-			};
+			return [above[0].parentNode, dom.nodeIndex(above[0])];
 		}
-		var breaker = findLinebreakingNode(above, below);
+
+		var left = boundaries.leftNode(above);
+		var right = boundaries.rightNode(below);
+
+		var breaker = findLinebreakingNode(left, right);
 		if (!breaker) {
-			traversing.climbUntil(below, dom.remove, hasRenderedContent);
-			return {
-				container: above,
-				offset: dom.nodeLength(above)
-			};
+			traversing.climbUntil(right, dom.remove, hasRenderedContent);
+			return [left, dom.nodeLength(left)];
 		}
-		var target = findTransferTarget(above, breaker);
+
+		var target = findTransferTarget(left, breaker);
 		var move;
-		var container;
 		var offset;
+		var container;
+
 		if (target) {
 			move = createTransferFunction(target, true);
 			container = target;
@@ -914,24 +886,25 @@ define([
 			container = breaker.parentNode;
 			offset = dom.nodeIndex(breaker);
 		}
-		var parent = below.parentNode;
-		if (0 === dom.nodeLength(below)) {
-			dom.remove(below);
+
+		var parent = right.parentNode;
+
+		if (0 === dom.nodeLength(right)) {
+			dom.remove(right);
 		} else {
 			traversing.walkUntil(
-				below,
+				right,
 				move,
 				cannotMove,
 				fn.outparameter(true)
 			);
 		}
-		if (parent !== above) {
+
+		if (parent !== left) {
 			traversing.climbUntil(parent, dom.remove, hasRenderedContent);
 		}
-		return {
-			container: container,
-			offset: offset
-		};
+
+		return [container, offset];
 	}
 
 	var zwChars = ZERO_WIDTH_CHARACTERS.join('');
@@ -1403,8 +1376,7 @@ define([
 		previousVisibleCharacter: previousVisibleCharacter,
 		previousVisiblePosition: previousVisiblePosition,
 		prop: prop,
-		areNextWhiteSpacesSignificant: areNextWhiteSpacesSignificant,
-		visuallyAdjacent: visuallyAdjacent
+		areNextWhiteSpacesSignificant: areNextWhiteSpacesSignificant
 	};
 
 	exports['isUnrendered'] = exports.isUnrendered;

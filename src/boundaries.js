@@ -5,11 +5,9 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom',
-	'ranges'
+	'dom'
 ], function Boundaries(
-	dom,
-	ranges
+	dom
 ) {
 	'use strict';
 
@@ -67,7 +65,7 @@ define([
 		node = node.childNodes[offset - 1];
 
 		return dom.isTextNode(node) ? [node.parentNode, dom.nodeIndex(node)]
-			                        : [node, dom.nodeLength(node)];
+		                            : [node, dom.nodeLength(node)];
 	}
 
 	function next(boundary) {
@@ -95,7 +93,7 @@ define([
 
 	function stepWhile(boundary, cond, step) {
 		var pos = boundary;
-		while (cond(pos[0], pos[1])) {
+		while (cond(pos, pos[0], pos[1])) {
 			pos = step(pos);
 		}
 		return pos;
@@ -109,23 +107,53 @@ define([
 		return stepWhile(boundary, cond, prev);
 	}
 
+	/**
+	 * Returns node that is right adjacent to the given boundary.
+	 *
+	 * @param {Array.<Element, number>} boundary
+	 * @return {Element}
+	 */
+	function leftNode(boundary) {
+		var node = boundary[0];
+		var offset = boundary[1];
+		return (0 === offset) ? node : dom.nodeAtOffset(node, offset - 1);
+	}
+
+	/**
+	 * Returns node that is left adjacent to the given boundary.
+	 *
+	 * @param {Array.<Element, number>} boundary
+	 * @return {Element}
+	 */
+	function rightNode(boundary) {
+		var node = boundary[0];
+		var offset = boundary[1];
+		return (dom.nodeLength(node) === offset)
+		     ? node
+		     : dom.nodeAtOffset(node, offset);
+	}
+
 	var exports = {
-		equal : equal,
-		start : start,
-		end   : end,
-		next  : next,
-		prev  : prev,
+		equal     : equal,
+		start     : start,
+		end       : end,
+		next      : next,
+		prev      : prev,
 		nextWhile : nextWhile,
-		prevWhile : prevWhile
+		prevWhile : prevWhile,
+		leftNode  : leftNode,
+		rightNode : rightNode
 	};
 
-	exports['equal'] = exports.equal;
-	exports['start'] = exports.start;
-	exports['end'] = exports.end;
-	exports['next'] = exports.next;
-	exports['prev'] = exports.prev;
+	exports['equal']     = exports.equal;
+	exports['start']     = exports.start;
+	exports['end']       = exports.end;
+	exports['next']      = exports.next;
+	exports['prev']      = exports.prev;
 	exports['nextWhile'] = exports.nextWhile;
 	exports['prevWhile'] = exports.prevWhile;
+	exports['leftNode']  = exports.leftNode;
+	exports['rightNode'] = exports.rightNode;
 
 	return exports;
 });

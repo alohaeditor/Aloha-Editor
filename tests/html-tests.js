@@ -208,13 +208,42 @@
 		equal(html.isControlCharacter('a'), false);
 	});
 
-	/*
 	test('isVisuallyAdjacent()', function () {
-		//t('<div><p>ba{</p>}az</div>', true);
+		tested.push('isVisuallyAdjacent');
+		var t = function (markup, expected) {
+			var range = ranges.create();
+			boundarymarkers.extract($(markup)[0], range);
+			equal(
+				html.isVisuallyAdjacent(
+					aloha.boundaries.start(range),
+					aloha.boundaries.end(range)
+				),
+				expected,
+				markup
+			);
+		};
+		t('<p>{}<i></i></p>',   true);
+		t('<p>{<i>}</i></p>',   true);
+		t('<p><i>{}</i></p>',   true);
+		t('<p><i>{</i>}</p>',   true);
+		t('<p><i></i>{}</p>',   true);
+		t('<p>a{}<i></i></p>',  true);
+		t('<p>a{<i>}</i></p>',  true);
+		t('<p><i>a{</i>}</p>',  true);
+		t('<p>{<i>}a</i></p>',  true);
+		t('<p><i>{</i>}a</p>',  true);
+		t('<p><i></i>{}a</p>',  true);
+		t('<p><i>a{</i>}b</p>', true);
+		t('<p><i>a{</i>b}</p>', false);
+		t('<p><i>{foo</i>b<u>a}<u>r</p>', false);
+		t('<div><p>foo{<br/></p>}bar</div>', true);
+		t('<div><p>{foo<br/></p>}bar</div>', false);
+		t('<div><p><i>foo{</i><br/></p>}bar</div>', true);
+		t('<div><p><i>foo{</i><br/><br/></p>}bar</div>', false);
 	});
 
 	test('removeVisualBreak()', function () {
-		var t = function(before, after) {
+		var t = function (before, after) {
 			return runTest(before, after, editing.joinRangeContainers);
 		};
 		t('<div><p>foo{</p><p>}bar</p></div>', '<div><p>foo{}bar</p></div>');
@@ -231,7 +260,6 @@
 
 		// TODO: Lists
 	});
-	*/
 
 	test('isStyleInherited', function () {
 		tested.push('isStyleInherited');

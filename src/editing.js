@@ -22,6 +22,7 @@
 define([
 	'dom',
 	'traversing',
+	'boundaries',
 	'arrays',
 	'maps',
 	'strings',
@@ -34,6 +35,7 @@ define([
 ], function Editing(
 	dom,
 	traversing,
+	boundaries,
 	arrays,
 	maps,
 	strings,
@@ -1311,22 +1313,15 @@ define([
 			return {
 				postprocessTextNodes: fn.noop,
 				postprocess: function () {
-					var position;
-					if (range.collapsed) {
-						position = {
-							container: range.startContainer,
-							offset: range.startOffset
-						};
-					} else {
-						var adjacent = html.visuallyAdjacent(range);
-						position = html.removeVisualBreak(
-							adjacent[0],
-							adjacent[1]
-						);
-					}
+					var position = range.collapsed
+							? boundaries.start(range)
+							: html.removeVisualBreak(
+								boundaries.start(range),
+								boundaries.end(range)
+							);
 					var pos = cursors.createFromBoundary(
-						position.container,
-						position.offset
+						position[0],
+						position[1]
 					);
 					left.setFrom(pos);
 					right.setFrom(pos);
