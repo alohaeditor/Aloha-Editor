@@ -18,3 +18,7 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: header ids plugin: A header ID will now automatically be added as
               soon as the heading is created if the header id plugins is
               activated. RT#56670
+
+- **BUGFIX**: table plugin: The "scope" attribute in TH elements will now be
+			  correctly set to "col" instead of "column".  This attribute only
+			  accepts "col" or "row" as values. RT#56088

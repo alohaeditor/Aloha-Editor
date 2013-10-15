@@ -787,7 +787,7 @@ define([
 				if (that.activeTable) {
 					that.activeTable.refresh();
 
-					toggleHeaderStatus(that.activeTable, 'column');
+					toggleHeaderStatus(that.activeTable, 'col');
 
 					that.activeTable.selection.unselectCells();
 					that.activeTable.selection.selectRows(that.activeTable.selection.selectedRowIdxs);
