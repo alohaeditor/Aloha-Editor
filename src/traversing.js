@@ -286,109 +286,6 @@ define([
 		};
 	}
 
-
-	/**
-	 *	<div>
-	 *		foo
-	 *		<p>
-	 *			bar
-	 *			<b>
-	 *				<u></u>
-	 *				baz
-	 *			</b>
-	 *		</p>
-	 *	</div>
-	 *
-	 *	|foo|<p>|bar|<b>|<u>|</u>|baz<b>|</p>|
-	 */
-	function prevNodeBoundary(container, offset) {
-		// <p>[foo</p>
-		// <p>fo[o</p>
-		// <p>foo[</p>
-		// ==
-		// <p>{foo</p>
-		//
-		// <p>{<p> ==> {<p></p>
-		if (0 === offset || dom.isTextNode(container)) {
-			return {
-				container: container.parentNode,
-				offset: dom.nodeIndex(container)
-			};
-		}
-
-		// <p>foo{</p> ==> <p>{foo</p>
-		// <p><b>foo</b>bar{</p> ==> <p><b>foo</b>{foo</p>
-		// <p><b><b>{</p> ==> <p><b>{</b></p>
-		// <p><b></b>{foo</p> ==> <p><b>{</b>foo</p>
-		// <p><b>foo</b>{bar</p> ==> <p><b>foo{</b>bar</p>
-		// <p>foo{<b></b></p> ==> <p>{foo<b></b></p>
-		var node = container.childNodes[offset - 1];
-
-		return (
-			dom.isTextNode(node)
-				? {
-					container: node.parentNode,
-			   		offset: dom.nodeIndex(node)
-				}
-				: {
-					container: node,
-					offset: dom.nodeLength(node)
-				}
-		);
-	}
-
-	function nextNodeBoundary(container, offset) {
-		// <p>[foo</p>
-		// <p>fo[o</p>
-		// <p>foo[</p>
-		// ==
-		// <p>foo{</p>
-		//
-		// <p><b>foo{</b></p> ==> <p><b>foo</b>{</p>
-		// <p><b>{</b></p> ==> <p><b></b>{</p>
-		if (dom.isTextNode(container) || dom.nodeLength(container) === offset) {
-			return {
-				container: container.parentNode,
-				offset: dom.nodeIndex(container) + 1
-			};
-		}
-
-		// <p>{foo</p> ==> <p>foo{</p>
-		// <p>{<b>foo</b></p> ==> <p><b>{foo</b></p>
-		var node = container.childNodes[offset];
-
-		return (
-			dom.isTextNode(node)
-				? {
-					container: container,
-					offset: offset + 1
-				}
-				: {
-					container: node,
-					offset: 0
-				}
-		);
-	}
-
-	function stepNodeBoundaryWhile(container, offset, cond, step) {
-		var pos = {
-			container: container,
-			offset: offset
-		};
-		while (cond(pos.container, pos.offset)) {
-			pos = step(pos.container, pos.offset);
-		}
-		return pos;
-	}
-
-	function prevNodeBoundaryWhile(container, offset, cond) {
-		return stepNodeBoundaryWhile(container, offset, cond, prevNodeBoundary);
-	}
-
-	function nextNodeBoundaryWhile(container, offset, cond) {
-		return stepNodeBoundaryWhile(container, offset, cond, nextNodeBoundary);
-	}
-
 	/**
 	 * Given a node, will return node that succeeds it in the document order.
 	 *
@@ -471,8 +368,8 @@ define([
 	 * inside of text nodes and void elements.
 	 *
 	 * @param {DOMObject} node
-	 * @param {Function(DOMObject):Boolean}
-	 * @param {Function(DOMObject):Boolean}
+	 * @param {Function(DOMObject, Boolean):Boolean}
+	 * @param {Function(DOMObject, Boolean):Boolean}
 	 * @return {DOMObject}
 	 */
 	function findThrough(start, match, until) {
@@ -480,19 +377,19 @@ define([
 		until = until || fn.returnFalse;
 		var next;
 		var node = start;
-		var stepIn = true;
+		var isSteppingIn = true;
 		while (node) {
-			next = (stepIn && node.lastChild) || node.previousSibling;
+			next = (isSteppingIn && node.lastChild) || node.previousSibling;
 			if (next) {
-				stepIn = true;
+				isSteppingIn = true;
 			} else {
-				stepIn = false;
+				isSteppingIn = false;
 				next = node.parentNode;
 			}
-			if (until(next)) {
+			if (until(next, isSteppingIn)) {
 				return null;
 			}
-			if (match(next)) {
+			if (match(next, isSteppingIn)) {
 				return next;
 			}
 			node = next;
@@ -895,10 +792,6 @@ define([
 	/**
 	 * DOM traversal functions.
 	 *
-	 * traversing.prevNodeBoundary()
-	 * traversing.nextNodeBoundary()
-	 * traversing.prevNodeBoundaryWhile()
-	 * traversing.nextNodeBoundaryWhile()
 	 * traversing.backward()
 	 * traversing.forward()
 	 * traversing.nextWhile()
@@ -921,10 +814,6 @@ define([
 	 * traversing.getNonAncestor()
 	 */
 	var exports = {
-		prevNodeBoundary: prevNodeBoundary,
-		nextNodeBoundary: nextNodeBoundary,
-		prevNodeBoundaryWhile: prevNodeBoundaryWhile,
-		nextNodeBoundaryWhile: nextNodeBoundaryWhile,
 		backward: backward,
 		forward: forward,
 		findThrough: findThrough,

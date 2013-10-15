@@ -10,6 +10,7 @@
 
 define([
 	'arrays',
+	'boundaries',
 	'boundary-markers',
 	'browser',
 	'caret',
@@ -33,6 +34,7 @@ define([
 	'typing'
 ], function Aloha(
 	arrays,
+	boundaries,
 	boundarymarkers,
 	browser,
 	caret,
@@ -91,6 +93,7 @@ define([
 	aloha['aloha'] = aloha;
 	aloha['mahalo'] = mahalo;
 	aloha['arrays'] = arrays;
+	aloha['boundaries'] = boundaries;
 	aloha['boundarymarkers'] = boundarymarkers;
 	aloha['browser'] = browser;
 	aloha['caret'] = caret;

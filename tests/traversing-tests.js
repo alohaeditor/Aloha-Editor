@@ -6,123 +6,6 @@
 	var boundarymarkers = aloha.boundarymarkers;
 	var tested = [];
 
-    module('traversing');
-
-	function runTest(before, after, op) {
-		var dom = $(before)[0];
-		var range = ranges.create();
-		boundarymarkers.extract(dom, range);
-		var pos = op(
-			range.startContainer,
-			range.startOffset
-		);
-		range.setStart(pos.container, pos.offset);
-		boundarymarkers.insert(range);
-		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
-	}
-
-	test('prevNodeBoundary', function () {
-		tested.push('prevNodeBoundary');
-
-		var t = function (before, after) {
-			runTest(before, after, traversing.prevNodeBoundary);
-		};
-
-		// ie will automatically convert <b>[foo]</b> to <b>{foo]</b>
-		if (!aloha.browser.browser.msie) {
-			t('<p><b>[foo]</b></p>', '<p><b>{foo]</b></p>');
-		}
-
-		t('<p><b>f[oo]</b></p>', '<p><b>{foo]</b></p>');
-		t('<p><b>foo[]</b></p>', '<p><b>{foo]</b></p>');
-		t('<p><b>[]</b></p>', '<p><b>{]</b></p>');
-
-		// ie will automatically convery <b>{]</b> to <b>[]</b>
-		if (!aloha.browser.browser.msie) {
-			t('<p><b>{]</b></p>', '<p>{<b>]</b></p>');
-		}
-
-		// ie will automatically convery <b></b>{] to <b></b>[]
-		if (!aloha.browser.browser.msie) {
-			t('<p><b></b>{}</p>', '<p><b>{</b>}</p>');
-		}
-
-		t('<p><b></b>{foo]</p>', '<p><b>{</b>foo]</p>');
-		t('<p>foo{<b>]</b></p>', '<p>{foo<b>]</b></p>');
-		t('<p><b>foo{]</b></p>', '<p><b>{foo]</b></p>');
-	});
-
-	test('prevNodeBoundaryWhile', function () {
-		tested.push('prevNodeBoundaryWhile');
-		var dom = $('<div>foo<p>bar<b><u><i>baz</i></u>buzz</b></p></div>')[0];
-		var range = ranges.create();
-		traversing.prevNodeBoundaryWhile(
-			dom,
-			aloha.dom.nodeIndex(dom.lastChild) + 1,
-			function (container, offset) {
-				if (container && container.parentNode) {
-					range.setStart(container, offset);
-					range.setEnd(container, offset);
-					ranges.insertText(range, '|');
-					return true;
-				}
-				return false;
-			}
-		);
-		equal(
-			dom.outerHTML,
-			'<div>|foo|<p>|bar|<b>|<u>|<i>|baz|</i>|</u>|buzz|</b>|</p>|</div>'
-		);
-	});
-
-	test('nextNodeBoundary', function () {
-		tested.push('nextNodeBoundary');
-
-		var t = function (before, after) {
-			runTest(before, after, traversing.nextNodeBoundary);
-		};
-
-		t('<p><b>[foo</b>}</p>', '<p><b>foo{</b>}</p>');
-		t('<p><b>f[oo</b>}</p>', '<p><b>foo{</b>}</p>');
-		t('<p><b>foo[</b>}</p>', '<p><b>foo{</b>}</p>');
-		t('<p><b>[</b>}</p>', '<p><b>{</b>}</p>');
-
-		t('<p><b>{</b>}</p>', '<p><b></b>{}</p>');
-		t('<p><b>{foo</b>}</p>', '<p><b>foo{</b>}</p>');
-
-		t('<p><b>foo{</b>}</p>', '<p><b>foo</b>{}</p>');
-		t('<p><b>{</b>}</p>', '<p><b></b>{}</p>');
-
-		t('<p>{foo}</p>', '<p>foo{}</p>');
-		t('<p>{<b>foo</b>}</p>', '<p><b>{foo</b>}</p>');
-
-		t('<p><b>{</b>foo]</p>', '<p><b></b>{foo]</p>');
-		t('<p>{foo<b>]</b></p>', '<p>foo{<b>]</b></p>');
-
-		t('<p>{foo<b>]</b></p>', '<p>foo{<b>]</b></p>');
-
-		t('<p><b>{foo]</b></p>', '<p><b>foo{}</b></p>');
-	});
-
-	test('nextNodeBoundaryWhile', function () {
-		tested.push('nextNodeBoundaryWhile');
-		var dom = $('<div>foo<p>bar<b><u><i>baz</i></u>buzz</b></p></div>')[0];
-		var range = ranges.create();
-		traversing.nextNodeBoundaryWhile(dom, 0, function (container, offset) {
-			if (container && container.parentNode) {
-				range.setStart(container, offset);
-				range.setEnd(container, offset);
-				ranges.insertText(range, '|');
-				return true;
-			}
-			return false;
-		});
-		equal(
-			dom.outerHTML,
-			'<div>|foo|<p>|bar|<b>||<u>||<i>|baz|</i>||</u>|buzz|</b>||</p>||</div>'
-		);
-	});
-
 	test('nextWhile', function () {
 		tested.push('nextWhile');
 		var node = $('<div><u></u><a>foo</a>bar<b></b><br/></div>')[0];
@@ -206,18 +89,24 @@
 	test('findThrough', function () {
 		tested.push('findThrough');
 		var nodes = [];
+		var steps = [];
 		traversing.findThrough(
-			$('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].lastChild,
-			function (node) {
+			$('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0],
+			function (node, isSteppingIn) {
+				steps.push(isSteppingIn ? 1 : 0);
 				nodes.push(node);
 			}
 		);
-		var expected = [
-			'B', 'four', 'U', 'I', 'three', 'I', 'U', 'two', 'B', 'one'
+		var expectedNodes = [
+			'five', 'B', 'four', 'U', 'I', 'three', 'I', 'U', 'two', 'B', 'one'
 		];
 		var i;
-		for (i = 0; i < expected.length; i++) {
-			equal(nodes[i] && (nodes[i].data || nodes[i].nodeName), expected[i]);
+		for (i = 0; i < expectedNodes.length; i++) {
+			equal(nodes[i] && (nodes[i].data || nodes[i].nodeName), expectedNodes[i]);
+		}
+		var expectedSteps = [1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0];
+		for (i = 0; i < expectedSteps.length; i++) {
+			equal(steps[i], expectedSteps[i], nodes[i] && (nodes[i].data || nodes[i].nodeName));
 		}
 	});
 
