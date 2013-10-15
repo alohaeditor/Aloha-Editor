@@ -1149,14 +1149,25 @@ define([
 			width : 275,
 			name  : 'tableSummary',
 			noTargetHighlight: true,
-			scope: this.name + '.cell'
+			scope: this.name + '.cell',
+			element: jQuery('<input id="aloha-attribute-field-tableSummary" class="aloha-wai-red" style="color: black; padding-left: 32px; background-color: white"/>')
 		} );
 
-		this.summary.addListener( 'keyup', function( event ) {
+		this.summary.addListener('keyup', function() {
 			if (that.activeTable) {
-				that.activeTable.checkWai();
+				var $element = $(this.getInputElem()),
+				    waiRed = that.activeTable.get('waiRed'),
+				    waiGreen = that.activeTable.get('waiGreen');
+
+				$element.removeClass(waiRed + ' ' + waiGreen);
+				if (that.activeTable.checkWai()) {
+					$element.addClass(waiGreen);
+				}
+				else {
+					$element.addClass(waiRed);
+				}
 			}
-		} );
+		});
 	};
 
 	/**
