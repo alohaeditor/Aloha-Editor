@@ -8,3 +8,9 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**:'th' tag 'scope' attribute set to 'column'
+
+             The options for the 'scope' attribute are 'row' or 'col'.
+
+             RT#56088
+
