@@ -55,11 +55,13 @@ define([
 	var actions = {};
 
 	actions[keys.CODES.backspace] = function deleteBackwards(range, context) {
-		return delete_(range, false, context);
+		delete_(range, false, context);
+		return range;
 	};
 
 	actions[keys.CODES.delete] = function deleteForward(range, context) {
-		return delete_(range, true, context);
+		delete_(range, true, context);
+		return range;
 	};
 
 	/*
