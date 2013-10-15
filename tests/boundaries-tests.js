@@ -102,7 +102,7 @@
 
 	test('nextWhile', function () {
 		tested.push('nextWhile');
-		var dom = $('<div>foo<p>bar<b><u><i>baz</i></u>buzz</b></p></div>')[0];
+		var dom = $('<div>foo<p>bar<b><br><u><i>baz</i></u>buzz</b></p></div>')[0];
 		var range = ranges.create();
 		boundaries.nextWhile([dom, 0], function (pos, container, offset) {
 			if (container && container.parentNode) {
@@ -115,7 +115,7 @@
 		});
 		equal(
 			dom.outerHTML,
-			'<div>|foo|<p>|bar|<b>||<u>||<i>|baz|</i>||</u>|buzz|</b>||</p>||</div>'
+			'<div>|foo|<p>|bar|<b>||<br>||<u>||<i>|baz|</i>||</u>|buzz|</b>||</p>||</div>'
 		);
 	});
 

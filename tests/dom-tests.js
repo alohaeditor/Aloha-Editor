@@ -374,6 +374,36 @@
 		ok(1);
 	});
 
+	test('isBlockNode', function () {
+		tested.push('isBlockNode');
+		var span = $('<span style="display: block"></span>')[0];
+		var div = $('<div></div>')[0];
+		var b = $('<b>foo</b>')[0];
+		var p = $('<p style="display: inline"></p>')[0];
+		var a = $('<a></a>')[0];
+		$('body').append([span, div, b, p, a]);
+		equal(dom.isBlockNode(span), false);
+		equal(dom.isBlockNode(div), true);
+		equal(dom.isBlockNode(b), false);
+		equal(dom.isBlockNode(p), true);
+		equal(dom.isBlockNode(a), false);
+	});
+
+	test('isInlineNode', function () {
+		tested.push('isInlineNode');
+		var span = $('<span style="display: block"></span>')[0];
+		var div = $('<div></div>')[0];
+		var b = $('<b>foo</b>')[0];
+		var p = $('<p style="display: inline"></p>')[0];
+		var a = $('<a></a>')[0];
+		$('body').append([span, div, b, p, a]);
+		equal(dom.isInlineNode(span), true);
+		equal(dom.isInlineNode(div), false);
+		equal(dom.isInlineNode(b), true);
+		equal(dom.isInlineNode(p), false);
+		equal(dom.isInlineNode(a), true);
+	});
+
 	module('dom');
 
 	testCoverage(test, tested, dom);

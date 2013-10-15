@@ -267,36 +267,6 @@
 		equal(html.isStyleInherited('background'), true);
 	});
 
-	test('isBlockType', function () {
-		tested.push('isBlockType');
-		var span = $('<span style="display: block"></span>')[0];
-		var div = $('<div></div>')[0];
-		var b = $('<b>foo</b>')[0];
-		var p = $('<p style="display: inline"></p>')[0];
-		var a = $('<a></a>')[0];
-		$('body').append([span, div, b, p, a]);
-		equal(html.isBlockType(span), false);
-		equal(html.isBlockType(div), true);
-		equal(html.isBlockType(b), false);
-		equal(html.isBlockType(p), true);
-		equal(html.isBlockType(a), false);
-	});
-
-	test('isInlineType', function () {
-		tested.push('isInlineType');
-		var span = $('<span style="display: block"></span>')[0];
-		var div = $('<div></div>')[0];
-		var b = $('<b>foo</b>')[0];
-		var p = $('<p style="display: inline"></p>')[0];
-		var a = $('<a></a>')[0];
-		$('body').append([span, div, b, p, a]);
-		equal(html.isInlineType(span), true);
-		equal(html.isInlineType(div), false);
-		equal(html.isInlineType(b), true);
-		equal(html.isInlineType(p), false);
-		equal(html.isInlineType(a), true);
-	});
-
 	test('hasBlockStyle', function () {
 		tested.push('hasBlockStyle');
 		var span = $('<span style="display: block"></span>')[0];

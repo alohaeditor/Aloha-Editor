@@ -64,8 +64,9 @@ define([
 		// <p>foo{<b></b></p> ==> <p>{foo<b></b></p>
 		node = node.childNodes[offset - 1];
 
-		return dom.isTextNode(node) ? [node.parentNode, dom.nodeIndex(node)]
-		                            : [node, dom.nodeLength(node)];
+		return (dom.isTextNode(node) || dom.isVoidNode(node))
+		     ? [node.parentNode, dom.nodeIndex(node)]
+		     : [node, dom.nodeLength(node)];
 	}
 
 	function next(boundary) {
@@ -88,7 +89,9 @@ define([
 		// <p>{<b>foo</b></p> ==> <p><b>{foo</b></p>
 		node = node.childNodes[offset];
 
-		return dom.isTextNode(node) ? [node.parentNode, offset + 1] : [node, 0];
+		return (dom.isTextNode(node) || dom.isVoidNode(node))
+		     ? [node.parentNode, offset + 1]
+		     : [node, 0];
 	}
 
 	function stepWhile(boundary, cond, step) {
