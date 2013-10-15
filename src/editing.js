@@ -1324,6 +1324,13 @@ define([
 		}, false);
 	}
 
+	function breakBlock(range, context) {
+		split(range, {
+			until: html.hasLinebreakingStyle
+		});
+		return range;
+	}
+
 	/**
 	 * High level editing functions.
 	 *
@@ -1336,7 +1343,8 @@ define([
 		wrap   : wrapElem,
 		format : format,
 		split  : split,
-		delete : delete_
+		delete : delete_,
+		breakBlock : breakBlock
 	};
 
 	exports['wrap'] = exports.wrap;

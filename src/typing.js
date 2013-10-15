@@ -40,7 +40,7 @@ define([
 	}
 
 	function enter(range, context) {
-		ranges.insertTextBehind(range, '¶');
+		editing.breakBlock(range, context);
 		return range;
 	}
 
@@ -64,20 +64,16 @@ define([
 		return range;
 	};
 
-	/*
 	actions[keys.CODES.enter] = function breakBlock(range, context) {
 		return enter(
 			range.collapsed ? range : delete_(range, true, context),
-			opts,
 			context
 		);
 	};
-	*/
 
 	actions['shift+' + keys.CODES.enter] = function breakLine(range, context) {
 		return breakLine(
 			range.collapsed ? range : delete_(range, true, context),
-			opts,
 			context
 		);
 	};

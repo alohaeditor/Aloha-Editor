@@ -705,6 +705,7 @@ define([
 	function removeVisualBreak(above, below) {
 		above = boundaries.normalize(above);
 		below = boundaries.normalize(below);
+
 		if (!isVisuallyAdjacent(above, below)) {
 			return [above[0].parentNode, dom.nodeIndex(above[0])];
 		}
