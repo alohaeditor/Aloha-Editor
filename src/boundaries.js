@@ -144,6 +144,18 @@ define([
 		return 0 === boundary[1];
 	}
 
+	function normalize(boundary) {
+		if (!dom.isTextNode(boundary[0])) {
+			return boundary;
+		}
+		var mid = dom.nodeLength(boundary[0]) / 2;
+		var offset = dom.nodeIndex(boundary[0]);
+		return [
+			boundary[0].parentNode,
+			(boundary[1] >= mid) ? offset + 1 : offset
+		];
+	}
+
 	var exports = {
 		equal     : equal,
 		start     : start,
@@ -155,7 +167,8 @@ define([
 		leftNode  : leftNode,
 		rightNode : rightNode,
 		atStart   : atStart,
-		atEnd     : atEnd
+		atEnd     : atEnd,
+		normalize : normalize
 	};
 
 	exports['equal']     = exports.equal;
@@ -167,6 +180,9 @@ define([
 	exports['prevWhile'] = exports.prevWhile;
 	exports['leftNode']  = exports.leftNode;
 	exports['rightNode'] = exports.rightNode;
+	exports['atStart'] = exports.atStart;
+	exports['atEnd'] = exports.atEnd;
+	exports['normalize'] = exports.normalize;
 
 	return exports;
 });

@@ -126,6 +126,7 @@ define([
 	 */
 	function hasLinebreakingStyle(node) {
 		return LINE_BREAKING_VOID_ELEMENTS[node.nodeName]
+		    || LIST_ITEMS[node.nodeName]
 		    || hasBlockStyle(node);
 	}
 
@@ -702,6 +703,8 @@ define([
 	 * @param {DOMObject} below
 	 */
 	function removeVisualBreak(above, below) {
+		above = boundaries.normalize(above);
+		below = boundaries.normalize(below);
 		if (!isVisuallyAdjacent(above, below)) {
 			return [above[0].parentNode, dom.nodeIndex(above[0])];
 		}
@@ -709,12 +712,18 @@ define([
 		var linebreak = nextLineBreak(above, below);
 
 		if (boundaries.equal(linebreak, below)) {
+			traversing.climbUntil(below[0], dom.remove, function (node) {
+				return above[0] === node || hasRenderedContent(node);
+			});
 			return above;
 		}
 
 		var move = boundaries.atEnd(linebreak)
-			     ? createTransferFunction(linebreak[0], true)
-			     : createTransferFunction(dom.nodeAtOffset(linebreak[0], linebreak[1]), false);
+			? createTransferFunction(linebreak[0], true)
+			: createTransferFunction(
+				dom.nodeAtOffset(linebreak[0], linebreak[1]),
+				false
+			);
 
 		var right = boundaries.rightNode(below);
 		var parent = right.parentNode;

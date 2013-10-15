@@ -88,7 +88,7 @@
 		t('<div>w<p>{x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>');
 		t('<div>w<p>[x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>');
 
-		t('<p>x<u><b>{</b></u>x<i>}</i>y</p>', '<p>x<u><b>[]</b></u>y</p>');
+		t('<p>x<u><b>{</b></u>x<i>}</i>y</p>', '<p>x<u><b>{}</b></u>y</p>');
 
 		t('<p>1<b>{2</b>3<u>4</u>]5<i>6</i></p>', '<p>1<b>{}</b>5<i>6</i></p>');
 		t('<p>1<b>{2</b>3<u>4</u>5<i>]6</i></p>', '<p>1<b>{}</b><i>6</i></p>');
@@ -99,6 +99,8 @@
 		t('<p>x<b>fo[o</b>bar<u>b]az</u>y</p>', '<p>x<b>fo{}</b><u>az</u>y</p>');
 
 		t('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>');
+		t('<ul><li>foo{</li><li>}bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
+		t('<ul><li>foo[</li><li>]bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
 
 		t('<div>foo{<ul><li>}bar</li></ul></div>', '<div>foo[]bar</div>');
 
