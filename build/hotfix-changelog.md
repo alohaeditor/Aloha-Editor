@@ -7,3 +7,8 @@ All changes are categorized into one of the following keywords:
                    usage, or intent of an existing one.
 
 ----
+
+- **BUGFIX**: Header ID not showing when an Heading is created
+              The solution to the problem is that every time the selection is in
+              Heading, check for ID attribute and if ID doesn't exists, it creates it.
+              RT#56670
