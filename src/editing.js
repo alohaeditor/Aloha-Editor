@@ -1030,8 +1030,6 @@ define([
 			mutate(range, formatter);
 			return formatter;
 		});
-
-		return liveRange;
 	}
 
 	/**
@@ -1090,8 +1088,6 @@ define([
 			mutate(range, formatter);
 			return formatter;
 		});
-
-		return liveRange;
 	}
 
 	/**
@@ -1249,8 +1245,6 @@ define([
 			splitRangeAtBoundaries(range, left, right, opts);
 			return null;
 		});
-
-		return liveRange;
 	}
 
 	/**
@@ -1328,7 +1322,6 @@ define([
 				}
 			};
 		}, false);
-		return liveRange;
 	}
 
 	/**
