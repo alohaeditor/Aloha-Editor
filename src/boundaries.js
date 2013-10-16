@@ -123,7 +123,7 @@ define([
 	}
 
 	/**
-	 * Returns node that is left adjacent to the given boundary.
+	 * Returns node that is right adjacent to the given boundary.
 	 *
 	 * @param {Array.<Element, number>} boundary
 	 * @return {Element}
@@ -132,7 +132,7 @@ define([
 		var node = boundary[0];
 		var offset = boundary[1];
 		return (dom.nodeLength(node) === offset)
-		     ? node
+		     ? (dom.isTextNode(node) ? node.nextSibling || node.parentNode : node)
 		     : dom.nodeAtOffset(node, offset);
 	}
 
@@ -152,7 +152,7 @@ define([
 		var offset = dom.nodeIndex(boundary[0]);
 		return [
 			boundary[0].parentNode,
-			(boundary[1] >= mid) ? offset + 1 : offset
+			(boundary[1] > mid) ? offset + 1 : offset
 		];
 	}
 

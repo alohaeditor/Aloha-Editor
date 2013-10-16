@@ -24,6 +24,87 @@
 		equal($editable.html(), after, before + ' ⇒ ' + after);
 	}
 
+	test('breakBlock()', function () {
+		tested.push('breakBlock');
+		var context = {
+			settings: {
+				defaultBlockNodeName: 'h1'
+			}
+		};
+		var t = function (before, after) {
+			return runTest(before, after, function (range) {
+				return editing.breakBlock(range, context);
+			});
+		};
+
+		t('<div><div><p>1</p>{}<p>2</p></div></div>',
+		  '<div><div><p>1</p><h1>{}</h1><p>2</p></div></div>');
+
+		t('<div><p>1</p>{}<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
+
+		t('<div contenteditable="true">1{}<p>2</p>3</div>',
+		  '<div contenteditable="true">1<h1>{}</h1><p>2</p>3</div>');
+
+		//t('<div><p>1</p>[]<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
+
+		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i><p>2</p></div>');
+
+		t('<div contenteditable="true"><i>1{}</i><p>2</p></div>',
+		  '<div contenteditable="true"><i>1</i><h1><i>{}</i></h1><p>2</p></div>');
+
+		t('<div><i>1{}<u>2</u>3</i><p>4</p></div>',
+		  '<div><i>1</i></div><div><i><u>[]2</u>3</i><p>4</p></div>');
+
+		t('<p>foo{}<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
+		t('<p>foo[]<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
+
+		t('<p>{}</p>', '<p></p><p>{}</p>');
+		t('<p>[]</p>', '<p></p><p>{}</p>');
+
+		t('<div><p>1[]</p><p>2</p></div>', '<div><p>1</p><p>{}</p><p>2</p></div>');
+		t('<div>1[]<p>2</p></div>', '<div>1<h1>{}</h1><p>2</p></div>');
+		t('<div>1{}<p>2</p></div>', '<div>1<h1>{}</h1><p>2</p></div>');
+
+		t('<i>[]</i>', '<i></i><h1><i>{}</i></h1>');
+		t('<i>[]foo</i>', '<i></i><h1><i>[]foo</i></h1>');
+		t('<i>[]<u>foo</u>bar</i>', '<i></i><h1><i><u>[]foo</u>bar</i></h1>');
+
+		t('<i>{}</i>',   '<i></i><h1><i>{}</i></h1>');
+		t('<i>b[]</i>',  '<i>b</i><h1><i>{}</i></h1>');
+		t('<i>b{}</i>',  '<i>b</i><h1><i>{}</i></h1>');
+		t('<i>[]b</i>',  '<i></i><h1><i>[]b</i></h1>');
+		t('<i>{}b</i>',  '<i></i><h1><i>[]b</i></h1>');
+		t('<i>b[]a</i>', '<i>b</i><h1><i>[]a</i></h1>');
+
+		t('<p>[]</p>', '<p></p><p>{}</p>');
+		t('<p>{}</p>', '<p></p><p>{}</p>');
+		t('<p>[]b</p>', '<p></p><p>[]b</p>');
+		t('<p>{}b</p>', '<p></p><p>[]b</p>');
+		t('<p>b[]</p>', '<p>b</p><p>{}</p>');
+		t('<p>b{}</p>', '<p>b</p><p>{}</p>');
+		t('<p>b[]a</p>', '<p>b</p><p>[]a</p>');
+		t('<p>b[]<br></p>', '<p>b</p><p>{}<br></p>');
+		t('<p><br>{}</p>', '<p><br></p><p>{}</p>');
+
+		t('<p><i>[]</i></p>', '<p><i></i></p><p><i>{}</i></p>');
+		t('<p><i>{}</i></p>', '<p><i></i></p><p><i>{}</i></p>');
+		t('<p><i>[]b</i></p>', '<p><i></i></p><p><i>[]b</i></p>');
+		t('<p><i>{}b</i></p>', '<p><i></i></p><p><i>[]b</i></p>');
+		t('<p><i>b[]</i></p>', '<p><i>b</i></p><p><i>{}</i></p>');
+		t('<p><i>b{}</i></p>', '<p><i>b</i></p><p><i>{}</i></p>');
+		t('<p><i>b[]a</i></p>', '<p><i>b</i></p><p><i>[]a</i></p>');
+		t('<p>a<i>[]</i>b</p>', '<p>a<i></i></p><p><i>{}</i>b</p>');
+
+		t('<p>a<u><i>b[]c</i></u>d<i>e</i></p>',
+		  '<p>a<u><i>b</i></u></p><p><u><i>[]c</i></u>d<i>e</i></p>');
+
+		t('<div><p><i>ba[]r</i></p></div>',
+		  '<div><p><i>ba</i></p><p><i>[]r</i></p></div>');
+
+		t('<div><p><i>fo[]o</i>bar</p></div>',
+		  '<div><p><i>fo</i></p><p><i>[]o</i>bar</p></div>');
+	});
+
 	test('delete()', function () {
 		tested.push('delete');
 		var t = function (before, after) {

@@ -221,6 +221,53 @@ define([
 	}
 
 	/**
+	 * Moves the given node, and all subsequent nextSiblings until `until` for
+	 * any of these sibling, into the end of `container`.
+	 *
+	 * @param {Element} node
+	 * @param {Element} container
+	 * @param {!Function(Element):boolean} container
+	 * @return {!Element}
+	 *         The node that caused any further moving to abort.
+	 */
+	function moveSiblingsInto(node, container, until) {
+		var next;
+		until = until || fn.returnFalse;
+		while (node && node !== container && !until(node)) {
+			next = node.nextSibling;
+			insert(node, container, true);
+			node = next;
+		}
+		return node;
+	}
+
+	/**
+	 * Moves the given node, and all subsequent nextSiblings until `until` for
+	 * any of these sibling, after `ref`.
+	 *
+	 * @param {Element} node
+	 * @param {Element} ref
+	 * @param {!Function(Element):boolean} container
+	 * @return {!Element}
+	 *         The node that caused any further moving to abort.
+	 */
+	function moveSiblingsAfter(node, ref, until) {
+		var next;
+		until = until || fn.returnFalse;
+		while (node && node !== ref && !until(node)) {
+			next = node.nextSibling;
+			insertAfter(node, ref);
+			// Because endless loop detected.
+			if (next === ref) {
+				return null;
+			}
+			ref = node;
+			node = next;
+		}
+		return node;
+	}
+
+	/**
 	 * Used to serialize outerHTML of DOM elements in older (pre-HTML5) Gecko,
 	 * Safari, and Opera browsers.
 	 *
@@ -640,6 +687,10 @@ define([
 		}
 	}
 
+	function insertAfter(node, ref) {
+		insert(node, ref.nextSibling || ref.parentNode, !ref.nextSibling);
+	}
+
 	/**
 	 * Detaches the given node.
 	 *
@@ -653,7 +704,7 @@ define([
 	 * Merges all contents of `right` into `left` by appending them to the end
 	 * of `left`, and then removing `right`.
 	 *
-	 * Will not merge since this could require ranges to be synchronized.
+	 * Will not merge text nodes since this requires ranges to be synchronized.
 	 *
 	 * @param {!Node} left
 	 * @param {!Node} right
@@ -1501,6 +1552,9 @@ define([
 		outerHtml: outerHtml,
 
 		moveNextAll: moveNextAll,
+		moveSiblingsInto: moveSiblingsInto,
+		moveSiblingsAfter: moveSiblingsAfter,
+
 		removeShallow: removeShallow,
 		removeShallowPreservingBoundaries: removeShallowPreservingBoundaries,
 		removePreservingRange: removePreservingRange,
@@ -1509,6 +1563,7 @@ define([
 
 		wrap: wrap,
 		insert: insert,
+		insertAfter: insertAfter,
 		replaceShallow: replaceShallow,
 
 		isAtEnd: isAtEnd,

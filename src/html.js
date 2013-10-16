@@ -745,6 +745,105 @@ define([
 		traversing.climbUntil(parent, dom.remove, isVisible);
 	}
 
+	function isBreak(node) {
+		return !dom.isVoidNode(node)
+		    && (dom.isEditingHost(node) || hasLinebreakingStyle(node));
+	}
+
+	function determineBreakingNode(context) {
+		if (context
+			&& context.settings
+			&& context.settings.defaultBlockNodeName) {
+			return context.settings.defaultBlockNodeName;
+		}
+		return 'div';
+	}
+
+	/**
+	 * Moves the nodes in `toMove` into the given container.  Any nodes in
+	 * `toMove` that are also found in `toPreserve` will be copied over rather
+	 * than moved.
+	 *
+	 * @param {Array.<Element>} toPreserve
+	 * @param {Array.<Element>} toMove
+	 * @param {Element}
+	 */
+	function moveNodesInto(toPreserve, toMove, container) {
+		var copy;
+		var node;
+		var i = toMove.length;
+		while (i--) {
+			node = toMove[i];
+			if (arrays.contains(toPreserve, node)) {
+				copy = document.createElement(node.nodeName);
+				dom.insert(copy, container, true);
+				node = node.nextSibling;
+			} else {
+				copy = null;
+			}
+			dom.moveSiblingsAfter(
+				dom.moveSiblingsInto(node, container, function (node) {
+					return !content.allowsNesting(
+						container.nodeName,
+						node.nodeName
+					);
+				}),
+				container
+			);
+			container = copy || node;
+		}
+	}
+
+	/**
+	 * Inserts a visual line break after the given boundary position.
+	 *
+	 * @param {Array.<Element, offset>} boundary
+	 * @param {!object}
+	 * @param {Array.<Element, offset>}
+	 *        The "forward position". This is the deepest node that is visually
+	 *        adjacent to the newly created line.
+	 */
+	function insertVisualBreak(boundary, context) {
+		var left = boundaries.leftNode(boundary);
+		var right = boundaries.rightNode(boundary);
+		var leftAscend = traversing.childAndParentsUntil(left, isBreak);
+		var rightAscend = traversing.childAndParentsUntilIncl(right, isBreak);
+		var breakpoint = rightAscend.pop();
+		var newBlock;
+
+		// Because if we reached the editing host in the ascent, it means that
+		// there was not block-level ancestor in that could be broken.
+		if (dom.isEditingHost(breakpoint)) {
+			newBlock = document.createElement(determineBreakingNode(context));
+			breakpoint = arrays.last(leftAscend);
+
+		// Because the range may have been just behind a line-breaking node.
+		} else if (!boundaries.atEnd(boundary) && isBreak(right)) {
+			newBlock = document.createElement(determineBreakingNode(context));
+		} else {
+			newBlock = document.createElement(breakpoint.nodeName);
+		}
+
+		dom.insertAfter(newBlock, breakpoint);
+		moveNodesInto(leftAscend, rightAscend, newBlock);
+		dom.moveSiblingsAfter(left.nextSibling, newBlock);
+
+		var focus = newBlock;
+		var next = newBlock;
+		while (next && next.firstChild) {
+			next = traversing.nextWhile(focus.firstChild, function (node) {
+				return dom.isVoidNode(node) || isUnrendered(node);
+			});
+			if (!next) {
+				break;
+			}
+			focus = next;
+		}
+
+		return dom.isVoidNode(focus) ? [focus.parentNode, dom.nodeIndex(focus)]
+		                             : [focus, 0];
+	}
+
 	var zwChars = ZERO_WIDTH_CHARACTERS.join('');
 
 	var breakingWhiteSpaces = arrays.complement(
@@ -1185,7 +1284,7 @@ define([
 	 * @param {DOMObject} elem
 	 */
 	function prop(elem) {
-		if (!browser.browser.msie && !elem.firstChild && dom.isBlockNode(elem)) {
+		if (!browser.browser.msie && dom.isBlockNode(elem) && !hasRenderedContent(elem)) {
 			dom.insert(document.createElement('br'), elem, true);
 		}
 	}
@@ -1207,6 +1306,7 @@ define([
 		isEmpty: isEmpty,
 		hasLinebreakingStyle: hasLinebreakingStyle,
 		isVisuallyAdjacent: isVisuallyAdjacent,
+		insertVisualBreak: insertVisualBreak,
 		removeVisualBreak: removeVisualBreak,
 		nextVisibleCharacter: nextVisibleCharacter,
 		nextVisiblePosition: nextVisiblePosition,

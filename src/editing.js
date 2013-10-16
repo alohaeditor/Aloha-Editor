@@ -1271,7 +1271,7 @@ define([
 	 *         The modified range, after deletion.
 	 */
 	function delete_(liveRange, overrides) {
-		fixupRange(liveRange, function (range, left, right) {
+		fixupRange(liveRange, function delete_(range, left, right) {
 			var remove = function (node) {
 				dom.removePreservingRange(node, range);
 			};
@@ -1316,11 +1316,20 @@ define([
 		}, false);
 	}
 
-	function breakBlock(range, context) {
-		split(range, {
-			until: html.hasLinebreakingStyle
-		});
-		return range;
+	/**
+	 * Creates a visual linebreak at the end position of the given range.
+	 *
+	 */
+	function breakBlock(liveRange, context) {
+		var range = ranges.collapseToEnd(StableRange(liveRange));
+		dom.splitTextContainers(range);
+		var boundary = html.insertVisualBreak(
+			boundaries.normalize(boundaries.start(range)),
+			context
+		);
+		liveRange.setStart(boundary[0], boundary[1]);
+		liveRange.setEnd(boundary[0], boundary[1]);
+		return liveRange;
 	}
 
 	/**
@@ -1336,7 +1345,7 @@ define([
 		format : format,
 		split  : split,
 		delete : delete_,
-		breakBlock : breakBlock
+		breakBlock: breakBlock
 	};
 
 	exports['wrap'] = exports.wrap;

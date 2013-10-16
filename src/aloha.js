@@ -68,7 +68,7 @@ define([
 
 	var context = {
 		settings: {
-			defaultLineBreakingElement: 'p'
+			defaultBlockNodeName: 'p'
 		},
 		overrides: []
 	};

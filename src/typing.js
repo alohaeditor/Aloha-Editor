@@ -32,23 +32,12 @@ define([
 					: ranges.expandBackwardToVisiblePosition
 			)(range);
 		}
-		range = editing.delete(
-			ranges.expandToVisibleCharacter(range),
-			context
-		);
+		editing.delete(ranges.expandToVisibleCharacter(range), context);
 		return range;
 	}
 
 	function enter(range, context) {
 		editing.breakBlock(range, context);
-		return range;
-	}
-
-	function breakBlock(range, context) {
-		return range;
-	}
-
-	function breakLine(range, context) {
 		return range;
 	}
 
