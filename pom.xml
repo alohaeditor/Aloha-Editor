@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
 	<version>0.23.23-SNAPSHOT</version>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
@@ -31,7 +32,7 @@
 		<releases.repoName>Gentics Public Repository</releases.repoName>
 		<releases.repoId>archiva.com.gentics.public</releases.repoId>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>rhino</groupId>
@@ -45,6 +46,18 @@
 			<version>r1918</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.gentics</groupId>
+			<artifactId>junit-selenium-qunit-runner</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<scm>
@@ -54,8 +67,19 @@
 	</scm>
 
 	<build>
-
-	<plugins>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<verbose>true</verbose>
+					<fork>true</fork>
+					<executable>${JAVA_1_6_HOME}/bin/javac</executable>
+					<compilerVersion>6.0</compilerVersion>
+					<source>6</source>
+					<target>6</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>com.googlecode.jslint4java</groupId>
 				<artifactId>jslint4java-maven-plugin</artifactId>
@@ -73,7 +97,7 @@
 					<failOnError>false</failOnError>
 					<!-- See http://docs.jslint4java.googlecode.com/git/2.0.2/apidocs/com/googlecode/jslint4java/Option.html -->
 					<options>
-						<!-- If names may have dangling _  -->
+						<!-- If names may have dangling _ -->
 						<nomen>true</nomen>
 						<!-- If multiple var statements per function should be allowed -->
 						<vars>true</vars>
@@ -129,7 +153,8 @@
 						</goals>
 						<configuration>
 							<options>
-								<predef>Aloha, window, global, process, define, require, jQuery, GCN</predef>
+								<predef>Aloha, window, global, process, define, require, jQuery,
+									GCN</predef>
 							</options>
 							<failOnError>false</failOnError>
 							<includes>
@@ -261,7 +286,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-full/</jsDestinationFolder>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>aloha-${build.profile}-debug-full</id>
 						<phase>compile</phase>
@@ -275,7 +300,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-full/</jsDestinationFolder>
 						</configuration>
 					</execution>
-					
+
 					<!-- Bare version of aloha (Without jquery and requirejs) -->
 					<execution>
 						<id>aloha-${build.profile}-debug-bare</id>
@@ -290,7 +315,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-bare/</jsDestinationFolder>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>aloha-${build.profile}-minified-bare</id>
 						<phase>compile</phase>
@@ -304,7 +329,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-bare/</jsDestinationFolder>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>less-css</id>
 						<phase>generate-sources</phase>
@@ -350,7 +375,7 @@
 							</descriptors>
 						</configuration>
 					</execution>
-						<execution>
+					<execution>
 						<id>cdn</id>
 						<phase>package</phase>
 						<goals>
@@ -383,7 +408,6 @@
 			<plugin>
 				<groupId>org.eclipse.m2e</groupId>
 				<artifactId>lifecycle-mapping</artifactId>
-				<version>1.0.0</version>
 				<configuration>
 					<lifecycleMappingMetadata>
 						<pluginExecutions>
@@ -406,6 +430,42 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											exec-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.1.1,)
+										</versionRange>
+										<goals>
+											<goal>exec</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<distributionManagement>
