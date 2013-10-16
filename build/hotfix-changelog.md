@@ -7,3 +7,6 @@ All changes are categorized into one of the following keywords:
                    usage, or intent of an existing one.
 
 ----
+
+- **BUGFIX**: 'width' attribute from table not removed
+              When copying the table the 'width' attribute of is not removed. RT#55759
