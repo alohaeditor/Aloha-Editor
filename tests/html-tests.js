@@ -32,6 +32,9 @@
 			});
 		};
 
+		t('<div><p>foo[]</p><div><ul><li>bar</li></ul></div></div>',
+		  '<div><p>foo[</p><div><ul><li>]bar</li></ul></div></div>');
+
 		t('<div>foo<p contenteditable="true">{}bar</p></div>',
 		  '<div>foo<p contenteditable="true">{b]ar</p></div>');
 
@@ -39,10 +42,10 @@
 		t('<div><i>foo{}<br></i>bar</div>', '<div><i>foo{<br>}</i>bar</div>');
 
 		t('<div><p>foo{}</p><ul><li>bar</li></ul></div>',
-		  '<div><p>foo{</p><ul><li>}bar</li></ul></div>');
+		  '<div><p>foo{</p><ul><li>]bar</li></ul></div>');
 
 		t('<div>foo{}<ul><li>bar</li></ul></div>',
-		  '<div>foo{<ul><li>}bar</li></ul></div>');
+		  '<div>foo{<ul><li>]bar</li></ul></div>');
 
 		t('<p>foo{}<b>bar</b>baz</p>', '<p>foo{<b>b]ar</b>baz</p>');
 
@@ -110,14 +113,14 @@
 		t('<b>foo[ ] &nbsp; </b>', '<b>foo[  &nbsp;] </b>');
 
 		t('<p>[]<br></p>', '<p>[<br>}</p>');
-		t('<p>[]<br>foo</p>', '<p>[<br>]foo</p>');
-		t('<p>foo[]<br>bar</p>', '<p>foo[<br>]bar</p>');
+		t('<p>[]<br>foo</p>', '<p>[<br>}foo</p>');
+		t('<p>foo[]<br>bar</p>', '<p>foo[<br>}bar</p>');
 		t('<p>foo{}<br><br>bar</p>', '<p>foo{<br>}<br>bar</p>');
 		t('<p>foo[]<br><br>bar</p>', '<p>foo[<br>}<br>bar</p>');
 		t('<div><p>foo[]<br></p>bar</div>', '<div><p>foo[<br></p>]bar</div>');
 
-		t('<div>foo[]<br><p>bar</p></div>', '<div>foo[<br><p>}bar</p></div>');
-		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>}bar</p></div>');
+		t('<div>foo[]<br><p>bar</p></div>', '<div>foo[<br><p>]bar</p></div>');
+		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>]bar</p></div>');
 	});
 
 	test('previousVisiblePosition()', function () {
@@ -241,24 +244,6 @@
 		t('<div><p>{foo<br/></p>}bar</div>', false);
 		t('<div><p><i>foo{</i><br/></p>}bar</div>', true);
 		t('<div><p><i>foo{</i><br/><br/></p>}bar</div>', false);
-	});
-
-	test('removeVisualBreak()', function () {
-		return;
-		var t = function (before, after) {};
-		t('<div><p>foo{</p><p>}bar</p></div>', '<div><p>foo{}bar</p></div>');
-		t('<div><p>foo[</p><p>]bar</p></div>', '<div><p>foo[]bar</p></div>');
-		t('<div><b>foo[</b><b>]bar</b></div>', '<div><b>foo[]bar</b></div>');
-		t('<div><b>foo{</b><i>}bar</i></div>', '<div><b>foo{}</b><i>bar</i></div>');
-		t('<div><b>foo[</b><i>]bar</i></div>', '<div><b>foo[]</b><i>bar</i></div>');
-		t('<div><b>foo{</b><p>}bar</p></div>', '<div><b>foo{}</b>bar</div>');
-		t('<div><b>foo[</b><p>]bar</p></div>', '<div><b>foo[]</b>bar</div>');
-		t('<div><b>foo[</b><p><b>]bar</b></p></div>',
-		                                       '<div><b>foo[]bar</b></div>');
-		t('<div><p><b>foo{</b></p>\n<i>\t\r\n<b>}bar</b></i></div>',
-		                                       '<div><p><b>foo{}</b><i>\t\r\n<b>bar</b></i></p>\n</div>');
-
-		// TODO: Lists
 	});
 
 	test('isStyleInherited', function () {

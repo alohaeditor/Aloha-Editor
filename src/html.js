@@ -1010,6 +1010,9 @@ define([
 			crossedVisualBreak(true);
 		}
 		if (crossedVisualBreak()) {
+			while (next && next.firstChild) {
+				next = traversing.nextWhile(next.firstChild, isUnrendered);
+			}
 			return {
 				node: next,
 				offset: 0
