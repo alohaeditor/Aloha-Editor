@@ -1,22 +1,18 @@
 								  KNOWN ISSUES
 								  ~~~~~~~~~~~~
 
-delete the given selection should not be a noop.
+the following should capture the unrendered spaces up to the front
+<p>
+				[D]</p>
 
-<ul><li>{</li></ul>
-<div>}
-	<ul>
-		<li>one</li>
-		<li>two</li>
-		<li>three<ul>
-					<li>one</li>
-					<li>two</li>
-					<li>three</li>
-				</ul>
-		</li>
-	</ul>
-</div>
+should be
+<p>[
+                 D]</p>
 
+so that after delete() is called, we will end up with <p></p> which will be
+propped to <p><br/></p>
+
+---
 
 double clicking on a first paragraphs leads to this wierd selection:
 <p>
@@ -30,15 +26,12 @@ double clicking on a first paragraphs leads to this wierd selection:
 	<li>three</li>
 </ul>
 
-
-
-
+---
 
 there should be a way to exclude certain elements (and perhaps attributes) if
 you don't want those: <em contentEditable="true" exclude="a em strong span">
 
-
-
+---
 
 E.g., if you run "bold" on
 
