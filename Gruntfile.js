@@ -43,6 +43,28 @@ module.exports = function (grunt) {
 		},
 		qunit: {
 			all: ['tests/index.html']
+		},
+		docular: {
+			docular_webapp_target : "build/docs",
+				groups: [
+					{
+						groupTitle: 'Aloha Editor API',
+						groupId: 'alohaeditor',
+						groupIcon: 'icon-book',
+							sections: [
+								{
+									id: "dom",
+									title: "Aloha Editor DOM API",
+									showSource: false,
+									scripts: [
+										"src"
+										],
+									rank: {}
+								},
+							]
+					}
+				],
+				//showDocularDocs: true
 		}
 	};
 
@@ -52,6 +74,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-closure-compiler');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
+	grunt.loadNpmTasks('grunt-docular');
 
 	grunt.registerTask(
 		'banner',
@@ -69,6 +92,7 @@ module.exports = function (grunt) {
 		'install-dependencies',
 		'jshint',
 		'qunit',
+		'docular',
 		'closure-compiler',
 		'banner'
 	]);

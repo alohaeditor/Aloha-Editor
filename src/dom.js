@@ -4,6 +4,20 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name dom
+ * @description
+ *
+ * ## DOM Utilities
+ *
+ * This module houses utillities that are
+ * used for DOM manipulation.
+ *
+ * Note, if you do not define the module using @doc module
+ * and the @name with the module id, then this page won't exist!!
+ */
 define([
 	'maps',
 	'arrays',
@@ -48,10 +62,21 @@ define([
 	};
 
 	/**
+	 * @doc function
+	 * @name aloha.DOM:isTextNode
+	 * @param {DOMObject} node the DOM node
+	 * @return {Boolean} `true` if `node` is a text node
+	 * @description
 	 * Returns `true` if `node` is a text node.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * Here is some example code:
+	 * ```js
+	 * for(var thing in window) {
+	 *     if(typeof(window[thing]) === "string") {
+	 *         ...
+	 *     }
+	 * }
+	 * ```
 	 */
 	function isTextNode(node) {
 		return Nodes.TEXT === node.nodeType;
