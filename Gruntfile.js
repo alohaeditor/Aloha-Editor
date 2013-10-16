@@ -45,10 +45,11 @@ module.exports = function (grunt) {
 			all: ['tests/index.html']
 		},
 		docular: {
+			docular_partial_home: 'docs/home.html',
 			docular_webapp_target : "build/docs",
 				groups: [
 					{
-						groupTitle: 'Aloha Editor API',
+						groupTitle: 'Aloha Editor',
 						groupId: 'alohaeditor',
 						groupIcon: 'icon-book',
 							sections: [
@@ -57,7 +58,23 @@ module.exports = function (grunt) {
 									title: "Aloha Editor DOM API",
 									showSource: false,
 									scripts: [
-										"src"
+										"src/dom.js"
+										],
+									rank: {}
+								},
+							]
+					},
+					{
+						groupTitle: 'Aloha Editor Guides',
+						groupId: 'guides',
+						groupIcon: 'icon-file',
+							sections: [
+								{
+									id: "repositories",
+									title: "Using Repositories",
+									showSource: false,
+									docs: [
+										"docs/guides/repositories.doc"
 										],
 									rank: {}
 								},
