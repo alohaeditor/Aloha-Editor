@@ -699,24 +699,26 @@ define([
 	 * Removes the visual line break between the adjacent nodes `above` and
 	 * `below` by moving the nodes from `below` to `above`.
 	 *
-	 * @param {DOMObject} above
-	 * @param {DOMObject} below
+	 * @param {Arrays.<Element, number>} above
+	 * @param {Arrays.<Element, number>} below
 	 */
 	function removeVisualBreak(above, below) {
 		above = boundaries.normalize(above);
 		below = boundaries.normalize(below);
 
 		if (!isVisuallyAdjacent(above, below)) {
-			return [above[0].parentNode, dom.nodeIndex(above[0])];
+			return;
 		}
 
 		var linebreak = nextLineBreak(above, below);
 
+		var isVisible = function (node) {
+			return above[0] === node || hasRenderedContent(node);
+		};
+
 		if (boundaries.equal(linebreak, below)) {
-			traversing.climbUntil(below[0], dom.remove, function (node) {
-				return above[0] === node || hasRenderedContent(node);
-			});
-			return above;
+			traversing.climbUntil(below[0], dom.remove, isVisible);
+			return;
 		}
 
 		var move = boundaries.atEnd(linebreak)
@@ -740,11 +742,7 @@ define([
 			);
 		}
 
-		if (parent !== boundaries.leftNode(linebreak)) {
-			traversing.climbUntil(parent, dom.remove, hasRenderedContent);
-		}
-
-		return above;
+		traversing.climbUntil(parent, dom.remove, isVisible);
 	}
 
 	var zwChars = ZERO_WIDTH_CHARACTERS.join('');

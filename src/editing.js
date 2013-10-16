@@ -1307,16 +1307,10 @@ define([
 			return {
 				postprocessTextNodes: fn.noop,
 				postprocess: function () {
-					var position = range.collapsed
-							? boundaries.start(range)
-							: html.removeVisualBreak(
-								boundaries.start(range),
-								boundaries.end(range)
-							);
-					var pos = cursors.createFromBoundary(
-						position[0],
-						position[1]
-					);
+					var above = boundaries.start(range);
+					var below = boundaries.end(range);
+					html.removeVisualBreak(above, below);
+					var pos = cursors.createFromBoundary(above[0], above[1]);
 					left.setFrom(pos);
 					right.setFrom(pos);
 				}
@@ -1337,7 +1331,7 @@ define([
 	 * editing.wrap()
 	 * editing.format()
 	 * editing.split()
-	 * editing.delete_()
+	 * editing.delete()
 	 */
 	var exports = {
 		wrap   : wrapElem,
