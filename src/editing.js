@@ -1127,11 +1127,9 @@ define([
 				if (leftPoint.node === parent && !leftPoint.atEnd) {
 					leftPoint.node = wrapper;
 				}
-				/*
 				if (rightPoint.node === parent) {
 					rightPoint.node = wrapper;
 				}
-				*/
 			}
 			moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
 		}
