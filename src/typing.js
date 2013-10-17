@@ -49,17 +49,21 @@ define([
 	};
 
 	actions[keys.CODES.enter] = function breakBlock(range, context) {
-		return editing.breakBlock(
+		editing.break(
 			range.collapsed ? range : delete_(range, true, context),
-			context
+			context,
+			false
 		);
+		return range;
 	};
 
 	actions['shift+' + keys.CODES.enter] = function breakLine(range, context) {
-		return breakLine(
+		editing.break(
 			range.collapsed ? range : delete_(range, true, context),
-			context
+			context,
+			true
 		);
+		return range;
 	};
 
 	actions.insertText = function insertText(range, context) {
@@ -79,7 +83,8 @@ define([
 		if (!msg.range) {
 			return;
 		}
-		var action = actions[msg.code];
+		var meta = msg.event.shiftKey ? 'shift+' : '';
+		var action = actions[meta + msg.code];
 		var range;
 		if (action) {
 			range = action(msg.range, context);

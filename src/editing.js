@@ -1317,19 +1317,22 @@ define([
 	}
 
 	/**
-	 * Creates a visual linebreak at the end position of the given range.
+	 * Creates a visual line break at the end position of the given range.
 	 *
+	 * @param {Range} liveRange
+	 * @param {object} context
+	 * @param {boolean} linebreak
 	 */
-	function breakBlock(liveRange, context) {
+	function break_(liveRange, context, linebreak) {
 		var range = ranges.collapseToEnd(StableRange(liveRange));
 		dom.splitTextContainers(range);
-		var boundary = html.insertVisualBreak(
+		var op = linebreak ? html.insertLineBreak : html.insertVisualBreak;
+		var boundary = op(
 			boundaries.normalize(boundaries.start(range)),
 			context
 		);
 		liveRange.setStart(boundary[0], boundary[1]);
 		liveRange.setEnd(boundary[0], boundary[1]);
-		return liveRange;
 	}
 
 	/**
@@ -1345,7 +1348,7 @@ define([
 		format : format,
 		split  : split,
 		delete : delete_,
-		breakBlock: breakBlock
+		break: break_,
 	};
 
 	exports['wrap'] = exports.wrap;

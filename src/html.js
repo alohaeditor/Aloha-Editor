@@ -874,6 +874,31 @@ define([
 		                             : [focus, 0];
 	}
 
+	/**
+	 * Inserts a <br> element at behind the given boundary position.
+	 *
+	 * @param {Arrays.<Element, number>} boundary
+	 * @param {object}
+	 * @return {Arrays.<Element, number>}
+	 */
+	function insertLineBreak(boundary, context) {
+		var br = document.createElement('br');
+		if (boundaries.atEnd(boundary)) {
+			dom.insert(br, boundary[0], true);
+		} else {
+			dom.insert(br, boundaries.rightNode(boundary));
+		}
+		boundary = boundaries.next(boundary);
+		var next = boundaries.atEnd(boundary) ? null : traversing.nextWhile(
+			boundaries.rightNode(boundary),
+			isUnrendered
+		);
+		if (!next || ('BR' !== next.nodeName && hasLinebreakingStyle(next))) {
+			dom.insert(document.createElement('br'), br);
+		}
+		return boundary;
+	}
+
 	var zwChars = ZERO_WIDTH_CHARACTERS.join('');
 
 	var breakingWhiteSpaces = arrays.complement(
@@ -1309,6 +1334,7 @@ define([
 		hasLinebreakingStyle: hasLinebreakingStyle,
 		isVisuallyAdjacent: isVisuallyAdjacent,
 		insertVisualBreak: insertVisualBreak,
+		insertLineBreak: insertLineBreak,
 		removeVisualBreak: removeVisualBreak,
 		nextVisibleCharacter: nextVisibleCharacter,
 		nextVisiblePosition: nextVisiblePosition,

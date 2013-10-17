@@ -24,8 +24,8 @@
 		equal($editable.html(), after, before + ' ⇒ ' + after);
 	}
 
-	test('breakBlock()', function () {
-		tested.push('breakBlock');
+	test('break()', function () {
+		tested.push('break');
 		var context = {
 			settings: {
 				defaultBlockNodeName: 'h1'
@@ -33,7 +33,7 @@
 		};
 		var t = function (before, after) {
 			return runTest(before, after, function (range) {
-				return editing.breakBlock(range, context);
+				return editing.break(range, context, false);
 			});
 		};
 
