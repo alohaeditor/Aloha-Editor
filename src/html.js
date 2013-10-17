@@ -1284,7 +1284,11 @@ define([
 	 * @param {DOMObject} elem
 	 */
 	function prop(elem) {
-		if (!browser.browser.msie && dom.isBlockNode(elem) && !hasRenderedContent(elem)) {
+		if (browser.browser.msie || !dom.isBlockNode(elem)) {
+			return;
+		}
+		if (!elem.firstChild
+		    || !traversing.nextWhile(elem.firstChild, isUnrenderedWhitespace)) {
 			dom.insert(document.createElement('br'), elem, true);
 		}
 	}
