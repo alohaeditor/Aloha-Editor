@@ -814,12 +814,7 @@ define([
 				copy = null;
 			}
 			dom.moveSiblingsAfter(
-				dom.moveSiblingsInto(node, container, function (node) {
-					return !content.allowsNesting(
-						container.nodeName,
-						node.nodeName
-					);
-				}),
+				dom.moveSiblingsInto(node, container, isBreak),
 				container
 			);
 			container = copy || node;

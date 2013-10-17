@@ -36,11 +36,6 @@ define([
 		return range;
 	}
 
-	function enter(range, context) {
-		editing.breakBlock(range, context);
-		return range;
-	}
-
 	var actions = {};
 
 	actions[keys.CODES.backspace] = function deleteBackwards(range, context) {
@@ -54,7 +49,7 @@ define([
 	};
 
 	actions[keys.CODES.enter] = function breakBlock(range, context) {
-		return enter(
+		return editing.breakBlock(
 			range.collapsed ? range : delete_(range, true, context),
 			context
 		);

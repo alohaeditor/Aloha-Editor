@@ -93,10 +93,10 @@
 		t('<div contenteditable="true"><i>1{}</i><p>2</p></div>',
 		  '<div contenteditable="true"><h1><i>1</i></h1><h1><i>{}</i></h1><p>2</p></div>');
 
-		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i><p>2</p></div>');
+		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i></div><p>2</p>');
 
 		t('<div><i>1{}<u>2</u>3</i><p>4</p></div>',
-		  '<div><i>1</i></div><div><i><u>[]2</u>3</i><p>4</p></div>');
+		  '<div><i>1</i></div><div><i><u>[]2</u>3</i></div><p>4</p>');
 
 		t('<p>foo{}<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
 		t('<p>foo[]<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');

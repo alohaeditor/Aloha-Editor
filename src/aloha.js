@@ -68,7 +68,7 @@ define([
 
 	var context = {
 		settings: {
-			defaultBlockNodeName: 'p'
+			defaultBlockNodeName: 'div'
 		},
 		overrides: []
 	};
