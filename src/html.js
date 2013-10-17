@@ -832,7 +832,7 @@ define([
 		var next = newBlock;
 		while (next && next.firstChild) {
 			next = traversing.nextWhile(focus.firstChild, function (node) {
-				return dom.isVoidNode(node) || isUnrendered(node);
+				return !dom.isVoidNode(node) && isUnrendered(node);
 			});
 			if (!next) {
 				break;
