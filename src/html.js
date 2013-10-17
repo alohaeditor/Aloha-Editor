@@ -840,28 +840,28 @@ define([
 		var right = boundaries.rightNode(boundary);
 		var leftAscend = traversing.childAndParentsUntil(left, isBreak);
 		var rightAscend = traversing.childAndParentsUntilIncl(right, isBreak);
-		var breakpoint = rightAscend.pop();
+		var breakNode = rightAscend.pop();
 		var newBlock;
 
 		// Because if we reached the editing host in the ascent, it means that
 		// there was not block-level ancestor in that could be broken.
-		if (dom.isEditingHost(breakpoint)) {
+		if (dom.isEditingHost(breakNode)) {
 			newBlock = document.createElement(determineBreakingNode(context));
-			breakpoint = newBlock.cloneNode(false);
-			dom.wrap(arrays.last(leftAscend), breakpoint);
+			breakNode = newBlock.cloneNode(false);
+			dom.wrap(arrays.last(leftAscend), breakNode);
 
 		// Because the range may have been just behind a line-breaking node.
 		} else if (!boundaries.atEnd(boundary) && isBreak(right)) {
 			newBlock = document.createElement(determineBreakingNode(context));
 		} else {
-			newBlock = breakpoint.cloneNode(false);
+			newBlock = breakNode.cloneNode(false);
 		}
 
-		dom.insertAfter(newBlock, breakpoint);
+		dom.insertAfter(newBlock, breakNode);
 		moveNodesInto(leftAscend, rightAscend, newBlock);
 		dom.moveSiblingsAfter(left.nextSibling, newBlock);
 
-		prop(breakpoint);
+		prop(breakNode);
 
 		var focus = newBlock;
 		var next = newBlock;
