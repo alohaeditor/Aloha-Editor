@@ -37,6 +37,14 @@
 			});
 		};
 
+		// Is this test valid?
+		//t('<div><p>1</p>[]<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
+
+		t('<p id="foo">1[]2</p>', '<p id="foo">1</p><p id="foo">[]2</p>');
+
+		t('<p><i style="color:red">1[]2</i></p>',
+		  '<p><i style="color:red">1</i></p><p><i style="color:red">[]2</i></p>');
+
 		t('<div><div><p>1</p>{}<p>2</p></div></div>',
 		  '<div><div><p>1</p><h1>{}</h1><p>2</p></div></div>');
 
@@ -45,12 +53,10 @@
 		t('<div contenteditable="true">1{}<p>2</p>3</div>',
 		  '<div contenteditable="true">1<h1>{}</h1><p>2</p>3</div>');
 
-		//t('<div><p>1</p>[]<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
-
-		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i><p>2</p></div>');
-
 		t('<div contenteditable="true"><i>1{}</i><p>2</p></div>',
 		  '<div contenteditable="true"><i>1</i><h1><i>{}</i></h1><p>2</p></div>');
+
+		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i><p>2</p></div>');
 
 		t('<div><i>1{}<u>2</u>3</i><p>4</p></div>',
 		  '<div><i>1</i></div><div><i><u>[]2</u>3</i><p>4</p></div>');

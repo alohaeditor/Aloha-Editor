@@ -775,7 +775,7 @@ define([
 		while (i--) {
 			node = toMove[i];
 			if (arrays.contains(toPreserve, node)) {
-				copy = document.createElement(node.nodeName);
+				copy = node.cloneNode(false);
 				dom.insert(copy, container, true);
 				node = node.nextSibling;
 			} else {
@@ -821,7 +821,7 @@ define([
 		} else if (!boundaries.atEnd(boundary) && isBreak(right)) {
 			newBlock = document.createElement(determineBreakingNode(context));
 		} else {
-			newBlock = document.createElement(breakpoint.nodeName);
+			newBlock = breakpoint.cloneNode(false);
 		}
 
 		dom.insertAfter(newBlock, breakpoint);
