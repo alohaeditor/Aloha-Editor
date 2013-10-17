@@ -847,7 +847,8 @@ define([
 		// there was not block-level ancestor in that could be broken.
 		if (dom.isEditingHost(breakpoint)) {
 			newBlock = document.createElement(determineBreakingNode(context));
-			breakpoint = arrays.last(leftAscend);
+			breakpoint = newBlock.cloneNode(false);
+			dom.wrap(arrays.last(leftAscend), breakpoint);
 
 		// Because the range may have been just behind a line-breaking node.
 		} else if (!boundaries.atEnd(boundary) && isBreak(right)) {
@@ -860,7 +861,7 @@ define([
 		moveNodesInto(leftAscend, rightAscend, newBlock);
 		dom.moveSiblingsAfter(left.nextSibling, newBlock);
 
-		prop(left);
+		prop(breakpoint);
 
 		var focus = newBlock;
 		var next = newBlock;

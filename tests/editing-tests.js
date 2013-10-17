@@ -43,20 +43,16 @@
 		t('<p>{}</p>', '<p><br></p><p>{}</p>');
 		t('<p>[]</p>', '<p><br></p><p>{}</p>');
 
-		t('<div><p>1[]</p><p>2</p></div>', '<div><p>1</p><p>{}</p><p>2</p></div>');
-		t('<div>1[]<p>2</p></div>', '<div>1<h1>{}</h1><p>2</p></div>');
-		t('<div>1{}<p>2</p></div>', '<div>1<h1>{}</h1><p>2</p></div>');
+		t('<i>[]</i>', '<h1><i></i></h1><h1><i>{}</i></h1>');
+		t('<i>[]foo</i>', '<h1><i></i></h1><h1><i>[]foo</i></h1>');
+		t('<i>[]<u>foo</u>bar</i>', '<h1><i></i></h1><h1><i><u>[]foo</u>bar</i></h1>');
 
-		t('<i>[]</i>', '<i></i><h1><i>{}</i></h1>');
-		t('<i>[]foo</i>', '<i></i><h1><i>[]foo</i></h1>');
-		t('<i>[]<u>foo</u>bar</i>', '<i></i><h1><i><u>[]foo</u>bar</i></h1>');
-
-		t('<i>{}</i>',   '<i></i><h1><i>{}</i></h1>');
-		t('<i>b[]</i>',  '<i>b</i><h1><i>{}</i></h1>');
-		t('<i>b{}</i>',  '<i>b</i><h1><i>{}</i></h1>');
-		t('<i>[]b</i>',  '<i></i><h1><i>[]b</i></h1>');
-		t('<i>{}b</i>',  '<i></i><h1><i>[]b</i></h1>');
-		t('<i>b[]a</i>', '<i>b</i><h1><i>[]a</i></h1>');
+		t('<i>{}</i>',   '<h1><i></i></h1><h1><i>{}</i></h1>');
+		t('<i>b[]</i>',  '<h1><i>b</i></h1><h1><i>{}</i></h1>');
+		t('<i>b{}</i>',  '<h1><i>b</i></h1><h1><i>{}</i></h1>');
+		t('<i>[]b</i>',  '<h1><i></i></h1><h1><i>[]b</i></h1>');
+		t('<i>{}b</i>',  '<h1><i></i></h1><h1><i>[]b</i></h1>');
+		t('<i>b[]a</i>', '<h1><i>b</i></h1><h1><i>[]a</i></h1>');
 
 		t('<p>[]</p>', '<p><br></p><p>{}</p>');
 		t('<p>{}</p>', '<p><br></p><p>{}</p>');
@@ -95,7 +91,7 @@
 		  '<div contenteditable="true">1<h1>{}</h1><p>2</p>3</div>');
 
 		t('<div contenteditable="true"><i>1{}</i><p>2</p></div>',
-		  '<div contenteditable="true"><i>1</i><h1><i>{}</i></h1><p>2</p></div>');
+		  '<div contenteditable="true"><h1><i>1</i></h1><h1><i>{}</i></h1><p>2</p></div>');
 
 		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i><p>2</p></div>');
 
@@ -104,6 +100,10 @@
 
 		t('<p>foo{}<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
 		t('<p>foo[]<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
+
+		t('<div><p>1[]</p><p>2</p></div>', '<div><p>1</p><p>{}</p><p>2</p></div>');
+		t('<div>1[]<p>2</p></div>', '<div>1<h1>{}</h1><p>2</p></div>');
+		t('<div>1{}<p>2</p></div>', '<div>1<h1>{}</h1><p>2</p></div>');
 
 		t('<p id="foo">1[]2</p>', '<p id="foo">1</p><p id="foo">[]2</p>');
 
