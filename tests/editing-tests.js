@@ -40,32 +40,8 @@
 		// Is this test valid?
 		//t('<div><p>1</p>[]<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
 
-		t('<p id="foo">1[]2</p>', '<p id="foo">1</p><p id="foo">[]2</p>');
-
-		t('<p><i style="color:red">1[]2</i></p>',
-		  '<p><i style="color:red">1</i></p><p><i style="color:red">[]2</i></p>');
-
-		t('<div><div><p>1</p>{}<p>2</p></div></div>',
-		  '<div><div><p>1</p><h1>{}</h1><p>2</p></div></div>');
-
-		t('<div><p>1</p>{}<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
-
-		t('<div contenteditable="true">1{}<p>2</p>3</div>',
-		  '<div contenteditable="true">1<h1>{}</h1><p>2</p>3</div>');
-
-		t('<div contenteditable="true"><i>1{}</i><p>2</p></div>',
-		  '<div contenteditable="true"><i>1</i><h1><i>{}</i></h1><p>2</p></div>');
-
-		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i><p>2</p></div>');
-
-		t('<div><i>1{}<u>2</u>3</i><p>4</p></div>',
-		  '<div><i>1</i></div><div><i><u>[]2</u>3</i><p>4</p></div>');
-
-		t('<p>foo{}<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
-		t('<p>foo[]<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
-
-		t('<p>{}</p>', '<p></p><p>{}</p>');
-		t('<p>[]</p>', '<p></p><p>{}</p>');
+		t('<p>{}</p>', '<p><br></p><p>{}</p>');
+		t('<p>[]</p>', '<p><br></p><p>{}</p>');
 
 		t('<div><p>1[]</p><p>2</p></div>', '<div><p>1</p><p>{}</p><p>2</p></div>');
 		t('<div>1[]<p>2</p></div>', '<div>1<h1>{}</h1><p>2</p></div>');
@@ -82,10 +58,10 @@
 		t('<i>{}b</i>',  '<i></i><h1><i>[]b</i></h1>');
 		t('<i>b[]a</i>', '<i>b</i><h1><i>[]a</i></h1>');
 
-		t('<p>[]</p>', '<p></p><p>{}</p>');
-		t('<p>{}</p>', '<p></p><p>{}</p>');
-		t('<p>[]b</p>', '<p></p><p>[]b</p>');
-		t('<p>{}b</p>', '<p></p><p>[]b</p>');
+		t('<p>[]</p>', '<p><br></p><p>{}</p>');
+		t('<p>{}</p>', '<p><br></p><p>{}</p>');
+		t('<p>[]b</p>', '<p><br></p><p>[]b</p>');
+		t('<p>{}b</p>', '<p><br></p><p>[]b</p>');
 		t('<p>b[]</p>', '<p>b</p><p>{}</p>');
 		t('<p>b{}</p>', '<p>b</p><p>{}</p>');
 		t('<p>b[]a</p>', '<p>b</p><p>[]a</p>');
@@ -109,6 +85,30 @@
 
 		t('<div><p><i>fo[]o</i>bar</p></div>',
 		  '<div><p><i>fo</i></p><p><i>[]o</i>bar</p></div>');
+
+		t('<div><div><p>1</p>{}<p>2</p></div></div>',
+		  '<div><div><p>1</p><h1>{}</h1><p>2</p></div></div>');
+
+		t('<div><p>1</p>{}<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
+
+		t('<div contenteditable="true">1{}<p>2</p>3</div>',
+		  '<div contenteditable="true">1<h1>{}</h1><p>2</p>3</div>');
+
+		t('<div contenteditable="true"><i>1{}</i><p>2</p></div>',
+		  '<div contenteditable="true"><i>1</i><h1><i>{}</i></h1><p>2</p></div>');
+
+		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i><p>2</p></div>');
+
+		t('<div><i>1{}<u>2</u>3</i><p>4</p></div>',
+		  '<div><i>1</i></div><div><i><u>[]2</u>3</i><p>4</p></div>');
+
+		t('<p>foo{}<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
+		t('<p>foo[]<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
+
+		t('<p id="foo">1[]2</p>', '<p id="foo">1</p><p id="foo">[]2</p>');
+
+		t('<p><i style="color:red">1[]2</i></p>',
+		  '<p><i style="color:red">1</i></p><p><i style="color:red">[]2</i></p>');
 	});
 
 	test('delete()', function () {

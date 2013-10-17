@@ -567,6 +567,38 @@ define([
 	}
 
 	/**
+	 * "Props up" the given element if needed.
+	 *
+	 * The HTML specification specifies that empty block-level elements be not
+	 * rendered.  This becomes a problem if an editing operation results in one
+	 * of these elements being emptied of all its child nodes.  If this were to
+	 * happen, standard conformant browsers will no longer render that empty
+	 * block element even though it will remain in the docuement.  Because the
+	 * element is invisible, it will no longer be possible for the caret to be
+	 * placed into it.
+	 *
+	 * In order to prevent littering the editable with invisible block-level
+	 * elements, we prop them up by ensuring the empty block-level elements are
+	 * given a <br> child node to force them to be rendered with one line
+	 * height.
+	 *
+	 * The notable exception to this rule are the Microsoft's non-standard
+	 * conformant Trident engines which render empty editable block level
+	 * elements with one line height.
+	 *
+	 * @param {DOMObject} elem
+	 */
+	function prop(elem) {
+		if (browser.browser.msie || !dom.isBlockNode(elem)) {
+			return;
+		}
+		if (!elem.firstChild
+		    || !traversing.nextWhile(elem.firstChild, isUnrenderedWhitespace)) {
+			dom.insert(document.createElement('br'), elem, true);
+		}
+	}
+
+	/**
 	 * Checks whether or not the given node may be used to receive moved nodes
 	 * in the process of removing a *visual* line break.
 	 *
@@ -760,9 +792,9 @@ define([
 	}
 
 	/**
-	 * Moves the nodes in `toMove` into the given container.  Any nodes in
-	 * `toMove` that are also found in `toPreserve` will be copied over rather
-	 * than moved.
+	 * Moves the nodes in `toMove` into the given container, nesting one inside
+	 * the other.  Any nodes in `toMove` that are also found in `toPreserve`
+	 * will be copied over rather than moved.
 	 *
 	 * @param {Array.<Element>} toPreserve
 	 * @param {Array.<Element>} toMove
@@ -827,6 +859,8 @@ define([
 		dom.insertAfter(newBlock, breakpoint);
 		moveNodesInto(leftAscend, rightAscend, newBlock);
 		dom.moveSiblingsAfter(left.nextSibling, newBlock);
+
+		prop(left);
 
 		var focus = newBlock;
 		var next = newBlock;
@@ -1259,38 +1293,6 @@ define([
 			node: landing,
 			offset: dom.nodeLength(landing)
 		};
-	}
-
-	/**
-	 * "Props up" the given element if needed.
-	 *
-	 * The HTML specification specifies that empty block-level elements be not
-	 * rendered.  This becomes a problem if an editing operation results in one
-	 * of these elements being emptied of all its child nodes.  If this were to
-	 * happen, standard conformant browsers will no longer render that empty
-	 * block element even though it will remain in the docuement.  Because the
-	 * element is invisible, it will no longer be possible for the caret to be
-	 * placed into it.
-	 *
-	 * In order to prevent littering the editable with invisible block-level
-	 * elements, we prop them up by ensuring the empty block-level elements are
-	 * given a <br> child node to force them to be rendered with one line
-	 * height.
-	 *
-	 * The notable exception to this rule are the Microsoft's non-standard
-	 * conformant Trident engines which render empty editable block level
-	 * elements with one line height.
-	 *
-	 * @param {DOMObject} elem
-	 */
-	function prop(elem) {
-		if (browser.browser.msie || !dom.isBlockNode(elem)) {
-			return;
-		}
-		if (!elem.firstChild
-		    || !traversing.nextWhile(elem.firstChild, isUnrenderedWhitespace)) {
-			dom.insert(document.createElement('br'), elem, true);
-		}
 	}
 
 	/**
