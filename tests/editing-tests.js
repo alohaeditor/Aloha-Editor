@@ -50,6 +50,7 @@
 
 		t('<p>[]</p>', '<p><br>{}</p>', true);
 		t('<p>{}<br></p>', '<p><br>{}<br></p>', true);
+		t('<p><br>{}</p>', '<p><br><br>{}</p>', true);
 
 		t('<p>foo[]<br></p>', '<p>foo<br>{}<br></p>', true);
 		t('<p>foo[]bar</p>', '<p>foo<br>{}bar</p>', true);

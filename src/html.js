@@ -891,8 +891,8 @@ define([
 		var next = br.nextSibling
 		        && traversing.nextWhile(br.nextSibling, ignorable);
 
-		var significant = dom.isInlineNode(br.parentNode)
-		               && (!prev || (prev && next) || ('BR' === prev.nodeName));
+		var significant = !prev
+		               || ((prev && next) && dom.isInlineNode(br.parentNode));
 
 		significant = significant || (
 			(
