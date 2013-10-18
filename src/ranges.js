@@ -11,7 +11,8 @@ define([
 	'traversing',
 	'functions',
 	'arrays',
-	'cursors'
+	'cursors',
+	'boundaries'
 ], function Ranges(
 	dom,
 	StableRange,
@@ -19,7 +20,8 @@ define([
 	traversing,
 	fn,
 	arrays,
-	cursors
+	cursors,
+	boundaries
 ) {
 	'use strict';
 
@@ -153,12 +155,12 @@ define([
 	 * @param {Cursor} pos
 	 * @param {Boolean}
 	 */
-	function canExpandBackward(container, offset) {
+	function canExpandBackward(boundary, container, offset) {
 		return container
 		    && container.parentNode
 		    && container.parentNode.parentNode
-		    && dom.isAtStart(container, offset)
-		    && !html.isLinebreakingNode(container);
+		    && boundaries.atStart(boundary)
+		    && !html.hasLinebreakingStyle(container);
 	}
 
 	/**
@@ -169,12 +171,12 @@ define([
 	 * @param {Cursor} pos
 	 * @param {Boolean}
 	 */
-	function canExpandForward(container, offset) {
+	function canExpandForward(boundary, container, offset) {
 		return container
 		    && container.parentNode
 		    && container.parentNode.parentNode
-		    && dom.isAtEnd(container, offset)
-		    && !html.isLinebreakingNode(container);
+		    && boundaries.atEnd(boundary)
+		    && !html.hasLinebreakingStyle(container);
 	}
 
 	/**
@@ -207,7 +209,7 @@ define([
 	                            oppositeContainer, oppositeOffset) {
 		return !boundariesEqual(container, offset, oppositeContainer, oppositeOffset)
 		    && !isAtTextNode(container, offset)
-		    && !html.isLinebreakingNode(container.childNodes[offset] || container);
+		    && !html.hasLinebreakingStyle(container.childNodes[offset] || container);
 	}
 
 	/**
@@ -227,8 +229,8 @@ define([
 		    && !isAtTextNode(container, offset - 1)
 		    && (
 				dom.isAtStart(container, offset)
-					? !html.isLinebreakingNode(container)
-					: !html.isLinebreakingNode(container.childNodes[offset - 1])
+					? !html.hasLinebreakingStyle(container)
+					: !html.hasLinebreakingStyle(container.childNodes[offset - 1])
 		    );
 	}
 
@@ -254,18 +256,16 @@ define([
 	 *         The modified range.
 	 */
 	function expand(range) {
-		var start = traversing.prevNodeBoundaryWhile(
-			range.startContainer,
-			range.startOffset,
+		var start = boundaries.prevWhile(
+			boundaries.start(range),
 			canExpandBackward
 		);
-		var end = traversing.nextNodeBoundaryWhile(
-			range.endContainer,
-			range.endOffset,
+		var end = boundaries.nextWhile(
+			boundaries.end(range),
 			canExpandForward
 		);
-		range.setStart(start.container, start.offset);
-		range.setEnd(end.container, end.offset);
+		range.setStart(start[0], start[1]);
+		range.setEnd(end[0], end[1]);
 		return range;
 	}
 
@@ -292,10 +292,9 @@ define([
 	 *         The modified range.
 	 */
 	function contract(range) {
-		var end = traversing.prevNodeBoundaryWhile(
-			range.endContainer,
-			range.endOffset,
-			function (container, offset) {
+		var end = boundaries.prevWhile(
+			boundaries.end(range),
+			function (boundary, container, offset) {
 				return canContractBackward(
 					container,
 					offset,
@@ -304,10 +303,9 @@ define([
 				);
 			}
 		);
-		var start = traversing.nextNodeBoundaryWhile(
-			range.startContainer,
-			range.startOffset,
-			function (container, offset) {
+		var start = boundaries.nextWhile(
+			boundaries.start(range),
+			function (boundary, container, offset) {
 				return canContractForward(
 					container,
 					offset,
@@ -316,8 +314,8 @@ define([
 				);
 			}
 		);
-		range.setStart(start.container, start.offset);
-		range.setEnd(end.container, end.offset);
+		range.setStart(start[0], start[1]);
+		range.setEnd(end[0], end[1]);
 		return range;
 	}
 
