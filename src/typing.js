@@ -76,8 +76,8 @@ define([
 	actions[keys.CODES.alt] =
 	actions[keys.CODES.shift] =
 	actions[keys.CODES.escape] =
-	actions[keys.CODES.capslock] =
-	actions[keys.CODES.control] = fn.identity;
+	actions[keys.CODES.control] =
+	actions[keys.CODES.capslock] = fn.identity;
 
 	function down(msg, context) {
 		if (!msg.range) {
