@@ -83,7 +83,8 @@ define([
 		if (!msg.range) {
 			return;
 		}
-		var meta = msg.event.shiftKey ? 'shift+' : '';
+		var meta = msg.event.shiftKey && (keys.CODES.shift !== msg.code)
+		         ? 'shift+' : '';
 		var action = actions[meta + msg.code];
 		var range;
 		if (action) {
