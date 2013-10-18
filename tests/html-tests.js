@@ -32,6 +32,9 @@
 			});
 		};
 
+		t('<div><p contenteditable="true">{}<br></p>foo</div>',
+		  '<div><p contenteditable="true">{<br>}</p>foo</div>');
+
 		t('<div><p>foo[]</p><div><ul><li>bar</li></ul></div></div>',
 		  '<div><p>foo[</p><div><ul><li>]bar</li></ul></div></div>');
 

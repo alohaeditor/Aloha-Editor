@@ -782,13 +782,16 @@ define([
 		    && (dom.isEditingHost(node) || hasLinebreakingStyle(node));
 	}
 
-	function determineBreakingNode(context) {
+	function determineBreakingNode(context, container) {
+		var name;
 		if (context
 			&& context.settings
 			&& context.settings.defaultBlockNodeName) {
-			return context.settings.defaultBlockNodeName;
+			name = context.settings.defaultBlockNodeName;
+		} else {
+			name = 'div';
 		}
-		return 'div';
+		return content.allowsNesting(container.nodeName, name) ? name : null;
 	}
 
 	/**
@@ -814,7 +817,12 @@ define([
 				copy = null;
 			}
 			dom.moveSiblingsAfter(
-				dom.moveSiblingsInto(node, container, isBreak),
+				dom.moveSiblingsInto(node, container, function (node) {
+					return !(
+						content.allowsNesting(container.nodeName, node.nodeName)
+						&& !isBreak(node)
+					);
+				}),
 				container
 			);
 			container = copy || node;
@@ -837,17 +845,28 @@ define([
 		var rightAscend = traversing.childAndParentsUntilIncl(right, isBreak);
 		var breakNode = rightAscend.pop();
 		var newBlock;
+		var breaker;
 
 		// Because if we reached the editing host in the ascent, it means that
 		// there was not block-level ancestor in that could be broken.
 		if (dom.isEditingHost(breakNode)) {
-			newBlock = document.createElement(determineBreakingNode(context));
-			breakNode = newBlock.cloneNode(false);
-			dom.wrap(arrays.last(leftAscend), breakNode);
+			breaker = determineBreakingNode(context, breakNode);
+			if (breaker) {
+				newBlock = document.createElement(breaker);
+				breakNode = newBlock.cloneNode(false);
+				dom.wrap(arrays.last(leftAscend), breakNode);
+			} else {
+				return insertLineBreak(boundary, context);
+			}
 
 		// Because the range may have been just behind a line-breaking node.
 		} else if (!boundaries.atEnd(boundary) && isBreak(right)) {
-			newBlock = document.createElement(determineBreakingNode(context));
+			breaker = determineBreakingNode(context, breakNode.parentNode);
+			if (breaker) {
+				newBlock = document.createElement(breaker);
+			} else {
+				return insertLineBreak(boundary, context);
+			}
 		} else {
 			newBlock = breakNode.cloneNode(false);
 		}
@@ -1186,7 +1205,10 @@ define([
 			crossedVisualBreak
 		);
 		if (!next) {
-			return {
+			return dom.isEditingHost(node) ? {
+				node: node,
+				offset: dom.nodeLength(node)
+			} : {
 				node: node.parentNode,
 				offset: dom.nodeLength(node.parentNode)
 			};

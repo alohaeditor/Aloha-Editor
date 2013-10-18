@@ -37,6 +37,8 @@
 			});
 		};
 
+		t('<p contenteditable="true">foo[]bar</p>', '<p contenteditable="true">foo<br>{}bar</p>');
+
 		t('<i>{}</i>', '<i><br>{}</i>', true);
 
 		t('<i>{}<br></i>', '<i><br>{}<br></i>', true);
