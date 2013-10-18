@@ -1348,7 +1348,7 @@ define([
 		format : format,
 		split  : split,
 		delete : delete_,
-		break: break_,
+		break  : break_,
 	};
 
 	exports['wrap'] = exports.wrap;

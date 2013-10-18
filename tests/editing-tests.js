@@ -31,11 +31,30 @@
 				defaultBlockNodeName: 'h1'
 			}
 		};
-		var t = function (before, after) {
+		var t = function (before, after, linebreak) {
 			return runTest(before, after, function (range) {
-				return editing.break(range, context, false);
+				return editing.break(range, context, linebreak);
 			});
 		};
+
+		t('<i>{}</i>', '<i><br>{}</i>', true);
+
+		t('<i>{}<br></i>', '<i><br>{}<br></i>', true);
+		t('<i><br>{}</i>', '<i><br><br>{}</i>', true);
+
+		t('<i>{}foo</i>', '<i><br>{}foo</i>', true);
+		t('<i>foo{}</i>', '<i>foo<br>{}<br></i>', true);
+
+		t('<i>foo{}<br></i>', '<i>foo<br>{}<br></i>', true);
+		t('<i><br>{}foo</i>', '<i><br><br>{}foo</i>', true);
+
+		t('<p>[]</p>', '<p><br>{}</p>', true);
+		t('<p>{}<br></p>', '<p><br>{}<br></p>', true);
+
+		t('<p>foo[]<br></p>', '<p>foo<br>{}<br></p>', true);
+		t('<p>foo[]bar</p>', '<p>foo<br>{}bar</p>', true);
+		t('<div><p>foo</p>[]bar</div>', '<div><p>foo</p><br>{}<br>bar</div>', true);
+		t('<p>foo<i>bar[]</i></p>', '<p>foo<i>bar<br>{}<br></i></p>', true);
 
 		// Is this test valid?
 		//t('<div><p>1</p>[]<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
@@ -109,6 +128,7 @@
 
 		t('<p><i style="color:red">1[]2</i></p>',
 		  '<p><i style="color:red">1</i></p><p><i style="color:red">[]2</i></p>');
+
 	});
 
 	test('delete()', function () {

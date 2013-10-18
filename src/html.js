@@ -875,6 +875,45 @@ define([
 	}
 
 	/**
+	 * Checks whether or not the given BR element is significant or not.
+	 *
+	 * @param {Element} br
+	 * @return {boolean}
+	 */
+	function isSignificantBr(br) {
+		var ignorable = function (node) {
+			return 'BR' !== node.nodeName && isUnrendered(node);
+		};
+
+		var prev = br.previousSibling
+		        && traversing.prevWhile(br.previousSibling, ignorable);
+
+		var next = br.nextSibling
+		        && traversing.nextWhile(br.nextSibling, ignorable);
+
+		var significant = dom.isInlineNode(br.parentNode)
+		               && (!prev || (prev && next) || ('BR' === prev.nodeName));
+
+		significant = significant || (
+			(
+				prev && ('BR' === prev.nodeName || !hasLinebreakingStyle(prev))
+			) && (
+				next && ('BR' === next.nodeName || !hasLinebreakingStyle(next))
+			)
+		);
+
+		significant = significant || (
+			(
+				prev && ('BR' === prev.nodeName)
+			) || (
+				next && ('BR' === next.nodeName)
+			)
+		);
+
+		return significant || (!prev && !next);
+	}
+
+	/**
 	 * Inserts a <br> element at behind the given boundary position.
 	 *
 	 * @param {Arrays.<Element, number>} boundary
@@ -883,19 +922,19 @@ define([
 	 */
 	function insertLineBreak(boundary, context) {
 		var br = document.createElement('br');
+
 		if (boundaries.atEnd(boundary)) {
 			dom.insert(br, boundary[0], true);
 		} else {
 			dom.insert(br, boundaries.rightNode(boundary));
 		}
+
 		boundary = boundaries.next(boundary);
-		var next = boundaries.atEnd(boundary) ? null : traversing.nextWhile(
-			boundaries.rightNode(boundary),
-			isUnrendered
-		);
-		if (!next || ('BR' !== next.nodeName && hasLinebreakingStyle(next))) {
+
+		if (!isSignificantBr(br)) {
 			dom.insert(document.createElement('br'), br);
 		}
+
 		return boundary;
 	}
 
