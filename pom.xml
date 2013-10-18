@@ -467,6 +467,21 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	
+	
+	<repositories>
+		<repository>
+			<id>archiva.lan.internal</id>
+			<name>Archiva LAN Internal Repository</name>
+			<url>http://archiva-mirror.office:8080/archiva/repository/internal</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<distributionManagement>
 		<repository>
