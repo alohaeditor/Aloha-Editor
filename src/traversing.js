@@ -398,7 +398,7 @@ define([
 	}
 
 	/**
-	 * Finds the first not that returns true for `match` by traversing through
+	 * Finds the first node for which `match` returns true by traversing through
 	 * `step`.
 	 *
 	 * @param {DOMObject} node

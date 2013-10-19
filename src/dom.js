@@ -48,6 +48,123 @@ define([
 	};
 
 	/**
+	 * Calculates the number of child nodes contained in the given DOM element.
+	 *
+	 * NB elem.childNodes.length is unreliable because "IE up to 8 does not count
+	 * empty text nodes." (http://www.quirksmode.org/dom/w3c_core.html)
+	 *
+	 * @param {!Element} elem
+	 * @return {number} Number of children contained in the given node.
+	 */
+	function numChildren(elem) {
+		return elem.childNodes.length;
+	}
+
+	/**
+	 * Get the nth (zero based) child of the given element.
+	 * 
+	 * NB elem.childNodes.length is unreliable because "IE up to 8 does not count
+	 * empty text nodes." (http://www.quirksmode.org/dom/w3c_core.html)
+	 *
+	 * @param {!Element} elem
+	 * @param {number} The offset of the child to return.
+	 * @return {!Element} The child at the given offset.
+	 */
+	function nthChild(elem, offset) {
+		return elem.childNodes[offset];
+	}
+
+	/**
+	 * Calculates the positional index of the given node inside of its parent
+	 * element.
+	 *
+	 * @param {!Node} node
+	 * @return {number} The zero-based index of the given node's position.
+	 */
+	function nodeIndex(node) {
+		var index = -1;
+		while (node) {
+			node = node.previousSibling;
+			index++;
+		}
+		return index;
+	}
+
+	function translateNodeIndex(elem, normalizedIndex, realIndex) {
+		var index = 0;
+		var currNormalizedIndex = 0;
+		var child = elem.firstChild;
+		for (;;) {
+			if (currNormalizedIndex >= normalizedIndex) {
+				return index;
+			}
+			if (index >= realIndex) {
+				return currNormalizedIndex;
+			}
+			if (!child) {
+				break;
+			}
+			if (isTextNode(child)) {
+				var nonEmptyRealIndex = -1;
+				while (child && isTextNode(child)) {
+					if (!isEmptyTextNode(child)) {
+						nonEmptyRealIndex = index;
+					}
+					child = child.nextSibling;
+					index += 1;
+				}
+				if (-1 !== nonEmptyRealIndex) {
+					if (nonEmptyRealIndex >= realIndex) {
+						return currNormalizedIndex;
+					}
+					currNormalizedIndex += 1;
+				}
+			} else {
+				child = child.nextSibling;
+				index += 1;
+				currNormalizedIndex += 1;
+			}
+		}
+		throw Error();
+	}
+
+	function realFromNormalizedIndex(elem, normalizedIndex) {
+		return translateNodeIndex(elem, normalizedIndex, Number.POSITIVE_INFINITY);
+	}
+
+	function normalizedFromRealIndex(elem, realIndex) {
+		return translateNodeIndex(elem, Number.POSITIVE_INFINITY, realIndex);
+	}
+
+	function normalizedNumChildren(elem) {
+		return normalizedFromRealIndex(elem, numChildren(elem));
+	}
+
+	function normalizedNodeIndex(node) {
+		return normalizedFromRealIndex(node.parentNode, nodeIndex(node));
+	}
+
+	function normalizedNthChild(elem, normalizedIndex) {
+		return nthChild(elem, realFromNormalizedIndex(elem, normalizedIndex));
+	}
+
+	/**
+	 * Determines the length of the given DOM node.
+	 *
+	 * @param {!Node} node
+	 * @return {number} Length of the given node.
+	 */
+	function nodeLength(node) {
+		if (Nodes.ELEMENT === node.nodeType) {
+			return numChildren(node);
+		}
+		if (Nodes.TEXT === node.nodeType) {
+			return node.length;
+		}
+		return 0;
+	}
+
+	/**
 	 * Returns `true` if `node` is a text node.
 	 *
 	 * @param {!Node} node
@@ -55,6 +172,10 @@ define([
 	 */
 	function isTextNode(node) {
 		return Nodes.TEXT === node.nodeType;
+	}
+
+	function isEmptyTextNode(node) {
+		return isTextNode(node) && !nodeLength(node);
 	}
 
 	/**
@@ -343,79 +464,6 @@ define([
 	}
 
 	/**
-	 * Calculates the number of child nodes contained in the given DOM element.
-	 *
-	 * NB elem.childNodes.length is unreliable because "IE up to 8 does not count
-	 * empty text nodes." (http://www.quirksmode.org/dom/w3c_core.html)
-	 *
-	 * @param {!Element} elem
-	 * @return {number} Number of children contained in the given node.
-	 */
-	function numChildren(elem) {
-		return elem.childNodes.length;
-	}
-
-	/**
-	 * Get the nth (zero based) child of the given element.
-	 * 
-	 * NB elem.childNodes.length is unreliable because "IE up to 8 does not count
-	 * empty text nodes." (http://www.quirksmode.org/dom/w3c_core.html)
-	 *
-	 * @param {!Element} elem
-	 * @param {number} The offset of the child to return.
-	 * @return {!Element} The child at the given offset.
-	 */
-	function nthChild(elem, offset) {
-		return elem.childNodes[offset];
-	}
-
-	/**
-	 * Determines the length of the given DOM node.
-	 *
-	 * @param {!Node} node
-	 * @return {number} Length of the given node.
-	 */
-	function nodeLength(node) {
-		if (Nodes.ELEMENT === node.nodeType) {
-			return numChildren(node);
-		}
-		if (Nodes.TEXT === node.nodeType) {
-			return node.length;
-		}
-		return 0;
-	}
-
-	/**
-	 * Calculates the positional index of the given node inside of its parent
-	 * element.
-	 *
-	 * @param {!Node} node
-	 * @return {number} The zero-based index of the given node's position.
-	 */
-	function nodeIndex(node) {
-		var index = -1;
-		while (node) {
-			node = node.previousSibling;
-			index++;
-		}
-		return index;
-	}
-
-	function normalizedNodeIndex(node) {
-		var index = -1;
-		while (node) {
-			node = node.previousSibling;
-			var skip = node;
-			while (skip && isTextNode(skip)) {
-				node = skip;
-				skip = skip.previousSibling;
-			}
-			index++;
-		}
-		return index;
-	}
-
-	/**
 	 * Whether or not the given node and offset describes a position before the
 	 * first child node or character in its container.
 	 *
@@ -555,21 +603,29 @@ define([
 	 * http://ejohn.org/blog/comparing-document-position/
 	 * http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
 	 *
+	 * TODO: Contains seems to be problematic on Safari, is this an issue for us?
+	 *       Should we just use compareDocumentPosition() since we only need IE > 9 anyway?
+	 * https://code.google.com/p/google-web-toolkit/issues/detail?id=1218
+	 *
 	 * @param {!Node} a
 	 * @param {!Node} b
 	 * @return {boolean}
 	 */
 	function contains(a, b) {
 		return (Nodes.ELEMENT === a.nodeType
-				? (a.contains
-				   ? (a !== b
+				? (a.compareDocumentPosition
+				   ? !!(a.compareDocumentPosition(b) & 16)
+				   : (a !== b
 				      // Because IE returns false for elemNode.contains(textNode).
 				      && (1 === b.nodeType
 				          ? a.contains(b)
 				          : (b.parentNode
-				             && (a === b.parentNode || a.contains(b.parentNode)))))
-				   : !!(a.compareDocumentPosition(b) & 16))
-				: false);
+				             && (a === b.parentNode || a.contains(b.parentNode))))))
+		        : false);
+	}
+
+	function following(a, b) {
+		return !!(a.compareDocumentPosition(b) & 4);
 	}
 
 	/**
@@ -778,12 +834,16 @@ define([
 	}
 
 	function boundariesFromRanges(ranges) {
+		// Because we don't want to check it every time we need to
+		// preserve some ranges, we accept null values here.
+		ranges = ranges || [];
 		return arrays.mapcat(ranges, boundariesFromRange);
 	}
 
-	function adjustBoundaries(fn, boundaries, arg1, arg2, arg3, arg4) {
+	function adjustBoundaries(fn, boundaries) {
+		var args = Array.prototype.slice.call(arguments, 2);
 		return boundaries.map(function (boundary) {
-			return fn(boundary, arg1, arg2, arg3, arg4);
+			return fn.apply(null, [boundary].concat(args));
 		});
 	}
 
@@ -807,7 +867,7 @@ define([
 		var splitNode = boundary[0];
 		var splitOffset = boundary[1];
 		if (Nodes.TEXT !== splitNode.nodeType) {
-			return;
+			return boundary;
 		}
 		if (wouldSplitTextNode(splitNode, splitOffset)) {
 			var boundaries = boundariesFromRanges(ranges);
@@ -838,26 +898,20 @@ define([
 		splitBoundary(endBoundary(range), [range]);
 	}
 
-	function joinTextNodeOneWay(node, sibling, range, prev) {
+	function joinTextNodeOneWay(node, sibling, ranges, prev) {
 		if (!sibling || Nodes.TEXT !== sibling.nodeType) {
 			return node;
 		}
-		// Because the range may change due to the DOM modication (automatically
-		// by the browser).
-		var sc = range.startContainer;
-		var so = range.startOffset;
-		var ec = range.endContainer;
-		var eo = range.endOffset;
+		var boundaries = boundariesFromRanges(ranges);
 		var parentNode = node.parentNode;
 		var nidx = nodeIndex(node);
 		var nodeLen = node.length;
 		var siblingLen = sibling.length;
 		sibling.insertData(prev ? siblingLen : 0, node.data);
 		parentNode.removeChild(node);
-		var sboundary = startBoundary(range);
-		var eboundary = endBoundary(range);
-		sboundary = adjustBoundaryAfterJoin(
-			sboundary,
+		boundaries = adjustBoundaries(
+			adjustBoundaryAfterJoin,
+			boundaries,
 			node,
 			nodeLen,
 			sibling,
@@ -866,18 +920,16 @@ define([
 			nidx,
 			prev
 		);
-		eboundary = adjustBoundaryAfterJoin(
-			eboundary,
-			node,
-			nodeLen,
-			sibling,
-			siblingLen,
-			parentNode,
-			nidx,
-			prev
-		);
-		setRangeFromBoundaries(range, sboundary, eboundary);
+		setRangesFromBoundaries(ranges, boundaries);
 		return sibling;
+	}
+
+	function joinTextNode(node, ranges) {
+		if (Nodes.TEXT !== node.nodeType) {
+			return;
+		}
+		node = joinTextNodeOneWay(node, node.previousSibling, ranges, true);
+		joinTextNodeOneWay(node, node.nextSibling, ranges, false);
 	}
 
 	/**
@@ -888,31 +940,32 @@ define([
 	 * @return {!Range} The given range, modified if necessary.
 	 */
 	function joinTextNodeAdjustRange(node, range) {
-		if (Nodes.TEXT !== node.nodeType) {
-			return range;
-		}
-		node = joinTextNodeOneWay(node, node.previousSibling, range, true);
-		joinTextNodeOneWay(node, node.nextSibling, range, false);
-		return range;
+		joinTextNode(node, [range]);
 	}
 
 	function adjustRangesAfterTextInsert(node, off, len, insertBefore, ranges) {
 		var boundaries = boundariesFromRanges(ranges);
+		boundaries.push([node, off]);
 		boundaries = adjustBoundaries(adjustBoundaryAfterTextInsert, boundaries, node, off, len, insertBefore);
+		var boundary = boundaries.pop();
 		setRangesFromBoundaries(ranges, boundaries);
+		return boundary;
 	}
 
 	function adjustRangesAfterNodeInsert(node, insertBefore, ranges) {
 		var boundaries = boundariesFromRanges(ranges);
+		boundaries.push([node.parentNode, nodeIndex(node)]);
 		boundaries = adjustBoundaries(adjustBoundaryAfterNodeInsert, boundaries, node, insertBefore);
+		var boundary = boundaries.pop();
 		setRangesFromBoundaries(ranges, boundaries);
+		return boundary;
 	}
 
 	function insertTextAtBoundary(text, boundary, insertBefore, ranges) {
 		// Because empty text nodes are generally not nice and even cause
 		// problems with IE8 (elem.childNodes).
 		if (!text.length) {
-			return;
+			return boundary;
 		}
 		var container = boundary[0];
 		var offset = boundary[1];
@@ -920,26 +973,23 @@ define([
 		var atEnd = isAtEnd(container, offset);
 		// Because if the node following the insert position is already a text
 		// node we can just reuse it.
-		if (!atEnd && isTextNode(node)) {
+		if (isTextNode(node)) {
 			var off = isTextNode(container) ? offset : 0;
 			node.insertData(off, text);
-			adjustRangesAfterTextInsert(node, off, text.length, insertBefore, ranges);
-			return [node, off];
+			return adjustRangesAfterTextInsert(node, off, text.length, insertBefore, ranges);
 		}
 		// Because if the node preceding the insert position is already a text
 		// node we can just reuse it.
 		var prev = atEnd ? node.lastChild : node.previousSibling;
 		if (prev && isTextNode(prev)) {
 			prev.insertData(prev.length, text);
-			adjustRangesAfterTextInsert(node, off, text.length, insertBefore, ranges);
-			return [prev, prev.length - text.length];
+			return adjustRangesAfterTextInsert(node, off, text.length, insertBefore, ranges);
 		}
 		// Because if we can't reuse any text nodes, we have to insert a new
 		// one.
 		var textNode = document.createTextNode(text);
 		insert(textNode, node, atEnd);
-		adjustRangesAfterNodeInsert(node, insertBefore, ranges)
-		return [textNode.parentNode, nodeIndex(textNode)];
+		return adjustRangesAfterNodeInsert(textNode, insertBefore, ranges)
 	}
 
 	function insertNodeAtBoundary(node, boundary, insertBefore, ranges) {
@@ -947,26 +997,7 @@ define([
 		var ref = nodeAtBoundary(boundary);
 		var atEnd = isBoundaryAtEnd(boundary);
 		insert(node, ref, atEnd);
-		adjustRangesAfterNodeInsert(node, insertBefore, ranges);
-		return [node.parentNode, nodeIndex(node)];
-	}
-
-	function insertNodesAtBoundary(nodes, boundary, insertBefore, ranges) {
-		var start;
-		for (start = 0;
-		     start < nodes.length && isTextNode(nodes[start]);
-		     start++) {
-			boundary = insertTextAtBoundary(nodes[start].data, boundary, true, ranges);
-		}
-		var end;
-		for (end = nodes.length - 1;
-		     end > start && isTextNode(nodes[end]);
-		     end--) {
-			boundary = insertTextAtBoundary(nodes[end].data, boundary, false, ranges);
-		}
-		for (; start <= end; start++) {
-			insertNodeAtBoundary(nodes[start], boundary, false, ranges);
-		}
+		return adjustRangesAfterNodeInsert(node, insertBefore, ranges);
 	}
 
 	/**
@@ -1156,18 +1187,25 @@ define([
 		}
 	}
 
+	function removeAttributeNS(elem, ns, name) {
+		// TODO is removeAttributeNS(null, ...) the same as removeAttribute(...)?
+		if (null != ns) {
+			elem.removeAttributeNS(ns, name);
+		} else {
+			elem.removeAttribute(name);
+		}
+	}
+
 	/**
 	 * NB: Internet Explorer supports the setAttributeNS method from
 	 * version 9, but only for HTML documents, not for XML documents.
-	 *
-	 * I don't know what else to do than to fall back to setAttribute()
-	 * which may be completely wrong.
 	 */
-	function setAttributeNS(node, ns, name, value) {
-		if (null != ns && node.setAttributeNS) {
-			node.setAttributeNS(ns, name, value);
+	function setAttributeNS(elem, ns, name, value) {
+		// TODO is setAttributeNS(null, ...) the same as setAttribute(...)?
+		if (null != ns) {
+			elem.setAttributeNS(ns, name, value);
 		} else {
-			node.setAttribute(name, value);
+			elem.setAttribute(name, value);
 		}
 	}
 
@@ -1328,6 +1366,52 @@ define([
 		return ancestor;
 	}
 
+	var parser = document.createElement('DIV');
+
+	function parseNode(html) {
+		parser.innerHTML = html;
+		var node = parser.firstChild;
+		parser.removeChild(node);
+		return node;
+	}
+
+	function stringify(node) {
+		return Serializer.serializeToString(node);
+	}
+
+	function isNode(node) {
+		var str = Object.prototype.toString.call(node);
+		// TODO: is this really the best way to do it?
+		return (/^\[object (Text|Comment|HTML\w*Element)\]$/).test(str);
+	}
+
+	function parseReviver(key, value) {
+		if (value && value['type'] === 'Node') {
+			var str = value['value'];
+			if (null != str) {
+				value = parseNode(str);
+			}
+		}
+		return value;
+	}
+
+	function stringifyReplacer(key, value) {
+		if (value && isNode(value)) {
+			value = {
+				'type': 'Node',
+				'value': stringify(value)
+			};
+		}
+		return value;
+	}
+
+	var expandoIdCnt = 0;
+	var expandoIdProp = '!aloha-expando-node-id';
+
+	function ensureExpandoId(node) {
+		return node[expandoIdProp] = node[expandoIdProp] || ++expandoIdCnt;
+	}
+
 	/**
 	 * Functions for working with the DOM.
 	 */
@@ -1346,6 +1430,7 @@ define([
 		hasAttrs: hasAttrs,
 		attrs: attrs,
 		setAttributeNS: setAttributeNS,
+		removeAttributeNS: removeAttributeNS,
 
 		indexByClass: indexByClass,
 		indexByName: indexByName,
@@ -1359,6 +1444,7 @@ define([
 		removePreservingRange: removePreservingRange,
 		removePreservingRanges: removePreservingRanges,
 		cloneShallow: cloneShallow,
+		clone: clone,
 
 		wrap: wrap,
 		insert: insert,
@@ -1366,21 +1452,29 @@ define([
 
 		isAtEnd: isAtEnd,
 		isAtStart: isAtStart,
+		nthChild: nthChild,
 		nodeIndex: nodeIndex,
-		normalizedNodeIndex: normalizedNodeIndex,
 		nodeLength: nodeLength,
 		nodeAtOffset: nodeAtOffset,
 		nodeAtBoundary: nodeAtBoundary,
 		insertTextAtBoundary: insertTextAtBoundary,
 		insertNodeAtBoundary: insertNodeAtBoundary,
 
+		normalizedNthChild: normalizedNthChild,
+		normalizedNodeIndex: normalizedNodeIndex,
+		realFromNormalizedIndex: realFromNormalizedIndex,
+		normalizedNumChildren: normalizedNumChildren,
+
 		isTextNode: isTextNode,
+		isEmptyTextNode: isEmptyTextNode,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
 		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
+		joinTextNode: joinTextNode,
 		splitBoundary: splitBoundary,
 
 		contains: contains,
+		following: following,
 
 		setStyle: setStyle,
 		getStyle: getStyle,
@@ -1391,7 +1485,12 @@ define([
 		isEditingHost: isEditingHost,
 		getEditingHost: getEditingHost,
 
-		Nodes: Nodes
+		stringify: stringify,
+		stringifyReplacer: stringifyReplacer,
+		parseReviver: parseReviver,
+		Nodes: Nodes,
+
+		ensureExpandoId: ensureExpandoId
 	};
 
 	exports['offset'] = exports.offset;
@@ -1404,6 +1503,7 @@ define([
 	exports['attrNames'] = exports.attrNames;
 	exports['hasAttrs'] = exports.hasAttrs;
 	exports['setAttributeNS'] = exports.setAttributeNS;
+	exports['removeAttributeNS'] = exports.removeAttributeNS;
 	exports['attrs'] = exports.attrs;
 	exports['indexByClass'] = exports.indexByClass;
 	exports['indexByName'] = exports.indexByName;
@@ -1415,24 +1515,28 @@ define([
 	exports['removePreservingRange'] = exports.removePreservingRange;
 	exports['removePreservingRanges'] = exports.removePreservingRanges;
 	exports['cloneShallow'] = exports.cloneShallow;
+	exports['clone'] = exports.clone;
 	exports['wrap'] = exports.wrap;
 	exports['insert'] = exports.insert;
 	exports['replaceShallow'] = exports.replaceShallow;
 	exports['isAtEnd'] = exports.isAtEnd;
 	exports['isAtStart'] = exports.isAtStart;
+	exports['nthChild'] = exports.nthChild;
 	exports['nodeIndex'] = exports.nodeIndex;
-	exports['normalizedNodeIndex'] = exports.normalizedNodeIndex;
 	exports['nodeLength'] = exports.nodeLength;
 	exports['nodeAtOffset'] = exports.nodeAtOffset;
 	exports['nodeAtBoundary'] = exports.nodeAtBoundary;
 	exports['insertTextAtBoundary'] = exports.insertTextAtBoundary;
 	exports['insertNodeAtBoundary'] = exports.insertNodeAtBoundary;
 	exports['isTextNode'] = exports.isTextNode;
+	exports['isEmptyTextNode'] = exports.isEmptyTextNode;
 	exports['splitTextNode'] = exports.splitTextNode;
 	exports['splitTextContainers'] = exports.splitTextContainers;
 	exports['joinTextNodeAdjustRange'] = exports.joinTextNodeAdjustRange;
+	exports['joinTextNode'] = exports.joinTextNode;
 	exports['splitBoundary'] = exports.splitBoundary;
 	exports['contains'] = exports.contains;
+	exports['following'] = exports.following;
 	exports['setStyle'] = exports.setStyle;
 	exports['getStyle'] = exports.getStyle;
 	exports['getComputedStyle'] = exports.getComputedStyle;
@@ -1440,7 +1544,11 @@ define([
 	exports['isEditable'] = exports.isEditable;
 	exports['isEditingHost'] = exports.isEditingHost;
 	exports['getEditingHost'] = exports.getEditingHost;
+	exports['stringify'] = exports.stringify;
+	exports['stringifyReplacer'] = exports.stringifyReplacer;
+	exports['parseReviver'] = exports.parseReviver;
 	exports['Nodes'] = exports.Nodes;
+	exports['ensureExpandoId'] = exports.ensureExpandoId;
 
 	exports['Nodes']['ELEMENT'] = exports.Nodes.ELEMENT;
 	exports['Nodes']['ATTR'] = exports.Nodes.ATTR;

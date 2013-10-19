@@ -73,23 +73,6 @@ define([], function Maps() {
 		return map;
 	}
 
-	/**
-	 * Returns an array of the map's keys.
-	 *
-	 * @param {Object} map
-	 * @return {Array}
-	 *         The set of keys in `map`.
-	 */
-	function keys(map) {
-		var ks = [],
-			k;
-		for (k in map) {
-			if (map.hasOwnProperty(k)) {
-				ks.push(k);
-			}
-		}
-		return ks;
-	}
 
 	/**
 	 * For each mapping, calls `cb(value, key, map)`.
@@ -106,6 +89,34 @@ define([], function Maps() {
 				cb(map[key], key, map);
 			}
 		}
+	}
+
+	/**
+	 * Returns an array of the map's keys.
+	 *
+	 * @param {!Object} map
+	 * @return {!Array} The set of keys in `map`.
+	 */
+	function keys(map) {
+		var ks = [];
+		forEach(map, function (value, key) {
+			ks.push(key);
+		});
+		return ks;
+	}
+
+	/**
+	 * Returns an array of the map's values.
+	 *
+	 * @param {!Object} map
+	 * @return {!Array} The values in `map`.
+	 */
+	function vals(map) {
+		var vs = [];
+		forEach(map, function (value) {
+			vs.push(value);
+		});
+		return vs;
 	}
 
 	/**
@@ -149,6 +160,7 @@ define([], function Maps() {
 		fillTuples: fillTuples,
 		fillKeys: fillKeys,
 		keys: keys,
+		vals: vals,
 		forEach: forEach,
 		merge: merge
 	};
@@ -157,6 +169,7 @@ define([], function Maps() {
 	exports['fillTuples'] = exports.fillTuples;
 	exports['fillKeys'] = exports.fillKeys;
 	exports['keys'] = exports.keys;
+	exports['vals'] = exports.vals;
 	exports['forEach'] = exports.forEach;
 	exports['merge'] = exports.merge;
 

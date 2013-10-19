@@ -108,6 +108,10 @@ define([], function Functions() {
 		};
 	}
 
+	function strictEquals(a, b) {
+		return a === b;
+	}
+
 	/**
 	 * Functions for working with functions.
 	 *
@@ -126,7 +130,8 @@ define([], function Functions() {
 		returnFalse: returnFalse,
 		complement: complement,
 		bind: bind,
-		outparameter: outparameter
+		outparameter: outparameter,
+		strictEquals: strictEquals
 	};
 
 	exports['identity'] = exports.identity;
