@@ -31,7 +31,8 @@ define([
 	'ranges',
 	'strings',
 	'traversing',
-	'typing'
+	'typing',
+	'undo'
 ], function Aloha(
 	arrays,
 	boundaries,
@@ -55,7 +56,8 @@ define([
 	ranges,
 	strings,
 	traversing,
-	typing
+	typing,
+	undo
 ) {
 	'use strict';
 
@@ -115,6 +117,7 @@ define([
 	aloha['strings'] = strings;
 	aloha['traversing'] = traversing;
 	aloha['xhtml'] = xhtml;
+	aloha['undo'] = undo;
 
 	window['aloha'] = aloha;
 

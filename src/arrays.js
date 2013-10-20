@@ -4,46 +4,8 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([], function Arrays() {
+define(['functions'], function Arrays(Fn) {
 	'use strict';
-
-	/**
-	 * Implements unique() using native sort().
-	 *
-	 * @param {Array} a
-	 *        The array to sort and strip of duplicate values.
-	 *        Warning: this array will be modified in-place.
-	 * @param {Function(*, *):Number} compFn
-	 *        A custom comparison function that accepts two values a and
-	 *        b from the given array and returns -1, 0, 1 depending on
-	 *        whether a < b, a == b, a > b respectively.
-	 *
-	 *        If no compFn is provided, the algorithm will use the browsers
-	 *        default sort behaviour and loose comparison to detect duplicates.
-	 * @return {Array}
-	 *         The given array, sorted and with duplicates removed.
-	 */
-	function sortUnique(a, compFn) {
-		var i;
-		if (compFn) {
-			a.sort(compFn);
-			for (i = 1; i < a.length; i++) {
-				if (0 === compFn(a[i], a[i - 1])) {
-					a.splice(i--, 1);
-				}
-			}
-		} else {
-			a.sort();
-			for (i = 1; i < a.length; i++) {
-				// Use loosely typed comparsion if no compFn is given
-				// to avoid sortUnique([6, "6", 6]) => [6, "6", 6]
-				if (a[i] == a[i - 1]) {
-					a.splice(i--, 1);
-				}
-			}
-		}
-		return a;
-	}
 
 	/**
 	 * Does a shallow compare of two arrays.
@@ -68,17 +30,10 @@ define([], function Arrays() {
 		if (len !== b.length) {
 			return false;
 		}
-		if (equalFn) {
-			for (i = 0; i < len; i++) {
-				if (!equalFn(a[i], b[i])) {
-					return false;
-				}
-			}
-		} else {
-			for (i = 0; i < len; i++) {
-				if (a[i] !== b[i]) {
-					return false;
-				}
+		equalFn = equalFn || Fn.strictEquals;
+		for (i = 0; i < len; i++) {
+			if (!equalFn(a[i], b[i])) {
+				return false;
 			}
 		}
 		return true;
@@ -174,12 +129,20 @@ define([], function Arrays() {
 		}, []);
 	}
 
+	function some(xs, pred, emptyResult) {
+		var result = emptyResult;
+		xs.some(function (x) {
+			result = pred(x);
+			return result;
+		});
+		return result;
+	}
+
 	/**
 	 * Functions for operating on arrays.
 	 *
 	 * arrays.contains()
 	 * arrays.equal()
-	 * arrays.sortUnique()
 	 * arrays.intersect()
 	 * arrays.second()
 	 * arrays.last()
@@ -188,19 +151,18 @@ define([], function Arrays() {
 		contains: contains,
 		complement: complement,
 		equal: equal,
-		sortUnique: sortUnique,
 		intersect: intersect,
 		second: second,
 		last: last,
 		coerce: coerce,
 		mapcat: mapcat,
-		partition: partition
+		partition: partition,
+		some: some
 	};
 
 	exports['contains'] = exports.contains;
 	exports['complement'] = exports.complement;
 	exports['equal'] = exports.equal;
-	exports['sortUnique'] = exports.sortUnique;
 	exports['intersect'] = exports.intersect;
 	exports['second'] = exports.second;
 	exports['last'] = exports.last;

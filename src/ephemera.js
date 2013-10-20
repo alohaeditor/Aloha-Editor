@@ -16,7 +16,6 @@
  */
 define([
 	'strings',
-	'trees',
 	'arrays',
 	'maps',
 	'dom',
@@ -25,7 +24,6 @@ define([
 	//'pubsub'
 ], function Ephemera(
 	strings,
-	trees,
 	arrays,
 	maps,
 	dom,
@@ -378,26 +376,6 @@ define([
 	}
 
 	/**
-	 * Called for each node during the pruning of a DOM tree.
-	 */
-	function pruneStep(emap, step, node) {
-		if (1 === node.nodeType) {
-			if (!pruneElem(node, emap)) {
-				return [];
-			}
-			node = trees.walkDomInplace(node, step);
-		}
-
-		// Ephemera.ephemera({ pruneFns: [] })
-		node = emap.pruneFns.reduce(node, arrays.applyNotNull);
-		if (!node) {
-			return [];
-		}
-
-		return [node];
-	}
-
-	/**
 	 * Prunes the given element of all ephemeral data.
 	 *
 	 * Elements marked with Ephemera.markElement() will be removed.
@@ -413,11 +391,7 @@ define([
 	 */
 	function prune(elem, emap) {
 		emap = emap || ephemeraMap;
-
-		function pruneStepClosure(node) {
-			return pruneStep(emap, pruneStepClosure, node);
-		}
-		return pruneStepClosure(elem)[0];
+		// TODO
 	}
 
 	/**

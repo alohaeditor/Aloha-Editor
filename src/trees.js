@@ -58,29 +58,6 @@
  *
  *     Constructs a deep clone of the given form.
  *
- * prepruneDom(form, pred, inplace)
- *
- *     Like preprune() except:
- *
- *     - the given form may be either an element or other DOM node, and
- *       only elements are descended into, all other node types are
- *       considered leaves.
- *
- *     - the given form will be cloned before it is being traversed, unless
- *       inplace is true.
- *
- *       This is different from prewalk, where the subforms that are
- *       passed to fn are not clones. Making a deep clone first
- *       simplifies some things, basically because an array or map can
- *       be the child of multiple arrays and maps at the same time,
- *       while a node can only be the child of a single parent node at
- *       any one time.
- *
- * postpruneDom(form, pred, inplace)
- *
- *     Like prepruneDom(), except the given function is applied as the tree
- *     is ascended.
- *
  * walk(form, recurse, inplace)
  *
  *     If form is an array or map, calls recurse on each of its items.
@@ -106,24 +83,10 @@
  *
  *     Short for walk(form, recurse, true)
  *
- * walkDomInplace(form, recurse)
- *
- *     Similar to walk() but operates on DOM nodes.
- *
- *     Elements are considered non-leaf, and everything else is
- *     considerd a leaf.
- *
- * Note: All functions work on array+map trees, unless they are suffixed
- *       with Dom, in which case they only work on DOM nodes.
- *
  * Note: When walking arrays and maps, if the fn and leaf functions
  *       modify the parent or any ancestor of the passed form, the
  *       resulting behaviour is undefined. Only modification of the
  *       passed form and descendants of the passed form is valid.
- *
- *       During DOM traversal, it is allowed to insert-into/remove-from
- *       the children of the parent of the given form, as long the given
- *       form itself is not removed.
  *
  * Note: the algorithms are recursive and the maximum nesting level of
  *       the input set is therefore bound to the maximum stack depth.
@@ -131,7 +94,7 @@
  *       than 1000, so the maximum input nesting level should not exceed
  *       about 300 (3 stack frames are needed per nesting level).
  */
-define(['arrays'], function Trees(arrays) {
+define([], function Trees() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
@@ -145,7 +108,7 @@ define(['arrays'], function Trees(arrays) {
 			len,
 			i,
 			key;
-		if (arrays.isArray(form)) {
+		if (Array.isArray(form)) {
 			result = (inplace ? form : []);
 			resultOff = 0;
 			for (i = 0, len = form.length; i < len; i++) {
@@ -154,10 +117,7 @@ define(['arrays'], function Trees(arrays) {
 					result[resultOff++] = subResult[0];
 				}
 			}
-			if (resultOff !== result.length) {
-				// TODO is result.length = resultOff better?
-				result = result.slice(0, resultOff);
-			}
+			result.length = resultOff;
 		} else if ('object' === typeof form) {
 			result = (inplace ? form : {});
 			for (key in form) {
@@ -178,30 +138,6 @@ define(['arrays'], function Trees(arrays) {
 
 	function walkInplace(form, step) {
 		return walk(form, step, true);
-	}
-
-	function walkDomInplace(form, step) {
-		var subResult,
-		    child,
-		    nextChild;
-		if (1 === form.nodeType) {
-			child = form.firstChild;
-			while (child) {
-				subResult = step(child);
-				// Advance to the next child _after stepping into child_
-				// to pick up modifications of the DOM.
-				nextChild = child.nextSibling;
-				if (subResult.length) {
-					if (subResult[0] !== child) {
-						form.replaceChild(subResult[0], child);
-					}
-				} else {
-					form.removeChild(child);
-				}
-				child = nextChild;
-			}
-		}
-		return form;
 	}
 
 	function prewalkStep(step, fn, walk, form) {
@@ -242,22 +178,6 @@ define(['arrays'], function Trees(arrays) {
 
 	function postprune(form, pred, inplace) {
 		return prepost(postpruneStep, pred, inplace ? walkInplace : walk, form);
-	}
-
-	function prewalkDom(form, fn, inplace) {
-		return prepost(prewalkStep, fn, walkDomInplace, inplace ? form : form.cloneNode(true));
-	}
-
-	function postwalkDom(form, fn, inplace) {
-		return prepost(postwalkStep, fn, walkDomInplace, inplace ? form : form.cloneNode(true));
-	}
-
-	function prepruneDom(form, pred, inplace) {
-		return prepost(prepruneStep, pred, walkDomInplace, inplace ? form : form.cloneNode(true));
-	}
-
-	function postpruneDom(form, pred, inplace) {
-		return prepost(postpruneStep, pred, walkDomInplace, inplace ? form : form.cloneNode(true));
 	}
 
 	function isLeaf(form) {
@@ -302,34 +222,24 @@ define(['arrays'], function Trees(arrays) {
 		postwalk: postwalk,
 		preprune: preprune,
 		postprune: postprune,
-		prewalkDom: prewalkDom,
-		postwalkDom: postwalkDom,
-		prepruneDom: prepruneDom,
-		postpruneDom: postpruneDom,
 		isLeaf: isLeaf,
 		leaves: leaves,
 		clone: clone,
 		flatten: flatten,
 		walk: walk,
-		walkInplace: walkInplace,
-		walkDomInplace: walkDomInplace
+		walkInplace: walkInplace
 	};
 
 	exports['prewalk'] = exports.prewalk;
 	exports['postwalk'] = exports.postwalk;
 	exports['preprune'] = exports.preprune;
 	exports['postprune'] = exports.postprune;
-	exports['prewalkDom'] = exports.prewalkDom;
-	exports['postwalkDom'] = exports.postwalkDom;
-	exports['prepruneDom'] = exports.prepruneDom;
-	exports['postpruneDom'] = exports.postpruneDom;
 	exports['isLeaf'] = exports.isLeaf;
 	exports['leaves'] = exports.leaves;
 	exports['clone'] = exports.clone;
 	exports['flatten'] = exports.flatten;
 	exports['walk'] = exports.walk;
 	exports['walkInplace'] = exports.walkInplace;
-	exports['walkDomInplace'] = exports.walkDomInplace;
 
 	return exports;
 });
