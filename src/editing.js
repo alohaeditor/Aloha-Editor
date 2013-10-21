@@ -1012,14 +1012,6 @@ define([
 	function wrapElem(liveRange, nodeName, remove, opts) {
 		opts = opts || {};
 
-		// Because of advanced compilation
-		if (null != opts['createWrapper']) {
-			opts.createWrapper = opts['createWrapper'];
-		}
-		if (null != opts['isReusable']) {
-			opts.isReusable = opts['isReusable'];
-		}
-
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
 			return;
@@ -1063,20 +1055,6 @@ define([
 	 */
 	function format(liveRange, styleName, styleValue, opts) {
 		opts = opts || {};
-
-		// Because of advanced compilation
-		if (null != opts['createWrapper']) {
-			opts.createWrapper = opts['createWrapper'];
-		}
-		if (null != opts['isPrunable']) {
-			opts.isPrunable = opts['isPrunable'];
-		}
-		if (null != opts['isStyleEqual']) {
-			opts.isStyleEqual = opts['isStyleEqual'];
-		}
-		if (null != opts['isObstruction']) {
-			opts.isObstruction = opts['isObstruction'];
-		}
 
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
@@ -1217,20 +1195,6 @@ define([
 	 */
 	function split(liveRange, opts) {
 		opts = opts || {};
-
-		// Because of advanced compilation
-		if (null != opts['clone']) {
-			opts.clone = opts['clone'];
-		}
-		if (null != opts['until']) {
-			opts.until = opts['until'];
-		}
-		if (null != opts['below']) {
-			opts.below = opts['below'];
-		}
-		if (null != opts['normalizRange']) {
-			opts.normalizeRange = opts['normalizeRange'];
-		}
 
 		opts = maps.merge({
 			clone: dom.cloneShallow,
