@@ -580,12 +580,12 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		var updateText = {};
 		var moves = [];
 		records.forEach(function (record) {
-			var target = record['target'];
-			var oldValue = record['oldValue'];
-			switch(record['type']) {
+			var target = record.target;
+			var oldValue = record.oldValue;
+			switch(record.type) {
 			case 'attributes':
-				var name = record['attributeName'];
-				var ns = record['attributeNamespace'];
+				var name = record.attributeName;
+				var ns = record.attributeNamespace;
 				var id = Dom.ensureExpandoId(target);
 				var updateAttrRecord = updateAttr[id] = updateAttr[id] || makeUpdateAttr(target, {});
 				var attrs = updateAttrRecord.attrs;
@@ -598,11 +598,11 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 				updateText[id] = updateText[id] || makeUpdateText(target, oldValue);
 				break;
 			case 'childList':
-				var prevSibling = record['previousSibling'];
-				Arrays.coerce(record['removedNodes']).forEach(function (node) {
+				var prevSibling = record.previousSibling;
+				Arrays.coerce(record.removedNodes).forEach(function (node) {
 					moves.push(makeDelete(node, target, prevSibling));
 				});
-				Arrays.coerce(record['addedNodes']).forEach(function (node) {
+				Arrays.coerce(record.addedNodes).forEach(function (node) {
 					moves.push(makeInsert(node));
 				});
 				break;
@@ -696,18 +696,18 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 	}
 
 	function applyChange(container, change, ranges, textNodes) {
-		var path = change['path'];
-		var type = change['type'];
+		var path = change.path;
+		var type = change.type;
 		var boundary = boundaryFromPath(container, path);
 		switch (type) {
 		case 'update-attr':
 			var node = Dom.nodeAtBoundary(boundary);
-			change['attrs'].forEach(function (attr) {
-				setOrRemoveAttribute(node, change['ns'], change['name'], change['value']);
+			change.attrs.forEach(function (attr) {
+				setOrRemoveAttribute(node, change.ns, change.name, change.value]);
 			});
 			break;
 		case 'insert':
-			change['content'].forEach(function (node) {
+			change.content.forEach(function (node) {
 				var insertNode = Dom.clone(node);
 				if (Dom.isTextNode(insertNode)) {
 					textNodes.push(insertNode);
@@ -719,7 +719,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 			boundary = Dom.splitBoundary(boundary, ranges);
 			var node = Dom.nodeAtBoundary(boundary);
 			var parent = node.parentNode;
-			change['content'].forEach(function (removedNode) {
+			change.content.forEach(function (removedNode) {
 				var next;
 				if (Dom.isTextNode(removedNode)) {
 					var removedLen = Dom.nodeLength(removedNode);
@@ -769,17 +769,17 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 	}
 
 	function inverseChange(change) {
-		var type = change['type'];
+		var type = change.type;
 		var inverse;
 		switch (type) {
 		case 'update-attr':
-			var oldValue = change['oldValue'];
-			var newValue = change['newValue'];
-			inverse = Maps.merge(change, {'oldValue': newValue, 'newValue': oldValue});
+			var oldValue = change.oldValue;
+			var newValue = change.newValue;
+			inverse = Maps.merge(change, {oldValue: newValue, newValue: oldValue});
 			break;
 		case 'insert':
 		case 'delete':
-			inverse = Maps.merge(change, {'type': ('insert' === type ? 'delete' : 'insert')});
+			inverse = Maps.merge(change, {type: ('insert' === type ? 'delete' : 'insert')});
 			break;
 		default:
 			throw Error();
@@ -788,8 +788,8 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 	}
 
 	function inverseChangeSet(changeSet) {
-		var changes = changeSet['changes'].slice(0).reverse().map(inverseChange);
-		return makeChangeSet(changeSet['meta'], changes);
+		var changes = changeSet.changes.slice(0).reverse().map(inverseChange);
+		return makeChangeSet(changeSet.meta, changes);
 	}
 
 	function collectRecordsFromFrame(frame, records) {

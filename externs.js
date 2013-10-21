@@ -21,3 +21,20 @@ opts.isObstruction = function () {};
 // Editing.wrap()
 opts.createWrapper = function () {};
 opts.isReusable = function () {};
+
+// Undo
+var change = {};
+change.type = 'insert';
+change.content = [];
+change.path = [];
+
+// Undo
+var changeSet = {};
+changeSet.changes = [];
+
+var opts = {};
+// Undo.createContext()
+opts.noCombineRecords = true;
+opts.noMutationObserver = true;
+// Undo.enter() / Undo.capture()
+opts.meta = {};
