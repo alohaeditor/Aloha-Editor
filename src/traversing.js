@@ -844,10 +844,6 @@ define([
 
 	exports['backward'] = exports.backward;
 	exports['forward'] = exports.forward;
-	exports['prevNodeBoundary'] = exports.prevNodeBoundary;
-	exports['nextNodeBoundary'] = exports.nextNodeBoundary;
-	exports['prevNodeBoundaryWhile'] = exports.prevNodeBoundaryWhile;
-	exports['nextNodeBoundaryWhile'] = exports.nextNodeBoundaryWhile;
 	exports['nextWhile'] = exports.nextWhile;
 	exports['prevWhile'] = exports.prevWhile;
 	exports['walk'] = exports.walk;
