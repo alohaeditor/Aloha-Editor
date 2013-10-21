@@ -67,7 +67,7 @@
 			]
 		};
 
-		var context = Undo.createContext(editable);
+		var context = Undo.Context(editable);
 		var capturedFrame = Undo.capture(context, {meta: true}, function () {
 			Undo.applyChangeSet(editable, changeSet);
 		});

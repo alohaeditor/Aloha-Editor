@@ -27,7 +27,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		assertEqual(value, false);
 	}
 
-	function createContext(elem, opts) {
+	function Context(elem, opts) {
 		opts = opts || {};
 		var context = {
 			elem: elem,
@@ -815,7 +815,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 	 * Stateless functions for undo support.
 	 */
 	var exports = {
-		createContext: createContext,
+		Context: Context,
 		enter: enter,
 		leave: leave,
 		capture: capture,
@@ -824,7 +824,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		applyChangeSet: applyChangeSet
 	};
 
-	exports['createContext'] = exports.createContext;
+	exports['Context'] = exports.Context;
 	exports['enter'] = exports.enter;
 	exports['leave'] = exports.leave;
 	exports['capture'] = exports.capture;
