@@ -1668,6 +1668,8 @@ define([
 		nodeLength: nodeLength,
 		nodeAtOffset: nodeAtOffset,
 		nodeAtBoundary: nodeAtBoundary,
+		startBoundary: startBoundary,
+		endBoundary: endBoundary,
 		insertTextAtBoundary: insertTextAtBoundary,
 		insertNodeAtBoundary: insertNodeAtBoundary,
 
@@ -1743,6 +1745,8 @@ define([
 	exports['nodeLength'] = exports.nodeLength;
 	exports['nodeAtOffset'] = exports.nodeAtOffset;
 	exports['nodeAtBoundary'] = exports.nodeAtBoundary;
+	exports['startBoundary'] = exports.startBoundary;
+	exports['endBoundary'] = exports.endBoundary;
 	exports['insertTextAtBoundary'] = exports.insertTextAtBoundary;
 	exports['insertNodeAtBoundary'] = exports.insertNodeAtBoundary;
 	exports['isTextNode'] = exports.isTextNode;

@@ -67,7 +67,6 @@ define([
 			code: event.keyCode,
 			range: ranges.get()
 		};
-		pubsub.publish('aloha.key.up', message);
 		pubsub.publish('aloha.key.up.' + event.keyCode, message);
 	}
 
@@ -83,7 +82,6 @@ define([
 			range: ranges.get()
 		};
 		var called = {};
-		pubsub.publish('aloha.key.down', message, called);
 		pubsub.publish('aloha.key.down.' + event.keyCode, message, called);
 	}
 
@@ -98,7 +96,6 @@ define([
 			code: event.keyCode,
 			range: ranges.get()
 		};
-		pubsub.publish('aloha.key.press', message);
 		pubsub.publish('aloha.key.press.' + event.keyCode, message);
 	}
 

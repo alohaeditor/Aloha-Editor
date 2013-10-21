@@ -200,21 +200,6 @@
 		t('<div><p>foo<br></p>[]one</div>', '<div><p>foo[<br></p>]one</div>');
 	});
 
-	test('isControlCharacter', function () {
-		tested.push('isControlCharacter');
-		equal(html.isControlCharacter('\0'), true);
-		equal(html.isControlCharacter('\b'), true);
-		equal(html.isControlCharacter('\n'), true);
-		equal(html.isControlCharacter('\r'), true);
-		equal(html.isControlCharacter('\t'), true);
-		equal(html.isControlCharacter('\f'), true);
-		equal(html.isControlCharacter('\v'), true);
-		equal(html.isControlCharacter('\u0000'), true);
-		equal(html.isControlCharacter('0'), false);
-		equal(html.isControlCharacter(''), false);
-		equal(html.isControlCharacter('a'), false);
-	});
-
 	test('isVisuallyAdjacent()', function () {
 		tested.push('isVisuallyAdjacent');
 		var t = function (markup, expected) {

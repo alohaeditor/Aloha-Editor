@@ -78,6 +78,9 @@ define([
 	keys.down(function (msg) {
 		typing.down(msg, context);
 	});
+	keys.press(function (msg) {
+		typing.press(msg, context);
+	});
 
 	/**
 	 * The Aloha Editor namespace root.

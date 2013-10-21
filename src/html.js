@@ -1371,6 +1371,7 @@ define([
 		isEmpty: isEmpty,
 		hasLinebreakingStyle: hasLinebreakingStyle,
 		isVisuallyAdjacent: isVisuallyAdjacent,
+		isWhiteSpacePreserveStyle: isWhiteSpacePreserveStyle,
 		insertVisualBreak: insertVisualBreak,
 		insertLineBreak: insertLineBreak,
 		removeVisualBreak: removeVisualBreak,
@@ -1389,6 +1390,7 @@ define([
 	exports['hasBlockStyle'] = exports.hasBlockStyle;
 	exports['hasInlineStyle'] = exports.hasInlineStyle;
 	exports['isUnrenderedWhitespace'] = exports.isUnrenderedWhitespace;
+	exports['isWhiteSpacePreserveStyle'] = exports.isWhiteSpacePreserveStyle;
 	exports['skipUnrenderedToStartOfLine'] = exports.skipUnrenderedToStartOfLine;
 	exports['skipUnrenderedToEndOfLine'] = exports.skipUnrenderedToEndOfLine;
 	exports['normalizeBoundary'] = exports.normalizeBoundary;
