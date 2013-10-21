@@ -10,14 +10,6 @@
 define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Arrays, Maps, Dom, Fn, Traversing) {
 	'use strict'
 
-	var observeAll = {
-		'childList': true,
-		'attributes': true,
-		'characterData': true,
-		'subtree': true,
-		'attributeOldValue': true,
-		'characterDataOldValue': true
-	};
 
 	function assertEqual(a, b) {
 		if (a !== b) {
@@ -35,14 +27,18 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		assertEqual(value, false);
 	}
 
-	function createContext(elem) {
+	function createContext(elem, opts) {
+		opts = opts || {};
 		var context = {
 			elem: elem,
 			observer: null,
 			stack: [],
-			frame: null
+			frame: null,
+			opts: opts
 		};
-		context.observer = new MutationObserver(Fn.noop);
+		context.observer = (!opts.noMutationObserver && window.MutationObserver
+		                    ? WithMutationObserver()
+		                    : WithSnapshots());
 		return context;
 	}
 
@@ -152,35 +148,44 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		frame.records = frame.records.concat(records);
 	}
 
-	function enter(context, meta) {
+	function enter(context, opts) {
+		opts = opts || {};
 		var frame = context.frame;
+		var observer = context.observer;
 		if (frame) {
-			takeRecords(context, frame);
+			if (!observer.takeRecordsSlow || opts.noCombineRecords) {
+				takeRecords(context, frame);
+			}
 			context.stack.push(frame);
 		} else {
-			context.observer.observe(context.elem, observeAll);
+			observer.observeAll(context.elem);
 		}
 		context.frame = {
 			records: [],
-			meta: meta
+			opts: opts,
+			isFrame: true
 		};
 	}
 
 	function leave(context) {
 		var frame = context.frame;
-		takeRecords(context, frame);
+		var observer = context.observer;
 		var upperFrame = context.stack.pop();;
 		if (upperFrame) {
+			if (!observer.takeRecordsSlow || frame.opts.noCombineRecords) {
+				takeRecords(context, frame);
+			}
 			upperFrame.records.push(frame);
 		} else {
-			context.observer.disconnect();
+			takeRecords(context, frame);
+			observer.disconnect();
 		}
 		context.frame = upperFrame;
 		return frame;
 	}
 
-	function capture(context, meta, fn) {
-		enter(context, meta);
+	function capture(context, opts, fn) {
+		enter(context, opts);
 		try {
 			fn();
 		} finally {
@@ -570,7 +575,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		});
 	}
 
-	function changesFromRecords(container, records) {
+	function changesFromMutationRecords(container, records) {
 		var updateAttr = {};
 		var updateText = {};
 		var moves = [];
@@ -610,6 +615,84 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		var rootPath = [];
 		generateChanges(rootPath, container, changes, recordTree);
 		return changes;
+	}
+
+	function changesFromSnapshots(container, snapshots) {
+		var changes = [];
+		snapshots.forEach(function (snapshot) {
+			var path = makePath(container, container);
+			stepDownPath(path, container.nodeName, 0);
+			// NB: We don't clone the children because a snapshot is
+			// already a copy of the actual content and is supposed to
+			// be immutable.
+			changes.push(makeDeleteChange(path, Dom.children(snapshot.before)));
+			changes.push(makeInsertChange(path, Dom.children(snapshot.after)));
+		});
+		return changes;
+	}
+
+	function WithMutationObserver() {
+		var observer = new MutationObserver(Fn.noop);
+
+		function observeAll(elem) {
+			var observeAllFlags = {
+				'childList': true,
+				'attributes': true,
+				'characterData': true,
+				'subtree': true,
+				'attributeOldValue': true,
+				'characterDataOldValue': true
+			};
+			observer.observe(elem, observeAllFlags);
+		}
+
+		function takeRecords() {
+			return observer.takeRecords();
+		}
+
+		function disconnect() {
+			observer.disconnect();
+		}
+
+		return {
+			observeAll: observeAll,
+			takeRecords: takeRecords,
+			disconnect: disconnect,
+			changesFromRecords: changesFromMutationRecords
+		};
+	}
+
+	function WithSnapshots() {
+		var observedElem = null;
+		var beforeSnapshot = null;
+
+		function observeAll(elem) {
+			observedElem = elem;
+			beforeSnapshot = Dom.clone(elem);
+		}
+
+		function takeRecords() {
+			if (Dom.isEqualNode(beforeSnapshot, observedElem)) {
+				return [];
+			}
+			var before = beforeSnapshot;
+			var after = Dom.clone(observedElem);
+			beforeSnapshot = after;
+			return [{before: before, after: after}];
+		}
+
+		function disconnect() {
+			observedElem = null;
+			beforeSnapshot = null;
+		}
+
+		return {
+			observeAll: observeAll,
+			takeRecords: takeRecords,
+			disconnect: disconnect,
+			changesFromRecords: changesFromSnapshots,
+			takeRecordsSlow: true
+		};
 	}
 
 	function applyChange(container, change, ranges, textNodes) {
@@ -713,7 +796,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		frame.records.forEach(function (record) {
 			// Because a frame may have nested frames mixed in among its
 			// records.
-			if (record.meta) {
+			if (record.isFrame) {
 				collectRecordsFromFrame(record, records);
 			} else {
 				records.push(record);
@@ -724,7 +807,8 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 	function changeSetFromFrame(context, frame) {
 		var records = [];
 		collectRecordsFromFrame(frame, records)
-		return makeChangeSet(frame.meta, changesFromRecords(context.elem, records));
+		var changes = context.observer.changesFromRecords(context.elem, records);
+		return makeChangeSet(frame.opts.meta, changes);
 	}
 
 	function stringify(change, space) {

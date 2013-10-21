@@ -161,6 +161,10 @@ define([
 		return elem.childNodes.length;
 	}
 
+	function children(elem) {
+		return arrays.coerce(elem.childNodes);
+	}
+
 	/**
 	 * Get the nth (zero based) child of the given element.
 	 * 
@@ -1610,6 +1614,10 @@ define([
 		return node[expandoIdProp] = node[expandoIdProp] || ++expandoIdCnt;
 	}
 
+	function isEqualNode(node, otherNode) {
+		return node.isEqualNode(otherNode);
+	}
+
 	/**
 	 * Functions for working with the DOM.
 	 */
@@ -1654,6 +1662,7 @@ define([
 
 		isAtEnd: isAtEnd,
 		isAtStart: isAtStart,
+		children: children,
 		nthChild: nthChild,
 		nodeIndex: nodeIndex,
 		nodeLength: nodeLength,
@@ -1673,6 +1682,7 @@ define([
 		isInlineNode: isInlineNode,
 		isTextLevelSemanticNode: isTextLevelSemanticNode,
 		isEmptyTextNode: isEmptyTextNode,
+		isEqualNode: isEqualNode,
 		splitTextNode: splitTextNode,
 		splitTextContainers: splitTextContainers,
 		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
@@ -1728,6 +1738,7 @@ define([
 	exports['isAtEnd'] = exports.isAtEnd;
 	exports['isAtStart'] = exports.isAtStart;
 	exports['nthChild'] = exports.nthChild;
+	exports['children'] = exports.children;
 	exports['nodeIndex'] = exports.nodeIndex;
 	exports['nodeLength'] = exports.nodeLength;
 	exports['nodeAtOffset'] = exports.nodeAtOffset;

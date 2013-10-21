@@ -11,7 +11,7 @@
 		return Arrays.coerce($('<div>' + html + '</div>').contents());
 	}
 
-	test('applyChanges', function () {
+	test('applyChangeSet', function () {
 		var editable = document.getElementById('test-editable');
 
 		var changeSet = {
@@ -32,7 +32,7 @@
 		equal(editable.innerHTML, 'zero<b>one<u>x</u></b>two<i>thxree</i>four');
 	});
 
-	test('case 2', function () {
+	test('Capture, inverseChangeSet', function () {
 		var editable = $('#test-editable')[0];
 		var controlEditable = Dom.clone(editable);
 		var initialChangeSet = {
