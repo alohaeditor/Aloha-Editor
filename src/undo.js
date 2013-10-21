@@ -703,7 +703,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		case 'update-attr':
 			var node = Dom.nodeAtBoundary(boundary);
 			change.attrs.forEach(function (attr) {
-				setOrRemoveAttribute(node, change.ns, change.name, change.value]);
+				setOrRemoveAttribute(node, change.ns, change.name, change.value);
 			});
 			break;
 		case 'insert':
