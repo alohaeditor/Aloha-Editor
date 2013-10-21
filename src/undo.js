@@ -37,8 +37,8 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 			opts: opts
 		};
 		context.observer = (!opts.noMutationObserver && window.MutationObserver
-		                    ? WithMutationObserver()
-		                    : WithSnapshots());
+		                    ? ObserverUsingMutationObserver()
+		                    : ObserverUsingSnapshots());
 		return context;
 	}
 
@@ -631,7 +631,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		return changes;
 	}
 
-	function WithMutationObserver() {
+	function ObserverUsingMutationObserver() {
 		var observer = new MutationObserver(Fn.noop);
 
 		function observeAll(elem) {
@@ -662,7 +662,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		};
 	}
 
-	function WithSnapshots() {
+	function ObserverUsingSnapshots() {
 		var observedElem = null;
 		var beforeSnapshot = null;
 
