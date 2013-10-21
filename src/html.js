@@ -343,28 +343,6 @@ define([
 	}
 
 	/**
-	 * Returns true if the given character is a control character. Control
-	 * characters are usually not rendered if they are inserted into the DOM.
-	 * Returns false for whitespace 0x20 (which may or may not be rendered see
-	 * isUnrenderedWhitespace()) and non-breaking whitespace 0xa0 but returns
-	 * true for tab 0x09 and linebreak 0x0a and 0x0d.
-	 *
-	 * @param {String} chr
-	 * @return {Boolean}
-	 */
-	function isControlCharacter(chr) {
-		// Regex matches C0 and C1 control codes, which seems to be good enough.
-		// "The C0 set defines codes in the range 00HEX–1FHEX and the C1
-		// set defines codes in the range 80HEX–9FHEX."
-		// In addition, we include \x007f which is "delete", which just
-		// seems like a good idea.
-		// http://en.wikipedia.org/wiki/List_of_Unicode_characters
-		// http://en.wikipedia.org/wiki/C0_and_C1_control_codes
-		return (/[\x00-\x1f\x7f-\x9f]/).test(chr);
-	}
-
-
-	/**
 	 * Unicode zero width space characters:
 	 * http://www.unicode.org/Public/UNIDATA/Scripts.txt
 	 *
@@ -1383,7 +1361,6 @@ define([
 	var exports = {
 		isUnrendered: isUnrendered,
 		isRendered: isRendered,
-		isControlCharacter: isControlCharacter,
 		isStyleInherited: isStyleInherited,
 		hasBlockStyle: hasBlockStyle,
 		hasInlineStyle: hasInlineStyle,
@@ -1408,7 +1385,6 @@ define([
 
 	exports['isUnrendered'] = exports.isUnrendered;
 	exports['isRendered'] = exports.isRendered;
-	exports['isControlCharacter'] = exports.isControlCharacter;
 	exports['isStyleInherited'] = exports.isStyleInherited;
 	exports['hasBlockStyle'] = exports.hasBlockStyle;
 	exports['hasInlineStyle'] = exports.hasInlineStyle;
