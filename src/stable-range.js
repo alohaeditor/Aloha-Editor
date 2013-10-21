@@ -22,6 +22,7 @@ define(['traversing', 'arrays', 'functions'], function (Traversing, Arrays, Fn) 
 		if (!(this instanceof StableRange)) {
 			return new StableRange(range);
 		}
+		range = range || {};
 		this.startContainer = range.startContainer;
 		this.startOffset = range.startOffset;
 		this.endContainer = range.endContainer;
