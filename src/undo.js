@@ -153,7 +153,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		var frame = context.frame;
 		var observer = context.observer;
 		if (frame) {
-			if (!observer.takeRecordsSlow || opts.noCombineRecords) {
+			if (!observer.takeRecordsSlow || context.opts.noCombineRecords) {
 				takeRecords(context, frame);
 			}
 			context.stack.push(frame);
@@ -172,7 +172,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		var observer = context.observer;
 		var upperFrame = context.stack.pop();;
 		if (upperFrame) {
-			if (!observer.takeRecordsSlow || frame.opts.noCombineRecords) {
+			if (!observer.takeRecordsSlow || context.opts.noCombineRecords) {
 				takeRecords(context, frame);
 			}
 			upperFrame.records.push(frame);
@@ -811,14 +811,6 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		return makeChangeSet(frame.opts.meta, changes);
 	}
 
-	function stringify(change, space) {
-		return JSON.stringify(change, Dom.stringifyReplacer, space);
-	}
-
-	function parse(json) {
-		return JSON.parse(json, Dom.parseReviver);
-	}
-
 	/**
 	 * Stateless functions for undo support.
 	 */
@@ -829,9 +821,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		capture: capture,
 		changeSetFromFrame: changeSetFromFrame,
 		inverseChangeSet: inverseChangeSet,
-		applyChangeSet: applyChangeSet,
-		stringify: stringify,
-		parse: parse
+		applyChangeSet: applyChangeSet
 	};
 
 	exports['createContext'] = exports.createContext;
