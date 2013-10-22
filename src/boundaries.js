@@ -5,9 +5,11 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom'
+	'dom',
+	'predicates'
 ], function Boundaries(
-	dom
+	dom,
+	Predicates
 ) {
 	'use strict';
 
@@ -64,7 +66,7 @@ define([
 		// <p>foo{<b></b></p> ==> <p>{foo<b></b></p>
 		node = node.childNodes[offset - 1];
 
-		return (dom.isTextNode(node) || dom.isVoidNode(node))
+		return (dom.isTextNode(node) || Predicates.isVoidNode(node))
 		     ? [node.parentNode, dom.nodeIndex(node)]
 		     : [node, dom.nodeLength(node)];
 	}
@@ -89,7 +91,7 @@ define([
 		// <p>{<b>foo</b></p> ==> <p><b>{foo</b></p>
 		node = node.childNodes[offset];
 
-		return (dom.isTextNode(node) || dom.isVoidNode(node))
+		return (dom.isTextNode(node) || Predicates.isVoidNode(node))
 		     ? [node.parentNode, offset + 1]
 		     : [node, 0];
 	}

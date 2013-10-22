@@ -2,6 +2,7 @@
 	'use strict';
 
 	var dom = aloha.dom;
+	var Predicates = aloha.predicates;
 	var tested = [];
 
 	var input = $('<div><p class="some-class">'
@@ -382,11 +383,11 @@
 		var p = $('<p style="display: inline"></p>')[0];
 		var a = $('<a></a>')[0];
 		$('body').append([span, div, b, p, a]);
-		equal(dom.isBlockNode(span), false);
-		equal(dom.isBlockNode(div), true);
-		equal(dom.isBlockNode(b), false);
-		equal(dom.isBlockNode(p), true);
-		equal(dom.isBlockNode(a), false);
+		equal(Predicates.isBlockNode(span), false);
+		equal(Predicates.isBlockNode(div), true);
+		equal(Predicates.isBlockNode(b), false);
+		equal(Predicates.isBlockNode(p), true);
+		equal(Predicates.isBlockNode(a), false);
 	});
 
 	test('isInlineNode', function () {
@@ -397,11 +398,11 @@
 		var p = $('<p style="display: inline"></p>')[0];
 		var a = $('<a></a>')[0];
 		$('body').append([span, div, b, p, a]);
-		equal(dom.isInlineNode(span), true);
-		equal(dom.isInlineNode(div), false);
-		equal(dom.isInlineNode(b), true);
-		equal(dom.isInlineNode(p), false);
-		equal(dom.isInlineNode(a), true);
+		equal(Predicates.isInlineNode(span), true);
+		equal(Predicates.isInlineNode(div), false);
+		equal(Predicates.isInlineNode(b), true);
+		equal(Predicates.isInlineNode(p), false);
+		equal(Predicates.isInlineNode(a), true);
 	});
 
 	module('dom');

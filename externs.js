@@ -34,7 +34,7 @@ changeSet.changes = [];
 
 var opts = {};
 // Undo.createContext()
-opts.noCombineRecords = true;
+opts.partitionRecords = true;
 opts.noMutationObserver = true;
 // Undo.enter() / Undo.capture()
 opts.meta = {};

@@ -367,6 +367,8 @@ define([
 	 * The traversing algorithm step twice in and out of elements and once
 	 * inside of text nodes and void elements.
 	 *
+	 * Goes upward and backward in the DOM hierarchy.
+	 *
 	 * @param {DOMObject} node
 	 * @param {Function(DOMObject, Boolean):Boolean}
 	 * @param {Function(DOMObject, Boolean):Boolean}

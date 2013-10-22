@@ -133,6 +133,9 @@ define([
 	function press(msg, context) {
 		var range = msg.range;
 		var event = msg.event;
+		if (!msg.range) {
+			return;
+		}
 		if (isTextInsertEvent(event)) {
 			var text = String.fromCharCode(event.which);
 			Ranges.select(actions.insertText(range, text, context));

@@ -32,7 +32,7 @@
 		equal(editable.innerHTML, 'zero<b>one<u>x</u></b>two<i>thxree</i>four');
 	});
 
-	test('Capture, inverseChangeSet', function () {
+	test('capture, inverseChangeSet', function () {
 		var editable = $('#test-editable')[0];
 		var controlEditable = Dom.clone(editable);
 		var initialChangeSet = {

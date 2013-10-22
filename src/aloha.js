@@ -18,6 +18,7 @@ define([
 	'colors',
 	'cursors',
 	'dom',
+	'predicates',
 	'dom-to-xhtml',
 	'editing',
 	'ephemera',
@@ -34,52 +35,81 @@ define([
 	'typing',
 	'undo'
 ], function Aloha(
-	arrays,
-	boundaries,
-	boundarymarkers,
-	browser,
-	caret,
-	content,
-	colors,
-	cursors,
-	dom,
-	xhtml,
-	editing,
-	ephemera,
-	events,
-	fn,
-	html,
-	mouse,
-	pubsub,
-	keys,
-	maps,
-	ranges,
-	strings,
-	traversing,
-	typing,
-	undo
+	Arrays,
+	Boundaries,
+	Boundarymarkers,
+	Browser,
+	Caret,
+	Content,
+	Colors,
+	Cursors,
+	Dom,
+	Predicates,
+	Xhtml,
+	Editing,
+	Ephemera,
+	Events,
+	Fn,
+	Html,
+	Mouse,
+	Pubsub,
+	Keys,
+	Maps,
+	Ranges,
+	Strings,
+	Traversing,
+	Typing,
+	Undo
 ) {
 	'use strict';
 
-	events.add(document, 'keyup',     keys.onUp);
-	events.add(document, 'keydown',   keys.onDown);
-	events.add(document, 'keypress',  keys.onPress);
-	events.add(document, 'mouseup',   mouse.onUp);
-	events.add(document, 'mousedown', mouse.onDown);
-	events.add(document, 'mousemove', mouse.onMove);
+	Events.add(document, 'keyup',     Keys.onUp);
+	Events.add(document, 'keydown',   Keys.onDown);
+	Events.add(document, 'keypress',  Keys.onPress);
+	Events.add(document, 'mouseup',   Mouse.onUp);
+	Events.add(document, 'mousedown', Mouse.onDown);
+	Events.add(document, 'mousemove', Mouse.onMove);
 
 	var context = {
 		settings: {
 			defaultBlockNodeName: 'div'
 		},
-		overrides: []
+		overrides: [],
+		editables: {}
 	};
 
-	keys.down(function (msg) {
-		typing.down(msg, context);
+	function contextFromEditable(elem) {
+		return elem['!aloha-context'];
+	}
+
+	function contextFromRange(range) {
+		var node = Dom.nodeAtBoundary(Dom.startBoundary(range));
+	}
+
+	function ensureEditableContext(context, elem) {
+		var undoContext = Undo.Context(elem);
+		var id = Dom.ensureExpandoId(elem);
+		var editableContext = context.editables[id] = {
+			elem: elem,
+			undoContext: undoContext
+		};
+		return editableContext;
+	}
+
+	function closeEditableContext(editableContext) {
+		Undo.close(editableContext.undoContext);
+	}
+
+	Keys.down(function (msg) {
+		Typing.down(msg, context);
 	});
-	keys.press(function (msg) {
-		typing.press(msg, context);
+
+	Keys.press(function (msg) {
+		Typing.press(msg, context);
+	});
+
+	document.addEventListener('keypress', function (event) {
+		Typing.press(alohaContext, event);
 	});
 
 	/**
@@ -87,40 +117,48 @@ define([
 	 *
 	 * Also serves as short aloha.aloha.
 	 */
-	function aloha(element) {
-		element.setAttribute('contentEditable', 'true');
+	function aloha(elem) {
+		var editableContext = ensureEditableContext(context, elem);
+		Undo.enter(editableContext.undoContext, {
+			meta: {type: 'external'},
+			partitionRecords: true
+		});
+		elem.setAttribute('contentEditable', 'true');
 	}
 
-	function mahalo(element) {
-		element.removeAttribute('contentEditable');
+	function mahalo(elem) {
+		var context = ensureEditableContext(context, elem);
+		closeEditableContext(context);
+		elem.removeAttribute('contentEditable');
 	}
 
 	aloha['aloha'] = aloha;
 	aloha['mahalo'] = mahalo;
-	aloha['arrays'] = arrays;
-	aloha['boundaries'] = boundaries;
-	aloha['boundarymarkers'] = boundarymarkers;
-	aloha['browser'] = browser;
-	aloha['caret'] = caret;
-	aloha['content'] = content;
-	aloha['colors'] = colors;
-	aloha['cursors'] = cursors;
-	aloha['dom'] = dom;
-	aloha['editing'] = editing;
-	aloha['ephemera'] = ephemera;
-	aloha['events'] = events;
-	aloha['fn'] = fn;
-	aloha['html'] = html;
-	aloha['typing'] = typing;
-	aloha['keys'] = keys;
-	aloha['mouse'] = mouse;
-	aloha['maps'] = maps;
-	aloha['pubsub'] = pubsub;
-	aloha['ranges'] = ranges;
-	aloha['strings'] = strings;
-	aloha['traversing'] = traversing;
-	aloha['xhtml'] = xhtml;
-	aloha['undo'] = undo;
+	aloha['arrays'] = Arrays;
+	aloha['boundaries'] = Boundaries;
+	aloha['boundarymarkers'] = Boundarymarkers;
+	aloha['browser'] = Browser;
+	aloha['caret'] = Caret;
+	aloha['content'] = Content;
+	aloha['colors'] = Colors;
+	aloha['cursors'] = Cursors;
+	aloha['dom'] = Dom;
+	aloha['predicates'] = Predicates;
+	aloha['editing'] = Editing;
+	aloha['ephemera'] = Ephemera;
+	aloha['events'] = Events;
+	aloha['fn'] = Fn;
+	aloha['html'] = Html;
+	aloha['typing'] = Typing;
+	aloha['keys'] = Keys;
+	aloha['mouse'] = Mouse;
+	aloha['maps'] = Maps;
+	aloha['pubsub'] = Pubsub;
+	aloha['ranges'] = Ranges;
+	aloha['strings'] = Strings;
+	aloha['traversing'] = Traversing;
+	aloha['xhtml'] = Xhtml;
+	aloha['undo'] = Undo;
 
 	window['aloha'] = aloha;
 

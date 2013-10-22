@@ -4,9 +4,6 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-// TODO Turn delete-insert sequences into moves.
-// TODO A change set should be a tree with a root path and nested
-//      changes that have a relative path.
 define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Arrays, Maps, Dom, Fn, Traversing) {
 	'use strict'
 
@@ -148,12 +145,18 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		frame.records = frame.records.concat(records);
 	}
 
+	function partitionRecords(context, frame) {
+		return (!context.observer.takeRecordsSlow
+		        || context.opts.partitionRecords
+		        || frame.opts.partitionRecords);
+	}
+
 	function enter(context, opts) {
 		opts = opts || {};
 		var frame = context.frame;
 		var observer = context.observer;
 		if (frame) {
-			if (!observer.takeRecordsSlow || context.opts.noCombineRecords) {
+			if (partitionRecords(context, frame)) {
 				takeRecords(context, frame);
 			}
 			context.stack.push(frame);
@@ -167,20 +170,27 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		};
 	}
 
+	function close(context) {
+		if (context.frame) {
+			context.observer.disconnect()
+			context.frame = null;
+		}
+	}
+
 	function leave(context) {
 		var frame = context.frame;
 		var observer = context.observer;
 		var upperFrame = context.stack.pop();;
 		if (upperFrame) {
-			if (!observer.takeRecordsSlow || context.opts.noCombineRecords) {
+			if (partitionRecords(context, frame)) {
 				takeRecords(context, frame);
 			}
 			upperFrame.records.push(frame);
+			context.frame = upperFrame;
 		} else {
 			takeRecords(context, frame);
-			observer.disconnect();
+			close(context);
 		}
-		context.frame = upperFrame;
 		return frame;
 	}
 
@@ -297,8 +307,10 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 			var id = Dom.ensureExpandoId(node);
 			switch (move.type) {
 			case DELETE:
-				var ref = move.prevSibling ? move.prevSibling : move.target;
-				var map = move.prevSibling ? delsByPrevSibling : delsByTarget;
+				var prevSibling = move.prevSibling;
+				var target = move.target;
+				var ref = prevSibling ? prevSibling : target;
+				var map = prevSibling ? delsByPrevSibling : delsByTarget;
 				var refId = Dom.ensureExpandoId(ref);
 				var dels = map[refId] = map[refId] || [];
 
@@ -320,8 +332,8 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 					// delete sequence that must have a valid anchor.
 					if (!dels.length && delsHavingRefs.length) {
 						var refDel = delsHavingRefs[0];
-						refDel.prevSibling = move.prevSibling;
-						refDel.target = move.target;
+						refDel.prevSibling = prevSibling;
+						refDel.target = target;
 					}
 					map[refId] = dels.concat(delsHavingRefs);
 				}
@@ -817,6 +829,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 	var exports = {
 		Context: Context,
 		enter: enter,
+		close: close,
 		leave: leave,
 		capture: capture,
 		changeSetFromFrame: changeSetFromFrame,

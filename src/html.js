@@ -14,6 +14,7 @@
  */
 define([
 	'dom',
+	'predicates',
 	'arrays',
 	'cursors',
 	'content',
@@ -23,6 +24,7 @@ define([
 	'functions'
 ], function Html(
 	dom,
+	Predicates,
 	arrays,
 	cursors,
 	content,
@@ -99,7 +101,7 @@ define([
 			return true;
 		case dom.Nodes.ELEMENT:
 			var style = dom.getComputedStyle(node, 'display');
-			return style ? !nonBlockDisplayValuesMap[style] : dom.isBlockNode(node);
+			return style ? !nonBlockDisplayValuesMap[style] : Predicates.isBlockNode(node);
 		default:
 			return false;
 		}
@@ -451,8 +453,8 @@ define([
 	 * @return {boolean}
 	 */
 	function isAdjacentToBlock(node) {
-		return dom.isBlockNode(node.previousSibling)
-		    || dom.isBlockNode(node.nextSibling);
+		return Predicates.isBlockNode(node.previousSibling)
+		    || Predicates.isBlockNode(node.nextSibling);
 	}
 
 	/**
@@ -477,7 +479,7 @@ define([
 		if (
 			!maybeUnrenderedNode
 				&& (node === node.parentNode.lastChild)
-					&& dom.isBlockNode(node.parentNode)
+					&& Predicates.isBlockNode(node.parentNode)
 						&& 'BR' === node.nodeName
 		) {
 			return true;
@@ -521,7 +523,7 @@ define([
 			}
 			if (pos[1] > 0) {
 				var node = dom.nodeAtOffset(pos[0], pos[1] - 1);
-				if ((dom.isTextNode(node) || dom.isVoidNode(node))
+				if ((dom.isTextNode(node) || Predicates.isVoidNode(node))
 					&& isRendered(node)) {
 					adjacent = false;
 					return false;
@@ -567,7 +569,7 @@ define([
 	 * @param {DOMObject} elem
 	 */
 	function prop(elem) {
-		if (browser.browser.msie || !dom.isBlockNode(elem)) {
+		if (browser.browser.msie || !Predicates.isBlockNode(elem)) {
 			return;
 		}
 		if (!elem.firstChild
@@ -590,9 +592,9 @@ define([
 	 * @return {Boolean}
 	 */
 	function suitableTransferTarget(node) {
-		return !dom.isVoidNode(node)
+		return !Predicates.isVoidNode(node)
 		    && !dom.isTextNode(node)
-		    && !dom.isTextLevelSemanticNode(node)
+		    && !Predicates.isTextLevelSemanticNode(node)
 			&& !LIST_CONTAINERS[node.nodeName];
 	}
 
@@ -649,7 +651,7 @@ define([
 	}
 
 	/**
-	 * Finds a suitable container inwhich to move nodes that are to the right of
+	 * Finds a suitable container in which to move nodes that are to the right of
 	 * `breaker` when removing a visual line break.
 	 *
 	 * @param {DOMObject} linebreak
@@ -756,7 +758,7 @@ define([
 	}
 
 	function isBreak(node) {
-		return !dom.isVoidNode(node)
+		return !Predicates.isVoidNode(node)
 		    && (dom.isEditingHost(node) || hasLinebreakingStyle(node));
 	}
 
@@ -859,7 +861,7 @@ define([
 		var next = newBlock;
 		while (next && next.firstChild) {
 			next = traversing.nextWhile(focus.firstChild, function (node) {
-				return !dom.isVoidNode(node) && isUnrendered(node);
+				return !Predicates.isVoidNode(node) && isUnrendered(node);
 			});
 			if (!next) {
 				break;
@@ -867,7 +869,7 @@ define([
 			focus = next;
 		}
 
-		return dom.isVoidNode(focus) ? [focus.parentNode, dom.nodeIndex(focus)]
+		return Predicates.isVoidNode(focus) ? [focus.parentNode, dom.nodeIndex(focus)]
 		                             : [focus, 0];
 	}
 
@@ -889,7 +891,7 @@ define([
 		        && traversing.nextWhile(br.nextSibling, ignorable);
 
 		var significant = !prev
-		               || ((prev && next) && dom.isInlineNode(br.parentNode));
+		               || ((prev && next) && Predicates.isInlineNode(br.parentNode));
 
 		significant = significant || (
 			(
@@ -1065,7 +1067,7 @@ define([
 		}
 		if (0 === offset) {
 			return !!traversing.previousNonAncestor(textnode, function (node) {
-				return dom.isInlineNode(node) && isRendered(node);
+				return Predicates.isInlineNode(node) && isRendered(node);
 			}, function (node) {
 				return hasLinebreakingStyle(node) || dom.isEditingHost(node);
 			});
@@ -1074,7 +1076,7 @@ define([
 			return true;
 		}
 		return !!traversing.nextNonAncestor(textnode, function (node) {
-			return dom.isInlineNode(node) && isRendered(node);
+			return Predicates.isInlineNode(node) && isRendered(node);
 		}, function (node) {
 			return hasLinebreakingStyle(node) || dom.isEditingHost(node);
 		});
@@ -1144,7 +1146,7 @@ define([
 			 */
 			function (node) {
 				return canInsertText(node)
-					|| (dom.isVoidNode(node)
+					|| (Predicates.isVoidNode(node)
 						&& traversing.nextWhile(node, isUnrendered));
 			},
 			function (node) {
@@ -1191,9 +1193,9 @@ define([
 				offset: dom.nodeLength(node.parentNode)
 			};
 		}
-		if (dom.isVoidNode(next)) {
+		if (Predicates.isVoidNode(next)) {
 			var after = traversing.forward(next);
-			if (dom.isVoidNode(after) || dom.isInlineNode(after)) {
+			if (Predicates.isVoidNode(after) || Predicates.isInlineNode(after)) {
 				return {
 					node: next.parentNode,
 					offset: dom.nodeIndex(next) + 1
@@ -1295,7 +1297,7 @@ define([
 			next,
 			function (node) {
 				return !arrays.contains(parents, node)
-				    && (canInsertText(node) || dom.isVoidNode(node));
+				    && (canInsertText(node) || Predicates.isVoidNode(node));
 			},
 			function (node) {
 				if (next === node) {
@@ -1325,14 +1327,14 @@ define([
 			landing = traversing.findBackward(
 				traversing.forward(landing.lastChild),
 				function (node) {
-					return canInsertText(node) || dom.isVoidNode(node);
+					return canInsertText(node) || Predicates.isVoidNode(node);
 				}
 			);
 		}
 
-		if (dom.isVoidNode(landing)) {
+		if (Predicates.isVoidNode(landing)) {
 			if (!landing.previousSibling
-				|| dom.isVoidNode(landing.previousSibling)) {
+				|| Predicates.isVoidNode(landing.previousSibling)) {
 				return {
 					node: landing.parentNode,
 					offset: dom.nodeIndex(landing)
