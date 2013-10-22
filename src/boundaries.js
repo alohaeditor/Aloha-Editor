@@ -139,7 +139,7 @@ define([
 	}
 
 	function atEnd(boundary) {
-		 return boundary[1] === dom.nodeLength(boundary[0]);
+		return boundary[1] === dom.nodeLength(boundary[0]);
 	}
 
 	function atStart(boundary) {

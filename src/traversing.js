@@ -466,6 +466,37 @@ define([
 		return find(node, match, until, reverse);
 	}
 
+	function nextSibling(node) {
+		return node.nextSibling;
+	}
+
+	function prevSibling(node) {
+		return node.previousSibling;
+	}
+
+	function parent(node) {
+		return node.parentNode;
+	}
+
+	function stepWhile(node, step, cond, arg) {
+		while (node && cond(node, arg)) {
+			node = step(node, arg);
+		}
+		return node;
+	}
+
+	function stepNextWhile(node, step, next, cond, arg) {
+		return stepWhile(node, function (node) {
+			var n = next(node);
+			step(node, arg);
+			return n;
+		}, cond, arg);
+	}
+
+	function stepNextUntil(node, step, next, until, arg) {
+		return stepNextWhile(node, step, next, fn.complement(until), arg);
+	}
+
 	/**
 	 * Starting from the given node and moving forward, traverses the set of
 	 * `node`'s sibiling nodes until either the predicate `cond` returns false
@@ -480,10 +511,7 @@ define([
 	 *         `node`, or one if it's next siblings.
 	 */
 	function nextWhile(node, cond, arg) {
-		while (node && cond(node, arg)) {
-			node = node.nextSibling;
-		}
-		return node;
+		return stepWhile(node, nextSibling, cond, arg);
 	}
 
 	/**
@@ -500,10 +528,11 @@ define([
 	 *         `node`, or one if it's previous siblings.
 	 */
 	function prevWhile(node, cond, arg) {
-		while (node && cond(node, arg)) {
-			node = node.previousSibling;
-		}
-		return node;
+		return stepWhile(node, prevSibling, cond, arg);
+	}
+
+	function upWhile(node, cond) {
+		return stepWhile(node, parent, cond);
 	}
 
 	/**
@@ -525,11 +554,7 @@ define([
 	 *        A value that will be passed to `func()` as the second argument.
 	 */
 	function walkUntil(node, func, until, arg) {
-		while (node && !until(node, arg)) {
-			var next = node.nextSibling;
-			func(node, arg);
-			node = next;
-		}
+		stepNextUntil(node, func, nextSibling, until, arg);
 	}
 
 	/**
@@ -544,12 +569,7 @@ define([
 	 *        A value that will be passed to `func()` as the second argument.
 	 */
 	function climbUntil(node, func, until, arg) {
-		var parent;
-		while (node && !until(node, arg)) {
-			parent = node.parentNode;
-			func(node, arg);
-			node = parent;
-		}
+		stepNextUntil(node, func, parent, until, arg);
 	}
 
 	/**
