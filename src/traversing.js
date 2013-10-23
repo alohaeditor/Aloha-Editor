@@ -287,10 +287,10 @@ define([
 	}
 
 	/**
-	 * Given a node, will return node that succeeds it in the document order.
+	 * Given a node, will return the node that succeeds it in the document order.
 	 *
 	 * For example, if this function is called recursively, starting from the
-	 * text node "one" in the below DOM tree:
+	 * text node "one" in the following DOM tree:
 	 *
 	 *	"one"
 	 *	<b>
@@ -306,7 +306,7 @@ define([
 	 *
 	 * forward() will return nodes in the following order:
 	 *
-	 * <b>...</b>, "two", <u>...</u>, <i>...</i>, "three", "four", "five"
+	 * <b>, "two", <u>, <i>, "three", "four", "five"
 	 *
 	 * @param {DOMObject} node
 	 * @return {DOMObject}
@@ -454,18 +454,6 @@ define([
 		return find(node, match, until, backward);
 	}
 
-	/**
-	 * Like findBackward(), except in reverse document order.
-	 *
-	 * @param {DOMObject} node
-	 * @param {Function(DOMObject):Boolean} match
-	 * @param {Function(DOMObject):Boolean} until
-	 * @return {DOMObject}
-	 */
-	function findReverse(node, match, until) {
-		return find(node, match, until, reverse);
-	}
-
 	function nextSibling(node) {
 		return node.nextSibling;
 	}
@@ -558,7 +546,7 @@ define([
 	}
 
 	/**
-	 * Climbs up the given node's ancestor until the predicate until() returns
+	 * Climbs up the given node's ancestors until the predicate until() returns
 	 * true.  Starting with the given node, applies func() to each node in the
 	 * traversal.
 	 *
@@ -752,8 +740,8 @@ define([
 	}
 
 	/**
-	 * Returns the nearest (in the document order) to the given node that is not
-	 * an ancestor of that node.
+	 * Returns the nearest node (in the document order) to the given node that
+	 * is not an ancestor.
 	 *
 	 * @param {DOMObject} start
 	 * @param {Boolean} previous
@@ -763,7 +751,7 @@ define([
 	 * @param {Function(DOMObject):Boolean} until
 	 *        (Optional) Predicate, which will be applied to each node in the
 	 *        traversal step.  If this function returns true, traversal will
-	 *        terminal and nearestNonAncestor will return null.
+	 *        terminal and will return null.
 	 * @return {DOMObject}
 	 */
 	function getNonAncestor(start, previous, match, until) {
@@ -792,7 +780,7 @@ define([
 
 	/**
 	 * Returns the previous node to the given node that is not one of it's
-	 * ancestor.
+	 * ancestors.
 	 *
 	 * @param {DOMObject} node
 	 * @param {DOMObject}
@@ -802,7 +790,7 @@ define([
 	}
 
 	/**
-	 * Returns the next node to the given node that is not one of it's ancestor.
+	 * Returns the next node to the given node that is not one of it's ancestors.
 	 *
 	 * @param {DOMObject} node
 	 * @param {DOMObject}
@@ -849,7 +837,6 @@ define([
 		find: find,
 		findBackward: findBackward,
 		findForward: findForward,
-		findReverse: findReverse,
 		findWordBoundaryAhead: findWordBoundaryAhead,
 		findWordBoundaryBehind: findWordBoundaryBehind,
 		parentsUntil: parentsUntil,
