@@ -25,8 +25,24 @@ opts.isReusable = function () {};
 // Undo
 var change = {};
 change.type = 'insert';
-change.content = [];
 change.path = [];
+change.content = [];
+change.attrs = [{}];
+change.attrs[0].name = 'name';
+change.attrs[0].ns = 'namespace';
+change.attrs[0].oldValue = 'value';
+change.attrs[0].newValue = 'value';
+var changeSet = {};
+changeSet.changes = [];
+changeSet.meta = {};
+changeSet.selection = {};
+changeSet.selection.type = 'update-range';
+changeSet.selection.newRange = {};
+changeSet.selection.newRange.start = {};
+changeSet.selection.newRange.end = {};
+changeSet.selection.oldRange = {};
+changeSet.selection.oldRange.start = {};
+changeSet.selection.oldRange.end = {};
 
 // Undo
 var changeSet = {};

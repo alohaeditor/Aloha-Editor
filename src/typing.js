@@ -78,7 +78,7 @@ define([
 			return;
 		}
 		var undoContext = editable.undoContext;
-		Undo.undo(undoContext, [range]);
+		Undo.undo(undoContext, range, [range]);
 		return range;
 	};
 
@@ -88,8 +88,7 @@ define([
 			return;
 		}
 		var undoContext = editable.undoContext;
-
-		Undo.redo(undoContext, [range]);
+		Undo.redo(undoContext, range, [range]);
 		return range;
 	};
 
@@ -206,13 +205,12 @@ define([
 			return;
 		}
 		var text = String.fromCharCode(event.which);
-		Ranges.select();
 		var undoContext = editable.undoContext;
 		Undo.advanceHistory(undoContext);
 		Undo.capture(undoContext, {meta: {type: 'typing'}}, function () {
 			actions.insertText(range, text, editor)
+			Ranges.select(range);
 		});
-		Ranges.select(range);
 		Undo.advanceHistory(undoContext);
 		event.preventDefault();
 	}

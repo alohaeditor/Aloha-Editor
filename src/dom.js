@@ -1235,19 +1235,31 @@ define([
 			);
 			style = style.replace(stripRegex, '');
 			if (!strings.empty(style)) {
-				elem.setAttribute('style', style);
+				setAttr(elem, 'style', style);
 			} else {
-				elem.removeAttribute('style');
+				removeAttr(elem, 'style');
 			}
 		}
 	}
 
-	function removeAttributeNS(elem, ns, name) {
+	function removeAttr(elem, name) {
+		elem.removeAttribute(name);
+	}
+
+	function setAttr(elem, name, value) {
+		if (null == value) {
+			removeAttr(elem, name);
+		} else {
+			elem.setAttribute(name, value);
+		}
+	}
+
+	function removeAttrNS(elem, ns, name) {
 		// TODO is removeAttributeNS(null, ...) the same as removeAttribute(...)?
 		if (null != ns) {
 			elem.removeAttributeNS(ns, name);
 		} else {
-			elem.removeAttribute(name);
+			removeAttr(elem, name);
 		}
 	}
 
@@ -1255,12 +1267,12 @@ define([
 	 * NB: Internet Explorer supports the setAttributeNS method from
 	 * version 9, but only for HTML documents, not for XML documents.
 	 */
-	function setAttributeNS(elem, ns, name, value) {
+	function setAttrNS(elem, ns, name, value) {
 		// TODO is setAttributeNS(null, ...) the same as setAttribute(...)?
 		if (null != ns) {
 			elem.setAttributeNS(ns, name, value);
 		} else {
-			elem.setAttribute(name, value);
+			setAttribute(elem, name, value);
 		}
 	}
 
@@ -1488,8 +1500,10 @@ define([
 		attrNames: attrNames,
 		hasAttrs: hasAttrs,
 		attrs: attrs,
-		setAttributeNS: setAttributeNS,
-		removeAttributeNS: removeAttributeNS,
+		setAttr: setAttr,
+		removeAttr: removeAttr,
+		setAttrNS: setAttrNS,
+		removeAttrNS: removeAttrNS,
 
 		indexByClass: indexByClass,
 		indexByName: indexByName,
@@ -1521,6 +1535,7 @@ define([
 		nodeLength: nodeLength,
 		nodeAtOffset: nodeAtOffset,
 		nodeAtBoundary: nodeAtBoundary,
+		isBoundaryAtEnd: isBoundaryAtEnd,
 		startBoundary: startBoundary,
 		endBoundary: endBoundary,
 		insertTextAtBoundary: insertTextAtBoundary,
@@ -1557,7 +1572,8 @@ define([
 		parseReviver: parseReviver,
 		Nodes: Nodes,
 
-		ensureExpandoId: ensureExpandoId
+		ensureExpandoId: ensureExpandoId,
+		setRangeFromBoundaries: setRangeFromBoundaries
 	};
 
 	exports['offset'] = exports.offset;
@@ -1569,8 +1585,10 @@ define([
 	exports['getElementsByClassNames'] = exports.getElementsByClassNames;
 	exports['attrNames'] = exports.attrNames;
 	exports['hasAttrs'] = exports.hasAttrs;
-	exports['setAttributeNS'] = exports.setAttributeNS;
-	exports['removeAttributeNS'] = exports.removeAttributeNS;
+	exports['setAttr'] = exports.setAttr;
+	exports['removeAttr'] = exports.removeAttr;
+	exports['setAttrNS'] = exports.setAttrNS;
+	exports['removeAttrNS'] = exports.removeAttrNS;
 	exports['attrs'] = exports.attrs;
 	exports['indexByClass'] = exports.indexByClass;
 	exports['indexByName'] = exports.indexByName;

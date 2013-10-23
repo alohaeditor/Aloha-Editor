@@ -4,7 +4,23 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Arrays, Maps, Dom, Fn, Traversing) {
+define([
+	'arrays',
+	'maps',
+	'dom',
+	'boundaries',
+	'functions',
+	'traversing',
+	'ranges'
+], function Undo(
+	Arrays,
+	Maps,
+	Dom,
+	Boundaries,
+	Fn,
+	Traversing,
+	Ranges
+) {
 	'use strict'
 
 
@@ -41,11 +57,11 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		return context;
 	}
 
-	function makeChangeSet(meta, changes) {
+	function makeChangeSet(meta, changes, selection) {
 		return {
-			// API
-			'changes': changes,
-			'meta': meta
+			changes: changes,
+			meta: meta,
+			selection: selection
 		};
 	}
 
@@ -142,6 +158,16 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		return [container, off];
 	}
 
+	function pathFromBoundary(container, boundary) {
+		var node = Dom.nodeAtBoundary(boundary);
+		var textOff = Dom.isTextNode(boundary[0]) ? boundary[1] : null;
+		var path = makePath(container, node, textOff);
+		if (Dom.isBoundaryAtEnd(boundary)) {
+			stepDownPath(path, node.nodeName, Dom.normalizedNumChildren(node));
+		}
+		return path;
+	}
+
 	function takeRecords(context, frame) {
 		// TODO takeRecords() implementation defined
 		var records = context.observer.takeRecords();
@@ -154,22 +180,36 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		        || frame.opts.partitionRecords);
 	}
 
+	function recordRange(container) {
+		var range = Ranges.get();
+		if (!range) {
+			return null;
+		}
+		var start = pathFromBoundary(container, Boundaries.start(range));
+		var end = pathFromBoundary(container, Boundaries.end(range));
+		return start && end ? {start: start, end: end} : null;
+	}
+
 	function enter(context, opts) {
 		opts = opts || {};
 		var frame = context.frame;
 		var observer = context.observer;
+		var elem = context.elem;
 		if (frame) {
 			if (partitionRecords(context, frame)) {
 				takeRecords(context, frame);
 			}
 			context.stack.push(frame);
 		} else {
-			observer.observeAll(context.elem);
+			observer.observeAll(elem);
 		}
+
 		context.frame = {
 			records: [],
 			opts: opts,
-			isFrame: true
+			isFrame: true,
+			oldRange: recordRange(elem),
+			newRange: null
 		};
 	}
 
@@ -194,6 +234,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 			takeRecords(context, frame);
 			close(context);
 		}
+		frame.newRange = recordRange(context.elem);
 		return frame;
 	}
 
@@ -208,9 +249,9 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 
 	function makeInsertDeleteChange(type, path, content) {
 		return {
-			'type': type,
-			'path': path,
-			'content': content
+			type: type,
+			path: path,
+			content: content
 		};
 	}
 
@@ -228,16 +269,24 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 			var name = attr.name;
 			var ns = attr.ns;
 			attrs.push({
-				'name': name,
-				'ns': ns,
-				'oldValue': attr.oldValue,
-				'newValue': Dom.getAttributeNS(node, ns, name)
+				name: name,
+				ns: ns,
+				oldValue: attr.oldValue,
+				newValue: Dom.getAttributeNS(node, ns, name)
 			});
 		});
 		return {
-			'type': 'update-attr',
-			'path': path,
-			'attrs': attrs
+			type: 'update-attr',
+			path: path,
+			attrs: attrs
+		};
+	}
+
+	function makeRangeUpdateChangeFromFrame(frame) {
+		return {
+			type: 'update-range',
+			oldRange: frame.oldRange,
+			newRange: frame.newRange
 		};
 	}
 
@@ -286,14 +335,6 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 			return record.prevSibling || record.target;
 		} else {
 			return record.node;
-		}
-	}
-
-	function setOrRemoveAttribute(node, ns, name, value) {
-		if (null == value) {
-			Dom.removeAttributeNS(node, ns, name);
-		} else {
-			Dom.setAttributeNS(node, ns, name, value);
 		}
 	}
 
@@ -510,14 +551,8 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		var prevSibling = delRecord.prevSibling;
 		var path;
 		if (prevSibling) {
-			var nextSibling = prevSibling.nextSibling;
-			if (nextSibling) {
-				path = makePath(container, nextSibling);
-			} else {
-				var parent = prevSibling.parentNode
-				path = makePath(container, parent);
-				stepDownPath(path, parent.nodeName, Dom.normalizedNumChildren(parent));
-			}
+			var off = Dom.nodeIndex(prevSibling) + 1;
+			path = pathFromBoundary(container, [prevSibling.parentNode, off]);
 		} else {
 			var target = delRecord.target;
 			path = makePath(container, target);
@@ -541,7 +576,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 			var updateAttr = delRecord.updateAttr;
 			if (updateAttr) {
 				Maps.forEach(updateAttr.attrs, function (attr) {
-					setOrRemoveAttribute(reconstructedNode, attr.ns, attr.name, attr.oldValue);
+					Dom.setAttrNS(reconstructedNode, attr.ns, attr.name, attr.oldValue);
 				});
 			}
 		}
@@ -710,18 +745,25 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		};
 	}
 
-	function applyChange(container, change, ranges, textNodes) {
-		var path = change.path;
+	function applyChange(container, change, range, ranges, textNodes) {
 		var type = change.type;
-		var boundary = boundaryFromPath(container, path);
 		switch (type) {
 		case 'update-attr':
 			var node = Dom.nodeAtBoundary(boundary);
 			change.attrs.forEach(function (attr) {
-				setOrRemoveAttribute(node, change.ns, change.name, change.value);
+				Dom.setAttrNS(node, change.ns, change.name, change.value);
 			});
 			break;
+		case 'update-range':
+			var newRange = change.newRange;
+			if (range && newRange) {
+				var startBoundary = boundaryFromPath(container, newRange.start);
+				var endBoundary = boundaryFromPath(container, newRange.end);
+				Dom.setRangeFromBoundaries(range, startBoundary, endBoundary);
+			}
+			break;
 		case 'insert':
+			var boundary = boundaryFromPath(container, change.path);
 			change.content.forEach(function (node) {
 				var insertNode = Dom.clone(node);
 				if (Dom.isTextNode(insertNode)) {
@@ -731,6 +773,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 			});
 			break;
 		case 'delete':
+			var boundary = boundaryFromPath(container, change.path);
 			boundary = Dom.splitBoundary(boundary, ranges);
 			var node = Dom.nodeAtBoundary(boundary);
 			var parent = node.parentNode;
@@ -767,20 +810,23 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 
 	function applyChanges(container, changes, ranges) {
 		// Because a changeSet was calculated with an exact node
-		// structure, we mustn't do any additional modifications like
-		// joining text nodes while applying the entire changeSet. Doing
-		// it afterward is OK.
+		// structure in mind, we mustn't do any additional modifications
+		// like joining text nodes while applying the entire
+		// changeSet. Doing it afterward and between changesets is OK.
 		var textNodes = [];
 		changes.forEach(function (change) {
-			applyChange(container, change, ranges, textNodes);
+			applyChange(container, change, null, ranges, textNodes);
 		});
 		textNodes.forEach(function (node) {
 			Dom.joinTextNode(node, ranges);
 		});
 	}
 
-	function applyChangeSet(container, changeSet, ranges) {
+	function applyChangeSet(container, changeSet, range, ranges) {
 		applyChanges(container, changeSet.changes, ranges);
+		if (range && changeSet.selection) {
+			applyChange(container, changeSet.selection, range, ranges, []);
+		}
 	}
 
 	function inverseChange(change) {
@@ -788,9 +834,16 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		var inverse;
 		switch (type) {
 		case 'update-attr':
-			var oldValue = change.oldValue;
-			var newValue = change.newValue;
-			inverse = Maps.merge(change, {oldValue: newValue, newValue: oldValue});
+			inverse = Maps.merge(change, {
+				oldValue: change.newValue,
+				newValue: change.oldValue
+			});
+			break;
+		case 'update-range':
+			inverse = Maps.merge(change, {
+				oldRange: change.newRange,
+				newRange: change.oldRange
+			});
 			break;
 		case 'insert':
 		case 'delete':
@@ -804,7 +857,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 
 	function inverseChangeSet(changeSet) {
 		var changes = changeSet.changes.slice(0).reverse().map(inverseChange);
-		return makeChangeSet(changeSet.meta, changes);
+		return makeChangeSet(changeSet.meta, changes, inverseChange(changeSet.selection));
 	}
 
 	function collectRecordsFromFrame(frame, records) {
@@ -823,7 +876,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		var records = [];
 		collectRecordsFromFrame(frame, records)
 		var changes = context.observer.changesFromRecords(context.elem, records);
-		return makeChangeSet(frame.opts.meta, changes);
+		return makeChangeSet(frame.opts.meta, changes, makeRangeUpdateChangeFromFrame(frame));
 	}
 
 	function topLevelChangeSetsFromFrame(context, frame) {
@@ -834,7 +887,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 				return;
 			}
 			var changes = context.observer.changesFromRecords(context.elem, records);
-			changeSets.push(makeChangeSet(frame.opts.meta, changes));
+			changeSets.push(makeChangeSet(frame.opts.meta, changes, makeRangeUpdateChangeFromFrame(frame)));
 			records = [];
 		}
 		frame.records.forEach(function (record) {
@@ -861,7 +914,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		context.historyIndex = history.length;
 	}
 
-	function undo(context, ranges) {
+	function undo(context, range, ranges) {
 		var history = context.history;
 		var historyIndex = context.historyIndex;
 		if (!historyIndex) {
@@ -870,18 +923,19 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		historyIndex -= 1;
 		var changeSet = history[historyIndex];
 		var undoChangeSet = inverseChangeSet(changeSet);
-		applyChangeSet(context.elem, undoChangeSet, ranges);
+		applyChangeSet(context.elem, undoChangeSet, range, ranges);
 		context.historyIndex = historyIndex;
 	}
 
-	function redo(context, ranges) {
+	function redo(context, range, ranges) {
 		var history = context.history;
+		var historyIndex = context.historyIndex;
 		if (historyIndex === history.length) {
 			return;
 		}
 		var changeSet = history[historyIndex];
 		historyIndex += 1;
-		applyChangeSet(context.elem, changeSet, ranges);
+		applyChangeSet(context.elem, changeSet, range, ranges);
 		context.historyIndex = historyIndex;
 	}
 
