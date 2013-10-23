@@ -6,10 +6,12 @@
  */
 define([
 	'dom',
-	'predicates'
+	'predicates',
+	'assert'
 ], function Boundaries(
-	dom,
-	Predicates
+	Dom,
+	Predicates,
+	Assert
 ) {
 	'use strict';
 
@@ -54,8 +56,8 @@ define([
 		// <p>{foo</p>
 		//
 		// <p>{<p> ==> {<p></p>
-		if (0 === offset || dom.isTextNode(node)) {
-			return [node.parentNode, dom.nodeIndex(node)];
+		if (0 === offset || Dom.isTextNode(node)) {
+			return [node.parentNode, Dom.nodeIndex(node)];
 		}
 
 		// <p>foo{</p> ==> <p>{foo</p>
@@ -66,9 +68,9 @@ define([
 		// <p>foo{<b></b></p> ==> <p>{foo<b></b></p>
 		node = node.childNodes[offset - 1];
 
-		return (dom.isTextNode(node) || Predicates.isVoidNode(node))
-		     ? [node.parentNode, dom.nodeIndex(node)]
-		     : [node, dom.nodeLength(node)];
+		return (Dom.isTextNode(node) || Predicates.isVoidNode(node))
+		     ? [node.parentNode, Dom.nodeIndex(node)]
+		     : [node, Dom.nodeLength(node)];
 	}
 
 	function next(boundary) {
@@ -83,15 +85,15 @@ define([
 		//
 		// <p><b>foo{</b></p> ==> <p><b>foo</b>{</p>
 		// <p><b>{</b></p> ==> <p><b></b>{</p>
-		if (dom.isTextNode(node) || dom.nodeLength(node) === offset) {
-			return [node.parentNode, dom.nodeIndex(node) + 1];
+		if (Dom.isTextNode(node) || Dom.nodeLength(node) === offset) {
+			return [node.parentNode, Dom.nodeIndex(node) + 1];
 		}
 
 		// <p>{foo</p> ==> <p>foo{</p>
 		// <p>{<b>foo</b></p> ==> <p><b>{foo</b></p>
 		node = node.childNodes[offset];
 
-		return (dom.isTextNode(node) || Predicates.isVoidNode(node))
+		return (Dom.isTextNode(node) || Predicates.isVoidNode(node))
 		     ? [node.parentNode, offset + 1]
 		     : [node, 0];
 	}
@@ -121,7 +123,7 @@ define([
 	function leftNode(boundary) {
 		var node = boundary[0];
 		var offset = boundary[1];
-		return (0 === offset) ? node : dom.nodeAtOffset(node, offset - 1);
+		return (0 === offset) ? node : Dom.nodeAtOffset(node, offset - 1);
 	}
 
 	/**
@@ -133,13 +135,13 @@ define([
 	function rightNode(boundary) {
 		var node = boundary[0];
 		var offset = boundary[1];
-		return (dom.nodeLength(node) === offset)
-		     ? (dom.isTextNode(node) ? node.nextSibling || node.parentNode : node)
-		     : dom.nodeAtOffset(node, offset);
+		return (Dom.nodeLength(node) === offset)
+		     ? (Dom.isTextNode(node) ? node.nextSibling || node.parentNode : node)
+		     : Dom.nodeAtOffset(node, offset);
 	}
 
 	function atEnd(boundary) {
-		return boundary[1] === dom.nodeLength(boundary[0]);
+		return boundary[1] === Dom.nodeLength(boundary[0]);
 	}
 
 	function atStart(boundary) {
@@ -147,15 +149,31 @@ define([
 	}
 
 	function normalize(boundary) {
-		if (!dom.isTextNode(boundary[0])) {
+		if (!Dom.isTextNode(boundary[0])) {
 			return boundary;
 		}
-		var mid = dom.nodeLength(boundary[0]) / 2;
-		var offset = dom.nodeIndex(boundary[0]);
+		var mid = Dom.nodeLength(boundary[0]) / 2;
+		var offset = Dom.nodeIndex(boundary[0]);
 		return [
 			boundary[0].parentNode,
 			(boundary[1] > mid) ? offset + 1 : offset
 		];
+	}
+
+	function isNodeBoundary(boundary) {
+		return !Dom.isTextNode(boundary[0]);
+	}
+
+	function nodeAfter(boundary) {
+		boundary = Dom.normalizeBoundary(boundary);
+		Assert.assertTrue(isNodeBoundary(boundary));
+		return atEnd(boundary) ? null : Dom.nthChild(boundary[0], boundary[1]);
+	}
+
+	function nodeBefore(boundary) {
+		boundary = Dom.normalizeBoundary(boundary);
+		Assert.assertTrue(isNodeBoundary(boundary));
+		return atStart(boundary) ? null : Dom.nthChild(boundary[0], boundary[1] - 1);
 	}
 
 	var exports = {
@@ -170,7 +188,9 @@ define([
 		rightNode : rightNode,
 		atStart   : atStart,
 		atEnd     : atEnd,
-		normalize : normalize
+		normalize : normalize,
+		nodeAfter: nodeAfter,
+		nodeBefore: nodeBefore
 	};
 
 	exports['equal']     = exports.equal;

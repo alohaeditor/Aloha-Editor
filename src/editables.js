@@ -11,8 +11,8 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing', 'undo'], function Un
 		return editor.editables[Dom.ensureExpandoId(elem)];
 	}
 
-	function fromRange(editor, range) {
-		var node = Dom.nodeAtBoundary(Dom.startBoundary(range));
+	function fromBoundary(editor, boundary) {
+		var node = Dom.nodeAtBoundary(boundary);
 		var elem = Traversing.upWhile(node, function (node) {
 			return !editor.editables[Dom.ensureExpandoId(node)];
 		});
@@ -45,7 +45,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing', 'undo'], function Un
 	var exports = {
 		Editable: Editable,
 		fromElem: fromElem,
-		fromRange: fromRange,
+		fromBoundary: fromBoundary,
 		assocIntoEditor: assocIntoEditor,
 		dissocFromEditor: dissocFromEditor,
 		close: close

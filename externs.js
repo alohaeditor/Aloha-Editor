@@ -50,7 +50,8 @@ changeSet.changes = [];
 
 var opts = {};
 // Undo.createContext()
-opts.partitionRecords = true;
 opts.noMutationObserver = true;
 // Undo.enter() / Undo.capture()
+opts.partitionRecords = true;
+opts.noObserve = true;
 opts.meta = {};

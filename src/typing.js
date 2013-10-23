@@ -73,7 +73,7 @@ define([
 	};
 
 	actions['ctrl+90'] = function undo(range, editor) {
-		var editable = Editables.fromRange(editor, range);
+		var editable = Editables.fromBoundary(editor, Dom.startBoundary(range));
 		if (!editable) {
 			return;
 		}
@@ -83,7 +83,7 @@ define([
 	};
 
 	actions['ctrl+shift+90'] = function redo(range, editor) {
-		var editable = Editables.fromRange(editor, range);
+		var editable = Editables.fromBoundary(editor, Dom.startBoundary(range));
 		if (!editable) {
 			return;
 		}
@@ -104,8 +104,15 @@ define([
 				text = '\xa0';
 			}
 		}
-		Dom.insertTextAtBoundary(text, Dom.startBoundary(range), true, [range]);
-		return range;
+		var boundary = Dom.startBoundary(range);
+		var editable = Editables.fromBoundary(editor, boundary);
+		var change = {
+			'type': 'insert',
+			'content': [editable.elem.ownerDocument.createTextNode(text)],
+			'path': Undo.pathFromBoundary(editable.elem, boundary)
+		};
+		Dom.insertTextAtBoundary(text, boundary, true, [range]);
+		return [change, range];
 	};
 
 	actions[Keys.CODES.f1] =
@@ -188,7 +195,7 @@ define([
 	function press(msg, editor) {
 		var range = msg.range;
 		var event = msg.event;
-		if (!msg.range) {
+		if (!range) {
 			return;
 		}
 		var action = actionFromEvent(event, range, editor);
@@ -200,16 +207,19 @@ define([
 		if (!isTextInsertEvent(event)) {
 			return;
 		}
-		var editable = Editables.fromRange(editor, range);
+		var editable = Editables.fromBoundary(editor, Dom.startBoundary(range));
 		if (!editable) {
 			return;
 		}
 		var text = String.fromCharCode(event.which);
 		var undoContext = editable.undoContext;
 		Undo.advanceHistory(undoContext);
-		Undo.capture(undoContext, {meta: {type: 'typing'}}, function () {
-			actions.insertText(range, text, editor)
-			Ranges.select(range);
+		Undo.capture(undoContext, {meta: {type: 'typing'}, noObserve: true}, function () {
+			var changeRange = actions.insertText(range, text, editor);
+			var change = changeRange[0];
+			var resultRange = changeRange[1];
+			Ranges.select(resultRange);
+			return {changes: [change]};
 		});
 		Undo.advanceHistory(undoContext);
 		event.preventDefault();

@@ -566,6 +566,32 @@ define([
 	}
 
 	/**
+	 * Normalizes the boundary point represented by container and offset
+	 * such that it will not point to the start or end of a text node
+	 * which reduces the number of different states the boundary can be
+	 * in, and thereby increases the the robusteness of the code written
+	 * against it slightly.
+	 *
+	 * It should be noted that native ranges controlled by the browser's
+	 * DOM implementation have the habit to change by themselves, so
+	 * even if normalized this way the range could revert to an
+	 * unnormalized state. See StableRange().
+	 */
+	function normalizeBoundary(boundary) {
+		var container = boundary[0];
+		if (isTextNode(container)) {
+			var parent = container.parentNode;
+			var offset = boundary[1];
+			if (!offset && parent) {
+				boundary = [parent, nodeIndex(container)];
+			} else if (offset >= nodeLength(container) && parent) {
+				boundary = [parent, nodeIndex(container) + 1];
+			}
+		}
+		return boundary;
+	}
+
+	/**
 	 * Wraps node `node` in given node `wrapper`.
 	 *
 	 * @param {!Node} node
@@ -726,65 +752,6 @@ define([
 		return before;
 	}
 
-	/**
-	 * Normalizes the boundary point represented by container and offset such
-	 * that it will not point to the start or end of a text node which reduces
-	 * the number of different states the range can be in, and thereby increases
-	 * the the robusteness of the code written against it slightly.
-	 *
-	 * It should be noted that native ranges controlled by the browser's DOM
-	 * implementation have the habit to change by themselves, so even if
-	 * normalized this way the range could revert to an unnormalized state. See
-	 * StableRange().
-	 *
-	 * @private
-	 */
-	function normalizeSetRange(setRange, range, container, offset) {
-		if (Nodes.TEXT === container.nodeType) {
-			var parent = container.parentNode;
-			if (!offset && parent) {
-				offset = nodeIndex(container);
-				container = parent;
-			} else if (offset === container.length && parent) {
-				offset = nodeIndex(container) + 1;
-				container = parent;
-			}
-		}
-		setRange.call(range, container, offset);
-	}
-
-	/**
-	 * Modifies the given range's start boundary and sets the range to the
-	 * browser selection.
-	 *
-	 * @private
-	 * @param {!Range} range
-	 *        Range objec to modify.
-	 * @param {!Node} container
-	 *        DOM node to set as the start container.
-	 * @param {number} offset
-	 *        The offset into `container`.
-	 */
-	function setRangeStart(range, container, offset) {
-		normalizeSetRange(range.setStart, range, container, offset);
-	}
-
-	/**
-	 * Modifies the given range's end boundary and sets the range to the browser
-	 * selection.
-	 *
-	 * @private
-	 * @param {!Range} range
-	 *        Range objec to modify.
-	 * @param {!Node} container
-	 *        DOM node to set as the end container.
-	 * @param {Number} offset
-	 *        The offset into `container`.
-	 */
-	function setRangeEnd(range, container, offset) {
-		normalizeSetRange(range.setEnd, range, container, offset);
-	}
-
 	function adjustBoundaryAfterSplit(boundary, splitNode, splitOffset,
 	                                  newNodeBeforeSplit) {
 		var container = boundary[0];
@@ -846,16 +813,33 @@ define([
 		var container = boundary[0];
 		var offset = boundary[1];
 		if (insertContainer === container && (insertBefore ? offset >= insertOff : offset > insertOff)) {
-			offset += len;
+			boundary = [container, offset + len];
 		}
-		return [container, offset];
+		return boundary;
 	}
 
 	function adjustBoundaryAfterTextInsert(boundary, node, off, len, insertBefore) {
-		return adjustBoundaryAfterInsert(boundary, node, off, len, insertBefore);
+		boundary = normalizeBoundary(boundary);
+		var container = boundary[0];
+		var offset = boundary[1];
+		// Because we must adjust boundaries adjacent to the insert
+		// correctly, even if they are not inside the text node but
+		// between nodes, we must move them in temporarily and normalize
+		// again afterwards.
+		if (!isTextNode(container)) {
+			var next = offset < numChildren(container) ? nthChild(container, offset) : null;
+			var prev = offset > 0 ? nthChild(container, offset - 1) : null;
+			if (next === node) {
+				boundary = [next, 0];
+			} else if (prev === node) {
+				boundary = [prev, nodeLength(prev)];
+			}
+		}
+		return normalizeBoundary(adjustBoundaryAfterInsert(boundary, node, off, len, insertBefore));
 	}
 
 	function adjustBoundaryAfterNodeInsert(boundary, node, insertBefore) {
+		boundary = normalizeBoundary(boundary);
 		return adjustBoundaryAfterInsert(boundary, node.parentNode, nodeIndex(node), 1, insertBefore);
 	}
 
@@ -875,17 +859,33 @@ define([
 		return [range.endContainer, range.endOffset];
 	}
 
+	/**
+	 * Sets the given range's start boundary.
+	 *
+	 * @param {!Range} range Range objec to modify.
+	 */
 	function setRangeStartFromBoundary(range, boundary) {
-		setRangeStart(range, boundary[0], boundary[1]);
+		boundary = normalizeBoundary(boundary);
+		range.setStart(boundary[0], boundary[1]);
 	}
 
+	/**
+	 * Sets the given range's end boundary.
+	 *
+	 * @param {!Range} range Range objec to modify.
+	 */
 	function setRangeEndFromBoundary(range, boundary) {
-		setRangeEnd(range, boundary[0], boundary[1]);
+		boundary = normalizeBoundary(boundary);
+		range.setEnd(boundary[0], boundary[1]);
 	}
 
 	function setRangeFromBoundaries(range, startBoundary, endBoundary) {
 		setRangeStartFromBoundary(range, startBoundary);
 		setRangeEndFromBoundary(range, endBoundary);
+	}
+
+	function boundariesFromRange(range) {
+		return [startBoundary(range), endBoundary(range)];
 	}
 
 	function boundariesFromRanges(ranges) {
@@ -908,10 +908,6 @@ define([
 		});
 	}
 
-	function boundariesFromRange(range) {
-		return [startBoundary(range), endBoundary(range)];
-	}
-
 	/**
 	 * Splits the given text node at the given offset and, if the given
 	 * range happens to have start or end containers equal to the given
@@ -921,10 +917,7 @@ define([
 	function splitBoundary(boundary, ranges) {
 		var splitNode = boundary[0];
 		var splitOffset = boundary[1];
-		if (Nodes.TEXT !== splitNode.nodeType) {
-			return boundary;
-		}
-		if (wouldSplitTextNode(splitNode, splitOffset)) {
+		if (isTextNode(splitNode) && wouldSplitTextNode(splitNode, splitOffset)) {
 			var boundaries = boundariesFromRanges(ranges);
 			boundaries.push(boundary);
 			var nodeBeforeSplit = splitTextNode(splitNode, splitOffset);
@@ -1024,21 +1017,25 @@ define([
 		}
 		var container = boundary[0];
 		var offset = boundary[1];
+		if (isTextNode(container) && offset < nodeLength(container)) {
+			container.insertData(offset, text);
+			return adjustRangesAfterTextInsert(container, offset, text.length, insertBefore, ranges);
+		}
 		var node = nodeAtOffset(container, offset);
 		var atEnd = isAtEnd(container, offset);
 		// Because if the node following the insert position is already a text
 		// node we can just reuse it.
 		if (isTextNode(node)) {
-			var off = isTextNode(container) ? offset : 0;
-			node.insertData(off, text);
-			return adjustRangesAfterTextInsert(node, off, text.length, insertBefore, ranges);
+			node.insertData(0, text);
+			return adjustRangesAfterTextInsert(node, 0, text.length, insertBefore, ranges);
 		}
 		// Because if the node preceding the insert position is already a text
 		// node we can just reuse it.
 		var prev = atEnd ? node.lastChild : node.previousSibling;
 		if (prev && isTextNode(prev)) {
-			prev.insertData(prev.length, text);
-			return adjustRangesAfterTextInsert(node, off, text.length, insertBefore, ranges);
+			var off = nodeLength(prev);
+			prev.insertData(off, text);
+			return adjustRangesAfterTextInsert(prev, off, text.length, insertBefore, ranges);
 		}
 		// Because if we can't reuse any text nodes, we have to insert a new
 		// one.
@@ -1535,6 +1532,7 @@ define([
 		nodeLength: nodeLength,
 		nodeAtOffset: nodeAtOffset,
 		nodeAtBoundary: nodeAtBoundary,
+		normalizeBoundary: normalizeBoundary,
 		isBoundaryAtEnd: isBoundaryAtEnd,
 		startBoundary: startBoundary,
 		endBoundary: endBoundary,

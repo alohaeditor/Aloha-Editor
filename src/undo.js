@@ -11,7 +11,8 @@ define([
 	'boundaries',
 	'functions',
 	'traversing',
-	'ranges'
+	'ranges',
+	'assert'
 ], function Undo(
 	Arrays,
 	Maps,
@@ -19,26 +20,10 @@ define([
 	Boundaries,
 	Fn,
 	Traversing,
-	Ranges
+	Ranges,
+	Assert
 ) {
 	'use strict'
-
-
-	function assertEqual(a, b) {
-		if (a !== b) {
-			throw Error('assertion error ' + a + ' !== ' + b);
-		}
-	}
-
-	function assertNotEqual(a, b) {
-		if (a === b) {
-			throw Error('assertion error ' + a + ' === ' + b);
-		}
-	}
-
-	function assertFalse(value) {
-		assertEqual(value, false);
-	}
 
 	function Context(elem, opts) {
 		opts = opts || {};
@@ -131,17 +116,17 @@ define([
 	function boundaryFromPath(container, path) {
 		for (var i = 0; i < path.length - 1; i++) {
 			var step = path[i];
-			assertEqual(step[1], container.nodeName);
+			Assert.assertEqual(step[1], container.nodeName);
 			container = Dom.normalizedNthChild(container, step[0]);
 		}
 		var lastStep = Arrays.last(path);
 		var off = lastStep[0];
 		container = Traversing.nextWhile(container, Dom.isEmptyTextNode);
 		// NB: container must be non-null at this point.
-		assertEqual(lastStep[1], container.nodeName);
+		Assert.assertEqual(lastStep[1], container.nodeName);
 		if (Dom.isTextNode(container)) {
 			// Because text offset paths with value 0 are invalid.
-			assertNotEqual(off, 0);
+			Assert.assertNotEqual(off, 0);
 			while (off > Dom.nodeLength(container)) {
 				off -= Dom.nodeLength(container);
 				container = container.nextSibling;
@@ -159,25 +144,21 @@ define([
 	}
 
 	function pathFromBoundary(container, boundary) {
-		var node = Dom.nodeAtBoundary(boundary);
-		var textOff = Dom.isTextNode(boundary[0]) ? boundary[1] : null;
+		var boundaryNode = boundary[0];
+		var boundaryOffset = boundary[1];
+		var node;
+		var textOff = null;
+		if (Dom.isTextNode(boundaryNode)) {
+			node = boundaryNode;
+			textOff = boundaryOffset;
+		} else {
+			node = Dom.nodeAtBoundary(boundary);
+		}
 		var path = makePath(container, node, textOff);
 		if (Dom.isBoundaryAtEnd(boundary)) {
 			stepDownPath(path, node.nodeName, Dom.normalizedNumChildren(node));
 		}
 		return path;
-	}
-
-	function takeRecords(context, frame) {
-		// TODO takeRecords() implementation defined
-		var records = context.observer.takeRecords();
-		frame.records = frame.records.concat(records);
-	}
-
-	function partitionRecords(context, frame) {
-		return (!context.observer.takeRecordsSlow
-		        || context.opts.partitionRecords
-		        || frame.opts.partitionRecords);
 	}
 
 	function recordRange(container) {
@@ -190,27 +171,19 @@ define([
 		return start && end ? {start: start, end: end} : null;
 	}
 
-	function enter(context, opts) {
-		opts = opts || {};
-		var frame = context.frame;
-		var observer = context.observer;
-		var elem = context.elem;
-		if (frame) {
-			if (partitionRecords(context, frame)) {
-				takeRecords(context, frame);
-			}
-			context.stack.push(frame);
-		} else {
-			observer.observeAll(elem);
-		}
+	function takeRecords(context, frame) {
+		// TODO takeRecords() implementation defined
+		var records = context.observer.takeRecords();
+		frame.records = frame.records.concat(records);
+	}
 
-		context.frame = {
-			records: [],
-			opts: opts,
-			isFrame: true,
-			oldRange: recordRange(elem),
-			newRange: null
-		};
+	function partitionRecords(context, frame, upperLowerFrame) {
+		if (!context.observer.takeRecordsSlow
+		    || frame.opts.partitionRecords
+		    || upperLowerFrame.opts.partitionRecords
+		    || !!frame.opts.noObserve !== !!upperLowerFrame.opts.noObserve) {
+			takeRecords(context, frame);
+		}
 	}
 
 	function close(context) {
@@ -220,31 +193,73 @@ define([
 		}
 	}
 
-	function leave(context) {
+	function enter(context, opts) {
+		opts = opts || {};
+		var upperFrame = context.frame;
+		var observer = context.observer;
+		var elem = context.elem;
+		var frame = {
+			opts: opts,
+			isFrame: true,
+			records: [],
+			result: null,
+			oldRange: recordRange(elem),
+			newRange: null
+		};
+		if (upperFrame) {
+			partitionRecords(context, upperFrame, frame);
+			context.stack.push(upperFrame);
+		} else {
+			observer.observeAll(elem);
+		}
+		context.frame = frame;
+	}
+
+	function leave(context, result) {
 		var frame = context.frame;
 		var observer = context.observer;
 		var upperFrame = context.stack.pop();;
 		if (upperFrame) {
-			if (partitionRecords(context, frame)) {
-				takeRecords(context, frame);
-			}
+			partitionRecords(context, frame, upperFrame);
 			upperFrame.records.push(frame);
 			context.frame = upperFrame;
 		} else {
 			takeRecords(context, frame);
 			close(context);
 		}
+		var noObserve = frame.opts.noObserve;
+		// Because we expect either a result to be returned by the
+		// capture function, or observed by the observer, but not both.
+		Assert.assertFalse(!!(!noObserve && result));
+		// TODO we should optimize the ObserverUsingSnapshots so that a
+		// snapshot isn't created when we don't observe.
+		if (noObserve) {
+			takeRecords(context, frame);
+			frame.records = [];
+		}
 		frame.newRange = recordRange(context.elem);
+		frame.result = result;
 		return frame;
 	}
 
 	function capture(context, opts, fn) {
 		enter(context, opts);
+		var result;
 		try {
-			fn();
+			result = fn();
 		} finally {
-			return leave(context);
+			return leave(context, result);
 		}
+	}
+
+	function captureOffTheRecord(context, opts, fn) {
+		var frame = capture(context, Maps.merge(opts, {noObserve: true}), fn);
+		// Because leave() will push the captured frame onto the
+		// upperFrame.
+		if (context.frame) {
+			context.frame.records.pop();
+		}
+		return frame;
 	}
 
 	function makeInsertDeleteChange(type, path, content) {
@@ -383,7 +398,7 @@ define([
 				}
 				break;
 			case INSERT:
-				assertFalse(!!inserted[id]);
+				Assert.assertFalse(!!inserted[id]);
 				inserted[id] =  move;
 				break;
 			default:
@@ -783,21 +798,24 @@ define([
 					var removedLen = Dom.nodeLength(removedNode);
 					while (removedLen) {
 						next = node.nextSibling;
-						assertEqual(node.nodeName, removedNode.nodeName);
+						Assert.assertEqual(node.nodeName, removedNode.nodeName);
 						var len = Dom.nodeLength(node);
 						if (removedLen >= len) {
 							Dom.removePreservingRanges(node, ranges);
 							removedLen -= len;
 						} else {
-							var beforeSplit = Dom.splitBoundary([node, removedLen], ranges);
-							Dom.removePreservingRanges(beforeSplit[0], ranges);
+							boundary = Dom.splitBoundary([node, removedLen], ranges);
+							var nodeBeforeSplit = Boundaries.nodeBefore(boundary);
+							var nodeAfterSplit = Boundaries.nodeAfter(boundary);
+							Dom.removePreservingRanges(nodeBeforeSplit, ranges);
 							removedLen = 0;
+							textNodes.push(nodeAfterSplit);
 						}
 						node = next;
 					}
 				} else {
 					next = node.nextSibling;
-					assertEqual(node.nodeName, removedNode.nodeName);
+					Assert.assertEqual(node.nodeName, removedNode.nodeName);
 					Dom.removePreservingRanges(node, ranges);
 					node = next;
 				}
@@ -873,10 +891,18 @@ define([
 	}
 
 	function changeSetFromFrame(context, frame) {
+		var rangeUpdateChange = makeRangeUpdateChangeFromFrame(frame);
+		var result = frame.result;
+		// Because we expect either a result to be returned by the
+		// capture function, or observed by the observer, but not both.
+		Assert.assertFalse(!!(frame.records.length && result));
+		if (result) {
+			return makeChangeSet(frame.opts.meta, result.changes, rangeUpdateChange);
+		}
 		var records = [];
 		collectRecordsFromFrame(frame, records)
 		var changes = context.observer.changesFromRecords(context.elem, records);
-		return makeChangeSet(frame.opts.meta, changes, makeRangeUpdateChangeFromFrame(frame));
+		return makeChangeSet(frame.opts.meta, changes, rangeUpdateChange);
 	}
 
 	function topLevelChangeSetsFromFrame(context, frame) {
@@ -887,7 +913,8 @@ define([
 				return;
 			}
 			var changes = context.observer.changesFromRecords(context.elem, records);
-			changeSets.push(makeChangeSet(frame.opts.meta, changes, makeRangeUpdateChangeFromFrame(frame)));
+			var rangeUpdateChange = makeRangeUpdateChangeFromFrame(frame);
+			changeSets.push(makeChangeSet(frame.opts.meta, changes, rangeUpdateChange));
 			records = [];
 		}
 		frame.records.forEach(function (record) {
@@ -923,7 +950,9 @@ define([
 		historyIndex -= 1;
 		var changeSet = history[historyIndex];
 		var undoChangeSet = inverseChangeSet(changeSet);
-		applyChangeSet(context.elem, undoChangeSet, range, ranges);
+		captureOffTheRecord(context, {meta: {type: 'undo'}}, function () {
+			applyChangeSet(context.elem, undoChangeSet, range, ranges);
+		});
 		context.historyIndex = historyIndex;
 	}
 
@@ -935,7 +964,9 @@ define([
 		}
 		var changeSet = history[historyIndex];
 		historyIndex += 1;
-		applyChangeSet(context.elem, changeSet, range, ranges);
+		captureOffTheRecord(context, {meta: {type: 'redo'}}, function () {
+			applyChangeSet(context.elem, changeSet, range, ranges);
+		});
 		context.historyIndex = historyIndex;
 	}
 
@@ -948,6 +979,7 @@ define([
 		close: close,
 		leave: leave,
 		capture: capture,
+		pathFromBoundary: pathFromBoundary,
 		changeSetFromFrame: changeSetFromFrame,
 		inverseChangeSet: inverseChangeSet,
 		applyChangeSet: applyChangeSet,
