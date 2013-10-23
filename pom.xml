@@ -68,6 +68,21 @@
 
 	<build>
 		<plugins>
+			<!-- Don't deploy any jars -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>never</phase>
+						<configuration>
+							<finalName>unwanted</finalName>
+							<classifier>unwanted</classifier>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -467,8 +482,8 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	
-	
+
+
 	<repositories>
 		<repository>
 			<id>archiva.lan.internal</id>
