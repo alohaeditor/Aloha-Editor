@@ -195,6 +195,10 @@
 					}
 				}
 				function main(ranges, editing, pubsub) {
+					var editables = document.getElementsByClassName('aloha-editable');
+					aloha.arrays.coerce(editables).forEach(function (node) {
+						aloha.aloha(node);
+					});
 					return;
 					var range = ranges.create(
 						document.getElementsByTagName('b')[0], 1,

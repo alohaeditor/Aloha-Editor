@@ -31,7 +31,9 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 			observer: null,
 			stack: [],
 			frame: null,
-			opts: opts
+			opts: opts,
+			history: [],
+			historyIndex: 0
 		};
 		context.observer = (!opts.noMutationObserver && window.MutationObserver
 		                    ? ObserverUsingMutationObserver()
@@ -61,6 +63,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 			stepDownPath(path, parent.nodeName, Dom.normalizedNodeIndex(node));
 			node = parent;
 		}
+		path.reverse();
 		return path;
 	}
 
@@ -744,7 +747,7 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 							removedLen -= len;
 						} else {
 							var beforeSplit = Dom.splitBoundary([node, removedLen], ranges);
-							Dom.removePreservingRanges(beforeSplit, ranges);
+							Dom.removePreservingRanges(beforeSplit[0], ranges);
 							removedLen = 0;
 						}
 						node = next;
@@ -823,6 +826,65 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		return makeChangeSet(frame.opts.meta, changes);
 	}
 
+	function topLevelChangeSetsFromFrame(context, frame) {
+		var changeSets = [];
+		var records = [];
+		function bundleTopLevelRecords() {
+			if (!records.length) {
+				return;
+			}
+			var changes = context.observer.changesFromRecords(context.elem, records);
+			changeSets.push(makeChangeSet(frame.opts.meta, changes));
+			records = [];
+		}
+		frame.records.forEach(function (record) {
+			if (record.isFrame) {
+				bundleTopLevelRecords();
+				changeSets.push(changeSetFromFrame(context, record));
+			} else {
+				records.push(record);
+			}
+		});
+		bundleTopLevelRecords();
+		return changeSets;
+	}
+
+	function advanceHistory(context) {
+		var history = context.history;
+		var historyIndex = context.historyIndex;
+		history.length = historyIndex;
+		var frame = context.frame;
+		var newChanges = topLevelChangeSetsFromFrame(context, frame);
+		history = history.concat(newChanges);
+		frame.records = [];
+		context.history = history;
+		context.historyIndex = history.length;
+	}
+
+	function undo(context, ranges) {
+		var history = context.history;
+		var historyIndex = context.historyIndex;
+		if (!historyIndex) {
+			return;
+		}
+		historyIndex -= 1;
+		var changeSet = history[historyIndex];
+		var undoChangeSet = inverseChangeSet(changeSet);
+		applyChangeSet(context.elem, undoChangeSet, ranges);
+		context.historyIndex = historyIndex;
+	}
+
+	function redo(context, ranges) {
+		var history = context.history;
+		if (historyIndex === history.length) {
+			return;
+		}
+		var changeSet = history[historyIndex];
+		historyIndex += 1;
+		applyChangeSet(context.elem, changeSet, ranges);
+		context.historyIndex = historyIndex;
+	}
+
 	/**
 	 * Stateless functions for undo support.
 	 */
@@ -834,7 +896,10 @@ define(['arrays', 'maps', 'dom', 'functions', 'traversing'], function Undo(Array
 		capture: capture,
 		changeSetFromFrame: changeSetFromFrame,
 		inverseChangeSet: inverseChangeSet,
-		applyChangeSet: applyChangeSet
+		applyChangeSet: applyChangeSet,
+		advanceHistory: advanceHistory,
+		undo: undo,
+		redo: redo
 	};
 
 	exports['Context'] = exports.Context;

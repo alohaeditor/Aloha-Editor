@@ -841,6 +841,7 @@ define([
 		findThrough: findThrough,
 		nextWhile: nextWhile,
 		prevWhile: prevWhile,
+		upWhile: upWhile,
 		walk: walk,
 		walkRec: walkRec,
 		walkUntil: walkUntil,
@@ -868,6 +869,7 @@ define([
 	exports['forward'] = exports.forward;
 	exports['nextWhile'] = exports.nextWhile;
 	exports['prevWhile'] = exports.prevWhile;
+	exports['upWhile'] = exports.upWhile;
 	exports['walk'] = exports.walk;
 	exports['walkRec'] = exports.walkRec;
 	exports['walkUntil'] = exports.walkUntil;

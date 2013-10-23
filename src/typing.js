@@ -12,7 +12,9 @@ define([
 	'editing',
 	'traversing',
 	'functions',
-	'strings'
+	'strings',
+	'editables',
+	'undo'
 ], function Typing(
 	Dom,
 	Keys,
@@ -21,11 +23,13 @@ define([
 	Editing,
 	Traversing,
 	Fn,
-	Strings
+	Strings,
+	Editables,
+	Undo
 ) {
 	'use strict';
 
-	function delete_(range, direction, context) {
+	function delete_(range, direction, editor) {
 		var collapsed = range.collapsed;
 		if (collapsed) {
 			range = (
@@ -34,43 +38,64 @@ define([
 					: Ranges.expandBackwardToVisiblePosition
 			)(range);
 		}
-		Editing.delete(Ranges.expandToVisibleCharacter(range), context);
+		Editing.delete(Ranges.expandToVisibleCharacter(range), editor);
 		return range;
 	}
 
 	var actions = {};
 
-	actions[Keys.CODES.backspace] = function deleteBackwards(range, context) {
-		delete_(range, false, context);
+	actions[Keys.CODES.backspace] = function deleteBackwards(range, editor) {
+		delete_(range, false, editor);
 		return range;
 	};
 
-	actions[Keys.CODES.delete] = function deleteForward(range, context) {
-		delete_(range, true, context);
+	actions[Keys.CODES.delete] = function deleteForward(range, editor) {
+		delete_(range, true, editor);
 		return range;
 	};
 
-	actions[Keys.CODES.enter] = function breakBlock(range, context) {
+	actions[Keys.CODES.enter] = function breakBlock(range, editor) {
 		Editing.break(
-			range.collapsed ? range : delete_(range, true, context),
-			context,
+			range.collapsed ? range : delete_(range, true, editor),
+			editor,
 			false
 		);
 		return range;
 	};
 
-	actions['shift+' + Keys.CODES.enter] = function breakLine(range, context) {
+	actions['shift+' + Keys.CODES.enter] = function breakLine(range, editor) {
 		Editing.break(
-			range.collapsed ? range : delete_(range, true, context),
-			context,
+			range.collapsed ? range : delete_(range, true, editor),
+			editor,
 			true
 		);
 		return range;
 	};
 
-	actions.insertText = function insertText(range, text, context) {
+	actions['ctrl+90'] = function undo(range, editor) {
+		var editable = Editables.fromRange(editor, range);
+		if (!editable) {
+			return;
+		}
+		var undoContext = editable.undoContext;
+		Undo.undo(undoContext, [range]);
+		return range;
+	};
+
+	actions['ctrl+shift+90'] = function redo(range, editor) {
+		var editable = Editables.fromRange(editor, range);
+		if (!editable) {
+			return;
+		}
+		var undoContext = editable.undoContext;
+
+		Undo.redo(undoContext, [range]);
+		return range;
+	};
+
+	actions.insertText = function insertText(range, text, editor) {
 		if (!range.collapsed) {
-			range = delete_(range, true, context);
+			range = delete_(range, true, editor);
 		}
 		if (' ' === text) {
 			var elem = Dom.nodeAtOffset(range.startContainer, range.startOffset);
@@ -104,21 +129,52 @@ define([
 		return !Strings.isControlCharacter(chr);
 	}
 
-	function down(msg, context) {
+	function actionFromEvent(event) {
+		var which = 'keypress' === event.type ? String.fromCharCode(event.which) : event.which;
+		var meta = '';
+		if (event.altKey && (Keys.CODES.alt !== which)) {
+			meta += 'alt+';
+		}
+		if (event.ctrlKey && (Keys.CODES.control !== which)) {
+			meta += 'ctrl+';
+		}
+		if (event.shiftKey && (Keys.CODES.shift !== which)) {
+			meta += 'shift+';
+		}
+		return actions[meta + which];
+		
+	}
+
+	/**
+	 * Most browsers store the keyCode/charCode in event.which, except
+	 * IE <= 8 which stores it in event.keyCode.
+	 *
+	 * Only the keypress event reliably provides the character
+	 * information.
+	 *
+	 * http://stackoverflow.com/questions/4285627/javascript-keycode-vs-charcode-utter-confusion
+	 * http://unixpapa.com/js/key.html
+	 */
+	function charCode(event) {
+		var which = event.which;
+		return null != which ? which : event.keyCode;
+	}
+
+	function applyAction(action, range, editor) {
+		range = action(range, editor);
+		Html.prop(range.commonAncestorContainer);
+		Ranges.select(range);
+	}
+
+	function down(msg, editor) {
 		var range = msg.range;
 		var event = msg.event;
-		var code = msg.code;
 		if (!msg.range) {
 			return;
 		}
-		var meta = event.shiftKey && (Keys.CODES.shift !== code)
-		         ? 'shift+' : '';
-		var action = actions[meta + code];
-		var range;
+		var action = actionFromEvent(event);
 		if (action) {
-			range = action(range, context);
-			Html.prop(range.commonAncestorContainer);
-			Ranges.select(range);
+			applyAction(action, range, editor);
 			event.preventDefault();
 		}
 	}
@@ -130,17 +186,35 @@ define([
 	 * since only the keypress event will have a keyCode (which) that is
 	 * convertible to the correct unicode character.
 	 */
-	function press(msg, context) {
+	function press(msg, editor) {
 		var range = msg.range;
 		var event = msg.event;
 		if (!msg.range) {
 			return;
 		}
-		if (isTextInsertEvent(event)) {
-			var text = String.fromCharCode(event.which);
-			Ranges.select(actions.insertText(range, text, context));
+		var action = actionFromEvent(event, range, editor);
+		if (action) {
+			applyAction(action);
 			event.preventDefault();
+			return;
 		}
+		if (!isTextInsertEvent(event)) {
+			return;
+		}
+		var editable = Editables.fromRange(editor, range);
+		if (!editable) {
+			return;
+		}
+		var text = String.fromCharCode(event.which);
+		Ranges.select();
+		var undoContext = editable.undoContext;
+		Undo.advanceHistory(undoContext);
+		Undo.capture(undoContext, {meta: {type: 'typing'}}, function () {
+			actions.insertText(range, text, editor)
+		});
+		Ranges.select(range);
+		Undo.advanceHistory(undoContext);
+		event.preventDefault();
 	}
 
 	var exports = {

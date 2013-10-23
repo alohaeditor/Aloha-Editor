@@ -33,7 +33,8 @@ define([
 	'strings',
 	'traversing',
 	'typing',
-	'undo'
+	'undo',
+	'editables'
 ], function Aloha(
 	Arrays,
 	Boundaries,
@@ -59,7 +60,8 @@ define([
 	Strings,
 	Traversing,
 	Typing,
-	Undo
+	Undo,
+	Editables
 ) {
 	'use strict';
 
@@ -70,7 +72,7 @@ define([
 	Events.add(document, 'mousedown', Mouse.onDown);
 	Events.add(document, 'mousemove', Mouse.onMove);
 
-	var context = {
+	var editor = {
 		settings: {
 			defaultBlockNodeName: 'div'
 		},
@@ -78,38 +80,12 @@ define([
 		editables: {}
 	};
 
-	function contextFromEditable(elem) {
-		return elem['!aloha-context'];
-	}
-
-	function contextFromRange(range) {
-		var node = Dom.nodeAtBoundary(Dom.startBoundary(range));
-	}
-
-	function ensureEditableContext(context, elem) {
-		var undoContext = Undo.Context(elem);
-		var id = Dom.ensureExpandoId(elem);
-		var editableContext = context.editables[id] = {
-			elem: elem,
-			undoContext: undoContext
-		};
-		return editableContext;
-	}
-
-	function closeEditableContext(editableContext) {
-		Undo.close(editableContext.undoContext);
-	}
-
 	Keys.down(function (msg) {
-		Typing.down(msg, context);
+		Typing.down(msg, editor);
 	});
 
 	Keys.press(function (msg) {
-		Typing.press(msg, context);
-	});
-
-	document.addEventListener('keypress', function (event) {
-		Typing.press(alohaContext, event);
+		Typing.press(msg, editor);
 	});
 
 	/**
@@ -118,8 +94,9 @@ define([
 	 * Also serves as short aloha.aloha.
 	 */
 	function aloha(elem) {
-		var editableContext = ensureEditableContext(context, elem);
-		Undo.enter(editableContext.undoContext, {
+		var editable = Editables.Editable(elem);
+		Editables.assocIntoEditor(editor, editable);
+		Undo.enter(editable.undoContext, {
 			meta: {type: 'external'},
 			partitionRecords: true
 		});
@@ -127,8 +104,9 @@ define([
 	}
 
 	function mahalo(elem) {
-		var context = ensureEditableContext(context, elem);
-		closeEditableContext(context);
+		var editable = Editables.fromElem(editor, elem);
+		Editables.close(editable);
+		Editables.dissocFromEditor(editor, editable);
 		elem.removeAttribute('contentEditable');
 	}
 
