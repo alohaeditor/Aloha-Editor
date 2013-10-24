@@ -970,10 +970,9 @@ define([
 		 * Helper function that will set the new image size using the field values
 		 */
 		setSizeByFieldValue: function () {
-			var plugin = this;
-			var width =  $('#' + plugin.ui.imgResizeWidthField.getInputId()).val();
-			var height = $('#' + plugin.ui.imgResizeHeightField.getInputId()).val();
-			plugin.setSize(width, height);
+			var width =  this.ui.imgResizeWidthField.getValue();
+			var height = this.ui.imgResizeHeightField.getValue();
+			this.setSize(width, height);
 		},
 
 		/**
@@ -982,10 +981,11 @@ define([
 		 * @param height new image-height in pixels
 		 */
 		_applyValuesToFields: function (width, height) {
-			$("#" + this.ui.imgResizeWidthField.getInputId()).val(width);
-			$("#" + this.ui.imgResizeHeightField.getInputId()).val(height);
-			$('#' + this.ui.imgResizeWidthField.getInputId()).css('background-color', '');
-			$('#' + this.ui.imgResizeHeightField.getInputId()).css('background-color', '');
+			this.ui.imgResizeWidthField.setValue(width);
+			this.ui.imgResizeHeightField.setValue(height);
+
+			this.ui.imgResizeWidthField.getInputJQuery().css('background-color', '');
+			this.ui.imgResizeHeightField.getInputJQuery().css('background-color', '');
 		},
 
 		/**
@@ -997,20 +997,16 @@ define([
 		 * when calculating the field values
 		 */
 		setCropAreaByFieldValue: function () {
+			var currentCropArea = this.jcAPI.tellSelect();
 
-			var plugin = this;
-			var currentCropArea = plugin.jcAPI.tellSelect();
-
-			var width =  $('#' + plugin.ui.imgResizeWidthField.getInputId()).val();
-			width = parseInt(width, 10);
-			var height = $('#' + plugin.ui.imgResizeHeightField.getInputId()).val();
-			height = parseInt(height, 10);
+			var width =  parseInt(this.ui.imgResizeWidthField.getValue(), 10);
+			var height = parseInt(this.ui.imgResizeHeightField.getValue(), 10);
 
 			var selection = [currentCropArea['x'], currentCropArea['y'], currentCropArea['x'] + width,currentCropArea['y'] + height];
 
-			plugin.jcAPI.setSelect(selection);
-			plugin._onCropSelect();
-			plugin.jcAPI.enable();
+			this.jcAPI.setSelect(selection);
+			this._onCropSelect();
+			this.jcAPI.enable();
 		},
 
 		/**

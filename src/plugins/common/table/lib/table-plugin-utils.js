@@ -1,11 +1,13 @@
 define([
 	'jquery',
 	'aloha/copypaste',
-	'util/browser'
+	'util/browser',
+	'aloha/console'
 ], function (
 	$,
 	CopyPaste,
-	Browser
+	Browser,
+    Console
 ) {
 	'use strict';
 
@@ -532,7 +534,7 @@ define([
 					try {
 						CopyPaste.selectAllOf(element)
 					} catch (e) {
-						console.error (e.message);
+						Console.error ('Table', e.message);
 					}
 				} else {
 					CopyPaste.selectAllOf(element);
