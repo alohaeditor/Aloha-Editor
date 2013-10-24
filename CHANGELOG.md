@@ -12,7 +12,7 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
-## 0.24.24 - 2013/10/24
+## 0.23.24 - 2013/10/24
 
 - **BUGFIX**: WAI input text is mistaken by the Caption Table
               Putting the image of WAI inside the input text we make clear that this
