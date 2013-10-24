@@ -100,8 +100,10 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			return -1;
 		}
 
-		var childNodes = node.parentNode.childNodes;
-		for (var i = 0, len = childNodes.length; i < len; i++) {
+		var i,
+		    childNodes = node.parentNode.childNodes,
+			len = childNodes.length;
+		for (i = 0; i < len; i++) {
 			if (childNodes[i] === node) {
 				return i;
 			}

@@ -70,8 +70,10 @@ define([
 	 * is 'tagName'
 	 */
 	function findTagInRangeTreeRecursion(array, tagName, objs) {
-		var element;
-		for (var i = 0, len = array.length; i < len; i++) {
+		var element,
+			i,
+			len = array.length;
+		for (i = 0; i < len; i++) {
 			element = array[i];
 			if (element.type !== 'none' && element.type !== 'collapsed') {
 				if (element.domobj.nodeName === tagName) {
