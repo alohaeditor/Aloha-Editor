@@ -1342,7 +1342,9 @@ define([
 			focusTable.hasFocus = true;
 		}
 		TablePlugin.activeTable = focusTable;
-		updateWaiImage(TablePlugin);
+		if (TablePlugin.activeTable) {
+			updateWaiImage(TablePlugin);
+		}
 
 		// show configured formatting classes
 		for (var i = 0; i < this.tableMSItems.length; i++) {
