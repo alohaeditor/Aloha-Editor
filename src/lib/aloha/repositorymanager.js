@@ -49,24 +49,24 @@ define([
 	 * @param {function:boolean} predicate
 	 * @return {Array} Sub set of domain
 	 */
-	var filter = (function(predicate) {
+	var filter = (function (predicate) {
 		if (predicate) {
-			return function(domain, predicate) {
+			return function (domain, predicate) {
 				return domain.filter(predicate);
 			};
 		}
 
-		return function(domain, predicate) {
-				var codomain = [],
-					i,
-					len = domain.length;
-				for (i = 0; i < len; i++) {
-					if (predicate(domain[i])) {
-						codomain.push(domain[i]);
-					}
+		return function (domain, predicate) {
+			var codomain = [],
+				i,
+				len = domain.length;
+			for (i = 0; i < len; i++) {
+				if (predicate(domain[i])) {
+					codomain.push(domain[i]);
 				}
-				return codomain;
-			};
+			}
+			return codomain;
+		};
 	}(Array.prototype.hasOwnProperty('filter')));
 
 	/**

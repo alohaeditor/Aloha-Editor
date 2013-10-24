@@ -871,12 +871,12 @@ define([
 		 * @param {Range Object} range Selection Range
 		 * @returns {DOMObject[]} All DOM objects matching the tag Name
 		 */
-		findAllMarkupByTagName: function(tagName, range) {
+		findAllMarkupByTagName: function (tagName, range) {
 			var rangeTree = range.getRangeTree(),
 				objs = [];
 			tagName = tagName.toUpperCase();
 
-			findTagInRangeTreeRecursion (rangeTree, tagName, objs);
+			findTagInRangeTreeRecursion(rangeTree, tagName, objs);
 			return objs;
 		},
 
