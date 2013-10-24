@@ -51,6 +51,7 @@ changeSet.changes = [];
 var opts = {};
 // Undo.createContext()
 opts.noMutationObserver = true;
+opts.combineCharsMax = 20;
 // Undo.enter() / Undo.capture()
 opts.partitionRecords = true;
 opts.noObserve = true;

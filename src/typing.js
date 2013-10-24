@@ -92,27 +92,42 @@ define([
 		return range;
 	};
 
+	actions['ctrl+66'] = function bold(range, editor) {
+		Editing.format(range, 'bold', true);
+	};
+
+	actions['ctrl+73'] = function italic(range, editor) {
+		Editing.format(range, 'italic', true);
+	};
+
 	actions.insertText = function insertText(range, text, editor) {
 		if (!range.collapsed) {
 			range = delete_(range, true, editor);
 		}
-		if (' ' === text) {
-			var elem = Dom.nodeAtOffset(range.startContainer, range.startOffset);
-			elem = elem.parentNode;
-			var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');
-			if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
-				text = '\xa0';
-			}
-		}
 		var boundary = Dom.startBoundary(range);
 		var editable = Editables.fromBoundary(editor, boundary);
-		var change = {
-			'type': 'insert',
-			'content': [editable.elem.ownerDocument.createTextNode(text)],
-			'path': Undo.pathFromBoundary(editable.elem, boundary)
-		};
-		Dom.insertTextAtBoundary(text, boundary, true, [range]);
-		return [change, range];
+		if (!editable) {
+			return;
+		}
+		var undoContext = editable.undoContext;
+		Undo.advanceHistory(undoContext);
+		Undo.capture(undoContext, {meta: {type: 'typing'}, noObserve: true}, function () {
+			if (' ' === text) {
+				var elem = Traversing.upWhile(Boundaries.container(boundary), Dom.isTextNode);
+				var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');
+				if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
+					text = '\xa0';
+				}
+			}
+			var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
+			var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
+			var change = Undo.makeInsertChange(insertPath, insertContent);
+			Dom.insertTextAtBoundary(text, boundary, true, [range]);
+			Ranges.select(range);
+			return {changes: [change]};
+		});
+		Undo.advanceHistory(undoContext);
+		return range;
 	};
 
 	actions[Keys.CODES.f1] =
@@ -204,25 +219,12 @@ define([
 			event.preventDefault();
 			return;
 		}
-		if (!isTextInsertEvent(event)) {
+		if (isTextInsertEvent(event)) {
+			var text = String.fromCharCode(event.which);
+			actions.insertText(range, text, editor);
+			event.preventDefault();
 			return;
 		}
-		var editable = Editables.fromBoundary(editor, Dom.startBoundary(range));
-		if (!editable) {
-			return;
-		}
-		var text = String.fromCharCode(event.which);
-		var undoContext = editable.undoContext;
-		Undo.advanceHistory(undoContext);
-		Undo.capture(undoContext, {meta: {type: 'typing'}, noObserve: true}, function () {
-			var changeRange = actions.insertText(range, text, editor);
-			var change = changeRange[0];
-			var resultRange = changeRange[1];
-			Ranges.select(resultRange);
-			return {changes: [change]};
-		});
-		Undo.advanceHistory(undoContext);
-		event.preventDefault();
 	}
 
 	var exports = {

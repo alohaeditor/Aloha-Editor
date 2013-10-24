@@ -252,8 +252,8 @@
 		var afterSwitched = switchElemTextSelection(after);
 		testMutation(title, switchElemTextSelection(before), function (actual) {
 			if (actual !== afterSwitched
-				    // Because it's ok it's ok as long as they come out
-				    // at the same position, we ignore differences between
+				    // Because it's ok as long as they come out at the
+				    // same position, we ignore differences between
 				    // selection type (text or element boundaries).
 				    && actual !== after
 				    // Because we must account for end of text node

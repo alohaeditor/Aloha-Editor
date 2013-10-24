@@ -176,6 +176,18 @@ define([
 		return atStart(boundary) ? null : Dom.nthChild(boundary[0], boundary[1] - 1);
 	}
 
+	function container(boundary) {
+		return boundary[0];
+	}
+
+	function nextNode(boundary) {
+		return nodeAfter(boundary) || container(boundary);
+	}
+
+	function prevNode(boundary) {
+		return nodeBefore(boundary) || container(boundary);
+	}
+
 	var exports = {
 		equal     : equal,
 		start     : start,
@@ -184,12 +196,15 @@ define([
 		prev      : prev,
 		nextWhile : nextWhile,
 		prevWhile : prevWhile,
+		nextNode  : nextNode,
+		prevNode  : prevNode,
+		container : container,
 		leftNode  : leftNode,
 		rightNode : rightNode,
 		atStart   : atStart,
 		atEnd     : atEnd,
 		normalize : normalize,
-		nodeAfter: nodeAfter,
+		nodeAfter : nodeAfter,
 		nodeBefore: nodeBefore
 	};
 

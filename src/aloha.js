@@ -96,11 +96,11 @@ define([
 	function aloha(elem) {
 		var editable = Editables.Editable(elem);
 		Editables.assocIntoEditor(editor, editable);
+		elem.setAttribute('contentEditable', 'true');
 		Undo.enter(editable.undoContext, {
 			meta: {type: 'external'},
 			partitionRecords: true
 		});
-		elem.setAttribute('contentEditable', 'true');
 	}
 
 	function mahalo(elem) {

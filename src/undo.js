@@ -27,6 +27,7 @@ define([
 
 	function Context(elem, opts) {
 		opts = opts || {};
+		opts.combineCharsMax = opts.combineCharsMax || 20;
 		var context = {
 			elem: elem,
 			observer: null,
@@ -702,7 +703,10 @@ define([
 	}
 
 	function ObserverUsingMutationObserver() {
-		var observer = new MutationObserver(Fn.noop);
+		var pushedRecords = [];
+		var observer = new MutationObserver(function (records) {
+			pushedRecords = pushedRecords.concat(records);
+		});
 
 		function observeAll(elem) {
 			var observeAllFlags = {
@@ -717,7 +721,9 @@ define([
 		}
 
 		function takeRecords() {
-			return observer.takeRecords();
+			var records =  pushedRecords.concat(observer.takeRecords());
+			pushedRecords.length = 0;
+			return records;
 		}
 
 		function disconnect() {
@@ -934,7 +940,7 @@ define([
 		return changeSets;
 	}
 
-	function combineTypingChanges(oldChangeSet, newChangeSet) {
+	function combineTypingChanges(oldChangeSet, newChangeSet, opts) {
 		var oldChanges = oldChangeSet.changes;
 		var newChanges = newChangeSet.changes;
 		if (oldChangeSet.meta.type !== newChangeSet.meta.type
@@ -956,7 +962,7 @@ define([
 		    || 1 !== newChange.content.length
 		    || !Dom.isTextNode(oldChange.content[0])
 		    || !Dom.isTextNode(newChange.content[0])
-		    || 20 <= Dom.nodeLength(oldChange.content[0])
+		    || opts.combineCharsMax <= Dom.nodeLength(oldChange.content[0])
 		    || oldSegment[0] + Dom.nodeLength(oldChange.content[0]) !== newSegment[0]
 		    || !pathEquals(oldPath.slice(0, oldPath.length - 1),
 		                   newPath.slice(0, newPath.length - 1))) {
@@ -972,26 +978,32 @@ define([
 	}
 
 	function advanceHistory(context) {
+		Assert.assertFalse(!!context.stack.length);
 		var history = context.history;
 		var historyIndex = context.historyIndex;
-		history.length = historyIndex;
 		var frame = context.frame;
-		var newChanges = topLevelChangeSetsFromFrame(context, frame);
-		var lastChange = Arrays.last(history);
-		if (1 === newChanges.length && lastChange) {
-			var combinedChange = combineTypingChanges(lastChange, newChanges[0]);
-			if (combinedChange) {
+		takeRecords(context, frame);
+		var newChangeSets = topLevelChangeSetsFromFrame(context, frame);
+		if (!newChangeSets.length) {
+			return;
+		}
+		history.length = historyIndex;
+		var lastChangeSet = Arrays.last(history);
+		if (1 === newChangeSets.length && lastChangeSet) {
+			var combinedChangeSet = combineTypingChanges(lastChangeSet, newChangeSets[0], context.opts);
+			if (combinedChangeSet) {
 				history.pop();
-				newChanges = [combinedChange];
+				newChangeSets = [combinedChangeSet];
 			}
 		}
-		history = history.concat(newChanges);
+		history = history.concat(newChangeSets);
 		frame.records = [];
 		context.history = history;
 		context.historyIndex = history.length;
 	}
 
 	function undo(context, range, ranges) {
+		advanceHistory(context);
 		var history = context.history;
 		var historyIndex = context.historyIndex;
 		if (!historyIndex) {
@@ -1007,6 +1019,7 @@ define([
 	}
 
 	function redo(context, range, ranges) {
+		advanceHistory(context);
 		var history = context.history;
 		var historyIndex = context.historyIndex;
 		if (historyIndex === history.length) {
@@ -1034,6 +1047,7 @@ define([
 		inverseChangeSet: inverseChangeSet,
 		applyChangeSet: applyChangeSet,
 		advanceHistory: advanceHistory,
+		makeInsertChange: makeInsertChange,
 		undo: undo,
 		redo: redo
 	};
