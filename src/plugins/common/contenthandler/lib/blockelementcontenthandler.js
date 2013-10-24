@@ -33,7 +33,7 @@ define([
 	var emptyBlocksSelector = Arrays.subtract(
 			Html.BLOCKLEVEL_ELEMENTS,
 			Html.VOID_ELEMENTS
-		).join(':empty,') + ':empty';
+		);
 
 	var NOT_ALOHA_BLOCK_FILTER = ':not(.aloha-block)';
 
@@ -116,7 +116,7 @@ define([
 	 */
 	function propBlockElements(i, element) {
 		var $element = $(element);
-		$element.filter(emptyBlocksSelector).append('<br/>');
+		$element.filter(emptyBlocksSelector).filter(':empty').append('<br/>');
 		$element.children(NOT_ALOHA_BLOCK_FILTER).each(propBlockElements);
 	}
 

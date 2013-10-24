@@ -21,7 +21,7 @@
  */
 
 function Sanitize(){
-  var i, e, options;
+  var options;
   options = arguments[0] || {};
   this.jQuery = arguments[1] || {};
   this.config = {}
@@ -33,21 +33,22 @@ function Sanitize(){
   this.config.protocols = options.protocols ? options.protocols : {};
   this.config.add_attributes = options.add_attributes ? options.add_attributes  : {};
   this.dom = options.dom ? options.dom : document;
-  for(i=0;i<this.config.elements.length;i++) {
-    this.allowed_elements[this.config.elements[i]] = true;
-  }
+	for (var i = 0, len = this.config.elements.length; i < len; i++) {
+		this.allowed_elements[this.config.elements[i]] = true;
+	}
   this.config.remove_element_contents = {};
   this.config.remove_all_contents = false;
   if(options.remove_contents) {
-    
-    if(options.remove_contents instanceof Array) {
-      for(i=0;i<options.remove_contents.length;i++) {
-        this.config.remove_element_contents[options.remove_contents[i]] = true;
-      }
-    }
-    else {
-      this.config.remove_all_contents = true;
-    }
+
+     if (options.remove_contents instanceof Array) {
+		  var elementContents = this.config.remove_element_contents;
+		  for (var i = 0, len = options.remove_contents.length; i < len; i++) {
+			  elementContents[options.remove_contents[i]] = true;
+		  }
+	  }
+	  else {
+		  this.config.remove_all_contents = true;
+	  }
   }
   this.transformers = options.transformers ? options.transformers : [];
 
@@ -69,30 +70,30 @@ Sanitize.prototype.clean_node = function(container) {
    * Utility function to check if an element exists in an array
    */
   function _array_index(needle, haystack) {
-    var i;
-    for(i=0; i < haystack.length; i++) {
-      if(haystack[i] == needle) 
-        return i;
-    }
-    return -1;
+	  for (var i = 0, len = haystack.length; i < len; i++) {
+		  if (haystack[i] === needle)
+			  return i;
+	  }
+	  return -1;
   }
-  
-  function _merge_arrays_uniq() {
-    var result = [];
-    var uniq_hash = {}
-    var i,j;
-    for(i=0;i<arguments.length;i++) {
-      if(!arguments[i] || !arguments[i].length)
-        continue;
-      for(j=0;j<arguments[i].length;j++) {
-        if(uniq_hash[arguments[i][j]])
-          continue;
-        uniq_hash[arguments[i][j]] = true;
-        result.push(arguments[i][j]);
-      }
-    }
-    return result;
-  }
+
+	function _merge_arrays_uniq() {
+		var result = [];
+		var uniq_hash = {},
+		    arg;
+		for (var i = 0, len = arguments.length; i < len; i++) {
+			arg = arguments[i];
+			if (!arg || !arg.length)
+				continue;
+			for (var j = 0, argLen = arg.length; j < argLen; j++) {
+				if (uniq_hash[arg[j]])
+					continue;
+				uniq_hash[arg[j]] = true;
+				result.push(arg[j]);
+			}
+		}
+		return result;
+	}
   
   /**
    * Clean function that checks the different node types and cleans them up accordingly
@@ -102,13 +103,13 @@ Sanitize.prototype.clean_node = function(container) {
     var clone;
 
     // check whether the elem passes all of the filters
-    for ( var i=0; i < this.filters.length; i++ ) {
-    	if (!this.filters[i](elem)) {
-    		clone = elem.cloneNode(true);
-            this.current_element.appendChild(clone);
-    		return;
-    	}
-    }
+	  for (var i = 0, len = this.filters.length; i < len; i++) {
+		  if (!this.filters[i](elem)) {
+			  clone = elem.cloneNode(true);
+			  this.current_element.appendChild(clone);
+			  return;
+		  }
+	  }
 
     switch(elem.nodeType) {
       // Element
@@ -138,7 +139,7 @@ Sanitize.prototype.clean_node = function(container) {
   }
   
   function _clean_element(elem) {
-    var i, j, clone, parent_element, name, allowed_attributes, attr, attr_name, attr_node, protocols, del, attr_ok;
+    var parent_element, name, allowed_attributes, attr, attr_name, attr_node, protocols, del, attr_ok;
     var transform = _transform_element.call(this, elem);
     var jQuery = this.jQuery;
     var isIE7 = jQuery.browser.msie && jQuery.browser.version === "7.0";
@@ -158,30 +159,30 @@ Sanitize.prototype.clean_node = function(container) {
         this.config.attributes['__ALL__'],
         transform.attr_whitelist
       );
-      for(i=0;i<allowed_attributes.length;i++) {
-        attr_name = allowed_attributes[i];
-        attr = elem.attributes[attr_name];
-        if(attr) {
-            attr_ok = true;
-            // Check protocol attributes for valid protocol
-            if(this.config.protocols[name] && this.config.protocols[name][attr_name]) {
-              protocols = this.config.protocols[name][attr_name];
-              del = attr.nodeValue.toLowerCase().match(Sanitize.REGEX_PROTOCOL);
-              if(del) {
-                attr_ok = (_array_index(del[1], protocols) != -1);
-              }
-              else {
-                attr_ok = (_array_index(Sanitize.RELATIVE, protocols) != -1);
-              }
-            }
-            if(attr_ok) {
-            	// sanitize does not work in IE7. It tries to set the style attribute via setAttributeNode() and this is know to not work in IE7
-    			// (see http://www.it-blogger.com/2007-06-22/microsofts-internetexplorer-und-mitglied-nicht-gefunden/ as a reference)
-              if(!isIE7 || (isIE7 && "style" !== attr_name)) {
-	              this.current_element.setAttribute(attr_name, attr.nodeValue)
-              }
-            }
-        }
+	    for (var i = 0, len = allowed_attributes.length; i < len; i++) {
+		    attr_name = allowed_attributes[i];
+		    attr = elem.attributes[attr_name];
+		    if (attr) {
+			    attr_ok = true;
+			    // Check protocol attributes for valid protocol
+			    if (this.config.protocols[name] && this.config.protocols[name][attr_name]) {
+				    protocols = this.config.protocols[name][attr_name];
+				    del = attr.nodeValue.toLowerCase().match(Sanitize.REGEX_PROTOCOL);
+				    if (del) {
+					    attr_ok = (_array_index(del[1], protocols) != -1);
+				    }
+				    else {
+					    attr_ok = (_array_index(Sanitize.RELATIVE, protocols) != -1);
+				    }
+			    }
+			    if (attr_ok) {
+				    // sanitize does not work in IE7. It tries to set the style attribute via setAttributeNode() and this is know to not work in IE7
+				    // (see http://www.it-blogger.com/2007-06-22/microsofts-internetexplorer-und-mitglied-nicht-gefunden/ as a reference)
+				    if (!isIE7 || (isIE7 && "style" !== attr_name)) {
+					    this.current_element.setAttribute(attr_name, attr.nodeValue)
+				    }
+			    }
+		    }
       }
 
       // Add attributes
@@ -200,17 +201,19 @@ Sanitize.prototype.clean_node = function(container) {
     else if(_array_index(elem, this.whitelist_nodes) != -1) {
       this.current_element = elem.cloneNode(true);
       // Remove child nodes, they will be sanitiazied and added by other code
-      while(this.current_element.childNodes.length > 0) {
-        this.current_element.removeChild(this.current_element.firstChild);
+	    var childNodesLength = this.current_element.childNodes.length;
+	    while(childNodesLength > 0) {
+            this.current_element.removeChild(this.current_element.firstChild);
       }
       parent_element.appendChild(this.current_element);
     }
 
     // iterate over child nodes
     if(!this.config.remove_all_contents && !this.config.remove_element_contents[name]) {
-      for(i=0;i<elem.childNodes.length;i++) {
-        _clean.call(this, elem.childNodes[i]);
-      }
+	    var childNodes = elem.childNodes;
+	    for (var i = 0, len = childNodes.length; i < len; i++) {
+		    _clean.call(this, childNodes[i]);
+	    }
     }
 
     // some versions of IE don't support normalize.
@@ -226,8 +229,8 @@ Sanitize.prototype.clean_node = function(container) {
       node: node,
       whitelist: false
     }
-    var i, j, transform;
-    for(i=0;i<this.transformers.length;i++) {
+    var transform;
+	for (var i = 0, transLength = this.transformers.length; i < transLength; i++) {
       transform = this.transformers[i]({
         allowed_elements: this.allowed_elements,
         config: this.config,
@@ -240,7 +243,7 @@ Sanitize.prototype.clean_node = function(container) {
         continue;
       else if(typeof transform == 'object') {
         if(transform.whitelist_nodes && transform.whitelist_nodes instanceof Array) {
-          for(j=0;j<transform.whitelist_nodes.length;j++) {
+	      for (var j = 0, len = transform.whitelist_nodes.length; j < len; j++) {
             if(_array_index(transform.whitelist_nodes[j], this.whitelist_nodes) == -1) {
               this.whitelist_nodes.push(transform.whitelist_nodes[j]);
             }
@@ -258,11 +261,11 @@ Sanitize.prototype.clean_node = function(container) {
     }
     return output;
   }
-  
-  
-  
-  for(i=0;i<container.childNodes.length;i++) {
-    _clean.call(this, container.childNodes[i]);
+
+
+  var childNodes = container.childNodes;
+  for (var i = 0, len = childNodes.length; i < len; i++) {
+    _clean.call(this, childNodes[i]);
   }
   
   if(fragment.normalize) {

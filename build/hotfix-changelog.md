@@ -7,3 +7,8 @@ All changes are categorized into one of the following keywords:
                    usage, or intent of an existing one.
 
 ----
+
+- **BUGFIX**:      Aloha Editor very slow on large content
+                   Some performance were made, so the Aloha-editor smartContenthandler is faster
+                   in large contents. Improvements of loop-for, jQuery selector and Dom iteration.
+                   RT#56619

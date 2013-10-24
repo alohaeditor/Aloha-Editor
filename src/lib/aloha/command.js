@@ -93,11 +93,12 @@ define([
 				return;
 			}
 			// Read current selection if not passed
+			var alohaSelection = Aloha.getSelection();
 			if (!range) {
-				if (!Aloha.getSelection().getRangeCount()) {
+				if (!alohaSelection.getRangeCount()) {
 					return;
 				}
-				range = Aloha.getSelection().getRangeAt(0);
+				range = alohaSelection.getRangeAt(0);
 			}
 
 			// For the insertHTML command we provide contenthandler API
@@ -114,9 +115,9 @@ define([
 
 			Engine.execCommand(commandId, showUi, value, range);
 
-			if (Aloha.getSelection().getRangeCount()) {
+			if (alohaSelection.getRangeCount()) {
 				// Read range after engine modification
-				range = Aloha.getSelection().getRangeAt(0);
+				range = alohaSelection.getRangeAt(0);
 
 				// FIX: doCleanup should work with W3C range
 				var startnode = range.commonAncestorContainer;
