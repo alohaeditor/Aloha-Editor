@@ -17,3 +17,6 @@ All changes are categorized into one of the following keywords:
               in the range selection.
               Changes were made so several links or abbreviation in the same selection
               have the same value. RT#55298
+- **BUGFIX**: Table caption is removed every time is deactivated.
+              Table caption is now hidden or shown but not removed,
+              so the original text remains. RT#56649

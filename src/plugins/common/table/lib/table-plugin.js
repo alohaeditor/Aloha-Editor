@@ -1135,16 +1135,24 @@ define([
 			click: function() {
 				if (that.activeTable) {
 					// look if table object has a child caption
-					if ( that.activeTable.obj.children("caption").is('caption') ) {
-						that.activeTable.obj.children("caption").remove();
+					var $caption = that.activeTable.obj.children("caption");
+
+					if ( $caption.is('caption') && $caption.is(':visible') ) {
+						$caption.hide();
 					} else {
-						var captionText = i18n.t('empty.caption');
-						var c = jQuery('<caption></caption>');
-						that.activeTable.obj.prepend(c);
-						that.makeCaptionEditable(c, captionText);
+						if (!$caption.is('caption')) {
+							$caption = jQuery('<caption></caption>');
+							that.activeTable.obj.prepend($caption);
+						}
+						$caption.show();
+						if (jQuery.trim($caption.text()).length === 0) {
+							$caption.text(i18n.t('empty.caption'));
+						}
+
+						that.makeCaptionEditable($caption, $caption.text());
 
 						// get the editable span within the caption and select it
-						var cDiv = c.find('div').eq(0);
+						var cDiv = $caption.find('div').eq(0);
 						var captionContent = cDiv.contents().eq(0);
 						if (captionContent.length > 0) {
 							var newRange = new GENTICS.Utils.RangeObject();
