@@ -46,26 +46,27 @@ define([
 	 * Prefers native Array.prototype.filter() where available (after JavaScript
 	 * 1.6).
 	 *
-	 * @param {Array} domain
 	 * @param {function:boolean} predicate
 	 * @return {Array} Sub set of domain
 	 */
-	var filter = (function (native) {
-		return (native
-			? function (domain, predicate) {
+	var filter = (function(predicate) {
+		if (predicate) {
+			return function(domain, predicate) {
 				return domain.filter(predicate);
-			}
-			: function (domain, predicate) {
-				var codomain = [];
-				var i;
-				for (i = 0; i < domain.length; i++) {
+			};
+		}
+
+		return function(domain, predicate) {
+				var codomain = [],
+					i,
+					len = domain.length;
+				for (i = 0; i < len; i++) {
 					if (predicate(domain[i])) {
 						codomain.push(domain[i]);
 					}
 				}
 				return codomain;
-			}
-		);
+			};
 	}(Array.prototype.hasOwnProperty('filter')));
 
 	/**
