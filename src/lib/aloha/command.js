@@ -83,30 +83,26 @@ define([
 	var CommandManager = {
 
 		execCommand: function (commandId, showUi, value, range) {
-			var evtObj = {
+			var eventData = {
 				commandId: commandId,
 				preventDefault: false
 			};
-			Aloha.trigger('aloha-command-will-execute', evtObj);
 
-			if (evtObj.preventDefault === true) {
+			Aloha.trigger('aloha-command-will-execute', eventData);
+
+			if (eventData.preventDefault === true) {
 				return;
 			}
-			// Read current selection if not passed
-			var alohaSelection = Aloha.getSelection();
+
+			var selection = Aloha.getSelection();
 			if (!range) {
-				if (!alohaSelection.getRangeCount()) {
+				if (!selection.getRangeCount()) {
 					return;
 				}
-				range = alohaSelection.getRangeAt(0);
+				range = selection.getRangeAt(0);
 			}
 
-			// For the insertHTML command we provide contenthandler API
 			if (commandId.toLowerCase() === 'inserthtml') {
-				//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
-				//	use all registered content handler; used for copy & paste atm (or write log message)
-				//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
-				//}
 				value = ContentHandlerManager.handleContent(value, {
 					contenthandler: Aloha.settings.contentHandler.insertHtml,
 					command: 'insertHtml'
@@ -117,13 +113,15 @@ define([
 
 			// Because there is never a situation where it will be necessary to
 			// do any further cleanup (merging of similar adjacent nodes)
-			if ('insertparagraph' !== commandId.toLowerCase() && alohaSelection.getRangeCount()) {
-				range = alohaSelection.getRangeAt(0);
+			if ('insertparagraph' !== commandId.toLowerCase()
+					&& selection.getRangeCount()) {
+
+				range = selection.getRangeAt(0);
 
 				// FIX: doCleanup should work with W3C range
-				var startnode = range.commonAncestorContainer;
-				if (startnode.parentNode) {
-					startnode = startnode.parentNode;
+				var start = range.commonAncestorContainer;
+				if (start.parentNode) {
+					start = start.parentNode;
 				}
 
 				var rangeObject = new window.GENTICS.Utils.RangeObject();
@@ -135,7 +133,7 @@ define([
 				Dom.doCleanup({
 					merge: true,
 					removeempty: false
-				}, rangeObject, startnode);
+				}, rangeObject, start);
 
 				rangeObject.select();
 			}
