@@ -143,6 +143,25 @@ define([
 	};
 
 	/**
+	 * Update the WAI image
+	 *
+	 * @param {TablePlugin} tablePlugin tablePlugin
+	 */
+	function updateWaiImage(tablePlugin) {
+		var $element = $(tablePlugin.summary.getInputElem()),
+			waiRed = tablePlugin.activeTable.get('waiRed'),
+			waiGreen = tablePlugin.activeTable.get('waiGreen');
+
+		$element.removeClass(waiRed + ' ' + waiGreen);
+		if (tablePlugin.activeTable.checkWai()) {
+			$element.addClass(waiGreen);
+		}
+		else {
+			$element.addClass(waiRed);
+		}
+	}
+
+	/**
 	 * Checks whether the given DOM element is nested within a table.
 	 *
 	 * @param {jQuery.<HTMLElement>} $element
@@ -1149,14 +1168,15 @@ define([
 			width : 275,
 			name  : 'tableSummary',
 			noTargetHighlight: true,
-			scope: this.name + '.cell'
+			scope: this.name + '.cell',
+			element: jQuery('<input id="aloha-attribute-field-tableSummary" class="aloha-wai-red" style="color: black; padding-left: 32px; background-color: white"/>')
 		} );
 
-		this.summary.addListener( 'keyup', function( event ) {
+		this.summary.addListener('keyup', function() {
 			if (that.activeTable) {
-				that.activeTable.checkWai();
+				updateWaiImage(that);
 			}
-		} );
+		});
 	};
 
 	/**
@@ -1314,6 +1334,7 @@ define([
 			focusTable.hasFocus = true;
 		}
 		TablePlugin.activeTable = focusTable;
+		updateWaiImage(TablePlugin);
 
 		// show configured formatting classes
 		for (var i = 0; i < this.tableMSItems.length; i++) {
