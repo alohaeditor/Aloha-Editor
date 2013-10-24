@@ -11,15 +11,22 @@ define([
 	Maps,
 	Html,
 	Dom,
-	jQuery) {
+	jQuery
+) {
 	"use strict";
 
+	/**
+	 *
+	 * @param obj
+	 * @param attr
+	 * @returns {Boolean} true
+	 */
 	function hasAttribute(obj, attr) {
 		var native_method = obj.hasAttribute;
 		if (native_method) {
 			return obj.hasAttribute(attr);
 		}
-		return (typeof obj.attributes[attr] != "undefined");
+		return (typeof obj.attributes[attr] !== 'undefined');
 	}
 
 	/**
@@ -30,8 +37,8 @@ define([
 	 * @return {Element}
 	 */
 	function insertAfter(node, preceding) {
-		var next = preceding.nextSibling;
-		var parent = preceding.parentNode;
+		var next = preceding.nextSibling,
+		    parent = preceding.parentNode;
 		if (next) {
 			parent.insertBefore(node, next);
 		} else {
