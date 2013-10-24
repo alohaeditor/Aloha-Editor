@@ -30,7 +30,7 @@ define([
 	'use strict';
 
 	var blocksSelector = Html.BLOCKLEVEL_ELEMENTS.join();
-	var emptyBlocksSelector = Arrays.subtract(
+	var nonVoidBlocksSelector = Arrays.subtract(
 			Html.BLOCKLEVEL_ELEMENTS,
 			Html.VOID_ELEMENTS
 		);
@@ -66,7 +66,7 @@ define([
 	function prepareForEditing(i, element) {
 		var $element = $(element);
 
-		$element.filter(emptyBlocksSelector).remove();
+		$element.filter(nonVoidBlocksSelector).remove();
 
 		if ($.browser.msie) {
 			// Because even though content edited by Aloha Editor is no longer
@@ -100,7 +100,7 @@ define([
 	 */
 	function prepareEditingInOldIE(i, element) {
 		var $element = $(element);
-		$element.filter(emptyBlocksSelector).append('\u200b');
+		$element.filter(nonVoidBlocksSelector).append('\u200b');
 		$element.children(NOT_ALOHA_BLOCK_FILTER).each(prepareEditingInOldIE);
 	}
 
@@ -116,7 +116,7 @@ define([
 	 */
 	function propBlockElements(i, element) {
 		var $element = $(element);
-		$element.filter(emptyBlocksSelector).filter(':empty').append('<br/>');
+		$element.filter(nonVoidBlocksSelector).filter(':empty').append('<br/>');
 		$element.children(NOT_ALOHA_BLOCK_FILTER).each(propBlockElements);
 	}
 
