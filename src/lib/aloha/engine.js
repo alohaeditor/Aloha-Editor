@@ -22,6 +22,43 @@ define([
 		return (typeof obj.attributes[attr] != "undefined");
 	}
 
+	/**
+	 * Insert the node `node` after `preceding`.
+	 *
+	 * @param {Element} node
+	 * @param {Element} preceding
+	 * @return {Element}
+	 */
+	function insertAfter(node, preceding) {
+		var next = preceding.nextSibling;
+		var parent = preceding.parentNode;
+		if (next) {
+			parent.insertBefore(node, next);
+		} else {
+			parent.appendChild(node);
+		}
+		return node;
+	}
+
+	/**
+	 * Splits text node `node` at the given text index.
+	 *
+	 * Note that we cannot use splitText() because it is bugridden in IE 9.
+	 *
+	 * Borrowed from rangy.
+	 *
+	 * @param {Element} node
+	 * @param {number} index
+	 * @return {Element}
+	 */
+	function splitText(node, index) {
+		var newNode = node.cloneNode(false);
+		newNode.deleteData(0, index);
+		node.deleteData(index, node.length - index);
+		insertAfter(newNode, node);
+		return newNode;
+	}
+
 	var htmlNamespace = "http://www.w3.org/1999/xhtml";
 
 	var cssStylingFlag = false;
@@ -3481,7 +3518,7 @@ define([
 		// the result, and its start offset to zero."
 		if (isEditable(range.startContainer) && range.startContainer.nodeType == $_.Node.TEXT_NODE && range.startOffset != 0 && range.startOffset != getNodeLength(range.startContainer)) {
 			// Account for browsers not following range mutation rules
-			var newNode = range.startContainer.splitText(range.startOffset);
+			var newNode = splitText(range.startContainer, range.startOffset);
 			var newActiveRange = Aloha.createRange();
 			if (range.startContainer == range.endContainer) {
 				var newEndOffset = range.endOffset - range.startOffset;
@@ -3508,7 +3545,7 @@ define([
 			var activeRange = range;
 			var newStart = [activeRange.startContainer, activeRange.startOffset];
 			var newEnd = [activeRange.endContainer, activeRange.endOffset];
-			activeRange.endContainer.splitText(activeRange.endOffset);
+			splitText(activeRange.endContainer, activeRange.endOffset);
 			activeRange.setStart(newStart[0], newStart[1]);
 			activeRange.setEnd(newEnd[0], newEnd[1]);
 
@@ -4144,11 +4181,11 @@ define([
 				// Account for browsers not following range mutation rules
 				if (getActiveRange().startContainer == getActiveRange().endContainer) {
 					newEnd = getActiveRange().endOffset - getActiveRange().startOffset;
-					newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
+					newNode = splitText(getActiveRange().startContainer, getActiveRange().startOffset);
 					getActiveRange().setStart(newNode, 0);
 					getActiveRange().setEnd(newNode, newEnd);
 				} else {
-					getActiveRange().setStart(getActiveRange().startContainer.splitText(getActiveRange().startOffset), 0);
+					getActiveRange().setStart(splitText(getActiveRange().startContainer, getActiveRange().startOffset), 0);
 				}
 			}
 
@@ -4165,7 +4202,7 @@ define([
 				newStart = [getActiveRange().startContainer, getActiveRange().startOffset];
 				newEnd = [getActiveRange().endContainer, getActiveRange().endOffset];
 				getActiveRange().setEnd(document.documentElement, 0);
-				newEnd[0].splitText(newEnd[1]);
+				splitText(newEnd[0], newEnd[1]);
 				getActiveRange().setStart(newStart[0], newStart[1]);
 				getActiveRange().setEnd(newEnd[0], newEnd[1]);
 			}
@@ -7727,7 +7764,7 @@ define([
 			// "If node is a Text node, and offset is neither 0 nor the length of
 			// node, call splitText(offset) on node."
 			if (node.nodeType == $_.Node.TEXT_NODE && offset != 0 && offset != getNodeLength(node)) {
-				node.splitText(offset);
+				splitText(node, offset);
 			}
 
 			// "If node is a Text node and offset is its length, set offset to one
