@@ -76,7 +76,7 @@ define([
 			targetObject,
 			targetAttribute,
 			lastAttributeValue,
-			additionalTargetObjects;
+			additionalTargetObjects = [];
 
 		if (props.cls) {
 			element.addClass(props.cls);
@@ -405,7 +405,7 @@ define([
 			} );
 		}
 
-		function addAdditionalTargetObject (targetObj) {
+		function addAdditionalTargetObject(targetObj) {
 			additionalTargetObjects.push(targetObj);
 		}
 
