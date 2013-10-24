@@ -28,3 +28,7 @@ All changes are categorized into one of the following keywords:
               When selecting an image the width and height inputs were not displayed.
               The problem was that when assigning the value to the input, the jQuery.val function was not
               working, because the element wasn't associated to the DOM yet.
+- **BUGFIX**: Outline on icons is too big resulting in too little visual difference between enabled or disabled state.
+              The outline when the icon is focused is too big and the user can't distinguish when a button
+              icon is enabled or disabled. By adding box-shadow (same behavior for different browsers)
+              the problem was solved.
