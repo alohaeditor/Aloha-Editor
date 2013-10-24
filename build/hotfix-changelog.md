@@ -61,3 +61,4 @@ All changes are categorized into one of the following keywords:
              paragraphs since this extra processing was not necessary and very
              expensive on large content.
 
+- **BUGFIX**: tables: Remove "width" attribute from copied tables. RT#55759
