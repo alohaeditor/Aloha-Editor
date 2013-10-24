@@ -442,6 +442,10 @@ define([
 			return element[0];
 		}
 
+		function getInputJQuery() {
+			return element;
+		}
+
 		var attrField = {
 			getInputElem: getInputElem,
 			hasInputElem: hasInputElem,
@@ -461,7 +465,8 @@ define([
 			addListener: addListener,
 			setObjectTypeFilter: setObjectTypeFilter,
 			setTemplate: setTemplate,
-			setPlaceholder: setPlaceholder
+			setPlaceholder: setPlaceholder,
+			getInputJQuery: getInputJQuery
 		};
 
 		return attrField;

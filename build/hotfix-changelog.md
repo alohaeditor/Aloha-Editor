@@ -20,3 +20,11 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: Table caption is removed every time is deactivated.
               Table caption is now hidden or shown but not removed,
               so the original text remains. RT#56649
+- **BUGFIX**: Fix display of values after image-reset and improve the
+              size-check of image-resizing
+- **BUGFIX**: image plugin: Various fixes and improvements for resizing, cropping and resetting images have been added, 
+              to improve the cohesion between displayed values and actual sizes.
+- **BUGFIX**: Inputs containing image height/width don't display when image is loaded (ie9)
+              When selecting an image the width and height inputs were not displayed.
+              The problem was that when assigning the value to the input, the jQuery.val function was not
+              working, because the element wasn't associated to the DOM yet.
