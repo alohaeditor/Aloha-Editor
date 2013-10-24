@@ -70,8 +70,10 @@ define([
 	 * is 'tagName'
 	 */
 	function findTagInRangeTreeRecursion(array, tagName, objs) {
-		var element;
-		for (var i = 0, len = array.length; i < len; i++) {
+		var element,
+			i,
+			len = array.length;
+		for (i = 0; i < len; i++) {
 			element = array[i];
 			if (element.type !== 'none' && element.type !== 'collapsed') {
 				if (element.domobj.nodeName === tagName) {
@@ -869,12 +871,12 @@ define([
 		 * @param {Range Object} range Selection Range
 		 * @returns {DOMObject[]} All DOM objects matching the tag Name
 		 */
-		findAllMarkupByTagName: function(tagName, range) {
+		findAllMarkupByTagName: function (tagName, range) {
 			var rangeTree = range.getRangeTree(),
 				objs = [];
 			tagName = tagName.toUpperCase();
 
-			findTagInRangeTreeRecursion (rangeTree, tagName, objs);
+			findTagInRangeTreeRecursion(rangeTree, tagName, objs);
 			return objs;
 		},
 
