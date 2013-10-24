@@ -90,10 +90,11 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 	}
 
 	/**
-	 * Get the index of the given node within its parent node
-	 * @param {DOMObject} node node to check
-	 * @return {Integer} index in the parent node or false if no node given or node has no parent
-	 * @method
+	 * Gets the index of the given node within its parent element.
+	 * @param {Element} node
+	 * @return {number}
+	 *         Index in the parent node or -1 if no node given or node has no
+	 *         parent.
 	 */
 	function getIndexInParent(node) {
 		if (!node) {
@@ -101,7 +102,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		}
 
 		var childNodes = node.parentNode.childNodes;
-		for (var i = 0, len = childNodes.length; i < len; i++) {
+		var i, len;
+		for (i = 0, len = childNodes.length; i < len; i++) {
 			if (childNodes[i] === node) {
 				return i;
 			}

@@ -70,8 +70,8 @@ define([
 	 * is 'tagName'
 	 */
 	function findTagInRangeTreeRecursion(array, tagName, objs) {
-		var element;
-		for (var i = 0, len = array.length; i < len; i++) {
+		var element, i, len;
+		for (i = 0, len = array.length; i < len; i++) {
 			element = array[i];
 			if (element.type !== 'none' && element.type !== 'collapsed') {
 				if (element.domobj.nodeName === tagName) {
@@ -874,7 +874,7 @@ define([
 				objs = [];
 			tagName = tagName.toUpperCase();
 
-			findTagInRangeTreeRecursion (rangeTree, tagName, objs);
+			findTagInRangeTreeRecursion(rangeTree, tagName, objs);
 			return objs;
 		},
 

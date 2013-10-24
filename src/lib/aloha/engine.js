@@ -11,7 +11,8 @@ define([
 	Maps,
 	Html,
 	Dom,
-	jQuery) {
+	jQuery
+) {
 	"use strict";
 
 	function hasAttribute(obj, attr) {
