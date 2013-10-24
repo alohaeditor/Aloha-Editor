@@ -50,6 +50,10 @@ define([
 		};
 	}
 
+	function pathEquals(pathA, pathB) {
+		return Arrays.equal(pathA, pathB, Arrays.equal);
+	}
+
 	function stepDownPath(path, containerName, off) {
 		path.push([off, containerName]);
 	}
@@ -256,8 +260,9 @@ define([
 		var frame = capture(context, Maps.merge(opts, {noObserve: true}), fn);
 		// Because leave() will push the captured frame onto the
 		// upperFrame.
-		if (context.frame) {
-			context.frame.records.pop();
+		var upperFrame = context.frame;
+		if (upperFrame) {
+			upperFrame.records.pop();
 		}
 		return frame;
 	}
@@ -297,11 +302,11 @@ define([
 		};
 	}
 
-	function makeRangeUpdateChangeFromFrame(frame) {
+	function makeRangeUpdateChange(oldRange, newRange) {
 		return {
 			type: 'update-range',
-			oldRange: frame.oldRange,
-			newRange: frame.newRange
+			oldRange: oldRange,
+			newRange: newRange
 		};
 	}
 
@@ -404,7 +409,7 @@ define([
 			default:
 				// NB: moves should only contains INSERTs and DELETEs
 				// (not COMPOUND_DELETEs).
-				throw Error();
+				Assert.assertError();
 			}
 		});
 	}
@@ -635,7 +640,7 @@ define([
 			default:
 				// NB: only COMPOUND_DELETEs should occur in a recordTree,
 				// DELETEs should not except as part of a COMPOUND_DELETE.
-				throw Error();
+				Assert.assertError();
 			}
 		});
 	}
@@ -672,7 +677,7 @@ define([
 				});
 				break;
 			default:
-				throw Error();
+				Assert.assertError();
 			};
 		});
 		var recordTree = makeRecordTree(container, moves, updateAttr, updateText);
@@ -822,7 +827,7 @@ define([
 			});
 			break;
 		default:
-			throw Error();
+			Assert.assertError();
 		}
 	}
 
@@ -868,7 +873,7 @@ define([
 			inverse = Maps.merge(change, {type: ('insert' === type ? 'delete' : 'insert')});
 			break;
 		default:
-			throw Error();
+			Assert.assertError();
 		}
 		return inverse;
 	}
@@ -891,7 +896,7 @@ define([
 	}
 
 	function changeSetFromFrame(context, frame) {
-		var rangeUpdateChange = makeRangeUpdateChangeFromFrame(frame);
+		var rangeUpdateChange = makeRangeUpdateChange(frame.oldRange, frame.newRange);
 		var result = frame.result;
 		// Because we expect either a result to be returned by the
 		// capture function, or observed by the observer, but not both.
@@ -913,7 +918,7 @@ define([
 				return;
 			}
 			var changes = context.observer.changesFromRecords(context.elem, records);
-			var rangeUpdateChange = makeRangeUpdateChangeFromFrame(frame);
+			var rangeUpdateChange = makeRangeUpdateChange(frame.oldRange, frame.newRange);
 			changeSets.push(makeChangeSet(frame.opts.meta, changes, rangeUpdateChange));
 			records = [];
 		}
@@ -929,12 +934,57 @@ define([
 		return changeSets;
 	}
 
+	function combineTypingChanges(oldChangeSet, newChangeSet) {
+		var oldChanges = oldChangeSet.changes;
+		var newChanges = newChangeSet.changes;
+		if (oldChangeSet.meta.type !== newChangeSet.meta.type
+		    || 1 !== oldChanges.length
+		    || 1 !== newChanges.length) {
+			return null;
+		}
+		var oldChange = oldChanges[0];
+		var newChange = newChanges[0];
+		var oldPath = oldChange.path;
+		var newPath = newChange.path;
+		var oldSegment = Arrays.last(oldPath);
+		var newSegment = Arrays.last(newPath);
+		if (oldChange.type !== 'insert'
+		    || oldChange.type !== newChange.type
+		    || oldSegment[1] !== '#text'
+		    || oldSegment[1] !== newSegment[1]
+		    || 1 !== oldChange.content.length
+		    || 1 !== newChange.content.length
+		    || !Dom.isTextNode(oldChange.content[0])
+		    || !Dom.isTextNode(newChange.content[0])
+		    || 20 <= Dom.nodeLength(oldChange.content[0])
+		    || oldSegment[0] + Dom.nodeLength(oldChange.content[0]) !== newSegment[0]
+		    || !pathEquals(oldPath.slice(0, oldPath.length - 1),
+		                   newPath.slice(0, newPath.length - 1))) {
+			return null;
+		}
+		var combinedNode = Dom.clone(oldChange.content[0]);
+		combinedNode.insertData(Dom.nodeLength(combinedNode), newChange.content[0].data);
+		var insertChange = makeInsertChange(oldPath, [combinedNode])
+		var oldRange = oldChangeSet.selection.oldRange;
+		var newRange = newChangeSet.selection.newRange
+		var rangeUpdateChange = makeRangeUpdateChange(oldRange, newRange);
+		return makeChangeSet(oldChangeSet.meta, [insertChange], rangeUpdateChange);
+	}
+
 	function advanceHistory(context) {
 		var history = context.history;
 		var historyIndex = context.historyIndex;
 		history.length = historyIndex;
 		var frame = context.frame;
 		var newChanges = topLevelChangeSetsFromFrame(context, frame);
+		var lastChange = Arrays.last(history);
+		if (1 === newChanges.length && lastChange) {
+			var combinedChange = combineTypingChanges(lastChange, newChanges[0]);
+			if (combinedChange) {
+				history.pop();
+				newChanges = [combinedChange];
+			}
+		}
 		history = history.concat(newChanges);
 		frame.records = [];
 		context.history = history;

@@ -21,10 +21,15 @@ define([], function Assert() {
 		assertEqual(value, true);
 	}
 
+	function assertError() {
+		throw Error();
+	}
+
 	return {
 		assertEqual: assertEqual,
 		assertNotEqual: assertNotEqual,
 		assertFalse: assertFalse,
-		assertTrue: assertTrue
+		assertTrue: assertTrue,
+		assertError: assertError
 	};
 });
