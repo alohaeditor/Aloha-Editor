@@ -32,3 +32,7 @@ All changes are categorized into one of the following keywords:
               The outline when the icon is focused is too big and the user can't distinguish when a button
               icon is enabled or disabled. By adding box-shadow (same behavior for different browsers)
               the problem was solved.
+- **BUGFIX**:      Aloha Editor very slow on large content
+                   Some performance were made, so the Aloha-editor smartContenthandler is faster
+                   in large contents. Improvements of loop-for, jQuery selector and Dom iteration.
+                   RT#56619

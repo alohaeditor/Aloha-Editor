@@ -207,9 +207,15 @@ define([
 				var commandId = data.commandId;
 
 				// Internet Explorer *magically* sets the range to the "Body" object after deselecting everything. yeah :-D
-				var onlyBlockSelected = (Aloha.getSelection().getRangeCount() === 0) || // Firefox / Chrome
-					(Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).endContainer === jQuery('body')[0]) || // Internet explorer: Inline Elements
-					(Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).startOffset + 1 === Aloha.getSelection().getRangeAt(0).endOffset); // Internet explorer: Block level elements
+				var selection = Aloha.getSelection(),
+				    rangeCount = selection.getRangeCount(),
+				    range = selection.getRangeAt(0),
+				    rangeEndContainer = range.endContainer,
+				    rangeStartContainer = range.startContainer,
+
+				    onlyBlockSelected = (rangeCount === 0) || // Firefox / Chrome
+					       (rangeCount === 1 && rangeEndContainer === rangeStartContainer && rangeEndContainer === jQuery('body')[0]) || // Internet explorer: Inline Elements
+					       (rangeCount === 1 && rangeEndContainer === rangeStartContainer && range.startOffset + 1 === range.endOffset); // Internet explorer: Block level elements
 
 				if (that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && onlyBlockSelected) {
 					// Deletion when a block is currently selected
@@ -217,7 +223,7 @@ define([
 					// In this case, the default command shall not be executed.
 					data.preventDefault = true;
 					that._activeBlock.destroy();
-				} else if (!that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).collapsed === false) {
+				} else if (!that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && rangeCount === 1 && range.collapsed === false) {
 					// Deletion when a block is inside a bigger selection currently
 					// In this case, we check if we find an aloha-block. If yes, we delete it right away as the browser does not delete it correctly by default
 					var traverseSelectionTree;
