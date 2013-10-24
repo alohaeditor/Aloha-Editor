@@ -11,6 +11,7 @@ define([
 	'ranges',
 	'editing',
 	'traversing',
+	'boundaries',
 	'functions',
 	'strings',
 	'editables',
@@ -22,6 +23,7 @@ define([
 	Ranges,
 	Editing,
 	Traversing,
+	Boundaries,
 	Fn,
 	Strings,
 	Editables,
@@ -29,51 +31,73 @@ define([
 ) {
 	'use strict';
 
-	function delete_(range, direction, editor) {
-		var collapsed = range.collapsed;
-		if (collapsed) {
-			range = (
-				direction
-					? Ranges.expandForwardToVisiblePosition
-					: Ranges.expandBackwardToVisiblePosition
-			)(range);
+	function undoable(type, range, editor, fn) {
+		var boundary = Boundaries.start(range);
+		var editable = Editables.fromBoundary(editor, boundary);
+		if (!editable) {
+			return;
 		}
-		Editing.delete(Ranges.expandToVisibleCharacter(range), editor);
+		var undoContext = editable.undoContext;
+		Undo.capture(undoContext, {
+			meta: {type: type},
+			oldRange: range
+		}, function () {
+			range = fn();
+			return {newRange: range};
+		});
+		Undo.advanceHistory(undoContext);
 		return range;
+	}
+
+	function delete_(range, direction, editor) {
+		return undoable('delete', range, editor, function () {
+			var collapsed = range.collapsed;
+			if (collapsed) {
+				range = (
+					direction
+						? Ranges.expandForwardToVisiblePosition
+						: Ranges.expandBackwardToVisiblePosition
+				)(range);
+			}
+			Editing.delete(Ranges.expandToVisibleCharacter(range), editor);
+			return range;
+		});
 	}
 
 	var actions = {};
 
 	actions[Keys.CODES.backspace] = function deleteBackwards(range, editor) {
 		delete_(range, false, editor);
-		return range;
 	};
 
 	actions[Keys.CODES.delete] = function deleteForward(range, editor) {
 		delete_(range, true, editor);
-		return range;
 	};
 
 	actions[Keys.CODES.enter] = function breakBlock(range, editor) {
-		Editing.break(
-			range.collapsed ? range : delete_(range, true, editor),
-			editor,
-			false
-		);
-		return range;
+		return undoable('enter', range, editor, function () {
+			Editing.break(
+				range.collapsed ? range : delete_(range, true, editor),
+				editor,
+				false
+			);
+			return range;
+		});
 	};
 
 	actions['shift+' + Keys.CODES.enter] = function breakLine(range, editor) {
-		Editing.break(
-			range.collapsed ? range : delete_(range, true, editor),
-			editor,
-			true
-		);
-		return range;
+		return undoable('enter', range, editor, function () {
+			Editing.break(
+				range.collapsed ? range : delete_(range, true, editor),
+				editor,
+				true
+			);
+			return range;
+		});
 	};
 
 	actions['ctrl+90'] = function undo(range, editor) {
-		var editable = Editables.fromBoundary(editor, Dom.startBoundary(range));
+		var editable = Editables.fromBoundary(editor, Boundaries.start(range));
 		if (!editable) {
 			return range;
 		}
@@ -83,7 +107,7 @@ define([
 	};
 
 	actions['ctrl+shift+90'] = function redo(range, editor) {
-		var editable = Editables.fromBoundary(editor, Dom.startBoundary(range));
+		var editable = Editables.fromBoundary(editor, Boundaries.start(range));
 		if (!editable) {
 			return range;
 		}
@@ -93,43 +117,24 @@ define([
 	};
 
 	actions['ctrl+66'] = function bold(range, editor) {
-		var boundary = Dom.startBoundary(range);
-		var editable = Editables.fromBoundary(editor, boundary);
-		if (!editable) {
-			return;
-		}
-		var undoContext = editable.undoContext;
-		Undo.capture(undoContext, {
-			meta: {type: 'bold'},
-			oldRange: range
-		}, function () {
+		return undoable('bold', range, editor, function () {
 			Editing.format(range, 'bold', true);
-			return {newRange: range};
+			return range;
 		});
-		Undo.advanceHistory(undoContext);
-		return range;
 	};
 
 	actions['ctrl+73'] = function italic(range, editor) {
-		var boundary = Dom.startBoundary(range);
-		var editable = Editables.fromBoundary(editor, boundary);
-		if (!editable) {
-			return;
-		}
-		var undoContext = editable.undoContext;
-		Undo.capture(undoContext, {
-			meta: {type: 'italic'},
-			oldRange: range
-		}, function () {
+		return undoable('italic', range, editor, function () {
 			Editing.format(range, 'italic', true);
-			return {newRange: range};
+			return range;
 		});
-		Undo.advanceHistory(undoContext);
-		return range;
 	};
 
 	actions.insertText = function insertText(range, text, editor) {
-		var boundary = Dom.startBoundary(range);
+		if (!range.collapsed) {
+			range = delete_(range, true, editor);
+		}
+		var boundary = Boundaries.start(range);
 		var editable = Editables.fromBoundary(editor, boundary);
 		if (!editable) {
 			return;
@@ -140,9 +145,6 @@ define([
 			oldRange: range,
 			noObserve: true
 		}, function () {
-			if (!range.collapsed) {
-				range = delete_(range, true, editor);
-			}
 			if (' ' === text) {
 				var elem = Traversing.upWhile(Boundaries.container(boundary), Dom.isTextNode);
 				var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');

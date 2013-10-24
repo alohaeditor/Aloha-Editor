@@ -207,7 +207,7 @@ define([
 			isFrame: true,
 			records: [],
 			result: null,
-			oldRange: recordRange(elem, opts.oldRange || Ranges.get()),
+			oldRange: recordRange(elem, opts.oldRange),
 			newRange: null
 		};
 		if (upperFrame) {
@@ -241,7 +241,7 @@ define([
 			takeRecords(context, frame);
 			frame.records = [];
 		}
-		frame.newRange = recordRange(context.elem, (result && result.newRange) || Ranges.get());
+		frame.newRange = recordRange(context.elem, result && result.newRange);
 		frame.result = result;
 		return frame;
 	}
