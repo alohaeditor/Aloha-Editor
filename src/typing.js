@@ -75,7 +75,7 @@ define([
 	actions['ctrl+90'] = function undo(range, editor) {
 		var editable = Editables.fromBoundary(editor, Dom.startBoundary(range));
 		if (!editable) {
-			return;
+			return range;
 		}
 		var undoContext = editable.undoContext;
 		Undo.undo(undoContext, range, [range]);
@@ -85,7 +85,7 @@ define([
 	actions['ctrl+shift+90'] = function redo(range, editor) {
 		var editable = Editables.fromBoundary(editor, Dom.startBoundary(range));
 		if (!editable) {
-			return;
+			return range;
 		}
 		var undoContext = editable.undoContext;
 		Undo.redo(undoContext, range, [range]);
@@ -93,25 +93,56 @@ define([
 	};
 
 	actions['ctrl+66'] = function bold(range, editor) {
-		Editing.format(range, 'bold', true);
-	};
-
-	actions['ctrl+73'] = function italic(range, editor) {
-		Editing.format(range, 'italic', true);
-	};
-
-	actions.insertText = function insertText(range, text, editor) {
-		if (!range.collapsed) {
-			range = delete_(range, true, editor);
-		}
 		var boundary = Dom.startBoundary(range);
 		var editable = Editables.fromBoundary(editor, boundary);
 		if (!editable) {
 			return;
 		}
 		var undoContext = editable.undoContext;
+		Undo.capture(undoContext, {
+			meta: {type: 'bold'},
+			oldRange: range
+		}, function () {
+			Editing.format(range, 'bold', true);
+			return {newRange: range};
+		});
 		Undo.advanceHistory(undoContext);
-		Undo.capture(undoContext, {meta: {type: 'typing'}, noObserve: true}, function () {
+		return range;
+	};
+
+	actions['ctrl+73'] = function italic(range, editor) {
+		var boundary = Dom.startBoundary(range);
+		var editable = Editables.fromBoundary(editor, boundary);
+		if (!editable) {
+			return;
+		}
+		var undoContext = editable.undoContext;
+		Undo.capture(undoContext, {
+			meta: {type: 'italic'},
+			oldRange: range
+		}, function () {
+			Editing.format(range, 'italic', true);
+			return {newRange: range};
+		});
+		Undo.advanceHistory(undoContext);
+		return range;
+	};
+
+	actions.insertText = function insertText(range, text, editor) {
+		var boundary = Dom.startBoundary(range);
+		var editable = Editables.fromBoundary(editor, boundary);
+		if (!editable) {
+			return;
+		}
+		var undoContext = editable.undoContext;
+		Undo.capture(undoContext, {
+			meta: {type: 'typing'},
+			oldRange: range,
+			noObserve: true
+		}, function () {
+			if (!range.collapsed) {
+				range = delete_(range, true, editor);
+			}
 			if (' ' === text) {
 				var elem = Traversing.upWhile(Boundaries.container(boundary), Dom.isTextNode);
 				var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');
@@ -123,8 +154,7 @@ define([
 			var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
 			var change = Undo.makeInsertChange(insertPath, insertContent);
 			Dom.insertTextAtBoundary(text, boundary, true, [range]);
-			Ranges.select(range);
-			return {changes: [change]};
+			return {newRange: range, changes: [change]};
 		});
 		Undo.advanceHistory(undoContext);
 		return range;
@@ -181,7 +211,10 @@ define([
 		return null != which ? which : event.keyCode;
 	}
 
-	function applyAction(action, range, editor) {
+	function applyAction(action, range, event, editor) {
+		// Because an action may cause an exception we prevent the
+		// browser's default action first.
+		event.preventDefault();
 		range = action(range, editor);
 		Html.prop(range.commonAncestorContainer);
 		Ranges.select(range);
@@ -195,8 +228,7 @@ define([
 		}
 		var action = actionFromEvent(event);
 		if (action) {
-			applyAction(action, range, editor);
-			event.preventDefault();
+			applyAction(action, range, event, editor);
 		}
 	}
 
@@ -215,13 +247,13 @@ define([
 		}
 		var action = actionFromEvent(event, range, editor);
 		if (action) {
-			applyAction(action);
-			event.preventDefault();
+			applyAction(action, range, event, editor);
 			return;
 		}
 		if (isTextInsertEvent(event)) {
 			var text = String.fromCharCode(event.which);
-			actions.insertText(range, text, editor);
+			range = actions.insertText(range, text, editor);
+			Ranges.select(range);
 			event.preventDefault();
 			return;
 		}

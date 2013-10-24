@@ -205,7 +205,8 @@ define([
 		atEnd     : atEnd,
 		normalize : normalize,
 		nodeAfter : nodeAfter,
-		nodeBefore: nodeBefore
+		nodeBefore: nodeBefore,
+		isNodeBoundary: isNodeBoundary
 	};
 
 	exports['equal']     = exports.equal;

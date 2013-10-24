@@ -149,25 +149,24 @@ define([
 	}
 
 	function pathFromBoundary(container, boundary) {
-		var boundaryNode = boundary[0];
-		var boundaryOffset = boundary[1];
-		var node;
-		var textOff = null;
-		if (Dom.isTextNode(boundaryNode)) {
-			node = boundaryNode;
-			textOff = boundaryOffset;
+		boundary = Dom.normalizeBoundary(boundary);
+		var path;
+		if (Boundaries.isNodeBoundary(boundary)) {
+			if (Dom.isBoundaryAtEnd(boundary)) {
+				var boundaryContainer = boundary[0];
+				path = makePath(container, boundaryContainer);
+				var numChildren = Dom.normalizedNumChildren(boundaryContainer);
+				stepDownPath(path, boundaryContainer.nodeName, numChildren);
+			} else {
+				path = makePath(container, Boundaries.nextNode(boundary));
+			}
 		} else {
-			node = Dom.nodeAtBoundary(boundary);
-		}
-		var path = makePath(container, node, textOff);
-		if (Dom.isBoundaryAtEnd(boundary)) {
-			stepDownPath(path, node.nodeName, Dom.normalizedNumChildren(node));
+			path = makePath(container, boundary[0], boundary[1]);
 		}
 		return path;
 	}
 
-	function recordRange(container) {
-		var range = Ranges.get();
+	function recordRange(container, range) {
 		if (!range) {
 			return null;
 		}
@@ -208,7 +207,7 @@ define([
 			isFrame: true,
 			records: [],
 			result: null,
-			oldRange: recordRange(elem),
+			oldRange: recordRange(elem, opts.oldRange || Ranges.get()),
 			newRange: null
 		};
 		if (upperFrame) {
@@ -235,14 +234,14 @@ define([
 		var noObserve = frame.opts.noObserve;
 		// Because we expect either a result to be returned by the
 		// capture function, or observed by the observer, but not both.
-		Assert.assertFalse(!!(!noObserve && result));
+		Assert.assertFalse(!!(!noObserve && result && result.changes));
 		// TODO we should optimize the ObserverUsingSnapshots so that a
 		// snapshot isn't created when we don't observe.
 		if (noObserve) {
 			takeRecords(context, frame);
 			frame.records = [];
 		}
-		frame.newRange = recordRange(context.elem);
+		frame.newRange = recordRange(context.elem, (result && result.newRange) || Ranges.get());
 		frame.result = result;
 		return frame;
 	}
@@ -906,8 +905,8 @@ define([
 		var result = frame.result;
 		// Because we expect either a result to be returned by the
 		// capture function, or observed by the observer, but not both.
-		Assert.assertFalse(!!(frame.records.length && result));
-		if (result) {
+		Assert.assertFalse(!!(frame.records.length && result && result.changes));
+		if (result && result.changes) {
 			return makeChangeSet(frame.opts.meta, result.changes, rangeUpdateChange);
 		}
 		var records = [];
