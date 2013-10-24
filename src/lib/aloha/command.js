@@ -115,8 +115,9 @@ define([
 
 			Engine.execCommand(commandId, showUi, value, range);
 
-			if (alohaSelection.getRangeCount()) {
-				// Read range after engine modification
+			// Because there is never a situation where it will be necessary to
+			// do any further cleanup (merging of similar adjacent nodes)
+			if ('insertparagraph' !== commandId.toLowerCase() && alohaSelection.getRangeCount()) {
 				range = alohaSelection.getRangeAt(0);
 
 				// FIX: doCleanup should work with W3C range
@@ -124,15 +125,18 @@ define([
 				if (startnode.parentNode) {
 					startnode = startnode.parentNode;
 				}
+
 				var rangeObject = new window.GENTICS.Utils.RangeObject();
 				rangeObject.startContainer = range.startContainer;
 				rangeObject.startOffset = range.startOffset;
 				rangeObject.endContainer = range.endContainer;
 				rangeObject.endOffset = range.endOffset;
+
 				Dom.doCleanup({
 					merge: true,
 					removeempty: false
 				}, rangeObject, startnode);
+
 				rangeObject.select();
 			}
 

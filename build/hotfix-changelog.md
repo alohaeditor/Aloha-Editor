@@ -56,3 +56,8 @@ All changes are categorized into one of the following keywords:
               to false in order to allow for more performant ways to work with
               ranges in IE.  Accomodations were taken to ensure that IE 9 would
               not crash with this flag.
+
+- **BUGFIX** commands: Further cleanup will no longer be done after inserting
+             paragraphs since this extra processing was not necessary and very
+             expensive on large content.
+
