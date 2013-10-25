@@ -108,6 +108,15 @@ define([], function Functions() {
 		};
 	}
 
+	/**
+	 * Compare the given arguments using the strict equals operator.
+	 *
+	 * Useful to pass as an arguments to other functions.
+	 *
+	 * @param a {*}
+	 * @param b {*}
+	 * @return {boolean}
+	 */
 	function strictEquals(a, b) {
 		return a === b;
 	}

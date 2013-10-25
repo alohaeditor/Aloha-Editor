@@ -14,14 +14,14 @@ define(['functions'], function Arrays(Fn) {
 	 *        An array to compare.
 	 * @param {Array} b
 	 *        A second array to compare with `a`.
-	 * @param {Function(*, *):Number} equalFn
+	 * @param {function(*, *):number} equalFn
 	 *        A custom comparison function that accepts two values a and b from
 	 *        the given arrays and returns true or false for equal and not equal
 	 *        respectively.
 	 *
 	 *        If no equalFn is provided, the algorithm will use the strict
 	 *        equals operator.
-	 * @return {Boolean}
+	 * @return {boolean}
 	 *         True if all items in a and b are equal, false if not.
 	 */
 	function equal(a, b, equalFn) {
@@ -45,7 +45,7 @@ define(['functions'], function Arrays(Fn) {
 	 * @param {Array} xs
 	 * @param {*} x
 	 *        A value to search for in the given array.
-	 * @return {Boolean}
+	 * @return {boolean}
 	 *         True of argument `x` is an element of the set `xs`.
 	 */
 	function contains(xs, x) {
@@ -108,15 +108,39 @@ define(['functions'], function Arrays(Fn) {
 	 * This implementation works on modern browsers and IE >= 9. For IE
 	 * < 9 a shim can be used, available here:
 	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice
+	 *
+	 * @param arrayLikeObject {*}
+	 * @return {Array.<*>}
 	 */
 	function coerce(arrayLikeObject) {
 		return Array.prototype.slice.call(arrayLikeObject, 0);
 	}
 
+	/**
+	 * Like Array.prototype.map() except expects the given function to return
+	 * arrays which will be concatenated together into the resulting array.
+	 *
+	 * Related to partition() in the sense that
+	 * mapcat(partition(xs, n), identity) == xs.
+	 *
+	 * @param xs {Array.<*>}
+	 * @param fn {function(*):Array.<*>}
+	 * @return {Array.<*>}
+	 */
 	function mapcat(xs, fn) {
 		return Array.prototype.concat.apply([], xs.map(fn));
 	}
 
+	/**
+	 * Partitions the given array xs into an array of arrays where each
+	 * nested array is a subsequence of xs of lenght n.
+	 *
+	 * See mapcat().
+	 *
+	 * @param xs {Array.<*>}
+	 * @param n {number}
+	 * @return {Array.<Array.<*>>}
+	 */
 	function partition(xs, n) {
 		return xs.reduce(function (result, x) {
 			var l = last(result);
@@ -129,11 +153,42 @@ define(['functions'], function Arrays(Fn) {
 		}, []);
 	}
 
-	function some(xs, pred, emptyResult) {
-		var result = emptyResult;
+	/**
+	 * Logically true is everything except null, undefined and false.
+	 *
+	 * The empty string and the numeric value of zero are both
+	 * considered true.
+	 *
+	 * @param value {*}
+	 * @return {boolean}
+	 */
+	function logicallyTrue(value) {
+		return null != value && false !== value;
+	}
+
+	/**
+	 * Returns the first logically true return value of pred which is
+	 * invoked on every item in xs. If pred doesn't return a logically
+	 * true value for any in xs, returns the last value returned by
+	 * pred. If xs is empty, returns null or undefined.
+	 *
+	 * Uses logicallyTrue() to determine whether something is logically
+	 * true.
+	 *
+	 * @param {Array.<*>} xs
+	 *        An array of items.
+	 * @param {function(*):*} pred
+	 *        A predicate function that takes an item from xs and
+	 *        returns a result that will be returned immediatly if it is
+	 *        logically true.
+	 * @return {*}
+	 *        The last value returned by pred.
+	 */
+	function some(xs, pred) {
+		var result = null;
 		xs.some(function (x) {
 			result = pred(x);
-			return result;
+			return logicallyTrue(result);
 		});
 		return result;
 	}
