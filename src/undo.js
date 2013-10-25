@@ -618,6 +618,7 @@ define([
 		recordTree.forEach(function (record) {
 			switch (record.type) {
 			case COMPOUND_DELETE:
+				lastInsertNode = null;
 				var path = containerPath.concat(delPath(container, record));
 				record.records.forEach(function (record) {
 					generateChanges(path, record.node, changes, record.contained);
@@ -627,7 +628,7 @@ define([
 			case INSERT:
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
-				if (lastInsertNode && lastInsertNode === node.previousSibling) {
+				if (false && lastInsertNode && lastInsertNode === node.previousSibling) {
 					lastInsertContent.push(Dom.clone(node));
 				} else {
 					lastInsertContent = [Dom.clone(node)];
@@ -636,11 +637,13 @@ define([
 				lastInsertNode = node;
 				break;
 			case UPDATE_ATTR:
+				lastInsertNode = null;
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeUpdateAttrChange(path, node, record.attrs));
 				break
 			case UPDATE_TEXT:
+				lastInsertNode = null;
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeDeleteChange(path, [document.createTextNode(record.oldValue)]));
