@@ -47,3 +47,25 @@ could, although of course it's a bit longer.
 
 
 http://mxr.mozilla.org/mozilla-central/source/editor/libeditor/base/nsEditor.cpp#2698
+
+
+Uncaught Error dom.js:132
+translateNodeIndex dom.js:132
+realFromNormalizedIndex dom.js:136
+normalizedNthChild dom.js:152
+boundaryFromPath undo.js:80
+applyChange undo.js:800
+(anonymous function) undo.js:855
+applyChanges undo.js:854
+applyChangeSet undo.js:863
+(anonymous function) undo.js:1061
+capture undo.js:256
+captureOffTheRecord undo.js:270
+undo undo.js:1060
+undo typing.js:108
+applyAction typing.js:226
+down typing.js:239
+(anonymous function) aloha.js:84
+send pubsub.js:90
+publish pubsub.js:186
+onDown keys.js:85

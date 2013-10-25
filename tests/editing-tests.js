@@ -37,10 +37,8 @@
 			});
 		};
 
-		t('<p contenteditable="true">foo[]bar</p>', '<p contenteditable="true">foo<br>{}bar</p>');
-
+		t('<i>b[]a</i>', '<h1><i>b</i></h1><h1><i>[]a</i></h1>');
 		t('<i>{}</i>', '<i><br>{}</i>', true);
-
 		t('<i>{}<br></i>', '<i><br>{}<br></i>', true);
 		t('<i><br>{}</i>', '<i><br><br>{}</i>', true);
 
@@ -64,6 +62,12 @@
 
 		t('<p>{}</p>', '<p><br></p><p>{}</p>');
 		t('<p>[]</p>', '<p><br></p><p>{}</p>');
+
+		t('<div><p><i>fo[]o</i>bar</p></div>',
+		  '<div><p><i>fo</i></p><p><i>[]o</i>bar</p></div>');
+
+		t('<div><p><i>fo[]o<b>bar</b></i>baz</p></div>',
+		  '<div><p><i>fo</i></p><p><i>[]o<b>bar</b></i>baz</p></div>');
 
 		t('<i>[]</i>', '<h1><i></i></h1><h1><i>{}</i></h1>');
 		t('<i>[]foo</i>', '<h1><i></i></h1><h1><i>[]foo</i></h1>');
@@ -115,10 +119,13 @@
 		t('<div contenteditable="true"><i>1{}</i><p>2</p></div>',
 		  '<div contenteditable="true"><h1><i>1</i></h1><h1><i>{}</i></h1><p>2</p></div>');
 
-		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i></div><p>2</p>');
+		t('<div contenteditable="true">foo[]bar</div>', '<div contenteditable="true"><h1>foo</h1><h1>[]bar</h1></div>');
+		t('<div contenteditable="true"><p>one</p>foo[]bar</div>', '<div contenteditable="true"><p>one</p><h1>foo</h1><h1>[]bar</h1></div>');
+
+		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i><p>2</p></div>');
 
 		t('<div><i>1{}<u>2</u>3</i><p>4</p></div>',
-		  '<div><i>1</i></div><div><i><u>[]2</u>3</i></div><p>4</p>');
+		  '<div><i>1</i></div><div><i><u>[]2</u>3</i><p>4</p></div>');
 
 		t('<p>foo{}<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
 		t('<p>foo[]<i>bar</i></p>', '<p>foo</p><p><i>[]bar</i></p>');
@@ -132,6 +139,7 @@
 		t('<p><i style="color:red">1[]2</i></p>',
 		  '<p><i style="color:red">1</i></p><p><i style="color:red">[]2</i></p>');
 
+		t('<p contenteditable="true">foo[]bar</p>', '<p contenteditable="true">foo<br>{}bar</p>');
 	});
 
 	test('delete()', function () {

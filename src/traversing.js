@@ -504,8 +504,8 @@ define([
 
 	/**
 	 * Starting from the given node and moving backwards, traverses the set of
-	 * `node`'s sibiling nodes until either the predicate `cond` returns false
-	 * or we reach the last sibling of `node`'s parent element.
+	 * `node`'s sibilings until either the predicate `cond` returns false or we
+	 * reach the last sibling of `node`'s parent element.
 	 *
 	 * @param {DOMObject} node
 	 * @param {Function(DOMObject, *?):Boolean} cond

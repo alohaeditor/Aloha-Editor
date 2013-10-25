@@ -757,11 +757,6 @@ define([
 		traversing.climbUntil(parent, dom.remove, isVisible);
 	}
 
-	function isBreak(node) {
-		return !Predicates.isVoidNode(node)
-		    && (dom.isEditingHost(node) || hasLinebreakingStyle(node));
-	}
-
 	function determineBreakingNode(context, container) {
 		var name;
 		if (context
@@ -774,39 +769,9 @@ define([
 		return content.allowsNesting(container.nodeName, name) ? name : null;
 	}
 
-	/**
-	 * Moves the nodes in `toMove` into the given container, nesting one inside
-	 * the other.  Any nodes in `toMove` that are also found in `toPreserve`
-	 * will be copied over rather than moved.
-	 *
-	 * @param {Array.<Element>} toPreserve
-	 * @param {Array.<Element>} toMove
-	 * @param {Element}
-	 */
-	function moveNodesInto(toPreserve, toMove, container) {
-		var copy;
-		var node;
-		var i = toMove.length;
-		while (i--) {
-			node = toMove[i];
-			if (arrays.contains(toPreserve, node)) {
-				copy = node.cloneNode(false);
-				dom.insert(copy, container, true);
-				node = node.nextSibling;
-			} else {
-				copy = null;
-			}
-			dom.moveSiblingsAfter(
-				dom.moveSiblingsInto(node, container, function (node) {
-					return !(
-						content.allowsNesting(container.nodeName, node.nodeName)
-						&& !isBreak(node)
-					);
-				}),
-				container
-			);
-			container = copy || node;
-		}
+	function isBreakingContainer(node) {
+		return !Predicates.isVoidNode(node)
+			&& (hasLinebreakingStyle(node) || dom.isEditingHost(node));
 	}
 
 	/**
@@ -815,50 +780,80 @@ define([
 	 * @param {Array.<Element, offset>} boundary
 	 * @param {!object}
 	 * @param {Array.<Element, offset>}
-	 *        The "forward position". This is the deepest node that is visually
-	 *        adjacent to the newly created line.
+	 *        The "forward position".  This is the deepest node that is
+	 *        visually adjacent to the newly created line.
 	 */
 	function insertVisualBreak(boundary, context) {
-		var left = boundaries.leftNode(boundary);
-		var right = boundaries.rightNode(boundary);
-		var leftAscend = traversing.childAndParentsUntil(left, isBreak);
-		var rightAscend = traversing.childAndParentsUntilIncl(right, isBreak);
-		var breakNode = rightAscend.pop();
-		var newBlock;
-		var breaker;
+		var start = boundaries.nextNode(boundary);
+		var movable = boundaries.atEnd(boundary) ? null : start;
 
-		// Because if we reached the editing host in the ascent, it means that
-		// there was not block-level ancestor in that could be broken.
-		if (dom.isEditingHost(breakNode)) {
-			breaker = determineBreakingNode(context, breakNode);
-			if (breaker) {
-				newBlock = document.createElement(breaker);
-				breakNode = newBlock.cloneNode(false);
-				dom.wrap(arrays.last(leftAscend), breakNode);
-			} else {
+		if (movable && isBreakingContainer(movable)) {
+			var nodeName = determineBreakingNode(context, movable.parentNode);
+			if (!nodeName) {
 				return insertLineBreak(boundary, context);
 			}
-
-		// Because the range may have been just behind a line-breaking node.
-		} else if (!boundaries.atEnd(boundary) && isBreak(right)) {
-			breaker = determineBreakingNode(context, breakNode.parentNode);
-			if (breaker) {
-				newBlock = document.createElement(breaker);
-			} else {
-				return insertLineBreak(boundary, context);
-			}
-		} else {
-			newBlock = breakNode.cloneNode(false);
+			var heirarchy = document.createElement(nodeName);
+			dom.insert(heirarchy, movable);
+			return [heirarchy, 0];
 		}
 
-		dom.insertAfter(newBlock, breakNode);
-		moveNodesInto(leftAscend, rightAscend, newBlock);
-		dom.moveSiblingsAfter(left.nextSibling, newBlock);
+		var ascend = traversing.childAndParentsUntilIncl(
+			start,
+			isBreakingContainer
+		);
 
-		prop(breakNode);
+		var anchor = ascend.pop();
 
-		var focus = newBlock;
-		var next = newBlock;
+		if (dom.isEditingHost(anchor)) {
+			var nodeName = determineBreakingNode(context, anchor);
+			if (!nodeName) {
+				return insertLineBreak(boundary, context);
+			}
+			anchor = document.createElement(nodeName);
+			var last = arrays.last(ascend);
+			var first = traversing.prevWhile(last, function (node) {
+				return node.previousSibling && hasInlineStyle(node.previousSibling);
+			});
+			if (first) {
+				dom.wrap(first, anchor);
+				dom.moveSiblingsAfter(first.nextSibling, first, function (node) {
+					return node === last;
+				});
+				dom.insert(last, anchor, true);
+			} else {
+				dom.wrap(last, anchor);
+			}
+		}
+
+		var heirarchy;
+		var parent;
+		var copy;
+		var node;
+		var next;
+		var len;
+		var i;
+
+		for (i = 0, len = ascend.length; i < len; i++) {
+			node = ascend[i];
+			parent = node.parentNode.cloneNode(false);
+			copy = (node === movable) ? node : node.cloneNode(false);
+			next = node.nextSibling;
+			dom.insert(heirarchy || copy, parent, true);
+			if (next) {
+				dom.moveSiblingsInto(next, parent);
+			}
+			heirarchy = parent;
+		}
+
+		if (!heirarchy) {
+			heirarchy = anchor.cloneNode(false);
+		}
+
+		dom.insertAfter(heirarchy, anchor);
+		prop(anchor);
+
+		var focus = heirarchy;
+		next = heirarchy;
 		while (next && next.firstChild) {
 			next = traversing.nextWhile(focus.firstChild, function (node) {
 				return !Predicates.isVoidNode(node) && isUnrendered(node);
@@ -869,8 +864,9 @@ define([
 			focus = next;
 		}
 
-		return Predicates.isVoidNode(focus) ? [focus.parentNode, dom.nodeIndex(focus)]
-		                             : [focus, 0];
+		return Predicates.isVoidNode(focus)
+		     ? [focus.parentNode, dom.nodeIndex(focus)]
+		     : [focus, 0];
 	}
 
 	/**
