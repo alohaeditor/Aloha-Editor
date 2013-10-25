@@ -73,51 +73,6 @@ define([
 		return path;
 	}
 
-	function precedingTextLength(node) {
-		var index = 0;
-		var skip = node.previousSibling;
-		while (skip && Dom.isTextNode(skip)) {
-			index += Dom.nodeLength(skip);
-			node = skip;
-			skip = skip.previousSibling;
-		}
-		return index;
-	}
-
-	/**
-	 * A path is an array of arrays where each member represents the
-	 * offset of a child in a parent. The empty array represents the
-	 * path of the top-most container from which the path was
-	 * calculated.
-	 *
-	 * Paths with textOff = 0 are invalid because empty text nodes
-	 * should be treated as if they are not present and if a path in an
-	 * empty text node is taken, the same path would become invalid when
-	 * the empty text node is removed.
-	 *
-	 * @param textOff if node is a text node, may be a valid offset in
-	 *        the text node except the last offset (off == length),
-	 *        otherwise must be null/undefined.
-	 */
-	function makePath(container, node, textOff) {
-		textOff = textOff || 0;
-		var effectiveNode = Traversing.nextWhile(node, Dom.isEmptyTextNode);
-		if (!effectiveNode) {
-			return nodePath(container, node);
-		}
-		if (Dom.isTextNode(effectiveNode)) {
-			textOff += precedingTextLength(effectiveNode);
-		}
-		var path = nodePath(container, effectiveNode);
-		if (!path) {
-			return null;
-		}
-		if (textOff) {
-			stepDownPath(path, '#text', textOff);
-		}
-		return path;
-	}
-
 	function boundaryFromPath(container, path) {
 		for (var i = 0; i < path.length - 1; i++) {
 			var step = path[i];
@@ -133,37 +88,80 @@ define([
 			// Because text offset paths with value 0 are invalid.
 			Assert.assertNotEqual(off, 0);
 			while (off > Dom.nodeLength(container)) {
+				Assert.assertTrue(Dom.isTextNode(container));
 				off -= Dom.nodeLength(container);
 				container = container.nextSibling;
 			}
-			// Because we don't want to generate boundaries with text
-			// offset == text length.
-			if (off === Dom.nodeLength(container)) {
-				off = Dom.nodeIndex(container) + 1;
+			// Because we may have stepped out of a text node.
+			if (!Dom.isTextNode(container)) {
+				Assert.assertEqual(off, 0);
 				container = container.parentNode;
+				off = Dom.nodeIndex(container);
 			}
 		} else {
 			off = Dom.realFromNormalizedIndex(container, off);
 		}
-		return [container, off];
+		return Dom.normalizeBoundary([container, off]);
 	}
 
+	/**
+	 * A path is an array of arrays where each member represents the
+	 * offset of a child in a parent. The empty array represents the
+	 * path of the top-most container from which the path was
+	 * calculated.
+	 *
+	 * The last step in a path may be the offset in a text node.
+	 *
+	 * If the nodes before a boundary are text nodes, the last step will
+	 * always be the offset in a text node, and the combined length of
+	 * the text nodes before the boundary will be used as the
+	 * offset. This is true even if the node following the boundary is
+	 * not a text node, and the path could theoretically be represented
+	 * by the next node's offset in the element parent. That's because
+	 * the path represents the path in the DOM based on the normalized
+	 * number of previous siblings, and doesn't depend on any next
+	 * siblings, and if we didn't always include the text offset before
+	 * the path, the path would look different if constructed from a DOM
+	 * that is structurally equal before the boundary, but contains text
+	 * nodes directly after the boundary.
+	 *
+	 * Paths with textOff = 0 are invalid because empty text nodes
+	 * should be treated as if they are not present and if a path in an
+	 * empty text node is taken, the same path would become invalid when
+	 * the empty text node is removed. This is true even when the text
+	 * node is not empty because we can't depend on what occurs after
+	 * the boundary (see previous paragraph).
+	 *
+	 * Paths reflect the normalized DOM - offsets will be calculated
+	 * assuming that empty text nodes don't exist and that subsequent
+	 * text nodes are counted as one.
+	 */
 	function pathFromBoundary(container, boundary) {
 		boundary = Dom.normalizeBoundary(boundary);
 		var path;
-		if (Boundaries.isNodeBoundary(boundary)) {
-			if (Dom.isBoundaryAtEnd(boundary)) {
-				var boundaryContainer = boundary[0];
-				path = makePath(container, boundaryContainer);
-				var numChildren = Dom.normalizedNumChildren(boundaryContainer);
-				stepDownPath(path, boundaryContainer.nodeName, numChildren);
-			} else {
-				path = makePath(container, Boundaries.nextNode(boundary));
-			}
+		var textOff = Boundaries.precedingTextLength(boundary);
+		if (textOff) {
+			var node = Boundaries.nodeBefore(boundary);
+			// Because nodePath() would use the normalizedNodeIndex
+			// which would translate an empty text node after a
+			// non-empty text node to the normalized offset after the
+			// non-empty text node.
+			node = Traversing.prevWhile(node, Dom.isEmptyTextNode);
+			path = nodePath(container, node);
+			stepDownPath(path, '#text', textOff);
+		} else if (Boundaries.atEnd(boundary)) {
+			var boundaryContainer = boundary[0];
+			path = nodePath(container, boundaryContainer);
+			var numChildren = Dom.normalizedNumChildren(boundaryContainer);
+			stepDownPath(path, boundaryContainer.nodeName, numChildren);
 		} else {
-			path = makePath(container, boundary[0], boundary[1]);
+			path = nodePath(container, Boundaries.nodeAfter(boundary));
 		}
 		return path;
+	}
+
+	function pathBeforeNode(container, node) {
+		return pathFromBoundary(container, Boundaries.beforeNode(node));
 	}
 
 	function recordRange(container, range) {
@@ -176,17 +174,17 @@ define([
 	}
 
 	function takeRecords(context, frame) {
-		// TODO takeRecords() implementation defined
 		var records = context.observer.takeRecords();
 		frame.records = frame.records.concat(records);
 	}
 
-	function partitionRecords(context, frame, upperLowerFrame) {
+	function partitionRecords(context, leftFrame, enteredFrame) {
 		if (!context.observer.takeRecordsSlow
-		    || frame.opts.partitionRecords
-		    || upperLowerFrame.opts.partitionRecords
-		    || !!frame.opts.noObserve !== !!upperLowerFrame.opts.noObserve) {
-			takeRecords(context, frame);
+		    || leftFrame.opts.partitionRecords
+		    || enteredFrame.opts.partitionRecords
+		    || leftFrame.opts.noObserve
+		    || enteredFrame.opts.noObserve) {
+			takeRecords(context, leftFrame);
 		}
 	}
 
@@ -210,6 +208,12 @@ define([
 			oldRange: recordRange(elem, opts.oldRange),
 			newRange: null
 		};
+		// Because currently it's not possible to nest frames inside
+		// noObserve and if noObserve is used, no history must exist.
+		Assert.assertFalse(!!((upperFrame && upperFrame.opts.noObserve)
+		                      || (upperFrame
+		                          && upperFrame.records.length
+		                          && opts.noObserve)));
 		if (upperFrame) {
 			partitionRecords(context, upperFrame, frame);
 			context.stack.push(upperFrame);
@@ -238,7 +242,6 @@ define([
 		// TODO we should optimize the ObserverUsingSnapshots so that a
 		// snapshot isn't created when we don't observe.
 		if (noObserve) {
-			takeRecords(context, frame);
 			frame.records = [];
 		}
 		frame.newRange = recordRange(context.elem, result && result.newRange);
@@ -249,11 +252,18 @@ define([
 	function capture(context, opts, fn) {
 		enter(context, opts);
 		var result;
-		try {
+//		try {
 			result = fn();
-		} finally {
+//		} catch (e) {
+			// TODO for some reason, whether I rethrow here or if I
+			// remove the catch completely, my version of Chrome just
+			// ignores the exception. Maybe it's a bug that just happens
+			// in the version of Chrome I'm using?
+//			window.console && window.console.log(e);
+//			throw e;
+//		} finally {
 			return leave(context, result);
-		}
+//		}
 	}
 
 	function captureOffTheRecord(context, opts, fn) {
@@ -575,8 +585,7 @@ define([
 			path = pathFromBoundary(container, [prevSibling.parentNode, off]);
 		} else {
 			var target = delRecord.target;
-			path = makePath(container, target);
-			stepDownPath(path, target.nodeName, 0);
+			path = pathFromBoundary(container, [target, 0]);
 		}
 		return path;
 	}
@@ -617,7 +626,7 @@ define([
 				break;
 			case INSERT:
 				var node = record.node;
-				var path = containerPath.concat(makePath(container, node));
+				var path = containerPath.concat(pathBeforeNode(container, node));
 				if (lastInsertNode && lastInsertNode === node.previousSibling) {
 					lastInsertContent.push(Dom.clone(node));
 				} else {
@@ -628,12 +637,12 @@ define([
 				break;
 			case UPDATE_ATTR:
 				var node = record.node;
-				var path = containerPath.concat(makePath(container, node));
+				var path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeUpdateAttrChange(path, node, record.attrs));
 				break
 			case UPDATE_TEXT:
 				var node = record.node;
-				var path = containerPath.concat(makePath(container, node));
+				var path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeDeleteChange(path, [document.createTextNode(record.oldValue)]));
 				changes.push(makeInsertChange(path, [Dom.clone(node)]));
 				break;
@@ -690,7 +699,7 @@ define([
 	function changesFromSnapshots(container, snapshots) {
 		var changes = [];
 		snapshots.forEach(function (snapshot) {
-			var path = makePath(container, container);
+			var path = pathBeforeNode(container, container);
 			stepDownPath(path, container.nodeName, 0);
 			// NB: We don't clone the children because a snapshot is
 			// already a copy of the actual content and is supposed to
@@ -874,8 +883,10 @@ define([
 			});
 			break;
 		case 'insert':
+			inverse = Maps.merge(change, {type: 'delete'});
+			break;
 		case 'delete':
-			inverse = Maps.merge(change, {type: ('insert' === type ? 'delete' : 'insert')});
+			inverse = Maps.merge(change, {type: 'insert'});
 			break;
 		default:
 			Assert.assertError();
@@ -888,81 +899,116 @@ define([
 		return makeChangeSet(changeSet.meta, changes, inverseChange(changeSet.selection));
 	}
 
-	function collectRecordsFromFrame(frame, records) {
+	function resetCollectedRecords(context, records) {
+		var changes = [];
+		if (records.length) {
+			changes = context.observer.changesFromRecords(context.elem, records);
+			records.length = 0;
+		}
+		return changes;
+	}
+
+	function collectChangesRec(context, frame, records) {
+		var changes = [];
+		var result = frame.result;
+		if (result && result.changes) {
+			// Because we expect either a result to be returned by the
+			// capture function, or observed by the observer, but not both.
+			Assert.assertFalse(!!frame.records.length);
+			var precedingChanges = resetCollectedRecords(context, records);
+			changes = changes.concat(precedingChanges);
+			changes = changes.concat(result.changes);
+			return changes;
+		}
 		frame.records.forEach(function (record) {
 			// Because a frame may have nested frames mixed in among its
 			// records.
 			if (record.isFrame) {
-				collectRecordsFromFrame(record, records);
+				changes = changes.concat(collectChangesRec(context, record, records));
 			} else {
 				records.push(record);
 			}
 		});
+		return changes;
+	}
+
+	function collectChanges(context, frame) {
+		var records = [];
+		var changes = collectChangesRec(context, frame, records);
+		var lastChanges = resetCollectedRecords(context, records);
+		return changes.concat(lastChanges);
+	}
+
+	function changeSetFromFrameHavingChanges(context, frame, changes) {
+		var rangeUpdateChange = makeRangeUpdateChange(frame.oldRange, frame.newRange);
+		return makeChangeSet(frame.opts.meta, changes, rangeUpdateChange);
 	}
 
 	function changeSetFromFrame(context, frame) {
-		var rangeUpdateChange = makeRangeUpdateChange(frame.oldRange, frame.newRange);
-		var result = frame.result;
-		// Because we expect either a result to be returned by the
-		// capture function, or observed by the observer, but not both.
-		Assert.assertFalse(!!(frame.records.length && result && result.changes));
-		if (result && result.changes) {
-			return makeChangeSet(frame.opts.meta, result.changes, rangeUpdateChange);
-		}
-		var records = [];
-		collectRecordsFromFrame(frame, records)
-		var changes = context.observer.changesFromRecords(context.elem, records);
-		return makeChangeSet(frame.opts.meta, changes, rangeUpdateChange);
+		var changes = collectChanges(context, frame);
+		return changeSetFromFrameHavingChanges(context, frame, changes);
 	}
 
 	function topLevelChangeSetsFromFrame(context, frame) {
 		var changeSets = [];
 		var records = [];
-		function bundleTopLevelRecords() {
-			if (!records.length) {
-				return;
+		function pushChangeSet(frame, changes) {
+			if (changes.length) {
+				var changeSet = changeSetFromFrameHavingChanges(context, frame, changes);
+				changeSets.push(changeSet);
 			}
-			var changes = context.observer.changesFromRecords(context.elem, records);
-			var rangeUpdateChange = makeRangeUpdateChange(frame.oldRange, frame.newRange);
-			changeSets.push(makeChangeSet(frame.opts.meta, changes, rangeUpdateChange));
-			records = [];
+		}
+		function pushTopLevelChangeSet() {
+			var changes = resetCollectedRecords(context, records);
+			pushChangeSet(frame, changes);
 		}
 		frame.records.forEach(function (record) {
 			if (record.isFrame) {
-				bundleTopLevelRecords();
-				changeSets.push(changeSetFromFrame(context, record));
+				pushTopLevelChangeSet();
+				pushChangeSet(record, collectChanges(context, record));
 			} else {
 				records.push(record);
 			}
 		});
-		bundleTopLevelRecords();
+		pushTopLevelChangeSet();
 		return changeSets;
 	}
 
-	function combineTypingChanges(oldChangeSet, newChangeSet, opts) {
+	function combineChanges(oldChangeSet, newChangeSet, opts) {
 		var oldChanges = oldChangeSet.changes;
 		var newChanges = newChangeSet.changes;
-		if (oldChangeSet.meta.type !== newChangeSet.meta.type
-		    || 1 !== oldChanges.length
-		    || 1 !== newChanges.length) {
+		var oldType = oldChangeSet.meta && oldChangeSet.meta.type;
+		var newType = newChangeSet.meta && newChangeSet.meta.type;
+		// TODO combine enter as the first character of a sequence of
+		// text inserts (currently will return null below because we
+		// only handle text boundaries).
+		if (!(('typing' === oldType || 'enter' === oldType)
+		      && 'typing' === newType)) {
 			return null;
 		}
 		var oldChange = oldChanges[0];
 		var newChange = newChanges[0];
 		var oldPath = oldChange.path;
 		var newPath = newChange.path;
-		var oldSegment = Arrays.last(oldPath);
-		var newSegment = Arrays.last(newPath);
+		var oldStep = Arrays.last(oldPath);
+		var newStep = Arrays.last(newPath);
+		// Because the text inserts may have started at a node boundary
+		// but we expect text steps below, we'll just pretend they
+		// started at the start of a text node.
+		if (oldStep && '#text' !== oldStep[1]) {
+			oldStep = ['#text', 0];
+			oldPath = oldPath.concat([oldStep]);
+		}
 		if (oldChange.type !== 'insert'
 		    || oldChange.type !== newChange.type
-		    || oldSegment[1] !== '#text'
-		    || oldSegment[1] !== newSegment[1]
+		    || oldStep[1] !== '#text'
+		    || oldStep[1] !== newStep[1]
 		    || 1 !== oldChange.content.length
 		    || 1 !== newChange.content.length
 		    || !Dom.isTextNode(oldChange.content[0])
 		    || !Dom.isTextNode(newChange.content[0])
 		    || opts.combineCharsMax <= Dom.nodeLength(oldChange.content[0])
-		    || oldSegment[0] + Dom.nodeLength(oldChange.content[0]) !== newSegment[0]
+		    || oldStep[0] + Dom.nodeLength(oldChange.content[0]) !== newStep[0]
 		    || !pathEquals(oldPath.slice(0, oldPath.length - 1),
 		                   newPath.slice(0, newPath.length - 1))) {
 			return null;
@@ -989,7 +1035,7 @@ define([
 		history.length = historyIndex;
 		var lastChangeSet = Arrays.last(history);
 		if (1 === newChangeSets.length && lastChangeSet) {
-			var combinedChangeSet = combineTypingChanges(lastChangeSet, newChangeSets[0], context.opts);
+			var combinedChangeSet = combineChanges(lastChangeSet, newChangeSets[0], context.opts);
 			if (combinedChangeSet) {
 				history.pop();
 				newChangeSets = [combinedChangeSet];
@@ -1033,7 +1079,7 @@ define([
 	}
 
 	/**
-	 * Stateless functions for undo support.
+	 * Functions for undo support.
 	 */
 	var exports = {
 		Context: Context,

@@ -4,6 +4,8 @@
 	var Arrays = aloha.arrays;
 	var Undo = aloha.undo;
 	var Dom = aloha.dom;
+	var Editing = aloha.editing;
+	var Ranges = aloha.ranges;
 
 	module('undo');
 
@@ -82,6 +84,27 @@
 		var redoChangeSet = Undo.inverseChangeSet(undoChangeSet);
 		Undo.applyChangeSet(editable, redoChangeSet);
 		equal(editable.innerHTML, controlEditable.innerHTML);
+	});
+
+	test('delete inside text node', function () {
+		var editable = $('#test-editable')[0];
+		$(editable).html('some <b>bold</b> text');
+		var controlEditable = Dom.clone(editable);
+		var context = Undo.Context(editable);
+		var capturedFrame = Undo.capture(context, {meta: true}, function () {
+			var range = Ranges.create();
+			Dom.setRangeFromBoundaries(range, [editable.firstChild, 2], [editable.firstChild, 3]);
+			Editing.delete(range);
+		});
+		var modifiedEditable = Dom.clone(editable);
+		var capturedChangeSet = Undo.changeSetFromFrame(context, capturedFrame);
+		var undoChangeSet = Undo.inverseChangeSet(capturedChangeSet);
+		Undo.applyChangeSet(editable, undoChangeSet);
+		equal(editable.innerHTML, controlEditable.innerHTML);
+
+		var redoChangeSet = Undo.inverseChangeSet(undoChangeSet);
+		Undo.applyChangeSet(editable, redoChangeSet);
+		equal(editable.innerHTML, modifiedEditable.innerHTML);
 	});
 
 }(window.aloha));

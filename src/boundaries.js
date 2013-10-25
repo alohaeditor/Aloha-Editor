@@ -166,14 +166,22 @@ define([
 
 	function nodeAfter(boundary) {
 		boundary = Dom.normalizeBoundary(boundary);
-		Assert.assertTrue(isNodeBoundary(boundary));
+		if (!isNodeBoundary(boundary)) {
+			return boundary[0].nextSibling;
+		}
 		return atEnd(boundary) ? null : Dom.nthChild(boundary[0], boundary[1]);
 	}
 
 	function nodeBefore(boundary) {
 		boundary = Dom.normalizeBoundary(boundary);
-		Assert.assertTrue(isNodeBoundary(boundary));
+		if (!isNodeBoundary(boundary)) {
+			return boundary[0];
+		}
 		return atStart(boundary) ? null : Dom.nthChild(boundary[0], boundary[1] - 1);
+	}
+
+	function beforeNode(node) {
+		return [node.parentNode, Dom.nodeIndex(node)];
 	}
 
 	function container(boundary) {
@@ -186,6 +194,21 @@ define([
 
 	function prevNode(boundary) {
 		return nodeBefore(boundary) || container(boundary);
+	}
+
+	function precedingTextLength(boundary) {
+		boundary = Dom.normalizeBoundary(boundary);
+		var node = nodeBefore(boundary);
+		var len = 0;
+		if (!isNodeBoundary(boundary)) {
+			len += boundary[1];
+			node = node.previousSibling;
+		}
+		while (node && Dom.isTextNode(node)) {
+			len += Dom.nodeLength(node);
+			node = node.previousSibling;
+		}
+		return len;
 	}
 
 	var exports = {
@@ -206,7 +229,9 @@ define([
 		normalize : normalize,
 		nodeAfter : nodeAfter,
 		nodeBefore: nodeBefore,
-		isNodeBoundary: isNodeBoundary
+		beforeNode: beforeNode,
+		isNodeBoundary: isNodeBoundary,
+		precedingTextLength: precedingTextLength
 	};
 
 	exports['equal']     = exports.equal;

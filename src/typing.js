@@ -45,7 +45,6 @@ define([
 			range = fn();
 			return {newRange: range};
 		});
-		Undo.advanceHistory(undoContext);
 		return range;
 	}
 
@@ -67,11 +66,15 @@ define([
 	var actions = {};
 
 	actions[Keys.CODES.backspace] = function deleteBackwards(range, editor) {
-		delete_(range, false, editor);
+		return undoable('delete', range, editor, function () {
+			return delete_(range, false, editor);
+		});
 	};
 
 	actions[Keys.CODES.delete] = function deleteForward(range, editor) {
-		delete_(range, true, editor);
+		return undoable('delete', range, editor, function () {
+			return delete_(range, true, editor);
+		});
 	};
 
 	actions[Keys.CODES.enter] = function breakBlock(range, editor) {
@@ -131,6 +134,9 @@ define([
 	};
 
 	actions.insertText = function insertText(range, text, editor) {
+		// TODO delete should be part of typing change (currently not
+		// possible since noObserve can't be used together with observed
+		// captures.
 		if (!range.collapsed) {
 			range = delete_(range, true, editor);
 		}
@@ -140,6 +146,7 @@ define([
 			return;
 		}
 		var undoContext = editable.undoContext;
+		Undo.advanceHistory(undoContext);
 		Undo.capture(undoContext, {
 			meta: {type: 'typing'},
 			oldRange: range,
@@ -158,7 +165,6 @@ define([
 			Dom.insertTextAtBoundary(text, boundary, true, [range]);
 			return {newRange: range, changes: [change]};
 		});
-		Undo.advanceHistory(undoContext);
 		return range;
 	};
 
