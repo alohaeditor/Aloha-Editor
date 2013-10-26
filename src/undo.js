@@ -374,8 +374,8 @@ define([
 		moves.forEach(function (move) {
 			var node = move.node;
 			var id = Dom.ensureExpandoId(node);
-			switch (move.type) {
-			case DELETE:
+			var type = move.type;
+			if (DELETE === type) {
 				var prevSibling = move.prevSibling;
 				var target = move.target;
 				var ref = prevSibling ? prevSibling : target;
@@ -406,12 +406,10 @@ define([
 					}
 					map[refId] = dels.concat(delsHavingRefs);
 				}
-				break;
-			case INSERT:
+			} else if (INSERT === type) {
 				Assert.assertFalse(!!inserted[id]);
 				inserted[id] =  move;
-				break;
-			default:
+			} else {
 				// NB: moves should only contains INSERTs and DELETEs
 				// (not COMPOUND_DELETEs).
 				Assert.assertError();
@@ -611,16 +609,15 @@ define([
 		var lastInsertContent = null;
 		var lastInsertNode = null;
 		recordTree.forEach(function (record) {
-			switch (record.type) {
-			case COMPOUND_DELETE:
+			var type = record.type;
+			if (COMPOUND_DELETE === type) {
 				lastInsertNode = null;
 				var path = containerPath.concat(delPath(container, record));
 				record.records.forEach(function (record) {
 					generateChanges(path, record.node, changes, record.contained);
 				});
 				changes.push(makeDeleteChange(path, record.records.map(reconstructNodeFromDelRecord)));
-				break;
-			case INSERT:
+			} else if (INSERT === type) {
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
 				if (lastInsertNode && lastInsertNode === node.previousSibling) {
@@ -630,21 +627,18 @@ define([
 					changes.push(makeInsertChange(path, lastInsertContent));
 				}
 				lastInsertNode = node;
-				break;
-			case UPDATE_ATTR:
+			} else if (UPDATE_ATTR === type) {
 				lastInsertNode = null;
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeUpdateAttrChange(path, node, record.attrs));
-				break
-			case UPDATE_TEXT:
+			} else if (UPDATE_TEXT === type) {
 				lastInsertNode = null;
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeDeleteChange(path, [document.createTextNode(record.oldValue)]));
 				changes.push(makeInsertChange(path, [Dom.clone(node)]));
-				break;
-			default:
+			} else {
 				// NB: only COMPOUND_DELETEs should occur in a recordTree,
 				// DELETEs should not except as part of a COMPOUND_DELETE.
 				Assert.assertError();
@@ -659,8 +653,8 @@ define([
 		records.forEach(function (record) {
 			var target = record.target;
 			var oldValue = record.oldValue;
-			switch(record.type) {
-			case 'attributes':
+			var type = record.type;
+			if ('attributes' === type) {
 				var name = record.attributeName;
 				var ns = record.attributeNamespace;
 				var id = Dom.ensureExpandoId(target);
@@ -669,12 +663,10 @@ define([
 				var attr = {oldValue: oldValue, name: name, ns: ns};
 				var key = name + ' ' + ns;
 				attrs[key] = attrs[key] || attr;
-				break;
-			case 'characterData':
+			} else if ('characterData' === type) {
 				var id = Dom.ensureExpandoId(target);
 				updateText[id] = updateText[id] || makeUpdateText(target, oldValue);
-				break;
-			case 'childList':
+			} else if ('childList' === type) {
 				var prevSibling = record.previousSibling;
 				Arrays.coerce(record.removedNodes).forEach(function (node) {
 					moves.push(makeDelete(node, target, prevSibling));
@@ -682,10 +674,9 @@ define([
 				Arrays.coerce(record.addedNodes).forEach(function (node) {
 					moves.push(makeInsert(node));
 				});
-				break;
-			default:
+			} else {
 				Assert.assertError();
-			};
+			}
 		});
 		var recordTree = makeRecordTree(container, moves, updateAttr, updateText);
 		var changes = [];
@@ -789,23 +780,20 @@ define([
 
 	function applyChange(container, change, range, ranges, textNodes) {
 		var type = change.type;
-		switch (type) {
-		case 'update-attr':
+		if ('update-attr' === type) {
 			var boundary = boundaryFromPath(container, change.path);
 			var node = Boundaries.nodeAfter(boundary);
 			change.attrs.forEach(function (attr) {
 				Dom.setAttrNS(node, attr.ns, attr.name, attr.newValue);
 			});
-			break;
-		case 'update-range':
+		} else if ('update-range' === type) {
 			var newRange = change.newRange;
 			if (range && newRange) {
 				var startBoundary = boundaryFromPath(container, newRange.start);
 				var endBoundary = boundaryFromPath(container, newRange.end);
 				Dom.setRangeFromBoundaries(range, startBoundary, endBoundary);
 			}
-			break;
-		case 'insert':
+		} else if ('insert' === type) {
 			var boundary = boundaryFromPath(container, change.path);
 			change.content.forEach(function (node) {
 				var insertNode = Dom.clone(node);
@@ -814,8 +802,7 @@ define([
 				}
 				boundary = Dom.insertNodeAtBoundary(insertNode, boundary, true, ranges);
 			});
-			break;
-		case 'delete':
+		} else if ('delete' === type) {
 			var boundary = boundaryFromPath(container, change.path);
 			boundary = Dom.splitBoundary(boundary, ranges);
 			var node = Dom.nodeAtBoundary(boundary);
@@ -848,8 +835,7 @@ define([
 					node = next;
 				}
 			});
-			break;
-		default:
+		} else {
 			Assert.assertError();
 		}
 	}
@@ -874,27 +860,22 @@ define([
 	function inverseChange(change) {
 		var type = change.type;
 		var inverse;
-		switch (type) {
-		case 'update-attr':
+		if ('update-attr' === type) {
 			inverse = Maps.merge(change, {
 				attrs: change.attrs.map(function (attr) {
 					return Maps.merge(attr, {oldValue: attr.newValue, newValue: attr.oldValue});
 				})
 			});
-			break;
-		case 'update-range':
+		} else if ('update-range' === type) {
 			inverse = Maps.merge(change, {
 				oldRange: change.newRange,
 				newRange: change.oldRange
 			});
-			break;
-		case 'insert':
+		} else if ('insert' === type) {
 			inverse = Maps.merge(change, {type: 'delete'});
-			break;
-		case 'delete':
+		} else if ('delete' === type) {
 			inverse = Maps.merge(change, {type: 'insert'});
-			break;
-		default:
+		} else {
 			Assert.assertError();
 		}
 		return inverse;
@@ -991,6 +972,10 @@ define([
 		return makeChangeSet(oldChangeSet.meta, [insertChange], rangeUpdateChange);
 	}
 
+	function interruptTyping(context) {
+		context.interrupted = true;
+	}
+
 	function advanceHistory(context) {
 		Assert.assertFalse(!!context.stack.length);
 		var history = context.history;
@@ -1003,13 +988,14 @@ define([
 		}
 		history.length = historyIndex;
 		var lastChangeSet = Arrays.last(history);
-		if (1 === newChangeSets.length && lastChangeSet) {
+		if (1 === newChangeSets.length && lastChangeSet && !context.interrupted) {
 			var combinedChangeSet = combineChanges(lastChangeSet, newChangeSets[0], context.opts);
 			if (combinedChangeSet) {
 				history.pop();
 				newChangeSets = [combinedChangeSet];
 			}
 		}
+		context.interrupted = false;
 		history = history.concat(newChangeSets);
 		frame.records = [];
 		context.history = history;
