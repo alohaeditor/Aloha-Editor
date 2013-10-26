@@ -612,7 +612,9 @@ define([
 	 * @param {DOMObject} Editing host, or null if none is found.
 	 */
 	function getNearestEditingHost(liveRange) {
-		var range = StableRange(liveRange);
+		/*jshint -W064*/
+		var range = StableRange(liveRange); // implicit constructor
+		/*jshint +W064*/
 		var editable = dom.getEditingHost(range.startContainer);
 		if (editable) {
 			return editable;

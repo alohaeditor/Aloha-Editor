@@ -129,7 +129,7 @@ define([
 				currNormalizedIndex += 1;
 			}
 		}
-		throw Error();
+		throw new Error();
 	}
 
 	function realFromNormalizedIndex(elem, normalizedIndex) {
@@ -1041,7 +1041,7 @@ define([
 		// one.
 		var textNode = document.createTextNode(text);
 		insert(textNode, node, atEnd);
-		return adjustRangesAfterNodeInsert(textNode, insertBefore, ranges)
+		return adjustRangesAfterNodeInsert(textNode, insertBefore, ranges);
 	}
 
 	function insertNodeAtBoundary(node, boundary, insertBefore, ranges) {

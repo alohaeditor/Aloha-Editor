@@ -441,7 +441,9 @@ define([
 		// caller to see the in-between updates, and because we are using
 		// ranges.trim() below to adjust the range's boundary points, which we
 		// don't want the browser to re-adjust (which some browsers do).
-		var range = StableRange(liveRange);
+		/*jshint -W064*/
+		var range = StableRange(liveRange); // implicit constructor
+		/*jshint +W064*/
 
 		// Because making the assumption that boundary points are between nodes
 		// makes the algorithms generally a bit simpler.
@@ -1288,7 +1290,9 @@ define([
 	 * @param {boolean} linebreak
 	 */
 	function break_(liveRange, context, linebreak) {
-		var range = ranges.collapseToEnd(StableRange(liveRange));
+		/*jshint -W064*/
+		var range = ranges.collapseToEnd(StableRange(liveRange)); // implicit constructor
+		/*jshint +W064*/
 		dom.splitTextContainers(range);
 		var op = linebreak ? html.insertLineBreak : html.insertVisualBreak;
 		var boundary = op(

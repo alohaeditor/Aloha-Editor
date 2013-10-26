@@ -3,13 +3,13 @@ define([], function Assert() {
 
 	function assertEqual(a, b) {
 		if (a !== b) {
-			throw Error('assertion error ' + a + ' !== ' + b);
+			throw new Error('assertion error ' + a + ' !== ' + b);
 		}
 	}
 
 	function assertNotEqual(a, b) {
 		if (a === b) {
-			throw Error('assertion error ' + a + ' === ' + b);
+			throw new Error('assertion error ' + a + ' === ' + b);
 		}
 	}
 
@@ -22,7 +22,7 @@ define([], function Assert() {
 	}
 
 	function assertError() {
-		throw Error();
+		throw new Error();
 	}
 
 	return {

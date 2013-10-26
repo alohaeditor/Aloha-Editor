@@ -4,7 +4,7 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([
+ define([
 	'arrays',
 	'maps',
 	'dom',
@@ -23,8 +23,7 @@ define([
 	Ranges,
 	Assert
 ) {
-	'use strict'
-
+	'use strict';
 	function Context(elem, opts) {
 		opts = opts || {};
 		opts.combineCharsMax = opts.combineCharsMax || 20;
@@ -37,9 +36,11 @@ define([
 			history: [],
 			historyIndex: 0
 		};
+		/*jshint -W064*/
 		context.observer = (!opts.noMutationObserver && window.MutationObserver
 		                    ? ChangeObserverUsingMutationObserver()
 		                    : ChangeObserverUsingSnapshots());
+		/*jshint +W064*/
 		return context;
 	}
 
@@ -79,8 +80,8 @@ define([
 			Assert.assertEqual(step[1], container.nodeName);
 			container = Dom.normalizedNthChild(container, step[0]);
 		}
-		var lastStep = Arrays.last(path);
-		var off = lastStep[0];
+		var lastStep = Arrays.last(path),
+			off = lastStep[0];
 		container = Traversing.nextWhile(container, Dom.isEmptyTextNode);
 		// NB: container must be non-null at this point.
 		Assert.assertEqual(lastStep[1], container.nodeName);
@@ -138,8 +139,8 @@ define([
 	 */
 	function pathFromBoundary(container, boundary) {
 		boundary = Dom.normalizeBoundary(boundary);
-		var path;
-		var textOff = Boundaries.precedingTextLength(boundary);
+		var path,
+			textOff = Boundaries.precedingTextLength(boundary);
 		if (textOff) {
 			var node = Boundaries.nodeBefore(boundary);
 			// Because nodePath() would use the normalizedNodeIndex
@@ -168,8 +169,8 @@ define([
 		if (!range) {
 			return null;
 		}
-		var start = pathFromBoundary(container, Boundaries.start(range));
-		var end = pathFromBoundary(container, Boundaries.end(range));
+		var start = pathFromBoundary(container, Boundaries.start(range)),
+			end = pathFromBoundary(container, Boundaries.end(range));
 		return start && end ? {start: start, end: end} : null;
 	}
 
@@ -185,31 +186,33 @@ define([
 	}
 
 	function partitionRecords(context, leavingFrame, lowerFrame, upperFrame) {
+		/*jshint -W018*/
 		if ((upperFrame.opts.partitionRecords && !upperFrame.opts.noObserve)
 		    || (!!lowerFrame.opts.noObserve !== !!upperFrame.opts.noObserve)) {
 			takeRecords(context, leavingFrame);
 		}
+		/*jshint +W018*/
 	}
 
 	function close(context) {
 		if (context.frame) {
-			context.observer.disconnect()
+			context.observer.disconnect();
 			context.frame = null;
 		}
 	}
 
 	function enter(context, opts) {
 		opts = opts || {};
-		var upperFrame = context.frame;
-		var observer = context.observer;
-		var elem = context.elem;
-		var noObserve = opts.noObserve || (upperFrame && upperFrame.opts.noObserve);
-		var frame = {
-			opts: Maps.merge(opts, {noObserve: noObserve}),
-			records: [],
-			oldRange: recordRange(elem, opts.oldRange),
-			newRange: null
-		};
+		var upperFrame = context.frame,
+			observer = context.observer,
+			elem = context.elem,
+			noObserve = opts.noObserve || (upperFrame && upperFrame.opts.noObserve),
+			frame = {
+				opts: Maps.merge(opts, {noObserve: noObserve}),
+				records: [],
+				oldRange: recordRange(elem, opts.oldRange),
+				newRange: null
+			};
 		if (upperFrame) {
 			partitionRecords(context, upperFrame, frame, upperFrame);
 			context.stack.push(upperFrame);
@@ -220,9 +223,9 @@ define([
 	}
 
 	function leave(context, result) {
-		var frame = context.frame;
-		var observer = context.observer;
-		var upperFrame = context.stack.pop();;
+		var frame = context.frame,
+			observer = context.observer,
+			upperFrame = context.stack.pop();
 		if (upperFrame) {
 			partitionRecords(context, frame, frame, upperFrame);
 		} else {
@@ -315,12 +318,12 @@ define([
 		};
 	}
 
-	var INSERT = 0;
-	var UPDATE_ATTR = 1;
-	var UPDATE_TEXT = 2;
-	var DELETE_FLAG = 4;
-	var DELETE = DELETE_FLAG;
-	var COMPOUND_DELETE = DELETE_FLAG + 1;
+	var INSERT = 0,
+		UPDATE_ATTR = 1,
+		UPDATE_TEXT = 2,
+		DELETE_FLAG = 4,
+		DELETE = DELETE_FLAG,
+		COMPOUND_DELETE = DELETE_FLAG + 1;
 
 	function makeDelete(node, target, prevSibling) {
 		return {
@@ -372,16 +375,16 @@ define([
 	// delete-insert-delete-insert => move   (in delsBy*, inserted)
 	function normalizeInsertDeletePreserveAnchors(moves, inserted, delsByPrevSibling, delsByTarget) {
 		moves.forEach(function (move) {
-			var node = move.node;
-			var id = Dom.ensureExpandoId(node);
+			var node = move.node,
+				id = Dom.ensureExpandoId(node);
 			switch (move.type) {
 			case DELETE:
-				var prevSibling = move.prevSibling;
-				var target = move.target;
-				var ref = prevSibling ? prevSibling : target;
-				var map = prevSibling ? delsByPrevSibling : delsByTarget;
-				var refId = Dom.ensureExpandoId(ref);
-				var dels = map[refId] = map[refId] || [];
+				var prevSibling = move.prevSibling,
+					target = move.target,
+					ref = prevSibling ? prevSibling : target,
+					map = prevSibling ? delsByPrevSibling : delsByTarget,
+					refId = Dom.ensureExpandoId(ref),
+					dels = map[refId] = map[refId] || [];
 
 				if (inserted[id]) {
 					// Because an insert-delete sequence will become a
@@ -515,8 +518,8 @@ define([
 
 	function sortRecordTree(tree) {
 		tree.sort(function (recordA, recordB) {
-			var anchorA = anchorNode(recordA);
-			var anchorB = anchorNode(recordB);
+			var anchorA = anchorNode(recordA),
+				anchorB = anchorNode(recordB);
 			// Because a delete's anchor precedes it, an insert with the
 			// same anchor as the del's node will always precede it.
 			if (anchorA === anchorB) {
@@ -532,9 +535,9 @@ define([
 	}
 
 	function makeRecordTree(container, moves, updateAttr, updateText) {
-		var delsByPrevSibling = {};
-		var delsByTarget = {};
-		var inserted = {};
+		var delsByPrevSibling = {},
+			delsByTarget = {},
+			inserted = {};
 		normalizeInsertDeletePreserveAnchors(moves, inserted, delsByPrevSibling, delsByTarget);
 		var delss = Maps.vals(delsByPrevSibling).concat(Maps.vals(delsByTarget));
 		// Because normalizeInsertDeletePreserveAnchors may cause empty
@@ -573,8 +576,8 @@ define([
 	}
 
 	function delPath(container, delRecord) {
-		var prevSibling = delRecord.prevSibling;
-		var path;
+		var prevSibling = delRecord.prevSibling,
+			path;
 		if (prevSibling) {
 			var off = Dom.nodeIndex(prevSibling) + 1;
 			path = pathFromBoundary(container, [prevSibling.parentNode, off]);
@@ -586,8 +589,8 @@ define([
 	}
 
 	function reconstructNodeFromDelRecord(delRecord) {
-		var node = delRecord.node;
-		var reconstructedNode;
+		var node = delRecord.node,
+			reconstructedNode;
 		if (Dom.isTextNode(node)) {
 			var updateText = delRecord.updateText;
 			if (updateText) {
@@ -608,21 +611,23 @@ define([
 	}
 
 	function generateChanges(containerPath, container, changes, recordTree) {
-		var lastInsertContent = null;
-		var lastInsertNode = null;
+		var lastInsertContent = null,
+			lastInsertNode = null,
+			path,
+			node;
 		recordTree.forEach(function (record) {
 			switch (record.type) {
 			case COMPOUND_DELETE:
 				lastInsertNode = null;
-				var path = containerPath.concat(delPath(container, record));
+				path = containerPath.concat(delPath(container, record));
 				record.records.forEach(function (record) {
 					generateChanges(path, record.node, changes, record.contained);
 				});
 				changes.push(makeDeleteChange(path, record.records.map(reconstructNodeFromDelRecord)));
 				break;
 			case INSERT:
-				var node = record.node;
-				var path = containerPath.concat(pathBeforeNode(container, node));
+				node = record.node;
+				path = containerPath.concat(pathBeforeNode(container, node));
 				if (lastInsertNode && lastInsertNode === node.previousSibling) {
 					lastInsertContent.push(Dom.clone(node));
 				} else {
@@ -633,14 +638,14 @@ define([
 				break;
 			case UPDATE_ATTR:
 				lastInsertNode = null;
-				var node = record.node;
-				var path = containerPath.concat(pathBeforeNode(container, node));
+				node = record.node;
+				path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeUpdateAttrChange(path, node, record.attrs));
-				break
+				break;
 			case UPDATE_TEXT:
 				lastInsertNode = null;
-				var node = record.node;
-				var path = containerPath.concat(pathBeforeNode(container, node));
+				node = record.node;
+				path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeDeleteChange(path, [document.createTextNode(record.oldValue)]));
 				changes.push(makeInsertChange(path, [Dom.clone(node)]));
 				break;
@@ -653,25 +658,26 @@ define([
 	}
 
 	function changesFromMutationRecords(container, records) {
-		var updateAttr = {};
-		var updateText = {};
-		var moves = [];
+		var updateAttr = {},
+			updateText = {},
+			moves = [],
+			id;
 		records.forEach(function (record) {
-			var target = record.target;
-			var oldValue = record.oldValue;
+			var target = record.target,
+				oldValue = record.oldValue;
 			switch(record.type) {
 			case 'attributes':
-				var name = record.attributeName;
-				var ns = record.attributeNamespace;
-				var id = Dom.ensureExpandoId(target);
-				var updateAttrRecord = updateAttr[id] = updateAttr[id] || makeUpdateAttr(target, {});
-				var attrs = updateAttrRecord.attrs;
-				var attr = {oldValue: oldValue, name: name, ns: ns};
-				var key = name + ' ' + ns;
+				var name = record.attributeName,
+					ns = record.attributeNamespace;
+				id = Dom.ensureExpandoId(target);
+				var updateAttrRecord = updateAttr[id] = updateAttr[id] || makeUpdateAttr(target, {}),
+					attrs = updateAttrRecord.attrs,
+					attr = {oldValue: oldValue, name: name, ns: ns},
+					key = name + ' ' + ns;
 				attrs[key] = attrs[key] || attr;
 				break;
 			case 'characterData':
-				var id = Dom.ensureExpandoId(target);
+				id = Dom.ensureExpandoId(target);
 				updateText[id] = updateText[id] || makeUpdateText(target, oldValue);
 				break;
 			case 'childList':
@@ -685,11 +691,11 @@ define([
 				break;
 			default:
 				Assert.assertError();
-			};
+			}
 		});
-		var recordTree = makeRecordTree(container, moves, updateAttr, updateText);
-		var changes = [];
-		var rootPath = [];
+		var recordTree = makeRecordTree(container, moves, updateAttr, updateText),
+			changes = [],
+			rootPath = [];
 		generateChanges(rootPath, container, changes, recordTree);
 		return changes;
 	}
@@ -707,11 +713,11 @@ define([
 	}
 
 	function ChangeObserverUsingMutationObserver() {
-		var observedElem = null;
-		var pushedRecords = [];
-		var observer = new MutationObserver(function (records) {
-			pushedRecords = pushedRecords.concat(records);
-		});
+		var observedElem = null,
+			pushedRecords = [],
+			observer = new MutationObserver(function (records) {
+				pushedRecords = pushedRecords.concat(records);
+			});
 
 		function observeAll(elem) {
 			var observeAllFlags = {
@@ -748,9 +754,8 @@ define([
 	}
 
 	function ChangeObserverUsingSnapshots() {
-		var observedElem = null;
-		var beforeSnapshot = null;
-
+		var observedElem = null,
+			beforeSnapshot = null;
 		function observeAll(elem) {
 			observedElem = elem;
 			beforeSnapshot = Dom.clone(elem);
@@ -760,8 +765,8 @@ define([
 			if (Dom.isEqualNode(beforeSnapshot, observedElem)) {
 				return [];
 			}
-			var before = beforeSnapshot;
-			var after = Dom.clone(observedElem);
+			var before = beforeSnapshot,
+				after = Dom.clone(observedElem);
 			beforeSnapshot = after;
 			return changesFromSnapshot(before, after);
 		}
@@ -788,11 +793,13 @@ define([
 	}
 
 	function applyChange(container, change, range, ranges, textNodes) {
-		var type = change.type;
+		var type = change.type,
+			boundary,
+			node;
 		switch (type) {
 		case 'update-attr':
-			var boundary = boundaryFromPath(container, change.path);
-			var node = Boundaries.nodeAfter(boundary);
+			boundary = boundaryFromPath(container, change.path);
+			node = Boundaries.nodeAfter(boundary);
 			change.attrs.forEach(function (attr) {
 				Dom.setAttrNS(node, attr.ns, attr.name, attr.newValue);
 			});
@@ -806,7 +813,7 @@ define([
 			}
 			break;
 		case 'insert':
-			var boundary = boundaryFromPath(container, change.path);
+			boundary = boundaryFromPath(container, change.path);
 			change.content.forEach(function (node) {
 				var insertNode = Dom.clone(node);
 				if (Dom.isTextNode(insertNode)) {
@@ -816,9 +823,9 @@ define([
 			});
 			break;
 		case 'delete':
-			var boundary = boundaryFromPath(container, change.path);
+			boundary = boundaryFromPath(container, change.path);
 			boundary = Dom.splitBoundary(boundary, ranges);
-			var node = Dom.nodeAtBoundary(boundary);
+			node = Dom.nodeAtBoundary(boundary);
 			var parent = node.parentNode;
 			change.content.forEach(function (removedNode) {
 				var next;
@@ -872,8 +879,8 @@ define([
 	}
 
 	function inverseChange(change) {
-		var type = change.type;
-		var inverse;
+		var type = change.type,
+			inverse;
 		switch (type) {
 		case 'update-attr':
 			inverse = Maps.merge(change, {
@@ -930,8 +937,8 @@ define([
 	function partitionedChangeSetsFromFrame(context, frame) {
 		var changeSets = [];
 		frame.records.forEach(function (record) {
-			var changeSet;
-			var nestedFrame = record.frame;
+			var changeSet,
+				nestedFrame = record.frame;
 			if (nestedFrame) {
 				var changes = collectChanges(context, nestedFrame);
 				changeSet = changeSetFromFrameHavingChanges(context, nestedFrame, changes);
@@ -944,10 +951,10 @@ define([
 	}
 
 	function combineChanges(oldChangeSet, newChangeSet, opts) {
-		var oldChanges = oldChangeSet.changes;
-		var newChanges = newChangeSet.changes;
-		var oldType = oldChangeSet.meta && oldChangeSet.meta.type;
-		var newType = newChangeSet.meta && newChangeSet.meta.type;
+		var oldChanges = oldChangeSet.changes,
+			newChanges = newChangeSet.changes,
+			oldType = oldChangeSet.meta && oldChangeSet.meta.type,
+			newType = newChangeSet.meta && newChangeSet.meta.type;
 		// TODO combine enter as the first character of a sequence of
 		// text inserts (currently will return null below because we
 		// only handle text boundaries).
@@ -955,12 +962,12 @@ define([
 		      && 'typing' === newType)) {
 			return null;
 		}
-		var oldChange = oldChanges[0];
-		var newChange = newChanges[0];
-		var oldPath = oldChange.path;
-		var newPath = newChange.path;
-		var oldStep = Arrays.last(oldPath);
-		var newStep = Arrays.last(newPath);
+		var oldChange = oldChanges[0],
+			newChange = newChanges[0],
+			oldPath = oldChange.path,
+			newPath = newChange.path,
+			oldStep = Arrays.last(oldPath),
+			newStep = Arrays.last(newPath);
 		// Because the text inserts may have started at a node boundary
 		// but we expect text steps below, we'll just pretend they
 		// started at the start of a text node.
@@ -984,18 +991,18 @@ define([
 		}
 		var combinedNode = Dom.clone(oldChange.content[0]);
 		combinedNode.insertData(Dom.nodeLength(combinedNode), newChange.content[0].data);
-		var insertChange = makeInsertChange(oldPath, [combinedNode])
-		var oldRange = oldChangeSet.selection.oldRange;
-		var newRange = newChangeSet.selection.newRange
-		var rangeUpdateChange = makeRangeUpdateChange(oldRange, newRange);
+		var insertChange = makeInsertChange(oldPath, [combinedNode]),
+			oldRange = oldChangeSet.selection.oldRange,
+			newRange = newChangeSet.selection.newRange,
+			rangeUpdateChange = makeRangeUpdateChange(oldRange, newRange);
 		return makeChangeSet(oldChangeSet.meta, [insertChange], rangeUpdateChange);
 	}
 
 	function advanceHistory(context) {
 		Assert.assertFalse(!!context.stack.length);
-		var history = context.history;
-		var historyIndex = context.historyIndex;
-		var frame = context.frame;
+		var history = context.history,
+			historyIndex = context.historyIndex,
+			frame = context.frame;
 		takeRecords(context, frame);
 		var newChangeSets = partitionedChangeSetsFromFrame(context, frame);
 		if (!newChangeSets.length) {
@@ -1018,14 +1025,14 @@ define([
 
 	function undo(context, range, ranges) {
 		advanceHistory(context);
-		var history = context.history;
-		var historyIndex = context.historyIndex;
+		var history = context.history,
+			historyIndex = context.historyIndex;
 		if (!historyIndex) {
 			return;
 		}
 		historyIndex -= 1;
-		var changeSet = history[historyIndex];
-		var undoChangeSet = inverseChangeSet(changeSet);
+		var changeSet = history[historyIndex],
+			undoChangeSet = inverseChangeSet(changeSet);
 		captureOffTheRecord(context, {meta: {type: 'undo'}}, function () {
 			applyChangeSet(context.elem, undoChangeSet, range, ranges);
 		});
@@ -1034,8 +1041,8 @@ define([
 
 	function redo(context, range, ranges) {
 		advanceHistory(context);
-		var history = context.history;
-		var historyIndex = context.historyIndex;
+		var history = context.history,
+			historyIndex = context.historyIndex;
 		if (historyIndex === history.length) {
 			return;
 		}
