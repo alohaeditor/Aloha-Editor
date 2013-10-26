@@ -1251,6 +1251,14 @@ define([
 		}
 	}
 
+	function getAttr(elem, name) {
+		return elem.getAttribute(name);
+	}
+
+	function getAttrNS(elem, ns, name) {
+		return elem.getAttributeNS(ns, name);
+	}
+
 	function removeAttrNS(elem, ns, name) {
 		// TODO is removeAttributeNS(null, ...) the same as removeAttribute(...)?
 		if (null != ns) {
@@ -1269,7 +1277,7 @@ define([
 		if (null != ns) {
 			elem.setAttributeNS(ns, name, value);
 		} else {
-			setAttribute(elem, name, value);
+			setAttr(elem, name, value);
 		}
 	}
 
@@ -1498,8 +1506,10 @@ define([
 		hasAttrs: hasAttrs,
 		attrs: attrs,
 		setAttr: setAttr,
-		removeAttr: removeAttr,
 		setAttrNS: setAttrNS,
+		getAttr: getAttr,
+		getAttrNS: getAttrNS,
+		removeAttr: removeAttr,
 		removeAttrNS: removeAttrNS,
 
 		indexByClass: indexByClass,

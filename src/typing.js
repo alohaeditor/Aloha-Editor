@@ -49,18 +49,17 @@ define([
 	}
 
 	function delete_(range, direction, editor) {
-		return undoable('delete', range, editor, function () {
-			var collapsed = range.collapsed;
-			if (collapsed) {
-				range = (
-					direction
-						? Ranges.expandForwardToVisiblePosition
-						: Ranges.expandBackwardToVisiblePosition
-				)(range);
-			}
-			Editing.delete(Ranges.expandToVisibleCharacter(range), editor);
-			return range;
-		});
+		var collapsed = range.collapsed;
+		if (collapsed) {
+			range = (
+				direction
+					? Ranges.expandForwardToVisiblePosition
+					: Ranges.expandBackwardToVisiblePosition
+			)(range);
+		}
+		Editing.delete(Ranges.expandToVisibleCharacter(range), editor);
+		Html.prop(range.commonAncestorContainer);
+		return range;
 	}
 
 	var actions = {};
@@ -84,6 +83,7 @@ define([
 				editor,
 				false
 			);
+			Html.prop(range.commonAncestorContainer);
 			return range;
 		});
 	};
@@ -95,6 +95,7 @@ define([
 				editor,
 				true
 			);
+			Html.prop(range.commonAncestorContainer);
 			return range;
 		});
 	};
@@ -134,12 +135,6 @@ define([
 	};
 
 	actions.insertText = function insertText(range, text, editor) {
-		// TODO delete should be part of typing change (currently not
-		// possible since noObserve can't be used together with observed
-		// captures.
-		if (!range.collapsed) {
-			range = delete_(range, true, editor);
-		}
 		var boundary = Boundaries.start(range);
 		var editable = Editables.fromBoundary(editor, boundary);
 		if (!editable) {
@@ -149,9 +144,12 @@ define([
 		Undo.advanceHistory(undoContext);
 		Undo.capture(undoContext, {
 			meta: {type: 'typing'},
-			oldRange: range,
-			noObserve: true
+			oldRange: range
 		}, function () {
+			if (!range.collapsed) {
+				range = delete_(range, true, editor);
+				boundary = Boundaries.start(range);
+			}
 			if (' ' === text) {
 				var elem = Traversing.upWhile(Boundaries.container(boundary), Dom.isTextNode);
 				var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');
@@ -162,8 +160,11 @@ define([
 			var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
 			var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
 			var change = Undo.makeInsertChange(insertPath, insertContent);
-			Dom.insertTextAtBoundary(text, boundary, true, [range]);
-			return {newRange: range, changes: [change]};
+			Undo.capture(undoContext, {noObserve: true}, function () {
+				Dom.insertTextAtBoundary(text, boundary, true, [range]);
+				return {changes: [change]};
+			});
+			return {newRange: range};
 		});
 		return range;
 	};
@@ -224,7 +225,6 @@ define([
 		// browser's default action first.
 		event.preventDefault();
 		range = action(range, editor);
-		Html.prop(range.commonAncestorContainer);
 		Ranges.select(range);
 	}
 

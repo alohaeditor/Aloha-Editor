@@ -38,8 +38,8 @@ define([
 			historyIndex: 0
 		};
 		context.observer = (!opts.noMutationObserver && window.MutationObserver
-		                    ? ObserverUsingMutationObserver()
-		                    : ObserverUsingSnapshots());
+		                    ? ChangeObserverUsingMutationObserver()
+		                    : ChangeObserverUsingSnapshots());
 		return context;
 	}
 
@@ -174,17 +174,20 @@ define([
 	}
 
 	function takeRecords(context, frame) {
-		var records = context.observer.takeRecords();
-		frame.records = frame.records.concat(records);
+		if (frame.opts.noObserve) {
+			context.observer.discardChanges();
+		} else {
+			var changes = context.observer.takeChanges();
+			if (changes.length) {
+				frame.records.push({changes: changes});
+			}
+		}
 	}
 
-	function partitionRecords(context, leftFrame, enteredFrame) {
-		if (!context.observer.takeRecordsSlow
-		    || leftFrame.opts.partitionRecords
-		    || enteredFrame.opts.partitionRecords
-		    || leftFrame.opts.noObserve
-		    || enteredFrame.opts.noObserve) {
-			takeRecords(context, leftFrame);
+	function partitionRecords(context, leavingFrame, lowerFrame, upperFrame) {
+		if ((upperFrame.opts.partitionRecords && !upperFrame.opts.noObserve)
+		    || (!!lowerFrame.opts.noObserve !== !!upperFrame.opts.noObserve)) {
+			takeRecords(context, leavingFrame);
 		}
 	}
 
@@ -200,22 +203,15 @@ define([
 		var upperFrame = context.frame;
 		var observer = context.observer;
 		var elem = context.elem;
+		var noObserve = opts.noObserve || (upperFrame && upperFrame.opts.noObserve);
 		var frame = {
-			opts: opts,
-			isFrame: true,
+			opts: Maps.merge(opts, {noObserve: noObserve}),
 			records: [],
-			result: null,
 			oldRange: recordRange(elem, opts.oldRange),
 			newRange: null
 		};
-		// Because currently it's not possible to nest frames inside
-		// noObserve and if noObserve is used, no history must exist.
-		Assert.assertFalse(!!((upperFrame && upperFrame.opts.noObserve)
-		                      || (upperFrame
-		                          && upperFrame.records.length
-		                          && opts.noObserve)));
 		if (upperFrame) {
-			partitionRecords(context, upperFrame, frame);
+			partitionRecords(context, upperFrame, frame, upperFrame);
 			context.stack.push(upperFrame);
 		} else {
 			observer.observeAll(elem);
@@ -228,9 +224,7 @@ define([
 		var observer = context.observer;
 		var upperFrame = context.stack.pop();;
 		if (upperFrame) {
-			partitionRecords(context, frame, upperFrame);
-			upperFrame.records.push(frame);
-			context.frame = upperFrame;
+			partitionRecords(context, frame, frame, upperFrame);
 		} else {
 			takeRecords(context, frame);
 			close(context);
@@ -239,13 +233,14 @@ define([
 		// Because we expect either a result to be returned by the
 		// capture function, or observed by the observer, but not both.
 		Assert.assertFalse(!!(!noObserve && result && result.changes));
-		// TODO we should optimize the ObserverUsingSnapshots so that a
-		// snapshot isn't created when we don't observe.
-		if (noObserve) {
-			frame.records = [];
+		if (noObserve && result && result.changes && result.changes.length) {
+			frame.records.push({changes: result.changes});
 		}
 		frame.newRange = recordRange(context.elem, result && result.newRange);
-		frame.result = result;
+		if (upperFrame) {
+			upperFrame.records.push({frame: frame});
+			context.frame = upperFrame;
+		}
 		return frame;
 	}
 
@@ -293,16 +288,16 @@ define([
 		return makeInsertDeleteChange('delete', path, content);
 	}
 
-	function makeUpdateAttrChange(path, node, attrs) {
+	function makeUpdateAttrChange(path, node, recordAttrs) {
 		var attrs = [];
-		Maps.forEach(attrs, function (attr) {
+		Maps.forEach(recordAttrs, function (attr) {
 			var name = attr.name;
 			var ns = attr.ns;
 			attrs.push({
 				name: name,
 				ns: ns,
 				oldValue: attr.oldValue,
-				newValue: Dom.getAttributeNS(node, ns, name)
+				newValue: Dom.getAttrNS(node, ns, name)
 			});
 		});
 		return {
@@ -628,7 +623,7 @@ define([
 			case INSERT:
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
-				if (false && lastInsertNode && lastInsertNode === node.previousSibling) {
+				if (lastInsertNode && lastInsertNode === node.previousSibling) {
 					lastInsertContent.push(Dom.clone(node));
 				} else {
 					lastInsertContent = [Dom.clone(node)];
@@ -699,21 +694,20 @@ define([
 		return changes;
 	}
 
-	function changesFromSnapshots(container, snapshots) {
+	function changesFromSnapshots(before, after) {
+		var path = pathBeforeNode(after, after);
+		stepDownPath(after, container.nodeName, 0);
 		var changes = [];
-		snapshots.forEach(function (snapshot) {
-			var path = pathBeforeNode(container, container);
-			stepDownPath(path, container.nodeName, 0);
-			// NB: We don't clone the children because a snapshot is
-			// already a copy of the actual content and is supposed to
-			// be immutable.
-			changes.push(makeDeleteChange(path, Dom.children(snapshot.before)));
-			changes.push(makeInsertChange(path, Dom.children(snapshot.after)));
-		});
+		// NB: We don't clone the children because a snapshot is
+		// already a copy of the actual content and is supposed to
+		// be immutable.
+		changes.push(makeDeleteChange(path, Dom.children(before)));
+		changes.push(makeInsertChange(path, Dom.children(after)));
 		return changes;
 	}
 
-	function ObserverUsingMutationObserver() {
+	function ChangeObserverUsingMutationObserver() {
+		var observedElem = null;
 		var pushedRecords = [];
 		var observer = new MutationObserver(function (records) {
 			pushedRecords = pushedRecords.concat(records);
@@ -729,27 +723,31 @@ define([
 				'characterDataOldValue': true
 			};
 			observer.observe(elem, observeAllFlags);
+			observedElem = elem;
 		}
 
-		function takeRecords() {
+		function takeChanges() {
 			var records =  pushedRecords.concat(observer.takeRecords());
 			pushedRecords.length = 0;
-			return records;
+			return changesFromMutationRecords(observedElem, records);
 		}
 
 		function disconnect() {
+			observedElem = null;
+			pushedRecords.length = 0;
 			observer.disconnect();
+			observer = null;
 		}
 
 		return {
 			observeAll: observeAll,
-			takeRecords: takeRecords,
-			disconnect: disconnect,
-			changesFromRecords: changesFromMutationRecords
+			takeChanges: takeChanges,
+			discardChanges: takeChanges,
+			disconnect: disconnect
 		};
 	}
 
-	function ObserverUsingSnapshots() {
+	function ChangeObserverUsingSnapshots() {
 		var observedElem = null;
 		var beforeSnapshot = null;
 
@@ -758,14 +756,22 @@ define([
 			beforeSnapshot = Dom.clone(elem);
 		}
 
-		function takeRecords() {
+		function takeChanges() {
 			if (Dom.isEqualNode(beforeSnapshot, observedElem)) {
 				return [];
 			}
 			var before = beforeSnapshot;
 			var after = Dom.clone(observedElem);
 			beforeSnapshot = after;
-			return [{before: before, after: after}];
+			return changesFromSnapshot(before, after);
+		}
+
+		// TODO instead of discarding the snapshot and making a new one,
+		// we could accept the changes that were generated instead and
+		// apply them to the snapshot, which would be faster for big
+		// documents.
+		function discardChanges() {
+			beforeSnapshot = Dom.clone(observedElem);
 		}
 
 		function disconnect() {
@@ -775,10 +781,9 @@ define([
 
 		return {
 			observeAll: observeAll,
-			takeRecords: takeRecords,
-			disconnect: disconnect,
-			changesFromRecords: changesFromSnapshots,
-			takeRecordsSlow: true
+			takeChanges: takeChanges,
+			discardChanges: discardChanges,
+			disconnect: disconnect
 		};
 	}
 
@@ -786,9 +791,10 @@ define([
 		var type = change.type;
 		switch (type) {
 		case 'update-attr':
-			var node = Dom.nodeAtBoundary(boundary);
+			var boundary = boundaryFromPath(container, change.path);
+			var node = Boundaries.nodeAfter(boundary);
 			change.attrs.forEach(function (attr) {
-				Dom.setAttrNS(node, change.ns, change.name, change.value);
+				Dom.setAttrNS(node, attr.ns, attr.name, attr.newValue);
 			});
 			break;
 		case 'update-range':
@@ -849,10 +855,6 @@ define([
 	}
 
 	function applyChanges(container, changes, ranges) {
-		// Because a changeSet was calculated with an exact node
-		// structure in mind, we mustn't do any additional modifications
-		// like joining text nodes while applying the entire
-		// changeSet. Doing it afterward and between changesets is OK.
 		var textNodes = [];
 		changes.forEach(function (change) {
 			applyChange(container, change, null, ranges, textNodes);
@@ -875,8 +877,9 @@ define([
 		switch (type) {
 		case 'update-attr':
 			inverse = Maps.merge(change, {
-				oldValue: change.newValue,
-				newValue: change.oldValue
+				attrs: change.attrs.map(function (attr) {
+					return Maps.merge(attr, {oldValue: attr.newValue, newValue: attr.oldValue});
+				})
 			});
 			break;
 		case 'update-range':
@@ -902,44 +905,16 @@ define([
 		return makeChangeSet(changeSet.meta, changes, inverseChange(changeSet.selection));
 	}
 
-	function resetCollectedRecords(context, records) {
+	function collectChanges(context, frame) {
 		var changes = [];
-		if (records.length) {
-			changes = context.observer.changesFromRecords(context.elem, records);
-			records.length = 0;
-		}
-		return changes;
-	}
-
-	function collectChangesRec(context, frame, records) {
-		var changes = [];
-		var result = frame.result;
-		if (result && result.changes) {
-			// Because we expect either a result to be returned by the
-			// capture function, or observed by the observer, but not both.
-			Assert.assertFalse(!!frame.records.length);
-			var precedingChanges = resetCollectedRecords(context, records);
-			changes = changes.concat(precedingChanges);
-			changes = changes.concat(result.changes);
-			return changes;
-		}
 		frame.records.forEach(function (record) {
-			// Because a frame may have nested frames mixed in among its
-			// records.
-			if (record.isFrame) {
-				changes = changes.concat(collectChangesRec(context, record, records));
+			if (record.frame) {
+				changes = changes.concat(collectChanges(context, record.frame));
 			} else {
-				records.push(record);
+				changes = changes.concat(record.changes);
 			}
 		});
 		return changes;
-	}
-
-	function collectChanges(context, frame) {
-		var records = [];
-		var changes = collectChangesRec(context, frame, records);
-		var lastChanges = resetCollectedRecords(context, records);
-		return changes.concat(lastChanges);
 	}
 
 	function changeSetFromFrameHavingChanges(context, frame, changes) {
@@ -952,28 +927,19 @@ define([
 		return changeSetFromFrameHavingChanges(context, frame, changes);
 	}
 
-	function topLevelChangeSetsFromFrame(context, frame) {
+	function partitionedChangeSetsFromFrame(context, frame) {
 		var changeSets = [];
-		var records = [];
-		function pushChangeSet(frame, changes) {
-			if (changes.length) {
-				var changeSet = changeSetFromFrameHavingChanges(context, frame, changes);
-				changeSets.push(changeSet);
-			}
-		}
-		function pushTopLevelChangeSet() {
-			var changes = resetCollectedRecords(context, records);
-			pushChangeSet(frame, changes);
-		}
 		frame.records.forEach(function (record) {
-			if (record.isFrame) {
-				pushTopLevelChangeSet();
-				pushChangeSet(record, collectChanges(context, record));
+			var changeSet;
+			var nestedFrame = record.frame;
+			if (nestedFrame) {
+				var changes = collectChanges(context, nestedFrame);
+				changeSet = changeSetFromFrameHavingChanges(context, nestedFrame, changes);
 			} else {
-				records.push(record);
+				changeSet = changeSetFromFrameHavingChanges(context, frame, record.changes);
 			}
+			changeSets.push(changeSet);
 		});
-		pushTopLevelChangeSet();
 		return changeSets;
 	}
 
@@ -1031,7 +997,7 @@ define([
 		var historyIndex = context.historyIndex;
 		var frame = context.frame;
 		takeRecords(context, frame);
-		var newChangeSets = topLevelChangeSetsFromFrame(context, frame);
+		var newChangeSets = partitionedChangeSetsFromFrame(context, frame);
 		if (!newChangeSets.length) {
 			return;
 		}
