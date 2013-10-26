@@ -824,7 +824,7 @@ define([
 	 * traversing.getNonAncestor()
 	 */
 	var exports = {
- 		backward: backward,
+		backward: backward,
 		forward: forward,
 		findThrough: findThrough,
 		nextWhile: nextWhile,
