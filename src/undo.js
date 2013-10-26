@@ -686,8 +686,8 @@ define([
 	}
 
 	function changesFromSnapshots(before, after) {
-		var path = pathBeforeNode(after, after);
-		stepDownPath(after, container.nodeName, 0);
+		var path = [];
+		stepDownPath(path, after.nodeName, 0);
 		var changes = [];
 		// NB: We don't clone the children because a snapshot is
 		// already a copy of the actual content and is supposed to
@@ -754,7 +754,7 @@ define([
 			var before = beforeSnapshot;
 			var after = Dom.clone(observedElem);
 			beforeSnapshot = after;
-			return changesFromSnapshot(before, after);
+			return changesFromSnapshots(before, after);
 		}
 
 		// TODO instead of discarding the snapshot and making a new one,
