@@ -887,15 +887,18 @@ define([
 	}
 
 	function collectChanges(context, frame) {
-		var changes = [];
+		var collectedChanges = [];
 		frame.records.forEach(function (record) {
-			if (record.frame) {
-				changes = changes.concat(collectChanges(context, record.frame));
+			var changes;
+			var nestedFrame = record.frame;
+			if (nestedFrame) {
+				changes = collectChanges(context, nestedFrame);
 			} else {
-				changes = changes.concat(record.changes);
+				changes = record.changes;
 			}
+			collectedChanges = collectedChanges.concat(changes);
 		});
-		return changes;
+		return collectedChanges;
 	}
 
 	function changeSetFromFrameHavingChanges(context, frame, changes) {
