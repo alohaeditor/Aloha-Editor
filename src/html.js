@@ -785,8 +785,14 @@ define([
 	 */
 	function insertVisualBreak(boundary, context) {
 		var start = boundaries.nextNode(boundary);
+
+		// Because any nodes which are entirely after the boundary position
+		// don't need to be copied but can be completely moved
+		// }<b>
 		var movable = boundaries.atEnd(boundary) ? null : start;
 
+		// Because if the boundary is right before a breaking container, The
+		// the default new breaking element should be inserted right before it
 		if (movable && isBreakingContainer(movable)) {
 			var nodeName = determineBreakingNode(context, movable.parentNode);
 			if (!nodeName) {
@@ -804,6 +810,9 @@ define([
 
 		var anchor = ascend.pop();
 
+		// Because if there are no breaking containers below the editing host,
+		// then we need to wrap the inline nodes adjacent to the boundary with
+		// the default breaking container before attempting to split it.
 		if (dom.isEditingHost(anchor)) {
 			var nodeName = determineBreakingNode(context, anchor);
 			if (!nodeName) {
