@@ -173,7 +173,7 @@ define([
 		isVoidNode: isVoidNode,
 		isBlockNode: isBlockNode,
 		isInlineNode: isInlineNode,
-		isTextLevelSemanticNode: isTextLevelSemanticNode,
+		isTextLevelSemanticNode: isTextLevelSemanticNode
 	};
 
 	exports['isVoidNode'] = exports.isVoidNode;

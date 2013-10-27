@@ -12,7 +12,7 @@
 
 	module('editing');
 
-	var $editable = $('<div id="editable" contentEditable="true"></div>');
+	var $editable = $('<div id="editable" contentEditable="true"></div>').appendTo('body');
 
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
@@ -26,18 +26,21 @@
 
 	test('break()', function () {
 		tested.push('break');
-		var context = {
-			settings: {
-				defaultBlockNodeName: 'h1'
-			}
-		};
-		var t = function (before, after, linebreak) {
+		var t = function (before, after, linebreak, overrides) {
 			return runTest(before, after, function (range) {
-				return editing.break(range, context, linebreak);
+				var context = {
+					settings: {
+						defaultBlockNodeName: 'h1'
+					},
+					overrides: []
+				};
+				editing.break(range, context, linebreak);
+				if (overrides) {
+					deepEqual(context.overrides, overrides);
+				}
 			});
 		};
 
-		t('<i>b[]a</i>', '<h1><i>b</i></h1><h1><i>[]a</i></h1>');
 		t('<i>{}</i>', '<i><br>{}</i>', true);
 		t('<i>{}<br></i>', '<i><br>{}<br></i>', true);
 		t('<i><br>{}</i>', '<i><br><br>{}</i>', true);
@@ -61,7 +64,7 @@
 		//t('<div><p>1</p>[]<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
 
 		t('<p>{}</p>', '<p><br></p><p>{}</p>');
-		t('<p>[]</p>', '<p><br></p><p>{}</p>');
+		t('<p>[]</p>', '<p><br></p><p>[]</p>');
 
 		t('<div><p><i>fo[]o</i>bar</p></div>',
 		  '<div><p><i>fo</i></p><p><i>[]o</i>bar</p></div>');
@@ -69,7 +72,39 @@
 		t('<div><p><i>fo[]o<b>bar</b></i>baz</p></div>',
 		  '<div><p><i>fo</i></p><p><i>[]o<b>bar</b></i>baz</p></div>');
 
-		t('<i>[]</i>', '<h1><i></i></h1><h1><i>{}</i></h1>');
+		t(
+			'<u style="text-decoration: none">[]</u>',
+			'<h1><u style="text-decoration: normal">[]</u></h1><h1>{}<br></h1>',
+			false,
+			[
+				['underline', false],
+				['strikethrough', false]
+			]
+		);
+
+		t(
+			'<strike><b style="text-decoration: underline"><i style="font-weight: normal">[]</i>foo</b></strike>',
+			'<h1><strike><b style="text-decoration: underline"><i style="font-weight: normal">[]</i></b></strike></h1>' +
+			'<h1><strike><b style="text-decoration: underline">foo</b></strike></h1>',
+			false,
+			[
+				['strikethrough', true],
+				['underline', true],
+				['italic', true],
+				['bold', false]
+			]
+		);
+
+		t(
+			'<b><i>[]</i>foo</b>',
+			'<h1><b><i></i></b></h1><h1><b><i>[]</i>foo</b></h1>',
+			false,
+			[
+				['bold', true],
+				['italic', true]
+			]
+		);
+
 		t('<i>[]foo</i>', '<h1><i></i></h1><h1><i>[]foo</i></h1>');
 		t('<i>[]<u>foo</u>bar</i>', '<h1><i></i></h1><h1><i><u>[]foo</u>bar</i></h1>');
 
@@ -80,7 +115,7 @@
 		t('<i>{}b</i>',  '<h1><i></i></h1><h1><i>[]b</i></h1>');
 		t('<i>b[]a</i>', '<h1><i>b</i></h1><h1><i>[]a</i></h1>');
 
-		t('<p>[]</p>', '<p><br></p><p>{}</p>');
+		t('<p>[]</p>', '<p><br></p><p>[]</p>');
 		t('<p>{}</p>', '<p><br></p><p>{}</p>');
 		t('<p>[]b</p>', '<p><br></p><p>[]b</p>');
 		t('<p>{}b</p>', '<p><br></p><p>[]b</p>');
@@ -90,15 +125,14 @@
 		t('<p>b[]<br></p>', '<p>b</p><p>{}<br></p>');
 		t('<p><br>{}</p>', '<p><br></p><p>{}</p>');
 
-		t('<p><i>[]</i></p>', '<p><i></i></p><p><i>{}</i></p>');
+		t('<p><i>[]</i></p>', '<p><i></i></p><p><i>[]</i></p>');
 		t('<p><i>{}</i></p>', '<p><i></i></p><p><i>{}</i></p>');
 		t('<p><i>[]b</i></p>', '<p><i></i></p><p><i>[]b</i></p>');
 		t('<p><i>{}b</i></p>', '<p><i></i></p><p><i>[]b</i></p>');
 		t('<p><i>b[]</i></p>', '<p><i>b</i></p><p><i>{}</i></p>');
 		t('<p><i>b{}</i></p>', '<p><i>b</i></p><p><i>{}</i></p>');
 		t('<p><i>b[]a</i></p>', '<p><i>b</i></p><p><i>[]a</i></p>');
-		t('<p>a<i>[]</i>b</p>', '<p>a<i></i></p><p><i>{}</i>b</p>');
-
+		t('<p>a<i>[]</i>b</p>', '<p>a<i></i></p><p><i>[]</i>b</p>');
 		t('<p>a<u><i>b[]c</i></u>d<i>e</i></p>',
 		  '<p>a<u><i>b</i></u></p><p><u><i>[]c</i></u>d<i>e</i></p>');
 
@@ -140,6 +174,8 @@
 		  '<p><i style="color:red">1</i></p><p><i style="color:red">[]2</i></p>');
 
 		t('<p contenteditable="true">foo[]bar</p>', '<p contenteditable="true">foo<br>{}bar</p>');
+
+		$editable.remove();
 	});
 
 	test('delete()', function () {

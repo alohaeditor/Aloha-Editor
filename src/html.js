@@ -21,6 +21,7 @@ define([
 	'browser',
 	'boundaries',
 	'traversing',
+	'overrides',
 	'functions'
 ], function Html(
 	dom,
@@ -31,6 +32,7 @@ define([
 	browser,
 	boundaries,
 	traversing,
+	Overrides,
 	fn
 ) {
 	'use strict';
@@ -469,6 +471,14 @@ define([
 			return true;
 		}
 
+		if (0 === dom.nodeLength(node)) {
+			return true;
+		}
+
+		if (node.firstChild && traversing.nextWhile(node.firstChild, isRendered)) {
+			return true;
+		}
+
 		// Because isUnrenderedWhiteSpaceNoBlockCheck() will give us false
 		// positives but never false negatives, the algorithm that will follow
 		// will make certain, and will also consider unrendered <br>s.
@@ -476,23 +486,20 @@ define([
 
 		// Because a <br> element that is a child node adjacent to its parent's
 		// end tag (terminal sibling) must not be rendered.
-		if (
-			!maybeUnrenderedNode
-				&& (node === node.parentNode.lastChild)
-					&& Predicates.isBlockNode(node.parentNode)
-						&& 'BR' === node.nodeName
+		if (!maybeUnrenderedNode
+			&& (node === node.parentNode.lastChild)
+			&& Predicates.isBlockNode(node.parentNode)
+			&& 'BR' === node.nodeName
 		) {
 			return true;
 		}
 
-		if (
-			maybeUnrenderedNode && (
-				isTerminalSibling(node)
-				|| isAdjacentToBlock(node)
-				|| skipUnrenderedToEndOfLine(cursors.create(node, false))
-				|| skipUnrenderedToStartOfLine(cursors.create(node, false))
-			)
-		) {
+		if (maybeUnrenderedNode && (
+			isTerminalSibling(node)
+			|| isAdjacentToBlock(node)
+			|| skipUnrenderedToEndOfLine(cursors.create(node, false))
+			|| skipUnrenderedToStartOfLine(cursors.create(node, false))
+		)) {
 			return true;
 		}
 
@@ -774,6 +781,10 @@ define([
 			&& (hasLinebreakingStyle(node) || dom.isEditingHost(node));
 	}
 
+	function isUnrenderedTextNode(node) {
+		return dom.isTextNode(node) && isUnrendered(node);
+	}
+
 	/**
 	 * Inserts a visual line break after the given boundary position.
 	 *
@@ -861,21 +872,20 @@ define([
 		dom.insertAfter(heirarchy, anchor);
 		prop(anchor);
 
-		var focus = heirarchy;
-		next = heirarchy;
-		while (next && next.firstChild) {
-			next = traversing.nextWhile(focus.firstChild, function (node) {
-				return !Predicates.isVoidNode(node) && isUnrendered(node);
-			});
-			if (!next) {
-				break;
-			}
-			focus = next;
+		while (heirarchy && heirarchy.firstChild) {
+			heirarchy = traversing.nextWhile(
+				heirarchy.firstChild,
+				isUnrenderedTextNode
+			) || heirarchy.firstChild;
 		}
 
-		return Predicates.isVoidNode(focus)
-		     ? [focus.parentNode, dom.nodeIndex(focus)]
-		     : [focus, 0];
+		context.overrides = Overrides.record(heirarchy, function (node) {
+			return hasLinebreakingStyle(node) || isRendered(node);
+		});
+
+		return Predicates.isVoidNode(heirarchy)
+		     ? [heirarchy.parentNode, dom.nodeIndex(heirarchy)]
+		     : [heirarchy, 0];
 	}
 
 	/**

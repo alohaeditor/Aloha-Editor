@@ -1174,6 +1174,24 @@ define([
 		return node.nodeType === Nodes.ELEMENT ? node.style[name] : null;
 	}
 
+	function getComputedStyles(elem, names) {
+		var props = {};
+		var doc = elem.ownerDocument;
+		if (doc && doc.defaultView && doc.defaultView.getComputedStyle) {
+			var styles = doc.defaultView.getComputedStyle(elem, null);
+			if (styles) {
+				names.forEach(function (name) {
+					props[name] = styles[name] || styles.getPropertyValue(name);
+				});
+			}
+		} else if (elem.currentStyle) {
+			names.forEach(function (name) {
+				props[name] = elem.currentStyle[name];
+			});
+		}
+		return props;
+	}
+
 	/**
 	 * Gets the computed/inherited style of the given node.
 	 *
@@ -1569,6 +1587,7 @@ define([
 		setStyle: setStyle,
 		getStyle: getStyle,
 		getComputedStyle: getComputedStyle,
+		getComputedStyles: getComputedStyles,
 		removeStyle: removeStyle,
 
 		isEditable: isEditable,
