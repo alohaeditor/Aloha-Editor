@@ -135,7 +135,7 @@ define([
 		return Dom.isTextNode(elem) ? [] : valuesFromStyles(elem);
 	}
 
-	function record(node, until) {
+	function harvest(node, until) {
 		var overrides = [];
 		var nodes = Traversing.childAndParentsUntil(
 			node,
@@ -158,7 +158,7 @@ define([
 				}
 				map[state[0]] = overrides.push(state);
 			}
-			overrides = overrides.concat(getValues(elem));
+			overrides = overrides.concat(getValues(nodes[i]));
 		}
 		for (i = 0, len = overrides.length; i < len; i++) {
 			if (!overrides[i]) {
@@ -168,22 +168,21 @@ define([
 		return overrides;
 	}
 
-	function inject(boundary, overrides) {
-		var i;
-		var len = overrides.length;
-		var container;
-		for (i = 0; i < len; i++) {
-			console.log(overrides[i]);
+	function consume(boundary, overrides) {
+		var override = overrides.pop();
+		while (override) {
+			console.log(override);
+			override = overrides.pop();
 		}
 	}
 
 	var exports = {
-		record: record,
-		inject: inject
+		harvest: harvest,
+		consume: consume
 	};
 
-	exports['record'] = exports.record;
-	exports['inject'] = exports.inject;
+	exports['harvest'] = exports.harvest;
+	exports['consume'] = exports.consume;
 
 	return exports;
 });

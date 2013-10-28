@@ -897,7 +897,7 @@ define([
 			return hasLinebreakingStyle(node) || isRendered(node);
 		};
 
-		context.overrides = context.overrides.concat(Overrides.read(
+		context.overrides = context.overrides.concat(Overrides.harvest(
 			heirarchy,
 			isVisibleOrHasBreakingStyle
 		));
