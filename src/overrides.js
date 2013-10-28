@@ -15,11 +15,13 @@ define([
 	'dom',
 	'misc',
 	'maps',
+	'boundaries',
 	'traversing'
 ], function Overrides(
 	Dom,
 	Misc,
 	Maps,
+	Boundaries,
 	Traversing
 ) {
 	'use strict';
@@ -36,14 +38,6 @@ define([
 		'SUP'    : 'superscript'
 	};
 
-	var stateToValue = {
-		'hilitecolor' : 'background-color',
-		'backcolor'   : 'background-color',
-		'fontname'    : 'font-family',
-		'fontsize'    : 'font-size',
-		'fontcolor'   : 'color'
-	};
-
 	/**
 	 * Any element whose node name corresponds with the given command states
 	 * ("bold", "italic", "underline", "strikethrough"), must also have the
@@ -56,6 +50,24 @@ define([
 		'italic'        : ['fontStyle', 'italic', null],
 		'underline'     : ['textDecoration', 'underline', 'none'],
 		'strikethrough' : ['textDecoration', 'line-through', 'none']
+	};
+
+	var overrideToNode = {
+		'createLink'    : 'A',
+		'underline'     : 'U',
+		'bold'          : 'B',
+		'italic'        : 'I',
+		'strikethrough' : 'STRIKE',
+		'subscript'     : 'SUB',
+		'superscript'   : 'SUP'
+	};
+
+	var overrideToValue = {
+		'hilitecolor' : 'background-color',
+		'backcolor'   : 'background-color',
+		'fontname'    : 'font-family',
+		'fontsize'    : 'font-size',
+		'fontcolor'   : 'color'
 	};
 
 	var styles = [
@@ -170,10 +182,30 @@ define([
 
 	function consume(boundary, overrides) {
 		var override = overrides.pop();
+		var node;
+		var wrapper;
 		while (override) {
-			console.log(override);
+			if (overrideToNode[override[0]]) {
+				// TODO: implement handling for false overrides states
+				var wrapper = document.createElement(overrideToNode[override[0]]);
+				if (node) {
+					Dom.wrap(node, wrapper);
+				} else {
+					Dom.insertNodeAtBoundary(wrapper, boundary);
+					boundary = [wrapper, 0];
+				}
+				node = wrapper;
+			} else {
+				if (!node) {
+					node = document.createElement('span');
+					Dom.insertNodeAtBoundary(node, boundary);
+					boundary = [node, 0];
+				}
+				Dom.setStyle(node, override[0], override[1]);
+			}
 			override = overrides.pop();
 		}
+		return boundary;
 	}
 
 	var exports = {
