@@ -892,10 +892,10 @@ define([
 			return hasLinebreakingStyle(node) || isRendered(node);
 		};
 
-		context.overrides = Overrides.record(
+		context.overrides = context.overrides.concat(Overrides.record(
 			heirarchy,
 			isVisibleOrHasBreakingStyle
-		);
+		));
 
 		var nodesToRemove = traversing.childAndParentsUntil(
 			heirarchy,

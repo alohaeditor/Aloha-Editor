@@ -73,10 +73,6 @@ define([
 	Events.add(document, 'mousemove', Mouse.onMove);
 
 	var editor = {
-		settings: {
-			defaultBlockNodeName: 'div'
-		},
-		overrides: [],
 		editables: {}
 	};
 
@@ -95,6 +91,10 @@ define([
 	 */
 	function aloha(elem) {
 		var editable = Editables.Editable(elem);
+		editable.overrides = [];
+		editable.settings = {
+			defaultBlockNodeName: 'div'
+		};
 		Editables.assocIntoEditor(editor, editable);
 		elem.setAttribute('contentEditable', 'true');
 		Undo.enter(editable.undoContext, {

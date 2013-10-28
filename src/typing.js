@@ -15,7 +15,8 @@ define([
 	'functions',
 	'strings',
 	'editables',
-	'undo'
+	'undo',
+	'overrides'
 ], function Typing(
 	Dom,
 	Keys,
@@ -27,7 +28,8 @@ define([
 	Fn,
 	Strings,
 	Editables,
-	Undo
+	Undo,
+	Overrides
 ) {
 	'use strict';
 
@@ -42,22 +44,21 @@ define([
 			meta: {type: type},
 			oldRange: range
 		}, function () {
-			range = fn();
+			range = fn(editable);
 			return {newRange: range};
 		});
 		return range;
 	}
 
-	function delete_(range, direction, editor) {
-		var collapsed = range.collapsed;
-		if (collapsed) {
+	function delete_(range, direction, editable) {
+		if (range.collapsed) {
 			range = (
 				direction
 					? Ranges.expandForwardToVisiblePosition
 					: Ranges.expandBackwardToVisiblePosition
 			)(range);
 		}
-		Editing.delete(Ranges.expandToVisibleCharacter(range), editor);
+		Editing.delete(Ranges.expandToVisibleCharacter(range), editable);
 		Html.prop(range.commonAncestorContainer);
 		return range;
 	}
@@ -65,22 +66,24 @@ define([
 	var actions = {};
 
 	actions[Keys.CODES.backspace] = function deleteBackwards(range, editor) {
-		return undoable('delete', range, editor, function () {
-			return delete_(range, false, editor);
+		return undoable('delete', range, editor, function (editable) {
+			editables.overrides = [];
+			return delete_(range, false, editable);
 		});
 	};
 
 	actions[Keys.CODES.delete] = function deleteForward(range, editor) {
-		return undoable('delete', range, editor, function () {
-			return delete_(range, true, editor);
+		return undoable('delete', range, editor, function (editable) {
+			editor.overrides = [];
+			return delete_(range, true, editable);
 		});
 	};
 
 	actions[Keys.CODES.enter] = function breakBlock(range, editor) {
-		return undoable('enter', range, editor, function () {
+		return undoable('enter', range, editor, function (editable) {
 			Editing.break(
-				range.collapsed ? range : delete_(range, true, editor),
-				editor,
+				range.collapsed ? range : delete_(range, true, editable),
+				editable,
 				false
 			);
 			Html.prop(range.commonAncestorContainer);
@@ -89,10 +92,10 @@ define([
 	};
 
 	actions['shift+' + Keys.CODES.enter] = function breakLine(range, editor) {
-		return undoable('enter', range, editor, function () {
+		return undoable('enter', range, editor, function (editable) {
 			Editing.break(
-				range.collapsed ? range : delete_(range, true, editor),
-				editor,
+				range.collapsed ? range : delete_(range, true, editable),
+				editable,
 				true
 			);
 			Html.prop(range.commonAncestorContainer);
@@ -121,8 +124,8 @@ define([
 	};
 
 	actions['ctrl+' + Keys.CODES.bold] = function bold(range, editor) {
-		return undoable('bold', range, editor, function () {
-			Editing.format(range, 'bold', true);
+		return undoable('bold', range, editor, function (editable) {
+			Editing.format(range, 'bold', true, editable);
 			return range;
 		});
 	};
@@ -157,6 +160,9 @@ define([
 					text = '\xa0';
 				}
 			}
+
+			Overrides.inject(boundary, editable.overrides);
+
 			var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
 			var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
 			var change = Undo.makeInsertChange(insertPath, insertContent);

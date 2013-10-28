@@ -58,6 +58,41 @@ define([
 		'strikethrough' : ['textDecoration', 'line-through', 'none']
 	};
 
+	var styles = [
+		'textTransform',
+
+		'backgroundColor',
+
+		'color',
+		'fontSize',
+		'fontFamily',
+
+		'border',
+		'borderColor',
+		'borderStyle',
+		'borderWidth',
+
+		'borderTop',
+		'borderTopColor',
+		'borderTopStyle',
+		'borderTopWidth',
+
+		'borderBottom',
+		'borderBottomColor',
+		'borderBottomStyle',
+		'borderBottomWidth',
+
+		'borderLeft',
+		'borderLeftColor',
+		'borderLeftStyle',
+		'borderLeftWidth',
+
+		'borderRight',
+		'borderRightColor',
+		'borderRightStyle',
+		'borderRightWidth'
+	];
+
 	function statesFromStyles(elem) {
 		var states = [];
 		Maps.forEach(stateToStyle, function (style, state) {
@@ -85,6 +120,21 @@ define([
 		return (state ? [[state, true]] : []).concat(statesFromStyles(elem));
 	}
 
+	function valuesFromStyles(elem) {
+		var values = [];
+		styles.forEach(function (style) {
+			var value = Dom.getStyle(elem, style);
+			if (value) {
+				values.push([style, value]);
+			}
+		});
+		return values;
+	}
+
+	function getValues(elem) {
+		return Dom.isTextNode(elem) ? [] : valuesFromStyles(elem);
+	}
+
 	function record(node, until) {
 		var overrides = [];
 		var nodes = Traversing.childAndParentsUntil(
@@ -108,6 +158,7 @@ define([
 				}
 				map[state[0]] = overrides.push(state);
 			}
+			overrides = overrides.concat(getValues(elem));
 		}
 		for (i = 0, len = overrides.length; i < len; i++) {
 			if (!overrides[i]) {
@@ -117,11 +168,22 @@ define([
 		return overrides;
 	}
 
+	function inject(boundary, overrides) {
+		var i;
+		var len = overrides.length;
+		var container;
+		for (i = 0; i < len; i++) {
+			console.log(overrides[i]);
+		}
+	}
+
 	var exports = {
-		record: record
+		record: record,
+		inject: inject
 	};
 
 	exports['record'] = exports.record;
+	exports['inject'] = exports.inject;
 
 	return exports;
 });
