@@ -613,16 +613,12 @@ define([
 	 * function returns true.
 	 *
 	 * @private
-	 * @param {DOMObject} ref
-	 *        The node to use a reference point by which to insert DOM Objects
-	 *        that will be passed into the insert function.
-	 * @param {Boolean} atEnd
-	 *        True if the received DOM objects should be inserted as the last
-	 *        child of `ref`.  Otherwise they will be inserted before `ref` as
-	 *        it's previousSibling.
+	 * @param {Array<Element, number>} boundary
 	 * @return {Function(DOMObject, OutParameter):Boolean}
 	 */
-	function createTransferFunction(ref, atEnd) {
+	function createTransferFunction(boundary) {
+		var ref = boundaries.nextNode(boundary);
+		var atEnd = boundaries.atEnd(boundary);
 		if (dom.isTextNode(ref)) {
 			ref = ref.parentNode;
 		}
@@ -716,13 +712,13 @@ define([
 	}
 
 	/**
-	 * Removes the visual line break between the adjacent nodes `above` and
-	 * `below` by moving the nodes from `below` to `above`.
+	 * Removes the visual line break between the adjacent boundaries `above`
+	 * and `below` by moving the nodes after `below` over to before `above`.
 	 *
 	 * @param {Arrays.<Element, number>} above
 	 * @param {Arrays.<Element, number>} below
 	 */
-	function removeVisualBreak(above, below) {
+	function removeVisualBreak(above, below, context) {
 		above = boundaries.normalize(above);
 		below = boundaries.normalize(below);
 
@@ -737,31 +733,27 @@ define([
 		};
 
 		if (boundaries.equal(linebreak, below)) {
+			context.overrides = context.overrides.concat(Overrides.harvest(below[0]));
 			traversing.climbUntil(below[0], dom.remove, isVisible);
 			return;
 		}
 
-		var move = boundaries.atEnd(linebreak)
-			? createTransferFunction(linebreak[0], true)
-			: createTransferFunction(
-				dom.nodeAtOffset(linebreak[0], linebreak[1]),
-				false
-			);
-
-		var right = boundaries.rightNode(below);
+		var right = boundaries.nextNode(below);
 		var parent = right.parentNode;
 
 		if (0 === dom.nodeLength(right)) {
+			context.overrides = context.overrides.concat(Overrides.harvest(right));
 			dom.remove(right);
 		} else {
 			traversing.walkUntil(
 				right,
-				move,
+				createTransferFunction(linebreak),
 				cannotMove,
 				fn.outparameter(true)
 			);
 		}
 
+		context.overrides = context.overrides.concat(Overrides.harvest(parent, isVisible));
 		traversing.climbUntil(parent, dom.remove, isVisible);
 	}
 
@@ -897,10 +889,9 @@ define([
 			return hasLinebreakingStyle(node) || isRendered(node);
 		};
 
-		context.overrides = context.overrides.concat(Overrides.harvest(
-			heirarchy,
-			isVisibleOrHasBreakingStyle
-		));
+		context.overrides = context.overrides.concat(
+			Overrides.harvest(heirarchy, isVisibleOrHasBreakingStyle)
+		);
 
 		var nodesToRemove = traversing.childAndParentsUntil(
 			heirarchy,

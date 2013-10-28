@@ -14,12 +14,12 @@
 
 	var $editable = $('<div id="editable" contentEditable="true"></div>').appendTo('body');
 
-	function runTest(before, after, op) {
+	function runTest(before, after, op, context) {
 		var dom = $(before)[0];
 		$editable.html('').append(dom);
 		var range = ranges.create();
 		boundarymarkers.extract(dom, range);
-		op(range);
+		op(range, context);
 		boundarymarkers.insert(range);
 		equal($editable.html(), after, before + ' ⇒ ' + after);
 	}
@@ -231,7 +231,9 @@
 	test('delete()', function () {
 		tested.push('delete');
 		var t = function (before, after) {
-			return runTest(before, after, editing.delete);
+			return runTest(before, after, editing.delete, {
+				overrides: []
+			});
 		};
 
 		t('<p>x[y]z</p>', '<p>x[]z</p>');

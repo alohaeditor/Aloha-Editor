@@ -150,7 +150,7 @@ define([
 			oldRange: range
 		}, function () {
 			if (!range.collapsed) {
-				range = delete_(range, true, editor);
+				range = delete_(range, true, editable);
 				boundary = Boundaries.start(range);
 			}
 			if (' ' === text) {

@@ -1230,11 +1230,11 @@ define([
 	 * @see https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
 	 *
 	 * @param {Range} range
-	 * @param {Object} overrides
+	 * @param {Object} context
 	 * @return {Range}
 	 *         The modified range, after deletion.
 	 */
-	function delete_(liveRange, overrides) {
+	function delete_(liveRange, context) {
 		fixupRange(liveRange, function delete_(range, left, right) {
 			var remove = function (node) {
 				dom.removePreservingRange(node, range);
@@ -1271,7 +1271,7 @@ define([
 				postprocess: function () {
 					var above = boundaries.start(range);
 					var below = boundaries.end(range);
-					html.removeVisualBreak(above, below);
+					html.removeVisualBreak(above, below, context);
 					var pos = cursors.createFromBoundary(above[0], above[1]);
 					left.setFrom(pos);
 					right.setFrom(pos);
