@@ -705,7 +705,7 @@ define([
 		        : false);
 	}
 
-	function following(a, b) {
+	function follows(a, b) {
 		return !!(a.compareDocumentPosition(b) & 4);
 	}
 
@@ -1582,7 +1582,7 @@ define([
 		splitBoundary: splitBoundary,
 
 		contains: contains,
-		following: following,
+		follows: follows,
 
 		setStyle: setStyle,
 		getStyle: getStyle,
@@ -1651,7 +1651,7 @@ define([
 	exports['joinTextNode'] = exports.joinTextNode;
 	exports['splitBoundary'] = exports.splitBoundary;
 	exports['contains'] = exports.contains;
-	exports['following'] = exports.following;
+	exports['follows'] = exports.follows;
 	exports['setStyle'] = exports.setStyle;
 	exports['getStyle'] = exports.getStyle;
 	exports['getComputedStyle'] = exports.getComputedStyle;

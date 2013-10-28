@@ -100,7 +100,7 @@ define([
 		});
 	};
 
-	actions['ctrl+90'] = function undo(range, editor) {
+	actions['ctrl+' + Keys.CODES.undo] = function undo(range, editor) {
 		var editable = Editables.fromBoundary(editor, Boundaries.start(range));
 		if (!editable) {
 			return range;
@@ -110,7 +110,7 @@ define([
 		return range;
 	};
 
-	actions['ctrl+shift+90'] = function redo(range, editor) {
+	actions['ctrl+shift+' + Keys.CODES.undo] = function redo(range, editor) {
 		var editable = Editables.fromBoundary(editor, Boundaries.start(range));
 		if (!editable) {
 			return range;
@@ -120,14 +120,14 @@ define([
 		return range;
 	};
 
-	actions['ctrl+66'] = function bold(range, editor) {
+	actions['ctrl+' + Keys.CODES.bold] = function bold(range, editor) {
 		return undoable('bold', range, editor, function () {
 			Editing.format(range, 'bold', true);
 			return range;
 		});
 	};
 
-	actions['ctrl+73'] = function italic(range, editor) {
+	actions['ctrl+' + Keys.CODES.italic] = function italic(range, editor) {
 		return undoable('italic', range, editor, function () {
 			Editing.format(range, 'italic', true);
 			return range;
@@ -160,6 +160,9 @@ define([
 			var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
 			var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
 			var change = Undo.makeInsertChange(insertPath, insertContent);
+			function capture(context) {
+				return context.capture();
+			}
 			Undo.capture(undoContext, {noObserve: true}, function () {
 				Dom.insertTextAtBoundary(text, boundary, true, [range]);
 				return {changes: [change]};
@@ -269,7 +272,8 @@ define([
 
 	var exports = {
 		down: down,
-		press: press
+		press: press,
+		actions: actions
 	};
 
 	exports['down'] = down;

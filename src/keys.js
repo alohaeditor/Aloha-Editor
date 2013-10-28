@@ -41,7 +41,10 @@ define([
 		'f12'       : 123,
 		'shift'     : 16,
 		'space'     : 32,
-		'tab'       : 9
+		'tab'       : 9,
+		'undo'      : 90,
+		'bold'      : 66,
+		'italic'    : 73
 	};
 
 	/**

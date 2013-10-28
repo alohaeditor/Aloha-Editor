@@ -25,6 +25,25 @@ define([
 ) {
 	'use strict'
 
+	/**
+	 * Creates a new undo context.
+	 *
+	 * The undo context holds an assortment of data items used across
+	 * many of the undo functions.
+	 *
+	 * Should be treated as a black box.
+	 *
+	 * @param elem {Element}
+	 *        The element whose mutations to are to be observed and made
+	 *        undoable/redoable.
+	 * @param opts {Object.<string,*>}
+	 *        A map of options:
+	 *        noMutationObserver - whether or not to use the MutationObserver
+	 *          API to observe changes,
+	 *        combineCharsMax - how many character to combine to a
+	 *          single change.
+	 * @return {Undo}
+	 */
 	function Context(elem, opts) {
 		opts = opts || {};
 		opts.combineCharsMax = opts.combineCharsMax || 20;
@@ -43,6 +62,15 @@ define([
 		return context;
 	}
 
+	/**
+	 * Creates a changeSet.
+	 *
+	 * @param meta {*} the metadat of the changeSet
+	 * @param changes {Array.<Change>} an array of changes
+	 * @param selection {RangeUpdateChange} reflects the change of the
+	 *        range from before to after all changes in this changeSet.
+	 * @return {ChangeSet}
+	 */
 	function makeChangeSet(meta, changes, selection) {
 		return {
 			changes: changes,
@@ -51,6 +79,13 @@ define([
 		};
 	}
 
+	/**
+	 * Whether two paths are equal.
+	 *
+	 * @param pathA {Path}
+	 * @param pathB {Path}
+	 * @return {boolean}
+	 */
 	function pathEquals(pathA, pathB) {
 		return Arrays.equal(pathA, pathB, Arrays.equal);
 	}
@@ -59,6 +94,13 @@ define([
 		path.push([off, containerName]);
 	}
 
+	/**
+	 * Creates a path from the given container down to the given node.
+	 *
+	 * @param container {Element}
+	 * @param container {Node}
+	 * @return {Path}
+	 */
 	function nodePath(container, node) {
 		var path = [];
 		while (node && container !== node) {
@@ -73,6 +115,13 @@ define([
 		return path;
 	}
 
+	/**
+	 * Creates a boundary from the given path in the given container.
+	 *
+	 * @param container {Element} at which the path begins.
+	 * @param path {Path} which goes down from the given container to the boundary.
+	 * @return {Boundary} the boundary at the given path.
+	 */
 	function boundaryFromPath(container, path) {
 		for (var i = 0; i < path.length - 1; i++) {
 			var step = path[i];
@@ -105,6 +154,8 @@ define([
 	}
 
 	/**
+	 * Creates a path from a boundary.
+	 *
 	 * A path is an array of arrays where each member represents the
 	 * offset of a child in a parent. The empty array represents the
 	 * path of the top-most container from which the path was
@@ -135,6 +186,14 @@ define([
 	 * Paths reflect the normalized DOM - offsets will be calculated
 	 * assuming that empty text nodes don't exist and that subsequent
 	 * text nodes are counted as one.
+	 *
+	 * @param container {Element}
+	 *        The container from which to start calculating the path.
+	 *        Must contain the given boundary.
+	 * @param boundary {Boundary}
+	 *        Must be contained by the given container
+	 * @return {Path}
+	 *        The path from the given container to the given boundary.
 	 */
 	function pathFromBoundary(container, boundary) {
 		boundary = Dom.normalizeBoundary(boundary);
@@ -160,6 +219,10 @@ define([
 		return path;
 	}
 
+	/**
+	 * Create a path from the given container to immediately before the
+	 * given node.
+	 */
 	function pathBeforeNode(container, node) {
 		return pathFromBoundary(container, Boundaries.beforeNode(node));
 	}
@@ -198,6 +261,22 @@ define([
 		}
 	}
 
+	/**
+	 * Enters a new frame in the given undo context.
+	 * 
+	 * @param context {Undo}
+	 * @param opts {Object.<string,*>}
+	 *        A map of options:
+	 *        noObserve - whether to observe changes. If true, changes
+	 *          must be supplied via the result argument of leave().
+	 *          Applies recursively to all nested frames.
+	 *        partitionRecords - whether to split up changes happening
+	 *          inside this frame and frames direcly below this frame (but
+	 *          not deeper).
+	 *        oldRange - a range to record that reflects the range
+	 *          before any changes in this frame happen.
+	 * @return {void}
+	 */
 	function enter(context, opts) {
 		opts = opts || {};
 		var upperFrame = context.frame;
@@ -219,6 +298,13 @@ define([
 		context.frame = frame;
 	}
 
+	/**
+	 * Leave a frame in the given undo context.
+	 *
+	 * @param context {Undo}
+	 * @param result {Object.<string.*>}
+	 * @return {Frame}
+	 */
 	function leave(context, result) {
 		var frame = context.frame;
 		var observer = context.observer;
@@ -244,6 +330,14 @@ define([
 		return frame;
 	}
 
+	/**
+	 * Enter/leave a frame before/after calling the given function.
+	 *
+	 * @param context {Undo}
+	 * @param opts {Object.<string,*>} given as the opts argument to enter()
+	 * @param {function(void):{Object.<string,*>}} given as the result argument to leave()
+	 * @return {Frame} the captured frame
+	 */
 	function capture(context, opts, fn) {
 		enter(context, opts);
 		var result;
@@ -251,9 +345,10 @@ define([
 			result = fn();
 //		} catch (e) {
 			// TODO for some reason, whether I rethrow here or if I
-			// remove the catch completely, my version of Chrome just
-			// ignores the exception. Maybe it's a bug that just happens
-			// in the version of Chrome I'm using?
+			// remove the catch (but not the try{}finally{}) completely,
+			// my version of Chrome just ignores the exception. Maybe
+			// it's a bug that just happens in the version of Chrome I'm
+			// using?
 //			window.console && window.console.log(e);
 //			throw e;
 //		} finally {
@@ -520,7 +615,7 @@ define([
 			if (anchorA === anchorB) {
 				return (DELETE_FLAG & recordB.type) ? -1 : 1;
 			}
-			return Dom.following(anchorA, anchorB) ? -1 : 1;
+			return Dom.follows(anchorA, anchorB) ? -1 : 1;
 		});
 		tree.forEach(function (record) {
 			if (record.contained) {
@@ -724,7 +819,7 @@ define([
 		}
 
 		function disconnect() {
-			observedElem = null;
+ 			observedElem = null;
 			pushedRecords.length = 0;
 			observer.disconnect();
 			observer = null;
@@ -906,6 +1001,13 @@ define([
 		return makeChangeSet(frame.opts.meta, changes, rangeUpdateChange);
 	}
 
+	/**
+	 * Given a frame, creates a changeSet from it.
+	 *
+	 * @param context {Undo}
+	 * @param frame {Frame}
+	 * @return {ChangeSet}
+	 */
 	function changeSetFromFrame(context, frame) {
 		var changes = collectChanges(context, frame);
 		return changeSetFromFrameHavingChanges(context, frame, changes);
@@ -975,10 +1077,27 @@ define([
 		return makeChangeSet(oldChangeSet.meta, [insertChange], rangeUpdateChange);
 	}
 
+	/**
+	 * Sets the interrupted flag in the given undo context.
+	 *
+	 * The interrupted flag specifies that the next change should not be
+	 * combined with the last change.
+	 *
+	 * @param context {Undo}
+	 * @return {void}
+	 */
 	function interruptTyping(context) {
 		context.interrupted = true;
 	}
 
+	/**
+	 * Generates changeSets from the records in the current frame in the
+	 * given context, empties the frame's records, and adds the
+	 * changeSets to the history.
+	 *
+	 * @param context {Undo}
+	 * @return {void}
+	 */
 	function advanceHistory(context) {
 		Assert.assertFalse(!!context.stack.length);
 		var history = context.history;
@@ -1005,6 +1124,15 @@ define([
 		context.historyIndex = history.length;
 	}
 
+	/**
+	 * Undoes the last changeSet in the history.
+	 *
+	 * @param context {Undo}
+	 * @param range {Range} will be set to the recorded range before the
+	 *        changes in the changeSet occurred.
+	 * @param ranges {Array.<Range>} will be preserved.
+	 * @return {void}
+	 */
 	function undo(context, range, ranges) {
 		advanceHistory(context);
 		var history = context.history;
@@ -1021,6 +1149,15 @@ define([
 		context.historyIndex = historyIndex;
 	}
 
+	/**
+	 * Redoes a previously undone changeSet in the history.
+	 *
+	 * @param context {Undo}
+	 * @param range {Range} will be set to the recorded range after the
+	 *        changes in the changeSet occurred.
+	 * @param ranges {Array.<Range>} will be preserved.
+	 * @return {void}
+	 */
 	function redo(context, range, ranges) {
 		advanceHistory(context);
 		var history = context.history;
@@ -1059,8 +1196,14 @@ define([
 	exports['enter'] = exports.enter;
 	exports['leave'] = exports.leave;
 	exports['capture'] = exports.capture;
+	exports['pathFromBoundary'] = exports.pathFromBoundary,
+	exports['changeSetFromFrame'] = exports.changeSetFromFrame;
 	exports['inverseChangeSet'] = exports.inverseChangeSet;
 	exports['applyChangeSet'] = exports.applyChangeSet;
+	exports['advanceHistory'] = exports.advanceHistory;
+	exports['makeInsertChange'] = exports.makeInsertChange;
+	exports['undo'] = exports.undo;
+	exports['redo'] = exports.redo;
 
 	return exports;
 });
