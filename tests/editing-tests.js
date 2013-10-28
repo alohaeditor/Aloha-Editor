@@ -36,10 +36,57 @@
 				};
 				editing.break(range, context, linebreak);
 				if (overrides) {
-					deepEqual(context.overrides, overrides);
+					deepEqual(context.overrides, overrides, overrides.join());
 				}
 			});
 		};
+
+		t(
+			'<b><u style="text-decoration: none">[]</u>foo</b>',
+			'<h1><b><u style="text-decoration: none"></u></b></h1><h1><b>{}foo</b></h1>',
+			false,
+			[
+				['underline', false],
+				['strikethrough', false]
+			]
+		);
+
+		t(
+			'<u style="text-decoration: none">[]</u>',
+			'<h1><u style="text-decoration: none"></u></h1><h1>{}</h1>',
+			false,
+			[
+				['underline', false],
+				['strikethrough', false]
+			]
+		);
+
+		t(
+			'<u style="text-decoration: none">[]foo</u>',
+			'<h1><u style="text-decoration: none"></u></h1><h1><u style="text-decoration: none">[]foo</u></h1>',
+			false,
+			[]
+		);
+
+		t(
+			'<strike><b style="text-decoration: underline"><i style="font-weight: normal">[]</i>foo</b></strike>',
+			'<h1><strike><b style="text-decoration: underline"><i style="font-weight: normal"></i></b></strike></h1>' +
+			'<h1><strike><b style="text-decoration: underline">{}foo</b></strike></h1>',
+			false,
+			[
+				['italic', true],
+				['bold', false]
+			]
+		);
+
+		t(
+			'<b><i>[]</i>foo</b>',
+			'<h1><b><i></i></b></h1><h1><b>{}foo</b></h1>',
+			false,
+			[
+				['italic', true]
+			]
+		);
 
 		t('<i>{}</i>', '<i><br>{}</i>', true);
 		t('<i>{}<br></i>', '<i><br>{}<br></i>', true);
@@ -64,58 +111,30 @@
 		//t('<div><p>1</p>[]<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
 
 		t('<p>{}</p>', '<p><br></p><p>{}</p>');
-		t('<p>[]</p>', '<p><br></p><p>[]</p>');
-
+		t('<p>[]</p>', '<p><br></p><p>{}</p>');
 		t('<div><p><i>fo[]o</i>bar</p></div>',
 		  '<div><p><i>fo</i></p><p><i>[]o</i>bar</p></div>');
 
 		t('<div><p><i>fo[]o<b>bar</b></i>baz</p></div>',
 		  '<div><p><i>fo</i></p><p><i>[]o<b>bar</b></i>baz</p></div>');
 
-		t(
-			'<u style="text-decoration: none">[]</u>',
-			'<h1><u style="text-decoration: normal">[]</u></h1><h1>{}<br></h1>',
-			false,
-			[
-				['underline', false],
-				['strikethrough', false]
-			]
-		);
-
-		t(
-			'<strike><b style="text-decoration: underline"><i style="font-weight: normal">[]</i>foo</b></strike>',
-			'<h1><strike><b style="text-decoration: underline"><i style="font-weight: normal">[]</i></b></strike></h1>' +
-			'<h1><strike><b style="text-decoration: underline">foo</b></strike></h1>',
-			false,
-			[
-				['strikethrough', true],
-				['underline', true],
-				['italic', true],
-				['bold', false]
-			]
-		);
-
-		t(
-			'<b><i>[]</i>foo</b>',
-			'<h1><b><i></i></b></h1><h1><b><i>[]</i>foo</b></h1>',
-			false,
-			[
-				['bold', true],
-				['italic', true]
-			]
-		);
-
 		t('<i>[]foo</i>', '<h1><i></i></h1><h1><i>[]foo</i></h1>');
 		t('<i>[]<u>foo</u>bar</i>', '<h1><i></i></h1><h1><i><u>[]foo</u>bar</i></h1>');
 
-		t('<i>{}</i>',   '<h1><i></i></h1><h1><i>{}</i></h1>');
-		t('<i>b[]</i>',  '<h1><i>b</i></h1><h1><i>{}</i></h1>');
-		t('<i>b{}</i>',  '<h1><i>b</i></h1><h1><i>{}</i></h1>');
-		t('<i>[]b</i>',  '<h1><i></i></h1><h1><i>[]b</i></h1>');
-		t('<i>{}b</i>',  '<h1><i></i></h1><h1><i>[]b</i></h1>');
+		t('<i>{}</i>', '<h1><i></i></h1><h1>{}</h1>', false, [
+			['italic', true]
+		]);
+		t('<i>b[]</i>', '<h1><i>b</i></h1><h1>{}</h1>', false, [
+			['italic', true]
+		]);
+		t('<i>b{}</i>', '<h1><i>b</i></h1><h1>{}</h1>', false, [
+			['italic', true]
+		]);
+		t('<i>[]b</i>', '<h1><i></i></h1><h1><i>[]b</i></h1>');
+		t('<i>{}b</i>', '<h1><i></i></h1><h1><i>[]b</i></h1>');
 		t('<i>b[]a</i>', '<h1><i>b</i></h1><h1><i>[]a</i></h1>');
 
-		t('<p>[]</p>', '<p><br></p><p>[]</p>');
+		t('<p>[]</p>', '<p><br></p><p>{}</p>');
 		t('<p>{}</p>', '<p><br></p><p>{}</p>');
 		t('<p>[]b</p>', '<p><br></p><p>[]b</p>');
 		t('<p>{}b</p>', '<p><br></p><p>[]b</p>');
@@ -125,14 +144,30 @@
 		t('<p>b[]<br></p>', '<p>b</p><p>{}<br></p>');
 		t('<p><br>{}</p>', '<p><br></p><p>{}</p>');
 
-		t('<p><i>[]</i></p>', '<p><i></i></p><p><i>[]</i></p>');
-		t('<p><i>{}</i></p>', '<p><i></i></p><p><i>{}</i></p>');
+		t('<p><i>[]</i></p>', '<p><i></i></p><p>{}</p>', false, [
+			['italic', true]
+		]);
+		t('<p><i>{}</i></p>', '<p><i></i></p><p>{}</p>', false, [
+			['italic', true]
+		]);
+
 		t('<p><i>[]b</i></p>', '<p><i></i></p><p><i>[]b</i></p>');
 		t('<p><i>{}b</i></p>', '<p><i></i></p><p><i>[]b</i></p>');
-		t('<p><i>b[]</i></p>', '<p><i>b</i></p><p><i>{}</i></p>');
-		t('<p><i>b{}</i></p>', '<p><i>b</i></p><p><i>{}</i></p>');
+
+		t('<p><i>b[]</i></p>', '<p><i>b</i></p><p>{}</p>', false, [
+			['italic', true]
+		]);
+
+		t('<p><i>b{}</i></p>', '<p><i>b</i></p><p>{}</p>', false, [
+			['italic', true]
+		]);
+
+		t('<p>a<i>[]</i>b</p>', '<p>a<i></i></p><p>{}b</p>', false, [
+			['italic', true]
+		]);
+
 		t('<p><i>b[]a</i></p>', '<p><i>b</i></p><p><i>[]a</i></p>');
-		t('<p>a<i>[]</i>b</p>', '<p>a<i></i></p><p><i>[]</i>b</p>');
+
 		t('<p>a<u><i>b[]c</i></u>d<i>e</i></p>',
 		  '<p>a<u><i>b</i></u></p><p><u><i>[]c</i></u>d<i>e</i></p>');
 
@@ -150,13 +185,26 @@
 		t('<div contenteditable="true">1{}<p>2</p>3</div>',
 		  '<div contenteditable="true">1<h1>{}</h1><p>2</p>3</div>');
 
-		t('<div contenteditable="true"><i>1{}</i><p>2</p></div>',
-		  '<div contenteditable="true"><h1><i>1</i></h1><h1><i>{}</i></h1><p>2</p></div>');
+		t(
+			'<div contenteditable="true"><i>1{}</i><p>2</p></div>',
+			'<div contenteditable="true"><h1><i>1</i></h1><h1>{}</h1><p>2</p></div>',
+			false,
+			[
+				['italic', true]
+			]
+		);
 
 		t('<div contenteditable="true">foo[]bar</div>', '<div contenteditable="true"><h1>foo</h1><h1>[]bar</h1></div>');
 		t('<div contenteditable="true"><p>one</p>foo[]bar</div>', '<div contenteditable="true"><p>one</p><h1>foo</h1><h1>[]bar</h1></div>');
 
-		t('<div><i>1{}</i><p>2</p></div>', '<div><i>1</i></div><div><i>{}</i><p>2</p></div>');
+		t(
+			'<div><i>1{}</i><p>2</p></div>',
+			'<div><i>1</i></div><div>{}<p>2</p></div>',
+			false,
+			[
+				['italic', true]
+			]
+		);
 
 		t('<div><i>1{}<u>2</u>3</i><p>4</p></div>',
 		  '<div><i>1</i></div><div><i><u>[]2</u>3</i><p>4</p></div>');

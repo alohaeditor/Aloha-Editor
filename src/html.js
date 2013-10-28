@@ -475,7 +475,8 @@ define([
 			return true;
 		}
 
-		if (node.firstChild && traversing.nextWhile(node.firstChild, isRendered)) {
+		if (node.firstChild
+		    && !traversing.nextWhile(node.firstChild, isUnrendered)) {
 			return true;
 		}
 
@@ -785,6 +786,32 @@ define([
 		return dom.isTextNode(node) && isUnrendered(node);
 	}
 
+	function insertBreakingNodeBefore(boundary, context) {
+		var next = boundaries.nextNode(boundary);
+		var name = determineBreakingNode(context, next.parentNode);
+		if (!name) {
+			return insertLineBreak(boundary, context);
+		}
+		var node = document.createElement(name);
+		dom.insert(node, next);
+		return [node, 0];
+	}
+
+	function wrapWithBreakingNode(ref, wrapper, context) {
+		var first = traversing.prevWhile(ref, function (node) {
+			return node.previousSibling && hasInlineStyle(node.previousSibling);
+		});
+		if (first) {
+			dom.wrap(first, wrapper);
+			dom.moveSiblingsAfter(first.nextSibling, first, function (node) {
+				return node === ref;
+			});
+			dom.insert(ref, wrapper, true);
+		} else {
+			dom.wrap(ref, wrapper);
+		}
+	}
+
 	/**
 	 * Inserts a visual line break after the given boundary position.
 	 *
@@ -805,13 +832,7 @@ define([
 		// Because if the boundary is right before a breaking container, The
 		// the default new breaking element should be inserted right before it
 		if (movable && isBreakingContainer(movable)) {
-			var nodeName = determineBreakingNode(context, movable.parentNode);
-			if (!nodeName) {
-				return insertLineBreak(boundary, context);
-			}
-			var heirarchy = document.createElement(nodeName);
-			dom.insert(heirarchy, movable);
-			return [heirarchy, 0];
+			return insertBreakingNodeBefore(boundary, context);
 		}
 
 		var ascend = traversing.childAndParentsUntilIncl(
@@ -825,24 +846,12 @@ define([
 		// then we need to wrap the inline nodes adjacent to the boundary with
 		// the default breaking container before attempting to split it.
 		if (dom.isEditingHost(anchor)) {
-			var nodeName = determineBreakingNode(context, anchor);
-			if (!nodeName) {
+			var name = determineBreakingNode(context, anchor);
+			if (!name) {
 				return insertLineBreak(boundary, context);
 			}
-			anchor = document.createElement(nodeName);
-			var last = arrays.last(ascend);
-			var first = traversing.prevWhile(last, function (node) {
-				return node.previousSibling && hasInlineStyle(node.previousSibling);
-			});
-			if (first) {
-				dom.wrap(first, anchor);
-				dom.moveSiblingsAfter(first.nextSibling, first, function (node) {
-					return node === last;
-				});
-				dom.insert(last, anchor, true);
-			} else {
-				dom.wrap(last, anchor);
-			}
+			anchor = document.createElement(name);
+			wrapWithBreakingNode(arrays.last(ascend), anchor, context);
 		}
 
 		var heirarchy;
@@ -879,9 +888,24 @@ define([
 			) || heirarchy.firstChild;
 		}
 
-		context.overrides = Overrides.record(heirarchy, function (node) {
+		var isVisibleOrHasBreakingStyle = function (node) {
 			return hasLinebreakingStyle(node) || isRendered(node);
-		});
+		};
+
+		context.overrides = Overrides.record(
+			heirarchy,
+			isVisibleOrHasBreakingStyle
+		);
+
+		var nodesToRemove = traversing.childAndParentsUntil(
+			heirarchy,
+			isVisibleOrHasBreakingStyle
+		);
+
+		if (nodesToRemove.length) {
+			heirarchy = arrays.last(nodesToRemove).parentNode;
+			nodesToRemove.forEach(dom.remove);
+		}
 
 		return Predicates.isVoidNode(heirarchy)
 		     ? [heirarchy.parentNode, dom.nodeIndex(heirarchy)]
