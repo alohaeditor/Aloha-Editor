@@ -79,9 +79,12 @@ require([
 			Keys.CODES.enter,
 			'shift+' + Keys.CODES.enter
 		];
+		var endOfLineProbabilities = {};
+		endOfLineProbabilities[Keys.CODES.enter] = 4;
 		simpleActions.forEach(function (code) {
-			deletesRange: Arrays.contains(deletesRange, code),
 			mutations.push({
+				deletesRange: Arrays.contains(deletesRange, code),
+				endOfLineProbability: endOfLineProbabilities[code],
 				mutate: function (elem, range) {
 					Typing.actions[code](range, editor);
 				}

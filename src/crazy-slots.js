@@ -7,12 +7,6 @@
 define(['arrays', 'ranges', 'dom', 'boundaries'], function CrazySlots(Arrays, Ranges, Dom, Boundaries) {
 	'use strict';
 
-	function constantly(value) {
-		return function () {
-			return value;
-		};
-	}
-
 	function repeat(value, n) {
 		var result = new Array(n);
 		var i;
@@ -23,7 +17,11 @@ define(['arrays', 'ranges', 'dom', 'boundaries'], function CrazySlots(Arrays, Ra
 	}
 
 	function randomInt(min, max) {
-		return Math.floor(Math.random() * (max - min + 1) + min);
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	function randomIntDecreasingProbability(min, max, tweak) {
+		return Math.floor(Math.pow(Math.random(), tweak) * (max - min + 1)) + min;
 	}
 
 	function boundariesInElem(elem) {
@@ -50,13 +48,18 @@ define(['arrays', 'ranges', 'dom', 'boundaries'], function CrazySlots(Arrays, Ra
 	}
 
 	function defaultBoundaryProbability(mutation, boundary) {
-		return 1;
+		return ((null != mutation.endOfLineProbability
+		         && Boundaries.atEnd(boundary))
+		        ? mutation.endOfLineProbability
+		        : 1);
 	}
 
-	function deleteRangeDistance(totalDistance) {
-		return (0 === randomInt(0, 20)
-		        ? randomInt(0, totalDistance)
-		        : 0);
+	function deleteRangeDistance(deletesRange, totalDistance) {
+		return randomIntDecreasingProbability(
+			0,
+			totalDistance,
+			(deletesRange ? 4 : 2)
+		);
 	}
 
 	function run(elem, mutations, opts) {
@@ -72,11 +75,11 @@ define(['arrays', 'ranges', 'dom', 'boundaries'], function CrazySlots(Arrays, Ra
 				return;
 			}
 			runs += 1;
+			var mutation = mutations[randomInt(0, mutations.length - 1)];
 			var boundaryProbability
 				= (opts.boundaryProbability
 				   || defaultBoundaryProbability).bind(null, mutation);
-			var mutation = mutations[randomInt(0, mutations.length - 1)];
-			var distance = mutation.deletesRange ? deleteRangeDistance : constantly(0);
+			var distance = deleteRangeDistance.bind(null, mutation.deletesRange);
 			var range = randomRange(elem, boundaryProbability, distance);
 			mutation.mutate(elem, range);
 			timeout = window.setTimeout(mutate, wait);
