@@ -36,6 +36,10 @@ require([
 		};
 		var elem = document.getElementById('aloha-editable');
 		var editable = Editables.Editable(elem);
+		editable.overrides = [];
+		editable.settings = {
+			defaultBlockNodeName: 'div'
+		};
 		Editables.assocIntoEditor(editor, editable);
 		Undo.enter(editable.undoContext, {
 			meta: {type: 'external'},

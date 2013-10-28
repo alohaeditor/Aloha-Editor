@@ -793,7 +793,7 @@ define([
 			return insertLineBreak(boundary, context);
 		}
 		var node = document.createElement(name);
-		dom.insert(node, next);
+		dom.insertNodeAtBoundary(node, boundary);
 		return [node, 0];
 	}
 
@@ -850,8 +850,13 @@ define([
 			if (!name) {
 				return insertLineBreak(boundary, context);
 			}
+			var ref = arrays.last(ascend);
 			anchor = document.createElement(name);
-			wrapWithBreakingNode(arrays.last(ascend), anchor, context);
+			if (ref) {
+				wrapWithBreakingNode(ref, anchor, context);
+			} else {
+				dom.insertNodeAtBoundary(anchor, boundary, true);
+			}
 		}
 
 		var heirarchy;
@@ -892,7 +897,7 @@ define([
 			return hasLinebreakingStyle(node) || isRendered(node);
 		};
 
-		context.overrides = context.overrides.concat(Overrides.record(
+		context.overrides = context.overrides.concat(Overrides.read(
 			heirarchy,
 			isVisibleOrHasBreakingStyle
 		));
@@ -960,19 +965,11 @@ define([
 	 */
 	function insertLineBreak(boundary, context) {
 		var br = document.createElement('br');
-
-		if (boundaries.atEnd(boundary)) {
-			dom.insert(br, boundary[0], true);
-		} else {
-			dom.insert(br, boundaries.rightNode(boundary));
-		}
-
+		dom.insertNodeAtBoundary(br, boundary);
 		boundary = boundaries.next(boundary);
-
 		if (!isSignificantBr(br)) {
-			dom.insert(document.createElement('br'), br);
+			dom.insertNodeAtBoundary(document.createElement('br'), boundary);
 		}
-
 		return boundary;
 	}
 

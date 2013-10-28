@@ -67,14 +67,14 @@ define([
 
 	actions[Keys.CODES.backspace] = function deleteBackwards(range, editor) {
 		return undoable('delete', range, editor, function (editable) {
-			editables.overrides = [];
+			editable.overrides = [];
 			return delete_(range, false, editable);
 		});
 	};
 
 	actions[Keys.CODES.delete] = function deleteForward(range, editor) {
 		return undoable('delete', range, editor, function (editable) {
-			editor.overrides = [];
+			editor.override = [];
 			return delete_(range, true, editable);
 		});
 	};
@@ -161,7 +161,7 @@ define([
 				}
 			}
 
-			Overrides.inject(boundary, editable.overrides);
+			Overrides.write(boundary, editable.overrides);
 
 			var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
 			var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
