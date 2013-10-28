@@ -62,3 +62,10 @@ All changes are categorized into one of the following keywords:
              expensive on large content.
 
 - **BUGFIX**: tables: Remove "width" attribute from copied tables. RT#55759
+
+- **BUGFIX**: Copy text to Mozilla browser, mess up with the order
+              When copy to Mozilla it keeps the <br> tags instead of replacing them
+              for <p> tags. The solution is to replace the <br> tags by <p> tags but
+              only aiming <br> tags from the children of the parent. If the children of
+              the children have some <br> tags we assume that those were intentionally
+              written for a reason. RT#57009

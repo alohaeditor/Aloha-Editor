@@ -37,7 +37,8 @@ define([
 	'aloha/command',
 	'contenthandler/contenthandler-utils',
 	'aloha/console',
-	'aloha/copypaste'
+	'aloha/copypaste',
+	'util/browser'
 ], function (
 	$,
 	Aloha,
@@ -45,7 +46,8 @@ define([
 	Commands,
 	ContentHandlerUtils,
 	Console,
-	CopyPaste
+	CopyPaste,
+    Browser
 ) {
 	'use strict';
 
@@ -63,7 +65,7 @@ define([
 	 * @type {boolean}
 	 * @const
 	 */
-	var IS_IE = !!$.browser.msie;
+	var IS_IE = Browser.ie;
 
 	/**
 	 * Matches as string consisting of a single white space character.
@@ -272,6 +274,40 @@ define([
 	}
 
 	/**
+	 * Clear <br> tags from clipboard only for Mozilla browsers.
+	 *
+	 * @param $clipboard
+	 * @returns {String} html string
+	 */
+	function clearBRTagsMozilla($clipboard) {
+		if (!Browser.mozilla) {
+			return $clipboard.html();
+		}
+
+		var $contents = $clipboard.contents(),
+		    len = $contents.length,
+		    $newContent = $('<div></div>'),
+		    i,
+		    newPTagNode;
+
+		for (i = 0; i < len; i++) {
+			if ($contents[i].nodeName === 'BR') {
+				newPTagNode = document.createElement('p');
+				if (i === len - 1 || $contents[i + 1].nodeName === 'BR') {
+					newPTagNode.appendChild(document.createElement('br'));
+				} else {
+					i++;
+					newPTagNode.appendChild($contents[i].cloneNode(true));
+				}
+				$newContent.append(newPTagNode);
+			} else {
+				$newContent.append($contents[i].cloneNode(true));
+			}
+		}
+		return $newContent.html();
+	}
+
+	/**
 	 * Gets the pasted content and inserts them into the current active
 	 * editable.
 	 *
@@ -287,7 +323,7 @@ define([
 	 */
 	function paste($clipboard, range, callback) {
 		if (range) {
-			var content = deleteFirstHeaderTag($clipboard.html());
+			var content = deleteFirstHeaderTag(clearBRTagsMozilla($clipboard));
 
 			// Because IE inserts an insidious nbsp into the content during
 			// pasting that needs to be removed.  Leaving it would otherwise
