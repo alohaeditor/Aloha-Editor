@@ -4,6 +4,7 @@
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
 <<<<<<< HEAD
+<<<<<<< HEAD
 	<version>0.24.3-commercial-SNAPSHOT</version>
 ||||||| merged common ancestors
 <<<<<<< Temporary merge branch 1
@@ -16,6 +17,23 @@
 =======
 	<version>0.24.6-commercial-SNAPSHOT</version>
 >>>>>>> 349cfe280eaf25da6d005977897a3e2c3734aa61
+||||||| merged common ancestors
+<<<<<<< Temporary merge branch 1
+	<version>0.24.3-commercial-SNAPSHOT</version>
+||||||| merged common ancestors
+<<<<<<< Temporary merge branch 1
+	<version>0.23.22-SNAPSHOT</version>
+||||||| merged common ancestors
+	<version>0.23.21-SNAPSHOT</version>
+=======
+	<version>0.24.3-commercial-SNAPSHOT</version>
+>>>>>>> Temporary merge branch 2
+=======
+	<version>0.24.5-commercial-SNAPSHOT</version>
+>>>>>>> Temporary merge branch 2
+=======
+	<version>0.24.5</version>
+>>>>>>> cdd4b9279d069b14894cbf7bd4e00f2139828fdf
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
