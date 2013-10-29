@@ -38,7 +38,8 @@ define([
 	'ui/scopes',
 	'util/class',
 	'PubSub',
-	'block/block-utils'
+	'block/block-utils',
+	'util/html'
 ], function(
 	Aloha,
 	jQuery,
@@ -47,7 +48,8 @@ define([
 	Scopes,
 	Class,
 	PubSub,
-	BlockUtils
+	BlockUtils,
+    Html
 ){
 	'use strict';
 
@@ -150,7 +152,20 @@ define([
 			if (this.isDraggable()) {
 				// Remove default drag/drop behavior of the browser
 				$element.find('img').attr('draggable', 'false');
-				$element.find('a').attr('draggable', 'false');
+
+				try {
+					$element.find('a').attr('draggable', 'false');
+				} catch(e) {
+					// If we get in here, it is most likely an issue with IE 10 in documentmode 7
+					// and IE10 compatibility mode. It maybe happens in older versions too.
+					// Error: Member not found
+					// https://connect.microsoft.com/IE/feedback/details/774078
+					// http://bugs.jquery.com/ticket/12577
+					// Our fallback solution:
+					$element.find('a').each(function() {
+						this.setAttribute('draggable', 'false');
+					});
+				}
 			}
 
 			// set the attributes
@@ -182,10 +197,14 @@ define([
 			//	}
 			//});
 
-			// Only for the span element.
+			// Only for inline element.
 			// It is not possible to insert text after or before a Block span
 			// when after or before the Block there is not elements
-			if (this.$element[0].nodeName === 'SPAN') {
+			if (Html.isInlineFormattable($element[0])) {
+				if ($element.closest('.aloha-editable-active').length > 0) {
+					BlockUtils.pad(that.$element);
+				}
+
 				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);

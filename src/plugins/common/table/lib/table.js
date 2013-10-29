@@ -23,7 +23,8 @@ define([
 	'table/table-plugin-utils',
 	'aloha/ephemera',
 	'util/html',
-	'util/dom2'
+	'util/dom2',
+	'aloha/console'
 ], function (
 	Aloha,
 	jQuery,
@@ -35,7 +36,8 @@ define([
 	Utils,
 	Ephemera,
 	Html,
-	Dom
+	Dom,
+    Console
 ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
@@ -527,6 +529,27 @@ define([
 			}
 		});
 
+
+		this.obj.on('keydown', function (jqEvent) {
+			// Delete button
+			if (jqEvent.keyCode === 46) {
+				if (that.selection.selectionType === 'row') {
+					that.deleteRows();
+				} else if (that.selection.selectionType === 'column') {
+					that.deleteColumns();
+				}
+
+				// jqEvent.stopPropagation doesn't support cancelBubble
+				// in the last jQuery versions. (query/jquery@97fa97f#diff-031bb62d959e7e4949d1847c82507f33L676)
+				if (typeof jqEvent.stopPropagation === 'function') {
+					jqEvent.stopPropagation();
+				} else {
+					// Workaround for IE
+					jqEvent.cancelBubble = true;
+				}
+			}
+		});
+
 		/*
 		We need to make sure that when the user has selected text inside a
 		table cell we do not delete the entire row, before we activate this
@@ -620,22 +643,21 @@ define([
 
 			});
 
-			eventContainer.bind( 'mousedown', function ( jqEvent ) {
+		eventContainer.bind( 'mousedown', function ( jqEvent ) {
 			// focus the table if not already done
 			if ( !that.hasFocus ) {
 				that.focus();
 			}
 
-
-	// DEACTIVATED by Haymo prevents selecting rows
-	//		// if a mousedown is done on the table, just focus the first cell of the table
-	//		setTimeout(function() {
-	//			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-	//			TableSelection.unselectCells();
-	//			jQuery(firstCell).get(0).focus();
-	//			// move focus in first cell
-	//			that.obj.cells[0].wrapper.get(0).focus();
-	//		}, 0);
+			// DEACTIVATED by Haymo prevents selecting rows
+			//		// if a mousedown is done on the table, just focus the first cell of the table
+			//		setTimeout(function() {
+			//			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
+			//			TableSelection.unselectCells();
+			//			jQuery(firstCell).get(0).focus();
+			//			// move focus in first cell
+			//			that.obj.cells[0].wrapper.get(0).focus();
+			//		}, 0);
 
 			// stop bubbling and default-behaviour
 			jqEvent.stopPropagation();
@@ -709,25 +731,31 @@ define([
 	};
 
 	/**
-	 * check the WAI conformity of the table and sets the attribute.
+	 * Check the WAI conformity of the table and sets the attribute.
+	 *
+	 * @returns {boolean} True is WAI is activated, False otherwise.
 	 */
 	Table.prototype.checkWai = function () {
-		var w = this.wai;
-		if (!w) {
-			return;
+		var thisWai = this.wai;
+		if (!thisWai) {
+			return false;
 		}
 
-		w.removeClass(this.get('waiGreen'));
-		w.removeClass(this.get('waiRed'));
+		var waiGreen = this.get('waiGreen'),
+			waiRed = this.get('waiRed');
+
+		thisWai.removeClass(waiGreen + ' ' + waiRed);
 
 		// Y U NO explain why we must check that summary is longer than 5 characters?
 		// http://cdn3.knowyourmeme.com/i/000/089/665/original/tumblr_l96b01l36p1qdhmifo1_500.jpg
 
-		if (jQuery.trim(this.obj[0].summary) != '') {
-			w.addClass(this.get('waiGreen'));
-		} else {
-			w.addClass(this.get('waiRed'));
+		if (jQuery.trim(this.obj[0].summary) !== '') {
+			thisWai.addClass(waiGreen);
+			return true;
 		}
+
+		thisWai.addClass(waiRed);
+		return false;
 	};
 
 	/**
@@ -988,6 +1016,7 @@ define([
 						e.stopPropagation();
 						e.preventDefault();
 					} catch (e) {
+						Console.error ('Table', e.message);
 					}
 
 					return false;
@@ -1657,7 +1686,6 @@ define([
 			columnsToSelect = this.columnsToSelect;
 		}
 
-		Scopes.setScope(this.tablePlugin.name + '.column');
 		this.selection.selectColumns(columnsToSelect);
 		this.tablePlugin._columnheaderButton.setState(this.selection.isHeader());
 
@@ -1675,6 +1703,8 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
+
+		Scopes.setScope(this.tablePlugin.name + '.column');
 	};
 
 	/**
@@ -1684,7 +1714,6 @@ define([
 	 */
 	Table.prototype.selectRows = function () {
 
-		Scopes.setScope(this.tablePlugin.name + '.row');
 		this.selection.selectRows(this.rowsToSelect);
 		this.tablePlugin._rowheaderButton.setState(this.selection.isHeader());
 
@@ -1702,6 +1731,8 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
+
+		Scopes.setScope(this.tablePlugin.name + '.row');
 	};
 
 	/**
