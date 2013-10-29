@@ -9,7 +9,7 @@
  * https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories
  * http://www.whatwg.org/specs/web-apps/2007-10-26/multipage/section-contenteditable.html
  * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
- * https://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-range-bp
+ * https://dvcs.w3.org/hg/domcore/raw-file/tip/overview.html#concept-range-bp
  * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
  */
 define([
@@ -24,16 +24,16 @@ define([
 	'overrides',
 	'functions'
 ], function Html(
-	dom,
+	Dom,
 	Predicates,
-	arrays,
-	cursors,
-	content,
-	browser,
-	boundaries,
-	traversing,
+	Arrays,
+	Cursors,
+	Content,
+	Browsers,
+	Boundaries,
+	Traversing,
 	Overrides,
-	fn
+	Fn
 ) {
 	'use strict';
 
@@ -98,11 +98,11 @@ define([
 			return false;
 		}
 		switch (node.nodeType) {
-		case dom.Nodes.DOCUMENT:
-		case dom.Nodes.DOCUMENT_FRAGMENT:
+		case Dom.Nodes.DOCUMENT:
+		case Dom.Nodes.DOCUMENT_FRAGMENT:
 			return true;
-		case dom.Nodes.ELEMENT:
-			var style = dom.getComputedStyle(node, 'display');
+		case Dom.Nodes.ELEMENT:
+			var style = Dom.getComputedStyle(node, 'display');
 			return style ? !nonBlockDisplayValuesMap[style] : Predicates.isBlockNode(node);
 		default:
 			return false;
@@ -172,7 +172,7 @@ define([
 		}
 		var cssWhiteSpace;
 		if (node.parentNode) {
-			cssWhiteSpace = dom.getComputedStyle(node.parentNode, 'white-space');
+			cssWhiteSpace = Dom.getComputedStyle(node.parentNode, 'white-space');
 			if (isWhiteSpacePreserveStyle(cssWhiteSpace)) {
 				return false;
 			}
@@ -304,11 +304,8 @@ define([
 		if (!isUnrenderedWhitespaceNoBlockCheck(node)) {
 			return false;
 		}
-		return (
-			skipUnrenderedToEndOfLine(cursors.cursor(node, false))
-			||
-			skipUnrenderedToStartOfLine(cursors.cursor(node, false))
-		);
+		return skipUnrenderedToEndOfLine(Cursors.cursor(node, false))
+		    || skipUnrenderedToStartOfLine(Cursors.cursor(node, false));
 	}
 
 	/**
@@ -321,7 +318,7 @@ define([
 		var child = elem.firstChild;
 		while (child) {
 			if (!isUnrenderedWhitespace(child)
-					&& (1 === child.nodeType || 3 === child.nodeType)) {
+			    && (1 === child.nodeType || 3 === child.nodeType)) {
 				return false;
 			}
 			child = child.nextSibling;
@@ -471,12 +468,12 @@ define([
 			return true;
 		}
 
-		if (0 === dom.nodeLength(node)) {
+		if (0 === Dom.nodeLength(node)) {
 			return true;
 		}
 
 		if (node.firstChild
-		    && !traversing.nextWhile(node.firstChild, isUnrendered)) {
+		    && !Traversing.nextWhile(node.firstChild, isUnrendered)) {
 			return true;
 		}
 
@@ -488,18 +485,18 @@ define([
 		// Because a <br> element that is a child node adjacent to its parent's
 		// end tag (terminal sibling) must not be rendered.
 		if (!maybeUnrenderedNode
-			&& (node === node.parentNode.lastChild)
-			&& Predicates.isBlockNode(node.parentNode)
-			&& 'BR' === node.nodeName
+		    && (node === node.parentNode.lastChild)
+		    && Predicates.isBlockNode(node.parentNode)
+		    && 'BR' === node.nodeName
 		) {
 			return true;
 		}
 
 		if (maybeUnrenderedNode && (
-			isTerminalSibling(node)
-			|| isAdjacentToBlock(node)
-			|| skipUnrenderedToEndOfLine(cursors.create(node, false))
-			|| skipUnrenderedToStartOfLine(cursors.create(node, false))
+		    isTerminalSibling(node)
+		    || isAdjacentToBlock(node)
+		    || skipUnrenderedToEndOfLine(Cursors.create(node, false))
+		    || skipUnrenderedToStartOfLine(Cursors.create(node, false))
 		)) {
 			return true;
 		}
@@ -513,7 +510,7 @@ define([
 	 * @param {DOMOjbect} node
 	 * @return {Boolean}
 	 */
-	var isRendered = fn.complement(isUnrendered);
+	var isRendered = Fn.complement(isUnrendered);
 
 	/**
 	 * Determine whether the boundary `left` is visually adjacent to `right`.
@@ -524,14 +521,14 @@ define([
 	 */
 	function isVisuallyAdjacent(left, right) {
 		var adjacent = false;
-		boundaries.prevWhile(right, function (pos) {
-			if (boundaries.equal(left, pos)) {
+		Boundaries.prevWhile(right, function (pos) {
+			if (Boundaries.equal(left, pos)) {
 				adjacent = true;
 				return false;
 			}
 			if (pos[1] > 0) {
-				var node = dom.nodeAtOffset(pos[0], pos[1] - 1);
-				if ((dom.isTextNode(node) || Predicates.isVoidNode(node))
+				var node = Dom.nodeAtOffset(pos[0], pos[1] - 1);
+				if ((Dom.isTextNode(node) || Predicates.isVoidNode(node))
 					&& isRendered(node)) {
 					adjacent = false;
 					return false;
@@ -549,9 +546,9 @@ define([
 	 * @retur {DOMObject}
 	 */
 	function hasRenderedContent(node) {
-		return dom.isTextNode(node)
+		return Dom.isTextNode(node)
 		     ? !isUnrenderedWhitespaceNoBlockCheck(node)
-		     : isRendered(traversing.nextWhile(node.firstChild, isUnrendered));
+		     : isRendered(Traversing.nextWhile(node.firstChild, isUnrendered));
 	}
 
 	/**
@@ -577,12 +574,12 @@ define([
 	 * @param {DOMObject} elem
 	 */
 	function prop(elem) {
-		if (browser.browser.msie || !Predicates.isBlockNode(elem)) {
+		if (Browsers.browser.msie || !Predicates.isBlockNode(elem)) {
 			return;
 		}
 		if (!elem.firstChild
-		    || !traversing.nextWhile(elem.firstChild, isUnrenderedWhitespace)) {
-			dom.insert(document.createElement('br'), elem, true);
+		    || !Traversing.nextWhile(elem.firstChild, isUnrenderedWhitespace)) {
+			Dom.insert(document.createElement('br'), elem, true);
 		}
 	}
 
@@ -601,9 +598,9 @@ define([
 	 */
 	function suitableTransferTarget(node) {
 		return !Predicates.isVoidNode(node)
-		    && !dom.isTextNode(node)
+		    && !Dom.isTextNode(node)
 		    && !Predicates.isTextLevelSemanticNode(node)
-			&& !LIST_CONTAINERS[node.nodeName];
+		    && !LIST_CONTAINERS[node.nodeName];
 	}
 
 	/**
@@ -617,9 +614,9 @@ define([
 	 * @return {Function(DOMObject, OutParameter):Boolean}
 	 */
 	function createTransferFunction(boundary) {
-		var ref = boundaries.nextNode(boundary);
-		var atEnd = boundaries.atEnd(boundary);
-		if (dom.isTextNode(ref)) {
+		var ref = Boundaries.nextNode(boundary);
+		var atEnd = Boundaries.atEnd(boundary);
+		if (Dom.isTextNode(ref)) {
 			ref = ref.parentNode;
 		}
 		return function insert(node, out_inserted) {
@@ -627,13 +624,13 @@ define([
 				return out_inserted(true);
 			}
 			if (ref.nodeName === node.nodeName) {
-				dom.merge(ref, node);
+				Dom.merge(ref, node);
 				return out_inserted(true);
 			}
 			var parent = atEnd ? ref : ref.parentNode;
-			if (content.allowsNesting(parent.nodeName, node.nodeName)) {
-				dom.insert(node, ref, atEnd);
-				dom.merge(node.previousSibling, node);
+			if (Content.allowsNesting(parent.nodeName, node.nodeName)) {
+				Dom.insert(node, ref, atEnd);
+				Dom.merge(node.previousSibling, node);
 				return out_inserted(true);
 			}
 			return out_inserted(false);
@@ -663,16 +660,16 @@ define([
 	 */
 	function findTransferTarget(node, limit) {
 		if (!isRendered(node)) {
-			node = traversing.findBackward(node, isRendered, dom.isEditingHost);
+			node = Traversing.findBackward(node, isRendered, Dom.isEditingHost);
 		}
 		if (!node || suitableTransferTarget(node)) {
 			return node;
 		}
-		node = traversing.findAncestor(
+		node = Traversing.findAncestor(
 			node,
 			suitableTransferTarget,
 			function (node) {
-				return node === limit || dom.isEditingHost(node);
+				return node === limit || Dom.isEditingHost(node);
 			}
 		);
 	}
@@ -698,16 +695,16 @@ define([
 	 * @return {Array.<Element, number>}
 	 */
 	function nextLineBreak(above, below) {
-		return boundaries.nextWhile(above, function (pos, node, offset) {
-			if (boundaries.equal(pos, below)) {
+		return Boundaries.nextWhile(above, function (pos, node, offset) {
+			if (Boundaries.equal(pos, below)) {
 				return false;
 			}
-			var end = boundaries.atEnd(pos);
-			var next = end ? node : dom.nodeAtOffset(node, offset);
+			var end = Boundaries.atEnd(pos);
+			var next = end ? node : Dom.nodeAtOffset(node, offset);
 			if (hasLinebreakingStyle(next)) {
 				return false;
 			}
-			return !(end && dom.isEditingHost(pos[0]));
+			return !(end && Dom.isEditingHost(pos[0]));
 		});
 	}
 
@@ -719,88 +716,87 @@ define([
 	 * @param {Arrays.<Element, number>} below
 	 */
 	function removeVisualBreak(above, below, context) {
-		above = boundaries.normalize(above);
-		below = boundaries.normalize(below);
+		above = Boundaries.normalize(above);
+		below = Boundaries.normalize(below);
 
 		if (!isVisuallyAdjacent(above, below)) {
 			return;
 		}
 
 		var linebreak = nextLineBreak(above, below);
-
 		var isVisible = function (node) {
 			return above[0] === node || hasRenderedContent(node);
 		};
 
-		if (boundaries.equal(linebreak, below)) {
+		if (Boundaries.equal(linebreak, below)) {
 			context.overrides = context.overrides.concat(Overrides.harvest(below[0]));
-			traversing.climbUntil(below[0], dom.remove, isVisible);
+			Traversing.climbUntil(below[0], Dom.remove, isVisible);
 			return;
 		}
 
-		var right = boundaries.nextNode(below);
+		var right = Boundaries.nextNode(below);
 		var parent = right.parentNode;
 
-		if (0 === dom.nodeLength(right)) {
+		if (0 === Dom.nodeLength(right)) {
 			context.overrides = context.overrides.concat(Overrides.harvest(right));
-			dom.remove(right);
+			Dom.remove(right);
 		} else {
-			traversing.walkUntil(
+			Traversing.walkUntil(
 				right,
 				createTransferFunction(linebreak),
 				cannotMove,
-				fn.outparameter(true)
+				Fn.outparameter(true)
 			);
 		}
 
 		context.overrides = context.overrides.concat(Overrides.harvest(parent, isVisible));
-		traversing.climbUntil(parent, dom.remove, isVisible);
+		Traversing.climbUntil(parent, Dom.remove, isVisible);
 	}
 
 	function determineBreakingNode(context, container) {
 		var name;
 		if (context
-			&& context.settings
-			&& context.settings.defaultBlockNodeName) {
-			name = context.settings.defaultBlockNodeName;
+		    && context.settings
+		    && context.settings.defaultBlockNodeName) {
+		    name = context.settings.defaultBlockNodeName;
 		} else {
 			name = 'div';
 		}
-		return content.allowsNesting(container.nodeName, name) ? name : null;
+		return Content.allowsNesting(container.nodeName, name) ? name : null;
 	}
 
 	function isBreakingContainer(node) {
 		return !Predicates.isVoidNode(node)
-			&& (hasLinebreakingStyle(node) || dom.isEditingHost(node));
+		    && (hasLinebreakingStyle(node) || Dom.isEditingHost(node));
 	}
 
 	function isUnrenderedTextNode(node) {
-		return dom.isTextNode(node) && isUnrendered(node);
+		return Dom.isTextNode(node) && isUnrendered(node);
 	}
 
 	function insertBreakingNodeBeforeBoundary(boundary, context) {
-		var next = boundaries.nextNode(boundary);
+		var next = Boundaries.nextNode(boundary);
 		var name = determineBreakingNode(context, next.parentNode);
 		if (!name) {
 			return insertLineBreak(boundary, context);
 		}
 		var node = document.createElement(name);
-		dom.insertNodeAtBoundary(node, boundary);
+		Dom.insertNodeAtBoundary(node, boundary);
 		return [node, 0];
 	}
 
 	function wrapWithBreakingNode(ref, wrapper, context) {
-		var first = traversing.prevWhile(ref, function (node) {
+		var first = Traversing.prevWhile(ref, function (node) {
 			return node.previousSibling && hasInlineStyle(node.previousSibling);
 		});
 		if (first) {
-			dom.wrap(first, wrapper);
-			dom.moveSiblingsAfter(first.nextSibling, first, function (node) {
+			Dom.wrap(first, wrapper);
+			Dom.moveSiblingsAfter(first.nextSibling, first, function (node) {
 				return node === ref;
 			});
-			dom.insert(ref, wrapper, true);
+			Dom.insert(ref, wrapper, true);
 		} else {
-			dom.wrap(ref, wrapper);
+			Dom.wrap(ref, wrapper);
 		}
 	}
 
@@ -814,11 +810,11 @@ define([
 	 *        visually adjacent to the newly created line.
 	 */
 	function insertVisualBreak(boundary, context) {
-		var start = boundaries.nextNode(boundary);
+		var start = Boundaries.nextNode(boundary);
 
 		// Because any nodes which are entirely after the boundary position
 		// don't need to be copied but can be completely moved: "}<b>"
-		var movable = boundaries.atEnd(boundary) ? null : start;
+		var movable = Boundaries.atEnd(boundary) ? null : start;
 
 		// Because if the boundary is right before a breaking container, The the
 		// default new breaking element should be inserted right before it.
@@ -826,7 +822,7 @@ define([
 			return insertBreakingNodeBeforeBoundary(boundary, context);
 		}
 
-		var ascend = traversing.childAndParentsUntilIncl(
+		var ascend = Traversing.childAndParentsUntilIncl(
 			start,
 			isBreakingContainer
 		);
@@ -836,17 +832,17 @@ define([
 		// Because if there are no breaking containers below the editing host,
 		// then we need to wrap the inline nodes adjacent to the boundary with
 		// the default breaking container before attempting to split it.
-		if (dom.isEditingHost(anchor)) {
+		if (Dom.isEditingHost(anchor)) {
 			var name = determineBreakingNode(context, anchor);
 			if (!name) {
 				return insertLineBreak(boundary, context);
 			}
-			var ref = arrays.last(ascend);
+			var ref = Arrays.last(ascend);
 			anchor = document.createElement(name);
 			if (ref) {
 				wrapWithBreakingNode(ref, anchor, context);
 			} else {
-				dom.insertNodeAtBoundary(anchor, boundary, true);
+				Dom.insertNodeAtBoundary(anchor, boundary, true);
 			}
 		}
 
@@ -863,9 +859,9 @@ define([
 			parent = node.parentNode.cloneNode(false);
 			copy = (node === movable) ? node : node.cloneNode(false);
 			next = node.nextSibling;
-			dom.insert(heirarchy || copy, parent, true);
+			Dom.insert(heirarchy || copy, parent, true);
 			if (next) {
-				dom.moveSiblingsInto(next, parent);
+				Dom.moveSiblingsInto(next, parent);
 			}
 			heirarchy = parent;
 		}
@@ -874,11 +870,11 @@ define([
 			heirarchy = anchor.cloneNode(false);
 		}
 
-		dom.insertAfter(heirarchy, anchor);
+		Dom.insertAfter(heirarchy, anchor);
 		prop(anchor);
 
 		while (heirarchy && heirarchy.firstChild) {
-			heirarchy = traversing.nextWhile(
+			heirarchy = Traversing.nextWhile(
 				heirarchy.firstChild,
 				isUnrenderedTextNode
 			) || heirarchy.firstChild;
@@ -892,18 +888,18 @@ define([
 			Overrides.harvest(heirarchy, isVisibleOrHasBreakingStyle)
 		);
 
-		var nodesToRemove = traversing.childAndParentsUntil(
+		var nodesToRemove = Traversing.childAndParentsUntil(
 			heirarchy,
 			isVisibleOrHasBreakingStyle
 		);
 
 		if (nodesToRemove.length) {
-			heirarchy = arrays.last(nodesToRemove).parentNode;
-			nodesToRemove.forEach(dom.remove);
+			heirarchy = Arrays.last(nodesToRemove).parentNode;
+			nodesToRemove.forEach(Dom.remove);
 		}
 
 		return Predicates.isVoidNode(heirarchy)
-		     ? [heirarchy.parentNode, dom.nodeIndex(heirarchy)]
+		     ? [heirarchy.parentNode, Dom.nodeIndex(heirarchy)]
 		     : [heirarchy, 0];
 	}
 
@@ -919,10 +915,10 @@ define([
 		};
 
 		var prev = br.previousSibling
-		        && traversing.prevWhile(br.previousSibling, ignorable);
+		        && Traversing.prevWhile(br.previousSibling, ignorable);
 
 		var next = br.nextSibling
-		        && traversing.nextWhile(br.nextSibling, ignorable);
+		        && Traversing.nextWhile(br.nextSibling, ignorable);
 
 		var significant = !prev
 		               || ((prev && next) && Predicates.isInlineNode(br.parentNode));
@@ -955,17 +951,17 @@ define([
 	 */
 	function insertLineBreak(boundary, context) {
 		var br = document.createElement('br');
-		dom.insertNodeAtBoundary(br, boundary);
-		boundary = boundaries.next(boundary);
+		Dom.insertNodeAtBoundary(br, boundary);
+		boundary = Boundaries.next(boundary);
 		if (!isSignificantBr(br)) {
-			dom.insertNodeAtBoundary(document.createElement('br'), boundary);
+			Dom.insertNodeAtBoundary(document.createElement('br'), boundary);
 		}
 		return boundary;
 	}
 
 	var zwChars = ZERO_WIDTH_CHARACTERS.join('');
 
-	var breakingWhiteSpaces = arrays.complement(
+	var breakingWhiteSpaces = Arrays.complement(
 		WHITE_SPACE_CHARACTERS,
 		NON_BREAKING_SPACE_CHARACTERS
 	).join('');
@@ -1080,7 +1076,7 @@ define([
 	 *
 	 * @see For more information on white space handling:
 	 *      http://www.w3.org/TR/REC-xml/#sec-white-space
-	 *      http://www.w3.org/TR/xhtml1/Overview.html#C_15
+	 *      http://www.w3.org/TR/xhtml1/overview.html#C_15
 	 *      http://lists.w3.org/Archives/Public/www-dom/1999AprJun/0007.html
 	 *
 	 * @param {DOMObject} node
@@ -1092,19 +1088,19 @@ define([
 			return false;
 		}
 		if (0 === offset) {
-			return !!traversing.previousNonAncestor(textnode, function (node) {
+			return !!Traversing.previousNonAncestor(textnode, function (node) {
 				return Predicates.isInlineNode(node) && isRendered(node);
 			}, function (node) {
-				return hasLinebreakingStyle(node) || dom.isEditingHost(node);
+				return hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 			});
 		}
 		if (0 !== textnode.data.substr(offset).search(WSP_FROM_END)) {
 			return true;
 		}
-		return !!traversing.nextNonAncestor(textnode, function (node) {
+		return !!Traversing.nextNonAncestor(textnode, function (node) {
 			return Predicates.isInlineNode(node) && isRendered(node);
 		}, function (node) {
-			return hasLinebreakingStyle(node) || dom.isEditingHost(node);
+			return hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 		});
 	}
 
@@ -1122,7 +1118,7 @@ define([
 	 *         and offset -1 if no next visible character can be found.
 	 */
 	function nextVisibleCharacter(node, offset) {
-		if (!dom.isTextNode(node) || offset === dom.nodeLength(node)) {
+		if (!Dom.isTextNode(node) || offset === Dom.nodeLength(node)) {
 			return {
 				node: null,
 				offset: -1
@@ -1146,25 +1142,25 @@ define([
 	 *
 	 * This test is useful for determining whether a node is suitable to serve
 	 * as a container for range boundary position for the purposes of editing
-	 * content.
+	 * Content.
 	 *
 	 * @param {DOMObject} node
 	 * @return {Boolean}
 	 */
 	function canInsertText(node) {
-		return (dom.isTextNode(node)
-		    || content.allowsNesting(node.nodeName, '#text'))
+		return (Dom.isTextNode(node)
+		    || Content.allowsNesting(node.nodeName, '#text'))
 		    && isRendered(node);
 	}
 
 	function prevNodeFromPosition(node, offset) {
-		return (dom.isAtEnd(node, offset) || dom.isTextNode(node))
-			? (node.lastChild || node)
-			: traversing.backward(dom.nodeAtOffset(node, offset));
+		return (Dom.isAtEnd(node, offset) || Dom.isTextNode(node))
+		     ? (node.lastChild || node)
+		     : Traversing.backward(Dom.nodeAtOffset(node, offset));
 	}
 
 	function nextNodeToFindPosition(start, out_crossedVisualBreak) {
-		return traversing.findForward(
+		return Traversing.findForward(
 			start,
 			/**
 			 * True if the given node can contain text or if it is a void node
@@ -1172,8 +1168,8 @@ define([
 			 */
 			function (node) {
 				return canInsertText(node)
-					|| (Predicates.isVoidNode(node)
-						&& traversing.nextWhile(node, isUnrendered));
+				    || (Predicates.isVoidNode(node)
+				        && Traversing.nextWhile(node, isUnrendered));
 			},
 			function (node) {
 				if (node === start) {
@@ -1182,9 +1178,9 @@ define([
 				if (!out_crossedVisualBreak()) {
 					out_crossedVisualBreak(hasLinebreakingStyle(node));
 				}
-				return dom.isEditingHost(node)
-					|| (node.previousSibling
-					    && dom.isEditingHost(node.previousSibling));
+				return Dom.isEditingHost(node)
+				    || (node.previousSibling
+				        && Dom.isEditingHost(node.previousSibling));
 			}
 		);
 	}
@@ -1205,26 +1201,26 @@ define([
 		if (pos.node) {
 			return pos;
 		}
-		var crossedVisualBreak = fn.outparameter(false);
+		var crossedVisualBreak = Fn.outparameter(false);
 		var next = nextNodeToFindPosition(
 			prevNodeFromPosition(node, offset),
 			crossedVisualBreak
 		);
 		if (!next) {
-			return dom.isEditingHost(node) ? {
+			return Dom.isEditingHost(node) ? {
 				node: node,
-				offset: dom.nodeLength(node)
+				offset: Dom.nodeLength(node)
 			} : {
 				node: node.parentNode,
-				offset: dom.nodeLength(node.parentNode)
+				offset: Dom.nodeLength(node.parentNode)
 			};
 		}
 		if (Predicates.isVoidNode(next)) {
-			var after = traversing.forward(next);
+			var after = Traversing.forward(next);
 			if (Predicates.isVoidNode(after) || Predicates.isInlineNode(after)) {
 				return {
 					node: next.parentNode,
-					offset: dom.nodeIndex(next) + 1
+					offset: Dom.nodeIndex(next) + 1
 				};
 			}
 			next = after;
@@ -1232,7 +1228,7 @@ define([
 		}
 		if (crossedVisualBreak()) {
 			while (next && next.firstChild) {
-				next = traversing.nextWhile(next.firstChild, isUnrendered);
+				next = Traversing.nextWhile(next.firstChild, isUnrendered);
 			}
 			return {
 				node: next,
@@ -1256,7 +1252,7 @@ define([
 	 *         null and offset -1 if no previous visible character can be found.
 	 */
 	function previousVisibleCharacter(node, offset) {
-		if (!dom.isTextNode(node) || 0 === offset) {
+		if (!Dom.isTextNode(node) || 0 === offset) {
 			return {
 				node: null,
 				offset: -1
@@ -1313,16 +1309,16 @@ define([
 
 		var crossedVisualBreak = false;
 
-		var next = (dom.isTextNode(node) || dom.isAtEnd(node, offset))
+		var next = (Dom.isTextNode(node) || Dom.isAtEnd(node, offset))
 		         ? node
-		         : dom.nodeAtOffset(node, offset);
+		         : Dom.nodeAtOffset(node, offset);
 
-		var parents = traversing.childAndParentsUntil(next, dom.isEditingHost);
+		var parents = Traversing.childAndParentsUntil(next, Dom.isEditingHost);
 
-		var landing = traversing.findThrough(
+		var landing = Traversing.findThrough(
 			next,
 			function (node) {
-				return !arrays.contains(parents, node)
+				return !Arrays.contains(parents, node)
 				    && (canInsertText(node) || Predicates.isVoidNode(node));
 			},
 			function (node) {
@@ -1332,9 +1328,9 @@ define([
 				if (!crossedVisualBreak) {
 					crossedVisualBreak = hasLinebreakingStyle(node);
 				}
-				return dom.isEditingHost(node)
-					|| (node.nextSibling
-					    && dom.isEditingHost(node.nextSibling));
+				return Dom.isEditingHost(node)
+				    || (node.nextSibling
+				        && Dom.isEditingHost(node.nextSibling));
 			}
 		);
 
@@ -1346,12 +1342,12 @@ define([
 		}
 
 		if (!crossedVisualBreak) {
-			return previousVisiblePosition(landing, dom.nodeLength(landing));
+			return previousVisiblePosition(landing, Dom.nodeLength(landing));
 		}
 
 		if (landing.lastChild) {
-			landing = traversing.findBackward(
-				traversing.forward(landing.lastChild),
+			landing = Traversing.findBackward(
+				Traversing.forward(landing.lastChild),
 				function (node) {
 					return canInsertText(node) || Predicates.isVoidNode(node);
 				}
@@ -1360,31 +1356,31 @@ define([
 
 		if (Predicates.isVoidNode(landing)) {
 			if (!landing.previousSibling
-				|| Predicates.isVoidNode(landing.previousSibling)) {
+			    || Predicates.isVoidNode(landing.previousSibling)) {
 				return {
 					node: landing.parentNode,
-					offset: dom.nodeIndex(landing)
+					offset: Dom.nodeIndex(landing)
 				};
 			}
 			landing = landing.previousSibling;
 		}
 
-		if (dom.isTextNode(landing)) {
+		if (Dom.isTextNode(landing)) {
 			var boundary = landing.data.search(WSP_FROM_END);
 			return {
 				node: landing,
-				offset: -1 === boundary ? dom.nodeLength(landing) : boundary
+				offset: -1 === boundary ? Dom.nodeLength(landing) : boundary
 			};
 		}
 
 		return {
 			node: landing,
-			offset: dom.nodeLength(landing)
+			offset: Dom.nodeLength(landing)
 		};
 	}
 
 	/**
-	 * Functions for working with HTML content.
+	 * Functions for working with HTML Content.
 	 */
 	var exports = {
 		isUnrendered: isUnrendered,
