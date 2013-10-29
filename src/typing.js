@@ -219,8 +219,7 @@ define([
 	 * Most browsers store the keyCode/charCode in event.which, except
 	 * IE <= 8 which stores it in event.keyCode.
 	 *
-	 * Only the keypress event reliably provides the character
-	 * information.
+	 * Only the keypress event reliably provides the character information.
 	 *
 	 * http://stackoverflow.com/questions/4285627/javascript-keycode-vs-charcode-utter-confusion
 	 * http://unixpapa.com/js/key.html
@@ -231,8 +230,8 @@ define([
 	}
 
 	function applyAction(action, range, event, editor) {
-		// Because an action may cause an exception we prevent the
-		// browser's default action first.
+		// Because an action may cause an exception we prevent the browser's
+		// default action first.
 		event.preventDefault();
 		range = action(range, editor);
 		Ranges.select(range);
@@ -253,9 +252,9 @@ define([
 	/**
 	 * Handles key presses that result in a character to be inserted.
 	 *
-	 * Needs a keypress event, rather than a keydown or keyup event,
-	 * since only the keypress event will have a keyCode (which) that is
-	 * convertible to the correct unicode character.
+	 * Needs a keypress event, rather than a keydown or keyup event, since only
+	 * the keypress event will have a keyCode (which) that is convertible to the
+	 * correct unicode character.
 	 */
 	function press(msg, editor) {
 		var range = msg.range;
@@ -284,6 +283,8 @@ define([
 	};
 
 	exports['down'] = down;
+	exports['press'] = press;
+	exports['actions'] = actions;
 
 	return exports;
 });
