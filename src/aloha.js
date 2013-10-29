@@ -84,6 +84,12 @@ define([
 		Typing.press(msg, editor);
 	});
 
+	Mouse.down(function (msg) {
+		Maps.forEach(editor.editables, function (editable) {
+			editable.overrides = [];
+		});
+	});
+
 	/**
 	 * The Aloha Editor namespace root.
 	 *
