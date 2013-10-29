@@ -101,9 +101,10 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			return -1;
 		}
 
-		var childNodes = node.parentNode.childNodes;
-		var i, len;
-		for (i = 0, len = childNodes.length; i < len; i++) {
+		var i,
+		    childNodes = node.parentNode.childNodes,
+			len = childNodes.length;
+		for (i = 0; i < len; i++) {
 			if (childNodes[i] === node) {
 				return i;
 			}
@@ -883,193 +884,191 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 
 				// decide further actions by node type
 				switch (nodeType) {
-					// found a non-text node
-					case 1:
-						var thisNodeName = this.nodeName;
-						if (prevNode && prevNode.nodeName === thisNodeName) {
-							// found a successive node of same type
+				// found a non-text node
+				case 1:
+					var thisNodeName = this.nodeName;
+					if (prevNode && prevNode.nodeName === thisNodeName) {
+						// found a successive node of same type
 
-							// now we check whether the selection starts or ends in the mother node after the current node
-							if (rangeObject.startContainer === startObject && startOffset > getIndexInParent(this)) {
-								// there will be one less object, so reduce the startOffset by one
-								rangeObject.startOffset -= 1;
-								// set the flag for range modification
-								modifiedRange = true;
-							}
-							if (rangeObject.endContainer === startObject && endOffset > getIndexInParent(this)) {
-								// there will be one less object, so reduce the endOffset by one
-								rangeObject.endOffset -= 1;
-								// set the flag for range modification
-								modifiedRange = true;
-							}
-
-							// merge the contents of this node into the previous one
-							jQuery(prevNode).append(jQuery(this).contents());
-
-							// after merging, we eventually need to cleanup the prevNode again
-							modifiedRange |= that.doCleanup(cleanup, rangeObject, prevNode);
-
-							// remove this node
-							jQuery(this).remove();
-
-						} else {
-							// do the recursion step here
-							modifiedRange |= that.doCleanup(cleanup, rangeObject, this);
-
-							// eventually remove empty elements
-							var removed = false;
-							if (cleanup.removeempty) {
-								if (GENTICS.Utils.Dom.isBlockLevelElement(this) && this.childNodes.length === 0) {
-									//							jQuery(this).remove();
-									removed = true;
-								}
-								if (jQuery.inArray(thisNodeName.toLowerCase(), that.mergeableTags) >= 0 && jQuery(this).text().length === 0 && this.childNodes.length === 0) {
-									//							jQuery(this).remove();
-									removed = true;
-								}
-							}
-
-							// when the current node was not removed, we eventually store it as previous (mergeable) tag
-							if (!removed) {
-								if (cleanup.mergeable
-									? cleanup.mergeable(this)
-									: jQuery.inArray(thisNodeName.toLowerCase(), that.mergeableTags) >= 0) {
-									prevNode = this;
-								} else {
-									prevNode = false;
-								}
-							} else {
-								// now we check whether the selection starts or ends in the mother node of this
-								if (rangeObject.startContainer === this.parentNode && startOffset > getIndexInParent(this)) {
-									// there will be one less object, so reduce the startOffset by one
-									rangeObject.startOffset = rangeObject.startOffset - 1;
-									// set the flag for range modification
-									modifiedRange = true;
-								}
-								if (rangeObject.endContainer === this.parentNode && endOffset > getIndexInParent(this)) {
-									// there will be one less object, so reduce the endOffset by one
-									rangeObject.endOffset = rangeObject.endOffset - 1;
-									// set the flag for range modification
-									modifiedRange = true;
-								}
-
-								// remove this text node
-								jQuery(this).remove();
-
-							}
-						}
-
-						break;
-					// found a text node
-					case 3:
-						// found a text node
-						if (prevNode && prevNode.nodeType === 3 && cleanup.merge) {
-							// the current text node will be merged into the last one, so
-							// check whether the selection starts or ends in the current
-							// text node
-							var prevNodeValue = prevNode.nodeValue,
-								prevNodeValueLength = prevNodeValue.length;
-
-							if (rangeObject.startContainer === this) {
-								// selection starts in the current text node
-
-								// update the start container to the last node
-								rangeObject.startContainer = prevNode;
-
-								// update the start offset
-								rangeObject.startOffset += prevNodeValueLength;
-
-								// set the flag for range modification
-								modifiedRange = true;
-
-							} else if (rangeObject.startContainer === prevNode.parentNode && rangeObject.startOffset === getIndexInParent(prevNode) + 1) {
-								// selection starts right between the previous and current text nodes (which will be merged)
-
-								// update the start container to the previous node
-								rangeObject.startContainer = prevNode;
-
-								// set the start offset
-								rangeObject.startOffset = prevNodeValueLength;
-
-								// set the flag for range modification
-								modifiedRange = true;
-							}
-
-							if (rangeObject.endContainer === this) {
-								// selection ends in the current text node
-
-								// update the end container to be the last node
-								rangeObject.endContainer = prevNode;
-
-								// update the end offset
-								rangeObject.endOffset += prevNodeValueLength;
-
-								// set the flag for range modification
-								modifiedRange = true;
-
-							} else if (rangeObject.endContainer === prevNode.parentNode && rangeObject.endOffset === getIndexInParent(prevNode) + 1) {
-								// selection ends right between the previous and current text nodes (which will be merged)
-
-								// update the end container to the previous node
-								rangeObject.endContainer = prevNode;
-
-								// set the end offset
-								rangeObject.endOffset = prevNodeValueLength;
-
-								// set the flag for range modification
-								modifiedRange = true;
-							}
-
-							// now append the contents of the current text node into the previous
-							prevNode.data += this.data;
-
-							// remove empty text nodes
-						} else if (!(this.nodeValue === '' && cleanup.removeempty)) {
-							prevNode = this;
-							// we are finish here don't delete this node
-							break;
-						}
-
-						// now we check whether the selection starts or ends in the mother node of this
-						if (rangeObject.startContainer === this.parentNode && rangeObject.startOffset > getIndexInParent(this)) {
+						// now we check whether the selection starts or ends in the mother node after the current node
+						if (rangeObject.startContainer === startObject && startOffset > getIndexInParent(this)) {
 							// there will be one less object, so reduce the startOffset by one
-							rangeObject.startOffset = rangeObject.startOffset - 1;
+							rangeObject.startOffset -= 1;
 							// set the flag for range modification
 							modifiedRange = true;
 						}
-						if (rangeObject.endContainer === this.parentNode && rangeObject.endOffset > getIndexInParent(this)) {
+						if (rangeObject.endContainer === startObject && endOffset > getIndexInParent(this)) {
 							// there will be one less object, so reduce the endOffset by one
-							rangeObject.endOffset = rangeObject.endOffset - 1;
+							rangeObject.endOffset -= 1;
 							// set the flag for range modification
 							modifiedRange = true;
 						}
 
-						// remove this text node
+						// merge the contents of this node into the previous one
+						jQuery(prevNode).append(jQuery(this).contents());
+
+						// after merging, we eventually need to cleanup the prevNode again
+						modifiedRange |= that.doCleanup(cleanup, rangeObject, prevNode);
+
+						// remove this node
 						jQuery(this).remove();
 
-						// if this is the last text node in a sequence, we remove any zero-width spaces in the text node,
-						// unless it is the only character
-						var prevNodeNextSibling = prevNode.nextSibling;
-						if (prevNode && (!prevNodeNextSibling || prevNodeNextSibling.nodeType !== 3)) {
-							var pos;
-							var prevNodeData = prevNode.data;
-							var prevNodeDataLength = prevNodeData.length;
-							for (pos = prevNodeDataLength - 1; pos >= 0 && prevNodeDataLength > 1; pos--) {
-								if (prevNodeData.charAt(pos) === '\u200b') {
-									prevNode.deleteData(pos, 1);
-									if (rangeObject.startContainer === prevNode && rangeObject.startOffset > pos) {
-										rangeObject.startOffset--;
-										modifiedRange = true;
-									}
-									if (rangeObject.endContainer === prevNode && rangeObject.endOffset > pos) {
-										rangeObject.endOffset--;
-										modifiedRange = true;
-									}
-								}
+					} else {
+						// do the recursion step here
+						modifiedRange |= that.doCleanup(cleanup, rangeObject, this);
+
+						// eventually remove empty elements
+						var removed = false;
+						if (cleanup.removeempty) {
+							if (GENTICS.Utils.Dom.isBlockLevelElement(this) && this.childNodes.length === 0) {
+								//							jQuery(this).remove();
+								removed = true;
+							}
+							if (jQuery.inArray(thisNodeName.toLowerCase(), that.mergeableTags) >= 0 && jQuery(this).text().length === 0 && this.childNodes.length === 0) {
+								//							jQuery(this).remove();
+								removed = true;
 							}
 						}
 
+						// when the current node was not removed, we eventually store it as previous (mergeable) tag
+						if (!removed) {
+							if (cleanup.mergeable ? cleanup.mergeable(this) : jQuery.inArray(thisNodeName.toLowerCase(), that.mergeableTags) >= 0) {
+								prevNode = this;
+							} else {
+								prevNode = false;
+							}
+						} else {
+							// now we check whether the selection starts or ends in the mother node of this
+							if (rangeObject.startContainer === this.parentNode && startOffset > getIndexInParent(this)) {
+								// there will be one less object, so reduce the startOffset by one
+								rangeObject.startOffset = rangeObject.startOffset - 1;
+								// set the flag for range modification
+								modifiedRange = true;
+							}
+							if (rangeObject.endContainer === this.parentNode && endOffset > getIndexInParent(this)) {
+								// there will be one less object, so reduce the endOffset by one
+								rangeObject.endOffset = rangeObject.endOffset - 1;
+								// set the flag for range modification
+								modifiedRange = true;
+							}
+
+							// remove this text node
+							jQuery(this).remove();
+
+						}
+					}
+
+					break;
+				// found a text node
+				case 3:
+					// found a text node
+					if (prevNode && prevNode.nodeType === 3 && cleanup.merge) {
+						// the current text node will be merged into the last one, so
+						// check whether the selection starts or ends in the current
+						// text node
+						var prevNodeValue = prevNode.nodeValue,
+							prevNodeValueLength = prevNodeValue.length;
+
+						if (rangeObject.startContainer === this) {
+							// selection starts in the current text node
+
+							// update the start container to the last node
+							rangeObject.startContainer = prevNode;
+
+							// update the start offset
+							rangeObject.startOffset += prevNodeValueLength;
+
+							// set the flag for range modification
+							modifiedRange = true;
+
+						} else if (rangeObject.startContainer === prevNode.parentNode && rangeObject.startOffset === getIndexInParent(prevNode) + 1) {
+							// selection starts right between the previous and current text nodes (which will be merged)
+
+							// update the start container to the previous node
+							rangeObject.startContainer = prevNode;
+
+							// set the start offset
+							rangeObject.startOffset = prevNodeValueLength;
+
+							// set the flag for range modification
+							modifiedRange = true;
+						}
+
+						if (rangeObject.endContainer === this) {
+							// selection ends in the current text node
+
+							// update the end container to be the last node
+							rangeObject.endContainer = prevNode;
+
+							// update the end offset
+							rangeObject.endOffset += prevNodeValueLength;
+
+							// set the flag for range modification
+							modifiedRange = true;
+
+						} else if (rangeObject.endContainer === prevNode.parentNode && rangeObject.endOffset === getIndexInParent(prevNode) + 1) {
+							// selection ends right between the previous and current text nodes (which will be merged)
+
+							// update the end container to the previous node
+							rangeObject.endContainer = prevNode;
+
+							// set the end offset
+							rangeObject.endOffset = prevNodeValueLength;
+
+							// set the flag for range modification
+							modifiedRange = true;
+						}
+
+						// now append the contents of the current text node into the previous
+						prevNode.data += this.data;
+
+						// remove empty text nodes
+					} else if (!(this.nodeValue === '' && cleanup.removeempty)) {
+						prevNode = this;
+						// we are finish here don't delete this node
 						break;
+					}
+
+					// now we check whether the selection starts or ends in the mother node of this
+					if (rangeObject.startContainer === this.parentNode && rangeObject.startOffset > getIndexInParent(this)) {
+						// there will be one less object, so reduce the startOffset by one
+						rangeObject.startOffset = rangeObject.startOffset - 1;
+						// set the flag for range modification
+						modifiedRange = true;
+					}
+					if (rangeObject.endContainer === this.parentNode && rangeObject.endOffset > getIndexInParent(this)) {
+						// there will be one less object, so reduce the endOffset by one
+						rangeObject.endOffset = rangeObject.endOffset - 1;
+						// set the flag for range modification
+						modifiedRange = true;
+					}
+
+					// remove this text node
+					jQuery(this).remove();
+
+					// if this is the last text node in a sequence, we remove any zero-width spaces in the text node,
+					// unless it is the only character
+					var prevNodeNextSibling = prevNode.nextSibling;
+					if (prevNode && (!prevNodeNextSibling || prevNodeNextSibling.nodeType !== 3)) {
+						var pos;
+						var prevNodeData = prevNode.data;
+						var prevNodeDataLength = prevNodeData.length;
+						for (pos = prevNodeDataLength - 1; pos >= 0 && prevNodeDataLength > 1; pos--) {
+							if (prevNodeData.charAt(pos) === '\u200b') {
+								prevNode.deleteData(pos, 1);
+								if (rangeObject.startContainer === prevNode && rangeObject.startOffset > pos) {
+									rangeObject.startOffset--;
+									modifiedRange = true;
+								}
+								if (rangeObject.endContainer === prevNode && rangeObject.endOffset > pos) {
+									rangeObject.endOffset--;
+									modifiedRange = true;
+								}
+							}
+						}
+					}
+
+					break;
 				}
 			});
 

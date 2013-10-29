@@ -12,6 +12,39 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.24 - 2013/10/24
+
+- **BUGFIX**: WAI input text is mistaken by the Caption Table
+              Putting the image of WAI inside the input text we make clear that this
+              input text is for WAI text and not for Table Caption. RT#56649
+- **BUGFIX**: Creation of several links or abbreviation is not fill with the same value.
+              When create several links in different paragraphs or item list
+              the value is not set the same for all the links but only for the first
+              in the range selection.
+              Changes were made so several links or abbreviation in the same selection
+              have the same value. RT#55298
+- **BUGFIX**: Table caption is removed every time is deactivated.
+              Table caption is now hidden or shown but not removed,
+              so the original text remains. RT#56649
+- **BUGFIX**: Inputs containing image height/width don't display when image is loaded (ie9)
+              When selecting an image the width and height inputs were not displayed.
+              The problem was that when assigning the value to the input, the jQuery.val function was not
+              working, because the element wasn't associated to the DOM yet.
+- **BUGFIX**: Outline on icons is too big resulting in too little visual difference between enabled or disabled state.
+              The outline when the icon is focused is too big and the user can't distinguish when a button
+              icon is enabled or disabled. By adding box-shadow (same behavior for different browsers)
+              the problem was solved.
+- **BUGFIX**: core: Some performance improvements were made, so the Aloha-editor smartContenthandler is faster
+              in large contents. Improvements of loop-for, jQuery selector and Dom iteration. RT#56619
+- **BUGFIX**: rangy: Change rangy-core configuration property "preferTextRange"
+              to false in order to allow for more performant ways to work with
+              ranges in IE.  Accomodations were taken to ensure that IE 9 would
+              not crash with this flag.
+- **BUGFIX**  commands: Further cleanup will no longer be done after inserting
+              paragraphs since this extra processing was not necessary and very
+              expensive on large content.
+- **BUGFIX**: tables: Remove "width" attribute from copied tables. RT#55759
+
 
 ## 0.23.23 - 2013/10/17
 

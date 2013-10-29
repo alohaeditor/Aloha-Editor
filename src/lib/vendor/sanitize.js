@@ -70,7 +70,9 @@ Sanitize.prototype.clean_node = function(container) {
    * Utility function to check if an element exists in an array
    */
   function _array_index(needle, haystack) {
-	  for (var i = 0, len = haystack.length; i < len; i++) {
+	  var i,
+	      len = haystack.length
+	  for (i = 0; i < len; i++) {
 		  if (haystack[i] === needle)
 			  return i;
 	  }
@@ -78,10 +80,12 @@ Sanitize.prototype.clean_node = function(container) {
   }
 
 	function _merge_arrays_uniq() {
-		var result = [];
-		var uniq_hash = {},
+		var result = [],
+		    uniq_hash = {},
+			i,
+		    len = arguments.length,
 		    arg;
-		for (var i = 0, len = arguments.length; i < len; i++) {
+		for (i = 0; i < len; i++) {
 			arg = arguments[i];
 			if (!arg || !arg.length)
 				continue;
@@ -100,10 +104,12 @@ Sanitize.prototype.clean_node = function(container) {
    * @param elem DOM Node to clean
    */
   function _clean(elem) {
-    var clone;
+    var clone,
+	    i,
+	    len = this.filters.length;
 
     // check whether the elem passes all of the filters
-	  for (var i = 0, len = this.filters.length; i < len; i++) {
+	  for (i = 0; i < len; i++) {
 		  if (!this.filters[i](elem)) {
 			  clone = elem.cloneNode(true);
 			  this.current_element.appendChild(clone);
@@ -139,7 +145,7 @@ Sanitize.prototype.clean_node = function(container) {
   }
   
   function _clean_element(elem) {
-    var parent_element, name, allowed_attributes, attr, attr_name, attr_node, protocols, del, attr_ok;
+    var i, len, parent_element, name, allowed_attributes, attr, attr_name, attr_node, protocols, del, attr_ok;
     var transform = _transform_element.call(this, elem);
     var jQuery = this.jQuery;
     var isIE7 = jQuery.browser.msie && jQuery.browser.version === "7.0";
@@ -149,7 +155,7 @@ Sanitize.prototype.clean_node = function(container) {
     
     // check if element itself is allowed
     parent_element = this.current_element;
-    if(this.allowed_elements[name] || transform.whitelist) {
+    if (this.allowed_elements[name] || transform.whitelist) {
         this.current_element = this.dom.createElement(elem.nodeName);
         parent_element.appendChild(this.current_element);
 
@@ -159,7 +165,8 @@ Sanitize.prototype.clean_node = function(container) {
         this.config.attributes['__ALL__'],
         transform.attr_whitelist
       );
-	    for (var i = 0, len = allowed_attributes.length; i < len; i++) {
+	    len = allowed_attributes.length;
+	    for (i = 0; i < len; i++) {
 		    attr_name = allowed_attributes[i];
 		    attr = elem.attributes[attr_name];
 		    if (attr) {
@@ -210,8 +217,9 @@ Sanitize.prototype.clean_node = function(container) {
 
     // iterate over child nodes
     if(!this.config.remove_all_contents && !this.config.remove_element_contents[name]) {
-	    var childNodes = elem.childNodes;
-	    for (var i = 0, len = childNodes.length; i < len; i++) {
+	    var childNodes = elem.childNodes,
+		    len = childNodes.length;
+	    for (i = 0; i < len; i++) {
 		    _clean.call(this, childNodes[i]);
 	    }
     }
@@ -228,9 +236,13 @@ Sanitize.prototype.clean_node = function(container) {
       attr_whitelist:[],
       node: node,
       whitelist: false
-    }
-    var transform;
-	for (var i = 0, transLength = this.transformers.length; i < transLength; i++) {
+    };
+    var transform,
+	    i,
+	    j,
+	    transLength = this.transformers.length,
+	    len;
+	for (i = 0; i < transLength; i++) {
       transform = this.transformers[i]({
         allowed_elements: this.allowed_elements,
         config: this.config,
@@ -243,7 +255,8 @@ Sanitize.prototype.clean_node = function(container) {
         continue;
       else if(typeof transform == 'object') {
         if(transform.whitelist_nodes && transform.whitelist_nodes instanceof Array) {
-	      for (var j = 0, len = transform.whitelist_nodes.length; j < len; j++) {
+	      len = transform.whitelist_nodes.length
+	      for (j = 0; j < len; j++) {
             if(_array_index(transform.whitelist_nodes[j], this.whitelist_nodes) == -1) {
               this.whitelist_nodes.push(transform.whitelist_nodes[j]);
             }
@@ -263,8 +276,9 @@ Sanitize.prototype.clean_node = function(container) {
   }
 
 
-  var childNodes = container.childNodes;
-  for (var i = 0, len = childNodes.length; i < len; i++) {
+  var childNodes = container.childNodes,
+      i;
+  for (i = 0, len = childNodes.length; i < len; i++) {
     _clean.call(this, childNodes[i]);
   }
   
