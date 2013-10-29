@@ -991,8 +991,7 @@ define([
 		joinTextNode(node, [range]);
 	}
 
-	function adjustRangesAfterTextInsert(node, off, len, insertBefore, ranges) {
-		var boundaries = boundariesFromRanges(ranges);
+	function adjustRangesAfterTextInsert(node, off, len, insertBefore, boundaries, ranges) {
 		boundaries.push([node, off]);
 		boundaries = adjustBoundaries(adjustBoundaryAfterTextInsert, boundaries, node, off, len, insertBefore);
 		var boundary = boundaries.pop();
@@ -1000,8 +999,7 @@ define([
 		return boundary;
 	}
 
-	function adjustRangesAfterNodeInsert(node, insertBefore, ranges) {
-		var boundaries = boundariesFromRanges(ranges);
+	function adjustRangesAfterNodeInsert(node, insertBefore, boundaries, ranges) {
 		boundaries.push([node.parentNode, nodeIndex(node)]);
 		boundaries = adjustBoundaries(adjustBoundaryAfterNodeInsert, boundaries, node, insertBefore);
 		var boundary = boundaries.pop();
@@ -1010,6 +1008,7 @@ define([
 	}
 
 	function insertTextAtBoundary(text, boundary, insertBefore, ranges) {
+		var boundaries = boundariesFromRanges(ranges);
 		// Because empty text nodes are generally not nice and even cause
 		// problems with IE8 (elem.childNodes).
 		if (!text.length) {
@@ -1019,7 +1018,7 @@ define([
 		var offset = boundary[1];
 		if (isTextNode(container) && offset < nodeLength(container)) {
 			container.insertData(offset, text);
-			return adjustRangesAfterTextInsert(container, offset, text.length, insertBefore, ranges);
+			return adjustRangesAfterTextInsert(container, offset, text.length, insertBefore, boundaries, ranges);
 		}
 		var node = nodeAtOffset(container, offset);
 		var atEnd = isAtEnd(container, offset);
@@ -1027,7 +1026,7 @@ define([
 		// node we can just reuse it.
 		if (isTextNode(node)) {
 			node.insertData(0, text);
-			return adjustRangesAfterTextInsert(node, 0, text.length, insertBefore, ranges);
+			return adjustRangesAfterTextInsert(node, 0, text.length, insertBefore, boundaries, ranges);
 		}
 		// Because if the node preceding the insert position is already a text
 		// node we can just reuse it.
@@ -1035,21 +1034,22 @@ define([
 		if (prev && isTextNode(prev)) {
 			var off = nodeLength(prev);
 			prev.insertData(off, text);
-			return adjustRangesAfterTextInsert(prev, off, text.length, insertBefore, ranges);
+			return adjustRangesAfterTextInsert(prev, off, text.length, insertBefore, boundaries, ranges);
 		}
 		// Because if we can't reuse any text nodes, we have to insert a new
 		// one.
 		var textNode = document.createTextNode(text);
 		insert(textNode, node, atEnd);
-		return adjustRangesAfterNodeInsert(textNode, insertBefore, ranges)
+		return adjustRangesAfterNodeInsert(textNode, insertBefore, boundaries, ranges)
 	}
 
 	function insertNodeAtBoundary(node, boundary, insertBefore, ranges) {
+		var boundaries = boundariesFromRanges(ranges);
 		boundary = splitBoundary(boundary, ranges);
 		var ref = nodeAtBoundary(boundary);
 		var atEnd = isBoundaryAtEnd(boundary);
 		insert(node, ref, atEnd);
-		return adjustRangesAfterNodeInsert(node, insertBefore, ranges);
+		return adjustRangesAfterNodeInsert(node, insertBefore, boundaries, ranges);
 	}
 
 	/**
