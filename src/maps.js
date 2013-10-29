@@ -135,10 +135,12 @@ define([], function Maps() {
 		var i;
 		for (i = 0; i < arguments.length; i++) {
 			var src = arguments[i];
-			var key;
-			for (key in src) {
-				if (src.hasOwnProperty(key)) {
-					dest[key] = src[key];
+			if (src) {
+				var key;
+				for (key in src) {
+					if (src.hasOwnProperty(key)) {
+						dest[key] = src[key];
+					}
 				}
 			}
 		}

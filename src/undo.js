@@ -40,13 +40,17 @@ define([
 	 *        A map of options:
 	 *        noMutationObserver - whether or not to use the MutationObserver
 	 *          API to observe changes,
-	 *        combineCharsMax - how many character to combine to a
-	 *          single change.
+	 *        maxCombineChars - how many character to combine to a
+	 *          single change (default 20).
+	 *        maxHistory - how many items to keep in the history
+	 *          (default 1000).
 	 * @return {Undo}
 	 */
 	function Context(elem, opts) {
-		opts = opts || {};
-		opts.combineCharsMax = opts.combineCharsMax || 20;
+		opts = Maps.merge({
+			maxCombineChars: 20,
+			maxHistory: 1000
+		}, opts);
 		var context = {
 			elem: elem,
 			observer: null,
@@ -1062,7 +1066,7 @@ define([
 		    || 1 !== newChange.content.length
 		    || !Dom.isTextNode(oldChange.content[0])
 		    || !Dom.isTextNode(newChange.content[0])
-		    || opts.combineCharsMax <= Dom.nodeLength(oldChange.content[0])
+		    || opts.maxCombineChars <= Dom.nodeLength(oldChange.content[0])
 		    || oldStep[0] + Dom.nodeLength(oldChange.content[0]) !== newStep[0]
 		    || !pathEquals(oldPath.slice(0, oldPath.length - 1),
 		                   newPath.slice(0, newPath.length - 1))) {
@@ -1095,6 +1099,13 @@ define([
 	 * given context, empties the frame's records, and adds the
 	 * changeSets to the history.
 	 *
+	 * The current frame should have the partitionRecords option set to
+	 * true and must be a top-level frame (not a nested frame).
+	 *
+	 * If the current history index is not at the end of the current
+	 * history, for example due to an undo, all changes after the
+	 * current index will be dropped.
+	 *
 	 * @param context {Undo}
 	 * @return {void}
 	 */
@@ -1119,13 +1130,18 @@ define([
 		}
 		context.interrupted = false;
 		history = history.concat(newChangeSets);
+		var maxHistory = context.opts.maxHistory;
+		if (history.length > maxHistory) {
+			history = history.slice(history.length - maxHistory, history.length);
+		}
 		frame.records = [];
 		context.history = history;
 		context.historyIndex = history.length;
 	}
 
 	/**
-	 * Undoes the last changeSet in the history.
+	 * Undoes the last changeSet in the history and decreases the
+	 * history index.
 	 *
 	 * @param context {Undo}
 	 * @param range {Range} will be set to the recorded range before the
@@ -1150,7 +1166,8 @@ define([
 	}
 
 	/**
-	 * Redoes a previously undone changeSet in the history.
+	 * Redoes a previously undone changeSet in the history and
+	 * increments the history index.
 	 *
 	 * @param context {Undo}
 	 * @param range {Range} will be set to the recorded range after the
