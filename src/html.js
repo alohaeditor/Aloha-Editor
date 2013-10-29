@@ -778,7 +778,7 @@ define([
 		return dom.isTextNode(node) && isUnrendered(node);
 	}
 
-	function insertBreakingNodeBefore(boundary, context) {
+	function insertBreakingNodeBeforeBoundary(boundary, context) {
 		var next = boundaries.nextNode(boundary);
 		var name = determineBreakingNode(context, next.parentNode);
 		if (!name) {
@@ -808,7 +808,7 @@ define([
 	 * Inserts a visual line break after the given boundary position.
 	 *
 	 * @param {Array.<Element, offset>} boundary
-	 * @param {!object}
+	 * @param {Object} context
 	 * @param {Array.<Element, offset>}
 	 *        The "forward position".  This is the deepest node that is
 	 *        visually adjacent to the newly created line.
@@ -817,14 +817,13 @@ define([
 		var start = boundaries.nextNode(boundary);
 
 		// Because any nodes which are entirely after the boundary position
-		// don't need to be copied but can be completely moved
-		// }<b>
+		// don't need to be copied but can be completely moved: "}<b>"
 		var movable = boundaries.atEnd(boundary) ? null : start;
 
-		// Because if the boundary is right before a breaking container, The
-		// the default new breaking element should be inserted right before it
+		// Because if the boundary is right before a breaking container, The the
+		// default new breaking element should be inserted right before it.
 		if (movable && isBreakingContainer(movable)) {
-			return insertBreakingNodeBefore(boundary, context);
+			return insertBreakingNodeBeforeBoundary(boundary, context);
 		}
 
 		var ascend = traversing.childAndParentsUntilIncl(
