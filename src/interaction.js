@@ -207,7 +207,6 @@ define([
 
 	function handlerFromEvent(event) {
 		var modifier = event.meta ? event.meta + '+' : '';
-		console.log(event.name, modifier, event.code, event.chr);
 		return (handlers[event.name]
 		    && handlers[event.name][modifier + event.code])
 		    || (event.isTextInput && handlers.keypress.input);
