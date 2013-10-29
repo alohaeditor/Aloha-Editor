@@ -6,6 +6,7 @@ require([
 	'../src/keys',
 	'../src/undo',
 	'../src/ranges',
+	'../src/dom',
 	'../src/crazy-slots'
 ], function (
 	Aloha,
@@ -15,6 +16,7 @@ require([
 	Keys,
 	Undo,
 	Ranges,
+	Dom,
 	CrazySlots
 ) {
 	'use strict';
@@ -41,10 +43,6 @@ require([
 			defaultBlockNodeName: 'div'
 		};
 		Editables.assocIntoEditor(editor, editable);
-		Undo.enter(editable.undoContext, {
-			meta: {type: 'external'},
-			partitionRecords: true
-		});
 		var mutations = [
 			{
 				probability: 10,
@@ -94,10 +92,7 @@ require([
 				}
 			});
 		});
-		CrazySlots.run(editable.elem, mutations, {
-			runs: 10000,
-			wait: 0
-		});
+		CrazySlots.run(editable, mutations);
 	}
 
 	if ('undefined' === typeof aloha) {

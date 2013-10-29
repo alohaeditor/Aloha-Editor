@@ -4,7 +4,19 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['arrays', 'ranges', 'dom', 'boundaries'], function CrazySlots(Arrays, Ranges, Dom, Boundaries) {
+define([
+	'arrays',
+	'ranges',
+	'dom',
+	'boundaries',
+	'undo'
+], function CrazySlots(
+	Arrays,
+	Ranges,
+	Dom,
+	Boundaries,
+	Undo
+) {
 	'use strict';
 
 	function repeat(value, n) {
@@ -62,13 +74,43 @@ define(['arrays', 'ranges', 'dom', 'boundaries'], function CrazySlots(Arrays, Ra
 		);
 	}
 
-	function run(elem, mutations, opts) {
+	function logException(fn) {
+		try {
+			fn();
+		} catch (e) {
+			console.log(e);
+			return true;
+		}
+		return false;
+	}
+	
+	function empty(elem) {
+		Dom.children(elem).forEach(function (child) {
+			elem.removeChild(child);
+		});
+	}
+
+	function replaceChildren(target, source) {
+		empty(target);
+		Dom.children(source).forEach(function (child) {
+			target.appendChild(child);
+		});
+	}
+
+	function run(editable, mutations, opts) {
+		opts = opts || {};
 		var wait = opts.wait || 0;
+		var initialElem = Dom.clone(editable.elem);
+		var maxRuns = (null != opts.runs ? opts.run : Number.POSITIVE_INFINITY);
 		var runs = 0;
 		var timeout;
 		mutations = Arrays.mapcat(mutations, function (mutation) {
 			var probability = mutation.probability;
 			return repeat(mutation, (null != probability ? probability : 1));
+		});
+		Undo.enter(editable.undoContext, {
+			meta: {type: 'external'},
+			partitionRecords: true
 		});
 		function mutate() {
 			if (runs >= opts.runs) {
@@ -80,8 +122,23 @@ define(['arrays', 'ranges', 'dom', 'boundaries'], function CrazySlots(Arrays, Ra
 				= (opts.boundaryProbability
 				   || defaultBoundaryProbability).bind(null, mutation);
 			var distance = deleteRangeDistance.bind(null, mutation.deletesRange);
-			var range = randomRange(elem, boundaryProbability, distance);
-			mutation.mutate(elem, range);
+			var range = randomRange(editable.elem, boundaryProbability, distance);
+			if (opts.continueOnError) {
+				var error = logException(function () {
+					mutation.mutate(editable.elem, range);
+				});
+				if (error) {
+					replaceChildren(editable.elem, Dom.clone(initialElem));
+					editable.undoContext.stack.length = 0;
+					editable.undoContext.frame = null;
+					Undo.enter(editable.undoContext, {
+						meta: {type: 'external'},
+						partitionRecords: true
+					});
+				}
+			} else {
+				mutation.mutate(editable.elem, range);
+			}
 			timeout = window.setTimeout(mutate, wait);
 		}
 		timeout = window.setTimeout(mutate, wait);
