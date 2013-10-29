@@ -212,10 +212,10 @@ define([
 		    || (event.isTextInput && handlers.keypress.input);
 	}
 
-	function handle(event) {
+	function basic(event) {
 		var handler = handlerFromEvent(event);
 		if (!handler) {
-			return;
+			return event;
 		}
 		var range = event.range;
 		if (handler.preventDefault) {
@@ -243,16 +243,25 @@ define([
 				Html.prop(range.commonAncestorContainer);
 			}
 		}
-		Ranges.select(range);
+		return event;
+	}
+
+	function thread() {
+		var needle = arguments[0];
+		var i;
+		var len = arguments.length;
+		for (i = 1; i < len; i++) {
+			needle = arguments[i](needle);
+		}
 	}
 
 	var exports = {
-		handle   : handle,
-		handlers : handlers
+		basic  : basic,
+		thread : thread
 	};
 
-	exports['handle'] = handle;
-	exports['handlers'] = handlers;
+	exports['basic'] = basic;
+	exports['thread'] = thread;
 
 	return exports;
 });

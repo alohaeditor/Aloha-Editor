@@ -72,19 +72,24 @@ define([
 	Events.add(document, 'mousedown', Mouse.onDown);
 	Events.add(document, 'mousemove', Mouse.onMove);
 
-	function editor(event) {
-		Interaction.handle(event);
+	function selectRange(event) {
+		if (event.range) {
+			Ranges.select(event.range);
+		}
+	}
+
+	function editor(msg) {
+		Interaction.thread(
+			Events.create(msg.event, msg.range, editor),
+			Interaction.basic,
+			selectRange
+		);
 	}
 
 	editor.editables = {};
 
-	Keys.on('up down press', function (msg) {
-		editor(Events.create(msg.event, msg.range, editor));
-	});
-
-	Mouse.on('up down press move', function (msg) {
-		editor(Events.create(msg.event, msg.range, editor));
-	});
+	Keys.on('up down press', editor);
+	Mouse.on('up down press move', editor);
 
 	/**
 	 * The Aloha Editor namespace root.
