@@ -614,8 +614,9 @@ define([
 		tree.sort(function (recordA, recordB) {
 			var anchorA = anchorNode(recordA);
 			var anchorB = anchorNode(recordB);
-			// Because a delete's anchor precedes it, an insert with the
-			// same anchor as the del's node will always precede it.
+			// Because a delete's anchor precedes the deleted node, an
+			// insert with the same anchor as the del will always
+			// precede it.
 			if (anchorA === anchorB) {
 				return (DELETE_FLAG & recordB.type) ? -1 : 1;
 			}

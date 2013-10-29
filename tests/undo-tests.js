@@ -107,4 +107,23 @@
 		equal(editable.innerHTML, modifiedEditable.innerHTML);
 	});
 
+	test('order of sequential deletes', function () {
+		var editable = $('#test-editable')[0];
+		$(editable).html('<b></b><i></i><em><strong></strong></em><span></span>');
+		var controlEditable = Dom.clone(editable);
+		var context = Undo.Context(editable);
+		var capturedFrame = Undo.capture(context, {meta: true}, function () {
+			var em = editable.childNodes[2];
+			em.removeChild(em.firstChild);
+			editable.removeChild(em);
+			var i = editable.childNodes[1];
+			editable.removeChild(i);
+		});
+		var changeSet = Undo.changeSetFromFrame(context, capturedFrame);
+		var undoChangeSet = Undo.inverseChangeSet(changeSet);
+		debugger;
+		Undo.applyChangeSet(editable, undoChangeSet);
+		equal(editable.innerHTML, controlEditable.innerHTML);
+	});
+
 }(window.aloha));
