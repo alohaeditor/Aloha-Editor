@@ -7,50 +7,46 @@
 define([
 	'dom',
 	'keys',
+	'maps',
 	'html',
 	'ranges',
 	'editing',
 	'traversing',
 	'boundaries',
 	'functions',
-	'strings',
 	'editables',
 	'undo',
 	'overrides'
 ], function Typing(
 	Dom,
 	Keys,
+	Maps,
 	Html,
 	Ranges,
 	Editing,
 	Traversing,
 	Boundaries,
 	Fn,
-	Strings,
 	Editables,
 	Undo,
 	Overrides
 ) {
 	'use strict';
 
-	function undoable(type, range, editor, fn) {
-		var boundary = Boundaries.start(range);
-		var editable = Editables.fromBoundary(editor, boundary);
-		if (!editable) {
-			return;
-		}
+	function undoable(type, range, editable, fn) {
 		var undoContext = editable.undoContext;
 		Undo.capture(undoContext, {
 			meta: {type: type},
 			oldRange: range
 		}, function () {
-			range = fn(editable);
+			range = fn();
 			return {newRange: range};
 		});
 		return range;
 	}
 
-	function delete_(range, direction, editable) {
+	function delete_(event, direction) {
+		var range = event.range;
 		if (range.collapsed) {
 			range = (
 				direction
@@ -58,233 +54,206 @@ define([
 					: Ranges.expandBackwardToVisiblePosition
 			)(range);
 		}
-		Editing.delete(Ranges.expandToVisibleCharacter(range), editable);
+		Editing.delete(Ranges.expandToVisibleCharacter(range), event.editable);
 		Html.prop(range.commonAncestorContainer);
 		return range;
 	}
 
-	var actions = {};
+	function format(event, format) {
+		Editing.format(event.range, format, true, event.editable);
+		return event.range;
+	}
 
-	actions[Keys.CODES.backspace] = function deleteBackwards(range, editor) {
-		return undoable('delete', range, editor, function (editable) {
-			editable.overrides = [];
-			return delete_(range, false, editable);
-		});
-	};
+	function break_(event, isLinebreak) {
+		Editing.break(event.range, event.editable, isLinebreak);
+		return event.range;
+	}
 
-	actions[Keys.CODES.delete] = function deleteForward(range, editor) {
-		return undoable('delete', range, editor, function (editable) {
-			editor.override = [];
-			return delete_(range, true, editable);
-		});
-	};
-
-	actions[Keys.CODES.enter] = function breakBlock(range, editor) {
-		return undoable('enter', range, editor, function (editable) {
-			Editing.break(
-				range.collapsed ? range : delete_(range, true, editable),
-				editable,
-				false
-			);
-			Html.prop(range.commonAncestorContainer);
-			return range;
-		});
-	};
-
-	actions['shift+' + Keys.CODES.enter] = function breakLine(range, editor) {
-		return undoable('enter', range, editor, function (editable) {
-			Editing.break(
-				range.collapsed ? range : delete_(range, true, editable),
-				editable,
-				true
-			);
-			Html.prop(range.commonAncestorContainer);
-			return range;
-		});
-	};
-
-	actions['ctrl+' + Keys.CODES.undo] = function undo(range, editor) {
-		var editable = Editables.fromBoundary(editor, Boundaries.start(range));
-		if (!editable) {
-			return range;
-		}
-		var undoContext = editable.undoContext;
-		Undo.undo(undoContext, range, [range]);
-		return range;
-	};
-
-	actions['ctrl+shift+' + Keys.CODES.undo] = function redo(range, editor) {
-		var editable = Editables.fromBoundary(editor, Boundaries.start(range));
-		if (!editable) {
-			return range;
-		}
-		var undoContext = editable.undoContext;
-		Undo.redo(undoContext, range, [range]);
-		return range;
-	};
-
-	actions['ctrl+' + Keys.CODES.bold] = function bold(range, editor) {
-		return undoable('bold', range, editor, function (editable) {
-			Editing.format(range, 'bold', true, editable);
-			return range;
-		});
-	};
-
-	actions['ctrl+' + Keys.CODES.italic] = function italic(range, editor) {
-		return undoable('italic', range, editor, function () {
-			Editing.format(range, 'italic', true);
-			return range;
-		});
-	};
-
-	actions.insertText = function insertText(range, text, editor) {
+	function insertText(event) {
+		var editable = event.editable;
+		var range = event.range;
+		var text = event.chr;
 		var boundary = Boundaries.start(range);
-		var editable = Editables.fromBoundary(editor, boundary);
-		if (!editable) {
+
+		if (' ' === text) {
+			var elem = Traversing.upWhile(
+				Boundaries.container(boundary),
+				Dom.isTextNode
+			);
+			var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');
+			if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
+				text = '\xa0';
+			}
+		}
+
+		boundary = Overrides.consume(boundary, editable.overrides);
+		Dom.setRangeFromBoundaries(range, boundary, boundary);
+
+		var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
+		var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
+		var change = Undo.makeInsertChange(insertPath, insertContent);
+
+		Undo.capture(editable.undoContext, {noObserve: true}, function () {
+			Dom.insertTextAtBoundary(text, boundary, true, [range]);
+			return {changes: [change]};
+		});
+
+		return range;
+	}
+
+	function toggleUndo(event, op) {
+		var undoContext = event.editable.undoContext;
+		op(undoContext, event.range, [event.range]);
+		return event.range;
+	}
+
+	var deleteBackwards = {
+		clearOverrides : true,
+		preventDefault : true,
+		arg            : false,
+		undo           : 'delete',
+		mutate         : delete_
+	};
+
+	var deleteForwards = {
+		clearOverrides : true,
+		preventDefault : true,
+		arg            : true,
+		undo           : 'delete',
+		mutate         : delete_
+	};
+
+	var breakBlock = {
+		deleteRange    : true,
+		clearOverrides : true,
+		preventDefault : true,
+		arg            : false,
+		undo           : 'enter',
+		mutate         : break_
+	};
+
+	var breakLine = {
+		deleteRange    : true,
+		clearOverrides : true,
+		preventDefault : true,
+		arg            : true,
+		undo           : 'enter',
+		mutate         : break_
+	};
+
+	var formatBold = {
+		preventDefault : true,
+		arg            : 'bold',
+		undo           : 'bold',
+		mutate         : format
+	};
+
+	var formatItalic = {
+		preventDefault : true,
+		arg            : 'italic',
+		undo           : 'italic',
+		mutate         : format
+	};
+
+	var inputText = {
+		deleteRange    : true,
+		preventDefault : true,
+		undo           : 'typing',
+		mutate         : insertText
+	}
+
+	var undo = {
+		clearOverrides : true,
+		preventDefault : true,
+		arg            : Undo.undo,
+		mutate         : toggleUndo
+	};
+
+	var redo = {
+		preventDefault : true,
+		clearOverrides : true,
+		arg            : Undo.redo,
+		mutate         : toggleUndo
+	};
+
+	var handlers = {
+		keyup     : {},
+		keydown   : {},
+		keypress  : {},
+		mousedown : {}
+	};
+
+	handlers.mousedown[1]                           =
+	handlers.mousedown[2]                           =
+	handlers.mousedown[3]                           =
+	handlers.keydown[Keys.CODES.up]                 =
+	handlers.keydown[Keys.CODES.down]               =
+	handlers.keydown[Keys.CODES.left]               =
+	handlers.keydown[Keys.CODES.right]              = {clearOverrides: true};
+
+	handlers.keydown[Keys.CODES.backspace]          = deleteBackwards;
+	handlers.keydown[Keys.CODES.delete]             = deleteForwards;
+
+	handlers.keydown[Keys.CODES.enter]              = breakBlock;
+	handlers.keydown['shift+' + Keys.CODES.enter]   = breakLine;
+
+	handlers.keypress['ctrl+' + Keys.CODES.bold]    = formatBold;
+	handlers.keypress['ctrl+' + Keys.CODES.italic]  = formatItalic;
+
+	handlers.keypress.input                         = inputText;
+
+	handlers.keyup['ctrl+' + Keys.CODES.undo]       = undo;
+	handlers.keyup['ctrl+shift+' + Keys.CODES.undo] = redo;
+
+	function handlerFromEvent(event) {
+		var modifier = event.meta ? event.meta + '+' : '';
+		console.log(event.name, modifier, event.code, event.chr);
+		return (handlers[event.name]
+		    && handlers[event.name][modifier + event.code])
+		    || (event.isTextInput && handlers.keypress.input);
+	}
+
+	function handle(event) {
+		var handler = handlerFromEvent(event);
+		if (!handler) {
 			return;
 		}
-		var undoContext = editable.undoContext;
-		Undo.advanceHistory(undoContext);
-		Undo.capture(undoContext, {
-			meta: {type: 'typing'},
-			oldRange: range
-		}, function () {
-			if (!range.collapsed) {
-				range = delete_(range, true, editable);
-				boundary = Boundaries.start(range);
-			}
-			if (' ' === text) {
-				var elem = Traversing.upWhile(Boundaries.container(boundary), Dom.isTextNode);
-				var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');
-				if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
-					text = '\xa0';
+		var range = event.range;
+		if (handler.preventDefault) {
+			event.event.preventDefault();
+		}
+		if (handler.clearOverrides) {
+			Maps.forEach(
+				event.editable ? [event.editable] : event.editor.editables,
+				function (editable) {
+					editable.overrides = [];
 				}
+			);
+		}
+		if (handler.deleteRange && range && !range.collapsed) {
+			delete_(event, false);
+		}
+		if (handler.mutate) {
+			if (handler.undo) {
+				undoable(handler.undo, range, event.editable, function () {
+					handler.mutate(event, handler.arg);
+					Html.prop(range.commonAncestorContainer);
+				});
+			} else {
+				handler.mutate(event, handler.arg);
+				Html.prop(range.commonAncestorContainer);
 			}
-
-			boundary = Overrides.consume(boundary, editable.overrides);
-			Dom.setRangeFromBoundaries(range, boundary, boundary);
-
-			var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
-			var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
-			var change = Undo.makeInsertChange(insertPath, insertContent);
-			function capture(context) {
-				return context.capture();
-			}
-			Undo.capture(undoContext, {noObserve: true}, function () {
-				Dom.insertTextAtBoundary(text, boundary, true, [range]);
-				return {changes: [change]};
-			});
-			return {newRange: range};
-		});
-		return range;
-	};
-
-	actions[Keys.CODES.f1] =
-	actions[Keys.CODES.f11] =
-	actions[Keys.CODES.tab] =
-	actions[Keys.CODES.alt] =
-	actions[Keys.CODES.shift] =
-	actions[Keys.CODES.escape] =
-	actions[Keys.CODES.control] =
-	actions[Keys.CODES.capslock] = Fn.identity;
-
-	function isTextInsertEvent(event) {
-		if (event.altKey
-		    || event.ctrlKey
-		    || event.metaKey
-		    || !event.which) {
-			return false;
 		}
-		var chr = String.fromCharCode(event.which);
-		return !Strings.isControlCharacter(chr);
-	}
-
-	function actionFromEvent(event) {
-		var which = 'keypress' === event.type ? String.fromCharCode(event.which) : event.which;
-		var meta = '';
-		if (event.altKey && (Keys.CODES.alt !== which)) {
-			meta += 'alt+';
-		}
-		if (event.ctrlKey && (Keys.CODES.control !== which)) {
-			meta += 'ctrl+';
-		}
-		if (event.shiftKey && (Keys.CODES.shift !== which)) {
-			meta += 'shift+';
-		}
-		return actions[meta + which];
-		
-	}
-
-	/**
-	 * Most browsers store the keyCode/charCode in event.which, except
-	 * IE <= 8 which stores it in event.keyCode.
-	 *
-	 * Only the keypress event reliably provides the character information.
-	 *
-	 * http://stackoverflow.com/questions/4285627/javascript-keycode-vs-charcode-utter-confusion
-	 * http://unixpapa.com/js/key.html
-	 */
-	function charCode(event) {
-		var which = event.which;
-		return null != which ? which : event.keyCode;
-	}
-
-	function applyAction(action, range, event, editor) {
-		// Because an action may cause an exception we prevent the browser's
-		// default action first.
-		event.preventDefault();
-		range = action(range, editor);
 		Ranges.select(range);
 	}
 
-	function down(msg, editor) {
-		var range = msg.range;
-		var event = msg.event;
-		if (!msg.range) {
-			return;
-		}
-		var action = actionFromEvent(event);
-		if (action) {
-			applyAction(action, range, event, editor);
-		}
-	}
-
-	/**
-	 * Handles key presses that result in a character to be inserted.
-	 *
-	 * Needs a keypress event, rather than a keydown or keyup event, since only
-	 * the keypress event will have a keyCode (which) that is convertible to the
-	 * correct unicode character.
-	 */
-	function press(msg, editor) {
-		var range = msg.range;
-		var event = msg.event;
-		if (!range) {
-			return;
-		}
-		var action = actionFromEvent(event, range, editor);
-		if (action) {
-			applyAction(action, range, event, editor);
-			return;
-		}
-		if (isTextInsertEvent(event)) {
-			var text = String.fromCharCode(event.which);
-			range = actions.insertText(range, text, editor);
-			Ranges.select(range);
-			event.preventDefault();
-			return;
-		}
-	}
-
 	var exports = {
-		down: down,
-		press: press,
-		actions: actions
+		handle   : handle,
+		handlers : handlers
 	};
 
-	exports['down'] = down;
-	exports['press'] = press;
-	exports['actions'] = actions;
+	exports['handle'] = handle;
+	exports['handlers'] = handlers;
 
 	return exports;
 });

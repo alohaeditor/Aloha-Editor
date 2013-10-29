@@ -91,17 +91,24 @@ define([
 		}
 	}
 
+	var CODES = {
+		'left'   : 1,
+		'middle' : 2,
+		'right'  : 3
+	};
+
 	/**
 	 * Functions for working with mouse events.
 	 */
 	var exports = {
-		on   : on,
-		up   : up,
-		down : down,
-		move : move,
-		onUp   : onUp,
-		onDown : onDown,
-		onMove : onMove
+		on          : on,
+		up          : up,
+		down        : down,
+		move        : move,
+		onUp        : onUp,
+		onDown      : onDown,
+		onMove      : onMove,
+		CODES       : CODES
 	};
 
 	exports['on']     = exports.on;

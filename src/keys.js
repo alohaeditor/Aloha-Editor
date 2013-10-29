@@ -4,19 +4,18 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
+ * @reference:
+ * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
+ *
  * @todo:
  * consider https://github.com/nostrademons/keycode.js/blob/master/keycode.js
  */
 define([
-	'events',
 	'pubsub',
-	'ranges',
-	'misc'
+	'ranges'
 ], function Keys(
-	events,
 	pubsub,
-	ranges,
-	misc
+	ranges
 ) {
 	'use strict';
 
@@ -33,7 +32,7 @@ define([
 		'alt'       : 18,
 		'backspace' : 8,
 		'capslock'  : 20,
-		'control'   : 17,
+		'ctrl'      : 17,
 		'delete'    : 46,
 		'enter'     : 13,
 		'escape'    : 27,
@@ -44,7 +43,11 @@ define([
 		'tab'       : 9,
 		'undo'      : 90,
 		'bold'      : 66,
-		'italic'    : 73
+		'italic'    : 73,
+		'left'      : 37,
+		'up'        : 38,
+		'right'     : 39,
+		'down'      : 40
 	};
 
 	/**
@@ -90,6 +93,14 @@ define([
 
 	/**
 	 * Publishes messages on the keypress event.
+	 *
+	 * Fires when a character is being inserted, and obeys the setting of
+	 * keyboard typing delays/repeating.
+	 *
+	 * Will repeat while the trigger key is depressed.
+	 *
+	 * Keypress event will have a keyCode (which) that is convertible to the
+	 * correct unicode character.
 	 *
 	 * @param {Event} event
 	 */
@@ -150,24 +161,19 @@ define([
 		}
 	}
 
-	function code(event) {
-		return event.keyCode || event.which;
-	}
-
 	/**
 	 * Functions for working with key events.
 	 */
 	var exports = {
-		on      : on,
-		up      : up,
-		down    : down,
-		press   : press,
-		onUp    : onUp,
-		onDown  : onDown,
-		onPress : onPress,
-		code    : code,
-		ARROWS  : ARROWS,
-		CODES   : CODES
+		on          : on,
+		up          : up,
+		down        : down,
+		press       : press,
+		onUp        : onUp,
+		onDown      : onDown,
+		onPress     : onPress,
+		ARROWS      : ARROWS,
+		CODES       : CODES
 	};
 
 	exports['on']      = exports.on;
@@ -177,7 +183,6 @@ define([
 	exports['onUp']    = exports.onUp;
 	exports['onDown']  = exports.onDown;
 	exports['onPress'] = exports.onPress;
-	exports['code']    = exports.code;
 	exports['ARROWS']  = exports.ARROWS;
 	exports['CODES']   = exports.CODES;
 

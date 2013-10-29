@@ -239,14 +239,13 @@ define([
 	 * @param {Object} msg
 	 */
 	function calculateOffset(event, range) {
-		var keycode = keys.code(event);
 		switch (event.type) {
 		case 'keypress':
-			return offsetAtKeyPress(keycode, range);
+			return offsetAtKeyPress(event.which, range);
 		case 'keydown':
-			return offsetAtKeyDown(keycode, range);
+			return offsetAtKeyDown(event.which, range);
 		case 'keyup':
-			return offsetAtKeyUp(keycode, range);
+			return offsetAtKeyUp(event.which, range);
 		default:
 			return calculate(caretOffset(range), 0, 0);
 		}

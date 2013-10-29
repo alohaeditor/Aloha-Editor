@@ -59,7 +59,7 @@ define([
 	Ranges,
 	Strings,
 	Traversing,
-	Typing,
+	Interaction,
 	Undo,
 	Editables
 ) {
@@ -72,22 +72,18 @@ define([
 	Events.add(document, 'mousedown', Mouse.onDown);
 	Events.add(document, 'mousemove', Mouse.onMove);
 
-	var editor = {
-		editables: {}
-	};
+	function editor(event) {
+		Interaction.handle(event);
+	}
 
-	Keys.down(function (msg) {
-		Typing.down(msg, editor);
+	editor.editables = {};
+
+	Keys.on('up down press', function (msg) {
+		editor(Events.create(msg.event, msg.range, editor));
 	});
 
-	Keys.press(function (msg) {
-		Typing.press(msg, editor);
-	});
-
-	Mouse.down(function (msg) {
-		Maps.forEach(editor.editables, function (editable) {
-			editable.overrides = [];
-		});
+	Mouse.on('up down press move', function (msg) {
+		editor(Events.create(msg.event, msg.range, editor));
 	});
 
 	/**
@@ -133,7 +129,7 @@ define([
 	aloha['events'] = Events;
 	aloha['fn'] = Fn;
 	aloha['html'] = Html;
-	aloha['typing'] = Typing;
+	aloha['interaction'] = Interaction;
 	aloha['keys'] = Keys;
 	aloha['mouse'] = Mouse;
 	aloha['maps'] = Maps;
