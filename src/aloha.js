@@ -71,9 +71,9 @@ define([
 		}
 	}
 
-	function editor(msg) {
+	function editor(event) {
 		Interaction.thread(
-			Events.create(msg.event, msg.range, editor),
+			Events.create(event, editor),
 			Interaction.basic,
 			setSelection
 		);
@@ -81,15 +81,12 @@ define([
 
 	editor.editables = {};
 
-	Events.add(document, 'keyup',     Keys.onUp);
-	Events.add(document, 'keydown',   Keys.onDown);
-	Events.add(document, 'keypress',  Keys.onPress);
-	Events.add(document, 'mouseup',   Mouse.onUp);
-	Events.add(document, 'mousedown', Mouse.onDown);
-	Events.add(document, 'mousemove', Mouse.onMove);
-
-	Keys.on('up down press', editor);
-	Mouse.on('up down press move', editor);
+	Events.add(document, 'keyup',     editor);
+	Events.add(document, 'keydown',   editor);
+	Events.add(document, 'keypress',  editor);
+	Events.add(document, 'mouseup',   editor);
+	Events.add(document, 'mousedown', editor);
+	Events.add(document, 'mousemove', editor);
 
 	/**
 	 * The Aloha Editor namespace root.

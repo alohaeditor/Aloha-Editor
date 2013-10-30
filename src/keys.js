@@ -10,13 +10,7 @@
  * @todo:
  * consider https://github.com/nostrademons/keycode.js/blob/master/keycode.js
  */
-define([
-	'pubsub',
-	'ranges'
-], function Keys(
-	pubsub,
-	ranges
-) {
+define([], function Keys() {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
@@ -53,7 +47,7 @@ define([
 	/**
 	 * Arrow keys
 	 *
-	 * @type {Object}
+	 * @type {object<number, string>}
 	 */
 	var ARROWS = {
 		37 : 'left',
@@ -62,129 +56,13 @@ define([
 		40 : 'down'
 	};
 
-	/**
-	 * Publishes messages on the keyup event.
-	 *
-	 * @param {Event} event
-	 */
-	function onUp(event) {
-		var message = {
-			event: event,
-			code: event.keyCode,
-			range: ranges.get()
-		};
-		pubsub.publish('aloha.key.up.' + event.keyCode, message);
-	}
-
-	/**
-	 * Publishes messages on the keydown event.
-	 *
-	 * @param {Event} event
-	 */
-	function onDown(event) {
-		var message = {
-			event: event,
-			code: event.keyCode,
-			range: ranges.get()
-		};
-		var called = {};
-		pubsub.publish('aloha.key.down.' + event.keyCode, message, called);
-	}
-
-	/**
-	 * Publishes messages on the keypress event.
-	 *
-	 * Fires when a character is being inserted, and obeys the setting of
-	 * keyboard typing delays/repeating.
-	 *
-	 * Will repeat while the trigger key is depressed.
-	 *
-	 * Keypress event will have a keyCode (which) that is convertible to the
-	 * correct unicode character.
-	 *
-	 * @param {Event} event
-	 */
-	function onPress(event) {
-		var message = {
-			event: event,
-			code: event.keyCode,
-			range: ranges.get()
-		};
-		pubsub.publish('aloha.key.press.' + event.keyCode, message);
-	}
-
-	function subscribe(channel, code, callback) {
-		if ('function' === typeof code) {
-			pubsub.subscribe('aloha.key.' + channel, code);
-		} else {
-			pubsub.subscribe(
-				'aloha.key.' + channel + '.' + (CODES[code] || code),
-				callback
-			);
-		}
-	}
-
-	/**
-	 * Publishes messages on the keydown event.
-	 *
-	 * @param {Function(Object)} callback
-	 */
-	function up(code, callback) {
-		subscribe('up', code, callback);
-	}
-
-	/**
-	 * Publishes messages on the keyup event.
-	 *
-	 * @param {Function(Object)} callback
-	 */
-	function down(code, callback) {
-		subscribe('down', code, callback);
-	}
-
-	/**
-	 * Publishes messages on the keypress event.
-	 *
-	 * @param {Function(Object)} callback
-	 */
-	function press(code, callback) {
-		subscribe('press', code, callback);
-	}
-
-	function on(channels, callback) {
-		if ('string' === typeof channels) {
-			channels = channels.split(' ');
-		}
-		var i;
-		for (i = 0; i < channels.length; i++) {
-			subscribe(channels[i], callback);
-		}
-	}
-
-	/**
-	 * Functions for working with key events.
-	 */
 	var exports = {
-		on          : on,
-		up          : up,
-		down        : down,
-		press       : press,
-		onUp        : onUp,
-		onDown      : onDown,
-		onPress     : onPress,
-		ARROWS      : ARROWS,
-		CODES       : CODES
+		ARROWS : ARROWS,
+		CODES  : CODES
 	};
 
-	exports['on']      = exports.on;
-	exports['up']      = exports.up;
-	exports['down']    = exports.down;
-	exports['press']   = exports.press;
-	exports['onUp']    = exports.onUp;
-	exports['onDown']  = exports.onDown;
-	exports['onPress'] = exports.onPress;
-	exports['ARROWS']  = exports.ARROWS;
-	exports['CODES']   = exports.CODES;
+	exports['ARROWS'] = exports.ARROWS;
+	exports['CODES']  = exports.CODES;
 
 	return exports;
 });

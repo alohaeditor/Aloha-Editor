@@ -5,15 +5,17 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'keys',
+	'ranges',
 	'strings',
 	'editables',
-	'boundaries',
-	'keys'
+	'boundaries'
 ], function Events(
+	Keys,
+	Ranges,
 	Strings,
 	Editables,
-	Boundaries,
-	Keys
+	Boundaries
 ) {
 	'use strict';
 
@@ -100,7 +102,8 @@ define([
 		return meta.join('+')
 	}
 
-	function create(event, range, editor) {
+	function create(event, editor) {
+		var range = (event instanceof KeyboardEvent) ? Ranges.get() : null;
 		var editable = range
 		             ? Editables.fromBoundary(editor, Boundaries.start(range))
 		             : null;
@@ -117,18 +120,15 @@ define([
 		};
 	}
 
-
-	/**
-	 * Functions for working with DOM events.
-	 */
 	var exports = {
 		add    : add,
 		remove : remove,
 		create : create
 	};
 
-	exports['add'] = exports.add;
+	exports['add']    = exports.add;
 	exports['remove'] = exports.remove;
+	exports['create'] = exports.create;
 
 	return exports;
 });
