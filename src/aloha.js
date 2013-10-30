@@ -65,14 +65,7 @@ define([
 ) {
 	'use strict';
 
-	Events.add(document, 'keyup',     Keys.onUp);
-	Events.add(document, 'keydown',   Keys.onDown);
-	Events.add(document, 'keypress',  Keys.onPress);
-	Events.add(document, 'mouseup',   Mouse.onUp);
-	Events.add(document, 'mousedown', Mouse.onDown);
-	Events.add(document, 'mousemove', Mouse.onMove);
-
-	function selectRange(event) {
+	function setSelection(event) {
 		if (event.range) {
 			Ranges.select(event.range);
 		}
@@ -82,11 +75,18 @@ define([
 		Interaction.thread(
 			Events.create(msg.event, msg.range, editor),
 			Interaction.basic,
-			selectRange
+			setSelection
 		);
 	}
 
 	editor.editables = {};
+
+	Events.add(document, 'keyup',     Keys.onUp);
+	Events.add(document, 'keydown',   Keys.onDown);
+	Events.add(document, 'keypress',  Keys.onPress);
+	Events.add(document, 'mouseup',   Mouse.onUp);
+	Events.add(document, 'mousedown', Mouse.onDown);
+	Events.add(document, 'mousemove', Mouse.onMove);
 
 	Keys.on('up down press', editor);
 	Mouse.on('up down press move', editor);
