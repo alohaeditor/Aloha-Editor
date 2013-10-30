@@ -4,7 +4,7 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['arrays', 'maps', 'dom', 'functions', 'traversing', 'undo'], function Undo(Arrays, Maps, Dom, Fn, Traversing, Undo) {
+define(['arrays', 'maps', 'dom', 'functions', 'traversing', 'undo'], function Editables(Arrays, Maps, Dom, Fn, Traversing, Undo) {
 	'use strict';
 	
 	function fromElem(editor, elem) {
