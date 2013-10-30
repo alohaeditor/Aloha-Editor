@@ -46,6 +46,9 @@ module.exports = function (grunt) {
 		},
 		docular: {
 			docular_partial_home: 'docs/home.html',
+			docular_partial_navigation: false,
+			docular_partial_footer: false,
+			docular_partial_group_index: false,
 			docular_webapp_target : "build/docs",
 				groups: [
 					{
@@ -54,13 +57,124 @@ module.exports = function (grunt) {
 						groupIcon: 'icon-book',
 							sections: [
 								{
+									id: "arrays",
+									title: "Arrays API",
+									showSource: true,
+									scripts: [
+										"src/arrays.js"
+										]
+								},
+								{
+									id: "boundary-markers",
+									title: "BoundaryMarkers API",
+									showSource: true,
+									scripts: [
+										"src/boundary-markers.js"
+										]
+								},
+								{
+									id: "browser",
+									title: "Browser API",
+									showSource: true,
+									scripts: [
+										"src/browser.js"
+										]
+								},
+								{
+									id: "colors",
+									title: "Colors API",
+									showSource: true,
+									scripts: [
+										"src/colors.js"
+										]
+								},
+								{
+									id: "content",
+									title: "Content API",
+									showSource: true,
+									scripts: [
+										"src/content.js"
+										]
+								},
+								{
+									id: "cursors",
+									title: "Cursor API",
+									showSource: true,
+									scripts: [
+										"src/cursors.js"
+										]
+								},
+								{
+									id: "domtoxhtml",
+									title: "DOM to XHTML API",
+									showSource: true,
+									scripts: [
+										"src/dom-to-xhtml.js"
+										]
+								},
+								/*{
 									id: "dom",
-									title: "Aloha Editor DOM API",
-									showSource: false,
+									title: "DOM API",
+									showSource: true,
 									scripts: [
 										"src/dom.js"
-										],
-									rank: {}
+										]
+								},*/
+								{
+									id: "editing",
+									title: "Editing API",
+									showSource: true,
+									scripts: [
+										"src/editing.js"
+										]
+								},
+								{
+									id: "ephemera",
+									title: "Ephemera API",
+									showSource: true,
+									scripts: [
+										"src/ephemera.js"
+										]
+								},
+								{
+									id: "events",
+									title: "Events API",
+									showSource: true,
+									scripts: [
+										"src/events.js"
+										]
+								},
+								{
+									id: "functions",
+									title: "Functions API",
+									showSource: true,
+									scripts: [
+										"src/functions.js"
+										]
+								},
+								/*{
+									id: "html",
+									title: "HTML API",
+									showSource: true,
+									scripts: [
+										"src/html.js"
+										]
+								},*/
+								{
+									id: "keys",
+									title: "Keys API",
+									showSource: true,
+									scripts: [
+										"src/keys.js"
+										]
+								},
+								{
+									id: "maps",
+									title: "Maps API",
+									showSource: true,
+									scripts: [
+										"src/maps.js"
+										]
 								},
 							]
 					},

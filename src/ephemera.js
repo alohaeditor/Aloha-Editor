@@ -14,6 +14,20 @@
  *       content - similar to make clean, but for single elements to reduce
  *       overhead.
  */
+
+
+/**
+ * @doc module
+ * @name ephemera
+ * @description
+ *
+ * ## Ephemeral Utilities
+ *
+ * This module houses utilities that are
+ * used for clean up the DOM.
+ *
+ */
+
 define([
 	'strings',
 	'trees',
@@ -81,6 +95,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ephemera:classes
+	 * @description
+	 *
 	 * Registers ephemeral classes.
 	 *
 	 * An ephemeral class is a non-content class that will be pruned from the
@@ -110,6 +128,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ephemera:attributes
+	 * @description
+	 *
 	 * Registers ephemeral attributes by attribute name.
 	 *
 	 * Similar to classes() except applies to entire attributes instead of
@@ -127,6 +149,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ephemera:ephemera
+	 * @description
+	 *
 	 * Provides access to the global ephemera registry.
 	 *
 	 * If the given argument is not null, sets the global ephemera registry to
@@ -186,6 +212,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ephemera:markElement
+	 * @description
+	 *
 	 * Marks an element as ephemeral.
 	 *
 	 * The element will be completely removed when the prune function is called
@@ -201,6 +231,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ephemera:markAttr
+	 * @description
+	 *
 	 * Marks the attribute of an element as ephemeral.
 	 *
 	 * The attribute will be removed from the element when the prune function is
@@ -228,6 +262,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ephemera:markWrapper
+	 * @description
+	 *
 	 * Marks an element as a ephemeral, excluding subnodes.
 	 *
 	 * The element will be removed when the prune function is called on it, but
@@ -255,6 +293,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ephemera:markFiller
+	 * @description
+	 *
 	 * Marks an element as ephemeral, excluding subnodes.
 	 *
 	 * Adds the class 'aloha-ephemera-filler' to the given element.
@@ -291,6 +333,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ephemera:isAttrEphemeral
+	 * @description
+	 *
 	 * Determines whether the given attribute of the given element is ephemeral
 	 * according to the given emap.
 	 *
@@ -398,6 +444,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ephemera:
+	 * @description
+	 *
 	 * Prunes the given element of all ephemeral data.
 	 *
 	 * Elements marked with Ephemera.markElement() will be removed.

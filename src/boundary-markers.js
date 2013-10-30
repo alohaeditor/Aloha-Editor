@@ -1,3 +1,21 @@
+/* boundery-markers.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php
+ */
+
+/**
+ * @doc module
+ * @name boundary-markers
+ * @description
+ *
+ * ## Boundery Marker Utilities
+ *
+ * This module houses utilities that are
+ * used for for bounder markers.
+ *
+ */
 define([
 	'dom',
 	'traversing',
@@ -20,9 +38,13 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.boundery-markers:insert
+	 * @description
+	 *
 	 * Insert selection markers at the given range.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 */
 	function insert(range) {
 		var leftMarkerChar  = (3 === range.startContainer.nodeType ? '[' : '{');
@@ -43,11 +65,15 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.boundery-markers:extract
+	 * @description
+	 *
 	 * Set the selection based on selection markers found in the content inside
 	 * of `rootElem`.
 	 *
-	 * @param {DOMObject} rootElem
-	 * @param {Range} range
+	 * @param {DOMObject} rootElem root element
+	 * @param {Range} range given range
 	 */
 	function extract(rootElem, range) {
 		var markers = ['[', '{', '}', ']'];
@@ -150,10 +176,15 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.boundery-markers:hint
+	 * @description
+	 *
 	 * Returns a string with boundary markers inserted into the representation
 	 * of the DOM to indicate the span of the given range.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
+	 * @return {String} boundery markers inserted into the DOM representation
 	 */
 	function hint(range) {
 		var container = range.commonAncestorContainer;

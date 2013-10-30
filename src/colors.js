@@ -1,3 +1,21 @@
+/* colors.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ */
+
+/**
+ * @doc module
+ * @name colors
+ * @description
+ *
+ * ## Color Utilities
+ *
+ * This module houses utilities that are
+ * used for for color related operations.
+ *
+ */
 define([
 	'dom',
 	'ranges',
@@ -56,10 +74,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.colors:hex
+	 * @description
+	 *
 	 * Given a color string will normalize it to a hex color string.
 	 *
-	 * @param {String} value
-	 * @return {String}
+	 * @param {String} value color string
+	 * @return {String} HEX color string
 	 */
 	function hex(value) {
 		var color = value.match(COLOR_PREFIX);
@@ -95,7 +117,7 @@ define([
 	/**
 	 * Gets the style of the start container of the given range.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 * @param {String} property
 	 * @return {String} Style value
 	 */
@@ -108,9 +130,13 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.colors:getTextColor
+	 * @description
+	 *
 	 * Gets the text color at the given range.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 * @return {String} Style color string
 	 */
 	function getTextColor(range) {
@@ -118,19 +144,27 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.colors:setTextColor
+	 * @description
+	 *
 	 * Sets the text color at the given range.
 	 *
-	 * @param {Range} range
-	 * @param {String} color
+	 * @param {Range} range given range
+	 * @param {String} color given color
 	 */
 	function setTextColor(range, color) {
 		editing.format(range, 'color', color, isColorEqual);
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.colors:unsetTextColor
+	 * @description
+	 *
 	 * Removes the text color at the given range.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 */
 	function unsetTextColor(range) {
 		var editable = ranges.getNearestEditingHost(range);
@@ -140,9 +174,13 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.colors:getBackgroundColor
+	 * @description
+	 *
 	 * Gets the background color at the given range.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 * @return {String} Style color string
 	 */
 	function getBackgroundColor(range) {
@@ -150,19 +188,27 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.colors:setBackgroundColor
+	 * @description
+	 *
 	 * Sets the background color at the given range.
 	 *
-	 * @param {Range} range
-	 * @param {String} color
+	 * @param {Range} range given range
+	 * @param {String} color given color
 	 */
 	function setBackgroundColor(range, color) {
 		editing.format(range, 'background-color', color, isColorEqual);
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.colors:unsetBackgroundColor
+	 * @description
+	 *
 	 * Removes the background color at the given range.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 */
 	function unsetBackgroundColor(range) {
 		var editable = ranges.getNearestEditingHost(range);

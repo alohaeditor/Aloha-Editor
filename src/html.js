@@ -4,6 +4,18 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name html
+ * @description
+ *
+ * ## HTML Utilities
+ *
+ * This module houses utilities that are
+ * used for working with HTML content.
+ *
+ */
 define([
 	'dom',
 	'cursors',
@@ -151,6 +163,10 @@ define([
 	};
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isBlockType
+	 * @description
+	 *
 	 * Similar to hasBlockStyle() except relies on the nodeName of the given
 	 * node which works for attached as well as and detached nodes.
 	 *
@@ -164,6 +180,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isInlineType
+	 * @description
+	 *
 	 * Similar to hasInlineStyle() in the same sense as isBlockType() is similar
 	 * to hasBlockStyle()
 	 *
@@ -177,6 +197,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isVoidType
+	 * @description
+	 *
 	 * Check whether the given node is a void element type.
 	 *
 	 * @param {DOMObject} node
@@ -187,6 +211,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isTextLevelSemanticType
+	 * @description
+	 *
 	 * Check whether the given node is a text-level semantic element type.
 	 *
 	 * @param {DOMObject} node
@@ -197,6 +225,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:hasBlockStyle
+	 * @description
+	 *
 	 * Checks whether the given node is rendered with block style.
 	 *
 	 * A block node is either an Element whose "display" property does not have
@@ -227,6 +259,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:hasInlineStyle
+	 * @description
+	 *
 	 * Checks whether the given node is rendered with inline style.
 	 *
 	 * An inline node is a node that is not a block node.
@@ -243,6 +279,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isLinebreakingNode
+	 * @description
+	 *
 	 * Returns true for nodes that introduce linebreaks.
 	 */
 	function isLinebreakingNode(node) {
@@ -251,6 +291,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isWhiteSpacePreserveStyle
+	 * @description
+	 *
 	 * Checks whether the given string represents a whitespace preservation
 	 * style property.
 	 *
@@ -264,6 +308,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isUnrenderedWhitespaceNoBlockCheck
+	 * @description
+	 *
 	 * Returns true if the given node is unrendered whitespace, with the caveat
 	 * that it only examines the given node and not any siblings.  An additional
 	 * check is necessary to determine whether the node occurs after/before a
@@ -302,6 +350,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isUnrenderedAtPoint
+	 * @description
+	 *
 	 * Returns true if the node at point is unrendered, with the caveat that it
 	 * only examines the node at point and not any siblings.  An additional
 	 * check is necessary to determine whether the whitespace occurrs
@@ -315,6 +367,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:skipUnrenderedToEndOfLine
+	 * @description
+	 *
 	 * Tries to move the given point to the end of the line, stopping to the
 	 * left of a br or block node, ignoring any unrendered nodes. Returns true
 	 * if the point was successfully moved to the end of the line, false if some
@@ -336,6 +392,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:skipUnrenderedToEndOfLine
+	 * @description
+	 *
 	 * Tries to move the given point to the start of the line, stopping to the
 	 * right of a br or block node, ignoring any unrendered nodes. Returns true
 	 * if the point was successfully moved to the start of the line, false if
@@ -373,6 +433,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:normalizeBoundary
+	 * @description
+	 *
 	 * Tries to move the given boundary to the start of line, skipping over any
 	 * unrendered nodes, or if that fails to the end of line (after a br element
 	 * if present), and for the last line in a block, to the very end of the
@@ -411,6 +475,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isUnrenderedWhitespace
+	 * @description
+	 *
 	 * Returns true if the given node is unrendered whitespace.
 	 *
 	 * @param {DOMObject} node
@@ -428,6 +496,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isEmpty
+	 * @description
+	 *
 	 * Checks whether the given DOM element is rendered empty or not.
 	 *
 	 * @param {DOMObject} elem
@@ -453,6 +525,10 @@ define([
 	};
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isStyleInherited
+	 * @description
+	 *
 	 * TODO complete the list of inherited/notInheritedStyles
 	 *
 	 * @param {String} styleName
@@ -463,6 +539,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isControlCharacter
+	 * @description
+	 *
 	 * Returns true if the given character is a control character. Control
 	 * characters are usually not rendered if they are inserted into the DOM.
 	 * Returns false for whitespace 0x20 (which may or may not be rendered see
@@ -594,6 +674,10 @@ define([
 	var WSP_CHARACTERS_FROM_END   = new RegExp('[' + wspChars + ']+$');
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isWhitespaces
+	 * @description
+	 *
 	 * Checks whether or not a given text node consists of only sequence of
 	 * white space characters as defined by W3 specification:
 	 *
@@ -607,6 +691,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isZeroWidthCharacters
+	 * @description
+	 *
 	 * Checks whether or not a given text node consists of only sequence of
 	 * zero-width characters.
 	 *
@@ -618,6 +706,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isWhitespaceOrZeroWidthCharacters
+	 * @description
+	 *
 	 * Checks whether or not a given text node consists of only sequence of
 	 * zero-width characters or whitespace characters.
 	 *
@@ -629,6 +721,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isTerminalSibling
+	 * @description
+	 *
 	 * Checks whether the given node positioned at either extremity of it's
 	 * sibling linked list.
 	 *
@@ -644,6 +740,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isAdjacentToBlock
+	 * @description
+	 *
 	 * Checks whether the given node is next to a block level elemnt.
 	 *
 	 * @param {DOMObject} node
@@ -654,6 +754,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isUnrenderedNode
+	 * @description
+	 *
 	 * Checks whether the given node is visually rendered according to HTML5
 	 * specification.
 	 *
@@ -697,6 +801,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:isVisuallyAdjacent
+	 * @description
+	 *
 	 * Determine whether node `left` is visually adjacent to `right`.
 	 *
 	 * In the following example, <p>, <i>, and "left" are all visually adjacent
@@ -792,6 +900,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:createTransferPivot
+	 * @description
+	 *
 	 * Returns an object containing the properties `start` and `move`.
 	 *
 	 * `start` a node that is *visually* (ignoring any unrendered nodes
@@ -848,6 +960,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:cannotMove
+	 * @description
+	 *
 	 * Whether the given node can be removed.
 	 *
 	 * @private
@@ -860,6 +976,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.html:
+	 * @description
+	 *
 	 * Removes the visual line break between the adjacent nodes `above` and
 	 * `below` by moving the nodes from `below` to above.
 	 *

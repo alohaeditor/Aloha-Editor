@@ -6,6 +6,19 @@
  *
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
+
+/**
+ * @doc module
+ * @name domtoxhtml
+ * @description
+ *
+ * ## DOM to XHTML Utilities
+ *
+ * This module houses utilities that are
+ * used for DOM to XHTML operations.
+ *
+ */
+
 define([
 	'dom',
 	'ephemera'
@@ -327,6 +340,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.domtoxhtml:contentsToXhtml
+	 * @description
+	 *
 	 * Serializes a number of DOM nodes in an array-like object to an XHTML
 	 * string.
 	 *
@@ -359,6 +376,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.domtoxhtml:nodeToXhtml
+	 * @description
+	 *
 	 * Serializes a DOM node to an XHTML string.
 	 *
 	 * Beware that the serialization method will generate XHTML as close as

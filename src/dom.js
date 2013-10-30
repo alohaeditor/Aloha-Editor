@@ -18,6 +18,7 @@
  * Note, if you do not define the module using @doc module
  * and the @name with the module id, then this page won't exist!!
  */
+
 define([
 	'maps',
 	'arrays',
@@ -63,10 +64,9 @@ define([
 
 	/**
 	 * @doc function
-	 * @name aloha.DOM:isTextNode
-	 * @param {DOMObject} node the DOM node
-	 * @return {Boolean} `true` if `node` is a text node
+	 * @name aloha.dom:isTextNode
 	 * @description
+     *
 	 * Returns `true` if `node` is a text node.
 	 *
 	 * Here is some example code:
@@ -77,12 +77,18 @@ define([
 	 *     }
 	 * }
 	 * ```
+	 * @param {DOMObject} node the DOM node
+	 * @return {Boolean} `true` if `node` is a text node
 	 */
 	function isTextNode(node) {
 		return Nodes.TEXT === node.nodeType;
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:moveNextAll
+	 * @description
+	 *
 	 * Like insertBefore, inserts firstChild into parent before refChild, except
 	 * also inserts all the following siblings of firstChild.
 	 *
@@ -114,6 +120,10 @@ define([
 	var Serializer = window.XMLSerializer && new window.XMLSerializer();
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:outerHtml
+	 * @description
+	 *
 	 * Gets the serialized HTML that describes the given DOM element and its
 	 * innerHTML.
 	 *
@@ -136,6 +146,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:attrNames
+	 * @description
+	 *
 	 * Retrieves the names of all attributes from the given elmenet.
 	 *
 	 * Correctly handles the case that IE7 and IE8 have approx 70-90
@@ -178,6 +192,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:getAttr
+	 * @description
+	 *
 	 * Get's the value of the given element's specified attribute.
 	 *
 	 * @param {DOMObject} elem
@@ -192,6 +210,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:setAttr
+	 * @description
+	 *
 	 * Set's the value of the given element's specified attribute.
 	 *
 	 * @param {DOMObject} elem
@@ -207,6 +229,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:removeAttr
+	 * @description
+	 *
 	 * Removes the specified attribute from the given element.
 	 *
 	 * @param {DOMObject} elem
@@ -220,6 +246,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:attrs
+	 * @description
+	 *
 	 * Gets the attributes of the given element.
 	 *
 	 * See attrNames() for an edge case on IE7.
@@ -250,6 +280,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:indexByClassHaveList
+	 * @description
+	 *
 	 * Like indexByClass() but operates on a list of elements instead.  The
 	 * given list may be a NodeList, HTMLCollection, or an array.
 	 *
@@ -287,6 +321,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:getElementsByClassNames
+	 * @description
+	 *
 	 * Returns a set of elements which have the given class names.
 	 *
 	 * @param {Array[String]} classes
@@ -315,6 +353,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:indexByClass
+	 * @description
+	 *
 	 * Indexes descendant elements based on the individual classes in
 	 * the class attribute.
 	 *
@@ -366,6 +408,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:indexByName
+	 * @description
+	 *
 	 * Indexes descendant elements based on elem.nodeName.
 	 *
 	 * Based on these observations:
@@ -421,6 +467,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:numChildren
+	 * @description
+	 *
 	 * Calculates the number of child nodes contained in the given DOM element.
 	 *
 	 * elem.childNodes.length is unreliable because "IE up to 8 does not count
@@ -440,6 +490,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:nodeLength
+	 * @description
+	 *
 	 * Determines the length of the given DOM node.
 	 *
 	 * @param {DOMObject} node
@@ -456,6 +510,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:nodeIndex
+	 * @description
+	 *
 	 * Calculates the positional index of the given node inside of its parent
 	 * element.
 	 *
@@ -473,6 +531,10 @@ define([
 
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:isAtStart
+	 * @description
+	 *
 	 * Whether or not the given node and offset describes a position before the
 	 * first child node or character in its container.
 	 *
@@ -493,6 +555,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:isAtEnd
+	 * @description
+	 *
 	 * Whether or not the given node and offset describes a position after the
 	 * last child node or character in its container.
 	 *
@@ -512,6 +578,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:
+	 * @description
+	 *
 	 * @param node if a text node, should have a parent node.
 	 */
 	function nodeAtOffset(node, offset) {
@@ -524,6 +594,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:wrap
+	 * @description
+	 *
 	 * Wraps node `node` in given node `wrapper`.
 	 *
 	 * @param {DOMObject} node
@@ -535,6 +609,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:insert
+	 * @description
+	 *
 	 * Inserts node `node` before `ref`, unless `atEnd` is truthy, in which case
 	 * `node` is inserted at the end of `ref` children nodes.
 	 *
@@ -551,6 +629,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:remove
+	 * @description
+	 *
 	 * Detaches the given node.
 	 *
 	 * @param {DOMObjec} node
@@ -560,6 +642,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:merge
+	 * @description
+	 *
 	 * Merges all contents of `right` into `left` by appending them to the end
 	 * of `left`, and then removing `right`.
 	 *
@@ -586,6 +672,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:replaceShallow
+	 * @description
+	 *
 	 * Replaces the given node with a new node while preserving the contents of
 	 * the given node.
 	 *
@@ -605,6 +695,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:contains
+	 * @description
+	 *
 	 * Returns `true` if node `b` is a descendant of node `a`, `false`
 	 * otherwise.
 	 *
@@ -643,6 +737,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:splitTextNode
+	 * @description
+	 *
 	 * Splits the given text node at the given offset.
 	 *
 	 * @TODO: could be optimized with insertData() so only a single text node is
@@ -785,6 +883,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:splitTextNodeAdjustRange
+	 * @description
+	 *
 	 * Splits the given text node at the given offset and, if the given
 	 * range happens to have start or end containers equal to the given
 	 * text node, adjusts it such that start and end position will point
@@ -824,6 +926,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:splitTextContainers
+	 * @description
+	 *
 	 * Splits text containers in the given range.
 	 *
 	 * @param {Range} range
@@ -887,6 +993,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:joinTextNodeAdjustRange
+	 * @description
+	 *
 	 * Joins the given node with its adjacent sibling.
 	 *
 	 * @param {DOMElement} A text node
@@ -904,6 +1014,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:removeShallow
+	 * @description
+	 *
 	 * Removes the given node while keeping it's content intact.
 	 *
 	 * @param {DOMObject} node
@@ -915,6 +1029,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:removePreservingRanges
+	 * @description
+	 *
 	 * Removes the given node while maintaing the given ranges.
 	 *
 	 * @param {DOMObject} node
@@ -960,6 +1078,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:removePreservingRange
+	 * @description
+	 *
 	 * Removes the given node while maintaing the given range.
 	 *
 	 * @param {DOMObject} node
@@ -987,6 +1109,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:removeShallowPreservingBoundaries
+	 * @description
+	 *
 	 * Does a shallow removal of the given node (see removeShallow()), while
 	 * preserving the range boundary points.
 	 *
@@ -999,6 +1125,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:cloneShallow
+	 * @description
+	 *
 	 * Returns a shallow clone of the given node.
 	 *
 	 * @param {DOMObject} node
@@ -1010,6 +1140,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:setStyle
+	 * @description
+	 *
 	 * Sets a style on the given element by modifying its style attribute.
 	 */
 	function setStyle(node, name, value) {
@@ -1021,6 +1155,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:getStyle
+	 * @description
+	 *
 	 * Gets a style from the given element's style attribute.
 	 * Note that this is different from the computed/inherited style.
 	 *
@@ -1038,6 +1176,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:getComputedStyle
+	 * @description
+	 *
 	 * Gets the computed/inherited style of the given node.
 	 *
 	 * @param {DOMObject} elem
@@ -1064,6 +1206,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:removeStyle
+	 * @description
+	 *
 	 * Removes the given style property from the given DOM element.
 	 *
 	 * @param {DOMObject} elem
@@ -1103,6 +1249,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:hasAttrs
+	 * @description
+	 *
 	 * Checks whether or not the given node contains one or more attributes.
 	 *
 	 * @param {DOMObject} node
@@ -1113,6 +1263,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:offset
+	 * @description
+	 *
 	 * Calculare the offset of the given node inside the document.
 	 *
 	 * @param {DOMObjec} node
@@ -1168,6 +1322,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:addClass
+	 * @description
+	 *
 	 * Adds one or more class names from the give node.
 	 *
 	 * @param {DOMObject} node
@@ -1179,6 +1337,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:removeClass
+	 * @description
+	 *
 	 * Remove one or more class names from the given node.
 	 *
 	 * @param {DOMObject} node
@@ -1190,6 +1352,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:hasClass
+	 * @description
+	 *
 	 * Checks whether the given node has the specified class.
 	 *
 	 * @param {DOMObject} node
@@ -1204,6 +1370,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:isEditingHost
+	 * @description
+	 *
 	 * Checks whether the given node is content editable.  An editing host is a
 	 * node that is either an Element with a contenteditable attribute set to
 	 * the true state, or the Element child of a Document whose designMode is
@@ -1227,6 +1397,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:isEditable
+	 * @description
+	 *
 	 * Checks whether the given element is editable.
 	 *
 	 * @param {DOMObject} node
@@ -1243,6 +1417,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.dom:getEditingHost
+	 * @description
+	 *
 	 * Checks whether the given element is an editing host.
 	 *
 	 * @param {DOMObject} node

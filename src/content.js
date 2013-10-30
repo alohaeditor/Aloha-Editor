@@ -4,6 +4,19 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name content
+ * @description
+ *
+ * ## Content Utilities
+ *
+ * This module houses utilities that are
+ * used for content interaction.
+ *
+ */
+
 define([], function Content() {
 	'use strict';
 
@@ -494,6 +507,10 @@ define([], function Content() {
 	};
 
 	/**
+	 * @doc function
+	 * @name aloha.content:allowsNesting
+	 * @description
+	 *
 	 * Checks whether the node name `outer` is allowed to contain in a node with
 	 * the node name `inner` as a direct descendant based on the HTML5
 	 * specification.

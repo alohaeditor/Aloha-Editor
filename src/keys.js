@@ -4,6 +4,19 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name keys
+ * @description
+ *
+ * ## working with key events
+ *
+ * This module houses utilities that are
+ * used for working with key events.
+ *
+ */
+
 define([
 	'events',
 	'pubsub',
@@ -101,9 +114,13 @@ define([
 	events.add(document, 'keyup', onKeyUpOnDocument);
 
 	/**
+	 * @doc function
+	 * @name aloha.keys:down
+	 * @description
+	 *
 	 * Publishes messages on the keyup event.
 	 *
-	 * @param {Function(object)} callback
+	 * @param {Function(object)} callback a callback function
 	 */
 	function down(code, callback) {
 		if (typeof code === 'function') {
@@ -114,9 +131,13 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.keys:up
+	 * @description
+	 *
 	 * Publishes messages on the keydown event.
 	 *
-	 * @param {Function(object)} callback
+	 * @param {Function(object)} callback a callback function
 	 */
 	function up(code, callback) {
 		if (typeof code === 'function') {
@@ -127,9 +148,13 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.keys:press
+	 * @description
+	 *
 	 * Publishes messages on the keypress event.
 	 *
-	 * @param {Function(object)} callback
+	 * @param {Function(object)} callback a callback function
 	 */
 	function press(code, callback) {
 		if (typeof code === 'function') {
@@ -139,6 +164,13 @@ define([
 		}
 	}
 
+	/**
+	 * @doc function
+	 * @name aloha.keys:code
+	 * @description
+	 *
+	 * which keyCode is used
+	 */
 	function code(event) {
 		return event.keyCode || event.which;
 	}

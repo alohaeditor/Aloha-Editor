@@ -4,6 +4,19 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  */
+
+/**
+ * @doc module
+ * @name browser
+ * @description
+ *
+ * ## Browser Utilities
+ *
+ * This module houses utilities that are
+ * used for for browser specific properties.
+ *
+ */
+
 define([], function Browser() {
 	'use strict';
 

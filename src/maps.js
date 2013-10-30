@@ -4,6 +4,19 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name maps
+ * @description
+ *
+ * ## Maps Utilities
+ *
+ * This module houses utilities that are
+ * used to work with maps (plain old objects).
+ *
+ */
+
 define([], function Maps() {
 	'use strict';
 
@@ -12,6 +25,10 @@ define([], function Maps() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.maps:isEmpty
+	 * @description
+	 *
 	 * Checks whether the given object has no own or inherited properties.
 	 *
 	 * @param {!Object} obj
@@ -30,6 +47,10 @@ define([], function Maps() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.maps:fillKeys
+	 * @description
+	 *
 	 * Fills the given map with the given keys mapped to the given value.
 	 *
 	 * @param {Object} map
@@ -51,12 +72,16 @@ define([], function Maps() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.maps:fillTuples
+	 * @description
+	 *
 	 * Fills the given map with entries from the given tuples.
 	 *
 	 * @param {Object} map
 	 *        The given map will have one entry added for each item in the given
 	 *        array.
-	 * @param {Array[Array[String, *]]}tuples
+	 * @param {Array[Array[String, *]]} tuples
 	 *        An array of [key, value] tuples. Javascript maps can only contain
 	 *        string keys, so the keys must be strings or or they will be cast
 	 *        to string.
@@ -74,9 +99,13 @@ define([], function Maps() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.maps:keys
+	 * @description
+	 *
 	 * Returns an array of the map's keys.
 	 *
-	 * @param {Object} map
+	 * @param {Object} map given map
 	 * @return {Array}
 	 *         The set of keys in `map`.
 	 */
@@ -92,6 +121,10 @@ define([], function Maps() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.maps:forEach
+	 * @description
+	 *
 	 * For each mapping, calls `cb(value, key, map)`.
 	 *
 	 * Emulates ECMAScript edition 5 Array.forEach.
@@ -109,6 +142,10 @@ define([], function Maps() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.maps:merge
+	 * @description
+	 *
 	 * Merges one or more maps.
 	 * Merging happens from left to right, which is useful for example
 	 * when merging a number of given options with default options:

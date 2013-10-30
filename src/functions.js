@@ -4,6 +4,19 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  */
+
+/**
+ * @doc module
+ * @name functions
+ * @description
+ *
+ * ## Function Utilities
+ *
+ * This module houses utilities that are
+ * used to work with functions.
+ *
+ */
+
 define([], function Functions() {
 	'use strict';
 
@@ -12,10 +25,14 @@ define([], function Functions() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.functions:identity
+	 * @description
+	 *
 	 * Returns its single argument.
 	 * Useful for composition when some default behaviour is needed.
 	 *
-	 * @param {*} arg
+	 * @param {*} arg given argument
 	 * @return {*}
 	 *         The given argument `arg`.
 	 */
@@ -24,6 +41,10 @@ define([], function Functions() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.functions:noop
+	 * @description
+	 *
 	 * Does nothing.
 	 * A noop function.
 	 */
@@ -31,6 +52,10 @@ define([], function Functions() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.functions:returnTrue
+	 * @description
+	 *
 	 * Always returns `true`.
 	 *
 	 * @return {Boolean}
@@ -41,6 +66,10 @@ define([], function Functions() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.functions:returnFalse
+	 * @description
+	 *
 	 * Always returns `false`.
 	 *
 	 * @return {Boolean}
@@ -51,12 +80,16 @@ define([], function Functions() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.functions:complement
+	 * @description
+	 *
 	 * Generates the complete function for `fn`.
 	 * The complement function will return the opposite boolean result when
 	 * called with the same arguments as the given `fn` function.
 	 *
-	 * @param {Function:Boolean} fn
-	 * @return {Function:Boolean}
+	 * @param {Function:Boolean} fn given function
+	 * @return {Function:Boolean} complete function
 	 */
 	function complement(fn) {
 		return function () {
@@ -65,11 +98,15 @@ define([], function Functions() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.functions:bind
+	 * @description
+	 *
 	 * Returns a function which will compute the value of calling `fn` with
 	 * `thisArg` bound to the the `this` variable.
 	 *
-	 * @param {Function} fn
-	 * @param {Object} thisArg
+	 * @param {Function} fn given function
+	 * @param {Object} thisArg given argument
 	 * @return {Function}
 	 *         A function that, when invoked, will call `fn` with `thisArg` as
 	 *         this, and return the return value.
@@ -84,7 +121,11 @@ define([], function Functions() {
 	}
 
 	/**
-	 * Creates a bound variable and returns the closure which can be use to get
+	 * @doc function
+	 * @name aloha.functions:outparameter
+	 * @description
+	 *
+	 * Creates a bound variable and returns the closure which can be used to get
 	 * and set the value of it as a free variable.
 	 *
 	 * This construct can be used to as a convenient way to simulate generic out
@@ -97,6 +138,7 @@ define([], function Functions() {
 	 * @param {*} value
 	 *        The initial value that the enclosed variable should hold.
 	 * @return {Function(*):*}
+	          closure of variable
 	 */
 	function outparameter(value) {
 		var variable = value;

@@ -19,6 +19,19 @@
  *      while it should probably be
  *      <p>{<b>some</br>text</b>}<br/></p>
  */
+
+/**
+ * @doc module
+ * @name editing
+ * @description
+ *
+ * ## Editing Utilities
+ *
+ * This module houses utilities that are
+ * used for content editing.
+ *
+ */
+
 define([
 	'dom',
 	'traversing',
@@ -402,6 +415,7 @@ define([
 			point.node = wrapper;
 		}
 	}
+
 
 	function wrap(node, wrapper, leftPoint, rightPoint) {
 		if (!content.allowsNesting(wrapper.nodeName, node.nodeName)) {
@@ -979,6 +993,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.editing:wrap
+	 * @description
+	 *
 	 * Ensures the given range is wrapped by elements with a given nodeName.
 	 *
 	 * @param {Range} liveRange The range of the current selection.
@@ -1022,10 +1040,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.editing:format
+	 * @description
+	 *
 	 * Ensures the given range is wrapped by elements that have a given
 	 * CSS style set.
 	 *
-	 * @param styleName a CSS style name.
+	 * @param {String} styleName a CSS style name.
 	 *        Please note that not-inherited styles currently may (or
 	 *        may not) cause undesirable results.  See also
 	 *        html.isStyleInherited().
@@ -1034,7 +1056,7 @@ define([
 	 *        non-clearable ancestor ("text-decoration: none" doesn't do
 	 *        anything as the underline will be drawn by the ancestor).
 	 *
-	 * @param opts all options supported by wrapElem() as well as the following:
+	 * @param {Object} opts all options supported by wrapElem() as well as the following:
 	 *        createWrapper - a function that takes a style value and
 	 *        returns a new empty wrapper node that has the style value
 	 *        applied.
@@ -1168,9 +1190,13 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.editing:split
+	 * @description
+	 *
 	 * Splits the ancestors above the given range's start and end points.
 	 *
-	 * @param opts a map of options (all optional):
+	 * @param {Object} opts a map of options (all optional):
 	 *
 	 *        clone - a function that clones a given element node
 	 *        shallowly and returns the cloned node.
@@ -1240,6 +1266,12 @@ define([
 		return liveRange;
 	}
 
+    /**
+     * @doc function
+	 * @name aloha.editing:remove
+	 * @description
+	 *
+    */
 	function remove(liveRange) {
 		fixupRange(liveRange, function (range, left, right) {
 			var remove = function (node) {

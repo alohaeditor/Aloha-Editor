@@ -4,6 +4,19 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name events
+ * @description
+ *
+ * ## Event Utilities
+ *
+ * This module houses utilities that are
+ * used for event handling.
+ *
+ */
+
 define([], function Events() {
 	'use strict';
 
@@ -12,6 +25,10 @@ define([], function Events() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.events:add
+	 * @description
+	 *
 	 * Registers an event listener to fire the given callback when a specified
 	 * event is triggered on the given object.
 	 *
@@ -43,6 +60,10 @@ define([], function Events() {
 	}());
 
 	/**
+	 * @doc function
+	 * @name aloha.events:remove
+	 * @description
+	 *
 	 * Detaches the specified event callback from the given event.
 	 *
 	 * @todo: Implement

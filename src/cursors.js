@@ -4,6 +4,19 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name cursors
+ * @description
+ *
+ * ## Cursor Utilities
+ *
+ * This module houses utilities that are
+ * used for cursor interaction.
+ *
+ */
+
 define(['dom'], function Position(dom) {
 	'use strict';
 
@@ -23,6 +36,10 @@ define(['dom'], function Position(dom) {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.cursors:create
+	 * @description
+	 *
 	 * Creates a cursor instance.
 	 *
 	 * A cursor has the added utility over other iteration methods of iterating
@@ -36,20 +53,24 @@ define(['dom'], function Position(dom) {
 	 *        The container in which the cursor is in.
 	 * @param {Boolean} atEnd
 	 *        Whether or not the cursor is at the end of the container.
-	 * @return {Cursor}
+	 * @return {Cursor} cursor instance
 	 */
 	function create(node, atEnd) {
 		return new Cursor(node, atEnd);
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.cursors:createFromBoundary
+	 * @description
+	 *
 	 * Creates a new cursor from the given container and offset.
 	 *
 	 * @param {DOMElement} container
 	 *        If a text node, should have a parent node.
 	 * @param {Number} offset
 	 *        If container is a text node, the offset will be ignored.
-	 * @return {Cursor}
+	 * @return {Cursor} cursor instance
 	 */
 	function createFromBoundary(container, offset) {
 		return create(
@@ -196,8 +217,8 @@ define(['dom'], function Position(dom) {
 	/**
 	 * Sets the start boundary of a given range from the given range position.
 	 *
-	 * @param {Cursor} pos
-	 * @param {Range} range
+	 * @param {Cursor} pos given cursor position
+	 * @param {Range} range given range
 	 * @return {Range}
 	 *         The modified range.
 	 */
@@ -213,7 +234,7 @@ define(['dom'], function Position(dom) {
 	/**
 	 * Sets the end boundary of a given range from the given range position.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 * @param {Cursor} pos
 	 * @return {Range}
 	 *         The given range, having been modified.
@@ -228,12 +249,16 @@ define(['dom'], function Position(dom) {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.cursors:setToRange
+	 * @description
+	 *
 	 * Sets the startContainer/startOffset and endContainer/endOffset boundary
 	 * points of the given range, based on the given start and end Cursors.
 	 *
-	 * @param {Range} range
-	 * @param {Cursor} start
-	 * @param {Cursor} end
+	 * @param {Range} range given range
+	 * @param {Cursor} start given cursor start position
+	 * @param {Cursor} end given cursor end position
 	 * @return {Range}
 	 *         The given range, having had its boundary points modified.
 	 */

@@ -4,10 +4,26 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name arrays
+ * @description
+ *
+ * ## Array Utilities
+ *
+ * This module houses utilities that are
+ * used for Array manipulation.
+ *
+ */
 define([], function Arrays() {
 	'use strict';
 
 	/**
+	 * @doc function
+	 * @name aloha.arrays:sortUnique
+	 * @description
+	 *
 	 * Implements unique() using native sort().
 	 *
 	 * @param {Array} a
@@ -46,6 +62,10 @@ define([], function Arrays() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.arrays:equal
+	 * @description
+	 *
 	 * Does a shallow compare of two arrays.
 	 *
 	 * @param {Array} a
@@ -85,9 +105,13 @@ define([], function Arrays() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.arrays:contains
+	 * @description
+	 *
 	 * Returns true if the given Array `xs` contains the value `x`.
 	 *
-	 * @param {Array} xs
+	 * @param {Array} xs DOM nodes
 	 * @param {*} x
 	 *        A value to search for in the given array.
 	 * @return {Boolean}
@@ -98,11 +122,15 @@ define([], function Arrays() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.arrays:intersect
+	 * @description
+	 *
 	 * Returns all items in the array `xs` that are also contained in array
 	 * `zs`.
 	 *
-	 * @param {Array} xs
-	 * @param {Array} zs
+	 * @param {Array} xs DOM nodes
+	 * @param {Array} zs DOM nodes
 	 * @return {Array}
 	 *         The intersection of the sets `xs` and `zs`.
 	 */
@@ -113,9 +141,13 @@ define([], function Arrays() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.arrays:last
+	 * @description
+	 *
 	 * Returns the last item in the given Array.
 	 *
-	 * @param {Array} xs
+	 * @param {Array} xs DOM nodes
 	 * @return {*}
 	 *         Last item in xs, or null if the given array is empty.
 	 */
@@ -124,10 +156,15 @@ define([], function Arrays() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.arrays:second
+	 * @description
+	 *
 	 * Returns the second item in the given array.
 	 *
-	 * @param {Array} xs
+	 * @param {Array} xs DOM nodes
 	 * @return {*}
+	 *          Second item in xs, or null if the given array is empty.
 	 */
 	function second(xs) {
 		return xs[1];
