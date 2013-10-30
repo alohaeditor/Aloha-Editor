@@ -104,6 +104,7 @@ define([
 		var maxRuns = (null != opts.runs ? opts.run : Number.POSITIVE_INFINITY);
 		var runs = 0;
 		var timeout;
+		var lastLog = +new Date();
 		mutations = Arrays.mapcat(mutations, function (mutation) {
 			var probability = mutation.probability;
 			return repeat(mutation, (null != probability ? probability : 1));
@@ -140,6 +141,10 @@ define([
 				mutation.mutate(editable.elem, range);
 			}
 			timeout = window.setTimeout(mutate, wait);
+			if (opts.log && 1000 < +new Date() - lastLog) {
+				lastLog = +new Date();
+				console.log('runs: ' + runs);
+			}
 		}
 		timeout = window.setTimeout(mutate, wait);
 		return function () {
