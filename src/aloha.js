@@ -61,27 +61,31 @@ define([
 	Ranges,
 	Strings,
 	Traversing,
-	Interaction,
+	Typing,
 	Undo,
 	Editables
 ) {
 	'use strict';
 
 	function setSelection(event) {
+		console.log(event.dragging);
 		if (event.range) {
 			Ranges.select(event.range);
 		}
 	}
 
+	var old;
 	function editor(event) {
-		Interaction.thread(
-			Events.create(event, editor),
-			Interaction.basic,
-			// Paste.interact,
-			// Links.interact,
-			// Images.interact,
-			// Tables.interact,
-			Blocks.interact,
+		old = Events.compose(
+			{
+				'native' : event,
+				'editor' : editor,
+				'old'    : old
+			},
+			Keys.handle,
+			Mouse.handle,
+			Blocks.handle,
+			Typing.handle,
 			setSelection
 		);
 	}
@@ -148,7 +152,7 @@ define([
 	aloha['events'] = Events;
 	aloha['fn'] = Fn;
 	aloha['html'] = Html;
-	aloha['interaction'] = Interaction;
+	aloha['typing'] = Typing;
 	aloha['keys'] = Keys;
 	aloha['mouse'] = Mouse;
 	aloha['maps'] = Maps;

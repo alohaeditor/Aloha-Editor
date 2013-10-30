@@ -10,7 +10,17 @@
  * @todo:
  * consider https://github.com/nostrademons/keycode.js/blob/master/keycode.js
  */
-define([], function Keys() {
+define([
+	'ranges',
+	'strings',
+	'editables',
+	'boundaries'
+], function Keys(
+	Ranges,
+	Strings,
+	Editables,
+	Boundaries
+) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
@@ -56,11 +66,63 @@ define([], function Keys() {
 		40 : 'down'
 	};
 
+	/**
+	 * Whether or not the given event represents a text input.
+	 *
+	 * @reference
+	 * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
+	 *
+	 * @param {Event} event Native event object
+	 * @return {Boolean}
+	 */
+	function isTextInput(event) {
+		return 'keypress' === event.type && !event.altKey && !event.ctrlKey
+		    && !Strings.isControlCharacter(String.fromCharCode(event.which));
+	}
+
+	function metaKeys(event) {
+		var meta = [];
+		if (event.ctrlKey && (CODES.ctrl  !== event.which)) {
+			meta.push('ctrl');
+		}
+		if (event.altKey && (CODES.alt   !== event.which)) {
+			meta.push('alt');
+		}
+		if (event.shiftKey && (CODES.shift !== event.which)) {
+			meta.push('shift');
+		}
+		return meta.join('+')
+	}
+
+	function handle(event) {
+		var native = event.native;
+		var range = (native instanceof KeyboardEvent)
+		          ? Ranges.get()
+		          : null;
+		if (range) {
+			event.range = range;
+			var editable = Editables.fromBoundary(
+				event.editor,
+				Boundaries.start(range)
+			);
+			if (editable) {
+				event.editable = editable;
+			}
+		}
+		event.type = native.type;
+		event.which = native.which,
+		event.meta = metaKeys(native);
+		event.isTextInput = isTextInput(native),
+		event.chr = String.fromCharCode(native.which);
+	}
+
 	var exports = {
+		handle : handle,
 		ARROWS : ARROWS,
 		CODES  : CODES
 	};
 
+	exports['handle'] = exports.handle;
 	exports['ARROWS'] = exports.ARROWS;
 	exports['CODES']  = exports.CODES;
 

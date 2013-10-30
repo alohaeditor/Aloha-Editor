@@ -1,4 +1,4 @@
-/* interaction.js is part of Aloha Editor project http://aloha-editor.org
+/* typing.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
@@ -16,9 +16,8 @@ define([
 	'functions',
 	'editables',
 	'undo',
-	'overrides',
-	'misc'
-], function Interaction(
+	'overrides'
+], function Typing(
 	Dom,
 	Keys,
 	Maps,
@@ -30,13 +29,13 @@ define([
 	Fn,
 	Editables,
 	Undo,
-	Overrides,
-	Misc
+	Overrides
 ) {
 	'use strict';
 
-	function undoable(type, range, editable, fn) {
-		var undoContext = editable.undoContext;
+	function undoable(type, interaction, fn) {
+		var range = interaction.range;
+		var undoContext = interaction.editable.undoContext;
 		Undo.capture(undoContext, {
 			meta: {type: type},
 			oldRange: range
@@ -47,8 +46,8 @@ define([
 		return range;
 	}
 
-	function delete_(event, direction) {
-		var range = event.range;
+	function delete_(interaction, direction) {
+		var range = interaction.range;
 		if (range.collapsed) {
 			range = (
 				direction
@@ -56,25 +55,28 @@ define([
 					: Ranges.expandBackwardToVisiblePosition
 			)(range);
 		}
-		Editing.delete(Ranges.expandToVisibleCharacter(range), event.editable);
+		Editing.delete(
+			Ranges.expandToVisibleCharacter(range),
+			interaction.editable
+		);
 		Html.prop(range.commonAncestorContainer);
 		return range;
 	}
 
-	function format(event, format) {
-		Editing.format(event.range, format, true, event.editable);
-		return event.range;
+	function format(interaction, format) {
+		Editing.format(interaction.range, format, true, interaction.editable);
+		return interaction.range;
 	}
 
-	function break_(event, isLinebreak) {
-		Editing.break(event.range, event.editable, isLinebreak);
-		return event.range;
+	function break_(interaction, isLinebreak) {
+		Editing.break(interaction.range, interaction.editable, isLinebreak);
+		return interaction.range;
 	}
 
-	function insertText(event) {
-		var editable = event.editable;
-		var range = event.range;
-		var text = event.chr;
+	function insertText(interaction) {
+		var editable = interaction.editable;
+		var range = interaction.range;
+		var text = interaction.chr;
 		var boundary = Boundaries.start(range);
 
 		if (' ' === text) {
@@ -103,10 +105,10 @@ define([
 		return range;
 	}
 
-	function toggleUndo(event, op) {
-		var undoContext = event.editable.undoContext;
-		op(undoContext, event.range, [event.range]);
-		return event.range;
+	function toggleUndo(interaction, op) {
+		var undoContext = interaction.editable.undoContext;
+		op(undoContext, interaction.range, [interaction.range]);
+		return interaction.range;
 	}
 
 	var deleteBackwards = {
@@ -207,23 +209,23 @@ define([
 	handlers.keyup['ctrl+' + Keys.CODES.undo]       = undo;
 	handlers.keyup['ctrl+shift+' + Keys.CODES.undo] = redo;
 
-	function handlerFromEvent(event) {
+	function handler(event) {
 		var modifier = event.meta ? event.meta + '+' : '';
-		return (handlers[event.name]
-		    && handlers[event.name][modifier + event.code])
+		return (handlers[event.type]
+		    && handlers[event.type][modifier + event.which])
 		    || (event.isTextInput && handlers.keypress.input);
 	}
 
-	function basic(event) {
-		var handler = handlerFromEvent(event);
-		if (!handler) {
+	function handle(event) {
+		var handle = handler(event);
+		if (!handle) {
 			return;
 		}
 		var range = event.range;
-		if (handler.preventDefault) {
-			event.event.preventDefault();
+		if (handle.preventDefault) {
+			event.native.preventDefault();
 		}
-		if (handler.clearOverrides) {
+		if (handle.clearOverrides) {
 			Maps.forEach(
 				event.editable ? [event.editable] : event.editor.editables,
 				function (editable) {
@@ -231,39 +233,28 @@ define([
 				}
 			);
 		}
-		if (handler.deleteRange && range && !range.collapsed) {
+		if (handle.deleteRange && range && !range.collapsed) {
 			delete_(event, false);
 		}
-		if (range && handler.mutate) {
-			if (handler.undo) {
-				undoable(handler.undo, range, event.editable, function () {
-					handler.mutate(event, handler.arg);
+		if (range && handle.mutate) {
+			if (handle.undo) {
+				undoable(handle.undo, event, function () {
+					handle.mutate(event, handle.arg);
 					Html.prop(range.commonAncestorContainer);
 				});
 			} else {
-				handler.mutate(event, handler.arg);
+				handle.mutate(event, handle.arg);
 				Html.prop(range.commonAncestorContainer);
 			}
 		}
 		return event;
 	}
 
-	function thread() {
-		var needle = arguments[0];
-		var i;
-		var len = arguments.length;
-		for (i = 1; i < len; i++) {
-			needle = Misc.copy(arguments[i](needle)) || needle;
-		}
-	}
-
 	var exports = {
-		basic  : basic,
-		thread : thread
+		handle : handle
 	};
 
-	exports['basic'] = basic;
-	exports['thread'] = thread;
+	exports['handle'] = handle;
 
 	return exports;
 });

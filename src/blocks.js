@@ -54,29 +54,29 @@ define([
 	handlers['aloha'] = initialize;
 	handlers['mousedown'] = mousedown;
 
-	function handlerFromEvent(event) {
+	function handler(event) {
 		var modifier = event.meta ? event.meta + '+' : '';
 		return (handlers[event.name]
 		    && handlers[event.name][modifier + event.code])
 		    || handlers[event.name];
 	}
 
-	function interact(event) {
-		var handler = handlerFromEvent(event);
-		if (handler) {
-			handler(event);
+	function handle(event) {
+		var handle = handler(event);
+		if (handle) {
+			handle(event);
 		}
 	}
 
 	var exports = {
-		read     : read,
-		write    : write,
-		interact : interact
+		read   : read,
+		write  : write,
+		handle : handle
 	};
 
 	exports['read'] = exports.read;
 	exports['write'] = exports.write;
-	exports['interact'] = exports.interact;
+	exports['handle'] = exports.handle;
 
 	return exports;
 });

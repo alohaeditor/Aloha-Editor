@@ -4,19 +4,7 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([
-	'keys',
-	'ranges',
-	'strings',
-	'editables',
-	'boundaries'
-], function Events(
-	Keys,
-	Ranges,
-	Strings,
-	Editables,
-	Boundaries
-) {
+define(['misc'], function Events(Misc) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
@@ -74,63 +62,25 @@ define([
 		};
 	}());
 
-	/**
-	 * Whether or not the given event represents a text input.
-	 *
-	 * @reference
-	 * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
-	 *
-	 * @param {Event} event Native event object
-	 * @return {Boolean}
-	 */
-	function isTextInput(event) {
-		return 'keypress' === event.type && !event.altKey && !event.ctrlKey
-		    && !Strings.isControlCharacter(String.fromCharCode(event.which));
-	}
-
-	function metaKeys(event) {
-		var meta = [];
-		if (event.ctrlKey && (Keys.CODES.ctrl  !== event.which)) {
-			meta.push('ctrl');
+	function compose() {
+		var value = arguments[0];
+		var i;
+		var len = arguments.length;
+		for (i = 1; i < len; i++) {
+			value = Misc.copy(arguments[i](value)) || value;
 		}
-		if (event.altKey && (Keys.CODES.alt   !== event.which)) {
-			meta.push('alt');	
-		}
-		if (event.shiftKey && (Keys.CODES.shift !== event.which)) {
-			meta.push('shift');
-		}
-		return meta.join('+')
-	}
-
-	function create(event, editor) {
-		var range = (event instanceof KeyboardEvent) ? Ranges.get() : null;
-		var editable = event.editable;
-		if (!editable && range) {
-			editable = Editables.fromBoundary(editor, Boundaries.start(range));
-		}
-		return {
-			'name'        : event.type,
-			'code'        : event.which,
-			'meta'        : metaKeys(event),
-			'isTextInput' : isTextInput(event),
-			'chr'         : String.fromCharCode(event.which),
-			'event'       : event,
-			'range'       : range,
-			'editor'      : editor,
-			'editable'    : editable,
-			'target'      : event.target
-		};
+		return value;
 	}
 
 	var exports = {
-		add    : add,
-		remove : remove,
-		create : create
+		add     : add,
+		remove  : remove,
+		compose : compose
 	};
 
-	exports['add']    = exports.add;
-	exports['remove'] = exports.remove;
-	exports['create'] = exports.create;
+	exports['add']     = exports.add;
+	exports['remove']  = exports.remove;
+	exports['compose'] = exports.compose;
 
 	return exports;
 });
