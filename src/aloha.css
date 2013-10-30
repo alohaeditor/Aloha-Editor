@@ -14,11 +14,11 @@ body {
 }
 
 ::selection {
-	background: rgba(0,0,0,0.1);
+	background: rgba(50,30,10,0.1);
 	color: inherit;
 }
 ::-moz-selection {
-	background: rgba(0,0,0,0.1);
+	background: rgba(50,30,10,0.1);
 	color: inherit;
 }
 
