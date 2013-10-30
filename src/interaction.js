@@ -16,7 +16,8 @@ define([
 	'functions',
 	'editables',
 	'undo',
-	'overrides'
+	'overrides',
+	'misc'
 ], function Interaction(
 	Dom,
 	Keys,
@@ -29,7 +30,8 @@ define([
 	Fn,
 	Editables,
 	Undo,
-	Overrides
+	Overrides,
+	Misc
 ) {
 	'use strict';
 
@@ -215,7 +217,7 @@ define([
 	function basic(event) {
 		var handler = handlerFromEvent(event);
 		if (!handler) {
-			return event;
+			return;
 		}
 		var range = event.range;
 		if (handler.preventDefault) {
@@ -251,7 +253,7 @@ define([
 		var i;
 		var len = arguments.length;
 		for (i = 1; i < len; i++) {
-			needle = arguments[i](needle);
+			needle = Misc.copy(arguments[i](needle)) || needle;
 		}
 	}
 

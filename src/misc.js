@@ -46,15 +46,31 @@ define([], function Misc() {
 		return a + ((b - a) / 2);
 	}
 
+	function copy(obj) {
+		if (!obj) {
+			return obj;
+		}
+		var prop;
+		var copied = {};
+		for (prop in obj) {
+			if (obj.hasOwnProperty(prop)) {
+				copied[prop] = obj[prop];
+			}
+		}
+		return copied;
+	}
+
 	var exports = {
-		anyRx: anyRx,
-		defined: defined,
-		mean: mean
+		anyRx   : anyRx,
+		defined : defined,
+		mean    : mean,
+		copy    : copy
 	};
 
 	exports['anyRx'] = exports.anyRx;
 	exports['defined'] = exports.defined;
 	exports['mean'] = exports.mean;
+	exports['copy'] = exports.copy;
 
 	return exports;
 });

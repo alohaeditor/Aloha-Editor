@@ -12,6 +12,7 @@ define([
 	'arrays',
 	'boundaries',
 	'boundary-markers',
+	'blocks',
 	'browser',
 	'caret',
 	'content',
@@ -39,6 +40,7 @@ define([
 	Arrays,
 	Boundaries,
 	Boundarymarkers,
+	Blocks,
 	Browser,
 	Caret,
 	Content,
@@ -75,6 +77,7 @@ define([
 		Interaction.thread(
 			Events.create(event, editor),
 			Interaction.basic,
+			Blocks.onEvent,
 			setSelection
 		);
 	}
