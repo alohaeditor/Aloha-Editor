@@ -104,9 +104,10 @@ define([
 
 	function create(event, editor) {
 		var range = (event instanceof KeyboardEvent) ? Ranges.get() : null;
-		var editable = range
-		             ? Editables.fromBoundary(editor, Boundaries.start(range))
-		             : null;
+		var editable = event.editable;
+		if (!editable && range) {
+			editable = Editables.fromBoundary(editor, Boundaries.start(range));
+		}
 		return {
 			'name'        : event.type,
 			'code'        : event.which,
@@ -116,7 +117,8 @@ define([
 			'event'       : event,
 			'range'       : range,
 			'editor'      : editor,
-			'editable'    : editable
+			'editable'    : editable,
+			'target'      : event.target
 		};
 	}
 

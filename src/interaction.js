@@ -234,7 +234,7 @@ define([
 		if (handler.deleteRange && range && !range.collapsed) {
 			delete_(event, false);
 		}
-		if (handler.mutate) {
+		if (range && handler.mutate) {
 			if (handler.undo) {
 				undoable(handler.undo, range, event.editable, function () {
 					handler.mutate(event, handler.arg);

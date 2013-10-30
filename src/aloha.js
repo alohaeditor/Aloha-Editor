@@ -10,9 +10,9 @@
 
 define([
 	'arrays',
+	'blocks',
 	'boundaries',
 	'boundary-markers',
-	'blocks',
 	'browser',
 	'caret',
 	'content',
@@ -38,9 +38,9 @@ define([
 	'editables'
 ], function Aloha(
 	Arrays,
+	Blocks,
 	Boundaries,
 	Boundarymarkers,
-	Blocks,
 	Browser,
 	Caret,
 	Content,
@@ -77,6 +77,7 @@ define([
 		Interaction.thread(
 			Events.create(event, editor),
 			Interaction.basic,
+			// Paste.interact,
 			// Links.interact,
 			// Images.interact,
 			// Tables.interact,
@@ -86,6 +87,7 @@ define([
 	}
 
 	editor.editables = {};
+	editor.BLOCK_CLASS = 'aloha-block';
 
 	Events.add(document, 'keyup',     editor);
 	Events.add(document, 'keydown',   editor);
@@ -111,6 +113,10 @@ define([
 			meta: {type: 'external'},
 			partitionRecords: true
 		});
+		editor({
+			'type'     : 'aloha',
+			'editable' : editable
+		});
 	}
 
 	function mahalo(elem) {
@@ -118,11 +124,16 @@ define([
 		Editables.close(editable);
 		Editables.dissocFromEditor(editor, editable);
 		elem.removeAttribute('contentEditable');
+		editor({
+			'type'     : 'mahalo',
+			'editable' : editable
+		});
 	}
 
 	aloha['aloha'] = aloha;
 	aloha['mahalo'] = mahalo;
 	aloha['arrays'] = Arrays;
+	aloha['blocks'] = Blocks;
 	aloha['boundaries'] = Boundaries;
 	aloha['boundarymarkers'] = Boundarymarkers;
 	aloha['browser'] = Browser;

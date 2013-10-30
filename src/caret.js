@@ -256,11 +256,11 @@ define([
 	dom.addClass(blinker, 'aloha-blinker');
 	dom.insert(blinker, document.body, true);
 
-	function showOnEvent(msg) {
-		var range = msg.range || ranges.get();
+	function interact(event) {
+		var range = event.range || ranges.get();
 		if (range) {
 			if (range.collapsed) {
-				var offset = calculateOffset(msg.event, range);
+				var offset = calculateOffset(event.event, range);
 				if (offset) {
 					show(getCaret(), offset);
 					show(blinker, offset);
@@ -273,11 +273,11 @@ define([
 	}
 
 	var exports = {
-		showOnEvent: showOnEvent,
-		calculateOffset: calculateOffset
+		interact        : interact,
+		calculateOffset : calculateOffset
 	};
 
-	exports['showOnEvent'] = exports.showOnEvent;
+	exports['interact'] = exports.interact;
 	exports['calculateOffset'] = exports.calculateOffset;
 
 	return exports;
