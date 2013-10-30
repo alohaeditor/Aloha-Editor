@@ -11,15 +11,15 @@ define([], function Blocks() {
 		eval(uate)('blocks');
 	}
 
-	function onEvent(event) {
+	function interact(event) {
 
 	}
 
 	var exports = {
-		onEvent : onEvent
+		interact : interact
 	};
 
-	exports['onEvent'] = exports.onEvent;
+	exports['interact'] = exports.interact;
 
 	return exports;
 });

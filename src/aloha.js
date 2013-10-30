@@ -77,7 +77,10 @@ define([
 		Interaction.thread(
 			Events.create(event, editor),
 			Interaction.basic,
-			Blocks.onEvent,
+			// Links.interact,
+			// Images.interact,
+			// Tables.interact,
+			Blocks.interact,
 			setSelection
 		);
 	}
