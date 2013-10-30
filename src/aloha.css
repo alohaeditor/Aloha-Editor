@@ -1,6 +1,6 @@
 html {
 	height: 100%;
-	background: #f1f0f0;
+	background: #fefdfd;
 }
 
 body {
@@ -12,10 +12,16 @@ body {
 	min-height: 100%;
 	box-shadow: 0 0 100px rgba(0,0,0,0.2) inset;
 }
+
 ::selection {
-	background: #40aebe;
-	color: #fff;
+	background: rgba(0,0,0,0.1);
+	color: inherit;
 }
+::-moz-selection {
+	background: rgba(0,0,0,0.1);
+	color: inherit;
+}
+
 .aloha-editable {
 	outline: 0;
 }
@@ -49,6 +55,7 @@ p:last-child { margin-bottom: 0; }
 	        transition: left 80ms ease-in-out;
 	*/
 }
+
 @-moz-keyframes blink {
 	  0% {opacity: 0.0}
 	100% {opacity: 0.9}
