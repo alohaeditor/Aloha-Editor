@@ -1037,6 +1037,9 @@ define([
 	function combineChanges(oldChangeSet, newChangeSet, opts) {
 		var oldChanges = oldChangeSet.changes;
 		var newChanges = newChangeSet.changes;
+		if (!oldChanges.length || !newChanges.length) {
+			return null;
+		}
 		var oldType = oldChangeSet.meta && oldChangeSet.meta.type;
 		var newType = newChangeSet.meta && newChangeSet.meta.type;
 		// TODO combine enter as the first character of a sequence of
