@@ -225,16 +225,19 @@ define([
 		if (handle.clearOverrides) {
 			event.editable.overrides = [];
 		}
-		if (handle.deleteRange && range && !range.collapsed) {
-			delete_(event, false);
-		}
 		if (range && handle.mutate) {
 			if (handle.undo) {
 				undoable(handle.undo, event, function () {
+					if (handle.deleteRange && !range.collapsed) {
+						delete_(event, false);
+					}
 					handle.mutate(event, handle.arg);
 					Html.prop(range.commonAncestorContainer);
 				});
 			} else {
+				if (handle.deleteRange && !range.collapsed) {
+					delete_(event, false);
+				}
 				handle.mutate(event, handle.arg);
 				Html.prop(range.commonAncestorContainer);
 			}
