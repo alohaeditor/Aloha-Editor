@@ -71,31 +71,24 @@ define([
 ) {
 	'use strict';
 
-	var previousState;
-	function prologue(event) {
-		event['previousState'] = previousState;
-		event['editor'] = editor;
-		return event;
-	}
-
-	function epilogue(event) {
-		previousState = event;
+	function setSelection(event) {
+		console.log(event.native);
 		if (event.range) {
 			Ranges.select(event.range);
 		}
-		console.log(event.dragging.state);
 	}
 
-	function editor(event, custom) {
+	function editor(native, custom) {
+		var event = custom || {'native' : native};
+		event.editor = editor;
 		Events.compose(
-			custom || {'native' : event},
-			prologue,
+			event,
 			Keys.handle,
 			Mouse.handle,
 			DragDrop.handle,
 			Blocks.handle,
 			Typing.handle,
-			epilogue
+			setSelection
 		);
 	}
 
@@ -105,9 +98,19 @@ define([
 	Events.add(document, 'keyup',     editor);
 	Events.add(document, 'keydown',   editor);
 	Events.add(document, 'keypress',  editor);
+
 	Events.add(document, 'mouseup',   editor);
 	Events.add(document, 'mousedown', editor);
 	Events.add(document, 'mousemove', editor);
+
+	Events.add(document, 'dragstart', editor);
+	Events.add(document, 'drag',      editor);
+	Events.add(document, 'dragenter', editor);
+	Events.add(document, 'dragexit',  editor);
+	Events.add(document, 'dragleave', editor);
+	Events.add(document, 'dragover',  editor);
+	Events.add(document, 'drop',      editor);
+	Events.add(document, 'dragend',   editor);
 
 	/**
 	 * The Aloha Editor namespace root.
