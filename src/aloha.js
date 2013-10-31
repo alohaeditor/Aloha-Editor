@@ -33,7 +33,7 @@ define([
 	'ranges',
 	'strings',
 	'traversing',
-	'interaction',
+	'typing',
 	'undo',
 	'editables'
 ], function Aloha(
