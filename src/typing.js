@@ -63,8 +63,8 @@ define([
 		return range;
 	}
 
-	function format(interaction, format) {
-		Editing.format(interaction.range, format, true, interaction.editable);
+	function format(interaction, style) {
+		Editing.format(interaction.range, style, true, interaction.editable);
 		return interaction.range;
 	}
 
@@ -164,7 +164,7 @@ define([
 		preventDefault : true,
 		undo           : 'typing',
 		mutate         : insertText
-	}
+	};
 
 	var undo = {
 		clearOverrides : true,

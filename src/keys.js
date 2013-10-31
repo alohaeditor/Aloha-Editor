@@ -23,10 +23,6 @@ define([
 ) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('keys');
-	}
-
 	/**
 	 * A map of key names to their keycode.
 	 *
@@ -91,7 +87,7 @@ define([
 		if (event.shiftKey && (CODES.shift !== event.which)) {
 			meta.push('shift');
 		}
-		return meta.join('+')
+		return meta.join('+');
 	}
 
 	function handle(event) {
@@ -110,9 +106,9 @@ define([
 			}
 		}
 		event.type = native.type;
-		event.which = native.which,
+		event.which = native.which;
 		event.meta = metaKeys(native);
-		event.isTextInput = isTextInput(native),
+		event.isTextInput = isTextInput(native);
 		event.chr = String.fromCharCode(native.which);
 	}
 

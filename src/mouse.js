@@ -4,16 +4,8 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([
-	'misc'
-], function Mouse(
-	Misc
-) {
+define(['misc'], function Mouse(Misc) {
 	'use strict';
-
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('mouse');
-	}
 
 	var CODES = {
 		'left'   : 1,
@@ -22,7 +14,7 @@ define([
 	};
 
 	function handle(event) {
-		var dragging = event.old && Misc.copy(event.old.dragging) || {};
+		var dragging = (event.old && Misc.copy(event.old.dragging)) || {};
 		var native = event.native;
 		dragging.x = native.pageX;
 		dragging.y = native.pageY;
@@ -37,10 +29,9 @@ define([
 			dragging.state = 'up';
 			break;
 		case 'mousemove':
-			dragging.state = (
-				'down' === dragging.state ||
-				'dragging' === dragging.state
-			) ? 'dragging' : 'move';
+			dragging.state = ('down' === dragging.state || 'dragging' === dragging.state)
+			               ? 'dragging'
+			               : 'move';
 			break;
 		default:
 			dragging = {};
