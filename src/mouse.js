@@ -21,33 +21,54 @@ define([
 		'right'  : 3
 	};
 
+	function mousedown(event, dragging) {
+		dragging.startX = event.native.pageX;
+		dragging.startY = event.native.pageY;
+		dragging.state = 'down';
+		Maps.forEach(event.editor.editables, function (editable) {
+			editable.overrides = [];
+		});
+		return dragging;
+	}
+
+	function mousemove(event, dragging) {
+		dragging.state = ('down' === dragging.state || 'dragging' === dragging.state)
+					   ? 'dragging'
+					   : 'move';
+		if ('dragging' === dragging.state && 'dragging' !== event.old.dragging.state) {
+			console.warn('prevent');
+			Dom.disableSelection(event.target.ownerDocument.body);
+		}
+		return dragging;
+	}
+
+	function mouseup(event, dragging) {
+		dragging.state = 'up';
+		if ('dragging' === event.old.dragging.state) {
+			console.warn('allow');
+			Dom.enableSelection(event.target.ownerDocument.body);
+		}
+		return dragging;
+	}
+
 	function handle(event) {
 		var dragging = (event.old && Misc.copy(event.old.dragging)) || {};
-		var native = event.native;
-		dragging.x = native.pageX;
-		dragging.y = native.pageY;
-		event.target = native.target;
-		switch (native.type) {
+		dragging.x = event.native.pageX;
+		dragging.y = event.native.pageY;
+		event.target = event.native.target;
+		switch (event.native.type) {
 		case 'mousedown':
-			dragging.startX = native.pageX;
-			dragging.startY = native.pageY;
-			dragging.state = 'down';
-			Maps.forEach(event.editor.editables, function (editable) {
-				editable.overrides = [];
-			});
+			event.dragging = mousedown(event, dragging);
 			break;
 		case 'mouseup':
-			dragging.state = 'up';
+			event.dragging = mouseup(event, dragging);
 			break;
 		case 'mousemove':
-			dragging.state = ('down' === dragging.state || 'dragging' === dragging.state)
-			               ? 'dragging'
-			               : 'move';
+			event.dragging = mousemove(event, dragging);
 			break;
 		default:
-			dragging = {};
+			event.dragging = {};
 		}
-		event.dragging = dragging;
 	}
 
 	var exports = {

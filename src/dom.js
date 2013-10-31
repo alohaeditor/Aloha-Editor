@@ -1507,17 +1507,15 @@ define([
 	}
 
 	function enableSelection(elem) {
-		var body = elem.ownerDocument.body;
-		body.removeAttribute('unselectable', 'on');
-		setStyle(Browser.VENDOR_PREFIX + '-user-select', 'all');
-		body.onselectstart = null;
+		elem.removeAttribute('unselectable', 'on');
+		setStyle(elem, Browser.VENDOR_PREFIX + '-user-select', 'all');
+		elem.onselectstart = null;
 	}
 
 	function disableSelection(elem) {
-		var body = elem.ownerDocument.body;
-		body.removeAttribute('unselectable', 'on');
-		setStyle(Browser.VENDOR_PREFIX + '-user-select', 'none');
-		body.onselectstart = Fn.returnFalse;
+		elem.removeAttribute('unselectable', 'on');
+		setStyle(elem, Browser.VENDOR_PREFIX + '-user-select', 'none');
+		elem.onselectstart = Fn.returnFalse;
 	}
 
 	/**
