@@ -12,6 +12,23 @@ define([], function Browser() {
 	}
 
 	/**
+	 * The vendor prefix string for the host user agent.
+	 *
+	 * @type {string}
+	 */
+	var VENDOR_PREFIX = (function () {
+		var prefixes = ['-webkit', '-moz', '-o'];
+		var style = document.createElement('div').style;
+		var i;
+		for (i = 0; i < prefixes.length; i++) {
+			if (prefixes[i] + '-transform' in style) {
+				return prefixes[i];
+			}
+		}
+		return '';
+	}());
+
+	/**
 	 * Adapted from http://code.jquery.com/jquery-migrate-git.js
 	 */
 	var matched = (function () {
@@ -58,14 +75,16 @@ define([], function Browser() {
 	 * browser.hasRemoveProperty
 	 */
 	var exports = {
-		ie7: browser.msie && parseInt(browser.version, 10) < 8,
-		browser: browser,
-		hasRemoveProperty: !!testElem.style.removeProperty
+		ie7               : browser.msie && parseInt(browser.version, 10) < 8,
+		browser           : browser,
+		hasRemoveProperty : !!testElem.style.removeProperty,
+		VENDOR_PREFIX     : VENDOR_PREFIX
 	};
 
 	exports['ie7'] = exports.ie7;
 	exports['browser'] = exports.browser;
 	exports['hasRemoveProperty'] = exports.hasRemoveProperty;
+	exports['VENDOR_PREFIX'] = exports.VENDOR_PREFIX;
 
 	return exports;
 });

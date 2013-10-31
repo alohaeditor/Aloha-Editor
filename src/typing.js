@@ -14,7 +14,6 @@ define([
 	'traversing',
 	'boundaries',
 	'functions',
-	'editables',
 	'undo',
 	'overrides'
 ], function Typing(
@@ -27,7 +26,6 @@ define([
 	Traversing,
 	Boundaries,
 	Fn,
-	Editables,
 	Undo,
 	Overrides
 ) {
@@ -183,30 +181,26 @@ define([
 	var handlers = {
 		keyup     : {},
 		keydown   : {},
-		keypress  : {},
-		mousedown : {}
+		keypress  : {}
 	};
 
-	handlers.mousedown[1]                           =
-	handlers.mousedown[2]                           =
-	handlers.mousedown[3]                           =
-	handlers.keydown[Keys.CODES.up]                 =
-	handlers.keydown[Keys.CODES.down]               =
-	handlers.keydown[Keys.CODES.left]               =
-	handlers.keydown[Keys.CODES.right]              = {clearOverrides: true};
+	handlers.keydown[Keys.CODES.up] =
+	handlers.keydown[Keys.CODES.down] =
+	handlers.keydown[Keys.CODES.left] =
+	handlers.keydown[Keys.CODES.right] = {clearOverrides: true};
 
-	handlers.keydown[Keys.CODES.backspace]          = deleteBackwards;
-	handlers.keydown[Keys.CODES.delete]             = deleteForwards;
+	handlers.keydown[Keys.CODES.delete] = deleteForwards;
+	handlers.keydown[Keys.CODES.backspace] = deleteBackwards;
 
-	handlers.keydown[Keys.CODES.enter]              = breakBlock;
-	handlers.keydown['shift+' + Keys.CODES.enter]   = breakLine;
+	handlers.keydown[Keys.CODES.enter] = breakBlock;
+	handlers.keydown['shift+' + Keys.CODES.enter] = breakLine;
 
-	handlers.keypress['ctrl+' + Keys.CODES.bold]    = formatBold;
-	handlers.keypress['ctrl+' + Keys.CODES.italic]  = formatItalic;
+	handlers.keypress['ctrl+' + Keys.CODES.bold] = formatBold;
+	handlers.keypress['ctrl+' + Keys.CODES.italic] = formatItalic;
 
-	handlers.keypress.input                         = inputText;
+	handlers.keypress.input = inputText;
 
-	handlers.keyup['ctrl+' + Keys.CODES.undo]       = undo;
+	handlers.keyup['ctrl+' + Keys.CODES.undo] = undo;
 	handlers.keyup['ctrl+shift+' + Keys.CODES.undo] = redo;
 
 	function handler(event) {
@@ -225,13 +219,8 @@ define([
 		if (handle.preventDefault) {
 			event.native.preventDefault();
 		}
-		if (handle.clearOverrides) {
-			Maps.forEach(
-				event.editable ? [event.editable] : event.editor.editables,
-				function (editable) {
-					editable.overrides = [];
-				}
-			);
+		if (handle.clearOverrides && event.editable) {
+			event.editable.overrides = [];
 		}
 		if (handle.deleteRange && range && !range.collapsed) {
 			delete_(event, false);

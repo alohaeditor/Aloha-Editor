@@ -15,9 +15,9 @@ define([
 	maps,
 	arrays,
 	strings,
-	browser,
-	fn,
-	misc
+	Browser,
+	Fn,
+	Misc
 ) {
 	'use strict';
 
@@ -210,7 +210,7 @@ define([
 	 */
 	function moveSiblingsInto(node, container, until) {
 		var next;
-		until = until || fn.returnFalse;
+		until = until || Fn.returnFalse;
 		while (node && node !== container && !until(node)) {
 			next = node.nextSibling;
 			insert(node, container, true);
@@ -231,7 +231,7 @@ define([
 	 */
 	function moveSiblingsAfter(node, ref, until) {
 		var next;
-		until = until || fn.returnFalse;
+		until = until || Fn.returnFalse;
 		while (node && node !== ref && !until(node)) {
 			next = node.nextSibling;
 			insertAfter(node, ref);
@@ -272,7 +272,7 @@ define([
 	 */
 	function outerHtml(node) {
 		var html = node.outerHTML;
-		if (misc.defined(html)) {
+		if (Misc.defined(html)) {
 			return html;
 		}
 		try {
@@ -453,7 +453,7 @@ define([
 	 */
 	function indexByClass(root, classMap) {
 		return indexByClassHaveList(
-			browser.ie7 ? root.getElementsByTagName('*')
+			Browser.ie7 ? root.getElementsByTagName('*')
 			            : getElementsByClassNames(maps.keys(classMap), root),
 			classMap
 		);
@@ -895,10 +895,10 @@ define([
 		return arrays.mapcat(ranges, boundariesFromRange);
 	}
 
-	function adjustBoundaries(fn, boundaries) {
+	function adjustBoundaries(Fn, boundaries) {
 		var args = Array.prototype.slice.call(arguments, 2);
 		return boundaries.map(function (boundary) {
-			return fn.apply(null, [boundary].concat(args));
+			return Fn.apply(null, [boundary].concat(args));
 		});
 	}
 
@@ -1225,7 +1225,7 @@ define([
 	 * @param {string} styleName
 	 */
 	function removeStyle(elem, styleName) {
-		if (browser.hasRemoveProperty) {
+		if (Browser.hasRemoveProperty) {
 			elem.style.removeProperty(styleName);
 			if (strings.empty(elem.getAttribute('style'))) {
 				elem.removeAttribute('style');
@@ -1310,13 +1310,13 @@ define([
 	}
 
 	/**
-	 * Calculare the offset of the given node inside the document.
+	 * Calculate the offset of the given node inside the document.
 	 *
 	 * @param {!Node} node
 	 * @return {!Object.<string, number>}
 	 */
 	function offset(node) {
-		if (!misc.defined(node.getBoundingClientRect)) {
+		if (!Misc.defined(node.getBoundingClientRect)) {
 			return {
 				top: 0,
 				left: 0
@@ -1506,6 +1506,20 @@ define([
 		return node.isEqualNode(otherNode);
 	}
 
+	function enableSelection(elem) {
+		var body = elem.ownerDocument.body;
+		body.removeAttribute('unselectable', 'on');
+		setStyle(Browser.VENDOR_PREFIX + '-user-select', 'all');
+		body.onselectstart = null;
+	}
+
+	function disableSelection(elem) {
+		var body = elem.ownerDocument.body;
+		body.removeAttribute('unselectable', 'on');
+		setStyle(Browser.VENDOR_PREFIX + '-user-select', 'none');
+		body.onselectstart = Fn.returnFalse;
+	}
+
 	/**
 	 * Functions for working with the DOM.
 	 */
@@ -1600,7 +1614,10 @@ define([
 		Nodes: Nodes,
 
 		ensureExpandoId: ensureExpandoId,
-		setRangeFromBoundaries: setRangeFromBoundaries
+		setRangeFromBoundaries: setRangeFromBoundaries,
+
+		enableSelection: enableSelection,
+		disableSelection : disableSelection
 	};
 
 	exports['offset'] = exports.offset;

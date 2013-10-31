@@ -4,7 +4,15 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['misc'], function Mouse(Misc) {
+define([
+	'dom',
+	'misc',
+	'maps'
+], function Mouse(
+	Dom,
+	Misc,
+	Maps
+) {
 	'use strict';
 
 	var CODES = {
@@ -24,6 +32,9 @@ define(['misc'], function Mouse(Misc) {
 			dragging.startX = native.pageX;
 			dragging.startY = native.pageY;
 			dragging.state = 'down';
+			Maps.forEach(event.editor.editables, function (editable) {
+				editable.overrides = [];
+			});
 			break;
 		case 'mouseup':
 			dragging.state = 'up';

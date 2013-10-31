@@ -68,7 +68,7 @@ define([
 	'use strict';
 
 	function setSelection(event) {
-		console.log(event.dragging);
+		console.log(event.dragging.state);
 		if (event.range) {
 			Ranges.select(event.range);
 		}
