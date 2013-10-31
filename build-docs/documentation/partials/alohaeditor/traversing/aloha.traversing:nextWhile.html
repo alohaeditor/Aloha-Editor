@@ -1,0 +1,21 @@
+<h1><code ng:non-bindable="">nextWhile</code>
+<span class="hint">( traversing in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Starting from the given node and moving forward, traverses the set of
+ <code class="plain">node</code> 's sibiling nodes until either the predicate  <code class="plain">cond</code>  returns false
+or we reach the last sibling of  <code class="plain">node</code> 's parent element.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">node – {DOMObject} – </code>
+<p>given node</p></li>
+<li><code class="plain">cond – {Function(DOMObject, *?):Boolean} – </code>
+<p>given condition</p></li>
+<li><code class="plain">arg – {*} – </code>
+<p>Optional arbitrary value that will be passed to the  <code class="plain">cond()</code> 
+predicate.</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{DOMObject}</code>
+–  <code class="plain">node</code> , or one if it's next siblings.</p></div>
+</div>

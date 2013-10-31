@@ -1,0 +1,20 @@
+<h1><code ng:non-bindable="">stableRange</code>
+<span class="hint">( ranges in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Creates a "stable" copy of the given range.</p>
+
+<p>A native range is live, which means that modifying the DOM may mutate the
+range. Also, using setStart/setEnd may not set the properties correctly
+(the browser may perform its own normalization of boundary points). The
+behaviour of a native range is very erratic and should be converted to a
+stable range as the first thing in any algorithm.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">range – {Range} – </code>
+<p>given range</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{StableRange}</code>
+– <p>a stable range</p></div>
+</div>

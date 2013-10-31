@@ -1,0 +1,48 @@
+<h1><code ng:non-bindable="">indexByName</code>
+<span class="hint">( dom in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Indexes descendant elements based on elem.nodeName.</p>
+
+<p>Based on these observations:</p>
+
+<ul>
+<li><p>On IE8, for moderate values of names.length, individual calls to
+getElementsByTagName is just as fast as $root.find('name, name,
+name, name').</p></li>
+<li><p>On IE7, $root.find('name, name, name, name') is extemely slow
+(can be an order of magnitude slower than individual calls to
+getElementsByTagName, why is that?).</p></li>
+<li><p>Although getElementsByTagName is very fast even on IE7, when
+names.length > 7 an alternative implementation that iterates
+over all tags and checks names from a hashmap (similar to how
+indexByClass does it) may become interesting, but
+names.length > 7 is unlikely.</p></li>
+</ul>
+
+<p>This function only makes sense if the given names array has many
+entries. For only one or two different names, calling $('name')
+or context.getElementsByTagName(name) directly is fine (but
+beware of $('name, name, ...') as explained above).</p>
+
+<p>The signature of this function differs from indexByClass by not
+taking a map but instead an array of names.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">root – {DOMObject} – </code>
+<p>The root element to search for elements to index (will not be
+included in search).</p></li>
+<li><code class="plain">names – {Array[String]} – </code>
+<p>An array of element names to look for.
+Names must be in all-uppercase (the same as elem.nodeName).</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{Object}</code>
+– <p>A map from element name to an array of elements with that name.
+Names will be all-uppercase.
+Arrays will be proper arrays, not NodeLists.  Every entry in
+classMap for which elements have been found will have a
+corresponding entry in the returned map. Entries for which no
+elements have been found, may or may not have an entry in the
+returned map.</p></div>
+</div>

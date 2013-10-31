@@ -1,0 +1,51 @@
+<h1><code ng:non-bindable="">ephemera</code>
+<span class="hint">( ephemera in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Provides access to the global ephemera registry.</p>
+
+<p>If the given argument is not null, sets the global ephemera registry to
+the given value and returns it. Otherwise, just returns the global
+registry.</p>
+
+<p>The given/returned value has the following properties:</p>
+
+<p>The given map may have the following entries</p>
+
+<p>classMap - a map from class name to the value true.
+           all classes must have a "aloha-" prefix.
+           Use Ehpemera.attributes() to set classes without "aloha-" prefix.</p>
+
+<p>attrMap  - a map from attribute name to the value true or to an array of
+           element names. If an array of elements is specified, the
+           attribute will only be considered ephemeral if it is found on
+           an element in the array.</p>
+
+<p>attrRxs  - an array of regexes (in object - not string - form: /[a-z].../)</p>
+
+<p>pruneFns - an array of functions that will be called at each pruning step.</p>
+
+<p>When a DOM tree is pruned with prune(elem) without an emap argument, the
+global registry maintained with classes() attributes() and ephemera() is
+used as a default map. If an emap argument is specified, the global
+registry will be ignored and the emap argument will be used instead.</p>
+
+<p>When a DOM tree is pruned with prune()
+- classes specified by classMap will be removed
+- attributes specified by attrMap or attrRxs will be removed
+- functions specified by pruneFns will be called as the DOM tree is
+  descended into (pre-order), with each node (element, text, etc.) as a
+  single argument. The function is free to modify the element and return
+  it, or return a new element which will replace the given element in the
+  pruned tree. If null or undefined is returned, the element will be
+  removed from the tree. As per contract of maps.walkDomInplace, it is
+  allowed to insert/remove children in the parent node as long as the
+  given node is not removed.</p>
+
+<p>Also see classes() and attributes().</p>
+
+<p>Note that removal of attributes doesn't always work on IE7 (in rare
+special cases). The dom-to-xhtml plugin can reliably remove ephemeral
+attributes during the serialization step.</p></div>
+</div>

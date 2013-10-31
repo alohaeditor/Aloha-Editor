@@ -53,6 +53,21 @@ You can use
 
 to continously proof your code during developement.
 
+### Docs
+
+To build the docs run:
+
+	grunt docular
+
+Docs will be generated in build/docs.
+
+Run:
+
+	grunt docular-server
+
+for a built in preview server.
+
+
 ## Contributors
 Meet the "A" Team
 

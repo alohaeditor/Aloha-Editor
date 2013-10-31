@@ -1,0 +1,25 @@
+<h1><code ng:non-bindable="">normalizeBoundary</code>
+<span class="hint">( html in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Tries to move the given boundary to the start of line, skipping over any
+unrendered nodes, or if that fails to the end of line (after a br element
+if present), and for the last line in a block, to the very end of the
+block.</p>
+
+<p>If the selection is inside a block with only a single empty line (empty
+except for unrendered nodes), and both boundary points are normalized,
+the selection will be collapsed to the start of the block.</p>
+
+<p>For some operations it's useful to think of a block as a number of lines,
+each including its respective br and any preceding unrendered whitespace
+and in case of the last line, also any following unrendered whitespace.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">point – {Cursor} – </code>
+<p>given cursor point</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{Boolean}</code>
+– <p>True if the cursor is moved.</p></div>
+</div>

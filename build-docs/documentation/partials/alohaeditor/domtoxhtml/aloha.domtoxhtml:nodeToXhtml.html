@@ -1,0 +1,65 @@
+<h1><code ng:non-bindable="">nodeToXhtml</code>
+<span class="hint">( domtoxhtml in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Serializes a DOM node to an XHTML string.</p>
+
+<p>Beware that the serialization method will generate XHTML as close as
+possible to the DOM tree represented by the given node. The result will
+only be valid XHTML if the DOM tree doesn't violate any contained-in
+rules.</p>
+
+<p>Element attributes with an empty string as value will not appear in the
+serialized output.</p>
+
+<p>Element attribute names are case-insensitive in HTML5, so they may come
+out in mixed-case depending on what the browser provides.</p>
+
+<p>When iterating over the DOM, CDATA sections are comment nodes on some
+browsers (Chrome) and not there at all on others (IE).  This is the same
+as what comes out from element.innerHTML.</p>
+
+<p>IE8 bug: comments will sometimes be silently stripped inside
+contentEditable=true. Conditional includes don't work inside
+contentEditable=true. See the tests for more information.</p>
+
+<p>IE8 bug: a title element will not be serialized correctly unless it
+occurs in the head of a HTML document, even if it occurs in a non-HTML
+namespace (maybe it works with a prefix).  This will probably also apply
+for other HTML elements that occur in the header.</p>
+
+<p>IE8 bug: unrecognized elements in the HTML scope will cause broken DOM
+structure (some HTML5 elements that are not yet implemented in IE for
+example). Some effort was made to fix a broken DOM structure, if it is
+encountered. There is one case which results in an unrecoverably broken
+DOM structure, which is an unrecognized element not preceded by some
+text. See the tests for further information.</p>
+
+<p>IE8 bug: whitespace is not reliably preserved when the style
+white-space:pre (or similar) is used. See the tests for further
+information. Whitespace inside <pre> elements will be preserved, but \n
+characters will become \r characters.</p>
+
+<p>IE7 bug: URLs in href and src attributes of a and img elements will be
+absolutized (including hostname and protocol) if they are given as a
+relative path.</p>
+
+<p>IE bug: Namespace support inside contentEditable=true is a bit shaky on
+IE. Don't use it if possible. See the tests to get an idea of what seems
+to work. Make namespace prefixes and element names all lower-case, as
+they are always lower-cased, even if the element doesn't occur in an HTML
+namespace. Don't use default namespaces, use prefixes (except for an HTML
+namespace).</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">node – {DOMObject} – </code>
+<p>A DOM node to serialize.</p></li>
+<li><code class="plain">ephemera – {Object} – </code>
+<p>Describes content that should not be serialized.
+Only attrMap and attrRxs are supported at the moment.
+See ephemera.ephemera().</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{String}</code>
+– <p>The serialized XHTML string represnting the given DOM node.</p></div>
+</div>

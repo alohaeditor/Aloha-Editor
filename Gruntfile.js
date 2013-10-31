@@ -48,7 +48,7 @@ module.exports = function (grunt) {
 			docular_partial_home: 'docs/home.html',
 			docular_partial_navigation: 'docs/navigation.html',
 			docular_partial_footer: 'docs/footer.html',
-			docular_partial_group_index: false,
+			/*docular_partial_group_index: false,*/
 			docular_webapp_target : "build/docs",
 				groups: [
 					{
@@ -58,7 +58,7 @@ module.exports = function (grunt) {
 							sections: [
 								{
 									id: "arrays",
-									title: "Arrays API",
+									title: "Arrays",
 									showSource: true,
 									scripts: [
 										"src/arrays.js"
@@ -66,7 +66,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "boundary-markers",
-									title: "BoundaryMarkers API",
+									title: "BoundaryMarkers",
 									showSource: true,
 									scripts: [
 										"src/boundary-markers.js"
@@ -74,7 +74,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "browser",
-									title: "Browser API",
+									title: "Browser",
 									showSource: true,
 									scripts: [
 										"src/browser.js"
@@ -82,7 +82,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "colors",
-									title: "Colors API",
+									title: "Colors",
 									showSource: true,
 									scripts: [
 										"src/colors.js"
@@ -90,7 +90,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "content",
-									title: "Content API",
+									title: "Content",
 									showSource: true,
 									scripts: [
 										"src/content.js"
@@ -98,7 +98,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "cursors",
-									title: "Cursor API",
+									title: "Cursor",
 									showSource: true,
 									scripts: [
 										"src/cursors.js"
@@ -106,7 +106,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "domtoxhtml",
-									title: "DOM to XHTML API",
+									title: "DOM to XHTML",
 									showSource: true,
 									scripts: [
 										"src/dom-to-xhtml.js"
@@ -114,7 +114,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "dom",
-									title: "DOM API",
+									title: "DOM",
 									showSource: true,
 									scripts: [
 										"src/dom.js"
@@ -122,7 +122,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "editing",
-									title: "Editing API",
+									title: "Editing",
 									showSource: true,
 									scripts: [
 										"src/editing.js"
@@ -130,7 +130,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "ephemera",
-									title: "Ephemera API",
+									title: "Ephemera",
 									showSource: true,
 									scripts: [
 										"src/ephemera.js"
@@ -138,7 +138,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "events",
-									title: "Events API",
+									title: "Events",
 									showSource: true,
 									scripts: [
 										"src/events.js"
@@ -146,7 +146,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "functions",
-									title: "Functions API",
+									title: "Functions",
 									showSource: true,
 									scripts: [
 										"src/functions.js"
@@ -154,7 +154,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "html",
-									title: "HTML API",
+									title: "HTML",
 									showSource: true,
 									scripts: [
 										"src/html.js"
@@ -162,7 +162,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "keys",
-									title: "Keys API",
+									title: "Keys",
 									showSource: true,
 									scripts: [
 										"src/keys.js"
@@ -170,7 +170,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "maps",
-									title: "Maps API",
+									title: "Maps",
 									showSource: true,
 									scripts: [
 										"src/maps.js"
@@ -178,7 +178,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "misc",
-									title: "Misc API",
+									title: "Misc",
 									showSource: true,
 									scripts: [
 										"src/misc.js"
@@ -186,7 +186,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "pubsub",
-									title: "PubSub API",
+									title: "PubSub",
 									showSource: true,
 									scripts: [
 										"src/pubsub.js"
@@ -194,7 +194,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "ranges",
-									title: "Ranges API",
+									title: "Ranges",
 									showSource: true,
 									scripts: [
 										"src/ranges.js"
@@ -202,7 +202,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "requirepronto",
-									title: "Require Pronto API",
+									title: "Require Pronto",
 									showSource: true,
 									scripts: [
 										"src/require-pronto.js"
@@ -210,7 +210,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "strings",
-									title: "String API",
+									title: "String",
 									showSource: true,
 									scripts: [
 										"src/strings.js"
@@ -218,7 +218,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "traversing",
-									title: "Traversing API",
+									title: "Traversing",
 									showSource: true,
 									scripts: [
 										"src/traversing.js"
@@ -226,7 +226,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "trees",
-									title: "Tree API",
+									title: "Tree",
 									showSource: true,
 									scripts: [
 										"src/trees.js"
@@ -234,7 +234,7 @@ module.exports = function (grunt) {
 								},
 								{
 									id: "typing",
-									title: "Typing API",
+									title: "Typing",
 									showSource: true,
 									scripts: [
 										"src/typing.js"

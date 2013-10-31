@@ -1,0 +1,27 @@
+<h1><code ng:non-bindable="">trimBoundaries</code>
+<span class="hint">( ranges in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Ensures that the given start point Cursor is not at an "start position"
+and the given end point Cursor is not at an "end position" by moving the
+points to the left and right respectively.  This is effectively the
+opposite of expandBoundaries().</p>
+
+<p>If the boundaries are equal (collapsed), or become equal during this
+operation, or if until() returns true for either point, they may remain
+in start and end position respectively.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">start – {Cusor} – </code>
+<p>start position of cursor</p></li>
+<li><code class="plain">end – {Cusor} – </code>
+<p>end position of cursor</p></li>
+<li><code class="plain">until – {Function:Boolean} – </code>
+<p>Optional predicate.  May be used to stop the trimming process from
+moving the Cursor from within an element outside of it.</p></li>
+<li><code class="plain">ignore – {Function:Boolean} – </code>
+<p>Optional predicate.  May be used to ignore (skip)
+following/preceding siblings which otherwise would stop the
+trimming process, like for example underendered whitespace.</p></li>
+</ul>
+</div>

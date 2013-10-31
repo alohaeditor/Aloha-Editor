@@ -1,0 +1,48 @@
+<h1><code ng:non-bindable="">split</code>
+<span class="hint">( editing in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Splits the ancestors above the given range's start and end points.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">opts – {Object} – </code>
+<p>a map of options (all optional):</p>
+
+<pre><code>   clone - a function that clones a given element node
+   shallowly and returns the cloned node.
+
+   until - a function that returns true if splitting
+   should stop at a given node (exclusive) below the topmost
+   node for which below() returns true. By default all
+   nodes are split.
+
+   below - a function that returns true if descendants
+   of a given node can be split. Used to determine the
+   topmost node at which to end the splitting process. If
+   false is returned for all ancestors of the start and end
+   points of the range, nothing will be split. By default,
+   returns true for an editing host.
+
+   normalizeRange - a boolean, defaults to true.
+   After splitting the selection may still be inside the split
+   nodes, for example after splitting the DOM may look like
+
+   &lt;b&gt;1&lt;/b&gt;&lt;b&gt;{2&lt;/b&gt;&lt;i&gt;3&lt;/i&gt;&lt;i&gt;}4&lt;/i&gt;
+
+  If normalizeRange is true, the selection is trimmed to
+  correct &lt;i&gt;}4&lt;/i&gt; and expanded to correct &lt;b&gt;{2&lt;/b&gt;, such
+   that it will look like
+
+  &lt;b&gt;1&lt;/b&gt;{&lt;b&gt;2&lt;/b&gt;&lt;i&gt;3&lt;/i&gt;}&lt;i&gt;4&lt;/i&gt;
+
+  This should make both start and end points children of the
+   same cac which is going to be the topmost unsplit node. This
+   is usually what one expects the range to look like after a
+   split.
+   NB: if splitUntil() returns true, start and end points
+   may not become children of the topmost unsplit node. Also,
+   if splitUntil() returns true, the selection may be moved
+   out of an unsplit node which may be unexpected.
+</code></pre></li>
+</ul>
+</div>

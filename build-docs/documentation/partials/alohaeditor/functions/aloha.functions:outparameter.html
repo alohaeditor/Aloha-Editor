@@ -1,0 +1,22 @@
+<h1><code ng:non-bindable="">outparameter</code>
+<span class="hint">( functions in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Creates a bound variable and returns the closure which can be used to get
+and set the value of it as a free variable.</p>
+
+<p>This construct can be used to as a convenient way to simulate generic out
+parameters in JavaScript.</p>
+
+<p>Calling the closure with an argument changes the value of the enclosed
+variable.  Calling the closure without any arguments will return the
+value of the enclosed variable.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">value – {*} – </code>
+<p>The initial value that the enclosed variable should hold.</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{Function(*):*}</code>
+– <p>closure of variable</p></div>
+</div>

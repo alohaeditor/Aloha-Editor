@@ -1,0 +1,27 @@
+<h1><code ng:non-bindable="">markWrapper</code>
+<span class="hint">( ephemera in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Marks an element as a ephemeral, excluding subnodes.</p>
+
+<p>The element will be removed when the prune function is called on it, but
+any children of the wrapper element will remain in its place.</p>
+
+<p>A wrapper is an element that wraps a single non-ephemeral element. A
+filler is an element that is wrapped by a single non-ephemeral element.
+This distinction is not important for the prune function, which behave
+the same for both wrappers and fillers, but it makes it easier to build
+more advanced content inspection algorithms (also see note at the header
+of ephemeral.js).</p>
+
+<p>Adds the class 'aloha-ephemera-wrapper' to the given element.</p>
+
+<p>The class 'aloha-ephemera-wrapper' may also be added directly, without
+recurse to this function, if that is more convenient.</p>
+
+<p>NB: a wrapper element must not wrap a filler element. Wrappers and
+    fillers are ephermeral. A wrapper must always wrap a single
+    <em>non-ephemeral</em> element, and a filler must always fill a single
+    <em>non-ephemeral</em> element.</p></div>
+</div>

@@ -1,0 +1,27 @@
+<h1><code ng:non-bindable="">wrap</code>
+<span class="hint">( editing in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Ensures the given range is wrapped by elements with a given nodeName.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">liveRange – {Range} – </code>
+<p>The range of the current selection.</p></li>
+<li><code class="plain">nodeName – {String} – </code>
+<p>The name of the tag that should serve as the
+wrapping node.</p></li>
+<li><code class="plain">remove – {Boolean} – </code>
+<p>Optional flag, which when set to false will cause
+the given markup to be removed (unwrapped) rather
+then set.</p></li>
+<li><code class="plain">opts – {Object} – </code>
+<p>A map of options (all optional):
+createWrapper - a function that returns a new empty
+wrapper node to use.</p>
+
+<p>isReusable - a function that returns true if a given node,
+already in the DOM at the correct place, can be reused
+instead of creating a new wrapper node. May be merged with
+other reusable or newly created wrapper nodes.</p></li>
+</ul>
+</div>

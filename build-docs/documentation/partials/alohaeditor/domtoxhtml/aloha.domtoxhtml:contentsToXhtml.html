@@ -1,0 +1,25 @@
+<h1><code ng:non-bindable="">contentsToXhtml</code>
+<span class="hint">( domtoxhtml in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Serializes a number of DOM nodes in an array-like object to an XHTML
+string.</p>
+
+<p>The XHTML of the nodes in the given array-like object will be
+concatenated.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">nodes – {Array[DOMObject]} – </code>
+<p>An array or jQuery object or another array-like object to
+serialize.</p></li>
+<li><code class="plain">ephemera – {Object} – </code>
+<p>Describes content that should not be serialized.
+Only attrMap and attrRxs are supported at the moment.
+See ephemera.ephemera().</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{String}</code>
+– <p>The serialized XHTML String representing the given DOM nodes in
+the given array-like object.  The result may look like an XML
+fragment with multiple top-level elements and text nodes.</p></div>
+</div>

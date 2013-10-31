@@ -1,0 +1,35 @@
+<h1><code ng:non-bindable="">format</code>
+<span class="hint">( editing in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Ensures the given range is wrapped by elements that have a given
+CSS style set.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">styleName – {String} – </code>
+<p>a CSS style name.
+Please note that not-inherited styles currently may (or
+may not) cause undesirable results.  See also
+html.isStyleInherited().</p>
+
+<p>The underline style can't be unformatted inside a
+non-clearable ancestor ("text-decoration: none" doesn't do
+anything as the underline will be drawn by the ancestor).</p></li>
+<li><code class="plain">opts – {Object} – </code>
+<p>all options supported by wrapElem() as well as the following:
+createWrapper - a function that takes a style value and
+returns a new empty wrapper node that has the style value
+applied.</p>
+
+<p>isPrunable - a function that returns true if a given node,
+after some style was removed from it, can be removed
+entirely. That's usually the case if the given node is
+equivalent to an empty wrapper.</p>
+
+<p>isStyleEqual - a function that returns true if two given
+style values are equal.
+TODO currently we just use strict equals by default, but
+     we should implement for each supported style it's own
+     equals function.</p></li>
+</ul>
+</div>

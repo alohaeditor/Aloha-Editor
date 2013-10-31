@@ -1,0 +1,21 @@
+<h1><code ng:non-bindable="">splitIncl</code>
+<span class="hint">( strings in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Split  <code class="plain">str</code>  along  <code class="plain">pattern</code> , including matches in the result.</p>
+
+<p>splitIncl("foo-bar", /-/g) results in ["foo", "-", "bar"]</p>
+
+<p>whereas</p>
+
+<p>"foo-bar".split(/-/g) results in ["foo", "bar"]</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">pattern – {RegExp} – </code>
+<p>Must include the g flag, otherwise will result in an endless loop.</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{Array[String]}</code>
+– <p>A list of substrings of  <code class="plain">str</code>  in the order they appeared in the
+given string.</p></div>
+</div>

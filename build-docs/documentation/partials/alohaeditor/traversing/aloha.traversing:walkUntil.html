@@ -1,0 +1,24 @@
+<h1><code ng:non-bindable="">walkUntil</code>
+<span class="hint">( traversing in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Applies the given function  <code class="plain">func()</code> , to the the given node  <code class="plain">node</code>  and
+it's next siblings, until the given  <code class="plain">until()</code>  function retuns  <code class="plain">true</code>  or
+all next siblings have been walked.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">node – {DOMObject} – </code>
+<p>given node</p></li>
+<li><code class="plain">func – {Function(DOMObject, *)} – </code>
+<p>Callback function to apply to the traversed nodes.  Will receive
+the each node as the first argument, and the value of  <code class="plain">arg</code>  as the
+second argument.</p></li>
+<li><code class="plain">until – {Function(DOMObject, *):Boolean} – </code>
+<p>Predicate function to test each traversed nodes.  Walking will be
+terminated when this function returns  <code class="plain">true</code> .  Will receive the
+each node as the first argument, and the value of  <code class="plain">arg</code>  as the
+second argument.</p></li>
+<li><code class="plain">arg – {*} – </code>
+<p>A value that will be passed to  <code class="plain">func()</code>  as the second argument.</p></li>
+</ul>
+</div>

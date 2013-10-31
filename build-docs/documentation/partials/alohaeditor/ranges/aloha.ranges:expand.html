@@ -1,0 +1,29 @@
+<h1><code ng:non-bindable="">expand</code>
+<span class="hint">( ranges in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Expands the given range.</p>
+
+<p>expand() will move the range's start and end boundary positions as far
+apart as possible in the document order whithout altering how the range
+would be visually represented when selected.</p>
+
+<p>The start and end boundary positions will not be expanded across elements
+which affect visual line breaks.  These include all elements with
+block-level display styling, img tags, and br tags ofcourse.</p>
+
+<p>Note that an element's styling can only be determined if that element is
+attached to the document.  If working with a range in a detached DOM,
+then line-breaking nodes are determined simply by their tag name.</p>
+
+<p>Also note that expand() will never move the start or end boundary
+position inside of a text node.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">range – {Range} – </code>
+<p>a given range</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{Range}</code>
+– <p>The modified range.</p></div>
+</div>

@@ -1,0 +1,11 @@
+Options -Indexes
+RewriteEngine on
+
+# Send all controller calls to the router.php file which takes care of all plugin controller requests
+RewriteCond %{REQUEST_URI} ^/controller/(.*)$ [NC]
+RewriteRule .* /php/router.php [L]
+
+# Reroute any non-file requests to index.html because of AngularJS HTML5 mode
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^(.*)$ index.html
+

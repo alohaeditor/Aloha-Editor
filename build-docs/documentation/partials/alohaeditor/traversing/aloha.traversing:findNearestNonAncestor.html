@@ -1,0 +1,22 @@
+<h1><code ng:non-bindable="">findNearestNonAncestor</code>
+<span class="hint">( traversing in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Returns the nearest (in the document order) to the given node that is not
+an ancestor of that node.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">node – {DOMObject} – </code>
+<p>given node</p></li>
+<li><code class="plain">previous – {Boolean} – </code>
+<p>If true, will look for the nearest preceeding node, otherwise the
+nearest subsequent node.</p></li>
+<li><code class="plain">limit – {Function(DOMObject):Boolean} – </code>
+<p>(Optional) Predicate, which will be applied to each node in the
+traversal step.  If this function returns true, traversal will
+terminal and findNearestNonAncestor will return null.</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{DOMObject}</code>
+– <p>nearest non ancestor node</p></div>
+</div>

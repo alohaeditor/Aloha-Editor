@@ -1,0 +1,22 @@
+<h1><code ng:non-bindable="">sortUnique</code>
+<span class="hint">( arrays in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Implements unique() using native sort().</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">a – {Array} – </code>
+<p>The array to sort and strip of duplicate values.
+Warning: this array will be modified in-place.</p></li>
+<li><code class="plain">compFn – {Function(*, *):Number} – </code>
+<p>A custom comparison function that accepts two values a and
+b from the given array and returns -1, 0, 1 depending on
+whether a &lt; b, a == b, a > b respectively.</p>
+
+<p>If no compFn is provided, the algorithm will use the browsers
+default sort behaviour and loose comparison to detect duplicates.</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{Array}</code>
+– <p>The given array, sorted and with duplicates removed.</p></div>
+</div>

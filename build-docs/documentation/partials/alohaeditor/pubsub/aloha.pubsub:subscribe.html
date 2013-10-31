@@ -1,0 +1,22 @@
+<h1><code ng:non-bindable="">subscribe</code>
+<span class="hint">( pubsub in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Subscribes a callback function to a channel.  Whenever this channel
+publishes, this function will be invoked.  The return value is an id
+which identifies this subscription (a channel, and callback tuple).  This
+id can be used to unsubscribe this subscription from the given channel.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">channel – {String} – </code>
+<p>Name of channel to listen on.</p></li>
+<li><code class="plain">callback – {Function(Object)} – </code>
+<p>Function to be invoked when messages are published on the given
+channel.</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{Number}</code>
+– <p>Positive integer representing the sid of this subscription, that
+can be used with unsubscribe() if subscription succeeds.  Otherwise the
+return value is -1;</p></div>
+</div>

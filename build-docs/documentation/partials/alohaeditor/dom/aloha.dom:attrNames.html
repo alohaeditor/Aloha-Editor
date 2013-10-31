@@ -1,0 +1,29 @@
+<h1><code ng:non-bindable="">attrNames</code>
+<span class="hint">( dom in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Retrieves the names of all attributes from the given element.</p>
+
+<p>Correctly handles the case that IE7 and IE8 have approx 70-90
+default attributes on each and every element.</p>
+
+<p>This implementation does not iterate over the elem.attributes
+property since that is much slower on IE7 (even when
+checking the attrNode.specified property). Instead it parses the
+HTML of the element. For elements with few attributes the
+performance on IE7 is improved by an order of magnitued.</p>
+
+<p>On IE7, when you clone a <button disabled="disabled"/> or an
+<input checked="checked"/> element the boolean properties will
+not be set on the cloned node. We choose the speed optimization
+over correctness in this case. The dom-to-xhtml plugin has a
+workaround for this case.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">elem – {DOMObject} – </code>
+<p>given element</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{Array[String]}</code>
+– <p>List of attribute names.</p></div>
+</div>

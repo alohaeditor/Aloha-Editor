@@ -1,0 +1,48 @@
+<h1><code ng:non-bindable="">indexByClass</code>
+<span class="hint">( dom in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Indexes descendant elements based on the individual classes in
+the class attribute.</p>
+
+<p>Based on these observations;</p>
+
+<ul>
+<li><p>$('.class1, .class2') takes twice as long as $('.class1') on IE7.</p></li>
+<li><p>$('.class1, .class2') is fast on IE8 (approx the same as
+$('.class'), no matter how many classes), but if the individual
+elements in the result set should be handled differently, the
+subsequent hasClass('.class1') and hasClass('.class2') calls
+slow things down again.</p></li>
+<li><p>DOM traversal with elem.firstChild elem.nextSibling is very
+slow on IE7 compared to just iterating over
+root.getElementsByTagName('*').</p></li>
+<li><p>$('name.class') is much faster than just $('.class'), but as
+soon as you need a single class in classMap that may be present
+on any element, that optimization doesn't gain anything since
+then you have to examine every element.</p></li>
+</ul>
+
+<p>This function will always take approx. the same amount of time
+(on IE7 approx. equivalent to a single call to $('.class')) no
+matter how many entries there are in classMap to index.</p>
+
+<p>This function only makes sense for multiple entries in
+classMap. For a single class lookup, $('.class') or
+$('name.class') is fine (even better in the latter case).</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">root – {DOMObject} – </code>
+<p>The root element to search for elements to index (will not be
+included in search).</p></li>
+<li><code class="plain">classMap – {Object} – </code>
+<p>A map from class name to boolean true.</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{Object}</code>
+– <p>A map from class name to an array of elements with that class.
+Every entry in classMap for which elements have been found will
+have a corresponding entry in the returned map.  Entries for
+which no elements have been found, may or may not have an entry
+in the returned map.</p></div>
+</div>

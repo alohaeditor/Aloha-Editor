@@ -1,0 +1,29 @@
+<h1><code ng:non-bindable="">trim</code>
+<span class="hint">( ranges in module <code ng:non-bindable="">aloha</code>
+ )</span>
+</h1>
+<div><h2 id="Description">Description</h2>
+<div class="description"><p>Starting with the given range's start and end boundary points, seek
+inward using a cursor, passing the cursor to ignoreLeft and ignoreRight,
+stopping when either of these returns true, adjusting the given range to
+the end positions of both cursors.</p>
+
+<p>The dom cursor passed to ignoreLeft and ignoreRight does not traverse
+positions inside text nodes. The exact rules for when text node
+containers are passed are as follows: If the left boundary point is
+inside a text node, trimming will start before it. If the right boundary
+point is inside a text node, trimming will start after it.
+ignoreLeft/ignoreRight() are invoked with the cursor before/after the
+text node that contains the boundary point.</p></div>
+<h2 id="Parameters">Parameters</h2>
+<ul class="parameters"><li><code class="plain">range – {Range} – </code>
+<p>given range</p></li>
+<li><code class="plain">ignoreLeft<i>(optional)</i> – {Function=} – </code>
+<p>given cursor</p></li>
+<li><code class="plain">ignoreRight<i>(optional)</i> – {Function=} – </code>
+<p>given cursor</p></li>
+</ul>
+<h2 id="Returns">Returns</h2>
+<div class="returns"><code class="plain">{Range}</code>
+– <p>The given range, modified.</p></div>
+</div>
