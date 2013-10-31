@@ -46,6 +46,10 @@ ul.parameters > li > p,
   display: inline;
 }
 
+ul.parameters li code.plain {
+    color: green;
+}
+
 ul.methods > li,
 ul.properties > li,
 ul.events > li {
