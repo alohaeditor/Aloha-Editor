@@ -39,8 +39,9 @@ define([
 	}
 
 	function initialize(event) {
-		var blocks = findBlocks(event.editable, event.editor);
-		console.warn(blocks.length + ' blocks found in ' + event.editable.elem);
+		findBlocks(event.editable, event.editor).forEach(function (block) {
+			block.setAttribute('contentEditable', 'false');
+		});
 	}
 
 	function mousedown(event) {
@@ -50,21 +51,14 @@ define([
 		}
 	}
 
-	var handlers = {};
-	handlers['aloha'] = initialize;
-	handlers['mousedown'] = mousedown;
-
-	function handler(event) {
-		var modifier = event.meta ? event.meta + '+' : '';
-		return (handlers[event.name]
-		    && handlers[event.name][modifier + event.code])
-		    || handlers[event.name];
-	}
-
 	function handle(event) {
-		var handle = handler(event);
-		if (handle) {
-			handle(event);
+		switch(event.type) {
+		case 'aloha':
+			initialize(event);
+			break;
+		case 'mousedown':
+			mousedown(event);
+			break;
 		}
 	}
 

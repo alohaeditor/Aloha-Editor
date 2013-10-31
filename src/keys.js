@@ -92,9 +92,10 @@ define([
 
 	function handle(event) {
 		var native = event.native;
-		var range = (native instanceof KeyboardEvent)
-		          ? Ranges.get()
-		          : null;
+		if (!native) {
+			return event;
+		}
+		var range = (native instanceof KeyboardEvent) ? Ranges.get() : null;
 		if (range) {
 			event.range = range;
 			var editable = Editables.fromBoundary(
@@ -105,11 +106,12 @@ define([
 				event.editable = editable;
 			}
 		}
-		event.type = native.type;
-		event.which = native.which;
-		event.meta = metaKeys(native);
-		event.isTextInput = isTextInput(native);
-		event.chr = String.fromCharCode(native.which);
+		event['type'] = native.type;
+		event['which'] = native.which;
+		event['meta'] = metaKeys(native);
+		event['isTextInput'] = isTextInput(native);
+		event['chr'] = String.fromCharCode(native.which);
+		return event;
 	}
 
 	var exports = {

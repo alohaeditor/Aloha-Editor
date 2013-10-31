@@ -19,6 +19,7 @@ define([
 	'colors',
 	'cursors',
 	'dom',
+	'dragdrop',
 	'predicates',
 	'dom-to-xhtml',
 	'editing',
@@ -47,6 +48,7 @@ define([
 	Colors,
 	Cursors,
 	Dom,
+	DragDrop,
 	Predicates,
 	Xhtml,
 	Editing,
@@ -67,26 +69,31 @@ define([
 ) {
 	'use strict';
 
-	function setSelection(event) {
-		console.log(event.dragging.state);
+	var previousState;
+	function prologue(event) {
+		event['previousState'] = previousState;
+		event['editor'] = editor;
+		return event;
+	}
+
+	function epilogue(event) {
+		previousState = event;
 		if (event.range) {
 			Ranges.select(event.range);
 		}
+		console.log(event.dragging.state);
 	}
 
-	var old;
-	function editor(event) {
-		old = Events.compose(
-			{
-				'native' : event,
-				'editor' : editor,
-				'old'    : old
-			},
+	function editor(event, custom) {
+		Events.compose(
+			custom || {'native' : event},
+			prologue,
 			Keys.handle,
 			Mouse.handle,
+			DragDrop.handle,
 			Blocks.handle,
 			Typing.handle,
-			setSelection
+			epilogue
 		);
 	}
 
@@ -117,7 +124,7 @@ define([
 			meta: {type: 'external'},
 			partitionRecords: true
 		});
-		editor({
+		editor(null, {
 			'type'     : 'aloha',
 			'editable' : editable
 		});
@@ -128,7 +135,7 @@ define([
 		Editables.close(editable);
 		Editables.dissocFromEditor(editor, editable);
 		elem.removeAttribute('contentEditable');
-		editor({
+		editor(null, {
 			'type'     : 'mahalo',
 			'editable' : editable
 		});
@@ -146,6 +153,7 @@ define([
 	aloha['colors'] = Colors;
 	aloha['cursors'] = Cursors;
 	aloha['dom'] = Dom;
+	aloha['dragdrop'] = DragDrop;
 	aloha['predicates'] = Predicates;
 	aloha['editing'] = Editing;
 	aloha['ephemera'] = Ephemera;
