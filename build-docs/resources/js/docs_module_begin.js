@@ -567,10 +567,12 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
 
                 $scope.currentPage = page;
 
+                if ($scope.currentPage) {
                 $scope.currentSource = {
                     source: $scope.currentPage.source,
                     codeBlocks: $scope.currentPage.codeBlocks
                 };
+                }
 
                 if (!$scope.currentPage) {
                     $scope.partialTitle = 'Error: Page Not Found!';
