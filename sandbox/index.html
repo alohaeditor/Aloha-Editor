@@ -64,32 +64,6 @@
 		</style>
 	</head>
 	<body>
-		<!--
-		<div class="aloha-editable" contentEditable="true">foo</div>
-		<div class="aloha-editable" contentEditable="true"> *bar</div>
-		<div class="aloha-editable" contentEditable="true">  *foo<b>  *bar</b></div>
-		<div class="aloha-editable" contentEditable="true"><p>  *foo</p></div>
-		<div class="aloha-editable" contentEditable="true"><p>foo* </p>bar</div>
-		<div class="aloha-editable" contentEditable="true"><p>foo</p> *bar</div>
-		<div class="aloha-editable" contentEditable="true"> <p>foo</p>  *bar</div>
-		<div class="aloha-editable" contentEditable="true"><p> *foo</p>x *bar</div>
-		<div class="aloha-editable" contentEditable="true"><b> *foo</b>x *bar</div>
-		<div class="aloha-editable" contentEditable="true">foo<p><i><b> *bar</b></i></p></div>
-		<div class="aloha-editable" contentEditable="true"> <i> <b> *bar* </b></i></div>
-		<div class="aloha-editable" contentEditable="true"><p><b>foo </b></p><p><i><b>bar  </b> </i> </p>baz</div>
-		<div class="aloha-editable" contentEditable="true"><b>  </b></div>
-		<div class="aloha-editable" contentEditable="true"><b>foo* </b>bar</div>
-		<div class="aloha-editable" contentEditable="true"><b>foo</b> *bar</div>
-		<div class="aloha-editable" contentEditable="true">foo<br><p>bar</p></div>
-		<p class="aloha-editable" contentEditable="true">sdfasdf<i>foo<br></i>bar</p>
-		<p class="aloha-editable" contentEditable="true">
-			<img
-			class="aloha-block"
-			src="http://farm6.staticflickr.com/5474/10550733095_48c0f419a3.jpg"
-			alt= "" />
-		</p>
-		-->
-
 		<div class="aloha-editable">
 			<h1>Aloha Editor</h1>
 			<p>
@@ -127,91 +101,7 @@
 				Donec ut libero sed arc vehicula ultricies a non tortor
 			</p>
 		</div>
-		<!--
-
-			<br/><br/><br/><hr/><br/><br/><br/>
-
-			<p>foo</p>
-			<p>bar</p>
-			<b>bar</b>
-			<p>buz</p>
-
-			<div>foo</div>
-			<div>
-				<p><b>bar</b></p>
-				<p>buz</p>
-			</div>
-
-			<br/><br/><br/><br/><br/><br/>
-
-			<div><p>foo</p></div>
-			<div><i>bar</i></div>
-
-
-			<div>
-				<div>
-					<h1>one</h1>
-					two
-					<p>three</p>
-				</div>
-			</div>
-
-			<p>foo</p><p>bar</p>
-
-			<br/><br/><br/><hr/><br/><br/><br/>
-
-			<b>foo</b><b>bar</b>
-
-			<br/><br/><br/><hr/><br/><br/><br/>
-
-			<b>foo</b><i>bar</i>
-
-			<br/><br/><br/><hr/><br/><br/><br/>
-
-			<b>foo</b><p>bar</p>
-
-			<br/><br/><br/><hr/><br/><br/><br/>
-
-			<b>foo</b><p><b>bar</b></p>
-
-			<br/><br/><br/><hr/><br/><br/><br/>
-
-			<b>foo</b><div><p>bar</p></div>
-
-			<br/><br/><br/><hr/><br/><br/><br/>
-
-			<b>foo</b><div><p>bar</p>baz</div>
-
-			<br/><br/><br/><hr/><br/><br/><br/>
-
-			<div>
-				<b>foo</b><div><h2><p>bar</p>baz</h2>buz</div>
-			</div>
-
-			<br/><br/><br/><br/><br/><br/>
-
-			<table summary="demo content for aloha tables">
-				<tbody>
-					<tr><td >This</td><td >is</td><td>a</td><td>demo</td></tr>
-					<tr><td>table</td><td colspan=2 rowspan=2>with</td><td>an</td></tr>
-					<tr><td>awesome</td><td>column</td></tr>
-					<tr><td>and</td><td>row</td><td>span</td><td>!</td></tr>
-				</tbody>
-				<caption>describe the table</caption>
-			</table>
-
-			<h2>Foo</h2>bar
-			<h2>Foo</h2><b>bar</b>
-			<h2>Foo</h2><b><i>bar</i></b>
-			<h2><i>Foo</i></h2><i>bar</i>
-			<h2><i>Foo</i></h2><i><u>bar</u></i>
-			<h2><i>Foo</i></h2><b><i>bar</i></b>
-			<h2><b><i>Foo</i></b></h2><b><i>bar</i></b>
-			<h2>Foo</h2><p>bar</p>
-
-			<br/><br/><br/><br/><br/><br/>
-		-->
-		<script src="mandox.js"></script>
+		<!-- script src="mandox.js"></script -->
 		<script src="../src/require-pronto.js"></script>
 		<script src="../src/require-pronto.dev.js"></script>
 		<script src="../build/aloha.js"></script>
@@ -219,33 +109,30 @@
 			(function () {
 				'use strict';
 				function setVersion (version) {
-					var h1 = document.getElementsByTagName('h1')[0];
+					var h1 = document.querySelector('h1');
 					if (h1) {
 						h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
 					}
 				}
-				function main(ranges, editing, pubsub) {
-					var editables = document.getElementsByClassName('aloha-editable');
-					aloha.arrays.coerce(editables).forEach(function (node) {
-						aloha.aloha(node);
-					});
-					return;
-					var range = ranges.create(
-						document.getElementsByTagName('b')[0], 1,
-						document.getElementsByTagName('b')[0], 2
-					);
-					ranges.select(ranges.extendToWord(range));
-					range = ranges.get();
-					editing.wrap(range, 'u');
-					ranges.contract(range);
-					ranges.insertText(ranges.stableRange(range), '"');
-					ranges.collapseToEnd(range)
-					ranges.insertText(range, '"');
-					ranges.collapseToEnd(range);
-					ranges.select(range);
+				function main(Editing, Ranges, Arrays, StableRange) {
+					Arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
+					var range = Ranges.expandToWord(Ranges.create(
+						document.querySelector('b'), 1,
+						document.querySelector('b'), 2
+					));
+					Editing.wrap(range, 'u');
+					Ranges.contract(range);
+					Ranges.insertTextBehind(StableRange(range), '"');
+					Ranges.collapseToEnd(range)
+					Ranges.insertTextBehind(range, '"');
 				}
 				function load(aloha) {
-					main(aloha.ranges, aloha.editing, aloha.pubsub);
+					main(
+						aloha.editing,
+						aloha.ranges,
+						aloha.arrays,
+						aloha.stablerange
+					);
 				}
 				if ('undefined' === typeof aloha) {
 					setVersion('src');

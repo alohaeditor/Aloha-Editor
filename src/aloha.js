@@ -32,6 +32,7 @@ define([
 	'keys',
 	'maps',
 	'ranges',
+	'stable-range',
 	'strings',
 	'traversing',
 	'typing',
@@ -61,6 +62,7 @@ define([
 	Keys,
 	Maps,
 	Ranges,
+	StableRange,
 	Strings,
 	Traversing,
 	Typing,
@@ -166,6 +168,7 @@ define([
 	aloha['maps'] = Maps;
 	aloha['pubsub'] = Pubsub;
 	aloha['ranges'] = Ranges;
+	aloha['stablerange'] = StableRange;
 	aloha['strings'] = Strings;
 	aloha['traversing'] = Traversing;
 	aloha['xhtml'] = Xhtml;
