@@ -31,9 +31,9 @@ define([
 ) {
 	'use strict';
 
-	function undoable(type, interaction, fn) {
-		var range = interaction.range;
-		var undoContext = interaction.editable.undoContext;
+	function undoable(type, event, fn) {
+		var range = event.range;
+		var undoContext = event.editable.undoContext;
 		Undo.capture(undoContext, {
 			meta: {type: type},
 			oldRange: range
@@ -44,8 +44,8 @@ define([
 		return range;
 	}
 
-	function delete_(interaction, direction) {
-		var range = interaction.range;
+	function delete_(event, direction) {
+		var range = event.range;
 		if (range.collapsed) {
 			range = (
 				direction
@@ -55,26 +55,26 @@ define([
 		}
 		Editing.delete(
 			Ranges.expandToVisibleCharacter(range),
-			interaction.editable
+			event.editable
 		);
 		Html.prop(range.commonAncestorContainer);
 		return range;
 	}
 
-	function format(interaction, style) {
-		Editing.format(interaction.range, style, true, interaction.editable);
-		return interaction.range;
+	function format(event, style) {
+		Editing.format(event.range, style, true, event.editable);
+		return event.range;
 	}
 
-	function break_(interaction, isLinebreak) {
-		Editing.break(interaction.range, interaction.editable, isLinebreak);
-		return interaction.range;
+	function break_(event, isLinebreak) {
+		Editing.break(event.range, event.editable, isLinebreak);
+		return event.range;
 	}
 
-	function insertText(interaction) {
-		var editable = interaction.editable;
-		var range = interaction.range;
-		var text = interaction.chr;
+	function insertText(event) {
+		var editable = event.editable;
+		var range = event.range;
+		var text = event.chr;
 		var boundary = Boundaries.start(range);
 
 		if (' ' === text) {
@@ -103,10 +103,10 @@ define([
 		return range;
 	}
 
-	function toggleUndo(interaction, op) {
-		var undoContext = interaction.editable.undoContext;
-		op(undoContext, interaction.range, [interaction.range]);
-		return interaction.range;
+	function toggleUndo(event, op) {
+		var undoContext = event.editable.undoContext;
+		op(undoContext, event.range, [event.range]);
+		return event.range;
 	}
 
 	var deleteBackwards = {
@@ -211,6 +211,9 @@ define([
 	}
 
 	function handle(event) {
+		if (!event.editable) {
+			return;
+		}
 		var handle = handler(event);
 		if (!handle) {
 			return;
@@ -219,7 +222,7 @@ define([
 		if (handle.preventDefault) {
 			event.native.preventDefault();
 		}
-		if (handle.clearOverrides && event.editable) {
+		if (handle.clearOverrides) {
 			event.editable.overrides = [];
 		}
 		if (handle.deleteRange && range && !range.collapsed) {
