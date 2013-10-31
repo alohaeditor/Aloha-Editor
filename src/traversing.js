@@ -4,6 +4,18 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name traversing
+ * @description
+ *
+ * ## Traversing Utilities
+ *
+ * This module houses DOM traversal functions.
+ *
+ */
+
 define([
 	'dom',
 	'functions'
@@ -184,13 +196,15 @@ define([
 	);
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:findWordBoundaryBehind
+	 * @description
+	 *
 	 * Looks backwards in the node tree for the nearest word boundary position.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Number} offset
-	 * @return position Information about the nearst found word boundary.
-	 * @return position.node
-	 * @return position.offset
+	 * @param {DOMObject} node given node
+	 * @param {Number} offset given offset
+	 * @return {Object} position Information about the nearst found word boundary.
 	 */
 	function findWordBoundaryBehind(node, offset) {
 		if (dom.isEditingHost(node)) {
@@ -235,13 +249,15 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:findWordBoundaryAhead
+	 * @description
+	 *
 	 * Looks forwards in the node tree for the nearest word boundary position.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Number} offset
-	 * @return position Information about the nearst found word boundary.
-	 * @return position.node
-	 * @return position.offset
+	 * @param {DOMObject} node given node
+	 * @param {Number} offset given offset
+	 * @return {Object} position Information about the nearst found word boundary.
 	 */
 	function findWordBoundaryAhead(node, offset) {
 		if (dom.isEditingHost(node)) {
@@ -288,6 +304,10 @@ define([
 
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:prevNodeBoundary
+	 * @description
+	 *
 	 *	<div>
 	 *		foo
 	 *		<p>
@@ -390,6 +410,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:forward
+	 * @description
+	 *
 	 * Given a node, will return node that succeeds it in the document order.
 	 *
 	 * For example, if this function is called recursively, starting from the
@@ -411,7 +435,7 @@ define([
 	 *
 	 * <b>...</b>, "two", <u>...</u>, <i>...</i>, "three", "four", "five"
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {DOMObject}
 	 *         The succeeding node or null if the given node has no previous
 	 *         siblings and no parent.
@@ -428,6 +452,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:backward
+	 * @description
+	 *
 	 * Given a node, will return node that preceeds it in the document order.
 	 *
 	 * For example, if this function is called recursively, starting from the
@@ -449,7 +477,7 @@ define([
 	 *
 	 * "four", "three", <i>...</i>, <u>...</u>, "two", <b>...</b>, "one"
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {DOMObject}
 	 *         The preceeding node or null if the given node has no previous
 	 *         siblings and no parent.
@@ -463,13 +491,17 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:findForward
+	 * @description
+	 *
 	 * Starting from the given node, and moving forwards through the DOM tree,
 	 * searches for a node which returns `true` when applied to the predicate
 	 * `match()`.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Function(DOMObject):Boolean} match
-	 * @return {DOMObject}
+	 * @param {DOMObject} node given node
+	 * @param {Function(DOMObject):Boolean} match search until here
+	 * @return {DOMObject} DOM object
 	 */
 	function findForward(node, match) {
 		while (node && !match(node)) {
@@ -479,13 +511,17 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:findBackward
+	 * @description
+	 *
 	 * Starting from the given node, and moving backwards through the DOM tree,
 	 * searches for a node which returns `true` when applied to the predicate
 	 * `match()`.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Function(DOMObject):Boolean} match
-	 * @return {DOMObject}
+	 * @param {DOMObject} node given node
+	 * @param {Function(DOMObject):Boolean} match serach until here
+	 * @return {DOMObject} DOM object
 	 */
 	function findBackward(node, match) {
 		while (node && !match(node)) {
@@ -495,12 +531,16 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:nextWhile
+	 * @description
+	 *
 	 * Starting from the given node and moving forward, traverses the set of
 	 * `node`'s sibiling nodes until either the predicate `cond` returns false
 	 * or we reach the last sibling of `node`'s parent element.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Function(DOMObject, *?):Boolean} cond
+	 * @param {DOMObject} node given node
+	 * @param {Function(DOMObject, *?):Boolean} cond given condition
 	 * @param {*} arg
 	 *        Optional arbitrary value that will be passed to the `cond()`
 	 *        predicate.
@@ -515,12 +555,16 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:prevWhile
+	 * @description
+	 *
 	 * Starting from the given node and moving backwards, traverses the set of
 	 * `node`'s sibiling nodes until either the predicate `cond` returns false
 	 * or we reach the last sibling of `node`'s parent element.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Function(DOMObject, *?):Boolean} cond
+	 * @param {DOMObject} node given node
+	 * @param {Function(DOMObject, *?):Boolean} cond given condition
 	 * @param {*} arg
 	 *        Optional arbitrary value that will be passed to the `cond()`
 	 *        predicate.
@@ -535,11 +579,15 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:walkUntil
+	 * @description
+	 *
 	 * Applies the given function `func()`, to the the given node `node` and
 	 * it's next siblings, until the given `until()` function retuns `true` or
 	 * all next siblings have been walked.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @param {Function(DOMObject, *)} func
 	 *        Callback function to apply to the traversed nodes.  Will receive
 	 *        the each node as the first argument, and the value of `arg` as the
@@ -561,10 +609,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:walk
+	 * @description
+	 *
 	 * Applies the given function `func()`, to the the given node `node` and all
 	 * it's next siblings.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @param {Function(DOMObject, *)} fn
 	 *        Callback function to apply to the traversed nodes.  Will receive
 	 *        the each node as the first argument, and the value of `arg` as the
@@ -577,6 +629,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:walkRec
+	 * @description
+	 *
 	 * Depth-first postwalk of the given DOM node.
 	 */
 	function walkRec(node, func, arg) {
@@ -589,11 +645,15 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:walkUntilNode
+	 * @description
+	 *
 	 * Applies the given function `func()`, to the the given node `node` and
 	 * it's next siblings, until `untilNode` is encountered or the last sibling
 	 * is reached.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @param {Function(DOMObject, *)} fn
 	 *        Callback function to apply to the traversed nodes.  Will receive
 	 *        the each node as the first argument, and the value of `arg` as the
@@ -610,10 +670,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:parentsUntil
+	 * @description
+	 *
 	 * Traverses up the given node's ancestors, collecting all parent nodes,
 	 * until the given predicate returns true.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @param {Function(DOMObject):Boolean} pred
 	 *        Predicate function which will receive nodes as they are traversed.
 	 *        This function returns `true`, it will terminate the traversal.
@@ -631,11 +695,15 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:parentsUntilIncl
+	 * @description
+	 *
 	 * Starting with the given node, traverses up the given node's ancestors,
 	 * collecting each parent node, until the first ancestor that causes the
 	 * given predicate function to return true.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @param {Function(DOMObject):Boolean} pred
 	 *        Predicate function which will receive nodes as they are traversed.
 	 *        This function returns `true`, it will terminate the traversal.
@@ -652,10 +720,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:childAndParentsUntil
+	 * @description
+	 *
 	 * Collects all ancestors of the given node until the first ancestor that
 	 * causes the given predicate function to return true.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @param {Function(DOMObject):Boolean} pred
 	 *        Predicate function which will receive nodes as they are traversed.
 	 *        This function returns `true`, it will terminate the traversal.
@@ -672,10 +744,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:childAndParentsUntilIncl
+	 * @description
+	 *
 	 * Collects the given node, and all its ancestors until the first ancestor
 	 * that causes the given predicate function to return true.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @param {Function(DOMObject):Boolean} pred
 	 *        Predicate function which will receive nodes as they are traversed.
 	 *        This function returns `true`, it will terminate the traversal.
@@ -692,9 +768,13 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:childAndParentsUntilNode
+	 * @description
+	 *
 	 * Collects all ancestors of the given node until `untilNode` is reached.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @param {DOMObject} untilNode
 	 *        Terminal ancestor.
 	 * @return {Array[DOMObject]}
@@ -707,10 +787,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:childAndParentsUntilInclNode
+	 * @description
+	 *
 	 * Collects the given node, and all its ancestors until `untilInclNode` is
 	 * reached.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @param {DOMObject} untilInclNode
 	 *        Terminal ancestor.  Will be included in results.
 	 * @return {Array[DOMObject]}
@@ -723,13 +807,17 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:climbUntil
+	 * @description
+	 *
 	 * Climbs up the given node's ancestor until the predicate until() return
-	 * true.  Starting with the given node, applies func() to each not in the
+	 * true.  Starting with the given node, applies func() to each node in the
 	 * climb.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Function(DOMObject)} func
-	 * @param {Function(DOMObject):Boolean} until
+	 * @param {DOMObject} node given node
+	 * @param {Function(DOMObject)} func function applied for each node
+	 * @param {Function(DOMObject):Boolean} until until that function returns true
 	 */
 	function climbUntil(node, func, until) {
 		var parent;
@@ -741,10 +829,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:findNearestNonAncestor
+	 * @description
+	 *
 	 * Returns the nearest (in the document order) to the given node that is not
 	 * an ancestor of that node.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @param {Boolean} previous
 	 *        If true, will look for the nearest preceeding node, otherwise the
 	 *        nearest subsequent node.
@@ -752,7 +844,7 @@ define([
 	 *        (Optional) Predicate, which will be applied to each node in the
 	 *        traversal step.  If this function returns true, traversal will
 	 *        terminal and findNearestNonAncestor will return null.
-	 * @return {DOMObject}
+	 * @return {DOMObject} nearest non ancestor node
 	 */
 	function findNearestNonAncestor(node, previous, limit) {
 		limit = limit || fn.returnFalse;
@@ -766,22 +858,30 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:previousNonAncestor
+	 * @description
+	 *
 	 * Returns the nearest previous node to the given node that is not one of
 	 * it's ancestor.
 	 *
-	 * @param {DOMObject} node
-	 * @param {DOMObject}
+	 * @param {DOMObject} node given node
+	 * @return {DOMObject} nearest previous node
 	 */
 	function previousNonAncestor(node) {
 		return findNearestNonAncestor(node, true, dom.isEditingHost);
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.traversing:nextNonAncestor
+	 * @description
+	 *
 	 * Returns the nearest next node to the given node that is not one of it's
 	 * ancestor.
 	 *
-	 * @param {DOMObject} node
-	 * @param {DOMObject}
+	 * @param {DOMObject} node given node
+	 * @return {DOMObject} nearest next node
 	 */
 	function nextNonAncestor(node) {
 		return findNearestNonAncestor(node, false, dom.isEditingHost);

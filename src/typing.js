@@ -4,6 +4,18 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name typing
+ * @description
+ *
+ * ## Typing Utilities
+ *
+ * This module houses utilities for keyboard events.
+ *
+ */
+
 define([
 	'dom',
 	'keys',

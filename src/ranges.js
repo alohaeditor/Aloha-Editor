@@ -4,6 +4,18 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name ranges
+ * @description
+ *
+ * ## Range Utilities
+ *
+ * This module is for working with DOM ranges.
+ *
+ */
+
 define([
 	'dom',
 	'html',
@@ -28,6 +40,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:get
+	 * @description
+	 *
 	 * Gets the currently selected range.
 	 *
 	 * @return {?Range}
@@ -39,14 +55,18 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:create
+	 * @description
+	 *
 	 * Creates a range object with boundaries defined by containers and offsets
 	 * in those containers.
 	 *
-	 * @param {DOMElement} startContainer
-	 * @param {Number} startOffset
-	 * @param {DOMElement} endContainer
-	 * @param {Number} endOffset
-	 * @return {Range}
+	 * @param {DOMElement} startContainer a startContainer
+	 * @param {Number} startOffset a startOffset
+	 * @param {DOMElement} endContainer an endContainer
+	 * @param {Number} endOffset an endOffset
+	 * @return {Range} range object with boundaries
 	 */
 	function create(startContainer, startOffset, endContainer, endOffset) {
 		var range = document.createRange();
@@ -62,10 +82,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:select
+	 * @description
+	 *
 	 * Sets the given range to the browser selection.  This will cause the
 	 * selection to be visually highlit by the browser.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range a given range
 	 * @return {Selection}
 	 *         The browser selection to which the range was set.
 	 */
@@ -77,10 +101,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:setFromReference
+	 * @description
+	 *
 	 * Sets the start and end boundaries of `range` from `reference`.
 	 *
-	 * @param {Range} range
-	 * @param {Range} reference
+	 * @param {Range} range a given range
+	 * @param {Range} reference a reference range
 	 * @return {Range}
 	 *         The modified range.
 	 */
@@ -232,6 +260,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:expand
+	 * @description
+	 *
 	 * Expands the given range.
 	 *
 	 * expand() will move the range's start and end boundary positions as far
@@ -249,7 +281,7 @@ define([
 	 * Also note that expand() will never move the start or end boundary
 	 * position inside of a text node.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range a given range
 	 * @return {Range}
 	 *         The modified range.
 	 */
@@ -270,6 +302,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:contract
+	 * @description
+	 *
 	 * Contracts the given range.
 	 *
 	 * contract() will move the range's start and end boundary positions as
@@ -287,7 +323,7 @@ define([
 	 * Also note that contract() will never move the start or end boundary
 	 * position inside of a text node.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range a given range
 	 * @return {Range}
 	 *         The modified range.
 	 */
@@ -322,11 +358,15 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:expandToWord
+	 * @description
+	 *
 	 * Expands the ranges start and end positions to the nearest word
 	 * boundaries.
 	 *
-	 * @param {Range} range
-	 * @return {Range}
+	 * @param {Range} range a given range
+	 * @return {Range} expanded range to nearest word bounderies
 	 */
 	function expandToWord(range) {
 		var behind = traversing.findWordBoundaryBehind(
@@ -343,6 +383,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:trim
+	 * @description
+	 *
 	 * Starting with the given range's start and end boundary points, seek
 	 * inward using a cursor, passing the cursor to ignoreLeft and ignoreRight,
 	 * stopping when either of these returns true, adjusting the given range to
@@ -356,9 +400,9 @@ define([
 	 * ignoreLeft/ignoreRight() are invoked with the cursor before/after the
 	 * text node that contains the boundary point.
 	 *
-	 * @param {Range} range
-	 * @param {Function=} ignoreLeft
-	 * @param {Function=} ignoreRight
+	 * @param {Range} range given range
+	 * @param {Function=} ignoreLeft given cursor
+	 * @param {Function=} ignoreRight given cursor
 	 * @return {Range}
 	 *         The given range, modified.
 	 */
@@ -398,12 +442,16 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:trimClosingOpening
+	 * @description
+	 *
 	 * Like trim() but ignores closing (to the left) and opening positions
 	 * (to the right).
 	 *
-	 * @param {Range} range
-	 * @param {Function=} ignoreLeft
-	 * @param {Function=} ignoreRight
+	 * @param {Range} range given range
+	 * @param {Function=} ignoreLeft given cursor
+	 * @param {Function=} ignoreRight given cursor
 	 * @return {Range}
 	 *         The given range, modified.
 	 */
@@ -462,6 +510,10 @@ define([
 	};
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:stableRange
+	 * @description
+	 *
 	 * Creates a "stable" copy of the given range.
 	 *
 	 * A native range is live, which means that modifying the DOM may mutate the
@@ -470,18 +522,22 @@ define([
 	 * behaviour of a native range is very erratic and should be converted to a
 	 * stable range as the first thing in any algorithm.
 	 *
-	 * @param {Range} range
-	 * @return {StableRange}
+	 * @param {Range} range given range
+	 * @return {StableRange} a stable range
 	 */
 	function stableRange(range) {
 		return new StableRange(range);
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:equal
+	 * @description
+	 *
 	 * Checks whether the two given range object are equal.
 	 *
-	 * @param {Range} a
-	 * @param {Range} b
+	 * @param {Range} a given range
+	 * @param {Range} b given range
 	 * @return {Boolean}
 	 *         True if ranges `a` and `b` have the same boundary points.
 	 */
@@ -493,13 +549,17 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:expandBoundaries
+	 * @description
+	 *
 	 * Ensures that the given start point Cursor is not at a "start position"
 	 * and the given end point Cursor is not at an "end position" by moving the
 	 * points to the left and right respectively.  This is effectively the
 	 * opposite of trimBoundaries().
 	 *
-	 * @param {Cusor} start
-	 * @param {Cusor} end
+	 * @param {Cusor} start start position of cursor
+	 * @param {Cusor} end end position of cursor
 	 * @param {Function:Boolean} until
 	 *        Optional predicate.  May be used to stop the trimming process from
 	 *        moving the Cursor from within an element outside of it.
@@ -521,6 +581,10 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:trimBoundaries
+	 * @description
+	 *
 	 * Ensures that the given start point Cursor is not at an "start position"
 	 * and the given end point Cursor is not at an "end position" by moving the
 	 * points to the left and right respectively.  This is effectively the
@@ -530,8 +594,8 @@ define([
 	 * operation, or if until() returns true for either point, they may remain
 	 * in start and end position respectively.
 	 *
-	 * @param {Cusor} start
-	 * @param {Cusor} end
+	 * @param {Cusor} start start position of cursor
+	 * @param {Cusor} end end position of cursor
 	 * @param {Function:Boolean} until
 	 *        Optional predicate.  May be used to stop the trimming process from
 	 *        moving the Cursor from within an element outside of it.
@@ -567,9 +631,13 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:collapseToStart
+	 * @description
+	 *
 	 * Collapses the given range start boundary towards the end boundary.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 * @return {Range}
 	 *         The given range, modified.
 	 */
@@ -579,9 +647,13 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:collapseToEnd
+	 * @description
+	 *
 	 * Collapses the given range start boundary towards the end boundary.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 * @return {Range}
 	 *         The given range, modified.
 	 */
@@ -591,12 +663,16 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:getNearestEditingHost
+	 * @description
+	 *
 	 * Gets the nearest editing host to the given range.
 	 *
 	 * Because Firefox, the range may not be inside the editable even though the
 	 * selection may be inside the editable.
 	 *
-	 * @param {Range} liveRange
+	 * @param {Range} liveRange given range
 	 * @param {DOMObject} Editing host, or null if none is found.
 	 */
 	function getNearestEditingHost(liveRange) {
@@ -613,9 +689,13 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:insertText
+	 * @description
+	 *
 	 * Insert the given text to the left of the given range.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 * @param {String} text
 	 *        The text to insert.
 	 * @return {Range}
@@ -665,10 +745,14 @@ define([
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.ranges:offset
+	 * @description
+	 *
 	 * Calculates the pixel position of the given range.
 	 *
-	 * @param {Range}
-	 * @return {Object}
+	 * @param {Range} given range
+	 * @return {Object} pixel position
 	 */
 	function offset(live) {
 		var range = live.cloneRange();

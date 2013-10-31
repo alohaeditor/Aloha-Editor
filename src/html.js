@@ -170,7 +170,7 @@ define([
 	 * Similar to hasBlockStyle() except relies on the nodeName of the given
 	 * node which works for attached as well as and detached nodes.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {Boolean}
 	 *         True if the given node is a block node type--regardless of how it
 	 *         is rendered.
@@ -187,7 +187,7 @@ define([
 	 * Similar to hasInlineStyle() in the same sense as isBlockType() is similar
 	 * to hasBlockStyle()
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {Boolean}
 	 *         True if the given node is an inline node type--regardless of how
 	 *         it is rendered.
@@ -203,8 +203,8 @@ define([
 	 *
 	 * Check whether the given node is a void element type.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @return {Boolean} True if the given node is a void element
 	 */
 	function isVoidType(node) {
 		return VOID_ELEMENTS[node.nodeName] || false;
@@ -217,8 +217,8 @@ define([
 	 *
 	 * Check whether the given node is a text-level semantic element type.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @return {Boolean} true if the given node is a text-level element
 	 */
 	function isTextLevelSemanticType(node) {
 		return TEXT_LEVEL_SEMANTIC_ELEMENTS[node.nodeName] || false;
@@ -238,7 +238,7 @@ define([
 	 * Note that this function depends on style inheritance which only works if
 	 * the given node is attached to the document.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {Boolean}
 	 *         True if the given node is rendered with block style.
 	 */
@@ -270,7 +270,7 @@ define([
 	 * Note that this function depends on style inheritance which only works if
 	 * the given node is attached to the document.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {Boolean}
 	 *         True if the given node is rendered with inline style.
 	 */
@@ -298,8 +298,8 @@ define([
 	 * Checks whether the given string represents a whitespace preservation
 	 * style property.
 	 *
-	 * @param {String} string
-	 * @return {Boolean}
+	 * @param {String} string given string
+	 * @return {Boolean} true if given string represents a whitespace preservation style
 	 */
 	function isWhiteSpacePreserveStyle(cssWhiteSpaceValue) {
 		return (cssWhiteSpaceValue === 'pre'
@@ -321,8 +321,8 @@ define([
 	 * http://code.google.com/p/rangy/source/browse/trunk/src/js/modules/rangy-cssclassapplier.js
 	 * under the MIT license.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @return {Boolean} true if the given node is unrendered whitespace
 	 */
 	function isUnrenderedWhitespaceNoBlockCheck(node) {
 		if (3 !== node.nodeType) {
@@ -377,7 +377,7 @@ define([
 	 * rendered content was encountered on the way. point will not be mutated
 	 * unless true is returned.
 	 *
-	 * @param {Cursor} point
+	 * @param {Cursor} point given cursor point
 	 * @return {Boolean}
 	 *         True if the cursor is moved.
 	 */
@@ -402,7 +402,7 @@ define([
 	 * some rendered content was encountered on the way. point will not be
 	 * mutated unless true is returned.
 	 *
-	 * @param {Cursor} point
+	 * @param {Cursor} point given cursor point
 	 * @return {Boolean}
 	 *         True if the cursor is moved.
 	 */
@@ -450,7 +450,7 @@ define([
 	 * each including its respective br and any preceding unrendered whitespace
 	 * and in case of the last line, also any following unrendered whitespace.
 	 *
-	 * @param {Cursor} point
+	 * @param {Cursor} point given cursor point
 	 * @return {Boolean}
 	 *         True if the cursor is moved.
 	 */
@@ -481,8 +481,8 @@ define([
 	 *
 	 * Returns true if the given node is unrendered whitespace.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @return {Boolean} true if the given node is unrendered whitespace
 	 */
 	function isUnrenderedWhitespace(node) {
 		if (!isUnrenderedWhitespaceNoBlockCheck(node)) {
@@ -502,8 +502,8 @@ define([
 	 *
 	 * Checks whether the given DOM element is rendered empty or not.
 	 *
-	 * @param {DOMObject} elem
-	 * @return {Boolean}
+	 * @param {DOMObject} elem given DOM element
+	 * @return {Boolean} true if given DOM element is rendered empty
 	 */
 	function isEmpty(elem) {
 		var child = elem.firstChild;
@@ -531,8 +531,8 @@ define([
 	 *
 	 * TODO complete the list of inherited/notInheritedStyles
 	 *
-	 * @param {String} styleName
-	 * @return {Boolean}
+	 * @param {String} styleName style name
+	 * @return {Boolean} true if style is inherited
 	 */
 	function isStyleInherited(styleName) {
 		return !notInheritedStyles[styleName];
@@ -549,8 +549,8 @@ define([
 	 * isUnrenderedWhitespace()) and non-breaking whitespace 0xa0 but returns
 	 * true for tab 0x09 and linebreak 0x0a and 0x0d.
 	 *
-	 * @param {String} chr
-	 * @return {Boolean}
+	 * @param {String} chr given character
+	 * @return {Boolean} true if given character is a control character
 	 */
 	function isControlCharacter(chr) {
 		// Regex matches C0 and C1 control codes, which seems to be good enough.
@@ -683,7 +683,7 @@ define([
 	 *
 	 * http://www.w3.org/TR/html401/struct/text.html#h-9.1
 	 *
-	 * @param {DOMElement} textnode
+	 * @param {DOMElement} textnode a given text node
 	 * @return {boolean} True is node is a textnode of white characters.
 	 */
 	function isWhitespaces(textnode) {
@@ -698,7 +698,7 @@ define([
 	 * Checks whether or not a given text node consists of only sequence of
 	 * zero-width characters.
 	 *
-	 * @param {DOMObject} textnode
+	 * @param {DOMObject} textnode given text node
 	 * @return {boolean} True is node is a textnode of zero-width characters
 	 */
 	function isZeroWidthCharacters(textnode) {
@@ -713,7 +713,7 @@ define([
 	 * Checks whether or not a given text node consists of only sequence of
 	 * zero-width characters or whitespace characters.
 	 *
-	 * @param {DOMObject} textnode
+	 * @param {DOMObject} textnode given text node
 	 * @return {boolean} True is node is a textnode of zero-width characters
 	 */
 	function isWhitespaceOrZeroWidthCharacters(textnode) {
@@ -728,7 +728,7 @@ define([
 	 * Checks whether the given node positioned at either extremity of it's
 	 * sibling linked list.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {boolean} True if node is wither the first or last child of its
 	 *                   parent.
 	 */
@@ -744,10 +744,10 @@ define([
 	 * @name aloha.html:isAdjacentToBlock
 	 * @description
 	 *
-	 * Checks whether the given node is next to a block level elemnt.
+	 * Checks whether the given node is next to a block level element.
 	 *
-	 * @param {DOMObject} node
-	 * @return {boolean}
+	 * @param {DOMObject} node given node
+	 * @return {boolean} true if node is next to a block level element
 	 */
 	function isAdjacentToBlock(node) {
 		return isBlockType(node.previousSibling) || isBlockType(node.nextSibling);
@@ -761,8 +761,8 @@ define([
 	 * Checks whether the given node is visually rendered according to HTML5
 	 * specification.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @return {Boolean} true if visually rendered
 	 */
 	function isUnrenderedNode(node) {
 		if (!node) {
@@ -811,9 +811,9 @@ define([
 	 * to <u> and "right":
 	 * <p>...<i>left</i></p><u>right</u>
 	 *
-	 * @param {DOMObject} left
-	 * @param {DOMObject} right
-	 * @return {Boolean}
+	 * @param {DOMObject} left DOM node
+	 * @param {DOMObject} right DOM node
+	 * @return {Boolean} true if `left` is visually adjacent to `right`
 	 */
 	function isVisuallyAdjacent(left, right) {
 		var node = traversing.previousNonAncestor(right);
@@ -855,8 +855,8 @@ define([
 	 * them will likely have it's semantic styling changed.
 	 *
 	 * @private
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @return {Boolean} true if the given node may be used to receive moved nodes
 	 */
 	function suitableTransferTarget(node) {
 		return !isVoidType(node) && !isTextLevelSemanticType(node);
@@ -876,7 +876,7 @@ define([
 	 *        True if the received DOM objects should be inserted as the last
 	 *        child of `ref`.  Otherwise they will be inserted before `ref` as
 	 *        it's previousSibling.
-	 * @return {Function(DOMObject, OutParameter):Boolean}
+	 * @return {Function(DOMObject, OutParameter):Boolean} function to insert the DOM object to a given node
 	 */
 	function createInsertFunction(ref, atEnd) {
 		if (dom.isTextNode(ref)) {
@@ -915,7 +915,7 @@ define([
 	 *
 	 * @param {DOMObject} node
 	 *        The node that is on the left side of the join.
-	 * @return {Object}
+	 * @return {Object} contains the properties `start` and `move`
 	 */
 	function createTransferPivot(node) {
 		var prev;
@@ -941,8 +941,8 @@ define([
 	 * the notable exception of list containers (ol, and ul).
 	 *
 	 * @private
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @return {Boolean} true if node is transferable
 	 */
 	function isTransferable(node) {
 		return isInlineType(node) || isListContainer(node);
@@ -950,8 +950,8 @@ define([
 
 	/**
 	 * @private
-	 * @param {DOMObject} node
-	 * @return {DOMObject}
+	 * @param {DOMObject} node given node
+	 * @return {DOMObject} next transferable node
 	 */
 	function nextTransferable(node) {
 		return traversing.findForward(node, isTransferable, function (node) {
@@ -967,9 +967,9 @@ define([
 	 * Whether the given node can be removed.
 	 *
 	 * @private
-	 * @param {DOMObject} node
-	 * @param {OutParameter(Boolean):Boolean} out_continueMoving
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @param {OutParameter(Boolean):Boolean} out_continueMoving moveable
+	 * @return {Boolean} true if node is not removeable
 	 */
 	function cannotMove(node, out_continueMoving) {
 		return !out_continueMoving() || !isTransferable(node);
@@ -983,8 +983,8 @@ define([
 	 * Removes the visual line break between the adjacent nodes `above` and
 	 * `below` by moving the nodes from `below` to above.
 	 *
-	 * @param {DOMObject} above
-	 * @param {DOMObject} below
+	 * @param {DOMObject} above given node
+	 * @param {DOMObject} below given node
 	 */
 	function removeVisualBreak(above, below) {
 		if (!isVisuallyAdjacent(above, below)) {

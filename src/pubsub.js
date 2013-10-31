@@ -4,6 +4,18 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
+
+/**
+ * @doc module
+ * @name pubsub
+ * @description
+ *
+ * ## PubSub Utilities
+ *
+ * This module houses functions to broker publish/subscribe facilities.
+ *
+ */
+
 define([], function () {
 	'use strict';
 
@@ -95,6 +107,10 @@ define([], function () {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.pubsub:subscribe
+	 * @description
+	 *
 	 * Subscribes a callback function to a channel.  Whenever this channel
 	 * publishes, this function will be invoked.  The return value is an id
 	 * which identifies this subscription (a channel, and callback tuple).  This
@@ -131,6 +147,10 @@ define([], function () {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.pubsub:unsubscribe
+	 * @description
+	 *
 	 * Unsubscribes callback using an sid which was returned by subscribe() when
 	 * the callback was subscribed.  Returns true if a subscription for this sid
 	 * was found and removed, otherwise returns false.
@@ -163,6 +183,10 @@ define([], function () {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.pubsub:pubsub
+	 * @description
+	 *
 	 * Publishes the given message on all channels that can be derived from the
 	 * given channel name.
 	 *

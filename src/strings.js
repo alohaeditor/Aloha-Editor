@@ -4,6 +4,18 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  */
+
+/**
+ * @doc module
+ * @name strings
+ * @description
+ *
+ * ## String Utilities
+ *
+ * This module houses high level string utility functions.
+ *
+ */
+
 define([], function Strings() {
 	'use strict';
 
@@ -12,11 +24,15 @@ define([], function Strings() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.strings:words
+	 * @description
+	 *
 	 * Splits a string into individual words.
 	 *
 	 * Words are non-empty sequences of non-space characaters.
 	 *
-	 * @param {String} str
+	 * @param {String} str string of words
 	 * @return {Array[String]}
 	 *         List of words found in the given string.
 	 */
@@ -37,6 +53,10 @@ define([], function Strings() {
 	}());
 
 	/**
+	 * @doc function
+	 * @name aloha.strings:dashesToCamelCase
+	 * @description
+	 *
 	 * Converts a dashes form into camel cased form.
 	 *
 	 * For example 'data-my-attr' becomes 'dataMyAttr'.
@@ -55,6 +75,10 @@ define([], function Strings() {
 	}());
 
 	/**
+	 * @doc function
+	 * @name aloha.strings:camelCaseToDashes
+	 * @description
+	 *
 	 * Converts a camel cased form into dashes form.
 	 *
 	 * For example
@@ -75,6 +99,10 @@ define([], function Strings() {
 	}());
 
 	/**
+	 * @doc function
+	 * @name aloha.strings:splitIncl
+	 * @description
+	 *
 	 * Split `str` along `pattern`, including matches in the result.
 	 *
 	 * splitIncl("foo-bar", /\-/g) results in ["foo", "-", "bar"]
@@ -108,10 +136,14 @@ define([], function Strings() {
 	}
 
 	/**
+	 * @doc function
+	 * @name aloha.strings:empty
+	 * @description
+	 *
 	 * Returns true for the empty string, null and undefined.
 	 *
-	 * @param {String=} str
-	 * @return {Boolean}
+	 * @param {String=} str given string
+	 * @return {Boolean} true for empty, null or undefined
 	 */
 	function empty(str) {
 		return '' === str || null == str;

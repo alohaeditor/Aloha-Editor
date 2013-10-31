@@ -46,8 +46,8 @@ module.exports = function (grunt) {
 		},
 		docular: {
 			docular_partial_home: 'docs/home.html',
-			docular_partial_navigation: false,
-			docular_partial_footer: false,
+			docular_partial_navigation: 'docs/navigation.html',
+			docular_partial_footer: 'docs/footer.html',
 			docular_partial_group_index: false,
 			docular_webapp_target : "build/docs",
 				groups: [
@@ -112,14 +112,14 @@ module.exports = function (grunt) {
 										"src/dom-to-xhtml.js"
 										]
 								},
-								/*{
+								{
 									id: "dom",
 									title: "DOM API",
 									showSource: true,
 									scripts: [
 										"src/dom.js"
 										]
-								},*/
+								},
 								{
 									id: "editing",
 									title: "Editing API",
@@ -152,14 +152,14 @@ module.exports = function (grunt) {
 										"src/functions.js"
 										]
 								},
-								/*{
+								{
 									id: "html",
 									title: "HTML API",
 									showSource: true,
 									scripts: [
 										"src/html.js"
 										]
-								},*/
+								},
 								{
 									id: "keys",
 									title: "Keys API",
@@ -176,6 +176,70 @@ module.exports = function (grunt) {
 										"src/maps.js"
 										]
 								},
+								{
+									id: "misc",
+									title: "Misc API",
+									showSource: true,
+									scripts: [
+										"src/misc.js"
+										]
+								},
+								{
+									id: "pubsub",
+									title: "PubSub API",
+									showSource: true,
+									scripts: [
+										"src/pubsub.js"
+										]
+								},
+								{
+									id: "ranges",
+									title: "Ranges API",
+									showSource: true,
+									scripts: [
+										"src/ranges.js"
+										]
+								},
+								{
+									id: "requirepronto",
+									title: "Require Pronto API",
+									showSource: true,
+									scripts: [
+										"src/require-pronto.js"
+										]
+								},
+								{
+									id: "strings",
+									title: "String API",
+									showSource: true,
+									scripts: [
+										"src/strings.js"
+										]
+								},
+								{
+									id: "traversing",
+									title: "Traversing API",
+									showSource: true,
+									scripts: [
+										"src/traversing.js"
+										]
+								},
+								{
+									id: "trees",
+									title: "Tree API",
+									showSource: true,
+									scripts: [
+										"src/trees.js"
+										]
+								},
+								{
+									id: "typing",
+									title: "Typing API",
+									showSource: true,
+									scripts: [
+										"src/typing.js"
+										]
+								}
 							]
 					},
 					{
@@ -195,6 +259,11 @@ module.exports = function (grunt) {
 							]
 					}
 				],
+				discussions: {
+					shortName: 'alohaeditor',
+					url: 'http://aloha-editor.org',
+					dev: false
+				}
 				//showDocularDocs: true
 		}
 	};

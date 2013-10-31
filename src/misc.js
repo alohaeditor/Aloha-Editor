@@ -6,10 +6,26 @@
  *
  * Contains miscellaneous utility functions that don't fit anywhere else.
  */
+
+/**
+ * @doc module
+ * @name misc
+ * @description
+ *
+ * ## Misc Utilities
+ *
+ * This module houses misc utilities.
+ *
+ */
+
 define([], function Misc() {
 	'use strict';
 
 	/**
+	 * @doc function
+	 * @name aloha.misc:anyRx
+	 * @description
+	 *
 	 * Returns true if any regex in the given rxs array tests true
 	 * against str.
 	 */
@@ -24,6 +40,13 @@ define([], function Misc() {
 		return false;
 	}
 
+	/**
+	 * @doc function
+	 * @name aloha.misc:defined
+	 * @description
+	 *
+	 * Returns true if obj is defined.
+	 */
 	function defined(obj) {
 		return 'undefined' !== typeof obj;
 	}

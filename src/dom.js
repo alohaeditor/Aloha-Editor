@@ -92,9 +92,9 @@ define([
 	 * Like insertBefore, inserts firstChild into parent before refChild, except
 	 * also inserts all the following siblings of firstChild.
 	 *
-	 * @param {DOMObject} parent
-	 * @param {DOMObject} firstChild
-	 * @param {DOMObject} refChild
+	 * @param {DOMObject} parent given parent node
+	 * @param {DOMObject} firstChild insert this node
+	 * @param {DOMObject} refChild inserte before this node
 	 */
 	function moveNextAll(parent, firstChild, refChild) {
 		while (firstChild) {
@@ -130,8 +130,8 @@ define([
 	 * Polyfill for older versions of Gecko, Safari, and Opera browsers.
 	 * @see https://bugzilla.mozilla.org/show_bug.cgi?id=92264 for background.
 	 *
-	 * @param {DOMObject} node
-	 * @return {String}
+	 * @param {DOMObject} node given node
+	 * @return {String} serialized HTML
 	 */
 	function outerHtml(node) {
 		var html = node.outerHTML;
@@ -150,7 +150,7 @@ define([
 	 * @name aloha.dom:attrNames
 	 * @description
 	 *
-	 * Retrieves the names of all attributes from the given elmenet.
+	 * Retrieves the names of all attributes from the given element.
 	 *
 	 * Correctly handles the case that IE7 and IE8 have approx 70-90
 	 * default attributes on each and every element.
@@ -167,7 +167,7 @@ define([
 	 * over correctness in this case. The dom-to-xhtml plugin has a
 	 * workaround for this case.
 	 *
-	 * @param {DOMObject} elem
+	 * @param {DOMObject} elem given element
 	 * @return {Array[String]}
 	 *         List of attribute names.
 	 */
@@ -198,7 +198,7 @@ define([
 	 *
 	 * Get's the value of the given element's specified attribute.
 	 *
-	 * @param {DOMObject} elem
+	 * @param {DOMObject} elem given element
 	 * @param {String} attr
 	 *        Case insensitive attribute name to retrieve.
 	 * @return {String?}
@@ -216,7 +216,7 @@ define([
 	 *
 	 * Set's the value of the given element's specified attribute.
 	 *
-	 * @param {DOMObject} elem
+	 * @param {DOMObject} elem given element
 	 * @param {String} attr
 	 *        Case insensitive attribute name to retrieve.
 	 * @param {String}
@@ -235,7 +235,7 @@ define([
 	 *
 	 * Removes the specified attribute from the given element.
 	 *
-	 * @param {DOMObject} elem
+	 * @param {DOMObject} elem given element
 	 * @param {String} attr
 	 *        Case insensitive attribute name to retrieve.
 	 */
@@ -254,7 +254,7 @@ define([
 	 *
 	 * See attrNames() for an edge case on IE7.
 	 *
-	 * @param {DOMObject} elem
+	 * @param {DOMObject} elem given element
 	 *        An element to get the attributes for.
 	 * @return {Array[String]}
 	 *         An array containing [name, value] tuples for each attribute.
@@ -287,9 +287,9 @@ define([
 	 * Like indexByClass() but operates on a list of elements instead.  The
 	 * given list may be a NodeList, HTMLCollection, or an array.
 	 *
-	 * @param {Array[DOMObject]} elems
-	 * @param {Object} classMap
-	 * @return {Object}
+	 * @param {Array[DOMObject]} elems given node elements
+	 * @param {Object} classMap given map
+	 * @return {Object} selected elements
 	 */
 	function indexByClassHaveList(elems, classMap) {
 		var index = {},
@@ -327,7 +327,7 @@ define([
 	 *
 	 * Returns a set of elements which have the given class names.
 	 *
-	 * @param {Array[String]} classes
+	 * @param {Array[String]} classes given class names
 	 * @param {DOMObject=} context
 	 *        The root element in which to do the search.
 	 * @return {Array[DOMObject]}
@@ -476,7 +476,7 @@ define([
 	 * elem.childNodes.length is unreliable because "IE up to 8 does not count
 	 * empty text nodes." (http://www.quirksmode.org/dom/w3c_core.html)
 	 *
-	 * @param {DOMObject} elem
+	 * @param {DOMObject} elem given element
 	 * @return {Number} Number of children contained in the given node.
 	 */
 	function numChildren(elem) {
@@ -496,7 +496,7 @@ define([
 	 *
 	 * Determines the length of the given DOM node.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {Number} Length of the given node.
 	 */
 	function nodeLength(node) {
@@ -517,7 +517,7 @@ define([
 	 * Calculates the positional index of the given node inside of its parent
 	 * element.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {Number} The zero-based index of the given node's position.
 	 */
 	function nodeIndex(node) {
@@ -543,9 +543,9 @@ define([
 	 * of
 	 * <b>[foo</b>...
 	 *
-	 * @param {DOMObject} node
-	 * @param {Number} offset
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @param {Number} offset offset
+	 * @return {Boolean} true if is at start
 	 */
 	function isAtStart(node, offset) {
 		return (
@@ -562,9 +562,9 @@ define([
 	 * Whether or not the given node and offset describes a position after the
 	 * last child node or character in its container.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Number} offset
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @param {Number} offset offset
+	 * @return {Boolean} true if is at end
 	 */
 	function isAtEnd(node, offset) {
 		return (
@@ -579,10 +579,10 @@ define([
 
 	/**
 	 * @doc function
-	 * @name aloha.dom:
+	 * @name aloha.dom:nodeAtOffset
 	 * @description
 	 *
-	 * @param node if a text node, should have a parent node.
+	 * @param {DOMObject} node if a text node, should have a parent node.
 	 */
 	function nodeAtOffset(node, offset) {
 		if (Nodes.ELEMENT === node.nodeType && offset < nodeLength(node)) {
@@ -600,8 +600,8 @@ define([
 	 *
 	 * Wraps node `node` in given node `wrapper`.
 	 *
-	 * @param {DOMObject} node
-	 * @param {DOMObject} wrapper
+	 * @param {DOMObject} node given node
+	 * @param {DOMObject} wrapper given wrapper
 	 */
 	function wrap(node, wrapper) {
 		node.parentNode.replaceChild(wrapper, node);
@@ -616,9 +616,9 @@ define([
 	 * Inserts node `node` before `ref`, unless `atEnd` is truthy, in which case
 	 * `node` is inserted at the end of `ref` children nodes.
 	 *
-	 * @param {DOMObject} node
-	 * @param {DOMObject} ref
-	 * @param {Boolean} atEnd
+	 * @param {DOMObject} node given node
+	 * @param {DOMObject} ref given node
+	 * @param {Boolean} atEnd insert at the end of `ref` children nodes
 	 */
 	function insert(node, ref, atEnd) {
 		if (atEnd) {
@@ -635,7 +635,7 @@ define([
 	 *
 	 * Detaches the given node.
 	 *
-	 * @param {DOMObjec} node
+	 * @param {DOMObjec} node given node
 	 */
 	function remove(node) {
 		node.parentNode.removeChild(node);
@@ -651,8 +651,8 @@ define([
 	 *
 	 * Will not merge since this could require ranges to be synchronized.
 	 *
-	 * @param {DOMObject} left
-	 * @param {DOMObject} right
+	 * @param {DOMObject} left given node
+	 * @param {DOMObject} right given node
 	 */
 	function merge(left, right) {
 		var next;
@@ -706,9 +706,9 @@ define([
 	 * http://ejohn.org/blog/comparing-document-position/
 	 * http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
 	 *
-	 * @param {DOMObject} a
-	 * @param {DOMObject} b
-	 * @return {Boolean}
+	 * @param {DOMObject} a given node
+	 * @param {DOMObject} b given node
+	 * @return {Boolean} `true` if node `b` is a descendant of node `a`
 	 */
 	function contains(a, b) {
 		return (Nodes.ELEMENT === a.nodeType
@@ -728,9 +728,9 @@ define([
 	 * nodes.
 	 *
 	 * @private
-	 * @param {DOMObject} node
-	 * @param {Number} offset
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @param {Number} offset offset
+	 * @return {Boolean} true if is splitable
 	 */
 	function wouldSplitTextNode(node, offset) {
 		return 0 < offset && offset < node.nodeValue.length;
@@ -750,7 +750,7 @@ define([
 	 *        DOM text node.
 	 * @param {Number} offset
 	 *        Number between 0 and the length of text of `node`.
-	 * @return {DOMObject}
+	 * @return {DOMObject} node
 	 */
 	function splitTextNode(node, offset) {
 		// Because node.splitText() is buggy on IE, split it manually.
@@ -932,7 +932,7 @@ define([
 	 *
 	 * Splits text containers in the given range.
 	 *
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 * @return {Range}
 	 *         The given range, potentially adjusted.
 	 */
@@ -1000,7 +1000,7 @@ define([
 	 * Joins the given node with its adjacent sibling.
 	 *
 	 * @param {DOMElement} A text node
-	 * @param {Range} range
+	 * @param {Range} range given range
 	 * @return {Range}
 	 *         The given range, modified if necessary.
 	 */
@@ -1020,7 +1020,7 @@ define([
 	 *
 	 * Removes the given node while keeping it's content intact.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 */
 	function removeShallow(node) {
 		var parent = node.parentNode;
@@ -1035,8 +1035,8 @@ define([
 	 *
 	 * Removes the given node while maintaing the given ranges.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Array[Range]} ranges
+	 * @param {DOMObject} node given node
+	 * @param {Array[Range]} ranges given ranges
 	 */
 	function removePreservingRanges(node, ranges) {
 		var range;
@@ -1084,8 +1084,8 @@ define([
 	 *
 	 * Removes the given node while maintaing the given range.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Range} range
+	 * @param {DOMObject} node given node
+	 * @param {Range} range given range
 	 */
 	function removePreservingRange(node, range) {
 		removePreservingRanges(node, [range]);
@@ -1116,8 +1116,8 @@ define([
 	 * Does a shallow removal of the given node (see removeShallow()), while
 	 * preserving the range boundary points.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Array[Cursor]} points
+	 * @param {DOMObject} node given node
+	 * @param {Array[Cursor]} points given cursor
 	 */
 	function removeShallowPreservingBoundaries(node, points) {
 		preserveBoundaries(node, points, preservePointForShallowRemove);
@@ -1131,7 +1131,7 @@ define([
 	 *
 	 * Returns a shallow clone of the given node.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {DOMObject}
 	 *         Clone of `node`.
 	 */
@@ -1212,8 +1212,8 @@ define([
 	 *
 	 * Removes the given style property from the given DOM element.
 	 *
-	 * @param {DOMObject} elem
-	 * @param {String} styleName
+	 * @param {DOMObject} elem given element
+	 * @param {String} styleName style property
 	 */
 	function removeStyle(elem, styleName) {
 		if (browser.hasRemoveProperty) {
@@ -1255,8 +1255,8 @@ define([
 	 *
 	 * Checks whether or not the given node contains one or more attributes.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Boolean}
+	 * @param {DOMObject} node given node
+	 * @return {Boolean} true if given node contains one or more attributes
 	 */
 	function hasAttrs(node) {
 		return !attrs(node).map(arrays.second).every(strings.empty);
@@ -1269,8 +1269,8 @@ define([
 	 *
 	 * Calculare the offset of the given node inside the document.
 	 *
-	 * @param {DOMObjec} node
-	 * @return {Object}
+	 * @param {DOMObjec} node given node
+	 * @return {Object} offset of the given node inside the document
 	 */
 	function offset(node) {
 		if (!misc.defined(node.getBoundingClientRect)) {
@@ -1328,9 +1328,9 @@ define([
 	 *
 	 * Adds one or more class names from the give node.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Strings} value
-	 * @return {DOMObject}
+	 * @param {DOMObject} node given node
+	 * @param {Strings} value class name
+	 * @return {DOMObject} modified node
 	 */
 	function addClass(node, value) {
 		return changeClassNames(node, value, addToList);
@@ -1343,9 +1343,9 @@ define([
 	 *
 	 * Remove one or more class names from the given node.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Strings} value
-	 * @return {DOMObject}
+	 * @param {DOMObject} node given node
+	 * @param {Strings} value class name
+	 * @return {DOMObject} modified node
 	 */
 	function removeClass(node, value) {
 		return changeClassNames(node, value, removeFromList);
@@ -1358,9 +1358,9 @@ define([
 	 *
 	 * Checks whether the given node has the specified class.
 	 *
-	 * @param {DOMObject} node
-	 * @param {String} value
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @param {String} value class name
+	 * @return {Boolean} true if node has the specified class
 	 */
 	function hasClass(node, value) {
 		return (
@@ -1380,7 +1380,7 @@ define([
 	 * enabled.
 	 *
 	 *
-	 * @param {DOMObject} node
+	 * @param {DOMObject} node given node
 	 * @return {Boolean}
 	 *         True if `node` is content editable.
 	 */
@@ -1403,8 +1403,8 @@ define([
 	 *
 	 * Checks whether the given element is editable.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @return {Boolean} true if node is editable
 	 */
 	function isEditable(node) {
 		return !!(node
@@ -1423,8 +1423,8 @@ define([
 	 *
 	 * Checks whether the given element is an editing host.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param {DOMObject} node given node
+	 * @return {Boolean} true if node is an editing host
 	 */
 	function getEditingHost(node) {
 		if (isEditingHost(node)) {
