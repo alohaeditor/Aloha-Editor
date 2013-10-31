@@ -608,7 +608,7 @@ docsApp.controller.DocsController = function($scope, $location, $window, $cookie
 
                         if(page.moduleItem){
 
-                            breadcrumb.push({ name: page.module, url: 'documentation/' + groupId + '/' + sectionId + '/' + page.module});
+                            //breadcrumb.push({ name: page.module, url: 'documentation/' + groupId + '/' + sectionId + '/' + page.module});
 
                             if(page.moduleSubItem){
 
