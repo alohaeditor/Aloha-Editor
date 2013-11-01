@@ -1,6 +1,9 @@
 								  KNOWN ISSUES
 								  ~~~~~~~~~~~~
 
+https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#toggling-lists
+
+
 the following should capture the unrendered spaces up to the front
 <p>
 				[D]</p>

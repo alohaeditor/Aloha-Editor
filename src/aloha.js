@@ -71,8 +71,21 @@ define([
 ) {
 	'use strict';
 
+	var last;
+
+	/*
+	setInterval(function () {
+		var range = last && Ranges.createFromPoint(last.clientX, last.clientY);
+		if (range) {
+			console.log(Boundarymarkers.hint(range));
+		}
+	}, 1000);
+	*/
+
 	function setSelection(event) {
-		console.log(event.native);
+		if (event.native) {
+			last = event.native;
+		}
 		if (event.range) {
 			Ranges.select(event.range);
 		}
@@ -95,22 +108,7 @@ define([
 	editor.editables = {};
 	editor.BLOCK_CLASS = 'aloha-block';
 
-	Events.add(document, 'keyup',     editor);
-	Events.add(document, 'keydown',   editor);
-	Events.add(document, 'keypress',  editor);
-
-	Events.add(document, 'mouseup',   editor);
-	Events.add(document, 'mousedown', editor);
-	Events.add(document, 'mousemove', editor);
-
-	Events.add(document, 'dragstart', editor);
-	Events.add(document, 'drag',      editor);
-	Events.add(document, 'dragenter', editor);
-	Events.add(document, 'dragexit',  editor);
-	Events.add(document, 'dragleave', editor);
-	Events.add(document, 'dragover',  editor);
-	Events.add(document, 'drop',      editor);
-	Events.add(document, 'dragend',   editor);
+	Events.setup(editor, document);
 
 	/**
 	 * The Aloha Editor namespace root.

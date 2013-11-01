@@ -8,8 +8,25 @@
  * http://www.whatwg.org/specs/web-apps/current-work/#dnd
  * https://developer.mozilla.org/en-US/docs/Drag_and_drop_events
  */
-define([], function DragDrop() {
+define([
+	'ranges'
+], function DragDrop(
+	Ranges
+) {
 	'use strict';
+
+	var DATA_TYPES = {
+		'html'  : 'text/html',
+		'plain' : 'text/plain'
+	};
+
+	function data(event, type) {
+		return event.dataTransfer.getData(DATA_TYPES[type || 'plain'] || type);
+	}
+
+	function range(event) {
+		return Ranges.createFromPoint(event.clientX, event.clientY);
+	}
 
 	function handle(event) {
 		var native = event.native;
@@ -20,6 +37,8 @@ define([], function DragDrop() {
 	}
 
 	var exports = {
+		data   : data,
+		range  : range,
 		handle : handle
 	};
 

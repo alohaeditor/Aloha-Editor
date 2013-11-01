@@ -6,10 +6,14 @@
  */
 define([
 	'dom',
-	'arrays'
+	'arrays',
+	'ranges',
+	'dragdrop'
 ], function Blocks(
 	Dom,
-	Arrays
+	Arrays,
+	Ranges,
+	DragDrop
 ) {
 	'use strict';
 
@@ -40,25 +44,51 @@ define([
 
 	function initialize(event) {
 		findBlocks(event.editable, event.editor).forEach(function (block) {
+			//Dom.insert(document.createTextNode('\u200B'), block, true);
 			block.setAttribute('contentEditable', 'false');
 		});
 	}
 
 	function mousedown(event) {
 		var isBlockTarget = Dom.hasClass(event.target, event.editor.BLOCK_CLASS);
-		if (isBlockTarget) {
-			console.log(read(event.target));
+		if (!isBlockTarget) {
+			return;
 		}
+		var block = event.target;
+		var index = Dom.nodeIndex(block);
+		event.range = Ranges.create(
+			block.parentNode,
+			index,
+			block.parentNode,
+			index + 1
+		);
+		console.log(read(block));
 	}
 
+	// https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
+	function drop(event) {
+		var native = event.native;
+		var range = DragDrop.range(native);
+		var data = DragDrop.data(native, 'html');
+		console.warn(aloha.boundarymarkers.hint(range));
+		console.log(data);
+		native.preventDefault();
+	}
+
+	function mousemove(event) {
+	}
+
+	var handlers = {
+		'aloha'     : initialize,
+		'mousedown' : mousedown,
+		'mousemove' : mousemove,
+		'drop'      : drop
+//      'dragend'   : drop
+	};
+
 	function handle(event) {
-		switch(event.type) {
-		case 'aloha':
-			initialize(event);
-			break;
-		case 'mousedown':
-			mousedown(event);
-			break;
+		if (handlers[event.type]) {
+			handlers[event.type](event);
 		}
 	}
 

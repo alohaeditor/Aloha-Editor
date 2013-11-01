@@ -6,10 +6,18 @@
  *
  * Refernces:
  * http://www.w3.org/TR/CSS2/propidx.html
+ * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#value
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#state
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#value-override
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#state-override
+ *
+ * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#specified-command-value
+ * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#inline-command-activated-values
+ * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#equivalent-values
+ * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#effective-command-value
+ *
+ * http://www.w3.org/TR/CSS2/propidx.html
  */
 define([
 	'dom',

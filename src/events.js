@@ -3,6 +3,9 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ *
+ * @reference
+ * http://www.w3.org/TR/DOM-Level-3-Events/#idl-interface-MouseEvent-initializers
  */
 define(['misc'], function Events(Misc) {
 	'use strict';
@@ -72,15 +75,42 @@ define(['misc'], function Events(Misc) {
 		return value;
 	}
 
+	/**
+	 * @reference
+	 * https://en.wikipedia.org/wiki/DOM_Events
+	 * http://www.w3.org/TR/DOM-Level-3-Events
+	 */
+	function setup(editor, doc) {
+		add(doc, 'keyup',     editor);
+		add(doc, 'keydown',   editor);
+		add(doc, 'keypress',  editor);
+
+		add(doc, 'click',     editor);
+		add(doc, 'mouseup',   editor);
+		add(doc, 'mousedown', editor);
+		add(doc, 'mousemove', editor);
+
+		add(doc, 'dragstart', editor);
+		add(doc, 'drag',      editor);
+		add(doc, 'dragenter', editor);
+		add(doc, 'dragexit',  editor);
+		add(doc, 'dragleave', editor);
+		add(doc, 'dragover',  editor);
+		add(doc, 'drop',      editor);
+		add(doc, 'dragend',   editor);
+	}
+
 	var exports = {
 		add     : add,
 		remove  : remove,
-		compose : compose
+		compose : compose,
+		setup   : setup
 	};
 
 	exports['add']     = exports.add;
 	exports['remove']  = exports.remove;
 	exports['compose'] = exports.compose;
+	exports['setup']   = exports.setup;
 
 	return exports;
 });

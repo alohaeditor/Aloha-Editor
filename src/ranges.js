@@ -3,6 +3,9 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ *
+ * @reference
+ * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
  */
 define([
 	'dom',
@@ -631,6 +634,21 @@ define([
 		select(range);
 	}
 
+	function createFromPoint(x, y) {
+		if (document.caretRangeFromPoint) {
+			return document.caretRangeFromPoint(x, y);
+		}
+		if (document.caretPositionFromPoint) {
+			var pos = document.caretPositionFromPoint(x, y);
+			return create(pos.offsetNode, pos.offset);
+		}
+		if (document.elementFromPoint) {
+			// @see
+			// http://stackoverflow.com/questions/3189812/creating-a-collapsed-range-from-a-pixel-position-in-ff-webkit
+			// http://jsfiddle.net/timdown/ABjQP/8/
+		}
+	}
+
 	/**
 	 * Library functions for working with DOM ranges.
 	 * It assums native support for document.getSelection() and
@@ -671,7 +689,8 @@ define([
 		trimClosingOpening: trimClosingOpening,
 		getNearestEditingHost: getNearestEditingHost,
 		expandBackwardToVisiblePosition: expandBackwardToVisiblePosition,
-		expandForwardToVisiblePosition: expandForwardToVisiblePosition
+		expandForwardToVisiblePosition: expandForwardToVisiblePosition,
+		createFromPoint: createFromPoint
 	};
 
 	exports['collapseToEnd'] = exports.collapseToEnd;
