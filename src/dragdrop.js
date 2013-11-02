@@ -9,9 +9,11 @@
  * https://developer.mozilla.org/en-US/docs/Drag_and_drop_events
  */
 define([
-	'ranges'
+	'ranges',
+	'caret'
 ], function DragDrop(
-	Ranges
+	Ranges,
+	Carets
 ) {
 	'use strict';
 
@@ -24,21 +26,42 @@ define([
 		return event.dataTransfer.getData(DATA_TYPES[type || 'plain'] || type);
 	}
 
-	function range(event) {
+	function rangeFromEvent(event) {
 		return Ranges.createFromPoint(event.clientX, event.clientY);
 	}
 
-	function handle(event) {
+	// https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
+	function drop(event) {
 		var native = event.native;
-		if (!native) {
-			return event;
+		native.preventDefault();
+		var srcRange = Ranges.get();
+		var dstRange = DragDrop.range(native);
+		var data = DragDrop.data(native, 'html');
+		Editing.delete(srcRange);
+	}
+
+	function mousemove(event) {
+		var range = rangeFromEvent(event.native);
+		if (range) {
+			var box = Carets.getBox(range);
+			console.clear();
+			console.warn(aloha.boundarymarkers.hint(range));
 		}
-		return event;
+	}
+
+	var handlers = {
+		//'mousemove' : mousemove
+	};
+
+	function handle(event) {
+		if (handlers[event.type]) {
+			handlers[event.type](event);
+		}
 	}
 
 	var exports = {
 		data   : data,
-		range  : range,
+		range  : rangeFromEvent,
 		handle : handle
 	};
 

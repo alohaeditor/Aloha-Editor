@@ -1,4 +1,4 @@
-/* caret.js is part of Aloha Editor project http://aloha-editor.org
+/* carets.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
@@ -7,278 +7,221 @@
 define([
 	'dom',
 	'keys',
-	'misc',
-	'html',
 	'ranges',
-	'traversing'
-], function Caret(
-	dom,
-	keys,
-	misc,
-	html,
-	ranges,
-	traversing
+	'arrays'
+], function Carets(
+	Dom,
+	Keys,
+	Ranges,
+	Arrays
 ) {
 	'use strict';
 
-	var caret;
-
-	function getCaret() {
-		if (!caret) {
-			caret = document.createElement('div');
-			dom.addClass(caret, 'aloha-caret');
-			dom.insert(caret, document.body, true);
-		}
+	function create() {
+		var caret = document.createElement('div');
+		Dom.addClass(caret, 'aloha-caret');
+		Dom.insert(caret, document.body, true);
+		Dom.disableSelection(caret);
 		return caret;
 	}
 
-	var hacks = {
+	function purge() {
+		Arrays.coerce(document.querySelectorAll('.aloha-caret'))
+		      .forEach(Dom.remove);
+	}
 
-		/**
-		 * Returns a expanded version of a clone of the given range.
-		 * This hack is necessary because getBoundingClientRect() only works
-		 * with non collapsed ranges.
-		 *
-		 * @param {Range} live
-		 * @return {Range}
-		 *         Clone and hacked version of the given range.
-		 */
-		getExpandedClone: function(live) {
-			var range = live.cloneRange();
-			range.setEnd(range.startContainer, range.startOffset);
-			if (0 === range.startOffset) {
-				if (dom.nodeLength(range.endContainer) > range.endOffset) {
-					range.setEnd(range.endContainer, range.endOffset + 1);
-				}
-			} else if (dom.nodeLength(range.startContainer) > 0) {
-				range.setStart(range.startContainer, range.startOffset - 1);
-			}
-			return range;
-		},
+	function show(caret, rect) {
+		caret.style.top = rect.top + 'px';
+		caret.style.left = rect.left + 'px';
+		caret.style.width = rect.width + 'px';
+		caret.style.height = rect.height + 'px';
+		caret.style.position = 'fixed';
+		caret.style.display = 'block';
+		caret.style.opacity = '0.5';
+	}
 
-		/**
-		 * Because Chrome has problems returning the correct ranges pixel
-		 * positions around visual line-breaks.
-		 *
-		 * @param {Object} offset
-		 * @param {Range} range
-		 * @retur {Object}
-		 */
-		correctOffset: function(offset, range) {
-			if (!offset.height) {
-			var start = dom.isTextNode(range.startContainer)
-					  ? range.startContainer.parentNode
-					  : range.startContainer;
-			var size = parseInt(dom.getComputedStyle(start, 'font-size'), 10);
-			var line = parseInt(dom.getComputedStyle(start, 'line-height'), 10);
-				offset = dom.offset(start);
-				offset.height = misc.mean(line, size);
-				offset.top += Math.abs(line - offset.height) / 2;
-			} else {
-				offset.top  += window.pageYOffset - document.body.clientTop;
-				offset.left += window.pageXOffset - document.body.clientLeft;
-			}
-			return offset;
+	function render(range) {
+		purge();
+
+		var startRange = Ranges.collapseToStart(range.cloneRange());
+		var endRange = Ranges.collapseToEnd(range.cloneRange());
+		var startCaret = create();
+		var endCaret = create();
+		var startBox = Ranges.box(startRange);
+		var endBox = Ranges.box(endRange);
+
+		startBox.width = endBox.width = 1;
+
+		startCaret.style.background = 'blue';
+		endCaret.style.background = 'red';
+
+		show(startCaret, startBox);
+		show(endCaret, endBox);
+	}
+
+	function getRange(event) {
+		return event.range || Ranges.get();
+	}
+
+	function isCtrlDown(event) {
+		return event.meta.indexOf('ctrl') > -1;
+	}
+
+	function isShiftDown(event) {
+		return event.meta.indexOf('shift') > -1;
+	}
+
+	function up(event, range, isNativeEditable) {
+		var ref = Ranges.collapseToEnd(range.cloneRange());
+		var box = Ranges.box(ref);
+		var half = box.height / 2;
+		var offset = half;
+		var next = Ranges.createFromPoint(box.left, box.top - offset);
+
+		while (next && Ranges.equal(next, ref)) {
+			offset += half;
+			next = Ranges.createFromPoint(box.left, box.top - offset);
 		}
+
+		if (!next) {
+			return;
+		}
+
+		range.setEnd(next.endContainer, next.endOffset);
+
+		if (range.collapsed && isShiftDown(event)) {
+			range.setStart(next.endContainer, next.endOffset);
+		}
+		
+		if (!isNativeEditable) {
+			event.native.preventDefault();
+		}
+	}
+
+	function down(event, range, isNativeEditable) {
+		var ref = Ranges.collapseToEnd(range.cloneRange());
+		var box = Ranges.box(ref);
+		box.top += box.height;
+		var half = box.height / 2;
+		var offset = half;
+		var next = Ranges.createFromPoint(box.left, box.top + offset);
+
+		while (next && Ranges.equal(next, ref)) {
+			offset += half;
+			next = Ranges.createFromPoint(box.left, box.top + offset);
+		}
+
+		if (!next) {
+			return;
+		}
+
+		if (range.collapsed && !isShiftDown(event)) {
+			range.setStart(next.endContainer, next.endOffset);
+		}
+
+		range.setEnd(next.endContainer, next.endOffset);
+
+		if (!isNativeEditable) {
+			event.native.preventDefault();
+		}
+	}
+
+	function left(event, range) {
+		var expand = isCtrlDown(event)
+				   ? Ranges.expandBackwardToVisibleWordPosition
+		           : Ranges.expandBackwardToVisiblePosition;
+
+		var contract = isCtrlDown(event)
+				     ? Ranges.contractBackwardToVisibleWordPosition
+		             : Ranges.contractBackwardToVisiblePosition;
+
+		if (isShiftDown(event)) {
+			if (range.collapsed) {
+				expand(range);
+			} else {
+				contract(range);
+			}
+			return;
+		}
+
+		if (range.collapsed) {
+			contract(range);
+		}
+
+		Ranges.collapseToStart(range);
+	}
+
+	function right(event, range) {
+		var shift = isShiftDown(event);
+		if (range.collapsed || shift) {
+			if (isCtrlDown(event)) {
+				Ranges.expandForwardToVisibleWordPosition(range);
+			} else {
+				Ranges.expandForwardToVisiblePosition(range);
+			}
+		}
+		if (!shift) {
+			Ranges.collapseToEnd(range);
+		}
+	}
+
+	var arrows = {};
+	arrows[Keys.CODES.up] = up;
+	arrows[Keys.CODES.down] = down;
+	arrows[Keys.CODES.left] = left;
+	arrows[Keys.CODES.right] = right;
+
+	function keydown(event) {
+		var range = event.range || Ranges.get();
+		if (!range) {
+			return event;
+		}
+		var isNativeEditable = 'true' === event.editable.elem.getAttribute('contentEditable');
+		var clone = range.cloneRange();
+		if (arrows[event.which]) {
+			arrows[event.which](event, clone, isNativeEditable);
+			// chrome hack
+			if (!isNativeEditable && !clone.collapsed) {
+				event.native.preventDefault();
+			}
+		}
+		if (!isNativeEditable) {
+			event.range = clone;
+		}
+		render(clone);
+		return event; }
+
+	function mousedown(event) {
+		var native = event.native;
+		var range = Ranges.createFromPoint(native.clientX, native.clientY);
+		if (range) {
+			render(range);
+		}
+	}
+
+	var handlers = {
+		'keydown'   : keydown,
+		'mousedown' : mousedown
 	};
 
-	/**
-	 * Calculates the pixel position of the given range.
-	 *
-	 * @param {Range}
-	 * @return {Object}
-	 */
-	function caretOffset(live) {
-		var range = hacks.getExpandedClone(live);
-		var box = range.getBoundingClientRect();
-		return hacks.correctOffset({
-			left   : box.left + (live.endOffset === range.endOffset ? box.width : 0),
-			top    : box.top,
-			height : box.height,
-			bottom : box.bottom
-		}, range);
-	}
-
-	function characterWidthAtRange(character, context) {
-		var canvas = getCaret();
-		canvas.style.fontSize = parseInt(
-			dom.getComputedStyle(context, 'font-size'),
-			10
-		) + 'px';
-		canvas.style.fontWeight = dom.getComputedStyle(context, 'font-weight');
-		canvas.innerHTML = (' ' === character) ? '&nbsp;' : character;
-		var width = parseInt(dom.getComputedStyle(canvas, 'width'), 10);
-		canvas.innerHTML = ' ';
-		return width;
-	}
-
-	function isVisibleTextNode(node) {
-		return dom.isTextNode(node) && html.isRendered(node);
-	}
-
-	function findVisibleTextNode(node, step) {
-		return step(node, isVisibleTextNode, dom.isLinebreakingNode);
-	}
-
-	function getStyleContext(range) {
-		return dom.isTextNode(range.startContainer)
-		     ? range.startContainer.parentNode
-		     : range.startContainer;
-	}
-
-	function skippedCharacter(dir, range) {
-		var node;
-		if ('left' === dir && dom.isTextNode(range.startContainer)) {
-			if (0 === range.startOffset) {
-				node = findVisibleTextNode(
-					range.startContainer,
-					traversing.findBackward
-				);
-				return node ? node.data.substr(-1) : '';
-			}
-			return range.startContainer.data.substr(range.startOffset - 1, 1);
+	function handle(event) {
+		if (handlers[event.type]) {
+			return handlers[event.type](event);
 		}
-		if ('right' === dir && dom.isTextNode(range.startContainer)) {
-			if (dom.nodeLength(range.startContainer) === range.startOffset) {
-				node = findVisibleTextNode(
-					range.startContainer,
-					traversing.findForward
-				);
-				return node ? node.data.substr(0, 1) : '';
-			}
-			return range.startContainer.data.substr(range.startOffset, 1);
-		}
-		return '';
-	}
-
-	function calculate(offset, correction, ydir) {
-		var o = {
-			height: offset.height,
-			left: Math.round(offset.left + correction)
-		};
-		if (ydir > 0) {
-			o.top = Math.round(offset.bottom);
-		} else if (ydir < 0) {
-			o.top = Math.round(offset.top - offset.height);
-		} else {
-			o.top = Math.round(offset.top);
-		}
-		return o;
-	}
-
-
-	function offsetAtKeyPress(keycode, range) {
-		if (keys.ARROWS[keycode]) {
-			return;
-		}
-		return calculate(
-			caretOffset(range),
-			characterWidthAtRange(
-				String.fromCharCode(keycode),
-				getStyleContext(range)
-			),
-			0
-		);
-	}
-
-	function offsetAtKeyDown(keycode, range) {
-		var arrow = keys.ARROWS[keycode];
-		if (keys.CODES.backspace === keycode) {
-			arrow = 'left';
-		}
-		if (!arrow) {
-			return;
-		}
-		var xdir = 0;
-		var ydir = 0;
-		switch (arrow) {
-		case 'left':
-			xdir = -1;
-			break;
-		case 'right':
-			xdir =  1;
-			break;
-		case 'up':
-			ydir = -1;
-			break;
-		case 'down':
-			ydir =  1;
-			break;
-		}
-		return calculate(
-			caretOffset(range),
-			characterWidthAtRange(
-				skippedCharacter(arrow, range),
-				getStyleContext(range)
-			) * xdir,
-			ydir
-		);
-	}
-
-	function offsetAtKeyUp(keycode, range) {
-		if (keys.ARROWS[keycode] || keys.CODES.backspace === keycode) {
-			return calculate(caretOffset(range), 0, 0);
-		}
-	}
-
-	function show(caret, offset) {
-		caret.style.height = offset.height + 'px';
-		caret.style.left = offset.left + 'px';
-		caret.style.top = offset.top + 'px';
-	}
-
-	function hide(caret) {
-		caret.style.height = 0;
-		caret.style.top = '-9999px';
-	}
-
-	/**
-	 * Allows you to pin point the pixel position of the caret while typing
-	 * text.
-	 *
-	 * @param {Object} msg
-	 */
-	function calculateOffset(event, range) {
-		switch (event.type) {
-		case 'keypress':
-			return offsetAtKeyPress(event.which, range);
-		case 'keydown':
-			return offsetAtKeyDown(event.which, range);
-		case 'keyup':
-			return offsetAtKeyUp(event.which, range);
-		default:
-			return calculate(caretOffset(range), 0, 0);
-		}
-	}
-
-	var blinker = document.createElement('div');
-	dom.addClass(blinker, 'aloha-caret');
-	dom.addClass(blinker, 'aloha-blinker');
-	dom.insert(blinker, document.body, true);
-
-	function interact(event) {
-		var range = event.range || ranges.get();
+		var range = event.range || Ranges.get();
 		if (range) {
-			if (range.collapsed) {
-				var offset = calculateOffset(event.event, range);
-				if (offset) {
-					show(getCaret(), offset);
-					show(blinker, offset);
-				}
-			} else {
-				hide(getCaret());
-				hide(blinker);
-			}
+			render(range);
 		}
+		return event;
 	}
 
 	var exports = {
-		interact        : interact,
-		calculateOffset : calculateOffset
+		render : render,
+		handle : handle
 	};
 
-	exports['interact'] = exports.interact;
-	exports['calculateOffset'] = exports.calculateOffset;
+	exports['render'] = exports.render;
+	exports['handle'] = exports.handle;
 
 	return exports;
 });

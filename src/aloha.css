@@ -5,7 +5,7 @@ html {
 
 body {
 	margin: 0;
-	padding: 10% 20%;
+	padding: 5% 20%;
 	color: #565452;
 	font-size: 20px;
 	line-height: 1.6em;
@@ -32,8 +32,7 @@ p:last-child { margin-bottom: 0; }
 .aloha-caret {
 	z-index: 1;
 	overflow: hidden;
-	position: absolute;
-	min-width: 3px;
+	//min-width: 3px;
 	margin: 0;
 	padding: 0;
 	background: #f1f0f0;

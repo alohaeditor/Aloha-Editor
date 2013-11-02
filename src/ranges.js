@@ -414,6 +414,25 @@ define([
 		return range;
 	}
 
+	function contractBackwardToVisiblePosition(range) {
+		var pos = html.previousVisiblePosition(
+			range.endContainer,
+			range.endOffset
+		);
+		if (pos.node
+			&& dom.isTextNode(pos.node)
+			&& !html.areNextWhiteSpacesSignificant(pos.node, pos.offset)) {
+			pos = html.nextVisiblePosition(pos.node, pos.offset);
+			if (pos.node) {
+				pos = html.previousVisiblePosition(pos.node, pos.offset);
+			}
+		}
+		if (pos.node) {
+			range.setEnd(pos.node, pos.offset);
+		}
+		return range;
+	}
+
 	/**
 	 * Starting with the given range's start and end boundary points, seek
 	 * inward using a cursor, passing the cursor to ignoreLeft and ignoreRight,
@@ -650,6 +669,47 @@ define([
 	}
 
 	/**
+	 * Because user agents have problems determining the bounding client rect
+	 * for collapsed ranges.
+	 */
+	function bounds(range, isStart) {
+		var clone = range.cloneRange();
+
+		if (isStart && clone.startOffset > 0) {
+			clone.setStart(clone.startContainer, clone.startOffset - 1);
+		}
+
+		var len = dom.nodeLength(clone.endContainer);
+
+		if (!isStart && clone.endOffset < len) {
+			clone.setEnd(clone.endContainer, clone.endOffset + 1);
+		}
+
+		var rect = clone.getBoundingClientRect();
+
+		return {
+			top    : rect.top,
+			left   : rect.left,
+			width  : rect.width,
+			height : rect.height
+		};
+	}
+
+	function box(range) {
+		var rect = bounds(range, false);
+		if (rect.width > 0) {
+			return rect;
+		}
+		rect = bounds(range, true);
+		if (rect.width > 0) {
+			rect.left += rect.width;
+			return rect;
+		}
+		// return boundingBox(range.commonAncestorContainer);
+		return rect;
+	}
+
+	/**
 	 * Library functions for working with DOM ranges.
 	 * It assums native support for document.getSelection() and
 	 * document.createRange().
@@ -671,6 +731,7 @@ define([
 	 * ranges.getNearestEditingHost()
 	 */
 	var exports = {
+		box: box,
 		collapseToEnd: collapseToEnd,
 		collapseToStart: collapseToStart,
 		create: create,
@@ -690,9 +751,11 @@ define([
 		getNearestEditingHost: getNearestEditingHost,
 		expandBackwardToVisiblePosition: expandBackwardToVisiblePosition,
 		expandForwardToVisiblePosition: expandForwardToVisiblePosition,
+		contractBackwardToVisiblePosition: contractBackwardToVisiblePosition,
 		createFromPoint: createFromPoint
 	};
 
+	exports['box'] = exports.box;
 	exports['collapseToEnd'] = exports.collapseToEnd;
 	exports['collapseToStart'] = exports.collapseToStart;
 	exports['create'] = exports.create;

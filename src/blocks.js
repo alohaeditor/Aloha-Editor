@@ -8,11 +8,13 @@ define([
 	'dom',
 	'arrays',
 	'ranges',
+	'editing',
 	'dragdrop'
 ], function Blocks(
 	Dom,
 	Arrays,
 	Ranges,
+	Editing,
 	DragDrop
 ) {
 	'use strict';
@@ -44,7 +46,6 @@ define([
 
 	function initialize(event) {
 		findBlocks(event.editable, event.editor).forEach(function (block) {
-			//Dom.insert(document.createTextNode('\u200B'), block, true);
 			block.setAttribute('contentEditable', 'false');
 		});
 	}
@@ -65,25 +66,9 @@ define([
 		console.log(read(block));
 	}
 
-	// https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
-	function drop(event) {
-		var native = event.native;
-		var range = DragDrop.range(native);
-		var data = DragDrop.data(native, 'html');
-		console.warn(aloha.boundarymarkers.hint(range));
-		console.log(data);
-		native.preventDefault();
-	}
-
-	function mousemove(event) {
-	}
-
 	var handlers = {
 		'aloha'     : initialize,
-		'mousedown' : mousedown,
-		'mousemove' : mousemove,
-		'drop'      : drop
-//      'dragend'   : drop
+		'mousedown' : mousedown
 	};
 
 	function handle(event) {

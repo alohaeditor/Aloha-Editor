@@ -1404,20 +1404,20 @@ define([
 	 * the true state, or the Element child of a Document whose designMode is
 	 * enabled.
 	 *
-	 *
 	 * @param {!Node} node
 	 * @return {boolean} True if `node` is content editable.
 	 */
 	function isEditingHost(node) {
-		return !!(node
-			&& node.nodeType === Nodes.ELEMENT
-				&& ('true' === node.contentEditable
-					|| (node.parentNode
-						&& Nodes.DOCUMENT === node.parentNode.nodeType
-							&& 'true' === node.parentNode.designMode
-					)
-				)
-		);
+		if (node.nodeType !== Nodes.ELEMENT) {
+			return false;
+		}
+		if ('true' === node.getAttribute('contentEditable')) {
+			return true;
+		}
+		var parent = node.parentNode;
+		return parent
+		    && (parent.nodeType === Nodes.DOCUMENT
+		        && 'true' === parent.designMode);
 	}
 
 	/**
@@ -1427,13 +1427,8 @@ define([
 	 * @return {boolean}
 	 */
 	function isEditable(node) {
-		return !!(node
-			&& (node.nodeType !== Nodes.ELEMENT
-				|| 'false' !== node.contentEditable)
-					&& !isEditingHost(node)
-						&& (isEditingHost(node.parentNode)
-							|| isEditable(node.parentNode))
-		);
+		return node.nodeType === Nodes.ELEMENT
+		    && 'true' === node.contentEditable;
 	}
 
 	/**

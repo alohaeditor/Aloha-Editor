@@ -44,7 +44,7 @@ define([
 	Boundaries,
 	Boundarymarkers,
 	Browser,
-	Caret,
+	Carets,
 	Content,
 	Colors,
 	Cursors,
@@ -83,9 +83,6 @@ define([
 	*/
 
 	function setSelection(event) {
-		if (event.native) {
-			last = event.native;
-		}
 		if (event.range) {
 			Ranges.select(event.range);
 		}
@@ -101,6 +98,7 @@ define([
 			DragDrop.handle,
 			Blocks.handle,
 			Typing.handle,
+			Carets.handle,
 			setSelection
 		);
 	}
@@ -122,7 +120,7 @@ define([
 			defaultBlockNodeName: 'div'
 		};
 		Editables.assocIntoEditor(editor, editable);
-		elem.setAttribute('contentEditable', 'true');
+		//elem.setAttribute('contentEditable', 'true');
 		Undo.enter(editable.undoContext, {
 			meta: {type: 'external'},
 			partitionRecords: true
@@ -151,7 +149,7 @@ define([
 	aloha['boundaries'] = Boundaries;
 	aloha['boundarymarkers'] = Boundarymarkers;
 	aloha['browser'] = Browser;
-	aloha['caret'] = Caret;
+	aloha['carets'] = Carets;
 	aloha['content'] = Content;
 	aloha['colors'] = Colors;
 	aloha['cursors'] = Cursors;
