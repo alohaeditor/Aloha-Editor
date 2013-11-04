@@ -55,18 +55,17 @@ define([
 			context = overrides.concat(context);
 		}
 
-		box.top  += window.pageYOffset - doc.body.clientTop;
+		box.top += window.pageYOffset - doc.body.clientTop;
 		box.left += window.pageXOffset - doc.body.clientLeft;
+		box.width = Overrides.lookup('bold', context) ? 4 : 2;
 
-		var bold = Overrides.lookup('bold', context);
-		var italic = Overrides.lookup('italic', context);
-		var color = Overrides.lookup('color', context);
+		caret.style.background = Overrides.lookup('color', context);
 
-		box.width = bold ? 4 : 2;
+		caret.style[Browsers.VENDOR_PREFIX + 'transform']
+			= Overrides.lookup('italic', context)
+			? 'rotate(8deg)'
+			: 'rotate(0deg)';
 
-		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = italic
-		                                                  ? 'rotate(8deg)'
-		                                                  : 'rotate(0deg)';
 		show(caret, box);
 	}
 
@@ -92,10 +91,6 @@ define([
 		} else {
 			Dom.remove(carets[1]);
 		}
-	}
-
-	function getRange(event) {
-		return event.range || Ranges.get();
 	}
 
 	function isCtrlDown(event) {
