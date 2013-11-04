@@ -230,11 +230,7 @@ define([
 					Html.prop(range.commonAncestorContainer);
 				});
 			} else {
-				if (handle.deleteRange && !range.collapsed) {
-					delete_(event, false);
-				}
 				handle.mutate(event);
-				Html.prop(range.commonAncestorContainer);
 			}
 		}
 		return event;
