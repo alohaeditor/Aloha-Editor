@@ -73,18 +73,8 @@ define([
 ) {
 	'use strict';
 
-	var last;
-
-	/*
-	setInterval(function () {
-		var range = last && Ranges.createFromPoint(last.clientX, last.clientY);
-		if (range) {
-			console.log(Boundarymarkers.hint(range));
-		}
-	}, 1000);
-	*/
-
 	function setSelection(event) {
+		console.warn(event.type);
 		if (event.range) {
 			Ranges.select(event.range);
 		}

@@ -198,6 +198,9 @@ define([
 	handlers.keypress['ctrl+' + Keys.CODES.bold] = formatBold;
 	handlers.keypress['ctrl+' + Keys.CODES.italic] = formatItalic;
 
+	handlers.keypress['ctrl+2'] = formatBold;
+	handlers.keypress['ctrl+9'] = formatItalic;
+
 	handlers.keypress.input = inputText;
 
 	handlers.keyup['ctrl+' + Keys.CODES.undo] = undo;
