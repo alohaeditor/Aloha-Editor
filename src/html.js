@@ -1105,39 +1105,44 @@ define([
 	}
 
 	/**
-	 * Returns the node/offset namedtuple, of the previous visible character
-	 * from the given position in the document.
+	 * Returns the boundary of the previous visible character from the given
+	 * position in the document.
 	 *
-	 * All "zero-width character" are ignored.
+	 * All all insignificant characters (including "zero-width" characters are
+	 * ignored).
+	 *
+	 * @param {TextBoundary} boundary
+	 * @return {TextBoundary}
 	 */
-	function previousVisibleCharacter(boundary) {
+	function previousCharacter(boundary) {
 		var node = boundary[0];
 		var offset = boundary[1];
-		var before = node.data.substr(0, offset);
+		var textBefore = node.data.substr(0, offset);
 
-		// Because `before` may be a sequence of white spaces
-		if (-1 === before.search(NOT_WSP_FROM_END) && !NOT_WSP.test(before)) {
+		// Because `textBefore` may be a sequence of white spaces
+		if (!NOT_WSP.test(textBefore)) {
 			return areNextWhiteSpacesSignificant(node, 0)
-			     ? [node, 1 === before.length ? 0 : 1]
+			     ? [node, 1 === textBefore.length ? 0 : 1]
 			     : null;
 		}
 
-		var position = before.match(NOT_WSP_FROM_END)[0].length - 1;
-		var moreThanOneWhiteSpace = position > 1;
+		var index = textBefore.match(NOT_WSP_FROM_END)[0].length - 1;
+		var hasMultipleWhiteSpaces = index > 1;
 
-		return [
-			node,
-			moreThanOneWhiteSpace ? offset - position + 1 : offset - 1
-		];
+		return [node, hasMultipleWhiteSpaces ? offset - index + 1 : offset - 1];
 	}
 
 	/**
-	 * Returns the node/offset namedtuple, of the next visible character from
-	 * the given position in the document.
+	 * Returns the boundary of the next visible character from the given
+	 * position in the document.
 	 *
-	 * All "zero-width character" are ignored.
+	 * All all insignificant characters (including "zero-width" characters are
+	 * ignored).
+	 *
+	 * @param {TextBoundary} boundary
+	 * @return {TextBoundary}
 	 */
-	function nextVisibleCharacter(boundary) {
+	function nextCharacter(boundary) {
 		var node = boundary[0];
 		var offset = boundary[1];
 		var index = node.data.substr(offset).search(
@@ -1157,16 +1162,16 @@ define([
 	 * @param {Number} offset
 	 * @return {Object}
 	 */
-	function stepVisibleBoundary(boundary, steps) {
+	function stepVisualBoundary(boundary, steps) {
 		var start;
 
 		if (!Boundaries.isNodeBoundary(boundary)) {
 			// <#te|xt>
-			var pos = steps.character(boundary);
+			var pos = steps.nextCharacter(boundary);
 			if (pos) {
 				return Boundaries.normalize(pos);
 			}
-			start = steps.next(boundary);
+			start = steps.stepBoundary(boundary);
 		} else {
 			start = Boundaries.normalize(boundary);
 		}
@@ -1174,7 +1179,7 @@ define([
 		var crossedVisualBreak = false;
 
 		var next = steps.stepWhile(start, function (pos, container) {
-			var node = steps.node(pos);
+			var node = steps.nodeAt(pos);
 
 			if (!crossedVisualBreak) {
 				//
@@ -1190,7 +1195,7 @@ define([
 			//    /          \
 			//   v            v
 			// <host>| or |</host>
-			if (Dom.isEditingHost(steps.node(pos))) {
+			if (Dom.isEditingHost(node)) {
 				return false;
 			}
 
@@ -1200,11 +1205,11 @@ define([
 		});
 
 		//  <host>| or |</host>
-		if (Dom.isEditingHost(steps.node(next))) {
+		if (Dom.isEditingHost(steps.nodeAt(next))) {
 			return start;
 		}
 
-		var after = steps.adjacent(next);
+		var after = steps.adjacentNode(next);
 
 		// |</p>  or |</b>
 		//   <p>| or   <b>|
@@ -1214,12 +1219,13 @@ define([
 
 		// |<p> or <p>|
 		if (hasLinebreakingStyle(after)) {
-			var afterNext = steps.next(next);
+			var afterNext = steps.stepBoundary(next);
 			// <p>|<br> or <br>|</p>
-			if ((steps.sibling(after) && hasInlineStyle(steps.sibling(after))) || hasInlineStyle(after.parentNode)) {
+			var sibling = steps.followingSibling(after);
+			if ((sibling && hasInlineStyle(sibling)) || hasInlineStyle(after.parentNode)) {
 				return afterNext;
 			}
-			var secondAfterNext = steps.next(afterNext);
+			var secondAfterNext = steps.stepBoundary(afterNext);
 			if (steps.isLimit(secondAfterNext) && Dom.isEditingHost(secondAfterNext[0])) {
 				return afterNext;
 			}
@@ -1241,45 +1247,45 @@ define([
 		}
 
 		// <#text>|<b> or </b>|<#text>
-		return steps.step(after);
+		return steps.stepVisualBoundary(after);
 	}
 
 	var forwardSteps = {
-		character : nextVisibleCharacter,
-		next      : Boundaries.next,
-		node      : Boundaries.nextNode,
-		adjacent  : Boundaries.nodeAfter,
-		stepWhile : Boundaries.nextWhile,
-		isLimit   : Boundaries.atEnd,
-		sibling   : function (node) {
+		nextCharacter : nextCharacter,
+		stepBoundary  : Boundaries.next,
+		adjacentNode  : Boundaries.nodeAfter,
+		stepWhile     : Boundaries.nextWhile,
+		nodeAt        : Boundaries.nextNode,
+		isLimit       : Boundaries.atEnd,
+		followingSibling: function followingSibling(node) {
 			return node.nextSibling;
 		},
-		step: function (node) {
-			return nextVisibleBoundary([node, 0]);
+		stepVisualBoundary: function stepVisualBoundary(node) {
+			return nextVisualBoundary([node, 0]);
 		}
 	};
 
 	var backwardSteps = {
-		character : previousVisibleCharacter,
-		next      : Boundaries.prev,
-		node      : Boundaries.prevNode,
-		adjacent  : Boundaries.nodeBefore,
-		stepWhile : Boundaries.prevWhile,
-		isLimit   : Boundaries.atStart,
-		sibling   : function (node) {
+		nextCharacter : previousCharacter,
+		stepBoundary  : Boundaries.prev,
+		adjacentNode  : Boundaries.nodeBefore,
+		stepWhile     : Boundaries.prevWhile,
+		nodeAt        : Boundaries.prevNode,
+		isLimit       : Boundaries.atStart,
+		followingSibling: function followingSibling(node) {
 			return node.previousSibling;
 		},
-		step: function (node) {
-			return previousVisibleBoundary([node, Dom.nodeLength(node)]);
+		stepVisualBoundary: function stepVisualBoundary(node) {
+			return previousVisualBoundary([node, Dom.nodeLength(node)]);
 		}
 	};
 
-	function nextVisibleBoundary(boundary) {
-		return stepVisibleBoundary(boundary, forwardSteps);
+	function nextVisualBoundary(boundary) {
+		return stepVisualBoundary(boundary, forwardSteps);
 	}
 
-	function previousVisibleBoundary(boundary) {
-		return stepVisibleBoundary(boundary, backwardSteps);
+	function previousVisualBoundary(boundary) {
+		return stepVisualBoundary(boundary, backwardSteps);
 	}
 
 	/**
@@ -1304,10 +1310,10 @@ define([
 		removeVisualBreak: removeVisualBreak,
 		nextLineBreak: nextLineBreak,
 		prop: prop,
-		previousVisibleCharacter: previousVisibleCharacter,
-		previousVisibleBoundary: previousVisibleBoundary,
-		nextVisibleCharacter: nextVisibleCharacter,
-		nextVisibleBoundary: nextVisibleBoundary,
+		previousCharacter: previousCharacter,
+		nextCharacter: nextCharacter,
+		previousVisualBoundary: previousVisualBoundary,
+		nextVisualBoundary: nextVisualBoundary,
 		areNextWhiteSpacesSignificant: areNextWhiteSpacesSignificant
 	};
 
@@ -1325,7 +1331,6 @@ define([
 	exports['hasLinebreakingStyle'] = exports.hasLinebreakingStyle;
 	exports['isVisuallyAdjacent'] = exports.isVisuallyAdjacent;
 	exports['removeVisualBreak'] = exports.removeVisualBreak;
-	exports['nextVisibleCharacter'] = exports.nextVisibleCharacter;
 
 	return exports;
 });

@@ -95,6 +95,19 @@ define([
 		return range;
 	}
 
+	function setStartFromBoundary(range, boundary) {
+		range.setStart(boundary[0], boundary[1]);
+	}
+
+	function setEndFromBoundary(range, boundary) {
+		range.setEnd(boundary[0], boundary[1]);
+	}
+
+	function setFromBoundaries(range, start, send) {
+		range.setStart(start[0], start[1]);
+		range.setEnd(end[0], end[1]);
+	}
+
 	/**
 	 * @private
 	 */
@@ -358,9 +371,10 @@ define([
 	 * @return {Range}
 	 */
 	function expandToVisibleCharacter(range) {
-		var pos = html.nextVisibleCharacter(boundaries.end(range));
-		if (pos.offset > 0) {
-			range.setEnd(pos.node, pos.offset - 1);
+		var boundary = html.nextVisibleCharacter(boundaries.end(range));
+		if (boundary) {
+			setEndFromBoundary(range, boundary);
+			//range.setEnd(pos[0], pos.offset - 1);
 		} else if (dom.isTextNode(range.endContainer)) {
 			range.setEnd(
 				range.endContainer,
@@ -378,9 +392,9 @@ define([
 	 * @return {Range}
 	 */
 	function expandBackwardToVisiblePosition(range) {
-		var pos = html.previousVisibleBoundary(boundaries.start(range));
-		if (pos[0]) {
-			range.setStart(pos[0], pos[1]);
+		var boundary = html.previousVisualBoundary(boundaries.start(range));
+		if (boundary) {
+			setStartFromBoundary(range, boundary);
 		}
 		return range;
 	}
@@ -393,33 +407,33 @@ define([
 	 * @return {Range}
 	 */
 	function expandForwardToVisiblePosition(range) {
-		var pos = html.nextVisibleBoundary(boundaries.end(range));
+		var pos = html.nextVisualBoundary(boundaries.end(range));
 		if (pos[0]
 			&& dom.isTextNode(pos[0])
 			&& !html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
-			pos = html.nextVisibleBoundary(pos);
+			pos = html.nextVisualBoundary(pos);
 			if (pos[0]) {
-				pos = html.previousVisibleBoundary(pos);
+				pos = html.previousVisualBoundary(pos);
 			}
 		}
-		if (pos[0]) {
-			range.setEnd(pos[0], pos[1]);
+		if (pos) {
+			setEndFromBoundary(range, pos);
 		}
 		return range;
 	}
 
 	function contractBackwardToVisiblePosition(range) {
-		var pos = html.previousVisibleBoundary(boundaries.end(range));
+		var pos = html.previousVisualBoundary(boundaries.end(range));
 		if (pos[0]
 			&& dom.isTextNode(pos[0])
 			&& !html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
-			pos = html.nextVisibleBoundary(pos);
+			pos = html.nextVisualBoundary(pos);
 			if (pos[0]) {
-				pos = html.previousVisibleBoundary(pos);
+				pos = html.previousVisualBoundary(pos);
 			}
 		}
-		if (pos[0]) {
-			range.setEnd(pos[0], pos[1]);
+		if (pos) {
+			setEndFromBoundary(range, pos);
 		}
 		return range;
 	}
@@ -736,6 +750,9 @@ define([
 		insertTextBehind: insertTextBehind,
 		select: select,
 		setFromReference: setFromReference,
+		setStartFromBoundary: setStartFromBoundary,
+		setEndFromBoundary: setEndFromBoundary,
+		setFromBoundaries: setFromBoundaries,
 		trim: trim,
 		trimBoundaries: trimBoundaries,
 		trimClosingOpening: trimClosingOpening,

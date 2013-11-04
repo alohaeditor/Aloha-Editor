@@ -19,11 +19,11 @@
 		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 
-	test('nextVisibleBoundary', function () {
-		tested.push('nextVisibleBoundary');
+	test('nextVisualBoundary', function () {
+		tested.push('nextVisualBoundary');
 		var t = function (before, after) {
 			return runTest(before, after, function (range) {
-				var pos = html.nextVisibleBoundary(Boundaries.end(range));
+				var pos = html.nextVisualBoundary(Boundaries.end(range));
 				if (pos[0]) {
 					range.setEnd(pos[0], pos[1]);
 				}
@@ -124,11 +124,11 @@
 		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>}bar</p></div>');
 	});
 
-	test('previousVisibleBoundary()', function () {
-		tested.push('previousVisibleBoundary');
+	test('previousVisualBoundary()', function () {
+		tested.push('previousVisualBoundary');
 		var t = function (before, after) {
 			return runTest(before, after, function (range) {
-				var boundary = html.previousVisibleBoundary(Boundaries.start(range));
+				var boundary = html.previousVisualBoundary(Boundaries.start(range));
 				if (boundary) {
 					range.setStart(boundary[0], boundary[1]);
 				}

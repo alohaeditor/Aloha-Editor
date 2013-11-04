@@ -1,25 +1,29 @@
 /* carets.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ o* Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
 	'functions',
 	'dom',
+	'html',
 	'keys',
 	'ranges',
 	'arrays',
 	'browser',
-	'overrides'
+	'overrides',
+	'boundaries'
 ], function Carets(
 	Fn,
 	Dom,
+	Html,
 	Keys,
 	Ranges,
 	Arrays,
 	Browsers,
-	Overrides
+	Overrides,
+	Boundaries
 ) {
 	'use strict';
 
@@ -46,7 +50,8 @@ define([
 		caret.style.opacity = '0.5';
 	}
 
-	function renderCaret(caret, range, overrides) {
+	function renderBoundary(caret, boundary, overrides) {
+		var range = Ranges.create(boundary[0], boundary[1]);
 		var box = Ranges.box(range);
 		var context = Overrides.harvest(range.startContainer);
 		var doc = caret.ownerDocument;
@@ -69,7 +74,7 @@ define([
 		show(caret, box);
 	}
 
-	function render(range, overrides, blinker) {
+	function render(range, overrides, anchor) {
 		var carets = document.querySelectorAll('.aloha-caret');
 
 		if (!carets[0]) {
@@ -82,12 +87,12 @@ define([
 
 		Dom.removeClass(carets[0], 'blink');
 		Dom.removeClass(carets[1], 'blink');
-		Dom.addClass(carets[blinker], 'blink');
+		Dom.addClass(carets['left' === anchor ? 0 : 1], 'blink');
 
-		renderCaret(carets[0], Ranges.collapseToStart(range.cloneRange()), overrides);
+		renderBoundary(carets[0], Boundaries.start(range), overrides);
 
 		if (!range.collapsed) {
-			renderCaret(carets[1], Ranges.collapseToEnd(range.cloneRange()), overrides);
+			renderBoundary(carets[1], Boundaries.end(range), overrides);
 		} else {
 			Dom.remove(carets[1]);
 		}
@@ -128,7 +133,7 @@ define([
 		}
 	}
 
-	function down(event, range, isNativeEditable) {
+	function down(event, range) {
 		var ref = Ranges.collapseToEnd(range.cloneRange());
 		var box = Ranges.box(ref);
 		box.top += box.height;
@@ -150,56 +155,61 @@ define([
 		}
 
 		range.setEnd(next.endContainer, next.endOffset);
-
-		if (!isNativeEditable) {
-			event.native.preventDefault();
-		}
 	}
 
-	function left(event, range) {
-		var expand = isCtrlDown(event)
-				   ? Ranges.expandBackwardToVisibleWordPosition
-		           : Ranges.expandBackwardToVisiblePosition;
-
-		var contract = isCtrlDown(event)
-				     ? Ranges.contractBackwardToVisibleWordPosition
-		             : Ranges.contractBackwardToVisiblePosition;
-
-		if (isShiftDown(event)) {
-			if (range.collapsed) {
-				expand(range);
-			} else {
-				contract(range);
-			}
-			return;
+	function backward(boundary, stride) {
+		if ('char' === stride) {
+			return Html.previousVisualBoundary(boundary);
 		}
+		return Html.previousWordBoundary(boundary);
+	}
 
+	function forward(boundary, stride) {
+		if ('char' === stride) {
+			return Html.nextVisualBoundary(boundary);
+		}
+		return Html.nextWordBoundary(boundary);
+	}
+
+	function step(event, range, anchor, direction) {
 		if (range.collapsed) {
-			contract(range);
+			anchor = direction;
 		}
-
-		Ranges.collapseToStart(range);
-	}
-
-	function right(event, range) {
+		var get;
+		var set;
+		var collapse;
+		if ('left' === anchor) {
+			get = Boundaries.start;
+			set = Ranges.setStartFromBoundary;
+			collapse = Ranges.collapseToStart;
+		} else {
+			get = Boundaries.end;
+			set = Ranges.setEndFromBoundary;
+			collapse = Ranges.collapseToEnd;
+		}
+		var move = 'left' === direction ? backward : forward;
+		var boundary = get(range);
 		var shift = isShiftDown(event);
 		if (range.collapsed || shift) {
-			if (isCtrlDown(event)) {
-				Ranges.expandForwardToVisibleWordPosition(range);
-			} else {
-				Ranges.expandForwardToVisiblePosition(range);
-			}
+			boundary = move(boundary, isCtrlDown(event) ? 'word' : 'char');
+			set(range, boundary);
 		}
 		if (!shift) {
-			Ranges.collapseToEnd(range);
+			collapse(range);
 		}
+		return anchor;
 	}
 
+	var anchor = 'right';
 	var arrows = {};
 	arrows[Keys.CODES.up] = up;
 	arrows[Keys.CODES.down] = down;
-	arrows[Keys.CODES.left] = left;
-	arrows[Keys.CODES.right] = right;
+	arrows[Keys.CODES.left] = function (event, range, anchor) {
+		return step(event, range, anchor, 'left');
+	};
+	arrows[Keys.CODES.right] = function (event, range, anchor) {
+		return step(event, range, anchor, 'right');
+	};
 
 	function keydown(event) {
 		var range = event.range || Ranges.get();
@@ -209,20 +219,19 @@ define([
 		var isNativeEditable = 'true' === event.editable.elem.getAttribute('contentEditable');
 		var clone = range.cloneRange();
 		if (arrows[event.which]) {
-			arrows[event.which](event, clone, isNativeEditable);
+			anchor = arrows[event.which](event, clone, anchor);
+			if (event.which === Keys.CODES.up || event.which === Keys.CODES.down) {
+				event.native.preventDefault();
+			}
 			// chrome hack
-			if (!isNativeEditable && !clone.collapsed) {
+			if ((!isNativeEditable && !clone.collapsed)) {
 				event.native.preventDefault();
 			}
 		}
 		if (!isNativeEditable) {
 			event.range = clone;
 		}
-		render(
-			clone,
-			event.editable && event.editable.overrides,
-			clone.collapsed ? 0 : 1
-		);
+		render(clone, event.editable && event.editable.overrides, anchor);
 		return event;
 	}
 
