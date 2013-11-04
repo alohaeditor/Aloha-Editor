@@ -216,9 +216,20 @@ define([
 		return boundary;
 	}
 
+	function lookup(name, overrides) {
+		var i;
+		var len = overrides.length;
+		for (i = 0; i < len; i++) {
+			if (name === overrides[i][0]) {
+				return overrides[i][1];
+			}
+		}
+	}
+
 	var exports = {
-		harvest: harvest,
-		consume: consume
+		lookup  : lookup,
+		harvest : harvest,
+		consume : consume
 	};
 
 	exports['harvest'] = exports.harvest;

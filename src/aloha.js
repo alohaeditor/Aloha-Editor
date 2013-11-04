@@ -27,10 +27,11 @@ define([
 	'events',
 	'functions',
 	'html',
+	'maps',
 	'mouse',
+	'overrides',
 	'pubsub',
 	'keys',
-	'maps',
 	'ranges',
 	'stable-range',
 	'strings',
@@ -57,10 +58,11 @@ define([
 	Events,
 	Fn,
 	Html,
+	Maps,
 	Mouse,
+	Overrides,
 	Pubsub,
 	Keys,
-	Maps,
 	Ranges,
 	StableRange,
 	Strings,
@@ -165,6 +167,7 @@ define([
 	aloha['keys'] = Keys;
 	aloha['mouse'] = Mouse;
 	aloha['maps'] = Maps;
+	aloha['overrides'] = Overrides;
 	aloha['pubsub'] = Pubsub;
 	aloha['ranges'] = Ranges;
 	aloha['stablerange'] = StableRange;

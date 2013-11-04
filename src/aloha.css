@@ -32,27 +32,22 @@ p:last-child { margin-bottom: 0; }
 .aloha-caret {
 	z-index: 1;
 	overflow: hidden;
-	//min-width: 3px;
 	margin: 0;
 	padding: 0;
-	background: #f1f0f0;
-}
-.aloha-blinker {
-	z-index: 2;
 	background: #0c59ef;
-	min-width: 2px;
-	-webkit-animation: blink .5s ease-out infinite alternate;
-	   -moz-animation: blink .5s ease-out infinite alternate;
-	    -ms-animation: blink .5s ease-out infinite alternate;
-	     -o-animation: blink .5s ease-out infinite alternate;
-	        animation: blink .5s ease-out infinite alternate;
-	/*
 	-webkit-transition: left 80ms ease-in-out;
 	   -moz-transition: left 80ms ease-in-out;
 	    -ms-transition: left 80ms ease-in-out;
 	     -o-transition: left 80ms ease-in-out;
 	        transition: left 80ms ease-in-out;
-	*/
+}
+
+.blink {
+	-webkit-animation: blink .5s ease-out infinite alternate;
+	   -moz-animation: blink .5s ease-out infinite alternate;
+	    -ms-animation: blink .5s ease-out infinite alternate;
+	     -o-animation: blink .5s ease-out infinite alternate;
+	        animation: blink .5s ease-out infinite alternate;
 }
 
 @-moz-keyframes blink {

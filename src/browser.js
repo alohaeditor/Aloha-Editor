@@ -17,11 +17,11 @@ define([], function Browser() {
 	 * @type {string}
 	 */
 	var VENDOR_PREFIX = (function () {
-		var prefixes = ['-webkit', '-moz', '-o'];
+		var prefixes = ['-webkit-', '-moz-', '-o-'];
 		var style = document.createElement('div').style;
 		var i;
 		for (i = 0; i < prefixes.length; i++) {
-			if (prefixes[i] + '-transform' in style) {
+			if (prefixes[i] + 'transform' in style) {
 				return prefixes[i];
 			}
 		}

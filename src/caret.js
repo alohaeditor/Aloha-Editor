@@ -5,15 +5,21 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'functions',
 	'dom',
 	'keys',
 	'ranges',
-	'arrays'
+	'arrays',
+	'browser',
+	'overrides'
 ], function Carets(
+	Fn,
 	Dom,
 	Keys,
 	Ranges,
-	Arrays
+	Arrays,
+	Browsers,
+	Overrides
 ) {
 	'use strict';
 
@@ -40,23 +46,43 @@ define([
 		caret.style.opacity = '0.5';
 	}
 
-	function render(range) {
-		purge();
+	function renderCaret(caret, range, overrides) {
+		var box = Ranges.box(range);
+		var context = Overrides.harvest(range.startContainer);
+		if (overrides) {
+			context = overrides.concat(context);
+		}
+		var bold = Overrides.lookup('bold', context);
+		var italic = Overrides.lookup('italic', context);
+		var color = Overrides.lookup('color', context);
+		box.width = bold ? 4 : 2;
+		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = italic ? 'rotate(8deg)' : 'rotate(0deg)';
+		show(caret, box);
+	}
 
-		var startRange = Ranges.collapseToStart(range.cloneRange());
-		var endRange = Ranges.collapseToEnd(range.cloneRange());
-		var startCaret = create();
-		var endCaret = create();
-		var startBox = Ranges.box(startRange);
-		var endBox = Ranges.box(endRange);
+	function render(range, overrides, blinker) {
+		//purge();
+		var carets = document.querySelectorAll('.aloha-caret');
 
-		startBox.width = endBox.width = 1;
+		if (!carets[0]) {
+			carets = [create()];
+		}
 
-		startCaret.style.background = 'blue';
-		endCaret.style.background = 'red';
+		if (!carets[1]) {
+			carets = [carets[0], create()];
+		}
 
-		show(startCaret, startBox);
-		show(endCaret, endBox);
+		Dom.removeClass(carets[0], 'blink');
+		Dom.removeClass(carets[1], 'blink');
+		Dom.addClass(carets[blinker], 'blink');
+
+		renderCaret(carets[0], Ranges.collapseToStart(range.cloneRange()), overrides);
+
+		if (!range.collapsed) {
+			renderCaret(carets[1], Ranges.collapseToEnd(range.cloneRange()), overrides);
+		} else {
+			Dom.remove(carets[1]);
+		}
 	}
 
 	function getRange(event) {
@@ -188,20 +214,33 @@ define([
 		if (!isNativeEditable) {
 			event.range = clone;
 		}
-		render(clone);
-		return event; }
+		render(
+			clone,
+			event.editable && event.editable.overrides,
+			clone.collapsed ? 0 : 1
+		);
+		return event;
+	}
 
 	function mousedown(event) {
 		var native = event.native;
 		var range = Ranges.createFromPoint(native.clientX, native.clientY);
 		if (range) {
-			render(range);
+			render(
+				range,
+				event.editable && event.editable.overrides,
+				range.collapsed ? 0 : 1
+			);
 		}
 	}
 
+	var noop = Fn.identity;
+
 	var handlers = {
 		'keydown'   : keydown,
-		'mousedown' : mousedown
+		'mousedown' : mousedown,
+		'keyup'     : noop,
+		'mouseup'   : noop
 	};
 
 	function handle(event) {
@@ -210,7 +249,11 @@ define([
 		}
 		var range = event.range || Ranges.get();
 		if (range) {
-			render(range);
+			render(
+				range,
+				event.editable && event.editable.overrides,
+				range.collapsed ? 0 : 1
+			);
 		}
 		return event;
 	}
