@@ -41,7 +41,7 @@ define([
 		caret.style.left = rect.left + 'px';
 		caret.style.width = rect.width + 'px';
 		caret.style.height = rect.height + 'px';
-		caret.style.position = 'fixed';
+		caret.style.position = 'absolute';
 		caret.style.display = 'block';
 		caret.style.opacity = '0.5';
 	}
@@ -49,13 +49,21 @@ define([
 	function renderCaret(caret, range, overrides) {
 		var box = Ranges.box(range);
 		var context = Overrides.harvest(range.startContainer);
+		var doc = caret.ownerDocument;
+
 		if (overrides) {
 			context = overrides.concat(context);
 		}
+
+		box.top  += window.pageYOffset - doc.body.clientTop;
+		box.left += window.pageXOffset - doc.body.clientLeft;
+
 		var bold = Overrides.lookup('bold', context);
 		var italic = Overrides.lookup('italic', context);
 		var color = Overrides.lookup('color', context);
+
 		box.width = bold ? 4 : 2;
+
 		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = italic
 		                                                  ? 'rotate(8deg)'
 		                                                  : 'rotate(0deg)';
