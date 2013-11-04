@@ -9,13 +9,15 @@ define([
 	'ranges',
 	'dom',
 	'boundaries',
-	'undo'
+	'undo',
+	'functions'
 ], function CrazySlots(
 	Arrays,
 	Ranges,
 	Dom,
 	Boundaries,
-	Undo
+	Undo,
+	Fn
 ) {
 	'use strict';
 
@@ -120,9 +122,9 @@ define([
 			runs += 1;
 			var mutation = mutations[randomInt(0, mutations.length - 1)];
 			var boundaryProbability
-				= (opts.boundaryProbability
-				   || defaultBoundaryProbability).bind(null, mutation);
-			var distance = deleteRangeDistance.bind(null, mutation.deletesRange);
+				= Fn.partial(opts.boundaryProbability || defaultBoundaryProbability,
+				             mutation);
+			var distance = Fn.partial(deleteRangeDistance, mutation.deletesRange);
 			var range = randomRange(editable.elem, boundaryProbability, distance);
 			if (opts.continueOnError) {
 				var error = logException(function () {

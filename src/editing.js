@@ -641,11 +641,11 @@ define([
 		function wrapContextValue(node, value) {
 			ensureWrapper(
 				node,
-				fn.bind(createContextWrapper, null, value),
+				fn.partial(createContextWrapper, value),
 				isReusable,
-				fn.bind(isMergableWrapper, null, value),
+				fn.partial(isMergableWrapper, value),
 				pruneContext,
-				fn.bind(addContextValue, null, value),
+				fn.partial(addContextValue, value),
 				leftPoint,
 				rightPoint
 			);
@@ -702,9 +702,9 @@ define([
 			if (!sibling) {
 				return;
 			}
-			var isMergable = fn.bind(isMergableWrapper, null, contextValue);
-			var createWrapper = fn.bind(createContextWrapper, null, contextValue);
-			var addValue = fn.bind(addContextValue, null, contextValue);
+			var isMergable = fn.partial(isMergableWrapper, contextValue);
+			var createWrapper = fn.partial(createContextWrapper, contextValue);
+			var addValue = fn.partial(addContextValue, contextValue);
 			var mergeNode = mergeNext ? sibling : wrapper;
 			ensureWrapper(mergeNode, createWrapper, isReusable, isMergable, pruneContext, addValue, leftPoint, rightPoint);
 		}

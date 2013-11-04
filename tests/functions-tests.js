@@ -39,10 +39,10 @@
 		equal(fn.complement(fn.returnFalse)(), true);
 	});
 
-	test('bind', function () {
+	test('partial', function () {
 		tested.push('bind');
-		equal(fn.bind(function () {
-			return this.foo;
+		equal(fn.partial(function (arg) {
+			return arg.foo;
 		}, {foo: 'foo'})(), 'foo');
 	});
 

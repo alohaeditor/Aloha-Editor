@@ -44,7 +44,7 @@ define([
 		return range;
 	}
 
-	function delete_(event, direction) {
+	function delete_(direction, event) {
 		var range = event.range;
 		if (range.collapsed) {
 			range = (
@@ -61,12 +61,12 @@ define([
 		return range;
 	}
 
-	function format(event, style) {
+	function format(style, event) {
 		Editing.format(event.range, style, true, event.editable);
 		return event.range;
 	}
 
-	function break_(event, isLinebreak) {
+	function break_(isLinebreak, event) {
 		Editing.break(event.range, event.editable, isLinebreak);
 		return event.range;
 	}
@@ -103,7 +103,7 @@ define([
 		return range;
 	}
 
-	function toggleUndo(event, op) {
+	function toggleUndo(op, event) {
 		var undoContext = event.editable.undoContext;
 		op(undoContext, event.range, [event.range]);
 		return event.range;
@@ -112,49 +112,43 @@ define([
 	var deleteBackwards = {
 		clearOverrides : true,
 		preventDefault : true,
-		arg            : false,
 		undo           : 'delete',
-		mutate         : delete_
+		mutate         : Fn.partial(delete_, false)
 	};
 
 	var deleteForwards = {
 		clearOverrides : true,
 		preventDefault : true,
-		arg            : true,
 		undo           : 'delete',
-		mutate         : delete_
+		mutate         : Fn.partial(delete_, true)
 	};
 
 	var breakBlock = {
 		deleteRange    : true,
 		clearOverrides : true,
 		preventDefault : true,
-		arg            : false,
 		undo           : 'enter',
-		mutate         : break_
+		mutate         : Fn.partial(break_, false)
 	};
 
 	var breakLine = {
 		deleteRange    : true,
 		clearOverrides : true,
 		preventDefault : true,
-		arg            : true,
 		undo           : 'enter',
-		mutate         : break_
+		mutate         : Fn.partial(break_, true)
 	};
 
 	var formatBold = {
 		preventDefault : true,
-		arg            : 'bold',
 		undo           : 'bold',
-		mutate         : format
+		mutate         : Fn.partial(format, 'bold')
 	};
 
 	var formatItalic = {
 		preventDefault : true,
-		arg            : 'italic',
 		undo           : 'italic',
-		mutate         : format
+		mutate         : Fn.partial(format, 'italic')
 	};
 
 	var inputText = {
@@ -167,15 +161,13 @@ define([
 	var undo = {
 		clearOverrides : true,
 		preventDefault : true,
-		arg            : Undo.undo,
-		mutate         : toggleUndo
+		mutate         : Fn.partial(toggleUndo, Undo.undo)
 	};
 
 	var redo = {
 		preventDefault : true,
 		clearOverrides : true,
-		arg            : Undo.redo,
-		mutate         : toggleUndo
+		mutate         : Fn.partial(toggleUndo, Undo.redo)
 	};
 
 	var handlers = {
@@ -234,14 +226,14 @@ define([
 					if (handle.deleteRange && !range.collapsed) {
 						delete_(event, false);
 					}
-					handle.mutate(event, handle.arg);
+					handle.mutate(event);
 					Html.prop(range.commonAncestorContainer);
 				});
 			} else {
 				if (handle.deleteRange && !range.collapsed) {
 					delete_(event, false);
 				}
-				handle.mutate(event, handle.arg);
+				handle.mutate(event);
 				Html.prop(range.commonAncestorContainer);
 			}
 		}

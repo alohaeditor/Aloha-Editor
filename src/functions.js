@@ -65,8 +65,8 @@ define([], function Functions() {
 	}
 
 	/**
-	 * Returns a function which will compute the value of calling `fn` with
-	 * `thisArg` bound to the the `this` variable.
+	 * Like Function.prototype.bind except without the `this` argument.
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
 	 *
 	 * @param {Function} fn
 	 * @param {Object} thisArg
@@ -74,10 +74,10 @@ define([], function Functions() {
 	 *         A function that, when invoked, will call `fn` with `thisArg` as
 	 *         this, and return the return value.
 	 */
-	function bind(fn, thisArg) {
-		var args = Array.prototype.slice.call(arguments, 2);
+	function partial(fn) {
+		var args = Array.prototype.slice.call(arguments, 1);
 		return function () {
-			return fn.apply(thisArg, args.concat(
+			return fn.apply(null, args.concat(
 				Array.prototype.slice.call(arguments, 0)
 			));
 		};
@@ -129,7 +129,7 @@ define([], function Functions() {
 	 * functions.returnTrue()
 	 * functions.returnFalse()
 	 * functions.complement()
-	 * functions.bind()
+	 * functions.partial()
 	 * functions.outparameter()
 	 */
 	var exports =  {
@@ -138,7 +138,7 @@ define([], function Functions() {
 		returnTrue: returnTrue,
 		returnFalse: returnFalse,
 		complement: complement,
-		bind: bind,
+		partial: partial,
 		outparameter: outparameter,
 		strictEquals: strictEquals
 	};
@@ -148,7 +148,7 @@ define([], function Functions() {
 	exports['returnTrue'] = exports.returnTrue;
 	exports['returnFalse'] = exports.returnFalse;
 	exports['complement'] = exports.complement;
-	exports['bind'] = exports.bind;
+	exports['partial'] = exports.partial;
 	exports['outparameter'] = exports.outparameter;
 
 	return exports;
