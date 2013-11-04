@@ -56,12 +56,13 @@ define([
 		var italic = Overrides.lookup('italic', context);
 		var color = Overrides.lookup('color', context);
 		box.width = bold ? 4 : 2;
-		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = italic ? 'rotate(8deg)' : 'rotate(0deg)';
+		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = italic
+		                                                  ? 'rotate(8deg)'
+		                                                  : 'rotate(0deg)';
 		show(caret, box);
 	}
 
 	function render(range, overrides, blinker) {
-		//purge();
 		var carets = document.querySelectorAll('.aloha-caret');
 
 		if (!carets[0]) {
@@ -118,7 +119,7 @@ define([
 		if (range.collapsed && isShiftDown(event)) {
 			range.setStart(next.endContainer, next.endOffset);
 		}
-		
+
 		if (!isNativeEditable) {
 			event.native.preventDefault();
 		}
@@ -222,9 +223,24 @@ define([
 		return event;
 	}
 
+	var depressed = false;
+	var dragging = false;
+
 	function mousedown(event) {
+		purge();
+		depressed = true;
+	}
+
+	function mousemove(event) {
+		dragging = depressed;
+	}
+
+	function mouseup(event) {
 		var native = event.native;
-		var range = Ranges.createFromPoint(native.clientX, native.clientY);
+		var shift = isShiftDown(event);
+		var range = dragging || shift
+		          ? Ranges.get()
+		          : Ranges.createFromPoint(native.clientX, native.clientY);
 		if (range) {
 			render(
 				range,
@@ -232,15 +248,19 @@ define([
 				range.collapsed ? 0 : 1
 			);
 		}
+		if (!dragging && !shift) {
+			event.range = range;
+		}
+		depressed = false;
+		dragging = false;
 	}
 
-	var noop = Fn.identity;
-
 	var handlers = {
+		'keyup'     : Fn.identity,
 		'keydown'   : keydown,
+		'mouseup'   : mouseup,
 		'mousedown' : mousedown,
-		'keyup'     : noop,
-		'mouseup'   : noop
+		'mousemove' : mousemove
 	};
 
 	function handle(event) {

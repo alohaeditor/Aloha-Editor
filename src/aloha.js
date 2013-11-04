@@ -74,7 +74,6 @@ define([
 	'use strict';
 
 	function setSelection(event) {
-		console.warn(event.type);
 		if (event.range) {
 			Ranges.select(event.range);
 		}
