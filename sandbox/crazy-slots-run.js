@@ -61,37 +61,56 @@ require([
 					if (CrazySlots.randomInt(0, 20) !== 0) {
 						Ranges.collapseToStart(range);
 					}
-					Typing.actions.insertText(range, text, editor);
+					Typing.actions.inputText.mutate({
+						editable: editable,
+						range: range,
+						chr: text
+					});
 				}
 			}
 		];
-		var simpleActions = [
-			Keys.CODES.delete,
-			Keys.CODES.backspace,
-			Keys.CODES.enter,
-			'shift+' + Keys.CODES.enter,
-			'ctrl+' + Keys.CODES.undo,
-			'ctrl+shift+' + Keys.CODES.undo,
-			'ctrl+' + Keys.CODES.bold,
-			'ctrl+' + Keys.CODES.italic
+		function mutationFromAction(action) {
+			return function (elem, range) {
+				action.mutate({editable: editable, range:  range});
+			};
+		}
+		var simpleMutations = [
+			{
+				deletesRange: true,
+				mutate: mutationFromAction(Typing.actions.deleteBackwards)
+			},
+			{
+				deletesRange: true,
+				mutate: mutationFromAction(Typing.actions.deleteForwards)
+			},
+			{
+				deletesRange: true,
+				endOfLineProbability: 4,
+				mutate: mutationFromAction(Typing.actions.breakBlock)
+			},
+			{
+				deletesRange: true,
+				endOfLineProbability: 4,
+				mutate: mutationFromAction(Typing.actions.breakLine)
+			},
+			{
+				deletesRange: false,
+				mutate: mutationFromAction(Typing.actions.formatBold)
+			},
+			{
+				deletesRange: false,
+				mutate: mutationFromAction(Typing.actions.formatItalic)
+			},
+			{
+				deletesRange: false,
+				mutate: mutationFromAction(Typing.actions.undo)
+			},
+			{
+				deletesRange: false,
+				mutate: mutationFromAction(Typing.actions.redo)
+			}
 		];
-		var deletesRange = [
-			Keys.CODES.delete,
-			Keys.CODES.backspace,
-			Keys.CODES.enter,
-			'shift+' + Keys.CODES.enter
-		];
-		var endOfLineProbabilities = {};
-		endOfLineProbabilities[Keys.CODES.enter] = 4;
-		simpleActions.forEach(function (code) {
-			mutations.push({
-				deletesRange: Arrays.contains(deletesRange, code),
-				endOfLineProbability: endOfLineProbabilities[code],
-				mutate: function (elem, range) {
-					Typing.actions[code](range, editor);
-				}
-			});
-		});
+		mutations = mutations.concat(simpleMutations);
 		CrazySlots.run(editable, mutations);
 	}
 

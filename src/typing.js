@@ -176,6 +176,18 @@ define([
 		keypress  : {}
 	};
 
+	var actions = {
+		deleteBackwards: deleteBackwards,
+		deleteForwards: deleteForwards,
+		breakBlock: breakBlock,
+		breakLine: breakLine,
+		formatBold: formatBold,
+		formatItalic: formatItalic,
+		inputText: inputText,
+		undo: undo,
+		redo: redo
+	};
+
 	handlers.keydown[Keys.CODES.up] =
 	handlers.keydown[Keys.CODES.down] =
 	handlers.keydown[Keys.CODES.left] =
@@ -237,7 +249,8 @@ define([
 	}
 
 	var exports = {
-		handle : handle
+		handle : handle,
+		actions: actions
 	};
 
 	exports['handle'] = handle;
