@@ -94,7 +94,8 @@
 		var capturedFrame = Undo.capture(context, {meta: true}, function () {
 			var range = Ranges.create();
 			Dom.setRangeFromBoundaries(range, [editable.firstChild, 2], [editable.firstChild, 3]);
-			Editing.delete(range);
+			var haveToPassEmptyOverridesOtherwiseError = {overrides: []};
+			Editing.delete(range, haveToPassEmptyOverridesOtherwiseError);
 		});
 		var modifiedEditable = Dom.clone(editable);
 		var capturedChangeSet = Undo.changeSetFromFrame(context, capturedFrame);
@@ -121,7 +122,6 @@
 		});
 		var changeSet = Undo.changeSetFromFrame(context, capturedFrame);
 		var undoChangeSet = Undo.inverseChangeSet(changeSet);
-		debugger;
 		Undo.applyChangeSet(editable, undoChangeSet);
 		equal(editable.innerHTML, controlEditable.innerHTML);
 	});

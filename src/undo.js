@@ -34,7 +34,7 @@ define([
 	 * Should be treated as a black box.
 	 *
 	 * @param elem {Element}
-	 *        The element whose mutations to are to be observed and made
+	 *        The element whose mutations are to be observed and made
 	 *        undoable/redoable.
 	 * @param opts {Object.<string,*>}
 	 *        A map of options:
@@ -713,10 +713,21 @@ define([
 			if (COMPOUND_DELETE === type) {
 				lastInsertNode = null;
 				var path = containerPath.concat(delPath(container, record));
+				var lastDeleteContent = null;
 				record.records.forEach(function (record) {
-					generateChanges(path, record.node, changes, record.contained);
+					var contained = record.contained;
+					if (contained.length) {
+						generateChanges(path, record.node, changes, contained);
+						lastDeleteContent = null;
+					}
+					var delNode = reconstructNodeFromDelRecord(record);
+					if (lastDeleteContent) {
+						lastDeleteContent.push(delNode);
+					} else {
+						lastDeleteContent = [delNode];
+						changes.push(makeDeleteChange(path, lastDeleteContent));
+					}
 				});
-				changes.push(makeDeleteChange(path, record.records.map(reconstructNodeFromDelRecord)));
 			} else if (INSERT === type) {
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
