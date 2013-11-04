@@ -67,15 +67,15 @@ define(['functions'], function Arrays(Fn) {
 		});
 	}
 	/**
-	 * Returns the relative complement of array `zs` in `xs`:
+	 * Returns the relative difference of array `zs` in `xs`:
 	 * All items in the array `xs` that are not contained in array `zs`.
 	 *
 	 * @param {Array} xs
 	 * @param {Array} zs
 	 * @return {Array}
-	 *         The intersection of the sets `xs` and `zs`.
+	 *         The difference of the sets `xs` and `zs`.
 	 */
-	function complement(xs, zs) {
+	function difference(xs, zs) {
 		return xs.filter(function (x) {
 			return !contains(zs, x);
 		});
@@ -204,7 +204,7 @@ define(['functions'], function Arrays(Fn) {
 	 */
 	var exports = {
 		contains: contains,
-		complement: complement,
+		difference: difference,
 		equal: equal,
 		intersect: intersect,
 		second: second,
@@ -216,7 +216,7 @@ define(['functions'], function Arrays(Fn) {
 	};
 
 	exports['contains'] = exports.contains;
-	exports['complement'] = exports.complement;
+	exports['difference'] = exports.difference;
 	exports['equal'] = exports.equal;
 	exports['intersect'] = exports.intersect;
 	exports['second'] = exports.second;

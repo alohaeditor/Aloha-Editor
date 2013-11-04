@@ -961,7 +961,7 @@ define([
 
 	var zwChars = ZERO_WIDTH_CHARACTERS.join('');
 
-	var breakingWhiteSpaces = Arrays.complement(
+	var breakingWhiteSpaces = Arrays.difference(
 		WHITE_SPACE_CHARACTERS,
 		NON_BREAKING_SPACE_CHARACTERS
 	).join('');
