@@ -3,7 +3,7 @@
 
 	var html = aloha.html;
 	var ranges = aloha.ranges;
-	var boundaries = aloha.boundaries;
+	var Boundaries = aloha.boundaries;
 	var boundarymarkers = aloha.boundarymarkers;
 	var tested = [];
 
@@ -11,6 +11,7 @@
 
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
+		$('#editable').html('').append(dom);
 		var range = ranges.create();
 		boundarymarkers.extract(dom, range);
 		op(range);
@@ -18,16 +19,13 @@
 		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 
-	test('nextVisiblePosition', function () {
-		tested.push('nextVisiblePosition');
+	test('nextVisibleBoundary', function () {
+		tested.push('nextVisibleBoundary');
 		var t = function (before, after) {
 			return runTest(before, after, function (range) {
-				var pos = html.nextVisiblePosition(
-					range.endContainer,
-					range.endOffset
-				);
-				if (pos.node) {
-					range.setEnd(pos.node, pos.offset);
+				var pos = html.nextVisibleBoundary(Boundaries.end(range));
+				if (pos[0]) {
+					range.setEnd(pos[0], pos[1]);
 				}
 			});
 		};
@@ -36,19 +34,19 @@
 		  '<div><p contenteditable="true">{<br>}</p>foo</div>');
 
 		t('<div><p>foo[]</p><div><ul><li>bar</li></ul></div></div>',
-		  '<div><p>foo[</p><div><ul><li>]bar</li></ul></div></div>');
+		  '<div><p>foo[</p><div><ul><li>}bar</li></ul></div></div>');
 
 		t('<div>foo<p contenteditable="true">{}bar</p></div>',
 		  '<div>foo<p contenteditable="true">{b]ar</p></div>');
 
-		t('<div><p>foo{}<br></p>bar</div>', '<div><p>foo{<br></p>]bar</div>');
+		t('<div><p>foo{}<br></p>bar</div>', '<div><p>foo{<br></p>}bar</div>');
 		t('<div><i>foo{}<br></i>bar</div>', '<div><i>foo{<br>}</i>bar</div>');
 
 		t('<div><p>foo{}</p><ul><li>bar</li></ul></div>',
-		  '<div><p>foo{</p><ul><li>]bar</li></ul></div>');
+		  '<div><p>foo{</p><ul><li>}bar</li></ul></div>');
 
 		t('<div>foo{}<ul><li>bar</li></ul></div>',
-		  '<div>foo{<ul><li>]bar</li></ul></div>');
+		  '<div>foo{<ul><li>}bar</li></ul></div>');
 
 		t('<p>foo{}<b>bar</b>baz</p>', '<p>foo{<b>b]ar</b>baz</p>');
 
@@ -82,7 +80,7 @@
 
 		t('<b>[f]oo</b>', '<b>[fo]o</b>');
 
-		t('<b>[fo]o</b>', '<b>[foo]</b>');
+		t('<b>[fo]o</b>', '<b>[foo}</b>');
 		t('<b>[fo]o </b>', '<b>[foo] </b>');
 		t('<b>[fo]o  </b>', '<b>[foo]  </b>');
 
@@ -120,39 +118,36 @@
 		t('<p>foo[]<br>bar</p>', '<p>foo[<br>}bar</p>');
 		t('<p>foo{}<br><br>bar</p>', '<p>foo{<br>}<br>bar</p>');
 		t('<p>foo[]<br><br>bar</p>', '<p>foo[<br>}<br>bar</p>');
-		t('<div><p>foo[]<br></p>bar</div>', '<div><p>foo[<br></p>]bar</div>');
 
-		t('<div>foo[]<br><p>bar</p></div>', '<div>foo[<br><p>]bar</p></div>');
-		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>]bar</p></div>');
+		t('<div><p>foo[]<br></p>bar</div>', '<div><p>foo[<br></p>}bar</div>');
+		t('<div>foo[]<br><p>bar</p></div>', '<div>foo[<br><p>}bar</p></div>');
+		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>}bar</p></div>');
 	});
 
-	test('previousVisiblePosition()', function () {
-		tested.push('previousVisiblePosition');
+	test('previousVisibleBoundary()', function () {
+		tested.push('previousVisibleBoundary');
 		var t = function (before, after) {
 			return runTest(before, after, function (range) {
-				var pos = html.previousVisiblePosition(
-					range.startContainer,
-					range.startOffset
-				);
-				if (pos.node) {
-					range.setStart(pos.node, pos.offset);
+				var boundary = html.previousVisibleBoundary(Boundaries.start(range));
+				if (boundary) {
+					range.setStart(boundary[0], boundary[1]);
 				}
 			});
 		};
 
-		t('<b>[]</b>',        '<b>[]</b>');
-		t('<b>[foo]</b>',     '<b>[foo]</b>');
-		t('<b>f[oo]</b>',     '<b>[foo]</b>');
-		t('<b> [foo]</b>',    '<b>[ foo]</b>');
-		t('<b> [ foo]</b>',   '<b>[  foo]</b>');
-		t('<b> [  foo]</b>',  '<b>[   foo]</b>');
-		t('<b>  [foo]</b>',   '<b>[  foo]</b>');
-		t('<b>  [ foo]</b>',  '<b>[   foo]</b>');
-		t('<b>  [  foo]</b>', '<b>[    foo]</b>');
+		t('<b>[]</b>',        '<b>{]</b>');
+		t('<b>[foo]</b>',     '<b>{foo]</b>');
+		t('<b>f[oo]</b>',     '<b>{foo]</b>');
+		t('<b> [foo]</b>',    '<b>{ foo]</b>');
+		t('<b> [ foo]</b>',   '<b>{  foo]</b>');
+		t('<b> [  foo]</b>',  '<b>{   foo]</b>');
+		t('<b>  [foo]</b>',   '<b>{  foo]</b>');
+		t('<b>  [ foo]</b>',  '<b>{   foo]</b>');
+		t('<b>  [  foo]</b>', '<b>{    foo]</b>');
 
-		t('<p>foo<b> [bar]</b></p>',    '<p>foo<b>[ bar]</b></p>');
-		t('<p>foo<b> [ bar]</b></p>',   '<p>foo<b>[  bar]</b></p>');
-		t('<p>foo<b> [  bar]</b></p>',   '<p>foo<b>[   bar]</b></p>');
+		t('<p>foo<b> [bar]</b></p>',    '<p>foo<b>{ bar]</b></p>');
+		t('<p>foo<b> [ bar]</b></p>',   '<p>foo<b>{  bar]</b></p>');
+		t('<p>foo<b> [  bar]</b></p>',  '<p>foo<b>{   bar]</b></p>');
 		t('<p>foo<b>  [ bar]</b></p>',  '<p>foo<b> [  bar]</b></p>');
 
 		t('<p>foo<b>  [bar]</b></p>',   '<p>foo<b> [ bar]</b></p>');
@@ -165,39 +160,28 @@
 		t('<b> foo  [bar]</b>', '<b> foo [ bar]</b>');
 
 		t('<p>foo{}<br></p>', '<p>fo[o}<br></p>');
-		t('<p>foo<br>{}</p>', '<p>foo[<br>}</p>');
+		t('<p>foo<br>{}</p>', '<p>foo{<br>}</p>');
 
-		t('<div><p>foo</p>[bar]</div>',
-		  '<div><p>foo[</p>bar]</div>');
+		t('<div><p>foo</p>[bar]</div>', '<div><p>foo{</p>bar]</div>');
+		t('<div><p>foo</p>{bar]</div>', '<div><p>foo{</p>bar]</div>');
 
-		t('<div><p>foo</p>{bar]</div>',
-		  '<div><p>foo[</p>bar]</div>');
+		t('<div><p>foo</p><b>[bar]</b></div>', '<div><p>foo{</p><b>bar]</b></div>');
+		t('<div><p>foo</p> <b>[bar]</b></div>', '<div><p>foo{</p> <b>bar]</b></div>');
+		t('<div><p>foo </p> <b>[bar]</b></div>', '<div><p>foo[ </p> <b>bar]</b></div>');
 
-		t('<div><p>foo</p><b>[bar]</b></div>',
-		  '<div><p>foo[</p><b>bar]</b></div>');
-
-		t('<div><p>foo</p> <b>[bar]</b></div>',
-		  '<div><p>foo[</p> <b>bar]</b></div>');
-
-		t('<div><p>foo </p> <b>[bar]</b></div>',
-		  '<div><p>foo[ </p> <b>bar]</b></div>');
-
-		t('<div><p>foo</p> [bar]</div>',
-		  '<div><p>foo[</p> bar]</div>');
-
-		t('<div><p>foo </p> [bar]</div>',
-		  '<div><p>foo[ </p> bar]</div>');
+		t('<div><p>foo</p> [bar]</div>', '<div><p>foo{</p> bar]</div>');
+		t('<div><p>foo </p> [bar]</div>', '<div><p>foo[ </p> bar]</div>');
 
 		t('<div><p>foo </p> <p> [bar]</p></div>',
 		  '<div><p>foo[ </p> <p> bar]</p></div>');
 
 		t('<div>foo<ul><li>bar</li></ul>{}baz</div>',
-		  '<div>foo<ul><li>bar[</li></ul>}baz</div>');
+		  '<div>foo<ul><li>bar{</li></ul>}baz</div>');
 
 		t('<p><br>[]foo</p>', '<p>{<br>]foo</p>');
-		t('<p>foo<br>[]bar</p>', '<p>foo[<br>]bar</p>');
+		t('<p>foo<br>[]bar</p>', '<p>foo{<br>]bar</p>');
 		t('<p>foo<br><br>[]bar</p>', '<p>foo<br>{<br>]bar</p>');
-		t('<div><p>foo<br></p>[]one</div>', '<div><p>foo[<br></p>]one</div>');
+		t('<div><p>foo<br></p>[]one</div>', '<div><p>foo{<br></p>]one</div>');
 	});
 
 	test('isVisuallyAdjacent()', function () {
@@ -207,8 +191,8 @@
 			boundarymarkers.extract($(markup)[0], range);
 			equal(
 				html.isVisuallyAdjacent(
-					boundaries.start(range),
-					boundaries.end(range)
+					Boundaries.start(range),
+					Boundaries.end(range)
 				),
 				expected,
 				markup
@@ -313,8 +297,8 @@
 			var range = ranges.create();
 			boundarymarkers.extract(dom, range);
 			var linebreak = html.nextLineBreak(
-				boundaries.start(range),
-				boundaries.end(range)
+				Boundaries.start(range),
+				Boundaries.end(range)
 			);
 			if (linebreak) {
 				range.setStart(linebreak[0], linebreak[1]);

@@ -1105,84 +1105,45 @@ define([
 	}
 
 	/**
+	 * Returns the node/offset namedtuple, of the previous visible character
+	 * from the given position in the document.
+	 *
+	 * All "zero-width character" are ignored.
+	 */
+	function previousVisibleCharacter(boundary) {
+		var node = boundary[0];
+		var offset = boundary[1];
+		var before = node.data.substr(0, offset);
+
+		// Because `before` may be a sequence of white spaces
+		if (-1 === before.search(NOT_WSP_FROM_END) && !NOT_WSP.test(before)) {
+			return areNextWhiteSpacesSignificant(node, 0)
+			     ? [node, 1 === before.length ? 0 : 1]
+			     : null;
+		}
+
+		var position = before.match(NOT_WSP_FROM_END)[0].length - 1;
+		var moreThanOneWhiteSpace = position > 1;
+
+		return [
+			node,
+			moreThanOneWhiteSpace ? offset - position + 1 : offset - 1
+		];
+	}
+
+	/**
 	 * Returns the node/offset namedtuple, of the next visible character from
 	 * the given position in the document.
 	 *
 	 * All "zero-width character" are ignored.
-	 *
-	 * @param {DOMObject} node
-	 * @param {Number} offset
-	 * @return {Object}
-	 *         An object with the properities "node" and "offset", representing
-	 *         the position of the next visible character.  "node" will be null
-	 *         and offset -1 if no next visible character can be found.
 	 */
-	function nextVisibleCharacter(node, offset) {
-		if (!Dom.isTextNode(node) || offset === Dom.nodeLength(node)) {
-			return {
-				node: null,
-				offset: -1
-			};
-		}
-		var boundary = node.data.substr(offset).search(
+	function nextVisibleCharacter(boundary) {
+		var node = boundary[0];
+		var offset = boundary[1];
+		var index = node.data.substr(offset).search(
 			areNextWhiteSpacesSignificant(node, offset) ? NOT_ZWSP : NOT_WSP
 		);
-		return -1 === boundary ? {
-			node: null,
-			offset: -1
-		} : {
-			node: node,
-			offset: offset + boundary + 1
-		};
-	}
-
-	/**
-	 * Whether or not it is possible to insert a text or a text node in the
-	 * given node.
-	 *
-	 * This test is useful for determining whether a node is suitable to serve
-	 * as a container for range boundary position for the purposes of editing
-	 * Content.
-	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
-	 */
-	function canInsertText(node) {
-		return (Dom.isTextNode(node)
-		    || Content.allowsNesting(node.nodeName, '#text'))
-		    && isRendered(node);
-	}
-
-	function prevNodeFromPosition(node, offset) {
-		return (Dom.isAtEnd(node, offset) || Dom.isTextNode(node))
-		     ? (node.lastChild || node)
-		     : Traversing.backward(Dom.nodeAtOffset(node, offset));
-	}
-
-	function nextNodeToFindPosition(start, out_crossedVisualBreak) {
-		return Traversing.findForward(
-			start,
-			/**
-			 * True if the given node can contain text or if it is a void node
-			 * with subequent visible siblings.
-			 */
-			function (node) {
-				return canInsertText(node)
-				    || (Predicates.isVoidNode(node)
-				        && Traversing.nextWhile(node, isUnrendered));
-			},
-			function (node) {
-				if (node === start) {
-					return false;
-				}
-				if (!out_crossedVisualBreak()) {
-					out_crossedVisualBreak(hasLinebreakingStyle(node));
-				}
-				return Dom.isEditingHost(node)
-				    || (node.previousSibling
-				        && Dom.isEditingHost(node.previousSibling));
-			}
-		);
+		return (-1 === index) ? null : [node, offset + index + 1];
 	}
 
 	/**
@@ -1196,187 +1157,129 @@ define([
 	 * @param {Number} offset
 	 * @return {Object}
 	 */
-	function nextVisiblePosition(node, offset) {
-		var pos = nextVisibleCharacter(node, offset);
-		if (pos.node) {
-			return pos;
-		}
-		var crossedVisualBreak = Fn.outparameter(false);
-		var next = nextNodeToFindPosition(
-			prevNodeFromPosition(node, offset),
-			crossedVisualBreak
-		);
-		if (!next) {
-			return Dom.isEditingHost(node) ? {
-				node: node,
-				offset: Dom.nodeLength(node)
-			} : {
-				node: node.parentNode,
-				offset: Dom.nodeLength(node.parentNode)
-			};
-		}
-		if (Predicates.isVoidNode(next)) {
-			var after = Traversing.forward(next);
-			if (Predicates.isVoidNode(after) || Predicates.isInlineNode(after)) {
-				return {
-					node: next.parentNode,
-					offset: Dom.nodeIndex(next) + 1
-				};
+	function stepVisibleBoundary(boundary, steps) {
+		var start;
+
+		if (!Boundaries.isNodeBoundary(boundary)) {
+			// <#te|xt>
+			var pos = steps.character(boundary);
+			if (pos) {
+				return Boundaries.normalize(pos);
 			}
-			next = after;
-			crossedVisualBreak(true);
-		}
-		if (crossedVisualBreak()) {
-			while (next && next.firstChild) {
-				next = Traversing.nextWhile(next.firstChild, isUnrendered);
-			}
-			return {
-				node: next,
-				offset: 0
-			};
-		}
-		return nextVisiblePosition(next, 0);
-	}
-
-	/**
-	 * Returns the node/offset namedtuple, of the previous visible character
-	 * from the given position in the document.
-	 *
-	 * All "zero-width character" are ignored.
-	 *
-	 * @param {DOMObject} node
-	 * @param {Number} offset
-	 * @return {Object}
-	 *         An object with the properities "node" and "offset", representing
-	 *         the position of the previous visible character.  "node" will be
-	 *         null and offset -1 if no previous visible character can be found.
-	 */
-	function previousVisibleCharacter(node, offset) {
-		if (!Dom.isTextNode(node) || 0 === offset) {
-			return {
-				node: null,
-				offset: -1
-			};
-		}
-
-		var before = node.data.substr(0, offset);
-
-		if ('' === before) {
-			return {
-				node: null,
-				offset: -1
-			};
-		}
-
-		// Because `before` may be a sequence of white spaces
-		if (-1 === before.search(NOT_WSP_FROM_END) && !NOT_WSP.test(before)) {
-			return areNextWhiteSpacesSignificant(node, 0)
-				? {
-					node: node,
-					offset: 1 === before.length ? 0 : 1
-				}
-				: {
-					node: null,
-					offset: -1
-				};
-		}
-
-		var boundary = before.match(NOT_WSP_FROM_END)[0].length - 1;
-		var moreThanOneWhiteSpace = boundary > 1;
-
-		return {
-			node: node,
-			offset: moreThanOneWhiteSpace ? offset - boundary + 1 : offset - 1
-		};
-	}
-
-	/**
-	 * Returns the an node/offset namedtuple of the previous visible position
-	 * in the document.
-	 *
-	 * The previous visible position is always the previoys visible character,
-	 * or the previous visible line break or space.
-	 *
-	 * @param {DOMObject} node
-	 * @param {Number} offset
-	 * @return {Object}
-	 */
-	function previousVisiblePosition(node, offset) {
-		var pos = previousVisibleCharacter(node, offset);
-		if (pos.node) {
-			return pos;
+			start = steps.next(boundary);
+		} else {
+			start = Boundaries.normalize(boundary);
 		}
 
 		var crossedVisualBreak = false;
 
-		var next = (Dom.isTextNode(node) || Dom.isAtEnd(node, offset))
-		         ? node
-		         : Dom.nodeAtOffset(node, offset);
+		var next = steps.stepWhile(start, function (pos, container) {
+			var node = steps.node(pos);
 
-		var parents = Traversing.childAndParentsUntil(next, Dom.isEditingHost);
-
-		var landing = Traversing.findThrough(
-			next,
-			function (node) {
-				return !Arrays.contains(parents, node)
-				    && (canInsertText(node) || Predicates.isVoidNode(node));
-			},
-			function (node) {
-				if (next === node) {
-					return false;
-				}
-				if (!crossedVisualBreak) {
-					crossedVisualBreak = hasLinebreakingStyle(node);
-				}
-				return Dom.isEditingHost(node)
-				    || (node.nextSibling
-				        && Dom.isEditingHost(node.nextSibling));
+			if (!crossedVisualBreak) {
+				//
+				//   .------- node ------.
+				//   |         |         |
+				//   v         v         v
+				// |<br>  or |<p>  or |</h1>
+				//  <br>| or  <p>| or  </h1>|
+				crossedVisualBreak = hasLinebreakingStyle(node);
 			}
-		);
 
-		if (!landing) {
-			return {
-				node: node,
-				offset: 0
-			};
-		}
-
-		if (!crossedVisualBreak) {
-			return previousVisiblePosition(landing, Dom.nodeLength(landing));
-		}
-
-		if (landing.lastChild) {
-			landing = Traversing.findBackward(
-				Traversing.forward(landing.lastChild),
-				function (node) {
-					return canInsertText(node) || Predicates.isVoidNode(node);
-				}
-			);
-		}
-
-		if (Predicates.isVoidNode(landing)) {
-			if (!landing.previousSibling
-			    || Predicates.isVoidNode(landing.previousSibling)) {
-				return {
-					node: landing.parentNode,
-					offset: Dom.nodeIndex(landing)
-				};
+			//    editing-host
+			//    /          \
+			//   v            v
+			// <host>| or |</host>
+			if (Dom.isEditingHost(steps.node(pos))) {
+				return false;
 			}
-			landing = landing.previousSibling;
+
+			// Because traversing over start and end tags has no visual
+			// significance
+			return !Dom.isTextNode(node) && isRendered(node);
+		});
+
+		//  <host>| or |</host>
+		if (Dom.isEditingHost(steps.node(next))) {
+			return start;
 		}
 
-		if (Dom.isTextNode(landing)) {
-			var boundary = landing.data.search(WSP_FROM_END);
-			return {
-				node: landing,
-				offset: -1 === boundary ? Dom.nodeLength(landing) : boundary
-			};
+		var after = steps.adjacent(next);
+
+		// |</p>  or |</b>
+		//   <p>| or   <b>|
+		if (!after) {
+			return next;
 		}
 
-		return {
-			node: landing,
-			offset: Dom.nodeLength(landing)
-		};
+		// |<p> or <p>|
+		if (hasLinebreakingStyle(after)) {
+			var afterNext = steps.next(next);
+			// <p>|<br> or <br>|</p>
+			if ((steps.sibling(after) && hasInlineStyle(steps.sibling(after))) || hasInlineStyle(after.parentNode)) {
+				return afterNext;
+			}
+			var secondAfterNext = steps.next(afterNext);
+			if (steps.isLimit(secondAfterNext) && Dom.isEditingHost(secondAfterNext[0])) {
+				return afterNext;
+			}
+			return secondAfterNext;
+		}
+
+		//  <p>| or  <br>|
+		// |<p>  or |<br>
+		if (crossedVisualBreak) {
+			// <#text>|<br>
+			if (Dom.isTextNode(after)) {
+				// Because `next` may be at a insignificant white space
+				var offset = after.data.search(WSP_FROM_END);
+				if (offset > -1) {
+					return [after, offset];
+				}
+			}
+			return next;
+		}
+
+		// <#text>|<b> or </b>|<#text>
+		return steps.step(after);
+	}
+
+	var forwardSteps = {
+		character : nextVisibleCharacter,
+		next      : Boundaries.next,
+		node      : Boundaries.nextNode,
+		adjacent  : Boundaries.nodeAfter,
+		stepWhile : Boundaries.nextWhile,
+		isLimit   : Boundaries.atEnd,
+		sibling   : function (node) {
+			return node.nextSibling;
+		},
+		step: function (node) {
+			return nextVisibleBoundary([node, 0]);
+		}
+	};
+
+	var backwardSteps = {
+		character : previousVisibleCharacter,
+		next      : Boundaries.prev,
+		node      : Boundaries.prevNode,
+		adjacent  : Boundaries.nodeBefore,
+		stepWhile : Boundaries.prevWhile,
+		isLimit   : Boundaries.atStart,
+		sibling   : function (node) {
+			return node.previousSibling;
+		},
+		step: function (node) {
+			return previousVisibleBoundary([node, Dom.nodeLength(node)]);
+		}
+	};
+
+	function nextVisibleBoundary(boundary) {
+		return stepVisibleBoundary(boundary, forwardSteps);
+	}
+
+	function previousVisibleBoundary(boundary) {
+		return stepVisibleBoundary(boundary, backwardSteps);
 	}
 
 	/**
@@ -1399,12 +1302,12 @@ define([
 		insertVisualBreak: insertVisualBreak,
 		insertLineBreak: insertLineBreak,
 		removeVisualBreak: removeVisualBreak,
-		nextVisibleCharacter: nextVisibleCharacter,
-		nextVisiblePosition: nextVisiblePosition,
 		nextLineBreak: nextLineBreak,
-		previousVisibleCharacter: previousVisibleCharacter,
-		previousVisiblePosition: previousVisiblePosition,
 		prop: prop,
+		previousVisibleCharacter: previousVisibleCharacter,
+		previousVisibleBoundary: previousVisibleBoundary,
+		nextVisibleCharacter: nextVisibleCharacter,
+		nextVisibleBoundary: nextVisibleBoundary,
 		areNextWhiteSpacesSignificant: areNextWhiteSpacesSignificant
 	};
 

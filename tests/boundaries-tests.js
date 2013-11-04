@@ -1,7 +1,7 @@
 (function (aloha) {
 	'use strict';
 
-	var boundaries = aloha.boundaries;
+	var Boundaries = aloha.boundaries;
 	var ranges = aloha.ranges;
 	var boundarymarkers = aloha.boundarymarkers;
 	var tested = [];
@@ -22,7 +22,7 @@
 		tested.push('prev');
 
 		var t = function (before, after) {
-			runTest(before, after, boundaries.prev);
+			runTest(before, after, Boundaries.prev);
 		};
 
 		// ie will automatically convert <b>[foo]</b> to <b>{foo]</b>
@@ -53,7 +53,7 @@
 		tested.push('prevWhile');
 		var dom = $('<div>foo<p>bar<b><u><i>baz</i></u>buzz</b></p></div>')[0];
 		var range = ranges.create();
-		boundaries.prevWhile(
+		Boundaries.prevWhile(
 			[dom, aloha.dom.nodeIndex(dom.lastChild) + 1],
 			function (pos, container, offset) {
 				if (container && container.parentNode) {
@@ -75,7 +75,7 @@
 		tested.push('next');
 
 		var t = function (before, after) {
-			runTest(before, after, boundaries.next);
+			runTest(before, after, Boundaries.next);
 		};
 
 		t('<p><b>[foo</b>}</p>', '<p><b>foo{</b>}</p>');
@@ -104,7 +104,7 @@
 		tested.push('nextWhile');
 		var dom = $('<div>foo<p>bar<b><br><u><i>baz</i></u>buzz</b></p></div>')[0];
 		var range = ranges.create();
-		boundaries.nextWhile([dom, 0], function (pos, container, offset) {
+		Boundaries.nextWhile([dom, 0], function (pos, container, offset) {
 			if (container && container.parentNode) {
 				range.setStart(container, offset);
 				range.setEnd(container, offset);
@@ -119,14 +119,14 @@
 		);
 	});
 
-	test('leftNode() & rightNode()', function () {
-		tested.push('leftNode');
-		tested.push('rightNode');
+	test('nodeBefore() & nodeAfter()', function () {
+		tested.push('nodeBefore');
+		tested.push('nodeAfter');
 		var t = function (markup, expected) {
 			var range = ranges.create();
 			boundarymarkers.extract($(markup)[0], range);
-			var left = boundaries.leftNode(boundaries.start(range));
-			var right = boundaries.rightNode(boundaries.end(range));
+			var left = Boundaries.nodeBefore(Boundaries.start(range));
+			var right = Boundaries.nodeAfter(Boundaries.end(range));
 			equal(left.data || left.nodeName, expected[0], markup + ' => ' + expected.join());
 			equal(right.data || right.nodeName, expected[1], markup + ' => ' + expected.join());
 		};
@@ -145,5 +145,5 @@
 		t('<p><i>{foo</i>b<u>a}<u>r</p>', ['I', 'U']);
 	});
 
-	testCoverage(test, tested, boundaries);
+	testCoverage(test, tested, Boundaries);
 }(window.aloha));

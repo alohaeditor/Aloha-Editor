@@ -358,10 +358,7 @@ define([
 	 * @return {Range}
 	 */
 	function expandToVisibleCharacter(range) {
-		var pos = html.nextVisibleCharacter(
-			range.endContainer,
-			range.endOffset
-		);
+		var pos = html.nextVisibleCharacter(boundaries.end(range));
 		if (pos.offset > 0) {
 			range.setEnd(pos.node, pos.offset - 1);
 		} else if (dom.isTextNode(range.endContainer)) {
@@ -381,12 +378,9 @@ define([
 	 * @return {Range}
 	 */
 	function expandBackwardToVisiblePosition(range) {
-		var pos = html.previousVisiblePosition(
-			range.startContainer,
-			range.startOffset
-		);
-		if (pos.node) {
-			range.setStart(pos.node, pos.offset);
+		var pos = html.previousVisibleBoundary(boundaries.start(range));
+		if (pos[0]) {
+			range.setStart(pos[0], pos[1]);
 		}
 		return range;
 	}
@@ -399,36 +393,33 @@ define([
 	 * @return {Range}
 	 */
 	function expandForwardToVisiblePosition(range) {
-		var pos = html.nextVisiblePosition(range.endContainer, range.endOffset);
-		if (pos.node
-			&& dom.isTextNode(pos.node)
-			&& !html.areNextWhiteSpacesSignificant(pos.node, pos.offset)) {
-			pos = html.nextVisiblePosition(pos.node, pos.offset);
-			if (pos.node) {
-				pos = html.previousVisiblePosition(pos.node, pos.offset);
+		var pos = html.nextVisibleBoundary(boundaries.end(range));
+		if (pos[0]
+			&& dom.isTextNode(pos[0])
+			&& !html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
+			pos = html.nextVisibleBoundary(pos);
+			if (pos[0]) {
+				pos = html.previousVisibleBoundary(pos);
 			}
 		}
-		if (pos.node) {
-			range.setEnd(pos.node, pos.offset);
+		if (pos[0]) {
+			range.setEnd(pos[0], pos[1]);
 		}
 		return range;
 	}
 
 	function contractBackwardToVisiblePosition(range) {
-		var pos = html.previousVisiblePosition(
-			range.endContainer,
-			range.endOffset
-		);
-		if (pos.node
-			&& dom.isTextNode(pos.node)
-			&& !html.areNextWhiteSpacesSignificant(pos.node, pos.offset)) {
-			pos = html.nextVisiblePosition(pos.node, pos.offset);
-			if (pos.node) {
-				pos = html.previousVisiblePosition(pos.node, pos.offset);
+		var pos = html.previousVisibleBoundary(boundaries.end(range));
+		if (pos[0]
+			&& dom.isTextNode(pos[0])
+			&& !html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
+			pos = html.nextVisibleBoundary(pos);
+			if (pos[0]) {
+				pos = html.previousVisibleBoundary(pos);
 			}
 		}
-		if (pos.node) {
-			range.setEnd(pos.node, pos.offset);
+		if (pos[0]) {
+			range.setEnd(pos[0], pos[1]);
 		}
 		return range;
 	}

@@ -100,7 +100,7 @@ define([
 
 	function stepWhile(boundary, cond, step) {
 		var pos = boundary;
-		while (cond(pos, pos[0], pos[1])) {
+		while (pos[0] && cond(pos, pos[0], pos[1])) {
 			pos = step(pos);
 		}
 		return pos;
@@ -114,32 +114,6 @@ define([
 		return stepWhile(boundary, cond, prev);
 	}
 
-	/**
-	 * Returns node that is right adjacent to the given boundary.
-	 *
-	 * @param {Array.<Element, number>} boundary
-	 * @return {Element}
-	 */
-	function leftNode(boundary) {
-		var node = boundary[0];
-		var offset = boundary[1];
-		return (0 === offset) ? node : Dom.nodeAtOffset(node, offset - 1);
-	}
-
-	/**
-	 * Returns node that is right adjacent to the given boundary.
-	 *
-	 * @param {Array.<Element, number>} boundary
-	 * @return {Element}
-	 */
-	function rightNode(boundary) {
-		var node = boundary[0];
-		var offset = boundary[1];
-		return (Dom.nodeLength(node) === offset)
-		     ? (Dom.isTextNode(node) ? node.nextSibling || node.parentNode : node)
-		     : Dom.nodeAtOffset(node, offset);
-	}
-
 	function atEnd(boundary) {
 		return boundary[1] === Dom.nodeLength(boundary[0]);
 	}
@@ -149,15 +123,17 @@ define([
 	}
 
 	function normalize(boundary) {
-		if (!Dom.isTextNode(boundary[0])) {
-			return boundary;
+		var container = boundary[0];
+		if (Dom.isTextNode(container)) {
+			var parent = container.parentNode;
+			var offset = boundary[1];
+			if (!offset && parent) {
+				boundary = [parent, Dom.nodeIndex(container)];
+			} else if (offset >= Dom.nodeLength(container) && parent) {
+				boundary = [parent, Dom.nodeIndex(container) + 1];
+			}
 		}
-		var mid = Dom.nodeLength(boundary[0]) / 2;
-		var offset = Dom.nodeIndex(boundary[0]);
-		return [
-			boundary[0].parentNode,
-			(boundary[1] > mid) ? offset + 1 : offset
-		];
+		return boundary;
 	}
 
 	function isNodeBoundary(boundary) {
@@ -165,7 +141,7 @@ define([
 	}
 
 	function nodeAfter(boundary) {
-		boundary = Dom.normalizeBoundary(boundary);
+		boundary = normalize(boundary);
 		if (!isNodeBoundary(boundary)) {
 			return boundary[0].nextSibling;
 		}
@@ -173,7 +149,7 @@ define([
 	}
 
 	function nodeBefore(boundary) {
-		boundary = Dom.normalizeBoundary(boundary);
+		boundary = normalize(boundary);
 		if (!isNodeBoundary(boundary)) {
 			return boundary[0];
 		}
@@ -222,8 +198,6 @@ define([
 		nextNode  : nextNode,
 		prevNode  : prevNode,
 		container : container,
-		leftNode  : leftNode,
-		rightNode : rightNode,
 		atStart   : atStart,
 		atEnd     : atEnd,
 		normalize : normalize,
@@ -241,8 +215,6 @@ define([
 	exports['prev']      = exports.prev;
 	exports['nextWhile'] = exports.nextWhile;
 	exports['prevWhile'] = exports.prevWhile;
-	exports['leftNode']  = exports.leftNode;
-	exports['rightNode'] = exports.rightNode;
 	exports['atStart'] = exports.atStart;
 	exports['atEnd'] = exports.atEnd;
 	exports['normalize'] = exports.normalize;

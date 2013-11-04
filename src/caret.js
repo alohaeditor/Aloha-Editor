@@ -203,7 +203,7 @@ define([
 
 	function keydown(event) {
 		var range = event.range || Ranges.get();
-		if (!range) {
+		if (!range || !event.editable) {
 			return event;
 		}
 		var isNativeEditable = 'true' === event.editable.elem.getAttribute('contentEditable');
