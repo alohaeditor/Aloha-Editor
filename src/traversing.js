@@ -8,8 +8,8 @@ define([
 	'dom',
 	'functions'
 ], function Traversing(
-	dom,
-	fn
+	Dom,
+	Fn
 ) {
 	'use strict';
 
@@ -193,20 +193,20 @@ define([
 	 * @return position.offset
 	 */
 	function findWordBoundaryBehind(node, offset) {
-		if (dom.isEditingHost(node)) {
+		if (Dom.isEditingHost(node)) {
 			return {
 				node: node,
 				offset: offset
 			};
 		}
-		if (dom.Nodes.TEXT === node.nodeType) {
+		if (Dom.Nodes.TEXT === node.nodeType) {
 			var boundary = node.data.substr(0, offset)
 			                   .search(WORD_BOUNDARY_FROM_END);
 			return (
 				-1 === boundary
 					? findWordBoundaryBehind(
 						node.parentNode,
-						dom.nodeIndex(node)
+						Dom.nodeIndex(node)
 					)
 					: {
 						node: node,
@@ -214,19 +214,19 @@ define([
 					}
 			);
 		}
-		if (dom.Nodes.ELEMENT === node.nodeType) {
+		if (Dom.Nodes.ELEMENT === node.nodeType) {
 			if (offset > 0) {
 				var child = node.childNodes[offset - 1];
 				return (
 					IN_WORD_TAGS[child.nodeName]
-						? findWordBoundaryBehind(child, dom.nodeLength(child))
+						? findWordBoundaryBehind(child, Dom.nodeLength(child))
 						: {
 							node: node,
 							offset: offset
 						}
 				);
 			}
-			return findWordBoundaryBehind(node.parentNode, dom.nodeIndex(node));
+			return findWordBoundaryBehind(node.parentNode, Dom.nodeIndex(node));
 		}
 		return {
 			node: node,
@@ -244,19 +244,19 @@ define([
 	 * @return position.offset
 	 */
 	function findWordBoundaryAhead(node, offset) {
-		if (dom.isEditingHost(node)) {
+		if (Dom.isEditingHost(node)) {
 			return {
 				node: node,
 				offset: offset
 			};
 		}
-		if (dom.Nodes.TEXT === node.nodeType) {
+		if (Dom.Nodes.TEXT === node.nodeType) {
 			var boundary = node.data.substr(offset).search(WORD_BOUNDARY);
 			return (
 				-1 === boundary
 					? findWordBoundaryAhead(
 						node.parentNode,
-						dom.nodeIndex(node) + 1
+						Dom.nodeIndex(node) + 1
 					)
 					: {
 						node: node,
@@ -264,8 +264,8 @@ define([
 					}
 			);
 		}
-		if (dom.Nodes.ELEMENT === node.nodeType) {
-			if (offset < dom.nodeLength(node)) {
+		if (Dom.Nodes.ELEMENT === node.nodeType) {
+			if (offset < Dom.nodeLength(node)) {
 				return (
 					IN_WORD_TAGS[node.childNodes[offset].nodeName]
 						? findWordBoundaryAhead(node.childNodes[offset], 0)
@@ -277,7 +277,7 @@ define([
 			}
 			return findWordBoundaryAhead(
 				node.parentNode,
-				dom.nodeIndex(node) + 1
+				Dom.nodeIndex(node) + 1
 			);
 		}
 		return {
@@ -375,8 +375,8 @@ define([
 	 * @return {DOMObject}
 	 */
 	function findThrough(start, match, until) {
-		match = match || fn.returnTrue;
-		until = until || fn.returnFalse;
+		match = match || Fn.returnTrue;
+		until = until || Fn.returnFalse;
 		var next;
 		var node = start;
 		var isSteppingIn = true;
@@ -410,7 +410,7 @@ define([
 	 * @return {DOMObject}
 	 */
 	function find(node, match, until, step) {
-		until = until || fn.returnFalse;
+		until = until || Fn.returnFalse;
 		if (until(node)) {
 			return null;
 		}
@@ -482,7 +482,7 @@ define([
 	}
 
 	function stepNextUntil(node, step, next, until, arg) {
-		return stepNextWhile(node, step, next, fn.complement(until), arg);
+		return stepNextWhile(node, step, next, Fn.complement(until), arg);
 	}
 
 	/**
@@ -573,14 +573,14 @@ define([
 	 *        A value that will be passed to `func()` as the second argument.
 	 */
 	function walk(node, func, arg) {
-		walkUntil(node, func, fn.returnFalse, arg);
+		walkUntil(node, func, Fn.returnFalse, arg);
 	}
 
 	/**
 	 * Depth-first postwalk of the given DOM node.
 	 */
 	function walkRec(node, func, arg) {
-		if (dom.Nodes.ELEMENT === node.nodeType) {
+		if (Dom.Nodes.ELEMENT === node.nodeType) {
 			walk(node.firstChild, function (node) {
 				walkRec(node, func, arg);
 			});
@@ -723,7 +723,7 @@ define([
 	}
 
 	function findAncestor(node, match, until) {
-		until = until || fn.returnFalse;
+		until = until || Fn.returnFalse;
 		if (until(node)) {
 			return null;
 		}
@@ -755,8 +755,8 @@ define([
 	 * @return {DOMObject}
 	 */
 	function getNonAncestor(start, previous, match, until) {
-		match = match || fn.returnTrue;
-		until = until || fn.returnFalse;
+		match = match || Fn.returnTrue;
+		until = until || Fn.returnFalse;
 		var next;
 		var node = start;
 		while (node) {
@@ -786,7 +786,7 @@ define([
 	 * @param {DOMObject}
 	 */
 	function previousNonAncestor(node, match, until) {
-		return getNonAncestor(node, true, match, until || dom.isEditingHost);
+		return getNonAncestor(node, true, match, until || Dom.isEditingHost);
 	}
 
 	/**
@@ -796,7 +796,7 @@ define([
 	 * @param {DOMObject}
 	 */
 	function nextNonAncestor(node, match, until) {
-		return getNonAncestor(node, false, match, until || dom.isEditingHost);
+		return getNonAncestor(node, false, match, until || Dom.isEditingHost);
 	}
 
 	/**
@@ -824,7 +824,7 @@ define([
 	 * traversing.getNonAncestor()
 	 */
 	var exports = {
- 		backward: backward,
+		backward: backward,
 		forward: forward,
 		findThrough: findThrough,
 		nextWhile: nextWhile,

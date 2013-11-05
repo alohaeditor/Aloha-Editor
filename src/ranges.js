@@ -13,18 +13,16 @@ define([
 	'html',
 	'traversing',
 	'functions',
-	'arrays',
 	'cursors',
 	'boundaries'
 ], function Ranges(
-	dom,
+	Dom,
 	StableRange,
-	html,
-	traversing,
-	fn,
-	arrays,
-	cursors,
-	boundaries
+	Html,
+	Traversing,
+	Fn,
+	Cursors,
+	Boundaries
 ) {
 	'use strict';
 
@@ -113,14 +111,14 @@ define([
 	 */
 	function seekBoundaryPoint(range, container, offset, oppositeContainer,
 	                           oppositeOffset, setFn, ignore, backwards) {
-		var cursor = cursors.cursorFromBoundaryPoint(container, offset);
+		var cursor = Cursors.cursorFromBoundaryPoint(container, offset);
 
 		// Because when seeking backwards, if the boundary point is inside a
 		// text node, trimming starts after it. When seeking forwards, the
 		// cursor starts before the node, which is what
 		// cursorFromBoundaryPoint() does automatically.
 		if (backwards
-				&& dom.Nodes.TEXT === container.nodeType
+				&& Dom.Nodes.TEXT === container.nodeType
 					&& offset > 0
 						&& offset < container.length) {
 			if (cursor.next()) {
@@ -132,7 +130,7 @@ define([
 				cursor.prev();
 			}
 		}
-		var opposite = cursors.cursorFromBoundaryPoint(
+		var opposite = Cursors.cursorFromBoundaryPoint(
 			oppositeContainer,
 			oppositeOffset
 		);
@@ -157,9 +155,9 @@ define([
 	 * @return {Boolean}
 	 */
 	function isAtTextNode(container, offset) {
-		return dom.isTextNode(container) || (
+		return Dom.isTextNode(container) || (
 			container.childNodes[offset]
-			&& dom.isTextNode(container.childNodes[offset])
+			&& Dom.isTextNode(container.childNodes[offset])
 		);
 	}
 
@@ -175,8 +173,8 @@ define([
 		return container
 		    && container.parentNode
 		    && container.parentNode.parentNode
-		    && boundaries.atStart(boundary)
-		    && !html.hasLinebreakingStyle(container);
+		    && Boundaries.atStart(boundary)
+		    && !Html.hasLinebreakingStyle(container);
 	}
 
 	/**
@@ -191,8 +189,8 @@ define([
 		return container
 		    && container.parentNode
 		    && container.parentNode.parentNode
-		    && boundaries.atEnd(boundary)
-		    && !html.hasLinebreakingStyle(container);
+		    && Boundaries.atEnd(boundary)
+		    && !Html.hasLinebreakingStyle(container);
 	}
 
 	/**
@@ -225,7 +223,7 @@ define([
 	                            oppositeContainer, oppositeOffset) {
 		return !boundariesEqual(container, offset, oppositeContainer, oppositeOffset)
 		    && !isAtTextNode(container, offset)
-		    && !html.hasLinebreakingStyle(container.childNodes[offset] || container);
+		    && !Html.hasLinebreakingStyle(container.childNodes[offset] || container);
 	}
 
 	/**
@@ -244,9 +242,9 @@ define([
 		return !boundariesEqual(container, offset, oppositeContainer, oppositeOffset)
 		    && !isAtTextNode(container, offset - 1)
 		    && (
-				dom.isAtStart(container, offset)
-					? !html.hasLinebreakingStyle(container)
-					: !html.hasLinebreakingStyle(container.childNodes[offset - 1])
+				Dom.isAtStart(container, offset)
+					? !Html.hasLinebreakingStyle(container)
+					: !Html.hasLinebreakingStyle(container.childNodes[offset - 1])
 		    );
 	}
 
@@ -272,12 +270,12 @@ define([
 	 *         The modified range.
 	 */
 	function expand(range) {
-		var start = boundaries.prevWhile(
-			boundaries.start(range),
+		var start = Boundaries.prevWhile(
+			Boundaries.start(range),
 			canExpandBackward
 		);
-		var end = boundaries.nextWhile(
-			boundaries.end(range),
+		var end = Boundaries.nextWhile(
+			Boundaries.end(range),
 			canExpandForward
 		);
 		range.setStart(start[0], start[1]);
@@ -308,8 +306,8 @@ define([
 	 *         The modified range.
 	 */
 	function contract(range) {
-		var end = boundaries.prevWhile(
-			boundaries.end(range),
+		var end = Boundaries.prevWhile(
+			Boundaries.end(range),
 			function (boundary, container, offset) {
 				return canContractBackward(
 					container,
@@ -319,8 +317,8 @@ define([
 				);
 			}
 		);
-		var start = boundaries.nextWhile(
-			boundaries.start(range),
+		var start = Boundaries.nextWhile(
+			Boundaries.start(range),
 			function (boundary, container, offset) {
 				return canContractForward(
 					container,
@@ -337,17 +335,17 @@ define([
 
 	/**
 	 * Expands the ranges start and end positions to the nearest word
-	 * boundaries.
+	 * Boundaries.
 	 *
 	 * @param {Range} range
 	 * @return {Range}
 	 */
 	function expandToWord(range) {
-		var behind = traversing.findWordBoundaryBehind(
+		var behind = Traversing.findWordBoundaryBehind(
 			range.startContainer,
 			range.startOffset
 		);
-		var ahead = traversing.findWordBoundaryAhead(
+		var ahead = Traversing.findWordBoundaryAhead(
 			range.endContainer,
 			range.endOffset
 		);
@@ -371,14 +369,14 @@ define([
 	 * @return {Range}
 	 */
 	function expandToVisibleCharacter(range) {
-		var boundary = html.nextCharacter(boundaries.end(range));
+		var boundary = Html.nextCharacter(Boundaries.end(range));
 		if (boundary) {
 			setEndFromBoundary(range, boundary);
 			//range.setEnd(pos[0], pos.offset - 1);
-		} else if (dom.isTextNode(range.endContainer)) {
+		} else if (Dom.isTextNode(range.endContainer)) {
 			range.setEnd(
 				range.endContainer,
-				dom.nodeLength(range.endContainer)
+				Dom.nodeLength(range.endContainer)
 			);
 		}
 		return range;
@@ -392,7 +390,7 @@ define([
 	 * @return {Range}
 	 */
 	function expandBackwardToVisiblePosition(range) {
-		var boundary = html.previousVisualBoundary(boundaries.start(range));
+		var boundary = Html.previousVisualBoundary(Boundaries.start(range));
 		if (boundary) {
 			setStartFromBoundary(range, boundary);
 		}
@@ -407,13 +405,13 @@ define([
 	 * @return {Range}
 	 */
 	function expandForwardToVisiblePosition(range) {
-		var pos = html.nextVisualBoundary(boundaries.end(range));
+		var pos = Html.nextVisualBoundary(Boundaries.end(range));
 		if (pos[0]
-			&& dom.isTextNode(pos[0])
-			&& !html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
-			pos = html.nextVisualBoundary(pos);
+			&& Dom.isTextNode(pos[0])
+			&& !Html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
+			pos = Html.nextVisualBoundary(pos);
 			if (pos[0]) {
-				pos = html.previousVisualBoundary(pos);
+				pos = Html.previousVisualBoundary(pos);
 			}
 		}
 		if (pos) {
@@ -423,13 +421,13 @@ define([
 	}
 
 	function contractBackwardToVisiblePosition(range) {
-		var pos = html.previousVisualBoundary(boundaries.end(range));
+		var pos = Html.previousVisualBoundary(Boundaries.end(range));
 		if (pos[0]
-			&& dom.isTextNode(pos[0])
-			&& !html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
-			pos = html.nextVisualBoundary(pos);
+			&& Dom.isTextNode(pos[0])
+			&& !Html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
+			pos = Html.nextVisualBoundary(pos);
 			if (pos[0]) {
-				pos = html.previousVisualBoundary(pos);
+				pos = Html.previousVisualBoundary(pos);
 			}
 		}
 		if (pos) {
@@ -459,8 +457,8 @@ define([
 	 *         The given range, modified.
 	 */
 	function trim(range, ignoreLeft, ignoreRight) {
-		ignoreLeft = ignoreLeft || fn.returnFalse;
-		ignoreRight = ignoreRight || fn.returnFalse;
+		ignoreLeft = ignoreLeft || Fn.returnFalse;
+		ignoreRight = ignoreRight || Fn.returnFalse;
 		if (range.collapsed) {
 			return range;
 		}
@@ -476,7 +474,7 @@ define([
 			so,
 			ec,
 			eo,
-			cursors.setRangeStart,
+			Cursors.setRangeStart,
 			ignoreLeft,
 			false
 		);
@@ -488,7 +486,7 @@ define([
 			eo,
 			sc,
 			so,
-			cursors.setRangeEnd,
+			Cursors.setRangeEnd,
 			ignoreRight,
 			true
 		);
@@ -506,8 +504,8 @@ define([
 	 *         The given range, modified.
 	 */
 	function trimClosingOpening(range, ignoreLeft, ignoreRight) {
-		ignoreLeft = ignoreLeft || fn.returnFalse;
-		ignoreRight = ignoreRight || fn.returnFalse;
+		ignoreLeft = ignoreLeft || Fn.returnFalse;
+		ignoreRight = ignoreRight || Fn.returnFalse;
 		trim(range, function (cursor) {
 			return cursor.atEnd || ignoreLeft(cursor.node);
 		}, function (cursor) {
@@ -548,8 +546,8 @@ define([
 	 *        trimming process, like for example underendered whitespace.
 	 */
 	function expandBoundaries(start, end, until, ignore) {
-		until = until || fn.returnFalse;
-		ignore = ignore || fn.returnFalse;
+		until = until || Fn.returnFalse;
+		ignore = ignore || Fn.returnFalse;
 		start.prevWhile(function (start) {
 			var prevSibling = start.prevSibling();
 			return prevSibling ? ignore(prevSibling) : !until(start.parent());
@@ -580,8 +578,8 @@ define([
 	 *        trimming process, like for example underendered whitespace.
 	 */
 	function trimBoundaries(start, end, until, ignore) {
-		until = until || fn.returnFalse;
-		ignore = ignore || fn.returnFalse;
+		until = until || Fn.returnFalse;
+		ignore = ignore || Fn.returnFalse;
 		start.nextWhile(function (start) {
 			return (
 				!start.equals(end)
@@ -640,20 +638,20 @@ define([
 	 */
 	function getNearestEditingHost(liveRange) {
 		var range = StableRange(liveRange);
-		var editable = dom.getEditingHost(range.startContainer);
+		var editable = Dom.getEditingHost(range.startContainer);
 		if (editable) {
 			return editable;
 		}
-		var isNotEditingHost = fn.complement(dom.isEditingHost);
+		var isNotEditingHost = Fn.complement(Dom.isEditingHost);
 		trim(range, isNotEditingHost, isNotEditingHost);
-		return dom.getEditingHost(
-			dom.nodeAtOffset(range.startContainer, range.startOffset)
+		return Dom.getEditingHost(
+			Dom.nodeAtOffset(range.startContainer, range.startOffset)
 		);
 	}
 
 	function insertTextBehind(range, text) {
 		var boundary = [range.startContainer, range.startOffset];
-		boundary = dom.insertTextAtBoundary(text, boundary, true, [range]);
+		boundary = Dom.insertTextAtBoundary(text, boundary, true, [range]);
 		collapseToStart(range);
 		select(range);
 	}
@@ -684,7 +682,7 @@ define([
 			clone.setStart(clone.startContainer, clone.startOffset - 1);
 		}
 
-		var len = dom.nodeLength(clone.endContainer);
+		var len = Dom.nodeLength(clone.endContainer);
 
 		if (!isStart && clone.endOffset < len) {
 			clone.setEnd(clone.endContainer, clone.endOffset + 1);

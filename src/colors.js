@@ -3,9 +3,9 @@ define([
 	'ranges',
 	'editing'
 ], function Colors(
-	dom,
-	ranges,
-	editing
+	Dom,
+	Ranges,
+	Editing
 ) {
 	'use strict';
 
@@ -100,9 +100,9 @@ define([
 	 * @return {String} Style value
 	 */
 	function getStyle(range, property) {
-		var node = dom.nodeAtOffset(range.startContainer, range.startOffset);
-		return dom.getComputedStyle(
-			dom.Nodes.TEXT === node.nodeType ? node.parentNode : node,
+		var node = Dom.nodeAtOffset(range.startContainer, range.startOffset);
+		return Dom.getComputedStyle(
+			Dom.Nodes.TEXT === node.nodeType ? node.parentNode : node,
 			property
 		);
 	}
@@ -124,7 +124,7 @@ define([
 	 * @param {String} color
 	 */
 	function setTextColor(range, color) {
-		editing.format(range, 'color', color, isColorEqual);
+		Editing.format(range, 'color', color, isColorEqual);
 	}
 
 	/**
@@ -133,9 +133,9 @@ define([
 	 * @param {Range} range
 	 */
 	function unsetTextColor(range) {
-		var editable = ranges.getNearestEditingHost(range);
+		var editable = Ranges.getNearestEditingHost(range);
 		if (editable) {
-			setTextColor(range, dom.getComputedStyle(editable, 'color'));
+			setTextColor(range, Dom.getComputedStyle(editable, 'color'));
 		}
 	}
 
@@ -156,7 +156,7 @@ define([
 	 * @param {String} color
 	 */
 	function setBackgroundColor(range, color) {
-		editing.format(range, 'background-color', color, isColorEqual);
+		Editing.format(range, 'background-color', color, isColorEqual);
 	}
 
 	/**
@@ -165,9 +165,9 @@ define([
 	 * @param {Range} range
 	 */
 	function unsetBackgroundColor(range) {
-		var editable = ranges.getNearestEditingHost(range);
+		var editable = Ranges.getNearestEditingHost(range);
 		if (editable) {
-			setBackgroundColor(range, dom.getComputedStyle(editable, 'background-color'));
+			setBackgroundColor(range, Dom.getComputedStyle(editable, 'background-color'));
 		}
 	}
 

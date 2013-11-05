@@ -12,9 +12,9 @@ define([
 	'functions',
 	'misc'
 ], function Dom(
-	maps,
-	arrays,
-	strings,
+	Maps,
+	Arrays,
+	Strings,
 	Browser,
 	Fn,
 	Misc
@@ -61,7 +61,7 @@ define([
 	}
 
 	function children(elem) {
-		return arrays.coerce(elem.childNodes);
+		return Arrays.coerce(elem.childNodes);
 	}
 
 	/**
@@ -262,7 +262,7 @@ define([
 
 	/**
 	 * Gets the serialized HTML that describes the given DOM element and its
-	 * innerHTML.
+	 * innerHtml.
 	 *
 	 * Polyfill for older versions of Gecko, Safari, and Opera browsers.
 	 * @see https://bugzilla.mozilla.org/show_bug.cgi?id=92264 for background.
@@ -323,7 +323,7 @@ define([
 	 * @return {!Array.<string>}
 	 *         An array containing [name, value] tuples for each attribute.
 	 *         Attribute values will always be strings, but possibly empty
-	 *         strings.
+	 *         Strings.
 	 */
 	function attrs(elem) {
 		var as = [];
@@ -363,7 +363,7 @@ define([
 		for (i = 0, len = elems.length; i < len; i++) {
 			elem = elems[i];
 			if (elem.className) {
-				classes = strings.words(elem.className);
+				classes = Strings.words(elem.className);
 				for (j = 0; j < classes.length; j++) {
 					cls = classes[j];
 					if (classMap[cls]) {
@@ -400,7 +400,7 @@ define([
 			found = context.getElementsByClassName(classes[i]);
 			len = found.length;
 			for (j = 0; j < len; j++) {
-				if (!arrays.contains(results, found[j])) {
+				if (!Arrays.contains(results, found[j])) {
 					results.push(found[j]);
 				}
 			}
@@ -454,7 +454,7 @@ define([
 	function indexByClass(root, classMap) {
 		return indexByClassHaveList(
 			Browser.ie7 ? root.getElementsByTagName('*')
-			            : getElementsByClassNames(maps.keys(classMap), root),
+			            : getElementsByClassNames(Maps.keys(classMap), root),
 			classMap
 		);
 	}
@@ -668,7 +668,7 @@ define([
 	 *        The element to be removed.
 	 * @param {!Element} replacement
 	 *        The replacement for `elem` which will receive all of the
-	 *        given element's content.
+	 *        given element's Content.
 	 */
 	function replaceShallow(elem, replacement) {
 		moveNextAll(replacement, elem.firstChild, null);
@@ -892,7 +892,7 @@ define([
 		// Because we don't want to check it every time we need to
 		// preserve some ranges, we accept null values here.
 		ranges = ranges || [];
-		return arrays.mapcat(ranges, boundariesFromRange);
+		return Arrays.mapcat(ranges, boundariesFromRange);
 	}
 
 	function adjustBoundaries(Fn, boundaries) {
@@ -903,7 +903,7 @@ define([
 	}
 
 	function setRangesFromBoundaries(ranges, boundaries) {
-		arrays.partition(boundaries, 2).forEach(function (boundaries, i) {
+		Arrays.partition(boundaries, 2).forEach(function (boundaries, i) {
 			setRangeFromBoundaries(ranges[i], boundaries[0], boundaries[1]);
 		});
 	}
@@ -1064,7 +1064,7 @@ define([
 	}
 
 	/**
-	 * Removes the given node while maintaing the given ranges.
+	 * Removes the given node while maintaing the given Ranges.
 	 *
 	 * @param {!Node} node
 	 * @param {!Array.<!Range>} ranges
@@ -1150,7 +1150,7 @@ define([
 	 * Sets a style on the given element by modifying its style attribute.
 	 */
 	function setStyle(node, name, value) {
-		name = strings.dashesToCamelCase(name);
+		name = Strings.dashesToCamelCase(name);
 		var styles = node.style;
 		if (name in styles) {
 			styles[name] = value;
@@ -1170,7 +1170,7 @@ define([
 	 */
 	function getStyle(node, name) {
 		// Because IE7 needs dashesToCamelCase().
-		name = strings.dashesToCamelCase(name);
+		name = Strings.dashesToCamelCase(name);
 		return node.nodeType === Nodes.ELEMENT ? node.style[name] : null;
 	}
 
@@ -1212,7 +1212,7 @@ define([
 		}
 		if (elem.currentStyle) {
 			// Because IE7 needs dashesToCamelCase().
-			name = strings.dashesToCamelCase(name);
+			name = Strings.dashesToCamelCase(name);
 			return elem.currentStyle[name];
 		}
 		return null;
@@ -1227,7 +1227,7 @@ define([
 	function removeStyle(elem, styleName) {
 		if (Browser.hasRemoveProperty) {
 			elem.style.removeProperty(styleName);
-			if (strings.empty(elem.getAttribute('style'))) {
+			if (Strings.empty(elem.getAttribute('style'))) {
 				elem.removeAttribute('style');
 			}
 		} else {
@@ -1249,7 +1249,7 @@ define([
 				'i'
 			);
 			style = style.replace(stripRegex, '');
-			if (!strings.empty(style)) {
+			if (!Strings.empty(style)) {
 				setAttr(elem, 'style', style);
 			} else {
 				removeAttr(elem, 'style');
@@ -1306,7 +1306,7 @@ define([
 	 * @param {boolean}
 	 */
 	function hasAttrs(node) {
-		return !attrs(node).map(arrays.second).every(strings.empty);
+		return !attrs(node).map(Arrays.second).every(Strings.empty);
 	}
 
 	/**
