@@ -27,6 +27,12 @@ define([
 ) {
 	'use strict';
 
+	// Selection states
+	var anchor = 'right';
+	var depressed = false;
+	var dragging = false;
+	var rangeAtDown;
+
 	function create() {
 		var caret = document.createElement('div');
 		Dom.addClass(caret, 'aloha-caret');
@@ -74,7 +80,7 @@ define([
 		show(caret, box);
 	}
 
-	function render(range, overrides, anchor) {
+	function renderRange(range, overrides, anchor) {
 		var carets = document.querySelectorAll('.aloha-caret');
 
 		if (!carets[0]) {
@@ -85,16 +91,21 @@ define([
 			carets = [carets[0], create()];
 		}
 
-		Dom.removeClass(carets[0], 'blink');
-		Dom.removeClass(carets[1], 'blink');
-		Dom.addClass(carets['left' === anchor ? 0 : 1], 'blink');
+		carets[0].style.background = 'red';
+		carets[1].style.background = 'brown';
 
 		renderBoundary(carets[0], Boundaries.start(range), overrides);
+		renderBoundary(carets[1], Boundaries.end(range), overrides);
 
-		if (!range.collapsed) {
-			renderBoundary(carets[1], Boundaries.end(range), overrides);
+		var steady  = carets['left' === anchor ? 1 : 0];
+		var blinker = carets['left' === anchor ? 0 : 1];
+
+		Dom.addClass(blinker, 'blink');
+
+		if (range.collapsed) {
+			Dom.remove(steady);
 		} else {
-			Dom.remove(carets[1]);
+			Dom.removeClass(steady, 'blink');
 		}
 	}
 
@@ -106,78 +117,52 @@ define([
 		return event.meta.indexOf('shift') > -1;
 	}
 
-	function up(event, range, isNativeEditable) {
-		var ref = Ranges.collapseToEnd(range.cloneRange());
+	function isReversed(sc, so, ec, eo){
+		var position = sc.compareDocumentPosition(ec);
+		return (0 === position && so > eo)
+		    || (position & Node.DOCUMENT_POSITION_PRECEDING);
+	}
+
+	function climb(event, range, anchor, direction) {
+		var get;
+		var set;
+
+		if ('left' === anchor) {
+			get = Ranges.collapseToStart;
+			set = Ranges.setStartFromBoundary;
+		} else {
+			get = Ranges.collapseToEnd;
+			set = Ranges.setEndFromBoundary;
+		}
+
+		var ref = get(range.cloneRange());
 		var box = Ranges.box(ref);
 		var half = box.height / 2;
 		var offset = half;
-		var next = Ranges.createFromPoint(box.left, box.top - offset);
+		var move = 'up' === direction ? up : down;
 
+		var next = move(box, offset);
 		while (next && Ranges.equal(next, ref)) {
 			offset += half;
-			next = Ranges.createFromPoint(box.left, box.top - offset);
+			next = move(box, offset);
 		}
 
-		if (!next) {
-			return;
+		if (next) {
+			set(range, Boundaries.start(next));
 		}
-
-		range.setEnd(next.endContainer, next.endOffset);
-
-		if (range.collapsed && isShiftDown(event)) {
-			range.setStart(next.endContainer, next.endOffset);
-		}
-
-		if (!isNativeEditable) {
-			event.native.preventDefault();
-		}
-	}
-
-	function down(event, range) {
-		var ref = Ranges.collapseToEnd(range.cloneRange());
-		var box = Ranges.box(ref);
-		box.top += box.height;
-		var half = box.height / 2;
-		var offset = half;
-		var next = Ranges.createFromPoint(box.left, box.top + offset);
-
-		while (next && Ranges.equal(next, ref)) {
-			offset += half;
-			next = Ranges.createFromPoint(box.left, box.top + offset);
-		}
-
-		if (!next) {
-			return;
-		}
-
-		if (range.collapsed && !isShiftDown(event)) {
-			range.setStart(next.endContainer, next.endOffset);
-		}
-
-		range.setEnd(next.endContainer, next.endOffset);
-	}
-
-	function backward(boundary, stride) {
-		if ('char' === stride) {
-			return Html.previousVisualBoundary(boundary);
-		}
-		return Html.previousWordBoundary(boundary);
-	}
-
-	function forward(boundary, stride) {
-		if ('char' === stride) {
-			return Html.nextVisualBoundary(boundary);
-		}
-		return Html.nextWordBoundary(boundary);
 	}
 
 	function step(event, range, anchor, direction) {
-		if (range.collapsed) {
+		var shift = isShiftDown(event);
+
+		if (range.collapsed || !shift) {
 			anchor = direction;
 		}
+
 		var get;
 		var set;
 		var collapse;
+
 		if ('left' === anchor) {
 			get = Boundaries.start;
 			set = Ranges.setStartFromBoundary;
@@ -187,23 +172,51 @@ define([
 			set = Ranges.setEndFromBoundary;
 			collapse = Ranges.collapseToEnd;
 		}
-		var move = 'left' === direction ? backward : forward;
+
+		var move = 'left' === direction ? left : right;
 		var boundary = get(range);
-		var shift = isShiftDown(event);
+
 		if (range.collapsed || shift) {
 			boundary = move(boundary, isCtrlDown(event) ? 'word' : 'char');
 			set(range, boundary);
 		}
+
 		if (!shift) {
 			collapse(range);
 		}
+
 		return anchor;
 	}
 
-	var anchor = 'right';
+	function up(box, stride) {
+		return Ranges.createFromPoint(box.left, box.top - stride);
+	}
+
+	function down(box, stride) {
+		return Ranges.createFromPoint(box.left, box.top + stride);
+	}
+
+	function left(boundary, stride) {
+		if ('char' === stride) {
+			return Html.previousVisualBoundary(boundary);
+		}
+		return Html.previousWordBoundary(boundary);
+	}
+
+	function right(boundary, stride) {
+		if ('char' === stride) {
+			return Html.nextVisualBoundary(boundary);
+		}
+		return Html.nextWordBoundary(boundary);
+	}
+
 	var arrows = {};
-	arrows[Keys.CODES.up] = up;
-	arrows[Keys.CODES.down] = down;
+	arrows[Keys.CODES.up] = function (event, range, anchor) {
+		return climb(event, range, anchor, 'up');
+	};
+	arrows[Keys.CODES.down] = function (event, range, anchor) {
+		return climb(event, range, anchor, 'down');
+	};
 	arrows[Keys.CODES.left] = function (event, range, anchor) {
 		return step(event, range, anchor, 'left');
 	};
@@ -231,16 +244,17 @@ define([
 		if (!isNativeEditable) {
 			event.range = clone;
 		}
-		render(clone, event.editable && event.editable.overrides, anchor);
+		renderRange(clone, event.editable && event.editable.overrides, anchor);
 		return event;
 	}
-
-	var depressed = false;
-	var dragging = false;
 
 	function mousedown(event) {
 		purge();
 		depressed = true;
+		rangeAtDown = Ranges.createFromPoint(
+			event.native.clientX,
+			event.native.clientY
+		);
 	}
 
 	function mousemove(event) {
@@ -249,20 +263,29 @@ define([
 
 	function mouseup(event) {
 		var native = event.native;
-		var shift = isShiftDown(event);
-		var range = dragging || shift
-		          ? Ranges.get()
-		          : Ranges.createFromPoint(native.clientX, native.clientY);
-		if (range) {
-			render(
-				range,
-				event.editable && event.editable.overrides,
-				range.collapsed ? 0 : 1
-			);
+		var expanding = dragging || isShiftDown(event);
+		var rangeAtUp = Ranges.createFromPoint(native.clientX, native.clientY);
+		var sc = rangeAtDown.startContainer;
+		var so = rangeAtDown.startOffset;
+		var ec = rangeAtUp.endContainer;
+		var eo = rangeAtUp.endOffset;
+		var range;
+
+		if (!expanding) {
+			sc = ec;
+			so = eo;
 		}
-		if (!dragging && !shift) {
-			event.range = range;
+
+		if (expanding && isReversed(sc, so, ec, eo)) {
+			anchor = 'left';
+			range = Ranges.create(ec, eo, sc, so);
+		} else {
+			anchor = 'right';
+			range = Ranges.create(sc, so, ec, eo);
 		}
+
+		renderRange(range, event.editable && event.editable.overrides, anchor);
+
 		depressed = false;
 		dragging = false;
 	}
@@ -272,7 +295,8 @@ define([
 		'keydown'   : keydown,
 		'mouseup'   : mouseup,
 		'mousedown' : mousedown,
-		'mousemove' : mousemove
+		'mousemove' : mousemove,
+		'click'     : Fn.identity
 	};
 
 	function handle(event) {
@@ -281,7 +305,7 @@ define([
 		}
 		var range = event.range || Ranges.get();
 		if (range) {
-			render(
+			renderRange(
 				range,
 				event.editable && event.editable.overrides,
 				range.collapsed ? 0 : 1
@@ -291,7 +315,7 @@ define([
 	}
 
 	var exports = {
-		render : render,
+		render : renderRange,
 		handle : handle
 	};
 
