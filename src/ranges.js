@@ -371,7 +371,7 @@ define([
 	 * @return {Range}
 	 */
 	function expandToVisibleCharacter(range) {
-		var boundary = html.nextVisibleCharacter(boundaries.end(range));
+		var boundary = html.nextCharacter(boundaries.end(range));
 		if (boundary) {
 			setEndFromBoundary(range, boundary);
 			//range.setEnd(pos[0], pos.offset - 1);
