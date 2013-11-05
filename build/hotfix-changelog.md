@@ -9,3 +9,6 @@ All changes are categorized into one of the following keywords:
 ----
 
 
+- **BUGFIX**:      Tooltip covers color palette
+                   The colors tooltip does not disappear when the color palette is shown.
+                   RT#57078
