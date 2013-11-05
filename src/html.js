@@ -1117,6 +1117,11 @@ define([
 	function previousCharacter(boundary) {
 		var node = boundary[0];
 		var offset = boundary[1];
+
+		if (0 === offset) {
+			return null;
+		}
+
 		var textBefore = node.data.substr(0, offset);
 
 		// Because `textBefore` may be a sequence of white spaces

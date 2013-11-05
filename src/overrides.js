@@ -226,12 +226,25 @@ define([
 		}
 	}
 
+	function map(overrides) {
+		var ret = {};
+		var i;
+		var len = overrides.length;
+		for (i = 0; i < len; i++) {
+			ret[overrides[i][0]] = overrides[i][1];
+		}
+		return ret;
+	}
+
 	var exports = {
+		map     : map,
 		lookup  : lookup,
 		harvest : harvest,
 		consume : consume
 	};
 
+	exports['map']     = exports.map;
+	exports['lookup']  = exports.lookup;
 	exports['harvest'] = exports.harvest;
 	exports['consume'] = exports.consume;
 

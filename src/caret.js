@@ -9,6 +9,7 @@ define([
 	'dom',
 	'html',
 	'keys',
+	'maps',
 	'ranges',
 	'arrays',
 	'browser',
@@ -19,6 +20,7 @@ define([
 	Dom,
 	Html,
 	Keys,
+	Maps,
 	Ranges,
 	Arrays,
 	Browsers,
@@ -26,12 +28,6 @@ define([
 	Boundaries
 ) {
 	'use strict';
-
-	// Selection states
-	var anchor = 'right';
-	var depressed = false;
-	var dragging = false;
-	var rangeAtDown;
 
 	function create() {
 		var caret = document.createElement('div');
@@ -46,41 +42,40 @@ define([
 		      .forEach(Dom.remove);
 	}
 
-	function show(caret, rect) {
+	function show(caret, rect, style) {
+		var color;
+		var width;
+		var rotation;
+		if (style) {
+			color = style['color'] || '';
+			width = rect.width * (style['bold'] ? 2 : 1);
+			rotation = style['italic'] ? 'rotate(8deg)' : '';
+		} else {
+			color = '';
+			width = rect.width;
+			rotation = '';
+		}
 		caret.style.top = rect.top + 'px';
 		caret.style.left = rect.left + 'px';
-		caret.style.width = rect.width + 'px';
 		caret.style.height = rect.height + 'px';
+		caret.style.width = width + 'px';
 		caret.style.position = 'absolute';
 		caret.style.display = 'block';
 		caret.style.opacity = '0.5';
+		caret.style.background = style ? style['color'] : '';
+		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = rotation;
 	}
 
-	function renderBoundary(caret, boundary, overrides) {
-		var range = Ranges.create(boundary[0], boundary[1]);
-		var box = Ranges.box(range);
-		var context = Overrides.harvest(range.startContainer);
+	function renderBoundary(caret, boundary, style) {
+		var box = Ranges.box(Ranges.create(boundary[0], boundary[1]));
 		var doc = caret.ownerDocument;
-
-		if (overrides) {
-			context = overrides.concat(context);
-		}
-
 		box.top += window.pageYOffset - doc.body.clientTop;
 		box.left += window.pageXOffset - doc.body.clientLeft;
-		box.width = Overrides.lookup('bold', context) ? 4 : 2;
-
-		caret.style.background = Overrides.lookup('color', context);
-
-		caret.style[Browsers.VENDOR_PREFIX + 'transform']
-			= Overrides.lookup('italic', context)
-			? 'rotate(8deg)'
-			: 'rotate(0deg)';
-
-		show(caret, box);
+		box.width = 2;
+		show(caret, box, style);
 	}
 
-	function renderRange(range, overrides, anchor) {
+	function renderRange(range, caret, startStyle, endStyle) {
 		var carets = document.querySelectorAll('.aloha-caret');
 
 		if (!carets[0]) {
@@ -92,13 +87,12 @@ define([
 		}
 
 		carets[0].style.background = 'red';
-		carets[1].style.background = 'brown';
 
-		renderBoundary(carets[0], Boundaries.start(range), overrides);
-		renderBoundary(carets[1], Boundaries.end(range), overrides);
+		renderBoundary(carets[0], Boundaries.start(range), startStyle);
+		renderBoundary(carets[1], Boundaries.end(range), endStyle);
 
-		var steady  = carets['left' === anchor ? 1 : 0];
-		var blinker = carets['left' === anchor ? 0 : 1];
+		var steady  = carets['start' === caret ? 1 : 0];
+		var blinker = carets['start' === caret ? 0 : 1];
 
 		Dom.addClass(blinker, 'blink');
 
@@ -123,11 +117,11 @@ define([
 		    || (position & Node.DOCUMENT_POSITION_PRECEDING);
 	}
 
-	function climb(event, range, anchor, direction) {
+	function climb(event, range, caret, direction) {
 		var get;
 		var set;
 
-		if ('left' === anchor) {
+		if ('start' === caret) {
 			get = Ranges.collapseToStart;
 			set = Ranges.setStartFromBoundary;
 		} else {
@@ -135,35 +129,41 @@ define([
 			set = Ranges.setEndFromBoundary;
 		}
 
-		var ref = get(range.cloneRange());
-		var box = Ranges.box(ref);
+		var clone = get(range.cloneRange());
+		var box = Ranges.box(clone);
 		var half = box.height / 2;
 		var offset = half;
 		var move = 'up' === direction ? up : down;
 
 		var next = move(box, offset);
-		while (next && Ranges.equal(next, ref)) {
+		while (next && Ranges.equal(next, clone)) {
 			offset += half;
 			next = move(box, offset);
 		}
 
 		if (next) {
-			set(range, Boundaries.start(next));
+			set(clone, Boundaries.start(next));
 		}
+
+		return {
+			range: clone,
+			caret: caret
+		};
 	}
 
-	function step(event, range, anchor, direction) {
+	function step(event, range, caret, direction) {
 		var shift = isShiftDown(event);
+		var move = 'left' === direction ? left : right;
 
 		if (range.collapsed || !shift) {
-			anchor = direction;
+			caret = 'left' === direction ? 'start' : 'end';
 		}
 
 		var get;
 		var set;
 		var collapse;
 
-		if ('left' === anchor) {
+		if ('start' === caret) {
 			get = Boundaries.start;
 			set = Ranges.setStartFromBoundary;
 			collapse = Ranges.collapseToStart;
@@ -173,19 +173,20 @@ define([
 			collapse = Ranges.collapseToEnd;
 		}
 
-		var move = 'left' === direction ? left : right;
-		var boundary = get(range);
+		var clone = range.cloneRange();
 
 		if (range.collapsed || shift) {
-			boundary = move(boundary, isCtrlDown(event) ? 'word' : 'char');
-			set(range, boundary);
+			set(clone, move(get(range), isCtrlDown(event) ? 'word' : 'char'));
 		}
 
 		if (!shift) {
-			collapse(range);
+			collapse(clone);
 		}
 
-		return anchor;
+		return {
+			range: clone,
+			caret: caret
+		};
 	}
 
 	function up(box, stride) {
@@ -211,65 +212,38 @@ define([
 	}
 
 	var arrows = {};
-	arrows[Keys.CODES.up] = function (event, range, anchor) {
-		return climb(event, range, anchor, 'up');
+	arrows[Keys.CODES.up] = function climbUp(event, range, caret) {
+		return climb(event, range, caret, 'up');
 	};
-	arrows[Keys.CODES.down] = function (event, range, anchor) {
-		return climb(event, range, anchor, 'down');
+	arrows[Keys.CODES.down] = function climbDown(event, range, caret) {
+		return climb(event, range, caret, 'down');
 	};
-	arrows[Keys.CODES.left] = function (event, range, anchor) {
-		return step(event, range, anchor, 'left');
+	arrows[Keys.CODES.left] = function stepLeft(event, range, caret) {
+		return step(event, range, caret, 'left');
 	};
-	arrows[Keys.CODES.right] = function (event, range, anchor) {
-		return step(event, range, anchor, 'right');
+	arrows[Keys.CODES.right] = function stepRight(event, range, caret) {
+		return step(event, range, caret, 'right');
 	};
 
-	function keydown(event) {
-		var range = event.range || Ranges.get();
-		if (!range || !event.editable) {
-			return event;
+	function keydown(event, range, caret, dragging) {
+		var range = Ranges.get();
+		if (range && arrows[event.which]) {
+			return arrows[event.which](event, range, caret);
 		}
-		var isNativeEditable = 'true' === event.editable.elem.getAttribute('contentEditable');
-		var clone = range.cloneRange();
-		if (arrows[event.which]) {
-			anchor = arrows[event.which](event, clone, anchor);
-			if (event.which === Keys.CODES.up || event.which === Keys.CODES.down) {
-				event.native.preventDefault();
-			}
-			// chrome hack
-			if ((!isNativeEditable && !clone.collapsed)) {
-				event.native.preventDefault();
-			}
-		}
-		if (!isNativeEditable) {
-			event.range = clone;
-		}
-		renderRange(clone, event.editable && event.editable.overrides, anchor);
-		return event;
 	}
 
-	function mousedown(event) {
-		purge();
-		depressed = true;
-		rangeAtDown = Ranges.createFromPoint(
+	function mouseup(event, range, caret, dragging) {
+		var expanding = dragging || isShiftDown(event);
+		var current = Ranges.createFromPoint(
 			event.native.clientX,
 			event.native.clientY
 		);
-	}
-
-	function mousemove(event) {
-		dragging = depressed;
-	}
-
-	function mouseup(event) {
-		var native = event.native;
-		var expanding = dragging || isShiftDown(event);
-		var rangeAtUp = Ranges.createFromPoint(native.clientX, native.clientY);
-		var sc = rangeAtDown.startContainer;
-		var so = rangeAtDown.startOffset;
-		var ec = rangeAtUp.endContainer;
-		var eo = rangeAtUp.endOffset;
-		var range;
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec = current.endContainer;
+		var eo = current.endOffset;
+		var current;
+		var caret;
 
 		if (!expanding) {
 			sc = ec;
@@ -277,40 +251,103 @@ define([
 		}
 
 		if (expanding && isReversed(sc, so, ec, eo)) {
-			anchor = 'left';
-			range = Ranges.create(ec, eo, sc, so);
+			caret = 'start';
+			current = Ranges.create(ec, eo, sc, so);
 		} else {
-			anchor = 'right';
-			range = Ranges.create(sc, so, ec, eo);
+			caret = 'end';
+			current = Ranges.create(sc, so, ec, eo);
 		}
 
-		renderRange(range, event.editable && event.editable.overrides, anchor);
-
-		depressed = false;
-		dragging = false;
+		return {
+			range : current,
+			caret : caret
+		};
 	}
 
 	var handlers = {
-		'keyup'     : Fn.identity,
+		'keyup'     : Fn.noop,
 		'keydown'   : keydown,
 		'mouseup'   : mouseup,
-		'mousedown' : mousedown,
-		'mousemove' : mousemove,
-		'click'     : Fn.identity
+		'click'     : Fn.noop
+	};
+
+	// Selection states
+	var selection = {
+		range       : null,
+		caret       : 'end',
+		isMouseDown : false,
+		isDragging  : false
+	};
+
+	var stateHandlers = {
+		'mousedown' : function (event) {
+			purge();
+			selection.isMouseDown = true;
+			if (!selection.range || !isShiftDown(event)) {
+				selection.range = Ranges.createFromPoint(
+					event.native.clientX,
+					event.native.clientY
+				);
+			}
+		},
+		'mouseup' : function (event) {
+			selection.isDragging = selection.isMouseDown = false;
+		},
+		'mousemove' : function (event) {
+			selection.isDragging = selection.isMouseDown;
+		}
 	};
 
 	function handle(event) {
+		var data;
+
 		if (handlers[event.type]) {
-			return handlers[event.type](event);
-		}
-		var range = event.range || Ranges.get();
-		if (range) {
-			renderRange(
-				range,
-				event.editable && event.editable.overrides,
-				range.collapsed ? 0 : 1
+			data = handlers[event.type](
+				event,
+				selection.range,
+				selection.caret,
+				selection.isDragging
 			);
 		}
+
+		if (stateHandlers[event.type]) {
+			stateHandlers[event.type](event);
+		}
+
+		if (!data) {
+			return event;
+		}
+
+		var range = selection.range = data.range;
+		var caret = selection.caret = data.caret;
+
+		event.range = range;
+
+		if ('keydown' === event.type) {
+			if (event.which === Keys.CODES.up || event.which === Keys.CODES.down) {
+				event.native.preventDefault();
+			}
+			// chrome hack to stop unwanted screen movements?
+			var isNative = 'true' === event.editable.elem.getAttribute('contentEditable');
+			if (!isNative && !range.collapsed) {
+				event.native.preventDefault();
+			}
+		}
+
+		if ('mousedown' !== event.type) {
+			var startStyle = Overrides.map(Overrides.harvest(range.startContainer));
+			var endStyle   = Overrides.map(Overrides.harvest(range.endContainer));
+			if (event.editables) {
+				var overrides  = Overrides.map(event.editable.overrides);
+				if ('start' === caret) {
+					startStyle = Maps.merge(startStyle, overrides);
+				} else {
+					endStyle = Maps.merge(endStyle, overrides);
+				}
+			}
+			renderRange(range, caret, startStyle, endStyle);
+		}
+
 		return event;
 	}
 
