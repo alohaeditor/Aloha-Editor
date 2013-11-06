@@ -364,8 +364,10 @@ define([
 	function expandToVisibleCharacter(range) {
 		var boundary = Html.nextCharacter(Boundaries.end(range));
 		if (boundary) {
-			setEndFromBoundary(range, boundary);
-			//range.setEnd(pos[0], pos.offset - 1);
+			if (boundary[1] > 0) {
+				boundary[1]--;
+				setEndFromBoundary(range, boundary);
+			}
 		} else if (Dom.isTextNode(range.endContainer)) {
 			range.setEnd(
 				range.endContainer,
