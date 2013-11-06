@@ -11,7 +11,6 @@ define([
 	'keys',
 	'maps',
 	'ranges',
-	'arrays',
 	'browser',
 	'overrides',
 	'boundaries',
@@ -23,7 +22,6 @@ define([
 	Keys,
 	Maps,
 	Ranges,
-	Arrays,
 	Browsers,
 	Overrides,
 	Boundaries,
@@ -40,16 +38,7 @@ define([
 		var caret = document.createElement('div');
 		Dom.addClass(caret, 'aloha-caret');
 		Dom.insert(caret, document.body, true);
-		Dom.disableSelection(caret);
 		return caret;
-	}
-
-	/**
-	 * Hides all caret elements.
-	 */
-	function purge() {
-		Arrays.coerce(document.querySelectorAll('.aloha-caret'))
-		      .forEach(Dom.remove);
 	}
 
 	/**
@@ -106,35 +95,20 @@ define([
 	 * of the range.
 	 *
 	 * @param {Range} range
-	 * @param {String} caret
-	 *        Which of the carets is the blinking caret. May be "start" or
-	 *        "end".
+	 * @param {Element} start
+	 * @param {Element} end
 	 * @param {Object} startOverrides
 	 * @param {Object} endOverrides
 	 */
-	function show(range, caret, startOverrides, endOverrides) {
-		var carets = document.querySelectorAll('.aloha-caret');
-
-		if (!carets[0]) {
-			carets = [create()];
-		}
-
-		if (!carets[1]) {
-			carets = [carets[0], create()];
-		}
-
-		renderBoundary(carets[0], Boundaries.start(range), startOverrides);
-		renderBoundary(carets[1], Boundaries.end(range), endOverrides);
-
-		var steady  = carets['start' === caret ? 1 : 0];
-		var blinker = carets['start' === caret ? 0 : 1];
-
+	function show(range, start, end, startOverrides, endOverrides) {
+		renderBoundary(start, Boundaries.start(range), startOverrides);
+		renderBoundary(end, Boundaries.end(range), endOverrides);
 		if (range.collapsed) {
-			Dom.remove(steady);
-			Dom.addClass(blinker, 'blink');
+			Dom.addClass(start, 'blink');
+			Dom.addClass(end, 'blink');
 		} else {
-			Dom.removeClass(steady, 'blink');
-			Dom.removeClass(blinker, 'blink');
+			Dom.removeClass(start, 'blink');
+			Dom.removeClass(end, 'blink');
 		}
 	}
 
@@ -142,18 +116,18 @@ define([
 	 * Calculates the override values at the given start and end boundaries.
 	 *
 	 * @param {Object} event
-	 * @param {String} caret
+	 * @param {String} focus
 	 *        Which of the carets is the blinking caret. May be "start" or
 	 *        "end".
 	 * @return {Array<Object>}
 	 *         An ordered list of the overrides at the start and end boundary.
 	 */
-	function computeOverrides(event, caret) {
+	function computeOverrides(event, focus) {
 		var start = Overrides.map(Overrides.harvest(event.range.startContainer));
 		var end = Overrides.map(Overrides.harvest(event.range.endContainer));
 		if (event.editables) {
 			var overrides  = Overrides.map(event.editable.overrides);
-			if ('start' === caret) {
+			if ('start' === focus) {
 				start = Maps.merge(start, overrides);
 			} else {
 				end = Maps.merge(end, overrides);
@@ -213,15 +187,15 @@ define([
 	 *
 	 * @param {Event} event
 	 * @param {Range} range
-	 * @param {String} caret
+	 * @param {String} focus
 	 * @param {String} direction
 	 * @return {Object}
 	 */
-	function climb(event, range, caret, direction) {
+	function climb(event, range, focus, direction) {
 		var get;
 		var set;
 
-		if ('start' === caret) {
+		if ('start' === focus) {
 			get = Ranges.collapseToStart;
 			set = Ranges.setStartFromBoundary;
 		} else {
@@ -252,7 +226,7 @@ define([
 		if (!expanding) {
 			sc = ec = next.startContainer;
 			so = eo = next.startOffset;
-		} else if ('start' === caret) {
+		} else if ('start' === focus) {
 			sc = next.startContainer;
 			so = next.startOffset;
 			ec = range.endContainer;
@@ -267,14 +241,14 @@ define([
 		var current;
 		if (expanding && isReversed(sc, so, ec, eo)) {
 			current = Ranges.create(ec, eo, sc, so);
-			caret = ('start' === caret) ? 'end' : 'start';
+			focus = ('start' === focus) ? 'end' : 'start';
 		} else {
 			current = Ranges.create(sc, so, ec, eo);
 		}
 
 		return {
 			range: current,
-			caret: caret
+			focus: focus
 		};
 	}
 
@@ -283,23 +257,23 @@ define([
 	 *
 	 * @param {Event} event
 	 * @param {Range} range
-	 * @param {String} caret
+	 * @param {String} focus
 	 * @param {String} direction
 	 * @return {Object}
 	 */
-	function step(event, range, caret, direction) {
+	function step(event, range, focus, direction) {
 		var shift = isShiftDown(event);
 		var move = 'left' === direction ? left : right;
 
 		if (range.collapsed || !shift) {
-			caret = 'left' === direction ? 'start' : 'end';
+			focus = 'left' === direction ? 'start' : 'end';
 		}
 
 		var get;
 		var set;
 		var collapse;
 
-		if ('start' === caret) {
+		if ('start' === focus) {
 			get = Boundaries.start;
 			set = Ranges.setStartFromBoundary;
 			collapse = Ranges.collapseToStart;
@@ -321,48 +295,48 @@ define([
 
 		return {
 			range: clone,
-			caret: caret
+			focus: focus
 		};
 	}
 
 	var arrows = {};
-	arrows[Keys.CODES.up] = function climbUp(event, range, caret) {
-		return climb(event, range, caret, 'up');
+	arrows[Keys.CODES.up] = function climbUp(event, range, focus) {
+		return climb(event, range, focus, 'up');
 	};
-	arrows[Keys.CODES.down] = function climbDown(event, range, caret) {
-		return climb(event, range, caret, 'down');
+	arrows[Keys.CODES.down] = function climbDown(event, range, focus) {
+		return climb(event, range, focus, 'down');
 	};
-	arrows[Keys.CODES.left] = function stepLeft(event, range, caret) {
-		return step(event, range, caret, 'left');
+	arrows[Keys.CODES.left] = function stepLeft(event, range, focus) {
+		return step(event, range, focus, 'left');
 	};
-	arrows[Keys.CODES.right] = function stepRight(event, range, caret) {
-		return step(event, range, caret, 'right');
+	arrows[Keys.CODES.right] = function stepRight(event, range, focus) {
+		return step(event, range, focus, 'right');
 	};
 
-	function keydown(event, range, previous, caret, dragging, doubleclicking) {
+	function keydown(event, range, previous, focus, dragging, doubleclicking) {
 		if (arrows[event.which]) {
-			return arrows[event.which](event, range, caret);
+			return arrows[event.which](event, range, focus);
 		}
 		return {
-			range : range,
-			caret : caret
+			range: range,
+			focus: focus
 		};
 	}
 
-	function keypress(event, range, previous, caret, dragging, doubleclicking) {
+	function keypress(event, range, previous, focus, dragging, doubleclicking) {
 		return {
-			range : range,
-			caret : caret
+			range: range,
+			focus: focus
 		};
 	}
 
-	function mouseup(event, range, previous, caret, dragging, doubleclicking) {
+	function mouseup(event, range, previous, focus, dragging, doubleclicking) {
 		if (doubleclicking && !dragging) {
 			return dblclick(
 				event,
 				previous,
 				previous,
-				caret,
+				focus,
 				dragging,
 				doubleclicking
 			);
@@ -389,21 +363,20 @@ define([
 		}
 
 		if (expanding && isReversed(sc, so, ec, eo)) {
-			caret = 'start';
+			focus = 'start';
 			current = Ranges.create(ec, eo, sc, so);
 		} else {
-			caret = 'end';
+			focus = 'end';
 			current = Ranges.create(sc, so, ec, eo);
 		}
 
 		return {
-			range : current,
-			caret : caret
+			range: current,
+			focus: focus
 		};
 	}
 
-	function mousedown(event, range, previous, caret, dragging, doubleclicking) {
-		purge();
+	function mousedown(event, range, previous, focus, dragging, doubleclicking) {
 		var current;
 		if (previous && isShiftDown(event)) {
 			current = previous;
@@ -414,15 +387,15 @@ define([
 			);
 		}
 		return {
-			range : current,
-			caret : caret
+			range: current,
+			focus: focus
 		};
 	}
 
-	function dblclick(event, range, previous, caret, dragging, doubleclicking) {
+	function dblclick(event, range, previous, focus, dragging, doubleclicking) {
 		return {
-			range : Ranges.expandToWord(previous),
-			caret : 'end'
+			range: Ranges.expandToWord(previous),
+			focus: 'end'
 		};
 	}
 
@@ -436,8 +409,10 @@ define([
 
 	// State of the user selection
 	var state = {
+		start         : create(),
+		end           : create(),
 		range         : null,
-		caret         : 'end',
+		focus         : 'end',
 		lastClick     : 0,
 		isDragging    : false,
 		isMouseDown   : false,
@@ -448,10 +423,10 @@ define([
 		'mousedown': function mousedown(event) {
 			state.isDragging = false;
 			state.isMouseDown = true;
-			var last = state.lastClick;
-			state.lastClick = new Date();
-			state.isDoubleClick = ((state.lastClick - last) < 500)
-			                   && Dom.hasClass(event.target, 'aloha-caret');
+			var then = state.lastClick;
+			var now = state.lastClick = new Date();
+			var isCaretClicked = event.target === state.start || event.target === state.end;
+			state.isDoubleClick = ((now - then) < 500) && isCaretClicked;
 		},
 		'mouseup': function mouseup(event) {
 			state.isDoubleClick = state.isDragging = state.isMouseDown = false;
@@ -469,38 +444,34 @@ define([
 	 */
 	function handle(event) {
 		var data;
-		var caret;
-		var range;
 
 		if (handlers[event.type]) {
 			data = handlers[event.type](
 				event,
 				event.range || Ranges.get(),
 				state.range,
-				state.caret,
+				state.focus,
 				state.isDragging,
 				state.isDoubleClick
 			);
 		}
 
 		if (stateHandlers[event.type]) {
-			stateHandlers[event.type](event, data);
+			stateHandlers[event.type](event);
 		}
 
 		if (!data) {
 			return event;
 		}
 
-		caret = state.caret = data.caret;
-		range = state.range = event.range = data.range;
+		state.focus = data.focus;
+		state.range = event.range = data.range;
+
+		var overrides = computeOverrides(event, state.focus);
+		show(state.range, state.start, state.end, overrides[0], overrides[1]);
 
 		if ('keydown' === event.type && arrows[event.which]) {
 			event.native.preventDefault();
-		}
-
-		if ('mousedown' !== event.type) {
-			var overrides = computeOverrides(event, caret);
-			show(range, caret, overrides[0], overrides[1]);
 		}
 
 		return event;

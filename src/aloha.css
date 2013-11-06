@@ -31,7 +31,6 @@ p:last-child { margin-bottom: 0; }
 
 .aloha-caret {
 	z-index: 1;
-	overflow: hidden;
 	margin: 0;
 	padding: 0;
 	background: #0c59ef;
