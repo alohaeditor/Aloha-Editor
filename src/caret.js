@@ -86,10 +86,10 @@ define([
 			carets = [carets[0], create()];
 		}
 
-		carets[0].style.background = 'red';
-
 		renderBoundary(carets[0], Boundaries.start(range), startStyle);
 		renderBoundary(carets[1], Boundaries.end(range), endStyle);
+
+		carets[0].style.background = 'red';
 
 		var steady  = carets['start' === caret ? 1 : 0];
 		var blinker = carets['start' === caret ? 0 : 1];
@@ -114,7 +114,7 @@ define([
 	function isReversed(sc, so, ec, eo){
 		var position = sc.compareDocumentPosition(ec);
 		return (0 === position && so > eo)
-		    || (position & Node.DOCUMENT_POSITION_PRECEDING);
+		    || (position & Node.DOCUMENT_POSITION_PRECEDING) > 0;
 	}
 
 	function climb(event, range, caret, direction) {
@@ -133,6 +133,7 @@ define([
 		var box = Ranges.box(clone);
 		var half = box.height / 2;
 		var offset = half;
+		var expanding = isShiftDown(event);
 		var move = 'up' === direction ? up : down;
 
 		var next = move(box, offset);
@@ -141,12 +142,37 @@ define([
 			next = move(box, offset);
 		}
 
-		if (next) {
-			set(clone, Boundaries.start(next));
+		if (!next) {
+			return;
+		}
+
+		var sc, so, ec, eo;
+
+		if (!expanding) {
+			sc = ec = next.startContainer;
+			so = eo = next.startOffset;
+		} else if ('start' === caret) {
+			sc = next.startContainer;
+			so = next.startOffset;
+			ec = range.endContainer;
+			eo = range.endOffset;
+		} else {
+			sc = range.startContainer;
+			so = range.startOffset;
+			ec = next.endContainer;
+			eo = next.endOffset;
+		}
+
+		var current;
+		if (expanding && isReversed(sc, so, ec, eo)) {
+			current = Ranges.create(ec, eo, sc, so);
+			caret = ('start' === caret) ? 'end' : 'start';
+		} else {
+			current = Ranges.create(sc, so, ec, eo);
 		}
 
 		return {
-			range: clone,
+			range: current,
 			caret: caret
 		};
 	}
@@ -194,7 +220,7 @@ define([
 	}
 
 	function down(box, stride) {
-		return Ranges.createFromPoint(box.left, box.top + stride);
+		return Ranges.createFromPoint(box.left, box.top + box.height + stride);
 	}
 
 	function left(boundary, stride) {
@@ -233,15 +259,18 @@ define([
 	}
 
 	function mouseup(event, range, caret, dragging) {
-		var expanding = dragging || isShiftDown(event);
 		var current = Ranges.createFromPoint(
 			event.native.clientX,
 			event.native.clientY
 		);
+		if (!range || !current) {
+			return;
+		}
 		var sc = range.startContainer;
 		var so = range.startOffset;
 		var ec = current.endContainer;
 		var eo = current.endOffset;
+		var expanding = dragging || isShiftDown(event);
 		var current;
 		var caret;
 
@@ -280,7 +309,7 @@ define([
 	};
 
 	var stateHandlers = {
-		'mousedown' : function (event) {
+		'mousedown' : function mousedown(event) {
 			purge();
 			selection.isMouseDown = true;
 			if (!selection.range || !isShiftDown(event)) {
@@ -290,10 +319,10 @@ define([
 				);
 			}
 		},
-		'mouseup' : function (event) {
+		'mouseup' : function mouseup(event) {
 			selection.isDragging = selection.isMouseDown = false;
 		},
-		'mousemove' : function (event) {
+		'mousemove' : function mousemove(event) {
 			selection.isDragging = selection.isMouseDown;
 		}
 	};
@@ -335,17 +364,17 @@ define([
 		}
 
 		if ('mousedown' !== event.type) {
-			var startStyle = Overrides.map(Overrides.harvest(range.startContainer));
-			var endStyle   = Overrides.map(Overrides.harvest(range.endContainer));
+			var startOverrides = Overrides.map(Overrides.harvest(range.startContainer));
+			var endOverrides   = Overrides.map(Overrides.harvest(range.endContainer));
 			if (event.editables) {
 				var overrides  = Overrides.map(event.editable.overrides);
 				if ('start' === caret) {
-					startStyle = Maps.merge(startStyle, overrides);
+					startOverrides = Maps.merge(startStyle, overrides);
 				} else {
-					endStyle = Maps.merge(endStyle, overrides);
+					endOverrides = Maps.merge(endStyle, overrides);
 				}
 			}
-			renderRange(range, caret, startStyle, endStyle);
+			renderRange(range, caret, startOverrides, endOverrides);
 		}
 
 		return event;
