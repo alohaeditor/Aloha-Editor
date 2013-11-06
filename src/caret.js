@@ -152,6 +152,7 @@ define([
 		var move = 'up' === direction ? up : down;
 
 		var next = move(box, offset);
+		// fix me also check if next and clone are *visually* adjacent
 		while (next && Ranges.equal(next, clone)) {
 			offset += half;
 			next = move(box, offset);
@@ -267,10 +268,17 @@ define([
 	};
 
 	function keydown(event, range, caret, dragging) {
-		var range = Ranges.get();
-		if (range && arrows[event.which]) {
+		var range = event.range || Ranges.get();
+		if (!range) {
+			return;
+		}
+		if (arrows[event.which]) {
 			return arrows[event.which](event, range, caret);
 		}
+		return {
+			range : range,
+			caret : caret
+		};
 	}
 
 	function keypress(event, range, caret, dragging) {
