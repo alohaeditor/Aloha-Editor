@@ -267,11 +267,7 @@ define([
 		return step(event, range, caret, 'right');
 	};
 
-	function keydown(event, range, caret, dragging) {
-		range = event.range || Ranges.get();
-		if (!range) {
-			return;
-		}
+	function keydown(event, range, previous, caret, dragging, doubleclicking) {
 		if (arrows[event.which]) {
 			return arrows[event.which](event, range, caret);
 		}
@@ -281,23 +277,36 @@ define([
 		};
 	}
 
-	function keypress(event, range, caret, dragging) {
+	function keypress(event, range, previous, caret, dragging, doubleclicking) {
 		return {
-			range : event.range || Ranges.get(),
+			range : range,
 			caret : caret
 		};
 	}
 
-	function mouseup(event, range, caret, dragging) {
+	function mouseup(event, range, previous, caret, dragging, doubleclicking) {
+		if (doubleclicking && !dragging) {
+			return dblclick(
+				event,
+				previous,
+				previous,
+				caret,
+				dragging,
+				doubleclicking
+			);
+		}
+
 		var current = Ranges.createFromPoint(
 			event.native.clientX,
 			event.native.clientY
 		);
-		if (!range || !current) {
+
+		if (!previous || !current) {
 			return;
 		}
-		var sc = range.startContainer;
-		var so = range.startOffset;
+
+		var sc = previous.startContainer;
+		var so = previous.startOffset;
 		var ec = current.endContainer;
 		var eo = current.endOffset;
 		var expanding = dragging || isShiftDown(event);
@@ -321,77 +330,91 @@ define([
 		};
 	}
 
-	function dblclick(event, range, caret, dragging) {
-		var current = Ranges.createFromPoint(
-			event.native.clientX,
-			event.native.clientY
-		);
-		if (current) {
-			return {
-				range : Ranges.expandToWord(current),
-				caret : 'end'
-			};
+	function mousedown(event, range, previous, caret, dragging, doubleclicking) {
+		purge();
+		var current;
+		if (previous && isShiftDown(event)) {
+			current = previous;
+		} else {
+			current = Ranges.createFromPoint(
+				event.native.clientX,
+				event.native.clientY
+			);
 		}
+		return {
+			range : current,
+			caret : caret
+		};
+	}
+
+	function dblclick(event, range, previous, caret, dragging, doubleclicking) {
+		return {
+			range : Ranges.expandToWord(previous),
+			caret : 'end'
+		};
 	}
 
 	var handlers = {
-		'keydown'  : keydown,
-		'keypress' : keypress,
-		'mouseup'  : mouseup,
-		'dblclick' : dblclick
+		'keydown'   : keydown,
+		'keypress'  : keypress,
+		'mouseup'   : mouseup,
+		'mousedown' : mousedown,
+		'dblclick'  : dblclick
 	};
 
 	// State of the user selection
 	var state = {
-		range       : null,
-		caret       : 'end',
-		isMouseDown : false,
-		isDragging  : false
+		range         : null,
+		caret         : 'end',
+		lastClick     : 0,
+		isDragging    : false,
+		isMouseDown   : false,
+		isDoubleClick : false
 	};
 
 	var stateHandlers = {
-		'mousedown' : function mousedown(event) {
-			purge();
+		'mousedown': function mousedown(event) {
+			state.isDragging = false;
 			state.isMouseDown = true;
-			if (!state.range || !isShiftDown(event)) {
-				state.range = Ranges.createFromPoint(
-					event.native.clientX,
-					event.native.clientY
-				);
-			}
+			var last = state.lastClick;
+			state.lastClick = new Date();
+			state.isDoubleClick = ((state.lastClick - last) < 500)
+			                   && Dom.hasClass(event.target, 'aloha-caret');
 		},
-		'mouseup' : function mouseup(event) {
-			state.isDragging = state.isMouseDown = false;
+		'mouseup': function mouseup(event) {
+			state.isDoubleClick = state.isDragging = state.isMouseDown = false;
 		},
-		'mousemove' : function mousemove(event) {
+		'mousemove': function mousemove(event) {
 			state.isDragging = state.isMouseDown;
 		}
 	};
 
 	function handle(event) {
 		var data;
+		var caret;
+		var range;
 
 		if (handlers[event.type]) {
 			data = handlers[event.type](
 				event,
+				event.range || Ranges.get(),
 				state.range,
 				state.caret,
-				state.isDragging
+				state.isDragging,
+				state.isDoubleClick
 			);
 		}
 
 		if (stateHandlers[event.type]) {
-			stateHandlers[event.type](event);
+			stateHandlers[event.type](event, data);
 		}
 
 		if (!data) {
 			return event;
 		}
 
-		var range = state.range = data.range;
-		var caret = state.caret = data.caret;
-
-		event.range = range;
+		caret = state.caret = data.caret;
+		range = state.range = event.range = data.range;
 
 		if ('keydown' === event.type && arrows[event.which]) {
 			event.native.preventDefault();
