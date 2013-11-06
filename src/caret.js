@@ -1,7 +1,7 @@
 /* carets.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- o* Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
@@ -31,6 +31,11 @@ define([
 ) {
 	'use strict';
 
+	/**
+	 * Creates a DOM element to be used to represent a caret.
+	 *
+	 * @param {Element}
+	 */
 	function create() {
 		var caret = document.createElement('div');
 		Dom.addClass(caret, 'aloha-caret');
@@ -39,12 +44,23 @@ define([
 		return caret;
 	}
 
+	/**
+	 * Hides all caret elements.
+	 */
 	function purge() {
 		Arrays.coerce(document.querySelectorAll('.aloha-caret'))
 		      .forEach(Dom.remove);
 	}
 
-	function show(caret, rect, overrides) {
+	/**
+	 * Renders the given caret according to the dimension of `rect` and styles
+	 * it to reflect the given map of overrides.
+	 *
+	 * @param {Elemen} caret
+	 * @param {Object} rect
+	 * @param {Object} overrides
+	 */
+	function render(caret, rect, overrides) {
 		var color;
 		var width;
 		var rotation;
@@ -68,16 +84,35 @@ define([
 		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = rotation;
 	}
 
+	/**
+	 * Renders the given caret according to the boundary and styles
+	 * it to reflect the given map of overrides.
+	 *
+	 * @param {Elemen} caret
+	 * @param {Object} rect
+	 * @param {Object} overrides
+	 */
 	function renderBoundary(caret, boundary, overrides) {
 		var box = Ranges.box(Ranges.create(boundary[0], boundary[1]));
 		var doc = caret.ownerDocument;
 		box.top += window.pageYOffset - doc.body.clientTop;
 		box.left += window.pageXOffset - doc.body.clientLeft;
 		box.width = 2;
-		show(caret, box, overrides);
+		render(caret, box, overrides);
 	}
 
-	function render(range, caret, startOverrides, endOverrides) {
+	/**
+	 * Shows the given range by rendering cursors at the start and end boundary
+	 * of the range.
+	 *
+	 * @param {Range} range
+	 * @param {String} caret
+	 *        Which of the carets is the blinking caret. May be "start" or
+	 *        "end".
+	 * @param {Object} startOverrides
+	 * @param {Object} endOverrides
+	 */
+	function show(range, caret, startOverrides, endOverrides) {
 		var carets = document.querySelectorAll('.aloha-caret');
 
 		if (!carets[0]) {
@@ -103,6 +138,16 @@ define([
 		}
 	}
 
+	/**
+	 * Calculates the override values at the given start and end boundaries.
+	 *
+	 * @param {Object} event
+	 * @param {String} caret
+	 *        Which of the carets is the blinking caret. May be "start" or
+	 *        "end".
+	 * @return {Array<Object>}
+	 *         An ordered list of the overrides at the start and end boundary.
+	 */
 	function computeOverrides(event, caret) {
 		var start = Overrides.map(Overrides.harvest(event.range.startContainer));
 		var end = Overrides.map(Overrides.harvest(event.range.endContainer));
@@ -117,6 +162,21 @@ define([
 		return [start, end];
 	}
 
+	/**
+	 * Checks whether the end boundary preceeds the start boundary in the
+	 * document order.
+	 *
+	 * @param {Element} sc Start container
+	 * @param {String}  so Start offset
+	 * @param {Element} ec End container
+	 * @param {String}  eo End offset
+	 * @return {Boolean}
+	 */
+	function isReversed(sc, so, ec, eo) {
+		var position = sc.compareDocumentPosition(ec);
+		return (0 === position && so > eo)
+		    || (position & Node.DOCUMENT_POSITION_PRECEDING) > 0;
+	}
 
 	function isCtrlDown(event) {
 		return event.meta.indexOf('ctrl') > -1;
@@ -124,12 +184,6 @@ define([
 
 	function isShiftDown(event) {
 		return event.meta.indexOf('shift') > -1;
-	}
-
-	function isReversed(sc, so, ec, eo) {
-		var position = sc.compareDocumentPosition(ec);
-		return (0 === position && so > eo)
-		    || (position & Node.DOCUMENT_POSITION_PRECEDING) > 0;
 	}
 
 	function up(box, stride) {
@@ -154,6 +208,15 @@ define([
 		return Traversing.findWordBoundaryAhead(boundary);
 	}
 
+	/**
+	 * Determines the next visual caret position above or below `range`.
+	 *
+	 * @param {Event} event
+	 * @param {Range} range
+	 * @param {String} caret
+	 * @param {String} direction
+	 * @return {Object}
+	 */
 	function climb(event, range, caret, direction) {
 		var get;
 		var set;
@@ -215,6 +278,15 @@ define([
 		};
 	}
 
+	/**
+	 * Determines the next visual caret position before or after `range`. 
+	 *
+	 * @param {Event} event
+	 * @param {Range} range
+	 * @param {String} caret
+	 * @param {String} direction
+	 * @return {Object}
+	 */
 	function step(event, range, caret, direction) {
 		var shift = isShiftDown(event);
 		var move = 'left' === direction ? left : right;
@@ -389,6 +461,12 @@ define([
 		}
 	};
 
+	/**
+	 * Renders caret elements to show the user selection.
+	 *
+	 * @param {Event} event
+	 * @return {Event}
+	 */
 	function handle(event) {
 		var data;
 		var caret;
@@ -422,18 +500,18 @@ define([
 
 		if ('mousedown' !== event.type) {
 			var overrides = computeOverrides(event, caret);
-			render(range, caret, overrides[0], overrides[1]);
+			show(range, caret, overrides[0], overrides[1]);
 		}
 
 		return event;
 	}
 
 	var exports = {
-		render : render,
+		show   : show,
 		handle : handle
 	};
 
-	exports['render'] = exports.render;
+	exports['show'] = exports.show;
 	exports['handle'] = exports.handle;
 
 	return exports;
