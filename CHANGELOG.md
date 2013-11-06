@@ -12,6 +12,19 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.25 - 2013/11/06
+
+- **BUGFIX**: Change table cell size by drag & drop
+              The line which is shown when you drag & drop the size of cell,
+              is not showed for the last row or last column. RT#55437
+- **BUGFIX**: Tooltip covers color palette
+              The colors tooltip does not disappear when the color palette is shown.
+              RT#57078
+- **BUGFIX**: Formatless Copy/Paste not working.
+              When paste action was made the formatlesshandler was never called.
+              We manually call this handler before pasting the content into the DOM element.
+              RT#56692
+
 ## 0.23.24 - 2013/10/24
 
 - **BUGFIX**: WAI input text is mistaken by the Caption Table
