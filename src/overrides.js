@@ -156,7 +156,7 @@ define([
 	}
 
 	function harvest(node, until) {
-		var overrides = [];
+		var stack = [];
 		var nodes = Traversing.childAndParentsUntil(
 			node,
 			until || Dom.isEditingHost
@@ -174,15 +174,16 @@ define([
 				state = states[j];
 				index = map[state[0]];
 				if (Misc.defined(index)) {
-					overrides.splice(index - 1, 1, null);
+					stack.splice(index - 1, 1, null);
 				}
-				map[state[0]] = overrides.push(state);
+				map[state[0]] = stack.push(state);
 			}
-			overrides = overrides.concat(getValues(nodes[i]));
+			stack = stack.concat(getValues(nodes[i]));
 		}
-		for (i = 0, len = overrides.length; i < len; i++) {
-			if (!overrides[i]) {
-				overrides.splice(i, 1);
+		var overrides = [];
+		for (i = 0, len = stack.length; i < len; i++) {
+			if (stack[i]) {
+				overrides.push(stack[i]);
 			}
 		}
 		return overrides;
