@@ -14,7 +14,8 @@ define([
 	'arrays',
 	'browser',
 	'overrides',
-	'boundaries'
+	'boundaries',
+	'traversing'
 ], function Carets(
 	Fn,
 	Dom,
@@ -25,7 +26,8 @@ define([
 	Arrays,
 	Browsers,
 	Overrides,
-	Boundaries
+	Boundaries,
+	Traversing
 ) {
 	'use strict';
 
@@ -227,14 +229,14 @@ define([
 		if ('char' === stride) {
 			return Html.previousVisualBoundary(boundary);
 		}
-		return Html.previousWordBoundary(boundary);
+		return Traversing.findWordBoundaryBehind(boundary);
 	}
 
 	function right(boundary, stride) {
 		if ('char' === stride) {
 			return Html.nextVisualBoundary(boundary);
 		}
-		return Html.nextWordBoundary(boundary);
+		return Traversing.findWordBoundaryAhead(boundary);
 	}
 
 	var arrows = {};
@@ -293,11 +295,25 @@ define([
 		};
 	}
 
+	function dblclick(event, range, caret, dragging) {
+		var current = Ranges.createFromPoint(
+			event.native.clientX,
+			event.native.clientY
+		);
+		if (current) {
+			return {
+				range : Ranges.expandToWord(current),
+				caret : 'end'
+			};
+		}
+	}
+
 	var handlers = {
 		'keyup'     : Fn.noop,
 		'keydown'   : keydown,
 		'mouseup'   : mouseup,
-		'click'     : Fn.noop
+		'click'     : Fn.noop,
+		'dblclick'  : dblclick
 	};
 
 	// Selection states

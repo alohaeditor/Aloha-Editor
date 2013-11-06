@@ -89,6 +89,7 @@ define(['misc'], function Events(Misc) {
 		add(doc, 'mouseup',   editor);
 		add(doc, 'mousedown', editor);
 		add(doc, 'mousemove', editor);
+		add(doc, 'dblclick',  editor);
 
 		add(doc, 'dragstart', editor);
 		add(doc, 'drag',      editor);

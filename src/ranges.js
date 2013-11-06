@@ -101,7 +101,7 @@ define([
 		range.setEnd(boundary[0], boundary[1]);
 	}
 
-	function setFromBoundaries(range, start, send) {
+	function setFromBoundaries(range, start, end) {
 		range.setStart(start[0], start[1]);
 		range.setEnd(end[0], end[1]);
 	}
@@ -341,16 +341,9 @@ define([
 	 * @return {Range}
 	 */
 	function expandToWord(range) {
-		var behind = Traversing.findWordBoundaryBehind(
-			range.startContainer,
-			range.startOffset
-		);
-		var ahead = Traversing.findWordBoundaryAhead(
-			range.endContainer,
-			range.endOffset
-		);
-		range.setStart(behind.node, behind.offset);
-		range.setEnd(ahead.node, ahead.offset);
+		var behind = Traversing.findWordBoundaryBehind(Boundaries.start(range));
+		var ahead = Traversing.findWordBoundaryAhead(Boundaries.end(range));
+		setFromBoundaries(range, behind, ahead);
 		return range;
 	}
 

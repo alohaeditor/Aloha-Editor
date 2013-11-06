@@ -8,10 +8,12 @@
  */
 define([
 	'dom',
-	'functions'
+	'functions',
+	'boundaries'
 ], function Traversing(
 	Dom,
-	Fn
+	Fn,
+	Boundaries
 ) {
 	'use strict';
 
@@ -188,104 +190,75 @@ define([
 	/**
 	 * Looks backwards in the node tree for the nearest word boundary position.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Number} offset
-	 * @return position Information about the nearst found word boundary.
-	 * @return position.node
-	 * @return position.offset
+	 * @param {Boundary} boundary
+	 * @return {Boundary}
 	 */
-	function findWordBoundaryBehind(node, offset) {
+	function findWordBoundaryBehind(boundary) {
+		var node = boundary[0];
+		var offset = boundary[1];
+
 		if (Dom.isEditingHost(node)) {
-			return {
-				node: node,
-				offset: offset
-			};
+			return boundary;
 		}
+
 		if (Dom.Nodes.TEXT === node.nodeType) {
-			var boundary = node.data.substr(0, offset)
-			                   .search(WORD_BOUNDARY_FROM_END);
-			return (
-				-1 === boundary
-					? findWordBoundaryBehind(
-						node.parentNode,
-						Dom.nodeIndex(node)
-					)
-					: {
-						node: node,
-						offset: boundary + 1
-					}
-			);
+			var index = node.data.substr(0, offset).search(WORD_BOUNDARY_FROM_END);
+			if (-1 === index) {
+				return findWordBoundaryBehind(
+					[node.parentNode, Dom.nodeIndex(node)]
+				);
+			}
+			return [node, index + 1];
 		}
+
 		if (Dom.Nodes.ELEMENT === node.nodeType) {
 			if (offset > 0) {
 				var child = node.childNodes[offset - 1];
-				return (
-					IN_WORD_TAGS[child.nodeName]
-						? findWordBoundaryBehind(child, Dom.nodeLength(child))
-						: {
-							node: node,
-							offset: offset
-						}
-				);
+				return IN_WORD_TAGS[child.nodeName]
+				     ? findWordBoundaryBehind([child, Dom.nodeLength(child)])
+				     : boundary;
 			}
-			return findWordBoundaryBehind(node.parentNode, Dom.nodeIndex(node));
+			return findWordBoundaryBehind(
+				[node.parentNode, Dom.nodeIndex(node)]
+			);
 		}
-		return {
-			node: node,
-			offset: offset
-		};
+
+		return boundary;
 	}
 
 	/**
 	 * Looks forwards in the node tree for the nearest word boundary position.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Number} offset
-	 * @return position Information about the nearst found word boundary.
-	 * @return position.node
-	 * @return position.offset
+	 * @param {Boundary}
+	 * @return {Boundary}
 	 */
-	function findWordBoundaryAhead(node, offset) {
+	function findWordBoundaryAhead(boundary) {
+		var node = boundary[0];
+		var offset = boundary[1];
+
 		if (Dom.isEditingHost(node)) {
-			return {
-				node: node,
-				offset: offset
-			};
+			return boundary;
 		}
-		if (Dom.Nodes.TEXT === node.nodeType) {
-			var boundary = node.data.substr(offset).search(WORD_BOUNDARY);
-			return (
-				-1 === boundary
-					? findWordBoundaryAhead(
-						node.parentNode,
-						Dom.nodeIndex(node) + 1
-					)
-					: {
-						node: node,
-						offset: offset + boundary
-					}
-			);
-		}
-		if (Dom.Nodes.ELEMENT === node.nodeType) {
+
+		if (Boundaries.isNodeBoundary(boundary)) {
 			if (offset < Dom.nodeLength(node)) {
-				return (
-					IN_WORD_TAGS[node.childNodes[offset].nodeName]
-						? findWordBoundaryAhead(node.childNodes[offset], 0)
-						: {
-							node: node,
-							offset: offset
-						}
-				);
+				return IN_WORD_TAGS[node.childNodes[offset].nodeName]
+				     ? findWordBoundaryAhead([node.childNodes[offset], 0])
+				     : boundary;
 			}
 			return findWordBoundaryAhead(
-				node.parentNode,
-				Dom.nodeIndex(node) + 1
+				[node.parentNode, Dom.nodeIndex(node) + 1]
 			);
 		}
-		return {
-			node: node,
-			offset: offset
-		};
+
+		var index = node.data.substr(offset).search(WORD_BOUNDARY);
+		if (-1 === index) {
+			return findWordBoundaryAhead(
+				[node.parentNode, Dom.nodeIndex(node) + 1]
+			);
+		}
+
+		return [node, offset + index];
 	}
 
 	/**
