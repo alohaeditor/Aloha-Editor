@@ -615,7 +615,7 @@ define([
 	 */
 	function createTransferFunction(boundary) {
 		var ref = Boundaries.nextNode(boundary);
-		var atEnd = Boundaries.atEnd(boundary);
+		var atEnd = Boundaries.isAtEnd(boundary);
 		if (Dom.isTextNode(ref)) {
 			ref = ref.parentNode;
 		}
@@ -699,7 +699,7 @@ define([
 			if (Boundaries.equal(pos, below)) {
 				return false;
 			}
-			var end = Boundaries.atEnd(pos);
+			var end = Boundaries.isAtEnd(pos);
 			var next = end ? node : Dom.nodeAtOffset(node, offset);
 			if (hasLinebreakingStyle(next)) {
 				return false;
@@ -814,7 +814,7 @@ define([
 
 		// Because any nodes which are entirely after the boundary position
 		// don't need to be copied but can be completely moved: "}<b>"
-		var movable = Boundaries.atEnd(boundary) ? null : start;
+		var movable = Boundaries.isAtEnd(boundary) ? null : start;
 
 		// Because if the boundary is right before a breaking container, The the
 		// default new breaking element should be inserted right before it.

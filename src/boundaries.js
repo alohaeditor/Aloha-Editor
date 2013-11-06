@@ -114,11 +114,11 @@ define([
 		return stepWhile(boundary, cond, prev);
 	}
 
-	function atEnd(boundary) {
+	function isAtEnd(boundary) {
 		return boundary[1] === Dom.nodeLength(boundary[0]);
 	}
 
-	function atStart(boundary) {
+	function isAtStart(boundary) {
 		return 0 === boundary[1];
 	}
 
@@ -145,7 +145,7 @@ define([
 		if (!isNodeBoundary(boundary)) {
 			return boundary[0].nextSibling;
 		}
-		return atEnd(boundary) ? null : Dom.nthChild(boundary[0], boundary[1]);
+		return isAtEnd(boundary) ? null : Dom.nthChild(boundary[0], boundary[1]);
 	}
 
 	function nodeBefore(boundary) {
@@ -153,11 +153,15 @@ define([
 		if (!isNodeBoundary(boundary)) {
 			return boundary[0];
 		}
-		return atStart(boundary) ? null : Dom.nthChild(boundary[0], boundary[1] - 1);
+		return isAtStart(boundary) ? null : Dom.nthChild(boundary[0], boundary[1] - 1);
 	}
 
 	function beforeNode(node) {
 		return [node.parentNode, Dom.nodeIndex(node)];
+	}
+
+	function atEndOfNode(node) {
+		return [node, Dom.numChilden(node)];
 	}
 
 	function container(boundary) {
@@ -198,12 +202,13 @@ define([
 		nextNode  : nextNode,
 		prevNode  : prevNode,
 		container : container,
-		atStart   : atStart,
-		atEnd     : atEnd,
+		isAtStart : isAtStart,
+		isAtEnd   : isAtEnd,
 		normalize : normalize,
 		nodeAfter : nodeAfter,
 		nodeBefore: nodeBefore,
 		beforeNode: beforeNode,
+		atEndOfNode: atEndOfNode,
 		isNodeBoundary: isNodeBoundary,
 		precedingTextLength: precedingTextLength
 	};
@@ -215,8 +220,8 @@ define([
 	exports['prev']      = exports.prev;
 	exports['nextWhile'] = exports.nextWhile;
 	exports['prevWhile'] = exports.prevWhile;
-	exports['atStart'] = exports.atStart;
-	exports['atEnd'] = exports.atEnd;
+	exports['isAtStart'] = exports.isAtStart;
+	exports['isAtEnd']   = exports.isAtEnd;
 	exports['normalize'] = exports.normalize;
 
 	return exports;

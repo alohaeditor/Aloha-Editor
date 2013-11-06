@@ -173,7 +173,7 @@ define([
 		return container
 		    && container.parentNode
 		    && container.parentNode.parentNode
-		    && Boundaries.atStart(boundary)
+		    && Boundaries.isAtStart(boundary)
 		    && !Html.hasLinebreakingStyle(container);
 	}
 
@@ -189,7 +189,7 @@ define([
 		return container
 		    && container.parentNode
 		    && container.parentNode.parentNode
-		    && Boundaries.atEnd(boundary)
+		    && Boundaries.isAtEnd(boundary)
 		    && !Html.hasLinebreakingStyle(container);
 	}
 

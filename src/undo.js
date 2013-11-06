@@ -157,6 +157,13 @@ define([
 		return Dom.normalizeBoundary([container, off]);
 	}
 
+	function endOfNodePath(container, node) {
+		var path = nodePath(container, node);
+		var numChildren = Dom.normalizedNumChildren(node);
+		stepDownPath(path, node.nodeName, numChildren);
+		return path;
+	}
+
 	/**
 	 * Creates a path from a boundary.
 	 *
@@ -165,7 +172,7 @@ define([
 	 * path of the top-most container from which the path was
 	 * calculated.
 	 *
-	 * The last step in a path may be the offset in a text node.
+	 * Only the last step in a path may be the offset in a text node.
 	 *
 	 * If the nodes before a boundary are text nodes, the last step will
 	 * always be the offset in a text node, and the combined length of
@@ -212,13 +219,35 @@ define([
 			node = Traversing.prevWhile(node, Dom.isEmptyTextNode);
 			path = nodePath(container, node);
 			stepDownPath(path, '#text', textOff);
-		} else if (Boundaries.atEnd(boundary)) {
-			var boundaryContainer = boundary[0];
-			path = nodePath(container, boundaryContainer);
-			var numChildren = Dom.normalizedNumChildren(boundaryContainer);
-			stepDownPath(path, boundaryContainer.nodeName, numChildren);
+		} else if (Boundaries.isAtEnd(boundary)) {
+			path = endOfNodePath(container, boundary[0]);
 		} else {
 			path = nodePath(container, Boundaries.nodeAfter(boundary));
+		}
+		return path;
+	}
+
+	/**
+	 * Useful for when the path to be generated should only represent a
+	 * fragment of a complete path, and mustn't include the last step,
+	 * which may otherwise be a text container (which must only occur as
+	 * the last step of a path and can't therefore be composed).
+	 */
+	function incompletePathFromBoundary(container, boundary) {
+		boundary = Dom.normalizeBoundary(boundary);
+		var node = Boundaries.nodeAfter(boundary);
+		// Because if the boundary is between two text nodes, index
+		// normalization performed by nodePath() will use the offset of
+		// the previous text node, while an incomplete path must point
+		// to the normalized index of the next element node.
+		if (Boundaries.precedingTextLength(boundary)) {
+			node = Traversing.nextWhile(node, Dom.isTextNode);
+		}
+		var path;
+		if (node) {
+			path = nodePath(container, node);
+		} else {
+			path = endOfNodePath(container, boundary[0]);
 		}
 		return path;
 	}
@@ -520,113 +549,129 @@ define([
 		return (COMPOUND_DELETE === record.type) ? record.records : [record];
 	}
 
-	function nodeContainsRecord(containerNode, record) {
-		return (((DELETE_FLAG & record.type) && containerNode === record.target)
-		        || Dom.contains(containerNode, anchorNode(record)));
+	function insertFollowedByDelete(recordA, recordB) {
+		var prevB = recordB.prevSibling;
+		var targetB = recordB.target;
+		var node = recordA.node;
+		if (prevB) {
+			if (prevB === node || Dom.contains(prevB, node)) {
+				return true;
+			}
+			// TODO Dom.contains(node, prevB) probably not needed
+			return !Dom.followedBy(prevB, node) && !Dom.contains(node, prevB);
+		} else {
+			if (targetB === node || Dom.contains(targetB, node)) {
+				return false;
+			}
+			// TODO Dom.contains(node, prevB) probably not needed
+			return !Dom.followedBy(targetB, node) && !Dom.contains(node, targetB);
+		}
 	}
 
-	function containsRecord(recordA, recordB) {
-		return nodeContainsRecord(recordA.node, recordB);
+	function insertFollowedByInsert(recordA, recordB) {
+		return Dom.followedBy(recordA.node, recordB.node);
+	}
+	
+	function prevSiblingFollowedByDelete(prevA, recordB) {
+		var prevB = recordB.prevSibling;
+		var targetB = recordB.target;
+		if (prevB) {
+			if (Dom.contains(prevB, prevA)) {
+				return true;
+			}
+			if (Dom.contains(prevA, prevB)) {
+				return false;
+			}
+			return Dom.followedBy(prevA, prevB);
+		} else {
+			if (prevA === targetB) {
+				return false;
+			}
+			if (Dom.contains(targetB, prevA) || Dom.contains(prevA, targetB)) {
+				return false;
+			}
+			return Dom.followedBy(prevA, targetB);
+		}
 	}
 
-	// Each delete is contained by not more than a single container
-	// delete, if any.
-	//
-	// We only need inserts at the top-level, or inside deletes. Inserts
-	// and deletes inside new inserts must be completely
-	// ignored. Inserts and deletes inside delete-insert sequences must
-	// be contained by the delete, but not by the insert.
-	//
-	// When all deletes are processed first, and then all inserts, the
-	// insert of a delete-insert sequence would not contain any of the
-	// inserts or deletes that happened in the delete, since the insert
-	// of a delete-insert sequence doesn't contain the delete of the
-	// delete-insert sequence.
-	//
-	// Given above, if an insert contains deletes, the insert is not
-	// part of an delete-insert sequence, since the delete of the
-	// delete-insert sequence already contains all the deletes, and the
-	// deletes can be discarded.
-	//
-	// For the same reason, if an insert contains inserts, they can be
-	// discarded in favor of the container insert.
-	function intoRecordTree(tree, record) {
-		var containerRecord;
-		// Because we need all operations that happened inside deletions
-		// in order to reconstruct the structure before deletion.
-		containerRecord = Arrays.some(tree, function (containerRecord) {
-			if (DELETE_FLAG & containerRecord.type) {
-				return Arrays.some(records(containerRecord), function (containerRecord) {
-					if (containsRecord(containerRecord, record)) {
-						return containerRecord;
-					}
-				});
-			}
-		});
-		if (containerRecord) {
-			containerRecord.contained = intoRecordTree(containerRecord.contained, record);
-			return tree;
+	function deleteFollowedByDelete(recordA, recordB) {
+		var prevA = recordA.prevSibling;
+		var prevB = recordB.prevSibling;
+		var targetA = recordA.target;
+		var targetB = recordB.target;
+		if (prevA) {
+			return prevSiblingFollowedByDelete(prevA, recordB);
+		} else if (prevB) {
+			return !prevSiblingFollowedByDelete(prevB, recordA);
+		} else {
+			return Dom.followedBy(targetA, targetB);
 		}
-		// Because an insert already contains all necessary information,
-		// we can just discard any records that occur in inserts. For
-		// delete-insert sequences, we don't loose any information
-		// because the deletes already have all been processed.
-		containerRecord = Arrays.some(tree, function (containerRecord) {
-			if (INSERT === containerRecord.type) {
-				if (containsRecord(containerRecord, record)) {
-					return containerRecord;
-				}
-			}
-		});
-		if (containerRecord) {
-			return tree;
+	}
+
+	function compareRecords(recordA, recordB) {
+		var deleteA = (DELETE_FLAG & recordA.type);
+		var deleteB = (DELETE_FLAG & recordB.type);
+		var follows;
+		if (deleteA && deleteB) {
+			follows = deleteFollowedByDelete(recordA, recordB);
+		} else if (!deleteA && !deleteB) {
+			follows = insertFollowedByInsert(recordA, recordB);
+		} else if (!deleteA && deleteB) {
+			follows = insertFollowedByDelete(recordA, recordB);
+		} else if (deleteA && !deleteB) {
+			follows = !insertFollowedByDelete(recordB, recordA);
 		}
-		// Because we can assume that any other records are updates that
-		// are disconnected from structural changes (deletes already
-		// have consumed the updateAttr and updateText information and
-		// inserts don't need any update information) it is sufficient
-		// to just add them without checking whether they contain other
-		// records.
-		var type = record.type;
-		if (INSERT === type || (DELETE_FLAG & type)) {
-			records(record).forEach(function (containerRecord) {
-				var notContained = [];
-				tree.forEach(function (record) {
-					if (containsRecord(containerRecord, record)) {
-						// Because an insert already contains all
-						// necessary information, we can just discard
-						// all contained records.
-						if (DELETE === containerRecord.type) {
-							containerRecord.contained.push(record);
-						}
-					} else {
-						notContained.push(record);
-					}
-				});
-				tree = notContained;
-			});
-		}
-		tree.push(record);
-		return tree;
+		return follows ? -1 : 1;
 	}
 
 	function sortRecordTree(tree) {
-		tree.sort(function (recordA, recordB) {
-			var anchorA = anchorNode(recordA);
-			var anchorB = anchorNode(recordB);
-			// Because a delete's anchor precedes the deleted node, an
-			// insert with the same anchor as the del will always
-			// precede it.
-			if (anchorA === anchorB) {
-				return (DELETE_FLAG & recordB.type) ? -1 : 1;
-			}
-			return Dom.follows(anchorA, anchorB) ? -1 : 1;
-		});
+		tree.sort(compareRecords);
 		tree.forEach(function (record) {
-			if (record.contained) {
-				sortRecordTree(record.contained);
-			}
+			records(record).forEach(function (record) {
+				if (record.contained && (DELETE_FLAG & record.type)) {
+					sortRecordTree(record.contained);
+				}
+			});
 		});
+	}
+
+	function fillOutContained(container, recs) {
+		var index = {};
+		recs.forEach(function (record) {
+			records(record).forEach(function (record) {
+				var type = record.type;
+				if (!(type & DELETE_FLAG) && type !== INSERT) {
+					return;
+				}
+				var id = Dom.ensureExpandoId(record.node);
+				var recordsByType = index[id] || {};
+				Assert.assertFalse(!!recordsByType[type]);
+				recordsByType[type] = record;
+				index[id] = recordsByType;
+			});
+		});
+		var containerId = Dom.ensureExpandoId(container);
+		Assert.assertFalse(!!index[containerId]);
+		var containerInsert = makeInsert(container);
+		var recordsByType = {};
+		recordsByType[INSERT] = containerInsert
+		index[containerId] = recordsByType;
+		recs.forEach(function (record) {
+			var target = ((DELETE & record.type)
+			              ? record.target
+			              : record.node.parentNode);
+			var ancestor = Traversing.upWhile(target, function (ancestor) {
+				return !index[Dom.ensureExpandoId(ancestor)];
+			});
+			if (!ancestor) {
+				return;
+			}
+			var recordsByType = index[Dom.ensureExpandoId(ancestor)];
+			Maps.forEach(recordsByType, function (containerRecord) {
+				containerRecord.contained.push(record);
+			});
+		});
+		return containerInsert.contained;
 	}
 
 	function makeRecordTree(container, moves, updateAttr, updateText) {
@@ -656,29 +701,31 @@ define([
 		});
 		var inss = Maps.vals(inserted);
 		inss.forEach(consumeUpdates);
-		var recordTree = [];
-		// NB: the order in which dels and inss and updates are added to
-		// the tree is significant.
-		recordTree = dels.reduce(intoRecordTree, recordTree);
-		recordTree = inss.reduce(intoRecordTree, recordTree);
-		recordTree = Maps.vals(updateAttr).reduce(intoRecordTree, recordTree);
-		recordTree = Maps.vals(updateText).reduce(intoRecordTree, recordTree);
-		recordTree = recordTree.filter(function (record) {
-			return nodeContainsRecord(container, record);
-		});
-		sortRecordTree(recordTree);
-		return recordTree;
+		var tree = fillOutContained(
+			container,
+			dels.concat(inss)
+				.concat(Maps.vals(updateAttr))
+				.concat(Maps.vals(updateText))
+		);
+		sortRecordTree(tree);
+		return tree;
 	}
 
-	function delPath(container, delRecord) {
+	function delPath(container, delRecord, incomplete) {
 		var prevSibling = delRecord.prevSibling;
 		var path;
 		if (prevSibling) {
 			var off = Dom.nodeIndex(prevSibling) + 1;
-			path = pathFromBoundary(container, [prevSibling.parentNode, off]);
+			var boundary = [prevSibling.parentNode, off];
+			path = (incomplete
+			        ? incompletePathFromBoundary(container, boundary)
+			        : pathFromBoundary(container, boundary));
 		} else {
 			var target = delRecord.target;
-			path = pathFromBoundary(container, [target, 0]);
+			var boundary = [target, 0];
+			path = (incomplete
+			        ? incompletePathFromBoundary(container, boundary)
+			        : pathFromBoundary(container, boundary));
 		}
 		return path;
 	}
@@ -713,11 +760,12 @@ define([
 			if (COMPOUND_DELETE === type) {
 				lastInsertNode = null;
 				var path = containerPath.concat(delPath(container, record));
+				var parentPath = containerPath.concat(delPath(container, record, true));
 				var lastDeleteContent = null;
 				record.records.forEach(function (record) {
 					var contained = record.contained;
 					if (contained.length) {
-						generateChanges(path, record.node, changes, contained);
+						generateChanges(parentPath, record.node, changes, contained);
 						lastDeleteContent = null;
 					}
 					var delNode = reconstructNodeFromDelRecord(record);
@@ -923,12 +971,13 @@ define([
 				if (Dom.isTextNode(removedNode)) {
 					var removedLen = Dom.nodeLength(removedNode);
 					while (removedLen) {
-						next = node.nextSibling;
 						Assert.assertEqual(node.nodeName, removedNode.nodeName);
 						var len = Dom.nodeLength(node);
 						if (removedLen >= len) {
+							next = node.nextSibling;
 							Dom.removePreservingRanges(node, ranges);
 							removedLen -= len;
+							node = next;
 						} else {
 							boundary = Dom.splitBoundary([node, removedLen], ranges);
 							var nodeBeforeSplit = Boundaries.nodeBefore(boundary);
@@ -936,8 +985,8 @@ define([
 							Dom.removePreservingRanges(nodeBeforeSplit, ranges);
 							removedLen = 0;
 							textNodes.push(nodeAfterSplit);
+							node = nodeAfterSplit;
 						}
-						node = next;
 					}
 				} else {
 					next = node.nextSibling;

@@ -61,17 +61,25 @@ require([
 					if (CrazySlots.randomInt(0, 20) !== 0) {
 						Ranges.collapseToStart(range);
 					}
-					Typing.actions.inputText.mutate({
-						editable: editable,
-						range: range,
-						chr: text
+					Undo.capture(editable.undoContext, {meta: 'typing'}, function () {
+						Typing.actions.inputText.mutate({
+							editable: editable,
+							range: range,
+							chr: text
+						});
 					});
 				}
 			}
 		];
 		function mutationFromAction(action) {
 			return function (elem, range) {
-				action.mutate({editable: editable, range:  range});
+				if (action.undo) {
+					Undo.capture(editable.undoContext, {meta: action.undo}, function () {
+						action.mutate({editable: editable, range:  range});
+					});
+				} else {
+					action.mutate({editable: editable, range: range});
+				}
 			};
 		}
 		var simpleMutations = [

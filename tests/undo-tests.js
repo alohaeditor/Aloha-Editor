@@ -126,4 +126,207 @@
 		equal(editable.innerHTML, controlEditable.innerHTML);
 	});
 
+	test('deletes contains a not-direct-child delete', function () {
+		var editable = $('#test-editable')[0];
+		$(editable).html('<div></div><div><i><b>legendos</b></i></div>quodsi<div></div>');
+		var controlEditable = Dom.clone(editable);
+		var context = Undo.Context(editable);
+		var capturedFrame = Undo.capture(context, null, function () {
+			var div = editable.childNodes[1];
+			var i = div.firstChild;
+			var legendos = i.firstChild.firstChild;
+			var quodsi = div.nextSibling;
+			div.removeChild(i);
+			editable.removeChild(div);
+			editable.removeChild(quodsi);
+			var combinedTextNode = legendos;
+			combinedTextNode.insertData(combinedTextNode.length, quodsi.data);
+			editable.insertBefore(combinedTextNode, editable.childNodes[2]);
+		});
+		var changeSet = Undo.changeSetFromFrame(context, capturedFrame);
+		var undoChangeSet = Undo.inverseChangeSet(changeSet);
+		Undo.applyChangeSet(editable, undoChangeSet);
+		equal(editable.innerHTML, controlEditable.innerHTML);
+	});
+
+	test('nested sorting of recordTree', function () {
+		var editable = $('#test-editable')[0];
+		$(editable).html('<div></div>xx<b>one<i>two</i>three</b>zz<div></div>');
+		var controlEditable = Dom.clone(editable);
+		var context = Undo.Context(editable);
+		var capturedFrame = Undo.capture(context, null, function () {
+			var xx = editable.childNodes[1];
+			var b = editable.childNodes[2];
+			var i = b.childNodes[1];
+			var two = i.childNodes[0];
+			var zz = editable.childNodes[3];
+			var wrapper = document.createElement('I');
+			editable.insertBefore(wrapper, xx);
+			wrapper.appendChild(xx);
+			wrapper.appendChild(b);
+			wrapper.appendChild(zz);
+			b.insertBefore(two, i);
+			b.removeChild(i);
+		});
+		var changeSet = Undo.changeSetFromFrame(context, capturedFrame);
+		var undoChangeSet = Undo.inverseChangeSet(changeSet);
+		Undo.applyChangeSet(editable, undoChangeSet);
+		equal(editable.innerHTML, controlEditable.innerHTML);
+	});
+
+	test('two deletes contain another delete', function () {
+		var editable = $('#test-editable')[0];
+		$(editable).html('<div></div>xx<b>one</b><i>two</i>zz<div></div>');
+		var controlEditable = Dom.clone(editable);
+		var context = Undo.Context(editable);
+		var capturedFrame = Undo.capture(context, null, function () {
+			var b = editable.childNodes[2];
+			var one = b.childNodes[0];
+			var i = editable.childNodes[3];
+			var two = i.childNodes[0];
+			b.removeChild(one);
+			editable.removeChild(b);
+			i.appendChild(b);
+			b.appendChild(one);
+			editable.removeChild(i);
+			editable.appendChild(i);
+		});
+		var changeSet = Undo.changeSetFromFrame(context, capturedFrame);
+		var undoChangeSet = Undo.inverseChangeSet(changeSet);
+		Undo.applyChangeSet(editable, undoChangeSet);
+		equal(editable.innerHTML, controlEditable.innerHTML);
+	});
+
+	test('an insert and a delete both contain another insert', function () {
+		var editable = $('#test-editable')[0];
+		$(editable).html('<i><b>xx</b></i>');
+		var controlEditable = Dom.clone(editable);
+		var context = Undo.Context(editable);
+		var capturedFrame = Undo.capture(context, {meta: true}, function () {
+			var b = document.createElement('B');
+			editable.appendChild(b);
+			var i0 = editable.firstChild;
+			var b0 = i0.firstChild;
+			var xx = b0.firstChild;
+			b0.removeChild(xx);
+			i0.insertBefore(xx, b0);
+			i0.removeChild(b0);
+			editable.insertBefore(b0, b);
+			editable.removeChild(i0);
+			b0.appendChild(i0);
+		});
+		var changeSet = Undo.changeSetFromFrame(context, capturedFrame);
+		var undoChangeSet = Undo.inverseChangeSet(changeSet);
+		Undo.applyChangeSet(editable, undoChangeSet);
+		equal(editable.innerHTML, controlEditable.innerHTML);
+	});
+
+	test('reproduced formatting test', function () {
+		var editable = $('#test-editable')[0];
+		$(editable).html('iudicabit<i>vis,</i><i><b>ad.quodsiEtlegendos,legendos,no,maluissetinsolensDicantquodsiposseLoremsivixvis,per</b></i><br>sitno,<div><b><br></b></div>posseLoremproiracundiaper<b>dolor</b><div>no,</div><div><i>periracundiain</i></div><br>etiam<div><br></div>posse<div><br></div><div></div>inne<br>in.ipsum<br><br>');
+		var controlEditable = Dom.clone(editable);
+		var context = Undo.Context(editable);
+		var capturedFrame = Undo.capture(context, {meta: true}, function () {
+
+			var br = editable.childNodes[3];
+			if (br.nodeName !== 'BR') throw Error();
+			var b = document.createElement('B');
+			Dom.wrap(br, b);
+
+			var sitno = editable.childNodes[4]
+			if (sitno.data !== 'sitno,') throw Error();
+			var b2 = document.createElement('B');
+			Dom.wrap(sitno, b2);
+
+			var div = editable.childNodes[5];
+			var bx = div.firstChild;
+			var br2 = bx.firstChild;
+			if (br.nodeName !== 'BR') throw Error();
+			//bx.removeChild(br2);
+			div.insertBefore(br2, bx);
+			div.removeChild(bx);
+
+			var b3 = document.createElement('B');
+			Dom.wrap(br2, b3);
+
+			var posseLorem = editable.childNodes[6];
+			if (!(/^posseLorem/).test(posseLorem.data)) throw Error();
+			var b4 = document.createElement('B');
+			Dom.wrap(posseLorem, b4);
+
+			var bx2 = editable.childNodes[7];
+			if (bx2.nodeName !== 'B')throw Error();
+			editable.removeChild(bx2);
+			b4.appendChild(bx2);
+
+			var dolor = bx2.firstChild;
+			if (dolor.data !== 'dolor')throw Error();
+			bx2.removeChild(dolor);
+			b4.insertBefore(dolor, bx2);
+			b4.removeChild(bx2);
+
+			var div2 = editable.childNodes[7];
+			var no = div2.firstChild;
+			if (no.data !== 'no,') throw Error();
+			var b5 = document.createElement('B');
+			Dom.wrap(no, b5);
+
+			var div3 = editable.childNodes[8];
+			var i = div3.firstChild;
+			if (i.nodeName !== 'I') throw Error();
+			var b6 = document.createElement('B');
+			Dom.wrap(i, b6);
+
+			// 20
+			editable.removeChild(b2)
+			// 21
+			b.appendChild(b2);
+			// 22
+			b2.removeChild(sitno);
+			// 23
+			b.insertBefore(sitno, b2);
+			// 24
+			b.removeChild(b2);
+
+			// 25
+			var i0 = editable.childNodes[2];
+			var b0 = i0.firstChild;
+			var adQuodsi = b0.firstChild;
+			if (!(/^ad.quodsi/).test(adQuodsi.data)) throw Error();
+			b0.removeChild(adQuodsi);
+			// 26
+			i0.insertBefore(adQuodsi, b0);
+			// 27
+			i0.removeChild(b0);
+			// 28
+			editable.insertBefore(b0, b);
+			editable.removeChild(i0);
+			// 29
+			b0.appendChild(i0);
+			// 30
+			editable.removeChild(b);
+			// 31
+			b0.appendChild(b);
+			if (br !== b.firstChild) throw Error();
+			// 32
+			b.removeChild(br);
+			// 33
+			b0.insertBefore(br, b);
+			// 34
+			b.removeChild(sitno);
+			// 35
+			b0.insertBefore(sitno, b);
+			// 36
+			b0.removeChild(b);
+			// 37 character data
+			dolor.replaceData(0, dolor.data.length, posseLorem.data + dolor.data);
+			// 38
+			b4.removeChild(posseLorem);
+		});
+		var changeSet = Undo.changeSetFromFrame(context, capturedFrame);
+		var undoChangeSet = Undo.inverseChangeSet(changeSet);
+		Undo.applyChangeSet(editable, undoChangeSet);
+		equal(editable.innerHTML, controlEditable.innerHTML);
+	});
+
 }(window.aloha));

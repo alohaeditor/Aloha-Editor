@@ -63,7 +63,7 @@ define([
 
 	function defaultBoundaryProbability(mutation, boundary) {
 		return ((null != mutation.endOfLineProbability
-		         && Boundaries.atEnd(boundary))
+		         && Boundaries.isAtEnd(boundary))
 		        ? mutation.endOfLineProbability
 		        : 1);
 	}

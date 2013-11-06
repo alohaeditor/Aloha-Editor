@@ -705,7 +705,7 @@ define([
 		        : false);
 	}
 
-	function follows(a, b) {
+	function followedBy(a, b) {
 		return !!(a.compareDocumentPosition(b) & 4);
 	}
 
@@ -1589,7 +1589,7 @@ define([
 		splitBoundary: splitBoundary,
 
 		contains: contains,
-		follows: follows,
+		followedBy: followedBy,
 
 		setStyle: setStyle,
 		getStyle: getStyle,
