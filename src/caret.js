@@ -44,14 +44,14 @@ define([
 		      .forEach(Dom.remove);
 	}
 
-	function show(caret, rect, style) {
+	function show(caret, rect, overrides) {
 		var color;
 		var width;
 		var rotation;
-		if (style) {
-			color = style['color'] || '';
-			width = rect.width * (style['bold'] ? 2 : 1);
-			rotation = style['italic'] ? 'rotate(8deg)' : '';
+		if (overrides) {
+			color = overrides['color'] || '';
+			width = rect.width * (overrides['bold'] ? 2 : 1);
+			rotation = overrides['italic'] ? 'rotate(8deg)' : '';
 		} else {
 			color = '';
 			width = rect.width;
@@ -64,20 +64,20 @@ define([
 		caret.style.position = 'absolute';
 		caret.style.display = 'block';
 		caret.style.opacity = '0.5';
-		caret.style.background = style ? style['color'] : '';
+		caret.style.background = color;
 		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = rotation;
 	}
 
-	function renderBoundary(caret, boundary, style) {
+	function renderBoundary(caret, boundary, overrides) {
 		var box = Ranges.box(Ranges.create(boundary[0], boundary[1]));
 		var doc = caret.ownerDocument;
 		box.top += window.pageYOffset - doc.body.clientTop;
 		box.left += window.pageXOffset - doc.body.clientLeft;
 		box.width = 2;
-		show(caret, box, style);
+		show(caret, box, overrides);
 	}
 
-	function render(range, caret, startStyle, endStyle) {
+	function render(range, caret, startOverrides, endOverrides) {
 		var carets = document.querySelectorAll('.aloha-caret');
 
 		if (!carets[0]) {
@@ -88,10 +88,8 @@ define([
 			carets = [carets[0], create()];
 		}
 
-		renderBoundary(carets[0], Boundaries.start(range), startStyle);
-		renderBoundary(carets[1], Boundaries.end(range), endStyle);
-
-		carets[0].style.background = 'red';
+		renderBoundary(carets[0], Boundaries.start(range), startOverrides);
+		renderBoundary(carets[1], Boundaries.end(range), endOverrides);
 
 		var steady  = carets['start' === caret ? 1 : 0];
 		var blinker = carets['start' === caret ? 0 : 1];
