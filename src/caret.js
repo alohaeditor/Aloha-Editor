@@ -331,12 +331,10 @@ define([
 	}
 
 	var handlers = {
-		'keyup'     : Fn.noop,
-		'keydown'   : keydown,
-		'keypress'  : keypress,
-		'mouseup'   : mouseup,
-		'click'     : Fn.noop,
-		'dblclick'  : dblclick
+		'keydown'  : keydown,
+		'keypress' : keypress,
+		'mouseup'  : mouseup,
+		'dblclick' : dblclick
 	};
 
 	// State of the user selection
@@ -393,6 +391,11 @@ define([
 
 		if ('keydown' === event.type) {
 			if (event.which === Keys.CODES.up || event.which === Keys.CODES.down) {
+				event.native.preventDefault();
+			}
+			// Because chrome would moved the selection forward once again
+			// otherwise
+			if (!range.collapsed) {
 				event.native.preventDefault();
 			}
 		}
