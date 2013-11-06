@@ -275,6 +275,13 @@ define([
 		}
 	}
 
+	function keypress(event, range, caret, dragging) {
+		return {
+			range : event.range || Ranges.get(),
+			caret : caret
+		};
+	}
+
 	function mouseup(event, range, caret, dragging) {
 		var current = Ranges.createFromPoint(
 			event.native.clientX,
@@ -326,6 +333,7 @@ define([
 	var handlers = {
 		'keyup'     : Fn.noop,
 		'keydown'   : keydown,
+		'keypress'  : keypress,
 		'mouseup'   : mouseup,
 		'click'     : Fn.noop,
 		'dblclick'  : dblclick
