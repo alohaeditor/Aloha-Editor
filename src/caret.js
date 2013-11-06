@@ -66,9 +66,7 @@ define([
 		caret.style.left = rect.left + 'px';
 		caret.style.height = rect.height + 'px';
 		caret.style.width = width + 'px';
-		caret.style.position = 'absolute';
 		caret.style.display = 'block';
-		caret.style.opacity = '0.5';
 		caret.style.background = color;
 		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = rotation;
 	}
@@ -113,6 +111,19 @@ define([
 	}
 
 	/**
+	 * Hides the given caret element.
+	 *
+	 * @param {Element} caret
+	 */
+	function hide(caret) {
+		caret.style.display = 'none';
+	}
+
+	function unhide(caret) {
+		caret.style.display = 'block';
+	}
+
+	/**
 	 * Calculates the override values at the given start and end boundaries.
 	 *
 	 * @param {Object} event
@@ -147,9 +158,7 @@ define([
 	 * @return {Boolean}
 	 */
 	function isReversed(sc, so, ec, eo) {
-		var position = sc.compareDocumentPosition(ec);
-		return (0 === position && so > eo)
-		    || (position & Node.DOCUMENT_POSITION_PRECEDING) > 0;
+		return (sc === ec && so > eo) || Dom.follows(ec, sc);
 	}
 
 	function isCtrlDown(event) {
@@ -180,6 +189,34 @@ define([
 			return Html.nextVisualBoundary(boundary);
 		}
 		return Traversing.findWordBoundaryAhead(boundary);
+	}
+
+	function calculateExpandedRange(current, previous, focus) {
+		var sc, so, ec, eo;
+
+		if ('start' === focus) {
+			sc = current.startContainer;
+			so = current.startOffset;
+			ec = previous.endContainer;
+			eo = previous.endOffset;
+		} else {
+			sc = previous.startContainer;
+			so = previous.startOffset;
+			ec = current.endContainer;
+			eo = current.endOffset;
+		}
+
+		if (isReversed(sc, so, ec, eo)) {
+			return {
+				range: Ranges.create(ec, eo, sc, so),
+				focus: 'start' === focus ? 'end' : 'start'
+			};
+		}
+
+		return {
+			range: Ranges.create(sc, so, ec, eo),
+			focus: focus
+		};
 	}
 
 	/**
@@ -221,35 +258,14 @@ define([
 			return;
 		}
 
-		var sc, so, ec, eo;
-
 		if (!expanding) {
-			sc = ec = next.startContainer;
-			so = eo = next.startOffset;
-		} else if ('start' === focus) {
-			sc = next.startContainer;
-			so = next.startOffset;
-			ec = range.endContainer;
-			eo = range.endOffset;
-		} else {
-			sc = range.startContainer;
-			so = range.startOffset;
-			ec = next.endContainer;
-			eo = next.endOffset;
+			return {
+				range: next,
+				focus: focus
+			};
 		}
 
-		var current;
-		if (expanding && isReversed(sc, so, ec, eo)) {
-			current = Ranges.create(ec, eo, sc, so);
-			focus = ('start' === focus) ? 'end' : 'start';
-		} else {
-			current = Ranges.create(sc, so, ec, eo);
-		}
-
-		return {
-			range: current,
-			focus: focus
-		};
+		return calculateExpandedRange(next, range, focus);
 	}
 
 	/**
@@ -313,7 +329,8 @@ define([
 		return step(event, range, focus, 'right');
 	};
 
-	function keydown(event, range, previous, focus, dragging, doubleclicking) {
+	function keydown(event, previous, focus) {
+		var range = calculateRange(event);
 		if (arrows[event.which]) {
 			return arrows[event.which](event, range, focus);
 		}
@@ -323,50 +340,56 @@ define([
 		};
 	}
 
-	function keypress(event, range, previous, focus, dragging, doubleclicking) {
+	function keypress(event) {
 		return {
-			range: range,
-			focus: focus
+			range: calculateRange(event),
+			focus: 'end'
 		};
 	}
 
-	function mouseup(event, range, previous, focus, dragging, doubleclicking) {
-		if (doubleclicking && !dragging) {
-			return dblclick(
-				event,
-				previous,
-				previous,
-				focus,
-				dragging,
-				doubleclicking
-			);
-		}
-
-		var current = Ranges.createFromPoint(
-			event.native.clientX,
-			event.native.clientY
-		);
-
-		if (!previous || !current) {
-			return;
-		}
-
-		var sc = previous.startContainer;
-		var so = previous.startOffset;
-		var ec = current.endContainer;
-		var eo = current.endOffset;
-		var expanding = dragging || isShiftDown(event);
+	function mouseup(event, previous, focus, expanding) {
+		var range = calculateRange(event);
 
 		if (!expanding) {
-			sc = ec;
-			so = eo;
+			return {
+				range: range,
+				focus: focus
+			};
 		}
 
-		if (expanding && isReversed(sc, so, ec, eo)) {
-			focus = 'start';
+		return calculateExpandedRange(range, previous, focus);
+	}
+
+	function mousedown(event, previous, focus, expanding) {
+		var range = calculateRange(event);
+
+		if (!expanding) {
+			return {
+				range: range,
+				focus: focus
+			};
+		}
+
+		var sc, so, ec, eo;
+
+		sc = range.startContainer;
+		so = range.startOffset;
+
+		if ('start' === focus) {
+			ec = previous.endContainer;
+			eo = previous.endOffset;
+		} else {
+			ec = previous.startContainer;
+			eo = previous.startOffset;
+		}
+
+		var current;
+
+		if (isReversed(sc, so, ec, eo)) {
+			focus = 'end';
 			current = Ranges.create(ec, eo, sc, so);
 		} else {
-			focus = 'end';
+			focus = 'start';
 			current = Ranges.create(sc, so, ec, eo);
 		}
 
@@ -376,25 +399,9 @@ define([
 		};
 	}
 
-	function mousedown(event, range, previous, focus, dragging, doubleclicking) {
-		var current;
-		if (previous && isShiftDown(event)) {
-			current = previous;
-		} else {
-			current = Ranges.createFromPoint(
-				event.native.clientX,
-				event.native.clientY
-			);
-		}
+	function dblclick(event) {
 		return {
-			range: current,
-			focus: focus
-		};
-	}
-
-	function dblclick(event, range, previous, focus, dragging, doubleclicking) {
-		return {
-			range: Ranges.expandToWord(previous),
+			range: Ranges.expandToWord(calculateRange(event)),
 			focus: 'end'
 		};
 	}
@@ -402,9 +409,10 @@ define([
 	var handlers = {
 		'keydown'   : keydown,
 		'keypress'  : keypress,
+		'dblclick'  : dblclick,
 		'mouseup'   : mouseup,
 		'mousedown' : mousedown,
-		'dblclick'  : dblclick
+		'mousemove' : Fn.returnFalse
 	};
 
 	// State of the user selection
@@ -413,28 +421,39 @@ define([
 		end           : create(),
 		range         : null,
 		focus         : 'end',
-		lastClick     : 0,
 		isDragging    : false,
-		isMouseDown   : false,
-		isDoubleClick : false
+		isMouseDown   : false
 	};
 
 	var stateHandlers = {
 		'mousedown': function mousedown(event) {
 			state.isDragging = false;
 			state.isMouseDown = true;
-			var then = state.lastClick;
-			var now = state.lastClick = new Date();
-			var isCaretClicked = event.target === state.start || event.target === state.end;
-			state.isDoubleClick = ((now - then) < 500) && isCaretClicked;
 		},
 		'mouseup': function mouseup(event) {
-			state.isDoubleClick = state.isDragging = state.isMouseDown = false;
+			state.isDragging = state.isMouseDown = false;
 		},
 		'mousemove': function mousemove(event) {
 			state.isDragging = state.isMouseDown;
 		}
 	};
+
+	function calculateRange(event) {
+		var range;
+		if ('mousedown' === event.type || 'mouseup' === event.type) {
+			hide(state.start);
+			hide(state.end);
+			range = Ranges.createFromPoint(
+				event.native.clientX,
+				event.native.clientY
+			);
+			unhide(state.start);
+			unhide(state.end);
+		} else {
+			range = event.range || Ranges.get();
+		}
+		return range;
+	}
 
 	/**
 	 * Renders caret elements to show the user selection.
@@ -443,24 +462,28 @@ define([
 	 * @return {Event}
 	 */
 	function handle(event) {
-		var data;
-
-		if (handlers[event.type]) {
-			data = handlers[event.type](
-				event,
-				event.range || Ranges.get(),
-				state.range,
-				state.focus,
-				state.isDragging,
-				state.isDoubleClick
-			);
+		if (!handlers[event.type]) {
+			return event;
 		}
+
+		var data = handlers[event.type](
+			event,
+			state.range,
+			state.focus,
+			state.isDragging || isShiftDown(event)
+		);
+
+		var wasDragging = state.isDragging;
 
 		if (stateHandlers[event.type]) {
 			stateHandlers[event.type](event);
+			if (!wasDragging && state.isDragging) {
+				hide(state.start);
+				hide(state.end);
+			}
 		}
 
-		if (!data) {
+		if (!data || !data.range) {
 			return event;
 		}
 

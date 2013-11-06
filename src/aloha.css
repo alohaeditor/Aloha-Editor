@@ -30,17 +30,11 @@ p:last-child { margin-bottom: 0; }
 
 
 .aloha-caret {
+	position: absolute;
 	z-index: 1;
 	margin: 0;
 	padding: 0;
-	background: #0c59ef;
-	/*
-	-webkit-transition: left 80ms ease-in-out;
-	   -moz-transition: left 80ms ease-in-out;
-	    -ms-transition: left 80ms ease-in-out;
-	     -o-transition: left 80ms ease-in-out;
-	        transition: left 80ms ease-in-out;
-	*/
+	background: #4285f4;
 }
 
 .blink {
@@ -52,10 +46,10 @@ p:last-child { margin-bottom: 0; }
 }
 
 @-moz-keyframes blink {
-	  0% {opacity: 0.0}
-	100% {opacity: 0.9}
+	  0% {opacity: 0}
+	100% {opacity: 1}
 }
 @-webkit-keyframes blink {
-	  0% {opacity: 0.0}
-	100% {opacity: 0.9}
+	  0% {opacity: 0}
+	100% {opacity: 1}
 }
