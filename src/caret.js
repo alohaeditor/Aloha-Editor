@@ -94,16 +94,16 @@ define([
 		var steady  = carets['start' === caret ? 1 : 0];
 		var blinker = carets['start' === caret ? 0 : 1];
 
-		Dom.addClass(blinker, 'blink');
-
 		if (range.collapsed) {
 			Dom.remove(steady);
+			Dom.addClass(blinker, 'blink');
 		} else {
 			Dom.removeClass(steady, 'blink');
+			Dom.removeClass(blinker, 'blink');
 		}
 	}
 
-	function computeOverrides(event) {
+	function computeOverrides(event, caret) {
 		var start = Overrides.map(Overrides.harvest(event.range.startContainer));
 		var end = Overrides.map(Overrides.harvest(event.range.endContainer));
 		if (event.editables) {
@@ -126,10 +126,32 @@ define([
 		return event.meta.indexOf('shift') > -1;
 	}
 
-	function isReversed(sc, so, ec, eo){
+	function isReversed(sc, so, ec, eo) {
 		var position = sc.compareDocumentPosition(ec);
 		return (0 === position && so > eo)
 		    || (position & Node.DOCUMENT_POSITION_PRECEDING) > 0;
+	}
+
+	function up(box, stride) {
+		return Ranges.createFromPoint(box.left, box.top - stride);
+	}
+
+	function down(box, stride) {
+		return Ranges.createFromPoint(box.left, box.top + box.height + stride);
+	}
+
+	function left(boundary, stride) {
+		if ('char' === stride) {
+			return Html.previousVisualBoundary(boundary);
+		}
+		return Traversing.findWordBoundaryBehind(boundary);
+	}
+
+	function right(boundary, stride) {
+		if ('char' === stride) {
+			return Html.nextVisualBoundary(boundary);
+		}
+		return Traversing.findWordBoundaryAhead(boundary);
 	}
 
 	function climb(event, range, caret, direction) {
@@ -231,28 +253,6 @@ define([
 		};
 	}
 
-	function up(box, stride) {
-		return Ranges.createFromPoint(box.left, box.top - stride);
-	}
-
-	function down(box, stride) {
-		return Ranges.createFromPoint(box.left, box.top + box.height + stride);
-	}
-
-	function left(boundary, stride) {
-		if ('char' === stride) {
-			return Html.previousVisualBoundary(boundary);
-		}
-		return Traversing.findWordBoundaryBehind(boundary);
-	}
-
-	function right(boundary, stride) {
-		if ('char' === stride) {
-			return Html.nextVisualBoundary(boundary);
-		}
-		return Traversing.findWordBoundaryAhead(boundary);
-	}
-
 	var arrows = {};
 	arrows[Keys.CODES.up] = function climbUp(event, range, caret) {
 		return climb(event, range, caret, 'up');
@@ -268,7 +268,7 @@ define([
 	};
 
 	function keydown(event, range, caret, dragging) {
-		var range = event.range || Ranges.get();
+		range = event.range || Ranges.get();
 		if (!range) {
 			return;
 		}
@@ -301,8 +301,6 @@ define([
 		var ec = current.endContainer;
 		var eo = current.endOffset;
 		var expanding = dragging || isShiftDown(event);
-		var current;
-		var caret;
 
 		if (!expanding) {
 			sc = ec;
@@ -407,7 +405,7 @@ define([
 		}
 
 		if ('mousedown' !== event.type) {
-			var overrides = computeOverrides(event);
+			var overrides = computeOverrides(event, caret);
 			render(range, caret, overrides[0], overrides[1]);
 		}
 
