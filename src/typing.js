@@ -171,9 +171,9 @@ define([
 	};
 
 	var handlers = {
-		keyup     : {},
-		keydown   : {},
-		keypress  : {}
+		keyup    : {},
+		keydown  : {},
+		keypress : {}
 	};
 
 	var actions = {
@@ -199,11 +199,8 @@ define([
 	handlers.keydown[Keys.CODES.enter] = breakBlock;
 	handlers.keydown['shift+' + Keys.CODES.enter] = breakLine;
 
-	handlers.keypress['ctrl+' + Keys.CODES.bold] = formatBold;
-	handlers.keypress['ctrl+' + Keys.CODES.italic] = formatItalic;
-
-	handlers.keypress['ctrl+2'] = formatBold;
-	handlers.keypress['ctrl+9'] = formatItalic;
+	handlers.keydown['ctrl+' + Keys.CODES.bold] = formatBold;
+	handlers.keydown['ctrl+' + Keys.CODES.italic] = formatItalic;
 
 	handlers.keypress.input = inputText;
 
@@ -254,6 +251,7 @@ define([
 	};
 
 	exports['handle'] = handle;
+	exports['actions'] = actions;
 
 	return exports;
 });
