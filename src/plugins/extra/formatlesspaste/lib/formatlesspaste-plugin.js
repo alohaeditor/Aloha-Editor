@@ -85,7 +85,7 @@ define([
 
 	function registerFormatlessPasteHandler(plugin) {
 		ContentHandlerManager.register('formatless', FormatlessPasteHandler);
-		FormatlessPasteHandler.strippedElements = Html.STRIPPED_ELEMENTS;
+		FormatlessPasteHandler.strippedElements = Html.TEXT_LEVEL_SEMANTIC_ELEMENTS;
 
 		plugin._toggleFormatlessPasteButton =
 			Ui.adopt('toggleFormatlessPaste', ToggleButton, {

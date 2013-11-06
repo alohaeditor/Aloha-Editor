@@ -121,7 +121,8 @@ define([
 	 *
 	 * @type {Array.<string>}
 	 */
-	var STRIPPED_ELEMENTS = ['a',
+	var TEXT_LEVEL_SEMANTIC_ELEMENTS = [
+		'a',
 		'abbr',
 		'b',
 		'bdi',
@@ -147,7 +148,8 @@ define([
 		'sup',
 		'time',
 		'u',
-		'var'];
+		'var'
+	];
 
 	/**
 	 * Unicode zero width space characters:
@@ -359,7 +361,7 @@ define([
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		VOID_ELEMENTS: VOID_ELEMENTS,
-		STRIPPED_ELEMENTS: STRIPPED_ELEMENTS,
+		TEXT_LEVEL_SEMANTIC_ELEMENTS: TEXT_LEVEL_SEMANTIC_ELEMENTS,
 		isBlock: isBlock,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isInlineFormattable: isInlineFormattable,
