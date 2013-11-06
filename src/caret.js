@@ -77,7 +77,7 @@ define([
 		show(caret, box, style);
 	}
 
-	function renderRange(range, caret, startStyle, endStyle) {
+	function render(range, caret, startStyle, endStyle) {
 		var carets = document.querySelectorAll('.aloha-caret');
 
 		if (!carets[0]) {
@@ -104,6 +104,21 @@ define([
 			Dom.removeClass(steady, 'blink');
 		}
 	}
+
+	function computeOverrides(event) {
+		var start = Overrides.map(Overrides.harvest(event.range.startContainer));
+		var end = Overrides.map(Overrides.harvest(event.range.endContainer));
+		if (event.editables) {
+			var overrides  = Overrides.map(event.editable.overrides);
+			if ('start' === caret) {
+				start = Maps.merge(start, overrides);
+			} else {
+				end = Maps.merge(end, overrides);
+			}
+		}
+		return [start, end];
+	}
+
 
 	function isCtrlDown(event) {
 		return event.meta.indexOf('ctrl') > -1;
@@ -316,8 +331,8 @@ define([
 		'dblclick'  : dblclick
 	};
 
-	// Selection states
-	var selection = {
+	// State of the user selection
+	var state = {
 		range       : null,
 		caret       : 'end',
 		isMouseDown : false,
@@ -327,19 +342,19 @@ define([
 	var stateHandlers = {
 		'mousedown' : function mousedown(event) {
 			purge();
-			selection.isMouseDown = true;
-			if (!selection.range || !isShiftDown(event)) {
-				selection.range = Ranges.createFromPoint(
+			state.isMouseDown = true;
+			if (!state.range || !isShiftDown(event)) {
+				state.range = Ranges.createFromPoint(
 					event.native.clientX,
 					event.native.clientY
 				);
 			}
 		},
 		'mouseup' : function mouseup(event) {
-			selection.isDragging = selection.isMouseDown = false;
+			state.isDragging = state.isMouseDown = false;
 		},
 		'mousemove' : function mousemove(event) {
-			selection.isDragging = selection.isMouseDown;
+			state.isDragging = state.isMouseDown;
 		}
 	};
 
@@ -349,9 +364,9 @@ define([
 		if (handlers[event.type]) {
 			data = handlers[event.type](
 				event,
-				selection.range,
-				selection.caret,
-				selection.isDragging
+				state.range,
+				state.caret,
+				state.isDragging
 			);
 		}
 
@@ -363,8 +378,8 @@ define([
 			return event;
 		}
 
-		var range = selection.range = data.range;
-		var caret = selection.caret = data.caret;
+		var range = state.range = data.range;
+		var caret = state.caret = data.caret;
 
 		event.range = range;
 
@@ -372,32 +387,18 @@ define([
 			if (event.which === Keys.CODES.up || event.which === Keys.CODES.down) {
 				event.native.preventDefault();
 			}
-			// chrome hack to stop unwanted screen movements?
-			var isNative = 'true' === event.editable.elem.getAttribute('contentEditable');
-			if (!isNative && !range.collapsed) {
-				event.native.preventDefault();
-			}
 		}
 
 		if ('mousedown' !== event.type) {
-			var startOverrides = Overrides.map(Overrides.harvest(range.startContainer));
-			var endOverrides   = Overrides.map(Overrides.harvest(range.endContainer));
-			if (event.editables) {
-				var overrides  = Overrides.map(event.editable.overrides);
-				if ('start' === caret) {
-					startOverrides = Maps.merge(startStyle, overrides);
-				} else {
-					endOverrides = Maps.merge(endStyle, overrides);
-				}
-			}
-			renderRange(range, caret, startOverrides, endOverrides);
+			var overrides = computeOverrides(event);
+			render(range, caret, overrides[0], overrides[1]);
 		}
 
 		return event;
 	}
 
 	var exports = {
-		render : renderRange,
+		render : render,
 		handle : handle
 	};
 
