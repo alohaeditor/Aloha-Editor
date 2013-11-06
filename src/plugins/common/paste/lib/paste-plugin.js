@@ -37,7 +37,8 @@ define([
 	'aloha/command',
 	'contenthandler/contenthandler-utils',
 	'aloha/console',
-	'aloha/copypaste'
+	'aloha/copypaste',
+	'aloha/contenthandlermanager'
 ], function (
 	$,
 	Aloha,
@@ -45,7 +46,8 @@ define([
 	Commands,
 	ContentHandlerUtils,
 	Console,
-	CopyPaste
+	CopyPaste,
+	ContentHandlerManager
 ) {
 	'use strict';
 
@@ -288,6 +290,11 @@ define([
 	function paste($clipboard, range, callback) {
 		if (range) {
 			var content = deleteFirstHeaderTag($clipboard.html());
+
+			var formatlessHandler = ContentHandlerManager.get('formatless');
+			if (typeof formatlessHandler !== 'undefined') {
+				content = formatlessHandler.handleContent(content);
+			}
 
 			// Because IE inserts an insidious nbsp into the content during
 			// pasting that needs to be removed.  Leaving it would otherwise
