@@ -151,6 +151,12 @@ define([
 		mutate         : Fn.partial(format, 'italic')
 	};
 
+	var formatUnderline = {
+		preventDefault : true,
+		undo           : 'underline',
+		mutate         : Fn.partial(format, 'underline')
+	};
+
 	var inputText = {
 		deleteRange    : true,
 		preventDefault : true,
@@ -201,6 +207,7 @@ define([
 
 	handlers.keydown['ctrl+' + Keys.CODES.bold] = formatBold;
 	handlers.keydown['ctrl+' + Keys.CODES.italic] = formatItalic;
+	handlers.keydown['ctrl+' + Keys.CODES.underline] = formatUnderline;
 
 	handlers.keypress.input = inputText;
 

@@ -44,6 +44,7 @@ define([
 		'undo'      : 90,
 		'bold'      : 66,
 		'italic'    : 73,
+		'underline' : 85,
 		'left'      : 37,
 		'up'        : 38,
 		'right'     : 39,
