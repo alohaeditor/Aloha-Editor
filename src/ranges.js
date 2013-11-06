@@ -362,13 +362,16 @@ define([
 	 * @return {Range}
 	 */
 	function expandToVisibleCharacter(range) {
+		if (!Dom.isTextNode(range.endContainer)) {
+			return range;
+		}
 		var boundary = Html.nextCharacter(Boundaries.end(range));
 		if (boundary) {
 			if (boundary[1] > 0) {
 				boundary[1]--;
 				setEndFromBoundary(range, boundary);
 			}
-		} else if (Dom.isTextNode(range.endContainer)) {
+		} else {
 			range.setEnd(
 				range.endContainer,
 				Dom.nodeLength(range.endContainer)
