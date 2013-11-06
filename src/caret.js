@@ -393,15 +393,8 @@ define([
 
 		event.range = range;
 
-		if ('keydown' === event.type) {
-			if (event.which === Keys.CODES.up || event.which === Keys.CODES.down) {
-				event.native.preventDefault();
-			}
-			// Because chrome would moved the selection forward once again
-			// otherwise
-			if (!range.collapsed) {
-				event.native.preventDefault();
-			}
+		if ('keydown' === event.type && arrows[event.which]) {
+			event.native.preventDefault();
 		}
 
 		if ('mousedown' !== event.type) {
