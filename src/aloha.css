@@ -14,12 +14,12 @@ body {
 }
 
 ::selection {
-	background: rgba(50,30,10,0.1);
-	color: inherit;
+	background: #4285f4;
+	color: #fff;
 }
 ::-moz-selection {
-	background: rgba(50,30,10,0.1);
-	color: inherit;
+	background: #4285f4;
+	color: #fff;
 }
 
 .aloha-editable {
@@ -34,7 +34,7 @@ p:last-child { margin-bottom: 0; }
 	z-index: 1;
 	margin: 0;
 	padding: 0;
-	background: #4285f4;
+	background: #333;
 	-webkit-animation: blink .5s ease-out infinite alternate;
 	   -moz-animation: blink .5s ease-out infinite alternate;
 	    -ms-animation: blink .5s ease-out infinite alternate;
