@@ -1261,7 +1261,7 @@ define([
 		adjacentNode  : Boundaries.nodeAfter,
 		stepWhile     : Boundaries.nextWhile,
 		nodeAt        : Boundaries.nextNode,
-		isLimit       : Boundaries.atEnd,
+		isLimit       : Boundaries.isAtEnd,
 		followingSibling: function followingSibling(node) {
 			return node.nextSibling;
 		},
@@ -1276,7 +1276,7 @@ define([
 		adjacentNode  : Boundaries.nodeBefore,
 		stepWhile     : Boundaries.prevWhile,
 		nodeAt        : Boundaries.prevNode,
-		isLimit       : Boundaries.atStart,
+		isLimit       : Boundaries.isAtStart,
 		followingSibling: function followingSibling(node) {
 			return node.previousSibling;
 		},
