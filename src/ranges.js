@@ -682,7 +682,7 @@ define([
 		var range = isKeyboardEvent
 		          ? event.range
 		          : createFromPoint(event.native.clientX, event.native.clientY);
-		return range || Ranges.get();
+		return range || get();
 	}
 
 	/**
