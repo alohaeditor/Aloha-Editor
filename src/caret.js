@@ -408,7 +408,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isDoubleClicking(name, range, previous, then) {
-		return ('mousedown' === name)
+		return ('mousedown' === name && range && previous)
 		    && ((new Date() - then) < 500) && Ranges.equal(range, previous);
 	}
 
@@ -438,7 +438,7 @@ define([
 			range = Ranges.fromEvent(event);
 			unhide(state.caret);
 
-			state.isDoubleClicking = (range && state.isDoubleClicking)
+			state.isDoubleClicking = state.isDoubleClicking
 					|| isDoubleClicking(type, range, state.range, state.time);
 
 			if (state.isDoubleClicking) {
