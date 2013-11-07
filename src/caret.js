@@ -88,21 +88,21 @@ define([
 	}
 
 	/**
-	 * Calculates the override values at the given node.
+	 * Calculates the override values at the given boundary container.
 	 *
 	 * @param  {Object}  event
-	 * @param  {Element} node
+	 * @param  {Element} container
 	 * @return {Object}
 	 *         An object with overrides mapped against their names.
 	 */
-	function overrides(event, node) {
+	function overrides(event, container) {
 		if (event.editable) {
 			return Maps.merge(
-				Overrides.map(Overrides.harvest(node)),
+				Overrides.map(Overrides.harvest(container)),
 				Overrides.map(event.editable.overrides)
 			);
 		}
-		return Overrides.map(Overrides.harvest(node));
+		return Overrides.map(Overrides.harvest(container));
 	}
 
 	/**
